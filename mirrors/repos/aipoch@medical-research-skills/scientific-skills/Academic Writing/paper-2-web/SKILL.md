@@ -1,6 +1,6 @@
 ---
-name: paper-2-web
-description: Use this skill when converting academic papers to promotional and presentation formats, including interactive websites (Paper2Web), presentation videos (Paper2Video), and conference posters (Paper2Poster). This skill is suitable for paper dissemination, conference preparation, creating explorable academic homepages, generating video abstracts, or producing printable posters from LaTeX or PDF source.
+name: paper-web
+description: "Use this skill when converting academic papers to promotional and presentation formats, including interactive websites (Paper2Web), presentation videos (Paper2Video), and conference posters (Paper2Poster). This skill is suitable for paper dissemination, conference preparation, creating explorable academic homepages, generating video abstracts, or producing printable posters from LaTeX or PDF source."
 license: MIT
 author: AIPOCH
 ---
@@ -597,3 +597,4 @@ Result file: paper_2_web_result.md
 Validation summary: PASS/FAIL with brief notes
 Assumptions: explicit list if any
 ```
+

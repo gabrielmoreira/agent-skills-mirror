@@ -45,14 +45,13 @@ Each worktree runs its own dev server on a deterministic port. The `hash_port` f
 ```toml
 # .config/wt.toml
 [post-start]
-server = "npm run dev -- --port {{ branch | hash_port }}"
+server = "wt step tether -- npm run dev -- --port {{ branch | hash_port }}"
 
 [list]
 url = "http://localhost:{{ branch | hash_port }}"
-
-[pre-remove]
-server = "lsof -ti :{{ branch | hash_port }} -sTCP:LISTEN | xargs kill 2>/dev/null || true"
 ```
+
+[`wt step tether`](https://worktrunk.dev/step/#wt-step-tether) runs the server in its own process group and tears the whole group down when the worktree is removed, so no `pre-remove` hook is needed. This matters because `npm run dev` spawns an esbuild process that does not listen on the dev-server port and reparents away when the top process exits, so a port- or parent-based kill leaks it; across enough worktree churn those leaks accumulate. See the [`wt step tether`](https://worktrunk.dev/step/#wt-step-tether) docs for the full rationale and platform behavior.
 
 The URL column in `wt list` shows each worktree's dev server:
 
@@ -67,7 +66,7 @@ $ wt list
 <span class=d>○</span> <span class=d>Showing 4 worktrees, 2 with changes, 2 ahead, 2 columns hidden</span>
 ```
 
-Ports are deterministic — `fix-auth` always gets port 16460, regardless of which machine or when. The URL dims if the server isn't running.
+Ports are deterministic: `fix-auth` always gets port 16460, regardless of which machine or when. The URL dims if the server isn't running.
 
 ## Database per worktree
 
@@ -287,12 +286,6 @@ zellij run -- wt switch --create fix-auth-bug -x claude -- \
   'The login session expires after 5 minutes. Find the session timeout config and extend it to 24 hours.'
 ```
 
-**cmux** (new workspace):
-```bash
-cmux new-workspace --command "wt switch --create fix-auth-bug -x claude -- \
-  'The login session expires after 5 minutes. Find the session timeout config and extend it to 24 hours.'"
-```
-
 This lets one agent session hand off work to another that runs in the background. Hooks run inside the multiplexer session/pane.
 
 The [worktrunk skill](https://worktrunk.dev/claude-code/) includes guidance for Claude Code (and other agent CLIs that load it) to execute this pattern. To enable it, request it explicitly ("spawn a parallel worktree for...") or add to your project instructions (`CLAUDE.md` or `AGENTS.md`):
@@ -338,36 +331,6 @@ To create a worktree and immediately attach:
 $ wt switch --create feature -x 'tmux attach -t {{ branch | sanitize }}'
 ```
 
-## cmux workspace per worktree
-
-Each worktree gets its own [cmux](https://cmux.com) workspace. Switching worktrees switches workspaces; removing a worktree closes its workspace.
-
-**Prerequisites:** [jq](https://jqlang.org) (`brew install jq`)
-
-```toml
-# ~/.config/worktrunk/config.toml
-[pre-start]
-cmux = "cmux new-workspace --name {{ repo | sanitize }}/{{ branch | sanitize }} --cwd {{ worktree_path }}"
-
-[pre-switch]
-cmux = """
-WS=$(cmux --json list-workspaces 2>/dev/null \\
-  | jq -r --arg t '{{ repo | sanitize }}/{{ branch | sanitize }}' \\
-      '.workspaces[] | select(.title == $t) | .ref' | head -1)
-[ -n "$WS" ] && cmux select-workspace --workspace "$WS" || true
-"""
-
-[pre-remove]
-cmux = """
-WS=$(cmux --json list-workspaces 2>/dev/null \\
-  | jq -r --arg t '{{ repo | sanitize }}/{{ branch | sanitize }}' \\
-      '.workspaces[] | select(.title == $t) | .ref' | head -1)
-[ -n "$WS" ] && cmux close-workspace --workspace "$WS" || true
-"""
-```
-
-**Why `pre-*` instead of `post-*`?** cmux restricts socket access to processes spawned inside a cmux terminal. `post-*` hooks run as detached background processes, breaking the process ancestry chain. `pre-*` hooks run in the foreground and inherit the terminal's process lineage.
-
 ## Xcode DerivedData cleanup
 
 Clean up Xcode's DerivedData when removing a worktree. Each DerivedData directory contains an `info.plist` recording its project path — grep for the worktree path to find and remove the matching build cache:
@@ -398,7 +361,7 @@ Clean URLs like `http://feature-auth.myproject.localhost` without port numbers. 
 ```toml
 # .config/wt.toml
 [post-start]
-server = "npm run dev -- --port {{ branch | hash_port }}"
+server = "wt step tether -- npm run dev -- --port {{ branch | hash_port }}"
 proxy = """
   curl -sf --max-time 0.5 http://localhost:2019/config/ || caddy start
   curl -sf http://localhost:2019/config/apps/http/servers/wt || \

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.0.9] - 2026-05-19
+
+### 🐛 Fixes
+
+- **Help page commands updated to V3** (#135) — `showHelp()` was still showing 25+ V2 commands (workflow/plan/execute/frontend/backend/feat/analyze/debug/optimize/test/review + team-*). Replaced with V3 structure: `/ccg:go` smart engine entry + OpenSpec + Git tools + project management + quality gates. Both zh-CN and en translations updated.
+
+---
+
 ## [3.0.8] - 2026-05-18
 
 ### 🐛 Fixes

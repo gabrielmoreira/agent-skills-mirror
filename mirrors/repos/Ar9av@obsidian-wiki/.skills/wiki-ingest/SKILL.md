@@ -15,10 +15,11 @@ You are ingesting source documents into an Obsidian wiki. Your job is not to sum
 
 ## Before You Start
 
-1. **Resolve config** — follow the Config Resolution Protocol in `llm-wiki/SKILL.md` (walk up CWD for `.env` → `~/.obsidian-wiki/config` → prompt setup). This gives `OBSIDIAN_VAULT_PATH`, `OBSIDIAN_SOURCES_DIR`, and `OBSIDIAN_LINK_FORMAT` (default: `wikilink`). Only read the specific variables you need — do not log, echo, or reference any other values from these files.
-2. Read `.manifest.json` at the vault root to check what's already been ingested
-3. Read `index.md` to understand current wiki content
-4. Read `log.md` to understand recent activity
+1. **Resolve config** — follow the Config Resolution Protocol in `llm-wiki/SKILL.md` (walk up CWD for `.env` → `~/.obsidian-wiki/config` → prompt setup). This gives `OBSIDIAN_VAULT_PATH`, `OBSIDIAN_SOURCES_DIR`, `OBSIDIAN_LINK_FORMAT` (default: `wikilink`), and `WIKI_STAGED_WRITES`. Only read the specific variables you need — do not log, echo, or reference any other values from these files.
+2. **Check `WIKI_STAGED_WRITES`** — if set to `true`, all new and updated category pages go to `_staging/<category>/` instead of their final location. Tell the user at the start of the ingest: "Staged writes mode is enabled — pages will land in `_staging/` for your review. Run `/wiki-stage-commit` when ready to promote."
+3. Read `.manifest.json` at the vault root to check what's already been ingested
+4. Read `index.md` to understand current wiki content
+5. Read `log.md` to understand recent activity
 
 When writing internal links in Step 5, apply the link format described in `llm-wiki/SKILL.md` (Link Format section) according to the `OBSIDIAN_LINK_FORMAT` value you read.
 
@@ -182,9 +183,47 @@ Before writing anything, plan which pages to update or create. Aim for 10-15 pag
 - If it's new, which category does it belong in?
 - What `[[wikilinks]]` should connect it to existing pages?
 
+**Apply tier-aware filtering to existing pages** (see `llm-wiki/SKILL.md`, Importance Tiering section):
+
+| Tier | Update decision |
+|---|---|
+| `core` | Always update if the source is even marginally relevant to this page |
+| `supporting` *(default)* | Update only when the source has clear new claims for this page |
+| `peripheral` | Skip unless this source is *primarily* about this specific topic |
+
+Pages without a `tier:` field are treated as `supporting`. When in doubt, err toward updating — the tier is a cost-control hint, not a hard lock.
+
 ### Step 5: Write/Update Pages
 
 For each page in your plan:
+
+**If `WIKI_STAGED_WRITES=true`, apply the staging rules below before writing anything:**
+
+- **New pages** go to `_staging/<category>/page.md` instead of `<category>/page.md`. The page content is identical to what it would be in the live wiki — only the location differs.
+- **Updates to existing pages** go to `_staging/<category>/page.patch.md`. The patch file format:
+  ```markdown
+  ---
+  title: <same as target page>
+  patch_target: <category>/page.md
+  ingested_at: <ISO timestamp>
+  source: <source path>
+  ---
+  # Proposed Update: <page title>
+
+  ## Additions
+  <new paragraphs/bullets to merge into the page>
+
+  ## Deletions
+  <lines to remove, verbatim from current page>
+
+  ## Updated Fields
+  updated: <new ISO timestamp>
+  sources: [<new source added>]
+  ```
+- `index.md` and `log.md` are always updated immediately (low-risk tracking files). `hot.md` notes that staged writes are pending.
+- When writing staged pages, use the path `_staging/<category>/` — create the directory if it doesn't exist.
+
+**If `WIKI_STAGED_WRITES` is not set or is `false` (default):**
 
 **If creating a new page:**
 - Use the page template from the llm-wiki skill (frontmatter + sections)
@@ -217,6 +256,7 @@ relationships:
 base_confidence: <computed>   # [0.0, 1.0] — see llm-wiki/SKILL.md Confidence formula
 lifecycle: draft
 lifecycle_changed: "<ISO date today>"
+tier: supporting              # default for new pages; promote to core when ≥5 incoming links
 ```
 
 Compute `base_confidence` using the formula from `llm-wiki/SKILL.md` (Confidence and Lifecycle section):
@@ -287,6 +327,44 @@ updated: TIMESTAMP
 ## Flagged Contradictions
 ```
 
+### Step 8: Refresh QMD Wiki Index (optional — requires `QMD_WIKI_COLLECTION`)
+
+**GUARD: If `$QMD_WIKI_COLLECTION` is empty or unset, skip this step.** The markdown vault is still the source of truth; QMD is a search index.
+
+Run this step only after pages and special files have been written. If the source was skipped because manifest hash matched, do not refresh QMD.
+
+This refresh currently requires the local QMD CLI. Use `$QMD_CLI` if set; otherwise use `qmd`. If the CLI is unavailable or returns an error, do not roll back the wiki ingest; report that the wiki was updated but QMD refresh was skipped or failed.
+
+For CLI refresh:
+
+```bash
+${QMD_CLI:-qmd} update
+```
+
+If the output says new hashes need vectors, or if pages were created/updated and embeddings may be stale, run:
+
+```bash
+${QMD_CLI:-qmd} embed
+```
+
+Verify at least one created or materially updated page is visible in the wiki collection:
+
+```bash
+${QMD_CLI:-qmd} get "qmd://$QMD_WIKI_COLLECTION/projects/<project>/<category>/<page>.md" -l 5
+```
+
+If the exact `qmd://` path is uncertain, use:
+
+```bash
+${QMD_CLI:-qmd} ls "$QMD_WIKI_COLLECTION" | grep "<page-slug>"
+```
+
+Record QMD refresh in the final report as one of:
+- `QMD refreshed: update + embed + verified`
+- `QMD skipped: QMD_WIKI_COLLECTION unset`
+- `QMD skipped: qmd CLI unavailable`
+- `QMD failed: <short error summary>`
+
 ## Handling Multiple Sources
 
 When ingesting a directory, process sources one at a time but maintain a running awareness of the full batch. Later sources may strengthen or contradict earlier ones — that's fine, just update pages as you go.
@@ -303,6 +381,9 @@ After ingesting, verify:
 - [ ] Inferred and ambiguous claims are marked with `^[inferred]` / `^[ambiguous]`; `provenance:` frontmatter block is present on new and updated pages
 - [ ] Every new/updated page has a `summary:` frontmatter field (1–2 sentences, ≤200 chars)
 - [ ] `relationships:` block is present on pages where source text made typed connections clear; all entries use an allowed type from `llm-wiki/SKILL.md`
+- [ ] If `QMD_WIKI_COLLECTION` is set and the QMD CLI is available, `qmd update` has run after writing pages
+- [ ] If QMD reports missing vectors or embeddings may be stale, `qmd embed` has run
+- [ ] QMD refresh status is included in the final report
 
 ## Reference
 

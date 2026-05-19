@@ -77,7 +77,7 @@ Write to `.github/episodic/meditation-YYYY-MM-DD-<topic>.md`:
 
 ### 5. Handoff — Enable session continuity
 
-Write explicit state snapshot at session end to repo-root `SESSION-HANDOFF.md`:
+Write explicit state snapshot at session end to repo-root `HANDOFF.md`:
 
 ```markdown
 # Session Handoff

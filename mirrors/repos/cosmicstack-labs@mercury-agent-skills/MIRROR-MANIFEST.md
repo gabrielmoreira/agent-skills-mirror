@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cosmicstack-labs/mercury-agent-skills` — 26 default patterns, 1 followed patterns, 124 file(s) materialized.
+Mirror of `cosmicstack-labs/mercury-agent-skills` — 26 default patterns, 1 followed patterns, 127 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cosmicstack-labs/mercury-agent-skills` — 26 default patterns, 1 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 124 |
+| Files         | 127 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -109,80 +109,83 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 48 | ✓ | [`categories/development/dependency-management/SKILL.md`](categories/development/dependency-management/SKILL.md) |
 | 49 | ✓ | [`categories/development/documentation-generation/SKILL.md`](categories/development/documentation-generation/SKILL.md) |
 | 50 | ✓ | [`categories/development/git-workflow/SKILL.md`](categories/development/git-workflow/SKILL.md) |
-| 51 | ✓ | [`categories/development/knowledge-base/SKILL.md`](categories/development/knowledge-base/SKILL.md) |
-| 52 | ✓ | [`categories/development/markdown-mastery/SKILL.md`](categories/development/markdown-mastery/SKILL.md) |
-| 53 | ✓ | [`categories/development/refactoring-patterns/SKILL.md`](categories/development/refactoring-patterns/SKILL.md) |
-| 54 | ✓ | [`categories/development/technical-writing/SKILL.md`](categories/development/technical-writing/SKILL.md) |
-| 55 | ✓ | [`categories/development/testing-strategies/SKILL.md`](categories/development/testing-strategies/SKILL.md) |
-| 56 | ✓ | [`categories/devops/ci-cd-pipeline/SKILL.md`](categories/devops/ci-cd-pipeline/SKILL.md) |
-| 57 | ✓ | [`categories/devops/cloud-architecture/SKILL.md`](categories/devops/cloud-architecture/SKILL.md) |
-| 58 | ✓ | [`categories/devops/docker-patterns/SKILL.md`](categories/devops/docker-patterns/SKILL.md) |
-| 59 | ✓ | [`categories/devops/kubernetes-patterns/SKILL.md`](categories/devops/kubernetes-patterns/SKILL.md) |
-| 60 | ✓ | [`categories/devops/monitoring-observability/SKILL.md`](categories/devops/monitoring-observability/SKILL.md) |
-| 61 | ✓ | [`categories/devops/sre-practices/SKILL.md`](categories/devops/sre-practices/SKILL.md) |
-| 62 | ✓ | [`categories/devops/terraform-iac/SKILL.md`](categories/devops/terraform-iac/SKILL.md) |
-| 63 | ✓ | [`categories/education-learning/assessment-design/SKILL.md`](categories/education-learning/assessment-design/SKILL.md) |
-| 64 | ✓ | [`categories/education-learning/curriculum-design/SKILL.md`](categories/education-learning/curriculum-design/SKILL.md) |
-| 65 | ✓ | [`categories/education-learning/learning-science/SKILL.md`](categories/education-learning/learning-science/SKILL.md) |
-| 66 | ✓ | [`categories/education-learning/micro-learning/SKILL.md`](categories/education-learning/micro-learning/SKILL.md) |
-| 67 | ✓ | [`categories/education-learning/teaching-methods/SKILL.md`](categories/education-learning/teaching-methods/SKILL.md) |
-| 68 | ✓ | [`categories/finance-legal/budgeting-forecasting/SKILL.md`](categories/finance-legal/budgeting-forecasting/SKILL.md) |
-| 69 | ✓ | [`categories/finance-legal/contract-review/SKILL.md`](categories/finance-legal/contract-review/SKILL.md) |
-| 70 | ✓ | [`categories/finance-legal/financial-analysis/SKILL.md`](categories/finance-legal/financial-analysis/SKILL.md) |
-| 71 | ✓ | [`categories/finance-legal/privacy-compliance/SKILL.md`](categories/finance-legal/privacy-compliance/SKILL.md) |
-| 72 | ✓ | [`categories/finance-legal/risk-management/SKILL.md`](categories/finance-legal/risk-management/SKILL.md) |
-| 73 | ✓ | [`categories/frontend/component-design-systems/SKILL.md`](categories/frontend/component-design-systems/SKILL.md) |
-| 74 | ✓ | [`categories/frontend/frontend-testing/SKILL.md`](categories/frontend/frontend-testing/SKILL.md) |
-| 75 | ✓ | [`categories/frontend/nextjs-patterns/SKILL.md`](categories/frontend/nextjs-patterns/SKILL.md) |
-| 76 | ✓ | [`categories/frontend/react-patterns/SKILL.md`](categories/frontend/react-patterns/SKILL.md) |
-| 77 | ✓ | [`categories/frontend/responsive-design/SKILL.md`](categories/frontend/responsive-design/SKILL.md) |
-| 78 | ✓ | [`categories/frontend/state-management/SKILL.md`](categories/frontend/state-management/SKILL.md) |
-| 79 | ✓ | [`categories/frontend/tailwind-css/SKILL.md`](categories/frontend/tailwind-css/SKILL.md) |
-| 80 | ✓ | [`categories/frontend/web-performance/SKILL.md`](categories/frontend/web-performance/SKILL.md) |
-| 81 | ✓ | [`categories/health-wellness/fitness-planning/SKILL.md`](categories/health-wellness/fitness-planning/SKILL.md) |
-| 82 | ✓ | [`categories/health-wellness/habit-formation/SKILL.md`](categories/health-wellness/habit-formation/SKILL.md) |
-| 83 | ✓ | [`categories/health-wellness/mental-health/SKILL.md`](categories/health-wellness/mental-health/SKILL.md) |
-| 84 | ✓ | [`categories/health-wellness/nutrition-planning/SKILL.md`](categories/health-wellness/nutrition-planning/SKILL.md) |
-| 85 | ✓ | [`categories/health-wellness/sleep-optimization/SKILL.md`](categories/health-wellness/sleep-optimization/SKILL.md) |
-| 86 | ✓ | [`categories/marketing/content-creation/SKILL.md`](categories/marketing/content-creation/SKILL.md) |
-| 87 | ✓ | [`categories/marketing/local-business-growth/SKILL.md`](categories/marketing/local-business-growth/SKILL.md) |
-| 88 | ✓ | [`categories/marketing/seo-strategy/SKILL.md`](categories/marketing/seo-strategy/SKILL.md) |
-| 89 | ✓ | [`categories/media-download/audio-extraction/SKILL.md`](categories/media-download/audio-extraction/SKILL.md) |
-| 90 | ✓ | [`categories/media-download/legal-downloading/SKILL.md`](categories/media-download/legal-downloading/SKILL.md) |
-| 91 | ✓ | [`categories/media-download/playlist-archiver/SKILL.md`](categories/media-download/playlist-archiver/SKILL.md) |
-| 92 | ✓ | [`categories/media-download/video-downloader/SKILL.md`](categories/media-download/video-downloader/SKILL.md) |
-| 93 | ✓ | [`categories/mobile/android-kotlin-patterns/SKILL.md`](categories/mobile/android-kotlin-patterns/SKILL.md) |
-| 94 | ✓ | [`categories/mobile/app-store-optimization/SKILL.md`](categories/mobile/app-store-optimization/SKILL.md) |
-| 95 | ✓ | [`categories/mobile/ios-swift-patterns/SKILL.md`](categories/mobile/ios-swift-patterns/SKILL.md) |
-| 96 | ✓ | [`categories/mobile/mobile-performance/SKILL.md`](categories/mobile/mobile-performance/SKILL.md) |
-| 97 | ✓ | [`categories/mobile/react-native-patterns/SKILL.md`](categories/mobile/react-native-patterns/SKILL.md) |
-| 98 | ✓ | [`categories/pdf-generation/invoice-document-pdf/SKILL.md`](categories/pdf-generation/invoice-document-pdf/SKILL.md) |
-| 99 | ✓ | [`categories/pdf-generation/markdown-to-pdf/SKILL.md`](categories/pdf-generation/markdown-to-pdf/SKILL.md) |
-| 100 | ✓ | [`categories/pdf-generation/report-generation/SKILL.md`](categories/pdf-generation/report-generation/SKILL.md) |
-| 101 | ✓ | [`categories/pdf-generation/typesetting-latex/SKILL.md`](categories/pdf-generation/typesetting-latex/SKILL.md) |
-| 102 | ✓ | [`categories/presentation/data-storytelling/SKILL.md`](categories/presentation/data-storytelling/SKILL.md) |
-| 103 | ✓ | [`categories/presentation/pitch-deck-creation/SKILL.md`](categories/presentation/pitch-deck-creation/SKILL.md) |
-| 104 | ✓ | [`categories/presentation/presentation-automation/SKILL.md`](categories/presentation/presentation-automation/SKILL.md) |
-| 105 | ✓ | [`categories/presentation/presentation-design/SKILL.md`](categories/presentation/presentation-design/SKILL.md) |
-| 106 | ✓ | [`categories/product/product-strategy/SKILL.md`](categories/product/product-strategy/SKILL.md) |
-| 107 | ✓ | [`categories/product/user-research/SKILL.md`](categories/product/user-research/SKILL.md) |
-| 108 | ✓ | [`categories/security/secure-coding/SKILL.md`](categories/security/secure-coding/SKILL.md) |
-| 109 | ✓ | [`categories/security/security-audit/SKILL.md`](categories/security/security-audit/SKILL.md) |
-| 110 | ✓ | [`categories/shop-restaurant/daily-pulse/SKILL.md`](categories/shop-restaurant/daily-pulse/SKILL.md) |
-| 111 | ✓ | [`categories/shop-restaurant/inventory-optimizer/SKILL.md`](categories/shop-restaurant/inventory-optimizer/SKILL.md) |
-| 112 | ✓ | [`categories/shop-restaurant/menu-engineer/SKILL.md`](categories/shop-restaurant/menu-engineer/SKILL.md) |
-| 113 | ✓ | [`categories/shop-restaurant/price-scout/SKILL.md`](categories/shop-restaurant/price-scout/SKILL.md) |
-| 114 | ✓ | [`categories/shop-restaurant/review-responder/SKILL.md`](categories/shop-restaurant/review-responder/SKILL.md) |
-| 115 | ✓ | [`categories/shop-restaurant/social-post/SKILL.md`](categories/shop-restaurant/social-post/SKILL.md) |
-| 116 | ✓ | [`categories/shop-restaurant/staff-scheduler/SKILL.md`](categories/shop-restaurant/staff-scheduler/SKILL.md) |
-| 117 | ✓ | [`categories/shop-restaurant/table-manager/SKILL.md`](categories/shop-restaurant/table-manager/SKILL.md) |
-| 118 | ✓ | [`categories/shop-restaurant/zomato-order/SKILL.md`](categories/shop-restaurant/zomato-order/SKILL.md) |
-| 119 | ✓ | [`categories/testing-qa/accessibility-testing/SKILL.md`](categories/testing-qa/accessibility-testing/SKILL.md) |
-| 120 | ✓ | [`categories/testing-qa/api-testing/SKILL.md`](categories/testing-qa/api-testing/SKILL.md) |
-| 121 | ✓ | [`categories/testing-qa/e2e-testing/SKILL.md`](categories/testing-qa/e2e-testing/SKILL.md) |
-| 122 | ✓ | [`categories/testing-qa/performance-testing/SKILL.md`](categories/testing-qa/performance-testing/SKILL.md) |
-| 123 | ✓ | [`categories/testing-qa/test-strategy/SKILL.md`](categories/testing-qa/test-strategy/SKILL.md) |
-| 124 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 51 | ✓ | [`categories/development/hyperframes-cli/SKILL.md`](categories/development/hyperframes-cli/SKILL.md) |
+| 52 | ✓ | [`categories/development/hyperframes-media/SKILL.md`](categories/development/hyperframes-media/SKILL.md) |
+| 53 | ✓ | [`categories/development/hyperframes/SKILL.md`](categories/development/hyperframes/SKILL.md) |
+| 54 | ✓ | [`categories/development/knowledge-base/SKILL.md`](categories/development/knowledge-base/SKILL.md) |
+| 55 | ✓ | [`categories/development/markdown-mastery/SKILL.md`](categories/development/markdown-mastery/SKILL.md) |
+| 56 | ✓ | [`categories/development/refactoring-patterns/SKILL.md`](categories/development/refactoring-patterns/SKILL.md) |
+| 57 | ✓ | [`categories/development/technical-writing/SKILL.md`](categories/development/technical-writing/SKILL.md) |
+| 58 | ✓ | [`categories/development/testing-strategies/SKILL.md`](categories/development/testing-strategies/SKILL.md) |
+| 59 | ✓ | [`categories/devops/ci-cd-pipeline/SKILL.md`](categories/devops/ci-cd-pipeline/SKILL.md) |
+| 60 | ✓ | [`categories/devops/cloud-architecture/SKILL.md`](categories/devops/cloud-architecture/SKILL.md) |
+| 61 | ✓ | [`categories/devops/docker-patterns/SKILL.md`](categories/devops/docker-patterns/SKILL.md) |
+| 62 | ✓ | [`categories/devops/kubernetes-patterns/SKILL.md`](categories/devops/kubernetes-patterns/SKILL.md) |
+| 63 | ✓ | [`categories/devops/monitoring-observability/SKILL.md`](categories/devops/monitoring-observability/SKILL.md) |
+| 64 | ✓ | [`categories/devops/sre-practices/SKILL.md`](categories/devops/sre-practices/SKILL.md) |
+| 65 | ✓ | [`categories/devops/terraform-iac/SKILL.md`](categories/devops/terraform-iac/SKILL.md) |
+| 66 | ✓ | [`categories/education-learning/assessment-design/SKILL.md`](categories/education-learning/assessment-design/SKILL.md) |
+| 67 | ✓ | [`categories/education-learning/curriculum-design/SKILL.md`](categories/education-learning/curriculum-design/SKILL.md) |
+| 68 | ✓ | [`categories/education-learning/learning-science/SKILL.md`](categories/education-learning/learning-science/SKILL.md) |
+| 69 | ✓ | [`categories/education-learning/micro-learning/SKILL.md`](categories/education-learning/micro-learning/SKILL.md) |
+| 70 | ✓ | [`categories/education-learning/teaching-methods/SKILL.md`](categories/education-learning/teaching-methods/SKILL.md) |
+| 71 | ✓ | [`categories/finance-legal/budgeting-forecasting/SKILL.md`](categories/finance-legal/budgeting-forecasting/SKILL.md) |
+| 72 | ✓ | [`categories/finance-legal/contract-review/SKILL.md`](categories/finance-legal/contract-review/SKILL.md) |
+| 73 | ✓ | [`categories/finance-legal/financial-analysis/SKILL.md`](categories/finance-legal/financial-analysis/SKILL.md) |
+| 74 | ✓ | [`categories/finance-legal/privacy-compliance/SKILL.md`](categories/finance-legal/privacy-compliance/SKILL.md) |
+| 75 | ✓ | [`categories/finance-legal/risk-management/SKILL.md`](categories/finance-legal/risk-management/SKILL.md) |
+| 76 | ✓ | [`categories/frontend/component-design-systems/SKILL.md`](categories/frontend/component-design-systems/SKILL.md) |
+| 77 | ✓ | [`categories/frontend/frontend-testing/SKILL.md`](categories/frontend/frontend-testing/SKILL.md) |
+| 78 | ✓ | [`categories/frontend/nextjs-patterns/SKILL.md`](categories/frontend/nextjs-patterns/SKILL.md) |
+| 79 | ✓ | [`categories/frontend/react-patterns/SKILL.md`](categories/frontend/react-patterns/SKILL.md) |
+| 80 | ✓ | [`categories/frontend/responsive-design/SKILL.md`](categories/frontend/responsive-design/SKILL.md) |
+| 81 | ✓ | [`categories/frontend/state-management/SKILL.md`](categories/frontend/state-management/SKILL.md) |
+| 82 | ✓ | [`categories/frontend/tailwind-css/SKILL.md`](categories/frontend/tailwind-css/SKILL.md) |
+| 83 | ✓ | [`categories/frontend/web-performance/SKILL.md`](categories/frontend/web-performance/SKILL.md) |
+| 84 | ✓ | [`categories/health-wellness/fitness-planning/SKILL.md`](categories/health-wellness/fitness-planning/SKILL.md) |
+| 85 | ✓ | [`categories/health-wellness/habit-formation/SKILL.md`](categories/health-wellness/habit-formation/SKILL.md) |
+| 86 | ✓ | [`categories/health-wellness/mental-health/SKILL.md`](categories/health-wellness/mental-health/SKILL.md) |
+| 87 | ✓ | [`categories/health-wellness/nutrition-planning/SKILL.md`](categories/health-wellness/nutrition-planning/SKILL.md) |
+| 88 | ✓ | [`categories/health-wellness/sleep-optimization/SKILL.md`](categories/health-wellness/sleep-optimization/SKILL.md) |
+| 89 | ✓ | [`categories/marketing/content-creation/SKILL.md`](categories/marketing/content-creation/SKILL.md) |
+| 90 | ✓ | [`categories/marketing/local-business-growth/SKILL.md`](categories/marketing/local-business-growth/SKILL.md) |
+| 91 | ✓ | [`categories/marketing/seo-strategy/SKILL.md`](categories/marketing/seo-strategy/SKILL.md) |
+| 92 | ✓ | [`categories/media-download/audio-extraction/SKILL.md`](categories/media-download/audio-extraction/SKILL.md) |
+| 93 | ✓ | [`categories/media-download/legal-downloading/SKILL.md`](categories/media-download/legal-downloading/SKILL.md) |
+| 94 | ✓ | [`categories/media-download/playlist-archiver/SKILL.md`](categories/media-download/playlist-archiver/SKILL.md) |
+| 95 | ✓ | [`categories/media-download/video-downloader/SKILL.md`](categories/media-download/video-downloader/SKILL.md) |
+| 96 | ✓ | [`categories/mobile/android-kotlin-patterns/SKILL.md`](categories/mobile/android-kotlin-patterns/SKILL.md) |
+| 97 | ✓ | [`categories/mobile/app-store-optimization/SKILL.md`](categories/mobile/app-store-optimization/SKILL.md) |
+| 98 | ✓ | [`categories/mobile/ios-swift-patterns/SKILL.md`](categories/mobile/ios-swift-patterns/SKILL.md) |
+| 99 | ✓ | [`categories/mobile/mobile-performance/SKILL.md`](categories/mobile/mobile-performance/SKILL.md) |
+| 100 | ✓ | [`categories/mobile/react-native-patterns/SKILL.md`](categories/mobile/react-native-patterns/SKILL.md) |
+| 101 | ✓ | [`categories/pdf-generation/invoice-document-pdf/SKILL.md`](categories/pdf-generation/invoice-document-pdf/SKILL.md) |
+| 102 | ✓ | [`categories/pdf-generation/markdown-to-pdf/SKILL.md`](categories/pdf-generation/markdown-to-pdf/SKILL.md) |
+| 103 | ✓ | [`categories/pdf-generation/report-generation/SKILL.md`](categories/pdf-generation/report-generation/SKILL.md) |
+| 104 | ✓ | [`categories/pdf-generation/typesetting-latex/SKILL.md`](categories/pdf-generation/typesetting-latex/SKILL.md) |
+| 105 | ✓ | [`categories/presentation/data-storytelling/SKILL.md`](categories/presentation/data-storytelling/SKILL.md) |
+| 106 | ✓ | [`categories/presentation/pitch-deck-creation/SKILL.md`](categories/presentation/pitch-deck-creation/SKILL.md) |
+| 107 | ✓ | [`categories/presentation/presentation-automation/SKILL.md`](categories/presentation/presentation-automation/SKILL.md) |
+| 108 | ✓ | [`categories/presentation/presentation-design/SKILL.md`](categories/presentation/presentation-design/SKILL.md) |
+| 109 | ✓ | [`categories/product/product-strategy/SKILL.md`](categories/product/product-strategy/SKILL.md) |
+| 110 | ✓ | [`categories/product/user-research/SKILL.md`](categories/product/user-research/SKILL.md) |
+| 111 | ✓ | [`categories/security/secure-coding/SKILL.md`](categories/security/secure-coding/SKILL.md) |
+| 112 | ✓ | [`categories/security/security-audit/SKILL.md`](categories/security/security-audit/SKILL.md) |
+| 113 | ✓ | [`categories/shop-restaurant/daily-pulse/SKILL.md`](categories/shop-restaurant/daily-pulse/SKILL.md) |
+| 114 | ✓ | [`categories/shop-restaurant/inventory-optimizer/SKILL.md`](categories/shop-restaurant/inventory-optimizer/SKILL.md) |
+| 115 | ✓ | [`categories/shop-restaurant/menu-engineer/SKILL.md`](categories/shop-restaurant/menu-engineer/SKILL.md) |
+| 116 | ✓ | [`categories/shop-restaurant/price-scout/SKILL.md`](categories/shop-restaurant/price-scout/SKILL.md) |
+| 117 | ✓ | [`categories/shop-restaurant/review-responder/SKILL.md`](categories/shop-restaurant/review-responder/SKILL.md) |
+| 118 | ✓ | [`categories/shop-restaurant/social-post/SKILL.md`](categories/shop-restaurant/social-post/SKILL.md) |
+| 119 | ✓ | [`categories/shop-restaurant/staff-scheduler/SKILL.md`](categories/shop-restaurant/staff-scheduler/SKILL.md) |
+| 120 | ✓ | [`categories/shop-restaurant/table-manager/SKILL.md`](categories/shop-restaurant/table-manager/SKILL.md) |
+| 121 | ✓ | [`categories/shop-restaurant/zomato-order/SKILL.md`](categories/shop-restaurant/zomato-order/SKILL.md) |
+| 122 | ✓ | [`categories/testing-qa/accessibility-testing/SKILL.md`](categories/testing-qa/accessibility-testing/SKILL.md) |
+| 123 | ✓ | [`categories/testing-qa/api-testing/SKILL.md`](categories/testing-qa/api-testing/SKILL.md) |
+| 124 | ✓ | [`categories/testing-qa/e2e-testing/SKILL.md`](categories/testing-qa/e2e-testing/SKILL.md) |
+| 125 | ✓ | [`categories/testing-qa/performance-testing/SKILL.md`](categories/testing-qa/performance-testing/SKILL.md) |
+| 126 | ✓ | [`categories/testing-qa/test-strategy/SKILL.md`](categories/testing-qa/test-strategy/SKILL.md) |
+| 127 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

@@ -21,9 +21,46 @@ Goal: build durable, compact project understanding for future agents through bou
 - Do not tell agent to read `AGENTS.md`; the harness injects it automatically in new sessions.
 - Consolidation is part of this workflow.
 
+## Artifact Compatibility Contract
+
+Codebase-recon artifacts must remain compatible with projects bootstrapped by `safe-start` and later changed by `safe-change`.
+
+Canonical repo-level artifacts:
+
+```text
+AGENTS.md
+
+docs/
+  agent/
+    REPO_INVENTORY.md
+    PROJECT_INTENT.md          # preserve/update when present; create only when useful
+    ARCHITECTURE.md
+    DATA_FLOW.md               # preserve/update when present; create only when useful
+    DATA_MODEL.md
+    INVARIANTS.md
+    DEPENDENCY_RULES.md
+    DESIGN_ISSUES.md
+    RISK_REGISTER.md
+    CHANGE_GUIDE.md
+    TESTING_STRATEGY.md        # preserve/update when present; create only when useful
+    VALIDATION_BASELINE.md     # preserve/update when present; create only when useful
+    adr/
+      0001-observed-architecture.md
+```
+
+Artifact header guidance when creating or updating durable docs:
+
+```text
+Status: current | partial | stale
+Evidence: planned | observed | mixed
+Last validated: unknown | <date>
+```
+
+Treat `safe-start` `planned` docs as intent until source evidence confirms them. Recon output should prefer `observed` evidence and should not silently delete intent docs; mark drift in `DESIGN_ISSUES.md` or `RISK_REGISTER.md` when intent and implementation disagree.
+
 ## Target Artifacts
 
-Unscoped/repo-level artifacts:
+Unscoped/repo-level artifacts required by recon passes:
 
 ```text
 AGENTS.md
@@ -42,7 +79,7 @@ docs/
       0001-observed-architecture.md
 ```
 
-Scoped artifacts, created only when a pass receives a focus argument:
+Scoped artifacts, created only when a pass receives a focus argument. Safe-start-compatible scoped docs may contain additional intent/flow/test/validation artifacts; preserve them when present.
 
 ```text
 docs/
@@ -51,23 +88,31 @@ docs/
       by-path/<repo-relative-path>/
         README.md              # optional local index for large/complex scopes
         REPO_INVENTORY.md
+        PROJECT_INTENT.md      # preserve/update when present; create only when useful
         ARCHITECTURE.md
+        DATA_FLOW.md           # preserve/update when present; create only when useful
         DATA_MODEL.md
         INVARIANTS.md
         DEPENDENCY_RULES.md
         DESIGN_ISSUES.md
         RISK_REGISTER.md
         CHANGE_GUIDE.md
+        TESTING_STRATEGY.md    # preserve/update when present; create only when useful
+        VALIDATION_BASELINE.md # preserve/update when present; create only when useful
         CONTRACTS.md
       by-domain/<domain-slug>/
         README.md              # optional local index for large/complex scopes
+        PROJECT_INTENT.md      # preserve/update when present; create only when useful
         ARCHITECTURE.md
+        DATA_FLOW.md           # preserve/update when present; create only when useful
         DATA_MODEL.md
         INVARIANTS.md
         DEPENDENCY_RULES.md
         DESIGN_ISSUES.md
         RISK_REGISTER.md
         CHANGE_GUIDE.md
+        TESTING_STRATEGY.md    # preserve/update when present; create only when useful
+        VALIDATION_BASELINE.md # preserve/update when present; create only when useful
         CONTRACTS.md
 ```
 
@@ -110,7 +155,7 @@ Suggested columns:
 - Scope
 - Kind: `path` / `domain`
 - Docs path
-- Status: `partial` / `current` / `stale` / `deprecated`
+- Status: `planned` / `partial` / `current` / `stale` / `deprecated`
 - Owns
 - External contracts
 - Last observed evidence
@@ -282,7 +327,7 @@ For each risk:
 
 ## Pass 6 — Root Agent Operating Guide
 
-Read first: `docs/agent/ARCHITECTURE.md`, `docs/agent/INVARIANTS.md`, `docs/agent/DATA_MODEL.md`, `docs/agent/DEPENDENCY_RULES.md`, `docs/agent/RISK_REGISTER.md`, `docs/agent/DESIGN_ISSUES.md`.
+Read first: `docs/agent/ARCHITECTURE.md`, `docs/agent/INVARIANTS.md`, `docs/agent/DATA_MODEL.md`, `docs/agent/DEPENDENCY_RULES.md`, `docs/agent/RISK_REGISTER.md`, `docs/agent/DESIGN_ISSUES.md`; when present, also read `docs/agent/PROJECT_INTENT.md`, `docs/agent/DATA_FLOW.md`, `docs/agent/TESTING_STRATEGY.md`, and `docs/agent/VALIDATION_BASELINE.md` only for operating guidance that affects future changes.
 
 Task: write/update root `AGENTS.md`.
 
@@ -309,7 +354,7 @@ Suggested sections:
 
 ## Pass 7 — Change Guide
 
-Read first: `docs/agent/ARCHITECTURE.md`, `docs/agent/DATA_MODEL.md`, `docs/agent/INVARIANTS.md`, `docs/agent/DEPENDENCY_RULES.md`.
+Read first: `docs/agent/ARCHITECTURE.md`, `docs/agent/DATA_MODEL.md`, `docs/agent/INVARIANTS.md`, `docs/agent/DEPENDENCY_RULES.md`; when present, also read `docs/agent/PROJECT_INTENT.md`, `docs/agent/DATA_FLOW.md`, `docs/agent/TESTING_STRATEGY.md`, and `docs/agent/VALIDATION_BASELINE.md` for scope, data-flow tracing, test guidance, and validation commands.
 
 Task: write/update `docs/agent/CHANGE_GUIDE.md`, or scoped `CHANGE_GUIDE.md` when focus is provided.
 
@@ -322,7 +367,7 @@ Required sections:
 - How to add side effects safely
 - How to add tests
 - How to avoid architecture drift
-- Documentation update checklist
+- Documentation update checklist, including compatible safe-start docs when present
 - Final verification checklist
 
 ## Pass 8 — Consolidation
@@ -334,6 +379,7 @@ Task: consolidate artifacts.
 Rules:
 - No source code edits.
 - Reconcile contradictions; do not silently delete disagreement evidence.
+- Preserve compatible safe-start docs (`PROJECT_INTENT.md`, `DATA_FLOW.md`, `TESTING_STRATEGY.md`, `VALIDATION_BASELINE.md`) at top-level and scoped paths when present; update status/evidence headers and cross-links when source evidence proves them current/stale.
 - Read `docs/agent/SCOPES.md` first when present; use it to select relevant scoped summaries and changed/relevant scoped docs.
 - When scoped passes disagree, resolve from source evidence where possible, assign/clarify ownership for shared contracts where evidence supports it, or record the disagreement as a drift risk / `Known Unknown` with cited evidence.
 - Keep detailed scope-specific facts in scoped artifacts; summarize only stable repo-level guidance in top-level docs.
@@ -343,6 +389,7 @@ Rules:
 - Ensure `ARCHITECTURE.md` describes structure, not line-by-line code.
 - Ensure `INVARIANTS.md` contains rules, not implementation notes.
 - Ensure `RISK_REGISTER.md` contains actionable risks.
+- Ensure `VALIDATION_BASELINE.md`, when present, names commands and blockers rather than broad strategy.
 - Preserve uncertainty markers where evidence incomplete.
 - Add `Known Unknowns` where useful.
 
@@ -364,7 +411,7 @@ Structure:
 
 ## Pass 10 — Risk-to-Tests Plan
 
-Read first: `docs/agent/RISK_REGISTER.md`, `docs/agent/INVARIANTS.md`, `docs/agent/DATA_MODEL.md`, `docs/agent/CHANGE_GUIDE.md`.
+Read first: `docs/agent/RISK_REGISTER.md`, `docs/agent/INVARIANTS.md`, `docs/agent/DATA_MODEL.md`, `docs/agent/CHANGE_GUIDE.md`; when present, also read `docs/agent/TESTING_STRATEGY.md` and `docs/agent/VALIDATION_BASELINE.md` for test type and command guidance.
 
 Task: select top 3–5 risks to convert into tests first.
 

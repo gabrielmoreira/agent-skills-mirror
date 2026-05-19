@@ -1,0 +1,1 @@
+cache/repos/github.com/NikiforovAll@pi-inspect/CLAUDE.md

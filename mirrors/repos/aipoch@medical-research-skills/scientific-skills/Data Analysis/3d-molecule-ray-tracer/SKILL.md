@@ -1,6 +1,6 @@
 ---
-name: 3d-molecule-ray-tracer
-description: Generate photorealistic rendering scripts for PyMOL and UCSF ChimeraX.
+name: d-molecule-ray-tracer
+description: "Generate photorealistic rendering scripts for PyMOL and UCSF ChimeraX."
 license: MIT
 author: AIPOCH
 ---
@@ -253,7 +253,7 @@ To render:
 - **Current Stage**: Draft
 - **Next Review Date**: 2026-03-15
 - **Known Issues**: None
-- **Planned Improvements**: 
+- **Planned Improvements**:
   - Blender integration
   - AI-assisted composition suggestions
   - Real-time preview mode
@@ -318,3 +318,4 @@ Use the following fixed structure for non-trivial requests:
 7. Next Checks
 
 If the request is simple, you may compress the structure, but still keep assumptions and limits explicit when they affect correctness.
+

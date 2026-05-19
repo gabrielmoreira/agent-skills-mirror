@@ -81,6 +81,8 @@ inside one service.
 | --- | --- | --- |
 | Instance lifecycle | Define common lifecycle plus service-type-specific registration, heartbeat, deregister, update, batch registration, and cleanup behavior. | [Naming Instance Lifecycle Spec](naming-instance-lifecycle-spec.md) |
 | Consistency and client state | Define common client identity plus ephemeral-service AP state, persistent-service CP state, indexes, and snapshots. | [Naming Consistency And Client State Spec](naming-consistency-client-spec.md) |
+| Ephemeral Distro consistency | Define ephemeral ownership, Distro sync, verify, anti-entropy, cleanup, and AP visibility. | [Naming Ephemeral Distro Consistency Spec](naming-ephemeral-distro-consistency-spec.md) |
+| Persistent CP consistency | Define persistent instance CP writes, metadata groups, snapshots, recovery, and visibility. | [Naming Persistent CP Consistency Spec](naming-persistent-cp-consistency-spec.md) |
 
 ## 5. Design Principles
 
@@ -148,7 +150,7 @@ the Naming domain:
 | HTTP Open API | `/v3/client/ns/instance` register, heartbeat, deregister, and list for custom runtime clients. |
 | HTTP Admin API | `/v3/admin/ns/*` service, instance, cluster, health, client, and operation management. |
 | gRPC API | Runtime register, batch register, persistent register, query, subscribe, fuzzy watch, and server push. See the [gRPC API Spec](../grpc-api/api-spec.md). |
-| Client SDK | Runtime application access through `NamingService`, including register, deregister, query, subscribe, fuzzy watch, local cache, and failover. See the [SDK Spec](../sdk/sdk-spec.md). |
+| Client SDK | Runtime application access through `NamingService`, including register, deregister, query, subscribe, fuzzy watch, local cache, and failover. See the [SDK Spec](../sdk/sdk-spec.md) and [Client Runtime Specs](../client/README.md). |
 | Maintainer SDK | Management integration through naming maintainer services. |
 | Console API | UI-oriented management workflows. Console APIs may shape presentation data, but must not redefine Naming semantics. |
 
@@ -166,15 +168,11 @@ the Naming domain:
   selection tools. Legacy API-defined service selectors are compatibility
   fields and must not become the basis for new traffic policy semantics.
 
-## 8. Pending Specs
+## 8. Related Specs
 
-- TODO: Define the Naming-specific Distro ownership, verify, anti-entropy, and
-  repair rules for ephemeral services. The shared AP foundation is defined by the
-  [AP Consistency Spec](../design/foundation-ap-consistency-spec.md), and the
-  server-to-server Distro transport boundary is defined by the
-  [Internal RPC And Cluster Request Spec](../design/foundation-internal-rpc-spec.md).
-- TODO: Define the Naming-specific CP group ownership, request shape, snapshot,
-  and recovery rules for persistent services and metadata. The shared CP
-  foundation is defined by the
-  [CP Consistency Spec](../design/foundation-cp-consistency-spec.md).
-- TODO: Define cross-domain visibility behavior for Naming range queries.
+- [Naming Ephemeral Distro Consistency Spec](naming-ephemeral-distro-consistency-spec.md)
+- [Naming Persistent CP Consistency Spec](naming-persistent-cp-consistency-spec.md)
+- [Runtime Push And Reconnect Spec](../client/runtime-push-reconnect-spec.md)
+- [AP Consistency Spec](../design/foundation-ap-consistency-spec.md)
+- [CP Consistency Spec](../design/foundation-cp-consistency-spec.md)
+- [Internal RPC And Cluster Request Spec](../design/foundation-internal-rpc-spec.md)

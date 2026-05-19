@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langflow-ai/langflow` — 26 default patterns, 0 followed patterns, 40 file(s) materialized.
+Mirror of `langflow-ai/langflow` — 26 default patterns, 8 followed patterns, 42 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `langflow-ai/langflow` — 26 default patterns, 0 followed patterns, 4
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 40 |
+| Followed pats | 8 |
+| Files         | 42 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,14 @@ Mirror of `langflow-ai/langflow` — 26 default patterns, 0 followed patterns, 4
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/agents/PHILOSOPHY.md`
+- `docs/agents/ARCHITECTURE.md`
+- `docs/agents/COMPONENTS.md`
+- `docs/agents/CONTRACTS.md`
+- `docs/agents/TESTING.md`
+- `docs/agents/ANTI-PATTERNS.md`
+- `CONTRIBUTING.md`
+- `DEVELOPMENT.md`
 
 ## File Index
 
@@ -89,16 +96,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 28 | ✓ | [`.agents/skills/frontend-testing/references/mocking.md`](.agents/skills/frontend-testing/references/mocking.md) |
 | 29 | ✓ | [`.agents/skills/frontend-testing/references/workflow.md`](.agents/skills/frontend-testing/references/workflow.md) |
 | 30 | ✓ | [`.agents/skills/frontend-testing/SKILL.md`](.agents/skills/frontend-testing/SKILL.md) |
-| 31 | ✓ | [`.cursor/rules/backend_development.mdc`](.cursor/rules/backend_development.mdc) |
-| 32 | ✓ | [`.cursor/rules/components/basic_component.mdc`](.cursor/rules/components/basic_component.mdc) |
-| 33 | ✓ | [`.cursor/rules/docs_development.mdc`](.cursor/rules/docs_development.mdc) |
-| 34 | ✓ | [`.cursor/rules/frontend_development.mdc`](.cursor/rules/frontend_development.mdc) |
-| 35 | ✓ | [`.cursor/rules/icons.mdc`](.cursor/rules/icons.mdc) |
-| 36 | ✓ | [`.cursor/rules/testing.mdc`](.cursor/rules/testing.mdc) |
-| 37 | ✓ | [`.cursor/settings.json`](.cursor/settings.json) |
-| 38 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 39 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 40 | ✓ | [`docs/static/llms.txt`](docs/static/llms.txt) |
+| 31 | ✓ | [`.cursor/settings.json`](.cursor/settings.json) |
+| 32 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 33 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 34 | ✓ | [`docs/static/llms.txt`](docs/static/llms.txt) |
+| 35 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 36 | → | [`DEVELOPMENT.md`](DEVELOPMENT.md) |
+| 37 | → | [`docs/agents/ANTI-PATTERNS.md`](docs/agents/ANTI-PATTERNS.md) |
+| 38 | → | [`docs/agents/ARCHITECTURE.md`](docs/agents/ARCHITECTURE.md) |
+| 39 | → | [`docs/agents/COMPONENTS.md`](docs/agents/COMPONENTS.md) |
+| 40 | → | [`docs/agents/CONTRACTS.md`](docs/agents/CONTRACTS.md) |
+| 41 | → | [`docs/agents/PHILOSOPHY.md`](docs/agents/PHILOSOPHY.md) |
+| 42 | → | [`docs/agents/TESTING.md`](docs/agents/TESTING.md) |
 
 ---
 

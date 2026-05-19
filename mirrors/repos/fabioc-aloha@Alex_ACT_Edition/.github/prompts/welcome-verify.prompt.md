@@ -1,7 +1,7 @@
 ---
 description: "Read-only audit of user-level VS Code/Copilot settings compliance"
 mode: agent
-lastReviewed: 2026-05-13
+lastReviewed: 2026-05-18
 ---
 
 # Welcome Verify
@@ -12,51 +12,22 @@ Use this to verify fleet policy compliance on a machine without changing any set
 
 Audit user-scope VS Code settings against the central baseline and report drift.
 
-## Baseline Keys
+## Source of truth
 
-Expected values:
-
-```json
-{
-  "update.mode": "default",
-  "extensions.autoUpdate": true,
-  "extensions.autoCheckUpdates": true,
-  "extensions.autoUpdateOnlyEnabledExtensions": false,
-
-  "chat.agent.enabled": true,
-  "chat.useAgentSkills": true,
-  "chat.includeReferencedInstructions": true,
-  "chat.commandCenter.enabled": true,
-  "chat.todoListTool.enabled": true,
-  "chat.planWidget.inlineEditor.enabled": true,
-
-  "github.copilot.chat.copilotMemory.enabled": true,
-  "github.copilot.chat.tools.memory.enabled": true,
-  "github.copilot.chat.codesearch.enabled": true,
-  "github.copilot.chat.responsesApi.toolSearchTool.enabled": true,
-  "github.copilot.chat.agent.modelDetails.enabled": true,
-  "mermaid-chat.enabled": true,
-
-  "chat.tools.terminal.backgroundNotifications": true,
-  "chat.tools.terminal.detachBackgroundProcesses": true,
-  "terminal.integrated.tabs.allowAgentCliTitle": true,
-
-  "chat.experimental.implicitContext.enabled": false,
-  "chat.experimental.symbolTools.cacheStable": false
-}
-```
+The baseline lives in `.github/config/welcome-baseline.json` (`settings` object). Both `/welcome` (apply) and `/welcome-verify` (this audit) load from the same file — update once.
 
 ## Read-Only Steps
 
-1. Resolve the user settings path for the current OS.
-2. Read `settings.json` as-is.
-3. Compare each baseline key/value pair.
-4. Classify each key:
+1. Load the baseline from `.github/config/welcome-baseline.json` (`settings` object).
+2. Resolve the user settings path for the current OS.
+3. Read `settings.json` as-is.
+4. Compare each baseline key/value pair.
+5. Classify each key:
    - `compliant` (value matches)
    - `drift` (key exists but value differs)
    - `missing` (key absent)
-5. Report compliance summary and drift table.
-6. Recommend running `/welcome` only if drift or missing keys are found.
+6. Report compliance summary and drift table.
+7. Recommend running `/welcome` only if drift or missing keys are found.
 
 ## Output Format
 

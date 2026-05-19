@@ -4,7 +4,10 @@ description: >
   Audit and maintain the health of the Obsidian wiki. Use this skill when the user wants to check their
   wiki for issues, find orphaned pages, detect contradictions, identify stale content, fix broken wikilinks,
   or perform general maintenance on their knowledge base. Also triggers on "clean up the wiki",
-  "what needs fixing", "audit my notes", or "wiki health check".
+  "what needs fixing", "audit my notes", or "wiki health check". Add --consolidate to switch from
+  report-only to act-and-report mode (the "dream cycle"): fixes broken links, adds missing cross-references
+  for orphans, corrects lifecycle states, demotes stale peripheral pages, normalizes tag aliases, and adds
+  contradiction callouts — all with a dry-run preview and explicit user confirmation before any writes.
 ---
 
 # Wiki Lint — Health Audit
@@ -362,3 +365,168 @@ Append to `log.md`:
 ```
 
 Offer to fix issues automatically or let the user decide which to address.
+
+---
+
+## Consolidate Mode (`--consolidate`)
+
+Triggered by `wiki-lint --consolidate`. Switches from report-only to **act-and-report** — the "dream cycle" that runs periodically so the wiki self-heals.
+
+### Safety protocol
+
+**Always run in dry-run first.** Before writing anything:
+
+1. Run all 12 lint checks (Step 1–12 above).
+2. Print the planned consolidation actions as a structured list (see Dry-Run Output below).
+3. Ask the user: `"Apply these N changes? [yes / no / select]"`.
+4. Only proceed with writes after explicit confirmation. If the user selects individual actions, apply only those.
+5. Never merge pages — use `wiki-dedup` for that. Only link, promote, demote, and flag.
+
+### Consolidation actions (in order, after confirmation)
+
+#### Action 1: Fix broken wikilinks
+
+For each broken `[[Target]]` found in Check 2:
+- Search the vault for a page whose title or filename is the closest fuzzy match (use `Grep` across `index.md` titles)
+- If a unique best match exists (edit distance ≤ 2 characters or same root word): rewrite the link. Note the rewrite: `[[Oringal]] → [[corrected-page]]`.
+- If no match or ambiguous: convert to plain text (`~~[[Target]]~~` → `Target`) and add a comment `<!-- broken link: no match found -->`.
+- Never create a new page just to satisfy a broken link.
+
+#### Action 2: Add missing cross-references for orphans
+
+For each orphan page found in Check 1 (zero incoming links):
+- Grep the vault body text for mentions of the page's title or aliases (case-insensitive).
+- For each mention found in another page, add a `[[wikilink]]` replacing the plain-text mention.
+- Limit to 3 insertions per orphan — don't flood pages with links.
+- This is scoped to orphans only (different from `cross-linker` which runs broadly).
+
+#### Action 3: Correct lifecycle states
+
+Apply these rules automatically (they don't require human judgment — they enforce the documented state machine):
+- **Promote `draft` → `reviewed`:** pages where `lifecycle: draft` AND `created` > 30 days ago AND `base_confidence > 0.7`. Set `lifecycle: reviewed`, `lifecycle_changed: <today>`, `lifecycle_reason: "auto-promoted by wiki-lint --consolidate: age>30d, confidence>0.7"`.
+- **Demote `verified` → `stale`:** NOT a state transition — `stale` is a computed overlay, not a lifecycle value. Instead: for verified pages where `is_stale = (today − updated) > 180 days`, add a callout at the top of the page body: `> ⚠️ **Stale**: This page was last updated <date>. Verify before relying on it.` Only add if the callout isn't already present.
+- **Do not change `reviewed` → `verified` or any other transition** — those are human-only.
+
+#### Action 4: Tier demotion
+
+For pages with `tier: supporting` (or unset) that have 0 incoming links AND haven't been updated in 90+ days:
+- Set `tier: peripheral`.
+- Emit a list of demotions for the user to review.
+- Do not demote `tier: core` pages automatically — those were manually set.
+
+#### Action 5: Tag normalization
+
+Read `_meta/taxonomy.md` for the alias mapping (e.g., `ml → machine-learning`). For each page, replace known alias tags with their canonical form in the `tags:` frontmatter field. This is a subset of `tag-taxonomy`'s work — only alias fixes, no full audit.
+
+#### Action 6: Contradiction callouts
+
+For each pair of pages marked as contradicting each other (via `relationships: contradicts` in frontmatter, or flagged in Check 5):
+- Check whether a `> ⚠️ Contradiction flagged with [[Other Page]]` callout already exists near the relevant claim.
+- If not, add it at the end of the "Key Ideas" section (or before "Open Questions" if no "Key Ideas" section). Keep it concise — one line.
+- Do not resolve the contradiction; only flag it visually.
+
+### Action 7: Write consolidation report
+
+After all actions, write a report to `synthesis/consolidation-<YYYY-MM-DD>.md`:
+
+```markdown
+---
+title: Consolidation Report <YYYY-MM-DD>
+category: synthesis
+tags: [maintenance, consolidation]
+sources: []
+summary: Auto-generated consolidation report from wiki-lint --consolidate run on <date>.
+lifecycle: draft
+lifecycle_changed: <date>
+tier: peripheral
+created: <ISO timestamp>
+updated: <ISO timestamp>
+---
+
+# Consolidation Report — <YYYY-MM-DD>
+
+## Summary
+- Broken links fixed: N
+- Cross-references added: M
+- Lifecycle states updated: K
+- Tier demotions: D
+- Tags normalized: T
+- Contradiction callouts added: C
+
+## Broken Link Fixes
+- `concepts/foo.md:12` — [[OldTarget]] → [[correct-target]]
+- `entities/bar.md:8` — [[Missing]] → `Missing` (no match found)
+
+## Cross-References Added (orphan rescue)
+- `concepts/baz.md` — now linked from: [[concepts/alpha]], [[skills/beta]]
+
+## Lifecycle Updates
+- `concepts/old-draft.md` — draft → reviewed (age 45d, confidence 0.74)
+- `synthesis/stale-verified.md` — stale callout added (last updated 2025-10-01)
+
+## Tier Demotions
+- `concepts/unused-concept.md` — supporting → peripheral (0 links, 120 days stale)
+
+## Tag Normalizations
+- `entities/some-tool.md` — `ml` → `machine-learning`
+
+## Contradiction Callouts
+- `concepts/scaling.md` — flagged contradiction with [[synthesis/efficiency]]
+```
+
+### Dry-Run Output (shown before any writes)
+
+```
+wiki-lint --consolidate — Dry Run
+
+Planned actions (N total):
+[1] Fix broken link: concepts/foo.md:12 [[OldTarget]] → [[correct-target]]
+[2] Add cross-ref: concepts/baz.md ← [[concepts/alpha]] (orphan rescue)
+[3] Lifecycle: concepts/old-draft.md → reviewed (age 45d, confidence 0.74)
+[4] Tier demotion: concepts/unused.md → peripheral (0 links, 112 days stale)
+[5] Tag alias: entities/some-tool.md: ml → machine-learning
+[6] Contradiction callout: concepts/scaling.md ↔ [[synthesis/efficiency]]
+
+Apply these 6 changes? [yes / no / select by number]
+```
+
+### Log entry for consolidate mode
+
+```
+- [TIMESTAMP] LINT_CONSOLIDATE links_fixed=N orphans_rescued=M lifecycle_updates=K tier_demotions=D tag_fixes=T contradiction_callouts=C report=synthesis/consolidation-YYYY-MM-DD.md
+```
+
+## QMD Refresh After Vault Writes
+
+QMD is a search index, not the source of truth. If `$QMD_WIKI_COLLECTION` is empty or unset, skip this step. Run it only after this skill has written or rewritten vault markdown. If QMD refresh fails, do not roll back the vault changes; report the QMD status separately.
+
+Use `$QMD_CLI` if set; otherwise use `qmd`.
+
+```bash
+${QMD_CLI:-qmd} update
+```
+
+If the output says vectors are needed or embeddings may be stale, run:
+
+```bash
+${QMD_CLI:-qmd} embed
+```
+
+Verify the collection with either:
+
+```bash
+${QMD_CLI:-qmd} ls "$QMD_WIKI_COLLECTION"
+```
+
+or, when a specific page path is known:
+
+```bash
+${QMD_CLI:-qmd} get "qmd://$QMD_WIKI_COLLECTION/<page>.md" -l 5
+```
+
+Record one of:
+- `QMD refreshed: update + embed + verified`
+- `QMD refreshed: update only + verified`
+- `QMD skipped: QMD_WIKI_COLLECTION unset`
+- `QMD skipped: qmd CLI unavailable`
+- `QMD failed: <short error summary>`

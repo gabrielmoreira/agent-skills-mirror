@@ -6,7 +6,7 @@ always: true
 
 # Settings — Application Configuration Management
 
-Use `get_settings` and `update_settings` to read and modify settings. **Never edit config files directly.** Coverage matches the desktop Settings UI one-to-one for everything that doesn't carry secrets. The four GUI-only zones — Providers / API Keys, IM Channel accounts (`channels`), MCP server configs (`mcp_servers`), and the active model selection (`active_model` / `fallback_models`) — are still readable here (with credentials redacted where applicable) but writes must happen in the Settings UI so credentials stay out of conversation logs.
+Use `get_settings` and `update_settings` to read and modify settings. **Never edit config files directly.** Coverage matches the desktop Settings UI one-to-one for everything that doesn't carry secrets. The five GUI-only zones — Providers / API Keys, IM Channel accounts (`channels`), MCP server configs (`mcp_servers`), the active model selection (`active_model` / `fallback_models`), and the Speech-to-Text subsystem (`stt_providers` / `active_stt_model` / `stt_fallback_models`) — are still readable here (with credentials redacted where applicable) but writes must happen in the Settings UI so credentials stay out of conversation logs.
 
 ## Risk Levels & Dual-Confirmation
 
@@ -98,6 +98,7 @@ If the response includes `sideEffect`, surface it to the user (e.g. "this requir
 | `recall_summary` | `enabled`, `minHits`, `contextCharBudget`, `timeoutSecs`, `maxTokens`, `includeHistory` (Phase B'3 — opt-in LLM summarization on `recall_memory` output; adds one side_query per call, degrades silently on failure) |
 | `tool_call_narration` | `toolCallNarrationEnabled` (bool, default `false`). When `true`, the system prompt tells the model to preface every tool call with a one-sentence announcement (Claude Code style). Some models (e.g. GPT-5.4 via Codex) over-apply this and restate identical intent across consecutive tool calls, causing visible duplication — default is off so users opt in explicitly. |
 | `teams` | **Special: DB rows, not AppConfig fields.** `read` returns an array of all user-configured team templates. `update` uses CRUD-style values — `{ "action": "save", "template": {...} }` or `{ "action": "delete", "templateId": "..." }`. Saved templates become discoverable by the model via `team(action="list_templates")`. See "Special: `teams` semantics" below. |
+| `im_auto_transcribe` | **Aggregate view + writer** for IM-channel voice auto-transcribe. Read returns `{ imFallbackModel, accounts: [{ id, label, channelId, autoTranscribeVoice }] }`. Write accepts `{ imFallbackModel?: { providerId, modelId } \| null, accounts?: [{ id, autoTranscribeVoice }] }` — both keys are independently optional. Enabling auto-transcribe consumes STT API quota per inbound voice message; without `imFallbackModel` (or `stt.activeModel` as fallback), the dispatcher logs a warning and forwards the original audio unchanged. Transcripts are prepended to the engine message as `[Voice transcript] …\n\n` (localised to `cfg.language`); the original audio always stays as an attachment alongside. |
 
 ### HIGH risk — require **explicit user confirmation**
 
@@ -124,8 +125,11 @@ If the response includes `sideEffect`, surface it to the user (e.g. "this requir
 | `fallback_models` | Fallback chain — use Settings UI |
 | `channels` | IM Channel accounts (Telegram / WeChat / Feishu / QQ / Discord). Read returns the account list with **`credentials` and `settings` fields redacted** (`"[REDACTED]"`); structural metadata (`id`, `channelId`, `label`, `enabled`, `agentId`, `autoApproveTools`, `security`) is exposed so the model can reference accounts without seeing bot tokens. Writes must go through Settings → Channels so the registry can drop/re-establish listeners under user supervision and credentials stay out of conversation logs. |
 | `mcp_servers` | MCP server configs. Read returns the server list with **`env`, `headers`, `oauth` fields redacted**. Writes must go through Settings → MCP Servers UI which enforces "trust acknowledgement" for stdio servers and routes credentials through `platform::write_secure_file` (0600). |
+| `stt_providers` | Speech-to-Text providers (cloud + local servers). Read returns the provider list with **`apiKey`, `authProfiles[*].apiKey` redacted** and **the entire `extra` map replaced with `"[REDACTED]"`** (covers Volcengine `app_id` / `access_key`, iFlytek `app_id`, Azure region key, etc.). Writes must go through Settings → Speech-to-Text so credentials stay out of conversation logs. |
+| `active_stt_model` | Active STT model for desktop voice input — use Settings UI so the engine cache picks up the new selection without an app restart. |
+| `stt_fallback_models` | STT failover chain — use Settings UI. |
 
-Model / Provider / API Key / IM Channel accounts / MCP server configs / per-session configs require the Settings UI.
+Model / Provider / API Key / IM Channel accounts / MCP server configs / STT providers / per-session configs require the Settings UI.
 
 ## Special: `teams` Semantics
 

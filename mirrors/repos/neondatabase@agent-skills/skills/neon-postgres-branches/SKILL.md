@@ -197,6 +197,14 @@ After branch creation, ask whether the user wants to update local environment cr
 - If no, leave credentials unchanged and share the connection string for manual use.
 - Never overwrite an existing env key without explicit confirmation.
 
+## Branching in CI/CD
+
+Common CI/CD use cases for Neon branches:
+
+- **Per-PR preview deployments:** Branch on PR open, deploy the preview against it, delete on close. Each PR gets an isolated database branch. Injecting the branch's `DATABASE_URL` into the deployed app is hosting-provider-specific — see [preview-branches-with-cloudflare](https://github.com/neondatabase/preview-branches-with-cloudflare), [preview-branches-with-vercel](https://github.com/neondatabase/preview-branches-with-vercel), or [preview-branches-with-fly](https://github.com/neondatabase/preview-branches-with-fly) for tested patterns.
+- **Migration testing in CI:** Run risky schema changes against a branch with production-like data before merge.
+- **Schema diff visibility:** Use the [schema-diff GitHub Action](https://github.com/marketplace/actions/neon-schema-diff-github-action) to auto-comment a DB-layer diff on the PR.
+
 ## Examples
 
 ### Example 1: Migration testing with realistic data

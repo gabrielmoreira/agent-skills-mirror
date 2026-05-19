@@ -1,6 +1,6 @@
 ---
-name: neurokit2
-description: Comprehensive biosignal processing for ECG/PPG/EEG/EDA/RSP/EMG/EOG; use when you need to clean, segment, and extract physiological features for HRV, event-related responses, complexity metrics, or multimodal psychophysiology pipelines.
+name: neurokit
+description: "Comprehensive biosignal processing for ECG/PPG/EEG/EDA/RSP/EMG/EOG; use when you need to clean, segment, and extract physiological features for HRV, event-related responses, complexity metrics, or multimodal psychophysiology pipelines."
 license: MIT
 author: AIPOCH
 ---
@@ -117,9 +117,9 @@ print("Grand average shape:", grand_average.shape)
 ### Processing pipelines (typical pattern)
 Most modalities follow a consistent structure:
 
-1. `*_process(signal, sampling_rate=...)`  
+1. `*_process(signal, sampling_rate=...)`
    Produces a cleaned signal plus intermediate channels (e.g., peaks, phases) and an `info` dict with indices/metadata.
-2. `*_analyze(processed_signals, sampling_rate=...)`  
+2. `*_analyze(processed_signals, sampling_rate=...)`
    Computes summary features and automatically selects an analysis mode based on recording length.
 
 Examples:

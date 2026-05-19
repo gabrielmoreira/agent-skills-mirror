@@ -1,49 +1,58 @@
 ---
-description: Interactive workflow to plan a new feature from scratch, from Interview to Task List.
+description: Plan a feature from product brief or clear intent into PRD, decisions, implementation plan, and task slices.
 ---
 
 # Feature Planning Workflow
 
-This workflow guides you from a vague idea to a fully planned implementation workspace.
+Goal: Produce a decision-complete PRD and implementation plan before code starts.
 
-## 1. Requirement Gathering (Interview)
+## Steps
 
-Trigger the PRD skill to interview the user and gather full context. This step is interactive.
+1. Load context:
+   - Product brief, ticket, or user request.
+   - Jira/ADO MCP ticket data when configured; otherwise local ticket text.
+   - Existing specs, design references, and repo patterns.
+   - `common-product-requirements`, `quality-engineering-business-analysis`, and matched framework skills.
+2. Interview:
+   - Ask only for business logic, scope, constraints, and acceptance criteria that cannot be inferred.
+   - Confirm target users, platforms, data, security, performance, rollout, and non-goals.
+   - Stop when requirements are actionable.
+3. Draft PRD:
+   - Save to `docs/specs/prd-[slug].md` when file writes are allowed.
+   - Keep "what" separate from "how".
+   - Mark unresolved items as blockers, not assumptions.
+4. Create implementation plan:
+   - Define components, contracts, data changes, migrations, risks, and verification.
+   - Slice work into fresh-context tasks.
+   - Identify whether `design-solution` is required before coding.
+5. Route:
+   - Architecture unclear -> `design-solution`.
+   - Plan approved and build-ready -> `implement-feature`.
 
-**Instruction**:
-"Please act as a Product Manager. Reference `skills/common/product-requirements/SKILL.md`. Start the **Discovery Phase** to gather requirements for the new feature the user wants to build. Ask clarifying questions until you have enough info."
+## Output
 
-## 2. PRD Generation
+## Output Template
 
-Once the interview is complete, generate the formal PRD.
+```md
+# Feature Plan: [Name]
 
-**Instruction**:
-"Based on the gathering findings, generate the PRD using the template at `skills/common/product-requirements/references/prd-template.md`. Save it to `docs/specs/prd-[feature_name].md`. Then, validate it using `skills/common/product-requirements/references/checklist.md`."
+## PRD
 
-## 3. Implementation Planning
+## Decisions
 
-Convert the "What" (PRD) into "How" (Plan).
+| Decision   | Choice   | Reason   |
+| ---------- | -------- | -------- |
+| [decision] | [choice] | [reason] |
 
-**Instruction**:
-"Analyze the generated PRD. Create an `implementation_plan.md` artifact.
+## Implementation Plan
 
-- Break down the PRD into technical components.
-- Identify necessary file changes.
-- Define a Verification Plan (Automated & Manual tests)."
+## Task Slices
 
-## 4. Task Initialization
+## Verification Plan
 
-Set up the workspace for execution.
+## Next Workflow
 
-**Instruction**:
-"Initialize `task.md` based on the Implementation Plan.
+design-solution | implement-feature
 
-- Create granular checklist items.
-- Ensure the first task consists of setup or structural changes."
-
-## 5. Kick-off Implementation
-
-Once the plan and tasks are ready, hand over to the implementation workflow.
-
-**Instruction**:
-"The planning phase is complete. Now run `/implement-feature docs/specs/prd-[feature_name].md` to begin the technical implementation phase."
+## Cost Report
+```

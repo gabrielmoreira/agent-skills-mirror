@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `google/adk-python` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `google/adk-python` — 26 default patterns, 0 followed patterns, 52 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `google/adk-python` — 26 default patterns, 0 followed patterns, 5 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 52 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,58 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`contributing/samples/local_environment_skill/skills/weather-skill/SKILL.md`](contributing/samples/local_environment_skill/skills/weather-skill/SKILL.md) |
-| 3 | ✓ | [`contributing/samples/skills_agent/skills/weather-skill/SKILL.md`](contributing/samples/skills_agent/skills/weather-skill/SKILL.md) |
-| 4 | ✓ | [`llms.txt`](llms.txt) |
-| 5 | ✓ | [`src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md`](src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md) |
+| 1 | ✓ | [`.agents/skills/adk-agent-builder/references/advanced-patterns.md`](.agents/skills/adk-agent-builder/references/advanced-patterns.md) |
+| 2 | ✓ | [`.agents/skills/adk-agent-builder/references/best-practices.md`](.agents/skills/adk-agent-builder/references/best-practices.md) |
+| 3 | ✓ | [`.agents/skills/adk-agent-builder/references/callbacks-and-plugins.md`](.agents/skills/adk-agent-builder/references/callbacks-and-plugins.md) |
+| 4 | ✓ | [`.agents/skills/adk-agent-builder/references/dynamic-nodes.md`](.agents/skills/adk-agent-builder/references/dynamic-nodes.md) |
+| 5 | ✓ | [`.agents/skills/adk-agent-builder/references/function-nodes.md`](.agents/skills/adk-agent-builder/references/function-nodes.md) |
+| 6 | ✓ | [`.agents/skills/adk-agent-builder/references/getting-started.md`](.agents/skills/adk-agent-builder/references/getting-started.md) |
+| 7 | ✓ | [`.agents/skills/adk-agent-builder/references/human-in-the-loop.md`](.agents/skills/adk-agent-builder/references/human-in-the-loop.md) |
+| 8 | ✓ | [`.agents/skills/adk-agent-builder/references/import-paths.md`](.agents/skills/adk-agent-builder/references/import-paths.md) |
+| 9 | ✓ | [`.agents/skills/adk-agent-builder/references/llm-agent-nodes.md`](.agents/skills/adk-agent-builder/references/llm-agent-nodes.md) |
+| 10 | ✓ | [`.agents/skills/adk-agent-builder/references/multi-agent.md`](.agents/skills/adk-agent-builder/references/multi-agent.md) |
+| 11 | ✓ | [`.agents/skills/adk-agent-builder/references/parallel-and-fanout.md`](.agents/skills/adk-agent-builder/references/parallel-and-fanout.md) |
+| 12 | ✓ | [`.agents/skills/adk-agent-builder/references/routing-and-conditions.md`](.agents/skills/adk-agent-builder/references/routing-and-conditions.md) |
+| 13 | ✓ | [`.agents/skills/adk-agent-builder/references/session-and-state.md`](.agents/skills/adk-agent-builder/references/session-and-state.md) |
+| 14 | ✓ | [`.agents/skills/adk-agent-builder/references/state-and-events.md`](.agents/skills/adk-agent-builder/references/state-and-events.md) |
+| 15 | ✓ | [`.agents/skills/adk-agent-builder/references/task-mode.md`](.agents/skills/adk-agent-builder/references/task-mode.md) |
+| 16 | ✓ | [`.agents/skills/adk-agent-builder/references/testing.md`](.agents/skills/adk-agent-builder/references/testing.md) |
+| 17 | ✓ | [`.agents/skills/adk-agent-builder/references/tool-catalog.md`](.agents/skills/adk-agent-builder/references/tool-catalog.md) |
+| 18 | ✓ | [`.agents/skills/adk-agent-builder/SKILL.md`](.agents/skills/adk-agent-builder/SKILL.md) |
+| 19 | ✓ | [`.agents/skills/adk-architecture/references/architecture/checkpoint-resume.md`](.agents/skills/adk-architecture/references/architecture/checkpoint-resume.md) |
+| 20 | ✓ | [`.agents/skills/adk-architecture/references/architecture/context.md`](.agents/skills/adk-architecture/references/architecture/context.md) |
+| 21 | ✓ | [`.agents/skills/adk-architecture/references/architecture/llm-context-orchestration.md`](.agents/skills/adk-architecture/references/architecture/llm-context-orchestration.md) |
+| 22 | ✓ | [`.agents/skills/adk-architecture/references/architecture/node-runner.md`](.agents/skills/adk-architecture/references/architecture/node-runner.md) |
+| 23 | ✓ | [`.agents/skills/adk-architecture/references/architecture/observability.md`](.agents/skills/adk-architecture/references/architecture/observability.md) |
+| 24 | ✓ | [`.agents/skills/adk-architecture/references/architecture/runner-roles.md`](.agents/skills/adk-architecture/references/architecture/runner-roles.md) |
+| 25 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/agent.md`](.agents/skills/adk-architecture/references/interfaces/agent.md) |
+| 26 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/base-agent.md`](.agents/skills/adk-architecture/references/interfaces/base-agent.md) |
+| 27 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/base-node.md`](.agents/skills/adk-architecture/references/interfaces/base-node.md) |
+| 28 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/event.md`](.agents/skills/adk-architecture/references/interfaces/event.md) |
+| 29 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/runner.md`](.agents/skills/adk-architecture/references/interfaces/runner.md) |
+| 30 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/workflow.md`](.agents/skills/adk-architecture/references/interfaces/workflow.md) |
+| 31 | ✓ | [`.agents/skills/adk-architecture/references/principles/api-principles.md`](.agents/skills/adk-architecture/references/principles/api-principles.md) |
+| 32 | ✓ | [`.agents/skills/adk-architecture/SKILL.md`](.agents/skills/adk-architecture/SKILL.md) |
+| 33 | ✓ | [`.agents/skills/adk-debug/SKILL.md`](.agents/skills/adk-debug/SKILL.md) |
+| 34 | ✓ | [`.agents/skills/adk-git/SKILL.md`](.agents/skills/adk-git/SKILL.md) |
+| 35 | ✓ | [`.agents/skills/adk-sample-creator/SKILL.md`](.agents/skills/adk-sample-creator/SKILL.md) |
+| 36 | ✓ | [`.agents/skills/adk-setup/SKILL.md`](.agents/skills/adk-setup/SKILL.md) |
+| 37 | ✓ | [`.agents/skills/adk-style/references/documentation.md`](.agents/skills/adk-style/references/documentation.md) |
+| 38 | ✓ | [`.agents/skills/adk-style/references/file-organization.md`](.agents/skills/adk-style/references/file-organization.md) |
+| 39 | ✓ | [`.agents/skills/adk-style/references/formatting.md`](.agents/skills/adk-style/references/formatting.md) |
+| 40 | ✓ | [`.agents/skills/adk-style/references/imports.md`](.agents/skills/adk-style/references/imports.md) |
+| 41 | ✓ | [`.agents/skills/adk-style/references/logging.md`](.agents/skills/adk-style/references/logging.md) |
+| 42 | ✓ | [`.agents/skills/adk-style/references/pydantic.md`](.agents/skills/adk-style/references/pydantic.md) |
+| 43 | ✓ | [`.agents/skills/adk-style/references/testing.md`](.agents/skills/adk-style/references/testing.md) |
+| 44 | ✓ | [`.agents/skills/adk-style/references/typing.md`](.agents/skills/adk-style/references/typing.md) |
+| 45 | ✓ | [`.agents/skills/adk-style/references/visibility.md`](.agents/skills/adk-style/references/visibility.md) |
+| 46 | ✓ | [`.agents/skills/adk-style/SKILL.md`](.agents/skills/adk-style/SKILL.md) |
+| 47 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 48 | ✓ | [`contributing/samples/environment_and_skills/local_environment_skill/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/local_environment_skill/skills/weather-skill/SKILL.md) |
+| 49 | ✓ | [`contributing/samples/environment_and_skills/skills_agent/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/skills_agent/skills/weather-skill/SKILL.md) |
+| 50 | ✓ | [`contributing/samples/environment_and_skills/skills/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/skills/skills/weather-skill/SKILL.md) |
+| 51 | ✓ | [`llms.txt`](llms.txt) |
+| 52 | ✓ | [`src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md`](src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md) |
 
 ---
 

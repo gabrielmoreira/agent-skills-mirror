@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `google-gemini/gemini-cli` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `google-gemini/gemini-cli` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `google-gemini/gemini-cli` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,37 +59,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.gemini/skills/async-pr-review/SKILL.md`](.gemini/skills/async-pr-review/SKILL.md) |
-| 2 | ✓ | [`.gemini/skills/behavioral-evals/SKILL.md`](.gemini/skills/behavioral-evals/SKILL.md) |
-| 3 | ✓ | [`.gemini/skills/ci/SKILL.md`](.gemini/skills/ci/SKILL.md) |
-| 4 | ✓ | [`.gemini/skills/code-reviewer/SKILL.md`](.gemini/skills/code-reviewer/SKILL.md) |
-| 5 | ✓ | [`.gemini/skills/docs-changelog/SKILL.md`](.gemini/skills/docs-changelog/SKILL.md) |
-| 6 | ✓ | [`.gemini/skills/docs-writer/SKILL.md`](.gemini/skills/docs-writer/SKILL.md) |
-| 7 | ✓ | [`.gemini/skills/github-issue-creator/SKILL.md`](.gemini/skills/github-issue-creator/SKILL.md) |
-| 8 | ✓ | [`.gemini/skills/pr-address-comments/SKILL.md`](.gemini/skills/pr-address-comments/SKILL.md) |
-| 9 | ✓ | [`.gemini/skills/pr-creator/SKILL.md`](.gemini/skills/pr-creator/SKILL.md) |
-| 10 | ✓ | [`.gemini/skills/review-duplication/SKILL.md`](.gemini/skills/review-duplication/SKILL.md) |
-| 11 | ✓ | [`.gemini/skills/string-reviewer/SKILL.md`](.gemini/skills/string-reviewer/SKILL.md) |
-| 12 | ✓ | [`docs/cli/creating-skills.md`](docs/cli/creating-skills.md) |
-| 13 | ✓ | [`docs/cli/gemini-md.md`](docs/cli/gemini-md.md) |
-| 14 | ✓ | [`docs/cli/skills-best-practices.md`](docs/cli/skills-best-practices.md) |
-| 15 | ✓ | [`docs/cli/skills.md`](docs/cli/skills.md) |
-| 16 | ✓ | [`docs/cli/using-agent-skills.md`](docs/cli/using-agent-skills.md) |
-| 17 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 18 | ✓ | [`packages/a2a-server/GEMINI.md`](packages/a2a-server/GEMINI.md) |
-| 19 | ✓ | [`packages/cli/GEMINI.md`](packages/cli/GEMINI.md) |
-| 20 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/greeter/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/greeter/SKILL.md) |
-| 21 | ✓ | [`packages/core/GEMINI.md`](packages/core/GEMINI.md) |
-| 22 | ✓ | [`packages/core/src/skills/builtin/skill-creator/SKILL.md`](packages/core/src/skills/builtin/skill-creator/SKILL.md) |
-| 23 | ✓ | [`packages/devtools/GEMINI.md`](packages/devtools/GEMINI.md) |
-| 24 | ✓ | [`packages/sdk/GEMINI.md`](packages/sdk/GEMINI.md) |
-| 25 | ✓ | [`packages/sdk/test-data/skills/pirate-skill/SKILL.md`](packages/sdk/test-data/skills/pirate-skill/SKILL.md) |
-| 26 | ✓ | [`packages/test-utils/GEMINI.md`](packages/test-utils/GEMINI.md) |
-| 27 | ✓ | [`packages/vscode-ide-companion/GEMINI.md`](packages/vscode-ide-companion/GEMINI.md) |
-| 28 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/critique/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/critique/SKILL.md) |
-| 29 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/memory/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/memory/SKILL.md) |
-| 30 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/metrics/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/metrics/SKILL.md) |
-| 31 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/prs/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/prs/SKILL.md) |
+| 1 | ✓ | [`.gemini/skills/agent-tui/SKILL.md`](.gemini/skills/agent-tui/SKILL.md) |
+| 2 | ✓ | [`.gemini/skills/async-pr-review/SKILL.md`](.gemini/skills/async-pr-review/SKILL.md) |
+| 3 | ✓ | [`.gemini/skills/behavioral-evals/SKILL.md`](.gemini/skills/behavioral-evals/SKILL.md) |
+| 4 | ✓ | [`.gemini/skills/ci/SKILL.md`](.gemini/skills/ci/SKILL.md) |
+| 5 | ✓ | [`.gemini/skills/code-reviewer/SKILL.md`](.gemini/skills/code-reviewer/SKILL.md) |
+| 6 | ✓ | [`.gemini/skills/docs-changelog/SKILL.md`](.gemini/skills/docs-changelog/SKILL.md) |
+| 7 | ✓ | [`.gemini/skills/docs-writer/SKILL.md`](.gemini/skills/docs-writer/SKILL.md) |
+| 8 | ✓ | [`.gemini/skills/github-issue-creator/SKILL.md`](.gemini/skills/github-issue-creator/SKILL.md) |
+| 9 | ✓ | [`.gemini/skills/pr-address-comments/SKILL.md`](.gemini/skills/pr-address-comments/SKILL.md) |
+| 10 | ✓ | [`.gemini/skills/pr-creator/SKILL.md`](.gemini/skills/pr-creator/SKILL.md) |
+| 11 | ✓ | [`.gemini/skills/review-duplication/SKILL.md`](.gemini/skills/review-duplication/SKILL.md) |
+| 12 | ✓ | [`.gemini/skills/string-reviewer/SKILL.md`](.gemini/skills/string-reviewer/SKILL.md) |
+| 13 | ✓ | [`.gemini/skills/tui-tester/SKILL.md`](.gemini/skills/tui-tester/SKILL.md) |
+| 14 | ✓ | [`docs/cli/creating-skills.md`](docs/cli/creating-skills.md) |
+| 15 | ✓ | [`docs/cli/gemini-md.md`](docs/cli/gemini-md.md) |
+| 16 | ✓ | [`docs/cli/skills-best-practices.md`](docs/cli/skills-best-practices.md) |
+| 17 | ✓ | [`docs/cli/skills.md`](docs/cli/skills.md) |
+| 18 | ✓ | [`docs/cli/using-agent-skills.md`](docs/cli/using-agent-skills.md) |
+| 19 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 20 | ✓ | [`packages/a2a-server/GEMINI.md`](packages/a2a-server/GEMINI.md) |
+| 21 | ✓ | [`packages/cli/GEMINI.md`](packages/cli/GEMINI.md) |
+| 22 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/greeter/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/greeter/SKILL.md) |
+| 23 | ✓ | [`packages/core/GEMINI.md`](packages/core/GEMINI.md) |
+| 24 | ✓ | [`packages/core/src/skills/builtin/skill-creator/SKILL.md`](packages/core/src/skills/builtin/skill-creator/SKILL.md) |
+| 25 | ✓ | [`packages/devtools/GEMINI.md`](packages/devtools/GEMINI.md) |
+| 26 | ✓ | [`packages/sdk/GEMINI.md`](packages/sdk/GEMINI.md) |
+| 27 | ✓ | [`packages/sdk/test-data/skills/pirate-skill/SKILL.md`](packages/sdk/test-data/skills/pirate-skill/SKILL.md) |
+| 28 | ✓ | [`packages/test-utils/GEMINI.md`](packages/test-utils/GEMINI.md) |
+| 29 | ✓ | [`packages/vscode-ide-companion/GEMINI.md`](packages/vscode-ide-companion/GEMINI.md) |
+| 30 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/critique/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/critique/SKILL.md) |
+| 31 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/memory/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/memory/SKILL.md) |
+| 32 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/metrics/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/metrics/SKILL.md) |
+| 33 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/prs/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/prs/SKILL.md) |
 
 ---
 

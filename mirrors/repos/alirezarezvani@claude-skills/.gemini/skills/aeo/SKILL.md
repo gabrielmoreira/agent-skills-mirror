@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/aeo/../../../marketing-skill/skills/aeo/SKILL.md

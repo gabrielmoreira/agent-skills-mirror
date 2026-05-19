@@ -41,9 +41,15 @@ async function main() {
 
     app.listen(port, () => {
       process.stderr.write(`[ags-mcp] SSE server listening on port ${port}\n`);
-      process.stderr.write(`[ags-mcp] MCP endpoint: http://localhost:${port}/mcp\n`);
-      process.stderr.write(`[ags-mcp] (Legacy) SSE endpoint: http://localhost:${port}/sse\n`);
-      process.stderr.write(`[ags-mcp] (Legacy) Message endpoint: http://localhost:${port}/messages\n`);
+      process.stderr.write(
+        `[ags-mcp] MCP endpoint: http://localhost:${port}/mcp\n`,
+      );
+      process.stderr.write(
+        `[ags-mcp] (Legacy) SSE endpoint: http://localhost:${port}/sse\n`,
+      );
+      process.stderr.write(
+        `[ags-mcp] (Legacy) Message endpoint: http://localhost:${port}/messages\n`,
+      );
     });
   } else {
     const transport = new StdioServerTransport();
@@ -58,4 +64,3 @@ main().catch((err) => {
   );
   process.exit(1);
 });
-

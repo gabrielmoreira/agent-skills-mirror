@@ -2,7 +2,12 @@ export interface LoadEvent {
   /** ISO timestamp when the load happened. */
   at: string;
   /** Tool that performed the load. */
-  via: "load_skills_for_files" | "load_skills_for_keywords" | "get_skill";
+  via:
+    | "load_skills_for_files"
+    | "load_skills_for_keywords"
+    | "get_skill"
+    | "list_workflows"
+    | "get_workflow";
   /** Input passed to the tool (files, keywords, or single id). */
   input: string[];
   /** Skills returned to the agent, formatted as `category/id`. */

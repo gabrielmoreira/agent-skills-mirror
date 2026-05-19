@@ -20,6 +20,8 @@ If the `agent-skills-standard` MCP server is registered in your runtime (check y
 
 | Tool | When to call it |
 | --- | --- |
+| `list_workflows()` | At the start of any task or session to discover available standard operating procedures |
+| `get_workflow(name)` | Once a relevant workflow is identified to retrieve exact step-by-step instructions |
 | `load_skills_for_files(files=[...])` | Before editing/reviewing any source file |
 | `load_skills_for_keywords(keywords=[...])` | Planning before files are chosen |
 | `get_skill(category, name)` | Direct lookup when you know the skill id |

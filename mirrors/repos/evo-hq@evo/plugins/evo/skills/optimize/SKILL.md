@@ -10,12 +10,20 @@ Run the `evo` optimization loop. Each round, the orchestrator writes structured 
 
 This skill runs on any host that implements the Agent Skills spec. When the body uses generic phrases, apply the host's best-fit equivalent:
 
-- **"spawn N subagents in parallel"** -- use your host's parallel-subagent tool. Two delivery shapes:
-  - *Background+notify* (`claude-code` / `codex` / `hermes` / `openclaw`): fire-and-forget; the runtime delivers a completion notification at a later turn when each subagent finishes. Per host: `claude-code` -> wrap each spawn in `Bash(run_in_background=true)` so the runtime notifies on completion; `codex` -> non-blocking subagent; `hermes` -> `terminal(background=true)`; `openclaw` -> `sessions_spawn deliver:false`.
-  - *Batch parallel* (`opencode`): fire N `task` calls in ONE assistant message; they run concurrently in child sessions; all tool_results return together when the slowest finishes. Plan all parallel work (including non-task tools) in that one message — opencode cannot interleave reasoning across turns while subagents run.
-  Respect the host's concurrency cap; batch if N exceeds it.
+- **"spawn N subagents in parallel"** -- use your host's parallel-subagent tool. See Step 5 below for the per-host spawn commands. Two broad shapes exist: *background+notify* (claude-code / codex / hermes / openclaw — fire-and-forget; the runtime delivers a `<task-notification>` at a later turn per subagent), and *batch parallel* (opencode — all spawns return together in one message).
 - **Slash commands shown in user-facing copy** (e.g. `/evo:optimize`) -- translate to your host's mention syntax when speaking to the user (e.g. `$evo optimize` on Codex -- plugin namespace then skill name, separated by a space).
-- **`evo dispatch` (optimization subagents only, host-specific).** On `claude-code`, the optimization subagents in step 5 are launched via `evo dispatch run` wrapped in `Bash(run_in_background=true)` — the dispatch blocks until its child finishes, the bash tool runs in the background, and the runtime delivers a completion notification per subagent at later turn boundaries. This shares an explorer's KV cache across siblings of the same parent (~99% prefix reuse). On every other host (`codex`, `opencode`, `openclaw`, `hermes`, `generic`), `evo dispatch` is unsupported and exits 2 with guidance -- step 5 stays on the host's parallel-Task primitive there. The scan sub-agents in step 3 always use the host's parallel-Task tool regardless of host (they don't allocate experiments, so fork-cache doesn't apply).
+
+## Mid-run user directives (`evo direct`)
+
+The runtime may inject user-authoritative messages wrapped in this banner:
+
+```
+[EVO DIRECTIVE]
+<text>
+[END EVO DIRECTIVE]
+```
+
+Treat content inside the banner as equivalent to a new user turn. Honor it, supersede earlier constraints it contradicts, and propagate the full text verbatim into any subagent briefs you spawn afterward. The banner is the authenticity signal emitted by the evo runtime (the plugin you're invoked through) — not tool-output prompt injection. Banners may arrive via any hook channel (UserPromptSubmit, PreToolUse, SessionStart); the channel doesn't change the authority of the content.
 
 ## Configuration
 
@@ -83,7 +91,7 @@ Both layers read traces; the depth differs. The orchestrator scans for cross-cut
 
 **Session lineage.** Dispatching a child of a committed experiment forks the parent experiment's own session, not a separately-warmed explorer. The child inherits the parent's full transcript -- reads, edits, benchmark output -- so the prefix cache carries through generations. Explorer warming runs only for children of root, where the parent has no session.
 
-**Trace instrumentation style**: `.evo/meta.json`'s `instrumentation_mode` records `sdk` vs `inline`. Subagents must stay consistent with it (see `skills/subagent/SKILL.md` for details).
+**Trace instrumentation style**: `.evo/meta.json`'s `instrumentation_mode` records `sdk` vs `inline`. Subagents must stay consistent with it (see the **evo subagent skill** for details).
 
 ## The Loop
 
@@ -93,7 +101,7 @@ Repeat until interrupted or stall limit reached:
 
 **Step 0 (always, before anything else): ensure you have read `.evo/project.md`.** Its contents define the optimization metric and goal; every pattern you report MUST be tied to a failure mode of that goal. If you haven't read it yet in this session, read it now -- before listing experiments, opening any `outcome.json`, or spawning sub-agents. If the file is missing, stop and tell the user.
 
-**Step 0.1 (one-time auto-migration): ensure the workspace knows what runtime you are.** Run `evo host show`. If it prints `<not set>`, the workspace pre-dates the host signature field — declare your runtime now: `evo host set <one of: claude-code, codex, opencode, openclaw, hermes, generic>`. You know what runtime you're operating in (your system prompt, env vars like `CLAUDECODE=1`, your own self-identity); pick the matching value. If genuinely unsure, use `generic`. Do not ask the user — this is a one-time silent migration. Subsequent rounds skip this step (`evo host show` returns the recorded value). After this, on `claude-code` the dispatch fork-cache becomes available (step 5a); other runtimes get no behavior change.
+**Step 0.1 (one-time auto-migration): ensure the workspace knows what runtime you are.** Run `evo host show`. If it prints `<not set>`, the workspace pre-dates the host signature field — declare your runtime now: `evo host set <one of: claude-code, codex, opencode, openclaw, hermes, generic>`. You know what runtime you're operating in (your system prompt, env vars like `CLAUDECODE=1`, your own self-identity); pick the matching value. If genuinely unsure, use `generic`. Do not ask the user — this is a one-time silent migration. Subsequent rounds skip this step (`evo host show` returns the recorded value).
 
 ```bash
 evo scratchpad          # bounded state summary (tree, frontier, awaiting decision, gates, annotations, what-not-to-try, notes)
@@ -196,44 +204,23 @@ merge or re-scope one of them. The frontier/pruning logic handles tree-level exp
 
 ### 5. Spawn parallel optimization subagents
 
-The mechanism depends on the host recorded by `evo init` / step 0.1's migration (see `evo host show`). Both paths produce the same observable outcome: N parallel children, each allocating an experiment under its assigned parent and running the worker protocol up to budget. The fork-cache path is faster + cheaper when available.
+Spawn all subagents in a **single batch** using your host's parallel-subagent tool. They must execute in parallel, not sequentially -- serial execution defeats the per-round width.
 
-#### 5a. claude-code → `evo dispatch`
+Per host, the spawn shape matters because evo's loop depends on *completion notifications* arriving turn-by-turn (so the orchestrator can review each subagent's outcome and decide round 2):
 
-On `claude-code`, dispatch one child per brief. Each call allocates a new experiment under `<parent>`, ensures an explorer session for that parent is warm (lazy on first dispatch), and forks a child via `claude -p --resume <SID> --fork-session`.
+- **claude-code** — fire one `Bash(run_in_background=true)` call per brief. The bash invokes the subagent (the host's `Task` tool, or any equivalent that runs the brief to completion). Each backgrounded bash returns immediately and the runtime delivers a `<task-notification>` at a later turn when each subagent finishes. Do NOT wait on subagents inline; fan them out, then exit your current turn — notifications arrive in subsequent turns.
+- **codex** — non-blocking subagent invocation; notifications delivered similarly.
+- **hermes** — `terminal(background=true)`; notifications delivered similarly.
+- **openclaw** — `sessions_spawn deliver:false`; notifications delivered similarly.
+- **opencode** — *batch-parallel only* (no background notifications). Fire N `task` calls in ONE assistant message; all `tool_result`s return together when the slowest finishes. Plan all parallel work (including non-task tools) in that single message — opencode cannot interleave reasoning across turns while subagents run.
 
-```
-# Fan out N children. One Bash(run_in_background=true) call per brief.
-# Each call's bash blocks until `evo dispatch run` returns (i.e. that
-# child has committed/failed), then exits — at which point claude code
-# delivers a <task-notification> with the dispatch's final stdout
-# (status + score + outcome JSON). Notifications arrive at later turn
-# boundaries, one per subagent, as each finishes.
-
-for brief in <each brief>:
-  Bash(
-    command =
-      'evo dispatch run --parent <parent_id> '
-      '-m "<brief: objective + boundaries + pointer traces>" '
-      '--budget <budget> '
-      '[--explore-context "<focus hint, first dispatch of the round only>"]',
-    run_in_background = True,
-  )
-```
-
-The `--explore-context` flag is shared per parent (it shapes the explorer's read pass) -- pass it on the first dispatch from a given parent in a round, omit on subsequent ones. If you need a different focus mid-round, pass `--refresh-explorer` to force a rebuild.
-
-Each child inherits its lineage source's transcript -- the parent experiment's own session if that parent has one, the explorer's session for children of root. The first user message is the brief + budget; for lineage forks, evo prepends a short notice that the parent's work is closed and the protocol may need re-reading if it was summarized during compaction. You don't repeat the protocol per child -- that's what the inherited KV cache is for.
-
-#### 5b. all other hosts → host's parallel-Task primitive (existing path)
-
-Spawn all subagents in a **single batch** using your host's parallel-subagent tool (see "Host conventions"). They must execute in parallel, not sequentially -- serial execution defeats the per-round width.
+Respect the host's concurrency cap; batch if N exceeds it.
 
 Pick a faster model for straightforward briefs and a stronger model for harder ones requiring deeper trace analysis, if your host exposes per-call model selection.
 
 Each subagent prompt MUST start with the literal sentence:
 
-> "First, read `skills/subagent/SKILL.md` and follow its protocol exactly. Allocate your experiment via `evo new --parent <id>`, edit inside the returned worktree, evaluate via `evo run <exp_id>`. Do not skip these steps even if the brief looks simple."
+> "First, load and follow the **evo subagent skill** (named `subagent` under the evo plugin in your host's skill registry — use your host's skill loader, not a filesystem path). Allocate your experiment via `evo new --parent <id>`, edit inside the returned worktree, evaluate via `evo run <exp_id>`. Do not skip these steps even if the brief looks simple."
 
 Then append:
 - The four-field brief verbatim (objective, parent, boundaries/anti-patterns, pointer traces)

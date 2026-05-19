@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `GarethManning/education-agent-skills` — 26 default patterns, 0 followed patterns, 135 file(s) materialized.
+Mirror of `GarethManning/education-agent-skills` — 26 default patterns, 0 followed patterns, 151 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `GarethManning/education-agent-skills` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 135 |
+| Files         | 151 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -136,64 +136,80 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 75 | ✓ | [`skills/historical-thinking/historical-thinking-assessment-designer/SKILL.md`](skills/historical-thinking/historical-thinking-assessment-designer/SKILL.md) |
 | 76 | ✓ | [`skills/historical-thinking/historical-thinking-strategy-modelling-guide/SKILL.md`](skills/historical-thinking/historical-thinking-strategy-modelling-guide/SKILL.md) |
 | 77 | ✓ | [`skills/historical-thinking/sourcing-skill-builder/SKILL.md`](skills/historical-thinking/sourcing-skill-builder/SKILL.md) |
-| 78 | ✓ | [`skills/literacy-critical-thinking/argument-structure-scaffold-generator/SKILL.md`](skills/literacy-critical-thinking/argument-structure-scaffold-generator/SKILL.md) |
-| 79 | ✓ | [`skills/literacy-critical-thinking/critical-thinking-task-designer/SKILL.md`](skills/literacy-critical-thinking/critical-thinking-task-designer/SKILL.md) |
-| 80 | ✓ | [`skills/literacy-critical-thinking/disciplinary-writing-scaffold/SKILL.md`](skills/literacy-critical-thinking/disciplinary-writing-scaffold/SKILL.md) |
-| 81 | ✓ | [`skills/literacy-critical-thinking/media-literacy-deconstruction-protocol/SKILL.md`](skills/literacy-critical-thinking/media-literacy-deconstruction-protocol/SKILL.md) |
-| 82 | ✓ | [`skills/literacy-critical-thinking/reading-comprehension-strategy-selector/SKILL.md`](skills/literacy-critical-thinking/reading-comprehension-strategy-selector/SKILL.md) |
-| 83 | ✓ | [`skills/literacy-critical-thinking/source-credibility-evaluation-protocol/SKILL.md`](skills/literacy-critical-thinking/source-credibility-evaluation-protocol/SKILL.md) |
-| 84 | ✓ | [`skills/literacy-critical-thinking/text-complexity-analyser/SKILL.md`](skills/literacy-critical-thinking/text-complexity-analyser/SKILL.md) |
-| 85 | ✓ | [`skills/memory-learning-science/cognitive-load-analyser/SKILL.md`](skills/memory-learning-science/cognitive-load-analyser/SKILL.md) |
-| 86 | ✓ | [`skills/memory-learning-science/dual-coding-designer/SKILL.md`](skills/memory-learning-science/dual-coding-designer/SKILL.md) |
-| 87 | ✓ | [`skills/memory-learning-science/elaborative-interrogation-generator/SKILL.md`](skills/memory-learning-science/elaborative-interrogation-generator/SKILL.md) |
-| 88 | ✓ | [`skills/memory-learning-science/feedback-quality-analyser/SKILL.md`](skills/memory-learning-science/feedback-quality-analyser/SKILL.md) |
-| 89 | ✓ | [`skills/memory-learning-science/interleaving-unit-planner/SKILL.md`](skills/memory-learning-science/interleaving-unit-planner/SKILL.md) |
-| 90 | ✓ | [`skills/memory-learning-science/retrieval-practice-generator/SKILL.md`](skills/memory-learning-science/retrieval-practice-generator/SKILL.md) |
-| 91 | ✓ | [`skills/memory-learning-science/spaced-practice-scheduler/SKILL.md`](skills/memory-learning-science/spaced-practice-scheduler/SKILL.md) |
-| 92 | ✓ | [`skills/memory-learning-science/worked-example-fading-designer/SKILL.md`](skills/memory-learning-science/worked-example-fading-designer/SKILL.md) |
-| 93 | ✓ | [`skills/montessori-alternative-approaches/mixed-age-learning-task-designer/SKILL.md`](skills/montessori-alternative-approaches/mixed-age-learning-task-designer/SKILL.md) |
-| 94 | ✓ | [`skills/montessori-alternative-approaches/prepared-environment-designer/SKILL.md`](skills/montessori-alternative-approaches/prepared-environment-designer/SKILL.md) |
-| 95 | ✓ | [`skills/montessori-alternative-approaches/three-part-lesson-designer/SKILL.md`](skills/montessori-alternative-approaches/three-part-lesson-designer/SKILL.md) |
-| 96 | ✓ | [`skills/montessori-alternative-approaches/uninterrupted-work-cycle-designer/SKILL.md`](skills/montessori-alternative-approaches/uninterrupted-work-cycle-designer/SKILL.md) |
-| 97 | ✓ | [`skills/original-frameworks/coherent-rubric-logic-builder/SKILL.md`](skills/original-frameworks/coherent-rubric-logic-builder/SKILL.md) |
-| 98 | ✓ | [`skills/original-frameworks/developmental-band-system-designer/SKILL.md`](skills/original-frameworks/developmental-band-system-designer/SKILL.md) |
-| 99 | ✓ | [`skills/original-frameworks/developmental-progression-synthesis/SKILL.md`](skills/original-frameworks/developmental-progression-synthesis/SKILL.md) |
-| 100 | ✓ | [`skills/original-frameworks/dispositional-knowledge-assessment-designer/SKILL.md`](skills/original-frameworks/dispositional-knowledge-assessment-designer/SKILL.md) |
-| 101 | ✓ | [`skills/original-frameworks/learning-target-authoring-guide/SKILL.md`](skills/original-frameworks/learning-target-authoring-guide/SKILL.md) |
-| 102 | ✓ | [`skills/original-frameworks/seeds-regenerative-inquiry-cycle/SKILL.md`](skills/original-frameworks/seeds-regenerative-inquiry-cycle/SKILL.md) |
-| 103 | ✓ | [`skills/original-frameworks/self-determined-project-design-protocol/SKILL.md`](skills/original-frameworks/self-determined-project-design-protocol/SKILL.md) |
-| 104 | ✓ | [`skills/original-frameworks/single-point-rubric-designer/SKILL.md`](skills/original-frameworks/single-point-rubric-designer/SKILL.md) |
-| 105 | ✓ | [`skills/professional-learning/competency-framework-translator/SKILL.md`](skills/professional-learning/competency-framework-translator/SKILL.md) |
-| 106 | ✓ | [`skills/professional-learning/instructional-coaching-conversation-guide/SKILL.md`](skills/professional-learning/instructional-coaching-conversation-guide/SKILL.md) |
-| 107 | ✓ | [`skills/professional-learning/lesson-observation-protocol-designer/SKILL.md`](skills/professional-learning/lesson-observation-protocol-designer/SKILL.md) |
-| 108 | ✓ | [`skills/professional-learning/lesson-study-cycle-designer/SKILL.md`](skills/professional-learning/lesson-study-cycle-designer/SKILL.md) |
-| 109 | ✓ | [`skills/professional-learning/panel-review/SKILL.md`](skills/professional-learning/panel-review/SKILL.md) |
-| 110 | ✓ | [`skills/professional-learning/pedagogical-content-knowledge-developer/SKILL.md`](skills/professional-learning/pedagogical-content-knowledge-developer/SKILL.md) |
-| 111 | ✓ | [`skills/professional-learning/professional-development-session-designer/SKILL.md`](skills/professional-learning/professional-development-session-designer/SKILL.md) |
-| 112 | ✓ | [`skills/professional-learning/reflective-practice-prompt-generator/SKILL.md`](skills/professional-learning/reflective-practice-prompt-generator/SKILL.md) |
-| 113 | ✓ | [`skills/professional-learning/teacher-inquiry-cycle-designer/SKILL.md`](skills/professional-learning/teacher-inquiry-cycle-designer/SKILL.md) |
-| 114 | ✓ | [`skills/professional-learning/technological-pedagogical-content-knowledge-developer/SKILL.md`](skills/professional-learning/technological-pedagogical-content-knowledge-developer/SKILL.md) |
-| 115 | ✓ | [`skills/questioning-discussion/dialogic-teaching-move-generator/SKILL.md`](skills/questioning-discussion/dialogic-teaching-move-generator/SKILL.md) |
-| 116 | ✓ | [`skills/questioning-discussion/discussion-protocol-selector/SKILL.md`](skills/questioning-discussion/discussion-protocol-selector/SKILL.md) |
-| 117 | ✓ | [`skills/questioning-discussion/hinge-question-designer/SKILL.md`](skills/questioning-discussion/hinge-question-designer/SKILL.md) |
-| 118 | ✓ | [`skills/questioning-discussion/socratic-questioning-sequence-generator/SKILL.md`](skills/questioning-discussion/socratic-questioning-sequence-generator/SKILL.md) |
-| 119 | ✓ | [`skills/self-regulated-learning/error-analysis-protocol/SKILL.md`](skills/self-regulated-learning/error-analysis-protocol/SKILL.md) |
-| 120 | ✓ | [`skills/self-regulated-learning/goal-setting-protocol-designer/SKILL.md`](skills/self-regulated-learning/goal-setting-protocol-designer/SKILL.md) |
-| 121 | ✓ | [`skills/self-regulated-learning/metacognitive-prompt-library/SKILL.md`](skills/self-regulated-learning/metacognitive-prompt-library/SKILL.md) |
-| 122 | ✓ | [`skills/self-regulated-learning/self-regulation-scaffold-generator/SKILL.md`](skills/self-regulated-learning/self-regulation-scaffold-generator/SKILL.md) |
-| 123 | ✓ | [`skills/self-regulated-learning/study-strategy-selector/SKILL.md`](skills/self-regulated-learning/study-strategy-selector/SKILL.md) |
-| 124 | ✓ | [`skills/wellbeing-motivation-agency/agency-scaffold-generator/SKILL.md`](skills/wellbeing-motivation-agency/agency-scaffold-generator/SKILL.md) |
-| 125 | ✓ | [`skills/wellbeing-motivation-agency/awe-wonder-experience-designer/SKILL.md`](skills/wellbeing-motivation-agency/awe-wonder-experience-designer/SKILL.md) |
-| 126 | ✓ | [`skills/wellbeing-motivation-agency/belonging-classroom-culture-designer/SKILL.md`](skills/wellbeing-motivation-agency/belonging-classroom-culture-designer/SKILL.md) |
-| 127 | ✓ | [`skills/wellbeing-motivation-agency/flow-state-condition-designer/SKILL.md`](skills/wellbeing-motivation-agency/flow-state-condition-designer/SKILL.md) |
-| 128 | ✓ | [`skills/wellbeing-motivation-agency/implementation-intention-designer/SKILL.md`](skills/wellbeing-motivation-agency/implementation-intention-designer/SKILL.md) |
-| 129 | ✓ | [`skills/wellbeing-motivation-agency/motivation-diagnostic-task-redesign/SKILL.md`](skills/wellbeing-motivation-agency/motivation-diagnostic-task-redesign/SKILL.md) |
-| 130 | ✓ | [`skills/wellbeing-motivation-agency/perma-based-lesson-designer/SKILL.md`](skills/wellbeing-motivation-agency/perma-based-lesson-designer/SKILL.md) |
-| 131 | ✓ | [`skills/wellbeing-motivation-agency/restorative-practice-protocol-designer/SKILL.md`](skills/wellbeing-motivation-agency/restorative-practice-protocol-designer/SKILL.md) |
-| 132 | ✓ | [`skills/wellbeing-motivation-agency/ruler-emotional-literacy-sequence/SKILL.md`](skills/wellbeing-motivation-agency/ruler-emotional-literacy-sequence/SKILL.md) |
-| 133 | ✓ | [`skills/wellbeing-motivation-agency/self-efficacy-builder-sequence/SKILL.md`](skills/wellbeing-motivation-agency/self-efficacy-builder-sequence/SKILL.md) |
-| 134 | ✓ | [`skills/wellbeing-motivation-agency/trauma-informed-practice-designer/SKILL.md`](skills/wellbeing-motivation-agency/trauma-informed-practice-designer/SKILL.md) |
-| 135 | ✓ | [`skills/wellbeing-motivation-agency/wellbeing-learning-connection-mapper/SKILL.md`](skills/wellbeing-motivation-agency/wellbeing-learning-connection-mapper/SKILL.md) |
+| 78 | ✓ | [`skills/inclusive-design/udl-barrier-anticipator/SKILL.md`](skills/inclusive-design/udl-barrier-anticipator/SKILL.md) |
+| 79 | ✓ | [`skills/inclusive-design/udl-lesson-auditor/SKILL.md`](skills/inclusive-design/udl-lesson-auditor/SKILL.md) |
+| 80 | ✓ | [`skills/inclusive-design/udl-options-designer/SKILL.md`](skills/inclusive-design/udl-options-designer/SKILL.md) |
+| 81 | ✓ | [`skills/literacy-critical-thinking/argument-structure-scaffold-generator/SKILL.md`](skills/literacy-critical-thinking/argument-structure-scaffold-generator/SKILL.md) |
+| 82 | ✓ | [`skills/literacy-critical-thinking/critical-thinking-task-designer/SKILL.md`](skills/literacy-critical-thinking/critical-thinking-task-designer/SKILL.md) |
+| 83 | ✓ | [`skills/literacy-critical-thinking/disciplinary-writing-scaffold/SKILL.md`](skills/literacy-critical-thinking/disciplinary-writing-scaffold/SKILL.md) |
+| 84 | ✓ | [`skills/literacy-critical-thinking/media-literacy-deconstruction-protocol/SKILL.md`](skills/literacy-critical-thinking/media-literacy-deconstruction-protocol/SKILL.md) |
+| 85 | ✓ | [`skills/literacy-critical-thinking/reading-comprehension-strategy-selector/SKILL.md`](skills/literacy-critical-thinking/reading-comprehension-strategy-selector/SKILL.md) |
+| 86 | ✓ | [`skills/literacy-critical-thinking/source-credibility-evaluation-protocol/SKILL.md`](skills/literacy-critical-thinking/source-credibility-evaluation-protocol/SKILL.md) |
+| 87 | ✓ | [`skills/literacy-critical-thinking/text-complexity-analyser/SKILL.md`](skills/literacy-critical-thinking/text-complexity-analyser/SKILL.md) |
+| 88 | ✓ | [`skills/memory-learning-science/cognitive-load-analyser/SKILL.md`](skills/memory-learning-science/cognitive-load-analyser/SKILL.md) |
+| 89 | ✓ | [`skills/memory-learning-science/dual-coding-designer/SKILL.md`](skills/memory-learning-science/dual-coding-designer/SKILL.md) |
+| 90 | ✓ | [`skills/memory-learning-science/elaborative-interrogation-generator/SKILL.md`](skills/memory-learning-science/elaborative-interrogation-generator/SKILL.md) |
+| 91 | ✓ | [`skills/memory-learning-science/feedback-quality-analyser/SKILL.md`](skills/memory-learning-science/feedback-quality-analyser/SKILL.md) |
+| 92 | ✓ | [`skills/memory-learning-science/interleaving-unit-planner/SKILL.md`](skills/memory-learning-science/interleaving-unit-planner/SKILL.md) |
+| 93 | ✓ | [`skills/memory-learning-science/retrieval-practice-generator/SKILL.md`](skills/memory-learning-science/retrieval-practice-generator/SKILL.md) |
+| 94 | ✓ | [`skills/memory-learning-science/spaced-practice-scheduler/SKILL.md`](skills/memory-learning-science/spaced-practice-scheduler/SKILL.md) |
+| 95 | ✓ | [`skills/memory-learning-science/worked-example-fading-designer/SKILL.md`](skills/memory-learning-science/worked-example-fading-designer/SKILL.md) |
+| 96 | ✓ | [`skills/montessori-alternative-approaches/mixed-age-learning-task-designer/SKILL.md`](skills/montessori-alternative-approaches/mixed-age-learning-task-designer/SKILL.md) |
+| 97 | ✓ | [`skills/montessori-alternative-approaches/prepared-environment-designer/SKILL.md`](skills/montessori-alternative-approaches/prepared-environment-designer/SKILL.md) |
+| 98 | ✓ | [`skills/montessori-alternative-approaches/three-part-lesson-designer/SKILL.md`](skills/montessori-alternative-approaches/three-part-lesson-designer/SKILL.md) |
+| 99 | ✓ | [`skills/montessori-alternative-approaches/uninterrupted-work-cycle-designer/SKILL.md`](skills/montessori-alternative-approaches/uninterrupted-work-cycle-designer/SKILL.md) |
+| 100 | ✓ | [`skills/original-frameworks/assessment-design-orchestrator/SKILL.md`](skills/original-frameworks/assessment-design-orchestrator/SKILL.md) |
+| 101 | ✓ | [`skills/original-frameworks/coherent-rubric-logic-builder/SKILL.md`](skills/original-frameworks/coherent-rubric-logic-builder/SKILL.md) |
+| 102 | ✓ | [`skills/original-frameworks/compassionate-systems-awareness-orchestrator/SKILL.md`](skills/original-frameworks/compassionate-systems-awareness-orchestrator/SKILL.md) |
+| 103 | ✓ | [`skills/original-frameworks/developmental-band-system-designer/SKILL.md`](skills/original-frameworks/developmental-band-system-designer/SKILL.md) |
+| 104 | ✓ | [`skills/original-frameworks/developmental-progression-synthesis/SKILL.md`](skills/original-frameworks/developmental-progression-synthesis/SKILL.md) |
+| 105 | ✓ | [`skills/original-frameworks/dispositional-knowledge-assessment-designer/SKILL.md`](skills/original-frameworks/dispositional-knowledge-assessment-designer/SKILL.md) |
+| 106 | ✓ | [`skills/original-frameworks/inclusive-design-orchestrator/SKILL.md`](skills/original-frameworks/inclusive-design-orchestrator/SKILL.md) |
+| 107 | ✓ | [`skills/original-frameworks/learning-target-authoring-guide/SKILL.md`](skills/original-frameworks/learning-target-authoring-guide/SKILL.md) |
+| 108 | ✓ | [`skills/original-frameworks/place-based-curriculum-orchestrator/SKILL.md`](skills/original-frameworks/place-based-curriculum-orchestrator/SKILL.md) |
+| 109 | ✓ | [`skills/original-frameworks/regenerative-project-design-orchestrator/SKILL.md`](skills/original-frameworks/regenerative-project-design-orchestrator/SKILL.md) |
+| 110 | ✓ | [`skills/original-frameworks/seeds-regenerative-inquiry-cycle/SKILL.md`](skills/original-frameworks/seeds-regenerative-inquiry-cycle/SKILL.md) |
+| 111 | ✓ | [`skills/original-frameworks/self-determined-project-design-protocol/SKILL.md`](skills/original-frameworks/self-determined-project-design-protocol/SKILL.md) |
+| 112 | ✓ | [`skills/original-frameworks/single-point-rubric-designer/SKILL.md`](skills/original-frameworks/single-point-rubric-designer/SKILL.md) |
+| 113 | ✓ | [`skills/professional-learning/competency-framework-translator/SKILL.md`](skills/professional-learning/competency-framework-translator/SKILL.md) |
+| 114 | ✓ | [`skills/professional-learning/instructional-coaching-conversation-guide/SKILL.md`](skills/professional-learning/instructional-coaching-conversation-guide/SKILL.md) |
+| 115 | ✓ | [`skills/professional-learning/lesson-observation-protocol-designer/SKILL.md`](skills/professional-learning/lesson-observation-protocol-designer/SKILL.md) |
+| 116 | ✓ | [`skills/professional-learning/lesson-study-cycle-designer/SKILL.md`](skills/professional-learning/lesson-study-cycle-designer/SKILL.md) |
+| 117 | ✓ | [`skills/professional-learning/panel-review/SKILL.md`](skills/professional-learning/panel-review/SKILL.md) |
+| 118 | ✓ | [`skills/professional-learning/pedagogical-content-knowledge-developer/SKILL.md`](skills/professional-learning/pedagogical-content-knowledge-developer/SKILL.md) |
+| 119 | ✓ | [`skills/professional-learning/professional-development-session-designer/SKILL.md`](skills/professional-learning/professional-development-session-designer/SKILL.md) |
+| 120 | ✓ | [`skills/professional-learning/reflective-practice-prompt-generator/SKILL.md`](skills/professional-learning/reflective-practice-prompt-generator/SKILL.md) |
+| 121 | ✓ | [`skills/professional-learning/teacher-inquiry-cycle-designer/SKILL.md`](skills/professional-learning/teacher-inquiry-cycle-designer/SKILL.md) |
+| 122 | ✓ | [`skills/professional-learning/technological-pedagogical-content-knowledge-developer/SKILL.md`](skills/professional-learning/technological-pedagogical-content-knowledge-developer/SKILL.md) |
+| 123 | ✓ | [`skills/questioning-discussion/dialogic-teaching-move-generator/SKILL.md`](skills/questioning-discussion/dialogic-teaching-move-generator/SKILL.md) |
+| 124 | ✓ | [`skills/questioning-discussion/discussion-protocol-selector/SKILL.md`](skills/questioning-discussion/discussion-protocol-selector/SKILL.md) |
+| 125 | ✓ | [`skills/questioning-discussion/hinge-question-designer/SKILL.md`](skills/questioning-discussion/hinge-question-designer/SKILL.md) |
+| 126 | ✓ | [`skills/questioning-discussion/perspective-taking-designer/SKILL.md`](skills/questioning-discussion/perspective-taking-designer/SKILL.md) |
+| 127 | ✓ | [`skills/questioning-discussion/socratic-questioning-sequence-generator/SKILL.md`](skills/questioning-discussion/socratic-questioning-sequence-generator/SKILL.md) |
+| 128 | ✓ | [`skills/self-regulated-learning/error-analysis-protocol/SKILL.md`](skills/self-regulated-learning/error-analysis-protocol/SKILL.md) |
+| 129 | ✓ | [`skills/self-regulated-learning/goal-setting-protocol-designer/SKILL.md`](skills/self-regulated-learning/goal-setting-protocol-designer/SKILL.md) |
+| 130 | ✓ | [`skills/self-regulated-learning/metacognitive-prompt-library/SKILL.md`](skills/self-regulated-learning/metacognitive-prompt-library/SKILL.md) |
+| 131 | ✓ | [`skills/self-regulated-learning/self-regulation-scaffold-generator/SKILL.md`](skills/self-regulated-learning/self-regulation-scaffold-generator/SKILL.md) |
+| 132 | ✓ | [`skills/self-regulated-learning/study-strategy-selector/SKILL.md`](skills/self-regulated-learning/study-strategy-selector/SKILL.md) |
+| 133 | ✓ | [`skills/systems-thinking/agency-circles-for-systems-action/SKILL.md`](skills/systems-thinking/agency-circles-for-systems-action/SKILL.md) |
+| 134 | ✓ | [`skills/systems-thinking/aspirational-systems-iceberg/SKILL.md`](skills/systems-thinking/aspirational-systems-iceberg/SKILL.md) |
+| 135 | ✓ | [`skills/systems-thinking/ladder-of-inference-reflection/SKILL.md`](skills/systems-thinking/ladder-of-inference-reflection/SKILL.md) |
+| 136 | ✓ | [`skills/systems-thinking/leverage-and-response-design/SKILL.md`](skills/systems-thinking/leverage-and-response-design/SKILL.md) |
+| 137 | ✓ | [`skills/systems-thinking/mental-model-mapper/SKILL.md`](skills/systems-thinking/mental-model-mapper/SKILL.md) |
+| 138 | ✓ | [`skills/systems-thinking/systems-awareness-iceberg/SKILL.md`](skills/systems-thinking/systems-awareness-iceberg/SKILL.md) |
+| 139 | ✓ | [`skills/systems-thinking/systems-wellbeing-impact-mapper/SKILL.md`](skills/systems-thinking/systems-wellbeing-impact-mapper/SKILL.md) |
+| 140 | ✓ | [`skills/wellbeing-motivation-agency/agency-scaffold-generator/SKILL.md`](skills/wellbeing-motivation-agency/agency-scaffold-generator/SKILL.md) |
+| 141 | ✓ | [`skills/wellbeing-motivation-agency/awe-wonder-experience-designer/SKILL.md`](skills/wellbeing-motivation-agency/awe-wonder-experience-designer/SKILL.md) |
+| 142 | ✓ | [`skills/wellbeing-motivation-agency/belonging-classroom-culture-designer/SKILL.md`](skills/wellbeing-motivation-agency/belonging-classroom-culture-designer/SKILL.md) |
+| 143 | ✓ | [`skills/wellbeing-motivation-agency/flow-state-condition-designer/SKILL.md`](skills/wellbeing-motivation-agency/flow-state-condition-designer/SKILL.md) |
+| 144 | ✓ | [`skills/wellbeing-motivation-agency/implementation-intention-designer/SKILL.md`](skills/wellbeing-motivation-agency/implementation-intention-designer/SKILL.md) |
+| 145 | ✓ | [`skills/wellbeing-motivation-agency/motivation-diagnostic-task-redesign/SKILL.md`](skills/wellbeing-motivation-agency/motivation-diagnostic-task-redesign/SKILL.md) |
+| 146 | ✓ | [`skills/wellbeing-motivation-agency/perma-based-lesson-designer/SKILL.md`](skills/wellbeing-motivation-agency/perma-based-lesson-designer/SKILL.md) |
+| 147 | ✓ | [`skills/wellbeing-motivation-agency/restorative-practice-protocol-designer/SKILL.md`](skills/wellbeing-motivation-agency/restorative-practice-protocol-designer/SKILL.md) |
+| 148 | ✓ | [`skills/wellbeing-motivation-agency/ruler-emotional-literacy-sequence/SKILL.md`](skills/wellbeing-motivation-agency/ruler-emotional-literacy-sequence/SKILL.md) |
+| 149 | ✓ | [`skills/wellbeing-motivation-agency/self-efficacy-builder-sequence/SKILL.md`](skills/wellbeing-motivation-agency/self-efficacy-builder-sequence/SKILL.md) |
+| 150 | ✓ | [`skills/wellbeing-motivation-agency/trauma-informed-practice-designer/SKILL.md`](skills/wellbeing-motivation-agency/trauma-informed-practice-designer/SKILL.md) |
+| 151 | ✓ | [`skills/wellbeing-motivation-agency/wellbeing-learning-connection-mapper/SKILL.md`](skills/wellbeing-motivation-agency/wellbeing-learning-connection-mapper/SKILL.md) |
 
 ---
 

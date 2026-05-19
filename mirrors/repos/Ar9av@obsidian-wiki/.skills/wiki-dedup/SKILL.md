@@ -245,3 +245,38 @@ Other skills should handle redirect stubs as follows:
 - **Abbreviations are the most common case.** "GPT" / "GPT-4" / "GPT4", "RSC" / "React Server Components", "LLM" / "Large Language Models" — these score high on substring containment and are almost always safe to merge.
 - **Different versions are not duplicates.** "GPT-3" and "GPT-4" are related but distinct. "fine-tuning" and "fine-tuning-llms" may be distinct (technique vs. specific application).
 - **Run `cross-linker` after dedup.** The redirect stubs leave the graph in a slightly inconsistent state. Cross-linker will tighten it up.
+
+## QMD Refresh After Vault Writes
+
+QMD is a search index, not the source of truth. If `$QMD_WIKI_COLLECTION` is empty or unset, skip this step. Run it only after this skill has written or rewritten vault markdown. If QMD refresh fails, do not roll back the vault changes; report the QMD status separately.
+
+Use `$QMD_CLI` if set; otherwise use `qmd`.
+
+```bash
+${QMD_CLI:-qmd} update
+```
+
+If the output says vectors are needed or embeddings may be stale, run:
+
+```bash
+${QMD_CLI:-qmd} embed
+```
+
+Verify the collection with either:
+
+```bash
+${QMD_CLI:-qmd} ls "$QMD_WIKI_COLLECTION"
+```
+
+or, when a specific page path is known:
+
+```bash
+${QMD_CLI:-qmd} get "qmd://$QMD_WIKI_COLLECTION/<page>.md" -l 5
+```
+
+Record one of:
+- `QMD refreshed: update + embed + verified`
+- `QMD refreshed: update only + verified`
+- `QMD skipped: QMD_WIKI_COLLECTION unset`
+- `QMD skipped: qmd CLI unavailable`
+- `QMD failed: <short error summary>`

@@ -1,6 +1,6 @@
 ---
-name: co2-tank-monitor
-description: IoT monitoring simulation to predict CO2 tank depletion and prevent weekend gas outages in cell culture facilities. Monitors cylinder pressure, calculates consumption rates, provides early warnings, and supports automated scheduling via cron.
+name: co-tank-monitor
+description: "IoT monitoring simulation to predict CO2 tank depletion and prevent weekend gas outages in cell culture facilities. Monitors cylinder pressure, calculates consumption rates, provides early warnings, and supports automated scheduling via cron."
 license: MIT
 author: AIPOCH
 ---
@@ -177,3 +177,4 @@ Every final response must make these explicit:
 
 - Cell Culture CO2 Guidelines: https://www.thermofisher.com/cellculture
 - Gas Cylinder Safety: https://www.osha.gov/gascylinders
+

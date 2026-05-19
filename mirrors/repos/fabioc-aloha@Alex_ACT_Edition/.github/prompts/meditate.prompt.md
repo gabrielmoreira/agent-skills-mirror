@@ -15,7 +15,7 @@ Run the meditation protocol. Transform working memory into permanent architectur
 3. **Extract** only what's *new and portable* — grep existing skills, instructions, and memory before writing anything
 4. **Route** each pattern to the right artifact (skill / instruction / prompt / muscle / memory tier)
 5. **Write** with concrete examples, correct frontmatter, and a trigger section
-6. If session is ending, write a handoff to repo-root `SESSION-HANDOFF.md`
+6. If session is ending, write a handoff to repo-root `HANDOFF.md`
 7. Report what was persisted (and what was deliberately *not* persisted because it was already covered)
 8. **Compact** — run `/compact` to discard transcript noise. The persisted artifacts are now the canonical record of this session. This is irreversible by design; consolidation succeeded, raw data is redundant.
 

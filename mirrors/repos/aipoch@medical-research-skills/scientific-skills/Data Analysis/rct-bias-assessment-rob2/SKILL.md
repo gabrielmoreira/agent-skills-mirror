@@ -1,6 +1,6 @@
 ---
-name: rct-bias-assessment-rob2
-description: Automates Risk of Bias 2 (ROB2) assessment for RCT papers by analyzing text against specific domains and synthesizing a report. Use when you need to assess the quality of a clinical trial paper or evaluate risk of bias.
+name: rct-bias-assessment-rob
+description: "Automates Risk of Bias 2 (ROB2) assessment for RCT papers by analyzing text against specific domains and synthesizing a report. Use when you need to assess the quality of a clinical trial paper or evaluate risk of bias."
 license: MIT
 author: AIPOCH
 ---
@@ -129,3 +129,4 @@ from scripts.assess_rob2 import clean_text
 # usage
 cleaned_json = clean_text(llm_output)
 ```
+

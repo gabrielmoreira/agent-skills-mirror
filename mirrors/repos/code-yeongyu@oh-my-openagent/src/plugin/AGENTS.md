@@ -60,10 +60,8 @@ const lookAt = isMultimodalLookerEnabled ? { look_at: createLookAt(ctx) } : {}
 const interactiveBashTool = interactiveBashEnabled ? { interactive_bash } : {}
 
 const allTools = {
-  ...builtinTools,                    // 6 LSP
   ...createGrepTools(ctx),
   ...createGlobTools(ctx),
-  ...createAstGrepTools(ctx),
   ...createSessionManagerTools(ctx),
   ...backgroundTools,                 // 2 background_*
   call_omo_agent, task,
@@ -74,6 +72,8 @@ const allTools = {
   ...taskToolsRecord,                 // +4 conditional
   ...hashlineToolsRecord,             // +1 conditional
 }
+
+// lsp_* and ast_grep_* tools are supplied by built-in MCP servers "lsp" and "ast_grep"
 ```
 
 ## KEY PATTERNS

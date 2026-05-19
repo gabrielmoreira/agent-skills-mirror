@@ -168,4 +168,4 @@ Next step: open kimi-prompt.md, verify no {PLACEHOLDER} remains, paste into kimi
 - [Stage 4: Position](../stage-4-position/SKILL.md)
 - [Stage 5: Script](../stage-5-script/SKILL.md)
 - [Stage 6: Revision](../stage-6-revision/SKILL.md)
-- [Full workflow guide](../../../guide/workflows/talk-pipeline.md)
+- [Full workflow guide](../../../../guide/workflows/talk-pipeline.md)

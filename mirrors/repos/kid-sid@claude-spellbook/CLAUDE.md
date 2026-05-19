@@ -9,6 +9,8 @@ At the start of every session, before doing anything else:
 3. Read both outputs — they contain saved context and the most relevant conversation history
 4. Do not explore files or ask clarifying questions that memory already answers
 
+> The `load_memory` / `suggest_history` / `save_memory` tools come from the `memory_map` MCP server. Install via `pip install "memory-map-mcp[embed-openai]"` — see the **MCP Server** section in [`README.md`](README.md#mcp-server) for full setup (MongoDB, env vars, hooks). Upstream: [github.com/kid-sid/memory_map](https://github.com/kid-sid/memory_map).
+
 Save or update memory entries whenever you learn something worth keeping across sessions.
 If something loaded from memory is no longer accurate, update it with `save_memory` using the same key.
 Use short, lowercase keys: `stack`, `current_work`, `gotchas`, `key_files`, etc. Keep values concise — one or two sentences max.
@@ -21,6 +23,7 @@ Use short, lowercase keys: `stack`, `current_work`, `gotchas`, `key_files`, etc.
 skills/<skill-name>/skill.md     — skill reference files (install to ~/.claude/skills/)
 .claude/agents/<name>.md         — autonomous subagents (install to ~/.claude/agents/)
 .claude/commands/<name>.md       — slash commands (install to ~/.claude/commands/)
+.claude/hooks/<name>.js          — PostToolUse/PreToolUse hook scripts (install to project .claude/hooks/)
 tools/<lang>/                    — drop-in linter/formatter configs for 6 languages
 templates/                       — scaffold starters
 ```
@@ -124,3 +127,22 @@ Agents run in an isolated context window — they do not see the parent session 
 **Adding an agent:** Create `.claude/agents/<name>.md`, restrict `tools` to the minimum needed, include a clear output format in the system prompt, add to the Agent Inventory table in both `CLAUDE.md` and `README.md`.
 
 **Skill inventory** is in `README.md`. To see all skills: `Glob skills/*/skill.md`.
+
+---
+
+## Skill Feedback
+
+When you activate a skill and encounter one of the following, append a finding to `.claude/findings.jsonl` **before** responding to the user:
+
+- **Bug** — a code example is wrong, an API is deprecated, a flag or option is incorrect
+- **Gap** — you had to look something up or invent a pattern the skill doesn't cover
+
+Use the Write or Edit tool to append one JSONL line (no trailing comma, no array wrapper):
+
+```
+{"ts":"<ISO timestamp>","source":"bug","skill":"<kebab-case skill name>","query":null,"url":null,"note":"<one sentence describing the issue>","snippet":null,"reviewed":false}
+```
+
+Use `"source":"gap"` for missing patterns. The `skill` field must match the folder name under `skills/`.
+
+Do not log routine use — only when the skill was incorrect or insufficient for the task at hand. Run `/update-skill` to review the log and apply approved changes back to skill files.

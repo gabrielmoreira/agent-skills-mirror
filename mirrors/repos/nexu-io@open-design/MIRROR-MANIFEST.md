@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nexu-io/open-design` — 26 default patterns, 0 followed patterns, 551 file(s) materialized.
+Mirror of `nexu-io/open-design` — 26 default patterns, 0 followed patterns, 552 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nexu-io/open-design` — 26 default patterns, 0 followed patterns, 55
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 551 |
+| Files         | 552 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -610,6 +610,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 549 | ✓ | [`tools/AGENTS.md`](tools/AGENTS.md) |
 | 550 | ✓ | [`tools/pack/AGENTS.md`](tools/pack/AGENTS.md) |
 | 551 | ✓ | [`tools/pr/AGENTS.md`](tools/pr/AGENTS.md) |
+| 552 | ✓ | [`tools/serve/AGENTS.md`](tools/serve/AGENTS.md) |
 
 ---
 

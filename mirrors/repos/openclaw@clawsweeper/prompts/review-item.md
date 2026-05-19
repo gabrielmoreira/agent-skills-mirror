@@ -89,16 +89,16 @@ and is not limited to PR patch defects. Use the current GitHub label rubric:
 Use `none` only when ClawSweeper should intentionally leave priority labels absent.
 
 Set `impactLabels` as ClawSweeper-owned GitHub impact labels for maintainers to
-find the affected problem class on both issues and pull requests. Use no more
-than 3 labels, only when the impact area is concretely supported by the item or
-diff, and keep this separate from `triagePriority` and
+find the affected problem class on issues. Use an empty array for pull requests.
+Use no more than 3 labels, only when the impact area is concretely supported by
+the issue, and keep this separate from `triagePriority` and
 `reviewFindings[].priority`:
-`impact:data-loss`: This issue or PR is about lost, corrupted, or silently dropped user/session/config data.
-`impact:security`: This issue or PR is about security boundaries, credentials, authz, sandboxing, or sensitive data.
-`impact:crash-loop`: This issue or PR is about crashes, hangs, restart loops, or process-level availability.
-`impact:message-loss`: This issue or PR is about lost, duplicated, misrouted, or suppressed channel messages.
-`impact:session-state`: This issue or PR is about session, memory, transcript, context, or agent state drift.
-`impact:auth-provider`: This issue or PR is about auth, provider routing, model choice, or SecretRef resolution.
+`impact:data-loss`: This issue is about lost, corrupted, or silently dropped user/session/config data.
+`impact:security`: This issue is about security boundaries, credentials, authz, sandboxing, or sensitive data.
+`impact:crash-loop`: This issue is about crashes, hangs, restart loops, or process-level availability.
+`impact:message-loss`: This issue is about lost, duplicated, misrouted, or suppressed channel messages.
+`impact:session-state`: This issue is about session, memory, transcript, context, or agent state drift.
+`impact:auth-provider`: This issue is about auth, provider routing, model choice, or SecretRef resolution.
 Use an empty array when no owned impact label applies. Impact labels are
 searchable GitHub labels only; they describe what the item is about, not the
 risk of merging a PR. They do not close, merge, block, or replace review
@@ -106,8 +106,8 @@ findings.
 
 Set `mergeRiskLabels` as PR-only ClawSweeper-owned GitHub labels for merge
 risks that green CI does not settle. Use an empty array for issues. Keep these
-separate from `impactLabels`: impact labels describe the affected or solved
-problem class, while merge-risk labels describe what could go wrong specifically
+separate from `impactLabels`: impact labels are issue-only affected-problem
+class labels, while merge-risk labels describe what could go wrong specifically
 because this PR is merged. Use no more than 3 labels, only when the risk is
 concretely supported by the diff, current behavior, upgrade path, or GitHub
 discussion:
@@ -119,10 +119,26 @@ discussion:
 `merge-risk: 🚨 availability`: 🚨 Merging this PR could cause crashes, hangs, restart loops, stalls, or process outages.
 `merge-risk: 🚨 automation`: 🚨 Merging this PR could break CI, automerge, proof capture, label sync, or automation.
 When merge risk is present, explain it in `risks` in maintainer-facing language
-and make `bestSolution` the best mitigation path. Write it as an imperative
-instruction a maintainer can paste into another LLM or into `@clawsweeper
-automerge` as special instructions. The public review comment will turn that
-into 1-3 maintainer choices and mark the best option `(recommended)`.
+and make `bestSolution` the best end state. Fill `mergeRiskOptions` with 1-3
+risk-specific maintainer options. Do not use a fixed menu. Each option needs a
+short title and one concrete sentence. Mark exactly one option `recommended:
+true` only when the evidence supports a clear best path; otherwise leave every
+option `recommended: false`. Use `category: "fix_before_merge"` for repair
+paths, `category: "accept_risk"` when maintainers may intentionally own the
+risk, and `category: "pause_or_close"` when the PR may need to pause or close as
+not worth the risk. Multiple fix-before-merge options are allowed when there are
+multiple valid repair paths. Set `automergeInstruction` only for a recommended
+`fix_before_merge` option that ClawSweeper automerge can reasonably execute;
+otherwise set it to an empty string. `automergeInstruction` must be only the
+special-instructions payload. Do not include a bot mention or command such as
+`@clawsweeper automerge`, `@clawsweeper autofix`, or `this PR:`.
+
+Fill `labelJustifications` with one object for every selected ClawSweeper-managed
+label. Include the selected `triagePriority` unless it is `none`, every selected
+`impactLabels` entry, and every selected `mergeRiskLabels` entry. Do not include
+labels that were not selected. Each `reason` should be one concise
+maintainer-facing sentence grounded in the item, diff, current behavior, or
+discussion.
 
 Populate structured reproduction metadata separately from the public prose.
 Use `reproductionStatus: "reproduced"` only when there is a concrete,
@@ -492,23 +508,28 @@ it does not, they can ask a maintainer to comment `@clawsweeper re-review`. Use
 
 Always fill `prRating` with boring internal tiers `S`, `A`, `B`, `C`, `D`, `F`,
 or `NA`; public output maps these to funny crustacean labels. Rate PR evidence
-and merge readiness, not the contributor. Use a calibrated
+and patch quality, not the contributor. Use a calibrated
 standard-distribution-style scale: `S` is rare and reserved for exceptional PRs
 with unusually strong proof, clean implementation, convincing validation, and no
 meaningful blockers; `A` is clearly above average; `B` is the normal good and
-likely mergeable rating; `C` means useful signal exists but confidence is
+likely mergeable quality rating; `C` means useful signal exists but confidence is
 limited; `D` means proof, validation, or implementation signal is thin; `F`
-means not merge-ready because proof is missing/unusable or the patch has serious
+means not quality-ready because proof is missing/unusable or the patch has serious
 correctness or safety concerns; `NA` is only for non-PR or not-applicable
 reviews. Set `proofTier` from real behavior proof quality, `patchTier` from
 implementation correctness, security review, scope, review findings, and
-validation, and `overallTier` from the weaker merge-readiness signal. Real
+validation, and `overallTier` from the weaker proof-or-patch quality signal. Real
 screenshots, recordings, or linked media that directly show the changed behavior
 are strong proof boosters and should be treated as shiny evidence; this does not
 override the browser runtime, network, CSP, or security rule above, where
 ordinary screenshots need visible diagnostics to be sufficient. Missing,
 mock-only, or insufficient proof must cap or lower the overall rating because
-real behavior proof remains a merge gate. Include `nextSteps` as 0-3 concrete
+real behavior proof remains a merge gate. Do not lower `proofTier`, `patchTier`,
+or `overallTier` solely because the PR is draft, has protected labels, is not
+automerge-eligible, or is waiting on a maintainer decision; those are workflow
+state signals, not proof or patch quality defects. Mention workflow blockers in
+the summary or `nextSteps` only when a contributor can materially act on them.
+Include `nextSteps` as 0-3 concrete
 rank-up moves only when they are merge-relevant and likely to improve reviewer
 confidence. Use an empty array for `S`, `A`, and `NA`, and usually for `B`
 unless one specific action materially reduces risk. Do not invent optional
@@ -562,17 +583,23 @@ maintainer urgency for the item as a whole, not just from PR review findings or
 whether ClawSweeper can automatically repair it.
 
 Always fill `impactLabels` with zero to three ClawSweeper-owned GitHub impact
-labels. These labels are only for maintainer search and triage, and they
-describe the issue/PR impact area rather than merge risk. They do not replace
+labels for issues, and always use `[]` for pull requests. These labels are only
+for maintainer search and triage, and they describe the issue impact area rather
+than merge risk. They do not replace
 `triagePriority`, `reviewFindings[].priority`, or the security review.
 
 Always fill `mergeRiskLabels` too. Use `[]` for issues and for PRs whose merge
 risk is adequately covered by normal review/CI. For PRs with non-obvious
 compatibility, delivery, session-state, auth-provider, security-boundary,
 availability, or automation risk, add the matching `merge-risk:*` labels,
-explain why the risk matters in `risks`, and put the preferred mitigation in
-`bestSolution` as a paste-ready instruction so maintainers see a recommended
-choice before merge.
+explain why the risk matters in `risks`, and fill `mergeRiskOptions` with
+decision-useful maintainer options. Use `mergeRiskOptions: []` whenever
+`mergeRiskLabels` is empty. Avoid making ClawSweeper sound more certain than the
+evidence supports.
+
+Always fill `labelJustifications` too. There must be exactly one justification
+for each selected triage priority label, impact label, and merge-risk label, and
+zero justifications for labels ClawSweeper did not select.
 
 Always fill the work-lane fields too. For non-candidates, use
 `workCandidate: "none"`, low confidence/priority, an empty `workPrompt`, and

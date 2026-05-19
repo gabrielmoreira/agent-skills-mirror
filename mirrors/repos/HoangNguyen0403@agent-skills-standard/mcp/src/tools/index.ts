@@ -3,8 +3,10 @@ import { z } from "zod";
 import { SetupHint } from "../config";
 import { SessionTracker } from "../services/SessionTracker";
 import { MatchResult, SkillIndex } from "../services/SkillIndex";
+import { scanWorkflows, readWorkflowBody } from "../services/WorkflowIndex";
 
 export interface ToolContext {
+  projectRoot: string;
   index: SkillIndex;
   tracker: SessionTracker;
   setup: SetupHint;
@@ -220,6 +222,141 @@ export async function auditSessionCompliance(
       : ["_(none yet)_"]),
   ];
   return { content: [{ type: "text", text: lines.join("\n") }] };
+}
+
+// ---------- get_session_cost ----------
+
+export const getSessionCostSchema = z.object({});
+
+export async function getSessionCost(
+  _args: Record<string, never>,
+  ctx: ToolContext,
+): Promise<ToolResult> {
+  const empty = maybeEmptyState(ctx);
+  if (empty) return empty;
+
+  const loaded = ctx.tracker.loadedSkills();
+  const events = ctx.tracker.events_();
+
+  const lines: string[] = [
+    "# Session Telemetry",
+    "",
+    "Note: Exact LLM token proxying is dependent on the execution platform.",
+    "Please populate the following markdown table in your final artifact `artifacts/session-cost.md` using your platform's usage reporting if available:",
+    "",
+    "| Metric | Value |",
+    "|---|---|",
+    "| **Tool Calls** | " + events.length + " |",
+    "| **Skills Loaded** | " + loaded.length + " |",
+    "| **Prompt Tokens** | [Agent: fill from platform usage] |",
+    "| **Completion Tokens** | [Agent: fill from platform usage] |",
+    "| **Estimated Cost** | [Agent: calculate based on model pricing] |",
+  ];
+  return { content: [{ type: "text", text: lines.join("\n") }] };
+}
+
+// ---------- list_workflows ----------
+
+export const listWorkflowsSchema = z.object({});
+
+export async function listWorkflows(
+  _args: Record<string, never>,
+  ctx: ToolContext,
+): Promise<ToolResult> {
+  const workflows = await scanWorkflows(ctx.projectRoot);
+  ctx.tracker.record({
+    via: "list_workflows",
+    input: [],
+    loaded: workflows.map((w) => `workflow/${w.name}`),
+  });
+
+  if (workflows.length === 0) {
+    return {
+      content: [
+        {
+          type: "text",
+          text: "No workflows found in `.agents/workflows`.",
+        },
+      ],
+    };
+  }
+
+  const lines: string[] = ["# Available Workflows", ""];
+  for (const wf of workflows) {
+    lines.push(
+      `- **${wf.name}**${wf.description ? `: ${wf.description}` : ""}`,
+    );
+  }
+
+  return { content: [{ type: "text", text: lines.join("\n") }] };
+}
+
+// ---------- get_workflow ----------
+
+export const getWorkflowSchema = z.object({
+  name: z
+    .string()
+    .describe(
+      "The exact name of the workflow (without extension, e.g. 'dev-fix')",
+    ),
+});
+
+export async function getWorkflow(
+  args: { name: string },
+  ctx: ToolContext,
+): Promise<ToolResult> {
+  const workflows = await scanWorkflows(ctx.projectRoot);
+  const matched = workflows.find(
+    (w) =>
+      w.name.toLowerCase() === args.name.toLowerCase() ||
+      w.name.toLowerCase() === args.name.replace(/\.md$/, "").toLowerCase(),
+  );
+
+  if (!matched) {
+    ctx.tracker.record({
+      via: "get_workflow",
+      input: [args.name],
+      loaded: [],
+    });
+    return {
+      isError: true,
+      content: [
+        {
+          type: "text",
+          text: `Workflow '${args.name}' not found. Available workflows:\n${workflows.map((w) => `  - ${w.name}`).join("\n")}`,
+        },
+      ],
+    };
+  }
+
+  const body = await readWorkflowBody(matched.path);
+  if (!body) {
+    return {
+      isError: true,
+      content: [
+        {
+          type: "text",
+          text: `Failed to read workflow file at '${matched.path}'.`,
+        },
+      ],
+    };
+  }
+
+  ctx.tracker.record({
+    via: "get_workflow",
+    input: [args.name],
+    loaded: [`workflow/${matched.name}`],
+  });
+
+  const header = `<!-- Provenance: Loaded workflow/${matched.name} via get_workflow -->`;
+  return {
+    content: [
+      {
+        type: "text",
+        text: `${header}\n\n# Workflow: ${matched.name}\n${matched.description ? `> [!IMPORTANT]\n> ${matched.description}\n` : ""}\n${body}`,
+      },
+    ],
+  };
 }
 
 // ---------- helpers ----------

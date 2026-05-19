@@ -287,7 +287,20 @@ No prefix (`v`), no extra text. The parser matches the first `## X.Y.Z` line to 
 The changelog is shown on the Paseo homepage. Write it for **end users**, not developers.
 
 - **Frame everything from the user's perspective.** Describe what changed in the app, not what changed in the code. Users care that "workspaces load instantly" — not that a component no longer remounts.
-- **Never mention component names, internal modules, or implementation details.** No `WorkingIndicator`, no `accumulatedUsage`, no `reconcileAndEmitWorkspaceUpdates`.
+- **Never mention component names, internal modules, or implementation details.** No `WorkingIndicator`, no `accumulatedUsage`, no `reconcileAndEmitWorkspaceUpdates`. Also no "virtualized lists", no "remount", no "memoization", no "debounced", no "fuzzy ranking", no "controlled input", no "uncontrolled input" — these are implementation words masquerading as user-facing copy.
+- **Concrete WRONG → RIGHT examples** (real mistakes from past releases):
+
+  | Wrong (implementation-facing)                                                       | Right (user-facing)                                         |
+  | ----------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+  | Switching layouts no longer remounts the active agent                               | Splitting a pane no longer loses your scroll position       |
+  | Model, mode, and thinking pickers — searchable virtualized lists with fuzzy ranking | Mobile model selector is faster and more straightforward    |
+  | Text inputs in mobile sheets no longer flicker while typing fast                    | Typing in mobile sheets no longer flickers                  |
+  | Compact web sheets no longer crash when swiped to dismiss                           | Sheets on mobile web no longer crash when swiped to dismiss |
+  | Reduced re-renders in the agent list                                                | Agent list scrolls smoothly                                 |
+  | Added debouncing to the search input                                                | Search results no longer lag behind typing                  |
+
+  Test: would a non-developer reader recognise what changed when using the app? If they'd need an engineer to translate ("what's a remount?"), the bullet is still implementation-facing — rewrite it as the symptom the user experiences.
+
 - **Collapse internal iterations.** If a feature was added and then fixed within the same release, just list the feature as working. Users never saw the broken version.
 - **Only list changes relative to the previous stable release.** The diff is `v(previous)..HEAD`. If something was introduced and fixed between those two tags, it never shipped — don't mention the fix.
   - **Common trap:** when drafting from `git log`, every commit looks like a separate bullet — including the "fix X" commits that landed on top of a brand-new feature in the same release window. Before listing a Fixed entry, check whether the thing being fixed was itself added in this same release. If so, drop the fix and fold it into the feature bullet.

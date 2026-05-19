@@ -1,6 +1,6 @@
 ---
-name: table-1-generator
-description: Automated generation of baseline characteristics tables (Table 1) for clinical research papers.
+name: table-generator
+description: "Automated generation of baseline characteristics tables (Table 1) for clinical research papers."
 license: MIT
 author: AIPOCH
 ---
@@ -161,7 +161,7 @@ pip install -r requirements.txt
 - **Current Stage**: Draft
 - **Next Review Date**: 2026-03-06
 - **Known Issues**: None
-- **Planned Improvements**: 
+- **Planned Improvements**:
   - Performance optimization
   - Additional feature support
 
@@ -204,3 +204,4 @@ Use the following fixed structure for non-trivial requests:
 7. Next Checks
 
 If the request is simple, you may compress the structure, but still keep assumptions and limits explicit when they affect correctness.
+

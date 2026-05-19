@@ -605,7 +605,7 @@ For tasks behind payment walls (agent has no valid credit card), the eval schema
 
 Each container gets a `/my-info/` directory with a dummy user identity (Alex Green): personal info JSON, email credentials, and a resume PDF. The email is a fresh disposable PurelyMail address generated per run. The agent reads these files when it needs to fill forms, register accounts, etc.
 
-Source templates: `src/clawbench/runtime/shared/alex_green_personal_info.json` (profile) and `src/clawbench/utils/resume_template.json` (resume).
+Source templates: `src/clawbench/runtime/shared/alex_green_personal_info.json` (profile) and `src/clawbench/runner/run_support/resume_template.json` (resume).
 
 </details>
 
@@ -742,6 +742,13 @@ If you use ClawBench in your research, please cite:
   url           = {https://arxiv.org/abs/2604.08523}
 }
 ```
+
+## Contact
+
+Questions, suggestions, or research collaboration? Reach the maintainer:
+
+- **Yuxuan Zhang** &mdash; `reacher` &lbrack;at&rbrack; `cs.ubc.ca` (UBC, NAIL Group) &middot; [Homepage &#8599;](https://reacher-z.github.io)
+- For bug reports or feature requests, please [open a GitHub issue](https://github.com/reacher-z/ClawBench/issues/new/choose) &mdash; it's faster than email and gets seen by all maintainers.
 
 ## Core Contributors
 

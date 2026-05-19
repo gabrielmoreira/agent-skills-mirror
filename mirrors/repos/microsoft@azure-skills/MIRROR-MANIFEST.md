@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/azure-skills` — 26 default patterns, 0 followed patterns, 953 file(s) materialized.
+Mirror of `microsoft/azure-skills` — 26 default patterns, 0 followed patterns, 954 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/azure-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 953 |
+| Files         | 954 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -964,54 +964,55 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 903 | ✓ | [`skills/microsoft-foundry/foundry-agent/trace/references/eval-correlation.md`](skills/microsoft-foundry/foundry-agent/trace/references/eval-correlation.md) |
 | 904 | ✓ | [`skills/microsoft-foundry/foundry-agent/trace/references/kql-templates.md`](skills/microsoft-foundry/foundry-agent/trace/references/kql-templates.md) |
 | 905 | ✓ | [`skills/microsoft-foundry/foundry-agent/trace/references/search-traces.md`](skills/microsoft-foundry/foundry-agent/trace/references/search-traces.md) |
-| 906 | ✓ | [`skills/microsoft-foundry/foundry-agent/trace/trace.md`](skills/microsoft-foundry/foundry-agent/trace/trace.md) |
-| 907 | ✓ | [`skills/microsoft-foundry/foundry-agent/troubleshoot/troubleshoot.md`](skills/microsoft-foundry/foundry-agent/troubleshoot/troubleshoot.md) |
-| 908 | ✓ | [`skills/microsoft-foundry/models/deploy-model/capacity/scripts/discover_and_rank.ps1`](skills/microsoft-foundry/models/deploy-model/capacity/scripts/discover_and_rank.ps1) |
-| 909 | ✓ | [`skills/microsoft-foundry/models/deploy-model/capacity/scripts/discover_and_rank.sh`](skills/microsoft-foundry/models/deploy-model/capacity/scripts/discover_and_rank.sh) |
-| 910 | ✓ | [`skills/microsoft-foundry/models/deploy-model/capacity/scripts/query_capacity.ps1`](skills/microsoft-foundry/models/deploy-model/capacity/scripts/query_capacity.ps1) |
-| 911 | ✓ | [`skills/microsoft-foundry/models/deploy-model/capacity/scripts/query_capacity.sh`](skills/microsoft-foundry/models/deploy-model/capacity/scripts/query_capacity.sh) |
-| 912 | ✓ | [`skills/microsoft-foundry/models/deploy-model/capacity/SKILL.md`](skills/microsoft-foundry/models/deploy-model/capacity/SKILL.md) |
-| 913 | ✓ | [`skills/microsoft-foundry/models/deploy-model/customize/EXAMPLES.md`](skills/microsoft-foundry/models/deploy-model/customize/EXAMPLES.md) |
-| 914 | ✓ | [`skills/microsoft-foundry/models/deploy-model/customize/references/customize-guides.md`](skills/microsoft-foundry/models/deploy-model/customize/references/customize-guides.md) |
-| 915 | ✓ | [`skills/microsoft-foundry/models/deploy-model/customize/references/customize-workflow.md`](skills/microsoft-foundry/models/deploy-model/customize/references/customize-workflow.md) |
-| 916 | ✓ | [`skills/microsoft-foundry/models/deploy-model/customize/SKILL.md`](skills/microsoft-foundry/models/deploy-model/customize/SKILL.md) |
-| 917 | ✓ | [`skills/microsoft-foundry/models/deploy-model/preset/EXAMPLES.md`](skills/microsoft-foundry/models/deploy-model/preset/EXAMPLES.md) |
-| 918 | ✓ | [`skills/microsoft-foundry/models/deploy-model/preset/references/preset-workflow.md`](skills/microsoft-foundry/models/deploy-model/preset/references/preset-workflow.md) |
-| 919 | ✓ | [`skills/microsoft-foundry/models/deploy-model/preset/references/workflow.md`](skills/microsoft-foundry/models/deploy-model/preset/references/workflow.md) |
-| 920 | ✓ | [`skills/microsoft-foundry/models/deploy-model/preset/SKILL.md`](skills/microsoft-foundry/models/deploy-model/preset/SKILL.md) |
-| 921 | ✓ | [`skills/microsoft-foundry/models/deploy-model/scripts/generate_deployment_url.ps1`](skills/microsoft-foundry/models/deploy-model/scripts/generate_deployment_url.ps1) |
-| 922 | ✓ | [`skills/microsoft-foundry/models/deploy-model/scripts/generate_deployment_url.sh`](skills/microsoft-foundry/models/deploy-model/scripts/generate_deployment_url.sh) |
-| 923 | ✓ | [`skills/microsoft-foundry/models/deploy-model/SKILL.md`](skills/microsoft-foundry/models/deploy-model/SKILL.md) |
-| 924 | ✓ | [`skills/microsoft-foundry/models/deploy-model/TEST_PROMPTS.md`](skills/microsoft-foundry/models/deploy-model/TEST_PROMPTS.md) |
-| 925 | ✓ | [`skills/microsoft-foundry/project/connections.md`](skills/microsoft-foundry/project/connections.md) |
-| 926 | ✓ | [`skills/microsoft-foundry/project/create/create-foundry-project.md`](skills/microsoft-foundry/project/create/create-foundry-project.md) |
-| 927 | ✓ | [`skills/microsoft-foundry/quota/quota.md`](skills/microsoft-foundry/quota/quota.md) |
-| 928 | ✓ | [`skills/microsoft-foundry/quota/references/capacity-planning.md`](skills/microsoft-foundry/quota/references/capacity-planning.md) |
-| 929 | ✓ | [`skills/microsoft-foundry/quota/references/error-resolution.md`](skills/microsoft-foundry/quota/references/error-resolution.md) |
-| 930 | ✓ | [`skills/microsoft-foundry/quota/references/optimization.md`](skills/microsoft-foundry/quota/references/optimization.md) |
-| 931 | ✓ | [`skills/microsoft-foundry/quota/references/ptu-guide.md`](skills/microsoft-foundry/quota/references/ptu-guide.md) |
-| 932 | ✓ | [`skills/microsoft-foundry/quota/references/troubleshooting.md`](skills/microsoft-foundry/quota/references/troubleshooting.md) |
-| 933 | ✓ | [`skills/microsoft-foundry/quota/references/workflows.md`](skills/microsoft-foundry/quota/references/workflows.md) |
-| 934 | ✓ | [`skills/microsoft-foundry/rbac/rbac.md`](skills/microsoft-foundry/rbac/rbac.md) |
-| 935 | ✓ | [`skills/microsoft-foundry/references/agent-metadata-contract.md`](skills/microsoft-foundry/references/agent-metadata-contract.md) |
-| 936 | ✓ | [`skills/microsoft-foundry/references/auth-best-practices.md`](skills/microsoft-foundry/references/auth-best-practices.md) |
-| 937 | ✓ | [`skills/microsoft-foundry/references/sdk/foundry-sdk-py.md`](skills/microsoft-foundry/references/sdk/foundry-sdk-py.md) |
-| 938 | ✓ | [`skills/microsoft-foundry/references/standard-agent-setup.md`](skills/microsoft-foundry/references/standard-agent-setup.md) |
-| 939 | ✓ | [`skills/microsoft-foundry/resource/create/create-foundry-resource.md`](skills/microsoft-foundry/resource/create/create-foundry-resource.md) |
-| 940 | ✓ | [`skills/microsoft-foundry/resource/create/references/patterns.md`](skills/microsoft-foundry/resource/create/references/patterns.md) |
-| 941 | ✓ | [`skills/microsoft-foundry/resource/create/references/troubleshooting.md`](skills/microsoft-foundry/resource/create/references/troubleshooting.md) |
-| 942 | ✓ | [`skills/microsoft-foundry/resource/create/references/workflows.md`](skills/microsoft-foundry/resource/create/references/workflows.md) |
-| 943 | ✓ | [`skills/microsoft-foundry/resource/private-network/private-network.md`](skills/microsoft-foundry/resource/private-network/private-network.md) |
-| 944 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/custom-template-adaptation.md`](skills/microsoft-foundry/resource/private-network/references/custom-template-adaptation.md) |
-| 945 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/deploy.md`](skills/microsoft-foundry/resource/private-network/references/deploy.md) |
-| 946 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/end-to-end-test.md`](skills/microsoft-foundry/resource/private-network/references/end-to-end-test.md) |
-| 947 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/intake.md`](skills/microsoft-foundry/resource/private-network/references/intake.md) |
-| 948 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/post-deployment-validation.md`](skills/microsoft-foundry/resource/private-network/references/post-deployment-validation.md) |
-| 949 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/scaffold.md`](skills/microsoft-foundry/resource/private-network/references/scaffold.md) |
-| 950 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/template-index.md`](skills/microsoft-foundry/resource/private-network/references/template-index.md) |
-| 951 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.bicep`](skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.bicep) |
-| 952 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.md`](skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.md) |
-| 953 | ✓ | [`skills/microsoft-foundry/SKILL.md`](skills/microsoft-foundry/SKILL.md) |
+| 906 | ✓ | [`skills/microsoft-foundry/foundry-agent/trace/references/tracing-insights-api.md`](skills/microsoft-foundry/foundry-agent/trace/references/tracing-insights-api.md) |
+| 907 | ✓ | [`skills/microsoft-foundry/foundry-agent/trace/trace.md`](skills/microsoft-foundry/foundry-agent/trace/trace.md) |
+| 908 | ✓ | [`skills/microsoft-foundry/foundry-agent/troubleshoot/troubleshoot.md`](skills/microsoft-foundry/foundry-agent/troubleshoot/troubleshoot.md) |
+| 909 | ✓ | [`skills/microsoft-foundry/models/deploy-model/capacity/scripts/discover_and_rank.ps1`](skills/microsoft-foundry/models/deploy-model/capacity/scripts/discover_and_rank.ps1) |
+| 910 | ✓ | [`skills/microsoft-foundry/models/deploy-model/capacity/scripts/discover_and_rank.sh`](skills/microsoft-foundry/models/deploy-model/capacity/scripts/discover_and_rank.sh) |
+| 911 | ✓ | [`skills/microsoft-foundry/models/deploy-model/capacity/scripts/query_capacity.ps1`](skills/microsoft-foundry/models/deploy-model/capacity/scripts/query_capacity.ps1) |
+| 912 | ✓ | [`skills/microsoft-foundry/models/deploy-model/capacity/scripts/query_capacity.sh`](skills/microsoft-foundry/models/deploy-model/capacity/scripts/query_capacity.sh) |
+| 913 | ✓ | [`skills/microsoft-foundry/models/deploy-model/capacity/SKILL.md`](skills/microsoft-foundry/models/deploy-model/capacity/SKILL.md) |
+| 914 | ✓ | [`skills/microsoft-foundry/models/deploy-model/customize/EXAMPLES.md`](skills/microsoft-foundry/models/deploy-model/customize/EXAMPLES.md) |
+| 915 | ✓ | [`skills/microsoft-foundry/models/deploy-model/customize/references/customize-guides.md`](skills/microsoft-foundry/models/deploy-model/customize/references/customize-guides.md) |
+| 916 | ✓ | [`skills/microsoft-foundry/models/deploy-model/customize/references/customize-workflow.md`](skills/microsoft-foundry/models/deploy-model/customize/references/customize-workflow.md) |
+| 917 | ✓ | [`skills/microsoft-foundry/models/deploy-model/customize/SKILL.md`](skills/microsoft-foundry/models/deploy-model/customize/SKILL.md) |
+| 918 | ✓ | [`skills/microsoft-foundry/models/deploy-model/preset/EXAMPLES.md`](skills/microsoft-foundry/models/deploy-model/preset/EXAMPLES.md) |
+| 919 | ✓ | [`skills/microsoft-foundry/models/deploy-model/preset/references/preset-workflow.md`](skills/microsoft-foundry/models/deploy-model/preset/references/preset-workflow.md) |
+| 920 | ✓ | [`skills/microsoft-foundry/models/deploy-model/preset/references/workflow.md`](skills/microsoft-foundry/models/deploy-model/preset/references/workflow.md) |
+| 921 | ✓ | [`skills/microsoft-foundry/models/deploy-model/preset/SKILL.md`](skills/microsoft-foundry/models/deploy-model/preset/SKILL.md) |
+| 922 | ✓ | [`skills/microsoft-foundry/models/deploy-model/scripts/generate_deployment_url.ps1`](skills/microsoft-foundry/models/deploy-model/scripts/generate_deployment_url.ps1) |
+| 923 | ✓ | [`skills/microsoft-foundry/models/deploy-model/scripts/generate_deployment_url.sh`](skills/microsoft-foundry/models/deploy-model/scripts/generate_deployment_url.sh) |
+| 924 | ✓ | [`skills/microsoft-foundry/models/deploy-model/SKILL.md`](skills/microsoft-foundry/models/deploy-model/SKILL.md) |
+| 925 | ✓ | [`skills/microsoft-foundry/models/deploy-model/TEST_PROMPTS.md`](skills/microsoft-foundry/models/deploy-model/TEST_PROMPTS.md) |
+| 926 | ✓ | [`skills/microsoft-foundry/project/connections.md`](skills/microsoft-foundry/project/connections.md) |
+| 927 | ✓ | [`skills/microsoft-foundry/project/create/create-foundry-project.md`](skills/microsoft-foundry/project/create/create-foundry-project.md) |
+| 928 | ✓ | [`skills/microsoft-foundry/quota/quota.md`](skills/microsoft-foundry/quota/quota.md) |
+| 929 | ✓ | [`skills/microsoft-foundry/quota/references/capacity-planning.md`](skills/microsoft-foundry/quota/references/capacity-planning.md) |
+| 930 | ✓ | [`skills/microsoft-foundry/quota/references/error-resolution.md`](skills/microsoft-foundry/quota/references/error-resolution.md) |
+| 931 | ✓ | [`skills/microsoft-foundry/quota/references/optimization.md`](skills/microsoft-foundry/quota/references/optimization.md) |
+| 932 | ✓ | [`skills/microsoft-foundry/quota/references/ptu-guide.md`](skills/microsoft-foundry/quota/references/ptu-guide.md) |
+| 933 | ✓ | [`skills/microsoft-foundry/quota/references/troubleshooting.md`](skills/microsoft-foundry/quota/references/troubleshooting.md) |
+| 934 | ✓ | [`skills/microsoft-foundry/quota/references/workflows.md`](skills/microsoft-foundry/quota/references/workflows.md) |
+| 935 | ✓ | [`skills/microsoft-foundry/rbac/rbac.md`](skills/microsoft-foundry/rbac/rbac.md) |
+| 936 | ✓ | [`skills/microsoft-foundry/references/agent-metadata-contract.md`](skills/microsoft-foundry/references/agent-metadata-contract.md) |
+| 937 | ✓ | [`skills/microsoft-foundry/references/auth-best-practices.md`](skills/microsoft-foundry/references/auth-best-practices.md) |
+| 938 | ✓ | [`skills/microsoft-foundry/references/sdk/foundry-sdk-py.md`](skills/microsoft-foundry/references/sdk/foundry-sdk-py.md) |
+| 939 | ✓ | [`skills/microsoft-foundry/references/standard-agent-setup.md`](skills/microsoft-foundry/references/standard-agent-setup.md) |
+| 940 | ✓ | [`skills/microsoft-foundry/resource/create/create-foundry-resource.md`](skills/microsoft-foundry/resource/create/create-foundry-resource.md) |
+| 941 | ✓ | [`skills/microsoft-foundry/resource/create/references/patterns.md`](skills/microsoft-foundry/resource/create/references/patterns.md) |
+| 942 | ✓ | [`skills/microsoft-foundry/resource/create/references/troubleshooting.md`](skills/microsoft-foundry/resource/create/references/troubleshooting.md) |
+| 943 | ✓ | [`skills/microsoft-foundry/resource/create/references/workflows.md`](skills/microsoft-foundry/resource/create/references/workflows.md) |
+| 944 | ✓ | [`skills/microsoft-foundry/resource/private-network/private-network.md`](skills/microsoft-foundry/resource/private-network/private-network.md) |
+| 945 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/custom-template-adaptation.md`](skills/microsoft-foundry/resource/private-network/references/custom-template-adaptation.md) |
+| 946 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/deploy.md`](skills/microsoft-foundry/resource/private-network/references/deploy.md) |
+| 947 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/end-to-end-test.md`](skills/microsoft-foundry/resource/private-network/references/end-to-end-test.md) |
+| 948 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/intake.md`](skills/microsoft-foundry/resource/private-network/references/intake.md) |
+| 949 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/post-deployment-validation.md`](skills/microsoft-foundry/resource/private-network/references/post-deployment-validation.md) |
+| 950 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/scaffold.md`](skills/microsoft-foundry/resource/private-network/references/scaffold.md) |
+| 951 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/template-index.md`](skills/microsoft-foundry/resource/private-network/references/template-index.md) |
+| 952 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.bicep`](skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.bicep) |
+| 953 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.md`](skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.md) |
+| 954 | ✓ | [`skills/microsoft-foundry/SKILL.md`](skills/microsoft-foundry/SKILL.md) |
 
 ---
 

@@ -11,7 +11,10 @@ If `docs/agent/SCOPES.md` is present:
 - use domain scopes only when task wording, scope tags, or contract links make them relevant
 - read nearest matching scope `README.md` only if present
 - read only task-relevant scoped docs, then top-level docs as fallback for missing categories or repo-wide rules
+- standard scoped docs may include `REPO_INVENTORY.md`, `ARCHITECTURE.md`, `DATA_MODEL.md`, `INVARIANTS.md`, `DEPENDENCY_RULES.md`, `DESIGN_ISSUES.md`, `RISK_REGISTER.md`, `CHANGE_GUIDE.md`, and `CONTRACTS.md`
+- safe-start scoped docs may also include `PROJECT_INTENT.md`, `DATA_FLOW.md`, `TESTING_STRATEGY.md`, and `VALIDATION_BASELINE.md`; read them only when task-relevant
 - before trusting a path scope, verify the scoped source path still exists; if not, treat scoped docs as historical/stale and fall back to top-level/source evidence
+- when scoped docs are marked `planned`, use them as intent and verify implementation-sensitive claims against source evidence
 - if multiple scopes match with equal confidence, read all relevant scope summaries and note ambiguity in preflight
 
 Cross-scope contract rule:

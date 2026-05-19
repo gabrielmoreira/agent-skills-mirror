@@ -1,6 +1,6 @@
 ---
-name: diagnostic-study-quality-assessment-quadas-2
-description: Analyzes clinical diagnostic accuracy studies for bias using the QUADAS-2 tool. Use when Claude needs to assess the quality, risk of bias, or applicability of diagnostic accuracy studies (e.g., "Assess this paper using QUADAS-2").
+name: diagnostic-study-quality-assessment-quadas
+description: "Analyzes clinical diagnostic accuracy studies for bias using the QUADAS-2 tool. Use when Claude needs to assess the quality, risk of bias, or applicability of diagnostic accuracy studies (e.g., \"Assess this paper using QUADAS-2\")."
 license: MIT
 author: AIPOCH
 ---
@@ -123,3 +123,4 @@ The script will automatically extract the text, which you can then copy and send
 ## References
 
 -   [QUADAS-2 Criteria](references/quadas_2_criteria.md): Detailed signaling questions and judgment guidelines.
+

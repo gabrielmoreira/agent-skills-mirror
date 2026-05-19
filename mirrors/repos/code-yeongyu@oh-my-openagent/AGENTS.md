@@ -4,7 +4,7 @@
 
 ## OVERVIEW
 
-OpenCode plugin (npm: `oh-my-opencode`, dual-published as `oh-my-openagent` during the rename transition) extending OpenCode with 11 agents, 54–61 lifecycle hooks (base / +team-mode) across 59 dirs, 20–39 tools (gated by config flags including team-mode), 3-tier MCP system (built-in + .mcp.json + skill-embedded), Hashline LINE#ID edit tool, IntentGate keyword detector, Team Mode (parallel multi-agent coordination, OFF by default), Boulder feature (boulder-state work tracking + cli/boulder subcommand), configurable agent ordering, and Claude Code compatibility. **Repository contains 2165 TypeScript files across `src/`, `script/`, `test-support/`, and `web/`, ~314k LOC; `src/` itself has 122 barrel `index.ts` files.** Entry: `src/index.ts` is now an 18-line wrapper that delegates to `src/testing/create-plugin-module.ts` `createPluginModule()` → 7-step init.
+OpenCode plugin (npm: `oh-my-opencode`, dual-published as `oh-my-openagent` during the rename transition) extending OpenCode with 11 agents, 54–61 lifecycle hooks (base / +team-mode) across 59 dirs, 20–39 tools (gated by config flags including team-mode), 3-tier MCP system (built-in + .mcp.json + skill-embedded), Hashline LINE#ID edit tool, IntentGate keyword detector, Team Mode (parallel multi-agent coordination, OFF by default), Boulder feature (boulder-state work tracking + cli/boulder subcommand), configurable agent ordering, and Claude Code compatibility. **Repository contains 2165 TypeScript files across `src/`, `script/`, `test-support/`, and `packages/web/`, ~314k LOC; `src/` itself has 122 barrel `index.ts` files.** Entry: `src/index.ts` is now an 18-line wrapper that delegates to `src/testing/create-plugin-module.ts` `createPluginModule()` → 7-step init.
 
 ## STRUCTURE
 
@@ -19,19 +19,19 @@ oh-my-opencode/
 │   ├── create-hooks.ts       # 5-tier hook composition
 │   ├── agents/               # 11 agents (Sisyphus, Hephaestus, Oracle, Librarian, Explore, Atlas, Prometheus, Metis, Momus, Multimodal-Looker, Sisyphus-Junior)
 │   ├── hooks/                # ~52 lifecycle hooks across 59 dirs (incl. 5 zauc-mocks + 1 shared + 1 `.sisyphus/` legacy state)
-│   ├── tools/                # 16 tool dirs; produces 20–39 tools (config-gated)
+│   ├── tools/                # 13 native tool dirs; LSP + AST-grep now served via built-in MCPs
 │   ├── features/             # 20 feature modules (incl. team-mode, background-agent, skill-mcp-manager, opencode-skill-loader, tmux-subagent, mcp-oauth, claude-code-plugin-loader, boulder-state, etc.)
 │   ├── shared/               # 278 utility files (170 non-test); logger → oh-my-opencode.log in os.tmpdir() (50 MB cap, .1/.2 backups)
 │   ├── config/               # Zod v4 schema system (30 schema files)
 │   ├── cli/                  # CLI: install, run, doctor, mcp-oauth, refresh-model-capabilities, get-local-version, boulder
-│   ├── mcp/                  # 3 built-in remote MCPs (websearch, context7, grep_app)
+│   ├── mcp/                  # 5 built-in MCPs (3 remote + local stdio lsp + ast_grep)
 │   ├── plugin/               # 10 OpenCode hook handlers + 5-tier hook composition
 │   ├── plugin-handlers/      # 6-phase config loading pipeline
 │   ├── openclaw/             # Bidirectional external integration (Discord/Telegram/HTTP/shell + reply listener daemon)
 │   ├── generated/            # model-capabilities.generated.json (refreshed via build:model-capabilities)
 │   └── testing/              # Test utilities + `create-plugin-module.ts` (extracted plugin entry factory, 182 LOC)
-├── web/                      # Marketing site (Next.js 15 + Cloudflare Workers, deployed to ohmyopenagent.com via opennextjs-cloudflare). Independent package with own bun.lock — see web/AGENTS.md
-├── packages/                 # 11 platform-specific compiled binary packages (darwin/linux/windows, AVX2 + baseline)
+├── packages/                 # 11 platform-specific binary packages, lsp-tools-mcp submodule, and web package
+│   └── web/                  # Marketing site (Next.js 15 + Cloudflare Workers). Independent package with own bun.lock
 ├── bin/                      # Platform-detection JS shim (oh-my-opencode + oh-my-openagent)
 ├── script/                   # Build/publish automation (singular, not scripts/)
 ├── docs/                     # User-facing docs (guide/, reference/, examples/, legal/, manifesto.md, superpowers/, troubleshooting/)
@@ -86,6 +86,8 @@ pluginModule.server(input, options)
 ## TOOL CATALOG (config-gated)
 
 **Always on (20):** `lsp_goto_definition`, `lsp_find_references`, `lsp_symbols`, `lsp_diagnostics`, `lsp_prepare_rename`, `lsp_rename`, `grep`, `glob`, `ast_grep_search`, `ast_grep_replace`, `session_list`, `session_read`, `session_search`, `session_info`, `background_output`, `background_cancel`, `call_omo_agent`, `task` (delegate), `skill`, `skill_mcp`.
+
+> Note: `lsp_*` and `ast_grep_*` tool names are now served by built-in MCP servers (`lsp` via `packages/lsp-tools-mcp`, `ast_grep` via `packages/ast-grep-mcp`), preserving existing names through OpenCode MCP namespacing.
 
 **Conditional:** `look_at` (+1, multimodal-looker not disabled), `interactive_bash` (+1, `tmux` binary available on PATH via `isInteractiveBashEnabled()`), `task_create`/`task_get`/`task_list`/`task_update` (+4, `experimental.task_system`), `edit` (+1, `hashline_edit`), `team_create`/`team_delete`/`team_shutdown_request`/`team_approve_shutdown`/`team_reject_shutdown`/`team_send_message`/`team_task_create`/`team_task_list`/`team_task_update`/`team_task_get`/`team_status`/`team_list` (+12, `team_mode.enabled`).
 
@@ -146,7 +148,7 @@ Schema autocomplete: `"$schema": "https://raw.githubusercontent.com/code-yeongyu
 
 | Tier | Source | Loader | Mechanism |
 |------|--------|--------|-----------|
-| 1. Built-in | `src/mcp/` | `createBuiltinMcps()` | 3 remote HTTP: websearch (Exa/Tavily), context7, grep_app |
+| 1. Built-in | `src/mcp/` | `createBuiltinMcps()` | 3 remote HTTP + 2 local stdio MCPs (`lsp`, `ast_grep`) |
 | 2. Claude Code | `.mcp.json` (project + user) | `claude-code-mcp-loader` | `${VAR}` env expansion (allowlist via `mcp_env_allowlist`) |
 | 3. Skill-embedded | SKILL.md YAML frontmatter | `SkillMcpManager` (per-session) | stdio + HTTP, OAuth 2.0 + PKCE + DCR step-up |
 
@@ -156,9 +158,9 @@ Schema autocomplete: `"$schema": "https://raw.githubusercontent.com/code-yeongyu
 |------|----------|-------|
 | Add new agent | `src/agents/` + `src/agents/builtin-agents/` | `createXXXAgent` factory + `mode: "primary" \| "subagent" \| "all"` |
 | Add new hook | `src/hooks/{name}/` + register in `src/plugin/hooks/create-*-hooks.ts` | Pick the right tier (Session/ToolGuard/Transform/Continuation/Skill) |
-| Add new tool | `src/tools/{name}/` + register in `src/plugin/tool-registry.ts` | Factory `createXXXTool` (most) or direct `ToolDefinition` (LSP, interactive_bash) |
+| Add new tool | `src/tools/{name}/` + register in `src/plugin/tool-registry.ts` | Factory `createXXXTool` (most) or direct `ToolDefinition` (interactive_bash) |
 | Add new feature module | `src/features/{name}/` | Standalone module wired into `plugin/` layer |
-| Add new MCP (tier 1) | `src/mcp/` + register in `createBuiltinMcps()` | Remote HTTP only |
+| Add new MCP (tier 1) | `src/mcp/` + register in `createBuiltinMcps()` | Remote HTTP or local stdio |
 | Add new built-in skill | `src/features/builtin-skills/skills/{name}.ts` + register in `skills.ts` | Implement `BuiltinSkill` interface |
 | Add new command | `src/features/builtin-commands/` | Templates in `templates/` |
 | Add new CLI subcommand | `src/cli/cli-program.ts` | Commander.js subcommand |
@@ -195,7 +197,7 @@ Schema autocomplete: `"$schema": "https://raw.githubusercontent.com/code-yeongyu
 - **Factory pattern:** `createXXX()` for all tools, hooks, agents.
 - **File naming:** kebab-case for files and directories.
 - **Module structure:** `index.ts` barrel exports, **no catch-all files** (`utils.ts`, `helpers.ts`, `service.ts` banned), 200 LOC soft limit per file.
-- **Imports:** relative within a module, barrel imports across modules (`import { log } from "./shared"`). **No path aliases in `src/`** — never `@/`. `web/` is the only exception: it uses `@/*` (Next.js convention) and has its own tsconfig.
+- **Imports:** relative within a module, barrel imports across modules (`import { log } from "./shared"`). **No path aliases in `src/`** — never `@/`. `packages/web/` is the only exception: it uses `@/*` (Next.js convention) and has its own tsconfig.
 - **Config format:** JSONC with comments + trailing commas, Zod v4 validation, snake_case keys.
 - **Dual package:** `oh-my-opencode` + `oh-my-openagent` published simultaneously during the rename transition.
 - **Comments:** AI slop comment patterns blocked by `comment-checker` hook (binary: `@code-yeongyu/comment-checker`). Use `// @allow` to bypass single line, `// comment-checker-disable-file` at file top to bypass file. Sparingly.
@@ -245,8 +247,8 @@ bunx oh-my-opencode mcp-oauth login <server-url>  # Tier-3 MCP OAuth (PKCE + DCR
 | `refresh-model-capabilities.yml` | weekly cron / dispatch | Refresh model capabilities from models.dev API |
 | `cla.yml` | issue_comment / PR | CLA assistant for contributors |
 | `lint-workflows.yml` | push/PR touching `.github/workflows/**` | actionlint only (`shellcheck=""` disables shellcheck) |
-| `web-ci.yml` | push/PR to master/dev touching `web/**`, `docs/**`, or the workflow file itself | format-check, lint, type-check, next build, opennextjs-cloudflare build |
-| `web-deploy.yml` | push to master/dev touching `web/**`, `docs/**`, or the workflow file itself, OR manual dispatch | Cloudflare Workers deploy via `cloudflare/wrangler-action@v3` (requires `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` secrets) |
+| `web-ci.yml` | push/PR to master/dev touching `packages/web/**`, `docs/**`, or the workflow file itself | format-check, lint, type-check, next build, opennextjs-cloudflare build |
+| `web-deploy.yml` | push to master/dev touching `packages/web/**`, `docs/**`, or the workflow file itself, OR manual dispatch | Cloudflare Workers deploy via `cloudflare/wrangler-action@v3` (requires `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` secrets) |
 
 ## NOTES
 
@@ -257,7 +259,7 @@ bunx oh-my-opencode mcp-oauth login <server-url>  # Tier-3 MCP OAuth (PKCE + DCR
 - **Two fallback systems:** `model-fallback` (proactive, chat.params, hardcoded chains) vs `runtime-fallback` (reactive, session.error, configurable per-category/agent).
 - **Config migration:** idempotent via `_migrations` tracking, atomic writes with timestamped backups.
 - **Build:** `bun build` (ESM) + `tsc --emitDeclarationOnly`, externals: `@ast-grep/napi`, `zod`.
-- **CI tests:** root tests run through plain `bun test`; `web/**` has its own package-level CI workflow.
+- **CI tests:** root tests run through plain `bun test`; `packages/web/**` has its own package-level CI workflow.
 - **122 barrel `index.ts` files** establish module boundaries.
 - **Architecture rules** enforced via the `rules-injector` hook reading `.omo/rules/*.md`. As of v4.2.0 only `test-discipline.md` ships; legacy `modular-code-enforcement.md` was retired.
 - **Windows builds:** run on `windows-latest` (not cross-compiled) to avoid Bun segfaults.

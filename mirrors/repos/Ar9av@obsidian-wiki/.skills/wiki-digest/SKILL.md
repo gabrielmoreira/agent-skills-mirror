@@ -203,3 +203,38 @@ Either way, append to `log.md`:
 - **Be concrete about re-reads.** "This page is relevant" is useless. "3 of this week's papers all cite the same claim in this page" is actionable.
 - **This skill only reads.** The only writes are the optional journal page, and the `log.md` append. It does not modify existing wiki pages.
 - **Don't duplicate wiki-status.** If the user asks "what needs ingesting" or "what's the delta", route to `wiki-status`. This skill answers "what did I learn", not "what's pending".
+
+## QMD Refresh After Vault Writes
+
+QMD is a search index, not the source of truth. If `$QMD_WIKI_COLLECTION` is empty or unset, skip this step. Run it only after this skill has written or rewritten vault markdown. If QMD refresh fails, do not roll back the vault changes; report the QMD status separately.
+
+Use `$QMD_CLI` if set; otherwise use `qmd`.
+
+```bash
+${QMD_CLI:-qmd} update
+```
+
+If the output says vectors are needed or embeddings may be stale, run:
+
+```bash
+${QMD_CLI:-qmd} embed
+```
+
+Verify the collection with either:
+
+```bash
+${QMD_CLI:-qmd} ls "$QMD_WIKI_COLLECTION"
+```
+
+or, when a specific page path is known:
+
+```bash
+${QMD_CLI:-qmd} get "qmd://$QMD_WIKI_COLLECTION/<page>.md" -l 5
+```
+
+Record one of:
+- `QMD refreshed: update + embed + verified`
+- `QMD refreshed: update only + verified`
+- `QMD skipped: QMD_WIKI_COLLECTION unset`
+- `QMD skipped: qmd CLI unavailable`
+- `QMD failed: <short error summary>`

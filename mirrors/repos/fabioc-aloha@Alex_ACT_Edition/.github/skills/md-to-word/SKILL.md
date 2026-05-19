@@ -7,8 +7,8 @@ tier: standard
 applyTo: '**/*docx*,**/*word*,**/*md-to-word*,**/*export*'
 muscle: .github/muscles/md-to-word.cjs
 inheritance: inheritable
-currency: 2026-04-30
-lastReviewed: 2026-04-30
+currency: 2026-05-18
+lastReviewed: 2026-05-18
 ---
 
 # Markdown to Word Conversion
@@ -149,7 +149,7 @@ npm install -g @mermaid-js/mermaid-cli svgexport
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `--toc` | off | Generate Table of Contents |
+| `--toc` | off | Generate Table of Contents. A `[toc]` marker in the source is **stripped but does not auto-enable TOC** (since v5.5.0). When the marker is found without `--toc`, a warning is logged so the heir can either pass `--toc` explicitly or remove the marker. |
 | `--cover` | off | Generate cover page from H1 + date |
 | `--style PRESET` | professional | Style preset (see below) |
 | `--page-size SIZE` | letter | Page size: letter, a4, 6x9 |
@@ -276,15 +276,16 @@ is set on diagrams that would have rendered flat.
 
 ## Table Formatting
 
-All tables receive professional OOXML styling:
+All tables receive professional OOXML styling (tightened in v5.5.0 for denser, more reference-document-style tables):
 
 | Element | Style |
 |---------|-------|
-| **Header row** | Microsoft blue (#0078D4), white text, bold 10pt |
+| **Header row** | Microsoft blue (#0078D4), white text, bold **9pt** |
 | **Even data rows** | Light gray (#F0F0F0) |
 | **Odd data rows** | White (#FFFFFF) |
+| **Data cell font** | **8.5pt** black |
 | **Borders** | Gray outer (#666666), light inner (#AAAAAA) |
-| **Cell padding** | 2pt top/bottom, 4pt left/right |
+| **Cell padding** | **1pt top/bottom, 3pt left/right** |
 | **Pagination** | cantSplit + keepWithNext (no orphan headers) |
 | **Repeat headers** | Header row repeats on each page for long tables |
 
@@ -447,6 +448,7 @@ node .github/muscles/md-to-word.cjs spec.md --watch
 
 | Version | Changes |
 |---------|---------|
+| **5.5.0** | Tighter table styling (header 10pt→9pt, data 9pt→8.5pt, cell margins 2pt/4pt → 1pt/3pt). `[toc]` marker in source now strips the line but does **not** auto-enable TOC — warning logged instead, requires explicit `--toc` to generate. Coverage smoke test corpus added at `docs/testing/md-to-word-coverage.md`. |
 | **5.4.0** | Diagram-type-aware Mermaid palette injection (sequence/state get themeVariables, flowcharts respect classDef), `--no-default-palette` opt-out, lint warnings for unstyled diagrams, sizing constants documented |
 | **5.3.0** | Style presets (professional, academic, course, creative), --cover, --toc |
 | **5.0.0** | SVG auto-conversion via svgexport, watch mode, recursive processing |

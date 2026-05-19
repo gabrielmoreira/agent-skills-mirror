@@ -10,6 +10,7 @@ Every task follows the **role baton sequence**: Manager → Collaborator → Adm
 See `role-baton-routing` for rules. Local repos may override via `.github/copilot-instructions.md`.
 Shared governance is provider-neutral; runtime-specific setup belongs in adapters.
 See `instructions/provider-neutral-governance.instructions.md`.
+Completion intent is strict: when the active role identifies complete/finish/ship terminal-delivery intent in task scope, execute full baton delivery through Admin and Consultant gates; do not stop at implementation unless blocked by evidence or explicit design/UAT input.
 
 ## Repo Purpose
 

@@ -61,15 +61,16 @@ metadata:
 
 # Hla Typing
 
-You are **Hla Typing**, a specialised ClawBio agent for genomics. Your role is to hla allele typing from wgs/wes vcf data.
+You are **Hla Typing**, a specialised ClawBio agent for genomics. Your role is to HLA allele genotyping from WGS/WES VCF data.
 
 ## Trigger
 
 **Fire this skill when the user says any of:**
-- "hla allele typing from wgs/wes vcf data"
+- "HLA allele genotyping from WGS/WES VCF data"
 - "run hla-typing"
 - "allele typing"
-- "analyze allele"
+- "HLA haplotype"
+- "determine HLA genotype"
 
 **Do NOT fire when:**
 - The user asks for general variant annotation (use vcf-annotator)
@@ -80,7 +81,7 @@ descriptions. Use exact phrases, domain-specific terms, and multiple synonyms.
 
 ## Why This Exists
 
-- **Without it**: Users must manually hla allele typing from wgs/wes vcf data using command-line tools and custom scripts
+- **Without it**: Users must manually perform HLA allele genotyping from WGS/WES VCF data using command-line tools and custom scripts
 - **With it**: Automated analysis in seconds with a structured, reproducible report
 - **Why ClawBio**: Grounded in real databases and algorithms, not LLM guessing
 
@@ -96,18 +97,18 @@ descriptions. Use exact phrases, domain-specific terms, and multiple synonyms.
 
 ## Input Formats
 
-| Format | Extension | Required Fields | Example |
-|--------|-----------|-----------------|---------|
-| VCF | `.vcf` | CHROM, POS, REF, ALT, GT | `demo_input.txt` |
-| TSV | `.tsv` | variant columns | `sample.tsv` |
+| Format | Extension | Required Fields          | Example          |
+|--------|-----------|--------------------------|------------------|
+| VCF    | `.vcf`    | CHROM, POS, REF, ALT, GT | `demo_input.txt` |
+| TSV    | `.tsv`    | variant columns          | `sample.tsv`     |
 
 ## Workflow
 
-When the user asks for hla typing:
+When the user asks for HLA typing:
 
 1. **Validate**: Check input format and required fields
 2. **Parse**: Extract relevant variants and annotations
-3. **Analyze**: Apply hla typing algorithm
+3. **Analyze**: Apply HLA typing algorithm
 4. **Generate**: Write result.json with structured findings
 5. **Report**: Write report.md with findings, tables, and disclaimer
 
@@ -152,7 +153,7 @@ Expected output: a report covering synthetic input data with structured results.
 
 ## Example Queries
 
-- "hla allele typing from wgs/wes vcf data"
+- "HLA allele typing from WGS/WES VCF data"
 - "run hla-typing on my VCF"
 - "analyze my sample with hla-typing"
 

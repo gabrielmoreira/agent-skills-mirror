@@ -46,7 +46,7 @@ Separate signal from noise. For each candidate pattern, ask: *"Is this already c
 | Automatable mechanical task | Muscle (`.github/muscles/<name>.cjs`) |
 | User preference (cross-project) | User memory (`/memories/<name>.md`) |
 | Project / repo convention | Repo memory (`/memories/repo/<name>.md`) |
-| Session continuity for next chat | Session memory (`/memories/session/<name>.md`) |
+| Cross-session handoff (next session needs to know) | Repo file (`HANDOFF.md` at repo root) — NOT session memory |
 
 ### 3. Write
 
@@ -81,7 +81,7 @@ Skip the chronicle for short sessions or when nothing new emerged.
 
 ### 5. Handoff (when ending a session)
 
-If the user is closing the thread, write to repo-root `SESSION-HANDOFF.md`:
+If the user is closing the thread, write to repo-root `HANDOFF.md`:
 
 ```markdown
 # Session Handoff

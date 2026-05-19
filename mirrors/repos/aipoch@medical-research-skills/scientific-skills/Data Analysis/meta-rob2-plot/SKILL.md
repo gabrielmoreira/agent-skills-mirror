@@ -1,5 +1,5 @@
 ---
-name: meta-rob2-plot
+name: meta-rob-plot
 description: "Draw ROB2 risk-of-bias plots, including a Traffic Light Plot and a Summary Bar Plot. Input is a CSV file with ROB2 assessments for each study; output are two PNG plot files."
 license: MIT
 author: AIPOCH
@@ -282,3 +282,4 @@ Assumptions: explicit list if any
 - Confirm the supported execution path completed without unresolved errors.
 - Confirm the final deliverable matches the documented format exactly.
 - Confirm assumptions, limitations, and warnings are surfaced explicitly.
+

@@ -171,6 +171,7 @@ provenance:
 base_confidence: 0.65
 lifecycle: draft
 lifecycle_changed: 2024-03-15
+tier: supporting
 created: 2024-03-15T10:30:00Z
 updated: 2024-03-15T10:30:00Z
 ---
@@ -350,6 +351,33 @@ Five states. **`stale` is not a state** — it is a computed overlay: `is_stale 
 
 Only ingest skills set `draft`. All other transitions require a human editor. Update `lifecycle_changed` whenever the state changes.
 
+## Importance Tiering
+
+The `tier:` field controls which pages get updated on each ingest pass and their priority in retrieval. As wikis grow, re-reading every page on every ingest wastes tokens — tiering lets ingest and query skills focus effort where it matters most.
+
+### Three tiers
+
+| Tier | Meaning | Ingest behavior | Query priority |
+|---|---|---|---|
+| `core` | Load-bearing pages — many other pages depend on them (high incoming-link count or bridge position). Always worth updating. | Always update if the source is even marginally relevant | Surfaced first in index and full-read passes |
+| `supporting` *(default)* | Standard wiki pages with moderate connectivity | Update when the source has clear new claims for this page | Standard priority |
+| `peripheral` | Low-connectivity pages — rarely linked, narrowly scoped | Skip unless the source is *primarily* about this topic | Last resort; skipped when trimming to context budget |
+
+### Assignment rules
+
+- **New pages:** default to `tier: supporting`
+- **Promote to `core`:** when a page accumulates ≥5 incoming wikilinks **or** is flagged as a bridge by `wiki-status` insights mode
+- **Demote to `peripheral`:** when a page has ≤1 incoming link and hasn't been updated in 90+ days
+- **Human override always wins** — edit `tier:` manually to lock a page at any level
+- Existing pages without `tier:` are treated as `supporting` (backward compatible — no migration needed)
+
+### Who manages tier
+
+- `wiki-ingest` reads `tier:` to decide whether to update a page on the current pass
+- `wiki-query` uses `tier:` to order candidates in the index pass and trim to context budget
+- `wiki-status` insights mode computes graph metrics and **suggests** tier assignments — it never writes them automatically
+- `wiki-lint` flags missing `tier:` on newly created pages (Phase 2 enforcement, same timeline as `base_confidence`)
+
 ## Retrieval Primitives
 
 Reading the vault is the dominant cost of every read-side skill. Use the cheapest primitive that can answer the question and **escalate only when the cheaper one is insufficient**. Any skill that needs content from the vault should follow this table rather than jumping straight to full-page reads.
@@ -367,6 +395,12 @@ Reading the vault is the dominant cost of every read-side skill. Use the cheapes
 **Why this matters:** a 20-page vault lets you get away with full-vault scans. A 200-page vault does not. The primitives above are how the skills framework scales to large vaults without a database.
 
 Skills that consume this table: `wiki-query`, `cross-linker`, `wiki-lint`, `wiki-status` (insights mode). Any new skill that reads the vault should cite this section rather than reinvent the pattern.
+
+## QMD Index Freshness
+
+QMD is an optional search index layered on top of the vault. The markdown vault is the source of truth. Any skill that writes wiki markdown should refresh QMD after the vault write completes, but only when `QMD_WIKI_COLLECTION` is configured and the local QMD transport is available. If QMD refresh fails, keep the vault changes and report the QMD status separately.
+
+Use the cheapest verification path that proves the new content is visible: `qmd update`, `qmd embed` only if vectors are stale or missing, then a targeted `qmd get` or `qmd ls` check for one written page or the collection root. Read-only skills should not refresh QMD.
 
 ## Core Principles
 
@@ -461,6 +495,8 @@ The wiki is configured through environment variables (see `.env.example`). The o
 - `OPENCLAW_HOME` — Where to find OpenClaw data
 - `COPILOT_HISTORY_PATH` — Where to find Copilot session data
 - `OBSIDIAN_LINK_FORMAT` — Internal link syntax: `wikilink` (default) or `markdown`
+- `WIKI_TOKEN_WARN_THRESHOLD` — Emit a warning in `wiki-status` when the full-wiki token estimate exceeds this value (default: `100000`). Set to `0` to disable. See `wiki-status` for the token footprint report.
+- `WIKI_STAGED_WRITES` — When `true`, all LLM-written pages go to `_staging/<category>/` for human review before promotion. See `wiki-setup` and `wiki-stage-commit` for details.
 
 No API keys are needed — the agent running these skills already has LLM access built in.
 

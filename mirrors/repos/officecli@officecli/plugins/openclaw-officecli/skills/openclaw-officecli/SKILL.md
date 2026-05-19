@@ -1,0 +1,169 @@
+---
+name: openclaw-officecli
+description: Use when an OpenClaw user clearly wants a local Office or image artifact such as a PPTX, DOCX, XLSX, Report, or IMG, and route the request through officecli agent-bridge instead of parsing human CLI output.
+---
+
+# OpenClaw OfficeCLI Skill
+
+## Purpose
+
+This skill lets an OpenClaw agent generate local `pptx`, `docx`, `xlsx`, `report`, and standalone `img` files through `officecli agent-bridge`, then send the generated file back to the current channel as an attachment.
+
+## Trigger Rules
+
+Trigger when the user clearly wants a file artifact, for example:
+
+- `generate a five-slide PPT about an enterprise collaboration platform`
+- `write a customer-facing docx for me`
+- `create a budget excel sheet`
+- `generate a launch image`
+- `turn this into slides`
+- `write a docx for customers`
+
+Do not trigger for:
+
+- pure explanation
+- brainstorming
+- outline-only requests
+- analysis without a file deliverable
+
+## Runtime Contract
+
+The skill must use `officecli agent-bridge` as the local execution protocol.
+
+Do not treat `officecli new ...` stdout as a protocol.
+
+Always prefer the structured bridge:
+
+- transport: `stdio`
+- framing: `Content-Length`
+- protocol: `JSON-RPC 2.0`
+- tool: `office.generate`
+
+Required bridge methods:
+
+- `initialize`
+- `capabilities/get`
+- `session/open`
+- `task/invoke`
+- `task/respond`
+- `task/status`
+- `task/cancel`
+
+Primary event types:
+
+- `task.started`
+- `task.progress`
+- `task.question`
+- `task.output`
+- `task.completed`
+- `task.failed`
+- `task.cancelled`
+
+## Agent Behavior
+
+1. Run `fix-officecli-env.sh` before starting any bridge session so the skill bundle is refreshed and any missing `officecli` setup is repaired.
+2. Run `check-officecli-env.sh` after the repair step.
+3. Ensure `officecli` is installed, configured, and reachable.
+4. Ensure `officecli agent-bridge` can be started locally.
+5. Read `initialize` or `capabilities/get` before invoking generation, and cache `document_generation.pptx.image_support` and top-level `image_generation`.
+6. Also cache `update`; if `available=true`, use `update_command` or your own repair flow instead of parsing human CLI update prompts.
+7. Convert the user's natural-language request into:
+   - `document_type`
+   - `topic`
+   - `prompt`
+   - optional `mode`
+   - optional `lang`
+   - optional `style`
+   - optional `audience`
+   - optional `ratio` for `img`
+8. If the user explicitly wants no images for `pptx`, set `enable_images=false`; otherwise follow the bridge capability default instead of hard-coding a client default.
+9. For standalone `img`, call `office.generate` with `document_type=img`; do not call `office.render`, do not set `mode=best`, and do not use local image provider config.
+10. Use `interactive=true` by default so the chat can handle follow-up questions.
+11. Use `mode=fast` by default unless the user explicitly asks for a higher-quality, more iterative workflow and the document type is not `img`.
+12. On `task.question`, present the question naturally in the channel and forward the answer via `task/respond`.
+13. On `task.output`, read `result.file_path` and send the file as an attachment in the current channel.
+14. On `task.failed`, convert the error into a user-friendly message.
+15. On user cancel, send `task/cancel`.
+
+## Runtime Mode Rules
+
+- use `officecli config runtime` to inspect the local default runtime mode when the host asks how OfficeCLI is configured
+- use `officecli config set-runtime hosted` when the host explicitly wants platform-managed hosted generation by default
+- use `officecli config set-runtime external` when the host wants local/external generation by default
+- hosted mode requires a platform OfficeCLI API key with hosted credits; do not ask users for aigateway keys because those are created and stored by the platform
+
+## PPT Image Rules
+
+For all OpenClaw agents using this skill:
+
+- inspect `document_generation.pptx.image_support.default_enabled` during capability discovery
+- inspect `update.available` during capability discovery
+- use `document_generation.pptx.image_support.disable_flag` when explaining how to produce a text-only deck
+- if `update.available=true`, prefer a structured repair/refresh path and show `update_command` when the host asks how to update
+- use `document_generation.pptx.image_support.config_command` and `config_fields` when the user reports missing images
+- if `task.output`, `task.completed`, or `task/status` includes `result_meta.image_support.attention_required=true`, surface that immediately in the chat
+- if `result_meta.image_support.reason=image_generation_degraded`, tell the user the deck was downgraded to a no-image version and they should check `image_base_url`, `image_api_key`, and `image_model`
+- do not rely only on free-form warning strings for client decisions; prefer `result_meta`
+- do not parse human update prompts from `officecli` stdout; use bridge capability fields
+
+## Standalone Image Rules
+
+For standalone `img` requests:
+
+- inspect top-level `image_generation` during capability discovery
+- use `office.generate` with `document_type=img`
+- pass `ratio=square|landscape|portrait` when the user asks for a shape; default to `square`
+- pass one `reference_image` local path or `http/https` URL when the user provides a reference image
+- require platform/license config and let the OfficeCLI server control the image provider
+- treat quota by runtime: in `external` mode one successful standalone image consumes one generation count, while in `hosted` mode it consumes hosted credits; free image usage has a separate 3-per-day bucket from free document generation
+- keep preview publishing enabled by default when publishing is configured; pass `publish=false` only for local-only output
+- do not use `office.render`, local `config set-generation` image settings, `mode=best`, source files, or local preview
+- include returned quota or credit balance metadata in the chat message when present
+
+## Environment Repair Rules
+
+- refresh the OpenClaw skill bundle and repair any missing `officecli` setup on every task by running `fix-officecli-env.sh`
+- do not refresh an already installed `officecli` binary unless the host explicitly opts in, for example with `OFFICECLI_REFRESH_BINARY=1`
+- when the user explicitly asks to uninstall `officecli`, run `uninstall-officecli.sh`
+- use `check-officecli-env.sh` as the single readiness probe for binary, config, and bridge
+- use `fix-officecli-env.sh` as the single repair entrypoint
+- when config is missing, ask only for the missing generation/license values and let the fix script write local config
+- online preview config is required by default so generated files can return publish URLs
+- if the current request is intentionally local-only, set `OFFICECLI_SKIP_PUBLISH_SETUP=1` before running the fix script
+- do not try to start `agent-bridge` until the check script returns ready
+- if refresh or check fails, stop and report the `officecli` environment error; when repair fails, use the fix script's final structured status as the source of truth, and do not fall back to any other PPT/DOC/XLS generation tool without explicit user approval
+
+## Attachment Delivery
+
+When generation succeeds:
+
+- read `task.output.payload.result.file_path`
+- upload that file to the current channel
+- include a short note with:
+  - document type
+  - document name
+  - any warnings returned by bridge
+  - when present, `result_meta.image_support.message`
+
+Do not only send a local file path unless attachment upload is impossible on the current channel.
+
+## Conversation Policy
+
+- If document type is missing, ask which file type the user wants.
+- If topic or goal is missing, ask a concise clarifying question.
+- If the bridge emits `task.question`, relay it instead of inventing your own replacement question.
+- Keep progress updates short and stage-based.
+- do not trigger `office.review` / `office.score` automatically after generation unless the user explicitly asks for scoring, review, validation, or quality checking
+
+## Local Requirements
+
+Expected local setup:
+
+- `officecli` available in `PATH`, or repairable by `fix-officecli-env.sh`
+- generation and license config already completed, or repairable by the fix script
+- standalone `img` requires license config; document/PPT image assets also require generation config
+- OpenClaw agent has permission to:
+  - spawn local commands
+  - read generated files
+  - upload attachments to the active channel

@@ -322,7 +322,15 @@ Generated: <date>
 - ...
 ```
 
-Save as `eval_viewer_<skill_name>.md` if filesystem is available; otherwise render inline.
+**Output location.** Save the eval viewer next to the audited skill so it stays with the artifact it describes:
+
+```
+<audited_skill_path>/eval_viewer_<skill_name>.md
+```
+
+Where `<audited_skill_path>` is the directory containing the skill's `SKILL.md` (the path the user passed in). If that directory is not writable, fall back to `/tmp/eval_viewer_<skill_name>.md` and note the fallback in the final report.
+
+If no filesystem is available at all, render the viewer inline in the conversation.
 
 > **Note for reviewer:** Check ⚠️ and ❌ rows first. Patterns across 2+ outputs indicate structural skill issues.
 
@@ -416,8 +424,8 @@ Methodological Ground : PASS / FAIL / N/A
 Code Usability        : PASS / FAIL / N/A
 
 ── STEP 7: Outputs ───────────────────────────────
-eval_viewer_<n>.md   : SAVED ✅
-eval_report_<n>_result.json : SAVED ✅
+<audited_skill_path>/eval_viewer_<n>.md          : SAVED ✅
+<audited_skill_path>/eval_report_<n>_result.json : SAVED ✅
 
 ── STEP 8: Final Score ───────────────────────────
 Static Score   : __/100  × 40% = __
@@ -437,29 +445,62 @@ Optimization Recommendations:
 
 ### Step 7–8 JSON Output
 
+> ⚠️ **STRICT SCHEMA COMPLIANCE — NOT OPTIONAL.**
+> The JSON report is consumed by downstream tooling (skill-evaluator, the frontend viewer, automated regression dashboards). Any deviation from the schema below — a renamed key, a missing field, a string where an object is expected — breaks that tooling silently. **Before emitting the JSON, you MUST:**
+>
+> 1. Re-read [`references/report_json_schema.md`](references/report_json_schema.md) in full (not just the summary table below).
+> 2. Build the JSON by copying the structure from the schema's complete example, then filling in values — do not invent your own key names or nesting.
+> 3. Run every item in the schema's Pre-Emit Checklist (§ "Pre-Emit Checklist" in `report_json_schema.md`) before writing the file. Treat each unchecked item as a blocker, not a warning.
+>
+> Common drift to watch for — these have been observed in past audits and each one breaks the contract:
+> - Using `static_score.total` instead of `static_score.subtotal`.
+> - Using `dynamic_score.execution_avg_score` instead of `dynamic_score.execution_avg`.
+> - Writing `veto_gates.research_veto.scientific_integrity: "PASS"` (a bare string) instead of `{ "result": "PASS", "detail": "..." }`.
+> - Omitting the top-level `gate` field inside `skill_veto` and `research_veto`.
+> - Per-input keys: `n` instead of `index`, missing `label` / `status` / `status_flag` / `note`.
+> - Each static category value being a bare integer instead of `{ "score": N, "max": M, "note": "..." }`.
+> - `final.final_score` / `final.weighted_static` / `final.weighted_dynamic` instead of `final.score` / `final.static_weighted` / `final.dynamic_weighted`.
+> - Missing `final.grade_symbol`.
+>
+> If a section of the schema's example does not match what you are about to emit, the example is canonical — change your output, not the schema.
+
 → Full schema + complete example: [`references/report_json_schema.md`](references/report_json_schema.md)
 
-**JSON top-level nodes (all 7 required):**
+**Output location.** Save the JSON next to the audited skill, using the same directory rule as the eval viewer:
+
+```
+<audited_skill_path>/eval_report_<skill_name>_result.json
+```
+
+If the audited skill directory already contains a prior `eval_report_<skill_name>_result.json`, **overwrite** it — the latest audit supersedes earlier ones. If that directory is not writable, fall back to `/tmp/eval_report_<skill_name>_result.json` and note the fallback in the final report.
+
+**JSON top-level nodes (all 7 required) — abbreviated reminder; the schema file is canonical:**
 
 | Node | Key rules |
 |---|---|
-| `meta` | `evaluator_version: "skill-auditor@1.0"` |
-| `veto_gates` | `skill_veto` keys: `stability`, `contract`, `determinism`, `security` — **no T-prefixes**; `research_veto` keys: `scientific_integrity`, `practice_boundaries`, `methodological_ground`, `code_usability` — **no M-prefixes** |
-| `static_score` | `categories` keys: `functional_suitability`, `reliability`, `performance_context`, `agent_usability`, `human_usability`, `security`, `maintainability`, `agent_specific` — **no cat-prefixes** |
-| `dynamic_score` | Each input includes full `assertions` array (`text`, `result`, `note` per assertion) in addition to `assertions_passed` / `assertions_total` counts |
-| `final` | weighted scores, grade, `deployable`, `veto_override` |
+| `meta` | `evaluator_version: "skill-auditor@1.0"`; includes `skill_name`, `description`, `evaluated_on`, `category`, `execution_mode`, `complexity`, `n_inputs` |
+| `veto_gates` | `skill_veto`: top-level `gate` + `stability`, `contract`, `determinism`, `security` — **no T-prefixes**. `research_veto`: top-level `applicable`, `gate` + four dimensions, each as `{ result, detail }` — **no M-prefixes** |
+| `static_score` | `subtotal`, `max`, `categories`. The 8 category keys must be exact and un-prefixed: `functional_suitability`, `reliability`, `performance_context`, `agent_usability`, `human_usability`, `security`, `maintainability`, `agent_specific`. **Each value is an object `{ score, max, note }`, never a bare integer.** |
+| `dynamic_score` | `execution_avg` (not `execution_avg_score`), `max`, `assertion_pass_rate: { passed, total }`, `inputs[]`. Each input uses `index` (not `n`) and includes `label`, `status`, `status_flag`, `note`, `basic`, `specialized`, `total`, `assertions_passed`, `assertions_total`, and a full `assertions[]` array of `{ text, result, note }` objects. |
+| `final` | `static_weighted`, `dynamic_weighted`, `score` (not `final_score`), `max`, `grade`, `grade_symbol`, `deployable`, `veto_override` |
 | `key_strengths` | plain-string array, 2–5 entries |
-| `recommendations` | P0 → P1 → P2 sorted |
+| `recommendations` | P0 → P1 → P2 sorted, each with `priority`, `title`, `observed_in`, `problem`, `root_cause`, `fix` |
 
-**Pre-emit checklist:**
+**Pre-emit checklist (MUST verify all of these before writing the file — see full list in `report_json_schema.md` § Pre-Emit Checklist):**
+- All free-text fields written in **English**
 - No T-, M-, or cat-numbered prefixes in any JSON key
-- `static_score.categories` has exactly **8** un-prefixed keys; all scores within 0–max
-- `dynamic_score.inputs` has exactly **N** objects; each has an `assertions` array
+- `static_score.categories` has exactly **8** keys; each value is `{ score, max, note }`; all scores within 0–max
+- `static_score.subtotal` equals the sum of all 8 category `score` values
+- `dynamic_score.inputs` has exactly **N** objects (matching `meta.n_inputs`); each has an `assertions` array
+- **Each input's `assertions` array has 3–5 entries** *(cardinality constraint — count it)*
 - Each input's `assertions_passed` equals count of `"PASS"` in its `assertions` array
+- Each input's `basic + specialized = total`
+- **`key_strengths` has 2–5 entries** *(cardinality constraint — count it)*
 - `research_veto.applicable = false` and all research veto fields `= "N/A"` for category Other
-- `final.veto_override = true` if any gate is FAIL
-- `recommendations` sorted P0 → P1 → P2
-- All averages/weighted scores rounded to **1 decimal**; all raw scores **integers**
+- `final.veto_override = true` if any gate is FAIL; `final.deployable = false` in that case
+- `final.grade` and `final.grade_symbol` consistent with `final.score` per the threshold table
+- `recommendations` sorted P0 → P1 → P2 (empty array allowed)
+- All averages/weighted scores rounded to **1 decimal**; all raw scores are **integers**
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cafe3310/public-agent-skills` — 26 default patterns, 0 followed patterns, 253 file(s) materialized.
+Mirror of `cafe3310/public-agent-skills` — 26 default patterns, 0 followed patterns, 257 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cafe3310/public-agent-skills` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 253 |
+| Files         | 257 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -306,12 +306,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 245 | ✓ | [`skills/text-watermark-fountain/scripts/encode.py`](skills/text-watermark-fountain/scripts/encode.py) |
 | 246 | ✓ | [`skills/text-watermark-fountain/scripts/lt_code.py`](skills/text-watermark-fountain/scripts/lt_code.py) |
 | 247 | ✓ | [`skills/text-watermark-fountain/SKILL.md`](skills/text-watermark-fountain/SKILL.md) |
-| 248 | ✓ | [`skills/use-claude-plugin/SKILL.md`](skills/use-claude-plugin/SKILL.md) |
-| 249 | ✓ | [`skills/weekly-report-writer/assets/weekly_report.md.template`](skills/weekly-report-writer/assets/weekly_report.md.template) |
-| 250 | ✓ | [`skills/weekly-report-writer/references/agents.md.example`](skills/weekly-report-writer/references/agents.md.example) |
-| 251 | ✓ | [`skills/weekly-report-writer/SKILL.md`](skills/weekly-report-writer/SKILL.md) |
-| 252 | ✓ | [`skills/wx-emoji-maker/scripts/run.sh`](skills/wx-emoji-maker/scripts/run.sh) |
-| 253 | ✓ | [`skills/wx-emoji-maker/SKILL.md`](skills/wx-emoji-maker/SKILL.md) |
+| 248 | ✓ | [`skills/twitter-watch/evals/evals.json`](skills/twitter-watch/evals/evals.json) |
+| 249 | ✓ | [`skills/twitter-watch/FOR_HUMAN.md`](skills/twitter-watch/FOR_HUMAN.md) |
+| 250 | ✓ | [`skills/twitter-watch/scripts/watch.py`](skills/twitter-watch/scripts/watch.py) |
+| 251 | ✓ | [`skills/twitter-watch/SKILL.md`](skills/twitter-watch/SKILL.md) |
+| 252 | ✓ | [`skills/use-claude-plugin/SKILL.md`](skills/use-claude-plugin/SKILL.md) |
+| 253 | ✓ | [`skills/weekly-report-writer/assets/weekly_report.md.template`](skills/weekly-report-writer/assets/weekly_report.md.template) |
+| 254 | ✓ | [`skills/weekly-report-writer/references/agents.md.example`](skills/weekly-report-writer/references/agents.md.example) |
+| 255 | ✓ | [`skills/weekly-report-writer/SKILL.md`](skills/weekly-report-writer/SKILL.md) |
+| 256 | ✓ | [`skills/wx-emoji-maker/scripts/run.sh`](skills/wx-emoji-maker/scripts/run.sh) |
+| 257 | ✓ | [`skills/wx-emoji-maker/SKILL.md`](skills/wx-emoji-maker/SKILL.md) |
 
 ---
 

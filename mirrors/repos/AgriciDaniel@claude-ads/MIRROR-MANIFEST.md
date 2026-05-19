@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AgriciDaniel/claude-ads` — 26 default patterns, 0 followed patterns, 43 file(s) materialized.
+Mirror of `AgriciDaniel/claude-ads` — 26 default patterns, 0 followed patterns, 46 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AgriciDaniel/claude-ads` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 43 |
+| Files         | 46 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,37 +71,40 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`agents/format-adapter.md`](agents/format-adapter.md) |
 | 11 | ✓ | [`agents/visual-designer.md`](agents/visual-designer.md) |
 | 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 13 | ✓ | [`skills/ads-apple/SKILL.md`](skills/ads-apple/SKILL.md) |
-| 14 | ✓ | [`skills/ads-audit/SKILL.md`](skills/ads-audit/SKILL.md) |
-| 15 | ✓ | [`skills/ads-budget/SKILL.md`](skills/ads-budget/SKILL.md) |
-| 16 | ✓ | [`skills/ads-competitor/SKILL.md`](skills/ads-competitor/SKILL.md) |
-| 17 | ✓ | [`skills/ads-create/SKILL.md`](skills/ads-create/SKILL.md) |
-| 18 | ✓ | [`skills/ads-creative/SKILL.md`](skills/ads-creative/SKILL.md) |
-| 19 | ✓ | [`skills/ads-dna/SKILL.md`](skills/ads-dna/SKILL.md) |
-| 20 | ✓ | [`skills/ads-generate/SKILL.md`](skills/ads-generate/SKILL.md) |
-| 21 | ✓ | [`skills/ads-google/SKILL.md`](skills/ads-google/SKILL.md) |
-| 22 | ✓ | [`skills/ads-landing/SKILL.md`](skills/ads-landing/SKILL.md) |
-| 23 | ✓ | [`skills/ads-linkedin/SKILL.md`](skills/ads-linkedin/SKILL.md) |
-| 24 | ✓ | [`skills/ads-math/SKILL.md`](skills/ads-math/SKILL.md) |
-| 25 | ✓ | [`skills/ads-meta/SKILL.md`](skills/ads-meta/SKILL.md) |
-| 26 | ✓ | [`skills/ads-microsoft/SKILL.md`](skills/ads-microsoft/SKILL.md) |
-| 27 | ✓ | [`skills/ads-photoshoot/SKILL.md`](skills/ads-photoshoot/SKILL.md) |
-| 28 | ✓ | [`skills/ads-plan/assets/agency.md`](skills/ads-plan/assets/agency.md) |
-| 29 | ✓ | [`skills/ads-plan/assets/b2b-enterprise.md`](skills/ads-plan/assets/b2b-enterprise.md) |
-| 30 | ✓ | [`skills/ads-plan/assets/ecommerce-creative.md`](skills/ads-plan/assets/ecommerce-creative.md) |
-| 31 | ✓ | [`skills/ads-plan/assets/ecommerce.md`](skills/ads-plan/assets/ecommerce.md) |
-| 32 | ✓ | [`skills/ads-plan/assets/finance.md`](skills/ads-plan/assets/finance.md) |
-| 33 | ✓ | [`skills/ads-plan/assets/generic.md`](skills/ads-plan/assets/generic.md) |
-| 34 | ✓ | [`skills/ads-plan/assets/healthcare.md`](skills/ads-plan/assets/healthcare.md) |
-| 35 | ✓ | [`skills/ads-plan/assets/info-products.md`](skills/ads-plan/assets/info-products.md) |
-| 36 | ✓ | [`skills/ads-plan/assets/local-service.md`](skills/ads-plan/assets/local-service.md) |
-| 37 | ✓ | [`skills/ads-plan/assets/mobile-app.md`](skills/ads-plan/assets/mobile-app.md) |
-| 38 | ✓ | [`skills/ads-plan/assets/real-estate.md`](skills/ads-plan/assets/real-estate.md) |
-| 39 | ✓ | [`skills/ads-plan/assets/saas.md`](skills/ads-plan/assets/saas.md) |
-| 40 | ✓ | [`skills/ads-plan/SKILL.md`](skills/ads-plan/SKILL.md) |
-| 41 | ✓ | [`skills/ads-test/SKILL.md`](skills/ads-test/SKILL.md) |
-| 42 | ✓ | [`skills/ads-tiktok/SKILL.md`](skills/ads-tiktok/SKILL.md) |
-| 43 | ✓ | [`skills/ads-youtube/SKILL.md`](skills/ads-youtube/SKILL.md) |
+| 13 | ✓ | [`skills/ads-amazon/SKILL.md`](skills/ads-amazon/SKILL.md) |
+| 14 | ✓ | [`skills/ads-apple/SKILL.md`](skills/ads-apple/SKILL.md) |
+| 15 | ✓ | [`skills/ads-attribution/SKILL.md`](skills/ads-attribution/SKILL.md) |
+| 16 | ✓ | [`skills/ads-audit/SKILL.md`](skills/ads-audit/SKILL.md) |
+| 17 | ✓ | [`skills/ads-budget/SKILL.md`](skills/ads-budget/SKILL.md) |
+| 18 | ✓ | [`skills/ads-competitor/SKILL.md`](skills/ads-competitor/SKILL.md) |
+| 19 | ✓ | [`skills/ads-create/SKILL.md`](skills/ads-create/SKILL.md) |
+| 20 | ✓ | [`skills/ads-creative/SKILL.md`](skills/ads-creative/SKILL.md) |
+| 21 | ✓ | [`skills/ads-dna/SKILL.md`](skills/ads-dna/SKILL.md) |
+| 22 | ✓ | [`skills/ads-generate/SKILL.md`](skills/ads-generate/SKILL.md) |
+| 23 | ✓ | [`skills/ads-google/SKILL.md`](skills/ads-google/SKILL.md) |
+| 24 | ✓ | [`skills/ads-landing/SKILL.md`](skills/ads-landing/SKILL.md) |
+| 25 | ✓ | [`skills/ads-linkedin/SKILL.md`](skills/ads-linkedin/SKILL.md) |
+| 26 | ✓ | [`skills/ads-math/SKILL.md`](skills/ads-math/SKILL.md) |
+| 27 | ✓ | [`skills/ads-meta/SKILL.md`](skills/ads-meta/SKILL.md) |
+| 28 | ✓ | [`skills/ads-microsoft/SKILL.md`](skills/ads-microsoft/SKILL.md) |
+| 29 | ✓ | [`skills/ads-photoshoot/SKILL.md`](skills/ads-photoshoot/SKILL.md) |
+| 30 | ✓ | [`skills/ads-plan/assets/agency.md`](skills/ads-plan/assets/agency.md) |
+| 31 | ✓ | [`skills/ads-plan/assets/b2b-enterprise.md`](skills/ads-plan/assets/b2b-enterprise.md) |
+| 32 | ✓ | [`skills/ads-plan/assets/ecommerce-creative.md`](skills/ads-plan/assets/ecommerce-creative.md) |
+| 33 | ✓ | [`skills/ads-plan/assets/ecommerce.md`](skills/ads-plan/assets/ecommerce.md) |
+| 34 | ✓ | [`skills/ads-plan/assets/finance.md`](skills/ads-plan/assets/finance.md) |
+| 35 | ✓ | [`skills/ads-plan/assets/generic.md`](skills/ads-plan/assets/generic.md) |
+| 36 | ✓ | [`skills/ads-plan/assets/healthcare.md`](skills/ads-plan/assets/healthcare.md) |
+| 37 | ✓ | [`skills/ads-plan/assets/info-products.md`](skills/ads-plan/assets/info-products.md) |
+| 38 | ✓ | [`skills/ads-plan/assets/local-service.md`](skills/ads-plan/assets/local-service.md) |
+| 39 | ✓ | [`skills/ads-plan/assets/mobile-app.md`](skills/ads-plan/assets/mobile-app.md) |
+| 40 | ✓ | [`skills/ads-plan/assets/real-estate.md`](skills/ads-plan/assets/real-estate.md) |
+| 41 | ✓ | [`skills/ads-plan/assets/saas.md`](skills/ads-plan/assets/saas.md) |
+| 42 | ✓ | [`skills/ads-plan/SKILL.md`](skills/ads-plan/SKILL.md) |
+| 43 | ✓ | [`skills/ads-server-side-tracking/SKILL.md`](skills/ads-server-side-tracking/SKILL.md) |
+| 44 | ✓ | [`skills/ads-test/SKILL.md`](skills/ads-test/SKILL.md) |
+| 45 | ✓ | [`skills/ads-tiktok/SKILL.md`](skills/ads-tiktok/SKILL.md) |
+| 46 | ✓ | [`skills/ads-youtube/SKILL.md`](skills/ads-youtube/SKILL.md) |
 
 ---
 

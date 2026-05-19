@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `buiducnhat/agent-skills` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `buiducnhat/agent-skills` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `buiducnhat/agent-skills` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,32 +60,40 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
-| 2 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 3 | ✓ | [`skills/brainstorm/references/summary-template.md`](skills/brainstorm/references/summary-template.md) |
-| 4 | ✓ | [`skills/brainstorm/SKILL.md`](skills/brainstorm/SKILL.md) |
-| 5 | ✓ | [`skills/cb-ask/SKILL.md`](skills/cb-ask/SKILL.md) |
-| 6 | ✓ | [`skills/cb-fix/SKILL.md`](skills/cb-fix/SKILL.md) |
-| 7 | ✓ | [`skills/cb-review/SKILL.md`](skills/cb-review/SKILL.md) |
-| 8 | ✓ | [`skills/docs/references/summary-template.md`](skills/docs/references/summary-template.md) |
-| 9 | ✓ | [`skills/docs/SKILL.md`](skills/docs/SKILL.md) |
-| 10 | ✓ | [`skills/execute-plan/references/execution-report-template.md`](skills/execute-plan/references/execution-report-template.md) |
-| 11 | ✓ | [`skills/execute-plan/SKILL.md`](skills/execute-plan/SKILL.md) |
-| 12 | ✓ | [`skills/git-commit/SKILL.md`](skills/git-commit/SKILL.md) |
-| 13 | ✓ | [`skills/quick-implement/SKILL.md`](skills/quick-implement/SKILL.md) |
-| 14 | ✓ | [`skills/visualize/references/content-patterns.md`](skills/visualize/references/content-patterns.md) |
-| 15 | ✓ | [`skills/visualize/references/mermaid-recipes.md`](skills/visualize/references/mermaid-recipes.md) |
-| 16 | ✓ | [`skills/visualize/references/router.md`](skills/visualize/references/router.md) |
-| 17 | ✓ | [`skills/visualize/references/templates/context.html`](skills/visualize/references/templates/context.html) |
-| 18 | ✓ | [`skills/visualize/references/templates/document.html`](skills/visualize/references/templates/document.html) |
-| 19 | ✓ | [`skills/visualize/references/templates/plan.html`](skills/visualize/references/templates/plan.html) |
-| 20 | ✓ | [`skills/visualize/references/templates/visualize-theme.css`](skills/visualize/references/templates/visualize-theme.css) |
-| 21 | ✓ | [`skills/visualize/references/verification.md`](skills/visualize/references/verification.md) |
-| 22 | ✓ | [`skills/visualize/references/workflow.md`](skills/visualize/references/workflow.md) |
-| 23 | ✓ | [`skills/visualize/SKILL.md`](skills/visualize/SKILL.md) |
-| 24 | ✓ | [`skills/write-plan/references/phase-template.md`](skills/write-plan/references/phase-template.md) |
-| 25 | ✓ | [`skills/write-plan/references/summary-template.md`](skills/write-plan/references/summary-template.md) |
-| 26 | ✓ | [`skills/write-plan/SKILL.md`](skills/write-plan/SKILL.md) |
-| 27 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
+| 2 | ✓ | [`plugins/cobrew/skills/ask/SKILL.md`](plugins/cobrew/skills/ask/SKILL.md) |
+| 3 | ✓ | [`plugins/cobrew/skills/brainstorm/SKILL.md`](plugins/cobrew/skills/brainstorm/SKILL.md) |
+| 4 | ✓ | [`plugins/cobrew/skills/docs/SKILL.md`](plugins/cobrew/skills/docs/SKILL.md) |
+| 5 | ✓ | [`plugins/cobrew/skills/execute-plan/SKILL.md`](plugins/cobrew/skills/execute-plan/SKILL.md) |
+| 6 | ✓ | [`plugins/cobrew/skills/fix/SKILL.md`](plugins/cobrew/skills/fix/SKILL.md) |
+| 7 | ✓ | [`plugins/cobrew/skills/git-commit/SKILL.md`](plugins/cobrew/skills/git-commit/SKILL.md) |
+| 8 | ✓ | [`plugins/cobrew/skills/quick-implement/SKILL.md`](plugins/cobrew/skills/quick-implement/SKILL.md) |
+| 9 | ✓ | [`plugins/cobrew/skills/review/SKILL.md`](plugins/cobrew/skills/review/SKILL.md) |
+| 10 | ✓ | [`plugins/cobrew/skills/visualize/SKILL.md`](plugins/cobrew/skills/visualize/SKILL.md) |
+| 11 | ✓ | [`plugins/cobrew/skills/write-plan/SKILL.md`](plugins/cobrew/skills/write-plan/SKILL.md) |
+| 12 | ✓ | [`skills/ask/SKILL.md`](skills/ask/SKILL.md) |
+| 13 | ✓ | [`skills/brainstorm/references/summary-template.md`](skills/brainstorm/references/summary-template.md) |
+| 14 | ✓ | [`skills/brainstorm/SKILL.md`](skills/brainstorm/SKILL.md) |
+| 15 | ✓ | [`skills/docs/references/summary-template.md`](skills/docs/references/summary-template.md) |
+| 16 | ✓ | [`skills/docs/SKILL.md`](skills/docs/SKILL.md) |
+| 17 | ✓ | [`skills/execute-plan/references/execution-report-template.md`](skills/execute-plan/references/execution-report-template.md) |
+| 18 | ✓ | [`skills/execute-plan/SKILL.md`](skills/execute-plan/SKILL.md) |
+| 19 | ✓ | [`skills/fix/SKILL.md`](skills/fix/SKILL.md) |
+| 20 | ✓ | [`skills/git-commit/SKILL.md`](skills/git-commit/SKILL.md) |
+| 21 | ✓ | [`skills/quick-implement/SKILL.md`](skills/quick-implement/SKILL.md) |
+| 22 | ✓ | [`skills/review/SKILL.md`](skills/review/SKILL.md) |
+| 23 | ✓ | [`skills/visualize/references/content-patterns.md`](skills/visualize/references/content-patterns.md) |
+| 24 | ✓ | [`skills/visualize/references/mermaid-recipes.md`](skills/visualize/references/mermaid-recipes.md) |
+| 25 | ✓ | [`skills/visualize/references/router.md`](skills/visualize/references/router.md) |
+| 26 | ✓ | [`skills/visualize/references/templates/context.html`](skills/visualize/references/templates/context.html) |
+| 27 | ✓ | [`skills/visualize/references/templates/document.html`](skills/visualize/references/templates/document.html) |
+| 28 | ✓ | [`skills/visualize/references/templates/plan.html`](skills/visualize/references/templates/plan.html) |
+| 29 | ✓ | [`skills/visualize/references/templates/visualize-theme.css`](skills/visualize/references/templates/visualize-theme.css) |
+| 30 | ✓ | [`skills/visualize/references/verification.md`](skills/visualize/references/verification.md) |
+| 31 | ✓ | [`skills/visualize/references/workflow.md`](skills/visualize/references/workflow.md) |
+| 32 | ✓ | [`skills/visualize/SKILL.md`](skills/visualize/SKILL.md) |
+| 33 | ✓ | [`skills/write-plan/references/phase-template.md`](skills/write-plan/references/phase-template.md) |
+| 34 | ✓ | [`skills/write-plan/references/summary-template.md`](skills/write-plan/references/summary-template.md) |
+| 35 | ✓ | [`skills/write-plan/SKILL.md`](skills/write-plan/SKILL.md) |
 
 ---
 

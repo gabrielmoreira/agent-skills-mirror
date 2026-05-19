@@ -20,7 +20,14 @@ This skill is for planning only:
 
 ### Step 1: Contextualize
 
-Load project context per the shared Context Loading Protocol. Then inspect only the code areas relevant to the requested change.
+Load only the project context relevant to the requested change:
+
+- If `docs/SUMMARY.md` exists, read it first.
+- Load only task-relevant detail docs.
+- Prioritize `Code Standard` docs for implementation conventions.
+- If docs conflict with code or user intent, use the available input/question tool before broad changes.
+
+Then inspect only the code areas relevant to the requested change.
 
 Capture:
 
@@ -54,7 +61,7 @@ Ask clarifying questions to resolve any ambiguity in the request. Focus on:
 #### Rules:
 
 - If requirements are already clear or come from the brainstorm context, no need the confirmation step.
-- Use `Question Tool` for gathering answers, context.
+- Use input/question tool for gathering answers, context.
 - State assumptions explicitly in `SUMMARY.md`. If multiple interpretations of the request exist, list them and ask — never pick silently.
 
 ### Step 4: Define Strategy and Phases
@@ -116,7 +123,7 @@ Before presenting the plan, verify:
 
 Then present for user review.
 
-If multiple viable approaches exist, present options and ask for one of: (use `Question Tool` for selection)
+If multiple viable approaches exist, present options and ask for one of: (use input/question tool for selection)
 
 - **Confirm**: approve current plan for execution
 - **Confirm and Visualize**: approve current plan and create a source-adjacent visualization in the same session
@@ -138,7 +145,7 @@ If the user chooses **Confirm and Visualize**:
 End with:
 
 Plan `<relative_path_to_plan>/SUMMARY.md` is ready.  
-Use `/clear` and then `/execute-plan <relative_path_to_plan>/SUMMARY.md` to execute it.
+Make new session and use `execute-plan` `<relative_path_to_plan>/SUMMARY.md` to execute it.
 
 If visualization was created, also include:
 

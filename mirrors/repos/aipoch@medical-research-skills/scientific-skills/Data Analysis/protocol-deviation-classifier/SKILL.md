@@ -1,6 +1,6 @@
 ---
 name: protocol-deviation-classifier
-description: Determine whether an incident in a clinical trial is a "major deviation.
+description: "Determine whether an incident in a clinical trial is a \"major deviation."
 license: MIT
 author: AIPOCH
 ---
@@ -319,7 +319,7 @@ pip install -r requirements.txt
 - **Current Stage**: Draft
 - **Next Review Date**: 2026-03-06
 - **Known Issues**: None
-- **Planned Improvements**: 
+- **Planned Improvements**:
   - Performance optimization
   - Additional feature support
 
@@ -381,3 +381,4 @@ If the request is simple, you may compress the structure, but still keep assumpt
 - Do not fabricate results, metrics, citations, or downstream conclusions.
 - Use safe fallback behavior when dependencies, credentials, or required inputs are missing.
 - Surface any execution failure with a concise diagnosis and recovery path.
+

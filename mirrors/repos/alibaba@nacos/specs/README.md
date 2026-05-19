@@ -26,6 +26,7 @@ Spec hierarchy:
 ```text
 Nacos design
   -> Resource model
+  -> Compatibility and deprecation
   -> Foundation capabilities
      -> Server lifecycle and environment configuration
      -> Cluster membership
@@ -39,7 +40,10 @@ Nacos design
      -> Event dispatch and NotifyCenter
      -> Observability hooks
   -> Core capabilities and domain capabilities
+     -> Config / Naming / AI Registry / Core Operations / Console / Distributed Lock
   -> HTTP / gRPC / SDK interface specs
+     -> Client runtime
+  -> Integration / Adapter model
   -> Extension model
   -> Security model
 ```
@@ -49,6 +53,7 @@ Nacos design
 ```text
 Nacos 顶层设计
   -> 资源模型
+  -> 兼容与废弃策略
   -> 基础能力
      -> 服务端生命周期与环境配置
      -> 集群成员
@@ -62,7 +67,10 @@ Nacos 顶层设计
      -> 事件分发与 NotifyCenter
      -> 可观测钩子
   -> 核心功能与领域功能
+     -> Config / Naming / AI Registry / Core 运维 / Console / 分布式锁
   -> HTTP / gRPC / SDK 接口规范
+     -> 客户端运行时
+  -> 集成 / 适配器模型
   -> 扩展模型
   -> 安全模型
 ```

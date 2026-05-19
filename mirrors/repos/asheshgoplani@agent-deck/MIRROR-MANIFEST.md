@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `asheshgoplani/agent-deck` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
+Mirror of `asheshgoplani/agent-deck` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `asheshgoplani/agent-deck` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 36 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,27 +74,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`skills/agent-deck/scripts/goal/manager.py`](skills/agent-deck/scripts/goal/manager.py) |
 | 14 | ✓ | [`skills/agent-deck/scripts/goal/prompts/worker.md`](skills/agent-deck/scripts/goal/prompts/worker.md) |
 | 15 | ✓ | [`skills/agent-deck/scripts/goal/tests/test_manager.py`](skills/agent-deck/scripts/goal/tests/test_manager.py) |
-| 16 | ✓ | [`skills/agent-deck/scripts/launch-subagent.sh`](skills/agent-deck/scripts/launch-subagent.sh) |
-| 17 | ✓ | [`skills/agent-deck/scripts/self-improvement/analyze-all-conductors.sh`](skills/agent-deck/scripts/self-improvement/analyze-all-conductors.sh) |
-| 18 | ✓ | [`skills/agent-deck/scripts/self-improvement/build_manifest.py`](skills/agent-deck/scripts/self-improvement/build_manifest.py) |
-| 19 | ✓ | [`skills/agent-deck/scripts/self-improvement/distill.py`](skills/agent-deck/scripts/self-improvement/distill.py) |
-| 20 | ✓ | [`skills/agent-deck/scripts/self-improvement/file_issue.py`](skills/agent-deck/scripts/self-improvement/file_issue.py) |
-| 21 | ✓ | [`skills/agent-deck/scripts/self-improvement/file-issues.sh`](skills/agent-deck/scripts/self-improvement/file-issues.sh) |
-| 22 | ✓ | [`skills/agent-deck/scripts/self-improvement/list_candidates.py`](skills/agent-deck/scripts/self-improvement/list_candidates.py) |
-| 23 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/analyzer.md`](skills/agent-deck/scripts/self-improvement/prompts/analyzer.md) |
-| 24 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/auditor.md`](skills/agent-deck/scripts/self-improvement/prompts/auditor.md) |
-| 25 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/issue-drafter.md`](skills/agent-deck/scripts/self-improvement/prompts/issue-drafter.md) |
-| 26 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/sanitizer.md`](skills/agent-deck/scripts/self-improvement/prompts/sanitizer.md) |
-| 27 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/synthesizer.md`](skills/agent-deck/scripts/self-improvement/prompts/synthesizer.md) |
-| 28 | ✓ | [`skills/agent-deck/scripts/self-improvement/run-analyzers.sh`](skills/agent-deck/scripts/self-improvement/run-analyzers.sh) |
-| 29 | ✓ | [`skills/agent-deck/scripts/self-improvement/sanitize.py`](skills/agent-deck/scripts/self-improvement/sanitize.py) |
-| 30 | ✓ | [`skills/agent-deck/SKILL.md`](skills/agent-deck/SKILL.md) |
-| 31 | ✓ | [`skills/session-share/scripts/.gitkeep`](skills/session-share/scripts/.gitkeep) |
-| 32 | ✓ | [`skills/session-share/scripts/export.sh`](skills/session-share/scripts/export.sh) |
-| 33 | ✓ | [`skills/session-share/scripts/import.sh`](skills/session-share/scripts/import.sh) |
-| 34 | ✓ | [`skills/session-share/scripts/utils.sh`](skills/session-share/scripts/utils.sh) |
-| 35 | ✓ | [`skills/session-share/SKILL.md`](skills/session-share/SKILL.md) |
-| 36 | ✓ | [`skills/session-share/tests/test_export_895_regression.sh`](skills/session-share/tests/test_export_895_regression.sh) |
+| 16 | ✓ | [`skills/agent-deck/scripts/goal/tests/test_worker_prompt.py`](skills/agent-deck/scripts/goal/tests/test_worker_prompt.py) |
+| 17 | ✓ | [`skills/agent-deck/scripts/launch-subagent.sh`](skills/agent-deck/scripts/launch-subagent.sh) |
+| 18 | ✓ | [`skills/agent-deck/scripts/self-improvement/analyze-all-conductors.sh`](skills/agent-deck/scripts/self-improvement/analyze-all-conductors.sh) |
+| 19 | ✓ | [`skills/agent-deck/scripts/self-improvement/build_manifest.py`](skills/agent-deck/scripts/self-improvement/build_manifest.py) |
+| 20 | ✓ | [`skills/agent-deck/scripts/self-improvement/distill.py`](skills/agent-deck/scripts/self-improvement/distill.py) |
+| 21 | ✓ | [`skills/agent-deck/scripts/self-improvement/file_issue.py`](skills/agent-deck/scripts/self-improvement/file_issue.py) |
+| 22 | ✓ | [`skills/agent-deck/scripts/self-improvement/file-issues.sh`](skills/agent-deck/scripts/self-improvement/file-issues.sh) |
+| 23 | ✓ | [`skills/agent-deck/scripts/self-improvement/list_candidates.py`](skills/agent-deck/scripts/self-improvement/list_candidates.py) |
+| 24 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/analyzer.md`](skills/agent-deck/scripts/self-improvement/prompts/analyzer.md) |
+| 25 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/auditor.md`](skills/agent-deck/scripts/self-improvement/prompts/auditor.md) |
+| 26 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/issue-drafter.md`](skills/agent-deck/scripts/self-improvement/prompts/issue-drafter.md) |
+| 27 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/sanitizer.md`](skills/agent-deck/scripts/self-improvement/prompts/sanitizer.md) |
+| 28 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/synthesizer.md`](skills/agent-deck/scripts/self-improvement/prompts/synthesizer.md) |
+| 29 | ✓ | [`skills/agent-deck/scripts/self-improvement/run-analyzers.sh`](skills/agent-deck/scripts/self-improvement/run-analyzers.sh) |
+| 30 | ✓ | [`skills/agent-deck/scripts/self-improvement/sanitize.py`](skills/agent-deck/scripts/self-improvement/sanitize.py) |
+| 31 | ✓ | [`skills/agent-deck/SKILL.md`](skills/agent-deck/SKILL.md) |
+| 32 | ✓ | [`skills/session-share/scripts/.gitkeep`](skills/session-share/scripts/.gitkeep) |
+| 33 | ✓ | [`skills/session-share/scripts/export.sh`](skills/session-share/scripts/export.sh) |
+| 34 | ✓ | [`skills/session-share/scripts/import.sh`](skills/session-share/scripts/import.sh) |
+| 35 | ✓ | [`skills/session-share/scripts/utils.sh`](skills/session-share/scripts/utils.sh) |
+| 36 | ✓ | [`skills/session-share/SKILL.md`](skills/session-share/SKILL.md) |
+| 37 | ✓ | [`skills/session-share/tests/test_export_895_regression.sh`](skills/session-share/tests/test_export_895_regression.sh) |
 
 ---
 

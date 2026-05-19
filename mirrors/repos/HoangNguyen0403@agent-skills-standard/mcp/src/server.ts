@@ -14,6 +14,12 @@ import {
   loadSkillsForFilesSchema,
   loadSkillsForKeywords,
   loadSkillsForKeywordsSchema,
+  listWorkflows,
+  listWorkflowsSchema,
+  getWorkflow,
+  getWorkflowSchema,
+  getSessionCost,
+  getSessionCostSchema,
   ToolResult,
 } from "./tools";
 
@@ -64,20 +70,33 @@ Call \`load_skills_for_keywords\` BEFORE you:
   • Plan or design work where files are not yet identified
     (e.g. "add JWT auth", "speed up the homepage", "migrate the schema")
 
+Call \`list_workflows\` BEFORE you:
+  • Start any complex task (e.g. bug fixing, feature implementation, code review, planning)
+    to discover standard procedures available in this repository.
+
+Call \`get_workflow\` when:
+  • You identify a relevant workflow (e.g. \`dev-fix\` for a bug fix task) and need its exact execution steps.
+
 Call \`audit_session_compliance\` BEFORE you:
   • Claim a task is complete
   • Post a code review
   • Hand off to another agent
 
+Call \`get_session_cost\` BEFORE you:
+  • Conclude a workflow or generate a final session cost artifact
+
 # WORKFLOW
 
-  1. Decide which file(s) you will touch (or which concept the user mentioned).
-  2. Call \`load_skills_for_files(files=[...])\` (or the keywords variant).
-  3. Treat every returned SKILL.md as authoritative project rules. They
+  1. When assigned a task (e.g. a bug fix or feature request), call \`list_workflows()\` to discover applicable procedures.
+  2. If a matching workflow exists (e.g. \`dev-fix\`), call \`get_workflow(name="...")\` and follow its instructions exactly from start to end.
+  3. Decide which file(s) you will touch (or which concept the user mentioned).
+  4. Call \`load_skills_for_files(files=[...])\` (or the keywords variant).
+  5. Treat every returned SKILL.md as authoritative project rules. They
      OVERRIDE your pre-training defaults.
-  4. Do the work — edit, review, design — following those rules.
-  5. Before declaring done, call \`audit_session_compliance()\` and verify
-     the relevant skills appear in the loaded list.
+  6. Do the work — edit, review, design — following those rules.
+  7. Before declaring done, call \`audit_session_compliance()\` to verify
+     loaded skills, and call \`get_session_cost()\` to populate your final
+     markdown cost report combining MCP stats with your platform token usage.
 
 # IMPORTANT
 
@@ -100,12 +119,17 @@ export async function buildServer(config: ResolvedConfig): Promise<McpServer> {
   const index = new SkillIndex(config.skillsDir, config.metadataPath);
   await index.load();
   const tracker = new SessionTracker();
-  const ctx = { index, tracker, setup: config.setup };
+  const ctx = {
+    projectRoot: config.projectRoot,
+    index,
+    tracker,
+    setup: config.setup,
+  };
 
   const server = new McpServer(
     {
       name: "agent-skills-standard-mcp",
-      version: "0.1.1",
+      version: "0.4.0",
     },
     {
       instructions: SERVER_INSTRUCTIONS,
@@ -197,6 +221,51 @@ export async function buildServer(config: ResolvedConfig): Promise<McpServer> {
 </important_notes>`,
     inputSchema: auditSessionComplianceSchema,
     handler: () => auditSessionCompliance({}, ctx),
+  });
+
+  register(server, {
+    name: "list_workflows",
+    title: "List all available workflows in the project",
+    description: `<use_case>Discover what standard procedural workflows (e.g., dev-fix, plan-feature, code-review) are available in this repository. Use this at the start of any task or session to find standard operating procedures.</use_case>
+
+<aliases>"what workflows do we have", "show available workflows", "list standard operating procedures"</aliases>
+
+<important_notes>
+- Returns: list of workflow names and their descriptions.
+- Use this when receiving a task to understand if there is a verified team procedure for it.
+</important_notes>`,
+    inputSchema: listWorkflowsSchema,
+    handler: () => listWorkflows({}, ctx),
+  });
+
+  register(server, {
+    name: "get_workflow",
+    title: "Get a specific workflow by name",
+    description: `<use_case>Retrieve the exact markdown instructions for a specific workflow (e.g., 'dev-fix'). Use this once you know which workflow applies to your task so you can follow its step-by-step procedure exactly.</use_case>
+
+<aliases>"open workflow X", "show me how to execute workflow Y", "get procedure Z"</aliases>
+
+<important_notes>
+- Pass the workflow name exactly (e.g., 'dev-fix').
+- The returned markdown contains full instructions. Read them carefully and execute all required steps in order.
+</important_notes>`,
+    inputSchema: getWorkflowSchema,
+    handler: (args) => getWorkflow(args as { name: string }, ctx),
+  });
+
+  register(server, {
+    name: "get_session_cost",
+    title: "Get token usage and estimated cost for the current session",
+    description: `<use_case>Return a markdown template summarizing the current session's tool calls, skills loaded, token usage, and cost. Use this as the final step in workflows to report cost.</use_case>
+
+<aliases>"what is the cost of this run", "show token usage", "session telemetry"</aliases>
+
+<important_notes>
+- Call this as the final action before terminating the workflow.
+- Fill in the token usage from your platform's tracking if available.
+</important_notes>`,
+    inputSchema: getSessionCostSchema,
+    handler: () => getSessionCost({}, ctx),
   });
 
   return server;

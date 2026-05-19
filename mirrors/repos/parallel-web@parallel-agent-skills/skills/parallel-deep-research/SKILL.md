@@ -57,6 +57,7 @@ Notes on the `-fast` suffix: `-fast` tiers use cached web data and are quicker. 
 Run `parallel-cli research processors` to see the full list with latencies.
 
 Parse the JSON output to extract the `run_id`, `interaction_id`, and monitoring URL. Immediately tell the user:
+
 - Deep research has been kicked off
 - The expected latency for the processor tier chosen (from the table above)
 - The monitoring URL where they can track progress
@@ -70,6 +71,7 @@ parallel-cli research poll "$RUN_ID" -o "$FILENAME" --timeout 540
 ```
 
 Important:
+
 - Use `--timeout 540` (9 minutes) to stay within tool execution limits
 - Do NOT pass `--json` — the full output is large and will flood context. The `-o` flag writes results to files instead.
 - With `-o "$FILENAME"`:
@@ -81,6 +83,7 @@ Important:
 ### If the poll times out
 
 Higher processor tiers can take longer than 9 minutes. If the poll exits without completing:
+
 1. Tell the user the research is still running server-side
 2. Re-run the same `parallel-cli research poll` command to continue waiting
 
@@ -89,6 +92,7 @@ Higher processor tiers can take longer than 9 minutes. If the poll exits without
 **After step 1:** Share the monitoring URL (for tracking progress only — it is not the final report).
 
 **After step 2:**
+
 1. Share the **executive summary** that the poll command printed to stdout
 2. Tell the user the generated file paths:
    - `$FILENAME.md` — formatted markdown report (if `--text` was used)
@@ -103,4 +107,10 @@ Ask the user if they would like to read through the files for more detail. Do NO
 
 ## Setup
 
-Requires `parallel-cli` (installed and authenticated). If `parallel-cli --version` fails, or if a later command fails with an authentication error, tell the user to see https://docs.parallel.ai/integrations/cli and stop.
+If `parallel-cli` is not found, install and authenticate:
+
+```bash
+/parallel:parallel-cli-setup
+```
+
+If any `parallel-cli research` command returns `403`, tell the user balance is likely required. Offer to run `parallel-cli balance get`, and if needed ask for explicit confirmation before running `parallel-cli balance add <amount_cents>`. Then retry the original research command.

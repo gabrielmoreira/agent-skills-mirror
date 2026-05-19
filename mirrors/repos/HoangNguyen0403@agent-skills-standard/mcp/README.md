@@ -16,6 +16,8 @@ This MCP follows the [Core Architecture](../ARCHITECTURE.md) inspired by **Rust 
 
 | Tool                                 | What it returns                                                                                   |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| `list_workflows()`                   | Returns available standard operating procedures (e.g. `dev-fix`, `plan-feature`).                 |
+| `get_workflow(name)`                 | Returns exact step-by-step markdown instructions for a specific workflow.                         |
 | `load_skills_for_files(files)`       | Matches files against the router and returns the matched `SKILL.md` content. Call before editing. |
 | `load_skills_for_keywords(keywords)` | Matches concept words against keyword triggers. Use for tasks that don't reference a file yet.    |
 | `get_skill(category, name)`          | Direct lookup for a known skill.                                                                  |
@@ -307,8 +309,8 @@ Smoke test the built binary:
 
 ## Token economics
 
-- **Tool schemas**: ~500 tokens per session (5 tools, terse descriptions). Negligible vs typical multi-tool MCP baselines.
-- **Per-load cost**: equivalent to the agent reading the matched `SKILL.md` files itself — the MCP saves round-trips by batching matches into one call.
+- **Tool schemas**: ~700 tokens per session (7 tools, terse descriptions). Negligible vs typical multi-tool MCP baselines.
+- **Per-load cost**: equivalent to the agent reading the matched `SKILL.md` or workflow files itself — the MCP saves round-trips by batching matches into one call.
 - **Tier-model demotion**: prevents broad-glob skills from ballooning the response. A typical `.dart` file edit returns 2-3 skills (~3-5 KB), not the whole flutter category.
 
 ## Architecture
@@ -322,11 +324,14 @@ mcp/
 │   ├── services/
 │   │   ├── SkillIndex.ts           # in-memory index + matcher (tier model)
 │   │   ├── SkillParser.ts          # SKILL.md frontmatter parser
+│   │   ├── WorkflowIndex.ts        # workflow discovery & markdown extraction
 │   │   └── SessionTracker.ts       # audit log
 │   └── tools/
-│       └── index.ts                # 5 tool handlers
+│       └── index.ts                # 7 tool handlers
 └── test/
-    └── SkillIndex.spec.ts          # 9 unit tests
+    ├── SkillIndex.spec.ts          # 19 unit tests
+    ├── Tools.spec.ts               # 13 unit tests
+    └── WorkflowIndex.spec.ts       # 5 unit tests
 ```
 
 ## Best-practices alignment

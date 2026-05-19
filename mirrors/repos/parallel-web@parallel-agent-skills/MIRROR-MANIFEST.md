@@ -62,14 +62,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
 | 2 | ✓ | [`agents/parallel-subagent.md`](agents/parallel-subagent.md) |
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`skills/parallel-data-enrichment/SKILL.md`](skills/parallel-data-enrichment/SKILL.md) |
-| 5 | ✓ | [`skills/parallel-deep-research/SKILL.md`](skills/parallel-deep-research/SKILL.md) |
-| 6 | ✓ | [`skills/parallel-findall/SKILL.md`](skills/parallel-findall/SKILL.md) |
-| 7 | ✓ | [`skills/parallel-monitor/SKILL.md`](skills/parallel-monitor/SKILL.md) |
-| 8 | ✓ | [`skills/parallel-web-extract/SKILL.md`](skills/parallel-web-extract/SKILL.md) |
-| 9 | ✓ | [`skills/parallel-web-search/SKILL.md`](skills/parallel-web-search/SKILL.md) |
-| 10 | ✓ | [`skills/result/SKILL.md`](skills/result/SKILL.md) |
-| 11 | ✓ | [`skills/setup/SKILL.md`](skills/setup/SKILL.md) |
+| 4 | ✓ | [`skills/parallel-cli-setup/SKILL.md`](skills/parallel-cli-setup/SKILL.md) |
+| 5 | ✓ | [`skills/parallel-data-enrichment/SKILL.md`](skills/parallel-data-enrichment/SKILL.md) |
+| 6 | ✓ | [`skills/parallel-deep-research/SKILL.md`](skills/parallel-deep-research/SKILL.md) |
+| 7 | ✓ | [`skills/parallel-findall/SKILL.md`](skills/parallel-findall/SKILL.md) |
+| 8 | ✓ | [`skills/parallel-monitor/SKILL.md`](skills/parallel-monitor/SKILL.md) |
+| 9 | ✓ | [`skills/parallel-web-extract/SKILL.md`](skills/parallel-web-extract/SKILL.md) |
+| 10 | ✓ | [`skills/parallel-web-search/SKILL.md`](skills/parallel-web-search/SKILL.md) |
+| 11 | ✓ | [`skills/result/SKILL.md`](skills/result/SKILL.md) |
 | 12 | ✓ | [`skills/status/SKILL.md`](skills/status/SKILL.md) |
 
 ---

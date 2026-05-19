@@ -16,45 +16,25 @@ To format a Bicep file, follow these guidelines:
 To avoid chaos keep a strict structure for Bicep files. The recommended structure is as follows:
 
 ```bicep
-////////////
 // Imports
-////////////
 
-////////////
 // Metadata (optional)
-////////////
 
-////////////
 // TargetScope (optional)
-////////////
 
-////////////
 // Parameters
-////////////
 
-////////////
 // Variables
-////////////
 
-////////////
 // Existing resource references
-////////////
 
-////////////
 // Resources / Modules
-////////////
 
-////////////
 // Outputs
-////////////
 
-////////////
 // User-Defined Types Types
-////////////
 
-////////////
 // Functions
-////////////
 ```
 
 Do not add blank lines between section comment headers and the first definition in that section.
@@ -62,9 +42,7 @@ Do not add blank lines between section comment headers and the first definition 
 Correct:
 
 ```bicep
-////////////
 // Parameters
-////////////
 @description('The supported Azure location')
 param location string
 ```
@@ -72,9 +50,7 @@ param location string
 Wrong:
 
 ```bicep
-////////////
 // Parameters
-////////////
 
 @description('The supported Azure location')
 param location string
@@ -116,6 +92,16 @@ module <name> '<path>' = {
 }
 ```
 
+### Reference naming
+
+Resources which have an `existing` reference should have the name ending with `Ref`. For example:
+
+```bicep
+resource subnetRef '<type>@<apiVersion>' existing = {
+    ...
+}
+```
+
 ## Execution steps
 
 When formatting a Bicep file, perform these steps in order:
@@ -134,7 +120,6 @@ When formatting a Bicep file, perform these steps in order:
    - Ensure decorators are in the correct order
 
 4. **Run bicep format**
-
    - Run command: `bicep format <.bicep file>`
 
 5. **Remove commented code**
@@ -159,35 +144,28 @@ Use the following command to compile and validate the Bicep file:
 param location string='eastus'
 var storageAccountName='mystorageaccount'
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-09-01'={
-name:storageAccountName
-location:location
-properties:{
-accessTier:'Hot'
-}
-sku:{name:'Standard_LRS'}
+    name:storageAccountName
+    location:location
+    properties:{
+        accessTier:'Hot'
+    }
+    sku: {
+        name: 'Standard_LRS'
+    }
 }
 ```
 
 ### After Formatting
 
 ```bicep
-/*
-Parameters
-*/
-
+// Parameters
 @sys.description('The Azure region for resource deployment')
 param location string = 'eastus'
 
-/*
-Variables
-*/
-
+// Variables
 var storageAccountName = 'mystorageaccount'
 
-/*
-Resources
-*/
-
+// Resources
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' = {
   name: storageAccountName
   location: location

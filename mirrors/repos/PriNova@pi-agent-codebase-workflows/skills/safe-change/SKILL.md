@@ -23,6 +23,39 @@ Prompt arguments may include a target, focus, or scope. Use these to limit inves
 - Update docs only when durable semantics changed. Read `references/docs-update.md` when docs may need updates.
 - Do not explicitly read `AGENTS.md`; The harness injects root `AGENTS.md` automatically.
 
+## Artifact Compatibility Contract
+
+Safe-change accepts artifacts produced by both `safe-start` and `codebase-recon`.
+
+Canonical repo-level docs may include:
+
+```text
+docs/agent/
+  REPO_INVENTORY.md
+  PROJECT_INTENT.md
+  ARCHITECTURE.md
+  DATA_FLOW.md
+  DATA_MODEL.md
+  INVARIANTS.md
+  DEPENDENCY_RULES.md
+  DESIGN_ISSUES.md
+  RISK_REGISTER.md
+  CHANGE_GUIDE.md
+  TESTING_STRATEGY.md
+  VALIDATION_BASELINE.md
+  SCOPES.md
+```
+
+Respect artifact headers when present:
+
+```text
+Status: current | partial | stale
+Evidence: planned | observed | mixed
+Last validated: unknown | <date>
+```
+
+Treat `planned` docs as design intent, not source evidence. Verify against code before relying on them for implementation-sensitive claims.
+
 ## Scoped Docs
 
 If `docs/agent/SCOPES.md` exists or task uses a module/package/app/service/path focus, read `references/scoped-docs.md` during preflight. Scoped docs are optional and backward-compatible; if absent, use top-level `docs/agent/*.md` only.
@@ -43,14 +76,19 @@ Classify task during preflight, then read the matching reference before design, 
 Read first:
 - `docs/agent/CHANGE_GUIDE.md` if present
 - `docs/agent/SCOPES.md` if present; then apply `references/scoped-docs.md`
+- matching scoped `REPO_INVENTORY.md` or top-level `docs/agent/REPO_INVENTORY.md` if present, for entry points, commands, and boundaries
+- matching scoped `VALIDATION_BASELINE.md` or top-level `docs/agent/VALIDATION_BASELINE.md` if present, for known-good validation commands and blockers
 
 Read only docs relevant to task:
+- project intent for scope, user-goal, non-goal, or product-sensitive changes
 - architecture docs for module/flow changes
+- data-flow docs for changes to user journeys, pipelines, transformations, or side effects
 - data model docs for data/schema/API/type changes
 - invariant docs for rule-sensitive changes
 - dependency rules for imports/module boundaries
 - risk register for risky areas
 - design issues for refactoring/design work
+- testing strategy for new/changed tests or validation approach
 - scoped `CONTRACTS.md` files for touched cross-scope APIs, shared types, schemas, events, generated clients, or persistence boundaries
 
 Before editing code, produce:

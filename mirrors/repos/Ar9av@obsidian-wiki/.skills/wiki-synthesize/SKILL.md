@@ -167,3 +167,38 @@ Skipped (consider next time):
 - **Don't synthesize for synthesis's sake.** If two concepts just happen to appear together a lot without a real conceptual link, skip them.
 - **Three-way syntheses are powerful but rare.** Only create them when three concepts form a genuine triangle of mutual influence — not just because all three appear in the same project page.
 - **Check `_insights.md` first.** The wiki-status skill may have already flagged synthesis candidates there — start with those before running the co-occurrence scan from scratch.
+
+## QMD Refresh After Vault Writes
+
+QMD is a search index, not the source of truth. If `$QMD_WIKI_COLLECTION` is empty or unset, skip this step. Run it only after this skill has written or rewritten vault markdown. If QMD refresh fails, do not roll back the vault changes; report the QMD status separately.
+
+Use `$QMD_CLI` if set; otherwise use `qmd`.
+
+```bash
+${QMD_CLI:-qmd} update
+```
+
+If the output says vectors are needed or embeddings may be stale, run:
+
+```bash
+${QMD_CLI:-qmd} embed
+```
+
+Verify the collection with either:
+
+```bash
+${QMD_CLI:-qmd} ls "$QMD_WIKI_COLLECTION"
+```
+
+or, when a specific page path is known:
+
+```bash
+${QMD_CLI:-qmd} get "qmd://$QMD_WIKI_COLLECTION/<page>.md" -l 5
+```
+
+Record one of:
+- `QMD refreshed: update + embed + verified`
+- `QMD refreshed: update only + verified`
+- `QMD skipped: QMD_WIKI_COLLECTION unset`
+- `QMD skipped: qmd CLI unavailable`
+- `QMD failed: <short error summary>`

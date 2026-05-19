@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/security-guidance/../../../engineering/security-guidance/skills/security-guidance/SKILL.md

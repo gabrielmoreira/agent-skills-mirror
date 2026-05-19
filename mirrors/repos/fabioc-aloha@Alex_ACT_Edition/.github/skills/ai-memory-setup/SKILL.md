@@ -6,13 +6,19 @@ name: ai-memory-setup
 description: "Detect, create, and manage the AI-Memory fleet communication channel. Fires on bootstrap, session start (announcements), and feedback writes."
 tier: standard
 applyTo: '**/AI-Memory/**,**/cognitive-config*,**/*feedback*,**/*announcement*,**/*fleet*,**/*memory-setup*'
-currency: 2026-05-02
-lastReviewed: 2026-05-02
+currency: 2026-05-18
+lastReviewed: 2026-05-18
 ---
 
 # AI-Memory Setup
 
 AI-Memory is the shared folder on the user's cloud drive where ACT heirs exchange feedback, announcements, and registry data. This skill covers detection, creation, path resolution, and ongoing read/write operations.
+
+## Formal contract
+
+Once AI-Memory exists, `AI-Memory/SCHEMA.md` is the source of truth for subfolder ownership, required frontmatter, and lifecycle rules (announcement expiry, feedback inbox-not-archive, knowledge-package retirement). Read it when in doubt about *what an artifact should look like* or *when it should be pruned*. This skill covers *how to set up and access* AI-Memory; SCHEMA.md covers *what lives inside it*.
+
+If SCHEMA.md is missing on a heir's resolved AI-Memory root, the Supervisor hasn't initialized it yet. The Create operation below installs the base structure; SCHEMA.md is added by Supervisor curation, not by heirs.
 
 ## Supported Cloud Providers
 
@@ -45,6 +51,7 @@ The resolution order matches `_registry.cjs` (the muscle used by `bootstrap-heir
 ```text
 <cloud-drive>/AI-Memory/
   README.md                           # Channel overview
+  SCHEMA.md                           # Formal contract (subfolder ownership, frontmatter, lifecycle)
   feedback/
     README.md
     alex-act/                         # Heir feedback inbox
@@ -121,9 +128,9 @@ When the heir observes friction worth surfacing:
 
 1. Resolve AI-Memory root
 2. Write one markdown file per item to `feedback/alex-act/`
-3. Filename format: `YYYY-MM-DD-<short-slug>.md`
+3. Filename format: `YYYY-MM-DD-<heir-id>-<short-slug>.md`
 4. Strip project specifics per `cross-project-isolation.instructions.md`
-5. Required frontmatter: Date, Category (bug/friction/feature-request/success), Severity (critical/high/medium/low), Heir (redacted), Edition version
+5. Frontmatter per `AI-Memory/SCHEMA.md` § Feedback (lowercase keys): `date`, `heir_id` (from `.github/.act-heir.json`), `severity` (critical/high/medium/low), `category` (bug/friction/feature-request/success/framework). Body: what you were doing, what happened, what you expected, repro steps, file or rule references.
 
 ### Read Announcements
 

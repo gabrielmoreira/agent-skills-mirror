@@ -23,6 +23,7 @@ This file is the single source of truth for agents entering this repository. Rea
 - `tools/dev` is the local development lifecycle control plane.
 - `tools/pack` is the local packaged build/start/stop/logs control plane and mac beta release artifact preparation surface.
 - `tools/pr` is the maintainer PR-duty control plane: a thin `gh` wrapper that encodes this repo's review-lane derivation, forbidden-surface flags, lane checklists, and validation-command suggestions.
+- `tools/serve` is the local fixture-service control plane; first service is `tools-serve start updater` for deterministic updater metadata and artifacts.
 - `e2e` owns user-level end-to-end smoke tests and Playwright UI automation; read `e2e/AGENTS.md` before editing its tests or commands.
 
 ## Inactive or placeholder directories
@@ -47,7 +48,7 @@ This file is the single source of truth for agents entering this repository. Rea
 
 ## Root command boundary
 
-- Keep root scripts reserved for true repo-level checks and tools control-plane entrypoints: `pnpm guard`, `pnpm typecheck`, `pnpm tools-dev`, `pnpm tools-pack`, and `pnpm tools-pr`.
+- Keep root scripts reserved for true repo-level checks and tools control-plane entrypoints: `pnpm guard`, `pnpm typecheck`, `pnpm tools-dev`, `pnpm tools-pack`, `pnpm tools-pr`, and `pnpm tools-serve`.
 - Do not add root aggregate `pnpm build` or `pnpm test` aliases. Build/test commands must stay package-scoped (`pnpm --filter <package> ...`) or tool-scoped (`pnpm tools-pack ...` / `pnpm tools-pr ...`).
 - Do not add root e2e aliases; e2e package commands and ownership rules live in `e2e/AGENTS.md`.
 
@@ -166,6 +167,7 @@ For a worked example of one full loop (red e2e spec → fix → green), see `e2e
 ```bash
 pnpm install
 pnpm tools-dev
+pnpm tools-serve start updater
 pnpm tools-dev start web
 pnpm tools-dev run web --daemon-port 17456 --web-port 17573
 pnpm tools-dev status --json
@@ -199,6 +201,7 @@ pnpm --filter @open-design/desktop build
 pnpm --filter @open-design/tools-dev build
 pnpm --filter @open-design/tools-pack build
 pnpm --filter @open-design/tools-pr build
+pnpm --filter @open-design/tools-serve build
 ```
 
 ```bash

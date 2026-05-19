@@ -125,6 +125,11 @@ git clone https://github.com/antonbabenko/terraform-skill.git ~/.agents/skills/t
 
 Codex auto-discovers skills from `~/.agents/skills/` and `.agents/skills/`. Update with `cd ~/.agents/skills/terraform-skill && git pull`.
 
+For a managed Codex plugin install, use the `antonbabenko/agent-plugins`
+marketplace (`codex plugin marketplace add antonbabenko/agent-plugins`, then
+install `terraform-skill`). Do not add `antonbabenko/terraform-skill` as a
+separate marketplace - it clashes by name with `agent-plugins`.
+
 </details>
 
 <details>

@@ -1,6 +1,6 @@
 ---
 name: differential-expression-analysis
-description: Use when analyzing bulk RNA-seq or microarray expression data to identify differentially expressed genes between two biological groups (case vs control), with volcano plots and heatmap visualization. NOT for: single-cell RNA-seq, methylation analysis, non-expression data.
+description: Use when analyzing bulk RNA-seq or microarray expression data to identify differentially expressed genes between two biological groups (case vs control), with volcano plots and heatmap visualization. NOT for:single-cell RNA-seq, methylation analysis, non-expression data.
 license: MIT
 author: AIPOCH
 ---

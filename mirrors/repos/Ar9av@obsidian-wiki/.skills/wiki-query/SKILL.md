@@ -62,6 +62,7 @@ Build a candidate set *without opening any page bodies*:
   2. Tag match
   3. Summary field contains the query term
   4. `index.md` entry contains the query term
+- **Apply tier ordering within each rank bucket:** when two candidates score equally, prefer `tier: core` over `tier: supporting` over `tier: peripheral`. Read the `tier:` frontmatter field with the same cheap grep as other fields. Pages without a `tier:` field are treated as `supporting`.
 
 If you're in **index-only mode**, stop here. Answer from `summary:` fields, titles, and `index.md` descriptions only. Label the answer clearly: **"(index-only answer — page bodies not read; facts below are from page summaries and may miss nuance)"**. Then skip to Step 5.
 
@@ -133,7 +134,7 @@ For each of the top candidates, pull the relevant section *without reading the w
 
 Only when Steps 2 and 3 don't answer the question:
 
-- `Read` the top **3** candidates in full.
+- `Read` the top **3** candidates in full. When choosing which 3 to read, apply tier ordering: read `core` pages before `supporting`, and skip `peripheral` pages unless they are the only match.
 - Follow at most one hop of `[[wikilinks]]` from those pages if the answer requires cross-references.
 - **For relationship queries** ("How does X relate to Y?" / "What contradicts X?"): also read the `relationships:` frontmatter block of the candidate pages. Each entry gives a typed, directional edge (`extends`, `implements`, `contradicts`, `derived_from`, `uses`, `replaces`, `related_to`). Surface these explicitly in your answer — "Page A *contradicts* Page B (typed edge)" is more useful than "Page A links to Page B".
 - Check "Open Questions" sections for known gaps.

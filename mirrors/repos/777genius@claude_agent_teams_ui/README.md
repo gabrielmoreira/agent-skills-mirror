@@ -26,7 +26,11 @@
   <sub>Free desktop app for AI agent teams. Auto-detects Claude/Codex/OpenCode (200+ models). Use the provider access you already have - subscriptions or API keys. Not just coding agents.</sub>
 </p>
 
+<!--
 <img width="1304" height="820" alt="image" src="https://github.com/user-attachments/assets/dea53a01-68b3-4c36-bcf6-e4d1ad4cdb31" />
+-->
+<img width="2560" height="1604" alt="telegram-cloud-photo-size-2-5213160716557294036-w" src="https://github.com/user-attachments/assets/cbe0e1e7-f73c-4dd7-94e0-c694fcaf491e" />
+
 
 <table>
 <tr>
@@ -172,29 +176,34 @@ For feature architecture and implementation guidance:
 
 | Feature | Agent Teams | Gastown | Paperclip | Cursor | Claude Code CLI |
 |---|---|---|---|---|---|
-| **Cross-team communication** | ✅ Native cross-team messages | ⚠️ Cross-rig coordination | ⚠️ Company-scoped org work | N/A | ❌ |
+| **Cross-team communication** | ✅ Messages between separate teams | ⚠️ Coordination across groups | ⚠️ Company-scoped org work | N/A | ❌ |
 | **Agent-to-agent messaging** | ✅ Native real-time mailbox | ✅ Mailboxes + handoffs | ⚠️ Comments + @mentions | ❌ | ✅ Team mailbox, no UI |
-| **Linked tasks** | ✅ Cross-refs + dependencies | ⚠️ Beads deps + convoys | ✅ Goals, parents, blockers | ❌ | ✅ Shared task list |
-| **Session analysis** | ✅ Task logs + token tracking | ⚠️ Session recall, feed, OTEL | ⚠️ Run transcripts + cost audit | ❌ | ⚠️ Usage command, no UI |
+| **Linked tasks** | ✅ Tasks can link to and block each other | ⚠️ Task deps + grouped work | ✅ Goals, parent tasks, blockers | ❌ | ✅ Shared task list |
+| **Session analysis** | ✅ Task logs + token usage | ⚠️ Session recall, feed, metrics | ⚠️ Run transcripts + cost audit | ❌ | ⚠️ Usage command, no UI |
 | **Task attachments** | ✅ Auto-attach, agents read & attach files | ❌ Not task-level | ✅ Docs, attachments, work products | ⚠️ Chat session only | ⚠️ Chat images only |
 | **Hunk-level review** | ✅ Accept / reject individual hunks | ❌ | ❌ Bring your own review | ✅ | ❌ |
 | **Built-in code editor** | ✅ With Git support | ❌ | ❌ Control plane, not editor | ✅ Full IDE | ❌ |
-| **Full autonomy** | ✅ Agents create, assign, review tasks end-to-end | ✅ Mayor, convoys, recovery | ✅ Heartbeats + governance | ⚠️ Background agents, not teams | ✅ Experimental CLI teams |
-| **Task dependencies (blocked by)** | ✅ Guaranteed ordering | ✅ DAG waves via Beads | ✅ Blockers + execution locks | ❌ | ✅ Team task deps, no UI |
-| **Review workflow** | ✅ Agents review each other + human review UI | ⚠️ Refinery merge queue | ✅ Approvals + governance | ⚠️ PR/BugBot only | ✅ Team review, no UI |
-| **Zero setup** | ✅ Guided runtime setup | ❌ Go/Git/Dolt/Beads/tmux | ⚠️ `npx` + embedded Postgres | ✅ | ⚠️ CLI + env flag |
+| **Full autonomy** | ✅ Agents plan, assign, work, and review | ✅ Coordinator, grouped work, recovery | ✅ Wake-up runs + governance | ⚠️ Background agents, not teams | ✅ Experimental CLI teams |
+| **Task dependencies** | ✅ Tasks wait for blockers automatically | ✅ Dependency waves | ✅ Blockers + execution locks | ❌ | ✅ Team task deps, no UI |
+| **Review workflow** | ✅ Agents review each other + human review UI | ⚠️ Merge queue | ✅ Approvals + governance | ⚠️ PR/BugBot only | ✅ Team review, no UI |
+| **Zero setup** | ✅ Guided runtime setup | ❌ Manual CLI stack | ⚠️ `npx` + local database | ✅ | ⚠️ CLI + env flag |
 | **Kanban board** | ✅ 5 columns, real-time | ❌ Dashboard, not Kanban | ✅ 7 columns, drag-and-drop | ❌ | ❌ |
-| **Execution log viewer** | ✅ Tool calls, reasoning, timeline | ⚠️ Feed, OTEL, dashboard | ✅ Run transcripts + ledger | ⚠️ Agent chat + terminal | ❌ |
+| **Execution logs** | ✅ Tool calls, reasoning, timeline | ⚠️ Feed, metrics, dashboard | ✅ Run transcripts + audit log | ⚠️ Agent chat + terminal | ❌ |
 | **Live processes** | ✅ View, stop, open URLs in browser | ⚠️ Agent health dashboard | ⚠️ Manual services + previews | ⚠️ Native terminal only | ❌ |
+| **CPU/RAM per teammate** | ✅ See CPU/RAM history for each live teammate | ⚠️ Shows activity/health, not CPU/RAM | ⚠️ Shows run status/cost, not CPU/RAM | ❌ Remote agent/terminal only | ❌ |
 | **Per-task code review** | ✅ Accept / reject / comment | ⚠️ Merge queue, no diff UI | ⚠️ PR/work products, no inline diff | ✅ BugBot on PRs | ❌ |
-| **Flexible autonomy** | ✅ Per-action approvals + notifications | ✅ Gates, escalation, recovery | ✅ Board approvals, pause, terminate | ⚠️ BG agents auto-run commands | ✅ Permissions + hooks |
+| **Flexible autonomy** | ✅ Per-action approvals + notifications | ✅ Gates, escalation, recovery | ✅ Board approvals, pause, terminate | ⚠️ Background agents auto-run commands | ✅ Permissions + hooks |
 | **Git worktree isolation** | ✅ Optional | ✅ Core primitive | ✅ Worktrees / branches | ⚠️ Background branches/VMs | ⚠️ Manual worktrees |
-| **Multi-agent backend** | ✅ Claude, Codex + OpenCode teammates | ✅ Claude, Codex, Gemini, Copilot + more | ✅ BYO agents: Claude, Codex, Cursor/OpenCode, HTTP | ⚠️ Multi-model agents, no team backend | ⚠️ Claude-only experimental teams |
+| **Mixed AI teammates** | ✅ Claude, Codex, and OpenCode in one team | ✅ Many providers, terminal-first | ✅ Bring your own agents/runtimes | ⚠️ Multi-model agents, no shared team | ⚠️ Claude-only experimental teams |
+| **Live team map** | ✅ Map of teammates, tasks, blockers, handoffs, activity, logs | ⚠️ Agent tree + feed panels | ⚠️ Org chart/status, not a task/log map | ❌ | ❌ |
+| **Live teammates** | ✅ Watch teammates work and message them directly | ⚠️ Terminal-based agent sessions | ⚠️ Agents wake up for runs, then sleep | ⚠️ Background agents per task | ⚠️ CLI teams, no desktop view |
+| **Team workspace** | ✅ Tasks, logs, Kanban, review, and teammates in one app | ⚠️ Mail/feed/dashboard across tools | ⚠️ Board + transcripts, less live teammate view | ⚠️ IDE chats/tasks, not team view | ❌ No desktop UI |
+| **Teammate launch status** | ✅ Know who started, who is stuck, and who replied | ⚠️ Session health, less clear message status | ⚠️ Run status, not live teammate status | ❌ | ⚠️ CLI mailbox, no visual status |
 | **Org chart / governance** | ⚠️ Roles + approvals, no org chart | ⚠️ Roles + escalation | ✅ Org chart + board governance | ⚠️ Team admin only | ❌ |
 | **Budget controls** | ⚠️ Cost/token visibility, no hard caps | ⚠️ Cost tiers + digest, no hard caps | ✅ Per-agent budgets + hard stops | ⚠️ Usage + BG spend limits | ⚠️ `/usage` + workspace limits |
 | **Price** | **Free OSS UI**, provider access needed | Free OSS, runtime plans needed | Free OSS, self-hosted + infra | Free + paid usage | Claude plan or API usage |
 
-Fact sources checked on May 16, 2026: [detailed research notes](docs/research/gastown-paperclip-comparison-2026-05-16.md), [Gastown README](https://github.com/gastownhall/gastown), [Gastown provider guide](https://github.com/gastownhall/gastown/blob/main/docs/agent-provider-integration.md), [Gastown scheduler](https://github.com/gastownhall/gastown/blob/main/docs/design/scheduler.md), [Gastown release](https://github.com/gastownhall/gastown/releases/tag/v1.1.0), [Paperclip README](https://github.com/paperclipai/paperclip), [Paperclip adapters](https://github.com/paperclipai/paperclip/blob/master/docs/adapters/overview.md), [Paperclip budgets](https://github.com/paperclipai/paperclip/blob/master/docs/guides/board-operator/costs-and-budgets.md), [Paperclip runtime services](https://github.com/paperclipai/paperclip/blob/master/docs/guides/board-operator/execution-workspaces-and-runtime-services.md), [Paperclip Kanban source](https://github.com/paperclipai/paperclip/blob/master/ui/src/components/KanbanBoard.tsx), [Paperclip work products](https://github.com/paperclipai/paperclip/blob/master/packages/shared/src/validators/work-product.ts), [Paperclip release](https://github.com/paperclipai/paperclip/releases/tag/v2026.513.0), [Cursor Background Agents](https://docs.cursor.com/en/background-agents), [Cursor Diffs & Review](https://docs.cursor.com/en/agent/review), [Cursor Bugbot](https://docs.cursor.com/en/bugbot), [Cursor pricing](https://docs.cursor.com/en/account/usage), [Claude Code agent teams](https://code.claude.com/docs/en/agent-teams), [Claude Code subagents](https://code.claude.com/docs/en/sub-agents), [Claude Code workflows](https://code.claude.com/docs/en/common-workflows), [Claude Code costs](https://code.claude.com/docs/en/costs), [Claude pricing](https://claude.com/pricing).
+Fact sources checked on May 18, 2026: [detailed research notes](docs/research/gastown-paperclip-comparison-2026-05-16.md), [Gastown README](https://github.com/gastownhall/gastown), [Gastown provider guide](https://github.com/gastownhall/gastown/blob/main/docs/agent-provider-integration.md), [Gastown scheduler](https://github.com/gastownhall/gastown/blob/main/docs/design/scheduler.md), [Gastown dashboard source](https://github.com/gastownhall/gastown/blob/main/internal/web/templates/convoy.html), [Gastown release](https://github.com/gastownhall/gastown/releases/tag/v1.1.0), [Paperclip README](https://github.com/paperclipai/paperclip), [Paperclip adapters](https://github.com/paperclipai/paperclip/blob/master/docs/adapters/overview.md), [Paperclip heartbeat protocol](https://github.com/paperclipai/paperclip/blob/master/docs/guides/agent-developer/heartbeat-protocol.md), [Paperclip org chart](https://paperclip.inc/docs/guides/board-operator/org-structure/), [Paperclip OrgChart source](https://github.com/paperclipai/paperclip/blob/master/ui/src/pages/OrgChart.tsx), [Paperclip budgets](https://github.com/paperclipai/paperclip/blob/master/docs/guides/board-operator/costs-and-budgets.md), [Paperclip runtime services](https://github.com/paperclipai/paperclip/blob/master/docs/guides/board-operator/execution-workspaces-and-runtime-services.md), [Paperclip Kanban source](https://github.com/paperclipai/paperclip/blob/master/ui/src/components/KanbanBoard.tsx), [Paperclip work products](https://github.com/paperclipai/paperclip/blob/master/packages/shared/src/validators/work-product.ts), [Paperclip release](https://github.com/paperclipai/paperclip/releases/tag/v2026.517.0), [Cursor Background Agents](https://docs.cursor.com/en/background-agents), [Cursor Diffs & Review](https://docs.cursor.com/en/agent/review), [Cursor Bugbot](https://docs.cursor.com/en/bugbot), [Cursor pricing](https://docs.cursor.com/en/account/usage), [Claude Code agent teams](https://code.claude.com/docs/en/agent-teams), [Claude Code subagents](https://code.claude.com/docs/en/sub-agents), [Claude Code workflows](https://code.claude.com/docs/en/common-workflows), [Claude Code costs](https://code.claude.com/docs/en/costs), [Claude pricing](https://claude.com/pricing).
 
 ---
 
@@ -278,6 +287,9 @@ pnpm dev
 
 `pnpm dev` starts the desktop Electron app. Do not start a browser/web dev server for normal development; that path is limited and is not the supported way to run agent teams locally.
 
+Use `pnpm dev:mcp` when you want an MCP browser/debugging tool to attach to the current
+Electron renderer through the local Chrome DevTools Protocol endpoint on `127.0.0.1:9222`.
+
 The desktop app auto-discovers Claude Code projects from `~/.claude/`.
 
 ### Debug teammate runtimes
@@ -309,21 +321,22 @@ local packaging.
 
 ### Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Desktop app development with hot reload |
-| `pnpm build` | Production build |
-| `pnpm typecheck` | TypeScript type checking |
-| `pnpm lint` | Lint (no auto-fix) |
-| `pnpm lint:fix` | Lint and auto-fix |
-| `pnpm format` | Format code with Prettier |
-| `pnpm test` | Run all tests |
-| `pnpm test:watch` | Watch mode |
-| `pnpm test:coverage` | Coverage report |
-| `pnpm test:coverage:critical` | Critical path coverage |
-| `pnpm check` | Full quality gate (types + lint + test + build) |
-| `pnpm fix` | Lint fix + format |
-| `pnpm quality` | Full check + format check + knip |
+| Command                       | Description                                                                  |
+| ----------------------------- | ---------------------------------------------------------------------------- |
+| `pnpm dev`                    | Desktop app development with hot reload                                      |
+| `pnpm dev:mcp`                | Desktop app development with hot reload and local CDP debugging on port 9222 |
+| `pnpm build`                  | Production build                                                             |
+| `pnpm typecheck`              | TypeScript type checking                                                     |
+| `pnpm lint`                   | Lint (no auto-fix)                                                           |
+| `pnpm lint:fix`               | Lint and auto-fix                                                            |
+| `pnpm format`                 | Format code with Prettier                                                    |
+| `pnpm test`                   | Run all tests                                                                |
+| `pnpm test:watch`             | Watch mode                                                                   |
+| `pnpm test:coverage`          | Coverage report                                                              |
+| `pnpm test:coverage:critical` | Critical path coverage                                                       |
+| `pnpm check`                  | Full quality gate (types + lint + test + build)                              |
+| `pnpm fix`                    | Lint fix + format                                                            |
+| `pnpm quality`                | Full check + format check + knip                                             |
 
 </details>
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nexu-io/html-anything` — 26 default patterns, 0 followed patterns, 77 file(s) materialized.
+Mirror of `nexu-io/html-anything` — 26 default patterns, 0 followed patterns, 78 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nexu-io/html-anything` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 77 |
+| Files         | 78 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,81 +61,82 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`src/lib/templates/skills/article-magazine/SKILL.md`](src/lib/templates/skills/article-magazine/SKILL.md) |
-| 4 | ✓ | [`src/lib/templates/skills/blog-post/SKILL.md`](src/lib/templates/skills/blog-post/SKILL.md) |
-| 5 | ✓ | [`src/lib/templates/skills/card-twitter/SKILL.md`](src/lib/templates/skills/card-twitter/SKILL.md) |
-| 6 | ✓ | [`src/lib/templates/skills/card-xiaohongshu/SKILL.md`](src/lib/templates/skills/card-xiaohongshu/SKILL.md) |
-| 7 | ✓ | [`src/lib/templates/skills/dashboard/SKILL.md`](src/lib/templates/skills/dashboard/SKILL.md) |
-| 8 | ✓ | [`src/lib/templates/skills/data-report/SKILL.md`](src/lib/templates/skills/data-report/SKILL.md) |
-| 9 | ✓ | [`src/lib/templates/skills/dating-web/SKILL.md`](src/lib/templates/skills/dating-web/SKILL.md) |
-| 10 | ✓ | [`src/lib/templates/skills/deck-blueprint/SKILL.md`](src/lib/templates/skills/deck-blueprint/SKILL.md) |
-| 11 | ✓ | [`src/lib/templates/skills/deck-course-module/SKILL.md`](src/lib/templates/skills/deck-course-module/SKILL.md) |
-| 12 | ✓ | [`src/lib/templates/skills/deck-dir-key-nav/SKILL.md`](src/lib/templates/skills/deck-dir-key-nav/SKILL.md) |
-| 13 | ✓ | [`src/lib/templates/skills/deck-graphify-dark/SKILL.md`](src/lib/templates/skills/deck-graphify-dark/SKILL.md) |
-| 14 | ✓ | [`src/lib/templates/skills/deck-guizang-editorial/SKILL.md`](src/lib/templates/skills/deck-guizang-editorial/SKILL.md) |
-| 15 | ✓ | [`src/lib/templates/skills/deck-hermes-cyber/SKILL.md`](src/lib/templates/skills/deck-hermes-cyber/SKILL.md) |
-| 16 | ✓ | [`src/lib/templates/skills/deck-magazine-web/SKILL.md`](src/lib/templates/skills/deck-magazine-web/SKILL.md) |
-| 17 | ✓ | [`src/lib/templates/skills/deck-obsidian-claude/SKILL.md`](src/lib/templates/skills/deck-obsidian-claude/SKILL.md) |
-| 18 | ✓ | [`src/lib/templates/skills/deck-open-slide-canvas/SKILL.md`](src/lib/templates/skills/deck-open-slide-canvas/SKILL.md) |
-| 19 | ✓ | [`src/lib/templates/skills/deck-pitch/SKILL.md`](src/lib/templates/skills/deck-pitch/SKILL.md) |
-| 20 | ✓ | [`src/lib/templates/skills/deck-presenter-mode/SKILL.md`](src/lib/templates/skills/deck-presenter-mode/SKILL.md) |
-| 21 | ✓ | [`src/lib/templates/skills/deck-product-launch/SKILL.md`](src/lib/templates/skills/deck-product-launch/SKILL.md) |
-| 22 | ✓ | [`src/lib/templates/skills/deck-replit/SKILL.md`](src/lib/templates/skills/deck-replit/SKILL.md) |
-| 23 | ✓ | [`src/lib/templates/skills/deck-safety-alert/SKILL.md`](src/lib/templates/skills/deck-safety-alert/SKILL.md) |
-| 24 | ✓ | [`src/lib/templates/skills/deck-simple/SKILL.md`](src/lib/templates/skills/deck-simple/SKILL.md) |
-| 25 | ✓ | [`src/lib/templates/skills/deck-swiss-international/SKILL.md`](src/lib/templates/skills/deck-swiss-international/SKILL.md) |
-| 26 | ✓ | [`src/lib/templates/skills/deck-tech-sharing/SKILL.md`](src/lib/templates/skills/deck-tech-sharing/SKILL.md) |
-| 27 | ✓ | [`src/lib/templates/skills/deck-xhs-pastel/SKILL.md`](src/lib/templates/skills/deck-xhs-pastel/SKILL.md) |
-| 28 | ✓ | [`src/lib/templates/skills/deck-xhs-post/SKILL.md`](src/lib/templates/skills/deck-xhs-post/SKILL.md) |
-| 29 | ✓ | [`src/lib/templates/skills/deck-xhs-white/SKILL.md`](src/lib/templates/skills/deck-xhs-white/SKILL.md) |
-| 30 | ✓ | [`src/lib/templates/skills/digital-eguide/SKILL.md`](src/lib/templates/skills/digital-eguide/SKILL.md) |
-| 31 | ✓ | [`src/lib/templates/skills/doc-kami-parchment/SKILL.md`](src/lib/templates/skills/doc-kami-parchment/SKILL.md) |
-| 32 | ✓ | [`src/lib/templates/skills/docs-page/SKILL.md`](src/lib/templates/skills/docs-page/SKILL.md) |
-| 33 | ✓ | [`src/lib/templates/skills/email-marketing/SKILL.md`](src/lib/templates/skills/email-marketing/SKILL.md) |
-| 34 | ✓ | [`src/lib/templates/skills/eng-runbook/SKILL.md`](src/lib/templates/skills/eng-runbook/SKILL.md) |
-| 35 | ✓ | [`src/lib/templates/skills/finance-report/SKILL.md`](src/lib/templates/skills/finance-report/SKILL.md) |
-| 36 | ✓ | [`src/lib/templates/skills/flowai-team-dashboard/SKILL.md`](src/lib/templates/skills/flowai-team-dashboard/SKILL.md) |
-| 37 | ✓ | [`src/lib/templates/skills/frame-data-chart-nyt/SKILL.md`](src/lib/templates/skills/frame-data-chart-nyt/SKILL.md) |
-| 38 | ✓ | [`src/lib/templates/skills/frame-flowchart-sticky/SKILL.md`](src/lib/templates/skills/frame-flowchart-sticky/SKILL.md) |
-| 39 | ✓ | [`src/lib/templates/skills/frame-glitch-title/SKILL.md`](src/lib/templates/skills/frame-glitch-title/SKILL.md) |
-| 40 | ✓ | [`src/lib/templates/skills/frame-light-leak-cinema/SKILL.md`](src/lib/templates/skills/frame-light-leak-cinema/SKILL.md) |
-| 41 | ✓ | [`src/lib/templates/skills/frame-liquid-bg-hero/SKILL.md`](src/lib/templates/skills/frame-liquid-bg-hero/SKILL.md) |
-| 42 | ✓ | [`src/lib/templates/skills/frame-logo-outro/SKILL.md`](src/lib/templates/skills/frame-logo-outro/SKILL.md) |
-| 43 | ✓ | [`src/lib/templates/skills/frame-macos-notification/SKILL.md`](src/lib/templates/skills/frame-macos-notification/SKILL.md) |
-| 44 | ✓ | [`src/lib/templates/skills/gamified-app/SKILL.md`](src/lib/templates/skills/gamified-app/SKILL.md) |
-| 45 | ✓ | [`src/lib/templates/skills/hr-onboarding/SKILL.md`](src/lib/templates/skills/hr-onboarding/SKILL.md) |
-| 46 | ✓ | [`src/lib/templates/skills/invoice/SKILL.md`](src/lib/templates/skills/invoice/SKILL.md) |
-| 47 | ✓ | [`src/lib/templates/skills/kanban-board/SKILL.md`](src/lib/templates/skills/kanban-board/SKILL.md) |
-| 48 | ✓ | [`src/lib/templates/skills/live-dashboard/SKILL.md`](src/lib/templates/skills/live-dashboard/SKILL.md) |
-| 49 | ✓ | [`src/lib/templates/skills/magazine-poster/SKILL.md`](src/lib/templates/skills/magazine-poster/SKILL.md) |
-| 50 | ✓ | [`src/lib/templates/skills/meeting-notes/SKILL.md`](src/lib/templates/skills/meeting-notes/SKILL.md) |
-| 51 | ✓ | [`src/lib/templates/skills/mobile-app/SKILL.md`](src/lib/templates/skills/mobile-app/SKILL.md) |
-| 52 | ✓ | [`src/lib/templates/skills/mobile-onboarding/SKILL.md`](src/lib/templates/skills/mobile-onboarding/SKILL.md) |
-| 53 | ✓ | [`src/lib/templates/skills/mockup-device-3d/SKILL.md`](src/lib/templates/skills/mockup-device-3d/SKILL.md) |
-| 54 | ✓ | [`src/lib/templates/skills/motion-frames/SKILL.md`](src/lib/templates/skills/motion-frames/SKILL.md) |
-| 55 | ✓ | [`src/lib/templates/skills/pm-spec/SKILL.md`](src/lib/templates/skills/pm-spec/SKILL.md) |
-| 56 | ✓ | [`src/lib/templates/skills/poster-hero/SKILL.md`](src/lib/templates/skills/poster-hero/SKILL.md) |
-| 57 | ✓ | [`src/lib/templates/skills/ppt-keynote/SKILL.md`](src/lib/templates/skills/ppt-keynote/SKILL.md) |
-| 58 | ✓ | [`src/lib/templates/skills/pricing-page/SKILL.md`](src/lib/templates/skills/pricing-page/SKILL.md) |
-| 59 | ✓ | [`src/lib/templates/skills/prototype-web/SKILL.md`](src/lib/templates/skills/prototype-web/SKILL.md) |
-| 60 | ✓ | [`src/lib/templates/skills/resume-modern/SKILL.md`](src/lib/templates/skills/resume-modern/SKILL.md) |
-| 61 | ✓ | [`src/lib/templates/skills/saas-landing/SKILL.md`](src/lib/templates/skills/saas-landing/SKILL.md) |
-| 62 | ✓ | [`src/lib/templates/skills/social-carousel/SKILL.md`](src/lib/templates/skills/social-carousel/SKILL.md) |
-| 63 | ✓ | [`src/lib/templates/skills/social-media-dashboard/SKILL.md`](src/lib/templates/skills/social-media-dashboard/SKILL.md) |
-| 64 | ✓ | [`src/lib/templates/skills/social-media-matrix/SKILL.md`](src/lib/templates/skills/social-media-matrix/SKILL.md) |
-| 65 | ✓ | [`src/lib/templates/skills/social-reddit-card/SKILL.md`](src/lib/templates/skills/social-reddit-card/SKILL.md) |
-| 66 | ✓ | [`src/lib/templates/skills/social-spotify-card/SKILL.md`](src/lib/templates/skills/social-spotify-card/SKILL.md) |
-| 67 | ✓ | [`src/lib/templates/skills/social-x-post-card/SKILL.md`](src/lib/templates/skills/social-x-post-card/SKILL.md) |
-| 68 | ✓ | [`src/lib/templates/skills/sprite-animation/SKILL.md`](src/lib/templates/skills/sprite-animation/SKILL.md) |
-| 69 | ✓ | [`src/lib/templates/skills/team-okrs/SKILL.md`](src/lib/templates/skills/team-okrs/SKILL.md) |
-| 70 | ✓ | [`src/lib/templates/skills/vfx-text-cursor/SKILL.md`](src/lib/templates/skills/vfx-text-cursor/SKILL.md) |
-| 71 | ✓ | [`src/lib/templates/skills/video-hyperframes/SKILL.md`](src/lib/templates/skills/video-hyperframes/SKILL.md) |
-| 72 | ✓ | [`src/lib/templates/skills/waitlist-page/SKILL.md`](src/lib/templates/skills/waitlist-page/SKILL.md) |
-| 73 | ✓ | [`src/lib/templates/skills/web-proto-brutalist/SKILL.md`](src/lib/templates/skills/web-proto-brutalist/SKILL.md) |
-| 74 | ✓ | [`src/lib/templates/skills/web-proto-editorial/SKILL.md`](src/lib/templates/skills/web-proto-editorial/SKILL.md) |
-| 75 | ✓ | [`src/lib/templates/skills/web-proto-soft/SKILL.md`](src/lib/templates/skills/web-proto-soft/SKILL.md) |
-| 76 | ✓ | [`src/lib/templates/skills/weekly-update/SKILL.md`](src/lib/templates/skills/weekly-update/SKILL.md) |
-| 77 | ✓ | [`src/lib/templates/skills/wireframe-sketch/SKILL.md`](src/lib/templates/skills/wireframe-sketch/SKILL.md) |
+| 3 | ✓ | [`e2e/AGENTS.md`](e2e/AGENTS.md) |
+| 4 | ✓ | [`next/src/lib/templates/skills/article-magazine/SKILL.md`](next/src/lib/templates/skills/article-magazine/SKILL.md) |
+| 5 | ✓ | [`next/src/lib/templates/skills/blog-post/SKILL.md`](next/src/lib/templates/skills/blog-post/SKILL.md) |
+| 6 | ✓ | [`next/src/lib/templates/skills/card-twitter/SKILL.md`](next/src/lib/templates/skills/card-twitter/SKILL.md) |
+| 7 | ✓ | [`next/src/lib/templates/skills/card-xiaohongshu/SKILL.md`](next/src/lib/templates/skills/card-xiaohongshu/SKILL.md) |
+| 8 | ✓ | [`next/src/lib/templates/skills/dashboard/SKILL.md`](next/src/lib/templates/skills/dashboard/SKILL.md) |
+| 9 | ✓ | [`next/src/lib/templates/skills/data-report/SKILL.md`](next/src/lib/templates/skills/data-report/SKILL.md) |
+| 10 | ✓ | [`next/src/lib/templates/skills/dating-web/SKILL.md`](next/src/lib/templates/skills/dating-web/SKILL.md) |
+| 11 | ✓ | [`next/src/lib/templates/skills/deck-blueprint/SKILL.md`](next/src/lib/templates/skills/deck-blueprint/SKILL.md) |
+| 12 | ✓ | [`next/src/lib/templates/skills/deck-course-module/SKILL.md`](next/src/lib/templates/skills/deck-course-module/SKILL.md) |
+| 13 | ✓ | [`next/src/lib/templates/skills/deck-dir-key-nav/SKILL.md`](next/src/lib/templates/skills/deck-dir-key-nav/SKILL.md) |
+| 14 | ✓ | [`next/src/lib/templates/skills/deck-graphify-dark/SKILL.md`](next/src/lib/templates/skills/deck-graphify-dark/SKILL.md) |
+| 15 | ✓ | [`next/src/lib/templates/skills/deck-guizang-editorial/SKILL.md`](next/src/lib/templates/skills/deck-guizang-editorial/SKILL.md) |
+| 16 | ✓ | [`next/src/lib/templates/skills/deck-hermes-cyber/SKILL.md`](next/src/lib/templates/skills/deck-hermes-cyber/SKILL.md) |
+| 17 | ✓ | [`next/src/lib/templates/skills/deck-magazine-web/SKILL.md`](next/src/lib/templates/skills/deck-magazine-web/SKILL.md) |
+| 18 | ✓ | [`next/src/lib/templates/skills/deck-obsidian-claude/SKILL.md`](next/src/lib/templates/skills/deck-obsidian-claude/SKILL.md) |
+| 19 | ✓ | [`next/src/lib/templates/skills/deck-open-slide-canvas/SKILL.md`](next/src/lib/templates/skills/deck-open-slide-canvas/SKILL.md) |
+| 20 | ✓ | [`next/src/lib/templates/skills/deck-pitch/SKILL.md`](next/src/lib/templates/skills/deck-pitch/SKILL.md) |
+| 21 | ✓ | [`next/src/lib/templates/skills/deck-presenter-mode/SKILL.md`](next/src/lib/templates/skills/deck-presenter-mode/SKILL.md) |
+| 22 | ✓ | [`next/src/lib/templates/skills/deck-product-launch/SKILL.md`](next/src/lib/templates/skills/deck-product-launch/SKILL.md) |
+| 23 | ✓ | [`next/src/lib/templates/skills/deck-replit/SKILL.md`](next/src/lib/templates/skills/deck-replit/SKILL.md) |
+| 24 | ✓ | [`next/src/lib/templates/skills/deck-safety-alert/SKILL.md`](next/src/lib/templates/skills/deck-safety-alert/SKILL.md) |
+| 25 | ✓ | [`next/src/lib/templates/skills/deck-simple/SKILL.md`](next/src/lib/templates/skills/deck-simple/SKILL.md) |
+| 26 | ✓ | [`next/src/lib/templates/skills/deck-swiss-international/SKILL.md`](next/src/lib/templates/skills/deck-swiss-international/SKILL.md) |
+| 27 | ✓ | [`next/src/lib/templates/skills/deck-tech-sharing/SKILL.md`](next/src/lib/templates/skills/deck-tech-sharing/SKILL.md) |
+| 28 | ✓ | [`next/src/lib/templates/skills/deck-xhs-pastel/SKILL.md`](next/src/lib/templates/skills/deck-xhs-pastel/SKILL.md) |
+| 29 | ✓ | [`next/src/lib/templates/skills/deck-xhs-post/SKILL.md`](next/src/lib/templates/skills/deck-xhs-post/SKILL.md) |
+| 30 | ✓ | [`next/src/lib/templates/skills/deck-xhs-white/SKILL.md`](next/src/lib/templates/skills/deck-xhs-white/SKILL.md) |
+| 31 | ✓ | [`next/src/lib/templates/skills/digital-eguide/SKILL.md`](next/src/lib/templates/skills/digital-eguide/SKILL.md) |
+| 32 | ✓ | [`next/src/lib/templates/skills/doc-kami-parchment/SKILL.md`](next/src/lib/templates/skills/doc-kami-parchment/SKILL.md) |
+| 33 | ✓ | [`next/src/lib/templates/skills/docs-page/SKILL.md`](next/src/lib/templates/skills/docs-page/SKILL.md) |
+| 34 | ✓ | [`next/src/lib/templates/skills/email-marketing/SKILL.md`](next/src/lib/templates/skills/email-marketing/SKILL.md) |
+| 35 | ✓ | [`next/src/lib/templates/skills/eng-runbook/SKILL.md`](next/src/lib/templates/skills/eng-runbook/SKILL.md) |
+| 36 | ✓ | [`next/src/lib/templates/skills/finance-report/SKILL.md`](next/src/lib/templates/skills/finance-report/SKILL.md) |
+| 37 | ✓ | [`next/src/lib/templates/skills/flowai-team-dashboard/SKILL.md`](next/src/lib/templates/skills/flowai-team-dashboard/SKILL.md) |
+| 38 | ✓ | [`next/src/lib/templates/skills/frame-data-chart-nyt/SKILL.md`](next/src/lib/templates/skills/frame-data-chart-nyt/SKILL.md) |
+| 39 | ✓ | [`next/src/lib/templates/skills/frame-flowchart-sticky/SKILL.md`](next/src/lib/templates/skills/frame-flowchart-sticky/SKILL.md) |
+| 40 | ✓ | [`next/src/lib/templates/skills/frame-glitch-title/SKILL.md`](next/src/lib/templates/skills/frame-glitch-title/SKILL.md) |
+| 41 | ✓ | [`next/src/lib/templates/skills/frame-light-leak-cinema/SKILL.md`](next/src/lib/templates/skills/frame-light-leak-cinema/SKILL.md) |
+| 42 | ✓ | [`next/src/lib/templates/skills/frame-liquid-bg-hero/SKILL.md`](next/src/lib/templates/skills/frame-liquid-bg-hero/SKILL.md) |
+| 43 | ✓ | [`next/src/lib/templates/skills/frame-logo-outro/SKILL.md`](next/src/lib/templates/skills/frame-logo-outro/SKILL.md) |
+| 44 | ✓ | [`next/src/lib/templates/skills/frame-macos-notification/SKILL.md`](next/src/lib/templates/skills/frame-macos-notification/SKILL.md) |
+| 45 | ✓ | [`next/src/lib/templates/skills/gamified-app/SKILL.md`](next/src/lib/templates/skills/gamified-app/SKILL.md) |
+| 46 | ✓ | [`next/src/lib/templates/skills/hr-onboarding/SKILL.md`](next/src/lib/templates/skills/hr-onboarding/SKILL.md) |
+| 47 | ✓ | [`next/src/lib/templates/skills/invoice/SKILL.md`](next/src/lib/templates/skills/invoice/SKILL.md) |
+| 48 | ✓ | [`next/src/lib/templates/skills/kanban-board/SKILL.md`](next/src/lib/templates/skills/kanban-board/SKILL.md) |
+| 49 | ✓ | [`next/src/lib/templates/skills/live-dashboard/SKILL.md`](next/src/lib/templates/skills/live-dashboard/SKILL.md) |
+| 50 | ✓ | [`next/src/lib/templates/skills/magazine-poster/SKILL.md`](next/src/lib/templates/skills/magazine-poster/SKILL.md) |
+| 51 | ✓ | [`next/src/lib/templates/skills/meeting-notes/SKILL.md`](next/src/lib/templates/skills/meeting-notes/SKILL.md) |
+| 52 | ✓ | [`next/src/lib/templates/skills/mobile-app/SKILL.md`](next/src/lib/templates/skills/mobile-app/SKILL.md) |
+| 53 | ✓ | [`next/src/lib/templates/skills/mobile-onboarding/SKILL.md`](next/src/lib/templates/skills/mobile-onboarding/SKILL.md) |
+| 54 | ✓ | [`next/src/lib/templates/skills/mockup-device-3d/SKILL.md`](next/src/lib/templates/skills/mockup-device-3d/SKILL.md) |
+| 55 | ✓ | [`next/src/lib/templates/skills/motion-frames/SKILL.md`](next/src/lib/templates/skills/motion-frames/SKILL.md) |
+| 56 | ✓ | [`next/src/lib/templates/skills/pm-spec/SKILL.md`](next/src/lib/templates/skills/pm-spec/SKILL.md) |
+| 57 | ✓ | [`next/src/lib/templates/skills/poster-hero/SKILL.md`](next/src/lib/templates/skills/poster-hero/SKILL.md) |
+| 58 | ✓ | [`next/src/lib/templates/skills/ppt-keynote/SKILL.md`](next/src/lib/templates/skills/ppt-keynote/SKILL.md) |
+| 59 | ✓ | [`next/src/lib/templates/skills/pricing-page/SKILL.md`](next/src/lib/templates/skills/pricing-page/SKILL.md) |
+| 60 | ✓ | [`next/src/lib/templates/skills/prototype-web/SKILL.md`](next/src/lib/templates/skills/prototype-web/SKILL.md) |
+| 61 | ✓ | [`next/src/lib/templates/skills/resume-modern/SKILL.md`](next/src/lib/templates/skills/resume-modern/SKILL.md) |
+| 62 | ✓ | [`next/src/lib/templates/skills/saas-landing/SKILL.md`](next/src/lib/templates/skills/saas-landing/SKILL.md) |
+| 63 | ✓ | [`next/src/lib/templates/skills/social-carousel/SKILL.md`](next/src/lib/templates/skills/social-carousel/SKILL.md) |
+| 64 | ✓ | [`next/src/lib/templates/skills/social-media-dashboard/SKILL.md`](next/src/lib/templates/skills/social-media-dashboard/SKILL.md) |
+| 65 | ✓ | [`next/src/lib/templates/skills/social-media-matrix/SKILL.md`](next/src/lib/templates/skills/social-media-matrix/SKILL.md) |
+| 66 | ✓ | [`next/src/lib/templates/skills/social-reddit-card/SKILL.md`](next/src/lib/templates/skills/social-reddit-card/SKILL.md) |
+| 67 | ✓ | [`next/src/lib/templates/skills/social-spotify-card/SKILL.md`](next/src/lib/templates/skills/social-spotify-card/SKILL.md) |
+| 68 | ✓ | [`next/src/lib/templates/skills/social-x-post-card/SKILL.md`](next/src/lib/templates/skills/social-x-post-card/SKILL.md) |
+| 69 | ✓ | [`next/src/lib/templates/skills/sprite-animation/SKILL.md`](next/src/lib/templates/skills/sprite-animation/SKILL.md) |
+| 70 | ✓ | [`next/src/lib/templates/skills/team-okrs/SKILL.md`](next/src/lib/templates/skills/team-okrs/SKILL.md) |
+| 71 | ✓ | [`next/src/lib/templates/skills/vfx-text-cursor/SKILL.md`](next/src/lib/templates/skills/vfx-text-cursor/SKILL.md) |
+| 72 | ✓ | [`next/src/lib/templates/skills/video-hyperframes/SKILL.md`](next/src/lib/templates/skills/video-hyperframes/SKILL.md) |
+| 73 | ✓ | [`next/src/lib/templates/skills/waitlist-page/SKILL.md`](next/src/lib/templates/skills/waitlist-page/SKILL.md) |
+| 74 | ✓ | [`next/src/lib/templates/skills/web-proto-brutalist/SKILL.md`](next/src/lib/templates/skills/web-proto-brutalist/SKILL.md) |
+| 75 | ✓ | [`next/src/lib/templates/skills/web-proto-editorial/SKILL.md`](next/src/lib/templates/skills/web-proto-editorial/SKILL.md) |
+| 76 | ✓ | [`next/src/lib/templates/skills/web-proto-soft/SKILL.md`](next/src/lib/templates/skills/web-proto-soft/SKILL.md) |
+| 77 | ✓ | [`next/src/lib/templates/skills/weekly-update/SKILL.md`](next/src/lib/templates/skills/weekly-update/SKILL.md) |
+| 78 | ✓ | [`next/src/lib/templates/skills/wireframe-sketch/SKILL.md`](next/src/lib/templates/skills/wireframe-sketch/SKILL.md) |
 
 ---
 

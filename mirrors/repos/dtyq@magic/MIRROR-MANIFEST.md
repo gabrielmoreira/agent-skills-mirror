@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `dtyq/magic` — 26 default patterns, 0 followed patterns, 68 file(s) materialized.
+Mirror of `dtyq/magic` — 26 default patterns, 0 followed patterns, 66 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dtyq/magic` — 26 default patterns, 0 followed patterns, 68 file(s) 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 68 |
+| Files         | 66 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,12 +74,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`backend/super-magic/agents/skills/develop-data-analysis-dashboard/SKILL.md`](backend/super-magic/agents/skills/develop-data-analysis-dashboard/SKILL.md) |
 | 14 | ✓ | [`backend/super-magic/agents/skills/dingtalk-cli/SKILL.md`](backend/super-magic/agents/skills/dingtalk-cli/SKILL.md) |
 | 15 | ✓ | [`backend/super-magic/agents/skills/env-manager/SKILL.md`](backend/super-magic/agents/skills/env-manager/SKILL.md) |
-| 16 | ✓ | [`backend/super-magic/agents/skills/find-skill/SKILL.md`](backend/super-magic/agents/skills/find-skill/SKILL.md) |
-| 17 | ✓ | [`backend/super-magic/agents/skills/im-channels/SKILL.md`](backend/super-magic/agents/skills/im-channels/SKILL.md) |
-| 18 | ✓ | [`backend/super-magic/agents/skills/lark-cli/SKILL.md`](backend/super-magic/agents/skills/lark-cli/SKILL.md) |
-| 19 | ✓ | [`backend/super-magic/agents/skills/magic-calendar/SKILL.md`](backend/super-magic/agents/skills/magic-calendar/SKILL.md) |
-| 20 | ✓ | [`backend/super-magic/agents/skills/skill-creator/SKILL.md`](backend/super-magic/agents/skills/skill-creator/SKILL.md) |
-| 21 | ✓ | [`backend/super-magic/agents/skills/skill-vetter/SKILL.md`](backend/super-magic/agents/skills/skill-vetter/SKILL.md) |
+| 16 | ✓ | [`backend/super-magic/agents/skills/im-channels/SKILL.md`](backend/super-magic/agents/skills/im-channels/SKILL.md) |
+| 17 | ✓ | [`backend/super-magic/agents/skills/lark-cli/SKILL.md`](backend/super-magic/agents/skills/lark-cli/SKILL.md) |
+| 18 | ✓ | [`backend/super-magic/agents/skills/magic-calendar/SKILL.md`](backend/super-magic/agents/skills/magic-calendar/SKILL.md) |
+| 19 | ✓ | [`backend/super-magic/agents/skills/skill-creator/SKILL.md`](backend/super-magic/agents/skills/skill-creator/SKILL.md) |
+| 20 | ✓ | [`backend/super-magic/agents/skills/skill-vetter/SKILL.md`](backend/super-magic/agents/skills/skill-vetter/SKILL.md) |
+| 21 | ✓ | [`backend/super-magic/agents/skills/slide-template/SKILL.md`](backend/super-magic/agents/skills/slide-template/SKILL.md) |
 | 22 | ✓ | [`backend/super-magic/agents/skills/subagents/SKILL.md`](backend/super-magic/agents/skills/subagents/SKILL.md) |
 | 23 | ✓ | [`backend/super-magic/agents/skills/user-info/SKILL.md`](backend/super-magic/agents/skills/user-info/SKILL.md) |
 | 24 | ✓ | [`backend/super-magic/agents/skills/using-cron/SKILL.md`](backend/super-magic/agents/skills/using-cron/SKILL.md) |
@@ -124,9 +124,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 63 | ✓ | [`frontend/magic-web/.cursor/rules/todo-development-guide.mdc`](frontend/magic-web/.cursor/rules/todo-development-guide.mdc) |
 | 64 | ✓ | [`frontend/magic-web/.cursor/rules/typescript-javascript-rules.mdc`](frontend/magic-web/.cursor/rules/typescript-javascript-rules.mdc) |
 | 65 | ✓ | [`frontend/magic-web/.cursor/rules/version-management.mdc`](frontend/magic-web/.cursor/rules/version-management.mdc) |
-| 66 | ✓ | [`frontend/magic-web/.cursor/skills/bugfix-workflow/SKILL.md`](frontend/magic-web/.cursor/skills/bugfix-workflow/SKILL.md) |
-| 67 | ✓ | [`frontend/magic-web/.cursor/skills/wiki-generator/SKILL.md`](frontend/magic-web/.cursor/skills/wiki-generator/SKILL.md) |
-| 68 | ✓ | [`frontend/magic-web/AGENTS.md`](frontend/magic-web/AGENTS.md) |
+| 66 | ✓ | [`frontend/magic-web/AGENTS.md`](frontend/magic-web/AGENTS.md) |
 
 ---
 

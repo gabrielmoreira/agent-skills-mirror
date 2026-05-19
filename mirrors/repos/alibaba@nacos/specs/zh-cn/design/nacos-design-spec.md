@@ -111,8 +111,9 @@ failover 相关行为。详细规则由 [Config 规范](../config/config-spec.md
 
 ### 4.3 AI Registry 领域
 
-AI Registry 领域管理 MCP Server、A2A AgentCard、Prompt、Skill 和 AgentSpec 等
-AI 资源。AI 资源使用 `NamespaceId -> resourceType -> resourceName` 作为顶层身份。
+[AI Registry 领域](../ai/ai-registry-spec.md)管理 MCP Server、A2A AgentCard、
+Prompt、Skill 和 AgentSpec 等 AI 资源。AI 资源使用
+`NamespaceId -> resourceType -> resourceName` 作为顶层身份。
 它负责 AI 资源元数据、版本、标签、可见性、端点、工具或 Skill 描述、发布流水线
 状态、下载分发和面向审计的追踪信息。
 
@@ -121,7 +122,8 @@ namespace、API、SDK、鉴权、插件和资源治理原则。
 
 ### 4.4 Core 和运维领域
 
-Core 领域负责 namespace 管理、[集群成员](foundation-cluster-membership-spec.md)、服务端状态、
+[Core 运维领域](../core/core-operations-spec.md)负责 namespace 管理、
+[集群成员](foundation-cluster-membership-spec.md)、服务端状态、
 readiness/liveness、[服务端生命周期与环境](foundation-server-lifecycle-env-spec.md)、
 [连接管理](foundation-remote-connection-spec.md)、
 [请求过滤与运行时上下文](foundation-request-context-spec.md)、

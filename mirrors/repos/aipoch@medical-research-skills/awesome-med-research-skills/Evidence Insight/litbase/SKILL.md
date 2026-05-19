@@ -3,20 +3,6 @@ name: litbase
 description: "Academic paper reading and research development system for biomedical researchers. Finds papers via Semantic Scholar, reads with structured notes, tracks discussion insights, and synthesizes literature into a Research Foundation Document (RFD) for downstream protocol design skills. 8 commands: /setup /feed /read /discuss /recap /update /sync /propose"
 license: MIT
 author: AIPOCH
-metadata:
-  openclaw:
-    optional_bins:
-      - python      # optional: accelerates paper search if available; falls back to inline WebFetch calls
-      - pdftotext   # optional: accelerates PDF text extraction if available; falls back to Claude native PDF reading
-  capability_tiers:
-    tier_a: "Conversation mode — Web Claude or any LLM chat interface; no file system; notes output as Artifacts; state maintained via session card"
-    tier_b: "File mode — Manus or any file-capable agent; file read/write available; no Python/bash required"
-    tier_c: "Full mode — OpenClaw / Claude Code; full file system, bash, and optional Python acceleration"
-  downstream_skills:
-    - clinical-cohort-protocol-designer
-    - translational-study-blueprint
-    - statistical-analysis-plan-writer
-    - protocol-writer
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
@@ -163,3 +149,5 @@ data_dir/                           ← path set in config.json
     proposal/
       YYYY-MM-DD_RFD.md
 ```
+
+

@@ -2,16 +2,16 @@
 name: slacrawl
 description: Archive and search Slack workspace messages, threads, and channels via the slacrawl CLI. Supports API sync, Slack export ZIP import, local desktop cache import, and full-text search.
 platforms: [linux, macos]
-homepage: https://github.com/vincentkoc/slacrawl
+homepage: https://github.com/openclaw/slacrawl
 requires:
   bins: [slacrawl]
   install:
     - kind: brew
-      formula: vincentkoc/tap/slacrawl
+      formula: openclaw/tap/slacrawl
       bins: [slacrawl]
       os: [darwin]
     - kind: go
-      module: "github.com/vincentkoc/slacrawl/cmd/slacrawl@latest"
+      module: "github.com/openclaw/slacrawl/cmd/slacrawl@latest"
       bins: [slacrawl]
 origin:
   source: moltis

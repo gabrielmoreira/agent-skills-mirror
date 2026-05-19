@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jeremylongshore/claude-code-plugins-plus-skills` — 26 default patterns, 0 followed patterns, 4846 file(s) materialized.
+Mirror of `jeremylongshore/claude-code-plugins-plus-skills` — 26 default patterns, 0 followed patterns, 4847 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jeremylongshore/claude-code-plugins-plus-skills` — 26 default patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4846 |
+| Files         | 4847 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -4904,7 +4904,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4843 | ✓ | [`skills/README.md`](skills/README.md) |
 | 4844 | ✓ | [`templates/skill-plugin/skills/example-skill/SKILL.md`](templates/skill-plugin/skills/example-skill/SKILL.md) |
 | 4845 | ✓ | [`tests/e2e/fixtures/test-plugin/skills/test-skill/SKILL.md`](tests/e2e/fixtures/test-plugin/skills/test-skill/SKILL.md) |
-| 4846 | ✓ | [`workspace/lab/schema-optimization/SKILL.md`](workspace/lab/schema-optimization/SKILL.md) |
+| 4846 | ✓ | [`tests/fixtures/root-level-skill-plugin/SKILL.md`](tests/fixtures/root-level-skill-plugin/SKILL.md) |
+| 4847 | ✓ | [`workspace/lab/schema-optimization/SKILL.md`](workspace/lab/schema-optimization/SKILL.md) |
 
 ---
 

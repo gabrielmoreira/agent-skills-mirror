@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `czlonkowski/n8n-mcp` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `czlonkowski/n8n-mcp` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `czlonkowski/n8n-mcp` — 26 default patterns, 0 followed patterns, 1 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,6 +60,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`data/skills/n8n-code-javascript/BUILTIN_FUNCTIONS.md`](data/skills/n8n-code-javascript/BUILTIN_FUNCTIONS.md) |
+| 3 | ✓ | [`data/skills/n8n-code-javascript/COMMON_PATTERNS.md`](data/skills/n8n-code-javascript/COMMON_PATTERNS.md) |
+| 4 | ✓ | [`data/skills/n8n-code-javascript/DATA_ACCESS.md`](data/skills/n8n-code-javascript/DATA_ACCESS.md) |
+| 5 | ✓ | [`data/skills/n8n-code-javascript/ERROR_PATTERNS.md`](data/skills/n8n-code-javascript/ERROR_PATTERNS.md) |
+| 6 | ✓ | [`data/skills/n8n-code-javascript/SKILL.md`](data/skills/n8n-code-javascript/SKILL.md) |
+| 7 | ✓ | [`data/skills/n8n-code-python/COMMON_PATTERNS.md`](data/skills/n8n-code-python/COMMON_PATTERNS.md) |
+| 8 | ✓ | [`data/skills/n8n-code-python/DATA_ACCESS.md`](data/skills/n8n-code-python/DATA_ACCESS.md) |
+| 9 | ✓ | [`data/skills/n8n-code-python/ERROR_PATTERNS.md`](data/skills/n8n-code-python/ERROR_PATTERNS.md) |
+| 10 | ✓ | [`data/skills/n8n-code-python/SKILL.md`](data/skills/n8n-code-python/SKILL.md) |
+| 11 | ✓ | [`data/skills/n8n-code-python/STANDARD_LIBRARY.md`](data/skills/n8n-code-python/STANDARD_LIBRARY.md) |
+| 12 | ✓ | [`data/skills/n8n-expression-syntax/COMMON_MISTAKES.md`](data/skills/n8n-expression-syntax/COMMON_MISTAKES.md) |
+| 13 | ✓ | [`data/skills/n8n-expression-syntax/EXAMPLES.md`](data/skills/n8n-expression-syntax/EXAMPLES.md) |
+| 14 | ✓ | [`data/skills/n8n-expression-syntax/SKILL.md`](data/skills/n8n-expression-syntax/SKILL.md) |
+| 15 | ✓ | [`data/skills/n8n-mcp-tools-expert/SEARCH_GUIDE.md`](data/skills/n8n-mcp-tools-expert/SEARCH_GUIDE.md) |
+| 16 | ✓ | [`data/skills/n8n-mcp-tools-expert/SKILL.md`](data/skills/n8n-mcp-tools-expert/SKILL.md) |
+| 17 | ✓ | [`data/skills/n8n-mcp-tools-expert/VALIDATION_GUIDE.md`](data/skills/n8n-mcp-tools-expert/VALIDATION_GUIDE.md) |
+| 18 | ✓ | [`data/skills/n8n-mcp-tools-expert/WORKFLOW_GUIDE.md`](data/skills/n8n-mcp-tools-expert/WORKFLOW_GUIDE.md) |
+| 19 | ✓ | [`data/skills/n8n-node-configuration/DEPENDENCIES.md`](data/skills/n8n-node-configuration/DEPENDENCIES.md) |
+| 20 | ✓ | [`data/skills/n8n-node-configuration/OPERATION_PATTERNS.md`](data/skills/n8n-node-configuration/OPERATION_PATTERNS.md) |
+| 21 | ✓ | [`data/skills/n8n-node-configuration/SKILL.md`](data/skills/n8n-node-configuration/SKILL.md) |
+| 22 | ✓ | [`data/skills/n8n-validation-expert/ERROR_CATALOG.md`](data/skills/n8n-validation-expert/ERROR_CATALOG.md) |
+| 23 | ✓ | [`data/skills/n8n-validation-expert/FALSE_POSITIVES.md`](data/skills/n8n-validation-expert/FALSE_POSITIVES.md) |
+| 24 | ✓ | [`data/skills/n8n-validation-expert/SKILL.md`](data/skills/n8n-validation-expert/SKILL.md) |
+| 25 | ✓ | [`data/skills/n8n-workflow-patterns/ai_agent_workflow.md`](data/skills/n8n-workflow-patterns/ai_agent_workflow.md) |
+| 26 | ✓ | [`data/skills/n8n-workflow-patterns/database_operations.md`](data/skills/n8n-workflow-patterns/database_operations.md) |
+| 27 | ✓ | [`data/skills/n8n-workflow-patterns/http_api_integration.md`](data/skills/n8n-workflow-patterns/http_api_integration.md) |
+| 28 | ✓ | [`data/skills/n8n-workflow-patterns/scheduled_tasks.md`](data/skills/n8n-workflow-patterns/scheduled_tasks.md) |
+| 29 | ✓ | [`data/skills/n8n-workflow-patterns/SKILL.md`](data/skills/n8n-workflow-patterns/SKILL.md) |
+| 30 | ✓ | [`data/skills/n8n-workflow-patterns/webhook_processing.md`](data/skills/n8n-workflow-patterns/webhook_processing.md) |
 
 ---
 
