@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Virtually try on different outfits by combining a person's photo and a clothing item, then optionally generate a professional fashion model video.**
 
-> **Estimated credits:** ~150 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

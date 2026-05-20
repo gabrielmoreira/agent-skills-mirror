@@ -127,7 +127,7 @@ Test suites in this repo are heavy. Running them in bulk freezes the machine, es
 - For a broad sweep, redirect to a file and read it after: `npx vitest run <path> --bail=1 > /tmp/test-output.txt 2>&1`
 - Never re-run a suite another agent already reported green.
 - For full-suite confidence, push to CI and check GitHub Actions.
-- Never run Playwright E2E (`packages/app/e2e/*.spec.ts`) locally — defer to CI.
+- Never run the full Playwright E2E suite locally — defer whole-suite verification to CI. Targeted Playwright specs are allowed when you changed or need to prove that specific flow.
 
 ## Agent authentication in tests
 

@@ -302,6 +302,13 @@ app.post('/api/orders', async (req, res) => {
 Use this pattern at the earliest point in the request handler where the business context is known.
 Do not wrap auto-instrumented spans in a second manual span just to add attributes — that creates unnecessary nesting.
 
+### Database query parameters
+
+Prepared-statement parameter values (`db.query.parameter.<key>`) are **off by default** in every OpenTelemetry SDK because they frequently carry PII and credentials.
+Do not enable capture without first checking the [never-instrument list](./sensitive-data.md#never-instrument-list) and planning Collector-side redaction.
+
+See [capturing database query parameters](./capture-database-query-parameters.md) for the per-language activation, attribute key shape and more.
+
 ### Attribute naming
 
 Follow the [Attribute Registry](https://opentelemetry.io/docs/specs/semconv/registry/attributes/) conventions:

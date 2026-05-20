@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Generate a 15-second cinematic awards-ceremony video — a host announces a winner from the stage, a spotlight finds them in the crowd, they walk up to the podium, receive the award, and the LED display reveals their name and "THE BEST ACTOR".**
 
-> **Estimated credits:** ~120 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

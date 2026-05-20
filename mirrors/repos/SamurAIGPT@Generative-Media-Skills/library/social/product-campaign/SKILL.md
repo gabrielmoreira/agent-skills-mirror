@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Generate a full multi-channel product campaign — hero visuals, social media assets, short ad video, and platform-specific crops for an end-to-end launch campaign.**
 
-> **Estimated credits:** ~200 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

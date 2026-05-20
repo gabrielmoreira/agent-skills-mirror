@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `thomast1906/github-copilot-agent-skills` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `thomast1906/github-copilot-agent-skills` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `thomast1906/github-copilot-agent-skills` — 26 default patterns, 0 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 17 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,9 +73,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`.github/skills/drawio-mcp-diagramming/SKILL.md`](.github/skills/drawio-mcp-diagramming/SKILL.md) |
 | 13 | ✓ | [`.github/skills/excalidraw-mcp-diagramming/SKILL.md`](.github/skills/excalidraw-mcp-diagramming/SKILL.md) |
 | 14 | ✓ | [`.github/skills/gh-aw-operations/SKILL.md`](.github/skills/gh-aw-operations/SKILL.md) |
-| 15 | ✓ | [`.github/skills/terraform-module-creator/SKILL.md`](.github/skills/terraform-module-creator/SKILL.md) |
-| 16 | ✓ | [`.github/skills/terraform-provider-upgrade/SKILL.md`](.github/skills/terraform-provider-upgrade/SKILL.md) |
-| 17 | ✓ | [`.github/skills/waf-assessment/SKILL.md`](.github/skills/waf-assessment/SKILL.md) |
+| 15 | ✓ | [`.github/skills/skill-creator/SKILL.md`](.github/skills/skill-creator/SKILL.md) |
+| 16 | ✓ | [`.github/skills/terraform-module-creator/SKILL.md`](.github/skills/terraform-module-creator/SKILL.md) |
+| 17 | ✓ | [`.github/skills/terraform-provider-upgrade/SKILL.md`](.github/skills/terraform-provider-upgrade/SKILL.md) |
+| 18 | ✓ | [`.github/skills/waf-assessment/SKILL.md`](.github/skills/waf-assessment/SKILL.md) |
 
 ---
 

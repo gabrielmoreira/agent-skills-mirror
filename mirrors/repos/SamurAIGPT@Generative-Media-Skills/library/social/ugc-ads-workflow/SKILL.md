@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Create a User-Generated Content (UGC) video ad by combining a human selfie and a product image, then generating a video script and an animated ad.**
 
-> **Estimated credits:** ~180 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

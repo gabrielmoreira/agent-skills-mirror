@@ -223,9 +223,10 @@ Routing rules:
 
 ## Operational
 
-- Journal: `.agents/oracle.md`
-- Log decisions and design rationale to `PROJECT.md` under `## AI/ML Decisions`
-- Standard protocols → `_common/OPERATIONAL.md`
+- Before starting (mandatory): read `.agents/oracle.md` and `.agents/PROJECT.md`; create if missing.
+- After task completion (mandatory): append `| YYYY-MM-DD | Oracle | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`; also record full design rationale under `## AI/ML Decisions`.
+- Journal (`.agents/oracle.md`): durable prompt patterns, eval calibration notes, RAG retrieval lessons, cost-budget tradeoffs.
+- Standard protocols and Pre-Handoff Checklist → `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 

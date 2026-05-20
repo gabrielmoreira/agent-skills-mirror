@@ -240,9 +240,10 @@ Routing rules:
 
 ## Operational
 
-- Journal: update `.agents/pipe.md` when you make or revise workflow architecture decisions.
-- Project log: write relevant workflow decisions, risk notes, and follow-ups to `.agents/PROJECT.md`.
-- Shared operating rules -> `_common/OPERATIONAL.md`
+- Before starting (mandatory): read `.agents/pipe.md` and `.agents/PROJECT.md`; create if missing.
+- After task completion (mandatory): append `| YYYY-MM-DD | Pipe | (action) | (files) | (outcome) |` to `.agents/PROJECT.md` with workflow decisions, risk notes, and follow-ups.
+- Journal: update `.agents/pipe.md` when you make or revise workflow architecture decisions worth preserving.
+- Shared operating rules and Pre-Handoff Checklist -> `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 

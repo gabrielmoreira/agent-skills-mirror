@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mcp-use/mcp-use` — 26 default patterns, 0 followed patterns, 98 file(s) materialized.
+Mirror of `mcp-use/mcp-use` — 26 default patterns, 0 followed patterns, 105 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mcp-use/mcp-use` — 26 default patterns, 0 followed patterns, 98 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 98 |
+| Files         | 105 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -157,6 +157,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 96 | ✓ | [`skills/mcp-builder/references/widgets/state.md`](skills/mcp-builder/references/widgets/state.md) |
 | 97 | ✓ | [`skills/mcp-builder/references/widgets/ui-guidelines.md`](skills/mcp-builder/references/widgets/ui-guidelines.md) |
 | 98 | ✓ | [`skills/mcp-builder/SKILL.md`](skills/mcp-builder/SKILL.md) |
+| 99 | ✓ | [`skills/openapi-to-mcp/LICENSE.txt`](skills/openapi-to-mcp/LICENSE.txt) |
+| 100 | ✓ | [`skills/openapi-to-mcp/references/auth.md`](skills/openapi-to-mcp/references/auth.md) |
+| 101 | ✓ | [`skills/openapi-to-mcp/references/code-templates.md`](skills/openapi-to-mcp/references/code-templates.md) |
+| 102 | ✓ | [`skills/openapi-to-mcp/references/deploy.md`](skills/openapi-to-mcp/references/deploy.md) |
+| 103 | ✓ | [`skills/openapi-to-mcp/references/mapping-rules.md`](skills/openapi-to-mcp/references/mapping-rules.md) |
+| 104 | ✓ | [`skills/openapi-to-mcp/references/testing.md`](skills/openapi-to-mcp/references/testing.md) |
+| 105 | ✓ | [`skills/openapi-to-mcp/SKILL.md`](skills/openapi-to-mcp/SKILL.md) |
 
 ---
 

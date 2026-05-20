@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
+Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 37 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 37 |
+| Files         | 36 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,15 +87,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`.agents/skills/frontend-testing/references/workflow.md`](.agents/skills/frontend-testing/references/workflow.md) |
 | 27 | ✓ | [`.agents/skills/frontend-testing/SKILL.md`](.agents/skills/frontend-testing/SKILL.md) |
 | 28 | ✓ | [`.agents/skills/how-to-write-component/SKILL.md`](.agents/skills/how-to-write-component/SKILL.md) |
-| 29 | ✓ | [`.agents/skills/tailwind-css-rules/SKILL.md`](.agents/skills/tailwind-css-rules/SKILL.md) |
-| 30 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 31 | ✓ | [`api/AGENTS.md`](api/AGENTS.md) |
-| 32 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 33 | ✓ | [`dify-agent/AGENTS.md`](dify-agent/AGENTS.md) |
-| 34 | ✓ | [`e2e/AGENTS.md`](e2e/AGENTS.md) |
-| 35 | ✓ | [`packages/dify-ui/AGENTS.md`](packages/dify-ui/AGENTS.md) |
-| 36 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 37 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
+| 29 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 30 | ✓ | [`api/AGENTS.md`](api/AGENTS.md) |
+| 31 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 32 | ✓ | [`dify-agent/AGENTS.md`](dify-agent/AGENTS.md) |
+| 33 | ✓ | [`e2e/AGENTS.md`](e2e/AGENTS.md) |
+| 34 | ✓ | [`packages/dify-ui/AGENTS.md`](packages/dify-ui/AGENTS.md) |
+| 35 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 36 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
 
 ---
 

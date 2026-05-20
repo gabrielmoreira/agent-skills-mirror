@@ -219,6 +219,37 @@ The auto-instrumentation packages automatically instrument:
 
 Refer to [OpenTelemetry documentation](https://opentelemetry.io/ecosystem/registry/?language=python) for the complete list.
 
+## Database query parameters
+
+Prepared-statement parameter values are off by default.
+Read [capturing database query parameters](../capture-database-query-parameters.md) first — it covers the cross-language risks and the Collector-side defence-in-depth that must be in place before enabling capture.
+
+Python does **not** expose an environment variable.
+Enable capture per instrumentor at SDK initialization:
+
+```python
+from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor
+
+Psycopg2Instrumentor().instrument(capture_parameters=True)
+```
+
+The same kwarg exists on `PsycopgInstrumentor`, `AsyncPGInstrumentor`, `TortoiseORMInstrumentor`, and the dbapi-base `trace_integration(..., capture_parameters=True)`.
+
+| | |
+|---|---|
+| Default | `False` |
+| Attribute key | **`db.statement.parameters`** — singular attribute with plural name. Does **not** use the standard `db.query.parameter.<key>` schema. |
+| Value shape | The entire DBAPI parameters tuple stringified via `str(args[1])` — one attribute carries everything, with no per-parameter keying. |
+| Coverage | `dbapi` base, `psycopg`, `psycopg2`, `asyncpg`, `tortoiseorm`. |
+| Silently dropped | `mysql`, `mysqlclient`, `pymysql`, `pymssql`, `sqlite3`, `aiopg` — the dbapi base supports the kwarg, but these wrappers do not forward it. |
+| No-op | `sqlalchemy` has no parameter capture at all. |
+| Type whitelist | None. |
+| Length cap | None. |
+
+**The attribute key is non-standard.**
+A consumer or backend that keys off `db.query.parameter.*` will not pick up Python values, and `db.statement.parameters` carries the entire DBAPI parameters tuple as a single language-specific `str()` representation — per-parameter values cannot be reconstructed downstream without parsing Python repr output.
+Treat the Python attribute as opaque debugging context, not as a structured replacement for `db.query.parameter.<key>`.
+
 ## Custom spans
 
 Add business context to auto-instrumented traces:

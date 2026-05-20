@@ -33,7 +33,7 @@ documents every meaningful `.h` and `.cpp` file and creates an
 |----------|---------|
 | **Claude Code** | `/plugin marketplace add TheQtCompanyRnD/agent-skills` then `/plugin install qt-development-skills` |
 | **Codex CLI** | `npx skills add TheQtCompanyRnD/agent-skills` |
-| **Copilot** | Copy `SKILL.md` to `.github/agents/qt-cpp-docs.agent.md` |
+| **Copilot** | `gh skill install TheQtCompanyRnD/agent-skills qt-cpp-docs` (preview) — or auto-discovered from `.claude/skills/` |
 | **Cursor** | Copy `SKILL.md` to `.cursor/rules/qt-cpp-docs/RULE.md` |
 
 ## Files

@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Cinematic 5–10s product ad from a product photo + brand brief.**
 
-> **Estimated credits:** ~130 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

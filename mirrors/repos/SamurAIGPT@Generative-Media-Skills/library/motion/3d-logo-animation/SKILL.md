@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Transform a 2D logo into a premium 3D version and animate it with professional cinematic effects.**
 
-> **Estimated credits:** ~120 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

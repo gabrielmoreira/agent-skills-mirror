@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Create a hilarious and ultra-realistic video of an anthropomorphic animal acting like a human vlogger in a real-world setting.**
 
-> **Estimated credits:** ~150 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

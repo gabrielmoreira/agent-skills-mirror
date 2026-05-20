@@ -5,6 +5,7 @@ import ai.koog.agents.core.agent.GraphAIAgent
 import ai.koog.agents.core.agent.config.AIAgentConfig
 import ai.koog.agents.core.agent.singleRunStrategy
 import ai.koog.agents.core.annotation.InternalAgentsApi
+import ai.koog.agents.core.dsl.extension.ReceivedToolResults
 import ai.koog.agents.core.dsl.extension.ToolCalls
 import ai.koog.agents.core.tools.Tool
 import ai.koog.agents.core.tools.ToolRegistry
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 class PersistenceRunsTwiceTest {
     private val serializer = KotlinxSerializer()
@@ -49,8 +51,6 @@ class PersistenceRunsTwiceTest {
         )
 
         val agent = GraphAIAgent(
-            inputType = typeToken<String>(),
-            outputType = typeToken<String>(),
             promptExecutor = getMockExecutor(serializer) {
                 // No LLM calls needed for this test; nodes write directly to the prompt/history
             },
@@ -220,9 +220,9 @@ class PersistenceRunsTwiceTest {
                 }
                 onNodeExecutionCompleted { ctx ->
                     if (ctx.node.name == "nodeExecuteTool") {
-                        val toolResult = (ctx.output as Message.User).parts
-                            .filterIsInstance<MessagePart.Tool.Result>()
-                            .single()
+                        val toolResult = (ctx.output as ReceivedToolResults).toolResults.single()
+                        // resultObject is set in the live result but must NOT survive persistence
+                        assertNotNull(toolResult.resultObject)
                         events += "finished: nodeExecuteTool(tool=${toolResult.tool}, output=${toolResult.output})"
                     }
                 }
@@ -262,19 +262,20 @@ class PersistenceRunsTwiceTest {
 
         val lastCheckpoint = checkpointStorage.getCheckpoints("session-01").last()
 
-        assertEquals("nodeExecuteTool", lastCheckpoint.nodePath.substringAfterLast("/"))
-        assertNotNull(lastCheckpoint.lastOutput, lastCheckpoint.nodePath.substringAfterLast("/"))
+        val lastGraphProps = lastCheckpoint.graphProperties!!
+        assertEquals("nodeExecuteTool", lastGraphProps.nodePath.substringAfterLast("/"))
+        assertNotNull(lastGraphProps.lastOutput, lastGraphProps.nodePath.substringAfterLast("/"))
 
-        val lastOutputValue = KotlinxSerializer().decodeFromJSONElement<Message.User>(
-            lastCheckpoint.lastOutput,
-            typeToken<Message.User>()
+        val lastOutputValue = KotlinxSerializer().decodeFromJSONElement<ReceivedToolResults>(
+            lastGraphProps.lastOutput,
+            typeToken<ReceivedToolResults>()
         )
-        val persistedToolResult = lastOutputValue.parts
-            .filterIsInstance<MessagePart.Tool.Result>()
-            .single()
+        val persistedToolResult = lastOutputValue.toolResults.single()
 
         assertEquals("guesser", persistedToolResult.tool)
         assertEquals("encoded_result(\"Hidden Value\")", persistedToolResult.output)
+        // resultObject is @Transient — it is NOT persisted via the Persistence feature
+        assertNull(persistedToolResult.resultObject)
 
         val expectedEventsFirstRun = listOf(
             "onLLMCallStarting(Tell me the secret!)",

@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Create professional interior design visualizations — redesign existing rooms, generate new room concepts, or visualize specific furniture styles in a space.**
 
-> **Estimated credits:** ~70 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Create a luxury jewelry advertisement with high-end commercial cinematography and detailed macro animation.**
 
-> **Estimated credits:** ~200 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

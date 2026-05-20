@@ -5,8 +5,8 @@ inheritance: inheritable
 description: "Frame audit before solving — restate the problem, flag user-framing mismatches, surface symptom→cause reframes"
 application: "Every non-trivial request — multi-file changes, > 15-minute estimates, or requests using fix/improve/broken/just-do-X language"
 applyTo: "**/*"
-currency: 2026-04-30
-lastReviewed: 2026-04-30
+currency: 2026-05-19
+lastReviewed: 2026-05-19
 ---
 
 # Problem Framing Audit (Discipline -1)
@@ -35,21 +35,39 @@ This rule is asymmetric. Trivial tasks pass through unchanged. Non-trivial tasks
 | User restates the same request after a failed attempt | **Activate** |
 | User explicitly asks "what am I missing?" or invokes `/reframe` | **Activate** |
 
+## Explain/Summarize Frame: verify before parroting
+
+When the user asks to **explain, describe, summarize, or read-and-explain** a doc/spec/README/config, the default failure is treating the doc text as ground truth. Docs drift from code.
+
+| Literal trigger phrase in the user prompt | Required action before responding |
+| --- | --- |
+| "Explain X", "Tell me how Y works", "Describe Z" | Name source file(s) read; cross-check ≥1 structural claim against filesystem |
+| "Summarize <doc>", "Read <file> and..." | Same; if doc and filesystem disagree, surface the gap and report both |
+| "Walk me through...", "What does <doc> say about..." | Same |
+
+Structural claims worth cross-checking: subfolder/file layout, listed fields, named sections, version numbers, counts. Not every claim — pick ≥1 the user's question depends on.
+
+**Visible marker**: `**Verified against**: <doc path> + <filesystem check>` — fire when summarizing any doc that claims structure.
+
+This is distinct from the Core Rule above (which asks "is the user solving the right problem?"). Here the user's frame is fine; the discipline is **don't parrot the doc as fact without confirming it still matches reality**.
+
 ## Visible Markers
 
 When the audit fires and surfaces a non-trivial reframe, make the move visible in the response:
 
 | Marker | When |
 |---|---|
-| `**Frame**: ...` (one-sentence restatement) | Always when audit fires |
+| `**Frame**: ...` (one-sentence restatement) | Always when Core Rule audit fires |
 | `**Cause-frame**: ...` | When the user's frame was a symptom and the audit surfaced the cause |
 | `**Considered framings**: (a) X, (b) Y — going with ...` | When step 8 (frame audit) surfaced a real alternative |
+| `**Verified against**: ...` | When the Explain/Summarize discipline fires (see section above) |
 
 Silent passes need no marker — only fire markers when the audit produced something. Performative markers on every response defeat the purpose.
 
 ## Anti-Patterns
 
 - **Parroting**: restating the user's words verbatim is not a restatement. Use your own words.
+- **Parroting the doc**: summarizing a README without verifying its structural claims still match the filesystem is the same failure mode at a different level. Use the Explain/Summarize discipline.
 - **Audit theatre**: surfacing a different frame and then solving the original anyway. If the audit fires, *propose* the reframe — let the user pick.
 - **Interrogation mode**: asking 5 clarifying questions back-to-back. One sharp question beats five generic ones.
 - **Skipping because it's "obvious"**: certainty is exactly when frames are most often wrong.

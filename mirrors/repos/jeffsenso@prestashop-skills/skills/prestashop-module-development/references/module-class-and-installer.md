@@ -62,15 +62,16 @@ class MyModule extends Module
 
 ## Tab management — always via Installer, never via getTabs()
 
-> **Rule**: Do NOT declare `getTabs()` in the main module class. This PS-native method has inconsistent lifecycle management and does not support the shared parent group tab (`Adminwswebsenso`) check.  
+> **Rule**: Do NOT declare `getTabs()` in the main module class. This PS-native method has inconsistent lifecycle management and does not support a shared parent group tab check.  
 > **Always** handle tab creation/deletion in `Installer::installTabs()` / `uninstallTabs()`.
 
 > **Rule**: **Never install the module configuration controller as a visible sidebar tab.** The configuration page is accessed via the module's "Configure" button in the Modules list (via `getContent()` redirect). The `AdminMymoduleConfiguration` tab must be installed with `visible: false` — it only exists to provide the `_legacy_link` routing target for the Symfony controller. Only CRUD/list controllers (e.g. `AdminMymoduleItems`) should appear in the sidebar.
 
-The parent group tab `Adminwswebsenso` is shared across all Websenso modules. Install it only if it does not already exist.
+If your organisation uses a shared group tab for all its modules, check for its existence before creating it. The example below uses `AdminMyCompanyGroup` as the group tab name — replace with your own.
 
 ```php
-private string $groupTabName = 'Adminwswebsenso';
+// Replace 'AdminMyCompanyGroup' and 'My Company' with your own values.
+private string $groupTabName = 'AdminMyCompanyGroup';
 
 private array $tabs = [
     [
@@ -78,7 +79,7 @@ private array $tabs = [
         'name'              => 'MyModule',
         'class_name'        => 'AdminMymoduleConfiguration',
         'label'             => 'My Module Configuration',
-        'parent_class_name' => 'Adminwswebsenso',
+        'parent_class_name' => 'AdminMyCompanyGroup',
         'visible'           => false,   // ← NEVER visible; accessed via module "Configure" button only
     ],
     [
@@ -86,7 +87,7 @@ private array $tabs = [
         'name'              => 'MyModule',
         'class_name'        => 'AdminMymoduleItems',
         'label'             => 'My Module Items',
-        'parent_class_name' => 'Adminwswebsenso',
+        'parent_class_name' => 'AdminMyCompanyGroup',
         'visible'           => true,
     ],
 ];
@@ -97,8 +98,8 @@ private function installTabs(): bool
         $groupTabIsInstalled = \Tab::getIdFromClassName($this->groupTabName);
         if (!$groupTabIsInstalled) {
             $parentTab = [
-                'name'              => 'WebSenso',
-                'label'             => 'WebSenso',
+                'name'              => 'My Company',   // Replace with your company/group label
+                'label'             => 'My Company',
                 'class_name'        => $this->groupTabName,
                 'visible'           => true,
                 'parent_class_name' => 'CONFIGURE',

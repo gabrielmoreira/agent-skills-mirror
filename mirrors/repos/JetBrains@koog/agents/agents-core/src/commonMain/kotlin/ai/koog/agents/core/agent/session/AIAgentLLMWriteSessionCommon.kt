@@ -103,10 +103,10 @@ public abstract class AIAgentLLMWriteSessionCommon internal constructor(
         return SafeTool(tool, environment, clock)
     }
 
-    public fun userMessage(parts: List<MessagePart.RequestPart>): Message.User =
+    internal fun userMessage(parts: List<MessagePart.RequestPart>): Message.User =
         Message.User(parts = parts, metaInfo = RequestMetaInfo.create(clock))
 
-    public fun userMessage(text: String): Message.User =
+    internal fun userMessage(text: String): Message.User =
         Message.User(parts = listOf(MessagePart.Text(text)), metaInfo = RequestMetaInfo.create(clock))
 
     /**
@@ -114,14 +114,6 @@ public abstract class AIAgentLLMWriteSessionCommon internal constructor(
      */
     public fun appendPrompt(body: PromptBuilder.() -> Unit) {
         prompt = prompt(prompt, clock, body)
-    }
-
-    /**
-     * Updates the current prompt by applying modifications defined in the provided block.
-     */
-    @Deprecated("Use `appendPrompt` instead", ReplaceWith("appendPrompt(body)"))
-    public fun updatePrompt(body: PromptBuilder.() -> Unit) {
-        appendPrompt(body)
     }
 
     /**

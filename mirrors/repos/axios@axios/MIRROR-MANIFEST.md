@@ -7,7 +7,7 @@ ref: v1.x
 
 # Mirror Manifest
 
-Mirror of `axios/axios` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `axios/axios` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `axios/axios` — 26 default patterns, 0 followed patterns, 3 file(s) 
 | Ref           | `v1.x` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,9 +59,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`.claude/skills/openspec-apply-change/SKILL.md`](.claude/skills/openspec-apply-change/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/openspec-archive-change/SKILL.md`](.claude/skills/openspec-archive-change/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/openspec-explore/SKILL.md`](.claude/skills/openspec-explore/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/openspec-propose/SKILL.md`](.claude/skills/openspec-propose/SKILL.md) |
+| 5 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 6 | ✓ | [`.opencode/skills/openspec-apply-change/SKILL.md`](.opencode/skills/openspec-apply-change/SKILL.md) |
+| 7 | ✓ | [`.opencode/skills/openspec-archive-change/SKILL.md`](.opencode/skills/openspec-archive-change/SKILL.md) |
+| 8 | ✓ | [`.opencode/skills/openspec-explore/SKILL.md`](.opencode/skills/openspec-explore/SKILL.md) |
+| 9 | ✓ | [`.opencode/skills/openspec-propose/SKILL.md`](.opencode/skills/openspec-propose/SKILL.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

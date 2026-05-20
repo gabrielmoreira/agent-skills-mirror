@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/syllabus/../../../research/syllabus/skills/syllabus/SKILL.md

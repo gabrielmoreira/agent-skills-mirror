@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Create a polished, on-brand Instagram post — square or portrait hero image with matching caption and hashtags.**
 
-> **Estimated credits:** ~20 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

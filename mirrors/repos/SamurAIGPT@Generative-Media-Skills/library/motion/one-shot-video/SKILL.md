@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Generate a single continuous cinematic shot video — no cuts, one seamless flowing scene with dramatic lighting and motion.**
 
-> **Estimated credits:** ~80 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

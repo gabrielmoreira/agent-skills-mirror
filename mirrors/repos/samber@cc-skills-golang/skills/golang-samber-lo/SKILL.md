@@ -1,12 +1,12 @@
 ---
 name: golang-samber-lo
-description: "Functional programming helpers for Golang using samber/lo — 500+ type-safe generic functions for slices, maps, channels, strings, math, tuples, and concurrency (Map, Filter, Reduce, GroupBy, Chunk, Flatten, Find, Uniq, etc.). Core immutable package (lo), concurrent variants (lo/parallel aka lop), in-place mutations (lo/mutable aka lom), lazy iterators (lo/it aka loi for Go 1.23+), and experimental SIMD (lo/exp/simd). Apply when using or adopting samber/lo, when the codebase imports github.com/samber/lo, or when implementing functional-style data transformations in Go. Not for streaming pipelines (→ See golang-samber-ro skill)."
+description: "Functional programming helpers for Golang using samber/lo — 500+ type-safe generic functions for slices, maps, channels, strings, math, tuples, and concurrency (Map, Filter, Reduce, GroupBy, Chunk, Flatten, Find, Uniq, etc.). Core immutable package (lo), concurrent variants (lo/parallel aka lop), in-place mutations (lo/mutable aka lom), lazy iterators (lo/it aka loi for Go 1.23+), and experimental SIMD (lo/exp/simd). Apply when using or adopting samber/lo, when the codebase imports github.com/samber/lo, or when implementing functional-style data transformations in Go. Not for streaming pipelines (→ See `samber/cc-skills-golang@golang-samber-ro` skill)."
 user-invocable: true
 license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.0.3"
+  version: "1.1.0"
   openclaw:
     emoji: "🧰"
     homepage: https://github.com/samber/cc-skills-golang
@@ -130,7 +130,7 @@ results, err := lo.MapErr(urls, func(url string, _ int) (Response, error) {
 
 | Mistake | Why it fails | Fix |
 | --- | --- | --- |
-| Using `lo.Contains` when `slices.Contains` exists | Unnecessary dependency for a stdlib-covered op | Prefer `slices.Contains`, `slices.Sort`, `maps.Keys` since Go 1.21+ |
+| Using `lo.Contains` when `slices.Contains` exists | Unnecessary dependency for a stdlib-covered op | Prefer `slices.Contains`/`slices.Sort` since Go 1.21+ and `slices.Collect(maps.Keys(m))` since Go 1.23+ when a key slice is needed |
 | Using `lop.Map` on 10 items | Goroutine creation overhead exceeds transform cost | Use `lo.Map` — `lop` benefits start at ~1000+ items for CPU-bound work |
 | Assuming `lo.Filter` modifies the input | `lo` is immutable by default — it returns a new slice | Use `lom.Filter` if you explicitly need in-place mutation |
 | Using `lo.Must` in production code paths | `Must` panics on error — fine in tests and init, dangerous in request handlers | Use the non-Must variant and handle the error |
@@ -138,7 +138,7 @@ results, err := lo.MapErr(urls, func(url string, _ int) (Response, error) {
 
 ## Best Practices
 
-1. **Prefer stdlib when available** — `slices.Contains`, `slices.Sort`, `maps.Keys` carry no dependency. Use `lo` for transforms the stdlib doesn't offer (Map, Filter, Reduce, GroupBy, Chunk, Flatten)
+1. **Prefer stdlib when available** — `slices.Contains` and `slices.Sort` (Go 1.21+) carry no dependency; `maps.Keys` is Go 1.23+ and returns an iterator, so use `slices.Collect(maps.Keys(m))` when you need a slice. Use `lo` for transforms the stdlib doesn't offer (Map, Filter, Reduce, GroupBy, Chunk, Flatten)
 2. **Compose lo functions** — chain `lo.Filter` → `lo.Map` → `lo.GroupBy` instead of writing nested loops. Each function is a building block
 3. **Profile before optimizing** — switch from `lo` to `lom`/`lop` only after `go tool pprof` confirms allocation or CPU as the bottleneck
 4. **Use error variants** — prefer `lo.MapErr` over `lo.Map` + manual error collection. Error variants stop early and propagate cleanly

@@ -22,12 +22,12 @@
 
 ## Table naming convention — MANDATORY
 
-Every module table name MUST start with `ws_`. This groups all Websenso tables together in the database and avoids conflicts with PS core tables.
+Prefix every module table name with a consistent company or module prefix to group your tables together and avoid conflicts with PS core tables. Replace `prefix_` with your own prefix (e.g. your company abbreviation or module name).
 
-- `ws_mymodule_items` ✅
-- `ws_mymodule_items_lang` ✅
-- `ws_mymodule_items_shop` ✅
-- `mymodule_items` ❌ (missing ws_ prefix)
+- `prefix_mymodule_items` ✅
+- `prefix_mymodule_items_lang` ✅
+- `prefix_mymodule_items_shop` ✅
+- `mymodule_items` ❌ (no prefix — risks collision with other modules)
 
 ---
 
@@ -38,9 +38,9 @@ Every module table name MUST start with `ws_`. This groups all Websenso tables t
 PrestaShop's Doctrine integration automatically adds `_DB_PREFIX_` to all entity table names globally. The entity class name (lowercased by Doctrine) becomes the table name:
 
 ```
-PHP class: Ws_mymodule_items
-  → Doctrine lowercases → ws_mymodule_items
-  → PS adds _DB_PREFIX_ → ps_ws_mymodule_items  (full DB table name)
+PHP class: Prefix_mymodule_items
+  → Doctrine lowercases → prefix_mymodule_items
+  → PS adds _DB_PREFIX_ → ps_prefix_mymodule_items  (full DB table name)
 ```
 
 So the naming convention is: **PHP class name = table name without `_DB_PREFIX_`**.
@@ -56,8 +56,8 @@ The SQL in `SqlQueries.php` uses `_DB_PREFIX_ . 'ws_mymodule_items'` which produ
 ```
 src/
  Entity/
-   ├── Ws_mymodule_items.php           # class name = table name
-   └── Ws_mymodule_items_lang.php      # class name = lang table name
+   ├── Prefix_mymodule_items.php           # class name = table name
+   └── Prefix_mymodule_items_lang.php      # class name = lang table name
  Repository/
    └── MymoduleItemsRepository.php     # extends EntityRepository
  Manager/
@@ -69,21 +69,21 @@ config/
 
 ---
 
-## `src/Entity/Ws_mymodule_items.php`
+## `src/Entity/Prefix_mymodule_items.php`
 
 ```php
-namespace Ws\Mymodule\Entity;
+namespace Vendor\Mymodule\Entity;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="Ws\Mymodule\Repository\MymoduleItemsRepository")
+ * @ORM\Entity(repositoryClass="Vendor\Mymodule\Repository\MymoduleItemsRepository")
  * @ORM\HasLifecycleCallbacks
  * @ORM\Table()
  */
-class Ws_mymodule_items
+class Prefix_mymodule_items
 {
     /**
      * @ORM\Id
@@ -94,9 +94,9 @@ class Ws_mymodule_items
 
     /**
      * @ORM\OneToMany(
-     *     targetEntity="Ws\Mymodule\Entity\Ws_mymodule_items_lang",
+     *     targetEntity="Vendor\Mymodule\Entity\Prefix_mymodule_items_lang",
      *     cascade={"persist","remove"},
-     *     mappedBy="ws_mymodule_items"
+     *     mappedBy="prefix_mymodule_items"
      * )
      */
     private $langs;
@@ -133,7 +133,7 @@ class Ws_mymodule_items
     public function setPosition(int $position): self { $this->position = $position; return $this; }
     public function getLangs() { return $this->langs; }
 
-    public function getLangByLangId(int $langId): ?Ws_mymodule_items_lang
+    public function getLangByLangId(int $langId): ?Prefix_mymodule_items_lang
     {
         foreach ($this->langs as $lang) {
             if ($langId === $lang->getLang()->getId()) {
@@ -143,9 +143,9 @@ class Ws_mymodule_items
         return null;
     }
 
-    public function addLang(Ws_mymodule_items_lang $lang): self
+    public function addLang(Prefix_mymodule_items_lang $lang): self
     {
-        $lang->setWs_mymodule_items($this);
+        $lang->setPrefix_mymodule_items($this);
         $this->langs->add($lang);
         return $this;
     }
@@ -189,10 +189,10 @@ class Ws_mymodule_items
 
 ---
 
-## `src/Entity/Ws_mymodule_items_lang.php`
+## `src/Entity/Prefix_mymodule_items_lang.php`
 
 ```php
-namespace Ws\Mymodule\Entity;
+namespace Vendor\Mymodule\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use PrestaShopBundle\Entity\Lang;
@@ -201,14 +201,14 @@ use PrestaShopBundle\Entity\Lang;
  * @ORM\Entity()
  * @ORM\Table()
  */
-class Ws_mymodule_items_lang
+class Prefix_mymodule_items_lang
 {
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Ws\Mymodule\Entity\Ws_mymodule_items", inversedBy="langs")
+     * @ORM\ManyToOne(targetEntity="Vendor\Mymodule\Entity\Prefix_mymodule_items", inversedBy="langs")
      * @ORM\JoinColumn(name="id_mymodule_items", referencedColumnName="id_mymodule_items", nullable=false)
      */
-    private Ws_mymodule_items $ws_mymodule_items;
+    private Prefix_mymodule_items $prefix_mymodule_items;
 
     /**
      * @ORM\Id
@@ -222,8 +222,8 @@ class Ws_mymodule_items_lang
      */
     private ?string $name = null;
 
-    public function getWs_mymodule_items(): Ws_mymodule_items { return $this->ws_mymodule_items; }
-    public function setWs_mymodule_items(Ws_mymodule_items $e): self { $this->ws_mymodule_items = $e; return $this; }
+    public function getPrefix_mymodule_items(): Prefix_mymodule_items { return $this->prefix_mymodule_items; }
+    public function setPrefix_mymodule_items(Prefix_mymodule_items $e): self { $this->prefix_mymodule_items = $e; return $this; }
     public function getLang(): Lang { return $this->lang; }
     public function setLang(Lang $l): self { $this->lang = $l; return $this; }
     public function getName(): ?string { return $this->name; }
@@ -236,21 +236,21 @@ class Ws_mymodule_items_lang
 ## `src/Repository/MymoduleItemsRepository.php`
 
 ```php
-namespace Ws\Mymodule\Repository;
+namespace Vendor\Mymodule\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Ws\Mymodule\Entity\Ws_mymodule_items;
+use Vendor\Mymodule\Entity\Prefix_mymodule_items;
 
 class MymoduleItemsRepository extends EntityRepository
 {
-    public function upsertEntity(Ws_mymodule_items $entity): void
+    public function upsertEntity(Prefix_mymodule_items $entity): void
     {
         $em = $this->getEntityManager();
         $em->persist($entity);
         $em->flush();
     }
 
-    public function deleteEntity(Ws_mymodule_items $entity): void
+    public function deleteEntity(Prefix_mymodule_items $entity): void
     {
         $em = $this->getEntityManager();
         $em->remove($entity);
@@ -282,8 +282,8 @@ class MymoduleItemsRepository extends EntityRepository
             $params['id'] = $id;
         }
         $sql = "SELECT e.*, el.*
-                FROM {$prefix}ws_mymodule_items e
-                LEFT JOIN {$prefix}ws_mymodule_items_lang el
+                FROM {$prefix}prefix_mymodule_items e
+                LEFT JOIN {$prefix}prefix_mymodule_items_lang el
                     ON e.id_mymodule_items = el.id_mymodule_items AND el.id_lang = :id_lang
                 WHERE e.active = 1{$filter}
                 ORDER BY e.position ASC";
@@ -298,12 +298,12 @@ class MymoduleItemsRepository extends EntityRepository
 ## `src/Manager/MymoduleItemsManager.php`
 
 ```php
-namespace Ws\Mymodule\Manager;
+namespace Vendor\Mymodule\Manager;
 
 use PrestaShopBundle\Entity\Repository\LangRepository;
-use Ws\Mymodule\Entity\Ws_mymodule_items;
-use Ws\Mymodule\Entity\Ws_mymodule_items_lang;
-use Ws\Mymodule\Repository\MymoduleItemsRepository;
+use Vendor\Mymodule\Entity\Prefix_mymodule_items;
+use Vendor\Mymodule\Entity\Prefix_mymodule_items_lang;
+use Vendor\Mymodule\Repository\MymoduleItemsRepository;
 
 class MymoduleItemsManager
 {
@@ -317,10 +317,10 @@ class MymoduleItemsManager
         $entity = $this->repository->findOneBy(['id' => $id]);
 
         if (!$entity) {
-            $entity = new Ws_mymodule_items();
+            $entity = new Prefix_mymodule_items();
             foreach ($params['name'] as $langId => $name) {
                 $lang    = $this->langRepository->findOneBy(['id' => $langId]);
-                $langRow = new Ws_mymodule_items_lang();
+                $langRow = new Prefix_mymodule_items_lang();
                 $langRow->setLang($lang);
                 $entity->addLang($langRow);
             }
@@ -364,11 +364,11 @@ No MetadataListener. No special Doctrine event listener. Just the factory:
 ```yaml
 services:
   mymodule.repository.items_repository:
-    class: Ws\Mymodule\Repository\MymoduleItemsRepository
+    class: Vendor\Mymodule\Repository\MymoduleItemsRepository
     public: true
     factory: ["@doctrine.orm.default_entity_manager", getRepository]
     arguments:
-      - Ws\Mymodule\Entity\Ws_mymodule_items
+      - Vendor\Mymodule\Entity\Prefix_mymodule_items
 ```
 
 ---
@@ -381,7 +381,7 @@ imports:
 
 services:
   mymodule.manager.items_manager:
-    class: Ws\Mymodule\Manager\MymoduleItemsManager
+    class: Vendor\Mymodule\Manager\MymoduleItemsManager
     public: true
     arguments:
       - "@mymodule.repository.items_repository"
@@ -393,7 +393,7 @@ services:
 ## Key rules summary
 
 - Entity class name = table name without `_DB_PREFIX_` (PS handles the prefix globally)
-- Always prefix tables with `ws_`: `ws_mymodule_*`
+- Always prefix tables with a consistent company or module prefix: e.g. `prefix_mymodule_*` — replace `prefix_` with your own
 - `@ORM\Table()` — empty annotation, NO `name=` parameter
 - Do NOT create `MetadataListener` or Doctrine event listeners for table naming
 - Repository registered via factory: `["@doctrine.orm.default_entity_manager", getRepository]`

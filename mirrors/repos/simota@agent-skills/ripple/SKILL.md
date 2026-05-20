@@ -278,8 +278,10 @@ Three AI engines independently analyze change impact — engine dispatch & loose
 
 ## Operational
 
-**Journal** (`.agents/ripple.md`): ** Read `.agents/ripple.md` + `.agents/PROJECT.md` before starting. Journal only novel impact...
-Standard protocols → `_common/OPERATIONAL.md`
+**Before starting (mandatory):** read `.agents/ripple.md` and `.agents/PROJECT.md`; create if missing.
+**Journal** (`.agents/ripple.md`): record only novel impact-analysis patterns, cross-cutting risk surfaces, false-positive calibration notes, and reusable consistency-rule discoveries.
+**After task completion (mandatory):** append `| YYYY-MM-DD | Ripple | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`.
+Standard protocols and Pre-Handoff Checklist → `_common/OPERATIONAL.md`
 
 ## Reference Map
 

@@ -1,12 +1,12 @@
 ---
 name: golang-safety
-description: "Defensive Golang coding to prevent panics, silent data corruption, and subtle runtime bugs. Use whenever writing or reviewing Go code that involves nil-prone types (pointers, interfaces, maps, slices, channels), numeric conversions, resource lifecycle (defer in loops), or defensive copying. Also triggers on questions about nil panics, append aliasing, map concurrent access, float comparison, or zero-value design."
+description: "Defensive Golang coding to prevent panics, silent data corruption, and subtle runtime bugs. Use when encountering nil panics, append aliasing, map concurrent access, float comparison pitfalls, or zero-value design questions. Also use when reviewing code for nil-safety, numeric conversion overflow, resource lifecycle issues (defer in loops), or defensive copying of slices and maps."
 user-invocable: true
 license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.1.2"
+  version: "1.2.1"
   openclaw:
     emoji: "🛡️"
     homepage: https://github.com/samber/cc-skills-golang
@@ -26,7 +26,7 @@ Prevents programmer mistakes — bugs, panics, and silent data corruption in nor
 ## Best Practices Summary
 
 1. **Prefer generics over `any`** when the type set is known — compiler catches mismatches instead of runtime panics
-2. **Always use comma-ok for type assertions** — bare assertions panic on mismatch
+2. **Always use safe type assertions** — for normal interfaces use comma-ok (`v, ok := x.(T)`); for reflection in Go 1.25+ prefer `reflect.TypeAssert[T](value)` over `value.Interface().(T)`.
 3. **Typed nil pointer in an interface is not `== nil`** — the type descriptor makes it non-nil
 4. **Writing to a nil map panics** — always initialize before use
 5. **`append` may reuse the backing array** — both slices share memory if capacity allows, silently corrupting each other
@@ -66,10 +66,10 @@ func getHandler() http.Handler {
 
 ### Nil map, slice, and channel behavior
 
-| Type | Read from nil | Write to nil | Len/Cap of nil | Range over nil |
+| Type | Index into nil | Write to nil | Len/Cap of nil | Range over nil |
 | --- | --- | --- | --- | --- |
 | Map | Zero value | **panic** | 0 | 0 iterations |
-| Slice | **panic** (index) | **panic** (index) | 0 | 0 iterations |
+| Slice | **panic** | **panic** | 0 | 0 iterations |
 | Channel | Blocks forever | Blocks forever | 0 | Blocks forever |
 
 ```go
@@ -130,11 +130,12 @@ i32 := int32(val)
 
 ```go
 // ✗ Bad — floating point arithmetic is not exact
-0.1+0.2 == 0.3 // false
+var a, b, c float64 = 0.1, 0.2, 0.3
+a+b == c // false
 
 // ✓ Good — use epsilon comparison
 const epsilon = 1e-9
-math.Abs((0.1+0.2)-0.3) < epsilon // true
+math.Abs((a+b)-c) < epsilon // true
 ```
 
 ### Division by zero
@@ -241,6 +242,17 @@ func (db *DB) connection() *sql.DB {
 ## Enforce with Linters
 
 Many safety pitfalls are caught automatically by linters: `errcheck`, `forcetypeassert`, `nilerr`, `govet`, `staticcheck`. See the `samber/cc-skills-golang@golang-lint` skill for configuration and usage.
+
+### Go 1.25+ reflection type assertions
+
+For reflection code, prefer `reflect.TypeAssert[T]` over `value.Interface().(T)`.
+
+```go
+v := reflect.ValueOf(x)
+if s, ok := reflect.TypeAssert[string](v); ok {
+    use(s)
+}
+```
 
 ## Cross-References
 

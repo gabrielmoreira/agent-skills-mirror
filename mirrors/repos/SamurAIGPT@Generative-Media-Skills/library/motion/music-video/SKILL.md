@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Build a short music video from a song theme — N keyframes, animate each, generate matching music.**
 
-> **Estimated credits:** ~200 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

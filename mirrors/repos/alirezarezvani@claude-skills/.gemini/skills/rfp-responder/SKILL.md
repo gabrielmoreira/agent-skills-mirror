@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/rfp-responder/../../../commercial/skills/rfp-responder/SKILL.md

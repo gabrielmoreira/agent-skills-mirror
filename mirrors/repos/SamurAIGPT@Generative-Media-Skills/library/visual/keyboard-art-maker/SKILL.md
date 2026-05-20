@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Generate artistic top-down photos of keyboard keycaps arranged to spell out custom text messages.**
 
-> **Estimated credits:** ~50 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

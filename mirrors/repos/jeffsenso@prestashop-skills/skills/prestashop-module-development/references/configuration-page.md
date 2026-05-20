@@ -178,3 +178,5 @@ class ConfigurationController extends FrameworkBundleAdminController
 ---
 
 > **Form field rules** (apply to all forms, not just configuration): see **[forms.md](forms.md)**.
+>
+> **Per-language fields** (`TranslatableType`): full pattern including the required locale-switcher JS bundle, per-lang storage in `DataConfiguration`, and the `{% block javascripts %}` Twig block: see **[forms.md — TranslatableType section](forms.md#translatabletype--per-language-fields)**.

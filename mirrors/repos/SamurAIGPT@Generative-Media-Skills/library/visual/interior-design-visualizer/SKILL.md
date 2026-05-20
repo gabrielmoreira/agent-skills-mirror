@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Visualize interior design by generating an empty room and filling it with stylish furniture and decor, or by redesigning an existing room.**
 
-> **Estimated credits:** ~100 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

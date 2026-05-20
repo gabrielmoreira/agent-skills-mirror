@@ -60,8 +60,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`desktop/CLAUDE.md`](desktop/CLAUDE.md) |
-| 3 | ✓ | [`runtime/harnesses/src/embedded-skills/app-builder/SKILL.md`](runtime/harnesses/src/embedded-skills/app-builder/SKILL.md) |
+| 2 | ✓ | [`apps/desktop/CLAUDE.md`](apps/desktop/CLAUDE.md) |
+| 3 | ✓ | [`runtime/harnesses/src/embedded-skills/app-builder-sdk/SKILL.md`](runtime/harnesses/src/embedded-skills/app-builder-sdk/SKILL.md) |
 | 4 | ✓ | [`runtime/harnesses/src/embedded-skills/browser-core-efficient/SKILL.md`](runtime/harnesses/src/embedded-skills/browser-core-efficient/SKILL.md) |
 | 5 | ✓ | [`runtime/harnesses/src/embedded-skills/browser-qa/SKILL.md`](runtime/harnesses/src/embedded-skills/browser-qa/SKILL.md) |
 | 6 | ✓ | [`runtime/harnesses/src/embedded-skills/mcp-configurator/SKILL.md`](runtime/harnesses/src/embedded-skills/mcp-configurator/SKILL.md) |

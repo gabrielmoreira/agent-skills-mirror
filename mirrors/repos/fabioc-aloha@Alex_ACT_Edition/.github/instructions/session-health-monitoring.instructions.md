@@ -5,8 +5,8 @@ inheritance: inheritable
 description: "Monitor session health, manage context window, and ensure continuity across sessions"
 application: "Always active — unconscious monitoring of session state and context capacity"
 applyTo: "**"
-currency: 2026-05-18
-lastReviewed: 2026-05-18
+currency: 2026-05-19
+lastReviewed: 2026-05-19
 ---
 
 # Session Health Monitoring
@@ -15,7 +15,7 @@ Monitor context usage and ensure graceful session transitions. Token-cost detail
 
 ## Proxy Heuristics
 
-VS Code does not expose token counts. Estimate via:
+VS Code does not expose token counts for built-in models. **BYOK models (1.120+) show real token usage and percent-full in the Chat view context-window control** — use that as ground truth when available. For non-BYOK or older builds, estimate via:
 
 | Signal | Interpretation |
 |--------|----------------|

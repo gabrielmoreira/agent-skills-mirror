@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zgsm-ai/everything-ai-coding` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `zgsm-ai/everything-ai-coding` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zgsm-ai/everything-ai-coding` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`platforms/claude-code/skills/eac/SKILL.md`](platforms/claude-code/skills/eac/SKILL.md) |
-| 3 | ✓ | [`platforms/costrict/skills/eac/SKILL.md`](platforms/costrict/skills/eac/SKILL.md) |
-| 4 | ✓ | [`platforms/opencode/skills/eac/SKILL.md`](platforms/opencode/skills/eac/SKILL.md) |
-| 5 | ✓ | [`platforms/vscode-costrict/skills/eac/SKILL.md`](platforms/vscode-costrict/skills/eac/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`platforms/claude-code/skills/eac/SKILL.md`](platforms/claude-code/skills/eac/SKILL.md) |
+| 4 | ✓ | [`platforms/costrict/skills/eac/SKILL.md`](platforms/costrict/skills/eac/SKILL.md) |
+| 5 | ✓ | [`platforms/opencode/skills/eac/SKILL.md`](platforms/opencode/skills/eac/SKILL.md) |
+| 6 | ✓ | [`platforms/vscode-costrict/skills/eac/SKILL.md`](platforms/vscode-costrict/skills/eac/SKILL.md) |
 
 ---
 

@@ -249,7 +249,11 @@ When scanning a polyglot monorepo, spawn language-specific scanner subagents in 
 | `_common/OPUS_47_AUTHORING.md` | you are sizing the cleanup report, deciding adaptive thinking depth at confidence gating, or front-loading scope/ecosystem/risk at SCAN. Critical for Sweep: P3, P5. |
 
 ## Operational
-Journal recurring false positives, dynamic-loading patterns, and project-specific exclusions in `.agents/sweep.md`. Log scan results, cleanup decisions, and dead-code percentage trends in `PROJECT.md` for cross-agent visibility. Standard protocols live in `_common/OPERATIONAL.md`.
+
+- Before starting (mandatory): read `.agents/sweep.md` and `.agents/PROJECT.md`; create if missing.
+- Journal recurring false positives, dynamic-loading patterns, and project-specific exclusions in `.agents/sweep.md` only when reusable.
+- After task completion (mandatory): append `| YYYY-MM-DD | Sweep | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`. Capture scan results, cleanup decisions, and dead-code percentage trends.
+- Standard protocols and Pre-Handoff Checklist → `_common/OPERATIONAL.md`.
 
 ## AUTORUN Support
 

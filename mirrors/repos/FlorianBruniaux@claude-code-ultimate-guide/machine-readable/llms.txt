@@ -6,8 +6,8 @@
 
 - Title: Claude Code Ultimate Guide
 - Author: Florian Bruniaux (Founding Engineer @ Méthode Aristote)
-- Version: 3.40.0
-- Last Updated: May 3, 2026
+- Version: 3.41.0
+- Last Updated: May 18, 2026
 - License: CC BY-SA 4.0 (free, open source)
 - Lines of Documentation: 25,368
 - Production Templates: 186
@@ -20,7 +20,7 @@
 3. Memory & Settings - CLAUDE.md configuration files
 4. Agents - Custom AI personas for specialized workflows
 5. Skills - Reusable knowledge modules (Skills 2.0: Capability Uplift + Encoded Preference, Evals, lifecycle management)
-6. Commands - Custom slash commands (/pr, /commit, /diagnose)
+6. Skills - User-invocable + model-invocable templates (/pr, /commit, /diagnose remain available)
 7. Hooks - Security automation and formatting (production hooks for bash + PowerShell)
 8. MCP Servers - External tool integration (databases, browsers, APIs, semantic search)
 9. Advanced Patterns - Trinity workflow, multi-agent teams, CI/CD, Tasks API
@@ -113,7 +113,7 @@ This guide tracks the MCP/AI agent threat landscape:
 - CVE database: 28+ tracked vulnerabilities
 - Supply chain threat analysis
 - Production security hardening checklist
-- Threat database: examples/commands/resources/threat-db.yaml
+- Threat database: examples/skills/update-threat-db/threat-db.yaml
 
 ## Machine-Readable Reference
 

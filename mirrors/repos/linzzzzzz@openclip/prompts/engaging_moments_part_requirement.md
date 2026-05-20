@@ -91,11 +91,12 @@ In addition to the general criteria above, apply these type-specific nuances bas
 ## Requirements
 
 ### Duration Constraints (Must Follow)
-- Minimum duration: 30 seconds
-- Maximum duration: 4 minutes (240 seconds)
-- Optimal range: 45-180 seconds for best short-form engagement
-- If a moment is shorter than 30 seconds, extend it to include context
-- If a moment is longer than 4 minutes, split it into multiple moments or trim to the most engaging part
+- Follow the runtime **Clip Length Preference** section injected by OpenClip
+- That section defines the hard minimum duration, hard maximum duration, and ideal target range for this run
+- Prefer clips whose natural arc fits the selected range
+- Do not pad weak or unrelated context just to satisfy the selected length
+- If a moment is shorter than the selected minimum, extend it only when nearby context improves standalone quality
+- If a moment is longer than the selected maximum, split it into multiple moments or trim to the most engaging complete arc
 
 ### Time Boundary Principles (Critical)
 
@@ -148,7 +149,7 @@ In addition to the general criteria above, apply these type-specific nuances bas
 3. **Apply engagement criteria** - Use both general and type-specific criteria
 4. **Identify candidate moments** - Find segments that meet the engagement standards
 5. **Verify timestamps** - Ensure all timestamps actually exist in the provided transcript
-6. **Check duration** - Confirm each moment is 30-240 seconds long
+6. **Check duration** - Confirm each moment follows the runtime Clip Length Preference bounds
 7. **Avoid overlaps** - Ensure moments don't overlap in time
 8. **Quality over quantity** - Only include genuinely engaging moments
 9. **Write a summary** - Write a brief 1-2 sentence description of what happens in each moment
@@ -218,7 +219,7 @@ Return your response as a JSON object following this exact structure:
 - **title**: Compelling title without emojis (follow language-specific guidelines)
 - **start_time**: Simple time format (HH:MM:SS or MM:SS) - NOT SRT format with milliseconds
 - **end_time**: Simple time format (HH:MM:SS or MM:SS) - NOT SRT format with milliseconds
-- **duration_seconds**: Integer duration in seconds (must be 30-240)
+- **duration_seconds**: Integer duration in seconds (must follow the runtime Clip Length Preference bounds)
 - **summary**: Brief 1-2 sentence description of what happens in this moment (content description, not engagement reasoning)
 - **engagement_details**: Object with "engagement_level" ("high", "medium", or "low")
 - **why_engaging**: Detailed explanation of what makes this moment compelling

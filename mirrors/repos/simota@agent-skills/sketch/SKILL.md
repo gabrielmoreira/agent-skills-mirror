@@ -284,9 +284,10 @@ Overlap boundaries:
 
 ## Operational
 
-- Journal reusable prompt or API learnings in `.agents/sketch.md`.
-- Append an activity log line to `.agents/PROJECT.md`: `| YYYY-MM-DD | Sketch | (action) | (files) | (outcome) |`
-- Standard protocols live in `_common/OPERATIONAL.md`.
+- Before starting (mandatory): read `.agents/sketch.md` and `.agents/PROJECT.md`; create if missing.
+- After task completion (mandatory): append `| YYYY-MM-DD | Sketch | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`.
+- Journal reusable prompt or API learnings in `.agents/sketch.md` only when an insight is genuinely reusable.
+- Standard protocols and Pre-Handoff Checklist live in `_common/OPERATIONAL.md`.
 
 ## AUTORUN Support
 

@@ -336,6 +336,59 @@ client := &http.Client{
 }
 ```
 
+## Database query parameters
+
+Neither `go.opentelemetry.io/contrib/instrumentation/database/sql/otelsql` nor `github.com/XSAM/otelsql` capture prepared-statement parameter values by default.
+Read [capturing database query parameters](../capture-database-query-parameters.md) first — it covers the cross-language risks and the Collector-side defence-in-depth that must be in place before enabling capture.
+
+For `github.com/XSAM/otelsql`, use the `WithAttributesGetter` option to emit `db.query.parameter.<key>` attributes:
+
+```go
+import (
+    "context"
+    "database/sql/driver"
+    "fmt"
+
+    "github.com/XSAM/otelsql"
+    "go.opentelemetry.io/otel/attribute"
+)
+
+func captureQueryParameters(_ context.Context, _ otelsql.Method, _ string, args []driver.NamedValue) []attribute.KeyValue {
+    attrs := make([]attribute.KeyValue, 0, len(args))
+    for i, a := range args {
+        switch a.Value.(type) {
+        case bool, int64, float64, string:
+            // allowed types
+        default:
+            // skip binary, time.Time conversion is up to the caller, etc.
+            continue
+        }
+        key := fmt.Sprintf("db.query.parameter.%d", i)
+        if a.Name != "" {
+            key = fmt.Sprintf("db.query.parameter.%s", a.Name)
+        }
+        attrs = append(attrs, attribute.String(key, fmt.Sprintf("%v", a.Value)))
+    }
+    return attrs
+}
+
+db, err := otelsql.Open("postgres", dsn,
+    otelsql.WithAttributesGetter(captureQueryParameters),
+)
+```
+
+For database drivers that bypass `database/sql` (e.g., `pgx` used directly), `trace.SpanFromContext(ctx).SetAttributes(...)` after the query returns is a no-op — the auto-instrumentation span is created and ended inside the driver tracer, so it is no longer recording by the time control returns to application code.
+Use a library-level option that emits parameter values onto the driver's own span.
+`github.com/exaring/otelpgx` exposes `otelpgx.WithIncludeQueryParameters()`:
+
+```go
+tracer := otelpgx.NewTracer(otelpgx.WithIncludeQueryParameters())
+config.ConnConfig.Tracer = tracer
+```
+
+This emits the library-specific attribute shape, not `db.query.parameter.<key>` — verify the resulting attribute keys against your downstream consumers.
+If the driver in use exposes no such option, parameter capture is not possible without modifying the driver's tracer implementation.
+
 ## Custom spans
 
 Add business context to instrumented traces:

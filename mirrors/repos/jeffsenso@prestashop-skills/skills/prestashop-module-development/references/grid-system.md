@@ -296,7 +296,7 @@ class MyEntityFilters extends Filters
   # PositionDefinition — used by updatePositionAction
   # IMPORTANT: $table must be the table name WITHOUT the DB prefix.
   # DoctrinePositionUpdateHandler prepends $dbPrefix automatically at runtime.
-  # e.g. for table `9sxtm_ws_mymodule_items`, use $table: 'ws_mymodule_items'
+  # e.g. for table `9sxtm_prefix_mymodule_items`, use $table: 'prefix_mymodule_items'
   mymodule.grid.position_definition:
     class: 'PrestaShop\PrestaShop\Core\Grid\Position\PositionDefinition'
     arguments:
@@ -499,7 +499,7 @@ $(document).ready(function () {
 - `index.php` guards must exist in **all** Grid subdirectories — lotr adds them automatically.
 - **NEVER start module route paths with `/modules/`** — `YamlModuleLoader` always prepends `/modules` automatically. Path `/modules/mymodule/...` becomes `/modules/modules/mymodule/...`, causing 404/405 on every action. Use `/mymodule/...` instead.
 - **Index (GET) and search (POST) MUST share the same path** — the Grid search form POSTs to the current page URL (the index URL). If the search route has a different path (e.g. `/entities/search`), the POST hits the index route which only accepts GET → 405 Method Not Allowed.
-- **Bundle webpack Grid ID must match `GRID_ID` constant** — if you copy a bundle from another module (e.g. `ws_payfip`), the minified section still contains `new o.a("payfip")`. Replace every occurrence with the actual grid ID. Mismatch means row links, bulk actions, search reset, and column sort silently fail.
+- **Bundle webpack Grid ID must match `GRID_ID` constant** — if you copy a bundle from another module, the minified section still contains the old grid ID. Replace every occurrence with the actual grid ID. Mismatch means row links, bulk actions, search reset, and column sort silently fail.
 - **`ImageColumn` always renders `<img src="...">` unconditionally** — if the `src_field` value is empty/null the browser shows a broken image icon. Fix: (1) make the SQL return `NULL` (not empty string) when there is no image using `IF(photo IS NOT NULL AND photo != '', CONCAT(base_url, photo), NULL)`; (2) create a custom Twig template that guards with `{% if record[...] is not empty %}`; (3) register the module views dir under the `@PrestaShop` Twig namespace in `services.yml` and name the template `{gridId}_{columnId}_{columnType}.html.twig` — `GridExtension::getTemplatePath` checks that path first. See the "ImageColumn custom template" section below.
 - **`ToggleColumn` for boolean grid columns** — always pair with a `YesAndNoChoiceType` filter. Use `ToggleColumn` (not `DataColumn`) for any `active`/boolean field. Add `YesAndNoChoiceType` filter with `setTypeOptions(['required' => false])`. The controller toggle action returns JSON `{status: bool, message: string}`. The `primary_field` option must point to the PK field name in the SELECT result. See the "ToggleColumn and boolean filters" section below.
 
@@ -603,7 +603,7 @@ $qb->select(
 mymodule.grid.position_definition:
   class: 'PrestaShop\PrestaShop\Core\Grid\Position\PositionDefinition'
   arguments:
-    $table:         'ws_mymodule_items'   # WITHOUT DB prefix — handler adds it at runtime
+    $table:         'prefix_mymodule_items'   # WITHOUT DB prefix — handler adds it at runtime
     $idField:       'id_myentity'
     $positionField: 'position'
 ```

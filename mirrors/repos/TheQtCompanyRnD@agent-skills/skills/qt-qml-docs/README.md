@@ -36,17 +36,18 @@ linking them all.
 |----------|---------|
 | **Claude Code** | `/plugin marketplace add TheQtCompanyRnD/agent-skills` then `/plugin install qt-development-skills` |
 | **Codex CLI** | `npx skills add TheQtCompanyRnD/agent-skills` |
-| **Copilot** | Copy `platforms/copilot.prompt.md` to `.github/agents/qt-qml-docs.agent.md` |
+| **Copilot** | `gh skill install TheQtCompanyRnD/agent-skills qt-qml-docs` (preview) — or auto-discovered from `.claude/skills/` |
 | **Cursor** | Copy `SKILL.md` to `.cursor/rules/qt-qml-docs/RULE.md` |
 | **Windsurf** | Copy `platforms/windsurf.md` to `.windsurf/rules/qt-qml-docs.md` |
 
 ## Platform variants
 
 The full skill (`SKILL.md`) works on any platform capable of
-loading Markdown instructions. For platforms with size
-constraints, condensed variants are available in `platforms/`:
+loading Markdown instructions, including **Claude Code**,
+**Codex CLI**, and **GitHub Copilot** (which auto-discovers it
+from `.claude/skills/`). For platforms with size constraints,
+a condensed variant is available in `platforms/`:
 
-- **copilot.prompt.md** — Condensed variant for GitHub Copilot
 - **windsurf.md** — Compact variant for Windsurf
 
 ## Files
@@ -54,7 +55,6 @@ constraints, condensed variants are available in `platforms/`:
 | File | Purpose |
 |------|---------|
 | `SKILL.md` | Full skill instructions (184 lines) |
-| `platforms/copilot.prompt.md` | Condensed variant for GitHub Copilot |
 | `platforms/windsurf.md` | Compact variant for Windsurf |
 
 ## License

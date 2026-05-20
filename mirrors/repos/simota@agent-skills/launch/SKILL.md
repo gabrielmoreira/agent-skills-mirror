@@ -243,9 +243,10 @@ When input contains `## NEXUS_ROUTING`, do not call other agents directly. Retur
 ```
 ## Operational
 
-- Journal: `.agents/launch.md`
-- Project log: `.agents/PROJECT.md`
-- Standard operational rules: `_common/OPERATIONAL.md`
+- Before starting (mandatory): read `.agents/launch.md` and `.agents/PROJECT.md`; create if missing.
+- After task completion (mandatory): append `| YYYY-MM-DD | Launch | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`.
+- Journal (`.agents/launch.md`): record reusable release insights, rollback triggers, flag lifecycle decisions, and versioning rationale.
+- Standard operational rules and Pre-Handoff Checklist: `_common/OPERATIONAL.md`
 - Git discipline: `_common/GIT_GUIDELINES.md`
 
 ## Collaboration

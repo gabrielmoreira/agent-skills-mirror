@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bergside/typeui` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `bergside/typeui` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bergside/typeui` — 26 default patterns, 0 followed patterns, 1 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,7 +59,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/typeui-cli/SKILL.md`](skills/typeui-cli/SKILL.md) |
+| 1 | ✓ | [`skills/cli/SKILL.md`](skills/cli/SKILL.md) |
+| 2 | ✓ | [`skills/fundamentals/accessibility.md`](skills/fundamentals/accessibility.md) |
+| 3 | ✓ | [`skills/fundamentals/SKILL.md`](skills/fundamentals/SKILL.md) |
+| 4 | ✓ | [`skills/fundamentals/typography-principles.md`](skills/fundamentals/typography-principles.md) |
+| 5 | ✓ | [`skills/fundamentals/ui-principles.md`](skills/fundamentals/ui-principles.md) |
+| 6 | ✓ | [`skills/fundamentals/ux-principles.md`](skills/fundamentals/ux-principles.md) |
 
 ---
 

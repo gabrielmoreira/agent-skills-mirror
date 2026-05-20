@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ilang-ai/ilang-openclaw` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `ilang-ai/ilang-openclaw` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ilang-ai/ilang-openclaw` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,9 +60,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`everything-is-ok/SKILL.md`](everything-is-ok/SKILL.md) |
-| 2 | ✓ | [`ilang-compress/SKILL.md`](ilang-compress/SKILL.md) |
-| 3 | ✓ | [`less-token/SKILL.md`](less-token/SKILL.md) |
-| 4 | ✓ | [`no-prompt/SKILL.md`](no-prompt/SKILL.md) |
+| 2 | ✓ | [`freemoney/SKILL.md`](freemoney/SKILL.md) |
+| 3 | ✓ | [`ilang-compress/SKILL.md`](ilang-compress/SKILL.md) |
+| 4 | ✓ | [`less-token/SKILL.md`](less-token/SKILL.md) |
+| 5 | ✓ | [`no-prompt/SKILL.md`](no-prompt/SKILL.md) |
 
 ---
 

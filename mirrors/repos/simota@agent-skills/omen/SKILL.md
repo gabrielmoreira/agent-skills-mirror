@@ -242,9 +242,10 @@ In all suppression cases, write a one-line note in the report explaining why the
 
 ## Operational
 
+**Before starting (mandatory):** read `.agents/omen.md` and `.agents/PROJECT.md`; create if missing.
 **Journal** (`.agents/omen.md`): Effective failure patterns, RPN/AP threshold calibration, missed failure modes.
-**Project log**: Record analysis scope and key findings in `PROJECT.md` for team visibility.
-Standard protocols → `_common/OPERATIONAL.md`
+**After task completion (mandatory):** append `| YYYY-MM-DD | Omen | (action) | (files) | (outcome) |` to `.agents/PROJECT.md` with analysis scope and key findings.
+Standard protocols and Pre-Handoff Checklist → `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 

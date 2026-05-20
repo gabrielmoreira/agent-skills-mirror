@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Generate a complete Amazon product listing image set — hero image, lifestyle shot, infographic with features, and comparison/detail closeups optimized for Amazon standards.**
 
-> **Estimated credits:** ~100 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 0 followed patterns, 149 file(s) materialized.
+Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 1 followed patterns, 150 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 0 followed pat
 | Ref Type      | `branch` |
 | Ref           | `dev` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 149 |
+| Followed pats | 1 |
+| Files         | 150 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 0 followed pat
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `ROADMAP.md`
 
 ## File Index
 
@@ -208,6 +208,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 147 | ✓ | [`src/tools/hashline-edit/AGENTS.md`](src/tools/hashline-edit/AGENTS.md) |
 | 148 | ✓ | [`src/tools/look-at/AGENTS.md`](src/tools/look-at/AGENTS.md) |
 | 149 | ✓ | [`src/tools/skill/AGENTS.md`](src/tools/skill/AGENTS.md) |
+| 150 | → | [`ROADMAP.md`](ROADMAP.md) |
 
 ---
 

@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Create a Xiaohongshu (RedNote/小红书) style cover image — vibrant, lifestyle-focused, with aesthetic typography overlay suitable for the Chinese social platform.**
 
-> **Estimated credits:** ~40 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

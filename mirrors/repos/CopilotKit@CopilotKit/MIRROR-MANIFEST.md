@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 6 followed patterns, 454 file(s) materialized.
+Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 6 followed patterns, 436 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 6 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 454 |
+| Files         | 436 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -445,79 +445,61 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 379 | ✓ | [`showcase/integrations/ms-agent-dotnet/src/app/demos/reasoning-default-render/README.md`](showcase/integrations/ms-agent-dotnet/src/app/demos/reasoning-default-render/README.md) |
 | 380 | ✓ | [`showcase/integrations/ms-agent-dotnet/src/app/demos/tool-rendering/README.md`](showcase/integrations/ms-agent-dotnet/src/app/demos/tool-rendering/README.md) |
 | 381 | ✓ | [`showcase/integrations/ms-agent-python/public/demo-files/README.md`](showcase/integrations/ms-agent-python/public/demo-files/README.md) |
-| 382 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/agent-config/README.md`](showcase/integrations/ms-agent-python/src/app/demos/agent-config/README.md) |
-| 383 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/agentic-chat-reasoning/README.md`](showcase/integrations/ms-agent-python/src/app/demos/agentic-chat-reasoning/README.md) |
-| 384 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/agentic-chat/README.md`](showcase/integrations/ms-agent-python/src/app/demos/agentic-chat/README.md) |
-| 385 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/chat-customization-css/README.md`](showcase/integrations/ms-agent-python/src/app/demos/chat-customization-css/README.md) |
-| 386 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/frontend-tools/README.md`](showcase/integrations/ms-agent-python/src/app/demos/frontend-tools/README.md) |
-| 387 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/gen-ui-agent/README.md`](showcase/integrations/ms-agent-python/src/app/demos/gen-ui-agent/README.md) |
-| 388 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/gen-ui-interrupt/README.md`](showcase/integrations/ms-agent-python/src/app/demos/gen-ui-interrupt/README.md) |
-| 389 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/gen-ui-tool-based/README.md`](showcase/integrations/ms-agent-python/src/app/demos/gen-ui-tool-based/README.md) |
-| 390 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/hitl-in-chat-booking/README.md`](showcase/integrations/ms-agent-python/src/app/demos/hitl-in-chat-booking/README.md) |
-| 391 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/hitl-in-chat/README.md`](showcase/integrations/ms-agent-python/src/app/demos/hitl-in-chat/README.md) |
-| 392 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/hitl/README.md`](showcase/integrations/ms-agent-python/src/app/demos/hitl/README.md) |
-| 393 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/interrupt-headless/README.md`](showcase/integrations/ms-agent-python/src/app/demos/interrupt-headless/README.md) |
-| 394 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/mcp-apps/README.md`](showcase/integrations/ms-agent-python/src/app/demos/mcp-apps/README.md) |
-| 395 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/multimodal/README.md`](showcase/integrations/ms-agent-python/src/app/demos/multimodal/README.md) |
-| 396 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/open-gen-ui-advanced/README.md`](showcase/integrations/ms-agent-python/src/app/demos/open-gen-ui-advanced/README.md) |
-| 397 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/open-gen-ui/README.md`](showcase/integrations/ms-agent-python/src/app/demos/open-gen-ui/README.md) |
-| 398 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/prebuilt-popup/README.md`](showcase/integrations/ms-agent-python/src/app/demos/prebuilt-popup/README.md) |
-| 399 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/prebuilt-sidebar/README.md`](showcase/integrations/ms-agent-python/src/app/demos/prebuilt-sidebar/README.md) |
-| 400 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/readonly-state-agent-context/README.md`](showcase/integrations/ms-agent-python/src/app/demos/readonly-state-agent-context/README.md) |
-| 401 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/reasoning-default-render/README.md`](showcase/integrations/ms-agent-python/src/app/demos/reasoning-default-render/README.md) |
-| 402 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/shared-state-read-write/README.md`](showcase/integrations/ms-agent-python/src/app/demos/shared-state-read-write/README.md) |
-| 403 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/shared-state-read/README.md`](showcase/integrations/ms-agent-python/src/app/demos/shared-state-read/README.md) |
-| 404 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/shared-state-streaming/README.md`](showcase/integrations/ms-agent-python/src/app/demos/shared-state-streaming/README.md) |
-| 405 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/shared-state-write/README.md`](showcase/integrations/ms-agent-python/src/app/demos/shared-state-write/README.md) |
-| 406 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/subagents/README.md`](showcase/integrations/ms-agent-python/src/app/demos/subagents/README.md) |
-| 407 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/tool-rendering-custom-catchall/README.md`](showcase/integrations/ms-agent-python/src/app/demos/tool-rendering-custom-catchall/README.md) |
-| 408 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/tool-rendering-default-catchall/README.md`](showcase/integrations/ms-agent-python/src/app/demos/tool-rendering-default-catchall/README.md) |
-| 409 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/tool-rendering-reasoning-chain/README.md`](showcase/integrations/ms-agent-python/src/app/demos/tool-rendering-reasoning-chain/README.md) |
-| 410 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/tool-rendering/README.md`](showcase/integrations/ms-agent-python/src/app/demos/tool-rendering/README.md) |
-| 411 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/voice/README.md`](showcase/integrations/ms-agent-python/src/app/demos/voice/README.md) |
-| 412 | ✓ | [`showcase/integrations/pydantic-ai/public/demo-audio/README.md`](showcase/integrations/pydantic-ai/public/demo-audio/README.md) |
-| 413 | ✓ | [`showcase/integrations/pydantic-ai/public/demo-files/README.md`](showcase/integrations/pydantic-ai/public/demo-files/README.md) |
-| 414 | ✓ | [`showcase/integrations/pydantic-ai/src/app/demos/agentic-chat-reasoning/README.md`](showcase/integrations/pydantic-ai/src/app/demos/agentic-chat-reasoning/README.md) |
-| 415 | ✓ | [`showcase/integrations/pydantic-ai/src/app/demos/agentic-chat/README.md`](showcase/integrations/pydantic-ai/src/app/demos/agentic-chat/README.md) |
-| 416 | ✓ | [`showcase/integrations/pydantic-ai/src/app/demos/gen-ui-tool-based/README.md`](showcase/integrations/pydantic-ai/src/app/demos/gen-ui-tool-based/README.md) |
-| 417 | ✓ | [`showcase/integrations/pydantic-ai/src/app/demos/hitl-in-chat/README.md`](showcase/integrations/pydantic-ai/src/app/demos/hitl-in-chat/README.md) |
-| 418 | ✓ | [`showcase/integrations/pydantic-ai/src/app/demos/hitl/README.md`](showcase/integrations/pydantic-ai/src/app/demos/hitl/README.md) |
-| 419 | ✓ | [`showcase/integrations/pydantic-ai/src/app/demos/reasoning-default-render/README.md`](showcase/integrations/pydantic-ai/src/app/demos/reasoning-default-render/README.md) |
-| 420 | ✓ | [`showcase/integrations/pydantic-ai/src/app/demos/tool-rendering-reasoning-chain/README.md`](showcase/integrations/pydantic-ai/src/app/demos/tool-rendering-reasoning-chain/README.md) |
-| 421 | ✓ | [`showcase/integrations/pydantic-ai/src/app/demos/tool-rendering/README.md`](showcase/integrations/pydantic-ai/src/app/demos/tool-rendering/README.md) |
-| 422 | ✓ | [`showcase/integrations/spring-ai/public/demo-audio/README.md`](showcase/integrations/spring-ai/public/demo-audio/README.md) |
-| 423 | ✓ | [`showcase/integrations/spring-ai/public/demo-files/README.md`](showcase/integrations/spring-ai/public/demo-files/README.md) |
-| 424 | ✓ | [`showcase/integrations/spring-ai/src/app/demos/agentic-chat/README.md`](showcase/integrations/spring-ai/src/app/demos/agentic-chat/README.md) |
-| 425 | ✓ | [`showcase/integrations/spring-ai/src/app/demos/gen-ui-interrupt/README.md`](showcase/integrations/spring-ai/src/app/demos/gen-ui-interrupt/README.md) |
-| 426 | ✓ | [`showcase/integrations/spring-ai/src/app/demos/gen-ui-tool-based/README.md`](showcase/integrations/spring-ai/src/app/demos/gen-ui-tool-based/README.md) |
-| 427 | ✓ | [`showcase/integrations/spring-ai/src/app/demos/hitl/README.md`](showcase/integrations/spring-ai/src/app/demos/hitl/README.md) |
-| 428 | ✓ | [`showcase/integrations/spring-ai/src/app/demos/interrupt-headless/README.md`](showcase/integrations/spring-ai/src/app/demos/interrupt-headless/README.md) |
-| 429 | ✓ | [`showcase/integrations/spring-ai/src/app/demos/shared-state-streaming/README.md`](showcase/integrations/spring-ai/src/app/demos/shared-state-streaming/README.md) |
-| 430 | ✓ | [`showcase/integrations/spring-ai/src/app/demos/tool-rendering/README.md`](showcase/integrations/spring-ai/src/app/demos/tool-rendering/README.md) |
-| 431 | ✓ | [`showcase/integrations/strands/public/demo-audio/README.md`](showcase/integrations/strands/public/demo-audio/README.md) |
-| 432 | ✓ | [`showcase/integrations/strands/public/demo-files/README.md`](showcase/integrations/strands/public/demo-files/README.md) |
-| 433 | ✓ | [`showcase/integrations/strands/src/app/demos/agentic-chat/README.md`](showcase/integrations/strands/src/app/demos/agentic-chat/README.md) |
-| 434 | ✓ | [`showcase/integrations/strands/src/app/demos/beautiful-chat/README.md`](showcase/integrations/strands/src/app/demos/beautiful-chat/README.md) |
-| 435 | ✓ | [`showcase/integrations/strands/src/app/demos/frontend-tools/README.md`](showcase/integrations/strands/src/app/demos/frontend-tools/README.md) |
-| 436 | ✓ | [`showcase/integrations/strands/src/app/demos/gen-ui-agent/README.md`](showcase/integrations/strands/src/app/demos/gen-ui-agent/README.md) |
-| 437 | ✓ | [`showcase/integrations/strands/src/app/demos/gen-ui-interrupt/README.md`](showcase/integrations/strands/src/app/demos/gen-ui-interrupt/README.md) |
-| 438 | ✓ | [`showcase/integrations/strands/src/app/demos/gen-ui-tool-based/README.md`](showcase/integrations/strands/src/app/demos/gen-ui-tool-based/README.md) |
-| 439 | ✓ | [`showcase/integrations/strands/src/app/demos/hitl/README.md`](showcase/integrations/strands/src/app/demos/hitl/README.md) |
-| 440 | ✓ | [`showcase/integrations/strands/src/app/demos/interrupt-headless/README.md`](showcase/integrations/strands/src/app/demos/interrupt-headless/README.md) |
-| 441 | ✓ | [`showcase/integrations/strands/src/app/demos/mcp-apps/README.md`](showcase/integrations/strands/src/app/demos/mcp-apps/README.md) |
-| 442 | ✓ | [`showcase/integrations/strands/src/app/demos/shared-state-read-write/README.md`](showcase/integrations/strands/src/app/demos/shared-state-read-write/README.md) |
-| 443 | ✓ | [`showcase/integrations/strands/src/app/demos/shared-state-read/README.md`](showcase/integrations/strands/src/app/demos/shared-state-read/README.md) |
-| 444 | ✓ | [`showcase/integrations/strands/src/app/demos/shared-state-streaming/README.md`](showcase/integrations/strands/src/app/demos/shared-state-streaming/README.md) |
-| 445 | ✓ | [`showcase/integrations/strands/src/app/demos/shared-state-write/README.md`](showcase/integrations/strands/src/app/demos/shared-state-write/README.md) |
-| 446 | ✓ | [`showcase/integrations/strands/src/app/demos/subagents/README.md`](showcase/integrations/strands/src/app/demos/subagents/README.md) |
-| 447 | ✓ | [`showcase/integrations/strands/src/app/demos/tool-rendering/README.md`](showcase/integrations/strands/src/app/demos/tool-rendering/README.md) |
-| 448 | ✓ | [`showcase/README.md`](showcase/README.md) |
-| 449 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
-| 450 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
-| 451 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
-| 452 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
-| 453 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 454 | → | [`README.md`](README.md) |
+| 382 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/agentic-chat/README.md`](showcase/integrations/ms-agent-python/src/app/demos/agentic-chat/README.md) |
+| 383 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/chat-customization-css/README.md`](showcase/integrations/ms-agent-python/src/app/demos/chat-customization-css/README.md) |
+| 384 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/frontend-tools/README.md`](showcase/integrations/ms-agent-python/src/app/demos/frontend-tools/README.md) |
+| 385 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/gen-ui-agent/README.md`](showcase/integrations/ms-agent-python/src/app/demos/gen-ui-agent/README.md) |
+| 386 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/gen-ui-tool-based/README.md`](showcase/integrations/ms-agent-python/src/app/demos/gen-ui-tool-based/README.md) |
+| 387 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/hitl/README.md`](showcase/integrations/ms-agent-python/src/app/demos/hitl/README.md) |
+| 388 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/interrupt-headless/README.md`](showcase/integrations/ms-agent-python/src/app/demos/interrupt-headless/README.md) |
+| 389 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/shared-state-read-write/README.md`](showcase/integrations/ms-agent-python/src/app/demos/shared-state-read-write/README.md) |
+| 390 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/shared-state-read/README.md`](showcase/integrations/ms-agent-python/src/app/demos/shared-state-read/README.md) |
+| 391 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/shared-state-streaming/README.md`](showcase/integrations/ms-agent-python/src/app/demos/shared-state-streaming/README.md) |
+| 392 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/subagents/README.md`](showcase/integrations/ms-agent-python/src/app/demos/subagents/README.md) |
+| 393 | ✓ | [`showcase/integrations/ms-agent-python/src/app/demos/tool-rendering/README.md`](showcase/integrations/ms-agent-python/src/app/demos/tool-rendering/README.md) |
+| 394 | ✓ | [`showcase/integrations/pydantic-ai/public/demo-audio/README.md`](showcase/integrations/pydantic-ai/public/demo-audio/README.md) |
+| 395 | ✓ | [`showcase/integrations/pydantic-ai/public/demo-files/README.md`](showcase/integrations/pydantic-ai/public/demo-files/README.md) |
+| 396 | ✓ | [`showcase/integrations/pydantic-ai/src/app/demos/agentic-chat-reasoning/README.md`](showcase/integrations/pydantic-ai/src/app/demos/agentic-chat-reasoning/README.md) |
+| 397 | ✓ | [`showcase/integrations/pydantic-ai/src/app/demos/agentic-chat/README.md`](showcase/integrations/pydantic-ai/src/app/demos/agentic-chat/README.md) |
+| 398 | ✓ | [`showcase/integrations/pydantic-ai/src/app/demos/gen-ui-tool-based/README.md`](showcase/integrations/pydantic-ai/src/app/demos/gen-ui-tool-based/README.md) |
+| 399 | ✓ | [`showcase/integrations/pydantic-ai/src/app/demos/hitl-in-chat/README.md`](showcase/integrations/pydantic-ai/src/app/demos/hitl-in-chat/README.md) |
+| 400 | ✓ | [`showcase/integrations/pydantic-ai/src/app/demos/hitl/README.md`](showcase/integrations/pydantic-ai/src/app/demos/hitl/README.md) |
+| 401 | ✓ | [`showcase/integrations/pydantic-ai/src/app/demos/reasoning-default-render/README.md`](showcase/integrations/pydantic-ai/src/app/demos/reasoning-default-render/README.md) |
+| 402 | ✓ | [`showcase/integrations/pydantic-ai/src/app/demos/tool-rendering-reasoning-chain/README.md`](showcase/integrations/pydantic-ai/src/app/demos/tool-rendering-reasoning-chain/README.md) |
+| 403 | ✓ | [`showcase/integrations/pydantic-ai/src/app/demos/tool-rendering/README.md`](showcase/integrations/pydantic-ai/src/app/demos/tool-rendering/README.md) |
+| 404 | ✓ | [`showcase/integrations/spring-ai/public/demo-audio/README.md`](showcase/integrations/spring-ai/public/demo-audio/README.md) |
+| 405 | ✓ | [`showcase/integrations/spring-ai/public/demo-files/README.md`](showcase/integrations/spring-ai/public/demo-files/README.md) |
+| 406 | ✓ | [`showcase/integrations/spring-ai/src/app/demos/agentic-chat/README.md`](showcase/integrations/spring-ai/src/app/demos/agentic-chat/README.md) |
+| 407 | ✓ | [`showcase/integrations/spring-ai/src/app/demos/gen-ui-interrupt/README.md`](showcase/integrations/spring-ai/src/app/demos/gen-ui-interrupt/README.md) |
+| 408 | ✓ | [`showcase/integrations/spring-ai/src/app/demos/gen-ui-tool-based/README.md`](showcase/integrations/spring-ai/src/app/demos/gen-ui-tool-based/README.md) |
+| 409 | ✓ | [`showcase/integrations/spring-ai/src/app/demos/hitl/README.md`](showcase/integrations/spring-ai/src/app/demos/hitl/README.md) |
+| 410 | ✓ | [`showcase/integrations/spring-ai/src/app/demos/interrupt-headless/README.md`](showcase/integrations/spring-ai/src/app/demos/interrupt-headless/README.md) |
+| 411 | ✓ | [`showcase/integrations/spring-ai/src/app/demos/shared-state-streaming/README.md`](showcase/integrations/spring-ai/src/app/demos/shared-state-streaming/README.md) |
+| 412 | ✓ | [`showcase/integrations/spring-ai/src/app/demos/tool-rendering/README.md`](showcase/integrations/spring-ai/src/app/demos/tool-rendering/README.md) |
+| 413 | ✓ | [`showcase/integrations/strands/public/demo-audio/README.md`](showcase/integrations/strands/public/demo-audio/README.md) |
+| 414 | ✓ | [`showcase/integrations/strands/public/demo-files/README.md`](showcase/integrations/strands/public/demo-files/README.md) |
+| 415 | ✓ | [`showcase/integrations/strands/src/app/demos/agentic-chat/README.md`](showcase/integrations/strands/src/app/demos/agentic-chat/README.md) |
+| 416 | ✓ | [`showcase/integrations/strands/src/app/demos/beautiful-chat/README.md`](showcase/integrations/strands/src/app/demos/beautiful-chat/README.md) |
+| 417 | ✓ | [`showcase/integrations/strands/src/app/demos/frontend-tools/README.md`](showcase/integrations/strands/src/app/demos/frontend-tools/README.md) |
+| 418 | ✓ | [`showcase/integrations/strands/src/app/demos/gen-ui-agent/README.md`](showcase/integrations/strands/src/app/demos/gen-ui-agent/README.md) |
+| 419 | ✓ | [`showcase/integrations/strands/src/app/demos/gen-ui-interrupt/README.md`](showcase/integrations/strands/src/app/demos/gen-ui-interrupt/README.md) |
+| 420 | ✓ | [`showcase/integrations/strands/src/app/demos/gen-ui-tool-based/README.md`](showcase/integrations/strands/src/app/demos/gen-ui-tool-based/README.md) |
+| 421 | ✓ | [`showcase/integrations/strands/src/app/demos/hitl/README.md`](showcase/integrations/strands/src/app/demos/hitl/README.md) |
+| 422 | ✓ | [`showcase/integrations/strands/src/app/demos/interrupt-headless/README.md`](showcase/integrations/strands/src/app/demos/interrupt-headless/README.md) |
+| 423 | ✓ | [`showcase/integrations/strands/src/app/demos/mcp-apps/README.md`](showcase/integrations/strands/src/app/demos/mcp-apps/README.md) |
+| 424 | ✓ | [`showcase/integrations/strands/src/app/demos/shared-state-read-write/README.md`](showcase/integrations/strands/src/app/demos/shared-state-read-write/README.md) |
+| 425 | ✓ | [`showcase/integrations/strands/src/app/demos/shared-state-read/README.md`](showcase/integrations/strands/src/app/demos/shared-state-read/README.md) |
+| 426 | ✓ | [`showcase/integrations/strands/src/app/demos/shared-state-streaming/README.md`](showcase/integrations/strands/src/app/demos/shared-state-streaming/README.md) |
+| 427 | ✓ | [`showcase/integrations/strands/src/app/demos/shared-state-write/README.md`](showcase/integrations/strands/src/app/demos/shared-state-write/README.md) |
+| 428 | ✓ | [`showcase/integrations/strands/src/app/demos/subagents/README.md`](showcase/integrations/strands/src/app/demos/subagents/README.md) |
+| 429 | ✓ | [`showcase/integrations/strands/src/app/demos/tool-rendering/README.md`](showcase/integrations/strands/src/app/demos/tool-rendering/README.md) |
+| 430 | ✓ | [`showcase/README.md`](showcase/README.md) |
+| 431 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
+| 432 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
+| 433 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
+| 434 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
+| 435 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 436 | → | [`README.md`](README.md) |
 
 ---
 

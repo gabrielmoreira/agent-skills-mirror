@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Generate N keyframes for a short story or scene sequence (image only, no video).**
 
-> **Estimated credits:** ~24 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

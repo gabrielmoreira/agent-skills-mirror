@@ -217,9 +217,10 @@ Add these when relevant:
 
 ## Operational
 
-- Read `.agents/scaffold.md` and `.agents/PROJECT.md`; create `.agents/scaffold.md` if missing.
-- Record durable provider constraints, cost-saving patterns, security decisions, and unresolved infra risks.
-- Follow `_common/OPERATIONAL.md` for shared operational protocol.
+- Before starting (mandatory): read `.agents/scaffold.md` and `.agents/PROJECT.md`; create `.agents/scaffold.md` if missing.
+- After task completion (mandatory): append `| YYYY-MM-DD | Scaffold | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`.
+- Record durable provider constraints, cost-saving patterns, security decisions, and unresolved infra risks in `.agents/scaffold.md`.
+- Follow `_common/OPERATIONAL.md` for shared operational protocol and Pre-Handoff Checklist.
 
 ## Collaboration
 

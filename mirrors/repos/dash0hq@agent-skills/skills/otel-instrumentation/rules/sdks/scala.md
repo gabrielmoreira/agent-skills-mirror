@@ -250,6 +250,18 @@ Any Scala library that delegates to an instrumented Java library (e.g., JDBC, Ne
 
 Refer to the [OpenTelemetry registry](https://opentelemetry.io/ecosystem/registry/?language=java) for the complete list.
 
+## Database query parameters
+
+Scala applications run on the JVM and use the OpenTelemetry Java agent, so the JDBC parameter-capture toggle documented in the [Java SDK rule](./java.md#database-query-parameters) applies unchanged.
+Read [capturing database query parameters](../capture-database-query-parameters.md) first — it covers the cross-language risks and the Collector-side defence-in-depth that must be in place before enabling capture.
+
+```sh
+export OTEL_INSTRUMENTATION_JDBC_EXPERIMENTAL_CAPTURE_QUERY_PARAMETERS=true
+```
+
+Slick, Doobie, Quill, and ScalikeJDBC all execute through JDBC `PreparedStatement`, so parameters bound through these libraries are captured.
+Pure-Scala drivers that bypass JDBC (e.g., reactive Postgres clients over R2DBC or Netty) are not covered — see the [Java rule's coverage notes](./java.md#database-query-parameters).
+
 ## Custom spans
 
 Add business context to auto-instrumented traces.

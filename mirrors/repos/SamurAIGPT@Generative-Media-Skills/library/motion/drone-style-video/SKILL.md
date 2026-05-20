@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Generate aerial drone-perspective footage — sweeping bird's-eye views, orbit shots, and flyover sequences for landscapes, architecture, and events.**
 
-> **Estimated credits:** ~80 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

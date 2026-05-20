@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Design a high-CTR YouTube thumbnail — striking imagery, bold text placement, and emotional face/subject if needed.**
 
-> **Estimated credits:** ~15 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

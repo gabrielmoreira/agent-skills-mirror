@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Create a dramatic "Giant Product" visual where a regular item is showcased as a massive, building-sized object next to a person, then optionally animate the scene.**
 
-> **Estimated credits:** ~150 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

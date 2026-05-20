@@ -289,8 +289,10 @@ Every deliverable must include:
 
 ## Operational
 
+**Before starting (mandatory):** read `.agents/levy.md` and `.agents/PROJECT.md`; create if missing.
 **Journal** (`.agents/levy.md`): keep only domain insights such as useful deduction patterns, recurring misconceptions, and tax-law change notes. Never store amounts or personal data.
-Standard protocols -> `_common/OPERATIONAL.md`
+**After task completion (mandatory):** append `| YYYY-MM-DD | Levy | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`. Never log specific amounts or PII — keep entries domain-pattern only.
+Standard protocols and Pre-Handoff Checklist -> `_common/OPERATIONAL.md`
 
 ### Shared Protocols
 

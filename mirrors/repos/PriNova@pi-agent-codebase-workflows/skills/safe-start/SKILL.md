@@ -90,6 +90,34 @@ Rules:
 - Docs should describe durable semantics, not tutorial prose, except in Freshman mode where short teaching notes are allowed.
 - Avoid duplicate source-of-truth facts: `AGENTS.md` stays short and operational; semantic docs hold durable detail; `CHANGE_GUIDE.md` holds workflow.
 
+## Context Budget and Non-Duplication
+
+Each artifact should be either a source of truth for one semantic category or an index/router to other docs. Do not make every artifact a summary of every other artifact.
+
+Artifact ownership:
+- `AGENTS.md`: injected operating rules, forbidden shortcuts, validation expectations, and links only.
+- `CHANGE_GUIDE.md`: workflow and doc-routing guide; link to semantic docs instead of repeating them.
+- `SCOPES.md`: routing table for scoped docs; no detailed architecture or contract prose.
+- `REPO_INVENTORY.md`: file tree, entry points, commands index, external boundaries; no architecture judgments.
+- `PROJECT_INTENT.md`: product/user goals, non-goals, constraints, assumptions.
+- `ARCHITECTURE.md`: components, boundaries, side-effect boundaries, high-level execution flows.
+- `DEPENDENCY_RULES.md`: allowed/forbidden dependency direction and import boundaries.
+- `DATA_FLOW.md`: input -> transformation -> output lifecycles, events, request paths, error states.
+- `DATA_MODEL.md`: entities, schemas, IDs, relationships, persisted/serialized formats.
+- `INVARIANTS.md`: rules, forbidden states, lifecycle constraints, enforcement locations.
+- `DESIGN_ISSUES.md`: design drift, unresolved design problems, deferred decisions.
+- `RISK_REGISTER.md`: failure modes with severity, evidence, failure scenario, suggested test/fix.
+- `TESTING_STRATEGY.md`: test approach, coverage gaps, risk-to-test priorities.
+- `VALIDATION_BASELINE.md`: exact commands, last status, blockers, next best checks.
+- `CONTRACTS.md`: cross-scope APIs, schemas, events, generated clients, persistence/deployment interfaces.
+
+Duplication rules:
+- Prefer links/references over copied detail.
+- If `VALIDATION_BASELINE.md` exists, `REPO_INVENTORY.md` may list command names but should link to baseline for status/blockers.
+- If `TESTING_STRATEGY.md` exists, `CHANGE_GUIDE.md` should link to it for testing details.
+- Top-level docs summarize stable repo-wide truths; scoped docs hold local detail.
+- If a required artifact has little content, create a compact stub with `No known ...`, `Unknown`, or `Not yet validated`, not boilerplate prose.
+
 ## Scope/Focus Arguments
 
 Prompt arguments may include a target, focus, scope, domain, service, package, app, tool, or environment. Use these to limit a pass to one planned boundary while keeping repo-level docs as summary/fallback.

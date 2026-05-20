@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/inbox-setup/../../../productivity/email/skills/inbox-setup/SKILL.md

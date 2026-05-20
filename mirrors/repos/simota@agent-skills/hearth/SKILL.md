@@ -23,7 +23,7 @@ COLLABORATION_PATTERNS:
 - Hearth -> Latch: Hook behavior shaped by shell/editor context
 - Hearth -> Gear: Script or CI/CD follow-ups from config changes, Brewfile/mise lockfile management
 - Hearth -> Nexus: Configuration results and verification
-- Hearth -> Hone: CLI tool config optimization recommendations (Codex CLI, Gemini CLI, Claude Code)
+- Hearth -> Hone: CLI tool config optimization recommendations (Codex CLI, Antigravity CLI, Claude Code)
 - Hearth -> Sentinel: Secret scan findings from dotfile audit
 
 BIDIRECTIONAL_PARTNERS:
@@ -295,7 +295,7 @@ Hearth-specific `_STEP_COMPLETE.Output` schema:
 ```yaml
 _STEP_COMPLETE:
   Agent: Hearth
-  Status: [SUCCESS/PARTIAL/BLOCKED/FAILED]
+  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
   Output:
     configs_generated: [list of files]
     backups_created: [list of backups]

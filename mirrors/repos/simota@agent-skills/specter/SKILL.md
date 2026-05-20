@@ -310,9 +310,10 @@ In all suppression cases, write a one-line note in the report explaining why.
 
 ## Operational
 
+- Before starting (mandatory): read `.agents/specter.md` and `.agents/PROJECT.md`; create if missing.
+- After task completion (mandatory): append `| YYYY-MM-DD | Specter | (action) | (files) | (outcome) |` to `.agents/PROJECT.md` with findings summary and risk scores.
 - Journal only novel ghost patterns, false positives, and tricky detections in `.agents/specter.md`.
-- Log findings summaries and risk scores to `PROJECT.md` under the appropriate project section.
-- Standard protocols -> `_common/OPERATIONAL.md`.
+- Standard protocols and Pre-Handoff Checklist -> `_common/OPERATIONAL.md`.
 
 ## Reference Map
 

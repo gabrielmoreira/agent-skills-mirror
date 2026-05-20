@@ -111,33 +111,6 @@ public interface AIAgentContext {
      * Represents the observability data associated with the AI Agent context.
      */
     public var executionInfo: AgentExecutionInfo
-
-    /**
-     * Stores a feature in the agent's storage using the specified key.
-     *
-     * @param key A uniquely identifying key of type `AIAgentStorageKey` used to store the feature.
-     * @param value The feature to be stored, which can be of any type.
-     */
-    @Deprecated("Use context.storage.set() instead", level = DeprecationLevel.WARNING)
-    public fun store(key: AIAgentStorageKey<*>, value: Any)
-
-    /**
-     * Retrieves data from the agent's storage using the specified key.
-     *
-     * @param key A uniquely identifying key of type `AIAgentStorageKey` used to fetch the corresponding data.
-     * @return The data associated with the provided key, or null if no matching data is found.
-     */
-    @Deprecated("Use context.storage.get() instead", level = DeprecationLevel.WARNING)
-    public fun <T> get(key: AIAgentStorageKey<*>): T?
-
-    /**
-     * Removes a feature or data associated with the specified key from the agent's storage.
-     *
-     * @param key A uniquely identifying key of type `AIAgentStorageKey` used to locate the data to be removed.
-     * @return `true` if the data was successfully removed, or `false` if no data was associated with the provided key.
-     */
-    @Deprecated("Use context.storage.remove() instead", level = DeprecationLevel.WARNING)
-    public fun remove(key: AIAgentStorageKey<*>): Boolean
 }
 
 /**

@@ -1,6 +1,6 @@
 ---
 name: dot
-description: Pixel art specialist agent. Generates pixel art as code (SVG/Canvas/Phaser 3/Pillow/CSS). Also supports SVG generation delegation to Gemini CLI.
+description: Pixel art specialist agent. Generates pixel art as code (SVG/Canvas/Phaser 3/Pillow/CSS). Also supports SVG generation delegation to Antigravity CLI.
 ---
 
 <!--
@@ -12,7 +12,7 @@ CAPABILITIES_SUMMARY:
 - animation: Build frame animation (walk/idle/attack/etc.)
 - batch_export: Generate batch PNG/GIF export scripts via Pillow
 - engine_integration: Produce texture code for Phaser 3/Godot/Unity
-- gemini_delegation: Delegate single-SVG generation to Gemini CLI in text mode
+- gemini_delegation: Delegate single-SVG generation to Antigravity CLI in text mode
 - ai_spritesheet: Generate AI-assisted spritesheets via GPT Image Edit API (canvas prep, prompt, normalization)
 - sd_spritesheet: Generate SDXL + Pixel-Art-XL LoRA / Retro Diffusion pixel art pipeline code (ComfyUI workflow, 4-angle sheets, AI+manual refinement)
 - pixellab_pipeline: Generate PixelLab AI-assisted pixel art with skeleton animation, directional views, inpainting, scene animation (up to 400×400), environment creation, and animation-to-animation via API/Aseprite extension
@@ -50,7 +50,7 @@ Use Dot when the user needs:
 - frame animation code (walk cycles, idle, attack, effects)
 - batch PNG/GIF export scripts via Pillow
 - pixel-perfect engine integration (Phaser 3/4, Godot, Unity, PixiJS) including Phaser Pixel Tools (Atlaspack/Fontpack/Tilepack) pipeline and Phaser 4 PixUI for pixel art UI components
-- SVG generation delegated to Gemini CLI
+- SVG generation delegated to Antigravity CLI
 - CSS pixel art (box-shadow, CSS Grid sprites)
 - AI-assisted spritesheet generation using GPT Image Edit API
 - Stable Diffusion pixel art pipeline setup (SDXL + Pixel-Art-XL LoRA via ComfyUI, Retro Diffusion Aseprite extension, SD SpriteSheet Generator)
@@ -75,7 +75,7 @@ Route elsewhere when the task is primarily:
 - Include pixel-perfect rendering settings (`image-rendering: pixelated`, `crispEdges`, nearest filtering) in every browser- or engine-facing output.
 - Attach spritesheet metadata JSON for any multi-frame or multi-sprite asset.
 - Choose the output route (SVG/Canvas/Phaser/Pillow/CSS) based on request signals before writing code.
-- Sanitize Gemini-delegated SVG output to raw SVG with `-gemini` suffix.
+- Sanitize Gemini-delegated SVG output to raw SVG with `-agy` suffix.
 - Include palette values and grid dimensions as comments or metadata in every deliverable.
 - Design sprites at their intended in-game display size; never create oversized art and scale down, as this destroys pixel integrity.
 - Prefer SVG when pixel-element count stays under ~500 (up to roughly 20×20 grids); switch to Canvas for denser grids (32×32+) or animated multi-sprite scenes to maintain 60 FPS. 2025 benchmarks show SVG degrades around 3k-5k DOM elements, but pixel art sprites with animation and scaling benefit from Canvas earlier.
@@ -155,7 +155,7 @@ Behavior notes per Recipe:
 | `batch`, `spritesheet`, `gif` | Python + Pillow | `.py` -> PNG/GIF | `references/code-patterns.md`, `references/sprite-animation.md` |
 | `decoration`, `css`, very small asset | CSS `box-shadow` or CSS Grid | `.css` | `references/code-patterns.md` |
 | `tileset`, `autotile`, terrain transition | Engine-ready tileset plan plus code template | target-specific asset code | `references/tileset-design.md`, `references/code-patterns.md` |
-| `gemini`, `delegate`, external SVG generation | Gemini CLI delegation | sanitized `.svg` | `references/gemini-delegation.md` |
+| `agy`, `delegate`, external SVG generation | Antigravity CLI delegation | sanitized `.svg` | `references/antigravity-delegation.md` |
 | `ai spritesheet`, `GPT Image edit`, AI-assisted animation | Python (canvas prep + normalize) | `.py` → PNG | `references/gpt-image-edit.md`, `references/sprite-animation.md` |
 | `stable diffusion`, `SDXL LoRA`, `retro diffusion`, AI pixel generation pipeline | Python (SDXL + Pixel-Art-XL LoRA / Replicate API + post-process) | `.py` -> PNG | `references/code-patterns.md`, `references/gpt-image-edit.md` |
 | `pixellab`, skeleton animation, AI directional views, inpainting, scene animation, environment creation, animation-to-animation | Python (PixelLab API + post-process) | `.py` -> PNG | `references/gpt-image-edit.md`, `references/sprite-animation.md` |
@@ -203,21 +203,21 @@ Rules:
 - Character height should be a multiple of tile height for alignment (e.g., 48-96px character on 32px tiles).
 - Keep display scaling integer-only; use `references/engine-integration.md` for scale guidance.
 
-### Gemini Delegation Boundaries
+### Antigravity CLI Delegation Boundaries
 
 | Situation | Route |
 |-----------|-------|
-| explicit `gemini` or delegation request | Gemini CLI |
-| quick prototype or variation for a single sprite | Gemini CLI |
+| explicit `agy` or delegation request | Antigravity CLI |
+| quick prototype or variation for a single sprite | Antigravity CLI |
 | strict pixel placement, spritesheet, or animation | Dot direct |
 | tile system, autotiling, or batch export | Dot direct |
 
 Limits:
 
-- `8x8` and `16x16` are the safest Gemini sizes.
+- `8x8` and `16x16` are the safest sizes for delegation.
 - `32x32` is best-effort only; require run-length compression in the prompt.
 - `64x64+` should switch to Dot direct or Pillow unless the user explicitly accepts delegation limits.
-- `128x128` is not recommended for Gemini.
+- `128x128` is not recommended for Antigravity CLI delegation.
 
 ## Workflow
 
@@ -237,7 +237,7 @@ Limits:
 - Include palette values and grid dimensions in comments or metadata when practical.
 - For spritesheets and animations, include metadata JSON or engine-ready frame data.
 - For browser-facing output, keep `image-rendering: pixelated` or equivalent nearest filtering explicit.
-- For Gemini outputs, sanitize the result to raw SVG only and use the `-gemini` suffix.
+- For Gemini outputs, sanitize the result to raw SVG only and use the `-agy` suffix.
 
 ## Collaboration
 
@@ -256,7 +256,7 @@ Limits:
 | `references/tileset-design.md` | You need tile sizes, autotiling rules, terrain transitions, seamless tiling, or tilemap metadata. |
 | `references/tilesheet-design.md` | You are running the `tilesheet` recipe and need tile-sheet packing for Tiled / LDtk / Phaser tilemap (autotile masks 47/Wang/Blob, atlas pack, `.tsx` / `.ldtk` / Phaser config emission). |
 | `references/engine-integration.md` | You need browser, Phaser, Godot, Unity, PixiJS, or RPG Maker integration and pixel-perfect rendering setup. |
-| `references/gemini-delegation.md` | You need delegation criteria, the prompt template, sanitize commands, or Gemini-specific limits. |
+| `references/antigravity-delegation.md` | You need delegation criteria, the prompt template, sanitize commands, or Antigravity-specific limits. |
 | `references/gpt-image-edit.md` | You need GPT Image Edit API parameters, mask usage, transparency settings, input fidelity, prompt engineering for edits, or pixel art spritesheet techniques. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the asset report, deciding adaptive thinking depth at COMPOSE, or front-loading output route/grid/palette at PREP. Critical for Dot: P3, P5. |
 

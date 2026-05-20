@@ -48,7 +48,7 @@ Key rules:
 - Always `require_once __DIR__ . '/vendor/autoload.php';` after the `_PS_VERSION_` guard
 - Never put hook registration, DB queries, or `Configuration::` calls directly in `install()` — delegate to `src/Install/Installer.php`
 - **Do NOT add `getTabs()`** to the main module class — manage tabs entirely via `Installer::installTabs()` / `uninstallTabs()`
-- Default parent tab is `Adminwswebsenso` (shared Websenso group); check existence before creating it
+- If using a shared company group tab, check its existence before creating it — never unconditionally create it
 - `getContent()` must only redirect to the Symfony route, never render HTML
 - **No SQL in the main module class** — all database access (including in hooks like `hookActionShopDataDuplication` and widget methods like `getWidgetVariables`) must be delegated to the Repository or Manager class via `$this->get('service.id')`
 - **Always guard service access** — use `$this->has()` + null check in admin context; use try/catch + `instanceof` in front-office context (stale container can make `has()` return `true` while `get()` still throws). See `references/module-class-and-installer.md` → *Guard patterns* section.
@@ -70,7 +70,7 @@ For translatable entities with Grid: read `references/entity-doctrine.md`
 - **Always use Doctrine ORM** (Entity + LangEntity + Repository + Manager) for any entity that has a Grid list page or translatable fields
 - ObjectModel is legacy — do not use in new or modernised modules
 - **Entity class name = table name without `_DB_PREFIX_`** — PS adds the prefix globally; use `@ORM\Table()` with no `name=` parameter
-- **All table names must start with `ws_`** — e.g. `ws_mymodule_items`, `ws_mymodule_items_lang` — to group Websenso tables together
+- Prefix table names with a consistent company or module prefix (e.g. `prefix_mymodule_items`, `prefix_mymodule_items_lang`) — to group tables together and avoid conflicts with PS core tables
 - Do NOT create `MetadataListener` or Doctrine event listeners for table naming
 - Always sanitize raw DBAL SQL: cast IDs with `(int)`, use bound parameters
 - **No raw SQL (`Db::getInstance()`, `pSQL()`, `_DB_PREFIX_` string concatenation) outside Repository and Manager classes.** This applies everywhere: main module class, Installer, FixturesInstaller, hooks, widget methods. The only exception is `Installer` SQL schema queries (`CREATE TABLE`, `DROP TABLE`) which have no Repository equivalent.
@@ -193,8 +193,30 @@ Read them for deep understanding of PS9 core architecture, conventions, and patt
 - **`ps9-core-ai/STRUCTURE.md`** — Architecture of the `.ai/` folder itself: how contexts,
   skills, and pointer files are organized and how AI tools discover them.
 
-> Source: [`PrestaShop/PrestaShop@develop/.ai`](https://github.com/PrestaShop/PrestaShop/tree/develop/.ai)
-> Refreshed by running: `vendor/websenso/prestashop-module-devtools/bin/lotr --install`
+> These files are static and bundled with this skill. They may be refreshed locally via `lotr --install`.
+
+## Steering
+
+If your project or organisation defines a steering layer (layered context rules for coding standards, architecture conventions, and project-specific overrides), load the steering files before starting any task.
+
+**Finding the resolver — search in this order:**
+
+1. `steering/resolver.md` at the module root (custom installation)
+2. `vendor/websenso/prestashop-module-devtools/steering/resolver.md` — canonical path when the devtools are installed as a Composer package (same package that provides `vendor/websenso/prestashop-module-devtools/bin/lotr`)
+3. Any `vendor/*/*/steering/resolver.md` — scan all vendor subfolders for a `steering/resolver.md` file (use the first match found)
+
+If none exists, skip steering silently and apply only the skill defaults.
+
+Typical steering structure (paths relative to wherever the resolver is found):
+
+```
+steering/resolver.md                          ← load order and conflict rules
+steering/company/                             ← organisation-wide standards
+steering/languages/php/coding-standards.md    ← PHP conventions
+steering/frameworks/prestashop/               ← PrestaShop-specific rules
+```
+
+Load steering files from lowest to highest priority (company → language → framework → project). Later layers override earlier ones.
 
 ## Escalation
 

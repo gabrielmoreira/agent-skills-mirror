@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nexu-io/open-design` — 26 default patterns, 0 followed patterns, 552 file(s) materialized.
+Mirror of `nexu-io/open-design` — 26 default patterns, 0 followed patterns, 557 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nexu-io/open-design` — 26 default patterns, 0 followed patterns, 55
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 552 |
+| Files         | 557 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -605,12 +605,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 544 | ✓ | [`skills/video-hyperframes/SKILL.md`](skills/video-hyperframes/SKILL.md) |
 | 545 | ✓ | [`skills/web-artifacts-builder/SKILL.md`](skills/web-artifacts-builder/SKILL.md) |
 | 546 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
-| 547 | ✓ | [`skills/wpds/SKILL.md`](skills/wpds/SKILL.md) |
-| 548 | ✓ | [`skills/youtube-clipper/SKILL.md`](skills/youtube-clipper/SKILL.md) |
-| 549 | ✓ | [`tools/AGENTS.md`](tools/AGENTS.md) |
-| 550 | ✓ | [`tools/pack/AGENTS.md`](tools/pack/AGENTS.md) |
-| 551 | ✓ | [`tools/pr/AGENTS.md`](tools/pr/AGENTS.md) |
-| 552 | ✓ | [`tools/serve/AGENTS.md`](tools/serve/AGENTS.md) |
+| 547 | ✓ | [`skills/weread-year-in-review-video-template/assets/default-showcase.mp4`](skills/weread-year-in-review-video-template/assets/default-showcase.mp4) |
+| 548 | ✓ | [`skills/weread-year-in-review-video-template/assets/template.html`](skills/weread-year-in-review-video-template/assets/template.html) |
+| 549 | ✓ | [`skills/weread-year-in-review-video-template/example.html`](skills/weread-year-in-review-video-template/example.html) |
+| 550 | ✓ | [`skills/weread-year-in-review-video-template/references/checklist.md`](skills/weread-year-in-review-video-template/references/checklist.md) |
+| 551 | ✓ | [`skills/weread-year-in-review-video-template/SKILL.md`](skills/weread-year-in-review-video-template/SKILL.md) |
+| 552 | ✓ | [`skills/wpds/SKILL.md`](skills/wpds/SKILL.md) |
+| 553 | ✓ | [`skills/youtube-clipper/SKILL.md`](skills/youtube-clipper/SKILL.md) |
+| 554 | ✓ | [`tools/AGENTS.md`](tools/AGENTS.md) |
+| 555 | ✓ | [`tools/pack/AGENTS.md`](tools/pack/AGENTS.md) |
+| 556 | ✓ | [`tools/pr/AGENTS.md`](tools/pr/AGENTS.md) |
+| 557 | ✓ | [`tools/serve/AGENTS.md`](tools/serve/AGENTS.md) |
 
 ---
 

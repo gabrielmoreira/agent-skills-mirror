@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Convert a photo of a person into a custom 3D action figure, complete with collectible toy packaging.**
 
-> **Estimated credits:** ~100 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

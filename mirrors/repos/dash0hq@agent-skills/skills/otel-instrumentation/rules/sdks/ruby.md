@@ -200,6 +200,22 @@ The auto-instrumentation package automatically instruments:
 
 Refer to the [OpenTelemetry Ruby Contrib repository](https://github.com/open-telemetry/opentelemetry-ruby-contrib/tree/main/instrumentation) for the complete list.
 
+## Database query parameters
+
+The OpenTelemetry Ruby instrumentation packages (`opentelemetry-instrumentation-pg`, `opentelemetry-instrumentation-mysql2`, `opentelemetry-instrumentation-active_record`) do **not** capture prepared-statement parameter values, and there is no env var or instrumentation option to enable capture.
+Read [capturing database query parameters](../capture-database-query-parameters.md) first.
+
+The `:db_statement` option on `OpenTelemetry::Instrumentation::PG::Instrumentation` controls sanitization of `db.statement` only (`:include`, `:omit`, `:obfuscate`); it does not emit `db.query.parameter.<key>`.
+
+```ruby
+# Available knobs — none capture parameter values
+OpenTelemetry::SDK.configure do |c|
+  c.use 'OpenTelemetry::Instrumentation::PG', { db_statement: :obfuscate }
+end
+```
+
+The auto-instrumentation creates and ends its span inside a `Module#prepend` wrapper around the driver method, so attaching attributes from application code after the call returns is a no-op.
+
 ## Custom spans
 
 Add business context to auto-instrumented traces:

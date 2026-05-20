@@ -9,9 +9,9 @@ Derive the PSR-4 namespace from the module name:
 - **Never** use the generic `PrestaShop\Module\` vendor prefix — it is reserved for PrestaShop core modules
 
 Examples:
-- `wsproductpaymentlogos` → prefix `Ws`, words `Product`, `Payment`, `Logos` → `Ws\ProductPaymentLogos`
-- `mycompanycoolfeature` → prefix `My` (2 letters), words `Company`, `Cool`, `Feature` → `My\CompanyCoolFeature`
-- `wsfaq` → prefix `Ws`, word `Faq` → `Ws\Faq`
+- `mycofeature` → prefix `My`, word `Cofeature` → `My\Cofeature`
+- `mycompanycoolfeature` → prefix `My`, words `Company`, `Cool`, `Feature` → `My\CompanyCoolFeature`
+- `mycoapp` → prefix `My`, word `Coapp` → `My\Coapp`
 
 This applies to `composer.json` `autoload.psr-4`, PHP `namespace` declarations, and `config/services.yml` FQCNs.
 

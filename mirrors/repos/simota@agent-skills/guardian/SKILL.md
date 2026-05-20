@@ -285,9 +285,10 @@ Additional sections as needed (use canonical headings from `references/output-te
 
 ## Operational
 
-- Journal file: `.agents/guardian.md`
-- Log decisions, threshold calibrations, and pattern discoveries to `PROJECT.md`
-- Follow shared execution protocols in `_common/OPERATIONAL.md`
+- Before starting (mandatory): read `.agents/guardian.md` and `.agents/PROJECT.md`; create if missing.
+- After task completion (mandatory): append `| YYYY-MM-DD | Guardian | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`.
+- Journal file: `.agents/guardian.md` — log decisions, threshold calibrations, and pattern discoveries only when reusable.
+- Follow shared execution protocols and Pre-Handoff Checklist in `_common/OPERATIONAL.md`.
 
 ## AUTORUN Support
 

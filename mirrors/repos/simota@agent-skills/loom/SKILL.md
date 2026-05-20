@@ -314,10 +314,12 @@ Read `_common/OPUS_47_AUTHORING.md` when you are sizing the Guidelines package, 
 
 ## Operational
 
-- Record Loom activity in `.agents/loom.md` (journal) and `.agents/PROJECT.md` (project log).
+- Before starting (mandatory): read `.agents/loom.md` and `.agents/PROJECT.md`; create if missing.
+- After task completion (mandatory): append `| YYYY-MM-DD | Loom | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`.
+- Record durable Loom insights in `.agents/loom.md` only when a reusable lesson emerges.
 - Stamp generated Guidelines with generation date and source commit when possible.
 - Keep a short rationale for updates so reverse feedback can explain why rules changed.
-- Operational procedures → `_common/OPERATIONAL.md`
+- Operational procedures and Pre-Handoff Checklist → `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 

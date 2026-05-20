@@ -11,21 +11,21 @@ Use `npx --yes n8nac` as the primary interface. Use `npx --yes @n8n-as-code/n8n-
 
 ## Context Root Protocol
 
-- Treat the current context root as the directory containing `n8nac-config.json`, `AGENTS.md`, `.agents/skills`, and the workflow sync folder.
+- Treat the current context root as the directory containing `n8nac-config.json`, `AGENTS.md`, `.agents/skills`, and the configured `workflowsPath`.
 - Generated context root hint: not embedded. Use the shell launch directory or the workspace path explicitly given by the user.
 - Before any n8n work, first run `npx --yes n8nac update-ai` from the context root, then read `AGENTS.md`. `update-ai` is designed to create or refresh the n8n-as-code block without destroying existing user or agent instructions.
 - Use the exact `n8nac command` and `n8n-manager command` listed in `AGENTS.md`. Those context-root commands override the portable examples in this skill.
 - Run every `npx --yes n8nac env ...`, `npx --yes n8nac workspace ...`, `npx --yes n8nac list`, `pull`, `push`, `validate`, `test`, and `update-ai` command from the context root unless the user explicitly gives another context root.
 - `AGENTS.md` is bootstrap context only, not a source of configuration truth.
-- Do not infer environment, project, sync folder, or workflow directory from `AGENTS.md`.
+- Do not infer environment, project, or `workflowsPath` from `AGENTS.md`.
 - Before n8n work, resolve the effective context from the backend:
 
 ```bash
 npx --yes n8nac env status --json
 ```
 
-- Use the returned `workflowDir` for workflow files. Treat it as an opaque backend-derived path that may contain generated or hashed segments.
-- `syncFolder` is only the user-configured sync root, not the workflow directory. Do not reconstruct `workflowDir` from `syncFolder`, environment name/id, `instanceIdentifier`, `instanceUserIdentifier`, `projectId`, or `projectName`.
+- Use the returned `workflowsPath` for workflow files. It is the configured workflow directory for the active environment.
+- Do not reconstruct `workflowsPath` from environment name/id, `instanceIdentifier`, `instanceUserIdentifier`, `projectId`, `projectName`, or legacy sync fields.
 - Never write `n8nac-config.json`, `~/.n8n-manager`, or n8n-manager secret files by hand.
 
 ## Workspace Readiness
@@ -82,7 +82,7 @@ npx --yes n8nac env status --json
 10. Configure the environment with:
 
 ```bash
-npx --yes n8nac env add <name> --base-url <url> --sync-folder workflows
+npx --yes n8nac env add <name> --base-url <url> --workflows-path workflows/<name>
 npx --yes n8nac env auth set <name> --api-key-stdin
 npx --yes n8nac env use <name>
 ```
@@ -90,7 +90,7 @@ npx --yes n8nac env use <name>
 For a managed local instance:
 
 ```bash
-npx --yes n8nac env add Local --managed-instance <id> --sync-folder workflows
+npx --yes n8nac env add Local --managed-instance <id> --workflows-path workflows/local
 npx --yes n8nac env use Local
 ```
 
@@ -98,12 +98,12 @@ npx --yes n8nac env use Local
 
 ## Environments
 
-Use `npx --yes n8nac env ...` for workspace environments, remote URLs, active environment, API-key binding, projects, and sync folders.
+Use `npx --yes n8nac env ...` for workspace environments, remote URLs, active environment, API-key binding, projects, and workflow paths.
 
 ```bash
 npx --yes n8nac env status --json
 npx --yes n8nac env list
-npx --yes n8nac env add <name> --base-url <url> --sync-folder workflows
+npx --yes n8nac env add <name> --base-url <url> --workflows-path workflows/<name>
 npx --yes n8nac env auth set <name> --api-key-stdin
 npx --yes n8nac env use <name>
 ```
@@ -117,7 +117,7 @@ npx --yes n8nac env use <name>
 Attach a managed local instance to the workspace with `npx --yes n8nac env ...`:
 
 ```bash
-npx --yes n8nac env add Local --managed-instance <id> --sync-folder workflows
+npx --yes n8nac env add Local --managed-instance <id> --workflows-path workflows/local
 npx --yes n8nac env use Local
 ```
 
@@ -195,7 +195,7 @@ npx --yes n8nac push <path-to-workflow.workflow.ts> --verify
 ```
 
 - `push` requires the full workflow file path, either absolute or context-root-relative. Do not pass a bare filename.
-- For a new workflow, create the file inside the `workflowDir` returned by `env status --json`, then confirm it with `npx --yes n8nac list --local`.
+- For a new workflow, create the file inside the `workflowsPath` returned by `env status --json`, then confirm it with `npx --yes n8nac list --local`.
 - If push/pull reports a conflict, use explicit resolution commands. Do not overwrite remote changes blindly.
 - `pull` and conflict resolution operate on a single workflow ID.
 - `list` is the lightweight command that covers all workflows at once.
@@ -491,7 +491,7 @@ npx --yes n8nac workflow activate <workflowId>
 For most workflow tasks:
 
 1. Resolve context with `env status --json`.
-2. Read `workflowDir` from the backend response.
+2. Read `workflowsPath` from the backend response.
 3. Inspect existing workflows with `list`.
 4. Pull before editing an existing workflow.
 5. Search examples and schemas.

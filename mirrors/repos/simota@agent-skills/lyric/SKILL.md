@@ -298,7 +298,8 @@ Next action: [LYRIC_TO_TONE_HANDOFF for audio generation | return to user for re
 
 ## Operational
 
-- Journal durable songwriting insights in `.agents/lyric.md`.
-- Add activity row to `.agents/PROJECT.md`: `| YYYY-MM-DD | Lyric | (action) | (files) | (outcome) |`.
-- Follow `_common/OPERATIONAL.md` and `_common/GIT_GUIDELINES.md`.
+- Before starting (mandatory): read `.agents/lyric.md` and `.agents/PROJECT.md`; create if missing.
+- After task completion (mandatory): append `| YYYY-MM-DD | Lyric | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`.
+- Journal durable songwriting insights in `.agents/lyric.md` only when an insight is genuinely reusable.
+- Follow `_common/OPERATIONAL.md` (Pre-Handoff Checklist) and `_common/GIT_GUIDELINES.md`.
 - Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`); song lyric language follows the user's request. Code identifiers stay in English.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jackwener/OpenCLI` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `jackwener/OpenCLI` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jackwener/OpenCLI` — 26 default patterns, 0 followed patterns, 31 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,15 +81,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`skills/opencli-autofix/SKILL.md`](skills/opencli-autofix/SKILL.md) |
 | 21 | ✓ | [`skills/opencli-browser/SKILL.md`](skills/opencli-browser/SKILL.md) |
 | 22 | ✓ | [`skills/opencli-usage/SKILL.md`](skills/opencli-usage/SKILL.md) |
-| 23 | ✓ | [`skills/smart-search/references/sources-ai.md`](skills/smart-search/references/sources-ai.md) |
-| 24 | ✓ | [`skills/smart-search/references/sources-info.md`](skills/smart-search/references/sources-info.md) |
-| 25 | ✓ | [`skills/smart-search/references/sources-media.md`](skills/smart-search/references/sources-media.md) |
-| 26 | ✓ | [`skills/smart-search/references/sources-other.md`](skills/smart-search/references/sources-other.md) |
-| 27 | ✓ | [`skills/smart-search/references/sources-shopping.md`](skills/smart-search/references/sources-shopping.md) |
-| 28 | ✓ | [`skills/smart-search/references/sources-social.md`](skills/smart-search/references/sources-social.md) |
-| 29 | ✓ | [`skills/smart-search/references/sources-tech.md`](skills/smart-search/references/sources-tech.md) |
-| 30 | ✓ | [`skills/smart-search/references/sources-travel.md`](skills/smart-search/references/sources-travel.md) |
-| 31 | ✓ | [`skills/smart-search/SKILL.md`](skills/smart-search/SKILL.md) |
 
 ---
 

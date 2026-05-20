@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Create a high-end cinematic product video advertisement starting from a simple product photo.**
 
-> **Estimated credits:** ~150 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

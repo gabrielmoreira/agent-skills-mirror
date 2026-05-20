@@ -24,7 +24,7 @@ Steps:
    ```bash
    npx neural-trader --model-compare --symbol TICKER --models "lstm,transformer,nbeats"
    ```
-6. Store model results:
-   `mcp__claude-flow__memory_store({ key: "model-MODEL-TICKER-DATE", value: "TRAINING_RESULTS", namespace: "trading-models" })`
+6. Store model results (canonical `trading-analysis` namespace per ADR-126 Phase 1 — was previously stored to undeclared `trading-models`):
+   `mcp__claude-flow__memory_store({ key: "model-MODEL-TICKER-DATE", value: "TRAINING_RESULTS", namespace: "trading-analysis" })`
 7. Train SONA on model outcomes:
    `mcp__claude-flow__neural_train({ patternType: "trading-model", epochs: 10 })`

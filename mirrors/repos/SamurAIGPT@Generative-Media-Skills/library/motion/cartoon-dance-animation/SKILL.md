@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Convert a photo of a person into a Pixar-style 3D cartoon character, then animate it using a reference dance or motion video.**
 
-> **Estimated credits:** ~150 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

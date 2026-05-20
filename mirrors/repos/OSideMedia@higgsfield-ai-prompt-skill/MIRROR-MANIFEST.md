@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `OSideMedia/higgsfield-ai-prompt-skill` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `OSideMedia/higgsfield-ai-prompt-skill` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `OSideMedia/higgsfield-ai-prompt-skill` — 26 default patterns, 0 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,27 +66,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`skills/higgsfield-audio/SKILL.md`](skills/higgsfield-audio/SKILL.md) |
 | 6 | ✓ | [`skills/higgsfield-camera/SKILL.md`](skills/higgsfield-camera/SKILL.md) |
 | 7 | ✓ | [`skills/higgsfield-cinema/SKILL.md`](skills/higgsfield-cinema/SKILL.md) |
-| 8 | ✓ | [`skills/higgsfield-image-shots/SKILL.md`](skills/higgsfield-image-shots/SKILL.md) |
-| 9 | ✓ | [`skills/higgsfield-marketing-studio/cross-surface-workflow.md`](skills/higgsfield-marketing-studio/cross-surface-workflow.md) |
-| 10 | ✓ | [`skills/higgsfield-marketing-studio/SKILL.md`](skills/higgsfield-marketing-studio/SKILL.md) |
-| 11 | ✓ | [`skills/higgsfield-mixed-media/SKILL.md`](skills/higgsfield-mixed-media/SKILL.md) |
-| 12 | ✓ | [`skills/higgsfield-models/MODELS-DEEP-REFERENCE.md`](skills/higgsfield-models/MODELS-DEEP-REFERENCE.md) |
-| 13 | ✓ | [`skills/higgsfield-models/SKILL.md`](skills/higgsfield-models/SKILL.md) |
-| 14 | ✓ | [`skills/higgsfield-moodboard/SKILL.md`](skills/higgsfield-moodboard/SKILL.md) |
-| 15 | ✓ | [`skills/higgsfield-motion/SKILL.md`](skills/higgsfield-motion/SKILL.md) |
-| 16 | ✓ | [`skills/higgsfield-pipeline/SKILL.md`](skills/higgsfield-pipeline/SKILL.md) |
-| 17 | ✓ | [`skills/higgsfield-prompt/SKILL.md`](skills/higgsfield-prompt/SKILL.md) |
-| 18 | ✓ | [`skills/higgsfield-recall/SKILL.md`](skills/higgsfield-recall/SKILL.md) |
-| 19 | ✓ | [`skills/higgsfield-recipes/SKILL.md`](skills/higgsfield-recipes/SKILL.md) |
-| 20 | ✓ | [`skills/higgsfield-seedance/FAILURE-MODES.md`](skills/higgsfield-seedance/FAILURE-MODES.md) |
-| 21 | ✓ | [`skills/higgsfield-seedance/SKILL.md`](skills/higgsfield-seedance/SKILL.md) |
-| 22 | ✓ | [`skills/higgsfield-soul/SKILL.md`](skills/higgsfield-soul/SKILL.md) |
-| 23 | ✓ | [`skills/higgsfield-stack/SKILL.md`](skills/higgsfield-stack/SKILL.md) |
-| 24 | ✓ | [`skills/higgsfield-style/SKILL.md`](skills/higgsfield-style/SKILL.md) |
-| 25 | ✓ | [`skills/higgsfield-troubleshoot/SKILL.md`](skills/higgsfield-troubleshoot/SKILL.md) |
-| 26 | ✓ | [`skills/higgsfield-vibe-motion/SKILL.md`](skills/higgsfield-vibe-motion/SKILL.md) |
-| 27 | ✓ | [`skills/higgsfield-workspaces/SKILL.md`](skills/higgsfield-workspaces/SKILL.md) |
-| 28 | ✓ | [`skills/shared/negative-constraints.md`](skills/shared/negative-constraints.md) |
+| 8 | ✓ | [`skills/higgsfield-gpt-image-2/SKILL.md`](skills/higgsfield-gpt-image-2/SKILL.md) |
+| 9 | ✓ | [`skills/higgsfield-gpt-image-2/static-ads-workflow.md`](skills/higgsfield-gpt-image-2/static-ads-workflow.md) |
+| 10 | ✓ | [`skills/higgsfield-image-shots/SKILL.md`](skills/higgsfield-image-shots/SKILL.md) |
+| 11 | ✓ | [`skills/higgsfield-marketing-studio/cross-surface-workflow.md`](skills/higgsfield-marketing-studio/cross-surface-workflow.md) |
+| 12 | ✓ | [`skills/higgsfield-marketing-studio/SKILL.md`](skills/higgsfield-marketing-studio/SKILL.md) |
+| 13 | ✓ | [`skills/higgsfield-mixed-media/SKILL.md`](skills/higgsfield-mixed-media/SKILL.md) |
+| 14 | ✓ | [`skills/higgsfield-models/MODELS-DEEP-REFERENCE.md`](skills/higgsfield-models/MODELS-DEEP-REFERENCE.md) |
+| 15 | ✓ | [`skills/higgsfield-models/SKILL.md`](skills/higgsfield-models/SKILL.md) |
+| 16 | ✓ | [`skills/higgsfield-moodboard/SKILL.md`](skills/higgsfield-moodboard/SKILL.md) |
+| 17 | ✓ | [`skills/higgsfield-motion/SKILL.md`](skills/higgsfield-motion/SKILL.md) |
+| 18 | ✓ | [`skills/higgsfield-pipeline/SKILL.md`](skills/higgsfield-pipeline/SKILL.md) |
+| 19 | ✓ | [`skills/higgsfield-prompt/SKILL.md`](skills/higgsfield-prompt/SKILL.md) |
+| 20 | ✓ | [`skills/higgsfield-recall/SKILL.md`](skills/higgsfield-recall/SKILL.md) |
+| 21 | ✓ | [`skills/higgsfield-recipes/SKILL.md`](skills/higgsfield-recipes/SKILL.md) |
+| 22 | ✓ | [`skills/higgsfield-seedance/FAILURE-MODES.md`](skills/higgsfield-seedance/FAILURE-MODES.md) |
+| 23 | ✓ | [`skills/higgsfield-seedance/SKILL.md`](skills/higgsfield-seedance/SKILL.md) |
+| 24 | ✓ | [`skills/higgsfield-soul/SKILL.md`](skills/higgsfield-soul/SKILL.md) |
+| 25 | ✓ | [`skills/higgsfield-stack/SKILL.md`](skills/higgsfield-stack/SKILL.md) |
+| 26 | ✓ | [`skills/higgsfield-style/SKILL.md`](skills/higgsfield-style/SKILL.md) |
+| 27 | ✓ | [`skills/higgsfield-troubleshoot/SKILL.md`](skills/higgsfield-troubleshoot/SKILL.md) |
+| 28 | ✓ | [`skills/higgsfield-vibe-motion/SKILL.md`](skills/higgsfield-vibe-motion/SKILL.md) |
+| 29 | ✓ | [`skills/higgsfield-workspaces/SKILL.md`](skills/higgsfield-workspaces/SKILL.md) |
+| 30 | ✓ | [`skills/shared/negative-constraints.md`](skills/shared/negative-constraints.md) |
 
 ---
 

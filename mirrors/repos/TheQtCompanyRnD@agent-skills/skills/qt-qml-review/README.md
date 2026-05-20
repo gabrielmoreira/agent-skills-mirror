@@ -36,7 +36,7 @@ deterministic Python linter with six parallel deep-analysis agents.
 |----------|---------|
 | **Claude Code** | `/plugin marketplace add TheQtCompanyRnD/agent-skills` then `/plugin install qt-development-skills` |
 | **Codex CLI** | `npx skills add TheQtCompanyRnD/agent-skills` |
-| **Copilot** | Copy `platforms/copilot.prompt.md` to `.github/agents/qt-qml-review.agent.md` |
+| **Copilot** | `gh skill install TheQtCompanyRnD/agent-skills qt-qml-review` (preview) — or auto-discovered from `.claude/skills/` |
 | **Cursor** | Copy `SKILL.md` to `.cursor/rules/qt-qml-review/RULE.md` |
 | **Windsurf** | Copy `platforms/windsurf.md` to `.windsurf/rules/qt-qml-review.md` |
 
@@ -47,12 +47,14 @@ architecture that requires a platform capable of running Python
 scripts and launching parallel subagents. This works natively on
 **Claude Code** and **Codex CLI**.
 
+**GitHub Copilot** also reads the full skill directory natively
+(via `.claude/skills/`, `.github/skills/`, or `~/.copilot/skills/`),
+though it cannot run the Python linter or launch parallel
+subagents — only the static guidance loads.
+
 For platforms that do not support multi-file skills or script
 execution, condensed variants are available in `platforms/`:
 
-- **copilot.prompt.md** — Single-file review checklist for GitHub
-  Copilot (under 3K chars). Covers the key rules without the
-  linter or agent orchestration.
 - **windsurf.md** — Compact rule summary for Windsurf (under 2K
   chars). Highest-priority rules only.
 
@@ -68,7 +70,6 @@ on platforms that support the full skill directory.
 | `SKILL.md` | Full skill instructions (412 lines) |
 | `references/qt-qml-review-checklist.md` | 47+ review rules with IDs |
 | `references/lint-scripts/qt_qml_lint.py` | Deterministic Python linter |
-| `platforms/copilot.prompt.md` | Condensed variant for GitHub Copilot |
 | `platforms/windsurf.md` | Compact variant for Windsurf |
 
 ## License

@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Generate a complete set of multi-angle product shots — front, side, back, top-down, and 45-degree perspective — for comprehensive product visualization.**
 
-> **Estimated credits:** ~120 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

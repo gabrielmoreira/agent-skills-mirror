@@ -1,3 +1,5 @@
+<!-- AI documentation context only. This file is static reference material for AI agents describing PrestaShop core architecture. Not executable code. -->
+
 # Webservice Domain
 
 ## Purpose

@@ -37,21 +37,24 @@ Pick a unique name:
 SANDBOX="openwork-eval-$(date +%Y%m%d-%H%M%S)"
 ```
 
-Create it from the repo devcontainer:
+Create it from the Daytona VNC-capable devcontainer:
 
 ```bash
 daytona create \
   --name "$SANDBOX" \
-  --dockerfile .devcontainer/Dockerfile \
-  --context .devcontainer/Dockerfile \
-  --context .devcontainer/start-display.sh \
-  --context .devcontainer/start-services.sh \
+  --dockerfile .devcontainer/Dockerfile.daytona-vnc \
+  --context .devcontainer/Dockerfile.daytona-vnc \
+  --context .devcontainer/start-daytona-vnc.sh \
   --class large \
   --memory 8 \
+  --disk 10 \
   --auto-stop 60 \
   --public \
   --target us
 ```
+
+Use `--disk 10`; the default Daytona disk can fill up during dependency and
+sidecar work.
 
 If Daytona is unavailable, skip to the local fallback and still run the closest possible test.
 
@@ -73,10 +76,12 @@ daytona exec "$SANDBOX" 'cd /workspace && pnpm install'
 ### Step 3: Start services
 
 ```bash
-daytona exec "$SANDBOX" 'cd /workspace && bash .devcontainer/start-services.sh'
+daytona exec "$SANDBOX" 'bash -lc "cd /workspace && nohup bash .devcontainer/start-daytona-vnc.sh > /tmp/start-vnc.log 2>&1 &"'
+daytona exec "$SANDBOX" 'bash -lc "cd /workspace/apps/app && nohup env OPENWORK_DEV_MODE=1 pnpm exec vite --host 0.0.0.0 --port 5173 > /tmp/vite.log 2>&1 &"'
+daytona exec "$SANDBOX" 'bash -lc "cd /workspace && nohup env DISPLAY=:99 ELECTRON_DISABLE_SANDBOX=1 OPENWORK_REACT_DEVTOOLS=0 OPENWORK_ELECTRON_REMOTE_DEBUG_PORT=9825 OPENWORK_DEV_MODE=1 pnpm --filter @openwork/desktop dev:electron > /tmp/electron.log 2>&1 &"'
 ```
 
-Wait for it to start (this runs in background, may timeout — that's OK).
+Wait ~35-60s for XFCE/noVNC, Vite, Electron, and opencode to start.
 
 ### Step 4: Verify
 
@@ -91,6 +96,10 @@ Then use the browser tools to verify:
 browser_list({ browser_url: "<CDP_URL>" })
 → should show "OpenWork" page target
 ```
+
+If `browser_list` fails, inspect `/tmp/electron.log`. The real CDP success
+marker is Chromium's `DevTools listening on ws://127.0.0.1:9825/...`, not just
+OpenWork's `Electron CDP exposed` line.
 
 ### Step 5: Create a workspace
 

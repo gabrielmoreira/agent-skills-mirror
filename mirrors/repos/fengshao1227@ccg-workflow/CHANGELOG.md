@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.1.0] - 2026-05-20
+
+### ✨ New Features
+
+- **Antigravity CLI backend** — Google Antigravity (`agy`) fully integrated as the 4th backend in codeagent-wrapper. Supports `-p` headless mode, `--add-dir` workspace, `--conversation` session resume, and line-by-line streaming to Web UI. Plain text output path (no JSON streaming) with `bufio.Scanner`. Binary v5.11.0.
+- **Antigravity as default frontend** — Replaces Gemini as the default frontend model. Init/menu/update UI all updated with Antigravity as recommended choice. Gemini remains available for enterprise users until June 18 sunset.
+- **Antigravity role prompts** — 7 prompts (`analyzer`, `architect`, `reviewer`, `debugger`, `optimizer`, `tester`, `frontend`) with READ-ONLY constraints + `builder` with FULL write permissions. Prompt-based permission control verified working.
+- **Codex parallel sub-agent orchestration** — AGENTS.md §5 upgraded: L+ complexity tasks use `spawn_agent("ccg-implement", fork_turns="none")` for parallel execution within a single Codex session. Complete spawn/wait/close lifecycle with Layer-based dependency ordering.
+- **Strategy parallel execution** — `guided-develop` and `full-collaborate` Codex/Antigravity mode uses `codeagent-wrapper --parallel` with Layer 1 (independent) ∥ Layer 2 (dependent) task decomposition. Supports mixed backend per task.
+- **Sub-agent guardrails** — Hook `ccg-workflow.py` detects Codex sub-agents and injects `<ccg-sub-agent-notice>` (execute dispatch only, ignore workflow). Agent TOMLs hardened with ⛔ absolute rules. `config.toml` adds `default_wait_timeout_ms=480000`, `max_wait_timeout_ms=3600000`.
+- **Codex Mode uninstall** — Menu option X now offers Install/Update/Uninstall. Uninstall only removes CCG-managed files (`ccg-*` agents, hooks, CCG-marked AGENTS.md), preserves `config.toml` and user files.
+
+### 🐛 Fixes
+
+- **HARD STOP execution mode choice skipped** — Claude was skipping the "who writes code" choice. Fixed: go.md iron rule #7 + strategy HARD STOPs rewritten from code blocks to direct ⛔⛔⛔ instructions with "no file writes before user reply".
+- **V3 strategy hardcoded model names** — `guided-develop.md` and `full-collaborate.md` had `--backend codex`/`--backend gemini` hardcoded. Replaced with `{{BACKEND_PRIMARY}}`/`{{FRONTEND_PRIMARY}}` template variables.
+
+### 🔄 Changes
+
+- **ModelType expanded** — `'codex' | 'gemini' | 'claude' | 'antigravity'`
+- **codeagent-wrapper v5.11.0** — New `AntigravityBackend`, `"agy"` alias in registry, plain text stdout reader, stdin direct-pass for agy
+
+---
+
+## [3.0.10] - 2026-05-19
+
+### 🐛 Fixes
+
+- **Windows update shows v0.0.0 and triggers false migration** — `getCurrentVersion()` failed to find `package.json` on Windows npx cache paths, returning `0.0.0`. This caused the update flow to display wrong version and trigger v1.4.0 migration for V3 users. Fix: use build-time bundled version (always available after unbuild) as primary source. Also added config.toml version guard in `needsMigration()` — V2+ users skip migration entirely regardless of stale directory state.
+
+---
+
 ## [3.0.9] - 2026-05-19
 
 ### 🐛 Fixes

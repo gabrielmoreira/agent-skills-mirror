@@ -34,8 +34,8 @@ Each skill has an eval suite in `evals/<skill-name>/` containing test cases, gra
 
 | Tier | Cases | Method | When to use |
 |------|-------|--------|-------------|
-| Smoke | ~20 | Agent-powered or promptfoo | Quick feedback during development, PR CI gate |
-| Full | All 95 | Promptfoo | Before releases, after major refactors, scheduled CI |
+| Smoke | ~20 | Agent-powered or promptfoo | Quick feedback during development |
+| Full | All 95 | Promptfoo | Before releases, after major refactors |
 
 Cases included in the smoke tier are tagged with `smoke: true` in their `metadata` block in the promptfoo configs.
 
@@ -70,10 +70,6 @@ npx promptfoo eval --filter-metadata "smoke=true"   # smoke tier
 npx promptfoo eval                                    # full suite
 npx promptfoo view
 ```
-
-### CI (GitHub Actions)
-
-The `eval.yml` workflow runs the smoke tier automatically on PRs that touch skill or eval files. It uses `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` secrets. Full suite can be triggered manually via workflow dispatch.
 
 ### When to run evals
 

@@ -263,7 +263,7 @@ provider.register();
 |----------|----------|
 | Instrumentation library configuration | The library exposes an option to disable or sanitize the sensitive field (e.g., `dbStatementSerializer`, `headersToSpanAttributes` allow/deny list). Always prefer this when available. |
 | Custom `SpanProcessor` / `LogRecordProcessor` | The library does not expose a configuration option, or you need a blanket policy across all instrumentation libraries. |
-| Collector-side redaction ([otel-ottl](../../otel-ottl/SKILL.md#redact-sensitive-data)) | Defence-in-depth safety net. Use in addition to, not instead of, in-process redaction. |
+| Collector-side redaction ([otel-ottl](../../otel-ottl/rules/redaction.md)) | Defence-in-depth safety net. Use in addition to, not instead of, in-process redaction. |
 
 Check the instrumentation library documentation first.
 Many libraries support allow/deny lists for captured headers, query sanitization options, or URL filtering.

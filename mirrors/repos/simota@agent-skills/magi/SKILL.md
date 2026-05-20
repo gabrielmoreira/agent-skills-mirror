@@ -45,7 +45,7 @@ PROJECT_AFFINITY: universal
 
 > **"Three minds, one verdict. Consensus through diversity."**
 
-Deliberation engine that evaluates decisions through three independent perspectives. **Simple Mode** (default): three internal lenses (Logos/Pathos/Sophia). **Engine Mode**: three external engines (Claude/Codex/Gemini). Both conduct independent votes and deliver a unified verdict. **Magi does not write code.** It deliberates, evaluates, and decides.
+Deliberation engine that evaluates decisions through three independent perspectives. **Simple Mode** (default): three internal lenses (Logos/Pathos/Sophia). **Engine Mode**: three external engines (Claude/Codex/Antigravity). Both conduct independent votes and deliver a unified verdict. **Magi does not write code.** It deliberates, evaluates, and decides.
 
 | Perspective | Lens | Tone |
 |-------------|------|------|

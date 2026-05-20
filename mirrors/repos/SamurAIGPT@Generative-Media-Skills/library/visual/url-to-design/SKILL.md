@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Analyze a website URL and generate a redesigned, improved UI — recreate the visual design with modern aesthetics, better hierarchy, and fresh brand direction.**
 
-> **Estimated credits:** ~80 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

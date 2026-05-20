@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Re-render a hero image into Instagram, TikTok, YouTube-shorts and Twitter/X aspect ratios.**
 
-> **Estimated credits:** ~24 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

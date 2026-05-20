@@ -1,7 +1,7 @@
 ---
 name: trader-signal
 description: Generate trading signals using npx neural-trader anomaly detection engine with Z-score scoring and neural prediction
-allowed-tools: Bash Read mcp__claude-flow__memory_store mcp__claude-flow__memory_retrieve mcp__claude-flow__memory_search mcp__claude-flow__neural_predict mcp__claude-flow__agentdb_pattern-search
+allowed-tools: Bash Read mcp__claude-flow__memory_store mcp__claude-flow__memory_retrieve mcp__claude-flow__memory_search mcp__claude-flow__memory_delete mcp__claude-flow__neural_predict mcp__claude-flow__agentdb_pattern-search
 argument-hint: "[--strategy NAME] [--symbols AAPL,MSFT]"
 ---
 Generate trading signals using neural-trader's anomaly detection engine.
@@ -31,5 +31,5 @@ Steps:
 6. Search historical pattern matches:
    `mcp__claude-flow__agentdb_pattern-search({ query: "ANOMALY_TYPE score RANGE", namespace: "trading-signals" })`
 7. Present ranked signals: instrument, direction, confidence, anomaly type, entry/stop/target
-8. Store signals:
-   `mcp__claude-flow__memory_store({ key: "signal-TIMESTAMP", value: "SIGNALS_JSON", namespace: "trading-signals" })`
+8. Store signals with a 24-hour TTL (intraday signals shouldn't pollute long-running memory; the `MemoryConsolidator.sweepExpired()` pass introduced in ADR-125 Phase 4 — shipped in `@claude-flow/memory@3.0.0-alpha.18` — sweeps them out after they expire):
+   `mcp__claude-flow__memory_store({ key: "signal-TIMESTAMP", value: "SIGNALS_JSON", namespace: "trading-signals", expiresAt: Date.now() + 24 * 60 * 60 * 1000 })`

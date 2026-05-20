@@ -6,8 +6,8 @@ description: "Clear documentation through visual excellence"
 tier: standard
 inheritance: inheritable
 applyTo: '**/*.md,**/*mermaid*,**/*diagram*'
-currency: 2026-04-30
-lastReviewed: 2026-04-30
+currency: 2026-05-19
+lastReviewed: 2026-05-19
 ---
 
 # Markdown & Mermaid
@@ -329,10 +329,11 @@ Need diagram? → What are you showing?
 
 ### VS Code Extension Setup
 
+VS Code 1.121+ renders Mermaid natively in Markdown previews (no extension required). The list below covers non-Mermaid tools (PlantUML, Graphviz, D2) and Mermaid-adjacent features still worth installing: chart authoring (`mermaidchart.vscode-mermaid-chart`) and the standalone live-preview tab (`vstirbu.vscode-mermaid-preview`). `bierner.markdown-mermaid` is omitted — 1.121's built-in renderer covers its use case.
+
 ```json
 {
   "recommendations": [
-    "bierner.markdown-mermaid",
     "vstirbu.vscode-mermaid-preview",
     "mermaidchart.vscode-mermaid-chart",
     "jebbs.plantuml",

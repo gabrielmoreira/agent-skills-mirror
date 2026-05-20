@@ -1,6 +1,8 @@
 # Skill: Daytona Dev Environment
 
-Launch the full OpenWork stack (Electron app + Den) in a Daytona cloud sandbox. The real desktop app runs on a virtual display and is accessible through your browser via noVNC.
+Launch the OpenWork Electron app in a Daytona cloud sandbox. The real desktop
+app runs on Daytona's XFCE/noVNC desktop stack and is accessible through your
+browser.
 
 ## Prerequisites
 
@@ -15,22 +17,30 @@ Launch the full OpenWork stack (Electron app + Den) in a Daytona cloud sandbox. 
 ```bash
 daytona create \
   --name openwork-dev \
-  --dockerfile .devcontainer/Dockerfile \
-  --context .devcontainer/Dockerfile \
-  --context .devcontainer/start-display.sh \
-  --context .devcontainer/start-services.sh \
+  --dockerfile .devcontainer/Dockerfile.daytona-vnc \
+  --context .devcontainer/Dockerfile.daytona-vnc \
+  --context .devcontainer/start-daytona-vnc.sh \
   --class large \
+  --memory 8 \
+  --disk 10 \
   --auto-stop 60 \
   --public \
   --target us
 ```
 
-> **Note:** Use `--context` to send only the Dockerfile and scripts, NOT the whole repo. The Dockerfile clones from GitHub inside the sandbox.
+> **Note:** Use the Daytona VNC Dockerfile, not the generic devcontainer
+> Dockerfile. It starts from `daytonaio/sandbox:0.6.0` so XFCE, Xvfb, x11vnc,
+> noVNC, websockify, and dbus-x11 match Daytona's Computer Use/VNC stack. Use
+> `--disk 10`; the default 3 GB disk fills up during dependency/sidecar work.
 
 ### 2. Start services
 
 ```bash
-daytona exec openwork-dev 'bash .devcontainer/start-services.sh'
+daytona exec openwork-dev 'bash -lc "cd /workspace && nohup bash .devcontainer/start-daytona-vnc.sh > /tmp/start-vnc.log 2>&1 &"'
+
+daytona exec openwork-dev 'bash -lc "cd /workspace/apps/app && nohup env OPENWORK_DEV_MODE=1 pnpm exec vite --host 0.0.0.0 --port 5173 > /tmp/vite.log 2>&1 &"'
+
+daytona exec openwork-dev 'bash -lc "cd /workspace && nohup env DISPLAY=:99 ELECTRON_DISABLE_SANDBOX=1 OPENWORK_REACT_DEVTOOLS=0 OPENWORK_DEV_MODE=1 OPENWORK_ELECTRON_REMOTE_DEBUG_PORT=9825 pnpm --filter @openwork/desktop dev:electron > /tmp/electron.log 2>&1 &"'
 ```
 
 Or SSH in and run interactively:
@@ -38,7 +48,7 @@ Or SSH in and run interactively:
 ```bash
 daytona ssh openwork-dev
 cd /workspace
-bash .devcontainer/start-services.sh
+bash .devcontainer/start-daytona-vnc.sh
 ```
 
 ### 3. Get the noVNC URL
@@ -98,12 +108,14 @@ daytona ssh openwork-dev
 # Check logs
 daytona exec openwork-dev 'tail -50 /tmp/electron.log'
 daytona exec openwork-dev 'tail -50 /tmp/vite.log'
+daytona exec openwork-dev 'tail -50 /tmp/start-vnc.log'
 
 # Take a screenshot via CDP
 daytona exec openwork-dev 'curl -s http://127.0.0.1:9825/json/list'
 
 # Restart just the Electron app
-daytona exec openwork-dev 'pkill -f electron; sleep 2; cd /workspace && DISPLAY=:99 ELECTRON_DISABLE_SANDBOX=1 OPENWORK_ELECTRON_REMOTE_DEBUG_PORT=9825 OPENWORK_DEV_MODE=1 nohup pnpm --filter @openwork/desktop dev:electron > /tmp/electron.log 2>&1 &'
+daytona exec openwork-dev 'bash -lc "pkill -f electron || true; pkill -f electron-dev || true"'
+daytona exec openwork-dev 'bash -lc "cd /workspace && nohup env DISPLAY=:99 ELECTRON_DISABLE_SANDBOX=1 OPENWORK_REACT_DEVTOOLS=0 OPENWORK_ELECTRON_REMOTE_DEBUG_PORT=9825 OPENWORK_DEV_MODE=1 pnpm --filter @openwork/desktop dev:electron > /tmp/electron.log 2>&1 &"'
 
 # Stop the sandbox (preserves state)
 daytona stop openwork-dev
@@ -124,7 +136,7 @@ daytona ssh openwork-dev
 cd /workspace
 git pull origin dev
 pnpm install
-# Then restart services
+# Then restart Vite/Electron
 ```
 
 ## Troubleshooting
@@ -136,13 +148,16 @@ cd /workspace/apps/app && OPENWORK_DEV_MODE=1 nohup npx vite --host 0.0.0.0 --po
 ```
 
 **noVNC shows black screen:**
-Xvfb may have crashed. Restart the display:
+Xvfb/XFCE may have crashed. Restart the desktop stack:
 ```bash
-bash .devcontainer/start-display.sh
+bash .devcontainer/start-daytona-vnc.sh
 ```
 
 **"no space left on device" when creating sandbox:**
-Don't use `--context .` — it uploads the entire repo (with worktrees, node_modules). Use individual `--context` flags for just the files needed.
+Use `--disk 10`. The default Daytona disk can be 3 GB, which is not enough for
+OpenWork dependencies and sidecar prep. Also don't use `--context .` — it
+uploads the entire repo (with worktrees, node_modules). Use individual
+`--context` flags for just the files needed.
 
 **Electron can't connect to localhost:5173:**
 Vite must listen on `0.0.0.0`, not just `localhost`. The start script handles this, but if running manually use `npx vite --host 0.0.0.0`.

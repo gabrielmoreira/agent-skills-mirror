@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `hoodini/ai-agents-skills` — 26 default patterns, 0 followed patterns, 72 file(s) materialized.
+Mirror of `hoodini/ai-agents-skills` — 26 default patterns, 0 followed patterns, 73 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `hoodini/ai-agents-skills` — 26 default patterns, 0 followed pattern
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 72 |
+| Files         | 73 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -108,29 +108,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 47 | ✓ | [`skills/ux-design-systems/SKILL.md`](skills/ux-design-systems/SKILL.md) |
 | 48 | ✓ | [`skills/vercel/SKILL.md`](skills/vercel/SKILL.md) |
 | 49 | ✓ | [`skills/web-accessibility/SKILL.md`](skills/web-accessibility/SKILL.md) |
-| 50 | ✓ | [`skills/yuv-design/lessons-learned.md`](skills/yuv-design/lessons-learned.md) |
-| 51 | ✓ | [`skills/yuv-design/patterns.md`](skills/yuv-design/patterns.md) |
-| 52 | ✓ | [`skills/yuv-design/README.md`](skills/yuv-design/README.md) |
-| 53 | ✓ | [`skills/yuv-design/SKILL.md`](skills/yuv-design/SKILL.md) |
-| 54 | ✓ | [`skills/yuv-viral-video/assets/fonts/Anton-Regular.ttf`](skills/yuv-viral-video/assets/fonts/Anton-Regular.ttf) |
-| 55 | ✓ | [`skills/yuv-viral-video/assets/fonts/Rubik-Black.ttf`](skills/yuv-viral-video/assets/fonts/Rubik-Black.ttf) |
-| 56 | ✓ | [`skills/yuv-viral-video/assets/fonts/Rubik-Bold.ttf`](skills/yuv-viral-video/assets/fonts/Rubik-Bold.ttf) |
-| 57 | ✓ | [`skills/yuv-viral-video/README.md`](skills/yuv-viral-video/README.md) |
-| 58 | ✓ | [`skills/yuv-viral-video/references/setup.md`](skills/yuv-viral-video/references/setup.md) |
-| 59 | ✓ | [`skills/yuv-viral-video/requirements.txt`](skills/yuv-viral-video/requirements.txt) |
-| 60 | ✓ | [`skills/yuv-viral-video/scripts/apple_glass.py`](skills/yuv-viral-video/scripts/apple_glass.py) |
-| 61 | ✓ | [`skills/yuv-viral-video/scripts/build_screen_share.py`](skills/yuv-viral-video/scripts/build_screen_share.py) |
-| 62 | ✓ | [`skills/yuv-viral-video/scripts/build_selfie.py`](skills/yuv-viral-video/scripts/build_selfie.py) |
-| 63 | ✓ | [`skills/yuv-viral-video/scripts/composite_screen_share.py`](skills/yuv-viral-video/scripts/composite_screen_share.py) |
-| 64 | ✓ | [`skills/yuv-viral-video/scripts/composite_selfie.py`](skills/yuv-viral-video/scripts/composite_selfie.py) |
-| 65 | ✓ | [`skills/yuv-viral-video/scripts/make_anims.py`](skills/yuv-viral-video/scripts/make_anims.py) |
-| 66 | ✓ | [`skills/yuv-viral-video/scripts/make_cards_screen_share.py`](skills/yuv-viral-video/scripts/make_cards_screen_share.py) |
-| 67 | ✓ | [`skills/yuv-viral-video/scripts/make_cards_selfie.py`](skills/yuv-viral-video/scripts/make_cards_selfie.py) |
-| 68 | ✓ | [`skills/yuv-viral-video/scripts/make_karaoke.py`](skills/yuv-viral-video/scripts/make_karaoke.py) |
-| 69 | ✓ | [`skills/yuv-viral-video/scripts/make_layout_assets.py`](skills/yuv-viral-video/scripts/make_layout_assets.py) |
-| 70 | ✓ | [`skills/yuv-viral-video/scripts/make_sfx.py`](skills/yuv-viral-video/scripts/make_sfx.py) |
-| 71 | ✓ | [`skills/yuv-viral-video/SKILL.md`](skills/yuv-viral-video/SKILL.md) |
-| 72 | ✓ | [`templates/skill-template/SKILL.md`](templates/skill-template/SKILL.md) |
+| 50 | ✓ | [`skills/x-twitter-scraper/SKILL.md`](skills/x-twitter-scraper/SKILL.md) |
+| 51 | ✓ | [`skills/yuv-design/lessons-learned.md`](skills/yuv-design/lessons-learned.md) |
+| 52 | ✓ | [`skills/yuv-design/patterns.md`](skills/yuv-design/patterns.md) |
+| 53 | ✓ | [`skills/yuv-design/README.md`](skills/yuv-design/README.md) |
+| 54 | ✓ | [`skills/yuv-design/SKILL.md`](skills/yuv-design/SKILL.md) |
+| 55 | ✓ | [`skills/yuv-viral-video/assets/fonts/Anton-Regular.ttf`](skills/yuv-viral-video/assets/fonts/Anton-Regular.ttf) |
+| 56 | ✓ | [`skills/yuv-viral-video/assets/fonts/Rubik-Black.ttf`](skills/yuv-viral-video/assets/fonts/Rubik-Black.ttf) |
+| 57 | ✓ | [`skills/yuv-viral-video/assets/fonts/Rubik-Bold.ttf`](skills/yuv-viral-video/assets/fonts/Rubik-Bold.ttf) |
+| 58 | ✓ | [`skills/yuv-viral-video/README.md`](skills/yuv-viral-video/README.md) |
+| 59 | ✓ | [`skills/yuv-viral-video/references/setup.md`](skills/yuv-viral-video/references/setup.md) |
+| 60 | ✓ | [`skills/yuv-viral-video/requirements.txt`](skills/yuv-viral-video/requirements.txt) |
+| 61 | ✓ | [`skills/yuv-viral-video/scripts/apple_glass.py`](skills/yuv-viral-video/scripts/apple_glass.py) |
+| 62 | ✓ | [`skills/yuv-viral-video/scripts/build_screen_share.py`](skills/yuv-viral-video/scripts/build_screen_share.py) |
+| 63 | ✓ | [`skills/yuv-viral-video/scripts/build_selfie.py`](skills/yuv-viral-video/scripts/build_selfie.py) |
+| 64 | ✓ | [`skills/yuv-viral-video/scripts/composite_screen_share.py`](skills/yuv-viral-video/scripts/composite_screen_share.py) |
+| 65 | ✓ | [`skills/yuv-viral-video/scripts/composite_selfie.py`](skills/yuv-viral-video/scripts/composite_selfie.py) |
+| 66 | ✓ | [`skills/yuv-viral-video/scripts/make_anims.py`](skills/yuv-viral-video/scripts/make_anims.py) |
+| 67 | ✓ | [`skills/yuv-viral-video/scripts/make_cards_screen_share.py`](skills/yuv-viral-video/scripts/make_cards_screen_share.py) |
+| 68 | ✓ | [`skills/yuv-viral-video/scripts/make_cards_selfie.py`](skills/yuv-viral-video/scripts/make_cards_selfie.py) |
+| 69 | ✓ | [`skills/yuv-viral-video/scripts/make_karaoke.py`](skills/yuv-viral-video/scripts/make_karaoke.py) |
+| 70 | ✓ | [`skills/yuv-viral-video/scripts/make_layout_assets.py`](skills/yuv-viral-video/scripts/make_layout_assets.py) |
+| 71 | ✓ | [`skills/yuv-viral-video/scripts/make_sfx.py`](skills/yuv-viral-video/scripts/make_sfx.py) |
+| 72 | ✓ | [`skills/yuv-viral-video/SKILL.md`](skills/yuv-viral-video/SKILL.md) |
+| 73 | ✓ | [`templates/skill-template/SKILL.md`](templates/skill-template/SKILL.md) |
 
 ---
 

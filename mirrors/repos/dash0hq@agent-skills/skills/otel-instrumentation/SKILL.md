@@ -27,6 +27,7 @@ Expert guidance for implementing high-quality, cost-efficient OpenTelemetry tele
 | [logs](./rules/logs.md) | Logs — structured logging, severity, trace correlation |
 | [metrics](./rules/metrics.md) | Metrics — instrument types, naming, units, cardinality |
 | [sensitive-data](./rules/sensitive-data.md) | Sensitive data — PII prevention, sanitization, redaction |
+| [capture-database-query-parameters](./rules/capture-database-query-parameters.md) | Prepared-statement parameter capture per language (Java, .NET, Python, Node.js, Go) |
 | [validation](./rules/validation.md) | Telemetry validation — post-deployment verification checklist |
 | [nodejs](./rules/sdks/nodejs.md) | Node.js instrumentation setup |
 | [go](./rules/sdks/go.md) | Go instrumentation setup |

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `coder/coder` — 26 default patterns, 12 followed patterns, 43 file(s) materialized.
+Mirror of `coder/coder` — 26 default patterns, 12 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `coder/coder` — 26 default patterns, 12 followed patterns, 43 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 12 |
-| Files         | 43 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -90,29 +90,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`.agents/skills/deep-review/roles/test-auditor.md`](.agents/skills/deep-review/roles/test-auditor.md) |
 | 19 | ✓ | [`.agents/skills/deep-review/SKILL.md`](.agents/skills/deep-review/SKILL.md) |
 | 20 | ✓ | [`.agents/skills/deep-review/structural-reviewer-prompt.md`](.agents/skills/deep-review/structural-reviewer-prompt.md) |
-| 21 | ✓ | [`.agents/skills/pull-requests/SKILL.md`](.agents/skills/pull-requests/SKILL.md) |
-| 22 | ✓ | [`.agents/skills/refine-plan/SKILL.md`](.agents/skills/refine-plan/SKILL.md) |
-| 23 | ✓ | [`.claude/skills/code-review/SKILL.md`](.claude/skills/code-review/SKILL.md) |
-| 24 | ✓ | [`.claude/skills/doc-check/SKILL.md`](.claude/skills/doc-check/SKILL.md) |
-| 25 | ✓ | [`.cursorrules`](.cursorrules) |
-| 26 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 27 | ✓ | [`aibridge/AGENTS.md`](aibridge/AGENTS.md) |
-| 28 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 29 | ✓ | [`docs/admin/templates/template-permissions.md`](docs/admin/templates/template-permissions.md) |
-| 30 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
-| 31 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
-| 32 | → | [`.claude/docs/AGENT_FAILURES.md`](.claude/docs/AGENT_FAILURES.md) |
-| 33 | → | [`.claude/docs/ARCHITECTURE.md`](.claude/docs/ARCHITECTURE.md) |
-| 34 | → | [`.claude/docs/DATABASE.md`](.claude/docs/DATABASE.md) |
-| 35 | → | [`.claude/docs/DEV_ISOLATION.md`](.claude/docs/DEV_ISOLATION.md) |
-| 36 | → | [`.claude/docs/DOCS_STYLE_GUIDE.md`](.claude/docs/DOCS_STYLE_GUIDE.md) |
-| 37 | → | [`.claude/docs/GO.md`](.claude/docs/GO.md) |
-| 38 | → | [`.claude/docs/OAUTH2.md`](.claude/docs/OAUTH2.md) |
-| 39 | → | [`.claude/docs/OBSERVABILITY.md`](.claude/docs/OBSERVABILITY.md) |
-| 40 | → | [`.claude/docs/PR_STYLE_GUIDE.md`](.claude/docs/PR_STYLE_GUIDE.md) |
-| 41 | → | [`.claude/docs/TESTING.md`](.claude/docs/TESTING.md) |
-| 42 | → | [`.claude/docs/TROUBLESHOOTING.md`](.claude/docs/TROUBLESHOOTING.md) |
-| 43 | → | [`.claude/docs/WORKFLOWS.md`](.claude/docs/WORKFLOWS.md) |
+| 21 | ✓ | [`.agents/skills/dogfood/SKILL.md`](.agents/skills/dogfood/SKILL.md) |
+| 22 | ✓ | [`.agents/skills/pull-requests/SKILL.md`](.agents/skills/pull-requests/SKILL.md) |
+| 23 | ✓ | [`.agents/skills/refine-plan/SKILL.md`](.agents/skills/refine-plan/SKILL.md) |
+| 24 | ✓ | [`.claude/skills/code-review/SKILL.md`](.claude/skills/code-review/SKILL.md) |
+| 25 | ✓ | [`.claude/skills/doc-check/SKILL.md`](.claude/skills/doc-check/SKILL.md) |
+| 26 | ✓ | [`.cursorrules`](.cursorrules) |
+| 27 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 28 | ✓ | [`aibridge/AGENTS.md`](aibridge/AGENTS.md) |
+| 29 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 30 | ✓ | [`docs/admin/templates/template-permissions.md`](docs/admin/templates/template-permissions.md) |
+| 31 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
+| 32 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
+| 33 | → | [`.claude/docs/AGENT_FAILURES.md`](.claude/docs/AGENT_FAILURES.md) |
+| 34 | → | [`.claude/docs/ARCHITECTURE.md`](.claude/docs/ARCHITECTURE.md) |
+| 35 | → | [`.claude/docs/DATABASE.md`](.claude/docs/DATABASE.md) |
+| 36 | → | [`.claude/docs/DEV_ISOLATION.md`](.claude/docs/DEV_ISOLATION.md) |
+| 37 | → | [`.claude/docs/DOCS_STYLE_GUIDE.md`](.claude/docs/DOCS_STYLE_GUIDE.md) |
+| 38 | → | [`.claude/docs/GO.md`](.claude/docs/GO.md) |
+| 39 | → | [`.claude/docs/OAUTH2.md`](.claude/docs/OAUTH2.md) |
+| 40 | → | [`.claude/docs/OBSERVABILITY.md`](.claude/docs/OBSERVABILITY.md) |
+| 41 | → | [`.claude/docs/PR_STYLE_GUIDE.md`](.claude/docs/PR_STYLE_GUIDE.md) |
+| 42 | → | [`.claude/docs/TESTING.md`](.claude/docs/TESTING.md) |
+| 43 | → | [`.claude/docs/TROUBLESHOOTING.md`](.claude/docs/TROUBLESHOOTING.md) |
+| 44 | → | [`.claude/docs/WORKFLOWS.md`](.claude/docs/WORKFLOWS.md) |
 
 ---
 

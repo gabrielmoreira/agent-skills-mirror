@@ -112,9 +112,16 @@ Return JSON:
 Verdict: PASS = all pass, WARN = at most cosmetic issues (length slight off / cosmetic style), FAIL = any math/code/factual error OR personal-info leak OR table-pipe / callout-list bug.
 ```
 
-### Step 4 — Fix and loop (≤3 rounds)
+### Step 4 — Fix and loop (no hard cap — judge by trajectory)
 
-For each FAIL issue, edit the MD. Then re-invoke codex with a **fresh thread** (never reuse threadId). Stop when verdict = PASS or WARN with no FAIL items. If still FAIL after 3 rounds, **stop and report to user** — don't keep retrying.
+For each FAIL issue, edit the MD. Then re-invoke codex with a **fresh thread** (never reuse threadId). Stop when verdict = PASS or WARN with no FAIL items.
+
+**No hard round cap.** Use these heuristics instead:
+
+- ✅ **Keep going** if each round's FAIL items are *shrinking, concrete, enumerable* (e.g., citation year fixes, off-by-one, single-line code bugs). The reviewer is doing useful work — let it converge.
+- ⛔ **Stop and report** if the same issue keeps coming back (loop detected), or if the FAIL items shift to architectural / scope concerns that need user input, or if the round count exceeds ~6 without convergence.
+
+Most tutorials converge in 3-5 rounds. Going to 5-6 rounds is fine if substantive bugs are still being caught — the Video Generation tutorial (May 2026) went to 5 rounds and the final 2 rounds caught real citation errors and an over-attribution to Sora's patch size that would have shipped otherwise.
 
 ### Step 5 — Render via /render-html
 
@@ -207,7 +214,7 @@ Suggest the row to the user but let them edit it in themselves if they want to c
 | Codex reasoning = xhigh | Hardcoded in Step 3 reviewer config |
 | Personal info redaction | Both math/code reviewer and render reviewer check; banlist in style guide |
 | Lessons-learned encoded | Table-pipe + callout-list collision rules in style guide AND review checks 5+6 |
-| No silent failure | If review FAILs after 3 rounds, stop and report — don't push |
+| No silent failure | If review FAILs and the FAIL set is no longer shrinking (loop) or hits ~6 rounds without convergence, stop and report — don't push |
 
 ## When NOT to use
 

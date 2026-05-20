@@ -56,6 +56,10 @@ Last validated: unknown | <date>
 
 Treat `planned` docs as design intent, not source evidence. Verify against code before relying on them for implementation-sensitive claims.
 
+## Context Budget and Non-Duplication
+
+Do not read or update every artifact by default. Read only docs relevant to task category, scope, and risk. During preflight, apply `references/preflight.md`; during semantic docs updates, apply `references/docs-update.md`.
+
 ## Scoped Docs
 
 If `docs/agent/SCOPES.md` exists or task uses a module/package/app/service/path focus, read `references/scoped-docs.md` during preflight. Scoped docs are optional and backward-compatible; if absent, use top-level `docs/agent/*.md` only.
@@ -77,7 +81,7 @@ Read first:
 - `docs/agent/CHANGE_GUIDE.md` if present
 - `docs/agent/SCOPES.md` if present; then apply `references/scoped-docs.md`
 - matching scoped `REPO_INVENTORY.md` or top-level `docs/agent/REPO_INVENTORY.md` if present, for entry points, commands, and boundaries
-- matching scoped `VALIDATION_BASELINE.md` or top-level `docs/agent/VALIDATION_BASELINE.md` if present, for known-good validation commands and blockers
+- matching scoped `VALIDATION_BASELINE.md` or top-level `docs/agent/VALIDATION_BASELINE.md` if present, for known-good validation commands and blockers; if absent, derive validation commands from `REPO_INVENTORY.md`, package/build files, and test config, and note missing baseline in preflight
 
 Read only docs relevant to task:
 - project intent for scope, user-goal, non-goal, or product-sensitive changes
@@ -88,7 +92,7 @@ Read only docs relevant to task:
 - dependency rules for imports/module boundaries
 - risk register for risky areas
 - design issues for refactoring/design work
-- testing strategy for new/changed tests or validation approach
+- testing strategy for new/changed tests or validation approach; if `TESTING_STRATEGY.md` is absent, infer from existing tests and note missing strategy in preflight
 - scoped `CONTRACTS.md` files for touched cross-scope APIs, shared types, schemas, events, generated clients, or persistence boundaries
 
 Before editing code, produce:

@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Turn a single photo of a person into a polished 15-second cinematic cooking tutorial. The skill first generates a high-end production reference sheet — character look, kitchen environment, and a 9-panel action board — then drives a continuous reference-to-video render that keeps the subject's face, outfit, and kitchen consistent across every frame.**
 
-> **Estimated credits:** ~120 per run (1 image edit + 1 video at 720p / 15s with audio).
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

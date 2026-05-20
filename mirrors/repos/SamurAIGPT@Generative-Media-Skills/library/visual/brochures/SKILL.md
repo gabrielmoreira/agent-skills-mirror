@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Generate a professional multi-page brochure design — cover, inner spread, and back cover — for business, real estate, events, or product launches.**
 
-> **Estimated credits:** ~90 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

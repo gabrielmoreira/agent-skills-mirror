@@ -7,7 +7,7 @@ import ai.koog.agents.core.dsl.builder.strategy
 import ai.koog.agents.core.dsl.extension.ReceivedToolResults
 import ai.koog.agents.core.dsl.extension.ToolCalls
 import ai.koog.agents.core.dsl.extension.nodeExecuteSingleTool
-import ai.koog.agents.core.dsl.extension.nodeExecuteToolsAndGetResults
+import ai.koog.agents.core.dsl.extension.nodeExecuteTools
 import ai.koog.agents.core.environment.ReceivedToolResult
 import ai.koog.agents.core.feature.config.FeatureConfig
 import ai.koog.agents.core.feature.handler.tool.ToolCallFailedContext
@@ -34,7 +34,7 @@ class ToolCallFailureEventsTest {
     private data class RequiredArgs(val required: String)
 
     private class RequiredArgsTool : SimpleTool<RequiredArgs>(
-        argsSerializer = RequiredArgs.serializer(),
+        argsType = typeToken<RequiredArgs>(),
         name = "required_args",
         description = "Tool that requires a single argument.",
     ) {
@@ -42,7 +42,7 @@ class ToolCallFailureEventsTest {
     }
 
     private class BadResultTool : SimpleTool<RequiredArgs>(
-        argsSerializer = RequiredArgs.serializer(),
+        argsType = typeToken<RequiredArgs>(),
         name = "bad_result",
         description = "Tool that fails on result serialization.",
     ) {
@@ -79,14 +79,12 @@ class ToolCallFailureEventsTest {
         var toolValidationFailed: ToolValidationFailedContext? = null
 
         val strategy = strategy<ToolCalls, ReceivedToolResults>("tool_failure_strategy") {
-            val executeTool by nodeExecuteToolsAndGetResults()
+            val executeTool by nodeExecuteTools()
             edge(nodeStart forwardTo executeTool)
             edge(executeTool forwardTo nodeFinish)
         }
 
         val agent = GraphAIAgent(
-            inputType = typeToken<MessagePart.Tool.Call>(),
-            outputType = typeToken<ReceivedToolResult>(),
             promptExecutor = getMockExecutor(serializer) { },
             agentConfig = AIAgentConfig.withSystemPrompt("test"),
             strategy = strategy,
@@ -121,8 +119,6 @@ class ToolCallFailureEventsTest {
         }
 
         val agent = GraphAIAgent(
-            inputType = typeToken<MessagePart.Tool.Call>(),
-            outputType = typeToken<ReceivedToolResult>(),
             promptExecutor = getMockExecutor(serializer) { },
             agentConfig = AIAgentConfig.withSystemPrompt("test"),
             strategy = strategy,
@@ -156,8 +152,6 @@ class ToolCallFailureEventsTest {
         }
 
         val agent = GraphAIAgent(
-            inputType = typeToken<MessagePart.Tool.Call>(),
-            outputType = typeToken<ReceivedToolResult>(),
             promptExecutor = getMockExecutor(serializer) { },
             agentConfig = AIAgentConfig.withSystemPrompt("test"),
             strategy = strategy,

@@ -399,11 +399,13 @@ Project affinity: universal.
 
 ## Operational
 
-**Journal** (`.agents/latch.md`): read or update it, create it if missing, and record only reusable hook design patterns, safe matcher lessons, debugging insights, or recurring failure modes. Do not store secrets or user data.
+**Before starting (mandatory):** read `.agents/latch.md` and `.agents/PROJECT.md`; create if missing.
 
-**PROJECT.md**: Log significant hook configurations, matcher decisions, and blocking hook justifications to the project-level `PROJECT.md` for cross-agent visibility.
+**Journal** (`.agents/latch.md`): record only reusable hook design patterns, safe matcher lessons, debugging insights, or recurring failure modes. Do not store secrets or user data.
 
-Standard protocols -> `_common/OPERATIONAL.md`
+**After task completion (mandatory):** append `| YYYY-MM-DD | Latch | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`. Log significant hook configurations, matcher decisions, and blocking hook justifications for cross-agent visibility.
+
+Standard protocols and Pre-Handoff Checklist -> `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 

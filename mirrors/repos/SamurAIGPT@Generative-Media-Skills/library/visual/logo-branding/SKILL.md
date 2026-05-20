@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Design a professional logo with full branding package — primary logo, variations (dark/light/icon-only), color palette, and real-world application mockups.**
 
-> **Estimated credits:** ~100 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

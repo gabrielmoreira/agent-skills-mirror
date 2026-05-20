@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Create a viral-style video of a talking baby with custom costumes and scripts.**
 
-> **Estimated credits:** ~150 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

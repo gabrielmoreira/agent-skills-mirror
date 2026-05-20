@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Generate a high-converting ad creative set — hero image, ad copy variations, and platform-optimized crops for Meta, Google Display, and LinkedIn.**
 
-> **Estimated credits:** ~60 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

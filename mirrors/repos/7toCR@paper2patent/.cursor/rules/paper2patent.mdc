@@ -1,0 +1,11 @@
+---
+description: Paper2Patent repository workflow for maintaining the paper-to-patent skill, prompt templates, patent drafting rules, and privacy boundaries.
+globs:
+alwaysApply: false
+---
+
+- Use `skills/paper2patent/SKILL.md` as the canonical workflow for paper-to-patent tasks.
+- Keep long drafting rules in `skills/paper2patent/references/`; do not duplicate full templates in IDE rule files.
+- Preserve fidelity to the supplied paper. Do not invent technical details, embodiments, metrics, or effects.
+- Do not commit unpublished papers, generated patent drafts, personal data, API keys, tokens, local usernames, or local absolute paths.
+- When editing skill files, validate both `skills/paper2patent` and `.claude/skills/paper2patent` if the Claude mirror exists.

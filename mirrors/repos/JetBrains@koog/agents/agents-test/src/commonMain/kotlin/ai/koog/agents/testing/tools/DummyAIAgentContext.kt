@@ -8,7 +8,6 @@ import ai.koog.agents.core.agent.context.AIAgentGraphContextBase
 import ai.koog.agents.core.agent.context.AIAgentLLMContext
 import ai.koog.agents.core.agent.entity.AIAgentStateManager
 import ai.koog.agents.core.agent.entity.AIAgentStorage
-import ai.koog.agents.core.agent.entity.AIAgentStorageKey
 import ai.koog.agents.core.agent.execution.AgentExecutionInfo
 import ai.koog.agents.core.annotation.InternalAgentsApi
 import ai.koog.agents.core.dsl.builder.BaseBuilder
@@ -107,21 +106,6 @@ public class DummyAIAgentContext(
         set(value) {
             _executionInfo = value
         }
-
-    @Deprecated("Use context.storage.set() instead", level = DeprecationLevel.WARNING)
-    override fun store(key: AIAgentStorageKey<*>, value: Any) {
-        throw NotImplementedError("store() is not supported for mock")
-    }
-
-    @Deprecated("Use context.storage.get() instead", level = DeprecationLevel.WARNING)
-    override fun <T> get(key: AIAgentStorageKey<*>): T {
-        throw NotImplementedError("get() is not supported for mock")
-    }
-
-    @Deprecated("Use context.storage.remove() instead", level = DeprecationLevel.WARNING)
-    override fun remove(key: AIAgentStorageKey<*>): Boolean {
-        throw NotImplementedError("remove() is not supported for mock")
-    }
 
     /**
      * Creates a new instance of `AIAgentContextBase` with the specified parameters,

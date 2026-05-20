@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jeffsenso/prestashop-skills` — 26 default patterns, 0 followed patterns, 158 file(s) materialized.
+Mirror of `jeffsenso/prestashop-skills` — 26 default patterns, 0 followed patterns, 159 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jeffsenso/prestashop-skills` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 158 |
+| Files         | 159 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -216,7 +216,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 155 | ✓ | [`skills/prestashop-module-development/references/services-split.md`](skills/prestashop-module-development/references/services-split.md) |
 | 156 | ✓ | [`skills/prestashop-module-development/references/translations.md`](skills/prestashop-module-development/references/translations.md) |
 | 157 | ✓ | [`skills/prestashop-module-development/references/validation.md`](skills/prestashop-module-development/references/validation.md) |
-| 158 | ✓ | [`skills/prestashop-module-development/SKILL.md`](skills/prestashop-module-development/SKILL.md) |
+| 158 | ✓ | [`skills/prestashop-module-development/scripts/translatable-form.bundle.js`](skills/prestashop-module-development/scripts/translatable-form.bundle.js) |
+| 159 | ✓ | [`skills/prestashop-module-development/SKILL.md`](skills/prestashop-module-development/SKILL.md) |
 
 ---
 

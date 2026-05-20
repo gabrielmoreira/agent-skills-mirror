@@ -178,27 +178,94 @@ EOF
 ### 并行调用提醒
 M+ 复杂度的分析和审查，使用上方的"双模型并行"模板。不要分开调用，用 `&` + `wait` 并行执行。
 
-## 5. Implementation — 你自己写代码
+## 5. Implementation — 写代码
 
-### 执行模式：Inline（你自己按 plan 顺序逐文件写）
+### 模式选择
 
-**不要 spawn 子代理。** 你自己按 plan.md 的步骤顺序逐个文件写代码。这比子代理更稳定、更快、更可控。
+| 复杂度 | 模式 | 说明 |
+|--------|------|------|
+| **S-M** | **Inline** — 你自己写 | 逐文件按 plan 顺序，最稳定 |
+| **L+** | **Parallel** — spawn 子代理 | 按文件归属拆分，并行写，快 2-4x |
 
-### 执行流程
+### 模式 A: Inline（S-M 复杂度）
+
+按 plan.md 步骤顺序逐个文件写：
+1. 先写底层（store/model/util），再写上层（route/middleware）
+2. 每写完一个文件跑测试/类型检查
+3. 全部完成后跑完整测试套件
+4. `git diff` 确认变更在 plan 范围内
+
+### 模式 B: Parallel Spawn（L+ 复杂度）
+
+#### Step 1: 从 plan.md 拆分子任务
+
+按**文件归属**拆分，确保子任务互不重叠：
+- **Layer 1** — 无依赖的任务（可并行）
+- **Layer 2** — 依赖 Layer 1 的任务
+
+#### Step 2: 并行 spawn Layer 1
+
+**⛔ 关键：必须传 `fork_turns="none"`。** 否则子代理继承你的上下文，看到你的 spawn 记录，尝试 wait 自己 → 死锁。
 
 ```
-1. 读 plan.md（如有）或回顾分析阶段的结论
-2. 按依赖顺序逐文件写：先写底层（store/model/util），再写上层（route/middleware）
-3. 每写完一个文件，跑一次测试/类型检查，确保不破坏现有功能
-4. 全部写完后，跑完整测试套件
-5. git diff 确认所有变更在 plan 范围内
+# 所有 Layer 1 子代理在同一轮 spawn（= 真正并行）
+spawn_agent(
+  agent_type="ccg-implement",
+  fork_turns="none",
+  message="Active task: .ccg/tasks/{name}\n\n## 文件范围（⛔ 硬性规则）\n只能创建或修改：\n- {file1}\n- {file2}\n严禁修改其他文件。\n\n## 实施步骤\n{steps from plan.md}\n\n## 验收标准\n{criteria}"
+)
+spawn_agent(
+  agent_type="ccg-implement",
+  fork_turns="none",
+  message="Active task: .ccg/tasks/{name}\n\n## 文件范围\n- {file3}\n- {file4}\n\n## 实施步骤\n{steps}\n\n## 验收标准\n{criteria}"
+)
 ```
 
-### 写代码原则
+#### Step 3: Wait + Verify + Close
+
+```
+expected_agents = [agent_1, agent_2, ...]
+
+while expected_agents is not empty:
+  wait(agent_id, timeout=480000)   # 8 min
+  list_agents()                     # 检查所有存活代理状态
+  for each terminal agent:
+    - 检查交付物是否存在（文件已创建/修改）
+    - close_agent(agent_id)
+    - 从 expected_agents 移除
+```
+
+#### Step 4: Layer 2（有依赖的任务）
+
+Layer 1 全部完成后，再 spawn Layer 2 子代理（同样的模式）。
+
+#### Step 5: 审查
+
+spawn 审查代理：
+```
+spawn_agent(
+  agent_type="ccg-review",
+  fork_turns="none",
+  message="审查 .ccg/tasks/{name} 的所有变更。\n运行: git diff\n检查: 正确性/安全/性能/规范\n输出: Critical/Warning/Info 分级报告"
+)
+wait(review_agent)
+close_agent(review_agent)
+```
+
+Critical 问题 → spawn 修复代理。Warning → 视情况修复。
+
+#### ⛔ Spawn 铁律
+
+1. **fork_turns="none" 永远不可省略** — 省略 = 死锁
+2. **子代理禁止再 spawn** — ccg-implement.toml 已关闭 multi_agent
+3. **每个文件同一时刻只有一个子代理可写** — 文件归属不可重叠
+4. **wait 超时要够长** — 默认 480s，复杂任务调到 600s
+5. **所有子代理必须 close** — 不 close = 资源泄漏
+
+### 写代码原则（两种模式通用）
 
 - **先读再写** — 修改文件前先读取完整内容，理解现有模式
 - **遵守 Spec** — .ccg/spec/ 里的约定是法律
-- **一个文件一个 commit 思路** — 每个文件的变更应该是自包含的
 - **不扩大范围** — plan 没说改的文件不要动
 - **测试驱动** — 新功能先写测试骨架，再写实现
 

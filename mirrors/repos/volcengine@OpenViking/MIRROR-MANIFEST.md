@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `volcengine/OpenViking` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `volcengine/OpenViking` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `volcengine/OpenViking` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,9 +69,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`bot/workspace/skills/weather/SKILL.md`](bot/workspace/skills/weather/SKILL.md) |
 | 9 | ✓ | [`examples/openclaw-plugin/skills/install-openviking-memory/SKILL.md`](examples/openclaw-plugin/skills/install-openviking-memory/SKILL.md) |
 | 10 | ✓ | [`examples/opencode/plugin/skills/openviking/SKILL.md`](examples/opencode/plugin/skills/openviking/SKILL.md) |
-| 11 | ✓ | [`examples/skills/ov-add-data/SKILL.md`](examples/skills/ov-add-data/SKILL.md) |
-| 12 | ✓ | [`examples/skills/ov-search-context/SKILL.md`](examples/skills/ov-search-context/SKILL.md) |
-| 13 | ✓ | [`examples/skills/ov-server-operate/SKILL.md`](examples/skills/ov-server-operate/SKILL.md) |
+| 11 | ✓ | [`examples/skills/ov_dream/SKILL.md`](examples/skills/ov_dream/SKILL.md) |
+| 12 | ✓ | [`examples/skills/ov-add-data/SKILL.md`](examples/skills/ov-add-data/SKILL.md) |
+| 13 | ✓ | [`examples/skills/ov-search-context/SKILL.md`](examples/skills/ov-search-context/SKILL.md) |
+| 14 | ✓ | [`examples/skills/ov-server-operate/SKILL.md`](examples/skills/ov-server-operate/SKILL.md) |
 
 ---
 

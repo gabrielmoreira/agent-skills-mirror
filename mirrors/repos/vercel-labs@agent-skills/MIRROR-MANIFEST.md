@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vercel-labs/agent-skills` — 26 default patterns, 0 followed patterns, 153 file(s) materialized.
+Mirror of `vercel-labs/agent-skills` — 26 default patterns, 0 followed patterns, 307 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel-labs/agent-skills` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 153 |
+| Files         | 307 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -210,8 +210,162 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 149 | ✓ | [`skills/react-view-transitions/SKILL.md`](skills/react-view-transitions/SKILL.md) |
 | 150 | ✓ | [`skills/vercel-cli-with-tokens.zip`](skills/vercel-cli-with-tokens.zip) |
 | 151 | ✓ | [`skills/vercel-cli-with-tokens/SKILL.md`](skills/vercel-cli-with-tokens/SKILL.md) |
-| 152 | ✓ | [`skills/web-design-guidelines.zip`](skills/web-design-guidelines.zip) |
-| 153 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
+| 152 | ✓ | [`skills/vercel-optimize/AGENTS.md`](skills/vercel-optimize/AGENTS.md) |
+| 153 | ✓ | [`skills/vercel-optimize/CONTRIBUTING.md`](skills/vercel-optimize/CONTRIBUTING.md) |
+| 154 | ✓ | [`skills/vercel-optimize/lib/auth-route.mjs`](skills/vercel-optimize/lib/auth-route.mjs) |
+| 155 | ✓ | [`skills/vercel-optimize/lib/budget-summary.mjs`](skills/vercel-optimize/lib/budget-summary.mjs) |
+| 156 | ✓ | [`skills/vercel-optimize/lib/citations.mjs`](skills/vercel-optimize/lib/citations.mjs) |
+| 157 | ✓ | [`skills/vercel-optimize/lib/cost-coverage.mjs`](skills/vercel-optimize/lib/cost-coverage.mjs) |
+| 158 | ✓ | [`skills/vercel-optimize/lib/dedup-recs.mjs`](skills/vercel-optimize/lib/dedup-recs.mjs) |
+| 159 | ✓ | [`skills/vercel-optimize/lib/deep-dive.mjs`](skills/vercel-optimize/lib/deep-dive.mjs) |
+| 160 | ✓ | [`skills/vercel-optimize/lib/display-labels.mjs`](skills/vercel-optimize/lib/display-labels.mjs) |
+| 161 | ✓ | [`skills/vercel-optimize/lib/extract-claims.mjs`](skills/vercel-optimize/lib/extract-claims.mjs) |
+| 162 | ✓ | [`skills/vercel-optimize/lib/framework-support.mjs`](skills/vercel-optimize/lib/framework-support.mjs) |
+| 163 | ✓ | [`skills/vercel-optimize/lib/gates/build-minutes-fanout.mjs`](skills/vercel-optimize/lib/gates/build-minutes-fanout.mjs) |
+| 164 | ✓ | [`skills/vercel-optimize/lib/gates/cold-start.mjs`](skills/vercel-optimize/lib/gates/cold-start.mjs) |
+| 165 | ✓ | [`skills/vercel-optimize/lib/gates/contract.mjs`](skills/vercel-optimize/lib/gates/contract.mjs) |
+| 166 | ✓ | [`skills/vercel-optimize/lib/gates/cwv-poor.mjs`](skills/vercel-optimize/lib/gates/cwv-poor.mjs) |
+| 167 | ✓ | [`skills/vercel-optimize/lib/gates/external-api-slow.mjs`](skills/vercel-optimize/lib/gates/external-api-slow.mjs) |
+| 168 | ✓ | [`skills/vercel-optimize/lib/gates/hard-gates.mjs`](skills/vercel-optimize/lib/gates/hard-gates.mjs) |
+| 169 | ✓ | [`skills/vercel-optimize/lib/gates/index.mjs`](skills/vercel-optimize/lib/gates/index.mjs) |
+| 170 | ✓ | [`skills/vercel-optimize/lib/gates/isr-overrevalidation.mjs`](skills/vercel-optimize/lib/gates/isr-overrevalidation.mjs) |
+| 171 | ✓ | [`skills/vercel-optimize/lib/gates/middleware-heavy.mjs`](skills/vercel-optimize/lib/gates/middleware-heavy.mjs) |
+| 172 | ✓ | [`skills/vercel-optimize/lib/gates/observability-events-attribution.mjs`](skills/vercel-optimize/lib/gates/observability-events-attribution.mjs) |
+| 173 | ✓ | [`skills/vercel-optimize/lib/gates/platform-bot-protection.mjs`](skills/vercel-optimize/lib/gates/platform-bot-protection.mjs) |
+| 174 | ✓ | [`skills/vercel-optimize/lib/gates/platform-fluid-compute.mjs`](skills/vercel-optimize/lib/gates/platform-fluid-compute.mjs) |
+| 175 | ✓ | [`skills/vercel-optimize/lib/gates/region-misconfig.mjs`](skills/vercel-optimize/lib/gates/region-misconfig.mjs) |
+| 176 | ✓ | [`skills/vercel-optimize/lib/gates/route-errors.mjs`](skills/vercel-optimize/lib/gates/route-errors.mjs) |
+| 177 | ✓ | [`skills/vercel-optimize/lib/gates/scanner-driven.mjs`](skills/vercel-optimize/lib/gates/scanner-driven.mjs) |
+| 178 | ✓ | [`skills/vercel-optimize/lib/gates/select-candidates.mjs`](skills/vercel-optimize/lib/gates/select-candidates.mjs) |
+| 179 | ✓ | [`skills/vercel-optimize/lib/gates/slow-route.mjs`](skills/vercel-optimize/lib/gates/slow-route.mjs) |
+| 180 | ✓ | [`skills/vercel-optimize/lib/gates/types.d.ts`](skills/vercel-optimize/lib/gates/types.d.ts) |
+| 181 | ✓ | [`skills/vercel-optimize/lib/gates/uncached-route.mjs`](skills/vercel-optimize/lib/gates/uncached-route.mjs) |
+| 182 | ✓ | [`skills/vercel-optimize/lib/gates/usage-spike-triage.mjs`](skills/vercel-optimize/lib/gates/usage-spike-triage.mjs) |
+| 183 | ✓ | [`skills/vercel-optimize/lib/grade-recommendation.mjs`](skills/vercel-optimize/lib/grade-recommendation.mjs) |
+| 184 | ✓ | [`skills/vercel-optimize/lib/impact-label.mjs`](skills/vercel-optimize/lib/impact-label.mjs) |
+| 185 | ✓ | [`skills/vercel-optimize/lib/impact-magnitude.mjs`](skills/vercel-optimize/lib/impact-magnitude.mjs) |
+| 186 | ✓ | [`skills/vercel-optimize/lib/investigation-brief.mjs`](skills/vercel-optimize/lib/investigation-brief.mjs) |
+| 187 | ✓ | [`skills/vercel-optimize/lib/project-facts.mjs`](skills/vercel-optimize/lib/project-facts.mjs) |
+| 188 | ✓ | [`skills/vercel-optimize/lib/queries.mjs`](skills/vercel-optimize/lib/queries.mjs) |
+| 189 | ✓ | [`skills/vercel-optimize/lib/reconcile-candidates.mjs`](skills/vercel-optimize/lib/reconcile-candidates.mjs) |
+| 190 | ✓ | [`skills/vercel-optimize/lib/render-report.mjs`](skills/vercel-optimize/lib/render-report.mjs) |
+| 191 | ✓ | [`skills/vercel-optimize/lib/repo-root.mjs`](skills/vercel-optimize/lib/repo-root.mjs) |
+| 192 | ✓ | [`skills/vercel-optimize/lib/route-normalize.mjs`](skills/vercel-optimize/lib/route-normalize.mjs) |
+| 193 | ✓ | [`skills/vercel-optimize/lib/sanitizers/bot-protection-certainty.mjs`](skills/vercel-optimize/lib/sanitizers/bot-protection-certainty.mjs) |
+| 194 | ✓ | [`skills/vercel-optimize/lib/sanitizers/cache-tag-invalidation-certainty.mjs`](skills/vercel-optimize/lib/sanitizers/cache-tag-invalidation-certainty.mjs) |
+| 195 | ✓ | [`skills/vercel-optimize/lib/sanitizers/count-correct.mjs`](skills/vercel-optimize/lib/sanitizers/count-correct.mjs) |
+| 196 | ✓ | [`skills/vercel-optimize/lib/sanitizers/function-duration-invocations.mjs`](skills/vercel-optimize/lib/sanitizers/function-duration-invocations.mjs) |
+| 197 | ✓ | [`skills/vercel-optimize/lib/sanitizers/index.mjs`](skills/vercel-optimize/lib/sanitizers/index.mjs) |
+| 198 | ✓ | [`skills/vercel-optimize/lib/sanitizers/middleware-conflict.mjs`](skills/vercel-optimize/lib/sanitizers/middleware-conflict.mjs) |
+| 199 | ✓ | [`skills/vercel-optimize/lib/sanitizers/missing-citation.mjs`](skills/vercel-optimize/lib/sanitizers/missing-citation.mjs) |
+| 200 | ✓ | [`skills/vercel-optimize/lib/sanitizers/pre-release.mjs`](skills/vercel-optimize/lib/sanitizers/pre-release.mjs) |
+| 201 | ✓ | [`skills/vercel-optimize/lib/sanitizers/rate-limit.mjs`](skills/vercel-optimize/lib/sanitizers/rate-limit.mjs) |
+| 202 | ✓ | [`skills/vercel-optimize/lib/sanitizers/rendering-mode-mislabel.mjs`](skills/vercel-optimize/lib/sanitizers/rendering-mode-mislabel.mjs) |
+| 203 | ✓ | [`skills/vercel-optimize/lib/sanitizers/undeclared-dep.mjs`](skills/vercel-optimize/lib/sanitizers/undeclared-dep.mjs) |
+| 204 | ✓ | [`skills/vercel-optimize/lib/sanitizers/vercel-directive-strip.mjs`](skills/vercel-optimize/lib/sanitizers/vercel-directive-strip.mjs) |
+| 205 | ✓ | [`skills/vercel-optimize/lib/sanitizers/window-units.mjs`](skills/vercel-optimize/lib/sanitizers/window-units.mjs) |
+| 206 | ✓ | [`skills/vercel-optimize/lib/scanners/cache-components-suspense-dedupe.mjs`](skills/vercel-optimize/lib/scanners/cache-components-suspense-dedupe.mjs) |
+| 207 | ✓ | [`skills/vercel-optimize/lib/scanners/edge-heavy-import.mjs`](skills/vercel-optimize/lib/scanners/edge-heavy-import.mjs) |
+| 208 | ✓ | [`skills/vercel-optimize/lib/scanners/force-dynamic.mjs`](skills/vercel-optimize/lib/scanners/force-dynamic.mjs) |
+| 209 | ✓ | [`skills/vercel-optimize/lib/scanners/headers-in-page.mjs`](skills/vercel-optimize/lib/scanners/headers-in-page.mjs) |
+| 210 | ✓ | [`skills/vercel-optimize/lib/scanners/index.mjs`](skills/vercel-optimize/lib/scanners/index.mjs) |
+| 211 | ✓ | [`skills/vercel-optimize/lib/scanners/large-static-asset.mjs`](skills/vercel-optimize/lib/scanners/large-static-asset.mjs) |
+| 212 | ✓ | [`skills/vercel-optimize/lib/scanners/max-age-without-s-maxage.mjs`](skills/vercel-optimize/lib/scanners/max-age-without-s-maxage.mjs) |
+| 213 | ✓ | [`skills/vercel-optimize/lib/scanners/middleware-broad-matcher.mjs`](skills/vercel-optimize/lib/scanners/middleware-broad-matcher.mjs) |
+| 214 | ✓ | [`skills/vercel-optimize/lib/scanners/missing-cache-headers.mjs`](skills/vercel-optimize/lib/scanners/missing-cache-headers.mjs) |
+| 215 | ✓ | [`skills/vercel-optimize/lib/scanners/prisma-include-tree.mjs`](skills/vercel-optimize/lib/scanners/prisma-include-tree.mjs) |
+| 216 | ✓ | [`skills/vercel-optimize/lib/scanners/region-pin-in-config.mjs`](skills/vercel-optimize/lib/scanners/region-pin-in-config.mjs) |
+| 217 | ✓ | [`skills/vercel-optimize/lib/scanners/source-maps-production.mjs`](skills/vercel-optimize/lib/scanners/source-maps-production.mjs) |
+| 218 | ✓ | [`skills/vercel-optimize/lib/scanners/sveltekit-prerender-missing.mjs`](skills/vercel-optimize/lib/scanners/sveltekit-prerender-missing.mjs) |
+| 219 | ✓ | [`skills/vercel-optimize/lib/scanners/turbo-force-bypass.mjs`](skills/vercel-optimize/lib/scanners/turbo-force-bypass.mjs) |
+| 220 | ✓ | [`skills/vercel-optimize/lib/scanners/unoptimized-image.mjs`](skills/vercel-optimize/lib/scanners/unoptimized-image.mjs) |
+| 221 | ✓ | [`skills/vercel-optimize/lib/scanners/use-cache-date-stamp.mjs`](skills/vercel-optimize/lib/scanners/use-cache-date-stamp.mjs) |
+| 222 | ✓ | [`skills/vercel-optimize/lib/support-topics.mjs`](skills/vercel-optimize/lib/support-topics.mjs) |
+| 223 | ✓ | [`skills/vercel-optimize/lib/throttle.mjs`](skills/vercel-optimize/lib/throttle.mjs) |
+| 224 | ✓ | [`skills/vercel-optimize/lib/util.mjs`](skills/vercel-optimize/lib/util.mjs) |
+| 225 | ✓ | [`skills/vercel-optimize/lib/vercel.mjs`](skills/vercel-optimize/lib/vercel.mjs) |
+| 226 | ✓ | [`skills/vercel-optimize/lib/verify-claim.mjs`](skills/vercel-optimize/lib/verify-claim.mjs) |
+| 227 | ✓ | [`skills/vercel-optimize/lib/workspace-resolver.mjs`](skills/vercel-optimize/lib/workspace-resolver.mjs) |
+| 228 | ✓ | [`skills/vercel-optimize/metadata.json`](skills/vercel-optimize/metadata.json) |
+| 229 | ✓ | [`skills/vercel-optimize/README.md`](skills/vercel-optimize/README.md) |
+| 230 | ✓ | [`skills/vercel-optimize/references/candidates.md`](skills/vercel-optimize/references/candidates.md) |
+| 231 | ✓ | [`skills/vercel-optimize/references/data-collection.md`](skills/vercel-optimize/references/data-collection.md) |
+| 232 | ✓ | [`skills/vercel-optimize/references/docs-library.json`](skills/vercel-optimize/references/docs-library.json) |
+| 233 | ✓ | [`skills/vercel-optimize/references/doctrine.md`](skills/vercel-optimize/references/doctrine.md) |
+| 234 | ✓ | [`skills/vercel-optimize/references/observability-plus.md`](skills/vercel-optimize/references/observability-plus.md) |
+| 235 | ✓ | [`skills/vercel-optimize/references/playbooks/ai-application.md`](skills/vercel-optimize/references/playbooks/ai-application.md) |
+| 236 | ✓ | [`skills/vercel-optimize/references/playbooks/api-service.md`](skills/vercel-optimize/references/playbooks/api-service.md) |
+| 237 | ✓ | [`skills/vercel-optimize/references/playbooks/content-site.md`](skills/vercel-optimize/references/playbooks/content-site.md) |
+| 238 | ✓ | [`skills/vercel-optimize/references/playbooks/ecommerce.md`](skills/vercel-optimize/references/playbooks/ecommerce.md) |
+| 239 | ✓ | [`skills/vercel-optimize/references/playbooks/marketing.md`](skills/vercel-optimize/references/playbooks/marketing.md) |
+| 240 | ✓ | [`skills/vercel-optimize/references/playbooks/README.md`](skills/vercel-optimize/references/playbooks/README.md) |
+| 241 | ✓ | [`skills/vercel-optimize/references/playbooks/saas.md`](skills/vercel-optimize/references/playbooks/saas.md) |
+| 242 | ✓ | [`skills/vercel-optimize/references/playbooks/sveltekit.md`](skills/vercel-optimize/references/playbooks/sveltekit.md) |
+| 243 | ✓ | [`skills/vercel-optimize/references/recommendations.md`](skills/vercel-optimize/references/recommendations.md) |
+| 244 | ✓ | [`skills/vercel-optimize/references/scanner-patterns.md`](skills/vercel-optimize/references/scanner-patterns.md) |
+| 245 | ✓ | [`skills/vercel-optimize/references/scoring.md`](skills/vercel-optimize/references/scoring.md) |
+| 246 | ✓ | [`skills/vercel-optimize/references/support-topics/astro-edge-middleware-scope.md`](skills/vercel-optimize/references/support-topics/astro-edge-middleware-scope.md) |
+| 247 | ✓ | [`skills/vercel-optimize/references/support-topics/astro-output-mode-and-isr.md`](skills/vercel-optimize/references/support-topics/astro-output-mode-and-isr.md) |
+| 248 | ✓ | [`skills/vercel-optimize/references/support-topics/auth-preserving-parallelization.md`](skills/vercel-optimize/references/support-topics/auth-preserving-parallelization.md) |
+| 249 | ✓ | [`skills/vercel-optimize/references/support-topics/bot-protection-product-guardrails.md`](skills/vercel-optimize/references/support-topics/bot-protection-product-guardrails.md) |
+| 250 | ✓ | [`skills/vercel-optimize/references/support-topics/build-minutes-monorepo-fanout.md`](skills/vercel-optimize/references/support-topics/build-minutes-monorepo-fanout.md) |
+| 251 | ✓ | [`skills/vercel-optimize/references/support-topics/cache-components-static-shell-boundaries.md`](skills/vercel-optimize/references/support-topics/cache-components-static-shell-boundaries.md) |
+| 252 | ✓ | [`skills/vercel-optimize/references/support-topics/cache-components-suspense-dedupe-pitfall.md`](skills/vercel-optimize/references/support-topics/cache-components-suspense-dedupe-pitfall.md) |
+| 253 | ✓ | [`skills/vercel-optimize/references/support-topics/cdn-cache-auth-safety.md`](skills/vercel-optimize/references/support-topics/cdn-cache-auth-safety.md) |
+| 254 | ✓ | [`skills/vercel-optimize/references/support-topics/cold-start-initialization-bundle.md`](skills/vercel-optimize/references/support-topics/cold-start-initialization-bundle.md) |
+| 255 | ✓ | [`skills/vercel-optimize/references/support-topics/core-web-vitals-client-bottlenecks.md`](skills/vercel-optimize/references/support-topics/core-web-vitals-client-bottlenecks.md) |
+| 256 | ✓ | [`skills/vercel-optimize/references/support-topics/database-egress-pooling-region.md`](skills/vercel-optimize/references/support-topics/database-egress-pooling-region.md) |
+| 257 | ✓ | [`skills/vercel-optimize/references/support-topics/dynamic-rendering-traps.md`](skills/vercel-optimize/references/support-topics/dynamic-rendering-traps.md) |
+| 258 | ✓ | [`skills/vercel-optimize/references/support-topics/external-api-critical-path-platform.md`](skills/vercel-optimize/references/support-topics/external-api-critical-path-platform.md) |
+| 259 | ✓ | [`skills/vercel-optimize/references/support-topics/external-api-critical-path.md`](skills/vercel-optimize/references/support-topics/external-api-critical-path.md) |
+| 260 | ✓ | [`skills/vercel-optimize/references/support-topics/fast-data-transfer-payloads.md`](skills/vercel-optimize/references/support-topics/fast-data-transfer-payloads.md) |
+| 261 | ✓ | [`skills/vercel-optimize/references/support-topics/fluid-compute-caveats.md`](skills/vercel-optimize/references/support-topics/fluid-compute-caveats.md) |
+| 262 | ✓ | [`skills/vercel-optimize/references/support-topics/function-duration-io-and-after.md`](skills/vercel-optimize/references/support-topics/function-duration-io-and-after.md) |
+| 263 | ✓ | [`skills/vercel-optimize/references/support-topics/function-invocation-reduction.md`](skills/vercel-optimize/references/support-topics/function-invocation-reduction.md) |
+| 264 | ✓ | [`skills/vercel-optimize/references/support-topics/function-region-misconfiguration-ttfb.md`](skills/vercel-optimize/references/support-topics/function-region-misconfiguration-ttfb.md) |
+| 265 | ✓ | [`skills/vercel-optimize/references/support-topics/image-optimization-cost-control.md`](skills/vercel-optimize/references/support-topics/image-optimization-cost-control.md) |
+| 266 | ✓ | [`skills/vercel-optimize/references/support-topics/isr-revalidation-static-generation.md`](skills/vercel-optimize/references/support-topics/isr-revalidation-static-generation.md) |
+| 267 | ✓ | [`skills/vercel-optimize/references/support-topics/middleware-proxy-edge-cost.md`](skills/vercel-optimize/references/support-topics/middleware-proxy-edge-cost.md) |
+| 268 | ✓ | [`skills/vercel-optimize/references/support-topics/next-fetch-revalidate-floor.md`](skills/vercel-optimize/references/support-topics/next-fetch-revalidate-floor.md) |
+| 269 | ✓ | [`skills/vercel-optimize/references/support-topics/next-font-cls-self-hosting.md`](skills/vercel-optimize/references/support-topics/next-font-cls-self-hosting.md) |
+| 270 | ✓ | [`skills/vercel-optimize/references/support-topics/next-heavy-ui-lazy-load-boundaries.md`](skills/vercel-optimize/references/support-topics/next-heavy-ui-lazy-load-boundaries.md) |
+| 271 | ✓ | [`skills/vercel-optimize/references/support-topics/next-image-lcp-preload-sizes.md`](skills/vercel-optimize/references/support-topics/next-image-lcp-preload-sizes.md) |
+| 272 | ✓ | [`skills/vercel-optimize/references/support-topics/next-route-handler-get-cache-defaults.md`](skills/vercel-optimize/references/support-topics/next-route-handler-get-cache-defaults.md) |
+| 273 | ✓ | [`skills/vercel-optimize/references/support-topics/next-script-third-party-strategy.md`](skills/vercel-optimize/references/support-topics/next-script-third-party-strategy.md) |
+| 274 | ✓ | [`skills/vercel-optimize/references/support-topics/nextjs-version-cache-semantics.md`](skills/vercel-optimize/references/support-topics/nextjs-version-cache-semantics.md) |
+| 275 | ✓ | [`skills/vercel-optimize/references/support-topics/not-found-catchall-request-waste.md`](skills/vercel-optimize/references/support-topics/not-found-catchall-request-waste.md) |
+| 276 | ✓ | [`skills/vercel-optimize/references/support-topics/nuxt-route-rules-cache-isr.md`](skills/vercel-optimize/references/support-topics/nuxt-route-rules-cache-isr.md) |
+| 277 | ✓ | [`skills/vercel-optimize/references/support-topics/observability-events-cost-attribution.md`](skills/vercel-optimize/references/support-topics/observability-events-cost-attribution.md) |
+| 278 | ✓ | [`skills/vercel-optimize/references/support-topics/post-response-work-waituntil.md`](skills/vercel-optimize/references/support-topics/post-response-work-waituntil.md) |
+| 279 | ✓ | [`skills/vercel-optimize/references/support-topics/README.md`](skills/vercel-optimize/references/support-topics/README.md) |
+| 280 | ✓ | [`skills/vercel-optimize/references/support-topics/route-error-durable-offload.md`](skills/vercel-optimize/references/support-topics/route-error-durable-offload.md) |
+| 281 | ✓ | [`skills/vercel-optimize/references/support-topics/route-error-runtime-limits.md`](skills/vercel-optimize/references/support-topics/route-error-runtime-limits.md) |
+| 282 | ✓ | [`skills/vercel-optimize/references/support-topics/runtime-cache-reusable-data.md`](skills/vercel-optimize/references/support-topics/runtime-cache-reusable-data.md) |
+| 283 | ✓ | [`skills/vercel-optimize/references/support-topics/sveltekit-isr-prerender-safety.md`](skills/vercel-optimize/references/support-topics/sveltekit-isr-prerender-safety.md) |
+| 284 | ✓ | [`skills/vercel-optimize/references/support-topics/sveltekit-split-cold-start-tradeoff.md`](skills/vercel-optimize/references/support-topics/sveltekit-split-cold-start-tradeoff.md) |
+| 285 | ✓ | [`skills/vercel-optimize/references/support-topics/usage-spike-triage.md`](skills/vercel-optimize/references/support-topics/usage-spike-triage.md) |
+| 286 | ✓ | [`skills/vercel-optimize/references/support-topics/use-cache-date-stamp-isr-write-amplifier.md`](skills/vercel-optimize/references/support-topics/use-cache-date-stamp-isr-write-amplifier.md) |
+| 287 | ✓ | [`skills/vercel-optimize/references/support-topics/use-cache-remote-shared-origin-data.md`](skills/vercel-optimize/references/support-topics/use-cache-remote-shared-origin-data.md) |
+| 288 | ✓ | [`skills/vercel-optimize/references/verification.md`](skills/vercel-optimize/references/verification.md) |
+| 289 | ✓ | [`skills/vercel-optimize/references/voice.md`](skills/vercel-optimize/references/voice.md) |
+| 290 | ✓ | [`skills/vercel-optimize/scripts/budget-summary.mjs`](skills/vercel-optimize/scripts/budget-summary.mjs) |
+| 291 | ✓ | [`skills/vercel-optimize/scripts/build-docs.mjs`](skills/vercel-optimize/scripts/build-docs.mjs) |
+| 292 | ✓ | [`skills/vercel-optimize/scripts/check-citations.mjs`](skills/vercel-optimize/scripts/check-citations.mjs) |
+| 293 | ✓ | [`skills/vercel-optimize/scripts/check-docs-fresh.mjs`](skills/vercel-optimize/scripts/check-docs-fresh.mjs) |
+| 294 | ✓ | [`skills/vercel-optimize/scripts/collect-signals.mjs`](skills/vercel-optimize/scripts/collect-signals.mjs) |
+| 295 | ✓ | [`skills/vercel-optimize/scripts/collect-sub-agent-outputs.mjs`](skills/vercel-optimize/scripts/collect-sub-agent-outputs.mjs) |
+| 296 | ✓ | [`skills/vercel-optimize/scripts/deep-dive.mjs`](skills/vercel-optimize/scripts/deep-dive.mjs) |
+| 297 | ✓ | [`skills/vercel-optimize/scripts/gate-investigations.mjs`](skills/vercel-optimize/scripts/gate-investigations.mjs) |
+| 298 | ✓ | [`skills/vercel-optimize/scripts/merge-signals.mjs`](skills/vercel-optimize/scripts/merge-signals.mjs) |
+| 299 | ✓ | [`skills/vercel-optimize/scripts/prepare-investigation-brief.mjs`](skills/vercel-optimize/scripts/prepare-investigation-brief.mjs) |
+| 300 | ✓ | [`skills/vercel-optimize/scripts/reconcile-candidates.mjs`](skills/vercel-optimize/scripts/reconcile-candidates.mjs) |
+| 301 | ✓ | [`skills/vercel-optimize/scripts/render-report.mjs`](skills/vercel-optimize/scripts/render-report.mjs) |
+| 302 | ✓ | [`skills/vercel-optimize/scripts/scan-codebase.mjs`](skills/vercel-optimize/scripts/scan-codebase.mjs) |
+| 303 | ✓ | [`skills/vercel-optimize/scripts/verify-and-regen.mjs`](skills/vercel-optimize/scripts/verify-and-regen.mjs) |
+| 304 | ✓ | [`skills/vercel-optimize/scripts/verify-finding.mjs`](skills/vercel-optimize/scripts/verify-finding.mjs) |
+| 305 | ✓ | [`skills/vercel-optimize/SKILL.md`](skills/vercel-optimize/SKILL.md) |
+| 306 | ✓ | [`skills/web-design-guidelines.zip`](skills/web-design-guidelines.zip) |
+| 307 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
 
 ---
 

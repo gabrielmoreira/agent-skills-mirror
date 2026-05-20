@@ -205,6 +205,71 @@ The auto-instrumentation package automatically instruments:
 
 Refer to [OpenTelemetry documentation](https://opentelemetry.io/docs/zero-code/dotnet/instrumentations/) for the complete list.
 
+## Database query parameters
+
+Prepared-statement parameter values (`db.query.parameter.<key>`) are off by default.
+Read [capturing database query parameters](../capture-database-query-parameters.md) first — it covers the cross-language risks and the Collector-side defence-in-depth that must be in place before enabling capture.
+
+.NET has two independent env vars depending on which client library generates the span.
+Set the one that matches the data-access stack in use.
+Capture is `internal` and only togglable via env var — there is no public API.
+
+### Microsoft SQL Server (`Microsoft.Data.SqlClient` / `System.Data.SqlClient`)
+
+```sh
+export OTEL_DOTNET_EXPERIMENTAL_SQLCLIENT_ENABLE_TRACE_DB_QUERY_PARAMETERS=true
+```
+
+Does **not** apply to Npgsql, MySQL, SQLite, or other providers.
+Not supported on .NET Framework (the EventSource path does not expose the `SqlCommand` instance).
+
+### Entity Framework Core (any relational provider)
+
+```sh
+export OTEL_DOTNET_EXPERIMENTAL_EFCORE_ENABLE_TRACE_DB_QUERY_PARAMETERS=true
+```
+
+Applies to any relational EFCore provider — SQL Server, PostgreSQL (`Npgsql.EntityFrameworkCore.PostgreSQL`), MySQL, SQLite.
+Cosmos DB and other NoSQL providers are not supported.
+EFCore auto-generates parameter names like `@__color_0`, `@__p_0` — emitted keys reflect those generated names, not the application's domain names.
+
+### Both flavours
+
+| | |
+|---|---|
+| Default | `false` |
+| Attribute key | `db.query.parameter.<name-or-0-based-index>` — uses `IDbDataParameter.ParameterName` if non-empty, else the index. |
+| Value transform | `Convert.ToString(parameter.Value, CultureInfo.InvariantCulture)`. |
+| Type whitelist | **None** — every parameter is captured regardless of type. Binary values are stringified. |
+| Length cap | None. |
+| Sanitizer interaction | Independent of statement sanitization. `db.query.text` is always sanitized; parameter capture bypasses that sanitizer. |
+
+### Npgsql directly (`Npgsql.OpenTelemetry`)
+
+There is **no env var**.
+The package's `EnableParameterLogging()` controls `Microsoft.Extensions.Logging` output, not span attributes.
+To emit `db.query.parameter.*` attributes, register a command-enrichment callback:
+
+```csharp
+using Npgsql;
+using OpenTelemetry.Trace;
+
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+dataSourceBuilder.ConfigureTracing(o => o.ConfigureCommandEnrichmentCallback((activity, command) =>
+{
+    for (var i = 0; i < command.Parameters.Count; i++)
+    {
+        var p = command.Parameters[i];
+        var key = string.IsNullOrEmpty(p.ParameterName)
+            ? $"db.query.parameter.{i}"
+            : $"db.query.parameter.{p.ParameterName}";
+        activity?.SetTag(key, Convert.ToString(p.Value, CultureInfo.InvariantCulture));
+    }
+}));
+```
+
+If the application routes Npgsql through EFCore, the EFCore env var applies and no callback is needed.
+
 ## Custom spans
 
 Add business context to auto-instrumented traces using `System.Diagnostics.ActivitySource` and `Activity`, the .NET native tracing API that OpenTelemetry bridges:

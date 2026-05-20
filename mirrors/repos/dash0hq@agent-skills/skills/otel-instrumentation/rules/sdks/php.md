@@ -229,6 +229,16 @@ The auto-instrumentation packages automatically instrument:
 
 Refer to [OpenTelemetry documentation](https://opentelemetry.io/ecosystem/registry/?language=php) for the complete list.
 
+## Database query parameters
+
+The OpenTelemetry PHP auto-instrumentation packages (`open-telemetry/opentelemetry-auto-pdo` and the framework wrappers) do **not** capture prepared-statement parameter values, and there is no env var or configuration option to enable capture.
+Read [capturing database query parameters](../capture-database-query-parameters.md) first.
+
+The PDO instrumentation uses `OpenTelemetry\API\Instrumentation\hook()` to wrap `PDO::query`, `PDO::prepare`, `PDOStatement::execute`, and related methods.
+It starts the span in the pre-hook and ends it in the post-hook; the bound parameters are not read or emitted.
+
+PHP-FPM does not expose a clean injection point that runs while the auto-instrumentation span is still recording — registering an additional `hook()` on the same method depends on extension-level ordering that is not part of the public contract.
+
 ## Custom spans
 
 Add business context to auto-instrumented traces:

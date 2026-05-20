@@ -16,6 +16,12 @@ Update relevant top-level or scoped docs for changes to:
 
 When artifact headers exist, update `Status`, `Evidence`, or `Last validated` only when the change or validation materially affects planned/observed/currentness.
 
+Non-duplication rules:
+- Update the owner artifact first; update router/index docs only with links or short pointers.
+- Do not copy detailed architecture into `CHANGE_GUIDE.md` or `AGENTS.md`.
+- Do not copy scoped-local details into top-level docs unless they changed repo-wide guidance.
+- If multiple docs mention the same concept, keep only one detailed source of truth and replace other copies with references.
+
 Do not update docs for:
 - purely mechanical edits
 - local implementation detail with no durable semantic meaning

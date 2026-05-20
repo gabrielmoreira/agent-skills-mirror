@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Turn a real lifestyle photo into a polished "chibi clone sticker diary" image — the original person stays photorealistic, surrounded by 5–8 kawaii chibi mini-clones, scrapbook doodles, and handwritten-style captions that match the scene.**
 
-> **Estimated credits:** ~120 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

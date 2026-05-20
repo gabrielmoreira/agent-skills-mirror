@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Design a 2D floor plan and convert it into a realistic, high-quality 3D architectural rendering.**
 
-> **Estimated credits:** ~120 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

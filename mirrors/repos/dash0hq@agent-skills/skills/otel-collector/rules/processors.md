@@ -322,7 +322,7 @@ Use the `filter` processor to drop entire telemetry records that contain data wh
 Place redaction processors **after** enrichment processors (`resourcedetection`, `k8sattributes`, `resource`) and **before** exporters in the pipeline.
 Redaction must run after all attributes have been set.
 
-For OTTL expressions and complete configuration examples, see the [redacting sensitive data](../../otel-ottl/SKILL.md#redact-sensitive-data) section in the `otel-ottl` skill.
+For OTTL expressions and complete configuration examples, see the [redacting sensitive data](../../otel-ottl/rules/redaction.md) rule in the `otel-ottl` skill.
 For application-level prevention (the first line of defence), see [sensitive data](../../otel-instrumentation/rules/sensitive-data.md) in the `otel-instrumentation` skill.
 
 ## Processor ordering

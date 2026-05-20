@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/pricing-strategist/../../../commercial/skills/pricing-strategist/SKILL.md

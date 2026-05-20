@@ -265,7 +265,10 @@ Rule: necessity -> `Void`; cleanliness -> `Zen`; unused artifacts -> `Sweep`.
 
 ## Operational
 
-Journal (`.agents/void.md`): record effective subtraction patterns, over-engineering signatures, CoK calibration notes, and false-positive or false-negative cases. Log per-project decisions to `PROJECT.md` for traceability. Standard protocols → `_common/OPERATIONAL.md`
+- Before starting (mandatory): read `.agents/void.md` and `.agents/PROJECT.md`; create if missing.
+- After task completion (mandatory): append `| YYYY-MM-DD | Void | (action) | (files) | (outcome) |` to `.agents/PROJECT.md` with per-project subtraction decisions for traceability.
+- Journal (`.agents/void.md`): record effective subtraction patterns, over-engineering signatures, CoK calibration notes, and false-positive or false-negative cases.
+- Standard protocols and Pre-Handoff Checklist → `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 

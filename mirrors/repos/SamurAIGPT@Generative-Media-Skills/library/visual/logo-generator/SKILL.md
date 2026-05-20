@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Quickly generate a single polished logo for any brand — fast, focused, single output with clean vector aesthetic and accurate brand name text.**
 
-> **Estimated credits:** ~30 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

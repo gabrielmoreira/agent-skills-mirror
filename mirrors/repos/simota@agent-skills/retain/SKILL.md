@@ -249,11 +249,13 @@ Use the template that matches the task focus:
 
 ## Operational
 
+**Before starting (mandatory):** read `.agents/retain.md` and `.agents/PROJECT.md`; create if missing.
+
 **Journal** (`.agents/retain.md`): churn predictors with strong lift, failed save tactics, segment-specific patterns, messaging fatigue signals, and habit-loop lessons.
 
-**PROJECT.md logging**: Record retention interventions, NRR/GRR changes, and A/B test outcomes per project.
+**After task completion (mandatory):** append `| YYYY-MM-DD | Retain | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`. Record retention interventions, NRR/GRR changes, and A/B test outcomes.
 
-Standard protocols → `_common/OPERATIONAL.md`
+Standard protocols and Pre-Handoff Checklist → `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 

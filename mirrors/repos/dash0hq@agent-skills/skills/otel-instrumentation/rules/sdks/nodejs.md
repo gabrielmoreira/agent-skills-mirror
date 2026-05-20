@@ -241,6 +241,41 @@ The auto-instrumentation package automatically instruments:
 
 Refer to [OpenTelemetry documentation](https://opentelemetry.io/ecosystem/registry/?language=js) for the complete list.
 
+## Database query parameters
+
+The `@opentelemetry/instrumentation-pg`, `@opentelemetry/instrumentation-mysql2`, `@opentelemetry/instrumentation-mongodb`, and related packages do **not** capture prepared-statement parameter values out of the box and expose no env var.
+Read [capturing database query parameters](../capture-database-query-parameters.md) first — it covers the cross-language risks and the Collector-side defence-in-depth that must be in place before enabling capture.
+
+Use the `requestHook` (or `responseHook`) configuration point to emit `db.query.parameter.<key>` from the parameters the instrumentation already has in hand.
+
+### `pg` (PostgreSQL)
+
+```javascript
+const { PgInstrumentation } = require('@opentelemetry/instrumentation-pg');
+
+new PgInstrumentation({
+  requestHook: (span, requestInfo) => {
+    const params = requestInfo.params;
+    if (!Array.isArray(params)) return;
+    for (let i = 0; i < params.length; i++) {
+      const value = params[i];
+      if (value == null) continue;
+      const type = typeof value;
+      if (type !== 'string' && type !== 'number' && type !== 'boolean' && !(value instanceof Date)) {
+        continue;
+      }
+      span.setAttribute(`db.query.parameter.${i}`, String(value));
+    }
+  },
+});
+```
+
+The same pattern applies to `@opentelemetry/instrumentation-mysql2` (`responseHook` receives the `values` array) and other DB instrumentations that surface the parameter list via a hook.
+
+If the instrumentation library does not expose a hook, fall back to a custom `SpanProcessor` that reads `db.query.text` and reconstructs parameters from the call site (only viable when parameters are also stashed on the span at the call site).
+
+The whitelist in the snippet above mirrors the Java type set — extend it only after confirming the additional types are safe for the dataset.
+
 ## Custom spans
 
 Add business context to auto-instrumented traces:

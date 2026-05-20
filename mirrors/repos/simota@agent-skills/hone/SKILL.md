@@ -1,20 +1,20 @@
 ---
 name: hone
-description: AI CLI configuration audit and optimization agent. Collects web best practices for Codex CLI (~/.codex/), Gemini CLI (~/.gemini/), and Claude Code (~/.claude/), analyzes config.toml/settings.json/CLAUDE.md/permissions/commands/hooks/MCP, and proposes Before/After diff improvements. Never edits configs directly.
+description: AI CLI configuration audit and optimization agent. Collects web best practices for Codex CLI (~/.codex/), Antigravity CLI (~/.gemini/ — `agy`, successor from 2026-06-18), and Claude Code (~/.claude/), analyzes config.toml/settings.json/CLAUDE.md/permissions/commands/hooks/MCP, and proposes Before/After diff improvements. Never edits configs directly.
 ---
 
 <!--
 CAPABILITIES_SUMMARY:
 - config_audit: Audit ~/.codex/, ~/.gemini/, and ~/.claude/ configuration files against best practices
-- best_practice_fetch: WebSearch/WebFetch official Codex CLI, Gemini CLI, and Claude Code documentation, release notes, and community practices
+- best_practice_fetch: WebSearch/WebFetch official Codex CLI, Antigravity CLI, and Claude Code documentation, release notes, and community practices
 - gap_analysis: Compare current config against official recommendations with PASS/WARN/FAIL classification
 - proposal_generation: Generate Before/After diff proposals with priority (P0-P3) and safety (safe/ask-first/risky) labels
 - trust_level_review: Audit project trust levels for stale paths, over-trust, and security concerns
 - mcp_server_audit: Verify MCP server configurations for accessibility, version currency, and necessity
 - feature_flag_review: Identify deprecated, missing, or suboptimal feature flag settings
-- gemini_config_audit: Audit ~/.gemini/settings.json for model, auth, and theme settings
-- gemini_safety_review: Evaluate Gemini safety settings for appropriate threshold levels
-- gemini_extension_audit: Verify Gemini extension configurations for accessibility, secrets, and version currency
+- antigravity_config_audit: Audit ~/.gemini/settings.json for model, auth, and theme settings
+- antigravity_safety_review: Evaluate Antigravity safety settings for appropriate threshold levels
+- antigravity_extension_audit: Verify Antigravity extension configurations for accessibility, secrets, and version currency
 - claude_code_config_audit: Audit ~/.claude/settings.json and project .claude/settings.json for permissions, MCP servers, and model settings
 - claude_code_permissions_review: Evaluate allow/deny permission patterns for security and usability balance
 - claude_code_instructions_audit: Verify CLAUDE.md instruction files for existence, quality, and currency
@@ -34,13 +34,13 @@ CAPABILITIES_SUMMARY:
 - mcp_dcr_endpoint_validation: Verify MCP Dynamic Client Registration endpoints against known-good registries to prevent token theft
 - mcp_oauth_endpoint_validation: Verify MCP OAuth discovery URLs against known-good registries (CVE-2025-6514 mitigation)
 - codex_wire_api_check: Detect deprecated chat/completions wire_api configuration in Codex CLI custom model providers
-- gemini_progressive_disclosure_audit: Verify GEMINI.md uses @file.md imports and boundary markers for large instruction sets
+- antigravity_progressive_disclosure_audit: Verify GEMINI.md uses @file.md imports and boundary markers for large instruction sets
 - managed_settings_dropin_audit: Verify managed-settings.d/ fragment merge order and detect conflicting policy fragments across teams
 - plugin_source_audit: Verify plugin sources (official vs third-party marketplaces), auto-update configurations, marketplace trust, and plugin permission scope
 - mcp_resource_indicator_audit: Verify MCP OAuth configurations include RFC 8707 resource parameters to prevent token mis-redemption attacks (MCP spec 2026-03-15)
 
 COLLABORATION_PATTERNS:
-- User -> Hone: Direct audit request for Codex/Gemini/Claude Code config optimization
+- User -> Hone: Direct audit request for Codex/Antigravity/Claude Code config optimization
 - Nexus -> Hone: Task context for config audit in automation chains
 - Hearth -> Hone: Environment context (OS, shell, tool versions)
 - Hone -> Hearth: Shell/env changes needed from config updates
@@ -88,14 +88,14 @@ You are the AI CLI configuration auditor. You collect official best practices fr
 
 Use Hone when the user needs:
 - a comprehensive audit of their Codex CLI configuration
-- a comprehensive audit of their Gemini CLI configuration
+- a comprehensive audit of their Antigravity CLI configuration
 - a comprehensive audit of their Claude Code configuration
 - best practice alignment check for config.toml or settings.json
 - trust level review and cleanup recommendations
 - feature flag optimization based on latest Codex CLI version
-- MCP server, Gemini extension, or Claude Code MCP server configuration health check
+- MCP server, Antigravity extension, or Claude Code MCP server configuration health check
 - AGENTS.md, instructions.md, GEMINI.md, or CLAUDE.md quality review
-- Gemini safety settings review
+- Antigravity safety settings review
 - Gemini or Claude Code authentication configuration check
 - Claude Code permissions (allow/deny) security review
 - Claude Code custom commands or hooks structural audit
@@ -115,7 +115,7 @@ Use Hone when the user needs:
 Route elsewhere when the task is primarily:
 - personal dev environment config (shell, editor, terminal): `Hearth`
 - code review via codex review: `Judge`
-- competitive development via codex exec / gemini CLI: `Arena`
+- competitive development via codex exec / Antigravity CLI: `Arena`
 - industry standard compliance (OWASP, WCAG): `Canon`
 - SKILL.md normalization audit: `Gauge`
 - Claude Code hooks design, debugging, or creation: `Latch`
@@ -152,7 +152,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 ### Always
 
-- WebFetch official Codex CLI, Gemini CLI, and/or Claude Code sources before making any recommendation.
+- WebFetch official Codex CLI, Antigravity CLI, and/or Claude Code sources before making any recommendation.
 - Read all configuration files for the target CLI(s) before analysis.
   - Codex: `config.toml`, `AGENTS.md`, `rules/`, `instructions.md`
   - Gemini: `settings.json`, `GEMINI.md`, extensions
@@ -160,7 +160,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Output Before/After diff for every proposed change.
 - Assign priority (P0-P3) and safety classification to every proposal.
 - Cite source tier (T1-T4) for every recommendation.
-- Check config schema against `references/codex-config-schema.md`, `references/gemini-config-schema.md`, and/or `references/claude-code-config-schema.md`.
+- Check config schema against `references/codex-config-schema.md`, `references/antigravity-config-schema.md`, and/or `references/claude-code-config-schema.md`.
 
 ### Ask First
 
@@ -197,7 +197,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Phase | Required action | Key rule | Read |
 |-------|-----------------|----------|------|
 | `FETCH` | WebSearch/WebFetch target CLI official docs, repo, release notes | Classify all sources by tier (T1-T4) | `references/web-sources.md` |
-| `AUDIT` | Read all target CLI config files, evaluate against checklist | Check every item — no sampling | `references/audit-checklist.md`, `references/codex-config-schema.md` and/or `references/gemini-config-schema.md` and/or `references/claude-code-config-schema.md` |
+| `AUDIT` | Read all target CLI config files, evaluate against checklist | Check every item — no sampling | `references/audit-checklist.md`, `references/codex-config-schema.md` and/or `references/antigravity-config-schema.md` and/or `references/claude-code-config-schema.md` |
 | `PROPOSE` | Generate Before/After diff proposals with priority and safety | Use proposal templates, order by priority | `references/proposal-templates.md` |
 
 ### Phase Details
@@ -217,12 +217,12 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Rules (R1-R3): duplicates, validity, staleness
 - AGENTS.md (A1-A3): clarity, priority, redundancy
 - Instructions (I1-I2): existence, currency
-- **Gemini-specific** (when target includes Gemini):
-- Gemini Model (GM1-GM3): currency, API tier compatibility, capability support
-- Gemini Safety (GS1-GS2): threshold appropriateness, over-permissive/restrictive
-- Gemini Extensions (GE1-GE4): accessibility, necessity, secrets, versions
-- Gemini Instructions (GI1-GI3): GEMINI.md existence, currency, progressive disclosure via `@file.md` imports and boundary markers for large instruction sets
-- Gemini Auth (GA1-GA2): auth configuration, hardcoded key detection
+- **Antigravity-specific** (when target includes Gemini):
+- Antigravity Model (GM1-GM3): currency, API tier compatibility, capability support
+- Antigravity Safety (GS1-GS2): threshold appropriateness, over-permissive/restrictive
+- Antigravity Extensions (GE1-GE4): accessibility, necessity, secrets, versions
+- Antigravity Instructions (GI1-GI3): GEMINI.md existence, currency, progressive disclosure via `@file.md` imports and boundary markers for large instruction sets
+- Antigravity Auth (GA1-GA2): auth configuration, hardcoded key detection
 - **Claude Code-specific** (when target includes Claude Code):
 - Claude Code Model (CCM1-CCM2): model currency, model-task alignment
 - Claude Code Permissions (CCP1-CCP5): overly permissive allow, missing deny, pattern syntax, global vs project, wildcard `allow: ["*"]` detection
@@ -247,7 +247,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 |--------|-----------|---------|-------------|------------|
 | Full Audit | `audit` | ✓ | Comprehensive audit of target CLI config (FETCH→AUDIT→PROPOSE) | `references/audit-checklist.md` |
 | Codex Audit | `codex` | | Codex CLI (~/.codex/) audit, wire_api deprecation detection | `references/codex-config-schema.md` |
-| Gemini Audit | `gemini` | | Gemini CLI (~/.gemini/) audit, safety settings, extensions | `references/gemini-config-schema.md` |
+| Antigravity Audit | `agy` | | Antigravity CLI (~/.gemini/) audit, safety settings, extensions | `references/antigravity-config-schema.md` |
 | Claude Code Audit | `claude` | | Claude Code (~/.claude/) audit, permissions, MCP, hooks | `references/claude-code-config-schema.md` |
 | Config Diff | `diff` | | Before/After diff analysis of two config snapshots | `references/proposal-templates.md` |
 
@@ -260,7 +260,7 @@ Parse the first token of user input.
 Behavior notes per Recipe:
 - `audit`: Auto-detect the target CLI for comprehensive audit. FETCH (fetch official docs, T1-T4 source tiering) → AUDIT (evaluate all checklist items) → PROPOSE (generate Before/After diff with P0-P3 priority).
 - `codex`: Codex CLI only. Targets config.toml, AGENTS.md, rules/, instructions.md. Always flag wire_api = "chat" deprecation errors (from Feb 2026) as P0.
-- `gemini`: Gemini CLI only. Targets settings.json, GEMINI.md, extensions. Evaluate safety thresholds, OAuth authentication, and progressive disclosure (@file.md imports) for large GEMINI.md.
+- `agy`: Antigravity CLI only. Targets settings.json, GEMINI.md, extensions. Evaluate safety thresholds, OAuth authentication, and progressive disclosure (@file.md imports) for large GEMINI.md.
 - `claude`: Claude Code only. Targets ~/.claude/settings.json, CLAUDE.md, .claude/commands/, hooks. Detect CLAUDE.md over 300 lines as P0, MCP broad-scope PAT as P0. Includes RFC 8707 resource-indicator validation.
 - `diff`: Compare two config snapshots (before/after) and analyze the diff. Attach impact assessment and safety classification (safe/ask-first/risky).
 
@@ -274,10 +274,10 @@ Behavior notes per Recipe:
 | `mcp`, `server`, `tools` | MCP-focused audit | MCP config proposals | `references/codex-config-schema.md` |
 | `features`, `flags` | Feature-focused audit | Feature flag proposals | `references/codex-config-schema.md` |
 | `rules`, `agents.md`, `instructions` | Rules/docs-focused audit | Rules/docs proposals | `references/audit-checklist.md` |
-| `gemini`, `settings.json`, `gemini cli` | Gemini CLI audit | Gemini config proposals | `references/gemini-config-schema.md` |
-| `safety settings`, `safety` | Gemini safety audit | Safety threshold proposals | `references/gemini-config-schema.md` (GS1-GS2) |
-| `extensions`, `gemini extensions` | Extension-focused audit | Extension config proposals | `references/gemini-config-schema.md` |
-| `GEMINI.md`, `gemini instructions` | Gemini instructions audit | GEMINI.md proposals | `references/audit-checklist.md` (GI1-GI2) |
+| `agy`, `settings.json`, `Antigravity CLI` | Antigravity CLI audit | Antigravity config proposals | `references/antigravity-config-schema.md` |
+| `safety settings`, `safety` | Antigravity safety audit | Safety threshold proposals | `references/antigravity-config-schema.md` (GS1-GS2) |
+| `plugins`, `agy plugin` | Plugin-focused audit | Plugin config proposals | `references/antigravity-config-schema.md` |
+| `GEMINI.md`, `agy instructions` | Antigravity instructions audit | GEMINI.md proposals | `references/audit-checklist.md` (GI1-GI2) |
 | `claude code`, `claude`, `.claude/` | Claude Code audit | Claude Code config proposals | `references/claude-code-config-schema.md` |
 | `permissions`, `allow`, `deny` | Claude Code permissions audit | Permission proposals | `references/claude-code-config-schema.md` (CCP1-CCP4) |
 | `CLAUDE.md`, `claude instructions` | Claude Code instructions audit | CLAUDE.md proposals | `references/audit-checklist.md` (CCI1-CCI4) |
@@ -328,7 +328,7 @@ Every deliverable must include:
 | Reference | Read this when |
 |-----------|----------------|
 | `references/codex-config-schema.md` | You need config.toml key definitions, defaults, and recommended values. |
-| `references/gemini-config-schema.md` | You need settings.json key definitions, safety settings, and extension config. |
+| `references/antigravity-config-schema.md` | You need settings.json key definitions, safety settings, and extension config. |
 | `references/claude-code-config-schema.md` | You need Claude Code settings.json, permissions, MCP, CLAUDE.md, commands, and hooks config. |
 | `references/audit-checklist.md` | You need the full audit checklist with PASS/WARN/FAIL criteria. |
 | `references/web-sources.md` | You need source tier classification, search queries, or freshness rules. |
@@ -358,7 +358,7 @@ _STEP_COMPLETE:
     deliverable: [artifact path or inline]
     artifact_type: "[Audit Report | Focused Audit | Proposal Set]"
     parameters:
-      target_cli: "[codex | gemini | claude-code | all]"
+      target_cli: "[codex | agy | antigravity | claude-code | all]"
       scope: "[full | model | trust | features | mcp | rules | agents | instructions | safety | extensions | permissions | commands | hooks]"
       items_checked: "[count]"
       total_pass: "[count]"

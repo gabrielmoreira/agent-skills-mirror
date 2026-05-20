@@ -6,7 +6,7 @@ license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
 metadata:
   author: samber
-  version: "0.0.2"
+  version: "0.0.3"
   openclaw:
     emoji: "🔮"
     homepage: https://github.com/samber/cc-skills-golang
@@ -193,7 +193,11 @@ func (r *subscriptionResolver) MessageAdded(ctx context.Context, room string) (<
             case <-ctx.Done():
                 return // client disconnected
             case msg := <-sub:
-                ch <- msg
+                select {
+                case ch <- msg:
+                case <-ctx.Done():
+                    return
+                }
             }
         }
     }()
@@ -238,7 +242,7 @@ For graph-gophers: `graphql.MaxDepth(10)` and `graphql.MaxParallelism(10)` optio
 | N+1 queries in child resolvers | One SQL per parent row → O(n) DB calls | Use per-request DataLoader |
 | Global DataLoader | Cross-request cache — stale data, data leaks | Create DataLoader in request middleware |
 | Editing `models_gen.go` directly | Next `go generate` wipes hand edits | Use `autobind` or `models.<T>.model` in `gqlgen.yml` |
-| Forgetting `go generate` after schema change | Resolver interface mismatch at compile time | Re-run `go run github.com/99designs/gqlgen generate` |
+| Forgetting `go generate` after schema change | Resolver interface mismatch at compile time | Re-run `go tool gqlgen generate` |
 | `int` field in graph-gophers resolver | Library requires `int32` for `Int` scalar | Use `int32` (or `float64` for `Float`) |
 | Introspection enabled in production | Exposes full schema to attackers | Gate with `ENV` check |
 | No complexity cap | Deeply nested query → CPU/memory DoS | `extension.FixedComplexityLimit(N)` |

@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Generate a cohesive brand visual kit — logo concept, color palette moodboard, and typography pairing suggestions.**
 
-> **Estimated credits:** ~40 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

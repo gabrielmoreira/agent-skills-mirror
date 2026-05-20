@@ -6,7 +6,7 @@ license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.0.0"
+  version: "1.0.2"
   openclaw:
     emoji: "🪡"
     homepage: https://github.com/samber/cc-skills-golang
@@ -35,7 +35,7 @@ Note: `google/wire` was archived in August 2025 (feature-complete; bug fixes sti
 This skill is not exhaustive. Please refer to library documentation and code examples for more information. Context7 can help as a discoverability platform.
 
 ```bash
-go install github.com/google/wire/cmd/wire@latest
+go get -tool github.com/google/wire/cmd/wire@latest
 go get github.com/google/wire
 ```
 
@@ -198,7 +198,7 @@ Run `wire ./...` after every constructor signature change. Add `//go:generate go
 | --- | --- |
 | Editing `wire_gen.go` manually | Never edit it. Change providers or injectors and re-run `wire ./...`. |
 | Missing `//go:build wireinject` | Add the tag as the very first line of every injector file. |
-| Two providers returning `*sql.DB` | Wrap with named types (`type PrimaryDB *sql.DB` or a wrapper struct). |
+| Two providers returning `*sql.DB` | Wrap with a named struct type: `type PrimaryDB struct { *sql.DB }` — Wire does not distinguish pointer type aliases. |
 | Injecting an interface without `wire.Bind` | Add `wire.Bind(new(MyInterface), new(*MyImpl))` to the provider set. |
 | Forgetting to re-run `wire ./...` after changes | Run wire before `go build`; add it to `go generate` or a Makefile target. |
 | Calling `cleanup()` without guarding for nil | Wire returns nil cleanup on construction error; guard with `if cleanup != nil { defer cleanup() }`. |

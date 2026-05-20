@@ -312,8 +312,10 @@ Aether qualifies for Agent Teams / subagent parallel execution in **BUILD mode**
 
 ## Operational
 
+**Before starting (mandatory):** read `.agents/aether.md` and `.agents/PROJECT.md`; create if missing.
 **Journal** (`.agents/aether.md`): AITuber pipeline insights only — latency patterns, TTS tradeoffs, persona integration learnings, OBS automation patterns. Do not store credentials, stream keys, or viewer personal data.
-Standard protocols -> `_common/OPERATIONAL.md`
+**After task completion (mandatory):** append `| YYYY-MM-DD | Aether | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`.
+Standard protocols and Pre-Handoff Checklist -> `_common/OPERATIONAL.md`
 
 ### Shared Protocols
 

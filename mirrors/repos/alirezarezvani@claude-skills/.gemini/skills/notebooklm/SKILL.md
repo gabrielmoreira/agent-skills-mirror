@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/notebooklm/../../../research/notebooklm/skills/notebooklm/SKILL.md

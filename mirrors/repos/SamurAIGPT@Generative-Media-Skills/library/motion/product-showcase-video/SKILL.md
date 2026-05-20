@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Create a dynamic product showcase with explosive ingredient arrangements, followed by a realistic motion animation.**
 
-> **Estimated credits:** ~150 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

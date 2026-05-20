@@ -4,6 +4,13 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.144](https://github.com/Piebald-AI/claude-code-system-prompts/commit/4b5fcf6)
+
+_-105 tokens_
+
+- Data: Managed Agents endpoint reference — Drops the `type: "model_config"` wrapper from the model config shorthand example, so the full config object is now just `{id: "claude-opus-4-6", speed: "fast"}`.
+- Tool Description: CronCreate — Adds a "Not for live watching" section (shown when the Monitor tool is enabled) clarifying that CronCreate re-runs prompts at fixed wall-clock intervals and pointing users to the Monitor tool for streaming log/process/command output as it changes, since cron polls on a schedule. Refactors the durability and runtime-behavior copy so the durable-vs-session-only guidance is sourced from shared snippets rather than inlined conditionals.
+
 # [2.1.143](https://github.com/Piebald-AI/claude-code-system-prompts/commit/2c6f3ba)
 
 _+302 tokens_

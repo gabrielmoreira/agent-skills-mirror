@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Create a multi-part animated story video by first establishing a consistent character and then generating sequential scenes and animating them.**
 
-> **Estimated credits:** ~200 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

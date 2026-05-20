@@ -55,9 +55,11 @@ Prereq: `ANTHROPIC_API_KEY` (or `CLAUDE_API_KEY`) + Managed Agents beta access. 
 
 5. **Pull artifacts (if needed):** `managed_agent_prompt({ sessionId, message: "cat /tmp/equity.csv" })` or `managed_agent_events` and read the tool_result.
 
-6. **Ingest locally:**
-   - `memory_store({ key: "backtest-<strategy>-<ts>", value: <metrics+params JSON>, namespace: "trading-backtests" })`
-   - If Sharpe > 1.5: `agentdb_pattern-store({ pattern: "profitable-<strategy-type>", data: "<params + results>" })`
+6. **Ingest locally + Ed25519 verify (ADR-126 Phase 4 fail-closed gate):**
+   - Build the `SignedBacktestArtifact` body from the cloud-returned metrics + params hash + runs hash. Sign it locally with `signBacktestArtifact(body, privateKeyHex)` from `plugins/ruflo-neural-trader/src/signed-artifact.mjs` (key resolution same as `trader-backtest`: `RUFLO_WITNESS_KEY_PATH` → `verification/witness-key.json` → degraded-unsigned warning).
+   - **Before storing OR promoting the artifact to a live strategy**: call `await verifyBacktestArtifact(artifact, trustedPublicKey)` where `trustedPublicKey` is the pinned project-config Ed25519 public key (NOT the `artifact.witnessPublicKey` field — that's attacker-controllable; see CWE-347 / #1922). If verification returns `false`: **REFUSE to promote** — emit a loud error `"[ERROR] ruflo-neural-trader: SignedBacktestArtifact signature INVALID against trusted key — refusing to promote to live strategy"` and return early. This is the fail-closed gate per ADR-126.
+   - On verify success: `memory_store({ key: "backtest-<strategy>-<ts>", value: JSON.stringify(signedArtifact), namespace: "trading-backtests" })`. The stored value carries `witnessSignature` + `witnessPublicKey`.
+   - If Sharpe > 1.5: `agentdb_pattern-store({ pattern: "profitable-<strategy-type>", data: "<params + results>" })`.
    - Record the run's container time + token cost to the `cost-tracking` namespace (per ADR-117 — cloud sessions bill until terminated).
 
 7. **Terminate immediately** — results in hand:

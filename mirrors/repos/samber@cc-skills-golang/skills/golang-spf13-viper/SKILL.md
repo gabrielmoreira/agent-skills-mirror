@@ -6,7 +6,7 @@ license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.0.0"
+  version: "1.0.1"
   openclaw:
     emoji: "🔧"
     homepage: https://github.com/samber/cc-skills-golang
@@ -90,7 +90,7 @@ For `BindEnv`, `AllowEmptyEnv`, and env-vs-default interaction, see [binding-and
 
 ## Flag binding (the cobra seam)
 
-Bind cobra flags to viper in `init()` or `PersistentPreRunE` — never in `RunE` (too late; cobra parses flags before `RunE` runs):
+Bind cobra flags to viper in `init()` or `PersistentPreRunE` — never in `RunE` (config loading in `PersistentPreRunE` already ran before `RunE`, so bindings set in `RunE` are missed):
 
 ```go
 func init() {

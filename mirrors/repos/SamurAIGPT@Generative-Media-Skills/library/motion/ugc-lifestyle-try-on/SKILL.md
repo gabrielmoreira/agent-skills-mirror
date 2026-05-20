@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Generate UGC-style (User Generated Content) lifestyle photos of a person wearing or using your product — authentic, relatable, social-media-native imagery.**
 
-> **Estimated credits:** ~60 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Generate a cinematic "freeze effect" video where time stops mid-scene, the subject walks through the frozen world, then time resumes with a snap.**
 
-> **Estimated credits:** ~150 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

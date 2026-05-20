@@ -16,7 +16,7 @@ These universal criteria apply to ALL content types:
 - **Memorability**: Unique or standout content that's likely to be shared
 
 ### Secondary Factors:
-- **Duration**: Optimal 45-180 seconds for short-form content
+- **Duration Fit**: Prefer moments that fit the runtime Clip Length Preference selected for this run
 - **Standalone Viability**: Can the clip be understood without context?
 - **Emotional Impact**: Does it evoke laughter, surprise, or inspiration?
 - **Information Density**: Does it contain valuable or surprising information?

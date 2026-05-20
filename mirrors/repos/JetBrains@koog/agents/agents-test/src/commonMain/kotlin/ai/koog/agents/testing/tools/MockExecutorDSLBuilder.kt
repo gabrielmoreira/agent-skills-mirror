@@ -1,7 +1,6 @@
 package ai.koog.agents.testing.tools
 
 import ai.koog.agents.core.tools.Tool
-import ai.koog.agents.core.tools.ToolResult
 import ai.koog.prompt.dsl.ModerationResult
 import ai.koog.prompt.executor.model.PromptExecutor
 import ai.koog.prompt.message.Message
@@ -15,6 +14,7 @@ import ai.koog.serialization.kotlinx.KotlinxSerializer
 import ai.koog.serialization.kotlinx.toKoogJSONObject
 import ai.koog.utils.time.KoogClock
 import kotlinx.coroutines.flow.Flow
+import kotlinx.serialization.Serializable
 import kotlin.jvm.JvmName
 
 /**
@@ -828,6 +828,14 @@ public class MockExecutorDSLBuilder(
         alwaysDoes { action() }
 
     /**
+     * A data class representing the tool result that is just text (String).
+     *
+     * @property text The output text generated from the text processing operation.
+     */
+    @Serializable
+    public data class TextToolResult(val text: String)
+
+    /**
      * Convenience extension function for configuring a text tool to always execute the specified action
      * and return its string result.
      *
@@ -835,10 +843,10 @@ public class MockExecutorDSLBuilder(
      * @return The result of the alwaysDoes call
      */
     @JvmName("alwaysTellsText")
-    public infix fun <Args> MockToolReceiver<Args, ToolResult.Text>.alwaysTells(
+    public infix fun <Args> MockToolReceiver<Args, TextToolResult>.alwaysTells(
         action: suspend () -> String
     ): Unit =
-        alwaysDoes { ToolResult.Text(action()) }
+        alwaysDoes { TextToolResult(action()) }
 
     /**
      * Convenience extension function for configuring a text tool to execute the specified action
@@ -847,10 +855,10 @@ public class MockExecutorDSLBuilder(
      * @param action A function that produces the string result
      * @return The result of the does call
      */
-    public infix fun <Args> MockToolReceiver<Args, ToolResult.Text>.doesStr(
+    public infix fun <Args> MockToolReceiver<Args, TextToolResult>.doesStr(
         action: suspend () -> String
-    ): MockToolReceiver.MockToolResponseBuilder<Args, ToolResult.Text> =
-        does { ToolResult.Text(action()) }
+    ): MockToolReceiver.MockToolResponseBuilder<Args, TextToolResult> =
+        does { TextToolResult(action()) }
 
     /**
      * Builds and returns a PromptExecutor configured with the mock responses and tool actions.

@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Create a comprehensive brand design guide — color palette, typography pairings, UI component previews, and visual identity rules with example mockups.**
 
-> **Estimated credits:** ~120 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

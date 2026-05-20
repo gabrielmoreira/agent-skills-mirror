@@ -203,6 +203,36 @@ The auto-instrumentation agent automatically instruments:
 
 Refer to the [OpenTelemetry registry](https://opentelemetry.io/ecosystem/registry/?language=java) for the complete list.
 
+## Database query parameters
+
+Prepared-statement parameter values (`db.query.parameter.<key>`) are off by default.
+Read [capturing database query parameters](../capture-database-query-parameters.md) first — it covers the cross-language risks (PII, credentials) and the Collector-side defence-in-depth that must be in place before enabling capture.
+
+Enable via environment variable on the Java agent:
+
+```sh
+export OTEL_INSTRUMENTATION_JDBC_EXPERIMENTAL_CAPTURE_QUERY_PARAMETERS=true
+```
+
+Or the equivalent JVM system property:
+
+```sh
+java -Dotel.instrumentation.jdbc.experimental.capture-query-parameters=true \
+     -javaagent:path/to/opentelemetry-javaagent.jar \
+     -jar myapp.jar
+```
+
+| | |
+|---|---|
+| Default | `false` |
+| Attribute key | `db.query.parameter.<N>` — 0-based positional index, stringified |
+| Coverage | **JDBC only.** Not R2DBC, Hibernate, jOOQ, MongoDB, Cassandra, Vertx-SQL, Couchbase, Jedis/Lettuce/Redisson, ClickHouse, Elasticsearch/OpenSearch, or InfluxDB. Connection-pool wrappers (HikariCP, c3p0, DBCP, Druid, Oracle UCP) emit pool metrics only. |
+| Type whitelist | `Boolean`, `Number`, `String`, `Date`/`Time`/`Timestamp`, `URL`, `RowId`. Binary streams, blobs, clobs, refs, and arrays are excluded. |
+| Length cap | None — long string values are captured in full. |
+| Batches | Parameters are **not** captured for batch statements. |
+| Sanitizer side-effect | Enabling capture forces `db.query.text` sanitization **off**. Literals in the SQL text are emitted verbatim. |
+| Stability | Incubator semantic convention. |
+
 ## Custom spans
 
 Add business context to auto-instrumented traces:

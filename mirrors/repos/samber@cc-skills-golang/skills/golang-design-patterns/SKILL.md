@@ -6,7 +6,7 @@ license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.1.3"
+  version: "1.1.4"
   openclaw:
     emoji: "🏗️"
     homepage: https://github.com/samber/cc-skills-golang
@@ -181,7 +181,7 @@ Error cases MUST be handled first with early return — keep the happy path at m
 
 - **Return error**: network failures, file not found, invalid input — anything a caller can handle
 - **Panic**: nil pointer in a place that should be impossible, violated invariant, `Must*` constructors used at init time
-- **`.Close()` errors**: acceptable to not check — `defer f.Close()` is fine without error handling
+- **`.Close()` / `Flush()` errors**: read-only cleanup can often use `defer f.Close()`, but write/flush resources must report close or flush errors when durability matters
 
 ## Data Handling
 

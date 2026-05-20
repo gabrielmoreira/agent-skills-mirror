@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `TheQtCompanyRnD/agent-skills` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `TheQtCompanyRnD/agent-skills` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `TheQtCompanyRnD/agent-skills` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 35 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,36 +64,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`skills/qt-cpp-docs/README.md`](skills/qt-cpp-docs/README.md) |
 | 4 | ✓ | [`skills/qt-cpp-docs/SKILL.md`](skills/qt-cpp-docs/SKILL.md) |
 | 5 | ✓ | [`skills/qt-cpp-review/LICENSE.txt`](skills/qt-cpp-review/LICENSE.txt) |
-| 6 | ✓ | [`skills/qt-cpp-review/platforms/copilot.prompt.md`](skills/qt-cpp-review/platforms/copilot.prompt.md) |
-| 7 | ✓ | [`skills/qt-cpp-review/platforms/windsurf.md`](skills/qt-cpp-review/platforms/windsurf.md) |
-| 8 | ✓ | [`skills/qt-cpp-review/README.md`](skills/qt-cpp-review/README.md) |
-| 9 | ✓ | [`skills/qt-cpp-review/references/lint-scripts/qt_review_lint.py`](skills/qt-cpp-review/references/lint-scripts/qt_review_lint.py) |
-| 10 | ✓ | [`skills/qt-cpp-review/references/qt-deprecated-classes.md`](skills/qt-cpp-review/references/qt-deprecated-classes.md) |
-| 11 | ✓ | [`skills/qt-cpp-review/references/qt-framework-checklist.md`](skills/qt-cpp-review/references/qt-framework-checklist.md) |
-| 12 | ✓ | [`skills/qt-cpp-review/references/qt-review-checklist.md`](skills/qt-cpp-review/references/qt-review-checklist.md) |
-| 13 | ✓ | [`skills/qt-cpp-review/SKILL.md`](skills/qt-cpp-review/SKILL.md) |
-| 14 | ✓ | [`skills/qt-qml-docs/LICENSE.txt`](skills/qt-qml-docs/LICENSE.txt) |
-| 15 | ✓ | [`skills/qt-qml-docs/platforms/copilot.prompt.md`](skills/qt-qml-docs/platforms/copilot.prompt.md) |
-| 16 | ✓ | [`skills/qt-qml-docs/platforms/windsurf.md`](skills/qt-qml-docs/platforms/windsurf.md) |
-| 17 | ✓ | [`skills/qt-qml-docs/README.md`](skills/qt-qml-docs/README.md) |
-| 18 | ✓ | [`skills/qt-qml-docs/SKILL.md`](skills/qt-qml-docs/SKILL.md) |
-| 19 | ✓ | [`skills/qt-qml-profiler/LICENSE.txt`](skills/qt-qml-profiler/LICENSE.txt) |
-| 20 | ✓ | [`skills/qt-qml-profiler/README.md`](skills/qt-qml-profiler/README.md) |
-| 21 | ✓ | [`skills/qt-qml-profiler/references/qml-performance-anti-patterns.md`](skills/qt-qml-profiler/references/qml-performance-anti-patterns.md) |
-| 22 | ✓ | [`skills/qt-qml-profiler/references/scripts/parse-qmlprofiler-trace.py`](skills/qt-qml-profiler/references/scripts/parse-qmlprofiler-trace.py) |
-| 23 | ✓ | [`skills/qt-qml-profiler/SKILL.md`](skills/qt-qml-profiler/SKILL.md) |
-| 24 | ✓ | [`skills/qt-qml-review/LICENSE.txt`](skills/qt-qml-review/LICENSE.txt) |
-| 25 | ✓ | [`skills/qt-qml-review/platforms/copilot.prompt.md`](skills/qt-qml-review/platforms/copilot.prompt.md) |
-| 26 | ✓ | [`skills/qt-qml-review/platforms/windsurf.md`](skills/qt-qml-review/platforms/windsurf.md) |
-| 27 | ✓ | [`skills/qt-qml-review/README.md`](skills/qt-qml-review/README.md) |
-| 28 | ✓ | [`skills/qt-qml-review/references/lint-scripts/qt_qml_lint.py`](skills/qt-qml-review/references/lint-scripts/qt_qml_lint.py) |
-| 29 | ✓ | [`skills/qt-qml-review/references/qt-qml-review-checklist.md`](skills/qt-qml-review/references/qt-qml-review-checklist.md) |
-| 30 | ✓ | [`skills/qt-qml-review/SKILL.md`](skills/qt-qml-review/SKILL.md) |
-| 31 | ✓ | [`skills/qt-qml/LICENSE.txt`](skills/qt-qml/LICENSE.txt) |
-| 32 | ✓ | [`skills/qt-qml/platforms/copilot.prompt.md`](skills/qt-qml/platforms/copilot.prompt.md) |
-| 33 | ✓ | [`skills/qt-qml/platforms/windsurf.md`](skills/qt-qml/platforms/windsurf.md) |
-| 34 | ✓ | [`skills/qt-qml/README.md`](skills/qt-qml/README.md) |
-| 35 | ✓ | [`skills/qt-qml/SKILL.md`](skills/qt-qml/SKILL.md) |
+| 6 | ✓ | [`skills/qt-cpp-review/platforms/windsurf.md`](skills/qt-cpp-review/platforms/windsurf.md) |
+| 7 | ✓ | [`skills/qt-cpp-review/README.md`](skills/qt-cpp-review/README.md) |
+| 8 | ✓ | [`skills/qt-cpp-review/references/lint-scripts/qt_review_lint.py`](skills/qt-cpp-review/references/lint-scripts/qt_review_lint.py) |
+| 9 | ✓ | [`skills/qt-cpp-review/references/qt-deprecated-classes.md`](skills/qt-cpp-review/references/qt-deprecated-classes.md) |
+| 10 | ✓ | [`skills/qt-cpp-review/references/qt-framework-checklist.md`](skills/qt-cpp-review/references/qt-framework-checklist.md) |
+| 11 | ✓ | [`skills/qt-cpp-review/references/qt-review-checklist.md`](skills/qt-cpp-review/references/qt-review-checklist.md) |
+| 12 | ✓ | [`skills/qt-cpp-review/SKILL.md`](skills/qt-cpp-review/SKILL.md) |
+| 13 | ✓ | [`skills/qt-qml-docs/LICENSE.txt`](skills/qt-qml-docs/LICENSE.txt) |
+| 14 | ✓ | [`skills/qt-qml-docs/platforms/windsurf.md`](skills/qt-qml-docs/platforms/windsurf.md) |
+| 15 | ✓ | [`skills/qt-qml-docs/README.md`](skills/qt-qml-docs/README.md) |
+| 16 | ✓ | [`skills/qt-qml-docs/SKILL.md`](skills/qt-qml-docs/SKILL.md) |
+| 17 | ✓ | [`skills/qt-qml-profiler/LICENSE.txt`](skills/qt-qml-profiler/LICENSE.txt) |
+| 18 | ✓ | [`skills/qt-qml-profiler/README.md`](skills/qt-qml-profiler/README.md) |
+| 19 | ✓ | [`skills/qt-qml-profiler/references/qml-performance-anti-patterns.md`](skills/qt-qml-profiler/references/qml-performance-anti-patterns.md) |
+| 20 | ✓ | [`skills/qt-qml-profiler/references/scripts/parse-qmlprofiler-trace.py`](skills/qt-qml-profiler/references/scripts/parse-qmlprofiler-trace.py) |
+| 21 | ✓ | [`skills/qt-qml-profiler/SKILL.md`](skills/qt-qml-profiler/SKILL.md) |
+| 22 | ✓ | [`skills/qt-qml-review/LICENSE.txt`](skills/qt-qml-review/LICENSE.txt) |
+| 23 | ✓ | [`skills/qt-qml-review/platforms/windsurf.md`](skills/qt-qml-review/platforms/windsurf.md) |
+| 24 | ✓ | [`skills/qt-qml-review/README.md`](skills/qt-qml-review/README.md) |
+| 25 | ✓ | [`skills/qt-qml-review/references/lint-scripts/qt_qml_lint.py`](skills/qt-qml-review/references/lint-scripts/qt_qml_lint.py) |
+| 26 | ✓ | [`skills/qt-qml-review/references/qt-qml-review-checklist.md`](skills/qt-qml-review/references/qt-qml-review-checklist.md) |
+| 27 | ✓ | [`skills/qt-qml-review/SKILL.md`](skills/qt-qml-review/SKILL.md) |
+| 28 | ✓ | [`skills/qt-qml/LICENSE.txt`](skills/qt-qml/LICENSE.txt) |
+| 29 | ✓ | [`skills/qt-qml/platforms/windsurf.md`](skills/qt-qml/platforms/windsurf.md) |
+| 30 | ✓ | [`skills/qt-qml/README.md`](skills/qt-qml/README.md) |
+| 31 | ✓ | [`skills/qt-qml/SKILL.md`](skills/qt-qml/SKILL.md) |
+| 32 | ✓ | [`skills/qt-ui-design/LICENSE.txt`](skills/qt-ui-design/LICENSE.txt) |
+| 33 | ✓ | [`skills/qt-ui-design/README.md`](skills/qt-ui-design/README.md) |
+| 34 | ✓ | [`skills/qt-ui-design/SKILL.md`](skills/qt-ui-design/SKILL.md) |
 
 ---
 

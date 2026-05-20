@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/vendor-management/../../../business-operations/skills/vendor-management/SKILL.md

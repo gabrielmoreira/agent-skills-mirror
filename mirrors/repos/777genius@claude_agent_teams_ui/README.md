@@ -23,7 +23,7 @@
 </p>
 
 <p align="center">
-  <sub>Free desktop app for AI agent teams. Auto-detects Claude/Codex/OpenCode (200+ models). Use the provider access you already have - subscriptions or API keys. Not just coding agents.</sub>
+  <sub>Free desktop app for AI agent teams. Start with a free model with no auth - no signup, API key, or card - or connect Claude/Codex/OpenCode provider access for more models. Not just coding agents.</sub>
 </p>
 
 <!--
@@ -53,38 +53,36 @@ https://github.com/user-attachments/assets/35e27989-726d-4059-8662-bae610e46b42
 
 No prerequisites - the app can detect supported runtimes/providers and guide setup from the UI.
 
-If you want the FRESHEST version, clone the repo and run it from the `dev` branch.
-
 <table align="center">
 <tr>
 <td align="center">
-  <a href="https://github.com/777genius/agent-teams-ai/releases/latest/download/Claude-Agent-Teams-UI-arm64.dmg">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/latest/download/Agent.Teams.AI-arm64.dmg">
     <img src="https://img.shields.io/badge/macOS_Apple_Silicon-.dmg-000000?style=for-the-badge&logo=apple&logoColor=white" alt="macOS Apple Silicon" />
   </a>
   <br />
-  <a href="https://github.com/777genius/agent-teams-ai/releases/latest/download/Claude-Agent-Teams-UI-x64.dmg">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/latest/download/Agent.Teams.AI-x64.dmg">
     <img src="https://img.shields.io/badge/macOS_Intel-.dmg-434343?style=for-the-badge&logo=apple&logoColor=white" alt="macOS Intel" />
   </a>
 </td>
 <td align="center">
-  <a href="https://github.com/777genius/agent-teams-ai/releases/latest/download/Claude-Agent-Teams-UI-Setup.exe">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/latest/download/Agent.Teams.AI.Setup.exe">
     <img src="https://img.shields.io/badge/Windows-Download_.exe-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows" />
   </a>
   <br />
   <sub>May trigger SmartScreen — click "More info" → "Run anyway"</sub>
 </td>
 <td align="center">
-  <a href="https://github.com/777genius/agent-teams-ai/releases/latest/download/Claude-Agent-Teams-UI.AppImage">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/latest/download/Agent.Teams.AI.AppImage">
     <img src="https://img.shields.io/badge/Linux-Download_.AppImage-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Linux AppImage" />
   </a>
   <br />
-  <a href="https://github.com/777genius/agent-teams-ai/releases/latest/download/Claude-Agent-Teams-UI-amd64.deb">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/latest/download/agent-teams-ai-amd64.deb">
     <img src="https://img.shields.io/badge/.deb-E95420?style=flat-square&logo=ubuntu&logoColor=white" alt=".deb" />
   </a>&nbsp;
-  <a href="https://github.com/777genius/agent-teams-ai/releases/latest/download/Claude-Agent-Teams-UI-x86_64.rpm">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/latest/download/agent-teams-ai-x86_64.rpm">
     <img src="https://img.shields.io/badge/.rpm-294172?style=flat-square&logo=redhat&logoColor=white" alt=".rpm" />
   </a>&nbsp;
-  <a href="https://github.com/777genius/agent-teams-ai/releases/latest/download/Claude-Agent-Teams-UI.pacman">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/latest/download/agent-teams-ai.pacman">
     <img src="https://img.shields.io/badge/.pacman-1793D1?style=flat-square&logo=archlinux&logoColor=white" alt=".pacman" />
   </a>
 </td>
@@ -96,11 +94,11 @@ If you want the FRESHEST version, clone the repo and run it from the `dev` branc
 - [Installation](#installation)
 - [Table of contents](#table-of-contents)
 - [What is this](#what-is-this)
-- [Developer architecture docs](#developer-architecture-docs)
 - [Comparison](#comparison)
 - [Quick start](#quick-start)
 - [FAQ](#faq)
 - [Development](#development)
+  - [Developer architecture docs](#developer-architecture-docs)
 - [Tech stack](#tech-stack)
   - [Build for distribution](#build-for-distribution)
   - [Scripts](#scripts)
@@ -113,7 +111,7 @@ If you want the FRESHEST version, clone the repo and run it from the `dev` branc
 
 An orchestration layer for AI agent teams across Claude, Codex, and OpenCode.
 
-- **Claude + Codex + OpenCode orchestration** — auto-detect available Claude/Codex/OpenCode runtimes and use the provider access you already have - subscriptions or API keys
+- **Claude + Codex + OpenCode orchestration** — start with a free model with no auth immediately, or auto-detect available Claude/Codex/OpenCode runtimes and use the provider access you already have - subscriptions or API keys
 - **Assemble your team** — create agent teams with different roles that work autonomously in parallel
 - **Agents talk to each other** — they communicate, create and manage their own tasks, review, leave comments
 - **Cross-team communication** — agents can fully communicate across different teams; you can configure or prompt them to collaborate and message each other between teams
@@ -141,7 +139,7 @@ An orchestration layer for AI agent teams across Claude, Codex, and OpenCode.
 
 - **Recent tasks across projects** — browse the latest completed tasks from all your projects in one place
 
-- **Zero-setup onboarding** — built-in runtime detection and provider authentication
+- **Zero-setup onboarding** — start with the free model with no auth, then connect paid/account providers only when you need them
 
 - **Built-in code editor** — edit project files with Git support without leaving the app
 
@@ -162,15 +160,6 @@ An orchestration layer for AI agent teams across Claude, Codex, and OpenCode.
 - **Workflow history** — see the full timeline of each task: when and how its status changed, which agents were involved, and every action that led to the current state
 
 </details>
-
-## Developer architecture docs
-
-For feature architecture and implementation guidance:
-
-- Canonical standard - [docs/FEATURE_ARCHITECTURE_STANDARD.md](docs/FEATURE_ARCHITECTURE_STANDARD.md)
-- Repo working instructions - [CLAUDE.md](CLAUDE.md)
-- Feature root guidance - [src/features/README.md](src/features/README.md)
-- Reference implementation - `src/features/recent-projects`
 
 ## Comparison
 
@@ -201,7 +190,7 @@ For feature architecture and implementation guidance:
 | **Teammate launch status** | ✅ Know who started, who is stuck, and who replied | ⚠️ Session health, less clear message status | ⚠️ Run status, not live teammate status | ❌ | ⚠️ CLI mailbox, no visual status |
 | **Org chart / governance** | ⚠️ Roles + approvals, no org chart | ⚠️ Roles + escalation | ✅ Org chart + board governance | ⚠️ Team admin only | ❌ |
 | **Budget controls** | ⚠️ Cost/token visibility, no hard caps | ⚠️ Cost tiers + digest, no hard caps | ✅ Per-agent budgets + hard stops | ⚠️ Usage + BG spend limits | ⚠️ `/usage` + workspace limits |
-| **Price** | **Free OSS UI**, provider access needed | Free OSS, runtime plans needed | Free OSS, self-hosted + infra | Free + paid usage | Claude plan or API usage |
+| **Price** | **Free OSS UI + free model with no auth**, paid providers optional | Free OSS, runtime plans needed | Free OSS, self-hosted + infra | Free + paid usage | Claude plan or API usage |
 
 Fact sources checked on May 18, 2026: [detailed research notes](docs/research/gastown-paperclip-comparison-2026-05-16.md), [Gastown README](https://github.com/gastownhall/gastown), [Gastown provider guide](https://github.com/gastownhall/gastown/blob/main/docs/agent-provider-integration.md), [Gastown scheduler](https://github.com/gastownhall/gastown/blob/main/docs/design/scheduler.md), [Gastown dashboard source](https://github.com/gastownhall/gastown/blob/main/internal/web/templates/convoy.html), [Gastown release](https://github.com/gastownhall/gastown/releases/tag/v1.1.0), [Paperclip README](https://github.com/paperclipai/paperclip), [Paperclip adapters](https://github.com/paperclipai/paperclip/blob/master/docs/adapters/overview.md), [Paperclip heartbeat protocol](https://github.com/paperclipai/paperclip/blob/master/docs/guides/agent-developer/heartbeat-protocol.md), [Paperclip org chart](https://paperclip.inc/docs/guides/board-operator/org-structure/), [Paperclip OrgChart source](https://github.com/paperclipai/paperclip/blob/master/ui/src/pages/OrgChart.tsx), [Paperclip budgets](https://github.com/paperclipai/paperclip/blob/master/docs/guides/board-operator/costs-and-budgets.md), [Paperclip runtime services](https://github.com/paperclipai/paperclip/blob/master/docs/guides/board-operator/execution-workspaces-and-runtime-services.md), [Paperclip Kanban source](https://github.com/paperclipai/paperclip/blob/master/ui/src/components/KanbanBoard.tsx), [Paperclip work products](https://github.com/paperclipai/paperclip/blob/master/packages/shared/src/validators/work-product.ts), [Paperclip release](https://github.com/paperclipai/paperclip/releases/tag/v2026.517.0), [Cursor Background Agents](https://docs.cursor.com/en/background-agents), [Cursor Diffs & Review](https://docs.cursor.com/en/agent/review), [Cursor Bugbot](https://docs.cursor.com/en/bugbot), [Cursor pricing](https://docs.cursor.com/en/account/usage), [Claude Code agent teams](https://code.claude.com/docs/en/agent-teams), [Claude Code subagents](https://code.claude.com/docs/en/sub-agents), [Claude Code workflows](https://code.claude.com/docs/en/common-workflows), [Claude Code costs](https://code.claude.com/docs/en/costs), [Claude pricing](https://claude.com/pricing).
 
@@ -210,7 +199,7 @@ Fact sources checked on May 18, 2026: [detailed research notes](docs/research/ga
 ## Quick start
 
 1. **Download** the app for your platform (see [Installation](#installation))
-2. **Launch the desktop app** - On first run, the setup wizard will detect the runtime and guide provider authentication
+2. **Launch the desktop app** - start with the free model with no auth, or let the setup wizard detect runtimes and guide provider authentication
 3. **Create a team** — Pick a project, define roles, write a provisioning prompt
 4. **Watch** — Agents spawn, create tasks, and work. You see it all on the kanban board
 
@@ -224,7 +213,7 @@ Use the desktop app as the primary product. The browser/web path is not needed f
 <details>
 <summary><strong>Do I need to install a runtime before using this app?</strong></summary>
 <br />
-No. The app guides runtime detection/setup and provider authentication from the UI - just launch and follow the setup wizard.
+No. You can start with the free model with no auth right away. If you want Claude, Codex, OpenCode/OpenRouter, or other provider-backed models, the app guides runtime detection/setup and provider authentication from the UI.
 </details>
 
 <details>
@@ -242,7 +231,7 @@ Yes. Agents send direct messages, create shared tasks, and leave comments - all 
 <details>
 <summary><strong>Is it free?</strong></summary>
 <br />
-Yes, free and open source. The app has no paid tier of its own. To run agents, you only need access to a supported provider/runtime, such as Anthropic or Codex.
+Yes. The app is free and open source, and you can start with a free model with no auth - no registration, API keys, or credit card. If you want more models, connect the provider access you already have, such as Claude, Codex, OpenCode/OpenRouter, or other supported runtimes.
 </details>
 
 <details>
@@ -266,6 +255,15 @@ Yes. Run multiple teams in one project or across different projects, even simult
 ---
 
 ## Development
+
+### Developer architecture docs
+
+For feature architecture and implementation guidance:
+
+- Canonical standard - [docs/FEATURE_ARCHITECTURE_STANDARD.md](docs/FEATURE_ARCHITECTURE_STANDARD.md)
+- Repo working instructions - [CLAUDE.md](CLAUDE.md)
+- Feature root guidance - [src/features/README.md](src/features/README.md)
+- Reference implementation - `src/features/recent-projects`
 
 ## Tech stack
 
@@ -347,16 +345,16 @@ local packaging.
 - [ ] Planning mode to organize agent plans before execution
 - [ ] Visual workflow editor ([@xyflow/react](https://github.com/xyflow/xyflow)) for building and orchestrating agent pipelines with drag & drop
 - [ ] Remote agent execution via SSH: launch and manage agent teams on remote machines over SSH (stream-json protocol over SSH channel, SFTP-based file monitoring for tasks/inboxes/config)
-- [ ] CLI runtime: Run not only on a local PC but in any headless/console environment (web UI), e.g. VPS, remote server, etc.
+- [x] CLI runtime: Run not only on a local PC but in any headless/console environment (web UI), e.g. VPS, remote server, etc.
 - [ ] 2 modes: current (agent teams), and a new mode: regular subagents (no communication between them)
 - [ ] Curate what context each agent sees (files, docs, MCP servers, skills)
-- [ ] Slash commands
+- [x] Slash commands
 - [ ] Outgoing message queue — queue user messages while the lead (or agent) is busy; clear agent-busy status in the UI; flush to stdin or relay from inbox when idle (durable queue on disk for the lead inbox path)
 - [ ] `createTasksBatch` — IPC/service API to create many team tasks in one call (playbooks, markdown checklist import, scripts); complements single `createTask`
 - [ ] Command palette — extend Cmd/Ctrl+K beyond project/session search to runnable actions (quick commands, navigation shortcuts, team/task operations) in a keyboard-first flow
 - [ ] Custom kanban columns
 - [ ] Run terminal commands
-- [ ] Monitor agents processes/stats
+- [x] Monitor agents processes/stats
 - [ ] Reusable agents with SOUL.md
 - [ ] Сommunicate via messenger
 - [ ] SDK to programmatically launch agents

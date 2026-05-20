@@ -11,21 +11,21 @@ Use `{{N8NAC_CMD}}` as the primary interface. Use `{{N8N_MANAGER_CMD}}` only for
 
 ## Context Root Protocol
 
-- Treat the current context root as the directory containing `n8nac-config.json`, `AGENTS.md`, `.agents/skills`, and the workflow sync folder.
+- Treat the current context root as the directory containing `n8nac-config.json`, `AGENTS.md`, `.agents/skills`, and the configured `workflowsPath`.
 - {{N8NAC_CONTEXT_ROOT_HINT}}
 - Before any n8n work, first run `{{N8NAC_CMD}} update-ai` from the context root, then read `AGENTS.md`. `update-ai` is designed to create or refresh the n8n-as-code block without destroying existing user or agent instructions.
 - Use the exact `n8nac command` and `n8n-manager command` listed in `AGENTS.md`. Those context-root commands override the portable examples in this skill.
 - Run every `{{N8NAC_CMD}} env ...`, `{{N8NAC_CMD}} workspace ...`, `{{N8NAC_CMD}} list`, `pull`, `push`, `validate`, `test`, and `update-ai` command from the context root unless the user explicitly gives another context root.
 - `AGENTS.md` is bootstrap context only, not a source of configuration truth.
-- Do not infer environment, project, sync folder, or workflow directory from `AGENTS.md`.
+- Do not infer environment, project, or `workflowsPath` from `AGENTS.md`.
 - Before n8n work, resolve the effective context from the backend:
 
 ```bash
 {{N8NAC_CMD}} env status --json
 ```
 
-- Use the returned `workflowDir` for workflow files. Treat it as an opaque backend-derived path that may contain generated or hashed segments.
-- `syncFolder` is only the user-configured sync root, not the workflow directory. Do not reconstruct `workflowDir` from `syncFolder`, environment name/id, `instanceIdentifier`, `instanceUserIdentifier`, `projectId`, or `projectName`.
+- Use the returned `workflowsPath` for workflow files. It is the configured workflow directory for the active environment.
+- Do not reconstruct `workflowsPath` from environment name/id, `instanceIdentifier`, `instanceUserIdentifier`, `projectId`, `projectName`, or legacy sync fields.
 - Never write `n8nac-config.json`, `~/.n8n-manager`, or n8n-manager secret files by hand.
 
 ## Workspace Readiness
@@ -82,7 +82,7 @@ Migration is one user-facing command. Do not reason about internal migration pha
 10. Configure the environment with:
 
 ```bash
-{{N8NAC_CMD}} env add <name> --base-url <url> --sync-folder workflows
+{{N8NAC_CMD}} env add <name> --base-url <url> --workflows-path workflows/<name>
 {{N8NAC_CMD}} env auth set <name> --api-key-stdin
 {{N8NAC_CMD}} env use <name>
 ```
@@ -90,7 +90,7 @@ Migration is one user-facing command. Do not reason about internal migration pha
 For a managed local instance:
 
 ```bash
-{{N8NAC_CMD}} env add Local --managed-instance <id> --sync-folder workflows
+{{N8NAC_CMD}} env add Local --managed-instance <id> --workflows-path workflows/local
 {{N8NAC_CMD}} env use Local
 ```
 
@@ -98,12 +98,12 @@ For a managed local instance:
 
 ## Environments
 
-Use `{{N8NAC_CMD}} env ...` for workspace environments, remote URLs, active environment, API-key binding, projects, and sync folders.
+Use `{{N8NAC_CMD}} env ...` for workspace environments, remote URLs, active environment, API-key binding, projects, and workflow paths.
 
 ```bash
 {{N8NAC_CMD}} env status --json
 {{N8NAC_CMD}} env list
-{{N8NAC_CMD}} env add <name> --base-url <url> --sync-folder workflows
+{{N8NAC_CMD}} env add <name> --base-url <url> --workflows-path workflows/<name>
 {{N8NAC_CMD}} env auth set <name> --api-key-stdin
 {{N8NAC_CMD}} env use <name>
 ```
@@ -117,7 +117,7 @@ Use `{{N8NAC_CMD}} env ...` for workspace environments, remote URLs, active envi
 Attach a managed local instance to the workspace with `{{N8NAC_CMD}} env ...`:
 
 ```bash
-{{N8NAC_CMD}} env add Local --managed-instance <id> --sync-folder workflows
+{{N8NAC_CMD}} env add Local --managed-instance <id> --workflows-path workflows/local
 {{N8NAC_CMD}} env use Local
 ```
 
@@ -195,7 +195,7 @@ Instance and tunnel operations are per managed local instance:
 ```
 
 - `push` requires the full workflow file path, either absolute or context-root-relative. Do not pass a bare filename.
-- For a new workflow, create the file inside the `workflowDir` returned by `env status --json`, then confirm it with `{{N8NAC_CMD}} list --local`.
+- For a new workflow, create the file inside the `workflowsPath` returned by `env status --json`, then confirm it with `{{N8NAC_CMD}} list --local`.
 - If push/pull reports a conflict, use explicit resolution commands. Do not overwrite remote changes blindly.
 - `pull` and conflict resolution operate on a single workflow ID.
 - `list` is the lightweight command that covers all workflows at once.
@@ -491,7 +491,7 @@ When a workflow is blocked by missing credentials, resolve the credential gap wi
 For most workflow tasks:
 
 1. Resolve context with `env status --json`.
-2. Read `workflowDir` from the backend response.
+2. Read `workflowsPath` from the backend response.
 3. Inspect existing workflows with `list`.
 4. Pull before editing an existing workflow.
 5. Search examples and schemas.

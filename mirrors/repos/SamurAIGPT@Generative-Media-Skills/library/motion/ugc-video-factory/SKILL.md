@@ -16,8 +16,6 @@ A three-stage pipeline:
 2. **Nano-Banana Pro Edit** fuses the person + product into a single hero photo (1K, 9:16).
 3. **Seedance 2.0 VIP Image-to-Video** animates the hero photo into a 10s vertical UGC clip with synced spoken audio.
 
-> **Estimated credits:** ~250 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |
@@ -73,7 +71,7 @@ Submit a `muapi image edit` call against the `nano-banana-pro-edit` model:
 - **Resolution**: `1K`
 - **Output format**: `jpeg`
 
-Capture the resulting image URL as `{{hero_image}}`. Briefly show it to the user for approval before burning video credits.
+Capture the resulting image URL as `{{hero_image}}`. Briefly show it to the user for approval before kicking off the video step.
 
 ### Step 3 — UGC Video (Seedance 2.0 VIP Image-to-Video)
 

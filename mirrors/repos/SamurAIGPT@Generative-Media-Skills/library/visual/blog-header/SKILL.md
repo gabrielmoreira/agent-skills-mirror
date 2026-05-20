@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Create a professional, eye-catching blog post header image sized for web (1200×628) with optional title composition guidance.**
 
-> **Estimated credits:** ~12 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |

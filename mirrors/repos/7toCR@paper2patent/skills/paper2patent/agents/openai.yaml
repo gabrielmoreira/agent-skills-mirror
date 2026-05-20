@@ -1,0 +1,6 @@
+interface:
+  display_name: "Paper2Patent"
+  short_description: "Generate Chinese patent applications from papers"
+  default_prompt: "Use $paper2patent to convert my paper into a complete Chinese invention patent application, generating DOCX and PDF files when possible."
+
+  

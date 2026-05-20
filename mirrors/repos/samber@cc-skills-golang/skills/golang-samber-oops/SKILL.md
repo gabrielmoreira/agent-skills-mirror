@@ -6,7 +6,7 @@ license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.1.2"
+  version: "1.1.3"
   openclaw:
     emoji: "💥"
     homepage: https://github.com/samber/cc-skills-golang
@@ -109,12 +109,14 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
     err := h.service.CreateUser(r.Context(), userID)
     if err != nil {
-        return oops.
+        err = oops.
             In("http-handler").
             Tags("endpoint", "/users").
             Request(r, false).
             User(userID).
             Wrapf(err, "create user failed")
+        http.Error(w, oops.GetPublic(err, "Internal server error"), http.StatusInternalServerError)
+        return
     }
 
     w.WriteHeader(http.StatusCreated)
@@ -207,7 +209,7 @@ func ProcessData(data string) (err error) {
         In("data-processor").
         Code("panic_recovered").
         Hint("Check input data format and dependencies").
-        With("panic_value", r).
+        With("input_data", data).
         Recover(func() {
             riskyOperation(data)
         })

@@ -116,19 +116,123 @@ $builder->add('selection_id', IntegerType::class, [
 
 ---
 
+---
+
+## TranslatableType — per-language fields
+
+Use `TranslatableType` when a field must store a **different value per installed language** (e.g. title templates, meta descriptions). It renders one input per language plus a language-selector dropdown.
+
+### ⚠️ Required: locale-switcher JS bundle
+
+`TranslatableType` renders `.js-locale-item` / `.js-locale-input` / `.js-locale-btn` elements whose visibility is controlled by a custom JS bundle — **not** by Bootstrap tabs alone. Without this bundle, clicking a language in the dropdown has no effect.
+
+**Step 1 — Copy the template bundle:**
+
+```bash
+cp skills/.agents/skills/prestashop-module-development/scripts/translatable-form.bundle.js \
+   views/js/{modulename}.form.bundle.js
+# Then replace every MODULENAME with your actual module name (lowercase):
+sed -i 's/MODULENAME/{modulename}/g' views/js/{modulename}.form.bundle.js
+```
+
+**Step 2 — Load it in the Twig template:**
+
+```twig
+{% block javascripts %}
+  {{ parent() }}
+  <script src="{{ asset('../modules/{modulename}/views/js/{modulename}.form.bundle.js') }}"></script>
+{% endblock %}
+```
+
+> The `{% block javascripts %}{{ parent() }}` is mandatory — `parent()` preserves the admin layout's default JS (jQuery, Bootstrap, etc.).
+
+### FormType — adding TranslatableType fields
+
+```php
+use PrestaShopBundle\Form\Admin\Type\TranslatableType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+
+$builder->add('title', TranslatableType::class, [
+    'type'     => TextType::class,
+    'label'    => $this->trans('Title', 'Modules.Mymodule.Admin'),
+    'options'  => ['attr' => ['maxlength' => 255]],
+    'help'     => $this->trans('Available tokens: %token%', 'Modules.Mymodule.Admin'),
+    'required' => false,
+]);
+```
+
+The service for the FormType must declare `parent: form.type.translatable.aware`:
+
+```yaml
+# config/components/form/my_form.yml
+mymodule.form.type.my_configuration:
+  class: Vendor\MyModule\Form\MyConfigurationFormType
+  parent: form.type.translatable.aware
+  tags:
+    - { name: form.type }
+```
+
+### DataConfiguration — storing per-lang values
+
+Values are stored in the PS `configuration` table as `KEY_{id_lang}`:
+
+```php
+final class MyConfigurationDataConfiguration implements DataConfigurationInterface
+{
+    public const KEY_TITLE = 'MYMODULE_TITLE';
+    public const DEFAULT_TITLE = 'Default title with %token%';
+
+    public function getConfiguration(): array
+    {
+        $title = [];
+        foreach (\Language::getLanguages(true) as $lang) {
+            $idLang = (int) $lang['id_lang'];
+            $title[$idLang] = $this->configuration->get(self::KEY_TITLE . '_' . $idLang)
+                ?: self::DEFAULT_TITLE;
+        }
+        return ['title' => $title];
+    }
+
+    public function updateConfiguration(array $configuration): array
+    {
+        foreach ($configuration['title'] ?? [] as $idLang => $value) {
+            $this->configuration->set(self::KEY_TITLE . '_' . (int) $idLang, $value);
+        }
+        return [];
+    }
+
+    public function validateConfiguration(array $configuration): bool { return true; }
+}
+```
+
+### Controller — always pass `$form->getData()`
+
+```php
+if ($form->isSubmitted() && $form->isValid()) {
+    $errors = $formDataHandler->save($form->getData()); // ✅ NOT $form
+    ...
+}
+```
+
+> **Common bug:** passing `$form` (the Form object) instead of `$form->getData()` (the array) to `save()` causes:
+> `Handler::save(): Argument #1 ($data) must be of type array, Form given`
+
+---
+
 ## Common PS form types quick reference
 
-| Field type       | PS type class                               | Notes |
-|------------------|----------------------------------------------|-------|
-| Boolean toggle   | `SwitchType`                                 | Always use this; never RadioType |
-| Short text       | `TextType` (Symfony)                         | |
-| Long text        | `TextareaType` (Symfony)                     | |
-| Integer          | `IntegerType` (Symfony) or `NumberType`      | |
-| Color picker     | `ColorPickerType`                            | `PrestaShopBundle\Form\Admin\Type` |
-| Country select   | `CountryChoiceType`                          | `PrestaShopBundle\Form\Admin\Type` |
-| Category tree    | `CategoryChoiceTreeType`                     | `PrestaShopBundle\Form\Admin\Type` |
-| Image upload     | `FileType` (Symfony)                         | validate MIME + size at boundary |
-| Money            | `MoneyType` (Symfony)                        | |
-| Date/time        | `DatePickerType`                             | `PrestaShopBundle\Form\Admin\Type` |
+| Field type            | PS type class                               | Notes |
+|-----------------------|----------------------------------------------|-------|
+| Boolean toggle        | `SwitchType`                                 | Always use this; never RadioType |
+| Short text            | `TextType` (Symfony)                         | |
+| Long text             | `TextareaType` (Symfony)                     | |
+| Integer               | `IntegerType` (Symfony) or `NumberType`      | |
+| Per-language text     | `TranslatableType`                           | Requires locale-switcher JS bundle (see above) |
+| Color picker          | `ColorPickerType`                            | `PrestaShopBundle\Form\Admin\Type` |
+| Country select        | `CountryChoiceType`                          | `PrestaShopBundle\Form\Admin\Type` |
+| Category tree         | `CategoryChoiceTreeType`                     | `PrestaShopBundle\Form\Admin\Type` |
+| Image upload          | `FileType` (Symfony)                         | validate MIME + size at boundary |
+| Money                 | `MoneyType` (Symfony)                        | |
+| Date/time             | `DatePickerType`                             | `PrestaShopBundle\Form\Admin\Type` |
 
 All PS-specific types are in `PrestaShopBundle\Form\Admin\Type\`.

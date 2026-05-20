@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/capacity-planner/../../../business-operations/skills/capacity-planner/SKILL.md

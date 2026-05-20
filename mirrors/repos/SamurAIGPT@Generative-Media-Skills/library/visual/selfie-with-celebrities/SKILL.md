@@ -11,8 +11,6 @@ acceptLicenseTerms: true
 
 **Generate a realistic behind-the-scenes selfie of the user with a celebrity or main actor from a specific movie, followed by an option to generate a cinematic long-take video connecting multiple selfies.**
 
-> **Estimated credits:** ~100 per run.
-
 ## Inputs
 
 | Name | Type | Required | Default | Description |
