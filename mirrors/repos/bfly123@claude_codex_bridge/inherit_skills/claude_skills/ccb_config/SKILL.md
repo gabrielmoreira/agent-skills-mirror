@@ -5,11 +5,11 @@ description: Design and edit CCB project teams by updating .ccb/ccb.config plus 
 
 # CCB Config
 
-Use this skill to design and edit a CCB-managed project team. The output is a valid `.ccb/ccb.config` plus preserved project memory updates in `.ccb/ccb_memory.md` and `.ccb/agents/<agent>/memory.md`.
+Use this skill to design and edit a CCB-managed project team. The usual output is a valid `.ccb/ccb.config` plus preserved project memory updates in `.ccb/ccb_memory.md` and `.ccb/agents/<agent>/memory.md`. If the user explicitly asks for a user-level default team, edit `~/.ccb/ccb.config` instead.
 
 ## Core Workflow
 
-1. Resolve the config authority first. The current CCB project config is `.ccb/ccb.config`; `.ccb_config/ccb.config` is legacy residue and must be treated as read-only migration evidence, not as the file to edit.
+1. Resolve the config authority first. CCB config precedence is built-in default < user config `~/.ccb/ccb.config` < project config `.ccb/ccb.config`. `.ccb_config/ccb.config` is legacy residue and must be treated as read-only migration evidence, not as the file to edit.
 2. Read the current `.ccb/ccb.config`, `.ccb/ccb_memory.md`, and relevant `.ccb/agents/<agent>/memory.md` files before proposing changes.
 3. If the user's project goal and workflow are not already clear, ask a short clarification question before designing the team.
 4. After the basic workflow is clear, propose one complete config with sensible defaults and ask for confirmation or adjustments.
@@ -18,10 +18,12 @@ Use this skill to design and edit a CCB-managed project team. The output is a va
    - `.ccb/ccb.config`
    - `.ccb/ccb_memory.md`
    - `.ccb/agents/<agent>/memory.md`
-7. Validate the written config with the CCB config loader and verify that the loader read `.ccb/ccb.config`, not the built-in default config.
+7. Validate the written config with the CCB config loader and verify that the loader read the intended source kind.
 8. Tell the user that CCB must be restarted for config changes to take effect.
 
 Do not write runtime state, generated memory, provider-state homes, `.ccb/provider-profiles/`, `.ccb/ccbd/`, legacy `.ccb_config/`, or provider-native project dotfiles such as `.codex`, `.claude`, or `.gemini`.
+
+By default, configure the current project by writing `.ccb/ccb.config`. Only write `~/.ccb/ccb.config` when the user explicitly asks for a user-level or system-wide default CCB team.
 
 Never run `ccb`, `ccb -s`, `ccb kill`, or any restart command as part of this skill workflow. Restarting from inside an active CCB pane can terminate the current session before file edits and validation finish. Finish all file writes and validation first, then tell the user the restart command to run manually.
 
@@ -153,11 +155,13 @@ python - <<'PY'
 from pathlib import Path
 from agents.config_loader import load_project_config
 result = load_project_config(Path('.'))
-if result.used_default or result.source_path is None:
+if result.source_kind != 'project_config' or result.source_path is None:
     raise SystemExit('ERROR: .ccb/ccb.config was not loaded; write the current config authority before validating')
 print(f'{len(result.config.agents)} agents OK: {", ".join(result.config.default_agents)}')
 PY
 ```
+
+After editing `~/.ccb/ccb.config` as the user-level default, validate from a temporary directory without a project config and require `source_kind == "user_config"`.
 
 Also check:
 
@@ -165,7 +169,7 @@ Also check:
 - every configured default agent appears exactly once in the layout;
 - `cmd` is first when enabled;
 - compact/hybrid worktree markers are present on the compact line, not in overlay;
-- validation reports `used_default = False` and a non-empty `source_path`;
+- validation reports the intended `source_kind` and a non-empty `source_path`;
 - no secrets were added unless the user explicitly provided them;
 - memory updates preserved existing unmarked content.
 

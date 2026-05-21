@@ -40,6 +40,12 @@ Celebratory confetti explosion with multi-colored pastel flakes.
 ### [easter_pastel_color_palette.gd](../scripts/theme_easter_easter_pastel_color_palette.gd)
 Static utility containing curated, harmonious Easter color tokens.
 
+### [easter_custom_cursor_manager.gd](../scripts/theme_easter_easter_custom_cursor_manager.gd)
+Expert logic for swapping system mouse cursors with themed Easter icons.
+
+### [easter_seasonal_audio_swapper.gd](../scripts/theme_easter_easter_seasonal_audio_swapper.gd)
+Dynamic audio resource loader that replaces standard UI sounds with seasonal variants.
+
 ## Visual Guidelines
 - **Colors**:
     -   Pink: `#FFC1CC`
@@ -61,6 +67,44 @@ Static utility containing curated, harmonious Easter color tokens.
 - **NEVER run date-checks in _process** — Checking the system calendar every frame is wasteful. Run `Time.get_date_dict_from_system()` once on `_ready` or event trigger.
 - **NEVER ignore the 'No-Seasonal' toggle** — Some players hate seasonal overrides. Always provide a 'Disable Seasonal Themes' option in settings.
 
-### Polish
-- **NEVER have 'Static' collectibles** — If a player finds an egg, it MUST react (wobble, sparkle, or pop). Dead items feel like bugs.
-- **NEVER skip the camera feedback** — A collect event without a subtle camera shake or lens kick feels 'hollow.'
+## Elite Theming Hooks
+
+- **Dynamic Z-Ordering**: Use `RenderingServer.canvas_item_set_draw_index()` to dynamically move collected egg particles to the front of the UI stack without reparenting nodes.
+- **Physics Interpolation**: When using `TRANS_ELASTIC` tweens on physics-driven eggs, invoke `RenderingServer.canvas_item_reset_physics_interpolation()` to prevent visual "jitter" on the first frame of the pop animation.
+- **StyleBox Overrides**: Use `Control.add_theme_stylebox_override("panel", my_stylebox)` instead of modifying the global Theme to isolate seasonal changes to specific UI modules.
+
+## Expert Easter Implementation
+
+### 1. Custom-Mouse-Cursor (Juice)
+Replacing the standard arrow with a themed Easter icon (e.g., a bunny ear).
+- **Implementation**:
+    ```gdscript
+    func _apply_easter_cursor():
+        var cursor_img = preload("res://ui/easter/cursor_bunny.png")
+        Input.set_custom_mouse_cursor(cursor_img, Input.CURSOR_ARROW, Vector2(16, 16))
+    ```
+- **Expert Note**: Always define a `hotspot` (the pixel that actually clicks). For a bunny ear, this is usually the center or base of the ear.
+
+### 2. Themed-Sound-Loaders
+Dynamically swapping UI sounds (e.g., button clicks) for "bouncy" or "egg-pop" variants.
+- **Pattern**: Use a `Resource` map to store original vs. seasonal sound pairs.
+    ```gdscript
+    @export var sound_overrides: Dictionary # String -> AudioStream
+    
+    func play_seasonal_sfx(original_name: String):
+        var stream = sound_overrides.get(original_name, default_sounds[original_name])
+        sfx_player.stream = stream
+        sfx_player.play()
+    ```
+
+### 3. World-Environment-Override (Spring Glow)
+Using code to transition the game's atmosphere without creating a new scene.
+- **Implementation**:
+    ```gdscript
+    func _apply_spring_env(env: Environment):
+        var tween = create_tween()
+        tween.tween_property(env, "ambient_light_color", Color("#FFF4E0"), 2.0)
+        tween.tween_property(env, "tonemap_exposure", 1.2, 2.0)
+        tween.tween_property(env, "fog_light_color", Color("#E0FFFF"), 2.0)
+    ```
+- **Expert Note**: Smoothly tweening these properties during a loading screen or transition prevents the "Sudden Change" glitch.

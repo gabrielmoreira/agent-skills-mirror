@@ -255,6 +255,114 @@ nav_agent.radius = 20.0
 nav_agent.max_neighbors = 10
 ```
 
+## Expert Navigation Architectures
+
+### 1. Crowd Collision (Server-Side Avoidance)
+For massive crowds, bypass node-based overhead by communicating directly with `NavigationServer3D`. Configure native server-side agents with RVO (Reciprocal Velocity Obstacle) parameters like `neighbor_distance` and `max_neighbors`.
+
+```gdscript
+class_name CrowdAgent3D extends CharacterBody3D
+## A completely node-less avoidance agent using the NavigationServer3D API.
+
+@export var max_speed: float = 4.0
+var _server_agent_rid: RID
+
+func _ready() -> void:
+    # Create the agent on the server and assign it to the default map.
+    _server_agent_rid = NavigationServer3D.agent_create()
+    NavigationServer3D.agent_set_map(_server_agent_rid, get_world_3d().get_navigation_map())
+    
+    # Enable avoidance and set physical dimensions.
+    NavigationServer3D.agent_set_avoidance_enabled(_server_agent_rid, true)
+    NavigationServer3D.agent_set_radius(_server_agent_rid, 0.5)
+    NavigationServer3D.agent_set_max_speed(_server_agent_rid, max_speed)
+    
+    # Crowd Tuning: Configure neighbor detection.
+    NavigationServer3D.agent_set_neighbor_distance(_server_agent_rid, 50.0)
+    NavigationServer3D.agent_set_max_neighbors(_server_agent_rid, 20)
+    
+    # Time horizons: How far ahead to predict agent/obstacle collisions.
+    NavigationServer3D.agent_set_time_horizon_agents(_server_agent_rid, 1.0)
+    NavigationServer3D.agent_set_time_horizon_obstacles(_server_agent_rid, 0.5)
+    
+    # Bind callback to safely receive computed velocity.
+    NavigationServer3D.agent_set_avoidance_callback(_server_agent_rid, _on_velocity_computed)
+
+func _physics_process(_delta: float) -> void:
+    # Determine desired velocity towards target.
+    var preferred_velocity: Vector3 = Vector3.FORWARD * max_speed 
+    NavigationServer3D.agent_set_velocity(_server_agent_rid, preferred_velocity)
+
+func _on_velocity_computed(safe_velocity: Vector3) -> void:
+    velocity = safe_velocity
+    move_and_slide()
+
+func _exit_tree() -> void:
+    if _server_agent_rid.is_valid():
+        NavigationServer3D.free_rid(_server_agent_rid)
+```
+
+### 2. Projected Obstacles (Dynamic NavMesh Carving)
+To remove areas from the navigation mesh dynamically (e.g., impact craters), inject a "Projected Obstruction" into the `NavigationMeshSourceGeometryData3D`. Setting `carve` to `true` cuts a hole precisely matching the geometry.
+
+```gdscript
+class_name NavMeshCarver3D extends Node3D
+## Dynamically carves holes into the NavMesh for permanent environmental changes.
+
+@export var nav_region: NavigationRegion3D
+
+var _source_geometry := NavigationMeshSourceGeometryData3D.new()
+var _is_baking: bool = false
+
+func carve_projectile_impact(impact_pos: Vector3, radius: float) -> void:
+    if _is_baking: return
+    _is_baking = true
+    _source_geometry.clear()
+    
+    # Parse existing geometry and add a carved obstruction.
+    NavigationServer3D.parse_source_geometry_data(nav_region.navigation_mesh, _source_geometry, nav_region)
+    
+    var outline := PackedVector3Array([
+        impact_pos + Vector3(-radius, 0, -radius),
+        impact_pos + Vector3(radius, 0, -radius),
+        impact_pos + Vector3(radius, 0, radius),
+        impact_pos + Vector3(-radius, 0, radius)
+    ])
+    
+    _source_geometry.add_projected_obstruction(outline, impact_pos.y, 10.0, true)
+    
+    # Bake asynchronously to prevent frame stuttering.
+    NavigationServer3D.bake_from_source_geometry_data_async(
+        nav_region.navigation_mesh, 
+        _source_geometry, 
+        _on_bake_finished
+    )
+
+func _on_bake_finished() -> void:
+    NavigationServer3D.region_set_navigation_mesh(nav_region.get_rid(), nav_region.navigation_mesh)
+    _is_baking = false
+```
+
+### 3. NavMesh Performance Profiler (Bake-Time Benchmarks)
+Benchmark bake times and topological complexity (polygon/edge counts) using `Time.get_ticks_usec()` and `NavigationServer3D.get_process_info()`.
+
+```gdscript
+class_name NavMeshProfiler extends Node
+## A benchmarking tool to validate NavMesh complexity and bake times.
+
+func run_benchmark(nav_mesh: NavigationMesh, source_geometry: NavigationMeshSourceGeometryData3D) -> void:
+    var start_time_usec: float = Time.get_ticks_usec()
+    
+    # Synchronous bake for linear benchmarking (main thread stall expected).
+    NavigationServer3D.bake_from_source_geometry_data(nav_mesh, source_geometry)
+    
+    var elapsed_ms: float = (Time.get_ticks_usec() - start_time_usec) / 1000.0
+    var poly_count: int = NavigationServer3D.get_process_info(NavigationServer3D.INFO_POLYGON_COUNT)
+    var edge_count: int = NavigationServer3D.get_process_info(NavigationServer3D.INFO_EDGE_COUNT)
+    
+    print("Bake Time: %f ms | Polygons: %d | Edges: %d" % [elapsed_ms, poly_count, edge_count])
+```
+
 ## Reference
 - [Godot Docs: Navigation](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_introduction_2d.html)
 

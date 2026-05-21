@@ -156,5 +156,66 @@ func seek(target_pos: Vector3) -> Vector3:
 3.  **Unfair Goalies**: Goalie reacts instantly. **Fix**: Add a "Reaction Time" delay and "Error Rate" based on shot speed/stats.
 
 
+## Advanced Sports Meta-Systems
+
+Professional implementation of animation synchronization, spatial intelligence, and collision filtering.
+
+### 1. Root-Motion-Transition (AnimationTree)
+Utilize the `AnimationMixer` class (and its derivatives like `AnimationTree`) to extract root motion from complex animations. This ensures that the character's physical displacement is driven directly by the animation data, preventing "skating" and ensuring momentum is visually grounded during high-speed turns or shots.
+
+```gdscript
+class_name SportsCharacter extends CharacterBody3D
+
+@onready var anim_tree: AnimationTree = $AnimationTree
+
+func _physics_process(_delta: float) -> void:
+    # Extract root motion from the current animation state
+    var root_motion := anim_tree.get_root_motion_position()
+    # Apply to velocity for physics-synced movement
+    velocity = (global_transform.basis * root_motion) / _delta
+    move_and_slide()
+```
+
+### 2. Contextual-Pass-Prediction (Raycasts)
+To predict if a passing lane is clear, configure a `PhysicsRayQueryParameters3D` object and use `PhysicsDirectSpaceState3D.intersect_ray()`. This allows the AI or player assist to verify unobstructed paths to teammates before committing to an action.
+
+```gdscript
+class_name PassPredictor extends Node3D
+
+func is_lane_clear(target_pos: Vector3) -> bool:
+    var space_state := get_world_3d().direct_space_state
+    var query := PhysicsRayQueryParameters3D.create(global_position, target_pos)
+    query.collision_mask = 1 # Environment/Opponents
+    
+    var result := space_state.intersect_ray(query)
+    return result.is_empty() # Path is clear if no collision
+```
+
+### 3. Layered-Hitbox Pattern
+Configure `Area3D` nodes with specific `collision_layer` and `collision_mask` properties to filter interactions. By assigning different layers for the ball and specific body parts (Head, Torso, Legs), you can accurately detect contextual overlaps for headers, chest-traps, or slide tackles.
+
+```gdscript
+class_name BodyPartHitbox extends Area3D
+
+enum Part { HEAD, TORSO, LEGS }
+@export var part_type: Part
+
+func _on_ball_entered(ball: RigidBody3D) -> void:
+    match part_type:
+        Part.HEAD:
+            apply_header_force(ball)
+        Part.TORSO:
+            apply_chest_trap(ball)
+        Part.LEGS:
+            apply_kick_force(ball)
+```
+
+**Expert Tip**: For the "Root Motion" system, ensure the `AnimationTree` property `deterministic` is set to true to ensure consistent displacement across different hardware.
+
+
+## Reference
+- Master Skill: [godot-master](../SKILL.md)
+
+
 ## Reference
 - Master Skill: [godot-master](../SKILL.md)

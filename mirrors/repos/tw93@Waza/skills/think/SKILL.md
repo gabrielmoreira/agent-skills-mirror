@@ -2,8 +2,7 @@
 name: think
 description: "Turns rough ideas into approved, decision-complete plans with validated structure before writing code. Covers new features, architecture decisions, and value judgments about whether to build, keep, or remove something. Not for bug fixes or small edits."
 when_to_use: "出方案, 给方案, 深入分析, 怎么设计, 用什么方案, 判断一下, 有没有必要, 值不值得, what's the best approach, plan this, how should I, should we keep this"
-metadata:
-  version: "3.24.0"
+dispatch_intent: "New feature, architecture, how should I design this, value judgment, executable plan, handoff"
 ---
 
 # Think: Design and Validate Before You Build
@@ -52,13 +51,9 @@ Distinction from Lightweight Mode: Lightweight answers "how to fix it" (method).
 
 ## Durable Context Preflight
 
-Run this only when the user mentions memory, preview, previous decisions, or a prior conclusion; when they provide a memory path; or when the current project exposes an obvious local memory summary. Do not hard-code machine-specific memory roots or read raw transcripts.
+See [rules/durable-context.md](../../rules/durable-context.md) for when to read durable context, the read-order budget, and the memory-type mapping (planning constraints, reusable patterns, facts that need re-verification against current state).
 
-Read durable context in this order: user-provided path, current project scope, then global preferences. List titles first, then open at most 1-2 relevant summaries. Treat cross-project entries as transferable patterns only.
-
-Map memory types before using them: `decision`, `preference`, and `principle` are planning constraints; `pattern` and `learning` are design checks; `fact` must be verified against current state before it affects the plan. Current repo state, live docs, logs, tests, and remote state override memory; if they conflict, name the conflict and follow current state.
-
-For `/think`, lock durable decisions and preferences before asking questions. Do not ask the user to restate an intent that the durable context already establishes unless it is risky, stale, or contradicted by current state.
+For `/think`, planning constraints are `decision`, `preference`, and `principle` entries; current repo state, live docs, logs, tests, and remote state override memory. Lock durable decisions and preferences before asking questions. Do not ask the user to restate an intent that the durable context already establishes unless it is risky, stale, or contradicted by current state.
 
 Before outputting any plan, scan the project's `AGENTS.md`, `CLAUDE.md`, `.claude/rules/*.md`, and any local agent-memory summary if the user pointed at one. If the proposed plan contradicts a "hard rule", "never X", "must Y", or "prefer Z" stated in those files, surface the contradiction in the plan output (one sentence: which rule, which step contradicts it, recommended resolution). Do not silently override the rule. If the rule blocks the plan, stop and ask before continuing.
 
@@ -69,6 +64,8 @@ Before proposing custom implementations, search for framework built-ins, officia
 ## Propose Approaches
 
 Give one recommended approach with rationale. Include effort, risk, and what existing code it builds on. Mention one alternative only if the tradeoff is genuinely close (>40% chance the user would prefer it). Always include one minimal option.
+
+When the plan is about distilling lessons from one project into a reusable skill set or shared rules, split the plan into **promote** and **do not promote**. Promote only reusable workflow constraints. Explicitly reject project-specific commands, paths, release checklists, safety boundaries, and private local context unless the user asks to update that project itself.
 
 For the recommendation, identify the most fragile assumption (premise collapse) and state it explicitly: "This plan assumes X. If X does not hold, Y happens." If the assumption is load-bearing and fragile, deform the design to survive its failure.
 
@@ -126,6 +123,7 @@ When the user later says "Implement the plan", "可以干", "直接改", "整", 
 | Picked a regional or locale-specific API variant without checking | List all regional or locale differences before writing integration code |
 | Introduced a second language or runtime into a single-stack project | Never add a new language or runtime without explicit approval |
 | User said "判断一下这个报错" and got Evaluation Mode | "判断一下" + error/bug context = debugging, route to `/hunt`. Evaluation Mode is for value/existence judgments only |
+| User asked to "沉淀到 Waza" after a project review | First separate transferable Waza capability from project facts. Do not import that project's commands, paths, or release rules into Waza |
 
 ## Output
 

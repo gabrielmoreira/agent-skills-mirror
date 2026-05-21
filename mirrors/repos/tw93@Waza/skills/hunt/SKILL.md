@@ -2,8 +2,7 @@
 name: hunt
 description: "Finds root cause of errors, crashes, regressions, screenshot-reported defects, unexpected behavior, and failing tests before applying any fix. Not for code review or new features."
 when_to_use: "排查, 查查, 报错, 崩溃, 不工作, 不对, 跑不通, 以前是好的, 回归, 截图回归, 判断错误原因, 判断为什么报错, 反复修不好, debug, regression, used to work, broke after update, why broken, not working, what's wrong, fix error, stack trace"
-metadata:
-  version: "3.24.0"
+dispatch_intent: "Error, crash, regression, screenshot-reported defect, test failure, stale cache, runtime boundary, why broken"
 ---
 
 # Hunt: Diagnose Before You Fix
@@ -27,13 +26,9 @@ Rationalization warning: "I'll just try this" means no hypothesis, write it firs
 
 ## Durable Context Preflight
 
-Run this only when the user mentions memory, preview, previous decisions, or a prior conclusion; when they provide a memory path; or when the current project exposes an obvious local memory summary. Do not hard-code machine-specific memory roots or read raw transcripts.
+See [rules/durable-context.md](../../rules/durable-context.md) for when to read durable context, the read-order budget, and the memory-type mapping.
 
-Read durable context in this order: user-provided path, current project scope, then global preferences. List titles first, then open at most 1-2 relevant summaries. Treat cross-project entries as transferable patterns only.
-
-Map memory types before using them: `decision`, `preference`, and `principle` describe diagnostic constraints; `pattern` and `learning` can seed hypotheses; `fact` must be verified against current state before it affects diagnosis. Current code, logs, repro steps, tests, environment versions, and remote state override memory.
-
-For `/hunt`, durable context is hypothesis fuel only. It never replaces a fresh root-cause sentence, a reproducible symptom list, or evidence from the current state.
+For `/hunt`, diagnostic constraints are `decision`, `preference`, and `principle` entries; `pattern` and `learning` can seed hypotheses. Current code, logs, repro steps, tests, environment versions, and remote state override memory. Durable context is hypothesis fuel only. It never replaces a fresh root-cause sentence, a reproducible symptom list, or evidence from the current state.
 
 ## Hard Rules
 

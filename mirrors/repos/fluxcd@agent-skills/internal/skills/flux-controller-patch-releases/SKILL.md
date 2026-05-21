@@ -132,6 +132,9 @@ For each controller:
    - Prefer PR titles over commit subjects for bullets.
    - Check the PRs that introduced the changes; do not infer titles from local
      commit messages.
+   - For dependency-update PRs, inspect the PR body, any referenced upstream
+     PRs, and the `go.mod` diff for notable content (see "Dependency update
+     PRs" below) rather than settling for a generic bump line.
    - In the intro paragraph, summarize the concrete bug fixes shipped in the
      patch release.
 
@@ -173,6 +176,14 @@ For each controller:
    - `git cherry-pick -x <Add changelog entry commit>`
    - `git push origin pick-changelog-vX.Y.Z`
    - Open PR from `pick-changelog-vX.Y.Z` to `main`
+   - Do this one controller at a time — never chain several controllers'
+     cherry-picks into a single shell invocation. If such a batch is
+     interrupted partway, the branches it already created make a later
+     `git switch -c` fail, which silently leaves you on `main`, so the next
+     `git cherry-pick` lands the changelog commit on local `main` instead of
+     the pick branch. Before cherry-picking, confirm you are on
+     `pick-changelog-vX.Y.Z`; if the branch already exists, switch to it (or
+     delete and recreate it) rather than letting `switch -c` fail.
 
 ## How To Build The Changelog Entry
 
@@ -192,6 +203,27 @@ Rules:
 - Use PR titles, not raw commit messages
 - Group multiple dependency bump PRs naturally when the repo history already does that
 - Verify the title against GitHub when the local merge commit is vague
+
+### Dependency update PRs
+
+Do not reduce a dependency bump to a generic "Update fluxcd/pkg dependencies"
+line and move on — the user-facing substance is usually hidden inside the bump.
+
+- Read the PR description and follow any referenced upstream PRs (e.g. an
+  `Includes: fluxcd/pkg#NNNN` line), and look at the actual `go.mod` diff to see
+  what really changed.
+- Call out notable items in the intro and bullets: security fixes with their
+  CVE/GHSA and an advisory link, plus a short parenthetical describing the
+  impact. When several controllers pull the same bump (e.g. the same go-git
+  release), use matching wording across their changelogs so readers can
+  correlate them.
+- Only mention a dependency change if it is relevant to what that controller
+  actually does. A bumped module often ships capabilities the controller never
+  exercises, and listing them implies a capability it does not have. For
+  example, GCP sovereign cloud *artifact registry* support (shipped via a
+  `pkg/auth` bump) is worth noting for source-controller and
+  image-reflector-controller, which pull from registries, but not for
+  image-automation-controller, which only talks to Git.
 
 ## Critical Checks
 

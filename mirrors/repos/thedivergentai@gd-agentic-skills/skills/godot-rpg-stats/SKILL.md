@@ -219,9 +219,72 @@ func can_use(stats: Stats) -> bool:
 2. **Modifiers** - Temporary/permanent bonuses
 3. **Formula Balance** - Avoid exponential power creep
 
+---
+
+## Elite Godot 4.x Patterns
+
+### 1. Robust Stat Cap System
+Encapsulate stats in a `Resource` and use property setters to enforce caps and prevent technical overflows.
+
+```gdscript
+# rpg_stat.gd
+class_name RPGStat extends Resource
+
+signal stat_changed(old_value: int, new_value: int)
+
+@export var stat_name: String = "Strength"
+@export var max_cap: int = 999
+@export var current_value: int = 10:
+    set(value):
+        var old := current_value
+        current_value = clampi(value, 0, max_cap)
+        if old != current_value:
+            stat_changed.emit(old, current_value)
+```
+
+### 2. Reactive Stat Dependency Graphs
+Use the Observer pattern to handle derived stats. Instead of polling every frame, connect signals so derived stats (like Speed) only recalculate when their dependencies (like Agility) change.
+
+```gdscript
+# derived_stat.gd
+class_name DerivedStat extends RPGStat
+
+@export var multiplier: float = 1.0
+@export var base_stat: RPGStat:
+    set(new_base):
+        if base_stat: base_stat.stat_changed.disconnect(_on_dependency_changed)
+        base_stat = new_base
+        if base_stat:
+            base_stat.stat_changed.connect(_on_dependency_changed)
+            _recalculate()
+
+func _recalculate() -> void:
+    current_value = int(base_stat.current_value * multiplier)
+
+func _on_dependency_changed(_old, _new) -> void:
+    _recalculate()
+```
+
+### 3. Equipment Comparison UI Helper
+Override `_make_custom_tooltip` on UI controls to generate dynamic, BBCode-formatted stat differentials when hovering over equipment.
+
+```gdscript
+# equipment_slot_ui.gd
+func _make_custom_tooltip(_text: String) -> Object:
+    var container := VBoxContainer.new()
+    var rtf := RichTextLabel.new()
+    rtf.bbcode_enabled = true
+    
+    var diff := hovered_stat.current_value - equipped_stat.current_value
+    var color := "green" if diff > 0 else "red"
+    var sign := "+" if diff > 0 else ""
+    
+    rtf.text = "[color=%s]%s: %d (%s%d)[/color]" % [
+        color, hovered_stat.stat_name, hovered_stat.current_value, sign, diff
+    ]
+    container.add_child(rtf)
+    return container
+```
+
 ## Reference
-- Related: `godot-combat-system`, `godot-inventory-system`
-
-
-### Related
 - Master Skill: [godot-master](../godot-master/SKILL.md)

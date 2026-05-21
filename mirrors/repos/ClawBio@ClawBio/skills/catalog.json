@@ -332,7 +332,16 @@
         "MTHFR",
         "neurodevelopment"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "methylation",
+        "MTHFR",
+        "folate cycle",
+        "BH4",
+        "homocysteine",
+        "methylation cycle",
+        "metilación",
+        "neurotransmitter synthesis"
+      ],
       "chaining_partners": []
     },
     {

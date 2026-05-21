@@ -17,6 +17,7 @@ CAPABILITIES_SUMMARY:
 - collaboration_bridging: Package thinking breakthroughs for Magi/Spark/Helm/Atlas/Oracle handoff
 - cognitive_bias_audit: Dedicated mode to detect and surface cognitive biases in decision-making processes — anchoring, sunk cost, confirmation bias, groupthink, IKEA effect, and 15+ patterns with debiasing recommendations
 - contradiction_resolution: Apply TRIZ contradiction matrix to systematically resolve technical and physical contradictions — classical Altshuller matrix (39 parameters × 40 principles), updated Matrix 2003 (48 parameters, 150K+ patents 1985-2003), or Matrix 2022; leverage LLM-assisted TRIZ tools (AutoTRIZ 4-module pipeline, AICON RAG-enhanced contradiction navigator for cross-domain principle discovery, TRIZ Contradiction Solver) for automated contradiction detection and inventive principle retrieval when available
+- tri_engine_reframe: `multi` Recipe — parallel assumption-inversion and cross-domain reframing across Codex + Antigravity + Claude subagents; Pattern D (Divergence-primary) — `VERIFIED-DIVERGENT × HIGH` reframes are top-billed because they represent perspective shifts structurally unreachable by other engines' training-data priors; Portfolio-only merge (Compete merge is anti-pattern — collapses the divergence Flux exists to surface); assumption_root grouping preserves "same assumption inverted differently" as separate clusters
 
 COLLABORATION_PATTERNS:
 - Pattern A: Thinking Breakthrough (User/Magi → Flux → Magi) — break deadlocked decisions
@@ -251,6 +252,7 @@ Dedicated mode for detecting cognitive biases in decision-making processes, inde
 | SCAMPER | `scamper` | | 7-lens artifact transformation (Substitute/Combine/Adapt/Modify/Put-to-other-use/Eliminate/Reverse) | `references/scamper-technique.md` |
 | Analogy | `analogy` | | Structural mapping from a source domain (Gentner; biomimicry; cross-industry) | `references/analogical-thinking.md` |
 | Inversion | `inversion` | | Munger inversion — invert the goal, enumerate failure-guarantees, derive avoid-list | `references/inversion-method.md` |
+| Multi-Engine | `multi` | | Tri-engine reframe generation (Codex + Antigravity + Claude in parallel) with Pattern D Divergence-primary scoring. Portfolio-only merge — `VERIFIED-DIVERGENT × HIGH` reframes top-billed because they are structurally unreachable by other engines. Use when stuck thinking is suspected to share the same training-data prior across one or two engines. | `references/tri-engine-reframe.md`, `_common/MULTI_ENGINE_RECIPE.md` |
 
 ## Subcommand Dispatch
 
@@ -266,6 +268,7 @@ Behavior notes per Recipe:
 - `scamper`: LENS mode CLASSIFY → SCAMPER probe → CRYSTALLIZE. Apply 7 lenses (S/C/A/M/P/E/R, Eberle 1971) with prompt banks; ≥3 ideas per lens, ASN-test filter, deliver 7-lens × N matrix. Pair with `challenge` or `shift` upstream — SCAMPER alone produces incremental ideas.
 - `analogy`: LENS mode CLASSIFY → ANALOGY map → CRYSTALLIZE. Gentner structural mapping — align relations not objects; budget near vs far analogies; mark breakdown points; rate transferability. Generate ≥5 candidates and kill 4.
 - `inversion`: LENS mode CLASSIFY → INVERT → ENUMERATE → AVOID → CRYSTALLIZE. Munger goal-flip and Taleb via negativa. Enumerate ≥10 failure-guarantees across 6 categories (technical/social/economic/cognitive/temporal/structural), derive avoid-list with owners. Hand failure-paths to Omen for RPN/AP scoring.
+- `multi`: Tri-engine reframe generation. Spawn Codex / Antigravity / Claude subagents in one message; each produces 4-6 reframes independently with loose prompts (Role + Target + Output format only — no framework names, no Cynefin rules, no ASN criteria passed to subagents). Pattern D Divergence-primary scoring on TWO axes: Concurrence (`UNIVERSAL` 3/3 / `LIKELY` 2/3 / `VERIFIED-DIVERGENT` 1/3) × Novelty (`HIGH` / `MEDIUM` / `LOW`). Critical Flux rule: `VERIFIED-DIVERGENT × HIGH` reframes are **top-billed** ahead of UNIVERSAL because they represent perspective shifts other engines' training-data priors cannot reach. Portfolio merge only — Compete merge (`multi --compete`) is offered on explicit request but preserves alternatives in an appendix because in reframing the "second-best" perspective often becomes the breakthrough once the user encounters the problem in a new context. CLUSTER preserves "same assumption inverted differently" as separate clusters under a shared `assumption_root` heading. See `references/tri-engine-reframe.md` for the full SCOPE → PREFLIGHT → FAN-OUT → NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE → PRESENT flow.
 
 ## Output Routing
 
@@ -280,6 +283,7 @@ Behavior notes per Recipe:
 | `pre-mortem`, `what could go wrong`, `blind spots` | RAPID | Assumption vulnerability report + Blind Spot Report | Magi or User |
 | `complexity paralysis`, `too many options`, `overwhelmed` | DEEP | Cynefin classification + prioritized reframing set | Sherpa or User |
 | `bias check`, `are we biased`, `decision audit` | AUDIT | Bias Audit Report + debiased framing | Magi or User |
+| `multi-engine`, `parallel reframe`, `tri-engine perspective`, `cross-engine assumption inversion`, `multi`, `escape my own prior` | DEEP (multi) | Portfolio of divergent reframes (top-billing VERIFIED-DIVERGENT × HIGH) + Assumption Map + Blind Spot Report | Magi, Spark, Atlas, or User |
 
 ---
 
@@ -295,6 +299,41 @@ Every deliverable must include:
 - **Recommended Next Steps** with agent routing.
 
 > **Detail**: See `references/output-formats.md` for full templates. See `references/anti-patterns.md` for quality guards.
+
+---
+
+## Multi-Engine Mode
+
+Activated by the `multi` Recipe (or any explicit user request for parallel reframing / cross-engine perspective comparison). Tri-engine reframe generation follows Pattern D (Divergence-primary) per `_common/MULTI_ENGINE_RECIPE.md` — but Flux pushes the pattern further than Spark or Plea because *divergent reframes are the literal product*, not a side effect.
+
+**Why three engines for reframing**: vertical reasoning reinforces existing thought structures (de Bono). A single engine — no matter how capable — is structurally bounded by its training-data prior and can only produce inversions consistent with that prior. Three independent engines (Codex/GitHub-heavy, Antigravity/Google-product-heavy, Claude/Anthropic-curated) each apply *their own* implicit prior to the same problem, producing reframes that no single engine can reach alone. The breakthrough perspective shift almost always comes from the engine the other two could not duplicate.
+
+**Core mechanics:**
+- Spawn three Agent subagents in a single message: `reframe-codex`, `reframe-agy`, `reframe-claude` (per `references/tri-engine-reframe.md`).
+- Run engine availability PREFLIGHT in Flux main context — never delegate detection to subagents (subagent PATH is narrower).
+- Use loose prompts (Role + Target + Output format only). Do NOT pass framework names (Bisociation, SCAMPER, TRIZ, Oblique Strategies), Cynefin classification rules, or ASN-test criteria to subagents — apply those at SYNTHESIZE. Each engine's training-data prior must drive divergence freely.
+- Subagents return structured JSON; main context integrates via NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE.
+
+**Two-axis scoring (the Flux-specific structure):**
+
+| Axis | Labels | Notes |
+|------|--------|-------|
+| Concurrence | `UNIVERSAL` (3/3), `LIKELY` (2/3), `VERIFIED-DIVERGENT` (1/3 after grounding) | How many engines reached the reframe |
+| Novelty | `HIGH`, `MEDIUM`, `LOW` (drop) | How much new action surface the reframe opens vs. the original framing |
+
+**Critical Flux rule (does NOT exist in Spark, opposite of Judge): `VERIFIED-DIVERGENT × HIGH` reframes occupy the top section of the Portfolio output, ahead of `UNIVERSAL` reframes.** Flux's entire premise is that breakthrough perspective shifts come from outside the consensus prior; multi-engine reframing makes that operational by treating single-engine divergence as a feature, not a defect.
+
+**CLUSTER difference from Spark**: two reframes targeting the same `original_assumption` but with different `inverted_form` are kept as **separate clusters** under a shared `assumption_root` heading — not merged. A single assumption can be inverted along multiple axes (negation / scale-shift / time-shift / observer-shift); collapsing them destroys divergent value.
+
+**Merge strategy: Portfolio-only by default.** Compete merge — choosing "the best reframe" — recreates the consensus prior the user came to Flux to escape. `multi --compete` is offered only on explicit request and even then alternatives are preserved in an appendix, because the "second-best" reframe often becomes the breakthrough once the user encounters the problem in a new context.
+
+**Engine-attribution tag (mandatory on every shipped reframe):** `[codex+agy+claude]` (3/3) / `[codex+agy]` etc. (2/3) / `[codex-verified]` (1/3 verified-divergent). For DIVERGENT reframes, append a second tag explaining *why divergence is informative here*: `[divergent: cross-domain-prior]`, `[divergent: scale-shift-prior]`, `[divergent: contrarian-prior]`.
+
+**GROUND checks (Flux main context, never delegated)**: ASN test (Actionability / Specificity / Novelty), hallucinated-domain check (cross-domain analogies plausible to an expert), synonym-substitution check, bias-blind-spot check (does the reframe inherit the same bias as the original framing?). Rejection categories: `REJECTED-ASN`, `REJECTED-HALLUCINATION`, `REJECTED-SYNONYM`, `REJECTED-BIAS-INHERITED`.
+
+**Degraded modes:** 1 engine down → continue with 2; 2 down → single-engine fallback with stricter ASN/bias-blind-spot grounding and flag that divergence-value is severely reduced (recommend falling back to standard `reframe` Recipe); all down → degrade to standard `reframe` Recipe (DEEP pipeline).
+
+Full algorithm, JSON schema, prompt skeletons, and grounding rules: `references/tri-engine-reframe.md`.
 
 ---
 
@@ -327,6 +366,9 @@ Every deliverable must include:
 | `references/scamper-technique.md` | You are running `scamper` — need 7-lens prompt banks, lens-selection heuristics, anti-patterns, and handoff for SCAMPER probing. |
 | `references/analogical-thinking.md` | You are running `analogy` — need Gentner structural mapping, near/far distance budget, biomimicry catalog, cross-industry patterns, breakdown-point testing. |
 | `references/inversion-method.md` | You are running `inversion` — need Munger goal-flip prompts, Taleb via negativa, 6-category failure-mode scaffold, avoid-list derivation, and Omen handoff. |
+| `references/tri-engine-reframe.md` | You are running the `multi` Recipe — tri-engine fan-out (Codex + Antigravity + Claude subagents), Pattern D Divergence-primary scoring on Concurrence × Novelty axes, Portfolio-only merge strategy, assumption_root clustering rule, JSON schema, subagent prompt skeletons, and degraded-mode behavior. |
+| `_common/SUBAGENT.md` | You need the base MULTI_ENGINE protocol — engine dispatch table, loose prompt rules, Agent tool fan-out mechanics, fallback rules. Read before authoring `multi` Recipe subagent prompts. |
+| `_common/MULTI_ENGINE_RECIPE.md` | You need the cross-skill `multi` Recipe protocol — Pattern D / C / H selection, canonical SCOPE → PREFLIGHT → FAN-OUT → NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE → DELIVER flow, engine-attribution conventions, degraded-mode matrix. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the reframing output, deciding adaptive thinking depth at contradiction/ASN gating, or front-loading problem/stuck-point/axis at ENTER. Critical for Flux: P3, P5. |
 
 ---
@@ -389,7 +431,7 @@ _STEP_COMPLETE:
   Status: SUCCESS | PARTIAL | BLOCKED | FAILED
   Output:
     deliverable: [reframing package path or inline]
-    artifact_type: "[Reframing Package | Assumption Map | Perspective Shift Report | Cross-Domain Insight]"
+    artifact_type: "[Reframing Package | Assumption Map | Perspective Shift Report | Cross-Domain Insight | Tri-Engine Reframe Portfolio]"
     parameters:
       cynefin_domain: "[Clear | Complicated | Complex | Chaotic | Disorder]"
       work_mode: "[DEEP | RAPID | LENS]"
@@ -397,6 +439,20 @@ _STEP_COMPLETE:
       reframed_statements_count: "[3-5]"
       blind_spots_detected: "[count]"
       serendipity_injections: "[count]"
+    tri_engine:                                  # present only when `multi` Recipe ran
+      engines_run: [codex, agy, claude]
+      engines_failed: [list or none]
+      merge_strategy: "[Portfolio | Compete]"   # Portfolio is the default for Flux
+      concurrence_distribution:
+        UNIVERSAL: [count]
+        LIKELY: [count]
+        VERIFIED-DIVERGENT: [count]
+      novelty_distribution:
+        HIGH: [count]
+        MEDIUM: [count]
+      top_billed_divergent: [count of VERIFIED-DIVERGENT × HIGH reframes promoted to top section]
+      assumption_roots: [count of distinct original_assumptions surfaced across engines]
+      rejected: [count + top categories — ASN-fail / hallucinated-domain / synonym-substitution / bias-inherited]
   Handoff:
     Format: FLUX_TO_[NEXT]_HANDOFF
     Content: [Full handoff content]

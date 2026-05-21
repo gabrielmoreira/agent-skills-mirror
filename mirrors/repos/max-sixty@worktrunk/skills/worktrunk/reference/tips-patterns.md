@@ -14,7 +14,7 @@ wsc feature -- 'Fix GH #322'          # Runs `claude 'Fix GH #322'`
 
 ## `wt` aliases
 
-Compose with template filters and [vars](https://worktrunk.dev/tips-patterns/#per-branch-variables) for branch-specific shortcuts:
+Compose with template filters and [vars](https://worktrunk.dev/tips-patterns/#per-branch-variables):
 
 ```toml
 # .config/wt.toml
@@ -24,6 +24,9 @@ open = "open http://localhost:{{ branch | hash_port }}"
 
 # Test with branch-specific features from vars
 test = "cargo test --features {{ vars.features | default('default') }}"
+
+# Switch via the interactive picker, print the chosen branch
+pick = "wt switch --format=json | jq -r '.branch'"
 ```
 
 See [Aliases](https://worktrunk.dev/extending/#aliases) for scoping, approval, and reference.
@@ -44,7 +47,7 @@ Each worktree runs its own dev server on a deterministic port. The `hash_port` f
 
 ```toml
 # .config/wt.toml
-[post-start]
+[post-create]
 server = "wt step tether -- npm run dev -- --port {{ branch | hash_port }}"
 
 [list]
@@ -73,7 +76,7 @@ Ports are deterministic: `fix-auth` always gets port 16460, regardless of which 
 Each worktree can have its own isolated database. A pipeline sets up names and ports as [vars](https://worktrunk.dev/config/#wt-config-state-vars), then later steps and hooks reference them:
 
 ```toml
-[[post-start]]
+[[post-create]]
 set-vars = """
 wt config state vars set \
   container='{{ repo }}-{{ branch | sanitize }}-postgres' \
@@ -81,7 +84,7 @@ wt config state vars set \
   db_url='postgres://postgres:dev@localhost:{{ ('db-' ~ branch) | hash_port }}/{{ branch | sanitize_db }}'
 """
 
-[[post-start]]
+[[post-create]]
 db = """
 docker run -d --rm \
   --name {{ vars.container }} \
@@ -110,21 +113,21 @@ DATABASE_URL=$(wt config state vars get db_url) npm start
 Use [`wt step copy-ignored`](https://worktrunk.dev/step/#wt-step-copy-ignored) to copy gitignored files (caches, dependencies, `.env`) between worktrees:
 
 ```toml
-[post-start]
+[post-create]
 copy = "wt step copy-ignored"
 ```
 
-When another hook depends on the copy — for example, copying `node_modules/` before `pnpm install` so the install reuses cached packages — sequence them with a `[[post-start]]` pipeline:
+When another hook depends on the copy — for example, copying `node_modules/` before `pnpm install` so the install reuses cached packages — sequence them with a `[[post-create]]` pipeline:
 
 ```toml
-[[post-start]]
+[[post-create]]
 copy = "wt step copy-ignored"
 
-[[post-start]]
+[[post-create]]
 install = "pnpm install"
 ```
 
-Use `pre-start` instead when an `--execute` command needs the copied files immediately.
+Use `pre-create` instead when an `--execute` command needs the copied files immediately.
 
 All gitignored files are copied by default. To limit what gets copied, create `.worktreeinclude` with patterns — files must be both gitignored and listed. See [`wt step copy-ignored`](https://worktrunk.dev/step/#wt-step-copy-ignored) for details.
 
@@ -213,7 +216,7 @@ git rebase $(wt config state default-branch)
 Reference Taskfile/Justfile/Makefile in hooks:
 
 ```toml
-[pre-start]
+[pre-create]
 "setup" = "task install"
 
 [pre-merge]
@@ -301,7 +304,7 @@ Each worktree gets its own tmux session with a multi-pane layout.
 
 ```toml
 # .config/wt.toml
-[pre-start]
+[pre-create]
 tmux = """
 S={{ branch | sanitize }}
 W={{ worktree_path }}
@@ -330,6 +333,41 @@ To create a worktree and immediately attach:
 ```bash
 $ wt switch --create feature -x 'tmux attach -t {{ branch | sanitize }}'
 ```
+
+## cmux workspace per worktree
+
+Each worktree gets its own [cmux](https://cmux.com) workspace. Switching worktrees switches workspaces; removing a worktree closes its workspace. Configuration contributed by [@endigma](https://github.com/endigma) ([#2796](https://github.com/max-sixty/worktrunk/issues/2796)).
+
+**Prerequisites:** [jq](https://jqlang.org) (`brew install jq`)
+
+```toml
+# ~/.config/worktrunk/config.toml
+
+# cmux is the navigation primitive; don't also cd the invoking shell.
+[switch]
+cd = false
+
+[pre-create]
+cmux = "cmux new-workspace --name {{ repo | sanitize }}/{{ branch | sanitize }} --cwd {{ worktree_path }} --focus true"
+
+[pre-switch]
+cmux = """
+WS=$(cmux --json list-workspaces 2>/dev/null \\
+  | jq -r --arg t '{{ repo | sanitize }}/{{ branch | sanitize }}' \\
+      '.workspaces[] | select(.title == $t) | .ref' | head -1)
+[ -n "$WS" ] && cmux select-workspace --workspace "$WS" || true
+"""
+
+[pre-remove]
+cmux = """
+WS=$(cmux --json list-workspaces 2>/dev/null \\
+  | jq -r --arg t '{{ repo | sanitize }}/{{ branch | sanitize }}' \\
+      '.workspaces[] | select(.title == $t) | .ref' | head -1)
+[ -n "$WS" ] && cmux close-workspace --workspace "$WS" || true
+"""
+```
+
+**Why `pre-*` instead of `post-*`?** cmux restricts socket access to processes spawned inside a cmux terminal. `post-*` hooks run as detached background processes, breaking the process ancestry chain. `pre-*` hooks run in the foreground and inherit the terminal's process lineage.
 
 ## Xcode DerivedData cleanup
 
@@ -360,7 +398,7 @@ Clean URLs like `http://feature-auth.myproject.localhost` without port numbers. 
 
 ```toml
 # .config/wt.toml
-[post-start]
+[post-create]
 server = "wt step tether -- npm run dev -- --port {{ branch | hash_port }}"
 proxy = """
   curl -sf --max-time 0.5 http://localhost:2019/config/ || caddy start
@@ -381,7 +419,7 @@ url = "http://{{ branch | sanitize }}.{{ repo }}.localhost:8080"
 
 **How it works:**
 
-1. `wt switch --create feature-auth` runs the `post-start` hook, starting the dev server on a deterministic port (`{{ branch | hash_port }}` → 16460)
+1. `wt switch --create feature-auth` runs the `post-create` hook, starting the dev server on a deterministic port (`{{ branch | hash_port }}` → 16460)
 2. The hook starts Caddy if needed and registers a route using the same port: `feature-auth.myproject` → `localhost:16460`
 3. `*.localhost` resolves to `127.0.0.1` via the OS
 4. Visiting `http://feature-auth.myproject.localhost:8080`: Caddy matches the subdomain and proxies to the dev server
@@ -391,10 +429,10 @@ url = "http://{{ branch | sanitize }}.{{ repo }}.localhost:8080"
 Follow background hook output in real-time:
 
 ```bash
-tail -f "$(wt config state logs get --hook=user:post-start:server)"
+tail -f "$(wt config state logs get --hook=user:post-create:server)"
 ```
 
-The `--hook` format is `source:hook-type:name` — e.g., `project:post-start:build` for project-defined hooks. Use `wt config state logs get` to list all available logs.
+The `--hook` format is `source:hook-type:name` — e.g., `project:post-create:build` for project-defined hooks. Use `wt config state logs get` to list all available logs.
 
 Create an alias for frequent use:
 

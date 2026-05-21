@@ -1,0 +1,64 @@
+# theSVG
+
+> The largest open-source brand SVG icon library for developers, designers, and AI agents.
+
+## About
+
+theSVG provides 4,000+ brand SVG icons with multi-variant support (color, mono, light, dark, wordmark). Available as npm packages, React components, CLI, REST API, CDN, and MCP server.
+
+## Links
+
+- Website: https://thesvg.org
+- Compare Libraries: https://thesvg.org/compare
+- GitHub: https://github.com/glincker/thesvg
+- npm: https://www.npmjs.com/package/thesvg
+- Submit Icon: https://thesvg.org/submit
+- Extensions: https://thesvg.org/extensions
+- Contact: https://thesvg.org/contact
+- Full LLM context: https://thesvg.org/llms-full.txt
+
+## Packages
+
+- `thesvg` - All icons in one package
+- `@thesvg/icons` - Core icon data, tree-shakeable ESM
+- `@thesvg/react` - Typed React components with forwardRef
+- `@thesvg/cli` - CLI tool (`npx @thesvg/cli add github`)
+- `@thesvg/mcp-server` - MCP server for AI assistants (Claude, Cursor, Windsurf)
+
+## API
+
+thesvg ships as a static site. There are no dynamic search endpoints; fetch the manifest once and filter client-side.
+
+Base URL: https://thesvg.org
+
+- `GET /icons/{slug}/{variant}.svg` - Direct SVG file (CDN)
+- `GET /api/registry.json` - Full icon manifest (slug, title, aliases, categories, hex, url, license, variant keys)
+- `GET /api/categories.json` - All categories with counts
+
+No authentication required. CORS enabled. A gated, token-based API at api.thesvg.org is on the roadmap for advanced search and analytics.
+
+## Icon Variants
+
+Each icon can have up to 7 variants:
+- `default` - Primary brand color (always present)
+- `mono` - Single color, inherits text color
+- `light` - White, for dark backgrounds
+- `dark` - Black, for light backgrounds
+- `wordmark` - Full text logo
+- `wordmarkLight` - White text logo
+- `wordmarkDark` - Dark text logo
+
+## CDN Usage
+
+```
+https://thesvg.org/icons/{slug}/{variant}.svg
+https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/{slug}/{variant}.svg
+```
+
+## Categories
+
+56 categories including: AI, Analytics, Authentication, Automotive, Aviation, Browser, Cloud, CMS, Community, Crypto, Database, Design, Devtool, Education, Entertainment, Finance, Food, Framework, Gaming, Hardware, Hosting, IoT, Language, Library, Linux, Media, Music, Payment, Platform, Privacy, Security, Self-Hosted, Shopping, Social, Software, and more.
+
+## Legal
+
+All brand icons are property of their respective owners. Provided for identification and development purposes under nominative fair use. See https://thesvg.org/legal and TRADEMARK.md.

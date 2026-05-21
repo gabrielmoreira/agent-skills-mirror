@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `1jehuang/jcode` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `1jehuang/jcode` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `1jehuang/jcode` — 26 default patterns, 0 followed patterns, 2 file(
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,6 +61,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.jcode/skills/optimization/SKILL.md`](.jcode/skills/optimization/SKILL.md) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`crates/jcode-desktop/AGENTS.md`](crates/jcode-desktop/AGENTS.md) |
 
 ---
 

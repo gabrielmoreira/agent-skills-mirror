@@ -324,9 +324,74 @@ func highlight_tile(tile_pos: Vector2i) -> void:
     highlight_layer.set_cell(tile_pos, 0, Vector2i(0, 0))
 ```
 
+## Expert TileMap Architectures
+
+### 1. Isometric TileMap (Z-Sorting / Y-Sorting)
+To master isometric rendering in Godot 4.x, configure the `TileSet` with `TILE_SHAPE_ISOMETRIC`. To ensure correct depth-sorting between tiles and dynamic entities (like players), enable `y_sort_enabled` on all `TileMapLayer` nodes and their mutual `Node2D` parent. Use `y_sort_origin` on `TileData` to precisely tune the sorting pivot for tall objects.
+
+```gdscript
+class_name IsometricMapOrchestrator extends Node2D
+## Configures multiple TileMapLayers for isometric Y-sorting.
+
+@export var ground: TileMapLayer
+@export var objects: TileMapLayer
+
+func _ready() -> void:
+    # Enable global Y-sorting for this container.
+    y_sort_enabled = true
+    
+    # Configure individual layers.
+    ground.y_sort_enabled = true
+    objects.y_sort_enabled = true
+    
+    # Optional: Offset the objects layer to fake height.
+    objects.y_sort_origin = 16 
+```
+
+### 2. Procedural Generation (TileMapPattern Stamping)
+For high-performance procedural generation, use `TileMapPattern` to store and "stamp" pre-fabricated tile structures. This is significantly faster than calling `set_cell()` in individual loops and preserves all tile identifiers (source_id, atlas_coords, alternative_tile) perfectly.
+
+```gdscript
+class_name TileStamper extends Node
+## Efficiently stamps pre-fabricated patterns into a TileMapLayer.
+
+@export var target_layer: TileMapLayer
+var _house_pattern: TileMapPattern
+
+func capture_pattern(coords: Array[Vector2i]) -> void:
+    # Encapsulate a set of cells into a reusable pattern resource.
+    _house_pattern = target_layer.get_pattern(coords)
+
+func stamp_at(position: Vector2i) -> void:
+    if _house_pattern:
+        # Bulk-paste the pattern at the target coordinates.
+        target_layer.set_pattern(position, _house_pattern)
+```
+
+### 3. Tilemap Diff (Layer Delta Merging)
+To implement world-saving or destruction-syncing, calculate the "diff" between two `TileMapLayer` nodes. By iterating through `get_used_cells()`, you can identify discrepancies in `source_id` or `atlas_coords` and apply only the changes to a target layer, optimizing network or disk I/O.
+
+```gdscript
+class_name TileDiffManager extends Node
+## Calculates and applies the delta between two TileMapLayers.
+
+func apply_layer_diff(source: TileMapLayer, target: TileMapLayer) -> void:
+    var source_cells := source.get_used_cells()
+    
+    for coord in source_cells:
+        var s_id := source.get_cell_source_id(coord)
+        var t_id := target.get_cell_source_id(coord)
+        
+        # If tiles differ, sync the target to the source.
+        if s_id != t_id:
+            var atlas := source.get_cell_atlas_coords(coord)
+            var alt := source.get_cell_alternative_tile(coord)
+            target.set_cell(coord, s_id, atlas, alt)
+```
+
 ## Reference
-- [Godot Docs: TileMaps](https://docs.godotengine.org/en/stable/tutorials/2d/using_tilemaps.html)
-- [Godot Docs: TileSets](https://docs.godotengine.org/en/stable/tutorials/2d/using_tilesets.html)
+- [Godot Docs: TileMapLayer](https://docs.godotengine.org/en/stable/classes/class_tilemaplayer.html)
+- [Godot Docs: TileMapPattern](https://docs.godotengine.org/en/stable/classes/class_tilemappattern.html)
 
 
 ### Related

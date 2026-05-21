@@ -1,0 +1,44 @@
+{
+  "name": "stitch-skills",
+  "interface": {
+    "displayName": "Stitch Skills"
+  },
+  "plugins": [
+    {
+      "name": "stitch-design",
+      "source": {
+        "source": "local",
+        "path": "./plugins/stitch-design"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "stitch-build",
+      "source": {
+        "source": "local",
+        "path": "./plugins/stitch-build"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "stitch-utilities",
+      "source": {
+        "source": "local",
+        "path": "./plugins/stitch-utilities"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `liaohch3/claude-tap` — 26 default patterns, 1 followed patterns, 183 file(s) materialized.
+Mirror of `liaohch3/claude-tap` — 26 default patterns, 1 followed patterns, 186 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `liaohch3/claude-tap` — 26 default patterns, 1 followed patterns, 18
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 183 |
+| Files         | 186 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -182,66 +182,69 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 121 | ✓ | [`.agents/evidence/pr/pr99/viewer-tool-name-fallback.png`](.agents/evidence/pr/pr99/viewer-tool-name-fallback.png) |
 | 122 | ✓ | [`.agents/evidence/pr/qoder-cli/qoder-trace-detail-scrolled.png`](.agents/evidence/pr/qoder-cli/qoder-trace-detail-scrolled.png) |
 | 123 | ✓ | [`.agents/evidence/pr/qoder-cli/qoder-trace-last-entry-expanded.png`](.agents/evidence/pr/qoder-cli/qoder-trace-last-entry-expanded.png) |
-| 124 | ✓ | [`.agents/evidence/pr/tool-search/README.md`](.agents/evidence/pr/tool-search/README.md) |
-| 125 | ✓ | [`.agents/evidence/pr/tool-search/responses-function-call.png`](.agents/evidence/pr/tool-search/responses-function-call.png) |
-| 126 | ✓ | [`.agents/evidence/pr/tool-search/tool-search-output-context.png`](.agents/evidence/pr/tool-search/tool-search-output-context.png) |
-| 127 | ✓ | [`.agents/evidence/pr/tool-search/tool-search-response.png`](.agents/evidence/pr/tool-search/tool-search-response.png) |
-| 128 | ✓ | [`.agents/evidence/pr/viewer-i18n-source/README.md`](.agents/evidence/pr/viewer-i18n-source/README.md) |
-| 129 | ✓ | [`.agents/evidence/pr/viewer-i18n-source/viewer-i18n-source-codex-trace.png`](.agents/evidence/pr/viewer-i18n-source/viewer-i18n-source-codex-trace.png) |
-| 130 | ✓ | [`.agents/evidence/pr/viewer-quality/anthropic_messages.png`](.agents/evidence/pr/viewer-quality/anthropic_messages.png) |
-| 131 | ✓ | [`.agents/evidence/pr/viewer-quality/codex_websocket.png`](.agents/evidence/pr/viewer-quality/codex_websocket.png) |
-| 132 | ✓ | [`.agents/evidence/pr/viewer-quality/gemini.png`](.agents/evidence/pr/viewer-quality/gemini.png) |
-| 133 | ✓ | [`.agents/evidence/pr/viewer-quality/README.md`](.agents/evidence/pr/viewer-quality/README.md) |
-| 134 | ✓ | [`.agents/evidence/pr/WS_VERIFY_REPORT.md`](.agents/evidence/pr/WS_VERIFY_REPORT.md) |
-| 135 | ✓ | [`.agents/recordings/01_error_banner_and_sidebar.png`](.agents/recordings/01_error_banner_and_sidebar.png) |
-| 136 | ✓ | [`.agents/recordings/02_sidebar_error_styling.png`](.agents/recordings/02_sidebar_error_styling.png) |
-| 137 | ✓ | [`.agents/recordings/03_copy_button_fallback_success.png`](.agents/recordings/03_copy_button_fallback_success.png) |
-| 138 | ✓ | [`.agents/recordings/codex-demo.cast`](.agents/recordings/codex-demo.cast) |
-| 139 | ✓ | [`.agents/recordings/codex-demo.gif`](.agents/recordings/codex-demo.gif) |
-| 140 | ✓ | [`.agents/recordings/demo_zh.mp4`](.agents/recordings/demo_zh.mp4) |
-| 141 | ✓ | [`.agents/recordings/demo.mp4`](.agents/recordings/demo.mp4) |
-| 142 | ✓ | [`.agents/recordings/diff-scroll-bottom.png`](.agents/recordings/diff-scroll-bottom.png) |
-| 143 | ✓ | [`.agents/recordings/diff-scroll-top.png`](.agents/recordings/diff-scroll-top.png) |
-| 144 | ✓ | [`.agents/recordings/search-01-open.png`](.agents/recordings/search-01-open.png) |
-| 145 | ✓ | [`.agents/recordings/search-02-highlight.png`](.agents/recordings/search-02-highlight.png) |
-| 146 | ✓ | [`.agents/recordings/search-03-navigate.png`](.agents/recordings/search-03-navigate.png) |
-| 147 | ✓ | [`.agents/recordings/viewer-01-turn1-overview.png`](.agents/recordings/viewer-01-turn1-overview.png) |
-| 148 | ✓ | [`.agents/recordings/viewer-02-tools-sse-expanded.png`](.agents/recordings/viewer-02-tools-sse-expanded.png) |
-| 149 | ✓ | [`.agents/recordings/viewer-03-request-json-scrolled.png`](.agents/recordings/viewer-03-request-json-scrolled.png) |
-| 150 | ✓ | [`.agents/recordings/viewer-04-turn5.png`](.agents/recordings/viewer-04-turn5.png) |
-| 151 | ✓ | [`.agents/recordings/viewer-05-diff.png`](.agents/recordings/viewer-05-diff.png) |
-| 152 | ✓ | [`.agents/recordings/viewer-06-curl.png`](.agents/recordings/viewer-06-curl.png) |
-| 153 | ✓ | [`.agents/recordings/viewer-07-turn10.png`](.agents/recordings/viewer-07-turn10.png) |
-| 154 | ✓ | [`.agents/recordings/viewer-08-dark-mode.png`](.agents/recordings/viewer-08-dark-mode.png) |
-| 155 | ✓ | [`.agents/recordings/viewer-09-sidebar-scrolled.png`](.agents/recordings/viewer-09-sidebar-scrolled.png) |
-| 156 | ✓ | [`.agents/recordings/viewer-10-last-turn.png`](.agents/recordings/viewer-10-last-turn.png) |
-| 157 | ✓ | [`.agents/recordings/viewer-11-final-wide.png`](.agents/recordings/viewer-11-final-wide.png) |
-| 158 | ✓ | [`.agents/recordings/viewer-codex-01-overview.png`](.agents/recordings/viewer-codex-01-overview.png) |
-| 159 | ✓ | [`.agents/recordings/viewer-codex-02-messages.png`](.agents/recordings/viewer-codex-02-messages.png) |
-| 160 | ✓ | [`.agents/recordings/viewer-codex-02-system-prompt.png`](.agents/recordings/viewer-codex-02-system-prompt.png) |
-| 161 | ✓ | [`.agents/recordings/viewer-codex-03-messages.png`](.agents/recordings/viewer-codex-03-messages.png) |
-| 162 | ✓ | [`.agents/recordings/viewer-codex-03-scrolled.png`](.agents/recordings/viewer-codex-03-scrolled.png) |
-| 163 | ✓ | [`.agents/recordings/viewer-codex-04-response.png`](.agents/recordings/viewer-codex-04-response.png) |
-| 164 | ✓ | [`.agents/recordings/viewer-codex-04-turn3.png`](.agents/recordings/viewer-codex-04-turn3.png) |
-| 165 | ✓ | [`.agents/recordings/viewer-codex-05-diff.png`](.agents/recordings/viewer-codex-05-diff.png) |
-| 166 | ✓ | [`.agents/recordings/viewer-codex-05-tokens.png`](.agents/recordings/viewer-codex-05-tokens.png) |
-| 167 | ✓ | [`.agents/recordings/viewer-codex-06-diff.png`](.agents/recordings/viewer-codex-06-diff.png) |
-| 168 | ✓ | [`.agents/recordings/viewer-codex-08-tools.png`](.agents/recordings/viewer-codex-08-tools.png) |
-| 169 | ✓ | [`.agents/recordings/viewer-demo.mp4`](.agents/recordings/viewer-demo.mp4) |
-| 170 | ✓ | [`.agents/skills/codex-e2e-test/SKILL.md`](.agents/skills/codex-e2e-test/SKILL.md) |
-| 171 | ✓ | [`.agents/skills/demo-video/SKILL.md`](.agents/skills/demo-video/SKILL.md) |
-| 172 | ✓ | [`.agents/skills/e2e-test/SKILL.md`](.agents/skills/e2e-test/SKILL.md) |
-| 173 | ✓ | [`.agents/skills/js-in-html-testing/SKILL.md`](.agents/skills/js-in-html-testing/SKILL.md) |
-| 174 | ✓ | [`.agents/skills/legibility-check/SKILL.md`](.agents/skills/legibility-check/SKILL.md) |
-| 175 | ✓ | [`.agents/skills/playwright-screen-recording/SKILL.md`](.agents/skills/playwright-screen-recording/SKILL.md) |
-| 176 | ✓ | [`.agents/skills/pr-preflight/SKILL.md`](.agents/skills/pr-preflight/SKILL.md) |
-| 177 | ✓ | [`.agents/skills/push-release/SKILL.md`](.agents/skills/push-release/SKILL.md) |
-| 178 | ✓ | [`.agents/skills/real-e2e-test/SKILL.md`](.agents/skills/real-e2e-test/SKILL.md) |
-| 179 | ✓ | [`.agents/skills/screenshot-validation/SKILL.md`](.agents/skills/screenshot-validation/SKILL.md) |
-| 180 | ✓ | [`.agents/skills/translate-i18n/SKILL.md`](.agents/skills/translate-i18n/SKILL.md) |
-| 181 | ✓ | [`.claude/CLAUDE.md`](.claude/CLAUDE.md) |
-| 182 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 183 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 124 | ✓ | [`.agents/evidence/pr/technical-log-tabs/history-delete-control.png`](.agents/evidence/pr/technical-log-tabs/history-delete-control.png) |
+| 125 | ✓ | [`.agents/evidence/pr/technical-log-tabs/trace-copy-followup.png`](.agents/evidence/pr/technical-log-tabs/trace-copy-followup.png) |
+| 126 | ✓ | [`.agents/evidence/pr/technical-log-tabs/trace-view.png`](.agents/evidence/pr/technical-log-tabs/trace-view.png) |
+| 127 | ✓ | [`.agents/evidence/pr/tool-search/README.md`](.agents/evidence/pr/tool-search/README.md) |
+| 128 | ✓ | [`.agents/evidence/pr/tool-search/responses-function-call.png`](.agents/evidence/pr/tool-search/responses-function-call.png) |
+| 129 | ✓ | [`.agents/evidence/pr/tool-search/tool-search-output-context.png`](.agents/evidence/pr/tool-search/tool-search-output-context.png) |
+| 130 | ✓ | [`.agents/evidence/pr/tool-search/tool-search-response.png`](.agents/evidence/pr/tool-search/tool-search-response.png) |
+| 131 | ✓ | [`.agents/evidence/pr/viewer-i18n-source/README.md`](.agents/evidence/pr/viewer-i18n-source/README.md) |
+| 132 | ✓ | [`.agents/evidence/pr/viewer-i18n-source/viewer-i18n-source-codex-trace.png`](.agents/evidence/pr/viewer-i18n-source/viewer-i18n-source-codex-trace.png) |
+| 133 | ✓ | [`.agents/evidence/pr/viewer-quality/anthropic_messages.png`](.agents/evidence/pr/viewer-quality/anthropic_messages.png) |
+| 134 | ✓ | [`.agents/evidence/pr/viewer-quality/codex_websocket.png`](.agents/evidence/pr/viewer-quality/codex_websocket.png) |
+| 135 | ✓ | [`.agents/evidence/pr/viewer-quality/gemini.png`](.agents/evidence/pr/viewer-quality/gemini.png) |
+| 136 | ✓ | [`.agents/evidence/pr/viewer-quality/README.md`](.agents/evidence/pr/viewer-quality/README.md) |
+| 137 | ✓ | [`.agents/evidence/pr/WS_VERIFY_REPORT.md`](.agents/evidence/pr/WS_VERIFY_REPORT.md) |
+| 138 | ✓ | [`.agents/recordings/01_error_banner_and_sidebar.png`](.agents/recordings/01_error_banner_and_sidebar.png) |
+| 139 | ✓ | [`.agents/recordings/02_sidebar_error_styling.png`](.agents/recordings/02_sidebar_error_styling.png) |
+| 140 | ✓ | [`.agents/recordings/03_copy_button_fallback_success.png`](.agents/recordings/03_copy_button_fallback_success.png) |
+| 141 | ✓ | [`.agents/recordings/codex-demo.cast`](.agents/recordings/codex-demo.cast) |
+| 142 | ✓ | [`.agents/recordings/codex-demo.gif`](.agents/recordings/codex-demo.gif) |
+| 143 | ✓ | [`.agents/recordings/demo_zh.mp4`](.agents/recordings/demo_zh.mp4) |
+| 144 | ✓ | [`.agents/recordings/demo.mp4`](.agents/recordings/demo.mp4) |
+| 145 | ✓ | [`.agents/recordings/diff-scroll-bottom.png`](.agents/recordings/diff-scroll-bottom.png) |
+| 146 | ✓ | [`.agents/recordings/diff-scroll-top.png`](.agents/recordings/diff-scroll-top.png) |
+| 147 | ✓ | [`.agents/recordings/search-01-open.png`](.agents/recordings/search-01-open.png) |
+| 148 | ✓ | [`.agents/recordings/search-02-highlight.png`](.agents/recordings/search-02-highlight.png) |
+| 149 | ✓ | [`.agents/recordings/search-03-navigate.png`](.agents/recordings/search-03-navigate.png) |
+| 150 | ✓ | [`.agents/recordings/viewer-01-turn1-overview.png`](.agents/recordings/viewer-01-turn1-overview.png) |
+| 151 | ✓ | [`.agents/recordings/viewer-02-tools-sse-expanded.png`](.agents/recordings/viewer-02-tools-sse-expanded.png) |
+| 152 | ✓ | [`.agents/recordings/viewer-03-request-json-scrolled.png`](.agents/recordings/viewer-03-request-json-scrolled.png) |
+| 153 | ✓ | [`.agents/recordings/viewer-04-turn5.png`](.agents/recordings/viewer-04-turn5.png) |
+| 154 | ✓ | [`.agents/recordings/viewer-05-diff.png`](.agents/recordings/viewer-05-diff.png) |
+| 155 | ✓ | [`.agents/recordings/viewer-06-curl.png`](.agents/recordings/viewer-06-curl.png) |
+| 156 | ✓ | [`.agents/recordings/viewer-07-turn10.png`](.agents/recordings/viewer-07-turn10.png) |
+| 157 | ✓ | [`.agents/recordings/viewer-08-dark-mode.png`](.agents/recordings/viewer-08-dark-mode.png) |
+| 158 | ✓ | [`.agents/recordings/viewer-09-sidebar-scrolled.png`](.agents/recordings/viewer-09-sidebar-scrolled.png) |
+| 159 | ✓ | [`.agents/recordings/viewer-10-last-turn.png`](.agents/recordings/viewer-10-last-turn.png) |
+| 160 | ✓ | [`.agents/recordings/viewer-11-final-wide.png`](.agents/recordings/viewer-11-final-wide.png) |
+| 161 | ✓ | [`.agents/recordings/viewer-codex-01-overview.png`](.agents/recordings/viewer-codex-01-overview.png) |
+| 162 | ✓ | [`.agents/recordings/viewer-codex-02-messages.png`](.agents/recordings/viewer-codex-02-messages.png) |
+| 163 | ✓ | [`.agents/recordings/viewer-codex-02-system-prompt.png`](.agents/recordings/viewer-codex-02-system-prompt.png) |
+| 164 | ✓ | [`.agents/recordings/viewer-codex-03-messages.png`](.agents/recordings/viewer-codex-03-messages.png) |
+| 165 | ✓ | [`.agents/recordings/viewer-codex-03-scrolled.png`](.agents/recordings/viewer-codex-03-scrolled.png) |
+| 166 | ✓ | [`.agents/recordings/viewer-codex-04-response.png`](.agents/recordings/viewer-codex-04-response.png) |
+| 167 | ✓ | [`.agents/recordings/viewer-codex-04-turn3.png`](.agents/recordings/viewer-codex-04-turn3.png) |
+| 168 | ✓ | [`.agents/recordings/viewer-codex-05-diff.png`](.agents/recordings/viewer-codex-05-diff.png) |
+| 169 | ✓ | [`.agents/recordings/viewer-codex-05-tokens.png`](.agents/recordings/viewer-codex-05-tokens.png) |
+| 170 | ✓ | [`.agents/recordings/viewer-codex-06-diff.png`](.agents/recordings/viewer-codex-06-diff.png) |
+| 171 | ✓ | [`.agents/recordings/viewer-codex-08-tools.png`](.agents/recordings/viewer-codex-08-tools.png) |
+| 172 | ✓ | [`.agents/recordings/viewer-demo.mp4`](.agents/recordings/viewer-demo.mp4) |
+| 173 | ✓ | [`.agents/skills/codex-e2e-test/SKILL.md`](.agents/skills/codex-e2e-test/SKILL.md) |
+| 174 | ✓ | [`.agents/skills/demo-video/SKILL.md`](.agents/skills/demo-video/SKILL.md) |
+| 175 | ✓ | [`.agents/skills/e2e-test/SKILL.md`](.agents/skills/e2e-test/SKILL.md) |
+| 176 | ✓ | [`.agents/skills/js-in-html-testing/SKILL.md`](.agents/skills/js-in-html-testing/SKILL.md) |
+| 177 | ✓ | [`.agents/skills/legibility-check/SKILL.md`](.agents/skills/legibility-check/SKILL.md) |
+| 178 | ✓ | [`.agents/skills/playwright-screen-recording/SKILL.md`](.agents/skills/playwright-screen-recording/SKILL.md) |
+| 179 | ✓ | [`.agents/skills/pr-preflight/SKILL.md`](.agents/skills/pr-preflight/SKILL.md) |
+| 180 | ✓ | [`.agents/skills/push-release/SKILL.md`](.agents/skills/push-release/SKILL.md) |
+| 181 | ✓ | [`.agents/skills/real-e2e-test/SKILL.md`](.agents/skills/real-e2e-test/SKILL.md) |
+| 182 | ✓ | [`.agents/skills/screenshot-validation/SKILL.md`](.agents/skills/screenshot-validation/SKILL.md) |
+| 183 | ✓ | [`.agents/skills/translate-i18n/SKILL.md`](.agents/skills/translate-i18n/SKILL.md) |
+| 184 | ✓ | [`.claude/CLAUDE.md`](.claude/CLAUDE.md) |
+| 185 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 186 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

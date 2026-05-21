@@ -431,5 +431,85 @@ void fragment() {
 }
 ```
 
+---
+
+## Expert Pattern: Material-Texture-Array (Instanced Variation)
+
+To render hundreds of varied objects (e.g., forest trees, crowd variants) in a single draw call, use **Instance Uniforms** with a texture array in a custom Spatial shader. This bypasses the need for unique material resources per variation.
+
+### The Spatial Shader (`texture_array.gdshader`)
+```glsl
+shader_type spatial;
+
+uniform sampler2D texture_array[4];
+// This uniform is unique per GeometryInstance3D node, NOT per material
+instance uniform int texture_index;
+
+void fragment() {
+    vec4 tex_color;
+    switch (texture_index) {
+        case 0: tex_color = texture(texture_array[0], UV); break;
+        case 1: tex_color = texture(texture_array[1], UV); break;
+        case 2: tex_color = texture(texture_array[2], UV); break;
+        case 3: tex_color = texture(texture_array[3], UV); break;
+    }
+    ALBEDO = tex_color.rgb;
+}
+```
+
+### The GDScript Controller
+```gdscript
+func apply_variant(mesh_instance: GeometryInstance3D, index: int) -> void:
+    # Set the per-instance uniform. The underlying material remains shared.
+    mesh_instance.set_instance_shader_parameter(&"texture_index", index)
+```
+
+---
+
+## Expert Pattern: Dissolve-Shader-Integration (Alpha Scissor)
+
+For high-performance impact or dissolve effects, use **Alpha Scissor** transparency. Unlike standard Alpha blending, Scissor allows the mesh to cast shadows and avoids the expensive transparency sorting pipeline.
+
+```gdscript
+func trigger_dissolve(mesh: MeshInstance3D, duration: float = 1.0) -> void:
+    var mat := mesh.get_surface_override_material(0) as StandardMaterial3D
+    if not mat: return
+
+    # 1. Force Alpha Scissor for performance
+    mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+    
+    # 2. Tween threshold to discard pixels based on noise/albedo alpha
+    var tween := create_tween()
+    tween.tween_property(mat, "alpha_scissor_threshold", 1.0, duration).from(0.0)
+```
+
+---
+
+## Expert Pattern: Material-LOD-System (HLOD)
+
+While Godot handles Mesh LOD (geometry) automatically, it does not simplify material shading at a distance. Use **Visibility Ranges** to swap meshes and apply simplified materials to reduce fragment shading costs.
+
+```gdscript
+func setup_lod_materials(detailed_node: GeometryInstance3D, distant_node: GeometryInstance3D) -> void:
+    # 1. Detailed version: Hide at 50m
+    detailed_node.visibility_range_end = 50.0
+    detailed_node.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+
+    # 2. Distant version: Appear at 50m
+    distant_node.visibility_range_begin = 50.0
+    distant_node.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+
+    # 3. Simplify Distant Material
+    var dist_mat := distant_node.get_surface_override_material(0) as StandardMaterial3D
+    if dist_mat:
+        # Disable expensive shading features for distant LOD
+        dist_mat.normal_enabled = false
+        dist_mat.rim_enabled = false
+        dist_mat.clearcoat_enabled = false
+        dist_mat.subsurf_scatter_enabled = false
+        # Use Pixel Dither for seamless, non-transparent fading
+        dist_mat.distance_fade_mode = BaseMaterial3D.DISTANCE_FADE_PIXEL_DITHER
+```
+
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 6 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,6 +65,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`docs/.conventions/brand-voice/SKILL.md`](docs/.conventions/brand-voice/SKILL.md) |
 | 5 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
 | 6 | ✓ | [`docs/src/ai/agent-panel.md`](docs/src/ai/agent-panel.md) |
+| 7 | ✓ | [`docs/src/ai/skills.md`](docs/src/ai/skills.md) |
+| 8 | ✓ | [`docs/src/ai/tool-permissions.md`](docs/src/ai/tool-permissions.md) |
 
 ---
 

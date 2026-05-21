@@ -558,44 +558,44 @@ python3 skills/edge-pipeline-orchestrator/scripts/orchestrate_edge_pipeline.py \
 **Trader Memory Core:** 🟡 FMP API optional (for MAE/MFE only)
 ```bash
 # Register screener output as thesis
-python3 skills/trader-memory-core/scripts/thesis_ingest.py \
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py ingest \
   --source kanchi-dividend-sop \
   --input reports/kanchi_entry_signals_2026-03-14.json \
   --state-dir state/theses/
 
 # Manual brokerage entry (fractional shares; free-form JSON, single or array)
-python3 skills/trader-memory-core/scripts/thesis_ingest.py \
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py ingest \
   --source manual --input amd.json --state-dir state/theses/
 
 # Walk an existing broker position to ACTIVE (backdated, fractional shares)
-python3 skills/trader-memory-core/scripts/thesis_store.py --state-dir state/theses/ \
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py store --state-dir state/theses/ \
   transition <id> ENTRY_READY --reason "existing position" --event-date 2026-05-02
-python3 skills/trader-memory-core/scripts/thesis_store.py --state-dir state/theses/ \
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py store --state-dir state/theses/ \
   open-position <id> --actual-price 142.10 --actual-date 2026-05-02 \
   --shares 7.86 --event-date 2026-05-02
 # Partial close (trim): ACTIVE/PARTIALLY_CLOSED → PARTIALLY_CLOSED, or → CLOSED
 # when the whole remainder is sold. Cumulative realized P&L in outcome.
-python3 skills/trader-memory-core/scripts/thesis_store.py --state-dir state/theses/ \
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py store --state-dir state/theses/ \
   trim <id> --shares-sold 4 --price 120.00 --date 2026-05-10
 # close / terminate / attach-position are also CLI subcommands
 # (close accepts ACTIVE or PARTIALLY_CLOSED)
-python3 skills/trader-memory-core/scripts/thesis_store.py --state-dir state/theses/ \
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py store --state-dir state/theses/ \
   close <id> --exit-reason target_hit --actual-price 165.00 --actual-date 2026-06-01
 
 # Query theses
-python3 skills/trader-memory-core/scripts/thesis_store.py \
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py store \
   --state-dir state/theses/ list --ticker AAPL --status ACTIVE
 
 # Check review schedule
-python3 skills/trader-memory-core/scripts/thesis_review.py \
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py review \
   --state-dir state/theses/ review-due --as-of 2026-04-15
 
 # Generate postmortem
-python3 skills/trader-memory-core/scripts/thesis_review.py \
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py review \
   --state-dir state/theses/ postmortem th_aapl_div_20260314_a3f1
 
 # Summary statistics
-python3 skills/trader-memory-core/scripts/thesis_review.py \
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py review \
   --state-dir state/theses/ summary
 ```
 

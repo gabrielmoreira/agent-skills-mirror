@@ -94,6 +94,14 @@ class_name MyComponent extends Node
 @export var stats: Resource # Components can hold their own data
 signal happened_something(value)
 
+func _ready() -> void:
+    _validate_dependencies()
+
+func _validate_dependencies() -> void:
+    # 2. Dependency-Validation: Fail early during development if setup is wrong [2]
+    # NOTE: assert() is stripped in release builds [10].
+    assert(stats != null, "Stats Resource missing on %s" % name)
+
 func do_logic(delta: float) -> void:
     # Perform specific task
     pass
@@ -202,6 +210,57 @@ func _physics_process(delta):
 
 func _on_death():
     queue_free()
+```
+
+## Expert Composition Patterns
+
+### 1. State-Component Pattern (FSM)
+Encapsulate complex behaviors into child nodes that act as states. The parent `StateMachine` component delegates lifecycle calls to the active child [4, 6].
+
+```gdscript
+class_name StateMachine extends Node
+@export var initial_state: Node
+@onready var _state: Node = initial_state
+
+func _ready() -> void:
+    if _state.has_method("enter"): _state.enter()
+
+func _physics_process(delta: float) -> void:
+    if _state.has_method("physics_process"):
+        _state.physics_process(delta)
+
+func transition_to(target_state_path: NodePath) -> void:
+    if _state.has_method("exit"): _state.exit()
+    _state = get_node(target_state_path)
+    if _state.has_method("enter"): _state.enter()
+```
+
+### 2. Component-Registry (O(1) Lookup)
+Avoid slow tree traversal (`get_node`) for sibling communication. The Orchestrator catalogs children in a Dictionary for instant access [3, 13].
+
+```gdscript
+# Inside the Orchestrator (e.g. Entity.gd)
+var _components: Dictionary = {}
+
+func _ready() -> void:
+    for child in get_children():
+        _components[child.name] = child
+        # Or register by group for interface-like access
+        for group in child.get_groups():
+            _components[group] = child
+
+### 3. Dependency-Validation
+Ensure critical components are present before execution. Use `assert()` in `_ready()` to fail fast during development if a required component is missing [7, 8].
+
+```gdscript
+# Inside Orchestrator
+func _ready() -> void:
+    assert(get_node_or_null("HealthComponent") != null, "Missing HealthComponent!")
+    assert(get_node_or_null("InputComponent") != null, "Missing InputComponent!")
+```
+
+func get_comp(key: StringName) -> Node:
+    return _components.get(key)
 ```
 
 ## Performance Note

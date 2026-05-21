@@ -74,6 +74,100 @@ func screen_point_to_ray():
 
 ---
 
+## Expert Raycasting & Query Architectures
+
+### 1. NavMesh-Ray-Constrain (Line-of-Sight via NavMesh)
+Standard physics raycasts check against collision shapes, but if using `NavigationObstacle3D` with `carve_navigation_mesh` enabled, the NavMesh dynamically adapts. To check LOS strictly against the NavMesh (avoiding carved holes), query an optimized path between points. If the result contains exactly 2 points, it's a direct, unobstructed line.
+
+```gdscript
+class_name NavMeshRayValidator extends Node
+## Validates line-of-sight using NavigationServer3D path optimization.
+
+@export var agent: NavigationAgent3D
+
+## Returns true if there is a direct, unobstructed line-of-sight on the NavMesh.
+func has_navmesh_line_of_sight(target_position: Vector3) -> bool:
+    if not is_instance_valid(agent): return false
+        
+    var map: RID = agent.get_navigation_map()
+    var start_position: Vector3 = agent.global_position
+    
+    # Query an optimized path using the funnel algorithm.
+    var path: PackedVector3Array = NavigationServer3D.map_get_path(
+        map, start_position, target_position, true, agent.navigation_layers
+    )
+    
+    # A direct line of sight will yield exactly two points: start and end.
+    return path.size() == 2
+```
+
+### 2. Collision-Object-Metadata (Decoupled Surface Types)
+Instead of checking groups or names on `intersect_ray()` results, utilize Godot's built-in `Object` metadata. Attach arbitrary `Variant` data (e.g., "Stone", "Metal") to `StaticBody3D` nodes. This decouples the physics query from specific class implementations and allows for highly extensible surface interaction logic.
+
+```gdscript
+class_name SurfaceRaycaster extends Node3D
+## Extracts surface metadata from raycast colliders for decoupled logic.
+
+func perform_surface_raycast() -> void:
+    var space_state := get_world_3d().direct_space_state
+    var query := PhysicsRayQueryParameters3D.create(global_position, target_pos)
+    var result: Dictionary = space_state.intersect_ray(query)
+    
+    if not result.is_empty():
+        var collider: Object = result.collider
+        var surface: StringName = &"default"
+        
+        # Check for explicitly assigned surface metadata.
+        if collider.has_meta(&"surface_type"):
+            surface = collider.get_meta(&"surface_type")
+            
+        print_rich("[color=cyan]Hit surface: %s[/color]" % surface)
+```
+
+### 3. Compute-Shader-Raycast (Massively Parallel Hits)
+When performing tens of thousands of rays (Radar, GI, or Volumetrics), CPU-bound queries bottleneck. Use the `RenderingDevice` API to execute GLSL compute shaders. Note: Since the physics BVH is CPU-bound, world geometry must be serialized into a GPU storage buffer to perform ray-triangle intersections in GLSL.
+
+```gdscript
+class_name ComputeRaycaster extends Node
+## Orchestrates massively parallel raycasts using the RenderingDevice API.
+
+var _rd: RenderingDevice
+var _shader: RID
+var _pipeline: RID
+
+func _ready() -> void:
+    _rd = RenderingServer.get_rendering_device()
+    var shader_file: RDShaderFile = load("res://compute_raycast.glsl")
+    var spirv: RDShaderSPIRV = shader_file.get_spirv()
+    _shader = _rd.shader_create_from_spirv(spirv)
+    _pipeline = _rd.compute_pipeline_create(_shader)
+
+func dispatch_rays(data_bytes: PackedByteArray) -> PackedByteArray:
+    var buffer_rid: RID = _rd.storage_buffer_create(data_bytes.size(), data_bytes)
+    var uniform := RDUniform.new()
+    uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
+    uniform.binding = 0
+    uniform.add_id(buffer_rid)
+    
+    var uniform_set: RID = _rd.uniform_set_create([uniform], _shader, 0)
+    var compute_list: int = _rd.compute_list_begin()
+    _rd.compute_list_bind_compute_pipeline(compute_list, _pipeline)
+    _rd.compute_list_bind_uniform_set(compute_list, uniform_set, 0)
+    _rd.compute_list_dispatch(compute_list, 1, 1, 1) 
+    _rd.compute_list_end()
+    _rd.submit()
+    _rd.sync()
+    
+    var output: PackedByteArray = _rd.buffer_get_data(buffer_rid)
+    _rd.free_rid(buffer_rid)
+    return output
+```
+
+## Reference
+- [Godot Docs: Raycasting](https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html)
+- [Godot Docs: Compute Shaders](https://docs.godotengine.org/en/stable/tutorials/shaders/compute_shaders.html)
+
+
 ### Related
 - `godot-2d-physics`, `godot-physics-3d`
 - Master Skill: [godot-master](../SKILL.md)

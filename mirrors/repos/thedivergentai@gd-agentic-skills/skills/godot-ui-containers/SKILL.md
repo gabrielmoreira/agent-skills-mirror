@@ -47,6 +47,9 @@ Advanced sizing logic using `SIZE_EXPAND_FILL` and `stretch_ratio` for weighted 
 
 ## NEVER Do in UI Containers
 
+- NEVER ignore **`mouse_filter`** properties; strictly set to `PASS` or `IGNORE` on overlay containers to prevent them from blocking clicks to underlying buttons.
+- NEVER instantiate thousands of nodes in a `ScrollContainer`; strictly use **Virtual List Pooling** with a `VScrollBar` hook and a single spacer child to simulate list height for O(1) rendering performance.
+- NEVER manually calculate card dimensions for responsive grids; strictly use an **`AspectRatioContainer`** to lock proportions (e.g., 2:3 ratio) while allowing parent containers to handle scaling.
 - **NEVER manually set child `position` or `size` in a Container** — Containers override child transforms during `queue_sort()`. Use `custom_minimum_size` or `size_flags` instead [1].
 - **NEVER forget `size_flags` for expansion** — Default is `SIZE_SHRINK_BEGIN`. Children will stay tiny unless you set `SIZE_EXPAND_FILL` for responsive containers.
 - **NEVER use `GridContainer` without setting `columns`** — Default is 1, creating a simple vertical list. For responsive wrapping, use `HFlowContainer` instead [8].
@@ -84,6 +87,57 @@ func _ready() -> void:
     # Add margins
     $MarginContainer.add_theme_constant_override("margin_left", 20)
     $MarginContainer.add_theme_constant_override("margin_right", 20)
+```
+
+## Expert Layout Patterns
+
+### 1. Split-Screen-Container (Dynamic)
+Standard pattern for local multiplayer or comparisons using `HSplitContainer`.
+
+```gdscript
+# split_screen.gd
+func setup_split(v1: SubViewport, v2: SubViewport):
+    var hsplit = HSplitContainer.new()
+    var c1 = SubViewportContainer.new()
+    c1.stretch = true # Resize viewport to match container
+    c1.add_child(v1)
+    hsplit.add_child(c1)
+    # repeat for c2/v2...
+```
+
+### 2. Virtual List ScrollContainer (Pooling)
+High-performance list for thousands of items by recycling a small node pool and using a spacer.
+
+```gdscript
+# virtual_list.gd
+func _on_scroll():
+    var scroll_y = get_v_scroll_bar().value
+    var start_idx = int(scroll_y / item_height)
+    for i in range(node_pool.size()):
+        var node = node_pool[i]
+        # Move node down the list
+        node.position.y = (start_idx + i) * item_height
+        # Inject data from the massive array
+        node.update_data(massive_data_array[start_idx + i])
+```
+
+### 3. Aspect-Ratio-Locked Cards
+Responsive cards that maintain proportions (e.g., 2:3) in any grid or flow container.
+
+```gdscript
+# card_grid.gd
+func add_card(texture: Texture2D):
+    var arc = AspectRatioContainer.new()
+    arc.ratio = 0.66 # 2:3 proportions
+    arc.stretch_mode = AspectRatioContainer.STRETCH_FIT
+    
+    var tr = TextureRect.new()
+    tr.texture = texture
+    tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+    tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+    
+    arc.add_child(tr)
+    grid_container.add_child(arc)
 ```
 
 ## SizeFlags

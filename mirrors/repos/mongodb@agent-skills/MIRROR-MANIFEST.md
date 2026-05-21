@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mongodb/agent-skills` — 26 default patterns, 0 followed patterns, 43 file(s) materialized.
+Mirror of `mongodb/agent-skills` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mongodb/agent-skills` — 26 default patterns, 0 followed patterns, 4
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 43 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,13 +61,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
 | 2 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 3 | ✓ | [`skills/atlas-stream-processing/references/connection-configs.md`](skills/atlas-stream-processing/references/connection-configs.md) |
-| 4 | ✓ | [`skills/atlas-stream-processing/references/development-workflow.md`](skills/atlas-stream-processing/references/development-workflow.md) |
-| 5 | ✓ | [`skills/atlas-stream-processing/references/mcp-troubleshooting.md`](skills/atlas-stream-processing/references/mcp-troubleshooting.md) |
-| 6 | ✓ | [`skills/atlas-stream-processing/references/output-diagnostics.md`](skills/atlas-stream-processing/references/output-diagnostics.md) |
-| 7 | ✓ | [`skills/atlas-stream-processing/references/pipeline-patterns.md`](skills/atlas-stream-processing/references/pipeline-patterns.md) |
-| 8 | ✓ | [`skills/atlas-stream-processing/references/sizing-and-parallelism.md`](skills/atlas-stream-processing/references/sizing-and-parallelism.md) |
-| 9 | ✓ | [`skills/atlas-stream-processing/SKILL.md`](skills/atlas-stream-processing/SKILL.md) |
+| 3 | ✓ | [`skills/mongodb-atlas-stream-processing/references/connection-configs.md`](skills/mongodb-atlas-stream-processing/references/connection-configs.md) |
+| 4 | ✓ | [`skills/mongodb-atlas-stream-processing/references/development-workflow.md`](skills/mongodb-atlas-stream-processing/references/development-workflow.md) |
+| 5 | ✓ | [`skills/mongodb-atlas-stream-processing/references/mcp-troubleshooting.md`](skills/mongodb-atlas-stream-processing/references/mcp-troubleshooting.md) |
+| 6 | ✓ | [`skills/mongodb-atlas-stream-processing/references/output-diagnostics.md`](skills/mongodb-atlas-stream-processing/references/output-diagnostics.md) |
+| 7 | ✓ | [`skills/mongodb-atlas-stream-processing/references/pipeline-patterns.md`](skills/mongodb-atlas-stream-processing/references/pipeline-patterns.md) |
+| 8 | ✓ | [`skills/mongodb-atlas-stream-processing/references/sizing-and-parallelism.md`](skills/mongodb-atlas-stream-processing/references/sizing-and-parallelism.md) |
+| 9 | ✓ | [`skills/mongodb-atlas-stream-processing/SKILL.md`](skills/mongodb-atlas-stream-processing/SKILL.md) |
 | 10 | ✓ | [`skills/mongodb-connection/references/monitoring-guide.md`](skills/mongodb-connection/references/monitoring-guide.md) |
 | 11 | ✓ | [`skills/mongodb-connection/SKILL.md`](skills/mongodb-connection/SKILL.md) |
 | 12 | ✓ | [`skills/mongodb-mcp-setup/SKILL.md`](skills/mongodb-mcp-setup/SKILL.md) |
@@ -101,7 +101,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 40 | ✓ | [`skills/mongodb-search-and-ai/references/lexical-search-querying.md`](skills/mongodb-search-and-ai/references/lexical-search-querying.md) |
 | 41 | ✓ | [`skills/mongodb-search-and-ai/references/vector-search.md`](skills/mongodb-search-and-ai/references/vector-search.md) |
 | 42 | ✓ | [`skills/mongodb-search-and-ai/SKILL.md`](skills/mongodb-search-and-ai/SKILL.md) |
-| 43 | ✓ | [`tools/review-skill/SKILL.md`](tools/review-skill/SKILL.md) |
+| 43 | ✓ | [`skills/OWNERS.yaml`](skills/OWNERS.yaml) |
+| 44 | ✓ | [`tools/review-skill/SKILL.md`](tools/review-skill/SKILL.md) |
 
 ---
 

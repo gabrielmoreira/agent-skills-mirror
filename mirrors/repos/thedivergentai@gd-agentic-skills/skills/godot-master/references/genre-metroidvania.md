@@ -174,5 +174,67 @@ func take_damage(amount: int, ability_type: String) -> void:
 *   **Item Descriptions**: Use them for "micro-stories" to build lore without interrupting gameplay.
 
 
+## Advanced Exploration Systems
+
+Professional implementation of world persistence, sequence-breaking prevention, and seamless navigation.
+
+### 1. Room-Metadata Resource (Persistence)
+To persist room states efficiently, create a custom `Resource` that holds exported variables like `is_cleared` or `items_found`. Setting the `resource_local_to_scene` property to true ensures that the resource is uniquely duplicated upon scene instantiation, allowing each room to maintain its own state while being serializable via `ResourceSaver`.
+
+```gdscript
+class_name RoomMetadata extends Resource
+
+@export var is_cleared: bool = false
+@export var collected_item_ids: Array[StringName] = []
+@export var enemy_positions: Array[Vector3] = []
+
+func save_room_state(node: Node) -> void:
+    # Logic to populate resource from current room state
+    ResourceSaver.save(self, node.scene_file_path + ".tres")
+```
+
+### 2. Sequence-Breaking Protection (Ability Checks)
+Prevent unintended progression by using a Singleton (Autoload) to track global player progression. Interactable objects and gates should perform safe checks against this central authority to verify prerequisites before allowing passage.
+
+```gdscript
+# progression_manager.gd (Autoload)
+class_name ProgressionManager extends Node
+
+var unlocked_abilities: Dictionary = {
+    "double_jump": false,
+    "dash": false,
+    "wall_slide": false
+}
+
+func check_gate(ability_name: String) -> bool:
+    return unlocked_abilities.get(ability_name, false)
+
+func unlock_ability(id: String) -> void:
+    if unlocked_abilities.has(id):
+        unlocked_abilities[id] = true
+```
+
+### 3. Fast-Travel Logic
+Implement fast-travel by utilizing `ResourceLoader` to asynchronously load target room scenes. This avoids main-thread hitches and allows for smooth transitions between distant points in the interconnected world.
+
+```gdscript
+class_name FastTravelSystem extends Node
+
+func travel_to_node(scene_path: String, spawn_id: StringName) -> void:
+    # Load the packed scene resource
+    var room_scene := ResourceLoader.load(scene_path) as PackedScene
+    if room_scene:
+        # Cache the spawn ID for the next scene's _ready() call
+        GlobalState.target_spawn_id = spawn_id
+        get_tree().change_scene_to_packed(room_scene)
+```
+
+**Architectural Tip**: For "Rooms", use the `resource_local_to_scene` flag on your metadata resource to ensure that instanced rooms don't share data accidentally, which is critical for unique item pickups.
+
+
+## Reference
+- Master Skill: [godot-master](../SKILL.md)
+
+
 ## Reference
 - Master Skill: [godot-master](../SKILL.md)

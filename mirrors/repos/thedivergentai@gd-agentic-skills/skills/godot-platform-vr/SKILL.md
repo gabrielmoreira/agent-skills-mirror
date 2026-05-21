@@ -101,6 +101,61 @@ func _process(delta: float) -> void:
 2. **High FPS** - 90+ required
 3. **Physical Space** - Respect boundaries
 4. **UI Distance** - 1-3m from player
+### 1. Mixed-Reality-Passthrough Pattern (Quest 3)
+To enable AR passthrough on devices like Meta Quest 3, set the `environment_blend_mode` to `ALPHA_BLEND`. This allows the virtual scene's alpha channel to control the visibility of the real-world camera feed.
+
+```gdscript
+class_name MixedRealityManager extends Node
+## Switches the headset to AR/Passthrough mode.
+
+func switch_to_ar() -> void:
+    var xr_interface := XRServer.primary_interface
+    if xr_interface and XRInterface.XR_ENV_BLEND_MODE_ALPHA_BLEND in xr_interface.get_supported_environment_blend_modes():
+        xr_interface.environment_blend_mode = XRInterface.XR_ENV_BLEND_MODE_ALPHA_BLEND
+        # Required for the camera feed to show through transparent areas.
+        get_viewport().transparent_bg = true 
+```
+
+### 2. XR-Performance-Overlay (Composition Layers)
+Standard 2D UI is blurry in VR due to lens distortion. Use `OpenXRCompositionLayerQuad` to project a `SubViewport` directly into the headset's runtime. This bypasses the 3D pipeline for a crisp, distortion-free display.
+
+```gdscript
+class_name XRPerformanceOverlay extends OpenXRCompositionLayerQuad
+## A crisp UI overlay projected directly by the XR runtime.
+
+@export var sub_viewport: SubViewport
+
+func _ready() -> void:
+    # Assign the viewport to the composition layer.
+    layer_viewport = sub_viewport
+    alpha_blend = true
+    # Position in front of the user (relative to XROrigin3D).
+    position = Vector3(0.0, 1.5, -1.0)
+```
+
+### 3. Universal-Grab-Manager (Decoupled Interactions)
+Avoid hardcoding grab logic into interactables. Use the OpenXR Action Map to define a generic "grab" action and a central manager to handle reparenting based on group tags.
+
+```gdscript
+class_name UniversalGrabManager extends Node3D
+## Decoupled interaction manager using OpenXR actions.
+
+@export var controller: XRController3D
+@export var grab_area: Area3D
+
+var _grabbed: Node3D = null
+
+func _ready() -> void:
+    controller.button_pressed.connect(_on_grab)
+
+func _on_grab(action_name: String) -> void:
+    if action_name == "grab" and not _grabbed:
+        for body in grab_area.get_overlapping_bodies():
+            if body.is_in_group("grabbable"):
+                _grabbed = body
+                _grabbed.reparent(controller, true)
+                break
+```
 
 ## Reference
 - Related: `godot-camera-systems`, `godot-input-handling`

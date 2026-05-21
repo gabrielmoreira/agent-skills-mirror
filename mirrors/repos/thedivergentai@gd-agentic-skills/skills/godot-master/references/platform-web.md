@@ -139,6 +139,60 @@ exclude_filter="*.md,*.txt,docs/*"
 2. **File Size** - Keep under 50MB
 3. **Mobile Web** - Test on phones
 4. **HTTPS** - Required for many APIs
+### 1. PWA Update Lifecycle
+Godot supports Progressive Web Apps (PWA) natively. Use the `pwa_update_available` signal to notify players of new versions and force a live reload using `pwa_update()`.
+
+```gdscript
+func _ready() -> void:
+    if OS.has_feature("web"):
+        # Detect new PWA version waiting to be activated.
+        JavaScriptBridge.pwa_update_available.connect(_on_pwa_update)
+
+func _on_pwa_update() -> void:
+    if JavaScriptBridge.pwa_needs_update():
+        # Force the new version to install and reload all browser tabs.
+        JavaScriptBridge.pwa_update()
+```
+
+### 2. WebGPU Beta-Feature Status
+Godot 4.x targets **WebGL 2.0** via the `Compatibility` renderer. While WebGPU is the future of web rendering, it is currently **unsupported** in Godot 4.x. To maximize performance, use the `Compatibility` renderer and enable VRAM texture compression (S3TC/BPTC for desktop browsers).
+
+### 3. JSON-RPC Bridge (Browser Communication)
+Create a structured, bidirectional communication bridge between Godot and the browser using the `JSONRPC` and `JavaScriptBridge` classes.
+
+```gdscript
+class_name WebRPCBridge extends Node
+## Facilitates JSON-RPC communication between Godot and the Browser.
+
+var _json_rpc: JSONRPC = JSONRPC.new()
+var _js_callback: JavaScriptObject
+
+func _ready() -> void:
+    if not OS.has_feature("web"): return
+        
+    _json_rpc.set_method("update_score", _on_score_update)
+    # Wrap GDScript callable for JS. Reference must be kept in class scope.
+    _js_callback = JavaScriptBridge.create_callback(_on_js_message)
+    
+    # Inject into global window object.
+    var window := JavaScriptBridge.get_interface("window")
+    window.sendToGodot = _js_callback
+
+func _on_js_message(args: Array) -> void:
+    var json_payload: String = args[0]
+    var parsed: Variant = JSON.parse_string(json_payload)
+    if parsed is Dictionary:
+        var response = _json_rpc.process_action(parsed)
+        if response: _send_to_browser(JSON.stringify(response))
+
+func _on_score_update(params: Variant) -> Variant:
+    # Handle logic...
+    return {"status": "ok"}
+
+func _send_to_browser(json_str: String) -> void:
+    var js := "if (window.onGodotMessage) { window.onGodotMessage('%s'); }" % json_str.json_escape()
+    JavaScriptBridge.eval(js)
+```
 
 ## Reference
 - Related: `godot-export-builds`, `godot-platform-mobile`

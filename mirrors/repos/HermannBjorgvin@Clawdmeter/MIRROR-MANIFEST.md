@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HermannBjorgvin/Clawdmeter` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `HermannBjorgvin/Clawdmeter` — 26 default patterns, 1 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `HermannBjorgvin/Clawdmeter` — 26 default patterns, 0 followed patte
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 1 |
+| Followed pats | 1 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `HermannBjorgvin/Clawdmeter` — 26 default patterns, 0 followed patte
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/porting/adding-a-board.md`
 
 ## File Index
 
@@ -60,6 +60,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`docs/porting/hal-contract.md`](docs/porting/hal-contract.md) |
+| 3 | → | [`docs/porting/adding-a-board.md`](docs/porting/adding-a-board.md) |
 
 ---
 

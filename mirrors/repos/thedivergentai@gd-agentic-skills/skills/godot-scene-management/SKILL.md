@@ -36,10 +36,8 @@ Robust node reference architecture using Unique Names and error-guarded @onready
 ### [dynamic_script_attachment.gd](scripts/dynamic_script_attachment.gd)
 Runtime script manipulation for modding systems or highly dynamic entity behavior.
 
-### [recursive_scene_cleanup.gd](scripts/recursive_scene_cleanup.gd)
-Pattern for ensuring zero-leak cleanup and orphan node detection in huge scene graphs.
-
 ### [async_scene_manager.gd](scripts/async_scene_manager.gd)
+Expert async scene loader with progress tracking, error handling, and transition callbacks.
 Expert async scene loader with progress tracking, error handling, and transition callbacks.
 
 ### [scene_pool.gd](scripts/scene_pool.gd)
@@ -60,7 +58,7 @@ Preserves and restores scene state across transitions using "persist" group patt
 - **NEVER reparent nodes mid-physics-step without care** — Reparenting can cause one-frame transform "teleports". Always store the `global_transform` and re-apply it after the `add_child()` call.
 - **NEVER rely on the SceneTree for 10,000+ objects** — If you don't need SceneTree features (signals, per-node scripts), use `PhysicsServer` and `RenderingServer` directly for raw performance.
 - **NEVER forget to handle `NOTIFICATION_WM_CLOSE_REQUEST`** — On desktop, if you don't handle the close request in a persistent node, the game may close during a critical save operation.
-- **NEVER use deep recursion for node cleanup** — If a scene has thousands of nodes, `queue_free()` on the root is efficient. Don't try to manually free every child in a loop unless you have specific memory leaks to debug.
+- **NEVER use deep recursion for node cleanup** — `queue_free()` is natively recursive in Godot 4. Freeing the root node automatically cleans up all children [6, 7]. Manual loops are redundant and inefficient.
 - **NEVER mix `SubViewport` and main world inputs without a plan** — By default, input events bubble up. Use `set_input_as_handled()` to prevent UI clicks in a subviewport from triggering gameplay in the main world.
 - **NEVER use `change_scene` to "Reset" a level** — It reloads everything from disk. For a quick respawn, just reset the variables and move the player to the start position.
 
@@ -232,20 +230,59 @@ func restore_persistent() -> void:
 get_tree().reload_current_scene()
 ```
 
-## Scene Caching
+## Expert Scene Patterns
+
+### 1. Node-Pooling-Pre-instantiation
+To avoid frame drops during combat, pre-fill your pools during a loading screen. This absorbs the instantiation cost upfront [1].
 
 ```gdscript
-# Cache frequently used scenes
-var scene_cache: Dictionary = {}
-
-func get_cached_scene(path: String) -> PackedScene:
-    if not scene_cache.has(path):
-        scene_cache[path] = load(path)
-    return scene_cache[path]
-
-# Usage:
-var enemy := get_cached_scene("res://enemies/goblin.tscn").instantiate()
+# Inside Pool Manager
+func pre_fill_pool(count: int):
+    for i in range(count):
+        var instance = scene.instantiate()
+        instance.process_mode = Node.PROCESS_MODE_DISABLED
+        instance.hide()
+        add_child(instance)
+        pool.append(instance)
 ```
+
+### 2. Scene-Transition-Staging
+Load sub-scenes or upcoming levels in the background during active gameplay using `ResourceLoader.load_threaded_request()` to prevent transition hitches [3, 4].
+
+```gdscript
+func start_background_load(path: String):
+    ResourceLoader.load_threaded_request(path)
+
+func _process(_d):
+    var status = ResourceLoader.load_threaded_get_status(path, progress)
+    if status == ResourceLoader.THREAD_LOAD_LOADED:
+        var scene = ResourceLoader.load_threaded_get(path)
+        # Transition when ready...
+```
+
+### 3. Scene Patcher (Runtime PCK Overrides)
+Hot-swap scenes or load modular DLC using `ProjectSettings.load_resource_pack()`. This mounts a `.pck` file into the virtual filesystem, overriding existing `res://` paths [4, 6].
+
+```gdscript
+func patch_scene(pck_path: String):
+    if ProjectSettings.load_resource_pack(pck_path):
+        # The next load() call will fetch the patched version from the PCK
+        get_tree().change_scene_to_file("res://patched_level.tscn")
+```
+
+### 4. Memory Leak Detector
+Track orphan nodes during scene transitions using the `Performance` singleton. If `OBJECT_ORPHAN_NODE_COUNT` is > 0, nodes were leaked [2, 10].
+
+```gdscript
+func check_leaks():
+    var orphans = Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)
+    if orphans > 0:
+        print_warning("Leaked %d nodes!" % orphans)
+        Node.print_orphan_nodes()
+```
+
+### 5. Natively Recursive Cleanup
+In Godot 4, `queue_free()` handles the entire node tree. You never need a manual `for child in get_children(): child.queue_free()` loop. This is handled at the engine level for maximum efficiency [7].
 
 ## Best Practices
 

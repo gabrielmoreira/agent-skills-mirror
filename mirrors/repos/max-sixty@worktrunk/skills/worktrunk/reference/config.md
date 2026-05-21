@@ -51,7 +51,7 @@ command = "CLAUDECODE= MAX_THINKING_TOKENS=0 claude -p --no-session-persistence 
 
 ```toml
 # .config/wt.toml
-[pre-start]
+[pre-create]
 deps = "npm ci"
 
 [pre-merge]
@@ -258,7 +258,9 @@ For context:
 - User configs generally apply to all projects.
 - User configs _also_ has a `[projects]` table which holds project-specific settings for the user, such as worktree layout and setting overrides. That's what this section covers.
 
-Entries are keyed by project identifier (e.g., `github.com/user/repo`). Scalar values (like `worktree-path`) replace the global value; everything else (hooks, aliases, etc.) appends, global first.
+Entries are keyed by project identifier — `<host>/<owner>/<repo>` derived from the primary remote URL (no `.git` suffix), or the canonical repo path when there is no remote. Run `wt config show` inside the repo to see the identifier for the current project; it appears in the `PROJECT CONFIG` section as `Identifier: …`.
+
+Scalar values (like `worktree-path`) replace the global value; everything else (hooks, aliases, etc.) appends, global first.
 
 ```toml
 [projects."github.com/user/repo"]
@@ -266,9 +268,30 @@ worktree-path = ".worktrees/{{ branch | sanitize }}"
 list.full = true
 merge.squash = false
 remove.delete-branch = false
-pre-start.env = "cp .env.example .env"
+pre-create.env = "cp .env.example .env"
 step.copy-ignored.exclude = [".repo-local-cache/"]
 aliases.deploy = "make deploy BRANCH={{ branch }}"
+```
+
+Hooks support all three [hook forms](https://worktrunk.dev/hook/#hook-forms). A table runs multiple commands concurrently; an array-of-tables pipeline runs steps in sequence. The dotted-key examples below are equivalent to the table forms — TOML treats `projects."github.com/user/repo".post-create.server = "..."` and a `[projects."github.com/user/repo".post-create]` table the same way:
+
+```toml
+# Single command
+[projects."github.com/user/repo"]
+post-create = "mise trust"
+
+# Multiple commands, running concurrently
+[projects."github.com/user/repo".post-create]
+mise = "mise trust"
+server = "npm run dev"
+
+# Pipeline: steps run in sequence
+[[projects."github.com/user/repo".post-create]]
+install = "npm ci"
+
+[[projects."github.com/user/repo".post-create]]
+build = "npm run build"
+server = "npm run dev"
 ```
 
 ### Custom prompt templates
@@ -411,8 +434,8 @@ To create a starter file with commented-out examples, run `wt config create --pr
 Project hooks apply to this repository only. See [`wt hook`](https://worktrunk.dev/hook/) for hook types, execution order, and examples.
 
 ```toml
-pre-start = "npm ci"
-post-start = "npm run dev"
+pre-create = "npm ci"
+post-create = "npm run dev"
 pre-merge = "npm test"
 ```
 
@@ -928,7 +951,7 @@ Hook output lives in per-branch subtrees under `.git/wt/logs/{branch}/`:
 | Background hooks | `{branch}/{source}/{hook-type}/{name}.log` |
 | Background removal | `{branch}/internal/remove.log` |
 
-All `post-*` hooks (post-start, post-switch, post-commit, post-merge) run in the background and produce log files. Source is `user` or `project`. Branch and hook names are sanitized for filesystem safety (invalid characters → `-`; short collision-avoidance hash appended). Same operation on same branch overwrites the previous log. Removing a branch clears its subtree; orphans from deleted branches can be swept with `wt config state logs clear`.
+All `post-*` hooks (post-create, post-switch, post-commit, post-merge) run in the background and produce log files. Source is `user` or `project`. Branch and hook names are sanitized for filesystem safety (invalid characters → `-`; short collision-avoidance hash appended). Same operation on same branch overwrites the previous log. Removing a branch clears its subtree; orphans from deleted branches can be swept with `wt config state logs clear`.
 
 #### Diagnostic files
 
@@ -960,9 +983,9 @@ Query the command log:
 $ tail -5 .git/wt/logs/commands.jsonl | jq .
 ```
 
-Path to one hook log (e.g. the `post-start` `server` hook for the current branch):
+Path to one hook log (e.g. the `post-create` `server` hook for the current branch):
 ```bash
-$ wt config state logs --format=json | jq -r '.hook_output[] | select(.source == "user" and .hook_type == "post-start" and (.name | startswith("server"))) | .path'
+$ wt config state logs --format=json | jq -r '.hook_output[] | select(.source == "user" and .hook_type == "post-create" and (.name | startswith("server"))) | .path'
 ```
 
 Logs for a specific branch:
@@ -1178,7 +1201,7 @@ $ wt config state vars set env=production --branch=main
 Variables are available in [hook templates](https://worktrunk.dev/hook/#template-variables) as `{{ vars.<key> }}`. Use the `default` filter for keys that may not be set:
 
 ```toml
-[post-start]
+[post-create]
 dev = "ENV={{ vars.env | default('development') }} npm start -- --port {{ vars.port | default('3000') }}"
 ```
 
@@ -1188,7 +1211,7 @@ JSON object and array values support dot access:
 $ wt config state vars set config='{"port": 3000, "debug": true}'
 ```
 ```toml
-[post-start]
+[post-create]
 dev = "npm start -- --port {{ vars.config.port }}"
 ```
 

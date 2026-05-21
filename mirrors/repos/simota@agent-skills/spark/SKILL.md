@@ -13,6 +13,7 @@ CAPABILITIES_SUMMARY:
 - outcome_framing: Frame proposals as outcomes using Opportunity Solution Trees (OST)
 - fail_condition_design: Define kill criteria and fail conditions for hypothesis-driven validation
 - ai_assisted_discovery: Leverage AI-accelerated ideation and automated opportunity mining
+- tri_engine_proposal: `multi` Recipe — parallel proposal generation across Codex + Antigravity + Claude subagents with concurrence-divergence scoring; Compete-merge (single best) or Portfolio-merge (multiple complementary) output strategies; preserves divergent single-engine breakthrough proposals alongside universal multi-engine concurrence
 
 COLLABORATION_PATTERNS:
 - Pulse -> Spark: Usage metrics for opportunity analysis
@@ -92,7 +93,6 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 - The feature requires new external dependencies.
 - The feature changes core data models, privacy posture, or security boundaries.
-- The user wants multi-engine brainstorming.
 - The proposal expands beyond the stated product scope.
 - The user presents a bloated backlog (50+ unscored items) — suggest pruning and prioritizing before proposing new features. [Source: prodpad.com — Agile anti-patterns]
 
@@ -166,6 +166,7 @@ Default opportunity patterns: dashboards from unused data · smart defaults from
 | Opportunity | `opportunity` | | Opportunity sizing: TAM/SAM/SOM, reach × impact × confidence, WTP signals, OST mapping | `references/opportunity-sizing.md`, `references/modern-product-discovery.md` |
 | Kill | `kill` | | Kill-criteria authoring and sunset decisions (pre-commit thresholds, migration-off, sunset communication) | `references/kill-criteria-sunset.md`, `references/feature-ideation-anti-patterns.md` |
 | Retro | `retro` | | Post-launch feature retrospective: adopted/iterated/discarded, decision vs outcome quality, feedback into discovery | `references/feature-retrospective.md`, `references/experiment-lifecycle.md` |
+| Multi-Engine | `multi` | | Tri-engine proposal generation (Codex + Antigravity + Claude in parallel) with concurrence-divergence scoring. Default merge = Portfolio (multiple proposals); use `multi --compete` for single best RFC. Mirrors Judge's tri-engine pattern, adapted for ideation. | `references/tri-engine-proposal.md`, `_common/SUBAGENT.md` |
 
 ## Subcommand Dispatch
 
@@ -181,6 +182,7 @@ Behavior notes per Recipe:
 - `opportunity`: Size the opportunity upstream of scoring — TAM/SAM/SOM with two independent paths, reach × impact × confidence in RICE-compatible units, WTP signal tier, market-timing assessment, OST placement. For priority-scoring framework (ICE/RICE/WSJF) across peers use `Rank`; for YAGNI scope-cutting once sizing exposes thin reach use `Void`.
 - `kill`: Kill-criteria authoring and sunset decision. Pre-commit numeric thresholds with dated measurement, Andon-cord triggers, sunk-cost resistance, deprecation checklist, migration-off plan, sunset communication. For systematic YAGNI scope-cutting across codebase use `Void`; for priority-scoring framework use `Rank`.
 - `retro`: Post-launch retrospective separating decision quality from outcome quality. Claim-by-claim adopted/iterated/discarded verdicts, durable learning extraction across discovery/scoping/validation layers, feedback into Cast/Rank/OST/anti-pattern corpus. For single A/B verdict use `Experiment`; for persona update handoff use `Cast`.
+- `multi`: Tri-engine proposal generation. Spawn Codex / Antigravity / Claude subagents in one message; each produces 3-5 proposals independently with loose prompts (Role + Target + Output format only). Plea-style Concurrence-Divergence scoring: `UNIVERSAL` (3/3) = safe bets, `LIKELY` (2/3) = strong-with-one-dissenter, `VERIFIED-DIVERGENT` (1/3 after grounding) = breakthrough candidates. Two merge strategies — default `Portfolio` (5-7 complementary proposals, RFC-style document) or explicit `multi --compete` (single best RFC, re-mixing best wording across engines). Critical difference from Judge: divergent proposals are NOT auto-low-value; the breakthrough often comes from one engine's unique training data. See `references/tri-engine-proposal.md` for the full SCOPE → PREFLIGHT → FAN-OUT → NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE → PRESENT flow.
 
 ## Output Routing
 
@@ -193,6 +195,7 @@ Behavior notes per Recipe:
 | `experiment`, `hypothesis`, `validate` | Experiment-ready proposal | Proposal with validation plan | `references/experiment-lifecycle.md` |
 | `competitive`, `gap analysis`, `catch up` | Competitive gap conversion | Gap-to-spec proposal | `references/compete-conversion.md` |
 | `roadmap`, `OKR`, `alignment` | Outcome-aligned proposal | NOW/NEXT/LATER framed proposal | `references/outcome-roadmapping-alignment.md` |
+| `multi-engine`, `parallel ideation`, `tri-engine`, `multi`, `cross-engine compare` | Tri-engine proposal generation | Portfolio document (default) or single Compete-merged RFC | `references/tri-engine-proposal.md` |
 | unclear feature request | Feature proposal workflow | Markdown proposal document | `references/proposal-templates.md` |
 
 Routing rules:
@@ -246,7 +249,28 @@ Spark receives product signals and insights from upstream agents, generates feat
 
 ## Multi-Engine Mode
 
-Use `_common/SUBAGENT.md` `MULTI_ENGINE` when the user explicitly wants parallel ideation or comparison. Keep prompts loose (role, existing features, user context, output format only). Do not pass JTBD templates or internal taxonomies.
+Activated by the `multi` Recipe (or any explicit user request for parallel ideation / cross-engine comparison). Tri-engine proposal generation mirrors Judge's tri-engine review pattern but optimizes for *ideation breadth* instead of *defect agreement*.
+
+**Core mechanics:**
+- Spawn three Agent subagents in a single message: `propose-codex`, `propose-agy`, `propose-claude` (per `references/tri-engine-proposal.md`).
+- Run engine availability PREFLIGHT in Spark main context — never delegate detection to subagents (subagent PATH is narrower; see `judge/references/tri-engine-review.md §2` for the canonical probe).
+- Use loose prompts (Role + Target + Output format only). Do NOT pass JTBD templates, RICE rubrics, OST taxonomies, or persona archetypes to subagents — apply framework rules in SYNTHESIZE, not at FAN-OUT. Each engine's training-data priors should drive divergence.
+- Subagents return structured JSON; main context integrates via NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE.
+
+**Concurrence vs Divergence scoring (key difference from Judge):**
+- `UNIVERSAL` (3/3) — safe bet, broadly recognized opportunity. Watch for "already shipped" duplicates.
+- `LIKELY` (2/3) — strong proposal with one dissenter. Note what the missing engine surfaced instead.
+- `VERIFIED-DIVERGENT` (1/3, grounded) — single-engine insight that survived duplication/persona-fit/evidence/hypothesis checks. Often the breakthrough proposal. NOT automatically lower-value than UNIVERSAL.
+
+**Merge strategies (user-selectable):**
+- `Portfolio` (default) — 5-7 complementary proposals ordered UNIVERSAL → LIKELY → VERIFIED-DIVERGENT, plus a final recommendation. Output: `docs/proposals/PORTFOLIO-[topic]-[date].md`.
+- `Compete` (`multi --compete`) — single best RFC re-mixing the best per-field wording across the engine variants. Output: `docs/proposals/RFC-[name].md` with `engine_concurrence` front matter.
+
+**Engine-attribution tag (mandatory on every shipped proposal):** `[codex+agy+claude]` (3/3) / `[codex+agy]` etc. (2/3) / `[codex-verified]` (1/3 verified-divergent).
+
+**Degraded modes:** 1 engine down → continue with 2; 2 down → single-engine fallback with stricter grounding; all down → degrade to standard `propose` Recipe.
+
+Full algorithm, JSON schema, prompt skeletons, and grounding rules: `references/tri-engine-proposal.md`.
 
 ## Reference Map
 
@@ -266,6 +290,9 @@ Use `_common/SUBAGENT.md` `MULTI_ENGINE` when the user explicitly wants parallel
 | `references/opportunity-sizing.md` | You need TAM/SAM/SOM sizing, reach × impact × confidence in RICE-compatible units, WTP signal tiers, or OST placement (the `opportunity` recipe). |
 | `references/kill-criteria-sunset.md` | You need pre-commit kill thresholds, Andon-cord triggers, sunset deprecation checklist, migration-off plan, or sunset communication (the `kill` recipe). |
 | `references/feature-retrospective.md` | You need post-launch retrospective separating decision quality from outcome quality, claim-by-claim adopted/iterated/discarded verdicts, or learning extraction (the `retro` recipe). |
+| `references/tri-engine-proposal.md` | You are running the `multi` Recipe — tri-engine fan-out (Codex + Antigravity + Claude subagents), Concurrence-Divergence scoring, Compete vs Portfolio merge strategies, JSON schema, subagent prompt skeletons, and degraded-mode behavior. |
+| `_common/MULTI_ENGINE_RECIPE.md` | You need the cross-skill `multi` Recipe protocol — three pattern types (D/C/H), canonical PREFLIGHT/FAN-OUT/NORMALIZE/CLUSTER/SCORE flow, implementation checklist, and engine-attribution tag conventions shared across all multi-enabled skills. |
+| `_common/SUBAGENT.md` | You need the base MULTI_ENGINE protocol — engine dispatch table, loose prompt rules, Agent tool fan-out mechanics, fallback rules. Read before authoring `multi` Recipe subagent prompts. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the RFC, deciding adaptive thinking depth at OST/hypothesis framing, or front-loading persona/outcome/scope at DISCOVER. Critical for Spark: P3, P5. |
 
 ## Operational
@@ -287,13 +314,22 @@ _STEP_COMPLETE:
   Status: SUCCESS | PARTIAL | BLOCKED | FAILED
   Output:
     deliverable: [artifact path or inline]
-    artifact_type: "[Feature Proposal | Opportunity Memo | Prioritization Report | Competitive Gap Spec]"
+    artifact_type: "[Feature Proposal | Opportunity Memo | Prioritization Report | Competitive Gap Spec | Tri-Engine Portfolio | Tri-Engine Compete-Merged RFC]"
     parameters:
       feature_name: "[proposed feature name]"
       target_persona: "[persona name]"
       rice_score: "[calculated score]"
       impact_effort: "[Quick Win | Big Bet | Fill-In | Time Sink]"
       validation_strategy: "[experiment type or validation method]"
+    tri_engine:                                  # present only when `multi` Recipe ran
+      engines_run: [codex, agy, claude]
+      engines_failed: [list or none]
+      merge_strategy: "[Portfolio | Compete]"
+      concurrence_distribution:
+        UNIVERSAL: [count]
+        LIKELY: [count]
+        VERIFIED-DIVERGENT: [count]
+      rejected: [count + top categories — duplicate / hallucination / persona-mismatch / vague-hypothesis]
   Validations:
     - "[persona and JTBD defined]"
     - "[RICE score calculated with assumptions]"

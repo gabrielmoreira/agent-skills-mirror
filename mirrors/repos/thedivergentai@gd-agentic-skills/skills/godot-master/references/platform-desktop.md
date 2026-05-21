@@ -151,6 +151,45 @@ func unlock_achievement(name: String) -> void:
 2. **Keybinds** - Allow remapping
 3. **Alt+F4** - Support quit shortcuts
 4. **Save Location** - Use `user://` directory
+## Expert Techniques & Optimizations
+
+### 1. Alt-Tab-Pause (Stuck Input Guard)
+When a game loses focus, the OS may intercept "key up" events, leaving Godot's `Input` state stuck. Use `NOTIFICATION_APPLICATION_FOCUS_OUT` to pause the game and reset input logic.
+
+```gdscript
+func _notification(what: int) -> void:
+    match what:
+        NOTIFICATION_APPLICATION_FOCUS_OUT:
+            get_tree().paused = true
+            # Optional: Manually release critical actions
+            Input.action_release("move_forward")
+        NOTIFICATION_APPLICATION_FOCUS_IN:
+            get_tree().paused = false
+```
+
+### 2. Social Integrations (GDExtension)
+For Discord-RPC or Vapor network pipes, use GDExtension to bind native shared libraries (.dll, .so, .dylib) to Godot at runtime. This keeps the engine core small while enabling expert-level social features.
+
+```gdscript
+# Logic assuming a 'SocialIntegration' GDExtension is loaded
+func _init_social() -> void:
+    if ClassDB.class_exists("SocialIntegration"):
+        var social = ClassDB.instantiate("SocialIntegration")
+        social.set_activity("In Menu", "Level 1")
+```
+
+### 3. Desktop-Launcher Template
+Use a dedicated Godot project as a lightweight launcher. It reads/writes `user://settings.cfg` and spawns the main game using `OS.create_process()`.
+
+```gdscript
+func _on_play_pressed() -> void:
+    var exe_path := OS.get_executable_path()
+    var args := PackedStringArray(["--main-pack", "game_data.pck"])
+    var pid := OS.create_process(exe_path, args)
+    
+    if pid > 0:
+        get_tree().quit()
+```
 
 ## Reference
 - Related: `godot-export-builds`, `godot-save-load-systems`

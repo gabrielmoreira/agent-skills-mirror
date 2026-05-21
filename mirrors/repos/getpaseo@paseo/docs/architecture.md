@@ -22,13 +22,13 @@ Your code never leaves your machine. Paseo is local-first.
             │  (Node.js)  │
             └──────┬──────┘
                    │
-      ┌────────────┼────────────┐
-      │            │            │
-┌─────▼─────┐ ┌───▼────┐ ┌────▼─────┐
-│  Claude   │ │ Codex  │ │ OpenCode │
-│  Agent    │ │ Agent  │ │  Agent   │
-│  SDK      │ │ Server │ │          │
-└───────────┘ └────────┘ └──────────┘
+      ┌────────────┼────────────┬────────────┬────────────┐
+      │            │            │            │            │
+┌─────▼─────┐ ┌───▼────┐ ┌──────▼─────┐ ┌────▼─────┐ ┌────▼────┐
+│  Claude   │ │ Codex  │ │  Copilot   │ │ OpenCode │ │   Pi    │
+│  Agent    │ │ Agent  │ │   Agent    │ │  Agent   │ │ Agent   │
+│  SDK      │ │ Server │ │    ACP     │ │          │ │         │
+└───────────┘ └────────┘ └────────────┘ └──────────┘ └─────────┘
 ```
 
 ## Components at a glance
@@ -146,6 +146,8 @@ There is no dedicated welcome message; the server emits a `status` session messa
 
 **Top-level WS envelopes** are `hello`, `recording_state`, `ping`/`pong`, and `session` (which wraps the rich union of session messages).
 
+Client liveness checks use the top-level JSON `ping`/`pong` envelope, not a session RPC and not RFC6455 protocol ping. The app runs through browser and React Native WebSocket APIs, which do not expose protocol ping, so this envelope is the portable way to test the direct or relay data path. Session RPC timeouts are operation failures and must not be treated as proof that the socket is dead.
+
 New session RPCs use dotted names with `.request` and `.response` suffixes, such as `checkout.github.set_auto_merge.request` and `checkout.github.set_auto_merge.response`. See [rpc-namespacing.md](rpc-namespacing.md) for the convention and migration rules for older flat RPC names.
 
 **Notable session message types:**
@@ -215,16 +217,17 @@ initializing → idle ⇄ running
 
 Each provider implements the `AgentClient` interface in `agent/agent-sdk-types.ts`. Provider implementations live in `agent/providers/`.
 
-The three first-class, user-facing providers are Claude Code, Codex, and OpenCode. Additional adapters exist in the same directory for ACP-compatible agents and internal use:
+The built-in, user-facing providers are Claude Code, Codex, Copilot, OpenCode, and Pi. Additional adapters exist in the same directory for ACP-compatible agents and internal use:
 
 | Provider           | Wraps                                | Session format                                     |
 | ------------------ | ------------------------------------ | -------------------------------------------------- |
 | Claude (`claude/`) | Anthropic Agent SDK                  | `~/.claude/projects/{cwd}/{session-id}.jsonl`      |
 | Codex              | Codex AppServer (`codex-app-server`) | `~/.codex/sessions/{date}/rollout-{ts}-{id}.jsonl` |
+| Copilot            | GitHub Copilot via ACP               | Provider-managed                                   |
 | OpenCode           | OpenCode server / CLI                | Provider-managed                                   |
-| Cursor / Copilot   | ACP wrapper (`acp-agent`)            | Provider-managed                                   |
+| Cursor             | ACP wrapper (`acp-agent`)            | Provider-managed                                   |
 | Generic ACP        | ACP wrapper                          | Provider-managed                                   |
-| Pi-direct          | Direct Anthropic API call            | Stateless                                          |
+| Pi                 | Local Pi RPC process                 | Provider-managed                                   |
 | Mock load test     | In-process fake                      | In-memory                                          |
 
 All providers:

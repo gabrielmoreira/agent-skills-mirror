@@ -19,6 +19,9 @@ Expert blueprint for roguelikes balancing challenge, progression, and replayabil
 
 ### Data & State
 - NEVER allow **Save Scumming**; strictly delete mid-run save files immediately upon loading to enforce permadeath.
+- NEVER allow the player to see the "Edge of the World"; strictly use **Fog of War** or limited vision cones to maintain the mystery of the unknown.
+- NEVER evaluate complex "Director" heuristics every frame; strictly use **Frame-Slicing (`Engine.get_process_frames()`)** to run heavy pacing logic only once every 60-120 frames for CPU efficiency.
+- NEVER move rooms individually by pixel values during procedural generation; strictly use **`Marker2D` Connection Points** in pre-authored scenes to calculate exact offsets for seamless room stitching.
 - NEVER allow Run State to leak into Meta State; strictly use separate singletons or Resources for `RunManager` and `MetaManager`.
 - NEVER scale meta-progression to be overpowered (+100% damage); strictly keep upgrades subtle (+5-15%) to maintain skill-based play.
 - NEVER forget to call `duplicate(true)` on base stat Resources; failing to deep-duplicate causes all entities to share a single health instance.
@@ -217,6 +220,55 @@ extends Relic
 func on_kill(player: Node, target: Node) -> void:
     player.heal(5)
     print("Vampirism triggered!")
+```
+
+### 4. Director-AI (Pacing Manager)
+Use frame-slicing to evaluate student performance and adjust difficulty without CPU spikes.
+
+```gdscript
+# director_ai.gd (Autoload)
+func _process(_delta):
+    # Only evaluate every 60 frames
+    if Engine.get_process_frames() % 60 == 0:
+        _update_pacing_logic()
+
+func _update_pacing_logic():
+    if player_health < 30:
+        spawn_rate -= 0.5 # Ease up
+    elif player_kills > 100:
+        spawn_rate += 1.0 # Challenge more
+```
+
+### 5. Procedural Room Assembler (Markers)
+Snap rooms together using connection markers for pixel-perfect stitching.
+
+```gdscript
+# room_assembler.gd
+func add_room(new_scene: PackedScene, prev_exit: Marker2D):
+    var inst = new_scene.instantiate()
+    add_child(inst)
+    await inst.tree_entered # Wait for node to be ready
+    
+    var entrance = inst.get_node("Entrance")
+    # Snap room so entrance matches previous exit
+    var offset = inst.global_position - entrance.global_position
+    inst.global_position = prev_exit.global_position + offset
+```
+
+### 6. Synergy-Tag System (Relics)
+Use tag aggregation on ItemData resources to trigger synergistic effects.
+
+```gdscript
+# synergy_manager.gd
+func check_synergies(inventory: Array[ItemData]):
+    var tags = {}
+    for item in inventory:
+        for tag in item.synergy_tags:
+            tags[tag] = tags.get(tag, 0) + 1
+            
+    if tags.get(&"Fire", 0) >= 1 and tags.get(&"Projectile", 0) >= 1:
+        activate_synergy(&"Flaming_Arrow")
+```
 ```
 
 ## Common Pitfalls

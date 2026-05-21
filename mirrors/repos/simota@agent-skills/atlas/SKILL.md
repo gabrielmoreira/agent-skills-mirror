@@ -15,6 +15,7 @@ CAPABILITIES_SUMMARY:
 - circular_dependency_remediation: Targeted SCC detection and break strategies (dependency inversion, interface extraction, module re-layering) for cyclic import graphs
 - coupling_metric_assessment: Afferent/efferent coupling, instability (I), abstractness (A), distance-from-main-sequence (D) scoring per module with actionable targets
 - module_boundary_evaluation: Bounded-context fit analysis, cross-boundary leak detection, and anti-corruption layer recommendations
+- tri_engine_architect: `multi` Recipe — parallel architecture assessment and ADR drafting across Codex + Antigravity + Claude subagents with Pattern H (hybrid) scoring; concurrence on smells calibrates the ADR Context section while divergence on architectural styles populates the Options section; emits one Consensus + Dissenting Options ADR with a load-bearing trade-off matrix; preserves single-engine architectural-style insights as named alternatives instead of strawmen
 
 COLLABORATION_PATTERNS:
 - Pattern A: Analysis-to-Design (Atlas → Architect)
@@ -133,6 +134,7 @@ Detailed checklists: `references/daily-process-checklists.md`
 | `module boundary`, `restructure` | Module boundary design | Restructuring proposal | `references/architecture-patterns.md` |
 | `architecture health`, `metrics` | Health assessment | Health score card | `references/architecture-health-metrics.md` |
 | `fitness function`, `evolutionary`, `guardrail` | Fitness function design | Fitness function spec + CI integration guide | `references/architecture-health-metrics.md` |
+| `multi-engine`, `tri-engine architecture`, `parallel ADR`, `cross-engine arch review`, `multi`, `architectural style trade-off` | Tri-engine architecture deliberation | Consensus + Dissenting Options ADR with load-bearing trade-off matrix | `references/tri-engine-architect.md` |
 | unclear architecture request | Dependency analysis + ADR | Analysis report + ADR | `references/dependency-analysis-patterns.md` |
 
 ## Recipes
@@ -147,6 +149,7 @@ Detailed checklists: `references/daily-process-checklists.md`
 | Cycle Break | `cycle` | | Circular dependency (SCC) detection and removal strategies (dependency inversion / interface extraction / re-layering) | `references/circular-dependency-remediation.md` |
 | Coupling Assessment | `coupling` | | Quantitative module coupling assessment (Ca/Ce/I/A/D) and improvement guidance | `references/coupling-metrics.md` |
 | Boundary Evaluation | `boundary` | | Bounded Context boundary evaluation, cross-boundary leak detection, anti-corruption layer proposals | `references/module-boundary-evaluation.md` |
+| Multi-Engine | `multi` | | Tri-engine architecture deliberation (Codex + Antigravity + Claude in parallel) with Pattern H scoring. Concurrence on architectural smells calibrates ADR Context; divergence on architectural styles populates the Considered Options section. Produces one Consensus + Dissenting Options ADR with a load-bearing trade-off matrix. | `references/tri-engine-architect.md`, `_common/MULTI_ENGINE_RECIPE.md` |
 
 ## Subcommand Dispatch
 
@@ -163,6 +166,7 @@ Behavior notes per Recipe:
 - `cycle`: Detect SCCs (strongly connected components) and present prioritized removal strategies (DIP / interface extraction / re-layering / merge) per SCC. Recommend Canvas visualization of the dependency graph.
 - `coupling`: Calculate Martin metrics (Ca/Ce/Instability/Abstractness/Distance) and identify modules off the Main Sequence. Present target values and improvement candidates.
 - `boundary`: Evaluate alignment between Bounded Context boundaries and repository structure. Detect cross-boundary data leakage, excessive shared kernel, and missing anti-corruption layers.
+- `multi`: Tri-engine architecture deliberation. Spawn Codex / Antigravity / Claude subagents in one message; each produces an independent assessment (2-3 architectural smells + 1-2 ADR options) with loose prompts (Role + Target + Output format only — no MADR template or style catalog passed in). Pattern H two-axis scoring: smells use confidence axis (`CONFIRMED` 3/3 → `LIKELY` 2/3 → `CANDIDATE` 1/3 ground-or-drop); options use perspective axis (`CONVERGENT` 3/3 → `CONVERGENT-PARTIAL` 2/3 → `DIVERGENT-{style}` 1/3 preserved). Critical Atlas rule: options targeting the same problem with **different architectural styles** are NOT merged — they ride into the ADR as separate Options entries. Synthesis emits one Consensus + Dissenting Options ADR (extended MADR 4.0 structure) with a load-bearing trade-off matrix that replaces the single-engine strawmen typically found in the Considered Options section. See `references/tri-engine-architect.md` for the full SCOPE → PREFLIGHT → FAN-OUT → NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE → PRESENT flow, JSON schema, and subagent prompt skeleton.
 
 ## Output Requirements
 
@@ -188,6 +192,35 @@ Every deliverable must include:
 
 **Subagent parallelism (SURVEY phase)**: For large-scale analysis spanning 3+ distinct code domains (e.g., frontend/backend/data), use RESEARCH_FAN_OUT with 2–3 Explore subagents — each scans a separate domain for dependency and coupling issues. Merge: Union (collect all dependency graphs → deduplicate → consolidate into unified report). For 4+ domains, delegate to Rally with Pattern D (Specialist Team, `db-specialist` / `api-specialist` / `frontend-specialist`).
 
+## Multi-Engine Mode
+
+Activated by the `multi` Recipe (or any explicit user request for parallel ADR / cross-engine architecture review / architectural-style trade-off comparison). Tri-engine architecture deliberation is a **Pattern H** flow (per `_common/MULTI_ENGINE_RECIPE.md`) — both concurrence and divergence carry value, but along different axes.
+
+**Core mechanics:**
+- Spawn three Agent subagents in a single message: `architect-codex`, `architect-agy`, `architect-claude` (per `references/tri-engine-architect.md`).
+- Run engine availability PREFLIGHT in Atlas main context — never delegate detection to subagents (subagent PATH is narrower; canonical probe in `_common/MULTI_ENGINE_RECIPE.md §PREFLIGHT`).
+- Use loose prompts (Role + Target + Output format only). Do NOT pass MADR templates, ISO/IEC/IEEE 42010 framing, the Modular-Monolith default, Vertical-Slice guidance, or fitness-function catalogs to subagents — those defaults are applied in SYNTHESIZE. Each engine's training-data prior (Codex GitHub-OSS, Antigravity Google-product, Claude Anthropic-curated) should drive architectural-style divergence.
+- Subagents return structured JSON with two streams — `architectural_smells` and `adr_options` — each carrying a specific `architectural_style` label.
+
+**Two-axis scoring (Pattern H — distinct from Judge's Pattern C or Spark's Pattern D):**
+- **Confidence axis on smells:** `CONFIRMED` (3/3) — high-confidence problem; ship to ADR Context. `LIKELY` (2/3) — ship with dissenter noted. `CANDIDATE` (1/3) — must pass strict grounding to survive.
+- **Perspective axis on options:** `CONVERGENT` (3/3 same style + intervention + migration class) — promote to Recommended Option. `CONVERGENT-PARTIAL` (2/3) — chosen with dissent in Options. `DIVERGENT-{style}` (1/3, grounded) — preserved as a named Option, NOT auto-low-value. The divergent option's architectural-style perspective is the value-add of running `multi`.
+
+**Critical Atlas-specific rule:** Options targeting the same smell with **different architectural styles** are NOT merged at CLUSTER. They ride into the final ADR's Considered Options section as separate entries — replacing the single-engine strawmen typically written there with three independently-reasoned recommendations.
+
+**Synthesis output — Consensus + Dissenting Options ADR:**
+- Extended MADR 4.0 structure (Context → Decision Drivers → Considered Options → Decision Outcome → Trade-off Matrix → Positive/Negative Consequences → Risks → Pros/Cons of each Dissenting Option → Migration Strategy → Rollback Plan → Fitness Functions → Engine Concurrence Notes).
+- The trade-off matrix becomes the load-bearing artifact — it now contains genuine cross-style trade-offs instead of author-imagined alternatives.
+- Output path: `docs/architecture/decisions/ADR-NNNN-{slug}.md` (or RFC template if user asked for an RFC) with `tri_engine` front matter capturing engine status and confidence/perspective distributions.
+
+**Engine-attribution tags (mandatory on every shipped smell and option):**
+- Smells: `[codex+agy+claude] [CONFIRMED]` (3/3) / `[codex+agy] [LIKELY]` etc. (2/3) / `[codex-verified] [VERIFIED-CANDIDATE]` (1/3 grounded).
+- Options: `[codex+agy+claude] [CONVERGENT]` / `[codex+claude] [CONVERGENT-PARTIAL]` etc. / `[agy-verified] [DIVERGENT-{style}]`.
+
+**Degraded modes:** 1 engine down → continue with 2; reduced architectural-style diversity flagged in ADR front matter. 2 down → single Option section ADR with explicit degradation note. All down → degrade to standard `adr` Recipe.
+
+Full algorithm, JSON schema, prompt skeletons, clustering rules, and grounding/anti-pattern checks: `references/tri-engine-architect.md`.
+
 ## Reference Map
 
 | Reference | Read this when |
@@ -207,6 +240,9 @@ Every deliverable must include:
 | `references/circular-dependency-remediation.md` | You are running the `cycle` recipe — SCC detection and removal strategies (dependency inversion, interface extraction, re-layering, merge). |
 | `references/coupling-metrics.md` | You are running the `coupling` recipe — Martin metrics (Ca/Ce/Instability/Abstractness/Distance) and Main Sequence assessment. |
 | `references/module-boundary-evaluation.md` | You are running the `boundary` recipe — bounded-context fit, cross-boundary leak detection, and anti-corruption layer recommendations. |
+| `references/tri-engine-architect.md` | You are running the `multi` Recipe — tri-engine fan-out (Codex + Antigravity + Claude subagents), Pattern H two-axis scoring, Consensus + Dissenting Options ADR structure, JSON schema, subagent prompt skeleton, and degraded-mode behavior. |
+| `_common/SUBAGENT.md` | You need the base MULTI_ENGINE protocol — engine dispatch table, loose prompt rules, Agent tool fan-out mechanics, fallback rules. Read before authoring `multi` Recipe subagent prompts. |
+| `_common/MULTI_ENGINE_RECIPE.md` | You need the cross-skill multi-engine protocol — Pattern H definition, canonical PREFLIGHT probe, CLUSTER/SCORE/GROUND/SYNTHESIZE flow, engine-attribution tag conventions, and degraded modes. |
 | `_common/OPUS_47_AUTHORING.md` | You are scoping SURVEY breadth, deciding adaptive thinking depth at PLAN, or sizing ADR/RFC outputs. Critical for Atlas: P3, P5. |
 
 ## Operational
@@ -227,12 +263,26 @@ _STEP_COMPLETE:
   Status: SUCCESS | PARTIAL | BLOCKED | FAILED
   Output:
     deliverable: [artifact path or inline]
-    artifact_type: "[ADR | RFC | Dependency Analysis | Debt Assessment | Module Boundary Design | Health Score]"
+    artifact_type: "[ADR | RFC | Dependency Analysis | Debt Assessment | Module Boundary Design | Health Score | Tri-Engine Consensus ADR]"
     parameters:
       analysis_scope: "[module | package | system]"
       coupling_score: "[metric]"
       debt_items: "[count]"
       migration_risk: "[Low | Medium | High]"
+    tri_engine:                                  # present only when `multi` Recipe ran
+      engines_run: [codex, agy, claude]
+      engines_failed: [list or none]
+      smell_confidence:
+        CONFIRMED: [count]
+        LIKELY: [count]
+        VERIFIED-CANDIDATE: [count]
+      option_perspective:
+        CONVERGENT: [count]
+        CONVERGENT-PARTIAL: [count]
+        DIVERGENT: [count]
+      recommended_option_style: "[Layered | Hexagonal | DDD | Event-Driven | Modular-Monolith | Microservices | CQRS | Vertical-Slice | Pipeline | Plugin]"
+      dissenting_option_styles: [list of architectural styles preserved as alternatives]
+      rejected: [count + top categories — hallucinated-module / already-mitigated / infeasible / anti-pattern]
   Next: Zen | Quill | Sherpa | Canvas | Builder | DONE
   Reason: [Why this next step]
 ```

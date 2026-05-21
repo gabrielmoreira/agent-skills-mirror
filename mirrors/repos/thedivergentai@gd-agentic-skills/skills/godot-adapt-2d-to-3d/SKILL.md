@@ -375,5 +375,87 @@ When moving a 3D character, rely heavily on `Transform3D` basis vectors rather t
 ### 2. Understanding Coordinate Discrepancies
 In 2D, the Y-axis points down. In 3D, Godot uses a right-handed system where Y-axis points UP, and forward is -Z. Translating 2D jumps to 3D requires inverting the Y velocity logic (e.g., `velocity.y = JUMP_SPEED` instead of `-JUMP_SPEED`).
 
+### 3. 2.5D Navigation (Camera-Projected Paths)
+For 2.5D games where actors move on a 3D floor but are displayed as 2D sprites, query the `NavigationServer3D` directly and project the resulting `PackedVector3Array` into 2D screen space (or a flattened gameplay plane) using `Camera3D.unproject_position`.
+
+```gdscript
+class_name NavigationBridge2D5D extends Node
+
+## Projects 3D NavigationServer paths to 2D screenspace for 2.5D movement.
+static func query_2_5d_path(camera: Camera3D, map_rid: RID, start_2d: Vector2, target_2d: Vector2) -> PackedVector2Array:
+    # 1. Project 2D screen points to the 3D ground plane (Y=0).
+    var start_3d := camera.project_position(start_2d, 0.0)
+    var target_3d := camera.project_position(target_2d, 0.0)
+    
+    # 2. Query optimized 3D path.
+    var path_3d := NavigationServer3D.map_get_path(map_rid, start_3d, target_3d, true)
+    
+    # 3. Project 3D world points back to 2D screenspace coordinates for the sprite.
+    var path_2d := PackedVector2Array()
+    for point in path_3d:
+        path_2d.append(camera.unproject_position(point))
+        
+    return path_2d
+```
+
+### 4. Shader-Based Billboarding (Massive Crowd Rendering)
+To render millions of instances, use `MultiMeshInstance3D` paired with a custom Visual Shader. Use `VisualShaderNodeBillboard` with `BILLBOARD_TYPE_FIXED_Y` to ensure sprites stay upright on flat terrain.
+
+```gdscript
+class_name MassiveCrowdManager extends MultiMeshInstance3D
+## Efficiently manages millions of camera-facing instances via GPU hardware.
+
+func _ready() -> void:
+    # 1. Configure the MultiMesh for 3D transforms.
+    multimesh = MultiMesh.new()
+    multimesh.transform_format = MultiMesh.TRANSFORM_3D
+    multimesh.instance_count = 10000
+    
+    # 2. Build a ShaderMaterial using VisualShaderNodeBillboard.
+    var material := ShaderMaterial.new()
+    # Note: Logic assumes billboard_type=BILLBOARD_TYPE_FIXED_Y and keep_scale=true.
+    multimesh.mesh = QuadMesh.new()
+    multimesh.mesh.surface_set_material(0, material)
+    
+    # 3. Populate transforms. The GPU handles orientation.
+    for i in range(multimesh.instance_count):
+        var pos := Vector3(randf() * 100, 0, randf() * 100)
+        multimesh.set_instance_transform(i, Transform3D(Basis(), pos))
+```
+
+### 5. Lighting Migration Tool (2D to 3D Converter)
+A robust `EditorScript` for mapping `PointLight2D` properties to `OmniLight3D`. Uses `EditorInterface.get_edited_scene_root()` to ensure changes are tracked by the editor.
+
+```gdscript
+@tool
+class_name LightMigrationTool extends EditorScript
+## Converts PointLight2D nodes in the active scene to OmniLight3D.
+
+func _run() -> void:
+    var root := EditorInterface.get_edited_scene_root()
+    if not root: return
+    _migrate_node(root)
+
+func _migrate_node(node: Node) -> void:
+    if node is PointLight2D:
+        var l3d := OmniLight3D.new()
+        l3d.light_color = node.color
+        l3d.light_energy = node.energy
+        # Approximate 3D range from 2D texture radius * scale
+        var radius := 128.0 # Default fallback
+        if node.texture: radius = node.texture.get_width() / 2.0
+        l3d.omni_range = radius * node.texture_scale
+        
+        # Mapping 2D (x, y) to 3D (x, y, height)
+        l3d.position = Vector3(node.position.x, node.position.y, node.height)
+        
+        node.get_parent().add_child(l3d)
+        l3d.owner = EditorInterface.get_edited_scene_root()
+        l3d.name = node.name + "_3D"
+        
+    for child in node.get_children():
+        _migrate_node(child)
+```
+
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)

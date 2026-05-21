@@ -41,9 +41,9 @@ Managing multi-step asynchronous loading and transitions using sequential signal
 
 ## NEVER Do in Signal Architecture
 
-- **NEVER use the legacy string-based `Object.connect()`** — Typos result in silent failures. Always use `signal.connect(_callback)` for compile-time validation [1].
+-**NEVER use the legacy string-based `Object.connect()`** — Typos result in silent failures. Always use `signal.connect(_callback)` for compile-time validation [1].
 - **NEVER use signals to dictate behavior top-down** — Signals are past-tense events (e.g., "died"). Use direct method calls for commands (e.g., "kill") [2].
-- **NEVER connect a signal twice to the same Callable** — This throws an `ERR_INVALID_PARAMETER` at runtime unless using `CONNECT_REFERENCE_COUNTED` [3].
+- **NEVER connect a signal twice to the same Callable** — This throws an `ERR_INVALID_PARAMETER` at runtime unless using the `Object.CONNECT_REFERENCE_COUNTED` flag to stack connections [3, 4].
 - **NEVER use a Global Signal Bus for local data** — Pollutes global state and makes debugging harder. Use local connections for scene-specific logic [4].
 - **NEVER assume callbacks must accept all signal arguments** — Use `unbind()` to drop unwanted parameters and keep your API clean [5].
 - **NEVER create circular signal dependencies** — A signals B, B signals back to A? Use a mediator (parent or AutoLoad) to break the loop [26].
@@ -245,14 +245,19 @@ func _ready():
 ```
 
 ### 3. Disconnect Signals When Nodes Are Freed
+Godot automatically disconnects signals when a node or object is freed [6]. However, there is a **CRITICAL EXCEPTION**:
+
+- **Capturing Lambdas**: If a lambda captures a local variable (e.g., `func(): print(x)`), Godot cannot automatically disconnect it. You MUST manually disconnect it in `_exit_tree()` or a cleanup method to prevent crashes [8, 9].
 
 ```gdscript
+var my_lambda: Callable
+
 func _ready() -> void:
-    player.died.connect(_on_player_died)
+    var x = 10
+    my_lambda = func(): print(x) # Capturing lambda
+    player.died.connect(my_lambda)
 
 func _exit_tree() -> void:
-    if player and player.died.is_connected(_on_player_died):
-        player.died.disconnect(_on_player_died)
 ```
 
 **Or use automatic cleanup:**

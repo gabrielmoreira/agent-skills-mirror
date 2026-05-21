@@ -32,7 +32,9 @@ YAML frontmatter at the top of every profile file:
 ---
 name: "<current display name>"
 wxid: "<wxid>"
-aliases: ["<old nickname>", "<even older nickname>"]
+group_nicknames: ["<历史群昵称 1>", "<历史群昵称 2>"]
+aliases: ["<群友给的称呼 1>", "<群友给的称呼 2>"]
+tags: ["<标签 1>", "<标签 2>"]
 first_seen: "YYYY-MM-DD"
 last_seen: "YYYY-MM-DD"
 total_messages: N
@@ -45,11 +47,15 @@ Field rules:
 
 - `name`: the most recent display name from `from_nickname` (or `self_display` for the owning user).
 - `wxid`: stable; never changes once written.
-- `aliases`: append-only; every prior display name we've seen. Don't include the current `name` in this list.
+- `group_nicknames`: append-only history of the user's own prior display names in the group. Push the prior `name` here when `name` changes. Dedupe, preserve chronological order (oldest → newest). Do not include the current `name`.
+- `aliases`: nicknames **other members** call this user (e.g., `蛙总`, `老王`, `X 哥`). Dedupe-append when observed in this batch. Do not include the current `name`, and do not duplicate `group_nicknames` entries — those record the user's own past handles, not how the group addresses them.
+- `tags`: free-form labels for the user, **independent** of the body's 角色标签 / 人设标签 section. Use for cross-cutting attributes that don't fit the role/personality framing (region, profession, community, recurring long-form interests, etc.). Agent may append or refine when observing stable patterns. No hard cap.
 - `first_seen` / `last_seen`: dates of first/most-recent digest appearance, YYYY-MM-DD.
 - `total_messages`: cumulative count across all digests this profile has been updated from.
 - `digest_appearances`: how many digest files this user has 3+ messages in.
 - `avg_messages_per_digest`: `total_messages / digest_appearances`, one decimal.
+
+**Backwards compatibility**: earlier versions of this skill used `aliases` for what is now `group_nicknames`. When reading an existing profile that lacks `group_nicknames` or `tags`, treat missing fields as `[]` and add them on the next write. **Do not auto-migrate** non-empty legacy `aliases` values — the agent can't reliably tell historical display names apart from community-given nicknames. Leave the values in `aliases`; the user can move historical display names into `group_nicknames` manually if desired.
 
 ### 1.3 Free-form body — normal profile
 
@@ -138,8 +144,16 @@ Rules differ per section. Append-only sections must never lose history; mergeabl
 
 ### 2.3 Frontmatter on every update
 
-- Update `name` if current display name differs from the recorded one. Push the old name onto `aliases` if not already there.
-- If `name` changed, also rename the file from `{wxid}-{old_nickname}.md` to `{wxid}-{new_nickname}.md`.
+- If the current display name differs from the recorded `name`:
+  - Push the old `name` onto `group_nicknames` if not already there (dedupe, preserve chronological order).
+  - Update `name` to the current display name.
+  - Rename the file from `{wxid}-{old_nickname}.md` to `{wxid}-{new_nickname}.md`.
+- Scan this batch for nicknames **other members** use to address this user, and dedupe-append into `aliases`. Signals:
+  - `@mention` resolving to this `wxid`.
+  - Direct salutations targeting this user with a name different from `name` (e.g., `蛙总你怎么看`, `老王说得对`).
+  - Quoted references in the digest body that name this user as someone other than their current `name`.
+  - Only add when attribution is unambiguous; skip uncertain matches.
+- If this batch reveals a stable cross-cutting attribute that doesn't fit the role/personality framing of 角色标签 / 人设标签 (region, profession, community, durable interest, etc.), append or refine `tags`. `tags` is independent of the body's tag sections — don't mirror them.
 - Update `last_seen` to the current digest's end date.
 - Increment `total_messages` by this batch's message count for this user.
 - Increment `digest_appearances` by 1.
@@ -154,7 +168,7 @@ Run after the digest file(s) are written. Iterate over every user with 3+ messag
 1. **Look up the profile.**
    - Scan `profiles/` (or `profiles-roast/` for the roast pass) for a file whose name starts with `{wxid}-`.
    - If found: open it.
-   - If not found: create a new file using the frontmatter template. `first_seen = last_seen = current digest end date`, `total_messages = this batch's count`, `digest_appearances = 1`.
+   - If not found: create a new file using the frontmatter template. `group_nicknames = []`, `aliases = []`, `tags = []`, `first_seen = last_seen = current digest end date`, `total_messages = this batch's count`, `digest_appearances = 1`. Then run §2.3 to seed observed aliases/tags from this batch.
 
 2. **Resolve wxid for new users.** When a new user appears, you already know their `wxid` from the wx-cli message data — use it directly. If for some reason only the nickname is known, run `wx contacts --query "{nickname}" --json` to resolve; if multiple matches, prefer the one currently in the group (cross-check `wx members <group>` if needed).
 
@@ -195,7 +209,7 @@ Triggered when the user says `回溯画像`, `初始化画像`, `backfill profil
 5. **Write profile files.**
    - For the normal pass, write to `profiles/{wxid}-{nickname}.md`.
    - For the roast pass, write to `profiles-roast/{wxid}-{nickname}.md`.
-   - Use the most recent nickname as the filename suffix. Push older nicknames into `aliases`.
+   - Use the most recent nickname as the filename suffix. Push older display names into `group_nicknames` (see step 6 for the field-by-field rules).
    - Sort 经典金句，标志性事件，毒舌语录库，经典翻车现场 entries chronologically by date.
    - No cap on the size of append-only sections during backfill — let history flow in.
 
@@ -204,6 +218,9 @@ Triggered when the user says `回溯画像`, `初始化画像`, `backfill profil
    - `last_seen` = latest digest date the user appeared in.
    - `total_messages` = sum of per-digest counts.
    - `digest_appearances` = number of digests the user crossed the 3-message threshold in.
+   - `group_nicknames` = best-effort. If the same `wxid` appears under multiple distinct display names across historical digests (e.g., via the leaderboard line "X — N 条" where X varied), fill the older ones in chronological order (newest stays in `name`). If chronological order is unclear, dedupe and let later runs correct.
+   - `aliases` = best-effort. Scan historical digest bodies for forms where another member calls this user by a name different from their current `name` (@mentions, direct salutations). Skip uncertain matches; leave `[]` if nothing reliable surfaces.
+   - `tags` = `[]`. Backfill does not seed `tags`; let normal runs accumulate them.
 
 7. **Report.** After both passes complete, print a short summary:
    - `Backfilled {N} normal profiles from {M} digests.`
@@ -264,7 +281,8 @@ When loading profile context for a fresh digest:
 2. For the normal pass, read `profiles/{wxid}-*.md` for each. Skip if missing.
 3. If the current run also generates the roast version, **separately** read `profiles-roast/{wxid}-*.md` during the roast generation pass.
 4. Compile a condensed working-memory block:
-   - The user's current `name` and `aliases` (so you can recognize them under different names).
+   - The user's current `name`, `group_nicknames`, and `aliases` (so you can recognize them under prior display names or community-given nicknames).
+   - `tags` (cross-cutting attributes — region, profession, community — useful for callouts in 群友画像).
    - 角色标签 / 人设标签 (so you can carry forward or contrast).
    - The 3-5 most recent 经典金句 / 毒舌语录 entries (so you can detect callbacks and repeats).
    - The 3-5 most recent 标志性事件 / 翻车现场 entries (so you can spot recurring themes).

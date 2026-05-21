@@ -161,5 +161,89 @@ Teach mechanics through level design, not text.
 *   **Signals**: Use signals like `state_changed` to update UI/Visuals decoupled from the logic.
 
 
-## Reference
+---
+
+## 🚀 Elite Technical Implementations (Batch 09)
+
+### 1. Level-Editor Serialization Pattern
+For puzzle games with custom editors, avoid using `.tscn` at runtime. Instead, use `FileAccess` and `JSON` to serialize grid data into compact, human-readable files in the `user://` directory.
+
+```gdscript
+class_name LevelSerializer extends Node
+
+const LEVEL_DIR := "user://levels/"
+
+## Serializes the grid state into a JSON file.
+static func save_level(level_name: String, grid_data: Dictionary) -> void:
+    var path := LEVEL_DIR + level_name + ".json"
+    var file := FileAccess.open(path, FileAccess.WRITE)
+    
+    if file:
+        file.store_string(JSON.stringify(grid_data, "\t"))
+        file.close()
+        print("Level saved successfully!")
+
+## Deserializes a JSON file back into a Dictionary.
+static func load_level(level_name: String) -> Dictionary:
+    var path := LEVEL_DIR + level_name + ".json"
+    var file := FileAccess.open(path, FileAccess.READ)
+    
+    if file:
+        var json_string := file.get_as_text()
+        var parsed_data = JSON.parse_string(json_string)
+        if parsed_data is Dictionary:
+            return parsed_data as Dictionary
+    return {}
+```
+
+### 2. Hint-Systems (A* Solvers)
+Use `AStarGrid2D` to provide logical hints. It is optimized for uniform grids and supports Jump Point Search (JPS) via `jumping_enabled` to drastically speed up pathfinding on large puzzle layouts.
+
+```gdscript
+class_name PuzzleHintSystem extends Node
+
+var _astar_grid: AStarGrid2D
+
+func _ready() -> void:
+    _astar_grid = AStarGrid2D.new()
+    _astar_grid.region = Rect2i(0, 0, 32, 32)
+    _astar_grid.cell_size = Vector2(1, 1)
+    _astar_grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
+    _astar_grid.jumping_enabled = true 
+    _astar_grid.update()
+
+## Queries the solver for the next logical step.
+func get_next_hint_step(player_pos: Vector2i, goal_pos: Vector2i) -> Vector2i:
+    var path := _astar_grid.get_id_path(player_pos, goal_pos)
+    if path.size() > 1:
+        return path[1] # Return next step in sequence
+    return player_pos
+```
+
+### 3. State-Snapshot Pattern (Instant Resets)
+Avoid `reload_current_scene()` for resets to prevent frame drops and UI flickering. Instead, capture the initial positions of all pieces into a `Dictionary` and restore them instantly.
+
+```gdscript
+class_name StateSnapshotManager extends Node
+
+signal state_restored()
+var _initial_state_snapshot: Dictionary[NodePath, Vector2] = {}
+
+## Capture initial positions of all puzzle pieces.
+func capture_initial_state() -> void:
+    var pieces = get_tree().get_nodes_in_group("puzzle_pieces")
+    for piece in pieces:
+        if piece is Node2D:
+            _initial_state_snapshot[piece.get_path()] = piece.global_position
+
+## Instantly restore pieces to their original state.
+func reset_to_snapshot() -> void:
+    for node_path in _initial_state_snapshot.keys():
+        var piece = get_node_or_null(node_path) as Node2D
+        if piece:
+            piece.global_position = _initial_state_snapshot[node_path]
+    state_restored.emit()
+```
+
+
 - Master Skill: [godot-master](../godot-master/SKILL.md)

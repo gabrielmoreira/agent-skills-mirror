@@ -56,9 +56,22 @@ Demonstrating the correct use of `_unhandled_input` to prevent gameplay logic fr
 
 ---
 
-## InputMap Actions
+## Input Propagation & Isolation
+Godot propagates input events in a specific order. Understanding this is key to isolating UI from gameplay.
 
-**Setup:** Project Settings → Input Map → Add action
+1. **`_input(event)`**: High-priority global intercept. Use for dev consoles or debug overlays.
+2. **`_gui_input(event)`**: Handled by **Control nodes (UI)**. If a UI element consumes the event (e.g., clicking a button), it calls `accept_event()`, stopping further propagation.
+3. **`_unhandled_input(event)`**: Reached ONLY if no UI element consumed the event. **Expert Pattern**: Put all gameplay logic (jump, shoot) here to prevent accidental triggers while interacting with menus.
+
+## InputMap Best Practices
+Avoid physical key checks. Define semantic actions (e.g., `move_left`, `interact`) in **Project Settings > Input Map**.
+
+### 1. Analog Deadzones
+Analog sticks suffer from drift. Use `Input.get_vector()` for mathematically correct **circular deadzones**.
+- **Bad**: Subtracting axis strengths manually creates "square" deadzones.
+- **Good**: `var input := Input.get_vector("left", "right", "up", "down")` applies a perfectly circular deadzone and clamps magnitude to 1.0.
+
+### 2. Basic Polling
 
 ```gdscript
 # Check if action pressed this frame
@@ -93,16 +106,153 @@ func _input(event: InputEvent) -> void:
             click_position = event.position
 ```
 
-## Gamepad Support
+## Multi-Modal Input & UI Glyphs
+Modern games must handle simultaneous Controller and Keyboard/Mouse input smoothly.
+
+### 1. Handling Input Modes
+- **Mouse Aiming**: Process `InputEventMouseMotion` in `_unhandled_input()` for relative movement.
+- **Stick Movement**: Poll `Input.get_vector()` in `_physics_process()` for clamped state.
+
+### 2. Dynamic Glyph Swapping
+To update UI prompts (e.g., "Press E" vs "Press X") in real-time:
+- **Autoload Strategy**: Create a singleton that monitors `_input(event)`.
+- **Detection**: Check `event is InputEventJoypadButton` or `InputEventJoypadMotion` to detect gamepad use.
+- **Broadcasting**: Emit a signal (e.g., `signal device_changed(is_gamepad: bool)`) when the hardware type shifts. All UI elements should listen to this signal to swap their prompt textures.
+
+## Expert Input Extensions
+
+### 1. Input-Buffering (Action Queuing)
+Decouple input presses from physics execution to make controls feel "tight." Store the input in a timed buffer and consume it when a valid state (e.g., landing) is reached [1, 2].
 
 ```gdscript
-# Detect controller connection
-func _ready() -> void:
-    Input.joy_connection_changed.connect(_on_joy_connection_changed)
+var jump_buffer_timer: float = 0.0
 
-func _on_joy_connection_changed(device: int, connected: bool) -> void:
-    if connected:
-        print("Controller ", device, " connected")
+func _unhandled_input(event: InputEvent) -> void:
+    if event.is_action_pressed("jump"):
+        jump_buffer_timer = 0.15 # 150ms window
+
+func _physics_process(delta: float) -> void:
+    if jump_buffer_timer > 0.0:
+        jump_buffer_timer -= delta
+        if is_on_floor():
+            jump()
+            jump_buffer_timer = 0.0
+```
+
+### 2. Coyote-Time (Jump Leniency)
+Allow a jump for a few frames after the character leaves a ledge by tracking the time since last grounded [4].
+
+```gdscript
+var coyote_timer: float = 0.0
+
+func _physics_process(delta: float) -> void:
+    if is_on_floor():
+        coyote_timer = 0.1 # 100ms grace period
+    else:
+        coyote_timer -= delta
+    
+    if Input.is_action_just_pressed("jump") and coyote_timer > 0.0:
+        jump()
+        coyote_timer = 0.0
+```
+
+### 3. Multiplayer-Input-Synchronization
+Route local device input to the authoritative server using RPCs and `multiplayer.get_remote_sender_id()` for validation [7, 8].
+
+```gdscript
+@rpc("any_peer", "call_local", "unreliable")
+func sync_input(dir: Vector2) -> void:
+    var sender = multiplayer.get_remote_sender_id()
+    # Apply dir to the player body associated with sender...
+```
+
+## Reference
+- [Godot Docs: InputEvent](https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html)
+
+## Expert Input Architectures
+
+### 1. Input-Event-Parsing (Virtual Injection)
+To simulate player input for automated testing or AI assistance, use `Input.parse_input_event()`. This injects raw `InputEvent` objects directly into the engine's processing pipeline, bypassing physical hardware. This is critical for building robust CI/CD test suites or deterministic tutorials.
+
+```gdscript
+class_name VirtualInputInjector extends Node
+## Injects virtual hardware events into the engine pipeline.
+
+func simulate_jump() -> void:
+    var event := InputEventAction.new()
+    event.action = &"jump"
+    event.pressed = true
+    
+    # 1. Dispatch the "Pressed" event.
+    Input.parse_input_event(event)
+    
+    # 2. Schedule the "Released" event.
+    await get_tree().create_timer(0.1).timeout
+    event.pressed = false
+    Input.parse_input_event(event)
+```
+
+### 2. Input-Combo-Validation (Sequence Buffering)
+Professional fighting games and action-RPGs utilize a rolling buffer to validate complex input sequences (e.g., "Down, Right, Punch"). Store semantic actions with their timestamps and check if the buffer ends with a specific pattern within a strict time window (e.g., 500ms).
+
+```gdscript
+class_name ComboValidator extends Node
+## Validates timed input sequences for special moves.
+
+var _input_buffer: Array[Dictionary] = []
+@export var combo_timeout: float = 0.5
+
+func add_input(action: StringName) -> void:
+    _input_buffer.append({"action": action, "time": Time.get_ticks_msec()})
+    _cleanup_buffer()
+    
+    # Example: Fireball (Down, Right, Attack)
+    if _check_sequence(["move_down", "move_right", "attack"]):
+        _execute_special_move("fireball")
+
+func _cleanup_buffer() -> void:
+    var now := Time.get_ticks_msec()
+    _input_buffer = _input_buffer.filter(func(i): return now - i.time < (combo_timeout * 1000))
+
+func _check_sequence(sequence: Array[StringName]) -> bool:
+    if _input_buffer.size() < sequence.size(): return false
+    
+    for i in range(sequence.size()):
+        var buffer_idx := _input_buffer.size() - sequence.size() + i
+        if _input_buffer[buffer_idx].action != sequence[i]:
+            return false
+    return true
+```
+
+### 3. Input-Replay-Buffer (Deterministic Playback)
+Deterministic replay is essential for debugging high-speed physics or creating "Ghost" racing data. Capture every `InputEvent` in `_unhandled_input()`, serializing the data with the current `multiplayer.get_unique_id()` or frame count.
+
+```gdscript
+class_name InputReplayBuffer extends Node
+## Captures and replays deterministic input streams.
+
+var _recorded_events: Array[Dictionary] = []
+var _is_replaying: bool = false
+
+func _unhandled_input(event: InputEvent) -> void:
+    if _is_replaying: return
+    
+    # Capture the duplicate event and current engine frame.
+    _recorded_events.append({
+        "frame": Engine.get_frames_drawn(),
+        "event": event.duplicate()
+    })
+
+func start_replay() -> void:
+    _is_replaying = true
+    var start_frame := Engine.get_frames_drawn()
+    
+    for entry in _recorded_events:
+        var target_frame: int = entry.frame
+        while Engine.get_frames_drawn() < start_frame + target_frame:
+            await get_tree().process_frame
+        
+        Input.parse_input_event(entry.event)
 ```
 
 ## Reference

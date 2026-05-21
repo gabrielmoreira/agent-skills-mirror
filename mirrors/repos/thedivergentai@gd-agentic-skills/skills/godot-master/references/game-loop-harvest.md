@@ -16,6 +16,7 @@ Implement decoupled, data-driven gathering mechanics. This system handles tool v
 | **Harvestable Node** | [harvestable_node.gd](../scripts/game_loop_harvest_harvestable_node.gd) | `StaticBody3D`: The world interaction entity. |
 | **Respawn Manager** | [harvest_respawn_manager.gd](../scripts/game_loop_harvest_harvest_respawn_manager.gd) | `Node`: (Singleton) Manages world persistence. |
 | **Inventory Manager**| [harvest_inventory_manager.gd](../scripts/game_loop_harvest_harvest_inventory_manager.gd) | `Node`: Hub for resource collection. |
+| **Auto-Save Manager**| [harvest_autosave_manager.gd](../scripts/game_loop_harvest_harvest_autosave_manager.gd) | `Node`: Interval-based progress safety. |
 
 ## 2. Implementation Guide
 
@@ -83,3 +84,29 @@ Expert patterns for idle optimization, UNIX-based offline gains, and threaded re
 
 ### [harvestable_node.gd](../scripts/game_loop_harvest_harvestable_node.gd)
 `StaticBody3D`: The world interaction entity that handles hits, shakes, and depletion.
+
+### [harvest_autosave_manager.gd](../scripts/game_loop_harvest_harvest_autosave_manager.gd)
+Manages interval-based auto-saving for harvest progress using `FileAccess`.
+
+---
+
+## Expert Harvest Patterns
+
+### 1. Proc-Gen Resource Veins (Noise)
+Instead of random placement, use `FastNoiseLite` to create organic "clusters" of resources.
+
+```gdscript
+var noise = FastNoiseLite.new()
+func _should_spawn(pos: Vector2) -> bool:
+    # noise_val is -1.0 to 1.0. Higher thresholds create tighter veins.
+    return noise.get_noise_2dv(pos) > 0.5 
+```
+
+### 2. Tool Durability System
+Avoid hardcoding durability into the player; use a `Resource` to encapsulate tool state.
+
+- **Benefit**: Allows easy serialization, swapping tools, and sharing logic across different tools.
+- **Implementation**: See `harvest_tool_data.gd`. Tools should emit `durability_changed` and `tool_broken` signals.
+
+## Reference
+- Master Skill: [godot-master](../SKILL.md)

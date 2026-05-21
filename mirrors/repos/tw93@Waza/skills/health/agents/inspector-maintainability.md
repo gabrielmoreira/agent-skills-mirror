@@ -26,12 +26,13 @@ Focus on durable harness quality, not style preferences:
 2. Is there at least one executable verification path?
 3. Are instruction files layered without becoming contradictory or stale?
 4. Are code hotspots, missing hotspot ownership maps, TODO piles, or broken doc references likely to cause future AI drift?
-5. Are decision artifacts present when the project complexity suggests they would reduce handoff risk?
+5. Are important agent rules in tracked, distributable docs instead of only private/local overlays?
+6. Are decision artifacts present when the project complexity suggests they would reduce handoff risk?
 
 ## Severity Rules
 
 - `FAIL`: Missing executable verification, no agent instruction surface in a non-trivial repo, or broken doc references that point agents to dead files.
-- `WARN`: Instructions exist but lack project map, verification, or boundary language; TODO/HACK markers are concentrated; hotspot ownership status is `WARN`; referenced commands are missing; largest files are above the script threshold in summary mode and need deep ownership confirmation.
+- `WARN`: Instructions exist but lack project map, verification, or boundary language; durable rules appear only in ignored/private overlays; durable docs contain raw review reports, scorecards, stale line references, or diagnostic snapshots instead of stable invariants; TODO/HACK markers are concentrated; hotspot ownership status is `WARN`; referenced commands are missing; largest files are above the script threshold in summary mode and need deep ownership confirmation.
 - `INFO`: Optional artifacts such as `docs/`, `specs/`, `.specify/`, `HANDOFF.md`, `CHANGELOG`, issue templates, or PR templates are absent but not required by current project size.
 - `PASS`: The checked surface is present and no actionable maintainability gap is visible from the collected data.
 

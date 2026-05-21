@@ -22,6 +22,7 @@ Expert guidance for building and distributing Godot games across platforms.
 ### Security
 - **NEVER commit keystores or raw passwords to Git** — Use Environment Variables and CI Secrets (`export_android_signing_env.ps1`).
 - **NEVER allow debug commands in Production** — Use `OS.has_feature("release")` to purge console/cheats from the final build.
+- **NEVER bake shaders on export for Dedicated Servers** — The Shader Baker (Godot 4.5+) is for visual clients. Enabling it for headless servers is wasted build time.
 ---
 
 ## Available Scripts
@@ -57,6 +58,12 @@ Editor tool for auditing resource sizes to optimize build footprints.
 
 ### [export_ci_github_actions.yml](../scripts/export_builds_export_ci_github_actions.yml)
 Professional CI/CD workflow for automated multi-platform Godot releases.
+
+### [export_steam_upload.ps1](../scripts/export_builds_export_steam_upload.ps1)
+Expert script for automating SteamPipe uploads using `steamcmd` and VDF manifests.
+
+### [export_universal_manager.gd](../scripts/export_builds_export_universal_manager.gd)
+Editor tool to programmatically iterate and export all defined presets in one click.
 
 ---
 
@@ -279,6 +286,52 @@ Catch platform-specific issues fast
 Debug: Keep logs, dev tools
 Release: Strip debug, optimize size
 ```
+
+## Expert Export Patterns
+
+### 1. Platform-Specific-Patching (Delta Updates)
+Pattern for mounting external PCK archives to update game content without a full reinstall.
+- **Implementation**:
+    ```gdscript
+    func _load_patch(patch_path: String) -> bool:
+        if FileAccess.file_exists(patch_path):
+            return ProjectSettings.load_resource_pack(patch_path, true) # true = replace files
+        return false
+    ```
+- **Expert Note**: Patched resources with the same path will override the base PCK. Use this for DLC, localized assets, or hotfixes.
+
+### 2. VRAM-Compression-Audit
+Ensuring the correct texture formats for target hardware.
+- **S3TC/BPTC**: Mandatory for Desktop (Forward+). BPTC is superior for Normal Maps and HDR.
+- **ETC2**: Standard for older Android/iOS devices. Does not support transparency on many Android GPUs [13].
+- **ASTC**: Modern mobile standard. High quality/size ratio. Preferred for newer high-end mobile devices.
+- **Rule**: ALWAYS disable compression for Pixel Art to maintain crisp edges [13].
+
+### 4. Steam-Upload-Pipeline (SteamPipe)
+Automating the distribution process to Steam branches.
+- **VDF Manifest**: Create a `app_build.vdf` file defining the app ID, branch (e.g., `beta`), and content folders.
+- **Implementation**:
+    ```powershell
+    # export_steam_upload.ps1
+    $SteamCMD = "C:\steamcmd\steamcmd.exe"
+    & $SteamCMD +login $env:STEAM_USER $env:STEAM_PASS +run_app_build "res://builds/app_build.vdf" +quit
+    ```
+- **Expert Note**: Use Environment Variables for credentials to keep the VDF file generic and safe for version control.
+
+### 5. Universal-Build-Manager (One-Click Export)
+Iterating through all export presets to generate a full suite of release binaries.
+- **Implementation**:
+    ```gdscript
+    func export_all():
+        var config := ConfigFile.new()
+        config.load("res://export_presets.cfg")
+        for section in config.get_sections():
+            if section.begins_with("preset."):
+                var preset_name = config.get_value(section, "name")
+                var path = config.get_value(section, "export_path")
+                OS.execute(OS.get_executable_path(), ["--headless", "--export-release", preset_name, path])
+    ```
+- **Benefit**: Ensures consistency across platforms by automating the "human error" phase of manual exporting.
 
 ## Reference
 - [Godot Docs: Exporting](https://docs.godotengine.org/en/stable/tutorials/export/index.html)

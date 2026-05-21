@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `labring/FastGPT` — 26 default patterns, 1 followed patterns, 27 file(s) materialized.
+Mirror of `labring/FastGPT` — 26 default patterns, 2 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `labring/FastGPT` — 26 default patterns, 1 followed patterns, 27 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 27 |
+| Followed pats | 2 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `labring/FastGPT` — 26 default patterns, 1 followed patterns, 27 fil
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `.codex/code/syntax.md`
+- `.codex/design/api/zod-request-parse-error-handling.md`
 
 ## File Index
 
@@ -86,6 +87,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 26 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
 | 27 | → | [`.codex/code/syntax.md`](.codex/code/syntax.md) |
+| 28 | → | [`.codex/design/api/zod-request-parse-error-handling.md`](.codex/design/api/zod-request-parse-error-handling.md) |
 
 ---
 

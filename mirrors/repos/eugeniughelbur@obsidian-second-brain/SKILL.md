@@ -31,6 +31,10 @@ description: >
 
 Try these methods in order. Use the first one available:
 
+**Method 0 — SessionStart hook (if configured):**
+If `hooks/load_vault_context.py` is wired as a SessionStart hook in `~/.claude/settings.json`, `_CLAUDE.md` is injected into context automatically at session start. Skip step 1 below.
+To wire it: `bash scripts/setup.sh "/path/to/vault"` or run `/obsidian-setup`.
+
 **Method A — MCP server (`mcp-obsidian`):**
 If the MCP tools (`get_file_contents`, `list_files_in_vault`, `search`, `append_content`, `write_file`) are available, use them.
 
@@ -51,6 +55,8 @@ get_file_contents("_CLAUDE.md")
 
 If it exists: follow its rules exactly — they override the defaults in this skill. Where `_CLAUDE.md` is silent, fall back to the defaults below.
 If it doesn't exist: use the defaults in this skill, then offer to create one.
+
+If the SessionStart hook is active, `_CLAUDE.md` is already in context — skip this step.
 
 ### 2. First time with a new user → run discovery
 
@@ -130,7 +136,7 @@ Every write operation must ask: *where else does this belong?*
 | A specific reusable number or stat | `social-media/data-points.md` (if folder exists) |
 | An external post that performed well + why | `social-media/swipe-file.md` (if folder exists) |
 | Research findings worth keeping | `social-media/research/YYYY-MM-DD — topic.md` (if folder exists) |
-| Any vault write | `log.md` (append timestamped entry), `index.md` (update if new note created) |
+| Any vault write | operation log (`Logs/YYYY-MM-DD.md` if `Logs/` exists, else `log.md`), `index.md` (update if new note created) |
 
 Always propagate. Never create a single orphaned note.
 
@@ -178,6 +184,17 @@ Two structural files that keep the vault navigable and auditable:
 - **`index.md`** — A catalog of all vault pages organized by category. Claude reads this FIRST when navigating the vault instead of searching — faster and cheaper on tokens. Update it whenever a new note is created or deleted. Format: `- [[Note Name]] — brief description` grouped under folder headings.
 
 - **`log.md`** — An append-only chronological log of every vault operation. Every save, ingest, health check, and structural change gets a timestamped entry. Never delete or rewrite entries — only append. Format: `## [YYYY-MM-DD] action | Description`
+
+### Per-day operation logs (modernized vaults)
+Vaults initialized with `/obsidian-init` (v0.9+) use a split log structure instead of a monolithic `log.md`:
+
+- **`Logs/YYYY-MM-DD.md`** — one file per day, append-only. Format: `**HH:MM** - action | description`
+- **`log.md` at vault root** — pointer file only. Never write entries here; it explains the per-day structure and ships the entry template.
+
+To migrate an existing monolithic `log.md`: run `python scripts/migrate_log.py --vault <path>`.
+To refresh the stats block in `index.md` after bulk writes: run `python scripts/vault_stats.py --vault <path>`.
+
+When writing operation log entries, check whether the vault uses the old (`log.md`) or new (`Logs/YYYY-MM-DD.md`) structure and write to the correct location.
 
 ### The vault is a living system
 The vault is not a filing cabinet. It is a living knowledge base that rewrites itself with every input. When new information enters:

@@ -401,5 +401,92 @@ cutout.size = Vector3(2, 3, 2.002)  # Slightly larger depth
 ### 1. Spatially Partitioning MultiMeshes
 The major drawback of `MultiMesh` is that individual instances cannot be frustum or occlusion culled; the entire cluster is drawn based on the bounding box of the `MultiMeshInstance3D`. To solve this, partition your thousands of objects into several regional `MultiMeshInstance3D` nodes so the engine can cull entire regions at once.
 
+---
+
+## Expert Pattern: GridMap-Custom-Data (Logic Proxies)
+
+Since `GridMap` is optimized for visuals/collision rather than logic, use "Proxy Tiles" to mark locations for spawn points, NPCs, or triggers during level design.
+
+```gdscript
+class_name GridMapLogicManager extends Node3D
+
+@export var level_grid: GridMap
+@export var spawn_point_scene: PackedScene
+
+# The ID of the invisible cube in your MeshLibrary
+const SPAWN_PROXY_ID: int = 5 
+
+func _ready() -> void:
+    _replace_proxies_with_logic()
+
+func _replace_proxies_with_logic() -> void:
+    # 1. Find all cells using the proxy tile
+    var proxy_cells: Array[Vector3i] = level_grid.get_used_cells_by_item(SPAWN_PROXY_ID)
+    
+    for cell in proxy_cells:
+        # 2. Convert grid pos to world pos
+        var world_pos: Vector3 = level_grid.to_global(level_grid.map_to_local(cell))
+        
+        # 3. Instantiate actual gameplay logic
+        var instance: Node3D = spawn_point_scene.instantiate()
+        add_child(instance)
+        instance.global_position = world_pos
+        
+        # 4. Clear the proxy tile to save performance
+        level_grid.set_cell_item(cell, GridMap.INVALID_CELL_ITEM)
+```
+
+---
+
+## Expert Pattern: Interior-Mapping (Fake Windows)
+
+For massive cities, avoid rendering actual interiors. Use a Spatial shader to project the illusion of 3D depth onto a single 2D window plane.
+
+```glsl
+shader_type spatial;
+
+uniform sampler2DArray room_textures; // Cubemap-like layers
+
+void fragment() {
+    // Project view vector into fake room depth
+    vec3 view_dir = normalize(VIEW);
+    
+    // Intersection math to determine which wall/floor/ceiling pixel to sample
+    // Note: Use 'VIEW' and 'INV_VIEW_MATRIX' for perspective calculations
+    vec3 room_uv = view_dir; // Simplified placeholder
+    
+    ALBEDO = texture(room_textures, room_uv).rgb;
+}
+```
+
+---
+
+## Expert Pattern: World-Streaming-Queue (Stutter-Free Loading)
+
+To prevent frame-spikes when moving between level chunks, use `ResourceLoader` background threads.
+
+```gdscript
+class_name WorldStreamer extends Node
+
+var load_queue: Array[String] = []
+
+func request_chunk(path: String) -> void:
+    # Begin background thread request
+    var err = ResourceLoader.load_threaded_request(path)
+    if err == OK:
+        load_queue.append(path)
+
+func _process(_delta: float) -> void:
+    for i in range(load_queue.size() - 1, -1, -1):
+        var path = load_queue[i]
+        var status = ResourceLoader.load_threaded_get_status(path)
+        
+        if status == ResourceLoader.THREAD_LOAD_LOADED:
+            # Resource ready! Instantiate and add to scene
+            var chunk: PackedScene = ResourceLoader.load_threaded_get(path)
+            add_child(chunk.instantiate())
+            load_queue.remove_at(i)
+```
+
 ## Reference
 - Master Skill: [godot-master](../SKILL.md)

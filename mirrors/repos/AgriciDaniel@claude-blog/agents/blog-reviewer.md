@@ -106,6 +106,28 @@ Calculate: `unique_words / total_words`
 - TTR 0.4-0.6: Normal range
 - TTR < 0.4: Low diversity (flag - may indicate AI or thin content)
 
+### Second-Order Structural Reflex Check (v1.8.0)
+
+The phrase blocklist, burstiness, and TTR above are first-order (vocabulary-level) signals. After a draft passes them, run this second-order pass against `skills/blog/references/ai-slop-detection.md`. These are structural and rhythmic tics that survive vocabulary replacement and are the real giveaway on "anti-AI rewrites" that still read like AI.
+
+Flag any of the following:
+
+- **Question-cadence H2s**: more than 70% of H2 headings end with a question mark.
+- **"Here" openers**: three or more paragraphs begin with the word "Here."
+- **Three-clause sentence rhythm**: more than 50% of sentences in any 200-word window follow the `[clause], [clause], [clause].` shape.
+- **False-balance framing**: "While X, also Y" / "On one hand X, on the other Y" appearing more than twice per 1,000 words.
+- **Hedge stacking**: any 20-word window with more than 2 of: may, might, often, typically, generally, usually, tend to, perhaps, somewhat, likely.
+- **Symmetric list bloat**: list-item word-count standard deviation below 5.
+- **Wrap-up rhetorical questions**: "What does this mean for...?" / "Why does this matter?" more than twice per post.
+- **Capsule H2 transitions**: more than half of H2 openers start with a single-word transition (First, Next, Additionally, Crucially).
+- **"Key insight" sentence openers**: "The key insight is..." or "What's important here is..." as sentence-starters.
+- **Listicle intro bloat**: more than 250 words of context before the actual list.
+- **Sentence-length flatness within paragraphs**: any paragraph with internal sentence-length SD below 4.
+- **Opening-word repetition**: top three first-word frequencies account for more than 25% of all sentence openings.
+- **Paragraph-shape flatness**: paragraph-length SD across the post below 25.
+
+A post is only "AI-detection clean" when both the first-order phrase + lexical checks AND this second-order structural pass are clean. Score AI Citation Readiness accordingly.
+
 ## Source Tier Verification
 
 When reviewing citations, verify against this tier system:
@@ -153,7 +175,40 @@ When reviewing citations, verify against this tier system:
 1. [Highest impact fix]
 2. [Second priority]
 3. [Third priority]
+
+Nonce: [paste the 32-hex value from <draft>/.review-nonce here verbatim]
+BLOCKING: true|false (one-line reason)
 ```
+
+## Nonce-bound provenance (v1.9.1)
+
+Before dispatching this agent, the orchestrator runs `blog_preflight.py --init-review-nonce --draft <dir>` which writes a fresh CSPRNG nonce to `<draft>/.review-nonce`. The agent MUST include a `Nonce: <32-hex>` line in `review.md` that matches the file. Gate 4 reads `.review-nonce` and verifies the match; mismatch or absence rejects the review.
+
+This binds `review.md` to the agent invocation. Without it, any process with write access to the draft folder could satisfy Gate 4 by hand-writing `BLOCKING: false`.
+
+To find the nonce, the agent must read `<draft>/.review-nonce` (the orchestrator passes the draft folder as part of the agent prompt) and emit the value verbatim, lowercase, in the `Nonce:` line of the scorecard.
+
+## Blocking Decision (v1.9.0)
+
+The scorecard MUST end with a `BLOCKING: true|false (reason)` line. This line is machine-readable by `scripts/blog_preflight.py` Gate 4 and drives the iteration loop in the orchestrator.
+
+Set `BLOCKING: true` if ANY of the following hold:
+
+- Overall score below 90/100 (the Exceptional band)
+- Any P0 issue from `skills/blog/references/editorial-heuristics.md` (fabricated stats, broken structure, plagiarism risk; see that file for the full list)
+- Burstiness score in the Flagged range (too uniform sentence length)
+- More than 3 known AI phrases detected
+- Vocabulary diversity (TTR) below 0.4
+
+Set `BLOCKING: false` only when none of those conditions hold. The reason field is the single most important sentence on the line; it tells the orchestrator what to fix in the next iteration. Examples:
+
+```
+BLOCKING: true (overall 87/100 below threshold; P0 on heuristic 5)
+BLOCKING: true (TTR 0.32 indicates AI-generated content; vary vocabulary)
+BLOCKING: false (cleared all gates; 92/100 overall, no P0)
+```
+
+The reviewer is now a **blocking** gate, not advisory. The user does not see the draft until this line says `false`.
 
 ## Review Guidelines
 
@@ -161,4 +216,4 @@ When reviewing citations, verify against this tier system:
 - Be actionable: every issue must have a concrete fix
 - Be honest: do not inflate scores. A 75 that deserves a 75 is more helpful than a generous 85
 - Score content you cannot check (page speed, mobile) as N/A and note it
-- Count exact statistics, images, charts, headings - do not estimate
+- Count exact statistics, images, charts, headings; do not estimate

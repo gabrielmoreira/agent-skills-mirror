@@ -127,9 +127,62 @@ func advance_phase() -> void:
 2. **Action Points** - Limit actions per turn
 3. **Timeout** - Add turn timer for online play
 
+---
+
+## Elite Godot 4.x Patterns
+
+### 1. Active Time Battle (ATB) Implementation
+Track time elapsed in seconds using `_process(delta)` to advance combatant gauges independently of framerate.
+
+```gdscript
+# combat_atb_manager.gd
+func _process(delta: float) -> void:
+    if not is_combat_active: return
+    
+    for actor in combatants:
+        if actor.atb_gauge < 100.0:
+            actor.atb_gauge += actor.speed * delta
+            if actor.atb_gauge >= 100.0:
+                actor.atb_gauge = 100.0
+                is_combat_active = false # Pause for action
+                turn_ready.emit(actor)
+                break
+```
+
+### 2. Turn Pre-visualization (Timeline Prediction)
+Simulate ATB iterations mathematically to predict and display the future turn order in the UI.
+
+```gdscript
+# turn_predictor.gd
+func predict_turns(actors: Array, count: int) -> Array:
+    var timeline := []
+    var sim_data := actors.map(func(a): return {"id": a, "gauge": a.atb_gauge, "speed": a.speed})
+    
+    while timeline.size() < count:
+        for s in sim_data:
+            s.gauge += s.speed * 0.1 # Simulated step
+            if s.gauge >= 100.0:
+                timeline.append(s.id)
+                s.gauge = 0.0
+                if timeline.size() >= count: break
+    return timeline
+```
+
+### 3. Combat Prediction Helper
+Encapsulate predictive math within `Resource` scripts to show expected damage numbers to players before they commit to an action.
+
+```gdscript
+# combat_stats_resource.gd
+func get_expected_damage(target: CombatStats) -> int:
+    # Deterministic calculation for UI display
+    var raw := attack_power - target.defense
+    return max(0, raw)
+
+# UI usage
+func _on_action_hover(target: Enemy):
+    var damage := player_stats.get_expected_damage(target.stats)
+    damage_preview_label.text = "Expected: %d" % damage
+```
+
 ## Reference
-- Related: `godot-combat-system`, `godot-rpg-stats`
-
-
-### Related
 - Master Skill: [godot-master](../godot-master/SKILL.md)

@@ -302,6 +302,102 @@ func _ready() -> void:
     drag_right_margin = 0.3
 ```
 
+## Expert Camera Architectures
+
+### 1. Camera Framing Box (Multi-Target Framing)
+To handle multiple targets in a single frame (e.g., Smash Bros or Local-Coop), calculate the AABB (Axis-Aligned Bounding Box) of all targets. Interpolate the camera's `global_position` to the center of the box and adjust the `zoom` (2D) or `distance` (3D) to encapsulate the entire box with a padding margin.
+
+```gdscript
+class_name FramingBoxCamera2D extends Camera2D
+## Dynamically zooms and pans to frame multiple targets.
+
+@export var targets: Array[Node2D] = []
+@export var margin: float = 100.0
+@export var min_zoom: float = 0.5
+@export var max_zoom: float = 2.0
+
+func _physics_process(_delta: float) -> void:
+    if targets.is_empty(): return
+    
+    # 1. Calculate the bounding box of all targets.
+    var rect := Rect2(targets[0].global_position, Vector2.ZERO)
+    for target in targets:
+        rect = rect.expand(target.global_position)
+    
+    # 2. Add padding.
+    rect = rect.grow(margin)
+    
+    # 3. Position the camera at the center.
+    global_position = rect.get_center()
+    
+    # 4. Calculate required zoom level to fit the box.
+    var screen_size := get_viewport_rect().size
+    var zoom_x := screen_size.x / rect.size.x
+    var zoom_y := screen_size.y / rect.size.y
+    var target_zoom := clampf(min(zoom_x, zoom_y), min_zoom, max_zoom)
+    
+    zoom = Vector2.ONE * target_zoom
+```
+
+### 2. Camera Raycasting (SpringArm3D / RayCast3D)
+To prevent the camera from clipping through terrain in 3D, use a `SpringArm3D` node. For custom camera logic, query the physics space directly using `intersect_ray()`. This allows you to smoothly interpolate the camera closer to the player when an obstruction (e.g., a wall) is detected between the camera's desired position and the target.
+
+```gdscript
+class_name OcclusionAwareCamera3D extends Camera3D
+## Prevents camera clipping via manual physics space raycasting.
+
+@export var target: Node3D
+@export var ideal_distance: float = 5.0
+
+func _physics_process(_delta: float) -> void:
+    if not target: return
+    
+    var space_state := get_world_3d().direct_space_state
+    var desired_pos := target.global_position + (Vector3.BACK * ideal_distance)
+    
+    # Query for obstructions between the target and the desired camera position.
+    var query := PhysicsRayQueryParameters3D.create(target.global_position, desired_pos)
+    query.exclude = [target.get_rid()]
+    
+    var result: Dictionary = space_state.intersect_ray(query)
+    
+    if not result.is_empty():
+        # Move the camera to the hit position (with a small offset to prevent clipping).
+        global_position = result.position + result.normal * 0.2
+    else:
+        global_position = desired_pos
+        
+    look_at(target.global_position)
+```
+
+### 3. Screenshake Audit (Trauma Decay Profiler)
+A "Screenshake Audit" involves visualizing the trauma-decay curve over time. By plotting the `current_trauma` value to a graph using the `CanvasItem._draw()` API, you can precisely tune the "punchiness" and "decay duration" of impacts to ensure they feel intentional rather than random noise.
+
+```gdscript
+class_name TraumaDebugger extends Node2D
+## Visualizes the decay curve of a trauma-based shake system.
+
+@export var camera: ProceduralScreenShake
+var _history: PackedFloat32Array = []
+
+func _process(_delta: float) -> void:
+    if not camera: return
+    
+    _history.append(camera.get_current_trauma())
+    if _history.size() > 200: _history.remove_at(0)
+    queue_redraw()
+
+func _draw() -> void:
+    var width := 400.0
+    var height := 100.0
+    var step := width / 200.0
+    
+    for i in range(1, _history.size()):
+        var p1 := Vector2(i * step, height - (_history[i-1] * height))
+        var p2 := Vector2((i+1) * step, height - (_history[i] * height))
+        draw_line(p1, p2, Color.YELLOW, 2.0)
+```
+
 ## Reference
 - [Godot Docs: Camera2D](https://docs.godotengine.org/en/stable/classes/class_camera2d.html)
 - [Godot Docs: Camera3D](https://docs.godotengine.org/en/stable/classes/class_camera3d.html)

@@ -5,7 +5,7 @@
 
 **Sync 242 AI coding standards to any project in one command.** Works with Cursor, Claude Code, GitHub Copilot, Gemini, Windsurf, Trae, Kiro, and Roo.
 
-**Current release:** `v2.4.4` — packaged `ags -V` now matches the published CLI version.
+**Current release:** `v2.4.5` — packaged `ags -V` now detects stale pnpm shims and guides repair.
 
 ```bash
 npx agent-skills-standard@latest init   # detect your stack

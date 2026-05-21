@@ -191,9 +191,64 @@ extends Resource
 2. **Sinks** - Provide money sinks (repairs, etc.)
 3. **Inflation** - Control money generation
 
+---
+
+## Elite Godot 4.x Patterns
+
+### 1. Multi-Item Barter System
+Use `Resource` arrays to define complex trade offers. This allows designers to visually configure "Quid Pro Quo" transactions without script modifications.
+
+```gdscript
+# trade_offer.gd
+class_name TradeOffer extends Resource
+
+@export var items_required: Array[Item] = []
+@export var items_provided: Array[Item] = []
+
+func can_afford(inventory: Inventory) -> bool:
+    for item in items_required:
+        if not inventory.has_item(item): return false
+    return true
+```
+
+### 2. Economic Analytics (GPM Tracking)
+Implement a custom `Logger` to intercept economy events and calculate metrics like Gold-Per-Minute (GPM) using the `Time` singleton.
+
+```gdscript
+# economy_logger.gd
+class_name EconomyLogger extends Logger
+
+var _gold_earned := 0
+var _start_time := Time.get_ticks_msec()
+
+func _log_message(msg: String, is_error: bool) -> void:
+    if not is_error and msg.begins_with("[ECON]"):
+        _gold_earned += msg.split(":")[1].to_int()
+        _log_gpm()
+
+func _log_gpm() -> void:
+    var mins := (Time.get_ticks_msec() - _start_time) / 60000.0
+    var gpm := _gold_earned / max(mins, 0.01)
+    # Output to analytics dashboard or file
+```
+
+### 3. Dynamic Item Value Estimator
+Encapsulate valuation logic within the `Item` resource. Use `enum` rarity tiers and power level properties to dynamically calculate merchant prices.
+
+```gdscript
+# item_data_economy.gd
+enum Rarity { COMMON, RARE, EPIC, LEGENDARY }
+@export var rarity: Rarity = Rarity.COMMON
+@export var base_value: int = 100
+
+func get_value() -> int:
+    var mult := 1.0
+    match rarity:
+        Rarity.RARE: mult = 2.0
+        Rarity.EPIC: mult = 5.0
+        Rarity.LEGENDARY: mult = 20.0
+    return int(base_value * mult)
+```
+
 ## Reference
-- Related: `godot-inventory-system`, `godot-save-load-systems`
-
-
-### Related
 - Master Skill: [godot-master](../godot-master/SKILL.md)

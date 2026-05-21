@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `elementalsouls/Claude-OSINT` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `elementalsouls/Claude-OSINT` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `elementalsouls/Claude-OSINT` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,10 +60,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`skills/offensive-osint/README.md`](skills/offensive-osint/README.md) |
-| 2 | ✓ | [`skills/offensive-osint/scripts/secret_scan.py`](skills/offensive-osint/scripts/secret_scan.py) |
-| 3 | ✓ | [`skills/offensive-osint/SKILL.md`](skills/offensive-osint/SKILL.md) |
-| 4 | ✓ | [`skills/osint-methodology/README.md`](skills/osint-methodology/README.md) |
-| 5 | ✓ | [`skills/osint-methodology/SKILL.md`](skills/osint-methodology/SKILL.md) |
+| 2 | ✓ | [`skills/offensive-osint/scripts/h1_reference.py`](skills/offensive-osint/scripts/h1_reference.py) |
+| 3 | ✓ | [`skills/offensive-osint/scripts/secret_scan.py`](skills/offensive-osint/scripts/secret_scan.py) |
+| 4 | ✓ | [`skills/offensive-osint/SKILL.md`](skills/offensive-osint/SKILL.md) |
+| 5 | ✓ | [`skills/osint-methodology/README.md`](skills/osint-methodology/README.md) |
+| 6 | ✓ | [`skills/osint-methodology/SKILL.md`](skills/osint-methodology/SKILL.md) |
 
 ---
 

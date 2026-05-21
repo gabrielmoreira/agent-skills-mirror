@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `google-labs-code/stitch-skills` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `google-labs-code/stitch-skills` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `google-labs-code/stitch-skills` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,19 +59,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`plugins/stitch-build/skills/react-components/SKILL.md`](plugins/stitch-build/skills/react-components/SKILL.md) |
-| 2 | ✓ | [`plugins/stitch-build/skills/remotion/SKILL.md`](plugins/stitch-build/skills/remotion/SKILL.md) |
-| 3 | ✓ | [`plugins/stitch-build/skills/shadcn-ui/SKILL.md`](plugins/stitch-build/skills/shadcn-ui/SKILL.md) |
-| 4 | ✓ | [`plugins/stitch-design/skills/code-to-design/SKILL.md`](plugins/stitch-design/skills/code-to-design/SKILL.md) |
-| 5 | ✓ | [`plugins/stitch-design/skills/extract-design-md/SKILL.md`](plugins/stitch-design/skills/extract-design-md/SKILL.md) |
-| 6 | ✓ | [`plugins/stitch-design/skills/extract-static-html/SKILL.md`](plugins/stitch-design/skills/extract-static-html/SKILL.md) |
-| 7 | ✓ | [`plugins/stitch-design/skills/generate-design/SKILL.md`](plugins/stitch-design/skills/generate-design/SKILL.md) |
-| 8 | ✓ | [`plugins/stitch-design/skills/manage-design-system/SKILL.md`](plugins/stitch-design/skills/manage-design-system/SKILL.md) |
-| 9 | ✓ | [`plugins/stitch-design/skills/upload-to-stitch/SKILL.md`](plugins/stitch-design/skills/upload-to-stitch/SKILL.md) |
-| 10 | ✓ | [`plugins/stitch-utilities/skills/design-md/SKILL.md`](plugins/stitch-utilities/skills/design-md/SKILL.md) |
-| 11 | ✓ | [`plugins/stitch-utilities/skills/enhance-prompt/SKILL.md`](plugins/stitch-utilities/skills/enhance-prompt/SKILL.md) |
-| 12 | ✓ | [`plugins/stitch-utilities/skills/stitch-loop/SKILL.md`](plugins/stitch-utilities/skills/stitch-loop/SKILL.md) |
-| 13 | ✓ | [`plugins/stitch-utilities/skills/taste-design/SKILL.md`](plugins/stitch-utilities/skills/taste-design/SKILL.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`plugins/stitch-build/skills/react-components/SKILL.md`](plugins/stitch-build/skills/react-components/SKILL.md) |
+| 3 | ✓ | [`plugins/stitch-build/skills/remotion/SKILL.md`](plugins/stitch-build/skills/remotion/SKILL.md) |
+| 4 | ✓ | [`plugins/stitch-build/skills/shadcn-ui/SKILL.md`](plugins/stitch-build/skills/shadcn-ui/SKILL.md) |
+| 5 | ✓ | [`plugins/stitch-design/skills/code-to-design/SKILL.md`](plugins/stitch-design/skills/code-to-design/SKILL.md) |
+| 6 | ✓ | [`plugins/stitch-design/skills/extract-design-md/SKILL.md`](plugins/stitch-design/skills/extract-design-md/SKILL.md) |
+| 7 | ✓ | [`plugins/stitch-design/skills/extract-static-html/SKILL.md`](plugins/stitch-design/skills/extract-static-html/SKILL.md) |
+| 8 | ✓ | [`plugins/stitch-design/skills/generate-design/SKILL.md`](plugins/stitch-design/skills/generate-design/SKILL.md) |
+| 9 | ✓ | [`plugins/stitch-design/skills/manage-design-system/SKILL.md`](plugins/stitch-design/skills/manage-design-system/SKILL.md) |
+| 10 | ✓ | [`plugins/stitch-design/skills/upload-to-stitch/SKILL.md`](plugins/stitch-design/skills/upload-to-stitch/SKILL.md) |
+| 11 | ✓ | [`plugins/stitch-utilities/skills/design-md/SKILL.md`](plugins/stitch-utilities/skills/design-md/SKILL.md) |
+| 12 | ✓ | [`plugins/stitch-utilities/skills/enhance-prompt/SKILL.md`](plugins/stitch-utilities/skills/enhance-prompt/SKILL.md) |
+| 13 | ✓ | [`plugins/stitch-utilities/skills/stitch-loop/SKILL.md`](plugins/stitch-utilities/skills/stitch-loop/SKILL.md) |
+| 14 | ✓ | [`plugins/stitch-utilities/skills/taste-design/SKILL.md`](plugins/stitch-utilities/skills/taste-design/SKILL.md) |
 
 ---
 

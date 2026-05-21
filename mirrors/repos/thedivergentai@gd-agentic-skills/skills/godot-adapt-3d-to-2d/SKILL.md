@@ -398,6 +398,61 @@ add_child(audio_2d)
 | **Performance** | Have GPU budget | Need 60 FPS on low-end |
 | **Team skills** | 3D artists | 2D artists or pixel art |
 
+## Expert Techniques & Optimizations
+
+### 1. Flattened Navigation (3D Navmesh to 2D Grid)
+While Godot treats 2D and 3D navigation as separate systems, you can project 3D pathfinding logic onto a 2D grid using `AStarGrid2D`. This is highly optimized for 2D grid-based movement and avoids the overhead of a full 3D navmesh.
+
+```gdscript
+class_name GridNavBridge extends Node
+
+var astar_grid: AStarGrid2D
+
+func _ready() -> void:
+    astar_grid = AStarGrid2D.new()
+    astar_grid.region = Rect2i(0, 0, 100, 100)
+    astar_grid.cell_size = Vector2(16, 16)
+    astar_grid.update()
+
+## Converts a 3D target position to a 2D grid path.
+func get_grid_path_from_3d(start_3d: Vector3, end_3d: Vector3) -> PackedVector2Array:
+    var start_map := Vector2i(start_3d.x / 16, start_3d.z / 16)
+    var end_map := Vector2i(end_3d.x / 16, end_3d.z / 16)
+    
+    return astar_grid.get_point_path(start_map, end_map)
+```
+
+### 2. Auto-LOD for 2D (Performance Optimization)
+Automatic LOD is natively a 3D feature, but you can simulate it in 2D using `VisibleOnScreenEnabler2D`. This node automatically toggles the `process_mode` of target nodes (like high-res sprites or complex AI) when they leave the screen, preserving CPU cycles and GPU fill rate.
+
+```gdscript
+# Attach to a complex 2D entity
+func setup_2d_lod(target_node: Node2D) -> void:
+    var enabler := VisibleOnScreenEnabler2D.new()
+    # Define the 'high-detail' rect
+    enabler.rect = Rect2(-64, -64, 128, 128) 
+    enabler.enable_node_path = target_node.get_path()
+    add_child(enabler)
+```
+
+### 3. Dimensional Patcher (CharacterBody3D to 2D Regex)
+To automate the down-porting of 3D controllers, use a `RegEx` script to map `Vector3` to `Vector2` and replace 3D-specific properties. This is essential for massive porting tasks where manual conversion of movement logic is prone to error.
+
+```gdscript
+@tool
+extends EditorScript
+
+func _run() -> void:
+    var regex = RegEx.new()
+    # Pattern to find Vector3 constructors and replace with Vector2
+    regex.compile("Vector3\\(([^,]+),\\s*([^,]+),\\s*([^)]+)\\)")
+    
+    var script_content = "velocity = Vector3(input.x, 0.0, input.y) * speed"
+    var result = regex.sub(script_content, "Vector2($1, $3)", true)
+    
+    # Output: "velocity = Vector2(input.x, input.y) * speed"
+    print(result)
+```
 
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)

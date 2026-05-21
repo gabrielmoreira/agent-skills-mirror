@@ -516,5 +516,109 @@ Enemies:
 - **Grim Dawn** - Deep character builds
 
 
+## Advanced ARPG Meta-Systems
+
+Expert implementation of high-end ARPG systems for endgame progression and visual polish.
+
+### 1. Paragon/Ascension System (Resource-Based Progression)
+For post-level-cap progression, utilize a custom `Resource`. This allows for encapsulated methods, signals for UI updates, and efficient serialization.
+
+```gdscript
+class_name ParagonStats extends Resource
+
+@export var paragon_level: int = 0
+@export var bonus_strength: float = 0.0
+@export var bonus_vitality: float = 0.0
+
+const XP_REQUIREMENT_BASE: int = 10000
+var current_xp: int = 0
+
+func add_paragon_experience(amount: int) -> void:
+    current_xp += amount
+    var leveled_up: bool = false
+    
+    while current_xp >= _get_xp_requirement():
+        current_xp -= _get_xp_requirement()
+        paragon_level += 1
+        bonus_strength += 2.5
+        bonus_vitality += 1.5
+        leveled_up = true
+        
+    if leveled_up:
+        emit_changed() # Notify UI and combat systems
+
+func _get_xp_requirement() -> int:
+    return XP_REQUIREMENT_BASE * (paragon_level + 1)
+```
+
+**Architectural Tip**: When assigning a paragon template to a character, always use `duplicate(true)` to avoid modifying the globally cached resource instance.
+
+### 2. Shader-Based Loot Beams (Visual Cues)
+To handle massive loot drops without performance degradation, use the `RenderingServer` to pass rarity parameters to a shared shader without duplicating materials.
+
+*loot_beam.gdshader*
+```glsl
+shader_type spatial;
+render_mode unshaded, cull_disabled;
+
+uniform vec3 rarity_color = vec3(1.0, 1.0, 1.0);
+
+void fragment() {
+    ALBEDO = rarity_color;
+    EMISSION = rarity_color * 3.0; # High emission for glowing effect
+}
+```
+
+*loot_drop_manager.gd*
+```gdscript
+class_name LootDropManager extends Node
+
+# Update visual rarity without material duplication overhead
+func apply_rarity_visuals(mesh_instance: MeshInstance3D, color: Color) -> void:
+    if mesh_instance:
+        # Use low-level RenderingServer for high-performance per-instance parameters
+        RenderingServer.instance_geometry_set_shader_parameter(
+            mesh_instance.get_instance_id(), 
+            "rarity_color", 
+            color
+        )
+```
+
+### 3. Stat-Snapshot System (Combat Logging)
+Combat logs should capture isolated state snapshots in a `Dictionary` and be flushed to disk periodically to avoid I/O bottlenecks.
+
+```gdscript
+class_name CombatLogger extends Node
+
+const LOG_FILE_PATH: String = "user://combat_log.json"
+var _session_buffer: Array[Dictionary] = []
+
+func record_event(source: String, target: String, damage: int, is_crit: bool) -> void:
+    var snapshot: Dictionary = {
+        "timestamp": Time.get_unix_time_from_system(),
+        "source": source,
+        "target": target,
+        "damage": damage,
+        "is_crit": is_crit
+    }
+    _session_buffer.append(snapshot)
+    
+    # Periodic flush (e.g., every 100 entries) to prevent memory bloat
+    if _session_buffer.size() >= 100:
+        flush_to_disk()
+
+func flush_to_disk() -> void:
+    if _session_buffer.is_empty(): return
+    
+    var file := FileAccess.open(LOG_FILE_PATH, FileAccess.WRITE)
+    if file:
+        file.store_string(JSON.stringify(_session_buffer, "\t"))
+        file.close()
+        # Note: In a real scenario, you'd append to existing logs or rotate files
+```
+
+**Anti-Pattern**: NEVER write to `res://` at runtime. Always use `user://` for persistent logs, as `res://` is typically read-only in exported builds.
+
+
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)

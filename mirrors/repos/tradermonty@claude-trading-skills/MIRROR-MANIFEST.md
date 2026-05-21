@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tradermonty/claude-trading-skills` — 26 default patterns, 2 followed patterns, 740 file(s) materialized.
+Mirror of `tradermonty/claude-trading-skills` — 26 default patterns, 2 followed patterns, 742 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tradermonty/claude-trading-skills` — 26 default patterns, 2 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 740 |
+| Files         | 742 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -726,80 +726,82 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 664 | ✓ | [`skills/trader-memory-core/scripts/tests/test_thesis_ingest.py`](skills/trader-memory-core/scripts/tests/test_thesis_ingest.py) |
 | 665 | ✓ | [`skills/trader-memory-core/scripts/tests/test_thesis_review.py`](skills/trader-memory-core/scripts/tests/test_thesis_review.py) |
 | 666 | ✓ | [`skills/trader-memory-core/scripts/tests/test_thesis_store.py`](skills/trader-memory-core/scripts/tests/test_thesis_store.py) |
-| 667 | ✓ | [`skills/trader-memory-core/scripts/thesis_ingest.py`](skills/trader-memory-core/scripts/thesis_ingest.py) |
-| 668 | ✓ | [`skills/trader-memory-core/scripts/thesis_review.py`](skills/trader-memory-core/scripts/thesis_review.py) |
-| 669 | ✓ | [`skills/trader-memory-core/scripts/thesis_store.py`](skills/trader-memory-core/scripts/thesis_store.py) |
-| 670 | ✓ | [`skills/trader-memory-core/SKILL.md`](skills/trader-memory-core/SKILL.md) |
-| 671 | ✓ | [`skills/trading-skills-navigator/assets/metadata_snapshot.json`](skills/trading-skills-navigator/assets/metadata_snapshot.json) |
-| 672 | ✓ | [`skills/trading-skills-navigator/references/intent_routing.md`](skills/trading-skills-navigator/references/intent_routing.md) |
-| 673 | ✓ | [`skills/trading-skills-navigator/references/setup_paths.md`](skills/trading-skills-navigator/references/setup_paths.md) |
-| 674 | ✓ | [`skills/trading-skills-navigator/scripts/build_snapshot.py`](skills/trading-skills-navigator/scripts/build_snapshot.py) |
-| 675 | ✓ | [`skills/trading-skills-navigator/scripts/recommend.py`](skills/trading-skills-navigator/scripts/recommend.py) |
-| 676 | ✓ | [`skills/trading-skills-navigator/scripts/tests/conftest.py`](skills/trading-skills-navigator/scripts/tests/conftest.py) |
-| 677 | ✓ | [`skills/trading-skills-navigator/scripts/tests/test_recommend.py`](skills/trading-skills-navigator/scripts/tests/test_recommend.py) |
-| 678 | ✓ | [`skills/trading-skills-navigator/SKILL.md`](skills/trading-skills-navigator/SKILL.md) |
-| 679 | ✓ | [`skills/uptrend-analyzer/references/uptrend_methodology.md`](skills/uptrend-analyzer/references/uptrend_methodology.md) |
-| 680 | ✓ | [`skills/uptrend-analyzer/scripts/calculators/__init__.py`](skills/uptrend-analyzer/scripts/calculators/__init__.py) |
-| 681 | ✓ | [`skills/uptrend-analyzer/scripts/calculators/historical_context_calculator.py`](skills/uptrend-analyzer/scripts/calculators/historical_context_calculator.py) |
-| 682 | ✓ | [`skills/uptrend-analyzer/scripts/calculators/market_breadth_calculator.py`](skills/uptrend-analyzer/scripts/calculators/market_breadth_calculator.py) |
-| 683 | ✓ | [`skills/uptrend-analyzer/scripts/calculators/momentum_calculator.py`](skills/uptrend-analyzer/scripts/calculators/momentum_calculator.py) |
-| 684 | ✓ | [`skills/uptrend-analyzer/scripts/calculators/sector_participation_calculator.py`](skills/uptrend-analyzer/scripts/calculators/sector_participation_calculator.py) |
-| 685 | ✓ | [`skills/uptrend-analyzer/scripts/calculators/sector_rotation_calculator.py`](skills/uptrend-analyzer/scripts/calculators/sector_rotation_calculator.py) |
-| 686 | ✓ | [`skills/uptrend-analyzer/scripts/data_fetcher.py`](skills/uptrend-analyzer/scripts/data_fetcher.py) |
-| 687 | ✓ | [`skills/uptrend-analyzer/scripts/report_generator.py`](skills/uptrend-analyzer/scripts/report_generator.py) |
-| 688 | ✓ | [`skills/uptrend-analyzer/scripts/scorer.py`](skills/uptrend-analyzer/scripts/scorer.py) |
-| 689 | ✓ | [`skills/uptrend-analyzer/scripts/tests/conftest.py`](skills/uptrend-analyzer/scripts/tests/conftest.py) |
-| 690 | ✓ | [`skills/uptrend-analyzer/scripts/tests/helpers.py`](skills/uptrend-analyzer/scripts/tests/helpers.py) |
-| 691 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_data_fetcher.py`](skills/uptrend-analyzer/scripts/tests/test_data_fetcher.py) |
-| 692 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_historical_context_calculator.py`](skills/uptrend-analyzer/scripts/tests/test_historical_context_calculator.py) |
-| 693 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_market_breadth_calculator.py`](skills/uptrend-analyzer/scripts/tests/test_market_breadth_calculator.py) |
-| 694 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_momentum_calculator.py`](skills/uptrend-analyzer/scripts/tests/test_momentum_calculator.py) |
-| 695 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_new_features.py`](skills/uptrend-analyzer/scripts/tests/test_new_features.py) |
-| 696 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_report_generator.py`](skills/uptrend-analyzer/scripts/tests/test_report_generator.py) |
-| 697 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_scorer.py`](skills/uptrend-analyzer/scripts/tests/test_scorer.py) |
-| 698 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_sector_participation_calculator.py`](skills/uptrend-analyzer/scripts/tests/test_sector_participation_calculator.py) |
-| 699 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_sector_rotation_calculator.py`](skills/uptrend-analyzer/scripts/tests/test_sector_rotation_calculator.py) |
-| 700 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_uptrend_analyzer.py`](skills/uptrend-analyzer/scripts/tests/test_uptrend_analyzer.py) |
-| 701 | ✓ | [`skills/uptrend-analyzer/scripts/uptrend_analyzer.py`](skills/uptrend-analyzer/scripts/uptrend_analyzer.py) |
-| 702 | ✓ | [`skills/uptrend-analyzer/SKILL.md`](skills/uptrend-analyzer/SKILL.md) |
-| 703 | ✓ | [`skills/us-market-bubble-detector/CHANGELOG.md`](skills/us-market-bubble-detector/CHANGELOG.md) |
-| 704 | ✓ | [`skills/us-market-bubble-detector/references/bubble_framework.md`](skills/us-market-bubble-detector/references/bubble_framework.md) |
-| 705 | ✓ | [`skills/us-market-bubble-detector/references/historical_cases.md`](skills/us-market-bubble-detector/references/historical_cases.md) |
-| 706 | ✓ | [`skills/us-market-bubble-detector/references/implementation_guide.md`](skills/us-market-bubble-detector/references/implementation_guide.md) |
-| 707 | ✓ | [`skills/us-market-bubble-detector/references/quick_reference_en.md`](skills/us-market-bubble-detector/references/quick_reference_en.md) |
-| 708 | ✓ | [`skills/us-market-bubble-detector/references/quick_reference.md`](skills/us-market-bubble-detector/references/quick_reference.md) |
-| 709 | ✓ | [`skills/us-market-bubble-detector/scripts/bubble_scorer.py`](skills/us-market-bubble-detector/scripts/bubble_scorer.py) |
-| 710 | ✓ | [`skills/us-market-bubble-detector/SKILL.md`](skills/us-market-bubble-detector/SKILL.md) |
-| 711 | ✓ | [`skills/us-stock-analysis/references/financial-metrics.md`](skills/us-stock-analysis/references/financial-metrics.md) |
-| 712 | ✓ | [`skills/us-stock-analysis/references/fundamental-analysis.md`](skills/us-stock-analysis/references/fundamental-analysis.md) |
-| 713 | ✓ | [`skills/us-stock-analysis/references/report-template.md`](skills/us-stock-analysis/references/report-template.md) |
-| 714 | ✓ | [`skills/us-stock-analysis/references/technical-analysis.md`](skills/us-stock-analysis/references/technical-analysis.md) |
-| 715 | ✓ | [`skills/us-stock-analysis/SKILL.md`](skills/us-stock-analysis/SKILL.md) |
-| 716 | ✓ | [`skills/value-dividend-screener/references/fmp_api_guide.md`](skills/value-dividend-screener/references/fmp_api_guide.md) |
-| 717 | ✓ | [`skills/value-dividend-screener/references/screening_methodology.md`](skills/value-dividend-screener/references/screening_methodology.md) |
-| 718 | ✓ | [`skills/value-dividend-screener/scripts/screen_dividend_stocks.py`](skills/value-dividend-screener/scripts/screen_dividend_stocks.py) |
-| 719 | ✓ | [`skills/value-dividend-screener/SKILL.md`](skills/value-dividend-screener/SKILL.md) |
-| 720 | ✓ | [`skills/vcp-screener/references/fmp_api_endpoints.md`](skills/vcp-screener/references/fmp_api_endpoints.md) |
-| 721 | ✓ | [`skills/vcp-screener/references/scoring_system.md`](skills/vcp-screener/references/scoring_system.md) |
-| 722 | ✓ | [`skills/vcp-screener/references/vcp_methodology.md`](skills/vcp-screener/references/vcp_methodology.md) |
-| 723 | ✓ | [`skills/vcp-screener/scripts/calculators/__init__.py`](skills/vcp-screener/scripts/calculators/__init__.py) |
-| 724 | ✓ | [`skills/vcp-screener/scripts/calculators/execution_state.py`](skills/vcp-screener/scripts/calculators/execution_state.py) |
-| 725 | ✓ | [`skills/vcp-screener/scripts/calculators/pattern_classifier.py`](skills/vcp-screener/scripts/calculators/pattern_classifier.py) |
-| 726 | ✓ | [`skills/vcp-screener/scripts/calculators/pivot_proximity_calculator.py`](skills/vcp-screener/scripts/calculators/pivot_proximity_calculator.py) |
-| 727 | ✓ | [`skills/vcp-screener/scripts/calculators/relative_strength_calculator.py`](skills/vcp-screener/scripts/calculators/relative_strength_calculator.py) |
-| 728 | ✓ | [`skills/vcp-screener/scripts/calculators/trend_template_calculator.py`](skills/vcp-screener/scripts/calculators/trend_template_calculator.py) |
-| 729 | ✓ | [`skills/vcp-screener/scripts/calculators/vcp_pattern_calculator.py`](skills/vcp-screener/scripts/calculators/vcp_pattern_calculator.py) |
-| 730 | ✓ | [`skills/vcp-screener/scripts/calculators/volume_pattern_calculator.py`](skills/vcp-screener/scripts/calculators/volume_pattern_calculator.py) |
-| 731 | ✓ | [`skills/vcp-screener/scripts/fmp_client.py`](skills/vcp-screener/scripts/fmp_client.py) |
-| 732 | ✓ | [`skills/vcp-screener/scripts/report_generator.py`](skills/vcp-screener/scripts/report_generator.py) |
-| 733 | ✓ | [`skills/vcp-screener/scripts/scorer.py`](skills/vcp-screener/scripts/scorer.py) |
-| 734 | ✓ | [`skills/vcp-screener/scripts/screen_vcp.py`](skills/vcp-screener/scripts/screen_vcp.py) |
-| 735 | ✓ | [`skills/vcp-screener/scripts/tests/conftest.py`](skills/vcp-screener/scripts/tests/conftest.py) |
-| 736 | ✓ | [`skills/vcp-screener/scripts/tests/test_fmp_client_historical.py`](skills/vcp-screener/scripts/tests/test_fmp_client_historical.py) |
-| 737 | ✓ | [`skills/vcp-screener/scripts/tests/test_vcp_screener.py`](skills/vcp-screener/scripts/tests/test_vcp_screener.py) |
-| 738 | ✓ | [`skills/vcp-screener/SKILL.md`](skills/vcp-screener/SKILL.md) |
-| 739 | → | [`docs/dev/maintenance-runbook.md`](docs/dev/maintenance-runbook.md) |
-| 740 | → | [`workflows/README.md`](workflows/README.md) |
+| 667 | ✓ | [`skills/trader-memory-core/scripts/tests/test_trader_memory_cli.py`](skills/trader-memory-core/scripts/tests/test_trader_memory_cli.py) |
+| 668 | ✓ | [`skills/trader-memory-core/scripts/thesis_ingest.py`](skills/trader-memory-core/scripts/thesis_ingest.py) |
+| 669 | ✓ | [`skills/trader-memory-core/scripts/thesis_review.py`](skills/trader-memory-core/scripts/thesis_review.py) |
+| 670 | ✓ | [`skills/trader-memory-core/scripts/thesis_store.py`](skills/trader-memory-core/scripts/thesis_store.py) |
+| 671 | ✓ | [`skills/trader-memory-core/scripts/trader_memory_cli.py`](skills/trader-memory-core/scripts/trader_memory_cli.py) |
+| 672 | ✓ | [`skills/trader-memory-core/SKILL.md`](skills/trader-memory-core/SKILL.md) |
+| 673 | ✓ | [`skills/trading-skills-navigator/assets/metadata_snapshot.json`](skills/trading-skills-navigator/assets/metadata_snapshot.json) |
+| 674 | ✓ | [`skills/trading-skills-navigator/references/intent_routing.md`](skills/trading-skills-navigator/references/intent_routing.md) |
+| 675 | ✓ | [`skills/trading-skills-navigator/references/setup_paths.md`](skills/trading-skills-navigator/references/setup_paths.md) |
+| 676 | ✓ | [`skills/trading-skills-navigator/scripts/build_snapshot.py`](skills/trading-skills-navigator/scripts/build_snapshot.py) |
+| 677 | ✓ | [`skills/trading-skills-navigator/scripts/recommend.py`](skills/trading-skills-navigator/scripts/recommend.py) |
+| 678 | ✓ | [`skills/trading-skills-navigator/scripts/tests/conftest.py`](skills/trading-skills-navigator/scripts/tests/conftest.py) |
+| 679 | ✓ | [`skills/trading-skills-navigator/scripts/tests/test_recommend.py`](skills/trading-skills-navigator/scripts/tests/test_recommend.py) |
+| 680 | ✓ | [`skills/trading-skills-navigator/SKILL.md`](skills/trading-skills-navigator/SKILL.md) |
+| 681 | ✓ | [`skills/uptrend-analyzer/references/uptrend_methodology.md`](skills/uptrend-analyzer/references/uptrend_methodology.md) |
+| 682 | ✓ | [`skills/uptrend-analyzer/scripts/calculators/__init__.py`](skills/uptrend-analyzer/scripts/calculators/__init__.py) |
+| 683 | ✓ | [`skills/uptrend-analyzer/scripts/calculators/historical_context_calculator.py`](skills/uptrend-analyzer/scripts/calculators/historical_context_calculator.py) |
+| 684 | ✓ | [`skills/uptrend-analyzer/scripts/calculators/market_breadth_calculator.py`](skills/uptrend-analyzer/scripts/calculators/market_breadth_calculator.py) |
+| 685 | ✓ | [`skills/uptrend-analyzer/scripts/calculators/momentum_calculator.py`](skills/uptrend-analyzer/scripts/calculators/momentum_calculator.py) |
+| 686 | ✓ | [`skills/uptrend-analyzer/scripts/calculators/sector_participation_calculator.py`](skills/uptrend-analyzer/scripts/calculators/sector_participation_calculator.py) |
+| 687 | ✓ | [`skills/uptrend-analyzer/scripts/calculators/sector_rotation_calculator.py`](skills/uptrend-analyzer/scripts/calculators/sector_rotation_calculator.py) |
+| 688 | ✓ | [`skills/uptrend-analyzer/scripts/data_fetcher.py`](skills/uptrend-analyzer/scripts/data_fetcher.py) |
+| 689 | ✓ | [`skills/uptrend-analyzer/scripts/report_generator.py`](skills/uptrend-analyzer/scripts/report_generator.py) |
+| 690 | ✓ | [`skills/uptrend-analyzer/scripts/scorer.py`](skills/uptrend-analyzer/scripts/scorer.py) |
+| 691 | ✓ | [`skills/uptrend-analyzer/scripts/tests/conftest.py`](skills/uptrend-analyzer/scripts/tests/conftest.py) |
+| 692 | ✓ | [`skills/uptrend-analyzer/scripts/tests/helpers.py`](skills/uptrend-analyzer/scripts/tests/helpers.py) |
+| 693 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_data_fetcher.py`](skills/uptrend-analyzer/scripts/tests/test_data_fetcher.py) |
+| 694 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_historical_context_calculator.py`](skills/uptrend-analyzer/scripts/tests/test_historical_context_calculator.py) |
+| 695 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_market_breadth_calculator.py`](skills/uptrend-analyzer/scripts/tests/test_market_breadth_calculator.py) |
+| 696 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_momentum_calculator.py`](skills/uptrend-analyzer/scripts/tests/test_momentum_calculator.py) |
+| 697 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_new_features.py`](skills/uptrend-analyzer/scripts/tests/test_new_features.py) |
+| 698 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_report_generator.py`](skills/uptrend-analyzer/scripts/tests/test_report_generator.py) |
+| 699 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_scorer.py`](skills/uptrend-analyzer/scripts/tests/test_scorer.py) |
+| 700 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_sector_participation_calculator.py`](skills/uptrend-analyzer/scripts/tests/test_sector_participation_calculator.py) |
+| 701 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_sector_rotation_calculator.py`](skills/uptrend-analyzer/scripts/tests/test_sector_rotation_calculator.py) |
+| 702 | ✓ | [`skills/uptrend-analyzer/scripts/tests/test_uptrend_analyzer.py`](skills/uptrend-analyzer/scripts/tests/test_uptrend_analyzer.py) |
+| 703 | ✓ | [`skills/uptrend-analyzer/scripts/uptrend_analyzer.py`](skills/uptrend-analyzer/scripts/uptrend_analyzer.py) |
+| 704 | ✓ | [`skills/uptrend-analyzer/SKILL.md`](skills/uptrend-analyzer/SKILL.md) |
+| 705 | ✓ | [`skills/us-market-bubble-detector/CHANGELOG.md`](skills/us-market-bubble-detector/CHANGELOG.md) |
+| 706 | ✓ | [`skills/us-market-bubble-detector/references/bubble_framework.md`](skills/us-market-bubble-detector/references/bubble_framework.md) |
+| 707 | ✓ | [`skills/us-market-bubble-detector/references/historical_cases.md`](skills/us-market-bubble-detector/references/historical_cases.md) |
+| 708 | ✓ | [`skills/us-market-bubble-detector/references/implementation_guide.md`](skills/us-market-bubble-detector/references/implementation_guide.md) |
+| 709 | ✓ | [`skills/us-market-bubble-detector/references/quick_reference_en.md`](skills/us-market-bubble-detector/references/quick_reference_en.md) |
+| 710 | ✓ | [`skills/us-market-bubble-detector/references/quick_reference.md`](skills/us-market-bubble-detector/references/quick_reference.md) |
+| 711 | ✓ | [`skills/us-market-bubble-detector/scripts/bubble_scorer.py`](skills/us-market-bubble-detector/scripts/bubble_scorer.py) |
+| 712 | ✓ | [`skills/us-market-bubble-detector/SKILL.md`](skills/us-market-bubble-detector/SKILL.md) |
+| 713 | ✓ | [`skills/us-stock-analysis/references/financial-metrics.md`](skills/us-stock-analysis/references/financial-metrics.md) |
+| 714 | ✓ | [`skills/us-stock-analysis/references/fundamental-analysis.md`](skills/us-stock-analysis/references/fundamental-analysis.md) |
+| 715 | ✓ | [`skills/us-stock-analysis/references/report-template.md`](skills/us-stock-analysis/references/report-template.md) |
+| 716 | ✓ | [`skills/us-stock-analysis/references/technical-analysis.md`](skills/us-stock-analysis/references/technical-analysis.md) |
+| 717 | ✓ | [`skills/us-stock-analysis/SKILL.md`](skills/us-stock-analysis/SKILL.md) |
+| 718 | ✓ | [`skills/value-dividend-screener/references/fmp_api_guide.md`](skills/value-dividend-screener/references/fmp_api_guide.md) |
+| 719 | ✓ | [`skills/value-dividend-screener/references/screening_methodology.md`](skills/value-dividend-screener/references/screening_methodology.md) |
+| 720 | ✓ | [`skills/value-dividend-screener/scripts/screen_dividend_stocks.py`](skills/value-dividend-screener/scripts/screen_dividend_stocks.py) |
+| 721 | ✓ | [`skills/value-dividend-screener/SKILL.md`](skills/value-dividend-screener/SKILL.md) |
+| 722 | ✓ | [`skills/vcp-screener/references/fmp_api_endpoints.md`](skills/vcp-screener/references/fmp_api_endpoints.md) |
+| 723 | ✓ | [`skills/vcp-screener/references/scoring_system.md`](skills/vcp-screener/references/scoring_system.md) |
+| 724 | ✓ | [`skills/vcp-screener/references/vcp_methodology.md`](skills/vcp-screener/references/vcp_methodology.md) |
+| 725 | ✓ | [`skills/vcp-screener/scripts/calculators/__init__.py`](skills/vcp-screener/scripts/calculators/__init__.py) |
+| 726 | ✓ | [`skills/vcp-screener/scripts/calculators/execution_state.py`](skills/vcp-screener/scripts/calculators/execution_state.py) |
+| 727 | ✓ | [`skills/vcp-screener/scripts/calculators/pattern_classifier.py`](skills/vcp-screener/scripts/calculators/pattern_classifier.py) |
+| 728 | ✓ | [`skills/vcp-screener/scripts/calculators/pivot_proximity_calculator.py`](skills/vcp-screener/scripts/calculators/pivot_proximity_calculator.py) |
+| 729 | ✓ | [`skills/vcp-screener/scripts/calculators/relative_strength_calculator.py`](skills/vcp-screener/scripts/calculators/relative_strength_calculator.py) |
+| 730 | ✓ | [`skills/vcp-screener/scripts/calculators/trend_template_calculator.py`](skills/vcp-screener/scripts/calculators/trend_template_calculator.py) |
+| 731 | ✓ | [`skills/vcp-screener/scripts/calculators/vcp_pattern_calculator.py`](skills/vcp-screener/scripts/calculators/vcp_pattern_calculator.py) |
+| 732 | ✓ | [`skills/vcp-screener/scripts/calculators/volume_pattern_calculator.py`](skills/vcp-screener/scripts/calculators/volume_pattern_calculator.py) |
+| 733 | ✓ | [`skills/vcp-screener/scripts/fmp_client.py`](skills/vcp-screener/scripts/fmp_client.py) |
+| 734 | ✓ | [`skills/vcp-screener/scripts/report_generator.py`](skills/vcp-screener/scripts/report_generator.py) |
+| 735 | ✓ | [`skills/vcp-screener/scripts/scorer.py`](skills/vcp-screener/scripts/scorer.py) |
+| 736 | ✓ | [`skills/vcp-screener/scripts/screen_vcp.py`](skills/vcp-screener/scripts/screen_vcp.py) |
+| 737 | ✓ | [`skills/vcp-screener/scripts/tests/conftest.py`](skills/vcp-screener/scripts/tests/conftest.py) |
+| 738 | ✓ | [`skills/vcp-screener/scripts/tests/test_fmp_client_historical.py`](skills/vcp-screener/scripts/tests/test_fmp_client_historical.py) |
+| 739 | ✓ | [`skills/vcp-screener/scripts/tests/test_vcp_screener.py`](skills/vcp-screener/scripts/tests/test_vcp_screener.py) |
+| 740 | ✓ | [`skills/vcp-screener/SKILL.md`](skills/vcp-screener/SKILL.md) |
+| 741 | → | [`docs/dev/maintenance-runbook.md`](docs/dev/maintenance-runbook.md) |
+| 742 | → | [`workflows/README.md`](workflows/README.md) |
 
 ---
 

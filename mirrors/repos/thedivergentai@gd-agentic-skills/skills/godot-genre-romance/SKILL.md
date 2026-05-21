@@ -23,6 +23,8 @@ Romance games are built on the "Affection Economy"—the management of player ti
 - NEVER use the "Same Date Order" trap; strictly implement a **Repetition Penalty** (~30%) for visiting the same location twice in a row.
 - NEVER forget "Missable" Milestones; strictly ensure meaningful consequences (e.g., missing events due to poor scheduling) to add weight to the experience.
 - NEVER ignore NPC Autonomy; strictly allow NPCs to have their own **Schedules** and the ability to **Reject** the player based on low trust or conflicting events.
+- NEVER use polling (`_process`) for NPC schedule checks; strictly use a **Signal-Driven TimeManager** (Autoload) to broadcast hour/day changes for performant state updates.
+- NEVER hardcode character references for jealousy logic; strictly use **Groups (`add_to_group`)** to broadcast romantic events across the scene for decoupled, autonomous NPC reactions.
 
 ### Technical & UI
 - NEVER use `_process` for typewriter text; strictly use **Tweens on `visible_ratio`** for frame-independent, smooth reveals.
@@ -136,6 +138,55 @@ Romance thrives on anticipation.
 
 *   **Deadline Scheduling**: "Confess by June 15th or lose."
 *   **Contextual Dialogue**: Characters reacting differently based on time of day or weather.
+
+### 4. NPC Daily Schedule (Signal-Driven)
+Avoid polling in `_process`. Use a central TimeManager and data-driven schedules.
+
+```gdscript
+# npc_schedule.gd (Resource)
+class_name NPCSchedule extends Resource
+@export var daily_routine: Dictionary = {8: "TownSquare", 12: "Tavern", 18: "Home"}
+
+# npc_controller.gd
+func _ready():
+    TimeManager.hour_changed.connect(_on_hour_changed)
+
+func _on_hour_changed(hour: int):
+    var dest = schedule.daily_routine.get(hour, "")
+    if dest: _navigate_to(dest)
+```
+
+### 5. Seasonal Dialogue Mapping
+Inject world state into dialogue using `.format()` and `Resource` mapping.
+
+```gdscript
+# seasonal_dialogue.gd (Resource)
+enum Season { SPRING, SUMMER, AUTUMN, WINTER }
+@export var season_lines: Dictionary = { Season.WINTER: "Stay warm near the fire." }
+
+# ui_layer.gd
+func update_greeting(season: Season):
+    var text = dialogue_res.get_seasonal_line(season)
+    label.text = text.format({"player_name": Global.player_name})
+```
+
+### 6. Jealousy Broadcasting (Groups)
+Decouple the player from NPC logic using `SceneTree.call_group()`.
+
+```gdscript
+# player_romance_manager.gd
+func start_date(npc_name: String):
+    # Notify everyone in the group without needing direct references
+    get_tree().call_group("romantic_interests", "on_player_date_started", npc_name)
+
+# npc_jealousy.gd
+func _ready():
+    add_to_group("romantic_interests")
+
+func on_player_date_started(dating_name: String):
+    if dating_name != self.name and affection > 30:
+        affection -= 10 # Jealousy penalty
+```
 
 ## Common Pitfalls
 

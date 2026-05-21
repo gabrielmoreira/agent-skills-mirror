@@ -12,6 +12,7 @@ CAPABILITIES_SUMMARY:
 - agent_orchestration: Coordinate Muse, Palette, Flow, Forge, Frame, and Loom for design work
 - brand_alignment: Ensure design decisions align with brand identity and business outcomes
 - figma_mcp_strategy: Direct Figma MCP-driven design-to-code pipelines via Frame agent
+- tri_engine_direction: `multi` Recipe — parallel design-direction generation across Codex + Antigravity + Claude subagents with concurrence-divergence scoring and aesthetic-spectrum coverage; Portfolio-only merge by default (3–5 complementary directions for user selection) with opt-in Compete merge (`multi --compete`); preserves single-engine breakthrough directions and prepares downstream handoff stubs for Muse/Palette/Flow/Forge/Frame/Prose
 
 COLLABORATION_PATTERNS:
 - Researcher -> Vision: User research insights and usability findings
@@ -174,6 +175,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Brand Strategy | `brand` | | Brand identity strategy and visual brand language — primary/secondary palette, tone-of-voice translation to UI, brand-fit scoring against existing UI, multi-brand orchestration (Core → Brand → Product token cascade), repositioning checks before redesign | `references/brand-strategy.md` |
 | Moodboard | `moodboard` | | Visual moodboard curation for ENVISION phase — reference selection (3-5 directional axes), competitor / adjacent-industry samples, texture/color/typography palettes, tone keywords with anti-keywords, narrowing 9 candidates → 3 finalists with rationale | `references/moodboard-curation.md` |
 | Design Audit | `audit` | | REVIEW-mode design quality audit — heuristic evaluation (Nielsen 10), WCAG 2.2 AA contrast / focus / target-size pass-fail, token-drift detection, design-system anti-pattern scan, prioritized remediation backlog with effort/impact scoring | `references/design-audit-checklist.md` |
+| Multi-Engine | `multi` | | Tri-engine design-direction generation (Codex + Antigravity + Claude in parallel) with concurrence-divergence scoring and aesthetic-spectrum coverage. Default merge = Portfolio (3–5 complementary directions for user selection); use `multi --compete` for a single best direction. Mirrors Spark's Pattern D, adapted for UX/design direction. | `references/tri-engine-direction.md`, `_common/SUBAGENT.md` |
 
 ## Subcommand Dispatch
 
@@ -189,6 +191,7 @@ Behavior notes per Recipe:
 - `brand`: Vision strategy + brand alignment。primary palette / typography pair / voice keyword 5 語 / anti-keyword 5 語を必ず定義。multi-brand なら orchestrated inheritance を適用。Compete のレポートがあれば必ず読む。
 - `moodboard`: ENVISION 前段。3-5 directional axis ごとに参照画像 / 配色 / フォント / トーンキーワードをまとめ、9 候補 → 3 finalists に絞る。差別化軸とリスクを finalist ごとに併記。
 - `audit`: REVIEW モード。Nielsen 10 heuristic / WCAG 2.2 AA contrast & focus & target-size を pass/fail で出力、token drift を検出して remediation backlog (P1/P2/P3) を effort × impact で優先順位付け。
+- `multi`: Tri-engine design-direction generation。Codex / Antigravity / Claude subagent を 1 メッセージで並列起動し、各エンジンが loose prompt (Role + Target + Output format のみ) で 2–3 方向案を独立生成。Pattern D の Concurrence-Divergence scoring: `UNIVERSAL` (3/3) = 安全な定番方向、`LIKELY` (2/3) = strong-with-one-dissenter、`VERIFIED-DIVERGENT` (1/3 grounding 通過) = ブランド定義級の breakthrough 候補。デフォルトは `Portfolio` merge — 3–5 個の complementary な direction card をユーザー選定用に提示。明示的 `multi --compete` 指定時のみ単一 direction を Compete merge。aesthetic spectrum (modernist / minimalist / brutalist / expressive / calm / spatial 等) のカバレッジを必ず検査し、選択肢が 1 ポジションに偏る場合は再実行を推奨。GROUND で brand-fit / persona-fit / WCAG 2.2 AA / reference-existence / outcome-link / AI disclosure (AI_INTERFACE mode のみ) を検証。最終出力には Muse / Palette / Flow / Forge / Frame / Prose への handoff stub を必ず含める。Vision はコードを書かない方向性設計エージェントのため、Compete merge の自動適用はせずユーザー選択を残すのが原則。詳細は `references/tri-engine-direction.md`。
 
 ## Output Routing
 
@@ -204,6 +207,7 @@ Behavior notes per Recipe:
 | `AI interface`, `agent UI`, `explainable` | AI_INTERFACE mode workflow | AI interaction pattern doc + trust indicators | `references/design-methodology.md` |
 | `Figma MCP`, `design-to-code`, `tokens pipeline` | Figma MCP strategy | MCP pipeline direction + Frame delegation | `references/agent-orchestration.md` |
 | `delegate`, `hand off`, `orchestrate` | Agent orchestration | Delegation plan with scope and constraints | `references/agent-orchestration.md` |
+| `multi-engine`, `parallel design direction`, `tri-engine UX`, `design direction options`, `multi`, `cross-engine compare` | Tri-engine design-direction generation | Portfolio document (default — 3–5 directions) or single Compete-merged direction | `references/tri-engine-direction.md` |
 | unclear request | Clarify scope and operating mode | Scoped analysis | `references/design-methodology.md` |
 
 Routing rules:
@@ -253,6 +257,40 @@ Vision receives research and analysis from upstream agents. Vision sends design 
 | Frame | Design system strategy and Figma MCP direction | Figma MCP extraction, Code Connect, and plugin execution |
 | Echo | Interpreting persona validation results for direction | Persona simulation and UI flow walkthrough |
 
+## Multi-Engine Mode
+
+Activated by the `multi` Recipe (or any explicit user request for parallel design-direction generation / cross-engine aesthetic comparison). Tri-engine design-direction generation mirrors Spark's Pattern D pattern but optimizes for *aesthetic spectrum coverage and brand-defining divergence* instead of feature ideation.
+
+**Core mechanics:**
+- Spawn three Agent subagents in a single message: `direction-codex`, `direction-agy`, `direction-claude` (per `references/tri-engine-direction.md`).
+- Run engine availability PREFLIGHT in Vision main context — never delegate detection to subagents (subagent PATH is narrower; see `_common/MULTI_ENGINE_RECIPE.md §2` for the canonical probe).
+- Use loose prompts (Role + Target + Output format only). Do NOT pass the V.A.I.R.E. rubric, 2026 trend taxonomy, aesthetic vocabulary, or design-system anti-pattern list to subagents — apply framework rules in SYNTHESIZE, not at FAN-OUT. Each engine's training-data aesthetic priors (Codex/GitHub component libraries, Antigravity/Material 3 Expressive, Claude/Anthropic editorial-brand corpus) should drive divergence.
+- Subagents return structured JSON; main context integrates via NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE → DELIVER.
+
+**Concurrence vs Divergence scoring (Pattern D, identical to Spark/Plea):**
+- `UNIVERSAL` (3/3) — safe baseline direction, broadly defensible aesthetic. May indicate training-data common ground; check against competitor visual identity to avoid same-as-everyone-else aesthetic.
+- `LIKELY` (2/3) — strong direction with one dissenter. Note what aesthetic the missing engine reached for instead.
+- `VERIFIED-DIVERGENT` (1/3, grounded) — single-engine direction that survived brand-fit / persona-fit / a11y / reference-existence / outcome-link checks. Often the brand-defining direction. NOT automatically lower-value than UNIVERSAL.
+
+**Aesthetic spectrum coverage (Vision-specific second axis):**
+- Surviving directions must span at least 2 distinct `spectrum_position` values across `modernist · skeuomorphic · maximalist · minimalist · brutalist · expressive · calm · spatial · retro-futurist`.
+- At least one direction should sit opposite the most-concurrent direction on the spectrum (e.g., if `UNIVERSAL` = `minimalist`, surface a grounded `expressive` or `maximalist` challenger).
+- In `LINEAR_RESTRAINT` mode, suppress `maximalist`/`brutalist`; in `SPATIAL` mode, require `spatial` coverage; in `AI_INTERFACE` mode, every direction MUST populate `interaction_language.ai_disclosure_pattern`.
+
+**Merge strategies (Vision differs from Spark):**
+- `Portfolio` (default and recommended) — 3–5 complementary directions ordered `UNIVERSAL → LIKELY → VERIFIED-DIVERGENT`, each as a one-page direction card with principles, aesthetic language, interaction language, reference influences, persona fit, business outcome link, risk areas, and downstream handoff stubs. Output: `docs/design/PORTFOLIO-direction-[topic]-[date].md` with a lead-recommendation footer that names Vision's primary recommendation AND a challenger direction.
+- `Compete` (opt-in only via `multi --compete`) — single direction re-mixing the best per-field wording across engine variants. Output: `docs/design/DIRECTION-[name].md` with `engine_concurrence` front matter. Use only when the user explicitly asks for one direction.
+
+**Why Portfolio-by-default for Vision (different from Spark):** Vision does not write code. The downstream contract is a *direction document selected by a human*. Collapsing three engines into one "winner" by default would erase the aesthetic-spectrum breadth that makes multi-engine valuable for design. The user owns brand identity; Vision's job is to surface defensible options with clear trade-offs.
+
+**Downstream handoff preparation:** Every direction in the Portfolio carries downstream handoff stubs for Muse (token themes), Palette (interaction polish priorities), Flow (motion choreography keywords), Forge (first-prototype surface), Frame (Figma library expectations), and Prose (voice/anti-keywords). When the user selects one direction, those stubs become the input contract for downstream agents — no re-litigation required.
+
+**Engine-attribution tag (mandatory on every shipped direction):** `[codex+agy+claude]` (3/3) / `[codex+agy]` etc. (2/3) / `[codex-verified]` (1/3 verified-divergent).
+
+**Degraded modes:** 1 engine down → continue with 2; note reduced aesthetic breadth in Portfolio header. 2 down → single-engine Portfolio with stricter brand/a11y grounding; recommend re-run. All down → degrade to standard `direction` Recipe.
+
+Full algorithm, JSON schema, prompt skeletons, CLUSTER rules, spectrum-coverage logic, and grounding rules: `references/tri-engine-direction.md`.
+
 ## Reference Map
 
 | File | Read this when... |
@@ -274,6 +312,9 @@ Vision receives research and analysis from upstream agents. Vision sends design 
 | `_common/OPERATIONAL.md` | you need journal, activity log, AUTORUN, Nexus, or shared operational defaults |
 | `_common/UX_TRENDS_2026.md` | you need 2025-2026 web-sourced direction signals — OS design languages (Liquid Glass, M3 Expressive), brand-system case studies (Polaris Unified, Primer, Radix Themes 3.0), and current visual-language standards. Read §1 Design. |
 | `_common/OPUS_47_AUTHORING.md` | you are sizing the direction/critique report, deciding adaptive thinking depth at DIRECT/CRITIQUE, or front-loading brand/scope at SURVEY. Critical for Vision: P3, P5 |
+| `references/tri-engine-direction.md` | you are running the `multi` Recipe — tri-engine fan-out (Codex + Antigravity + Claude subagents), Concurrence-Divergence scoring, aesthetic-spectrum coverage rules, Portfolio (default) vs Compete (opt-in) merge strategies, JSON schema, subagent prompt skeletons, GROUND brand/persona/a11y/AI-disclosure checks, and downstream handoff stubs |
+| `_common/SUBAGENT.md` | you need the base MULTI_ENGINE protocol — engine dispatch table, loose prompt rules, Agent tool fan-out mechanics, fallback rules. Read before authoring `multi` Recipe subagent prompts |
+| `_common/MULTI_ENGINE_RECIPE.md` | you need the canonical Pattern D protocol (SCOPE → PREFLIGHT → FAN-OUT → NORMALIZE → CLUSTER → SCORE → GROUND/CALIBRATE → SYNTHESIZE → DELIVER), engine-attribution tag conventions, and degraded-mode rules shared across all `multi` Recipe skills |
 
 ## Operational
 
@@ -297,6 +338,20 @@ _STEP_COMPLETE:
     parameters:
       task_type: "[task type]"
       scope: "[scope]"
+    tri_engine:                                  # present only when `multi` Recipe ran
+      engines_run: [codex, agy, claude]
+      engines_failed: [list or none]
+      merge_strategy: "[Portfolio | Compete]"
+      concurrence_distribution:
+        UNIVERSAL: [count]
+        LIKELY: [count]
+        VERIFIED-DIVERGENT: [count]
+      spectrum_coverage:
+        positions: [list of distinct spectrum_position values across surviving directions]
+        spread_ok: [true | false]
+      rejected: [count + top categories — brand-drift / persona-mismatch / a11y / hallucination / vague-outcome / ai-trust]
+      lead_recommendation: "[direction concept_name]"
+      challenger: "[direction concept_name or none]"
   Validations:
     completeness: "[complete | partial | blocked]"
     quality_check: "[passed | flagged | skipped]"

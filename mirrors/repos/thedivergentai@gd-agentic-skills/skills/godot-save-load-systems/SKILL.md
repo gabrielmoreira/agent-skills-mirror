@@ -311,10 +311,58 @@ position = Vector2(data.position.x, data.position.y)
 texture = load(data.texture_path)
 ```
 
+## Best Practices
+
+1. **Use `user://` Protocol** - Platform-independent paths
+2. **Version Your Save Format** - Migration support
+3. **Handle Errors Gracefully** - Validate file opening
+4. **Auto-Save Pattern** - Periodic background saves
+
+---
+
+## Elite Godot 4.x Patterns
+
+### 1. Encrypted Save Data
+Secure sensitive player progress using `FileAccess.open_encrypted_with_pass()`. This uses AES-256 encryption to prevent casual save editing.
+
+```gdscript
+# save_manager.gd
+func save_encrypted(data: Variant, password: String) -> void:
+    var file := FileAccess.open_encrypted_with_pass(SAVE_PATH, FileAccess.WRITE, password)
+    if file:
+        file.store_var(data, true) # Binary serialization
+        file.close()
+```
+
+### 2. Rolling Save Slots (Backup System)
+Prevent data loss during crashes by creating a rolling backup before overwriting the primary save file.
+
+```gdscript
+# save_manager.gd
+func _create_backup() -> void:
+    if FileAccess.file_exists(SAVE_PATH):
+        DirAccess.copy_absolute(SAVE_PATH, BACKUP_PATH)
+
+func safe_save(data: Variant) -> void:
+    _create_backup()
+    save_encrypted(data, "pass")
+```
+
+### 3. Save Integrity Validator (SHA-256)
+Verify that a save file has not been tampered with or corrupted by comparing its cryptographic hash.
+
+```gdscript
+# save_validator.gd
+func verify_save_integrity(path: String, expected_hash: String) -> bool:
+    var current_hash := FileAccess.get_sha256(path)
+    return current_hash == expected_hash
+
+# On Load:
+func load_with_validation() -> Variant:
+    if not verify_save_integrity(SAVE_PATH, stored_hash):
+        return _load_from_backup() # Fallback to backup
+    return load_encrypted(SAVE_PATH, "pass")
+```
+
 ## Reference
-- [Godot Docs: Saving Games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html)
-- [Godot Docs: File System](https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html)
-
-
-### Related
 - Master Skill: [godot-master](../godot-master/SKILL.md)

@@ -36,6 +36,15 @@
 - For ad-hoc scripts, write the script to a temporary file (for example under `/tmp`) using `write`, run that file, edit it if needed, and remove it when it is no longer needed. Do not embed multi-line scripts directly in `bash` commands.
 - NEVER commit unless user asks
 
+## Dependency and Install Security
+
+- Treat npm dependency and lockfile changes as reviewed code changes. Direct external dependencies must stay pinned to exact versions.
+- Use `npm install --ignore-scripts` to hydrate/update `node_modules` locally. Use `npm ci --ignore-scripts` for clean installs/CI-style verification. Do not run lifecycle scripts unless the user explicitly asks.
+- If dependency metadata changes, run `npm install --package-lock-only --ignore-scripts` to update `package-lock.json` without installing or running scripts.
+- If `packages/coding-agent/npm-shrinkwrap.json` needs regeneration, run `node scripts/generate-coding-agent-shrinkwrap.mjs`; verify with `node scripts/generate-coding-agent-shrinkwrap.mjs --check` or `npm run check`.
+- Pre-commit blocks accidental lockfile commits unless `PI_ALLOW_LOCKFILE_CHANGE=1` is set. Do not bypass it unless the user explicitly wants the lockfile change committed.
+- New dependencies with lifecycle scripts require review and an explicit allowlist entry in `scripts/generate-coding-agent-shrinkwrap.mjs`; do not add one silently.
+
 ## Contribution Gate
 
 - New issues from new contributors are auto-closed by `.github/workflows/issue-gate.yml`
@@ -190,13 +199,32 @@ Create provider file exporting:
 
 1. **Update CHANGELOGs**: Ensure all changes since last release are documented in the `[Unreleased]` section of each affected package's CHANGELOG.md
 
-2. **Run release script**:
+2. **Soft gate: local release smoke test**: Before running the real release script, build an unpublished local release and manually smoke test it from outside the repository so it cannot accidentally resolve workspace files:
+   ```bash
+   npm run release:local -- --out /tmp/pi-local-release --force
+   cd /tmp
+   /tmp/pi-local-release/node/pi --help
+   /tmp/pi-local-release/node/pi --version
+   /tmp/pi-local-release/node/pi
+   /tmp/pi-local-release/bun/pi --help
+   /tmp/pi-local-release/bun/pi --version
+   ```
+   In the interactive smoke test, verify startup, model/account listing, and at least one real prompt with the intended default provider. Treat failures as release blockers unless the user explicitly accepts the risk.
+
+3. **Run release script until npm publish**:
    ```bash
    npm run release:patch    # Fixes and additions
    npm run release:minor    # API breaking changes
    ```
 
-The script handles: version bump, CHANGELOG finalization, commit, tag, publish, and adding new `[Unreleased]` sections.
+   npm publishing requires the maintainer's npm WebAuthn/security-key 2FA and cannot be completed by an agent alone. If the release script stops at `npm publish` with an npm browser authentication URL, the maintainer must run or approve `npm run publish` locally. Do not rerun the version bump.
+
+4. **After publish succeeds, finish release bookkeeping**:
+   - Add fresh `## [Unreleased]` sections to package changelogs.
+   - Commit with `Add [Unreleased] section for next cycle`.
+   - Push `main` and the release tag.
+
+The release script handles the full flow when npm publish auth is already satisfied. If npm requires WebAuthn during publish, continue manually from the existing release commit/tag using the steps above.
 
 ## **CRITICAL** Git Rules for Parallel Agents **CRITICAL**
 

@@ -4,6 +4,45 @@
 
 ---
 
+## v0.3.88: 移动端 Web 主入口与 fallback 默认关闭（2026-05-21）
+
+- `[llm].fallback_enabled` 新增为默认关闭的 LLM 请求 fallback 开关；关闭时 `LLMRegistry.complete()` 只调用默认 provider，失败直接暴露。
+- `[llm.embedding].fallback_enabled` 新增为默认关闭的 embedding fallback 开关；关闭时不切 provider、不借用 `[llm.<provider>]` 凭据，且 embedding provider 留空表示不启用，不再跟随默认 LLM。
+- 浏览器插件设置页「模型」tab 增加 LLM fallback 与 embedding fallback 两个开关，并更新文案说明 embedding 与 LLM 独立配置。
+- 移动 Web 新增轻量 view-model 适配层，推荐页池状态会读取 `/api/runtime-status` 的 `pool_available_count` / `last_replenished_count` / `recent_pool_topics`，画像页 MBTI 可渲染后端返回的 `{EI: {pole, strength}}` 对象形态；对话页兼容 `/api/chat/turns` 返回的 `reply` 字段，不再因字段形态不一致空白或漏显回复。
+- 移动 Web 资源噪声收敛：根路径 `/favicon.ico` 现在复用 PWA 图标返回 PNG；推荐页封面会过滤直接 403 的小红书 CDN URL、把 B 站 `http` / protocol-relative 封面升到 HTTPS，并用 `no-referrer` 加载外链图片，避免浏览器控制台残留 favicon / hotlink 错误。
+- 移动 Web 推荐页的惊喜推荐动作对齐浏览器插件：按钮改为「看看 / 喜欢 / 不感兴趣 / 聊一聊」，移除仅移动端存在的「稍后」，并把「喜欢」写入 `/api/delight/respond` 的 `like` 反馈。
+- 移动 Web 推荐页头部对齐插件：新增 `For You / 这几条，你大概会点开` 紧凑 header，把「换一批」放回首屏主操作位，池状态三枚 chip 改为「当前可换 / 最近补进 / 现在在忙」，活动状态降级为 header 内辅助行，「加载更多」移动到推荐列表底部。
+- 移动 Web 画像页补齐与插件一致的画像细节：MBTI 显示可信度，使用场景显示“模式”，内容口味把 `long/slow` 等 raw 值本地化为中文标签，认知更新卡片保留后端 `context_line` 与 `source_label`。
+- 移动 Web 对话页对齐插件主聊天会话：读取和提交都使用 `session=popup&scope=chat`，聊天回复完成后会刷新画像和活动流；消息 overlay 内的兴趣探测动作改为「喜欢 / 不喜欢 / 多聊聊」，惊喜推荐动作补齐「喜欢」，聊天输入框固定在底部并以两行高度起步，保留更多历史上下文可视空间。
+- 新增移动 Web 原生重设计 spec，明确 `/m/` 与浏览器插件在推荐、画像、对话、消息和 delight 工作流上的功能对齐范围，以及手机端独立信息架构。
+- 后端源码版本记录为 v0.3.88，准备发布 `backend-v0.3.88` source tag；浏览器插件版本仍为 extension v0.3.38。
+
+---
+
+## v0.3.87 / extension v0.3.38: runtime 配置真实生效（2026-05-20）
+
+- Runtime: YouTube steady-state discovery now runs through an independent backend producer loop with per-strategy daily execution budgets, `min_interval_minutes` throttling, and source-deficit gating.
+- `AccountSyncService` 现在会持久化同秒历史 bvid 集合、收藏 bvid 集合和关注 mid 集合；B 站账号同步只把新增历史 / 收藏 / 关注送进画像分析，避免消息推荐期间重复重放旧账号信号并浪费 LLM tokens。
+- XHS / 抖音 / YouTube bootstrap task-result 新增跨任务 seen-key 过滤：任务表仍保留完整 partial / final 原始结果，但进入 memory / 增量画像前会跳过 `source_bootstrap_state.json` 里已见的 note / video / item key；抖音和 YouTube 队列也补齐 `in_progress` claim 与 6 小时近期任务复用，避免反复打开前台 tab 全量扫描。
+- `[scheduler]` 新增真实 runtime 调度参数：refresh 轮询、行为触发阈值、trending / explore 间隔、单轮 discovery 上限、主动推送间隔和 speculator idle tick；这些字段已接入 `/api/config`、daemon runtime、OpenClaw direct bootstrap 和插件设置页。
+- `scheduler.speculation_*` 现在会传入 `SoulEngine` / `InterestSpeculator`，配置页里的猜测兴趣间隔、TTL、冷却、确认阈值和上限不再只是保存到 TOML。
+- 插件设置页调度区移除无效的 `discovery_cron` 输入，补上 `extension_disconnect_grace_seconds` 和实际生效的 runtime 频率控件；`discovery_cron` 仍作为 legacy 字段保留在配置/API 中但 runtime 不消费。
+- README 快速开始保留插件安装、AI 部署后端和平台登录三步展开；后端其他部署路径继续折叠展示。
+- 后端源码版本记录为 v0.3.87，但不发布 backend GitHub Release；浏览器插件版本提升到 v0.3.38，准备发布 `extension-v0.3.38`。
+
+---
+
+## v0.3.86 / extension v0.3.37: 小红书默认改为显式开启（2026-05-20）
+
+- `[sources.xiaohongshu].enabled` 默认改为 `false`；小红书 discovery / init bootstrap 现在必须由用户在初始化时选择 Yes、传 `--yes-xhs`，或在插件设置页打开后才会启用。
+- `openbiliclaw init` 的小红书交互提示默认从 Yes 改为 No；非交互环境也不再静默启用小红书 bootstrap，避免未安装扩展或未登录时自动排队任务。
+- runtime 候选池默认有效配比改为只包含 Bilibili；`[scheduler.pool_source_shares]` 仍保存 Bilibili / 小红书 / 抖音 / YouTube = `8 / 1 / 1 / 1`，显式启用可选平台后才参与 quota。
+- 插件设置页读取缺省配置时不再默认勾选「启用小红书 discovery」，保存和配比建议都以用户当前开关为准。
+- 后端源码版本记录为 v0.3.86，但不发布 backend GitHub Release；浏览器插件版本提升到 v0.3.37，准备发布 `extension-v0.3.37`。
+
+---
+
 ## v0.3.85 / extension v0.3.36: 插件配置页来源与日志整理（2026-05-20）
 
 - `[sources.bilibili].enabled` 新增 Bilibili discovery 开关；关闭后 B 站 search / related_chain / trending / explore 不再参与后台补池，`pool_source_shares.bilibili` 会保留但从运行时有效配比中剔除。

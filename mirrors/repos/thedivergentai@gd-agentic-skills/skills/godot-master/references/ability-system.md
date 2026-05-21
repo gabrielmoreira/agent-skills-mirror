@@ -504,5 +504,110 @@ Do not enforce strict class checks. Rely on duck-typing: `if collision.get_colli
 ### 3. Group Broadcasting for AoE
 For Area-of-Effect abilities, assign entities to groups. Process damage efficiently by calling `get_tree().call_group("enemies", "apply_damage", 50)` instead of looping manually.
 
+---
+
+## Elite Godot 4.x Patterns
+
+### 1. Advanced Status Effect System (Resource-Driven)
+Status effects should be represented as custom `Resource` scripts. This allows them to be data containers with logic, encapsulated methods, and signals for data changes.
+
+> [!CAUTION]
+> When applying a status effect template to a character at runtime, you MUST use `duplicate(true)` to create a deep copy. Modifying a shared resource instance will apply changes to EVERY character using that template globally.
+
+```gdscript
+# status_effect.gd
+class_name StatusEffect extends Resource
+
+@export var effect_name: String = "Unknown"
+@export var duration: float = 5.0
+@export var tick_rate: float = 1.0
+
+var _time_since_last_tick: float = 0.0
+var _elapsed_time: float = 0.0
+
+func apply_effect(target: Node) -> void:
+    # Logic to apply effect (e.g., damage, stat change)
+    pass
+
+func process_tick(target: Node, delta: float) -> bool:
+    _elapsed_time += delta
+    _time_since_last_tick += delta
+    
+    if _time_since_last_tick >= tick_rate:
+        apply_effect(target)
+        _time_since_last_tick = 0.0
+        
+    return _elapsed_time >= duration
+```
+
+```gdscript
+# status_effect_manager.gd
+class_name StatusEffectManager extends Node
+
+var active_effects: Array[StatusEffect] = []
+
+func add_effect(effect_template: StatusEffect) -> void:
+    # Essential: duplicate to avoid global state pollution
+    active_effects.append(effect_template.duplicate(true))
+
+func _process(delta: float) -> void:
+    # Backward iteration for safe removal
+    for i in range(active_effects.size() - 1, -1, -1):
+        var effect: StatusEffect = active_effects[i]
+        var is_finished: bool = effect.process_tick(get_parent(), delta)
+        
+        if is_finished:
+            active_effects.remove_at(i)
+```
+
+### 2. Networked Ability Prediction
+To eliminate perceived lag in multiplayer, use a combination of local prediction and authoritative server validation via RPCs.
+
+```gdscript
+# ability_caster.gd
+class_name AbilityCaster extends Node
+
+@rpc("any_peer", "call_remote", "reliable")
+func server_request_cast(target_pos: Vector3) -> void:
+    var sender_id := multiplayer.get_remote_sender_id()
+    # Authoritative check
+    if has_sufficient_resources():
+        consume_resources()
+        rpc("client_execute_cast", target_pos) # Confirm for everyone
+    else:
+        rpc_id(sender_id, "client_cancel_cast") # Reject prediction
+
+@rpc("authority", "call_remote", "reliable")
+func client_execute_cast(target_pos: Vector3) -> void:
+    if not is_multiplayer_authority():
+        _play_cast_animation() # Sync for observers
+    _spawn_projectile(target_pos)
+
+@rpc("authority", "call_remote", "reliable")
+func client_cancel_cast() -> void:
+    # Rollback local visuals/state
+    _cancel_animation()
+```
+
+### 3. Skill Tree Visualizer (Editor Tooling)
+Use `@tool` and `GraphEdit` to create visual auditing tools for skill dependencies and balance.
+
+```gdscript
+@tool
+class_name SkillTreeVisualizer extends GraphEdit
+
+@export var skill_database: Array[Resource] = []:
+    set(value):
+        skill_database = value
+        if Engine.is_editor_hint(): _rebuild_graph()
+
+func _rebuild_graph() -> void:
+    clear_connections()
+    for child in get_children(): if child is GraphNode: child.queue_free()
+    
+    # Instantiate GraphNodes and connect via connect_node(from, port, to, port)
+    # based on Resource dependency properties.
+```
+
 ## Reference
 - Master Skill: [godot-master](../SKILL.md)

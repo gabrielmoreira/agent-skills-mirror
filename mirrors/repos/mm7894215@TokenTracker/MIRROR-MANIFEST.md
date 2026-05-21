@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mm7894215/TokenTracker` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `mm7894215/TokenTracker` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mm7894215/TokenTracker` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,18 +62,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`dashboard/public/llms.txt`](dashboard/public/llms.txt) |
-| 4 | ✓ | [`skills/public/frontend-ui-functional/assets/snippets/button.tsx`](skills/public/frontend-ui-functional/assets/snippets/button.tsx) |
-| 5 | ✓ | [`skills/public/frontend-ui-functional/assets/snippets/card.tsx`](skills/public/frontend-ui-functional/assets/snippets/card.tsx) |
-| 6 | ✓ | [`skills/public/frontend-ui-functional/assets/snippets/form.tsx`](skills/public/frontend-ui-functional/assets/snippets/form.tsx) |
-| 7 | ✓ | [`skills/public/frontend-ui-functional/assets/snippets/layout.tsx`](skills/public/frontend-ui-functional/assets/snippets/layout.tsx) |
-| 8 | ✓ | [`skills/public/frontend-ui-functional/assets/snippets/lazy-route.tsx`](skills/public/frontend-ui-functional/assets/snippets/lazy-route.tsx) |
-| 9 | ✓ | [`skills/public/frontend-ui-functional/assets/snippets/zustand-store.ts`](skills/public/frontend-ui-functional/assets/snippets/zustand-store.ts) |
-| 10 | ✓ | [`skills/public/frontend-ui-functional/references/a11y-checklist.md`](skills/public/frontend-ui-functional/references/a11y-checklist.md) |
-| 11 | ✓ | [`skills/public/frontend-ui-functional/references/atomic-design.md`](skills/public/frontend-ui-functional/references/atomic-design.md) |
-| 12 | ✓ | [`skills/public/frontend-ui-functional/references/perf-and-state.md`](skills/public/frontend-ui-functional/references/perf-and-state.md) |
-| 13 | ✓ | [`skills/public/frontend-ui-functional/references/styling-tokens.md`](skills/public/frontend-ui-functional/references/styling-tokens.md) |
-| 14 | ✓ | [`skills/public/frontend-ui-functional/references/tooling.md`](skills/public/frontend-ui-functional/references/tooling.md) |
-| 15 | ✓ | [`skills/public/frontend-ui-functional/SKILL.md`](skills/public/frontend-ui-functional/SKILL.md) |
 
 ---
 

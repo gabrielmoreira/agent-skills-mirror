@@ -256,6 +256,158 @@ void fragment() {
 uniform float wave_amplitude = 0.02;
 ```
 
+---
+
+---
+
+## Expert Pattern: Deferred-Fog-Volume
+
+Create localized volumetric effects (caves, toxic clouds) using custom fog shaders that react to real-time lighting.
+
+```glsl
+// Custom Localized Fog Shader
+shader_type fog;
+
+uniform float base_density : hint_range(0.0, 10.0) = 1.0;
+uniform vec3 edge_color : source_color = vec3(0.1, 0.5, 0.8);
+
+void fog() {
+    // 1. SDF built-in contains distance to FogVolume surface
+    float distance_factor = clamp(-SDF, 0.0, 1.0);
+    
+    // 2. Smooth density falloff at volume edges
+    float edge_fade = pow(distance_factor, 2.0);
+    
+    // 3. Output to volumetric froxel buffer
+    DENSITY = base_density * edge_fade;
+    ALBEDO = edge_color;
+}
+```
+
+---
+
+## Expert Pattern: Compute-Shader-Particles
+
+Simulate massive, high-performance particle systems (boids, fluids) using the `RenderingDevice` API for raw GPGPU processing.
+
+```gdscript
+class_name ComputeParticleSim extends Node
+
+var _rd: RenderingDevice
+var _pipeline: RID
+var _buffer: RID
+
+func _ready() -> void:
+    # 1. Initialize RenderingDevice and load GLSL
+    _rd = RenderingServer.create_local_rendering_device()
+    var shader_file := load("res://particle_sim.glsl") as RDShaderFile
+    var shader_rid := _rd.shader_create_from_spirv(shader_file.get_spirv())
+    
+    # 2. Setup Storage Buffer for particle data
+    var data := PackedFloat32Array()
+    data.resize(6400) # 6400 particles
+    _buffer = _rd.storage_buffer_create(data.size() * 4, data.to_byte_array())
+    
+    # 3. Create Compute Pipeline and Uniform Set
+    var uniform := RDUniform.new()
+    uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
+    uniform.binding = 0
+    uniform.add_id(_buffer)
+    
+    var uniform_set := _rd.uniform_set_create([uniform], shader_rid, 0)
+    _pipeline = _rd.compute_pipeline_create(shader_rid)
+    
+    # 4. Dispatch (simplified for logic overview)
+    var compute_list := _rd.compute_list_begin()
+    _rd.compute_list_bind_compute_pipeline(compute_list, _pipeline)
+    _rd.compute_list_bind_uniform_set(compute_list, uniform_set, 0)
+    _rd.compute_list_dispatch(compute_list, 100, 1, 1) # 100 workgroups * 64
+    _rd.compute_list_end()
+```
+
+---
+
+## Expert Pattern: Shader-Debug-Visualizer
+
+Diagnostic tool to inspect Depth, Normals, and UVs using a full-screen post-processing quad.
+
+```glsl
+shader_type spatial;
+render_mode unshaded, fog_disabled;
+
+uniform sampler2D depth_tex : hint_depth_texture;
+uniform sampler2D norm_tex : hint_normal_roughness_texture;
+uniform int mode : hint_range(0, 2) = 0; // 0: Depth, 1: Normals, 2: UVs
+
+void vertex() {
+    POSITION = vec4(VERTEX.xy, 1.0, 1.0); // Full-screen quad
+}
+
+void fragment() {
+    if (mode == 0) {
+        float raw_depth = texture(depth_tex, SCREEN_UV).x;
+        // Convert to linear view-space depth
+        vec3 ndc = vec3(SCREEN_UV * 2.0 - 1.0, raw_depth);
+        vec4 view = INV_PROJECTION_MATRIX * vec4(ndc, 1.0);
+        view.xyz /= view.w;
+        ALBEDO = vec3(clamp(-view.z / 100.0, 0.0, 1.0));
+    } else if (mode == 1) {
+        vec3 norm = texture(norm_tex, SCREEN_UV).xyz * 2.0 - 1.0;
+        ALBEDO = (norm * 0.5) + 0.5;
+    } else {
+        ALBEDO = vec3(SCREEN_UV, 0.0);
+    }
+}
+```
+
+---
+
+## Expert Pattern: Visual-Shader-Extensibility
+
+Extend the Visual Shader editor by creating custom `VisualShaderNodeCustom` classes in GDScript to expose complex math or global functions as reusable nodes.
+
+```gdscript
+@tool
+class_name VisualShaderNodeCustomMath extends VisualShaderNodeCustom
+
+func _get_name() -> String: return "CustomPhysicsMath"
+func _get_category() -> String: return "Custom"
+func _get_return_icon_type() -> PortType: return PORT_TYPE_SCALAR
+
+func _get_input_port_count() -> int: return 2
+func _get_input_port_name(port: int) -> String: return "in_" + str(port)
+func _get_input_port_type(_port: int) -> PortType: return PORT_TYPE_SCALAR
+
+func _get_output_port_count() -> int: return 1
+func _get_output_port_name(_port: int) -> String: return "out"
+func _get_output_port_type(_port: int) -> PortType: return PORT_TYPE_SCALAR
+
+func _get_code(input_vars: Array[String], output_vars: Array[String], _mode: Shader.Mode, _type: VisualShader.Type) -> String:
+    return "%s = %s * (1.0 - %s);" % [output_vars[0], input_vars[0], input_vars[1]]
+```
+
+---
+
+## Expert Pattern: Shader-Precompilation-Warmup
+
+Prevent mid-game "shader stutter" by forcing the engine to compile and cache pipelines during a loading screen.
+
+```gdscript
+func warmup_shaders(scenes: Array[PackedScene]):
+    for scene in scenes:
+        var inst = scene.instantiate()
+        add_child(inst)
+        # Place in front of camera
+        inst.position = Vector3(0, 0, -5) 
+    
+    # Force a single-frame render to populate the pipeline cache
+    await RenderingServer.frame_post_draw
+    
+    # Cleanup
+    for child in get_children():
+        child.queue_free()
+```
+
 ## Reference
 - [Godot Docs: Shading Language](https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/shading_language.html)
 - [Godot Docs: Your First Shader](https://docs.godotengine.org/en/stable/tutorials/shaders/your_first_shader/your_first_2d_shader.html)

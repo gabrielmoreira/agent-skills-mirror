@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rstackjs/agent-skills` — 26 default patterns, 0 followed patterns, 59 file(s) materialized.
+Mirror of `rstackjs/agent-skills` — 26 default patterns, 0 followed patterns, 60 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rstackjs/agent-skills` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 59 |
+| Files         | 60 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -117,7 +117,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 56 | ✓ | [`skills/rspress-description-generator/SKILL.md`](skills/rspress-description-generator/SKILL.md) |
 | 57 | ✓ | [`skills/rspress-v2-upgrade/SKILL.md`](skills/rspress-v2-upgrade/SKILL.md) |
 | 58 | ✓ | [`skills/rstest-best-practices/SKILL.md`](skills/rstest-best-practices/SKILL.md) |
-| 59 | ✓ | [`skills/storybook-rsbuild/SKILL.md`](skills/storybook-rsbuild/SKILL.md) |
+| 59 | ✓ | [`skills/rstest-debugging/SKILL.md`](skills/rstest-debugging/SKILL.md) |
+| 60 | ✓ | [`skills/storybook-rsbuild/SKILL.md`](skills/storybook-rsbuild/SKILL.md) |
 
 ---
 

@@ -7,13 +7,14 @@ This repository is not a published game repo. It is the source for runtime skill
 - `shared/` — engine-agnostic `godogen` files, shared hook templates, and common game-repo instructions
 - `godot/` — Godot-specific `godogen` files, `godot-api`, Godot capture hook helpers, and Godot game-repo instructions
 - `bevy/` — Bevy-specific `godogen` files, `bevy-help`, Bevy capture hook helpers, and Bevy game-repo instructions
-- `publish.sh` — renders a runtime repo with `--engine {godot,bevy}` and `--agent {claude,codex}`
+- `babylon/` — Babylon.js-specific `godogen` files, `babylon-help`, Vite scaffold, browser capture hook helpers, and Babylon game-repo instructions
+- `publish.sh` — renders a runtime repo with `--engine {godot,bevy,babylon}` and `--agent {claude,codex}`
 
 Claude vs Codex is a publish-time render choice, not a source-tree split.
 
 ## Source vs Runtime
 
-- `godot/game-engine.md` and `bevy/game-engine.md` render to `CLAUDE.md` or `AGENTS.md` in published game repos.
+- `godot/game-engine.md`, `bevy/game-engine.md`, and `babylon/game-engine.md` render to `CLAUDE.md` or `AGENTS.md` in published game repos.
 - Runtime skills render to `.claude/skills/` for Claude Code and `.agents/skills/` for Codex.
 - Runtime hooks render to `.claude/hooks/` or `.codex/hooks/`.
 - Codex `agents/openai.yaml` files are generated from each skill's rendered `SKILL.md` frontmatter.
@@ -30,6 +31,11 @@ Published Bevy repos carry:
 
 - **godogen**
 - **bevy-help**
+
+Published Babylon.js repos carry:
+
+- **godogen**
+- **babylon-help**
 
 ## Editing Rules
 

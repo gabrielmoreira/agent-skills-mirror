@@ -60,7 +60,28 @@ Material-swapping logic for providing clear 'Active' feedback to players.
 ### [revival_auto_save_manager.gd](../scripts/mechanic_revival_revival_auto_save_manager.gd)
 Automatic save-trigger logic for ensuring checkpoint persistence.
 
+### [revival_spectral_shader.gdshader](../scripts/mechanic_revival_revival_spectral_shader.gdshader)
+Translucent, glowing "ghost" effect for downed players.
+
+### [revival_async_restorer.gd](../scripts/mechanic_revival_revival_async_restorer.gd)
+Smooth stat restoration logic using Tweens for organic recovery.
+
+### [revival_death_analytics.gd](../scripts/mechanic_revival_revival_death_analytics.gd)
+Persistent logging of death telemetry (cause, location, time) for balancing.
+
 ---
+
+## Expert Revival Patterns
+
+### 1. Spectral Visual Feedback
+Don't just hide the player. Use a **Spectral Shader** to communicate the "Downed" state.
+- **Implementation**: Apply a `ShaderMaterial` with additive blending and a pulsing `ALPHA` to the player mesh.
+- **Juice**: Combine with a grayscale `ColorRect` post-process effect to sell the "Spirit Realm" transition.
+
+### 2. Death Analytics Ledger
+Use **Death Analytics** to find "Difficulty Spikes".
+- **Tracking**: Log `global_position` and `cause_of_death` to a JSON file.
+- **Optimization**: Export these logs to a heatmap tool to identify areas where players are struggling.
 
 ## Reference
 - Master Skill: [godot-master](../SKILL.md)

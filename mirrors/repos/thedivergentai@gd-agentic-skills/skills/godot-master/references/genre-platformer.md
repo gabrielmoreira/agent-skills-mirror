@@ -265,5 +265,60 @@ func _process(delta: float) -> void:
 - **Shovel Knight** - Retro mechanics with modern feel
 
 
+## Advanced Platformer Mechanics
+
+Elite implementation of competitive features, procedural world-building, and specialized physics.
+
+### 1. Squash and Stretch Helper (Visual Juice)
+To apply high-fidelity visual juice, modify the scale of the character's visual node using `Tween`. This provides non-linear interpolation for bouncy, responsive movement that makes actions like jumping and landing feel physically grounded.
+
+```gdscript
+class_name GameFeelHelper extends Node
+
+func apply_squash_and_stretch(visual_node: Node2D, target_scale: Vector2, duration: float) -> void:
+    var tween := visual_node.create_tween()
+    tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+    # Squash
+    tween.tween_property(visual_node, "scale", target_scale, duration)
+    # Return to normal
+    tween.tween_property(visual_node, "scale", Vector2.ONE, duration)
+```
+
+### 2. Particle-Trails
+Enable 3D or 2D particle trails by configuring `GPUParticles3D` with the `trail_enabled` property. This creates a procedural trail of meshes or sprites that follows the player, enhancing the sense of speed and direction.
+
+```gdscript
+class_name SpeedTrail extends GPUParticles3D
+
+func toggle_trail(active: bool) -> void:
+    emitting = active
+    trail_enabled = true
+    trail_lifetime = 0.5
+    # Configure via shader or process_material for color fading
+```
+
+### 3. Checkpoint-System
+Implement a reliable checkpoint system by recording the player's `global_position` upon entering a designated `Area2D` trigger. Store the checkpoint as a `Resource` to ensure it persists across scene transitions and game restarts.
+
+```gdscript
+class_name Checkpoint extends Area2D
+
+@export var checkpoint_id: StringName
+
+func _on_body_entered(body: Node2D) -> void:
+    if body.is_in_group("player"):
+        SaveManager.current_checkpoint_pos = global_position
+        SaveManager.last_checkpoint_id = checkpoint_id
+        # Play visual/audio feedback
+        play_activation_effects()
+```
+
+**Expert Tip**: For the "Squash and Stretch" effect, ensure the visual node's pivot point is at the character's feet (bottom center) so the scaling happens from the ground up.
+
+
+## Reference
+- Master Skill: [godot-master](../SKILL.md)
+
+
 ## Reference
 - Master Skill: [godot-master](../SKILL.md)

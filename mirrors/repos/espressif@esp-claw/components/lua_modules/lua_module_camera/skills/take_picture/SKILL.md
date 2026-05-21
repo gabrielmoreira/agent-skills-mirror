@@ -40,6 +40,12 @@ Do not retry with changed arguments or run another camera script in the same tur
       "type": "integer",
       "default": 3000,
       "minimum": 0
+    },
+    "skip_frames": {
+      "type": "integer",
+      "default": 3,
+      "minimum": 0,
+      "description": "Number of warm-up frames to discard before saving the photo."
     }
   }
 }
@@ -71,10 +77,16 @@ Take a photo into a storage-root-relative directory:
 {"path":"{CUR_SKILL_DIR}/scripts/take_picture.lua","args":{"dir":"photos","filename":"latest.jpg","timeout_ms":5000}}
 ```
 
+Take a photo after discarding more warm-up frames:
+
+```json
+{"path":"{CUR_SKILL_DIR}/scripts/take_picture.lua","args":{"filename":"stable.jpg","skip_frames":5}}
+```
+
 ## Recommended Flow
 
 1. Activate the `board_hardware_info` skill and confirm that a `camera` device is listed.
 2. If no camera is listed, tell the user that the board does not declare a camera and stop.
 3. Choose a safe filename. Use the default unless the user requested a specific output name.
 4. Run `{CUR_SKILL_DIR}/scripts/take_picture.lua` with the selected `args`.
-5. Report the saved path, byte count, resolution, pixel format, and any error directly from the script output.
+5. Report the saved path, byte count, resolution, pixel format, skipped warm-up frames, and any error directly from the script output.

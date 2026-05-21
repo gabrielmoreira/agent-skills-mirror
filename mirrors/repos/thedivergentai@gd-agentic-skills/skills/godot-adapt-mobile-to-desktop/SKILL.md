@@ -462,6 +462,49 @@ sun.directional_shadow_max_distance = 200.0  # Up from 50
 - [ ] Settings persist across sessions
 - [ ] Game scales well to ultrawide monitors (21:9, 32:9)
 
+## Expert Techniques & Optimizations
+
+### 1. Standalone Desktop Launcher
+For heavy desktop builds, use a lightweight Godot "Launcher" executable. This allows users to configure settings via `ConfigFile` before spawning the main game process using `OS.create_process()`.
+
+```gdscript
+func launch_game() -> void:
+    # Save settings to user://settings.cfg
+    config.save("user://settings.cfg")
+    
+    # Spawn main game with data pack argument
+    var path := OS.get_executable_path()
+    var args := PackedStringArray(["--main-pack", "game_data.pck"])
+    var pid := OS.create_process(path, args)
+    
+    if pid > 0:
+        get_tree().quit()
+```
+
+### 2. Graphics Benchmark Mode
+Automatically suggest optimal settings by running a 5-second performance test. Use `ProjectSettings.set_setting()` to toggle high-end features like Screen Space AA or SDFGI half-resolution based on average FPS.
+
+```gdscript
+func _evaluate_benchmark(frame_count: int, duration: float) -> void:
+    var avg_fps := frame_count / duration
+    if avg_fps < 30.0:
+        # Disable heavy features
+        ProjectSettings.set_setting("rendering/anti_aliasing/quality/screen_space_aa", 0)
+        ProjectSettings.set_setting("rendering/global_illumination/gi/use_half_resolution", true)
+    
+    ProjectSettings.save_custom("user://override.cfg")
+```
+
+### 3. Steamworks Integration (GDExtension)
+While Godot doesn't natively include Steamworks, the expert approach is to use a GDExtension (like GodotSteam) to bridge the Steam SDK for cloud saves and achievements. This keeps the core engine binary small while providing deep platform integration.
+
+```gdscript
+# Example using GodotSteam GDExtension
+func _ready() -> void:
+    if Steam.steamInit().status == Steam.STEAM_OK:
+        print("Steam Cloud and Achievements Active")
+        Steam.requestStats()
+```
 
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)

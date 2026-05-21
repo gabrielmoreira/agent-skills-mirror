@@ -13,5 +13,7 @@
 - Preserve Team&Model signing on governed issue, PR, commit, and doc artifacts.
 - Use installed Megingjord skills from `$HOME/.agents/skills/` when relevant.
 - Always use the OpenAI developer documentation MCP server if you need to work with the OpenAI API, ChatGPT Apps SDK, Codex, or related docs without me having to explicitly ask.
-- Apply harness goal priority for decisions: Governance > Quality > Zero Cost > Privacy > Portability > Resilience > Throughput > Observability > Interoperability.
+- Apply harness goal priority for decisions: Governance > Quality > Zero Cost > Privacy > Portability > Resilience > Throughput > Observability > Interoperability > Maintainability.
 - HAMR routing canonical contract: `instructions/hamr-routing.instructions.md` (cost levers, /quota, /mcp, cache-hit gate). Complementary to the Global Task Router lane policy.
+- OWASP Agentic security mapping: `instructions/owasp-agentic-mapping.instructions.md` (OA1-OA10 risk-to-goal mapping; G1-G10 coverage classification).
+- Cross-team artifact-write contract: `instructions/cross-team-artifact-write.instructions.md` (target-runtime team owns schema/contract test; required before manager-handoff on cross-runtime config writes).

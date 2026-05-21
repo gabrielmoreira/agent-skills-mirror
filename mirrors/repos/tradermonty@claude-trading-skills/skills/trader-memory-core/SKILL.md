@@ -23,7 +23,36 @@ Phase 1 supports single-ticker theses: dividend_income, growth_momentum, mean_re
 
 - Python 3.10+
 - `pyyaml` (already in project dependencies)
+- `jsonschema` (already in `pyproject.toml`; required by `thesis_store.py` and every command that imports it, including `thesis_ingest.py` and `thesis_review.py`)
 - FMP API key (optional, only for MAE/MFE calculation in postmortem)
+
+### How to invoke the CLI
+
+Use the stdlib-only launcher `trader_memory_cli.py` for all CLI work. It transparently routes through `uv run --project <repo>` when `uv` is available, so the repo's pinned `jsonschema` is reachable even from a foreign cwd or from `python3` with no global `jsonschema` (e.g. cron / Hermes profile runs):
+
+```bash
+# From inside the repo
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py store --state-dir state/theses list
+
+# From any other cwd (cron, profile, distribution runner) — point the launcher at the repo
+export CLAUDE_TRADING_SKILLS_REPO=/path/to/claude-trading-skills
+python3 "$CLAUDE_TRADING_SKILLS_REPO/skills/trader-memory-core/scripts/trader_memory_cli.py" \
+  store --state-dir /path/to/state/theses list
+```
+
+Subcommands: `store` → `thesis_store.py`, `ingest` → `thesis_ingest.py`, `review` → `thesis_review.py`. Everything after the subcommand is forwarded verbatim, so existing argument flags (`--state-dir`, `transition`, `open-position`, etc.) work unchanged.
+
+If the launcher reports that `jsonschema` is not importable AND `uv` is not on `PATH`, the actionable fixes (in priority order) are:
+
+1. Install `uv` (https://docs.astral.sh/uv/) and re-run the launcher.
+2. Install the project's dependencies into the current interpreter:
+   ```bash
+   uv pip install -e /path/to/claude-trading-skills
+   # or, as a last resort:
+   python3 -m pip install jsonschema
+   ```
+
+Do **not** treat the thesis store as unavailable and do **not** mutate `state/theses/*.yaml` by hand to work around a missing dependency — schema validation is part of thesis state integrity.
 
 ## Workflow
 
@@ -32,7 +61,7 @@ Phase 1 supports single-ticker theses: dividend_income, growth_momentum, mean_re
 Read the screener's JSON output and convert to thesis using the appropriate adapter.
 
 ```bash
-python3 skills/trader-memory-core/scripts/thesis_ingest.py \
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py ingest \
   --source kanchi-dividend-sop \
   --input reports/kanchi_entry_signals_2026-03-14.json \
   --state-dir state/theses/
@@ -61,7 +90,7 @@ the `manual` source with a free-form JSON file (a single object or an array):
 ```
 
 ```bash
-python3 skills/trader-memory-core/scripts/thesis_ingest.py \
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py ingest \
   --source manual --input amd.json --state-dir state/theses/
 ```
 
@@ -81,19 +110,19 @@ chronological):
 
 ```bash
 # 1. ingest → IDEA (stamped at entry_date)
-python3 .../thesis_ingest.py --source manual --input amd.json --state-dir state/theses/
+python3 .../trader_memory_cli.py ingest --source manual --input amd.json --state-dir state/theses/
 # 2. IDEA → ENTRY_READY (backdated)
-python3 .../thesis_store.py --state-dir state/theses/ transition <id> ENTRY_READY \
+python3 .../trader_memory_cli.py store --state-dir state/theses/ transition <id> ENTRY_READY \
   --reason "existing IBI Smart position" --event-date 2026-05-02
 # 3. ENTRY_READY → ACTIVE (fractional shares, backdated)
-python3 .../thesis_store.py --state-dir state/theses/ open-position <id> \
+python3 .../trader_memory_cli.py store --state-dir state/theses/ open-position <id> \
   --actual-price 142.10 --actual-date 2026-05-02 --shares 7.86 --event-date 2026-05-02
 ```
 
 ### 2. Query — Search and list theses
 
 ```bash
-python3 skills/trader-memory-core/scripts/thesis_store.py \
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py store \
   --state-dir state/theses/ list --ticker AAPL --status ACTIVE
 ```
 
@@ -108,7 +137,7 @@ plain `YYYY-MM-DD` (widened to midnight UTC) or a full ISO timestamp.
 **State transition** (IDEA → ENTRY_READY only):
 
 ```bash
-python3 skills/trader-memory-core/scripts/thesis_store.py --state-dir state/theses/ \
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py store --state-dir state/theses/ \
   transition <id> ENTRY_READY --reason "validated" [--event-date YYYY-MM-DD]
 ```
 
@@ -119,7 +148,7 @@ Python: `thesis_store.transition(state_dir, thesis_id, "ENTRY_READY", reason, ev
 **Open position** (ENTRY_READY → ACTIVE — the only path to ACTIVE):
 
 ```bash
-python3 .../thesis_store.py --state-dir state/theses/ open-position <id> \
+python3 .../trader_memory_cli.py store --state-dir state/theses/ open-position <id> \
   --actual-price 142.10 --actual-date 2026-05-02 [--shares 7.86] [--event-date 2026-05-02]
 ```
 
@@ -130,7 +159,7 @@ python3 .../thesis_store.py --state-dir state/theses/ open-position <id> \
 CLOSED when the whole remainder is sold):
 
 ```bash
-python3 .../thesis_store.py --state-dir state/theses/ trim <id> \
+python3 .../trader_memory_cli.py store --state-dir state/theses/ trim <id> \
   --shares-sold 4 --price 120.00 --date 2026-05-10
 ```
 
@@ -152,9 +181,9 @@ fully open at runtime.
 **Close or invalidate** (→ CLOSED or INVALIDATED):
 
 ```bash
-python3 .../thesis_store.py --state-dir state/theses/ close <id> \
+python3 .../trader_memory_cli.py store --state-dir state/theses/ close <id> \
   --exit-reason target_hit --actual-price 165.00 --actual-date 2026-06-01
-python3 .../thesis_store.py --state-dir state/theses/ terminate <id> \
+python3 .../trader_memory_cli.py store --state-dir state/theses/ terminate <id> \
   --terminal-status INVALIDATED --exit-reason "thesis broke"
 ```
 
@@ -170,7 +199,7 @@ Use `thesis_store.mark_reviewed(state_dir, thesis_id, review_date=..., outcome="
 **Attach position-sizer output:**
 
 ```bash
-python3 .../thesis_store.py --state-dir state/theses/ attach-position <id> \
+python3 .../trader_memory_cli.py store --state-dir state/theses/ attach-position <id> \
   --report reports/position_report.json
 ```
 
@@ -183,7 +212,7 @@ Use `thesis_store.link_report(state_dir, thesis_id, skill, file, date)` to cross
 ### 4. Review — Check due dates and monitoring status
 
 ```bash
-python3 skills/trader-memory-core/scripts/thesis_review.py \
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py review \
   --state-dir state/theses/ review-due --as-of 2026-04-15
 ```
 
@@ -192,7 +221,7 @@ List theses with `next_review_date <= as_of`. Use with kanchi-dividend-review-mo
 ### 5. Postmortem — Close and reflect
 
 ```bash
-python3 skills/trader-memory-core/scripts/thesis_review.py \
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py review \
   --state-dir state/theses/ postmortem th_aapl_div_20260314_a3f1
 ```
 
@@ -201,7 +230,7 @@ Generate a structured postmortem in `state/journal/`. If FMP API key is availabl
 **Summary statistics:**
 
 ```bash
-python3 skills/trader-memory-core/scripts/thesis_review.py \
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py review \
   --state-dir state/theses/ summary
 ```
 

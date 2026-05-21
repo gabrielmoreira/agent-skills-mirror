@@ -209,9 +209,65 @@ func create_quest_entry(quest: Quest) -> Control:
 2. **Save Progress** - Track completed quests
 3. **Validation** - Check prerequisites before accepting
 
+---
+
+## Elite Godot 4.x Patterns
+
+### 1. Auto-Navigation Waypoint Helper
+Dynamically guide players to objectives using `NavigationAgent3D`. Update the `target_position` only when objectives change to optimize pathfinding queries.
+
+```gdscript
+# quest_waypoint_helper.gd
+class_name QuestWaypointHelper extends Node3D
+
+@export var navigation_agent: NavigationAgent3D
+
+func set_objective_pos(target_pos: Vector3) -> void:
+    navigation_agent.target_position = target_pos
+
+func _physics_process(_delta: float) -> void:
+    if navigation_agent.is_navigation_finished(): return
+    
+    var next_pos := navigation_agent.get_next_path_position()
+    # Logic to point compass or draw 3D UI towards next_pos
+```
+
+### 2. Resource-Based Quest Prerequisites
+Avoid hardcoded unlock logic. Use `Resource` references to define quest dependencies that can be visually linked in the Inspector.
+
+```gdscript
+# quest_data.gd
+class_name QuestData extends Resource
+
+@export var quest_id: StringName
+@export var prerequisites: Array[QuestData] = []
+@export var is_completed: bool = false
+
+func can_unlock() -> bool:
+    for prereq in prerequisites:
+        if not prereq.is_completed: return false
+    return true
+```
+
+### 3. Thread-Safe Quest Conflict Resolver
+In complex games with concurrent updates (e.g., background networking or parallel combat logic), use a `Mutex` to prevent race conditions when updating shared quest progress.
+
+```gdscript
+# quest_conflict_resolver.gd
+class_name QuestConflictResolver extends Node
+
+var _mutex := Mutex.new()
+var _progress_map := {}
+
+func safely_add_progress(id: StringName, amount: int) -> void:
+    _mutex.lock()
+    _progress_map[id] = _progress_map.get(id, 0) + amount
+    var current := _progress_map[id]
+    _mutex.unlock()
+    
+    # Defer signals/UI to main thread
+    call_deferred("_notify_update", id, current)
+```
+
 ## Reference
-- Related: `godot-dialogue-system`, `godot-save-load-systems`
-
-
-### Related
 - Master Skill: [godot-master](../godot-master/SKILL.md)

@@ -11,15 +11,15 @@ func _ready() -> void:
 	for i in pool_size:
 		var instance = scene_to_pool.instantiate()
 		instance.visible = false
-		instance.set_process(false)
+		instance.process_mode = Node.PROCESS_MODE_DISABLED
 		add_child(instance)
 		_pool.append(instance)
 
 func spawn(pos: Vector2):
 	for i in _pool:
-		if not i.visible:
+		if i.process_mode == Node.PROCESS_MODE_DISABLED:
 			i.global_position = pos
 			i.visible = true
-			i.set_process(true)
+			i.process_mode = Node.PROCESS_MODE_INHERIT
 			return i
 	return null # Pool exhausted

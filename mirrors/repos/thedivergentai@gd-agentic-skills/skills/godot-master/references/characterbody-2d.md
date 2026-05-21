@@ -405,9 +405,81 @@ func _physics_process(delta: float) -> void:
         can_jump = false
 ```
 
+## Expert Character Architectures
+
+### 1. Wall Cling (Variable Friction)
+To implement a professional "Wall Cling" or "Wall Slide," monitor `is_on_wall()` while the character is falling. Instead of a binary state, apply a friction scalar to the `velocity.y` to allow for varying slide speeds based on player input or surface types (Custom Data).
+
+```gdscript
+class_name WallClingController extends CharacterBody2D
+## Implements variable friction wall-clinging.
+
+@export var wall_friction: float = 0.15
+@export var gravity: float = 980.0
+
+func _physics_process(delta: float) -> void:
+    if not is_on_floor():
+        velocity.y += gravity * delta
+        
+        # Apply cling friction if moving against a wall and falling.
+        if is_on_wall() and velocity.y > 0:
+            velocity.y *= wall_friction
+            
+    move_and_slide()
+```
+
+### 2. Animation-Driven Movement (Root Motion)
+For pixel-perfect animation/physics synchronization, use the `AnimationTree` root motion API. Retrieve the motion delta from the animation track using `get_root_motion_position()` and apply it to the character's velocity. This ensures that the character's feet never slide across the ground during complex movement cycles.
+
+```gdscript
+class_name RootMotionController2D extends CharacterBody2D
+## Synchronizes physics displacement with AnimationTree root motion.
+
+@export var animation_tree: AnimationTree
+
+func _physics_process(delta: float) -> void:
+    # 1. Retrieve the 3D root motion delta (standardized API).
+    var root_motion: Vector3 = animation_tree.get_root_motion_position()
+    
+    # 2. Convert the 3D delta to a 2D velocity vector.
+    var motion_2d := Vector2(root_motion.x, root_motion.z)
+    velocity = motion_2d / delta
+    
+    move_and_slide()
+```
+
+### 3. Game-Feel Profiler (Jump Arcs)
+To debug and polish platforming "feel," implement a real-time trajectory profiler. Use the `CanvasItem._draw()` callback to plot the character's historical positions as a polyline. This allows you to visualize jump arcs, apex duration, and buffer windows to ensure the movement matches the intended design.
+
+```gdscript
+class_name GameFeelProfiler extends Node2D
+## Visualizes character jump arcs and velocity vectors for debugging.
+
+@export var character: CharacterBody2D
+var _points: PackedVector2Array = []
+
+func _process(_delta: float) -> void:
+    if not character: return
+    
+    # Capture global position relative to the debugger's origin.
+    _points.append(character.global_position - global_position)
+    if _points.size() > 100: _points.remove_at(0)
+    
+    queue_redraw()
+
+func _draw() -> void:
+    if _points.size() < 2: return
+    
+    # Draw the jump arc as a persistent polyline.
+    draw_polyline(_points, Color.CYAN, 2.0, true)
+    
+    # Draw current velocity vector.
+    draw_line(_points[-1], _points[-1] + character.velocity * 0.1, Color.YELLOW, 3.0)
+```
+
 ## Reference
 - [Godot Docs: CharacterBody2D](https://docs.godotengine.org/en/stable/classes/class_characterbody2d.html)
-- [Godot Docs: Using CharacterBody2D](https://docs.godotengine.org/en/stable/tutorials/physics/using_character_body_2d.html)
+- [Godot Docs: AnimationTree](https://docs.godotengine.org/en/stable/classes/class_animationtree.html)
 
 
 ### Related

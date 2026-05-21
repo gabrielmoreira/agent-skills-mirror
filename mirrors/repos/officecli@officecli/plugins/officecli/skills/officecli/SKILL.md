@@ -43,6 +43,26 @@ Do not use this skill for pure Q&A, rough brainstorming with no file output, or 
 - persistent configuration is handled through `officecli config ...`, not through an `init` wizard
 - default runtime mode is visible through `officecli config runtime` and can be changed with `officecli config set-runtime external|hosted`
 - hosted runtime mode uses the OfficeCLI platform service and requires a platform OfficeCLI API key with hosted credits; users should not configure or handle aigateway keys directly
+- OfficeCLI should be installed through one channel at a time; if the user already has a Homebrew-installed `officecli`, do not suggest or run `npm install -g officecli` on top of it
+
+## Authentication
+
+`officecli` supports three authentication modes:
+
+- **anonymous** — free hosted trial with limited daily quotas (default after install)
+- **account** — full hosted credits after browser login
+- **api_key** — automation credential set via `officecli set-key <api-key>`
+
+Preferred authentication flow:
+
+- run `officecli whoami` to check the current authentication mode
+- if the mode is `anonymous`, guide the user to run `officecli login` to sign in with their account
+- `officecli login` opens a browser URL with a short device code; it also works on headless or remote shells
+- for CI or automation environments where a browser is unavailable, use `officecli set-key <api-key>` instead
+- run `officecli doctor` to diagnose platform connectivity or configuration issues
+- run `officecli logout` to clear the local account session
+
+The environment check and fix scripts detect anonymous mode and surface a login recommendation automatically. When `check-officecli-env.sh` reports `"auth_mode":"anonymous"` with `"account_login"` in `missing_items`, the agent should tell the user to run `officecli login` before proceeding with generation.
 
 ## Capability Check
 
@@ -65,10 +85,12 @@ Run `fix-officecli-env.sh` on every task, not only when the environment looks br
 - the fix script should install `officecli` when it is missing, but must not refresh an existing binary unless the host explicitly opts in, for example with `OFFICECLI_REFRESH_BINARY=1`
 - when the user explicitly asks to uninstall `officecli`, run `uninstall-officecli.sh`
 - if `officecli` is missing, the fix script should auto-install it through the public dist installer
+- if the user previously installed with Homebrew and wants to switch to npm, tell them to run `brew uninstall officecli/homebrew-officecli/officecli` first; if their formula uses the short name, use `brew uninstall officecli`, then run `npm install -g officecli`
 - if generation or license config is missing, ask only for the missing values and let the fix script call the relevant `officecli config ...` commands
 - publish config is required by default so generated files return online preview URLs
 - if the user explicitly wants local-only output, set `OFFICECLI_SKIP_PUBLISH_SETUP=1` before running the fix script
 - after repair, rerun `check-officecli-env.sh` and only proceed when it returns ready
+- if `check-officecli-env.sh` reports `"auth_mode":"anonymous"`, tell the user to run `officecli login` before generating; do not silently proceed with anonymous trial quotas
 - when repair fails, surface the fix script's final structured status instead of mixing it with a later readiness check
 - if repair still fails, surface the missing items clearly instead of silently switching to another artifact path
 
@@ -114,6 +136,11 @@ When asking an agent to use `officecli`, include the details that most affect ou
 
 When the task is about setting up or fixing `officecli`, prefer the explicit config commands:
 
+- `officecli login`
+- `officecli logout`
+- `officecli whoami`
+- `officecli doctor`
+- `officecli set-key <api-key>`
 - `./check-officecli-env.sh`
 - `./fix-officecli-env.sh`
 - `./uninstall-officecli.sh`

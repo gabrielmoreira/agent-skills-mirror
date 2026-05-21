@@ -37,6 +37,9 @@ Essential flood-protection and anti-spam manager for RPC security.
 ### [net_custom_id_mapper.gd](../scripts/multiplayer_networking_net_custom_id_mapper.gd)
 Mapping utility for linking permanent UserIDs to volatile Network PeerIDs.
 
+### [net_rollback_helper.gd](../scripts/multiplayer_networking_net_rollback_helper.gd)
+Expert logic for state snapshots and re-simulation (GGR-style rollback).
+
 ## NEVER Do (Expert Networking Rules)
 
 ### Core Architecture
@@ -303,7 +306,19 @@ var target_position: Vector2
 func _process(delta: float) -> void:
     if not is_multiplayer_authority():
         position = position.lerp(target_position, 15.0 * delta)
-```
+
+## Expert Networking Patterns
+
+### 1. Multiplayer Delta-Compression
+To minimize bandwidth, only send data that has changed.
+- **Native**: Use `MultiplayerSynchronizer` with `REPLICATION_MODE_ON_CHANGE`.
+- **Manual**: Store the `last_sent_state` and only broadcast an RPC if the current state differs by a significant threshold.
+
+### 2. Network Simulator UI
+Test your game's resilience by artificially degrading the network.
+- **Latency**: Buffer outgoing/incoming RPCs in an array and delay execution.
+- **Jitter**: Randomize the delay for each packet.
+- **Packet Loss**: Use `randf() < loss_rate` to discard packets before they are processed.
 
 ## Reference
 - [Godot Docs: High-level Multiplayer](https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html)

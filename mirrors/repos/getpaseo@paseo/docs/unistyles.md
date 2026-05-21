@@ -80,6 +80,34 @@ The important detail: the automatic native path tracks `props.style`. It does no
 
 [`useUnistyles()`](https://www.unistyl.es/v3/references/use-unistyles) is different. It gives React access to the current theme/runtime and can make a component re-render when those values change. Use it for values that must be rendered through React props, such as icon colors or small escape hatches. Do not expect direct reads from `UnistylesRuntime` to re-render a component; [issue #817](https://github.com/jpudysz/react-native-unistyles/issues/817) is a useful reminder of that invariant.
 
+## Dynamic Pixel Styles On Web
+
+Avoid feeding changing pixel values such as `{ top, left }`, `{ maxHeight }`, or `{ minWidth }` into the `style` prop of Unistyles-managed React Native components on web. The web runtime hashes each distinct style object by value and appends a CSS rule to `#unistyles-web`; those rules are not reclaimed during the page lifetime, so pointer-driven positioning can turn into steady stylesheet growth.
+
+Use the inline style escape hatch below for high-churn values. Do not split a component into plain/web/native variants just to keep one measured value out of the CSS registry. Raw DOM wrappers are reserved for real DOM infrastructure, such as terminal hosts, virtualized web rows, or third-party drag wrappers.
+
+## Inline Style Escape Hatch
+
+When a style value is high-churn and must bypass Unistyles' CSS registry, keep the component on the normal Unistyles path and mark only that style object with `inlineUnistylesStyle`.
+
+```tsx
+import { inlineUnistylesStyle } from "@/styles/unistyles-inline-style";
+
+const styles = StyleSheet.create({
+  thumb: {
+    position: "absolute",
+  },
+});
+
+<View style={[styles.thumb, inlineUnistylesStyle({ height, transform: [{ translateY }] })]} />;
+```
+
+This uses Unistyles' own animated-style lane: ordinary styles still become Unistyles classes, while the marked style object stays in React Native's inline style array. Use it for measured geometry, scroll or drag transforms, and pressed/hovered/open state where generating CSS classes is the wrong ownership boundary.
+
+Do not split a component into plain and Unistyles variants just to handle one high-churn value. The component remains a normal Unistyles component; only the specific style object escapes.
+
+When a reusable component has a prop whose whole job is dynamic geometry, make that prop the seam. For example, `FloatingSurface.frameStyle` and `FloatingScrollView.style` own their own escape hatch so menu, tooltip, hover-card, and combobox callers can stay declarative instead of knowing about Unistyles internals.
+
 ## Main Gotcha: `contentContainerStyle`
 
 `ScrollView.contentContainerStyle` is the canonical trap. It looks like a style prop, but it is not the same prop that Unistyles' remapped native component registers by default. The upstream tutorial calls this out directly in its [ScrollView Background Issue](https://www.unistyl.es/v3/tutorial/settings-screen#scrollview-background-issue) section.

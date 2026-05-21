@@ -62,7 +62,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.github/instructions/octofit_tracker_django_backend.instructions.md`](.github/instructions/octofit_tracker_django_backend.instructions.md) |
 | 2 | ✓ | [`.github/instructions/octofit_tracker_react_frontend.instructions.md`](.github/instructions/octofit_tracker_react_frontend.instructions.md) |
 | 3 | ✓ | [`.github/instructions/octofit_tracker_setup_project.instructions.md`](.github/instructions/octofit_tracker_setup_project.instructions.md) |
-| 4 | ✓ | [`.github/prompts/create-django-project.prompt.md`](.github/prompts/create-django-project.prompt.md) |
+| 4 | ✓ | [`.github/prompts/create-express-logic-tier.prompt.md`](.github/prompts/create-express-logic-tier.prompt.md) |
 | 5 | ✓ | [`.github/prompts/init-populate-octofit_db.prompt.md`](.github/prompts/init-populate-octofit_db.prompt.md) |
 
 ---

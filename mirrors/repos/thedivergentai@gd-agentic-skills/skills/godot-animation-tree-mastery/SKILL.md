@@ -402,5 +402,71 @@ func _on_screen_entered() -> void:
 **Use AnimationPlayer for**: Simple animations, UI, cutscenes, props
 
 
+---
+
+## Expert Pattern: Animation-Event-Dispatcher
+
+Decouple your animation frames from specific gameplay logic by using a generalized dispatcher that passes metadata (e.g., surface type for footsteps) through signals.
+
+```gdscript
+class_name AnimationEventDispatcher extends Node
+
+signal animation_event(event_name: String, metadata: Variant)
+
+## Generic function called by AnimationPlayer Method Tracks
+func dispatch_event(event_name: String, metadata: Variant) -> void:
+    animation_event.emit(event_name, metadata)
+
+# Workflow:
+# 1. Add Method Track to animation (e.g., "walk")
+# 2. Keyframe: method="dispatch_event", args=["footstep", "stone"]
+# 3. Audio manager listens to signal and plays correct 'stone' SFX.
+```
+
+---
+
+## Expert Pattern: Procedural-In-Place-Rotation
+
+Use a `BlendTree` to procedurally blend turning animations based on rotation input, providing more natural stationary turns than simple state changes.
+
+```gdscript
+# Root -> BlendTree
+#   └─ TurnBlend (AnimationNodeBlend2)
+#       ├─ Input 0: Idle
+#       └─ Input 1: TurnRight
+
+func _physics_process(delta: float) -> void:
+    var turn_input := Input.get_axis("left", "right")
+    
+    # 0.0 = Idle, 1.0 = Full Turn
+    var blend_amount := abs(turn_input)
+    
+    # Update BlendTree parameter
+    anim_tree.set("parameters/TurnBlend/blend_amount", blend_amount)
+    
+    # Update physical rotation
+    rotate_y(-turn_input * turn_speed * delta)
+```
+
+---
+
+## Expert Pattern: Tree-Complexity-Culler
+
+Optimize massive scenes by swapping the `AnimationTree.tree_root` resource between a complex "Hero" tree and a simplified "Crowd" tree based on visibility.
+
+```gdscript
+class_name AnimationComplexityManager extends Node3D
+
+@export var hero_tree: AnimationRootNode   # Complex StateMachine
+@export var crowd_tree: AnimationRootNode  # Simple Looping Idle
+
+@onready var anim_tree: AnimationTree = $AnimationTree
+@onready var visibility: VisibleOnScreenNotifier3D = $VisibleOnScreenNotifier3D
+
+func _ready() -> void:
+    visibility.screen_entered.connect(func(): anim_tree.tree_root = hero_tree)
+    visibility.screen_exited.connect(func(): anim_tree.tree_root = crowd_tree)
+```
+
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)

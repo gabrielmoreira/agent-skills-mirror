@@ -240,14 +240,15 @@ class_name WeaponData
 @export var attack_speed: float = 1.0
 @export var special_effects: Array[StatusEffect] = []
 
-# status_effect.gd
-extends Resource
-class_name StatusEffect
-
 @export var effect_name: String
 @export var duration: float
 @export var damage_per_second: int
-```
+
+### Pattern 5b: Binary Serialization (.res vs .tres)
+For production builds, use the binary `.res` format. It is faster to save and load and provides better compression than the human-readable `.tres` format [7, 8].
+
+- **Recursion**: Godot's `ResourceSaver` automatically serializes nested sub-resources recursively. Saving the parent saves the entire tree [7].
+- **Cache Mode**: When loading, use `ResourceLoader.CACHE_MODE_REPLACE` to force a fresh reload from disk, bypassing the internal cache if data has changed [5, 6].
 
 ### Pattern 6: Resource Scripts with Signals
 
@@ -304,10 +305,12 @@ func load_all_items() -> Array[ItemData]:
 func _ready():
     stats = stats.duplicate()  # Or custom duplicate method
 
-# ❌ Bad - modifies the original resource file
-@export var stats: CharacterStats
-func _ready():
-    stats.current_health -= 10  # This changes the .tres file!
+# ✅ Best - Use Local to Scene
+# Set `resource_local_to_scene = true` in the Inspector (or script).
+# This ensures each scene instance gets its own unique copy of the resource [10].
+func _setup_local_to_scene():
+    # Use this virtual method for unique per-instance initialization [14].
+    print("Unique resource instance ready!")
 ```
 
 ### 2. Use `@export` for Inspector Editing
@@ -359,6 +362,32 @@ func load_inventory(path: String) -> Inventory:
         return ResourceLoader.load(path)
     return null
 ```
+
+## Expert Data Patterns
+
+### 1. O(1) Resource Preloader
+Avoid disk I/O hitches during gameplay by caching mission-critical assets into a Dictionary during a loading phase. This enables instant O(1) retrieval for spawning [3, 17].
+
+```gdscript
+# Global Asset Cache (Autoload)
+var _cache: Dictionary = {}
+
+func cache_asset(path: String):
+    # Use threaded loading for background processing
+    ResourceLoader.load_threaded_request(path)
+    # ... poll status ...
+    var asset = ResourceLoader.load_threaded_get(path)
+    _cache[path.get_file().get_basename()] = asset
+
+func get_asset(name: StringName) -> Resource:
+    return _cache.get(name)
+```
+
+### 2. Recursive Serialization Registry
+Building complex databases using nested Resources. The root resource (e.g. `QuestDatabase`) saves all child `QuestData` and `ObjectiveData` resources in a single `.res` file [7].
+
+### 3. Local-to-Scene Component Patterns
+Mandatory for components like `HealthComponent` or `AIConfig` that share a base `.tres` but must track unique runtime values. Setting `resource_local_to_scene = true` prevents the "Damaging one damages all" bug [10].
 
 ## Reference
 - [Godot Docs: Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html)

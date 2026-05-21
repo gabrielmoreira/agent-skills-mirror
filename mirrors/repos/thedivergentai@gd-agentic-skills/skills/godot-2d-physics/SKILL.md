@@ -410,31 +410,83 @@ func check_vision() -> void:
 
 ## Expert Techniques & Optimizations
 
-### 1. Low-Level Servers for Massive Swarms
-If you are dealing with tens of thousands of projectiles or physics objects, the SceneTree node overhead will bottleneck the CPU. Bypass the SceneTree entirely by using `PhysicsServer2D` and `RenderingServer` to create, move, and draw bodies directly in C++ or GDScript.
+### 1. Physics-Server-Batching (Low-Level Swarms)
+For massive simulations (e.g., thousands of projectiles), avoid the overhead of the SceneTree by using `PhysicsServer2D` directly. This allows you to batch movement and collision updates in a single loop, significantly reducing CPU usage by bypassing node-based lifecycle overhead.
 
-### 2. Physics Interpolation
-If your game uses a low physics tick rate to save CPU cycles (causing visible jitter), enable **Physics Interpolation** in the Project Settings. This keeps the physics tick rate low but interpolates visual transforms smoothly over rendered frames.
-
-### 3. Safe RigidBody2D Integration
 ```gdscript
-extends RigidBody2D
+class_name PhysicsBatchManager extends Node
+## Manages thousands of physics bodies directly via PhysicsServer2D.
 
-var thrust := Vector2(0, -250)
-var torque := 20000.0
+var _bodies: Array[RID] = []
 
-# According to the RigidBody2D documentation, we must use _integrate_forces 
-# to safely modify physical state without fighting the physics server.
-func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
-    if Input.is_action_pressed("ui_up"):
-        # Apply force taking current rotation into account
-        state.apply_force(thrust.rotated(rotation))
-    else:
-        state.apply_force(Vector2.ZERO)
-        
-    var rotation_dir := Input.get_axis("ui_left", "ui_right")
-    state.apply_torque(rotation_dir * torque)
+func create_bullet_swarm(count: int) -> void:
+    for i in range(count):
+        var body := PhysicsServer2D.body_create()
+        PhysicsServer2D.body_set_mode(body, PhysicsServer2D.BODY_MODE_KINEMATIC)
+        PhysicsServer2D.body_set_space(body, get_world_2d().space)
+        _bodies.append(body)
+
+func _physics_process(_delta: float) -> void:
+    # Batch update all body transforms.
+    for body in _bodies:
+        var current_transform := PhysicsServer2D.body_get_state(body, PhysicsServer2D.BODY_STATE_TRANSFORM)
+        var next_transform := current_transform.translated(Vector2.RIGHT * 5.0)
+        PhysicsServer2D.body_set_state(body, PhysicsServer2D.BODY_STATE_TRANSFORM, next_transform)
+```
+
+### 2. Multi-Shape-Sync (Compound RID Bodies)
+A single physics body can consist of multiple shapes (e.g., a shield and a character). To sync these shapes dynamically without creating multiple nodes, use `PhysicsServer2D.body_add_shape()`. This is ideal for characters with dynamic equipment or vehicles with complex, non-uniform collision volumes.
+
+```gdscript
+class_name CompoundBodySync extends Node2D
+## Synchronizes multiple shapes within a single low-level physics body.
+
+var _body: RID
+var _shapes: Array[RID] = []
+
+func _ready() -> void:
+    _body = PhysicsServer2D.body_create()
+    
+    # Add multiple collision shapes to the same body RID.
+    var circle := PhysicsServer2D.circle_shape_create()
+    PhysicsServer2D.shape_set_data(circle, 20.0)
+    PhysicsServer2D.body_add_shape(_body, circle, Transform2D.IDENTITY)
+    _shapes.append(circle)
+    
+    var box := PhysicsServer2D.rectangle_shape_create()
+    PhysicsServer2D.shape_set_data(box, Vector2(10, 50))
+    PhysicsServer2D.body_add_shape(_body, box, Transform2D.IDENTITY.translated(Vector2(30, 0)))
+    _shapes.append(box)
+```
+
+### 3. Collision-Visual-Debugger (Runtime Gizmos)
+Professional debugging requires real-time visualization of collision data that isn't visible via standard debug options. Use `CanvasItem._draw()` to render contact points and normals extracted from `KinematicCollision2D` or the physics space state.
+
+```gdscript
+class_name CollisionVisualDebugger extends Node2D
+## Renders collision normals and hit points for real-time physics debugging.
+
+var _last_collision: KinematicCollision2D
+
+func update_debug_info(collision: KinematicCollision2D) -> void:
+    _last_collision = collision
+    queue_redraw()
+
+func _draw() -> void:
+    if not _last_collision: return
+    
+    var hit_pos := to_local(_last_collision.get_position())
+    var normal := _last_collision.get_normal()
+    
+    # Draw hit point and normal vector.
+    draw_circle(hit_pos, 5.0, Color.RED)
+    draw_line(hit_pos, hit_pos + normal * 30.0, Color.GREEN, 2.0)
 ```
 
 ## Reference
+- [Godot Docs: PhysicsServer2D](https://docs.godotengine.org/en/stable/classes/class_physicsserver2d.html)
+- [Godot Docs: KinematicCollision2D](https://docs.godotengine.org/en/stable/classes/class_kinematiccollision2d.html)
+
+
+### Related
 - Master Skill: [godot-master](../godot-master/SKILL.md)

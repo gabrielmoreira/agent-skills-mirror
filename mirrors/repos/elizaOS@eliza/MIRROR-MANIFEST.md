@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `elizaOS/eliza` — 26 default patterns, 0 followed patterns, 281 file(s) materialized.
+Mirror of `elizaOS/eliza` — 26 default patterns, 0 followed patterns, 286 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `elizaOS/eliza` — 26 default patterns, 0 followed patterns, 281 file
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 281 |
+| Files         | 286 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -289,57 +289,62 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 228 | ✓ | [`packages/cloud-shared/AGENTS.md`](packages/cloud-shared/AGENTS.md) |
 | 229 | ✓ | [`packages/cloud-shared/CLAUDE.md`](packages/cloud-shared/CLAUDE.md) |
 | 230 | ✓ | [`packages/docs/plugins/skills.md`](packages/docs/plugins/skills.md) |
-| 231 | ✓ | [`packages/docs/rest/skills.md`](packages/docs/rest/skills.md) |
-| 232 | ✓ | [`packages/native/plugins/doctr-cpp/AGENTS.md`](packages/native/plugins/doctr-cpp/AGENTS.md) |
-| 233 | ✓ | [`packages/native/plugins/face-cpp/AGENTS.md`](packages/native/plugins/face-cpp/AGENTS.md) |
-| 234 | ✓ | [`packages/native/plugins/polarquant-cpu/AGENTS.md`](packages/native/plugins/polarquant-cpu/AGENTS.md) |
-| 235 | ✓ | [`packages/native/plugins/qjl-cpu/AGENTS.md`](packages/native/plugins/qjl-cpu/AGENTS.md) |
-| 236 | ✓ | [`packages/native/plugins/silero-vad-cpp/AGENTS.md`](packages/native/plugins/silero-vad-cpp/AGENTS.md) |
-| 237 | ✓ | [`packages/native/plugins/turboquant-cpu/AGENTS.md`](packages/native/plugins/turboquant-cpu/AGENTS.md) |
-| 238 | ✓ | [`packages/native/plugins/voice-classifier-cpp/AGENTS.md`](packages/native/plugins/voice-classifier-cpp/AGENTS.md) |
-| 239 | ✓ | [`packages/native/plugins/wakeword-cpp/AGENTS.md`](packages/native/plugins/wakeword-cpp/AGENTS.md) |
-| 240 | ✓ | [`packages/native/plugins/yolo-cpp/AGENTS.md`](packages/native/plugins/yolo-cpp/AGENTS.md) |
-| 241 | ✓ | [`packages/os/CLAUDE.md`](packages/os/CLAUDE.md) |
-| 242 | ✓ | [`packages/robot/AGENTS.md`](packages/robot/AGENTS.md) |
-| 243 | ✓ | [`packages/skills/skills/1password/SKILL.md`](packages/skills/skills/1password/SKILL.md) |
-| 244 | ✓ | [`packages/skills/skills/apple-notes/SKILL.md`](packages/skills/skills/apple-notes/SKILL.md) |
-| 245 | ✓ | [`packages/skills/skills/apple-reminders/SKILL.md`](packages/skills/skills/apple-reminders/SKILL.md) |
-| 246 | ✓ | [`packages/skills/skills/blucli/SKILL.md`](packages/skills/skills/blucli/SKILL.md) |
-| 247 | ✓ | [`packages/skills/skills/bluebubbles/SKILL.md`](packages/skills/skills/bluebubbles/SKILL.md) |
-| 248 | ✓ | [`packages/skills/skills/build-monetized-app/SKILL.md`](packages/skills/skills/build-monetized-app/SKILL.md) |
-| 249 | ✓ | [`packages/skills/skills/camsnap/SKILL.md`](packages/skills/skills/camsnap/SKILL.md) |
-| 250 | ✓ | [`packages/skills/skills/canvas/SKILL.md`](packages/skills/skills/canvas/SKILL.md) |
-| 251 | ✓ | [`packages/skills/skills/coding-agent/SKILL.md`](packages/skills/skills/coding-agent/SKILL.md) |
-| 252 | ✓ | [`packages/skills/skills/discord/SKILL.md`](packages/skills/skills/discord/SKILL.md) |
-| 253 | ✓ | [`packages/skills/skills/eliza-app-development/SKILL.md`](packages/skills/skills/eliza-app-development/SKILL.md) |
-| 254 | ✓ | [`packages/skills/skills/eliza-cloud-buy-domain/SKILL.md`](packages/skills/skills/eliza-cloud-buy-domain/SKILL.md) |
-| 255 | ✓ | [`packages/skills/skills/eliza-cloud-manage-domain/SKILL.md`](packages/skills/skills/eliza-cloud-manage-domain/SKILL.md) |
-| 256 | ✓ | [`packages/skills/skills/eliza-cloud/SKILL.md`](packages/skills/skills/eliza-cloud/SKILL.md) |
-| 257 | ✓ | [`packages/skills/skills/eliza/SKILL.md`](packages/skills/skills/eliza/SKILL.md) |
-| 258 | ✓ | [`packages/skills/skills/elizaos/SKILL.md`](packages/skills/skills/elizaos/SKILL.md) |
-| 259 | ✓ | [`packages/skills/skills/github/SKILL.md`](packages/skills/skills/github/SKILL.md) |
-| 260 | ✓ | [`packages/skills/skills/healthcheck/SKILL.md`](packages/skills/skills/healthcheck/SKILL.md) |
-| 261 | ✓ | [`packages/skills/skills/imsg/SKILL.md`](packages/skills/skills/imsg/SKILL.md) |
-| 262 | ✓ | [`packages/skills/skills/nano-banana-pro/SKILL.md`](packages/skills/skills/nano-banana-pro/SKILL.md) |
-| 263 | ✓ | [`packages/skills/skills/nano-pdf/SKILL.md`](packages/skills/skills/nano-pdf/SKILL.md) |
-| 264 | ✓ | [`packages/skills/skills/notion/SKILL.md`](packages/skills/skills/notion/SKILL.md) |
-| 265 | ✓ | [`packages/skills/skills/obsidian/SKILL.md`](packages/skills/skills/obsidian/SKILL.md) |
-| 266 | ✓ | [`packages/skills/skills/ordercli/SKILL.md`](packages/skills/skills/ordercli/SKILL.md) |
-| 267 | ✓ | [`packages/skills/skills/skill-creator/SKILL.md`](packages/skills/skills/skill-creator/SKILL.md) |
-| 268 | ✓ | [`packages/skills/skills/slack/SKILL.md`](packages/skills/skills/slack/SKILL.md) |
-| 269 | ✓ | [`packages/skills/skills/spotify-player/SKILL.md`](packages/skills/skills/spotify-player/SKILL.md) |
-| 270 | ✓ | [`packages/skills/skills/task-agent-eliza-bridge/SKILL.md`](packages/skills/skills/task-agent-eliza-bridge/SKILL.md) |
-| 271 | ✓ | [`packages/skills/skills/things-mac/SKILL.md`](packages/skills/skills/things-mac/SKILL.md) |
-| 272 | ✓ | [`packages/skills/skills/tmux/SKILL.md`](packages/skills/skills/tmux/SKILL.md) |
-| 273 | ✓ | [`packages/skills/skills/trello/SKILL.md`](packages/skills/skills/trello/SKILL.md) |
-| 274 | ✓ | [`packages/skills/skills/wacli/SKILL.md`](packages/skills/skills/wacli/SKILL.md) |
-| 275 | ✓ | [`packages/skills/skills/weather/SKILL.md`](packages/skills/skills/weather/SKILL.md) |
-| 276 | ✓ | [`packages/skills/skills/yara-authoring/SKILL.md`](packages/skills/skills/yara-authoring/SKILL.md) |
-| 277 | ✓ | [`packages/training/AGENTS.md`](packages/training/AGENTS.md) |
-| 278 | ✓ | [`packages/training/CLAUDE.md`](packages/training/CLAUDE.md) |
-| 279 | ✓ | [`plugins/plugin-local-inference/native/AGENTS.md`](plugins/plugin-local-inference/native/AGENTS.md) |
-| 280 | ✓ | [`plugins/plugin-local-inference/native/CLAUDE.md`](plugins/plugin-local-inference/native/CLAUDE.md) |
-| 281 | ✓ | [`plugins/plugin-local-inference/native/kokoro_training/AGENTS.md`](plugins/plugin-local-inference/native/kokoro_training/AGENTS.md) |
+| 231 | ✓ | [`packages/feed/.cursorrules`](packages/feed/.cursorrules) |
+| 232 | ✓ | [`packages/feed/.ruler/AGENTS.md`](packages/feed/.ruler/AGENTS.md) |
+| 233 | ✓ | [`packages/feed/AGENTS.md`](packages/feed/AGENTS.md) |
+| 234 | ✓ | [`packages/feed/CLAUDE.md`](packages/feed/CLAUDE.md) |
+| 235 | ✓ | [`packages/feed/docs/skills.md`](packages/feed/docs/skills.md) |
+| 236 | ✓ | [`packages/feed/skills/feed/SKILL.md`](packages/feed/skills/feed/SKILL.md) |
+| 237 | ✓ | [`packages/native/plugins/doctr-cpp/AGENTS.md`](packages/native/plugins/doctr-cpp/AGENTS.md) |
+| 238 | ✓ | [`packages/native/plugins/face-cpp/AGENTS.md`](packages/native/plugins/face-cpp/AGENTS.md) |
+| 239 | ✓ | [`packages/native/plugins/polarquant-cpu/AGENTS.md`](packages/native/plugins/polarquant-cpu/AGENTS.md) |
+| 240 | ✓ | [`packages/native/plugins/qjl-cpu/AGENTS.md`](packages/native/plugins/qjl-cpu/AGENTS.md) |
+| 241 | ✓ | [`packages/native/plugins/silero-vad-cpp/AGENTS.md`](packages/native/plugins/silero-vad-cpp/AGENTS.md) |
+| 242 | ✓ | [`packages/native/plugins/turboquant-cpu/AGENTS.md`](packages/native/plugins/turboquant-cpu/AGENTS.md) |
+| 243 | ✓ | [`packages/native/plugins/voice-classifier-cpp/AGENTS.md`](packages/native/plugins/voice-classifier-cpp/AGENTS.md) |
+| 244 | ✓ | [`packages/native/plugins/wakeword-cpp/AGENTS.md`](packages/native/plugins/wakeword-cpp/AGENTS.md) |
+| 245 | ✓ | [`packages/native/plugins/yolo-cpp/AGENTS.md`](packages/native/plugins/yolo-cpp/AGENTS.md) |
+| 246 | ✓ | [`packages/os/CLAUDE.md`](packages/os/CLAUDE.md) |
+| 247 | ✓ | [`packages/robot/AGENTS.md`](packages/robot/AGENTS.md) |
+| 248 | ✓ | [`packages/skills/skills/1password/SKILL.md`](packages/skills/skills/1password/SKILL.md) |
+| 249 | ✓ | [`packages/skills/skills/apple-notes/SKILL.md`](packages/skills/skills/apple-notes/SKILL.md) |
+| 250 | ✓ | [`packages/skills/skills/apple-reminders/SKILL.md`](packages/skills/skills/apple-reminders/SKILL.md) |
+| 251 | ✓ | [`packages/skills/skills/blucli/SKILL.md`](packages/skills/skills/blucli/SKILL.md) |
+| 252 | ✓ | [`packages/skills/skills/bluebubbles/SKILL.md`](packages/skills/skills/bluebubbles/SKILL.md) |
+| 253 | ✓ | [`packages/skills/skills/build-monetized-app/SKILL.md`](packages/skills/skills/build-monetized-app/SKILL.md) |
+| 254 | ✓ | [`packages/skills/skills/camsnap/SKILL.md`](packages/skills/skills/camsnap/SKILL.md) |
+| 255 | ✓ | [`packages/skills/skills/canvas/SKILL.md`](packages/skills/skills/canvas/SKILL.md) |
+| 256 | ✓ | [`packages/skills/skills/coding-agent/SKILL.md`](packages/skills/skills/coding-agent/SKILL.md) |
+| 257 | ✓ | [`packages/skills/skills/discord/SKILL.md`](packages/skills/skills/discord/SKILL.md) |
+| 258 | ✓ | [`packages/skills/skills/eliza-app-development/SKILL.md`](packages/skills/skills/eliza-app-development/SKILL.md) |
+| 259 | ✓ | [`packages/skills/skills/eliza-cloud-buy-domain/SKILL.md`](packages/skills/skills/eliza-cloud-buy-domain/SKILL.md) |
+| 260 | ✓ | [`packages/skills/skills/eliza-cloud-manage-domain/SKILL.md`](packages/skills/skills/eliza-cloud-manage-domain/SKILL.md) |
+| 261 | ✓ | [`packages/skills/skills/eliza-cloud/SKILL.md`](packages/skills/skills/eliza-cloud/SKILL.md) |
+| 262 | ✓ | [`packages/skills/skills/eliza/SKILL.md`](packages/skills/skills/eliza/SKILL.md) |
+| 263 | ✓ | [`packages/skills/skills/elizaos/SKILL.md`](packages/skills/skills/elizaos/SKILL.md) |
+| 264 | ✓ | [`packages/skills/skills/github/SKILL.md`](packages/skills/skills/github/SKILL.md) |
+| 265 | ✓ | [`packages/skills/skills/healthcheck/SKILL.md`](packages/skills/skills/healthcheck/SKILL.md) |
+| 266 | ✓ | [`packages/skills/skills/imsg/SKILL.md`](packages/skills/skills/imsg/SKILL.md) |
+| 267 | ✓ | [`packages/skills/skills/nano-banana-pro/SKILL.md`](packages/skills/skills/nano-banana-pro/SKILL.md) |
+| 268 | ✓ | [`packages/skills/skills/nano-pdf/SKILL.md`](packages/skills/skills/nano-pdf/SKILL.md) |
+| 269 | ✓ | [`packages/skills/skills/notion/SKILL.md`](packages/skills/skills/notion/SKILL.md) |
+| 270 | ✓ | [`packages/skills/skills/obsidian/SKILL.md`](packages/skills/skills/obsidian/SKILL.md) |
+| 271 | ✓ | [`packages/skills/skills/ordercli/SKILL.md`](packages/skills/skills/ordercli/SKILL.md) |
+| 272 | ✓ | [`packages/skills/skills/skill-creator/SKILL.md`](packages/skills/skills/skill-creator/SKILL.md) |
+| 273 | ✓ | [`packages/skills/skills/slack/SKILL.md`](packages/skills/skills/slack/SKILL.md) |
+| 274 | ✓ | [`packages/skills/skills/spotify-player/SKILL.md`](packages/skills/skills/spotify-player/SKILL.md) |
+| 275 | ✓ | [`packages/skills/skills/task-agent-eliza-bridge/SKILL.md`](packages/skills/skills/task-agent-eliza-bridge/SKILL.md) |
+| 276 | ✓ | [`packages/skills/skills/things-mac/SKILL.md`](packages/skills/skills/things-mac/SKILL.md) |
+| 277 | ✓ | [`packages/skills/skills/tmux/SKILL.md`](packages/skills/skills/tmux/SKILL.md) |
+| 278 | ✓ | [`packages/skills/skills/trello/SKILL.md`](packages/skills/skills/trello/SKILL.md) |
+| 279 | ✓ | [`packages/skills/skills/wacli/SKILL.md`](packages/skills/skills/wacli/SKILL.md) |
+| 280 | ✓ | [`packages/skills/skills/weather/SKILL.md`](packages/skills/skills/weather/SKILL.md) |
+| 281 | ✓ | [`packages/skills/skills/yara-authoring/SKILL.md`](packages/skills/skills/yara-authoring/SKILL.md) |
+| 282 | ✓ | [`packages/training/AGENTS.md`](packages/training/AGENTS.md) |
+| 283 | ✓ | [`packages/training/CLAUDE.md`](packages/training/CLAUDE.md) |
+| 284 | ✓ | [`plugins/plugin-local-inference/native/AGENTS.md`](plugins/plugin-local-inference/native/AGENTS.md) |
+| 285 | ✓ | [`plugins/plugin-local-inference/native/CLAUDE.md`](plugins/plugin-local-inference/native/CLAUDE.md) |
+| 286 | ✓ | [`plugins/plugin-local-inference/native/kokoro_training/AGENTS.md`](plugins/plugin-local-inference/native/kokoro_training/AGENTS.md) |
 
 ---
 

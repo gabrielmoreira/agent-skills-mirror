@@ -13,6 +13,7 @@ CAPABILITIES_SUMMARY:
 - ai_code_security: Heightened security review for AI-generated/vibe-coded code (45% flaw rate baseline)
 - owasp_2025_audit: Full OWASP Top 10:2025 compliance auditing with updated category mappings
 - multi_engine_consensus: Multi-scanner correlation for high-assurance targets (78% single-tool miss rate)
+- tri_engine_scan: `multi` Recipe — parallel SAST fan-out across Codex + Antigravity + Claude Code subagents with concurrence scoring (CONFIRMED 3/3 / LIKELY 2/3 / CANDIDATE 1/3); Pattern C (Concurrence-primary) — filter aggressively, every shipped finding actionable; Sentinel-strict GROUND (Plausible Hallucination check on cited sinks, lockfile reality check for CVE/CVSS, registry probe for slopsquat/typosquat, upstream-mitigation rule-out); arbitration overrides (hardcoded secret → CRITICAL, CVSS≥9 reachable → CRITICAL, unreachable → MEDIUM, framework-guaranteed → drop two tiers); engine-attribution tag mandatory per finding
 - authn_audit: Authentication audit — session management, JWT handling, OAuth/OIDC flows, MFA, password storage (OWASP A07:2025 Identification & Auth Failures, CWE-287/384/521/798)
 - authz_audit: Authorization audit — RBAC/ABAC correctness, IDOR, BOLA/BFLA, horizontal + vertical privilege escalation (OWASP A01:2025 Broken Access Control, CWE-285/639/863)
 - ai_security_audit: LLM integration static review — prompt injection, jailbreak, indirect prompt injection via retrieved content, PII leakage, unsafe tool-use boundary (OWASP LLM Top 10 2025: LLM01/LLM02/LLM06/LLM07)
@@ -170,6 +171,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Authorization Audit | `authz` | | RBAC / ABAC correctness, IDOR, BOLA/BFLA, privilege-escalation review (OWASP A01:2025) | `references/authz-audit.md`, `references/api-security.md` |
 | AI Security Audit | `aisec` | | LLM integration static review — prompt injection, PII leakage, unsafe tool-use (OWASP LLM Top 10 2025) | `references/ai-security.md`, `references/ai-code-security.md` |
 | Mobile Security | `mobile` | | MASVS v2.1.0 + MAS Checklist static audit across 8 categories, MASWE-mapped findings (MASWE-0005 hardcoded keys priority), iOS / Android secret scan beyond source (`Info.plist`, `gradle.properties`), insecure-storage / first-party-only pinning verification, MobSF integration | `references/vulnerability-patterns.md` |
+| Multi-Engine | `multi` | | Tri-engine parallel SAST (Codex + Antigravity + Claude Code in one Agent-tool message); Pattern C concurrence scoring + Sentinel-strict grounding; high-assurance scan for AI-authored code, security-critical surfaces, or whenever single-engine confidence is insufficient (78% single-tool miss rate) | `references/tri-engine-scan.md`, `_common/MULTI_ENGINE_RECIPE.md` |
 
 ## Subcommand Dispatch
 
@@ -187,6 +189,7 @@ Behavior notes per Recipe:
 - `authz`: Static audit of access-control enforcement — RBAC/ABAC correctness, missing `requireRole` / `requirePermission` wiring on handlers, IDOR (CWE-639) via unverified path/query IDs, BOLA/BFLA on REST+GraphQL resolvers, horizontal (same-role cross-tenant) and vertical (role-escalation) privilege checks, tenant-scope leaks in ORM queries. Maps to OWASP A01:2025 and CWE-285/639/863. Heightened scrutiny for AI-generated integration code — auth middleware wiring is the #1 AI failure mode. Scope boundary: Sentinel finds the missing check statically; `Probe` confirms exploitability against a live endpoint. Cross-link to `Probe` when the gap is high-confidence.
 - `aisec`: Static review of LLM integration code — prompt-template injection surfaces, output handling (markdown / HTML escaping to block rendered-prompt attacks), indirect prompt injection via retrieved content (RAG sources, tool results, user-uploaded docs), PII scrubbing before prompt assembly and before logging, tool-use boundary (allowlisted tools, parameter validation, no shell/SQL passthrough), model-output-to-action gating, rate/cost limits. Maps to OWASP LLM Top 10 2025: LLM01 Prompt Injection, LLM02 Sensitive Information Disclosure, LLM06 Excessive Agency, LLM07 System Prompt Leakage. Scope boundary: Sentinel audits the integration code path; adversarial jailbreak/red-team validation belongs to `Breach`. Cross-link to `Breach` for adversarial validation after static findings are remediated.
 - `mobile`: OWASP MASVS v2.1.0 + MAS Checklist static audit for iOS / Android apps. Walk 8 categories: **STORAGE** (Keychain `.biometryCurrentSet` + `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` for iOS secrets; Tink-encrypted DataStore for Android — flag `UserDefaults` / plain `SharedPreferences` / deprecated `EncryptedSharedPreferences` for token storage); **CRYPTO** (route algorithm/parameter design to `Crypt`; verify constant-time comparison, no custom primitives); **AUTH** (Passkey / Credential Manager wiring, Sign in with Apple alongside 3rd-party SSO, session/JWT defaults — cross-link `authn`); **NETWORK** (TLS 1.2+, first-party-only certificate pinning with ≥ 2 backup public keys; flag wide third-party pinning); **PLATFORM** (deep-link allowlist, IPC validation, WebView `javascriptEnabled` review, AT/AS hardening); **CODE** (third-party SDK CVE check, MASWE-0005 hardcoded credentials priority — scan `Info.plist` / `*.xcconfig` / `gradle.properties` / `local.properties` / `BuildConfig` / strings.xml / decompiled binary, not just source); **RESILIENCE** (root/jailbreak detection trade-offs, anti-tamper for high-risk apps only); **PRIVACY** (Required Reasons API usage, ANDROID_ID handling — cross-link `Cloak` for Privacy Manifest review). Run MobSF v4.4.2 SAST/DAST as a CI step on APK/IPA artifacts and merge findings. Scope boundary: Sentinel finds static gaps and MASWE mappings; `Probe` confirms exploitability with Frida 17+ / MobSF dynamic / Drozer; `Crypt` owns algorithm and key-management design; `Cloak` owns privacy-side compliance; `Native` implements the fix.
+- `multi`: Tri-engine parallel SAST — spawn Codex + Antigravity + Claude Code subagents in a single Agent-tool message, each runs an independent scan, results integrated via Pattern C concurrence (CONFIRMED 3/3 / LIKELY 2/3 / CANDIDATE 1/3-must-ground). PREFLIGHT engine binaries in main context before fan-out (probe `command -v` then fallback paths). GROUND every CANDIDATE with Sentinel-strict checks: Plausible Hallucination check on cited sink, lockfile reality check for dependency CVEs, registry probe for slopsquat/typosquat, upstream-mitigation rule-out. FILTER aggressively — every shipped finding must be actionable (no style-only, no already-mitigated, no hallucinated sinks). Use when AI-authored code is being reviewed, when single-engine confidence is insufficient, or when the scope is security-critical (auth/payments/PII handling). Default to `scan` for routine work; reserve `multi` for high-assurance.
 
 ## Output Routing
 
@@ -200,7 +203,7 @@ Behavior notes per Recipe:
 | `AI-generated`, `LLM`, `MCP`, `prompt injection`, `vibe coding`, `Copilot` | AI code security review — heightened scrutiny for CWE-918/798/22/78; 45% flaw rate baseline. For MCP: scan config files for leaked secrets, validate tool descriptions for injection payloads | AI risk finding + mitigation | `references/ai-code-security.md` |
 | `supply chain`, `dependency confusion`, `typosquatting`, `slopsquatting`, `lockfile` | Supply-chain attack surface audit — verify provenance, lockfile integrity, namespace squatting | Supply-chain risk report + remediation | `references/supply-chain-security.md` |
 | `SARIF`, `machine-readable` | SARIF output mode | SARIF-compatible JSON report | `references/defensive-controls.md` |
-| `multi-engine` | Multi-engine consensus scan | Merged finding set with confidence boost | `references/vulnerability-patterns.md` |
+| `multi-engine`, `tri-engine security`, `tri-engine scan`, `parallel SAST`, `cross-engine vulnerability scan`, `high-assurance scan` | Tri-engine parallel SAST fan-out (Codex + Antigravity + Claude Code subagents in one Agent-tool message) — Pattern C concurrence scoring + Sentinel-strict grounding (Plausible Hallucination, lockfile reality, registry probe, upstream-mitigation rule-out) | Engine-attributed finding set (CONFIRMED 3/3 / LIKELY 2/3 / VERIFIED 1/3-grounded), rejection ledger, AI-code section if applicable | `references/tri-engine-scan.md`, `_common/MULTI_ENGINE_RECIPE.md` |
 | `OWASP`, `audit`, `checklist` | Full OWASP Top 10 audit | Checklist-based report | `references/owasp-2025-checklist.md` |
 | `MASVS`, `MASTG`, `MASWE`, `mobile security`, `iOS security`, `Android security`, `MobSF` | Mobile static audit (MASVS v2.1.0 + MASWE) | MASVS-categorized findings + MASWE mappings + MobSF integration | `references/vulnerability-patterns.md` |
 | `Info.plist`, `gradle.properties`, `local.properties`, `xcconfig`, `BuildConfig` | Mobile binary secret scan | Hardcoded credential findings (MASWE-0005) | `references/vulnerability-patterns.md` |
@@ -297,14 +300,48 @@ Sentinel receives security-flagged artifacts from upstream agents, performs stat
 | `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing a Sentinel-specific verb (SECURE-FIX / HARDEN / MITIGATE / BREAKING-FIX / AUTH-FIX / REVOKE-AND-ROTATE / INVESTIGATE-FURTHER), or deciding whether to ship inline vs hand off. |
 | `_common/LLM_PROMPT_GENERATION.md` | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Scout/Trail/Plea. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the security report, deciding adaptive thinking depth at PRIORITIZE/FILTER, or front-loading scope at SCAN. Critical for Sentinel: P2, P5. |
+| `references/tri-engine-scan.md` | You are running the `multi` Recipe — Sentinel-specific JSON schema (cwe / owasp / cve_id / vuln_class / exploit_scenario), CLUSTER identity rules (vuln_class + file + ±5-line overlap + same OWASP bucket), SCORE rubric (CONFIRMED/LIKELY/CANDIDATE), Sentinel-strict GROUND (Plausible Hallucination check, lockfile reality, registry probe, upstream-mitigation rule-out), ARBITRATE overrides, FILTER actionable-only rule, subagent prompt skeleton. |
+| `_common/SUBAGENT.md` | You need base engine dispatch mechanics for parallel Agent-tool calls — invocation pattern, subscription-auth invariants, JSON-output mandate, fallback rules when an engine fails. |
+| `_common/MULTI_ENGINE_RECIPE.md` | You need the cross-skill canonical flow (SCOPE → PREFLIGHT → FAN-OUT → NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE → DELIVER), Pattern C/D/H rubric reference, PREFLIGHT engine-availability probe, engine-attribution tag conventions, degraded-mode matrix. |
 
 ## Multi-Engine Mode
 
-- Trigger when instructed via Nexus or the user with `multi-engine`, or when findings are ambiguous enough that multiple security engines improve confidence.
-- Use independent scans and merge by union. Dispatch each engine with minimal context: role (one line), target code, usage context, and output format. Do not preload OWASP checklists or detailed pattern catalogs.
-- Merge rules: collect all findings → deduplicate by location + type → sort by severity → boost confidence for multi-engine consensus → keep single-engine findings as lower-confidence candidates.
+Pattern type: **C — Concurrence-primary**. Different LLM engines (Codex / Antigravity / Claude) carry non-overlapping CVE / CWE / framework-specific training-data priors. Concurrence collapses false positives; the 78% single-tool miss rate (Veracode 2026) is the cost of skipping fan-out on high-assurance scans.
 
-Read `_common/SUBAGENT.md` section `MULTI_ENGINE` when this mode is requested.
+**Trigger** — activate when any of these hold:
+
+- User invokes `multi` subcommand, or says `multi-engine`, `tri-engine`, `parallel SAST`, `cross-engine`, or `high-assurance` scan
+- Nexus routes a security task with concurrence-required signal
+- Target is AI-authored code (heightened scrutiny — single engine misses absent-defense patterns)
+- Target touches auth, payments, PII, secret handling, or other security-critical surface
+- A prior single-engine scan returned an ambiguous result and the user requests cross-validation
+
+**Flow** — `SCOPE → PREFLIGHT → FAN-OUT → NORMALIZE → CLUSTER → SCORE → GROUND → ARBITRATE → FILTER → REPORT` per `references/tri-engine-scan.md`. PREFLIGHT runs in Sentinel main context only (never delegated to subagents — their inherited PATH is narrower than the user's interactive shell).
+
+**Loose prompt rule** — dispatch each engine with minimal context: role (one line), target code, axis focus, AI-authored flag, output JSON schema. Do NOT preload OWASP checklists, CWE catalogs, vulnerability-pattern references, or remediation snippets. The point of fan-out is to let each engine's training-data priors drive independent output; preloaded frameworks collapse that diversity. Frameworks apply at SYNTHESIZE.
+
+**CVE / training-data divergence** — each engine knows different CVE databases:
+
+- Codex carries GitHub Security Advisory + npm/PyPI registry advisories prominently
+- Antigravity carries Google's OSS-Vulnerability database + Wiz / Google-product CVE corpus prominently
+- Claude carries Anthropic-curated security research + general OWASP/CWE training prominently
+
+Cluster overlap across these divergent priors is high-confidence; single-engine catches after grounding are the long-tail vulnerabilities other scanners miss.
+
+**Plausible Hallucination check (Sentinel-strict)** — for every CANDIDATE finding, read the cited sink with the Read tool and verify the cited code, import, function name, CVE ID, and package name actually exist. Engines hallucinate plausible-looking sinks at non-trivial rates; for dependency findings, also confirm the lockfile pins a version inside the affected range (NOT just `package.json`). For slopsquat/typosquat findings, query the registry's JSON API for existence, publish date, and download count before shipping.
+
+**Concurrence + arbitration**:
+
+- 3/3 `CONFIRMED` → ship after one-finding spot-check
+- 2/3 `LIKELY` → ship with light grounding (existence + not-mitigated)
+- 1/3 `CANDIDATE` → MUST pass strict grounding; drop if rejected
+- Severity arbitration overrides: hardcoded secret → CRITICAL, CVSS≥9 reachable → CRITICAL, CVSS≥9 unreachable → MEDIUM, missing CSRF on session endpoint → HIGH, framework guarantee covers sink → drop two tiers or REJECT, AI-generated code + CWE-80/117/918/798 → boost one tier (per Veracode Spring 2026 failure rates)
+
+**Filter aggressively** — every shipped finding must carry: VERIFIED/LIKELY/CONFIRMED status, severity ≥ MEDIUM (or explicitly requested LOW), concrete `remediation`, concrete `exploit_scenario` for ≥ HIGH, no upstream mitigation, no style-only content. Goal: zero noise from Sentinel reports.
+
+**Degraded modes** — 1 engine missing → run other two, treat CANDIDATEs more strictly; 2 missing → single-engine, all findings CANDIDATE, ground all; all 3 fail → abort multi mode and fall back to default `scan` Recipe with reduced-confidence flag.
+
+Read `_common/MULTI_ENGINE_RECIPE.md` (cross-skill canonical flow) and `references/tri-engine-scan.md` (Sentinel-specific JSON schema, CLUSTER identity rules, SCORE rubric, GROUND checks, SYNTHESIZE merge, subagent prompt skeleton) before fan-out. Read `_common/SUBAGENT.md` §MULTI_ENGINE for base engine dispatch mechanics.
 
 ## Operational
 
@@ -327,7 +364,7 @@ _STEP_COMPLETE:
     deliverable: [primary artifact or inline report]
     artifact_type: "[Security Report | CVE Report | Fix Specification | Multi-Engine Report | SARIF Report]"
     parameters:
-      task_type: "[secret_detection | injection | headers | dependency | auth | ai_code | api_security]"
+      task_type: "[secret_detection | injection | headers | dependency | auth | ai_code | api_security | tri_engine_scan]"
       scope: "[file path(s) or component]"
       finding_severity: "[CRITICAL | HIGH | MEDIUM | LOW | ENHANCEMENT | none]"
       finding_confidence: "[HIGH | MEDIUM | LOW]"
@@ -335,6 +372,16 @@ _STEP_COMPLETE:
       fix_applied: "[true | false | partial]"
       lines_changed: "[count or 0]"
       false_positive_note: "[reason if downgraded | none]"
+    tri_engine:
+      activated: "[true | false]"
+      engines_run: "[codex, agy, claude]"
+      engines_failed: "[list or none]"
+      concurrence: "[CONFIRMED: N, LIKELY: N, VERIFIED: N (1/3-grounded)]"
+      findings_shipped: "[count after FILTER]"
+      rejected: "[count + top categories: hallucinated_sink | upstream_mitigated | framework_guaranteed | test_file_only | unreachable_dep | wrong_cwe_mapping | style_only]"
+      ai_authored_flag: "[true | false]"
+      plausible_hallucination_rejects: "[count or 0]"
+      slopsquat_rejects: "[count or 0]"
   Validations:
     - "[lint/tests pass after fix]"
     - "[issue confirmed closed or suppressed with rationale]"

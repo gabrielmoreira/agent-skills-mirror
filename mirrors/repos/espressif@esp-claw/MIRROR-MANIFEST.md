@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `espressif/esp-claw` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `espressif/esp-claw` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `espressif/esp-claw` — 26 default patterns, 0 followed patterns, 15 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,8 +72,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`components/claw_modules/claw_memory/skills/profile_memory_ops/SKILL.md`](components/claw_modules/claw_memory/skills/profile_memory_ops/SKILL.md) |
 | 12 | ✓ | [`components/common/skill_builder/skills/skill_creator/SKILL.md`](components/common/skill_builder/skills/skill_creator/SKILL.md) |
 | 13 | ✓ | [`components/common/skill_builder/skills/skills_lab_downloader/SKILL.md`](components/common/skill_builder/skills/skills_lab_downloader/SKILL.md) |
-| 14 | ✓ | [`components/lua_modules/lua_module_camera/skills/take_picture/SKILL.md`](components/lua_modules/lua_module_camera/skills/take_picture/SKILL.md) |
-| 15 | ✓ | [`components/lua_modules/lua_module_http_server/skills/http_server_lua_demo/SKILL.md`](components/lua_modules/lua_module_http_server/skills/http_server_lua_demo/SKILL.md) |
+| 14 | ✓ | [`components/common/skill_builder/skills/skills_lab_search/SKILL.md`](components/common/skill_builder/skills/skills_lab_search/SKILL.md) |
+| 15 | ✓ | [`components/lua_modules/lua_driver_touch/skills/read_touch/SKILL.md`](components/lua_modules/lua_driver_touch/skills/read_touch/SKILL.md) |
+| 16 | ✓ | [`components/lua_modules/lua_module_ble_hid/skills/ble_hid/SKILL.md`](components/lua_modules/lua_module_ble_hid/skills/ble_hid/SKILL.md) |
+| 17 | ✓ | [`components/lua_modules/lua_module_camera/skills/take_picture/SKILL.md`](components/lua_modules/lua_module_camera/skills/take_picture/SKILL.md) |
+| 18 | ✓ | [`components/lua_modules/lua_module_http_server/skills/http_server_lua_demo/SKILL.md`](components/lua_modules/lua_module_http_server/skills/http_server_lua_demo/SKILL.md) |
 
 ---
 

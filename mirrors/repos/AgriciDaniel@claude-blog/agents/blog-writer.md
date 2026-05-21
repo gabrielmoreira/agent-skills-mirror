@@ -150,7 +150,7 @@ After completing the full draft, before returning content:
 1. Self-check readability:
    - Count average sentence length (target: 15-20 words)
    - Verify no paragraph exceeds 150 words (hard limit)
-   - Check for passive voice clusters -- rewrite to active
+   - Check for passive voice clusters: rewrite to active
    - Replace jargon with plain alternatives where possible
 2. Recommend the orchestrator run a quick check (this agent does NOT have
    the Bash tool, so the check is delegated): the orchestrator can invoke
@@ -193,5 +193,5 @@ Before returning content, verify:
 - [ ] Citation capsules in major sections
 - [ ] Internal linking zones marked
 - [ ] Every embedded image URL was verified by the researcher (Verified column = Yes)
-- [ ] No page URLs used as image src -- only direct CDN/image file URLs
+- [ ] No page URLs used as image src: only direct CDN/image file URLs
 - [ ] Image alt text is a full descriptive sentence (not just keywords)

@@ -4,11 +4,15 @@
 
 This repository contains **Claude Blog**, a Tier 4 Claude Code skill for blog content
 creation, optimization, and management. It follows the Agent Skills open standard and the
-3-layer architecture (directive, orchestration, execution). 28 sub-skills, 5 specialized
-subagents, and 12 content templates are dual-optimized for Google rankings (December 2025
-Core Update, E-E-A-T) and AI citations (GEO/AEO). Includes FLOW framework integration,
-semantic topic-cluster planning + execution, and multilingual publishing (Pro Hub Challenge
-v1.7.0 community release).
+3-layer architecture (directive, orchestration, execution). 30 sub-skills, 5 specialized
+subagents, 12 content templates, and 21 reference docs are dual-optimized for Google rankings
+(December 2025 Core Update, E-E-A-T) and AI citations (GEO/AEO). Includes FLOW framework
+integration, semantic topic-cluster planning + execution, multilingual publishing (Pro Hub
+Challenge v1.7.0), BRAND.md/VOICE.md/DISCOURSE.md project-root context auto-load (v1.8.0,
+fenced via `scripts/load_untrusted_root.py` with CSPRNG nonces, v1.8.3+), CI-enforced
+prose hygiene via `scripts/lint_prose.py` (v1.8.4+), and the 5-gate Blog Delivery Contract
+(v1.9.0, `skills/blog/references/blog-delivery-contract.md`) that runs `blog_preflight.py`
++ a BLOCKING `blog-reviewer` agent between every draft and the user.
 
 ## Architecture
 
@@ -17,14 +21,22 @@ claude-blog/
   CLAUDE.md                          # Project instructions (this file)
   CONTRIBUTORS.md                    # Pro Hub Challenge attribution and integration decisions
   CHANGELOG.md                       # Keep a Changelog format
-  .claude-plugin/plugin.json         # Plugin manifest (v1.7.0)
+  .claude-plugin/plugin.json         # Plugin manifest (v1.9.0)
   .claude-plugin/marketplace.json    # Marketplace catalog for distribution
   .mcp.json                          # MCP server configuration (nanobanana-mcp)
   pyproject.toml                     # Python packaging (3.11+)
+  scripts/analyze_blog.py            # 5-category quality scoring (stdlib)
+  scripts/blog_preflight.py          # 5-gate delivery contract runner (v1.9.0)
+  scripts/blog_render.py             # md -> html -> pdf renderer; XSS-safe JSON-LD (v1.9.0)
+  scripts/cognitive_load.py          # Per-section concept-density analyzer (v1.8.0)
+  scripts/discourse_research.py      # Discourse brief synthesis from SERP JSON (v1.8.0)
+  scripts/generate_hero.py           # Hero image ladder: Banana -> Gemini -> stock -> Openverse (v1.9.0)
+  scripts/load_untrusted_root.py     # Code-enforced fence helper for BRAND/VOICE/DISCOURSE (v1.8.3)
+  scripts/lint_prose.py              # Fence-aware prose-hygiene linter (v1.8.4; CI-enforced)
   scripts/sync_flow.py               # Pulls FLOW references (stdlib, sandboxed)
-  skills/                            # 28 sub-skills (blog/ is the orchestrator)
+  skills/                            # 30 sub-skills (blog/ is the orchestrator)
     blog/SKILL.md                   # Main orchestrator, routing, scoring
-      references/                   # 14 on-demand knowledge files
+      references/                   # 21 on-demand knowledge files (5 in v1.8.0, 1 in v1.9.0)
       templates/                    # 12 content templates
       scripts/                     # Python analysis scripts
     blog-write/SKILL.md            # Write new articles from scratch
@@ -82,7 +94,7 @@ claude-blog/
     blog-seo.md                     # SEO validation
     blog-reviewer.md                # Quality scoring (no Bash, post v1.7.0 hardening)
     blog-translator.md              # Multilingual translation (no Bash, v1.7.0)
-  tests/                             # pytest suite incl. test_security_guardrails.py
+  tests/                             # pytest suite (160 tests) incl. test_blog_delivery_contract.py + test_security_guardrails.py
 ```
 
 ## Commands
@@ -116,11 +128,14 @@ claude-blog/
 | `/blog localize` | Cultural deep-adaptation per locale (v1.7.0) |
 | `/blog locale-audit` | Multilingual content QA (v1.7.0) |
 | `/blog flow` | FLOW framework prompts: find, optimize, win, prompts index, sync (v1.7.0) |
+| `/blog brand` | Generate BRAND.md + VOICE.md context auto-loaded by all sub-skills (v1.8.0) |
+| `/blog discourse` | API-free last-30-days discourse research; produces DISCOURSE.md (v1.8.0) |
+| `/blog update` | Freshness update (alias to rewrite) |
 
 ## Development Rules
 
 - Keep SKILL.md files under 500 lines / 5000 tokens
-- SKILL.md frontmatter: only valid fields (name, description, user-invokable, argument-hint, compatibility, license, metadata, disable-model-invocation). Do NOT use `allowed-tools` -- it is not a Claude Code spec field
+- SKILL.md frontmatter: only valid fields (name, description, user-invokable, argument-hint, compatibility, license, metadata, disable-model-invocation). Do NOT use `allowed-tools`; it is not a Claude Code spec field
 - New reference files should be focused and under 200 lines. Existing comprehensive references (platform-guides, schema-stack, content-templates, distribution-playbook) are exempt from this guideline
 - Scripts must have docstrings, CLI interface, and JSON output
 - Follow kebab-case naming for all skill directories
@@ -128,6 +143,8 @@ claude-blog/
 - Python 3.11+ required; dependencies in pyproject.toml
 - Test with `python -m pytest tests/` after changes
 - Run `claude plugin validate .` before pushing plugin changes
+- Run `python3 scripts/lint_prose.py` locally to catch forbidden prose chars before CI does (v1.8.4+)
+- Project-root file loading (BRAND.md/VOICE.md/DISCOURSE.md): use `scripts/load_untrusted_root.py` via Bash; never hand-roll a fence (v1.8.3+)
 - Plugin skills auto-discovered from `skills/` directory (do not list in plugin.json)
 
 ## Distribution

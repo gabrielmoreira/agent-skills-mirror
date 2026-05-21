@@ -177,5 +177,84 @@ static func format(bn: BigNumber) -> String:
 3.  **UI Lag**: Updating 50 text labels every frame. **Fix**: Only update labels when values actually change (Signal-based), or throttling updates to 10fps.
 
 
-## Reference
+---
+
+## 🚀 Elite Technical Implementations (Batch 09)
+
+### 1. BigReal-Math-Structure (Handling > 1e308)
+Idle games often exceed the limits of 64-bit floats (~1.8e308). Use a custom `RefCounted` class to store numbers in scientific notation (mantissa + exponent), allowing for virtually infinite growth.
+
+```gdscript
+class_name BigReal extends RefCounted
+
+@export var mantissa: float = 0.0
+@export var exponent: int = 0
+
+func _init(m: float = 0.0, e: int = 0) -> void:
+    mantissa = m
+    exponent = e
+    _normalize()
+
+func _normalize() -> void:
+    if mantissa == 0.0:
+        exponent = 0
+        return
+    while abs(mantissa) >= 10.0:
+        mantissa /= 10.0
+        exponent += 1
+    while abs(mantissa) < 1.0 and mantissa != 0.0:
+        mantissa *= 10.0
+        exponent -= 1
+
+func multiply(other: BigReal) -> BigReal:
+    return BigReal.new(mantissa * other.mantissa, exponent + other.exponent)
+```
+
+### 2. Multi-Offline-Progression Pattern
+Calculate retroactively what the player earned while the game was closed using `Time.get_unix_time_from_system()`. Save the timestamp to `user://` and compare it upon relaunch.
+
+```gdscript
+class_name OfflineProgressionManager extends Node
+
+signal offline_earnings_calculated(seconds_offline: float)
+const SAVE_PATH: String = "user://offline_save.json"
+
+func _ready() -> void:
+    _process_offline_time()
+
+func _process_offline_time() -> void:
+    var current_time = Time.get_unix_time_from_system()
+    var last_time = load_timestamp() # From FileAccess
+    var delta = current_time - last_time
+    
+    if delta > 60.0:
+        offline_earnings_calculated.emit(delta)
+
+func save_timestamp() -> void:
+    var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+    file.store_string(JSON.stringify({"last_time": Time.get_unix_time_from_system()}))
+```
+
+### 3. Particle-Batch-Juice (Manual Emission)
+Spawning new nodes for click-juice is expensive. Use a single `GPUParticles2D` and call `emit_particle()` manually on every click to batch spawn particles directly at the mouse coordinates.
+
+```gdscript
+class_name ClickJuiceManager extends Node2D
+
+@export var click_particles: GPUParticles2D
+
+func _input(event: InputEvent) -> void:
+    if event.is_action_pressed(&"click"):
+        var click_pos = get_global_mouse_position()
+        _burst_particles(click_pos)
+
+func _burst_particles(pos: Vector2) -> void:
+    for i in range(15):
+        var xform = Transform2D(0.0, pos)
+        var velocity = Vector2(randf_range(-200.0, 200.0), randf_range(-200.0, 200.0))
+        # Direct GPU emission bypasses SceneTree overhead
+        click_particles.emit_particle(xform, velocity, Color.WHITE, Color.WHITE, 0)
+```
+
+
 - Master Skill: [godot-master](../SKILL.md)

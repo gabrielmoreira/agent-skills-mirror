@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wasp-lang/open-saas` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `wasp-lang/open-saas` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wasp-lang/open-saas` — 26 default patterns, 0 followed patterns, 5 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,6 +64,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`template/app/.agents/skills/guided-tour/SKILL.md`](template/app/.agents/skills/guided-tour/SKILL.md) |
 | 4 | ✓ | [`template/app/AGENTS.md`](template/app/AGENTS.md) |
 | 5 | ✓ | [`template/app/CLAUDE.md`](template/app/CLAUDE.md) |
+| 6 | ✓ | [`template/app/public/llms.txt`](template/app/public/llms.txt) |
 
 ---
 

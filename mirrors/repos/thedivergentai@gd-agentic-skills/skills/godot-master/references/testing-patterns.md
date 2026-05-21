@@ -273,6 +273,62 @@ Priority:
 4. UI interactions
 ```
 
+## Expert Testing Patterns
+
+### 1. State-Snapshot-Testing (Data Regression)
+Verifying that complex game states (Inventory, Quests, Stats) remain consistent across versions.
+- **Implementation**: Serialize the target node's state into a `Dictionary`, then compare against a "Golden JSON" reference.
+    ```gdscript
+    func test_inventory_snapshot() -> void:
+        var current_state = inventory.serialize() # Returns Dictionary
+        var reference = load_json("res://tests/goldens/inventory_v1.json")
+        assert_eq(current_state, reference, "State drifted from golden reference")
+    ```
+- **Expert Note**: Use `JSON.stringify(dict, "\t")` to save snapshots with human-readable indentation for easy git diffing.
+
+### 2. Snapshot-Testing-UI (Visual Regression)
+Verifying that UI layouts remain pixel-perfect across updates.
+- **Capture**: Await `RenderingServer.frame_post_draw`, then capture the viewport's `Image`.
+- **Comparison**: Compare the raw byte data of the current image against a "golden" reference image stored in `res://tests/snapshots/`.
+
+### 2. Headless-CLI-CI (Automated Pipelines)
+Running the test suite in non-GUI environments like GitHub Actions.
+- **Flags**: Use the `--headless` engine flag to skip display server initialization.
+- **Scripted Execution**: Use `-s` to run a master test orchestrator script.
+- **Exit Codes**: Explicitly call `SceneTree.quit(0)` for success and `quit(1)` for failures. CI runners use these codes to determine pipeline pass/fail status.
+
+### 3. Fuzz-Testing-Input (Stress Analysis)
+Generating randomized inputs to catch edge-case crashes in input handlers.
+- **Implementation**: Create randomized `InputEvent` objects and inject them via `Input.parse_input_event()`.
+    ```gdscript
+    func fuzz_inputs(iterations: int = 100):
+        for i in iterations:
+            var event = InputEventKey.new()
+            event.keycode = randi_range(KEY_A, KEY_Z)
+            event.pressed = true
+            Input.parse_input_event(event)
+    ```
+- **Benefit**: Discovers unhandled null-refs or state-machine illegal transitions that manual testing misses.
+
+### 4. CI/CD-Performance-Gate (Automated Audit)
+Automatically failing builds that regress in performance metrics.
+- **Metric Tracking**: Use `Performance.get_monitor(Performance.TIME_PROCESS)` and `Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME`.
+- **Implementation**:
+    ```gdscript
+    func test_performance_bench() -> void:
+        # Run heavy gameplay simulation for 100 frames
+        await wait_frames(100)
+        var avg_draw_calls = _get_average_draw_calls()
+        assert_lt(avg_draw_calls, 500, "Draw calls exceeded budget!")
+    ```
+- **Expert Note**: Combined with `--headless`, this ensures that architectural "slop" (like material duplication) blocks the merge.
+
+### 5. Mock-Network-Provider (Local Multiplayer Testing)
+Testing RPC logic and replication without requiring a live server or second client.
+- **Implementation**: Create a `MockPeer` class that inherits from `OfflineMultiplayerPeer` or `SceneMultiplayer`.
+- **Pattern**: Override `send_packet` to redirect messages directly to the local `multiplayer.on_packet_received` signal, simulating "Loopback" networking.
+- **Benefit**: Allows unit testing of `_rpc` methods and `MultiplayerSynchronizer` state in isolation.
+
 ## Reference
 - [GUT Documentation](https://github.com/bitwes/Gut)
 

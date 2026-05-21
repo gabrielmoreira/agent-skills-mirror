@@ -2,6 +2,151 @@
 
 All notable changes to Clawd Cursor will be documented in this file.
 
+## [0.9.4] - 2026-05-20 — external-agent reliability + browser DOM reachability
+
+Two threads of work landed: a batch of reliability fixes surfaced by
+an end-to-end live test (Sonnet driving clawdcursor over MCP-HTTP
+against the public benchmark exam at clawdcursor.com/tests), and the
+first round of fixes to the external-agent UX gap that test exposed.
+
+### Live test summary
+
+The exam at `192.168.1.127:8000` (14 desktop-control tasks: clicks,
+drags, hover, double/right-click, typing, scroll-to-find, bezier path,
+keyboard combo, multi-step workflow) was passed end-to-end by Sonnet
+driving the compact MCP surface. Three runs:
+
+- baseline (no hierarchy prompt): grade A, 39 screenshots, 2 a11y calls
+- hierarchy prompted (no CDP fallback yet): grade A, 39 screenshots, 0 a11y successes — proved the underlying tools were canvas-blind
+- post-CDP-fallback + `--compact`: ~20 CDP DOM hits including ★TARGET in the scroll-to-find task (saved ~285 wheel-scroll calls)
+
+### Added — `clawdcursor agent --compact` (PR #106)
+
+Previously the 6-compound MCP surface (`computer`, `accessibility`,
+`window`, `system`, `browser`, `task`) was only reachable via
+`clawdcursor mcp --compact` (stdio, for editor integrations). The
+HTTP-MCP daemon at `:3847/mcp` was hard-coded to serve all 97 granular
+tools — which silently broke the README's "6 compact tools" pitch for
+any external agent connecting over HTTP. `clawdcursor agent --compact`
+(or `CLAWD_MCP_COMPACT=1`) now exposes the same compound surface over
+HTTP. Default stays granular because the daemon dashboard at `/` calls
+9 granular tool names directly (`scheduled_task_*`, `agent_status`,
+`submit_task`, `favorites_*`, `logs_recent`) — flipping the default
+will follow once those calls migrate to the compound `system` action
+vocabulary.
+
+### Added — CDP DOM fallback in `find_element` + `read_screen` (PR #107)
+
+Edge / Chrome UIA trees stop at browser chrome — single-page apps and
+in-page DOM widgets are invisible to pure UIA queries. When the focused
+window is a recognised browser and clawdcursor's CDP driver is
+connected, `find_element` and `read_screen` now also query the DOM via
+`document.querySelectorAll('a, button, input, …, [aria-label], [role]')`
+and fold the matches into the response. `find_element` flags CDP
+results with a `(via CDP DOM; coords are viewport-relative)` header;
+`read_screen` appends a `BROWSER DOM` section side-by-side with the
+UIA tree. The smart-layer (`smart_click` / `smart_read` / `smart_type`)
+already had this fallback; the granular tools that external agents
+prefer when explicitly told "a11y first" did not. Now they do.
+
+**Known limit.** CDP DOM only sees standard HTML elements. Canvas-
+rendered content (shapes drawn via 2D context or WebGL) remains
+vision-only and requires `computer.screenshot` + pixel coordinates.
+This is a platform limit, not a tool limit — `querySelectorAll` cannot
+enumerate pixels.
+
+### Fixed — pipeline ladder climbs past rung LLM errors (PR #104)
+
+`src/core/pipeline.ts` previously treated any "aborted" failure string
+as a hard user-abort, so a transient LLM timeout on the blind rung
+collapsed the whole chain — vision was effectively dead code on slow
+or flaky providers. Replaced the stringly-typed branch with a
+`RungFailureCategory` tagged-union (`user_abort` / `rung_llm_error` /
+`agent_gave_up` / `verifier_rejected` / `config_missing` /
+`anti_pattern` / `infra_error`) and a `categorizeFailureReason` mapper
+as the single source of truth. Chain-abort gate hard-aborts only on
+`user_abort`, `infra_error`, `anti_pattern`, or high-confidence
+`verifier_rejected`; everything else escalates to the next rung.
+
+Verified live: pointing the daemon at an unreachable LLM URL produced
+`blind → hybrid → vision` rung attempts where the previous chain-abort
+gate stopped after rung 1. Also fixed a related phantom-success bug
+where aggregate accounting could mark a task `success: true` when every
+rung had failed with `rung_llm_error`. 4 integration tests +
+7 mapper unit tests added at `src/__tests__/pipeline-chain-abort.test.ts`.
+
+### Fixed — blind-mode coordinate-click guardrail (PR #103)
+
+The autonomous agent's blind rung (a11y-only, no screenshots) was
+emitting raw `mouse_click(x, y)` calls with hallucinated coordinates
+when the a11y tree didn't contain the LLM's target — a live test
+observed it walking through an exam UI by guessing positions until the
+verifier's 0.65-confidence rejection finally fired. New block at
+`src/core/agent-loop/agent.ts:531-587`: when `mode === 'blind'` and no
+a11y-aware selector (`invoke_element`, `set_field_value`,
+`focus_element`, `a11y_select`, `a11y_toggle`, `a11y_expand`,
+`a11y_collapse`, `wait_for_element`, `find_element`) succeeded in the
+prior 2 turns, raw coordinate clicks are refused with a structured
+tool-result that points the LLM at the recovery options
+(`cannot_read` or `screenshot`). 4 regression tests at
+`src/__tests__/blind-coord-click-guard.test.ts`.
+
+### Fixed — CLI `--text-model` / `--api-key` / `--base-url` ignored (PR #105)
+
+The boot banner read these flags through `resolveConfig`
+(`src/llm/config.ts:203`) and proudly printed
+`Using externally configured models: text=X`, but the runtime agent
+loop read from `loadPipelineConfig` (`src/surface/doctor.ts:1636`)
+which only consulted `.clawdcursor-config.json` — so the very next log
+line was `pipeline.start … models=text=off`. `loadPipelineConfig` now
+accepts an optional `ResolvedConfig` overlay; fields tagged
+`source === 'cli'` override disk values. Precedence preserved
+(CLI > project > user > env > autodetect > default). The contradictory
+double banner (`No AI providers found` immediately followed by
+`Using externally configured models`) is also gone — the
+auto-detection branch is skipped when CLI flags already supply LLM
+wiring. 5 regression tests at
+`src/__tests__/load-pipeline-config-overlay.test.ts`.
+
+### Fixed — `smart_click` candidates + macOS multi-window + open_url tier + a11y description fallback (PR #102, closes #101)
+
+Four issues from issue #101:
+
+- `smart_click` now returns a structured failure payload
+  `{error, reason, target, candidates, tried, elapsedMs, isError: true}`
+  instead of bare timeout strings. Callers that hit an ambiguous target
+  can disambiguate from the candidate list; deadline-aware budget
+  replaces the bare `Promise.race` that previously swallowed diagnostic
+  state. New tests at `src/__tests__/smart-tools.test.ts`.
+
+- macOS `focus_window` now disambiguates among multiple windows of the
+  same process by title — `scripts/mac/_window-picker.jxa` plus a
+  `scoreWindow()` heuristic that deprioritises tray-style popovers
+  (Xcode "Downloads", etc.).
+
+- `open_url` was filtered out of the act-only safety tier; the
+  `safetyTier: 2 → 1` change in `src/tools/extras.ts:523` restores it.
+
+- A11y element labels now fall back through `name → description →
+  value → ''` so macOS apps that put their visible text in
+  `AXDescription` (Xcode, others) render with something meaningful
+  instead of `"missing value"`. `formatElement()` helper in
+  `src/tools/a11y.ts:25-30`.
+
+### Repo hygiene
+
+Closed security-audit issue #13 with the per-commit fix-mapping comment.
+Rejected SafeSkill scanner PR #92 (the 20/100 "Blocked" badge was
+based on a heuristic that flags ANSI terminal color escapes as
+obfuscated content — see `src/surface/cli.ts`, `src/surface/doctor.ts`,
+etc. for the 58+ legitimate ANSI escapes). Closed issue #101.
+
+Five dependabot bumps landed: `tsx` 4.21→4.22, `ws` 8.20.0→8.20.1
+(security patch), `croner` 9→10 (major, breaking change does not
+affect this codebase — only `?` wildcard semantics changed),
+`eslint` group +3 updates, `@types/node` 25.7→25.9.
+
+
 ## [0.9.3] - 2026-05-16 — tool-layer fixes + live-test report
 
 Three critical tool-layer fixes surfaced by a deep audit + a Windows

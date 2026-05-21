@@ -42,6 +42,15 @@ L-System string grammar for procedural plant and tree growth in 3D.
 ### [wfc_level_generator.gd](../scripts/procedural_generation_wfc_level_generator.gd)
 Expert Wave Function Collapse implementation with tile adjacency rules.
 
+### [proc_gen_marching_cubes_base.gd](../scripts/procedural_generation_proc_gen_marching_cubes_base.gd)
+Base class for 3D terrain generation using ArrayMesh and direct GPU vertex array committing.
+
+### [proc_gen_graph_layout.gd](../scripts/procedural_generation_proc_gen_graph_layout.gd)
+Pattern for managing logical dungeon layouts using AStar2D/3D as a directed graph.
+
+### [proc_gen_seed_history.gd](../scripts/procedural_generation_proc_gen_seed_history.gd)
+Seed and state history manager for deterministic, undoable procedural sequences.
+
 ## NEVER Do in Procedural Generation
 
 - **NEVER generate chunks on the Main Thread** — Proc-gen is CPU intensive and causes frame-rate spikes. Use `WorkerThreadPool` or a background `Thread` to keep the UI responsive.
@@ -256,6 +265,20 @@ func wfc_generate(width: int, height: int) -> Array:
 1. **Seeding** - Use seeds for reproducibility
 2. **Validation** - Ensure playable levels
 3. **Performance** - Generate async if needed
+
+## Expert Procedural Patterns
+
+### 1. 3D Terrain via ArrayMesh (Marching Cubes)
+For voxel-like or smooth organic terrain, use `ArrayMesh` to generate geometry from code.
+- **Logic**: Calculate vertices, normals, and indices in a worker thread.
+- **Commit**: Use `add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)` to create the mesh.
+- **Performance**: Use `create_trimesh_collision()` only for the current chunk to keep physics updates fast.
+
+### 2. Graph-Based Dungeon Logic
+Don't generate your dungeon geometry first. Build a logical graph using `AStar2D`.
+- **Vertices**: Represent "Rooms".
+- **Edges**: Represent "Hallways" or "Doors".
+- **Benefit**: You can easily run validation (is every room reachable?) before spawning a single mesh.
 
 ## Reference
 - Related: `godot-tilemap-mastery`, `godot-resource-data-patterns`

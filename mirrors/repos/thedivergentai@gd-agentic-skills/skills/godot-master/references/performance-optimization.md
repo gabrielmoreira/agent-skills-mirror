@@ -50,8 +50,9 @@ Staggered path update strategy for massive AI crowds to prevent pathfinding bott
 - **NEVER block the main thread for heavy operations** — Avoid `OS.delay_msec()` or long synchronous data processing. Use `WorkerThreadPool` to keep framerates steady.
 - **NEVER use complex collision shapes for physics queries** — High-poly convex shapes are expensive to resolve. Prefer simplified primitives (Circle, Rectangle, Box).
 - **NEVER forget to disconnect local lambda signals** — Anonymous lambdas connected to global signals can cause memory leaks if the capturing object is freed.
-- **NEVER use large textures without compression** — VRAM is limited. Use VRAM Compressed (S3TC/BPTC) for fast lookup and reduced memory footprint.
+- **NEVER use large textures without VRAM compression** — VRAM is limited. Use **S3TC/BPTC** for desktop (DirectX/Vulkan) and **ETC2** for mobile. Note: Disable compression for Pixel Art to avoid artifacts [13].
 - **NEVER perform tree modifications during physics steps** — Adding/removing nodes during `_inter_ray` or `_physics_process` can lock the physics server. Use `call_deferred`.
+- **NEVER skip shader pre-warming in the Compatibility renderer** — Unlike Forward+, OpenGL lacks Ubershaders. Pre-instantiate every mesh/VFX in front of the camera for 1 frame behind a loading screen to avoid hitches [21].
 
 ---
 
@@ -92,13 +93,28 @@ func _on_screen_entered() -> void:
     set_process(true)
 ```
 
-### Reduce Draw Calls
+### AStar-Throttler (Pathfinding Budget)
+Spreading pathfinding costs over multiple frames to prevent frame-time spikes.
+- **Implementation**:
+    ```gdscript
+    var _query_queue: Array[Callable] = []
+    const TIME_BUDGET_USEC := 1000 # 1ms budget
 
-```
-# Use TextureAtlas (sprite sheets)
-# Batch similar materials
-# Fewer unique textures
-```
+    func _process(_delta):
+        var start_time := Time.get_ticks_usec()
+        while not _query_queue.is_empty() and (Time.get_ticks_usec() - start_time) < TIME_BUDGET_USEC:
+            var query = _query_queue.pop_front()
+            query.call()
+    ```
+
+### Shader-Preloading (Zero-Hitch Strategy)
+- **Forward+ / Mobile**: Godot 4.4+ uses **Ubershaders** for automatic precompilation. Ensure scenes are instantiated at least once (even if invisible) at load-time to trigger pipeline detection [19].
+- **Compatibility (OpenGL)**: Place a hidden `Camera3D` looking at a small area containing every unique mesh and material in your project for 1 frame during the loading screen [20].
+
+### VRAM Compression Guide
+- **S3TC (Desktop)**: Best for high-quality textures on Windows/Linux/macOS.
+- **BPTC (Desktop)**: Superior quality for HDR and normal maps; slightly higher VRAM usage.
+- **ETC2 (Mobile)**: The standard for Android/iOS; ensure textures are opaque where possible for maximum compatibility [13].
 
 ## Reference
 - [Godot Docs: Performance Optimization](https://docs.godotengine.org/en/stable/tutorials/performance/general_optimization.html)

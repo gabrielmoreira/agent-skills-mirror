@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.*
+
+# Output
+output/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Internal
+.sisyphus

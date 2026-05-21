@@ -432,5 +432,98 @@ func _ready() -> void:
     distance_fade_length = 5.0
 ```
 
+---
+
+## Expert Pattern: Light-Volume-Trigger
+
+Smoothly transition between lighting environments (e.g., entering a dark cave from a bright desert) using `Area3D` triggers and `Tween`-driven `Camera3D` overrides.
+
+```gdscript
+class_name LightVolumeTrigger extends Area3D
+
+@export var interior_environment: Environment
+@export var transition_duration: float = 2.0
+
+func _ready() -> void:
+    body_entered.connect(_on_body_entered)
+    body_exited.connect(_on_body_exited)
+
+func _on_body_entered(body: Node3D) -> void:
+    if body.is_in_group("player"):
+        var camera := get_viewport().get_camera_3d()
+        # Duplicate to avoid modifying the original resource
+        if not camera.environment:
+            camera.environment = interior_environment.duplicate()
+            
+        var tween := create_tween().set_parallel(true)
+        # Interpolate key properties for visual adaptation
+        tween.tween_property(camera.environment, "tonemap_exposure", interior_environment.tonemap_exposure, transition_duration)
+        tween.tween_property(camera.environment, "ambient_light_energy", interior_environment.ambient_light_energy, transition_duration)
+
+func _on_body_exited(body: Node3D) -> void:
+    # Reverse tween or clear camera environment to return to WorldEnvironment
+    pass
+```
+
+> [!TIP]
+> Place a `ReflectionProbe` inside the interior with `interior = true`. Godot will automatically blend this with the exterior environment as the player transitions.
+
+---
+
+## Expert Pattern: Interior-Mapping (Fake-Rooms)
+
+Use shaders to create the illusion of 3D rooms inside flat window planes. This is significantly more performant than rendering actual geometry for every building interior.
+
+```glsl
+shader_type spatial;
+
+// Texture array containing wall/floor/ceiling layers
+uniform sampler2DArray room_textures;
+uniform vec3 room_dimensions = vec3(1.0, 1.0, 1.0);
+
+void fragment() {
+    // 1. Transform view vector into object space
+    vec3 view_dir = normalize(VIEW * mat3(INV_VIEW_MATRIX * MODEL_MATRIX));
+    
+    // 2. Ray-box intersection (Simplified logic)
+    // Calculate the 'depth' of the fake room based on view angle
+    vec3 pos = vec3(UV * 2.0 - 1.0, 0.0);
+    vec3 id = 1.0 / view_dir;
+    // ... complex ray-casting math ...
+    
+    // 3. Sample the texture array
+    // Z component selects the specific room variation or wall type
+    ALBEDO = texture(room_textures, vec3(UV, 0.0)).rgb;
+}
+```
+
+---
+
+## Expert Pattern: Lighting-Quality-Settings
+
+Manage complex lighting features (Shadows, SDFGI, Fog) at runtime using the `RenderingServer` API for direct engine control.
+
+```gdscript
+class_name LightingQualityManager extends Node
+
+func apply_low_quality_profile(env_rid: RID) -> void:
+    # 1. SDFGI Optimization
+    # Huge performance gain: Render GI buffers at half resolution
+    RenderingServer.gi_set_use_half_resolution(true)
+    RenderingServer.environment_set_sdfgi_ray_count(RenderingServer.ENV_SDFGI_RAY_COUNT_4)
+    RenderingServer.environment_set_sdfgi_frames_to_converge(RenderingServer.ENV_SDFGI_CONVERGE_IN_30_FRAMES)
+    
+    # 2. Shadow Optimization
+    # Reduce global directional shadow atlas
+    RenderingServer.directional_shadow_atlas_set_size(2048, true)
+    RenderingServer.directional_soft_shadow_filter_set_quality(RenderingServer.SHADOW_QUALITY_SOFT_VERY_LOW)
+    # Reduce positional (Omni/Spot) shadows for current viewport
+    get_viewport().positional_shadow_atlas_size = 1024
+    
+    # 3. Volumetric Fog
+    # Disable or heavily reduce fog detail
+    RenderingServer.environment_set_volumetric_fog(env_rid, false, 0.01, Color.WHITE, Color.BLACK, 0.0, 0.2, 64.0, 2.0, 1.0, true, 0.9, 0.0, 1.0)
+```
+
 ## Reference
 - Master Skill: [godot-master](../SKILL.md)

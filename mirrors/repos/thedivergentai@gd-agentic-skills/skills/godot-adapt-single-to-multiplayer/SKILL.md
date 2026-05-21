@@ -54,6 +54,9 @@ Robust script for P2P network discovery and automatic port forwarding via UPNP.
 ### [net_debug_overlay_monitor.gd](scripts/net_debug_overlay_monitor.gd)
 In-game diagnostic overlay reporting RTT (Ping), Packet Loss, and Jitter.
 
+### [net_lag_compensation.gd](scripts/net_lag_compensation.gd)
+Expert server-side state rewinding (Lag Compensation) for accurate hit-registration.
+
 ### [net_lobby_late_join_sync.gd](scripts/net_lobby_late_join_sync.gd)
 Professional state-initialization logic to bridge 'Late Joiners' into a synced session.
 
@@ -310,6 +313,20 @@ func _on_position_synced(new_pos: Vector2) -> void:
     position_buffer.append(new_pos)
     if position_buffer.size() > BUFFER_SIZE:
         position_buffer.pop_front()
+
+### Server-Side Lag Compensation (Hit Rewind)
+
+To ensure clients can hit targets accurately despite latency, the server must "rewind" the world state to the exact moment the client fired.
+
+**Expert Pattern:**
+1. **Record History**: Store global transforms of all hit-able entities (players, enemies) in a rolling buffer indexed by `Engine.get_physics_frames()`.
+2. **Hit Request**: Client sends a "Fire" RPC including the `tick` when they pressed the button.
+3. **Rewind**: Server retrieves the state for that `tick`, temporarily moves all RIDs back to those transforms via `PhysicsServer3D.body_set_state()`.
+4. **Validate**: Perform a raycast query.
+5. **Restore**: Move all RIDs back to their "present day" transforms.
+
+> [!TIP]
+> Always use `PhysicsServer3D` directly for rewinding to bypass `SceneTree` overhead and prevent unwanted signal/node update cascades.
 ```
 
 ---
@@ -408,6 +425,21 @@ func _ready() -> void:
 | Lag tolerance | Medium (prediction helps) | Low (desyncs) |
 | Development complexity | High | Medium |
 
+
+## Advanced Networking Topics
+
+### Peer-to-Peer NAT Traversal (Hole Punching)
+In P2P architectures, clients often sit behind firewalls. **UPNP** (Universal Plug and Play) is the first line of defense, allowing the game to request port forwarding from the router automatically using `net_upnp_discovery_logic.gd`.
+
+For cases where UPNP fails:
+- **STUN/TURN**: Use a STUN server to discover public IP/port pairings.
+- **Relay Servers**: If direct connection is impossible, fallback to a relay server (TURN) to bridge the two peers.
+
+### Network Profiling & Visualization
+Visualizing the packet timeline is critical for debugging jitter. Propose an overlay that graphs:
+- **Packet Arrival**: A scrolling timeline showing when packets arrive relative to physics frames.
+- **Buffer Health**: A visualization of the interpolation jitter buffer size.
+- **RTT (Round Trip Time)**: Real-time graph of latency spikes.
 
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)

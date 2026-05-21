@@ -1,0 +1,29 @@
+# AuthOS Skills
+
+Source-verified Agent Skills for AuthOS, rewritten from the current AuthOS source code rather than project documentation.
+
+Main site: https://authos.dev/
+Documentation: https://authos.dev/docs/
+AI Agent Skills guide: https://authos.dev/docs/ai-agent-skills/
+AuthOS source repository: https://github.com/drmhse/AuthOS
+
+## Platform
+
+- [authos-platform-deployment](authos-platform-deployment/SKILL.md): Deploy and configure AuthOS API runtimes, database backends, JWT keys, billing provider env, Docker images, and health checks.
+- [authos-platform-maintenance](authos-platform-maintenance/SKILL.md): Maintain health/readiness, metrics, jobs, webhook delivery failures, token refresh, MFA metrics, database behavior, and key rotation.
+- [authos-tenancy-governance](authos-tenancy-governance/SKILL.md): Govern tenant lifecycle, tiers, feature overrides, platform owners, impersonation, analytics, operations status, and audit logs.
+
+## Tenant Administration
+
+- [authos-identity-configuration](authos-identity-configuration/SKILL.md): Configure organization OAuth, upstream enterprise providers, domain routes, branding, custom domains, SMTP, SAML IdP, passkeys, MFA, and provider-token reauth.
+- [authos-service-management](authos-service-management/SKILL.md): Manage services, client credentials, redirect URIs, device activation URIs, plans, API keys, SAML configuration, and checkout.
+- [authos-rbac-control](authos-rbac-control/SKILL.md): Manage organization roles, capability strings, members, invitations, service access grants, and SCIM tokens.
+- [authos-compliance-automation](authos-compliance-automation/SKILL.md): Use privacy export/anonymization, tenant and platform audit logs, SIEM config, risk events, and MFA evidence surfaces.
+
+## Application Integration
+
+- [authos-web-integration](authos-web-integration/SKILL.md): Integrate browser, React, Vue, and TypeScript apps with OAuth redirects, callback fragments, password auth, magic links, passkeys, MFA, and token refresh.
+- [authos-backend-integration](authos-backend-integration/SKILL.md): Verify AuthOS JWTs through JWKS and `@drmhse/authos-node`, including Express middleware and backend session exchange.
+- [authos-service-api-integration](authos-service-api-integration/SKILL.md): Consume trusted service API routes with `X-Api-Key` for users, subscriptions, analytics, service info, and provider-token requests.
+- [authos-device-flow](authos-device-flow/SKILL.md): Implement device authorization through `/auth/device/code`, `/auth/device/verify`, and `/auth/token`.
+- [authos-webhook-integration](authos-webhook-integration/SKILL.md): Configure tenant webhooks, subscribe to current event types, verify live HMAC headers, and inspect delivery history.

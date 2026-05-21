@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,13 +83,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`dd-llmo/llm-obs-eval-bootstrap/SKILL.md`](dd-llmo/llm-obs-eval-bootstrap/SKILL.md) |
 | 23 | ✓ | [`dd-llmo/llm-obs-eval-pipeline/SKILL.md`](dd-llmo/llm-obs-eval-pipeline/SKILL.md) |
 | 24 | ✓ | [`dd-llmo/llm-obs-experiment-analyzer/SKILL.md`](dd-llmo/llm-obs-experiment-analyzer/SKILL.md) |
-| 25 | ✓ | [`dd-llmo/llm-obs-session-classify/SKILL.md`](dd-llmo/llm-obs-session-classify/SKILL.md) |
-| 26 | ✓ | [`dd-llmo/llm-obs-trace-rca/SKILL.md`](dd-llmo/llm-obs-trace-rca/SKILL.md) |
-| 27 | ✓ | [`dd-logs/SKILL.md`](dd-logs/SKILL.md) |
-| 28 | ✓ | [`dd-monitors/SKILL.md`](dd-monitors/SKILL.md) |
-| 29 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
-| 30 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
-| 31 | ✓ | [`SKILL.md`](SKILL.md) |
+| 25 | ✓ | [`dd-llmo/llm-obs-experiment-py-bootstrap/SKILL.md`](dd-llmo/llm-obs-experiment-py-bootstrap/SKILL.md) |
+| 26 | ✓ | [`dd-llmo/llm-obs-session-classify/SKILL.md`](dd-llmo/llm-obs-session-classify/SKILL.md) |
+| 27 | ✓ | [`dd-llmo/llm-obs-trace-rca/SKILL.md`](dd-llmo/llm-obs-trace-rca/SKILL.md) |
+| 28 | ✓ | [`dd-logs/SKILL.md`](dd-logs/SKILL.md) |
+| 29 | ✓ | [`dd-monitors/SKILL.md`](dd-monitors/SKILL.md) |
+| 30 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
+| 31 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
+| 32 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

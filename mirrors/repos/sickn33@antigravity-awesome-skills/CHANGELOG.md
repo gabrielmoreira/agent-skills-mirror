@@ -9,6 +9,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [11.4.1] - 2026-05-20 - "Installer Supply-Chain Hardening"
+
+> Patch release for the npm installer used by Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+This release hardens the npm installer after reviewing Socket.dev's AI-detected code-anomaly warning for `tools/bin/install.js`.
+
+## Improvements
+
+- **release-pinned installs** - default `npx antigravity-awesome-skills` installs now clone the matching package release tag instead of the repository tip, reducing drift between npm package contents and installed skills.
+- **git ref validation** - `--tag` and `--version` refs are validated before invoking `git clone`, while still allowing explicit branch installs such as `--tag main`.
+- **destination symlink guard** - installer copy operations now refuse to write through pre-existing destination symlinks.
+- **installer docs and regression coverage** - documents the release-pinned default and adds installer tests for release-tag resolution and unsafe ref rejection.
+
+## Who should care
+
+- **npm users** get installer behavior that is pinned to the published package version by default.
+- **security scanners and maintainers** get a narrower supply-chain surface for the installer path Socket flagged.
+
+## [11.4.0] - 2026-05-20 - "Mercury MCP, Photopea Embeds, and Codex Bundle Names"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills`
+- Choose your tool: [README -> Choose Your Tool](https://github.com/sickn33/antigravity-awesome-skills#choose-your-tool)
+- Best skills by tool: [README -> Best Skills By Tool](https://github.com/sickn33/antigravity-awesome-skills#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/workflows.md)
+
+This release merges PR #598 and PR #601 through the maintainer workflow, fixes issue #597 by shortening Codex bundle plugin identifiers, and reduces antivirus false-positive risk in the Linux privilege-escalation guidance from issue #600.
+
+## New Skills
+
+- **mercury-mcp** - lookup reference for Mercury MCP tools covering messages, threads, tasks, automations, agent context, and admin-scoped team graph tools.
+- **photopea-embedded-editor** - web-app integration guide for embedding Photopea with `photopea.js`, file loading, scripting, exports, layers, text, selections, and template editing patterns.
+
+## Improvements
+
+- **Codex bundle names** - generated Codex bundle plugins now use compact `agyb-*` names while preserving existing repo-local source directories, keeping qualified skill names within the 64-character loader limit.
+- **bundle regression tests** - adds coverage that every generated Codex bundle plugin name and `plugin:skill` qualified name stays within the 64-character limit.
+- **security skill false-positive reduction** - replaces a pipe-to-shell LinPEAS example with download, inspect, chmod, and explicit execution steps for authorized labs.
+- **generated artifact sync** - refreshes catalog, skill index, plugin mirrors, web assets, contributor credits, package metadata, and visible skill counts to `1,462+`.
+
+## Who should care
+
+- **Codex CLI users** can enable editorial bundles without losing valid skills to long qualified plugin names.
+- **MCP users** get a compact Mercury tool reference for agent messaging, task tracking, and automations.
+- **Web app builders** get a practical Photopea embedding guide for browser-based image editing workflows.
+- **Security learners and maintainers** get safer documentation patterns that are less likely to trigger local antivirus heuristics.
+
+## Credits
+
+- **[@boeto](https://github.com/boeto)** for issue #597 and the concrete Codex bundle-name reproduction.
+- **[@WagnerFFreitas](https://github.com/WagnerFFreitas)** for issue #600 and the Norton false-positive report.
+- **[@Karthikeya-Meesala](https://github.com/Karthikeya-Meesala)** for PR #598 (`mercury-mcp`).
+- **[@bulkmockupsfiller-ai](https://github.com/bulkmockupsfiller-ai)** and **[@abdul-karim-mia](https://github.com/abdul-karim-mia)** for PR #601 (`photopea-embedded-editor`).
+
 ## [11.3.0] - 2026-05-16 - "Discovery Manifests and Recommendation Pipelines"
 
 > Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.

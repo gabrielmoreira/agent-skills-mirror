@@ -90,6 +90,53 @@ $Label.add_theme_font_override("font", font)
 $Label.add_theme_font_size_override("font_size", 24)
 ```
 
+## Expert Theming Patterns
+
+### 1. Shared-Color-Palette (The Static Pattern)
+Maintain a single source of truth for UI colors accessible to both the Theme Editor and GDScript.
+- **Theme Setup**: In your `.theme` file, create a custom type called `Palette` and add `Color` items (e.g., `primary`, `danger`, `accent`).
+- **Static Access**: Use a `SharedPalette` class with `static func get_primary() -> Color` that pulls from `ThemeDB.get_project_theme()`. This ensures UI scripts and the visual theme never drift.
+
+### 2. Theme-Type-Variations
+Avoid duplicating button scenes or styleboxes for variants like "Danger" or "Ghost" styles.
+- **Implementation**: In the Theme Editor, create a new **Type Variation**. Set its **Base Type** to `Button`.
+- **Inheritance**: The variation inherits all properties from the base type. You only override what's different (e.g., set `font_color` to red for `DangerButton`).
+- **Usage**: Assign via code `node.theme_type_variation = &"DangerButton"` or via the Inspector dropdown.
+
+### 3. Runtime-Theme-Swapping (Accessibility)
+Efficiently switch the visual style of the entire game for Light, Dark, or High-Contrast modes.
+- **Cascading Updates**: Assign a new `Theme` resource to the **root** Control node. Godot propagates this to every descendant.
+- **Accessibility**: Use `NOTIFICATION_THEME_CHANGED` to update elements that don't support automatic theming (like custom `_draw()` logic or RichText effects).
+- **High-Contrast**: Ensure High-Contrast themes use pure black/white and thicker focus outlines for low-vision accessibility.
+
+### 4. Themed-Asset-Loading (Seasonal Variants)
+Godot Themes support more than just colors and fonts—they can store textures.
+- **Setup**: Define UI icons as **Icon** items within separate Theme resources (e.g., `halloween.theme`, `christmas.theme`).
+- **Swapping**: Swapping the root theme resource instantly cascades the new icon textures across all buttons and panels without manual logic.
+
+### 5. UI-Focus-Manager (Dynamic Controller Icons)
+Standard focus styles are static. For professional UX, swap controller icons based on the connected device.
+- **Detection**: Use `Input.get_joy_name(device)` to identify the controller (e.g., "PS4 Controller", "Xbox One Controller").
+- **Implementation**:
+    ```gdscript
+    func _on_joy_connection_changed(device: int, connected: bool):
+        if connected:
+            var joy_name = Input.get_joy_name(device).to_lower()
+            if "xbox" in joy_name:
+                _set_prompt_icons("res://ui/icons/xbox/")
+            elif "playstation" in joy_name or "ps" in joy_name:
+                _set_prompt_icons("res://ui/icons/ps/")
+    ```
+- **Interpolation**: When a node gains focus, use a `Tween` to move a dedicated "Highlight Panel" to the node's `get_global_rect()`.
+
+### 6. Asset-Dependency-Audit (Draw-Call Reduction)
+Ensuring UI textures are optimized for rendering performance.
+- **Atlas Packing**: Use `AtlasTexture` to crop small UI elements from a singular large sheet. This reduces VRAM state changes and minimizes draw calls [14].
+- **Compression Policy**:
+    - **2D/Pixel Art**: Use **Lossless** compression to avoid blurry artifacts [15].
+    - **UI Backgrounds**: Use **Lossy** or **Basis Universal** for large illustrations to save disk space without decreasing VRAM usage [15].
+- **Audit**: Use `ResourceLoader.get_dependencies(scene_path)` to ensure no uncompressed raw assets (e.g. `.png`) are leaking into the final export [19].
+
 ## Reference
 - [Godot Docs: GUI Theming](https://docs.godotengine.org/en/stable/tutorials/ui/gui_skinning.html)
 

@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 29 file
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,34 +60,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/authoring-skills/SKILL.md`](.agents/skills/authoring-skills/SKILL.md) |
-| 2 | ✓ | [`.agents/skills/create-pr/SKILL.md`](.agents/skills/create-pr/SKILL.md) |
-| 3 | ✓ | [`.agents/skills/dce-edge/SKILL.md`](.agents/skills/dce-edge/SKILL.md) |
-| 4 | ✓ | [`.agents/skills/flags/SKILL.md`](.agents/skills/flags/SKILL.md) |
-| 5 | ✓ | [`.agents/skills/gh-stack/SKILL.md`](.agents/skills/gh-stack/SKILL.md) |
-| 6 | ✓ | [`.agents/skills/pr-status-triage/local-repro.md`](.agents/skills/pr-status-triage/local-repro.md) |
-| 7 | ✓ | [`.agents/skills/pr-status-triage/SKILL.md`](.agents/skills/pr-status-triage/SKILL.md) |
-| 8 | ✓ | [`.agents/skills/pr-status-triage/workflow.md`](.agents/skills/pr-status-triage/workflow.md) |
-| 9 | ✓ | [`.agents/skills/react-vendoring/SKILL.md`](.agents/skills/react-vendoring/SKILL.md) |
-| 10 | ✓ | [`.agents/skills/README.md`](.agents/skills/README.md) |
-| 11 | ✓ | [`.agents/skills/router-act/SKILL.md`](.agents/skills/router-act/SKILL.md) |
-| 12 | ✓ | [`.agents/skills/runtime-debug/SKILL.md`](.agents/skills/runtime-debug/SKILL.md) |
-| 13 | ✓ | [`.agents/skills/update-docs/references/CODE-TO-DOCS-MAPPING.md`](.agents/skills/update-docs/references/CODE-TO-DOCS-MAPPING.md) |
-| 14 | ✓ | [`.agents/skills/update-docs/references/DOC-CONVENTIONS.md`](.agents/skills/update-docs/references/DOC-CONVENTIONS.md) |
-| 15 | ✓ | [`.agents/skills/update-docs/SKILL.md`](.agents/skills/update-docs/SKILL.md) |
-| 16 | ✓ | [`.agents/skills/v8-jit/SKILL.md`](.agents/skills/v8-jit/SKILL.md) |
-| 17 | ✓ | [`.agents/skills/write-api-reference/SKILL.md`](.agents/skills/write-api-reference/SKILL.md) |
-| 18 | ✓ | [`.agents/skills/write-guide/SKILL.md`](.agents/skills/write-guide/SKILL.md) |
-| 19 | ✓ | [`.claude-plugin/plugins/cache-components/skills/cache-components/PATTERNS.md`](.claude-plugin/plugins/cache-components/skills/cache-components/PATTERNS.md) |
-| 20 | ✓ | [`.claude-plugin/plugins/cache-components/skills/cache-components/REFERENCE.md`](.claude-plugin/plugins/cache-components/skills/cache-components/REFERENCE.md) |
-| 21 | ✓ | [`.claude-plugin/plugins/cache-components/skills/cache-components/SKILL.md`](.claude-plugin/plugins/cache-components/skills/cache-components/SKILL.md) |
-| 22 | ✓ | [`.claude-plugin/plugins/cache-components/skills/cache-components/TROUBLESHOOTING.md`](.claude-plugin/plugins/cache-components/skills/cache-components/TROUBLESHOOTING.md) |
-| 23 | ✓ | [`.cursor/commands/gt-workflow.md`](.cursor/commands/gt-workflow.md) |
-| 24 | ✓ | [`.cursor/worktrees.json`](.cursor/worktrees.json) |
-| 25 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 26 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 27 | ✓ | [`packages/next/AGENTS.md`](packages/next/AGENTS.md) |
-| 28 | ✓ | [`skills/next-compile/scripts/check.mjs`](skills/next-compile/scripts/check.mjs) |
-| 29 | ✓ | [`skills/next-compile/SKILL.md`](skills/next-compile/SKILL.md) |
+| 2 | ✓ | [`.agents/skills/backport-pr/SKILL.md`](.agents/skills/backport-pr/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/create-pr/SKILL.md`](.agents/skills/create-pr/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/dce-edge/SKILL.md`](.agents/skills/dce-edge/SKILL.md) |
+| 5 | ✓ | [`.agents/skills/flags/SKILL.md`](.agents/skills/flags/SKILL.md) |
+| 6 | ✓ | [`.agents/skills/gh-stack/SKILL.md`](.agents/skills/gh-stack/SKILL.md) |
+| 7 | ✓ | [`.agents/skills/pr-status-triage/local-repro.md`](.agents/skills/pr-status-triage/local-repro.md) |
+| 8 | ✓ | [`.agents/skills/pr-status-triage/SKILL.md`](.agents/skills/pr-status-triage/SKILL.md) |
+| 9 | ✓ | [`.agents/skills/pr-status-triage/workflow.md`](.agents/skills/pr-status-triage/workflow.md) |
+| 10 | ✓ | [`.agents/skills/react-vendoring/SKILL.md`](.agents/skills/react-vendoring/SKILL.md) |
+| 11 | ✓ | [`.agents/skills/README.md`](.agents/skills/README.md) |
+| 12 | ✓ | [`.agents/skills/router-act/SKILL.md`](.agents/skills/router-act/SKILL.md) |
+| 13 | ✓ | [`.agents/skills/runtime-debug/SKILL.md`](.agents/skills/runtime-debug/SKILL.md) |
+| 14 | ✓ | [`.agents/skills/update-docs/references/CODE-TO-DOCS-MAPPING.md`](.agents/skills/update-docs/references/CODE-TO-DOCS-MAPPING.md) |
+| 15 | ✓ | [`.agents/skills/update-docs/references/DOC-CONVENTIONS.md`](.agents/skills/update-docs/references/DOC-CONVENTIONS.md) |
+| 16 | ✓ | [`.agents/skills/update-docs/SKILL.md`](.agents/skills/update-docs/SKILL.md) |
+| 17 | ✓ | [`.agents/skills/v8-jit/SKILL.md`](.agents/skills/v8-jit/SKILL.md) |
+| 18 | ✓ | [`.agents/skills/write-api-reference/SKILL.md`](.agents/skills/write-api-reference/SKILL.md) |
+| 19 | ✓ | [`.agents/skills/write-guide/SKILL.md`](.agents/skills/write-guide/SKILL.md) |
+| 20 | ✓ | [`.claude-plugin/plugins/cache-components/skills/cache-components/PATTERNS.md`](.claude-plugin/plugins/cache-components/skills/cache-components/PATTERNS.md) |
+| 21 | ✓ | [`.claude-plugin/plugins/cache-components/skills/cache-components/REFERENCE.md`](.claude-plugin/plugins/cache-components/skills/cache-components/REFERENCE.md) |
+| 22 | ✓ | [`.claude-plugin/plugins/cache-components/skills/cache-components/SKILL.md`](.claude-plugin/plugins/cache-components/skills/cache-components/SKILL.md) |
+| 23 | ✓ | [`.claude-plugin/plugins/cache-components/skills/cache-components/TROUBLESHOOTING.md`](.claude-plugin/plugins/cache-components/skills/cache-components/TROUBLESHOOTING.md) |
+| 24 | ✓ | [`.cursor/commands/gt-workflow.md`](.cursor/commands/gt-workflow.md) |
+| 25 | ✓ | [`.cursor/worktrees.json`](.cursor/worktrees.json) |
+| 26 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 27 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 28 | ✓ | [`packages/next/AGENTS.md`](packages/next/AGENTS.md) |
+| 29 | ✓ | [`skills/next-compile/scripts/check.mjs`](skills/next-compile/scripts/check.mjs) |
+| 30 | ✓ | [`skills/next-compile/SKILL.md`](skills/next-compile/SKILL.md) |
 
 ---
 

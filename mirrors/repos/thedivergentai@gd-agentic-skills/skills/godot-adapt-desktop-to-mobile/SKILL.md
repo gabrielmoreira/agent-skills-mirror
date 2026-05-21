@@ -455,6 +455,57 @@ func is_valid_touch(position: Vector2) -> bool:
 - [ ] Works in both portrait and landscape
 - [ ] Text is readable on smallest target device (iPhone SE)
 
+## Expert Techniques & Optimizations
+
+### 1. Unified IAP Manager (iOS & Android)
+Mobile In-App Purchases (IAP) rely on platform-specific singletons (`GodotGooglePlayBilling` for Android and `InAppStore` for iOS). Use feature tags to abstract these behind a unified interface.
+
+```gdscript
+class_name IAPManager extends Node
+
+var android_billing: Object
+var ios_store: Object
+
+func _ready() -> void:
+    if OS.has_feature("android") and Engine.has_singleton("GodotGooglePlayBilling"):
+        android_billing = Engine.get_singleton("GodotGooglePlayBilling")
+        android_billing.start_connection()
+    elif OS.has_feature("ios") and Engine.has_singleton("InAppStore"):
+        ios_store = Engine.get_singleton("InAppStore")
+        ios_store.set_auto_finish_transaction(true)
+
+func purchase_product(id: String) -> void:
+    if android_billing:
+        android_billing.purchase(id)
+    elif ios_store:
+        ios_store.purchase({ "product_id": id })
+```
+
+### 2. App Store Asset Pipeline (Screenshot Automation)
+Generating store screenshots across multiple resolutions is tedious. Automate this by capturing the viewport texture after the frame is drawn.
+
+```gdscript
+func capture_screenshot(filename: String) -> void:
+    # Wait for the frame to finish rendering
+    await RenderingServer.frame_post_draw
+    
+    var img: Image = get_viewport().get_texture().get_image()
+    var path := "user://screenshots/%s.png" % filename
+    img.save_png(path)
+    print("Screenshot saved to: ", path)
+```
+
+### 3. Mobile Debug Overlay (Memory Monitoring)
+Mobile devices have strict memory limits. Use `OS.get_memory_info()` to monitor physical and available memory in real-time.
+
+```gdscript
+func _process(_delta: float) -> void:
+    var mem: Dictionary = OS.get_memory_info()
+    var physical_mb := float(mem.get("physical", 0)) / 1048576.0
+    var available_mb := float(mem.get("available", 0)) / 1048576.0
+    
+    $DebugLabel.text = "Mem: %.2f / %.2f MB" % [available_mb, physical_mb]
+```
 
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)

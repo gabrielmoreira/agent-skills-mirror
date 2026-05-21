@@ -2,8 +2,7 @@
 name: check
 description: "Reviews code diffs and release-ready changes after implementation, executes approved implementation plans, extracts project-specific constraints from repository context, auto-fixes safe issues, and drives approved release, publish, push, release-reaction, and issue/PR follow-through. Also triages issues and PRs when the user mentions them. Not for exploring ideas, debugging, or document prose review."
 when_to_use: "review, 看看代码, 检查一下, 有没有问题, 是否需要优化, 合并前, 继续优化, 优化代码, 看看issue, 看看PR, release, publish, push, release reaction, GitHub reaction, 发布, 提交, 关闭issue, 发布表情, release表情, close issue, issue close, review my code, check changes, before merge, before release, code review, code-review"
-metadata:
-  version: "3.24.0"
+dispatch_intent: "Code review, before merge, release gates, generated artifacts, safety sinks, publish/push/reaction follow-through, triage issues/PRs"
 ---
 
 # Check: Review Before You Ship
@@ -13,6 +12,21 @@ Prefix your first line with 🥷 inline, not as its own paragraph.
 > Note: `/review` is a built-in Anthropic plugin command for PR review. Waza uses `/check` (or the alias `code-review`) instead. Do not re-trigger `/review` from within this skill.
 
 Read the diff, find the problems, fix what can be fixed safely, ask about the rest. Done means verification ran in this session and passed.
+
+## Mode Picker
+
+Pick the mode that matches the user's intent, then read that section in full. Modes layer on top of the shared review surface (Scope, Hard Stops, Autofix, Specialist Review, Verification, Sign-off) further down.
+
+| User intent | Mode |
+|---|---|
+| "implement this plan", `/think` output handed off | [Plan Execution](#plan-execution-mode) |
+| Diff or PR ready, "review", "看看代码", "合并前" | Default review (start at [Get the Diff](#get-the-diff)) |
+| "look at issues", "review PRs", "triage", "批量处理" | [Triage Mode](#triage-mode) |
+| "is this worth a release", "值不值得发版" | [Release Worthiness Analysis](#release-worthiness-analysis) |
+| "commit", "push", "publish", "release", "close issue", "发布表情" | [Ship / Release Follow-through](#ship--release-follow-through) |
+| Document, PDF, prose review | Delegate to `/write` (see [Document Review](#document-review)) |
+
+Before any mode, run [Project Context Extraction](#project-context-extraction) and (if memory is in scope) [Durable Context Preflight](#durable-context-preflight).
 
 ## Plan Execution Mode
 
@@ -48,13 +62,9 @@ For release or maintainer work, also fill the Release Gate 2.0 matrix from `refe
 
 ## Durable Context Preflight
 
-Run this only when the user mentions memory, preview, previous decisions, or a prior conclusion; when they provide a memory path; or when the current project exposes an obvious local memory summary. Do not hard-code machine-specific memory roots or read raw transcripts.
+See [rules/durable-context.md](../../rules/durable-context.md) for when to read durable context, the read-order budget, and the memory-type mapping.
 
-Read durable context in this order: user-provided path, current project scope, then global preferences. List titles first, then open at most 1-2 relevant summaries. Treat cross-project entries as transferable patterns only.
-
-Map memory types before using them: `decision`, `preference`, and `principle` are private task constraints; `pattern` and `learning` are review checklists; `fact` must be verified against current state before it affects the review. Current code, diff, public docs, CI, tests, and remote state override memory.
-
-For `/check`, durable memory can explain user intent and preferred follow-through, but public project rules still come from README files, manifests, CI workflows, release docs, the diff, and explicit instructions in the current thread. Never cite private memory as a public project requirement.
+For `/check`, private task constraints are `decision`, `preference`, and `principle` entries; review checklists are `pattern` and `learning`. Current code, diff, public docs, CI, tests, and remote state override memory. Durable memory can explain user intent and preferred follow-through, but public project rules still come from README files, manifests, CI workflows, release docs, the diff, and explicit instructions in the current thread. Never cite private memory as a public project requirement.
 
 ## Get the Diff
 
@@ -66,22 +76,13 @@ Activate when the user mentions: issue, PR, "review all", triage, "batch", or "�
 
 **Action-first rule:** Items with a clear disposition (already fixed, duplicate, already released) get acted on immediately without analysis paragraphs. When analyzing screenshots or images, state what you see and the suggested action in one message. Only ask the user when the disposition is genuinely ambiguous.
 
-**Flow:** Pull open items with `gh issue list -R <repo> --state open --limit 20` and `gh pr list -R <repo> --state open`. For each item, check if a fix already shipped: `git log --oneline <latest-tag>..HEAD | grep -i "<keyword>"`. If shipped: close with note. If merged but unreleased: reply "已修复，等下一个版本 release" and close. If no fix: analyze and act. Fix now if possible (`fix: closes #N` commit); for Mole nightly-fixed items reply `@<user>, this is already fixed in the latest nightly. Upgrade: mo update --nightly` and close; for valid-but-unreleased items acknowledge and leave open; for invalid items give one-two sentence reason and close.
+**Flow:** Pull open items with `gh issue list -R <repo> --state open --limit 20` and `gh pr list -R <repo> --state open`. For each item, check if a fix already shipped: `git log --oneline <latest-tag>..HEAD | grep -i "<keyword>"`. If shipped: close with note. If merged but unreleased: reply "已修复，等下一个版本 release" and close. If no fix: analyze and act. Fix now if possible (`fix: closes #N` commit); when the target project documents a nightly, beta, or pre-release channel that already contains the fix, reply with that exact upgrade path and close; for valid-but-unreleased items acknowledge and leave open; for invalid items give one-two sentence reason and close.
 
 Before final conclusions in a live queue, refresh the issue/PR list once more and re-read any item that changed during the run. If evidence is incomplete, hold the item instead of closing it on a guess.
 
 **PR handling:** If the PR direction is accepted but the patch needs changes, prefer pushing the maintainer's fixes to the contributor's PR branch and then merging the PR. Check `maintainerCanModify` first. If branch edits are not allowed, ask the contributor to enable maintainer edits or push the needed revision; only fall back to a separate maintainer commit when timing or release safety requires it, and say so in the PR. Close without merging only when the direction is rejected, unsafe, no longer needed, or explicitly not part of the project's scope. Do not silently absorb an accepted PR into `main` and close it.
 
-**Public reply shape (maintainer, issue or PR):**
-
-1. Resolve `@<login>` from `gh issue view` / `gh pr view --json author`.
-2. **Language:** Match the **opener's** language when it is Chinese or English. If the opener used Japanese or Korean, use English for the maintainer reply unless project docs override.
-3. Open with `@<login>` and **at most one** short thanks (`感谢反馈`, `thank you for the report`, etc.). Do **not** add closing thanks stacks (`再次感谢`, `Thanks again`, long courtesy endings).
-4. One or two short paragraphs: factual reason, what shipped or what is blocked, no ceremony.
-5. Always give a **next step tied to releases or verification**: next App Store or GitHub release, nightly upgrade command, cache path to clear once, or exactly what info is still needed.
-6. Prefer **editing** an existing maintainer comment (`PATCH /repos/{owner}/{repo}/issues/comments/{comment_id}`) when updating wording; avoid delete plus repost unless the old text must disappear from history.
-
-Default to this shape unless `AGENTS.md` or `CLAUDE.md` in the repo contradicts it.
+**Public reply shape:** load `references/public-reply.md` for the full template (mention, single thanks, factual paragraphs, next-release step, editing rules, closure criteria). Ship Mode uses the same template; the file is the single source.
 
 **Sign-off line (append to standard sign-off):**
 ```
@@ -112,7 +113,7 @@ This mode extends review; it does not skip review. Before any public or irrevers
 3. Verify generated or bundled outputs, version fields, release notes, package contents, and required artifacts are in sync. Prefer dry-run commands when the ecosystem provides them.
 4. Commit only intended files. Preserve unrelated dirty work, and serialize git operations so index locks or overlapping adds do not corrupt the workflow.
 5. Push, publish, tag, or create a release only when the user has explicitly approved that action. If auth, OTP, CI, registry, or network state blocks the operation, pause and report the exact blocker.
-6. For issue/PR follow-through, confirm the item identity with `gh issue view` or `gh pr view` before posting. Use the **Public reply shape** from Triage Mode (mention, single thanks, facts, explicit next release or verification step). Close only when the fix is shipped, already available, invalid, duplicate, or the maintainer explicitly asked for closure.
+6. For issue/PR follow-through, confirm the item identity with `gh issue view` or `gh pr view` before posting. Use `references/public-reply.md` for the maintainer reply template (mention, single thanks, facts, explicit next release or verification step) and its closure criteria.
 7. For GitHub release reaction follow-through, only do it when project context or the current thread asks for it. After the release exists and required assets are verified, resolve the release id from the tag, POST every positive release reaction to `repos/<owner>/<repo>/releases/<id>/reactions` with `gh api`, and re-read reactions to confirm. Positive release reactions are `+1`, `laugh`, `heart`, `hooray`, `rocket`, and `eyes`.
 8. After network or API failures, re-read the end state instead of assuming success or failure.
 
@@ -140,6 +141,7 @@ Drift signals (examples, not exhaustive -- any one is enough to label drift):
 - A new dependency appears that the goal did not mention
 - Code unrelated to the goal was deleted or commented out
 - A new abstraction or helper was introduced that is not required by the goal
+- A maintainability, review, or cleanup change quietly adds user-visible UI, default config, workflow permissions, or release behavior
 
 ## Pattern-Fix Completeness
 
@@ -154,6 +156,7 @@ Examples, not exhaustive -- flag any diff that could cause irreversible harm if 
 - **Destructive auto-execution**: any task marked "safe" or "auto-run" that modifies user-visible state (history files, config, preferences, installed software) must require explicit confirmation.
 - **Release artifacts missing**: verify every artifact listed in release notes, release templates, or project workflows exists and has been uploaded before declaring done.
 - **Generated artifact drift**: if source changes require generated or bundled outputs, verify the output was regenerated and included.
+- **Tracked package omissions**: if a package script builds from tracked files, allowlists, or generated manifests, verify every new helper module, reference file, template, or script used by the diff is tracked and present in the built archive before sign-off.
 - **Version skew**: release version fields across manifests, package metadata, app configs, changelogs, tags, or lockfiles must stay synchronized.
 - **Unknown identifiers in diff**: any function, variable, or type introduced in the diff that does not exist in the codebase is a hard stop. Grep before writing or approving any reference: `grep -r "name" .` -- no results outside the diff = does not exist.
 - **Injection and validation**: SQL, command, path injection at system entry points. Credentials hardcoded, logged, committed, or copied into public docs.
@@ -168,6 +171,15 @@ After reviewing the diff, check whether it introduces invariants not yet capture
 - New UI constraint (layout rule, animation, overlay registration) → `.claude/rules/*.md`
 - New deploy/release step or artifact → AGENTS.md or `docs/`
 - New cross-file sync requirement (enum ↔ HTML anchors, Swift keys ↔ xcstrings) → AGENTS.md
+- One-off review reports or diagnostic snapshots should not become durable docs as-is; extract the stable rule into AGENTS/CLAUDE/rules/references and drop the stale report from the commit.
+
+### Snapshot Report Routing
+
+Treat review reports, scorecards, and diagnostic snapshots as evidence, not as source-of-truth docs. Before approving one:
+
+1. Re-read the current diff or repo surface named by the report. If the claim is stale, exclude the report from the commit or rewrite it into a stable rule.
+2. Keep project-specific commands, paths, protected areas, release rituals, and safety constraints in that project's public context. Do not promote them into Waza.
+3. Promote only transferable review behavior into Waza: e.g. "check untracked files before readiness", "inspect generated package contents", or "turn one-off reports into invariants."
 
 If found, either apply the doc update as `safe_auto` (when the invariant is clear from the diff) or flag it in the sign-off as `doc debt`. When no new invariants exist, sign-off says `doc debt: none`.
 

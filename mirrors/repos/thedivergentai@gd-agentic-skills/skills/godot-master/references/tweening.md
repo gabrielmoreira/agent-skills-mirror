@@ -241,6 +241,90 @@ tween.tween_property($Sprite, "position", Vector2(100, 0), 1.0)
 # Always store reference to kill old tween
 ```
 
+---
+
+## Expert Pattern: Bezier-Path-Tween
+
+Animate objects along complex, curved trajectories using `Path2D` and `PathFollow2D` instead of calculating math manually.
+
+```gdscript
+func play_curved_motion(follow_node: PathFollow2D, duration: float):
+    # 1. Ensure path starts at 0
+    follow_node.progress_ratio = 0.0
+    
+    # 2. Tween the sampler progress
+    var tween := create_tween().bind_node(follow_node)
+    tween.tween_property(follow_node, "progress_ratio", 1.0, duration) \
+        .set_trans(Tween.TRANS_CUBIC) \
+        .set_ease(Tween.EASE_IN_OUT)
+```
+
+---
+
+## Expert Pattern: Physics-Sync-Tweening
+
+Prevent jitter and visual "streaking" when animating physics bodies or handling network corrections.
+
+```gdscript
+func apply_physics_tween(target: Node3D, goal: Vector3):
+    # 1. Prevent 'visual streak' if teleporting to a start position
+    target.global_position = start_pos
+    target.reset_physics_interpolation()
+    
+    # 2. Sync tween steps with physics frames
+    var tween := create_tween().bind_node(target)
+    tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+    
+    tween.tween_property(target, "global_position", goal, 0.5)
+```
+
+---
+
+## Expert Pattern: Juice-Config-Resource
+
+Decouple animation "feel" from logic by storing tween parameters in external resources for global balancing.
+
+```gdscript
+# juice_config.gd
+class_name JuiceConfig extends Resource
+@export var duration: float = 0.3
+@export var trans: Tween.TransitionType = Tween.TRANS_ELASTIC
+@export var ease: Tween.EaseType = Tween.EASE_OUT
+
+# gameplay_object.gd
+@export var juice: JuiceConfig
+
+func play_bounce():
+    var tween := create_tween()
+    tween.set_trans(juice.trans)
+    tween.set_ease(juice.ease)
+    tween.tween_property(self, "scale", Vector2(1.2, 1.2), juice.duration)
+```
+
+---
+
+## Expert Pattern: Tween-Event-Sequencing
+
+Orchestrate complex mini-cutscenes by chaining property interpolations, delays, and callbacks into a single controlled sequence.
+
+```gdscript
+func play_mini_cutscene(actor: Sprite2D):
+    var tween := create_tween().bind_node(self)
+    
+    # 1. Step 1: Move and fade in (Parallel)
+    tween.set_parallel(true)
+    tween.tween_property(actor, "position:x", 500.0, 1.0)
+    tween.tween_property(actor, "modulate:a", 1.0, 0.5)
+    
+    # 2. Step 2: Wait then call logic (Chained)
+    tween.chain().tween_interval(0.5)
+    tween.tween_callback(func(): _play_vfx(actor.position))
+    
+    # 3. Step 3: Shrink and exit
+    tween.tween_property(actor, "scale", Vector2.ZERO, 0.5).set_trans(Tween.TRANS_BACK)
+    tween.tween_callback(actor.queue_free)
+```
+
 ## Reference
 - [Godot Docs: Tween](https://docs.godotengine.org/en/stable/classes/class_tween.html)
 

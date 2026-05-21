@@ -1,14 +1,14 @@
 ---
 name: lark-sheets
-description: '飞书电子表格：创建和操作电子表格。支持创建表格、创建/复制/删除/更新工作表、读写单元格、追加行数据、查找内容、导出文件。当用户需要创建电子表格、管理工作表、批量读写数据、在已知表格中查找内容、导出或下载表格时使用。若用户是想按名称或关键词搜索云空间里的表格文件，请改用 lark-doc 的 docs +search 先定位资源。'
-version: 1.2.0
+description: '飞书电子表格创建、工作表管理、单元格读写和导出。'
+version: "1.2.1"
 author: larksuite
 source: "github:larksuite/cli"
 source_url: "https://github.com/larksuite/cli/tree/main/skills/lark-sheets"
 license: MIT
 tags: '[feishu, lark, lark-cli, sheets, spreadsheet]'
 created_at: "2026-05-19"
-updated_at: "2026-05-19"
+updated_at: "2026-05-21"
 quality: 4
 complexity: intermediate
 metadata:
@@ -22,8 +22,6 @@ metadata:
 **CRITICAL — 开始前 MUST 先用 Read 工具读取 [`../lark-shared/SKILL.md`](../lark-shared/SKILL.md)，其中包含认证、权限处理**
 
 ## 快速决策
-- 按标题或关键词找云空间里的表格文件，先用 `lark-cli docs +search`。
-- `docs +search` 会直接返回 `SHEET` 结果，不要把它误解成只能搜文档 / Wiki。
 - 已知 spreadsheet URL / token 后，再进入 `sheets +info`、`sheets +read`、`sheets +find` 等对象内部操作。
 
 ## 核心概念
@@ -197,7 +195,7 @@ Shortcut 是对常用操作的高级封装（`lark-cli sheets +<verb> [flags]`�
 | Shortcut | 说明 |
 |----------|------|
 | [`+create`](references/lark-sheets-spreadsheet-management.md#create) | Create a spreadsheet (optional header row and initial data) |
-| [`+info`](references/lark-sheets-spreadsheet-management.md#info) | View spreadsheet and sheet information |
+| [`+info`](references/lark-sheets-spreadsheet-management.md#info) | View spreadsheet metadata and sheet information |
 | [`+export`](references/lark-sheets-spreadsheet-management.md#export) | Export a spreadsheet (async task polling + optional download) |
 
 ### Sheet Management
@@ -352,3 +350,29 @@ lark-cli sheets <resource> <method> [flags] # 调用 API
 | `spreadsheet.sheet.float_images.get` | `sheets:spreadsheet:read` |
 | `spreadsheet.sheet.float_images.query` | `sheets:spreadsheet:read` |
 | `spreadsheet.sheet.float_images.delete` | `sheets:spreadsheet:write_only` |
+<!-- LOCAL-QUALITY-SUPPLEMENT:START -->
+## Usage Notes
+
+This supplement is maintained by the repository sync pipeline. It keeps the
+imported upstream skill usable inside this curated collection when the upstream
+source is intentionally concise.
+
+## Common Patterns
+
+```text
+1. Confirm that the user's task matches the skill trigger.
+2. Read the relevant project files or user-provided context before acting.
+3. Choose the smallest reversible action that advances the task.
+4. Run the verification command or manual check that proves the result.
+5. Report the outcome, evidence, and any remaining risk.
+```
+
+## Boundaries
+
+- Prefer the upstream workflow for Lark Sheets; this section only adds local quality
+  guardrails.
+- Do not invent project facts when required files, vaults, services, or tools are
+  unavailable.
+- Stop and ask for clarification when the next action could overwrite user work,
+  expose private data, or change production state.
+<!-- LOCAL-QUALITY-SUPPLEMENT:END -->

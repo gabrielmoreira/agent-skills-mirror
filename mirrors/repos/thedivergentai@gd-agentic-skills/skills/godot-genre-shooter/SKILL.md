@@ -380,5 +380,69 @@ func server_validate_shot(shooter_transform: Transform3D) -> void:
 4. **Animations**: `AnimationTree` for weapon state machines (idle, aim, fire, reload)
 
 
+## Advanced Shooter Meta-Systems
+
+Elite implementation of tactical positioning, realistic ballistics, and environmental interaction.
+
+### 1. Spray-Pattern Editor (Recoil Math)
+Utilize Godot's custom `Resource` system to define reusable data containers. By creating a script that inherits from `Resource` and using the `@export` annotation on an `Array[Vector2]`, you can manually define weapon recoil patterns that are editable directly in the Godot Inspector.
+
+```gdscript
+class_name WeaponRecoilPattern extends Resource
+
+@export var spray_points: Array[Vector2] = []
+@export var horizontal_variance: float = 0.1
+@export var vertical_variance: float = 0.1
+
+func get_recoil_at(shot_index: int) -> Vector2:
+    if spray_points.is_empty(): return Vector2.ZERO
+    var base := spray_points[shot_index % spray_points.size()]
+    return base + Vector2(randf() * horizontal_variance, randf() * vertical_variance)
+```
+
+### 2. Lag-Compensation (Server Rewinding)
+To implement authoritative hit validation, store a history of player positions in a ring buffer. When a shot is fired, the server temporarily "rewinds" target colliders to their historical positions based on the client's timestamp, performs the raycast, and restores them.
+
+```gdscript
+class_name LagCompensator extends Node
+
+var _history: Array[Dictionary] = [] # { "time": int, "transform": Transform3D }
+const MAX_BACKTRACK_MS = 200
+
+func _physics_process(_delta: float) -> void:
+    _history.append({"time": Time.get_ticks_msec(), "transform": owner.global_transform})
+    if _history.size() > 60: # ~1 second at 60fps
+        _history.pop_front()
+
+func backtrack_to(timestamp: int) -> void:
+    var best_match = _history[0]
+    for entry in _history:
+        if abs(entry.time - timestamp) < abs(best_match.time - timestamp):
+            best_match = entry
+    owner.global_transform = best_match.transform
+```
+
+### 3. ShapeCast3D-Explosion
+To query an explosion volume without node overhead, use `PhysicsDirectSpaceState3D.intersect_shape()`. This returns an array of dictionaries representing all colliders within the sphere volume in a single call.
+
+```gdscript
+class_name ExplosionQuery extends Node3D
+
+func execute_explosion(radius: float) -> Array[Dictionary]:
+    var space_state := get_world_3d().direct_space_state
+    var sphere := SphereShape3D.new()
+    sphere.radius = radius
+    
+    var query := PhysicsShapeQueryParameters3D.new()
+    query.shape = sphere
+    query.transform = global_transform
+    query.collision_mask = 1 # Environment/Players
+
+    return space_state.intersect_shape(query, 32)
+```
+
+**Architectural Tip**: When implementing Lag Compensation, always perform the raycast in a single frame and immediately restore transforms to prevent physics glitches in other server calculations.
+
+
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)

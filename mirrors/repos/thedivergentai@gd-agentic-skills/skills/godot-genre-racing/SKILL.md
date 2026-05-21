@@ -163,5 +163,69 @@ func update_ai_speed(ai_car: VehicleBody3D, player: VehicleBody3D) -> void:
 3.  **Tunnel Vision**: No sense of speed. **Fix**: Increase FOV as speed increases, add camera shake, wind lines, and motion blur.
 
 
+## Advanced Racing Meta-Systems
+
+Elite implementation of competitive integrity, aerodynamics, and auditory realism.
+
+### 1. Drift-Boost (Mini-Turbo)
+Implement a drift-boost mechanic by accumulating a charge variable during the `_physics_process()` callback while the player is in a drift state. Upon release, apply a burst of speed using `apply_central_impulse()` on the `RigidBody3D` (or `VehicleBody3D`), creating the classic arcade "Mini-Turbo" effect.
+
+```gdscript
+class_name DriftBoostSystem extends Node
+
+var drift_charge: float = 0.0
+const BOOST_MULTIPLIER = 1000.0
+
+func _physics_process(delta: float) -> void:
+    if owner.is_drifting:
+        drift_charge += delta
+    elif drift_charge > 0:
+        execute_boost()
+
+func execute_boost() -> void:
+    var boost_force := owner.global_transform.basis.z * (drift_charge * BOOST_MULTIPLIER)
+    owner.apply_central_impulse(boost_force)
+    drift_charge = 0.0
+```
+
+### 2. Tire-Smoke Particles
+Attach a `GPUParticles3D` node to each wheel and toggle the `emitting` property based on the wheel's traction state. This provides immediate visual feedback for drifting, burnouts, and high-speed braking.
+
+```gdscript
+class_name TireSmokeManager extends Node3D
+
+@export var smoke_particles: GPUParticles3D
+@export var wheel: VehicleWheel3D
+
+func _process(_delta: float) -> void:
+    # Emit smoke if the wheel is slipping significantly
+    smoke_particles.emitting = wheel.get_skidinfo() < 0.5
+```
+
+### 3. Replay-Ghost Binary Storage
+For high-performance ghost car replays, convert positional and rotational data into a `PackedVector2Array` or use Godot's binary `.res` format via `ResourceSaver`. This is significantly faster and more compact than text-based formats for storing frame-by-frame data.
+
+```gdscript
+class_name GhostRecorder extends Node
+
+var frame_data: PackedVector3Array = []
+
+func record_frame(pos: Vector3) -> void:
+    frame_data.append(pos)
+
+func save_ghost_binary(path: String) -> void:
+    var file := FileAccess.open(path, FileAccess.WRITE)
+    if file:
+        file.store_var(frame_data) # Binary Variant serialization
+        file.close()
+```
+
+**Architectural Tip**: When implementing Drift-Boost, use a `Tween` to briefly increase the Camera FOV during the boost to enhance the sense of sudden acceleration.
+
+
+## Reference
+- Master Skill: [godot-master](../godot-master/SKILL.md)
+
+
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)

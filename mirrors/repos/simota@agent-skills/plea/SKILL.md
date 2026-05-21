@@ -17,6 +17,7 @@ CAPABILITIES_SUMMARY:
 - whychain_root_cause: 5-Whys vertical/lateral chain with Ishikawa fishbone to surface root unmet need
 - opportunity_tree: Torres OST four-layer hierarchy (Outcome → Opportunity → Solution → Experiment with kill rules)
 - llm_prompt_generation: Pair every demand and every report with a ready-to-paste LLM instruction prompt for downstream agents (Spark, Scribe, Accord, Builder, Forge, Rank)
+- tri_engine_demand: `multi` Recipe — parallel synthetic demand generation across Codex + Antigravity + Claude subagents channeling the same persona set with concurrence-divergence scoring; preserves cross-persona-universal signals AND single-engine divergent-voice insights; mitigates per-engine persona-channeling bias (mode-collapse / WEIRD / over-sanitization); calibration tags (`[validated]`/`[supported]`/`[hypothesis]`/`[synthetic-only]`) flow through every emitted demand
 
 COLLABORATION_PATTERNS:
 - Pattern A: Cast → Plea → Spark — Persona Pipeline: Cast provides personas → Plea generates demands → Spark structures proposals
@@ -289,6 +290,7 @@ Each prompt declares one action verb so the receiving LLM knows what shape of ou
 | Jobs-to-be-Done | `jtbd` | | DEEP | Switch interview, four-forces, Job Map for the progress users hire the product to make | Researcher, Spark | `references/jtbd-switch-interview.md` |
 | 5 Whys Root Cause | `5whys` | | DEEP | Iterative why-chain that drives a surface request to its root unmet need | Researcher, Spark | `references/5whys-root-cause.md` |
 | Opportunity Solution Tree | `opportunity` | | DEEP | Outcome → Opportunity → Solution → Experiment hierarchy for continuous discovery | Researcher, Spark, Experiment | `references/opportunity-solution-tree.md` |
+| Multi-Engine | `multi` | | (overlays EXPLORE/DEEP) | Tri-engine demand generation (Codex + Antigravity + Claude in parallel) channeling the same persona set. Concurrence-divergence scoring with per-persona AND cross-persona signals. Mitigates per-engine persona-channeling bias. | Spark, Researcher, Voice | `references/tri-engine-demand.md`, `_common/SUBAGENT.md` |
 
 ### Mode Modifiers
 
@@ -313,6 +315,7 @@ Behavior notes per Recipe:
 - `jtbd`: Run a Christensen / Moesta Switch interview to produce synthetic JTBD. Always separate the four forces (push / pull / anxiety / habit), the 8-stage Job Map, and the functional / emotional / social dimensions. Real-user JTBD is Researcher's domain — tag outputs `synthetic: true` and hand off to Researcher for validation.
 - `5whys`: Apply Toyota / Ohno's 5 Whys to a user demand. Drill at least 5 levels vertically; allow multiple roots via Ishikawa fishbone laterally. Strictly distinguish causal ("because") from sequential ("and then"). Rewrite the output as the root unmet need, not the surface request.
 - `opportunity`: Build Teresa Torres' OST. Enforce four layers: Outcome (behavioral metric) → Opportunity (user-voice unmet need) → Solution (2-4 candidates) → Experiment (smallest test + kill rule). Reject output framing, OKR confusion, and solution-first thinking. Treat it as a living artifact on weekly cadence; hand off to Researcher / Spark / Experiment.
+- `multi`: Tri-engine demand generation. Spawn Codex / Antigravity / Claude subagents in one message; **all three channel the same persona set** independently. Each engine's training-data priors produce different "voices" for the same persona — that divergence is the value. Per-cluster Concurrence-Divergence scoring within each persona (`UNIVERSAL-DEMAND` 3/3, `LIKELY-DEMAND` 2/3, `VERIFIED-DIVERGENT-VOICE` 1/3 after calibration) PLUS a cross-persona axis (`CROSS-PERSONA-UNIVERSAL` when ≥2 personas voice the same demand under multi-engine concurrence) — the strongest synthetic signal Plea can produce. Calibration tags (`[validated]`/`[supported]`/`[hypothesis]`/`[synthetic-only]`) per `references/calibration.md` apply to every demand. Compatible with `COMPETE`, `EDGE`, and `CHALLENGE` mode modifiers. Critical difference from Judge: `DIVERGENT-VOICE` demands often surface the silent-majority insight no other engine smoothed over — NOT auto-low-value. See `references/tri-engine-demand.md` for the full SCOPE → CAST → PREFLIGHT → FAN-OUT → NORMALIZE → CLUSTER → SCORE → CALIBRATE → SYNTHESIZE → DELIVER flow.
 
 ---
 
@@ -327,6 +330,16 @@ Every deliverable must include:
 - Emotional impact rating per request (current emotion, post-fulfillment emotion, urgency)
 - **LLM Instruction Prompt — per-request** (paste-ready prompt for downstream agent under each request)
 - **LLM Instruction Prompt — per-report** (orchestration prompt at end of report; see `LLM Instruction Prompt Generation`)
+
+**Multi-Engine Recipe (`multi`) additional requirements:**
+
+- Engine status line in the header (which of codex/agy/claude ran successfully + any unavailability reason)
+- Per-demand engine concurrence tag (`[codex+agy+claude]` / `[codex+agy]` / `[claude-verified]` etc.)
+- Per-demand calibration tag (`[validated]` / `[supported]` / `[hypothesis]` / `[synthetic-only]`) per `references/calibration.md`
+- Cross-Persona Analysis section is mandatory in multi mode (not optional)
+- Top-priority section listing `CROSS-PERSONA-UNIVERSAL` demands (≥2 personas under multi-engine concurrence) when any exist
+- Rejection ledger (condensed) — count by rejection category (voice-mismatch / criteria-vague / persona-fabricated) for transparency without noise
+- Per-request LLM Instruction Prompts MUST embed the demand's `engine_concurrence` and calibration tags so downstream agents (Spark, Scribe, Builder) know whether they are acting on a 3/3-validated demand or a 1/3-divergent hypothesis
 
 ---
 
@@ -422,6 +435,9 @@ Choose the action that matches your role:
 | `references/5whys-root-cause.md` | You are running `5whys` — vertical/lateral why protocol, causal-vs-sequential check, Ishikawa fishbone integration, anti-patterns for synthetic root cause |
 | `references/opportunity-solution-tree.md` | You are running `opportunity` — Torres OST four-layer hierarchy, outcome anchoring, opportunity stripping, experiment design with kill rules, weekly continuous-discovery cadence |
 | `_common/AI_PERSONA_RISKS.md` | You are generating personas internally (no Cast registry available) — apply mode-collapse / WEIRD / over-sanitization guardrails before voicing demands |
+| `references/tri-engine-demand.md` | You are running the `multi` Recipe — tri-engine fan-out (Codex + Antigravity + Claude subagents channeling the same personas), Concurrence-Divergence scoring per persona + cross-persona axis, calibration tagging, Mode Modifier compatibility, JSON schema, subagent prompt skeletons, and degraded-mode behavior. |
+| `_common/MULTI_ENGINE_RECIPE.md` | You need the cross-skill `multi` Recipe protocol — three pattern types (D/C/H), canonical PREFLIGHT/FAN-OUT/NORMALIZE/CLUSTER/SCORE flow, implementation checklist, and engine-attribution tag conventions shared across all multi-enabled skills. |
+| `_common/SUBAGENT.md` | You need the base MULTI_ENGINE protocol — engine dispatch table, loose prompt rules, Agent tool fan-out mechanics, fallback rules. Read before authoring `multi` Recipe subagent prompts. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the demand proposal, deciding adaptive thinking depth at persona channeling, or front-loading persona pool and product context at INTAKE. Critical for Plea: P3, P5, P7. |
 
 ---
@@ -494,6 +510,46 @@ Five embodiment tactics drive demand from lived friction rather than abstraction
 
 ---
 
+## Multi-Engine Mode
+
+Activated by the `multi` Recipe (or any explicit user request for parallel persona channeling / tri-engine demand generation). Tri-engine demand generation mirrors Judge's tri-engine review pattern but optimizes for *persona-voice diversity* instead of *defect agreement*.
+
+**Core mechanics:**
+- Spawn three Agent subagents in a single message: `demand-codex`, `demand-agy`, `demand-claude` (per `references/tri-engine-demand.md`).
+- **All three engines work with the same persona set** — divergence comes from independent channeling of identical personas, not from different persona pools. Cast registry personas (`.agents/personas/registry.yaml`) are shared verbatim across subagents.
+- Run engine availability PREFLIGHT in Plea main context — never delegate detection to subagents (subagent PATH is narrower; see `judge/references/tri-engine-review.md §2` for the canonical probe).
+- Use loose prompts (Role + Persona-channel block + Target + Output format). Do NOT pass the Plea "curse of knowledge" table, JTBD templates, or assumption-challenge taxonomies — apply those Plea-specific frames in SYNTHESIZE, not at FAN-OUT.
+- Subagents return structured JSON; main context integrates via NORMALIZE → CLUSTER → SCORE → CALIBRATE → SYNTHESIZE.
+
+**Concurrence vs Divergence scoring (key difference from Judge):**
+
+*Per-cluster (within each persona):*
+- `UNIVERSAL-DEMAND` (3/3) — all engines channeled this persona to the same unmet need. Highest synthetic-signal strength, but still synthetic-only until calibrated against real Voice/Trace/Researcher data.
+- `LIKELY-DEMAND` (2/3) — strong with one dissenter. Note what the missing engine surfaced for this persona instead.
+- `VERIFIED-DIVERGENT-VOICE` (1/3, calibrated) — one engine channeled the persona to a demand the others smoothed over. Often surfaces silent-majority insights; NOT automatically lower-value.
+
+*Cross-persona signal (new in tri-engine Plea):*
+- `CROSS-PERSONA-UNIVERSAL` — same demand surfaced for ≥2 personas, each under UNIVERSAL or LIKELY concurrence. Strongest signal Plea can produce (9-independent-voice convergence). Surface as top-priority demands.
+- `PERSONA-SPECIFIC` — demand surfaced for exactly one persona. Persona-specific insight; do not generalize.
+
+**Engine-attribution + calibration tags (mandatory on every shipped demand):**
+- `[codex+agy+claude] [validated]` — strongest: 3/3 concurrence + real-data validation
+- `[codex+agy] [supported]` — 2/3 concurrence + partial real-data support
+- `[claude-verified] [hypothesis]` — 1/3 verified-divergent + no conflicting real data
+- `[claude-verified] [synthetic-only]` — 1/3 verified-divergent + no real-data available
+
+**Mode Modifier compatibility:** `multi` overlays with `COMPETE` (competitor-anchored channeling across engines), `EDGE` (minority/extreme personas across engines), and `CHALLENGE` (each engine independently counters the same roadmap assumptions).
+
+**AI-persona bias mitigation:** Different engines have different mode-collapse / WEIRD / over-sanitization profiles (`_common/AI_PERSONA_RISKS.md`). Their disagreement reveals where any single engine is collapsing the persona — divergence here is a *bias-detection* signal, not noise.
+
+**Degraded modes:** 1 engine down → continue with 2; 2 down → single-engine fallback with stricter calibration and loud `synthetic-only` tag; all down → degrade to standard `request` Recipe; fewer than 3 personas available → multi runs anyway but flag persona-representativeness risk.
+
+**Output structure:** standard Plea Demand Report (`§Output Format`) with these multi-mode additions — engine-status line in header, mandatory Cross-Persona Analysis section, per-demand `engine_concurrence` + calibration tags in every per-request LLM Instruction Prompt, rejection ledger by category.
+
+Full algorithm, JSON schema, prompt skeletons, calibration rules, and degraded-mode matrix: `references/tri-engine-demand.md`.
+
+---
+
 ## AUTORUN Support
 
 See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `SCOPE → CAST → CHANNEL → VOICE → COMPILE` and emit `_STEP_COMPLETE`.
@@ -514,6 +570,20 @@ _STEP_COMPLETE:
       action_verb_distribution:
         ANALYZE | PROPOSE | DESIGN | DRAFT-SPEC | PROTOTYPE | REFINE: [count]
     files_changed: List[{path, type, changes}]
+    tri_engine:                                  # present only when `multi` Recipe ran
+      engines_run: [codex, agy, claude]
+      engines_failed: [list or none]
+      concurrence_distribution:
+        UNIVERSAL-DEMAND: [count]
+        LIKELY-DEMAND: [count]
+        VERIFIED-DIVERGENT-VOICE: [count]
+      cross_persona_universal: [count]
+      calibration_distribution:
+        validated: [count]
+        supported: [count]
+        hypothesis: [count]
+        synthetic-only: [count]
+      rejected: [count + top categories]
   Handoff:
     Format: PLEA_TO_[NEXT]_HANDOFF
     Content: [Handoff content for next agent]

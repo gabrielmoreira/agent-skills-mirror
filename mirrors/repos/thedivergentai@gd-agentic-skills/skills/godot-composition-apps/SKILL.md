@@ -44,8 +44,8 @@ The Root Node script (e.g., `LoginScreen.gd`, `UserProfile.gd`) is now an **Orch
 |---------|----------------|
 | **Orchestrator** | `UserProfile.gd` |
 | **Component 1** | `AuthValidator` (Logic) |
-| **Component 2** | `FormListener` (Input) |
-| **Component 3** | `ThemeManager` (Visual) |
+| **Component 2** | `AuthVisualSyncer` (Visuals) |
+| **Component 3** | `ThemeManager` (Visuals) |
 
 ## Implementation Standards
 
@@ -133,7 +133,59 @@ func _on_copy_success():
 ```
 
 
-## Expert Composition Components
+## Expert Composition Patterns (Apps)
+
+### 1. App-Level Service Locator
+Avoid polluting the Global Autoload list with dozens of Node-based singletons. Use `Engine.register_singleton()` for lightweight, non-node business logic services (Auth, Config, Networking) [6].
+
+```gdscript
+# AppServiceLocator.gd (Autoload)
+func _ready() -> void:
+    # Register a lightweight RefCounted object as a global singleton
+    if not Engine.has_singleton(&"AuthService"):
+        Engine.register_singleton(&"AuthService", AuthService.new())
+
+# Access from anywhere
+var auth = Engine.get_singleton(&"AuthService")
+```
+
+### 2. Visual-Logic-Syncers (VLS)
+Strictly decouple UI animations and VFX from business logic. The Logic component emits signals, and the VLS component listens and triggers the `AnimationPlayer` [12, 13].
+
+```gdscript
+# AuthVisualSyncer.gd
+@export var logic: AuthFormLogic
+@export var anim: AnimationPlayer
+
+func _ready() -> void:
+    logic.login_failed.connect(_on_login_failed)
+
+func _on_login_failed(reason: String):
+    anim.play("shake_form")
+    # Procedural juice via Tweens
+    var t = create_tween()
+    t.tween_property(self, "modulate", Color.RED, 0.2)
+```
+
+### 3. O(1) Component Registry
+In complex dashboards, use a Dictionary in the Orchestrator to store sibling components for instant lookup, bypassing brittle `get_node()` paths [3, 13].
+
+```gdscript
+# DashboardOrchestrator.gd
+var _registry: Dictionary = {}
+
+func _ready() -> void:
+    for child in get_children():
+        _registry[child.name] = child
+        for group in child.get_groups():
+            _registry[group] = child
+
+func get_comp(key: StringName) -> Node:
+    return _registry.get(key)
+```
+
+## Reference
+- Master Skill: [godot-master](../godot-master/SKILL.md)
 
 ### [comp_orchestrator_base.gd](scripts/comp_orchestrator_base.gd)
 Central hub for signal delegation and component wiring. Logic-free manager.

@@ -82,3 +82,23 @@ Orchestrates the timeline, delays between waves, and tracks "Victory" conditions
 
 ### [wave_resource.gd](scripts/wave_resource.gd)
 Data containers for wave compositions and difficulty settings.
+
+### [wave_weighted_spawner.gd](scripts/wave_weighted_spawner.gd)
+Spatial spawner using weighted random selection for enemy variety.
+
+---
+
+## Expert Wave Patterns
+
+### 1. Occlusion Culling for Swarms
+To optimize performance with hundreds of enemies, enable **Occlusion Culling**.
+- **Setup**: Add an `OccluderInstance3D` to your arena and bake it.
+- **Result**: Enemies completely hidden behind walls/pillars won't be processed by the GPU, significantly boosting FPS.
+
+### 2. Wave UI Architecture
+Decouple your wave data from the UI using a `CanvasLayer` and signals.
+- **Wave Counter**: Display current/total waves.
+- **Health Bars**: Use a `TextureProgressBar` on a `CanvasLayer` for bosses, or `Sprite3D` with a viewport texture for individual enemy health bars.
+
+## Reference
+- Master Skill: [godot-master](../godot-master/SKILL.md)

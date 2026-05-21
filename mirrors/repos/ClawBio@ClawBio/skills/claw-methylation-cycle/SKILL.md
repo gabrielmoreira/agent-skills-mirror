@@ -23,6 +23,28 @@ tags:
 demo_data_path: demo_input.txt
 guideline_doi: "10.3390/nu13030768"
 validation_tier: community
+metadata:
+  openclaw:
+    requires:
+      bins:
+        - python3
+      env: []
+      config: []
+    always: false
+    emoji: "🧬"
+    homepage: https://github.com/ClawBio/ClawBio
+    os: [darwin, linux]
+    install: |
+      pip install -e .
+    trigger_keywords:
+      - methylation
+      - MTHFR
+      - folate cycle
+      - BH4
+      - homocysteine
+      - methylation cycle
+      - metilación
+      - neurotransmitter synthesis
 ---
 
 # claw-methylation-cycle

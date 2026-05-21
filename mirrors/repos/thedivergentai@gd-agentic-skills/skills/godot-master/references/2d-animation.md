@@ -331,5 +331,119 @@ func _physics_process(delta: float) -> void:
         state_machine.travel("idle")
 ```
 
+---
+
+## Expert Pattern: Animation-Frame-Data-Extractor
+
+To extract custom per-frame metadata (e.g., spawn offsets, hitbox sizes), use an `AnimationPlayer` in conjunction with `AnimatedSprite2D`. `SpriteFrames` is strictly a visual container; `AnimationPlayer` allows you to decouple visual data from logical metadata using **Value Tracks** or **Call Method Tracks**.
+
+```gdscript
+class_name AnimationDataExtractor extends CharacterBody2D
+
+# 1. Define the metadata property (Value Track target)
+@export var current_spawn_offset: Vector2 = Vector2.ZERO:
+    set(value):
+        current_spawn_offset = value
+        _update_spawn_point()
+
+@onready var anim_player: AnimationPlayer = $AnimationPlayer
+@onready var spawn_marker: Marker2D = $SpawnMarker
+
+func _ready() -> void:
+    # Playing via AnimationPlayer updates 'current_spawn_offset' on keyed frames
+    anim_player.play("attack_shoot")
+
+func _update_spawn_point() -> void:
+    spawn_marker.position = current_spawn_offset
+
+# 2. Call Method Track Implementation
+# Use this to pass complex arguments directly to a function on a specific frame
+func spawn_projectile(damage: int, specific_offset: Vector2) -> void:
+    var projectile = PROJECTILE_SCENE.instantiate()
+    projectile.damage = damage
+    projectile.position = global_position + specific_offset
+    get_parent().add_child(projectile)
+```
+
+---
+
+## Expert Pattern: Skeletal-IK-2D (Procedural Foot Placement)
+
+For procedural limb positioning (e.g., planting feet on slopes), use Godot's built-in 2D skeletal modification system. The `SkeletonModification2DTwoBoneIK` is the elite choice for limbs as it is more lightweight than full FABRIK solvers.
+
+### Setup
+1. Add a `SkeletonModificationStack2D` to your `Skeleton2D`.
+2. Add a `SkeletonModification2DTwoBoneIK` to the stack.
+3. Assign the target bones (e.g., UpperLeg and LowerLeg).
+4. Point the `target_nodepath` to a `Marker2D` (IK Target).
+
+```gdscript
+class_name ProceduralWalker2D extends Node2D
+
+@onready var skeleton: Skeleton2D = $Skeleton2D
+@onready var ik_target_left_foot: Marker2D = $IKTargets/LeftFootTarget
+@onready var floor_raycast: RayCast2D = $RayCasts/LeftFootRay
+
+func _ready() -> void:
+    # Ensure modification stack is enabled
+    var mod_stack: SkeletonModificationStack2D = skeleton.get_modification_stack()
+    if mod_stack:
+        mod_stack.enabled = true
+        mod_stack.enable_all_modifications(true)
+
+func _physics_process(_delta: float) -> void:
+    floor_raycast.force_raycast_update()
+    
+    if floor_raycast.is_colliding():
+        # Move IK target to the exact collision point
+        ik_target_left_foot.global_position = floor_raycast.get_collision_point()
+    else:
+        # Fallback to resting position
+        ik_target_left_foot.position = Vector2(0, 50)
+```
+
+---
+
+## Expert Pattern: Sprite-Sheet-Memory-Manager
+
+Dynamically load and unload high-resolution textures to optimize VRAM usage. Leverage `ResourceLoader` for asynchronous loading and `RefCounted` for automatic memory purging.
+
+```gdscript
+class_name SpriteSheetMemoryManager extends Node
+
+@onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
+var _pending_path: String = ""
+var _target_anim: StringName = &"heavy_attack"
+
+func load_high_res_anim(path: String) -> void:
+    _pending_path = path
+    # 1. Start background loading to prevent frame stutter
+    ResourceLoader.load_threaded_request(_pending_path)
+    set_process(true)
+
+func _process(_delta: float) -> void:
+    # 2. Check loading status
+    var status = ResourceLoader.load_threaded_get_status(_pending_path)
+    if status == ResourceLoader.THREAD_LOAD_LOADED:
+        var tex: Texture2D = ResourceLoader.load_threaded_get(_pending_path)
+        _apply_to_frames(tex)
+        set_process(false)
+
+func _apply_to_frames(tex: Texture2D) -> void:
+    var frames: SpriteFrames = animated_sprite.sprite_frames
+    if not frames.has_animation(_target_anim):
+        frames.add_animation(_target_anim)
+    
+    # 3. Inject frame dynamically
+    frames.add_frame(_target_anim, tex)
+    animated_sprite.play(_target_anim)
+
+func unload_high_res_anim() -> void:
+    var frames: SpriteFrames = animated_sprite.sprite_frames
+    if frames.has_animation(_target_anim):
+        # 4. Breaking the reference to the Texture2D frees it from RAM
+        frames.clear(_target_anim)
+```
+
 ## Reference
 - Master Skill: [godot-master](../SKILL.md)

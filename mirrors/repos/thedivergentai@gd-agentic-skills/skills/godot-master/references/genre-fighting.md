@@ -346,5 +346,92 @@ func load_state(state: Dictionary) -> void:
 4. **Save/Load for rollback**: Keep state serializable
 
 
+## Advanced Fighting Game Meta-Systems
+
+Professional implementation of move-set management, editor-side debugging, and roster balance.
+
+### 1. Command-List JSON Schema (Move-set Definitions)
+Decouple move-sets from character logic by using an external JSON schema. This allows designers to iterate on frame data and inputs without modifying GDScript.
+
+```gdscript
+class_name MoveSetLoader extends Node
+
+var move_data: Dictionary = {}
+
+func load_from_json(path: String) -> void:
+    var file := FileAccess.open(path, FileAccess.READ)
+    if file:
+        var json_string := file.get_as_text()
+        var result = JSON.parse_string(json_string)
+        if result is Dictionary:
+            move_data = result
+        file.close()
+
+# Example JSON Schema structure:
+# {
+#   "hadouken": {
+#     "input": ["down", "down_forward", "forward", "punch"],
+#     "startup": 12,
+#     "active": 3,
+#     "recovery": 25,
+#     "damage": 800
+#   }
+# }
+```
+
+### 2. Visual Frame Advancer (Editor Debugger)
+Use `@tool` scripts to create editor-side debugging tools that allow scrubbing through animation frames to verify hitbox alignment.
+
+```gdscript
+@tool
+class_name FrameAdvancer extends Node
+
+@export var current_frame: int = 0:
+    set(value):
+        current_frame = value
+        if Engine.is_editor_hint():
+            _sync_animation_to_frame()
+
+@export var step_forward: bool = false:
+    set(value):
+        if value:
+            current_frame += 1
+            step_forward = false # Reset toggle
+
+func _sync_animation_to_frame() -> void:
+    var anim_player: AnimationPlayer = get_node_or_null("../AnimationPlayer")
+    if anim_player:
+        anim_player.seek(current_frame * (1.0/60.0), true)
+        # Force a redraw of debug shapes
+        get_parent().queue_redraw()
+```
+
+### 3. Character-Specific Scaling (Balance Resources)
+Encapsulate roster balance variables in `Resource` files. This allows for profile-based scaling (e.g., HeavyWeight vs. GlassCannon) that can be swapped instantly.
+
+```gdscript
+class_name FighterBalanceProfile extends Resource
+
+@export_group("Damage Scaling")
+@export var base_damage_mult: float = 1.0
+@export var combo_proration_rate: float = 0.9 # Lower means faster damage drop-off
+
+@export_group("Movement Scaling")
+@export var walk_speed_mult: float = 1.0
+@export var dash_distance_mult: float = 1.0
+
+@export_group("Defense Scaling")
+@export var max_health: int = 10000
+@export var guts_threshold: float = 0.3 # Damage reduction kicks in at 30% HP
+
+# Usage in Fighter script:
+# @export var balance_profile: FighterBalanceProfile
+# func take_damage(amount: int) -> void:
+#     health -= int(amount * balance_profile.damage_reduction_curve)
+```
+
+**Anti-Pattern**: NEVER hardcode balance numbers in the Fighter base class. Strictly use delegated `Resource` profiles to maintain a clean, maintainable roster.
+
+
 ## Reference
 - Master Skill: [godot-master](../SKILL.md)

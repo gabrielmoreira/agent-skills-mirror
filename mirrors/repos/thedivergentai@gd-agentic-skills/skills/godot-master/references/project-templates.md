@@ -289,6 +289,57 @@ ui_cancel=Keys: Escape, Gamepad B
 4. Configure Input Map
 5. Begin development
 
+## Expert Template Patterns
+
+### 1. Folder-by-Feature (Entity-Centric)
+The professional standard for scalable Godot project organization.
+- **The Rule**: Keep all resources related to a game entity (scripts, scenes, textures, local resources) in the same directory (e.g., `res://entities/player/`).
+- **Benefit**: Simplifies refactoring, enables easier asset migration between projects, and prevents the "monolithic scripts folder" bottleneck.
+
+### 2. Standard-Export-Presets (Platform Stability)
+Optimized configurations for high-fidelity exports.
+- **VRAM Compression**: Ensure `textures/vram_compression/import_etc2_astc` is enabled for Android/mobile compatibility.
+- **Architecture**: Target `x86_64` for Windows/Linux desktop and `arm64-v8a` for modern Android devices.
+- **Feature Tags**: Use custom feature tags (e.g., `mobile`, `low_end`) to conditionally load lower-resolution assets or simplified shaders at runtime.
+
+- **Versioning**: Add `.import` files to version control; they contain the vital metadata that tells Godot how to process your raw assets.
+
+### 4. CI/CD-Ready Pipeline (GitHub Actions)
+Automate builds headlessly using CLI flags. This ensures consistent binaries and early detection of export errors [3, 16, 17].
+
+```yaml
+# .github/workflows/export.yml
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export Windows
+        run: godot --headless --export-release "Windows Desktop" build/game.exe
+```
+
+### 5. Modular-DLC Structure (PCK Mounting)
+Deliver content updates or patches without exposing source code. Use `ProjectSettings.load_resource_pack()` to mount external assets into `res://` [4, 6].
+
+```gdscript
+func load_dlc(path: String):
+    if ProjectSettings.load_resource_pack(path):
+        # Assets in PCK override existing res:// paths
+        var new_scene = load("res://dlc_level.tscn")
+```
+
+### 6. System-Bootstrap-Priority
+Control AutoLoad initialization order using a central `BootstrapManager`. This replaces the linear Project Settings list with a prioritized script [19, 20].
+
+```gdscript
+# BootstrapManager.gd (The only Autoload)
+func _ready():
+    # 1. Start Critical Systems (Network, Config)
+    _add_system(NetworkManager.new())
+    # 2. Start Secondary Systems (Audio, UI)
+    _add_system(AudioManager.new())
+```
+
 ## Reference
 - [GDSkills godot-project-foundations](project-foundations.md)
 

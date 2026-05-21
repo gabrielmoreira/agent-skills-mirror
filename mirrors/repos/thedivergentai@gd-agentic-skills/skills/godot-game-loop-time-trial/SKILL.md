@@ -80,3 +80,28 @@ The central clock. Validates checkpoint order and handles "Best Lap" logic.
 
 ### [ghost_recorder.gd](scripts/ghost_recorder.gd)
 Captures high-frequency transform data for playback.
+
+### [time_trial_playback_buffer.gd](scripts/time_trial_playback_buffer.gd)
+Jitter-buffer for smooth ghost playback during network streaming.
+
+### [time_trial_leaderboard_bridge.gd](scripts/time_trial_leaderboard_bridge.gd)
+Formatting utility for converting raw time data to human-readable strings.
+
+---
+
+## Expert Time Trial Patterns
+
+### 1. Delta-Compression for Ghosts
+Instead of recording every frame, only store a new "keyframe" if the player's position or rotation has changed beyond a threshold.
+
+- **Storage**: Use `FileAccess.open_compressed()` with `FileAccess.COMPRESSION_ZSTD` for maximum efficiency.
+- **Binary**: Save as raw floats/integers rather than JSON to reduce file size by ~80%.
+
+### 2. The Leaderboard Bridge
+Standardize time formatting across your game to avoid precision issues.
+
+- **Precision**: Store records in `msec` (int) or `usec` (int) to avoid float rounding errors.
+- **Formatting**: Use `%02d:%02d.%03d` format strings for consistent UI display (e.g., `01:24.450`).
+
+## Reference
+- Master Skill: [godot-master](../godot-master/SKILL.md)

@@ -14,7 +14,9 @@ Expert blueprint for rhythm games emphasizing audio-visual synchronization and f
 - NEVER process song logic in `_process()`; strictly use **`_physics_process()`** or a conductor loop to ensure deterministic timing regardless of render frames.
 - NEVER use `_process()` to capture hit inputs; strictly use **`_input(event)`** to record the exact timestamp of the button press event.
 - NEVER scale engine time_scale for song speed; strictly use **`AudioStreamPlayer.pitch_scale`** to adjust speed and avoid globally breaking physics logic.
-- NEVER ignore **Audio Latency Calibration**; strictly provide a manual offset menu to compensate for varied hardware (Bluetooth vs Wired).
+- NEVER neglect **Audio Latency** calibration; strictly provide a tool for players to adjust for hardware/Bluetooth delays (~30-100ms) to prevent "unplayable" sync issues.
+- NEVER use standard `_process` delta for note-to-audio sync; strictly use the **Hardware Clock** via `AudioServer.get_playback_position() + AudioServer.get_time_since_last_mix()` for sub-frame accuracy.
+- NEVER move thousands of note sprites on the CPU; strictly use a **Shader-Based Highway** (UV scrolling) to offload track movement to the GPU.
 - NEVER use `yield` or `await` for beat timing; strictly use a sample-accurate **Delta Accumulator** tied to the audio clock.
 - NEVER assume a constant BPM; strictly build your conductor to handle a **Tempo Map** for complex track changes.
 
@@ -395,6 +397,53 @@ func pulse_receptor(lane: int, judgment: Judgment) -> void:
 2. **Input polling**: Use `_input` not `_process` for precise timing
 3. **Shaders**: UV scrolling for note highways
 4. **Particles**: Use `GPUParticles2D` for hit effects
+
+### 3. Hardware-Synced Latency Calibration
+Calculate precise offsets by compensating for OS/Hardware latency.
+
+```gdscript
+# latency_calibrator.gd
+func _record_tap(expected_time: float):
+    # Obtain precise hardware-synced audio position
+    var mix_time = audio_player.get_playback_position() + AudioServer.get_time_since_last_mix()
+    # Compensate for OS/Hardware output latency
+    var true_audio_time = mix_time - AudioServer.get_output_latency()
+    
+    var offset = true_audio_time - expected_time
+    save_offset(offset)
+```
+
+### 4. Ghost-Note Detection (Anti-Spam)
+Penalize inputs that don't correlate to an active note using `_unhandled_input`.
+
+```gdscript
+# input_manager.gd
+func _unhandled_input(event: InputEvent):
+    # Consume action only on initial press
+    if event.is_action_pressed("rhythm_hit", false, true):
+        if active_notes_in_window.is_empty():
+            # Anti-Cheat: Penalize spamming
+            ghost_note_detected.emit()
+        else:
+            _evaluate_hit()
+        get_viewport().set_input_as_handled()
+```
+
+### 5. Shader-Based Note Highway
+Ultra-smooth scrolling using UV manipulation on the GPU to bypass CPU bottlenecks.
+
+```glsl
+// highway.gdshader
+shader_type canvas_item;
+uniform float scroll_speed = 1.0;
+
+void fragment() {
+    vec2 scrolled_uv = UV;
+    // Offset Y over time to simulate movement
+    scrolled_uv.y -= TIME * scroll_speed;
+    COLOR = texture(TEXTURE, scrolled_uv);
+}
+```
 
 
 ## Reference

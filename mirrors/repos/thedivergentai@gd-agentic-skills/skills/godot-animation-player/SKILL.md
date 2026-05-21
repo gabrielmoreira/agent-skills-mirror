@@ -403,5 +403,73 @@ anim.track_set_call_mode(method_track_idx, Animation.CALL_MODE_DISCRETE)
 **Use Tween for**: Simple runtime effects, one-off transitions
 
 
+---
+
+## Expert Pattern: Shared-Animation-Library
+
+Efficiently reuse animation data across multiple different models (e.g., all humanoid NPCs) by decoupling animations into an `AnimationLibrary` resource. This prevents VRAM and memory bloat from duplicated tracks.
+
+```gdscript
+class_name SharedAnimationManager extends Node
+
+@export var shared_library: AnimationLibrary
+@onready var anim_player: AnimationPlayer = $AnimationPlayer
+
+func _ready() -> void:
+    # 1. Inject the shared library under a unique key
+    anim_player.add_animation_library(&"shared_human", shared_library)
+    
+    # 2. Access animations using the 'library/animation' syntax
+    anim_player.play(&"shared_human/walk")
+```
+
+---
+
+## Expert Pattern: Animation-Event-Signaling
+
+Instead of calling hardcoded functions directly from method tracks, use a generalized "Signaler" pattern to decouple the animation timeline from gameplay logic.
+
+```gdscript
+class_name AnimationSignaler extends Node
+
+## Emitted when the animation reaches a marked event key
+signal animation_event(event_type: String)
+
+## Generic receiver for AnimationPlayer Method Tracks
+func emit_event(event_type: String) -> void:
+    animation_event.emit(event_type)
+
+# Setup in AnimationPlayer:
+# 1. Add Method Track pointing to this node
+# 2. Keyframe: method="emit_event", args=["spawn_footstep_vfx"]
+# 3. Other systems connect to 'animation_event' signal
+```
+
+---
+
+## Expert Pattern: Animation-Budget-Manager
+
+Save significant CPU time in scenes with many characters by manually controlling the animation processing frequency based on visibility.
+
+```gdscript
+class_name AnimationBudgetManager extends Node3D
+
+@onready var anim_player: AnimationPlayer = $AnimationPlayer
+@onready var visibility_notifier: VisibleOnScreenNotifier3D = $VisibleOnScreenNotifier3D
+
+func _ready() -> void:
+    # 1. Disable automatic engine processing
+    anim_player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
+
+func _process(delta: float) -> void:
+    # 2. Cull updates for off-screen entities
+    if not visibility_notifier.is_on_screen():
+        return
+        
+    # 3. Manually step the animation forward
+    # Optional: Throttle updates (e.g., only call every 2nd frame) for distant entities
+    anim_player.advance(delta)
+```
+
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)

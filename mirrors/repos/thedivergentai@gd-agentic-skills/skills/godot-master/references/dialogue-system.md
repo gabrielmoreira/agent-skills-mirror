@@ -294,9 +294,59 @@ func play_voice_line(line_id: String) -> void:
 3. **Typewriter Effect** - Adds polish
 4. **Skip Button** - Let players skip
 
+---
+
+## Elite Godot 4.x Patterns
+
+### 1. Custom Dialogue Graph Editor
+Leverage `GraphEdit` and `GraphNode` to build visual authoring tools for complex branching narratives.
+
+```gdscript
+@tool
+class_name DialogueGraphEditor extends GraphEdit
+
+func link_nodes(from: StringName, from_port: int, to: StringName, to_port: int) -> void:
+    # Programmatic connection of visual dialogue blocks
+    var err := connect_node(from, from_port, to, to_port)
+    if err == OK:
+        print_rich("[color=green]Branch linked.[/color]")
+```
+
+### 2. Audio-Driven Dialogue (TTS & Lipsync)
+Use `DisplayServer` for asynchronous Text-to-Speech and register utterance callbacks to drive mouth animations or viseme changes in real-time.
+
+```gdscript
+# dialogue_lipsync.gd
+func start_speaking(text: String) -> void:
+    # 1. Register boundary callback
+    var cb := Callable(self, "_on_tts_boundary")
+    DisplayServer.tts_set_utterance_callback(DisplayServer.TTS_UTTERANCE_BOUNDARY, cb)
+    
+    # 2. Speak asynchronously
+    var voices := DisplayServer.tts_get_voices_for_language("en")
+    DisplayServer.tts_speak(text, voices[0])
+
+func _on_tts_boundary(char_idx: int, _id: int) -> void:
+    # Drive lipsync/animation based on current character index
+    _update_mouth_shape(char_idx)
+```
+
+### 3. Dialogue Analytics Logger
+Implement a custom `Logger` to intercept and record player choices without cluttering conversation logic with I/O calls.
+
+```gdscript
+# dialogue_stat_logger.gd
+class_name DialogueStatLogger extends Logger
+
+func _log_message(msg: String, is_error: bool) -> void:
+    if not is_error and msg.begins_with("[CHOICE]"):
+        # Process and record choice analytics (e.g., save to file or send to server)
+        _record_analytics(msg)
+
+# Register in an AutoLoad's _init()
+static func initialize() -> void:
+    OS.add_logger(DialogueStatLogger.new())
+```
+
 ## Reference
-- Related: `godot-signal-architecture`, `godot-save-load-systems`, `godot-ui-rich-text`
-
-
-### Related
 - Master Skill: [godot-master](../SKILL.md)

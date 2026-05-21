@@ -74,7 +74,65 @@ func _on_cheat_unlocked():
 - **NEVER allow unlimited rapid-fire cheat attempts** — A simple macro can brute-force a 4-button combo in seconds. Use `secret_lockout_cheat_guard.gd` to add a penalty for excessive failures.
 - **NEVER trigger a secret without an 'Aha!' audio/visual cue** — The reward for finding a secret is the *feeling* of discovery. Use `secret_audio_environment_occluder.gd` to change the atmosphere.
 
+## Best Practices
+
+1. **Event-Based Combo Detection** - Avoid polling in `_process`.
+2. **Subtle Cues** - Secrets should be hinted at, not invisible.
+3. **Global Persistence** - Use separate save files for meta-progress.
+
 ---
+
+## Elite Godot 4.x Patterns
+
+### 1. Secret Flag Tracker (Achievement Bridge)
+Use `Resource` objects to track discovery states and emit signals that bridge to your achievement system.
+
+```gdscript
+# secret_data.gd
+class_name SecretData extends Resource
+@export var id: StringName
+@export var is_found := false:
+    set(v):
+        is_found = v
+        emit_changed()
+
+# secret_manager.gd (AutoLoad)
+func _on_secret_changed(data: SecretData):
+    if data.is_found:
+        achievement_system.unlock(data.id)
+```
+
+### 2. Environmental Storytelling Lore History
+Extend secret resources to include lore snippets. Record a history of discovered items to populate a player journal using `RichTextLabel` with BBCode.
+
+```gdscript
+# lore_item.gd
+class_name LoreItem extends SecretData
+@export_multiline var description: String
+
+# lore_journal_ui.gd
+func add_entry(lore: LoreItem):
+    journal_label.text += "\n[b]Discovery:[/b] " + lore.description
+```
+
+### 3. Ghosting System (Collected Secret Visibility)
+Instead of deleting found secrets, render them with partial transparency and disable their collision. This informs players that the area has been "cleared."
+
+```gdscript
+# ghostable_secret.gd
+func _ready():
+    if secret_data.is_found:
+        _apply_ghost_visuals()
+
+func _apply_ghost_visuals():
+    # 2D: Use modulate alpha
+    modulate.a = 0.3
+    # 3D: Adjust GeometryInstance3D transparency
+    # transparency = 0.7
+    
+    # Disable monitoring safely
+    set_deferred("monitoring", false)
+```
 
 ## Reference
 - Master Skill: [godot-master](../SKILL.md)

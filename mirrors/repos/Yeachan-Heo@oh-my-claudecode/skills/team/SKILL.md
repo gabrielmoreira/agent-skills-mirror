@@ -78,6 +78,7 @@ User: "/team 3:executor fix all TypeScript errors"
 ```
 
 **Storage layout (managed by Claude Code):**
+
 ```
 ~/.claude/
   teams/fix-ts-errors/
@@ -90,6 +91,10 @@ User: "/team 3:executor fix all TypeScript errors"
     ...
 ```
 
+## Goal Workflow Relationship
+
+Team is the OMC authority for parallel, staged execution. Use the deterministic conflict policies `refuse`, `adopt_existing`, and `artifact_only` rather than non-deterministic warning handling. If a task mentions Claude Code `/goal`, Ralph, UltraQA, or artifact-only Ultragoal, keep Team as the primary loop authority unless the leader explicitly hands off. Use `/goal` only as a documented native Claude Code handoff target or as visible evidence from the lead session; do not claim the `/goal` evaluator independently runs commands, reads files, or replaces `team-verify` / `team-fix`. Artifact-only Ultragoal references should be treated as durable goal ledger/checkpoint/evidence artifacts, not as worker execution by themselves.
+
 ## Staged Pipeline (Canonical Team Runtime)
 
 Team execution follows a staged pipeline:
@@ -100,13 +105,13 @@ Team execution follows a staged pipeline:
 
 Each pipeline stage uses **specialized agents** -- not just executors. The lead selects agents based on the stage and task characteristics.
 
-| Stage | Required Agents | Optional Agents | Selection Criteria |
-|-------|----------------|-----------------|-------------------|
-| **team-plan** | `explore` (haiku), `planner` (opus) | `analyst` (opus), `architect` (opus) | Use `analyst` for unclear requirements. Use `architect` for systems with complex boundaries. |
-| **team-prd** | `analyst` (opus) | `critic` (opus) | Use `critic` to challenge scope. |
-| **team-exec** | `executor` (sonnet) | `executor` (opus), `debugger` (sonnet), `designer` (sonnet), `writer` (haiku), `test-engineer` (sonnet) | Match agent to subtask type. Use `executor` (model=opus) for complex autonomous work, `designer` for UI, `debugger` for compilation issues, `writer` for docs, `test-engineer` for test creation. |
-| **team-verify** | `verifier` (sonnet) | `test-engineer` (sonnet), `security-reviewer` (sonnet), `code-reviewer` (opus) | Always run `verifier`. Add `security-reviewer` for auth/crypto changes. Add `code-reviewer` for >20 files or architectural changes. `code-reviewer` also covers style/formatting checks. |
-| **team-fix** | `executor` (sonnet) | `debugger` (sonnet), `executor` (opus) | Use `debugger` for type/build errors and regression isolation. Use `executor` (model=opus) for complex multi-file fixes. |
+| Stage           | Required Agents                     | Optional Agents                                                                                         | Selection Criteria                                                                                                                                                                                |
+| --------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **team-plan**   | `explore` (haiku), `planner` (opus) | `analyst` (opus), `architect` (opus)                                                                    | Use `analyst` for unclear requirements. Use `architect` for systems with complex boundaries.                                                                                                      |
+| **team-prd**    | `analyst` (opus)                    | `critic` (opus)                                                                                         | Use `critic` to challenge scope.                                                                                                                                                                  |
+| **team-exec**   | `executor` (sonnet)                 | `executor` (opus), `debugger` (sonnet), `designer` (sonnet), `writer` (haiku), `test-engineer` (sonnet) | Match agent to subtask type. Use `executor` (model=opus) for complex autonomous work, `designer` for UI, `debugger` for compilation issues, `writer` for docs, `test-engineer` for test creation. |
+| **team-verify** | `verifier` (sonnet)                 | `test-engineer` (sonnet), `security-reviewer` (sonnet), `code-reviewer` (opus)                          | Always run `verifier`. Add `security-reviewer` for auth/crypto changes. Add `code-reviewer` for >20 files or architectural changes. `code-reviewer` also covers style/formatting checks.          |
+| **team-fix**    | `executor` (sonnet)                 | `debugger` (sonnet), `executor` (opus)                                                                  | Use `debugger` for type/build errors and regression isolation. Use `executor` (model=opus) for complex multi-file fixes.                                                                          |
 
 **Routing rules:**
 
@@ -142,6 +147,7 @@ Each pipeline stage uses **specialized agents** -- not just executors. The lead 
 ### Verify/Fix Loop and Stop Conditions
 
 Continue `team-exec -> team-verify -> team-fix` until:
+
 1. verification passes and no required fix tasks remain, or
 2. work reaches an explicit terminal blocked/failed outcome with evidence.
 
@@ -159,6 +165,7 @@ The lead writes handoffs to `.omc/handoffs/<stage-name>.md`.
 
 ```markdown
 ## Handoff: <current-stage> → <next-stage>
+
 - **Decided**: [key decisions made in this stage]
 - **Rejected**: [alternatives considered and why they were rejected]
 - **Risks**: [identified risks for the next stage]
@@ -177,6 +184,7 @@ The lead writes handoffs to `.omc/handoffs/<stage-name>.md`.
 
 ```markdown
 ## Handoff: team-plan → team-exec
+
 - **Decided**: Microservice architecture with 3 services (auth, api, worker). PostgreSQL for persistence. JWT for auth tokens.
 - **Rejected**: Monolith (scaling concerns), MongoDB (team expertise is SQL), session cookies (API-first design).
 - **Risks**: Worker service needs Redis for job queue — not yet provisioned. Auth service has no rate limiting in initial design.
@@ -219,6 +227,7 @@ Call `TeamCreate` with a slug derived from the task:
 ```
 
 **Response:**
+
 ```json
 {
   "team_name": "fix-ts-errors",
@@ -248,18 +257,18 @@ state_write(mode="team", active=true, current_phase="team-plan", state={
 
 **State schema fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `active` | boolean | Whether team mode is active |
-| `current_phase` | string | Current pipeline stage: `team-plan`, `team-prd`, `team-exec`, `team-verify`, `team-fix` |
-| `team_name` | string | Slug name for the team |
-| `agent_count` | number | Number of worker agents |
-| `agent_types` | string | Comma-separated agent types used in team-exec |
-| `task` | string | Original task description |
-| `fix_loop_count` | number | Current fix iteration count |
-| `max_fix_loops` | number | Maximum fix iterations before failing (default: 3) |
-| `linked_ralph` | boolean | Whether team is linked to a ralph persistence loop |
-| `stage_history` | string | Comma-separated list of stage transitions with timestamps |
+| Field            | Type    | Description                                                                             |
+| ---------------- | ------- | --------------------------------------------------------------------------------------- |
+| `active`         | boolean | Whether team mode is active                                                             |
+| `current_phase`  | string  | Current pipeline stage: `team-plan`, `team-prd`, `team-exec`, `team-verify`, `team-fix` |
+| `team_name`      | string  | Slug name for the team                                                                  |
+| `agent_count`    | number  | Number of worker agents                                                                 |
+| `agent_types`    | string  | Comma-separated agent types used in team-exec                                           |
+| `task`           | string  | Original task description                                                               |
+| `fix_loop_count` | number  | Current fix iteration count                                                             |
+| `max_fix_loops`  | number  | Maximum fix iterations before failing (default: 3)                                      |
+| `linked_ralph`   | boolean | Whether team is linked to a ralph persistence loop                                      |
+| `stage_history`  | string  | Comma-separated list of stage transitions with timestamps                               |
 
 **Update state on every stage transition:**
 
@@ -291,6 +300,7 @@ Call `TaskCreate` for each subtask. Set dependencies with `TaskUpdate` using `ad
 ```
 
 **Response stores a task file (e.g. `1.json`):**
+
 ```json
 {
   "id": "1",
@@ -338,6 +348,7 @@ Spawn N teammates using `Task` with `team_name` and `name` parameters. Each team
 ```
 
 **Response:**
+
 ```json
 {
   "agent_id": "worker-1@fix-ts-errors",
@@ -347,6 +358,7 @@ Spawn N teammates using `Task` with `team_name` and `name` parameters. Each team
 ```
 
 **Side effects:**
+
 - Teammate added to `config.json` members array
 - An **internal task** is auto-created (with `metadata._internal: true`) tracking the agent lifecycle
 - Internal tasks appear in `TaskList` output -- filter them when counting real tasks
@@ -401,6 +413,7 @@ state_write(mode="team", current_phase="team-fix", state={
 ```
 
 This enables:
+
 - **Resume**: If the lead crashes, `state_read(mode="team")` reveals the last stage and team name for recovery
 - **Cancel**: The cancel skill reads `current_phase` to know what cleanup is needed
 - **Ralph integration**: Ralph can read team state to know if the pipeline completed or failed
@@ -533,6 +546,7 @@ This addendum must preserve the core rule: **worker = executor only, never leade
 **CRITICAL: Steps must execute in exact order. Never call TeamDelete before shutdown is confirmed.**
 
 **Step 1: Verify completion**
+
 ```
 Call TaskList — verify all real tasks (non-internal) are completed or failed.
 ```
@@ -540,6 +554,7 @@ Call TaskList — verify all real tasks (non-internal) are completed or failed.
 **Step 2: Request shutdown from each teammate**
 
 **Lead sends:**
+
 ```json
 {
   "type": "shutdown_request",
@@ -549,11 +564,13 @@ Call TaskList — verify all real tasks (non-internal) are completed or failed.
 ```
 
 **Step 3: Wait for responses (BLOCKING)**
+
 - Wait up to 30s per teammate for `shutdown_response`
 - Track which teammates confirmed vs timed out
 - If a teammate doesn't respond within 30s: log warning, mark as unresponsive
 
 **Teammate receives and responds:**
+
 ```json
 {
   "type": "shutdown_response",
@@ -563,11 +580,13 @@ Call TaskList — verify all real tasks (non-internal) are completed or failed.
 ```
 
 After approval:
+
 - Teammate process terminates
 - Teammate auto-removed from `config.json` members array
 - Internal task for that teammate completes
 
 **Step 4: TeamDelete — only after ALL teammates confirmed or timed out**
+
 ```json
 { "team_name": "fix-ts-errors" }
 ```
@@ -575,6 +594,7 @@ After approval:
 **Step 5: Orphan scan**
 
 Check for agent processes that survived TeamDelete:
+
 ```bash
 node "${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-orphans.mjs" --team-name fix-ts-errors
 ```
@@ -582,6 +602,7 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-orphans.mjs" --team-name fix-ts-erro
 This scans for processes matching the team name whose config no longer exists, and terminates them (SIGTERM → 5s wait → SIGKILL). Supports `--dry-run` for inspection.
 
 **Shutdown sequence is BLOCKING:** Do not proceed to TeamDelete until all teammates have either:
+
 - Confirmed shutdown (`shutdown_response` with `approve: true`), OR
 - Timed out (30s with no response)
 
@@ -595,11 +616,11 @@ The team skill supports **hybrid execution** combining Claude agent teammates wi
 
 Tasks are tagged with an execution mode during decomposition:
 
-| Execution Mode | Provider | Capabilities |
-|---------------|----------|-------------|
-| `claude_worker` | Claude agent | Full Claude Code tool access (Read/Write/Edit/Bash/Task). Best for tasks needing Claude's reasoning + iterative tool use. |
-| `codex_worker` | Codex CLI (tmux pane) | Full filesystem access in working_directory. Runs autonomously via tmux pane. Best for code review, security analysis, refactoring, architecture. Requires `npm install -g @openai/codex`. |
-| `gemini_worker` | Gemini CLI (tmux pane) | Full filesystem access in working_directory. Runs autonomously via tmux pane. Best for UI/design work, documentation, large-context tasks. Requires `npm install -g @google/gemini-cli`. |
+| Execution Mode  | Provider               | Capabilities                                                                                                                                                                               |
+| --------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `claude_worker` | Claude agent           | Full Claude Code tool access (Read/Write/Edit/Bash/Task). Best for tasks needing Claude's reasoning + iterative tool use.                                                                  |
+| `codex_worker`  | Codex CLI (tmux pane)  | Full filesystem access in working_directory. Runs autonomously via tmux pane. Best for code review, security analysis, refactoring, architecture. Requires `npm install -g @openai/codex`. |
+| `gemini_worker` | Gemini CLI (tmux pane) | Full filesystem access in working_directory. Runs autonomously via tmux pane. Best for UI/design work, documentation, large-context tasks. Requires `npm install -g @google/gemini-cli`.   |
 
 ### How CLI Workers Operate
 
@@ -612,6 +633,7 @@ Tmux CLI workers run in dedicated tmux panes with filesystem access. They are **
 5. Lead reads the output, marks the task complete, and feeds results to dependent tasks
 
 **Key difference from Claude teammates:**
+
 - CLI workers operate via tmux, not Claude Code's tool system
 - They cannot use TaskList/TaskUpdate/SendMessage (no team awareness)
 - They run as one-shot autonomous jobs, not persistent teammates
@@ -619,16 +641,16 @@ Tmux CLI workers run in dedicated tmux panes with filesystem access. They are **
 
 ### When to Route Where
 
-| Task Type | Best Route | Why |
-|-----------|-----------|-----|
-| Iterative multi-step work | Claude teammate | Needs tool-mediated iteration + team communication |
-| Code review / security audit | CLI worker or specialist agent | Autonomous execution, good at structured analysis |
-| Architecture analysis / planning | architect Claude agent | Strong analytical reasoning with codebase access |
-| Refactoring (well-scoped) | CLI worker or executor agent | Autonomous execution, good at structured transforms |
-| UI/frontend implementation | designer Claude agent | Design expertise, framework idioms |
-| Large-scale documentation | writer Claude agent | Writing expertise + large context for consistency |
-| Build/test iteration loops | Claude teammate | Needs Bash tool + iterative fix cycles |
-| Tasks needing team coordination | Claude teammate | Needs SendMessage for status updates |
+| Task Type                        | Best Route                     | Why                                                 |
+| -------------------------------- | ------------------------------ | --------------------------------------------------- |
+| Iterative multi-step work        | Claude teammate                | Needs tool-mediated iteration + team communication  |
+| Code review / security audit     | CLI worker or specialist agent | Autonomous execution, good at structured analysis   |
+| Architecture analysis / planning | architect Claude agent         | Strong analytical reasoning with codebase access    |
+| Refactoring (well-scoped)        | CLI worker or executor agent   | Autonomous execution, good at structured transforms |
+| UI/frontend implementation       | designer Claude agent          | Design expertise, framework idioms                  |
+| Large-scale documentation        | writer Claude agent            | Writing expertise + large context for consistency   |
+| Build/test iteration loops       | Claude teammate                | Needs Bash tool + iterative fix cycles              |
+| Tasks needing team coordination  | Claude teammate                | Needs SendMessage for status updates                |
 
 ### Example: Hybrid Team with CLI Workers
 
@@ -680,18 +702,18 @@ The `getTeamStatus(teamName, workingDirectory, heartbeatMaxAgeMs?)` function pro
 Example usage in the monitor loop:
 
 ```typescript
-const status = getTeamStatus('fix-ts-errors', workingDirectory);
+const status = getTeamStatus("fix-ts-errors", workingDirectory);
 
 for (const worker of status.workers) {
   if (!worker.isAlive) {
     // Worker is dead -- reassign its in-progress tasks
   }
   for (const msg of worker.recentMessages) {
-    if (msg.type === 'task_complete') {
+    if (msg.type === "task_complete") {
       // Mark task complete, unblock dependents
-    } else if (msg.type === 'task_failed') {
+    } else if (msg.type === "task_failed") {
       // Handle failure, possibly retry or reassign
-    } else if (msg.type === 'error') {
+    } else if (msg.type === "error") {
       // Log error, check if worker needs intervention
     }
   }
@@ -704,14 +726,14 @@ if (status.taskSummary.pending === 0 && status.taskSummary.inProgress === 0) {
 
 ### Event-Based Actions from Outbox Messages
 
-| Message Type | Action |
-|-------------|--------|
-| `task_complete` | Mark task completed, check if blocked tasks are now unblocked, notify dependent workers |
-| `task_failed` | Increment failure sidecar, decide retry vs reassign vs skip |
-| `idle` | Worker has no assigned tasks -- assign pending work or begin shutdown |
-| `error` | Log the error, check `consecutiveErrors` in heartbeat for quarantine threshold |
-| `shutdown_ack` | Worker acknowledged shutdown -- safe to remove from team |
-| `heartbeat` | Update liveness tracking (redundant with heartbeat files but useful for latency monitoring) |
+| Message Type    | Action                                                                                      |
+| --------------- | ------------------------------------------------------------------------------------------- |
+| `task_complete` | Mark task completed, check if blocked tasks are now unblocked, notify dependent workers     |
+| `task_failed`   | Increment failure sidecar, decide retry vs reassign vs skip                                 |
+| `idle`          | Worker has no assigned tasks -- assign pending work or begin shutdown                       |
+| `error`         | Log the error, check `consecutiveErrors` in heartbeat for quarantine threshold              |
+| `shutdown_ack`  | Worker acknowledged shutdown -- safe to remove from team                                    |
+| `heartbeat`     | Update liveness tracking (redundant with heartbeat files but useful for latency monitoring) |
 
 This approach complements the existing `SendMessage`-based communication by providing a pull-based mechanism for MCP workers that cannot use Claude Code's team messaging tools.
 
@@ -755,6 +777,7 @@ When the user invokes `/team ralph`, says "team ralph", or combines both keyword
 ### Activation
 
 Team+Ralph activates when:
+
 1. User invokes `/team ralph "task"` or `/oh-my-claudecode:team ralph "task"`
 2. Keyword detector finds both `team` and `ralph` in the prompt
 3. Hook detects `MAGIC KEYWORD: RALPH` alongside team context
@@ -791,6 +814,7 @@ state_write(mode="ralph", active=true, iteration=1, max_iterations=10, current_p
 ### Cancellation
 
 Cancel either mode cancels both:
+
 - **Cancel Ralph (linked):** Cancel Team first (graceful shutdown), then clear Ralph state
 - **Cancel Team (linked):** Clear Team, mark Ralph iteration cancelled, stop loop
 
@@ -810,21 +834,21 @@ This prevents duplicate teams and allows graceful recovery from lead failures.
 
 ## Comparison: Team vs Legacy Swarm
 
-| Aspect | Team (Native) | Swarm (Legacy SQLite) |
-|--------|--------------|----------------------|
-| **Storage** | JSON files in `~/.claude/teams/` and `~/.claude/tasks/` | SQLite in `.omc/state/swarm.db` |
-| **Dependencies** | `better-sqlite3` not needed | Requires `better-sqlite3` npm package |
-| **Task claiming** | `TaskUpdate(owner + in_progress)` -- lead pre-assigns | SQLite IMMEDIATE transaction -- atomic |
-| **Race conditions** | Possible if two agents claim same task (mitigate by pre-assigning) | None (SQLite transactions) |
-| **Communication** | `SendMessage` (DM, broadcast, shutdown) | None (fire-and-forget agents) |
-| **Task dependencies** | Built-in `blocks` / `blockedBy` arrays | Not supported |
-| **Heartbeat** | Automatic idle notifications from Claude Code | Manual heartbeat table + polling |
-| **Shutdown** | Graceful request/response protocol | Signal-based termination |
-| **Agent lifecycle** | Auto-tracked via internal tasks + config members | Manual tracking via heartbeat table |
-| **Progress visibility** | `TaskList` shows live status with owner | SQL queries on tasks table |
-| **Conflict prevention** | Owner field (lead-assigned) | Lease-based claiming with timeout |
-| **Crash recovery** | Lead detects via missing messages, reassigns | Auto-release after 5-min lease timeout |
-| **State cleanup** | `TeamDelete` removes everything | Manual `rm` of SQLite database |
+| Aspect                  | Team (Native)                                                      | Swarm (Legacy SQLite)                  |
+| ----------------------- | ------------------------------------------------------------------ | -------------------------------------- |
+| **Storage**             | JSON files in `~/.claude/teams/` and `~/.claude/tasks/`            | SQLite in `.omc/state/swarm.db`        |
+| **Dependencies**        | `better-sqlite3` not needed                                        | Requires `better-sqlite3` npm package  |
+| **Task claiming**       | `TaskUpdate(owner + in_progress)` -- lead pre-assigns              | SQLite IMMEDIATE transaction -- atomic |
+| **Race conditions**     | Possible if two agents claim same task (mitigate by pre-assigning) | None (SQLite transactions)             |
+| **Communication**       | `SendMessage` (DM, broadcast, shutdown)                            | None (fire-and-forget agents)          |
+| **Task dependencies**   | Built-in `blocks` / `blockedBy` arrays                             | Not supported                          |
+| **Heartbeat**           | Automatic idle notifications from Claude Code                      | Manual heartbeat table + polling       |
+| **Shutdown**            | Graceful request/response protocol                                 | Signal-based termination               |
+| **Agent lifecycle**     | Auto-tracked via internal tasks + config members                   | Manual tracking via heartbeat table    |
+| **Progress visibility** | `TaskList` shows live status with owner                            | SQL queries on tasks table             |
+| **Conflict prevention** | Owner field (lead-assigned)                                        | Lease-based claiming with timeout      |
+| **Crash recovery**      | Lead detects via missing messages, reassigns                       | Auto-release after 5-min lease timeout |
+| **State cleanup**       | `TeamDelete` removes everything                                    | Manual `rm` of SQLite database         |
 
 **When to use Team over Swarm:** Always prefer `/team` for new work. It uses Claude Code's built-in infrastructure, requires no external dependencies, supports inter-agent communication, and has task dependency management.
 
@@ -881,9 +905,9 @@ Optional settings live in `.claude/omc.jsonc` (project) or `~/.config/claude-omc
       "maxAgents": 20,
       "defaultAgentType": "claude",
       "monitorIntervalMs": 30000,
-      "shutdownTimeoutMs": 15000
-    }
-  }
+      "shutdownTimeoutMs": 15000,
+    },
+  },
 }
 ```
 
@@ -907,27 +931,27 @@ Declare which provider (`claude`, `codex`, `gemini`) and which model tier should
 {
   "team": {
     "roleRouting": {
-      "orchestrator":  { "model": "inherit" },
-      "planner":       { "provider": "claude", "model": "HIGH" },
-      "analyst":       { "provider": "claude", "model": "HIGH" },
-      "executor":      { "provider": "claude", "model": "MEDIUM" },
-      "critic":        { "provider": "codex" },
+      "orchestrator": { "model": "inherit" },
+      "planner": { "provider": "claude", "model": "HIGH" },
+      "analyst": { "provider": "claude", "model": "HIGH" },
+      "executor": { "provider": "claude", "model": "MEDIUM" },
+      "critic": { "provider": "codex" },
       "code-reviewer": { "provider": "gemini" },
-      "test-engineer": { "provider": "gemini", "model": "MEDIUM" }
-    }
-  }
+      "test-engineer": { "provider": "gemini", "model": "MEDIUM" },
+    },
+  },
 }
 ```
 
-| Role | Provider | Model |
-|---|---|---|
-| `orchestrator` | claude (pinned) | inherits invoking session |
-| `planner` | claude | `HIGH` (opus) |
-| `analyst` | claude | `HIGH` (opus) |
-| `executor` | claude | `MEDIUM` (sonnet) |
-| `critic` | codex | codex default |
-| `code-reviewer` | gemini | gemini default |
-| `test-engineer` | gemini | `MEDIUM` (sonnet) |
+| Role            | Provider        | Model                     |
+| --------------- | --------------- | ------------------------- |
+| `orchestrator`  | claude (pinned) | inherits invoking session |
+| `planner`       | claude          | `HIGH` (opus)             |
+| `analyst`       | claude          | `HIGH` (opus)             |
+| `executor`      | claude          | `MEDIUM` (sonnet)         |
+| `critic`        | codex           | codex default             |
+| `code-reviewer` | gemini          | gemini default            |
+| `test-engineer` | gemini          | `MEDIUM` (sonnet)         |
 
 ### Canonical roles
 
@@ -998,15 +1022,15 @@ MCP workers can operate in isolated git worktrees to prevent file conflicts betw
 
 ### API Reference
 
-| Function | Description |
-|----------|-------------|
-| `createWorkerWorktree(teamName, workerName, repoRoot, baseBranch?)` | Create isolated worktree |
-| `removeWorkerWorktree(teamName, workerName, repoRoot)` | Remove worktree and branch |
-| `listTeamWorktrees(teamName, repoRoot)` | List all team worktrees |
-| `cleanupTeamWorktrees(teamName, repoRoot)` | Remove all team worktrees |
-| `checkMergeConflicts(workerBranch, baseBranch, repoRoot)` | Non-destructive conflict check |
-| `mergeWorkerBranch(workerBranch, baseBranch, repoRoot)` | Merge worker branch (--no-ff) |
-| `mergeAllWorkerBranches(teamName, repoRoot, baseBranch?)` | Merge all completed workers |
+| Function                                                            | Description                    |
+| ------------------------------------------------------------------- | ------------------------------ |
+| `createWorkerWorktree(teamName, workerName, repoRoot, baseBranch?)` | Create isolated worktree       |
+| `removeWorkerWorktree(teamName, workerName, repoRoot)`              | Remove worktree and branch     |
+| `listTeamWorktrees(teamName, repoRoot)`                             | List all team worktrees        |
+| `cleanupTeamWorktrees(teamName, repoRoot)`                          | Remove all team worktrees      |
+| `checkMergeConflicts(workerBranch, baseBranch, repoRoot)`           | Non-destructive conflict check |
+| `mergeWorkerBranch(workerBranch, baseBranch, repoRoot)`             | Merge worker branch (--no-ff)  |
+| `mergeAllWorkerBranches(teamName, repoRoot, baseBranch?)`           | Merge all completed workers    |
 
 ### Important Notes
 

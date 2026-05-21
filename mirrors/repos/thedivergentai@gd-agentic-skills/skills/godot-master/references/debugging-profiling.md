@@ -271,6 +271,54 @@ Debug → Remote Debug → Inspect scene tree
 See live node hierarchy
 ```
 
+## Expert Debugging Patterns
+
+### 1. Automated-QA-Suite (Headless CI/CD)
+Pattern for verifying game state in automated pipelines with deterministic exit codes.
+- **Headless Execution**: Use `godot --headless -s test_runner.gd` to run tests without a display server.
+- **Verification**: Evaluate state and call `get_tree().quit(0)` for success or `quit(1)` for failure to pass exit codes back to the CI runner.
+- **Implementation**:
+    ```gdscript
+    func _run() -> void: # Main entry for --script
+        var success := _run_all_tests()
+        if success:
+            print("[TEST_RESULT] PASS")
+            get_tree().quit(0)
+        else:
+            printerr("[TEST_RESULT] FAIL")
+            get_tree().quit(1)
+    ```
+- **CLI Flags**: Use `--gpu-validation` and `--gpu-abort` to catch driver-level errors in CI.
+
+### 2. Visual-Profiler-Extensions (GPU Costs)
+Custom diagnostic overlays to monitor rendering overhead in-game.
+- **Metric Querying**: Use `RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME)` for draw calls.
+- **GPU Profiling**: Enable `debug/settings/stdout/print_gpu_profile` in Project Settings to dump a per-second breakdown of CanvasItem, shadow, and glow costs.
+- **VRAM Tracking**: Use `Performance.get_monitor(Performance.RENDER_VIDEO_MEM_USED)` to track total GPU memory consumption.
+- **Implementation**:
+    ```gdscript
+    func _process(_delta):
+        var calls = RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME)
+        var primitives = RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME)
+        # Display on-screen overlay
+    ```
+
+### 3. Thread-Safety-Analyzer (Race Conditions)
+Ensuring safe access to the SceneTree and data from worker threads.
+- **Safety Checks**: Use `Thread.set_thread_safety_checks_enabled(true)` to force Godot to throw errors when unsafe SceneTree access occurs from a thread.
+- **Deferred Access**: ALWAYS use `call_deferred()` or `set_deferred()` when a worker thread needs to modify the SceneTree.
+- **Server Safety**: Servers (Rendering/Physics) are thread-safe ONLY if enabled in Project Settings under `threading/worker_pool/allow_group_tasks`.
+- **Implementation**:
+    ```gdscript
+    func _ready():
+        Thread.set_thread_safety_checks_enabled(true) # Global enforcement
+    ```
+
+### 4. Memory-Leak-Tracker (Transient Scenes)
+Identifying leaks in scenes that are instantiated and freed frequently.
+- **Orphan Detection**: Periodically check `Node.get_orphan_node_ids()`. If the count grows indefinitely after closing transient scenes, you have a leak.
+- **ObjectDB Snapshots**: Use the Godot 4.6 ObjectDB Profiler to take "Before" and "After" snapshots. Diffing these reveals exactly which `RefCounted` objects are causing circular reference leaks.
+
 ## Reference
 - [Godot Docs: Debugger](https://docs.godotengine.org/en/stable/tutorials/scripting/debug/debugger_panel.html)
 

@@ -394,5 +394,85 @@ func server_validate_shot(shooter_transform: Transform3D) -> void:
 4. **Animations**: `AnimationTree` for weapon state machines (idle, aim, fire, reload)
 
 
+## Advanced FPS Feel & Movement
+
+Elite patterns for world-class weapon weight, stair navigation, and tactical positioning.
+
+### 1. Viewmodel Sway (Procedural Weight)
+To make weapons feel heavy and responsive, apply a rotational offset based on the mouse's last velocity. Use `Input.get_last_mouse_velocity()` for jitter-free data.
+
+```gdscript
+class_name WeaponSway extends Node3D
+
+@export var sway_amount: float = 0.01
+@export var max_sway: float = 0.05
+@export var smooth_speed: float = 5.0
+
+func _process(delta: float) -> void:
+    # Use 0.1s buffered mouse velocity for jitter-free sway
+    var mouse_vel := Input.get_last_mouse_velocity()
+    
+    var target_pos := Vector3(
+        clamp(-mouse_vel.x * sway_amount, -max_sway, max_sway),
+        clamp(mouse_vel.y * sway_amount, -max_sway, max_sway),
+        0
+    )
+    
+    # Smoothly lerp the viewmodel to the target offset
+    transform.origin = transform.origin.lerp(target_pos, delta * smooth_speed)
+```
+
+### 2. Step-Up Logic (FPS Navigation)
+Standard `move_and_slide()` can snag on small steps. Use a manual raycast check to detect steps and adjust the player's vertical position for smooth stair climbing.
+
+```gdscript
+class_name FPSStepController extends CharacterBody3D
+
+@export var step_height: float = 0.4
+@onready var space_state := get_world_3d().direct_space_state
+
+func _physics_process(delta: float) -> void:
+    move_and_slide()
+    if is_on_wall():
+        _check_for_step()
+
+func _check_for_step() -> void:
+    # Cast a ray forward and down from step_height
+    var forward_offset := velocity.normalized() * 0.5
+    var ray_start := global_position + Vector3(0, step_height, 0) + forward_offset
+    var ray_end := ray_start + Vector3.DOWN * step_height
+    
+    var query := PhysicsRayQueryParameters3D.create(ray_start, ray_end)
+    query.exclude = [get_rid()]
+    
+    var result := space_state.intersect_ray(query)
+    if result:
+        # Smoothly or instantly teleport to step top
+        global_position.y = result.position.y
+```
+
+### 3. Tactical Lean System
+Peeking around corners is achieved by rotating the camera around the Z-axis (roll) and offsetting the local X position. Use `Input.get_axis()` for smooth analog leaning.
+
+```gdscript
+class_name LeanSystem extends Camera3D
+
+@export var lean_angle: float = 15.0 # Degrees
+@export var lean_offset: float = 0.4 # Meters
+@export var lean_speed: float = 8.0
+
+func _process(delta: float) -> void:
+    var lean_input := Input.get_axis("lean_left", "lean_right")
+    
+    var target_rot := deg_to_rad(-lean_input * lean_angle)
+    var target_pos := lean_input * lean_offset
+    
+    rotation.z = lerp_angle(rotation.z, target_rot, delta * lean_speed)
+    transform.origin.x = lerp(transform.origin.x, target_pos, delta * lean_speed)
+```
+
+**Expert Tip**: For the Lean system, parent the `Camera3D` to a "LeanPivot" node at the base of the player's neck to ensure the pivot point feels anatomically correct.
+
+
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)

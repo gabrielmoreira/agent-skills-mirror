@@ -101,7 +101,7 @@ Plan Mode 不属于 permission_mode 三选一，而是**正交的工作模式**�
 | 3 | **YOLO**（global / session） | 全部 `Allow`；保护路径/危险命令/macOS 控制动作命中只 warn | 仅 Plan 能压 |
 | 4 | **保护路径** | 非 YOLO 时强制 `Ask` + `forbids_allow_always=true` | 仅 YOLO / Plan |
 | 5 | **危险命令** | 非 YOLO 时强制 `Ask` + `forbids_allow_always=true` | 仅 YOLO / Plan |
-| 6 | **macOS 控制动作** | `mac_control` 普通突变动作 → `Ask`；高风险动作 → `Ask` + `forbids_allow_always=true` | 仅 YOLO / Plan |
+| 6 | **macOS 控制动作** | `mac_control` 普通/隐私动作 → `Ask`；高风险动作 → `Ask` + `forbids_allow_always=true` | 仅 YOLO / Plan |
 | 7 | **AllowAlways 累积** | 命中作用域规则 → `Allow`（v1 待 GUI 编辑入口） | 在第 7 层之内 |
 | 8 | **Session 模式 preset** | Default / Smart 各自展开 | — |
 | 9 | **兜底** | `Decision::Allow` | — |
@@ -257,7 +257,7 @@ pub async fn resolve_async(ctx: &ResolveContext<'_>) -> Decision
 
 - **engine 不依赖 AssistantAgent**：通过 `judge.rs` 内部调 `AssistantAgent::judge_one_shot` 静态方法，从 `cached_config().providers` 拿 ProviderConfig 自建 LLM 调用，不用主对话的 cache snapshot
 - **保护路径 / 危险命令在 sync 路径**：让 hot path 在 LLM 不可用时仍能正确强制审批
-- **macOS 控制动作在 sync 路径**：`mac_control` 的风险由 `action/op/path` 纯参数判断；普通突变动作弹审批，高风险动作禁用 AllowAlways
+- **macOS 控制动作在 sync 路径**：`mac_control` 的风险由 `action/op/path` 纯参数判断；普通/隐私动作弹审批，高风险动作禁用 AllowAlways
 - **YOLO 内仍跑风险检查**：保护路径 / 危险命令 / macOS 控制只为打 `app_warn!` 审计日志，不改决策
 
 ---
@@ -321,9 +321,9 @@ pub async fn resolve_async(ctx: &ResolveContext<'_>) -> Decision
 | **保护路径** | `read` / `write` / `edit` / `apply_patch` / `exec`(cwd 或 command 内出现) | 路径前缀 + 通配（`*.env` / `*secret*`） | ✅ 非 YOLO 强制 | ❌ 按钮置灰 |
 | **危险命令** | `exec` | 命令字符串 ASCII case-insensitive substring | ✅ 非 YOLO 强制 | ❌ 按钮置灰 |
 | **编辑命令** | `exec` | 命令字符串 substring | 仅 Default 模式触发；Smart/YOLO 不消费 | ✅ 可 AllowAlways |
-| **macOS 控制** | `mac_control` | `action/op/path` 纯参数分类 | ✅ 普通/高风险突变 | 普通突变可；高风险置灰 |
+| **macOS 控制** | `mac_control` | `action/op/path` 纯参数分类 | ✅ 普通/隐私/高风险动作 | 普通/隐私动作可；高风险置灰 |
 
-`mac_control` 的只读动作（`status` / `permissions` / `snapshot` / `wait` / `apps.list` / `apps.frontmost` / `apps.installed` / `apps.search` / `windows.list` / `menu.list` / `dialog.inspect`）直接放行；普通突变动作弹审批；高风险突变动作禁用 AllowAlways。
+`mac_control` 的只读动作（`status` / `permissions` / `snapshot` / `elements.find` / `wait` / `apps.list` / `apps.frontmost` / `apps.installed` / `apps.search` / `windows.list` / `act.dry_run` / `menu.list` / `dialog.inspect`）直接放行；普通突变和隐私敏感动作（例如 `clipboard.get/set/clear`）弹审批；高风险突变动作禁用 AllowAlways。
 
 ### 默认值
 
@@ -384,7 +384,7 @@ pub fn reset_to_defaults(cache: &Cache, file: &Path, defaults: &[&str]) -> Resul
 |------|------|
 | `write` / `edit` / `apply_patch` | 编辑类工具 |
 | `exec` 命中编辑命令模式 | 编辑命令 |
-| `mac_control` 普通突变动作 | macOS 桌面控制 |
+| `mac_control` 普通/隐私动作 | macOS 桌面控制 |
 | `mac_control` 高风险动作 | macOS 桌面控制（禁用 AllowAlways） |
 
 额外（连 YOLO 都覆盖不了的暂只有 Plan Mode）：保护路径 + 危险命令 + 高风险 macOS 控制在非 YOLO 下强制弹，其中高风险 macOS 控制包括 `apps.quit`、`windows.close`、`dialog.accept` 和命中危险词的 `menu.click`。
@@ -403,7 +403,7 @@ pub fn reset_to_defaults(cache: &Cache, file: &Path, defaults: &[&str]) -> Resul
 | `peek_sessions` `sessions_list` `sessions_history` `session_status` `agents_list` | 跨会话只读 |
 | `get_settings` `list_settings_backups` | 设置查询 |
 
-合计 **17 个内置可加项**。MCP 工具不进 Agent 自定义清单（避免 N 项展开太长），统一由 `McpServerConfig.default_approval` 字段 server 级开关。`mac_control` 也不进入自定义勾选清单；它按 `action/op` 细分只读、普通突变和高风险突变。
+合计 **17 个内置可加项**。MCP 工具不进 Agent 自定义清单（避免 N 项展开太长），统一由 `McpServerConfig.default_approval` 字段 server 级开关。`mac_control` 也不进入自定义勾选清单；它按 `action/op` 细分只读、普通/隐私动作和高风险突变。
 
 > **「自定义工具审批」仅 Default 模式生效**——Smart / Yolo 模式忽略整个机制。UI 显式提示用户。
 
@@ -522,7 +522,7 @@ useEffect(() => {
 | `set_approval_timeout_action` | `POST /api/config/approval-timeout-action` | 同上 |
 | `respond_to_approval` | `POST /api/chat/approval` | 弹窗按钮回调（`allow_once` / `allow_always` / `deny`） |
 
-后端实现：[`src-tauri/src/commands/permission.rs`](../../src-tauri/src/commands/permission.rs) + [`crates/ha-server/src/routes/permission.rs`](../../crates/ha-server/src/routes/permission.rs)（双壳镜像，登记 followup F-025 计划合并到 `permission::api` 模块）。
+后端实现：[`src-tauri/src/commands/permission.rs`](../../src-tauri/src/commands/permission.rs) + [`crates/ha-server/src/routes/permission.rs`](../../crates/ha-server/src/routes/permission.rs)（双壳镜像；后续可按需合并到 `permission::api` 模块）。
 
 ---
 
@@ -577,13 +577,13 @@ useEffect(() => {
    - 编辑器 UI 在「设置 → 权限 → AllowAlways」
    - 弹窗按上下文动态高亮 in-this-project / in-this-session / agent-home / globally
 
-2. **`smart_judge` 不复用主对话 prompt cache**：`judge_one_shot` 走 bare 模式，每次 cache miss 是完整 token 成本（60s TTL 摊销）。原计划 "复用 system_prompt + history 前缀命中 prompt cache 成本 ≈ 主对话首轮的 10%" 留作 followup——需要把 agent 引用透传到 engine async 路径
+2. **`smart_judge` 不复用主对话 prompt cache**：`judge_one_shot` 走 bare 模式，每次 cache miss 是完整 token 成本（60s TTL 摊销）。若要复用 system_prompt + history 前缀命中 prompt cache，需要把 agent 引用透传到 engine async 路径
 
-3. **`SessionMeta.permission_mode` 仍是 `String`**：消费方各自 `SessionMode::parse_or_default(&m.permission_mode)`。enum 已存在但未替换字段类型——登记 [F-029](../plans/review-followups.md)
+3. **`SessionMeta.permission_mode` 仍是 `String`**：消费方各自 `SessionMode::parse_or_default(&m.permission_mode)`。enum 已存在但未替换字段类型
 
 4. **Smart 模式 system prompt cache 失效**：`SMART_MODE_GUIDANCE` 注入位置在 `TOOL_CALL_NARRATION_GUIDANCE` 之后但仍在 prefix 里——session 切 mode 会作废静态前缀缓存一次。原 plan 描述的"作为 suffix cache block 不作废静态前缀"未实现（需要改 chat_round provider 适配，跨 4 个 provider）
 
-5. **判官 cache key 不规范化对象键序**：`args.to_string()` 哈希——同语义不同键序产生不同 cache key——登记 [F-031](../plans/review-followups.md)
+5. **判官 cache key 不规范化对象键序**：`args.to_string()` 哈希——同语义不同键序产生不同 cache key
 
 6. **不做老数据迁移**：`ToolPermissionMode` / `exec-approvals.json` / `auto_approve_tools` / `require_approval` 一律不读，重启后默认值生效，老用户审批规则需要重新设置
 

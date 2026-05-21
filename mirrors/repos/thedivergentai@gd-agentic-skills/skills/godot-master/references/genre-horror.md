@@ -34,6 +34,8 @@ Expert blueprint for horror games balancing tension, atmosphere, and player agen
 - NEVER rely on AnimationPlayer for random flickering; use `Tween` for programmatic, clean energy manipulation.
 - NEVER load heavy scare scenes or 4K textures synchronously via `load()`; strictly use `ResourceLoader.load_threaded_request()` to prevent frame stalls.
 - NEVER scale CollisionShape3D non-uniformly; strictly adjust internal shape resource parameters (radius, height) to prevent erratic physics.
+- NEVER perform synchronous, heavy file I/O in a Safe Room; strictly use **`Thread` and `Mutex`** to handle background saving without stalling the main game thread.
+- NEVER check for hiding spot types by casting; strictly use **`Object` metadata (`set_meta`)** for performant, decoupled AI queries.
 
 ---
 
@@ -147,6 +149,54 @@ Horror needs peaks and valleys.
 ### The "Dual Brain" AI
 *   **Director (All-knowing)**: Cheats to keep the alien relevant (teleports it closer if far away, guides it to player's general area).
 *   **Alien (Senses only)**: Honest AI. Must actually see/hear the player to attack.
+
+### 3. Hiding-Spot Metadata System
+Use decoupled Object metadata so AI can query state without knowing the class.
+
+```gdscript
+# hiding_spot.gd
+func _ready():
+    add_to_group("hiding_spots")
+    set_meta("is_occupied", false)
+
+# predator_ai.gd
+func search_hiding_spots():
+    for spot in get_tree().get_nodes_in_group("hiding_spots"):
+        if spot.get_meta("is_occupied"):
+            investigate(spot.global_position)
+```
+
+### 4. Adaptive Audio (Stress Muffling)
+Dynamic low-pass filtering via `AudioServer`.
+
+```gdscript
+# audio_stress_manager.gd
+func update_stress(fear_level: float):
+    # Enable LPF effect on Master bus (index 0) if fear is high
+    AudioServer.set_bus_effect_enabled(0, 0, fear_level > 0.5)
+    # Attenuate volume linearly
+    AudioServer.set_bus_volume_linear(0, 1.0 - (fear_level * 0.4))
+```
+
+### 5. Safe-Room Multithreaded Save
+Use `Thread` and `Mutex` to prevent frame drops during checkpoint saves.
+
+```gdscript
+# safe_room.gd
+var _save_thread: Thread = Thread.new()
+var _mutex: Mutex = Mutex.new()
+
+func trigger_save(data: Dictionary):
+    _mutex.lock()
+    if not _save_thread.is_alive():
+        _save_thread.start(_do_save.bind(data.duplicate(true)))
+    _mutex.unlock()
+
+func _do_save(data):
+    var file = FileAccess.open("user://save.dat", FileAccess.WRITE)
+    file.store_var(data)
+    file.close()
+```
 
 ## Godot-Specific Tips
 

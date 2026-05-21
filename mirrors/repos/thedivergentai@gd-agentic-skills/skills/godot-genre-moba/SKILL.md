@@ -183,5 +183,79 @@ class_name Ability extends Resource
 3.  **Hacking**: Client says "I dealt 1000 damage". **Fix**: Client says "I cast Spell Q at Direction V". Server calculates damage.
 
 
+## Advanced MOBA Meta-Systems
+
+Professional implementation of match playback, network smoothing, and advanced jungle AI.
+
+### 1. Match Replay System (Binary Serialization)
+For high-performance match recording, use `var_to_bytes()` to serialize state dictionaries into a compressed binary format. Avoid JSON for replays to minimize disk I/O and file size.
+
+```gdscript
+class_name ReplayManager extends Node
+
+var frame_history: Array[PackedByteArray] = []
+
+func record_frame(state: Dictionary) -> void:
+    # Efficiently convert data to bytes
+    frame_history.append(var_to_bytes(state))
+
+func save_replay(match_id: String) -> void:
+    var file := FileAccess.open("user://replays/" + match_id + ".dat", FileAccess.WRITE)
+    if file:
+        file.store_var(frame_history) # Stores the whole array as a variant
+        file.close()
+
+func play_frame(frame_index: int) -> Dictionary:
+    return bytes_to_var(frame_history[frame_index])
+```
+
+### 2. Networked Interpolated Sync
+Use Godot 4.x's built-in physics interpolation to mask network jitter. Combined with `MultiplayerSynchronizer`, this provides smooth hero movement even at low tick rates (15-20Hz).
+
+```gdscript
+class_name HeroNetSync extends CharacterBody3D
+
+func _ready() -> void:
+    # Enable native engine interpolation for visual smoothness
+    physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_ON
+    
+    if is_multiplayer_authority():
+        setup_synchronizer()
+
+func setup_synchronizer() -> void:
+    var sync := $MultiplayerSynchronizer
+    var config := SceneReplicationConfig.new()
+    # Sync position/rotation via unreliable ordered packets
+    config.add_property(NodePath(".:global_position"))
+    sync.replication_config = config
+```
+
+### 3. Jungle-AI (Camp Leashing)
+Implement a state machine for jungle monsters that monitors distance from their spawn point. If a hero draws them too far, they enter a "Leashing" state, becoming invulnerable and returning home.
+
+```gdscript
+class_name JungleCreep extends CharacterBody3D
+
+@export var leash_radius: float = 12.0
+@onready var spawn_pos := global_position
+
+func _physics_process(_delta: float) -> void:
+    var dist_from_home := global_position.distance_to(spawn_pos)
+    
+    match state:
+        State.CHASING:
+            if dist_from_home > leash_radius:
+                state = State.LEASHING
+        State.LEASHING:
+            # Move back to spawn_pos using NavigationAgent3D
+            nav_agent.target_position = spawn_pos
+            if global_position.distance_to(spawn_pos) < 1.0:
+                state = State.IDLE
+                health = max_health # Reset health on return
+```
+
+**Expert Tip**: Always use `NavigationServer3D.map_get_iteration_id()` to ensure the navigation map is fully synced before allowing AI to pathfind after spawning.
+
+
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)

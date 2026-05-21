@@ -127,3 +127,10 @@ Recommend adding a new branch only if all are true:
 1. Repeated need appears in at least 2 repositories.
 2. At least 3 controls are not covered by existing primary types + overlays.
 3. Risk is meaningful if left as ad-hoc guidance.
+
+## Cross-Team Artifact-Write Flag
+
+When routing a repo that authors config files consumed by another team's runtime
+(e.g., Codex team writing `.claude/settings.json`), flag the ticket for the
+cross-team artifact-write contract. See
+`instructions/cross-team-artifact-write.instructions.md`.

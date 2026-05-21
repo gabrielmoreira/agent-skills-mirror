@@ -39,6 +39,12 @@ Ensuring compatibility with HTML5/Web browser clients using `WebSocketMultiplaye
 ### [peer_kick_manager.gd](../scripts/server_architecture_peer_kick_manager.gd)
 Graceful termination and cleanup of peer connections with custom reason propagation.
 
+### [server_matchmaker_client.gd](../scripts/server_architecture_server_matchmaker_client.gd)
+Client-side handoff logic for connecting to servers via a Load Balancer/Matchmaker.
+
+### [server_health_exporter.gd](../scripts/server_architecture_server_health_exporter.gd)
+Telemetry exporter for headless servers to monitoring stacks (Prometheus/Grafana).
+
 ## NEVER Do in Server Architecture
 
 - **NEVER trust the client** — Validate all state changes, purchases, and damage exclusively on the authoritative server to prevent cheating [28].
@@ -99,6 +105,20 @@ PhysicsServer2D.body_add_shape(body_rid, shape_rid)
 - Regular game objects
 - UI
 - Prototyping
+
+## Advanced Server Patterns
+
+### 1. Grid-Based Interest Management
+In large worlds, don't sync everything. Use `AABB` checks on the server to only sync objects within a player's immediate "interest grid".
+
+- **Logic**: Set `MultiplayerSynchronizer.public_visibility = false`.
+- **Filter**: `add_visibility_filter(func(id): return player_aabb.has_point(object_pos))`.
+
+### 2. Server Health Metrics
+Monitoring dedicated servers is vital for scaling.
+- **FPS**: Drop below 60/30 indicates simulation lag.
+- **Memory**: Static memory growth indicates RID leaks.
+- **Nodes**: High orphan counts indicate incorrect cleanup.
 
 ## Reference
 - [Godot Docs: Using Servers](https://docs.godotengine.org/en/stable/tutorials/performance/using_servers.html)

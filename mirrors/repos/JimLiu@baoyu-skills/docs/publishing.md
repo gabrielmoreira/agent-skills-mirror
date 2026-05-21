@@ -23,6 +23,10 @@ bash scripts/sync-clawhub.sh <skill>   # sync one skill
 
 Release hooks are configured via `.releaserc.yml`. This repo does not stage a separate release directory: publish reads the skill directory directly and validates that local package references and CLI bin targets are self-contained.
 
+Every skill release must keep the `version:` in that skill's `SKILL.md` aligned with the version being published. `publish-skill.mjs` and `sync-clawhub.mjs` both reject mismatches so a registry payload cannot ship with stale skill metadata.
+
+Commits that touch `skills/<name>/**` must use Conventional Commit subjects, for example `fix(baoyu-post-to-wechat): handle WeChat editor focus`. CI runs `npm run verify:skill-release-commits` against the pushed or PR commit range so bare subjects like `Fix WeChat browser article publishing` cannot bypass per-skill release versioning silently.
+
 ## Shared Workspace Packages
 
 `packages/` is the source of truth for shared runtime code. Most skills consume shared packages from npm with semver ranges. `baoyu-url-to-markdown` is the exception: it vendors the `baoyu-fetch` runtime into `skills/baoyu-url-to-markdown/scripts/lib/` so the published skill is self-contained and does not depend on the `baoyu-fetch` npm package.

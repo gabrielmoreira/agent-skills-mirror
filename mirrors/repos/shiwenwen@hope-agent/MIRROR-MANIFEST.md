@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shiwenwen/hope-agent` — 26 default patterns, 33 followed patterns, 79 file(s) materialized.
+Mirror of `shiwenwen/hope-agent` — 26 default patterns, 32 followed patterns, 78 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `shiwenwen/hope-agent` — 26 default patterns, 33 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 33 |
-| Files         | 79 |
+| Followed pats | 32 |
+| Files         | 78 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,7 +83,6 @@ Mirror of `shiwenwen/hope-agent` — 26 default patterns, 33 followed patterns, 
 - `docs/architecture/api-reference.md`
 - `docs/architecture/config-system.md`
 - `docs/README.md`
-- `docs/plans/review-followups.md`
 
 ## File Index
 
@@ -167,9 +166,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 74 | → | [`docs/architecture/subagent.md`](docs/architecture/subagent.md) |
 | 75 | → | [`docs/architecture/tool-system.md`](docs/architecture/tool-system.md) |
 | 76 | → | [`docs/architecture/transport-modes.md`](docs/architecture/transport-modes.md) |
-| 77 | → | [`docs/plans/review-followups.md`](docs/plans/review-followups.md) |
-| 78 | → | [`docs/README.md`](docs/README.md) |
-| 79 | → | [`docs/release-process.md`](docs/release-process.md) |
+| 77 | → | [`docs/README.md`](docs/README.md) |
+| 78 | → | [`docs/release-process.md`](docs/release-process.md) |
 
 ---
 

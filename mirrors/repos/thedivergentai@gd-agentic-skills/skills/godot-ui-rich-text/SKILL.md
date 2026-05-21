@@ -46,6 +46,9 @@ Simple regex-based syntax highlighting pattern for code blocks in UI.
 
 ### Click & Hover UX
 - **NEVER use [url] without visual feedback** — If the text doesn't change color on hover or the cursor doesn't change, players won't know it's clickable. Use `rich_text_hover_reactive.gd`.
+- NEVER hardcode layout logic into strings; strictly use **BBCode Tables** and **Alignment Tags** to ensure text structures remain flexible.
+- NEVER animate text typewriter effects by modifying the `text` or `bbcode` string frame-by-frame; strictly use **`visible_ratio`** or **`visible_characters`** to avoid expensive parsing overhead and flickering.
+- NEVER use standard bitmap fonts for large titles or dynamic UI; strictly use **MSDF (Multichannel Signed Distance Field)** fonts to ensure perfectly crisp outlines and scaling at any resolution.
 - **NEVER perform heavy logic inside `meta_clicked`** — This signal is on the Main Thread. Use it to emit a command and handle processing asynchronously if needed.
 
 ### Dialogue & Narrative
@@ -80,6 +83,50 @@ func _ready() -> void:
 
 func _on_meta_clicked(meta: Variant) -> void:
     print("Clicked: ", meta)
+```
+
+## Expert Text Patterns
+
+### 1. Rich-Text-MSDF-Outline (SDF)
+Enable crisp, high-resolution outlines and scaling by enabling MSDF on font resources and using theme overrides.
+
+```gdscript
+# msdf_styler.gd
+func _ready():
+    # Crisp outlines regardless of screen scale
+    label.add_theme_color_override("font_outline_color", Color.BLACK)
+    label.add_theme_constant_override("outline_size", 4)
+```
+
+### 2. Animated-Text-Reveal (Visible Ratio)
+Efficient typewriter effect that preserves BBCode animations (like [wave] or [shake]) and avoids parsing overhead.
+
+```gdscript
+# dialogue_revealer.gd
+func reveal(new_text: String):
+    label.text = new_text
+    label.visible_ratio = 0.0 # Set text but hide characters
+    var duration = label.get_total_character_count() / char_speed
+    # Animate ratio from 0 to 1
+    create_tween().tween_property(label, "visible_ratio", 1.0, duration)
+```
+
+### 3. Custom-BBCode-Effect (RichTextEffect)
+Define custom visual tags (like `[relic]`) by extending RichTextEffect for unique gameplay-themed text animations.
+
+```gdscript
+# relic_effect.gd
+@tool
+extends RichTextEffect
+var bbcode = "relic"
+
+func _process_custom_fx(char_fx: CharFXTransform):
+    # Retrieve param: [relic color=#ff00ff]
+    var color = char_fx.env.get("color", Color.GOLD)
+    # Apply sinusoidal floating
+    char_fx.offset.y += sin(char_fx.elapsed_time * 5.0) * 2.0
+    char_fx.color = color
+    return true
 ```
 
 ## Reference

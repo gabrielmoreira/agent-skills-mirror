@@ -194,5 +194,72 @@ func update_hand_visuals() -> void:
 *   **Tweens**: Essential! Tween position, rotation, and scale for that "juicy" Hearthstone/Slay the Spire feel.
 
 
-## Reference
+---
+
+## 🚀 Elite Technical Implementations (Batch 09)
+
+### 1. Holographic Foil (Shader Script)
+Add visual rarity and "juice" to cards using a holographic shader. This script uses iridescence based on TIME and UV coordinates to create a shifting rainbow effect.
+
+```glsl
+shader_type canvas_item;
+
+uniform float foil_speed : hint_range(0.1, 5.0) = 1.0;
+uniform float foil_intensity : hint_range(0.0, 1.0) = 0.5;
+
+void fragment() {
+    vec4 base_color = texture(TEXTURE, UV);
+    
+    // Create shifting rainbow iridescence
+    vec3 holo_color = vec3(
+        0.5 + 0.5 * sin(TIME * foil_speed + UV.x * 10.0),
+        0.5 + 0.5 * sin(TIME * foil_speed + UV.y * 10.0 + 2.0),
+        0.5 + 0.5 * sin(TIME * foil_speed + (UV.x + UV.y) * 10.0 + 4.0)
+    );
+    
+    // Blend with base texture alpha
+    COLOR = vec4(mix(base_color.rgb, holo_color, foil_intensity * base_color.a), base_color.a);
+}
+```
+
+### 2. Card-History Logging (Action Tracking)
+Track card actions (Played, Drawn, Discarded) for a history panel using a custom `Logger`. This intercepts messages tagged with `[CARD]` and routes them to a turn history buffer.
+
+```gdscript
+class_name CardHistoryLogger extends Logger
+
+signal history_updated(entry: String)
+var turn_history: Array[String] = []
+
+func _log_message(message: String, error: bool) -> void:
+    if not error and message.begins_with("[CARD]"):
+        turn_history.append(message)
+        history_updated.emit(message)
+
+# To register (in an Autoload):
+# func _init(): OS.add_logger(CardHistoryLogger.new())
+```
+
+### 3. Hand-Limit Logic (Over-Draw Protection)
+Encapsulate hand data and enforce a maximum size. Use signals to notify the UI when a card is successfully drawn or discarded due to being overdrawn.
+
+```gdscript
+class_name HandManager extends Node
+
+signal card_drawn(card: Resource)
+signal card_overdrawn(card: Resource)
+
+@export var max_hand_size: int = 10
+var _current_hand: Array[Resource] = []
+
+func draw_card(new_card: Resource) -> void:
+    if _current_hand.size() >= max_hand_size:
+        # Hand is full; trigger overdraw
+        card_overdrawn.emit(new_card)
+    else:
+        _current_hand.append(new_card)
+        card_drawn.emit(new_card)
+```
+
+
 - Master Skill: [godot-master](../godot-master/SKILL.md)

@@ -37,3 +37,34 @@ Collection of 10 expert patterns: Custom MainLoop extensions, deferred scene swi
 
 ### [collection_manager.gd](scripts/collection_manager.gd)
 The central brain of the hunt. Tracks progress and manages completion signals.
+
+### [collection_compass.gd](scripts/collection_compass.gd)
+Spatial radar for pointing towards the nearest collectible using vector math.
+
+---
+
+## Expert Collection Patterns
+
+### 1. Persistent Collection (Save/Load)
+To ensure progress survives restarts, use `FileAccess` to store data in `user://`.
+
+```gdscript
+func save_progress(data: Dictionary):
+    var file = FileAccess.open("user://save.dat", FileAccess.WRITE)
+    file.store_var(data) # Binary serialization for performance
+
+func load_progress() -> Dictionary:
+    if not FileAccess.file_exists("user://save.dat"): return {}
+    var file = FileAccess.open("user://save.dat", FileAccess.READ)
+    return file.get_var()
+```
+
+### 2. Collection Archive UI (Silhouettes)
+Display uncollected items as silhouettes without extra textures by using `modulate`.
+
+- **Technique**: Use an `ItemList` or `TextureRect` grid.
+- **Silhouette**: Set `modulate = Color(0, 0, 0, 0.5)` for locked items.
+- **Reveal**: Set `modulate = Color(1, 1, 1, 1)` once collected.
+
+## Reference
+- Master Skill: [godot-master](../godot-master/SKILL.md)

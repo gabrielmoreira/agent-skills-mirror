@@ -36,8 +36,8 @@ Expert high-performance voice pooler with priority-based 'voice stealing' logic.
 ### [audio_occlusion_raycast.gd](scripts/audio_occlusion_raycast.gd)
 Professional Raycast-based audio occlusion for dynamic muffling behind walls.
 
-### [audio_adaptive_music_player.gd](scripts/audio_adaptive_music_player.gd)
-BPM-synced horizontal re-sequencer for seamless musical transitions.
+### [audio_interactive_music_manager.gd](scripts/audio_interactive_music_manager.gd)
+Manager for vertical music layering using AudioStreamSynchronized for dynamic intensity.
 
 ### [audio_reactive_visualizer_component.gd](scripts/audio_reactive_visualizer_component.gd)
 Expert FFT spectrum analysis component for driving logic-to-data visuals.
@@ -432,6 +432,24 @@ func _on_all_enemies_defeated() -> void:
 
 ---
 
+## Expert Audio Patterns
+
+### 1. Subtitle-Sync-System
+Standard pattern for perfectly timed dialogue using `AnimationPlayer`.
+- **Tracks**: Use an **Audio Playback Track** for the voice-over and a **Call Method Track** to trigger subtitles.
+- **Localization**: Pass a translation key (e.g., `show_subtitle("VO_LINE_01")`) as the method argument. The subtitle script uses `tr()` to fetch the localized text, ensuring perfect sync across all languages.
+
+### 2. Audio-Occlusion-Profiling (Dynamic Muffling)
+Simulate sound muffling behind obstacles using built-in filters.
+- **Occlusion Detection**: Use a `RayCast3D` from the `AudioStreamPlayer3D` towards the listener.
+- **Filter Modulation**: If the raycast is blocked, use a `Tween` to lower the `attenuation_filter_cutoff_hz` (e.g., from 20500 Hz to 1500 Hz) to create a muffled effect.
+- **Room Occlusion**: Use `Area3D` with **Audio Bus Overrides** to redirect sound to a bus with a `LowPassFilter` when the source/listener enters a specific room.
+
+### 3. Interactive-Music-Graph (Non-Linear Scoring)
+Godot 4's advanced music resources for dynamic transitions.
+- **Horizontal Re-sequencing**: Use `AudioStreamInteractive`. It functions as a state machine where you can define transitions between clips (e.g., "Exploration" to "Combat") that snap to the next beat or bar automatically.
+- **Vertical Layering**: Use `AudioStreamSynchronized` to play multiple stems in perfect sync. Dynamically fade stem volumes (e.g., adding drums during intensity) using `set_sync_stream_volume()`.
+
 ## Performance Optimization
 
 ### Disable Far Audio
@@ -487,6 +505,18 @@ if $AudioStreamPlayer.volume_db < -60:
 | **Use for** | Music, UI | 2D games | 3D games |
 | **Performance** | Fastest | Medium | Slowest |
 
+
+## Advanced Audio Patterns
+
+### 1. High-Precision Subtitle Sync
+To prevent subtitle drift in long audio tracks, don't rely on simple timers.
+- **Formula**: `Position = get_playback_position() + get_time_since_last_mix() - get_output_latency()`.
+- **Implementation**: Poll this value in `_process` and compare against a timestamped subtitle track.
+
+### 2. Vertical Music Layering
+Use `AudioStreamSynchronized` to keep multiple stems (drums, bass, melodies) perfectly aligned.
+- **Dynamic Mix**: Use `set_sync_stream_volume(index, db)` to fade layers in/out based on combat intensity or exploration progress.
+- **Tweening**: Always use a `Tween` to interpolate volume changes over 1-2 seconds for a natural transition.
 
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)

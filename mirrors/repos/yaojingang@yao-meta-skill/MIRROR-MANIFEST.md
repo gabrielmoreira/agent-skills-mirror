@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `yaojingang/yao-meta-skill` — 26 default patterns, 8 followed patterns, 28 file(s) materialized.
+Mirror of `yaojingang/yao-meta-skill` — 26 default patterns, 9 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `yaojingang/yao-meta-skill` — 26 default patterns, 8 followed patter
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 8 |
-| Files         | 28 |
+| Followed pats | 9 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -58,6 +58,7 @@ Mirror of `yaojingang/yao-meta-skill` — 26 default patterns, 8 followed patter
 - `references/reference-scan.md`
 - `references/artifact-design-doctrine.md`
 - `references/prompt-engineering-doctrine.md`
+- `references/systems-thinking-doctrine.md`
 - `references/governance.md`
 
 ## File Index
@@ -94,6 +95,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | → | [`references/reference-scan.md`](references/reference-scan.md) |
 | 27 | → | [`references/resource-boundaries.md`](references/resource-boundaries.md) |
 | 28 | → | [`references/skill-engineering-method.md`](references/skill-engineering-method.md) |
+| 29 | → | [`references/systems-thinking-doctrine.md`](references/systems-thinking-doctrine.md) |
 
 ---
 

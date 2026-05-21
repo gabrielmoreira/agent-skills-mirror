@@ -15,7 +15,9 @@ Expert blueprint for educational games that make learning engaging through game 
 - NEVER use walls of text for instructions; strictly use **Show, Don't Tell** methods: interactive diagrams, non-verbal tutorials, or 3-second looping GIFs.
 - NEVER skip **Spaced Repetition** logic; strictly ensure successfully answered questions reappear at increasing intervals to verify long-term retention.
 - NEVER focus on failure; strictly prominently display **Mastery %**, **XP Bars**, and **Skill Trees** to motivate through visible progress.
-- NEVER use static difficulty; strictly implement **Adaptive Scaling** to maintain the "Flow State" (target ~70% success rate).
+- NEVER assume a fixed difficulty; strictly implement **Dynamic Scaffolding** that adjusts challenge based on the student's mastery level to keep them in the "Zone of Proximal Development".
+- NEVER hardcode student stats in UI components; strictly use **`Resource` scripts (`StudentProfile`)** to decouple student data from the presentation layer for persistence and scalability.
+- NEVER build custom debug dashboards for performance tracking during development; strictly use **`Performance.add_custom_monitor()`** to inject live student metrics into the Godot Editor Debugger.
 
 ### Technical & Accessibility
 - NEVER hardcode text into UI; strictly use **Translation Keys (PO files)** for internationalization and classroom localized support.
@@ -115,6 +117,52 @@ extends Resource
 @export var id: String
 @export var title: String
 @export var required_topics: Array[String] # Prereqs
+```
+
+### 4. Mastery-Based Matchmaking (Profiles)
+Use custom Resources for student profiles to track and react to mastery changes.
+
+```gdscript
+# student_profile.gd (Resource)
+class_name StudentProfile extends Resource
+signal mastery_up(new_tier: int)
+
+@export var score: int = 0:
+    set(v):
+        score = v
+        if score > threshold: _promote()
+
+func _promote():
+    tier += 1
+    mastery_up.emit(tier)
+```
+
+### 5. Visual Analytics (Custom Monitors)
+Inject metrics into the Godot Editor Debugger without building complex UI.
+
+```gdscript
+# analytics_manager.gd (Autoload)
+func _ready():
+    if not Engine.is_editor_hint():
+        Performance.add_custom_monitor("edu/correct_rate", _get_rate)
+
+func _get_rate():
+    return float(correct) / total_attempts
+```
+
+### 6. Hint-Cooldown (Progressive Disclosure)
+Decouple time-based hint reveals using signals.
+
+```gdscript
+# hint_manager.gd
+signal hint_revealed(text: String)
+var _timer: float = 0.0
+
+func _process(delta):
+    _timer += delta
+    if _timer >= cooldown:
+        hint_revealed.emit(hints.pop_front())
+        _timer = 0.0
 ```
 
 ## Key Mechanics Implementation

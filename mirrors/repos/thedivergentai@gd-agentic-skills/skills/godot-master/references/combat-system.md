@@ -290,9 +290,73 @@ func calculate_damage(base_damage: float, crit_chance: float = 0.1) -> DamageDat
 3. **Area2D for Hitboxes** - Built-in collision detection
 4. **Invincibility Frames** - Prevent spam damage
 
+---
+
+## Elite Godot 4.x Patterns
+
+### 1. Combat Logging & Telemetry
+Use `FileAccess` and `JSON` to record combat events to the `user://` directory for balancing analytics.
+
+```gdscript
+# combat_logger.gd
+class_name CombatLogger extends Node
+
+const LOG_FILE := "user://combat_log.json"
+var _session_log: Array[Dictionary] = []
+
+func log_damage_event(source: String, target: String, amount: int) -> void:
+    var event := { "source": source, "target": target, "damage": amount }
+    _session_log.append(event)
+    # Optimization: Batch flushes instead of writing on every event
+    if _session_log.size() >= 10: _flush_to_disk()
+
+func _flush_to_disk() -> void:
+    var file := FileAccess.open(LOG_FILE, FileAccess.WRITE)
+    if file:
+        file.store_string(JSON.stringify(_session_log))
+        file.close()
+```
+
+### 2. Authoritative Networked Damage
+Clients should never dictate damage. Instead, they request a hit validation from the server via RPC, providing the target's node path and intended damage.
+
+```gdscript
+# networked_damage_manager.gd
+class_name NetworkedDamageManager extends Node
+
+func request_damage(target: Node, amount: int) -> void:
+    if multiplayer.has_multiplayer_peer():
+        rpc_id(1, "server_validate_hit", target.get_path(), amount)
+
+@rpc("any_peer", "call_remote", "reliable")
+func server_validate_hit(target_path: NodePath, amount: int) -> void:
+    var sender_id := multiplayer.get_remote_sender_id()
+    var target_node := get_node_or_null(target_path)
+    
+    if is_instance_valid(target_node) and target_node.has_method("take_damage"):
+        # Elite: Insert manual lag-compensation / distance checks here
+        target_node.take_damage(amount)
+        rpc_id(sender_id, "client_confirm_hit", target_path, amount)
+
+@rpc("authority", "call_remote", "reliable")
+func client_confirm_hit(target_path: NodePath, amount: int) -> void:
+    print_rich("[color=green]Hit confirmed by server.[/color]")
+```
+
+### 3. Hitbox Visualizer (In-Game Debugging)
+Toggle global collision visibility during live gameplay using `SceneTree.debug_collisions_hint`.
+
+```gdscript
+# hitbox_visualizer.gd
+class_name HitboxVisualizer extends Node
+
+func toggle_debug_hitboxes() -> void:
+    get_tree().debug_collisions_hint = not get_tree().debug_collisions_hint
+
+## Set specific debug colors for different combat volumes
+static func set_hitbox_color(shape: CollisionShape3D, is_attack: bool) -> void:
+    shape.debug_color = Color.RED if is_attack else Color.GREEN
+```
+
 ## Reference
-- Related: `godot-2d-physics`, `godot-animation-player`, `godot-characterbody-2d`
-
-
-### Related
 - Master Skill: [godot-master](../SKILL.md)

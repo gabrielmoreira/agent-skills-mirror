@@ -137,6 +137,60 @@ func handle_input(event: InputEvent) -> void:
 2. **Signals** - Communicate state changes
 3. **Stack** - Use push/pop for interruptions
 
+## Expert State Machine Patterns
+
+### 1. HSM Visualizer (Debug Tool)
+Use a specialized `Control` node with `_draw()` to visualize the current state stack/hierarchy in the viewport for immediate debugging [3, 11].
+
+```gdscript
+class_name HSMVisualizer extends Control
+@export var state_machine: Node
+
+func _draw() -> void:
+    var font := ThemeDB.fallback_font
+    var pos := Vector2(20, 20)
+    # Recursively draw active state names...
+    draw_string(font, pos, "Active: " + state_machine.current_state.name)
+```
+
+### 2. State-Based Audio (Decoupled)
+Avoid hardcoding `audio.play()` inside state `enter()` methods. Use a syncer that listens to `state_changed` and maps state names to `AudioStream` resources [12, 13].
+
+```gdscript
+class_name StateAudioSyncer extends Node
+@export var state_machine: Node
+@export var audio_map: Dictionary # { "Jump": preload("jump.wav") }
+
+func _ready() -> void:
+    state_machine.state_changed.connect(_on_state_changed)
+
+func _on_state_changed(_old, new_state: Node):
+    if audio_map.has(new_state.name):
+        $AudioPlayer.stream = audio_map[new_state.name]
+        $AudioPlayer.play()
+```
+
+### 3. Transition Cost (Utility AI)
+Enable states to evaluate their own "weight" based on context. The StateMachine polls sibling costs and transitions to the lowest-cost behavior [17, 18].
+
+```gdscript
+# CostState.gd (Base)
+func get_cost(context: Dictionary) -> float:
+    return 10.0 # Default weight
+
+# UtilityStateMachine.gd
+func _physics_process(_d: float) -> void:
+    var best_state: Node = current_state
+    var low_cost: float = INF
+    for child in get_children():
+        var cost = child.get_cost(context)
+        if cost < low_cost:
+            low_cost = cost
+            best_state = child
+    if best_state != current_state:
+        transition_to(best_state.name)
+```
+
 ## Reference
 - Related: `godot-characterbody-2d`, `godot-animation-player`
 
