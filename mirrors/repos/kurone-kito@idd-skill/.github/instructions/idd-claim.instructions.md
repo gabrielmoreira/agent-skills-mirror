@@ -285,6 +285,42 @@ forced-handoff evidence in the issue digest or resume report's
 `Authoritative by` field. Do not invent ad hoc `claimed-by` fields and
 do not reuse the displaced `{claim-id}`.
 
+### Hide displaced claim chain on takeover
+
+When the verified new claim was posted with `supersedes: <prior-id>`
+naming a concrete prior `{claim-id}` (stale takeover or forced-handoff
+recovery; **not** the legacy-migration path, which always uses
+`supersedes: none` per the Legacy claim migration section below),
+minimize the displaced claim's marker chain on the issue as
+`OUTDATED` after this session has recorded its own verified
+`{claim-id}`. Find every trusted `claimed-by` / `unclaimed-by` /
+heartbeat comment whose embedded `{claim-id}` equals `<prior-id>`
+and call:
+
+```sh
+node scripts/minimize-superseded-markers.mjs \
+  --subject-ids "<id1>,<id2>,..." \
+  --classifier OUTDATED \
+  --trusted-marker-logins "<trusted-login-1>,<trusted-login-2>" \
+  --apply
+```
+
+Skip this step entirely if:
+
+- the new claim has `supersedes: none` (fresh claim — there is no
+  displaced chain to hide);
+- the takeover claim was not verified (do not hide the prior chain
+  until the successor is observable as the active claim);
+- the candidate set is empty (no trusted markers carry the prior
+  `{claim-id}`);
+- the helper is unavailable. Subsequent F4 cleanup still picks up
+  any missed candidates.
+
+**Do not** hide a same-`{claim-id}` heartbeat chain from a normal
+heartbeat post; heartbeats refresh the stale clock but do not
+supersede prior markers, and the visible heartbeat chain is the
+active-claim audit trail.
+
 After claim verification, upsert the issue live status digest when there
 is exactly one marked digest or none. Use the verified `claimed-by`
 comment as the authority: set `Phase` to `A5 claimed`, `Claim` to the
@@ -292,6 +328,13 @@ current `{agent-id}` / `{claim-id}`, `Branch` to the verified branch,
 `Open blockers` to `none`, and `Next action` to `B1 create branch and
 worktree`. If multiple marked digests exist, report their URLs and
 continue from the verified claim without editing a digest.
+
+The verified `branch:` field is also the input to the cwd-vs-claim
+check that every later mutation must satisfy. See the
+[Claim revalidation gate](idd-overview-core.instructions.md#claim-revalidation-gate)
+for the full algorithm (stop and report if a mutation would run from
+the primary worktree while the active claim names a non-`main`
+implementation branch).
 
 Then continue to `idd-work.instructions.md`.
 

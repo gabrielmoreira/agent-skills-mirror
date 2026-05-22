@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cs-frontend-engineer/../../../agents/engineering/cs-frontend-engineer.md

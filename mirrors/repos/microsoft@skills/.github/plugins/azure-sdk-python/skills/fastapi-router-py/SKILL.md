@@ -54,3 +54,8 @@ async def list_items() -> list[Item]:
 3. Create corresponding Pydantic models
 4. Create service layer if needed
 5. Add frontend API functions
+
+## Best Practices
+
+1. **Pick `def` or `async def` per endpoint based on whether you call async I/O;** do not mix sync and async blocking calls in one handler.
+2. **Manage long-lived resources (DB pools, HTTP clients) in `lifespan` and inject via `Depends`;** use `with`/`async with` for per-request resources.

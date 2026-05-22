@@ -28,7 +28,18 @@ AZURE_RESOURCE_GROUP=<your-resource-group>  # Required for all auth methods
 AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
 ```
 
-## Authentication
+## Authentication & Lifecycle
+
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
 
 ```python
 from azure.identity import DefaultAzureCredential, ManagedIdentityCredential
@@ -41,10 +52,12 @@ credential = DefaultAzureCredential(require_envvar=True)
 # See https://learn.microsoft.com/python/api/overview/azure/identity-readme?view=azure-python#credential-classes
 # credential = ManagedIdentityCredential()
 
-client = FabricMgmtClient(
+with FabricMgmtClient(
     credential=credential,
     subscription_id=os.environ["AZURE_SUBSCRIPTION_ID"]
-)
+) as client:
+    # Use `client` for all subsequent operations (see examples below)
+    ...
 ```
 
 ## Create Fabric Capacity
@@ -55,31 +68,30 @@ from azure.mgmt.fabric.models import FabricCapacity, FabricCapacityProperties, C
 from azure.identity import DefaultAzureCredential
 import os
 
-credential = DefaultAzureCredential()
-client = FabricMgmtClient(
-    credential=credential,
-    subscription_id=os.environ["AZURE_SUBSCRIPTION_ID"]
-)
-
 resource_group = os.environ["AZURE_RESOURCE_GROUP"]
 capacity_name = "myfabriccapacity"
 
-capacity = client.fabric_capacities.begin_create_or_update(
-    resource_group_name=resource_group,
-    capacity_name=capacity_name,
-    resource=FabricCapacity(
-        location="eastus",
-        sku=CapacitySku(
-            name="F2",  # Fabric SKU
-            tier="Fabric"
-        ),
-        properties=FabricCapacityProperties(
-            administration=FabricCapacityAdministration(
-                members=["user@contoso.com"]
+credential = DefaultAzureCredential()
+with FabricMgmtClient(
+    credential=credential,
+    subscription_id=os.environ["AZURE_SUBSCRIPTION_ID"]
+) as client:
+    capacity = client.fabric_capacities.begin_create_or_update(
+        resource_group_name=resource_group,
+        capacity_name=capacity_name,
+        resource=FabricCapacity(
+            location="eastus",
+            sku=CapacitySku(
+                name="F2",  # Fabric SKU
+                tier="Fabric"
+            ),
+            properties=FabricCapacityProperties(
+                administration=FabricCapacityAdministration(
+                    members=["user@contoso.com"]
+                )
             )
         )
-    )
-).result()
+    ).result()
 
 print(f"Capacity created: {capacity.name}")
 ```
@@ -258,11 +270,13 @@ capacity = poller.result()
 
 ## Best Practices
 
-1. **Use DefaultAzureCredential** for authentication
-2. **Suspend unused capacities** to reduce costs
-3. **Start with smaller SKUs** and scale up as needed
-4. **Use tags** for cost tracking and organization
-5. **Check name availability** before creating capacities
-6. **Handle LRO properly** — don't assume immediate completion
-7. **Set up capacity admins** — specify users who can manage workspaces
-8. **Monitor capacity usage** via Azure Monitor metrics
+1. **Pick sync OR async and stay consistent.** Do not mix `azure.xxx` sync clients with `azure.xxx.aio` async clients in the same call path. Choose one mode per module.
+2. **Always use context managers for clients and async credentials.** Wrap every client in `with Client(...) as client:` (sync) or `async with Client(...) as client:` (async). For async `DefaultAzureCredential` from `azure.identity.aio`, also use `async with credential:` so tokens and transports are cleaned up.
+3. **Use `DefaultAzureCredential`** for code that runs locally. Use a specific token credential for code that runs in Azure.
+4. **Suspend unused capacities** to reduce costs
+5. **Start with smaller SKUs** and scale up as needed
+6. **Use tags** for cost tracking and organization
+7. **Check name availability** before creating capacities
+8. **Handle LRO properly** — don't assume immediate completion
+9. **Set up capacity admins** — specify users who can manage workspaces
+10. **Monitor capacity usage** via Azure Monitor metrics

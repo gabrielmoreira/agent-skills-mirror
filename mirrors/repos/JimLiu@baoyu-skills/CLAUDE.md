@@ -66,6 +66,22 @@ Skills that prompt users for choices MUST declare the tool-selection convention 
 
 Skills that render images MUST declare the backend-selection convention **inline** in exactly one place per `SKILL.md` — a `## Image Generation Tools` section near the top (after `## User Input Tools`). Do NOT link out to [docs/image-generation-tools.md](docs/image-generation-tools.md); that doc is the author-side canonical source — copy its body into each SKILL.md. Concrete tool names (`imagegen`, `image_generate`, `baoyu-imagine`) elsewhere in a skill are treated as examples — other runtimes substitute their local equivalent under the rule. The rule is stateless: use whatever backend is available; if multiple, ask the user once; if none, ask how to proceed. Every rendered image's full prompt must be written to a standalone `prompts/NN-*.md` file before any backend is invoked. Backend skills (`baoyu-imagine`, `baoyu-image-gen`, `baoyu-danger-gemini-web`) are exempt — they render directly rather than selecting a backend.
 
+### `codex-imagegen` Backend
+
+A backend for non-Codex runtimes (e.g., Claude Code) that generates images by spawning `codex exec --json --sandbox danger-full-access` and delegating to Codex CLI's built-in `image_gen` tool. Uses the user's Codex subscription — no `OPENAI_API_KEY` required.
+
+Invoke via:
+
+```bash
+./scripts/codex-imagegen.sh \
+  --image <output.png> \
+  --prompt-file prompts/01-cover.md \
+  --aspect 16:9 \
+  --cache-dir ~/.cache/baoyu-codex-imagegen
+```
+
+Stdout emits a single JSON line: `{"status":"ok","path":...,"bytes":N,...}`. On failure, `{"status":"error","error_kind":...}`. Skills route here by setting `preferred_image_backend: codex-imagegen` in EXTEND.md. Full reference: [docs/codex-imagegen-backend.md](docs/codex-imagegen-backend.md).
+
 ## Deprecated Skills
 
 | Skill | Note |

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ajhcs/healthcare-agents` — 26 default patterns, 0 followed patterns, 52 file(s) materialized.
+Mirror of `ajhcs/healthcare-agents` — 26 default patterns, 0 followed patterns, 53 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ajhcs/healthcare-agents` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 52 |
+| Files         | 53 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -100,17 +100,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 39 | ✓ | [`agents/quality-patient-safety-officer.md`](agents/quality-patient-safety-officer.md) |
 | 40 | ✓ | [`agents/quality-process-improvement-analyst.md`](agents/quality-process-improvement-analyst.md) |
 | 41 | ✓ | [`agents/quality-risk-manager.md`](agents/quality-risk-manager.md) |
-| 42 | ✓ | [`agents/revenue-340b-program-manager.md`](agents/revenue-340b-program-manager.md) |
-| 43 | ✓ | [`agents/revenue-chargemaster-analyst.md`](agents/revenue-chargemaster-analyst.md) |
-| 44 | ✓ | [`agents/revenue-contract-analyst.md`](agents/revenue-contract-analyst.md) |
-| 45 | ✓ | [`agents/revenue-cycle-specialist.md`](agents/revenue-cycle-specialist.md) |
-| 46 | ✓ | [`agents/revenue-finance-manager.md`](agents/revenue-finance-manager.md) |
-| 47 | ✓ | [`agents/revenue-medical-coding-specialist.md`](agents/revenue-medical-coding-specialist.md) |
-| 48 | ✓ | [`agents/strategy-actuarial-advisor.md`](agents/strategy-actuarial-advisor.md) |
-| 49 | ✓ | [`agents/strategy-clinical-operations-consultant.md`](agents/strategy-clinical-operations-consultant.md) |
-| 50 | ✓ | [`agents/strategy-healthcare-consultant.md`](agents/strategy-healthcare-consultant.md) |
-| 51 | ✓ | [`agents/strategy-operations-consultant.md`](agents/strategy-operations-consultant.md) |
-| 52 | ✓ | [`agents/strategy-structural-improvement-consultant.md`](agents/strategy-structural-improvement-consultant.md) |
+| 42 | ✓ | [`agents/registry.json`](agents/registry.json) |
+| 43 | ✓ | [`agents/revenue-340b-program-manager.md`](agents/revenue-340b-program-manager.md) |
+| 44 | ✓ | [`agents/revenue-chargemaster-analyst.md`](agents/revenue-chargemaster-analyst.md) |
+| 45 | ✓ | [`agents/revenue-contract-analyst.md`](agents/revenue-contract-analyst.md) |
+| 46 | ✓ | [`agents/revenue-cycle-specialist.md`](agents/revenue-cycle-specialist.md) |
+| 47 | ✓ | [`agents/revenue-finance-manager.md`](agents/revenue-finance-manager.md) |
+| 48 | ✓ | [`agents/revenue-medical-coding-specialist.md`](agents/revenue-medical-coding-specialist.md) |
+| 49 | ✓ | [`agents/strategy-actuarial-advisor.md`](agents/strategy-actuarial-advisor.md) |
+| 50 | ✓ | [`agents/strategy-clinical-operations-consultant.md`](agents/strategy-clinical-operations-consultant.md) |
+| 51 | ✓ | [`agents/strategy-healthcare-consultant.md`](agents/strategy-healthcare-consultant.md) |
+| 52 | ✓ | [`agents/strategy-operations-consultant.md`](agents/strategy-operations-consultant.md) |
+| 53 | ✓ | [`agents/strategy-structural-improvement-consultant.md`](agents/strategy-structural-improvement-consultant.md) |
 
 ---
 

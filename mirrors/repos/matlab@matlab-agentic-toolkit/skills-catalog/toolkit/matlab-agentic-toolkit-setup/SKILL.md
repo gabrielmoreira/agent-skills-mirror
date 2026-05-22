@@ -41,10 +41,10 @@ Here's what I'll do:
 This setup configures everything globally — once it's done, MATLAB tools and
 skills will be available in every session, regardless of which project you're
 working in. This is the easiest way to get started. If you later want to scope
-the configuration to specific projects, the Getting Started guide covers that.
+the configuration to specific projects, the Configuration and Troubleshooting guide covers that.
 
-If you'd rather set things up manually, the Getting Started guide has
-step-by-step instructions: GETTING_STARTED.md
+If you'd rather set things up manually, the Configuration and Troubleshooting guide has
+step-by-step instructions: Configuration_and_Troubleshooting.md
 ```
 
 Adapt the wording naturally — don't recite it verbatim — but cover all three points. After printing the welcome message, proceed directly to Phase 1 without waiting for a response.
@@ -443,7 +443,7 @@ Present a final summary including: MATLAB version and location, MCP server versi
 
 **For Claude Code:** List installed plugins and their scope. Next steps: start new session, try "What version of MATLAB is running?", list available skills.
 
-**For other platforms:** Mark as "EXPERIMENTAL". Next steps: restart the agent, try "What version of MATLAB is running?". Include troubleshooting: check config file, test binary, link to GETTING_STARTED.md and issue tracker (https://github.com/matlab/matlab-agentic-toolkit/issues).
+**For other platforms:** Next steps: restart the agent, try "What version of MATLAB is running?". Include troubleshooting: check config file, test binary, link to Configuration_and_Troubleshooting.md and issue tracker (https://github.com/matlab/matlab-agentic-toolkit/issues).
 
 ---
 

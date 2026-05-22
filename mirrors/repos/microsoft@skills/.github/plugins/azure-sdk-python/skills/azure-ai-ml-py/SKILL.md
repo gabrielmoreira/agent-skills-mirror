@@ -29,7 +29,18 @@ AZURE_ML_WORKSPACE_NAME=<your-workspace-name>  # Required for all auth methods
 AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
 ```
 
-## Authentication
+## Authentication & Lifecycle
+
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
 
 ```python
 from azure.ai.ml import MLClient
@@ -41,12 +52,14 @@ credential = DefaultAzureCredential(require_envvar=True)
 # Or use a specific credential directly in production:
 # See https://learn.microsoft.com/python/api/overview/azure/identity-readme?view=azure-python#credential-classes
 # credential = ManagedIdentityCredential()
-ml_client = MLClient(
+with MLClient(
     credential=credential,
     subscription_id=os.environ["AZURE_SUBSCRIPTION_ID"],
     resource_group_name=os.environ["AZURE_RESOURCE_GROUP"],
     workspace_name=os.environ["AZURE_ML_WORKSPACE_NAME"]
-)
+) as ml_client:
+    for ws in ml_client.workspaces.list():
+        print(ws.name)
 ```
 
 ### From Config File
@@ -56,10 +69,14 @@ from azure.ai.ml import MLClient
 from azure.identity import DefaultAzureCredential
 
 # Uses config.json in current directory or parent
-ml_client = MLClient.from_config(
+with MLClient.from_config(
     credential=DefaultAzureCredential()
-)
+) as ml_client:
+    for ws in ml_client.workspaces.list():
+        print(ws.name)
 ```
+
+> **Long-lived `ml_client`:** Subsequent examples in this skill assume `ml_client` was created via the pattern above and is alive for the lifetime of your script. In production, wrap your top-level workflow in a single `with MLClient(...) as ml_client:` block so the underlying HTTP transport closes cleanly on exit.
 
 ## Workspace Management
 
@@ -273,10 +290,12 @@ print(f"Default: {default_ds.name}")
 
 ## Best Practices
 
-1. **Use versioning** for data, models, and environments
-2. **Configure idle scale-down** to reduce compute costs
-3. **Use environments** for reproducible training
-4. **Stream job logs** to monitor progress
-5. **Register models** after successful training jobs
-6. **Use pipelines** for multi-step workflows
-7. **Tag resources** for organization and cost tracking
+1. **Pick sync OR async and stay consistent.** Do not mix `azure.ai.ml` sync clients with `azure.ai.ml` async clients in the same call path. Choose one mode per module.
+2. **Always use context managers for clients and async credentials.** Wrap every client in `with MLClient(...) as client:` (sync) or `async with MLClient(...) as client:` (async). For async `DefaultAzureCredential` from `azure.identity.aio`, also use `async with credential:` so tokens and transports are cleaned up.
+3. **Use versioning** for data, models, and environments
+4. **Configure idle scale-down** to reduce compute costs
+5. **Use environments** for reproducible training
+6. **Stream job logs** to monitor progress
+7. **Register models** after successful training jobs
+8. **Use pipelines** for multi-step workflows
+9. **Tag resources** for organization and cost tracking

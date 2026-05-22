@@ -62,7 +62,7 @@ Contains the authentication data extracted from your browser session:
 }
 ```
 
-**Cookie requirements** (empirically validated via single- and pair-wise ablation, see `auth-keepalive.md` §3.5; enforced by `_validate_required_cookies()` in `auth.py`):
+**Cookie requirements** (empirically validated via single- and pair-wise ablation, see `auth-cookie-lifecycle.md` §3.5; enforced by `_validate_required_cookies()` in `auth.py`):
 
 - **Tier 1 — strictly required (raises on absence):** `SID` AND `__Secure-1PSIDTS`. `SID` is the only individually-required cookie (`__Secure-1PSIDTS` is removable on its own because Google can re-mint it via `RotateCookies`), but the pair-wise check uncovered that as soon as `__Secure-1PSIDTS` and any one other auth cookie are both missing, Google rejects with `Authentication expired or invalid`. The library therefore enforces both up-front. Authoritative value: `MINIMUM_REQUIRED_COOKIES` in `auth.py`.
 - **Tier 2 — secondary binding (logs a warning if absent):** either `OSID` is present, or both `APISID` and `SAPISID` are present. Without this, even valid Tier 1 cookies can't authenticate the homepage GET. Logged rather than raised so unverified edge-case flows (e.g. Workspace SSO) aren't broken by a too-strict client check.
@@ -130,6 +130,7 @@ A persistent Chromium user data directory used during `notebooklm login`.
 | `NOTEBOOKLM_REFRESH_STORAGE_PATH` | Child-process hint set for `NOTEBOOKLM_REFRESH_CMD`; path to the `storage_state.json` file the command must rewrite | resolved storage path |
 | `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE` | Disable the proactive `accounts.google.com/RotateCookies` poke that refreshes `__Secure-1PSIDTS` ahead of expiry | `0` |
 | `NOTEBOOKLM_QUIET_DEPRECATIONS` | Suppress stderr deprecation notices for deprecated CLI flags | - |
+| `NOTEBOOKLM_VCR_RECORD_ERRORS` | Synthetic-error injection mode for VCR test cassettes (`429`, `5xx`, `expired_csrf`) | - |
 
 ### Env vars and precedence
 
@@ -159,6 +160,7 @@ be audited from one location.
 | `NOTEBOOKLM_REFRESH_PROFILE` | Child env var injected into `NOTEBOOKLM_REFRESH_CMD`; names the resolved NotebookLM profile that is being refreshed. Refresh scripts may read it, but setting it in the parent shell does not select the profile. | Set by `auth` refresh-spawn helper from the resolved profile. | `auth._run_refresh_cmd` |
 | `NOTEBOOKLM_REFRESH_STORAGE_PATH` | Child env var injected into `NOTEBOOKLM_REFRESH_CMD`; points to the `storage_state.json` file the command must rewrite before exiting `0`. Refresh scripts may read it, but setting it in the parent shell does not select storage. | Set by `auth` refresh-spawn helper from the explicit storage path or profile-aware storage path. | `auth._run_refresh_cmd` |
 | `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE` | When `1`, disable the proactive `accounts.google.com/RotateCookies` poke that refreshes `__Secure-1PSIDTS` ahead of expiry. Useful when running behind a proxy that rejects the extra request, or in offline test fixtures. | Process env on every keepalive check. | `auth` keepalive guards (constant `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE_ENV` in `notebooklm.auth`) |
+| `NOTEBOOKLM_VCR_RECORD_ERRORS` | Synthetic-error injection mode for VCR test cassettes. Lowercase-normalized; valid values are `429` (rate limit), `5xx` (server error), or `expired_csrf` (CSRF token expiration). Used to record synthetic error cassettes under VCR. | Process env on each request, evaluated by `ErrorInjectionMiddleware` to intercept and synthesize failures. | `_error_injection._get_error_injection_mode` |
 
 **Boolean handling.** `NOTEBOOKLM_DEBUG_RPC` treats `1` / `true` / `yes`
 (case-insensitive) as truthy; everything else is falsy.
@@ -171,14 +173,13 @@ falsy and opts back into the soft-mode fallback.
 bare `export NOTEBOOKLM_NOTEBOOK=` does not block `notebooklm use` /
 `-n/--notebook` from resolving.
 
-**The `--quiet` global flag.** `notebooklm --quiet <subcommand>` raises the
-`notebooklm` package logger floor to `ERROR` for the duration of one
-invocation, so cron and CI logs stay clean while real failures still surface.
-It is mutually exclusive with `-v/-vv` — combining the two raises a
-`UsageError` (exit `2`) since the resolved log levels conflict
-(`ERROR` vs `INFO`/`DEBUG`). For per-call (rather than per-shell) silencing
-of `INFO`/`WARN` the global flag is the preferred surface; `NOTEBOOKLM_LOG_LEVEL`
-remains the right tool for shell-wide / always-on suppression.
+**The `--quiet` global flag.** `notebooklm --quiet <subcommand>` suppresses
+status prose and raises the `notebooklm` package logger floor to `ERROR` for
+the duration of one invocation, so cron and CI logs stay clean while real
+failures still surface. Structured `--json` payloads are still emitted. It is
+mutually exclusive with `-v/-vv` — combining the two raises a `UsageError`
+(exit `2`) since the resolved log levels conflict (`ERROR` vs `INFO`/`DEBUG`).
+For shell-wide / always-on log suppression, use `NOTEBOOKLM_LOG_LEVEL`.
 
 ### NOTEBOOKLM_HOME
 
@@ -271,7 +272,7 @@ back to `en`. For the generate commands, the resolution order is:
 1. `--language` CLI flag
 2. `NOTEBOOKLM_HL` environment variable
 3. `language` value from the **global** `~/.notebooklm/config.json` (set via
-   `notebooklm config language <code>`). The language is stored once per
+   `notebooklm language set <code>`). The language is stored once per
    `NOTEBOOKLM_HOME`, **not** per profile — switching `notebooklm -p work`
    does not switch the configured language. See
    `src/notebooklm/cli/language.py:111-151` for the resolver and
@@ -305,14 +306,15 @@ Every batchexecute RPC issued by the client (whether through `NotebookLMClient`
 or any of the CLI commands) uses a **30-second** HTTP request timeout by
 default, with a tighter **10-second** connection-establishment timeout. The
 shorter connect timeout helps surface network-level issues quickly while the
-longer read timeout accommodates slow server responses. Both are exposed as
-constructor arguments on `NotebookLMClient` (`timeout=` and `connect_timeout=`)
-for callers that need to tune them per-workload — see the
+longer read timeout accommodates slow server responses. The timeout is exposed as a
+constructor argument on `NotebookLMClient` (`timeout=`)
+for callers that need to tune it per-workload — see the
 `DEFAULT_TIMEOUT` / `DEFAULT_CONNECT_TIMEOUT` constants in
-`src/notebooklm/_session.py`. The chat streaming endpoint
+`src/notebooklm/_session_config.py`. The chat streaming endpoint
 (`ChatAPI.ask`) keeps its own longer per-stream deadlines because individual
-chat responses can exceed 30 seconds; refer to the Python API reference for
-its `timeout=` argument.
+chat responses can exceed 30 seconds, but this is configured at the client level
+(via the `timeout=` argument on the `NotebookLMClient` constructor or `from_storage` initializer),
+not on individual `ask` calls.
 
 ### Decoder strictness
 
@@ -358,7 +360,7 @@ batchexecute response contains RPC IDs but not the one the call requested
 | `--storage PATH` | Path to storage_state.json | `$NOTEBOOKLM_HOME/profiles/<profile>/storage_state.json` |
 | `-p, --profile NAME` | Use a named profile | Active profile or `default` |
 | `-v, --verbose` | Enable verbose output (`-v` for INFO, `-vv` for DEBUG) | - |
-| `--quiet` | Suppress INFO/WARN logs on stderr (only ERROR survives). Mutually exclusive with `-v`. | - |
+| `--quiet` | Suppress status output and INFO/WARN logs (only errors survive). Mutually exclusive with `-v`. | - |
 | `--version` | Show version | - |
 | `--help` | Show help | - |
 

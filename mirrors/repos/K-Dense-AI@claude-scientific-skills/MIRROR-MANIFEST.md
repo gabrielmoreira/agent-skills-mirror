@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `K-Dense-AI/claude-scientific-skills` — 26 default patterns, 0 followed patterns, 140 file(s) materialized.
+Mirror of `K-Dense-AI/claude-scientific-skills` — 26 default patterns, 0 followed patterns, 141 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `K-Dense-AI/claude-scientific-skills` — 26 default patterns, 0 follo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 140 |
+| Files         | 141 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -131,74 +131,75 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 70 | ✓ | [`scientific-skills/open-notebook/SKILL.md`](scientific-skills/open-notebook/SKILL.md) |
 | 71 | ✓ | [`scientific-skills/opentrons-integration/SKILL.md`](scientific-skills/opentrons-integration/SKILL.md) |
 | 72 | ✓ | [`scientific-skills/optimize-for-gpu/SKILL.md`](scientific-skills/optimize-for-gpu/SKILL.md) |
-| 73 | ✓ | [`scientific-skills/paper-lookup/SKILL.md`](scientific-skills/paper-lookup/SKILL.md) |
-| 74 | ✓ | [`scientific-skills/paperzilla/SKILL.md`](scientific-skills/paperzilla/SKILL.md) |
-| 75 | ✓ | [`scientific-skills/parallel-web/SKILL.md`](scientific-skills/parallel-web/SKILL.md) |
-| 76 | ✓ | [`scientific-skills/pathml/SKILL.md`](scientific-skills/pathml/SKILL.md) |
-| 77 | ✓ | [`scientific-skills/pdf/SKILL.md`](scientific-skills/pdf/SKILL.md) |
-| 78 | ✓ | [`scientific-skills/peer-review/SKILL.md`](scientific-skills/peer-review/SKILL.md) |
-| 79 | ✓ | [`scientific-skills/pennylane/SKILL.md`](scientific-skills/pennylane/SKILL.md) |
-| 80 | ✓ | [`scientific-skills/phylogenetics/SKILL.md`](scientific-skills/phylogenetics/SKILL.md) |
-| 81 | ✓ | [`scientific-skills/polars-bio/SKILL.md`](scientific-skills/polars-bio/SKILL.md) |
-| 82 | ✓ | [`scientific-skills/polars/SKILL.md`](scientific-skills/polars/SKILL.md) |
-| 83 | ✓ | [`scientific-skills/pptx-posters/SKILL.md`](scientific-skills/pptx-posters/SKILL.md) |
-| 84 | ✓ | [`scientific-skills/pptx/editing.md`](scientific-skills/pptx/editing.md) |
-| 85 | ✓ | [`scientific-skills/pptx/pptxgenjs.md`](scientific-skills/pptx/pptxgenjs.md) |
-| 86 | ✓ | [`scientific-skills/pptx/SKILL.md`](scientific-skills/pptx/SKILL.md) |
-| 87 | ✓ | [`scientific-skills/primekg/SKILL.md`](scientific-skills/primekg/SKILL.md) |
-| 88 | ✓ | [`scientific-skills/protocolsio-integration/SKILL.md`](scientific-skills/protocolsio-integration/SKILL.md) |
-| 89 | ✓ | [`scientific-skills/pufferlib/SKILL.md`](scientific-skills/pufferlib/SKILL.md) |
-| 90 | ✓ | [`scientific-skills/pydeseq2/SKILL.md`](scientific-skills/pydeseq2/SKILL.md) |
-| 91 | ✓ | [`scientific-skills/pydicom/SKILL.md`](scientific-skills/pydicom/SKILL.md) |
-| 92 | ✓ | [`scientific-skills/pyhealth/SKILL.md`](scientific-skills/pyhealth/SKILL.md) |
-| 93 | ✓ | [`scientific-skills/pylabrobot/SKILL.md`](scientific-skills/pylabrobot/SKILL.md) |
-| 94 | ✓ | [`scientific-skills/pymatgen/SKILL.md`](scientific-skills/pymatgen/SKILL.md) |
-| 95 | ✓ | [`scientific-skills/pymc/SKILL.md`](scientific-skills/pymc/SKILL.md) |
-| 96 | ✓ | [`scientific-skills/pymoo/SKILL.md`](scientific-skills/pymoo/SKILL.md) |
-| 97 | ✓ | [`scientific-skills/pyopenms/SKILL.md`](scientific-skills/pyopenms/SKILL.md) |
-| 98 | ✓ | [`scientific-skills/pysam/SKILL.md`](scientific-skills/pysam/SKILL.md) |
-| 99 | ✓ | [`scientific-skills/pytdc/SKILL.md`](scientific-skills/pytdc/SKILL.md) |
-| 100 | ✓ | [`scientific-skills/pytorch-lightning/SKILL.md`](scientific-skills/pytorch-lightning/SKILL.md) |
-| 101 | ✓ | [`scientific-skills/pyzotero/SKILL.md`](scientific-skills/pyzotero/SKILL.md) |
-| 102 | ✓ | [`scientific-skills/qiskit/SKILL.md`](scientific-skills/qiskit/SKILL.md) |
-| 103 | ✓ | [`scientific-skills/qutip/SKILL.md`](scientific-skills/qutip/SKILL.md) |
-| 104 | ✓ | [`scientific-skills/rdkit/SKILL.md`](scientific-skills/rdkit/SKILL.md) |
-| 105 | ✓ | [`scientific-skills/research-grants/SKILL.md`](scientific-skills/research-grants/SKILL.md) |
-| 106 | ✓ | [`scientific-skills/research-lookup/SKILL.md`](scientific-skills/research-lookup/SKILL.md) |
-| 107 | ✓ | [`scientific-skills/rowan/SKILL.md`](scientific-skills/rowan/SKILL.md) |
-| 108 | ✓ | [`scientific-skills/scanpy/SKILL.md`](scientific-skills/scanpy/SKILL.md) |
-| 109 | ✓ | [`scientific-skills/scholar-evaluation/SKILL.md`](scientific-skills/scholar-evaluation/SKILL.md) |
-| 110 | ✓ | [`scientific-skills/scientific-brainstorming/SKILL.md`](scientific-skills/scientific-brainstorming/SKILL.md) |
-| 111 | ✓ | [`scientific-skills/scientific-critical-thinking/SKILL.md`](scientific-skills/scientific-critical-thinking/SKILL.md) |
-| 112 | ✓ | [`scientific-skills/scientific-schematics/SKILL.md`](scientific-skills/scientific-schematics/SKILL.md) |
-| 113 | ✓ | [`scientific-skills/scientific-slides/SKILL.md`](scientific-skills/scientific-slides/SKILL.md) |
-| 114 | ✓ | [`scientific-skills/scientific-visualization/SKILL.md`](scientific-skills/scientific-visualization/SKILL.md) |
-| 115 | ✓ | [`scientific-skills/scientific-writing/SKILL.md`](scientific-skills/scientific-writing/SKILL.md) |
-| 116 | ✓ | [`scientific-skills/scikit-bio/SKILL.md`](scientific-skills/scikit-bio/SKILL.md) |
-| 117 | ✓ | [`scientific-skills/scikit-learn/SKILL.md`](scientific-skills/scikit-learn/SKILL.md) |
-| 118 | ✓ | [`scientific-skills/scikit-survival/SKILL.md`](scientific-skills/scikit-survival/SKILL.md) |
-| 119 | ✓ | [`scientific-skills/scvelo/SKILL.md`](scientific-skills/scvelo/SKILL.md) |
-| 120 | ✓ | [`scientific-skills/scvi-tools/SKILL.md`](scientific-skills/scvi-tools/SKILL.md) |
-| 121 | ✓ | [`scientific-skills/seaborn/SKILL.md`](scientific-skills/seaborn/SKILL.md) |
-| 122 | ✓ | [`scientific-skills/shap/SKILL.md`](scientific-skills/shap/SKILL.md) |
-| 123 | ✓ | [`scientific-skills/simpy/SKILL.md`](scientific-skills/simpy/SKILL.md) |
-| 124 | ✓ | [`scientific-skills/stable-baselines3/SKILL.md`](scientific-skills/stable-baselines3/SKILL.md) |
-| 125 | ✓ | [`scientific-skills/statistical-analysis/SKILL.md`](scientific-skills/statistical-analysis/SKILL.md) |
-| 126 | ✓ | [`scientific-skills/statsmodels/SKILL.md`](scientific-skills/statsmodels/SKILL.md) |
-| 127 | ✓ | [`scientific-skills/sympy/SKILL.md`](scientific-skills/sympy/SKILL.md) |
-| 128 | ✓ | [`scientific-skills/tiledbvcf/SKILL.md`](scientific-skills/tiledbvcf/SKILL.md) |
-| 129 | ✓ | [`scientific-skills/timesfm-forecasting/SKILL.md`](scientific-skills/timesfm-forecasting/SKILL.md) |
-| 130 | ✓ | [`scientific-skills/torch-geometric/SKILL.md`](scientific-skills/torch-geometric/SKILL.md) |
-| 131 | ✓ | [`scientific-skills/torchdrug/SKILL.md`](scientific-skills/torchdrug/SKILL.md) |
-| 132 | ✓ | [`scientific-skills/transformers/SKILL.md`](scientific-skills/transformers/SKILL.md) |
-| 133 | ✓ | [`scientific-skills/treatment-plans/SKILL.md`](scientific-skills/treatment-plans/SKILL.md) |
-| 134 | ✓ | [`scientific-skills/umap-learn/SKILL.md`](scientific-skills/umap-learn/SKILL.md) |
-| 135 | ✓ | [`scientific-skills/usfiscaldata/SKILL.md`](scientific-skills/usfiscaldata/SKILL.md) |
-| 136 | ✓ | [`scientific-skills/vaex/SKILL.md`](scientific-skills/vaex/SKILL.md) |
-| 137 | ✓ | [`scientific-skills/venue-templates/SKILL.md`](scientific-skills/venue-templates/SKILL.md) |
-| 138 | ✓ | [`scientific-skills/what-if-oracle/SKILL.md`](scientific-skills/what-if-oracle/SKILL.md) |
-| 139 | ✓ | [`scientific-skills/xlsx/SKILL.md`](scientific-skills/xlsx/SKILL.md) |
-| 140 | ✓ | [`scientific-skills/zarr-python/SKILL.md`](scientific-skills/zarr-python/SKILL.md) |
+| 73 | ✓ | [`scientific-skills/pacsomatic/SKILL.md`](scientific-skills/pacsomatic/SKILL.md) |
+| 74 | ✓ | [`scientific-skills/paper-lookup/SKILL.md`](scientific-skills/paper-lookup/SKILL.md) |
+| 75 | ✓ | [`scientific-skills/paperzilla/SKILL.md`](scientific-skills/paperzilla/SKILL.md) |
+| 76 | ✓ | [`scientific-skills/parallel-web/SKILL.md`](scientific-skills/parallel-web/SKILL.md) |
+| 77 | ✓ | [`scientific-skills/pathml/SKILL.md`](scientific-skills/pathml/SKILL.md) |
+| 78 | ✓ | [`scientific-skills/pdf/SKILL.md`](scientific-skills/pdf/SKILL.md) |
+| 79 | ✓ | [`scientific-skills/peer-review/SKILL.md`](scientific-skills/peer-review/SKILL.md) |
+| 80 | ✓ | [`scientific-skills/pennylane/SKILL.md`](scientific-skills/pennylane/SKILL.md) |
+| 81 | ✓ | [`scientific-skills/phylogenetics/SKILL.md`](scientific-skills/phylogenetics/SKILL.md) |
+| 82 | ✓ | [`scientific-skills/polars-bio/SKILL.md`](scientific-skills/polars-bio/SKILL.md) |
+| 83 | ✓ | [`scientific-skills/polars/SKILL.md`](scientific-skills/polars/SKILL.md) |
+| 84 | ✓ | [`scientific-skills/pptx-posters/SKILL.md`](scientific-skills/pptx-posters/SKILL.md) |
+| 85 | ✓ | [`scientific-skills/pptx/editing.md`](scientific-skills/pptx/editing.md) |
+| 86 | ✓ | [`scientific-skills/pptx/pptxgenjs.md`](scientific-skills/pptx/pptxgenjs.md) |
+| 87 | ✓ | [`scientific-skills/pptx/SKILL.md`](scientific-skills/pptx/SKILL.md) |
+| 88 | ✓ | [`scientific-skills/primekg/SKILL.md`](scientific-skills/primekg/SKILL.md) |
+| 89 | ✓ | [`scientific-skills/protocolsio-integration/SKILL.md`](scientific-skills/protocolsio-integration/SKILL.md) |
+| 90 | ✓ | [`scientific-skills/pufferlib/SKILL.md`](scientific-skills/pufferlib/SKILL.md) |
+| 91 | ✓ | [`scientific-skills/pydeseq2/SKILL.md`](scientific-skills/pydeseq2/SKILL.md) |
+| 92 | ✓ | [`scientific-skills/pydicom/SKILL.md`](scientific-skills/pydicom/SKILL.md) |
+| 93 | ✓ | [`scientific-skills/pyhealth/SKILL.md`](scientific-skills/pyhealth/SKILL.md) |
+| 94 | ✓ | [`scientific-skills/pylabrobot/SKILL.md`](scientific-skills/pylabrobot/SKILL.md) |
+| 95 | ✓ | [`scientific-skills/pymatgen/SKILL.md`](scientific-skills/pymatgen/SKILL.md) |
+| 96 | ✓ | [`scientific-skills/pymc/SKILL.md`](scientific-skills/pymc/SKILL.md) |
+| 97 | ✓ | [`scientific-skills/pymoo/SKILL.md`](scientific-skills/pymoo/SKILL.md) |
+| 98 | ✓ | [`scientific-skills/pyopenms/SKILL.md`](scientific-skills/pyopenms/SKILL.md) |
+| 99 | ✓ | [`scientific-skills/pysam/SKILL.md`](scientific-skills/pysam/SKILL.md) |
+| 100 | ✓ | [`scientific-skills/pytdc/SKILL.md`](scientific-skills/pytdc/SKILL.md) |
+| 101 | ✓ | [`scientific-skills/pytorch-lightning/SKILL.md`](scientific-skills/pytorch-lightning/SKILL.md) |
+| 102 | ✓ | [`scientific-skills/pyzotero/SKILL.md`](scientific-skills/pyzotero/SKILL.md) |
+| 103 | ✓ | [`scientific-skills/qiskit/SKILL.md`](scientific-skills/qiskit/SKILL.md) |
+| 104 | ✓ | [`scientific-skills/qutip/SKILL.md`](scientific-skills/qutip/SKILL.md) |
+| 105 | ✓ | [`scientific-skills/rdkit/SKILL.md`](scientific-skills/rdkit/SKILL.md) |
+| 106 | ✓ | [`scientific-skills/research-grants/SKILL.md`](scientific-skills/research-grants/SKILL.md) |
+| 107 | ✓ | [`scientific-skills/research-lookup/SKILL.md`](scientific-skills/research-lookup/SKILL.md) |
+| 108 | ✓ | [`scientific-skills/rowan/SKILL.md`](scientific-skills/rowan/SKILL.md) |
+| 109 | ✓ | [`scientific-skills/scanpy/SKILL.md`](scientific-skills/scanpy/SKILL.md) |
+| 110 | ✓ | [`scientific-skills/scholar-evaluation/SKILL.md`](scientific-skills/scholar-evaluation/SKILL.md) |
+| 111 | ✓ | [`scientific-skills/scientific-brainstorming/SKILL.md`](scientific-skills/scientific-brainstorming/SKILL.md) |
+| 112 | ✓ | [`scientific-skills/scientific-critical-thinking/SKILL.md`](scientific-skills/scientific-critical-thinking/SKILL.md) |
+| 113 | ✓ | [`scientific-skills/scientific-schematics/SKILL.md`](scientific-skills/scientific-schematics/SKILL.md) |
+| 114 | ✓ | [`scientific-skills/scientific-slides/SKILL.md`](scientific-skills/scientific-slides/SKILL.md) |
+| 115 | ✓ | [`scientific-skills/scientific-visualization/SKILL.md`](scientific-skills/scientific-visualization/SKILL.md) |
+| 116 | ✓ | [`scientific-skills/scientific-writing/SKILL.md`](scientific-skills/scientific-writing/SKILL.md) |
+| 117 | ✓ | [`scientific-skills/scikit-bio/SKILL.md`](scientific-skills/scikit-bio/SKILL.md) |
+| 118 | ✓ | [`scientific-skills/scikit-learn/SKILL.md`](scientific-skills/scikit-learn/SKILL.md) |
+| 119 | ✓ | [`scientific-skills/scikit-survival/SKILL.md`](scientific-skills/scikit-survival/SKILL.md) |
+| 120 | ✓ | [`scientific-skills/scvelo/SKILL.md`](scientific-skills/scvelo/SKILL.md) |
+| 121 | ✓ | [`scientific-skills/scvi-tools/SKILL.md`](scientific-skills/scvi-tools/SKILL.md) |
+| 122 | ✓ | [`scientific-skills/seaborn/SKILL.md`](scientific-skills/seaborn/SKILL.md) |
+| 123 | ✓ | [`scientific-skills/shap/SKILL.md`](scientific-skills/shap/SKILL.md) |
+| 124 | ✓ | [`scientific-skills/simpy/SKILL.md`](scientific-skills/simpy/SKILL.md) |
+| 125 | ✓ | [`scientific-skills/stable-baselines3/SKILL.md`](scientific-skills/stable-baselines3/SKILL.md) |
+| 126 | ✓ | [`scientific-skills/statistical-analysis/SKILL.md`](scientific-skills/statistical-analysis/SKILL.md) |
+| 127 | ✓ | [`scientific-skills/statsmodels/SKILL.md`](scientific-skills/statsmodels/SKILL.md) |
+| 128 | ✓ | [`scientific-skills/sympy/SKILL.md`](scientific-skills/sympy/SKILL.md) |
+| 129 | ✓ | [`scientific-skills/tiledbvcf/SKILL.md`](scientific-skills/tiledbvcf/SKILL.md) |
+| 130 | ✓ | [`scientific-skills/timesfm-forecasting/SKILL.md`](scientific-skills/timesfm-forecasting/SKILL.md) |
+| 131 | ✓ | [`scientific-skills/torch-geometric/SKILL.md`](scientific-skills/torch-geometric/SKILL.md) |
+| 132 | ✓ | [`scientific-skills/torchdrug/SKILL.md`](scientific-skills/torchdrug/SKILL.md) |
+| 133 | ✓ | [`scientific-skills/transformers/SKILL.md`](scientific-skills/transformers/SKILL.md) |
+| 134 | ✓ | [`scientific-skills/treatment-plans/SKILL.md`](scientific-skills/treatment-plans/SKILL.md) |
+| 135 | ✓ | [`scientific-skills/umap-learn/SKILL.md`](scientific-skills/umap-learn/SKILL.md) |
+| 136 | ✓ | [`scientific-skills/usfiscaldata/SKILL.md`](scientific-skills/usfiscaldata/SKILL.md) |
+| 137 | ✓ | [`scientific-skills/vaex/SKILL.md`](scientific-skills/vaex/SKILL.md) |
+| 138 | ✓ | [`scientific-skills/venue-templates/SKILL.md`](scientific-skills/venue-templates/SKILL.md) |
+| 139 | ✓ | [`scientific-skills/what-if-oracle/SKILL.md`](scientific-skills/what-if-oracle/SKILL.md) |
+| 140 | ✓ | [`scientific-skills/xlsx/SKILL.md`](scientific-skills/xlsx/SKILL.md) |
+| 141 | ✓ | [`scientific-skills/zarr-python/SKILL.md`](scientific-skills/zarr-python/SKILL.md) |
 
 ---
 

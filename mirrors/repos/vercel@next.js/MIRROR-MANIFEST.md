@@ -87,8 +87,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 27 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 28 | ✓ | [`packages/next/AGENTS.md`](packages/next/AGENTS.md) |
-| 29 | ✓ | [`skills/next-compile/scripts/check.mjs`](skills/next-compile/scripts/check.mjs) |
-| 30 | ✓ | [`skills/next-compile/SKILL.md`](skills/next-compile/SKILL.md) |
+| 29 | ✓ | [`skills/next-dev-loop/SKILL.md`](skills/next-dev-loop/SKILL.md) |
+| 30 | ✓ | [`skills/next-ppr-optimizer/SKILL.md`](skills/next-ppr-optimizer/SKILL.md) |
 
 ---
 

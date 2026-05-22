@@ -13,6 +13,11 @@ This guide covers everything you need to contribute to `notebooklm-py`: architec
 
 ## Architecture
 
+> **Canonical post-refactor map:** see [`docs/architecture.md`](./architecture.md)
+> for the v0.5.0 collaborator graph + capability-protocol model. This section
+> remains as the contributor on-ramp (package layout + adding-features
+> guidance) and links out to the architecture doc rather than duplicating it.
+
 ### Package Structure
 
 ```
@@ -22,7 +27,6 @@ src/notebooklm/
 ├── auth.py              # Authentication handling
 ├── types.py             # Dataclasses and type definitions
 ├── _session.py          # Concrete Session HTTP/RPC infrastructure
-├── _core.py             # Legacy compatibility shim
 ├── _notebooks.py        # NotebooksAPI implementation
 ├── _notebook_metadata.py # Private notebook metadata composition service
 ├── _sources.py          # SourcesAPI implementation
@@ -85,24 +89,25 @@ src/notebooklm/
 |-------|-------|----------------|
 | **CLI** | `cli/*.py` | User commands, input validation, Rich output |
 | **Client** | `client.py`, `_*.py` | High-level Python API, returns typed dataclasses |
-| **Session** | `_session.py`, `_core.py`, `_kernel.py`, session/kernel collaborators | `Session` orchestrator + seam-module helpers (HTTP client lifecycle, RPC dispatch, metrics, drain bookkeeping, request-id counter, auth refresh, conversation cache, polling registry, cookie persistence) |
+| **Session** | `_session.py`, `_kernel.py`, session/kernel collaborators | `Session` orchestrator + seam-module helpers (HTTP client lifecycle, RPC dispatch, metrics, drain bookkeeping, request-id counter, auth refresh, conversation cache, polling registry, cookie persistence) |
 | **RPC** | `rpc/*.py` | Protocol encoding/decoding, method IDs |
 
 #### Session-layer seam modules
 
-The `Session` layer is split across `_session.py` (orchestrator), `_core.py`
-(legacy compatibility shim), `_kernel.py` (HTTP client owner), and
-single-responsibility collaborator modules. Each helper exposes a
-Protocol-shim host interface so it can be unit-tested against a stub `Session`:
+The `Session` layer is split across `_session.py` (orchestrator),
+`_kernel.py` (HTTP client owner), and single-responsibility collaborator
+modules. (The legacy `_core.py` compatibility shim was deleted in v0.5.0;
+callers import directly from the canonical modules.) Each helper exposes
+a Protocol-shim host interface so it can be unit-tested against a stub
+`Session`:
 
 | Module | Class | Responsibility |
 |---|---|---|
 | `_session.py` | `Session` | Orchestrator owning the `httpx.AsyncClient` + `AuthTokens`; module-level constants and re-exports; error-injection seam (`_get_error_injection_mode`) used by middleware-level error injection. |
-| `_core.py` | shim | Compatibility re-export surface for legacy private imports. |
 | `_client_metrics.py` | `ClientMetrics` | `ClientMetricsSnapshot` counters, queue-wait recorders, `on_rpc_event` async callback. |
 | `_transport_drain.py` | `TransportDrainTracker` | In-flight transport counters, `_TransportOperationToken`, lazy `asyncio.Condition` powering `client.drain(...)`. |
 | `_reqid_counter.py` | `ReqidCounter` | Monotonic `_reqid` counter for chat backend (baseline 100000, step 100000). |
-| `_session_auth.py` | `AuthRefreshCoordinator` | Refresh-task lifecycle, refresh lock, `_AuthSnapshot` rotation. |
+| `_session_auth.py` | `AuthRefreshCoordinator` | Refresh-task lifecycle, refresh lock, `AuthSnapshot` rotation. |
 | `_session_lifecycle.py` | `ClientLifecycle` | Loop-affinity guard, `aclose` plumbing, keepalive task wiring. |
 | `_rpc_executor.py` | `RpcExecutor` | RPC dispatch executor with `DecodeResponse` + `RpcOwner` Protocols. |
 | `_authed_transport.py` | `AuthedTransport` | Authed HTTP POST path, retry loops (429 + 5xx). |
@@ -115,8 +120,8 @@ The feature-facing surface is the set of **capability Protocols** in
 `OperationScopeProvider`, `AsyncWorkRuntime`, plus the standalone
 `AuthMetadata` and `Kernel` consumed by the upload pipeline. The
 broad `Session` Protocol that previously bundled these together was
-deleted in Phase 7 of the capability refactor (`docs/refactor.md`
-§Migration Plan step 10); each feature now depends on the narrowest
+deleted in the final phase of the capability refactor (see
+[`docs/refactor-history.md`](refactor-history.md) and ADR-013); each feature now depends on the narrowest
 slice it needs, either by composing the shared Protocols here or by
 defining a feature-local runtime in its own module (`ChatRuntime` in
 `_chat.py`, `ArtifactsRuntime` in `_artifacts.py`, `UploadRuntime` in
@@ -169,6 +174,13 @@ The architecture tests encode the current layer contract:
 
 **Why async?** Google's API can be slow. Async enables concurrent operations and non-blocking downloads.
 
+**Naming conventions.** See [`docs/conventions.md`](./conventions.md) for the
+canonical tiebreakers on waiting/polling verbs (`poll_X` / `wait_for_X` /
+`wait_until_X` / `await_X` / `_wait_for_X`), RPC-callable Protocol names
+(`NextCall` / `RpcCall` / `RpcCallback` / `ShareRpc` / `RpcCaller`), and
+metrics method verbs (`record_X` vs `emit_X`). New code should pick names
+from those catalogues rather than introducing parallel patterns.
+
 ### Adding New Features
 
 **New RPC Method:**
@@ -182,16 +194,22 @@ The architecture tests encode the current layer contract:
 1. Create `_newfeature.py` with `NewFeatureAPI` class.
 2. Type the constructor's runtime parameter against the **narrowest
    shared capability Protocol** it actually uses (`RpcCaller`,
-   `AsyncWorkRuntime`, etc.), or define a feature-local runtime
-   Protocol in your feature module if the slice you need is not
-   shared with any other feature (e.g. `ChatRuntime`, `ArtifactsRuntime`,
-   `UploadRuntime`). Do not type against a broad `Session` — that
-   Protocol was deleted in Phase 7 of the capability refactor; see
-   ADR-013 for the rationale.
-3. Add to `client.py`: `self.newfeature = NewFeatureAPI(self._core)` —
+   `AsyncWorkRuntime`, etc. — see
+   [`docs/architecture.md`](./architecture.md) for the protocol
+   catalog), or define a feature-local runtime Protocol in your feature
+   module if the slice you need is not shared with any other feature
+   (e.g. `ChatRuntime`, `ArtifactsRuntime`, `UploadRuntime`). **Do NOT
+   import the concrete `Session` class for type annotations** — the
+   broad `Session` Protocol was deleted in Phase 7 of the capability
+   refactor; see ADR-013 for the rationale.
+3. Add to `client.py`: `self.newfeature = NewFeatureAPI(self._session)` —
    the concrete `Session` structurally satisfies every capability
    Protocol, so the wiring stays straightforward.
-4. Export types from `__init__.py`.
+4. **Tests** should use `tests/_fixtures/fake_core.py:FakeSession`
+   which exposes the union of all capability protocols — it lets a
+   feature test substitute the broad runtime without constructing a
+   real `Session`.
+5. Export types from `__init__.py`.
 
 ---
 
@@ -323,21 +341,31 @@ NOTEBOOKLM_READ_ONLY_NOTEBOOK_ID=<work-nb-id> \
 tests/
 ├── unit/                            # No network, fast, mock everything
 ├── integration/                     # Mocked HTTP responses + VCR cassettes
-│   ├── test_artifacts.py            # ArtifactsAPI integration
+│   ├── test_artifacts_integration.py # ArtifactsAPI integration
 │   ├── test_artifacts_drift.py      # CREATE_ARTIFACT payload drift guard
+│   ├── test_auth_refresh_vcr.py     # Auth refresh token VCR test
 │   ├── test_auto_refresh.py         # Keepalive/refresh integration
-│   ├── test_chat.py                 # ChatAPI integration
-│   ├── test_cli_source_delete.py    # CLI source-delete path
-│   ├── test_session_integration.py  # Session + RPC plumbing
+│   ├── test_chat_delete_conversation_vcr.py
+│   ├── test_chat_multi_source_vcr.py
+│   ├── test_chat_passage_resolver.py
+│   ├── test_cli_session_local.py
 │   ├── test_download_multi_artifact.py
+│   ├── test_error_paths_vcr.py      # Synthetic and VCR error paths
 │   ├── test_get_summary_drift.py    # GET_NOTEBOOK_SUMMARY drift guard
-│   ├── test_notebooks.py            # NotebooksAPI integration
-│   ├── test_notes.py                # NotesAPI integration
-│   ├── test_research_api.py         # ResearchAPI integration
-│   ├── test_settings.py             # SettingsAPI integration
-│   ├── test_sharing.py              # SharingAPI integration
+│   ├── test_notebooks_integration.py # NotebooksAPI integration
+│   ├── test_notes_integration.py     # NotesAPI integration
+│   ├── test_notes_idempotency.py
+│   ├── test_polling_vcr.py
+│   ├── test_research_deep_poll_vcr.py
+│   ├── test_research_idempotency.py
+│   ├── test_save_chat_as_note_integration.py
+│   ├── test_session_integration.py  # Session + RPC plumbing
+│   ├── test_settings_integration.py  # SettingsAPI integration
+│   ├── test_settings_vcr.py
+│   ├── test_sharing_integration.py   # SharingAPI integration
+│   ├── test_sharing_vcr.py
 │   ├── test_skill_packaging.py      # Packaging smoke (skills, entry-points)
-│   ├── test_sources.py              # SourcesAPI integration
+│   ├── test_sources_integration.py   # SourcesAPI integration
 │   ├── test_vcr_comprehensive.py    # End-to-end VCR walkthrough
 │   ├── test_vcr_example.py          # VCR pattern reference
 │   ├── test_vcr_real_api.py         # VCR against real-API cassettes
@@ -422,8 +450,8 @@ emails, and other sensitive patterns before the cassette hits disk. Verify
 the result with the cassette guard before committing:
 
 ```bash
-# Current guard (a Python replacement is planned)
-tests/check_cassettes_clean.sh
+# Verify recorded cassettes are clean of credentials
+uv run python tests/scripts/check_cassettes_clean.py
 ```
 
 #### Synthetic error cassettes
@@ -450,7 +478,9 @@ The plumbing has three opt-in layers:
 1. **Env var**: `NOTEBOOKLM_VCR_RECORD_ERRORS=<mode>` activates the transport
    wrapper inside `Session.open()`.
 2. **Pytest marker**: `@pytest.mark.synthetic_error("<mode>")` sets the env
-   var for the duration of a single test (auto-reverted on teardown).
+   var for the duration of a single test (auto-reverted on teardown). Note
+   that the `synthetic_error` marker is registered dynamically in
+   `tests/conftest.py:149` (rather than statically listed in `pyproject.toml`).
 3. **Filename prefix**: cassettes recorded under this mode MUST be named
    `error_synthetic_<mode>_<slug>.yaml` — use
    `tests.cassette_patterns.synthetic_error_cassette_name(mode, slug)` to
@@ -464,7 +494,7 @@ ships only the plumbing):
 ```bash
 NOTEBOOKLM_VCR_RECORD=1 \
 NOTEBOOKLM_VCR_RECORD_ERRORS=429 \
-  uv run pytest tests/integration/test_error_cassettes.py::test_rate_limit_records
+  uv run pytest tests/integration/test_error_paths_vcr.py
 ```
 
 Production behavior is unchanged when `NOTEBOOKLM_VCR_RECORD_ERRORS` is
@@ -549,7 +579,7 @@ Need network?
 
 ### Credential redaction
 
-The package handler installed by `configure_logging()` has a `RedactingFilter` attached. It runs for every record reaching the handler, including records originating in child loggers (`notebooklm._core`, `notebooklm._chat`, etc.) via Python logging's default propagation. The filter scrubs:
+The package handler installed by `configure_logging()` has a `RedactingFilter` attached. It runs for every record reaching the handler, including records originating in child loggers (`notebooklm._session`, `notebooklm._authed_transport`, `notebooklm._chat`, etc.) via Python logging's default propagation. The filter scrubs:
 
 - CSRF tokens (`at=...`)
 - Session IDs (`f.sid=...`)
@@ -559,7 +589,7 @@ The package handler installed by `configure_logging()` has a `RedactingFilter` a
 
 The filter pre-renders `record.exc_info` traceback into a scrubbed `record.exc_text` while preserving `record.exc_info` itself. The live exception object is not mutated.
 
-To add a new secret pattern: edit `_REDACT_PATTERNS` in `src/notebooklm/_logging.py` and add a unit test in `tests/unit/test__logging.py` before merging.
+To add a new secret pattern: edit `_REDACT_PATTERNS` in `src/notebooklm/_logging.py` and add a unit test in `tests/unit/test_logging.py` before merging.
 
 ### Attaching your own handler
 
@@ -608,7 +638,7 @@ The `RedactingFilter` preserves `record.exc_info` (the live exception object) so
 
 - Standard `logging.Formatter` uses `record.exc_text` (scrubbed by our filter) and does NOT re-render from `exc_info`. Safe.
 - Custom formatters that ignore `exc_text` and read `exc_info` directly may render an unredacted traceback. **Mitigation**: wrap such handlers with `apply_redaction()` so the formatter is decorated and post-scrubs the final output regardless of which exception attribute it reads.
-- Records propagate to root by default (`notebooklm.propagate = True`) so `caplog` and `basicConfig` work without changes. Our filter mutates the record before propagation, so downstream handlers (including root's) see the scrubbed version. **Caveat**: if a user attaches an unredacted handler directly to a child logger (`notebooklm._core`), that handler fires *before* propagation reaches our parent handler. Mitigation: `apply_redaction(child_handler)`.
+- Records propagate to root by default (`notebooklm.propagate = True`) so `caplog` and `basicConfig` work without changes. Our filter mutates the record before propagation, so downstream handlers (including root's) see the scrubbed version. **Caveat**: if a user attaches an unredacted handler directly to a child logger (`notebooklm._session`), that handler fires *before* propagation reaches our parent handler. Mitigation: `apply_redaction(child_handler)`.
 - Applications that want notebooklm logs *isolated* from root can set `logging.getLogger('notebooklm').propagate = False` themselves.
 
 ---

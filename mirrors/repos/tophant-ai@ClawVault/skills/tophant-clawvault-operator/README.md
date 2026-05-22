@@ -1,6 +1,6 @@
 # ClawVault Operator Skill
 
-Day-to-day operations skill for ClawVault — start/stop services, manage configuration, apply vault presets, and scan text/files directly from OpenClaw agents.
+Day-to-day operations skill for ClawVault — start/stop services, manage configuration, apply vault presets, scan text/files, and validate OpenClaw plugin interception directly from OpenClaw agents.
 
 **Complements** [`tophant-clawvault-installer`](https://clawhub.ai/Martin2877/tophant-clawvault-installer) (install/health/test/uninstall) with the full operational surface of ClawVault.
 
@@ -22,10 +22,10 @@ This creates the `~/.clawvault-env/` venv that the operator skill depends on.
 **From ClawHub (recommended):**
 
 ```bash
-openclaw skills install tophant-clawvault-operator --version=0.2.5 --force
+openclaw skills install tophant-clawvault-operator --version=0.2.6 --force
 
 # Or via clawhub CLI
-clawhub install tophant-clawvault-operator --version 0.2.5
+clawhub install tophant-clawvault-operator --version 0.2.6
 ```
 
 **ClawHub:** https://clawhub.ai/Martin2877/tophant-clawvault-operator
@@ -65,10 +65,11 @@ openclaw restart
 |---|---|
 | **Service lifecycle** | `start`, `stop`, `status` |
 | **Threat scanning** | `scan`, `scan-file` |
+| **OpenClaw validation** | `plugin-acceptance` |
 | **Configuration** | `config-show`, `config-get`, `config-set` |
 | **Vault presets** | `vault-list`, `vault-show`, `vault-apply` |
 
-11 commands total. See [SKILL.md](./SKILL.md) for complete reference with examples.
+12 commands total. See [SKILL.md](./SKILL.md) for complete reference with examples.
 
 ## Vault Presets
 

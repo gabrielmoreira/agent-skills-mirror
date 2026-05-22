@@ -43,3 +43,7 @@ VS Code does not expose token counts for built-in models. **BYOK models (1.120+)
 ## Graceful Handoff
 
 When approaching session limits or switching topics, write the cross-session handoff to **repo-root `HANDOFF.md`** (state, completed work, next steps, pending decisions). `/memories/session/` is for in-conversation scratch only — it clears at conversation end and is the wrong tier for handoff content. Suggest: "New session can read `HANDOFF.md` at repo root to continue."
+
+## Would Revise If
+
+Revise if proxy heuristics for token counts consistently mispredict session capacity (warning signs miscalibrated for the current model class), if the BYOK token-counter assumption breaks (extension UI no longer surfaces percent-full), or if graceful-handoff produces `HANDOFF.md` content that the next session can't actually pick up from.

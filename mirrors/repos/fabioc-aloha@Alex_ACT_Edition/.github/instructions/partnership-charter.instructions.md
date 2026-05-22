@@ -91,3 +91,7 @@ The five commitments apply to any domain:
 ## Reference
 
 *The Verification Habit*, Chapter 10: The Partnership Charter
+
+## Would Revise If
+
+Revise if any of the five commitments produces measurable friction without behavior change (charter is aspirational not load-bearing), if the trust kill-switch never fires in cases where it should (the four conditions are miscalibrated), or if heir feedback shows partnership friction not covered by any of the five commitments.

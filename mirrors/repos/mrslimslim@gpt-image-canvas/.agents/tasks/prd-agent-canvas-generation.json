@@ -1,0 +1,371 @@
+{
+  "version": 1,
+  "project": "gpt-image-canvas",
+  "overview": "Build a first-feedback version of an Agent-driven canvas image generation workflow. Users chat with an Agent in the right panel, the Agent creates a structured generation plan node on the tldraw canvas, the user confirms execution, and generated intermediate/reference/final images appear around the plan node. Ralph must execute one story per iteration, commit story changes, and keep secrets out of the repository.",
+  "goals": [
+    "Add an Agent LLM configuration surface for one OpenAI-compatible chat or multimodal model.",
+    "Use DeepAgentsjs with a built-in canvas image planning skill and product-only whitelisted tools.",
+    "Let users create, revise, confirm, execute, cancel, and retry structured generation plans from an Agent conversation.",
+    "Represent Agent output as a custom tldraw plan node that tracks jobs, dependencies, progress, errors, and thumbnails.",
+    "Support batch and dependency-aware generation with generated anchor/reference images while preserving existing manual generation workflows.",
+    "Reuse existing generation records, assets, history, gallery, local storage, and provider behavior for actual image generation jobs."
+  ],
+  "nonGoals": [
+    "Do not persist Agent chat messages in v1; keep them in the current browser session only.",
+    "Do not add arbitrary workflow graph editing, node-graph authoring, or a full table editor inside the plan node.",
+    "Do not group Gallery or generation history by Agent plan in v1.",
+    "Do not expose shell commands, real filesystem tools, or non-product tools to DeepAgentsjs.",
+    "Do not support multiple saved Agent LLM profiles, user accounts, cloud sync, billing, or collaborative Agent sessions.",
+    "Do not continue Agent runs after the WebSocket disconnects or the page refreshes."
+  ],
+  "successMetrics": [
+    "A user can configure an Agent LLM once and see masked configuration after refresh.",
+    "A user can open the Agent tab, type a multi-image request, and receive a visible plan node on the canvas.",
+    "A user can select up to three canvas images and have them used as Agent message context or image-generation references according to the vision setting.",
+    "A user can confirm a plan and watch job statuses, thumbnails, intermediate anchor images, and final images update in both the chat and plan node.",
+    "A plan with generated character or style anchors runs in dependency order and places all visible images around the plan node.",
+    "Manual text generation, reference generation, history rerun, locate, download, gallery, provider configuration, and project autosave continue to work."
+  ],
+  "openQuestions": [
+    "No product-level open questions remain for v1. Defaults: Agent chat is session-only, Agent LLM config is persisted, one plan can produce at most 16 total generated images including intermediate anchors, each job can use at most 3 references, dependency source jobs must generate exactly 1 output, and WebSocket disconnect cancels the active Agent run."
+  ],
+  "stack": {
+    "packageManager": "pnpm 9.14.2 workspaces",
+    "frontend": "React + Vite + TypeScript + tldraw + Tailwind CSS + lucide-react",
+    "backend": "Hono on Node.js with TypeScript",
+    "database": "SQLite using Drizzle ORM and better-sqlite3",
+    "agent": "DeepAgentsjs with a built-in canvas image planning skill and whitelisted product tools",
+    "agentLlmProvider": "One saved OpenAI-compatible chat or multimodal model configuration",
+    "imageProvider": "Existing OpenAI-compatible Images API plus Codex Responses image provider selection for image generation",
+    "transport": "WebSocket for Agent conversation, plan updates, execution progress, thumbnails, and cancellation",
+    "runtime": "Node.js 22",
+    "storage": "Host ./data or DATA_DIR for SQLite, assets, COS configuration, Codex tokens, provider secrets, and Agent LLM config"
+  },
+  "routes": [
+    {
+      "path": "/api/agent-config",
+      "name": "Agent LLM Configuration",
+      "purpose": "Read and save one OpenAI-compatible Agent LLM configuration with masked secret readback."
+    },
+    {
+      "path": "/api/agent/ws",
+      "name": "Agent WebSocket",
+      "purpose": "Run Agent conversation, plan creation/revision, confirmed execution, cancellation, retry, status, and thumbnail events."
+    },
+    {
+      "path": "/api/images/generate",
+      "name": "Text To Image",
+      "purpose": "Continue generating actual images for Agent jobs without changing existing manual semantics."
+    },
+    {
+      "path": "/api/images/edit",
+      "name": "Reference Image Generation",
+      "purpose": "Continue generating actual images from selected or generated reference images for Agent jobs."
+    },
+    {
+      "path": "/api/project",
+      "name": "Project State",
+      "purpose": "Continue saving the tldraw snapshot, including persistent Agent plan nodes, without saving Agent chat messages."
+    }
+  ],
+  "uiNotes": [
+    "The UI language is Chinese.",
+    "Keep the existing manual generation experience intact by adding a right-panel tab switcher for Manual and Agent.",
+    "The Agent tab should feel like a working tool, not a marketing surface: compact conversation, selected-reference summary, default generation controls, and visible run state.",
+    "The Agent tab default controls include size, quality, and output format; natural language can override them per plan.",
+    "Use the current selected canvas images as message attachments/reference candidates, capped at 3.",
+    "When Agent LLM supports vision, selected images can be sent to the Agent as multimodal input; when it does not, selected images are only available as image-generation references.",
+    "The custom plan node should be readable at a glance and show plan title, total output count, jobs, dependencies, progress, errors, thumbnails, and actions.",
+    "Final and intermediate generated images remain ordinary tldraw image shapes so users can move, crop, download, and reuse them as references.",
+    "Generated images should be placed around the plan node instead of centered in the viewport.",
+    "Desktop and mobile layouts must keep text and controls inside their containers with no overlapping UI."
+  ],
+  "dataModel": [
+    {
+      "entity": "AgentLlmConfig",
+      "fields": [
+        "id",
+        "apiKey",
+        "baseUrl",
+        "model",
+        "timeoutMs",
+        "supportsVision",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    {
+      "entity": "GenerationPlan",
+      "fields": [
+        "id",
+        "title",
+        "status",
+        "defaults",
+        "jobs",
+        "edges",
+        "createdBy",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    {
+      "entity": "GenerationJob",
+      "fields": [
+        "id",
+        "role",
+        "prompt",
+        "count",
+        "size",
+        "quality",
+        "outputFormat",
+        "references",
+        "status",
+        "outputs",
+        "error"
+      ]
+    },
+    {
+      "entity": "GenerationReference",
+      "fields": [
+        "kind",
+        "assetId",
+        "jobId",
+        "outputId",
+        "usage"
+      ]
+    },
+    {
+      "entity": "AgentPlanNodeShape",
+      "fields": [
+        "plan",
+        "w",
+        "h",
+        "selectedJobId",
+        "lastRunId"
+      ]
+    }
+  ],
+  "webSocketProtocol": {
+    "clientMessages": [
+      "user_message",
+      "revise_plan",
+      "execute_plan",
+      "cancel_run",
+      "retry_failed",
+      "ping"
+    ],
+    "serverEvents": [
+      "connected",
+      "assistant_delta",
+      "plan_created",
+      "plan_updated",
+      "job_started",
+      "job_completed",
+      "job_failed",
+      "job_blocked",
+      "asset_preview",
+      "run_cancelled",
+      "run_done",
+      "error",
+      "pong"
+    ]
+  },
+  "rules": [
+    "Ralph must complete exactly one story per iteration and commit story changes unless explicitly run with no-commit.",
+    "Use pnpm install if dependencies are missing; the package manager is pinned to pnpm@9.14.2.",
+    "Run pnpm typecheck and pnpm build before completing each story.",
+    "Frontend stories must perform browser verification against the running app, usually with pnpm dev and http://localhost:5173.",
+    "Keep local agent scratch files under .codex-temp/ and do not commit .ralph, .env, data, generated images, SQLite databases, build output, or machine-specific paths.",
+    "Secrets must only be read from .env, runtime environment, existing local provider config, Codex token storage, or the new Agent LLM config; secrets must never be logged.",
+    "Agent chat messages are session-only in v1 and must not be saved to the database, project API, or plan node.",
+    "Agent LLM configuration is persisted locally and returned to the browser only with masked API key data.",
+    "DeepAgentsjs must only receive whitelisted product tools for plan creation, plan update, job execution, selected reference access, canvas status updates, and cancellation.",
+    "Do not expose shell, arbitrary filesystem, environment inspection, or database inspection tools to the user-facing Agent.",
+    "A single GenerationPlan can request at most 16 total generated images, including intermediate character, style, or reference anchor images.",
+    "Each GenerationJob can use at most 3 resolved reference images, matching the existing edit/reference API limit.",
+    "Any job whose output is referenced by a downstream job must have count exactly 1.",
+    "Confirmed plans are structurally immutable during execution; if the Agent needs a different prompt, count, dependency, or reference, it must create a revised plan for user confirmation.",
+    "Unexecuted plan revisions update the same plan node; revisions after execution create a new plan node.",
+    "WebSocket disconnect or browser refresh cancels the active Agent run; already generated assets and canvas images remain.",
+    "Retry failed retries failed jobs plus downstream jobs blocked by those failures; do not rerun already successful independent jobs.",
+    "Generated intermediate images are visible on the canvas, labeled or represented as intermediate/reference assets in the plan node, and count against the 16-image limit.",
+    "Existing manual text generation, reference generation, generation history, Gallery, provider configuration, COS backup, and project autosave behavior must not regress."
+  ],
+  "qualityGates": [
+    "pnpm typecheck",
+    "pnpm build"
+  ],
+  "stories": [
+    {
+      "id": "AG-001",
+      "title": "Add Agent LLM configuration and WebSocket foundation",
+      "status": "done",
+      "dependsOn": [],
+      "description": "As a creator, I want to configure one OpenAI-compatible Agent LLM and establish a safe WebSocket channel so the Agent can later chat, plan, execute, and cancel without exposing secrets.",
+      "acceptanceCriteria": [
+        "Add shared contracts for Agent LLM config view, save request, masked secret, WebSocket client messages, and WebSocket server events.",
+        "Add SQLite-backed Agent LLM configuration storage with one active row containing apiKey, baseUrl, model, timeoutMs, supportsVision, createdAt, and updatedAt.",
+        "Initialize or migrate the Agent LLM config table at startup using the existing database.ts migration style.",
+        "Implement GET /api/agent-config returning the saved config with API key masked and supportsVision visible.",
+        "Implement PUT /api/agent-config with API key replacement/preservation semantics, base URL/model trimming, positive timeout validation, and boolean supportsVision persistence.",
+        "Reject invalid config payloads with 400 JSON errors and do not log API key values.",
+        "Add an Agent WebSocket endpoint at /api/agent/ws that accepts connections, sends a connected event, handles ping/pong, handles cancel_run idempotently, and returns a clear missing-config error for Agent work when no usable Agent LLM config exists.",
+        "WebSocket close or disconnect must cancel any active in-memory run tied to that socket.",
+        "Negative case: missing Agent LLM config does not crash the server and produces a clear user-facing error event.",
+        "Negative case: malformed WebSocket JSON produces an error event without terminating the server process.",
+        "Verification: deterministic backend smoke checks or focused tests cover config save/readback, masking, preservation, invalid payloads, and basic WebSocket connect/error/cancel behavior.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-05-03T13:20:06.727008+00:00",
+      "completedAt": "2026-05-03T13:39:12.423235+00:00",
+      "updatedAt": "2026-05-03T13:39:12.423235+00:00"
+    },
+    {
+      "id": "AG-002",
+      "title": "Define GenerationPlan contracts and DeepAgentsjs planning skill",
+      "status": "done",
+      "dependsOn": [
+        "AG-001"
+      ],
+      "description": "As a creator, I want the Agent to turn a natural-language image request into a strict, inspectable GenerationPlan so the canvas can display and execute the plan deterministically.",
+      "acceptanceCriteria": [
+        "Add DeepAgentsjs as the Agent framework dependency and wire it through a backend planner module.",
+        "Define shared GenerationPlan, GenerationJob, GenerationReference, plan status, job status, dependency edge, plan defaults, and validation result contracts.",
+        "Implement a built-in versioned canvas image planning skill/system instruction that constrains the Agent to output strict GenerationPlan JSON.",
+        "The planning skill must explain the 16 total generated image cap, the 3 reference image cap per job, dependency source count=1, visible intermediate anchor images, and confirmation-before-execution rule.",
+        "The planner accepts user text, current Agent defaults, and up to 3 selected canvas reference summaries.",
+        "When supportsVision is true, selected images may be sent to the Agent as multimodal input; when false, selected images are represented as reference handles only and the Agent must not claim to visually inspect them.",
+        "Validate every plan server-side before sending it to the client.",
+        "Reject plans that exceed 16 total generated images including anchors, use more than 3 references per job, reference unknown jobs, create dependency cycles, or give a downstream-referenced source job count other than 1.",
+        "If the user asks for a character/story and no user image is supplied, the Agent may create one visible character_anchor job with count 1 and downstream references.",
+        "Negative case: invalid or non-JSON model output is converted into a clear error event and no plan node is created.",
+        "Verification: focused tests or deterministic smoke scripts cover valid simple plan, multi-prompt plan, selected-reference plan, generated-anchor dependency plan, over-limit plan rejection, cycle rejection, and no-vision reference handling.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-05-03T13:39:14.679968+00:00",
+      "completedAt": "2026-05-03T13:56:19.284135+00:00",
+      "updatedAt": "2026-05-03T13:56:19.284135+00:00"
+    },
+    {
+      "id": "AG-003",
+      "title": "Build Agent tab with selected reference inputs",
+      "status": "done",
+      "dependsOn": [
+        "AG-001",
+        "AG-002"
+      ],
+      "description": "As a creator, I want a right-panel Agent tab where I can chat, set default output parameters, and attach selected canvas images so advanced generation starts from the same workspace context.",
+      "acceptanceCriteria": [
+        "Add a compact right-panel tab switcher for Manual and Agent without removing or regressing the existing manual generation UI.",
+        "Agent tab includes a session-only conversation transcript, message input, send button, run/cancel affordance, and clear empty/config-missing states in Chinese.",
+        "Agent tab includes default size, quality, and output format controls using existing size/quality/format options.",
+        "Agent tab shows current selected canvas image references capped at 3, with file/name or fallback label and dimensions when available.",
+        "If more than 3 canvas images are selected, show a Chinese warning that only up to 3 can be used and do not send 4 or more as references.",
+        "If the Agent LLM config has supportsVision enabled, message submission includes selected image data or data URLs only for the capped references; otherwise it includes reference handles/summaries only.",
+        "Sending a user message opens the WebSocket if needed and renders assistant_delta, plan_created, error, run_cancelled, and run_done events in the Agent tab.",
+        "Agent-generated image thumbnails shown in chat can be clicked to locate the corresponding canvas image once AG-005 provides output shape IDs.",
+        "Manual text generation, manual reference generation, history actions, provider settings, home routing, gallery, and mobile drawer continue to behave as before.",
+        "Mobile and desktop layouts keep the Agent transcript, controls, and input inside the panel or drawer without overlapping the canvas or CTA.",
+        "Browser verification: verify desktop and mobile layouts, missing Agent config, text-only model mode, supportsVision mode with selected references, 0/1/3/4 selected reference states, and no regression to Manual mode.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-05-03T13:56:21.525588+00:00",
+      "completedAt": "2026-05-03T14:25:15.5470971+00:00",
+      "updatedAt": "2026-05-03T14:25:15.5470971+00:00"
+    },
+    {
+      "id": "AG-004",
+      "title": "Add canvas Agent plan node shape",
+      "status": "done",
+      "dependsOn": [
+        "AG-002",
+        "AG-003"
+      ],
+      "description": "As a creator, I want Agent output to become a visible custom canvas node so I can inspect the plan, understand dependencies, and confirm execution in the same spatial workspace as the results.",
+      "acceptanceCriteria": [
+        "Add a tldraw custom shape util for an Agent plan node and register it through the existing shapeUtils path.",
+        "The plan node stores the current GenerationPlan, stable dimensions, selectedJobId if needed, and lastRunId if needed.",
+        "The plan node renders title, total generated image count, plan status, job rows, role labels, dependency/reference chips, per-job status, concise error copy, and thumbnail slots.",
+        "The plan node provides Execute Plan, Cancel, and Retry Failed actions as embedded controls or selected-node controls with accessible labels.",
+        "When a plan_created event arrives, create a plan node in the visible canvas near the current viewport center or selected context.",
+        "When a plan_updated event arrives for an unexecuted plan, update the same plan node.",
+        "When a plan_updated event represents a revision of an already executed plan, create a new plan node instead of mutating the executed plan node.",
+        "Plan nodes persist through the existing project snapshot save/restore flow.",
+        "Autosave must not preserve a misleading in-progress run state after refresh; restored active/loading plan nodes should be normalized to a cancelled or idle/error state with no eternal spinner.",
+        "Negative case: a malformed plan node payload in an old or corrupted snapshot must not crash app load.",
+        "Browser verification: create a plan from Agent chat, refresh to confirm node restoration, revise before execution, revise after execution to create a new node, and verify node controls are visible on desktop and mobile.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-05-03T14:27:38.905586+00:00",
+      "completedAt": "2026-05-03T14:57:02.1159076+00:00",
+      "updatedAt": "2026-05-03T14:57:02.1159076+00:00"
+    },
+    {
+      "id": "AG-005",
+      "title": "Execute Agent plans with dependency-aware canvas output",
+      "status": "done",
+      "dependsOn": [
+        "AG-004"
+      ],
+      "description": "As a creator, I want confirmed Agent plans to run with dependency-aware execution so intermediate anchors and final outputs appear around the plan node with live status and retry support.",
+      "acceptanceCriteria": [
+        "Implement product-only DeepAgentsjs execution tools for reading confirmed plan state, executing a generation job, updating plan/job status, creating canvas placeholders, attaching output assets, and cancelling the run.",
+        "Execution must not allow the Agent to change confirmed plan structure; prompt, count, dependencies, references, size, quality, and output format are fixed after confirmation.",
+        "Implement DAG scheduling where jobs with no unmet dependencies may run concurrently and jobs with dependencies wait for successful upstream outputs.",
+        "If an upstream job fails, downstream dependent jobs are marked blocked and are not executed until retry.",
+        "Resolve generated_output references by taking the single output of upstream dependency source jobs; dependency source jobs must already be validated as count=1.",
+        "Resolve selected_canvas_image references from the capped selected references captured when the plan was created or revised.",
+        "Each actual generation job uses the existing image generation/edit provider flows, local asset saving, COS backup if configured, and GenerationRecord persistence.",
+        "Intermediate anchor images and final images are both inserted as ordinary tldraw image shapes arranged around the plan node in job order.",
+        "The plan node receives live job_started, job_completed, job_failed, job_blocked, asset_preview, run_cancelled, and run_done updates.",
+        "The Agent chat receives compact status messages and generated thumbnails; clicking a thumbnail locates the corresponding output image shape.",
+        "Cancel stops outstanding requests, marks remaining running/queued jobs cancelled or blocked, and prevents cancelled results from being inserted after cancellation.",
+        "Retry Failed retries failed jobs plus downstream blocked jobs while preserving successful independent outputs and not rerunning completed jobs.",
+        "Negative case: if all jobs fail or are blocked, the plan node and Agent chat show a clear Chinese failure summary without leaving loading placeholders forever.",
+        "Browser verification: run a simple no-reference plan, a multi-prompt plan, a selected-reference plan, a generated character-anchor dependency plan, cancel in-flight execution, and retry a failed or blocked plan when possible.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-05-03T15:08:02.7098341+00:00",
+      "completedAt": "2026-05-03T15:11:47.8637166+00:00",
+      "updatedAt": "2026-05-03T15:11:47.8637166+00:00"
+    },
+    {
+      "id": "AG-006",
+      "title": "Document Agent workflow and complete verification handoff",
+      "status": "done",
+      "dependsOn": [
+        "AG-005"
+      ],
+      "description": "As a maintainer, I want the Agent workflow documented and fully verified so the six-story Ralph task leaves a usable first-feedback product surface.",
+      "acceptanceCriteria": [
+        "Update README.md and README.zh-CN.md with Agent LLM setup, Agent tab usage, selected reference behavior, supportsVision behavior, plan node lifecycle, execution confirmation, cancel, retry, and known v1 limits.",
+        "Document that Agent chat messages are session-only in v1 and are not persisted after refresh.",
+        "Document that Agent LLM config is saved locally in DATA_DIR SQLite and should be treated as sensitive local runtime data.",
+        "Document the 16 total generated image cap, 3 references per job cap, dependency source count=1 rule, and WebSocket disconnect cancellation behavior.",
+        "Document that Gallery/history remain per-generation-record and are not grouped by Agent plan in v1.",
+        "Run pnpm typecheck successfully.",
+        "Run pnpm build successfully.",
+        "Run pnpm dev and browser-verify the existing manual text generation path, manual reference generation path, Agent config flow, Agent tab, selected reference caps, plan creation, plan node persistence, execution, cancellation, retry, thumbnails, and thumbnail-to-canvas locating.",
+        "Verify desktop and mobile layouts for the Agent tab and plan node controls.",
+        "Check browser console, API terminal, and Vite terminal for newly introduced runtime errors without printing secrets.",
+        "If live provider credentials or Agent LLM credentials are unavailable, record the exact environmental blocker in Ralph run notes without reading, printing, or committing secrets.",
+        "Confirm git status excludes .env, .ralph, .codex-temp, data, generated images, SQLite databases, screenshots, and build output from commits.",
+        "Verification: final story records commands run, browser findings, changed files, and residual risks."
+      ],
+      "startedAt": "2026-05-03T15:15:58.0019650+00:00",
+      "completedAt": "2026-05-03T15:20:41.1431800+00:00",
+      "updatedAt": "2026-05-03T15:20:41.1431800+00:00",
+      "verificationNotes": [
+        "Updated README.md and README.zh-CN.md with Agent LLM setup, Agent tab usage, selected reference behavior, supportsVision behavior, plan node lifecycle, execution confirmation, cancel, retry, v1 caps, privacy notes, and troubleshooting.",
+        "Ran pnpm typecheck successfully after the final docs and mobile drawer accessibility fix.",
+        "Ran pnpm --filter @gpt-image-canvas/api smoke:planner, pnpm --filter @gpt-image-canvas/api smoke:agent, and pnpm --filter @gpt-image-canvas/api smoke:executor successfully. The smoke:agent and smoke:executor runs emitted only the Node punycode deprecation warning.",
+        "Ran pnpm build successfully. Vite emitted the existing Node 22.11.0 version warning and large chunk warning.",
+        "Browser-verified http://127.0.0.1:5173/canvas on desktop 1440x900 and mobile 390x844 using the existing dev server on port 5173. Manual tab and Agent tab rendered without overlap; Agent config state, selected reference cap display, and mobile drawer behavior were visible.",
+        "Browser console had no JavaScript runtime errors after the final fix. Remaining non-blocking console output: tldraw zh-cn missing message warnings and a form field id/name accessibility issue.",
+        "Live Agent planning with the current local fake vision config and selected large app preview previously returned HTTP 400 in this environment; no secrets were read or printed. Planner and executor behavior were verified with deterministic smoke scripts and fake image provider coverage.",
+        "Changed files for AG-006: README.md, README.zh-CN.md, apps/web/src/App.tsx, and .agents/tasks/prd-agent-canvas-generation.json.",
+        "Pre-commit git status contained only the AG-006 source/docs/PRD files; .env, .ralph, .codex-temp, data, generated images, SQLite databases, screenshots, and build output were not staged."
+      ]
+    }
+  ]
+}

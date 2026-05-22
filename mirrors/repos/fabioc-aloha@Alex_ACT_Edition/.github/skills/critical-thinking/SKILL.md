@@ -213,7 +213,7 @@ The right response would have been: "Does the exact LASIK date affect any clinic
 | **Effect size**          | Statistically significant or actually meaningful?                |
 | **Reproducibility**      | Has this been replicated? Or is it a single finding?             |
 
-**Red flags**: A single blog post treated as definitive. A 2019 best practice applied to a 2026 framework. A manufacturer's whitepaper as evidence their product works. A case report generalized to a population.
+**Red flags**: A single blog post treated as definitive. A 2019 recommendation applied uncritically to a 2026 framework. A manufacturer's whitepaper as evidence their product works. A case report generalized to a population.
 
 ---
 
@@ -406,3 +406,7 @@ These markers are not mandatory for every response. They activate based on the c
 | Devil's Advocate as theater            | Arguing weakly against your own position      | The adversarial argument must be the strongest possible, not a straw man |
 
 ---
+
+## Would Revise If
+
+Revise if the 7 disciplines plus Discipline -1 frame audit produce no measurable improvement in conclusion quality over a quarter (skill is theater not load-bearing), if high-stakes work consistently passes through without any of the gates firing (the materiality calibration is too lax), or if the visible-marker requirements produce stacked decorative markers that defeat their auditing purpose.

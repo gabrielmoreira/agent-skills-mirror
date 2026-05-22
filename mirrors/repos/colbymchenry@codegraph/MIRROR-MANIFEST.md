@@ -59,8 +59,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/agent-eval/SKILL.md`](.claude/skills/agent-eval/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/publish/SKILL.md`](.claude/skills/publish/SKILL.md) |
+| 1 | ✓ | [`.claude/skills/add-lang/SKILL.md`](.claude/skills/add-lang/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/agent-eval/SKILL.md`](.claude/skills/agent-eval/SKILL.md) |
 | 3 | ✓ | [`.cursor/rules/codegraph.mdc`](.cursor/rules/codegraph.mdc) |
 | 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 

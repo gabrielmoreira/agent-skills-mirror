@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Varnan-Tech/opendirectory` — 26 default patterns, 0 followed patterns, 408 file(s) materialized.
+Mirror of `Varnan-Tech/opendirectory` — 26 default patterns, 0 followed patterns, 417 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Varnan-Tech/opendirectory` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 408 |
+| Files         | 417 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -395,78 +395,87 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 334 | ✓ | [`skills/show-hn-writer/references/hn-rules.md`](skills/show-hn-writer/references/hn-rules.md) |
 | 335 | ✓ | [`skills/show-hn-writer/references/title-formulas.md`](skills/show-hn-writer/references/title-formulas.md) |
 | 336 | ✓ | [`skills/show-hn-writer/SKILL.md`](skills/show-hn-writer/SKILL.md) |
-| 337 | ✓ | [`skills/tweet-thread-from-blog/.env.example`](skills/tweet-thread-from-blog/.env.example) |
-| 338 | ✓ | [`skills/tweet-thread-from-blog/evals/evals.json`](skills/tweet-thread-from-blog/evals/evals.json) |
-| 339 | ✓ | [`skills/tweet-thread-from-blog/README.md`](skills/tweet-thread-from-blog/README.md) |
-| 340 | ✓ | [`skills/tweet-thread-from-blog/references/output-template.md`](skills/tweet-thread-from-blog/references/output-template.md) |
-| 341 | ✓ | [`skills/tweet-thread-from-blog/references/thread-format.md`](skills/tweet-thread-from-blog/references/thread-format.md) |
-| 342 | ✓ | [`skills/tweet-thread-from-blog/SKILL.md`](skills/tweet-thread-from-blog/SKILL.md) |
-| 343 | ✓ | [`skills/twitter-GTM-find-skill/.gitignore`](skills/twitter-GTM-find-skill/.gitignore) |
-| 344 | ✓ | [`skills/twitter-GTM-find-skill/README.md`](skills/twitter-GTM-find-skill/README.md) |
-| 345 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/references/icp-checklist.md`](skills/twitter-GTM-find-skill/twitter-GTM-find/references/icp-checklist.md) |
-| 346 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/package.json`](skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/package.json) |
-| 347 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/run_pipeline.sh`](skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/run_pipeline.sh) |
-| 348 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/debug.ts`](skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/debug.ts) |
-| 349 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/extractor.ts`](skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/extractor.ts) |
-| 350 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/icp-filter.ts`](skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/icp-filter.ts) |
-| 351 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/index.ts`](skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/index.ts) |
-| 352 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/scraper.ts`](skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/scraper.ts) |
-| 353 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/tsconfig.json`](skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/tsconfig.json) |
-| 354 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/SKILL.md`](skills/twitter-GTM-find-skill/twitter-GTM-find/SKILL.md) |
-| 355 | ✓ | [`skills/vc-curated-match/data/vc_funds.json`](skills/vc-curated-match/data/vc_funds.json) |
-| 356 | ✓ | [`skills/vc-curated-match/evals/ai-b2b-saas-seed.md`](skills/vc-curated-match/evals/ai-b2b-saas-seed.md) |
-| 357 | ✓ | [`skills/vc-curated-match/evals/devtool-oss-seed.md`](skills/vc-curated-match/evals/devtool-oss-seed.md) |
-| 358 | ✓ | [`skills/vc-curated-match/evals/evals.json`](skills/vc-curated-match/evals/evals.json) |
-| 359 | ✓ | [`skills/vc-curated-match/evals/fintech-india-preseed.md`](skills/vc-curated-match/evals/fintech-india-preseed.md) |
-| 360 | ✓ | [`skills/vc-curated-match/evals/varnan-seed.md`](skills/vc-curated-match/evals/varnan-seed.md) |
-| 361 | ✓ | [`skills/vc-curated-match/README.md`](skills/vc-curated-match/README.md) |
-| 362 | ✓ | [`skills/vc-curated-match/scripts/fetch_product_context.py`](skills/vc-curated-match/scripts/fetch_product_context.py) |
-| 363 | ✓ | [`skills/vc-curated-match/scripts/generate_report.py`](skills/vc-curated-match/scripts/generate_report.py) |
-| 364 | ✓ | [`skills/vc-curated-match/scripts/match_vcs.py`](skills/vc-curated-match/scripts/match_vcs.py) |
-| 365 | ✓ | [`skills/vc-curated-match/scripts/run.py`](skills/vc-curated-match/scripts/run.py) |
-| 366 | ✓ | [`skills/vc-curated-match/SKILL.md`](skills/vc-curated-match/SKILL.md) |
-| 367 | ✓ | [`skills/vc-finder/.env.example`](skills/vc-finder/.env.example) |
-| 368 | ✓ | [`skills/vc-finder/data/vc_funds.json`](skills/vc-finder/data/vc_funds.json) |
-| 369 | ✓ | [`skills/vc-finder/evals/evals.json`](skills/vc-finder/evals/evals.json) |
-| 370 | ✓ | [`skills/vc-finder/README.md`](skills/vc-finder/README.md) |
-| 371 | ✓ | [`skills/vc-finder/references/stage-signals.md`](skills/vc-finder/references/stage-signals.md) |
-| 372 | ✓ | [`skills/vc-finder/references/vc-outreach-guide.md`](skills/vc-finder/references/vc-outreach-guide.md) |
-| 373 | ✓ | [`skills/vc-finder/scripts/match_funds.py`](skills/vc-finder/scripts/match_funds.py) |
-| 374 | ✓ | [`skills/vc-finder/SKILL.md`](skills/vc-finder/SKILL.md) |
-| 375 | ✓ | [`skills/vid-motion-graphics/evals/evals.json`](skills/vid-motion-graphics/evals/evals.json) |
-| 376 | ✓ | [`skills/vid-motion-graphics/README.md`](skills/vid-motion-graphics/README.md) |
-| 377 | ✓ | [`skills/vid-motion-graphics/references/scene-library.md`](skills/vid-motion-graphics/references/scene-library.md) |
-| 378 | ✓ | [`skills/vid-motion-graphics/references/style-presets.md`](skills/vid-motion-graphics/references/style-presets.md) |
-| 379 | ✓ | [`skills/vid-motion-graphics/scripts/capture-frames.mjs`](skills/vid-motion-graphics/scripts/capture-frames.mjs) |
-| 380 | ✓ | [`skills/vid-motion-graphics/scripts/export-video.sh`](skills/vid-motion-graphics/scripts/export-video.sh) |
-| 381 | ✓ | [`skills/vid-motion-graphics/SKILL.md`](skills/vid-motion-graphics/SKILL.md) |
-| 382 | ✓ | [`skills/vid-product-launch/README.md`](skills/vid-product-launch/README.md) |
-| 383 | ✓ | [`skills/vid-product-launch/references/scene-library.md`](skills/vid-product-launch/references/scene-library.md) |
-| 384 | ✓ | [`skills/vid-product-launch/references/style-presets.md`](skills/vid-product-launch/references/style-presets.md) |
-| 385 | ✓ | [`skills/vid-product-launch/scripts/capture-frames.mjs`](skills/vid-product-launch/scripts/capture-frames.mjs) |
-| 386 | ✓ | [`skills/vid-product-launch/scripts/export-video.sh`](skills/vid-product-launch/scripts/export-video.sh) |
-| 387 | ✓ | [`skills/vid-product-launch/SKILL.md`](skills/vid-product-launch/SKILL.md) |
-| 388 | ✓ | [`skills/vid-sizzle-reel/README.md`](skills/vid-sizzle-reel/README.md) |
-| 389 | ✓ | [`skills/vid-sizzle-reel/references/cut-patterns.md`](skills/vid-sizzle-reel/references/cut-patterns.md) |
-| 390 | ✓ | [`skills/vid-sizzle-reel/references/tone-presets.md`](skills/vid-sizzle-reel/references/tone-presets.md) |
-| 391 | ✓ | [`skills/vid-sizzle-reel/SKILL.md`](skills/vid-sizzle-reel/SKILL.md) |
-| 392 | ✓ | [`skills/where-your-customer-lives/.env.example`](skills/where-your-customer-lives/.env.example) |
-| 393 | ✓ | [`skills/where-your-customer-lives/evals/evals.json`](skills/where-your-customer-lives/evals/evals.json) |
-| 394 | ✓ | [`skills/where-your-customer-lives/README.md`](skills/where-your-customer-lives/README.md) |
-| 395 | ✓ | [`skills/where-your-customer-lives/references/channel-types.md`](skills/where-your-customer-lives/references/channel-types.md) |
-| 396 | ✓ | [`skills/where-your-customer-lives/references/entry-tactics.md`](skills/where-your-customer-lives/references/entry-tactics.md) |
-| 397 | ✓ | [`skills/where-your-customer-lives/references/scoring-guide.md`](skills/where-your-customer-lives/references/scoring-guide.md) |
-| 398 | ✓ | [`skills/where-your-customer-lives/scripts/fetch.py`](skills/where-your-customer-lives/scripts/fetch.py) |
-| 399 | ✓ | [`skills/where-your-customer-lives/SKILL.md`](skills/where-your-customer-lives/SKILL.md) |
-| 400 | ✓ | [`skills/yc-intent-radar-skill/README.md`](skills/yc-intent-radar-skill/README.md) |
-| 401 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/.gitignore`](skills/yc-intent-radar-skill/yc-jobs-scraper/.gitignore) |
-| 402 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/auth.js`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/auth.js) |
-| 403 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/db.js`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/db.js) |
-| 404 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/export_radar_candidates.js`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/export_radar_candidates.js) |
-| 405 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/package-lock.json`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/package-lock.json) |
-| 406 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/package.json`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/package.json) |
-| 407 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/scraper.js`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/scraper.js) |
-| 408 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/SKILL.md`](skills/yc-intent-radar-skill/yc-jobs-scraper/SKILL.md) |
+| 337 | ✓ | [`skills/store-listing-optimizer/.env.example`](skills/store-listing-optimizer/.env.example) |
+| 338 | ✓ | [`skills/store-listing-optimizer/evals/evals.json`](skills/store-listing-optimizer/evals/evals.json) |
+| 339 | ✓ | [`skills/store-listing-optimizer/evals/fixtures/competitor_brief.md`](skills/store-listing-optimizer/evals/fixtures/competitor_brief.md) |
+| 340 | ✓ | [`skills/store-listing-optimizer/evals/fixtures/current_listing.md`](skills/store-listing-optimizer/evals/fixtures/current_listing.md) |
+| 341 | ✓ | [`skills/store-listing-optimizer/README.md`](skills/store-listing-optimizer/README.md) |
+| 342 | ✓ | [`skills/store-listing-optimizer/references/aso-guidelines.md`](skills/store-listing-optimizer/references/aso-guidelines.md) |
+| 343 | ✓ | [`skills/store-listing-optimizer/references/output-schema.md`](skills/store-listing-optimizer/references/output-schema.md) |
+| 344 | ✓ | [`skills/store-listing-optimizer/references/positioning-framework.md`](skills/store-listing-optimizer/references/positioning-framework.md) |
+| 345 | ✓ | [`skills/store-listing-optimizer/SKILL.md`](skills/store-listing-optimizer/SKILL.md) |
+| 346 | ✓ | [`skills/tweet-thread-from-blog/.env.example`](skills/tweet-thread-from-blog/.env.example) |
+| 347 | ✓ | [`skills/tweet-thread-from-blog/evals/evals.json`](skills/tweet-thread-from-blog/evals/evals.json) |
+| 348 | ✓ | [`skills/tweet-thread-from-blog/README.md`](skills/tweet-thread-from-blog/README.md) |
+| 349 | ✓ | [`skills/tweet-thread-from-blog/references/output-template.md`](skills/tweet-thread-from-blog/references/output-template.md) |
+| 350 | ✓ | [`skills/tweet-thread-from-blog/references/thread-format.md`](skills/tweet-thread-from-blog/references/thread-format.md) |
+| 351 | ✓ | [`skills/tweet-thread-from-blog/SKILL.md`](skills/tweet-thread-from-blog/SKILL.md) |
+| 352 | ✓ | [`skills/twitter-GTM-find-skill/.gitignore`](skills/twitter-GTM-find-skill/.gitignore) |
+| 353 | ✓ | [`skills/twitter-GTM-find-skill/README.md`](skills/twitter-GTM-find-skill/README.md) |
+| 354 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/references/icp-checklist.md`](skills/twitter-GTM-find-skill/twitter-GTM-find/references/icp-checklist.md) |
+| 355 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/package.json`](skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/package.json) |
+| 356 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/run_pipeline.sh`](skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/run_pipeline.sh) |
+| 357 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/debug.ts`](skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/debug.ts) |
+| 358 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/extractor.ts`](skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/extractor.ts) |
+| 359 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/icp-filter.ts`](skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/icp-filter.ts) |
+| 360 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/index.ts`](skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/index.ts) |
+| 361 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/scraper.ts`](skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/src/scraper.ts) |
+| 362 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/tsconfig.json`](skills/twitter-GTM-find-skill/twitter-GTM-find/scripts/tsconfig.json) |
+| 363 | ✓ | [`skills/twitter-GTM-find-skill/twitter-GTM-find/SKILL.md`](skills/twitter-GTM-find-skill/twitter-GTM-find/SKILL.md) |
+| 364 | ✓ | [`skills/vc-curated-match/data/vc_funds.json`](skills/vc-curated-match/data/vc_funds.json) |
+| 365 | ✓ | [`skills/vc-curated-match/evals/ai-b2b-saas-seed.md`](skills/vc-curated-match/evals/ai-b2b-saas-seed.md) |
+| 366 | ✓ | [`skills/vc-curated-match/evals/devtool-oss-seed.md`](skills/vc-curated-match/evals/devtool-oss-seed.md) |
+| 367 | ✓ | [`skills/vc-curated-match/evals/evals.json`](skills/vc-curated-match/evals/evals.json) |
+| 368 | ✓ | [`skills/vc-curated-match/evals/fintech-india-preseed.md`](skills/vc-curated-match/evals/fintech-india-preseed.md) |
+| 369 | ✓ | [`skills/vc-curated-match/evals/varnan-seed.md`](skills/vc-curated-match/evals/varnan-seed.md) |
+| 370 | ✓ | [`skills/vc-curated-match/README.md`](skills/vc-curated-match/README.md) |
+| 371 | ✓ | [`skills/vc-curated-match/scripts/fetch_product_context.py`](skills/vc-curated-match/scripts/fetch_product_context.py) |
+| 372 | ✓ | [`skills/vc-curated-match/scripts/generate_report.py`](skills/vc-curated-match/scripts/generate_report.py) |
+| 373 | ✓ | [`skills/vc-curated-match/scripts/match_vcs.py`](skills/vc-curated-match/scripts/match_vcs.py) |
+| 374 | ✓ | [`skills/vc-curated-match/scripts/run.py`](skills/vc-curated-match/scripts/run.py) |
+| 375 | ✓ | [`skills/vc-curated-match/SKILL.md`](skills/vc-curated-match/SKILL.md) |
+| 376 | ✓ | [`skills/vc-finder/.env.example`](skills/vc-finder/.env.example) |
+| 377 | ✓ | [`skills/vc-finder/data/vc_funds.json`](skills/vc-finder/data/vc_funds.json) |
+| 378 | ✓ | [`skills/vc-finder/evals/evals.json`](skills/vc-finder/evals/evals.json) |
+| 379 | ✓ | [`skills/vc-finder/README.md`](skills/vc-finder/README.md) |
+| 380 | ✓ | [`skills/vc-finder/references/stage-signals.md`](skills/vc-finder/references/stage-signals.md) |
+| 381 | ✓ | [`skills/vc-finder/references/vc-outreach-guide.md`](skills/vc-finder/references/vc-outreach-guide.md) |
+| 382 | ✓ | [`skills/vc-finder/scripts/match_funds.py`](skills/vc-finder/scripts/match_funds.py) |
+| 383 | ✓ | [`skills/vc-finder/SKILL.md`](skills/vc-finder/SKILL.md) |
+| 384 | ✓ | [`skills/vid-motion-graphics/evals/evals.json`](skills/vid-motion-graphics/evals/evals.json) |
+| 385 | ✓ | [`skills/vid-motion-graphics/README.md`](skills/vid-motion-graphics/README.md) |
+| 386 | ✓ | [`skills/vid-motion-graphics/references/scene-library.md`](skills/vid-motion-graphics/references/scene-library.md) |
+| 387 | ✓ | [`skills/vid-motion-graphics/references/style-presets.md`](skills/vid-motion-graphics/references/style-presets.md) |
+| 388 | ✓ | [`skills/vid-motion-graphics/scripts/capture-frames.mjs`](skills/vid-motion-graphics/scripts/capture-frames.mjs) |
+| 389 | ✓ | [`skills/vid-motion-graphics/scripts/export-video.sh`](skills/vid-motion-graphics/scripts/export-video.sh) |
+| 390 | ✓ | [`skills/vid-motion-graphics/SKILL.md`](skills/vid-motion-graphics/SKILL.md) |
+| 391 | ✓ | [`skills/vid-product-launch/README.md`](skills/vid-product-launch/README.md) |
+| 392 | ✓ | [`skills/vid-product-launch/references/scene-library.md`](skills/vid-product-launch/references/scene-library.md) |
+| 393 | ✓ | [`skills/vid-product-launch/references/style-presets.md`](skills/vid-product-launch/references/style-presets.md) |
+| 394 | ✓ | [`skills/vid-product-launch/scripts/capture-frames.mjs`](skills/vid-product-launch/scripts/capture-frames.mjs) |
+| 395 | ✓ | [`skills/vid-product-launch/scripts/export-video.sh`](skills/vid-product-launch/scripts/export-video.sh) |
+| 396 | ✓ | [`skills/vid-product-launch/SKILL.md`](skills/vid-product-launch/SKILL.md) |
+| 397 | ✓ | [`skills/vid-sizzle-reel/README.md`](skills/vid-sizzle-reel/README.md) |
+| 398 | ✓ | [`skills/vid-sizzle-reel/references/cut-patterns.md`](skills/vid-sizzle-reel/references/cut-patterns.md) |
+| 399 | ✓ | [`skills/vid-sizzle-reel/references/tone-presets.md`](skills/vid-sizzle-reel/references/tone-presets.md) |
+| 400 | ✓ | [`skills/vid-sizzle-reel/SKILL.md`](skills/vid-sizzle-reel/SKILL.md) |
+| 401 | ✓ | [`skills/where-your-customer-lives/.env.example`](skills/where-your-customer-lives/.env.example) |
+| 402 | ✓ | [`skills/where-your-customer-lives/evals/evals.json`](skills/where-your-customer-lives/evals/evals.json) |
+| 403 | ✓ | [`skills/where-your-customer-lives/README.md`](skills/where-your-customer-lives/README.md) |
+| 404 | ✓ | [`skills/where-your-customer-lives/references/channel-types.md`](skills/where-your-customer-lives/references/channel-types.md) |
+| 405 | ✓ | [`skills/where-your-customer-lives/references/entry-tactics.md`](skills/where-your-customer-lives/references/entry-tactics.md) |
+| 406 | ✓ | [`skills/where-your-customer-lives/references/scoring-guide.md`](skills/where-your-customer-lives/references/scoring-guide.md) |
+| 407 | ✓ | [`skills/where-your-customer-lives/scripts/fetch.py`](skills/where-your-customer-lives/scripts/fetch.py) |
+| 408 | ✓ | [`skills/where-your-customer-lives/SKILL.md`](skills/where-your-customer-lives/SKILL.md) |
+| 409 | ✓ | [`skills/yc-intent-radar-skill/README.md`](skills/yc-intent-radar-skill/README.md) |
+| 410 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/.gitignore`](skills/yc-intent-radar-skill/yc-jobs-scraper/.gitignore) |
+| 411 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/auth.js`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/auth.js) |
+| 412 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/db.js`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/db.js) |
+| 413 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/export_radar_candidates.js`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/export_radar_candidates.js) |
+| 414 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/package-lock.json`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/package-lock.json) |
+| 415 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/package.json`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/package.json) |
+| 416 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/scraper.js`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/scraper.js) |
+| 417 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/SKILL.md`](skills/yc-intent-radar-skill/yc-jobs-scraper/SKILL.md) |
 
 ---
 

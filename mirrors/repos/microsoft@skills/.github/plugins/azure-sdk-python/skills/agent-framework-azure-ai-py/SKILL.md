@@ -43,7 +43,18 @@ export BING_CONNECTION_ID="your-bing-connection-id"  # For web search
 export AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
 ```
 
-## Authentication
+## Authentication & Lifecycle
+
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
 
 ```python
 from azure.identity.aio import AzureCliCredential, DefaultAzureCredential, ManagedIdentityCredential
@@ -333,6 +344,11 @@ if __name__ == "__main__":
 - Use `Annotated[type, Field(description=...)]` for function parameters
 - Use `get_new_thread()` for multi-turn conversations
 - Prefer `HostedMCPTool` for service-managed MCP, `MCPStreamableHTTPTool` for client-managed
+
+## Best Practices
+
+1. **This SDK is async-first** — use `async def` handlers and `async with` throughout.
+2. **Always use context managers for clients and async credentials.** Wrap every client in `with Client(...) as client:` (sync) or `async with Client(...) as client:` (async). For async `DefaultAzureCredential` from `azure.identity.aio`, also use `async with credential:` so tokens and transports are cleaned up.
 
 ## Reference Files
 

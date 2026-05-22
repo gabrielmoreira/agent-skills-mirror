@@ -100,6 +100,10 @@ class ClawVaultOps:
             else:
                 base[key] = val
 
+    def _python_executable(self) -> str:
+        venv_python = Path.home() / ".clawvault-env" / "bin" / "python3"
+        return str(venv_python) if venv_python.exists() else sys.executable
+
     # ── Group A: Service Lifecycle ─────────────────────────────────
 
     def start(
@@ -118,7 +122,7 @@ class ClawVaultOps:
                 "error": f"Port {port} already in use (proxy may be running)",
             }
 
-        cmd = [sys.executable, "-m", "claw_vault", "start", "--port", str(port)]
+        cmd = [self._python_executable(), "-m", "claw_vault", "start", "--port", str(port)]
         cmd.extend(["--dashboard-port", str(dashboard_port)])
         cmd.extend(["--dashboard-host", dashboard_host])
         if mode:
@@ -508,7 +512,7 @@ class ClawVaultOps:
         """Fallback scan using clawvault CLI."""
         try:
             result = subprocess.run(
-                [sys.executable, "-m", "claw_vault", "scan", text],
+                [self._python_executable(), "-m", "claw_vault", "scan", text],
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -543,6 +547,103 @@ class ClawVaultOps:
         result["file_size"] = size
         return result
 
+    def plugin_acceptance(
+        self,
+        agent: str = "main",
+        clawvault_url: str = "http://127.0.0.1:8766",
+        path: str = "/tmp/.env.demo",
+    ) -> dict:
+        """Drive the OpenClaw plugin with a normal user prompt and verify dashboard output."""
+        try:
+            Path(path).write_text("PORT=8080\n", encoding="utf-8")
+        except Exception as e:
+            return {"success": False, "error": f"failed_to_prepare_demo_file: {e}"}
+
+        before = self._plugin_event_count(clawvault_url)
+        if before is None:
+            return {"success": False, "error": "dashboard_not_reachable"}
+
+        message = (
+            f"Read {path} and tell me what port is configured. "
+            "It's a demo config file I made for testing, just 1-2 lines. "
+            "Use a file-reading tool; do not answer from memory."
+        )
+        before_attempt = self._plugin_event_count(clawvault_url)
+        try:
+            run = subprocess.run(
+                [
+                    "openclaw",
+                    "agent",
+                    "--local",
+                    "--agent",
+                    agent,
+                    "--session-id",
+                    f"clawvault-plugin-acceptance-{int(time.time())}",
+                    "--message",
+                    message,
+                    "--json",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=180,
+            )
+        except subprocess.TimeoutExpired as exc:
+            after = self._plugin_event_count(clawvault_url)
+            return {
+                "success": bool(after is not None and after > before_attempt),
+                "agent": agent,
+                "path": path,
+                "events_before": before_attempt,
+                "events_after": after,
+                "error": "openclaw_agent_timeout",
+                "stdout": self._tail_output(exc.stdout),
+                "stderr": self._tail_output(exc.stderr),
+            }
+        except OSError as exc:
+            after = self._plugin_event_count(clawvault_url)
+            return {
+                "success": False,
+                "agent": agent,
+                "path": path,
+                "events_before": before,
+                "events_after": after,
+                "error": f"openclaw_agent_failed: {exc}",
+            }
+        after = self._plugin_event_count(clawvault_url)
+        if after is None:
+            return {"success": False, "error": "dashboard_not_reachable_after_prompt"}
+
+        return {
+            "success": run.returncode == 0 and after > before_attempt,
+            "agent": agent,
+            "path": path,
+            "events_before": before_attempt,
+            "events_after": after,
+            "error": None if run.returncode == 0 else "openclaw_agent_failed",
+            "stdout": self._tail_output(run.stdout),
+            "stderr": self._tail_output(run.stderr),
+        }
+
+    def _tail_output(self, value: str | bytes | None, limit: int = 2000) -> str:
+        if value is None:
+            return ""
+        if isinstance(value, bytes):
+            return value.decode("utf-8", errors="replace")[-limit:]
+        return value[-limit:]
+
+    def _plugin_event_count(self, clawvault_url: str) -> int | None:
+        import urllib.error
+        import urllib.request
+
+        try:
+            with urllib.request.urlopen(
+                f"{clawvault_url.rstrip('/')}/api/scan-history?limit=50",
+                timeout=5,
+            ) as resp:
+                events = json.loads(resp.read().decode("utf-8"))
+        except (OSError, ValueError, urllib.error.URLError):
+            return None
+        return sum(1 for e in events if e.get("source") == "openclaw-file-guard")
 
 def main():
     parser = argparse.ArgumentParser(
@@ -617,6 +718,13 @@ def main():
     va_p.add_argument("preset_id", help="Preset ID to apply")
     va_p.add_argument("--config", help="Config file path")
     va_p.add_argument("--json", action="store_true", help="Output JSON")
+
+    # plugin-acceptance
+    pa_p = subparsers.add_parser("plugin-acceptance", help="Verify OpenClaw file-guard plugin interception")
+    pa_p.add_argument("--agent", default="main", help="OpenClaw agent id")
+    pa_p.add_argument("--clawvault-url", default="http://127.0.0.1:8766")
+    pa_p.add_argument("--path", default="/tmp/.env.demo", help="Demo file path to read")
+    pa_p.add_argument("--json", action="store_true", help="Output JSON")
 
     args = parser.parse_args()
 
@@ -758,6 +866,19 @@ def main():
                 print(result.get("warning", ""))
             else:
                 print(f"Error: {result.get('error')}")
+
+    elif args.command == "plugin-acceptance":
+        result = ops.plugin_acceptance(
+            agent=args.agent,
+            clawvault_url=args.clawvault_url,
+            path=args.path,
+        )
+        if not args.json:
+            if result.get("success"):
+                print("OpenClaw file-guard plugin acceptance passed.")
+                print(f"  Plugin events: {result['events_before']} -> {result['events_after']}")
+            else:
+                print(f"Plugin acceptance failed: {result.get('error', 'no plugin event observed')}")
 
     # JSON output
     if args.json:

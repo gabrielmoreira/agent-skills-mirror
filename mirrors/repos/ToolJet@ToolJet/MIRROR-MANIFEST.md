@@ -2,12 +2,12 @@
 repo: ToolJet/ToolJet
 repoUrl: https://github.com/ToolJet/ToolJet.git
 refType: branch
-ref: develop
+ref: main
 ---
 
 # Mirror Manifest
 
-Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -15,10 +15,10 @@ Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 3 file
 |---------------|-------|
 | Repo          | `ToolJet/ToolJet` |
 | Ref Type      | `branch` |
-| Ref           | `develop` |
+| Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,9 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`docs/docs/marketplace/plugins/gemini.md`](docs/docs/marketplace/plugins/gemini.md) |
-| 2 | ✓ | [`docs/versioned_docs/version-3.16.0-LTS/marketplace/plugins/gemini.md`](docs/versioned_docs/version-3.16.0-LTS/marketplace/plugins/gemini.md) |
-| 3 | ✓ | [`docs/versioned_docs/version-3.5.0-LTS/marketplace/plugins/gemini.md`](docs/versioned_docs/version-3.5.0-LTS/marketplace/plugins/gemini.md) |
+| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 2 | ✓ | [`.github/instructions/appbuilder-review.instructions.md`](.github/instructions/appbuilder-review.instructions.md) |
+| 3 | ✓ | [`.github/instructions/data-migrations.instructions.md`](.github/instructions/data-migrations.instructions.md) |
+| 4 | ✓ | [`.github/instructions/server-widget-config-review.instructions.md`](.github/instructions/server-widget-config-review.instructions.md) |
+| 5 | ✓ | [`.github/instructions/widget-components-review.instructions.md`](.github/instructions/widget-components-review.instructions.md) |
+| 6 | ✓ | [`.github/instructions/widget-config-review.instructions.md`](.github/instructions/widget-config-review.instructions.md) |
+| 7 | ✓ | [`docs/docs/marketplace/plugins/gemini.md`](docs/docs/marketplace/plugins/gemini.md) |
+| 8 | ✓ | [`docs/versioned_docs/version-3.0.0-LTS/marketplace/plugins/gemini.md`](docs/versioned_docs/version-3.0.0-LTS/marketplace/plugins/gemini.md) |
 
 ---
 

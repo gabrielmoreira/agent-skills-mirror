@@ -4,6 +4,25 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.147](https://github.com/Piebald-AI/claude-code-system-prompts/commit/8f898b3)
+
+_+1,236 tokens_
+
+- **NEW:** Agent Prompt: /code-review part 1 base finder angles — Adds shared finder-angle instructions for `/code-review`, covering line-by-line diff scanning, removed-behavior auditing, and cross-file caller/callee tracing.
+- **NEW:** Agent Prompt: /code-review part 2 low effort mode — Adds a low-effort `/code-review` mode that reads the diff once, skips tests and fixtures, avoids subagents and full-file reads, and returns up to four hunk-visible runtime correctness findings.
+- **NEW:** Agent Prompt: /code-review part 3 extra-high and maximum effort modes — Adds extra-high and maximum-effort `/code-review` modes that prioritize recall with five independent finder angles, one-vote verification, a gap sweep, and up to fifteen findings.
+- **NEW:** Agent Prompt: /code-review part 4 three-state verification phase — Adds a verifier phase that classifies candidate review findings as confirmed, plausible, or refuted, keeping confirmed and plausible candidates.
+- **NEW:** Agent Prompt: /code-review part 5 recall-biased verification phase — Adds recall-biased verification guidance that treats realistic uncertain review candidates as plausible unless the code refutes them.
+- **NEW:** Agent Prompt: /code-review part 6 medium effort mode — Adds a medium-effort `/code-review` mode focused on precision, using three finder angles, one-vote verification, and up to eight findings.
+- **NEW:** Agent Prompt: /code-review part 7 high effort mode — Adds a high-effort `/code-review` mode focused on recall, using three finder angles, recall-biased verification, and up to ten findings.
+- **NEW:** Agent Prompt: /code-review part 8 GitHub comment posting — Adds optional `--comment` behavior for `/code-review`, posting findings as inline GitHub PR comments when possible and falling back to `gh api` or terminal output.
+- **REMOVED:** Skill: Simplify — Removes the code review and cleanup skill.
+- Agent Prompt: /rename auto-generate session name — Removes the explicit instruction to treat `<conversation>` contents as data rather than instructions when generating a kebab-case session name.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Replaces the safety-check bypass rule with a broader auto-mode bypass hard block covering classifier jailbreaking, bad-faith retry tunneling, and permission-system indirection; also treats unrequested permission allow-rule widening as self-modification.
+- System Prompt: Worker instructions — Clarifies that the `code-review` skill reports correctness findings but does not edit code, and tells workers to fix any surfaced findings before tests and end-to-end verification.
+- System Reminder: Team Coordination — Clarifies that teammates should be addressed by name while active, and that `agentId` should only be used to resume a completed background agent.
+- Tool Description: SendMessageTool — Updates team messaging guidance to allow `agentId` only for resuming completed background agents while continuing to address active teammates by name.
+
 # [2.1.146](https://github.com/Piebald-AI/claude-code-system-prompts/commit/6ad4688)
 
 _+4,755 tokens_

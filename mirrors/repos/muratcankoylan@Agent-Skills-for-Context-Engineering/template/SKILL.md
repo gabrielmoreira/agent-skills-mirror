@@ -9,6 +9,8 @@ Provide a clear, concise description of what this skill covers and when to use i
 
 **Important**: Keep the total SKILL.md body under 500 lines for optimal performance. Move detailed reference material to separate files in the `references/` directory.
 
+Every skill body must make its ownership boundary explicit. The description and `When to Activate` section should say what the skill owns and which adjacent skills own nearby work. This prevents broad skills from stealing activation from narrower skills.
+
 ## When to Activate
 
 Describe specific situations, tasks, or contexts where this skill should be activated. Include both direct triggers (specific keywords or task types) and indirect signals (broader patterns that indicate skill relevance).
@@ -18,6 +20,11 @@ Write in third person. The description is injected into the system prompt, and i
 - Good: "Processes Excel files and generates reports"
 - Avoid: "I can help you process Excel files"
 
+Include a short "Do not activate" block for adjacent skills. Example:
+
+- Do not activate for project-level pipeline shape: `project-development`.
+- Do not activate for individual tool schema design: `tool-design`.
+
 ## Core Concepts
 
 Explain the fundamental concepts covered by this skill. These are the mental models, principles, or frameworks that the skill teaches.
@@ -26,6 +33,8 @@ Default assumption: Claude is already very smart. Only add context Claude does n
 - "Does Claude really need this explanation?"
 - "Can I assume Claude knows this?"
 - "Does this paragraph justify its token cost?"
+
+Prefer behavior-changing mechanisms over general background. If a concept should be reusable across the corpus, add or update a record in `researcher/mechanisms/registry.jsonl`.
 
 ## Detailed Topics
 
@@ -48,6 +57,8 @@ Match the level of specificity to the task's fragility:
 - **High freedom**: Multiple approaches are valid, decisions depend on context
 - **Medium freedom**: Preferred pattern exists, some variation acceptable
 - **Low freedom**: Operations are fragile, specific sequence must be followed
+
+Practical guidance should be executable by an agent: a workflow, checklist, decision table, or concrete operating rule. If a section only explains history or motivation, move it to `references/`.
 
 ## Examples
 
@@ -93,6 +104,8 @@ Related skills in this collection:
 
 External resources:
 - Research papers, documentation, or guides
+
+Numeric, benchmark, volatile, or vendor-performance claims need an inline `claim-*` ID backed by `researcher/claims/index.jsonl`, or they should be softened and moved to dated reference material.
 
 ---
 

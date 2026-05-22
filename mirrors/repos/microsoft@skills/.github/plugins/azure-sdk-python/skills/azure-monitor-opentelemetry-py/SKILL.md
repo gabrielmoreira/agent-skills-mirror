@@ -27,13 +27,19 @@ APPLICATIONINSIGHTS_CONNECTION_STRING=InstrumentationKey=xxx;IngestionEndpoint=h
 AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
 ```
 
+> **🔑 Auth & lifecycle:** This distro is configured with a connection string by design, but for *AAD-authenticated ingestion* (where supported) prefer `DefaultAzureCredential` via the `credential=` parameter — see the [Azure AD Authentication](#azure-ad-authentication) section. Any Azure SDK clients you create alongside the exporter should be wrapped in `with`/`async with` blocks (and async credentials from `azure.identity.aio` likewise).
+
 ## Quick Start
 
 ```python
+from azure.identity import DefaultAzureCredential
 from azure.monitor.opentelemetry import configure_azure_monitor
 
-# One-line setup - reads connection string from environment
-configure_azure_monitor()
+# Connection string identifies the App Insights resource (read from APPLICATIONINSIGHTS_CONNECTION_STRING env var).
+# DefaultAzureCredential authenticates ingestion via Microsoft Entra ID (preferred over instrumentation-key-only auth).
+configure_azure_monitor(
+    credential=DefaultAzureCredential(),
+)
 
 # Your application code...
 ```
@@ -41,10 +47,13 @@ configure_azure_monitor()
 ## Explicit Configuration
 
 ```python
+from azure.identity import DefaultAzureCredential
 from azure.monitor.opentelemetry import configure_azure_monitor
 
+# Reads APPLICATIONINSIGHTS_CONNECTION_STRING from env to identify the resource;
+# DefaultAzureCredential authenticates ingestion via Microsoft Entra ID.
 configure_azure_monitor(
-    connection_string="InstrumentationKey=xxx;IngestionEndpoint=https://xxx.in.applicationinsights.azure.com/"
+    credential=DefaultAzureCredential(),
 )
 ```
 
@@ -226,10 +235,12 @@ configure_azure_monitor(
 
 ## Best Practices
 
-1. **Call configure_azure_monitor() early** — Before importing instrumented libraries
-2. **Use environment variables** for connection string in production
-3. **Set cloud role name** for multi-service applications
-4. **Enable sampling** in high-traffic applications
-5. **Use structured logging** for better log analytics queries
-6. **Add custom attributes** to spans for better debugging
-7. **Use AAD authentication** for production workloads
+1. **Pick sync OR async and stay consistent.** Do not mix `azure.xxx` sync clients with `azure.xxx.aio` async clients in the same call path. Choose one mode per module.
+2. **Flush and shut down providers at process exit.** Call the shutdown/flush APIs (e.g. `tracer_provider.shutdown()`, `meter_provider.shutdown()`, `logger_provider.shutdown()`) at process exit to flush telemetry before the process terminates.
+3. **Call configure_azure_monitor() early** — Before importing instrumented libraries
+4. **Use environment variables** for connection string in production
+5. **Set cloud role name** for multi-service applications
+6. **Enable sampling** in high-traffic applications
+7. **Use structured logging** for better log analytics queries
+8. **Add custom attributes** to spans for better debugging
+9. **Use Microsoft Entra authentication** for production workloads

@@ -1,0 +1,194 @@
+{
+  "version": 1,
+  "project": "gpt-image-canvas",
+  "overview": "Fix the Agent planning experience so configured chat models stream visible thinking/progress, long thinking text does not overlap output, generated plans are inspectable from both chat and canvas, and plan summaries distinguish final deliverables from support jobs. Ralph must execute exactly one story per iteration, commit story changes, and keep secrets out of logs and commits.",
+  "goals": [
+    "Stream direct OpenAI-compatible Agent planner output where supported while keeping raw GenerationPlan JSON hidden until server validation succeeds.",
+    "Keep the existing DeepAgents planner path as a safe non-stream fallback when direct streaming is not used.",
+    "Render Agent assistant, thinking, and plan messages as separate readable transcript items with no overlap on desktop or mobile.",
+    "Make chat plan cards actionable and make canvas plan node details discoverable enough to inspect job prompts, dependencies, references, outputs, and errors.",
+    "Verify the configured local model path, smoke checks, typecheck, build, and browser behavior without printing secrets."
+  ],
+  "nonGoals": [
+    "Do not add a new WebSocket event family when existing Agent events can carry the behavior.",
+    "Do not display raw model JSON in the chat transcript.",
+    "Do not persist Agent chat messages beyond the current browser session.",
+    "Do not change image provider selection, saved secrets, or database credential storage behavior.",
+    "Do not rewrite the Agent planning schema beyond the minimum summary/detail data needed by this task."
+  ],
+  "successMetrics": [
+    "A configured direct planner model emits visible thinking/progress before plan validation finishes.",
+    "Long Chinese thinking text wraps or scrolls inside its message card without overlapping assistant output or the composer.",
+    "A generated plan card in chat can locate/select the matching canvas plan node.",
+    "Plan summaries show final deliverable image count separately from support/anchor image count.",
+    "The selected canvas plan job exposes full prompt, dependencies, references, status/error, and output information without clipping.",
+    "pnpm --filter @gpt-image-canvas/api smoke:planner, pnpm typecheck, pnpm build, and required browser verification pass or record exact environmental blockers."
+  ],
+  "openQuestions": [
+    "No product-level open questions remain. Defaults: keep thinking visible, treat user-requested pages as final_image deliverables, count character/style/reference anchors as support jobs, and continue using existing Agent WebSocket events."
+  ],
+  "stack": {
+    "packageManager": "pnpm 9.14.2 workspaces",
+    "frontend": "React + Vite + TypeScript + tldraw + Tailwind CSS + lucide-react",
+    "backend": "Hono on Node.js with TypeScript",
+    "database": "SQLite using Drizzle ORM and better-sqlite3",
+    "agent": "DeepAgentsjs fallback plus direct OpenAI-compatible ChatOpenAI streaming for supported planner models",
+    "transport": "Existing /api/agent/ws WebSocket events",
+    "runtime": "Node.js 24 per repository engines",
+    "storage": "Host ./data or DATA_DIR for SQLite, assets, provider secrets, Codex tokens, and Agent LLM config"
+  },
+  "routes": [
+    {
+      "path": "/api/agent/ws",
+      "name": "Agent WebSocket",
+      "purpose": "Stream assistant/thinking deltas, send validated plan_created events, and report run status."
+    },
+    {
+      "path": "/api/agent-config",
+      "name": "Agent LLM Configuration",
+      "purpose": "Continue reading the saved configured model without exposing API keys."
+    },
+    {
+      "path": "/api/project",
+      "name": "Project State",
+      "purpose": "Continue saving and restoring canvas plan nodes safely."
+    }
+  ],
+  "uiNotes": [
+    "The UI language is Chinese where user-facing copy is added or changed.",
+    "Keep the current warm paper, terracotta, teal, compact operational tool aesthetic.",
+    "The Agent transcript should remain a working panel, not a landing page or marketing surface.",
+    "Thinking cards may be visibly distinct, but must stay contained, readable, and scrollable for long model reasoning.",
+    "Plan card interactions should feel direct: activate the card to locate/select the plan node rather than opening a separate marketing-style explanation.",
+    "Plan node details should be dense but scan-friendly, with stable dimensions and no overlapping controls."
+  ],
+  "rules": [
+    "Ralph must complete exactly one story per iteration and commit story changes unless explicitly run with no-commit.",
+    "Use pnpm install if dependencies are missing; the package manager is pinned to pnpm@9.14.2.",
+    "Run pnpm --filter @gpt-image-canvas/api smoke:planner, pnpm typecheck, and pnpm build before completing the final story.",
+    "Frontend stories must perform browser verification against the running app, usually with pnpm dev and http://localhost:5173.",
+    "Keep local agent scratch files under .codex-temp/ and do not commit .ralph, .env, data, generated images, SQLite databases, screenshots, build output, or machine-specific paths.",
+    "Secrets must only be read from .env, runtime environment, or existing local configuration storage and must never be logged.",
+    "No raw GenerationPlan JSON should be displayed in chat; buffer it server-side and only show validated plan UI.",
+    "Use existing WebSocket events: assistant_delta, assistant_thinking_delta, plan_created, run_done, and error.",
+    "Work with the existing dirty tree and do not revert unrelated user changes."
+  ],
+  "qualityGates": [
+    "pnpm --filter @gpt-image-canvas/api smoke:planner",
+    "pnpm typecheck",
+    "pnpm build"
+  ],
+  "stories": [
+    {
+      "id": "AS-001",
+      "title": "Stream direct Agent planner output",
+      "status": "done",
+      "dependsOn": [],
+      "description": "As a creator, I want configured direct Agent planner models to stream thinking/progress while the backend safely buffers raw plan JSON until validation succeeds.",
+      "acceptanceCriteria": [
+        "Update the direct OpenAI-compatible planner path to use model.stream or an equivalent native streaming API for supported direct models.",
+        "Set the direct planner ChatOpenAI configuration so streaming is not disabled for the direct path.",
+        "Emit assistant_thinking_delta as reasoning chunks become available from streamed chunk fields such as reasoning_content, reasoning, additional_kwargs, or response_metadata.",
+        "Buffer streamed assistant content internally and parse it as strict GenerationPlan JSON only after the stream completes.",
+        "Do not emit raw JSON content as assistant_delta; only emit short human progress/status copy before and after planning.",
+        "Keep the existing DeepAgents planner path as a non-stream fallback when the planner is not using the direct streaming path.",
+        "Cancellation through AbortSignal stops the stream and returns the existing agent_run_cancelled result without creating a plan.",
+        "Negative case: invalid streamed JSON returns invalid_plan_json or invalid_plan_schema and no plan_created event.",
+        "Negative case: streaming transport errors return a recoverable agent_planner_failed error without logging secrets.",
+        "Verification: extend agent planner smoke coverage for streamed content chunks, streamed reasoning chunks, cancellation, invalid streamed JSON, and final validated plan parsing."
+      ],
+      "startedAt": "2026-05-03T17:12:37.275222+00:00",
+      "completedAt": "2026-05-03T17:31:46.970576+00:00",
+      "updatedAt": "2026-05-03T17:31:46.970576+00:00"
+    },
+    {
+      "id": "AS-002",
+      "title": "Fix Agent transcript streaming layout",
+      "status": "done",
+      "dependsOn": [
+        "AS-001"
+      ],
+      "description": "As a creator, I want streamed assistant output, thinking, and plan messages to remain readable and ordered without visual overlap in the Agent panel.",
+      "acceptanceCriteria": [
+        "Keep assistant, thinking, system, error, and plan-bearing assistant messages as separate transcript items instead of merging thinking text into assistant output.",
+        "Append streamed chunks to the latest matching message type only when appropriate for the active run.",
+        "Auto-scroll the transcript as streaming messages arrive without moving focus away from the input or active controls.",
+        "Update transcript CSS so long thinking text wraps with overflow-wrap:anywhere and can scroll inside a bounded card.",
+        "Ensure thinking cards, assistant cards, plan cards, preview lists, and the composer do not overlap on desktop or mobile.",
+        "Keep text inside message/card containers with stable widths and no viewport-scaled fonts.",
+        "Negative case: very long unbroken text in a thinking delta remains contained and does not widen the panel.",
+        "Negative case: rapid alternating assistant/thinking deltas preserve order and do not create duplicate empty cards.",
+        "Browser verification: desktop and mobile Agent tab with long Chinese thinking text, fast chunk updates, cancellation, and no console errors."
+      ],
+      "startedAt": "2026-05-03T17:31:49.229525+00:00",
+      "completedAt": "2026-05-03T17:53:34.962612+00:00",
+      "updatedAt": "2026-05-03T17:53:34.962612+00:00"
+    },
+    {
+      "id": "AS-003",
+      "title": "Make plan cards and node details inspectable",
+      "status": "done",
+      "dependsOn": [
+        "AS-002"
+      ],
+      "description": "As a creator, I want generated plan summaries and details to clearly explain what will be made and let me jump from chat to the canvas plan node.",
+      "acceptanceCriteria": [
+        "Make the chat plan card keyboard and pointer actionable so activation locates/selects the matching canvas plan node.",
+        "If the matching node is missing or malformed, show a clear Chinese recoverable error message instead of throwing.",
+        "Update plan summaries to count final_image outputs separately from support outputs produced by character_anchor, style_anchor, reference_anchor, or variation jobs.",
+        "For a 6-page request with one support anchor, the summary should communicate 6 final images plus 1 support image rather than only saying 7 images.",
+        "Expand the selected-job detail area in the canvas plan node to show full prompt, role, count, dependencies, references, status, errors, and output slots or thumbnail state.",
+        "Preserve stable plan node dimensions; internal detail areas may scroll but must not clip text behind controls.",
+        "Harden plan/node normalization so malformed or legacy plan payloads render the existing safe unreadable state and never crash app load.",
+        "Negative case: a plan with zero final_image jobs still shows a coherent support-only summary.",
+        "Negative case: a malformed plan card payload does not call canvas operations with invalid data.",
+        "Browser verification: create a plan, activate the chat card to locate the canvas node, select multiple jobs, inspect details, refresh, and verify restored/malformed states remain safe."
+      ],
+      "startedAt": "2026-05-03T17:53:37.214239+00:00",
+      "completedAt": "2026-05-03T18:15:27.2812148Z",
+      "updatedAt": "2026-05-03T18:15:27.2812148Z",
+      "verificationNotes": [
+        "Ralph implemented the AS-003 source changes but the parent loop timed out before writing a run summary or committing.",
+        "Manually reviewed and retained the AS-003 changes for actionable plan cards, final/support output summaries, expanded plan-node details, and malformed payload guards.",
+        "Ran pnpm typecheck successfully after taking over the in-progress story.",
+        "Full browser verification continues in AS-004."
+      ]
+    },
+    {
+      "id": "AS-004",
+      "title": "Verify and document Agent streaming fixes",
+      "status": "done",
+      "dependsOn": [
+        "AS-003"
+      ],
+      "description": "As a maintainer, I want the streaming Agent fixes fully verified with smoke checks, build gates, browser testing, and a concise handoff record.",
+      "acceptanceCriteria": [
+        "Run pnpm --filter @gpt-image-canvas/api smoke:planner successfully or record the exact non-secret blocker.",
+        "Run pnpm typecheck successfully or record the exact non-secret blocker.",
+        "Run pnpm build successfully or record the exact non-secret blocker.",
+        "Run pnpm dev and browser-verify http://localhost:5173 with the configured Agent model when credentials are available.",
+        "Browser verification covers visible streaming thinking, no transcript overlap, valid plan creation, clickable plan card, canvas node detail inspection, desktop layout, and mobile layout.",
+        "Check browser console, API terminal, and Vite terminal for new runtime errors without printing secrets.",
+        "Record any Node engine warnings, Vite warnings, credential/environment limitations, and residual risks in story verification notes.",
+        "Confirm git status excludes .env, .ralph, .codex-temp, data, generated images, SQLite databases, screenshots, build output, and machine-specific paths from commits.",
+        "Verification: final story records changed files, commands run, browser findings, and commit hashes."
+      ],
+      "startedAt": "2026-05-03T18:16:26.208788+00:00",
+      "completedAt": "2026-05-03T19:17:32.5536405Z",
+      "updatedAt": "2026-05-03T19:17:32.5536405Z",
+      "verificationNotes": [
+        "Ralph AS-004 generated .ralph/runs/run-20260504-021626-1569-iter-1.md before the outer command timed out.",
+        "AS-004 verification commit: 5abc7c6 Document native dependency rebuild note.",
+        "Related implementation commits: b0ea34c Stream direct agent planner output, 6df4906 Fix agent transcript streaming layout, 66edd7b Make agent plan details inspectable.",
+        "Ralph recorded node -v v24.15.0, pnpm -v 9.14.2, pnpm --filter @gpt-image-canvas/api smoke:planner PASS, pnpm typecheck PASS, and pnpm build PASS.",
+        "Ralph rebuilt better-sqlite3 after a non-secret NODE_MODULE_VERSION mismatch and documented that guidance in AGENTS.md.",
+        "pnpm dev was partial on Windows because the API tsx watch child stayed alive without binding 127.0.0.1:8787; built API start was used as the browser verification fallback.",
+        "Ralph browser-verified desktop 1440x1000 and mobile 390x844 with configured model deepseek-v4-flash without logging credentials.",
+        "Verified visible streamed thinking, no transcript/composer overlap, valid plan creation, clickable plan card, canvas node selection, and expanded plan-node details.",
+        "Observed non-blocking warnings: tldraw zh-cn missing translation keys, Canvas2D willReadFrequently, React DevTools info, Chrome form-field advisory, and existing Vite large chunk warning.",
+        "Residual risks: Windows pnpm dev API startup issue remains documented; first model attempt produced unsupported job quality and surfaced a recoverable HTTP 400 before a corrected prompt produced a valid plan.",
+        "Confirmed ignored files and secret/runtime directories were excluded from commits."
+      ]
+    }
+  ]
+}

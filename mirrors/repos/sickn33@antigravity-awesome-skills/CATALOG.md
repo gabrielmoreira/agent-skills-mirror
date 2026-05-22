@@ -2,7 +2,7 @@
 
 Generated at: 2026-02-08T00:00:00.000Z
 
-Total skills: 1462
+Total skills: 1464
 
 ## architecture (96)
 
@@ -479,7 +479,7 @@ Total skills: 1462
 | `yes-md` | 6-layer AI governance: safety gates, evidence-based debugging, anti-slack detection, and machine-enforced hooks. Makes AI safe, thorough, and honest. | yes, md | yes, md, layer, ai, governance, safety, gates, evidence, debugging, anti, slack, detection |
 | `youtube-automation` | Automate YouTube tasks via Rube MCP (Composio): upload videos, manage playlists, search content, get analytics, and handle comments. Always search tools firs... | youtube | youtube, automation, automate, tasks, via, rube, mcp, composio, upload, videos, playlists, search |
 
-## development (207)
+## development (208)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -539,6 +539,7 @@ Total skills: 1462
 | `backend-architect` | Expert backend architect specializing in scalable API design, microservices architecture, and distributed systems. | backend | backend, architect, specializing, scalable, api, microservices, architecture, distributed |
 | `baseline-ui` | Validates animation durations, enforces typography scale, checks component accessibility, and prevents layout anti-patterns in Tailwind CSS projects. Use whe... | baseline, ui | baseline, ui, validates, animation, durations, enforces, typography, scale, checks, component, accessibility, prevents |
 | `bevy-ecs-expert` | Master Bevy's Entity Component System (ECS) in Rust, covering Systems, Queries, Resources, and parallel scheduling. | bevy, ecs | bevy, ecs, entity, component, rust, covering, queries, resources, parallel, scheduling |
+| `bilig-workpaper` | Use formula-backed WorkPaper JSON and MCP tools for agent spreadsheet tasks without driving Excel or a browser UI. | spreadsheets, formulas, mcp, xlsx, typescript | spreadsheets, formulas, mcp, xlsx, typescript, bilig, workpaper, formula, backed, json, agent, spreadsheet |
 | `bullmq-specialist` | BullMQ expert for Redis-backed job queues, background processing, and reliable async execution in Node.js/TypeScript applications. | bullmq | bullmq, redis, backed, job, queues, background, processing, reliable, async, execution, node, js |
 | `bun-development` | Fast, modern JavaScript/TypeScript development with the Bun runtime, inspired by [oven-sh/bun](https://github.com/oven-sh/bun). | bun | bun, development, fast, javascript, typescript, runtime, inspired, oven, sh, https, github, com |
 | `cc-skill-coding-standards` | Universal coding standards, best practices, and patterns for TypeScript, JavaScript, React, and Node.js development. | cc, skill, coding, standards | cc, skill, coding, standards, universal, typescript, javascript, react, node, js, development |
@@ -1406,7 +1407,7 @@ Total skills: 1462
 | `wiki-qa` | Answer repository questions grounded entirely in source code evidence. Use when user asks a question about the codebase, user wants to understand a specific ... | wiki, qa | wiki, qa, answer, repository, questions, grounded, entirely, source, code, evidence, user, asks |
 | `windows-privilege-escalation` | Provide systematic methodologies for discovering and exploiting privilege escalation vulnerabilities on Windows systems during penetration testing engagements. | windows, privilege, escalation | windows, privilege, escalation, provide, systematic, methodologies, discovering, exploiting, vulnerabilities, during, penetration, testing |
 
-## workflow (100)
+## workflow (101)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -1492,6 +1493,7 @@ Total skills: 1462
 | `slack-automation` | Automate Slack workspace operations including messaging, search, channel management, and reaction workflows through Composio's Slack toolkit. | slack | slack, automation, automate, workspace, operations, including, messaging, search, channel, reaction, through, composio |
 | `square-automation` | Automate Square tasks via Rube MCP (Composio): payments, orders, invoices, locations. Always search tools first for current schemas. | square | square, automation, automate, tasks, via, rube, mcp, composio, payments, orders, invoices, locations |
 | `stripe-automation` | Automate Stripe tasks via Rube MCP (Composio): customers, charges, subscriptions, invoices, products, refunds. Always search tools first for current schemas. | stripe | stripe, automation, automate, tasks, via, rube, mcp, composio, customers, charges, subscriptions, invoices |
+| `subagent-orchestrator` | Coordinate quota-aware parallel subagents for large, multi-file Antigravity tasks. | subagents, orchestration, quota, parallel, multi-agent | subagents, orchestration, quota, parallel, multi-agent, subagent, orchestrator, coordinate, aware, large, multi, file |
 | `task-intelligence` | Protocolo de Inteligência Pré-Tarefa — ativa TODOS os agentes relevantes do ecossistema ANTES de executar qualquer tarefa solicitada pelo usuário. | planning, pre-task, risk-analysis, orchestration | planning, pre-task, risk-analysis, orchestration, task, intelligence, protocolo, de, intelig, ncia, pr, tarefa |
 | `team-collaboration-issue` | You are a GitHub issue resolution expert specializing in systematic bug investigation, feature implementation, and collaborative development workflows. Your ... | team, collaboration, issue | team, collaboration, issue, github, resolution, specializing, systematic, bug, investigation, feature, collaborative, development |
 | `telegram-automation` | Automate Telegram tasks via Rube MCP (Composio): send messages, manage chats, share photos/documents, and handle bot commands. Always search tools first for ... | telegram | telegram, automation, automate, tasks, via, rube, mcp, composio, send, messages, chats, share |

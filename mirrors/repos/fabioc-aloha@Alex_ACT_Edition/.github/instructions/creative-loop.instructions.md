@@ -118,3 +118,7 @@ The creative loop is where ACT applies:
 | TEST | Falsifiability — what would prove this wrong? (Tenet V) |
 | RELEASE | Self-correct before shipping (Tenet VI) |
 | IMPROVE | Apply ACT to ACT itself (Tenet X) |
+
+## Would Revise If
+
+Revise if real creative work consistently produces better output by skipping the prescribed stages (the loop is descriptive theater not predictive), if stage-detection from user signals misroutes work to the wrong stage 2+ times in a quarter, or if the anti-patterns table fires false positives on legitimately interleaved work (e.g. iterative prototyping where build/test mix by design).

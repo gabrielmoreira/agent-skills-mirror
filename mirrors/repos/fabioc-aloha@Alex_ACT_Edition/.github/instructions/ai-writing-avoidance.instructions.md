@@ -44,3 +44,7 @@ Before finalizing any document:
 - Use before any external publication
 - Apply to email templates and form letters
 - Required for customer-facing policy documents
+
+## Would Revise If
+
+Revise if the banned-vocabulary list ages out (terms become standard English usage rather than AI tells), if the 6-step audit catches fewer than 50% of human-flagged AI patterns in shipped writing, or if the rules block valid technical writing more often than they catch AI artifacts.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vercel-labs/agent-skills` — 26 default patterns, 0 followed patterns, 307 file(s) materialized.
+Mirror of `vercel-labs/agent-skills` — 26 default patterns, 0 followed patterns, 308 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel-labs/agent-skills` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 307 |
+| Files         | 308 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -346,26 +346,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 285 | ✓ | [`skills/vercel-optimize/references/support-topics/usage-spike-triage.md`](skills/vercel-optimize/references/support-topics/usage-spike-triage.md) |
 | 286 | ✓ | [`skills/vercel-optimize/references/support-topics/use-cache-date-stamp-isr-write-amplifier.md`](skills/vercel-optimize/references/support-topics/use-cache-date-stamp-isr-write-amplifier.md) |
 | 287 | ✓ | [`skills/vercel-optimize/references/support-topics/use-cache-remote-shared-origin-data.md`](skills/vercel-optimize/references/support-topics/use-cache-remote-shared-origin-data.md) |
-| 288 | ✓ | [`skills/vercel-optimize/references/verification.md`](skills/vercel-optimize/references/verification.md) |
-| 289 | ✓ | [`skills/vercel-optimize/references/voice.md`](skills/vercel-optimize/references/voice.md) |
-| 290 | ✓ | [`skills/vercel-optimize/scripts/budget-summary.mjs`](skills/vercel-optimize/scripts/budget-summary.mjs) |
-| 291 | ✓ | [`skills/vercel-optimize/scripts/build-docs.mjs`](skills/vercel-optimize/scripts/build-docs.mjs) |
-| 292 | ✓ | [`skills/vercel-optimize/scripts/check-citations.mjs`](skills/vercel-optimize/scripts/check-citations.mjs) |
-| 293 | ✓ | [`skills/vercel-optimize/scripts/check-docs-fresh.mjs`](skills/vercel-optimize/scripts/check-docs-fresh.mjs) |
-| 294 | ✓ | [`skills/vercel-optimize/scripts/collect-signals.mjs`](skills/vercel-optimize/scripts/collect-signals.mjs) |
-| 295 | ✓ | [`skills/vercel-optimize/scripts/collect-sub-agent-outputs.mjs`](skills/vercel-optimize/scripts/collect-sub-agent-outputs.mjs) |
-| 296 | ✓ | [`skills/vercel-optimize/scripts/deep-dive.mjs`](skills/vercel-optimize/scripts/deep-dive.mjs) |
-| 297 | ✓ | [`skills/vercel-optimize/scripts/gate-investigations.mjs`](skills/vercel-optimize/scripts/gate-investigations.mjs) |
-| 298 | ✓ | [`skills/vercel-optimize/scripts/merge-signals.mjs`](skills/vercel-optimize/scripts/merge-signals.mjs) |
-| 299 | ✓ | [`skills/vercel-optimize/scripts/prepare-investigation-brief.mjs`](skills/vercel-optimize/scripts/prepare-investigation-brief.mjs) |
-| 300 | ✓ | [`skills/vercel-optimize/scripts/reconcile-candidates.mjs`](skills/vercel-optimize/scripts/reconcile-candidates.mjs) |
-| 301 | ✓ | [`skills/vercel-optimize/scripts/render-report.mjs`](skills/vercel-optimize/scripts/render-report.mjs) |
-| 302 | ✓ | [`skills/vercel-optimize/scripts/scan-codebase.mjs`](skills/vercel-optimize/scripts/scan-codebase.mjs) |
-| 303 | ✓ | [`skills/vercel-optimize/scripts/verify-and-regen.mjs`](skills/vercel-optimize/scripts/verify-and-regen.mjs) |
-| 304 | ✓ | [`skills/vercel-optimize/scripts/verify-finding.mjs`](skills/vercel-optimize/scripts/verify-finding.mjs) |
-| 305 | ✓ | [`skills/vercel-optimize/SKILL.md`](skills/vercel-optimize/SKILL.md) |
-| 306 | ✓ | [`skills/web-design-guidelines.zip`](skills/web-design-guidelines.zip) |
-| 307 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
+| 288 | ✓ | [`skills/vercel-optimize/references/support-topics/workflow-resumable-stream-routes.md`](skills/vercel-optimize/references/support-topics/workflow-resumable-stream-routes.md) |
+| 289 | ✓ | [`skills/vercel-optimize/references/verification.md`](skills/vercel-optimize/references/verification.md) |
+| 290 | ✓ | [`skills/vercel-optimize/references/voice.md`](skills/vercel-optimize/references/voice.md) |
+| 291 | ✓ | [`skills/vercel-optimize/scripts/budget-summary.mjs`](skills/vercel-optimize/scripts/budget-summary.mjs) |
+| 292 | ✓ | [`skills/vercel-optimize/scripts/build-docs.mjs`](skills/vercel-optimize/scripts/build-docs.mjs) |
+| 293 | ✓ | [`skills/vercel-optimize/scripts/check-citations.mjs`](skills/vercel-optimize/scripts/check-citations.mjs) |
+| 294 | ✓ | [`skills/vercel-optimize/scripts/check-docs-fresh.mjs`](skills/vercel-optimize/scripts/check-docs-fresh.mjs) |
+| 295 | ✓ | [`skills/vercel-optimize/scripts/collect-signals.mjs`](skills/vercel-optimize/scripts/collect-signals.mjs) |
+| 296 | ✓ | [`skills/vercel-optimize/scripts/collect-sub-agent-outputs.mjs`](skills/vercel-optimize/scripts/collect-sub-agent-outputs.mjs) |
+| 297 | ✓ | [`skills/vercel-optimize/scripts/deep-dive.mjs`](skills/vercel-optimize/scripts/deep-dive.mjs) |
+| 298 | ✓ | [`skills/vercel-optimize/scripts/gate-investigations.mjs`](skills/vercel-optimize/scripts/gate-investigations.mjs) |
+| 299 | ✓ | [`skills/vercel-optimize/scripts/merge-signals.mjs`](skills/vercel-optimize/scripts/merge-signals.mjs) |
+| 300 | ✓ | [`skills/vercel-optimize/scripts/prepare-investigation-brief.mjs`](skills/vercel-optimize/scripts/prepare-investigation-brief.mjs) |
+| 301 | ✓ | [`skills/vercel-optimize/scripts/reconcile-candidates.mjs`](skills/vercel-optimize/scripts/reconcile-candidates.mjs) |
+| 302 | ✓ | [`skills/vercel-optimize/scripts/render-report.mjs`](skills/vercel-optimize/scripts/render-report.mjs) |
+| 303 | ✓ | [`skills/vercel-optimize/scripts/scan-codebase.mjs`](skills/vercel-optimize/scripts/scan-codebase.mjs) |
+| 304 | ✓ | [`skills/vercel-optimize/scripts/verify-and-regen.mjs`](skills/vercel-optimize/scripts/verify-and-regen.mjs) |
+| 305 | ✓ | [`skills/vercel-optimize/scripts/verify-finding.mjs`](skills/vercel-optimize/scripts/verify-finding.mjs) |
+| 306 | ✓ | [`skills/vercel-optimize/SKILL.md`](skills/vercel-optimize/SKILL.md) |
+| 307 | ✓ | [`skills/web-design-guidelines.zip`](skills/web-design-guidelines.zip) |
+| 308 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
 
 ---
 

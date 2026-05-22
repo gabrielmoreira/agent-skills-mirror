@@ -29,7 +29,18 @@ COSMOS_KEY=<emulator-key>  # Only required for key-based auth or emulator
 AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
 ```
 
-## Authentication
+## Authentication & Lifecycle
+
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
 
 **DefaultAzureCredential (preferred)**:
 ```python
@@ -43,21 +54,25 @@ credential = DefaultAzureCredential(require_envvar=True)
 # See https://learn.microsoft.com/python/api/overview/azure/identity-readme?view=azure-python#credential-classes
 # credential = ManagedIdentityCredential()
 
-client = CosmosClient(
+with CosmosClient(
     url=os.environ["COSMOS_ENDPOINT"],
     credential=credential
-)
+) as client:
+    # Use client here (see following sections for operations)
+    ...
 ```
 
 **Emulator (local development)**:
 ```python
 from azure.cosmos import CosmosClient
 
-client = CosmosClient(
+with CosmosClient(
     url="https://localhost:8081",
     credential=os.environ["COSMOS_KEY"],
     connection_verify=False
-)
+) as client:
+    # Use client here (see following sections for operations)
+    ...
 ```
 
 ## Architecture Overview
@@ -104,6 +119,7 @@ def _is_emulator_endpoint(endpoint: str) -> bool:
 async def get_container():
     global _cosmos_container
     if _cosmos_container is None:
+        # Singleton: client lives for the FastAPI app lifetime; close in a lifespan shutdown handler.
         if _is_emulator_endpoint(settings.cosmos_endpoint):
             client = CosmosClient(
                 url=settings.cosmos_endpoint,
@@ -204,6 +220,11 @@ async def test_get_project_by_id_returns_project(mock_cosmos_container):
 ```
 
 **Full testing guide**: See [references/testing.md](references/testing.md)
+
+## Best Practices
+
+1. **This skill uses async throughout (`azure.cosmos.aio`); do not mix with the sync `azure.cosmos` client.** Keep the whole FastAPI request path async — don't pair sync Cosmos calls with async handlers.
+2. **Always use context managers for clients and async credentials.** Wrap the client in `async with CosmosClient(...) as client:` (or manage its lifetime via FastAPI lifespan and close it explicitly). For async `DefaultAzureCredential` from `azure.identity.aio`, also use `async with credential:` so tokens and transports are cleaned up.
 
 ## Reference Files
 

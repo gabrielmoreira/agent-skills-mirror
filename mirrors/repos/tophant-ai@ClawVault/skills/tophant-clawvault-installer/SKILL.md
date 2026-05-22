@@ -1,6 +1,6 @@
 ---
 name: tophant-clawvault-installer
-version: 0.2.12
+version: 0.2.13
 description: Install, configure, test, and uninstall ClawVault AI security proxy
 homepage: https://github.com/tophant-ai/ClawVault
 user-invocable: true
@@ -47,7 +47,7 @@ Install ClawVault. The script creates a Python virtual environment, temporarily 
 # ClawVault web dashboard starts at http://localhost:8766.
 # To activate OpenClaw proxy later, manually run:
 #   systemctl --user restart openclaw-gateway
-python3 SKILL_DIR/clawvault_manager.py install --mode quick --json
+python3 SKILL_DIR/clawvault_manager.py install --mode quick --install-plugin --json
 
 # Interactive setup
 python3 SKILL_DIR/clawvault_manager.py install --mode standard --json
@@ -67,6 +67,10 @@ python3 SKILL_DIR/clawvault_manager.py install --mode quick --configure-gateway-
 # Skip OpenClaw proxy integration explicitly
 python3 SKILL_DIR/clawvault_manager.py install --mode quick --no-proxy --json
 ```
+
+### OpenClaw plugin acceptance check
+
+After installing the plugin, send a normal OpenClaw prompt that asks to read `/tmp/.env.demo`. If the plugin is active, that prompt should trigger file-guard interception and appear in the ClawVault dashboard.
 
 ### /tophant-clawvault-installer health
 

@@ -104,11 +104,47 @@ Follow this structure (based on existing Azure SDK skills):
 1. **Title** — `# SDK Name`
 2. **Installation** — `pip install`, `npm install`, etc.
 3. **Environment Variables** — Required configuration, with an inline comment explaining when it's required . If using `DefaultAzureCredential`in production,include `AZURE_TOKEN_CREDENTIALS` (set to `prod` or `<specific_credential>`)
-4. **Authentication** — Use a specific Microsoft Entra Token credential like `ManagedIdentityCredential` or `WorkloadIdentityCredential` for production. `DefaultAzureCredential` is only recommended for local development. To use DefaultAzureCredential in production, set the environment variable `AZURE_TOKEN_CREDENTIALS` to `prod` or the specific target credential.
+4. **Authentication & Lifecycle** — Use a specific Microsoft Entra Token credential like `ManagedIdentityCredential` or `WorkloadIdentityCredential` for production. `DefaultAzureCredential` is only recommended for local development. To use DefaultAzureCredential in production, set the environment variable `AZURE_TOKEN_CREDENTIALS` to `prod` or the specific target credential. **For Python skills, this section MUST start with the standard callout block** (see [Required Authentication & Lifecycle Callout (Python)](#required-authentication--lifecycle-callout-python) below).
 5. **Core Workflow** — Minimal viable example
 6. **Feature Tables** — Clients, methods, tools
 7. **Best Practices** — Numbered list
 8. **Reference Links** — Table linking to `/references/*.md`
+
+### Required Authentication & Lifecycle Callout (Python)
+
+> **Scope:** Python skills (`-py` suffix) only. Other languages may follow their own idioms.
+
+Every Python Azure SDK skill MUST open its `## Authentication & Lifecycle` section with the following callout block, **verbatim**, before any code samples. This makes the two non-negotiable rules visible to users before they read or copy any client setup code.
+
+```markdown
+## Authentication & Lifecycle
+
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
+```
+
+**Placement rules:**
+
+- Insert immediately under the `## Authentication & Lifecycle` heading, before the first code sample.
+- Do not paraphrase or restructure the wording — the consistency across skills is the point.
+- If the SDK does not support Entra ID at all (rare — e.g. some legacy speech REST endpoints, websocket APIs that require subscription keys), keep rule #2 (context managers) and replace rule #1 with a single sentence noting the SDK requires API-key auth and explaining why Entra is not yet available.
+- If the SDK is async-only (e.g. `azure-ai-voicelive`), keep both rules but show only the async form in the bullets.
+- Skip the callout entirely for non-Azure Python skills with no client lifecycle (e.g. `pydantic-models-py`).
+
+**Code sample enforcement.** Every client construction in the skill body must demonstrate both rules:
+
+- Show `with` / `async with` on every client instantiation in usage examples (not just the auth section).
+- Show `DefaultAzureCredential` in the primary auth example. **Do not delete API-key examples for SDKs where keys are still officially supported** — many existing users (especially in regulated environments still completing their Entra rollout) need a copy-pastable working sample. Demote the keyed snippet into a clearly-labeled `### Legacy: API Key (existing keyed deployments)` subsection placed *after* the primary `DefaultAzureCredential` block in the same `## Authentication & Lifecycle` section. Include a one-line note that new code should use `DefaultAzureCredential` and that the keyed path is for existing deployments. Also add the `<SERVICE>_KEY` env var back to the Environment Variables block with a `# Only required for the legacy API-key auth path below` comment.
+- A handful of services have key-specific quirks worth calling out in the Legacy subsection (e.g. `azure-ai-translation-text` requires a `region=` parameter when using a key against the global endpoint, because token-credential auth requires a custom subdomain endpoint). Surface these in the demoted block rather than dropping the example.
+- For async examples, wrap `DefaultAzureCredential` from `azure.identity.aio` in `async with credential:` alongside the client.
 
 ### Authentication Pattern (All Languages)
 
@@ -117,14 +153,15 @@ For local development, use `DefaultAzureCredential` which supports multiple auth
 If configuring a Rust skill, use `DeveloperToolsCredential` for local development and `ManagedIdentityCredential` for production. The Rust SDK does not support `DefaultAzureCredential`, so explicitly use the appropriate credential in each environment.
 
 ```python
-# Python
+# Python — note: client is wrapped in `with` for deterministic cleanup
 from azure.identity import DefaultAzureCredential, ManagedIdentityCredential
 # Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
 credential = DefaultAzureCredential(require_envvar=True)
 # Or use a specific credential directly in production:
 # See https://learn.microsoft.com/python/api/overview/azure/identity-readme?view=azure-python#credential-classes
 # credential = ManagedIdentityCredential()
-client = ServiceClient(endpoint, credential)
+with ServiceClient(endpoint, credential) as client:
+    client.do_thing()
 ```
 
 ```csharp
@@ -209,7 +246,7 @@ Azure SDKs use consistent verbs across all languages:
 
 See `references/azure-sdk-patterns.md` for detailed patterns including:
 
-- **Python**: `ItemPaged`, `LROPoller`, context managers, Sphinx docstrings
+- **Python**: `ItemPaged`, `LROPoller`, context managers, Sphinx docstrings. Pick **sync or async** for the whole skill and stick with it — never mix. Always show `with` / `async with` context managers first.
 - **.NET**: `Response<T>`, `Pageable<T>`, `Operation<T>`, mocking support
 - **Java**: Builder pattern, `PagedIterable`/`PagedFlux`, Reactor types
 - **TypeScript**: `PagedAsyncIterableIterator`, `AbortSignal`, browser considerations
@@ -337,7 +374,18 @@ AZURE_EXAMPLE_ENDPOINT=https://<resource>.example.azure.com
 AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
 \`\`\`
 
-## Authentication
+## Authentication & Lifecycle
+
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
 
 \`\`\`python
 from azure.identity import DefaultAzureCredential, ManagedIdentityCredential
@@ -352,34 +400,30 @@ credential = DefaultAzureCredential(require_envvar=True)
 # See https://learn.microsoft.com/python/api/overview/azure/identity-readme?view=azure-python#credential-classes
 
 # credential = ManagedIdentityCredential()
-
-client = ExampleClient(
-endpoint=os.environ["AZURE_EXAMPLE_ENDPOINT"],
-credential=credential
-)
+with ExampleClient(
+    endpoint=os.environ["AZURE_EXAMPLE_ENDPOINT"],
+    credential=credential,
+) as client:
+    item = client.get_item("example")
 \`\`\`
 
 ## Core Workflow
 
 \`\`\`python
+with ExampleClient(endpoint=endpoint, credential=credential) as client:
+    # Create
+    item = client.create_item(name="example", data={...})
 
-# Create
+    # List (pagination handled automatically)
+    for item in client.list_items():
+        print(item.name)
 
-item = client.create_item(name="example", data={...})
+    # Long-running operation
+    poller = client.begin_process(item.id)
+    result = poller.result()
 
-# List (pagination handled automatically)
-
-for item in client.list_items():
-print(item.name)
-
-# Long-running operation
-
-poller = client.begin_process(item_id)
-result = poller.result()
-
-# Cleanup
-
-client.delete_item(item_id)
+    # Cleanup
+    client.delete_item(item.id)
 \`\`\`
 
 ## Reference Files
@@ -572,17 +616,31 @@ from azure.ai.mymodule.models import MyClient # Wrong - Client is not in models
 
 ## 2. Authentication Patterns
 
-#### ✅ CORRECT: DefaultAzureCredential
+#### ✅ CORRECT: DefaultAzureCredential + context manager
 
 \`\`\`python
 credential = DefaultAzureCredential()
-client = MyClient(endpoint, credential)
+with MyClient(endpoint, credential) as client:
+    client.do_thing()
 \`\`\`
 
 #### ❌ INCORRECT: Hardcoded Credentials
 
 \`\`\`python
-client = MyClient(endpoint, api_key="hardcoded") # Security risk
+client = MyClient(endpoint, api_key="hardcoded")  # Security risk
+\`\`\`
+
+#### ❌ INCORRECT: Connection string / account key when Entra is supported
+
+\`\`\`python
+client = MyClient.from_connection_string(os.environ["CONNECTION_STRING"])  # Bypasses Entra audit/rotation
+\`\`\`
+
+#### ❌ INCORRECT: Bare client without context manager
+
+\`\`\`python
+client = MyClient(endpoint, credential)  # Leaks HTTP transport on exception / interpreter exit
+client.do_thing()
 \`\`\`
 ```
 
@@ -612,9 +670,11 @@ scenarios:
     expected_patterns:
       - "DefaultAzureCredential"
       - "MyClient"
+      - "with MyClient"  # enforce context manager
     forbidden_patterns:
       - "api_key="
       - "hardcoded"
+      - "from_connection_string"  # prefer Entra over connection strings
     tags:
       - basic
       - authentication
@@ -624,11 +684,12 @@ scenarios:
       from azure.ai.mymodule import MyClient
 
       credential = DefaultAzureCredential()
-      client = MyClient(
+      with MyClient(
           endpoint=os.environ["AZURE_ENDPOINT"],
-          credential=credential
-      )
-      # ... rest of working example
+          credential=credential,
+      ) as client:
+          # ... rest of working example
+          pass
 ```
 
 **Scenario design principles:**
@@ -761,6 +822,8 @@ azure-ai-agents/
 | Skip acceptance criteria         | Skills without tests can't be validated    |
 | Skip symlink categorization      | Skills won't be discoverable by category   |
 | Use wrong import paths           | Azure SDKs have specific module structures |
+| Omit sync/async + context-manager bullets from Best Practices in Python skills | End users won't follow rules that aren't written down; examples alone aren't enough |
+| Mix sync and async in the same Python example | Demonstrates the anti-pattern the skill is supposed to prevent |
 
 ---
 
@@ -780,6 +843,8 @@ Before completing a skill:
 - [ ] Authentication uses `DefaultAzureCredential`
 - [ ] Includes cleanup/delete in examples
 - [ ] References organized by feature
+- [ ] **(Python skills only) Best Practices section contains the two user-facing rules** (sync-or-async consistency + context managers for clients and async credentials), using the variant matched to the skill type
+- [ ] **(Python skills only)** Every code example obeys both rules (no mixed sync/async; every client wrapped in `with` / `async with`)
 
 **Categorization:**
 

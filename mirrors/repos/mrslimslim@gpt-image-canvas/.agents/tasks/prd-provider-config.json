@@ -1,0 +1,170 @@
+{
+  "version": 1,
+  "project": "gpt-image-canvas",
+  "overview": "Add an in-app provider configuration dialog that lowers API setup friction while preserving existing environment-variable and Codex credential behavior. Ralph must execute one story per iteration, commit story changes, and keep secrets out of the repository.",
+  "goals": [
+    "Let users configure one local OpenAI-compatible Images API source from the web app.",
+    "Keep environment variables effective and visible as a read-only provider source.",
+    "Show Codex account/session status without exposing OAuth token secrets.",
+    "Allow provider source priority to be reordered, with fallback only when a higher-priority source is empty or unavailable.",
+    "Preserve the existing generation, local asset persistence, Codex login, and COS backup flows."
+  ],
+  "nonGoals": [
+    "Do not support multiple saved local API profiles in this task.",
+    "Do not write or edit .env files from the browser.",
+    "Do not return complete API keys, Codex access tokens, refresh tokens, or ID tokens to the browser.",
+    "Do not add a model marketplace, arbitrary provider request mapping, billing, user accounts, or cloud sync.",
+    "Do not auto-fallback to a lower-priority provider after a selected provider returns a generation error."
+  ],
+  "successMetrics": [
+    "A user can open a global configuration dialog from the top-right navigation.",
+    "The dialog shows environment, local API, and Codex provider sources, including unavailable sources.",
+    "A user can save one local API key/base URL/model configuration without editing .env.",
+    "The provider source priority persists after refresh and controls image generation provider selection.",
+    "Saved secrets are masked in API responses and never logged or committed."
+  ],
+  "openQuestions": [
+    "No product-level open questions remain. The task defaults are: one saved local API profile, read-only environment source, Codex account status only, fallback only for empty or unavailable sources, and default priority env > local API > Codex."
+  ],
+  "stack": {
+    "packageManager": "pnpm 9.14.2 workspaces",
+    "frontend": "React + Vite + TypeScript + tldraw + Tailwind CSS + lucide-react",
+    "backend": "Hono on Node.js with TypeScript",
+    "database": "SQLite using Drizzle ORM and better-sqlite3",
+    "imageProvider": "OpenAI-compatible Images API plus Codex Responses image provider",
+    "runtime": "Node.js 22",
+    "storage": "Host ./data or DATA_DIR for SQLite, assets, COS configuration, Codex tokens, and locally saved provider secrets"
+  },
+  "routes": [
+    {
+      "path": "/api/provider-config",
+      "name": "Provider Configuration",
+      "purpose": "Read and save provider source priority plus one local OpenAI-compatible API configuration."
+    },
+    {
+      "path": "/api/auth/status",
+      "name": "Auth Status",
+      "purpose": "Continue returning the active provider while adding enough source summary data for UI status."
+    },
+    {
+      "path": "/api/images/generate",
+      "name": "Text To Image",
+      "purpose": "Generate using the first available configured provider source by priority."
+    },
+    {
+      "path": "/api/images/edit",
+      "name": "Reference Image Generation",
+      "purpose": "Edit/reference generation using the first available configured provider source by priority."
+    }
+  ],
+  "uiNotes": [
+    "The UI language is Chinese.",
+    "Add the settings entry at the far right of the global top navigation so it is reachable from Home, Canvas, and Gallery.",
+    "The existing Home API setup action should open the new provider configuration dialog.",
+    "Use the existing warm paper, terracotta, teal, restrained utility-panel design language.",
+    "The dialog should prioritize an efficient operational settings surface over marketing copy.",
+    "Show unavailable sources in the priority list so users understand why fallback happens.",
+    "Use drag-and-drop for mouse users and accessible up/down controls for keyboard users.",
+    "Keep all secret fields masked on readback; API keys can be replaced by entering a new value."
+  ],
+  "dataModel": [
+    {
+      "entity": "ProviderConfig",
+      "fields": [
+        "id",
+        "sourceOrderJson",
+        "localApiKey",
+        "localBaseUrl",
+        "localModel",
+        "localTimeoutMs",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    {
+      "entity": "ProviderSourceView",
+      "fields": [
+        "id",
+        "kind",
+        "label",
+        "available",
+        "status",
+        "details",
+        "secret"
+      ]
+    }
+  ],
+  "rules": [
+    "Ralph must complete exactly one story per iteration and commit story changes unless explicitly run with no-commit.",
+    "Use pnpm install if dependencies are missing; the package manager is pinned to pnpm@9.14.2.",
+    "Run pnpm typecheck and pnpm build before completing each story.",
+    "Frontend stories must perform browser verification against the running app.",
+    "Keep local agent scratch files under .codex-temp/ and do not commit .ralph, .env, data, generated images, SQLite databases, or build output.",
+    "Secrets must only be read from .env, runtime environment, Codex token storage, or the new local SQLite provider config; secrets must never be logged.",
+    "Environment variables remain a read-only source in the UI and must not be written by the app.",
+    "The default source priority is env-openai, local-openai, codex.",
+    "Provider fallback occurs only when a source is empty, disabled by absence of required credentials, or unavailable before request creation.",
+    "A provider selected for a generation request must not silently fallback after an upstream generation error.",
+    "Codex token values must not be returned to the browser; show only account/session status such as email, account ID, expiry, refresh time, and unavailable reason."
+  ],
+  "qualityGates": [
+    "pnpm typecheck",
+    "pnpm build"
+  ],
+  "stories": [
+    {
+      "id": "PC-001",
+      "title": "Add provider configuration storage and priority selection",
+      "status": "done",
+      "dependsOn": [],
+      "description": "As a local app user, I want provider credentials and priority to be managed by the backend so environment variables, one saved local API configuration, and Codex can participate in a predictable fallback chain.",
+      "acceptanceCriteria": [
+        "Add shared contracts for provider configuration responses, save requests, provider source IDs, provider source kinds, and masked secrets.",
+        "Add a SQLite-backed provider configuration store with one active row for source order and one local OpenAI-compatible API configuration.",
+        "Initialize or migrate the provider config table at startup using the existing database.ts style.",
+        "Implement GET /api/provider-config returning env OpenAI, local OpenAI, and Codex sources in saved priority order, including unavailable sources.",
+        "Implement PUT /api/provider-config to save source order and one local API configuration with API key replacement/preservation semantics.",
+        "Environment source details are read from OPENAI_API_KEY, OPENAI_BASE_URL, OPENAI_IMAGE_MODEL, and OPENAI_IMAGE_TIMEOUT_MS; API key is masked, while Base URL, model, and timeout are visible.",
+        "Local API source supports API key, Base URL, model advanced field, and timeout with sensible defaults matching the existing provider defaults.",
+        "Update /api/auth/status to preserve current compatibility while exposing the active source summary needed by the UI.",
+        "Update createConfiguredImageProvider to select the first available source by priority: env OpenAI, local OpenAI, or Codex according to saved order.",
+        "Do not fallback after a selected provider returns an upstream generation error; return the existing provider error flow.",
+        "Negative case: empty local API key is treated as unavailable and falls through to the next source without saving an unusable active provider.",
+        "Negative case: malformed source order or unsupported source IDs are rejected with 400 JSON errors and no secret logging.",
+        "Verification: deterministic backend checks or focused unit-level smoke scripts cover source ordering, masking, local API preservation, and fallback selection.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-05-02T08:43:04.098199+00:00",
+      "completedAt": "2026-05-02T08:58:57.249211+00:00",
+      "updatedAt": "2026-05-02T08:58:57.249211+00:00"
+    },
+    {
+      "id": "PC-002",
+      "title": "Build global provider configuration dialog",
+      "status": "done",
+      "dependsOn": [
+        "PC-001"
+      ],
+      "description": "As a creator, I want a top-right configuration dialog where I can see environment and Codex status, enter one local API configuration, and reorder provider priority without editing .env.",
+      "acceptanceCriteria": [
+        "Add a top-right global settings button to the existing top navigation and keep it reachable from Home, Canvas, and Gallery.",
+        "Change the Home page API setup action to open the new provider configuration dialog instead of the old documentation-only modal.",
+        "Render a modal dialog with an upper provider priority list and lower source detail sections.",
+        "The priority list shows env OpenAI, local OpenAI, and Codex sources whether available or unavailable, with clear Chinese status copy.",
+        "Support pointer drag-and-drop reordering plus keyboard-accessible up/down controls, and persist the order through PUT /api/provider-config.",
+        "The environment section is read-only, masks the API key, and shows Base URL, model, timeout, and a compact .env/restart hint.",
+        "The local API section lets the user enter or replace API key, Base URL, model in an advanced field, and timeout; saved keys are masked on reload.",
+        "The Codex section shows email or account ID, availability, expiry, refresh time, unavailable reason, and existing login/logout actions without exposing token values.",
+        "After saving a non-empty local API key, refresh auth/provider status and allow the existing route guard to navigate to /canvas when a provider is available.",
+        "Keep the existing provider status popover coherent with the new active source and do not duplicate conflicting status text.",
+        "Mobile and desktop layouts must keep text within containers, controls usable, and no overlapping UI.",
+        "Update README.md, README.zh-CN.md, and .env.example to document the in-app provider configuration, environment precedence, local SQLite secret storage, and no-public-exposure guidance.",
+        "Browser verification: open dialog from Home, Canvas, and Gallery; reorder sources; save local API config; refresh and verify masked readback; verify unavailable source fallback messaging; verify responsive layout.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-05-02T08:58:59.472449+00:00",
+      "completedAt": "2026-05-02T09:27:26.344899+00:00",
+      "updatedAt": "2026-05-02T09:27:26.344899+00:00"
+    }
+  ]
+}

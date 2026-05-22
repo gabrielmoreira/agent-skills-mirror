@@ -2,6 +2,84 @@
 
 All notable changes to Clawd Cursor will be documented in this file.
 
+## [0.9.5] - 2026-05-21 — repositioning + compact `task` fix + macOS Tahoe silent screenshots + npm publish prep
+
+Three threads landed: a documentation reframe so the README finally
+matches what the product actually is, a real ship-bug fix for one of
+the six headline compact tools, and a macOS 26 Tahoe compatibility
+fix. Also: package metadata is now npm-publish-ready.
+
+### Added — README + homepage repositioning (PR #93)
+
+After v0.9.4's live tests confirmed external LLMs (Sonnet driving the
+compact MCP surface) consistently passed real tasks via the MCP
+catalog, the documentation now leads with that fact instead of the
+"skill, not an app" framing.
+
+- Old tagline: *"A cursor and a keyboard for any AI agent on a real desktop."*
+- New tagline: **"The local MCP server that gives any agent safe desktop control."**
+
+Above-the-fold opening triplet now names the three defensible
+architectural claims: **no cloud / no telemetry by default**, **single
+`safety.evaluate()` chokepoint** every tool call routes through, and
+**bearer-token auth on every HTTP request**. Homepage (docs/index.html)
+mirrors the README changes.
+
+### Fixed — compact `task` compound returns `success: false` on success (PR #110)
+
+The compact `task` action — one of the six headline tools — routes
+through `delegate_to_agent`, which polls `agent_status` until idle
+and then reads `data.lastResult` to report `{success, verified, steps,
+lastAction}` to the caller.
+
+But `AgentState` had no `lastResult` field (`src/types.ts:80`). After
+`executeTask()` finished, the result was returned to the direct caller
+but never written onto state. The poll-then-read path saw `undefined`
+and reported `{success: false, steps: 0}` on every completed task —
+including the successful ones. One of the six headline tools was
+silently broken in v0.9.4.
+
+Fix: `AgentState` now has `lastResult?: TaskResult`. `executeTask()`
+snapshots the result onto `state.lastResult` immediately before
+resolving. Cleared at task start so pollers can't read stale data
+while a new task is in flight. Test coverage: 4 new tests at
+`src/__tests__/agent-last-result.test.ts`.
+
+### Fixed — silent screenshots on macOS 14+ via ScreenCaptureKit (PR #109)
+
+macOS 26 Tahoe added a "screen captured" white-flash animation that
+fires whenever any process hits the screencapture coordinator daemon —
+including the deprecated `CGWindowListCreateImage` API our
+`ScreenshotHelper` was using. For an agent tool that screenshots
+dozens of times per session, every flash was both visually disruptive
+and a privacy signal users didn't need to see for legitimate
+automation.
+
+New `captureFullScreenSCK` + `captureWindowSCK` functions use
+ScreenCaptureKit (macOS 14+) which Tahoe's flash hook does NOT
+intercept. JSON output shape preserved byte-for-byte; deployment
+target stays `.macOS(.v12)` via runtime version gate. Falls back to
+the existing CG path on macOS 12-13 where CG is still silent.
+
+### Added — `prepare` script for clean npm publish
+
+`package.json` now has `prepare: tsc && node dist/postbuild.js`. The
+npm `prepare` lifecycle runs on `npm pack` / `npm publish`, so the
+published tarball always reflects the current source rather than
+shipping a stale `dist/` from the developer's last `npm run build`.
+
+### Notes
+
+- **macOS users installing via `npm i -g clawdcursor`**: the Swift
+  native helper (ClawdCursor.app) isn't pre-built in the npm tarball.
+  After install, run `cd $(npm root -g)/clawdcursor && bash native/build.sh && clawdcursor grant`
+  to build it. Or use the existing `irm | iex` installer which handles
+  this automatically. Fixing the npm-direct macOS path is on the
+  v0.9.6 list.
+- Closed PR #94 (diagram improvements) — its scope was a subset of
+  #93's; the diagram updates folded in via the rebase.
+
+
 ## [0.9.4] - 2026-05-20 — external-agent reliability + browser DOM reachability
 
 Two threads of work landed: a batch of reliability fixes surfaced by

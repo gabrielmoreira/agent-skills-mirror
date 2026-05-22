@@ -1,25 +1,25 @@
 {
   "name": "tophant-clawvault-installer",
-  "version": "0.2.12",
-  "description": "AI security system that protects agents from prompt injection, data leakage, and dangerous commands. Operates as local HTTP proxy to inspect traffic. Review SECURITY.md before installing.",
+  "version": "0.2.13",
+  "description": "Install and manage ClawVault from OpenClaw agents.",
   "author": "Tophant SPAI Lab",
   "homepage": "https://github.com/tophant-ai/ClawVault",
   "repository": "https://github.com/tophant-ai/ClawVault",
   "main": "clawvault_manager.py",
   "permissions": ["execute_command", "write_files", "read_files", "network"],
   "permissions_rationale": {
-    "execute_command": "Required to run pip install and start/stop ClawVault services",
-    "write_files": "Creates configuration files in ~/.ClawVault/ directory",
+    "execute_command": "Required to run install, test, and service commands for ClawVault",
+    "write_files": "Creates configuration files in ~/.ClawVault/",
     "read_files": "Reads ClawVault configuration from ~/.ClawVault/",
-    "network": "Downloads ClawVault package and proxies AI traffic for inspection"
+    "network": "Downloads ClawVault package and reaches the dashboard API"
   },
-  "tags": ["security", "ai-protection", "proxy", "threat-detection", "privacy"],
+  "tags": ["security", "ai-protection", "proxy", "threat-detection", "privacy", "openclaw", "plugin"],
   "requirements": ["pyyaml"],
   "python_version": ">=3.10",
   "commands": {
     "install": {
-      "description": "Install ClawVault with specified mode. Creates venv, installs latest GitHub repository code, generates config, writes OpenClaw proxy config, starts services, and does not restart openclaw-gateway by default.",
-      "usage": "install --mode [quick|standard|advanced] [--no-start] [--no-proxy] [--restart-gateway]"
+      "description": "Install ClawVault and optionally configure OpenClaw proxy integration.",
+      "usage": "install --mode [quick|standard|advanced] [--install-plugin] [--plugin-dir <path>] [--no-start] [--no-proxy] [--restart-gateway]"
     },
     "health": {
       "description": "Check ClawVault health status",
@@ -30,7 +30,7 @@
       "usage": "generate-rule <policy> [--scenario <name>] [--apply]"
     },
     "test": {
-      "description": "Run detection tests",
+      "description": "Run detection and plugin-acceptance checks.",
       "usage": "test --category [all|sensitive|injection|commands]"
     },
     "uninstall": {

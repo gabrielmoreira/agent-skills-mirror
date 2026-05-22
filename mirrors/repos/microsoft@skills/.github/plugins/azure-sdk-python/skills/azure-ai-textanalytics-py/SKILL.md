@@ -24,40 +24,55 @@ pip install azure-ai-textanalytics
 
 ```bash
 AZURE_LANGUAGE_ENDPOINT=https://<resource>.cognitiveservices.azure.com  # Required for all auth methods
-AZURE_LANGUAGE_KEY=<your-api-key>  # Only required for AzureKeyCredential auth
 AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
+AZURE_LANGUAGE_KEY=<your-api-key>  # Only required for the legacy API-key auth path below
 ```
 
-## Authentication
+## Authentication & Lifecycle
 
-### API Key
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
 
 ```python
 import os
-from azure.core.credentials import AzureKeyCredential
-from azure.ai.textanalytics import TextAnalyticsClient
-
-endpoint = os.environ["AZURE_LANGUAGE_ENDPOINT"]
-key = os.environ["AZURE_LANGUAGE_KEY"]
-
-client = TextAnalyticsClient(endpoint, AzureKeyCredential(key))
-```
-
-### Entra ID (Recommended)
-
-```python
-from azure.ai.textanalytics import TextAnalyticsClient
 from azure.identity import DefaultAzureCredential, ManagedIdentityCredential
+from azure.ai.textanalytics import TextAnalyticsClient
 
 # Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
 credential = DefaultAzureCredential(require_envvar=True)
 # Or use a specific credential directly in production:
 # See https://learn.microsoft.com/python/api/overview/azure/identity-readme?view=azure-python#credential-classes
 # credential = ManagedIdentityCredential()
-client = TextAnalyticsClient(
+
+with TextAnalyticsClient(
     endpoint=os.environ["AZURE_LANGUAGE_ENDPOINT"],
-    credential=credential
-)
+    credential=credential,
+) as client:
+    languages = client.detect_language(["Hello, world!"])
+```
+
+### Legacy: API Key (existing keyed deployments)
+
+New code should use `DefaultAzureCredential` above. Use `AzureKeyCredential` only if you have an existing keyed deployment that hasn't been migrated to Entra ID yet — for example, regulated environments still completing their Entra rollout.
+
+```python
+import os
+from azure.core.credentials import AzureKeyCredential
+from azure.ai.textanalytics import TextAnalyticsClient
+
+with TextAnalyticsClient(
+    endpoint=os.environ["AZURE_LANGUAGE_ENDPOINT"],
+    credential=AzureKeyCredential(os.environ["AZURE_LANGUAGE_KEY"]),
+) as client:
+    languages = client.detect_language(["Hello, world!"])
 ```
 
 ## Sentiment Analysis
@@ -199,12 +214,13 @@ from azure.ai.textanalytics.aio import TextAnalyticsClient
 from azure.identity.aio import DefaultAzureCredential
 
 async def analyze():
-    async with TextAnalyticsClient(
-        endpoint=endpoint,
-        credential=DefaultAzureCredential()
-    ) as client:
-        result = await client.analyze_sentiment(documents)
-        # Process results...
+    async with DefaultAzureCredential() as credential:
+        async with TextAnalyticsClient(
+            endpoint=endpoint,
+            credential=credential
+        ) as client:
+            result = await client.analyze_sentiment(documents)
+            # Process results...
 ```
 
 ## Client Types
@@ -229,9 +245,10 @@ async def analyze():
 
 ## Best Practices
 
-1. **Use batch operations** for multiple documents (up to 10 per request)
-2. **Enable opinion mining** for detailed aspect-based sentiment
-3. **Use async client** for high-throughput scenarios
-4. **Handle document errors** — results list may contain errors for some docs
-5. **Specify language** when known to improve accuracy
-6. **Use context manager** or close client explicitly
+1. **Pick sync OR async and stay consistent.** Do not mix `azure.ai.textanalytics` sync clients with `azure.ai.textanalytics.aio` async clients in the same call path. Choose one mode per module.
+2. **Always use context managers for clients and async credentials.** Wrap every client in `with TextAnalyticsClient(...) as client:` (sync) or `async with TextAnalyticsClient(...) as client:` (async). For async `DefaultAzureCredential` from `azure.identity.aio`, also use `async with credential:` so tokens and transports are cleaned up.
+3. **Use batch operations** for multiple documents (up to 10 per request)
+4. **Enable opinion mining** for detailed aspect-based sentiment
+5. **Use async client** for high-throughput scenarios
+6. **Handle document errors** — results list may contain errors for some docs
+7. **Specify language** when known to improve accuracy

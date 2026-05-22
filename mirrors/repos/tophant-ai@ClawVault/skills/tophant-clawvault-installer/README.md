@@ -38,8 +38,8 @@ openclaw restart
 ### Basic Usage
 
 ```bash
-# Install ClawVault
-/tophant-clawvault-installer install --mode quick
+# Install ClawVault and link the OpenClaw file-guard plugin
+/tophant-clawvault-installer install --mode quick --install-plugin
 
 # Check health
 /tophant-clawvault-installer health
@@ -58,7 +58,7 @@ openclaw restart
 - **Latest GitHub install source** - Temporarily installs from the latest GitHub `main` code instead of PyPI or a fixed tag
 - **Failure-aware setup** - Reports configuration initialization failures as installation failures
 - **Secure dashboard defaults** - Binds the dashboard to `127.0.0.1` by default
-- **OpenClaw proxy integration** - Can configure OpenClaw gateway proxy settings, with `--no-proxy` opt-out
+- **OpenClaw proxy integration and validation** - Can configure OpenClaw gateway proxy settings and verify the normal prompt path that triggers file-guard plugin interception
 - **Rule generation** - Create security rules from natural language
 - **Scenario templates** - Pre-configured policies (customer_service, development, production, finance)
 - **Detection testing** - Built-in test suites for validation

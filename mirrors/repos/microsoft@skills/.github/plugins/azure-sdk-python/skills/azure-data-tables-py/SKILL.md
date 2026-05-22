@@ -31,7 +31,18 @@ COSMOS_TABLE_ENDPOINT=https://<account>.table.cosmos.azure.com  # Required for C
 AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
 ```
 
-## Authentication
+## Authentication & Lifecycle
+
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
 
 ```python
 import os
@@ -47,10 +58,14 @@ credential = DefaultAzureCredential(require_envvar=True)
 endpoint = "https://<account>.table.core.windows.net"
 
 # Service client (manage tables)
-service_client = TableServiceClient(endpoint=endpoint, credential=credential)
+with TableServiceClient(endpoint=endpoint, credential=credential) as service_client:
+    # Use service_client here (see following sections for operations)
+    ...
 
 # Table client (work with entities)
-table_client = TableClient(endpoint=endpoint, table_name="mytable", credential=credential)
+with TableClient(endpoint=endpoint, table_name="mytable", credential=credential) as table_client:
+    # Use table_client here (see following sections for operations)
+    ...
 ```
 
 ## Client Types
@@ -209,23 +224,22 @@ from azure.data.tables.aio import TableServiceClient, TableClient
 from azure.identity.aio import DefaultAzureCredential
 
 async def table_operations():
-    credential = DefaultAzureCredential()
-    
-    async with TableClient(
-        endpoint="https://<account>.table.core.windows.net",
-        table_name="mytable",
-        credential=credential
-    ) as client:
-        # Create
-        await client.create_entity(entity={
-            "PartitionKey": "async",
-            "RowKey": "1",
-            "data": "test"
-        })
-        
-        # Query
-        async for entity in client.query_entities("PartitionKey eq 'async'"):
-            print(entity)
+    async with DefaultAzureCredential() as credential:
+        async with TableClient(
+            endpoint="https://<account>.table.core.windows.net",
+            table_name="mytable",
+            credential=credential
+        ) as client:
+            # Create
+            await client.create_entity(entity={
+                "PartitionKey": "async",
+                "RowKey": "1",
+                "data": "test"
+            })
+            
+            # Query
+            async for entity in client.query_entities("PartitionKey eq 'async'"):
+                print(entity)
 
 import asyncio
 asyncio.run(table_operations())
@@ -245,10 +259,13 @@ asyncio.run(table_operations())
 
 ## Best Practices
 
-1. **Design partition keys** for query patterns and even distribution
-2. **Query within partitions** whenever possible (cross-partition is expensive)
-3. **Use batch operations** for multiple entities in same partition
-4. **Use `upsert_entity`** for idempotent writes
-5. **Use parameterized queries** to prevent injection
-6. **Keep entities small** — max 1MB per entity
-7. **Use async client** for high-throughput scenarios
+1. **Pick sync OR async and stay consistent.** Do not mix `azure.data.tables` sync clients with `azure.data.tables.aio` async clients in the same call path. Choose one mode per module.
+2. **Always use context managers for clients and async credentials.** Wrap every client in `with TableClient(...) as client:` (sync) or `async with TableClient(...) as client:` (async). For async `DefaultAzureCredential` from `azure.identity.aio`, also use `async with credential:` so tokens and transports are cleaned up.
+3. **Use `DefaultAzureCredential`** for portable auth across local dev and Azure (avoid connection strings / API keys when possible).
+4. **Design partition keys** for query patterns and even distribution
+5. **Query within partitions** whenever possible (cross-partition is expensive)
+6. **Use batch operations** for multiple entities in same partition
+7. **Use `upsert_entity`** for idempotent writes
+8. **Use parameterized queries** to prevent injection
+9. **Keep entities small** — max 1MB per entity
+10. **Use async client** for high-throughput scenarios

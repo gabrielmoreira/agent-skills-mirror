@@ -51,6 +51,9 @@ internal/
     readtracker_cache.go # Per-session ReadTracker cache
     suggestion_handler.go # GET /suggestion + POST /accept
     uploads_handler.go # /uploads GET (list) + DELETE (retract) proxies
+    auth.go            # AuthManager state machine (email/password, macOS-only)
+    auth_handlers.go   # /local/auth/* handlers (state, register, login, sign-out, …)
+    ws_controller.go   # WS goroutine start/stop driven by AuthManager
   agent/
     loop.go              # AgentLoop.Run(), SwitchAgent()
     tools.go             # Tool interface, ToolRegistry
@@ -81,7 +84,8 @@ internal/
     suggestion_state.go  # Per-session suggestion text/state
     forkedrequest.go     # BuildForkedRequest (byte-equality contract)
   agents/                # AGENT.md loader, CRUD, validate, embed.FS builtins
-  client/                # GatewayClient (Anthropic via Cloud), OllamaClient, SSE
+  keychain/              # macOS Keychain wrapper (Backend interface + osBackend/memBackend); api_key source of truth
+  client/                # GatewayClient (Anthropic via Cloud), OllamaClient, SSE, AuthClient (/auth/*)
   cloudflow/             # /research, /swarm Gateway workflow runner
   heartbeat/             # Per-agent HEARTBEAT.md + alerts
   watcher/               # Per-agent debounced FS watcher
@@ -116,6 +120,7 @@ Feature changes update README.md (user-facing), CLAUDE.md (this file, developer-
 **Kocoro skill is the AI's source of truth for the daemon HTTP API** — every `mux.HandleFunc(...)` in `internal/daemon/server.go` must have a matching entry in `internal/skills/bundled/skills/kocoro/references/*.md`. When adding endpoints, update the matching reference file in the same PR. Maps:
 - agents/skills/schedules/config endpoints → `references/{agents,skills,schedules,config}.md`
 - MCP / permissions / project-init / instructions / recipes / session-sync / memory → matching `references/*.md`
+- `/local/auth/*` endpoints → `references/auth.md`
 - Protected config fields, tool filter → `SKILL.md` security section
 
 ### Hardcoded Limit Policy
@@ -179,7 +184,7 @@ Unknown tools → denied (fail-safe). Always-ask gate runs BEFORE the allowlist,
 | `delivery_ack` capability | `client.go:sendDeliveryAck` | After `SendReply` succeeds for `MsgTypeMessage`, emit ack so Cloud drops the replay-buffer entry. Reply-failure paths skip the ack so replay is correct. |
 | Attachments | `attachment.go` | Priority `document_b64` → `extracted_text` → URL download. Caps: 500 MB/file, 20/msg, inline doc ≤ 25 MB raw. Capability tokens `inline_document_b64` / `inline_extracted_text` gate the new fields. DOCX/XLSX/PPTX/CSV extraction is daemon-local via `internal/tools/doc_extract.go` (Phase 2 aligned with CC). Cloud fills PDF `DocumentB64` + transcodes HEIC/AVIF. |
 | Session routing | `router.go` | `ComputeRouteKey` precedence: explicit `session:<id>` → thread → sender → agent → channel. Web/webhook/cron/schedule bypass (always fresh). |
-| Session share uploads | `daemon/share_handler.go` + `share_async.go` | Render HTML → POST `/api/v1/uploads` with `kind=session_share` + `metadata={session_id, agent?}`; the post-upload LIST lookup also filters by `kind=session_share` so concurrent landing-page/image uploads can't shove our row off the first page. publish_to_web sends `kind=other`; daemon list proxy validates kind against the whitelist before forwarding. |
+| Session share uploads | `daemon/share_handler.go` + `share_async.go` | Render HTML → POST `/api/v1/uploads` with `kind=session_share` + `metadata={session_id, agent?}`; the post-upload LIST lookup also filters by `kind=session_share` so concurrent landing-page/image uploads can't shove our row off the first page. publish_to_web sends `kind=other`; daemon list proxy validates kind against the whitelist before forwarding. Template `<head>` carries OG / Twitter Card / JSON-LD (publisher = Kocoro) for social preview cards (`internal/share/social_meta.go`); `og:url` is intentionally omitted — HTML is built before the upload URL is known, crawlers fall back to the actual page URL. Config: `daemon.share_metadata.{site_name, site_url, default_og_image, twitter_image, logo_url}` (`twitter_image` lets operators ship a 1200×630 wide hero for X while keeping a square `default_og_image` for Slack / Teams / Facebook / LinkedIn; empty `twitter_image` falls back to `default_og_image`). |
 | Output format | `runner.go outputFormatForSource` | `plain` for cloud-distributed channels (slack/line/feishu/lark/telegram/webhook); `markdown` default. |
 | Tool result sizing | `spill.go` + `toolresult_budget.go` + `context_bloat.go` | Per-result spill at policy threshold (default 50K, grep 20K) → tmp file + 2K preview. `file_read` is `UnlimitedToolResultSizeChars` (no spill); it self-bounds via `fileReadHardCapRunes = 500_000` in the tool itself, with truncation marker. Per-turn 200K-rune aggregate cap skips Unlimited tools. `ToolResultReplacements` + `ToolResultSeen` persisted across checkpoints AND terminal saves. |
 | file_read dedup | `agent/readtracker.go` + `daemon/readtracker_cache.go` | Records `(path, offset, limit, mtime, size)`; re-reads return a stub. Per-session, released via `SessionManager.OnSessionClose`. |
@@ -197,6 +202,7 @@ Unknown tools → denied (fail-safe). Always-ask gate runs BEFORE the allowlist,
 | Thinking blocks | `client.ContentBlock` + `agent.buildAssistantMessage` | Cloud relays full ordered `content_blocks` incl. `thinking`/`redacted_thinking`. Persisted verbatim; `internal/sync/strip_thinking.go` removes from upload-side copy before size check. Sanitizers in `messagesForLLM` / time-based / micro-compact / `BuildForkedRequest` preserve them. |
 | Conditional `think` tool | `tools/register.go shouldRegisterThinkTool` | Not registered on default gateway+thinking path. Still registered when thinking disabled, Ollama provider, or `ForceThinkTool=true`. `operationalRules()` strips `### Planning` bullet only when think absent, keeping prompt byte-equal otherwise. |
 | Prompt suggestion | `agent/suggestion.go` | Forked LLM call after each main turn. **CACHE SAFETY**: byte-equal to main request except 2 appended messages + `SkipCacheWrite: true`. Any other divergence fragments the cache. |
+| Email/password auth (macOS only) | `internal/daemon/auth.go` + `auth_handlers.go` + `ws_controller.go` + `internal/keychain/` + `internal/client/auth.go` | `/local/auth/{state,register,login,resend-verification,forgot-password,sign-out,sign-out-full}` proxy to Cloud `/api/v1/auth/*`. AuthManager state machine drives WS lifecycle via WSController — WS only runs in `signed_in` state. `auth_state_changed` event broadcasts transitions over SSE. api_key persisted in Keychain (`ai.kocoro.daemon.api_key/<user_id>`); yaml `api_key` field is migrated away on first launch (v1 migration in `internal/config/migrate.go`). Non-darwin: AuthManager is nil, endpoints return 503, legacy cfg.APIKey path used. |
 
 ### Daemon Approval Protocol
 
@@ -246,6 +252,7 @@ Scalars override, lists merge+dedup, structs field-level merge. MCP server env-v
 - Schedules: `~/.shannon/schedules.json` + `~/Library/LaunchAgents/com.shannon.schedule.<id>.plist`
 - Notification history: `~/.shannon/notifications.jsonl` (JSONL append-only, capped at 500 entries; trimmed + atomically rewritten on daemon startup, survives restarts)
 - Skill secrets index: `~/.shannon/secrets-index.json` (chmod 600, flock-protected, names only); values in macOS Keychain (service `com.shannon.skill.<name>`)
+- Daemon api_key (macOS only): macOS Keychain service `ai.kocoro.daemon.api_key`, account = Cloud user_id (UUID). Active user pointer at service `ai.kocoro.daemon.state`, account `current_user_id`. `cfg.APIKey` (yaml) is now empty after the v1 migration; Bootstrap reads Keychain instead
 - Sync: marker `~/.shannon/sync_marker.json`, lock `~/.shannon/sync.lock` (never delete), dry-run outbox `~/.shannon/sync_outbox/`
 - Logs: `~/.shannon/logs/audit.log`, `~/.shannon/logs/schedule-<id>.log`
 - Memory: socket `~/.shannon/memory.sock`, bundle root `~/.shannon/memory/`

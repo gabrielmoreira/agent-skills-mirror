@@ -5,8 +5,8 @@ inheritance: inheritable
 description: "Frame audit before solving — restate the problem, flag user-framing mismatches, surface symptom→cause reframes"
 application: "Every non-trivial request — multi-file changes, > 15-minute estimates, or requests using fix/improve/broken/just-do-X language"
 applyTo: "**/*"
-currency: 2026-05-19
-lastReviewed: 2026-05-19
+currency: 2026-05-21
+lastReviewed: 2026-05-21
 ---
 
 # Problem Framing Audit (Discipline -1)
@@ -75,3 +75,7 @@ Silent passes need no marker — only fire markers when the audit produced somet
 ## Skill Reference
 
 Full step-back protocol (8 checks: restate, generalise, specialise, invert, why, pre-mortem, stakeholder, frame audit) in `.github/skills/problem-framing-audit/SKILL.md`. This instruction is the always-on gate; the skill is the detailed body.
+
+## Would Revise If
+
+Revise if Discipline -1 fires on consistently trivial requests (the asymmetric activation rule is too broad), if the symptom→cause reframe table produces no reframes for 90+ days (the audit is decorative not load-bearing), or if the Explain/Summarize Frame produces `**Verified against**` markers that don't actually correspond to filesystem checks (the marker degrades to boilerplate).

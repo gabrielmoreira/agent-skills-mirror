@@ -30,7 +30,18 @@ SERVICEBUS_SUBSCRIPTION_NAME=mysubscription  # Required for subscription operati
 AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
 ```
 
-## Authentication
+## Authentication & Lifecycle
+
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
 
 ```python
 from azure.identity import DefaultAzureCredential, ManagedIdentityCredential
@@ -43,10 +54,12 @@ credential = DefaultAzureCredential(require_envvar=True)
 # credential = ManagedIdentityCredential()
 namespace = "<namespace>.servicebus.windows.net"
 
-client = ServiceBusClient(
+with ServiceBusClient(
     fully_qualified_namespace=namespace,
     credential=credential
-)
+) as client:
+    # Use client here (see following sections for operations)
+    ...
 ```
 
 ## Client Types
@@ -259,13 +272,15 @@ with ServiceBusClient(
 
 ## Best Practices
 
-1. **Use async client** for production workloads
-2. **Use context managers** (`async with`) for proper cleanup
-3. **Complete messages** after successful processing
-4. **Use dead-letter queue** for poison messages
-5. **Use sessions** for ordered, FIFO processing
-6. **Use message batches** for high-throughput scenarios
-7. **Set `max_wait_time`** to avoid infinite blocking
+1. **Pick sync OR async and stay consistent.** Do not mix `azure.xxx` sync clients with `azure.xxx.aio` async clients in the same call path. Choose one mode per module.
+2. **Always use context managers for clients and async credentials.** Wrap every client in `with Client(...) as client:` (sync) or `async with Client(...) as client:` (async) for proper cleanup. For async `DefaultAzureCredential` from `azure.identity.aio`, also use `async with credential:` so tokens and transports are cleaned up.
+3. **Use `DefaultAzureCredential`** for portable auth across local dev and Azure (avoid connection strings / API keys when possible).
+4. **Use async client** for production workloads
+5. **Complete messages** after successful processing
+6. **Use dead-letter queue** for poison messages
+7. **Use sessions** for ordered, FIFO processing
+8. **Use message batches** for high-throughput scenarios
+9. **Set `max_wait_time`** to avoid infinite blocking
 
 ## Reference Files
 

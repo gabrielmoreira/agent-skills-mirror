@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,24 +60,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.opencode/skills/browser-automation/SKILL.md`](.opencode/skills/browser-automation/SKILL.md) |
-| 2 | ✓ | [`.opencode/skills/browser-setup-devtools/SKILL.md`](.opencode/skills/browser-setup-devtools/SKILL.md) |
-| 3 | ✓ | [`.opencode/skills/daytona-dev/SKILL.md`](.opencode/skills/daytona-dev/SKILL.md) |
-| 4 | ✓ | [`.opencode/skills/daytona-electron-test/SKILL.md`](.opencode/skills/daytona-electron-test/SKILL.md) |
-| 5 | ✓ | [`.opencode/skills/get-started/SKILL.md`](.opencode/skills/get-started/SKILL.md) |
-| 6 | ✓ | [`.opencode/skills/opencode-bridge/SKILL.md`](.opencode/skills/opencode-bridge/SKILL.md) |
-| 7 | ✓ | [`.opencode/skills/opencode-mirror/SKILL.md`](.opencode/skills/opencode-mirror/SKILL.md) |
-| 8 | ✓ | [`.opencode/skills/opencode-primitives/SKILL.md`](.opencode/skills/opencode-primitives/SKILL.md) |
-| 9 | ✓ | [`.opencode/skills/openwork-core/SKILL.md`](.opencode/skills/openwork-core/SKILL.md) |
-| 10 | ✓ | [`.opencode/skills/openwork-debug/SKILL.md`](.opencode/skills/openwork-debug/SKILL.md) |
-| 11 | ✓ | [`.opencode/skills/openwork-orchestrator-npm-publish/SKILL.md`](.opencode/skills/openwork-orchestrator-npm-publish/SKILL.md) |
-| 12 | ✓ | [`.opencode/skills/release/SKILL.md`](.opencode/skills/release/SKILL.md) |
-| 13 | ✓ | [`.opencode/skills/run-evals/SKILL.md`](.opencode/skills/run-evals/SKILL.md) |
-| 14 | ✓ | [`.opencode/skills/shadcn/cli.md`](.opencode/skills/shadcn/cli.md) |
-| 15 | ✓ | [`.opencode/skills/shadcn/customization.md`](.opencode/skills/shadcn/customization.md) |
-| 16 | ✓ | [`.opencode/skills/shadcn/SKILL.md`](.opencode/skills/shadcn/SKILL.md) |
-| 17 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 18 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
-| 19 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
+| 2 | ✓ | [`.opencode/skills/daytona-dev/SKILL.md`](.opencode/skills/daytona-dev/SKILL.md) |
+| 3 | ✓ | [`.opencode/skills/daytona-electron-test/SKILL.md`](.opencode/skills/daytona-electron-test/SKILL.md) |
+| 4 | ✓ | [`.opencode/skills/get-started/SKILL.md`](.opencode/skills/get-started/SKILL.md) |
+| 5 | ✓ | [`.opencode/skills/opencode-bridge/SKILL.md`](.opencode/skills/opencode-bridge/SKILL.md) |
+| 6 | ✓ | [`.opencode/skills/opencode-mirror/SKILL.md`](.opencode/skills/opencode-mirror/SKILL.md) |
+| 7 | ✓ | [`.opencode/skills/opencode-primitives/SKILL.md`](.opencode/skills/opencode-primitives/SKILL.md) |
+| 8 | ✓ | [`.opencode/skills/openwork-core/SKILL.md`](.opencode/skills/openwork-core/SKILL.md) |
+| 9 | ✓ | [`.opencode/skills/openwork-debug/SKILL.md`](.opencode/skills/openwork-debug/SKILL.md) |
+| 10 | ✓ | [`.opencode/skills/openwork-orchestrator-npm-publish/SKILL.md`](.opencode/skills/openwork-orchestrator-npm-publish/SKILL.md) |
+| 11 | ✓ | [`.opencode/skills/release/SKILL.md`](.opencode/skills/release/SKILL.md) |
+| 12 | ✓ | [`.opencode/skills/run-evals/SKILL.md`](.opencode/skills/run-evals/SKILL.md) |
+| 13 | ✓ | [`.opencode/skills/shadcn/cli.md`](.opencode/skills/shadcn/cli.md) |
+| 14 | ✓ | [`.opencode/skills/shadcn/customization.md`](.opencode/skills/shadcn/customization.md) |
+| 15 | ✓ | [`.opencode/skills/shadcn/SKILL.md`](.opencode/skills/shadcn/SKILL.md) |
+| 16 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 17 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
+| 18 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
 
 ---
 

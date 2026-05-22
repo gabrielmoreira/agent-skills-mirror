@@ -5,8 +5,8 @@ inheritance: inheritable
 description: "Epistemic calibration — confidence matching, hallucination prevention, and self-correction"
 application: "Always active — unconscious self-monitoring for certainty calibration"
 applyTo: "**"
-currency: 2026-05-19
-lastReviewed: 2026-05-19
+currency: 2026-05-21
+lastReviewed: 2026-05-21
 ---
 
 # Epistemic Calibration
@@ -83,3 +83,7 @@ Sycophancy is most likely when the user sounds confident. That's exactly when to
 - **Catch yourself before the user catches you.**
 - **Confidence should match actual certainty.**
 - **A search that didn't run looks identical to a search that found nothing — verify the scope before reporting absence.**
+
+## Would Revise If
+
+Revise if the confidence-trigger rule produces over-challenge of legitimate user authority claims (every "clearly" gets pushback), if output-discipline signals fire so often that "verified against" becomes meaningless boilerplate, or if the input-discipline anti-hallucination signals miss a new failure mode that produces verifiable fabrication in shipped work.

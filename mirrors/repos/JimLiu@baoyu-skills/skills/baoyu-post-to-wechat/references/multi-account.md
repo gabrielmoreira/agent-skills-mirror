@@ -37,7 +37,7 @@ accounts:
 
 ## Per-Account vs Global Keys
 
-**Per-account** (also accepted globally as fallback): `default_publish_method`, `default_author`, `need_open_comment`, `only_fans_can_comment`, `app_id`, `app_secret`, `chrome_profile_path`.
+**Per-account** (also accepted globally as fallback): `default_publish_method`, `default_author`, `need_open_comment`, `only_fans_can_comment`, `app_id`, `app_secret`, `chrome_profile_path`, `remote_publish_host`, `remote_publish_user`, `remote_publish_port`, `remote_publish_identity_file`, `remote_publish_known_hosts_file`, `remote_publish_strict_host_key_checking`, `remote_publish_connect_timeout`, `remote_publish_proxy_jump`.
 
 **Global-only** (always shared): `default_theme`, `default_color`.
 
@@ -99,3 +99,54 @@ ${BUN_X} {baseDir}/scripts/wechat-api.ts <file> --theme default --account ai-too
 ${BUN_X} {baseDir}/scripts/wechat-article.ts --markdown <file> --theme default --account baoyu
 ${BUN_X} {baseDir}/scripts/wechat-browser.ts --markdown <file> --images ./photos/ --account baoyu
 ```
+
+## Remote API Publishing
+
+`wechat-api.ts` supports a `remote-api` mode that tunnels WeChat API calls through an SSH SOCKS5 dynamic port forward to a server whose IP is on WeChat's allowlist. Markdown rendering, image processing, draft assembly, and HTML rewriting still happen locally; only outbound HTTPS calls to `api.weixin.qq.com` traverse the tunnel. No files are written to the remote host and `AppSecret` never leaves the local process. The remote host needs only `sshd` and outbound network access.
+
+### Per-Account Configuration
+
+```md
+default_theme: default
+default_color: blue
+default_publish_method: browser   # browser remains the default
+
+accounts:
+  - name: 宝玉的技术分享
+    alias: baoyu
+    default: true
+    default_publish_method: api
+    default_author: 宝玉
+    app_id: your_wechat_app_id
+    app_secret: your_wechat_app_secret
+  - name: AI工具集
+    alias: ai-tools
+    default_publish_method: remote-api
+    default_author: AI工具集
+    app_id: your_ai_tools_app_id
+    app_secret: your_ai_tools_app_secret
+    remote_publish_host: ai-tools-server.example.com
+    remote_publish_user: deploy
+    remote_publish_port: 22
+    remote_publish_identity_file: /home/me/.ssh/id_ed25519
+    remote_publish_known_hosts_file: /home/me/.ssh/known_hosts
+    remote_publish_strict_host_key_checking: accept-new
+```
+
+Account-level `remote_publish_*` values override top-level globals. CLI `--remote-*` flags override both.
+
+### CLI Usage
+
+```bash
+# Use the account's default_publish_method (remote-api here):
+${BUN_X} {baseDir}/scripts/wechat-api.ts <file> --theme default --account ai-tools
+
+# Force remote mode regardless of default_publish_method:
+${BUN_X} {baseDir}/scripts/wechat-api.ts <file> --theme default --account baoyu --remote --remote-host other-server.example.com
+```
+
+### Security Notes
+
+- Authentication is SSH key only. Passwords and `ssh-askpass` are not used.
+- Only the typed `remote_publish_*` keys are read; raw `ssh` / `scp` options are intentionally not supported.
+- The tunnel forwards raw TCP; TLS verification for `api.weixin.qq.com` is still performed end-to-end by the local process.

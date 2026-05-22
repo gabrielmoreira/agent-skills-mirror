@@ -23,47 +23,30 @@ pip install azure-ai-translation-text
 ## Environment Variables
 
 ```bash
-AZURE_TRANSLATOR_KEY=<your-api-key>  # Only required for AzureKeyCredential auth
-AZURE_TRANSLATOR_REGION=<your-region>  # e.g., eastus, westus2; required with API key auth
-# Or use custom endpoint
-AZURE_TRANSLATOR_ENDPOINT=https://<resource>.cognitiveservices.azure.com  # Required for Entra ID auth
+AZURE_TRANSLATOR_ENDPOINT=https://<resource>.cognitiveservices.azure.com  # Required for Entra ID auth (must be a custom subdomain endpoint)
 AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
+# Only required for the legacy API-key auth path below:
+AZURE_TRANSLATOR_KEY=<your-api-key>
+AZURE_TRANSLATOR_REGION=<your-region>  # e.g., eastus, westus2; required when authenticating with a key against the global endpoint
 ```
 
-## Authentication
+## Authentication & Lifecycle
 
-### API Key with Region
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
 
 ```python
 import os
-from azure.ai.translation.text import TextTranslationClient
-from azure.core.credentials import AzureKeyCredential
-
-key = os.environ["AZURE_TRANSLATOR_KEY"]
-region = os.environ["AZURE_TRANSLATOR_REGION"]
-
-# Create credential with region
-credential = AzureKeyCredential(key)
-client = TextTranslationClient(credential=credential, region=region)
-```
-
-### API Key with Custom Endpoint
-
-```python
-endpoint = os.environ["AZURE_TRANSLATOR_ENDPOINT"]
-
-client = TextTranslationClient(
-    credential=AzureKeyCredential(key),
-    endpoint=endpoint
-)
-```
-
-### Entra ID (Recommended)
-
-```python
-import os
-from azure.ai.translation.text import TextTranslationClient
 from azure.identity import DefaultAzureCredential, ManagedIdentityCredential
+from azure.ai.translation.text import TextTranslationClient
 
 # Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
 credential = DefaultAzureCredential(require_envvar=True)
@@ -71,10 +54,38 @@ credential = DefaultAzureCredential(require_envvar=True)
 # See https://learn.microsoft.com/python/api/overview/azure/identity-readme?view=azure-python#credential-classes
 # credential = ManagedIdentityCredential()
 
-client = TextTranslationClient(
+with TextTranslationClient(
+    endpoint=os.environ["AZURE_TRANSLATOR_ENDPOINT"],
     credential=credential,
-    endpoint=os.environ["AZURE_TRANSLATOR_ENDPOINT"]
-)
+) as client:
+    result = client.translate(body=["Hello, world!"], to=["es"])
+```
+
+### Legacy: API Key (existing keyed deployments)
+
+New code should use `DefaultAzureCredential` above. The Translator service has two specifics that make API-key auth still common in existing deployments:
+
+- **Token-credential auth requires a custom subdomain endpoint** (`https://<resource>.cognitiveservices.azure.com`). If you only have the global endpoint (`https://api.cognitive.microsofttranslator.com`), you must either provision a custom subdomain or stay on the key-based path until you do.
+- **Key + region** is the canonical setup against the global endpoint. The region is sent as the `Ocp-Apim-Subscription-Region` header and is required whenever you use a multi-service or global Translator key.
+
+```python
+import os
+from azure.core.credentials import AzureKeyCredential
+from azure.ai.translation.text import TextTranslationClient
+
+# Key + region against the global endpoint (most common keyed setup)
+with TextTranslationClient(
+    credential=AzureKeyCredential(os.environ["AZURE_TRANSLATOR_KEY"]),
+    region=os.environ["AZURE_TRANSLATOR_REGION"],
+) as client:
+    result = client.translate(body=["Hello, world!"], to=["es"])
+
+# Key against a custom subdomain endpoint (no region required)
+with TextTranslationClient(
+    endpoint=os.environ["AZURE_TRANSLATOR_ENDPOINT"],
+    credential=AzureKeyCredential(os.environ["AZURE_TRANSLATOR_KEY"]),
+) as client:
+    result = client.translate(body=["Hello, world!"], to=["es"])
 ```
 
 ## Basic Translation
@@ -249,18 +260,19 @@ for item in result:
 
 ```python
 from azure.ai.translation.text.aio import TextTranslationClient
-from azure.core.credentials import AzureKeyCredential
+from azure.identity.aio import DefaultAzureCredential
 
 async def translate_text():
-    async with TextTranslationClient(
-        credential=AzureKeyCredential(key),
-        region=region
-    ) as client:
-        result = await client.translate(
-            body=["Hello, world!"],
-            to=["es"]
-        )
-        print(result[0].translations[0].text)
+    async with DefaultAzureCredential() as credential:
+        async with TextTranslationClient(
+            credential=credential,
+            endpoint=endpoint,
+        ) as client:
+            result = await client.translate(
+                body=["Hello, world!"],
+                to=["es"]
+            )
+            print(result[0].translations[0].text)
 ```
 
 ## Client Methods
@@ -277,10 +289,12 @@ async def translate_text():
 
 ## Best Practices
 
-1. **Batch translations** — Send multiple texts in one request (up to 100)
-2. **Specify source language** when known to improve accuracy
-3. **Use async client** for high-throughput scenarios
-4. **Cache language list** — Supported languages don't change frequently
-5. **Handle profanity** appropriately for your application
-6. **Use html text_type** when translating HTML content
-7. **Include alignment** for applications needing word mapping
+1. **Pick sync OR async and stay consistent.** Do not mix `azure.xxx` sync clients with `azure.xxx.aio` async clients in the same call path. Choose one mode per module.
+2. **Always use context managers for clients and async credentials.** Wrap every client in `with Client(...) as client:` (sync) or `async with Client(...) as client:` (async). For async `DefaultAzureCredential` from `azure.identity.aio`, also use `async with credential:` so tokens and transports are cleaned up.
+3. **Batch translations** — Send multiple texts in one request (up to 100)
+4. **Specify source language** when known to improve accuracy
+5. **Use async client** for high-throughput scenarios
+6. **Cache language list** — Supported languages don't change frequently
+7. **Handle profanity** appropriately for your application
+8. **Use html text_type** when translating HTML content
+9. **Include alignment** for applications needing word mapping

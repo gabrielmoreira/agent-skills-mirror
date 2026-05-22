@@ -37,6 +37,19 @@ AZURE_KEYVAULT_URL=https://<vault-name>.vault.azure.net/  # Required for all aut
 AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
 ```
 
+## Authentication & Lifecycle
+
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
+
 ## Secrets
 
 ### SecretClient Setup
@@ -52,7 +65,9 @@ credential = DefaultAzureCredential(require_envvar=True)
 # credential = ManagedIdentityCredential()
 vault_url = "https://<vault-name>.vault.azure.net/"
 
-client = SecretClient(vault_url=vault_url, credential=credential)
+with SecretClient(vault_url=vault_url, credential=credential) as client:
+    # All secret operations go inside this block (see examples below)
+    ...
 ```
 
 ### Secret Operations
@@ -99,7 +114,9 @@ from azure.keyvault.keys import KeyClient
 credential = DefaultAzureCredential()
 vault_url = "https://<vault-name>.vault.azure.net/"
 
-client = KeyClient(vault_url=vault_url, credential=credential)
+with KeyClient(vault_url=vault_url, credential=credential) as client:
+    # All key operations go inside this block (see examples below)
+    ...
 ```
 
 ### Key Operations
@@ -132,33 +149,32 @@ deleted_key = poller.result()
 from azure.keyvault.keys.crypto import CryptographyClient, EncryptionAlgorithm
 
 # Get crypto client for a specific key
-crypto_client = CryptographyClient(key, credential=credential)
+# crypto_client = CryptographyClient(key, credential=credential)
 # Or from key ID
-crypto_client = CryptographyClient(
+with CryptographyClient(
     "https://<vault>.vault.azure.net/keys/<key-name>/<version>",
     credential=credential
-)
+) as crypto_client:
+    # Encrypt
+    plaintext = b"Hello, Key Vault!"
+    result = crypto_client.encrypt(EncryptionAlgorithm.rsa_oaep, plaintext)
+    ciphertext = result.ciphertext
 
-# Encrypt
-plaintext = b"Hello, Key Vault!"
-result = crypto_client.encrypt(EncryptionAlgorithm.rsa_oaep, plaintext)
-ciphertext = result.ciphertext
+    # Decrypt
+    result = crypto_client.decrypt(EncryptionAlgorithm.rsa_oaep, ciphertext)
+    decrypted = result.plaintext
 
-# Decrypt
-result = crypto_client.decrypt(EncryptionAlgorithm.rsa_oaep, ciphertext)
-decrypted = result.plaintext
+    # Sign
+    from azure.keyvault.keys.crypto import SignatureAlgorithm
+    import hashlib
 
-# Sign
-from azure.keyvault.keys.crypto import SignatureAlgorithm
-import hashlib
+    digest = hashlib.sha256(b"data to sign").digest()
+    result = crypto_client.sign(SignatureAlgorithm.rs256, digest)
+    signature = result.signature
 
-digest = hashlib.sha256(b"data to sign").digest()
-result = crypto_client.sign(SignatureAlgorithm.rs256, digest)
-signature = result.signature
-
-# Verify
-result = crypto_client.verify(SignatureAlgorithm.rs256, digest, signature)
-print(f"Valid: {result.is_valid}")
+    # Verify
+    result = crypto_client.verify(SignatureAlgorithm.rs256, digest, signature)
+    print(f"Valid: {result.is_valid}")
 ```
 
 ## Certificates
@@ -172,7 +188,9 @@ from azure.keyvault.certificates import CertificateClient, CertificatePolicy
 credential = DefaultAzureCredential()
 vault_url = "https://<vault-name>.vault.azure.net/"
 
-client = CertificateClient(vault_url=vault_url, credential=credential)
+with CertificateClient(vault_url=vault_url, credential=credential) as client:
+    # All certificate operations go inside this block (see examples below)
+    ...
 ```
 
 ### Certificate Operations
@@ -189,9 +207,9 @@ print(f"Thumbprint: {certificate.properties.x509_thumbprint.hex()}")
 
 # Get certificate with private key (as secret)
 from azure.keyvault.secrets import SecretClient
-secret_client = SecretClient(vault_url=vault_url, credential=credential)
-cert_secret = secret_client.get_secret("my-cert")
-# cert_secret.value contains PEM or PKCS12
+with SecretClient(vault_url=vault_url, credential=credential) as secret_client:
+    cert_secret = secret_client.get_secret("my-cert")
+    # cert_secret.value contains PEM or PKCS12
 
 # List certificates
 for cert in client.list_properties_of_certificates():
@@ -218,12 +236,10 @@ from azure.identity.aio import DefaultAzureCredential
 from azure.keyvault.secrets.aio import SecretClient
 
 async def get_secret():
-    credential = DefaultAzureCredential()
-    client = SecretClient(vault_url=vault_url, credential=credential)
-    
-    async with client:
-        secret = await client.get_secret("my-secret")
-        print(secret.value)
+    async with DefaultAzureCredential() as credential:
+        async with SecretClient(vault_url=vault_url, credential=credential) as client:
+            secret = await client.get_secret("my-secret")
+            print(secret.value)
 
 import asyncio
 asyncio.run(get_secret())
@@ -246,11 +262,13 @@ except HttpResponseError as e:
 
 ## Best Practices
 
-1. **Use DefaultAzureCredential** for authentication
-2. **Use managed identity** in Azure-hosted applications
-3. **Enable soft-delete** for recovery (enabled by default)
-4. **Use RBAC** over access policies for fine-grained control
-5. **Rotate secrets** regularly using versioning
-6. **Use Key Vault references** in App Service/Functions config
-7. **Cache secrets** appropriately to reduce API calls
-8. **Use async clients** for high-throughput scenarios
+1. **Pick sync OR async and stay consistent.** Do not mix `azure.xxx` sync clients with `azure.xxx.aio` async clients in the same call path. Choose one mode per module.
+2. **Always use context managers for clients and async credentials.** Wrap every client in `with Client(...) as client:` (sync) or `async with Client(...) as client:` (async). For async `DefaultAzureCredential` from `azure.identity.aio`, also use `async with credential:` so tokens and transports are cleaned up.
+3. **Use `DefaultAzureCredential`** for code that runs locally. Use a specific token credential for code that runs in Azure.
+4. **Use managed identity** in Azure-hosted applications
+5. **Enable soft-delete** for recovery (enabled by default)
+6. **Use RBAC** over access policies for fine-grained control
+7. **Rotate secrets** regularly using versioning
+8. **Use Key Vault references** in App Service/Functions config
+9. **Cache secrets** appropriately to reduce API calls
+10. **Use async clients** for high-throughput scenarios

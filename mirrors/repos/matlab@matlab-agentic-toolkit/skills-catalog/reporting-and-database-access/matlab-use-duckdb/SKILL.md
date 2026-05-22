@@ -1,10 +1,10 @@
 ---
 name: matlab-use-duckdb
-description: "Generates MATLAB code for DuckDB database operations using Database Toolbox. Use when connecting to DuckDB (in-memory or file-based), querying CSV/Parquet/JSON files with SQL, creating development databases, preprocessing out-of-memory data, using duckdb(), installing DuckDB extensions, or using DuckDB as an analytical engine in MATLAB."
+description: "Generates MATLAB code for DuckDB database operations using Database Toolbox. Use when connecting to DuckDB (in-memory or file-based), querying CSV/Parquet/JSON/Excel files with SQL, creating development databases, preprocessing out-of-memory data, using duckdb(), installing DuckDB extensions, using DuckDB as an analytical engine in MATLAB, converting MATLAB analytics to SQL queries, optimizing data pipelines that use MATLAB file I/O before processing, or replacing file I/O bottlenecks with direct DuckDB reads."
 license: MathWorks BSD-3-Clause
 metadata:
   author: MathWorks
-  version: "1.0"
+  version: "1.1"
 ---
 
 # MATLAB Database Toolbox Interface to DuckDB
@@ -19,7 +19,10 @@ Use when working with DuckDB databases from MATLAB using Database Toolbox. DuckD
 - Preprocessing large data that doesn't fit in memory before importing into MATLAB
 - Using DuckDB as an analytical engine for filtering, aggregation, joins, or sorting
 - Installing and using DuckDB extensions
-- User mentions keywords: DuckDB, duckdb, analytical engine, embedded database, parquet, CSV analytics, in-memory database, portable database, development database, out-of-memory preprocessing
+- Converting existing MATLAB array/table operations into equivalent DuckDB SQL queries
+- Optimizing a data pipeline that reads files into MATLAB memory before processing
+- Replacing MATLAB file I/O bottlenecks (`readtable`, `readmatrix`, `parquetread`, `xlsread`, `csvread`) with direct DuckDB file reads
+- User mentions keywords: DuckDB, duckdb, analytical engine, embedded database, parquet, CSV analytics, in-memory database, portable database, development database, out-of-memory preprocessing, optimize data pipeline, convert to SQL, replace readtable, replace parquetread, file bottleneck
 
 ## When NOT to Use
 
@@ -27,6 +30,24 @@ Use when working with DuckDB databases from MATLAB using Database Toolbox. DuckD
 - Data fits in memory and only needs standard MATLAB operations — use `readtable`/`readmatrix` directly
 - Object-relational mapping — use ORM (`ormread`/`ormwrite` with `Mappable` classes)
 - MongoDB, Cassandra, or Neo4j — use their dedicated Database Toolbox interfaces
+
+## On-Load Protocol
+
+When this skill is loaded into a session where code already exists:
+
+1. **Audit the data pipeline** — Identify how data enters the workflow:
+   - Is data read via MATLAB I/O (`readtable`, `readmatrix`, `readcell`, `readtimetable`, `parquetread`, `xlsread`, `csvread`)?
+   - Is data then written to DuckDB with `sqlwrite` before querying?
+   - If yes: this is the **load-then-query anti-pattern**. DuckDB can likely read the source file directly via `read_csv`, `read_parquet`, or `read_xlsx` (excel extension).
+
+2. **Evaluate each data source** against the decision framework:
+   - Can DuckDB read this file type directly? (CSV, Parquet, JSON, Excel via extension)
+   - Can filtering/aggregation be pushed into the SQL read?
+   - Is the MATLAB I/O step a performance bottleneck?
+
+3. **Recommend architectural changes** — Do not limit review to API correctness. Propose replacing `readtable`/`xlsread` + `sqlwrite` + query chains with `fetch(conn, "SELECT ... FROM read_csv/read_parquet/read_xlsx(...)")`.
+
+The highest-value patterns in this skill are architectural: file-analytics pushdown eliminates entire pipeline stages and can yield 10x+ speedups.
 
 ## What Is DuckDB and Why Does Database Toolbox Ship It?
 
@@ -131,6 +152,26 @@ data = fetch(conn, "SELECT * FROM read_parquet('https://example.com/data.parquet
 close(conn);
 ```
 
+For **Excel files**, use the `excel` extension with `read_xlsx` (NOT `st_read` from spatial):
+
+```matlab
+conn = duckdb();
+execute(conn, "INSTALL excel");
+execute(conn, "LOAD excel");
+data = fetch(conn, "SELECT * FROM read_xlsx('report.xlsx')");
+close(conn);
+```
+
+### Pattern 6: Persistent Import from File
+
+```matlab
+conn = duckdb("analytics.duckdb");
+execute(conn, "CREATE TABLE events AS SELECT * FROM read_parquet('raw_events.parquet')");
+% Future sessions: query by table name (no file re-read)
+result = sqlread(conn, "events");
+close(conn);
+```
+
 For detailed examples, see:
 - **File analytics and out-of-memory preprocessing**: `reference/cards/file-analytics.md`
 - **Development database workflows**: `reference/cards/development-database.md`
@@ -165,11 +206,26 @@ close(conn);
 pstmt = databasePreparedStatement(conn, "INSERT INTO t VALUES(?, ?)");
 % CORRECT — use sqlwrite
 sqlwrite(conn, "t", data);
+
+% WRONG — using st_read from spatial extension for Excel files
+data = fetch(conn, "SELECT * FROM st_read('file.xlsx')");
+% CORRECT — use excel extension with read_xlsx
+execute(conn, "INSTALL excel");
+execute(conn, "LOAD excel");
+data = fetch(conn, "SELECT * FROM read_xlsx('file.xlsx')");
+
+% WRONG — MATLAB table column named with SQL reserved keyword
+data = table(1, "A", 'VariableNames', {'id','group'});
+sqlwrite(conn, "t", data);  % Parser error: "group" is reserved
+% CORRECT — rename column before writing
+data = renamevars(data, 'group', 'experiment_group');
+sqlwrite(conn, "t", data);
 ```
 
 ## Checklist
 
 Before finalizing DuckDB code, verify:
+- [ ] **Pipeline check**: No unnecessary MATLAB file I/O (e.g., `readtable`, `xlsread`, `parquetread`) + `sqlwrite` chains when DuckDB can read files directly
 - [ ] Connected with `duckdb()` or `duckdb("file.duckdb")` / `duckdb("file.db")` — not `database()` or JDBC
 - [ ] `isopen(conn)` checked after connection
 - [ ] File queries use `fetch` with SQL (not `sqlread`)
@@ -197,6 +253,9 @@ Before finalizing DuckDB code, verify:
 
 **Issue**: Extension install fails
 - **Solution**: Requires internet for first install (cached afterward). See https://duckdb.org/docs/current/core_extensions/overview.
+
+**Issue**: `sqlwrite` fails with "syntax error at or near" a column name
+- **Solution**: Column name is a SQL reserved keyword (`group`, `order`, `select`, `table`, etc.). Rename with `renamevars(data, 'group', 'experiment_group')` before writing.
 
 **Issue**: Type mismatch on `sqlwrite`
 - **Solution**: DuckDB supports rich types (ARRAY, LIST, STRUCT, MAP). Use `sqlfind(conn, "tableName")` to check column types.

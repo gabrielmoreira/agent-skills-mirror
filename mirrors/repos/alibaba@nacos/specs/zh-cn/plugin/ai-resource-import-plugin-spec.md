@@ -35,6 +35,10 @@ SPI 契约应定义在插件体系中，例如 `plugin/ai` 模块，和 AI stora
 registry 或 Git 索引。资源 Operator 不属于用户扩展插件，第一阶段应由 `ai` 模块内置并通过
 Nacos 当前领域服务写入资源。
 
+默认 importer 实现应放在 `plugin-default-impl`，而不是 AI Registry 领域模块。`ai` 模块负责导入
+API、source 解析、校验和资源 Operator；`plugin-default-impl` 负责默认外部来源适配器以及对应的
+预置 source 配置。
+
 ## 概念
 
 | 概念 | 含义 |
@@ -85,6 +89,10 @@ sourceId -> ImportSource(pluginName, resourceTypes, endpoint, limits, authRef)
 
 来源管理器必须拒绝重复 `sourceId`，并拒绝 importer 插件未加载或已禁用的 source。
 
+高级部署仍可以通过 `nacos.ai.resource.import.sources[...]` 配置显式 source，并由
+`nacos.ai.resource.import.enabled=true` 开启。默认 importer 的预置来源使用插件命名空间配置，
+可以通过运维配置的 `nacos.plugin.ai.importer.*` 属性单独启用。
+
 ## SPI
 
 导入实现由 builder 创建。
@@ -102,6 +110,12 @@ sourceId -> ImportSource(pluginName, resourceTypes, endpoint, limits, authRef)
 | `supportedResourceTypes()` | importer 可以产出的资源类型。 |
 | `search(context)` | 从配置来源返回 candidate 分页，结果只包含必要元数据。 |
 | `fetch(context, item)` | 从配置来源拉取一个被选择的 artifact。 |
+
+预置 source 可以通过可选的 source provider SPI 提供：
+
+| Provider 方法 | 要求 |
+|---------------|------|
+| `loadSources(properties)` | 返回从服务端配置和可信默认值派生出的已启用导入来源。 |
 
 `context` 包含 namespace、resource type、source 配置、query、cursor、limit 和 importer
 选项。它不得包含用户传入的网络 endpoint。
@@ -137,7 +151,102 @@ Resource Operator 位于 AI Registry 领域内，不属于导入插件。它们�
 当前仍由 Config 记录承载。未来 MCP 迁移到 `ai_resource` 后，只应修改 MCP Operator。导入插件和
 统一导入 API 应保持兼容。
 
-对 Skill 而言，Operator 应保持 Skill 包边界，并通过 Skill upload 或 draft 生命周期 API 写入。
+对 Skill 而言，Operator 应保持 Skill 包边界，并通过 Skill upload 或 draft 生命周期 API 写入。导入成功后，
+如果 artifact 包含 `sourceMetadata.artifactUrl`，Skill Operator 应将该 URL 记录为导入后资源的来源
+字段（`ai_resource.c_from`）；如果没有 `artifactUrl`，则回退使用 `sourceMetadata.source`。
+
+## 内置 Importer
+
+默认内置 importer 由 `plugin-default-impl` 下的 `nacos-default-ai-importer-plugin` 模块提供。
+
+`mcp-registry` importer 对接运维配置的 MCP registry endpoint，search 阶段只返回 MCP Server
+摘要，fetch 阶段返回可由 MCP Resource Operator 写入的 `MCP_DETAIL` artifact。
+
+官方 MCP registry 预置来源可以通过如下配置启用：
+
+```properties
+nacos.plugin.ai.importer.mcp.official.enabled=true
+```
+
+未覆盖时，该配置创建 source id `mcp-official`、importer `mcp-registry`、资源类型 `mcp`，endpoint
+为 `https://registry.modelcontextprotocol.io/v0/servers`。运维可以使用同一
+`nacos.plugin.ai.importer.mcp.official.*` 前缀覆盖 source id、展示名、endpoint、auth 引用、
+超时、条目限制和 artifact 大小。
+
+`skills-well-known` importer 对接运维配置的 Skill 市场或 registry root。若 source endpoint
+不是 well-known 路径，importer 应先尝试 `/.well-known/agent-skills`，再 fallback 到
+`/.well-known/skills` 以兼容 v0.1 来源；若 endpoint 已以 `/.well-known/agent-skills` 或
+`/.well-known/skills` 结尾，则直接使用该路径。
+
+Skill well-known 预置来源可以通过如下配置启用：
+
+```properties
+nacos.plugin.ai.importer.skills.well-known.enabled=true
+nacos.plugin.ai.importer.skills.well-known.url=https://developers.cloudflare.com
+```
+
+该配置创建 source id `skills-well-known`、importer `skills-well-known`、资源类型 `skill`。运维可以使用同一
+`nacos.plugin.ai.importer.skills.well-known.*` 前缀覆盖 source id、展示名、auth 引用、超时、
+条目限制和 artifact 大小。启用该预置时必须配置 `url`。
+
+Importer 必须同时支持两类 Skill well-known discovery 版本：
+
+- v0.1.0 或 legacy 来源，通过缺失 `$schema` 字段，或
+  `https://schemas.agentskills.io/discovery/0.1.0/schema.json` schema URI 识别；
+- v0.2.0 来源，通过
+  `https://schemas.agentskills.io/discovery/0.2.0/schema.json` schema URI 识别。
+
+v0.1.0 或 legacy 来源的 `index.json` 使用每个 Skill 的文件列表：
+
+```json
+{
+  "skills": [
+    {
+      "name": "demo-skill",
+      "description": "Demo skill",
+      "files": [
+        "SKILL.md",
+        "docs/guide.md"
+      ]
+    }
+  ]
+}
+```
+
+Search 阶段只能返回 `name`、`description` 和非 secret metadata。Fetch 阶段按
+`{wellKnownBase}/{skillName}/{file}` 拉取被选择 Skill 的文件，校验文件路径安全性，组装为标准
+Skill ZIP artifact，并交给 Skill Resource Operator 通过普通 Skill upload 或 draft 生命周期写入。
+
+v0.2.0 来源的 `index.json` 使用 artifact 引用：
+
+```json
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "demo-skill",
+      "type": "skill-md",
+      "description": "Demo skill",
+      "url": "/.well-known/agent-skills/demo-skill/SKILL.md",
+      "digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    },
+    {
+      "name": "archive-skill",
+      "type": "archive",
+      "description": "Demo archive skill",
+      "url": "/.well-known/agent-skills/archive-skill.tar.gz",
+      "digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    }
+  ]
+}
+```
+
+Search 阶段不得下载 artifact 内容，只能暴露 `name`、`description`、`type`、`url`、`digest`、
+schema version 和其他 Console 所需的非 secret metadata。Fetch 阶段必须以 index URL 为基准解析
+`url`，在服务端下载被选择的 artifact，校验 `sha256` digest，并将 artifact 转换为标准 Nacos
+Skill ZIP 边界。内置 importer 必须支持 `skill-md` 单文件 artifact，以及 ZIP、TAR、TAR.GZ、
+TGZ 形式的 `archive` artifact。Archive 解包必须校验路径安全性，限制文件数量和解压后总大小，
+并在交给 Skill Resource Operator 前拒绝不支持的 archive 格式。
 
 ## API 流程
 

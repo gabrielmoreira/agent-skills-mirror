@@ -23,25 +23,22 @@ pip install azure-appconfiguration
 ## Environment Variables
 
 ```bash
-AZURE_APPCONFIGURATION_CONNECTION_STRING=Endpoint=https://<name>.azconfig.io;Id=...;Secret=...  # Alternative to Entra ID auth
-# Or for Entra ID:
 AZURE_APPCONFIGURATION_ENDPOINT=https://<name>.azconfig.io  # Required for Entra ID auth
 AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
 ```
 
-## Authentication
+## Authentication & Lifecycle
 
-### Connection String
-
-```python
-from azure.appconfiguration import AzureAppConfigurationClient
-
-client = AzureAppConfigurationClient.from_connection_string(
-    os.environ["AZURE_APPCONFIGURATION_CONNECTION_STRING"]
-)
-```
-
-### Entra ID
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
 
 ```python
 import os
@@ -54,10 +51,12 @@ credential = DefaultAzureCredential(require_envvar=True)
 # See https://learn.microsoft.com/python/api/overview/azure/identity-readme?view=azure-python#credential-classes
 # credential = ManagedIdentityCredential()
 
-client = AzureAppConfigurationClient(
+with AzureAppConfigurationClient(
     base_url=os.environ["AZURE_APPCONFIGURATION_ENDPOINT"],
     credential=credential
-)
+) as client:
+    # Use client here (see following sections for operations)
+    ...
 ```
 
 ## Configuration Settings
@@ -225,17 +224,13 @@ from azure.appconfiguration.aio import AzureAppConfigurationClient
 from azure.identity.aio import DefaultAzureCredential
 
 async def main():
-    credential = DefaultAzureCredential()
-    client = AzureAppConfigurationClient(
-        base_url=endpoint,
-        credential=credential
-    )
-    
-    setting = await client.get_configuration_setting(key="app:message")
-    print(setting.value)
-    
-    await client.close()
-    await credential.close()
+    async with DefaultAzureCredential() as credential:
+        async with AzureAppConfigurationClient(
+            base_url=endpoint,
+            credential=credential
+        ) as client:
+            setting = await client.get_configuration_setting(key="app:message")
+            print(setting.value)
 ```
 
 ## Client Operations
@@ -252,10 +247,12 @@ async def main():
 
 ## Best Practices
 
-1. **Use labels** for environment separation (dev, staging, prod)
-2. **Use key prefixes** for logical grouping (app:database:*, app:cache:*)
-3. **Make production settings read-only** to prevent accidental changes
-4. **Create snapshots** before deployments for rollback capability
-5. **Use Entra ID** instead of connection strings in production
-6. **Refresh settings periodically** in long-running applications
-7. **Use feature flags** for gradual rollouts and A/B testing
+1. **Pick sync OR async and stay consistent.** Do not mix `azure.xxx` sync clients with `azure.xxx.aio` async clients in the same call path. Choose one mode per module.
+2. **Always use context managers for clients and async credentials.** Wrap every client in `with Client(...) as client:` (sync) or `async with Client(...) as client:` (async). For async `DefaultAzureCredential` from `azure.identity.aio`, also use `async with credential:` so tokens and transports are cleaned up.
+3. **Use labels** for environment separation (dev, staging, prod)
+4. **Use key prefixes** for logical grouping (app:database:*, app:cache:*)
+5. **Make production settings read-only** to prevent accidental changes
+6. **Create snapshots** before deployments for rollback capability
+7. **Use Entra ID** instead of connection strings in production
+8. **Refresh settings periodically** in long-running applications
+9. **Use feature flags** for gradual rollouts and A/B testing

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 43 file(s) materialized.
+Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 43 f
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 43 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -98,10 +98,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | ✓ | [`.github/instructions/studio-e2e-tests.instructions.md`](.github/instructions/studio-e2e-tests.instructions.md) |
 | 38 | ✓ | [`.github/instructions/studio-error-handling.instructions.md`](.github/instructions/studio-error-handling.instructions.md) |
 | 39 | ✓ | [`.github/instructions/studio-shadcn-components.instructions.md`](.github/instructions/studio-shadcn-components.instructions.md) |
-| 40 | ✓ | [`.github/instructions/studio-telemetry.instructions.md`](.github/instructions/studio-telemetry.instructions.md) |
-| 41 | ✓ | [`.github/instructions/studio-testing.instructions.md`](.github/instructions/studio-testing.instructions.md) |
-| 42 | ✓ | [`apps/learn/public/llms.txt`](apps/learn/public/llms.txt) |
-| 43 | ✓ | [`apps/www/app/llms.txt/route.ts`](apps/www/app/llms.txt/route.ts) |
+| 40 | ✓ | [`.github/instructions/studio-shortcuts.instructions.md`](.github/instructions/studio-shortcuts.instructions.md) |
+| 41 | ✓ | [`.github/instructions/studio-telemetry.instructions.md`](.github/instructions/studio-telemetry.instructions.md) |
+| 42 | ✓ | [`.github/instructions/studio-testing.instructions.md`](.github/instructions/studio-testing.instructions.md) |
+| 43 | ✓ | [`apps/learn/public/llms.txt`](apps/learn/public/llms.txt) |
+| 44 | ✓ | [`apps/www/app/llms.txt/route.ts`](apps/www/app/llms.txt/route.ts) |
 
 ---
 

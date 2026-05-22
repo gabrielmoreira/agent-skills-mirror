@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dadbodgeoff/drift` — 26 default patterns, 0 followed patterns, 72 file(s) materialized.
+Mirror of `dadbodgeoff/drift` — 26 default patterns, 0 followed patterns, 73 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dadbodgeoff/drift` — 26 default patterns, 0 followed patterns, 72 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 72 |
+| Files         | 73 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -131,6 +131,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 70 | ✓ | [`drift v1 depreciated/skills/websocket-management/SKILL.md`](drift%20v1%20depreciated/skills/websocket-management/SKILL.md) |
 | 71 | ✓ | [`drift v1 depreciated/skills/worker-health-monitoring/SKILL.md`](drift%20v1%20depreciated/skills/worker-health-monitoring/SKILL.md) |
 | 72 | ✓ | [`drift v1 depreciated/skills/worker-orchestration/SKILL.md`](drift%20v1%20depreciated/skills/worker-orchestration/SKILL.md) |
+| 73 | ✓ | [`drift v3/AGENTS.md`](drift%20v3/AGENTS.md) |
 
 ---
 

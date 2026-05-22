@@ -43,10 +43,9 @@ CONNECTIONS__SERVICE_CONNECTION__SETTINGS__TENANTID=<tenant-id>
 # Optional: OAuth handlers for auto sign-in
 AGENTAPPLICATION__USERAUTHORIZATION__HANDLERS__GRAPH__SETTINGS__AZUREBOTOAUTHCONNECTIONNAME=<connection-name>
 
-# Optional: Azure OpenAI for streaming
+# Optional: Azure OpenAI for streaming (AAD auth via DefaultAzureCredential)
 AZURE_OPENAI_ENDPOINT=<endpoint>
 AZURE_OPENAI_API_VERSION=<version>
-AZURE_OPENAI_API_KEY=<key>
 
 # Optional: Copilot Studio client
 COPILOTSTUDIOAGENT__ENVIRONMENTID=<environment-id>
@@ -191,12 +190,20 @@ async def on_error(context: TurnContext, error: Exception):
 
 ```python
 from openai import AsyncAzureOpenAI
+from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 from microsoft_agents.activity import SensitivityUsageInfo
 
+# AAD token provider (preferred over AZURE_OPENAI_API_KEY)
+token_provider = get_bearer_token_provider(
+    DefaultAzureCredential(),
+    "https://cognitiveservices.azure.com/.default",
+)
+
+# Module-level singleton: client lives for the agent app lifetime.
 CLIENT = AsyncAzureOpenAI(
     api_version=environ["AZURE_OPENAI_API_VERSION"],
     azure_endpoint=environ["AZURE_OPENAI_ENDPOINT"],
-    api_key=environ["AZURE_OPENAI_API_KEY"]
+    azure_ad_token_provider=token_provider,
 )
 
 @AGENT_APP.message("poem")
@@ -305,6 +312,7 @@ async def main():
         tenant_id=environ.get("COPILOTSTUDIOAGENT__TENANTID"),
     )
 
+    # CopilotClient does not implement the context manager protocol.
     copilot_client = CopilotClient(settings, token)
 
     # Start conversation
@@ -325,14 +333,16 @@ asyncio.run(main())
 
 ## Best Practices
 
-1. Use `microsoft_agents` import prefix (underscores, not dots).
-2. Use `MemoryStorage` only for development; use BlobStorage or CosmosDB in production.
-3. Always use `load_configuration_from_env(environ)` to load SDK configuration.
-4. Include `jwt_authorization_middleware` in aiohttp Application middlewares.
-5. Use `MsalConnectionManager` for MSAL-based authentication.
-6. Call `end_stream()` in finally blocks when using streaming responses.
-7. Use `auth_handlers` parameter on message decorators for OAuth-protected routes.
-8. Keep secrets in environment variables, not in source code.
+1. **This skill is async-first (aiohttp-based).** Use async handlers and `async with` for aiohttp sessions.
+2. **Always use context managers for clients and async credentials.** Wrap every client in `with Client(...) as client:` (sync) or `async with Client(...) as client:` (async). For async `DefaultAzureCredential` from `azure.identity.aio`, also use `async with credential:` so tokens and transports are cleaned up.
+3. Use `microsoft_agents` import prefix (underscores, not dots).
+4. Use `MemoryStorage` only for development; use BlobStorage or CosmosDB in production.
+5. Always use `load_configuration_from_env(environ)` to load SDK configuration.
+6. Include `jwt_authorization_middleware` in aiohttp Application middlewares.
+7. Use `MsalConnectionManager` for MSAL-based authentication.
+8. Call `end_stream()` in finally blocks when using streaming responses.
+9. Use `auth_handlers` parameter on message decorators for OAuth-protected routes.
+10. Keep secrets in environment variables, not in source code.
 
 ## Reference Links
 

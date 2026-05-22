@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `coinbase/agentic-wallet-skills` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `coinbase/agentic-wallet-skills` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `coinbase/agentic-wallet-skills` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,15 +59,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/authenticate-wallet/SKILL.md`](skills/authenticate-wallet/SKILL.md) |
-| 2 | ✓ | [`skills/fund/SKILL.md`](skills/fund/SKILL.md) |
-| 3 | ✓ | [`skills/monetize-service/SKILL.md`](skills/monetize-service/SKILL.md) |
-| 4 | ✓ | [`skills/pay-for-service/SKILL.md`](skills/pay-for-service/SKILL.md) |
-| 5 | ✓ | [`skills/query-onchain-data/SKILL.md`](skills/query-onchain-data/SKILL.md) |
-| 6 | ✓ | [`skills/search-for-service/SKILL.md`](skills/search-for-service/SKILL.md) |
-| 7 | ✓ | [`skills/send-usdc/SKILL.md`](skills/send-usdc/SKILL.md) |
-| 8 | ✓ | [`skills/trade/SKILL.md`](skills/trade/SKILL.md) |
-| 9 | ✓ | [`skills/x402/SKILL.md`](skills/x402/SKILL.md) |
+| 1 | ✓ | [`skills/agentic-wallet/references/auth.md`](skills/agentic-wallet/references/auth.md) |
+| 2 | ✓ | [`skills/agentic-wallet/references/balance.md`](skills/agentic-wallet/references/balance.md) |
+| 3 | ✓ | [`skills/agentic-wallet/references/fund.md`](skills/agentic-wallet/references/fund.md) |
+| 4 | ✓ | [`skills/agentic-wallet/references/query-onchain.md`](skills/agentic-wallet/references/query-onchain.md) |
+| 5 | ✓ | [`skills/agentic-wallet/references/send-usdc.md`](skills/agentic-wallet/references/send-usdc.md) |
+| 6 | ✓ | [`skills/agentic-wallet/references/trade.md`](skills/agentic-wallet/references/trade.md) |
+| 7 | ✓ | [`skills/agentic-wallet/references/x402-monetize.md`](skills/agentic-wallet/references/x402-monetize.md) |
+| 8 | ✓ | [`skills/agentic-wallet/references/x402-pay.md`](skills/agentic-wallet/references/x402-pay.md) |
+| 9 | ✓ | [`skills/agentic-wallet/references/x402-search.md`](skills/agentic-wallet/references/x402-search.md) |
+| 10 | ✓ | [`skills/agentic-wallet/SKILL.md`](skills/agentic-wallet/SKILL.md) |
 
 ---
 

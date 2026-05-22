@@ -35,3 +35,7 @@ Do not hardcode tool names from `availableDeferredTools` without loading them vi
 ## When this file does not load
 
 If the topic is not in the glob (e.g., pure prose editing, doc curation), the categories table doesn't load. The always-on `tool-awareness.instructions.md` still fires the *rule*; if a deferred tool is needed, broaden the search query empirically (start with one word, iterate).
+
+## Would Revise If
+
+Revise if the categories table goes stale (VS Code adds new deferred tool families not listed), if the search-query patterns produce zero results for tools that `availableDeferredTools` lists as present, or if the "broaden the search query empirically" guidance fails to recover tools that should be reachable.

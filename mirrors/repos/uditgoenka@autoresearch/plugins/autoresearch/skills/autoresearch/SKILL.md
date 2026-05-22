@@ -1,116 +1,41 @@
 ---
 name: autoresearch
-description: >-
-  ALWAYS activate when user mentions autoresearch, autoresearch:plan,
-  autoresearch:debug, autoresearch:fix, autoresearch:security,
-  autoresearch:ship, autoresearch:scenario, autoresearch:predict,
-  autoresearch:learn, autoresearch:reason, autoresearch:probe,
-  $autoresearch, $autoresearch:<subcommand>, or /autoresearch:<subcommand>,
-  even when embedded in prose. This is a BLOCKING skill invocation —
-  invoke BEFORE generating any other response.
+description: "Autonomous iteration loop: modify, verify, keep/discard against any metric"
+version: 2.1.0
 ---
 
-# Autoresearch For Codex
+# Autoresearch — Autonomous Goal-directed Iteration
 
-Codex-native port of the Autoresearch command surface.
+## Safety Invariants (all subcommands)
+- Never push, publish, or deploy without explicit user approval.
+- Bounded by default. Override with `Iterations: unlimited`.
+- All results logged to `autoresearch/{subcommand}-{YYMMDD}-{HHMM}/` directory.
+- Chain handoff via `handoff.json`. Evals reads `*-results.tsv`.
 
-Accepted invocation forms:
+## Subcommands
 
-- `autoresearch`
-- `autoresearch:plan`
-- `autoresearch:debug`
-- `autoresearch:fix`
-- `autoresearch:security`
-- `autoresearch:ship`
-- `autoresearch:scenario`
-- `autoresearch:predict`
-- `autoresearch:learn`
-- `autoresearch:reason`
-- `autoresearch:probe`
+| Command | Does | Default Iterations |
+|---|---|---|
+| `$autoresearch` | Iterate against a metric: modify → verify → keep/discard | 25 |
+| `$autoresearch plan` | Convert a goal into validated Scope, Metric, Verify config | N/A |
+| `$autoresearch debug` | Hunt bugs: hypothesize → test → falsify → repeat | 15 |
+| `$autoresearch fix` | Crush errors one-by-one until zero remain | 20 |
+| `$autoresearch security` | STRIDE + OWASP audit with red-team personas | 15 |
+| `$autoresearch ship` | Ship through 8 phases: checklist → dry-run → deploy → verify | N/A |
+| `$autoresearch scenario` | Generate edge cases across 12 dimensions | 20 |
+| `$autoresearch predict` | 5 expert personas debate before implementation | N/A |
+| `$autoresearch learn` | Scout codebase → generate docs → validate → fix loop | 10 |
+| `$autoresearch reason` | Adversarial debate with blind judges until convergence | 8 |
+| `$autoresearch probe` | 8 personas interrogate requirements until saturation | 15 |
+| `$autoresearch evals` | Analyze iteration results: trends, plateaus, regressions | N/A |
 
-Compatibility aliases normalize to the same canonical commands:
+## Universal Flags
 
-- `$autoresearch`
-- `$autoresearch:debug --fix`
-- `$autoresearch debug --fix`
-- `/autoresearch:debug --fix`
-- `/autoresearch debug --fix`
-- `autoresearch debug --fix`
-
-Flags and inline fields follow the canonical command spec. Use `resources/autoresearch-command-spec.json` in an installed Codex skill bundle, or `../../resources/autoresearch-command-spec.json` from the repo source tree.
-
-## Runtime translation
-
-Translate Claude-specific assumptions to Codex as follows:
-
-| Claude contract | Codex contract |
-| --- | --- |
-| Slash command | Plain-text `autoresearch[:subcommand]` or `$autoresearch` skill invocation |
-| `AskUserQuestion` | `request_user_input` when available, otherwise a concise direct question batch |
-| `.claude/skills/...` | This plugin's `skills/autoresearch/...` tree |
-| Claude command registration | Skill-triggered routing or the wrapper CLI |
-
-Never preserve Claude-only runtime names in user-facing execution if a Codex-native equivalent exists.
-
-## Router
-
-1. Detect the command from the first line or first token.
-   - Strip a leading `$` or `/` from explicit skill or Claude-style invocations.
-   - If a prompt embeds `$autoresearch` in prose, extract that invocation and keep surrounding text as context.
-   - Treat `autoresearch debug`, `$autoresearch debug`, and `/autoresearch debug` as `autoresearch:debug`.
-   - Keep root `autoresearch` when the next token is inline config or prose instead of a known subcommand.
-2. Read the command spec for the exact flags, required context, outputs, and stop conditions:
-   - Installed skill bundle: `resources/autoresearch-command-spec.json`
-   - Repo source tree: `../../resources/autoresearch-command-spec.json`
-3. Read the matching reference file from `references/`.
-4. Preserve the existing command semantics:
-   - same required setup gates
-   - same bounded iteration behavior for `Iterations:` and `--iterations`
-   - same output directory names
-   - same `--chain` behavior when a command supports it
-5. If required context is missing, gather it before execution.
-6. Prefer Codex-native tools and file paths, not Claude-specific names.
-
-## Setup gate
-
-If a command is missing critical context, stop and gather it before any execution phase:
-
-- Use `request_user_input` when the runtime exposes it.
-- If structured input is unavailable, ask a concise batch of direct questions in one message.
-- Do not enter the loop, audit, or chain step with incomplete setup.
-
-## Command map
-
-| Command | Reference |
-| --- | --- |
-| `autoresearch` | `references/core-loop.md` |
-| `autoresearch:plan` | `references/plan.md` |
-| `autoresearch:debug` | `references/debug.md` |
-| `autoresearch:fix` | `references/fix.md` |
-| `autoresearch:security` | `references/security.md` |
-| `autoresearch:ship` | `references/ship.md` |
-| `autoresearch:scenario` | `references/scenario.md` |
-| `autoresearch:predict` | `references/predict.md` |
-| `autoresearch:learn` | `references/learn.md` |
-| `autoresearch:reason` | `references/reason.md` |
-| `autoresearch:probe` | `references/probe.md` |
-
-## Wrapper CLI
-
-The bundled wrapper CLI preserves the existing command syntax:
-
-```bash
-python3 plugins/autoresearch/scripts/autoresearch_cli.py security --diff --fail-on critical
-bin/autoresearch plan Improve test coverage to 90%
-bin/autoresearch '$autoresearch:debug' --fix --scope 'src/**/*.ts'
-```
-
-The wrapper accepts plain, `$`, and `/` command aliases, converts command-line input into the canonical skill prompt, and runs `codex exec` by default.
-
-## Quality rules
-
-- Keep the subcommand surface stable.
-- Treat the spec JSON as the single source of truth for flag validation.
-- Preserve output directories such as `security/`, `ship/`, `scenario/`, `predict/`, `learn/`, and `reason/`.
-- When a chain is requested, hand off using the prior command's generated artifacts and explicit context.
-- If Codex cannot exactly match a Claude behavior, emulate the behavior as closely as possible and make the limitation explicit.
+| Flag | Applies To | Purpose |
+|---|---|---|
+| `Iterations: N` | All looping | Set iteration count |
+| `Iterations: unlimited` | All looping | Opt-in unbounded |
+| `--evals` | All looping | Mid-loop checkpoints + final summary |
+| `--evals-interval N` | All looping | Override checkpoint frequency |
+| `--chain <targets>` | All | Sequential handoff after completion |
+| `--<subcommand>` | All | Shorthand for `--chain <subcommand>` |

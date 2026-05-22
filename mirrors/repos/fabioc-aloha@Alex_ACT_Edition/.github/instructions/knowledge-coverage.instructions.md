@@ -27,3 +27,7 @@ Before responding: classify the topic, calibrate the language. For Low/Unknown, 
 ## Visible Badge (KS3)
 
 When `showConfidenceBadge` is `true` in `.github/config/cognitive-config.json`, append `**Confidence**: High|Medium|Low` to substantive responses. When `false` or absent, calibrate via language only.
+
+## Would Revise If
+
+Revise if the High/Medium/Low/Unknown classification produces consistent over-confidence (Medium claims that turn out wrong) or consistent over-hedging (High claims softened unnecessarily), or if the visible-badge feature is rejected by users as noise rather than welcomed as calibration signal.

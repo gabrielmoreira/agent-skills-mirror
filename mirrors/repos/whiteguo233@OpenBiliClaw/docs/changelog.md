@@ -4,19 +4,59 @@
 
 ---
 
-## v0.3.88: 移动端 Web 主入口与 fallback 默认关闭（2026-05-21）
+## v0.3.89 / extension v0.3.43: 显式 fallback 与限流降噪发布（2026-05-22）
 
+- 后端源码版本提升到 v0.3.89，准备发布 `backend-v0.3.89`；浏览器插件版本提升到 extension v0.3.43，准备发布 `extension-v0.3.43`。
+- LLM provider 限流 / cooldown 时，discovery eval batch 和 recommendation copy batch 不再退回逐条 LLM 调用，避免一次 Gemini 429 放大成整批 traceback；XHS / 抖音 / YouTube task claim 改用短生命周期 SQLite 连接，修复并发 `/next-task` poll 的嵌套事务错误；`httpx` / `httpcore` 文件日志默认降到 WARNING。
+- 插件设置页将 LLM / embedding fallback 从“自动尝试其它 provider”改成显式“备选 Provider”下拉框；`fallback_provider = ""` 时完全不 fallback，非空时只尝试这一个备选 provider。
+- `/api/image-proxy` 不再把 redirect 白名单失败、非图片 Content-Type、超过 10MB 和超时统一折叠成 502；校验类错误保留 403 / 400 / 413，网络超时返回 504，缓存回退只用于上游网络失败或 5xx 类错误。
+
+## v0.3.88 / extension v0.3.42: 局域网二维码与封面代理合并发布（2026-05-21）
+
+- 浏览器插件版本提升到 extension v0.3.42，合入 extension v0.3.41 的封面代理发布内容，并补齐 main 上的移动端二维码局域网 IP 自动检测逻辑；当插件后端仍配置为 `127.0.0.1` / `localhost` 时，会读取 `/api/health.lan_ip` 生成手机可访问的 `/m/` 二维码。
+- 一句话安装和 agent bootstrap 默认绑定 `0.0.0.0:8420`，健康检查仍使用 `127.0.0.1` URL；`/api/health.lan_ip` 优先返回 RFC1918 网卡地址并排除 `198.18.0.0/15` VPN / TUN 地址，避免二维码显示手机不可达 IP。
+- `openbiliclaw init` 的 B 站收藏和关注初始化信号默认各限制为 300 条 / 人，并新增 `--bilibili-favorite-limit` / `--bilibili-follow-limit` 覆盖项；人类安装流程的 `agent_bootstrap.py --interactive-confirm` 会让用户确认这两个上限后再自动 init，避免大收藏夹和长关注列表把初始画像事件量拉得过高；B 站观看历史仍保持 300 条。
+
+---
+
+## v0.3.88 / extension v0.3.41: 插件封面代理发布（2026-05-21）
+
+- 浏览器插件版本提升到 extension v0.3.41，推荐、惊喜推荐和消息封面统一走配置的本地后端 `/api/image-proxy`，不再直接暴露第三方 CDN 图片请求；本次仅发布插件包，后端源码版本仍为 v0.3.88。
+
+---
+
+## v0.3.88 / extension v0.3.40: 移动端视觉优化与局域网默认可达（2026-05-21）
+
+- 移动 Web 惊喜推荐卡片视觉优化：封面图加 `shape-outside` 圆角环绕让文字沿圆角自然流动；推荐理由字号从 12px 提升到 12.5px、行高从 1.48 提到 1.68 并增加字距提升阅读舒适度；「推荐原因」标签改为品牌粉蓝渐变底 + 细描边；卡片圆角从 14px 加大到 18px 并增加右上角径向渐变光晕与多层阴影增强纵深感；小屏移除理由文本截断改为字号微缩。
+- 移动 Web 推荐页 header 和推荐卡片视觉优化：For You 标签改为品牌渐变胶囊 + 阴影；标题字号 15→17px；换一批按钮加圆角描边；活动行加独立边框；pool chip 改为圆角方块；推荐卡片标题加粗至 15px、card-source 改为胶囊形态、表达文字行高提升、卡片加内发光和分层阴影。
+- 新增 `[api]` 配置节：`host`（默认 `0.0.0.0`）和 `port`（默认 `8420`），`openbiliclaw start` 读取配置决定监听地址，不再硬编码 `127.0.0.1`。手机扫码即可直接访问移动端 Web。
+- `openbiliclaw init` 新增网络绑定确认：交互式引导中会询问用户是否允许局域网设备访问（默认 Y），选择结果持久化到 `config.toml [api].host`。
+- 健康检查端点 `/api/health` 新增 `lan_ip` 字段：通过 UDP connect trick 检测本机局域网 IP 并返回。
+- 浏览器插件移动端二维码自动检测局域网 IP：当插件配置的后端地址是 127.0.0.1 时，自动从 `/api/health` 获取 `lan_ip` 并用局域网 IP 生成二维码，手机扫码直接可用。
+- 修复 `[api]` 配置 round-trip：`load_config()` 现在会读取 `[api].host` / `[api].port`，`save_config()` 会写回 `[api]`；一句话安装脚本和 `agent_bootstrap.py` 默认绑定 `0.0.0.0`，健康检查仍使用 `127.0.0.1` URL，避免把 `0.0.0.0` 当作浏览器访问地址。
+- 修复局域网 IP 检测优先级：`/api/health.lan_ip` 现在优先选择网卡上的 RFC1918 地址（如 `192.168.x.x`），并排除 VPN / TUN 常见的 `198.18.0.0/15` benchmark 地址，避免二维码显示手机不可达的虚拟网卡 IP。
+
+---
+
+## v0.3.88 / extension v0.3.39: 移动端 Web 主入口与 fallback 默认关闭（2026-05-21）
+
+- 新增 `/api/image-proxy` 后端图片代理，移动 Web 和浏览器插件的推荐、惊喜推荐、消息封面统一经本地后端加载；代理限制白名单 CDN、逐跳校验 redirect、校验 `image/*` 类型和 10MB 实际字节，前端加载失败时保留固定比例占位。
 - `[llm].fallback_enabled` 新增为默认关闭的 LLM 请求 fallback 开关；关闭时 `LLMRegistry.complete()` 只调用默认 provider，失败直接暴露。
 - `[llm.embedding].fallback_enabled` 新增为默认关闭的 embedding fallback 开关；关闭时不切 provider、不借用 `[llm.<provider>]` 凭据，且 embedding provider 留空表示不启用，不再跟随默认 LLM。
 - 浏览器插件设置页「模型」tab 增加 LLM fallback 与 embedding fallback 两个开关，并更新文案说明 embedding 与 LLM 独立配置。
 - 移动 Web 新增轻量 view-model 适配层，推荐页池状态会读取 `/api/runtime-status` 的 `pool_available_count` / `last_replenished_count` / `recent_pool_topics`，画像页 MBTI 可渲染后端返回的 `{EI: {pole, strength}}` 对象形态；对话页兼容 `/api/chat/turns` 返回的 `reply` 字段，不再因字段形态不一致空白或漏显回复。
 - 移动 Web 资源噪声收敛：根路径 `/favicon.ico` 现在复用 PWA 图标返回 PNG；推荐页封面会过滤直接 403 的小红书 CDN URL、把 B 站 `http` / protocol-relative 封面升到 HTTPS，并用 `no-referrer` 加载外链图片，避免浏览器控制台残留 favicon / hotlink 错误。
-- 移动 Web 推荐页的惊喜推荐动作对齐浏览器插件：按钮改为「看看 / 喜欢 / 不感兴趣 / 聊一聊」，移除仅移动端存在的「稍后」，并把「喜欢」写入 `/api/delight/respond` 的 `like` 反馈。
+- 移动 Web 推荐页的惊喜推荐动作对齐浏览器插件：底部按钮改为「看看 / 喜欢 / 不感兴趣 / 聊一聊」，「稍后看」收进右上角关闭控件，并把「喜欢」写入 `/api/delight/respond` 的 `like` 反馈。
 - 移动 Web 推荐页头部对齐插件：新增 `For You / 这几条，你大概会点开` 紧凑 header，把「换一批」放回首屏主操作位，池状态三枚 chip 改为「当前可换 / 最近补进 / 现在在忙」，活动状态降级为 header 内辅助行，「加载更多」移动到推荐列表底部。
+- 移动 Web 推荐页头部再次压缩移动端状态区：三枚池状态从大卡片改成横向轻量 pill，活动摘要改成单行；`xhs-extension-*`、`dy-plugin-*`、`yt-*` 等内部来源名会在移动端显示为用户可读的中文短标签。README 移动端预览说明同步使用「不感兴趣」文案。
+- 移动 Web 惊喜推荐改为接近插件的 compact banner：封面从全宽大图收敛为左侧小缩略图，右侧展示标签、标题、理由和来源，翻页控件并入标签行，减少首屏占用并保留「看看 / 喜欢 / 不感兴趣 / 聊一聊」动作。
+- 移动 Web 惊喜推荐 compact banner 恢复独立推荐原因描述：`delight_hook` 作为短标签展示，`delight_reason` 带「推荐原因」标记并围绕左侧头图排版，右上角保留「稍后看」关闭入口，避免只剩标题和 hook 看不到推荐理由，同时让这张卡明显区别于普通推荐卡。
+- README / README_EN 的移动端预览截图已刷新为当前 `/m/` 推荐页实际渲染图，展示惊喜推荐 compact banner、推荐原因环绕头图和插件一致的动作区。
 - 移动 Web 画像页补齐与插件一致的画像细节：MBTI 显示可信度，使用场景显示“模式”，内容口味把 `long/slow` 等 raw 值本地化为中文标签，认知更新卡片保留后端 `context_line` 与 `source_label`。
 - 移动 Web 对话页对齐插件主聊天会话：读取和提交都使用 `session=popup&scope=chat`，聊天回复完成后会刷新画像和活动流；消息 overlay 内的兴趣探测动作改为「喜欢 / 不喜欢 / 多聊聊」，惊喜推荐动作补齐「喜欢」，聊天输入框固定在底部并以两行高度起步，保留更多历史上下文可视空间。
 - 新增移动 Web 原生重设计 spec，明确 `/m/` 与浏览器插件在推荐、画像、对话、消息和 delight 工作流上的功能对齐范围，以及手机端独立信息架构。
-- 后端源码版本记录为 v0.3.88，准备发布 `backend-v0.3.88` source tag；浏览器插件版本仍为 extension v0.3.38。
+- 插件顶部功能区新增移动端二维码入口：点击手机图标会按当前插件后端地址生成 `/m/` 本地二维码，手机可直接扫码打开移动端 Web；若仍是 `127.0.0.1` / `localhost` 会提示先切到电脑局域网 IP。README 同步补充移动端推荐 / 画像 / 对话截图和扫码使用方式。
+- 后端源码版本记录为 v0.3.88，并通过 `backend-v0.3.88` source tag 标记；不发布 backend GitHub Release / 桌面包，远端 `backend-v*` workflow 改为只校验 tag 与 `pyproject.toml` 版本一致。浏览器插件版本提升到 extension v0.3.39，准备发布 `extension-v0.3.39`。
 
 ---
 

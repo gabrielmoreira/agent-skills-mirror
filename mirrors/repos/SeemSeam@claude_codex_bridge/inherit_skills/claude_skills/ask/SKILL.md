@@ -17,6 +17,7 @@ Use this only for `/ask <target> <message...>`.
 - Use `--callback` only from inside an active CCB task when this agent needs the target's result before finishing the original task. The current turn must end after submit; CCB will route the target result back as a new continuation task.
 - Plain nested `ask` from an active CCB task is rejected; choose `--callback` for needed results or `--silence` for independent no-result-needed work.
 - Do not manually append output-policy text; `ask` injects reply guidance.
+- `ask get`, `pend`, `watch`, and `ping` are diagnostics-only commands for explicit debugging requests, not normal ask workflow tools.
 
 Always send `MESSAGE` through the `<<'EOF' ... EOF` heredoc below. No other form is allowed.
 
@@ -44,4 +45,4 @@ $MESSAGE
 EOF
 ```
 
-After the command returns, immediately end the turn. Do not wait for a reply, do not run `pend` / `ping` / `watch`, do not poll, do not add commentary. For `--callback`, report only that delegation was submitted; the final result belongs in the later continuation task.
+After the command returns, immediately end the turn. Do not wait for a reply, do not run `ask get` / `pend` / `ping` / `watch`, do not poll, do not add commentary. For `--callback`, report only that delegation was submitted; the final result belongs in the later continuation task.

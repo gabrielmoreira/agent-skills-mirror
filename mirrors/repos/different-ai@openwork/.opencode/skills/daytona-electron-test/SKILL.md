@@ -18,72 +18,35 @@ and bug reproduction.
 ## Fastest path: the script
 
 Run the helper script from the repo root. It creates a Daytona VNC-capable
-sandbox, checks out the ref, starts XFCE/noVNC, Vite, Electron, and waits for
-CDP:
+sandbox from the reusable `openwork-eval-vnc` snapshot when present, checks out
+the ref, conditionally installs deps, starts XFCE/noVNC, Vite, Electron, and
+waits for CDP:
 
 ```bash
 bash .devcontainer/test-on-daytona.sh [branch-or-commit]
 ```
 
 It prints the CDP and noVNC URLs at the end. Then use `browser_list` to connect.
+Refresh the snapshot with `bash .devcontainer/create-daytona-openwork-snapshot.sh`
+when dependencies or base setup change. The snapshot excludes `node_modules`;
+dependency installs reuse the `openwork-eval-pnpm-store` volume.
+For OpenAI flows, create the reusable secrets volume once with
+`bash .devcontainer/setup-daytona-secrets-volume.sh .newtoken`; future Daytona
+sandboxes mount `openwork-eval-secrets:/daytona-secrets` automatically.
 
-## Manual path (step by step)
+## Manual debugging
 
-### 1. Create the sandbox
-
-```bash
-SANDBOX="openwork-test-$(date +%Y%m%d-%H%M%S)"
-
-daytona create \
-  --name "$SANDBOX" \
-  --dockerfile .devcontainer/Dockerfile.daytona-vnc \
-  --context .devcontainer/Dockerfile.daytona-vnc \
-  --context .devcontainer/start-daytona-vnc.sh \
-  --class large \
-  --memory 8 \
-  --disk 10 \
-  --auto-stop 60 \
-  --public \
-  --target us
-```
-
-**CRITICAL:** Always `--memory 8`. The default 1 GB will OOM-kill pnpm install
-and Vite's esbuild. Electron + Vite + opencode needs ~6 GB.
-
-**CRITICAL:** Always `--disk 10` with the Daytona VNC image. The default 3 GB
-can fill up during dependency/sidecar work.
-
-**WHY THIS IMAGE:** Use `.devcontainer/Dockerfile.daytona-vnc`, which is based
-on `daytonaio/sandbox:0.6.0`. It includes Daytona's expected desktop stack:
-Xvfb, XFCE, x11vnc, noVNC, websockify, and dbus-x11. Do not use the generic
-`node:20-bookworm + fluxbox` path for Electron/noVNC tests unless debugging the
-old setup.
-
-### 2. Checkout the branch under test
-
-The Dockerfile clones `dev` at build time. Fetch and checkout the target:
+Do not copy raw Daytona create/start commands into new docs or skills. Keep the
+single maintained provisioning path in `.devcontainer/test-on-daytona.sh` and
+debug by inspecting its logs:
 
 ```bash
-daytona exec "$SANDBOX" -- "bash -lc 'cd /workspace && git fetch origin <ref> && git checkout <ref> && pnpm install --frozen-lockfile || pnpm install'"
+daytona exec <sandbox> -- 'tail -80 /tmp/start-vnc.log'
+daytona exec <sandbox> -- 'tail -80 /tmp/vite.log'
+daytona exec <sandbox> -- 'tail -80 /tmp/electron.log'
 ```
 
-### 3. Start services (background, don't block)
-
-```bash
-daytona exec "$SANDBOX" -- "bash -lc 'cd /workspace && nohup bash .devcontainer/start-daytona-vnc.sh > /tmp/start-vnc.log 2>&1 &'"
-
-daytona exec "$SANDBOX" -- "bash -lc 'cd /workspace/apps/app && nohup env OPENWORK_DEV_MODE=1 pnpm exec vite --host 0.0.0.0 --port 5173 > /tmp/vite.log 2>&1 &'"
-
-daytona exec "$SANDBOX" -- "bash -lc 'cd /workspace && nohup env DISPLAY=:99 ELECTRON_DISABLE_SANDBOX=1 OPENWORK_REACT_DEVTOOLS=0 OPENWORK_DEV_MODE=1 OPENWORK_ELECTRON_REMOTE_DEBUG_PORT=9825 pnpm --filter @openwork/desktop dev:electron > /tmp/electron.log 2>&1 &'"
-```
-
-**IMPORTANT:** Keep these as separate `daytona exec` calls. `start-daytona-vnc.sh`
-starts long-lived desktop services, Vite is a long-lived dev server, and Electron
-is long-lived. Running them in the foreground blocks `daytona exec`.
-
-Wait ~35-60s for XFCE + Vite + Electron + opencode sidecar to boot.
-
-### 4. Get URLs
+### Get URLs
 
 ```bash
 # Electron CDP (automation) -- THIS IS WHAT browser_list CONNECTS TO
@@ -322,21 +285,27 @@ daytona exec "$SANDBOX" -- "bash -lc 'DISPLAY=:99 xdotool search --name OpenWork
 daytona exec "$SANDBOX" -- "bash -lc 'DISPLAY=:99 xdotool search --name OpenWork windowactivate'"
 ```
 
-## Injecting API keys
+## API keys for provider evals
 
-Edit the workspace opencode config:
+Do not edit workspace config or print keys. Create/populate the reusable
+Daytona volume once from the repo root:
+
 ```bash
-daytona exec "$SANDBOX" -- "bash -lc 'cd /workspace/hello && node -e \"...update opencode.jsonc...\"'"
+bash .devcontainer/setup-daytona-secrets-volume.sh .newtoken
 ```
 
-Then restart Electron so opencode picks up the new config:
+Every Daytona eval sandbox mounts `openwork-eval-secrets:/daytona-secrets` and
+`/opt/openwork-daytona/start-daytona-electron.sh` sources
+`/daytona-secrets/openai.env` before Electron starts. If you update the volume while a sandbox is already
+running, restart Electron so the env is reloaded:
+
 ```bash
 # Step 1: kill Electron/runtime children
 daytona exec "$SANDBOX" -- "bash -lc 'pkill -f electron || true; pkill -f electron-dev || true; pkill -f opencode || true'"
 
 # Step 2: wait, then restart Electron (separate exec call)
 sleep 3
-daytona exec "$SANDBOX" -- "bash -lc 'cd /workspace && nohup env DISPLAY=:99 ELECTRON_DISABLE_SANDBOX=1 OPENWORK_REACT_DEVTOOLS=0 OPENWORK_ELECTRON_REMOTE_DEBUG_PORT=9825 OPENWORK_DEV_MODE=1 pnpm --filter @openwork/desktop dev:electron > /tmp/electron.log 2>&1 &'"
+daytona exec "$SANDBOX" -- "bash -lc 'cd /workspace && bash /opt/openwork-daytona/start-daytona-electron.sh --detach'"
 ```
 
 **GOTCHA:** Do NOT chain `pkill` and the restart in the same

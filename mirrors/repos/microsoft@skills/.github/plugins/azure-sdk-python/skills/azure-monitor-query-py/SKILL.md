@@ -31,7 +31,18 @@ AZURE_METRICS_RESOURCE_URI=/subscriptions/<sub>/resourceGroups/<rg>/providers/<p
 AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
 ```
 
-## Authentication
+## Authentication & Lifecycle
+
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
 
 ```python
 from azure.identity import DefaultAzureCredential, ManagedIdentityCredential
@@ -51,8 +62,6 @@ credential = DefaultAzureCredential(require_envvar=True)
 from azure.monitor.query import LogsQueryClient
 from datetime import timedelta
 
-client = LogsQueryClient(credential)
-
 query = """
 AppRequests
 | where TimeGenerated > ago(1h)
@@ -60,15 +69,16 @@ AppRequests
 | order by TimeGenerated desc
 """
 
-response = client.query_workspace(
-    workspace_id=os.environ["AZURE_LOG_ANALYTICS_WORKSPACE_ID"],
-    query=query,
-    timespan=timedelta(hours=1)
-)
+with LogsQueryClient(credential) as client:
+    response = client.query_workspace(
+        workspace_id=os.environ["AZURE_LOG_ANALYTICS_WORKSPACE_ID"],
+        query=query,
+        timespan=timedelta(hours=1)
+    )
 
-for table in response.tables:
-    for row in table.rows:
-        print(row)
+    for table in response.tables:
+        for row in table.rows:
+            print(row)
 ```
 
 ### Query with Time Range
@@ -137,20 +147,19 @@ elif response.status == LogsQueryStatus.FAILURE:
 from azure.monitor.query import MetricsQueryClient
 from datetime import timedelta
 
-metrics_client = MetricsQueryClient(credential)
+with MetricsQueryClient(credential) as metrics_client:
+    response = metrics_client.query_resource(
+        resource_uri=os.environ["AZURE_METRICS_RESOURCE_URI"],
+        metric_names=["Percentage CPU", "Network In Total"],
+        timespan=timedelta(hours=1),
+        granularity=timedelta(minutes=5)
+    )
 
-response = metrics_client.query_resource(
-    resource_uri=os.environ["AZURE_METRICS_RESOURCE_URI"],
-    metric_names=["Percentage CPU", "Network In Total"],
-    timespan=timedelta(hours=1),
-    granularity=timedelta(minutes=5)
-)
-
-for metric in response.metrics:
-    print(f"{metric.name}:")
-    for time_series in metric.timeseries:
-        for data in time_series.data:
-            print(f"  {data.timestamp}: {data.average}")
+    for metric in response.metrics:
+        print(f"{metric.name}:")
+        for time_series in metric.timeseries:
+            for data in time_series.data:
+                print(f"  {data.timestamp}: {data.average}")
 ```
 
 ### Aggregations
@@ -205,18 +214,14 @@ from azure.monitor.query.aio import LogsQueryClient, MetricsQueryClient
 from azure.identity.aio import DefaultAzureCredential
 
 async def query_logs():
-    credential = DefaultAzureCredential()
-    client = LogsQueryClient(credential)
-    
-    response = await client.query_workspace(
-        workspace_id=workspace_id,
-        query="AppRequests | take 10",
-        timespan=timedelta(hours=1)
-    )
-    
-    await client.close()
-    await credential.close()
-    return response
+    async with DefaultAzureCredential() as credential:
+        async with LogsQueryClient(credential) as client:
+            response = await client.query_workspace(
+                workspace_id=workspace_id,
+                query="AppRequests | take 10",
+                timespan=timedelta(hours=1)
+            )
+            return response
 ```
 
 ## Common Kusto Queries
@@ -252,10 +257,13 @@ AppExceptions
 
 ## Best Practices
 
-1. **Use timedelta** for relative time ranges
-2. **Handle partial results** for large queries
-3. **Use batch queries** when running multiple queries
-4. **Set appropriate granularity** for metrics to reduce data points
-5. **Convert to DataFrame** for easier data analysis
-6. **Use aggregations** to summarize metric data
-7. **Filter by dimensions** to narrow metric results
+1. **Pick sync OR async and stay consistent.** Do not mix `azure.xxx` sync clients with `azure.xxx.aio` async clients in the same call path. Choose one mode per module.
+2. **Always use context managers for clients and async credentials.** Wrap every client in `with Client(...) as client:` (sync) or `async with Client(...) as client:` (async). For async `DefaultAzureCredential` from `azure.identity.aio`, also use `async with credential:` so tokens and transports are cleaned up.
+3. **Use `DefaultAzureCredential`** for portable auth across local dev and Azure (avoid connection strings / API keys when possible).
+4. **Use timedelta** for relative time ranges
+4. **Handle partial results** for large queries
+5. **Use batch queries** when running multiple queries
+6. **Set appropriate granularity** for metrics to reduce data points
+7. **Convert to DataFrame** for easier data analysis
+8. **Use aggregations** to summarize metric data
+9. **Filter by dimensions** to narrow metric results

@@ -192,11 +192,13 @@ Key points:
 
 Link: https://neon.com/docs/introduction/branching.md
 
-For detailed branch creation workflows (normal vs schema-only branches, reset-from-parent, CLI/MCP selection), fetch the full branching skill:
+For detailed branch creation workflows (normal vs schema-only branches, reset-from-parent, CLI/MCP selection), use the `neon-postgres-branches` skill if available 
+
+Or fetch the full branching skill from the following URL:
 
 https://neon.com/docs/ai/skills/neon-postgres-branches/SKILL.md
 
-To install the skill directly:
+If this skill is not installed you can use the following command to install it:
 
 ```bash
 npx skills add neondatabase/agent-skills --skill neon-postgres-branches

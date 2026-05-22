@@ -70,3 +70,7 @@ Before starting, define what "done" means:
 ```
 
 Without a definition of done, scope will expand to fill available time.
+
+## Would Revise If
+
+Revise if scope-creep detection signals produce false positives (legitimate additions blocked as creep), if MoSCoW classification produces consistent re-prioritization mid-project (categories too coarse for the work), or if the negotiation patterns shut down genuine user needs more often than they prevent scope expansion.

@@ -1,6 +1,6 @@
 ---
 name: better-codex
-description: Behavioral guardrails for Codex coding work based on common user complaints. Use when Codex is asked to implement, modify, debug, review, test, or operate on a codebase and should avoid unsafe scope expansion, stale edits, fake completion, brittle edits, shallow debugging, superficial patch-on fixes, one-off special-case code, short-term design choices that hurt maintainability, blindly following incorrect user assumptions, generic product or UI output, over-mocked tests, noisy approvals, verbose status reports, or leaking internal reasoning into user-facing UI.
+description: Behavioral guardrails for Codex coding work based on common user complaints. Use when Codex is asked to implement, modify, debug, review, test, or operate on a codebase and should avoid unsafe scope expansion, stale edits, fake completion, brittle edits, shallow debugging, superficial patch-on fixes, one-off special-case code, short-term design choices that hurt maintainability, blindly following incorrect user assumptions, generic product or UI output, over-mocked tests, noisy approvals, verbose status reports, or leaking internal reasoning into project artifacts or user-facing UI.
 ---
 
 # Better Codex
@@ -74,6 +74,16 @@ Use these rules as a reliability overlay for codebase work. They convert recurri
 - Inspect command results before claiming success. Do not say a rebuild, restart, test, or migration succeeded unless you saw the result.
 - Do not invent files, fake data, placeholder logic, or unverified state. If placeholder content is necessary, label it clearly and explain why.
 - In the final response, separate completed work from unverified work. State exactly which checks ran and which did not.
+
+## Project Artifact Boundary
+
+- Classify every piece of text before writing it: user requirement, explanation to the user, internal reasoning, or true project artifact.
+- Only true project artifacts may be written into the repository. User requirements, user-facing explanations, internal reasoning, rejected approaches, prompt fragments, debugging narration, and acceptance criteria belong in the conversation unless the user explicitly asks to document them.
+- True project artifacts are durable content that future maintainers, systems, tests, or end users need: source code, tests, configuration, migrations, product docs, API docs, changelog entries, and user-facing copy that belongs to the product.
+- Strictly separate thinking from deliverables. Do not put the process of deciding what to build into code, tests, docs, configuration, migrations, or UI copy.
+- Do not create scratch notes, implementation journals, TODO narratives, "what I changed" files, or agent-generated summaries inside the repo unless the user asks for them. Use the conversation for that context.
+- Code comments should explain stable invariants, domain intent, non-obvious constraints, or external contracts. They should not describe the assistant's reasoning, the user's prompt, or the step-by-step implementation process.
+- Before finishing, scan changed project text for leaked assistant language such as "I decided", "the user asked", "we need to", "implementation note", "acceptance criteria", "thought process", "debugging steps", "my approach", or "requested by the user".
 
 ## User-Facing Output
 

@@ -1110,7 +1110,7 @@ def main():
     # Model resolution priority:
     #   1. Explicit `model` in the call args (agent / user override)
     #   2. SKILL_IMAGE_GENERATION_MODEL env var (synced from
-    #      config["skill"]["image-generation"]["model"] at startup)
+    #      config["skills"]["image-generation"]["model"] at startup)
     #   3. None → fall back to automatic provider routing (try every
     #      provider with a configured API key in global priority order)
     model = args.get("model") or os.environ.get("SKILL_IMAGE_GENERATION_MODEL") or ""

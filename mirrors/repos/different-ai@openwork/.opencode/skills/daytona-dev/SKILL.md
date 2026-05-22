@@ -12,46 +12,23 @@ browser.
 
 ## Quick Start
 
-### 1. Create the sandbox
+### 1. Create and start the sandbox
 
 ```bash
-daytona create \
-  --name openwork-dev \
-  --dockerfile .devcontainer/Dockerfile.daytona-vnc \
-  --context .devcontainer/Dockerfile.daytona-vnc \
-  --context .devcontainer/start-daytona-vnc.sh \
-  --class large \
-  --memory 8 \
-  --disk 10 \
-  --auto-stop 60 \
-  --public \
-  --target us
+bash .devcontainer/test-on-daytona.sh [branch-or-commit]
 ```
 
-> **Note:** Use the Daytona VNC Dockerfile, not the generic devcontainer
-> Dockerfile. It starts from `daytonaio/sandbox:0.6.0` so XFCE, Xvfb, x11vnc,
-> noVNC, websockify, and dbus-x11 match Daytona's Computer Use/VNC stack. Use
-> `--disk 10`; the default 3 GB disk fills up during dependency/sidecar work.
+The helper uses the VNC snapshot when available, falls back to the VNC Dockerfile
+when needed, starts noVNC/Vite/Electron, and prints the URLs.
 
-### 2. Start services
+Or SSH in after the helper prints the sandbox name:
 
 ```bash
-daytona exec openwork-dev 'bash -lc "cd /workspace && nohup bash .devcontainer/start-daytona-vnc.sh > /tmp/start-vnc.log 2>&1 &"'
-
-daytona exec openwork-dev 'bash -lc "cd /workspace/apps/app && nohup env OPENWORK_DEV_MODE=1 pnpm exec vite --host 0.0.0.0 --port 5173 > /tmp/vite.log 2>&1 &"'
-
-daytona exec openwork-dev 'bash -lc "cd /workspace && nohup env DISPLAY=:99 ELECTRON_DISABLE_SANDBOX=1 OPENWORK_REACT_DEVTOOLS=0 OPENWORK_DEV_MODE=1 OPENWORK_ELECTRON_REMOTE_DEBUG_PORT=9825 pnpm --filter @openwork/desktop dev:electron > /tmp/electron.log 2>&1 &"'
-```
-
-Or SSH in and run interactively:
-
-```bash
-daytona ssh openwork-dev
+daytona ssh <sandbox>
 cd /workspace
-bash .devcontainer/start-daytona-vnc.sh
 ```
 
-### 3. Get the noVNC URL
+### 2. Get the noVNC URL
 
 ```bash
 daytona preview-url openwork-dev -p 6080
@@ -115,7 +92,7 @@ daytona exec openwork-dev 'curl -s http://127.0.0.1:9825/json/list'
 
 # Restart just the Electron app
 daytona exec openwork-dev 'bash -lc "pkill -f electron || true; pkill -f electron-dev || true"'
-daytona exec openwork-dev 'bash -lc "cd /workspace && nohup env DISPLAY=:99 ELECTRON_DISABLE_SANDBOX=1 OPENWORK_REACT_DEVTOOLS=0 OPENWORK_ELECTRON_REMOTE_DEBUG_PORT=9825 OPENWORK_DEV_MODE=1 pnpm --filter @openwork/desktop dev:electron > /tmp/electron.log 2>&1 &"'
+daytona exec openwork-dev 'bash -lc "cd /workspace && bash /opt/openwork-daytona/start-daytona-electron.sh --detach"'
 
 # Stop the sandbox (preserves state)
 daytona stop openwork-dev
@@ -150,7 +127,7 @@ cd /workspace/apps/app && OPENWORK_DEV_MODE=1 nohup npx vite --host 0.0.0.0 --po
 **noVNC shows black screen:**
 Xvfb/XFCE may have crashed. Restart the desktop stack:
 ```bash
-bash .devcontainer/start-daytona-vnc.sh
+bash /opt/openwork-daytona/start-daytona-vnc.sh
 ```
 
 **"no space left on device" when creating sandbox:**

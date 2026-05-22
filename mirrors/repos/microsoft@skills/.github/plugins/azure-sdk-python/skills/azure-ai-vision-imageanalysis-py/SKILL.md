@@ -24,34 +24,28 @@ pip install azure-ai-vision-imageanalysis
 
 ```bash
 VISION_ENDPOINT=https://<resource>.cognitiveservices.azure.com  # Required for all auth methods
-VISION_KEY=<your-api-key>  # Only required for AzureKeyCredential auth
 AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
+VISION_KEY=<your-api-key>  # Only required for the legacy API-key auth path below
 ```
 
-## Authentication
+## Authentication & Lifecycle
 
-### API Key
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
 
 ```python
 import os
-from azure.ai.vision.imageanalysis import ImageAnalysisClient
-from azure.core.credentials import AzureKeyCredential
-
-endpoint = os.environ["VISION_ENDPOINT"]
-key = os.environ["VISION_KEY"]
-
-client = ImageAnalysisClient(
-    endpoint=endpoint,
-    credential=AzureKeyCredential(key)
-)
-```
-
-### Entra ID (Recommended)
-
-```python
-import os
-from azure.ai.vision.imageanalysis import ImageAnalysisClient
 from azure.identity import DefaultAzureCredential, ManagedIdentityCredential
+from azure.ai.vision.imageanalysis import ImageAnalysisClient
+from azure.ai.vision.imageanalysis.models import VisualFeatures
 
 # Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
 credential = DefaultAzureCredential(require_envvar=True)
@@ -59,10 +53,34 @@ credential = DefaultAzureCredential(require_envvar=True)
 # See https://learn.microsoft.com/python/api/overview/azure/identity-readme?view=azure-python#credential-classes
 # credential = ManagedIdentityCredential()
 
-client = ImageAnalysisClient(
+with ImageAnalysisClient(
     endpoint=os.environ["VISION_ENDPOINT"],
-    credential=credential
-)
+    credential=credential,
+) as client:
+    result = client.analyze_from_url(
+        image_url="https://aka.ms/azsdk/image-analysis/sample.jpg",
+        visual_features=[VisualFeatures.CAPTION],
+    )
+```
+
+### Legacy: API Key (existing keyed deployments)
+
+New code should use `DefaultAzureCredential` above. Use `AzureKeyCredential` only if you have an existing keyed deployment that hasn't been migrated to Entra ID yet — for example, regulated environments still completing their Entra rollout.
+
+```python
+import os
+from azure.core.credentials import AzureKeyCredential
+from azure.ai.vision.imageanalysis import ImageAnalysisClient
+from azure.ai.vision.imageanalysis.models import VisualFeatures
+
+with ImageAnalysisClient(
+    endpoint=os.environ["VISION_ENDPOINT"],
+    credential=AzureKeyCredential(os.environ["VISION_KEY"]),
+) as client:
+    result = client.analyze_from_url(
+        image_url="https://aka.ms/azsdk/image-analysis/sample.jpg",
+        visual_features=[VisualFeatures.CAPTION],
+    )
 ```
 
 ## Analyze Image from URL
@@ -216,15 +234,16 @@ from azure.ai.vision.imageanalysis.aio import ImageAnalysisClient
 from azure.identity.aio import DefaultAzureCredential
 
 async def analyze_image():
-    async with ImageAnalysisClient(
-        endpoint=endpoint,
-        credential=DefaultAzureCredential()
-    ) as client:
-        result = await client.analyze_from_url(
-            image_url=image_url,
-            visual_features=[VisualFeatures.CAPTION]
-        )
-        print(result.caption.text)
+    async with DefaultAzureCredential() as credential:
+        async with ImageAnalysisClient(
+            endpoint=endpoint,
+            credential=credential
+        ) as client:
+            result = await client.analyze_from_url(
+                image_url=image_url,
+                visual_features=[VisualFeatures.CAPTION]
+            )
+            print(result.caption.text)
 ```
 
 ## Visual Features
@@ -263,10 +282,12 @@ except HttpResponseError as e:
 
 ## Best Practices
 
-1. **Select only needed features** to optimize latency and cost
-2. **Use async client** for high-throughput scenarios
-3. **Handle HttpResponseError** for invalid images or auth issues
-4. **Enable gender_neutral_caption** for inclusive descriptions
-5. **Specify language** for localized captions
-6. **Use smart_crops_aspect_ratios** matching your thumbnail requirements
-7. **Cache results** when analyzing the same image multiple times
+1. **Pick sync OR async and stay consistent.** Do not mix `azure.ai.vision.imageanalysis` sync clients with `azure.ai.vision.imageanalysis.aio` async clients in the same call path. Choose one mode per module.
+2. **Always use context managers for clients and async credentials.** Wrap every client in `with ImageAnalysisClient(...) as client:` (sync) or `async with ImageAnalysisClient(...) as client:` (async). For async `DefaultAzureCredential` from `azure.identity.aio`, also use `async with credential:` so tokens and transports are cleaned up.
+3. **Select only needed features** to optimize latency and cost
+4. **Use async client** for high-throughput scenarios
+5. **Handle HttpResponseError** for invalid images or auth issues
+6. **Enable gender_neutral_caption** for inclusive descriptions
+7. **Specify language** for localized captions
+8. **Use smart_crops_aspect_ratios** matching your thumbnail requirements
+9. **Cache results** when analyzing the same image multiple times

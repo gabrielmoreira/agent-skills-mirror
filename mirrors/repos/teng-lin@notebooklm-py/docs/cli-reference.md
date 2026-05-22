@@ -18,7 +18,7 @@ notebooklm [-p PROFILE] [--storage PATH] [--version] [-v|--quiet] <command> [OPT
 - `-p, --profile NAME` - Use a named profile (overrides `NOTEBOOKLM_PROFILE` env var)
 - `--storage PATH` - Override the default storage location
 - `-v, --verbose` - Increase verbosity (`-v` for INFO, `-vv` for DEBUG)
-- `--quiet` - Suppress INFO/WARN log records on stderr (only ERROR survives). Mutually exclusive with `-v`/`-vv`; combining the two raises `UsageError` (exit `2`).
+- `--quiet` - Suppress status output and INFO/WARN log records (only errors survive). Structured `--json` payloads are still emitted. Mutually exclusive with `-v`/`-vv`; combining the two raises `UsageError` (exit `2`).
 - `--version` - Show version and exit
 - `--help` - Show help message
 
@@ -232,7 +232,7 @@ All `artifact` subcommands also accept `-n/--notebook ID`.
 
 ### Download Commands (`notebooklm download <type>`)
 
-Every `download` subcommand accepts the same selection / safety / output flag set: `-n/--notebook ID`, `-a/--artifact ID`, `--all`, `--latest` (default), `--earliest`, `--name TEXT` (fuzzy title match), `--dry-run`, `--force`, `--no-clobber` (default), and `--json`.
+Every `download` subcommand accepts the same selection / safety / output flag set: `-n/--notebook ID`, `-a/--artifact ID`, `--all`, `--latest` (default), `--earliest`, `--name TEXT` (fuzzy title match), `--dry-run`, `--force`, `--no-clobber` (opt-in to skip existing; default is auto-rename), and `--json`.
 
 | Command | Arguments | Type-specific options | Example |
 |---------|-----------|-----------------------|---------|
@@ -571,7 +571,7 @@ notebooklm auth check --json
 **Checks performed:**
 1. Storage file exists and is readable
 2. JSON structure is valid
-3. Required cookies (`SID` + `__Secure-1PSIDTS`) are present (the Tier 1 `MINIMUM_REQUIRED_COOKIES` set; either `OSID` or the `APISID`+`SAPISID` pair is also needed for the secondary-binding check — see [auth-keepalive.md](auth-keepalive.md) §3.5)
+3. Required cookies (`SID` + `__Secure-1PSIDTS`) are present (the Tier 1 `MINIMUM_REQUIRED_COOKIES` set; either `OSID` or the `APISID`+`SAPISID` pair is also needed for the secondary-binding check — see [auth-cookie-lifecycle.md](auth-cookie-lifecycle.md) §3.5)
 4. Cookie domains are correct (.google.com vs regional)
 5. (With `--test`) Token fetch succeeds
 
@@ -761,7 +761,7 @@ notebooklm source add-research [query] [OPTIONS]
 - `--import-all` - Automatically import all found sources (works with blocking mode)
 - `--cited-only` - With `--import-all`, import only cited sources
 - `--no-wait` - Start research and return immediately (non-blocking)
-- `--timeout SECONDS` - Retry budget for `--import-all` when the IMPORT_RESEARCH RPC times out (default: 1800). Mirrors `research wait --timeout`. Has no effect without `--import-all`.
+- `--timeout SECONDS` - Per-phase seconds budget for (a) the research-completion poll loop and (b) the `--import-all` retry loop (default: 1800). Each phase gets the full budget independently, so worst-case total wall time is up to 2× this value. Matches `research wait --timeout` semantics. Before 0.4.2 the in-line poll was hardcoded to 5 minutes, so deep research that ran longer was silently abandoned and left an "Add sources?" modal hanging in the NotebookLM web UI — bump `--timeout` for long deep-research runs.
 - `--prompt-file PATH` - Read query from a file (or `-` for stdin) instead of the positional argument
 
 > **Note:** `--mode deep` is only supported with `--from web` (the default). Combining `--mode deep --from drive` is rejected by the backend with `ValidationError("Deep Research only supports Web sources.")` — for Drive, stick with `--mode fast`.
@@ -986,7 +986,7 @@ notebooklm generate revise-slide "Remove taxonomy table" --artifact art123 --sli
 
 Generate a text report (briefing doc, study guide, blog post, or custom).
 
-> **Python equivalent:** [`client.artifacts.generate_report(nb_id, format=..., ...)`](python-api.md#generation-methods).
+> **Python equivalent:** [`client.artifacts.generate_report(nb_id, report_format=..., ...)`](python-api.md#generation-methods).
 
 ```bash
 notebooklm generate report [description] [OPTIONS]
@@ -1094,7 +1094,7 @@ notebooklm download <type> [OUTPUT_PATH] [OPTIONS]
 
 | Type | Default Extension | Description |
 |------|-------------------|-------------|
-| `audio` | `.mp4` | Audio overview (podcast) in MP4 container |
+| `audio` | `.mp3` | Audio overview (podcast) as MP3 |
 | `video` | `.mp4` | Video overview |
 | `slide-deck` | `.pdf` or `.pptx` | Slide deck as PDF (default) or PowerPoint |
 | `infographic` | `.png` | Infographic image |
@@ -1110,7 +1110,7 @@ notebooklm download <type> [OUTPUT_PATH] [OPTIONS]
 - `-a, --artifact ID` - Select specific artifact by ID (supports partial IDs)
 - `--dry-run` - Show what would be downloaded without actually downloading
 - `--force` - Overwrite existing files
-- `--no-clobber` - Skip if file already exists (default)
+- `--no-clobber` - Skip if file already exists (opt-in; default is auto-rename)
 - `--format [pdf|pptx]` - Slide deck format (slide-deck command only, default: pdf)
 - `--json` - Output result in JSON format
 
@@ -1498,6 +1498,57 @@ done
 
 ---
 
+### Doctor: `doctor`
+
+Check profile setup, auth status, and migration.
+
+Diagnoses common issues with profiles, authentication, and directory structure. Use `--fix` to automatically repair detected problems.
+
+```bash
+notebooklm doctor [OPTIONS]
+```
+
+**Options:**
+- `--fix` - Attempt to fix detected issues (e.g. missing directories, broken configurations)
+- `--json` - Output diagnostic results as a JSON structure for scripting/automation
+
+**Examples:**
+```bash
+# Check profile and authentication health
+notebooklm doctor
+
+# Auto-repair environment issues
+notebooklm doctor --fix
+
+# Print diagnostics in machine-readable format
+notebooklm doctor --json
+```
+
+---
+
+### Agent: `agent show`
+
+Show bundled instructions for supported agent environments.
+
+This command displays tailored instructions for different LLM agents (Codex or Claude Code) to help them understand how to use this CLI programmatically.
+
+```bash
+notebooklm agent show [OPTIONS] {codex|claude}
+```
+
+**Examples:**
+```bash
+# Show instructions for Codex
+notebooklm agent show codex
+
+# Show instructions for Claude Code
+notebooklm agent show claude
+```
+
+> **Note:** `agent show codex` prefers the root `AGENTS.md` file when running from a source checkout, so the CLI mirrors the same instructions Codex sees in the repository.
+
+---
+
 ## Tips for LLM Agents
 
 When using this CLI programmatically:
@@ -1522,7 +1573,7 @@ When using this CLI programmatically:
 
 6. **Stdin pipelines**: Four surfaces accept the canonical Unix `-` placeholder for "read from stdin": `notebooklm ask -`, `notebooklm ask --prompt-file -`, `notebooklm note create -` (or `--content -`), and `notebooklm source add -` (forces text-source path; bypasses path-shaped detection). Same convention applies to the various `generate <kind> --prompt-file -` flags.
 
-7. **Quiet logs for CI/cron**: Pass `--quiet` (root-level) to suppress INFO/WARN log records; only ERROR survives. `--quiet` is mutually exclusive with `-v/-vv` (combining the two raises `UsageError` with exit `2`). For long-running keepalive loops, `notebooklm auth refresh --quiet` is the subcommand-scoped equivalent.
+7. **Quiet output for CI/cron**: Pass `--quiet` (root-level) to suppress status output and INFO/WARN log records; errors still surface and structured `--json` payloads are still emitted. `--quiet` is mutually exclusive with `-v/-vv` (combining the two raises `UsageError` with exit `2`). For long-running keepalive loops, `notebooklm auth refresh --quiet` is the subcommand-scoped equivalent.
 
 8. **Error handling**: Commands exit with non-zero status on failure (`1` for user/library errors, `2` for system/unexpected errors per [CLI Exit-Code Convention](cli-exit-codes.md)). With `--json`, failures surface as a typed envelope `{"error": true, "code": "<TYPED_CODE>", "message": "..."}` on stdout; without `--json`, error messages go to stderr.
 

@@ -32,7 +32,18 @@ CHECKPOINT_CONTAINER=checkpoints  # Required for checkpoint storage
 AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
 ```
 
-## Authentication
+## Authentication & Lifecycle
+
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
 
 ```python
 from azure.identity import DefaultAzureCredential, ManagedIdentityCredential
@@ -47,19 +58,23 @@ namespace = "<namespace>.servicebus.windows.net"
 eventhub_name = "my-eventhub"
 
 # Producer
-producer = EventHubProducerClient(
+with EventHubProducerClient(
     fully_qualified_namespace=namespace,
     eventhub_name=eventhub_name,
     credential=credential
-)
+) as producer:
+    # Use producer here (see following sections for operations)
+    ...
 
 # Consumer
-consumer = EventHubConsumerClient(
+with EventHubConsumerClient(
     fully_qualified_namespace=namespace,
     eventhub_name=eventhub_name,
     consumer_group="$Default",
     credential=credential
-)
+) as consumer:
+    # Use consumer here (see following sections for operations)
+    ...
 ```
 
 ## Client Types
@@ -76,13 +91,11 @@ consumer = EventHubConsumerClient(
 from azure.eventhub import EventHubProducerClient, EventData
 from azure.identity import DefaultAzureCredential
 
-producer = EventHubProducerClient(
+with EventHubProducerClient(
     fully_qualified_namespace="<namespace>.servicebus.windows.net",
     eventhub_name="my-eventhub",
     credential=DefaultAzureCredential()
-)
-
-with producer:
+) as producer:
     # Create batch (handles size limits)
     event_data_batch = producer.create_batch()
     
@@ -121,14 +134,12 @@ def on_event(partition_context, event):
     print(f"Data: {event.body_as_str()}")
     partition_context.update_checkpoint(event)
 
-consumer = EventHubConsumerClient(
+with EventHubConsumerClient(
     fully_qualified_namespace="<namespace>.servicebus.windows.net",
     eventhub_name="my-eventhub",
     consumer_group="$Default",
     credential=DefaultAzureCredential()
-)
-
-with consumer:
+) as consumer:
     consumer.receive(
         on_event=on_event,
         starting_position="-1",  # Beginning of stream
@@ -148,20 +159,18 @@ checkpoint_store = BlobCheckpointStore(
     credential=DefaultAzureCredential()
 )
 
-consumer = EventHubConsumerClient(
+with EventHubConsumerClient(
     fully_qualified_namespace="<namespace>.servicebus.windows.net",
     eventhub_name="my-eventhub",
     consumer_group="$Default",
     credential=DefaultAzureCredential(),
     checkpoint_store=checkpoint_store
-)
+) as consumer:
+    def on_event(partition_context, event):
+        print(f"Received: {event.body_as_str()}")
+        # Checkpoint after processing
+        partition_context.update_checkpoint(event)
 
-def on_event(partition_context, event):
-    print(f"Received: {event.body_as_str()}")
-    # Checkpoint after processing
-    partition_context.update_checkpoint(event)
-
-with consumer:
     consumer.receive(on_event=on_event)
 ```
 
@@ -232,13 +241,15 @@ with producer:
 
 ## Best Practices
 
-1. **Use batches** for sending multiple events
-2. **Use checkpoint store** in production for reliable processing
-3. **Use async client** for high-throughput scenarios
-4. **Use partition keys** for ordered delivery within a partition
-5. **Handle batch size limits** — catch ValueError when batch is full
-6. **Use context managers** (`with`/`async with`) for proper cleanup
-7. **Set appropriate consumer groups** for different applications
+1. **Pick sync OR async and stay consistent.** Do not mix `azure.xxx` sync clients with `azure.xxx.aio` async clients in the same call path. Choose one mode per module.
+2. **Always use context managers for clients and async credentials.** Wrap every client in `with Client(...) as client:` (sync) or `async with Client(...) as client:` (async) for proper cleanup. For async `DefaultAzureCredential` from `azure.identity.aio`, also use `async with credential:` so tokens and transports are cleaned up.
+3. **Use `DefaultAzureCredential`** for portable auth across local dev and Azure (avoid connection strings / API keys when possible).
+4. **Use batches** for sending multiple events
+5. **Use checkpoint store** in production for reliable processing
+6. **Use async client** for high-throughput scenarios
+7. **Use partition keys** for ordered delivery within a partition
+8. **Handle batch size limits** — catch ValueError when batch is full
+9. **Set appropriate consumer groups** for different applications
 
 ## Reference Files
 

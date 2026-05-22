@@ -20,3 +20,7 @@ For any brain-audit request:
 5. Rerun the same local evidence checks after edits.
 
 The audit is complete only after findings are either fixed or explicitly documented as deferred with rationale.
+
+## Would Revise If
+
+Revise if the brain-auditor worker misses defect classes that manual review catches on the same audit pass, if local deterministic checks repeatedly disagree with file-validated findings (the muscle is unreliable), or if severity prioritization causes critical defects to ship while medium ones get fixed first.

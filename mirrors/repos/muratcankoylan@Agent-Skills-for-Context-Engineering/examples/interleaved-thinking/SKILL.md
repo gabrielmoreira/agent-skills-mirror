@@ -1,6 +1,6 @@
 ---
 name: reasoning-trace-optimizer
-description: "Debug and optimize AI agents by analyzing reasoning traces. Activates on 'debug agent', 'optimize prompt', 'analyze reasoning', 'why did the agent fail', 'improve agent performance', or when diagnosing agent failures and context degradation."
+description: "Debug and optimize AI agents by analyzing reasoning traces, context degradation, tool confusion, instruction drift, repeated task failures, and performance regressions."
 ---
 
 # Reasoning Trace Optimizer
@@ -9,7 +9,7 @@ Debug and optimize AI agents by analyzing their reasoning traces. This skill use
 
 ## When to Activate
 
-- User asks to "debug agent", "analyze reasoning", or "optimize prompt"
+- Agent reasoning traces need debugging, analysis, or prompt optimization
 - Agent task fails and user wants to understand why
 - User mentions "context degradation", "tool confusion", or "instruction drift"
 - Request to improve agent performance or reduce errors

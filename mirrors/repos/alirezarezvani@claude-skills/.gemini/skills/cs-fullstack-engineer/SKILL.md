@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cs-fullstack-engineer/../../../agents/engineering/cs-fullstack-engineer.md

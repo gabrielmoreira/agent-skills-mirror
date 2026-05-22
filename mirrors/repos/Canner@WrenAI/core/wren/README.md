@@ -1,33 +1,33 @@
-# wren-engine
+# wrenai
 
-[![PyPI version](https://img.shields.io/pypi/v/wren-engine.svg)](https://pypi.org/project/wren-engine/)
-[![Python](https://img.shields.io/pypi/pyversions/wren-engine.svg)](https://pypi.org/project/wren-engine/)
-[![License](https://img.shields.io/pypi/l/wren-engine.svg)](https://github.com/Canner/wren-engine/blob/main/LICENSE)
+[![PyPI version](https://img.shields.io/pypi/v/wrenai.svg)](https://pypi.org/project/wrenai/)
+[![Python](https://img.shields.io/pypi/pyversions/wrenai.svg)](https://pypi.org/project/wrenai/)
+[![License](https://img.shields.io/pypi/l/wrenai.svg)](https://github.com/Canner/WrenAI/blob/main/LICENSE)
 
-Wren Engine CLI and Python SDK — semantic SQL layer for 20+ data sources.
+Wren AI CLI and Python SDK — semantic SQL layer for 20+ data sources.
 
-Translate natural SQL queries through an [MDL (Modeling Definition Language)](https://docs.getwren.ai/) semantic layer and execute them against your database. Powered by [Apache DataFusion](https://datafusion.apache.org/) and [Ibis](https://ibis-project.org/).
+Translate natural SQL queries through an [MDL (Modeling Definition Language)](https://docs.getwren.ai/) semantic layer and execute them against your database. Powered by [Apache DataFusion](https://datafusion.apache.org/).
 
 ## Installation
 
 ```bash
-pip install wren-engine              # Core (DuckDB included)
-pip install wren-engine[postgres]    # PostgreSQL
-pip install wren-engine[mysql]       # MySQL
-pip install wren-engine[bigquery]    # BigQuery
-pip install wren-engine[snowflake]   # Snowflake
-pip install wren-engine[clickhouse]  # ClickHouse
-pip install wren-engine[trino]       # Trino
-pip install wren-engine[mssql]       # SQL Server
-pip install wren-engine[databricks]  # Databricks
-pip install wren-engine[redshift]    # Redshift
-pip install wren-engine[spark]       # Spark
-pip install wren-engine[athena]      # Athena
-pip install wren-engine[oracle]      # Oracle
-pip install 'wren-engine[memory]'    # Schema & query memory (LanceDB)
-pip install 'wren-engine[ui]'        # Browser-based profile form (starlette + uvicorn)
-pip install 'wren-engine[main]'      # memory + interactive prompts + ui
-pip install 'wren-engine[all]'       # All connectors + main
+pip install wrenai              # Core (DuckDB included)
+pip install wrenai[postgres]    # PostgreSQL
+pip install wrenai[mysql]       # MySQL
+pip install wrenai[bigquery]    # BigQuery
+pip install wrenai[snowflake]   # Snowflake
+pip install wrenai[clickhouse]  # ClickHouse
+pip install wrenai[trino]       # Trino
+pip install wrenai[mssql]       # SQL Server
+pip install wrenai[databricks]  # Databricks
+pip install wrenai[redshift]    # Redshift
+pip install wrenai[spark]       # Spark
+pip install wrenai[athena]      # Athena
+pip install wrenai[oracle]      # Oracle
+pip install 'wrenai[memory]'    # Schema & query memory (LanceDB)
+pip install 'wrenai[ui]'        # Browser-based profile form (starlette + uvicorn)
+pip install 'wrenai[main]'      # memory + interactive prompts + ui
+pip install 'wrenai[all]'       # All connectors + main
 ```
 
 Requires Python 3.11+.
@@ -76,7 +76,7 @@ primary_key: order_id
 **2. Configure a connection profile:**
 
 ```bash
-# Browser form (recommended, requires wren-engine[ui])
+# Browser form (recommended, requires wrenai[ui])
 wren profile add my-db --ui
 
 # Interactive terminal prompts
@@ -133,7 +133,7 @@ flags.
 | `strict_mode` | `false` | When `true`, every table in a query must be defined in the MDL. Queries referencing undeclared tables are rejected before execution. |
 | `denied_functions` | `[]` | List of function names (case-insensitive) that are forbidden in queries. |
 
-**6. (Optional) Index schema for semantic search** (requires `wren-engine[memory]`):
+**6. (Optional) Index schema for semantic search** (requires `wrenai[memory]`):
 
 ```bash
 wren memory index                              # index MDL schema
@@ -165,7 +165,7 @@ wren profile debug prod
 wren profile rm old-profile --force
 ```
 
-The `--ui` flag opens a browser-based form that auto-derives fields from each datasource's schema — including file upload for BigQuery credentials, variant selection for Databricks/Redshift, and sensible defaults for all 20+ supported sources. Requires `pip install 'wren-engine[ui]'`.
+The `--ui` flag opens a browser-based form that auto-derives fields from each datasource's schema — including file upload for BigQuery credentials, variant selection for Databricks/Redshift, and sensible defaults for all 20+ supported sources. Requires `pip install 'wrenai[ui]'`.
 
 Once a profile is active, `wren` uses it automatically:
 
@@ -208,7 +208,7 @@ just format         # Auto-fix
 | `just test-mysql` | MySQL connector tests | Yes |
 | `just test` | All tests | Yes |
 
-Profile web tests (`test_profile_web.py`) require `wren-engine[ui]`:
+Profile web tests (`test_profile_web.py`) require `wrenai[ui]`:
 
 ```bash
 uv sync --extra dev --extra ui --find-links ../wren-core-py/target/wheels/
@@ -222,6 +222,36 @@ uv run pytest tests/test_profile_web.py -v
 ./scripts/publish.sh --test     # Build + publish to TestPyPI
 ./scripts/publish.sh --build    # Build only
 ```
+
+## Package rename: `wren-engine` → `wrenai`
+
+Starting with the 0.7.0 release, this PyPI distribution is renamed from
+[`wren-engine`](https://pypi.org/project/wren-engine/) to
+[`wrenai`](https://pypi.org/project/wrenai/) to align with the **Wren AI**
+brand. The legacy `wren-engine` project on PyPI is frozen at 0.6.x and
+will not receive further updates.
+
+### What stays the same
+
+- The Python import path: `import wren` (and submodules under `wren.*`)
+- The `wren` CLI entrypoint and every subcommand (`wren query`,
+  `wren context`, `wren profile`, `wren memory`, …)
+- All extras (`postgres`, `mysql`, `bigquery`, …, `memory`, `ui`, `main`,
+  `all`)
+- Configuration files under `~/.wren/` (profiles, memory, config)
+
+Only the name you type after `pip install` is different.
+
+### Migration
+
+```bash
+pip uninstall wren-engine
+pip install wrenai                  # or: pip install "wrenai[<extras>]"
+wren --version                      # should print: wrenai X.Y.Z
+```
+
+If your project pinned `wren-engine` in a `requirements.txt`,
+`pyproject.toml`, or lockfile, replace it with `wrenai` and re-lock.
 
 ## License
 

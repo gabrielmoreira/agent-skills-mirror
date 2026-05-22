@@ -28,7 +28,18 @@ AZURE_SUBSCRIPTION_ID=your-subscription-id  # Required for all auth methods
 AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
 ```
 
-## Authentication
+## Authentication & Lifecycle
+
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
 
 ```python
 from azure.identity import DefaultAzureCredential, ManagedIdentityCredential
@@ -41,10 +52,12 @@ credential = DefaultAzureCredential(require_envvar=True)
 # See https://learn.microsoft.com/python/api/overview/azure/identity-readme?view=azure-python#credential-classes
 # credential = ManagedIdentityCredential()
 
-client = ApiManagementClient(
+with ApiManagementClient(
     credential=credential,
     subscription_id=os.environ["AZURE_SUBSCRIPTION_ID"]
-)
+) as client:
+    # Use `client` for all subsequent operations (see examples below)
+    ...
 ```
 
 ## Create APIM Service
@@ -281,9 +294,11 @@ user = client.user.create_or_update(
 
 ## Best Practices
 
-1. **Use named values** for secrets and configuration
-2. **Apply policies** at appropriate scopes (global, product, API, operation)
-3. **Use products** to bundle APIs and manage access
-4. **Enable Application Insights** for monitoring
-5. **Use backends** to abstract backend services
-6. **Version your APIs** using APIM's versioning features
+1. **Pick sync OR async and stay consistent.** Do not mix `azure.xxx` sync clients with `azure.xxx.aio` async clients in the same call path. Choose one mode per module.
+2. **Always use context managers for clients and async credentials.** Wrap every client in `with Client(...) as client:` (sync) or `async with Client(...) as client:` (async). For async `DefaultAzureCredential` from `azure.identity.aio`, also use `async with credential:` so tokens and transports are cleaned up.
+3. **Use named values** for secrets and configuration
+4. **Apply policies** at appropriate scopes (global, product, API, operation)
+5. **Use products** to bundle APIs and manage access
+6. **Enable Application Insights** for monitoring
+7. **Use backends** to abstract backend services
+8. **Version your APIs** using APIM's versioning features

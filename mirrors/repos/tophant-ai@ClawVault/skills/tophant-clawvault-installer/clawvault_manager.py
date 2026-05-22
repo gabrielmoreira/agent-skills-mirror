@@ -36,7 +36,7 @@ REPO_URL = "https://github.com/tophant-ai/ClawVault"
 CLAWVAULT_GITHUB_REF = "main"
 CLAWVAULT_GITHUB_SPEC = f"git+{REPO_URL}.git@{CLAWVAULT_GITHUB_REF}"
 DEFAULT_DASHBOARD_HOST = "127.0.0.1"
-VERSION = "0.2.12"
+VERSION = "0.2.13"
 
 
 class ClawVaultManager:
@@ -904,6 +904,76 @@ class ClawVaultManager:
             )
         ]
 
+    def install_openclaw_plugin(
+        self,
+        plugin_dir: str | None = None,
+        mode: str = "strict",
+        clawvault_url: str = "http://127.0.0.1:8766",
+    ) -> dict:
+        """Build and link the OpenClaw file-guard plugin."""
+        root = Path(plugin_dir).expanduser() if plugin_dir else Path.cwd() / "openclaw-file-guard"
+        if not root.exists():
+            return {"success": False, "error": f"Plugin directory not found: {root}"}
+
+        build = subprocess.run(
+            ["npm", "run", "build"],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+        if build.returncode != 0:
+            return {
+                "success": False,
+                "error": "plugin_build_failed",
+                "stdout": build.stdout[-2000:],
+                "stderr": build.stderr[-2000:],
+            }
+
+        install = subprocess.run(
+            ["openclaw", "plugins", "install", "--link", "."],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+        if install.returncode != 0:
+            return {
+                "success": False,
+                "error": "plugin_install_failed",
+                "stdout": install.stdout[-2000:],
+                "stderr": install.stderr[-2000:],
+            }
+
+        config_path = Path.home() / ".openclaw/openclaw.json"
+        config_updated = False
+        if config_path.exists():
+            try:
+                cfg = json.loads(config_path.read_text())
+                plugins = cfg.setdefault("plugins", {})
+                entries = plugins.setdefault("entries", {})
+                entry = entries.setdefault("openclaw-file-guard", {})
+                entry["enabled"] = True
+                plugin_cfg = entry.setdefault("config", {})
+                plugin_cfg["clawvaultUrl"] = clawvault_url
+                plugin_cfg["mode"] = mode
+                config_path.write_text(json.dumps(cfg, indent=2, ensure_ascii=False) + "\n")
+                config_updated = True
+            except (OSError, ValueError, TypeError) as exc:
+                return {
+                    "success": False,
+                    "error": f"plugin_installed_but_config_failed: {exc}",
+                }
+
+        return {
+            "success": True,
+            "plugin_dir": str(root),
+            "config_path": str(config_path),
+            "config_updated": config_updated,
+            "mode": mode,
+            "clawvault_url": clawvault_url,
+        }
+
     # ── HTTP helper (stdlib only) ─────────────────────────────
 
     @staticmethod
@@ -969,6 +1039,26 @@ def main():
         action="store_true",
         help="Restart openclaw-gateway after proxy configuration (may disconnect or hang OpenClaw)",
     )
+    install_parser.add_argument(
+        "--install-plugin",
+        action="store_true",
+        help="Build and link the OpenClaw file-guard plugin after install",
+    )
+    install_parser.add_argument(
+        "--plugin-dir",
+        help="Path to the openclaw-file-guard plugin directory",
+    )
+    install_parser.add_argument(
+        "--plugin-mode",
+        choices=["log", "strict"],
+        default="strict",
+        help="OpenClaw file-guard plugin mode when --install-plugin is used",
+    )
+    install_parser.add_argument(
+        "--clawvault-url",
+        default="http://127.0.0.1:8766",
+        help="ClawVault dashboard URL for the OpenClaw file-guard plugin",
+    )
     install_parser.add_argument("--json", action="store_true", help="Output JSON")
 
     # Health command
@@ -1020,6 +1110,15 @@ def main():
             configure_gateway_proxy=args.configure_gateway_proxy,
             restart_gateway=args.restart_gateway,
         )
+        if result.get("success") and args.install_plugin:
+            plugin_result = manager.install_openclaw_plugin(
+                plugin_dir=args.plugin_dir,
+                mode=args.plugin_mode,
+                clawvault_url=args.clawvault_url,
+            )
+            result["openclaw_plugin"] = plugin_result
+            if not plugin_result.get("success"):
+                result["success"] = False
     elif args.command == "health":
         result = manager.check_health()
         if not args.json:

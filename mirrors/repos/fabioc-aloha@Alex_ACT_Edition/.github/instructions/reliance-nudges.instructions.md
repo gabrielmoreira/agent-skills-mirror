@@ -54,3 +54,7 @@ The educational content remains available as Mall skills for users who want the 
 - `skills/critical-thinking/appropriate-reliance/`
 - `skills/critical-thinking/awareness/`
 - `skills/critical-thinking/calibration-tracking/`
+
+## Would Revise If
+
+Revise if the 6 signal patterns produce false-positive nudges that interrupt user flow more often than they catch real over-reliance, if nudges deliver no measurable change in user verification behavior over a quarter, or if the inhibition rules fail and stacked nudges appear in single responses 2+ times in observed sessions.

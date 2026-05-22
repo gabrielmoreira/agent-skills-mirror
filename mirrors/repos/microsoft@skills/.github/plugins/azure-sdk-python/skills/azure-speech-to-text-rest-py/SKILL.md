@@ -351,12 +351,14 @@ Common language codes (see [full list](https://learn.microsoft.com/azure/ai-serv
 
 ## Best Practices
 
-1. **Use WAV PCM 16kHz mono** for best compatibility
-2. **Enable chunked transfer** for lower latency
-3. **Cache access tokens** for 9 minutes (valid for 10)
-4. **Specify the correct language** for accurate recognition
-5. **Use detailed format** when you need confidence scores
-6. **Handle all RecognitionStatus values** in production code
+1. **Pick sync OR async and stay consistent.** Do not mix `azure.xxx` sync clients with `azure.xxx.aio` async clients in the same call path. Choose one mode per module.
+2. **Always use context managers for clients.** Use `with httpx.Client(...) as client:` (sync) or `async with httpx.AsyncClient(...) as client:` (async) so connections are pooled and closed deterministically.
+3. **Use WAV PCM 16kHz mono** for best compatibility
+4. **Enable chunked transfer** for lower latency
+5. **Cache access tokens** for 9 minutes (valid for 10)
+6. **Specify the correct language** for accurate recognition
+7. **Use detailed format** when you need confidence scores
+8. **Handle all RecognitionStatus values** in production code
 
 ## When NOT to Use This API
 

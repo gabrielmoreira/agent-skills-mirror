@@ -9,6 +9,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [11.5.0] - 2026-05-21 - "Security Boundary Hardening and New Agent Skills"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+This release hardens plugin-safe distribution boundaries, resolves the current Dependabot `ws` alert in the web app lockfile, and merges PR #604 and PR #605 through the maintainer workflow.
+
+## New Skills
+
+- **subagent-orchestrator** - quota-aware parallel subagent coordination for large, multi-file Antigravity tasks.
+- **bilig-workpaper** - formula-backed WorkPaper JSON and MCP guidance for deterministic spreadsheet-style agent workflows.
+
+## Security
+
+- **plugin-safe boundary hardening** - blocks critical-risk or third-party setup-sensitive community skills from the generated Codex and Claude plugin-safe distributions.
+- **ingest-youtube input hardening** - validates single-video YouTube URLs, terminates `yt-dlp` options with `--`, ignores user config, adds subprocess timeouts, and neutralizes untrusted metadata in generated markdown.
+- **web app dependency fixes** - updates `ws` to the patched `8.20.1` range and refreshes vulnerable transitive audit entries in `apps/web-app/package-lock.json`.
+
+## Improvements
+
+- **generated artifact sync** - refreshes compatibility data, skill indexes, plugin mirrors, docs, and visible skill counts to `1,464+`.
+- **subagent-orchestrator metadata** - normalizes PR #604 metadata so the skill passes repository validation.
+
+## Who should care
+
+- **Plugin users** get a safer marketplace-style distribution that excludes setup-sensitive critical workflows from safe plugin bundles.
+- **Vault users** get safer YouTube transcript ingestion with stricter URL and markdown handling.
+- **Agent workflow builders** get two new community skills for parallel agent coordination and formula-backed workbook automation.
+
+## Credits
+
+- **[@sulavmgr456-byte](https://github.com/sulavmgr456-byte)** for PR #604 (`subagent-orchestrator`).
+- **[@gregkonush](https://github.com/gregkonush)** for PR #605 (`bilig-workpaper`).
+
 ## [11.4.1] - 2026-05-20 - "Installer Supply-Chain Hardening"
 
 > Patch release for the npm installer used by Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.

@@ -1,0 +1,626 @@
+{
+  "version": 1,
+  "project": "gpt-image-canvas",
+  "overview": "Build a local professional AI canvas using tldraw, Hono, SQLite, and GPT Image 2. Ralph must execute one story per iteration, commit story changes, and keep secrets out of the repository.",
+  "goals": [
+    "Provide a local tldraw-based canvas for AI image creation and visual comparison.",
+    "Support GPT Image 2 text-to-image as the primary workflow.",
+    "Support single selected canvas image as a reference for image-to-image generation.",
+    "Persist projects, history, generated image metadata, and assets locally.",
+    "Offer Docker Compose as a one-command production-style local runtime."
+  ],
+  "nonGoals": [
+    "Do not support models other than gpt-image-2 in v1.",
+    "Do not implement user accounts, cloud sync, billing, multi-project management, or collaborative editing.",
+    "Do not implement mask-based inpainting or local region editing.",
+    "Do not implement arbitrary third-party request/response mapping; only support OpenAI-compatible base URLs.",
+    "Do not commit real API keys, generated assets, SQLite databases, or Ralph runtime state."
+  ],
+  "successMetrics": [
+    "A user can open the local app, type a prompt, choose a size, and generate images onto the tldraw canvas.",
+    "Generated images are written under the local data directory and remain available after restart.",
+    "The canvas snapshot and generation history restore after restart.",
+    "A selected canvas image can be used as a single reference image for a new generation.",
+    "Docker Compose can build and serve the app from one localhost port."
+  ],
+  "openQuestions": [
+    "No product-level open questions remain. If live API credentials are missing, record that the final live API smoke could not run instead of committing secrets."
+  ],
+  "stack": {
+    "packageManager": "pnpm 9.14.2 workspaces",
+    "frontend": "React + Vite + TypeScript + tldraw + Tailwind CSS + lucide-react",
+    "backend": "Hono on Node.js with TypeScript",
+    "database": "SQLite using Drizzle ORM and better-sqlite3",
+    "imageProvider": "OpenAI-compatible Images API, fixed model gpt-image-2",
+    "runtime": "Node.js 22",
+    "deploy": "Dockerfile and docker-compose.yml with a single app service",
+    "storage": "Host ./data bind-mounted to /app/data in Docker"
+  },
+  "routes": [
+    {
+      "path": "/",
+      "name": "Canvas App",
+      "purpose": "React/tldraw creative workspace served by Vite in development and by Hono in production."
+    },
+    {
+      "path": "/api/health",
+      "name": "Health Check",
+      "purpose": "Confirm the API server is running."
+    },
+    {
+      "path": "/api/config",
+      "name": "App Config",
+      "purpose": "Return fixed model, supported size presets, style presets, quality options, formats, and counts."
+    },
+    {
+      "path": "/api/project",
+      "name": "Project State",
+      "purpose": "Load and save the single default project and tldraw snapshot."
+    },
+    {
+      "path": "/api/images/generate",
+      "name": "Text To Image",
+      "purpose": "Generate one or more GPT Image 2 images from a prompt."
+    },
+    {
+      "path": "/api/images/edit",
+      "name": "Reference Image Generation",
+      "purpose": "Generate images using a single selected canvas image as reference."
+    },
+    {
+      "path": "/api/assets/:id",
+      "name": "Asset File",
+      "purpose": "Serve locally stored generated image files."
+    },
+    {
+      "path": "/api/assets/:id/download",
+      "name": "Asset Download",
+      "purpose": "Download the original generated asset."
+    }
+  ],
+  "uiNotes": [
+    "The UI language is Chinese.",
+    "The app opens directly into the working canvas; do not build a marketing landing page.",
+    "Use a full-height tldraw canvas with a fixed right-side AI panel.",
+    "Keep the canvas clean: do not place prompt labels next to generated images.",
+    "Use scene-oriented size presets with visible dimensions, plus custom width/height inputs.",
+    "Hide background and transparency controls because v1 only supports gpt-image-2.",
+    "Basic controls stay visible: prompt, style preset, size preset/custom size, count, generate/cancel.",
+    "Advanced controls are collapsible: quality and output format.",
+    "History shows recent generations with actions to locate, rerun, and download."
+  ],
+  "dataModel": [
+    {
+      "entity": "Project",
+      "fields": [
+        "id",
+        "name",
+        "snapshotJson",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    {
+      "entity": "Asset",
+      "fields": [
+        "id",
+        "fileName",
+        "relativePath",
+        "mimeType",
+        "width",
+        "height",
+        "createdAt"
+      ]
+    },
+    {
+      "entity": "GenerationRecord",
+      "fields": [
+        "id",
+        "mode",
+        "prompt",
+        "effectivePrompt",
+        "presetId",
+        "width",
+        "height",
+        "quality",
+        "outputFormat",
+        "count",
+        "status",
+        "error",
+        "referenceAssetId",
+        "createdAt"
+      ]
+    },
+    {
+      "entity": "GenerationOutput",
+      "fields": [
+        "id",
+        "generationId",
+        "status",
+        "assetId",
+        "error",
+        "createdAt"
+      ]
+    }
+  ],
+  "importFormat": {
+    "description": "Not applicable for v1. Users create and persist work locally inside the app.",
+    "example": {}
+  },
+  "rules": [
+    "Ralph must complete exactly one story per iteration and commit story changes unless explicitly run with no-commit.",
+    "Treat the current uncommitted scaffold files as draft work that US-001 should normalize, not as final implementation.",
+    "The only supported image model is gpt-image-2. Do not add model switching UI.",
+    "Read OPENAI_API_KEY, OPENAI_BASE_URL, PORT, HOST, and DATA_DIR from environment variables or .env.",
+    "Do not read the user's global Codex config for image API credentials.",
+    "Do not log or commit real API keys.",
+    "The OpenAI-compatible base URL is configurable, but request and response semantics remain OpenAI Images API-compatible.",
+    "Validate custom sizes on both frontend and backend. Reject invalid values with clear Chinese errors instead of silently changing them.",
+    "Batch generation supports counts 1, 2, and 4 with backend concurrency limited to 2. Do not restrict batch count for large images.",
+    "On partial batch failures, keep successful assets and record failed outputs.",
+    "Canceling a generation aborts the client request and prevents canceled results from being inserted into the canvas.",
+    "Deleting an image shape from the canvas does not delete its local file or history entry.",
+    "The single default project autosaves with debounce.",
+    "Docker Compose uses one app service and bind-mounts ./data to /app/data.",
+    "Every story must run pnpm typecheck and pnpm build after implementation. Frontend stories must also perform browser verification."
+  ],
+  "qualityGates": [
+    "pnpm typecheck",
+    "pnpm build"
+  ],
+  "stories": [
+    {
+      "id": "US-001",
+      "title": "Standardize repository scaffold for Ralph execution",
+      "status": "done",
+      "dependsOn": [],
+      "description": "As a maintainer, I want a clean pnpm workspace, Ralph task file, and operational repository notes so subsequent Ralph stories can run deterministically.",
+      "acceptanceCriteria": [
+        "Normalize the existing draft scaffold into a valid pnpm workspace with apps/api, apps/web, and packages/shared.",
+        "Install or preserve Ralph templates under .agents/ralph and keep this PRD at .agents/tasks/prd-gpt-image-canvas.json.",
+        "Root scripts include dev, api:dev, web:dev, typecheck, build, and start.",
+        ".env.example documents OPENAI_API_KEY, OPENAI_BASE_URL, OPENAI_IMAGE_MODEL=gpt-image-2, PORT, HOST, and DATA_DIR without real secrets.",
+        ".gitignore excludes .env, .ralph, data, generated assets, databases, node_modules, and build outputs.",
+        "AGENTS.md documents pnpm, quality gates, app boundaries, and the no-secret rule.",
+        "Example: running pnpm --version reports pnpm 9.x and the workspace files are present.",
+        "Negative case: real API keys must not appear in README, .env.example, PRD, AGENTS.md, or committed files.",
+        "Verification: pnpm typecheck and pnpm build either pass or fail only because dependencies have not yet been installed; if dependencies are missing, run pnpm install and rerun."
+      ],
+      "startedAt": "2026-04-27T08:05:55.583781+00:00",
+      "completedAt": "2026-04-27T08:14:49.888485+00:00",
+      "updatedAt": "2026-04-27T08:14:49.888485+00:00"
+    },
+    {
+      "id": "US-002",
+      "title": "Build Hono API with SQLite persistence",
+      "status": "done",
+      "dependsOn": [
+        "US-001"
+      ],
+      "description": "As a local app user, I want the API to persist my single project, generation history, and generated asset metadata in SQLite so work survives restarts.",
+      "acceptanceCriteria": [
+        "Add apps/api with Hono, @hono/node-server, dotenv, drizzle-orm, drizzle-kit, and better-sqlite3.",
+        "Create SQLite schema for Project, Asset, GenerationRecord, and GenerationOutput.",
+        "Initialize DATA_DIR, assets directory, and database file automatically at startup.",
+        "Implement GET /api/health returning ok status.",
+        "Implement GET /api/config returning model gpt-image-2, style presets, size presets, qualities, formats, and counts.",
+        "Implement GET /api/project and PUT /api/project for the single default project snapshot.",
+        "Example: a saved snapshot can be loaded again after restarting the API.",
+        "Negative case: invalid project payload returns a 400 JSON error and does not corrupt stored state.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-04-27T08:15:41.092106+00:00",
+      "completedAt": "2026-04-27T08:29:12.320013+00:00",
+      "updatedAt": "2026-04-27T08:29:12.320013+00:00"
+    },
+    {
+      "id": "US-003",
+      "title": "Create React tldraw workspace shell",
+      "status": "done",
+      "dependsOn": [
+        "US-001",
+        "US-002"
+      ],
+      "description": "As a creator, I want a Chinese professional canvas interface with tldraw and an AI control panel so I can start composing images immediately.",
+      "acceptanceCriteria": [
+        "Add apps/web with React, Vite, TypeScript, tldraw, Tailwind CSS, lucide-react, and a Vite proxy to the API.",
+        "Render a full-height tldraw canvas with a fixed right-side Chinese AI panel.",
+        "Panel includes visible prompt, style preset, scene size preset, custom width/height, count, generate, and cancel controls.",
+        "Panel includes collapsible advanced controls for quality and output format.",
+        "Do not show model selection, background controls, or transparent background controls.",
+        "Example: selecting a scene preset updates the visible width and height.",
+        "Negative case: an empty prompt disables generation or shows a clear Chinese validation message.",
+        "Browser verification: run the app, load the workspace, confirm tldraw canvas and panel render without overlap.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-04-27T08:54:43.603864+00:00",
+      "completedAt": "2026-04-27T09:04:23.874699+00:00",
+      "updatedAt": "2026-04-27T09:04:23.874699+00:00"
+    },
+    {
+      "id": "US-004",
+      "title": "Autosave and restore the tldraw project",
+      "status": "done",
+      "dependsOn": [
+        "US-002",
+        "US-003"
+      ],
+      "description": "As a creator, I want my canvas to autosave and restore so refreshing the app does not lose layout or work in progress.",
+      "acceptanceCriteria": [
+        "On app load, fetch /api/project and restore the saved tldraw snapshot if present.",
+        "Autosave the tldraw snapshot through PUT /api/project with debounce after canvas changes.",
+        "Show a compact save status in the AI panel or app chrome.",
+        "Do not save on every pointer movement without debounce.",
+        "Example: draw or add a shape, refresh, and the shape reappears.",
+        "Negative case: if the API save fails, the UI shows a non-blocking Chinese error and keeps the current canvas intact.",
+        "Browser verification: create a shape, refresh, and confirm it restores.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-04-27T09:04:55.068960+00:00",
+      "completedAt": "2026-04-27T09:18:55.100801+00:00",
+      "updatedAt": "2026-04-27T09:18:55.100801+00:00"
+    },
+    {
+      "id": "US-005",
+      "title": "Implement GPT Image 2 provider and size validation",
+      "status": "done",
+      "dependsOn": [
+        "US-002"
+      ],
+      "description": "As a maintainer, I want a safe GPT Image 2 provider abstraction so generation requests are validated and secrets remain on the server.",
+      "acceptanceCriteria": [
+        "Implement an image provider interface for generate and edit operations, with only an OpenAI-compatible GPT Image 2 implementation.",
+        "Read OPENAI_API_KEY and OPENAI_BASE_URL from environment variables or .env; do not read global Codex config.",
+        "Hard-code or enforce model gpt-image-2 on provider calls.",
+        "Implement shared frontend/backend size validation for scene presets and custom sizes.",
+        "Return Chinese JSON errors for missing API key, invalid prompt, invalid size, unsupported provider behavior, or upstream failure.",
+        "Do not log API keys or full authorization headers.",
+        "Example: valid custom size passes validation and produces the OpenAI-compatible size value.",
+        "Negative case: invalid custom size returns 400 before contacting upstream.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-04-27T09:19:21.983840+00:00",
+      "completedAt": "2026-04-27T09:34:50.298980+00:00",
+      "updatedAt": "2026-04-27T09:34:50.298980+00:00"
+    },
+    {
+      "id": "US-006",
+      "title": "Generate text-to-image assets onto the canvas",
+      "status": "done",
+      "dependsOn": [
+        "US-003",
+        "US-004",
+        "US-005"
+      ],
+      "description": "As a creator, I want to generate one or more images from a text prompt and place them on the canvas in a grid so I can compare options visually.",
+      "acceptanceCriteria": [
+        "Implement POST /api/images/generate accepting prompt, presetId, size, quality, outputFormat, and count.",
+        "Compose style presets into the effective prompt by appending the preset prompt transparently.",
+        "Execute batch requests with backend concurrency limited to 2.",
+        "Save successful image files under data/assets and metadata/history in SQLite.",
+        "Return a generation record with per-output success or failure.",
+        "Insert successful image outputs into tldraw as image assets and shapes in a neat grid centered in the current viewport.",
+        "Canceling a request prevents canceled results from being inserted into the canvas.",
+        "Example: count 4 produces up to four canvas images arranged as a grid.",
+        "Negative case: one failed output still leaves successful outputs on the canvas and records the failure.",
+        "Browser verification: submit a generation request using configured credentials and confirm image insertion when credentials are available; otherwise verify the missing-key error.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-04-27T09:35:21.781141+00:00",
+      "completedAt": "2026-04-27T10:03:29.050221+00:00",
+      "updatedAt": "2026-04-27T10:03:29.050221+00:00"
+    },
+    {
+      "id": "US-007",
+      "title": "Generate from a single selected reference image",
+      "status": "done",
+      "dependsOn": [
+        "US-006"
+      ],
+      "description": "As a creator, I want to select one image on the canvas and use it as a reference for a new GPT Image 2 generation.",
+      "acceptanceCriteria": [
+        "Detect when exactly one tldraw image shape is selected and expose it as the current reference in the AI panel.",
+        "Implement POST /api/images/edit accepting prompt, size, quality, outputFormat, count, and one reference image.",
+        "Support reference images from generated assets and from user-added canvas image assets when their data can be read by the frontend.",
+        "Place edit outputs near the current viewport in the same grid style as text-to-image outputs.",
+        "Record referenceAssetId when the reference maps to a locally stored asset.",
+        "Example: selecting one image enables the reference generation mode and produces a new related image.",
+        "Negative case: selecting zero, multiple, or non-image shapes keeps reference generation disabled with a clear Chinese hint.",
+        "Browser verification: select one canvas image and confirm reference UI state; perform live edit smoke only when credentials support it.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-04-27T10:04:00.241791+00:00",
+      "completedAt": "2026-04-27T10:26:25.518705+00:00",
+      "updatedAt": "2026-04-27T10:26:25.518705+00:00"
+    },
+    {
+      "id": "US-008",
+      "title": "Add generation history actions",
+      "status": "done",
+      "dependsOn": [
+        "US-006",
+        "US-007"
+      ],
+      "description": "As a creator, I want a simple persistent history so I can locate, rerun, and download previous generation results.",
+      "acceptanceCriteria": [
+        "Show recent generation records in the right panel with prompt excerpt, mode, size, status, created time, and output count.",
+        "Clicking locate moves the tldraw camera to the corresponding canvas image when it still exists.",
+        "Rerun submits a new generation with the same prompt, preset, size, quality, format, count, and reference when available.",
+        "Download opens or downloads the original locally stored asset through /api/assets/:id/download.",
+        "Deleting a canvas image shape does not delete the asset file or history record.",
+        "Example: after refresh, history still appears and download works for stored assets.",
+        "Negative case: locating a deleted canvas shape shows a Chinese not-found message instead of crashing.",
+        "Browser verification: generate or use existing history, locate an output, rerun it, and download an asset.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-04-27T10:55:36.783390+00:00",
+      "completedAt": "2026-04-27T11:12:28.876845+00:00",
+      "updatedAt": "2026-04-27T11:12:28.876845+00:00"
+    },
+    {
+      "id": "US-009",
+      "title": "Package the app with Docker Compose",
+      "status": "done",
+      "dependsOn": [
+        "US-002",
+        "US-003",
+        "US-008"
+      ],
+      "description": "As a local operator, I want Docker Compose to build and serve the complete app from one localhost port with data persisted on the host.",
+      "acceptanceCriteria": [
+        "Add Dockerfile using Node.js 22 and pnpm via Corepack.",
+        "Build shared, web, and API packages in the image.",
+        "Serve the built web bundle through Hono from the same app service that serves /api.",
+        "Add docker-compose.yml with one app service, localhost port mapping, env_file .env, and ./data bind-mounted to /app/data.",
+        "Document Docker startup in README.",
+        "Example: docker compose up --build serves the app at localhost on the configured port.",
+        "Negative case: missing .env credentials does not stop the app from booting; generation endpoints return missing-key errors.",
+        "Verification: pnpm typecheck and pnpm build pass; docker compose config succeeds."
+      ],
+      "startedAt": "2026-04-27T11:17:57.764970+00:00",
+      "completedAt": "2026-04-27T12:03:00.000000+00:00",
+      "updatedAt": "2026-04-27T12:03:00.000000+00:00"
+    },
+    {
+      "id": "US-010",
+      "title": "Run final local, Docker, and live API smoke verification",
+      "status": "done",
+      "dependsOn": [
+        "US-009"
+      ],
+      "description": "As a maintainer, I want final end-to-end verification so the Ralph build leaves a usable local professional image canvas.",
+      "acceptanceCriteria": [
+        "Run pnpm typecheck and pnpm build successfully.",
+        "Start the local dev workflow and browser-verify the canvas, AI panel, autosave, history, and download flows.",
+        "Run docker compose config and, when Docker is available, docker compose up --build long enough to confirm the app boots.",
+        "If .env has valid credentials, perform one live text-to-image smoke and one live reference-image smoke using gpt-image-2.",
+        "If credentials or provider capability are unavailable, record the exact reason in Ralph progress without committing secrets.",
+        "Update README with final setup, dev, Docker, data storage, and troubleshooting notes.",
+        "Example: a user following README can run the app and generate onto the canvas.",
+        "Negative case: missing credentials are handled as a runtime configuration problem, not as a build failure.",
+        "Verification: final story records commands run, browser findings, Docker findings, and live API smoke status."
+      ],
+      "startedAt": "2026-04-27T12:24:59.997597+00:00",
+      "completedAt": "2026-04-27T13:58:49.000000+00:00",
+      "updatedAt": "2026-04-27T13:58:49.000000+00:00"
+    },
+    {
+      "id": "US-011",
+      "title": "Optimize text generation main flow",
+      "status": "done",
+      "dependsOn": [
+        "US-010"
+      ],
+      "description": "As a creator, I want text-to-image generation to be the default, clear, and low-friction path so selecting canvas content never accidentally changes my generation mode.",
+      "acceptanceCriteria": [
+        "Add a compact segmented control labelled \u6587\u672c\u751f\u6210 / \u53c2\u8003\u751f\u6210, defaulting to \u6587\u672c\u751f\u6210.",
+        "In text mode, generation must not depend on the selected canvas image and must always call /api/images/generate.",
+        "An empty prompt must not show a warning on initial load; show the Chinese validation message only after the user attempts generation or another invalid field is active.",
+        "When the prompt is empty, show a small set of prompt starter chips; clicking a chip fills the prompt draft.",
+        "Keep the first-screen controls focused on style preset, scene size/custom dimensions, and count; keep quality and output format in the existing advanced section.",
+        "Example: with an image selected on the canvas, text mode still sends a text-to-image request.",
+        "Negative case: clicking generate with an empty prompt shows a clear Chinese validation message and sends no request.",
+        "Browser verification: verify empty prompt behavior, chip fill behavior, button enabled/disabled state, and that text mode uses /api/images/generate.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-04-28T03:48:23.551322+00:00",
+      "completedAt": "2026-04-28T04:01:01.153725+00:00",
+      "updatedAt": "2026-04-28T04:01:01.153725+00:00"
+    },
+    {
+      "id": "US-012",
+      "title": "Build responsive panel and mobile drawer",
+      "status": "done",
+      "dependsOn": [
+        "US-011"
+      ],
+      "description": "As a creator, I want the desktop AI panel to feel polished and the mobile canvas to remain usable so the AI controls never crush the drawing workspace.",
+      "acceptanceCriteria": [
+        "On desktop, set the AI panel width to clamp(380px, 28vw, 440px) and keep the canvas padded by the same responsive width.",
+        "Below 1024px, convert the AI panel to a drawer that is closed by default and does not reduce the canvas width.",
+        "Show a floating AI \u751f\u6210 button on small screens that opens the drawer.",
+        "The drawer must support close button, backdrop click, Escape key, and basic aria attributes such as aria-expanded or aria-modal where appropriate.",
+        "Prevent horizontal scrolling and ensure the bottom CTA does not overlap form content or safe-area insets.",
+        "Example: on a 390px wide viewport, the canvas remains nearly full width before opening the drawer.",
+        "Negative case: closing the drawer must return focusable access to the canvas and must not leave an invisible overlay blocking interaction.",
+        "Browser verification: verify desktop 1440x900 and mobile 390x844 layouts.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-04-28T04:02:06.754747+00:00",
+      "completedAt": "2026-04-28T04:18:56.570650+00:00",
+      "updatedAt": "2026-04-28T04:18:56.570650+00:00"
+    },
+    {
+      "id": "US-013",
+      "title": "Add canvas generation placeholders and loading motion",
+      "status": "done",
+      "dependsOn": [
+        "US-011"
+      ],
+      "description": "As a creator, I want generated images to have visible canvas placeholders while loading so I can see the expected size, count, and placement immediately.",
+      "acceptanceCriteria": [
+        "Add a tldraw custom shape util named generation-placeholder, registered through Tldraw shapeUtils.",
+        "When generation starts for count 1, 2, or 4, create matching placeholder shapes in a centered viewport grid using the target output aspect ratio and display size.",
+        "Loading placeholders show the target dimensions, Chinese generating copy, and a spinner, shimmer, or breathing-border loading animation.",
+        "On success, replace each corresponding placeholder in place with the generated image asset and image shape, preserving placement instead of recalculating the grid.",
+        "On partial failure, replace successful placeholders and keep failed placeholders with a concise Chinese error state.",
+        "On cancel, delete loading placeholders for the canceled request.",
+        "Autosave must filter out placeholders whose status is loading so refresh never restores an eternal loading object; failed placeholders may persist.",
+        "Example: count 4 creates four loading placeholders before the network response resolves.",
+        "Negative case: missing API key creates a failed placeholder state rather than leaving a spinner forever.",
+        "Browser verification: verify success when credentials are available, missing-key failure, cancel cleanup, and refresh behavior.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-04-28T04:19:21.584476+00:00",
+      "completedAt": "2026-04-28T04:51:01.559646+00:00",
+      "updatedAt": "2026-04-28T04:51:01.559646+00:00"
+    },
+    {
+      "id": "US-014",
+      "title": "Make reference generation an explicit mode",
+      "status": "done",
+      "dependsOn": [
+        "US-011",
+        "US-013"
+      ],
+      "description": "As a creator, I want reference generation to be an explicit secondary mode so selecting canvas images does not unexpectedly change the main generation action.",
+      "acceptanceCriteria": [
+        "Only evaluate selected canvas images for generation eligibility when the user has switched to \u53c2\u8003\u751f\u6210 mode.",
+        "In reference mode, zero images, multiple objects, non-image selection, or unreadable image selection show compact Chinese guidance and disable generation.",
+        "When exactly one readable image is selected in reference mode, show its file name and dimensions and submit to /api/images/edit.",
+        "Provide a cancel-reference action that calls editor.selectNone() and returns the reference mode panel to its missing-image state.",
+        "Reference generation must use the same canvas placeholder lifecycle as text generation, including loading, success replacement, partial failure, and cancel cleanup.",
+        "Example: selecting one generated image and switching to \u53c2\u8003\u751f\u6210 enables the generate CTA.",
+        "Negative case: selecting a shape that is not an image must not submit an edit request.",
+        "Browser verification: verify no-image, valid-image, cancel-reference, and reference request path behavior.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-04-28T04:51:34.535135+00:00",
+      "completedAt": "2026-04-28T05:09:11.670Z",
+      "updatedAt": "2026-04-28T05:09:11.670Z"
+    },
+    {
+      "id": "US-015",
+      "title": "Polish history records and status feedback",
+      "status": "done",
+      "dependsOn": [
+        "US-011"
+      ],
+      "description": "As a creator, I want generation history and status feedback to be compact and clear so the panel supports iteration without overwhelming the main prompt flow.",
+      "acceptanceCriteria": [
+        "Show only the latest three generation history records by default, with an expand/collapse affordance for additional records.",
+        "Restyle history records as compact list items preserving prompt excerpt, status, size, output count, created time, locate, rerun, and download actions.",
+        "Keep locate, rerun, and download actions aligned with clear hover, focus, and disabled states.",
+        "Use an inline panel status strip for generation progress, success, validation, and error messages; the main CTA also shows loading copy while generating.",
+        "After successful generation, keep the panel open, select the newly inserted image or images, and update history at the top.",
+        "Example: a long history does not push core prompt controls out of the first screen.",
+        "Negative case: download for records without a successful local asset remains disabled and visually clear.",
+        "Browser verification: verify default three records, expand/collapse, locate, rerun disabled while generating, and download disabled state.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-04-28T05:14:57.278681+00:00",
+      "completedAt": "2026-04-28T05:33:45.563836+00:00",
+      "updatedAt": "2026-04-28T05:33:45.563836+00:00"
+    },
+    {
+      "id": "US-016",
+      "title": "Run final UX verification and Ralph handoff",
+      "status": "done",
+      "dependsOn": [
+        "US-012",
+        "US-013",
+        "US-014",
+        "US-015"
+      ],
+      "description": "As a maintainer, I want final UX regression verification and Ralph progress notes so the incremental UX work is ready to hand off.",
+      "acceptanceCriteria": [
+        "Run pnpm typecheck successfully.",
+        "Run pnpm build successfully.",
+        "Start pnpm dev and browser-verify desktop and mobile layouts.",
+        "Verify text generation mode, reference generation mode, loading placeholders, cancel behavior, failed placeholders, history compaction, and mobile drawer behavior.",
+        "Check the browser console and dev server output for newly introduced runtime errors.",
+        "If real credentials are unavailable, record the missing-key verification result without reading, logging, or committing secrets.",
+        "Append a Ralph progress entry with commands run, browser findings, changed files, and residual risks.",
+        "Example: a user can open the app, type a prompt, see canvas placeholders immediately, and receive either generated images or a clear failed placeholder.",
+        "Negative case: missing credentials are treated as a runtime configuration state, not a build failure.",
+        "Verification: pnpm typecheck, pnpm build, and browser verification pass or are documented with explicit environmental blockers."
+      ],
+      "startedAt": "2026-04-28T05:35:00.881719+00:00",
+      "completedAt": "2026-04-28T05:55:29.719212+00:00",
+      "updatedAt": "2026-04-28T05:55:29.719212+00:00"
+    },
+    {
+      "id": "US-017",
+      "title": "Add Codex auth and image provider fallback",
+      "status": "done",
+      "dependsOn": [
+        "US-016"
+      ],
+      "description": "As a creator without an OpenAI API key, I want to authenticate with Codex from the web app so image generation can still work through my Codex account.",
+      "acceptanceCriteria": [
+        "Add backend auth status, Codex device-login start/poll, and Codex logout endpoints without returning token secrets to the browser.",
+        "Persist Codex OAuth token data in SQLite under DATA_DIR, including access token, refresh token, ID token, email, account ID, expiry, and refresh timestamp.",
+        "Refresh expired or near-expired Codex access tokens before generation; clear or mark the session unavailable when refresh fails with a non-retryable auth error.",
+        "Keep provider precedence stable: OPENAI_API_KEY and OPENAI_BASE_URL continue to use the existing OpenAI-compatible Images API; Codex is used only when no API key is configured and a valid Codex session exists.",
+        "Implement a Codex Responses image_generation provider for text generation and reference-image generation, mapping prompt, size, quality, output format, and reference images into the Responses request.",
+        "Parse Codex image_generation outputs from response.completed and response.output_item.done events and return base64 images through the existing ImageProvider contract.",
+        "Reuse the existing local asset persistence, COS backup, generation history, and provider error sanitization flows.",
+        "Negative case: when neither API key nor Codex session is available, generation returns a clear missing-provider JSON error without logging secrets.",
+        "Verification: provider selection, Codex token parsing/refresh, device flow response parsing, and Codex image result extraction are covered by focused tests or deterministic smoke checks.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-05-01T13:30:58.806821+00:00",
+      "completedAt": "2026-05-01T14:21:50.009820+00:00",
+      "updatedAt": "2026-05-01T14:21:50.009820+00:00"
+    },
+    {
+      "id": "US-018",
+      "title": "Build premium homepage and credential-aware routing",
+      "status": "done",
+      "dependsOn": [
+        "US-017"
+      ],
+      "description": "As a first-time visitor without credentials, I want a refined project homepage with clear Codex login and API setup paths before entering the canvas.",
+      "acceptanceCriteria": [
+        "Add app routes for home (/), canvas (/canvas), and gallery (/gallery).",
+        "When neither OPENAI_API_KEY nor a valid Codex session is available, / displays a premium Chinese homepage for \\u4e13\\u4e1a AI \\u753b\\u5e03 and /canvas redirects or navigates back to /.",
+        "When a generation provider is available, / should route users into /canvas while /gallery remains available in all credential states.",
+        "Top navigation reflects the new routes and keeps Gallery accessible without credentials.",
+        "Homepage uses the existing product preview asset and an editorial luxury visual direction consistent with the current warm paper, serif typography, terracotta, and teal design language.",
+        "Homepage includes two primary actions: Codex \\u767b\\u5f55 opens the Codex device-login dialog, and \\u63a5\\u5165 API opens an instructional modal for .env-based API configuration.",
+        "The Codex login dialog shows verification URL, user code, pending/success/expired/error states, supports retry/close, and automatically navigates to /canvas after successful login.",
+        "The API setup modal is documentation-only and never stores or echoes API keys in the web app.",
+        "Mobile and desktop layouts must keep text legible, controls within bounds, and no overlapping UI.",
+        "Browser verification: no-credential home, /canvas guard, /gallery access, API modal, Codex login dialog pending flow, and credential-available /canvas routing are checked.",
+        "Verification: pnpm typecheck and pnpm build pass."
+      ],
+      "startedAt": "2026-05-01T14:21:52.000000+00:00",
+      "completedAt": "2026-05-01T14:48:31.571782+00:00",
+      "updatedAt": "2026-05-01T14:48:31.571782+00:00"
+    },
+    {
+      "id": "US-019",
+      "title": "Document auth options and complete Ralph verification handoff",
+      "status": "done",
+      "dependsOn": [
+        "US-018"
+      ],
+      "description": "As a maintainer, I want the new authentication options, homepage routing, and verification results documented so the Ralph handoff is safe to continue.",
+      "acceptanceCriteria": [
+        "Update README.md and README.zh-CN.md with the new / homepage, /canvas workspace route, Codex login path, API key precedence, and Gallery availability.",
+        "Update .env.example comments to explain that OPENAI_API_KEY remains optional when using Codex login, while API keys still take precedence when configured.",
+        "Document that Codex OAuth tokens are stored in DATA_DIR SQLite and must be treated as sensitive local runtime data.",
+        "Document that the API setup modal is instructional only and does not save API keys from the browser.",
+        "Run pnpm typecheck successfully.",
+        "Run pnpm build successfully.",
+        "Run pnpm dev and browser-verify desktop and mobile states for no-credential homepage, canvas guard, Gallery access, API setup modal, and available-provider canvas routing where possible.",
+        "If real Codex authorization or image capability is unavailable, record the exact environmental blocker without reading, printing, or committing secrets.",
+        "Confirm git status excludes .env, .ralph, .codex-temp, data, generated images, SQLite databases, and build output from commits.",
+        "Append Ralph progress or handoff notes only in local Ralph runtime files; do not commit .ralph artifacts."
+      ],
+      "startedAt": "2026-05-01T14:31:25.324735+00:00",
+      "completedAt": "2026-05-01T14:48:31.571782+00:00",
+      "updatedAt": "2026-05-01T14:48:31.571782+00:00"
+    }
+  ]
+}

@@ -39,3 +39,7 @@ Lint findings degrade silently. Each "not mine" leaves a longer tail for the nex
 ## Trigger Origin
 
 Burned in 2026-04-30 on a changelog edit that shipped with 10 MD060 findings called "pre-existing." User pushback: "NEVER. fix lint even if its not yours." Fixed in a follow-up commit. The follow-up should not have been needed.
+
+## Would Revise If
+
+Revise if owning all lint state on touched files repeatedly blocks emergency hotfixes (the rule is wrongly absolute for time-critical scenarios), or if the "pre-existing, not my edit" anti-pattern stops appearing in shipped commits for two full quarters — at which point the rule may be obsoleted because the discipline has been internalized.

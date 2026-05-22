@@ -67,3 +67,7 @@ When the user says "build me X," distinguish three layers:
 | **Feature** (how) | What specific thing to build? | "GitHub Action running tests on PR" |
 
 Validate the need before committing to a solution. One sharp question beats five generic ones. Ask "why" up to five times when the root need is unclear.
+
+## Would Revise If
+
+Revise if SBI feedback produces no measurable behavior change in 3+ instances over a quarter (the model is performative not load-bearing), if the audience-lead table produces tone mismatches when applied verbatim, or if the need/solution/feature elicitation pattern misses real user needs that surface later as scope changes.

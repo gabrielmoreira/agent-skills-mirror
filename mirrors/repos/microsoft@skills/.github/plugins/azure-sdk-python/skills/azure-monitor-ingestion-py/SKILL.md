@@ -44,7 +44,18 @@ Before using this SDK, you need:
 3. **Data Collection Rule (DCR)** — Defines schema and destination
 4. **Custom Table** — In Log Analytics (created via DCR or manually)
 
-## Authentication
+## Authentication & Lifecycle
+
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
 
 ```python
 from azure.monitor.ingestion import LogsIngestionClient
@@ -57,10 +68,12 @@ credential = DefaultAzureCredential(require_envvar=True)
 # See https://learn.microsoft.com/python/api/overview/azure/identity-readme?view=azure-python#credential-classes
 # credential = ManagedIdentityCredential()
 
-client = LogsIngestionClient(
+with LogsIngestionClient(
     endpoint=os.environ["AZURE_DCE_ENDPOINT"],
     credential=credential
-)
+) as client:
+    # Use `client.upload(...)` for all subsequent operations (see examples below)
+    ...
 ```
 
 ## Upload Custom Logs
@@ -69,11 +82,6 @@ client = LogsIngestionClient(
 from azure.monitor.ingestion import LogsIngestionClient
 from azure.identity import DefaultAzureCredential
 import os
-
-client = LogsIngestionClient(
-    endpoint=os.environ["AZURE_DCE_ENDPOINT"],
-    credential=DefaultAzureCredential()
-)
 
 rule_id = os.environ["AZURE_DCR_RULE_ID"]
 stream_name = os.environ["AZURE_DCR_STREAM_NAME"]
@@ -84,7 +92,11 @@ logs = [
     {"TimeGenerated": "2024-01-15T10:02:00Z", "Computer": "server2", "Message": "Connection established"}
 ]
 
-client.upload(rule_id=rule_id, stream_name=stream_name, logs=logs)
+with LogsIngestionClient(
+    endpoint=os.environ["AZURE_DCE_ENDPOINT"],
+    credential=DefaultAzureCredential()
+) as client:
+    client.upload(rule_id=rule_id, stream_name=stream_name, logs=logs)
 ```
 
 ## Upload from JSON File
@@ -165,11 +177,13 @@ from azure.monitor.ingestion import LogsIngestionClient
 
 # Azure Government
 credential = DefaultAzureCredential(authority=AzureAuthorityHosts.AZURE_GOVERNMENT)
-client = LogsIngestionClient(
+with LogsIngestionClient(
     endpoint="https://example.ingest.monitor.azure.us",
     credential=credential,
     credential_scopes=["https://monitor.azure.us/.default"]
-)
+) as client:
+    # client.upload(...)
+    ...
 ```
 
 ## Batching Behavior
@@ -205,11 +219,12 @@ Stream names follow patterns:
 
 ## Best Practices
 
-1. **Use DefaultAzureCredential** for authentication
-2. **Handle errors gracefully** — use `on_error` callback for partial failures
-3. **Include TimeGenerated** — Required field for all logs
-4. **Match DCR schema** — Log fields must match DCR column definitions
-5. **Use async client** for high-throughput scenarios
-6. **Batch uploads** — SDK handles batching, but send reasonable chunks
-7. **Monitor ingestion** — Check Log Analytics for ingestion status
-8. **Use context manager** — Ensures proper client cleanup
+1. **Pick sync OR async and stay consistent.** Do not mix `azure.xxx` sync clients with `azure.xxx.aio` async clients in the same call path. Choose one mode per module.
+2. **Always use context managers for clients and async credentials.** Wrap every client in `with Client(...) as client:` (sync) or `async with Client(...) as client:` (async) to ensure proper cleanup. For async `DefaultAzureCredential` from `azure.identity.aio`, also use `async with credential:` so tokens and transports are cleaned up.
+3. **Use `DefaultAzureCredential`** for code that runs locally. Use a specific token credential for code that runs in Azure.
+4. **Handle errors gracefully** — use `on_error` callback for partial failures
+5. **Include TimeGenerated** — Required field for all logs
+6. **Match DCR schema** — Log fields must match DCR column definitions
+7. **Use async client** for high-throughput scenarios
+8. **Batch uploads** — SDK handles batching, but send reasonable chunks
+9. **Monitor ingestion** — Check Log Analytics for ingestion status

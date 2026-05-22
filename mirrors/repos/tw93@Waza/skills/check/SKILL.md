@@ -1,8 +1,8 @@
 ---
 name: check
-description: "Reviews code diffs and release-ready changes after implementation, executes approved implementation plans, extracts project-specific constraints from repository context, auto-fixes safe issues, and drives approved release, publish, push, release-reaction, and issue/PR follow-through. Also triages issues and PRs when the user mentions them. Not for exploring ideas, debugging, or document prose review."
-when_to_use: "review, 看看代码, 检查一下, 有没有问题, 是否需要优化, 合并前, 继续优化, 优化代码, 看看issue, 看看PR, release, publish, push, release reaction, GitHub reaction, 发布, 提交, 关闭issue, 发布表情, release表情, close issue, issue close, review my code, check changes, before merge, before release, code review, code-review"
-dispatch_intent: "Code review, before merge, release gates, generated artifacts, safety sinks, publish/push/reaction follow-through, triage issues/PRs"
+description: "Reviews code diffs and release-ready changes after implementation, runs on-demand project-wide code-quality audits with a 4-axis scorecard, executes approved implementation plans, extracts project-specific constraints from repository context, auto-fixes safe issues, and drives approved release, publish, push, release-reaction, and issue/PR follow-through. Also triages issues and PRs when the user mentions them. Not for exploring ideas, debugging, or document prose review."
+when_to_use: "review, 看看代码, 检查一下, 有没有问题, 是否需要优化, 合并前, 继续优化, 优化代码, 看看issue, 看看PR, release, publish, push, release reaction, GitHub reaction, 发布, 提交, 关闭issue, 发布表情, release表情, close issue, issue close, review my code, check changes, before merge, before release, code review, code-review, audit, project audit, 项目体检, 项目评分, 给项目打分, 深入分析项目代码, 评估项目质量, 代码质量评分, scorecard, linus review, rate this codebase, score this project"
+dispatch_intent: "Code review, before merge, release gates, generated artifacts, safety sinks, publish/push/reaction follow-through, triage issues/PRs, project-wide code-quality audit scorecard"
 ---
 
 # Check: Review Before You Ship
@@ -24,6 +24,7 @@ Pick the mode that matches the user's intent, then read that section in full. Mo
 | "look at issues", "review PRs", "triage", "批量处理" | [Triage Mode](#triage-mode) |
 | "is this worth a release", "值不值得发版" | [Release Worthiness Analysis](#release-worthiness-analysis) |
 | "commit", "push", "publish", "release", "close issue", "发布表情" | [Ship / Release Follow-through](#ship--release-follow-through) |
+| "audit", "项目体检", "项目评分", "给项目打分", "深入分析项目代码", "scorecard", "linus review" | [Project Audit](#project-audit-mode) |
 | Document, PDF, prose review | Delegate to `/write` (see [Document Review](#document-review)) |
 
 Before any mode, run [Project Context Extraction](#project-context-extraction) and (if memory is in scope) [Durable Context Preflight](#durable-context-preflight).
@@ -118,6 +119,63 @@ This mode extends review; it does not skip review. Before any public or irrevers
 8. After network or API failures, re-read the end state instead of assuming success or failure.
 
 End with the concrete shipped state: commit hash, tag, release URL, registry/version result, pushed branch, release asset state, release reaction state, issue/PR state, and any remaining blockers. Omit fields that do not apply.
+
+## Project Audit Mode
+
+Activate when the user asks for a project-wide code-quality scorecard: "audit", "项目体检", "代码质量评分", "scorecard", "linus 风格 review". Distinct from Default Review (PR/diff scoped) and Triage (issue batching). Single-pass project-wide quality assessment.
+
+**Flow**
+
+1. Run `python3 <waza>/skills/check/scripts/audit_signals.py --root <project>` from the target repo. The script emits ten labelled blocks (`=== FILE SIZE HOTSPOTS ===` ... `=== DENYLIST IN BUILD ===`) each ending with `status: PASS|WARN|FAIL`.
+2. Skim the largest source files surfaced by `FILE SIZE HOTSPOTS` (typically 3-5; stop sooner if the architecture is already clear).
+3. Read `CLAUDE.md` / `AGENTS.md` / `README.md` to learn the project's own stated conventions before judging it against generic ones.
+4. Apply the four-axis rubric below. Each axis is independently scored 0-10. Overall = arithmetic mean.
+5. Surface 3-7 concrete findings per axis. Each finding: file:line citation when possible, severity (CRIT/STRUCT/INCR), one-line fix.
+6. Output to **terminal only**. Do not create files in the target repo. If the user follows up with "save it", offer `./docs/<project>-audit.md` then; default is ephemeral.
+
+**Rubric**
+
+| Axis | What it covers |
+|---|---|
+| Architecture | Module boundaries, coupling, abstraction layers vs flat duplication, single source of truth |
+| Code Quality | File size discipline, dedup, readability, comments on non-obvious behavior |
+| Engineering | Tests, CI gates, version coordination, install URL pinning, packaging posture |
+| Perf and Risk | Hazards, scope creep, distribution risk, privacy posture, third-party blast radius |
+
+**Scoring anchors**
+
+- 9-10: exceptional discipline, polish-only items
+- 7-8.5: solid with clear targeted improvements
+- 5-7: working but with structural debt
+- below 5: significant rework recommended
+
+A WARN that the project has explicitly justified (in its own docs or a comment) is not a finding; cite the justification and skip. Do not mechanically convert WARN to CRIT. A block with `status: N/A` means the surface does not exist (e.g. no packaging script); treat as silence, not as a positive signal.
+
+**Output template (terminal)**
+
+```
+Project: <name>
+Overall: X.X / 10
+
+Architecture: X / 10 -- one-line summary
+Code Quality: X / 10 -- one-line summary
+Engineering:  X / 10 -- one-line summary
+Perf & Risk:  X / 10 -- one-line summary
+
+Findings
+[CRIT] <file:line> -- <issue>
+       why: <reason grounded in signal or read>
+       fix: <concrete action>
+[STRUCT] ...
+[INCR] ...
+
+Top 3 highest-leverage moves
+1. ...
+2. ...
+3. ...
+```
+
+Stop after the report unless the user asks for follow-up implementation. Audit mode does not modify files in the target repo.
 
 ## Scope
 

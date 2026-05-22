@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `uditgoenka/autoresearch` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `uditgoenka/autoresearch` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `uditgoenka/autoresearch` — 26 default patterns, 0 followed patterns
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,25 +61,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
 | 2 | ✓ | [`.agents/skills/autoresearch/agents/openai.yaml`](.agents/skills/autoresearch/agents/openai.yaml) |
-| 3 | ✓ | [`.agents/skills/autoresearch/references/autonomous-loop-protocol.md`](.agents/skills/autoresearch/references/autonomous-loop-protocol.md) |
-| 4 | ✓ | [`.agents/skills/autoresearch/references/core-principles.md`](.agents/skills/autoresearch/references/core-principles.md) |
-| 5 | ✓ | [`.agents/skills/autoresearch/references/debug-workflow.md`](.agents/skills/autoresearch/references/debug-workflow.md) |
-| 6 | ✓ | [`.agents/skills/autoresearch/references/fix-workflow.md`](.agents/skills/autoresearch/references/fix-workflow.md) |
-| 7 | ✓ | [`.agents/skills/autoresearch/references/learn-workflow.md`](.agents/skills/autoresearch/references/learn-workflow.md) |
-| 8 | ✓ | [`.agents/skills/autoresearch/references/plan-workflow.md`](.agents/skills/autoresearch/references/plan-workflow.md) |
-| 9 | ✓ | [`.agents/skills/autoresearch/references/predict-workflow.md`](.agents/skills/autoresearch/references/predict-workflow.md) |
-| 10 | ✓ | [`.agents/skills/autoresearch/references/probe-workflow.md`](.agents/skills/autoresearch/references/probe-workflow.md) |
-| 11 | ✓ | [`.agents/skills/autoresearch/references/reason-workflow.md`](.agents/skills/autoresearch/references/reason-workflow.md) |
-| 12 | ✓ | [`.agents/skills/autoresearch/references/results-logging.md`](.agents/skills/autoresearch/references/results-logging.md) |
-| 13 | ✓ | [`.agents/skills/autoresearch/references/scenario-workflow.md`](.agents/skills/autoresearch/references/scenario-workflow.md) |
-| 14 | ✓ | [`.agents/skills/autoresearch/references/security-workflow.md`](.agents/skills/autoresearch/references/security-workflow.md) |
-| 15 | ✓ | [`.agents/skills/autoresearch/references/ship-workflow.md`](.agents/skills/autoresearch/references/ship-workflow.md) |
-| 16 | ✓ | [`.agents/skills/autoresearch/SKILL.md`](.agents/skills/autoresearch/SKILL.md) |
-| 17 | ✓ | [`.claude/skills/autoresearch/SKILL.md`](.claude/skills/autoresearch/SKILL.md) |
-| 18 | ✓ | [`.opencode/skills/autoresearch/SKILL.md`](.opencode/skills/autoresearch/SKILL.md) |
-| 19 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 20 | ✓ | [`claude-plugin/skills/autoresearch/SKILL.md`](claude-plugin/skills/autoresearch/SKILL.md) |
-| 21 | ✓ | [`plugins/autoresearch/skills/autoresearch/SKILL.md`](plugins/autoresearch/skills/autoresearch/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/autoresearch/autoresearch.md`](.agents/skills/autoresearch/autoresearch.md) |
+| 4 | ✓ | [`.agents/skills/autoresearch/debug.md`](.agents/skills/autoresearch/debug.md) |
+| 5 | ✓ | [`.agents/skills/autoresearch/evals.md`](.agents/skills/autoresearch/evals.md) |
+| 6 | ✓ | [`.agents/skills/autoresearch/fix.md`](.agents/skills/autoresearch/fix.md) |
+| 7 | ✓ | [`.agents/skills/autoresearch/learn.md`](.agents/skills/autoresearch/learn.md) |
+| 8 | ✓ | [`.agents/skills/autoresearch/plan.md`](.agents/skills/autoresearch/plan.md) |
+| 9 | ✓ | [`.agents/skills/autoresearch/predict.md`](.agents/skills/autoresearch/predict.md) |
+| 10 | ✓ | [`.agents/skills/autoresearch/probe.md`](.agents/skills/autoresearch/probe.md) |
+| 11 | ✓ | [`.agents/skills/autoresearch/reason.md`](.agents/skills/autoresearch/reason.md) |
+| 12 | ✓ | [`.agents/skills/autoresearch/references/predict-personas.md`](.agents/skills/autoresearch/references/predict-personas.md) |
+| 13 | ✓ | [`.agents/skills/autoresearch/references/reason-judge-protocol.md`](.agents/skills/autoresearch/references/reason-judge-protocol.md) |
+| 14 | ✓ | [`.agents/skills/autoresearch/references/security-checklist.md`](.agents/skills/autoresearch/references/security-checklist.md) |
+| 15 | ✓ | [`.agents/skills/autoresearch/scenario.md`](.agents/skills/autoresearch/scenario.md) |
+| 16 | ✓ | [`.agents/skills/autoresearch/security.md`](.agents/skills/autoresearch/security.md) |
+| 17 | ✓ | [`.agents/skills/autoresearch/ship.md`](.agents/skills/autoresearch/ship.md) |
+| 18 | ✓ | [`.agents/skills/autoresearch/SKILL.md`](.agents/skills/autoresearch/SKILL.md) |
+| 19 | ✓ | [`.claude/skills/autoresearch/SKILL.md`](.claude/skills/autoresearch/SKILL.md) |
+| 20 | ✓ | [`.opencode/skills/autoresearch/SKILL.md`](.opencode/skills/autoresearch/SKILL.md) |
+| 21 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 22 | ✓ | [`claude-plugin/skills/autoresearch/SKILL.md`](claude-plugin/skills/autoresearch/SKILL.md) |
+| 23 | ✓ | [`plugins/autoresearch/skills/autoresearch/SKILL.md`](plugins/autoresearch/skills/autoresearch/SKILL.md) |
 
 ---
 

@@ -26,7 +26,18 @@ AZURE_AI_MODEL_DEPLOYMENT_NAME="gpt-4o-mini"  # Required for all auth methods
 AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
 ```
 
-## Authentication
+## Authentication & Lifecycle
+
+> **🔑 Two rules apply to every code sample below:**
+>
+> 1. **Prefer `DefaultAzureCredential`.** It works locally (Azure CLI / VS Code / Developer CLI) and in Azure (managed identity, workload identity) with no code change. Avoid connection strings, account/API keys — they bypass Entra audit and rotation.
+>    - Local dev: `DefaultAzureCredential` works as-is.
+>    - Production: set `AZURE_TOKEN_CREDENTIALS=prod` (or `AZURE_TOKEN_CREDENTIALS=<specific_credential>`) to constrain the credential chain to production-safe credentials.
+> 2. **Wrap every client in a context manager** so HTTP transports, sockets, and token caches are released deterministically:
+>    - Sync: `with <Client>(...) as client:`
+>    - Async: `async with <Client>(...) as client:` **and** `async with DefaultAzureCredential() as credential:` (from `azure.identity.aio`)
+>
+> Snippets may abbreviate this setup, but production code should always follow both rules.
 
 ```python
 import os
@@ -38,10 +49,11 @@ credential = DefaultAzureCredential(require_envvar=True)
 # Or use a specific credential directly in production:
 # See https://learn.microsoft.com/python/api/overview/azure/identity-readme?view=azure-python#credential-classes
 # credential = ManagedIdentityCredential()
-client = AIProjectClient(
+with AIProjectClient(
     endpoint=os.environ["AZURE_AI_PROJECT_ENDPOINT"],
     credential=credential,
-)
+) as client:
+    deployments = list(client.deployments.list())
 ```
 
 ## Client Operations Overview
@@ -63,17 +75,16 @@ client = AIProjectClient(
 ```python
 from azure.ai.projects import AIProjectClient
 
-client = AIProjectClient(
+with AIProjectClient(
     endpoint=os.environ["AZURE_AI_PROJECT_ENDPOINT"],
     credential=DefaultAzureCredential(),
-)
-
-# Use Foundry-native operations
-agent = client.agents.create_agent(
-    model=os.environ["AZURE_AI_MODEL_DEPLOYMENT_NAME"],
-    name="my-agent",
-    instructions="You are helpful.",
-)
+) as client:
+    # Use Foundry-native operations
+    agent = client.agents.create_agent(
+        model=os.environ["AZURE_AI_MODEL_DEPLOYMENT_NAME"],
+        name="my-agent",
+        instructions="You are helpful.",
+    )
 ```
 
 ### 2. OpenAI-Compatible Client
@@ -270,11 +281,12 @@ agent = client.agents.create_agent(
 
 ## Best Practices
 
-1. **Use context managers** for async client: `async with AIProjectClient(...) as client:`
-2. **Clean up agents** when done: `client.agents.delete_agent(agent.id)`
-3. **Use `create_and_process`** for simple runs, **streaming** for real-time UX
-4. **Use versioned agents** for production deployments
-5. **Prefer connections** for external service integration (AI Search, Bing, etc.)
+1. **Pick sync OR async and stay consistent.** Do not mix `azure.ai.projects` sync clients with `azure.ai.projects.aio` async clients in the same call path. Choose one mode per module.
+2. **Always use context managers for clients and async credentials.** Wrap every client in `with AIProjectClient(...) as client:` (sync) or `async with AIProjectClient(...) as client:` (async). For async `DefaultAzureCredential` from `azure.identity.aio`, also use `async with credential:` so tokens and transports are cleaned up.
+3. **Clean up agents** when done: `client.agents.delete_agent(agent.id)`
+4. **Use `create_and_process`** for simple runs, **streaming** for real-time UX
+5. **Use versioned agents** for production deployments
+6. **Prefer connections** for external service integration (AI Search, Bing, etc.)
 
 ## SDK Comparison
 

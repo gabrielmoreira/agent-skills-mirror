@@ -137,7 +137,7 @@ Worktrunk can delete **worktrees** and **branches**. Both have safeguards.
 
 ### Worktree removal
 
-`wt remove` mirrors `git worktree remove`: it refuses to remove worktrees with uncommitted changes (staged, modified, or untracked files). The `--force` flag overrides the untracked-files check for build artifacts that weren't cleaned up.
+`wt remove` mirrors `git worktree remove`: it refuses to remove worktrees with uncommitted changes (staged, modified, or untracked files). The `--force` flag removes the worktree anyway, discarding all of those changes.
 
 For worktrees containing precious ignored data (databases, caches, large assets), use `git worktree lock`:
 
@@ -179,11 +179,11 @@ User hooks and user aliases don't require approval (you defined them). Commands 
 
 ▲ repo needs approval to execute 3 commands:
 
-○ pre-create install:
+○ pre-start install:
   npm ci
-○ pre-create build:
+○ pre-start build:
   cargo build --release
-○ pre-create env:
+○ pre-start env:
   echo 'PORT={{ branch | hash_port }}' > .env.local
 
 ❯ Allow and remember? [y/N]

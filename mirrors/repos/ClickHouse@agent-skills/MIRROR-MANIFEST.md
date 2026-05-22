@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ClickHouse/agent-skills` — 26 default patterns, 0 followed patterns, 82 file(s) materialized.
+Mirror of `ClickHouse/agent-skills` — 26 default patterns, 0 followed patterns, 94 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ClickHouse/agent-skills` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 82 |
+| Files         | 94 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -127,20 +127,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 66 | ✓ | [`skills/clickhouse-best-practices/rules/schema-types-minimize-bitwidth.md`](skills/clickhouse-best-practices/rules/schema-types-minimize-bitwidth.md) |
 | 67 | ✓ | [`skills/clickhouse-best-practices/rules/schema-types-native-types.md`](skills/clickhouse-best-practices/rules/schema-types-native-types.md) |
 | 68 | ✓ | [`skills/clickhouse-best-practices/SKILL.md`](skills/clickhouse-best-practices/SKILL.md) |
-| 69 | ✓ | [`skills/clickhouse-js-node-troubleshooting/metadata.json`](skills/clickhouse-js-node-troubleshooting/metadata.json) |
-| 70 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/compression.md`](skills/clickhouse-js-node-troubleshooting/reference/compression.md) |
-| 71 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/data-types.md`](skills/clickhouse-js-node-troubleshooting/reference/data-types.md) |
-| 72 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/logging.md`](skills/clickhouse-js-node-troubleshooting/reference/logging.md) |
-| 73 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/proxy-pathname.md`](skills/clickhouse-js-node-troubleshooting/reference/proxy-pathname.md) |
-| 74 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/query-params.md`](skills/clickhouse-js-node-troubleshooting/reference/query-params.md) |
-| 75 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/readonly-users.md`](skills/clickhouse-js-node-troubleshooting/reference/readonly-users.md) |
-| 76 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/socket-hangup.md`](skills/clickhouse-js-node-troubleshooting/reference/socket-hangup.md) |
-| 77 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/tls.md`](skills/clickhouse-js-node-troubleshooting/reference/tls.md) |
-| 78 | ✓ | [`skills/clickhouse-js-node-troubleshooting/SKILL.md`](skills/clickhouse-js-node-troubleshooting/SKILL.md) |
-| 79 | ✓ | [`skills/clickhousectl-cloud-deploy/metadata.json`](skills/clickhousectl-cloud-deploy/metadata.json) |
-| 80 | ✓ | [`skills/clickhousectl-cloud-deploy/SKILL.md`](skills/clickhousectl-cloud-deploy/SKILL.md) |
-| 81 | ✓ | [`skills/clickhousectl-local-dev/metadata.json`](skills/clickhousectl-local-dev/metadata.json) |
-| 82 | ✓ | [`skills/clickhousectl-local-dev/SKILL.md`](skills/clickhousectl-local-dev/SKILL.md) |
+| 69 | ✓ | [`skills/clickhouse-js-node-coding/reference/async-insert.md`](skills/clickhouse-js-node-coding/reference/async-insert.md) |
+| 70 | ✓ | [`skills/clickhouse-js-node-coding/reference/client-configuration.md`](skills/clickhouse-js-node-coding/reference/client-configuration.md) |
+| 71 | ✓ | [`skills/clickhouse-js-node-coding/reference/custom-json.md`](skills/clickhouse-js-node-coding/reference/custom-json.md) |
+| 72 | ✓ | [`skills/clickhouse-js-node-coding/reference/data-types.md`](skills/clickhouse-js-node-coding/reference/data-types.md) |
+| 73 | ✓ | [`skills/clickhouse-js-node-coding/reference/insert-columns.md`](skills/clickhouse-js-node-coding/reference/insert-columns.md) |
+| 74 | ✓ | [`skills/clickhouse-js-node-coding/reference/insert-formats.md`](skills/clickhouse-js-node-coding/reference/insert-formats.md) |
+| 75 | ✓ | [`skills/clickhouse-js-node-coding/reference/insert-values.md`](skills/clickhouse-js-node-coding/reference/insert-values.md) |
+| 76 | ✓ | [`skills/clickhouse-js-node-coding/reference/ping.md`](skills/clickhouse-js-node-coding/reference/ping.md) |
+| 77 | ✓ | [`skills/clickhouse-js-node-coding/reference/query-parameters.md`](skills/clickhouse-js-node-coding/reference/query-parameters.md) |
+| 78 | ✓ | [`skills/clickhouse-js-node-coding/reference/select-formats.md`](skills/clickhouse-js-node-coding/reference/select-formats.md) |
+| 79 | ✓ | [`skills/clickhouse-js-node-coding/reference/sessions.md`](skills/clickhouse-js-node-coding/reference/sessions.md) |
+| 80 | ✓ | [`skills/clickhouse-js-node-coding/SKILL.md`](skills/clickhouse-js-node-coding/SKILL.md) |
+| 81 | ✓ | [`skills/clickhouse-js-node-troubleshooting/metadata.json`](skills/clickhouse-js-node-troubleshooting/metadata.json) |
+| 82 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/compression.md`](skills/clickhouse-js-node-troubleshooting/reference/compression.md) |
+| 83 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/data-types.md`](skills/clickhouse-js-node-troubleshooting/reference/data-types.md) |
+| 84 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/logging.md`](skills/clickhouse-js-node-troubleshooting/reference/logging.md) |
+| 85 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/proxy-pathname.md`](skills/clickhouse-js-node-troubleshooting/reference/proxy-pathname.md) |
+| 86 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/query-params.md`](skills/clickhouse-js-node-troubleshooting/reference/query-params.md) |
+| 87 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/readonly-users.md`](skills/clickhouse-js-node-troubleshooting/reference/readonly-users.md) |
+| 88 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/socket-hangup.md`](skills/clickhouse-js-node-troubleshooting/reference/socket-hangup.md) |
+| 89 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/tls.md`](skills/clickhouse-js-node-troubleshooting/reference/tls.md) |
+| 90 | ✓ | [`skills/clickhouse-js-node-troubleshooting/SKILL.md`](skills/clickhouse-js-node-troubleshooting/SKILL.md) |
+| 91 | ✓ | [`skills/clickhousectl-cloud-deploy/metadata.json`](skills/clickhousectl-cloud-deploy/metadata.json) |
+| 92 | ✓ | [`skills/clickhousectl-cloud-deploy/SKILL.md`](skills/clickhousectl-cloud-deploy/SKILL.md) |
+| 93 | ✓ | [`skills/clickhousectl-local-dev/metadata.json`](skills/clickhousectl-local-dev/metadata.json) |
+| 94 | ✓ | [`skills/clickhousectl-local-dev/SKILL.md`](skills/clickhousectl-local-dev/SKILL.md) |
 
 ---
 

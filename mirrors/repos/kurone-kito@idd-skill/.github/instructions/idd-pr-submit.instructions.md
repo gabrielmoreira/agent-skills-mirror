@@ -4,8 +4,8 @@ Read this file after the self-review loop passes. It covers
 pre-publication main sync, claim verification, tests, pushing, PR
 creation, and waiting for CI.
 
-Before the D1 rebase and D2 push, apply the shared claim revalidation
-gate. The active claim must still use your current `{claim-id}`.
+Before the D1 rebase and D2 push, apply the
+[shared claim revalidation gate](idd-overview-core.instructions.md#claim-revalidation-gate).
 
 ## D1 — Sync main before first push
 
@@ -54,12 +54,55 @@ Use GH CLI or GH MCP to create the pull request. The PR body must
 include:
 
 - A concise summary of the branch's changes
-- A `Closes #<issue>` keyword linking the issue
+- A closing keyword on its own line linking the claimed issue (see
+  Closing keyword below)
 - Recommended follow-up issues (if any)
 - Relevant background/rationale, when it materially affects review (for
   example, reuse constraints, intentional trade-offs, or non-goals).
   Include only context grounded in the issue discussion, commits, diff,
   or explicit operator instructions; omit rather than speculate.
+
+### Closing keyword
+
+The closing keyword must appear in the PR **body** (not the title) as
+plain markdown text. Write a line such as Closes #N, Fixes #N, or
+Resolves #N (case-insensitive) where N is the claimed issue number.
+Render that example literally in the body — no backticks, no code
+fences, no block-quote prefix.
+
+When referring to keyword forms _as forms_ (not as the literal body
+text), inline code is fine in surrounding prose; the no-wrapper
+constraint applies only to the actual PR body content that GitHub
+must parse.
+
+GitHub recognizes the following keyword forms: close, closes, closed,
+fix, fixes, fixed, resolve, resolves, resolved.
+
+#### Anti-patterns
+
+GitHub's closing-keyword detection does NOT activate when the keyword
+is wrapped in any of these markdown forms — even if the underlying
+text is correct:
+
+- inline code (backtick-wrapped, e.g. `` `Closes #1` ``) — not
+  detected
+- fenced code block (triple backtick or triple tilde) — not detected
+- block quote prefix (`>` at line start) — not detected
+
+When detection fails, GitHub will not auto-close the linked issue on
+merge and the issue↔PR linking surfaces (sidebar, timeline) will not
+populate.
+
+#### Multiple closing issues
+
+When the PR closes more than one issue, repeat the keyword for each
+reference. Both keywords must appear in plain body text for GitHub to
+auto-close both issues:
+
+- Works — a body line written as Closes #1, closes #2 (GitHub parses
+  each keyword + reference pair).
+- Does **not** work — a body line written as Closes #1, #2 (no
+  keyword precedes the second reference, so #2 is not auto-closed).
 
 After creating the PR, if the repository has CODEOWNER rules or expected
 reviewers that are not auto-assigned by GitHub, request them explicitly:
@@ -67,6 +110,56 @@ reviewers that are not auto-assigned by GitHub, request them explicitly:
 ```sh
 gh pr edit {pr-number} --add-reviewer {reviewer-login}
 ```
+
+### D3.5 — Verify closing keyword detection
+
+After PR creation and before D4, confirm GitHub recognized the
+closing keyword for the claimed issue. Resume routing should re-enter
+this sub-step when a session restarts after PR creation but before CI
+completion.
+
+1. Re-fetch the PR body:
+
+   ```sh
+   gh pr view <pr-number> --json body --jq '.body'
+   ```
+
+2. Strip regions GitHub does not parse for closing keywords:
+
+   - lines inside fenced code blocks (triple backtick or triple tilde)
+   - spans inside inline code (single backticks)
+   - lines beginning with `>` (block-quote prefix) after leading
+     whitespace
+
+3. Search the remaining plain-text body for a closing keyword
+   referencing the **claimed issue number** `<N>`, using a regex
+   equivalent to:
+
+   ```text
+   (?im)\b(close[sd]?|fix(e[sd])?|resolve[sd]?)\s+#<N>\b
+   ```
+
+4. **If no match in the stripped body**:
+
+   - Edit the PR body with
+     `gh pr edit <pr-number> --body <updated-body>` to add a
+     correctly placed plain-text closing keyword line (e.g.,
+     `Closes #<N>` as its own line, outside any code fence or
+     block quote).
+   - Repeat steps 1–3 once.
+   - If the second self-check still fails, post a hold note on the
+     issue citing the PR URL and stop. Do not proceed to D4.
+
+5. **If the keyword exists only inside a stripped region**: report
+   which wrapper form was detected (inline code, fenced block, or
+   block-quote prefix) and apply the same edit-and-recheck path
+   as step 4.
+
+GitHub's `closingIssuesReferences` field on the PR
+(`gh pr view <pr-number> --json closingIssuesReferences`) can also
+confirm detection: it lists every issue GitHub plans to close when
+the PR merges. If that list is non-empty and contains the claimed
+issue, the regex check above is redundant but still safe to run.
 
 ## D4 — Wait for CI
 

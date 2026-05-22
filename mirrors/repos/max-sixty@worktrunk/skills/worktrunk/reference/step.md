@@ -133,9 +133,6 @@ Options:
   -b, --branch <BRANCH>
           Branch to operate on (defaults to current worktree)
 
-      --no-hooks
-          Skip hooks
-
       --stage <STAGE>
           What to stage before committing [default: all]
 
@@ -151,6 +148,9 @@ Options:
           Print help (see a summary with '-h')
 
 Automation:
+      --no-hooks
+          Skip hooks
+
       --format <FORMAT>
           Output format
 
@@ -232,9 +232,6 @@ Arguments:
           Defaults to default branch.
 
 Options:
-      --no-hooks
-          Skip hooks
-
       --stage <STAGE>
           What to stage before committing [default: all]
 
@@ -250,6 +247,9 @@ Options:
           Print help (see a summary with '-h')
 
 Automation:
+      --no-hooks
+          Skip hooks
+
       --format <FORMAT>
           Output format
 
@@ -357,7 +357,7 @@ Add to the project config:
 
 ```toml
 # .config/wt.toml
-[post-create]
+[post-start]
 copy = "wt step copy-ignored"
 ```
 
@@ -409,7 +409,7 @@ Reflink copies share disk blocks until modified — no data is actually copied. 
 
 Uses per-file reflink (like `cp -Rc`) — copy time scales with file count.
 
-Use the `post-create` hook so the copy runs in the background. Use `pre-create` instead if subsequent hooks or `--execute` command need the copied files immediately.
+Use the `post-start` hook so the copy runs in the background. Use `pre-start` instead if subsequent hooks or `--execute` command need the copied files immediately.
 
 ### Background-hook priority (experimental)
 
@@ -428,7 +428,7 @@ The `target/` directory is huge (often 1-10GB). Copying with reflink cuts first 
 `node_modules/` is large but mostly static. If the project has no native dependencies, symlinks are even faster:
 
 ```toml
-[pre-create]
+[pre-start]
 deps = "ln -sf {{ primary_worktree_path }}/node_modules ."
 ```
 
@@ -869,7 +869,9 @@ this by using a temporary location.
 ### Clobbering
 
 With `--clobber`, non-worktree paths at target locations are moved to
-`<path>.bak-<timestamp>` before relocating.
+`<path>.bak.<timestamp>` before relocating. If that name is already taken,
+the move counts up (`…-2`, `…-3`, …) until it finds a free name, so an
+existing backup is never overwritten.
 
 ### Main worktree behavior
 
@@ -909,7 +911,8 @@ Options:
       --clobber
           Backup non-worktree paths at target locations
 
-          Moves blocking paths to <path>.bak-<timestamp>.
+          Moves blocking paths to <path>.bak.<timestamp>. If that name is taken, counts up (…-2, …-3
+          , …) to a free name.
 
   -h, --help
           Print help (see a summary with '-h')
@@ -949,7 +952,7 @@ Run a command; kill its whole process tree when its worktree is removed. Teardow
 
 ### Why
 
-A `post-create` hook to start a long-lived process and a `pre-remove` hook to
+A `post-start` hook to start a long-lived process and a `pre-remove` hook to
 stop it is usually enough. But `pre-remove` only runs when worktrunk removes
 the worktree, so a `git worktree remove`, an `rm -rf`, or a crashed hook skips
 it. Across enough worktree churn some process is bound to outlive its worktree,
@@ -978,7 +981,7 @@ Run a dev server, torn down automatically when the worktree goes away:
 
 ```toml
 # .config/wt.toml
-[post-create]
+[post-start]
 server = "wt step tether -- npm run dev -- --port {{ branch | hash_port }}"
 ```
 

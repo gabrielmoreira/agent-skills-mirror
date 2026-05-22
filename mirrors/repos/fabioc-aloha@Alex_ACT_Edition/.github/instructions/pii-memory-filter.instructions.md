@@ -66,3 +66,7 @@ When the user asks to store something containing PII:
 - **Health data** → Decline. Explain no memory tier is appropriate for L4 health data.
 - **Credentials** → Direct to VS Code SecretStorage or environment variables
 - **Work patterns** → Generalize: "prefers TDD" not "wrote 47 tests on Tuesday"
+
+## Would Revise If
+
+Revise if the never-write list catches PII so rarely that the cost of the always-on filter exceeds its protection value, if the per-tier allowed/not-allowed table has obvious gaps in real PII categories arising in heir work, or if a documented PII leak occurs through a category the filter should have caught (post-mortem the gap, then extend the table).

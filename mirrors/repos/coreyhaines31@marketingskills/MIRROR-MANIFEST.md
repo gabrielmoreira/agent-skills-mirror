@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `coreyhaines31/marketingskills` — 26 default patterns, 0 followed patterns, 159 file(s) materialized.
+Mirror of `coreyhaines31/marketingskills` — 26 default patterns, 0 followed patterns, 164 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `coreyhaines31/marketingskills` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 159 |
+| Files         | 164 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -208,16 +208,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 147 | ✓ | [`skills/site-architecture/references/navigation-patterns.md`](skills/site-architecture/references/navigation-patterns.md) |
 | 148 | ✓ | [`skills/site-architecture/references/site-type-templates.md`](skills/site-architecture/references/site-type-templates.md) |
 | 149 | ✓ | [`skills/site-architecture/SKILL.md`](skills/site-architecture/SKILL.md) |
-| 150 | ✓ | [`skills/social/evals/evals.json`](skills/social/evals/evals.json) |
-| 151 | ✓ | [`skills/social/references/platform-limits.md`](skills/social/references/platform-limits.md) |
-| 152 | ✓ | [`skills/social/references/platforms.md`](skills/social/references/platforms.md) |
-| 153 | ✓ | [`skills/social/references/post-templates.md`](skills/social/references/post-templates.md) |
-| 154 | ✓ | [`skills/social/references/reverse-engineering.md`](skills/social/references/reverse-engineering.md) |
-| 155 | ✓ | [`skills/social/references/short-form-video.md`](skills/social/references/short-form-video.md) |
-| 156 | ✓ | [`skills/social/SKILL.md`](skills/social/SKILL.md) |
-| 157 | ✓ | [`skills/video/evals/evals.json`](skills/video/evals/evals.json) |
-| 158 | ✓ | [`skills/video/references/ai-video-prompting.md`](skills/video/references/ai-video-prompting.md) |
-| 159 | ✓ | [`skills/video/SKILL.md`](skills/video/SKILL.md) |
+| 150 | ✓ | [`skills/sms/evals/evals.json`](skills/sms/evals/evals.json) |
+| 151 | ✓ | [`skills/sms/references/compliance.md`](skills/sms/references/compliance.md) |
+| 152 | ✓ | [`skills/sms/references/platforms.md`](skills/sms/references/platforms.md) |
+| 153 | ✓ | [`skills/sms/references/sequence-templates.md`](skills/sms/references/sequence-templates.md) |
+| 154 | ✓ | [`skills/sms/SKILL.md`](skills/sms/SKILL.md) |
+| 155 | ✓ | [`skills/social/evals/evals.json`](skills/social/evals/evals.json) |
+| 156 | ✓ | [`skills/social/references/platform-limits.md`](skills/social/references/platform-limits.md) |
+| 157 | ✓ | [`skills/social/references/platforms.md`](skills/social/references/platforms.md) |
+| 158 | ✓ | [`skills/social/references/post-templates.md`](skills/social/references/post-templates.md) |
+| 159 | ✓ | [`skills/social/references/reverse-engineering.md`](skills/social/references/reverse-engineering.md) |
+| 160 | ✓ | [`skills/social/references/short-form-video.md`](skills/social/references/short-form-video.md) |
+| 161 | ✓ | [`skills/social/SKILL.md`](skills/social/SKILL.md) |
+| 162 | ✓ | [`skills/video/evals/evals.json`](skills/video/evals/evals.json) |
+| 163 | ✓ | [`skills/video/references/ai-video-prompting.md`](skills/video/references/ai-video-prompting.md) |
+| 164 | ✓ | [`skills/video/SKILL.md`](skills/video/SKILL.md) |
 
 ---
 

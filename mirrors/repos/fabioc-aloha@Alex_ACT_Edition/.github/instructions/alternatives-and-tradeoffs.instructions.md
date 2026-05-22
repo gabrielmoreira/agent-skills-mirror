@@ -170,3 +170,7 @@ When presenting alternatives + trade-offs:
 - `trade-off-analysis` → §2
 
 Combined because the two halves are inseparable: generating without comparing produces noise; comparing without generating produces premature anchoring.
+
+## Would Revise If
+
+Revise if the technique-to-trigger map produces consistent misroutes (SCAMPER fires when MECE was needed, or vice versa), if weighted decision matrices repeatedly produce post-hoc weight rationalization despite the "weights before scoring" rule, or if generation methods produce strawman alternatives rather than genuinely viable ones over a quarter of use.

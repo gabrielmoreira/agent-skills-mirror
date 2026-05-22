@@ -18,79 +18,48 @@ Run the OpenWork UI evaluation flows against a real Electron app. Prefer a fresh
 - `daytona` CLI installed and logged in (`daytona login`)
 - Using the "Different AI" org (`daytona organization use "Different AI"`)
 - The `.devcontainer/` files exist in the repo
+- Optional OpenAI coverage: reusable Daytona volume `openwork-eval-secrets`
+  populated once with `bash .devcontainer/setup-daytona-secrets-volume.sh .newtoken`
 
 ## Workflow
 
-### Step 1: Create sandbox
+### Preferred path: helper script
 
-Create a new Daytona sandbox for each eval run. Avoid reusing old sandboxes unless the user explicitly asks to debug existing state.
-
-Before creating the sandbox, explicitly point Daytona at the Different AI org:
+Use the repo helper unless you need to debug a specific Daytona step manually:
 
 ```bash
 daytona organization use "Different AI"
+bash .devcontainer/test-on-daytona.sh <branch-or-commit>
 ```
 
-Pick a unique name:
+The helper creates a fresh VNC-capable Daytona sandbox from the reusable
+`openwork-eval-vnc` snapshot when present, falls back to the VNC Dockerfile when
+needed, mounts the reusable `openwork-eval-secrets:/daytona-secrets` volume,
+mounts the reusable `openwork-eval-pnpm-store` pnpm cache volume, starts
+XFCE/noVNC, Vite, and Electron with Daytona-safe graphics flags, waits for CDP,
+then prints the CDP and noVNC URLs.
+
+Refresh the snapshot when dependencies or base setup change:
 
 ```bash
-SANDBOX="openwork-eval-$(date +%Y%m%d-%H%M%S)"
+bash .devcontainer/create-daytona-openwork-snapshot.sh
 ```
 
-Create it from the Daytona VNC-capable devcontainer:
+The snapshot intentionally excludes `node_modules` to stay below Daytona's 20 GB
+snapshot limit. Dependency installs reuse the pnpm store volume.
+
+For OpenAI/provider eval coverage, create/populate the volume once before the
+first run:
 
 ```bash
-daytona create \
-  --name "$SANDBOX" \
-  --dockerfile .devcontainer/Dockerfile.daytona-vnc \
-  --context .devcontainer/Dockerfile.daytona-vnc \
-  --context .devcontainer/start-daytona-vnc.sh \
-  --class large \
-  --memory 8 \
-  --disk 10 \
-  --auto-stop 60 \
-  --public \
-  --target us
+bash .devcontainer/setup-daytona-secrets-volume.sh .newtoken
 ```
 
-Use `--disk 10`; the default Daytona disk can fill up during dependency and
-sidecar work.
+Do not print the key. Future eval sandboxes reuse the same volume.
 
-If Daytona is unavailable, skip to the local fallback and still run the closest possible test.
+### Verify helper output
 
-### Step 2: Prepare repo
-
-Use a clean checkout inside the sandbox. The devcontainer Dockerfile normally clones the repo into `/workspace`; if that is missing, clone it there. Then fetch and check out the branch or commit under test.
-
-```bash
-daytona exec "$SANDBOX" 'test -d /workspace/.git || git clone https://github.com/different-ai/openwork.git /workspace'
-daytona exec "$SANDBOX" 'git -C /workspace fetch --all --prune && git -C /workspace checkout <branch-or-commit> && git -C /workspace pull --ff-only || true'
-```
-
-Install dependencies before starting services:
-
-```bash
-daytona exec "$SANDBOX" 'cd /workspace && pnpm install'
-```
-
-### Step 3: Start services
-
-```bash
-daytona exec "$SANDBOX" 'bash -lc "cd /workspace && nohup bash .devcontainer/start-daytona-vnc.sh > /tmp/start-vnc.log 2>&1 &"'
-daytona exec "$SANDBOX" 'bash -lc "cd /workspace/apps/app && nohup env OPENWORK_DEV_MODE=1 pnpm exec vite --host 0.0.0.0 --port 5173 > /tmp/vite.log 2>&1 &"'
-daytona exec "$SANDBOX" 'bash -lc "cd /workspace && nohup env DISPLAY=:99 ELECTRON_DISABLE_SANDBOX=1 OPENWORK_REACT_DEVTOOLS=0 OPENWORK_ELECTRON_REMOTE_DEBUG_PORT=9825 OPENWORK_DEV_MODE=1 pnpm --filter @openwork/desktop dev:electron > /tmp/electron.log 2>&1 &"'
-```
-
-Wait ~35-60s for XFCE/noVNC, Vite, Electron, and opencode to start.
-
-### Step 4: Verify
-
-```bash
-# Get CDP URL
-daytona preview-url "$SANDBOX" -p 9825
-```
-
-Then use the browser tools to verify:
+Use the Electron CDP URL printed by `test-on-daytona.sh` with the browser tools:
 
 ```
 browser_list({ browser_url: "<CDP_URL>" })

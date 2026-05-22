@@ -27,3 +27,7 @@ For common deferred tool categories and search-query patterns, see [tool-awarene
 ## External Ingest (VS Code 1.119+)
 
 In remote or virtual-filesystem workspaces (GitHub.dev, VS Code Remote, Codespaces), the editor provides codebase context automatically. `semantic_search` and file operations work transparently — no agent action needed.
+
+## Would Revise If
+
+Revise if VS Code changes the deferred-tool mechanism (e.g. `tool_search` semantics change, deferred tools become directly callable, or external-ingest changes scope in remote workspaces), or if the "search before calling" rule produces no observed failures over a quarter (the rule is no longer load-bearing because the platform changed).
