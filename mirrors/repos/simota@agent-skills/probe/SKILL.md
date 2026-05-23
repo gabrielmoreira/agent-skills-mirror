@@ -42,7 +42,7 @@ Probe is the dynamic security testing specialist. Use it to prove exploitability
 
 Use Probe when the task involves:
 
-- ZAP (maintained by Checkmarx, Apache 2.0), Burp Suite, Nuclei, DAST, penetration testing, or runtime exploit verification — ZAP PTK add-on enables combined DAST+IAST+SAST+SCA in a single authenticated browser session (Chrome, Edge, Firefox) with client-side alert coverage
+- ZAP (now branded **ZAP by Checkmarx**, Apache 2.0; v2.16.0 is the current GA, JDK 17+), Burp Suite (Burp AI announced 2025-03-31 — AI login recording, automated PoC validation), Nuclei (**v3.8.0** as of 2026-04-18; pin against CVE-2024-43405 / GHSA-29rg-wmcw-hpf4 / GHSA-jm34-66cf-qpvr), DAST, penetration testing, or runtime exploit verification — ZAP PTK add-on enables combined DAST+IAST+SAST+SCA in a single authenticated browser session (Chrome, Edge, Firefox) with client-side alert coverage
 - Validating whether a static finding is actually exploitable in a running environment
 - Testing authentication, authorization, session handling, rate limiting, GraphQL, OAuth, or SSRF in a running app — ZAP now supports TOTP fields, multi-screen login flows, and Client Script Authentication via Zest scripts for complex auth scenarios
 - Designing scan strategy, security gates, SARIF export, or CI-integrated security testing
@@ -67,7 +67,7 @@ Route elsewhere when the task is primarily:
 - Test attack paths, not isolated vulnerabilities. Chain identity abuse, misconfiguration, and privilege escalation to prove real-world impact.
 - Test positive and negative cases, including authenticated and session-aware paths where relevant.
 - Prefer staging or pre-production. Production active exploit testing is never the default.
-- Always include BOLA/BFLA checks when API scope exists — BOLA accounts for ~40% of all API attacks (Wallarm Q2 2025). Note: traditional DAST tools cannot dynamically substitute user credentials, so BOLA testing requires multi-identity session configuration or dedicated API security tooling.
+- Always include BOLA/BFLA checks when API scope exists — BOLA still tops the API attack chart per Wallarm's *2026 API ThreatStats Report* (2026-02-17): **43% of 2025 CISA KEV additions (106 / 245) were API-related**, **97% of API vulns are exploitable in a single request**, and **52% of disclosed API breaches in 2025 traced to broken authentication**. Note: traditional DAST tools cannot dynamically substitute user credentials, so BOLA testing requires multi-identity session configuration or dedicated API security tooling.
 - Remediation SLAs by CVSS: Critical (9.0-10.0) → 24h, High (7.0-8.9) → 7 days, Medium (4.0-6.9) → 30 days, Low (0.1-3.9) → 90 days.
 - Reference OWASP Top 10 2025 (8th edition, 589 CWEs): Broken Access Control (#1), Security Misconfiguration (#2), Software Supply Chain Failures (#3, expanded from Vulnerable Components), Injection (#5), Mishandling of Exceptional Conditions (#10, new).
 - Use CVSS v4.0 when tooling supports it — Scope metric removed, Threat replaces Temporal, Supplemental metrics (Automatable, Safety) aid non-technical stakeholder communication. NVD officially supports v4.0 scoring. Fall back to CVSS v3.1 when v4.0 is unavailable. Caution: v4.0 vectors are incompatible with v3.x parsers — mixing versions produces incorrect scores.
@@ -133,7 +133,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Staging DAST (Nuclei targeted) | `1-5 min` | Run template-based checks after staging deploy |
 | Staging DAST (ZAP active) | `< 15 min` | Run only targeted or diff-based scans |
 | Full pipeline DAST | `> 30 min` | Move to nightly or weekly full scan |
-| API priority | `BOLA` ≈ `40%` of API attacks (Wallarm Q2 2025) | Always include API1/BOLA checks when API scope exists |
+| API priority | API attacks dominate KEV — `43%` of 2025 CISA KEV additions are API-related (Wallarm *2026 API ThreatStats*); BOLA still tops the volume chart | Always include API1/BOLA checks when API scope exists |
 | Nuclei templates | `12,000+` community templates available (incl. cloud config: GCP/Azure/K8s) | Use targeted subsets; full template scan for nightly only; pin versions and verify sources (CVE-2024-43405) |
 | Nuclei rate limit | Default `150 req/sec`; configurable via `-rl` flag | Reduce for production-adjacent targets (e.g., 30-50 req/sec); increase for isolated staging only |
 | Proof requirement | No safe proof = no confirmed finding | Mark as `Needs Review` or `Unconfirmed`, not confirmed |
@@ -330,6 +330,7 @@ Follow `_common/GIT_GUIDELINES.md`. Use Conventional Commits such as `feat(secur
 | `references/mobile-dast.md` | You are running the `mobile` Recipe — iOS/Android built-app dynamic testing, MobSF orchestration, Frida instrumentation, authorized SSL pinning bypass, OWASP MASVS/MASTG mapping |
 | `references/recon.md` | You are running the `recon` Recipe — passive external attack-surface mapping (subfinder/amass/crt.sh, dnsx/httpx, public-repo secret hunting, shodan/fofa/censys), no exploitation |
 | `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing a Probe-specific verb (EXPLOIT-FIX / HARDEN-RUNTIME / MITIGATE / BREAKING-FIX / AUTH-FIX / INVESTIGATE-FURTHER), or deciding whether to suppress the prompt (Sentinel ownership / Breach escalation / reconnaissance only). |
+| `references/llm-agent-security-2026.md` | The target embeds an LLM endpoint, RAG retriever, agentic / tool-calling workflow, or MCP server. OWASP Top 10 for LLM 2025 v2.0 (LLM01-LLM10), OWASP Top 10 for Agentic Applications (ASI01 Agent Goal Hijacking, indirect prompt injection), MCP-specific checks, Garak / PyRIT / Promptfoo / DeepTeam tooling, stochasticity proof standards. |
 | `_common/LLM_PROMPT_GENERATION.md` | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Sentinel/Scout/Trail/Plea. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the DAST report, deciding adaptive thinking depth at VALIDATE, or front-loading scope/authorization at PLAN. Critical for Probe: P2, P5. |
 

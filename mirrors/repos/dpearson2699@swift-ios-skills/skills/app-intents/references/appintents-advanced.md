@@ -1,13 +1,13 @@
 # App Intents Advanced Reference
 
 Extended App Intents patterns beyond the basics covered in the main skill.
-Covers @Parameter variants, EntityPropertyQuery, assistant schemas, focus
+Covers `@Parameter` variants, EntityPropertyQuery, assistant schemas, focus
 filters, SiriKit migration, error handling, confirmation flows, authentication,
 URL-representable types, and Spotlight indexing.
 
 ## Contents
 
-- [@Parameter Initializer Variants](#parameter-initializer-variants)
+- [`@Parameter Initializer Variants`](#parameter-initializer-variants)
 - [EntityPropertyQuery (Filter and Sort)](#entitypropertyquery-filter-and-sort)
 - [Assistant Schemas (iOS 18+)](#assistant-schemas-ios-18)
 - [Focus Filter Intents](#focus-filter-intents)
@@ -17,12 +17,12 @@ URL-representable types, and Spotlight indexing.
 - [Authentication Policies](#authentication-policies)
 - [URLRepresentableIntent / Entity / Enum (iOS 18+)](#urlrepresentableintent-entity-enum-ios-18)
 - [IndexedEntity for Spotlight (iOS 18+)](#indexedentity-for-spotlight-ios-18)
-- [@ComputedProperty(indexingKey:) for Spotlight (iOS 26+)](#computedpropertyindexingkey-for-spotlight-ios-26)
+- [`@ComputedProperty(indexingKey:) for Spotlight (iOS 26+)`](#computedpropertyindexingkey-for-spotlight-ios-26)
 - [Onscreen Content for Siri (iOS 26+)](#onscreen-content-for-siri-ios-26)
 - [Parameter Summary Builder](#parameter-summary-builder)
 - [Core Spotlight Direct Usage](#core-spotlight-direct-usage)
 
-## @Parameter Initializer Variants
+## `@Parameter` Initializer Variants
 
 ### 1. Basic (String, Bool, URL, Date)
 
@@ -725,7 +725,7 @@ extension ArticleEntity {
 }
 ```
 
-## @ComputedProperty(indexingKey:) for Spotlight (iOS 26+)
+## `@ComputedProperty(indexingKey:)` for Spotlight (iOS 26+)
 
 Use indexing keys on `@Property` and `@ComputedProperty` for structured Spotlight
 metadata without manual `CSSearchableItemAttributeSet` configuration.

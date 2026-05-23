@@ -26,7 +26,9 @@ Skills are modular knowledge packages that transform general-purpose agents into
 
 The context window is a shared resource. Challenge each piece: "Does this justify its token cost?"
 
-**Default assumption: Agents are already capable.** Only add what they don't already know.
+**For domain/procedural skills**: Agents are already capable. Only add what they don't already know.
+
+**For SDK/API skills**: Users MUST provide SDK package name, documentation URL, or repository reference. The skill cannot be created without this context.
 
 ### 2. Fresh Documentation First
 
@@ -43,7 +45,7 @@ Search `microsoft-docs` MCP for current API patterns:
 
 ### 3. Degrees of Freedom
 
-Match specificity to task fragility:
+Match specificity to implementation constraints. High freedom when approaches vary; low freedom when precise execution is required:
 
 | Freedom    | When                             | Example          |
 | ---------- | -------------------------------- | ---------------- |
@@ -65,6 +67,8 @@ Skills load in three levels:
 
 ## Skill Structure
 
+**Quick reference:**
+
 ```
 skill-name/
 ├── SKILL.md (required)
@@ -76,20 +80,20 @@ skill-name/
     └── assets/       — Output resources (templates, images)
 ```
 
-### SKILL.md
+For Azure SDK skills, follow the **Skill Section Order** below. For domain skills, use your judgment to organize logically.
 
-- **Frontmatter**: `name` and `description`. The description is the trigger mechanism.
-- **Body**: Instructions loaded only after triggering.
+### SKILL.md Essentials
 
-### Bundled Resources
+- **Frontmatter**: `name` and `description` (description triggers the skill)
+- **Body**: Keep under 500 lines; split large skills into reference files
 
-| Type          | Purpose                  | When to Include                    |
-| ------------- | ------------------------ | ---------------------------------- |
-| `scripts/`    | Deterministic operations | Same code rewritten repeatedly     |
-| `references/` | Detailed patterns        | API docs, schemas, detailed guides |
-| `assets/`     | Output resources         | Templates, images, boilerplate     |
+### Bundled Resources (Optional)
 
-**Don't include**: README.md, CHANGELOG.md, installation guides.
+| Type          | When to Include           | Examples                   |
+| ------------- | ------------------------- | -------------------------- |
+| `scripts/`    | Reused code patterns      | Auth setup, CLI scripts    |
+| `references/` | Detailed patterns/schemas | API docs, migration guides |
+| `assets/`     | Output templates          | Boilerplate code, images   |
 
 ---
 
@@ -293,6 +297,8 @@ Add both items verbatim (adapted only for language/SDK specifics) as the **first
 2. **Use `RequestContent::from()` to wrap upload data.** When uploading data (e.g., blobs), wrap the content in `RequestContent::from(your_data)` to ensure proper handling by the SDK.
 
 3. **Assign appropriate RBAC roles for Entra ID auth.** For production authentication using Entra ID, ensure the identity has the necessary RBAC role assigned (e.g., "Storage Blob Data Contributor" for blob write access).
+
+4. **Always verify package versions using crates.io.** Before using a package, check its version on [crates.io](https://crates.io/) to ensure you are using a stable and supported release.
 
 ### Handling Deprecated or Rebranded SDKs
 
@@ -840,7 +846,7 @@ Before completing a skill:
 
 - [ ] Description includes what AND when (trigger phrases)
 - [ ] SKILL.md under 500 lines
-- [ ] Authentication uses `DefaultAzureCredential`
+- [ ] Authentication guidance matches language-specific recommendations (including Rust credential guidance)
 - [ ] Includes cleanup/delete in examples
 - [ ] References organized by feature
 - [ ] **(Python skills only) Best Practices section contains the two user-facing rules** (sync-or-async consistency + context managers for clients and async credentials), using the variant matched to the skill type

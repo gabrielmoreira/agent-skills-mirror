@@ -1,1 +1,1 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/handoff/../../../engineering/handoff/skills/handoff/SKILL.md
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/handoff/../../../productivity/handoff/skills/handoff/SKILL.md

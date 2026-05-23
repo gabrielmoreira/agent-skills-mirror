@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ConardLi/garden-skills` — 26 default patterns, 6 followed patterns, 192 file(s) materialized.
+Mirror of `ConardLi/garden-skills` — 26 default patterns, 6 followed patterns, 218 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ConardLi/garden-skills` — 26 default patterns, 6 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 192 |
+| Files         | 218 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -232,30 +232,56 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 166 | ✓ | [`skills/web-video-presentation/themes/bauhaus-bold/tokens.css`](skills/web-video-presentation/themes/bauhaus-bold/tokens.css) |
 | 167 | ✓ | [`skills/web-video-presentation/themes/blueprint/theme.json`](skills/web-video-presentation/themes/blueprint/theme.json) |
 | 168 | ✓ | [`skills/web-video-presentation/themes/blueprint/tokens.css`](skills/web-video-presentation/themes/blueprint/tokens.css) |
-| 169 | ✓ | [`skills/web-video-presentation/themes/chalk-garden/theme.json`](skills/web-video-presentation/themes/chalk-garden/theme.json) |
-| 170 | ✓ | [`skills/web-video-presentation/themes/chalk-garden/tokens.css`](skills/web-video-presentation/themes/chalk-garden/tokens.css) |
-| 171 | ✓ | [`skills/web-video-presentation/themes/midnight-press/theme.json`](skills/web-video-presentation/themes/midnight-press/theme.json) |
-| 172 | ✓ | [`skills/web-video-presentation/themes/midnight-press/tokens.css`](skills/web-video-presentation/themes/midnight-press/tokens.css) |
-| 173 | ✓ | [`skills/web-video-presentation/themes/monochrome-print/theme.json`](skills/web-video-presentation/themes/monochrome-print/theme.json) |
-| 174 | ✓ | [`skills/web-video-presentation/themes/monochrome-print/tokens.css`](skills/web-video-presentation/themes/monochrome-print/tokens.css) |
-| 175 | ✓ | [`skills/web-video-presentation/themes/newsroom/theme.json`](skills/web-video-presentation/themes/newsroom/theme.json) |
-| 176 | ✓ | [`skills/web-video-presentation/themes/newsroom/tokens.css`](skills/web-video-presentation/themes/newsroom/tokens.css) |
-| 177 | ✓ | [`skills/web-video-presentation/themes/paper-press/theme.json`](skills/web-video-presentation/themes/paper-press/theme.json) |
-| 178 | ✓ | [`skills/web-video-presentation/themes/paper-press/tokens.css`](skills/web-video-presentation/themes/paper-press/tokens.css) |
-| 179 | ✓ | [`skills/web-video-presentation/themes/sunset-zine/theme.json`](skills/web-video-presentation/themes/sunset-zine/theme.json) |
-| 180 | ✓ | [`skills/web-video-presentation/themes/sunset-zine/tokens.css`](skills/web-video-presentation/themes/sunset-zine/tokens.css) |
-| 181 | ✓ | [`skills/web-video-presentation/themes/terminal-green/theme.json`](skills/web-video-presentation/themes/terminal-green/theme.json) |
-| 182 | ✓ | [`skills/web-video-presentation/themes/terminal-green/tokens.css`](skills/web-video-presentation/themes/terminal-green/tokens.css) |
-| 183 | ✓ | [`skills/web-video-presentation/themes/warm-keynote/theme.json`](skills/web-video-presentation/themes/warm-keynote/theme.json) |
-| 184 | ✓ | [`skills/web-video-presentation/themes/warm-keynote/tokens.css`](skills/web-video-presentation/themes/warm-keynote/tokens.css) |
-| 185 | ✓ | [`website/gpt-image2-website/README.md`](website/gpt-image2-website/README.md) |
-| 186 | ✓ | [`website/web-design-website/README.md`](website/web-design-website/README.md) |
-| 187 | → | [`CONTRIBUTING.ja-JP.md`](CONTRIBUTING.ja-JP.md) |
-| 188 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 189 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
-| 190 | → | [`README.ja-JP.md`](README.ja-JP.md) |
-| 191 | → | [`README.md`](README.md) |
-| 192 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 169 | ✓ | [`skills/web-video-presentation/themes/bold-signal/theme.json`](skills/web-video-presentation/themes/bold-signal/theme.json) |
+| 170 | ✓ | [`skills/web-video-presentation/themes/bold-signal/tokens.css`](skills/web-video-presentation/themes/bold-signal/tokens.css) |
+| 171 | ✓ | [`skills/web-video-presentation/themes/chalk-garden/theme.json`](skills/web-video-presentation/themes/chalk-garden/theme.json) |
+| 172 | ✓ | [`skills/web-video-presentation/themes/chalk-garden/tokens.css`](skills/web-video-presentation/themes/chalk-garden/tokens.css) |
+| 173 | ✓ | [`skills/web-video-presentation/themes/creative-voltage/theme.json`](skills/web-video-presentation/themes/creative-voltage/theme.json) |
+| 174 | ✓ | [`skills/web-video-presentation/themes/creative-voltage/tokens.css`](skills/web-video-presentation/themes/creative-voltage/tokens.css) |
+| 175 | ✓ | [`skills/web-video-presentation/themes/dark-botanical/theme.json`](skills/web-video-presentation/themes/dark-botanical/theme.json) |
+| 176 | ✓ | [`skills/web-video-presentation/themes/dark-botanical/tokens.css`](skills/web-video-presentation/themes/dark-botanical/tokens.css) |
+| 177 | ✓ | [`skills/web-video-presentation/themes/dune/theme.json`](skills/web-video-presentation/themes/dune/theme.json) |
+| 178 | ✓ | [`skills/web-video-presentation/themes/dune/tokens.css`](skills/web-video-presentation/themes/dune/tokens.css) |
+| 179 | ✓ | [`skills/web-video-presentation/themes/electric-studio/theme.json`](skills/web-video-presentation/themes/electric-studio/theme.json) |
+| 180 | ✓ | [`skills/web-video-presentation/themes/electric-studio/tokens.css`](skills/web-video-presentation/themes/electric-studio/tokens.css) |
+| 181 | ✓ | [`skills/web-video-presentation/themes/forest-ink/theme.json`](skills/web-video-presentation/themes/forest-ink/theme.json) |
+| 182 | ✓ | [`skills/web-video-presentation/themes/forest-ink/tokens.css`](skills/web-video-presentation/themes/forest-ink/tokens.css) |
+| 183 | ✓ | [`skills/web-video-presentation/themes/indigo-porcelain/theme.json`](skills/web-video-presentation/themes/indigo-porcelain/theme.json) |
+| 184 | ✓ | [`skills/web-video-presentation/themes/indigo-porcelain/tokens.css`](skills/web-video-presentation/themes/indigo-porcelain/tokens.css) |
+| 185 | ✓ | [`skills/web-video-presentation/themes/kraft-paper/theme.json`](skills/web-video-presentation/themes/kraft-paper/theme.json) |
+| 186 | ✓ | [`skills/web-video-presentation/themes/kraft-paper/tokens.css`](skills/web-video-presentation/themes/kraft-paper/tokens.css) |
+| 187 | ✓ | [`skills/web-video-presentation/themes/midnight-press/theme.json`](skills/web-video-presentation/themes/midnight-press/theme.json) |
+| 188 | ✓ | [`skills/web-video-presentation/themes/midnight-press/tokens.css`](skills/web-video-presentation/themes/midnight-press/tokens.css) |
+| 189 | ✓ | [`skills/web-video-presentation/themes/monochrome-print/theme.json`](skills/web-video-presentation/themes/monochrome-print/theme.json) |
+| 190 | ✓ | [`skills/web-video-presentation/themes/monochrome-print/tokens.css`](skills/web-video-presentation/themes/monochrome-print/tokens.css) |
+| 191 | ✓ | [`skills/web-video-presentation/themes/neon-cyber/theme.json`](skills/web-video-presentation/themes/neon-cyber/theme.json) |
+| 192 | ✓ | [`skills/web-video-presentation/themes/neon-cyber/tokens.css`](skills/web-video-presentation/themes/neon-cyber/tokens.css) |
+| 193 | ✓ | [`skills/web-video-presentation/themes/newsroom/theme.json`](skills/web-video-presentation/themes/newsroom/theme.json) |
+| 194 | ✓ | [`skills/web-video-presentation/themes/newsroom/tokens.css`](skills/web-video-presentation/themes/newsroom/tokens.css) |
+| 195 | ✓ | [`skills/web-video-presentation/themes/paper-press/theme.json`](skills/web-video-presentation/themes/paper-press/theme.json) |
+| 196 | ✓ | [`skills/web-video-presentation/themes/paper-press/tokens.css`](skills/web-video-presentation/themes/paper-press/tokens.css) |
+| 197 | ✓ | [`skills/web-video-presentation/themes/pastel-dream/theme.json`](skills/web-video-presentation/themes/pastel-dream/theme.json) |
+| 198 | ✓ | [`skills/web-video-presentation/themes/pastel-dream/tokens.css`](skills/web-video-presentation/themes/pastel-dream/tokens.css) |
+| 199 | ✓ | [`skills/web-video-presentation/themes/split-canvas/theme.json`](skills/web-video-presentation/themes/split-canvas/theme.json) |
+| 200 | ✓ | [`skills/web-video-presentation/themes/split-canvas/tokens.css`](skills/web-video-presentation/themes/split-canvas/tokens.css) |
+| 201 | ✓ | [`skills/web-video-presentation/themes/sunset-zine/theme.json`](skills/web-video-presentation/themes/sunset-zine/theme.json) |
+| 202 | ✓ | [`skills/web-video-presentation/themes/sunset-zine/tokens.css`](skills/web-video-presentation/themes/sunset-zine/tokens.css) |
+| 203 | ✓ | [`skills/web-video-presentation/themes/swiss-ikb/theme.json`](skills/web-video-presentation/themes/swiss-ikb/theme.json) |
+| 204 | ✓ | [`skills/web-video-presentation/themes/swiss-ikb/tokens.css`](skills/web-video-presentation/themes/swiss-ikb/tokens.css) |
+| 205 | ✓ | [`skills/web-video-presentation/themes/terminal-green/theme.json`](skills/web-video-presentation/themes/terminal-green/theme.json) |
+| 206 | ✓ | [`skills/web-video-presentation/themes/terminal-green/tokens.css`](skills/web-video-presentation/themes/terminal-green/tokens.css) |
+| 207 | ✓ | [`skills/web-video-presentation/themes/vintage-editorial/theme.json`](skills/web-video-presentation/themes/vintage-editorial/theme.json) |
+| 208 | ✓ | [`skills/web-video-presentation/themes/vintage-editorial/tokens.css`](skills/web-video-presentation/themes/vintage-editorial/tokens.css) |
+| 209 | ✓ | [`skills/web-video-presentation/themes/warm-keynote/theme.json`](skills/web-video-presentation/themes/warm-keynote/theme.json) |
+| 210 | ✓ | [`skills/web-video-presentation/themes/warm-keynote/tokens.css`](skills/web-video-presentation/themes/warm-keynote/tokens.css) |
+| 211 | ✓ | [`website/gpt-image2-website/README.md`](website/gpt-image2-website/README.md) |
+| 212 | ✓ | [`website/web-design-website/README.md`](website/web-design-website/README.md) |
+| 213 | → | [`CONTRIBUTING.ja-JP.md`](CONTRIBUTING.ja-JP.md) |
+| 214 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 215 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
+| 216 | → | [`README.ja-JP.md`](README.ja-JP.md) |
+| 217 | → | [`README.md`](README.md) |
+| 218 | → | [`README.zh-CN.md`](README.zh-CN.md) |
 
 ---
 

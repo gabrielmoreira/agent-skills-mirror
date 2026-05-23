@@ -11,6 +11,15 @@ npm run test:behavior             # prompt-behavior + orchestration-handoff regr
 ```
 Scenarios are in `evals/scenarios/`. Validate against matching schemas in `schemas/`.
 
+## Path Resolution
+Agent resource paths are workspace-relative by default. When a file listed in any agent's `## Resources` section is not found in the active workspace root:
+1. Retry the read using the absolute prefix `{{VSCODE_USER_PROMPTS_FOLDER}}/` (for example, `{{VSCODE_USER_PROMPTS_FOLDER}}/governance/model-routing.json`).
+2. If still not found, log the missing path in the gate event and continue with `confidence` reduced by 0.1 per missing critical file.
+3. Never fabricate file contents. Never silently proceed as if a missing governance file contained default values.
+4. Applies to `governance/`, `schemas/`, `plans/project-context.md`, `docs/agent-engineering/`, and `skills/` paths referenced in agent `## Resources` sections.
+
+This boot-time rule intentionally duplicates `docs/agent-engineering/TOOL-ROUTING.md` Rule 8 so global user-level agents can recover before `TOOL-ROUTING.md` itself is loaded.
+
 ## Failure Classification
 When status is `FAILED`, `NEEDS_INPUT`, `NEEDS_REVISION`, or `REJECTED`, include `failure_classification`:
 - `transient` — Flaky test, network timeout, or temporary tool unavailability; retry with identical scope.

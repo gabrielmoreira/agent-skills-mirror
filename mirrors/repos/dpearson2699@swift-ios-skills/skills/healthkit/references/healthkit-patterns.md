@@ -391,7 +391,7 @@ func fetchHourlyHeartRate(for date: Date) async throws -> [(hour: Date, bpm: Dou
 
 ## HealthKit + SwiftUI Integration
 
-### HealthKit Manager with @Observable
+### HealthKit Manager with `@Observable`
 
 ```swift
 import HealthKit

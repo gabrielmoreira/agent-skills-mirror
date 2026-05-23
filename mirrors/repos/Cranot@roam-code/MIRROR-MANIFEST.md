@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Cranot/roam-code` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `Cranot/roam-code` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Cranot/roam-code` — 26 default patterns, 0 followed patterns, 3 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,8 +60,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`skills/roam/SKILL.md`](skills/roam/SKILL.md) |
-| 3 | ✓ | [`templates/distribution/landing-page/llms.txt`](templates/distribution/landing-page/llms.txt) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`skills/roam/SKILL.md`](skills/roam/SKILL.md) |
+| 4 | ✓ | [`templates/distribution/landing-page/llms.txt`](templates/distribution/landing-page/llms.txt) |
 
 ---
 

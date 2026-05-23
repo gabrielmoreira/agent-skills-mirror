@@ -13,11 +13,11 @@ with Swift 6.3.
 - [Model Definition](#model-definition)
 - [ModelContainer Setup](#modelcontainer-setup)
 - [CRUD Operations](#crud-operations)
-- [@Query in SwiftUI](#query-in-swiftui)
+- [`@Query in SwiftUI`](#query-in-swiftui)
 - [#Predicate](#predicate)
 - [FetchDescriptor](#fetchdescriptor)
 - [Schema Versioning and Migration](#schema-versioning-and-migration)
-- [Concurrency (@ModelActor)](#concurrency-modelactor)
+- [Concurrency (`@ModelActor`)](#concurrency-modelactor)
 - [SwiftUI Integration](#swiftui-integration)
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
@@ -47,9 +47,9 @@ class Trip {
 }
 ```
 
-**@Attribute options**: `.externalStorage`, `.unique`, `.spotlight`, `.allowsCloudEncryption`, `.preserveValueOnDeletion` (iOS 18+), `.ephemeral`, `.transformable(by:)`. Rename: `@Attribute(originalName: "old_name")`.
+**`@Attribute` options**: `.externalStorage`, `.unique`, `.spotlight`, `.allowsCloudEncryption`, `.preserveValueOnDeletion` (iOS 18+), `.ephemeral`, `.transformable(by:)`. Rename: `@Attribute(originalName: "old_name")`.
 
-**@Relationship**: `deleteRule:` `.cascade`/`.nullify`(default)/`.deny`/`.noAction`. Specify `inverse:` for reliable behavior. Unidirectional (iOS 18+): `inverse: nil`.
+**`@Relationship`**: `deleteRule:` `.cascade`/`.nullify`(default)/`.deny`/`.noAction`. Specify `inverse:` for reliable behavior. Unidirectional (iOS 18+): `inverse: nil`.
 
 **#Unique (iOS 18+)**: `#Unique<Person>([\.firstName, \.lastName])` -- compound uniqueness.
 
@@ -104,7 +104,7 @@ try modelContext.transaction {
 }
 ```
 
-## @Query in SwiftUI
+## `@Query` in SwiftUI
 
 ```swift
 struct TripListView: View {
@@ -201,7 +201,7 @@ static let migrateV2toV3 = MigrationStage.custom(
 
 Lightweight handles: adding optional/defaulted properties, renaming (`originalName`), removing properties, adding model types.
 
-## Concurrency (@ModelActor)
+## Concurrency (`@ModelActor`)
 
 ```swift
 @ModelActor
@@ -257,11 +257,11 @@ struct DetailView: View {
 
 ## Common Mistakes
 
-**1. @Model on struct** -- Use class. `@Model` requires reference semantics.
+**1. `@Model` on struct** -- Use class. `@Model` requires reference semantics.
 
-**2. @Transient without default** -- Always provide default: `@Transient var x: Bool = false`.
+**2. `@Transient` without default** -- Always provide default: `@Transient var x: Bool = false`.
 
-**3. Missing .modelContainer** -- @Query returns empty without a container on the view hierarchy.
+**3. Missing .modelContainer** -- `@Query` returns empty without a container on the view hierarchy.
 
 **4. Passing model objects across actors:**
 ```swift
@@ -287,9 +287,9 @@ struct DetailView: View {
 // CORRECT: #Predicate<Trip> { $0.tags.contains { $0.name == "x" } }
 ```
 
-**8. No save in @ModelActor** -- Always call `try modelContext.save()` explicitly.
+**8. No save in `@ModelActor`** -- Always call `try modelContext.save()` explicitly.
 
-**9. ObservableObject with @Model** -- Never use `ObservableObject`/`@Published`. `@Model` generates `Observable`. Use `@Query` in views.
+**9. ObservableObject with `@Model`** -- Never use `ObservableObject`/`@Published`. `@Model` generates `Observable`. Use `@Query` in views.
 
 **10. Non-optional relationship without default:**
 ```swift
@@ -325,7 +325,7 @@ struct DetailView: View {
 ## References
 
 - [references/swiftdata-advanced.md](references/swiftdata-advanced.md) — custom data stores, history tracking, CloudKit, composite attributes, model inheritance, undo/redo, performance
-- [references/swiftdata-queries.md](references/swiftdata-queries.md) — @Query variants, FetchDescriptor deep dive, sectioned queries, dynamic queries, background fetch
+- [references/swiftdata-queries.md](references/swiftdata-queries.md) — `@Query` variants, FetchDescriptor deep dive, sectioned queries, dynamic queries, background fetch
 - [references/core-data-coexistence.md](references/core-data-coexistence.md) — standalone Core Data patterns and Core Data to SwiftData migration
 - [references/predicate-pitfalls.md](references/predicate-pitfalls.md) — #Predicate runtime crashes, unsupported expressions, safe patterns
 - [references/indexing.md](references/indexing.md) — #Index macro, compound indexes, when to index, migration

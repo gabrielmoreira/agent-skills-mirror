@@ -17,8 +17,48 @@ Score each item 1–5. If any item scores below 3, fix it before continuing. **D
 [ ] No mid-video dark frames              → state explicitly which frames (if any) are dark and why
 [ ] Brand assets actually visible         → for each beat, name which captured SVG / illustration / screenshot is on screen and at what timestamp. If a beat shows zero captured assets, justify why.
 [ ] Audio duration matches video ±0.5s    → paste both numbers
+[ ] animation-map.json generated          → run `node <repo-root>/skills/hyperframes/scripts/animation-map.mjs <project-dir>`; confirm every beat has events listed and no bbox/flag warnings
+[ ] w2h-verify report                     → run `node <repo-root>/skills/website-to-hyperframes/scripts/w2h-verify.mjs <project-dir>`; paste the FULL output (every row, every percent) verbatim into your final user-facing summary — see "w2h-verify — the source of truth" below
+[ ] Audio + motion verification done      → see "Audio + motion verification" below; played the full preview, confirmed SFX lands at storyboard timestamps
 [ ] Critic sub-agent run                  → paste its single biggest quality gap finding, verbatim
 ```
+
+### w2h-verify — the source of truth
+
+The skill ran for months on agents reading "REQUIRED" and skipping anyway. The verify script ends that — it computes facts the agent cannot fudge:
+
+- **Required artifacts present** (STORYBOARD.md, DESIGN.md, SCRIPT.md, index.html)
+- **Brand visuals used** — at least 1 beat must reference a captured `hero-*`, `image-*`, or `svgs/*.svg` asset (logo doesn't count). Catches the "9% asset usage / brand isn't visually present" failure.
+- **Headline font-size** — per-beat, the largest CSS `font-size` must be ≥80px. Catches the "headlines too small to read" failure that surfaces later as inspect `clipped_text` errors.
+- **Timeline coverage** — per-beat, GSAP event positions must span ≥70% of the beat's `data-duration`. Catches "webpage not shot" failures where the beat has entrance tweens then goes static.
+- **Shader transitions consistency** — shaders declared in STORYBOARD.md must appear in index.html (with HyperShader runtime present, not just as SFX file references).
+- **SFX timestamp drift** — storyboard `t=X.Xs` vs index.html `data-start=X.X`, picks the closest index timestamp per file for multi-timestamp SFX.
+- **Beat duration consistency** — storyboard's beat ranges (`B4 — Name | 16.600 – 21.000s |`) must match `data-duration` in index.html within ±0.5s. Catches storyboard staleness.
+- **Rendered MP4 existence** — INFO only; flagged when claiming verified motion without rendering.
+
+Run it as the LAST gate in your DoD pass, after fixing everything else:
+
+```bash
+node <repo-root>/skills/website-to-hyperframes/scripts/w2h-verify.mjs <project-dir>
+```
+
+(Locate the repo root from a project subdirectory: `find "$HOME" -path '*/skills/website-to-hyperframes/scripts/w2h-verify.mjs' -maxdepth 10 2>/dev/null | head -1`.)
+
+**The script's output is the deliverable.** Paste the entire report — the table, the percentages, the FAIL lines — verbatim into your final user-facing summary, in the "What I verified" / "What I did NOT verify" section. The user will read it directly. You don't get to summarize, simplify, or omit rows.
+
+**If any row says FAIL:**
+
+- Either fix the underlying issue and re-run until the row says PASS
+- Or include the FAIL row verbatim in your final summary's "What I did NOT verify" section with a one-sentence explanation of why you chose not to fix it
+
+**Forbidden:**
+
+- Hand-writing your own verification summary that doesn't match the script's output
+- Cherry-picking which rows to include
+- Replacing percentages with adjectives ("most assets used" instead of "8%")
+- Running the script, seeing FAIL, and not mentioning it
+
+The script's exit code is 0 (all pass) or 1 (one or more fail). If you ship with exit=1, the user knows from the report exactly what they're getting.
 
 ### Per-beat file read
 
@@ -62,9 +102,24 @@ Some are style suggestions you can safely ignore:
 - **Deprecated attributes** (data-layer, data-end) — still work, just not preferred
 - **Dense tracks** — informational, not a bug
 
-**WCAG contrast false positives** — the validator samples text colors at fixed timestamps. Elements that are at `opacity: 0` (pre-entrance) or mid-fade at those sample timestamps get measured against the background as if they were fully visible, which produces spurious contrast failures. Before changing a color to clear a WCAG warning, verify visually that the element is actually unreadable when on-screen at full opacity. If it's only flagged for pre-entrance / exit moments, the warning is a sampling artifact, not a real failure. Bumping the color to "fix" these false positives changes the brand identity for no real benefit.
+**WCAG contrast warnings — per-warning verification, not blanket dismissal.**
 
-Don't blindly ignore 158 warnings. Don't blindly fix all of them either. Read them.
+The validator samples text colors at fixed timestamps. Elements at `opacity: 0` (pre-entrance) or mid-fade get measured as if fully visible — real false positives exist. BUT this is a per-warning judgment, not a blanket excuse.
+
+**For EACH warning the validator emits, paste this block in your verdict:**
+
+```
+Warning N: <quote the validator output verbatim>
+  Element: <selector>
+  Sampled timestamp: t=<n>
+  At t=<n>, is this element on-screen at full opacity? (yes/no — confirm by viewing snapshot at that timestamp)
+  Verdict: REAL ISSUE / SAMPLING ARTIFACT (justify in one sentence)
+  Action: <hex change at line N>  OR  NONE because <reason>
+```
+
+**Forbidden:** writing "the N warnings are mostly transition-window false positives" without per-warning evidence. That phrasing alone fails the gate. The validator does not report 158 warnings as a group — it reports them individually, and you verify them individually.
+
+Don't blindly ignore. Don't blindly fix. Verify each.
 
 ## Visual Verification (snapshot)
 
@@ -86,7 +141,9 @@ npx hyperframes snapshot <project-dir> --frames <N> \
 
 Output lands in `<project-dir>/snapshots/`. Gemini writes `snapshots/descriptions.md` automatically.
 
-**If `descriptions.md` is missing or empty after the snapshot:** `GEMINI_API_KEY` was not set — confirm it's in `<project-dir>/.env` (the CLI loads .env from CWD) or in your shell environment. Re-run after fixing. Do not proceed without Gemini descriptions — visual inspection alone is not sufficient verification.
+**If `descriptions.md` is missing or empty after the snapshot:** `GEMINI_API_KEY` was not set — confirm it's in `<project-dir>/.env` (the CLI loads .env from CWD) or in your shell environment. Re-run after fixing.
+
+**Fallback if Gemini is genuinely unavailable** (no key, key invalid, or quota exhausted): use your own image-reading capability to inspect each frame in `snapshots/` directly. For each frame, write one sentence describing what's on screen — focus on the dimensions Gemini would catch (blank/dark frames, missing brand assets, text legibility, layout problems). Save these descriptions as `snapshots/descriptions.md` yourself so the rest of the checklist still has a single source of truth. State explicitly in your verdict that descriptions were agent-authored, not Gemini-authored, so the user knows to spot-check.
 
 **Gemini descriptions will flag two frames as "blank/black" — these two are expected and not bugs:**
 
@@ -154,6 +211,53 @@ If you cannot find any problems and want to score everything 4–5, you are not 
 
 Read every score. Fix anything below 3 before showing the user. If the CTA scores below 3, fix the CTA. Do not rationalize low scores as "the user can decide."
 
+## Audio + motion verification — three paths, pick one
+
+Snapshots are silent stills. 18 PNG snapshots from a 30s 30fps video = 18/900 = 2% of frames. The other 98% — including all motion, all transitions, all audio — is unverified by snapshots alone. "Confirmed via snapshot" is not coverage.
+
+You MUST do ONE of these three paths before declaring done:
+
+### Path 1 (preferred): Play the preview
+
+Open the Studio URL in a browser via Playwright (or another browser tool you have). Play start-to-end at 1.0× speed (NOT scrubbed). Confirm:
+
+```
+[ ] Played full video front-to-back at 1.0× — actually played, not scrubbed
+[ ] For each SFX in STORYBOARD.md: sound lands at the visual moment within ±0.1s
+    (Beat N SFX `<file>`: storyboard says t=<x>s → heard at t=<y>s → drift <z>s)
+[ ] Narration delivers the right line per beat (no off-by-one or missing lines)
+[ ] No moments where audio is present but visual is mid-transition unintentionally
+[ ] Audio audible and not clipped/peaked
+```
+
+### Path 2: Render a low-res MP4 and read it frame-by-frame
+
+When Playwright isn't available, render at 540p (fast — ~30s for a 30s video) and read the MP4:
+
+```bash
+node /<repo-root>/packages/cli/dist/cli.js render <project-dir> \
+  --width 960 --height 540 --quality medium
+```
+
+Then sample the resulting MP4 at minimum 5fps (use `ffmpeg -i <mp4> -r 5 frames/frame-%04d.png` if needed). Read those frames sequentially. For each SFX moment in STORYBOARD.md, find the corresponding frame and confirm the visual matches.
+
+### Path 3 (last resort): Explicit deferred disclosure with quantified gap
+
+If neither Path 1 nor Path 2 is possible in this session, your final summary MUST contain this verbatim:
+
+```
+**Audio + motion verification: NOT POSSIBLE in this session.**
+- Snapshots cover: <N> frames out of <video_duration × fps> total (<percentage>% coverage)
+- NOT verified: motion between snapshots, SFX/visual timing alignment, shader transition smoothness, audio mix levels, narration sync to beats
+- Recommended user action: open the preview URL above and play start-to-end; flag anything that feels off
+```
+
+**Forbidden everywhere:**
+
+- "Confirmed via snapshot" or "snapshots look right" as audio/motion evidence
+- "Preview is running, looks good" without actually playing it
+- Path 3 disclosure that omits the quantified coverage gap (the percentage is mandatory)
+
 ## Preview (always do this)
 
 Always start the preview so the user can see and scrub through the project:
@@ -169,6 +273,35 @@ http://localhost:<port>/#project/<project-name>
 ```
 
 Use the actual port and project name from the preview command output. Do NOT present `index.html` as the project link — that's the source file. The user-facing project is the running Studio preview.
+
+### Honest disclosure — REQUIRED in your final summary
+
+Your final message to the user MUST end with these two sections, even if everything passed. Both sections appear AFTER the preview URL, BEFORE you stop talking.
+
+```
+**What I verified:**
+- <one bullet per DoD item that passed, with the actual evidence cited inline>
+  (e.g. "Lint: zero errors — output pasted above")
+  (e.g. "Per-beat read: 7/7 beats PASS, evidence blocks above")
+  (e.g. "WCAG: 3 warnings flagged, all 3 verified as sampling artifacts — see verdicts above")
+
+**What I did NOT verify (spot-check these):**
+- <one bullet per item you skipped, deferred, or could not complete — and why>
+  (e.g. "Audio + motion verification deferred — no Playwright in this session. SFX timing is computed but unconfirmed in playback.")
+  (e.g. "animation-map.json skipped — script not found at expected path; manually confirmed timeline coverage in per-beat reads instead.")
+  (e.g. "Beat 5 has a 0.4s window where the doc card is visible but contents are still opacity 0 — sub-agent flagged it, I chose not to fix because it was below my threshold; worth your eye.")
+```
+
+The user reads this section to know what to spot-check.
+
+**UNACCEPTABLE final summaries:**
+
+- "Looks great, ready to ship" (no disclosure)
+- "All checks pass" (when one was actually skipped)
+- "Sub-agents confirmed everything" (delegating trust without verifying)
+- Omitting the "What I did NOT verify" section because you happened to verify everything (still include it — write "None" if true, but the section header must appear).
+
+Lying or omitting here is worse than skipping a check honestly. A short user spot-check beats a hidden broken video every time.
 
 ## Render (on-demand only)
 

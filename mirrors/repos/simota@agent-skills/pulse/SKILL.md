@@ -10,7 +10,7 @@ CAPABILITIES_SUMMARY:
 - funnel_analysis: Design conversion funnels with step definitions, expected rates (visitor-to-lead 1.5-2.5% avg, MQL→SQL 30-50%), and segment analysis
 - cohort_analysis: Design retention cohorts with SQL queries for BigQuery/Snowflake; B2B SaaS month-1 retention benchmark 46.9%
 - dashboard_specification: Specify dashboard sections, chart types, filters, and refresh rates
-- analytics_platform_integration: GA4 (incl. Analytics Advisor AI, cross-channel budgeting), Amplitude (session replay, heatmaps), Mixpanel (AI replay summaries, experimentation), PostHog implementation with React hooks; server-side tracking and Consent Mode v2; auto-capture vs manual instrumentation tradeoff
+- analytics_platform_integration: GA4 (incl. Analytics Advisor AI, cross-channel budgeting, 2026-06-15 consent split), Amplitude (Ask Amplitude AI, session replay, heatmaps, $49 Plus tier; AMPL on NASDAQ since 2021-09-28), Mixpanel (2025-02 pricing rebuild — 1M events/mo free, Spark AI + MCP Server, re-launched experimentation/feature flags late 2025), PostHog (all-in-one + PostHog AI agent), Heap (now Contentsquare since 2023-12-07), Statsig (under OpenAI since 2025-09-02, $1.1B), Snowplow (SLULA license since 2024-01-08 — not Apache 2.0); server-side GTM v3.2.0+ and Consent Mode v2; auto-capture vs manual instrumentation tradeoff
 - privacy_consent_management: Consent-aware tracking, PII removal, GDPR/Consent Mode v2, server-side first-party tracking
 - data_quality_monitoring: Schema validation, schema drift detection, freshness monitoring, volume tracking, completeness checks
 - revenue_analytics: MRR/ARR/ARPU/LTV/CAC/NRR tracking and movement analysis; CAC:LTV ≥ 1:3 health / ≥ 1:5 top-tier; NRR >100% healthy / >110% strong / >120% top-tier; B2B SaaS avg churn 3.5% (top performers <3%, B2C 6.5-8%); enterprise <1%; CAC payback <12mo good / <80 days elite
@@ -50,7 +50,8 @@ Use Pulse when the user needs:
 - dashboard specification (sections, chart types, filters, refresh rates)
 - analytics platform integration (GA4, Amplitude, Mixpanel, PostHog, React hooks)
 - GA4 Analytics Advisor natural language queries and cross-channel budgeting (2026)
-- auto-capture vs manual instrumentation selection (Heap/PostHog auto-capture for speed; Amplitude/Mixpanel manual for cleaner data)
+- auto-capture vs manual instrumentation selection (PostHog and Contentsquare-Heap auto-capture for speed; Amplitude/Mixpanel manual for cleaner data — Amplitude Autocapture available 2024+)
+- platform selection given 2025-2026 landscape (Heap → Contentsquare 2023-12-07; Statsig → OpenAI 2025-09-02 $1.1B; Snowplow OSS license shift to SLULA 2024-01-08; Mixpanel 2025-02 event-based pricing rebuild with 1M free events; dbt Semantic Layer GA 2024-10)
 - server-side tracking setup and Consent Mode v2 configuration
 - privacy and consent management for tracking (GDPR, consent banners)
 - data quality monitoring setup (schema validation, schema drift detection, freshness)

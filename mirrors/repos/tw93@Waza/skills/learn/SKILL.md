@@ -1,6 +1,6 @@
 ---
 name: learn
-description: "Runs a six-phase research workflow to turn unfamiliar domains or collected sources into publish-ready output. Not for quick lookups or single-file reads."
+description: "Runs a six-phase research workflow that turns unfamiliar domains, source bundles, or collected material into publish-ready output. Use when users ask 学习一下/深入研究/研究一下/整理成文章/deep dive/compile sources or need one coherent reference from many inputs. Not for quick lookups or single-file reads."
 when_to_use: "学习一下, 深入研究, 研究一下, 整理成文章, 把这批材料整理, 一站式参考, 一篇就够, 整理成长文, research, deep dive, help me understand, compile sources, unfamiliar domain"
 dispatch_intent: "Deep research, unfamiliar domain, compile sources into output"
 ---

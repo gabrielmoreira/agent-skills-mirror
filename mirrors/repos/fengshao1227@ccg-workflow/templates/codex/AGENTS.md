@@ -127,13 +127,13 @@ ls .ccg/spec/ 2>/dev/null
 ### ⛔ 默认调用方式：双模型并行（M+ 复杂度必须用这个）
 
 ```bash
-~/.claude/bin/codeagent-wrapper --progress --backend gemini - "$(pwd)" <<'GEMINI_EOF'
-ROLE_FILE: ~/.claude/.ccg/prompts/gemini/$ROLE.md
+~/.claude/bin/codeagent-wrapper --progress --backend {{FRONTEND_PRIMARY}} - "$(pwd)" <<'FRONTEND_EOF'
+ROLE_FILE: ~/.claude/.ccg/prompts/{{FRONTEND_PRIMARY}}/$ROLE.md
 <TASK>
 {任务描述 + 上下文}
 </TASK>
 OUTPUT: {期望输出格式}
-GEMINI_EOF
+FRONTEND_EOF
 &
 ~/.claude/bin/codeagent-wrapper --progress --backend claude - "$(pwd)" <<'CLAUDE_EOF'
 ROLE_FILE: ~/.claude/.ccg/prompts/claude/$ROLE.md
@@ -152,8 +152,8 @@ wait
 
 #### Gemini（前端/UI 分析）
 ```bash
-~/.claude/bin/codeagent-wrapper --progress --backend gemini - "$(pwd)" <<'EOF'
-ROLE_FILE: ~/.claude/.ccg/prompts/gemini/$ROLE.md
+~/.claude/bin/codeagent-wrapper --progress --backend {{FRONTEND_PRIMARY}} - "$(pwd)" <<'EOF'
+ROLE_FILE: ~/.claude/.ccg/prompts/{{FRONTEND_PRIMARY}}/$ROLE.md
 <TASK>
 {任务描述 + 上下文}
 </TASK>
@@ -287,8 +287,8 @@ Critical 问题 → spawn 修复代理。Warning → 视情况修复。
 
 ```bash
 # 必须并行调用两个模型审查 git diff
-~/.claude/bin/codeagent-wrapper --progress --backend gemini - "$(pwd)" <<'EOF'
-ROLE_FILE: ~/.claude/.ccg/prompts/gemini/reviewer.md
+~/.claude/bin/codeagent-wrapper --progress --backend {{FRONTEND_PRIMARY}} - "$(pwd)" <<'EOF'
+ROLE_FILE: ~/.claude/.ccg/prompts/{{FRONTEND_PRIMARY}}/reviewer.md
 <TASK>审查以下代码变更：$(git diff)</TASK>
 OUTPUT: Critical/Warning/Info 分级审查报告
 EOF

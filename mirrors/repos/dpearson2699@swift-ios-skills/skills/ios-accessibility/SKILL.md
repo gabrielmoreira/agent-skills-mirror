@@ -60,7 +60,7 @@ Focus management is where most apps fail. When a sheet, alert, or popover is dis
 
 This section is about accessibility focus for assistive technologies. For keyboard focus, directional focus, `focusSection()`, scene-focused values, and `UIFocusGuide`, use the `focus-engine` skill.
 
-### @AccessibilityFocusState (iOS 15+)
+### `@AccessibilityFocusState` (iOS 15+)
 
 `@AccessibilityFocusState` is a property wrapper that reads and writes the current accessibility focus. It works with `Bool` for single-target focus or an optional `Hashable` enum for multi-target focus.
 
@@ -144,7 +144,7 @@ UIAccessibility.post(notification: .screenChanged, argument: newScreenView)
 
 ## Dynamic Type
 
-See [references/a11y-patterns.md](references/a11y-patterns.md) for Dynamic Type and adaptive layout examples, including @ScaledMetric and minimum tap target patterns.
+See [references/a11y-patterns.md](references/a11y-patterns.md) for Dynamic Type and adaptive layout examples, including `@ScaledMetric` and minimum tap target patterns.
 
 ## Custom Rotors
 

@@ -298,9 +298,13 @@ Each sub-agent reads [beat-builder-guide.md](beat-builder-guide.md) — it has e
 ```
 Build the composition for Beat N. Save to compositions/beat-N-name.html.
 
-FIRST: Read skills/website-to-hyperframes/references/beat-builder-guide.md end to end.
-It has your full workflow, all rules, easing vocabulary, and file references.
-Follow its workflow exactly:
+FIRST: Locate and read the beat-builder guide. Your CWD is the project directory, so
+the skill lives outside it — run this to find it:
+
+  find "$HOME" -path '*/website-to-hyperframes/references/beat-builder-guide.md' -maxdepth 10 2>/dev/null | head -1
+
+Read that file end to end. It has your full workflow, all rules, easing vocabulary,
+and file references. Follow its workflow exactly:
   build → lint (`npx hyperframes lint .`)
         → snapshot (`npx hyperframes snapshot . --frames 3`)
         → view contact sheet AND read snapshots/descriptions.md
@@ -385,30 +389,86 @@ For every `.html` file in `compositions/`, confirm that `index.html` has a `data
 
 **Captions stub rule:** Never create a `compositions/captions.html` with an empty transcript (`const script = [];`). If the VO/transcript step was skipped or failed, do not create the captions composition at all. An empty captions file that returns immediately is worse than no captions file — it silently does nothing and wastes a track slot.
 
+### Parallel sub-agent snapshots are stale — re-snapshot after all complete
+
+When you dispatch sub-agents in parallel (one per beat), each sub-agent snapshots a project where sibling beats may not exist yet. Their per-beat snapshots are valid for THEIR beat in isolation, but **any snapshot at a beat boundary or during a shader transition will show the wrong content** — typically the previous beat's content because the next beat hasn't been built.
+
+Example: Beat 6's sub-agent took a snapshot at t=25.7s and saw Beat 1's content because Beat 5 didn't exist yet when Beat 6's sub-agent ran. The sub-agent reported this as "shader transition behavior showing previous scene" — a plausible-sounding but wrong diagnosis.
+
+**Required after all sub-agents complete:**
+
+```bash
+node /<repo-root>/packages/cli/dist/cli.js snapshot <project-dir> --frames <N>
+```
+
+where N follows the snapshot formula: `max(beats × 3, ceil(duration_seconds / 2))`. This is the canonical snapshot that Step 6's DoD uses — not any individual sub-agent's intermediate snapshots.
+
+Sub-agents' snapshots are still useful as per-beat sanity checks, but they are not the deliverable. The post-completion snapshot is. Don't skip it because "the sub-agents already snapshotted."
+
 ## 5. Read each beat HTML top-to-bottom — REQUIRED gate before Step 6
 
-**Do not declare Step 5 complete on sub-agents' word.** Earlier sessions had sub-agents reply "looks good, 0 errors" and the main agent trusted them — that's how videos shipped with mismatched colors, missing logos, headlines too small to read. Close the trust path by opening every file the sub-agent produced.
+**This gate is non-skippable.** "I read it and it looks fine", "the sub-agent confirmed", "the snapshots look right" are NOT acceptable. Snapshots are 3 frames out of 300+ in motion — they hide everything that goes wrong between them.
+
+**Why this gate exists:** Earlier sessions had sub-agents reply "looks good, 0 errors" and the main agent trusted them — that's how videos shipped with mismatched colors, missing logos, headlines too small to read, and SFX firing 1 second late because the agent typed timestamps "by eye" instead of computing them.
 
 For each `compositions/beat-N.html`:
 
-1. **Open the file and read it top-to-bottom.** Not a glance. Not a grep. Read the `<style>` block, then the markup, then the `<script>` block. Understand what's actually there.
-2. **Cross-check against DESIGN.md:**
-   - Does the `--bg` / primary background hex from DESIGN.md appear in the CSS or inline styles?
-   - Does the accent hex appear (if this beat uses an accent)?
-   - Are fonts the ones DESIGN.md specified? If `@font-face` is declared, does the path match a real file under `capture/assets/fonts/` or a published `@fontsource/*` import?
-   - Is the headline `font-size` ≥80px?
-3. **Cross-check against STORYBOARD.md (this beat's section):**
-   - Are the captured assets the storyboard called for actually referenced in the HTML (`<img src=...>`, inline SVG, `background-image: url(...)`, etc.)? Open the asset paths and confirm the files exist.
-   - Does the GSAP timeline cover the full beat duration, not just the first 1-2 seconds of entrance tweens? Look for events spread across the `BEAT` constant.
-   - Does the shot framing/camera move described in the storyboard show up in the GSAP code (scale/x/y/yPercent transforms with meaningful magnitudes)?
-4. **Check the technical gates inline:**
-   - `data-composition-id` on the root div matches the `window.__timelines["..."]` key in the script
-   - `data-width` and `data-height` match the host div in index.html
-   - The script is INSIDE the `<template>`, not after `</template>`
-   - No bare `gsap.to(...)`, no `Math.random()`, no `repeat: -1`
-5. **Open each frame in `snapshots/beat-N/`** and confirm visually that the entrance, hold, and exit moments look like what the storyboard described. If `snapshots/descriptions.md` exists, read Gemini's per-frame analysis of this beat in particular.
+1. **Open the file and read it top-to-bottom.** Not a glance. Not a grep. Read the `<style>` block, then the markup, then the `<script>` block.
+2. **Fill in this evidence block — every line, with quoted values from the file:**
 
-**Anything off — fix it inline (small CSS / GSAP correction) or re-dispatch the sub-agent with the specific problem quoted.** Do not move to Step 6 until every beat has been read top-to-bottom and the cross-checks pass.
+```
+Beat N: compositions/beat-N-NAME.html
+  BG color in CSS:        <hex from line Y>      ← quote the exact line
+  Accent color in CSS:    <hex from line Z>      ← quote the exact line
+  Headline font-size:     <px from line>         (≥80? yes/no)
+  Headline font-family:   <stack from line>      (matches DESIGN.md? yes/no)
+  @font-face src paths:   <list>                 (each path exists? yes/no)
+  Captured assets used:   <full list of paths from <img src=>, inline SVG ids, background-image url()>
+  Storyboard called for:  <list from STORYBOARD.md beat N>
+  Assets match storyboard? yes/no — if no, specify the gap
+  GSAP first event:       tl.X("...", {...}, <t>)   beat-local t=<num>
+  GSAP last event:        tl.X("...", {...}, <t>)   beat-local t=<num>
+  Beat duration:          <N>s                   (events span full duration? yes/no)
+  SFX trigger:            <element> data-start=<num>
+  Storyboard SFX line:    "<quote the line>" → expected t=<num>
+  SFX timestamp matches?  yes/no — if no, specify the drift
+  Technical gates:        data-composition-id matches window.__timelines key? yes/no
+                          script INSIDE <template>? yes/no
+                          no Math.random / no repeat:-1 / no bare gsap.to? yes/no
+  VERDICT: PASS / FIX (specify exactly what)
+```
+
+If you cannot fill any line (e.g., "I see no SFX trigger" or "headline font-family not specified"), that IS a finding — fix or escalate, don't paper over.
+
+3. **Open each frame in `snapshots/beat-N/`** and confirm visually that entrance/hold/exit match the storyboard.
+
+**Anything off — fix it inline (small CSS/GSAP correction) or re-dispatch the sub-agent with the specific problem quoted.** Do not move to Step 6 until every beat has its evidence block filled and PASS.
+
+### SFX timestamp computation — compute, don't eyeball
+
+Every SFX `data-start` value MUST be computed from STORYBOARD.md, not estimated visually.
+
+For each SFX entry:
+
+1. Storyboard names beat-local time (e.g. "Beat 2 at 1.2s into the beat").
+2. Get the beat's global start time from beat ordering (e.g. Beat 1: 0–3.5s → Beat 2 starts at 3.5s globally).
+3. Add beat-local + global start: `3.5 + 1.2 = 4.7s`.
+4. Write `data-start="4.7"` in index.html.
+
+**Forbidden:** writing `data-start="<approximate visual moment>"` by reading the storyboard and estimating by eye. The evidence block above MUST quote both the storyboard SFX line and the index.html `data-start` line — and confirm they match within ±0.1s (≈3 frames at 30fps; same tolerance `w2h-verify.mjs` enforces and `step-6-validate.md` uses for playback verification). A 1-second drift is not a rounding error; it's a build failure.
+
+### Surface recurring sub-agent workarounds to the user
+
+When 2+ sub-agents independently report the same workaround (e.g., "I had to base64-encode the data URI because the linter false-positives on inline SVG"), that's a tooling bug worth surfacing. List these in your Step 5 final report under "Tooling issues encountered" even if each instance was resolved. Format:
+
+```
+TOOLING ISSUES (worth filing):
+- 3 sub-agents (beats 1, 4, 6) hit `root_missing_composition_id` false positive on
+  inline SVG data URI in CSS. Workarounds: base64 (beat 1), removed overlay (beats 4, 6).
+  Worth filing as a regression against packages/core/src/lint.
+```
+
+Burying recurring workarounds means the next session hits the same bug and works around it again. Don't.
 
 ### Brand-defaults check (whole-video, after every beat passes its own read)
 

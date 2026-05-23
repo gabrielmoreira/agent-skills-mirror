@@ -100,7 +100,7 @@ def micro_compact(messages: list) -> list:
 
 
 # -- Layer 2: auto_compact - save transcript, summarize, replace messages --
-def auto_compact(messages: list) -> list:
+def auto_compact(messages: list, focus: str = "") -> list:
     # Save full transcript to disk
     TRANSCRIPT_DIR.mkdir(exist_ok=True)
     transcript_path = TRANSCRIPT_DIR / f"transcript_{int(time.time())}.jsonl"
@@ -110,12 +110,16 @@ def auto_compact(messages: list) -> list:
     print(f"[transcript saved: {transcript_path}]")
     # Ask LLM to summarize
     conversation_text = json.dumps(messages, default=str)[-80000:]
+    focus_instruction = ""
+    if focus:
+        focus_instruction = f" Pay special attention to preserving details about: {focus}."
     response = client.messages.create(
         model=MODEL,
         messages=[{"role": "user", "content":
             "Summarize this conversation for continuity. Include: "
             "1) What was accomplished, 2) Current state, 3) Key decisions made. "
-            "Be concise but preserve critical details.\n\n" + conversation_text}],
+            "Be concise but preserve critical details."
+            f"{focus_instruction}\n\n" + conversation_text}],
         max_tokens=2000,
     )
     summary = next((block.text for block in response.content if hasattr(block, "text")), "")
@@ -215,10 +219,12 @@ def agent_loop(messages: list):
             return
         results = []
         manual_compact = False
+        compact_focus = ""
         for block in response.content:
             if block.type == "tool_use":
                 if block.name == "compact":
                     manual_compact = True
+                    compact_focus = block.input.get("focus", "")
                     output = "Compressing..."
                 else:
                     handler = TOOL_HANDLERS.get(block.name)
@@ -233,7 +239,7 @@ def agent_loop(messages: list):
         # Layer 3: manual compact triggered by the compact tool
         if manual_compact:
             print("[manual compact]")
-            messages[:] = auto_compact(messages)
+            messages[:] = auto_compact(messages, focus=compact_focus)
             return
 
 

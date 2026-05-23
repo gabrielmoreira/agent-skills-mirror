@@ -228,9 +228,9 @@ embedding:
 
 - Global and scoped activation are independent, with no inheritance between scopes.
 - Activation flags are files: `.toggle-1` (ON) and `.toggle-0` (OFF).
-- UI states are `ON`, `OFF`, and `Advanced` (shown when any project/profile-specific override exists).
+- The plugin list shows a binary `ON`/`OFF` global activation switch.
 - `always_enabled: true` in `plugin.yaml` forces ON and disables toggle controls in the UI.
-- The "Switch" modal is the canonical per-scope activation surface, and "Configure Plugin" keeps scope synchronized with the settings modal.
+- For plugins with project/profile scoping, the plugin config modal is the canonical per-scope activation surface.
 
 ---
 

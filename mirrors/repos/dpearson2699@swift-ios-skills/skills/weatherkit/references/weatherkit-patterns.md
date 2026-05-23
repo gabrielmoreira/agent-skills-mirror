@@ -13,7 +13,7 @@ Overflow reference for the `weatherkit` skill. Contains advanced patterns that e
 
 ## WeatherKit SwiftUI Integration
 
-### Weather Manager with @Observable
+### Weather Manager with `@Observable`
 
 ```swift
 import WeatherKit

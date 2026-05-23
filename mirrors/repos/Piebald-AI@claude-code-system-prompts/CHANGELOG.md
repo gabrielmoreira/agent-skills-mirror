@@ -4,6 +4,16 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.149](https://github.com/Piebald-AI/claude-code-system-prompts/commit/43311cf)
+
+_+282 tokens_
+
+- Tool Description: Workflow — Adds framing for using workflows to decompose broad work, gain confidence through independent checks, and handle scale beyond one context; also recommends scouting inline before orchestration and expands quality patterns with multi-modal sweeps, completeness critics, and logging bounded coverage.
+
+#### [2.1.148](https://github.com/Piebald-AI/claude-code-system-prompts/commit/7ef7134)
+
+<sub>_No changes to the system prompts in v2.1.148._</sub>
+
 # [2.1.147](https://github.com/Piebald-AI/claude-code-system-prompts/commit/8f898b3)
 
 _+1,236 tokens_

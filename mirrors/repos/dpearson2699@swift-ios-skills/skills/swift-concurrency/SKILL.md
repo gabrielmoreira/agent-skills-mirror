@@ -19,7 +19,7 @@ behavior changes.
 - [Task Cancellation](#task-cancellation)
 - [Actor Reentrancy](#actor-reentrancy)
 - [AsyncSequence and AsyncStream](#asyncsequence-and-asyncstream)
-- [@Observable and Concurrency](#observable-and-concurrency)
+- [`@Observable and Concurrency`](#observable-and-concurrency)
 - [Synchronization Primitives](#synchronization-primitives)
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
@@ -128,7 +128,7 @@ final class StickerModel {
 
 Use `@concurrent` to explicitly request background execution when needed.
 
-### @concurrent Attribute
+### `@concurrent` Attribute
 
 `@concurrent` ensures a function always runs on the concurrent thread pool,
 freeing the calling actor to run other tasks.
@@ -350,7 +350,7 @@ let stream = AsyncStream<Location> { continuation in
 Use `withCheckedContinuation` / `withCheckedThrowingContinuation` for
 single-value callbacks. Resume exactly once.
 
-## @Observable and Concurrency
+## `@Observable` and Concurrency
 
 - `@Observable` classes should be `@MainActor` for view models.
 - Use `@State` to own an `@Observable` instance (replaces `@StateObject`).

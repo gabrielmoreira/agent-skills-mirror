@@ -1,17 +1,17 @@
 ---
 name: unity-gameobject
-description: "GameObject creation and manipulation. Use when users want to create, delete, move, rotate, scale, or parent GameObjects. Triggers: gameobject, create, delete, transform, position, rotation, scale, parent, hierarchy, 游戏对象, Unity创建, Unity删除, Unity移动, Unity旋转, Unity缩放."
+description: "GameObject creation and manipulation. Use when users want to create, delete, move, rotate, scale, parent, find, or rename GameObjects. Triggers: gameobject, create gameobject, delete gameobject, duplicate, rename, transform, position, rotation, scale, parent, child, hierarchy, layer, tag, active, find, primitive, cube, sphere, instanceId, 游戏对象, 创建游戏对象, 删除游戏对象, 复制, 重命名, 变换, 位置, 旋转, 缩放, 父子, 层级, 查找游戏对象, 标签, 图层, 激活, 立方体, 球体."
 ---
 
 # Unity GameObject Skills
 
 > **BATCH-FIRST**: Use `*_batch` skills when operating on 2+ objects to reduce API calls from N to 1.
 
-## Guardrails
+## Operating Mode
 
-**Mode**: SkillMode.FullAuto (default — requires grant under Approval mode)
-
-> Some skills (Delete / PlayMode / Reload / high-risk) are auto-forbidden in Approval/Auto modes — only Bypass can run them.
+- **Approval**（默认）：本模块多为 `SkillMode.FullAuto`，调用需用户 grant；grant 后服务端一步执行并返结果。
+- **Auto / Bypass**：直接执行。
+- **含 NeverInSemi 高危 skill**：`gameobject_delete` / `gameobject_delete_batch`（标记 Operation.Delete）。这些在 Approval/Auto 下返 `MODE_FORBIDDEN`，仅 Bypass 或用户 Allowlist 命中可调。
 
 **DO NOT** (common hallucinations):
 - `gameobject_move` / `gameobject_rotate` / `gameobject_set_scale` do not exist → use `gameobject_set_transform` (handles position, rotation, and scale together)
@@ -255,6 +255,12 @@ Set transforms for multiple objects.
 | `items` | json string | Yes | - | JSON array of per-item objects (see example below) |
 
 
+**Item properties** (each item supports identifier + any subset of transform fields):
+- Identifier: `name` / `instanceId` / `path` (at least one required)
+- World: `posX`, `posY`, `posZ`, `rotX`, `rotY`, `rotZ`, `scaleX`, `scaleY`, `scaleZ`
+- Local: `localPosX`, `localPosY`, `localPosZ`
+- RectTransform (UI only): `anchoredPosX`, `anchoredPosY`, `anchorMinX`, `anchorMinY`, `anchorMaxX`, `anchorMaxY`, `pivotX`, `pivotY`, `sizeDeltaX`, `sizeDeltaY`, `width`, `height`
+
 **Returns**: `{success, totalItems, successCount, failCount, results: [{success, name, position, rotation, scale}]}`
 
 ```python
@@ -266,7 +272,7 @@ unity_skills.call_skill("gameobject_set_transform_batch", items=[
 ```
 
 ### gameobject_set_active_batch
-Toggle multiple objects.
+Toggle multiple objects. Each item supports identifier (`name` / `instanceId` / `path`) + `active` (bool).
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `items` | json string | Yes | - | JSON array of per-item objects (see example below) |
@@ -299,7 +305,7 @@ unity_skills.call_skill("gameobject_set_parent_batch", items=[
 ```
 
 ### gameobject_set_layer_batch
-Set layer for multiple objects.
+Set layer for multiple objects. Each item supports identifier (`name` / `instanceId` / `path`) + `layer` (string layer name) + optional `recursive` (bool, default false — propagates layer to children).
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `items` | json string | Yes | - | JSON array of per-item objects (see example below) |
@@ -315,7 +321,7 @@ unity_skills.call_skill("gameobject_set_layer_batch", items=[
 ```
 
 ### gameobject_set_tag_batch
-Set tag for multiple objects.
+Set tag for multiple objects. Each item supports identifier (`name` / `instanceId` / `path`) + `tag` (string tag name).
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `items` | json string | Yes | - | JSON array of per-item objects (see example below) |

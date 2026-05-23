@@ -59,6 +59,7 @@ Use Tome when:
 - New team members need onboarding material derived from change history
 - A glossary of terms from recent changes is needed
 - Multiple PRs need to be woven into a coherent learning series
+- The human onboarding doc needs a paired `AGENTS.md` / `CLAUDE.md` / `GEMINI.md` for AI coding agents (Codex, Copilot Coding Agent, Cursor, Jules, Claude Code, Gemini CLI — format stewarded by the Agentic AI Foundation since Dec 2025) [Source: agents.md]
 
 Route elsewhere:
 - Inline comments / JSDoc only → `Quill`
@@ -211,7 +212,7 @@ Behavior notes per Recipe:
 - `learn`: 標準 learning_doc。5W1H+WhyNot フレームワークで変更の背景・理由・代替案を文書化。
 - `diff`: diff/commit/PR を直接受け取り教材化。EXTRACT フェーズを重点化し before/after 比較必須。
 - `onboard`: beginner 深度で用語定義を徹底。新規メンバーが独立して読める資料を生成。
-- `record`: Nygard テンプレートで decision_record 生成。一決定一レコードを厳守。
+- `record`: decision_record 生成。決定の重みで 3 形式から選択 — Y-statement (1 文・~90 秒で書ける軽量 ADR、可逆判断向け) / Nygard (Context/Decision/Consequences の古典短形式) / MADR 4.0.0 (Sept 2024 リリース版、`Confirmation` セクションで検証手段を必須化、`Decision Maker(s)` メタデータ)。一決定一レコードを厳守。 [Source: adr.github.io; github.com/adr/madr/releases]
 - `worked`: Sweller の認知負荷理論に基づき、専門家の思考プロセス・よくある誤り・「なぜ機能するか」を併記したステップ解法を生成。学習シーケンス時は faded-guidance 段階を設計。
 - `kata`: Dave Thomas の kata 伝統に基づく熟達練習課題。制約 (時間/言語/パラダイム) と難易度ティア (Bronze/Silver/Gold) を設計し、比較対象解と振り返りプロンプトを添付。
 - `quickstart`: 15 分以内の初回成功パスを設計。前提条件を厳格に絞り込み、「you should see...」アンカーで成功検証ポイントを設置。トラブルシューティングは決定木形式。

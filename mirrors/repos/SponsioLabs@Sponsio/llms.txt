@@ -1,0 +1,27 @@
+# Sponsio
+
+> Runtime contract enforcement for AI agents. Natural-language policies compile into deterministic temporal contracts that block unsafe tool calls, file writes, API requests, or database mutations before side effects land. Sub-10μs p99, zero LLM on the hot path, covers all 10 OWASP Agentic risks.
+
+## Start here
+
+- [README.md](README.md): Product overview, Quick start, Integrations for 8 frameworks, benchmarks.
+- [QUICKSTART.md](QUICKSTART.md): Full walkthrough — install, wire-up, observe mode, flip to enforce, configuration reference, production rollout.
+
+## Reference
+
+- [docs/concepts/contracts.md](docs/concepts/contracts.md): Contract DSL — deterministic patterns, LTL syntax, YAML schema.
+- [docs/reference/cli.md](docs/reference/cli.md): CLI reference — scan, validate, check, report, demo, onboard, serve, refresh.
+- [docs/integrations/index.md](docs/integrations/index.md): Per-framework integration guides.
+- [docs/concepts/architecture.md](docs/concepts/architecture.md): Design — LTL evaluator, det/sto pipelines, grounding.
+- [docs/concepts/owasp-coverage.md](docs/concepts/owasp-coverage.md): OWASP Agentic Top 10 (2026) → Sponsio control mapping.
+
+## Governance
+
+- [CONTRIBUTING.md](CONTRIBUTING.md): Dev environment, patch workflow, what belongs in this repo.
+- [SECURITY.md](SECURITY.md): Security policy, scope, private disclosure.
+- [CHANGELOG.md](CHANGELOG.md): Release notes.
+- [CLAUDE.md](CLAUDE.md): Agent guide for LLM assistants reading this repo.
+
+## Optional
+
+- [llms-full.txt](llms-full.txt): Concatenated single-file dump of every public doc (~184KB).

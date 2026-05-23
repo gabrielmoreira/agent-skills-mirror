@@ -4,15 +4,17 @@ This app uses [`react-native-unistyles` v3](https://www.unistyl.es/) for theme-a
 
 That model is powerful, but it has sharp edges. Use this note when adding theme-dependent styles.
 
-## STOP — `useUnistyles()` Is Forbidden
+## STOP — `useUnistyles()` Is Banned
 
-**Do not call `useUnistyles()` unless every alternative below has been ruled out and you can explain in a code comment why.** The library authors themselves [strongly advise against it](https://www.unistyl.es/v3/references/use-unistyles):
+**Do not call `useUnistyles()`. Anywhere. New code MUST NOT add a call; existing call sites are tolerated only because nobody has rewritten them yet and will be converted as they are touched.** The library authors themselves [strongly advise against it](https://www.unistyl.es/v3/references/use-unistyles):
 
 > We strongly recommend **not using** this hook, as it will re-render your component on every change. This hook was created to simplify the migration process and should only be used when other methods fail.
 
-We have hit this gotcha repeatedly in Paseo. It manifests as periodic, lockstep re-renders of warm subtrees (agent streams, panels, sidebars) even when nothing the user can see has changed — confirmed in profiling: `AgentStreamView` re-rendering constantly with `theme` showing as the only changed input on every render. The hook subscribes the component to **all** Unistyles runtime changes (theme, breakpoint, insets, color scheme, scale) and returns a fresh object reference each call, which also breaks every downstream `useMemo`/`memo` boundary that includes a derived theme value.
+We have hit this gotcha repeatedly in Paseo. The hook subscribes the component to **every** Unistyles runtime change (theme, breakpoint, insets, color scheme, scale) and returns a fresh object reference each call. That means a periodic lockstep re-render of warm subtrees (agent streams, panels, sidebars) even when nothing the user can see has changed — confirmed in profiling, with `theme` as the only changed input every cycle. It also breaks every downstream `useMemo`/`memo` boundary that includes a derived theme value.
 
-Before reaching for `useUnistyles()`, work down this list of alternatives in order:
+Reviewers MUST reject PRs that introduce a new `useUnistyles()` call. There is no last-resort carveout. If you cannot solve a case with the alternatives below, file an issue and stop — do not paper over it with the hook.
+
+Use these alternatives in order:
 
 ### 1. `StyleSheet.create((theme) => ...)` — default
 
@@ -46,31 +48,9 @@ const ThemedBlur = withUnistyles(BlurView);
 
 (Mind the `> *` child-selector leak documented further down.)
 
-### 4. Lift the read into a tiny leaf component
+### 4. There is no "last resort"
 
-If only one prop in a large component needs a theme value at runtime, extract a small leaf component that calls `useUnistyles()` and accept its re-renders in isolation. Never let a whole stream / panel / sidebar / virtualized list subscribe.
-
-### 5. (Last resort) `useUnistyles()`
-
-Only acceptable when both of:
-
-- (a) The value is consumed by a 3rd-party library that cannot be wrapped with `withUnistyles` (per the upstream "When to use it?" list), AND
-- (b) The component is small, leaf-level, and not on a hot render path.
-
-If you add a new `useUnistyles()` call, leave a comment on the line explaining which of (a)/(b) applies and why each higher-priority alternative was ruled out.
-
-### Hot-path forbidden list
-
-Do not introduce `useUnistyles()` in or above any of these subtrees — re-renders here are observably expensive:
-
-- `AgentStreamView` and anything it renders (message rows, tool calls, plan card, todo list, activity log, compaction marker, copy buttons)
-- `AgentPanel` body (`packages/app/src/panels/agent-panel.tsx`)
-- `Composer` and `MessageInput`
-- `WorkspaceScreen` shell, `WorkspaceDesktopTabsRow`, deck wrapper
-- `LeftSidebar` row items, `SidebarWorkspaceList`, `CommandCenter`
-- Anything inside a virtualized list (`@tanstack/react-virtual`, `FlashList`)
-
-Reviewers must reject PRs that add `useUnistyles()` calls in these areas without a written justification matching the last-resort criteria above.
+There is no escape hatch. If none of (1)–(3) fit, the problem is upstream — fix it there or file an issue. The hook is not on the table.
 
 ## How Updates Propagate
 

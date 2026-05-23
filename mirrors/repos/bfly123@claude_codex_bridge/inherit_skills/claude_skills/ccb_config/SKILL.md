@@ -13,13 +13,14 @@ Use this skill to design and edit a CCB-managed project team. The usual output i
 2. Read the current `.ccb/ccb.config`, `.ccb/ccb_memory.md`, and relevant `.ccb/agents/<agent>/memory.md` files before proposing changes.
 3. If the user's project goal and workflow are not already clear, ask a short clarification question before designing the team.
 4. After the basic workflow is clear, propose one complete config with sensible defaults and ask for confirmation or adjustments.
-5. Prefer compact or hybrid config. Use rich TOML only when compact/hybrid cannot express the requested behavior.
-6. Edit only user-authored authority files:
+5. Prefer compact or hybrid config for ordinary single-window teams. Existing compact/hybrid configs stay single-window and should not be migrated to `[windows]` unless the user wants named tmux windows, multi-window sidebar layout, or per-window agent grouping.
+6. When the user asks to modernize, split, or reorganize an old config, treat it as a migration task: preserve the old roster and overrides by default, propose the new target shape, then write only after confirmation.
+7. Edit only user-authored authority files:
    - `.ccb/ccb.config`
    - `.ccb/ccb_memory.md`
    - `.ccb/agents/<agent>/memory.md`
-7. Validate the written config with the CCB config loader and verify that the loader read the intended source kind.
-8. Tell the user that CCB must be restarted for config changes to take effect.
+8. Validate the written config with the CCB config loader and verify that the loader read the intended source kind.
+9. Tell the user that CCB must be restarted for config changes to take effect.
 
 Do not write runtime state, generated memory, provider-state homes, `.ccb/provider-profiles/`, `.ccb/ccbd/`, legacy `.ccb_config/`, or provider-native project dotfiles such as `.codex`, `.claude`, or `.gemini`.
 
@@ -87,6 +88,35 @@ Only ask additional questions when a safe default does not exist, for example:
 - The user requests a provider/model not supported by the current CCB installation.
 - Renaming/removing an existing agent would leave old memory files whose fate is ambiguous.
 
+## Migration Tasks
+
+Use this flow when the user asks to convert an existing compact/hybrid config to a newer layout, add multiple windows, add sidebars, or reorganize agents by window:
+
+1. Read the current config and identify whether it is compact, hybrid, explicit windows, or legacy rich TOML.
+2. Preserve existing agent names, providers, `(worktree)` markers, models, keys, urls, descriptions, labels, permissions, restore settings, provider profiles, and memory files unless the user asks to change them.
+3. If the user wants to stay single-window, keep compact/hybrid format and only adjust the compact layout or overlay fields.
+4. If the user wants multi-window, named windows, or per-window sidebar layout, migrate to `version = 2` with `[windows]`.
+5. In `[windows]`, remove `cmd`; a persistent `cmd` pane is a compact/hybrid feature.
+6. Keep each agent in exactly one window. Use window names that match the workflow, such as `main`, `work`, `review`, `research`, or `ops`.
+7. Move agent-specific extras into `[agents.<name>]` tables after the `[windows]` block.
+8. Present a before/after proposal and ask for confirmation before writing.
+
+Example migration:
+
+```text
+Before:
+cmd; main:codex, worker1:codex(worktree), worker2:claude(worktree); reviewer:claude
+
+After:
+version = 2
+entry_window = "main"
+
+[windows]
+main = "main:codex"
+work = "worker1:codex(worktree), worker2:claude(worktree)"
+review = "reviewer:claude"
+```
+
 ## Defaults
 
 - Keep `cmd` enabled unless the user explicitly disables it.
@@ -110,7 +140,11 @@ Key points:
 - `;` creates horizontal columns from left to right.
 - `,` creates vertical rows within a column from top to bottom.
 - In compact/hybrid config, the first compact block owns layout, default agents, cmd, provider, and workspace mode.
+- Compact/hybrid config without `[windows]` is a legacy-compatible single-window layout even when CCB supports windows topology.
 - Hybrid TOML overlay may only add fields for agents already declared in the compact header and must not redefine `provider` or `workspace_mode`.
+- Explicit windows topology uses `version = 2`, `[windows]`, and optional `[ui.sidebar]`; it must not include `default_agents`, `layout`, or `cmd_enabled`.
+- `cmd` is not supported inside `[windows]` topology. Use compact/hybrid config when a persistent command pane is required.
+- Migration to `[windows]` is opt-in and should preserve existing agent fields unless the user asks for role/provider/workspace changes.
 - `agent:provider(worktree)` maps to `workspace_mode = "git-worktree"`.
 - `git-worktree` requires the project root to be a git repository; CCB must not silently fall back to copying.
 
@@ -166,8 +200,8 @@ After editing `~/.ccb/ccb.config` as the user-level default, validate from a tem
 Also check:
 
 - agent names are valid and not reserved;
-- every configured default agent appears exactly once in the layout;
-- `cmd` is first when enabled;
+- compact/hybrid config: every configured default agent appears exactly once in the layout and `cmd` is first when enabled;
+- windows topology config: every configured agent appears in exactly one `[windows]` layout and no `cmd` leaf is present;
 - compact/hybrid worktree markers are present on the compact line, not in overlay;
 - validation reports the intended `source_kind` and a non-empty `source_path`;
 - no secrets were added unless the user explicitly provided them;

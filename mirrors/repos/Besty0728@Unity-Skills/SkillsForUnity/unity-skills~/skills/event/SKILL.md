@@ -1,20 +1,21 @@
 ---
 name: unity-event
-description: "UnityEvent management. Use when users want to inspect or modify UI events like Button.onClick. Triggers: event, onClick, listener, callback, UnityEvent, button click, 事件, 监听器, 按钮点击."
+description: "UnityEvent persistent-listener wiring at editor time: inspect, add, remove, batch-add, copy, clear, set call-state, list events on a component (e.g. Button.onClick, Slider.onValueChanged). For runtime invocation only. Triggers: UnityEvent, event, persistent listener, persistent call, onClick, onValueChanged, listener, callback, wire, hook up, EditorAndRuntime, RuntimeOnly, button click, 事件, 持久监听器, 监听器, 接线, 回调, 按钮点击, 持久化."
 ---
 
 # Event Skills
 
-Inspect and modify UnityEvents (e.g. Button.onClick).
+Inspect and modify persistent listeners on UnityEvents (e.g. `Button.onClick`, `Toggle.onValueChanged`) — the same listeners you see in the Inspector's event drop slots.
 
-## Guardrails
+## Operating Mode
 
-**Mode**: Mixed — query skills marked SkillMode.SemiAuto; mutators are SkillMode.FullAuto (need grant under Approval)
-
-> Some skills (Delete / PlayMode / Reload / high-risk) are auto-forbidden in Approval/Auto modes — only Bypass can run them.
+- **Approval**（默认）：查询类 skill（`event_get_listeners` / `event_list_events` / `event_get_listener_count`，源码标 `SkillMode.SemiAuto`）直接执行；其余变更/调用类（`event_add_listener` / `event_set_listener_state` / `event_invoke` / `event_add_listener_batch` / `event_copy_listeners`，标 `SkillMode.FullAuto`）需用户 grant，grant 后服务端一步执行返结果。
+- **Auto / Bypass**：未被禁列表拦截的 skill 直接执行。
+- 本模块**含 Delete 类 skill**：`event_remove_listener`、`event_clear_listeners` 标记为 `SkillOperation.Delete`，被 `IsForbiddenInSemi` 静态拦截 —— 仅 **Bypass** 模式或加入 **Allowlist** 才能调用。
+- `event_invoke` 只在 Play mode / runtime 下有效；编辑器空跑时仅触发 EditorAndRuntime 监听。`event_add_listener` 等写入的是 persistent listener（序列化到 prefab/scene），即可在编辑器时配置。
 
 **DO NOT** (common hallucinations):
-- `event_create` / `event_trigger` do not exist → UnityEvents are triggered at runtime, not from editor skills
+- `event_create` / `event_trigger` do not exist → UnityEvents are declared in component source code; this module only wires listeners
 - `event_subscribe` does not exist → use `event_add_listener`
 - `event_remove` does not exist → use `event_remove_listener`
 - `event_add_listener` requires exact component type and method name on the target

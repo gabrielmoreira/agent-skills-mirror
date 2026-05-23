@@ -4,12 +4,12 @@ Attributes and interoperability features for Swift. Covers C-calling-convention 
 
 ## Contents
 
-- [C Interoperability — @c Attribute](#c-interoperability--c-attribute)
+- [C Interoperability — `@c` Attribute](#c-interoperability--c-attribute)
 - [Module Selectors](#module-selectors)
 - [Performance Annotations](#performance-annotations)
 - [Symbol Visibility and Layout](#symbol-visibility-and-layout)
 
-## C Interoperability — @c Attribute
+## C Interoperability — `@c` Attribute
 
 The `@c` attribute (SE-0495) marks a Swift function for direct C-calling-convention export. The function becomes callable from C, C++, and Objective-C without bridging headers or `@_cdecl`.
 
@@ -45,7 +45,7 @@ let client: NetworkingA::Client = .init()
 
 ## Performance Annotations
 
-### @specialized
+### `@specialized`
 
 SE-0460 makes `@specialized` an official attribute (previously underscored as `@_specialize`). Forces the compiler to emit a specialized version of a generic function for specific concrete types.
 
@@ -57,7 +57,7 @@ func sum<T: Numeric>(_ values: [T]) -> T {
 }
 ```
 
-### @inline(always) Guarantee
+### `@inline(always)` Guarantee
 
 SE-0496 guarantees `@inline(always)` will inline the function at every call site. Previously it was a hint the compiler could ignore. A compilation error is now emitted if inlining is impossible (e.g., recursive calls).
 
@@ -70,7 +70,7 @@ func fastPath(_ x: Int) -> Int {
 
 ## Symbol Visibility and Layout
 
-### @export
+### `@export`
 
 SE-0497 gives explicit control over symbol visibility and definition availability:
 
@@ -85,7 +85,7 @@ public func stableAPI() -> Int {
 }
 ```
 
-### @section and @used
+### `@section` and `@used`
 
 SE-0492 places global variables into named binary sections and prevents dead-stripping. Primarily for Embedded Swift and systems programming.
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `heygen-com/hyperframes` — 26 default patterns, 0 followed patterns, 175 file(s) materialized.
+Mirror of `heygen-com/hyperframes` — 26 default patterns, 0 followed patterns, 176 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `heygen-com/hyperframes` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 175 |
+| Files         | 176 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -233,7 +233,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 172 | ✓ | [`skills/website-to-hyperframes/references/step-4-vo.md`](skills/website-to-hyperframes/references/step-4-vo.md) |
 | 173 | ✓ | [`skills/website-to-hyperframes/references/step-5-build.md`](skills/website-to-hyperframes/references/step-5-build.md) |
 | 174 | ✓ | [`skills/website-to-hyperframes/references/step-6-validate.md`](skills/website-to-hyperframes/references/step-6-validate.md) |
-| 175 | ✓ | [`skills/website-to-hyperframes/SKILL.md`](skills/website-to-hyperframes/SKILL.md) |
+| 175 | ✓ | [`skills/website-to-hyperframes/scripts/w2h-verify.mjs`](skills/website-to-hyperframes/scripts/w2h-verify.mjs) |
+| 176 | ✓ | [`skills/website-to-hyperframes/SKILL.md`](skills/website-to-hyperframes/SKILL.md) |
 
 ---
 

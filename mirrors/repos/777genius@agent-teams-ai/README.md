@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/777genius/agent-teams-ai/releases/latest"><img src="https://img.shields.io/github/v/tag/777genius/agent-teams-ai?style=flat-square&label=version&color=blue" alt="Latest Release" /></a>&nbsp;
+  <a href="https://github.com/777genius/agent-teams-ai/releases/latest"><img src=".github/badges/version.svg" alt="Latest Release" /></a>&nbsp;
   <a href="https://github.com/777genius/agent-teams-ai/actions/workflows/ci.yml"><img src="https://github.com/777genius/agent-teams-ai/actions/workflows/ci.yml/badge.svg" alt="CI Status" /></a>&nbsp;
   <a href="https://discord.gg/qtqSZSyuEc"><img src="https://img.shields.io/badge/Discord-Join%20us-5865F2?style=flat-square&logo=discord&logoColor=white" alt="Discord" /></a>
 </p>
@@ -26,11 +26,17 @@
   <sub>Free desktop app for AI agent teams. Start with a free model with no auth - no signup, API key, or card - or connect Claude/Codex/OpenCode provider access for more models. Not just coding agents.</sub>
 </p>
 
+<img width="1304" height="820" alt="image" src="https://i.imgur.com/AugQy1B.jpeg" />
+
 <!--
 <img width="1304" height="820" alt="image" src="https://github.com/user-attachments/assets/dea53a01-68b3-4c36-bcf6-e4d1ad4cdb31" />
--->
 <img width="2560" height="1604" alt="telegram-cloud-photo-size-2-5213160716557294036-w" src="https://github.com/user-attachments/assets/cbe0e1e7-f73c-4dd7-94e0-c694fcaf491e" />
+-->
 
+<a href="https://777genius.github.io/agent-teams-ai/">Watch demo on the site or here:</a>
+
+
+https://github.com/user-attachments/assets/d1a85fe5-fb49-4009-b2c1-79ae8818e8c4
 
 <table>
 <tr>
@@ -69,7 +75,9 @@ No prerequisites - the app can detect supported runtimes/providers and guide set
     <img src="https://img.shields.io/badge/Windows-Download_.exe-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows" />
   </a>
   <br />
-  <sub>May trigger SmartScreen — click "More info" → "Run anyway"</sub>
+  <sub>May trigger SmartScreen - click "More info" -> "Run anyway"</sub>
+  <br />
+  <sub><strong>Windows required:</strong> launch Agent Teams AI as Administrator, especially when using OpenCode runtimes.</sub>
 </td>
 <td align="center">
   <a href="https://github.com/777genius/agent-teams-ai/releases/latest/download/Agent.Teams.AI.AppImage">
@@ -100,6 +108,7 @@ No prerequisites - the app can detect supported runtimes/providers and guide set
 - [Development](#development)
   - [Developer architecture docs](#developer-architecture-docs)
 - [Tech stack](#tech-stack)
+  - [Debug teammate runtimes](#debug-teammate-runtimes)
   - [Build for distribution](#build-for-distribution)
   - [Scripts](#scripts)
 - [Roadmap](#roadmap)

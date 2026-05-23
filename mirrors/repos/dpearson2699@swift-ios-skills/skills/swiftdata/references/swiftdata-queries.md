@@ -1,6 +1,6 @@
 # SwiftData Queries Reference
 
-Deep reference for all @Query initializer variants, FetchDescriptor options,
+Deep reference for all `@Query` initializer variants, FetchDescriptor options,
 sort descriptors, sectioned queries, dynamic query switching, background fetch
 patterns, and aggregate queries.
 
@@ -8,16 +8,16 @@ patterns, and aggregate queries.
 
 ## Contents
 
-- [@Query Initializer Variants](#query-initializer-variants)
+- [`@Query Initializer Variants`](#query-initializer-variants)
 - [FetchDescriptor Deep Dive](#fetchdescriptor-deep-dive)
 - [Complex Sort Descriptors](#complex-sort-descriptors)
 - [Sectioned Queries Pattern](#sectioned-queries-pattern)
 - [Dynamic Query Switching](#dynamic-query-switching)
-- [Background Fetch Patterns with @ModelActor](#background-fetch-patterns-with-modelactor)
+- [Background Fetch Patterns with `@ModelActor`](#background-fetch-patterns-with-modelactor)
 - [Aggregate Queries](#aggregate-queries)
 - [Enumerate for Large Datasets](#enumerate-for-large-datasets)
 
-## @Query Initializer Variants
+## `@Query` Initializer Variants
 
 `@Query` is a SwiftUI property wrapper (`DynamicProperty`) that automatically
 fetches and observes persistent model data. All variants are `@MainActor`.
@@ -463,7 +463,7 @@ struct AdvancedTripList: View {
 
 ---
 
-## Background Fetch Patterns with @ModelActor
+## Background Fetch Patterns with `@ModelActor`
 
 ### Basic Background Fetch
 

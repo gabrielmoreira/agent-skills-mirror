@@ -9,7 +9,7 @@ Use this skill when scripts need to be easier to author, configure, and review i
 
 ## Guardrails
 
-**Mode**: Documentation only — guidance for AI under all three operating modes; no REST skills to gate.
+> **Mode**: Documentation only — no REST skills to gate; load freely under any operating mode (Approval / Auto / Bypass).
 
 - Prefer `[SerializeField] private` over unnecessary public fields.
 - Do not over-decorate with attributes when simple naming suffices.

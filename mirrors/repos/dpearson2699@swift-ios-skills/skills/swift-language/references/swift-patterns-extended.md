@@ -8,7 +8,7 @@ Additional patterns and examples that extend the core SKILL.md. Refer to this fi
 - [Codable: Date Decoding Strategies](#codable-date-decoding-strategies)
 - [Codable: Unkeyed Containers (Arrays)](#codable-unkeyed-containers-arrays)
 - [Codable: Wrapper for Lossy Array Decoding](#codable-wrapper-for-lossy-array-decoding)
-- [Codable: @dynamicMemberLookup Wrapper](#codable-dynamicmemberlookup-wrapper)
+- [Codable: `@dynamicMemberLookup` Wrapper](#codable-dynamicmemberlookup-wrapper)
 - [Result Builder: HTML Builder](#result-builder-html-builder)
 - [Result Builder: buildFinalResult](#result-builder-buildfinalresult)
 - [Property Wrapper: UserDefaults-Backed](#property-wrapper-userdefaults-backed)
@@ -147,7 +147,7 @@ struct LossyArray<Element: Decodable>: Decodable {
 private struct AnyCodable: Decodable {}
 ```
 
-## Codable: @dynamicMemberLookup Wrapper
+## Codable: `@dynamicMemberLookup` Wrapper
 
 Type-safe access to arbitrary JSON:
 

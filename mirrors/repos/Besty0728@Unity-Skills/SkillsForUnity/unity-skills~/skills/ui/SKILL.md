@@ -1,6 +1,6 @@
 ---
 name: unity-ui
-description: "Unity UI creation. Use when users want to create Canvas, Button, Text, Image, or other UI elements. Triggers: UI, canvas, button, text, image, panel, slider, toggle, UGUI, 界面, 按钮, 文本, 面板."
+description: "Unity UGUI (Canvas-based UI) creation and layout: Canvas, Panel, Button, Text (TMP auto-detect), Image, RawImage, InputField, Slider, Toggle, Dropdown, ScrollView, Scrollbar, RectTransform anchors and layout groups. This is the GameObject + Canvas system; for UXML/USS use the `uitoolkit` module. Triggers: UGUI, UI, Canvas, ScreenSpaceOverlay, Button, Text, TextMeshPro, TMP, Image, RawImage, Panel, Slider, Toggle, Dropdown, ScrollView, ScrollRect, Scrollbar, InputField, RectTransform, anchor, pivot, layout group, vertical layout, horizontal layout, grid layout, LayoutElement, CanvasGroup, mask, RectMask2D, outline, shadow, 界面, 按钮, 文本, 文字, 图片, 面板, 滑块, 开关, 下拉, 滚动视图, 滚动条, 输入框, 锚点, 布局, 画布, 蒙版."
 ---
 
 # Unity UI Skills
@@ -9,9 +9,11 @@ Use this module for Unity UGUI / Canvas workflows. It is separate from UI Toolki
 
 > **Batch-first**: Prefer `ui_create_batch` when creating `2+` UI elements.
 
-## Guardrails
+## Operating Mode
 
-**Mode**: SkillMode.FullAuto (default — requires grant under Approval mode)
+- **Approval**（默认）：查询类 skill（`ui_find_all`，源码标 `SkillMode.SemiAuto`）直接执行；其余创建/修改类（`ui_create_*` / `ui_set_*` / `ui_add_*` / `ui_layout_children` / `ui_align_selected` 等，标 `SkillMode.FullAuto`）需用户 grant，grant 后服务端一步执行返结果。
+- **Auto / Bypass**：所有 skill 直接执行；Auto 走 AI 自我评估，Bypass 全放行。
+- 本模块**不含** Delete / PlayMode / Reload / 高危 skill，无 Bypass-only 拦截项。删除 UI 节点请走 `gameobject` 模块。
 
 **DO NOT** (common hallucinations):
 - `ui_add_canvas` does not exist -> use `ui_create_canvas`

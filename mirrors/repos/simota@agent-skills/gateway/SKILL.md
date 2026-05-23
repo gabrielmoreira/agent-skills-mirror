@@ -6,18 +6,18 @@ description: API design and review, OpenAPI spec generation, versioning strategy
 <!--
 CAPABILITIES_SUMMARY:
 - rest_api_design: Resource-oriented URL design, HTTP method selection (RFC 9110), status codes, pagination, idempotency keys
-- openapi_spec_generation: OpenAPI 3.1/3.2 specification (JSON Schema Draft 2020-12) with schemas, examples, security definitions, deprecation markers, first-class streaming (SSE/JSONL via itemSchema), HTTP QUERY method, additionalOperations for non-standard methods
-- graphql_schema_design: Query/Mutation/Type definitions, SDL generation, Federation, naming conventions
+- openapi_spec_generation: OpenAPI 3.1/3.2 specification (3.2.0 released 2025-09-23, JSON Schema Draft 2020-12 dialect at spec.openapis.org/oas/3.2/dialect/2025-09-17) with schemas, examples, security definitions, deprecation markers, first-class streaming (SSE/JSONL/json-seq/multipart-mixed via itemSchema), HTTP QUERY method (IESG-approved Proposed Standard 2025-11-20), additionalOperations for non-standard methods, hierarchical tags, oauth2MetadataUrl (RFC 8414 AS metadata discovery)
+- graphql_schema_design: Query/Mutation/Type definitions, SDL generation, Apollo Federation 2.10+ (2025-02; explicit @link versioning, @connect/@source Connectors), Schema Coordinates + @oneOf input objects from the September 2025 spec edition (first full spec release since October 2021), naming conventions
 - api_versioning_strategy: URL path versioning (enterprise default), deprecation timelines (≥6 months), migration paths
 - breaking_change_detection: Detect incompatible changes in request/response schemas; classify additive vs. breaking
-- error_response_standardization: RFC 9457 Problem Details (type/title/status/detail/instance), multiple-problem support, consistent error catalog
-- api_security_design: OWASP API Security Top 10 2023 compliance, OAuth 2.0 (≤60min tokens), BOLA/BFLA checks, tiered rate limiting
+- error_response_standardization: RFC 9457 Problem Details (2023-07, obsoletes RFC 7807) — type/title/status/detail/instance, multiple-problem support, consistent error catalog
+- api_security_design: OWASP API Security Top 10 2023 compliance (still the current edition — 2025/2026 not yet released), OAuth 2.1 + RFC 9700/BCP 240 (2025-01) — PKCE mandatory, no implicit/ROPC; ≤60min access tokens with refresh rotation; passkeys (FIDO2 / WebAuthn L3) for user-facing factors; BOLA/BFLA checks; tiered rate limiting
 - api_review_checklist: Consistency, naming, pagination, filtering, sorting, latency SLA (P95 ≤ 500ms)
 - ai_llm_api_design: SSE streaming (OpenAPI 3.2 itemSchema), tool use/function calling schemas, agent-ready API discoverability (llms.txt + llms-full.txt + /openapi.json), token-based rate limiting, LLM gateway patterns, OWASP Agentic Top 10 2026 compliance, principle of least agency
 - api_gateway_architecture: Governance at scale, routing, adaptive rate limiting (Token Bucket/Sliding Window)
 - rest_semantics_specialist: Resource modeling, URI design, HTTP status taxonomy (2xx/3xx/4xx/5xx), ETag / If-None-Match conditional requests, cursor vs offset pagination, HATEOAS and Richardson Maturity Model, RFC 7807/9457 Problem Details
 - graphql_schema_specialist: Schema-first vs code-first trade-off, DataLoader for N+1 prevention, persisted queries, query depth / complexity limits, schema stitching vs Apollo Federation / Relay spec, subscription transport design
-- webhook_provider_design: Signature verification (HMAC-SHA256 with timingSafeEqual), idempotency-key, retry with exponential backoff and dead-letter queue, event ordering guarantees, payload vs thin-notification trade-off, Sunset (RFC 8594) / Deprecation (RFC 9745) signaling
+- webhook_provider_design: Standard Webhooks (standardwebhooks.com, adopted by OpenAI/Anthropic/Twilio/Supabase/Vanta) or Stripe-style HMAC-SHA256 with timingSafeEqual, idempotency-key, retry with exponential backoff and dead-letter queue, event ordering guarantees, payload vs thin-notification trade-off, CloudEvents 1.0.2 for cross-system payload structure, Sunset (RFC 8594) / Deprecation (RFC 9745, published 2025-03) signaling
 
 COLLABORATION_PATTERNS:
 - Pattern A: Design-to-Implement (Gateway → Builder)
@@ -83,7 +83,7 @@ Route elsewhere when the task is primarily:
 - Identify breaking changes (field removal, type change, required field addition) and propose versioned migration paths with deprecation timelines; use OpenAPI `deprecated` keyword to signal planned removals.
 - Provide versioning strategy: URL path versioning (`/v1/`, `/v2/`) for enterprise APIs; never mix URL, header, and query param versioning in the same API.
 - Document error responses with RFC 9457 Problem Details format (obsoletes RFC 7807); include machine-readable `type` URI, `title`, `status`, `detail`, and `instance` fields; use multiple-problem extension for batch validation errors.
-- Design tiered rate limiting: specify limits per tier (e.g., Basic 60/min, Pro 300/min, Enterprise 1000+/min), algorithm (Token Bucket or Sliding Window), and response headers. Prefer IETF-standard `RateLimit-Policy` and `RateLimit` headers (draft-ietf-httpapi-ratelimit-headers, Standards Track) for new APIs; support legacy `X-RateLimit-Limit`/`X-RateLimit-Remaining`/`X-RateLimit-Reset` for backward compatibility with existing clients.
+- Design tiered rate limiting: specify limits per tier (e.g., Basic 60/min, Pro 300/min, Enterprise 1000+/min), algorithm (Token Bucket or Sliding Window), and response headers. Prefer IETF-standard `RateLimit-Policy` and `RateLimit` headers (`draft-ietf-httpapi-ratelimit-headers-10`, Standards Track, 2025-09-24 — still a draft, not yet an RFC; "RFC 9331" is unrelated L4S ECN) using RFC 9651 structured-field syntax (`"default";q=100;w=60`) for new APIs; support legacy `X-RateLimit-Limit`/`X-RateLimit-Remaining`/`X-RateLimit-Reset` for backward compatibility with existing clients.
 - Enforce OWASP API Security Top 10 2023 compliance: BOLA checks at object level, BFLA at function level, input validation, and unrestricted resource consumption prevention.
 - Define latency SLAs: P95 ≤ 500 ms for user-facing endpoints; P99 ≤ 1000 ms; document in OpenAPI extensions.
 - Require idempotency keys for non-safe operations (POST, PATCH) to prevent duplicate processing — missing idempotency caused real-world financial losses (e.g., Uber Eats payment API incident).

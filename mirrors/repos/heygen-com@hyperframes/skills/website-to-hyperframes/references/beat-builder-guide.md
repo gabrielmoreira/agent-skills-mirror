@@ -115,6 +115,70 @@ After lint passes, snapshots are taken, and you've fixed every issue you saw —
 
 So in your report, name the hex codes you used, the captured asset paths you placed, the headline `font-size`, and the GSAP timeline's last `tl.fromTo(...)` timestamp. Brief, concrete, true. If anything diverges from DESIGN.md or the storyboard, say so explicitly — the main agent can decide whether to accept the divergence or send you back to fix it. Surprises caught at this hand-off cost minutes; surprises caught at Step 6 cost iterations.
 
+### FLAG protocol — required phrasing for non-blocking issues
+
+When you find any of these, surface them as **FLAGS** in your report, not as conditional suggestions:
+
+- Visual states that briefly look broken (empty containers, hanging elements, gap moments)
+- Spec ambiguities you had to resolve by guessing
+- Linter bugs you worked around
+- Tween values you changed from the spec because they wouldn't fit
+
+**Forbidden phrasing:** "if the X feels too long, you could...", "consider tweaking Y", "might want to..."
+
+**Required phrasing — concrete, actionable, with line numbers:**
+
+```
+FLAG: at beat-local t=1.2s the doc card is visible but its inner content is still
+       opacity 0 — a 0.4s empty-panel window.
+       RECOMMENDED FIX: pull title typewriter from 1.6s → 1.4s
+       in compositions/beat-5-name.html line 234.
+```
+
+The main agent MUST EITHER apply each FLAG's fix OR write a one-sentence rejection with reason. Silently dropping a FLAG is a verification failure that gets caught at Step 6 (or worse, in the user's preview).
+
+### Spec ambiguity — escalate, don't paper over
+
+If STORYBOARD.md gives you a transition or transformation but doesn't establish the **start** state, do NOT guess. Examples of ambiguity worth flagging:
+
+- "Row 1 transitions from Huly Blue to Huly Orange at 3.5s" — but Row 1's initial color isn't specified
+- "Headline grows" — but the start size isn't specified
+- "Cards slide in" — but the off-screen position isn't specified
+- "Subhead appears after the headline" — but exact timing offset isn't specified
+
+**Required action:** FLAG the ambiguity in your report verbatim:
+
+```
+FLAG: STORYBOARD.md beat 3 says "Row 1 transitions blue → orange at 3.5s" but
+       Row 1's initial color is not specified anywhere. I interpreted Row 1 starts
+       blue and tweened to orange. CONFIRM or correct.
+```
+
+The main agent then confirms or corrects before Step 6 advances. Picking an interpretation silently means the build looks "fine" while diverging from intent — and the user only notices in motion.
+
+### Sub-agent diagnoses are unverified claims, not facts
+
+When a sub-agent reports "this is a linter false positive" / "this is a known bug" / "this attribute doesn't work as documented" — those are HYPOTHESES, not findings. Sub-agents diagnose from one symptom; they don't have repo-wide context.
+
+Before propagating any sub-agent diagnosis (e.g., applying the same "workaround" to another beat, or telling the user "this is a known bug"), do ONE of:
+
+1. **Verify by reading the source.** Open the file the sub-agent claims is buggy. Confirm the bug exists. Example: "I read `packages/core/src/lint/utils.ts:42` and confirmed the regex matches `url(\"data:image/svg+xml...\")` incorrectly. The workaround is to base64-encode the URI."
+2. **Disclose the unverified claim.** Don't suppress it — surface it. Example: "Sub-agent for beat 2 diagnosed `root_missing_composition_id` as a linter false positive on inline SVG data URIs. I applied the same workaround to beat 4 WITHOUT verifying the underlying claim. Worth filing as a regression against `packages/core/src/lint/utils.ts` to confirm."
+
+**Forbidden:** silently adopting the workaround pattern and presenting "lint passes" as evidence. If the workaround came from an unverified diagnosis, "lint passes because the diagnosis was correct AND I worked around it" and "lint passes because the diagnosis was wrong but the workaround happened to make the symptom disappear" are both possible. Without verification, you don't know which. The next session inherits the workaround AND the unverified diagnosis.
+
+### When you accept a sub-agent's divergence from spec — UPDATE the spec
+
+If a sub-agent reports "I diverged from STORYBOARD.md because..." AND you accept the divergence, you MUST update STORYBOARD.md to reflect the actual implementation. Otherwise the spec lies about the artifact.
+
+Examples:
+
+- Sub-agent: "Storyboard says 'HULY' uppercase but the actual logo asset is lowercase 'huly'. I used lowercase." Accept → edit STORYBOARD.md beat N to say "huly" lowercase. Note the change inline.
+- Sub-agent: "Storyboard says cells at 56px but they read too small at 1920×1080. I used 96px." Accept → edit STORYBOARD.md beat N's cell size to 96px.
+- Sub-agent: "Storyboard says SFX at t=4.7s but the visual moment lands at t=5.2s; I aligned SFX to the visual." Accept → edit STORYBOARD.md SFX line to t=5.2s.
+
+**Forbidden:** accepting the divergence silently and leaving the storyboard with the wrong spec. The next session reading STORYBOARD.md will trust it as ground truth. The spec is a contract; if you break the contract, update the contract.
+
 ---
 
 ## Continuous motion — the most important rule
@@ -175,7 +239,7 @@ If any are missing from the beat spec, the beat is under-defined. Don't fill the
 - CSS CENTERING: no `transform: translate(-50%, -50%)` with GSAP transforms. Use flexbox or `xPercent/yPercent`.
 - QUERYSELECTOR: `document.getElementById("id")` with null guards. No method calls without null check.
 - CHARACTER SPANS: `display:inline-block` on spaces collapses them. Use `&nbsp;` or per-word spans.
-- COUNTERS: no `onUpdate` callbacks. Discrete `tl.set(el, {textContent: "42"}, 2.5)` at timestamps.
+- COUNTERS: no `onUpdate` for numeric counters — use discrete `tl.set(el, {textContent: "42"}, 2.5)` at timestamps. `onUpdate` and `tl.call()` ARE supported for canvas/WebGL rendering loops and character-by-character typing — see capabilities.md §10.
 - TIMELINE: `window.__timelines["beat-N-name"] = tl` synchronously. Key = `data-composition-id`.
 - DETERMINISTIC: no `Math.random()`, `Date.now()`, `requestAnimationFrame`, `repeat:-1`.
 - Always `tl.fromTo()` not `tl.from()` for entrances.

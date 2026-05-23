@@ -60,7 +60,7 @@ telemetry: false
 #
 # serena:
 #   mode: bridge
-#   bridge_host: gemini             # the CLI that connects via URL
+#   bridge_host: claude             # the CLI that connects via URL
 #   bridge_url: http://localhost:12341/mcp  # default; override if needed
 #   auto_update: true               # upgrade serena-agent on every `oma update`
 
@@ -106,9 +106,9 @@ docs:
 # Model selection
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Built-in: claude | codex | gemini | qwen | cursor | mixed
+# Built-in: antigravity | claude | codex | qwen | cursor | mixed
 # (custom_presets entries are also valid)
-model_preset: gemini
+model_preset: antigravity
 
 # Per-agent override (optional) — shallow-merged on top of the preset entry.
 # Agent ids: orchestrator, architecture, qa, pm, backend, frontend, mobile,
@@ -116,7 +116,7 @@ model_preset: gemini
 # Each AgentSpec accepts:
 #   model:    "<owner>/<slug>"  required.  Slugs follow OpenRouter convention
 #             (https://openrouter.ai/models). Only models whose owning vendor
-#             ships a forkable CLI (claude, codex, gemini, qwen) are usable —
+#             ships a forkable CLI (antigravity, claude, codex, qwen) are usable —
 #             API-only entries (api_only: true) are skipped. Custom slugs go
 #             in `models:` below.
 #   effort:   none | low | medium | high | xhigh   (ignored for cli-session models like Claude)
@@ -134,10 +134,10 @@ model_preset: gemini
 # Example:
 # models:
 #   my-fast:
-#     cli: gemini
-#     cli_model: gemini-3-flash
+#     cli: antigravity
+#     cli_model: gemini-3.5-flash
 #     supports:
-#       native_dispatch_from: [gemini]
+#       native_dispatch_from: [antigravity]
 
 # User-defined presets (optional). Use `extends:` to partially inherit a built-in.
 # Example:

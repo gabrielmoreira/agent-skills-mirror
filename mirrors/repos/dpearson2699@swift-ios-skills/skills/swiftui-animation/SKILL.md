@@ -16,7 +16,7 @@ correct timing, transitions, and accessibility handling using Swift 6.3 patterns
 - [Spring Type (iOS 17+)](#spring-type-ios-17)
 - [PhaseAnimator (iOS 17+)](#phaseanimator-ios-17)
 - [KeyframeAnimator (iOS 17+)](#keyframeanimator-ios-17)
-- [@Animatable Macro](#animatable-macro)
+- [`@Animatable Macro`](#animatable-macro)
 - [matchedGeometryEffect (iOS 14+)](#matchedgeometryeffect-ios-14)
 - [Navigation Zoom Transition (iOS 18+)](#navigation-zoom-transition-ios-18)
 - [Transitions (iOS 17+)](#transitions-ios-17)
@@ -212,7 +212,7 @@ Keyframe types: `LinearKeyframe` (linear), `CubicKeyframe` (smooth curve),
 
 Use `repeating: true` for looping keyframe animations.
 
-## @Animatable Macro
+## `@Animatable` Macro
 
 Replaces manual `AnimatableData` boilerplate. Attach to any type with
 animatable stored properties.

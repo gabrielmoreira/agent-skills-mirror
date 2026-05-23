@@ -282,6 +282,36 @@ packaged as ZIP, TAR, TAR.GZ, or TGZ. Archive extraction must validate path
 safety, limit file count and decompressed size, and reject unsupported archive
 formats before the artifact is handed to the Skill resource operator.
 
+The `skills-sh` importer connects to the operator-configured skills.sh API root.
+It follows the skills.sh CLI discovery flow: search uses
+`GET {endpoint}/api/search?q={query}&limit={limit}` and returns candidate
+summaries only. If the user query is blank, the importer should use `skill` as
+the default query. If the trimmed user query is one character, the importer
+should reject the request locally because skills.sh requires at least two query
+characters. Fetch resolves the selected candidate's `source` and `skillId` to
+`GET {endpoint}/api/download/{owner}/{repo}/{skillId}`, validates the returned
+file paths, assembles a standard Skill ZIP artifact, and passes that artifact
+to the Skill resource operator.
+
+The skills.sh preset may be enabled with:
+
+```properties
+nacos.plugin.ai.importer.skills.skills-sh.enabled=true
+```
+
+Unless overridden, this creates source id `skills-sh`, importer `skills-sh`,
+resource type `skill`, and endpoint `https://skills.sh`. Operators may override
+the preset source id, display name, endpoint, auth reference, timeouts, item
+limits, and artifact size by using the same
+`nacos.plugin.ai.importer.skills.skills-sh.*` prefix.
+
+Search metadata may expose only non-secret values such as the skills.sh page
+URL, the GitHub repository URL, repository source, skill id, and install count.
+Fetch source metadata may additionally include the download snapshot hash.
+Fetch must set `sourceMetadata.artifactUrl` to the corresponding skills.sh page
+URL so imported Skill resources record a concrete external source instead of
+`local`.
+
 ## API Flow
 
 Nacos should expose unified Admin and Console import APIs:
@@ -318,6 +348,12 @@ list sources(resourceType)
   -> show conflicts, dependency warnings, and overwrite options
   -> execute selected candidates
 ```
+
+The browser must not select searched candidates by default. It may provide an
+explicit select-all control, and users must still be able to deselect individual
+candidates after selecting all. Import-all-valid actions, if present, must only
+operate on candidates that the user explicitly selected and validated, including
+candidates accumulated across multiple validation batches in the same source.
 
 The browser must not receive full artifacts. MCP tools/specification, Skill zip
 content, and other importable payloads may flow only among the server-side

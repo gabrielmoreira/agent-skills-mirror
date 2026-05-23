@@ -12,9 +12,15 @@ Editor-side automation for the YooAsset hot-update framework — build pipeline 
 
 ## Guardrails
 
-**Mode**: Mixed — query skills marked SkillMode.SemiAuto; mutators are SkillMode.FullAuto (need grant under Approval)
-
-> Some skills (Delete / PlayMode / Reload / high-risk) are auto-forbidden in Approval/Auto modes — only Bypass can run them.
+**Operating Mode** (v1.9 three-tier):
+- **Approval** (default): query/list/read skills (`yooasset_check_installed`, `yooasset_get_default_paths`, `yooasset_get_build_settings`, `yooasset_list_collector_packages`, `yooasset_list_collector_rules`, `yooasset_list_assetart_scanners`, `yooasset_runtime_get_validation_result`, `yooasset_load_build_report`, `yooasset_list_report_bundles`, `yooasset_get_bundle_detail`, `yooasset_list_report_assets`, `yooasset_get_asset_detail`, `yooasset_get_dependency_graph`, `yooasset_compare_build_reports`, `yooasset_list_independ_assets`) run directly. Builders / Collector mutators / scanner runs / window-openers are FullAuto — on `MODE_RESTRICTED`, run the grant protocol.
+- **Auto** / **Bypass**: SemiAuto and FullAuto run directly.
+- Auto-forbidden in this module:
+  - `MayEnterPlayMode = true` → `yooasset_runtime_validate_package`, `yooasset_runtime_cleanup`
+  - `SkillOperation.Delete` → `yooasset_remove_collector_package`, `yooasset_remove_collector_group`, `yooasset_remove_collector`
+  
+  Reachable only under Bypass mode or via a user-managed Allowlist entry; the grant flow returns `MODE_FORBIDDEN`. Note `yooasset_build_bundles` runs heavy disk I/O but has no Reload/PlayMode flag, so it stays grantable.
+- When `com.tuyoogame.yooasset` is missing, every skill except `yooasset_check_installed` returns a `NoYooAsset()` error with install instructions.
 
 **DO NOT** (common hallucinations):
 - `yooasset_initialize` / `yooasset_load_asset` / `yooasset_create_downloader` — do NOT exist as general-purpose REST skills. Runtime APIs (`YooAssets.Initialize`, default-package `YooAssets.LoadAssetAsync`, `ResourcePackage.LoadAssetAsync`, `RequestPackageVersionAsync`, `CreateResourceDownloader`) belong in game code. Use [yooasset-design](../yooasset-design/SKILL.md) when writing runtime code.

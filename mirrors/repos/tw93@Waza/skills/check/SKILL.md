@@ -1,6 +1,6 @@
 ---
 name: check
-description: "Reviews code diffs and release-ready changes after implementation, runs on-demand project-wide code-quality audits with a 4-axis scorecard, executes approved implementation plans, extracts project-specific constraints from repository context, auto-fixes safe issues, and drives approved release, publish, push, release-reaction, and issue/PR follow-through. Also triages issues and PRs when the user mentions them. Not for exploring ideas, debugging, or document prose review."
+description: "Reviews code diffs, PRs, issue queues, release readiness, commits, pushes, publishing, and project audits. Use when users ask review/看看代码/合并前/看看issue/PR/release/push or to implement an approved plan, with safety gates for dirty and untracked worktrees. Not for exploring ideas, debugging root causes, or prose review."
 when_to_use: "review, 看看代码, 检查一下, 有没有问题, 是否需要优化, 合并前, 继续优化, 优化代码, 看看issue, 看看PR, release, publish, push, release reaction, GitHub reaction, 发布, 提交, 关闭issue, 发布表情, release表情, close issue, issue close, review my code, check changes, before merge, before release, code review, code-review, audit, project audit, 项目体检, 项目评分, 给项目打分, 深入分析项目代码, 评估项目质量, 代码质量评分, scorecard, linus review, rate this codebase, score this project"
 dispatch_intent: "Code review, before merge, release gates, generated artifacts, safety sinks, publish/push/reaction follow-through, triage issues/PRs, project-wide code-quality audit scorecard"
 ---
@@ -12,6 +12,20 @@ Prefix your first line with 🥷 inline, not as its own paragraph.
 > Note: `/review` is a built-in Anthropic plugin command for PR review. Waza uses `/check` (or the alias `code-review`) instead. Do not re-trigger `/review` from within this skill.
 
 Read the diff, find the problems, fix what can be fixed safely, ask about the rest. Done means verification ran in this session and passed.
+
+## Worktree Safety Preflight
+
+Before any review, triage, ship, release, or PR operation, read the current worktree with:
+
+```bash
+git status --short --branch -uall
+```
+
+Treat modified, staged, and untracked files as user work. You may read them and include them in the review surface, but you must not move, hide, overwrite, clean, or discard them without explicit user approval in the current turn.
+
+Do not run these commands as default review or PR setup: `git switch`, `git checkout`, `git reset --hard`, `git clean`, `git stash -u`, `git stash --include-untracked`, `git stash -a`, `git stash --all`, or `gh pr checkout`. If a branch change or cleanup is genuinely required, stop and ask for that exact operation.
+
+For PR inspection, prefer commands that do not switch the current working tree: `gh pr view`, `gh pr diff`, `git fetch origin pull/<n>/head:refs/tmp/pr-<n>`, and `git merge-tree`.
 
 ## Mode Picker
 
@@ -36,7 +50,7 @@ Activate when the user's message starts with "Implement the following plan", "�
 In this mode, do not run a code review. Instead:
 
 1. State which plan is being executed (first heading or summary line).
-2. Check for obvious repo drift: run `git status` and skim any changed files that contradict the plan. If drift makes the plan unsafe, name the specific conflict and stop.
+2. Check for obvious repo drift: run `git status --short --branch -uall` and skim any changed files that contradict the plan. If drift makes the plan unsafe, name the specific conflict and stop.
 3. Work through each plan item as a to-do. Mark each complete as you go.
 4. After all items are done, run the project's verification command.
 5. Transition automatically into Ship mode if the project context or current thread indicates review-then-ship.

@@ -118,7 +118,16 @@ When the user gives no creative direction, default to what the brand's visual id
 
 With that minimum in hand, still write an ambitious storyboard. "Surprise me" means "impress me," not "play it safe." Go bold.
 
-**Autonomous mode propagates.** When the user signals "surprise me" / "decide for me" / "just build it" here at Step 2, that signal kills every downstream 💬 gate too — Step 3's storyboard approval, Step 4's TTS provider choice, captions. Make all creative decisions yourself and present the finished video at the end. Do not ask four separate questions across four separate steps. Read the room once and commit.
+**Autonomous mode propagates — for user-preference gates only.** When the user signals "surprise me" / "decide for me" / "just build it" here at Step 2, that signal kills downstream user-preference 💬 gates: Step 3's storyboard approval, Step 4's TTS provider choice, music yes/no, captions yes/no. Make those creative decisions yourself and present the finished video at the end. Do not ask four separate questions across four separate steps. Read the room once and commit.
+
+**Auto mode does NOT skip quality-verification gates.** These run regardless and must produce evidence in your final summary:
+
+- Asset Audit (Step 3) — view contact sheets, justify USE/SKIP per asset
+- Per-beat HTML evidence block (Step 5)
+- DoD checklist (Step 6) — animation-map, per-warning WCAG verification, audio + motion playback (or explicit "deferred" disclosure)
+- "What I did NOT verify" disclosure (Step 6)
+
+**Test for "preference vs quality gate":** if the answer changes the _content_ of the video (which voice? captions on? beat 3 cinematic or fast?), it's a preference — auto mode decides. If the answer is "did the verification happen?", it's a quality gate — auto mode does NOT apply. Reasoning "auto mode says bias toward action, so I'll skip the contact sheets" misuses auto mode.
 
 ### Specific direction
 

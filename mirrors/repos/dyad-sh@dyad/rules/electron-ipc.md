@@ -137,6 +137,14 @@ When modifying `ChatResponseChunkSchema` or adding new `safeSend("chat:response:
 
 When a main-process workflow needs to show a user-facing warning toast after a turn completes, thread it through every completion path, not just `chat:response:end`. Build-mode auto-approve and local-agent flows use `ChatResponseEndSchema`, while manual proposal approval uses `ApproveProposalResultSchema`; surface the warning in both `useStreamChat` and `ChatInput` so the behavior stays consistent.
 
+## Package install command policy
+
+When changing install-policy constants or helpers in `src/ipc/utils/socket_firewall.ts`, search all command builders before committing. The same policy can be consumed by add-dependency processing, app startup (`src/ipc/services/app_runtime_service.ts`), and cloud sandbox setup, so removing an export like `NPM_INSTALL_POLICY_ARGS` can leave stale imports that only `npm run ts` catches.
+
+Do not treat "pnpm is available but older than the minimumReleaseAge-supporting version" the same as "pnpm is unavailable." `PNPM_INSTALL_POLICY_ARGS` currently use `--config.*` flags, which pnpm 10.15.0 and 9.0.0 accept on `pnpm install`; keep using pnpm with those flags when it is present, and only fall back to npm when the pnpm binary cannot be run.
+
+When generating `pnpm-workspace.yaml` for install policy (`allowBuilds`, `minimumReleaseAge`), include a top-level `packages:` block such as `packages: ["." ]` if one does not already exist. pnpm 9 treats `pnpm-workspace.yaml` as a workspace manifest and fails with `packages field missing or empty` when the file only contains config keys.
+
 ## React + IPC integration pattern
 
 When creating hooks/components that call IPC handlers:

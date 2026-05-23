@@ -281,7 +281,7 @@ struct KeychainError: Error, CustomStringConvertible {
 
 Every `SecItem*` function blocks the calling thread due to IPC to `securityd` and potential Secure Enclave round-trips. For biometry-protected items, the block can last several seconds during user authentication (WWDC 2014 Session 711).
 
-❌ **@MainActor keychain access that blocks the UI:**
+❌ **`@MainActor` keychain access that blocks the UI:**
 
 ```swift
 // ❌ WRONG — blocks main thread, freezes UI during securityd IPC
@@ -587,7 +587,7 @@ Before shipping keychain code, verify:
 2. **Add-or-update pattern implemented** — `SecItemAdd` catches `-25299` and falls back to `SecItemUpdate`; duplicate saves never crash or silently fail
 3. **Return flags explicitly set** — every `SecItemCopyMatching` call includes at least one `kSecReturn*` flag; no "success but nil" bugs
 4. **CFTypeRef cast matches flags** — cast type corresponds to the combination of return flags and match limit (see Return Type Cheat Sheet)
-5. **Zero SecItem calls on @MainActor** — all keychain access isolated in a dedicated `actor` (iOS 17+) or serial `DispatchQueue` (iOS 13–16)
+5. **Zero SecItem calls on `@MainActor`** — all keychain access isolated in a dedicated `actor` (iOS 17+) or serial `DispatchQueue` (iOS 13–16)
 6. **Fresh dictionaries per call** — no dictionary reuse across SecItem functions; add dict, query dict, and update dict are separate
 7. **kSec\* constants used** — no raw string literals for dictionary keys; using either `[CFString: Any]` or `[String: Any]` with `as String` casts
 8. **Queries are specific** — `kSecAttrService` + `kSecAttrAccount` included for GenericPassword; `kSecMatchLimitOne` used unless enumeration is needed

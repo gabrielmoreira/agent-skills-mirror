@@ -5,14 +5,14 @@ exceed the main skill file's scope.
 
 ## Contents
 
-- [SwiftUI Integration with @Observable](#swiftui-integration-with-observable)
+- [SwiftUI Integration with `@Observable`](#swiftui-integration-with-observable)
 - [CMBatchedSensorManager (High-Frequency)](#cmbatchedsensormanager-high-frequency)
 - [Headphone Motion](#headphone-motion)
 - [Pedometer SwiftUI View](#pedometer-swiftui-view)
 - [Activity-Based Navigation](#activity-based-navigation)
 - [Water Submersion (watchOS Ultra)](#water-submersion-watchos-ultra)
 
-## SwiftUI Integration with @Observable
+## SwiftUI Integration with `@Observable`
 
 ### Motion Manager Service
 

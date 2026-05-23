@@ -78,7 +78,7 @@ For MV pattern rationale, app wiring, and lightweight client examples, see [refe
 
 ## State Management
 
-### @Observable Ownership Rules
+### `@Observable` Ownership Rules
 
 **Important:** Always annotate `@Observable` view model classes with `@MainActor` to ensure UI-bound state is updated on the main thread. Required for Swift 6 concurrency safety.
 

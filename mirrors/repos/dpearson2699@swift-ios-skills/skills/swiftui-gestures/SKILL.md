@@ -18,7 +18,7 @@ Swift 6.3 patterns.
 - [MagnifyGesture (iOS 17+)](#magnifygesture-ios-17)
 - [RotateGesture (iOS 17+)](#rotategesture-ios-17)
 - [Gesture Composition](#gesture-composition)
-- [@GestureState](#gesturestate)
+- [`@GestureState`](#gesturestate)
 - [Adding Gestures to Views](#adding-gestures-to-views)
 - [Custom Gesture Protocol](#custom-gesture-protocol)
 - [Common Mistakes](#common-mistakes)
@@ -224,7 +224,7 @@ let doubleTapOrLongPress = TapGesture(count: 2)
     }
 ```
 
-## @GestureState
+## `@GestureState`
 
 `@GestureState` is a property wrapper that **automatically resets** to its
 initial value when the gesture ends. Use for transient feedback; use `@State`
@@ -354,7 +354,7 @@ VStack {
 .simultaneousGesture(TapGesture().onEnded { parentAction() })
 ```
 
-### 2. Using @State instead of @GestureState for transient state
+### 2. Using `@State` instead of `@GestureState` for transient state
 
 ```swift
 // DON'T: @State doesn't auto-reset — view stays offset after gesture ends

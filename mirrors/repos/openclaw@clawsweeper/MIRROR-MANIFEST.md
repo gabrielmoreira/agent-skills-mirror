@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/clawsweeper` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `openclaw/clawsweeper` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/clawsweeper` — 26 default patterns, 0 followed patterns, 8
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,14 +59,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`prompts/repair/autonomous.md`](prompts/repair/autonomous.md) |
-| 3 | ✓ | [`prompts/repair/execute.md`](prompts/repair/execute.md) |
-| 4 | ✓ | [`prompts/repair/plan-only.md`](prompts/repair/plan-only.md) |
-| 5 | ✓ | [`prompts/repair/review-result.md`](prompts/repair/review-result.md) |
-| 6 | ✓ | [`prompts/repair/worker-system.md`](prompts/repair/worker-system.md) |
-| 7 | ✓ | [`prompts/review-commit.md`](prompts/review-commit.md) |
-| 8 | ✓ | [`prompts/review-item.md`](prompts/review-item.md) |
+| 1 | ✓ | [`.agents/skills/crabbox/SKILL.md`](.agents/skills/crabbox/SKILL.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`prompts/repair/autonomous.md`](prompts/repair/autonomous.md) |
+| 4 | ✓ | [`prompts/repair/execute.md`](prompts/repair/execute.md) |
+| 5 | ✓ | [`prompts/repair/plan-only.md`](prompts/repair/plan-only.md) |
+| 6 | ✓ | [`prompts/repair/review-result.md`](prompts/repair/review-result.md) |
+| 7 | ✓ | [`prompts/repair/worker-system.md`](prompts/repair/worker-system.md) |
+| 8 | ✓ | [`prompts/review-commit.md`](prompts/review-commit.md) |
+| 9 | ✓ | [`prompts/review-item.md`](prompts/review-item.md) |
 
 ---
 

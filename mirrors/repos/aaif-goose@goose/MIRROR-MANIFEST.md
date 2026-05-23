@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aaif-goose/goose` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `aaif-goose/goose` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aaif-goose/goose` — 26 default patterns, 0 followed patterns, 12 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,12 +65,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`documentation/AGENTS.md`](documentation/AGENTS.md) |
 | 5 | ✓ | [`documentation/CLAUDE.md`](documentation/CLAUDE.md) |
 | 6 | ✓ | [`documentation/static/llms.txt`](documentation/static/llms.txt) |
-| 7 | ✓ | [`ui/goose2/AGENTS.md`](ui/goose2/AGENTS.md) |
-| 8 | ✓ | [`ui/goose2/CLAUDE.md`](ui/goose2/CLAUDE.md) |
-| 9 | ✓ | [`ui/goose2/src/shared/ui/AGENTS.md`](ui/goose2/src/shared/ui/AGENTS.md) |
-| 10 | ✓ | [`ui/goose2/src/shared/ui/CLAUDE.md`](ui/goose2/src/shared/ui/CLAUDE.md) |
-| 11 | ✓ | [`ui/text/AGENTS.md`](ui/text/AGENTS.md) |
-| 12 | ✓ | [`ui/text/CLAUDE.md`](ui/text/CLAUDE.md) |
+| 7 | ✓ | [`ui/text/AGENTS.md`](ui/text/AGENTS.md) |
+| 8 | ✓ | [`ui/text/CLAUDE.md`](ui/text/CLAUDE.md) |
 
 ---
 

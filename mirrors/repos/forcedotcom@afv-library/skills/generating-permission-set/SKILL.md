@@ -177,7 +177,7 @@ Before deploying, verify:
 - [ ] Permissions follow least privilege
 - [ ] No required fields in `<fieldPermissions>`
 - [ ] No duplicate permissions
-- [ ] no lengthy comments
+- [ ] No lengthy comments
 
 ## What Causes Deployment Failure
 

@@ -373,7 +373,7 @@ let fixedColumns = [
 
 ## State and Observation Optimization
 
-### @Observable Granular Tracking
+### `@Observable` Granular Tracking
 
 `@Observable` (Observation framework, iOS 17+) tracks property access at the **per-property level**. A view only re-evaluates when properties it actually read in `body` change:
 

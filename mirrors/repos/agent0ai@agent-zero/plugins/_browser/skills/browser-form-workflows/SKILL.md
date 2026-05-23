@@ -11,7 +11,7 @@ Start with `browser:content` to capture current refs, then use `browser:detail` 
 
 Use `select_option`, `set_checked`, `upload_file`, `type`, `type_submit`, and `submit` for form interaction. Use coordinates only when no stable ref exists or the UI is intentionally canvas-like.
 
-Use `browser:screenshot` plus `vision_load` when layout, visual validation, captcha-like UI, canvas content, or hidden state matters. Browser screenshots are not automatically loaded into model-visible history.
+Use `browser:screenshot` plus `vision_load` when layout, visual validation, captcha-like UI, canvas content, or hidden state matters. Browser screenshots are not automatically loaded into model-visible history; no-path screenshots return ephemeral refs for `vision_load`.
 
 Verify after submission with `browser:content`, `browser:state`, or another explicit `browser:screenshot` plus `vision_load`.
 

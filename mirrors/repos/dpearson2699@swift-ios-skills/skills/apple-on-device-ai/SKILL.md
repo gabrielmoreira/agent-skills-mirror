@@ -143,7 +143,7 @@ Key rules:
 - Call `session.prewarm()` before user interaction for faster first response
 - Save/restore transcripts: `LanguageModelSession(model: model, tools: [], transcript: savedTranscript)`
 
-### Structured Output with @Generable
+### Structured Output with `@Generable`
 
 The `@Generable` macro creates compile-time schemas for type-safe output:
 
@@ -167,7 +167,7 @@ let response = try await session.respond(
 print(response.content.name)
 ```
 
-#### @Guide Constraints
+#### `@Guide` Constraints
 
 | Constraint | Purpose |
 |---|---|
@@ -480,7 +480,7 @@ actor ModelCoordinator {
 - [ ] Foundation Models: availability checked before every API call
 - [ ] Foundation Models: graceful fallback when model unavailable
 - [ ] Foundation Models: session prewarm called before user interaction
-- [ ] Foundation Models: @Generable properties in logical generation order
+- [ ] Foundation Models: `@Generable` properties in logical generation order
 - [ ] Foundation Models: token budget accounted for (check `contextSize`)
 - [ ] Core ML: model format is mlprogram (.mlpackage) for iOS 15+
 - [ ] Core ML: model.eval() called before tracing/exporting PyTorch models
@@ -494,7 +494,7 @@ actor ModelCoordinator {
 
 ## References
 
-- [Foundation Models API](references/foundation-models.md) -- LanguageModelSession, @Generable, tool calling, prompt design
+- [Foundation Models API](references/foundation-models.md) -- LanguageModelSession, `@Generable`, tool calling, prompt design
 - [Core ML Conversion](references/coreml-conversion.md) -- Model conversion from PyTorch, TensorFlow, other frameworks
 - [Core ML Optimization](references/coreml-optimization.md) -- Quantization, palettization, pruning, performance tuning
 - [MLX Swift & llama.cpp](references/mlx-swift.md) -- MLX Swift patterns, llama.cpp integration, memory management

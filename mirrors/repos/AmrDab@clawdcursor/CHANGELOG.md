@@ -2,6 +2,64 @@
 
 All notable changes to Clawd Cursor will be documented in this file.
 
+## [Unreleased] — auth-hardening + docs catchup + linux CI stabilization
+
+### Docs — `Toolbox` / `Tools` naming + restored action-enum tables (PR #111)
+
+The repositioning in #93 inadvertently stripped the per-toolbox action
+enum tables that v0.9.3 shipped. Readers landing on the post-v0.9.4
+README saw vague descriptions like *"computer — Mouse, keyboard,
+screenshot. Raw I/O."* with no way to discover the ~70 verbs each
+compound tool actually exposes short of querying `tools/list`. The
+tables are restored verbatim from v0.9.3, and the two sections are
+labeled **`Toolbox` — 6 compound tools (recommended)** and **`Tools`
+— 97 granular primitives** to make the catalog choice unambiguous.
+
+### Security — dashboard cookie auth instead of inline-JS token injection
+
+The dashboard at `/` no longer injects the bearer token into client
+JS. The previous flow set `var __TOKEN = '__CLAWD_TOKEN_PLACEHOLDER__'`
+in the served HTML so dashboard JS could send `Authorization: Bearer`
+on `/mcp` calls — which meant any future XSS, a malicious browser
+extension, or a host misbind to a non-loopback address could exfiltrate
+the live token and execute the full MCP tool catalog.
+
+The server now sets `clawdcursor_token` as a `httpOnly` + `sameSite:
+strict` cookie when serving `/`. Dashboard JS no longer carries the
+token at all; `fetch('/mcp', …)` relies on the browser auto-attaching
+the cookie on same-origin requests. The auth gate at
+`src/surface/http-utility.ts` accepts both `Authorization: Bearer`
+headers (used by external tooling) and the cookie (used by the
+dashboard) — backward-compatible for any script that authenticates by
+header.
+
+### Security — `requireAuth` no longer silently accepts on-disk token rotation by default
+
+`requireAuth` previously fell back to reading `~/.clawdcursor/token`
+when the incoming token didn't match the in-memory token. That allowed
+any process with write access to that file to rotate the auth token
+and gain MCP access immediately without restarting the daemon.
+
+Drift acceptance is now opt-in via `CLAWD_ALLOW_DISK_TOKEN_DRIFT=1`.
+The default is fail-closed: a request whose token doesn't match the
+in-memory token is rejected, regardless of what's on disk.
+
+**Backward-incompatible** for any tooling that rotated the disk token
+to authenticate against a running daemon. Set
+`CLAWD_ALLOW_DISK_TOKEN_DRIFT=1` to restore the previous behavior.
+
+### CI — global nut-js mock for Linux runners
+
+`tests/vitest.setup.ts` wires a global mock for `@nut-tree-fork/nut-js`
+so vitest can boot on Linux CI runners that don't have libXtst /
+libxdo installed. Existing per-file `vi.mock('@nut-tree-fork/nut-js',
+…)` declarations continue to override the global, so no existing
+test behavior changes. Method names in the global mock match
+production usage in `src/platform/native-desktop.ts` (`mouse.click`,
+`screen.grabRegion`, etc.) so the global is a usable fallback for
+new tests.
+
+
 ## [0.9.5] - 2026-05-21 — repositioning + compact `task` fix + macOS Tahoe silent screenshots + npm publish prep
 
 Three threads landed: a documentation reframe so the README finally
@@ -67,6 +125,22 @@ the existing CG path on macOS 12-13 where CG is still silent.
 npm `prepare` lifecycle runs on `npm pack` / `npm publish`, so the
 published tarball always reflects the current source rather than
 shipping a stale `dist/` from the developer's last `npm run build`.
+
+### Fixed — installer no longer destroys user state on dirty tree (PR #108, backfilled to v0.9.5)
+
+The `irm https://clawdcursor.com/install.ps1 | iex` and equivalent
+`curl … | bash` paths previously did a `git checkout && git pull` and,
+on any non-zero exit, ran `rm -rf $INSTALL_DIR` and re-cloned from
+scratch. Any uncommitted work in the user's tree — feature branches,
+dirty edits, untracked scratch files — was destroyed with no consent
+and no recovery path. The error message also lied about the cause: a
+dirty tree, a missing ref, or a diverged branch all surfaced as
+"Download failed. Check your internet and try again."
+
+Both installers now refuse to update a dirty tree, surface the real
+`git` stderr on failure, and never delete `$INSTALL_DIR` without
+explicit user action. `install.ps1` also dropped UTF-8 em-dashes in
+comments to fix a Windows-PowerShell-5.1 ANSI-decoding parser issue.
 
 ### Notes
 

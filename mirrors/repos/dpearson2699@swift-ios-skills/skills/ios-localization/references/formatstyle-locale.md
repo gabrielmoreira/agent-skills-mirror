@@ -14,7 +14,7 @@ Comprehensive reference for locale-aware formatting in iOS 15+ using `FormatStyl
 - [Custom FormatStyle Implementation](#custom-formatstyle-implementation)
 - [Forcing a Specific Locale](#forcing-a-specific-locale)
 - [RTL Layout Deep Dive](#rtl-layout-deep-dive)
-- [@ScaledMetric for Dynamic Type](#scaledmetric-for-dynamic-type)
+- [`@ScaledMetric for Dynamic Type`](#scaledmetric-for-dynamic-type)
 - [Layout Testing with Accessibility Inspector](#layout-testing-with-accessibility-inspector)
 - [Quick Reference Table](#quick-reference-table)
 
@@ -551,7 +551,7 @@ Text(phoneNumber)
 | Corner radius | Only rounding top-left/top-right | Round leading/trailing corners |
 | Swipe gestures | "Swipe right to delete" | "Swipe to leading edge" -- or use system gestures |
 
-## @ScaledMetric for Dynamic Type
+## `@ScaledMetric` for Dynamic Type
 
 Use `@ScaledMetric` to make custom spacing, icon sizes, and padding scale with the user's Dynamic Type setting.
 

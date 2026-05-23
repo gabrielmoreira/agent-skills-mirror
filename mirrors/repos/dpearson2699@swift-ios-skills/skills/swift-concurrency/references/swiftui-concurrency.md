@@ -9,7 +9,7 @@ Concurrency patterns and best practices specific to SwiftUI applications.
 - [Sendable Closures and Data-Race Safety](#sendable-closures-and-data-race-safety)
 - [Structuring Async Work](#structuring-async-work)
 - [The .task Modifier](#the-task-modifier)
-- [@Observable View Models](#observable-view-models)
+- [`@Observable View Models`](#observable-view-models)
 - [Async Observation with Observations (SE-0475)](#async-observation-with-observations-se-0475)
 - [Performance-Driven Concurrency](#performance-driven-concurrency)
 - [Common SwiftUI Concurrency Mistakes](#common-swiftui-concurrency-mistakes)
@@ -106,7 +106,7 @@ Use `.task(id:)` to restart work when a value changes:
 }
 ```
 
-## @Observable View Models
+## `@Observable` View Models
 
 - Annotate view models with both `@Observable` and `@MainActor`.
 - Use `@State` to own an `@Observable` instance (replaces `@StateObject`).

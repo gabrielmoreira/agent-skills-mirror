@@ -27,7 +27,7 @@ Use this when architecture choices may be revisited later or when multiple plaus
 
 ## Guardrails
 
-**Mode**: Documentation only — guidance for AI under all three operating modes; no REST skills to gate.
+> **Mode**: Documentation only — no REST skills to gate; load freely under any operating mode (Approval / Auto / Bypass).
 
 - Keep ADRs short.
 - Record only decisions that materially affect code generation or architecture direction.

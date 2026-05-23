@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mlflow/mlflow` — 26 default patterns, 1 followed patterns, 17 file(s) materialized.
+Mirror of `mlflow/mlflow` — 26 default patterns, 1 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mlflow/mlflow` — 26 default patterns, 1 followed patterns, 17 file(
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 17 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,13 +69,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`.github/instructions/code-review.instructions.md`](.github/instructions/code-review.instructions.md) |
 | 9 | ✓ | [`.github/instructions/github-actions.instructions.md`](.github/instructions/github-actions.instructions.md) |
 | 10 | ✓ | [`.github/instructions/python.instructions.md`](.github/instructions/python.instructions.md) |
-| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 12 | ✓ | [`libs/typescript/integrations/claude-code/skills/setup/SKILL.md`](libs/typescript/integrations/claude-code/skills/setup/SKILL.md) |
-| 13 | ✓ | [`libs/typescript/integrations/claude-code/skills/status/SKILL.md`](libs/typescript/integrations/claude-code/skills/status/SKILL.md) |
-| 14 | ✓ | [`mlflow/server/AGENTS.md`](mlflow/server/AGENTS.md) |
-| 15 | ✓ | [`mlflow/server/js/CLAUDE.md`](mlflow/server/js/CLAUDE.md) |
-| 16 | ✓ | [`mlflow/server/js/src/experiment-tracking/pages/experiment-scorers/CLAUDE.md`](mlflow/server/js/src/experiment-tracking/pages/experiment-scorers/CLAUDE.md) |
-| 17 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 13 | ✓ | [`libs/typescript/integrations/claude-code/skills/setup/SKILL.md`](libs/typescript/integrations/claude-code/skills/setup/SKILL.md) |
+| 14 | ✓ | [`libs/typescript/integrations/claude-code/skills/status/SKILL.md`](libs/typescript/integrations/claude-code/skills/status/SKILL.md) |
+| 15 | ✓ | [`mlflow/server/AGENTS.md`](mlflow/server/AGENTS.md) |
+| 16 | ✓ | [`mlflow/server/js/CLAUDE.md`](mlflow/server/js/CLAUDE.md) |
+| 17 | ✓ | [`mlflow/server/js/src/experiment-tracking/pages/experiment-scorers/CLAUDE.md`](mlflow/server/js/src/experiment-tracking/pages/experiment-scorers/CLAUDE.md) |
+| 18 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
 
 ---
 

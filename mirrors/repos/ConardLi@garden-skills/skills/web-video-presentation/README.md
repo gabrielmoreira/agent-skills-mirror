@@ -81,12 +81,12 @@ skills/web-video-presentation/
 │   ├── index.html
 │   ├── vite.config.ts
 │   └── src/
-└── themes/
-    ├── paper-press/
-    ├── warm-keynote/
+└── themes/                    # 23 themes, each with its own signature
     ├── midnight-press/
-    ├── blueprint/
-    └── ...
+    ├── warm-keynote/
+    ├── newsroom/
+    ├── bauhaus-bold/
+    └── ...                     # full list in references/THEMES.md
 ```
 
 ---
@@ -113,20 +113,38 @@ The generated `presentation/` project is a normal Vite + React + TypeScript app.
 
 ## Built-In Theme Directions
 
-The skill includes multiple theme families, each with its own visual DNA rather than a simple color swap:
+The skill ships **23 themes**, each with its own design DNA — not a simple color swap. Browse the two groups below by canvas tone, pick one that fits, or use any of them as a starting point for a derived theme.
 
-- `paper-press` — editorial paper, warm print texture
-- `warm-keynote` — modern talk / keynote energy
-- `midnight-press` — dark editorial presentation
-- `blueprint` — technical drawing / planning surface
-- `chalk-garden` — classroom / chalkboard style
-- `terminal-green` — phosphor terminal atmosphere
-- `bauhaus-bold` — sharp geometric manifesto
-- `sunset-zine` — indie zine / expressive collage
-- `newsroom` — newspaper / media desk
-- `monochrome-print` — restrained typographic print
+### Dark (8 themes)
 
-See [THEMES.md](./references/THEMES.md) for the full token contract and theme guidance.
+- `midnight-press` — cinematic editorial dark, warm espresso + hot orange
+- `chalk-garden` — slate chalkboard, handwritten Patrick Hand + chalk-yellow
+- `terminal-green` — 80s phosphor CRT, mono-only + scanlines
+- `blueprint` — drafting board, deep navy + cyan + 60px grid
+- `dark-botanical` — premium editorial dark, terracotta / blush / gold glow
+- `neon-cyber` — cyberpunk future, cyan + magenta double-neon
+- `bold-signal` — hero pitch deck, dark gradient + orange focal card
+- `creative-voltage` — saturated electric blue + neon yellow halftone
+
+### Light (15 themes)
+
+- `paper-press` — editorial paper, warm cream + hot orange
+- `warm-keynote` — modern SaaS keynote, glass slab + teal + warm grid
+- `newsroom` — NYT broadsheet, newsprint cream + banner red
+- `bauhaus-bold` — manifesto modernist, 0 radius + 4px thick frame
+- `sunset-zine` — risograph zine, peach + magenta + dashed cut lines
+- `monochrome-print` — refined Monocle / Wallpaper print restraint
+- `vintage-editorial` — witty Fraunces + geometric overlay (circle / line / dot)
+- `pastel-dream` — soft pastel + sage + right-edge pill ribbon
+- `split-canvas` — dual-tone, peach left + lavender right
+- `electric-studio` — corporate clarity, crisp white + electric-blue base bar
+- `indigo-porcelain` — indigo IS the ink (not just an accent) + porcelain white
+- `forest-ink` — forest green IS the ink + ivory (vintage National Geographic)
+- `kraft-paper` — deep brown IS the ink + kraft beige + copper accent
+- `dune` — charcoal + sand, near-zero accent (architecture brochure)
+- `swiss-ikb` — extra-light 200 weight Helvetica + IKB + 1px hairline grid
+
+See [THEMES.md](./references/THEMES.md) for the full token contract, signature for each theme, and how to derive new themes from existing ones (including Swiss yellow / green / orange variants).
 
 ---
 

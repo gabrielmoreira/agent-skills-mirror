@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `reacher-z/ClawBench` — 26 default patterns, 7 followed patterns, 9 file(s) materialized.
+Mirror of `reacher-z/ClawBench` — 26 default patterns, 8 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `reacher-z/ClawBench` — 26 default patterns, 7 followed patterns, 9 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 9 |
+| Followed pats | 8 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,6 +56,7 @@ Mirror of `reacher-z/ClawBench` — 26 default patterns, 7 followed patterns, 9 
 - `CONTRIBUTING.md`
 - `eval/README.md`
 - `eval/agentic_eval.md`
+- `docs/scoring.md`
 - `eval/scoring.md`
 - `src/clawbench/runtime/chrome-extension/README.md`
 
@@ -68,12 +69,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`src/README.md`](src/README.md) |
 | 3 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 4 | → | [`eval/agentic_eval.md`](eval/agentic_eval.md) |
-| 5 | → | [`eval/README.md`](eval/README.md) |
-| 6 | → | [`eval/scoring.md`](eval/scoring.md) |
-| 7 | → | [`README.md`](README.md) |
-| 8 | → | [`src/clawbench/runtime/chrome-extension/README.md`](src/clawbench/runtime/chrome-extension/README.md) |
-| 9 | → | [`src/clawbench/runtime/extension-server/README.md`](src/clawbench/runtime/extension-server/README.md) |
+| 4 | → | [`docs/scoring.md`](docs/scoring.md) |
+| 5 | → | [`eval/agentic_eval.md`](eval/agentic_eval.md) |
+| 6 | → | [`eval/README.md`](eval/README.md) |
+| 7 | → | [`eval/scoring.md`](eval/scoring.md) |
+| 8 | → | [`README.md`](README.md) |
+| 9 | → | [`src/clawbench/runtime/chrome-extension/README.md`](src/clawbench/runtime/chrome-extension/README.md) |
+| 10 | → | [`src/clawbench/runtime/extension-server/README.md`](src/clawbench/runtime/extension-server/README.md) |
 
 ---
 

@@ -93,9 +93,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`plugins/_browser/skills/browser-form-workflows/SKILL.md`](plugins/_browser/skills/browser-form-workflows/SKILL.md) |
 | 30 | ✓ | [`plugins/_desktop/skills/linux-desktop/SKILL.md`](plugins/_desktop/skills/linux-desktop/SKILL.md) |
 | 31 | ✓ | [`plugins/_office/skills/calc-spreadsheets/SKILL.md`](plugins/_office/skills/calc-spreadsheets/SKILL.md) |
-| 32 | ✓ | [`plugins/_office/skills/document-artifacts/SKILL.md`](plugins/_office/skills/document-artifacts/SKILL.md) |
-| 33 | ✓ | [`plugins/_office/skills/impress-presentations/SKILL.md`](plugins/_office/skills/impress-presentations/SKILL.md) |
-| 34 | ✓ | [`plugins/_office/skills/markdown-documents/SKILL.md`](plugins/_office/skills/markdown-documents/SKILL.md) |
+| 32 | ✓ | [`plugins/_office/skills/impress-presentations/SKILL.md`](plugins/_office/skills/impress-presentations/SKILL.md) |
+| 33 | ✓ | [`plugins/_office/skills/markdown-documents/SKILL.md`](plugins/_office/skills/markdown-documents/SKILL.md) |
+| 34 | ✓ | [`plugins/_office/skills/office-artifacts/SKILL.md`](plugins/_office/skills/office-artifacts/SKILL.md) |
 | 35 | ✓ | [`plugins/_office/skills/writer-documents/SKILL.md`](plugins/_office/skills/writer-documents/SKILL.md) |
 | 36 | ✓ | [`prompts/agent.context.extras.md`](prompts/agent.context.extras.md) |
 | 37 | ✓ | [`prompts/agent.extras.agent_info.md`](prompts/agent.extras.agent_info.md) |

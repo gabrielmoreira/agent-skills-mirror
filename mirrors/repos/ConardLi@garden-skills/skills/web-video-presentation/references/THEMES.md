@@ -39,7 +39,7 @@
 
 ## 内置主题
 
-10 套初始主题，每个都有**独立的设计 DNA** —— 不是简单的换色版。挑一个
+23 套主题，每个都有**独立的设计 DNA** —— 不是简单的换色版。挑一个
 匹配你主题情绪的，或者作为你自己主题的起点。
 
 ### 深色主题
@@ -50,17 +50,31 @@
 | `chalk-garden`    | 深石板黑板。Patrick Hand 全场手写，粉笔黄 accent。**2px 虚线 rule** 是签名。film grain（overlay）+ vignette。衬线带 chalk text-shadow。手绘节奏。                                                                |
 | `terminal-green`  | 80 年代磷光终端。纯黑 + JetBrains Mono only + 0px 直角。**CRT 扫描线**贴在舞台上。文字带磷光 text-shadow。利落线性动效（180/400/650ms）。hero 数字：等宽带发光。                                                  |
 | `blueprint`       | 工程蓝图。深海军蓝 + 绘图青 + IBM Plex Mono。**2px 虚线青色 rule + 60px 制图网格**是签名。hero 数字：等宽青色。等宽配对营造技术 / 蓝图感。                                                                       |
+| `dark-botanical`  | 高级感编辑暗底 —— 时尚刊物 / 博物馆图录。近黑 + 暖陶 / 玫粉 / 鎏金叠层。Cormorant italic + IBM Plex Sans。**柔光晕染（blurred light pool）作为签名**。慢速电影感节奏（1.7s）。140×100 padding。              |
+| `neon-cyber`      | 赛博朋克未来派。深海军底 + 电光青 + 玫红双霓虹。Clash Display + Satoshi。**青色发光网格 + 双色霓虹描边（cyan + magenta text-shadow）**是签名。snappy 节奏（380/650ms）。                                       |
+| `bold-signal`     | hero pitch-deck 暗底。Archivo Black + Space Grotesk。大橙色焦点色卡 + 制表数编号。**对角线深色渐变 + 大字标语**是签名。punchy 节奏（420/680ms）。                                                                |
+| `creative-voltage`| 复古朋克创意工作室。饱和电光蓝底 + 霓虹黄强调。Syne + Space Mono。**halftone 网点 + 偏移霓黄阴影**是签名。punchy + 能量节奏（450/720ms）。                                                                       |
 
 ### 浅色主题
 
-| id                  | 性格                                                                                                                                                                                                            |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `paper-press`       | midnight-press 的白天孪生兄弟。暖奶油 + 纸纹（multiply blend）。火热橙。hero 数字：斜体编辑级衬线。慢速电影感节奏。140×100 padding。                                                                              |
-| `warm-keynote`      | 现代 SaaS keynote。奶油 + 棕褐墨 + 青绿 + Inter。**大圆角（32px）glass slab** 配 backdrop blur。**粗黑 font-black hero 数字**。舞台上 40px 暖色网格。弹簧动效。                                                  |
-| `newsroom`          | NYT 报刊。报纸奶油 + 墨黑衬线 + 旗红。Playfair Display + Noto Serif SC。**0 圆角**（报纸不会圆角）。hero 数字：超大斜体显示衬线。安静的印刷节奏。淡纸纹。                                                        |
-| `bauhaus-bold`      | 现代主义宣言。米白 + 墨黑 + 原色蓝。Archivo Black + Inter。**0 圆角 + 4px 实色厚边 + 4px 黑色画框包住舞台 + 偏移实色阴影**。hero 数字：font-weight 900 巨字。利落快速动效。无装饰。                              |
-| `sunset-zine`       | 独立 risograph zine。暖桃 + riso 洋红 + Fraunces。**虚线剪贴线 + 偏移桃色阴影**。hero 数字：斜体 Fraunces。粗 riso 纸纹。弹簧 overshoot 动效。                                                                  |
-| `monochrome-print`  | 安静精炼的印刷杂志 —— Monocle / Wallpaper / MIT Press。米白 + 墨黑衬线 + 墨蓝 accent。Source Serif。**只有 1px 实线发丝、4px 精炼圆角**。hero 数字：斜体 tabular figures。**无装饰** —— 极简纯粹。极静节奏（1.7s 揭示）。 |
+| id                   | 性格                                                                                                                                                                                                            |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `paper-press`        | midnight-press 的白天孪生兄弟。暖奶油 + 纸纹（multiply blend）。火热橙。hero 数字：斜体编辑级衬线。慢速电影感节奏。140×100 padding。                                                                              |
+| `warm-keynote`       | 现代 SaaS keynote。奶油 + 棕褐墨 + 青绿 + Inter。**大圆角（32px）glass slab** 配 backdrop blur。**粗黑 font-black hero 数字**。舞台上 40px 暖色网格。弹簧动效。                                                  |
+| `newsroom`           | NYT 报刊。报纸奶油 + 墨黑衬线 + 旗红。Playfair Display + Noto Serif SC。**0 圆角**（报纸不会圆角）。hero 数字：超大斜体显示衬线。安静的印刷节奏。淡纸纹。                                                        |
+| `bauhaus-bold`       | 现代主义宣言。米白 + 墨黑 + 原色蓝。Archivo Black + Inter。**0 圆角 + 4px 实色厚边 + 4px 黑色画框包住舞台 + 偏移实色阴影**。hero 数字：font-weight 900 巨字。利落快速动效。无装饰。                              |
+| `sunset-zine`        | 独立 risograph zine。暖桃 + riso 洋红 + Fraunces。**虚线剪贴线 + 偏移桃色阴影**。hero 数字：斜体 Fraunces。粗 riso 纸纹。弹簧 overshoot 动效。                                                                  |
+| `monochrome-print`   | 安静精炼的印刷杂志 —— Monocle / Wallpaper / MIT Press。米白 + 墨黑衬线 + 墨蓝 accent。Source Serif。**只有 1px 实线发丝、4px 精炼圆角**。hero 数字：斜体 tabular figures。**无装饰** —— 极简纯粹。极静节奏（1.7s 揭示）。 |
+| `vintage-editorial`  | 俏皮编辑奶油底。Fraunces italic + Work Sans + 暖陶 accent。**细线几何叠层（圆 + 线 + 点）**是签名。有性格、会说话，像专栏作家。中速带轻微 overshoot。                                                            |
+| `pastel-dream`       | 友好柔光。柔粉蓝灰底 + 奶油卡 + 鼠尾草绿。Plus Jakarta Sans。**大圆角（20px）+ 右侧多色 pill 色条**是签名。soft springy（520/820ms）。                                                                          |
+| `split-canvas`       | 双拼画布 —— 蜜桃 + 薰衣草 50/50 硬切分。Outfit + 玫红 accent。**屏幕本身就是双色底**，章节自由在哪一侧落内容。playful 中速（480/780ms）。                                                                       |
+| `electric-studio`    | 企业电光蓝。净白底 + 单一电光蓝 + Manrope。**贴底 4px 电蓝条**作为签名，B2B / 路演 / 财报场景的清晰自信。punchy 节奏（420/700ms）。                                                                              |
+| `indigo-porcelain`   | 靛蓝瓷 —— **靛蓝当墨**（不是 accent，是字色本身）+ 瓷白纸。Playfair Display italic + Noto Serif SC + IBM Plex Sans 正文。学术 / 研究气质，像一本当代思想期刊。无装饰 —— 纯粹。慢速（1.55s）。                       |
+| `forest-ink`         | 森林墨 —— **森林绿当墨** + 象牙暖纸。Source Serif 正文 + Playfair Display。旧版《国家地理》感，沉稳、文献感。faint warm grain。慢速（1.65s）。                                                                  |
+| `kraft-paper`        | 牛皮纸 —— **深棕当墨** + 牛皮米。Fraunces + Source Serif + 紫铜 accent。老笔记本 / 老信封感。**粗暖纸纹**是签名。慢速 tactile（1.55s）。                                                                       |
+| `dune`               | 沙丘 —— **炭褐当墨** + 沙底 + 几乎无 accent（muted clay）。Inter display + Source Serif 正文。**无装饰 + 极宽 padding（140×100）**是签名。建筑手册 / 画廊感。最慢节奏（1.75s）。                                |
+| `swiss-ikb`          | 瑞士国际主义。**极细 200 weight Inter / Helvetica** + 净暖白底 + IKB 克莱因蓝 + **1px 发丝网格 (64px)**。`r-card: 0` 直角。Massimo Vignelli / Helvetica Forever 能量。punchy + linear（400/650ms）。           |
+
 
 随时列出可用主题：
 
@@ -203,18 +217,31 @@ CSS"领域 —— 在那里解决，别扩主题契约。
 
 挑一个**最接近**你目标气质的：
 
-| 目标情绪                            | 起点               |
-| ----------------------------------- | ------------------ |
-| 阴郁、电影感、编辑级                | `midnight-press`   |
-| 编辑级 - 浅色                       | `paper-press`      |
-| 现代 keynote / SaaS                 | `warm-keynote`     |
-| 教室 / 解说                         | `chalk-garden`     |
-| 终端 / 黑客 / 赛博                  | `terminal-green`   |
-| 纪录片 / 严肃 / 新闻                | `newsroom`         |
-| 工程 / 蓝图 / 技术                  | `blueprint`        |
-| 现代主义 / 布鲁塔利斯特 / 宣言      | `bauhaus-bold`     |
-| 独立 / 玩味 / zine                  | `sunset-zine`      |
-| 精炼 / 安静 / 印刷                  | `monochrome-print` |
+| 目标情绪                                | 起点                  |
+| --------------------------------------- | --------------------- |
+| 阴郁、电影感、编辑级                    | `midnight-press`      |
+| 编辑级 - 浅色                           | `paper-press`         |
+| 现代 keynote / SaaS                     | `warm-keynote`        |
+| 教室 / 解说                             | `chalk-garden`        |
+| 终端 / 黑客 / 复古 CRT                  | `terminal-green`      |
+| 纪录片 / 严肃 / 新闻                    | `newsroom`            |
+| 工程 / 蓝图 / 技术                      | `blueprint`           |
+| 现代主义 / 布鲁塔利斯特 / 宣言          | `bauhaus-bold`        |
+| 独立 / 玩味 / zine                      | `sunset-zine`         |
+| 精炼 / 安静 / 印刷                      | `monochrome-print`    |
+| 高级感暗底 / 时尚 / 博物馆图录          | `dark-botanical`      |
+| 赛博朋克 / 未来感 / AI / web3           | `neon-cyber`          |
+| 俏皮编辑 / 有声音的博主 / 文化随笔      | `vintage-editorial`   |
+| 柔粉 / 友好 / onboarding / 女性向       | `pastel-dream`        |
+| 双色分屏 / 对照 / 辩论                  | `split-canvas`        |
+| pitch deck / 大字宣言 / 焦点色卡         | `bold-signal`         |
+| B2B / 企业 / 投资人路演                 | `electric-studio`     |
+| 复古朋克 / 创意工作室 / 设计周          | `creative-voltage`    |
+| 学术 / 研究 / 中国当代文化              | `indigo-porcelain`    |
+| 自然 / 可持续 / 户外 / 纪录             | `forest-ink`          |
+| 文学 / 怀旧 / 书评 / 手工艺             | `kraft-paper`         |
+| 建筑 / 艺术展览 / 高端画廊              | `dune`                |
+| 瑞士国际主义 / Helvetica / 信息驱动设计 | `swiss-ikb`           |
 
 ```bash
 cd <path-to-web-video-presentation>/themes

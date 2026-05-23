@@ -68,10 +68,10 @@
 - クリック / キーボード駆動の `(chapter, step)` カーソル、ビジュアルステップごとに 1 つのナレーションビート
 - スクリプト、テーマ、アウトライン、実装モード、オプションの音声に対する厳格なコラボレーションチェックポイント
 - 録画中もステージをクリーンに保つ、ホバー時のみ表示される進捗コントロール
-- `paper-press` から `terminal-green` まで複数のビジュアル言語を持つテーマトークンアーキテクチャ
+- **23 種類のビルトインテーマ**（`midnight-press` から `swiss-ikb` まで）を備えたテーマトークンアーキテクチャ。エディトリアル、ターミナル、エンジニアリング、スイス国際主義など、各テーマが独自のデザインシグネチャを持つ
 - 再利用可能なステージプリミティブと録画ガイダンスを備えた Vite + React + TypeScript プロジェクトのスキャフォールド
 
-リンク: [README](./skills/web-video-presentation/README.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md) · <!-- DOWNLOAD:web-video-presentation:start -->[Download v1.1.5 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-video-presentation-v1.1.5/web-video-presentation-1.1.5.zip)<!-- DOWNLOAD:web-video-presentation:end -->
+リンク: [README](./skills/web-video-presentation/README.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md) · <!-- DOWNLOAD:web-video-presentation:start -->[Download v1.2.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-video-presentation-v1.2.0/web-video-presentation-1.2.0.zip)<!-- DOWNLOAD:web-video-presentation:end -->
 
 ---
 

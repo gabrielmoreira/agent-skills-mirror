@@ -32,7 +32,13 @@ npx hyperframes tts "First sentence. Second sentence." --voice af_nova --output 
 # Measure: seconds ÷ words × total script words = estimated full audio length
 ```
 
-If the estimate puts your video at ±15% of the planned duration, proceed. If it's more than 15% off, recalibrate the script length first.
+If the estimate puts your video at ±15% of the planned duration, proceed. If it's more than 15% off, recalibrate the script length first:
+
+- **Audio TOO SHORT** (more than 15% under planned duration) → add strategic pauses. In `narration.txt`, insert blank lines between paragraphs (≈0.6s each) or `...` between sentences (≈0.4s each). Aim for the pauses to land at storyboard beat boundaries so the silence feels intentional, not dead air.
+- **Audio TOO LONG** (more than 15% over planned duration) → identify the beat in your storyboard with the highest words-per-second density. Cut one supporting sentence from THAT beat's lines — preserve the lead sentence (the one that names the beat's idea). Re-measure with another test clip before committing to full generation.
+- **Audio matches plan but beat boundaries drift** → adjust the storyboard durations to match the actual narration, not the other way around. The audio is the ground truth once narration is generated.
+
+The script formula assumes constant words-per-second, but punctuation, dramatic pauses, and silence cues all stretch real audio. Always trust a measured test clip over the formula.
 
 ## Background music
 

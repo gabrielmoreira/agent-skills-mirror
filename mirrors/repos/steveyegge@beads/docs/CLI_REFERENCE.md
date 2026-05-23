@@ -1305,16 +1305,18 @@ bd show [id...] [--id=<id>...] [--current] [flags]
 **Flags:**
 
 ```
-      --as-of string     Show issue as it existed at a specific commit hash or branch (requires Dolt)
-      --children         Show only the children of this issue
-      --current          Show the currently active issue (in-progress, hooked, or last touched)
-      --id stringArray   Issue ID (use for IDs that look like flags, e.g., --id=gt--xyz)
-      --local-time       Show timestamps in local time instead of UTC
-      --long             Show all available fields (extended metadata, agent identity, gate fields, etc.)
-      --refs             Show issues that reference this issue (reverse lookup)
-      --short            Show compact one-line output per issue
-      --thread           Show full conversation thread (for messages)
-  -w, --watch            Watch for changes and auto-refresh display
+      --as-of string         Show issue as it existed at a specific commit hash or branch (requires Dolt)
+      --children             Show only the children of this issue
+      --current              Show the currently active issue (in-progress, hooked, or last touched)
+      --id stringArray       Issue ID (use for IDs that look like flags, e.g., --id=gt--xyz)
+      --include-comments     Stream full comment bodies in JSON output (--json only; may be slow on issues with many comments)
+      --include-dependents   Stream full dependent issues in JSON output (--json only; may be slow on hub beads)
+      --local-time           Show timestamps in local time instead of UTC
+      --long                 Show all available fields (extended metadata, agent identity, gate fields, etc.)
+      --refs                 Show issues that reference this issue (reverse lookup)
+      --short                Show compact one-line output per issue
+      --thread               Show full conversation thread (for messages)
+  -w, --watch                Watch for changes and auto-refresh display
 ```
 
 ### bd state
@@ -2380,8 +2382,8 @@ bd federation
 
 Import issues from a JSONL file (newline-delimited JSON) into the database.
 
-If no file is specified, imports from .beads/issues.jsonl (the git-tracked
-export). Use "-" to read from stdin. This is the incremental counterpart to
+If no file is specified, imports from the configured import.path under .beads/
+(default: issues.jsonl). Use "-" to read from stdin. This is the incremental counterpart to
 'bd export': new issues are created and existing issues are updated (upsert
 semantics).
 
@@ -2417,7 +2419,7 @@ when present in the JSONL and otherwise filled in by the importer. The
 legacy "wisp" boolean is accepted as an alias for "ephemeral".
 
 EXAMPLES:
-  bd import                        # Import from .beads/issues.jsonl
+  bd import                        # Import from configured import.path
   bd import backup.jsonl           # Import from a specific file
   bd import -i backup.jsonl        # Legacy alias for a specific file
   bd import -                      # Read JSONL from stdin
@@ -2576,6 +2578,7 @@ Configuration is stored per-project in the beads database and is version-control
 
 Common namespaces:
   - export.*          Auto-export settings (stored in config.yaml)
+  - import.*          JSONL import settings (stored in config.yaml)
   - jira.*            Jira integration settings
   - linear.*          Linear integration settings
   - github.*          GitHub integration settings
@@ -2595,6 +2598,14 @@ Auto-Export (config.yaml):
     export.path       Output filename relative to .beads/ (default: issues.jsonl)
     export.interval   Minimum time between exports (default: 60s)
     export.git-add    Auto-stage the export file (default: false)
+
+Auto-Import (config.yaml):
+  Reads .beads/issues.jsonl by default when a JSONL import path is implied.
+  Use a relative filename/path so the import stays within the project .beads/
+  directory and remains portable across machines.
+
+  Keys:
+    import.path       Input filename relative to .beads/ (default: issues.jsonl)
 
 Custom Status States:
   You can define custom status states for multi-step pipelines using the
@@ -2617,6 +2628,7 @@ Suppressing Doctor Warnings:
 Examples:
   bd config set export.auto true                       # Enable auto-export for viewer integrations
   bd config set export.path "beads.jsonl"              # Custom export filename
+  bd config set import.path "beads.jsonl"              # Custom import filename
   bd config set export.git-add true                    # Also stage the export file
   bd config set jira.url "https://company.atlassian.net"
   bd config set jira.project "PROJ"
@@ -3378,7 +3390,7 @@ bd init [flags]
       --discard-remote                    Authorize discarding the configured remote's Dolt history when re-initializing. Requires --destroy-token in non-interactive mode; see 'bd help init-safety'.
       --external                          Server is externally managed (skip server startup); use with --shared-server or --server
       --force                             Deprecated alias for --reinit-local. Bypasses only the LOCAL data-safety guard; does NOT authorize remote divergence (see 'bd help init-safety').
-      --from-jsonl                        Import issues from .beads/issues.jsonl instead of git history
+      --from-jsonl                        Import issues from configured import.path instead of git history
       --non-interactive                   Skip all interactive prompts (auto-detected in CI or non-TTY environments)
   -p, --prefix string                     Issue prefix (default: current directory name)
       --proxied-server                    [EXPERIMENTAL] Use a per-workspace proxied dolt sql-server (proxy + child dolt) rooted at .beads/proxieddb

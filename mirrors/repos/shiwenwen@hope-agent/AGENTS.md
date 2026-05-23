@@ -33,7 +33,7 @@ docker compose --profile with-ollama up -d    # + Ollama 本地 LLM sidecar
 
 ## 提交前检查（强制）
 
-`git push` 前**必须**本地跑以下六条；`pnpm install` 后 [`.husky/pre-push`](.husky/pre-push) 钩子按这个顺序自动跑：
+以下六条是 `git push` 的强制门禁（对应 CI 8 项 status check）；`pnpm install` 后 [`.husky/pre-push`](.husky/pre-push) 钩子会在 push 时按此顺序自动跑——**无需在 push 前手动重复执行**：
 
 ```bash
 cargo fmt --all --check                                                    # CI: rust.yml fmt
@@ -55,7 +55,7 @@ pnpm test                                                                    # C
 - **改代码过程中**：默认只做单点验证——Rust 用 `cargo check -p <crate>`，TS/TSX 用 `pnpm typecheck`；不要主动跑 clippy / cargo test / pnpm test / pnpm lint
 - **想跑全套必须先问**：判断需要跑这四项之一时，先问用户「是否要跑 X？」并说明原因，等回复再跑
 - **长任务收尾例外**：跨多文件多模块 / 完整 plan / 跨 crate 重构这类阶段性收尾时，可主动跑必要项，跑前说一句"改动较大，跑一下 X 收尾"
-- **commit / push 前 / 用户明确要求**：直接按指示跑
+- **push 由钩子兜底**：`git push` 时钩子自动跑全套，**Agent 不要在 push 前手动重复跑一遍**；只有用户明确要求跑某项时才手动跑
 
 ## 分支与发布
 

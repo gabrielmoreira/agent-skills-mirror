@@ -32,6 +32,7 @@ At the start of non-trivial work, list `docs/` and skim anything relevant to the
 | [docs/design.md](docs/design.md)                               | Theme tokens — colors, fonts, spacing, radii, icons                                                                            |
 | [docs/hover.md](docs/hover.md)                                 | Hover — the canonical pattern (plain View + onPointerEnter/Leave, separate inner Pressable) and the three ways agents break it |
 | [docs/unistyles.md](docs/unistyles.md)                         | Unistyles gotchas — `useUnistyles()` is forbidden, alternatives in order                                                       |
+| [docs/floating-panels.md](docs/floating-panels.md)             | Anchored popovers — Portal/Modal escape for Android, lifecycle gates, keyboard-shared-value, status-bar offset, the flash      |
 | [docs/file-icons.md](docs/file-icons.md)                       | Material icon theme integration for the file explorer                                                                          |
 | [docs/providers.md](docs/providers.md)                         | Adding a new agent provider end-to-end                                                                                         |
 | [docs/custom-providers.md](docs/custom-providers.md)           | Custom provider config: Z.AI, Alibaba/Qwen, ACP agents, profiles, custom binaries                                              |

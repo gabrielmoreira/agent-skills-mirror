@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `matlab/agent-skills-playground` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `matlab/agent-skills-playground` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `matlab/agent-skills-playground` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,6 +67,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`demos/mbse-with-agentic-ai/skills/system-composer/SKILL.md`](demos/mbse-with-agentic-ai/skills/system-composer/SKILL.md) |
 | 7 | ✓ | [`skills/matlab-performance-optimizer/SKILL.md`](skills/matlab-performance-optimizer/SKILL.md) |
 | 8 | ✓ | [`skills/matlab-uihtml-app-builder/SKILL.md`](skills/matlab-uihtml-app-builder/SKILL.md) |
+| 9 | ✓ | [`skills/matlab-uihtml-design/assets/base-template-clean.html`](skills/matlab-uihtml-design/assets/base-template-clean.html) |
+| 10 | ✓ | [`skills/matlab-uihtml-design/assets/base-template-cosmic-dark.html`](skills/matlab-uihtml-design/assets/base-template-cosmic-dark.html) |
+| 11 | ✓ | [`skills/matlab-uihtml-design/assets/base-template-dashboard-light.html`](skills/matlab-uihtml-design/assets/base-template-dashboard-light.html) |
+| 12 | ✓ | [`skills/matlab-uihtml-design/assets/base-template-material.html`](skills/matlab-uihtml-design/assets/base-template-material.html) |
+| 13 | ✓ | [`skills/matlab-uihtml-design/assets/base-template-midnight-gradient.html`](skills/matlab-uihtml-design/assets/base-template-midnight-gradient.html) |
+| 14 | ✓ | [`skills/matlab-uihtml-design/assets/base-template-minimal-mono.html`](skills/matlab-uihtml-design/assets/base-template-minimal-mono.html) |
+| 15 | ✓ | [`skills/matlab-uihtml-design/assets/base-template-neumorphic-dark.html`](skills/matlab-uihtml-design/assets/base-template-neumorphic-dark.html) |
+| 16 | ✓ | [`skills/matlab-uihtml-design/assets/base-template-warm-dark.html`](skills/matlab-uihtml-design/assets/base-template-warm-dark.html) |
+| 17 | ✓ | [`skills/matlab-uihtml-design/assets/style-gallery.html`](skills/matlab-uihtml-design/assets/style-gallery.html) |
+| 18 | ✓ | [`skills/matlab-uihtml-design/references/design-styles.md`](skills/matlab-uihtml-design/references/design-styles.md) |
+| 19 | ✓ | [`skills/matlab-uihtml-design/references/styles/clean.md`](skills/matlab-uihtml-design/references/styles/clean.md) |
+| 20 | ✓ | [`skills/matlab-uihtml-design/references/styles/cosmic-dark.md`](skills/matlab-uihtml-design/references/styles/cosmic-dark.md) |
+| 21 | ✓ | [`skills/matlab-uihtml-design/references/styles/dashboard-light.md`](skills/matlab-uihtml-design/references/styles/dashboard-light.md) |
+| 22 | ✓ | [`skills/matlab-uihtml-design/references/styles/material.md`](skills/matlab-uihtml-design/references/styles/material.md) |
+| 23 | ✓ | [`skills/matlab-uihtml-design/references/styles/midnight-gradient.md`](skills/matlab-uihtml-design/references/styles/midnight-gradient.md) |
+| 24 | ✓ | [`skills/matlab-uihtml-design/references/styles/minimal-mono.md`](skills/matlab-uihtml-design/references/styles/minimal-mono.md) |
+| 25 | ✓ | [`skills/matlab-uihtml-design/references/styles/neumorphic-dark.md`](skills/matlab-uihtml-design/references/styles/neumorphic-dark.md) |
+| 26 | ✓ | [`skills/matlab-uihtml-design/references/styles/warm-dark.md`](skills/matlab-uihtml-design/references/styles/warm-dark.md) |
+| 27 | ✓ | [`skills/matlab-uihtml-design/SKILL.md`](skills/matlab-uihtml-design/SKILL.md) |
 
 ---
 

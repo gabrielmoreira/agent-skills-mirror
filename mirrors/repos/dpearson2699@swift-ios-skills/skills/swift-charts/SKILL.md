@@ -324,7 +324,7 @@ BarPlot(data, x: .value("X", \.x), y: .value("Y", \.y))
 
 ## Common Mistakes
 
-### 1. Using ObservableObject instead of @Observable
+### 1. Using ObservableObject instead of `@Observable`
 
 ```swift
 // WRONG

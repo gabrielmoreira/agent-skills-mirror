@@ -576,7 +576,7 @@ Full editor in packages/studio/:
 - No `setTimeout` / `setInterval` in timeline construction
 - No `requestAnimationFrame` (timeline-driven; engine seeks per frame)
 - No `repeat: -1` (calculate exact repeats: `Math.ceil(duration / cycleDuration) - 1`)
-- No `tl.call(fn)` / `tl.add(function)` / `onComplete`/`onStart`/`onUpdate`/`onRepeat` callbacks (engine doesn't fire them)
+- No `onComplete`/`onStart`/`onRepeat` callbacks (engine doesn't fire them). **Exception:** `onUpdate` and `tl.call()` ARE supported — they're required for canvas/WebGL rendering, character-by-character typing, and counter patterns. See §10 (Canvas 2D procedural art) for the documented pattern.
 - No `gsap.set` on clips from later scenes (use `tl.set(selector, vars, position)`)
 - Synchronous timeline construction (no async)
 - Master clock can clamp at composition end

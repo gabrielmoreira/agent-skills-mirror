@@ -51,7 +51,7 @@ Mirror of `Stirling-Tools/Stirling-PDF` — 26 default patterns, 1 followed patt
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `frontend/DeveloperGuide.md`
+- `frontend/editor/DeveloperGuide.md`
 
 ## File Index
 
@@ -61,7 +61,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | → | [`frontend/DeveloperGuide.md`](frontend/DeveloperGuide.md) |
+| 3 | → | [`frontend/editor/DeveloperGuide.md`](frontend/editor/DeveloperGuide.md) |
 
 ---
 

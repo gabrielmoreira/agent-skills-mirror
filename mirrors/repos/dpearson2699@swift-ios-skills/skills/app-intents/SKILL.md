@@ -12,7 +12,7 @@ Shortcuts, Spotlight, widgets, Control Center, and Apple Intelligence.
 
 - [Triage Workflow](#triage-workflow)
 - [AppIntent Protocol](#appintent-protocol)
-- [@Parameter](#parameter)
+- [`@Parameter`](#parameter)
 - [AppEntity](#appentity)
 - [EntityQuery (4 Variants)](#entityquery-4-variants)
 - [AppEnum](#appenum)
@@ -91,7 +91,7 @@ struct OrderSoupIntent: AppIntent {
 Optional members: `description` (`IntentDescription`), `openAppWhenRun` (`Bool`),
 `isDiscoverable` (`Bool`), `authenticationPolicy` (`IntentAuthenticationPolicy`).
 
-## @Parameter
+## `@Parameter`
 
 Declare each user-facing input with `@Parameter`. Optional parameters are not
 required; non-optional parameters with a `default` are pre-filled.
@@ -446,7 +446,7 @@ struct ProductValueQuery: IntentValueQuery {
 2. **Missing `\(.applicationName)` in phrases.** Every `AppShortcut` phrase
    MUST include the application name token. Siri uses it for disambiguation.
 
-3. **Non-optional @Parameter without default.** The system cannot preview or
+3. **Non-optional `@Parameter` without default.** The system cannot preview or
    pre-fill such parameters. Make non-optional parameters have a `default`, or
    mark them optional.
 
@@ -486,4 +486,4 @@ struct ProductValueQuery: IntentValueQuery {
 
 ## References
 
-- See [references/appintents-advanced.md](references/appintents-advanced.md) for @Parameter variants, EntityPropertyQuery, assistant schemas, focus filters, SiriKit migration, error handling, confirmation flows, authentication, URL-representable types, and Spotlight indexing details.
+- See [references/appintents-advanced.md](references/appintents-advanced.md) for `@Parameter` variants, EntityPropertyQuery, assistant schemas, focus filters, SiriKit migration, error handling, confirmation flows, authentication, URL-representable types, and Spotlight indexing details.

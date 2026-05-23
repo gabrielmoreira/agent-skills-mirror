@@ -1,6 +1,6 @@
 ---
 name: unity-skills
-description: "Unity Editor automation via REST API — create scripts, analyze scenes, manage assets, control editor, and orchestrate workflows. Triggers: Unity, Unity Skills, in Unity, automate Unity, editor automation, create script, scene summary, build scene, Unity自动化, Unity编辑器, Unity技能, 操作Unity，在Unity中."
+description: "Unity Editor automation via REST API — create scripts, analyze scenes, manage assets, control editor, orchestrate workflows, run batch jobs, and route by Unity version. Triggers: Unity, Unity Skills, in Unity, automate Unity, Unity editor automation, create Unity script, scene summary, analyze Unity scene, Unity GameObject, Unity prefab, Unity asset, Unity workflow, Unity batch, grant Unity skill, Unity allowlist, Unity skill schema, multi-instance Unity, set Unity version, Unity自动化, Unity编辑器, Unity技能, 操作Unity, 在Unity中, Unity工作流, Unity批处理, Unity授权, Unity白名单, Unity多实例, Unity实例切换, Unity场景分析."
 ---
 
 # Unity Skills
@@ -16,7 +16,7 @@ For exact skill names, parameters, defaults, and returns, query schema first:
 
 Use module `SKILL.md` files for routing guidance, guardrails, and minimal examples, not as the canonical source of exact signatures.
 
-Current snapshot: `714` REST skills, `51` functional source modules, `68` module documentation directories (`49` REST/module docs + `19` advisory docs), Unity `2022.3+`, default timeout `15 minutes`.
+Current snapshot: `750` REST skills, `51` functional source modules, `68` module documentation directories (`49` REST/module docs + `19` advisory docs), Unity `2022.3+`, default timeout `15 minutes`.
 
 Python helper: `unity-skills/scripts/unity_skills.py`
 
@@ -71,6 +71,7 @@ The Allowlist is a **user-managed** permanent whitelist of skill names, configur
 
 - Allowlisted skills execute directly under any mode — the server skips the Approval/MODE_RESTRICTED gate
 - **An Allowlist entry overrides MODE_FORBIDDEN** for that skill (covers Delete / MayEnterPlayMode / MayTriggerReload / `RiskLevel="high"`). This is intentional: the user has explicitly opted in
+- **Allowlist does NOT bypass the high-risk ConfirmationToken gate.** When `RequireConfirmation` is enabled (Settings drawer → Runtime → Require Confirmation), high-risk skills still require the `_confirm` token two-step handshake even if allowlisted — Allowlist only covers the mode/approval channel, not the per-call safety confirmation
 - The list is **opaque to the AI**: allowlisted skills look like normal successful calls, never returning `MODE_RESTRICTED`
 - **The AI should not call `/permission/allowlist/add` on its own initiative.** Only call it when the user has explicitly authorized a session-scoped bulk add (e.g. "把这几个 skill 加白名单方便我后面批量调"); otherwise direct the user to add entries through the panel
 - Allowlist endpoints: `GET /permission/allowlist` / `POST /permission/allowlist/add` / `POST /permission/allowlist/remove` (body `{skill}` or `{all: true}`)
@@ -97,25 +98,25 @@ Mode authorization (persistent, per-skill) and `ConfirmationToken` (single-shot,
 
 ### Skill Mode Annotation
 
-The REST surface (~`714` skills) is partitioned by `[UnitySkill]` `Mode` and runtime metadata. Use schema endpoints for the canonical list:
+The REST surface (~`750` skills) is partitioned by `[UnitySkill]` `Mode` and runtime metadata. Use schema endpoints for the canonical list:
 
 | Annotation | Count | Source |
 |---|---|---|
-| `SkillMode.SemiAuto` | ~`121` | Manually annotated. Covers categories: `script` / `perception` / `scene` / `editor` / `asset` / `workflow` / `debug` / `console`, plus every read-only query skill |
-| Auto-detected NeverInSemi | ~`40+` | `IsForbiddenInSemi()` derives from `Operation.Delete`, `MayEnterPlayMode`, `MayTriggerReload`, `RiskLevel="high"`, plus explicit fallback list (`scene_clear`, `scene_new`, `batch_apply`, select `cleaner_*`) |
-| `SkillMode.FullAuto` (default) | remainder | Unannotated skills. Approval requires grant; Auto / Bypass execute directly |
+| `SkillMode.SemiAuto` | ~`270` | Manually annotated. Covers read-only / query / analyze skills across `script` / `perception` / `scene` / `editor` / `asset` / `workflow` / `debug` / `console` and most modules' info / list / get / find skills |
+| Auto-detected NeverInSemi | ~`40+` | `IsForbiddenInSemi()` derives from `Operation.Delete`, `MayEnterPlayMode`, `MayTriggerReload`, `RiskLevel="high"`, plus an explicit fallback list (`scene_clear`, `scene_new`, `batch_apply`) |
+| `SkillMode.FullAuto` (default) | remainder | Unannotated skills (write / mutate by default). Approval requires grant; Auto / Bypass execute directly |
 
-SemiAuto category overview (use `GET /skills?category=<Category>` for the exact callable list):
+SemiAuto category overview (use `GET /skills?category=<Category>` for the exact callable list; only SemiAuto skills are listed below — write skills in the same modules remain FullAuto):
 
-| Category | Modules | Representative Skills |
-|----------|---------|----------------------|
-| Script | script | script_create, script_read, script_replace, script_append |
-| Perception | perception | scene_analyze, scene_health_check, project_stack_detect |
-| Scene Mgmt | scene | scene_save, scene_load, scene_context, scene_find_objects |
-| Editor | editor | editor_get_context, editor_undo, editor_redo |
-| Asset Basic | asset | asset_refresh, asset_find, asset_get_info |
-| Workflow | workflow | workflow_task_start/end, workflow_undo_task; use workflow/batch helpers for planning, preview, jobs, and rollback, not free-form scene construction |
-| Debug | debug, console | debug_check_compilation, console_get_logs |
+| Category | Modules | Representative SemiAuto Skills |
+|----------|---------|--------------------------------|
+| Script | script | script_read, script_list, script_get_info, script_find_in_file, script_get_compile_feedback |
+| Perception | perception | scene_analyze, scene_context, scene_health_check, scene_find_hotspots, project_stack_detect |
+| Scene Mgmt | scene | scene_get_info, scene_get_hierarchy, scene_get_loaded, scene_find_objects |
+| Editor | editor | editor_get_context, editor_get_state, editor_get_selection, editor_get_tags, editor_get_layers |
+| Asset Basic | asset | asset_find, asset_get_info |
+| Workflow | workflow | workflow_list, workflow_session_list, workflow_session_status, workflow_plan; use workflow/batch helpers for planning, preview, jobs, and rollback, not free-form scene construction |
+| Debug | debug, console | debug_check_compilation, debug_get_errors, debug_get_system_info, debug_get_memory_info, console_get_logs |
 | Advisory | 19 modules | Design-only guidance modules (no REST skills) |
 
 ## Core Rules

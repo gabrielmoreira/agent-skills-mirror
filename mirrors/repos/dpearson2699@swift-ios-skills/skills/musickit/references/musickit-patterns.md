@@ -13,7 +13,7 @@ Overflow reference for the `musickit` skill. Contains advanced patterns that exc
 
 ## MusicKit SwiftUI Integration
 
-### Music Player Manager with @Observable
+### Music Player Manager with `@Observable`
 
 ```swift
 import MusicKit

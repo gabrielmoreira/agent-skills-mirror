@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getpaseo/paseo` — 26 default patterns, 20 followed patterns, 36 file(s) materialized.
+Mirror of `getpaseo/paseo` — 26 default patterns, 21 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 20 followed patterns, 36 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 20 |
-| Files         | 36 |
+| Followed pats | 21 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,6 +60,7 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 20 followed patterns, 36 fil
 - `docs/design.md`
 - `docs/hover.md`
 - `docs/unistyles.md`
+- `docs/floating-panels.md`
 - `docs/file-icons.md`
 - `docs/providers.md`
 - `docs/custom-providers.md`
@@ -104,16 +105,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | → | [`docs/design.md`](docs/design.md) |
 | 25 | → | [`docs/development.md`](docs/development.md) |
 | 26 | → | [`docs/file-icons.md`](docs/file-icons.md) |
-| 27 | → | [`docs/glossary.md`](docs/glossary.md) |
-| 28 | → | [`docs/hover.md`](docs/hover.md) |
-| 29 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
-| 30 | → | [`docs/product.md`](docs/product.md) |
-| 31 | → | [`docs/providers.md`](docs/providers.md) |
-| 32 | → | [`docs/release.md`](docs/release.md) |
-| 33 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
-| 34 | → | [`docs/testing.md`](docs/testing.md) |
-| 35 | → | [`docs/unistyles.md`](docs/unistyles.md) |
-| 36 | → | [`SECURITY.md`](SECURITY.md) |
+| 27 | → | [`docs/floating-panels.md`](docs/floating-panels.md) |
+| 28 | → | [`docs/glossary.md`](docs/glossary.md) |
+| 29 | → | [`docs/hover.md`](docs/hover.md) |
+| 30 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
+| 31 | → | [`docs/product.md`](docs/product.md) |
+| 32 | → | [`docs/providers.md`](docs/providers.md) |
+| 33 | → | [`docs/release.md`](docs/release.md) |
+| 34 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
+| 35 | → | [`docs/testing.md`](docs/testing.md) |
+| 36 | → | [`docs/unistyles.md`](docs/unistyles.md) |
+| 37 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

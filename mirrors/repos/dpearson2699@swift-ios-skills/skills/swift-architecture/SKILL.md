@@ -11,7 +11,7 @@ built with Swift 6.3 and SwiftUI or UIKit.
 ## Contents
 
 - [Architecture Selection](#architecture-selection)
-- [MV Pattern (Model-View with @Observable)](#mv-pattern)
+- [MV Pattern (Model-View with `@Observable`)](#mv-pattern)
 - [MVVM](#mvvm)
 - [MVI (Model-View-Intent)](#mvi)
 - [TCA (The Composable Architecture)](#tca)
@@ -51,7 +51,7 @@ demands it.
 The simplest SwiftUI architecture. The view observes `@Observable` models
 directly. No intermediate view model layer.
 
-Docs: [@Observable](https://sosumi.ai/documentation/observation/observable())
+Docs: [`@Observable`](https://sosumi.ai/documentation/observation/observable())
 
 ```swift
 import Observation
@@ -410,7 +410,7 @@ integration or shared navigation logic across platforms.
 
 ## Migration Between Patterns
 
-### ObservableObject → @Observable
+### ObservableObject → `@Observable`
 
 ```swift
 // Before (iOS 16)

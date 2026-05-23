@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `multica-ai/multica` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `multica-ai/multica` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `multica-ai/multica` — 26 default patterns, 0 followed patterns, 3 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,7 +61,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/web-design-guidelines/SKILL.md`](.agents/skills/web-design-guidelines/SKILL.md) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

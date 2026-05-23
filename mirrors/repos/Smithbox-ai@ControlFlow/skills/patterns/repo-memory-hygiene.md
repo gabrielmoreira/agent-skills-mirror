@@ -165,6 +165,21 @@ Confirm all five required fields are present and complete before calling `create
 
 Incomplete entries must not be created. If any field cannot be completed with direct evidence, **DO NOT WRITE**.
 
+### Step 5: Check for skill-proposal candidates
+
+After completing Steps 1–4 for repo-memory candidates, run the Skill-Proposal Candidate Criteria from `skills/patterns/memory-promotion-candidates.md` on any pattern that:
+
+- Passed Step 1 (valid taxonomy type, not ephemeral).
+- Passed Step 2 (cross-plan applicable).
+- Has confidence ≥ 0.85 per the confidence calculation in that skill.
+- Is NOT already covered by an entry in `skills/index.md`.
+
+For each qualifying candidate:
+
+1. Use `plans/templates/skill-proposal-template.md` to create a proposal file at `plans/artifacts/<task-slug>/skill-proposals/<pattern-slug>.md`.
+2. Do NOT write to `skills/patterns/` directly. The proposal waits for human review.
+3. Log the proposal path in the execution report or phase summary so it is visible to the Orchestrator.
+
 ---
 
 ## Checklist D — Periodic Memory Audit (Diagnostic)

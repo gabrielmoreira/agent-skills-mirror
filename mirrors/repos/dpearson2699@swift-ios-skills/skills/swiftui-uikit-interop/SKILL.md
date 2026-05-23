@@ -298,7 +298,7 @@ When embedding `UIHostingController` as a child, pin its view with constraints. 
 
 ## State Synchronization Patterns
 
-### @Binding: Two-Way Sync (SwiftUI <-> UIKit)
+### `@Binding`: Two-Way Sync (SwiftUI <-> UIKit)
 
 Use `@Binding` when both sides read and write the same value. The coordinator writes to `parent.bindingProperty` in delegate callbacks; `updateUIView` reads the binding and pushes it into the UIKit view.
 

@@ -29,10 +29,10 @@ In host mode, page content and screenshots may be blocked by host-content policy
 Screenshots are explicit only; the browser does not automatically load images into model context.
 
 1. Call `browser` with `action: "screenshot"`.
-2. Call `vision_load` with the returned path.
+2. Call `vision_load` with the returned `vision_load.tool_args.paths` value.
 3. Reason from the latest loaded screenshot.
 
-Screenshot args include `quality`, `full_page`, and optional `path`. PNG is used when `path` ends with `.png`; otherwise JPEG is used.
+Screenshot args include `quality`, `full_page`, and optional `path`. Without `path`, the screenshot is an ephemeral ref consumed by `vision_load`; with `path`, PNG is used when `path` ends with `.png`, otherwise JPEG is used.
 
 ## Forms And Files
 

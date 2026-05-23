@@ -13,7 +13,7 @@ Overflow reference for the `contacts-framework` skill. Contains advanced pattern
 
 ## Contacts SwiftUI Integration
 
-### Contact Manager with @Observable
+### Contact Manager with `@Observable`
 
 ```swift
 import Contacts

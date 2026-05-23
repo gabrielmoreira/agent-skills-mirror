@@ -142,8 +142,8 @@ struct TabsView: View {
 }
 ```
 
-@MainActor
-@Observable
+`@MainActor`
+`@Observable`
 final class TabRouter {
   private var routers: [AppTab: RouterPath] = [:]
 

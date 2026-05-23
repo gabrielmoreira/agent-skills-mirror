@@ -290,7 +290,7 @@ struct MyApp: App {
 
 ## Migration from Core Data to SwiftData
 
-### Step 1: Map Core Data Entities to @Model Classes
+### Step 1: Map Core Data Entities to `@Model` Classes
 
 Create a `@Model` class for each Core Data entity. Property names and types
 must align with the `.xcdatamodeld` definition.
@@ -362,8 +362,8 @@ class Tag {
 | URI | URL |
 | Decimal | Decimal |
 | Transformable | Codable struct (composite, iOS 18+) |
-| To-one relationship | Optional reference to @Model |
-| To-many relationship | Array of @Model |
+| To-one relationship | Optional reference to `@Model` |
+| To-many relationship | Array of `@Model` |
 
 ### Step 2: Schema Versioning Considerations
 

@@ -13,7 +13,7 @@ that exceed the main skill file's scope.
 
 ## SwiftUI HomeKit Integration
 
-### HomeKit Store with @Observable
+### HomeKit Store with `@Observable`
 
 ```swift
 import HomeKit

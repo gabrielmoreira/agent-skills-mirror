@@ -10,7 +10,7 @@ On-device language model optimized for Apple Silicon. No API keys, no network, n
 - [Use Cases](#use-cases)
 - [Session Management](#session-management)
 - [Generating Responses](#generating-responses)
-- [Structured Output with @Generable](#structured-output-with-generable)
+- [Structured Output with `@Generable`](#structured-output-with-generable)
 - [Tool Calling](#tool-calling)
 - [Error Handling](#error-handling)
 - [Generation Options](#generation-options)
@@ -154,7 +154,7 @@ for try await snapshot in stream {
 let response = try await stream.collect()
 ```
 
-## Structured Output with @Generable
+## Structured Output with `@Generable`
 
 The `@Generable` macro creates compile-time JSON schemas for type-safe output.
 
@@ -185,7 +185,7 @@ print(recipe.name)
 print(recipe.steps)
 ```
 
-### Supported Types for @Generable Properties
+### Supported Types for `@Generable` Properties
 
 - `String`
 - `Int`, `Double`, `Float`
@@ -195,7 +195,7 @@ print(recipe.steps)
 - Other `@Generable` structs (nested)
 - Enums conforming to `@Generable`
 
-### @Guide Constraints
+### `@Guide` Constraints
 
 ```swift
 @Generable

@@ -5,14 +5,14 @@ A comprehensive mapping of deprecated-to-modern SwiftUI and iOS APIs from iOS 15
 ## Contents
 - NavigationView to NavigationStack
 - NavigationView Sidebar to NavigationSplitView
-- ObservableObject / @Published / @StateObject to @Observable / @State
-- @ObservedObject to let / @Bindable
-- @EnvironmentObject to @Environment
+- ObservableObject / `@Published` / `@StateObject` to `@Observable` / `@State`
+- `@ObservedObject` to let / `@Bindable`
+- `@EnvironmentObject` to `@Environment`
 - foregroundColor to foregroundStyle
 - .onChange single-value to two-value
 - ActionSheet to confirmationDialog
 - Alert (Legacy) to modern .alert
-- AnyView to @ViewBuilder
+- AnyView to `@ViewBuilder`
 - .onAppear + Task to .task
 - presentationMode to dismiss
 - GeometryReader to Layout / containerRelativeFrame
@@ -20,7 +20,7 @@ A comprehensive mapping of deprecated-to-modern SwiftUI and iOS APIs from iOS 15
 - XCTest to Swift Testing
 - EditButton/.onDelete to .swipeActions
 - UIApplication.shared.open to openURL
-- @FetchRequest to @Query (SwiftData)
+- `@FetchRequest` to @Query (SwiftData)
 - some vs any return types
 - .sheet(item:) for sheet presentation
 - Color.resolve(in:) usage
@@ -133,7 +133,7 @@ NavigationSplitView explicitly models two-column and three-column layouts. Colum
 
 ---
 
-## ObservableObject / @Published / @StateObject to @Observable / @State
+## ObservableObject / `@Published` / `@StateObject` to `@Observable` / `@State`
 
 The Observation framework (iOS 17+) replaces Combine-based observation. Classes annotated with `@Observable` track property access automatically -- no `@Published` wrappers needed.
 
@@ -213,7 +213,7 @@ struct SettingsView: View {
 
 ---
 
-## @ObservedObject to let / @Bindable
+## `@ObservedObject` to let / `@Bindable`
 
 ### Before (Superseded)
 
@@ -262,7 +262,7 @@ With `@Observable`, you no longer need `@ObservedObject` to subscribe to changes
 
 ---
 
-## @EnvironmentObject to @Environment
+## `@EnvironmentObject` to `@Environment`
 
 ### Before (Superseded)
 
@@ -482,7 +482,7 @@ The modern alert API accepts a `presenting` parameter to pass data directly into
 
 ---
 
-## AnyView to @ViewBuilder and Concrete Types
+## AnyView to `@ViewBuilder` and Concrete Types
 
 ### Before (Deprecated Pattern)
 
@@ -569,7 +569,7 @@ struct FeedView: View {
 
 ---
 
-## @Environment(\.presentationMode) to @Environment(\.dismiss)
+## `@Environment(\.presentationMode)` to `@Environment(\.dismiss)`
 
 ### Before (Deprecated)
 
@@ -869,7 +869,7 @@ struct ItemList: View {
 
 ---
 
-## UIApplication.shared.open to @Environment(\.openURL)
+## UIApplication.shared.open to `@Environment(\.openURL)`
 
 ### Before (Deprecated Pattern)
 
@@ -911,7 +911,7 @@ openURL(url) { accepted in
 
 ---
 
-## @FetchRequest to #Query (SwiftData)
+## `@FetchRequest` to #Query (SwiftData)
 
 Core Data's `@FetchRequest` is superseded by SwiftData's `@Query` macro when you migrate to SwiftData models.
 

@@ -10,7 +10,7 @@ Advisory module. Every rule is distilled from Cysharp UniTask source at:
 
 Each rule cites a concrete file/line so the reasoning is auditable and the AI does not improvise against stale memory.
 
-> **Mode**: Documentation only — guidance for AI under all three operating modes; no REST skills to gate.
+> **Mode**: Documentation only — no REST skills to gate; load freely under any operating mode (Approval / Auto / Bypass).
 
 ## When to Load This Module
 

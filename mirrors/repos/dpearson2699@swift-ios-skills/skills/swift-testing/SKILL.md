@@ -10,9 +10,9 @@ Swift Testing is the modern testing framework for Swift (Xcode 16+, Swift 6+). P
 ## Contents
 
 - [Basic Tests](#basic-tests)
-- [@Test Traits](#test-traits)
+- [`@Test Traits`](#test-traits)
 - [#expect and #require](#expect-and-require)
-- [@Suite and Test Organization](#suite-and-test-organization)
+- [`@Suite and Test Organization`](#suite-and-test-organization)
 - [Execution Model](#execution-model)
 - [Known Issues](#known-issues)
 - [Additional Patterns](#additional-patterns)
@@ -37,7 +37,7 @@ func updateDisplayName() {
 }
 ```
 
-## @Test Traits
+## `@Test` Traits
 
 ```swift
 @Test("Validates email format")                                    // display name
@@ -81,7 +81,7 @@ let first = try #require(items.first)
 
 **Rule: Use `#require` when subsequent assertions depend on the value. Use `#expect` for independent checks.**
 
-## @Suite and Test Organization
+## `@Suite` and Test Organization
 
 See [references/testing-patterns.md](references/testing-patterns.md) for suite organization, confirmation patterns, known-issue handling, and execution-model details.
 

@@ -1,19 +1,6 @@
 ---
 name: web-design-engineer
-description: |
-  Build high-quality visual Web artifacts using HTML/CSS/JavaScript/React — web pages, landing pages, dashboards, interactive prototypes, HTML slide decks, animated demos, UI mockups, data visualizations, and more.
-  Use this skill whenever the user's request involves a visual, interactive, or front-end deliverable, including:
-  - Creating web pages, landing pages, dashboards, marketing pages
-  - Building interactive prototypes or UI mockups (with device frames)
-  - Building HTML slide decks / presentations
-  - Creating CSS/JS animations or timeline-driven animated demos
-  - Turning design mockups, screenshots, or PRDs into interactive implementations
-  - Data visualization (Chart.js / D3, etc.)
-  - Design system / UI Kit exploration
-  - Reviewing / critiquing existing visual work (when the user asks "review this", "is it good?", "score this design")
-  Even if the user doesn't explicitly say "HTML" or "web page," this skill applies whenever the intent is to produce something visual, interactive, or presentational.
-  Includes a fact-verification step (WebSearch real products before assuming), a brand asset protocol (logo / product imagery / UI screenshots > color hex codes), a Design Direction Advisor fallback for vague requests, and an on-demand 5-dimension Critique mode.
-  Not applicable: pure back-end logic, CLI tools, data-processing scripts, non-visual code tasks, command-line debugging.
+description: Build polished visual web artifacts with HTML/CSS/JavaScript/React: pages, dashboards, prototypes, slide decks, animations, UI mockups, and data visualizations. Use when the user wants a browser-rendered, interactive, or presentational front-end deliverable. Not for back-end, CLI, or non-visual coding tasks.
 ---
 
 # Web Design Engineer

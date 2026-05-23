@@ -380,7 +380,7 @@ let infoTemplate = CPInformationTemplate(
 1. Build and run in Xcode with the iOS simulator.
 2. Choose I/O > External Displays > CarPlay.
 
-Default window: 800x480 at @2x. Enable extra options for navigation apps:
+Default window: 800x480 at `@2x`. Enable extra options for navigation apps:
 
 ```bash
 defaults write com.apple.iphonesimulator CarPlayExtraOptions -bool YES
@@ -390,9 +390,9 @@ defaults write com.apple.iphonesimulator CarPlayExtraOptions -bool YES
 
 | Configuration | Pixels | Scale |
 |---|---|---|
-| Minimum | 748 x 456 | @2x |
-| Portrait | 768 x 1024 | @2x |
-| Standard | 800 x 480 | @2x |
+| Minimum | 748 x 456 | `@2x` |
+| Portrait | 768 x 1024 | `@2x` |
+| Standard | 800 x 480 | `@2x` |
 | High-resolution | 1920 x 720 | @3x |
 
 Simulator cannot test locked-iPhone behavior, Siri, audio coexistence with

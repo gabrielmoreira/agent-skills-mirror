@@ -55,8 +55,8 @@ Look for a plan file:
    ┌──────────┬─────────┐
    │ Agent    │ CLI     │
    ├──────────┼─────────┤
-   │ frontend │ gemini  │
-   │ backend  │ gemini  │
+   │ frontend │ codex   │
+   │ backend  │ codex   │
    │ mobile   │ claude  │
    │ pm       │ claude  │
    └──────────┴─────────┘

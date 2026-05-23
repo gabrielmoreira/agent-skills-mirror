@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.1.1] - 2026-05-23
+
+### 🐛 Fixes
+
+- **Codex-Led AGENTS.md hardcoded gemini** — External model calls in AGENTS.md were hardcoded to `--backend gemini` + `prompts/gemini/`. Now uses `{{FRONTEND_PRIMARY}}`/`{{BACKEND_PRIMARY}}` template variables, replaced at install time via `injectConfigVariables()`. Users who selected antigravity or other models now get correct routing in Codex-Led mode.
+
+### 🔄 Changes
+
+- **Ralph Loop auto-retry** — Critical issues now auto-fix without asking user each round. Only stops at MAX_ROUNDS (3) if Critical persists, or passes through immediately when no Critical found. Reduces human intervention in quality gates.
+- **Artifact Registry** — `task.json` gains `artifacts: []` array. Each deliverable (plan, review, code) registered with type/path/status. Hooks inject artifact summary into breadcrumbs (`workflow-state.js`) and session context (`session-start.js`).
+
+---
+
 ## [3.1.0] - 2026-05-20
 
 ### ✨ New Features

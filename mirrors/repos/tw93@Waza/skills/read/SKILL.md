@@ -1,6 +1,6 @@
 ---
 name: read
-description: "Fetches any URL or PDF as clean Markdown for reading, quoting, citation, or downstream work. Handles paywalls, JS-heavy pages, X/Twitter, and Chinese platforms via proxy cascade. Not for local text files already in the repo."
+description: "Fetches URLs and PDFs as clean Markdown for reading, quoting, citation, and downstream work, including paywalls, JS-heavy pages, X/Twitter, and Chinese platforms. Use when users ask 看这个链接/读一下/抓取网页/read this/check this URL/fetch this page. Not for local text files already in the repo."
 when_to_use: "any URL or PDF to fetch, 看这个链接, 读一下, 看看这个网页, 抓取网页, read this, check this URL, fetch this page"
 dispatch_intent: "Any URL or PDF to fetch, read this, fetch this page"
 ---

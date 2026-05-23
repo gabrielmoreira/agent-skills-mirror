@@ -1,6 +1,6 @@
 ---
 name: unity-skills-index
-description: "Index of Unity Skills functional modules and advisory modules. Browse available skills, check mode requirements, and find the right module. Triggers: module list, skill index, browse skills, find module, 模块列表, 技能索引, 查找模块."
+description: "Index of Unity Skills functional modules and advisory design modules. Browse available skill modules, check operating-mode requirements (Approval/Auto/Bypass), and pick the right module for the task. Triggers: Unity module list, Unity skill index, browse Unity skills, find Unity module, Unity module catalog, Unity skill categories, mode requirements, Unity advisory modules, Unity 模块列表, Unity 技能索引, 浏览 Unity 技能, 查找 Unity 模块, Unity 模块目录, Unity 技能分类, 模式要求, Unity 设计模块."
 ---
 
 # Unity Skills - Module Index
@@ -12,7 +12,13 @@ Module docs. Start with [../SKILL.md](../SKILL.md) for mode switching and schema
 
 ## Modules
 
-> **Mode legend** (v1.9.0+): `SA` ≈ most skills marked `SkillMode.SemiAuto` — usable in Approval mode without grant. `FA` ≈ most skills are `SkillMode.FullAuto` — require grant under Approval. `Mixed` ≈ split between SA and FA. Suffix `*` means the module contains skills auto-forbidden in Approval/Auto (Delete / PlayMode / Reload / high-risk); only Bypass can run those. Labels are guidance; the per-skill `mode` field returned by `GET /skills` is authoritative.
+> **Mode legend** (v1.9.0+, caller-facing — describes what the caller can do, not the C# attribute):
+> - `SA` — module skills mostly run directly in **all three modes** (Approval / Auto / Bypass) without a grant.
+> - `FA` — module skills mostly require **user grant** under Approval (single-shot one-step execution); under Auto / Bypass they run directly with audit only.
+> - `Mixed` — module is split between SA and FA; check per-skill `mode` returned by `GET /skills` before calling.
+> - Suffix `*` — module contains auto-forbidden skills (Delete / Play Mode / Domain Reload / high-risk). These return `MODE_FORBIDDEN` under Approval and Auto; only **Bypass** runs them, **or** the user can permanently allow them via the Allowlist. Never attempt grant for them.
+>
+> Labels are guidance only; the per-skill `mode` field on `GET /skills` is authoritative.
 
 | Module | Mode | Description | Batch Support |
 |--------|:----:|-------------|---------------|
@@ -94,7 +100,7 @@ These modules provide design guidance only.
 
 ## Batch-First Rule
 
-When a task in Auto or Bypass mode (or after grant under Approval) touches `2+` objects, prefer `*_batch` skills over repeated single-item calls.
+When a task touches `2+` objects in Auto / Bypass mode (or after a successful grant under Approval), prefer `*_batch` skills over repeated single-item calls.
 
 ## Skill Naming Convention
 

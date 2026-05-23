@@ -1,17 +1,17 @@
 ---
 name: unity-asset
-description: "Unity asset management. Use when users want to import, move, delete, duplicate, or organize project assets. Triggers: asset, import, export, folder, file, resource, AssetDatabase, Unity资源, 资产, Unity导入."
+description: "Unity asset management. Use when users want to import (external file), delete, move/rename, duplicate, find/search, get info, create folders, refresh AssetDatabase, reimport (single or batch), or read/set asset labels. Triggers: asset, import asset, delete asset, move asset, rename asset, duplicate asset, find asset, search asset, asset info, create folder, refresh assets, reimport, asset labels, AssetDatabase filter, t:Texture2D, l:Label, 资源, 资产, 导入资源, 删除资源, 移动资源, 重命名资源, 复制资源, 查找资源, 资源信息, 创建文件夹, 刷新资源, 重新导入, 资源标签."
 ---
 
 # Unity Asset Skills
 
 > **BATCH-FIRST**: Use `*_batch` skills when operating on 2+ assets.
 
-## Guardrails
+## Operating Mode
 
-**Mode**: SkillMode.SemiAuto (most skills usable in Approval mode)
-
-> Some skills (Delete / PlayMode / Reload / high-risk) are auto-forbidden in Approval/Auto modes — only Bypass can run them.
+- **Approval**（默认）：本模块 Mixed —— `asset_find` / `asset_get_info` / `asset_get_labels` 标 `SkillMode.SemiAuto`，可直接执行；写类 skill (`asset_move` / `asset_move_batch` / `asset_duplicate` / `asset_create_folder` / `asset_refresh` / `asset_reimport*` / `asset_set_labels`) 走默认 `SkillMode.FullAuto`，需 grant。
+- **Auto / Bypass**：FullAuto 直接执行。
+- **含 NeverInSemi 高危 skill**：`asset_import` (标 `RiskLevel = "high"` —— 写入项目)；`asset_delete` / `asset_delete_batch` (Operation.Delete)。这些在 Approval/Auto 下返 `MODE_FORBIDDEN`，仅 Bypass 或 Allowlist 命中可调。
 
 **DO NOT** (common hallucinations):
 - `asset_create` does not exist → use `asset_create_folder` (folders), `material_create` (materials), `script_create` (scripts)
@@ -142,7 +142,6 @@ Find assets by search filter.
 |-----------|------|----------|---------|-------------|
 | `searchFilter` | string | Yes | - | Search query |
 | `limit` | int | No | 50 | Max results to return |
-| `limit` | int | No | 100 | Max results |
 
 **Search Filter Syntax**:
 | Filter | Example | Description |
@@ -152,7 +151,7 @@ Find assets by search filter.
 | `name` | `player` | By name |
 | Combined | `t:Material player` | Multiple filters |
 
-**Returns**: `{success, count, assets: [path]}`
+**Returns**: `{count, totalFound, assets: [{path, name, type}]}`
 
 ### asset_create_folder
 Create a folder in the project.

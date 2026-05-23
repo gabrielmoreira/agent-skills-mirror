@@ -81,12 +81,12 @@ skills/web-video-presentation/
 │   ├── index.html
 │   ├── vite.config.ts
 │   └── src/
-└── themes/
-    ├── paper-press/
-    ├── warm-keynote/
+└── themes/                    # 23 套主题，每套独立设计签名
     ├── midnight-press/
-    ├── blueprint/
-    └── ...
+    ├── warm-keynote/
+    ├── newsroom/
+    ├── bauhaus-bold/
+    └── ...                     # 完整列表见 references/THEMES.md
 ```
 
 ---
@@ -113,20 +113,38 @@ bash skills/web-video-presentation/scripts/scaffold.sh --list-themes
 
 ## 内置主题方向
 
-Skill 内置多套主题，每套都有自己的设计 DNA，不只是换色：
+Skill 内置 **23 套**主题，每套都有独立的设计 DNA —— 不是简单的换色版。下面按底色分两组速览，挑一套接近你目标气质的，或者作为派生新主题的起点。
 
-- `paper-press`：编辑纸张、温暖印刷质感
-- `warm-keynote`：现代 keynote / talk 气质
-- `midnight-press`：深色编辑式演示
-- `blueprint`：技术蓝图 / 规划图纸
-- `chalk-garden`：课堂 / 黑板风格
-- `terminal-green`：磷光终端氛围
-- `bauhaus-bold`：几何、粗黑边、宣言感
-- `sunset-zine`：独立 zine / 拼贴表达
-- `newsroom`：报刊 / 媒体编辑台
-- `monochrome-print`：克制的黑白印刷排版
+### 深色（8 套）
 
-完整 token 契约和主题说明见 [THEMES.md](./references/THEMES.md)。
+- `midnight-press` 暗色印刷 —— 电影感编辑、暖暗底 + 火热橙
+- `chalk-garden` 粉笔花园 —— 深石板黑板 + 手写体 + 粉笔黄
+- `terminal-green` 终端绿 —— 80 年代磷光终端 + CRT 扫描线
+- `blueprint` 工程蓝图 —— 深海军 + 制图青 + 60px 网格
+- `dark-botanical` 暗夜植物 —— 暖陶 / 玫粉 / 鎏金叠层，时尚刊物封面
+- `neon-cyber` 霓虹赛博 —— 电光青 + 玫红双霓虹，未来派
+- `bold-signal` 焦点信号 —— 大橙色焦点色卡 + Archivo Black，pitch deck
+- `creative-voltage` 电压创意 —— 饱和电光蓝 + 霓黄 + halftone
+
+### 浅色（15 套）
+
+- `paper-press` 亮色印刷 —— 暖奶油纸 + 火热橙
+- `warm-keynote` 暖色 Keynote —— 大圆角 glass slab + 青绿 + 40px 网格
+- `newsroom` 报社 —— NYT 大报、奶油 + 墨黑 + 旗红
+- `bauhaus-bold` 包豪斯 —— 0 圆角 + 4px 厚边 + 偏移实色阴影
+- `sunset-zine` 日落 Zine —— 暖桃 + 玫红 + Fraunces + 虚线剪贴
+- `monochrome-print` 黑白印刷 —— 安静精炼，Monocle / Wallpaper 气质
+- `vintage-editorial` 复古编辑 —— 俏皮 Fraunces + 几何叠层（圆 / 线 / 点）
+- `pastel-dream` 柔光梦 —— 柔粉蓝灰 + 鼠尾草绿 + 右侧 pill 色条
+- `split-canvas` 双拼画布 —— 蜜桃 + 薰衣草 50/50 双底色
+- `electric-studio` 电光企业 —— 净白 + 电光蓝 + 贴底 4px 蓝条
+- `indigo-porcelain` 靛蓝瓷 —— 靛蓝当墨（不是 accent，是字色本身）+ 瓷白
+- `forest-ink` 森林墨 —— 森林绿当墨 + 象牙，旧版国家地理感
+- `kraft-paper` 牛皮纸 —— 深棕当墨 + 牛皮米 + 紫铜 accent
+- `dune` 沙丘 —— 炭褐 + 沙底，几乎无 accent，建筑画廊感
+- `swiss-ikb` 瑞士克莱因蓝 —— 极细 200 weight + IKB + 1px 发丝网格
+
+完整 token 契约、每套的设计签名、以及怎么基于现有主题派生新主题（包括 Swiss 黄 / 绿 / 橙变体），见 [THEMES.md](./references/THEMES.md)。
 
 ---
 

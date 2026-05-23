@@ -1,17 +1,17 @@
 ---
 name: unity-component
-description: "GameObject component management. Use when users want to add, remove, or configure components like Rigidbody, Collider, AudioSource. Triggers: component, add component, rigidbody, collider, audio source, script, 组件, 添加组件, 刚体, 碰撞体."
+description: "GameObject component management. Use when users want to add, remove, list, copy, enable/disable components, or read/set component properties (Rigidbody, Collider, AudioSource, custom scripts). Triggers: component, add component, remove component, list components, set property, get properties, copy component, enable, disable, rigidbody, collider, audio source, script, MeshRenderer, propertyName, componentType, 组件, 添加组件, 移除组件, 列出组件, 设置属性, 读取属性, 复制组件, 启用, 禁用, 刚体, 碰撞体, 音源, 脚本组件."
 ---
 
 # Unity Component Skills
 
 > **BATCH-FIRST**: Use `*_batch` skills when operating on 2+ objects to reduce API calls from N to 1.
 
-## Guardrails
+## Operating Mode
 
-**Mode**: Mixed — query skills marked SkillMode.SemiAuto; mutators are SkillMode.FullAuto (need grant under Approval)
-
-> Some skills (Delete / PlayMode / Reload / high-risk) are auto-forbidden in Approval/Auto modes — only Bypass can run them.
+- **Approval**（默认）：本模块 Mixed —— `component_list` / `component_get_properties` 标 `SkillMode.SemiAuto`，可直接执行；写类 skill (`component_add` / `component_set_property` / `component_set_enabled` / `component_copy` 等) 标 `SkillMode.FullAuto`，需 grant 单次执行返结果。
+- **Auto / Bypass**：FullAuto 直接执行。
+- **含 NeverInSemi 高危 skill**：`component_remove` / `component_remove_batch`（Operation.Delete）。这些在 Approval/Auto 下返 `MODE_FORBIDDEN`，仅 Bypass 或 Allowlist 命中可调。
 
 **DO NOT** (common hallucinations):
 - `component_create` / `component_get` do not exist → use `component_add` (add) and `component_get_properties` (read)
@@ -56,7 +56,7 @@ Add a component to a GameObject.
 
 *At least one identifier required
 
-**Returns**: `{success, gameObject, componentType, added}`
+**Returns**: `{success, gameObject, instanceId, component, fullTypeName}` (returns `{warning, gameObject, instanceId}` instead if a single-instance component already exists)
 
 ### component_remove
 Remove a component from a GameObject.
@@ -67,7 +67,7 @@ Remove a component from a GameObject.
 | `instanceId` | int | No* | Instance ID |
 | `componentType` | string | Yes | Component type to remove |
 
-**Returns**: `{success, gameObject, componentType, removed}`
+**Returns**: `{success, gameObject, removed}` (`removed` is the requested `componentType` string)
 
 ### component_list
 List all components on a GameObject.
@@ -77,7 +77,7 @@ List all components on a GameObject.
 | `name` | string | No* | GameObject name |
 | `instanceId` | int | No* | Instance ID |
 
-**Returns**: `{success, gameObject, instanceId, components: [string]}`
+**Returns**: `{gameObject, instanceId, path, componentCount, components: [{type, fullType, enabled, keyProperties?}]}` (`keyProperties` only present when `includeProperties=true`)
 
 ### component_set_property
 Set a component property value.
@@ -114,7 +114,7 @@ call_skill("component_set_property", name="Obj", componentType="Rigidbody", prop
            value="Interpolate")
 ```
 
-**Returns**: `{success, gameObject, componentType, property, oldValue, newValue}`
+**Returns**: `{success, gameObject, component, property, valueSet, valueType}` (`valueSet` is the string form of the actual value applied; `valueType` is the resolved target type name)
 
 ### component_get_properties
 Get all properties of a component.
@@ -125,7 +125,7 @@ Get all properties of a component.
 | `instanceId` | int | No* | Instance ID |
 | `componentType` | string | Yes | Component type |
 
-**Returns**: `{success, gameObject, componentType, properties: {name: value}}`
+**Returns**: `{gameObject, component, fullTypeName, properties: [{name, type, fullType, value, canWrite}], fields: [{name, type, fullType, value, isSerializable}]}`
 
 ---
 

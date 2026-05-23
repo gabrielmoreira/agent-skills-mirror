@@ -68,10 +68,10 @@
 - 点击 / 键盘驱动 `(chapter, step)` 游标，一个口播节拍对应一个视觉 step
 - 在稿子、主题、outline、开发模式和可选音频合成前设置硬 checkpoint
 - 悬浮才出现的进度控制，录屏时画面保持干净
-- 基于主题 token 的视觉架构，内置从 `paper-press` 到 `terminal-green` 的多种设计语言
+- 基于主题 token 的视觉架构，内置 **23 套主题**，每套独立设计签名，覆盖编辑、终端、工程、瑞士国际主义等多种风格
 - 脚手架产出 Vite + React + TypeScript 项目，并附带舞台原语与录屏指南
 
-链接：[README](./skills/web-video-presentation/README.zh-CN.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md) · <!-- DOWNLOAD:web-video-presentation:start -->[下载 v1.1.5 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-video-presentation-v1.1.5/web-video-presentation-1.1.5.zip)<!-- DOWNLOAD:web-video-presentation:end -->
+链接：[README](./skills/web-video-presentation/README.zh-CN.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md) · <!-- DOWNLOAD:web-video-presentation:start -->[下载 v1.2.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-video-presentation-v1.2.0/web-video-presentation-1.2.0.zip)<!-- DOWNLOAD:web-video-presentation:end -->
 
 ---
 

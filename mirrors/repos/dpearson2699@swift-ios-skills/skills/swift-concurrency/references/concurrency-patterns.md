@@ -8,7 +8,7 @@ code stays single-threaded by default until you choose to introduce concurrency.
 - [Core Problem Solved](#core-problem-solved)
 - [SE-0466: Default MainActor Isolation](#se-0466-default-mainactor-isolation)
 - [SE-0461: nonisolated(nonsending)](#se-0461-nonisolatednonsending)
-- [@concurrent Attribute](#concurrent-attribute)
+- [`@concurrent Attribute`](#concurrent-attribute)
 - [SE-0472: Task.immediate](#se-0472-taskimmediate)
 - [Isolated Conformances](#isolated-conformances)
 - [SE-0481: weak let (Proposed)](#se-0481-weak-let-proposed--swift-62)
@@ -101,7 +101,7 @@ the actor, eliminating data races without annotation.
 
 To explicitly opt into background execution, use `@concurrent`.
 
-## @concurrent Attribute
+## `@concurrent` Attribute
 
 Ensures a function always runs on the concurrent thread pool, freeing the
 calling actor for other work.

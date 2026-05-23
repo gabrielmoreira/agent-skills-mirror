@@ -53,3 +53,30 @@ Apply the canonical Anti-Rationalization Table in `skills/patterns/llm-behavior-
 - If a temporary fallback is needed, make it explicit, bounded, and observable through logs, tests, or a follow-up task.
 - Preserve failing evidence in the execution report when verification cannot pass, including the command and the smallest known reproduction.
 - Never declare a bug fixed until the targeted guard and the relevant broader suite both pass or the remaining gap is explicitly classified.
+
+## Diagnosis Packet Template
+
+When Orchestrator requests a diagnosis packet before a fixable retry, produce the following structured block. All fields except `stack_trace_excerpt` are required:
+
+| Field | Required | Content |
+| ----- | -------- | ------- |
+| `reproduction_steps` | Yes | Minimal command, fixture, or sequence that triggers the failure on demand. |
+| `root_cause_hypothesis` | Yes | One sentence naming the underlying cause — not the visible symptom. |
+| `affected_component` | Yes | The smallest file, schema, rule, or module that must change to fix the root cause. |
+| `stack_trace_excerpt` | No | Key lines from error output, logs, or test failure that confirm the hypothesis. |
+
+### Stack-Trace-First Rule
+
+Capture the full stack trace or error output before attempting any fix. A trace captured after a partial fix may hide the original cause. If the trace is unavailable, document why and provide the closest available evidence (last known good state, diff, log excerpt).
+
+### Blame/Bisect Gate
+
+Before writing a fix, identify which recent change introduced the regression:
+
+1. Scan the git diff or the current edit batch for the commit or file that changed the failing contract.
+2. If the regression is traced to your own current edit batch, prefer reverting the specific line rather than adding a compensating patch.
+3. If the regression pre-dates the current batch, document the offending change in `root_cause_hypothesis`.
+
+### Prove-It Test
+
+Do not close a fixable retry without a passing test or schema fixture that would have caught the original failure. If the failure is a schema validation error, add an `expected-fail` fixture. If the failure is a test failure, ensure the relevant test passes after the fix and that the failing assertion is not merely deleted or suppressed.

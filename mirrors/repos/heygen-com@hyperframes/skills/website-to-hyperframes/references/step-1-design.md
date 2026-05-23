@@ -33,7 +33,7 @@ Sub-agents try to use the fonts you list. The manifest tells you exactly what's 
 
 ---
 
-## The 6 sections to write
+## The 5 sections to write
 
 ### `## 1. Visual Theme (one paragraph)`
 
@@ -256,32 +256,7 @@ Generous whitespace as confidence. Section gaps are always `60–100px`. Content
 
 ---
 
-### `## 5. Depth & Elevation`
-
-Document the brand's shadow philosophy and the actual shadow values used.
-
-#### Shadow table
-
-```markdown
-| Level        | Value                            | Used for                                        |
-| ------------ | -------------------------------- | ----------------------------------------------- |
-| Flat (0)     | none                             | Default — most surfaces, inputs, body text      |
-| Raised (1)   | `0 2px 8px rgba(0, 0, 0, 0.1)`   | Cards on white, hovered surfaces, floating CTAs |
-| Elevated (2) | `0 4px 12px rgba(0, 0, 0, 0.15)` | Dropdown menus, popovers                        |
-| Floating (3) | `0 8px 24px rgba(0, 0, 0, 0.2)`  | Modals, important overlays                      |
-```
-
-#### Shadow philosophy (one paragraph)
-
-How does this brand use shadows? Sparingly with soft falloff, or dramatically with hard edges? Are they present by default or only on hover? On dark backgrounds, do shadows invert to glow effects?
-
-```markdown
-Shadows are minimal — used only to signal interactivity (hover) or layering (modals). All shadows are soft-edged (blur ≥ 8px). On dark backgrounds, shadows convert to subtle glow (`0 0 24px rgba(255, 99, 99, 0.15)` using the brand's accent color). Hard shadows do not exist in this system.
-```
-
----
-
-### `## 6. Iteration Guide` (the load-bearing section)
+### `## 5. Iteration Guide` (the load-bearing section)
 
 5–10 numbered rules that encode the most important brand decisions. Each rule is a **single actionable sentence stating what to do, with the specific values from this site.** These are the "if in doubt, do this" rules sub-agents consult while composing beats.
 

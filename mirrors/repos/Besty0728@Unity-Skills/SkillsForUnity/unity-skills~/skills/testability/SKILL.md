@@ -24,7 +24,7 @@ Use this skill when deciding what logic should remain in Unity-facing classes an
 
 ## Guardrails
 
-**Mode**: Documentation only — guidance for AI under all three operating modes; no REST skills to gate.
+> **Mode**: Documentation only — no REST skills to gate; load freely under any operating mode (Approval / Auto / Bypass).
 
 - Do not force test seams everywhere if the script is tiny and scene-bound.
 - Prefer a few meaningful seams over abstraction for its own sake.

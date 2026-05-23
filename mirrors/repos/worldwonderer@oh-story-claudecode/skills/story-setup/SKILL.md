@@ -57,7 +57,7 @@ metadata:
 
 ### 2.4.1 Agent 兼容性处理
 - Agent frontmatter 以 Claude Code 为主；OpenClaw/qclaw 等只要支持 AgentSkills，未知字段（如 `memory`、`skills`、`disallowedTools`）应被忽略。若目标工具报 frontmatter 错误，保留 `name`、`description`、`tools` 三项，删除不支持字段后再部署。
-- 部署到项目后，agent 内引用的 `story-*/references/*.md` 需要能从项目根或 skills 安装目录检索到；若全局安装路径不同，优先用项目内 skills 路径，其次用工具的 skill 搜索能力，不要假定固定绝对路径。
+- 部署到项目后，agent 内引用的参考资料必须走 `story-setup/references/agent-references/*.md` 这一本 skill 内复制路径；不要跨 skill 引用其他 skill 的 references。若全局安装路径不同，优先用项目内 `.claude/skills/` 或 `skills/` 作为规范路径前缀，其次用工具的 skill 搜索能力，不要假定固定绝对路径。
 
 ### 2.5 部署 Session State 模板
 - 读取 `skills/story-setup/references/templates/上下文.md.tmpl`
@@ -78,11 +78,11 @@ metadata:
 - 写入以下字段：
   ```
   deployed_at: <date -u +"%Y-%m-%dT%H:%M:%SZ">
-  agents_version: 7
+  agents_version: 8
   setup_skill_version: 1.0.0
   ```
 - 此文件供 session-start.sh 和写作 skill 检测部署状态，避免重复提示
-- 如果 `.story-deployed` 已存在但无 `agents_version` 或版本 < 7，提示用户重新运行 story-setup 以更新 hooks/agents/rules（v7 修复日更续写 continuation 与伏笔 hook 误报；v6 统一短篇主会话/子代理正文格式；v5 更新 narrative-writer 场景写法、段落密度规则和跨平台字数统计）
+- 如果 `.story-deployed` 已存在但无 `agents_version` 或版本 < 8，提示用户重新运行 story-setup 以更新 hooks/agents/rules（v8 修复 Agent 读取 skill 参考文件路径；v7 修复日更续写 continuation 与伏笔 hook 误报；v6 统一短篇主会话/子代理正文格式；v5 更新 narrative-writer 场景写法、段落密度规则和跨平台字数统计）
 
 ## Phase 3：验证安装
 
@@ -136,8 +136,8 @@ hooks 注册合并按 command 字段去重：
 ## 重新部署
 
 - `.story-deployed` 不存在 → 全新安装，Phase 2 全部执行
-- `.story-deployed` 存在且 `agents_version: 7` → 提示已部署，AskUserQuestion 确认是否重新部署
-- `.story-deployed` 存在但 `agents_version` < 7 → 提示需要更新，重新执行 Phase 2 覆盖 agents/hooks/rules，CLAUDE.md 和 settings.local.json 走合并策略
+- `.story-deployed` 存在且 `agents_version: 8` → 提示已部署，AskUserQuestion 确认是否重新部署
+- `.story-deployed` 存在但 `agents_version` < 8 → 提示需要更新，重新执行 Phase 2 覆盖 agents/hooks/rules，CLAUDE.md 和 settings.local.json 走合并策略
 
 ---
 
@@ -149,6 +149,7 @@ hooks 注册合并按 command 字段去重：
 | references/templates/hooks/ | 6 个 hook 脚本模板 |
 | references/templates/rules/ | 4 条 path-scoped 规则模板 |
 | references/templates/agents/ | 7 个 agent 定义模板（story-architect, character-designer, narrative-writer, consistency-checker, story-researcher, story-explorer, chapter-extractor） |
+| references/agent-references/ | Agent 模板自带的参考资料副本；模板只引用本目录，避免跨 skill references |
 | references/templates/settings-hooks.json | hooks 注册 JSON 片段 |
 | references/templates/上下文.md.tmpl | 写作上下文模板 |
 

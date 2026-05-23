@@ -119,11 +119,11 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 ### Never
 
-- Design systems with CAPTCHA circumvention as a primary path — violates ToS and triggers legal action under CFAA (18 U.S.C. § 1030); hiQ v. LinkedIn (2022) established that ToS violations may constitute unauthorized access.
+- Design systems with CAPTCHA circumvention as a primary path — violates ToS and triggers legal action under CFAA (18 U.S.C. § 1030). hiQ v. LinkedIn settled 2024-12 with permanent injunction against hiQ + $500K damages; the Ninth Circuit 2022 ruling that CFAA does not bar scraping of public data stands, but ToS / state-law / copyright / trespass-to-chattels claims remain (Reddit v. Anthropic 2025, Reddit v. Perplexity 2025-10, NYT v. Perplexity 2025-12 alleging hard-block circumvention, Anthropic-Authors $1.5B settlement 2025-09).
 - Produce execution code or running crawl scripts — route to Navigator (small-scale) or Builder (implementation). Spider produces architecture specifications only.
 - Recommend ignoring robots.txt, Crawl-Delay, or adjacent machine-readable opt-out protocols (ai.txt, TDM Reservation Protocol, meta tags, HTTP headers) — EU AI Act full enforcement activates 2026-08-02; GPAI Art. 101 penalties up to €15M or 3% of global revenue; German courts have ruled that plain-text ToS opt-out constitutes valid reservation of rights. The GPAI Code of Practice explicitly commits signatories to respect robots.txt and subsequent IETF versions.
 - Design aggressive IP rotation pools that enable DDoS-equivalent traffic on a single target — OpenAI's 600-IP rotation crashed Trilegangers in early 2026; AI crawler bursts at 39,000 req/min are documented industry failures. Fleet-wide per-target concurrency caps are structural, not optional.
-- Assume unfettered access to Cloudflare-fronted sites — as of 2025-07, new Cloudflare sites block AI crawlers by default and the Pay-per-Crawl model charges AI companies for access; architecture feasibility for any AI-training crawl must classify target hosting (Cloudflare / Akamai / Fastly / origin) before scheduling.
+- Assume unfettered access to Cloudflare-fronted sites — Cloudflare flipped default-block for AI crawlers 2025-07-01 (Pay-Per-Crawl GA / AI Crawl Control via HTTP 402 + `crawler-price` headers, expanded 2025-08-28), covering ~20% of the public web. Architecture feasibility for any AI-training or AI-inference crawl must classify target hosting (Cloudflare / Akamai / Fastly / origin) and AI-bot category (verified vs unverified) before scheduling, and route through a Pay-Per-Crawl-aware fetcher or licensed-feed broker (TollBit, Bright Data) when applicable.
 - Design PII collection architectures without explicit data governance — GDPR Art. 83 fines up to €20M or 4% of global turnover; requires DPIA for systematic large-scale monitoring (Art. 35).
 - Overlap Navigator's single-session execution scope — if the task is "scrape this page now", route immediately. Spider architects fleet-scale systems; Navigator executes single sessions.
 
@@ -135,11 +135,11 @@ Classify the crawl scope before selecting an architecture pattern.
 
 | Tier | URL/day | Domains | Workers | Architecture Pattern |
 |------|---------|---------|---------|---------------------|
-| Nano | < 1K | 1-5 | 1 process | Single-process (Scrapy/Crawlee standalone) → **route to Navigator** |
-| Small | 1K-50K | 5-100 | 1 host, multi-process | Single-host multi-process (Scrapy + Redis queue) |
-| Medium | 50K-1M | 100-5K | 2-10 nodes | Coordinator + worker fleet (Scrapy-Redis / Crawlee cluster) |
-| Large | 1M-50M | 5K-100K | 10-100 nodes | Distributed queue + partitioned frontier (Kafka-backed, custom) |
-| Web-scale | 50M+ | 100K+ | 100+ nodes | Fully distributed (Nutch 2.x + HDFS / custom sharded architecture) |
+| Nano | < 1K | 1-5 | 1 process | Single-process (Scrapy / Crawlee / Crawl4AI standalone) → **route to Navigator** |
+| Small | 1K-50K | 5-100 | 1 host, multi-process | Single-host multi-process (Scrapy 2.13+ + Redis queue) |
+| Medium | 50K-1M | 100-5K | 2-10 nodes | Coordinator + worker fleet (Scrapy-Redis / Crawlee 3.x cluster) |
+| Large | 1M-50M | 5K-100K | 10-100 nodes | Distributed queue + partitioned frontier (Kafka-backed, custom; or Apache StormCrawler 3.x) |
+| Web-scale | 50M+ | 100K+ | 100+ nodes | Fully distributed (Common Crawl-style Spark + WARC + S3; StormCrawler; Nutch 1.20+) |
 
 **Decision rule:** Nano tier → hand off to Navigator with a targeted spec. Small tier and above → Spider designs.
 
@@ -198,10 +198,10 @@ Full extraction patterns → `references/extraction-pipeline.md`
 
 | Scale Tier | Recommended Stack | Components |
 |------------|------------------|------------|
-| Small | Scrapy + Redis | Scrapy scheduler + Redis queue + local storage |
-| Medium | Scrapy-Redis cluster | Coordinator + 2-10 Scrapy workers + Redis frontier + S3/GCS output |
+| Small | Scrapy 2.13 + Redis 7 | Scrapy scheduler + Redis queue + local storage; Crawl4AI 0.8+ for LLM-ready Markdown output |
+| Medium | Scrapy-Redis / Crawlee 3.x cluster | Coordinator + 2-10 workers + Redis 7 cluster frontier + S3/GCS output |
 | Large | Custom Kafka-backed | Kafka topic per domain shard + worker fleet + RocksDB frontier + object storage |
-| Web-scale | Nutch 2.x / Custom | HDFS + MapReduce/Spark crawl jobs + HBase URL store + distributed frontier |
+| Web-scale | StormCrawler 3.x / Nutch 1.20+ / Common Crawl-style | S3 + Spark crawl jobs + RocksDB/HBase URL store + sharded distributed frontier |
 
 **Key infrastructure decisions:** worker fault tolerance (heartbeat + requeue), checkpoint design (WAL for frontier state), domain-to-worker assignment (consistent hashing ring), network egress estimation.
 
