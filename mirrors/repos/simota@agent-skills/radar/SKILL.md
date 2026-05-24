@@ -140,9 +140,9 @@ Behavior notes per Recipe:
 - `coverage`: Target 80%+ diff coverage and select priority gaps by risk assessment.
 - `regression`: Only after a Scout or Builder handoff. Add bug-reproducing tests fail-first, then confirm green after the fix.
 - `ci`: Reduce suite runtime with TIA or skip conditions. Delegate CI infrastructure changes to Gear.
-- `unit`: Design unit test architecture from scratch or restructure an existing suite. Enforce AAA (Arrange-Act-Assert), pick the right test double (fake > stub > mock > spy in that preference order), isolate at the unit boundary, and keep tests deterministic (no clock, network, or filesystem without injection). Multi-language: Jest/Vitest for TS, pytest for Python, Go `testing`, `cargo test` for Rust. Use `coverage` instead when the goal is filling gaps in an existing suite, not redesigning it.
+- `unit`: Design unit test architecture from scratch or restructure an existing suite. Enforce AAA (Arrange-Act-Assert), pick the right test double (fake > stub > mock > spy in that preference order), isolate at the unit boundary, and keep tests deterministic (no clock, network, or filesystem without injection). Multi-language: Vitest 4.x / Jest 30 for TS/JS, pytest 8.x for Python, Go `testing`, `cargo test` / cargo-nextest for Rust, JUnit 5.12+ / JUnit 6 for Java. Use `coverage` instead when the goal is filling gaps in an existing suite, not redesigning it.
 - `integration`: Design backend-service integration tests (component-to-component: service ↔ DB / cache / queue / downstream HTTP). Prefer Testcontainers for ephemeral Postgres/MySQL/Redis/Kafka, WireMock or MSW for HTTP stubbing at the boundary, and pick a DB fixture strategy (transaction rollback fastest, truncate if triggers matter, per-test DB only when schema migrations are under test). Playwright API mode is acceptable for backend HTTP assertions. Route to `Voyager` for browser-level E2E and full user journeys — this recipe does NOT cover user-to-system flows. Use `edge` instead when extending an existing integration suite with edge cases.
-- `mutation`: Run a mutation testing tool against an existing suite to measure test-suite effectiveness. Stryker for JS/TS, PIT for Java/Kotlin, mutmut (or cosmic-ray) for Python, cargo-mutants for Rust. Analyze survived mutants as weak assertions, triage equivalent mutants (functionally identical — accept the survivor), and wire a mutation-score threshold into CI (critical modules ≥85%, project-wide ≥60% per Siege baselines). Scope: author-side code-quality mutation (strengthening unit-test assertions day-to-day). Route to `Siege` for program-level mutation strategy, tiered CI (PR/nightly/release) design, operator selection at scale, and mutation as a non-functional resilience verification — Siege owns the broader mutation testing program and Radar `mutation` complements it at the individual-developer layer.
+- `mutation`: Run a mutation testing tool against an existing suite to measure test-suite effectiveness. StrykerJS 7.0+ for JS/TS (supports Vitest, Jest, Node Tap; `npx stryker run`), PIT for Java/Kotlin, mutmut (or cosmic-ray) for Python, cargo-mutants for Rust. Analyze survived mutants as weak assertions, triage equivalent mutants (functionally identical — accept the survivor), and wire a mutation-score threshold into CI (critical modules ≥85%, project-wide ≥60% per Siege baselines). Scope: author-side code-quality mutation (strengthening unit-test assertions day-to-day). Route to `Siege` for program-level mutation strategy, tiered CI (PR/nightly/release) design, operator selection at scale, and mutation as a non-functional resilience verification — Siege owns the broader mutation testing program and Radar `mutation` complements it at the individual-developer layer.
 
 ## Workflow
 
@@ -159,11 +159,11 @@ Behavior notes per Recipe:
 
 | Language | Primary Framework | Coverage Tool | Mock / Stub Defaults | Read This |
 |----------|-------------------|---------------|----------------------|-----------|
-| TypeScript / JavaScript | Vitest / Jest | v8 / istanbul | RTL, MSW, `vi.fn()` | `references/testing-patterns.md` |
-| Python | pytest | coverage.py / pytest-cov | pytest-mock, `unittest.mock` | `references/multi-language-testing.md` |
+| TypeScript / JavaScript | Vitest 4.x / Jest 30 | v8 / istanbul | RTL, MSW, `vi.fn()` | `references/testing-patterns.md` |
+| Python | pytest 8.x | coverage.py / pytest-cov | pytest-mock, `unittest.mock` | `references/multi-language-testing.md` |
 | Go | `testing` / testify | `go test -cover` | gomock / mockery | `references/multi-language-testing.md` |
-| Rust | `cargo test` | tarpaulin / llvm-cov | mockall | `references/multi-language-testing.md` |
-| Java | JUnit 5 | JaCoCo | Mockito | `references/multi-language-testing.md` |
+| Rust | `cargo test` / cargo-nextest | tarpaulin / llvm-cov | mockall | `references/multi-language-testing.md` |
+| Java | JUnit 5.12+ / JUnit 6 | JaCoCo | Mockito | `references/multi-language-testing.md` |
 
 ## Test Mix
 
@@ -175,9 +175,9 @@ Behavior notes per Recipe:
 
 Additional layers:
 
-- Property-based testing for invariants and edge discovery — pairing with mutation testing boosts kill scores from 70% to 92% on async code (Source: johal.in 2026)
+- Property-based testing for invariants and edge discovery — pairing with mutation testing boosts kill scores from 70% to 92% on async code (Source: johal.in 2026). Use `fast-check` 4.x (JS/TS; `@fast-check/vitest` for Vitest integration), `hypothesis` (Python), `proptest` (Rust). See [fast-check.dev](https://fast-check.dev/) for current API.
 - Contract testing for service boundaries
-- Mutation testing to verify test strength — watch for equivalent mutants (false survivors) and tool-specific timeouts in distributed CI (>200ms latency causes Stryker .NET failures; apply exponential backoff, Source: johal.in 2026). Stryker .NET now uses ML to prune equivalent mutants, reducing noise by 30% (Source: johal.in 2026). Agentic mutation tools (mewt for Rust/Solidity) enable LLM-guided mutant generation targeting high-risk code paths (Source: Trail of Bits 2026)
+- Mutation testing to verify test strength — StrykerJS 7.0+ supports Vitest and Node Tap runners natively (Source: [stryker-mutator.io/blog/announcing-stryker-js-7](https://stryker-mutator.io/blog/announcing-stryker-js-7/)). Watch for equivalent mutants (false survivors) and tool-specific timeouts in distributed CI (>200ms latency causes Stryker .NET failures; apply exponential backoff, Source: johal.in 2026). Stryker .NET now uses ML to prune equivalent mutants, reducing noise by 30% (Source: johal.in 2026). Agentic mutation tools (mewt for Rust/Solidity) enable LLM-guided mutant generation targeting high-risk code paths (Source: Trail of Bits 2026)
 - Snapshot testing only for stable, intentional output shapes
 - AI-assisted test generation for accelerating edge-case discovery — AI augments testing capacity but does not replace human judgment on test intent and assertion quality. LLM-powered mutation testing (e.g., Meta ACH) generates targeted tests for undetected faults, making mutation testing practical at enterprise scale (Source: Meta Engineering 2025, momentic.ai 2026). AI-assisted flaky repair (FlakyGuard) achieves 47.6% automated repair rate with 51.8% developer acceptance on reproducible flaky tests (Source: ASE 2025)
 

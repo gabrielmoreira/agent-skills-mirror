@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zzet/gortex` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `zzet/gortex` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zzet/gortex` — 26 default patterns, 0 followed patterns, 1 file(s) 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,6 +60,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`docs/agents.md`](docs/agents.md) |
+| 3 | ✓ | [`docs/skills.md`](docs/skills.md) |
 
 ---
 

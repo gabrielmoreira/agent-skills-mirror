@@ -69,9 +69,10 @@
 - 在稿子、主题、outline、开发模式和可选音频合成前设置硬 checkpoint
 - 悬浮才出现的进度控制，录屏时画面保持干净
 - 基于主题 token 的视觉架构，内置 **23 套主题**，每套独立设计签名，覆盖编辑、终端、工程、瑞士国际主义等多种风格
+- **可插拔 TTS**：provider-agnostic 音频 runner，**内置 2 个 provider**（MiniMax `mmx-cli` + OpenAI TTS via curl），并附带三函数契约 + ElevenLabs / edge-tts / Azure / Google Cloud / macOS `say` 的现成代码片段
 - 脚手架产出 Vite + React + TypeScript 项目，并附带舞台原语与录屏指南
 
-链接：[README](./skills/web-video-presentation/README.zh-CN.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md) · <!-- DOWNLOAD:web-video-presentation:start -->[下载 v1.2.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-video-presentation-v1.2.0/web-video-presentation-1.2.0.zip)<!-- DOWNLOAD:web-video-presentation:end -->
+链接：[README](./skills/web-video-presentation/README.zh-CN.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md) · <!-- DOWNLOAD:web-video-presentation:start -->[下载 v1.2.1 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-video-presentation-v1.2.1/web-video-presentation-1.2.1.zip)<!-- DOWNLOAD:web-video-presentation:end -->
 
 ---
 
@@ -88,11 +89,12 @@
 
 - 定义六步设计工作流：需求 → 上下文 → 设计系统 → v0 → 完整构建 → 验证
 - 用反 AI 俗套清单和更强的视觉判断，避免千篇一律的生成式 UI
+- 内置 **设计方向顾问（6 学派差异化推荐）+ 25 套有 anchor 的风格配方库**（Linear / Aesop / Pentagram / Bloomberg / Stripe Press / Mid-Century 等），含可粘贴的 palette / typography / signature moves / 反模式
 - 覆盖 HTML / CSS / JavaScript / React 原型，以及响应式布局、动效和交互细节
 - 包含 inline React + Babel、CSS tokens、`oklch()` 配色、container queries、reduced-motion 等实现规则
 - 提供高级模式参考，覆盖设备框、幻灯片引擎、动画时间线、仪表盘等常见 Web 产物
 
-链接：[README](./skills/web-design-engineer/README.zh-CN.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[下载 v1.1.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.1.0/web-design-engineer-1.1.0.zip)<!-- DOWNLOAD:web-design-engineer:end -->
+链接：[README](./skills/web-design-engineer/README.zh-CN.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[下载 v1.2.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.2.0/web-design-engineer-1.2.0.zip)<!-- DOWNLOAD:web-design-engineer:end -->
 
 ---
 

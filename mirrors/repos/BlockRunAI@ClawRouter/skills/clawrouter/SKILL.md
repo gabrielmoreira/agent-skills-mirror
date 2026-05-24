@@ -160,7 +160,7 @@ Realtime prices and historical OHLC across every asset class. The agent should c
 | --------------------------- | --------------------------------------------------------------------------- | -------------------- |
 | `blockrun_image_generation` | 8 image models — DALL-E 3, Nano Banana / Pro, Flux, Grok Imagine, CogView-4 | $0.015–$0.15 / image |
 | `blockrun_image_edit`       | Edit / inpaint existing image (openai/gpt-image-1)                          | $0.02–$0.04 / image  |
-| `blockrun_video_generation` | Grok Imagine + ByteDance Seedance (1.5-pro / 2.0-fast / 2.0) at 480p, 5–10s. Seedance is now token-priced upstream (~10,128 tokens/sec). Pass `image_url` for image-to-video (cheaper on 2.0). Seedance 2.0 variants accept optional `real_face_asset_id` (`ta_…`) for BytePlus RealFace character-consistency. | $0.05/s (Grok); Seedance ~$0.23–$0.74 per 5s clip |
+| `blockrun_video_generation` | Grok Imagine + ByteDance Seedance (1.5-pro / 2.0-fast / 2.0) at 720p with synced audio (t2v default), 5–10s. Token-priced upstream (~20,256 tokens/sec at the 720p+audio default — 2× the prior 480p rate). Pass `image_url` for image-to-video (cheaper on 2.0). Seedance 2.0 variants accept optional `real_face_asset_id` (`ta_…`) for BytePlus RealFace character-consistency — mutually exclusive with `image_url`. | $0.05/s (Grok); Seedance ~$0.46–$1.49 per 5s clip |
 
 ### Phone & Voice (Twilio + Bland.ai)
 

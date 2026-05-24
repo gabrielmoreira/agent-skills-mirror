@@ -150,6 +150,7 @@ Agent disambiguation → `references/agent-disambiguation.md`
 | Security | `security` | | Security response | Sentinel → Builder → Radar |
 | Refactor | `refactor` | | Refactoring | Zen → Radar |
 | Optimize | `optimize` | | Performance improvement | Bolt/Tuner → Radar |
+| Kaizen | `kaizen` | | **Existing-feature** continuous improvement (multi-axis: perf / UX / code-quality / feature-extension). Measure → diagnose → prioritize one axis → improve → regression-verify → before/after report. Differs from `refactor` (internal-only, no external behavior change), `optimize` (perf-only), and `feature` (new addition) — kaizen polishes a feature that already ships. Scale: 4-8 agents, lightweight to medium, no user confirmation required. | (Lens + Pulse?/Echo?/Voice?/Trace?)[diagnose] → Spark[improvement-spec] → Magi[axis-prioritize] → (Bolt/Tuner ‖ Palette/Prose/Flow ‖ Zen/Sweep ‖ Artisan/Builder)[axis-bounded improve] → Radar[regression] → Pulse?/Echo? [re-measure] → Guardian[PR with Before/After] |
 | Proactive | `proactive` | | /Nexus with no arguments, project state scan | Scan project → recommend |
 | Apex | `apex` | | Full-cycle auto-implementation: discovery → spec → parallel design → risk gate → loop → ship. With no-args, also runs Phase 0 to **autonomously discover the goal** before Phase 1. For high-stakes new features with cross-team impact. | (Phase 0: project_scan + spark + rank + voice/pulse/compete/sage/magi as available, when no goal supplied) → Discovery (plea+researcher+echo?) → Ideate (riff) → Verdict (magi) → Spec (accord+void?+scribe?) → Design [Tech (atlas+gateway?+schema?) ‖ UX (vision sub-orchestrates muse+palette+prose+flow?+frame?+forge+echo)] → Risk Gate (omen+ripple+echo) → Loop (orbit drives builder+artisan?+showcase?+judge+radar+voyager?) → Ship (guardian+launch) |
 | Goal Setup | `goal` | | `/goal` autonomous long-running execution setup helper (Claude Code v2.1.139+ / Codex CLI experimental). Detects platform, classifies use case (ci-headless / long-dev / parallel-experiment / safe-bounded), audits current config, designs hooks, drafts context docs, and outputs a tailored launch command. | Hone[audit] → Latch[hooks] → Scribe?[CLAUDE.md or AGENTS.md] → DELIVER(launch recipe) |
@@ -171,6 +172,7 @@ Execution-control Mode (AUTORUN_FULL / AUTORUN / GUIDED / INTERACTIVE) is applie
 - `security`: Sentinel[scan] → Builder[fix] → Radar[edge] chain. +Probe for dynamic testing.
 - `refactor`: Zen → Radar[coverage] chain. +Atlas for architectural scope.
 - `optimize`: Bolt/Tuner → Radar[edge] chain. +Schema for DB-heavy work.
+- `kaizen`: **Phase 1 (DIAGNOSE, parallel)** — Lens[map-current-implementation] runs unconditionally; in parallel, conditionally include Pulse[KPI-measure] if metrics instrumentation exists, Echo[UX-walkthrough] if the feature has a UI surface, Voice[sentiment]/Trace[session-replay] if user-feedback or session data is available. Goal: multi-signal picture of how the feature behaves and where it falls short. **Phase 2 (PROPOSE, sequential)** — Spark[improvement-spec, **constrained to enhancing existing data/logic** — not new feature ideation] → Magi[axis-prioritize] selects **one or two** axes from `{perf, UX, code-quality, feature-extension}`; rejects "improve everything" plans because kaizen is iterative and scope-bounded. **Phase 3 (IMPROVE, axis-bounded, parallel within axis)** — perf axis → Bolt[frontend]/Tuner[explain]; UX axis → Palette[usability]/Prose[microcopy]/Flow[motion]; code-quality axis → Zen[refactor]/Sweep[dead-code]; feature-extension axis → Artisan[component]/Builder[api]. Independent sub-axes run in parallel; dependent ones serialize. **Phase 4 (VERIFY)** — Radar[regression] gates non-regression on existing behavior; if Pulse/Echo ran in Phase 1, re-run them for Before/After comparison. **Phase 5 (SHIP)** — Guardian[PR-prep] produces PR with embedded Before/After report. **Boundary vs `refactor`**: refactor changes only internal structure with no external-behavior delta; kaizen explicitly improves externally-observable quality (latency, UX feel, error messages) alongside internal hygiene. **Boundary vs `optimize`**: optimize is perf-only; kaizen treats perf as one axis among many. **Boundary vs `feature`**: feature adds new capability; kaizen polishes an existing one. **Anti-patterns prevented**: (1) "rewrite the whole module under improvement banner" — Magi's axis-cap forces scope discipline; (2) "improve without measuring" — Phase 1 diagnostics are mandatory entry; (3) "improvement that regresses something else" — Phase 4 Radar + re-measure gates non-regression. +Scout for deeper root-cause investigation when Lens output is insufficient, +Atlas when improvement requires structural change, +Ripple for cross-module impact analysis before committing to an axis. Use for iterative weekly/monthly polishing of shipped features, post-launch refinement, and quality-axis rotation.
 - `proactive`: Follow `references/proactive-mode.md` to scan project state and recommend next actions.
 - `apex`: Full-cycle auto-implementation across 6 sequential phases (Discovery → Ideate → Verdict → Spec → Design+Risk Gate → Implement Loop → Ship) with parallel Tech/UX sub-tracks in Phase 5. Vision sub-orchestrates UX (Muse/Palette/Prose/Flow/Frame/Forge/Echo) on Claude Code. **Orbit sub-orchestrates the implementation loop on Codex CLI (fixed engine — `spawn_agent`/`wait_agent`)**, driving Builder/Artisan/Showcase/Judge/Radar/Voyager. Risk Gate is tri-axis (Omen + Ripple + Echo). With no-args, Phase 0 autonomously discovers the goal before Phase 1. Read `references/apex-recipe.md` for phase contracts, conditional inclusion rules, sub-orchestration topology, engine boundary semantics, and AUTORUN chain template. **Prerequisite**: Codex CLI must be reachable with `agents.max_depth ≥ 2` before Phase 6; otherwise Orbit fails the handoff. **Confirm with user before launch — Apex spawns 8-25 agents and is high-cost.**
 - `goal`: `/goal` autonomous long-running execution setup helper. Detects target platform (`~/.claude/` → Claude Code v2.1.139+, `~/.codex/` → Codex CLI experimental `[features] goals = true`, both → ask user). Classifies use case (ci-headless / long-dev / parallel-experiment / safe-bounded — default `safe-bounded` if unspecified). Chain: Hone audits current config and proposes Before/After diff → Latch designs Stop/PostToolUse hooks for completion verification and notifications → Scribe drafts CLAUDE.md or AGENTS.md additions when missing → DELIVER outputs the launch command and verification checklist. Read `references/goal-recipe.md` for phase contracts, use-case templates, hook templates, and launch command recipes. Lightweight: 1-3 agents, 2-4 min wall time. No code execution — produces configuration recommendations the user applies.
@@ -236,6 +238,20 @@ Is spawn tool available? (Agent / spawn_agent)
 **Codex Subagent Tools:** `spawn_agent`, `send_input`, `wait_agent`, `resume_agent`, `close_agent`
 **Config:** `agents.max_depth` (default: 1) controls nesting. Omitted fields inherit from parent session.
 
+#### Antigravity CLI (`agy`)
+
+| Layer | Method | When | API |
+|-------|--------|------|-----|
+| **L1: Direct Spawn** | `/agent <name> "<task>"` (TUI) or `agy -p "<prompt>"` (one-shot) | 1-4 step sequential chains | TUI: `/agent <slug> "<prompt>"` / Headless: `agy -p "<prompt>" --output-format json` |
+| **L2: Parallel Spawn** | Multiple `/agent` invocations (asynchronous subagents, each in its own context window) | 2-3 independent branches | Aggregate via `/tasks`; subagents run async, no explicit `wait` primitive |
+| **L3: Role-Driven Team** | Plugin-installed team pack (e.g. `oh-my-antigravity` — `agy plugin install <url>`) | 4+ workers, complex ownership | Community pattern — `/oma:taskboard` priority queue + explicit approval gates (no Rally equivalent documented) |
+
+**agy Subagent Tools:** `/agent`, `/tasks`, `/resume`, `/rewind`, `/btw` (read-only side question), `/schedule`, `/goal` (experimental flag status 未確認)
+**Config:** Subagent depth-cap key name **未確認** — community guidance says "cap subagent depth" but no JSON/TOML key was found in official docs. Treat as runtime/budget concern via `/usage` polling, not as a config switch.
+**Skill root:** `~/.gemini/antigravity-cli/skills/` (global) or `<repo>/.agents/skills/` (workspace, preferred).
+**Permission model:** `request-review` (default — pause for review) / `proceed-in-sandbox` (containerized auto) / `always-proceed` (host auto, production-forbidden) / `strict` (read-only).
+**Cross-CLI mapping:** see `_common/CLI_COMPATIBILITY.md` for the full Claude Code / Codex CLI / agy matrix.
+
 ### Model Selection
 
 | Agent Role | model | Rationale |
@@ -278,6 +294,34 @@ Agent(
 
 > **Opus 4.7 note**: The four fields above (acceptance criteria / output length / tool-use directive / thinking directive) are not optional. Opus 4.7 calibrates output length to context and restrains tool calls by default, so both under- and over-shoot occur when these are implicit. For parallel spawns, see **Core Rule #10** and **`_common/SUBAGENT.md`**, and issue multiple `Agent(... run_in_background: true)` calls in the same turn. Shared protocol: `_common/OPUS_47_AUTHORING.md`.
 
+#### agy Spawn Template
+
+For Antigravity CLI the prompt body is identical — only the invocation differs:
+
+```
+/agent [agent]-[task-slug] "You are the [AgentName] agent.
+First, read ~/.gemini/antigravity-cli/skills/[agent]/SKILL.md (or <repo>/.agents/skills/[agent]/SKILL.md) and follow its instructions.
+
+Recipe: [recipe-name or auto]
+Task: [task_description]
+Context from previous step: [handoff_context]
+Constraints: [constraints]
+Acceptance criteria: [acceptance_criteria]
+Output length envelope: [length_envelope]
+Tool-use directive: [tool_use_directive]
+Thinking directive: [thinking_directive]
+
+On completion, emit _STEP_COMPLETE with Agent / Status / Output / Next."
+```
+
+Or for headless / non-interactive:
+
+```
+agy -p "<same prompt body>" --output-format json
+```
+
+> **agy notes**: (1) Model is switched via `/model` in TUI before spawning, not per-agent — design recipes around the active model or instruct the user to switch. (2) `/usage` does not update live — for long chains (>20 min) prefer `agy -p` one-shot triggered externally over TUI-resident `/agent` invocations to avoid mid-run quota cliffs. (3) Permission mode defaults to `request-review`; recipes that assume autonomy must instruct the user to switch to `proceed-in-sandbox` before invocation (never `always-proceed` in production). (4) `request-review` is reported as occasionally ignored for file edits (forum: missing features) — treat as a runtime risk, not a configuration guarantee.
+
 Detailed execution flows: `references/execution-phases.md`, `references/orchestration-patterns.md`
 
 ## Safety Contract
@@ -314,6 +358,7 @@ Detailed execution flows: `references/execution-phases.md`, `references/orchestr
 | `security`, `vulnerability`, `CVE` | Security audit and fix chain | Security report + fixes | `references/routing-matrix.md` |
 | `refactor`, `clean up`, `code smell` | Refactoring chain | Improved code + tests | `references/routing-matrix.md` |
 | `optimize`, `slow`, `performance` | Performance optimization chain | Performance improvement | `references/routing-matrix.md` |
+| `kaizen`, `improve`, `polish`, `enhance existing`, `incremental improvement`, `magic up`, `磨き上げ`, `継続改善` | Kaizen multi-axis improvement chain for existing features | Improved feature + Before/After report + regression-safe PR | (inline in `## Subcommand Dispatch`) |
 | `review`, `check`, `audit` | Quality review chain | Review report | `references/routing-matrix.md` |
 | `design system docs`, `token docs`, `component catalog` | Design system documentation chain | Token + catalog + diagrams + API docs | `references/routing-matrix.md` |
 | `brainstorm`, `bounce ideas`, `riff`, `ideate`, `sounding board` | Interactive brainstorming session | Session summary with insights | `references/routing-matrix.md` |
@@ -350,6 +395,7 @@ Use the table below for common cases. Canonical matrix: `references/routing-matr
 | `SECURITY` | Sentinel → Builder → Radar | `+Probe` for dynamic testing, `+Specter` for concurrency risk |
 | `REFACTOR` | Zen → Radar | `+Sherpa` for multi-file refactors, `+Atlas` for architecture, `+Grove` for structure |
 | `OPTIMIZE` | Bolt/Tuner → Radar | `+Schema` for DB-heavy work |
+| `KAIZEN` | (Lens + Pulse?/Echo?/Voice?/Trace?) → Spark → Magi → (Bolt/Tuner ‖ Palette/Prose/Flow ‖ Zen/Sweep ‖ Artisan/Builder)[axis] → Radar → Guardian | `+Scout` for deep root-cause, `+Atlas` for structural improvement, `+Ripple` for impact analysis |
 | `DESIGN_SYSTEM_DOCS` | Muse → Showcase + Canvas → Quill | `+Vision` for direction, `+Artisan` for live examples |
 | `DESIGN_WORKFLOW` | Atelier (orchestrates: Vision → Muse/Frame → Forge → Artisan → Showcase → Canvas) | Full design→code loop with design-system persistence. Use when request spans direction + tokens + prototype + implementation + catalog |
 | `ESSENTIAL` | Plea → Spark → Magi → Rank → Y/N verdict → **if Y: Sherpa → Builder[codex] → Radar[codex] → Guardian** (refinement funnel + conditional implementation) | `+Void` for aggressive scope cut in Phase 1-4, `+Accord` for atomic-unit specs |

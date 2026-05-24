@@ -1011,6 +1011,18 @@ _MODEL_PREFERRED_PROVIDER: list[tuple[tuple[str, ...], str]] = [
 # Default global priority when the model has no preferred provider.
 _DEFAULT_PROVIDER_ORDER = ["OpenAI", "Gemini", "Seedream", "Qwen", "MiniMax", "LinkAI"]
 
+# UI provider id (persisted via the Models page) → internal label used by
+# the factory dict in `_build_providers`. Allows pinning a vendor for
+# custom model names that prefix-inference can't recognize.
+_PROVIDER_ID_TO_LABEL = {
+    "openai": "OpenAI",
+    "gemini": "Gemini",
+    "doubao": "Seedream",
+    "dashscope": "Qwen",
+    "minimax": "MiniMax",
+    "linkai": "LinkAI",
+}
+
 
 def _preferred_provider(model: str) -> str | None:
     m = (model or "").lower()
@@ -1020,7 +1032,7 @@ def _preferred_provider(model: str) -> str | None:
     return None
 
 
-def _build_providers(model: str) -> list[tuple[str, ImageProvider]]:
+def _build_providers(model: str, provider_id: str = "") -> list[tuple[str, ImageProvider]]:
     """Build an ordered list of (label, provider) to try.
 
     Behaviour:
@@ -1051,7 +1063,12 @@ def _build_providers(model: str) -> list[tuple[str, ImageProvider]]:
         "LinkAI": os.environ.get("LINKAI_API_BASE", "https://api.link-ai.tech"),
     }
 
-    pref = _preferred_provider(model)
+    # Provider preference resolution priority:
+    #   1. Explicit `provider_id` (UI-persisted, supports custom model names).
+    #   2. Model-name prefix inference.
+    pref = _PROVIDER_ID_TO_LABEL.get(provider_id) if provider_id else None
+    if not pref:
+        pref = _preferred_provider(model)
 
     # If a specific model is requested and its native provider has no key,
     # other backends won't recognise the id → reset to auto routing.
@@ -1114,6 +1131,9 @@ def main():
     #   3. None → fall back to automatic provider routing (try every
     #      provider with a configured API key in global priority order)
     model = args.get("model") or os.environ.get("SKILL_IMAGE_GENERATION_MODEL") or ""
+    # Provider hint persisted by the Models UI; lets users pin a vendor for
+    # custom model names that prefix-inference can't recognize.
+    provider_id = args.get("provider") or os.environ.get("SKILL_IMAGE_GENERATION_PROVIDER") or ""
     quality = args.get("quality")
     size = args.get("size")
     aspect_ratio = args.get("aspect_ratio")
@@ -1121,7 +1141,7 @@ def main():
 
     output_dir = os.environ.get("IMAGE_OUTPUT_DIR", os.path.join(os.getcwd(), "images"))
 
-    providers = _build_providers(model)
+    providers = _build_providers(model, provider_id=provider_id)
     if not providers:
         target = f"model '{model}'" if model else "image generation"
         print(json.dumps({

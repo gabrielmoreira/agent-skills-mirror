@@ -40,9 +40,14 @@
 ```
 your-project/
 ├── .agents/skills/web-design-engineer/   # 或 .claude/skills/web-design-engineer/
-│   ├── SKILL.md                          # 主技能文件（约 400 行）
+│   ├── SKILL.md                          # 主技能文件
 │   └── references/
-│       └── advanced-patterns.md          # 代码模板库（约 520 行）
+│       ├── advanced-patterns.md          # 代码模板库（slide engine / 设备框架 / 动效时间线 / 数据可视化）
+│       ├── design-directions.md          # 设计方向顾问（6 学派，差异化 3 选 1 推荐）
+│       ├── style-recipes/                # 25 套有 anchor 的风格配方（按需读单文件，每个 anchor 一个 .md）
+│       │   ├── INDEX.md                   #   目录索引 + 3 张索引表 + 跨配方反模式
+│       │   ├── linear.md / aesop.md / pentagram.md / ...    #   25 个独立 recipe 文件
+│       └── critique-guide.md             # 5 维评分细则 + 常见问题清单
 └── ...
 ```
 
@@ -98,6 +103,18 @@ your-project/
 | 极简专业 | 青蓝 | Outfit + Space Grotesk | 仪表盘、B2B |
 | 手作温度 | 焦糖 | Caveat + Newsreader | 餐饮、教育 |
 
+**风格配方库（25 套有 anchor，渐进式加载）。** 当用户点名"Linear 风" / "Aesop 风" / "Pentagram 级排版"时，Agent 只需读 `references/style-recipes/<anchor>.md` 单个文件（约 50 行）；目录索引、3 张索引表、跨配方反模式都在 `references/style-recipes/INDEX.md`（约 150 行）。整个目录从不一次性加载。25 套配方分布在 7 个学派（Direction Advisor 的 6 学派 + 一个只能通过直接点名 anchor 触达的 *Specialty / Genre* 学派）：
+
+| 学派 | 配方 |
+|---|---|
+| Editorial / 极简 | `apple-hig` · `muji-kenya-hara` · `aesop` · `dieter-rams-braun` · `monocle-magazine` |
+| 信息架构 | `pentagram` · `vignelli-swiss-helvetica` · `bloomberg-terminal` · `tufte-dataink` · `nyt-the-daily` |
+| 现代工具 / Builder SaaS | `linear` · `vercel-mesh` · `raycast` · `notion-pre-ai` |
+| 动效 / 实验 | `field-io` · `active-theory` · `resn-storytelling` |
+| 粗粝 / Brutalist | `are-na` · `bloomberg-businessweek-turley` · `balenciaga-post-2017` |
+| 温暖人文 | `mailchimp-freddie` · `stripe-press` · `headspace-meditation` |
+| 特定风格 / 年代 | `y2k-retrofuturism` · `mid-century-modern` |
+
 ---
 
 ## 示例
@@ -147,6 +164,8 @@ your-project/
 - **扩展的反俗套清单** —— 从真实 AI 输出中识别出的额外模式
 - **占位符哲学** —— 一套完整的框架，专业地处理缺失素材
 - **配色 × 字体配对表** —— 六套经过验证的视觉系统起点
+- **设计方向顾问** —— 模糊需求场景的 6 学派差异化 3 选 1 推荐机制，且显式接入到 recipe 库做落地
+- **25 套有 anchor 的风格配方库** —— 每套绑定一个真实品牌 / studio / 设计师，含可粘贴的具体值；用来抵御 AI 默认味
 - **高级模式库** —— 常见 UI 模式的即用代码模板
 
 ---

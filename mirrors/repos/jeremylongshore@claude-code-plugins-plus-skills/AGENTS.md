@@ -1,4 +1,12 @@
+<!-- markdownlint-disable MD024 -->
+
 # Agent Instructions
+
+<!-- bd-doctor-divergence: ok -->
+<!-- AGENTS.md and CLAUDE.md are intentionally distinct in this repo.
+     CLAUDE.md = repository-specific guidance (build commands, conventions, marketplace layout).
+     AGENTS.md = generic agent / beads session protocol.
+     CLAUDE.md explicitly delegates session protocol here ("Session protocol lives in AGENTS.md"). -->
 
 This project uses **bd** (beads) for issue tracking. Run `bd onboard` to get started.
 
@@ -47,12 +55,14 @@ bd sync               # Sync with git
 2. **Run quality gates** (if code changed) - Tests, linters, builds
 3. **Update issue status** - Close finished work, update in-progress items
 4. **PUSH TO REMOTE** - This is MANDATORY:
+
    ```bash
    git pull --rebase
    bd sync
    git push
    git status  # MUST show "up to date with origin"
    ```
+
 5. **Clean up** - Clear stashes, prune remote branches
 6. **Verify** - All changes committed AND pushed
 7. **Hand off** - Provide context for next session
@@ -160,12 +170,14 @@ For more details, see README.md and docs/QUICKSTART.md.
 2. **Run quality gates** (if code changed) - Tests, linters, builds
 3. **Update issue status** - Close finished work, update in-progress items
 4. **PUSH TO REMOTE** - This is MANDATORY:
+
    ```bash
    git pull --rebase
    bd sync
    git push
    git status  # MUST show "up to date with origin"
    ```
+
 5. **Clean up** - Clear stashes, prune remote branches
 6. **Verify** - All changes committed AND pushed
 7. **Hand off** - Provide context for next session

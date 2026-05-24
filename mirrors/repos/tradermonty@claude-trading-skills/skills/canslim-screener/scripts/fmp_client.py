@@ -120,6 +120,7 @@ class FMPClient:
     """Client for Financial Modeling Prep API with rate limiting and caching"""
 
     BASE_URL = "https://financialmodelingprep.com/api/v3"
+    STABLE_URL = "https://financialmodelingprep.com/stable"
     RATE_LIMIT_DELAY = 0.3  # 300ms between requests (200 requests/minute max)
 
     def __init__(self, api_key: Optional[str] = None):
@@ -307,10 +308,13 @@ class FMPClient:
         if cache_key in self.cache:
             return self.cache[cache_key]
 
-        url = f"{self.BASE_URL}/income-statement/{symbol}"
         params = {"period": period, "limit": limit}
-
-        data = self._rate_limited_get(url, params)
+        # stable: /income-statement?symbol=&period=&limit= ; v3 fallback: path-style
+        data = self._rate_limited_get(
+            f"{self.STABLE_URL}/income-statement", {**params, "symbol": symbol}, quiet=True
+        )
+        if not data:
+            data = self._rate_limited_get(f"{self.BASE_URL}/income-statement/{symbol}", params)
 
         if data:
             self.cache[cache_key] = data
@@ -393,51 +397,103 @@ class FMPClient:
         if cache_key in self.cache:
             return self.cache[cache_key]
 
-        url = f"{self.BASE_URL}/profile/{symbol}"
-
-        data = self._rate_limited_get(url)
+        # stable: /profile?symbol= ; v3 fallback: /profile/{symbol}
+        data = self._rate_limited_get(f"{self.STABLE_URL}/profile", {"symbol": symbol}, quiet=True)
+        if not data:
+            data = self._rate_limited_get(f"{self.BASE_URL}/profile/{symbol}")
 
         if data:
+            # /stable/profile renamed mktCap -> marketCap; expose mktCap so the
+            # screener (profile[0]["mktCap"]) keeps working on either endpoint.
+            for p in data:
+                if isinstance(p, dict) and "mktCap" not in p and "marketCap" in p:
+                    p["mktCap"] = p["marketCap"]
             self.cache[cache_key] = data
 
         return data
 
-    def get_institutional_holders(self, symbol: str) -> Optional[list[dict]]:
+    @staticmethod
+    def _recent_13f_quarters(as_of=None, count: int = 4):
+        """Yield the most recent completed (year, quarter) 13F periods, newest first.
+
+        13F filings lag the quarter end by ~45 days, so the just-completed
+        quarter may not be filed yet; the caller walks back until data exists.
         """
-        Fetch institutional holder data (Phase 2: I component)
+        d = as_of or date.today()
+        year = d.year
+        quarter = (d.month - 1) // 3  # current quarter (1-4) minus 1 = last completed
+        if quarter == 0:
+            quarter, year = 4, year - 1
+        for _ in range(count):
+            yield year, quarter
+            quarter -= 1
+            if quarter == 0:
+                quarter, year = 4, year - 1
 
-        Args:
-            symbol: Stock ticker
+    def get_institutional_holders(self, symbol: str) -> Optional[dict]:
+        """Fetch institutional sponsorship summary (CANSLIM 'I' component).
 
-        Returns:
-            List of institutional holders with:
-                - holder: Institution name (str)
-                - shares: Number of shares held (int)
-                - dateReported: Reporting date (str)
-                - change: Change in shares from previous quarter (int)
-            Returns None on error
+        Returns a dict::
 
-        Example:
-            holders = client.get_institutional_holders("AAPL")
-            # holders[0] = {"holder": "Vanguard Group Inc", "shares": 1234567890, ...}
+            {"num_holders": int, "ownership_pct": float | None,
+             "top_holders": [{"holder": str, "shares": int, "change": int}, ...]}
 
-        Note:
-            This endpoint provides 13F filing data. Free tier may have limited access.
-            Typical response contains hundreds to thousands of institutional holders.
+        /stable has no single endpoint returning the full holder list (the
+        per-holder endpoint is paginated 10/page). Instead this uses
+        institutional-ownership/symbol-positions-summary for the holder count
+        (investorsHolding) and ownership % (ownershipPercent) — more accurate
+        than summing a list — plus extract-analytics/holder (page 0) for the
+        top names used in superinvestor detection. Falls back to the v3
+        institutional-holder list for legacy keys. Returns None on failure.
         """
         cache_key = f"institutional_{symbol}"
-
         if cache_key in self.cache:
             return self.cache[cache_key]
 
-        url = f"{self.BASE_URL}/institutional-holder/{symbol}"
+        result = None
+        # --- /stable: latest available 13F quarter ---
+        for year, quarter in self._recent_13f_quarters():
+            qp = {"symbol": symbol, "year": year, "quarter": quarter}
+            summary = self._rate_limited_get(
+                f"{self.STABLE_URL}/institutional-ownership/symbol-positions-summary",
+                qp,
+                quiet=True,
+            )
+            if isinstance(summary, list) and summary:
+                top = self._rate_limited_get(
+                    f"{self.STABLE_URL}/institutional-ownership/extract-analytics/holder",
+                    {**qp, "page": 0},
+                    quiet=True,
+                )
+                top_holders = [
+                    {
+                        "holder": h.get("investorName"),
+                        "shares": h.get("sharesNumber"),
+                        "change": h.get("changeInSharesNumber"),
+                    }
+                    for h in (top or [])
+                    if isinstance(h, dict)
+                ]
+                result = {
+                    "num_holders": summary[0].get("investorsHolding"),
+                    "ownership_pct": summary[0].get("ownershipPercent"),
+                    "top_holders": top_holders,
+                }
+                break
 
-        data = self._rate_limited_get(url)
+        # --- v3 fallback (legacy keys): full holder list ---
+        if result is None:
+            v3 = self._rate_limited_get(f"{self.BASE_URL}/institutional-holder/{symbol}")
+            if isinstance(v3, list) and v3:
+                result = {
+                    "num_holders": len(v3),
+                    "ownership_pct": None,  # calculator derives from shares/profile/Finviz
+                    "top_holders": v3[:10],  # already {holder, shares, change}
+                }
 
-        if data:
-            self.cache[cache_key] = data
-
-        return data
+        if result is not None:
+            self.cache[cache_key] = result
+        return result
 
     def calculate_ema(self, prices: list[float], period: int = 50) -> float:
         """

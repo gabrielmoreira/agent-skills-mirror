@@ -10,7 +10,7 @@ CAPABILITIES_SUMMARY:
 - illustration: Create SVG illustrations (hero images, spot illustrations, decorative elements)
 - sprite_system: Build SVG sprite sheets and symbol systems
 - consistency_audit: Audit icon sets for stroke width, corner radius, grid alignment consistency
-- animated_svg: Generate CSS/SMIL animated SVG icons and micro-interactions
+- animated_svg: Generate CSS-primary animated SVG icons and micro-interactions; SMIL for portable standalone SVG only
 - accessibility: Ensure aria-label, role, title attributes for all SVG assets
 - optimization: Optimize SVG output (SVGO rules, path simplification, viewBox normalization)
 - variable_font_icons: Variable Font icon systems (weight/optical-size axes, Google Material Symbols, responsive icons that scale with text)
@@ -106,7 +106,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Illustration | `illustration` | | SVG illustration | `references/patterns.md`, `references/examples.md` |
 | Icon System | `system` | | Icon system design | `references/patterns.md` |
 | Sprite Symbols | `sprite` | | Build SVG sprite symbols | `references/patterns.md` |
-| Animated SVG | `animate` | | SMIL/CSS animation authoring for icons and microinteractions | `references/svg-animation.md` |
+| Animated SVG | `animate` | | CSS animation (primary) and SMIL for portable standalone SVG | `references/svg-animation.md` |
 | Themed SVG | `theme` | | `currentColor` / CSS custom property theming, dark-mode variants | `references/theme-tokens.md` |
 | Accessible SVG | `a11y` | | ARIA, `<title>`/`<desc>`, decorative vs informative annotation | `references/svg-accessibility.md` |
 | Optimize | `optimize` | | SVGO config, path simplification, decimal precision, transform flatten, sprite vs inline trade-off | `references/svg-optimization.md` |
@@ -124,7 +124,7 @@ Behavior notes per Recipe:
 - `illustration`: Generate hero/spot/decorative SVG illustrations. With viewBox and path optimization.
 - `system`: Define grid, stroke width, and naming conventions first, then design the icon set. Use sprites for 10+ icons.
 - `sprite`: Build an SVG spritesheet with the `<symbol>` + `<use>` pattern. Prioritize bundle size reduction.
-- `animate`: Author SMIL/CSS animation for loaders, status transitions, and microinteractions. Animate transform/opacity only and ship a `prefers-reduced-motion` fallback.
+- `animate`: Author CSS-primary animation for loaders, status transitions, and microinteractions. Use SMIL only for portable standalone SVG (works in `<img src>`). Animate transform/opacity only and ship a `prefers-reduced-motion` fallback.
 - `theme`: Theme icons via `currentColor` and CSS custom properties. Escalate to `var(--icon-*)` for multi-color icons; coordinate token names with Muse.
 - `a11y`: Annotate with ARIA / `<title>` / `<desc>`. Default to decorative (`aria-hidden="true"`); elevate to `role="img"` + `aria-labelledby` only when the icon is the sole carrier of meaning.
 - `optimize`: Apply SVGO with project-specific preset (preserve viewBox, currentColor, IDs only when needed), simplify paths to ≤2-decimal precision, flatten nested transforms, and decide sprite vs inline based on count and reuse.

@@ -15,7 +15,7 @@ CAPABILITIES_SUMMARY:
 - rag_retrieval_layer: Design the Retrieval layer of RAG pipelines (chunking-aware retrieval, reranking, context assembly)
 - search_quality_evaluation: Evaluate search quality with Precision, Recall, MRR, NDCG, and relevance judgments
 - scaling_strategy: Design sharding, replica, caching, and warm-up strategies for search infrastructure
-- rerank_pipeline: Design second-stage re-ranking for any retrieval system — cross-encoder (BGE Reranker / Cohere Rerank 3), Learning to Rank (LambdaMART / LightGBM LTR), two-stage retrieve-then-rerank latency budget, click-feedback loop
+- rerank_pipeline: Design second-stage re-ranking for any retrieval system — cross-encoder (BGE Reranker v2-m3 / Cohere Rerank 3.5), Learning to Rank (LambdaMART / LightGBM LTR), two-stage retrieve-then-rerank latency budget, click-feedback loop
 - autocomplete_design: Design search-as-you-type / suggestion subsystems — edge n-gram analyzer, prefix query, typo tolerance (Levenshtein / BK-tree / symspell), synonym expansion, personalization, sub-50ms latency budget
 - search_evaluation_program: Design end-to-end search quality evaluation — offline metrics (nDCG / MRR / MAP / Precision@k / Recall@k), online signals (CTR / position bias), golden-query set curation, click models, A/B test design for ranking changes
 
@@ -241,21 +241,23 @@ SEARCH_PROFILE:
 | `text-embedding-3-large` | 3072 (or 256-3072) | Yes | $$ | High | Matryoshka support for dimension reduction |
 | `text-embedding-3-small` | 1536 (or 256-1536) | Yes | $ | Good | Best cost/quality for general use |
 | `voyage-3-large` | 1024 | Yes | $$ | High | Strong on code and technical content |
-| `cohere-embed-v4` | 1024 | Yes | $$ | High | Native int8/binary quantization |
+| `cohere-embed-v4` | 1024 | Yes (100+) | $$ | High | Native int8/binary quantization; Matryoshka support |
+| `bge-m3` | 1024 | Yes (100+) | Free | Good | Open-source; dense + sparse + late-interaction in one model |
 | `jina-colbert-v2` | variable | Yes (89 langs) | $$ | High | Late interaction — token-level matching for reranking |
 | `all-MiniLM-L6-v2` | 384 | No | Free | Moderate | Lightweight, fast inference |
-| `multilingual-e5-large` | 1024 | Yes | Free | Good | Best free multilingual option |
+| `multilingual-e5-large-instruct` | 1024 | Yes (100+) | Free | Good | Best free multilingual option |
 
 ### Vector Index Strategy
 
 | Engine | Index Type | Best For | Trade-off |
 |--------|-----------|----------|-----------|
-| pgvector | HNSW | <5M vectors, hybrid with RDBMS | Simple ops, single-DB advantage |
-| pgvector + pgvectorscale | StreamingDiskANN | <50M vectors, cost-sensitive | 471 QPS at 99% recall (50M vectors), 75% cheaper than Pinecone s1 |
-| pgvector | IVFFlat | <500K vectors, batch workloads | Faster build, lower recall |
-| Pinecone | Proprietary | Managed, serverless | Cost at scale |
-| Weaviate | HNSW | Multi-modal, GraphQL-native | Memory-heavy |
-| Qdrant | HNSW | Filtering + vector, payload-aware | Self-hosted complexity |
+| pgvector 0.8+ | HNSW (iterative scan) | <5M vectors, hybrid with RDBMS | Iterative scan auto-expands; improved cost estimation — [github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) |
+| pgvector + pgvectorscale | StreamingDiskANN | <50M vectors, cost-sensitive | Single-DB advantage, lower cost than dedicated vector DBs |
+| pgvector 0.8+ | IVFFlat (iterative scan) | <500K vectors, batch workloads | Faster build, iterative scan mitigates low-probe recall loss |
+| Pinecone serverless | Proprietary | Zero-ops managed, BYOC available | Pay-per-use; dedicated read nodes (early access) — [docs.pinecone.io/release-notes/2025](https://docs.pinecone.io/release-notes/2025) |
+| Weaviate 1.28+ | HNSW | Multi-modal, enterprise RBAC | BlockMax WAND speeds BM25/hybrid; RBAC tech preview — [weaviate.io/blog/weaviate-1-28-release](https://weaviate.io/blog/weaviate-1-28-release) |
+| Qdrant 1.16+ | HNSW + ACORN | Heavy filtering + vector | ACORN improves filtered search quality; tiered multitenancy — [qdrant.tech/blog/qdrant-1.16.x](https://qdrant.tech/blog/qdrant-1.16.x/) |
+| Milvus 2.6 | HNSW, DiskANN, RaBitQ | Billion-scale, cost-sensitive | 1-bit RaBitQ quantization (~28% memory, 4× QPS); hot-cold tiered storage — [milvus.io/blog/introduce-milvus-2-6](https://milvus.io/blog/introduce-milvus-2-6-built-for-scale-designed-to-reduce-costs.md) |
 
 ### pgvector Configuration
 
@@ -319,7 +321,8 @@ Query → [BM25 Search] → Top-N₁ results (ranked by BM25)
 | Anti-Pattern | Impact | Fix |
 |-------------|--------|-----|
 | Naive fixed-size chunking | Splits mid-sentence, loses context | Use semantic or recursive chunking with overlap |
-| Vector-only retrieval (no reranking) | Semantically plausible but suboptimal chunks | Add cross-encoder or ColBERT reranker over top-k |
+| Missing chunk context | Chunks lack surrounding context needed to determine relevance | Use Contextual Retrieval — prepend per-chunk context before embedding and BM25 indexing; reduces retrieval failures by ~49%, or ~67% with reranking — [anthropic.com/news/contextual-retrieval](https://www.anthropic.com/news/contextual-retrieval) |
+| Vector-only retrieval (no reranking) | Semantically plausible but suboptimal chunks | Add cross-encoder (BGE v2-m3, Cohere Rerank 3.5) or ColBERT reranker over top-k |
 | Embedding rot (stale embeddings) | Silent drift toward hallucination | Re-embed on model update; version embeddings |
 | No retrieval evaluation | Cannot detect degradation | Track Recall@20 ≥ 0.80 and Precision@5 ≥ 0.70 |
 | Domain-mismatched embeddings | Weak representations for specialized content | Fine-tune or benchmark domain-specific models |
@@ -399,7 +402,7 @@ EVALUATION_SPEC:
 | Hybrid Search | `hybrid` | | BM25 + vector fusion, RRF scoring, reranking pipeline | `references/patterns.md` |
 | Index Optimization | `index` | | Index mapping optimization, scaling design | `references/patterns.md` |
 | RAG Retrieval | `rag` | | RAG retrieval-layer design, chunking, reranking, context assembly | `references/evaluation-methods.md` |
-| Re-ranking | `rerank` | | Second-stage re-ranking pipeline — cross-encoder (BGE / Cohere Rerank 3), LTR (LambdaMART / LightGBM), latency budget, click-feedback loop | `references/rerank-design.md` |
+| Re-ranking | `rerank` | | Second-stage re-ranking pipeline — cross-encoder (BGE v2-m3 / Cohere Rerank 3.5), LTR (LambdaMART / LightGBM), latency budget, click-feedback loop | `references/rerank-design.md` |
 | Autocomplete / Suggest | `suggest` | | Search-as-you-type / suggestion subsystem — edge n-gram, prefix query, typo tolerance (Levenshtein / symspell), sub-50ms latency | `references/suggest-design.md` |
 | Search Evaluation | `eval` | | Search quality evaluation program — offline metrics (nDCG / MRR / MAP), online signals (CTR / position bias), golden set, A/B design | `references/search-evaluation.md` |
 
@@ -415,7 +418,7 @@ Behavior notes per Recipe:
 - `hybrid`: BM25 + vector fusion via RRF (default `k = 60`) or weighted sum. Always include fusion-strategy rationale and a reranking-stage recommendation — see `rerank` for depth.
 - `index`: Existing index optimization — mapping, analyzer, shard count, replica, refresh interval, warmers. Profile current query mix before changing any setting.
 - `rag`: RAG retrieval layer only. Chunking strategy + retrieval method + reranking + context assembly. Hand off to `Oracle` for prompt design and LLM-output evaluation. Always include a reranker — vector-only retrieval retrieves semantically plausible but suboptimal chunks.
-- `rerank`: Second-stage re-ranking over any retrieval system (not RAG-specific). Pick cross-encoder (BGE Reranker v2 / Cohere Rerank 3 / jina-reranker) for quality, LTR (LambdaMART / LightGBM LTR) when click-feedback data exists. Declare Stage-1 top-N, Stage-2 top-K, and added latency budget (typically +30-100ms). Hand off to `Builder` for feature-extraction pipeline; use `Experiment` for A/B stat design with `eval`'s search metrics. Cross-link: Oracle `embed` defers to `rerank` for reranker depth.
+- `rerank`: Second-stage re-ranking over any retrieval system (not RAG-specific). Pick cross-encoder (BGE Reranker v2-m3 / Cohere Rerank 3.5 / jina-reranker-v2) for quality, LTR (LambdaMART / LightGBM LTR) when click-feedback data exists. Declare Stage-1 top-N, Stage-2 top-K, and added latency budget (typically +30-100ms). Hand off to `Builder` for feature-extraction pipeline; use `Experiment` for A/B stat design with `eval`'s search metrics. Cross-link: Oracle `embed` defers to `rerank` for reranker depth.
 - `suggest`: Autocomplete / search-as-you-type subsystem, separate from the main `fulltext` retrieval index. Edge-n-gram or completion suggester analyzer, prefix query, typo tolerance via Levenshtein automaton / BK-tree / symspell. Sub-50ms P99 is the bar; degrade synonyms and personalization before breaking the latency budget. Log query-prefix pairs to feed `eval`'s suggestion-acceptance metric. Cross-link: main retrieval stays in `fulltext`.
 - `eval`: Search-specific quality evaluation — offline (nDCG / MRR / MAP / Precision@k / Recall@k) and online (CTR with position-bias correction, abandonment, reformulation). Curate 50-200 golden queries with graded judgments; use a click model (Cascade / DBN / PBM) when relying on logs. Delegate general A/B statistics (power, SRM, CUPED) to `Experiment`; Seek `eval` supplies the ranking metric and click model. Cross-link: Oracle `eval` covers LLM-output quality (faithfulness, grounding), a separate domain from retrieval ranking quality.
 

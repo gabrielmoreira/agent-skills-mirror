@@ -2,7 +2,7 @@
 
 Generated at: 2026-02-08T00:00:00.000Z
 
-Total skills: 1464
+Total skills: 1465
 
 ## architecture (96)
 
@@ -219,7 +219,7 @@ Total skills: 1464
 | `alpha-vantage` | Access 20+ years of global financial data: equities, options, forex, crypto, commodities, economic indicators, and 50+ technical indicators. | alpha, vantage | alpha, vantage, access, 20, years, global, financial, data, equities, options, forex, crypto |
 | `analytics-product` | Analytics de produto — PostHog, Mixpanel, eventos, funnels, cohorts, retencao, north star metric, OKRs e dashboards de produto. | analytics, product, metrics, posthog, mixpanel | analytics, product, metrics, posthog, mixpanel, de, produto, eventos, funnels, cohorts, retencao, north |
 | `analytics-tracking` | Design, audit, and improve analytics tracking systems that produce reliable, decision-ready data. | analytics, tracking | analytics, tracking, audit, improve, produce, reliable, decision, data |
-| `andrej-karpathy` | Agente que simula Andrej Karpathy — ex-Director of AI da Tesla, co-fundador da OpenAI, fundador da Eureka Labs, e o maior educador de deep learning do mundo. | persona, ai-expert, deep-learning, education | persona, ai-expert, deep-learning, education, andrej, karpathy, agente, que, simula, ex, director, ai |
+| `andrej-karpathy` | Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes... | coding-guidelines, code-review, llm-coding, simplicity | coding-guidelines, code-review, llm-coding, simplicity, andrej, karpathy, behavioral, guidelines, reduce, common, llm, coding |
 | `angular-ui-patterns` | Modern Angular UI patterns for loading states, error handling, and data display. Use when building UI components, handling async data, or managing component ... | angular, ui | angular, ui, loading, states, error, handling, data, display, building, components, async, managing |
 | `api-documenter` | Master API documentation with OpenAPI 3.1, AI-powered tools, and modern developer experience practices. Create interactive docs, generate SDKs, and build com... | api, documenter | api, documenter, documentation, openapi, ai, powered, developer, experience, interactive, docs, generate, sdks |
 | `apify-actor-development` | Important: Before you begin, fill in the generatedBy property in the meta section of .actor/actor.json. Replace it with the tool and model you're currently u... | apify, actor | apify, actor, development, important, before, begin, fill, generatedby, property, meta, section, json |
@@ -692,7 +692,7 @@ Total skills: 1464
 | `zod-validation-expert` | Expert in Zod — TypeScript-first schema validation. Covers parsing, custom errors, refinements, type inference, and integration with React Hook Form, Next.js... | zod, validation | zod, validation, typescript, first, schema, covers, parsing, custom, errors, refinements, type, inference |
 | `zustand-store-ts` | Create Zustand stores following established patterns with proper TypeScript types and middleware. | zustand, store, ts | zustand, store, ts, stores, following, established, proper, typescript, types, middleware |
 
-## general (354)
+## general (355)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -936,6 +936,7 @@ Total skills: 1464
 | `page-cro` | Analyze and optimize individual pages for conversion performance. | page, cro | page, cro, analyze, optimize, individual, pages, conversion, performance |
 | `paypal-integration` | Master PayPal payment integration including Express Checkout, IPN handling, recurring billing, and refund workflows. | paypal, integration | paypal, integration, payment, including, express, checkout, ipn, handling, recurring, billing, refund |
 | `paywall-upgrade-cro` | You are an expert in in-app paywalls and upgrade flows. Your goal is to convert free users to paid, or upgrade users to higher tiers, at moments when they've... | paywall, upgrade, cro | paywall, upgrade, cro, app, paywalls, flows, goal, convert, free, users, paid, higher |
+| `pdf-conversion-router` | Use when converting a PDF into another format such as Markdown, HTML, text, JSON, DOCX, or structured notes and the agent must choose the best extraction rou... | pdf, conversion, router | pdf, conversion, router, converting, another, format, such, markdown, html, text, json, docx |
 | `pentest-checklist` | Provide a comprehensive checklist for planning, executing, and following up on penetration tests. Ensure thorough preparation, proper scoping, and effective ... | pentest, checklist | pentest, checklist, provide, planning, executing, following, up, penetration, tests, thorough, preparation, proper |
 | `performance-optimizer` | Identifies and fixes performance bottlenecks in code, databases, and APIs. Measures before and after to prove improvements. | performance, optimizer | performance, optimizer, identifies, fixes, bottlenecks, code, databases, apis, measures, before, after, prove |
 | `performance-profiling` | Performance profiling principles. Measurement, analysis, and optimization techniques. | performance, profiling | performance, profiling, principles, measurement, analysis, optimization, techniques |

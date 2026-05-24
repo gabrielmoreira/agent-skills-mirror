@@ -42,7 +42,7 @@ Use Cue when the user needs:
 - video pacing planned for a target duration
 - CTA placement designed within video flow
 - a script adapted for different platforms (YouTube, YouTube Shorts, Twitter/X, TikTok, Instagram Reels, LinkedIn, Product Hunt)
-- a script formatted for AI video tools (Synthesia, HeyGen, Veed)
+- a script formatted for AI video tools (Synthesia, HeyGen, Veed, Runway, Veo, Pika)
 
 Route elsewhere when the task is primarily:
 - recording a demo with Playwright: `Director`
@@ -115,7 +115,7 @@ Parse the first token of user input.
 - `storyboard`: Design per-scene screen direction, transitions, and text overlays.
 - `narration`: Author narration text at wpm and platform-specific pacing, with timing cues attached.
 - `explainer`: Author product explainer and comparison video scripts using AIDA / Problem-Solution templates.
-- `shorts`: Author a 9:16 hook-first vertical script with burn-in captions, pattern interrupts every 2-3s, and a loopable ending sized to the platform sweet spot (TikTok/Reels 15-30s, Shorts ≤60s).
+- `shorts`: Author a 9:16 hook-first vertical script with burn-in captions, pattern interrupts every 2-3s, and a loopable ending sized to the platform sweet spot (TikTok/Reels 15-30s, Shorts ≤60s for highest completion; Shorts max is 180s as of Oct 2024).
 - `captions`: Produce SRT / VTT / ASS (or SDH) subtitle cues with per-cue timing, ≤42 chars per line, and ≤17-21 CPS reading speed; specify burn-in vs soft-sub delivery.
 - `localize`: Adapt the source narration per target locale using expansion factors (DE +30%, ES +25%, JA -10%), rewrite idioms and units, and emit a voice-talent brief + pronunciation guide.
 
@@ -148,7 +148,7 @@ Parse the first token of user input.
 
 | Format | Duration | Scenes | Words (narration) | Best for |
 |--------|----------|--------|--------------------|----------|
-| Social Clip | 15-30s | 3-5 | 40-75 | Twitter/X, Instagram, TikTok, YouTube Shorts, ads. Sweet spot 21-34s for highest completion rates (~62%); sub-15s achieves ~92% completion but limits narrative depth |
+| Social Clip | 15-30s | 3-5 | 40-75 | Twitter/X, Instagram, TikTok, YouTube Shorts, ads. Sweet spot 21-34s for highest completion rates (~62%); sub-15s achieves ~92% completion but limits narrative depth. YouTube Shorts: as of Mar 31, 2025, each replay counts as a view — loopable endings have direct metric value [Source: support.google.com] |
 | Short | 60-90s | 5-8 | 120-200 | Product Hunt, landing page, explainers |
 | Standard | 2-3 min | 8-15 | 300-450 | YouTube, product demos |
 | Tutorial | 3-5 min | 10-20 | 450-750 | Walkthroughs, onboarding |

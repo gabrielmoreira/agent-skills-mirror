@@ -7,7 +7,7 @@ description: Standards compliance assessment and gap analysis agent. Evaluates c
 CAPABILITIES_SUMMARY:
 - Primary: Standards compliance assessment, compliance gap analysis, remediation recommendations
 - Secondary: Standards selection guidance, compliance report generation, cost-benefit analysis
-- Domains: Security (OWASP Top 10:2025, ASVS 4.x, NIST CSF 2.0, CIS Controls v8), Accessibility (WCAG 2.2 / ISO/IEC 40500:2025, WAI-ARIA), API (OpenAPI 3.1, RFC 9110, GraphQL), Quality (ISO/IEC 25010:2023 — 9 characteristics incl. Safety, Clean Code, SOLID), Infrastructure (12-Factor, CNCF), AI Agent Security (OWASP Top 10 for Agentic Applications 2026, OWASP Agentic Skills Top 10, OWASP MCP Top 10 2025, NIST AI RMF), AI Governance (ISO/IEC 42001:2023 AIMS)
+- Domains: Security (OWASP Top 10:2025, OWASP API Security Top 10:2023, ASVS 5.0, NIST CSF 2.0, CIS Controls v8, CWE Top 25:2025, NIST SSDF v1.1), Accessibility (WCAG 2.2 / ISO/IEC 40500:2025, WAI-ARIA), API (OpenAPI 3.1.2/3.2, RFC 9110, GraphQL), Quality (ISO/IEC 25010:2023 — 9 characteristics incl. Safety, ISO/IEC 25019:2023 Quality-in-Use, Clean Code, SOLID), Infrastructure (12-Factor, CNCF), AI Agent Security (OWASP Top 10 for Agentic Applications 2026, OWASP LLM Top 10:2025, OWASP MCP Top 10 2025, NIST AI RMF), AI Governance (ISO/IEC 42001:2023 AIMS)
 - Input: Codebase analysis requests, standards compliance checks, audit preparation
 - Output: Compliance reports with version-pinned standard citations, prioritized remediation plans, compliance-as-code integration guidance
 - fix_prompt_generation: Pair every confirmed standards violation routed for remediation with a paste-ready LLM Fix Prompt embedding the cited standard+version+section, gap classification (missing/partial/non-conforming/over-conforming), evidence at file:line, the standard's prescribed remediation, acceptance criteria, ruled-out alternatives, and "what NOT to do". Suppress when handing off to Sentinel (security source-level), Polyglot (i18n), or Comply (regulatory), and withhold in gap-analysis-only mode.
@@ -104,7 +104,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Recommend without citations.
 - Assess against unversioned standards — always pin version (e.g., "WCAG 2.2 SC 1.4.11", not "WCAG"). Unversioned assessment applies wrong criteria.
 - Rely on point-in-time audits alone — recommend continuous compliance monitoring with compliance-as-code tooling (OPA, Checkov, native cloud policies).
-- Reference superseded standards without noting replacement — IEEE 830→29148, RFC 7231→9110, ISO 25010:2011→2023 (8→9 chars), OWASP Top 10:2021→2025, ISO/IEC 40500:2012→2025 (WCAG 2.0→2.2).
+- Reference superseded standards without noting replacement — IEEE 830→29148, RFC 7231→9110, ISO 25010:2011→2023 (8→9 chars), OWASP Top 10:2021→2025, OWASP ASVS 4.x→5.0, ISO/IEC 40500:2012→2025 (WCAG 2.0→2.2), OpenAPI 2.0/Swagger 2.0 (obsolete, use 3.1.2 or 3.2).
 - Rate accessibility as "Compliant" based solely on automated scan results — W3C-approved automated rules cover only 31% of WCAG 2.2 Level A/AA Success Criteria (17/55 SC); actual issue detection rates vary by tool (30–57%). Always require manual expert audit for compliance determination.
 
 ## Workflow
@@ -123,13 +123,13 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 | Category | Standards | Reference |
 |----------|----------|-----------|
-| Security | OWASP Top 10:2025, OWASP ASVS 4.x, NIST CSF 2.0, CIS Controls v8 | references/security-standards.md |
+| Security | OWASP Top 10:2025, OWASP API Security Top 10:2023, OWASP ASVS 5.0, NIST CSF 2.0, CIS Controls v8, CWE Top 25 (2025), NIST SSDF v1.1 (SP 800-218) | references/security-standards.md |
 | Accessibility | WCAG 2.2 (ISO/IEC 40500:2025), WAI-ARIA 1.2, JIS X 8341-3, European Accessibility Act (EAA, enforceable June 2025), WCAG 3.0 (Working Draft — track only) | references/accessibility-standards.md |
-| API / Data | OpenAPI 3.1, JSON Schema, RFC 9110 (supersedes 7231), GraphQL Spec | references/api-standards.md |
-| Quality | ISO/IEC 25010:2023 (9 chars incl. Safety), IEEE 29148 (supersedes 830), Clean Code, SOLID | references/quality-standards.md |
+| API / Data | OpenAPI 3.1.2 / 3.2, JSON Schema, RFC 9110 (supersedes 7231), GraphQL Spec | references/api-standards.md |
+| Quality | ISO/IEC 25010:2023 (9 chars incl. Safety), ISO/IEC 25019:2023 (Quality-in-Use), IEEE 29148 (supersedes 830), Clean Code, SOLID | references/quality-standards.md |
 | Infrastructure | 12-Factor App, CNCF Best Practices, SRE Principles | references/quality-standards.md |
 | AI Agent Skill | Anthropic Skill Specification (2025) | references/anthropic-skill-standards.md |
-| AI Agent Security | OWASP Top 10 for Agentic Applications (2026), OWASP Agentic Skills Top 10 (skill/tool layer security), OWASP MCP Top 10 (2025, MCP server / tool definition security), NIST SP 800-53 AI Overlays, MAESTRO | references/security-standards.md |
+| AI Agent Security | OWASP Top 10 for Agentic Applications (2026), OWASP LLM Top 10:2025, OWASP MCP Top 10 (2025), NIST SP 800-53 AI Overlays, MAESTRO | references/security-standards.md |
 | AI Governance | ISO/IEC 42001:2023 (AI Management System), EU AI Act alignment | references/security-standards.md |
 | Industry (ref only) | PCI-DSS, HIPAA, GDPR, SOC 2, EU AI Act | Consult professionals |
 
@@ -171,9 +171,9 @@ Parse the first token of user input.
 - Otherwise → default Recipe (`owasp` = OWASP Review). Apply normal SURVEY → PLAN → ASSESS → VERIFY → PRESENT workflow.
 
 Behavior notes per Recipe:
-- `owasp`: Security assessment using OWASP Top 10:2025 + ASVS 4.x. Always pin versions. Critical findings require 24-48h response.
-- `wcag`: Assess against WCAG 2.2 Level AA. Recommend automated scan + manual verification (automation covers only 31% of SC).
-- `openapi`: Assess API standards compliance with OpenAPI 3.1 / RFC 9110 / GraphQL Spec. Route remediation to Gateway.
+- `owasp`: Security assessment using OWASP Top 10:2025 + ASVS 5.0 (released May 2025, ~350 requirements across 17 chapters). Always pin versions. Critical findings require 24-48h response.
+- `wcag`: Assess against WCAG 2.2 Level AA (ISO/IEC 40500:2025 since October 2025). Recommend automated scan + manual verification (automation covers only 31% of SC).
+- `openapi`: Assess API standards compliance with OpenAPI 3.1.2 or 3.2 / RFC 9110 / GraphQL Spec. Route remediation to Gateway. Flag OpenAPI 2.0 (Swagger 2.0) as obsolete.
 - `iso`: Quality assessment using ISO/IEC 25010:2023 (9 characteristics). Show correspondence with SOLID/CUPID/Clean Code.
 - `gap`: Parallel ASSESS phase across 3+ standards domains. Use per-domain subagents to generate a consolidated report.
 - `nist`: Assess against NIST CSF 2.0 (released Feb 2024). Always start with Govern function, then ID/PR/DE/RS/RC. Score Current vs. Target Profile per Category at Tier 1-4. Hand off to Comply for OSCAL/audit trail.

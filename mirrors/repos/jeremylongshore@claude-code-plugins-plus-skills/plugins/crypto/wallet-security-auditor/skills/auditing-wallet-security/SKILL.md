@@ -30,6 +30,7 @@ Security analysis tool for cryptocurrency wallets. Scans ERC20 token approvals, 
 ## Prerequisites
 
 Before using this skill, ensure you have:
+
 - Python 3.8+ with `requests` library installed
 - Optional: `ETHERSCAN_API_KEY` environment variable for higher rate limits
 - Network access to blockchain RPC endpoints (public RPCs included)
@@ -41,12 +42,13 @@ Before using this skill, ensure you have:
 
 Scan wallet for all active ERC20 token approvals:
 
-```bash
+```text
 cd ${CLAUDE_SKILL_DIR}/scripts
 python wallet_auditor.py approvals <address> --chain <chain>
 ```
 
 Options:
+
 1. `--chain`: ethereum, bsc, polygon, arbitrum, optimism, base (default: ethereum)
 2. `--unlimited`: Show only unlimited approvals
 3. `--verbose`: Detailed output
@@ -69,7 +71,7 @@ Analyzes:
 
 Get weighted security risk score (0-100, higher = safer):
 
-```bash
+```text
 python wallet_auditor.py score <address>
 python wallet_auditor.py score <address> --json  # JSON output
 ```
@@ -105,7 +107,7 @@ Detects:
 
 Get prioritized list of approvals to revoke:
 
-```bash
+```text
 python wallet_auditor.py revoke-list <address>
 ```
 
@@ -132,6 +134,7 @@ python wallet_auditor.py chains
 ## Output
 
 ### Security Score Report
+
 ```
 ╔═══════════════════════════════════════════════════════════════════╗
 ║                    WALLET SECURITY SCORE                          ║
@@ -147,18 +150,21 @@ python wallet_auditor.py chains
 ```
 
 ### Approval Summary
+
 - Total active approvals count
 - Unlimited approvals flagged
 - Risky approvals with severity
 - Unique spenders and tokens
 
 ### Risk Factors
+
 - [CRITICAL] Unlimited approval to unknown contract
 - [HIGH] Approval to flagged contract
 - [MEDIUM] Many unlimited approvals (>5)
 - [LOW] Interaction with unverified contract
 
 ### Recommendations
+
 - Priority 1: Revoke risky approvals immediately
 - Priority 2: Review unnecessary unlimited approvals
 - Priority 3: Audit all approvals periodically
@@ -179,6 +185,7 @@ See `${CLAUDE_SKILL_DIR}/references/errors.md` for comprehensive error handling:
 See `${CLAUDE_SKILL_DIR}/references/examples.md` for detailed examples.
 
 ### Quick Security Check
+
 ```bash
 # Check wallet approvals
 python wallet_auditor.py approvals 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
@@ -195,6 +202,7 @@ python wallet_auditor.py approvals 0x... --chain arbitrum
 ```
 
 ### Generate Audit Report
+
 ```bash
 # Text report
 python wallet_auditor.py report 0x... --output security_audit.txt

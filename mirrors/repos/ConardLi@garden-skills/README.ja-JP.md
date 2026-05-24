@@ -69,9 +69,10 @@
 - スクリプト、テーマ、アウトライン、実装モード、オプションの音声に対する厳格なコラボレーションチェックポイント
 - 録画中もステージをクリーンに保つ、ホバー時のみ表示される進捗コントロール
 - **23 種類のビルトインテーマ**（`midnight-press` から `swiss-ikb` まで）を備えたテーマトークンアーキテクチャ。エディトリアル、ターミナル、エンジニアリング、スイス国際主義など、各テーマが独自のデザインシグネチャを持つ
+- **プラガブル TTS**：プロバイダー非依存の音声ランナー。**2 つのビルトインプロバイダー**（MiniMax `mmx-cli` + curl 経由の OpenAI TTS）を同梱し、ElevenLabs / edge-tts / Azure / Google Cloud / macOS `say` 用のコピペ可能なスニペットも付属
 - 再利用可能なステージプリミティブと録画ガイダンスを備えた Vite + React + TypeScript プロジェクトのスキャフォールド
 
-リンク: [README](./skills/web-video-presentation/README.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md) · <!-- DOWNLOAD:web-video-presentation:start -->[Download v1.2.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-video-presentation-v1.2.0/web-video-presentation-1.2.0.zip)<!-- DOWNLOAD:web-video-presentation:end -->
+リンク: [README](./skills/web-video-presentation/README.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md) · <!-- DOWNLOAD:web-video-presentation:start -->[Download v1.2.1 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-video-presentation-v1.2.1/web-video-presentation-1.2.1.zip)<!-- DOWNLOAD:web-video-presentation:end -->
 
 ---
 
@@ -88,11 +89,12 @@
 
 - 要件 → コンテキスト → デザインシステム → v0 → フルビルド → 検証という 6 ステップのデザインワークフローを定義
 - アンチクリシェのブロックリストとより強いビジュアル判断力で、一般的な AI UI パターンを超える
+- **デザインディレクション・アドバイザー（6 学派の差別化された 3 択推薦）と、anchor 付きスタイルレシピ 25 種類**（Linear / Aesop / Pentagram / Bloomberg / Stripe Press / Mid-Century など）を内蔵。各レシピにはコピー可能なパレット、タイポグラフィ、シグネチャムーブ、アンチパターンが揃っており、デザインシステム宣言にそのまま貼り込める
 - HTML / CSS / JavaScript / React プロトタイプをカバーし、レスポンシブレイアウト、モーション、インタラクションの仕上げに関するガイダンスを提供
 - インライン React + Babel、CSS トークン、`oklch()` カラー処理、コンテナクエリ、reduced-motion 対応の実装ルールを含む
 - デバイスフレーム、スライドエンジン、アニメーションタイムライン、ダッシュボード、その他の再利用可能な Web 成果物のための高度なパターンリファレンスを同梱
 
-リンク: [README](./skills/web-design-engineer/README.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[Download v1.1.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.1.0/web-design-engineer-1.1.0.zip)<!-- DOWNLOAD:web-design-engineer:end -->
+リンク: [README](./skills/web-design-engineer/README.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[Download v1.2.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.2.0/web-design-engineer-1.2.0.zip)<!-- DOWNLOAD:web-design-engineer:end -->
 
 ---
 

@@ -1,9 +1,11 @@
 # Agent Protocol
 
 **Server:** obsidian-mcp-server
-**Version:** 3.2.1
-**Framework:** [@cyanheads/mcp-ts-core](https://www.npmjs.com/package/@cyanheads/mcp-ts-core) `^0.9.1`
+**Version:** 3.2.2
+**Framework:** [@cyanheads/mcp-ts-core](https://www.npmjs.com/package/@cyanheads/mcp-ts-core) `^0.9.6`
 **Engines:** Bun ≥1.3.11, Node ≥24.0.0
+**MCP SDK:** `@modelcontextprotocol/sdk` ^1.29.0
+**Zod:** ^4.4.3
 
 > **Read the framework docs first:** `node_modules/@cyanheads/mcp-ts-core/CLAUDE.md` contains the full API reference — builders, Context, error codes, exports, patterns. This file covers server-specific conventions only.
 
@@ -293,13 +295,13 @@ Available skills:
 | `security-pass` | Audit server for MCP-flavored security gaps: output injection, scope blast radius, input sinks, tenant isolation |
 | `tool-defs-analysis` | Audit MCP definition language across tools/resources/prompts — voice, leaks, defaults, recovery hints, sparsity, structure |
 | `polish-docs-meta` | Finalize docs, README, metadata, and agent protocol for shipping |
-| `release-and-publish` | Ship a release end-to-end across npm, MCP Registry, and GHCR |
+| `release-and-publish` | Ship a release end-to-end across npm, MCP Registry, GitHub Releases (`.mcpb`), and GHCR |
 | `maintenance` | Investigate changelogs, adopt upstream changes, sync skills to agent dirs |
 | `migrate-mcp-ts-template` | Migrate a `mcp-ts-template` fork to depend on `@cyanheads/mcp-ts-core` as a package |
 | `report-issue-framework` | File a bug or feature request against `@cyanheads/mcp-ts-core` via `gh` CLI |
 | `report-issue-local` | File a bug or feature request against this server's own repo via `gh` CLI |
 | `api-auth` | Auth modes, scopes, JWT/OAuth |
-| `api-canvas` | DataCanvas SQL workspace (Tier 3, DuckDB) — not used by this server |
+| `api-canvas` | DataCanvas: register tabular data, run SQL, export, plus the `spillover()` helper for big result sets — Tier 3 opt-in |
 | `api-config` | AppConfig, parseConfig, env vars |
 | `api-context` | Context interface, logger, state, progress |
 | `api-errors` | McpError, JsonRpcErrorCode, error patterns |
@@ -324,14 +326,26 @@ When you complete a skill's checklist, check the boxes and add a completion time
 | `bun run rebuild` | Clean + build |
 | `bun run clean` | Remove build artifacts |
 | `bun run devcheck` | Lint + format + typecheck + security + changelog sync |
+| `bun run audit:refresh` | Delete `bun.lock`, reinstall, re-audit. Use when `devcheck` flags a transitive advisory — stale lockfile can mask already-patched deps. If advisory survives, it's real. |
 | `bun run tree` | Generate `docs/tree.md` |
+| `bun run list-skills` | Print project skill index (name, version, description) |
 | `bun run format` | Auto-fix formatting (Biome) |
 | `bun run lint:mcp` | Validate MCP definitions against the linter rules |
+| `bun run lint:packaging` | Validate env var alignment between `manifest.json` and `server.json` |
+| `bun run bundle` | Build and pack as `.mcpb` for one-click Claude Desktop install |
 | `bun run test` | Run Vitest tests |
 | `bun run start:stdio` | Production mode (stdio) — requires `bun run build` first |
 | `bun run start:http` | Production mode (HTTP) — requires `bun run build` first |
 | `bun run changelog:build` | Regenerate `CHANGELOG.md` rollup from `changelog/<minor>.x/*.md` |
 | `bun run changelog:check` | Verify `CHANGELOG.md` is in sync (used by devcheck) |
+
+---
+
+## Bundling
+
+`bun run bundle` produces a `.mcpb` extension bundle for one-click install in Claude Desktop. MCPB is stdio-only — HTTP deployments are unaffected. Delete `manifest.json` and `.mcpbignore` if not shipping MCPB bundles; `lint:packaging` skips cleanly.
+
+**Adding an env var requires both files:** `server.json` (`environmentVariables[]`) and `manifest.json` (`mcp_config.env` + `user_config`). `lint:packaging` (run by `devcheck`) verifies the env var names match.
 
 ---
 

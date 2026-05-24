@@ -89,6 +89,16 @@ Sixty seconds from zero to a tool-calling agent on your desktop.
 | You're building an agent that runs unattended | **`clawdcursor agent`** | HTTP MCP daemon on `127.0.0.1:3847`. Has its own LLM brain optionally configured via `doctor`. |
 | Your agent has its own brain &mdash; you just want the tools as an HTTP endpoint | **`clawdcursor agent --no-llm`** | Same daemon, no built-in pipeline, no scheduler startup, no credential validation. Pure tool surface. |
 
+**Simplest &mdash; any OS (now on npm):**
+
+```bash
+npm i -g clawdcursor
+```
+
+> Works as-is on Windows and Linux. On **macOS**, also run `clawdcursor grant` afterward to build the native helper (Accessibility + Screen Recording). The OS installer scripts below do this step for you.
+
+**Or one line per OS (clones the repo, builds, and handles the macOS native build automatically):**
+
 **Windows (PowerShell):**
 
 ```powershell

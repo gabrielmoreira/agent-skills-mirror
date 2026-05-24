@@ -67,7 +67,8 @@ Good design is rooted in existing context. **Never start from thin air.** Priori
 1. **Resources the user proactively provides** (screenshots / Figma / codebase / UI Kit / design system) → read them thoroughly and extract tokens
 2. **Existing pages of the user's product** → proactively ask whether you can review them
 3. **Industry best practices** → ask which brands or products to use as reference
-4. **Starting from scratch** → explicitly tell the user that "no reference will affect the final quality," and either establish a temporary system based on industry best practices, or switch to Design Direction Advisor mode
+4. **User names an anchor** ("make it Linear-style" / "Aesop feeling" / "MUJI quietness") → read the single recipe file at `references/style-recipes/<anchor>.md` (e.g., `references/style-recipes/linear.md`). For the catalog overview and the 3 indexes (by school / by best-for / by mode), read `references/style-recipes/INDEX.md` first.
+5. **Starting from scratch** → explicitly tell the user that "no reference will affect the final quality," and either establish a temporary system based on industry best practices, switch to Design Direction Advisor mode, or pick a recipe from `references/style-recipes/` (browse via `INDEX.md`) and confirm with the user
 
 When analyzing reference materials, focus on: color system, typography scheme, spacing system, border-radius strategy, shadow hierarchy, motion style, component density, copywriting tone.
 
@@ -123,6 +124,7 @@ The system that follows must serve these answers. Picking aesthetics in a vacuum
 
 ```markdown
 Design Decisions:
+- Anchor / recipe (if any): [e.g., "linear" → `references/style-recipes/linear.md`, or "custom"]
 - Color palette: [primary / secondary / neutral / accent]
 - Typography: [heading font / body font / code font]
 - Spacing system: [base unit and multiples]
@@ -130,6 +132,8 @@ Design Decisions:
 - Shadow hierarchy: [elevation 1–5]
 - Motion style: [easing curves / duration / trigger]
 ```
+
+> If you picked a recipe from `references/style-recipes/`, paste its concrete palette / typography / spacing / radius / shadow / motion values straight into the block above — that catalog exists so you don't have to invent these on the fly, which is the leading cause of AI-default Inter + #3b82f6 mush. **Load only the one recipe file you're using**, not the whole catalog.
 
 🛑 **Checkpoint 1**: After articulating Steps 3a + 3, stop. Tell the user "I plan to use this system. Confirm and I'll start the v0." Then **actually wait** — don't say it and immediately start coding.
 
@@ -220,11 +224,12 @@ Don't ask the user 10 generic taste questions. Instead, propose **3 design direc
 
 | School | Vibe | Sample anchors | Best for |
 |---|---|---|---|
-| **Information architecture** | Rational, data-driven, restrained | Pentagram, Edward Tufte, Massimo Vignelli | Safe / professional / B2B |
-| **Editorial / minimalist** | Whitespace, refined typography, quiet luxury | Kenya Hara (MUJI), Apple HIG, Dieter Rams | Premium / high-end / quiet |
+| **Information architecture** | Rational, data-driven, restrained | Pentagram, Edward Tufte, Massimo Vignelli, Bloomberg Terminal | Safe / professional / B2B / data products |
+| **Editorial / minimalist** | Whitespace, refined typography, quiet luxury | Kenya Hara (MUJI), Apple HIG, Dieter Rams, Aesop | Premium / high-end / quiet |
+| **Modern tool / Builder SaaS** | Hairline detail, warm dark, single accent, monospace chips | Linear, Vercel, Raycast, Notion | Developer tools / B2B SaaS / AI tools / infra |
 | **Motion / experimental** | Bold, generative, sensory | Field.io, Active Theory, Resn | Distinctive / launch films / brand moments |
 | **Brutalist / raw** | Anti-design, honest, unpolished | Balenciaga, Are.na, Bloomberg Businessweek covers | Differentiated / confident / counter-culture |
-| **Warm humanist** | Approachable, organic, hand-touched | Mailchimp (early), Stripe Press, Studio Dumbar | Lifestyle / education / approachable B2C |
+| **Warm humanist** | Approachable, organic, hand-touched | Mailchimp (early), Stripe Press, Headspace | Lifestyle / education / approachable B2C / wellness |
 
 ❌ **Hard rule**: never recommend 3 picks from the same row — the user can't tell them apart and the contrast that makes the choice meaningful collapses.
 
@@ -232,7 +237,9 @@ Don't ask the user 10 generic taste questions. Instead, propose **3 design direc
 
 The chosen direction becomes the design context for Step 2 onward. Document it in `brand-spec.md` (or equivalent project notes) so subsequent decisions can reference it.
 
-> Extended philosophy library, per-direction visual recipes, and AI-prompt templates → `references/design-directions.md`.
+> **Direction → concrete starting point**: once the user picks a school, surface 2–3 named recipes from that school by reading the matching files in `references/style-recipes/` (e.g., picked *Information Architecture* → read `references/style-recipes/pentagram.md`, `references/style-recipes/bloomberg-terminal.md`, etc.). Each recipe file brings concrete palette, typography, spacing, and signature moves you can paste into the Step 3 design-system declaration.
+
+> Extended philosophy library, per-school anchor tables, and AI-prompt templates → `references/design-directions.md`. Anchored recipe catalog → `references/style-recipes/INDEX.md` (catalog index + 3 indexes + cross-cutting anti-patterns) + 25 single-recipe files alongside it.
 
 ---
 
@@ -481,4 +488,6 @@ Read on demand based on task type — don't preload everything:
 |---|---|
 | Slide engine, device frames, Tweaks panel, animation timeline, design canvas, dark mode, data viz, oklch color system, font recommendations | `references/advanced-patterns.md` |
 | Vague request → recommend 3 design directions; extended philosophy library + per-direction visual recipes + AI-prompt templates | `references/design-directions.md` |
+| User named an anchor ("Linear-style" / "Aesop feeling") → load **only that one file** | `references/style-recipes/<anchor>.md` (e.g., `linear.md`, `aesop.md`) |
+| Browse the recipe catalog / compare options after Direction Advisor picks a school | `references/style-recipes/INDEX.md` (3 indexes + cross-cutting anti-patterns; then read 1–3 specific recipe files) |
 | Critique mode — detailed scoring rubrics, per-output-type weighting, common-issue catalog (top 10) | `references/critique-guide.md` |

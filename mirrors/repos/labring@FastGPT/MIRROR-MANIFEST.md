@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `labring/FastGPT` — 26 default patterns, 2 followed patterns, 28 file(s) materialized.
+Mirror of `labring/FastGPT` — 26 default patterns, 3 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `labring/FastGPT` — 26 default patterns, 2 followed patterns, 28 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 28 |
+| Followed pats | 3 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `labring/FastGPT` — 26 default patterns, 2 followed patterns, 28 fil
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `.codex/code/commands.md`
 - `.codex/code/syntax.md`
 - `.codex/design/api/zod-request-parse-error-handling.md`
 
@@ -86,8 +87,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`.codex/skills/system/test-case/SKILL.md`](.codex/skills/system/test-case/SKILL.md) |
 | 25 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 26 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
-| 27 | → | [`.codex/code/syntax.md`](.codex/code/syntax.md) |
-| 28 | → | [`.codex/design/api/zod-request-parse-error-handling.md`](.codex/design/api/zod-request-parse-error-handling.md) |
+| 27 | → | [`.codex/code/commands.md`](.codex/code/commands.md) |
+| 28 | → | [`.codex/code/syntax.md`](.codex/code/syntax.md) |
+| 29 | → | [`.codex/design/api/zod-request-parse-error-handling.md`](.codex/design/api/zod-request-parse-error-handling.md) |
 
 ---
 

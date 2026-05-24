@@ -120,37 +120,50 @@ Attribution:
    ```bash
    npm run release:local -- --out /tmp/pi-local-release --force
    cd /tmp
+
+   # Node package install smoke tests
    /tmp/pi-local-release/node/pi --help
    /tmp/pi-local-release/node/pi --version
+   /tmp/pi-local-release/node/pi --list-models
+   /tmp/pi-local-release/node/pi -p "Say exactly: ok"
    /tmp/pi-local-release/node/pi
+
+   # Bun binary smoke tests
    /tmp/pi-local-release/bun/pi --help
    /tmp/pi-local-release/bun/pi --version
+   /tmp/pi-local-release/bun/pi --list-models
+   /tmp/pi-local-release/bun/pi -p "Say exactly: ok"
+   /tmp/pi-local-release/bun/pi
    ```
-   Verify startup, model/account listing, and at least one real prompt with the intended default provider. Failures are release blockers unless the user explicitly accepts the risk.
+   Verify both Node and Bun startup, model/account listing, interactive startup, and at least one real prompt with the intended default provider. The bare commands `/tmp/pi-local-release/node/pi` and `/tmp/pi-local-release/bun/pi` start interactive mode; run each in tmux, submit a prompt, and wait for the model reply before considering the interactive smoke test passed. Failures are release blockers unless the user explicitly accepts the risk.
 
-3. **Brief the user on the WebAuthn flow before running anything**. Print exactly the following message and then stop and wait for the user to confirm in their next message:
+3. **Verify npm authentication**: run `npm whoami` before starting the release script. If it fails, stop and tell the user to run `npm login` manually first, then retry after they confirm `npm whoami` succeeds.
+
+4. **Brief the user on the WebAuthn flow before running anything**. Print exactly the following message and then stop and wait for the user to confirm in their next message:
 
    ```
-   Before I run the release script, read this carefully:
+   Before the release publish step, read this carefully:
 
    - `npm publish` uses WebAuthn 2FA.
-   - A login URL will appear in the live bash output in this TUI. I will NOT see it until the command exits.
-   - You must watch the bash output, cmd/ctrl-click the URL, log in in the browser, and select the "don't ask again for N minutes" option so publish can continue.
-   - This may happen more than once during the release.
+   - The safest flow is for you to run the publish command yourself, because you can see and open the npm authentication URL immediately.
+   - I will tell you the exact command to run.
+   - When npm prints an auth URL, cmd/ctrl-click it, log in in the browser, and select the "don't ask again for N minutes" option if available.
+   - This may happen more than once during publish.
+   - Do not rerun `npm run release:patch` or `npm run release:minor` after a failed publish; only rerun the publish command I give you.
 
-   Reply "ready" once you have read this and are watching the bash output. I will not run the release script until you do.
+   Reply "ready" once you have read this and are ready to run the command locally.
    ```
 
-   Do not proceed to step 4 until the user explicitly confirms.
+   Do not proceed to step 5 until the user explicitly confirms.
 
-4. **Run the release script**:
+5. **Run the release script**:
    ```bash
    npm run release:patch    # fixes + additions
    npm run release:minor    # breaking changes
    ```
-   Do not pass a `timeout` to the bash tool for this call. If publish fails partway, stop and report to the user what happened (which package failed, the error output) along with possible solutions. Never rerun the version bump on your own.
+   Do not pass a `timeout` to the bash tool for this call. If publish fails during the WebAuthn/OTP step after version bump, stop and tell the user to run `npm run publish` themselves from the repo root. Never rerun the version bump on your own. After the user reports publish success, continue with the post-publish steps.
 
-5. **After publish succeeds**:
+6. **After publish succeeds**:
    - Add fresh `## [Unreleased]` sections to package changelogs.
    - Commit with `Add [Unreleased] section for next cycle`.
    - Push `main` and the release tag.

@@ -42,7 +42,7 @@ const openEvidenceConfig = (env: string) => ({
 
 ## Environment Files
 
-```bash
+```text
 # Per-env files: .env.development, .env.staging, .env.production
 OPENEVIDENCE_API_KEY_{DEV|STG|PROD}=<api-key>
 OPENEVIDENCE_BASE_URL=https://api.{dev.|staging.|""}openevidence.com/v1
@@ -109,6 +109,7 @@ OPENEVIDENCE_BAA_ID=baa-2026-001 npm run deploy -- --env production --hipaa-chec
 ## Resources
 
 - [OpenEvidence Docs](https://www.openevidence.com)
+
 ## Next Steps
 
 See `openevidence-deploy-integration`.

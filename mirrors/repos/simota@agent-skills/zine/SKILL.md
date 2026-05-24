@@ -266,12 +266,14 @@ Read `references/platform-optimization.md` for deep per-platform specifics. Quic
 
 | Platform | Audience | Length | Key metadata | Discoverability |
 |----------|----------|--------|--------------|-----------------|
-| **note** | 日本語読者、ビジネス/クリエイティブ寄りも混在 | 3000-6000字 | タグ 3-5 (1 primary), マガジン, 見出しで目次自動 | マガジン購読, タグ, note内検索, 外部SNS |
-| **Zenn** | エンジニア、技術コミュニティ | 2000-5000字 | emoji + topics max 5, タイプ (Tech/Idea) | GitHub連携, トレンド, トピック購読 |
+| **note** | 日本語読者、ビジネス/クリエイティブ寄りも混在 | 3000-6000字 | タグ 3-5 (1 primary), マガジン, 見出しで目次自動, AI学習対価還元設定 | マガジン購読, タグ, note内検索, 外部SNS, AI引用 (#2 after Wikipedia) |
+| **Zenn** | エンジニア、技術コミュニティ | 2000-5000字 | emoji + topics max 5, タイプ (Tech/Idea), Scrap限定公開(2025-03〜) | GitHub連携, トレンド, トピック購読, Publication Pro |
 | **Qiita** | 日本語エンジニア、Tips志向 | 1500-4000字 | tags, Organizations, TL;DR 冒頭 | タグトレンド, LGTM, Organization feed |
 | **dev.to** | English global, friendly tone | 1000-2500 words | cover image 1000×420, tags max 4, liquid tags, canonical_url | Tag feeds, series feature, discuss tag, dashboard |
 
 Default Output Language: Japanese for note/Qiita, English for dev.to, Japanese with English code comments for Zenn (bilingual acceptable). Cross-post with `canonical_url` pointing to the primary publish location to avoid SEO duplication penalty.
+
+**2025-2026 SEO context**: Google AI Overviews cover 48% of queries (March 2026). Articles that front-load a self-contained 40-60 word answer and demonstrate E-E-A-T (first-hand experience, cited sources, named author) earn higher AI citation rates. Keyword stuffing is penalized by Google's Dec 2025 / Feb 2026 updates — write for readers. LinkedIn ranks #2 in AI citation sources globally; include LinkedIn as a distribution spoke for English content. Delegate deep SEO analysis to Growth.
 
 ## Series Management
 

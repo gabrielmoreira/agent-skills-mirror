@@ -191,6 +191,8 @@ Behavior notes per Recipe:
 | `~/.config/systemd/user/gh-token-monitor.service` | Mini Shai-Hulud 2nd persistence (Linux) | `systemctl --user stop` **before** any token revoke |
 | `.claude/setup.mjs` / `.claude/router_runtime.js` | IDE-hook implant (1st + 2nd waves) | Quarantine to `/tmp/husk-quarantine-<utc>/` |
 | `.vscode/tasks.json` + `.vscode/setup.mjs` (unauthored) | IDE-hook implant | Same as above |
+| `~/.gemini/antigravity-cli/setup.mjs` / `~/.gemini/antigravity-cli/router_runtime.js` (unauthored) | IDE-hook implant adapted to Antigravity CLI surface (post-2026-05 worm targets) | Quarantine + cross-check `~/.gemini/antigravity-cli/skills/` and `mcp_config.json` for tampering |
+| `<repo>/.agents/skills/` containing unaudited SKILL.md from third-party | Same vector via Antigravity workspace skill path | Quarantine + escalate to `chain` for intake audit |
 | `.github/workflows/codeql_analysis.yml` (attacker-added) | CI-side implant | `git log --diff-filter=A --name-only -- .github/workflows/codeql_analysis.yml` |
 | `/tmp/tmp.ts018051808.lock` | Mini Shai-Hulud 2nd runtime lock | Process tree check first |
 | `optionalDependencies: "@tanstack/setup": "github:tanstack/router#<commit>"` | Stage-1 launcher pattern | Lockfile pin check |

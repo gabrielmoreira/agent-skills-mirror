@@ -101,7 +101,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Recommend Skill | `recommend` | ✓ | Recommend best-fit skill for the task (cache-first; falls back to full catalog) | `.claude/compass-cache.md` (if present) OR `references/catalog.md`, `references/patterns.md`, `references/recipes-directory.md` |
 | Catalog Listing | `catalog` | | Full catalog of all skills (cache bypassed) | `references/catalog.md`, `references/recipes-directory.md` |
 | Onboarding Guide | `onboard` | | Orientation for new users | `references/examples.md`, `references/recipes-directory.md` |
-| Recipe Directory | `recipes` | | Per-skill Recipe (Subcommand) listing. `/compass recipes <skill>` lists all Recipes for a specific skill; without arguments, shows all 136 skills | `references/recipes-directory.md` |
+| Recipe Directory | `recipes` | | Per-skill Recipe (Subcommand) listing. `/compass recipes <skill>` lists all Recipes for a specific skill; without arguments, shows all 141 skills | `references/recipes-directory.md` |
 | Init Cache | `init` | | Generate `.claude/compass-cache.md` for the current repository — scan signals (manifests, file mix, conventions), score skills, write Top-N slim cache. Reduces recommend-time context ~95%. | `references/cache-recipes.md`, `references/cache-format.md`, `references/catalog.md` |
 | Refresh Cache | `refresh` | | Force-regenerate `.claude/compass-cache.md` with before/after diff (added / removed / affinity-changed skills). Use after catalog upgrades, framework changes, or TTL expiry. | `references/cache-recipes.md`, `references/cache-format.md`, `references/catalog.md` |
 
@@ -144,7 +144,7 @@ For beginners, present the ecosystem as 5 intuitive domains:
 | **Design** | Atlas, Schema, Gateway | `/atlas 依存関係を分析して` |
 | **Operate** | Pipe, Scaffold, Beacon | `/pipe GitHub Actionsワークフロー作って` |
 
-Full 23-category, 136-agent catalog: `references/catalog.md`.
+Full 24-category, 141-agent catalog: `references/catalog.md`.
 Recommendation and comparison output formats: `references/patterns.md` Output Formats section.
 
 ## Output Requirements

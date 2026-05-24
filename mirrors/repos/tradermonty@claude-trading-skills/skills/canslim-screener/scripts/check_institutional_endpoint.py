@@ -6,19 +6,33 @@ Critical decision point for Phase 2 implementation
 
 import os
 import sys
+from datetime import date
 
 import requests
 
 
+def _latest_completed_quarter(as_of=None):
+    """(year, quarter) of the most recent completed calendar quarter."""
+    d = as_of or date.today()
+    year = d.year
+    quarter = (d.month - 1) // 3  # current quarter (1-4) minus 1 = last completed
+    if quarter == 0:
+        quarter, year = 4, year - 1
+    return year, quarter
+
+
 def check_institutional_endpoint():
     """
-    Test if institutional-holder endpoint is available with current API key
+    Test if /stable institutional-ownership data is available with the API key.
+
+    The skill sources the CANSLIM 'I' component from /stable
+    institutional-ownership (symbol-positions-summary for the holder count +
+    ownership %), with a v3 fallback handled automatically in FMPClient. This
+    is just an availability probe.
 
     Returns:
-        bool: True if endpoint available (Full Implementation)
-              False if endpoint restricted (Fallback Implementation)
+        bool: True if institutional data is reachable, False otherwise.
     """
-    # Get API key
     api_key = os.environ.get("FMP_API_KEY")
 
     if not api_key:
@@ -26,75 +40,46 @@ def check_institutional_endpoint():
         print("Please set it with: export FMP_API_KEY=your_key")
         return False
 
-    print(f"Testing institutional-holder endpoint with API key (length: {len(api_key)})...")
+    print(f"Testing /stable institutional-ownership with API key (length: {len(api_key)})...")
     print()
 
-    # Test institutional-holder endpoint
     test_symbol = "AAPL"
-    url = f"https://financialmodelingprep.com/api/v3/institutional-holder/{test_symbol}"
+    year, quarter = _latest_completed_quarter()
+    url = (
+        "https://financialmodelingprep.com/stable/institutional-ownership/symbol-positions-summary"
+    )
+    params = {"symbol": test_symbol, "year": year, "quarter": quarter, "apikey": api_key}
 
     try:
-        response = requests.get(url, headers={"apikey": api_key}, timeout=10)
+        response = requests.get(url, params=params, timeout=10)
 
-        print(f"Status Code: {response.status_code}")
+        print(f"Status Code: {response.status_code} (year={year} Q{quarter})")
         print(f"Response length: {len(response.text)} bytes")
         print()
 
         if response.status_code == 200:
-            # Parse JSON
             data = response.json()
-
-            # Check if it's an error message
-            if isinstance(data, dict) and "Error Message" in data:
-                print("❌ RESULT: Endpoint RESTRICTED")
-                print(f"   Error: {data['Error Message']}")
-                print()
-                print("DECISION: Use Fallback Implementation (Step 3B)")
-                print("  - I component will use Profile API institutionalOwnership field only")
-                print("  - Score capped at 70/100")
-                print("  - Quality warning will be added to all results")
-                return False
-
-            # Check if data is valid
-            if isinstance(data, list) and len(data) > 0:
-                print("✅ RESULT: Endpoint AVAILABLE")
-                print(f"   Found {len(data)} institutional holders for {test_symbol}")
-                print()
-                print("Sample data:")
-                for i, holder in enumerate(data[:3]):
-                    print(
-                        f"  {i + 1}. {holder.get('holder', 'N/A')}: "
-                        f"{holder.get('shares', 0):,} shares"
-                    )
-                print()
-                print("DECISION: Use Full Implementation (Step 3A)")
-                print("  - Full institutional analysis with holder count and ownership %")
-                print("  - Superinvestor detection")
-                print("  - Score range: 0-100")
+            if isinstance(data, list) and data and data[0].get("investorsHolding"):
+                summary = data[0]
+                print("✅ RESULT: Institutional data AVAILABLE")
+                print(
+                    f"   {test_symbol}: {summary.get('investorsHolding')} holders, "
+                    f"ownership {summary.get('ownershipPercent')}%"
+                )
                 return True
-            else:
-                print("⚠️  RESULT: Unexpected response format")
-                print(f"   Data type: {type(data)}")
-                print(f"   Data: {data}")
-                print()
-                print("DECISION: Use Fallback Implementation (Step 3B) as precaution")
-                return False
+            print("⚠️  RESULT: No institutional data for the latest quarter")
+            print(f"   Data: {str(data)[:200]}")
+            return False
 
-        elif response.status_code == 401 or response.status_code == 403:
-            print("❌ RESULT: Endpoint RESTRICTED (401/403)")
-            print()
-            print("DECISION: Use Fallback Implementation (Step 3B)")
+        if response.status_code in (401, 403):
+            print("❌ RESULT: RESTRICTED (401/403) — check subscription/key")
             return False
-        else:
-            print(f"⚠️  RESULT: Unexpected status code {response.status_code}")
-            print()
-            print("DECISION: Use Fallback Implementation (Step 3B) as precaution")
-            return False
+
+        print(f"⚠️  RESULT: Unexpected status code {response.status_code}")
+        return False
 
     except requests.exceptions.RequestException as e:
         print(f"❌ ERROR: Request failed - {e}")
-        print()
-        print("DECISION: Use Fallback Implementation (Step 3B)")
         return False
 
 

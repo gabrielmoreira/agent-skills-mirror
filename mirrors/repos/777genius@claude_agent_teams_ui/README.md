@@ -1,3 +1,4 @@
+
 <p align="center">
   <a href="docs/screenshots/1.jpg"><img src="docs/screenshots/1.jpg" width="75" alt="Kanban Board" /></a>&nbsp;
   <a href="docs/screenshots/7.png"><img src="docs/screenshots/7.png" width="75" alt="Code Review" /></a>&nbsp;
@@ -35,8 +36,7 @@
 
 <a href="https://777genius.github.io/agent-teams-ai/">Watch demo on the site or here:</a>
 
-
-https://github.com/user-attachments/assets/d1a85fe5-fb49-4009-b2c1-79ae8818e8c4
+[demo_new_15s.webm](https://github.com/user-attachments/assets/d78cf5a4-80fe-4a8b-a1db-fb272e18029c)
 
 <table>
 <tr>
@@ -152,7 +152,7 @@ An orchestration layer for AI agent teams across Claude, Codex, and OpenCode.
 
 - **Built-in code editor** — edit project files with Git support without leaving the app
 
-- **Branch strategy** — choose via prompt: single branch or git worktree per agent
+- **Branch strategy** - choose per teammate at launch: use the main checkout or run selected agents in their own git worktree. You can still spell out branch rules in the provisioning prompt.
 
 - **Team member stats** — global performance statistics per member
 
@@ -252,13 +252,13 @@ Yes. Every task shows a full diff view where you can accept, reject, or comment 
 <details>
 <summary><strong>What happens if an agent gets stuck?</strong></summary>
 <br />
-Send a direct message to course-correct, or stop and restart from the process dashboard. If an agent needs your input, you'll get a notification and the task will show a distinct badge on the board.
+Send a direct message to course-correct, or stop and restart from the process dashboard. Agent Teams also has a nudge system: the app can send a short control message when there is a clear reason to wake an agent up, such as after a known rate-limit cooldown, when a teammate has not synced with its current task or review, or when progress appears stalled. Nudges are guarded and rate limited, so they are meant to help the agent continue, not spam it. If an agent needs your input, you'll get a notification and the task will show a distinct badge on the board.
 </details>
 
 <details>
 <summary><strong>Does it support multiple projects and teams?</strong></summary>
 <br />
-Yes. Run multiple teams in one project or across different projects, even simultaneously. To avoid Git conflicts, ask agents to use git worktree in your provisioning prompt.
+Yes. Run multiple teams in one project or across different projects, even simultaneously. To avoid Git conflicts, enable git worktree isolation for selected teammates when launching the team, and use the provisioning prompt for any extra branch or merge rules.
 </details>
 
 ---

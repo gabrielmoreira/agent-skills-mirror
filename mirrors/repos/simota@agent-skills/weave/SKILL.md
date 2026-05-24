@@ -11,7 +11,7 @@ CAPABILITIES_SUMMARY:
 - saga_design: Saga Orchestration / Choreography pattern design with compensating transactions
 - approval_flow: Multi-level approval flow design — escalation, timeout, and delegation rules
 - event_driven_workflow: Event-driven workflow design and CQRS/ES integration
-- engine_selection: Workflow-engine selection across Temporal, Step Functions, Cadence, Inngest, and others
+- engine_selection: Workflow-engine selection across Temporal, Step Functions, Inngest, Restate, DBOS Transact, XState v5, and LangGraph
 - long_running_tx: Long-running transaction management — idempotency and retry strategies
 - workflow_testing: Workflow testability design and state-transition test-case generation
 
@@ -204,6 +204,7 @@ Behavior notes per Recipe:
 | Test case generation requested | Extract state × event matrix; hand to Radar | `references/state-machine-patterns.md` |
 | Saga spans 5+ participating services | Default to Orchestration; name coordinator ownership and retry budget | `references/saga-patterns.md` |
 | Long-running transaction (minutes to days) | Recommend Temporal-class durable engine; pin explicit `cancellationType` | `references/engine-selection.md` |
+| AI agent workflow (LLM-driven state transitions) | Model as graph-based state machine (LangGraph) or durable workflow (Temporal / DBOS) with explicit human-in-the-loop states | `references/engine-selection.md` |
 | Approval flow with timeout / escalation | Model with BPMN 2.0 boundary timer + escalation events (never error events) | `references/approval-flow-patterns.md` |
 | Spec extract received from Scribe | Re-ground against existing transitions; reject if business rules conflict | `references/handoffs.md` |
 
@@ -319,9 +320,14 @@ Details → `references/approval-flow-patterns.md`
 | Engine | Best For | Language | Hosting |
 |--------|----------|----------|---------|
 | Temporal | General-purpose, long-running workflows | Go / Java / TS / Python | Self-hosted / Cloud |
-| AWS Step Functions | AWS-native, serverless | ASL (JSON) | AWS Managed |
-| Inngest | Event-driven, serverless | TS / Go / Python | Cloud / Self-hosted |
-| XState | Front-end state management | TS / JS | Client-side |
+| AWS Step Functions | AWS-native, serverless, large-scale parallel (Distributed Map) | ASL (JSON) | AWS Managed |
+| Inngest | Event-driven, serverless, Next.js / Vercel | TS / Go / Python | Cloud / Self-hosted |
+| Restate | Durable async/await at service boundaries | TS / Java / Go / Rust | Self / Cloud |
+| DBOS Transact | Postgres-backed durable execution, minimal infra | TS / Python / Java / Go | Self / Cloud |
+| XState v5 | In-process state management, Actor model | TS / JS | Client-side / Node |
+| LangGraph | Stateful AI agent workflows, human-in-the-loop | Python / TS | Self / Cloud |
+
+> **Removed:** Cadence is superseded by Temporal for new projects. See [temporal.io](https://temporal.io).
 
 Details → `references/engine-selection.md`
 

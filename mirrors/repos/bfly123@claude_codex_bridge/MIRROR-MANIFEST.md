@@ -61,9 +61,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`dev_tools/skills/ccb-github/SKILL.md`](dev_tools/skills/ccb-github/SKILL.md) |
 | 2 | ✓ | [`inherit_skills/claude_skills/ask/SKILL.md`](inherit_skills/claude_skills/ask/SKILL.md) |
-| 3 | ✓ | [`inherit_skills/claude_skills/ccb_config/SKILL.md`](inherit_skills/claude_skills/ccb_config/SKILL.md) |
+| 3 | ✓ | [`inherit_skills/claude_skills/ccb-config/SKILL.md`](inherit_skills/claude_skills/ccb-config/SKILL.md) |
 | 4 | ✓ | [`inherit_skills/codex_skills/ask/SKILL.md`](inherit_skills/codex_skills/ask/SKILL.md) |
-| 5 | ✓ | [`inherit_skills/codex_skills/ccb_config/SKILL.md`](inherit_skills/codex_skills/ccb_config/SKILL.md) |
+| 5 | ✓ | [`inherit_skills/codex_skills/ccb-config/SKILL.md`](inherit_skills/codex_skills/ccb-config/SKILL.md) |
 | 6 | ✓ | [`inherit_skills/droid_skills/ask/SKILL.md`](inherit_skills/droid_skills/ask/SKILL.md) |
 | 7 | ✓ | [`mcp/ccb-delegation/server_runtime_io.py`](mcp/ccb-delegation/server_runtime_io.py) |
 | 8 | ✓ | [`mcp/ccb-delegation/server_runtime_protocol.py`](mcp/ccb-delegation/server_runtime_protocol.py) |

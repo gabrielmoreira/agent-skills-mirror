@@ -9,6 +9,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [11.6.0] - 2026-05-23 - "Audit Hardening and Karpathy Guidelines"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills --help`
+- Choose your tool: [README.md#choose-your-tool](README.md#choose-your-tool)
+- Best skills by tool: [README.md#best-skills-by-tool](README.md#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](docs/users/workflows.md)
+
+This release hardens the repository after a full audit pass, fixes issue #611 by syncing `andrej-karpathy` to English upstream guidelines, and improves release/security guardrails.
+
+## Security
+
+- Replaced executable pipe-to-shell install examples across canonical skills with package-manager or download-inspect-execute flows, and removed the obsolete allowlist comments.
+- Hardened the web-app refresh archive fallback by pre-validating tar/zip paths, rejecting archive symlink entries, and verifying extracted real paths before moving downloaded skills into place.
+- Replaced the Telegram Node boilerplate and docs examples with Telegraf to remove the deprecated vulnerable `request` dependency chain and avoid putting bot tokens in webhook URLs.
+- Hardened WhatsApp webhook signature validation so malformed `x-hub-signature-256` headers return `401` instead of throwing on `timingSafeEqual` buffer length mismatches.
+- Refused installer migrations through symlinked target directories and added regression coverage for symlink target failures.
+- Restored TLS verification by default in Junta scraper implementations, with insecure TLS only available through the shared `JUNTA_INSECURE_TLS` escape hatch.
+
+## Fixed
+
+- Replaced the non-English `andrej-karpathy` skill content with English Karpathy coding guidelines synced from the upstream `multica-ai/andrej-karpathy-skills` source.
+- Made `audit:skills:strict` enforce an explicit legacy warning budget so strict skill-audit debt is tracked and regressions fail without blocking on the historical backlog.
+- Replaced realistic AWS/private-key examples with unmistakable placeholders and taught `security:docs` to block those patterns from returning.
+- Rebuilt local documentation link validation as a deterministic, path-aware checker for `README.md`, `docs/`, and `docs_zh-CN/`, and repaired the broken localized/internal markdown links it now catches.
+- Refreshed stale Chinese documentation release/count claims to `11.5.0` / `1,465+` and marked the old final validation report as a historical snapshot.
+- Made the Chinese glossary validation report deterministic by removing timestamps and machine-specific absolute paths.
+- Stopped publishing `.disabled` skills as web static assets during `app:setup`.
+- Updated web-app SEO counts and social metadata to `1,465+`, aligned the SEO verifier and Pages workflow with the linked `site.webmanifest`, and corrected the documented canonical URL environment variables.
+- Added generated-index duplicate-ID protection so future nested skill basename collisions fail during index generation.
+- Fixed the Remotion chart rule typo from `implmentation` to `implementation`.
+
 ## [11.5.0] - 2026-05-21 - "Security Boundary Hardening and New Agent Skills"
 
 > Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.

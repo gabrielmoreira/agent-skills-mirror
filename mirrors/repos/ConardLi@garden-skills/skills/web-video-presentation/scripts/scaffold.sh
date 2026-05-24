@@ -149,10 +149,16 @@ cp "$TEMPLATES/src/chapters/01-example/Example.tsx"     src/chapters/01-example/
 cp "$TEMPLATES/src/chapters/01-example/Example.css"     src/chapters/01-example/Example.css
 cp "$TEMPLATES/src/chapters/01-example/narrations.ts"   src/chapters/01-example/narrations.ts
 
-# Audio pipeline scripts (extract-narrations + synthesize-audio).
+# Audio pipeline scripts (extract-narrations + synthesize-audio runner +
+# pluggable TTS providers under tts-providers/).
 cp "$TEMPLATES/scripts/extract-narrations.ts"  scripts/extract-narrations.ts
 cp "$TEMPLATES/scripts/synthesize-audio.sh"    scripts/synthesize-audio.sh
 chmod +x scripts/synthesize-audio.sh
+
+mkdir -p scripts/tts-providers
+cp "$TEMPLATES/scripts/tts-providers/README.md"   scripts/tts-providers/README.md
+cp "$TEMPLATES/scripts/tts-providers/minimax.sh"  scripts/tts-providers/minimax.sh
+cp "$TEMPLATES/scripts/tts-providers/openai.sh"   scripts/tts-providers/openai.sh
 
 # Wire the audio scripts into npm so contributors don't have to remember
 # the exact command. Uses node to merge into the existing package.json.
@@ -212,8 +218,9 @@ cat <<EOF
 音频合成（可选，录制前做）：
 
   npm run extract-narrations    # 扫所有章节 narrations.ts → audio-segments.json
-  npm run synthesize-audio      # 调 mmx-cli 合成 → public/audio/<id>/<step>.mp3
-                                # （没装 mmx 见 references/AUDIO.md）
+  npm run synthesize-audio      # 默认 minimax provider 合成 → public/audio/<id>/<step>.mp3
+                                # 换 provider：PRESENTATION_TTS=<name> npm run synthesize-audio
+                                # 自定义 / 没装 mmx 见 scripts/tts-providers/README.md
 
 写章节时必读（单一入口，路径在 SKILL 仓库内）：
 

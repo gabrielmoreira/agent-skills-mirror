@@ -112,7 +112,10 @@ def ivw(instruments: list[Instrument]) -> MREstimate:
     beta_ivw = np.sum(w * bx * by) / np.sum(w * bx ** 2)
 
     residuals = by - beta_ivw * bx
-    phi = max(1.0, np.sum(w * residuals ** 2) / (len(instruments) - 1))
+    if len(instruments) == 1:
+        phi = 1.0
+    else:
+        phi = max(1.0, np.sum(w * residuals ** 2) / (len(instruments) - 1))
     se_ivw = math.sqrt(phi / np.sum(w * bx ** 2))
 
     z = beta_ivw / se_ivw
@@ -654,7 +657,13 @@ def main() -> None:
     elif args.instruments:
         with open(args.instruments) as f:
             data = json.load(f)
-        instruments = [Instrument(**s) for s in data["instruments"]]
+        instruments = [Instrument(
+            snp=s["SNP"], effect_allele=s["effect_allele"], other_allele=s["other_allele"],
+            eaf=s["eaf"], beta_exposure=s["beta_exposure"], se_exposure=s["se_exposure"],
+            pval_exposure=s["pval_exposure"], beta_outcome=s["beta_outcome"],
+            se_outcome=s["se_outcome"], pval_outcome=s["pval_outcome"],
+            f_statistic=s["f_statistic"],
+        ) for s in data["instruments"]]
         exposure = data.get("exposure", "Exposure")
         outcome = data.get("outcome", "Outcome")
     else:

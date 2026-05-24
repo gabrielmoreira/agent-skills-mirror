@@ -25,7 +25,7 @@ npx mcp-local-rag [global-options] ingest [options] <path>
 
 | Option | Env Var | Default | Description |
 |--------|---------|---------|-------------|
-| `--base-dir <path>` | `BASE_DIR` | cwd | Base directory for documents |
+| `--base-dir <path>` | `BASE_DIR` / `BASE_DIRS` | cwd | Document root directory. Repeatable; CLI roots replace env roots. |
 | `--max-file-size <n>` | `MAX_FILE_SIZE` | `104857600` | Max file size in bytes (1–500MB) |
 | `--visual` | — | `false` | Enable VLM captioning for PDF figure pages (PDFs only; no effect on other types) |
 | `--visual-quality <profile>` | — | `fast` | VLM profile when `--visual` is set: `fast` or `quality`. Silently ignored when `--visual` is absent. See "Visual quality profiles" below. |
@@ -72,14 +72,14 @@ Output: JSON array to stdout.
 ### list
 
 ```bash
-npx mcp-local-rag [global-options] list [--base-dir <path>]
+npx mcp-local-rag [global-options] list [--base-dir <path>]...
 ```
 
 | Option | Env Var | Default | Description |
 |--------|---------|---------|-------------|
-| `--base-dir <path>` | `BASE_DIR` | cwd | Base directory to scan |
+| `--base-dir <path>` | `BASE_DIR` / `BASE_DIRS` | cwd | Base directory to scan. Repeatable; CLI roots replace env roots. |
 
-Output: JSON to stdout.
+Output: JSON to stdout. The result includes `baseDirs: string[]` (all effective roots) plus a legacy `baseDir: string` (first effective root after normalization and nested-root pruning). Each file entry is annotated with the `baseDir` that produced it. Raw-data/orphaned entries remain under `sources` without a root annotation.
 
 ### status
 

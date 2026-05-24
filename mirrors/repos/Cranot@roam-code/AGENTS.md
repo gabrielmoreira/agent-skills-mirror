@@ -22,6 +22,17 @@ Authoritative counts (AST-derived, env-independent): `command_count: 241 · cano
 - Architecture guide and diagram: `templates/distribution/landing-page/docs/architecture.html`
 - Live URL: https://roam-code.com/docs/
 
+## Where files go (private vs public)
+
+This repo is public. The placement rule is physical, not pattern-based:
+
+- **`internal/`** — the ONE private folder. Wholesale gitignored. Everything that shouldn't be on GitHub goes here: session memos, sprint plans, release-readiness drafts, monetization research, dogfood batches, smoke results, generated test fixtures, scratch notes, anything you'd be uncomfortable seeing in a public diff. Sub-conventions: `internal/dogfood/` (eval corpus), `internal/planning/` (session / sprint / release memos).
+- **Everything else** — public by default. `src/`, `tests/`, `templates/`, `dev/`, root files. No magic in the gitignore, no whitelists, no per-extension rules.
+
+When in doubt about a file: if it's a planning artifact or session-cadence output, write it under `internal/`. If you intend it to be public, write it in the appropriate public folder.
+
+Anti-pattern history: the repo used to use an enumerative gitignore in `dev/` (whitelisting specific filename templates to exclude), which fail-opened on any new memo family. Fixed by the rule above: one private folder, no pattern magic.
+
 ## Quality discipline (from `internal/dogfood/` + agi-in-md)
 
 This section codifies what makes a roam command good. Distilled from 212 dogfood evals + 1000+ prompt-design experiments. Treat as constraints when adding or modifying commands.
@@ -427,10 +438,7 @@ correction, `surface --json` top-level keys completion, and
 - `src/roam/evidence/mcp_receipt.py` - canonical `McpDecisionReceipt` dataclass
 - `scripts/export_mcp_receipt_schema.py` - JSON Schema Draft 2020-12 emitter (P2.2)
 - https://github.com/Cranot/roam-code/discussions/37#discussioncomment-16967163 - public reply on the runtime-security posture
-- `dev/ROAM-STRATEGY-2026-05-15.md`  - active strategy command center (framing, launch, build queue). Private — gitignored; not shipped to PyPI/GitHub.
-- `dev/BACKLOG.md`                   - what's queued / still TODO
-- `dev/ROADMAP.md` tier four-star    - strategic items not yet started (R21 leases done; R25 plugin still open)
-- `internal/dogfood/SYNTHESIS-2026-05-12.md` - dogfood corpus (private — gitignored)
+- Strategic planning, engineering ledger, dogfood corpus, and other internal-cadence memos live under `internal/` (folder-wide gitignored). Read the newest files there at session start.
 
 ## Conventions
 

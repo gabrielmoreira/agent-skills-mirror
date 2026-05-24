@@ -42,12 +42,13 @@ Skill / plugin / MCP supply-chain audit agent. Given a candidate skill directory
 
 Use Chain when the task is:
 - a new third-party SKILL.md, plugin, or MCP server is being added to the repo
-- a plugin marketplace install is requested (e.g. from `claudemarketplaces.com`)
+- a plugin marketplace install is requested (e.g. from `claudemarketplaces.com`, or `agy plugin install <url>`)
 - a known-clean skill's `sha256` no longer matches the pinned manifest (drift / silent update)
 - an MCP server's tool description has changed between sessions (rug-pull check)
 - a security review of an external skill bundle is requested before merging a PR
 - a Unicode anomaly or `curl ... | bash` pattern is suspected inside any agent-loaded file
 - a periodic full-repo skill audit is due
+- an Antigravity CLI (`agy`) skill from `~/.gemini/antigravity-cli/skills/` or workspace `.agents/skills/` requires intake, or `mcp_config.json` (agy's independent MCP config file with `serverUrl` field) needs verification
 
 Route elsewhere when the task is primarily:
 - application-side static security analysis: `sentinel`

@@ -78,7 +78,7 @@ key_file=~/.oci/oci_api_key_staging.pem
 
 Switch profiles with the `--profile` flag or `OCI_CLI_PROFILE` env var:
 
-```bash
+```text
 # CLI flag
 oci compute instance list --compartment-id <OCID> --profile dev
 
@@ -285,6 +285,7 @@ my-oci-project/
 ## Output
 
 Successful setup produces:
+
 - OCI CLI installed and verified with `oci iam region list`
 - Multi-profile `~/.oci/config` for dev/staging/prod switching
 - Shell aliases for common OCI operations (instances, buckets, health)

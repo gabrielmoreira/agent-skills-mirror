@@ -12,6 +12,9 @@ CAPABILITIES_SUMMARY:
 - schema_optimization: Optimize schema design for query performance including partitioning and MVs
 - database_profiling: Profile database workload patterns and connection pool utilization
 - pg18_optimization: Leverage PostgreSQL 18 features (AIO, skip scan, parallel GIN builds, virtual generated columns)
+- mysql_hypergraph: Evaluate MySQL 9.7+ Hypergraph optimizer for multi-table join workloads; validate with EXPLAIN FORMAT=TREE
+- pgvector_iterative_scan: Diagnose and fix filtered vector search using pgvector 0.8+ hnsw.iterative_scan and halfvec storage optimization
+- percona_toolkit_integration: Use pt-query-digest (Percona Toolkit 3.7.1) for MySQL slow-log aggregation; pg_qualstats+hypopg for PostgreSQL index advising
 - ai_assisted_analysis: AI-driven execution plan interpretation and index recommendation from query patterns
 - fix_prompt_generation: Pair every actionable performance finding with a paste-ready LLM Fix Prompt embedding the slow query, current/predicted EXPLAIN ANALYZE plan, workload context, recommended action, acceptance criteria (including row-estimate sanity check and write-overhead budget), ruled-out alternatives, and "what NOT to do" so a downstream agent (Builder, Schema for migrations, Bolt for caching) can act without manual reformulation
 
@@ -128,6 +131,9 @@ Agent role boundaries: [\_common/BOUNDARIES.md](~/.claude/skills/_common/BOUNDAR
 | Statistics staleness                          | `n_dead_tup > 10%` of `n_live_tup`        | run ANALYZE or check autovacuum       |
 | Index bloat concern                           | index size `> 2×` expected for row count   | consider REINDEX CONCURRENTLY         |
 | pgvector index selection                      | dataset `> 500K vectors`                   | HNSW as production default (~15× higher QPS than IVFFlat at 1M/50d benchmarks); fall back to IVFFlat only when build time or memory (HNSW ≈3× memory, ~30× build time) dominate |
+| pgvector filtered search overfiltering risk   | any WHERE filter on vector query           | enable `hnsw.iterative_scan = 'relaxed_order'` (pgvector 0.8+); without it only ef_search candidates are evaluated before the filter, causing result starvation — up to 5.7× QPS improvement for selective filters (`https://www.postgresql.org/about/news/pgvector-080-released-2952/`) |
+| pgvector halfvec storage reduction            | dataset with float4 embeddings             | halfvec (2-byte floats, pgvector 0.7+) cuts index storage ~60% with negligible recall loss on 1536-dim embeddings; up to 10M vectors fit on a mid-tier managed instance (`https://www.postgresql.org/about/news/pgvector-070-released-2852/`) |
+| MySQL Hypergraph optimizer                    | MySQL 9.7+ with complex multi-table joins  | enable via `SET optimizer_switch='hypergraph_optimizer=on'`; GA in MySQL 9.7 Community Edition (2026-05); shows +26% read-only-distinct, +15% range gains in sysbench; use `EXPLAIN FORMAT=TREE` to verify hash-join selection (`https://blogs.oracle.com/mysql/the-hypergraph-optimizer-is-now-available-in-mysql-9-7-community-edition`) |
 
 Production-safety rules:
 
@@ -139,6 +145,11 @@ Production-safety rules:
 - Always verify `@Transactional(readOnly = true)` on read-only queries in ORM frameworks — omitting it causes unnecessary write locks and reduces concurrent read throughput.
 - Enable `auto_explain` module (`auto_explain.log_min_duration`) in staging and production to automatically capture execution plans for slow queries — post-hoc EXPLAIN on a previously slow query may produce a different plan due to caching or statistics changes.
 - On PostgreSQL 18+, prefer virtual generated columns over stored generated columns for derived values used only in reads — virtual columns compute at query time, eliminating write overhead and storage bloat while remaining indexable.
+- MySQL 8.4 LTS InnoDB tuning: `innodb_adaptive_hash_index` is **disabled by default** in 8.4 (enabled in 8.0/earlier); benchmark both states before enabling. For hash joins, `join_buffer_size` caps in-memory usage — spill-to-disk degrades significantly; tune based on workload. Use `EXPLAIN FORMAT=TREE` to confirm hash join selection (`https://dev.mysql.com/doc/refman/8.4/en/hash-joins.html`). MySQL parallel DDL (index creation uses parallel threads by default in 8.4+) makes large `ALTER TABLE` operations significantly faster — verify `innodb_ddl_threads` setting.
+- MySQL 9.7+ Hypergraph optimizer: GA in MySQL 9.7 Community Edition (2026-05); enables better hash-join cost models vs the classic nested-loop-first optimizer. Enable per-session with `SET optimizer_switch='hypergraph_optimizer=on'`. The `EXPLAIN FORMAT=TREE` output is the only format showing hash-join node details (`https://blogs.oracle.com/mysql/the-hypergraph-optimizer-is-now-available-in-mysql-9-7-community-edition`).
+- For MySQL slow-query analysis, use `pt-query-digest` (Percona Toolkit 3.7.1, released 2026-04-17) to aggregate slow logs by normalized fingerprint and surface P95/P99 latency and rows-examined distributions (`https://docs.percona.com/percona-toolkit/pt-query-digest.html`). For workload profiling and index advising, pair with `pg_qualstats` + `hypopg` on PostgreSQL: `pg_qualstats_index_advisor()` proposes candidates, hypopg validates each via `EXPLAIN` without building the real index, then promote with `CREATE INDEX CONCURRENTLY` (`https://www.percona.com/blog/automatic-index-recommendations-in-postgresql-using-pg_qualstats-and-hypopg/`).
+- pgvector 0.8+ iterative scan: for filtered vector queries with a WHERE clause, set `hnsw.iterative_scan = 'relaxed_order'` (or `strict_order` when exact distance ordering is required) and tune `hnsw.max_scan_tuples`. Without this, `ef_search` candidates are evaluated before the filter, causing result starvation on selective filters. pgvector 0.7+ `halfvec` type halves storage with negligible recall loss — prefer for float32 embeddings when storage cost matters.
+- PostgreSQL 19 (Beta 1 expected 2026-06-04, GA 2026-09): forward-plan only. Notable monitoring additions: `pg_stat_statements.last_exec_time`, per-process-type log verbosity, and enhanced autoanalyze statistics. Do not include PG19 features in production Fix Prompts until GA + first minor release (`https://versionlog.com/blog/postgresql-19-whats-coming-september-2026/`).
 
 ## Collaboration
 

@@ -5,7 +5,7 @@ description: Visualization agent that converts code, designs, and context into M
 
 <!--
 CAPABILITIES_SUMMARY:
-- standard_diagrams: Flowchart, sequence, state, class, ER, Gantt, mind map, journey, git graph, pie chart, architecture, block, kanban, sankey, xy chart, radar, treemap, wardley map, packet, venn (v11.12.3+), ishikawa (v11.12.3+), wardley (beta), treeview (v11.14.0, 2026-03-14) [Source: Mermaid — v11.13.0 release blog](https://mermaid.ai/blog/posts/mermaid-v11-13-0-two-new-diagram-types-and-our-most-polished-release-yet)
+- standard_diagrams: Flowchart, sequence, state, class, ER, Gantt, mind map, journey, git graph, pie chart, architecture, block, kanban, sankey, xy chart, radar, treemap, wardley map, packet, venn (v11.12.3+), ishikawa (v11.12.3+), wardley (v11.14.0+), treeview (v11.14.0+) [Source: Mermaid v11.13.0 release blog](https://mermaid.ai/blog/posts/mermaid-v11-13-0-two-new-diagram-types-and-our-most-polished-release-yet) | [Wardley Maps (v11.14.0+)](https://mermaid.js.org/syntax/wardley.html)
 - reverse_engineering: Code-to-diagram from app, API, schema, tests, auth flow, dependency structure
 - c4_model: Context, Container, Component, Code views for architecture
 - diff_visualization: Before/after, schema change, architecture delta

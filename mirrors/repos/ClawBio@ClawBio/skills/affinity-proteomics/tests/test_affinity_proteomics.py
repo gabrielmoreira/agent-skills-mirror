@@ -17,6 +17,7 @@ sys.path.insert(0, str(SKILL_DIR))
 
 from affinity_proteomics import (
     ACTION_REQUEST_SCHEMA,
+    WORKFLOW_STATE_SCHEMA,
     DiffAbundanceResult,
     ProteomicsData,
     differential_abundance,
@@ -184,13 +185,22 @@ class TestOlinkDemo:
         assert result["platform"] == "olink"
         assert result["total_proteins_tested"] == 40
         assert result["chat_summary_lines"][0].startswith("Affinity proteomics demo complete")
+        assert result["workflow_state"]["state_schema"] == WORKFLOW_STATE_SCHEMA
+        assert result["workflow_state"]["state_id"].startswith("sha256:")
+        assert result["workflow_state"]["lifecycle"] == "ready"
+        assert result["workflow_state"]["state_label"] == "differential-abundance-ready"
         assert {action["action_id"] for action in result["suggested_actions"]} == {
             "show-top-proteins",
+            "show-volcano-summary",
         }
         assert all(action["request"]["schema"] == ACTION_REQUEST_SCHEMA for action in result["suggested_actions"])
-        assert all(action["request"]["action"] == "top-proteins" for action in result["suggested_actions"])
-        assert result["suggested_actions"][0]["request"]["n"] == 5
-        assert len(result["suggested_actions"][0]["request"]["proteins"]) == 10
+        assert all(action["request"]["state_schema"] == WORKFLOW_STATE_SCHEMA for action in result["suggested_actions"])
+        assert all(action["request"]["state_id"] == result["workflow_state"]["state_id"] for action in result["suggested_actions"])
+        top_action = next(action for action in result["suggested_actions"] if action["action_id"] == "show-top-proteins")
+        assert top_action["request"]["action"] == "top-proteins"
+        assert top_action["request"]["n"] == 5
+        assert top_action["estimate"] == "~5s"
+        assert len(top_action["request"]["proteins"]) == 10
         assert {"path": "report.md", "label": "Markdown report"} in result["preferred_artifacts"]
 
     def test_action_request_renders_report_section(self, tmp_path):
@@ -214,8 +224,34 @@ class TestOlinkDemo:
         assert (output_dir / "result.json").exists()
         assert result["schema"] == "affinity_proteomics.action_result.v1"
         assert result["action"] == "top-proteins"
+        assert result["workflow_state"]["lifecycle"] == "ready"
+        assert result["workflow_state"]["state_id"] == source_result["workflow_state"]["state_id"]
         assert "## Top Proteins" in result["report_md"]
         assert any("Showing top 5 proteins" in line for line in result["chat_summary_lines"])
+
+    def test_action_request_rejects_mismatched_state(self, tmp_path):
+        source_dir = tmp_path / "source"
+        run_pipeline(
+            platform="olink", input_path=SKILL_DIR / "example_data" / "olink_demo_npx.csv",
+            meta_path=SKILL_DIR / "example_data" / "olink_demo_meta.csv",
+            group_col="Group", contrast=("Case", "Control"),
+            output_dir=source_dir, demo=True,
+        )
+        source_result = json.loads((source_dir / "result.json").read_text())
+        action = next(
+            action for action in source_result["suggested_actions"]
+            if action["action_id"] == "show-top-proteins"
+        )
+        stale_request = {**action["request"], "state_id": "sha256:stale"}
+
+        output_dir = tmp_path / "stale"
+        result = handle_action_request(stale_request, output_dir)
+
+        assert result["schema"] == "affinity_proteomics.action_result.v1"
+        assert result["action"] == "top-proteins"
+        assert result["workflow_state"]["lifecycle"] == "expired"
+        assert result["workflow_state"]["state_label"] == "stale-action-request"
+        assert any("stale or mismatched" in line for line in result["chat_summary_lines"])
 
 
 # ---------------------------------------------------------------------------

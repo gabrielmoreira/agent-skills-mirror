@@ -18,7 +18,7 @@ go test -race ./...                 # all test packages must pass
 
 ## MANDATORY: Use Gortex MCP tools instead of Read/Grep/Glob
 
-Gortex is registered as an MCP server. You **MUST** prefer graph queries over file reads on every task in this repo — `search_symbols`, `find_usages`, `get_symbol_source`, `get_editing_context`, `smart_context`, `edit_symbol` / `edit_file` / `rename_symbol` / `batch_edit`. PreToolUse hooks deny `Read` / `Grep` / `Glob` against indexed source; the deny message names the right tool. The MCP server registers 120+ tools but `tools/list` shows only a core set — call `tools_search` to discover and load the rest on demand (`tool_profile` reports the active profile). The cross-project rule tables live in `~/.claude/CLAUDE.md` — neither is restated here. This file carries only project-specific guidance.
+Gortex is registered as an MCP server. You **MUST** prefer graph queries over file reads on every task in this repo — `search_symbols`, `find_usages`, `get_symbol_source`, `get_editing_context`, `smart_context`, `edit_symbol` / `edit_file` / `rename_symbol` / `batch_edit`. PreToolUse hooks deny `Read` / `Grep` / `Glob` against indexed source; the deny message names the right tool. The MCP server registers 120+ tools — all of them eagerly published in `tools/list` by default; set `GORTEX_LAZY_TOOLS=1` to opt into the lazy / `tools_search` discovery flow when the client honours `notifications/tools/list_changed`. The cross-project rule tables live in `~/.claude/CLAUDE.md` — neither is restated here. This file carries only project-specific guidance.
 
 ### Discovery (read once, then keep using)
 

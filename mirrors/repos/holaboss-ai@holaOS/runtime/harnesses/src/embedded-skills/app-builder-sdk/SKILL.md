@@ -57,58 +57,144 @@ There is ONE provider identifier; the same value flows through every layer of th
 - Google Drive: **`googledrive`**
 - Slack / GitHub / Gmail / Notion / Stripe / Linear / Figma / Calendly / Mailchimp / Reddit / Twitter / Instagram / YouTube / LinkedIn: **lowercase brand name** (verify in catalog).
 
-If unsure, verify against Composio's catalog BEFORE writing `provider.ts`:
+If unsure, verify against the **integration store catalog** BEFORE writing `provider.ts` — the runtime will reject `workspace_apps_register` on any `provider` that isn't in this list with a "did you mean '<x>'?" suggestion. The store catalog is the curated subset of Composio toolkits we explicitly support; Composio has 1000+ toolkits but only the ones in `runtime/api-server/src/integration-store-catalog.ts` (Hero + Supported tiers) are accepted.
 
 ```bash
-curl -sS https://backend.composio.dev/api/v3/toolkits \
-  -H "x-api-key: $COMPOSIO_API_KEY" \
-  | jq -r '.items[] | select(.slug | test("(?i)<keyword>")) | .slug + " — " + .name'
+# Look up supported slugs from the runtime (preferred — single source of truth):
+curl -sS http://127.0.0.1:8080/api/v1/capabilities/runtime-tools/integrations/catalog | jq '.provider_ids'
+
+# Or grep the catalog file directly if you have the repo open.
 ```
+
+Composio's own catalog (`https://backend.composio.dev/api/v3/toolkits`) is a useful reference for slug spelling but is **not** the source of truth — a slug existing on Composio does NOT mean we support it. If you want to add a new toolkit, the workflow is: add a row to `integration-store-catalog.ts`, not bake the unsupported slug into your app.
 
 The legacy `composioToolkit` field on `ProviderRegistry` is **deprecated**. Do not set it. If a reference still does, replace `id` with the same value and drop `composioToolkit`. Splitting them was a misreading of the runtime — the broker proxy uses ONLY `provider` (= `cfg.id`); `composioToolkit` is dead code, currently used only by `manifest.ts` as a fallback that should never trigger when `id` is correct.
 
+### Connection readiness: ask the runtime, never the upstream host
+
+If your app needs to show "connected / needs connection" status in the UI, you **MUST** call `getIntegrationStatus()` from `@holaboss/app-builder-sdk` on mount (via a TanStack Start server function or loader), and re-call it after the user finishes any Connect flow. There is **no other supported way** to detect connectivity. Pinging the upstream host (`https://api.twitter.com/...`, `https://api.notion.com/...`) is not just suboptimal — it is the exact failure mode that left every previous vibe-coded dashboard stuck on "needs connection" the moment Composio rerouted the toolkit (api.twitter.com → api.x.com, Discord scope-only slug, etc.). The register-time lint rejects hardcoded upstream hosts; `getIntegrationStatus()` is the only way through.
+
+```ts
+// src/client/lib/integration-status.ts (TanStack Start server function)
+import { getIntegrationStatus } from "@holaboss/app-builder-sdk"
+
+export const integrationStatus = createServerFn().handler(async () => {
+  return getIntegrationStatus()
+})
+
+// or narrow to one provider for a per-toolkit badge:
+export const twitterStatus = createServerFn().handler(async () => {
+  return getIntegrationStatus({ provider: "twitter" })
+})
+```
+
+The helper reads `HOLABOSS_APP_GRANT` + `WORKSPACE_API_URL` (both injected by the runtime when your app starts) and calls the runtime's `/api/v1/integrations/readiness` endpoint. Response shape: `{ ready: boolean, issues: [{ provider, integrationKey, code, message }] }`. `code` is one of `ready | integration_not_bound | integration_not_connected | integration_needs_reauth` — let the UI pick the affordance from that code (e.g. show "Connect" for `integration_not_connected` and "Reconnect" for `integration_needs_reauth`).
+
+There is **no legitimate reason** for an SDK app to ping the upstream API host as a connectivity test. If something looks like it needs that, you want `getIntegrationStatus` instead.
+
+The runtime enforces this at `workspace_apps_register` time: a source-tree scan rejects any app whose `src/` contains hardcoded toolkit hosts like `api.twitter.com`, `api.x.com`, `api.github.com`, `slack.com/api`, `api.notion.com`, `api.linear.app`, `gmail.googleapis.com`, etc. The error names the file, line, and the provider you should be routing through instead. The right shape is **always** `createRuntimeBrokerTransport({ provider })` — no upstream host belongs in your app code.
+
 ## Dashboard / workspace-pane UI (vibe-coded apps)
 
-The SDK's default `startMcpServer({ httpPort, ... })` ships a one-screen "headless module" placeholder on the http port. That placeholder is **only acceptable for integration-only modules** (Slack-style MCP-driven flows). The moment the user asks for a dashboard / list view / kanban / calendar / "let me see my X", **you must replace the placeholder with a real shadcn UI under `src/client/`**. The placeholder is what makes vibe-coded apps look ugly — the user has flagged it explicitly.
+The SDK's default `startMcpServer({ httpPort, ... })` ships a one-screen "headless module" placeholder on the http port. That placeholder is **only acceptable for integration-only modules** (Slack-style MCP-driven flows). The moment the user asks for a dashboard / list view / kanban / calendar / "let me see my X", you must replace the placeholder with a real dashboard built on `@holaboss/ui`.
 
-The product constraints are distilled below from the original vibe-coding design review. Treat this section as the source of truth for the UI constraints in packaged runtimes.
+### Polish pass: handled by a separate auto-queued turn
 
-### L1 — shadcn registry is the ONLY component source
+For dashboard apps (those with `src/client/`), the runtime auto-queues a polish-only input on the main session after `workspace_apps_ensure_running` returns `ready: true`. You do **not** have to invoke `interface-design` or refactor `src/client/` inside the same turn as the build. The response from `workspace_apps_ensure_running` includes a `polish_pass_queued` array listing the queued input(s); the polish turn dispatches automatically as the next turn on the user's chat.
 
-Bring shadcn primitives in via the holaOS-locked registry version (set in the app's `components.json`). No other component library (Material UI, Ant, Chakra, etc.). No raw `<div>` styled with custom classes either — use `Card`, `Button`, `Input`, `Select`, `Table`, `Dialog`, `Sheet`, `Tabs`, `Popover`, `Accordion`, `Dropdown`, `Badge`, `Avatar`, etc.
+In this build turn: finish wrapping up cleanly — tell the user the app is built, mention that a polish pass will run next. That's it.
 
-### L2 — theme tokens are immutable
+In the auto-queued polish turn (you'll see a `text` payload starting with `[Auto-queued post-build polish pass]`):
 
-Colors, font sizes, spacing, radii **all** come from CSS variables wired up by the holaOS theme (`--background`, `--foreground`, `--primary`, `--muted`, `--accent`, `--border`, `--radius`, etc.). No inline `style={{ color: "#f12711" }}`. No custom CSS files. No new Tailwind colors. If a value is missing from the token palette, it's a SDK gap to escalate — do not patch it locally.
+1. Invoke `skill({ name: "interface-design" })` and read its full output.
+2. For each `.tsx` / `.css` file under `apps/<app_id>/src/client/`: **REWRITE the whole file via `bash` heredoc** (`cat > path/to/file <<'EOF' ... EOF`), NOT via `edit`. Whole-file rewrite is mandatory for this pass — incremental edits repeatedly produce checkbox-compliant no-changes.
+3. Re-run `workspace_apps_build` + `workspace_apps_restart_and_wait_ready`.
+4. Take a `browser_screenshot` of the rendered dashboard. Compare it against the `interface-design` rules you just loaded. If the rendered output doesn't match those rules, return to step 2 and rewrite again.
+5. Only after the screenshot is right, declare the polish pass done.
 
-### L3 — prefer opinionated layouts when they exist
+Why this is a separate auto-queued turn and not part of the build turn:
 
-The platform is rolling out a small library of "long like a family" layout components: `AppShell`, `ResourceList`, `ResourceDetail`, `ResourceKanban`, `ResourceCalendar`. If they're available (check `@holaboss/app-builder-sdk` exports at write-time), reach for them first — they consume an `app.resource()` declaration and render the right UI with zero boilerplate. If they're NOT yet exported, **do not invent your own AppShell with `<div>` + Tailwind**. Compose shadcn primitives directly in a single route file: `Card` + `Tabs` + `Table` is the safe minimum, and it upgrades cleanly when the layouts land.
+- Doing both in one turn consistently produced "skill invoked, 1 trivial edit, ready" — the agent's task-complete mindset and ~80-tool-call context fatigue defeated every prompt-strength escalation we tried. Forensic at `holaOS/docs/plans/2026-05-22-interface-design-skill-noop-forensic.md`.
+- A separate turn restores fresh context, narrow scope, and no build-time inertia. Empirically this matches the one observed successful polish, which the user manually triggered as a second turn.
 
-### L4 — free compose within L1+L2
+What this gate is NOT:
 
-Within those two ironclad layers, you have full freedom: drop in `Dialog` for confirmations, `Popover` for filters, `Tabs` for view switching. Different apps should be visually distinguishable (a content planner ≠ a CRM) but everyone in the workspace should "look like one family".
+- Not optional for dashboard apps — the input is queued mechanically; you can't skip it. Integration-only modules (no `src/client/`) get no queued input.
+- Not satisfied by ceremony — the runtime can verify file mtimes / screenshot, and the user checks the rendered UI either way.
+- Not replaced by `frontend-design` — that one targets marketing pages and drifts the output the wrong way.
 
-### Practical scaffolding (today, no AppShell yet)
+### Visual decisions belong to `interface-design`, not here
 
-For a dashboard app, `src/client/` is a TanStack Start surface that serves the workspace iframe:
+Every visual decision — density, hierarchy, typography, color usage, layout shape — is delegated to the `interface-design` skill that runs in the auto-queued polish turn. This file deliberately does NOT prescribe what a dashboard should look like.
 
+The reasoning is empirical: previous versions of this skill listed concrete visual rules and named the failure modes to avoid. Observed output consistently reproduced the named failure modes — naming an anti-pattern is enough to anchor on it. Removing them from this file leaves `interface-design` as the sole authority on look-and-feel.
+
+If your output looks wrong, the fix lives in the polish turn (re-invoke `interface-design`, rewrite via heredoc, screenshot, iterate). It does not live in this SKILL.md.
+
+### The rule: import `@holaboss/ui`, do not redefine primitives
+
+`@holaboss/ui` is a public npm package. It provides every primitive and CSS token your dashboard needs. **Do not generate shadcn primitives, copy a `components/ui/` directory, write your own Card, or import any other component library**. If `@holaboss/ui` is missing something, surface it to the SDK team instead of inventing a local replacement — visual drift is the failure mode the library exists to prevent.
+
+Layout itself is your call. There is no `DashboardShell` / `PageHeader` / `DataTable` / `StatPill` / etc. — those were removed in 0.3.0. Compose page chrome from the raw primitives (Card, Tabs, Sheet, Sidebar, Table, Skeleton, EmptyState…). What the layout should look like is decided in the `interface-design` polish turn, not here.
+
+Install:
+
+```bash
+cd <app-dir>
+bun add @holaboss/ui
 ```
-src/client/
-├── components.json          # locked shadcn registry pinned in app.runtime.yaml
-├── routes/
-│   ├── __root.tsx          # imports the global theme.css (CSS variables)
-│   └── index.tsx           # ResourceList-style table by default
-├── components/
-│   └── ui/                  # shadcn primitives — generated via shadcn CLI, NOT hand-written
-└── lib/utils.ts             # cn() helper (shadcn convention)
+
+Both `@holaboss/app-builder-sdk` and `@holaboss/ui` are public npm packages. The resulting `package.json` looks like:
+
+```json
+"dependencies": {
+  "@holaboss/app-builder-sdk": "latest",
+  "@holaboss/ui": "latest"
+}
 ```
 
-Wire it up by:
+**Always use `"latest"` for both.** These packages are lockstep-evolving alongside this skill — pre-1.0 caret semver (`^0.1.0`) only matches `0.1.x`, so any pinned dep silently drifts behind the skill when a new minor is published. `"latest"` keeps every fresh `bun install` aligned with the runtime's current expectations. Do NOT install via `file:` paths, git refs, or pinned versions — `"latest"` is the only supported form.
+
+### Mount the styles — one import, done
+
+`@holaboss/ui` ships a pre-compiled stylesheet that contains:
+- the holaOS design tokens (`--background`, `--foreground`, `--primary`, `--radius`, etc.)
+- the default theme palette
+- every Tailwind utility class used by the library's primitives + layouts
+
+Import it once at the dashboard root:
+
+```tsx
+// src/client/routes/__root.tsx
+import "@holaboss/ui/styles.css";
+```
+
+That's it. **Do not** try to add `@holaboss/ui` to your own Tailwind `@source` list — the utilities are already baked in. **Do not** mount `tokens.css` + `themes/holaos.css` separately unless you have an explicit reason (those exports exist as an escape hatch).
+
+Visual rules: colors / spacing / radii come from these CSS variables. No inline `style={{ color: "#f12711" }}`. No custom CSS files. No new Tailwind colors. If a value is missing from the token palette, escalate to the SDK team — do not patch it locally.
+
+### Catalog of what `@holaboss/ui` ships
+
+A full base-ui-flavoured shadcn surface — ~55 primitives. The ones you reach for most for a dashboard:
+
+- **Containers**: `Card` (+ Header/Title/Description/Content/Footer/Action), `Sheet`, `Drawer`, `Dialog`, `AlertDialog`, `HoverCard`, `Popover`, `Tabs`
+- **Lists / tables**: `Table` (+ Header/Body/Row/Cell/Caption/Footer), `Sidebar` family, `Accordion`, `Collapsible`
+- **Form**: `Input`, `Textarea`, `Select`, `NativeSelect`, `Checkbox`, `RadioGroup`, `Switch`, `Slider`, `Combobox`, `Field` family (FieldGroup, FieldLabel, FieldSet, FieldLegend, FieldDescription, FieldError), `InputGroup`, `InputOTP`, `Label`
+- **Charts**: `Chart` family — `ChartContainer`, `ChartTooltip`, `ChartTooltipContent`, `ChartLegend`, `ChartLegendContent` (wraps Recharts)
+- **States**: `EmptyState`, `Skeleton`, `Spinner`, `Progress`, `Alert`
+- **Atoms**: `Button`, `Badge`, `Avatar`, `StatusDot`, `Kbd`, `Separator`, `Tooltip`, `Toggle`, `ToggleGroup`, `ButtonGroup`, `Item`
+- **Nav / IA**: `Breadcrumb`, `Pagination`, `NavigationMenu`, `Menubar`, `DropdownMenu`, `ContextMenu`, `Command`
+- **Layout helpers**: `AspectRatio`, `Resizable`, `Calendar`, `Carousel`
+
+**Utility**: `cn(...)` for class merging. **Toast**: import `Toaster` and use `toast()` from `sonner` (re-exported).
+
+### Wiring the client app
 
 1. Start TanStack Start (or simple Bun.serve serving a Vite-built dashboard) on `env.PORT` from the same `server.ts` that boots the MCP server on `env.MCP_PORT`. The desktop's iframe loads whatever the http port serves.
 2. The dashboard reads the app's own SQLite (the table `app.resource()` declared) via TanStack Start server functions — same DB the MCP tools mutate. **Never duplicate state.**
-3. Mount the global theme stylesheet at the top of `__root.tsx`. Without it the shadcn tokens fall back to defaults and the app looks alien.
+3. Mount `@holaboss/ui/styles.css` at the top of `__root.tsx`. That single import covers the tokens, the default theme, and every Tailwind utility class the library uses. Without it the tokens fall back to defaults and the components render with no styling.
+
+Beyond those three wiring points, **the layout is yours**. The `interface-design` skill output (delivered in the auto-queued polish turn) is your design brief; the primitive catalog above is your toolbox. No scaffolding template, no "minimal dashboard route" stub to copy.
 
 ### Schema migration (from PM doc)
 
@@ -124,28 +210,44 @@ vibe coding's biggest failure mode is destructive migrations. Rules:
 
 Each schema change is a version; the user must be able to roll back.
 
-### UI anti-patterns (failure modes the user flagged)
+### UI anti-patterns — two are enforced at register time
 
-- **Raw HTML with hand-written Tailwind classes for whole layouts.** The default placeholder is exactly this and it looked terrible. Always start from `Card` + `Table` + `Tabs`.
-- **Inline `style={{ ... }}`** anywhere except `style={{ width: ... }}` for measured layout (resize observers etc.). Colors / spacing / radii never inline.
+`workspace_apps_register` runs two structural lints over `src/client/` for dashboard apps. Both reject the call with file/line context; nothing ships until they pass.
+
+- **Minimum named imports from `@holaboss/ui`.** A dashboard with fewer than 3 distinct named imports from the library across all `src/client/` files is rejected. Importing only `@holaboss/ui/styles.css` (the stylesheet) does NOT count — the library exists to provide composable components, not just tokens. Replace hand-rolled className-based components with the library's `Card` / `Button` / `Table` / `Badge` / `StatusDot` / `Skeleton` / `EmptyState` / `Tabs` / `ChartContainer` etc.
+- **No parallel design system in app-local CSS.** Any `.css` file under `src/client/` containing hex color literals (`#1f883d`), raw color function calls (`rgb()` / `hsl()` / `oklch()` / `lab()` / `lch()`), or custom CSS variable definitions that don't forward an existing holaOS token (`--my-thing: var(--background);` style passthroughs are allowed) is rejected. The lint exists because agents repeatedly shipped 200+-line stylesheets defining their own theme on top of the library — bypassing the OKLch palette, the font-weight cap, and the workspace theme system. App-local CSS may contain `@import "tailwindcss"` and empty `@layer` blocks so app-side composed Tailwind classes work; that's all.
+
+Other UI anti-patterns (not lint-enforced, but still wrong):
+
+- **A `components/ui/` directory or any shadcn-add path.** Import primitives from `@holaboss/ui` only.
+- **Inline `style={{ ... }}`** anywhere except `style={{ width: ... }}` for measured layout (resize observers, etc.).
 - **Hardcoded hex colors / px values for spacing or radii.** Use the theme tokens; if missing, surface to the SDK team.
-- **A new component library** (radix-ui standalone, headless-ui, react-aria) — shadcn already wraps Radix; that's the only path.
-- **A single-page dashboard with 3+ deeply nested `div`s of custom flexbox.** Use shadcn's `Card`, `Separator`, `Tabs` — they encode the platform's spacing rhythm.
+- **A new component library** (Material UI, Ant, Chakra, react-aria, etc.) — `@holaboss/ui` wraps the workspace-canonical primitives; that's the only path.
 - **Per-app dark mode toggle / theme picker.** Theme is workspace-level; the app inherits via CSS variables and does nothing.
+
+### App-level anti-patterns (not UI — code shape)
+
+- **Hand-rolled polling / `setInterval` / `setTimeout(retry, N)` / custom backoff loops.** All scheduling and retry lives in the workspace automations layer. The SDK's `sync(name, { schedule, ... })` is a **declarative** statement of intent — Holaboss runs it on the declared cadence; you do not. Putting an interval in client or server code creates duplicate fetches, fights workspace pause/resume, and ignores user-level rate budgets.
+- **Custom OAuth, token storage, or refresh logic.** The runtime broker via Composio owns the OAuth lifecycle, token rotation, scope negotiation, and re-auth detection end-to-end. Your app's only credential primitive is `createRuntimeBrokerTransport({ provider })`. If you find yourself reading a token, you are off-path; route through the broker instead. To branch on "needs reauth", use `getIntegrationStatus()` and inspect `code === "integration_needs_reauth"`.
+- **Hardcoded user identity in code** — usernames, email addresses, account ids, workspace names. These are mutable + per-workspace. Read identity from `getIntegrationStatus()` issues (handle/email come back enriched), from app row state, or from a server-function parameter. Never bake "@jotyy" or "user@example.com" into source.
+- **Layering a second ORM / entity abstraction on top of `resource` + `action` + `sync`.** The five primitives are the whole storage contract; the MCP tool surface and the dashboard reads derive from them. If you need a field, a state, or an action that doesn't exist in your `resource`, extend the resource — don't wrap it in your own `class Repository`. A parallel model silently desynchronizes from the tools the agent gets.
+- **All-or-nothing dashboard rendering.** Don't block the entire page on a `Promise.all` of every server fetch. Each card, table, and chart should render the moment its own data lands, with a `Skeleton` during fetch and `EmptyState` if the data is empty. A 0.5s skeleton beats a 4s blank page even when the slow query is just one card.
+- **Forgetting the `integration:` block when the app uses a Composio provider.** If you call `createRuntimeBrokerTransport({ provider: "gmail" })` anywhere in the app, `app.runtime.yaml` MUST declare a matching `integrations:` entry. Otherwise the binding step has no key to bind, `getIntegrationStatus()` reports `integration_not_bound`, and the dashboard is stuck. See section 4 below.
 
 ### Reviewer pass
 
-After writing the dashboard, eyeball it against an existing healthy holaOS pane (e.g. the marketplace pane, the integrations pane). It should feel like the same product. If it doesn't, you've broken L1 or L2 — re-check.
+After writing the dashboard, eyeball it against an existing healthy holaOS pane (e.g. the marketplace pane, the integrations pane). It should feel like the same product. If it doesn't, you've imported something from outside `@holaboss/ui` or redefined a primitive — re-check.
 
 ## Pick a reference shape
 
 Copy the closest bundled reference dir as your template; don't write from scratch. All backend references are at `reference/<shape>/`.
 
-The existing references are **integration-only** (no `src/client/`). Use them for the backend skeleton (`app.ts`, `provider.ts`, `server.ts`, `app.runtime.yaml`) — they're correct. For dashboard apps, layer `src/client/` on top per the "Dashboard / workspace-pane UI" section above; no dashboard-shape reference exists yet, so model the visual after the desktop's healthy panes (marketplace / integrations) and the L1-L4 constraints.
+Backend references (`slack-messaging`, `pinterest-publishing`, `github-workflow`, `gcalendar-events`, `telegram-messaging`) are integration-only (no `src/client/`). Use them for the backend skeleton (`app.ts`, `provider.ts`, `server.ts`, `app.runtime.yaml`) — they're correct. **There is no dashboard reference.** Dashboard-shape apps assemble `src/client/` themselves from `@holaboss/ui` primitives under the `interface-design` skill's guidance — copying a single canonical template was producing every dashboard looking the same, so the template was removed.
 
 | Shape | Reference | Use when the request looks like |
 |---|---|---|
-| **messaging** | `slack-messaging/` | Send / edit / delete / react on a message; chat-like provider (Discord, Telegram, IRC, SMS). Has custom state alphabet + side-effect actions + reversible scheduled send. **Also the only reference with full `server.ts` + `app.runtime.yaml`** — copy those two files verbatim into any new module regardless of shape. |
+| **dashboard** | _(none — compose freely)_ | Anything with a list / table / kanban / calendar / "let me see my X" — agent-built workspace pane. There is no canonical `src/client/` template; assemble from `@holaboss/ui` primitives under the `interface-design` skill. Combine with one of the backend shapes below for the actual data plane. |
+| **messaging** | `slack-messaging/` | Send / edit / delete / react on a message; chat-like provider (Discord, Telegram, IRC, SMS). Has custom state alphabet + side-effect actions + reversible scheduled send. **Also the only backend reference with full `server.ts` + `app.runtime.yaml`** — copy those two files verbatim into any new module regardless of shape. |
 | **publishing** | `pinterest-publishing/` | Multi-step upload-then-publish + reversible cancel; idempotency via `row.external_id` short-circuit. Use for any "create draft → confirm → publish → can be deleted" flow (image / video / blog posts). |
 | **workflow** | `github-workflow/` | Multi-state lifecycle (`draft / open / in_progress / closed / reopened / failed`), reversible close↔reopen, side-effect actions (`comment`, `assign`) that don't change row.status. CRM leads / issue trackers / ticketing systems. |
 | **event-with-time** | `gcalendar-events/` | Resources carry their own `start_time/end_time` (intrinsic, not "schedule this action later"); RSVP as side-effect; recurring (RRULE). Use for calendar / booking / appointment modules. |
@@ -165,7 +267,7 @@ For Slack-style modules where the agent drives via MCP and no dashboard is neede
 ├── provider.ts         # ProviderRegistry: id, baseUrl, allowedHosts, whoamiPath
 ├── server.ts           # production entry: SqliteStateBackend + runtime-broker + startMcpServer
 ├── app.runtime.yaml    # manifest (lifecycle, healthchecks, mcp.tools list, env_contract, integration)
-└── package.json        # only declares: @holaboss/app-builder-sdk via `file:` dep
+└── package.json        # declares @holaboss/app-builder-sdk via npm semver
 ```
 
 `startMcpServer({ httpPort })`'s built-in placeholder is acceptable here — the user never opens this app's workspace pane in practice, they drive it from chat. Copy `reference/slack-messaging/{server.ts,app.runtime.yaml}` and adapt the constants. Copy `reference/<your-shape>/{app.ts,provider.ts}` and adapt the resource/action declarations.
@@ -207,7 +309,7 @@ The desktop's iframe (`AppSurfacePane`) resolves the URL to `env.PORT`; whatever
 
 After writing the 4 files into `<workspace>/apps/<app_id>/`, do these in order. Do not skip steps:
 
-### 1. `package.json` — use a `file:` dep, absolute path
+### 1. `package.json` — npm semver, no `file:` paths
 
 ```json
 {
@@ -216,12 +318,13 @@ After writing the 4 files into `<workspace>/apps/<app_id>/`, do these in order. 
   "private": true,
   "type": "module",
   "dependencies": {
-    "@holaboss/app-builder-sdk": "file:/absolute/path/to/<app-builder-sdk-skill-dir>/sdk-package"
+    "@holaboss/app-builder-sdk": "latest",
+    "@holaboss/ui": "latest"
   }
 }
 ```
 
-Prefer the bundled `sdk-package` path beside this skill. Do not assume a repo checkout exists. The dependency path still needs to be absolute because the SDK package lives outside the workspace and relative paths break across worktrees.
+Both packages live on npmjs.com (public, Apache-2.0). `bun install` pulls them down like any normal dep — no repo checkout assumption, no machine-specific file: paths. Use `"latest"` literally; do not pin a version.
 
 ### 2. `bun install` once in the app dir
 
@@ -253,12 +356,21 @@ env_contract:
 
 If you're not sure, write the app, `bun run server.ts` once locally, and read the "Tools registered: N" log line.
 
-### 4. `integration` block in app.runtime.yaml
+### 4. `integration` block in app.runtime.yaml — REQUIRED if the app calls any provider
+
+If your app uses `createRuntimeBrokerTransport({ provider })` or otherwise consumes a Composio toolkit, you **must** declare a matching `integrations:` entry. Without it:
+- The runtime binding lookup has no key to match, so `upsertIntegrationBinding` succeeds at the row level but `getIntegrationStatus()` reports `integration_not_bound` forever.
+- The Connect card the chat renders never resolves, the multi-card gate keeps the agent paused, and the user sees a dashboard stuck on "needs connection" no matter how many times they click Connect.
+
+Skip this block only when the app is purely internal (no upstream calls).
 
 ```yaml
-integration:
-  destination: "<provider_id>"     # matches ProviderRegistry.id
-  credential_source: "platform"     # always; uses Composio via runtime broker
+integrations:
+  - key: <integration_key>          # local handle the app uses; usually same as provider_id
+    provider: <provider_id>         # MUST be a Composio store catalog slug (see section above)
+    capability: <api | messaging | files | ...>
+    required: true                  # block startup if not bound
+    credential_source: platform     # always; uses Composio via runtime broker
 ```
 
 ### 5. Register in `workspace.yaml`
@@ -276,7 +388,7 @@ mcp_registry:
       type: remote
       url: http://localhost:<MCP_PORT>/mcp/sse
       enabled: true
-      timeout_ms: 30000
+      timeout_ms: 120000   # vibe-coded apps cold-start slowly: first npm install + first build + boot easily blow past 30s; 120s is the runtime default for the same reason
 applications:
   - app_id: <app_id>
     config_path: apps/<app_id>/app.runtime.yaml
@@ -309,6 +421,27 @@ sqlite3 ~/.holaboss-desktop/sandbox-host/state/control-plane.db \
 If no row → user has not connected this provider yet; tell them to use the desktop integrations panel before continuing. Don't try to mint a Composio connection from the agent — that's an OAuth flow that requires user consent in the desktop UI.
 
 The PUT triggers `refreshAppsForIntegrationBinding` which restarts the app process, so the new env propagates within a few seconds.
+
+### Propose connect for every required integration BEFORE declaring the app done
+
+The single biggest failure mode in vibe-coded apps is **shipping a non-functional app and rationalizing it as "safe mode" / "access not available yet" instead of asking the user to connect**. That rationalization is wrong every time. Read this carefully.
+
+**The required loop:**
+
+1. App declares `integrations: [...]` in `app.runtime.yaml` for every provider it uses. (See section 4 below — this is mandatory whenever the app calls any provider; the alternative is not "skip the declaration", it is "you do not need this provider in your app".)
+2. `workspace_apps_register` / `workspace_apps_ensure_running` returns a `pending_integrations` array listing every declared provider that does not yet have an active connection.
+3. For **each** entry in `pending_integrations`, you call `holaboss_workspace_integrations_propose_connect({ toolkit_slug })`. One card per provider. Same turn is fine.
+4. You stop. The runtime emits a `waiting_on_pending_integrations` event, parks your next input, and re-dispatches it the moment all required connections land as `active`. You do not poll, do not retry, do not chain "let me also call gmail_get_profile to verify" — that hits 401 noise.
+5. When the system re-dispatches you, every required provider is connected, the dashboard's `getIntegrationStatus()` will return `ready: true`, and the app actually works.
+
+**The trap you must NOT fall into:**
+
+- Do not catch a 401 / `integration_not_connected` from an MCP tool and conclude "this API is not available" or "Composio doesn't expose this". That error means **the user hasn't connected yet**, NOT that the action is missing. Propose connect and try again after the user authorizes.
+- Do not skip declaring `integrations` in the manifest because "then the gate will pause my turn". The gate IS the contract — being paused is the correct outcome when the user needs to do an OAuth step. Skipping the declaration to dodge the gate is shipping a broken app.
+- Do not invent "safe mode", "manual mode", "logging-only mode", "preview mode", or any other phrase that means "the app I just shipped doesn't actually work". Those are agent rationalizations of the same underlying bug: you did not propose_connect when you should have.
+- Do not double-propose the same toolkit "in case the first one didn't take" — the gate de-dupes by slug.
+
+**Concrete heuristic:** if your final message would contain any of "isn't available yet", "doesn't expose", "safe mode", "manual mode", "logging-only", "no real recipient", or "shows blockers instead of pretending to send" — stop, go back to step 3, and propose_connect the missing providers. Then re-evaluate.
 
 ## Verification checklist
 
@@ -367,6 +500,6 @@ Run all of these. Stop at the first failure and report the symptom verbatim, don
 
 ### For dashboard apps (additionally)
 
-7. `ui-reference/components.json` — the holaOS-locked shadcn registry version. Match it in the app's own `components.json` so primitives stay aligned.
-8. `ui-reference/tokens.css` and `ui-reference/themes/holaos.css` — the shared CSS variable tokens (`--background` / `--primary` / `--radius` / etc.). Use these; do not invent new ones.
+7. `@holaboss/ui` on npmjs.com — public package with the full primitive catalog (~55 base-ui shadcn components incl. Chart family, Sidebar, Dialog/Sheet/Drawer, Table, Form, Calendar, Carousel, Sonner). Install via `bun add @holaboss/ui` and mount the bundled styles via a single `import "@holaboss/ui/styles.css"` at the dashboard root. No DashboardShell/DataTable/StatPill layouts — compose from primitives.
+8. _(no dashboard reference)_ — dashboards compose freely from `@holaboss/ui` primitives. The `interface-design` skill chained above is the only authority on shape.
 9. Compare against the current live desktop panes if available, but do not leave the workspace or guess repo-root source paths just to locate pane source files.

@@ -7,7 +7,7 @@ description: Regex/parser/DSL design specialist for grammar authoring and ReDoS-
 CAPABILITIES_SUMMARY:
 - regex_design: Safe regex authoring with anchors, lookaround, unicode flags
 - redos_prevention: Catastrophic backtracking detection, exponential complexity analysis
-- regex_engine_awareness: RE2 (Go, linear-time) vs PCRE (Perl-like) vs ECMAScript vs Oniguruma differences
+- regex_engine_awareness: RE2 (Go, linear-time) vs PCRE (Perl-like) vs ECMAScript (ES2025: RegExp.escape, inline modifiers) vs Oniguruma differences; Unicode 16.0 script property support by engine
 - parser_generator_selection: ANTLR4 vs PEG.js vs nearley vs tree-sitter vs chevrotain vs hand-written RD
 - parser_combinator_design: Parsec-style composable parsers, ts-parsec, chevrotain fluent API
 - grammar_ambiguity_detection: LALR conflicts, PEG ordered-choice hazards, left-recursion
@@ -129,7 +129,7 @@ questions:
       - label: "PCRE / Perl-compat"
         description: "Full feature set incl. backreferences, lookaround; ReDoS-prone"
       - label: "ECMAScript (/u or /v flag)"
-        description: "Browser/Node default. ES2024 /v adds set notation and atomic groups"
+        description: "Browser/Node default. ES2024 /v adds set notation; ES2025 adds RegExp.escape() and inline flag modifiers (?i:...)"
       - label: "Oniguruma (Ruby)"
         description: "Ruby / mruby environments; supports named captures, multi-byte"
       - label: "Other (please specify)"
@@ -273,7 +273,7 @@ Three patterns to reject on sight:
 (a*)*        # quantifier on already-quantified group — exponential
 ```
 
-Read `references/regex-safety.md` for the full protocol including detection tools (redos-detector, safe-regex, rxxr2, regexploit), atomic groups `(?>...)`, possessive quantifiers `a++`, ES2024 `/v` flag, and the HTML/email anti-patterns.
+Read `references/regex-safety.md` for the full protocol including detection tools (redos-detector, safe-regex, rxxr2, regexploit), atomic groups `(?>...)`, possessive quantifiers `a++`, ES2024 `/v` flag, ES2025 `RegExp.escape()` and inline modifiers, Unicode 16.0 script properties, and the HTML/email anti-patterns.
 
 ## Parser Generator Selection
 

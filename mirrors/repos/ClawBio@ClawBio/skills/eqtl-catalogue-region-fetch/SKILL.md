@@ -97,9 +97,9 @@ eQTL Catalogue (Kerimov 2021 *Nat Genet*) is the de facto umbrella aggregator fo
 
 - A **point lookup of one variant in one tissue**: query the GTEx Portal REST API (`https://gtexportal.org/api/v2/`) directly for single-variant queries.
 - **All eQTLs for a gene across all tissues**: this skill returns one (study × tissue × quant_method) at a time. Iterating across tissues is the orchestrator's job, not a single skill invocation.
-- **pQTL data**: eQTL Catalogue does not host pQTL summary statistics. Use UKB-PPP or deCODE for protein QTLs.
+- **pQTL data**: eQTL Catalogue does not host pQTL summary statistics. For UKB-PPP plasma cis-pQTL, use the `ukb-ppp-region-fetch` skill (Sun 2023 Nature, Synapse-backed).
 - **trans-eQTL data**: eQTL Catalogue's cis-window is ±1 Mb of TSS; trans-eQTL signals are at distant variants and require a different upstream (e.g., eQTLGen for blood trans).
-- **Fine-mapping credible sets / PIPs**: credible-set posteriors (SuSiE) live at a different FTP path (`http://ftp.ebi.ac.uk/pub/databases/spot/eQTL/susie/`) and require a separate skill. The nominal-pass `.all.tsv.gz` files this skill fetches do NOT include posterior inclusion probabilities.
+- **Fine-mapping credible sets / PIPs**: credible-set posteriors (SuSiE) live at a different FTP path (`http://ftp.ebi.ac.uk/pub/databases/spot/eQTL/susie/`) and require a separate skill. For SuSiE / SuSiE-inf / ABF fine-mapping with PIPs and credible sets, use the sibling `fine-mapping` skill already on ClawBio main. The nominal-pass `.all.tsv.gz` files this skill fetches do NOT include posterior inclusion probabilities.
 
 ## Scope
 

@@ -13,8 +13,8 @@ CAPABILITIES_SUMMARY:
 - database_migration: Schema evolution, zero-downtime migrations, data backfill, dual-write patterns, version upgrade procedures
 - verification: Before/after comparison tests, regression detection, performance benchmarks, behavioral equivalence checks
 - rollback_planning: Feature flags for gradual rollout, circuit breakers, rollback scripts, data reversion procedures
-- framework_recipe: Framework-specific major-version migration (Vue 2→3, React CRA→Next.js, Angular major, Rails major, Spring Boot 2→3, Express→Fastify/Hono) with feature-parity checklist, adapter pattern, dual-run validation, and deprecation-warning triage
-- language_recipe: Language / runtime migration (JS→TS, TS strict-mode staged enablement, Python 2→3 residual, Node LTS major bumps, Go toolchain upgrades, Java 8→17/21) with type-inference strategy and runtime-behavior diff verification
+- framework_recipe: Framework-specific major-version migration (Vue 2→3, React 18→19, React CRA→Next.js, Next.js 15→16, Angular major, Svelte 4→5, Rails major, Spring Boot 2→3, Spring Boot 3→4, Express→Fastify/Hono) with feature-parity checklist, adapter pattern, dual-run validation, and deprecation-warning triage
+- language_recipe: Language / runtime migration (JS→TS, TS strict-mode staged enablement, Python 2→3 residual, Python 3.12→3.13/3.14, Node.js LTS major bumps incl. Node 22 LTS, Go toolchain upgrades, Java 8→17/21, Java 21→25) with type-inference strategy and runtime-behavior diff verification
 - deprecation_recipe: Feature / API sunset orchestration — deprecation period design, usage telemetry, Sunset HTTP header (RFC 8594), client migration docs, staged removal playbook with reversible rollback flag
 
 COLLABORATION_PATTERNS:
@@ -48,7 +48,7 @@ Migration orchestrator — plans, executes, and verifies technology transitions 
 ## Trigger Guidance
 
 Use Shift when the task needs:
-- framework or library migration (React class→hooks, Vue 2→3, CJS→ESM)
+- framework or library migration (React class→hooks, React 18→19, Vue 2→3, Svelte 4→5, CJS→ESM)
 - language migration (JavaScript→TypeScript, Python 2→3)
 - API version migration (v1→v2 with backward compatibility)
 - database version upgrade or schema migration strategy
@@ -108,7 +108,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Ensure every phase is independently deployable and reversible.
 - Stay within migration orchestration domain; route implementation to Builder, tests to Radar.
 - Define measurable migration success criteria: data integrity ≥99.9% for critical data, latency deviation ≤±10% of pre-migration baseline, failed transactions <0.02%.
-- Prefer ast-grep (or jssg for JS/TS) for cross-language and large-scale codemods; use jscodeshift when deep JS/TS AST control is needed. Always dry-run codemods before batch execution.
+- Prefer ast-grep (or jssg for JS/TS) for cross-language and large-scale codemods; use jscodeshift when deep JS/TS AST control is needed. Always dry-run codemods before batch execution. For Java/Kotlin/Python automated refactoring at scale, prefer OpenRewrite (Lossless Semantic Trees) over hand-written codemods — it ships official recipes for Spring Boot 3→4, Jakarta namespace renames, and dependency upgrades (source: [OpenRewrite Docs](https://docs.openrewrite.org/), 2025-2026). For LLM-assisted migration of large Java projects, GitHub Copilot agent mode (App Modernization extension) provides assessment → code-fix → validation guidance with CVE scanning on changed dependencies (source: [GitHub Blog, 2025](https://github.blog/ai-and-ml/github-copilot/a-step-by-step-guide-to-modernizing-java-projects-with-github-copilot-agent-mode/)).
 - Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read current framework versions, database schemas, API surface, and dependency graph at ASSESS — migration correctness requires grounding in concrete source and target state), P5 (think step-by-step at strategy selection: Strangler Fig vs Branch by Abstraction vs Parallel Run vs Big Bang, expand-contract ordering, codemod dry-run verification, rollback sequencing)** as critical for Shift. P2 recommended: calibrated migration plan preserving phase boundaries, behavioral equivalence checks, and rollback path. P1 recommended: front-load source/target versions, scope, and risk tier at ASSESS.
 
 ## Migration Strategy Decision
@@ -120,6 +120,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Critical path, need behavioral proof | **Parallel Run** | Low (high effort) | `references/migration-strategies.md` |
 | Small scope (<50 files), well-tested, low risk | **Big Bang** | High if untested | `references/migration-strategies.md` |
 | Database schema change, zero-downtime required | **Expand-Contract** | Medium | `references/database-migration.md` |
+| Data/infrastructure migration needing staged read+write cutover | **Migration Flags (LaunchDarkly 6-stage)** | Low | `references/migration-strategies.md` |
 | API version change, external consumers | **Versioned Endpoints** | Medium | `references/codemod-patterns.md` |
 
 ## Common Migration Paths
@@ -127,9 +128,13 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | From → To | Complexity | Key challenge | Reference |
 |-----------|-----------|---------------|-----------|
 | React class → hooks | Medium | Lifecycle mapping, shared state refactoring | `references/codemod-patterns.md` |
+| React 18 → 19 | Medium | Actions/`useActionState`, Server Components, `ref` as prop, `forwardRef` removal; official react-codemod set + codemod.com | `references/framework-migration.md` |
 | Vue 2 → Vue 3 | High | Options→Composition API, Vuex→Pinia, template changes | `references/codemod-patterns.md` |
+| Next.js 15 → 16 | Medium | Cache Components replacing implicit caching, async `params`/`searchParams`, PPR boundaries; `npx @next/codemod upgrade 16` | `references/framework-migration.md` |
+| Svelte 4 → 5 | Medium | Runes reactivity model, slots→snippets; `npx sv migrate svelte-5` official migrator | `references/framework-migration.md` |
 | CJS → ESM | Medium | Dynamic require, __dirname, interop | `references/codemod-patterns.md` |
 | JavaScript → TypeScript | High | Gradual typing, any→strict, config setup | `references/codemod-patterns.md` |
+| Spring Boot 3 → 4 | High | Requires Java 21+, Spring Framework 7 / Jakarta EE 11, Spring Security 7; OpenRewrite `UpgradeSpringBoot_4_0` recipe | `references/framework-migration.md` |
 | REST → GraphQL | High | Schema design, resolver mapping, client refactor | `references/migration-strategies.md` |
 | Monolith → Microservices | Very High | Domain boundaries, data ownership, inter-service communication | `references/migration-strategies.md` |
 | PostgreSQL major upgrade | Medium | Extension compatibility, replication slot handling; consider pgroll for automated expand-contract | `references/database-migration.md` |
@@ -156,7 +161,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Codemod Generation | `codemod` | | AST transform script generation | `references/codemod-patterns.md` |
 | Strangler Fig | `strangler` | | Strangler Fig strategy design and implementation | `references/migration-strategies.md` |
 | Verification | `verify` | | Behavioral equivalence verification before and after migration | `references/database-migration.md` |
-| Framework Migration | `framework` | | Framework major-version jump (Vue 2→3, React CRA→Next.js, Angular major, Rails major, Spring Boot 2→3, Express→Fastify/Hono) with feature-parity checklist and dual-run | `references/framework-migration.md` |
+| Framework Migration | `framework` | | Framework major-version jump (Vue 2→3, React 18→19, React CRA→Next.js, Next.js 15→16, Svelte 4→5, Angular major, Rails major, Spring Boot 2→3, Spring Boot 3→4, Express→Fastify/Hono) with feature-parity checklist and dual-run | `references/framework-migration.md` |
 | Language Migration | `lang` | | Language / runtime migration (JS→TS, TS `strict` staged enablement, Python 2→3 residual, Node LTS bumps, Go toolchain, Java 8→17/21) | `references/language-migration.md` |
 | Deprecation Sunset | `deprecate` | | Feature / API sunset with telemetry, Sunset header, migration docs, and staged removal playbook | `references/deprecation-strategy.md` |
 
@@ -171,7 +176,7 @@ Behavior notes per Recipe:
 - `codemod`: AST transform authoring — prefer ast-grep/jssg for cross-language or large-scale rewrites, jscodeshift or ts-morph for deep JS/TS semantics, LibCST for Python. Always dry-run before batch execution. Mechanical rewrite only — semantic verification still belongs to `verify`.
 - `strangler`: Strangler Fig implementation design — façade routing plan, old/new coexistence boundaries, migration sequence. Guard against façade-bottleneck (façade accumulating routing logic) and technical-layer decomposition (should be domain-boundary).
 - `verify`: Before/after behavioral-equivalence proof — golden fixtures, request replay, diff classification (expected / regression / benign). Required gate before removing compatibility layers in `COMPLETE`.
-- `framework`: Framework major-version migration (Vue 2→3, React CRA→Next.js, Angular major, Rails major, Spring Boot 2→3, Express→Fastify/Hono). Produces a feature-parity checklist, adapter/compat shim plan, dual-run validation harness, and deprecation-warning triage. Consumes Horizon's "framework deprecated" findings as input. Distinct from `plan`: `plan` chooses the strategy in the abstract; `framework` executes a specific framework transition with domain-specific gotchas.
+- `framework`: Framework major-version migration (Vue 2→3, React 18→19, React CRA→Next.js, Next.js 15→16, Angular major, Svelte 4→5, Rails major, Spring Boot 2→3, Spring Boot 3→4, Express→Fastify/Hono). Produces a feature-parity checklist, adapter/compat shim plan, dual-run validation harness, and deprecation-warning triage. Consumes Horizon's "framework deprecated" findings as input. For React 19: the React team co-published codemods with codemod.com covering `Context.Provider`, `forwardRef`, `useContext→use` rewrites ([codemod.com React 18→19 guide](https://docs.codemod.com/guides/migrations/react-18-19)). For Next.js 15→16: run `npx @next/codemod upgrade 16`; key changes are Cache Components and async `params`/`searchParams`. For Svelte 4→5: run `npx sv migrate svelte-5` or migrate per-component in VS Code; slots replaced by snippets. For Spring Boot 3→4: requires Java 21+, Jakarta EE 11, Spring Framework 7 — use OpenRewrite `UpgradeSpringBoot_4_0` recipe ([Moderne blog, 2025](https://www.moderne.ai/blog/spring-boot-4x-migration-guide)). Distinct from `plan`: `plan` chooses the strategy in the abstract; `framework` executes a specific framework transition with domain-specific gotchas.
 - `lang`: Language / runtime migration (JS→TS, TS `strict` staged enablement, Python 2→3 residual, Node LTS majors, Go toolchain, Java 8→17/21). Drives incremental type-inference strategy (leaves first, one `strict` sub-flag per PR) and runtime-behavior-diff verification (same deterministic workload on old + new runtime). Hand off crypto/TLS runtime diffs to Sentinel.
 - `deprecate`: Feature / API sunset orchestration — deprecation period, usage telemetry, Sunset HTTP header (RFC 8594), client migration docs, staged removal playbook with reversible rollback flag. Boundaries: Void decides *whether* to cut; `deprecate` runs *how* to cut safely. Launch owns release/version strategy and CHANGELOG; `deprecate` feeds it the notice content and removal-release target. Use when the surface being removed has external or cross-team callers.
 

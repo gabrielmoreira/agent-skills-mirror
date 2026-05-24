@@ -58,7 +58,7 @@ src/
 ├── api/         # Panel API server + OpenAI-compatible serve routes (axum)
 ├── auth/        # OAuth (PKCE), token refresh, Claude CLI import
 ├── bus/         # Async message bus
-├── channels/    # Telegram, Slack, Discord, Webhook, WhatsApp, Lark, Email, MQTT, Serial
+├── channels/    # Telegram, Slack, Discord, Webhook, WhatsApp Web/Cloud, Lark, Email, Serial, ACP; MQTT parked
 ├── cli/         # Clap commands + handlers
 ├── config/      # Config types/loading + hot-reload
 ├── cron/        # Persistent cron scheduler
@@ -97,6 +97,7 @@ For detailed module docs see `docs/claude/architecture.md`.
 - `shell` tool output is truncated at 2,000 lines / 50KB before it reaches the model context.
 - `grep` reports subprocess failures instead of collapsing them into "No matches found".
 - `edit_file` rejects empty `old_text` and accepts optional `expected_replacements` to guard exact-match edits.
+- `longterm_memory` includes explicit use/counter-use trigger phrases so durable user corrections, preferences, and project conventions are persisted only when they generalize beyond the current task.
 
 ## Common Tasks
 
@@ -126,6 +127,6 @@ cargo nextest run --test cli_smoke | e2e | integration
 cargo nextest run test_name                # Specific test
 ```
 
-Current validation: `cargo fmt -- --check`, `cargo clippy -- -D warnings`, and `cargo test --doc` pass. `cargo nextest run --lib` is currently blocked by `auth::oauth::tests::test_callback_server_timeout` under nextest, though the same test passes when rerun with `cargo test`.
+Current validation: `cargo fmt -- --check`, `cargo clippy -- -D warnings`, `cargo nextest run --lib`, and `cargo test --doc` pass.
 
 For smoke checklist and benchmarks see `docs/claude/testing.md`.

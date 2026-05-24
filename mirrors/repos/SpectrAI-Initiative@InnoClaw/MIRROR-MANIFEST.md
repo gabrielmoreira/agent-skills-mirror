@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `SpectrAI-Initiative/InnoClaw` — 26 default patterns, 0 followed patterns, 224 file(s) materialized.
+Mirror of `SpectrAI-Initiative/InnoClaw` — 26 default patterns, 0 followed patterns, 228 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `SpectrAI-Initiative/InnoClaw` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 224 |
+| Files         | 228 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -189,100 +189,104 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 128 | ✓ | [`.claude/skills/nuclear_physics/SKILL.md`](.claude/skills/nuclear_physics/SKILL.md) |
 | 129 | ✓ | [`.claude/skills/oceanographic-seawater-properties/SKILL.md`](.claude/skills/oceanographic-seawater-properties/SKILL.md) |
 | 130 | ✓ | [`.claude/skills/one_health_analysis/SKILL.md`](.claude/skills/one_health_analysis/SKILL.md) |
-| 131 | ✓ | [`.claude/skills/opentargets-disease-target/SKILL.md`](.claude/skills/opentargets-disease-target/SKILL.md) |
-| 132 | ✓ | [`.claude/skills/optical-frequency-calculation/SKILL.md`](.claude/skills/optical-frequency-calculation/SKILL.md) |
-| 133 | ✓ | [`.claude/skills/optics_analysis/SKILL.md`](.claude/skills/optics_analysis/SKILL.md) |
-| 134 | ✓ | [`.claude/skills/organism_classification/SKILL.md`](.claude/skills/organism_classification/SKILL.md) |
-| 135 | ✓ | [`.claude/skills/orphan_drug_analysis/SKILL.md`](.claude/skills/orphan_drug_analysis/SKILL.md) |
-| 136 | ✓ | [`.claude/skills/pandemic_preparedness/SKILL.md`](.claude/skills/pandemic_preparedness/SKILL.md) |
-| 137 | ✓ | [`.claude/skills/paper-ai-search/SKILL.md`](.claude/skills/paper-ai-search/SKILL.md) |
-| 138 | ✓ | [`.claude/skills/paper-discussion-full/SKILL.md`](.claude/skills/paper-discussion-full/SKILL.md) |
-| 139 | ✓ | [`.claude/skills/paper-discussion/SKILL.md`](.claude/skills/paper-discussion/SKILL.md) |
-| 140 | ✓ | [`.claude/skills/paper-search/SKILL.md`](.claude/skills/paper-search/SKILL.md) |
-| 141 | ✓ | [`.claude/skills/pediatric_drug_safety/SKILL.md`](.claude/skills/pediatric_drug_safety/SKILL.md) |
-| 142 | ✓ | [`.claude/skills/peptide-properties-calculation/SKILL.md`](.claude/skills/peptide-properties-calculation/SKILL.md) |
-| 143 | ✓ | [`.claude/skills/personalized_medicine/SKILL.md`](.claude/skills/personalized_medicine/SKILL.md) |
-| 144 | ✓ | [`.claude/skills/pharmacogenomics_analysis/SKILL.md`](.claude/skills/pharmacogenomics_analysis/SKILL.md) |
-| 145 | ✓ | [`.claude/skills/pharmacokinetics_profile/SKILL.md`](.claude/skills/pharmacokinetics_profile/SKILL.md) |
-| 146 | ✓ | [`.claude/skills/phenotype-by-hpo-id/SKILL.md`](.claude/skills/phenotype-by-hpo-id/SKILL.md) |
-| 147 | ✓ | [`.claude/skills/polymer_property_analysis/SKILL.md`](.claude/skills/polymer_property_analysis/SKILL.md) |
-| 148 | ✓ | [`.claude/skills/polypharmacology_analysis/SKILL.md`](.claude/skills/polypharmacology_analysis/SKILL.md) |
-| 149 | ✓ | [`.claude/skills/population_genetics/SKILL.md`](.claude/skills/population_genetics/SKILL.md) |
-| 150 | ✓ | [`.claude/skills/precision_oncology/SKILL.md`](.claude/skills/precision_oncology/SKILL.md) |
-| 151 | ✓ | [`.claude/skills/protein_classification_analysis/SKILL.md`](.claude/skills/protein_classification_analysis/SKILL.md) |
-| 152 | ✓ | [`.claude/skills/protein_complex_analysis/SKILL.md`](.claude/skills/protein_complex_analysis/SKILL.md) |
-| 153 | ✓ | [`.claude/skills/protein_database_crossref/SKILL.md`](.claude/skills/protein_database_crossref/SKILL.md) |
-| 154 | ✓ | [`.claude/skills/protein_drug_interaction/SKILL.md`](.claude/skills/protein_drug_interaction/SKILL.md) |
-| 155 | ✓ | [`.claude/skills/protein_engineering/SKILL.md`](.claude/skills/protein_engineering/SKILL.md) |
-| 156 | ✓ | [`.claude/skills/protein_function_annotation/SKILL.md`](.claude/skills/protein_function_annotation/SKILL.md) |
-| 157 | ✓ | [`.claude/skills/protein_interaction_network/SKILL.md`](.claude/skills/protein_interaction_network/SKILL.md) |
-| 158 | ✓ | [`.claude/skills/protein_property_comparison/SKILL.md`](.claude/skills/protein_property_comparison/SKILL.md) |
-| 159 | ✓ | [`.claude/skills/protein_quality_assessment/SKILL.md`](.claude/skills/protein_quality_assessment/SKILL.md) |
-| 160 | ✓ | [`.claude/skills/protein_similarity_search/SKILL.md`](.claude/skills/protein_similarity_search/SKILL.md) |
-| 161 | ✓ | [`.claude/skills/protein_solubility_optimization/SKILL.md`](.claude/skills/protein_solubility_optimization/SKILL.md) |
-| 162 | ✓ | [`.claude/skills/protein_structure_analysis/SKILL.md`](.claude/skills/protein_structure_analysis/SKILL.md) |
-| 163 | ✓ | [`.claude/skills/protein-blast-search/SKILL.md`](.claude/skills/protein-blast-search/SKILL.md) |
-| 164 | ✓ | [`.claude/skills/protein-properties-calculation/SKILL.md`](.claude/skills/protein-properties-calculation/SKILL.md) |
-| 165 | ✓ | [`.claude/skills/proteome_analysis/SKILL.md`](.claude/skills/proteome_analysis/SKILL.md) |
-| 166 | ✓ | [`.claude/skills/protocol-extraction-from-pdf/SKILL.md`](.claude/skills/protocol-extraction-from-pdf/SKILL.md) |
-| 167 | ✓ | [`.claude/skills/protocol-generation/SKILL.md`](.claude/skills/protocol-generation/SKILL.md) |
-| 168 | ✓ | [`.claude/skills/protocol-to-executable-json/SKILL.md`](.claude/skills/protocol-to-executable-json/SKILL.md) |
-| 169 | ✓ | [`.claude/skills/pubchem_deep_dive/SKILL.md`](.claude/skills/pubchem_deep_dive/SKILL.md) |
-| 170 | ✓ | [`.claude/skills/pubchem-smiles-search/SKILL.md`](.claude/skills/pubchem-smiles-search/SKILL.md) |
-| 171 | ✓ | [`.claude/skills/pubmed-article-search/SKILL.md`](.claude/skills/pubmed-article-search/SKILL.md) |
-| 172 | ✓ | [`.claude/skills/rare_disease_genetics/SKILL.md`](.claude/skills/rare_disease_genetics/SKILL.md) |
-| 173 | ✓ | [`.claude/skills/region-gene-elements/SKILL.md`](.claude/skills/region-gene-elements/SKILL.md) |
-| 174 | ✓ | [`.claude/skills/regulatory_region_analysis/SKILL.md`](.claude/skills/regulatory_region_analysis/SKILL.md) |
-| 175 | ✓ | [`.claude/skills/research-ideation-full/SKILL.md`](.claude/skills/research-ideation-full/SKILL.md) |
-| 176 | ✓ | [`.claude/skills/researcher-ambiguity-gate/SKILL.md`](.claude/skills/researcher-ambiguity-gate/SKILL.md) |
-| 177 | ✓ | [`.claude/skills/researcher-context-audit/SKILL.md`](.claude/skills/researcher-context-audit/SKILL.md) |
-| 178 | ✓ | [`.claude/skills/researcher-dispatch-supervisor/SKILL.md`](.claude/skills/researcher-dispatch-supervisor/SKILL.md) |
-| 179 | ✓ | [`.claude/skills/researcher-plan-architect/SKILL.md`](.claude/skills/researcher-plan-architect/SKILL.md) |
-| 180 | ✓ | [`.claude/skills/researcher-replan-recovery/SKILL.md`](.claude/skills/researcher-replan-recovery/SKILL.md) |
-| 181 | ✓ | [`.claude/skills/researcher-rigor-gate/SKILL.md`](.claude/skills/researcher-rigor-gate/SKILL.md) |
-| 182 | ✓ | [`.claude/skills/scientific-literature-search/SKILL.md`](.claude/skills/scientific-literature-search/SKILL.md) |
-| 183 | ✓ | [`.claude/skills/seawater-freezing-temperature/SKILL.md`](.claude/skills/seawater-freezing-temperature/SKILL.md) |
-| 184 | ✓ | [`.claude/skills/seawater-sound-speed-calculation/SKILL.md`](.claude/skills/seawater-sound-speed-calculation/SKILL.md) |
-| 185 | ✓ | [`.claude/skills/seismic-waveform-processing/SKILL.md`](.claude/skills/seismic-waveform-processing/SKILL.md) |
-| 186 | ✓ | [`.claude/skills/signal_processing/SKILL.md`](.claude/skills/signal_processing/SKILL.md) |
-| 187 | ✓ | [`.claude/skills/skill-creator/SKILL.md`](.claude/skills/skill-creator/SKILL.md) |
-| 188 | ✓ | [`.claude/skills/smiles_comprehensive_analysis/SKILL.md`](.claude/skills/smiles_comprehensive_analysis/SKILL.md) |
-| 189 | ✓ | [`.claude/skills/smiles-to-cas-conversion/SKILL.md`](.claude/skills/smiles-to-cas-conversion/SKILL.md) |
-| 190 | ✓ | [`.claude/skills/snp_functional_analysis/SKILL.md`](.claude/skills/snp_functional_analysis/SKILL.md) |
-| 191 | ✓ | [`.claude/skills/statistical_error_analysis/SKILL.md`](.claude/skills/statistical_error_analysis/SKILL.md) |
-| 192 | ✓ | [`.claude/skills/string-ppi-enrichment/SKILL.md`](.claude/skills/string-ppi-enrichment/SKILL.md) |
-| 193 | ✓ | [`.claude/skills/structural_homology_modeling/SKILL.md`](.claude/skills/structural_homology_modeling/SKILL.md) |
-| 194 | ✓ | [`.claude/skills/structural_pharmacogenomics/SKILL.md`](.claude/skills/structural_pharmacogenomics/SKILL.md) |
-| 195 | ✓ | [`.claude/skills/substance_toxicology/SKILL.md`](.claude/skills/substance_toxicology/SKILL.md) |
-| 196 | ✓ | [`.claude/skills/substructure_activity_search/SKILL.md`](.claude/skills/substructure_activity_search/SKILL.md) |
-| 197 | ✓ | [`.claude/skills/synthetic_biology_design/SKILL.md`](.claude/skills/synthetic_biology_design/SKILL.md) |
-| 198 | ✓ | [`.claude/skills/systems_pharmacology/SKILL.md`](.claude/skills/systems_pharmacology/SKILL.md) |
-| 199 | ✓ | [`.claude/skills/tcga-gene-expression/SKILL.md`](.claude/skills/tcga-gene-expression/SKILL.md) |
-| 200 | ✓ | [`.claude/skills/text2cad/SKILL.md`](.claude/skills/text2cad/SKILL.md) |
-| 201 | ✓ | [`.claude/skills/thermal_analysis/SKILL.md`](.claude/skills/thermal_analysis/SKILL.md) |
-| 202 | ✓ | [`.claude/skills/tissue_specific_analysis/SKILL.md`](.claude/skills/tissue_specific_analysis/SKILL.md) |
-| 203 | ✓ | [`.claude/skills/toxicity_assessment/SKILL.md`](.claude/skills/toxicity_assessment/SKILL.md) |
-| 204 | ✓ | [`.claude/skills/transcriptome_analysis/SKILL.md`](.claude/skills/transcriptome_analysis/SKILL.md) |
-| 205 | ✓ | [`.claude/skills/ucsc_genome_exploration/SKILL.md`](.claude/skills/ucsc_genome_exploration/SKILL.md) |
-| 206 | ✓ | [`.claude/skills/uniprot_deep_analysis/SKILL.md`](.claude/skills/uniprot_deep_analysis/SKILL.md) |
-| 207 | ✓ | [`.claude/skills/uniprot-protein-retrieval/SKILL.md`](.claude/skills/uniprot-protein-retrieval/SKILL.md) |
-| 208 | ✓ | [`.claude/skills/unit_conversion_suite/SKILL.md`](.claude/skills/unit_conversion_suite/SKILL.md) |
-| 209 | ✓ | [`.claude/skills/unit-conversion-nanoscale/SKILL.md`](.claude/skills/unit-conversion-nanoscale/SKILL.md) |
-| 210 | ✓ | [`.claude/skills/variant_pathogenicity/SKILL.md`](.claude/skills/variant_pathogenicity/SKILL.md) |
-| 211 | ✓ | [`.claude/skills/variant-clinical-significance/SKILL.md`](.claude/skills/variant-clinical-significance/SKILL.md) |
-| 212 | ✓ | [`.claude/skills/variant-cross-database-ids/SKILL.md`](.claude/skills/variant-cross-database-ids/SKILL.md) |
-| 213 | ✓ | [`.claude/skills/variant-functional-prediction/SKILL.md`](.claude/skills/variant-functional-prediction/SKILL.md) |
-| 214 | ✓ | [`.claude/skills/variant-genomic-location/SKILL.md`](.claude/skills/variant-genomic-location/SKILL.md) |
-| 215 | ✓ | [`.claude/skills/variant-gwas-associations/SKILL.md`](.claude/skills/variant-gwas-associations/SKILL.md) |
-| 216 | ✓ | [`.claude/skills/variant-pharmacogenomics/SKILL.md`](.claude/skills/variant-pharmacogenomics/SKILL.md) |
-| 217 | ✓ | [`.claude/skills/variant-population-frequency/SKILL.md`](.claude/skills/variant-population-frequency/SKILL.md) |
-| 218 | ✓ | [`.claude/skills/virtual_screening/SKILL.md`](.claude/skills/virtual_screening/SKILL.md) |
-| 219 | ✓ | [`.claude/skills/virus_genomics/SKILL.md`](.claude/skills/virus_genomics/SKILL.md) |
-| 220 | ✓ | [`.claude/skills/web_literature_mining/SKILL.md`](.claude/skills/web_literature_mining/SKILL.md) |
-| 221 | ✓ | [`.claude/skills/wind-site-assessment/SKILL.md`](.claude/skills/wind-site-assessment/SKILL.md) |
-| 222 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 223 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 224 | ✓ | [`plugins/innoclaw-cli/skills/innoclaw-cli/SKILL.md`](plugins/innoclaw-cli/skills/innoclaw-cli/SKILL.md) |
+| 131 | ✓ | [`.claude/skills/openspec-apply-change/SKILL.md`](.claude/skills/openspec-apply-change/SKILL.md) |
+| 132 | ✓ | [`.claude/skills/openspec-archive-change/SKILL.md`](.claude/skills/openspec-archive-change/SKILL.md) |
+| 133 | ✓ | [`.claude/skills/openspec-explore/SKILL.md`](.claude/skills/openspec-explore/SKILL.md) |
+| 134 | ✓ | [`.claude/skills/openspec-propose/SKILL.md`](.claude/skills/openspec-propose/SKILL.md) |
+| 135 | ✓ | [`.claude/skills/opentargets-disease-target/SKILL.md`](.claude/skills/opentargets-disease-target/SKILL.md) |
+| 136 | ✓ | [`.claude/skills/optical-frequency-calculation/SKILL.md`](.claude/skills/optical-frequency-calculation/SKILL.md) |
+| 137 | ✓ | [`.claude/skills/optics_analysis/SKILL.md`](.claude/skills/optics_analysis/SKILL.md) |
+| 138 | ✓ | [`.claude/skills/organism_classification/SKILL.md`](.claude/skills/organism_classification/SKILL.md) |
+| 139 | ✓ | [`.claude/skills/orphan_drug_analysis/SKILL.md`](.claude/skills/orphan_drug_analysis/SKILL.md) |
+| 140 | ✓ | [`.claude/skills/pandemic_preparedness/SKILL.md`](.claude/skills/pandemic_preparedness/SKILL.md) |
+| 141 | ✓ | [`.claude/skills/paper-ai-search/SKILL.md`](.claude/skills/paper-ai-search/SKILL.md) |
+| 142 | ✓ | [`.claude/skills/paper-discussion-full/SKILL.md`](.claude/skills/paper-discussion-full/SKILL.md) |
+| 143 | ✓ | [`.claude/skills/paper-discussion/SKILL.md`](.claude/skills/paper-discussion/SKILL.md) |
+| 144 | ✓ | [`.claude/skills/paper-search/SKILL.md`](.claude/skills/paper-search/SKILL.md) |
+| 145 | ✓ | [`.claude/skills/pediatric_drug_safety/SKILL.md`](.claude/skills/pediatric_drug_safety/SKILL.md) |
+| 146 | ✓ | [`.claude/skills/peptide-properties-calculation/SKILL.md`](.claude/skills/peptide-properties-calculation/SKILL.md) |
+| 147 | ✓ | [`.claude/skills/personalized_medicine/SKILL.md`](.claude/skills/personalized_medicine/SKILL.md) |
+| 148 | ✓ | [`.claude/skills/pharmacogenomics_analysis/SKILL.md`](.claude/skills/pharmacogenomics_analysis/SKILL.md) |
+| 149 | ✓ | [`.claude/skills/pharmacokinetics_profile/SKILL.md`](.claude/skills/pharmacokinetics_profile/SKILL.md) |
+| 150 | ✓ | [`.claude/skills/phenotype-by-hpo-id/SKILL.md`](.claude/skills/phenotype-by-hpo-id/SKILL.md) |
+| 151 | ✓ | [`.claude/skills/polymer_property_analysis/SKILL.md`](.claude/skills/polymer_property_analysis/SKILL.md) |
+| 152 | ✓ | [`.claude/skills/polypharmacology_analysis/SKILL.md`](.claude/skills/polypharmacology_analysis/SKILL.md) |
+| 153 | ✓ | [`.claude/skills/population_genetics/SKILL.md`](.claude/skills/population_genetics/SKILL.md) |
+| 154 | ✓ | [`.claude/skills/precision_oncology/SKILL.md`](.claude/skills/precision_oncology/SKILL.md) |
+| 155 | ✓ | [`.claude/skills/protein_classification_analysis/SKILL.md`](.claude/skills/protein_classification_analysis/SKILL.md) |
+| 156 | ✓ | [`.claude/skills/protein_complex_analysis/SKILL.md`](.claude/skills/protein_complex_analysis/SKILL.md) |
+| 157 | ✓ | [`.claude/skills/protein_database_crossref/SKILL.md`](.claude/skills/protein_database_crossref/SKILL.md) |
+| 158 | ✓ | [`.claude/skills/protein_drug_interaction/SKILL.md`](.claude/skills/protein_drug_interaction/SKILL.md) |
+| 159 | ✓ | [`.claude/skills/protein_engineering/SKILL.md`](.claude/skills/protein_engineering/SKILL.md) |
+| 160 | ✓ | [`.claude/skills/protein_function_annotation/SKILL.md`](.claude/skills/protein_function_annotation/SKILL.md) |
+| 161 | ✓ | [`.claude/skills/protein_interaction_network/SKILL.md`](.claude/skills/protein_interaction_network/SKILL.md) |
+| 162 | ✓ | [`.claude/skills/protein_property_comparison/SKILL.md`](.claude/skills/protein_property_comparison/SKILL.md) |
+| 163 | ✓ | [`.claude/skills/protein_quality_assessment/SKILL.md`](.claude/skills/protein_quality_assessment/SKILL.md) |
+| 164 | ✓ | [`.claude/skills/protein_similarity_search/SKILL.md`](.claude/skills/protein_similarity_search/SKILL.md) |
+| 165 | ✓ | [`.claude/skills/protein_solubility_optimization/SKILL.md`](.claude/skills/protein_solubility_optimization/SKILL.md) |
+| 166 | ✓ | [`.claude/skills/protein_structure_analysis/SKILL.md`](.claude/skills/protein_structure_analysis/SKILL.md) |
+| 167 | ✓ | [`.claude/skills/protein-blast-search/SKILL.md`](.claude/skills/protein-blast-search/SKILL.md) |
+| 168 | ✓ | [`.claude/skills/protein-properties-calculation/SKILL.md`](.claude/skills/protein-properties-calculation/SKILL.md) |
+| 169 | ✓ | [`.claude/skills/proteome_analysis/SKILL.md`](.claude/skills/proteome_analysis/SKILL.md) |
+| 170 | ✓ | [`.claude/skills/protocol-extraction-from-pdf/SKILL.md`](.claude/skills/protocol-extraction-from-pdf/SKILL.md) |
+| 171 | ✓ | [`.claude/skills/protocol-generation/SKILL.md`](.claude/skills/protocol-generation/SKILL.md) |
+| 172 | ✓ | [`.claude/skills/protocol-to-executable-json/SKILL.md`](.claude/skills/protocol-to-executable-json/SKILL.md) |
+| 173 | ✓ | [`.claude/skills/pubchem_deep_dive/SKILL.md`](.claude/skills/pubchem_deep_dive/SKILL.md) |
+| 174 | ✓ | [`.claude/skills/pubchem-smiles-search/SKILL.md`](.claude/skills/pubchem-smiles-search/SKILL.md) |
+| 175 | ✓ | [`.claude/skills/pubmed-article-search/SKILL.md`](.claude/skills/pubmed-article-search/SKILL.md) |
+| 176 | ✓ | [`.claude/skills/rare_disease_genetics/SKILL.md`](.claude/skills/rare_disease_genetics/SKILL.md) |
+| 177 | ✓ | [`.claude/skills/region-gene-elements/SKILL.md`](.claude/skills/region-gene-elements/SKILL.md) |
+| 178 | ✓ | [`.claude/skills/regulatory_region_analysis/SKILL.md`](.claude/skills/regulatory_region_analysis/SKILL.md) |
+| 179 | ✓ | [`.claude/skills/research-ideation-full/SKILL.md`](.claude/skills/research-ideation-full/SKILL.md) |
+| 180 | ✓ | [`.claude/skills/researcher-ambiguity-gate/SKILL.md`](.claude/skills/researcher-ambiguity-gate/SKILL.md) |
+| 181 | ✓ | [`.claude/skills/researcher-context-audit/SKILL.md`](.claude/skills/researcher-context-audit/SKILL.md) |
+| 182 | ✓ | [`.claude/skills/researcher-dispatch-supervisor/SKILL.md`](.claude/skills/researcher-dispatch-supervisor/SKILL.md) |
+| 183 | ✓ | [`.claude/skills/researcher-plan-architect/SKILL.md`](.claude/skills/researcher-plan-architect/SKILL.md) |
+| 184 | ✓ | [`.claude/skills/researcher-replan-recovery/SKILL.md`](.claude/skills/researcher-replan-recovery/SKILL.md) |
+| 185 | ✓ | [`.claude/skills/researcher-rigor-gate/SKILL.md`](.claude/skills/researcher-rigor-gate/SKILL.md) |
+| 186 | ✓ | [`.claude/skills/scientific-literature-search/SKILL.md`](.claude/skills/scientific-literature-search/SKILL.md) |
+| 187 | ✓ | [`.claude/skills/seawater-freezing-temperature/SKILL.md`](.claude/skills/seawater-freezing-temperature/SKILL.md) |
+| 188 | ✓ | [`.claude/skills/seawater-sound-speed-calculation/SKILL.md`](.claude/skills/seawater-sound-speed-calculation/SKILL.md) |
+| 189 | ✓ | [`.claude/skills/seismic-waveform-processing/SKILL.md`](.claude/skills/seismic-waveform-processing/SKILL.md) |
+| 190 | ✓ | [`.claude/skills/signal_processing/SKILL.md`](.claude/skills/signal_processing/SKILL.md) |
+| 191 | ✓ | [`.claude/skills/skill-creator/SKILL.md`](.claude/skills/skill-creator/SKILL.md) |
+| 192 | ✓ | [`.claude/skills/smiles_comprehensive_analysis/SKILL.md`](.claude/skills/smiles_comprehensive_analysis/SKILL.md) |
+| 193 | ✓ | [`.claude/skills/smiles-to-cas-conversion/SKILL.md`](.claude/skills/smiles-to-cas-conversion/SKILL.md) |
+| 194 | ✓ | [`.claude/skills/snp_functional_analysis/SKILL.md`](.claude/skills/snp_functional_analysis/SKILL.md) |
+| 195 | ✓ | [`.claude/skills/statistical_error_analysis/SKILL.md`](.claude/skills/statistical_error_analysis/SKILL.md) |
+| 196 | ✓ | [`.claude/skills/string-ppi-enrichment/SKILL.md`](.claude/skills/string-ppi-enrichment/SKILL.md) |
+| 197 | ✓ | [`.claude/skills/structural_homology_modeling/SKILL.md`](.claude/skills/structural_homology_modeling/SKILL.md) |
+| 198 | ✓ | [`.claude/skills/structural_pharmacogenomics/SKILL.md`](.claude/skills/structural_pharmacogenomics/SKILL.md) |
+| 199 | ✓ | [`.claude/skills/substance_toxicology/SKILL.md`](.claude/skills/substance_toxicology/SKILL.md) |
+| 200 | ✓ | [`.claude/skills/substructure_activity_search/SKILL.md`](.claude/skills/substructure_activity_search/SKILL.md) |
+| 201 | ✓ | [`.claude/skills/synthetic_biology_design/SKILL.md`](.claude/skills/synthetic_biology_design/SKILL.md) |
+| 202 | ✓ | [`.claude/skills/systems_pharmacology/SKILL.md`](.claude/skills/systems_pharmacology/SKILL.md) |
+| 203 | ✓ | [`.claude/skills/tcga-gene-expression/SKILL.md`](.claude/skills/tcga-gene-expression/SKILL.md) |
+| 204 | ✓ | [`.claude/skills/text2cad/SKILL.md`](.claude/skills/text2cad/SKILL.md) |
+| 205 | ✓ | [`.claude/skills/thermal_analysis/SKILL.md`](.claude/skills/thermal_analysis/SKILL.md) |
+| 206 | ✓ | [`.claude/skills/tissue_specific_analysis/SKILL.md`](.claude/skills/tissue_specific_analysis/SKILL.md) |
+| 207 | ✓ | [`.claude/skills/toxicity_assessment/SKILL.md`](.claude/skills/toxicity_assessment/SKILL.md) |
+| 208 | ✓ | [`.claude/skills/transcriptome_analysis/SKILL.md`](.claude/skills/transcriptome_analysis/SKILL.md) |
+| 209 | ✓ | [`.claude/skills/ucsc_genome_exploration/SKILL.md`](.claude/skills/ucsc_genome_exploration/SKILL.md) |
+| 210 | ✓ | [`.claude/skills/uniprot_deep_analysis/SKILL.md`](.claude/skills/uniprot_deep_analysis/SKILL.md) |
+| 211 | ✓ | [`.claude/skills/uniprot-protein-retrieval/SKILL.md`](.claude/skills/uniprot-protein-retrieval/SKILL.md) |
+| 212 | ✓ | [`.claude/skills/unit_conversion_suite/SKILL.md`](.claude/skills/unit_conversion_suite/SKILL.md) |
+| 213 | ✓ | [`.claude/skills/unit-conversion-nanoscale/SKILL.md`](.claude/skills/unit-conversion-nanoscale/SKILL.md) |
+| 214 | ✓ | [`.claude/skills/variant_pathogenicity/SKILL.md`](.claude/skills/variant_pathogenicity/SKILL.md) |
+| 215 | ✓ | [`.claude/skills/variant-clinical-significance/SKILL.md`](.claude/skills/variant-clinical-significance/SKILL.md) |
+| 216 | ✓ | [`.claude/skills/variant-cross-database-ids/SKILL.md`](.claude/skills/variant-cross-database-ids/SKILL.md) |
+| 217 | ✓ | [`.claude/skills/variant-functional-prediction/SKILL.md`](.claude/skills/variant-functional-prediction/SKILL.md) |
+| 218 | ✓ | [`.claude/skills/variant-genomic-location/SKILL.md`](.claude/skills/variant-genomic-location/SKILL.md) |
+| 219 | ✓ | [`.claude/skills/variant-gwas-associations/SKILL.md`](.claude/skills/variant-gwas-associations/SKILL.md) |
+| 220 | ✓ | [`.claude/skills/variant-pharmacogenomics/SKILL.md`](.claude/skills/variant-pharmacogenomics/SKILL.md) |
+| 221 | ✓ | [`.claude/skills/variant-population-frequency/SKILL.md`](.claude/skills/variant-population-frequency/SKILL.md) |
+| 222 | ✓ | [`.claude/skills/virtual_screening/SKILL.md`](.claude/skills/virtual_screening/SKILL.md) |
+| 223 | ✓ | [`.claude/skills/virus_genomics/SKILL.md`](.claude/skills/virus_genomics/SKILL.md) |
+| 224 | ✓ | [`.claude/skills/web_literature_mining/SKILL.md`](.claude/skills/web_literature_mining/SKILL.md) |
+| 225 | ✓ | [`.claude/skills/wind-site-assessment/SKILL.md`](.claude/skills/wind-site-assessment/SKILL.md) |
+| 226 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 227 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 228 | ✓ | [`plugins/innoclaw-cli/skills/innoclaw-cli/SKILL.md`](plugins/innoclaw-cli/skills/innoclaw-cli/SKILL.md) |
 
 ---
 

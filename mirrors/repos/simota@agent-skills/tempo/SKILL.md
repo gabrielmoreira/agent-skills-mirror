@@ -271,10 +271,11 @@ Read `references/timezone-safety.md` for the full discipline.
 
 | Library | State | Recommendation |
 |---------|-------|----------------|
-| **Temporal API** (`ZonedDateTime`, `Instant`) | ECMAScript **Stage 4** (advanced 2026-03, in ES2026 spec); shipping in Firefox 139 / Chrome 144 / Node 26; polyfill `@js-temporal/polyfill` for older runtimes [Source: Socket — TC39 Advances Temporal to Stage 4](https://socket.dev/blog/tc39-advances-temporal-to-stage-4) | New TS/JS code — preferred long-term |
+| **Temporal API** (`ZonedDateTime`, `Instant`) | ECMAScript **Stage 4** (TC39 advanced 2026-01-20, in ES2026 spec); shipping natively in Firefox 139+ / Chrome 144+ / Node.js 26 (unflagged); polyfill `@js-temporal/polyfill` for older runtimes. Source: [TC39 Advances Temporal to Stage 4](https://socket.dev/blog/tc39-advances-temporal-to-stage-4), [Node.js 26 Release](https://nodejs.org/en/blog/release/v26.0.0) | New TS/JS code — preferred; native in Node 26+ |
 | **Luxon** (`DateTime.setZone`, `.toUTC`) | Mature, IANA-aware | Excellent for current production JS/TS |
-| **date-fns-tz** (`formatInTimeZone`, `zonedTimeToUtc`) | Function-based companion to date-fns | Good when already on date-fns |
-| **Moment.js** | Maintenance mode since 2020 | Do NOT use in new code; migrate to Luxon |
+| **date-fns v4 + `@date-fns/tz`** | v4.0 (Sep 2024): first-class TZ support via `@date-fns/tz` and `@date-fns/utc` packages; replaces `date-fns-tz` companion. Source: [date-fns v4.0 announcement](https://blog.date-fns.org/v40-with-time-zone-support/) | Preferred for date-fns codebases; upgrade from `date-fns-tz` |
+| **date-fns-tz** (`formatInTimeZone`, `zonedTimeToUtc`) | Pre-v4 companion; still functional but `@date-fns/tz` is the successor | Legacy — migrate to `@date-fns/tz` on date-fns v4+ |
+| **Moment.js** | Maintenance mode since 2020 | Do NOT use in new code; migrate to Luxon or Temporal |
 | **Python `zoneinfo`** (stdlib, 3.9+) | IANA-backed | Preferred over `pytz` for new Python code |
 | **pytz** | Works but has footguns (use `.localize()` not constructor) | Replace with `zoneinfo` when possible |
 
@@ -340,7 +341,7 @@ Brief matrix; details in `references/cron-patterns.md` and `references/retry-str
 | **K8s CronJob** | 5-field Unix | UTC (cluster) or spec.timeZone (stable since v1.27; embedded Go tzdata fallback) | `backoffLimit` | Failed-job history + external | Manual |
 | **Cloud Scheduler** (GCP) | 5-field Unix + `timeZone` | Any IANA | Retry config on Job | Pub/Sub DLQ | Manual |
 | **Sidekiq** (Ruby) | cron-parser via sidekiq-cron | Any IANA | Built-in exp backoff (25 retries) | Morgue queue | `sidekiq_options lock: :until_executed` |
-| **BullMQ** (Node) | cron via repeat option | Any IANA | `attempts` + `backoff: exponential` | `failed` list | Custom via job ID |
+| **BullMQ** (Node) | Job Schedulers API (v5.16+; `repeat` deprecated) | Any IANA | `attempts` + `backoff: exponential` | `failed` list | Custom via job ID |
 | **Celery Beat** (Python) | crontab() | Any IANA | `autoretry_for`, `retry_backoff` | Result backend + manual | `task_ignore_result`, custom |
 | **Temporal** | Built-in cron + workflow | Any IANA | `RetryPolicy` with backoff/coefficient/max | `CancelChildWorkflow` / Queues | Workflow ID = idempotency key |
 

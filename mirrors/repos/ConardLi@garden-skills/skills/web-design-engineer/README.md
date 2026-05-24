@@ -40,9 +40,14 @@ Copy this skill folder into your project:
 ```
 your-project/
 ├── .agents/skills/web-design-engineer/   # or .claude/skills/web-design-engineer/
-│   ├── SKILL.md                          # Main skill file (~400 lines)
+│   ├── SKILL.md                          # Main skill file
 │   └── references/
-│       └── advanced-patterns.md          # Code template library (~520 lines)
+│       ├── advanced-patterns.md          # Code template library (slide engine, device frames, motion timelines, data viz)
+│       ├── design-directions.md          # Design Direction Advisor (6 schools, differentiated 3-pick recommendation)
+│       ├── style-recipes/                # 25 anchored style recipes — one .md file per anchor, loaded on demand
+│       │   ├── INDEX.md                   #   Catalog index + 3 cross-indexes + cross-cutting anti-patterns
+│       │   ├── linear.md / aesop.md / pentagram.md / ...    #   25 single-recipe files
+│       └── critique-guide.md             # 5-dimension scoring rubric + common issues catalog
 └── ...
 ```
 
@@ -98,6 +103,18 @@ The agent will automatically pick up the skill when your request involves visual
 | Minimal professional | Teal-blue | Outfit + Space Grotesk | Dashboards, B2B |
 | Artisan warmth | Caramel | Caveat + Newsreader | Food, education |
 
+**Anchored style-recipe library (25 named recipes, progressively loaded).** When the user names an anchor ("Linear-style", "Aesop feeling", "Pentagram-grade type"), the agent reads **only the matching file** at `references/style-recipes/<anchor>.md` (~50 lines). The catalog index, 3 cross-indexes, and cross-cutting anti-patterns live in `references/style-recipes/INDEX.md` (~150 lines). The full catalog is never loaded at once. The 25 recipes are spread across 7 schools (the 6 Direction-Advisor schools plus a *Specialty / Genre* school reachable only via direct anchor names):
+
+| School | Recipes |
+|---|---|
+| Editorial / Minimalist | `apple-hig` · `muji-kenya-hara` · `aesop` · `dieter-rams-braun` · `monocle-magazine` |
+| Information Architecture | `pentagram` · `vignelli-swiss-helvetica` · `bloomberg-terminal` · `tufte-dataink` · `nyt-the-daily` |
+| Modern Tool / Builder SaaS | `linear` · `vercel-mesh` · `raycast` · `notion-pre-ai` |
+| Motion / Experimental | `field-io` · `active-theory` · `resn-storytelling` |
+| Brutalist / Raw | `are-na` · `bloomberg-businessweek-turley` · `balenciaga-post-2017` |
+| Warm Humanist | `mailchimp-freddie` · `stripe-press` · `headspace-meditation` |
+| Specialty / Genre | `y2k-retrofuturism` · `mid-century-modern` |
+
 ---
 
 ## Demos
@@ -147,6 +164,8 @@ Key additions beyond the original Claude Design prompt:
 - **Extended anti-cliché list** — additional patterns identified from real-world AI output
 - **Placeholder philosophy** — a complete framework for handling missing assets professionally
 - **Color × font pairing table** — six validated visual system starting points
+- **Design Direction Advisor** — six-school conversational tool for vague requests, with explicit handoff to the recipe library
+- **25-recipe anchored style library** — each recipe tied to a real brand / studio / designer with concrete copy-able values; defends against AI-default mush
 - **Advanced pattern library** — ready-to-use code templates for common UI patterns
 
 ---

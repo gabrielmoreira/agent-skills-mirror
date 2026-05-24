@@ -20,6 +20,25 @@ Analyze the current codebase and produce a `knowledge-graph.json` file in `.unde
 
 ---
 
+## Progress Reporting
+
+Throughout execution, report progress to the user at each phase transition and during batch processing. This keeps users informed on large codebases where analysis can take a long time.
+
+- **Phase transitions:** At the start of each phase, print a status line:
+  > `[Phase N/7] <phase name>...`
+  >
+  > Example: `[Phase 2/7] Analyzing files (12 batches)...`
+
+- **Batch progress:** During Phase 2, report each batch with its index and total:
+  > `Analyzing batch X/N (files: foo.ts, bar.ts, ...)` (list up to 3 filenames, then `...` if more)
+
+- **Phase completion:** When a phase finishes, briefly confirm:
+  > `Phase N complete. <one-line summary of result>`
+  >
+  > Example: `Phase 1 complete. Found 247 files across 3 languages.`
+
+---
+
 ## Phase 0 — Pre-flight
 
 Determine whether to run a full analysis or incremental update.
@@ -213,6 +232,8 @@ Set up and verify the `.understandignore` file before scanning.
 
 ## Phase 1 — SCAN (Full analysis only)
 
+Report to the user: `[Phase 1/7] Scanning project files...`
+
 Dispatch a subagent using the `project-scanner` agent definition (at `agents/project-scanner.md`). Append the following additional context:
 
 > **Additional context from main session:**
@@ -270,6 +291,9 @@ Batch the file list from Phase 1 into groups of **20-30 files each** (aim for ~2
 - Non-code files can be mixed with code files in the same batch if batch sizes are small
 - Each file's `fileCategory` from Phase 1 must be included in the batch file list
 
+After batching, report the plan to the user:
+> `[Phase 2/7] Analyzing files — <totalFiles> files in <totalBatches> batches (up to 5 concurrent)...`
+
 For each batch, dispatch a subagent using the `file-analyzer` agent definition (at `agents/file-analyzer.md`). Run up to **5 subagents concurrently** using parallel dispatch. Append the following additional context:
 
 > **Additional context from main session:**
@@ -292,7 +316,7 @@ Fill in batch-specific parameters below and dispatch:
 > Project root: `$PROJECT_ROOT`
 > Project: `<projectName>`
 > Languages: `<languages>`
-> Batch index: `<batchIndex>`
+> Batch: `<batchIndex>/<totalBatches>`
 > Skill directory (for bundled scripts): `<SKILL_DIR>`
 > Write output to: `$PROJECT_ROOT/.understand-anything/intermediate/batch-<batchIndex>.json`
 >
@@ -306,7 +330,9 @@ Fill in batch-specific parameters below and dispatch:
 > 2. `<path>` (<sizeLines> lines, language: `<language>`, fileCategory: `<fileCategory>`)
 > ...
 
-After ALL batches complete, run the merge-and-normalize script bundled with this skill (located next to this SKILL.md file — use the skill directory path, not the project root):
+After ALL batches complete, report to the user: `Phase 2 complete. All <totalBatches> batches analyzed.`
+
+Run the merge-and-normalize script bundled with this skill (located next to this SKILL.md file — use the skill directory path, not the project root):
 ```bash
 python <SKILL_DIR>/merge-batch-graphs.py $PROJECT_ROOT
 ```
@@ -343,6 +369,8 @@ After batches complete:
 
 ## Phase 3 — ASSEMBLE REVIEW
 
+Report to the user: `[Phase 3/7] Reviewing assembled graph...`
+
 Dispatch a subagent using the `assemble-reviewer` agent definition (at `agents/assemble-reviewer.md`).
 
 Pass these parameters in the dispatch prompt:
@@ -367,6 +395,8 @@ After the subagent completes, read `$PROJECT_ROOT/.understand-anything/intermedi
 ---
 
 ## Phase 4 — ARCHITECTURE
+
+Report to the user: `[Phase 4/7] Identifying architectural layers...`
 
 **Build the combined prompt template:**
  1. Use the `architecture-analyzer` agent definition (at `agents/architecture-analyzer.md`).
@@ -449,6 +479,8 @@ All four fields (`id`, `name`, `description`, `nodeIds`) are required.
 
 ## Phase 5 — TOUR
 
+Report to the user: `[Phase 5/7] Building guided tour...`
+
 Dispatch a subagent using the `tour-builder` agent definition (at `agents/tour-builder.md`). Append the following additional context:
 
 > **Additional context from main session:**
@@ -519,6 +551,8 @@ Required fields: `order`, `title`, `description`, `nodeIds`. Preserve optional `
 ---
 
 ## Phase 6 — REVIEW
+
+Report to the user: `[Phase 6/7] Validating knowledge graph...`
 
 Assemble the full KnowledgeGraph JSON object:
 
@@ -679,6 +713,8 @@ Pass these parameters in the dispatch prompt:
 ---
 
 ## Phase 7 — SAVE
+
+Report to the user: `[Phase 7/7] Saving knowledge graph...`
 
 1. Write the final knowledge graph to `$PROJECT_ROOT/.understand-anything/knowledge-graph.json`.
 

@@ -11,6 +11,7 @@ FMP API key is optional; without it, yfinance is used exclusively.
 
 import sys
 import time
+from datetime import date, timedelta
 from typing import Any, Optional
 
 try:
@@ -52,8 +53,15 @@ def _v3_quote_url(base: str, symbols_str: str, params: dict) -> tuple[str, dict]
 
 
 def _stable_hist_url(base: str, symbols_str: str, params: dict) -> tuple[str, dict]:
-    """stable/historical-price-full?symbol=A,B&..."""
+    """stable/historical-price-eod/full?symbol=SYM&from=&to="""
     params["symbol"] = symbols_str
+    # The /stable EOD endpoint ignores `timeseries`; convert it to a from/to
+    # range (~2x calendar days to cover N trading days, +10 slack).
+    days = params.pop("timeseries", None)
+    if days is not None:
+        today = date.today()
+        params["from"] = (today - timedelta(days=int(days) * 2 + 10)).isoformat()
+        params["to"] = today.isoformat()
     return base, params
 
 
@@ -62,13 +70,34 @@ def _v3_hist_url(base: str, symbols_str: str, params: dict) -> tuple[str, dict]:
     return f"{base}/{symbols_str}", params
 
 
+def _normalize_eod_flat_list(data: Any, symbols_str: str) -> Any:
+    """Convert a /stable historical-price-eod/full flat list to the v3 shape.
+
+    Input  : [{"symbol": "AAPL", "date": .., "close": .., ...}, ...]
+    Output : {"symbol": "AAPL", "historical": [...]}
+    Non-list input (v3 dict / historicalStockList) passes through unchanged;
+    returns None when no row matches the requested symbol.
+    """
+    if not isinstance(data, list):
+        return data
+    norm = symbols_str.replace("-", ".")
+    rows = [
+        r
+        for r in data
+        if isinstance(r, dict) and (r.get("symbol") or symbols_str).replace("-", ".") == norm
+    ]
+    if not rows:
+        return None
+    return {"symbol": symbols_str, "historical": rows}
+
+
 _FMP_ENDPOINTS = {
     "quote": [
         ("https://financialmodelingprep.com/stable/quote", _stable_quote_url),
         ("https://financialmodelingprep.com/api/v3/quote", _v3_quote_url),
     ],
     "historical": [
-        ("https://financialmodelingprep.com/stable/historical-price-full", _stable_hist_url),
+        ("https://financialmodelingprep.com/stable/historical-price-eod/full", _stable_hist_url),
         ("https://financialmodelingprep.com/api/v3/historical-price-full", _v3_hist_url),
     ],
 }
@@ -80,8 +109,11 @@ class ETFScanner:
     Supports FMP API (preferred) with automatic yfinance fallback.
     """
 
-    FMP_HIST_BATCH_SIZE = 5
-    FMP_QUOTE_BATCH_SIZE = 50
+    # One symbol per request: FMP's /stable endpoints do not support
+    # comma-batched symbols (that is a paid legacy feature that silently
+    # returns []), so quotes/history are fetched individually.
+    FMP_HIST_BATCH_SIZE = 1
+    FMP_QUOTE_BATCH_SIZE = 1
 
     _ENDPOINT_FAILURE_THRESHOLD = 3  # disable endpoint after N consecutive failures
 
@@ -171,6 +203,10 @@ class ETFScanner:
                 )
                 if resp.status_code == 200:
                     data = resp.json()
+                    if endpoint_key == "historical":
+                        # /stable returns a flat OHLCV list; reshape to the v3
+                        # {"symbol", "historical"} dict the parser expects.
+                        data = _normalize_eod_flat_list(data, symbols_str)
                     if data:
                         # Reset failure count on success
                         self._endpoint_failures[base_url] = 0

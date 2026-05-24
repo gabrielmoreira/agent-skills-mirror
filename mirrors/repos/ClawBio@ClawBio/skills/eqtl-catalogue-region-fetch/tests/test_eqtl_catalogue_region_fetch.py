@@ -43,6 +43,28 @@ def test_ftp_url_for_strips_trailing_slash_on_base():
     assert url == "https://example.org/sumstats/QTS000015/QTD000266/QTD000266.all.tsv.gz"
 
 
+@pytest.mark.parametrize(
+    "quant_method, expected_suffix",
+    [
+        ("ge", ".all.tsv.gz"),
+        ("microarray", ".all.tsv.gz"),
+        ("leafcutter", ".cc.tsv.gz"),
+        ("exon", ".cc.tsv.gz"),
+        ("tx", ".cc.tsv.gz"),
+        ("txrev", ".cc.tsv.gz"),
+        (None, ".all.tsv.gz"),   # default when metadata omits it
+        ("GE", ".all.tsv.gz"),   # case-insensitive
+    ],
+)
+def test_ftp_url_for_picks_suffix_by_quant_method(quant_method, expected_suffix):
+    """Per the 2026-05-15 FTP-layout audit: non-ge / non-microarray datasets
+    only ship .cc.tsv.gz; ge + microarray ship .all.tsv.gz. Default keeps
+    the old .all behaviour so legacy callers (and tests that don't care
+    about quant_method) are not broken."""
+    url = ftp_url_for("QTS000015", "QTD000270", quant_method=quant_method)
+    assert url.endswith(f"QTD000270{expected_suffix}")
+
+
 # ----------------------- FTP row parsing helpers -----------------------
 
 
@@ -267,6 +289,90 @@ def test_resolve_study_id_raises_when_metadata_lacks_study_id(monkeypatch):
             dataset_id="QTD000266", chromosome="1",
             start_bp=1, end_bp=1000,
         )
+
+
+# ----------------------- gene_id filter + sQTL FTP wiring -----------------------
+
+
+def _leafcutter_row(*, gene_id="ENSG00000134243", cluster="clu_56921",
+                    variant="chr1_109274968_T_G", position="109274968", pvalue="2.5e-15"):
+    """Build a synthetic leafcutter row: molecular_trait_id is a cluster id
+    (not an ENSG), but the gene_id column is the parent ENSG."""
+    return "\t".join([
+        cluster,        # molecular_trait_id (cluster id for leafcutter)
+        "1",            # chromosome
+        position,       # position
+        "T",            # ref
+        "G",            # alt
+        variant,        # variant
+        "5", "0.32",    # ma_samples, maf
+        pvalue,         # pvalue
+        "0.32", "0.05", # beta, se
+        "SNP", "127", "396", "0.999",
+        cluster,        # molecular_trait_object_id
+        gene_id,        # gene_id (parent ENSG)
+        "", "rs12740374",
+    ])
+
+
+def test_fetch_region_gene_id_filter_keeps_only_target_gene_rows_for_leafcutter(
+    monkeypatch, patched_pysam,
+):
+    """For non-ge quant methods (leafcutter here), the molecular_trait_id
+    column is a cluster id, not an ENSG. Filtering by `gene_id=ENSG...` is
+    what the orchestrator needs."""
+    rows = [
+        _leafcutter_row(),  # SORT1 cluster 56921
+        _leafcutter_row(cluster="clu_10969", variant="chr1_109280000_A_G"),  # different SORT1 cluster, same gene
+        _leafcutter_row(gene_id="ENSG00000999999", cluster="clu_77777",
+                        variant="chr1_109265000_A_G"),  # different gene
+    ]
+    client = EQTLCatalogueClient()
+    monkeypatch.setattr(client, "_get", lambda path, params=None: {
+        "study_id": "QTS000015",
+        "dataset_id": "QTD000270",
+        "study_label": "GTEx",
+        "tissue_label": "liver",
+        "quant_method": "leafcutter",
+        "release": "7.0",
+    })
+    patched_pysam["tbx"] = _mock_tabix(rows)
+    result = client.fetch_region(
+        dataset_id="QTD000270", chromosome="1",
+        start_bp=108_774_968, end_bp=109_774_968,
+        gene_id="ENSG00000134243",
+    )
+    # Two rows belong to the SORT1 gene (two splice clusters); third row dropped.
+    assert result.n_variants == 2
+
+
+def test_fetch_region_uses_cc_suffix_for_leafcutter(monkeypatch):
+    """fetch_region must pass the dataset's quant_method into ftp_url_for so
+    leafcutter (and other non-ge) datasets resolve to `.cc.tsv.gz`. Captures
+    the URL pysam opened to verify the suffix without hitting the network."""
+    client = EQTLCatalogueClient()
+    monkeypatch.setattr(client, "_get", lambda path, params=None: {
+        "study_id": "QTS000015",
+        "dataset_id": "QTD000270",
+        "quant_method": "leafcutter",
+        "release": "7.0",
+    })
+    captured = {"url": None}
+
+    def fake_tabix(url):
+        captured["url"] = url
+        tbx = _mock_tabix([])
+        return tbx
+
+    import pysam
+    monkeypatch.setattr(pysam, "TabixFile", fake_tabix)
+    client.fetch_region(
+        dataset_id="QTD000270", chromosome="1",
+        start_bp=108_774_968, end_bp=109_774_968,
+        gene_id="ENSG00000134243",
+    )
+    assert captured["url"] is not None
+    assert captured["url"].endswith("QTD000270.cc.tsv.gz")
 
 
 # ----------------------- FTP_COLUMNS schema check -----------------------

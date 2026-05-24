@@ -172,7 +172,7 @@ class TestFMPEndpointFallback:
 
         result = scanner._fmp_request("quote", "AAPL")
         assert result is None
-        assert scanner._stats["fmp_failures"] == 2
+        assert scanner.backend_stats()["fmp_failures"] == 2
 
 
 # ---------------------------------------------------------------------------
@@ -636,21 +636,30 @@ class TestSymbolLevelFallback:
         quote_resp.json.return_value = [
             {"symbol": "AAPL", "pe": 30, "price": 150, "yearHigh": 180, "yearLow": 120},
         ]
-        hist_resp = MagicMock()
-        hist_resp.status_code = 200
-        # Historical with enough data for RSI (newest-first from FMP)
-        hist_resp.json.return_value = {
-            "historicalStockList": [
-                {"symbol": "AAPL", "historical": [{"close": float(150 - i)} for i in range(20)]},
-            ]
-        }
-        mock_requests.get.side_effect = [
-            quote_resp,
-            hist_resp,
-            # Per-symbol retry for MSFT (fails)
-            MagicMock(status_code=500),
-            MagicMock(status_code=500),
-        ]
+
+        # Symbols are fetched one per request (no comma-batching on /stable),
+        # so route by symbol/endpoint rather than a fixed call sequence: AAPL
+        # succeeds via FMP, MSFT fails (→ yfinance fallback).
+        def fake_get(url, params=None, headers=None, timeout=None):
+            p = params or {}
+            # symbol is in params for /stable, in the path for the v3 fallback
+            symbol = p.get("symbol") or url.rstrip("/").rsplit("/", 1)[-1]
+            resp = MagicMock()
+            if "AAPL" in symbol:
+                resp.status_code = 200
+                if "quote" in url:
+                    resp.json.return_value = [
+                        {"symbol": "AAPL", "pe": 30, "price": 150, "yearHigh": 180, "yearLow": 120}
+                    ]
+                else:  # /stable historical returns a flat OHLCV list
+                    resp.json.return_value = [
+                        {"symbol": "AAPL", "close": float(150 - i)} for i in range(20)
+                    ]
+            else:  # MSFT → FMP fails on both stable and v3
+                resp.status_code = 500
+            return resp
+
+        mock_requests.get.side_effect = fake_get
 
         # yfinance fallback: download for MSFT
         mock_df = pd.DataFrame(
@@ -675,7 +684,7 @@ class TestSymbolLevelFallback:
         msft = [r for r in results if r["symbol"] == "MSFT"][0]
         assert msft["pe_ratio"] == 35.0
         # Stats show fallback occurred
-        assert scanner._stats["yf_fallbacks"] >= 1
+        assert scanner.backend_stats()["yf_fallbacks"] >= 1
 
     @patch("etf_scanner._requests_lib")
     def test_all_fmp_success_no_yfinance_calls(self, mock_requests):
@@ -700,7 +709,7 @@ class TestSymbolLevelFallback:
             scanner.batch_stock_metrics(["AAPL"])
             mock_yf.download.assert_not_called()
 
-        assert scanner._stats["yf_calls"] == 0
+        assert scanner.backend_stats()["yf_calls"] == 0
 
     @patch("etf_scanner.HAS_REQUESTS", False)
     @patch("etf_scanner.yf")
@@ -723,7 +732,7 @@ class TestSymbolLevelFallback:
 
         results = scanner.batch_stock_metrics(["AAPL"])
         assert len(results) == 1
-        assert scanner._stats["yf_calls"] == 1
+        assert scanner.backend_stats()["yf_calls"] == 1
 
 
 # ---------------------------------------------------------------------------

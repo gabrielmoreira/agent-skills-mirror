@@ -7,13 +7,13 @@ description: "Product image search and high-precision download specialist. Multi
 <!--
 CAPABILITIES_SUMMARY:
 - product_query_orchestration: Multi-source parallel search across e-commerce APIs (Amazon PA-API, Rakuten Ichiba, Shopify, eBay, Walmart), image search (Google CSE, Bing, SerpAPI), and manufacturer/brand sites
-- identifier_matching: Match by SKU / JAN / EAN / UPC / ASIN / GTIN-13/14 / model number with normalization and check-digit validation
+- identifier_matching: Match by SKU / JAN / EAN / UPC / ASIN / GTIN-13/14 / GS1 Digital Link QR URI / model number with normalization and check-digit validation; Sunrise 2027 transition — scan 2D codes (GS1 Digital Link QR / DataMatrix) alongside legacy 1D EAN/UPC during dual-run period
 - text_matching: Product name and attribute fuzzy matching with locale-aware tokenization (Japanese / English / mixed scripts)
 - visual_matching: Perceptual similarity scoring (pHash, dHash, ORB, CLIP embeddings) for product image precision verification
 - multi_resolution_selection: Prefer highest-resolution variant, format preservation (WebP / AVIF / PNG / JPEG), color profile awareness
 - perceptual_dedup: Cross-source duplicate detection via pHash / dHash with hamming-distance threshold
 - quality_validation: Min resolution, blur detection (Laplacian variance), watermark detection, aspect-ratio sanity
-- license_tracking: Per-source license classification, manufacturer ToS verification, opt-out signal honoring (robots.txt / ai.txt / TDM / meta tags)
+- license_tracking: Per-source license classification, manufacturer ToS verification, opt-out signal honoring (robots.txt / ai.txt / TDM / meta tags); C2PA Content Credentials manifest reading at VERIFY for AI-generation disclosure and provenance; IPTC 2025.1 AI fields (AI System Used, AI Prompt Information) extraction and manifest recording
 - politeness_compliance: Per-source rate limiting (token bucket), Retry-After honoring, jittered delays, 429/5xx adaptive backoff
 - manifest_curation: Provenance metadata (source URL, fetch time, license, dimensions, hash, match score), structured output directory
 - failure_recovery: Per-product retry with source fallback chain, partial-success reporting, resumable batches
@@ -122,7 +122,8 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Emit API keys, secrets, or auth tokens to stdout, logs, HTTP exception traces, `failures.md`, or any persisted artifact. Mask via secret-redaction layer at every boundary. [F12]
 - Deliver an image without provenance metadata.
 - Auto-accept matches below the configured confidence floor.
-- Ignore robots.txt or opt-out signals — EU AI Act enforcement (full activation 2026-08-02) and GPAI Art. 101 penalties (€15M / 3% global revenue) treat opt-out compliance as a regulatory requirement.
+- Ignore robots.txt or opt-out signals — EU AI Act enforcement (full activation 2026-08-02, Art. 50 AI-content disclosure) and GPAI Art. 101 penalties (€15M / 3% global revenue) treat opt-out compliance as a regulatory requirement.
+- Deliver images without checking C2PA Content Credentials manifest at VERIFY when the source is known to embed C2PA (Sony Alpha / Samsung Galaxy S25 / Google Pixel 10 camera hardware, Adobe Creative Cloud, professional newsroom output). Record C2PA `ai_assertion` presence, AI-generation flag, and signing identity in provenance metadata. [2026 requirement — EU AI Act Art. 50 enforcement 2026-08-02]
 - Collect copyrighted product images for AI training without explicit license authorization.
 - Persist images flagged with manufacturer take-down requests or DMCA notices.
 - Aggregate per-domain concurrency above the fleet cap (default `≤ 4` concurrent connections per origin) — even when rotating IPs.
@@ -136,7 +137,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 | Phase | Required action | Key rule | Read |
 |-------|-----------------|----------|------|
-| `INTAKE` | Parse product list, normalize identifiers, set source allowlist, set quality / license thresholds, allocate batch ID | No source query before matching keys are confirmed | `references/output-manifest.md` |
+| `INTAKE` | Parse product list, normalize identifiers (including GS1 Digital Link QR URI — extract GTIN and optional batch/serial/expiry application identifiers per GS1 Digital Link standard v1.2.0, Jan 2026), set source allowlist, set quality / license thresholds, allocate batch ID | No source query before matching keys are confirmed | `references/output-manifest.md` |
 | `SEARCH` | Query allowed sources in parallel with per-source rate limit, collect candidate URLs and metadata | Minimum 2 independent sources per product (exceptions: canonical URL / tier-1 SKU match) | `references/source-strategies.md` |
 | `MATCH` | Score candidates by identifier → text → visual; pick top match if score `≥ 0.85`, flag if `0.70-0.85`, reject if `< 0.70` | Identifier match before text match before visual-only | `references/matching-precision.md` |
 | `DOWNLOAD` | Fetch highest-resolution variant, preserve format, retry with backoff, honor `Retry-After` | Politeness contract enforced per source | `references/source-strategies.md` |
@@ -306,6 +307,7 @@ Shared protocols → [`_common/OPERATIONAL.md`](../_common/OPERATIONAL.md)
 <!--
 SELF_EVOLUTION_LOG:
 - 2026-04-27 IMPROVE recipe: V1 (Japanese references → English), V2 (canonical Patterns), V3 (description simplification), V4 (backslash escape), F08/F12/F14 (Boundaries hardening), F07 (pack_size detection). Net +9 lines. Safety Levels: A=4 (V1/V3/V4 + F07), B=3 (V2 CAPABILITIES, F08+F14 Always, F12 Never).
+- 2026-05-23 MAINTAIN recipe: API currency update (eBay Finding/Shopping API decommission 2025-02-05, GS1 Digital Link Resolver v1.2.0 Jan 2026, GS1 Sunrise 2027), C2PA Content Credentials + IPTC 2025.1 AI fields added to license_tracking CAPABILITIES and license-compliance.md, provenance schema extended. Sources: contentauthenticity.org, iptc.org/news/iptc-photo-metadata-standard-2025-1-adds-ai-properties/, gs1us.org/sunrise-2027, developer.ebay.com/develop/get-started/api-deprecation-status.
 
 #TODO(agent): F01 — In references/source-strategies.md Cross-Source Dedup, add CDN size-suffix mutation safety check (verify SHA prefix or canonical key after URL rewrite to prevent fallback to a different product image).
 #TODO(agent): F03 — In references/license-compliance.md Opt-Out Signal Surface, shorten cache TTL from 24h to 6h and add batch-start re-fetch for EU AI Act 2026-08-02 enforcement readiness.

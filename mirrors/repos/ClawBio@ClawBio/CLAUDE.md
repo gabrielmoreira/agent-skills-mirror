@@ -73,12 +73,15 @@ When the user asks a question, match it to a skill and act:
 | WES clinical report English, exome PDF report, whole exome sequencing report, clinical exome PDF | `skills/wes-clinical-report-en/` | Run `wes_clinical_report_en.py` |
 | WES clinical report Spanish, informe clinico WES, exome PDF espanol, Predice, Inbiomedic, Novogene report | `skills/wes-clinical-report-es/` | Run `wes_clinical_report_es.py` |
 | Proteomic aging clocks, organ aging, Olink clock, proteomics clock, organ clock, Goeminne, plasma protein aging, organ-specific aging | `skills/proteomics-clock/` | Run `proteomics_clock.py` |
+| Sample QC triage, sample identity, sex mismatch, fingerprint concordance, contamination, batch shift, low complexity, rerun candidates | `skills/sample-qc-triage/` | Run `sample_qc_triage.py` |
+| CRISPR screen triage, guide counts, depleted genes, knockout screen hits, rank CRISPR hits, follow-up genes | `skills/crispr-screen-triage/` | Run `crispr_screen_triage.py` |
+| Marker dominance mapping, map marker spots, marker-based tissue regions, tumor core, immune edge | `skills/marker-dominance-mapper/` | Run `marker_dominance_mapper.py` |
 | Single FASTA analysis, GC content, ORF finding, protein properties, isoelectric point, GRAVY index, molecular weight, sequence summary, fasta metrics | `skills/analyze-fasta/` | Run `analyze_fasta.py` |
 | Phylogenetic tree from VCF, distance matrix from variants, VCF2TREE, VCF2DIST, DIST2TREE, FASTA2DIST, fastreer, fastreeR, genomic distance, k-mer distance, population tree, cosine distance, sample phylogeny, hierarchical clustering of samples | `skills/fastreer/` | Run `fastreer.py` |
 
 ## How to Use a Skill
 
-### Skills with Python scripts (pharmgx-reporter, equity-scorer, nutrigx_advisor, claw-metagenomics, genome-compare, bio-orchestrator, variant-annotation, bioconductor-bridge, clinical-trial-finder, data-extractor, illumina-bridge, pubmed-summariser, omics-target-evidence-mapper, target-validation-scorer, scrna-orchestrator, scrna-embedding, diff-visualizer, proteomics-de, struct-predictor, clinical-variant-reporter, multiqc-reporter, labstep, clinpgx, gwas-prs, gwas-lookup, methylation-clock, profile-report, ukb-navigator, galaxy-bridge, flow-bio, rnaseq-de, protocols-io, soul2dna, genome-match, recombinator, fine-mapping, cell-detection, wes-clinical-report-en, wes-clinical-report-es, proteomics-clock, fastreer)
+### Skills with Python scripts (pharmgx-reporter, equity-scorer, nutrigx_advisor, claw-metagenomics, genome-compare, bio-orchestrator, variant-annotation, bioconductor-bridge, clinical-trial-finder, data-extractor, illumina-bridge, pubmed-summariser, omics-target-evidence-mapper, target-validation-scorer, scrna-orchestrator, scrna-embedding, diff-visualizer, proteomics-de, struct-predictor, clinical-variant-reporter, multiqc-reporter, labstep, clinpgx, gwas-prs, gwas-lookup, methylation-clock, profile-report, ukb-navigator, galaxy-bridge, flow-bio, rnaseq-de, protocols-io, soul2dna, genome-match, recombinator, fine-mapping, cell-detection, wes-clinical-report-en, wes-clinical-report-es, proteomics-clock, sample-qc-triage, crispr-screen-triage, marker-dominance-mapper, fastreer)
 1. Read the skill's `SKILL.md` for domain context
 2. Run the Python script with correct CLI arguments (see below)
 3. Show the user the output — open any generated figures and explain results
@@ -262,6 +265,21 @@ python skills/proteomics-clock/proteomics_clock.py \
   --input <olink_npx.csv> --organs Heart,Brain,Kidney --generation gen1 --output <dir>
 python skills/proteomics-clock/proteomics_clock.py --demo --output /tmp/proteomics_demo
 
+# Sample QC triage - local sequencing QC outlier triage
+python skills/sample-qc-triage/sample_qc_triage.py \
+  --input <qc_metrics.csv> --output <report_dir>
+python skills/sample-qc-triage/sample_qc_triage.py --demo --output /tmp/sample_qc_demo
+
+# CRISPR screen triage - deterministic guide-level hit ranking
+python skills/crispr-screen-triage/crispr_screen_triage.py \
+  --input <screen_counts.csv> --output <report_dir>
+python skills/crispr-screen-triage/crispr_screen_triage.py --demo --output /tmp/crispr_triage_demo
+
+# Marker dominance mapper - marker-based spot region mapping
+python skills/marker-dominance-mapper/marker_dominance_mapper.py \
+  --input <spot_counts.csv> --output <report_dir>
+python skills/marker-dominance-mapper/marker_dominance_mapper.py --demo --output /tmp/marker_map_demo
+
 # fastreeR — phylogenetic trees and distance matrices from VCF/FASTA
 python skills/fastreer/fastreer.py \
   --command VCF2TREE --input samples.vcf.gz --bootstrap 100 --output <report_dir>
@@ -316,6 +334,9 @@ For instant demos when the user has no data:
 | Corpas 30x PGx loci (WGS) | `corpas-30x/subsets/pgx_loci.vcf.gz` | pharmgx-reporter |
 | Corpas 30x NutriGx loci (WGS) | `corpas-30x/subsets/nutrigx_loci.vcf.gz` | nutrigx_advisor |
 | Corpas 30x QC baselines | `corpas-30x/baselines/qc_summary.json` | Benchmark tests |
+| Sample QC demo metrics (5 synthetic samples) | `skills/sample-qc-triage/demo_qc_metrics.csv` | sample-qc-triage |
+| CRISPR screen demo counts (12 synthetic guides, 6 genes) | `skills/crispr-screen-triage/demo_screen_counts.csv` | crispr-screen-triage |
+| Marker dominance demo counts (6 synthetic spots) | `skills/marker-dominance-mapper/demo_marker_counts.csv` | marker-dominance-mapper |
 | Flow.bio demo (live API + offline cache) | `--demo` flag / `skills/flow-bio/data/demo_cache.json` | flow-bio |
 
 ### Demo Commands
@@ -413,6 +434,15 @@ python skills/flow-bio/flow_bio.py --demo --output /tmp/flow_demo
 
 # Flow.bio search (requires FLOW_USERNAME + FLOW_PASSWORD)
 python skills/flow-bio/flow_bio.py --search "RNA-seq" --output /tmp/flow_search
+
+# Sample QC triage demo
+python skills/sample-qc-triage/sample_qc_triage.py --demo --output /tmp/sample_qc_demo
+
+# CRISPR screen triage demo
+python skills/crispr-screen-triage/crispr_screen_triage.py --demo --output /tmp/crispr_triage_demo
+
+# Marker dominance mapper demo
+python skills/marker-dominance-mapper/marker_dominance_mapper.py --demo --output /tmp/marker_map_demo
 
 # fastreeR demo
 python skills/fastreer/fastreer.py --demo --output /tmp/fastreer_demo

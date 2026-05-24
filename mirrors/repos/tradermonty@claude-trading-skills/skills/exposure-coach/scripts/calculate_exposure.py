@@ -59,6 +59,11 @@ def extract_breadth_score(data: Optional[dict]) -> Optional[int]:
         return int(data["breadth_score"])
     if "composite_score" in data:
         return int(data["composite_score"])
+    # market-breadth-analyzer nests its 0-100 health score under "composite"
+    # (100 = healthy). High = bullish, so used directly (no inversion).
+    composite = data.get("composite")
+    if isinstance(composite, dict) and "composite_score" in composite:
+        return int(composite["composite_score"])
     if "ad_ratio" in data and "nh_nl_ratio" in data:
         ad = data["ad_ratio"]
         nh_nl = data["nh_nl_ratio"]
@@ -158,6 +163,12 @@ def extract_top_risk_score(data: Optional[dict]) -> Optional[int]:
         return None
     if "top_risk_score" in data:
         return int(data["top_risk_score"])
+    # market-top-detector nests its 0-100 score under "composite", where HIGH =
+    # higher top risk (>80 = Critical/Top Formation). Invert to the
+    # exposure-friendly convention (high = safe to be exposed).
+    composite = data.get("composite")
+    if isinstance(composite, dict) and "composite_score" in composite:
+        return max(0, min(100, int(100 - composite["composite_score"])))
     if "top_probability" in data:
         prob = data["top_probability"]
         # Invert: high probability = low score
@@ -176,11 +187,20 @@ def extract_top_risk_score(data: Optional[dict]) -> Optional[int]:
 
 
 def extract_ftd_score(data: Optional[dict]) -> Optional[int]:
-    """Extract FTD score (inverted - high FTD = low score)."""
+    """Extract Follow-Through-Day score (high = strong FTD = bullish bottom).
+
+    ftd-detector emits a 0-100 FTD quality score under ``quality_score``
+    (``total_score``); a confirmed Follow-Through Day is a bullish
+    bottom-confirmation signal, so the score is used directly (no inversion).
+    """
     if data is None:
         return None
     if "ftd_score" in data:
         return int(data["ftd_score"])
+    # ftd-detector real shape: {"quality_score": {"total_score": 0-100, ...}}
+    quality = data.get("quality_score")
+    if isinstance(quality, dict) and quality.get("total_score") is not None:
+        return max(0, min(100, int(quality["total_score"])))
     if "anomaly_level" in data:
         level = data["anomaly_level"].lower()
         mapping = {"none": 90, "low": 80, "moderate": 55, "elevated": 35, "critical": 15}

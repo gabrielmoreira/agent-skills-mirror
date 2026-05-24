@@ -3,151 +3,116 @@
 ## 架构
 
 ```
-CLI (packages/cli) ──HTTP──▶ Daemon (packages/daemon) ──CDP WebSocket──▶ Chrome
-MCP (packages/mcp) ──HTTP──┘       │
-                              ┌────┴────┐
-                              │  HTTP   │
-                              │ Server  │
-                              └────┬────┘
-                                   │
-                         ┌─────────┼─────────┐
-                         │         │         │
-                    CdpConnection  │  CommandDispatch
-                    (WebSocket)    │  (request → handler)
-                                   │
-                            TabStateManager
-                            (短 ID, seq 序号,
-                             per-tab 事件缓冲)
+CLI ──HTTP──▶ Daemon ──controlConn CDP──▶ Chrome
+                │
+                │ --hub 模式 (可选)
+                ├── Hub ProviderStream ──▶ Pinix Hub
+                │
+                │ Protocol 2
+                └── Streamer (bb-viewer) ──captureConn + inputConn CDP──▶ Chrome
+                         │
+                         └── WebRTC video + DataChannel ──▶ Clip Web UI
 ```
 
-**Daemon 组件：**
+**三根 CDP 连接到同一个 Chrome：**
 
-- **CdpConnection** — 维持到 Chrome DevTools Protocol 的 WebSocket 长连接。自动发现 Chrome，管理 session 复用（每个 tab 一个 session）。
-- **TabStateManager** — 管理 per-tab 状态。分配短 ID（targetId 末 4+ 位 hex，保证唯一）。维护全局单调递增 `seq` 计数器。每个 tab 持有环形缓冲事件集合（network/console/errors）。
-- **CommandDispatch** — 将 `Request.action` 映射到处理函数。所有处理器接收 `CdpConnection` 和解析后的 `TabState`，返回带 `tab`（短 ID）和 `seq` 的 `Response`。
+| 连接 | Owner | 职责 |
+|------|-------|------|
+| controlConn | daemon | Agent 操作：tab/nav/site/DOM/click-by-ref |
+| inputConn | streamer | Human 实时输入：鼠标/键盘/IME (DataChannel → CDP) |
+| captureConn | streamer | 视频流：screencast → VP8 → WebRTC |
 
-**核心概念：**
+**组件：**
 
-- **短 tab ID** — 取 CDP targetId 末尾，最少 4 字符，碰撞时自动扩展。所有请求/响应中用短 ID 标识 tab。
-- **seq 计数器** — 全局单调递增整数，每次操作和每个捕获事件都递增。支持 `since` 过滤做增量查询。
-- **Per-tab 事件缓冲** — 环形缓冲（network: 500 条, console: 200 条, errors: 100 条），带 seq 标签。通过 `since`、`filter`、`method`、`status`、`limit` 查询。
+| 组件 | 位置 | 职责 |
+|------|------|------|
+| CLI | `packages/cli/` | 命令行入口，HTTP 调 daemon |
+| Daemon | `packages/daemon/` | 控制中心：CDP controlConn、HTTP API、Hub 连接、site 执行、streamer 管理 |
+| Shared | `packages/shared/` | 统一命令定义 (`commands.ts`)、协议类型 (`protocol.ts`) |
+| Streamer | `bb-viewer` repo | 纯视频 + 实时输入（Go binary，daemon 子进程） |
 
-共享类型定义：`packages/shared/src/protocol.ts`
+## Daemon 两种模式
 
-## 添加新命令
+```bash
+# 本地模式：Agent 用 CLI 操作浏览器
+bb-browser daemon start
 
-3 个文件：
+# Hub 模式：注册到 Pinix Hub，远程可用
+bb-browser daemon start --hub https://hub.pinixai.com --hub-token xxx
+```
 
-1. `packages/shared/src/protocol.ts` — 添加 ActionType + Request 字段 + ResponseData 字段
-2. `packages/daemon/src/command-dispatch.ts` — 在 `dispatchRequest` 中添加处理分支
-3. `packages/cli/src/commands/<name>.ts` + `packages/cli/src/index.ts` — CLI 命令 + 路由
+## 协议
 
-可选：`packages/mcp/src/index.ts` — 如果需要暴露为 MCP tool
+### Protocol 1: CLI ↔ daemon (`POST /command`)
+
+请求：`{"method": "snap", "params": {"tab": "3ef9"}}`
+成功：`{"result": {"tab": "3ef9", "title": "Google", "snapshot": "..."}}`
+失败：`{"error": {"message": "Missing --tab", "hint": "Run 'bb-browser tab list'"}}`
+
+### Protocol 2: daemon ↔ streamer (`POST /command`)
+
+| Method | Params | 说明 |
+|--------|--------|------|
+| connect | {cdpUrl, ice?} | 连接 CDP，创建 WebRTC peer |
+| answer | {answer_sdp, candidates} | 完成 WebRTC 信令 |
+| switch | {cdpUrl} | 切到新 tab（peer 不变） |
+| stop | {} | 停止 |
+
+## 统一命令定义
+
+`packages/shared/src/commands.ts` 是所有命令的单一定义源。每个命令包含 `method`、`group`、`description`、`requiresTab`、`params`。CLI 解析、daemon dispatch、Hub 注册都从这里读取。
+
+添加新命令：
+1. `commands.ts` — 添加 CommandDef
+2. `protocol.ts` — 添加 ActionType
+3. `command-dispatch.ts` — 添加处理分支
+4. `packages/cli/src/commands/<name>.ts` + `index.ts` — CLI 命令
+
+## CLI 命令
+
+`--tab` 必填（除 `open`、`site` 组、`tab list/new`、`daemon`）。
+
+| 组 | 命令 |
+|----|------|
+| 导航 | `open <url> [--tab]`, `back --tab`, `forward --tab`, `reload --tab`, `close --tab` |
+| 观察 | `snap --tab`, `screenshot --tab`, `get <attr> --tab`, `eval <js> --tab` |
+| 交互 | `click/hover/fill/type/press/scroll/check/uncheck/select --tab` |
+| Tab | `tab list`, `tab new [url]` |
+| Site | `site list`, `site info <name>`, `site run <name>` |
+| 调试 | `network/console/errors/trace --tab` |
+| 进程 | `daemon start [--hub]`, `daemon stop`, `daemon status` |
 
 ## 设计不变量
 
-改代码前必读。违反任何一条都是 bug。
+1. **Daemon 是唯一操作 API**。CLI 和 Hub invoke 都通过 daemon。
+2. **Streamer 不做业务逻辑**。不管 tab、不做导航。只做帧编码和输入转发。
+3. **Tab ID 统一用 daemon 分配的短 ID**（如 `3ef9`）。Streamer 不知道 tab ID，只接收 CDP WebSocket URL。
+4. **Site 执行在 daemon 内**。不 shell-out CLI。
+5. **所有操作响应包含 `tab`**（短 ID）。观察类响应包含 `cursor`。
+6. **Per-tab 事件隔离**。tab 关闭时释放短 ID 和事件缓冲。
+7. **`seq` 全局单调递增**，不可回退。
+8. **Daemon 启动时清理旧进程**。`cleanupStaleDaemon()` 确保不残留。
 
-- **INV-1:** 所有操作响应必须包含 `tab`（短 ID）和 `seq`（序号）
-- **INV-2:** 观察类响应（network/console/errors）必须包含 `cursor`
-- **INV-3:** 无效 tab ID 必须报错，不允许静默 fallback
-- **INV-4:** `seq` 全局单调递增，不可回退
-- **INV-5:** per-tab 事件隔离 — tab A 的事件不会出现在 tab B 的查询中
-- **INV-6:** tab 关闭时释放短 ID，清除事件缓冲
-- **INV-7:** `tab_new` 在零 tab 时仍可工作（在 `ensurePageTarget` 之前处理）
+## Hub Clip 注册
 
-## UX 规范（Agent 和人类双用户）
+Hub 模式下 daemon 注册：
 
-bb-browser 有两类用户：**人类**（直接用 CLI）和 **AI Agent**（通过 bash/MCP 调用）。Agent 是桥梁 — 读取 bb-browser 输出并翻译给人类。每个文本表面都要同时服务两者。
+| Clip | 命令 |
+|------|------|
+| browser | 所有标准命令 + `stream.start/answer/close/switch` |
+| \<platform\> | 每个 site adapter 一个命令（如 `google/search`） |
 
-### `site list` 描述
-
-公式：`{动作} ({English keywords}: {核心返回字段})`
-
-```
-# 差 — Agent 无法按任务匹配
-获取雪球股票实时行情
-
-# 好 — 双语可搜索，显示返回内容
-股票实时行情 (stock quote: price, change%, market cap)
-```
-
-### `site info <name>`
-
-Agent 的函数签名。暴露完整 @meta：
-- `args` 含 required/optional 和描述
-- `example` 含可执行的命令
-- `readOnly`、`domain`
-
-### JSON 字段命名
-
-字段名就是 Agent 向人类解释数据的词汇。
-
-| 规则 | 差 | 好 |
-|------|-----|------|
-| 完整英文单词 | `chgPct` | `changePercent` |
-| 值带单位 | `155` | `"1.55%"` |
-| 大数可读 | `177320000000` | `"1.77万亿"` |
-| 始终包含 URL | (缺失) | `"url": "https://..."` |
-| ISO 时间戳 | `1710000000` | `"2026-03-15T01:40:31.000Z"` |
-
-### 错误结构
-
-每个错误必须有三个字段：
-
-```json
-{
-  "error": "HTTP 401",
-  "hint": "需要先登录雪球，请先在浏览器中打开 xueqiu.com 并登录",
-  "action": "bb-browser open https://xueqiu.com"
-}
-```
-
-- `error` — 技术原因（Agent 判断是否可自动修复）
-- `hint` — 人类可读解释（Agent 无法自动修复时原样转达）
-- `action` — 可执行的修复命令，可为空（Agent 优先尝试执行）
-
-### 命令后提示
-
-每个有自然下一步的命令输出应包含一行提示：
-
-```
-# site update 之后：
-💡 运行 bb-browser site recommend 看看哪些和你的浏览习惯匹配
-```
-
-### `--help` 分组
-
-按用户意图分组，最重要的在前：
-
-1. **开始使用** — site recommend, site list, site info, site, guide
-2. **浏览器操作** — open, snapshot, click, fill, type, press, scroll
-3. **页面信息** — get, screenshot, eval, fetch
-4. **标签页** — tab
-5. **调试** — network, console, errors, trace, history
-
-### `site recommend`
-
-人类和 Agent 的首要入门命令：
-- 交叉引用 `history domains` 和 `site list`
-- 显示 "available"（含示例命令）和 "not_available"（含访问次数）
-- JSON 输出结构化，适合 Agent 能力引导
+Clip Web UI 通过 Hub invoke 调用标准命令（tab_list、open、reload 等）和 stream 命令。
 
 ## 代码规范
 
-- Commit message：`<type>(<scope>): <summary>`，英文
+- Commit：`<type>(<scope>): <summary>`，英文
 - 类型：`fix` / `feat` / `refactor` / `chore` / `docs`
-- 用户面文本用中文，代码/注释用英文
-- 遵循现有模式：添加新 CLI 命令前先读 `trace.ts`
-- 构建：在仓库根目录执行 `pnpm build`
-- site adapter 不需要写测试
+- 构建：`pnpm build`
+- 测试：`pnpm test`
+- lint：`pnpm lint`
 
-## 测试
+## 参考
 
-- `pnpm test` — 运行所有测试（通过 turbo 编排）
-- `pnpm build` — 类型安全检查（提交前必须运行）
-- `pnpm lint` — 代码风格（daemon, mcp, shared）
-
-测试分层：
-- **单元测试** — 数据结构（RingBuffer、TabState、短 ID 生成）
-- **契约测试** — 协议一致性、设计不变量验证
+- [RFC issue #4](https://github.com/epiral/bb-viewer/issues/4) — 架构设计文档
+- [issue #224](https://github.com/epiral/bb-browser/issues/224) — daemon 生命周期（已修复）

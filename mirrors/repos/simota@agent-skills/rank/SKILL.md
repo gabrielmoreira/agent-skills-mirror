@@ -65,7 +65,7 @@ Priority quantification engine. Scores and orders competing items (features, tas
 - Report bias checks (HIPPO, recency, sunk cost, anchoring) on every ranking deliverable.
 - Provide score rationale for each item — numbers without reasoning are noise.
 - Include confidence level (High/Medium/Low) per ranked item.
-- Select frameworks based on team size and data maturity: <10 people or low data → ICE; 10–50 with user data → RICE; 50+ with multiple stakeholders → WSJF or Weighted Scoring.
+- Select frameworks based on team size and data maturity: <10 people or low data → ICE; 10–50 with user data → RICE; 50+ with multiple stakeholders → WSJF or Weighted Scoring. When 5+ criteria conflict and manual pairwise comparison is impractical, consider AHP with LLM-assisted pairwise scoring — treat LLM output as calibration anchor, validate with the team before accepting. [Source: arXiv 2402.07404 https://arxiv.org/abs/2402.07404]
 - Use relative Fibonacci scoring (1–13) for WSJF components to reduce false precision; absolute dollar estimates only when financial data is available and validated.
 - Apply consider-the-opposite technique during calibration — research shows this reduces anchoring bias by 30%+ (Morewedge et al., 2015). Recent meta-analytic evidence confirms small but significant debiasing effects (g=0.26, n=10,941) across 54 RCTs. [Source: Nature Human Behaviour — Systematic review and meta-analysis of educational approaches to reduce cognitive biases among students (2025) https://www.nature.com/articles/s41562-025-02253-y]
 - When frameworks disagree (Spearman ρ < 0.7), surface the divergence explicitly rather than averaging or hiding it.
@@ -113,12 +113,13 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Framework | Best For | Key Formula | When to Use |
 |-----------|----------|-------------|-------------|
 | **ICE** | Quick initial triage | Impact × Confidence × Ease (avg 1–10) | Many items, little data, small teams (<10) |
-| **RICE** | Product features | (Reach × Impact × Confidence) / Effort | User reach matters, teams with usage data (10–50) |
-| **WSJF** | SAFe/Lean environments | Cost of Delay / Job Duration | Time value is clear, large orgs (50+). CoD = Business Value + Time Criticality + Risk Reduction (Fibonacci 1–13, total range 3–39) |
-| **MoSCoW** | Stakeholder alignment | Must/Should/Could/Won't | Binary-style decisions needed |
+| **RICE** | Product features | (Reach × Impact × Confidence) / Effort | User reach matters, teams with usage data (10–50). Reach = users/events per fixed window (typically per quarter). [Source: Intercom Blog, Jan 2025 https://www.intercom.com/blog/rice-simple-prioritization-for-product-managers/] |
+| **WSJF** | SAFe/Lean environments | Cost of Delay / Job Duration | Time value is clear, large orgs (50+). CoD = Business Value + Time Criticality + RR&OE (Fibonacci 1–13). SAFe 6.0 primary Feature sequencing tool at ART level. [Source: framework.scaledagile.com/wsjf] |
+| **MoSCoW** | Stakeholder alignment | Must/Should/Could/Won't | Binary-style decisions needed. Cap Must ≤ 60% of effort; demote Should items surviving 3+ sprints to Could. |
 | **Cost of Delay** | Economic decisions | $/week of delay | Revenue impact is quantifiable |
-| **Kano** | User satisfaction | Must-be/Performance/Attractive | UX improvement prioritization |
+| **Kano** | User satisfaction | Must-be/Performance/Attractive | UX improvement prioritization. Run quarterly — AI-driven features migrate Attractive→Must-be within 12–18 months. [Source: Hypersense Software Kano Analysis, Jan 2025 https://hypersense-software.com/blog/2025/01/12/kano-analysis-in-software-development/] |
 | **Value vs Effort** | Visual consensus | 2×2 matrix | Team workshops |
+| **AHP + LLM** | Complex multi-criteria decisions | Pairwise comparison matrix, automated by LLM | When 5+ criteria conflict and manual pairwise comparison is impractical. Use LLM-suggested pairwise ratios as calibration anchors, not final scores. [Source: arXiv 2402.07404 — AHP + GPT-4 for automated decision support https://arxiv.org/abs/2402.07404] |
 
 ### Work Modes
 

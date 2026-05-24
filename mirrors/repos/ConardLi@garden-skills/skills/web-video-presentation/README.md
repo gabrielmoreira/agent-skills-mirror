@@ -33,6 +33,7 @@ The skill is primarily a **methodology and collaboration workflow**. The scaffol
 - **Hidden chrome** — progress controls are hover-only, keeping recordings clean.
 - **Motion first** — each scene needs a moving visual anchor; static paragraphs are treated as a smell.
 - **Theme tokens** — visual decisions flow through semantic tokens so themes can change the whole feel.
+- **Pluggable TTS** — provider-agnostic audio runner ships **two built-in providers** (MiniMax `mmx-cli` and OpenAI TTS via curl); swap to ElevenLabs / edge-tts / Azure / Google Cloud / macOS `say` / any self-hosted TTS by dropping a single shell file into `tts-providers/`.
 - **Hard checkpoints** — the agent pauses after script/theme alignment, after outline approval, and before optional audio synthesis.
 
 ---
@@ -80,6 +81,13 @@ skills/web-video-presentation/
 ├── templates/
 │   ├── index.html
 │   ├── vite.config.ts
+│   ├── scripts/
+│   │   ├── extract-narrations.ts
+│   │   ├── synthesize-audio.sh       # provider-agnostic runner
+│   │   └── tts-providers/            # 1 file = 1 TTS backend
+│   │       ├── README.md             # contract + ready-to-paste ElevenLabs / edge-tts / Azure / Google / say snippets
+│   │       ├── minimax.sh            # default — uses mmx-cli
+│   │       └── openai.sh             # built-in — uses OPENAI_API_KEY via curl
 │   └── src/
 └── themes/                    # 23 themes, each with its own signature
     ├── midnight-press/
@@ -155,6 +163,7 @@ See [THEMES.md](./references/THEMES.md) for the full token contract, signature f
 - [OUTLINE-FORMAT.md](./references/OUTLINE-FORMAT.md) — required outline structure
 - [SCRIPT-STYLE.md](./references/SCRIPT-STYLE.md) — article-to-narration rewrite guidance
 - [PATTERNS.md](./references/PATTERNS.md) — optional visual primitive recipes
-- [AUDIO.md](./references/AUDIO.md) — optional narration synthesis workflow
+- [AUDIO.md](./references/AUDIO.md) — optional narration synthesis workflow (provider-agnostic)
+- [tts-providers/README.md](./templates/scripts/tts-providers/README.md) — TTS provider contract + 2 built-ins (minimax / openai) + ready-to-paste snippets for ElevenLabs / edge-tts / Azure / Google Cloud / macOS say
 - [RECORDING.md](./references/RECORDING.md) — screen recording and post-production notes
 

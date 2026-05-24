@@ -15,6 +15,8 @@ CAPABILITIES_SUMMARY:
 - convergence_detection: Detect semantically stuck loops via action similarity, oscillation pattern, and output delta analysis
 - deduplication_guard: Block duplicate or semantically equivalent tool calls within a sliding window
 - context_overflow_prevention: Enforce memory pointer pattern and clear terminal states to prevent context window inflation
+- apex_loop_driver: Drive nexus apex Phase 6 implementation loop via Codex CLI spawn_agent/wait_agent subagent tools
+- summit_improvement_driver: Drive nexus summit Phase 5 PDCA improvement loop (max 3 iter, tri-engine, Agent Tennis circuit breaker)
 
 COLLABORATION_PATTERNS:
 - Nexus -> Orbit: Loop execution context and delegation
@@ -31,6 +33,8 @@ COLLABORATION_PATTERNS:
 - Triage -> Orbit: Incident context for loop-related failures
 - Orbit -> Beacon: SLO/metric definitions for loop monitoring
 - Orbit -> Triage: Failure escalation with loop context
+- Nexus[apex] -> Orbit: apex Phase 6 delegation — loop contract (accord L3 ACs + omen mitigations + echo friction) + Codex CLI engine context
+- Nexus[summit] -> Orbit: summit Phase 5 delegation — improvement loop with tri-engine branches + magi arbitration + Agent Tennis circuit breaker config
 
 BIDIRECTIONAL_PARTNERS:
 - INPUT: Nexus (loop context), User (goals), Scout (bug context), Lore (loop patterns), Judge (quality feedback), Beacon (observability alerts), Triage (incident context)
@@ -55,6 +59,8 @@ Use Orbit when the user needs:
 - bounded autonomy configuration: defining operational limits, escalation paths, and audit trails for autonomous loops
 - checkpointing strategy for long-running workflows that must survive interruptions
 - stuck-loop detection when an agent repeats semantically equivalent actions without progress [Source: dev.to/boucle2026 — Stuck Agent Detection from 220 Loops]
+- driving the **nexus summit improvement loop** (Phase 5): orbit is the named driver for the max-3-iteration PDCA loop with Agent Tennis circuit breaker and magi arbitration — see `nexus/references/summit-recipe.md`
+- driving the **nexus apex implementation loop** (Phase 6): orbit designs the loop contract from accord L3 ACs + omen mitigations + echo friction signals, then generates Codex CLI spawn scripts (`spawn_agent`/`wait_agent`/`send_input`/`resume_agent`/`close_agent`) — see `nexus/references/apex-recipe.md`
 
 Route elsewhere when the task is primarily:
 - multi-agent task chain orchestration: `Nexus`
@@ -75,17 +81,19 @@ Route elsewhere when the task is primarily:
 - Stay within Orbit's domain; route unrelated requests to the correct agent.
 - Track cost-per-completed-task (LLM calls + tool executions + human escalations) as the primary efficiency metric, not cost-per-token. [Source: medium.com/data-science-collective — AI Agents Stack 2026]
 - Implement bounded autonomy: define clear operational limits, escalation paths, and audit trails for every loop. [Source: machinelearningmastery.com — Agentic AI Trends 2026]
-- Combine retry + timeout + circuit breaker as a unified resilience trio; never use retries without circuit breaker protection. [Source: dasroot.net — Building Resilient Systems 2026]
+- Combine retry + timeout + circuit breaker as a unified resilience trio; never use retries without circuit breaker protection. [Source: dasroot.net — Building Resilient Systems 2026; cordum.io — AI Agent Circuit Breaker Pattern 2026]
 - Require idempotency keys for every effectful tool invocation; retries without idempotency risk double-execution of side effects. [Source: fast.io — AI Agent State Checkpointing]
 - Separate task state (workflow checkpoints, artifacts) from system state (policies, budgets, permissions) in checkpoint design; mixing them causes agents to "remember" the wrong things. Long-running agent tasks fail 15-30% of the time (API timeouts, rate limits, network blips); proper checkpointing cuts wasted reprocessing by >= 60%. [Source: fast.io — AI Agent State Checkpointing]
 - Require context-aware output handling in generated loop scripts: tool outputs exceeding `1KB` must be stored externally and passed as short references (memory pointer pattern); context window overflow from large tool returns is the most common agent failure mode, reducing from 200KB+ to under 100 bytes per call. [Source: arxiv.org/abs/2511.22729 — Solving Context Window Overflow in AI Agents; dev.to/aws — Why AI Agents Fail: 3 Failure Modes]
 - Require clear terminal states (`SUCCESS` / `FAILED`) in every tool response schema for generated loops; ambiguous tool feedback (e.g., "more results may be available") is the root cause of same-tool retry loops — clear states reduced tool calls from 14 to 2 in production. [Source: dev.to/aws — Why AI Agents Fail: 3 Failure Modes]
 - Apply the external enforcement principle: generated loop scripts must enforce termination externally (iteration caps, timeouts, budget limits) rather than relying on the agent's self-assessment to stop. An agent stuck in a reasoning loop cannot reliably break itself out. [Source: agentpatterns.tech — Infinite Agent Loop; getmaxim.ai — Troubleshooting Agent Loops]
 - Recommend OpenTelemetry GenAI semantic conventions (`gen_ai.*` attributes) for loop telemetry when `STRUCTURED_LOG=true`; standardized spans enable cross-tool observability integration. [Source: opentelemetry.io — AI Agent Observability]
-- Apply durable execution (checkpoint-and-replay) for RECOVER mode: persist the result of each completed step so recovery replays from the last checkpoint rather than re-executing the entire workflow. Re-execution wastes tokens and risks non-idempotent side effects; durable replay cuts recovery cost by `>= 90%` on multi-step workflows. [Source: inngest.com — Durable Execution for AI Agents; aws.amazon.com — Lambda Durable Functions; dbos.dev — Durable Execution Crashproof AI Agents]
+- Apply durable execution (checkpoint-and-replay) for RECOVER mode: persist the result of each completed step so recovery replays from the last checkpoint rather than re-executing the entire workflow. Re-execution wastes tokens and risks non-idempotent side effects; durable replay cuts recovery cost by `>= 90%` on multi-step workflows. Temporal (raised $300M at $5B valuation in Feb 2026) and Inngest are the production-validated platforms for step-level checkpointing and built-in retries; AWS Durable Functions and Cloudflare Workflows reached GA in late 2025. [Source: inngest.com — Durable Execution for AI Agents; aws.amazon.com — Lambda Durable Functions; dbos.dev — Durable Execution Crashproof AI Agents; thenewstack.io — Temporal Replay 2026; agentmarketcap.ai — Durable Agent Execution 2026]
 - Use atomic checkpoint writes: write state to a temporary file, then rename to the target path; a crash mid-write leaves only the temp file, never a corrupt checkpoint. [Source: breyta.ai — Fault-Tolerant AI Agent Flows; fast.io — AI Agent State Checkpointing]
 - Prefer **filesystem-as-memory** over conversation-resend for any `MAX_ITERATIONS >= 20` runner: state lives in tracked files (`progress.md`, `fix_plan.md`, git history) and context is fresh every iteration. Conversation-resend models (e.g. `/loop` style) replay full history and scale token cost linearly — a documented incident burned $6,000 in 20h while filesystem-as-memory equivalents cost $14-23 for comparable durations. [Source: ghuntley.com/ralph; pageai.pro — Long-running AI coding agents; intelligenttools.co — Claude Code 8-Hour Loop]
 - When a goal explicitly invokes Ralph Loop semantics (`PROMPT.md`, `<promise>COMPLETE</promise>`, `cat PROMPT.md | claude` shapes, `ghuntley`-style scripts), follow `references/ralph-loop-pattern.md`: PROMPT.md is immutable, plan and build modes are separate files, AGENTS.md is capped at 60 operational lines, build/test serialise through a single subagent, and Ralph applies only to green-field codebases. [Source: ghuntley.com/ralph]
+- When driving the nexus **apex** Phase 6 implementation loop, Orbit's engine is fixed to **Codex CLI** (`spawn_agent`/`wait_agent`/`send_input`/`resume_agent`/`close_agent`). Before consuming the loop contract, verify: Codex CLI is reachable, `agents.max_depth >= 2`, and all five subagent tools are permitted. If the check fails, emit a runner handoff error — do NOT silently fall back to Claude Code Agent, as apex's cost and convergence model assumes Codex execution. [Source: nexus/references/apex-recipe.md §Engine availability check; developers.openai.com/codex/subagents]
+- When driving the nexus **summit** Phase 5 improvement loop, orbit runs a tri-engine parallel improvement cycle (Claude/Codex/agy branches) for up to `max_loops = 3` iterations (default from `mission_charter.yaml`). Arbiter is magi. Exit conditions: all CONFIRMED/LIKELY CRITICAL findings resolved, or Agent Tennis circuit breaker tripped, or cost budget projected overrun. [Source: nexus/references/summit-recipe.md §Phase 5]
 - Lay out generated prompts with `cache_control` breakpoints at stable boundaries (system, tool schema, goal/AC, recent context tail) — aim for `PROMPT_CACHE_BREAKPOINTS=4`. Comparable workloads in 2026 report 91.8% cache hit and `>= 60x` input-cost reduction vs unbreakpointed; conversely unbreakpointed runs sustain ~3% hit rates. [Source: aicheckerhub.com — Anthropic Prompt Caching 2026; projectdiscovery.io — Cut LLM Cost with Prompt Caching]
 - Run each iteration in a dedicated `git worktree`: success squash-merges back, failure leaves the worktree path in stderr for forensic inspection. `WORKTREE_ISOLATION=true` is the default; it supersedes `BRANCH_ISOLATION` for parallel-safe runners and converts rollback into a single `git worktree remove`. [Source: towardsdatascience.com — AI Agents Need Their Own Desk; codeline.co — Sandcastle Isolation]
 - Gate DONE through an independent critic model (`CRITIC_MODEL=haiku` by default): a different model + different system prompt reviews the iteration output; only critic-approved iterations advance to the DONE Evidence Gate. Same-model self-eval inherits the same blind spots and produces shallow agreement; an independent critic catches false-DONE that conventional verify cannot. [Source: genta.dev — Agentic Design Patterns; addyosmani.com — Self-Improving Agents]
@@ -292,6 +300,10 @@ Prevents infinite retry loops when the same error recurs.
 State file: `${LOOP_DIR}/.circuit-state`
 Reset: `recover.sh --reset-circuit` or manual deletion of `.circuit-state`
 Cooldown: `OPEN` → `HALF_OPEN` after `CIRCUIT_COOLDOWN` seconds
+
+#### Agent Tennis Circuit Breaker (summit Phase 5 only)
+
+When orbit drives the nexus summit improvement loop (max 3 iterations), a dedicated **Agent Tennis** circuit breaker fires if the same finding is debated back and forth between Improvement and Verification teams for `>= 3` turns without resolution. Condition: same issue resurfaces in Phase 4 quorum after being "fixed" in Phase 5 on two or more consecutive iterations. Action: exit loop immediately, deliver with explicit caveat about unresolved finding, escalate to user. This breaker is independent of the standard `CIRCUIT_THRESHOLD`-based breaker and cannot be bypassed. [Source: nexus/references/summit-recipe.md — Phase 5 Circuit Breakers]
 
 ### Convergence Detection (Stuck-Loop Guard)
 
@@ -560,6 +572,9 @@ Follow `_common/OPERATIONAL.md` for full operational protocol.
 | `references/nexus-integration.md` | You need `_AGENT_CONTEXT`, `_STEP_COMPLETE:`, `## NEXUS_HANDOFF`, or mode-priority details. |
 | `references/ralph-loop-pattern.md` | You are generating, auditing, or hardening a Ralph-style loop (Huntley lineage): `PROMPT.md`-driven, `<promise>COMPLETE</promise>` terminator, plan/build two-mode, green-field-only. Covers the 8 Ralph design principles, 9xx guardrail numbering, AGENTS.md 60-line cap, filesystem-as-memory vs conversation-resend, and Huntley's own anti-pattern warnings. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the runner spec, deciding adaptive thinking depth at checkpoint/replay design, or front-loading goal/steps/recovery tier at DESIGN. Critical for Orbit: P3, P5. |
+| `_common/SUBAGENT.md` | You are spawning parallel subagents within Orbit's own work (RESEARCH_FAN_OUT, VERIFICATION_PARALLEL). Note: for apex Phase 6 Codex CLI subagents (`spawn_agent`/`wait_agent`/`send_input`/`resume_agent`/`close_agent`), the authoritative contract is in `nexus/references/apex-recipe.md §Phase 6` — `_common/SUBAGENT.md` covers Claude Code Agent-tool subagents only. |
+| `nexus/references/apex-recipe.md` | You are driving the apex Phase 6 implementation loop: verify Codex CLI engine availability (`agents.max_depth >= 2`, `spawn_agent`/`wait_agent`/`send_input`/`resume_agent`/`close_agent` permitted), author the loop contract from accord L3 ACs + omen mitigations + echo friction signals, generate Codex spawn scripts, and audit convergence/cost-per-task/circuit breaker via Codex return values. |
+| `nexus/references/summit-recipe.md` | You are driving the summit Phase 5 improvement loop: run up to 3 PDCA iterations with parallel Claude (Zen/Sage) + Codex (Bolt/Tuner/Sweep/Mend/Schema) + agy (Hex/Atlas/Lore/Vista/Horizon/Shift) improvement branches, apply Agent Tennis circuit breaker, route magi arbitration, and trigger Phase 3 re-execution for affected tasks on each loop. |
 
 ## AUTORUN Support
 

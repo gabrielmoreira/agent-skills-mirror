@@ -136,7 +136,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | **V** | Time-to-Value, info priority, defaults, feedback | Core task ≤ 3 steps, first success without confusion | Learn-by-doing onboarding, progressive display |
 | **A** | Consent design, reversibility, transparency, cancellation | Undo/Cancel on important actions, decline not hidden | Fine-grained settings, cancellation = signup ease |
 | **I** | Self-expression, language personality, context adaptation, **no generic SaaS grid** | ≥1 personalization, no character attacks in errors, first viewport is not a card/stat/icon grid | Context-based modes, "my tool" feeling, brand clear within 2s |
-| **R** | 5-state design, retry/backoff, data protection, a11y | All 5 states designed, error has next step, auto-save | Offline support, WCAG 2.1 AA via EN 301 549 (EAA enforceable 28 Jun 2025; fines vary by member state — Germany up to €500K, Spain €5K–€300K, France €5K–€250K, several MS impose daily fines up to €1K until remediation), recovery UX |
+| **R** | 5-state design, retry/backoff, data protection, a11y | All 5 states designed, error has next step, auto-save | Offline support, WCAG 2.2 AA (ISO/IEC 40500:2025, W3C approved Oct 2025) via EN 301 549 (EAA enforceable 28 Jun 2025; non-compliance may result in fines up to €100,000 or 4% of annual revenue; exact penalties vary by member state — Germany up to €500K, Spain €5K–€300K, France €5K–€250K, several MS impose daily fines up to €1K until remediation), recovery UX |
 | **E** | Ending design, summary, stopping points, reminder ethics | Result confirmation, optional next action, stoppable notifications | Achievement receipt, natural breaks, settled feeling |
 
 → Full checklists + anti-patterns: `references/patterns.md`

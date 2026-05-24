@@ -2,7 +2,19 @@
 
 You are reviewing one open item from the target repository for conservative maintainer cleanup.
 
-Work in the checked-out target repository. Inspect the current `main` code, docs, tests, and history as needed. The provided GitHub context includes compact related issue/PR data extracted before the review, including explicit mentions and best-effort local title-search matches from existing ClawSweeper reports. You may use unauthenticated `gh` only if it works; do not lower confidence just because authenticated `gh` is unavailable. Do not list `gh` auth, `GH_TOKEN`, shallow-clone, or unavailable-authenticated-GitHub caveats as risks when the provided context plus local checkout are enough to decide.
+Work in the checked-out target repository. Before reviewing, read the target
+repository's `AGENTS.md` if present and follow its repository-specific
+instructions when they do not conflict with this prompt or higher-priority
+system/developer instructions. Inspect the current `main` code, docs, tests, and
+history as needed. The provided GitHub context includes compact related issue/PR
+data extracted before the review, including explicit mentions, linked closing
+PRs, best-effort local title-search matches from existing ClawSweeper reports,
+optional gitcrawl cluster siblings, and optional GitHub issue-search matches.
+You may use
+unauthenticated `gh` only if it works; do not lower confidence just because
+authenticated `gh` is unavailable. Do not list `gh` auth, `GH_TOKEN`,
+shallow-clone, or unavailable-authenticated-GitHub caveats as risks when the
+provided context plus local checkout are enough to decide.
 
 Treat the issue/PR discussion as evidence, not just background. Read the provided comments, timeline, and related item context before deciding. If commenters already linked a related plugin, extension, workaround, reproduction, prior PR, or external implementation, reflect that positively in the summary/evidence when it affects the decision. For `clawhub` closes, explicitly mention and link an already-posted plugin/extension when one exists, while still explaining why the OpenClaw core item can close.
 
@@ -13,6 +25,15 @@ This is a read-only review. Do not edit files, create notes, add commits, push b
 The checkout must remain byte-for-byte clean. Use read-only inspection commands only, such as `rg`, `sed`, `nl`, `find`, `git log`, `git show`, `git diff`, `gh issue view`, `gh pr view`, and `gh api`. Do not run commands that install dependencies, generate files, update caches, run formatters, rewrite lockfiles, apply patches, create temp files inside the repo, or otherwise write to the checkout. Do not use `apply_patch`, redirection, `tee`, `cat >`, `touch`, `mkdir`, `pnpm install`, build commands, or tests that create artifacts.
 
 Review deeply before closing. High confidence means you read enough current code, docs, tests, comments, related reports, and git history to understand the real product boundary. Do not decide from the issue title, one exact `rg` hit, or one nearby file. Search for synonyms and old names from the issue, then inspect the implementation, call sites, tests/docs, and relevant history around the matching surface. Prefer several independent checks over a single brittle match. If the item is a PR, inspect the PR body/diff/files/comments plus current `main` behavior before deciding whether the work is obsolete or still useful.
+
+Every review must answer whether the item is still necessary. For both issues
+and PRs, check whether current `main` already solves the central user problem,
+whether the fix is in the latest release or main-only, and whether a merged or
+open related PR now owns the work. When current `main` solves the issue with
+high-confidence source, history, and release/main-only evidence, prefer an
+`implemented_on_main` close even if the fix has not shipped in a release yet.
+If a meaningful requested behavior remains missing, keep the item open or link
+the canonical remaining work.
 
 For every issue or PR, trace the people most likely connected to the relevant
 code or behavior. Do a small feature-history hunt, not just latest-line blame:
@@ -78,6 +99,29 @@ optional skill bundle, skill documentation, or skill-only PR that can live
 outside OpenClaw core. Set `requiresNewFeature`, `requiresNewConfigOption`, and
 `requiresProductDecision` independently. Any true value means the item is not a
 strict bug-fix automation candidate even if useful.
+
+For issues, also do a VISION.md fit pass when the target checkout has
+`VISION.md`. Read it before selecting `visionFit`. Use `visionFit: "aligned"`
+only when the requested work fits current priorities or explicit next
+priorities and does not conflict with roadmap guardrails such as core staying
+lean, plugins/ClawHub owning optional capability, or deferred work. Use
+`rejected` when VISION.md says the work should live elsewhere or not merge for
+now, `unclear` when VISION.md is missing or evidence is mixed, and
+`not_applicable` for pull requests and non-product cleanup. Put short concrete
+references in `visionFitEvidence`.
+
+Estimate `implementationComplexity` for issues. Use `small` only when one
+focused autonomous PR can plausibly implement it with clear likely files and a
+validation path; use `medium` for bounded multi-area work, `large` for broad
+architecture/migration/product work, `unclear` when the shape is unknown, and
+`not_applicable` for PRs and close decisions. Set
+`autoImplementationCandidate: "vision_fit"` only when an open issue is
+high-confidence, `visionFit: "aligned"`, `implementationComplexity: "small"`,
+`workCandidate: "queue_fix_pr"`, `workConfidence: "high"`, has a complete
+`workPrompt`, likely files, validation commands, no security/protected signal,
+no open linked PR, and no product-decision blocker. Set
+`autoImplementationCandidate: "strict_bug"` only for the existing reproduced
+bug lane described below. Otherwise use `none`.
 
 Set `triagePriority` as ClawSweeper's maintainer-facing priority label for both
 issues and pull requests. This is not the same as `reviewFindings[].priority`
@@ -299,7 +343,7 @@ Close only when the evidence is strong and the repository policy allows it. Allo
 - `incoherent`: the item is too unclear or internally contradictory after reading the title/body/comments.
 - `stale_insufficient_info`: an issue is older than 60 days and lacks enough concrete data to reasonably verify the reported bug against current `main`. Use this only for issues, not PRs, and only when the missing data is the blocker. The close comment must ask the reporter to open a new issue if it is still a problem, with clearer reproduction steps, expected/actual behavior, logs/screenshots, versions, config, or affected channel/plugin details.
 
-For `openclaw/clawhub`, review every issue and PR with the same depth, but only close PRs where current `main` definitely implements the PR’s intended change or an older PR is mostly implemented on `main` under the `mostly_implemented_on_main` rules. For ClawHub, use `implemented_on_main` or `mostly_implemented_on_main` only for those PRs, and keep all issues plus all other PR outcomes open.
+For `openclaw/clawhub`, review every issue and PR with the same depth, but only close items where current `main` definitely implements the requested or intended change. For ClawHub pull requests only, older PRs may also use `mostly_implemented_on_main` under the normal rules. Keep all other ClawHub outcomes open.
 
 Do a canonical-search pass before keeping an older item open only because a
 small part might remain. Start with the provided `relatedItems`, then search
@@ -360,7 +404,8 @@ bug-fix PR creation only when `itemCategory` is exactly `bug`,
 `requiresNewConfigOption`, and `requiresProductDecision` are all `false`.
 Keep the bug boundary narrow in `workPrompt`: fix broken existing behavior,
 add or update regression coverage, and stop if the implementation would add a
-feature/config/product-policy change.
+feature/config/product-policy change. Set `autoImplementationCandidate` to
+`strict_bug` for this strict bug lane.
 
 For pull requests, `workCandidate` is also the automation contract. Use
 `queue_fix_pr` only when there is a concrete, actionable repair that an
@@ -634,3 +679,6 @@ empty arrays. For manual-review items, use `workCandidate: "manual_review"` and
 explain the blocker in `workReason`. For fix-PR candidates, use
 `workCandidate: "queue_fix_pr"` and include a complete `workPrompt`,
 `workClusterRefs`, `workValidation`, and `workLikelyFiles`.
+Always fill the vision-fit fields too. For older/non-applicable paths use
+`visionFit: "not_applicable"`, `implementationComplexity: "not_applicable"`,
+`autoImplementationCandidate: "none"`, a short reason, and empty evidence.

@@ -108,13 +108,21 @@ def calculate_institutional_sponsorship(
             "interpretation": "Data unavailable",
         }
 
-    # Count institutional holders
-    num_holders = len(institutional_holders)
+    # Accept either the /stable aggregate shape (dict from get_institutional_holders)
+    # or a legacy v3 holder list.
+    if isinstance(institutional_holders, dict):
+        num_holders = institutional_holders.get("num_holders") or 0
+        preset_ownership_pct = institutional_holders.get("ownership_pct")
+        holder_list = institutional_holders.get("top_holders") or []
+    else:
+        num_holders = len(institutional_holders)
+        preset_ownership_pct = None
+        holder_list = institutional_holders
 
-    # Check for superinvestors
+    # Check for superinvestors (the top holders carry the names)
     superinvestors_found = []
-    for holder_entry in institutional_holders:
-        holder_name = holder_entry.get("holder", "").upper()
+    for holder_entry in holder_list:
+        holder_name = (holder_entry.get("holder") or "").upper()
         for superinvestor in SUPERINVESTORS:
             if superinvestor in holder_name:
                 superinvestors_found.append(holder_entry.get("holder"))
@@ -122,16 +130,17 @@ def calculate_institutional_sponsorship(
 
     superinvestor_present = len(superinvestors_found) > 0
 
-    # Calculate total shares held by institutions
-    total_shares_held = sum(holder.get("shares", 0) for holder in institutional_holders)
+    # Total shares held (used only for the list-derived ownership path).
+    total_shares_held = sum(holder.get("shares", 0) or 0 for holder in holder_list)
 
-    # Calculate ownership percentage (requires shares outstanding from profile)
-    ownership_pct = None
+    # Ownership %: prefer the /stable summary value; else derive from shares +
+    # shares outstanding; else fall back to Finviz.
+    ownership_pct = preset_ownership_pct
     shares_outstanding = None
-    quality_warning = None
+    quality_warning = ""
     data_source = "FMP"  # Track data source
 
-    if profile:
+    if ownership_pct is None and profile:
         # Try to get shares outstanding (different field names possible)
         shares_outstanding = profile.get("sharesOutstanding")
 
@@ -146,7 +155,7 @@ def calculate_institutional_sponsorship(
             ownership_pct = (total_shares_held / shares_outstanding) * 100
         else:
             quality_warning = "Shares outstanding unavailable from FMP."
-    else:
+    elif ownership_pct is None:
         quality_warning = "Company profile not provided."
 
     # Finviz fallback: If ownership % still unavailable, try Finviz

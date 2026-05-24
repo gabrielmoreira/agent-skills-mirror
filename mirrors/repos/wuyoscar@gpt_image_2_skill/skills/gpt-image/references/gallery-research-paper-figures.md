@@ -357,15 +357,21 @@ Create a beautiful research flowchart for an AI safety benchmark pipeline called
 Create a polished ICLR-style Figure 1 for an imaginary method called "Hierarchical Memory Routing for Long-Context Multimodal Reasoning (HMR)". The top band shows the failure mode of naive long-context multimodal processing: one overcrowded horizontal token stream mixing text, image patches, retrieved documents, tool traces, and audio snippets, with red-orange warning accents for interference, attention dilution, memory collision, and quadratic compute cost. A clean horizontal divider separates the main lower panel, which presents the HMR framework as a spacious modular loop. Center: a Reasoning Controller with stages Observe_t to Update_t. Left: a three-level Memory Hierarchy with working cache, episodic memory, and semantic knowledge base. Right: Multimodal Streams entering selectively through routing paths. Bottom right: sparse experts activated only when needed. White background, vector-clean styling, neutral gray plus cool accents, minimal but legible labels, conference-paper clarity, no poster aesthetics.
 ```
 
-### No. 93 · Minimal research illustration prompt
+### No. 93 · LLM Persona Atlas
 
-- Image: `docs/research-paper-figures/llm-agent-research-illustration.png`
+- Image: `docs/research-paper-figures/llm-persona-atlas.png`
 
-  <img src="../../../docs/research-paper-figures/llm-agent-research-illustration.png" alt="llm agent research illustration" width="420"/>
-- Metadata: Research Paper Figures · `landscape` · `1536x1024` · Author: Unknown · Source: [Xiaohongshu](https://www.xiaohongshu.com/explore/67e414010000000007037315)
+  <img src="../../../docs/research-paper-figures/llm-persona-atlas.png" alt="llm persona atlas" width="420"/>
+- Metadata: Research Paper Figures · `wide` · `2048x1152` · Curated
 
 ```text
-Draw a research-paper illustration showing a closed-loop LLM agent system. The left side begins with a user prompt, then flows into a planner, tool-use engine, retrieval module, memory buffer, and a final verifier that feeds corrections back into the system. Use a restrained academic palette of blue, slate, and orange accents. Style it like a clean paper illustration: vector-like blocks, precise arrows, sparse labels, balanced whitespace, and a clear Figure 1 narrative from problem input to verified output.
+Create a premium conceptual figure for an EMNLP / ACL paper, landscape 16:9, high-resolution, polished editorial-academic style. Theme: "LLM Persona Atlas". This should not look like a generic pipeline diagram. It should look like a beautifully designed Figure 1 from a top NLP / agent paper: minimal, refined, memorable, with a strong central visual metaphor.
+
+Use a warm off-white paper background, subtle grain, large clean margins, crisp vector-like linework, delicate shadows, and fine gradients used sparingly. Use an understated, high-end color palette: ink black, warm gray, muted cobalt, dusty teal, soft sage, pale amber, muted coral, slate blue. No saturated rainbow colors, no cartoon style, no photorealism, no generic stock illustration.
+
+Composition: left "Utterance Stream" with small translucent speech fragments flowing in as curved data ribbons; center "Persona Lens" as a glass-like hexagonal prism / agent lens that refracts utterance ribbons into six colored persona strands; right "Six Persona Glyphs" as a coherent 2x3 gallery of abstract symbolic avatars labeled "Concise", "Explainer", "Cautious", "Supportive", "Creative", and "Analyst".
+
+Keep typography sparse, crisp, and clean. Add a small title "LLM Persona Atlas" and subtitle "from utterance style to model profile". Avoid dense method labels, big boxes, fake equations, fake citations, garbled text, photoreal humans, childish cartoon avatars, heavy shadows, and purple gradient backgrounds.
 ```
 
 ### No. 94 · Multimodal agent experiment workflow figure

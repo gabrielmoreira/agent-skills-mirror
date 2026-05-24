@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import math
 import sys
@@ -44,6 +45,7 @@ DISCLAIMER = (
 
 ACTION_REQUEST_SCHEMA = "affinity_proteomics.action_request.v1"
 ACTION_RESULT_SCHEMA = "affinity_proteomics.action_result.v1"
+WORKFLOW_STATE_SCHEMA = "affinity_proteomics.workflow_state.v1"
 
 
 # ---------------------------------------------------------------------------
@@ -456,6 +458,99 @@ def _write_diff_table(results: list[DiffAbundanceResult], path: Path) -> None:
                         f"{r.log2fc:.4f}", f"{r.pvalue:.2e}", f"{r.padj:.2e}", r.significant])
 
 
+def _top_protein_rows(results: list[DiffAbundanceResult], n: int = 10) -> list[dict]:
+    return [
+        {
+            "protein_id": r.protein_id,
+            "gene": r.gene_symbol,
+            "log2fc": round(r.log2fc, 4),
+            "padj": f"{r.padj:.2e}",
+        }
+        for r in results[:n]
+    ]
+
+
+def _build_action_context(
+    data: ProteomicsData,
+    results: list[DiffAbundanceResult],
+    contrast: tuple[str, str],
+) -> dict:
+    sig = [r for r in results if r.significant]
+    context = {
+        "platform": data.platform,
+        "contrast": list(contrast),
+        "total_proteins_tested": len(results),
+        "significant_proteins": len(sig),
+        "up_in_group1": sum(1 for r in sig if r.log2fc > 0),
+        "up_in_group2": sum(1 for r in sig if r.log2fc < 0),
+        "proteins": _top_protein_rows(results),
+    }
+    context["state_id"] = _state_id_from_context(context)
+    return context
+
+
+def _state_id_from_context(context: dict) -> str:
+    state_payload = {k: v for k, v in context.items() if k != "state_id"}
+    encoded = json.dumps(
+        state_payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+    )
+    return "sha256:" + hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+
+def _workflow_state_from_context(
+    context: dict,
+    *,
+    lifecycle: str = "ready",
+    state_label: str = "differential-abundance-ready",
+    message: str | None = None,
+) -> dict:
+    contrast = context.get("contrast") if isinstance(context.get("contrast"), list) else []
+    contrast_label = " vs ".join(str(item) for item in contrast) if contrast else "the requested contrast"
+    state = {
+        "state_schema": WORKFLOW_STATE_SCHEMA,
+        "state_id": context.get("state_id") or _state_id_from_context(context),
+        "lifecycle": lifecycle,
+        "state_label": state_label,
+        "description": (
+            f"{str(context.get('platform', 'affinity')).upper()} differential "
+            f"abundance results for {contrast_label} are available."
+        ),
+    }
+    if message:
+        state["message"] = message
+    return state
+
+
+def _request_context(request: dict) -> dict:
+    proteins = request.get("proteins")
+    if not isinstance(proteins, list):
+        proteins = []
+    contrast = request.get("contrast")
+    if not isinstance(contrast, list):
+        contrast = []
+    context = {
+        "platform": str(request.get("platform") or "affinity"),
+        "contrast": [str(item) for item in contrast],
+        "total_proteins_tested": _int_request_value(request.get("total_proteins_tested"), len(proteins)),
+        "significant_proteins": _int_request_value(request.get("significant_proteins"), 0),
+        "up_in_group1": _int_request_value(request.get("up_in_group1"), 0),
+        "up_in_group2": _int_request_value(request.get("up_in_group2"), 0),
+        "proteins": [protein for protein in proteins if isinstance(protein, dict)],
+    }
+    context["state_id"] = _state_id_from_context(context)
+    return context
+
+
+def _int_request_value(value, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
 def _write_report_md(data, results, contrast, group_col, output_dir, timestamp, demo, input_label):
     sig = [r for r in results if r.significant]
     lines = [
@@ -494,6 +589,7 @@ def _write_report_md(data, results, contrast, group_col, output_dir, timestamp, 
 
 def _write_result_json(data, results, contrast, output_dir, timestamp, demo):
     sig = [r for r in results if r.significant]
+    action_context = _build_action_context(data, results, contrast)
     result = {
         "tool": "ClawBio Affinity Proteomics",
         "version": "0.1.0",
@@ -504,11 +600,7 @@ def _write_result_json(data, results, contrast, output_dir, timestamp, demo):
         "qc_summary": {k: v for k, v in data.qc_summary.items() if k != "lod_summary"},
         "total_proteins_tested": len(results),
         "significant_proteins": len(sig),
-        "top_10": [
-            {"protein_id": r.protein_id, "gene": r.gene_symbol, "log2fc": round(r.log2fc, 4),
-             "padj": f"{r.padj:.2e}"}
-            for r in results[:10]
-        ],
+        "top_10": action_context["proteins"],
         "chat_summary_lines": [
             (
                 f"Affinity proteomics {'demo' if demo else 'analysis'} complete: "
@@ -518,7 +610,8 @@ def _write_result_json(data, results, contrast, output_dir, timestamp, demo):
             "Choose a small report card below for a read-only follow-up.",
         ],
         "preferred_artifacts": _artifact_entries(output_dir),
-        "suggested_actions": _build_suggested_actions(results),
+        "workflow_state": _workflow_state_from_context(action_context),
+        "suggested_actions": _build_suggested_actions(action_context),
         "disclaimer": DISCLAIMER,
     }
     (output_dir / "result.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
@@ -540,36 +633,45 @@ def _artifact_entries(output_dir: Path) -> list[dict[str, str]]:
     return entries
 
 
-def _build_suggested_actions(results: list[DiffAbundanceResult]) -> list[dict]:
+def _build_suggested_actions(action_context: dict) -> list[dict]:
     """Return the minimal demo follow-up for the Skill Action Menu."""
-    sig = [r for r in results if r.significant]
-    # Keep the teaching example compact: the request carries structured rows,
-    # and the follow-up handler renders the requested slice.
-    top_proteins = [
-        {
-            "protein_id": r.protein_id,
-            "gene": r.gene_symbol,
-            "log2fc": round(r.log2fc, 4),
-            "padj": f"{r.padj:.2e}",
-        }
-        for r in results[:10]
-    ]
+    request_context = {k: v for k, v in action_context.items() if k != "state_id"}
 
     return [
         {
             "action_id": "show-top-proteins",
             "label": "Top Proteins",
+            "description": "Render the top-ranked proteins as a compact table.",
+            "estimate": "~5s",
             "kind": "navigation",
             "request": {
                 "schema": ACTION_REQUEST_SCHEMA,
                 "action": "top-proteins",
+                "state_schema": WORKFLOW_STATE_SCHEMA,
+                "state_id": action_context["state_id"],
                 "n": 5,
-                "total_proteins_tested": len(results),
-                "significant_proteins": len(sig),
-                "proteins": top_proteins,
+                **request_context,
             },
             "requires_confirmation": False,
             "expected_artifacts": ["report.md"],
+            "timeout_secs": 30,
+        },
+        {
+            "action_id": "show-volcano-summary",
+            "label": "Volcano Summary",
+            "description": "Summarise the differential abundance direction counts.",
+            "estimate": "~5s",
+            "kind": "navigation",
+            "request": {
+                "schema": ACTION_REQUEST_SCHEMA,
+                "action": "volcano-summary",
+                "state_schema": WORKFLOW_STATE_SCHEMA,
+                "state_id": action_context["state_id"],
+                **request_context,
+            },
+            "requires_confirmation": False,
+            "expected_artifacts": ["report.md"],
+            "timeout_secs": 30,
         }
     ]
 
@@ -586,45 +688,127 @@ def _load_action_request(input_path: Path) -> dict | None:
     return None
 
 
-def handle_action_request(request: dict, output_dir: Path) -> dict:
-    output_dir.mkdir(parents=True, exist_ok=True)
-    if request.get("action") != "top-proteins":
-        raise ValueError(f"Unsupported action request: {request.get('action')}")
-    proteins = request.get("proteins")
-    if not isinstance(proteins, list):
-        raise ValueError("top-proteins request is missing proteins")
-    try:
-        n = max(1, int(request.get("n", 5)))
-    except (TypeError, ValueError):
-        n = 5
-
-    selected = [protein for protein in proteins[:n] if isinstance(protein, dict)]
-    rows = [
-        "| Protein | Gene | log2FC | Adj P |",
-        "|---------|------|--------|-------|",
-    ]
-    for protein in selected:
-        rows.append(
-            "| {protein_id} | {gene} | {log2fc} | {padj} |".format(
-                protein_id=protein.get("protein_id", ""),
-                gene=protein.get("gene", ""),
-                log2fc=protein.get("log2fc", ""),
-                padj=protein.get("padj", ""),
-            )
+def _stateful_request_workflow_state(request: dict) -> dict | None:
+    """Return valid workflow_state, expired on mismatch, or None for legacy requests."""
+    requested_state_id = request.get("state_id")
+    if not requested_state_id:
+        return None
+    context = _request_context(request)
+    if request.get("state_schema") != WORKFLOW_STATE_SCHEMA or requested_state_id != context["state_id"]:
+        return _workflow_state_from_context(
+            context,
+            lifecycle="expired",
+            state_label="stale-action-request",
+            message=(
+                "This follow-up action no longer matches the analysis state "
+                "that produced it."
+            ),
         )
-    total_tested = request.get("total_proteins_tested", len(proteins))
-    significant = request.get("significant_proteins", "")
-    report_md = "# Affinity Proteomics Follow-up\n\n## Top Proteins\n\n" + "\n".join(rows) + "\n"
+    return _workflow_state_from_context(context)
+
+
+def _current_request_workflow_state(request: dict) -> dict:
+    return _workflow_state_from_context(_request_context(request))
+
+
+def _write_stale_action_result(request: dict, output_dir: Path, workflow_state: dict) -> dict:
+    action = str(request.get("action") or "unknown")
     summary_lines = [
-        f"Showing top {len(selected)} proteins from {total_tested} tested; "
-        f"{significant} met significance thresholds."
+        (
+            "This follow-up action is stale or mismatched. Please rerun the "
+            "affinity-proteomics analysis and choose a fresh action."
+        )
     ]
-    preferred_artifacts = [{"path": "report.md", "label": "Follow-up report"}]
+    report_md = "# Affinity Proteomics Follow-up\n\n" + summary_lines[0] + "\n"
     (output_dir / "report.md").write_text(report_md, encoding="utf-8")
     result = {
         "schema": ACTION_RESULT_SCHEMA,
         "source_schema": ACTION_REQUEST_SCHEMA,
-        "action": "top-proteins",
+        "action": action,
+        "workflow_state": workflow_state,
+        "chat_summary_lines": summary_lines,
+        "preferred_artifacts": [{"path": "report.md", "label": "Follow-up report"}],
+        "report_md": report_md,
+        "disclaimer": DISCLAIMER,
+    }
+    (output_dir / "result.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+    return result
+
+
+def handle_action_request(request: dict, output_dir: Path) -> dict:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    workflow_state = _stateful_request_workflow_state(request)
+    if workflow_state and workflow_state.get("lifecycle") == "expired":
+        return _write_stale_action_result(request, output_dir, workflow_state)
+
+    action = request.get("action")
+    if action not in {"top-proteins", "volcano-summary"}:
+        raise ValueError(f"Unsupported action request: {request.get('action')}")
+    proteins = request.get("proteins")
+    if not isinstance(proteins, list):
+        raise ValueError("action request is missing proteins")
+
+    if workflow_state is None:
+        workflow_state = _current_request_workflow_state(request)
+
+    total_tested = request.get("total_proteins_tested", len(proteins))
+    significant = request.get("significant_proteins", "")
+    preferred_artifacts = [{"path": "report.md", "label": "Follow-up report"}]
+
+    if action == "top-proteins":
+        try:
+            n = max(1, int(request.get("n", 5)))
+        except (TypeError, ValueError):
+            n = 5
+
+        selected = [protein for protein in proteins[:n] if isinstance(protein, dict)]
+        rows = [
+            "| Protein | Gene | log2FC | Adj P |",
+            "|---------|------|--------|-------|",
+        ]
+        for protein in selected:
+            rows.append(
+                "| {protein_id} | {gene} | {log2fc} | {padj} |".format(
+                    protein_id=protein.get("protein_id", ""),
+                    gene=protein.get("gene", ""),
+                    log2fc=protein.get("log2fc", ""),
+                    padj=protein.get("padj", ""),
+                )
+            )
+        report_md = "# Affinity Proteomics Follow-up\n\n## Top Proteins\n\n" + "\n".join(rows) + "\n"
+        summary_lines = [
+            f"Showing top {len(selected)} proteins from {total_tested} tested; "
+            f"{significant} met significance thresholds."
+        ]
+    else:
+        contrast = request.get("contrast") if isinstance(request.get("contrast"), list) else []
+        group1 = str(contrast[0]) if len(contrast) > 0 else "group 1"
+        group2 = str(contrast[1]) if len(contrast) > 1 else "group 2"
+        up_group1 = request.get("up_in_group1", 0)
+        up_group2 = request.get("up_in_group2", 0)
+        top_gene = proteins[0].get("gene", "") if proteins and isinstance(proteins[0], dict) else ""
+        report_md = (
+            "# Affinity Proteomics Follow-up\n\n"
+            "## Volcano Summary\n\n"
+            f"- Proteins tested: {total_tested}\n"
+            f"- Significant proteins: {significant}\n"
+            f"- Up in {group1}: {up_group1}\n"
+            f"- Up in {group2}: {up_group2}\n"
+            f"- Top ranked protein: {top_gene or 'not available'}\n"
+        )
+        summary_lines = [
+            (
+                f"Volcano summary: {significant} significant proteins; "
+                f"{up_group1} up in {group1}, {up_group2} up in {group2}."
+            )
+        ]
+
+    (output_dir / "report.md").write_text(report_md, encoding="utf-8")
+    result = {
+        "schema": ACTION_RESULT_SCHEMA,
+        "source_schema": ACTION_REQUEST_SCHEMA,
+        "action": action,
+        "workflow_state": workflow_state,
         "chat_summary_lines": summary_lines,
         "preferred_artifacts": preferred_artifacts,
         "report_md": report_md,

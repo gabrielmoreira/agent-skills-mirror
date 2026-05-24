@@ -114,8 +114,18 @@ Forks may change product branding for their own distribution, but they must pres
 
 ## Commit Conventions
 
-- Commit messages in Chinese or English, describe the "why" not the "what"
-- Keep changes focused — one logical change per commit
+- **English only.** Both subject and body are written in English. Code identifiers and quoted error strings may stay in their original form.
+- **Describe the code change, not the plan artifact.** The subject names the file scope (or module), the behaviour that changed, and the intent. Internal plan numbering (stage names, fix codenames, phase / step / wave identifiers) does not appear in the subject or the body. Reference upstream issues by number where context helps (for example `#572`); reference symbols by their actual code name rather than by a plan tag.
+- **Body explains why; the diff explains what.** State the motivation, the alternative considered, the trade-off accepted, the regression risk addressed, or the bug class being prevented. Skip narration of which lines moved.
+- **One logical change per commit.** A rename, a behaviour change, and a new test are three commits unless they are genuinely inseparable. If a subject needs the word `and` to describe its scope, consider splitting.
+- **No subject length limit.** Prefer a long, precise subject over a short, cryptic one. A reader scanning `git log` should be able to tell what shipped without opening the diff.
+
+Examples:
+
+- Good: `fix the telemetry analyzer to emit a graceful error when stdin is not valid JSON instead of raising a raw Python traceback`
+- Good: `correct the counter names listed in docs/architecture/conversation_concurrency.md so they match the strings actually stored by conversation_metrics.snapshot()`
+- Bad: `feat(S5-A): TaskState.ensure_ready_for_reasoning + IllegalReasoningEntry contract` (plan codename, mixed scope)
+- Bad: `S4-A 完成` (Chinese, plan codename, no description)
 
 ## Known Gotchas
 

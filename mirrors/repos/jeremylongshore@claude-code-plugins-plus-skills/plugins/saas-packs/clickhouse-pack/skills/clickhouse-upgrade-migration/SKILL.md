@@ -72,6 +72,7 @@ open https://github.com/ClickHouse/ClickHouse/blob/master/CHANGELOG.md
 ```
 
 **Key breaking changes to watch for:**
+
 - Client API signature changes (`createClient` options)
 - Default setting changes (compression, timeouts)
 - New query result format behavior
@@ -201,7 +202,7 @@ validateUpgrade();
 
 ### Step 6: Rollback Procedure
 
-```bash
+```text
 # Node.js client rollback
 npm install @clickhouse/client@<previous-version> --save-exact
 

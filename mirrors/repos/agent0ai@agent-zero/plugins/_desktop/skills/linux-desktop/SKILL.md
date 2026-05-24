@@ -1,23 +1,31 @@
 ---
 name: linux-desktop
-description: Use when the user asks Agent Zero to operate the built-in Linux Desktop, XFCE apps, LibreOffice GUI apps, file manager, terminal, or visual desktop workflows.
+description: Use only for Agent Zero's built-in Docker/Xpra Linux Desktop, XFCE apps, LibreOffice GUI apps, file manager, terminal, or visual workflows inside the Agent Zero runtime. Not for A0 CLI /computer-use or computer_use_remote host control.
 version: "0.3.0"
 author: "Agent Zero Core Team"
 tags: ["linux", "desktop", "xfce", "libreoffice", "gui", "files", "terminal"]
 triggers:
-  - "Linux desktop"
-  - "Desktop GUI"
-  - "XFCE"
-  - "LibreOffice GUI"
-  - "file manager"
-  - "terminal app"
-  - "use the OS"
+  - "Agent Zero Desktop"
+  - "built-in Linux Desktop"
+  - "Xpra Desktop"
+  - "XFCE Desktop"
+  - "LibreOffice GUI in Desktop"
+  - "Desktop file manager"
+  - "Docker desktop terminal"
 allowed_tools:
   - office_artifact
   - code_execution_tool
 ---
 
 # Linux Desktop Interface
+
+## Boundary With Host Computer Use
+
+This skill is only for the built-in Desktop surface running inside Agent Zero's Docker/runtime Xpra session. It does not control the user's host OS, real monitor, local Ubuntu/Wayland session, macOS desktop, or Windows desktop.
+
+If the user asks for `/computer-use`, "my computer", "host machine", "local desktop", screenshots of the user's screen, hiding/minimizing a window on their screen, or any connected A0 CLI Computer Use task, do not use this skill, `desktopctl.sh`, Xpra, `code_execution_tool`, or Docker shell commands. Load `host-computer-use` and use `computer_use_remote`; if unavailable, tell the user to enable `/computer-use on`.
+
+`desktopctl.sh` only targets the internal Agent Zero Xpra display. It cannot observe or control the user's connected host screen.
 
 Use the Desktop as a full Linux GUI when the user explicitly needs a visual workflow, an installed desktop app, or manual layout polish that is awkward through structured file edits alone. Agent Zero may warm the persistent Desktop runtime during initial startup, but visible Desktop surface use remains opt-in. The Desktop is opt-in at the UI level: do not open a surface just because the user asks for a document. Use structured tools first for deterministic content changes, then use the Desktop for inspection, GUI-only actions, and final visual confirmation.
 

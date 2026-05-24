@@ -464,16 +464,27 @@ class RepresentativeStockSelector:
         self._rate_limit()
         self._source_states["fmp"].total_queries += 1
 
-        url = f"https://financialmodelingprep.com/api/v3/etf-holder/{etf_symbol}"
+        # stable: /etf/holdings?symbol= ; v3 fallback (legacy keys): /etf-holder/{symbol}.
+        # Both return a list of holdings with `asset` (ticker) and `marketValue`.
+        endpoints = [
+            ("https://financialmodelingprep.com/stable/etf/holdings", {"symbol": etf_symbol}),
+            (f"https://financialmodelingprep.com/api/v3/etf-holder/{etf_symbol}", None),
+        ]
 
         try:
-            resp = requests.get(url, headers={"apikey": self._fmp_api_key}, timeout=15)
-            if resp.status_code != 200:
-                self._record_failure("fmp")
-                return []
+            data = None
+            for url, params in endpoints:
+                resp = requests.get(
+                    url, params=params, headers={"apikey": self._fmp_api_key}, timeout=15
+                )
+                if resp.status_code != 200:
+                    continue
+                payload = resp.json()
+                if isinstance(payload, list) and payload:
+                    data = payload
+                    break
 
-            data = resp.json()
-            if not isinstance(data, list):
+            if not data:
                 self._record_failure("fmp")
                 return []
 

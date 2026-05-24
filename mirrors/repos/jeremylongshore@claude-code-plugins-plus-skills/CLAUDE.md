@@ -47,10 +47,10 @@ j-rig eval <skill-dir> --models haiku,sonnet,opus --db freshie/inventory.sqlite
 
 ## Two Catalog System — Critical
 
-| File | Purpose | Edit? |
-|---|---|---|
-| `.claude-plugin/marketplace.extended.json` | Source of truth | **Yes** |
-| `.claude-plugin/marketplace.json` | CLI-compatible, auto-generated | **Never** |
+| File                                       | Purpose                        | Edit?     |
+| ------------------------------------------ | ------------------------------ | --------- |
+| `.claude-plugin/marketplace.extended.json` | Source of truth                | **Yes**   |
+| `.claude-plugin/marketplace.json`          | CLI-compatible, auto-generated | **Never** |
 
 `pnpm run sync-marketplace` regenerates all three derived artifacts: `marketplace.json`, any missing `plugins/**/package.json` files, and the `README.md` AUTO-TOC block. The pre-commit hook runs this automatically when `marketplace.extended.json` is staged.
 
@@ -152,7 +152,3 @@ Key tables: `skill_compliance` (scores, grades, JRig columns), `forge_proofs` (d
 ## npm Publish Pipeline
 
 Patch version bumps happen automatically on PR (via `auto-bump-on-pr.yml`). For minor/major bumps, hand-edit the version in the same PR. Merge to main triggers publish + tag + GitHub Release via `publish-changed-packages.yml`. See `RELEASING.md` for the full operator flow.
-
-## Legacy Root Files
-
-Not part of the active build: `docker-compose.test.yml`, `Dockerfile.test`, `firebase.json` + `firestore.rules` (tonsofskills.com migrated to Contabo VPS 2026-05-06 via `deploy-vps.yml`; `deploy-firebase.yml` is renamed `.disabled`), `config.zcf.json`, scratch scripts.

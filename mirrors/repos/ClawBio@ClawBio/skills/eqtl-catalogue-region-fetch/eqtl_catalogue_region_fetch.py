@@ -14,12 +14,22 @@ Per-study attribution: original publication for each constituent dataset.
 The REST API at `https://www.ebi.ac.uk/eqtl/api/v2/datasets/{id}/associations`
 silently returns only ONE side of the cis-window (genomic-lower) and ignores
 `pos_min` / `pos_max` filters (verified May 2026). The FTP tabix-indexed
-`.all.tsv.gz` files contain the full ±1 Mb of strand-aware TSS for each gene
+per-variant files contain the full ±1 Mb of strand-aware TSS for each gene
 as designed. We use the FTP path; the REST API is kept only for dataset
 metadata lookups.
 
-URL pattern:
-    https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/<QTS>/<QTD>/<QTD>.all.tsv.gz
+URL pattern (suffix depends on quant_method, verified 2026-05-15):
+    https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/<QTS>/<QTD>/<QTD>{suffix}
+
+    suffix = ".all.tsv.gz"  for quant_method in {ge, microarray}
+    suffix = ".cc.tsv.gz"   for quant_method in {exon, tx, txrev, leafcutter, ...}
+
+The `.cc.tsv.gz` file is the official eQTL-Catalogue distribution for
+non-ge methods: it retains the strongest molecular trait per fine-mapped
+credible-set signal (the same trait used for the upstream coloc call),
+giving ~98% size reduction while keeping almost all significant loci.
+Per-variant schema is identical to `.all.tsv.gz`, so `FTP_COLUMNS` below
+applies to both.
 
 Variant id mapping: the FTP file's `variant` column is `chrN_pos_ref_alt`;
 we strip the `chr` prefix at the row-normalisation boundary so the emitted
@@ -148,9 +158,11 @@ class EQTLCatalogueAPIError(Exception):
     """Raised when an eQTL Catalogue endpoint returns an error or unexpected payload."""
 
 
-# Column order in the .all.tsv.gz files (verified live 2026-05-05 against
-# QTD000429.all.tsv.gz). Stable across v7+ datasets per the eQTL Catalogue
-# schema doc; if a future release changes this, the shape check in
+# Column order in the per-variant FTP files. Verified live 2026-05-05
+# against QTD000429.all.tsv.gz (ge); identical schema confirmed 2026-05-15
+# for .cc.tsv.gz across the 4 non-ge sQTL quant methods (per the official
+# eQTL-Catalogue file-format doc and a 60-dataset probe). Stable across v7+
+# datasets; if a future release changes this, the shape check in
 # `_parse_ftp_row` will fail loudly rather than silently misaligning.
 FTP_COLUMNS = [
     "molecular_trait_id", "chromosome", "position", "ref", "alt",
@@ -160,22 +172,40 @@ FTP_COLUMNS = [
 ]
 
 
-def ftp_url_for(study_id: str, dataset_id: str, ftp_base: str = DEFAULT_FTP_BASE) -> str:
-    """Construct the canonical FTP URL for a dataset's all.tsv.gz file.
+def ftp_url_for(
+    study_id: str,
+    dataset_id: str,
+    ftp_base: str = DEFAULT_FTP_BASE,
+    quant_method: str | None = "ge",
+) -> str:
+    """Construct the canonical FTP URL for a dataset's per-variant sumstats file.
 
-    URL pattern (verified 2026-05-05):
-      https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/<QTS>/<QTD>/<QTD>.all.tsv.gz
+    URL pattern (verified 2026-05-05 + 2026-05-15):
+      https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/<QTS>/<QTD>/<QTD>{suffix}
+
+    Suffix is `.all.tsv.gz` for `ge` and `microarray` quant methods (full
+    nominal-pass per-variant sumstats); `.cc.tsv.gz` otherwise. Empirical
+    FTP probe 2026-05-15 confirmed 0/60 non-ge datasets ship `.all.tsv.gz`
+    across 15 major studies x 4 sQTL methods (`exon`, `tx`, `txrev`,
+    `leafcutter`), while 60/60 ship `.cc.tsv.gz` with identical per-variant
+    schema. Per the official eQTL-Catalogue docs the `.cc.tsv.gz` file
+    retains the strongest molecular trait per fine-mapped credible set
+    (~98% size reduction while keeping almost all significant loci); this
+    is the trait selection used for the upstream coloc call.
     """
-    return f"{ftp_base.rstrip('/')}/{study_id}/{dataset_id}/{dataset_id}.all.tsv.gz"
+    qm = (quant_method or "ge").lower()
+    suffix = ".all.tsv.gz" if qm in {"ge", "microarray"} else ".cc.tsv.gz"
+    return f"{ftp_base.rstrip('/')}/{study_id}/{dataset_id}/{dataset_id}{suffix}"
 
 
 class EQTLCatalogueClient:
     """Tabix-on-FTP region fetcher + REST metadata helper.
 
     The associations fetch path uses pysam.TabixFile against the FTP
-    `.all.tsv.gz` for the target dataset. The REST API is retained only
-    for `/datasets/{id}` metadata lookups (sample group, tissue, condition
-    labels for panel titles).
+    per-variant sumstats file for the target dataset (`.all.tsv.gz` for
+    `ge`/`microarray`, `.cc.tsv.gz` otherwise; see `ftp_url_for`). The
+    REST API is retained only for `/datasets/{id}` metadata lookups
+    (sample group, tissue, condition labels for panel titles).
 
     No caching here. The caller handles caching upstream.
     """
@@ -241,15 +271,30 @@ class EQTLCatalogueClient:
         start_bp: int,
         end_bp: int,
         molecular_trait_id: str | None = None,
+        gene_id: str | None = None,
         study_id: str | None = None,
     ) -> RegionResult:
-        """Tabix-fetch a region from the FTP `.all.tsv.gz`.
+        """Tabix-fetch a region from the FTP per-variant sumstats file.
 
-        cis-eQTL datasets contain rows for every (gene, variant) pair tested
-        in the cis-window. Pass `molecular_trait_id` (the Ensembl gene id) to
-        restrict to the gene of interest. Without it, the result includes
-        every gene whose cis-window overlaps the requested region, which is
-        rarely what the renderer wants.
+        cis-QTL datasets contain rows for every (trait, variant) pair tested
+        in the cis-window. Filter to a single gene's rows by passing
+        `gene_id` (Ensembl `ENSG...` form): the `gene_id` column is the
+        parent Ensembl gene for every quant method, even when
+        `molecular_trait_id` is a transcript / exon / intron-cluster id, so
+        this is the portable filter across `ge`, `tx`, `txrev`, `exon`,
+        `leafcutter`, `microarray`. Pass `molecular_trait_id` instead to
+        filter to a single trait (canonical for `ge` where
+        `molecular_trait_id == gene_id`, or to restrict to one cluster /
+        transcript / exon for non-ge). Passing both narrows to rows matching
+        both.
+
+        Without any filter, the result includes every trait whose cis-window
+        overlaps the requested region, which is rarely what the renderer
+        wants.
+
+        The file picked is quant-method-aware (see `ftp_url_for`):
+        `.all.tsv.gz` for `ge`/`microarray`, `.cc.tsv.gz` for splicing /
+        exon / transcript quant methods.
 
         `study_id` (QTS) is auto-resolved from the dataset_id via REST
         metadata when omitted. Pass it explicitly to skip the metadata
@@ -261,7 +306,10 @@ class EQTLCatalogueClient:
         notes: list[str] = []
         meta_obj = self.fetch_dataset_metadata(dataset_id)
         sid = self._resolve_study_id(dataset_id, study_id or meta_obj.get("study_id"))
-        url = ftp_url_for(sid, dataset_id, ftp_base=self.ftp_base)
+        quant_method = meta_obj.get("quant_method")
+        url = ftp_url_for(
+            sid, dataset_id, ftp_base=self.ftp_base, quant_method=quant_method,
+        )
 
         try:
             import pysam
@@ -294,6 +342,8 @@ class EQTLCatalogueClient:
                     )
                     continue
                 row = dict(zip(FTP_COLUMNS, fields))
+                if gene_id and row.get("gene_id") != gene_id:
+                    continue
                 if molecular_trait_id and row.get("molecular_trait_id") != molecular_trait_id:
                     continue
                 variants.append(_normalise_row(row))

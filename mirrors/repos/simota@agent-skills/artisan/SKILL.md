@@ -9,13 +9,13 @@ CAPABILITIES_SUMMARY:
 - vue_production: Vue 3.5+/3.6 Composition API (Reactive Props Destructure, useTemplateRef, Lazy Hydration), Vapor Mode (3.6 beta — compile-to-DOM bypassing VDOM, `<script setup>` only, no Suspense, opt-in per-component, not production-stable), composables, Pinia state management
 - svelte_production: Svelte 5 Runes ($state/$derived/$effect), Snippet components, stores
 - state_management: Zustand, Pinia, Context API, local state with proper scoping
-- form_handling: React Hook Form + Zod validation, accessible error display
+- form_handling: React Hook Form + Zod v4 (14× faster, @zod/mini 1.9KB for edge), TanStack Form v1 (stable Mar 2025, cross-framework, type-safe paths), accessible error display
 - data_fetching: TanStack Query, SWR, server-side fetching with caching strategies
 - accessibility: ARIA attributes, keyboard navigation, focus management, WCAG AA compliance
 - styling: Tailwind CSS, CSS Modules, CSS-in-JS with cn() utility patterns
 - modern_css: CSS @scope (native scoping), Anchor Positioning (declarative tooltip/dropdown placement with position-try-fallbacks), Popover API (popover attribute + popovertarget, top layer, light dismiss), text-wrap: balance/pretty (Baseline 2024), CSS if() (conditional custom property resolution, Chrome Canary), sibling-index()/sibling-count() (CSS sibling position reference), Grid Lanes/CSS Masonry (native masonry layout, WebKit implementation)
 - server_components: Server-first architecture, selective hydration, RSC boundaries
-- type_safety: TypeScript strict mode, Zod schemas, discriminated unions
+- type_safety: TypeScript strict mode, Zod v4 / Valibot / ArkType schemas, discriminated unions
 - a11y_implementation: Component-level accessibility hardening — ARIA roles/labels, keyboard navigation, focus management, screen reader affordances, WCAG 2.2 AA baseline (target size, focus appearance, dragging alternatives)
 - i18n_implementation: Component-level internationalization — t() extraction, ICU MessageFormat for plurals/selects, Intl API for date/number/currency, RTL-safe layout with logical properties, locale switching wiring
 - ui_performance: Frontend-component performance tuning — React memoization (memo/useMemo/useCallback when Compiler is off), list virtualization (TanStack Virtual / react-window), dynamic import code-splitting, bundle-size audit per route/component
@@ -55,7 +55,7 @@ Use Artisan when the task needs:
 - TypeScript strict mode component with proper error boundaries
 - accessible (WCAG AA) interactive UI components
 - state management setup (Zustand, Pinia, Context API)
-- form handling with validation (React Hook Form + Zod)
+- form handling with validation (React Hook Form + Zod v4, TanStack Form v1)
 - Server Component / RSC architecture decisions
 - data fetching with TanStack Query or SWR
 
@@ -144,7 +144,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `vue`, `composition api`, `composable` | Vue 3 production implementation | Vue component | `references/vue-svelte-patterns.md` |
 | `svelte`, `runes`, `$state` | Svelte 5 production implementation | Svelte component | `references/vue-svelte-patterns.md` |
 | `state`, `zustand`, `pinia`, `context` | State management setup | State architecture | `references/state-management.md` |
-| `form`, `validation`, `zod` | Form handling implementation | Form component | `references/component-quality.md` |
+| `form`, `validation`, `zod`, `valibot`, `tanstack form` | Form handling implementation | Form component | `references/component-quality.md` |
 | `accessibility`, `aria`, `a11y` | Accessibility-focused implementation | Accessible component | `references/component-quality.md` |
 | `prototype to production`, `forge output` | Prototype conversion | Production component | `references/react-patterns.md` |
 | `landing page`, `marketing page`, `AI-generated page` | Composition-aware page implementation | Page with layout restraint | `references/ai-frontend-patterns.md` |
@@ -193,7 +193,7 @@ Parse the first token of user input.
 Behavior notes per Recipe:
 - `component`: Single component implementation. Always include type safety, a11y, and error/loading states. Target <50 lines.
 - `state`: Classify state (Remote/URL/Local/Shared) during DESIGN, then select the optimal library.
-- `form`: RHF + Zod validation. Include error display, submission state, and accessibility.
+- `form`: RHF + Zod v4 validation (or TanStack Form v1 for cross-framework/type-safe paths). Include error display, submission state, and accessibility.
 - `fetch`: TanStack Query v5 or SWR. Design caching strategy and error/loading states.
 - `rsc`: Lock Server/Client boundaries during DESIGN. Consider selective hydration and streaming.
 - `a11y`: Tactical WCAG 2.2 AA hardening of an Artisan-owned component or page — wire ARIA roles/labels, keyboard paths, focus management, and screen reader affordances. Verify target size (≥24×24px), focus appearance, and dragging alternatives. Scope is a single component/page; route to `Palette` for product-level usability/interaction redesign, and route to `Canon` for repo-wide WCAG gap audits.
@@ -240,7 +240,7 @@ Artisan receives prototypes, design direction, and review feedback from upstream
 
 | Reference | Read this when |
 |-----------|----------------|
-| `references/react-patterns.md` | You need React 19 hooks, React Compiler v1.0, RSC composition, Suspense streaming, Server Actions, cache/revalidation, form handling, hooks/RSC anti-patterns. |
+| `references/react-patterns.md` | You need React 19 hooks, React Compiler v1.0, RSC composition, Suspense streaming, Server Actions, cache/revalidation, Next.js 16.2 features, form handling (RHF / TanStack Form v1 / Zod v4), hooks/RSC anti-patterns. |
 | `references/state-management.md` | You need state classification (Remote/URL/Local/Shared), TanStack Query v5, Zustand, nuqs v2, RSC hydration patterns. |
 | `references/component-quality.md` | You need a11y (ARIA, keyboard, focus, WCAG 2.2 new criteria), error/loading states, form validation, Tailwind v4 styling, component checklist. |
 | `references/performance-testing.md` | You need Core Web Vitals (INP), optimization, Vitest v2 Browser Mode, Storybook 8.5+, RSC testing strategies, Playwright E2E. |

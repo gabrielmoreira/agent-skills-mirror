@@ -1,20 +1,23 @@
 # Design Direction Advisor — Extended Reference
 
-Read this when the request is vague ("make something nice", "I don't know what style I want") and no design context exists. The main `SKILL.md` already covers the **mechanism** (3 differentiated directions, named designer references, hard rule against same-school picks). This file provides the **library** — concrete philosophies you can pull from, per-direction visual recipes, and prompt templates.
+Read this when the request is vague ("make something nice", "I don't know what style I want") and no design context exists. The main `SKILL.md` already covers the **mechanism** (3 differentiated directions, named designer references, hard rule against same-school picks). This file provides the **school taxonomy** — six high-level philosophical lenses, each with named anchors and the sample copy you use to recommend it.
+
+> **Terminology lock**: this file deals in **schools** (six high-level lenses) and **anchors** (named studios / brands / designers per school). The companion folder `style-recipes/` contains 25 **recipe** files — one file per anchor — with concrete, ready-to-paste configurations. When a user picks a school here, hand them off to the recipe files in that school for concrete palette / typography / spacing values. Load only the recipe files you actually need; the catalog index is at `style-recipes/INDEX.md`.
 
 ---
 
 ## How to Use This File
 
 1. Read the user's request and the four positioning questions (narrative role / viewing distance / visual temperature / capacity)
-2. Pick **3 directions from different rows** below (the school table) that genuinely fit the user's context
+2. Pick **3 schools from different rows** below that genuinely fit the user's context
 3. Recommend each with: named designer/studio + 2–3 lines of "why this fits you" + 3–4 signature visual cues + (optional) one famous touchstone work
 4. Wait for the user to pick one (or remix two)
-5. The chosen direction becomes the design context — write it into `brand-spec.md` and proceed to the main workflow
+5. **After the user picks a school → read 2–3 recipe files from `style-recipes/` in that school** (e.g., picked *Information Architecture* → read `style-recipes/pentagram.md` + `style-recipes/bloomberg-terminal.md` + `style-recipes/tufte-dataink.md`). The recipe files carry the concrete values; this file does not duplicate them.
+6. The chosen recipe becomes the design context — write it into `brand-spec.md` and proceed to the main workflow
 
 ---
 
-## The Five Schools (1 of 3 must come from each different row)
+## The Six Schools (1 of 3 must come from each different row)
 
 ### 1. Information Architecture
 
@@ -27,14 +30,10 @@ Read this when the request is vague ("make something nice", "I don't know what s
 | **Pentagram** (Paula Scher, Michael Bierut) | Bold typography as image; identity through type relationships; sparing color use |
 | **Edward Tufte** | Maximum data-ink ratio; small multiples; smallest sufficient difference |
 | **Massimo Vignelli** | Helvetica-style restraint; strict grid; 6 typefaces is enough for a lifetime |
-| **NB Studio / Spin** | Editorial restraint applied to corporate identity |
+| **Bloomberg Terminal** | Mission-critical density; amber-on-near-black; monospaced data |
+| **NYT / Broadsheet editorial** | Multi-deck hierarchy; serif headlines; place-rich photography |
 
-**Visual recipe**:
-- Type: large-scale display headlines (often Helvetica / Suisse / Söhne / Neue Haas Grotesk family); body in the same family at small sizes
-- Color: 1 ink + 1 accent + 1 background — that's it
-- Layout: strict 12-column grid, generous gutters, baseline-grid alignment
-- No: gradients, shadows, decorative icons, illustrations
-- Motion: minimal — fades and slides only, never bouncy
+**Concrete starting points** (each is a single file in `style-recipes/` — read one): [`pentagram`](./style-recipes/pentagram.md) · [`vignelli-swiss-helvetica`](./style-recipes/vignelli-swiss-helvetica.md) · [`bloomberg-terminal`](./style-recipes/bloomberg-terminal.md) · [`tufte-dataink`](./style-recipes/tufte-dataink.md) · [`nyt-the-daily`](./style-recipes/nyt-the-daily.md) — each carries the palette, typography, spacing, and signature moves to paste straight into Step 3.
 
 **Sample copy when recommending**:
 > "Pentagram-style information architecture — your dashboard becomes a system of typographic relationships rather than a UI. Headlines do the heavy visual lifting; everything else recedes. Best when you want institutional credibility and your data is the hero."
@@ -53,13 +52,9 @@ Read this when the request is vague ("make something nice", "I don't know what s
 | **Apple HIG / Marketing** | Generous negative space; hero product on white; one-thought-per-screen |
 | **Dieter Rams (Braun)** | "Less but better"; honest materials; functional decoration is a contradiction |
 | **Aesop** | Cream/sage palette; serif copy as conversation; product as protagonist |
+| **Monocle** | Magazine-grade kicker / headline / dek hierarchy; international considered |
 
-**Visual recipe**:
-- Type: editorial serif display (Newsreader / Source Serif / EB Garamond / GT Sectra) + clean sans body (Söhne / Inter Tight / Geist Sans)
-- Color: warm off-white + ink + 1 muted accent (sage, ochre, terracotta) — no pure black, no pure white
-- Layout: asymmetric, lots of margin, single column for body, oversized hero
-- No: bento grids, multiple cards per row, busy navigation
-- Motion: slow Ken Burns, subtle parallax, never snap
+**Concrete starting points** (each is a single file in `style-recipes/` — read one): [`apple-hig`](./style-recipes/apple-hig.md) · [`muji-kenya-hara`](./style-recipes/muji-kenya-hara.md) · [`aesop`](./style-recipes/aesop.md) · [`dieter-rams-braun`](./style-recipes/dieter-rams-braun.md) · [`monocle-magazine`](./style-recipes/monocle-magazine.md) — each carries the palette, typography, spacing, and signature moves to paste straight into Step 3.
 
 **Sample copy when recommending**:
 > "Kenya Hara-style editorial minimalism — the page is mostly whitespace, with one serif headline carrying emotional weight and the product anchored in a single hero shot. Best when premium positioning matters more than feature density."
@@ -77,14 +72,10 @@ Read this when the request is vague ("make something nice", "I don't know what s
 | **Field.io** | Generative type and form; data-driven motion; the page is a system that *makes* itself |
 | **Active Theory** | WebGL hero moments; physics-driven interactions; cinematic transitions |
 | **Resn** | Storytelling through scroll; payoff for exploration; surprise is the reward |
-| **Vercel / Linear marketing** (recent) | Subtle but everywhere motion; glass + gradient meshes used with restraint |
 
-**Visual recipe**:
-- Type: variable fonts that *do something* (axis transitions on hover/scroll); often display-weight grotesque
-- Color: high-contrast, often dark base + 1–2 saturated accents; or generative gradients
-- Layout: full-bleed canvases, content emerges through scroll, CTAs deliberately delayed
-- Motion: choreographed, multi-stage, eased — `cubic-bezier(0.83, 0, 0.17, 1)` style "expo" curves
-- Required: a concrete motion language declared up-front (which easings, which durations, which trigger types)
+**Concrete starting points** (each is a single file in `style-recipes/` — read one): [`field-io`](./style-recipes/field-io.md) · [`active-theory`](./style-recipes/active-theory.md) · [`resn-storytelling`](./style-recipes/resn-storytelling.md) — each carries the palette, typography, spacing, and signature moves to paste straight into Step 3.
+
+> Note: Vercel / Linear marketing pages use motion *as restraint*, not as the show — they live in the **Modern Tool / Builder SaaS** school below, not here. Reach for this school only when motion is genuinely the brand.
 
 **Sample copy when recommending**:
 > "Field.io-style motion-led identity — the page generates itself in front of the visitor through choreographed scroll-driven sequences. Best when the launch *moment* matters and your audience will share clips. Note: this is the most labor-intensive of the three; budget accordingly."
@@ -104,12 +95,7 @@ Read this when the request is vague ("make something nice", "I don't know what s
 | **Balenciaga** (post-2017) | Default browser styling weaponized; hero text in Helvetica at absurd scale |
 | **Craigslist (yes, really)** | Information density without apology; everything is a link |
 
-**Visual recipe**:
-- Type: monospace + system serif; or one display font abused at every size
-- Color: 1–2 colors max, often fluorescent or muddy on white; never "tasteful"
-- Layout: visible grid breaks, intentional misalignment, density without hierarchy where appropriate
-- Required: commit fully — half-brutalism reads as broken design, not a statement
-- No: drop shadows, gradients, rounded corners > 4px, "polish"
+**Concrete starting points** (each is a single file in `style-recipes/` — read one): [`are-na`](./style-recipes/are-na.md) · [`bloomberg-businessweek-turley`](./style-recipes/bloomberg-businessweek-turley.md) · [`balenciaga-post-2017`](./style-recipes/balenciaga-post-2017.md) — each carries the palette, typography, spacing, and signature moves to paste straight into Step 3.
 
 **Sample copy when recommending**:
 > "Are.na/Bloomberg-style brutalism — system fonts, harsh type contrast, no rounded corners, no shadows. Confrontational on purpose. Best when you're a strong contrarian voice and want to repel the crowd that wants 'modern SaaS.' Warning: half-measures here look broken, not bold."
@@ -127,17 +113,34 @@ Read this when the request is vague ("make something nice", "I don't know what s
 | **Mailchimp** (early Freddie era) | Hand-drawn marks; warm illustration; personality in microcopy |
 | **Stripe Press** | Editorial serif + warm palette + tactile object photography |
 | **Studio Dumbar** | Identity through movement and personality, not through restraint |
-| **Notion** (pre-AI era) | Emoji as first-class design element; soft shadows; rounded everything but not in a cookie-cutter way |
+| **Headspace / Calm** | Soft pastels, rounded everything, breathing-pace motion |
 
-**Visual recipe**:
-- Type: humanist serif (Tiempos / GT Sectra / Sentinel) + rounded sans (Söhne Breit / Inter Tight); one decorative script for accent (Caveat used sparingly)
-- Color: warm neutrals (cream, sand, sage) + saturated friendly accent (caramel, coral, terracotta)
-- Layout: rounded cards (16–24px radius), soft shadows, illustrations *replace* hero photos
-- Motion: gentle, never snappy; bouncy easing curves welcome
-- Required: at least one element of intentional human warmth (real photo of the team, a hand-drawn mark, a microcopy joke)
+**Concrete starting points** (each is a single file in `style-recipes/` — read one): [`mailchimp-freddie`](./style-recipes/mailchimp-freddie.md) · [`stripe-press`](./style-recipes/stripe-press.md) · [`headspace-meditation`](./style-recipes/headspace-meditation.md) — each carries the palette, typography, spacing, and signature moves to paste straight into Step 3.
+
+> Note: Notion (pre-AI era) borrows from this school's friendly tone but lives in the **Modern Tool / Builder SaaS** school below — it's a tool first, warmth second.
 
 **Sample copy when recommending**:
 > "Stripe Press / early Mailchimp warmth — humanist serifs, cream palette, illustrations that feel hand-touched. Best when you want trust and approachability over institutional polish. Tone is 'friend who happens to be expert,' not 'expert addressing client.'"
+
+---
+
+### 6. Modern Tool / Builder SaaS
+
+**Vibe**: Quiet luxury for tools, hairline detail, warm dark + monospace accents
+**Best for**: Developer tools, B2B SaaS, AI tools, infrastructure / platform products, productivity apps
+**Why it works**: Confident restraint reads as "made by people who use tools," not "made by marketers." Hairline borders, monospace shortcut chips, and a single accent color signal craft-led culture without shouting. This is the most under-served school in AI-default output — every model wants to reach for the purple-pink-blue gradient instead.
+
+| Anchor | What to borrow |
+|---|---|
+| **Linear** | Hairline 1px borders, warm dark ground, selective purple accent < 5% of pixels, keyboard-first chips |
+| **Vercel** (recent) | Black + white precision broken by *one* feathered gradient mesh; deploy-log realism in the hero |
+| **Raycast** | Glassy command-palette as hero; per-extension color dots used as small accents |
+| **Notion** (pre-AI era) | Friendly serif headlines + emoji-as-icon on cream surfaces; structure first, warmth second |
+
+**Concrete starting points** (each is a single file in `style-recipes/` — read one): [`linear`](./style-recipes/linear.md) · [`vercel-mesh`](./style-recipes/vercel-mesh.md) · [`raycast`](./style-recipes/raycast.md) · [`notion-pre-ai`](./style-recipes/notion-pre-ai.md) — each carries the palette, typography, spacing, and signature moves to paste straight into Step 3.
+
+**Sample copy when recommending**:
+> "Linear-style modern-tool aesthetic — warm dark ground, hairline 1px borders, a single purple accent used on less than 5% of pixels, monospace shortcut chips. Best when your audience is technical and 'serious but designed' matters more than 'fun and accessible.' This is the recipe that defends most directly against AI-default Inter + blue button + 16px-radius output."
 
 ---
 
@@ -167,6 +170,8 @@ Always include:
 - Aspect ratio and dimensions
 - Composition rules (rule-of-thirds, centered, asymmetric)
 - What to *avoid* (e.g., "no purple gradient, no emoji, no rounded cards")
+
+> Each recipe file in `style-recipes/` ships a pre-written **AI prompt seed** tuned to that recipe's DNA — start from the one you're using rather than writing prompts from scratch.
 
 ---
 

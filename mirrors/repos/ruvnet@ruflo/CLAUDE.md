@@ -926,60 +926,88 @@ memory_search_unified({ query: "authentication security", limit: 5 })
 
 ## Publishing to npm
 
+### Versioning policy (stable releases — alpha series ended at 3.7.0-alpha.81, 2026-05-23)
+
+- **From 3.7.0 onward we ship stable semver**, NOT alpha pre-releases.
+- Bump rules (semver discipline):
+  - **PATCH** (3.7.0 → 3.7.1): bug fixes only, no API change, no schema change
+  - **MINOR** (3.7.0 → 3.8.0): backward-compatible additions (new MCP tool, new flag, new agent type)
+  - **MAJOR** (3.x → 4.0.0): breaking change in CLI surface, MCP tool signature, file layout, or default behavior
+- Default tag is `latest` (no `--tag alpha`). The `alpha` and `v3alpha` dist-tags continue to exist for historical compatibility — point them at the same version as `latest`.
+- Never publish a pre-release (`-alpha.N`, `-beta.N`, `-rc.N`) unless the user explicitly asks for a pre-release flow.
+
 ### Publishing Rules
 
 - MUST publish ALL THREE packages when publishing CLI changes: `@claude-flow/cli`, `claude-flow`, AND `ruflo`
-- MUST update ALL dist-tags for ALL THREE packages after publishing
+- MUST update ALL dist-tags for ALL THREE packages after publishing (latest + alpha + v3alpha all point to the same version)
 - Publish order: `@claude-flow/cli` first, then `claude-flow` (umbrella), then `ruflo` (alias umbrella)
 - MUST run verification for ALL THREE before telling user publishing is complete
 
 ```bash
-# STEP 1: Build and publish CLI
+# Replace 3.7.1 below with your chosen stable version (patch/minor/major per the rules above)
+
+# STEP 1: Build and publish @claude-flow/cli
 cd v3/@claude-flow/cli
-npm version 3.0.0-alpha.XXX --no-git-tag-version
+npm version 3.7.1 --no-git-tag-version
 npm run build
-npm publish --tag alpha
-npm dist-tag add @claude-flow/cli@3.0.0-alpha.XXX latest
+npm publish                              # default tag is `latest` — no --tag flag
+npm dist-tag add @claude-flow/cli@3.7.1 alpha     # historical compat
+npm dist-tag add @claude-flow/cli@3.7.1 v3alpha   # historical compat
 
 # STEP 2: Publish claude-flow umbrella
-cd /workspaces/claude-flow
-npm version 3.0.0-alpha.XXX --no-git-tag-version
-npm publish --tag v3alpha
+cd /Users/cohen/Projects/ruflo                    # or your repo root
+npm version 3.7.1 --no-git-tag-version
+npm publish
+npm dist-tag add claude-flow@3.7.1 alpha
+npm dist-tag add claude-flow@3.7.1 v3alpha
 
-# STEP 3: Update ALL claude-flow umbrella tags (CRITICAL - DON'T SKIP!)
-npm dist-tag add claude-flow@3.0.0-alpha.XXX latest
-npm dist-tag add claude-flow@3.0.0-alpha.XXX alpha
-
-# STEP 4: Publish ruflo umbrella (CRITICAL - DON'T FORGET!)
-cd /workspaces/claude-flow/ruflo
-npm version 3.0.0-alpha.XXX --no-git-tag-version
-npm publish --tag alpha
-npm dist-tag add ruflo@3.0.0-alpha.XXX latest
+# STEP 3: Publish ruflo wrapper (CRITICAL — DON'T FORGET — this is what users run)
+cd ruflo
+npm version 3.7.1 --no-git-tag-version
+npm publish
+npm dist-tag add ruflo@3.7.1 alpha
+npm dist-tag add ruflo@3.7.1 v3alpha
 ```
 
-**Verification (run before telling user):**
+**Verification (run before telling user publishing is complete):**
+
 ```bash
-npm view @claude-flow/cli dist-tags --json
-npm view claude-flow dist-tags --json
-npm view ruflo dist-tags --json
-# ALL THREE packages need: alpha AND latest pointing to newest version
+for pkg in @claude-flow/cli claude-flow ruflo; do
+  echo "$pkg: $(npm view $pkg@latest version)"
+  npm view $pkg dist-tags --json
+done
+# All three must show latest === alpha === v3alpha === new version
 ```
 
 ### All Tags That Must Be Updated
+
 | Package | Tag | Command Users Run |
 |---------|-----|-------------------|
-| `@claude-flow/cli` | `alpha` | `npx @claude-flow/cli@alpha` |
 | `@claude-flow/cli` | `latest` | `npx @claude-flow/cli@latest` |
-| `@claude-flow/cli` | `v3alpha` | `npx @claude-flow/cli@v3alpha` |
-| `claude-flow` | `alpha` | `npx claude-flow@alpha` — EASY TO FORGET |
+| `@claude-flow/cli` | `alpha` | `npx @claude-flow/cli@alpha` (legacy compat) |
+| `@claude-flow/cli` | `v3alpha` | `npx @claude-flow/cli@v3alpha` (legacy compat) |
 | `claude-flow` | `latest` | `npx claude-flow@latest` |
-| `claude-flow` | `v3alpha` | `npx claude-flow@v3alpha` |
-| `ruflo` | `alpha` | `npx ruflo@alpha` — EASY TO FORGET |
+| `claude-flow` | `alpha` | `npx claude-flow@alpha` (legacy compat) |
+| `claude-flow` | `v3alpha` | `npx claude-flow@v3alpha` (legacy compat) |
 | `ruflo` | `latest` | `npx ruflo@latest` |
+| `ruflo` | `alpha` | `npx ruflo@alpha` (legacy compat) |
+| `ruflo` | `v3alpha` | `npx ruflo@v3alpha` (legacy compat) |
 
-- Never forget the `ruflo` package — it's a thin wrapper users run via `npx ruflo@alpha`
-- Never forget the umbrella `alpha` tag — users run `npx claude-flow@alpha`
+- Never forget the `ruflo` package — it's the thin wrapper users actually run via `npx ruflo`
+- The legacy `alpha` and `v3alpha` tags MUST stay pointed at the latest stable so old install commands keep working
 - `ruflo` source is in `/ruflo/` — it depends on `@claude-flow/cli`
+- Also remember to update `ruflo/package.json` overrides when adding new pinned transitives (see #2112 lesson — root overrides do NOT propagate to the published `ruflo` wrapper)
+
+### GitHub Release after publish
+
+Every stable bump SHOULD have a matching `gh release create v<version>` with consolidated release notes pointing at the gist if one exists. Example:
+
+```bash
+git tag v3.7.1 main
+git push origin v3.7.1
+gh release create v3.7.1 --title "v3.7.1 — <one-line headline>" \
+  --notes-file /tmp/release-notes.md
+```
 
 ## Plugin Registry Maintenance (IPFS/Pinata)
 

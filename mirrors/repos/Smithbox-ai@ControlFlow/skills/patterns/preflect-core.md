@@ -1,10 +1,13 @@
 # PreFlect — Canonical Pre-Action Reflection Gate
 
 ## Purpose
+
 Single source of truth for the PreFlect gate every ControlFlow agent applies before any action batch (planning, dispatch, coding, audit, review, write, test, report). Agent files reference this skill instead of restating the canonical risk classes.
 
 ## When to Apply
+
 Before *each* batch of substantive output:
+
 - Orchestrator: before each subagent dispatch / approval batch.
 - Planner: before finalizing a plan revision.
 - Implementation agents: before each edit/test cycle.
@@ -34,6 +37,7 @@ The decision MUST be observable in the agent's output (gate event, execution-rep
 ## Domain Hooks
 
 Agents MAY add up to 5 lines of agent-specific risk classes immediately after the pointer to this skill, under the heading `Agent-specific additions:`. Examples:
+
 - Orchestrator: high-risk-destructive approval gate applies before dispatch.
 - Planner: Idea Interview & Clarification Gates must precede Semantic Risk.
 - Adversarial critics (PlanAuditor, AssumptionVerifier, ExecutabilityVerifier): adversarial stance — escalate any mirage.
