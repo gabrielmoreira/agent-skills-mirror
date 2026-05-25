@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/pi-agent-codebase-workflows/scopes.schema.json",
+  "title": "scopes",
+  "allOf": [
+    {
+      "$ref": "common.schema.json"
+    }
+  ],
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact",
+    "artifact_id",
+    "scope",
+    "status",
+    "evidence_mode",
+    "last_validated",
+    "owners",
+    "depends_on",
+    "evidence",
+    "unknowns",
+    "scopes",
+    "routing_rules"
+  ],
+  "properties": {
+    "artifact": {
+      "const": "scopes"
+    },
+    "scopes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^scope:[a-z0-9][a-z0-9._/-]*$"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "routing_rules": {
+      "type": "array"
+    }
+  }
+}

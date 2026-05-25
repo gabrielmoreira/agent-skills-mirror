@@ -1,13 +1,5 @@
 ---
-description: "Run all codebase reconstruction passes when repo size and complexity allow"
+description: "Structured codebase reconstruction all passes"
 argument-hint: "[focus]"
 ---
-Use the `codebase-recon` skill in all-in-one mode.
-
-Focus, if provided: $ARGUMENTS
-
-Use focus to scope all passes to a module/package/app/service/path in large repos or monorepos. If focus is provided, write scoped artifacts under `docs/agent/scopes/by-path/<focus>/` for path focus or `docs/agent/scopes/by-domain/<slug>/` for domain focus, and update `docs/agent/SCOPES.md`.
-
-First assess whether the repository is small/simple enough for reliable sequential reconstruction. If yes, run passes 1–10, writing top-level artifacts under `docs/agent/` when unscoped or scoped artifacts under `docs/agent/scopes/**` when focused, and keeping `AGENTS.md` at project root.
-
-If the repo proves too large or complex, complete the current pass and tell the user which numbered pass to run next.
+Before writing/updating structured artifacts, after loading the selected skill, load shared refs relative to that skill: `../_shared/references/artifact-api.md`, `../_shared/references/schemas/common.schema.json`, and only the matching artifact schema(s). Follow the skill Structured Artifact Write/Update Protocol for scope resolution, stable IDs, upserts, evidence, reference integrity, status transitions, deterministic YAML formatting, and validation. Resolve `<docs-root>` exactly per the selected skill: canonicalize `workspace_root`, use repo-local `<workspace_root>/docs/agent/api` only when that skill says repo-local applies and the directory exists, otherwise strip one leading slash/backslash from `workspace_root`, replace every slash, backslash, and colon with `-`, wrap with `--`, and use `~/.pi/agent/workspaces/<workspace-fingerprint>/docs/agent/api`. Use `/skill:codebase-recon` all-in-one mode. Produce canonical YAML artifacts under the resolved structured docs root; root `AGENTS.md` may be generated in Pass 6 for harness interoperability. No other Markdown docs. Focus: $ARGUMENTS. If repo is too large, finish current pass and recommend next pass.

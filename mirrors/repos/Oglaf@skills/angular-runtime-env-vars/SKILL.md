@@ -2,9 +2,18 @@
 name: angular-runtime-env-vars
 description: Configure runtime environment variables for Angular prerender/static deployments, especially on Azure App Service. Use this skill whenever the user mentions Angular + prerender/static hosting + env vars, runtime-config.js, startup command injection, or stale config values after deploy/restart.
 author: "Christian Fleishmann Silva (Oglaf)"
+version: "1.0.0"
 ---
 
+<!-- Prompt v1.0 — 2026-05-24 -->
+
 # Angular Runtime Env Vars
+
+> **Context boundary:** Each user message is an independent task. Do not carry state from previous tasks unless explicitly told to.
+
+## Priority Ordering
+
+PRIORITY 1: Inject environment variables at runtime via `server.js`, not at build time. PRIORITY 2: Prevent stale values with no-cache headers on `runtime-config.js`. PRIORITY 3: Validate Azure App Service startup command and env var key alignment. When these conflict, always prefer correct runtime injection over convenience shortcuts.
 
 Use this skill to make Angular prerender/static apps read environment values at runtime instead of baking values at build time.
 
@@ -89,8 +98,24 @@ Verify:
 
 ## Output format
 
-Return:
+Always respond with these three sections in order:
 
-1. What was changed (files + behavior impact).
-2. Exact App Service settings/checks to apply.
-3. A short verification sequence (including cache-busted runtime-config URL check).
+1. **Changed** — files modified and their behavioral impact.
+2. **Azure App Service** — exact settings/checks to apply.
+3. **Verification** — step-by-step sequence including a cache-busted `runtime-config.js` URL check.
+
+Example output structure:
+```
+### Changed
+- `server.js`: injects API_URL into assets/runtime-config.js on startup
+- `server.js`: adds no-cache headers for /assets/runtime-config.js
+
+### Azure App Service
+- Add App Setting: API_URL = https://api.example.com
+- Startup command: node server.js
+
+### Verification
+1. Restart the App Service
+2. Fetch: https://yourapp.azurewebsites.net/assets/runtime-config.js?v=1
+3. Confirm window.__APP_RUNTIME_CONFIG__.apiUrl shows the expected value
+```

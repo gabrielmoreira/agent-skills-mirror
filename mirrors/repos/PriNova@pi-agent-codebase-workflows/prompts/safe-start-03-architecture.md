@@ -1,34 +1,5 @@
 ---
-description: "Safe-start pass 3: architecture decisions derived from data flow"
-argument-hint: "[stack preference / constraints]"
+description: "Structured safe-start pass 3 architecture"
+argument-hint: "[focus]"
 ---
-Use `/skill:safe-start` Pass 3 — Architecture Decisions.
-
-Stack preference or constraints: $ARGUMENTS
-
-Read first when present:
-- `docs/agent/PROJECT_INTENT.md`
-- `docs/agent/DATA_FLOW.md`
-- `docs/agent/DATA_MODEL.md`
-- `docs/agent/INVARIANTS.md`
-
-Derive module boundaries from data flow and side-effect boundaries. Choose framework/libraries after boundaries are clear.
-
-Produce/update:
-- `docs/agent/ARCHITECTURE.md`
-- `docs/agent/DEPENDENCY_RULES.md`
-- `docs/agent/RISK_REGISTER.md`
-- `docs/agent/adr/0001-initial-architecture.md`
-
-Required output:
-- Architecture overview
-- Module boundaries and ownership
-- Dependency direction
-- Side-effect boundaries
-- Stack/framework/library decisions and alternatives considered
-- Configuration/secrets approach
-- Error handling strategy
-- Security/privacy basics
-- Key risks and mitigations
-- ADR: context, decision, alternatives, consequences
-- Approval gate: confirm whether to proceed to contract docs or scaffold plan
+Before writing/updating structured artifacts, after loading the selected skill, load shared refs relative to that skill: `../_shared/references/artifact-api.md`, `../_shared/references/schemas/common.schema.json`, and only the matching artifact schema(s). Follow the skill Structured Artifact Write/Update Protocol for scope resolution, stable IDs, upserts, evidence, reference integrity, status transitions, deterministic YAML formatting, and validation. Resolve `<docs-root>` exactly per the selected skill: canonicalize `workspace_root`, use repo-local `<workspace_root>/docs/agent/api` only when that skill says repo-local applies and the directory exists, otherwise strip one leading slash/backslash from `workspace_root`, replace every slash, backslash, and colon with `-`, wrap with `--`, and use `~/.pi/agent/workspaces/<workspace-fingerprint>/docs/agent/api`. Use `/skill:safe-start` Pass 3. Write/update `architecture.yaml`, `dependency-rules.yaml`, `design-issues.yaml`, `risk-register.yaml`, and `adr.yaml`. YAML only. Focus: $ARGUMENTS.

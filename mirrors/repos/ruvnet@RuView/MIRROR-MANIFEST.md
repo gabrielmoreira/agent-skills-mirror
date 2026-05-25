@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ruvnet/RuView` — 26 default patterns, 1 followed patterns, 42 file(s) materialized.
+Mirror of `ruvnet/RuView` — 26 default patterns, 1 followed patterns, 43 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ruvnet/RuView` — 26 default patterns, 1 followed patterns, 42 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 42 |
+| Files         | 43 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -99,8 +99,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 38 | ✓ | [`plugins/ruview/skills/ruview-mmwave/SKILL.md`](plugins/ruview/skills/ruview-mmwave/SKILL.md) |
 | 39 | ✓ | [`plugins/ruview/skills/ruview-model-training/SKILL.md`](plugins/ruview/skills/ruview-model-training/SKILL.md) |
 | 40 | ✓ | [`plugins/ruview/skills/ruview-quickstart/SKILL.md`](plugins/ruview/skills/ruview-quickstart/SKILL.md) |
-| 41 | ✓ | [`plugins/ruview/skills/ruview-verify/SKILL.md`](plugins/ruview/skills/ruview-verify/SKILL.md) |
-| 42 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
+| 41 | ✓ | [`plugins/ruview/skills/ruview-rvagent/SKILL.md`](plugins/ruview/skills/ruview-rvagent/SKILL.md) |
+| 42 | ✓ | [`plugins/ruview/skills/ruview-verify/SKILL.md`](plugins/ruview/skills/ruview-verify/SKILL.md) |
+| 43 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
 
 ---
 

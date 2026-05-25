@@ -336,6 +336,7 @@ Full algorithm, JSON schema, coverage-matrix layout, GROUND checklist, and subag
 | `_common/SUBAGENT.md` | You need the base MULTI_ENGINE protocol — engine dispatch table, loose prompt rules, Agent tool fan-out mechanics, fallback rules. Read before authoring `multi` Recipe subagent prompts. |
 | `_common/MULTI_ENGINE_RECIPE.md` | You need the cross-skill `multi` Recipe protocol — Pattern D (Divergence-primary) scoring rules, canonical PREFLIGHT probe, degraded modes, engine-attribution tag convention, and the Implementation Checklist that this skill's `multi` Recipe follows. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the research report, deciding adaptive thinking depth at method selection, or front-loading research question/scope/participants at INTAKE. Critical for Researcher: P3, P5. |
+| `_common/GROWTH_BRAND_PROOF.md` | You are the core Research-axis agent in `nexus growth-acceptance` Phase 0 (pre-design). Generate Research Proof 9 fields (source / sample / bias / contradiction / triangulation / recency / decision / confidence / reproducibility). Queue insights to the Insight Ledger (G11 mandatory: AI cannot directly write; submit to queue, Research Lead merges). Required for Step 2+ adoption. Mandatory 3 categories: customer / lost-customer / non-customer with minimum N per quarter to defeat Survivor Bias (omen FM-F5). |
 
 ## Operational
 

@@ -350,6 +350,7 @@ In all suppression cases, write a one-line note in the report explaining why.
 | `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing a Judge-specific verb (APPLY-FIX / REWRITE / REVERT-AND-RESTART / BREAKING-FIX / INVESTIGATE-FURTHER / DOWNGRADE), or deciding whether to suppress the prompt for nit-only / escalations / single-engine findings. |
 | `_common/LLM_PROMPT_GENERATION.md` | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Scout/Trail/Sentinel/Plea. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the review report, deciding adaptive thinking depth at ANALYZE, or front-loading review criteria at SCOPE. Critical for Judge: P2, P5. |
+| `_common/PROOF_CARRYING.md` | You are the tri-engine evidence auditor in `nexus acceptance` Phase 4. Defines the 5 Gate decision rules (schema completeness, spec consistency, cross-engine quorum, semantic non-emptiness, compute cap) and G1 cross-engine diversity requirement for Tier-S (Claude + Codex + agy quorum 2-of-3). |
 
 ---
 

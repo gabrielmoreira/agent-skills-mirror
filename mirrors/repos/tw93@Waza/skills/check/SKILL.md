@@ -235,6 +235,27 @@ Examples, not exhaustive -- flag any diff that could cause irreversible harm if 
 - **Dependency changes**: unexpected additions or version bumps in package.json, Cargo.toml, go.mod, requirements.txt. Flag any new dependency not obviously required by the diff.
 - **Safety sinks**: destructive file operations, shell or AppleScript construction, cwd/path/symlink traversal, approval or sandbox boundary changes, signing/appcast flows, and auth prompts need explicit review of validation, rollback, and user-confirmation behavior.
 
+## Finding Quality Gate
+
+Before writing any finding into the report, run this gate:
+
+**Pre-report self-check (four questions, every finding must pass):**
+1. Can I cite the exact file:line?
+2. Can I describe the specific input or state that triggers the bad outcome?
+3. Have I read the upstream callers / downstream consumers, not just the function in isolation?
+4. Is the severity defensible? Would a senior reviewer raise this at this level in a real PR?
+
+If any answer is "no", drop the finding or downgrade it to advisory. Vague findings train the reader to ignore real ones.
+
+**A clean review is a valid review.** Do not manufacture findings to justify the invocation. Zero findings with a stated review surface is a complete output. Padding the report with low-confidence noise is a worse outcome than reporting nothing.
+
+**HIGH and CRITICAL require three pieces of evidence:**
+1. The exact file:line where the bug lives.
+2. The specific trigger: what input, state, or sequence produces the bad outcome.
+3. Why existing guards (validation, type system, upstream catch, framework default) do not already prevent it.
+
+Cannot supply all three? Downgrade to MEDIUM, or drop. "This *might* break under some condition" is not a HIGH.
+
 ## Knowledge Sync
 
 After reviewing the diff, check whether it introduces invariants not yet captured in project docs:

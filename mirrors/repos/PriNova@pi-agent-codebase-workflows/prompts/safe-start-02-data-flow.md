@@ -1,30 +1,5 @@
 ---
-description: "Safe-start pass 2: data-first input/transformation/output design"
-argument-hint: "[focus or project notes]"
+description: "Structured safe-start pass 2 data flow"
+argument-hint: "[focus]"
 ---
-Use `/skill:safe-start` Pass 2 — Data Flow Design.
-
-Focus or notes: $ARGUMENTS
-
-Read `docs/agent/PROJECT_INTENT.md` if present. Do not choose modules before data shape is clear.
-
-Produce/update:
-- `docs/agent/DATA_FLOW.md`
-- `docs/agent/DATA_MODEL.md`
-- `docs/agent/INVARIANTS.md`
-
-Required output:
-- External inputs
-- User inputs
-- Files/events/API payloads
-- Core entities/value objects
-- Identifiers and relationships
-- Lifecycle/state transitions
-- Validation and normalization
-- Transformation pipeline: input -> validation -> normalization -> domain operation -> output
-- Outputs: UI states, API responses, reports, side effects
-- Error states
-- Invariants and forbidden states
-- Persistence/serialization draft if needed
-- Open questions and risks
-- Approval gate: confirm whether to proceed to architecture decisions
+Before writing/updating structured artifacts, after loading the selected skill, load shared refs relative to that skill: `../_shared/references/artifact-api.md`, `../_shared/references/schemas/common.schema.json`, and only the matching artifact schema(s). Follow the skill Structured Artifact Write/Update Protocol for scope resolution, stable IDs, upserts, evidence, reference integrity, status transitions, deterministic YAML formatting, and validation. Resolve `<docs-root>` exactly per the selected skill: canonicalize `workspace_root`, use repo-local `<workspace_root>/docs/agent/api` only when that skill says repo-local applies and the directory exists, otherwise strip one leading slash/backslash from `workspace_root`, replace every slash, backslash, and colon with `-`, wrap with `--`, and use `~/.pi/agent/workspaces/<workspace-fingerprint>/docs/agent/api`. Use `/skill:safe-start` Pass 2. Write/update `data-flow.yaml`, `data-model.yaml`, and `invariants.yaml`. YAML only. Focus: $ARGUMENTS.

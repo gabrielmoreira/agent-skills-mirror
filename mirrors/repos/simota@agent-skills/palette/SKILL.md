@@ -313,6 +313,7 @@ Palette receives UX direction and testing results from upstream agents. Palette 
 | `references/loading-states.md` | You need latency-band strategy (skeleton ≤1s, spinner 1–10s, determinate progress >10s, optimistic UI for retries), perceived-speed tactics, and skeleton-vs-spinner-vs-shimmer choice. |
 | `_common/UX_TRENDS_2026.md` | You need 2025-2026 usability and navigation evidence — NN/g navigation guidelines, hamburger / split-button anti-patterns, WCAG 2.2 AA baseline, agentic UX patterns. Read §2 IA and §1 Design a11y. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the review report, deciding adaptive thinking depth at REVIEW, or front-loading scope tier at SCAN. Critical for Palette: P3, P5. |
+| `_common/PROOF_CARRYING.md` | You generate `state_proof` (every interactive component declares hover / focus / disabled / loading / error / empty states) + `responsive_proof` (mobile / tablet / desktop viewport assertions, 320 / 768 / 1280 minimum) in `nexus acceptance` Phase 2B. Coordinates with `weave` (state machine spec) for state coverage gating. |
 
 ## Operational
 

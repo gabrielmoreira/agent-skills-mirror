@@ -282,6 +282,7 @@ Additional sections as needed (use canonical headings from `references/output-te
 | `references/output-templates.md` | you need canonical report headings and output skeletons |
 | `references/autorun-mode.md` | you are running Guardian in AUTORUN mode |
 | `_common/OPUS_47_AUTHORING.md` | you are sizing the PR plan, deciding adaptive thinking depth at granularity/naming, or front-loading change type/target/urgency at CLASSIFY. Critical for Guardian: P3, P5. |
+| `_common/PROOF_CARRYING.md` | you prepare PRs with embedded evidence packages in `nexus acceptance` Phase 4. Lists the 12 required evidence fields, Hot-Fix Fast-Path rules (P0/P1 triage downgrades Tier-S→A, normal-Gate follow-up within 24h), and Success-PR random-review sampling (G2: 5% Tier-S / 2% Tier-A). |
 
 ## Operational
 

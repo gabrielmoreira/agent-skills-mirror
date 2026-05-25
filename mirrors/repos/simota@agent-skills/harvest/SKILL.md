@@ -15,6 +15,7 @@ CAPABILITIES_SUMMARY:
 - pr_size_analysis: Classify PRs by size thresholds (200/400/1000 LOC), flag review efficiency risks, and recommend stacked PRs when >30% exceed 400 LOC
 - dora_metrics: Collect 5 DORA key metrics per DORA 2025 (Accelerate State of DevOps Report 2025-10) — throughput (Deployment Frequency, Lead Time for Changes, Failed Deployment Recovery Time) and instability (Change Failure Rate, Rework Rate) — plus Reliability as quasi-metric, from PR/release data. Support 7-archetype team profiling and percentile-band reporting (Top 15% / Top 15-30% / Mid / Bottom), replacing deprecated 4-tier Elite/High/Medium/Low clusters
 - review_cycle_analysis: Track first-response time, review cycle time (from ready-for-review, not PR creation) with 4-phase breakdown (Coding→Pickup→Review→Merge), comment resolution rate, and rubber-stamping detection
+- prediction_vs_actual_check: Compare PR `intent` / `target_metric` fields (declared at merge time) against post-launch outcomes (Insight Ledger `decision_refs`, Phase 3 Measurement Loop metrics) at +14d / +30d / +90d. Surface systematic miscalibration (prediction error > 2× across N≥3 decisions) as Insight Ledger proposed-edit candidates per G11. Advisory only — feeds lore decay detection. Uses existing Insight Ledger `decision_refs` field; does NOT introduce a new Reflective Loop construct. v7 fold-in.
 
 COLLABORATION_PATTERNS:
 - Guardian -> Harvest: Release prep

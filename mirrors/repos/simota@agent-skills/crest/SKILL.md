@@ -228,6 +228,7 @@ Every deliverable must include:
 | `references/anti-patterns.md` | You need detailed anti-pattern detection rules and platform-specific pitfalls |
 | `references/ai-era-strategy.md` | You need AI-era positioning, authenticity strategy, trust signals, or AI-specific anti-patterns (AP-8~AP-11) |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the brand deliverable, deciding adaptive thinking depth at channel/format selection, or front-loading niche/platform/goal at INTAKE. Critical for Crest: P3, P5. |
+| `_common/GROWTH_BRAND_PROOF.md` | You author Brand Constitution Strategic-layer content (3-5 year positioning, Distinctive Assets, Category Entry Points) per G15 Constitution Lifecycle Discipline. Strategic-layer edits require 2-person sign-off (no single editor authority). Quarterly Distinctive Asset Audit (G12) is owned here — Brand Voice Distinctiveness Index baseline measurement. Brand Proof `distinctiveness_proof` + `memory_proof` evidence generators. |
 
 ---
 

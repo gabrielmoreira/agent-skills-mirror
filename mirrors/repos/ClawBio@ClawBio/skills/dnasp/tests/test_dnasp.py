@@ -271,7 +271,7 @@ class TestSegregatingSites:
 
 class TestSingletons:
     def test_no_singletons(self):
-        # Both positions segregate with equal frequency — no singletons
+        # Both positions segregate with equal frequency  -  no singletons
         seqs = ["AT", "AT", "GC", "GC"]
         eta_s, per_seq = dn.compute_singletons(seqs)
         assert eta_s == 0
@@ -1168,7 +1168,7 @@ class TestBisect:
         assert root == pytest.approx(2.0, abs=1e-8)
 
     def test_no_sign_change_returns_midpoint(self):
-        # f always positive — should return midpoint without crash
+        # f always positive  -  should return midpoint without crash
         result = dn._bisect(lambda x: x + 1.0, 0.0, 10.0)
         assert result == pytest.approx(5.0)
 
@@ -1217,7 +1217,7 @@ class TestCountDerived:
         assert eta == 0
 
     def test_ancestral_allele_absent_skipped(self):
-        # Outgroup = A, but all ingroup have T — ancestral absent
+        # Outgroup = A, but all ingroup have T  -  ancestral absent
         seqs = ["TAAAA", "TAAAA", "TAAAA"]
         outgroup = "AAAAA"
         eta, eta_e = dn._count_derived(seqs, outgroup)
@@ -1251,8 +1251,8 @@ class TestComputeFuLiOutgroup:
         """
         4 ingroup + 1 outgroup.
         Outgroup = AAAAA
-        Seq1: TAAAA  — pos0 derived T, singleton → eta=1, eta_e=1
-        Seq2-4: AAAAA — ancestral
+        Seq1: TAAAA   -  pos0 derived T, singleton → eta=1, eta_e=1
+        Seq2-4: AAAAA  -  ancestral
         k_bar (all pairwise among 4 ingroup):
           pair (seq1,seq2), (seq1,seq3), (seq1,seq4) = 1 diff each → 3 pairs × 1
           pair (seq2,seq3), (seq2,seq4), (seq3,seq4) = 0 → k_bar = 3/6 = 0.5
@@ -1532,7 +1532,7 @@ class TestFisherExact:
         assert p1 == pytest.approx(p2)
 
     def test_zero_row(self):
-        # One row is all zero — only one possible table
+        # One row is all zero  -  only one possible table
         p = dn._fisher_exact_2x2(0, 0, 5, 5)
         assert p == pytest.approx(1.0)
 
@@ -1544,7 +1544,7 @@ class TestFisherExact:
         assert p < 0.01
 
     def test_one_cell_zero_not_always_significant(self):
-        # 0 1 / 1 0 — 2×2 with n=2; only two possible tables, p must be 1
+        # 0 1 / 1 0  -  2×2 with n=2; only two possible tables, p must be 1
         p = dn._fisher_exact_2x2(0, 1, 1, 0)
         assert p == pytest.approx(1.0)
 
@@ -1817,7 +1817,7 @@ class TestComputeKaKs:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Group D — Fu's Fs and Site Frequency Spectrum
+# Group D  -  Fu's Fs and Site Frequency Spectrum
 # ─────────────────────────────────────────────────────────────────────────────
 
 class TestStirling1Unsigned:
@@ -2140,7 +2140,7 @@ class TestComputeSFS:
 
 
 # =============================================================================
-# Group E — Transition / Transversion ratio
+# Group E  -  Transition / Transversion ratio
 # =============================================================================
 
 class TestSynonymousFamilies:
@@ -2299,7 +2299,7 @@ class TestComputeTsTv:
 
 
 # =============================================================================
-# Group E — Codon usage bias (RSCU + ENC)
+# Group E  -  Codon usage bias (RSCU + ENC)
 # =============================================================================
 
 class TestComputeCodonUsage:
@@ -2399,7 +2399,7 @@ class TestComputeCodonUsage:
 
     def test_enc_none_for_insufficient_data(self):
         """ENC is None when amino acid coverage is too sparse for all classes."""
-        # Only Met and Phe — cannot fill all 4 degeneracy classes
+        # Only Met and Phe  -  cannot fill all 4 degeneracy classes
         r = dn.compute_codon_usage(['ATGTTT'])
         assert r.ENC is None
 

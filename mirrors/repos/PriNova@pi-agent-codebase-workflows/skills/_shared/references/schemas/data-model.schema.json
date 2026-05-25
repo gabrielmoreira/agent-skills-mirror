@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/pi-agent-codebase-workflows/data-model.schema.json",
+  "title": "data-model",
+  "allOf": [
+    {
+      "$ref": "common.schema.json"
+    }
+  ],
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact",
+    "artifact_id",
+    "scope",
+    "status",
+    "evidence_mode",
+    "last_validated",
+    "owners",
+    "depends_on",
+    "evidence",
+    "unknowns",
+    "entities",
+    "lifecycles",
+    "serialized_formats"
+  ],
+  "properties": {
+    "artifact": {
+      "const": "data_model"
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^entity:[a-z0-9][a-z0-9._/-]*$"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "lifecycles": {
+      "type": "array"
+    },
+    "serialized_formats": {
+      "type": "array"
+    }
+  }
+}

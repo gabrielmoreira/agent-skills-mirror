@@ -11,6 +11,7 @@ Run as: python3 check_agent_context.py [ROOT] [summary|deep]
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import sys
@@ -50,6 +51,49 @@ def print_list(title: str, items: list[str], empty: str = "(none)", limit: int |
         print(f"  {item}")
     if limit is not None and len(items) > limit:
         print(f"  ... {len(items) - limit} more")
+
+
+def load_json(path: Path) -> tuple[object | None, str | None]:
+    if not path.is_file():
+        return None, None
+    try:
+        return json.loads(read(path)), None
+    except json.JSONDecodeError as exc:
+        return None, f"{path.name}: invalid JSON at line {exc.lineno}"
+
+
+def redact_sensitive_entries(value: object, prefix: str = "") -> list[str]:
+    entries: list[str] = []
+    if isinstance(value, dict):
+        for key, child in value.items():
+            child_prefix = f"{prefix}.{key}" if prefix else str(key)
+            if SENSITIVE_RE.search(str(key)):
+                entries.append(f"{child_prefix}=[REDACTED]")
+                continue
+            entries.extend(redact_sensitive_entries(child, child_prefix))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            entries.extend(redact_sensitive_entries(child, f"{prefix}[{index}]"))
+    return entries
+
+
+def string_list(value: object) -> list[str]:
+    if isinstance(value, list):
+        return [str(item) if not SENSITIVE_RE.search(str(item)) else "[REDACTED]" for item in value]
+    if isinstance(value, dict):
+        return sorted(str(key) for key in value)
+    if isinstance(value, str):
+        return ["[REDACTED]" if SENSITIVE_RE.search(value) else value]
+    return []
+
+
+def skill_root_count(path: Path, include_root_md: bool) -> int:
+    if not path.is_dir():
+        return 0
+    count = len(list(path.rglob("SKILL.md")))
+    if include_root_md:
+        count += len([p for p in path.glob("*.md") if p.name != "SKILL.md"])
+    return count
 
 
 def project_instruction_files(root: Path) -> list[Path]:
@@ -157,6 +201,92 @@ def project_trust(projects: dict[str, str], root: Path) -> str:
     return "missing"
 
 
+def summarize_pi_surface(root: Path, home: Path) -> tuple[str, list[str]]:
+    global_settings = home / ".pi" / "agent" / "settings.json"
+    project_settings = root / ".pi" / "settings.json"
+    settings_sources = [
+        ("global_settings", global_settings),
+        ("project_settings", project_settings),
+    ]
+
+    configured_skills: list[str] = []
+    configured_packages: list[str] = []
+    redacted_entries: list[str] = []
+    findings: list[str] = []
+    malformed = False
+
+    for label, path in settings_sources:
+        data, error = load_json(path)
+        if error:
+            malformed = True
+            findings.append(error)
+            continue
+        if not isinstance(data, dict):
+            continue
+        configured_skills.extend(
+            f"{label}.skills: {item}" for item in string_list(data.get("skills"))
+        )
+        configured_packages.extend(
+            f"{label}.packages: {item}" for item in string_list(data.get("packages"))
+        )
+        redacted_entries.extend(
+            f"{label}.{item}" for item in redact_sensitive_entries(data)
+        )
+
+    package_path = root / "package.json"
+    package_pi_skills: list[str] = []
+    data, error = load_json(package_path)
+    if error:
+        findings.append(error)
+    elif isinstance(data, dict):
+        pi_manifest = data.get("pi")
+        if isinstance(pi_manifest, dict):
+            package_pi_skills = string_list(pi_manifest.get("skills"))
+
+    pi_skill_dirs = [
+        ("global_pi_skill_roots", home / ".pi" / "agent" / "skills", True),
+        ("project_pi_skill_roots", root / ".pi" / "skills", True),
+        ("global_agents_skill_roots", home / ".agents" / "skills", False),
+        ("project_agents_skill_roots", root / ".agents" / "skills", False),
+    ]
+    skill_counts = [
+        f"{label}: {skill_root_count(path, include_root_md)}"
+        for label, path, include_root_md in pi_skill_dirs
+    ]
+
+    has_pi_surface = (
+        global_settings.is_file()
+        or project_settings.is_file()
+        or bool(package_pi_skills)
+        or any(not line.endswith(": 0") for line in skill_counts)
+        or bool(configured_skills)
+        or bool(configured_packages)
+    )
+    if not has_pi_surface:
+        findings.append("no Pi settings, package manifest, or skill directories found")
+
+    status = "WARN" if malformed else "PASS"
+    lines = [
+        "=== PI SURFACE ===",
+        f"pi_status: {status}",
+        f"global_settings_json: {yes(global_settings)}",
+        f"project_settings_json: {yes(project_settings)}",
+        f"package_json: {yes(package_path)}",
+    ]
+    lines.extend(skill_counts)
+    lines.append("package_pi_skills:")
+    lines.extend(f"  {item}" for item in (package_pi_skills or ["(none)"]))
+    lines.append("configured_skills:")
+    lines.extend(f"  {item}" for item in (configured_skills or ["(none)"]))
+    lines.append("configured_packages:")
+    lines.extend(f"  {item}" for item in (configured_packages or ["(none)"]))
+    lines.append("redacted_pi_entries:")
+    lines.extend(f"  {item}" for item in (redacted_entries or ["(none)"]))
+    lines.append("pi_findings:")
+    lines.extend(f"  {item}" for item in (findings or ["(none)"]))
+    return status, lines
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("root", nargs="?", default=".", help="Repo root (default: cwd)")
@@ -262,6 +392,10 @@ def main() -> int:
     print(f"project_skills: {local_skill_count}")
     print(f"global_skills: {global_skill_count}")
     print_list("claude_findings", claude_findings)
+
+    _, pi_lines = summarize_pi_surface(root, home)
+    for line in pi_lines:
+        print(line)
 
     print("=== INSTRUCTION CONFLICTS ===")
     print(f"conflict_status: {conflict_status}")

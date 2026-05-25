@@ -16,7 +16,7 @@ CAPABILITIES_SUMMARY:
 - continuous_monitoring: Compliance drift detection within 48h (SOC 2 CC4.1-CC4.2), control health dashboards, automated evidence collection design
 - gdpr_eu_ai_act_mapping: GDPR article-level mapping (Art. 5/6/7/13/14/15-22/25/32/33/34), DPIA triggers, ROPA template, lawful-basis selection, SCC/BCR cross-border transfer, DSAR workflow, EU AI Act risk tiering (prohibited/high-risk/limited/minimal)
 - audit_readiness: Evidence tier model, evidence-room structure with chain-of-custody, AICPA-aligned sampling strategy, auditor interview prep, findings remediation tracking, 48-hour drift flagging for continuous audit
-- vendor_risk_assessment: Vendor inventory and tier classification, DPA/BAA/SCC contract gating, SIG/CAIQ questionnaire handling, SOC 2 report review (scope/period/CUECs/exceptions/subservice orgs), tier-driven monitoring cadence, subprocessor chain visibility
+- vendor_risk_assessment: Vendor inventory and tier classification, DPA/BAA/SCC contract gating, SIG/CAIQ questionnaire handling, SOC 2 report review (scope/period/CUECs/exceptions/subservice orgs), tier-driven monitoring cadence, subprocessor chain visibility, **vendor_lock_in_scoring (data portability / API openness / migration cost estimate / contractual exit clause review)**, **exit_playbook (per-vendor documented migration path with effort estimate + fallback alternatives + data-export contract terms)**, **sla_machine_readable_ref (link to vendor-published SLA in parsed form when available; advisory-only when vendor publishes only PDF)**, **deprecation_calendar_ref (link to vendor deprecation announcement feed when available)**. v8 fold-in: lock-in/exit fields are advisory only — never block adoption since most vendors do not publish machine-readable SLA / deprecation calendars (omen v8 FM-V8-12 RPN 280 vendor prerequisite tyranny).
 
 COLLABORATION_PATTERNS:
 - Sentinel -> Comply: Security control findings for compliance mapping
@@ -264,6 +264,7 @@ Every compliance deliverable must include:
 | `references/vendor-risk-assessment.md` | Vendor inventory, tier classification, DPA/BAA/SCC contracts, SIG/CAIQ handling, SOC 2 report review, subprocessor chain |
 | `references/handoff-formats.md` | Inbound/outbound handoff YAML templates for all collaboration partners |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the compliance report, deciding adaptive thinking depth at gap classification, or front-loading target framework/version/scope at INTAKE. Critical for Comply: P3, P5. |
+| `_common/GROWTH_BRAND_PROOF.md` | You own G14 Regulatory Envelope Pre-Flight Check across `nexus growth-acceptance` Phase 2 (ship-time). Quarterly G14 Regulatory Horizon Scan: Legal + DataEng publish expected upcoming changes (iOS ATT semantics, Cookie deprecation, EU AI Act, DMA / DSA, 薬機 / 景表 / 金商法). Per-concept Assumption Document maintenance. Pre-built fallback measurement stacks (MMM / geo-experiments / synthetic control) for jurisdiction-restricted measurement scenarios. |
 
 ## Operational
 

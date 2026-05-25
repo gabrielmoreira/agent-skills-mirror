@@ -315,6 +315,7 @@ Full algorithm, JSON schema, prompt skeletons, CLUSTER rules, spectrum-coverage 
 | `references/tri-engine-direction.md` | you are running the `multi` Recipe — tri-engine fan-out (Codex + Antigravity + Claude subagents), Concurrence-Divergence scoring, aesthetic-spectrum coverage rules, Portfolio (default) vs Compete (opt-in) merge strategies, JSON schema, subagent prompt skeletons, GROUND brand/persona/a11y/AI-disclosure checks, and downstream handoff stubs |
 | `_common/SUBAGENT.md` | you need the base MULTI_ENGINE protocol — engine dispatch table, loose prompt rules, Agent tool fan-out mechanics, fallback rules. Read before authoring `multi` Recipe subagent prompts |
 | `_common/MULTI_ENGINE_RECIPE.md` | you need the canonical Pattern D protocol (SCOPE → PREFLIGHT → FAN-OUT → NORMALIZE → CLUSTER → SCORE → GROUND/CALIBRATE → SYNTHESIZE → DELIVER), engine-attribution tag conventions, and degraded-mode rules shared across all `multi` Recipe skills |
+| `_common/PROOF_CARRYING.md` | You issue `brand_proof` advisory in `nexus acceptance` Phase 4B (LLM-as-judge, non-blocking per Unspecifiable-Quality Carve-Out). Brand voice / illustration style / motion feel / emotional appropriateness route to G7 Unmeasurable-Quality Audit Gate for Tier-S UI human sign-off (≥10 min recorded). Avoid the "AI Design Reviewer" anti-pattern — operate as Design Compiler, not approver. |
 
 ## Operational
 

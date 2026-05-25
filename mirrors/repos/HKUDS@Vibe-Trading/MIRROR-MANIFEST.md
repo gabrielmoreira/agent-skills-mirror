@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HKUDS/Vibe-Trading` — 26 default patterns, 0 followed patterns, 77 file(s) materialized.
+Mirror of `HKUDS/Vibe-Trading` — 26 default patterns, 0 followed patterns, 78 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `HKUDS/Vibe-Trading` — 26 default patterns, 0 followed patterns, 77 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 77 |
+| Files         | 78 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -116,26 +116,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 55 | ✓ | [`agent/src/skills/quant-statistics/SKILL.md`](agent/src/skills/quant-statistics/SKILL.md) |
 | 56 | ✓ | [`agent/src/skills/regulatory-knowledge/SKILL.md`](agent/src/skills/regulatory-knowledge/SKILL.md) |
 | 57 | ✓ | [`agent/src/skills/report-generate/SKILL.md`](agent/src/skills/report-generate/SKILL.md) |
-| 58 | ✓ | [`agent/src/skills/risk-analysis/SKILL.md`](agent/src/skills/risk-analysis/SKILL.md) |
-| 59 | ✓ | [`agent/src/skills/seasonal/SKILL.md`](agent/src/skills/seasonal/SKILL.md) |
-| 60 | ✓ | [`agent/src/skills/sector-rotation/SKILL.md`](agent/src/skills/sector-rotation/SKILL.md) |
-| 61 | ✓ | [`agent/src/skills/sentiment-analysis/SKILL.md`](agent/src/skills/sentiment-analysis/SKILL.md) |
-| 62 | ✓ | [`agent/src/skills/shadow-account/SKILL.md`](agent/src/skills/shadow-account/SKILL.md) |
-| 63 | ✓ | [`agent/src/skills/smc/SKILL.md`](agent/src/skills/smc/SKILL.md) |
-| 64 | ✓ | [`agent/src/skills/social-media-intelligence/SKILL.md`](agent/src/skills/social-media-intelligence/SKILL.md) |
-| 65 | ✓ | [`agent/src/skills/stablecoin-flow/SKILL.md`](agent/src/skills/stablecoin-flow/SKILL.md) |
-| 66 | ✓ | [`agent/src/skills/strategy-generate/examples.md`](agent/src/skills/strategy-generate/examples.md) |
-| 67 | ✓ | [`agent/src/skills/strategy-generate/SKILL.md`](agent/src/skills/strategy-generate/SKILL.md) |
-| 68 | ✓ | [`agent/src/skills/technical-basic/SKILL.md`](agent/src/skills/technical-basic/SKILL.md) |
-| 69 | ✓ | [`agent/src/skills/token-unlock-treasury/SKILL.md`](agent/src/skills/token-unlock-treasury/SKILL.md) |
-| 70 | ✓ | [`agent/src/skills/trade-journal/SKILL.md`](agent/src/skills/trade-journal/SKILL.md) |
-| 71 | ✓ | [`agent/src/skills/tushare/SKILL.md`](agent/src/skills/tushare/SKILL.md) |
-| 72 | ✓ | [`agent/src/skills/us-etf-flow/SKILL.md`](agent/src/skills/us-etf-flow/SKILL.md) |
-| 73 | ✓ | [`agent/src/skills/valuation-model/SKILL.md`](agent/src/skills/valuation-model/SKILL.md) |
-| 74 | ✓ | [`agent/src/skills/vnpy-export/SKILL.md`](agent/src/skills/vnpy-export/SKILL.md) |
-| 75 | ✓ | [`agent/src/skills/volatility/SKILL.md`](agent/src/skills/volatility/SKILL.md) |
-| 76 | ✓ | [`agent/src/skills/web-reader/SKILL.md`](agent/src/skills/web-reader/SKILL.md) |
-| 77 | ✓ | [`agent/src/skills/yfinance/SKILL.md`](agent/src/skills/yfinance/SKILL.md) |
+| 58 | ✓ | [`agent/src/skills/research-goal/SKILL.md`](agent/src/skills/research-goal/SKILL.md) |
+| 59 | ✓ | [`agent/src/skills/risk-analysis/SKILL.md`](agent/src/skills/risk-analysis/SKILL.md) |
+| 60 | ✓ | [`agent/src/skills/seasonal/SKILL.md`](agent/src/skills/seasonal/SKILL.md) |
+| 61 | ✓ | [`agent/src/skills/sector-rotation/SKILL.md`](agent/src/skills/sector-rotation/SKILL.md) |
+| 62 | ✓ | [`agent/src/skills/sentiment-analysis/SKILL.md`](agent/src/skills/sentiment-analysis/SKILL.md) |
+| 63 | ✓ | [`agent/src/skills/shadow-account/SKILL.md`](agent/src/skills/shadow-account/SKILL.md) |
+| 64 | ✓ | [`agent/src/skills/smc/SKILL.md`](agent/src/skills/smc/SKILL.md) |
+| 65 | ✓ | [`agent/src/skills/social-media-intelligence/SKILL.md`](agent/src/skills/social-media-intelligence/SKILL.md) |
+| 66 | ✓ | [`agent/src/skills/stablecoin-flow/SKILL.md`](agent/src/skills/stablecoin-flow/SKILL.md) |
+| 67 | ✓ | [`agent/src/skills/strategy-generate/examples.md`](agent/src/skills/strategy-generate/examples.md) |
+| 68 | ✓ | [`agent/src/skills/strategy-generate/SKILL.md`](agent/src/skills/strategy-generate/SKILL.md) |
+| 69 | ✓ | [`agent/src/skills/technical-basic/SKILL.md`](agent/src/skills/technical-basic/SKILL.md) |
+| 70 | ✓ | [`agent/src/skills/token-unlock-treasury/SKILL.md`](agent/src/skills/token-unlock-treasury/SKILL.md) |
+| 71 | ✓ | [`agent/src/skills/trade-journal/SKILL.md`](agent/src/skills/trade-journal/SKILL.md) |
+| 72 | ✓ | [`agent/src/skills/tushare/SKILL.md`](agent/src/skills/tushare/SKILL.md) |
+| 73 | ✓ | [`agent/src/skills/us-etf-flow/SKILL.md`](agent/src/skills/us-etf-flow/SKILL.md) |
+| 74 | ✓ | [`agent/src/skills/valuation-model/SKILL.md`](agent/src/skills/valuation-model/SKILL.md) |
+| 75 | ✓ | [`agent/src/skills/vnpy-export/SKILL.md`](agent/src/skills/vnpy-export/SKILL.md) |
+| 76 | ✓ | [`agent/src/skills/volatility/SKILL.md`](agent/src/skills/volatility/SKILL.md) |
+| 77 | ✓ | [`agent/src/skills/web-reader/SKILL.md`](agent/src/skills/web-reader/SKILL.md) |
+| 78 | ✓ | [`agent/src/skills/yfinance/SKILL.md`](agent/src/skills/yfinance/SKILL.md) |
 
 ---
 

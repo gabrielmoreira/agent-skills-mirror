@@ -13,6 +13,7 @@ CAPABILITIES_SUMMARY:
 - compliance_reporting: Evidence-based verdicts (CERTIFIED/CONDITIONAL/REJECTED) with IEEE 1012-2024 V&V method classification and integrity-level-based depth calibration
 - ambiguity_detection: Specification quality assessment and ambiguity flagging
 - remediation_routing: Handoff to Builder/Radar/Warden/Scribe for fixes
+- supply_chain_provenance: Optional evidence-package fields (`sbom_ref` / `signature_ref` / `provenance_attestation`) for SLSA-style supply-chain conformance. Advisory when org lacks Sigstore / Fulcio / Rekor / SBOM-generator infra (capability-gated like Design Proof Phase-0 prerequisite); blocking only when declared in Tier policy. v6 fold-in.
 - fix_prompt_generation: Pair every confirmed AC gap with a paste-ready LLM Fix Prompt embedding AC ID, AC verbatim, BDD scenario, verification verdict, evidence, recommended action, acceptance criteria, ruled-out alternatives, and "what NOT to do" so a downstream agent (Builder for code, Scribe/Accord for spec rewrites) can act without manual reformulation. Suppress when verification-only, when escalating spec rewrite to Scribe/Accord, when stakeholder decision pending, or when full conformance verified.
 
 COLLABORATION_PATTERNS:
@@ -86,6 +87,8 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Extract all acceptance criteria before issuing any verdict.
 - Generate BDD scenarios for every extracted criterion.
 - Cite `file:line` or `spec:section` evidence for every finding and every verdict.
+- **Supply-chain provenance fields (v6 fold-in, advisory by default)**: When the org has Sigstore / Cosign / SBOM-generator infra available, attach `sbom_ref` (CycloneDX / SPDX URI), `signature_ref` (Cosign bundle digest), and `provenance_attestation` (SLSA v1.2 in-toto statement) to the evidence package as optional fields. Capability-gated: if any of (Fulcio reachable / Rekor v2 reachable / SBOM generator wired into CI) is missing, downgrade to `supply_chain_provenance: skipped (org capability missing)`. Mandatory only when the Tier policy declares it (Enterprise Tier-S regulated domains). Never block merge for absent supply-chain fields on orgs without infra — that reproduces the SLSA/Cosign prerequisite tyranny anti-pattern (omen v6 FM-7, RPN 252).
+- **Citation form discipline (v5 fold-in)**: When emitting `@source:` citations for documentation Claim-Binding or traceability evidence, prefer **symbol-based** references (`@source:billing-service::createInvoice`) or **content-hash** references (`@source:openapi.yaml#sha256:abc...`) over raw line-number references (`@source:src/api.ts#L12-45`). Raw line-number references silently drift on refactor and can point to unrelated code while still passing existence checks (omen v5 FM-D-2, RPN 648). Line-number citations are permitted only when paired with a content-hash anchor for drift detection.
 - Flag ambiguities with `AMBIGUOUS_FLAG`.
 - Include a traceability matrix in every compliance report.
 - Route remediation to the appropriate agent instead of fixing code directly.
@@ -462,6 +465,7 @@ Required section order:
 | `references/traceability-advanced.md` | You need bidirectional traceability, gap analysis, coverage optimization, or regulated audit support. |
 | `references/llm-verification-guardrails.md` | You need LLM capability limits, evidence-first guardrails, prompt strategies, or hallucination prevention rules. |
 | `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing an Attest-specific action verb (CLOSE-GAP / RECONCILE-SPEC / BREAKING-CLOSE / INVESTIGATE-FURTHER / WAIVE), or deciding whether to suppress for verification-only / Scribe-Accord rewrite / pending stakeholder / full conformance. |
+| `_common/PROOF_CARRYING.md` | You are invoked from `nexus acceptance` Phase 1 (spec-diff) or Phase 4 (final conformance verdict). Defines the 12 evidence-package fields, Tier-S/A/B/C application policy, meta-oracle rules for spec self-bug mitigation, and unspecifiable-quality carve-out that bypasses the Gate. |
 | `references/gherkin-authoring.md` | You are running the `gherkin` recipe — authoring `.feature` files (Background, Scenario Outline, Examples, Tags) with step-definition stubs for Cucumber-JVM/JS, SpecFlow, Behave, or pytest-bdd. |
 | `references/property-based-testing.md` | You are running the `property` recipe — generalizing spec invariants into properties (idempotency, round-trip, monotonicity) and producing framework-specific code (Hypothesis, fast-check, jqwik, proptest, ScalaCheck). |
 | `references/test-oracle-design.md` | You are running the `oracle` recipe — selecting test oracle patterns (golden master, metamorphic, differential, model-based, consistency oracle) per criterion. |

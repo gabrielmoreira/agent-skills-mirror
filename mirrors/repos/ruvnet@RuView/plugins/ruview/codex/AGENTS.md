@@ -47,6 +47,7 @@ After significant changes: run the Rust tests + Python proof, then `bash scripts
 | `ruview-app` | Run a sensing application (presence / vitals / pose / sleep / MAT / point cloud) |
 | `ruview-train` | Train / evaluate / publish a model (incl. GPU on GCloud) |
 | `ruview-verify` | Run the trust pipeline + pre-merge checklist |
+| `ruview-rvagent` | Explore rvAgent + RVF agentic flows wiring into RuView |
 
 Install: copy `codex/prompts/*.md` into `~/.codex/prompts/`, or run Codex with this directory on its prompt path.
 

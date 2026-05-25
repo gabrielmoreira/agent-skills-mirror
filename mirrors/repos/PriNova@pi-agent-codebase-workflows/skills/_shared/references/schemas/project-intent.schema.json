@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/pi-agent-codebase-workflows/project-intent.schema.json",
+  "title": "project-intent",
+  "allOf": [
+    {
+      "$ref": "common.schema.json"
+    }
+  ],
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact",
+    "artifact_id",
+    "scope",
+    "status",
+    "evidence_mode",
+    "last_validated",
+    "owners",
+    "depends_on",
+    "evidence",
+    "unknowns",
+    "intent"
+  ],
+  "properties": {
+    "artifact": {
+      "const": "project_intent"
+    },
+    "intent": {
+      "type": "object"
+    },
+    "goals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}

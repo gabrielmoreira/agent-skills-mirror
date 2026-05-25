@@ -322,6 +322,7 @@ When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical
 | `references/breakpoint-extraction.md` | You are running the `breakpoint` recipe — multi-frame variant analysis, layout-grid extraction, constraint inheritance, container-query candidate identification. |
 | `_common/UX_TRENDS_2026.md` | You need cross-vendor token / design-system context — DTCG 2025.10 stable spec, OKLCH/P3 colour pipelines, Schema 2025 / Code Connect lineage, Polaris Unified case. Read §1 Design. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the handoff packet, deciding adaptive thinking depth at SCOPE, or front-loading target consumer/file scope at SCAN. Critical for Frame: P3, P5. |
+| `_common/PROOF_CARRYING.md` | You own Design-Code Contract enforcement in `nexus acceptance` Phase 2B / 4B. Coordinate the G9 Swiss-Cheese 4-layer detection (Layer 1 AST + Layer 2 Storybook + Layer 3 Runtime DOM + Layer 4 Code Connect). All 4 required before `component_proof` becomes Gate-blocking. Contract Meta-Oracle: Contract changes themselves are Proof-Carrying. Contract versioning: v1/v2 coexistence ≤6 months with tracked sunset. |
 
 ## Operational
 

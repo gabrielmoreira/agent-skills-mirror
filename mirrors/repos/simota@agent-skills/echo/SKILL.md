@@ -104,6 +104,10 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Create Markdown report with emotion summary.
 - Run a11y checks for Accessibility persona.
 - Generate A/B test hypotheses.
+- In `council` mode: emit Persona Contract first (situation/goal/fear/comprehension/success/disqualification); produce only behavior-trace YAML; never free-form opinion.
+- In `council` mode: respect persona cost cap per Org Tier (Solo skip / SMB max 3 / Enterprise max 9). Prioritize Primary weight personas first.
+- In `council` mode for Tier-S/A: run via `arena multi` engine diversity (Codex + Antigravity + Claude); single-engine Council is forbidden for Tier-S.
+- In `council` mode: tag all output as `[hypothesis]` confidence by default; promotion to `[validated]` requires Voice/Trace real-user calibration per Insight Ledger Survivor Bias rule.
 
 ### Ask First
 
@@ -119,6 +123,9 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Compliment dev team, use tech jargon, or accept "works as designed."
 - Treat synthetic persona findings as equivalent to real user research — tag all synthetic findings as "hypothesis" and require human validation for go/no-go decisions. See `_common/AI_PERSONA_RISKS.md` for full guardrails.
 - Overlook consent dark patterns (asymmetric Accept/Reject, pre-checked boxes, confirmshaming, disguised ads, subscription traps).
+- In `council` mode: emit subjective opinions ("seems good" / "feels nice"). Council output is strict YAML schema — behavior_trace + disqualification_triggers + success_achieved + correction_proposals only.
+- In `council` mode: exceed Org-Tier persona cap (no "just one more persona" exceptions; if budget exhausted, defer to next session).
+- In `council` mode for Tier-S: rely on single-engine evaluation (correlated hallucination risk per Magi v4 G16 fold-in).
 
 ## Workflow
 
@@ -145,6 +152,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | SUS Scoring | `sus` | | System Usability Scale authoring, scoring, and benchmark comparison with percentile / grade / adjective mapping | `references/sus-scoring.md` |
 | Think-Aloud | `aloud` | | Concurrent / retrospective think-aloud session moderation, prompt discipline, transcript coding, and finding extraction | `references/think-aloud-protocol.md` |
 | Multi-Engine | `multi` | | Tri-engine cognitive walkthrough (Codex + Antigravity + Claude in parallel) over a persona × step matrix. Pattern H scoring (confidence + perspective) plus cross-persona universality. Surfaces cross-persona-universal friction as the strongest synthetic UX signal and preserves single-engine divergent-voice insights. | `references/tri-engine-walkthrough.md`, `_common/SUBAGENT.md`, `_common/MULTI_ENGINE_RECIPE.md` |
+| Council | `council` | | **Persona Council mode (v4 fold-in)**: parallel multi-persona evaluation against a machine-readable Persona Contract (situation/goal/fear/comprehension/success/disqualification). Strict "no subjective opinion" output discipline — behavior trace + disqualification trigger + correction proposal only. Persona weights: Primary (must-pass) / Secondary (must-not-degrade) / Non-target (don't optimize) / Risk (block on damage). Required for `nexus growth-acceptance` Phase 0 persona evaluation. Cost-capped per Org Tier (Solo: skip, SMB: max 3 personas, Enterprise: max 9). | (inline below) + `references/cognitive-persona-model.md` |
 
 ## Subcommand Dispatch
 
@@ -160,6 +168,58 @@ Behavior notes per Recipe:
 - `heuristic`: Structured Nielsen-10 (or domain-extended) expert review. 3-5 evaluators, two independent passes, severity 0-4 scoring with heuristic-citation audit trail. For empirical confirmation use `aloud` or Researcher.
 - `sus`: SUS authoring, per-respondent scoring, mean + 90% CI, Sauro/Lewis grade mapping. Pair with SEQ / task completion for triangulation; use UMUX-Lite / UEQ / CASTLE when SUS is the wrong fit.
 - `aloud`: Concurrent (default) or retrospective think-aloud moderation. Permitted-prompt discipline, 10-category transcript coding, n≥5 sweet spot. Findings are timestamped, quote-backed, and severity-tagged.
+- `council`: **Persona Council mode (v4 fold-in)** — parallel multi-persona evaluation against a machine-readable **Persona Contract**. Strict output discipline: **no subjective opinion**, only behavior trace + Persona Contract disqualification trigger + concrete correction proposal. Persona Contract schema:
+  ```yaml
+  persona_id: <unique id>
+  weight: primary | secondary | non-target | risk
+  # primary: must-pass (all success conditions); secondary: must-not-degrade (no new disqualification triggers); non-target: don't optimize for; risk: block on damage signals
+  situation: <one-sentence current context of the persona>
+  goal: <what the persona is trying to accomplish in this session>
+  fear: [<concern 1>, <concern 2>, ...] # what would make them abandon
+  comprehension_level:
+    domain_knowledge: low | medium | high
+    technical_terms: [list of terms they understand vs not]
+    glossary_needed: [terms requiring inline explanation]
+  success_conditions:
+    - id: SUCC-001
+      description: <observable behavior indicating success>
+      time_budget: <max acceptable seconds>
+    - id: SUCC-002
+      ...
+  disqualification_conditions:
+    - id: DISQ-001
+      description: <observable behavior that triggers automatic FAIL>
+      check: <how to detect>
+      severity: blocking | high | medium
+    - id: DISQ-002
+      ...
+  ```
+  Output format strict — no free-form opinions:
+  ```yaml
+  council_evaluation:
+    persona_id: <ref>
+    target_artifact: <screen/flow/copy under evaluation>
+    result: PASS | FAIL | INCONCLUSIVE
+    behavior_trace:
+      - step: 1
+        action: <what persona did>
+        observation: <what they saw>
+        duration_seconds: <numeric>
+      - step: 2
+        ...
+    disqualification_triggers: [<DISQ-ID list, empty if none>]
+    success_achieved: [<SUCC-ID list, empty if none>]
+    correction_proposals:
+      - target: <element id>
+        change: <specific concrete change>
+        rationale: <which disqualification this addresses>
+  ```
+  Cost cap per Org Tier (G19-style enforcement, per Magi v4 C5 — Always/Never section instead of new guardrail): Solo skip; SMB max 3 personas; Enterprise max 9 personas per single evaluation. Use `Primary` first; only escalate to `Secondary`/`Non-target`/`Risk` if budget remains.
+
+  Engine diversity (G16-style enforcement via Always/Never): for Tier-S/A evaluations, Persona Council MUST run via `arena multi` mode (Codex + Antigravity + Claude) — single-engine Council is forbidden for Tier-S, advisory only for Tier-A.
+
+  AI-Persona-as-Hypothesis discipline (G17-style enforcement via Always/Never): Council output is `[hypothesis]` confidence by default; promotion to `[validated]` requires real-user calibration via Voice/Trace per Insight Ledger Survivor Bias rule.
+
 - `multi`: Tri-engine cognitive walkthrough. Spawn Codex / Antigravity / Claude subagents in one message; each walks the same persona set through the same UI flow independently with loose prompts (Role + Personas + UI flow + Step list + Artifacts + Output schema only). Pattern H Hybrid scoring across two axes inside each persona × step cell — confidence (CONFIRMED 3/3 / LIKELY 2/3 / CANDIDATE 1/3) and perspective (CONVERGENT / DIVERGENT-N) — plus a third cross-persona axis: `CROSS-PERSONA-UNIVERSAL` (friction in ≥2 personas × multi-engine concurrence) is the strongest signal in the report. Dark-pattern findings auto-promote to CONFIRMED at 2/3 concurrence due to regulatory risk. Critical Echo-specific rule: `CANDIDATE` / `DIVERGENT` findings are NOT auto-low-value — single-engine breakthroughs often surface the "normalized friction" the team has stopped noticing. See `references/tri-engine-walkthrough.md` for the full SCOPE → CAST → PREFLIGHT → FAN-OUT → NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE → DELIVER flow.
 
 ## Output Routing
@@ -175,6 +235,7 @@ Behavior notes per Recipe:
 | `a11y`, `accessibility` | Accessibility persona walkthrough | Accessibility audit | `references/ux-frameworks.md` |
 | `predictive`, `pre-launch` | Predictive friction detection | Risk signal report | `references/ux-frameworks.md` |
 | `multi-engine`, `tri-engine walkthrough`, `parallel persona walkthrough`, `cross-engine UX`, `multi`, `persona × engine matrix` | Tri-engine cognitive walkthrough | Persona × engine × step matrix report with cross-persona-universal findings | `references/tri-engine-walkthrough.md` |
+| `council`, `persona council`, `persona contract`, `multi-persona evaluation`, `disqualification check`, `persona weight matrix` | Persona Council evaluation (machine-readable Contract + no-opinion + behavior trace + disqualification triggers) | Council evaluation report per persona with PASS/FAIL + behavior trace + correction proposals | (inline in Subcommand Dispatch) + `references/cognitive-persona-model.md` |
 
 ## Output Requirements
 
@@ -254,6 +315,8 @@ Full algorithm, JSON schema, CLUSTER identity rules, GROUND checks, prompt skele
 | `_common/MULTI_ENGINE_RECIPE.md` | You need cross-skill multi-engine protocol — Pattern type selection (D/C/H), shared SCOPE/PREFLIGHT/FAN-OUT/NORMALIZE/CLUSTER mechanics, engine-attribution tag conventions. Echo applies Pattern H. |
 | `_common/UX_TRENDS_2026.md` | You need 2025-2026 evaluation evidence — NN/g navigation / IA studies, WCAG 2.2 motion-a11y criteria, agentic UX failure modes, and dark-mode / hamburger / search-as-escape-hatch anti-patterns. Read §2 IA and §1 Design a11y. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the walkthrough report, deciding adaptive thinking depth at persona/method selection, or front-loading persona/UI/method at PLAN. Critical for Echo: P3, P5. |
+| `_common/PROOF_CARRYING.md` v3.1 | You define the AI-user persona set for `ux_task_proof` in `nexus acceptance` Phase 3B: standard / returning / impatient / mobile / screen-reader / slow-net / payment-fail / locale-edge / adversarial. Each persona must produce a non-trivial walkthrough log; empty findings without log = rejected (semantic-non-emptiness rule). v4 fold-in: `council` Recipe with machine-readable Persona Contract (situation/goal/fear/comprehension/success/disqualification), no-opinion discipline, Org-Tier persona cap, engine diversity for Tier-S/A. |
+| `_common/GROWTH_BRAND_PROOF.md` | You provide `council` Recipe output to `nexus growth-acceptance` Phase 0 (Pre-Design, Enterprise org-tier) for Persona Proof. Friction Ledger entries (when writing trace evidence via the `echo` writer role per G11) capture persona-specific UI moments at second-grain. |
 
 ## Operational
 

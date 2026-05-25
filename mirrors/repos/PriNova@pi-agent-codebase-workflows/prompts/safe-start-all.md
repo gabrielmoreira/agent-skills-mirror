@@ -1,24 +1,5 @@
 ---
-description: "Safe-start all-in-one greenfield workflow for small/simple projects"
-argument-hint: "[project idea / constraints]"
+description: "Structured safe-start all passes"
+argument-hint: "[project intent/focus]"
 ---
-Use `/skill:safe-start` all-in-one mode.
-
-Project idea or constraints: $ARGUMENTS
-
-Only use all-in-one mode if the project appears small/simple enough. Otherwise recommend starting with `/safe-start-01-intent`.
-
-Workflow:
-1. Determine guidance level: Freshman, Standard, or Expert. Default Standard if unclear.
-2. Capture intent and assumptions.
-3. Produce data-first design: inputs -> transformations -> outputs, data model, invariants.
-4. Propose architecture decisions derived from data flow.
-5. Propose contract docs and scaffold plan.
-6. Stop for approval before writing files unless user explicitly requested implementation now.
-7. If approved/requested, scaffold minimal baseline, run validation, implement one thin vertical slice, and hand off to `safe-change`.
-
-Required final output:
-- Files created/changed
-- Validation run and result
-- Handoff status: ready / partial / blocked
-- Next safe-change-sized work items
+Before writing/updating structured artifacts, after loading the selected skill, load shared refs relative to that skill: `../_shared/references/artifact-api.md`, `../_shared/references/schemas/common.schema.json`, and only the matching artifact schema(s). Follow the skill Structured Artifact Write/Update Protocol for scope resolution, stable IDs, upserts, evidence, reference integrity, status transitions, deterministic YAML formatting, and validation. Resolve `<docs-root>` exactly per the selected skill: canonicalize `workspace_root`, use repo-local `<workspace_root>/docs/agent/api` only when that skill says repo-local applies and the directory exists, otherwise strip one leading slash/backslash from `workspace_root`, replace every slash, backslash, and colon with `-`, wrap with `--`, and use `~/.pi/agent/workspaces/<workspace-fingerprint>/docs/agent/api`. Use `/skill:safe-start` all-in-one mode. Create canonical YAML artifacts under the resolved structured docs root and root `AGENTS.md` for harness interoperability. Do not create README or other prose docs as workflow artifacts. Stop for approval gates unless implementation explicitly requested. Input: $ARGUMENTS.

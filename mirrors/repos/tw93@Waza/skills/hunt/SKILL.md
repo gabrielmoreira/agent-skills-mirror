@@ -40,6 +40,10 @@ For `/hunt`, diagnostic constraints are `decision`, `preference`, and `principle
 - **Visual/rendering bugs: static analysis first.** Trace paint layers, stacking contexts, and layer order in DevTools before adding console.log or visual debug overlays. Logs cannot capture what the compositor does. Only add instrumentation after static analysis fails.
 - **Fix the cause, not the symptom.** If the fix touches more than 5 files, pause and confirm scope with the user.
 
+## Fix Scope Discipline
+
+If the bug genuinely needs a refactor first (e.g. the cause cannot be addressed without changing a shared interface), pause, name the refactor explicitly, and ask. Do not silently bundle it. A bug fix that grew into a refactor is a separate PR.
+
 ## Bisect Mode
 
 Activate when: "以前是好的", "之前是好的", "used to work", "上一次提交还是对的", "broke after update", or the user remembers a specific good commit or version.

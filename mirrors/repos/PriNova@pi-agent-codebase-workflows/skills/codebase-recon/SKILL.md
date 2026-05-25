@@ -1,487 +1,201 @@
 ---
 name: codebase-recon
-description: Reconstruction workflow for unfamiliar or undocumented codebases. Use to create compact semantic artifacts for architecture, data model, invariants, dependency rules, risks, root AGENTS.md, change guide, consolidation, ADRs, and risk-to-test planning. Supports numbered passes and all-in-one mode for small/simple repos.
+description: Structured reconstruction workflow for unfamiliar or undocumented codebases. Produces agent-first YAML artifacts only under a resolved structured docs root, with no prose Markdown fallback.
 ---
 
-# Codebase Reconstruction
+# Codebase Reconstruction — Structured API Only
 
-Goal: build durable, compact project understanding for future agents through bounded reconstruction passes.
+Goal: reconstruct durable project understanding into canonical YAML artifacts for coding-agent ingestion.
+
+
+## Structured Artifact API Contract
+
+Legacy prose artifacts are deprecated. Do not create, update, or rely on `docs/agent/*.md`, scoped prose docs, or generated human-readable Markdown views. Use structured YAML for canonical artifacts. Root `AGENTS.md` remains a harness interoperability file and may be generated/updated only by workflows that explicitly say so.
+
+Resolved structured docs root:
+
+Treat `docs/agent/api` as a logical layout rooted at a resolved structured docs root, not a fixed repo path.
+
+Resolution rules:
+1. Resolve `workspace_root` with `git rev-parse --show-toplevel 2>/dev/null` or fallback to `pwd`.
+2. Canonicalize `workspace_root` before fingerprinting when possible (`realpath`, `pwd -P`, `Path(...).resolve()`, or equivalent).
+3. `safe-start` always creates and uses the initial repo-local root: `<workspace_root>/docs/agent/api`.
+4. `codebase-recon` uses repo-local only when `<workspace_root>/docs/agent/api` already exists.
+5. Otherwise use the global overlay root: `~/.pi/agent/workspaces/<workspace-fingerprint>/docs/agent/api`.
+6. Compute `<workspace-fingerprint>` exactly from canonical `workspace_root`: strip one leading slash/backslash, replace every slash, backslash, and colon with `-`, then wrap with `--`. This keeps the same workspace stable.
+7. Example: `/data/data/com.termux/files/home/CodeProjects/pi-mono` -> `--data-data-com.termux-files-home-CodeProjects-pi-mono--`.
+8. Do not create new repo-local structured docs in unadopted repos unless the user explicitly asks for repo-local adoption there.
+
+Logical structured layout under the resolved docs root:
+
+```text
+repo/
+  scopes.yaml
+  repo-inventory.yaml
+  project-intent.yaml
+  architecture.yaml
+  data-flow.yaml
+  data-model.yaml
+  invariants.yaml
+  dependency-rules.yaml
+  design-issues.yaml
+  risk-register.yaml
+  change-guide.yaml
+  testing-strategy.yaml
+  validation-baseline.yaml
+  contracts.yaml
+  adr.yaml
+  agent-operating-guide.yaml
+scopes/
+  by-path/<repo-relative-path>/...
+  by-domain/<slug>/...
+```
+
+Every structured artifact must conform to `../_shared/references/schemas/common.schema.json` plus its artifact-specific schema. Do not inline, invent, or vary envelope fields.
+
+Stable IDs required: `scope:*`, `component:*`, `entity:*`, `invariant:*`, `risk:*`, `contract:*`, `flow:*`, `command:*`, `issue:*`, `adr:*`, `testplan:*`.
+
+Ownership rules:
+- `scopes`: scope routing, ownership, cross-scope discovery only.
+- `repo-inventory`: file tree, commands index, entry points, external boundaries, configs.
+- `validation-baseline`: command status, blockers, recommended validation order.
+- `project-intent`: goals, users, journeys, non-goals, constraints, assumptions.
+- `architecture`: components, architecture style, side-effect boundaries, high-level flow refs.
+- `data-flow`: typed flow graph/steps, inputs, outputs, error states.
+- `data-model`: entities, IDs, schemas, relationships, lifecycles, serialized formats.
+- `invariants`: rules, forbidden states, enforcement locations, invariant-test refs.
+- `dependency-rules`: layers, allowed/forbidden dependencies, violations, coupling hotspots.
+- `design-issues`: structural drift, deferred decisions, ambiguity, ownership gaps.
+- `risk-register`: failure modes, severity/confidence, affected refs, suggested tests/fixes.
+- `contracts`: cross-scope APIs, schemas, events, generated clients, DB/file/deployment/env contracts.
+- `testing-strategy`: test topology, coverage gaps, risk-to-test priorities.
+- `change-guide`: workflow routing and checklists; references owner artifacts, duplicates no facts.
+- `adr`: structured decision records with bounded prose fields.
+- `agent-operating-guide`: structured source for agent operating rules. Root `AGENTS.md` may mirror this in compact harness-readable Markdown when produced by safe-start or codebase-recon Pass 6.
+
+Redundancy rule: define each fact in its owner artifact exactly once. Other artifacts reference IDs.
+Current truth rule: canonical YAML artifacts represent current state, not audit history. Remove resolved or superseded records from canonical owner artifacts by default. Keep them only when another live record still references them or an active migration requires temporary continuity. Use Git history, PRs, issues, or ADRs for audit/history.
+Prose rule: bounded prose allowed only in `summary`, `notes`, `rationale`, `context`, `decision`, `recommended_action`, and similar scalar fields.
+Scope rule: if focus is path-like, write under `<docs-root>/scopes/by-path/<focus>/`; otherwise under `<docs-root>/scopes/by-domain/<slug>/`. Always update `<docs-root>/repo/scopes.yaml`.
+
+
+
+## Runtime Schema Loading
+
+When a workflow creates, updates, migrates, or validates structured artifacts, read `../_shared/references/artifact-api.md` first. Then read only the shared skill package schemas needed for the artifacts being written:
+- `../_shared/references/schemas/common.schema.json`
+- `../_shared/references/schemas/<artifact-file-base>.schema.json`
+
+Do not read all schemas. Do not use templates. Schemas are runtime API contracts; project docs outside the shared runtime refs are maintainer aids unless the user asks about this package itself.
+
+## Structured Artifact Write/Update Protocol
+
+Use this protocol whenever creating or updating YAML artifacts.
+
+### 1. Scope and owner resolution
+
+1. Resolve scope first from task/focus and `<docs-root>/repo/scopes.yaml` when present.
+2. Path focus uses longest prefix match; domain focus requires explicit domain/contract/task evidence.
+3. Select the single owner artifact for each fact using the ownership rules above.
+4. Never duplicate owner facts in router/checklist artifacts; reference stable IDs instead.
+
+### 2. Read-before-write
+
+1. Read the existing target YAML if it exists.
+2. Read directly referenced owner artifacts needed to preserve refs and avoid duplication.
+3. If target YAML is absent, create it with the common envelope and artifact-specific top-level keys.
+4. Preserve unknown fields unless they conflict with this protocol; do not silently drop agent/user-added structured data.
+
+### 3. Stable ID generation
+
+1. Reuse existing IDs whenever the semantic object is the same, even if name/path changed.
+2. New IDs use deterministic slugs from owner scope + semantic name: `risk:<slug>`, `entity:<slug>`, `component:<slug>`, etc.
+3. If two objects slug-collide, append shortest stable discriminator from path/component/contract, not a random suffix.
+4. Never renumber IDs because order changed.
+
+### 4. Upsert semantics
+
+For each discovered fact/object:
+1. Match existing record by ID first.
+2. If no ID match, match by stable source-of-truth fields: path+symbol, contract source path, command string+cwd, entity name+owner scope, rule owner+kind.
+3. If matched, update only changed fields, append/refresh evidence, and preserve unrelated fields.
+4. If unmatched, insert new record in deterministic order by ID or explicit `order` field.
+5. If an existing observed record is resolved, superseded, or no longer supported, delete it from the canonical owner artifact by default.
+6. Keep a record with `status: stale` or `deprecated` only when a live reference still depends on it or an active migration needs temporary continuity. Add evidence/unknown explaining why, and link replacement ID when known.
+7. Delete accidental duplicates, malformed records, and unreferenced resolved/superseded records, and mention deletion in final response.
+
+### 5. Evidence and confidence
+
+1. Every observed record needs at least one evidence ref with file/symbol/command/doc/diff observation.
+2. Planned records may use `evidence_mode: planned` and confidence `low` or `medium`.
+3. Mixed records must separate observed fields from planned/assumed fields via evidence refs or `unknowns`.
+4. Do not upgrade `status: current` or confidence `high` without source or command evidence.
+
+### 6. Reference integrity
+
+Before writing final artifacts:
+1. Check every `*_ref`, `*_refs`, and `depends_on` ID points to a record in the same artifact set or is explicitly listed as external/unknown.
+2. Prefer adding missing owner records as compact stubs over leaving dangling refs.
+3. For cross-scope refs, ensure `scopes.yaml` and `contracts.yaml` identify owner/consumer relationship.
+4. If ownership is ambiguous, create/update `design-issues.yaml` with `kind: ownership_gap` and reference it.
+
+### 7. Status transitions
+
+Allowed transitions:
+- `planned -> partial -> current`
+- `current -> stale -> current`
+- `current|stale|partial -> deprecated`
+
+Rules:
+- `current` requires sufficient observed evidence for the represented scope.
+- `partial` means useful but incomplete evidence.
+- `stale` means contradicted by newer source evidence or missing source path. Use it as a temporary migration/quarantine state, not a permanent archive state.
+- `deprecated` means superseded; include `replacement_ref` when known. Use it only when a live reference still needs continuity during migration; otherwise remove the record from the canonical artifact.
+
+### 8. Deterministic formatting
+
+1. Use YAML with two-space indentation.
+2. Use stable top-level key order: envelope keys first, artifact-specific keys next.
+3. Sort unordered arrays by `id`; keep ordered flow/checklist arrays by `order`.
+4. Use `null`, `[]`, or `{}` consistently rather than omitting required envelope fields.
+5. Keep prose scalar fields concise; no long narrative blocks.
+
+### 9. Validation before completion
+
+Perform best-effort validation after writing:
+1. Re-read changed YAML for parse/syntax sanity when practical.
+2. Validate against the shared schemas by inspection/re-read: envelope keys, artifact-specific top-level keys, required arrays/items, stable ID prefixes, and obvious dangling refs.
+3. Verify no legacy Markdown artifacts were created or updated by the workflow, except root `AGENTS.md` when explicitly produced for harness interoperability.
+4. Report changed YAML files, validation performed, unresolved unknowns, and any records intentionally retained or pruned as part of compaction.
+
 
 ## Core Rules
 
-- Work in bounded passes.
-- Prefer one session per pass for large or unfamiliar repos.
-- Allow all-in-one mode when user asks for it and repo appears small/simple enough for reliable sequential reconstruction.
-- Do not edit production code during reconstruction.
-- Each pass produces or updates one compact artifact.
-- Later passes read prior artifacts instead of re-reading whole repo.
-- Mark uncertainty as `Observed` with confidence: low / medium / high.
-- Cite evidence: files, symbols, commands, tests.
-- Write/update project-root `AGENTS.md`; never write `docs/AGENTS.md` or `docs/agent/AGENTS.md`.
-- Do not tell agent to read `AGENTS.md`; the harness injects it automatically in new sessions.
-- Consolidation is part of this workflow.
-
-## Artifact Compatibility Contract
-
-Codebase-recon artifacts must remain compatible with projects bootstrapped by `safe-start` and later changed by `safe-change`.
-
-Canonical repo-level artifacts:
-
-```text
-AGENTS.md
-
-docs/
-  agent/
-    REPO_INVENTORY.md
-    PROJECT_INTENT.md          # preserve/update when present; create only when useful
-    ARCHITECTURE.md
-    DATA_FLOW.md               # preserve/update when present; create only when useful
-    DATA_MODEL.md
-    INVARIANTS.md
-    DEPENDENCY_RULES.md
-    DESIGN_ISSUES.md
-    RISK_REGISTER.md
-    CHANGE_GUIDE.md
-    TESTING_STRATEGY.md        # required baseline artifact; may state unknowns/gaps
-    VALIDATION_BASELINE.md     # required baseline artifact; may state blockers/not run
-    adr/
-      0001-observed-architecture.md
-```
-
-Artifact header guidance when creating or updating durable docs:
-
-```text
-Status: current | partial | stale
-Evidence: planned | observed | mixed
-Last validated: unknown | <date>
-```
-
-Treat `safe-start` `planned` docs as intent until source evidence confirms them. Recon output should prefer `observed` evidence and should not silently delete intent docs; mark drift in `DESIGN_ISSUES.md` or `RISK_REGISTER.md` when intent and implementation disagree.
-
-## Context Budget and Non-Duplication
-
-Each artifact should be either a source of truth for one semantic category or an index/router to other docs. Do not make every artifact a summary of every other artifact.
-
-Artifact ownership:
-- `AGENTS.md`: injected operating rules, forbidden shortcuts, validation expectations, and links only.
-- `CHANGE_GUIDE.md`: workflow and doc-routing guide; link to semantic docs instead of repeating them.
-- `SCOPES.md`: routing table for scoped docs; no detailed architecture or contract prose.
-- `REPO_INVENTORY.md`: file tree, entry points, commands index, external boundaries; no architecture judgments.
-- `PROJECT_INTENT.md`: product/user goals, non-goals, constraints, assumptions.
-- `ARCHITECTURE.md`: components, boundaries, side-effect boundaries, high-level execution flows.
-- `DEPENDENCY_RULES.md`: allowed/forbidden dependency direction and import boundaries.
-- `DATA_FLOW.md`: input -> transformation -> output lifecycles, events, request paths, error states.
-- `DATA_MODEL.md`: entities, schemas, IDs, relationships, persisted/serialized formats.
-- `INVARIANTS.md`: rules, forbidden states, lifecycle constraints, enforcement locations.
-- `DESIGN_ISSUES.md`: design drift, unresolved design problems, deferred decisions.
-- `RISK_REGISTER.md`: failure modes with severity, evidence, failure scenario, suggested test/fix.
-- `TESTING_STRATEGY.md`: test approach, coverage gaps, risk-to-test priorities.
-- `VALIDATION_BASELINE.md`: exact commands, last status, blockers, next best checks.
-- `CONTRACTS.md`: cross-scope APIs, schemas, events, generated clients, persistence/deployment interfaces.
-
-Duplication rules:
-- Prefer links/references over copied detail.
-- If `VALIDATION_BASELINE.md` exists, `REPO_INVENTORY.md` may list command names but should link to baseline for status/blockers.
-- If `TESTING_STRATEGY.md` exists, `CHANGE_GUIDE.md` should link to it for testing details.
-- Top-level docs summarize stable repo-wide truths; scoped docs hold local detail.
-- If a required artifact has little evidence, create a compact stub with `No known ...`, `Unknown`, or `Not yet validated`, not boilerplate prose.
-
-## Target Artifacts
-
-Unscoped/repo-level artifacts required by recon passes:
-
-```text
-AGENTS.md
-
-docs/
-  agent/
-    REPO_INVENTORY.md
-    ARCHITECTURE.md
-    DATA_MODEL.md
-    INVARIANTS.md
-    DEPENDENCY_RULES.md
-    DESIGN_ISSUES.md
-    RISK_REGISTER.md
-    CHANGE_GUIDE.md
-    TESTING_STRATEGY.md
-    VALIDATION_BASELINE.md
-    adr/
-      0001-observed-architecture.md
-```
-
-Scoped artifacts, created only when a pass receives a focus argument. Safe-start-compatible scoped docs may contain additional intent/flow/test/validation artifacts; preserve them when present.
-
-```text
-docs/
-  agent/
-    scopes/
-      by-path/<repo-relative-path>/
-        README.md              # optional local index for large/complex scopes
-        REPO_INVENTORY.md
-        PROJECT_INTENT.md      # preserve/update when present; create only when useful
-        ARCHITECTURE.md
-        DATA_FLOW.md           # preserve/update when present; create only when useful
-        DATA_MODEL.md
-        INVARIANTS.md
-        DEPENDENCY_RULES.md
-        DESIGN_ISSUES.md
-        RISK_REGISTER.md
-        CHANGE_GUIDE.md
-        TESTING_STRATEGY.md    # required when Pass 10 runs for this scope
-        VALIDATION_BASELINE.md # required when Pass 1 runs for this scope
-        CONTRACTS.md
-      by-domain/<domain-slug>/
-        README.md              # optional local index for large/complex scopes
-        PROJECT_INTENT.md      # preserve/update when present; create only when useful
-        ARCHITECTURE.md
-        DATA_FLOW.md           # preserve/update when present; create only when useful
-        DATA_MODEL.md
-        INVARIANTS.md
-        DEPENDENCY_RULES.md
-        DESIGN_ISSUES.md
-        RISK_REGISTER.md
-        CHANGE_GUIDE.md
-        TESTING_STRATEGY.md    # required when Pass 10 runs for this scope
-        VALIDATION_BASELINE.md # required when Pass 1 runs for this scope
-        CONTRACTS.md
-```
-
-`docs/agent/SCOPES.md` is created when scoped artifacts exist and acts as their registry. Top-level docs remain valid and are used as repo-level summaries/fallbacks.
-
-## Focus Argument and Scoped Artifacts
-
-Pass prompts accept an optional `[focus]` argument. Use it to scope reconstruction to a module, package, app, service, directory, or bounded domain area, especially in monorepos.
-
-Examples:
-- `/recon-01-inventory packages/api`
-- `/recon-02-architecture apps/mobile auth flow`
-- `/skill:codebase-recon pass-03-data-invariants services/billing`
-
-When focus is absent:
-- run the pass in unscoped mode
-- write/update the standard top-level `docs/agent/*.md` artifact for the pass
-- if scoped artifacts already exist, use them only when the pass explicitly calls for consolidation
-
-When focus is provided:
-- inspect only the focused area plus immediate dependencies, entry points, tests, and external boundaries needed to understand it
-- if focus is an existing repo-relative path, write to `docs/agent/scopes/by-path/<focus>/`
-- if focus is not a path, write to `docs/agent/scopes/by-domain/<slug>/`
-- update `docs/agent/SCOPES.md` with scope path, docs path, status, ownership, and external contracts
-- optionally create/update scoped `README.md` only when helpful for large/complex scopes; otherwise rely on `SCOPES.md` as the index
-- write pass findings into the scoped artifact for that pass, not into the top-level artifact
-- include evidence paths that show the scoped boundary
-- mark interactions with the rest of the repo as external dependencies/boundaries
-- leave cross-scope reconciliation for Pass 8 consolidation
-
-Scoped docs are additive and backward compatible. If a repository was reconstructed before scoped artifacts existed, keep existing top-level docs. Create `SCOPES.md` and scoped artifacts only when the first scoped pass runs. Later consolidation may summarize scoped findings into top-level docs.
-
-This enables module/package-level reconstruction first, then later consolidation into repo-level artifacts.
-
-## Scope Registry and Contracts
-
-`docs/agent/SCOPES.md` should stay compact and act as the discovery index for future workflows.
-
-Suggested columns:
-- Scope
-- Kind: `path` / `domain`
-- Docs path
-- Status: `planned` / `partial` / `current` / `stale` / `deprecated`
-- Owns
-- External contracts
-- Last observed evidence
-
-Each scoped directory may include `CONTRACTS.md` for cross-module APIs, shared types, schemas, events, generated clients, persistence boundaries, or public internal contracts.
-
-Contract rules:
-- every cross-scope contract should have one owner scope
-- owner scope documents source of truth, compatibility rules, tests, and consumers
-- consumer scopes link to owner contract and document local usage/risk only
-- do not duplicate full contract rules across scopes
-- generated clients reference source schema owner
-- if ownership is unclear, record it as a known unknown or drift risk
-
-## Execution Modes
-
-Default: numbered-pass mode.
-
-Use numbered-pass mode for large, complex, or unfamiliar repositories. User invokes one pass at a time, e.g.:
-
-```text
-/skill:codebase-recon pass-01-inventory
-/skill:codebase-recon pass-02-architecture
-/skill:codebase-recon pass-03-data-invariants
-```
-
-Equivalent numbered prompt templates are available as `/recon-01-inventory`, `/recon-02-architecture`, etc. At start of each later pass, read only relevant prior docs named in that pass. Do not re-analyze whole repository unless evidence is missing.
-
-Optional: all-in-one mode.
-
-Use all-in-one mode when user asks for it and repository size/complexity makes sequential reconstruction practical.
-
-All-in-one mode may be requested with:
-- `/skill:codebase-recon all`
-- `/skill:codebase-recon all-in-one`
-- `/recon-all`
-
-Before all-in-one execution:
-1. Inspect repository tree, package/build files, and major entry points.
-2. Decide whether all-in-one mode is reasonable.
-3. If not reasonable, explain why and recommend starting with Pass 1 only unless user explicitly wants to proceed.
-
-In all-in-one mode, run passes 1–10 sequentially.
-
-Rules:
-- Write/update each artifact immediately after its pass.
-- Treat written artifacts as source of truth for later passes.
-- Before each pass, read only artifacts required by that pass.
-- Keep each artifact compact and evidence-based.
-- If repository proves larger or more complex than expected, finish current pass and report next numbered pass user should run.
-
-Switch from all-in-one to numbered-pass mode when:
-- repository is a monorepo or has multiple apps/packages/services
-- source tree is too large to inspect meaningfully in one pass
-- generated/vendor/build output dominates search results
-- a pass requires deeper investigation than planned
-- prior artifact needs substantial correction before later passes
-- evidence is insufficient for next pass without broad re-reading
-
-## Pass 1 — Repository Inventory
-
-Task: write/update `docs/agent/REPO_INVENTORY.md` and `docs/agent/VALIDATION_BASELINE.md`, or scoped `REPO_INVENTORY.md` / `VALIDATION_BASELINE.md` when focus is provided.
-
-Rules:
-- No source edits.
-- No architecture judgments yet.
-- Inspect build/config/package files, directory tree, entry points, tests, validation commands, external boundaries.
-- Create `VALIDATION_BASELINE.md` even if commands cannot be run; record exact unknowns, blockers, and next best checks.
-
-`REPO_INVENTORY.md` output sections:
-- Project summary
-- Build/test commands
-- Entry points
-- Major directories
-- External dependencies/boundaries
-- Unknowns
-- Next recommended analysis targets
-
-`VALIDATION_BASELINE.md` output sections:
-- Install/bootstrap command(s)
-- Format/lint command(s)
-- Typecheck/build command(s)
-- Test command(s)
-- Runtime/smoke command(s)
-- Last run status: run / not run / blocked
-- Blockers and next best checks
-
-## Pass 2 — Architecture Reconstruction
-
-Read first: `docs/agent/REPO_INVENTORY.md`.
-
-Task: write/update `docs/agent/ARCHITECTURE.md`, or scoped `ARCHITECTURE.md` when focus is provided.
-
-Find:
-- dominant architecture style: vertical slices, layered, MVC, clean/onion/hexagonal, framework-driven, mixed/unclear
-- major modules/components
-- dependency directions
-- where domain logic lives
-- side-effect boundaries: file I/O, network, DB, UI, shell/CLI, LLM/API
-- 2–5 important execution flows from entry point to output
-
-Output sections:
-- Architecture overview
-- Component map
-- Dependency direction
-- Main execution flows
-- Side-effect boundaries
-- Observed inconsistencies
-- Confidence notes
-
-## Pass 3 — Data Model and Invariants
-
-Read first: `docs/agent/REPO_INVENTORY.md`, `docs/agent/ARCHITECTURE.md`.
-
-Task: write/update `docs/agent/DATA_MODEL.md` and `docs/agent/INVARIANTS.md`, or scoped `DATA_MODEL.md` and `INVARIANTS.md` when focus is provided.
-
-Focus only on semantically important data crossing module boundaries, persisted/serialized formats, configs, APIs, IDs, states, lifecycles.
-
-Output sections:
-- Core data model
-- Data lifecycle
-- Persisted/serialized formats
-- Invariants
-- Enforcement locations
-- Unenforced assumptions
-- Risk notes
-
-## Pass 4 — Dependency Rules and Drift Detection
-
-Read first: `docs/agent/REPO_INVENTORY.md`, `docs/agent/ARCHITECTURE.md`, `docs/agent/DATA_MODEL.md`, `docs/agent/INVARIANTS.md`.
-
-Task: write/update `docs/agent/DEPENDENCY_RULES.md` and `docs/agent/DESIGN_ISSUES.md`, or scoped `DEPENDENCY_RULES.md` and `DESIGN_ISSUES.md` when focus is provided.
-
-Find:
-- observed module dependencies
-- cycles
-- cross-slice coupling
-- shared/common/utils dumping-ground risks
-- UI/CLI/framework code containing domain logic
-- core logic with side effects
-- unstable dependencies leaking into stable code
-
-Output sections:
-- Observed dependency rules
-- Recommended dependency rules
-- Violations
-- Coupling hotspots
-- Shared/common risk areas
-- Drift risks
-- Suggested future architecture tests
-
-## Pass 5 — Bug-Risk and Subtle-Failure Analysis
-
-Read first: `docs/agent/ARCHITECTURE.md`, `docs/agent/DATA_MODEL.md`, `docs/agent/INVARIANTS.md`, `docs/agent/DEPENDENCY_RULES.md`.
-
-Task: write/update `docs/agent/RISK_REGISTER.md`, or scoped `RISK_REGISTER.md` when focus is provided.
-
-Find high-signal risks only:
-- inconsistent state transitions
-- unchecked null/None/undefined
-- shared mutable data
-- ordering assumptions
-- ID/reference mismatch
-- error handling gaps
-- concurrency/async/races
-- persistence corruption
-- API/schema mismatch
-- missing tests around critical invariants
-
-For each risk:
-- Title
-- Severity: low / medium / high / critical
-- Confidence: low / medium / high
-- Evidence
-- Failure scenario
-- Affected files
-- Suggested test
-- Suggested fix direction
-
-## Pass 6 — Root Agent Operating Guide
-
-Read first: `docs/agent/ARCHITECTURE.md`, `docs/agent/INVARIANTS.md`, `docs/agent/DATA_MODEL.md`, `docs/agent/DEPENDENCY_RULES.md`, `docs/agent/RISK_REGISTER.md`, `docs/agent/DESIGN_ISSUES.md`; when present, also read `docs/agent/PROJECT_INTENT.md`, `docs/agent/DATA_FLOW.md`, `docs/agent/TESTING_STRATEGY.md`, and `docs/agent/VALIDATION_BASELINE.md` only for operating guidance that affects future changes.
-
-Task: write/update root `AGENTS.md`.
-
-Rules:
-- Keep compact and operational.
-- Link to deeper docs; do not duplicate them.
-- Treat `AGENTS.md` as an index of rules and pointers, not a semantic artifact dump.
-- Focus on rules that prevent drift and bugs.
-- Include design/implementation/verification workflow.
-- If `docs/agent/SCOPES.md` exists, include scoped-doc discovery guidance: future agents should check `SCOPES.md`, use longest matching path scope first, then repo-level fallback.
-- Merge with existing root `AGENTS.md` if present.
-- Do not create `docs/AGENTS.md` or `docs/agent/AGENTS.md`.
-
-Suggested sections:
-- Project summary
-- Architecture rules
-- Data model rules
-- Invariants not to violate
-- Side-effect boundaries
-- How to make a change
-- How to validate a change
-- When to update docs
-- Forbidden shortcuts
-- Current high-risk areas
-
-## Pass 7 — Change Guide
-
-Read first: `docs/agent/ARCHITECTURE.md`, `docs/agent/DATA_MODEL.md`, `docs/agent/INVARIANTS.md`, `docs/agent/DEPENDENCY_RULES.md`; when present, also read `docs/agent/PROJECT_INTENT.md`, `docs/agent/DATA_FLOW.md`, `docs/agent/TESTING_STRATEGY.md`, and `docs/agent/VALIDATION_BASELINE.md` for scope, data-flow tracing, test guidance, and validation commands.
-
-Task: write/update `docs/agent/CHANGE_GUIDE.md`, or scoped `CHANGE_GUIDE.md` when focus is provided.
-
-Required sections:
-- Before coding
-- How to locate affected slice/module
-- How to discover matching scoped docs through `docs/agent/SCOPES.md` when present
-- How to trace data flow
-- How to add/modify data structures
-- How to add side effects safely
-- How to add tests
-- How to avoid architecture drift
-- Documentation update checklist, including compatible safe-start docs when present
-- Final verification checklist
-
-## Pass 8 — Consolidation
-
-Read root `AGENTS.md` if it exists, all relevant top-level `docs/agent/*.md`, `docs/agent/SCOPES.md` if present, and relevant scoped docs under `docs/agent/scopes/**` created by previous passes.
-
-Task: consolidate artifacts.
-
-Rules:
-- No source code edits.
-- Reconcile contradictions; do not silently delete disagreement evidence.
-- Preserve compatible safe-start docs (`PROJECT_INTENT.md`, `DATA_FLOW.md`, `TESTING_STRATEGY.md`, `VALIDATION_BASELINE.md`) at top-level and scoped paths when present; update status/evidence headers and cross-links when source evidence proves them current/stale.
-- Read `docs/agent/SCOPES.md` first when present; use it to select relevant scoped summaries and changed/relevant scoped docs.
-- When scoped passes disagree, resolve from source evidence where possible, assign/clarify ownership for shared contracts where evidence supports it, or record the disagreement as a drift risk / `Known Unknown` with cited evidence.
-- Keep detailed scope-specific facts in scoped artifacts; summarize only stable repo-level guidance in top-level docs.
-- Update `SCOPES.md` status/currentness when consolidation identifies stale, deprecated, or reconciled scopes.
-- De-duplicate repeated facts only after preserving the strongest evidence paths and any materially different scope-specific observations.
-- Keep root `AGENTS.md` short and operational.
-- Ensure `ARCHITECTURE.md` describes structure, not line-by-line code.
-- Ensure `INVARIANTS.md` contains rules, not implementation notes.
-- Ensure `RISK_REGISTER.md` contains actionable risks, not generic design concerns owned by `DESIGN_ISSUES.md`.
-- Ensure `CHANGE_GUIDE.md` routes readers to source-of-truth docs instead of duplicating them.
-- Ensure `VALIDATION_BASELINE.md` exists after repo-level Pass 1 has run and names commands/blockers rather than broad strategy.
-- Ensure `TESTING_STRATEGY.md` exists after repo-level Pass 10 has run and names observed test structure, gaps, and risk-to-test priorities.
-- Preserve uncertainty markers where evidence incomplete.
-- Add `Known Unknowns` where useful.
-
-## Pass 9 — Observed-Architecture ADR
-
-Read first: `docs/agent/ARCHITECTURE.md`, `docs/agent/DEPENDENCY_RULES.md`, `docs/agent/DATA_MODEL.md`, `docs/agent/INVARIANTS.md`, `docs/agent/DESIGN_ISSUES.md`.
-
-Task: write `docs/agent/adr/0001-observed-architecture.md`.
-
-Structure:
-- ADR 0001: Observed Current Architecture
-- Status: Accepted as observed baseline
-- Context
-- Decision
-- Evidence
-- Consequences
-- Known Issues
-- Follow-up Actions
-
-## Pass 10 — Risk-to-Tests Plan
-
-Read first: `docs/agent/RISK_REGISTER.md`, `docs/agent/INVARIANTS.md`, `docs/agent/DATA_MODEL.md`, `docs/agent/CHANGE_GUIDE.md`, `docs/agent/TESTING_STRATEGY.md`, and `docs/agent/VALIDATION_BASELINE.md`.
-
-Task: write/update `docs/agent/TESTING_STRATEGY.md`, or scoped `TESTING_STRATEGY.md` when focus is provided, and select top 3–5 risks to convert into tests first.
-
-Create `TESTING_STRATEGY.md` even if test coverage is sparse or unknown; record observed test types, gaps, risk-based priorities, and recommended next tests.
-
-Selection criteria:
-- high severity
-- high confidence
-- central invariant affected
-- likely regression risk
-- cheap to test
-
-For each selected risk:
-- Risk title
-- Why test first
-- Existing/new test file
-- Test type: unit / characterization / regression / integration
-- Exact scenario
-- Expected behavior
-- Minimal implementation plan
-
-`TESTING_STRATEGY.md` output sections:
-- Observed test structure
-- Existing test types and commands
-- Coverage gaps around invariants and risks
-- Recommended test strategy
-- Risk-to-test priorities
-- Known blockers
-
-Do not write production code in this pass.
+- Do not edit production code.
+- No Markdown artifacts except root `AGENTS.md` for harness interoperability in Pass 6.
+- Each pass writes/updates only its owner artifacts.
+- Later passes read prior YAML artifacts instead of re-reading whole repo.
+- Evidence is mandatory for observed claims.
+- Unknowns are explicit records, not vague prose.
+- Use stable IDs and cross-references to mirror codebase ownership and relationships.
+
+## Passes
+
+Users may invoke this skill directly for any pass, or use the matching prompt template as a pass shortcut.
+
+1. Inventory (`/recon-01-inventory`): write `repo-inventory.yaml` and `validation-baseline.yaml`; update `scopes.yaml` for focus.
+2. Architecture (`/recon-02-architecture`): write `architecture.yaml` with components, style, boundaries, execution flow refs.
+3. Data/invariants (`/recon-03-data-invariants`): write `data-model.yaml` and `invariants.yaml`.
+4. Dependencies/drift (`/recon-04-dependency-rules`): write `dependency-rules.yaml` and `design-issues.yaml`.
+5. Risks (`/recon-05-risk-register`): write `risk-register.yaml`.
+6. Agent operating guide (`/recon-06-agents`): write `agent-operating-guide.yaml` and root `AGENTS.md`.
+7. Change guide (`/recon-07-change-guide`): write `change-guide.yaml`.
+8. Consolidation (`/recon-08-consolidate`): reconcile YAML artifacts, resolve contradictions with evidence, preserve owner-only facts.
+9. ADR (`/recon-09-adr`): write `adr.yaml` with structured ADR records.
+10. Risk-to-tests (`/recon-10-risk-tests`): write/update `testing-strategy.yaml`.
+
+All-in-one shortcut: `/recon-all` runs the pass sequence until the requested focus is complete or the repo size requires stopping at a pass boundary.
+
+## Artifact Shape Source
+
+For each pass, use the shared runtime schemas as the only shape contract: `../_shared/references/artifact-api.md`, `../_shared/references/schemas/common.schema.json`, and the matching artifact schema(s). Do not rely on prose key lists.

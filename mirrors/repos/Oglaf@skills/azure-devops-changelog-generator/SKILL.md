@@ -27,6 +27,12 @@ outputs:
 
 # Skill: Azure DevOps Release Changelog Generator
 
+## Priority Ordering
+
+PRIORITY 1: Always retrieve and analyze work item discussion/comments — they contain the real implementation context. PRIORITY 2: Group output by Azure DevOps project (`System.Project`). PRIORITY 3: Write one-sentence, functional summaries derived from comments and changeset/commit messages. When these conflict, prefer comment-driven accuracy over title-based brevity.
+
+---
+
 ## Purpose
 
 Generate structured release documentation from **TFVC changesets** or **Git commits** by retrieving associated **Azure DevOps work items**, analyzing their full context, and producing:

@@ -293,6 +293,7 @@ When a full compliance audit spans 3+ standard domains (e.g., Security + A11y + 
 | `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing a Canon-specific action verb (REMEDIATE / EXEMPT-WITH-RATIONALE / BREAKING-REMEDIATE / MITIGATE / INVESTIGATE-FURTHER), or deciding whether to suppress for a Sentinel/Polyglot/Comply handoff or gap-analysis-only scope. |
 | `_common/LLM_PROMPT_GENERATION.md` | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Scout/Trail/Sentinel. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the compliance report, deciding adaptive thinking depth at version pinning, or front-loading standard/version/scope at ASSESS. Critical for Canon: P3, P5. |
+| `_common/PROOF_CARRYING.md` | You generate `a11y_proof` (WCAG 2.2 AA verification via axe-core / Pa11y, keyboard navigation, focus order, ARIA correctness) in `nexus acceptance` Phase 2B and issue the final WCAG verdict in Phase 4B. Layer B (Design Acceptance) sub-orchestrated by `atelier`. Empty findings without exploration log = rejected (semantic-non-emptiness rule). |
 
 ## Operational
 

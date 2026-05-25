@@ -27,6 +27,12 @@ If any required input cannot be determined, ask the user before proceeding.
 
 ---
 
+## Priority Ordering
+
+PRIORITY 1: Only report issues with confidence ≥ 75 — never surface false positives or stylistic concerns. PRIORITY 2: Always confirm findings with the user before posting inline comments. PRIORITY 3: Use parallel multi-model analysis (gpt-5.4 + claude-sonnet-4.6) and deduplicate overlapping findings. When these conflict, prefer fewer high-confidence findings over comprehensive low-confidence coverage.
+
+---
+
 ## Overview
 
 Provide a structured code review for a given Azure DevOps PR, including validation, multi-pass analysis, and inline feedback posting.

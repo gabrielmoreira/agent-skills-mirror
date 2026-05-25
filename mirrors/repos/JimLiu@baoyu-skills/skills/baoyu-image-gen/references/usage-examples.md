@@ -25,10 +25,13 @@ ${BUN_X} {baseDir}/scripts/main.ts --prompt "Make blue" --image out.png --ref so
 
 ```bash
 # OpenAI
-${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --provider openai
+${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --provider openai --model gpt-image-2
 
 # Azure OpenAI (model = deployment name)
-${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --provider azure --model gpt-image-1.5
+${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --provider azure --model gpt-image-2
+
+# OpenAI GPT Image 2 custom 4K size
+${BUN_X} {baseDir}/scripts/main.ts --prompt "A cinematic landscape" --image out.png --provider openai --model gpt-image-2 --size 3840x2160
 
 # Google with explicit model
 ${BUN_X} {baseDir}/scripts/main.ts --prompt "Make blue" --image out.png --provider google --model gemini-3-pro-image-preview --ref source.png
@@ -47,6 +50,12 @@ ${BUN_X} {baseDir}/scripts/main.ts --prompt "为咖啡品牌设计一张 21:9 �
 
 # DashScope legacy fixed-size
 ${BUN_X} {baseDir}/scripts/main.ts --prompt "一张电影感海报" --image out.png --provider dashscope --model qwen-image-max --size 1664x928
+
+# DashScope Wan 2.7 Image Pro (4K text-to-image)
+${BUN_X} {baseDir}/scripts/main.ts --prompt "一间有着精致窗户的花店" --image out.png --provider dashscope --model wan2.7-image-pro --size 4096x4096
+
+# DashScope Wan 2.7 Image with reference image (multi-image fusion)
+${BUN_X} {baseDir}/scripts/main.ts --prompt "把图2的涂鸦喷绘在图1的汽车上" --image out.png --provider dashscope --model wan2.7-image-pro --ref car.webp paint.webp
 
 # Z.AI GLM-image
 ${BUN_X} {baseDir}/scripts/main.ts --prompt "一张带清晰中文标题的科技海报" --image out.png --provider zai

@@ -2,7 +2,7 @@
 repo: unifapi-agent/skills
 repoUrl: https://github.com/unifapi-agent/skills.git
 refType: branch
-ref: master
+ref: main
 ---
 
 # Mirror Manifest
@@ -15,7 +15,7 @@ Mirror of `unifapi-agent/skills` — 26 default patterns, 0 followed patterns, 1
 |---------------|-------|
 | Repo          | `unifapi-agent/skills` |
 | Ref Type      | `branch` |
-| Ref           | `master` |
+| Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 13 |

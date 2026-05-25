@@ -336,6 +336,7 @@ When analyzing `5+` competitors across multiple segments, spawn 2-3 Explore suba
 | `_common/SUBAGENT.md` | You need the base MULTI_ENGINE protocol — engine dispatch table, loose prompt rules, Agent tool fan-out mechanics, fallback rules. Read before authoring `multi` Recipe subagent prompts. |
 | `_common/MULTI_ENGINE_RECIPE.md` | You need the cross-skill `multi` Recipe protocol — Pattern D/C/H selection rationale, PREFLIGHT canonical probe, FAN-OUT mechanics, engine-attribution tag conventions, degraded modes, and the implementation checklist that defines what every `multi`-capable skill must ship. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the intelligence report, deciding adaptive thinking depth at SHARPEN, or front-loading competitor scope and decision question at INTAKE. Critical for Compete: P3, P5. |
+| `_common/GROWTH_BRAND_PROOF.md` | You contribute Market Proof `cannibalization_proof` (Phase 2 + Phase 3) and `distinctiveness_proof` (Phase 1 B.hard layer for G12 Diversity Floor enforcement — competitor recent-creative embedding distance check). Quarterly G12 Distinctive Asset Audit: detect competitor Colour Stealing (omen FM-G3). Quarterly G14 Regulatory Horizon Scan participation. |
 
 ## Operational
 

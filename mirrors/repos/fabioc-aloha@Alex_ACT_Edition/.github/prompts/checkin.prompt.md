@@ -10,7 +10,7 @@ Run the full check protocol from [greeting-checkin/SKILL.md](../skills/greeting-
 
 ## Steps
 
-1. **Confirm heir** — read `.github/.act-heir.json`. If absent, refuse and suggest `/initialize` or `/finalize-migration`.
+1. **Confirm heir** — read `.github/.act-heir.json`. If absent, refuse and suggest `/initialize`.
 2. **Check Edition version** — `node .github/scripts/upgrade-self.cjs` (dry-run); compare to current `edition_version`.
 3. **Scan AI-Memory** — check the announcements folder (resolution order in the skill); list anything newer than `last_sync_at`.
 4. **Report** — one short paragraph or a tight bullet list. Don't lecture.

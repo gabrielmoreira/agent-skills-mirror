@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jnMetaCode/ai-shortfilm-prompts` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `jnMetaCode/ai-shortfilm-prompts` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jnMetaCode/ai-shortfilm-prompts` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,13 +60,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/shortfilm-prompt/SKILL.md`](.claude/skills/shortfilm-prompt/SKILL.md) |
-| 2 | ✓ | [`prompts/cyber-wuxia.md`](prompts/cyber-wuxia.md) |
-| 3 | ✓ | [`prompts/kaisa-transformation.md`](prompts/kaisa-transformation.md) |
-| 4 | ✓ | [`prompts/kamen-rider-transformations.md`](prompts/kamen-rider-transformations.md) |
-| 5 | ✓ | [`prompts/metal-gear-charge-combat.md`](prompts/metal-gear-charge-combat.md) |
-| 6 | ✓ | [`prompts/pacific-rim-gundam.md`](prompts/pacific-rim-gundam.md) |
-| 7 | ✓ | [`prompts/README.md`](prompts/README.md) |
-| 8 | ✓ | [`prompts/zombie-scavenger.md`](prompts/zombie-scavenger.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`prompts/cyber-wuxia.md`](prompts/cyber-wuxia.md) |
+| 4 | ✓ | [`prompts/kaisa-transformation.md`](prompts/kaisa-transformation.md) |
+| 5 | ✓ | [`prompts/kamen-rider-transformations.md`](prompts/kamen-rider-transformations.md) |
+| 6 | ✓ | [`prompts/metal-gear-charge-combat.md`](prompts/metal-gear-charge-combat.md) |
+| 7 | ✓ | [`prompts/pacific-rim-gundam.md`](prompts/pacific-rim-gundam.md) |
+| 8 | ✓ | [`prompts/README.md`](prompts/README.md) |
+| 9 | ✓ | [`prompts/zombie-scavenger.md`](prompts/zombie-scavenger.md) |
 
 ---
 

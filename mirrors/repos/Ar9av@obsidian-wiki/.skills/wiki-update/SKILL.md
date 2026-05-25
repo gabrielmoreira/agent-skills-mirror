@@ -36,7 +36,12 @@ Derive a clean project name from the directory name.
 Check `.manifest.json` for this project:
 
 - **First time?** Full scan. Everything is new.
-- **Synced before?** Look at `last_commit_synced`. Only consider what changed since then. Use `git log <last_commit>..HEAD --oneline` to see what's new.
+- **Synced before?** Look at `last_commit_synced`. Before computing the delta, verify the stored SHA is still reachable:
+  ```bash
+  git merge-base --is-ancestor <last_commit_synced> HEAD
+  ```
+  - **Exit 0 (ancestor):** Safe. Run `git log <last_commit_synced>..HEAD --oneline` to see what changed.
+  - **Exit 1 (not an ancestor — rebase or force-push occurred):** The stored SHA is no longer in this branch's history. Warn the user: *"Stored commit `<sha>` is no longer reachable — branch may have been rebased or force-pushed. Falling back to full scan."* Then treat as first-time sync: re-scan everything and update `last_commit_synced` to the current HEAD SHA at the end of Step 6.
 
 If nothing meaningful changed since last sync, tell the user and stop.
 

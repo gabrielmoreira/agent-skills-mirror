@@ -50,7 +50,7 @@ character_presets:
 | `preferred_layout` | string | null | Layout preference or null |
 | `preferred_aspect` | string | null | Aspect ratio (3:4, 4:3, 16:9) |
 | `language` | string | null | Output language (null = auto-detect) |
-| `preferred_image_backend` | string | `auto` | Image backend selection. `auto` = prefer runtime-native tool, fall back to the only installed backend, ask if multiple non-native are present. `ask` = always confirm on every run. `<backend-id>` (e.g., `codex-imagegen`, `baoyu-imagine`, `image_generate`) = pin this backend when available; fall back to `auto` when it isn't. Absent = `auto`. Resolution logic is documented in `SKILL.md`'s `## Image Generation Tools` section. |
+| `preferred_image_backend` | string | `auto` | Image backend selection. `auto` = prefer runtime-native tool, fall back to the only installed backend, ask if multiple non-native are present. `ask` = always confirm on every run. `<backend-id>` (e.g., `codex-imagegen`, `baoyu-image-gen`, `image_generate`) = pin this backend when available; fall back to `auto` when it isn't. Absent = `auto`. Resolution logic is documented in `SKILL.md`'s `## Image Generation Tools` section. |
 | `generation_batch_size` | int | 4 | Number of page images to dispatch per batch when the backend has native batch support or the runtime can issue parallel generation calls. Clamp invalid values to 1-8. Current user request overrides this value. |
 | `character_presets` | array | [] | Preset character roles for styles like ohmsha |
 

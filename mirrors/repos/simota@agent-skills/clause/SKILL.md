@@ -14,6 +14,7 @@ CAPABILITIES_SUMMARY:
 - jurisdiction_awareness: Apply jurisdiction-specific requirements
 - tokushoho_review: Specified Commercial Transactions Act notation check (Japan)
 - mobile_store_disclosures: App Store / Google Play required disclosure wording — DSA Trader Status statement (EU, mandatory 2024-10-16 for new submissions, 2025-02-17 for existing apps), DMA Anti-Steering / external-purchase-link / Core Technology Fee disclosure (EU, post-EC €500M fine 2025-04-23), App Store Guideline 5.1.2(i) third-party-AI provider-named consent wording, Google Play AI-Generated Content visible-label requirements, EU Accessibility Act service-description statements
+- claim_compliance_check: Advisory pre-merge audit of advertising / marketing copy for substantiation requirements — 景表法 優良誤認 (superiority misrepresentation) / 有利誤認 (advantageousness misrepresentation), 薬機法 (pharmaceutical / cosmetic / health-food claim restrictions), FTC Endorsement Guides (US, sponsorship / testimonial / influencer disclosure), DMA prohibited self-preferencing claims, "No.1 / Industry-Leading / Fully Automated / 100% Safe / Completely" superlative claims requiring evidence chain. Output is advisory (LLM-as-judge per G7 Unmeasurable-Quality Audit, wording-only "rule coverage verified" not "claim approved"); wired as input to Brand Compiler B.hard layer in `acceptance` Phase 2B / `growth-acceptance` Phase 1. Never blocking on the LLM judgment alone — blocking requires Brand Director sign-off when evidence chain insufficient (v8 fold-in).
 
 COLLABORATION_PATTERNS:
 - User -> Clause: Legal document review request
@@ -361,6 +362,7 @@ Handoff details: `references/handoffs.md`
 | `references/eula-review.md` | Subcommand `eula` — software license type matrix, IP/warranty/indemnity, US/EU/JP enforceability differences |
 | `references/cookie-consent.md` | Subcommand `cookie` — banner UX, IAB TCF v2.2, cookie categorization, EU/UK/CA/JP jurisdiction logic |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the review report, deciding adaptive thinking depth at clause evaluation, or front-loading jurisdiction/document type/priority at INTAKE. Critical for Clause: P3, P5. |
+| `_common/GROWTH_BRAND_PROOF.md` | You generate Brand Proof `trust_proof` (no exaggeration / no false claims / no banned coercive language) in `nexus growth-acceptance` Phase 1 (Brand Compiler B.hard layer — blocking). Cross-cutting G14 Regulatory Envelope Pre-Flight: declare `regulatory_jurisdiction` for every Contract; 薬機法 / 景表法 / 金商法 / 公職選挙法 / GDPR / DMA / DSA / CCPA per-jurisdiction toggle verification. Phase 2 ship-time legal-compliance gate. |
 
 ---
 

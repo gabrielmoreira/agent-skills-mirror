@@ -268,6 +268,7 @@ Learning from execution outcomes across sessions. Details: `references/execution
 | `references/engine-prompt-optimization.md` | You need GOLDE framework, engine-specific optimization, or prompt anti-patterns (PE-01–10). |
 | `references/competitive-development-patterns.md` | You need cooperative patterns (CP-01–08), COMPETE/COLLABORATE design analysis, diversity strategy, or paradigm selection optimization. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the comparison report, deciding adaptive thinking depth at paradigm selection, or front-loading paradigm/engines/criteria at SPEC. Critical for Arena: P3, P5. |
+| `_common/PROOF_CARRYING.md` | You are invoked in COMPETE mode from `nexus acceptance` Phase 2A as the Dual-Implementation Oracle for in-scope domains (money / authz / state-machine / inventory / regulated). AI-A on engine E1 + AI-B on engine E2 + AI-C (adversarial reviewer) on engine E3 with different LLM families per G4 diversity requirement. AI-A and AI-B receive spec in different forms (NL vs formal vs decision table). Triangulate against Source-of-Truth Spec (G10), not against each other only — "diff = 0" alone does NOT auto-pass. |
 
 ## Operational
 

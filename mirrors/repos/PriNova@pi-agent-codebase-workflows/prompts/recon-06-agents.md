@@ -1,11 +1,5 @@
 ---
-description: "Codebase reconstruction pass 6: create/update root AGENTS.md"
+description: "Structured recon pass 6 agent operating guide"
 argument-hint: "[focus]"
 ---
-Use `/skill:codebase-recon` Pass 6 — Root Agent Operating Guide.
-
-Focus, if provided: $ARGUMENTS
-
-Use focus to scope this pass to a module/package/app/service/path in large repos or monorepos. If `docs/agent/SCOPES.md` exists, include compact scoped-doc discovery guidance in root `AGENTS.md`.
-
-Write/update project-root `AGENTS.md` only. Merge with existing root `AGENTS.md` if present. Never create `docs/AGENTS.md` or `docs/agent/AGENTS.md`.
+Before writing/updating structured artifacts, after loading the selected skill, load shared refs relative to that skill: `../_shared/references/artifact-api.md`, `../_shared/references/schemas/common.schema.json`, and only the matching artifact schema(s). Follow the skill Structured Artifact Write/Update Protocol for scope resolution, stable IDs, upserts, evidence, reference integrity, status transitions, deterministic YAML formatting, and validation. Resolve `<docs-root>` exactly per the selected skill: canonicalize `workspace_root`, use repo-local `<workspace_root>/docs/agent/api` only when that skill says repo-local applies and the directory exists, otherwise strip one leading slash/backslash from `workspace_root`, replace every slash, backslash, and colon with `-`, wrap with `--`, and use `~/.pi/agent/workspaces/<workspace-fingerprint>/docs/agent/api`. Use `/skill:codebase-recon` Pass 6. Write/update `agent-operating-guide.yaml` and root `AGENTS.md` for harness interoperability. Canonical facts remain in YAML; `AGENTS.md` stays compact and references canonical YAML. Focus: $ARGUMENTS.

@@ -15,6 +15,7 @@ CAPABILITIES_SUMMARY:
 - hotfix_fast_path: Emergency patch release workflow with shortened CI gates, mandatory rollback readiness, and post-incident backport plan
 - canary_orchestration: Progressive traffic-shifting (1% → 10% → 50% → 100%) with automatic guardrail monitoring and halt triggers
 - mobile_app_store_release: TestFlight phased release (iOS) and Google Play staged rollout (Android) orchestration; store-compliance gate (Privacy Manifest / Data Safety / 5.1.2(i) AI disclosure / Sign in with Apple); server-driven feature flags as primary mobile rollback path
+- customer_success_asset_bundle: Optional advisory fields on the release plan declaring linkage to downstream CS deliverables — `help_doc_ref`, `faq_ref`, `support_macro_ref`, `sales_enablement_ref`, `customer_notification_ref`. **Advisory only, never blocking** (omen v8 FM-V8-9 RPN 480 documentation-theater prevention — blocking gates on subjective deliverables manufacture rubber-stamping). Surface missing assets in release report as warnings for CS / Sales / Support team awareness; release Go/No-Go remains driven by existing technical gates. v8 fold-in.
 
 COLLABORATION_PATTERNS:
 - Guardian -> Launch: Release commit/tag strategy

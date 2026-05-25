@@ -1,12 +1,5 @@
 ---
-description: Safe-change universal preflight before any non-trivial task
-argument-hint: "<task>"
+description: "Structured safe-change preflight"
+argument-hint: "[task/focus]"
 ---
-Use `/skill:safe-change` Universal Preflight.
-
-Task:
-$ARGUMENTS
-
-Use `docs/agent/SCOPES.md` if present to discover matching scoped docs before falling back to top-level docs.
-
-Do not edit code. Produce the preflight output and say whether implementation should proceed now or wait for approval.
+Before writing/updating structured artifacts, after loading the selected skill, load shared refs relative to that skill: `../_shared/references/artifact-api.md`, `../_shared/references/schemas/common.schema.json`, and only the matching artifact schema(s). Follow the skill Structured Artifact Write/Update Protocol for scope resolution, stable IDs, upserts, evidence, reference integrity, status transitions, deterministic YAML formatting, and validation. Resolve `<docs-root>` exactly per the selected skill: canonicalize `workspace_root`, use repo-local `<workspace_root>/docs/agent/api` only when that skill says repo-local applies and the directory exists, otherwise strip one leading slash/backslash from `workspace_root`, replace every slash, backslash, and colon with `-`, wrap with `--`, and use `~/.pi/agent/workspaces/<workspace-fingerprint>/docs/agent/api`. Use `/skill:safe-change` structured preflight. Read only canonical YAML artifacts under the resolved structured docs root; do not read legacy prose docs. Focus/task: $ARGUMENTS. Output classification, artifacts read, matched scope, affected files, invariant/contract/risk refs, validation command refs, and approval status.

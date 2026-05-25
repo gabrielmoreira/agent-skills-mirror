@@ -99,6 +99,63 @@ function toHttpsUrl(url: string | undefined): string {
   return url.startsWith("http://") ? url.replace(/^http:\/\//i, "https://") : url;
 }
 
+function htmlToPlainText(html: string): string {
+  if (!html) return "";
+
+  let text = html;
+
+  // 1. 将 <br>, <br/>, <br /> 替换为换行符
+  text = text.replace(/<br\s*\/?>/gi, "\n");
+
+  // 2. 将 </p>, </div>, </h1>, </h2>, </h3>, </h4>, </h5>, </h6>, </li> 替换为换行符
+  text = text.replace(/<\/(?:p|div|h[1-6]|li|tr|td|th)>/gi, "\n");
+
+  // 3. 去掉所有剩余的 HTML 标签
+  text = text.replace(/<[^>]+>/g, "");
+
+  // 4. 解码 HTML 实体
+  const entityMap: Record<string, string> = {
+    "&nbsp;": " ",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&amp;": "&",
+    "&quot;": '"',
+    "&#39;": "'",
+    "&apos;": "'",
+    "&mdash;": "—",
+    "&ndash;": "–",
+    "&hellip;": "…",
+    "&ldquo;": "“",
+    "&rdquo;": "”",
+    "&lsquo;": "‘",
+    "&rsquo;": "’",
+  };
+  text = text.replace(/&(?:[a-zA-Z]+|#x[0-9a-fA-F]+|#\d+);/g, (entity) => {
+    if (entityMap[entity]) return entityMap[entity];
+    const hexMatch = entity.match(/^&#x([0-9a-fA-F]+);$/);
+    if (hexMatch) {
+      return String.fromCodePoint(Number.parseInt(hexMatch[1]!, 16));
+    }
+    const numMatch = entity.match(/^&#(\d+);$/);
+    if (numMatch) {
+      return String.fromCodePoint(Number.parseInt(numMatch[1]!, 10));
+    }
+    return entity;
+  });
+
+  // 5. 合并多个连续空白字符（空格、制表符、换行）为一个空格
+  text = text.replace(/[ \t]+/g, " ");
+
+  // 6. 合并多个连续换行为一个换行
+  text = text.replace(/\n{3,}/g, "\n\n");
+
+  // 7. 去掉行首行尾空白
+  text = text.split("\n").map(line => line.trim()).join("\n");
+
+  // 8. 最终 trim
+  return text.trim();
+}
+
 async function uploadImage(
   imagePath: string,
   accessToken: string,
@@ -295,10 +352,15 @@ async function publishToDraft(
     if (!options.imageMediaIds || options.imageMediaIds.length === 0) {
       throw new Error("newspic requires at least one image");
     }
+    // newspic 的 content 应该是纯文本，需要：
+    // 1. 去掉 HTML 标签
+    // 2. 解码 HTML 实体（&nbsp;、&lt; 等）
+    // 3. 合并多余空白字符
+    const plainContent = htmlToPlainText(options.content);
     article = {
       article_type: "newspic",
       title: options.title,
-      content: options.content,
+      content: plainContent,
       need_open_comment: noc,
       only_fans_can_comment: ofcc,
       image_info: {

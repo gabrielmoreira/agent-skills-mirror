@@ -1,7 +1,7 @@
 ---
 name: baoyu-image-gen
-description: "[Deprecated: use baoyu-imagine] AI image generation with OpenAI, Azure OpenAI, Google, OpenRouter, DashScope, Z.AI GLM-Image, MiniMax, Jimeng, Seedream and Replicate APIs. Supports text-to-image, reference images, aspect ratios, and batch generation from saved prompt files. Sequential by default; use batch parallel generation when the user already has multiple prompts or wants stable multi-image throughput. Use when user asks to generate, create, or draw images."
-version: 1.56.4
+description: AI image generation with OpenAI GPT Image 2, Azure OpenAI, Google, OpenRouter, DashScope, Z.AI GLM-Image, MiniMax, Jimeng, Seedream and Replicate APIs. Supports text-to-image, reference images, aspect ratios, and batch generation from saved prompt files. Sequential by default; use batch parallel generation when the user already has multiple prompts or wants stable multi-image throughput. Use when user asks to generate, create, or draw images.
+version: 2.0.0
 metadata:
   openclaw:
     homepage: https://github.com/JimLiu/baoyu-skills#baoyu-image-gen
@@ -11,10 +11,9 @@ metadata:
         - npx
 ---
 
-
 # Image Generation (AI SDK)
 
-Official API-based image generation. Supports OpenAI, Azure OpenAI, Google, OpenRouter, DashScope (阿里通义万象), Z.AI GLM-Image, MiniMax, Jimeng (即梦), Seedream (豆包) and Replicate.
+Official API-based image generation. Supports OpenAI GPT Image 2, Azure OpenAI, Google, OpenRouter, DashScope (阿里通义万象), Z.AI GLM-Image, MiniMax, Jimeng (即梦), Seedream (豆包) and Replicate.
 
 ## User Input Tools
 
@@ -44,6 +43,8 @@ Check these paths in order; first hit wins:
 
 - **Found** → load, parse, apply. If `default_model.[provider]` is null → ask model only.
 - **Not found** → run first-time setup (`references/config/first-time-setup.md`) using AskUserQuestion to collect provider + model + quality + save location. Save EXTEND.md, then continue. Do not generate images before this completes.
+
+Legacy compatibility: if `.baoyu-skills/baoyu-imagine/EXTEND.md` exists and the new path doesn't, the runtime renames it to `baoyu-image-gen`. If both exist, the runtime leaves them alone and uses the new path.
 
 **EXTEND.md keys**: default provider, default quality, default aspect ratio, default image size, OpenAI image API dialect, default models, batch worker cap, provider-specific batch limits. Schema: `references/config/preferences-schema.md`.
 
@@ -77,6 +78,9 @@ ${BUN_X} {baseDir}/scripts/main.ts --prompt "Make blue" --image out.png --ref so
 # Specific provider
 ${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --provider dashscope --model qwen-image-2.0-pro
 
+# OpenAI GPT Image 2
+${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --provider openai --model gpt-image-2
+
 # Batch mode
 ${BUN_X} {baseDir}/scripts/main.ts --batchfile batch.json --jobs 4
 ```
@@ -103,11 +107,11 @@ When the user wants a person/object preserved from reference images:
 | `--provider google\|openai\|azure\|openrouter\|dashscope\|zai\|minimax\|jimeng\|seedream\|replicate` | Force provider (default: auto-detect) |
 | `--model <id>`, `-m` | Model ID — see provider references for defaults and allowed values |
 | `--ar <ratio>` | Aspect ratio (`16:9`, `1:1`, `4:3`, …) |
-| `--size <WxH>` | Explicit size (e.g., `1024x1024`) |
+| `--size <WxH>` | Explicit size (e.g., `1024x1024`; for `gpt-image-2`, width/height must be multiples of 16, max edge 3840px, ratio no wider than 3:1) |
 | `--quality normal\|2k` | Quality preset (default: `2k`) |
 | `--imageSize 1K\|2K\|4K` | Image size for Google/OpenRouter (default: from quality) |
 | `--imageApiDialect openai-native\|ratio-metadata` | OpenAI-compatible endpoint dialect — use `ratio-metadata` for gateways that expect aspect-ratio `size` plus `metadata.resolution` |
-| `--ref <files...>` | Reference images. Supported by Google multimodal, OpenAI GPT Image edits, Azure OpenAI edits (PNG/JPG only), OpenRouter multimodal models, Replicate supported families, MiniMax subject-reference, Seedream 5.0/4.5/4.0. Not supported by Jimeng, Seedream 3.0, SeedEdit 3.0 |
+| `--ref <files...>` | Reference images. Supported by Google multimodal, OpenAI GPT Image edits, Azure OpenAI edits (PNG/JPG only), OpenRouter multimodal models, Replicate supported families, MiniMax subject-reference, Seedream 5.0/4.5/4.0, DashScope `wan2.7-image-pro`/`wan2.7-image`. Not supported by Jimeng, Seedream 3.0, SeedEdit 3.0, or any DashScope model outside the `wan2.7-image*` family |
 | `--n <count>` | Number of images. Replicate requires `--n 1` (single-output save semantics) |
 | `--json` | JSON output |
 
@@ -140,15 +144,15 @@ When the user wants a person/object preserved from reference images:
 
 ### Codex/ChatGPT OAuth is not an OpenAI API key
 
-`--provider openai` uses the standard OpenAI Images API and requires `OPENAI_API_KEY`. A Codex or ChatGPT desktop login is a different entitlement and is not a drop-in replacement for `OPENAI_API_KEY`; do not paste a Codex OAuth token into `OPENAI_API_KEY` or only set `OPENAI_BASE_URL` to a Codex backend.
+`--provider openai --model gpt-image-2` uses the standard OpenAI Images API (`/v1/images/generations` or `/v1/images/edits`) and requires `OPENAI_API_KEY`. A Codex or ChatGPT desktop login is a different entitlement and is not a drop-in replacement for `OPENAI_API_KEY`; do not paste a Codex OAuth token into `OPENAI_API_KEY` or only set `OPENAI_BASE_URL` to a Codex backend.
 
 If the user wants to use their Codex subscription / GPT Image 2 entitlement without an OpenAI API key, route through a Codex-native backend instead of this skill's `openai` provider:
 
 - In Codex runtime: use the native `imagegen` skill/tool.
-- In non-Codex runtimes with `codex` CLI installed and logged in: use the repo-level `scripts/codex-imagegen.sh` wrapper when the calling skill supports it. Resolve it from the plugin/repo root and pass absolute prompt/output/reference paths.
+- In non-Codex runtimes with `codex` CLI installed and logged in: use the repo-level `scripts/codex-imagegen.sh` wrapper when the calling skill supports it (for example `baoyu-cover-image`). Resolve it from the plugin/repo root and pass absolute prompt/output/reference paths.
 - In Hermes runtimes with a native `image_generate` tool: use that tool as a fallback, and state whether reference images were passed directly or reconstructed from extracted traits.
 
-Do not modify the existing `openai` provider to silently consume Codex OAuth. If first-class Codex OAuth support is added, implement it as a distinct provider (for example `openai-codex`) with its own auth, route, request shape, docs, and tests. See `references/codex-oauth-vs-openai-api-key.md`.
+Do not modify the existing `openai` provider to silently consume Codex OAuth. If first-class Codex OAuth support is added to `baoyu-image-gen`, implement it as a distinct provider (for example `openai-codex`) with its own auth, route, request shape, docs, and tests. See `references/codex-oauth-vs-openai-api-key.md`.
 
 ## Model Resolution
 
@@ -159,7 +163,9 @@ Priority (highest → lowest) applies to every provider:
 3. Env var `<PROVIDER>_IMAGE_MODEL`
 4. Built-in default
 
-For Azure, `--model` / `default_model.azure` is the Azure deployment name. `AZURE_OPENAI_DEPLOYMENT` is the preferred env var; `AZURE_OPENAI_IMAGE_MODEL` is kept as a backward-compatible alias.
+For OpenAI, the built-in default is `gpt-image-2`. `gpt-image-1.5`, `gpt-image-1`, and GPT Image snapshots remain selectable with `--model` or `OPENAI_IMAGE_MODEL`.
+
+For Azure, `--model` / `default_model.azure` is the Azure deployment name. `AZURE_OPENAI_DEPLOYMENT` is the preferred env var; `AZURE_OPENAI_IMAGE_MODEL` is kept as a backward-compatible alias. If your Azure deployment is named after the underlying model, use `gpt-image-2`; otherwise use the exact custom deployment name.
 
 EXTEND.md overrides env vars: if EXTEND.md sets `default_model.google: "gemini-3-pro-image-preview"` and the env var sets `GOOGLE_IMAGE_MODEL=gemini-3.1-flash-image-preview`, EXTEND.md wins.
 
@@ -200,17 +206,19 @@ Each provider has its own quirks (model families, size rules, ref support, limit
 
 | Preset | Google imageSize | OpenAI size | OpenRouter size | Replicate resolution | Use case |
 |--------|------------------|-------------|-----------------|----------------------|----------|
-| `normal` | 1K | 1024px | 1K | 1K | Quick previews |
-| `2k` (default) | 2K | 2048px | 2K | 2K | Covers, illustrations, infographics |
+| `normal` | 1K | 1024px target | 1K | 1K | Quick previews |
+| `2k` (default) | 2K | 2048px target | 2K | 2K | Covers, illustrations, infographics |
 
 Google/OpenRouter `imageSize` can be overridden with `--imageSize 1K|2K|4K`.
+
+For OpenAI native `gpt-image-2`, `normal` maps to `quality=medium` and a low-latency valid size near the requested aspect ratio; `2k` maps to `quality=high` and 2048px-class sizes such as `2048x2048`, `2048x1152`, or `1152x2048`. Use explicit `--size` for valid custom or 4K outputs, e.g. `3840x2160`.
 
 ## Aspect Ratios
 
 Supported: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `2.35:1`.
 
 - Google multimodal: `imageConfig.aspectRatio`
-- OpenAI: closest supported size
+- OpenAI: `gpt-image-2` uses the closest valid custom size for the requested ratio; older GPT Image and DALL·E models use their closest supported fixed size
 - OpenRouter: `imageGenerationOptions.aspect_ratio`; if only `--size <WxH>` is given, the ratio is inferred
 - Replicate: behavior is model-specific — `google/nano-banana*` uses `aspect_ratio`, `bytedance/seedream-*` uses documented Replicate ratios, Wan 2.7 maps `--ar` to a concrete `size`
 - MiniMax: official `aspect_ratio` values; if `--size <WxH>` is given without `--ar`, sends `width`/`height` for `image-01`
@@ -245,14 +253,14 @@ Rule of thumb: once prompt files are saved and the task is "generate all of thes
 
 ### Codex image2 fallback
 
-If `--provider openai` fails because `OPENAI_API_KEY` is missing but the current runtime has a native image-generation backend or the repo-level `codex-imagegen` wrapper is available, use that path rather than leaving the user waiting. Be explicit about whether the fallback is true reference-image generation or only a text-prompt reconstruction from extracted visual traits. See `references/codex-image2-fallback.md`.
+If `--provider openai --model gpt-image-2` fails because `OPENAI_API_KEY` is missing but the current runtime has a native image-generation backend or the repo-level `codex-imagegen` wrapper is available, use that path rather than leaving the user waiting. Be explicit about whether the fallback is true reference-image generation or only a text-prompt reconstruction from extracted visual traits. See `references/codex-image2-fallback.md`.
 
 ## References
 
 | File | Content |
 |------|---------|
 | `references/usage-examples.md` | Extended CLI examples across providers and batch mode |
-| `references/codex-oauth-vs-openai-api-key.md` | Why Codex/ChatGPT OAuth image2 entitlement is not usable through the standard OpenAI API-key provider |
+| `references/codex-oauth-vs-openai-api-key.md` | Why Codex/ChatGPT OAuth image2 entitlement is not usable through baoyu-image-gen's standard OpenAI API-key provider |
 | `references/codex-image2-fallback.md` | Practical fallback behavior when OpenAI API credentials are absent but Codex/native image generation is available |
 | `references/providers/dashscope.md` | DashScope families, sizes, limits |
 | `references/providers/zai.md` | Z.AI GLM-image / cogview-4 |

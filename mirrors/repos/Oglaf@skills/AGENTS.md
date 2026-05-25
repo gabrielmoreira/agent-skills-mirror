@@ -1,4 +1,18 @@
+<!-- Instructions v1.0 — 2026-05-24 -->
+
 # GitHub Copilot Instructions
+
+> **Context boundary:** Each user message is an independent task. Do not carry state from previous tasks unless explicitly told to.
+
+## Priority Ordering
+
+PRIORITY 1: Keep each skill self-contained inside its own folder — never share runtime code across skills. PRIORITY 2: Preserve the existing `SKILL.md` structure (YAML front matter + explicit operational sections). PRIORITY 3: Follow Windows/PowerShell conventions for all examples and scripts. When instructions conflict, prefer skill isolation over shared utilities, and prefer Windows compatibility over cross-platform generality.
+
+## Output Format
+
+Respond with: (1) the specific files to create or modify, (2) exact content changes, and (3) brief verification steps. When scope is ambiguous, ask before acting.
+
+---
 
 ## Commands
 

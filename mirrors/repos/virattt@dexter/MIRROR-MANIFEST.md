@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `virattt/dexter` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `virattt/dexter` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `virattt/dexter` — 26 default patterns, 0 followed patterns, 4 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,7 +62,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`src/skills/dcf/sector-wacc.md`](src/skills/dcf/sector-wacc.md) |
 | 3 | ✓ | [`src/skills/dcf/SKILL.md`](src/skills/dcf/SKILL.md) |
-| 4 | ✓ | [`src/skills/x-research/SKILL.md`](src/skills/x-research/SKILL.md) |
+| 4 | ✓ | [`src/skills/write-memo/examples.md`](src/skills/write-memo/examples.md) |
+| 5 | ✓ | [`src/skills/write-memo/memo-style.md`](src/skills/write-memo/memo-style.md) |
+| 6 | ✓ | [`src/skills/write-memo/SKILL.md`](src/skills/write-memo/SKILL.md) |
+| 7 | ✓ | [`src/skills/x-research/SKILL.md`](src/skills/x-research/SKILL.md) |
 
 ---
 

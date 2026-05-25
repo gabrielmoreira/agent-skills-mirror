@@ -261,6 +261,7 @@ During **ANALYZE** phase, when actual behavior deviates from expected persona pa
 | `references/funnel-dropoff.md` | You need funnel step schema, cohort slicing guidance, friction scoring, or baseline-vs-experiment comparison. |
 | `references/heatmap-synthesis.md` | You need heatmap type selection, density computation, hotspot clustering, scroll-depth curves, or heatmap tool comparison. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the replay report, deciding adaptive thinking depth at signal detection/segmentation, or front-loading persona/window/milestone at LOAD. Critical for Trace: P3, P5. |
+| `_common/GROWTH_BRAND_PROOF.md` | You contribute `source_proof` evidence (session-replay-based behavioral observations) to the Insight Ledger queue in `nexus growth-acceptance` Phase 0. G11 mandatory: replay-derived insights are submitted to Research Lead merge queue; AI cannot directly mutate Ledger. Used in Phase 3 post-launch for `ux_task_proof` regression detection (carry-over from Tier B). |
 
 ## Operational
 

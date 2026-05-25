@@ -295,6 +295,10 @@ lock sibling and the two invocations never contend.
 # Unit + integration tests (no auth needed)
 uv run pytest
 
+# Fast local loop — skip repo-wide audit / release-gate checks (~40s saved).
+# CI still runs these; the marker just lets you iterate quickly.
+uv run pytest tests/unit tests/integration -m "not repo_lint"
+
 # E2E tests (requires auth + test notebook)
 uv run pytest tests/e2e -m readonly        # Read-only tests only
 uv run pytest tests/e2e -m "not variants"  # Skip parameter variants
@@ -303,6 +307,12 @@ uv run pytest tests/e2e --include-variants # All tests including variants
 # Select a profile for E2E tests
 uv run pytest tests/e2e -m e2e --profile work
 ```
+
+The `repo_lint` marker tags cassette-shape lint, public-surface scans,
+docstring/install-doc drift guards, version-sync, and CI-script audits.
+These are valuable release/CI guardrails but cost ~30–45s locally. See
+[`CONTRIBUTING.md`](../CONTRIBUTING.md#fast-local-loop-skip-repo-wide-audit-checks)
+for the canonical fast-loop guidance.
 
 ### Selecting a profile for E2E tests
 
@@ -682,7 +692,7 @@ credentials by dispatching a workflow on a feature branch:
 
 | Gate | Where | Mechanism |
 |------|-------|-----------|
-| `environment: protected-readonly` | Job-level | GitHub Environment with a required reviewer — secrets do not resolve until the maintainer approves the run. Use `${{ github.event_name == 'workflow_dispatch' && 'protected-readonly' \|\| '' }}` to require approval only on manual dispatch while leaving scheduled cron canaries unattended. |
+| `environment: protected-readonly` | Job-level | GitHub Environment hosting the canonical secret values. Bind it **unconditionally** (`environment: protected-readonly`) so every trigger — scheduled `cron` and `workflow_dispatch` alike — sees the same secret. **Note:** the earlier conditional form (`${{ github.event_name == 'workflow_dispatch' && 'protected-readonly' \|\| '' }}`) silently broke scheduled crons once the secrets stopped existing at repo level (issue #1009); the same env binding is now the single source of truth. If you want to block `workflow_dispatch` behind manual approval, add a **required reviewers** rule on the environment — but be aware scheduled runs will then queue at the same gate. |
 | `needs.<job>.outputs.is_standard == 'true'` | Job/step-level `if:` | Pin secret-using jobs or steps to standard branches (`main` / `release/*` / scheduled cron). Non-standard branches skip outright — no secret values land in the runner env. |
 | `github.event.sender.login == 'teng-lin'` | Job-level `if:` | Pin webhook-triggered workflows (e.g. `claude.yml`) to a specific maintainer actor. Any other actor's trigger never reaches the secret-bearing steps. |
 
@@ -690,6 +700,28 @@ credentials by dispatching a workflow on a feature branch:
 asserts every workflow file in `.github/workflows/` satisfies at least one of
 the above gates for every `secrets.*` reference (except `secrets.GITHUB_TOKEN`,
 which is covered separately by `scripts/check_workflow_permissions.py`).
+
+The checker also **rejects the conditional `environment:` shape** outright:
+
+```yaml
+# REJECTED (silently broke #1009 once the secret was migrated env-only)
+environment: ${{ github.event_name == 'workflow_dispatch' && 'protected-readonly' || '' }}
+
+# REQUIRED — unconditional binding
+environment: protected-readonly
+```
+
+The empty-string fallback in the expression form means "no environment", so
+secrets that live only in environments resolve to empty under that branch.
+Binding the environment unconditionally is the single source of truth.
+
+Additionally, **every job that consumes `NOTEBOOKLM_AUTH_JSON` runs a
+fail-fast preflight step** (`if [ -z "$NOTEBOOKLM_AUTH_JSON" ]; then exit 1`)
+before the test/script step. Without the preflight, an empty secret would
+let pytest skip every auth-requiring test silently and the job would land
+green with 0 tests run (issue #1009). The preflight surfaces an `::error::`
+annotation linked to the secret-config misconfig so the failure is visible
+in the GitHub UI rather than hidden behind "0 passed".
 
 #### One-time GitHub Environment setup
 
@@ -749,8 +781,10 @@ When introducing a workflow that touches `secrets.*`:
 
 1. Pick the gate shape that matches the trigger surface:
    - `workflow_dispatch` only → job-level `environment: protected-readonly`.
-   - `workflow_dispatch` + `schedule` → conditional environment expression
-     (approve manual runs, leave cron unattended).
+   - `workflow_dispatch` + `schedule` → also job-level `environment: protected-readonly`
+     (unconditional — issue #1009). Pair with an upstream `is_standard`
+     gate so a non-maintainer's feature-branch dispatch can't reach the
+     secret-bearing job at all.
    - Webhook-triggered (`issue_comment`, etc.) → job-level `if:` pinning
      `sender.login` to the maintainer.
    - Multi-branch CI (`push`, `pull_request`, nightly) → step-level `if:`

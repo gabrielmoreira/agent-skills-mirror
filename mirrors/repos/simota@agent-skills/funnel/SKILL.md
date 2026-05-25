@@ -412,6 +412,7 @@ Handoff formats → `references/handoffs.md`
 | `references/copy-lp-authoring.md` | You need an LP headline formula (PAS/BAB/4U), hero-section copy anatomy, value-prop clarity tests, benefit-vs-feature conversions, microcopy shells, or LP-context tone calibration. |
 | `references/trust-signal-placement.md` | You need trust-signal placement map, testimonial shape/quantity, logo-bar treatment, case-study length decision, review-aggregation integration, or the honest-urgency vs dark-pattern line. |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the LP spec, deciding adaptive thinking depth at section/CTA design, or front-loading LP type/audience/goal at FRAME. Critical for Funnel: P3, P5. |
+| `_common/GROWTH_BRAND_PROOF.md` | You generate Market Proof `channel_proof` (channel-fit rationale) and `funnel_proof` (funnel stage targeting) in `nexus growth-acceptance` Phase 2 (ship-time). LP authoring is subject to Brand Compiler B.hard (taboo / legal / G12 Distinctiveness Floor) and B.pattern (token / Code Connect) layers from Layer B carry-over. LP copy is subject to `copy_proof` (Tier B Design) + `tone_proof` (Layer C Brand Proof). |
 
 ## Operational
 

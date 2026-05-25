@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/pi-agent-codebase-workflows/risk-register.schema.json",
+  "title": "risk-register",
+  "allOf": [
+    {
+      "$ref": "common.schema.json"
+    }
+  ],
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact",
+    "artifact_id",
+    "scope",
+    "status",
+    "evidence_mode",
+    "last_validated",
+    "owners",
+    "depends_on",
+    "evidence",
+    "unknowns",
+    "risks"
+  ],
+  "properties": {
+    "artifact": {
+      "const": "risk_register"
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "severity",
+          "confidence",
+          "status",
+          "evidence_refs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^risk:[a-z0-9][a-z0-9._/-]*$"
+          },
+          "title": {
+            "type": "string"
+          },
+          "severity": {
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "confidence": {
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^ev:[a-z0-9][a-z0-9._/-]*$"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}

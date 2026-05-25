@@ -102,6 +102,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Use Structurizr DSL as the primary output format.
 - Include a title, legend, and element types in every diagram.
 - Label Container-to-Container relationships with explicit protocols/technologies.
+- **Prefer architecture-as-code / generated C4 views over hand-drawn (v5 advisory, fold-in)**: Architecture / dependency / deployment diagrams should be reverse-generated from code, IaC, and service catalog where feasible (use canvas `reverse_engineering` capability). Hand-drawn C4 finals silently drift; generated views stay in sync. Exploration sketches and proposal diagrams are explicitly carved out — only final CI-gated artifacts are subject to this advisory.
 
 ### Ask First
 

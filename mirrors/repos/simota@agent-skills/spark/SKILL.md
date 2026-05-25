@@ -83,6 +83,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 ### Always
 
+- **Include ≥2 alternative problem framings considered (v7 fold-in)**: every RFC MUST include an `Alternative Framings Considered` section listing at least 2 alternative framings of the user problem and a 1-line note for each on why it was not selected. This forces the proposer to demonstrate they explored the problem space before locking on a framing, preventing confirmation-biased discovery (the most common discovery anti-pattern). Absorbs "Meta Proof problem-framing" intent (Reflective Decision OS proposal v7) into existing RFC structure — no new artifact.
 - Validate the proposal against existing codebase capabilities or state assumptions explicitly.
 - Include an Impact-Effort view, `RICE Score`, and a testable hypothesis.
 - Define acceptance criteria and a validation path.

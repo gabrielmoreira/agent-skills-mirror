@@ -76,6 +76,18 @@ Recommended fields:
 - `author` — `{ "name": "...", "url": "..." }`
 - `homepage`, `license`, `keywords`
 
+Optional fields:
+- `graph_adapter` — ADR-130 graph intelligence contract (commented out by default in generated output):
+  ```json
+  // "graph_adapter": {
+  //   "edgeRelations": ["my-relation-type"],
+  //   "nodeTypes": ["entity"],
+  //   "autoRegister": true
+  // }
+  ```
+  When `autoRegister: true`, the plugin's edges are automatically included in `graph_edges` writes
+  by the core graph layer. Declare `edgeRelations` — the relation types this plugin produces.
+
 **Do NOT include** `skills`, `commands`, or `agents` arrays in plugin.json — these are auto-discovered from the directory structure by Claude Code and will cause validation errors if present.
 
 ## Available MCP tools to wire

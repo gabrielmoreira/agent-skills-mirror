@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/pi-agent-codebase-workflows/contracts.schema.json",
+  "title": "contracts",
+  "allOf": [
+    {
+      "$ref": "common.schema.json"
+    }
+  ],
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact",
+    "artifact_id",
+    "scope",
+    "status",
+    "evidence_mode",
+    "last_validated",
+    "owners",
+    "depends_on",
+    "evidence",
+    "unknowns",
+    "contracts"
+  ],
+  "properties": {
+    "artifact": {
+      "const": "contracts"
+    },
+    "contracts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^contract:[a-z0-9][a-z0-9._/-]*$"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}

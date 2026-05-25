@@ -90,6 +90,25 @@ npm run typecheck
 
 ### 4. Git Tag & GitHub Release
 
+<release_title_convention enforcement="MANDATORY">
+The GitHub release title MUST be the bare version tag — nothing else.
+
+  CORRECT:    `v1.0.151`
+  WRONG:      `v1.0.151 — VS Code Copilot cwd cascade + fan-out gate`
+  WRONG:      `v1.0.151: stats accuracy hotfix`
+  WRONG:      `v1.0.151 (hotfix)`
+
+Rationale: title length matters for npm/registry feed rendering, RSS,
+release-list pages, and the GitHub UI sidebar — all of which truncate.
+The version is the load-bearing identifier; descriptive copy belongs in
+the release body where it has room to breathe. Inconsistent titles also
+break downstream tooling that greps releases by name pattern.
+
+Use `--title "v{VERSION}"` verbatim. Never inline a description. If
+the release deserves a headline, lead the BODY with an H2 — title field
+stays pure version.
+</release_title_convention>
+
 ```bash
 # The npm version command already created a git tag
 # Verify it exists:
@@ -98,7 +117,8 @@ git tag --list 'v*' | tail -5
 # Push the commit and tag
 git push origin main --tags
 
-# Create GitHub release with auto-generated changelog
+# Create GitHub release — title field is the bare version, body carries
+# the description. Title convention is non-negotiable (see block above).
 gh release create v{VERSION} \
   --title "v{VERSION}" \
   --generate-notes \

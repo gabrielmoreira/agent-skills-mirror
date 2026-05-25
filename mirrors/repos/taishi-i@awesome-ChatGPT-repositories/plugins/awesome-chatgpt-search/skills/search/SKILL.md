@@ -45,22 +45,22 @@ Examples:
 
 - **Aim for 3–6 keywords.** Too few miss items; too many inflate low-quality partial matches.
 
-### Step 2 — Select which data files to read
+### Step 2 — Search the data files with grep
 
-Data is split into per-category files. Each file is a JSON array of items with fields:
+Data is split into per-category files. Each file is a JSON array with **one repo record per line**, so you can `grep` for matches instead of reading whole files — this keeps token use low (a typical query pulls in a few dozen matching lines instead of hundreds of KB). Fields per record:
 - `u`: GitHub URL · `n`: repository name · `d`: English description
 - `c`: category · `l`: language (optional) · `t`: topics comma-separated (optional)
-- `sc`: quality score 0–8
+- `sc`: quality score 0–8 · `st`: star count (optional) · `ns`: normalized star score 0–10 (optional)
 
-**File list** (all under `data/` relative to this plugin; the four largest categories are split a/b):
+**File list** (all under `data/` relative to this plugin; six categories over ~200 entries are split a/b):
 
 | Category | File(s) |
 |----------|---------|
 | Awesome-lists | `repos-awesome-lists.json` |
 | Prompts | `repos-prompts.json` |
 | Chatbots | `repos-chatbots-a.json`, `repos-chatbots-b.json` |
-| Browser-extensions | `repos-browser-extensions.json` |
-| CLIs | `repos-clis.json` |
+| Browser-extensions | `repos-browser-extensions-a.json`, `repos-browser-extensions-b.json` |
+| CLIs | `repos-clis-a.json`, `repos-clis-b.json` |
 | Reimplementations | `repos-reimplementations.json` |
 | Tutorials | `repos-tutorials.json` |
 | NLP | `repos-nlp-a.json`, `repos-nlp-b.json` |
@@ -69,9 +69,11 @@ Data is split into per-category files. Each file is a JSON array of items with f
 | Openai | `repos-openai-a.json`, `repos-openai-b.json` |
 | Others | `repos-others-a.json`, `repos-others-b.json` |
 
-**Which files to read — read the minimum set that covers the query:**
+**Which files to search — pick the minimum set that covers the query, then grep them (below):**
 
-**Rule A — category: specified:** read only that category's file(s), skip routing below.
+**Rule A — category: specified:** grep only that category's file(s), skip routing below.
+Match the category name **case-insensitively** and accept common variants:
+`cli`/`clis`/`command-line` → CLIs · `chatbot`/`bot`/`chatbots` → Chatbots · `browser`/`extension`/`browser-extension` → Browser-extensions · `prompt`/`prompts` → Prompts · `tutorial`/`tutorials` → Tutorials · `reimpl`/`reimplementation` → Reimplementations · `awesome`/`lists` → Awesome-lists · `open ai`/`openai` → Openai. If the value matches no category, fall back to keyword routing (Rule C).
 
 **Rule B — list categories:** skip all file reads, jump to Step 5b.
 
@@ -79,11 +81,11 @@ Data is split into per-category files. Each file is a JSON array of items with f
 
 Use the **English keywords from Step 1** (not the original query text) for routing.
 For each row below, check if any English keyword contains or matches the listed terms (case-insensitive substring).
-Read that row's file(s) only if there is a match.
+Use that row's file(s) only if there is a match.
 If multiple rows match, collect all their files (deduplicated).
 If **no rows match**, use the default: `repos-chatbots-a.json`, `repos-nlp-a.json`, `repos-openai-a.json`, `repos-others-a.json`.
 
-| If query mentions… | Read these files |
+| If query mentions… | Search these files |
 |--------------------|-----------------|
 | chatbot, bot, chat, dialog, conversation, assistant, discord, slack | repos-chatbots-a.json, repos-chatbots-b.json |
 | RAG, retrieval, vector, embed, semantic, FAISS, Chroma, Pinecone, similarity, index | repos-nlp-a.json, repos-nlp-b.json, repos-langchain.json |
@@ -104,20 +106,29 @@ If **no rows match**, use the default: `repos-chatbots-a.json`, `repos-nlp-a.jso
 | image, vision, multimodal, DALL-E, Stable Diffusion, drawing | repos-others-a.json, repos-nlp-a.json |
 | voice, speech, audio, TTS, ASR, Whisper | repos-others-a.json, repos-nlp-b.json |
 
-To locate a file, use:
+**Then grep those files for the keywords — do NOT open whole files with the Read tool.** Locate the data directory once:
 ```
-find "${HOME}/.claude/plugins" "${PWD}" -type f -name "<filename>" -path "*awesome-chatgpt-search*" 2>/dev/null | head -1
+DATA="$(find "${HOME}/.claude/plugins" "${PWD}" -type d -name data -path "*awesome-chatgpt-search*" 2>/dev/null | head -1)"
 ```
-
-Then use the Read tool on the returned path.
+Then grep the selected files for your Step 1 keywords and cap the output. Use `-F` (literal substring match — same semantics as the scoring step, and safe for keywords like `c++` or `.net`) with one `-e` per keyword:
+```
+grep -ihF -e keyword1 -e keyword2 -e keyword3 "$DATA"/repos-nlp-a.json "$DATA"/repos-nlp-b.json | head -120
+```
+Each line of output is one repo record (a JSON object) that matched at least one keyword — score those lines directly in Step 4. This reads only the matching repos, not the whole files. Notes:
+- If grep returns **fewer than ~8 lines**, broaden the keywords (add stems/tool names from Step 1) and re-run.
+- If it returns the full `head` cap, your keywords are good; proceed.
+- Only fall back to the Read tool on individual files if `grep` is unavailable.
 
 ### Step 3 — Filter by language (if `language:<lang>` was given)
 
-After reading, keep only items where `l` matches the specified language (case-insensitive).
+Append a language filter to the grep pipeline (the `l` field holds the language, matched case-insensitively):
+```
+grep -ihF -e keyword1 -e keyword2 "$DATA"/repos-clis-a.json "$DATA"/repos-clis-b.json | grep -iF '"l":"<lang>"' | head -120
+```
 
 ### Step 4 — Score candidates
 
-Using the English keywords from Step 1, compute a **relevance score** for each item across all loaded files:
+Using the English keywords from Step 1, compute a **relevance score** for each repo record returned by grep:
 
 **Text match score** (case-insensitive, per keyword):
 - Name (`n`) exact keyword match: +20 pts
@@ -162,18 +173,19 @@ Skip scoring. Present:
 
 | Category | Count |
 |----------|-------|
-| Awesome-lists | 95 |
-| Prompts | 182 |
-| Chatbots | 375 |
-| Browser-extensions | 250 |
-| CLIs | 227 |
+| Awesome-lists | 96 |
+| Prompts | 184 |
+| Chatbots | 379 |
+| Browser-extensions | 252 |
+| CLIs | 240 |
 | Reimplementations | 42 |
 | Tutorials | 21 |
-| NLP | 405 |
+| NLP | 412 |
 | Langchain | 178 |
 | Unity | 17 |
 | Openai | 325 |
-| Others | 451 |
+| Others | 461 |
+| **Total** | **2,607** |
 ```
 
 ### Step 6 — Format the output

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nowork-studio/toprank` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
+Mirror of `nowork-studio/toprank` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nowork-studio/toprank` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 25 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,22 +68,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`google-ads/manage/SKILL.md`](google-ads/manage/SKILL.md) |
 | 8 | ✓ | [`meta-ads/audit/SKILL.md`](meta-ads/audit/SKILL.md) |
 | 9 | ✓ | [`meta-ads/manage/SKILL.md`](meta-ads/manage/SKILL.md) |
-| 10 | ✓ | [`openclaw/skills/toprank-improve-page/SKILL.md`](openclaw/skills/toprank-improve-page/SKILL.md) |
-| 11 | ✓ | [`openclaw/skills/toprank-investigate-drop/SKILL.md`](openclaw/skills/toprank-investigate-drop/SKILL.md) |
-| 12 | ✓ | [`openclaw/skills/toprank-portfolio-review/SKILL.md`](openclaw/skills/toprank-portfolio-review/SKILL.md) |
-| 13 | ✓ | [`openclaw/skills/toprank-site-onboard/SKILL.md`](openclaw/skills/toprank-site-onboard/SKILL.md) |
-| 14 | ✓ | [`openclaw/skills/toprank-weekly-review/SKILL.md`](openclaw/skills/toprank-weekly-review/SKILL.md) |
-| 15 | ✓ | [`seo/broken-link-checker/SKILL.md`](seo/broken-link-checker/SKILL.md) |
-| 16 | ✓ | [`seo/content-planner/SKILL.md`](seo/content-planner/SKILL.md) |
-| 17 | ✓ | [`seo/content-writer/SKILL.md`](seo/content-writer/SKILL.md) |
-| 18 | ✓ | [`seo/geo-optimizer/SKILL.md`](seo/geo-optimizer/SKILL.md) |
-| 19 | ✓ | [`seo/keyword-research/SKILL.md`](seo/keyword-research/SKILL.md) |
-| 20 | ✓ | [`seo/meta-tags-optimizer/SKILL.md`](seo/meta-tags-optimizer/SKILL.md) |
-| 21 | ✓ | [`seo/schema-markup-generator/SKILL.md`](seo/schema-markup-generator/SKILL.md) |
-| 22 | ✓ | [`seo/seo-analysis/SKILL.md`](seo/seo-analysis/SKILL.md) |
-| 23 | ✓ | [`seo/seo-page/SKILL.md`](seo/seo-page/SKILL.md) |
-| 24 | ✓ | [`seo/setup-cms/SKILL.md`](seo/setup-cms/SKILL.md) |
-| 25 | ✓ | [`toprank-upgrade-skill/SKILL.md`](toprank-upgrade-skill/SKILL.md) |
+| 10 | ✓ | [`notfair-cmo-skill/SKILL.md`](notfair-cmo-skill/SKILL.md) |
+| 11 | ✓ | [`notfair-cmo/CLAUDE.md`](notfair-cmo/CLAUDE.md) |
+| 12 | ✓ | [`notfair-upgrade-skill/SKILL.md`](notfair-upgrade-skill/SKILL.md) |
+| 13 | ✓ | [`openclaw/skills/notfair-improve-page/SKILL.md`](openclaw/skills/notfair-improve-page/SKILL.md) |
+| 14 | ✓ | [`openclaw/skills/notfair-investigate-drop/SKILL.md`](openclaw/skills/notfair-investigate-drop/SKILL.md) |
+| 15 | ✓ | [`openclaw/skills/notfair-portfolio-review/SKILL.md`](openclaw/skills/notfair-portfolio-review/SKILL.md) |
+| 16 | ✓ | [`openclaw/skills/notfair-site-onboard/SKILL.md`](openclaw/skills/notfair-site-onboard/SKILL.md) |
+| 17 | ✓ | [`openclaw/skills/notfair-weekly-review/SKILL.md`](openclaw/skills/notfair-weekly-review/SKILL.md) |
+| 18 | ✓ | [`seo/broken-link-checker/SKILL.md`](seo/broken-link-checker/SKILL.md) |
+| 19 | ✓ | [`seo/content-planner/SKILL.md`](seo/content-planner/SKILL.md) |
+| 20 | ✓ | [`seo/content-writer/SKILL.md`](seo/content-writer/SKILL.md) |
+| 21 | ✓ | [`seo/geo-optimizer/SKILL.md`](seo/geo-optimizer/SKILL.md) |
+| 22 | ✓ | [`seo/keyword-research/SKILL.md`](seo/keyword-research/SKILL.md) |
+| 23 | ✓ | [`seo/meta-tags-optimizer/SKILL.md`](seo/meta-tags-optimizer/SKILL.md) |
+| 24 | ✓ | [`seo/schema-markup-generator/SKILL.md`](seo/schema-markup-generator/SKILL.md) |
+| 25 | ✓ | [`seo/seo-analysis/SKILL.md`](seo/seo-analysis/SKILL.md) |
+| 26 | ✓ | [`seo/seo-page/SKILL.md`](seo/seo-page/SKILL.md) |
+| 27 | ✓ | [`seo/setup-cms/SKILL.md`](seo/setup-cms/SKILL.md) |
 
 ---
 

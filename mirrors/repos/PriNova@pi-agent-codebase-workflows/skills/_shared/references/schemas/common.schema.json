@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/pi-agent-codebase-workflows/common.schema.json",
+  "title": "Structured Agent Artifact Envelope",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact",
+    "artifact_id",
+    "scope",
+    "status",
+    "evidence_mode",
+    "last_validated",
+    "owners",
+    "depends_on",
+    "evidence",
+    "unknowns"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "artifact": {
+      "type": "string"
+    },
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^(scope|component|entity|invariant|risk|contract|flow|command|issue|adr|testplan|repo):[a-z0-9][a-z0-9._/-]*$"
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "source",
+        "docs_path"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^scope:[a-z0-9][a-z0-9._/-]*$"
+        },
+        "kind": {
+          "enum": [
+            "repo",
+            "path",
+            "domain"
+          ]
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "docs_path": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "status": {
+      "enum": [
+        "planned",
+        "partial",
+        "current",
+        "stale",
+        "deprecated"
+      ]
+    },
+    "evidence_mode": {
+      "enum": [
+        "planned",
+        "observed",
+        "mixed"
+      ]
+    },
+    "last_validated": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "owners": {
+      "type": "object",
+      "required": [
+        "primary",
+        "source_of_truth"
+      ],
+      "properties": {
+        "primary": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_of_truth": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "depends_on": {
+      "type": "object",
+      "properties": {
+        "artifacts": {
+          "type": "array"
+        },
+        "scopes": {
+          "type": "array"
+        },
+        "contracts": {
+          "type": "array"
+        }
+      },
+      "additionalProperties": true
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^ev:[a-z0-9][a-z0-9._/-]*$"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "path": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "symbol": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "observation": {
+            "type": "string"
+          },
+          "confidence": {
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        },
+        "additionalProperties": true,
+        "required": [
+          "id",
+          "kind",
+          "path",
+          "symbol",
+          "command",
+          "observation",
+          "confidence"
+        ]
+      }
+    },
+    "unknowns": {
+      "type": "array"
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "replacement_ref": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

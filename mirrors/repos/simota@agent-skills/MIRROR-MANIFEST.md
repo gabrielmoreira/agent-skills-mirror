@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `simota/agent-skills` — 26 default patterns, 1 followed patterns, 144 file(s) materialized.
+Mirror of `simota/agent-skills` — 26 default patterns, 3 followed patterns, 147 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `simota/agent-skills` — 26 default patterns, 1 followed patterns, 14
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 144 |
+| Followed pats | 3 |
+| Files         | 147 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,8 @@ Mirror of `simota/agent-skills` — 26 default patterns, 1 followed patterns, 14
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `_common/GIT_GUIDELINES.md`
+- `_common/BOUNDARIES.md`
+- `_common/OPERATIONAL.md`
 
 ## File Index
 
@@ -177,32 +179,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 116 | ✓ | [`siege/SKILL.md`](siege/SKILL.md) |
 | 117 | ✓ | [`sigil/SKILL.md`](sigil/SKILL.md) |
 | 118 | ✓ | [`sketch/SKILL.md`](sketch/SKILL.md) |
-| 119 | ✓ | [`spark/SKILL.md`](spark/SKILL.md) |
-| 120 | ✓ | [`specter/SKILL.md`](specter/SKILL.md) |
-| 121 | ✓ | [`spider/SKILL.md`](spider/SKILL.md) |
-| 122 | ✓ | [`stage/SKILL.md`](stage/SKILL.md) |
-| 123 | ✓ | [`stratum/SKILL.md`](stratum/SKILL.md) |
-| 124 | ✓ | [`stream/SKILL.md`](stream/SKILL.md) |
-| 125 | ✓ | [`sweep/SKILL.md`](sweep/SKILL.md) |
-| 126 | ✓ | [`tempo/SKILL.md`](tempo/SKILL.md) |
-| 127 | ✓ | [`titan/SKILL.md`](titan/SKILL.md) |
-| 128 | ✓ | [`tome/SKILL.md`](tome/SKILL.md) |
-| 129 | ✓ | [`tone/SKILL.md`](tone/SKILL.md) |
-| 130 | ✓ | [`trace/SKILL.md`](trace/SKILL.md) |
-| 131 | ✓ | [`trail/SKILL.md`](trail/SKILL.md) |
-| 132 | ✓ | [`triage/SKILL.md`](triage/SKILL.md) |
-| 133 | ✓ | [`tuner/SKILL.md`](tuner/SKILL.md) |
-| 134 | ✓ | [`vigil/SKILL.md`](vigil/SKILL.md) |
-| 135 | ✓ | [`vision/SKILL.md`](vision/SKILL.md) |
-| 136 | ✓ | [`vista/SKILL.md`](vista/SKILL.md) |
-| 137 | ✓ | [`voice/SKILL.md`](voice/SKILL.md) |
-| 138 | ✓ | [`void/SKILL.md`](void/SKILL.md) |
-| 139 | ✓ | [`voyager/SKILL.md`](voyager/SKILL.md) |
-| 140 | ✓ | [`warden/SKILL.md`](warden/SKILL.md) |
-| 141 | ✓ | [`weave/SKILL.md`](weave/SKILL.md) |
-| 142 | ✓ | [`zen/SKILL.md`](zen/SKILL.md) |
-| 143 | ✓ | [`zine/SKILL.md`](zine/SKILL.md) |
-| 144 | → | [`_common/GIT_GUIDELINES.md`](_common/GIT_GUIDELINES.md) |
+| 119 | ✓ | [`sonar/SKILL.md`](sonar/SKILL.md) |
+| 120 | ✓ | [`spark/SKILL.md`](spark/SKILL.md) |
+| 121 | ✓ | [`specter/SKILL.md`](specter/SKILL.md) |
+| 122 | ✓ | [`spider/SKILL.md`](spider/SKILL.md) |
+| 123 | ✓ | [`stage/SKILL.md`](stage/SKILL.md) |
+| 124 | ✓ | [`stratum/SKILL.md`](stratum/SKILL.md) |
+| 125 | ✓ | [`stream/SKILL.md`](stream/SKILL.md) |
+| 126 | ✓ | [`sweep/SKILL.md`](sweep/SKILL.md) |
+| 127 | ✓ | [`tempo/SKILL.md`](tempo/SKILL.md) |
+| 128 | ✓ | [`titan/SKILL.md`](titan/SKILL.md) |
+| 129 | ✓ | [`tome/SKILL.md`](tome/SKILL.md) |
+| 130 | ✓ | [`tone/SKILL.md`](tone/SKILL.md) |
+| 131 | ✓ | [`trace/SKILL.md`](trace/SKILL.md) |
+| 132 | ✓ | [`trail/SKILL.md`](trail/SKILL.md) |
+| 133 | ✓ | [`triage/SKILL.md`](triage/SKILL.md) |
+| 134 | ✓ | [`tuner/SKILL.md`](tuner/SKILL.md) |
+| 135 | ✓ | [`vigil/SKILL.md`](vigil/SKILL.md) |
+| 136 | ✓ | [`vision/SKILL.md`](vision/SKILL.md) |
+| 137 | ✓ | [`vista/SKILL.md`](vista/SKILL.md) |
+| 138 | ✓ | [`voice/SKILL.md`](voice/SKILL.md) |
+| 139 | ✓ | [`void/SKILL.md`](void/SKILL.md) |
+| 140 | ✓ | [`voyager/SKILL.md`](voyager/SKILL.md) |
+| 141 | ✓ | [`warden/SKILL.md`](warden/SKILL.md) |
+| 142 | ✓ | [`weave/SKILL.md`](weave/SKILL.md) |
+| 143 | ✓ | [`zen/SKILL.md`](zen/SKILL.md) |
+| 144 | ✓ | [`zine/SKILL.md`](zine/SKILL.md) |
+| 145 | → | [`_common/BOUNDARIES.md`](_common/BOUNDARIES.md) |
+| 146 | → | [`_common/GIT_GUIDELINES.md`](_common/GIT_GUIDELINES.md) |
+| 147 | → | [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md) |
 
 ---
 

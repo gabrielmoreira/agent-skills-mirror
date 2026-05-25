@@ -83,15 +83,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`.agents/skills/agent-carnet/references/cookbook.md`](.agents/skills/agent-carnet/references/cookbook.md) |
 | 23 | ✓ | [`.agents/skills/agent-carnet/references/frontmatter.md`](.agents/skills/agent-carnet/references/frontmatter.md) |
 | 24 | ✓ | [`.agents/skills/agent-carnet/SKILL.md`](.agents/skills/agent-carnet/SKILL.md) |
-| 25 | ✓ | [`.claude/skills/contextual-commit/SKILL.md`](.claude/skills/contextual-commit/SKILL.md) |
-| 26 | ✓ | [`.claude/skills/repomix-explorer/SKILL.md`](.claude/skills/repomix-explorer/SKILL.md) |
-| 27 | ✓ | [`.cursor/rules/base.mdc`](.cursor/rules/base.mdc) |
-| 28 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 29 | ✓ | [`.github/instructions/base.instructions.md`](.github/instructions/base.instructions.md) |
-| 30 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 31 | ✓ | [`browser/.claude/skills/browser-extension-developer/SKILL.md`](browser/.claude/skills/browser-extension-developer/SKILL.md) |
-| 32 | ✓ | [`browser/CLAUDE.md`](browser/CLAUDE.md) |
-| 33 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 25 | ✓ | [`.agents/skills/contextual-commit/SKILL.md`](.agents/skills/contextual-commit/SKILL.md) |
+| 26 | ✓ | [`.cursor/rules/base.mdc`](.cursor/rules/base.mdc) |
+| 27 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 28 | ✓ | [`.github/instructions/base.instructions.md`](.github/instructions/base.instructions.md) |
+| 29 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 30 | ✓ | [`browser/.claude/skills/browser-extension-developer/SKILL.md`](browser/.claude/skills/browser-extension-developer/SKILL.md) |
+| 31 | ✓ | [`browser/CLAUDE.md`](browser/CLAUDE.md) |
+| 32 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 33 | ✓ | [`skills/repomix-explorer/SKILL.md`](skills/repomix-explorer/SKILL.md) |
 | 34 | ✓ | [`website/.claude/skills/website-maintainer/SKILL.md`](website/.claude/skills/website-maintainer/SKILL.md) |
 
 ---

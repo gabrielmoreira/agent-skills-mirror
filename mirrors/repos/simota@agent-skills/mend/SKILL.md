@@ -231,6 +231,7 @@ Every deliverable must include:
 | `references/circuit-remediation.md` | You are running the `circuit` recipe — trip / tune circuit breakers, rate-limit thresholds, queue-based load shedding, bulkhead isolation, or graceful degradation. |
 | `references/canary-remediation.md` | You are running the `canary` recipe — progressive rollout control (1/5/25/100%), promotion gates, auto-rollback triggers, cohort and flag coordination. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the remediation plan, deciding adaptive thinking depth at tier/confidence classification, or front-loading severity/blast-radius/approval at CLASSIFY. Critical for Mend: P3, P5. |
+| `_common/PROOF_CARRYING.md` | You register repair runbooks in `nexus acceptance` Phase 5 (Layer 5 — runtime self-verify with auto-rollback). Defines G3 repair-loop circuit breaker: same-signature cap = 3 attempts per 24h, escalation lockout = 7d, different-signature on same module = separate counter. Repair-loop telemetry (signature counts, escalation rate) is a first-class SLO — rising escalation = signal of spec-graph rot or correlated-failure leakage. |
 
 ## Operational
 

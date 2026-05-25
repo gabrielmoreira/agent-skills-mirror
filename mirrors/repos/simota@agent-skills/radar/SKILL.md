@@ -290,6 +290,7 @@ Radar receives bug reports, implementation changes, review findings, coverage ga
 | `references/shift-left-right-testing.md` | Connecting Radar to observability, QAOps, or production feedback loops |
 | `references/modern-testing-dx.md` | Optimizing test DX, feedback loops, and team maturity |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the test/coverage report, deciding adaptive thinking depth at LOCK, or front-loading scope at SCAN. Critical for Radar: P2, P5. |
+| `_common/PROOF_CARRYING.md` | You generate oracles (property + regression + edge-case) in `nexus acceptance` Phase 2. Generated oracles must be deterministic (seed = spec-graph hash) and pass 3× shadow-run on `main` before becoming Gate-blocking. Empty findings without exploration log are rejected as semantically empty. |
 
 ## Operational
 

@@ -2,11 +2,11 @@
 type: instruction
 lifecycle: stable
 inheritance: inheritable
-description: "Platform awareness for VS Code tool system: deferred tools require tool_search, external ingest provides context in remote workspaces"
+description: "Platform awareness for VS Code tool system: deferred tools require tool_search, external ingest provides context in remote workspaces, skill SKILL.md descriptions surface in the slash picker"
 application: "Always active: agents must know which tools are deferred and how to discover them"
 applyTo: "**"
-currency: 2026-05-18
-lastReviewed: 2026-05-18
+currency: 2026-05-24
+lastReviewed: 2026-05-24
 ---
 
 # Tool Awareness
@@ -28,6 +28,33 @@ For common deferred tool categories and search-query patterns, see [tool-awarene
 
 In remote or virtual-filesystem workspaces (GitHub.dev, VS Code Remote, Codespaces), the editor provides codebase context automatically. `semantic_search` and file operations work transparently — no agent action needed.
 
+## Skill Picker Surfacing (VS Code 1.118+)
+
+In 1.118+, `.github/skills/<name>/SKILL.md` files with a non-empty `description` in their frontmatter ALSO surface in the chat slash-command picker (alongside `.github/prompts/*.prompt.md`). Controlled by the experimental setting `github.copilot.chat.skillTool.enabled` (default on).
+
+### Consequence for the brain
+
+When a prompt and a skill share a base name (`/meditate` prompt + `meditation` skill), the picker shows both. This is not a brain defect — the verb-prompt / noun-skill pairing is intentional (prompts are workflow entry points, skills are knowledge bodies). The picker noise is a side effect of the platform surface postdating the brain's design.
+
+### Lever, not stripping
+
+If picker noise is the problem, the lever is the user-level setting:
+
+```jsonc
+// settings.json (user scope)
+"github.copilot.chat.skillTool.enabled": false
+```
+
+**Never strip the SKILL.md `description` to declutter the picker.** The `description` field has three consumers and the picker is the least important of them:
+
+1. **Agent skill discovery (primary)** — every session loads SKILL.md descriptions into the `<skills>` block; this is how the parent agent decides whether to invoke the skill
+2. **Brain QA enforcement** — `scripts/brain-qa.cjs` hard-fails on missing/empty description
+3. **Chat picker tooltip** — the surface visible to humans
+
+Stripping (1) and (2) to fix (3) is a Type III error (right cost, wrong problem). The setting is the right scope.
+
 ## Would Revise If
 
 Revise if VS Code changes the deferred-tool mechanism (e.g. `tool_search` semantics change, deferred tools become directly callable, or external-ingest changes scope in remote workspaces), or if the "search before calling" rule produces no observed failures over a quarter (the rule is no longer load-bearing because the platform changed).
+
+**Skill picker section falsifier**: revise by 2026-08-24 (90 days) or sooner if any of the following fires: (a) VS Code renames or removes `github.copilot.chat.skillTool.enabled`; (b) setting the flag to `false` does not reduce skill-name entries in the slash picker; (c) the brain restructures SKILL.md frontmatter such that `description` ceases to be the agent-discovery signal. First observed contradiction wins.

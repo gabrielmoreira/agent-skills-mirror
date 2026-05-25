@@ -296,6 +296,7 @@ Routing rules:
 | [api-e2e-testing.md](references/api-e2e-testing.md) | User-journey E2E through an API-only interface (Playwright `APIRequestContext` chains, mock-vs-real backend toggle, contract-test follow-up) |
 | [component-testing.md](references/component-testing.md) | Component tests in a real browser (Playwright Component Testing, Cypress Component Testing, Storybook Interactions) |
 | [OPUS_47_AUTHORING.md](../_common/OPUS_47_AUTHORING.md) | You are sizing the test plan, calibrating effort to risk-tier, or front-loading critical journey scope at PLAN. Critical for Voyager: P3, P6. |
+| [PROOF_CARRYING.md](../_common/PROOF_CARRYING.md) | You are invoked from `nexus acceptance` Phase 2 (UI flows + visual regression as Layer 2 oracles) and Phase 3 (adversarial UI users — impatient / mobile / screen-reader / broken-connection / payment-failure personas). Adversarial-finding outputs must include non-trivial exploration logs; empty findings are rejected as semantically empty. |
 
 ## Operational
 

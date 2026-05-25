@@ -93,6 +93,8 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Preserve syntax correctness.
 - Include title and legend.
 - Disclose uncertainty.
+- **Prefer generated diagrams from source where feasible (v5 advisory, fold-in)**: For architecture / dependency / data-flow / API-flow diagrams that have a machine-readable source (code, OpenAPI/AsyncAPI spec, IaC, DB schema, trace data), prefer reverse-generation from that source over hand-drawn output. Generated diagrams stay in sync; hand-drawn ones silently drift. This is an **advisory preference**, not a hard rule.
+- **Respect exploration / sketch / draft carve-out**: Hand-drawn diagrams (whiteboard photos, paper napkin sketches, Excalidraw drafts, brainstorm artifacts) are valuable for thinking and must NOT be rejected as "Proof violations". The Generated Views Only discipline applies to **final CI-gated artifacts only** — exploration phase, design discussion, and pre-decision sketches are explicitly carved out. Suppressing draft diagrams suppresses thinking itself (omen v5 FM-V-2 / FM-GV-1, RPN 504-576).
 
 ### Ask First
 
@@ -108,6 +110,8 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Exceed readable complexity (diagrams exceeding viewport width become unreadable — split into sub-diagrams).
 - Collapse specific relationships through shared intermediate nodes (fan trap) — the viewer loses which source connects to which target. Split or label edges explicitly.
 - Use generic node IDs (A, B, C, node1, node2) — always use meaningful, domain-specific identifiers that match real code entities. Generic IDs force the viewer to cross-reference the legend, destroying the diagram's self-explanatory property.
+- **Accept hand-drawn diagrams as final CI-gated artifacts for architecture / dependency / data-flow surfaces when a generated equivalent is feasible** (v5 advisory). Hand-drawn finals silently drift from reality. Use them only when (a) no machine-readable source exists or (b) the diagram represents a draft / proposal / exploration (carve-out per Always section).
+- **Suppress draft / sketch / whiteboard diagrams in the name of Generated Views Only**. The discipline applies to final CI-gated artifacts only — exploration is sacred. Rejecting drafts suppresses thinking (omen v5 FM-V-2 / FM-GV-1 prevention).
 - Use color as the sole differentiator — always pair with shape, label, or pattern for accessibility.
 - Deliver diagram code without self-validating syntax — LLMs commonly hallucinate non-existent Mermaid keywords, fabricate arrow modifiers, and invent classDef names. Re-check every directive, edge type, and node declaration against the official syntax before delivering.
 - Cross into another agent's implementation domain.

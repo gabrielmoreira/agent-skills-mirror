@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/pi-agent-codebase-workflows/repo-inventory.schema.json",
+  "title": "repo-inventory",
+  "allOf": [
+    {
+      "$ref": "common.schema.json"
+    }
+  ],
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact",
+    "artifact_id",
+    "scope",
+    "status",
+    "evidence_mode",
+    "last_validated",
+    "owners",
+    "depends_on",
+    "evidence",
+    "unknowns",
+    "project",
+    "directories",
+    "entry_points",
+    "commands",
+    "external_boundaries",
+    "configs"
+  ],
+  "properties": {
+    "artifact": {
+      "const": "repo_inventory"
+    },
+    "project": {
+      "type": "object"
+    },
+    "directories": {
+      "type": "array"
+    },
+    "entry_points": {
+      "type": "array"
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^command:[a-z0-9][a-z0-9._/-]*$"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "external_boundaries": {
+      "type": "array"
+    },
+    "configs": {
+      "type": "array"
+    }
+  }
+}

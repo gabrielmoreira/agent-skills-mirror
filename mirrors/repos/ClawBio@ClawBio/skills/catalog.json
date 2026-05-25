@@ -1,37 +1,9 @@
 {
   "version": "1.0.0",
   "generated_by": "scripts/generate_catalog.py",
-  "skill_count": 74,
+  "skill_count": 76,
   "galaxy_tool_count": 8182,
   "skills": [
-    {
-      "name": "article-data-fetcher",
-      "cli_alias": "article-data-fetcher",
-      "description": "Given an article DOI or PubMed ID, discover and download the genomics data files deposited by the authors (VCF, FASTA, H5AD, CSV, BAM, etc.) from public repositories such as GEO, ENA, Zenodo, Figshare, Dryad, and OSF.",
-      "version": "0.1.0",
-      "status": "active",
-      "has_script": true,
-      "has_tests": true,
-      "has_demo": true,
-      "demo_command": "python skills/article-data-fetcher/article_data_fetcher.py --demo",
-      "dependencies": [
-        "requests",
-        "tqdm",
-        "pydantic",
-        "biopython"
-      ],
-      "tags": [
-        "data-download",
-        "genomics",
-        "reproducibility",
-        "geo",
-        "ena",
-        "zenodo",
-        "vcf",
-        "fasta",
-        "h5ad"
-      ]
-    },
     {
       "name": "affinity-proteomics",
       "cli_alias": null,
@@ -120,10 +92,56 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/archaic-introgression/archaic_introgression.py --demo",
+      "demo_command": "python skills/archaic-introgression/pipeline.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [],
+      "chaining_partners": []
+    },
+    {
+      "name": "article-data-fetcher",
+      "cli_alias": null,
+      "description": "Given an article DOI or PubMed ID, discover and download the genomics data files deposited by the authors (VCF, FASTA, H5AD, CSV, JSON, BAM, etc.) from public repositories such as GEO, ENA, Zenodo, Figshare, Dryad, and OSF.",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/article-data-fetcher/article_data_fetcher.py --demo",
+      "dependencies": [
+        "python>=3.11",
+        "requests>=2.31",
+        "biopython>=1.83",
+        "tqdm>=4.66",
+        "pydantic>=2.0"
+      ],
+      "tags": [
+        "data-download",
+        "genomics",
+        "reproducibility",
+        "geo",
+        "ena",
+        "zenodo"
+      ],
+      "trigger_keywords": [
+        "download data from paper",
+        "download genomics data from article",
+        "get VCF from paper",
+        "get FASTA from study",
+        "fetch supplementary data files",
+        "download dataset from publication",
+        "retrieve genomics files from doi",
+        "get raw data from study",
+        "download from GEO",
+        "download from ENA",
+        "fetch h5ad from paper",
+        "get csv from publication",
+        "article data download",
+        "paper dataset download",
+        "download research data",
+        "get files from zenodo",
+        "fetch data from figshare"
+      ],
       "chaining_partners": []
     },
     {
@@ -254,6 +272,49 @@
       ]
     },
     {
+      "name": "busco-assessor",
+      "cli_alias": null,
+      "description": "Genome, transcriptome, and protein completeness assessment via BUSCO v6. Agentic lineage routing from organism description, all three BUSCO modes, auto-lineage support, and full demo mode without the BUSCO binary.",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/busco-assessor/busco_assessor.py --demo",
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "tags": [
+        "busco",
+        "genome-completeness",
+        "assembly-qc",
+        "transcriptome",
+        "lineage",
+        "orthodb",
+        "hmmer",
+        "prokaryote",
+        "eukaryote"
+      ],
+      "trigger_keywords": [
+        "genome completeness",
+        "BUSCO score",
+        "BUSCO assessment",
+        "assembly quality",
+        "check my assembly",
+        "BUSCO genome mode",
+        "completeness metrics",
+        "assembly QC",
+        "transcriptome completeness",
+        "protein set completeness",
+        "auto-lineage",
+        "busco -m genome",
+        "how complete is my genome",
+        "BUSCO bacteria",
+        "run BUSCO"
+      ],
+      "chaining_partners": []
+    },
+    {
       "name": "cell-detection",
       "cli_alias": null,
       "description": "Cell segmentation in fluorescence microscopy images. Supports Cellpose/cpsam (Cellpose 4.0) with additional backends planned. Produces segmentation masks, per-cell morphology metrics (area, diameter, centroid, eccentricity), overlay figures, and a report.md.",
@@ -284,35 +345,6 @@
         "segmentation mask"
       ],
       "chaining_partners": []
-    },
-    {
-      "name": "crispr-screen-triage",
-      "cli_alias": "crispr-triage",
-      "description": "Deterministic CRISPR screen hit ranking from local guide-level count tables",
-      "version": "0.1.0",
-      "status": "mvp",
-      "has_script": true,
-      "has_tests": true,
-      "has_demo": true,
-      "demo_command": "python clawbio.py run crispr-triage --demo",
-      "dependencies": [
-        "python>=3.10"
-      ],
-      "tags": [
-        "crispr",
-        "screen",
-        "triage"
-      ],
-      "trigger_keywords": [
-        "CRISPR screen triage",
-        "guide count ranking",
-        "rank CRISPR hits",
-        "depleted guide screen"
-      ],
-      "chaining_partners": [
-        "target-validation-scorer",
-        "omics-target-evidence-mapper"
-      ]
     },
     {
       "name": "claw-ancestry-pca",
@@ -471,7 +503,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/clinical-trial-finder/opentargets.py --demo",
+      "demo_command": "python skills/clinical-trial-finder/euctr.py --demo",
       "dependencies": [
         "python>=3.11"
       ],
@@ -505,7 +537,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/clinical-variant-reporter/clinical_variant_reporter.py --demo",
+      "demo_command": "python skills/clinical-variant-reporter/acmg_engine.py --demo",
       "dependencies": [],
       "tags": [
         "acmg",
@@ -554,6 +586,35 @@
       "chaining_partners": [
         "pharmgx-reporter",
         "gwas-lookup"
+      ]
+    },
+    {
+      "name": "crispr-screen-triage",
+      "cli_alias": "crispr-triage",
+      "description": "Deterministic CRISPR screen hit ranking from local guide-level count tables",
+      "version": "0.1.0",
+      "status": "mvp",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python clawbio.py run crispr-triage --demo",
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "tags": [
+        "crispr",
+        "screen",
+        "triage"
+      ],
+      "trigger_keywords": [
+        "CRISPR screen triage",
+        "guide count ranking",
+        "rank CRISPR hits",
+        "depleted guide screen"
+      ],
+      "chaining_partners": [
+        "target-validation-scorer",
+        "omics-target-evidence-mapper"
       ]
     },
     {
@@ -1154,7 +1215,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/illumina-bridge/illumina_providers.py --demo",
+      "demo_command": "python skills/illumina-bridge/illumina_bridge.py --demo",
       "dependencies": [],
       "tags": [
         "illumina",
@@ -1209,7 +1270,7 @@
     {
       "name": "ld-1000g-region-compute",
       "cli_alias": null,
-      "description": "Compute pairwise r² between a lead variant and every variant in a window\nusing the 1000 Genomes Phase 3 GRCh38 reference panel, ancestry-stratified.\nUse when an agent needs LD coloring for a regional plot or LD pruning\naround a candidate causal variant. Single client (on-demand region fetch\nfrom EBI 1000G FTP via plink 1.9); no multi-GB cold-start.\n",
+      "description": "Compute pairwise r² between a lead variant and every variant in a window\nusing the 1000 Genomes Phase 3 GRCh38 reference panel, ancestry-stratified.\nUse when an agent needs LD coloring for a regional plot or LD pruning\naround a candidate causal variant. Single client (on-demand region fetch\nfrom EBI 1000G FTP); no multi-GB cold-start.\n",
       "version": "0.1.0",
       "status": "planned",
       "has_script": true,
@@ -1232,10 +1293,11 @@
       ],
       "trigger_keywords": [
         "ld around lead",
-        "1000G LD",
-        "plink r2",
-        "linkage disequilibrium",
-        "regional LD"
+        "ld region 1000g",
+        "r-squared 1000g phase 3",
+        "ancestry-stratified ld",
+        "locuszoom ld coloring",
+        "1000 genomes ld panel"
       ],
       "chaining_partners": []
     },
@@ -1273,6 +1335,34 @@
         "recent papers on"
       ],
       "chaining_partners": []
+    },
+    {
+      "name": "marker-dominance-mapper",
+      "cli_alias": "marker-map",
+      "description": "Deterministic marker-dominance region mapping from local spot-count CSVs",
+      "version": "0.1.0",
+      "status": "mvp",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python clawbio.py run marker-map --demo",
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "tags": [
+        "marker-dominance",
+        "spot-map",
+        "marker-mapping"
+      ],
+      "trigger_keywords": [
+        "marker dominance mapping",
+        "map marker spots",
+        "marker-based tissue regions"
+      ],
+      "chaining_partners": [
+        "scrna-orchestrator",
+        "diff-visualizer"
+      ]
     },
     {
       "name": "mendelian-randomisation",
@@ -1337,34 +1427,6 @@
       ],
       "trigger_keywords": [],
       "chaining_partners": []
-    },
-    {
-      "name": "marker-dominance-mapper",
-      "cli_alias": "marker-map",
-      "description": "Deterministic marker-dominance region mapping from local spot-count CSVs",
-      "version": "0.1.0",
-      "status": "mvp",
-      "has_script": true,
-      "has_tests": true,
-      "has_demo": true,
-      "demo_command": "python clawbio.py run marker-map --demo",
-      "dependencies": [
-        "python>=3.10"
-      ],
-      "tags": [
-        "marker-dominance",
-        "spot-map",
-        "marker-mapping"
-      ],
-      "trigger_keywords": [
-        "marker dominance mapping",
-        "map marker spots",
-        "marker-based tissue regions"
-      ],
-      "chaining_partners": [
-        "scrna-orchestrator",
-        "diff-visualizer"
-      ]
     },
     {
       "name": "multiqc-reporter",
@@ -1448,6 +1510,46 @@
       "chaining_partners": []
     },
     {
+      "name": "nfcore-rnaseq-wrapper",
+      "cli_alias": "rnaseq-pipeline",
+      "description": "Wrapper skill for running nf-core/rnaseq bulk RNA-seq preprocessing (FASTQ or BAM reprocessing) with strict preflight, reproducibility outputs, and downstream handoff to ClawBio bulk RNA-seq DE skills.",
+      "version": "0.1.0",
+      "status": "mvp",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python clawbio.py run rnaseq-pipeline --demo",
+      "dependencies": [
+        "python>=3.11"
+      ],
+      "tags": [
+        "rnaseq",
+        "bulk-rna-seq",
+        "nextflow",
+        "nf-core",
+        "fastq",
+        "preprocessing",
+        "counts"
+      ],
+      "trigger_keywords": [
+        "bulk RNA-seq preprocessing",
+        "nf-core rnaseq",
+        "run rnaseq from fastq",
+        "preprocess RNA-seq FASTQs",
+        "FASTQ to count matrix",
+        "STAR Salmon RNA-seq pipeline",
+        "RSEM RNA-seq pipeline",
+        "HISAT2 RNA-seq alignment",
+        "bowtie2 salmon prokaryotic rnaseq"
+      ],
+      "chaining_partners": [
+        "rnaseq-de",
+        "diff-visualizer",
+        "bio-orchestrator",
+        "multiqc-reporter"
+      ]
+    },
+    {
       "name": "nfcore-scrnaseq-wrapper",
       "cli_alias": "scrnaseq-pipeline",
       "description": "Wrapper skill for running nf-core/scrnaseq upstream single-cell RNA-seq preprocessing from FASTQ with strict preflight, reproducibility outputs, and downstream handoff to ClawBio scRNA skills.",
@@ -1492,7 +1594,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/nutrigx-advisor/parse_input.py --demo",
+      "demo_command": "python skills/nutrigx-advisor/score_variants.py --demo",
       "dependencies": [],
       "tags": [
         "nutrigenomics",
@@ -1745,7 +1847,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/pubmed-summariser/pubmed_summariser.py --demo",
+      "demo_command": "python skills/pubmed-summariser/pubmed_api.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [
@@ -2182,7 +2284,7 @@
     {
       "name": "ukb-ppp-region-fetch",
       "cli_alias": null,
-      "description": "Fetch a region of plasma cis-pQTL summary statistics from UKB-PPP\n(Sun 2023 Nature) via Synapse. Use when an agent needs pQTL beta / SE /\np-value for every variant in a window around a protein's TSS for one\n(protein, ancestry) Olink-Explore-3072 measurement. Bundled-slice path\nrequires no auth for the canonical demo cohort; arbitrary queries fall\nthrough to a live Synapse fetch that requires a free PAT. Input: protein,\nancestry, chromosome, start, end. Output: harmonised TSV slice.\n",
+      "description": "Fetch a regional slice of plasma pQTL summary statistics from the UK\nBiobank Pharma Proteomics Project (UKB-PPP; Sun 2023 Nature) for a\nspecific (protein, ancestry) measurement. Use when an agent needs\nper-variant beta / SE / p-value around a coloc-lead variant for\ndownstream colocalisation, Mendelian randomisation, or regional\nplotting against a pQTL exposure. The canonical use case is the\ncis-window around the protein's coding gene TSS, but UKB-PPP releases\nfull-genome summary stats per protein so any GRCh38 window (including\ntrans loci) is supported when the user supplies an explicit\n(chromosome, start_bp, end_bp). Input: protein_label (HGNC or\nUniProt), ancestry, chromosome, start_bp, end_bp. Output: harmonised\nTSV slice + manifest + human-readable report.\n",
       "version": "0.1.0",
       "status": "planned",
       "has_script": true,

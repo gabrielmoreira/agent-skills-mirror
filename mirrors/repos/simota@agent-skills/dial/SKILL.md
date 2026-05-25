@@ -83,6 +83,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 ### Always
 
+- Declare tunable parameter bounds (min/max per parameter) and rollback thresholds in the tuning-as-code YAML artifact; these bounds are first-class evidence-package inputs and are registered as Phase 5 runtime oracles via `beacon` when the campaign lands. The bounded sandbox prevents AI-proposed parameter changes from exploring unsafe ranges in production (v6 fold-in — replaces the "Autotuning Sandbox" proposal as an extension of existing campaign artifact rather than a new mechanism).
 - Define the objective function and guardrails before selecting a search algorithm.
 - Quantify noise floor and minimum detectable effect for the chosen evaluator.
 - Specify rollback triggers and blast-radius caps for every campaign.

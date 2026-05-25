@@ -35,21 +35,31 @@ After installation, invoke as:
 
 ## Compact data format (`plugins/awesome-chatgpt-search/data/`)
 
-Data is split into 16 per-category JSON files (4–73 KB each, all under the Read tool's limits).
-The four largest categories (Chatbots, NLP, Openai, Others) are split into `-a` / `-b` halves:
+Data is split into 18 per-category JSON files (5–70 KB each, all under the Read tool's limits).
+The six categories with more than ~200 entries (Chatbots, NLP, Openai, Others, Browser-extensions, CLIs) are split into `-a` / `-b` halves:
 
 ```
-repos-awesome-lists.json      repos-prompts.json
-repos-chatbots-a.json         repos-chatbots-b.json
-repos-browser-extensions.json repos-clis.json
-repos-reimplementations.json  repos-tutorials.json
-repos-nlp-a.json              repos-nlp-b.json
-repos-langchain.json          repos-unity.json
-repos-openai-a.json           repos-openai-b.json
-repos-others-a.json           repos-others-b.json
+repos-awesome-lists.json          repos-prompts.json
+repos-chatbots-a.json             repos-chatbots-b.json
+repos-browser-extensions-a.json   repos-browser-extensions-b.json
+repos-clis-a.json                 repos-clis-b.json
+repos-reimplementations.json      repos-tutorials.json
+repos-nlp-a.json                  repos-nlp-b.json
+repos-langchain.json              repos-unity.json
+repos-openai-a.json               repos-openai-b.json
+repos-others-a.json               repos-others-b.json
 ```
 
-Each file is a flat JSON array optimised for Claude to read and score directly:
+Each file is a JSON array with **one record per line** (a valid array, but newline-delimited) so the search skill can `grep` for matching repos and score only those lines — instead of reading whole files into context, which keeps token use low:
+
+```json
+[
+{"u":"https://github.com/user/repo","n":"repo-name","d":"...","c":"Category","l":"Python","t":"tag1,tag2","sc":6.5,"st":1234,"ns":6.4},
+...
+]
+```
+
+Expanded, each record has these fields:
 
 ```json
 [
@@ -60,12 +70,14 @@ Each file is a flat JSON array optimised for Claude to read and score directly:
     "c": "Category",
     "l": "Python",
     "t": "tag1,tag2,tag3",
-    "sc": 6.5
+    "sc": 6.5,
+    "st": 1234,
+    "ns": 6.4
   }
 ]
 ```
 
-Fields: `u` URL · `n` name · `d` description · `c` category · `l` language (optional) · `t` topics comma-separated (optional) · `sc` quality score 0–8
+Fields: `u` URL · `n` name · `d` description · `c` category · `l` language (optional) · `t` topics comma-separated (optional) · `sc` quality score 0–8 · `st` star count (optional) · `ns` normalized star score 0–10 (optional)
 
 ## Data file format
 

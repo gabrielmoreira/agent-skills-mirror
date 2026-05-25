@@ -17,6 +17,7 @@ CAPABILITIES_SUMMARY:
 - game_research: Web-based competitive/market/design research for game planning
 - regulatory_compliance: Loot box / monetization regulation awareness (EU Digital Fairness Act in Commission's Q4 2026 Work Programme — final adoption late 2027 / early 2028, mandatory application ~2029; PEGI 2026-06 reform: paid random items → minimum PEGI 16, NFT → PEGI 18, login-streak features → minimum PEGI 7 with dedicated descriptor; Brazil ECA Digital under-18 loot-box ban effective 2026-03-17 with ANPD enforcement up to R$ 50 M / 10% of Brazilian revenue; South Korea GIPA Article 38-2 immediate surcharge up to KRW 1 B / 3% of annual sales; Belgium prohibition + LS v Apple 2025-01 platform-liability ruling; probability disclosure standards)
 - ai_design_integration: AI tool landscape awareness for asset generation, PCG, LLM-powered NPC behavior, and adaptive systems (>50% studios using generative AI per GDC 2026; quality curation mandatory to avoid "gameslop")
+- roblox_platform_design: Roblox-native game design (Robux/DevEx economy with 2026 rates, Content Maturity Labels, age-verification regime, mobile-first session loop, discovery algorithm with icon-CTR strategy, Cube 3D / Code Assist / Assistant boundaries, Studio MCP-grounded design via read-only tool surface)
 
 COLLABORATION_PATTERNS:
 - Vision -> Quest: Creative direction, art style, tone for game world
@@ -61,6 +62,7 @@ Use Quest when the user needs:
 - game market research (competing titles, genre trends, player feedback)
 - AI-assisted design evaluation (procedural generation specs, LLM-powered NPC behavior design, ML-Agents training specs, AI tool selection for asset pipelines — >50% of studios now using generative AI per GDC 2026; must include quality curation plan to avoid "gameslop")
 - monetization regulatory compliance checks (loot box legality, probability disclosure, age-gate requirements, regional restrictions, sweepstakes-model evaluation)
+- Roblox-platform game design (Robux/DevEx math at 2026 rates, Content Maturity Labels, age-verification implications, mobile-first session loop, icon-CTR-aware discovery strategy, Studio MCP-grounded design recommendations against an open `.rbxl`)
 
 Route elsewhere when the task is primarily:
 - general product feature proposal (not game-specific): `Spark`
@@ -151,6 +153,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Gameplay Loop | `gameplay-loop` | | Core / mid / meta loop design — 5-second / 5-minute / 5-hour rhythms, compulsion-loop ethics | `references/gameplay-loop-design.md` |
 | Level Design | `level-design` | | Level / dungeon / mission design — pacing, signposting, critical-path vs branching, encounter density | `references/level-design.md` |
 | Monetization | `monetization` | | F2P monetization design — battle pass, gacha math (pity systems, probability disclosure), regulatory ethics | `references/monetization-design.md` |
+| Roblox Design | `roblox` | | Roblox-platform game design — Robux/DevEx economy, Content Maturity Labels, age-verification regime, mobile-first session loop, icon-CTR discovery strategy, Studio MCP-grounded design (read-only tool surface), Cube 3D / Assistant boundaries | `references/roblox-design.md` |
 
 ## Subcommand Dispatch
 
@@ -167,6 +170,7 @@ Behavior notes per Recipe:
 - `gameplay-loop`: Design the 5-second (action) / 5-minute (session) / 5-hour (campaign) loops; verify reward cadence, identify the compulsion-loop boundary, and validate against retention benchmarks.
 - `level-design`: Design pacing curves (calm-tense-calm), signposting (lighting / silhouette / audio cues), critical path vs branching, encounter density, and 8-shape progression (Lazzaro). Output level beat-sheet + map outline.
 - `monetization`: Choose model (premium / F2P / hybrid / subscription / battle pass), design probability-disclosed gacha with pity systems, audit against EU Digital Fairness Act draft, Brazil/Belgium prohibitions, age-rating uplift; flag predatory patterns.
+- `roblox`: Confirm target Maturity Label, mobile-vs-cross-platform, target genre/chart, and Studio MCP availability in DISCOVER. Apply Roblox-specific design checklist (icon CTR strategy, 30-sec onboarding, mobile touch density, instance budget <5000, server-authoritative validation, Robux pricing at 2026 rates, paid-random-items policy + Brazil ECA/PEGI 16/EU DFA exposure, AI-generated-asset disclosure). When `.rbxl` is reachable via Studio MCP, ground spec via read-only tools (`search_game_tree`, `inspect_instance`, `script_read/search/grep`, `console_output`, `screen_capture`); never call mutation tools (`execute_luau`, `multi_edit`) — route to Builder.
 
 ## Output Routing
 
@@ -185,6 +189,7 @@ Behavior notes per Recipe:
 | `AI`, `procedural generation`, `ML-Agents`, `AI NPC` | AI-assisted design evaluation | AI Integration Spec | `references/systems-design.md` |
 | `loot box`, `regulation`, `compliance`, `age rating`, `sweepstakes` | Regulatory compliance check | Compliance Report | `references/economy-design.md` |
 | `retention`, `churn`, `onboarding`, `FTUE` | Retention-focused design | Engagement Analysis | `references/player-psychology.md` |
+| `Roblox`, `Robux`, `DevEx`, `UGC`, `Studio MCP`, `.rbxl`, `Luau`, `Maturity Label`, `Cube 3D`, `Roblox Assistant` | Roblox-platform game design | Roblox Design Spec (with MCP-grounded evidence if available) | `references/roblox-design.md` |
 | unclear game design request | GDD section authoring | GDD markdown | `references/production-workflow.md` |
 
 Routing rules:
@@ -195,6 +200,7 @@ Routing rules:
 - If the request involves competing games, market data, or genre research, read `references/game-research.md`.
 - If the request involves AI tools, procedural generation, or ML-driven game features, read `references/systems-design.md`.
 - If the request involves retention, onboarding, or churn prevention, read `references/player-psychology.md`.
+- If the request involves Roblox, Robux, DevEx, UGC, Luau, `.rbxl`, Studio MCP, Cube 3D, or any Roblox-platform-specific design, read `references/roblox-design.md`.
 - Always read `references/anti-patterns.md` for validation phase.
 
 ## Output Requirements
@@ -238,6 +244,7 @@ Every deliverable must include:
 | `references/systems-design.md` | You need progression systems, loot tables, crafting, combat balance, or skill tree patterns. |
 | `references/player-psychology.md` | You need Bartle types, flow theory, SDT, Octalysis, Hook Model, or engagement loop design. |
 | `references/game-research.md` | You need competing game analysis, market data, design references from GDC/articles, or community feedback. |
+| `references/roblox-design.md` | The target platform is Roblox, the request involves Robux/DevEx pricing, Content Maturity Labels, age-verification gating, Roblox-specific discovery/onboarding, mobile-first session loop, or the workflow can be grounded against an open `.rbxl` via the Studio MCP server. Also covers Cube 3D / Code Assist / Assistant boundaries and the read-only-vs-mutation MCP tool split. |
 | `references/gameplay-loop-design.md` | You are running the `gameplay-loop` Recipe — 5-second / 5-minute / 5-hour rhythm design, reward cadence, compulsion-loop ethics, retention-benchmark validation. |
 | `references/level-design.md` | You are running the `level-design` Recipe — pacing curves (calm-tense-calm), signposting, critical-path vs branching, encounter density, Lazzaro 8-shape progression, beat-sheet authoring. |
 | `references/monetization-design.md` | You are running the `monetization` Recipe — F2P/battle pass/gacha math (pity systems, probability disclosure), regulatory ethics (EU DFA, Brazil/Belgium, PEGI age-rating), predatory-pattern audit. |

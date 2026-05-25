@@ -1,28 +1,5 @@
 ---
-description: "Safe-start pass 8: hand off new project to safe-change workflow"
-argument-hint: "[handoff focus]"
+description: "Structured safe-start pass 8 handoff"
+argument-hint: "[focus]"
 ---
-Use `/skill:safe-start` Pass 8 — Handoff to Safe Change.
-
-Handoff focus: $ARGUMENTS
-
-Verify project is ready for documented-codebase work.
-
-Check:
-- Root `AGENTS.md` exists and is operational
-- `docs/agent/` artifacts cover architecture, data model, invariants, dependency rules, tests, risks, and change guide
-- Validation baseline commands are known and recently run
-- First vertical slice is implemented or explicitly deferred
-- Next work items are small enough for `safe-change`
-
-Produce/update:
-- `docs/agent/CHANGE_GUIDE.md`
-- `docs/agent/RISK_REGISTER.md`
-- optional `docs/agent/BACKLOG.md`
-
-Final output:
-- Handoff status: ready / partial / blocked
-- Validation summary
-- Remaining risks
-- Next recommended work items
-- Explicit instruction: future feature/bug/refactor work should use `/skill:safe-change`
+Before writing/updating structured artifacts, after loading the selected skill, load shared refs relative to that skill: `../_shared/references/artifact-api.md`, `../_shared/references/schemas/common.schema.json`, and only the matching artifact schema(s). Follow the skill Structured Artifact Write/Update Protocol for scope resolution, stable IDs, upserts, evidence, reference integrity, status transitions, deterministic YAML formatting, and validation. Resolve `<docs-root>` exactly per the selected skill: canonicalize `workspace_root`, use repo-local `<workspace_root>/docs/agent/api` only when that skill says repo-local applies and the directory exists, otherwise strip one leading slash/backslash from `workspace_root`, replace every slash, backslash, and colon with `-`, wrap with `--`, and use `~/.pi/agent/workspaces/<workspace-fingerprint>/docs/agent/api`. Use `/skill:safe-start` Pass 8. Verify structured artifacts are ready for `safe-change`; update `change-guide.yaml`, `risk-register.yaml`, `repo-inventory.yaml`, `design-issues.yaml`, and `scopes.yaml` as needed. YAML only. Focus: $ARGUMENTS.

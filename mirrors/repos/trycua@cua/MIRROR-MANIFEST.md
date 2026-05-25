@@ -75,8 +75,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/typing-input/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/typing-input/CLAUDE.md) |
 | 15 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/video-player/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/video-player/CLAUDE.md) |
 | 16 | ✓ | [`libs/cua-bench/example_tasks/minesweeper_game_env/CLAUDE.md`](libs/cua-bench/example_tasks/minesweeper_game_env/CLAUDE.md) |
-| 17 | ✓ | [`libs/cua-driver-rs/Skills/cua-driver-rs/SKILL.md`](libs/cua-driver-rs/Skills/cua-driver-rs/SKILL.md) |
-| 18 | ✓ | [`libs/cua-driver/Skills/cua-driver/SKILL.md`](libs/cua-driver/Skills/cua-driver/SKILL.md) |
+| 17 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/SKILL.md`](libs/cua-driver/rust/Skills/cua-driver/SKILL.md) |
+| 18 | ✓ | [`libs/cua-driver/swift/Skills/cua-driver/SKILL.md`](libs/cua-driver/swift/Skills/cua-driver/SKILL.md) |
 | 19 | ✓ | [`libs/typescript/cua-cli/CLAUDE.md`](libs/typescript/cua-cli/CLAUDE.md) |
 | 20 | ✓ | [`skills/gui-automation/references/command-reference.md`](skills/gui-automation/references/command-reference.md) |
 | 21 | ✓ | [`skills/gui-automation/SKILL.md`](skills/gui-automation/SKILL.md) |

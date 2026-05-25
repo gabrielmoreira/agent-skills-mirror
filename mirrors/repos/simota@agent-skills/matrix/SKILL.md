@@ -263,6 +263,7 @@ When results are already available (Remap mode), also include:
 - Read [equiv-class-bva.md](~/.claude/skills/matrix/references/equiv-class-bva.md) when axes are input ranges (integers, strings, continuous values) and you need equivalence partitioning + BVA + one-defect-per-negative-case discipline.
 - Read [risk-weighted-coverage.md](~/.claude/skills/matrix/references/risk-weighted-coverage.md) when prioritizing combinations by RPN / Action Priority or integrating with FMEA output from omen.
 - Read [\_common/OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md) when you are sizing the combinatorial plan, deciding adaptive thinking depth at t-way strength, or front-loading domain/axes/target at SCAN. Critical for Matrix: P3, P5.
+- Read [\_common/PROOF_CARRYING.md](~/.claude/skills/_common/PROOF_CARRYING.md) when generating pairwise / orthogonal-array story sets for `vrt_proof` in `nexus acceptance` Phase 2B per PD-2 Matrix Sampling Policy. Default to 2-way coverage; full N-way reserved for Tier-S critical paths. Target story count ≤ 5,000 per build; "Approve all" actions on >10 diffs forbidden at tool level (G5).
 
 ## Operational
 

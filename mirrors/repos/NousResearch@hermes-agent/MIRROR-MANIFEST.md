@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NousResearch/hermes-agent` — 26 default patterns, 0 followed patterns, 655 file(s) materialized.
+Mirror of `NousResearch/hermes-agent` — 26 default patterns, 0 followed patterns, 656 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NousResearch/hermes-agent` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 655 |
+| Files         | 656 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -701,19 +701,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 640 | ✓ | [`skills/social-media/xurl/SKILL.md`](skills/social-media/xurl/SKILL.md) |
 | 641 | ✓ | [`skills/software-development/debugging-hermes-tui-commands/SKILL.md`](skills/software-development/debugging-hermes-tui-commands/SKILL.md) |
 | 642 | ✓ | [`skills/software-development/hermes-agent-skill-authoring/SKILL.md`](skills/software-development/hermes-agent-skill-authoring/SKILL.md) |
-| 643 | ✓ | [`skills/software-development/node-inspect-debugger/SKILL.md`](skills/software-development/node-inspect-debugger/SKILL.md) |
-| 644 | ✓ | [`skills/software-development/plan/SKILL.md`](skills/software-development/plan/SKILL.md) |
-| 645 | ✓ | [`skills/software-development/python-debugpy/SKILL.md`](skills/software-development/python-debugpy/SKILL.md) |
-| 646 | ✓ | [`skills/software-development/requesting-code-review/SKILL.md`](skills/software-development/requesting-code-review/SKILL.md) |
-| 647 | ✓ | [`skills/software-development/spike/SKILL.md`](skills/software-development/spike/SKILL.md) |
-| 648 | ✓ | [`skills/software-development/subagent-driven-development/references/context-budget-discipline.md`](skills/software-development/subagent-driven-development/references/context-budget-discipline.md) |
-| 649 | ✓ | [`skills/software-development/subagent-driven-development/references/gates-taxonomy.md`](skills/software-development/subagent-driven-development/references/gates-taxonomy.md) |
-| 650 | ✓ | [`skills/software-development/subagent-driven-development/SKILL.md`](skills/software-development/subagent-driven-development/SKILL.md) |
-| 651 | ✓ | [`skills/software-development/systematic-debugging/SKILL.md`](skills/software-development/systematic-debugging/SKILL.md) |
-| 652 | ✓ | [`skills/software-development/test-driven-development/SKILL.md`](skills/software-development/test-driven-development/SKILL.md) |
-| 653 | ✓ | [`skills/software-development/writing-plans/SKILL.md`](skills/software-development/writing-plans/SKILL.md) |
-| 654 | ✓ | [`skills/yuanbao/SKILL.md`](skills/yuanbao/SKILL.md) |
-| 655 | ✓ | [`website/docs/user-guide/features/skills.md`](website/docs/user-guide/features/skills.md) |
+| 643 | ✓ | [`skills/software-development/hermes-s6-container-supervision/SKILL.md`](skills/software-development/hermes-s6-container-supervision/SKILL.md) |
+| 644 | ✓ | [`skills/software-development/node-inspect-debugger/SKILL.md`](skills/software-development/node-inspect-debugger/SKILL.md) |
+| 645 | ✓ | [`skills/software-development/plan/SKILL.md`](skills/software-development/plan/SKILL.md) |
+| 646 | ✓ | [`skills/software-development/python-debugpy/SKILL.md`](skills/software-development/python-debugpy/SKILL.md) |
+| 647 | ✓ | [`skills/software-development/requesting-code-review/SKILL.md`](skills/software-development/requesting-code-review/SKILL.md) |
+| 648 | ✓ | [`skills/software-development/spike/SKILL.md`](skills/software-development/spike/SKILL.md) |
+| 649 | ✓ | [`skills/software-development/subagent-driven-development/references/context-budget-discipline.md`](skills/software-development/subagent-driven-development/references/context-budget-discipline.md) |
+| 650 | ✓ | [`skills/software-development/subagent-driven-development/references/gates-taxonomy.md`](skills/software-development/subagent-driven-development/references/gates-taxonomy.md) |
+| 651 | ✓ | [`skills/software-development/subagent-driven-development/SKILL.md`](skills/software-development/subagent-driven-development/SKILL.md) |
+| 652 | ✓ | [`skills/software-development/systematic-debugging/SKILL.md`](skills/software-development/systematic-debugging/SKILL.md) |
+| 653 | ✓ | [`skills/software-development/test-driven-development/SKILL.md`](skills/software-development/test-driven-development/SKILL.md) |
+| 654 | ✓ | [`skills/software-development/writing-plans/SKILL.md`](skills/software-development/writing-plans/SKILL.md) |
+| 655 | ✓ | [`skills/yuanbao/SKILL.md`](skills/yuanbao/SKILL.md) |
+| 656 | ✓ | [`website/docs/user-guide/features/skills.md`](website/docs/user-guide/features/skills.md) |
 
 ---
 

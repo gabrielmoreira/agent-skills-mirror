@@ -75,7 +75,7 @@ The workspace already has Edition content with local modifications. Running the 
 
 3. **Render the marker** at `.github/.act-heir.json` with `notes` set to:
 
-   > Registered retroactively (path-1 quick register). N edition-owned files diverge locally and will be overwritten on next upgrade-self. Run `/finalize-migration` to move heir-specific content into `local/` overlays before upgrading.
+   > Registered retroactively (path-1 quick register). N edition-owned files diverge locally and will be overwritten on next upgrade-self. Move heir-specific content into `local/` overlays before upgrading.
 
 4. **Copy only the missing files** from Edition into the target. Do not touch existing files.
 
@@ -83,7 +83,7 @@ The workspace already has Edition content with local modifications. Running the 
 
 6. Stage but do NOT commit. Suggest commit message: `chore: register as ACT heir (path-1 quick register)`.
 
-7. Surface the divergence list to the user with a clear next step: *"These N files are locally modified copies of Edition-owned content. Before your next `/upgrade`, run `/finalize-migration` to move heir-specific changes into `local/` overlays. Otherwise the next upgrade will silently overwrite them."*
+7. Surface the divergence list to the user with a clear next step: *"These N files are locally modified copies of Edition-owned content. Before your next `/upgrade`, move heir-specific changes into `local/` overlays. Otherwise the next upgrade will silently overwrite them."*
 
 ## Path D — Already a Heir
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AmrDab/clawdcursor` — 26 default patterns, 5 followed patterns, 10 file(s) materialized.
+Mirror of `AmrDab/clawdcursor` — 26 default patterns, 4 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `AmrDab/clawdcursor` — 26 default patterns, 5 followed patterns, 10 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 10 |
+| Followed pats | 4 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,7 +52,6 @@ Mirror of `AmrDab/clawdcursor` — 26 default patterns, 5 followed patterns, 10 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `README.md`
-- `CHANGELOG.md`
 - `docs/guide-marketplace.md`
 - `SECURITY.md`
 - `CONTRIBUTING.md`
@@ -68,11 +67,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`native/README.md`](native/README.md) |
 | 4 | ✓ | [`seed-registry/README.md`](seed-registry/README.md) |
 | 5 | ✓ | [`SKILL.md`](SKILL.md) |
-| 6 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 7 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 8 | → | [`docs/guide-marketplace.md`](docs/guide-marketplace.md) |
-| 9 | → | [`README.md`](README.md) |
-| 10 | → | [`SECURITY.md`](SECURITY.md) |
+| 6 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 7 | → | [`docs/guide-marketplace.md`](docs/guide-marketplace.md) |
+| 8 | → | [`README.md`](README.md) |
+| 9 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

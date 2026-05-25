@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/pi-agent-codebase-workflows/architecture.schema.json",
+  "title": "architecture",
+  "allOf": [
+    {
+      "$ref": "common.schema.json"
+    }
+  ],
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact",
+    "artifact_id",
+    "scope",
+    "status",
+    "evidence_mode",
+    "last_validated",
+    "owners",
+    "depends_on",
+    "evidence",
+    "unknowns",
+    "architecture",
+    "components",
+    "dependency_direction",
+    "execution_flows",
+    "side_effect_boundaries"
+  ],
+  "properties": {
+    "artifact": {
+      "const": "architecture"
+    },
+    "architecture": {
+      "type": "object"
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^component:[a-z0-9][a-z0-9._/-]*$"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "dependency_direction": {
+      "type": "object"
+    },
+    "execution_flows": {
+      "type": "array"
+    },
+    "side_effect_boundaries": {
+      "type": "array"
+    }
+  }
+}

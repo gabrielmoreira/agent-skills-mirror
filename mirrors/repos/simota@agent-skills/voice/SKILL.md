@@ -238,6 +238,7 @@ Overlap boundaries:
 | `references/thematic-coding.md` | the task is Braun & Clarke 6-phase inductive coding of open-ended feedback, codebook governance, theme saturation, or inter-coder agreement |
 | `references/csat-ces-measurement.md` | the task is CSAT / CES instrument design, benchmark mapping, touchpoint selection, or combined CSAT × CES × NPS triangulation |
 | `_common/OPUS_47_AUTHORING.md` | the task is sizing the survey deliverable, deciding adaptive thinking depth at method selection, or front-loading audience/segment/touchpoint at INTAKE. Critical for Voice: P3, P5. |
+| `_common/GROWTH_BRAND_PROOF.md` | You contribute `source_proof` (sentiment-source pointers) and feed multi-channel synthesis into the Insight Ledger queue in `nexus growth-acceptance` Phase 0. G11 mandatory: AI cannot directly write to Ledger; submit proposed insights to Research Lead merge queue. Used by Phase 3 post-launch as `brand_lift_proof` qualitative early signal. |
 
 ## Operational
 

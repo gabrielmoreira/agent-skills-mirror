@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/pi-agent-codebase-workflows/change-guide.schema.json",
+  "title": "change-guide",
+  "allOf": [
+    {
+      "$ref": "common.schema.json"
+    }
+  ],
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact",
+    "artifact_id",
+    "scope",
+    "status",
+    "evidence_mode",
+    "last_validated",
+    "owners",
+    "depends_on",
+    "evidence",
+    "unknowns",
+    "change_workflows",
+    "routing",
+    "doc_update_rules",
+    "checklists"
+  ],
+  "properties": {
+    "artifact": {
+      "const": "change_guide"
+    },
+    "change_workflows": {
+      "type": "array"
+    },
+    "routing": {
+      "type": "object"
+    },
+    "doc_update_rules": {
+      "type": "array"
+    },
+    "checklists": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}

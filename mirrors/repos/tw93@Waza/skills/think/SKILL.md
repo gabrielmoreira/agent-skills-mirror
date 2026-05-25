@@ -94,6 +94,14 @@ Get approval before proceeding. If the user rejects, ask specifically what did n
 
 **No placeholders in approved plans.** Every step must be concrete before approval. Forbidden patterns: TBD, TODO, "implement later," "similar to step N," "details to be determined." A plan with placeholders is a promise to plan later.
 
+**Phase independence.** If the plan has multiple phases, each phase must be independently mergeable: after Phase N ships, the system is in a usable state, even if N+1 never lands. Plans that require all phases to complete before anything works are fragile (one stuck phase blocks the whole release) and waste review effort. If the work cannot be cut into mergeable phases, say so and ship it as one phase instead of pretending it is staged.
+
+**Plan red flags (self-check before handoff):**
+- A phase depends on the next phase to be useful (cannot ship alone).
+- A "Phase 0: investigate / spike" exists. Investigation belongs before the plan, not inside it.
+
+Either red flag means the plan is not ready. Resolve it before handing off.
+
 ## Implementation Handoff
 
 A finished plan must be executable by another engineer or agent without re-deciding the direction. Include:

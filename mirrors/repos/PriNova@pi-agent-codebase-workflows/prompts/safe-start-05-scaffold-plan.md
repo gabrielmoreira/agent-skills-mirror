@@ -1,29 +1,5 @@
 ---
-description: "Safe-start pass 5: plan minimal scaffold and tooling before code"
-argument-hint: "[framework/tooling preference]"
+description: "Structured safe-start pass 5 scaffold plan"
+argument-hint: "[focus]"
 ---
-Use `/skill:safe-start` Pass 5 — Scaffold Plan.
-
-Framework/tooling preference: $ARGUMENTS
-
-Read prior design docs under `docs/agent/` if present. Do not scaffold before the plan is explicit unless user already approved implementation.
-
-Produce a minimal scaffold plan with:
-- File tree to create
-- Package/build config choices
-- Format/lint/typecheck choices where suitable
-- Test runner and initial tests
-- App entrypoint and health/hello path
-- Config/env example if needed
-- Exact commands to create/install/run
-- Files that will be generated or edited
-- Validation commands expected after scaffold
-- Risks/assumptions
-
-Avoid:
-- speculative abstractions
-- unused frameworks
-- broad feature implementation
-- auth/payment/admin systems unless the initial project goal requires them
-
-Approval gate: ask whether to write files and run scaffold commands unless user explicitly requested implementation now.
+Before writing/updating structured artifacts, after loading the selected skill, load shared refs relative to that skill: `../_shared/references/artifact-api.md`, `../_shared/references/schemas/common.schema.json`, and only the matching artifact schema(s). Follow the skill Structured Artifact Write/Update Protocol for scope resolution, stable IDs, upserts, evidence, reference integrity, status transitions, deterministic YAML formatting, and validation. Resolve `<docs-root>` exactly per the selected skill: canonicalize `workspace_root`, use repo-local `<workspace_root>/docs/agent/api` only when that skill says repo-local applies and the directory exists, otherwise strip one leading slash/backslash from `workspace_root`, replace every slash, backslash, and colon with `-`, wrap with `--`, and use `~/.pi/agent/workspaces/<workspace-fingerprint>/docs/agent/api`. Use `/skill:safe-start` Pass 5. Produce scaffold plan in chat only before file creation approval: tree, tooling, commands, generated files, risks. Do not create docs except canonical YAML updates already approved. Focus: $ARGUMENTS.

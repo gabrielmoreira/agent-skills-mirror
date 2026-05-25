@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `breaking-brake/cc-wf-studio` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `breaking-brake/cc-wf-studio` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `breaking-brake/cc-wf-studio` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,6 +68,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`.github/skills/cc-workflow-ai-editor/SKILL.md`](.github/skills/cc-workflow-ai-editor/SKILL.md) |
 | 8 | ✓ | [`.roo/skills/cc-workflow-ai-editor/SKILL.md`](.roo/skills/cc-workflow-ai-editor/SKILL.md) |
 | 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 10 | ✓ | [`packages/cli/skills/ccwf-cli/SKILL.md`](packages/cli/skills/ccwf-cli/SKILL.md) |
 
 ---
 

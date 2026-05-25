@@ -13,6 +13,7 @@ CAPABILITIES_SUMMARY:
 - Discovery propagation between related agents
 - Staleness detection and sunset candidate identification
 - Lifecycle drift cascade detection across dependent agent chains (model drift = ~40% of production failures)
+- capability_regression_baseline: Per-agent behavioral-regression baseline on EFS trajectory — track task-completion-rate / output-quality-score / tool-use-accuracy per agent and flag when prompt or model upgrade causes drop ≥ 5% on existing baseline. Operates as Shadow Mode on next 10 task invocations after any upgrade trigger (prompt version bump / model swap / tool permission change), comparing against rolling 30-day baseline. Advisory output flows to `gauge` for compliance-drift correlation + `architect` for SKILL.md rollback recommendation. v8 fold-in: addresses Agent Lifecycle Proof intent (Round 8 proposal) without adding a new pre-merge gate layer.
 - Sequential reasoning misassignment detection (39–70% penalty)
 - Orchestration anti-pattern detection (leaky pipeline, unbalanced fan-out, criteria-less synthesis, passive supervisor, micromanaging supervisor, directive misalignment loop)
 - Specification ambiguity detection (~42% of MAS failures from divergent interpretation of underspecified tasks)

@@ -1,24 +1,5 @@
 ---
-description: "Safe-start pass 1: capture greenfield project intent and guidance level"
-argument-hint: "[project idea / constraints]"
+description: "Structured safe-start pass 1 intent"
+argument-hint: "[intent/focus]"
 ---
-Use `/skill:safe-start` Pass 1 — Intent Capture.
-
-Project idea or constraints: $ARGUMENTS
-
-Determine guidance level: Freshman, Standard, or Expert. If unclear, ask once; default to Standard when user wants to proceed.
-
-Produce or update `docs/agent/PROJECT_INTENT.md` when creating files. If not editing yet, produce the same sections in chat.
-
-Required output:
-- Product goal
-- Target users
-- Primary user journeys
-- Must-have features
-- Non-goals
-- Runtime/platform/deployment target
-- Constraints and preferences
-- Guidance level
-- Assumptions
-- Open questions
-- Approval gate: confirm whether to proceed to data-flow design
+Before writing/updating structured artifacts, after loading the selected skill, load shared refs relative to that skill: `../_shared/references/artifact-api.md`, `../_shared/references/schemas/common.schema.json`, and only the matching artifact schema(s). Follow the skill Structured Artifact Write/Update Protocol for scope resolution, stable IDs, upserts, evidence, reference integrity, status transitions, deterministic YAML formatting, and validation. Resolve `<docs-root>` exactly per the selected skill: canonicalize `workspace_root`, use repo-local `<workspace_root>/docs/agent/api` only when that skill says repo-local applies and the directory exists, otherwise strip one leading slash/backslash from `workspace_root`, replace every slash, backslash, and colon with `-`, wrap with `--`, and use `~/.pi/agent/workspaces/<workspace-fingerprint>/docs/agent/api`. Use `/skill:safe-start` Pass 1. Write/update `project-intent.yaml`, initial `repo-inventory.yaml`, optional `scopes.yaml`. YAML only. Input: $ARGUMENTS.

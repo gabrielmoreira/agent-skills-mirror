@@ -448,7 +448,7 @@ Character sheet is recommended for multi-page comics with recurring characters, 
 | Exists | No `--ref` support | **B**: Embed character descriptions in every prompt |
 | Skipped | — | **C**: Prompt file contains all descriptions inline |
 
-**Strategy A: Using `--ref` parameter** (e.g., baoyu-imagine)
+**Strategy A: Using `--ref` parameter** (e.g., baoyu-image-gen)
 
 - Read the chosen image generation skill's `SKILL.md`
 - Invoke that installed skill via its documented interface, not by calling its scripts directly

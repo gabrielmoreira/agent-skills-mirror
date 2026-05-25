@@ -35,7 +35,23 @@ Both companion skills are installed locally and auto-discovered by Claude Code a
 
 Both skills read `ELEVENLABS_API_KEY` from `~/Developer/video-use/.env`. Set it once and both skills work. Do not duplicate the key in this skill's directory.
 
-## Style preferences (mandatory defaults — inherited from `yuv-frontend-design`)
+## Save location
+
+**Default:** `~/Documents/yuv-projects/videos/<slug>/` — always save viral video projects here so renders are findable. The `<slug>` is short, derived from the topic or source filename.
+
+```bash
+mkdir -p ~/Documents/yuv-projects/videos
+cd ~/Documents/yuv-projects/videos
+# Initialize the project here.
+hyperframes init <slug> --video <source.mp4> --non-interactive
+cd <slug>
+```
+
+Final renders land at `~/Documents/yuv-projects/videos/<slug>/renders/final_*_V<N>.mp4` (both 9:16 and 16:9). Tell the user where the videos live at the end of every render.
+
+---
+
+## Style preferences (mandatory defaults — inherited from `yuv-design-system`)
 
 This skill is the **video instantiation** of Yuval Avidani's brand system. Whenever a brand or palette is not explicitly specified by the source content, these defaults apply. They override any companion-skill defaults that conflict.
 
@@ -83,7 +99,7 @@ The canonical YUV.AI palette and its video-tuned counterparts:
 
 ### Inheritance rule
 
-If you are building any auxiliary surface (a preview page, a catalog, a dashboard, a render-status UI), apply the full `yuv-frontend-design` skill defaults — Inter body, off-white page, paper grain, warm shadows, pink CTAs.
+If you are building any auxiliary surface (a preview page, a catalog, a dashboard, a render-status UI), apply the full `yuv-design-system` skill defaults — Anton + Inter typography, Fly High purple palette by default, signature components, brand assets. The `yuv-design-system` is the canonical source of truth for all Yuval-brand visuals.
 
 If you are rendering the MP4 itself, apply the video-tuned values in the table above. Same brand, two delivery surfaces.
 

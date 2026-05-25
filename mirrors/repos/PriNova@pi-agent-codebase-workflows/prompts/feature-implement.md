@@ -1,11 +1,5 @@
 ---
-description: Preflight + implement approved feature design
-argument-hint: "<approved-design-or-feature>"
+description: "Structured feature implementation"
+argument-hint: "[approved design/focus]"
 ---
-Use `/skill:safe-change`.
-
-Task:
-Implement this approved feature design:
-$ARGUMENTS
-
-First run Universal Preflight. If no approved design is present, perform Feature Design and stop for approval. If design is clear/approved, perform Feature Implementation with tests and validation.
+Before writing/updating structured artifacts, after loading the selected skill, load shared refs relative to that skill: `../_shared/references/artifact-api.md`, `../_shared/references/schemas/common.schema.json`, and only the matching artifact schema(s). Follow the skill Structured Artifact Write/Update Protocol for scope resolution, stable IDs, upserts, evidence, reference integrity, status transitions, deterministic YAML formatting, and validation. Resolve `<docs-root>` exactly per the selected skill: canonicalize `workspace_root`, use repo-local `<workspace_root>/docs/agent/api` only when that skill says repo-local applies and the directory exists, otherwise strip one leading slash/backslash from `workspace_root`, replace every slash, backslash, and colon with `-`, wrap with `--`, and use `~/.pi/agent/workspaces/<workspace-fingerprint>/docs/agent/api`. Use `/skill:safe-change` feature implementation. Follow approved design. Implement minimal change, add tests, validate, update owner YAML artifacts only for durable semantic changes. No legacy Markdown docs except root `AGENTS.md` when `agent-operating-guide.yaml` changes. Design/focus: $ARGUMENTS.

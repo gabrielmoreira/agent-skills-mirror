@@ -1,27 +1,5 @@
 ---
-description: "Safe-start pass 6: establish green validation baseline for new project"
-argument-hint: "[validation focus]"
+description: "Structured safe-start pass 6 validation baseline"
+argument-hint: "[focus]"
 ---
-Use `/skill:safe-start` Pass 6 — Validation Baseline.
-
-Validation focus: $ARGUMENTS
-
-Run the most relevant checks for the scaffolded project. Prefer project-local commands and wrappers.
-
-Validate when applicable:
-- install/bootstrap works
-- format/lint command works
-- typecheck/build works
-- tests run
-- app starts
-- one smoke test proves runtime path
-
-Produce/update `docs/agent/VALIDATION_BASELINE.md` with:
-- Commands run
-- Results
-- Known warnings
-- Blockers and exact errors if any
-- Next best check when a command cannot run
-- Baseline status: green / partial / blocked
-
-Do not proceed to feature depth until baseline is green or blockers are explicitly accepted by user.
+Before writing/updating structured artifacts, after loading the selected skill, load shared refs relative to that skill: `../_shared/references/artifact-api.md`, `../_shared/references/schemas/common.schema.json`, and only the matching artifact schema(s). Follow the skill Structured Artifact Write/Update Protocol for scope resolution, stable IDs, upserts, evidence, reference integrity, status transitions, deterministic YAML formatting, and validation. Resolve `<docs-root>` exactly per the selected skill: canonicalize `workspace_root`, use repo-local `<workspace_root>/docs/agent/api` only when that skill says repo-local applies and the directory exists, otherwise strip one leading slash/backslash from `workspace_root`, replace every slash, backslash, and colon with `-`, wrap with `--`, and use `~/.pi/agent/workspaces/<workspace-fingerprint>/docs/agent/api`. Use `/skill:safe-start` Pass 6. Run/record applicable validations and write/update `validation-baseline.yaml` with command status, blockers, recommended order. YAML only. Focus: $ARGUMENTS.

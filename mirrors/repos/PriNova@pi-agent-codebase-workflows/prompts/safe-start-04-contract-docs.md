@@ -1,36 +1,5 @@
 ---
-description: "Safe-start pass 4: create project contract docs for humans and future agents"
-argument-hint: "[docs focus]"
+description: "Structured safe-start pass 4 contract artifacts"
+argument-hint: "[focus]"
 ---
-Use `/skill:safe-start` Pass 4 — Project Contract Docs.
-
-Docs focus: $ARGUMENTS
-
-Read first when present:
-- `docs/agent/PROJECT_INTENT.md`
-- `docs/agent/DATA_FLOW.md`
-- `docs/agent/DATA_MODEL.md`
-- `docs/agent/INVARIANTS.md`
-- `docs/agent/ARCHITECTURE.md`
-- `docs/agent/DEPENDENCY_RULES.md`
-- `docs/agent/RISK_REGISTER.md`
-
-Create compact operational docs. Freshman mode may include short teaching notes and command explanations. Expert mode should be terse and contract-oriented.
-
-Produce/update:
-- `README.md`
-- `AGENTS.md`
-- `docs/agent/CHANGE_GUIDE.md`
-- `docs/agent/TESTING_STRATEGY.md`
-- optional `docs/agent/CONTRACTS.md`, `docs/agent/SECURITY.md`, `docs/agent/DEPLOYMENT.md`
-
-Required output:
-- Project overview
-- Architecture rules
-- Data model rules
-- Invariants not to violate
-- How to add/modify features
-- How to validate changes
-- Documentation update rules
-- Forbidden shortcuts
-- Approval gate: confirm whether to proceed to scaffold planning
+Before writing/updating structured artifacts, after loading the selected skill, load shared refs relative to that skill: `../_shared/references/artifact-api.md`, `../_shared/references/schemas/common.schema.json`, and only the matching artifact schema(s). Follow the skill Structured Artifact Write/Update Protocol for scope resolution, stable IDs, upserts, evidence, reference integrity, status transitions, deterministic YAML formatting, and validation. Resolve `<docs-root>` exactly per the selected skill: canonicalize `workspace_root`, use repo-local `<workspace_root>/docs/agent/api` only when that skill says repo-local applies and the directory exists, otherwise strip one leading slash/backslash from `workspace_root`, replace every slash, backslash, and colon with `-`, wrap with `--`, and use `~/.pi/agent/workspaces/<workspace-fingerprint>/docs/agent/api`. Use `/skill:safe-start` Pass 4. Write/update structured YAML artifacts: `change-guide.yaml`, `testing-strategy.yaml`, `contracts.yaml` when needed, `agent-operating-guide.yaml`, and root `AGENTS.md` for harness interoperability. Do not write README or other prose docs. Focus: $ARGUMENTS.

@@ -1,11 +1,5 @@
 ---
-description: "Codebase reconstruction pass 4: dependency rules and drift"
+description: "Structured recon pass 4 dependencies and design issues"
 argument-hint: "[focus]"
 ---
-Use `/skill:codebase-recon` Pass 4 — Dependency Rules and Drift Detection.
-
-Focus, if provided: $ARGUMENTS
-
-Use focus to scope this pass to a module/package/app/service/path in large repos or monorepos. If focus is provided, write scoped artifacts under `docs/agent/scopes/by-path/<focus>/` for path focus or `docs/agent/scopes/by-domain/<slug>/` for domain focus, and update `docs/agent/SCOPES.md`.
-
-Read prior reconstruction docs, including matching scoped prior docs when focus is provided. Write/update `docs/agent/DEPENDENCY_RULES.md` and `docs/agent/DESIGN_ISSUES.md`, or scoped `DEPENDENCY_RULES.md` and `DESIGN_ISSUES.md` when focus is provided. Do not edit source code.
+Before writing/updating structured artifacts, after loading the selected skill, load shared refs relative to that skill: `../_shared/references/artifact-api.md`, `../_shared/references/schemas/common.schema.json`, and only the matching artifact schema(s). Follow the skill Structured Artifact Write/Update Protocol for scope resolution, stable IDs, upserts, evidence, reference integrity, status transitions, deterministic YAML formatting, and validation. Resolve `<docs-root>` exactly per the selected skill: canonicalize `workspace_root`, use repo-local `<workspace_root>/docs/agent/api` only when that skill says repo-local applies and the directory exists, otherwise strip one leading slash/backslash from `workspace_root`, replace every slash, backslash, and colon with `-`, wrap with `--`, and use `~/.pi/agent/workspaces/<workspace-fingerprint>/docs/agent/api`. Use `/skill:codebase-recon` Pass 4. Read structured inventory/architecture/data/invariant YAML. Write/update `dependency-rules.yaml` and `design-issues.yaml`. YAML only. Focus: $ARGUMENTS.

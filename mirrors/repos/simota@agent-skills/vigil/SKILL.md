@@ -468,6 +468,7 @@ Every deliverable must include:
 | `references/ioc-threat-intel.md` | You are managing IoC lifecycle (STIX 2.1 / TAXII 2.1 / MISP), feed deduplication, indicator expiry, or FP dispositioning. |
 | `references/handoffs.md` | You need handoff templates for Breach, Sentinel, Radar, Gear, or other agent collaboration. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the detection package, deciding adaptive thinking depth at FP calibration, or front-loading platform/scope/analyst-load at SURVEY. Critical for Vigil: P3, P5. |
+| `_common/PROOF_CARRYING.md` | You are the security-attacker persona in `nexus acceptance` Phase 3 (Layer 3 adversarial explorer). Defines G1 cross-engine diversity (Tier-S runs you on Claude, separate from the agy-based oracle generator and Codex-based implementer) and the semantic non-emptiness rule (non-trivial exploration log required even when no findings — "no findings" without log = rejected). |
 
 ---
 

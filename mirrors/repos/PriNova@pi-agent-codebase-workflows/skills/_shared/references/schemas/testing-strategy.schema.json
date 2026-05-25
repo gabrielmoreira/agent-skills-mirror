@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/pi-agent-codebase-workflows/testing-strategy.schema.json",
+  "title": "testing-strategy",
+  "allOf": [
+    {
+      "$ref": "common.schema.json"
+    }
+  ],
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact",
+    "artifact_id",
+    "scope",
+    "status",
+    "evidence_mode",
+    "last_validated",
+    "owners",
+    "depends_on",
+    "evidence",
+    "unknowns",
+    "test_structure",
+    "coverage_gaps",
+    "risk_to_test_priorities",
+    "known_blockers"
+  ],
+  "properties": {
+    "artifact": {
+      "const": "testing_strategy"
+    },
+    "test_structure": {
+      "type": "array"
+    },
+    "coverage_gaps": {
+      "type": "array"
+    },
+    "risk_to_test_priorities": {
+      "type": "array"
+    },
+    "known_blockers": {
+      "type": "array"
+    },
+    "test_plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^testplan:[a-z0-9][a-z0-9._/-]*$"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}

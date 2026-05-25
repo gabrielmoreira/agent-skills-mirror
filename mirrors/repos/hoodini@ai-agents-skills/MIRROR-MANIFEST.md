@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `hoodini/ai-agents-skills` — 26 default patterns, 0 followed patterns, 73 file(s) materialized.
+Mirror of `hoodini/ai-agents-skills` — 26 default patterns, 0 followed patterns, 143 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `hoodini/ai-agents-skills` — 26 default patterns, 0 followed pattern
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 73 |
+| Files         | 143 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -103,35 +103,105 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | ✓ | [`skills/mongodb/SKILL.md`](skills/mongodb/SKILL.md) |
 | 43 | ✓ | [`skills/nano-banana-pro/SKILL.md`](skills/nano-banana-pro/SKILL.md) |
 | 44 | ✓ | [`skills/owasp-security/SKILL.md`](skills/owasp-security/SKILL.md) |
-| 45 | ✓ | [`skills/railway/SKILL.md`](skills/railway/SKILL.md) |
-| 46 | ✓ | [`skills/shabbat-times/SKILL.md`](skills/shabbat-times/SKILL.md) |
-| 47 | ✓ | [`skills/ux-design-systems/SKILL.md`](skills/ux-design-systems/SKILL.md) |
-| 48 | ✓ | [`skills/vercel/SKILL.md`](skills/vercel/SKILL.md) |
-| 49 | ✓ | [`skills/web-accessibility/SKILL.md`](skills/web-accessibility/SKILL.md) |
-| 50 | ✓ | [`skills/x-twitter-scraper/SKILL.md`](skills/x-twitter-scraper/SKILL.md) |
-| 51 | ✓ | [`skills/yuv-design/lessons-learned.md`](skills/yuv-design/lessons-learned.md) |
-| 52 | ✓ | [`skills/yuv-design/patterns.md`](skills/yuv-design/patterns.md) |
-| 53 | ✓ | [`skills/yuv-design/README.md`](skills/yuv-design/README.md) |
-| 54 | ✓ | [`skills/yuv-design/SKILL.md`](skills/yuv-design/SKILL.md) |
-| 55 | ✓ | [`skills/yuv-viral-video/assets/fonts/Anton-Regular.ttf`](skills/yuv-viral-video/assets/fonts/Anton-Regular.ttf) |
-| 56 | ✓ | [`skills/yuv-viral-video/assets/fonts/Rubik-Black.ttf`](skills/yuv-viral-video/assets/fonts/Rubik-Black.ttf) |
-| 57 | ✓ | [`skills/yuv-viral-video/assets/fonts/Rubik-Bold.ttf`](skills/yuv-viral-video/assets/fonts/Rubik-Bold.ttf) |
-| 58 | ✓ | [`skills/yuv-viral-video/README.md`](skills/yuv-viral-video/README.md) |
-| 59 | ✓ | [`skills/yuv-viral-video/references/setup.md`](skills/yuv-viral-video/references/setup.md) |
-| 60 | ✓ | [`skills/yuv-viral-video/requirements.txt`](skills/yuv-viral-video/requirements.txt) |
-| 61 | ✓ | [`skills/yuv-viral-video/scripts/apple_glass.py`](skills/yuv-viral-video/scripts/apple_glass.py) |
-| 62 | ✓ | [`skills/yuv-viral-video/scripts/build_screen_share.py`](skills/yuv-viral-video/scripts/build_screen_share.py) |
-| 63 | ✓ | [`skills/yuv-viral-video/scripts/build_selfie.py`](skills/yuv-viral-video/scripts/build_selfie.py) |
-| 64 | ✓ | [`skills/yuv-viral-video/scripts/composite_screen_share.py`](skills/yuv-viral-video/scripts/composite_screen_share.py) |
-| 65 | ✓ | [`skills/yuv-viral-video/scripts/composite_selfie.py`](skills/yuv-viral-video/scripts/composite_selfie.py) |
-| 66 | ✓ | [`skills/yuv-viral-video/scripts/make_anims.py`](skills/yuv-viral-video/scripts/make_anims.py) |
-| 67 | ✓ | [`skills/yuv-viral-video/scripts/make_cards_screen_share.py`](skills/yuv-viral-video/scripts/make_cards_screen_share.py) |
-| 68 | ✓ | [`skills/yuv-viral-video/scripts/make_cards_selfie.py`](skills/yuv-viral-video/scripts/make_cards_selfie.py) |
-| 69 | ✓ | [`skills/yuv-viral-video/scripts/make_karaoke.py`](skills/yuv-viral-video/scripts/make_karaoke.py) |
-| 70 | ✓ | [`skills/yuv-viral-video/scripts/make_layout_assets.py`](skills/yuv-viral-video/scripts/make_layout_assets.py) |
-| 71 | ✓ | [`skills/yuv-viral-video/scripts/make_sfx.py`](skills/yuv-viral-video/scripts/make_sfx.py) |
-| 72 | ✓ | [`skills/yuv-viral-video/SKILL.md`](skills/yuv-viral-video/SKILL.md) |
-| 73 | ✓ | [`templates/skill-template/SKILL.md`](templates/skill-template/SKILL.md) |
+| 45 | ✓ | [`skills/parallax-landing-page/assets/hub-template.html`](skills/parallax-landing-page/assets/hub-template.html) |
+| 46 | ✓ | [`skills/parallax-landing-page/assets/landing-page-template.html`](skills/parallax-landing-page/assets/landing-page-template.html) |
+| 47 | ✓ | [`skills/parallax-landing-page/assets/parallax.js`](skills/parallax-landing-page/assets/parallax.js) |
+| 48 | ✓ | [`skills/parallax-landing-page/assets/style.css`](skills/parallax-landing-page/assets/style.css) |
+| 49 | ✓ | [`skills/parallax-landing-page/references/copy-guide.md`](skills/parallax-landing-page/references/copy-guide.md) |
+| 50 | ✓ | [`skills/parallax-landing-page/references/showcase-integration.md`](skills/parallax-landing-page/references/showcase-integration.md) |
+| 51 | ✓ | [`skills/parallax-landing-page/scripts/extract_frames.py`](skills/parallax-landing-page/scripts/extract_frames.py) |
+| 52 | ✓ | [`skills/parallax-landing-page/SKILL.md`](skills/parallax-landing-page/SKILL.md) |
+| 53 | ✓ | [`skills/railway/SKILL.md`](skills/railway/SKILL.md) |
+| 54 | ✓ | [`skills/shabbat-times/SKILL.md`](skills/shabbat-times/SKILL.md) |
+| 55 | ✓ | [`skills/ux-design-systems/SKILL.md`](skills/ux-design-systems/SKILL.md) |
+| 56 | ✓ | [`skills/vercel/SKILL.md`](skills/vercel/SKILL.md) |
+| 57 | ✓ | [`skills/video-edit/README.md`](skills/video-edit/README.md) |
+| 58 | ✓ | [`skills/video-edit/references/apply_review.py`](skills/video-edit/references/apply_review.py) |
+| 59 | ✓ | [`skills/video-edit/references/caption-parallax-outro-en.html`](skills/video-edit/references/caption-parallax-outro-en.html) |
+| 60 | ✓ | [`skills/video-edit/references/caption-parallax-outro-he.html`](skills/video-edit/references/caption-parallax-outro-he.html) |
+| 61 | ✓ | [`skills/video-edit/references/corrections-hebrew.md`](skills/video-edit/references/corrections-hebrew.md) |
+| 62 | ✓ | [`skills/video-edit/references/gen_body_vertical.py`](skills/video-edit/references/gen_body_vertical.py) |
+| 63 | ✓ | [`skills/video-edit/references/gen_body.py`](skills/video-edit/references/gen_body.py) |
+| 64 | ✓ | [`skills/video-edit/references/host-template-vertical.html`](skills/video-edit/references/host-template-vertical.html) |
+| 65 | ✓ | [`skills/video-edit/references/host-template.html`](skills/video-edit/references/host-template.html) |
+| 66 | ✓ | [`skills/video-edit/references/liquid-blobs.html`](skills/video-edit/references/liquid-blobs.html) |
+| 67 | ✓ | [`skills/video-edit/references/make_review.py`](skills/video-edit/references/make_review.py) |
+| 68 | ✓ | [`skills/video-edit/references/serve_review.py`](skills/video-edit/references/serve_review.py) |
+| 69 | ✓ | [`skills/video-edit/references/setup.md`](skills/video-edit/references/setup.md) |
+| 70 | ✓ | [`skills/video-edit/references/transcribe.py`](skills/video-edit/references/transcribe.py) |
+| 71 | ✓ | [`skills/video-edit/references/transcript-review-workflow.md`](skills/video-edit/references/transcript-review-workflow.md) |
+| 72 | ✓ | [`skills/video-edit/screenshots/01-parallax-behind-subject.jpg`](skills/video-edit/screenshots/01-parallax-behind-subject.jpg) |
+| 73 | ✓ | [`skills/video-edit/screenshots/02-matrix-decode-glass.jpg`](skills/video-edit/screenshots/02-matrix-decode-glass.jpg) |
+| 74 | ✓ | [`skills/video-edit/screenshots/03-editorial-emphasis-glass.jpg`](skills/video-edit/screenshots/03-editorial-emphasis-glass.jpg) |
+| 75 | ✓ | [`skills/video-edit/screenshots/04-talking-head-outro.jpg`](skills/video-edit/screenshots/04-talking-head-outro.jpg) |
+| 76 | ✓ | [`skills/video-edit/screenshots/05-outro-behind-text.jpg`](skills/video-edit/screenshots/05-outro-behind-text.jpg) |
+| 77 | ✓ | [`skills/video-edit/screenshots/06-liquid-blobs.jpg`](skills/video-edit/screenshots/06-liquid-blobs.jpg) |
+| 78 | ✓ | [`skills/video-edit/SKILL.md`](skills/video-edit/SKILL.md) |
+| 79 | ✓ | [`skills/video-edit/transcript-editor/index.html`](skills/video-edit/transcript-editor/index.html) |
+| 80 | ✓ | [`skills/video-edit/transcript-editor/previews/bold-underline.mp4`](skills/video-edit/transcript-editor/previews/bold-underline.mp4) |
+| 81 | ✓ | [`skills/video-edit/transcript-editor/previews/glitch-rgb.mp4`](skills/video-edit/transcript-editor/previews/glitch-rgb.mp4) |
+| 82 | ✓ | [`skills/video-edit/transcript-editor/previews/highlight-marker.mp4`](skills/video-edit/transcript-editor/previews/highlight-marker.mp4) |
+| 83 | ✓ | [`skills/video-edit/transcript-editor/previews/liquid-fill.mp4`](skills/video-edit/transcript-editor/previews/liquid-fill.mp4) |
+| 84 | ✓ | [`skills/video-edit/transcript-editor/previews/marquee-rail.mp4`](skills/video-edit/transcript-editor/previews/marquee-rail.mp4) |
+| 85 | ✓ | [`skills/video-edit/transcript-editor/previews/mask-wipe.mp4`](skills/video-edit/transcript-editor/previews/mask-wipe.mp4) |
+| 86 | ✓ | [`skills/video-edit/transcript-editor/previews/neon-glow.mp4`](skills/video-edit/transcript-editor/previews/neon-glow.mp4) |
+| 87 | ✓ | [`skills/video-edit/transcript-editor/previews/soft-fade.mp4`](skills/video-edit/transcript-editor/previews/soft-fade.mp4) |
+| 88 | ✓ | [`skills/video-edit/transcript-editor/previews/split-reveal.mp4`](skills/video-edit/transcript-editor/previews/split-reveal.mp4) |
+| 89 | ✓ | [`skills/video-edit/transcript-editor/previews/stamp-impact.mp4`](skills/video-edit/transcript-editor/previews/stamp-impact.mp4) |
+| 90 | ✓ | [`skills/video-edit/transcript-editor/previews/typewriter.mp4`](skills/video-edit/transcript-editor/previews/typewriter.mp4) |
+| 91 | ✓ | [`skills/video-edit/transcript-editor/README.md`](skills/video-edit/transcript-editor/README.md) |
+| 92 | ✓ | [`skills/video-to-landing-page/references/design-notes.md`](skills/video-to-landing-page/references/design-notes.md) |
+| 93 | ✓ | [`skills/video-to-landing-page/references/extract-frames.py`](skills/video-to-landing-page/references/extract-frames.py) |
+| 94 | ✓ | [`skills/video-to-landing-page/references/landing-template.html`](skills/video-to-landing-page/references/landing-template.html) |
+| 95 | ✓ | [`skills/video-to-landing-page/references/setup.md`](skills/video-to-landing-page/references/setup.md) |
+| 96 | ✓ | [`skills/video-to-landing-page/SKILL.md`](skills/video-to-landing-page/SKILL.md) |
+| 97 | ✓ | [`skills/web-accessibility/SKILL.md`](skills/web-accessibility/SKILL.md) |
+| 98 | ✓ | [`skills/x-twitter-scraper/SKILL.md`](skills/x-twitter-scraper/SKILL.md) |
+| 99 | ✓ | [`skills/yuv-decks/SKILL.md`](skills/yuv-decks/SKILL.md) |
+| 100 | ✓ | [`skills/yuv-design-system/assets/logo-rectangle-wordmark.png`](skills/yuv-design-system/assets/logo-rectangle-wordmark.png) |
+| 101 | ✓ | [`skills/yuv-design-system/assets/logo-square-color.png`](skills/yuv-design-system/assets/logo-square-color.png) |
+| 102 | ✓ | [`skills/yuv-design-system/assets/logo-square-transparent.png`](skills/yuv-design-system/assets/logo-square-transparent.png) |
+| 103 | ✓ | [`skills/yuv-design-system/assets/profile-yuval-studio.png`](skills/yuv-design-system/assets/profile-yuval-studio.png) |
+| 104 | ✓ | [`skills/yuv-design-system/references/components/AltimeterDial.tsx`](skills/yuv-design-system/references/components/AltimeterDial.tsx) |
+| 105 | ✓ | [`skills/yuv-design-system/references/components/CompassDial.tsx`](skills/yuv-design-system/references/components/CompassDial.tsx) |
+| 106 | ✓ | [`skills/yuv-design-system/references/components/CounterUp.tsx`](skills/yuv-design-system/references/components/CounterUp.tsx) |
+| 107 | ✓ | [`skills/yuv-design-system/references/components/FlightHUD.tsx`](skills/yuv-design-system/references/components/FlightHUD.tsx) |
+| 108 | ✓ | [`skills/yuv-design-system/references/components/HeroBg.tsx`](skills/yuv-design-system/references/components/HeroBg.tsx) |
+| 109 | ✓ | [`skills/yuv-design-system/references/components/index.ts`](skills/yuv-design-system/references/components/index.ts) |
+| 110 | ✓ | [`skills/yuv-design-system/references/components/keyframes.css`](skills/yuv-design-system/references/components/keyframes.css) |
+| 111 | ✓ | [`skills/yuv-design-system/references/components/PurpleBar.tsx`](skills/yuv-design-system/references/components/PurpleBar.tsx) |
+| 112 | ✓ | [`skills/yuv-design-system/references/components/YellowUnderline.tsx`](skills/yuv-design-system/references/components/YellowUnderline.tsx) |
+| 113 | ✓ | [`skills/yuv-design-system/references/lessons-learned.md`](skills/yuv-design-system/references/lessons-learned.md) |
+| 114 | ✓ | [`skills/yuv-design-system/references/palettes-warm-editorial.md`](skills/yuv-design-system/references/palettes-warm-editorial.md) |
+| 115 | ✓ | [`skills/yuv-design-system/references/presentations.md`](skills/yuv-design-system/references/presentations.md) |
+| 116 | ✓ | [`skills/yuv-design-system/references/social-and-links.md`](skills/yuv-design-system/references/social-and-links.md) |
+| 117 | ✓ | [`skills/yuv-design-system/references/social-images.md`](skills/yuv-design-system/references/social-images.md) |
+| 118 | ✓ | [`skills/yuv-design-system/references/tokens/palette.css`](skills/yuv-design-system/references/tokens/palette.css) |
+| 119 | ✓ | [`skills/yuv-design-system/references/tokens/palette.json`](skills/yuv-design-system/references/tokens/palette.json) |
+| 120 | ✓ | [`skills/yuv-design-system/references/tokens/tailwind.config.js`](skills/yuv-design-system/references/tokens/tailwind.config.js) |
+| 121 | ✓ | [`skills/yuv-design-system/references/typography.md`](skills/yuv-design-system/references/typography.md) |
+| 122 | ✓ | [`skills/yuv-design-system/references/visuals-and-charts.md`](skills/yuv-design-system/references/visuals-and-charts.md) |
+| 123 | ✓ | [`skills/yuv-design-system/references/web-and-react.md`](skills/yuv-design-system/references/web-and-react.md) |
+| 124 | ✓ | [`skills/yuv-design-system/SKILL.md`](skills/yuv-design-system/SKILL.md) |
+| 125 | ✓ | [`skills/yuv-viral-video/assets/fonts/Anton-Regular.ttf`](skills/yuv-viral-video/assets/fonts/Anton-Regular.ttf) |
+| 126 | ✓ | [`skills/yuv-viral-video/assets/fonts/Rubik-Black.ttf`](skills/yuv-viral-video/assets/fonts/Rubik-Black.ttf) |
+| 127 | ✓ | [`skills/yuv-viral-video/assets/fonts/Rubik-Bold.ttf`](skills/yuv-viral-video/assets/fonts/Rubik-Bold.ttf) |
+| 128 | ✓ | [`skills/yuv-viral-video/README.md`](skills/yuv-viral-video/README.md) |
+| 129 | ✓ | [`skills/yuv-viral-video/references/setup.md`](skills/yuv-viral-video/references/setup.md) |
+| 130 | ✓ | [`skills/yuv-viral-video/requirements.txt`](skills/yuv-viral-video/requirements.txt) |
+| 131 | ✓ | [`skills/yuv-viral-video/scripts/apple_glass.py`](skills/yuv-viral-video/scripts/apple_glass.py) |
+| 132 | ✓ | [`skills/yuv-viral-video/scripts/build_screen_share.py`](skills/yuv-viral-video/scripts/build_screen_share.py) |
+| 133 | ✓ | [`skills/yuv-viral-video/scripts/build_selfie.py`](skills/yuv-viral-video/scripts/build_selfie.py) |
+| 134 | ✓ | [`skills/yuv-viral-video/scripts/composite_screen_share.py`](skills/yuv-viral-video/scripts/composite_screen_share.py) |
+| 135 | ✓ | [`skills/yuv-viral-video/scripts/composite_selfie.py`](skills/yuv-viral-video/scripts/composite_selfie.py) |
+| 136 | ✓ | [`skills/yuv-viral-video/scripts/make_anims.py`](skills/yuv-viral-video/scripts/make_anims.py) |
+| 137 | ✓ | [`skills/yuv-viral-video/scripts/make_cards_screen_share.py`](skills/yuv-viral-video/scripts/make_cards_screen_share.py) |
+| 138 | ✓ | [`skills/yuv-viral-video/scripts/make_cards_selfie.py`](skills/yuv-viral-video/scripts/make_cards_selfie.py) |
+| 139 | ✓ | [`skills/yuv-viral-video/scripts/make_karaoke.py`](skills/yuv-viral-video/scripts/make_karaoke.py) |
+| 140 | ✓ | [`skills/yuv-viral-video/scripts/make_layout_assets.py`](skills/yuv-viral-video/scripts/make_layout_assets.py) |
+| 141 | ✓ | [`skills/yuv-viral-video/scripts/make_sfx.py`](skills/yuv-viral-video/scripts/make_sfx.py) |
+| 142 | ✓ | [`skills/yuv-viral-video/SKILL.md`](skills/yuv-viral-video/SKILL.md) |
+| 143 | ✓ | [`templates/skill-template/SKILL.md`](templates/skill-template/SKILL.md) |
 
 ---
 

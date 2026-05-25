@@ -24,7 +24,7 @@ This backend implements the `preferred_image_backend: codex-imagegen` config key
 | Scenario | Conventional backend | This backend |
 |----------|---------------------|--------------|
 | You have a Codex subscription | OpenAI Images API costs add up per image | Subscription already covers it — zero marginal API cost |
-| No `OPENAI_API_KEY` available | `baoyu-imagine` needs an API key | `codex login` is enough |
+| No `OPENAI_API_KEY` available | `baoyu-image-gen` needs an API key | `codex login` is enough |
 | Want to use GPT Image 2 | Only via OpenAI API | Codex's `image_gen` *is* GPT Image 2 |
 
 ## Prerequisites
