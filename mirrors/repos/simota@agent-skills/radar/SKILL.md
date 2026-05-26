@@ -117,32 +117,25 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| Edge Cases | `edge` | ✓ | Add missing tests for boundary values and error paths | `references/testing-patterns.md` |
-| Flaky Repair | `flaky` | | Root-cause diagnosis and stabilization of flaky tests | `references/flaky-test-guide.md` |
-| Coverage Fill | `coverage` | | Coverage gap filling and priority gap identification | `references/coverage-strategy.md` |
-| Regression Suite | `regression` | | Add regression tests from Scout handoffs | `references/testing-patterns.md`, `references/advanced-techniques.md` |
-| CI Optimize | `ci` | | Test selection and CI speed improvements | `references/test-selection-strategy.md` |
-| Unit Test Design | `unit` | | Design unit test architecture from scratch (AAA, test doubles, boundary isolation) across Jest/Vitest, pytest, Go testing, cargo-test | `references/unit-testing.md` |
-| Integration Test Design | `integration` | | Design backend-integration test architecture with Testcontainers, WireMock/MSW, DB fixture strategy | `references/integration-testing.md` |
-| Mutation Testing | `mutation` | | Run Stryker/PIT/mutmut/cargo-mutants, analyze survivors, triage equivalent mutants, enforce CI mutation-score threshold | `references/mutation-testing.md` |
+Single source of truth for Recipe definitions. Behavior depth lives in the Behavior column; load only the "Read First" column files at the initial step.
+
+| Recipe | Subcommand | Default? | When to Use | Behavior | Read First |
+|--------|-----------|---------|-------------|----------|------------|
+| Edge Cases | `edge` | ✓ | Add missing tests for boundary values and error paths | Prioritize boundary values, null, empty, timeout, and error branches. Confirm regressions fail-first. | `references/testing-patterns.md` |
+| Flaky Repair | `flaky` | | Root-cause diagnosis and stabilization of flaky tests | Identify the root cause (async timing / shared state / order dependency) before fixing. No automatic retries. | `references/flaky-test-guide.md` |
+| Coverage Fill | `coverage` | | Coverage gap filling and priority gap identification | Target 80%+ diff coverage and select priority gaps by risk assessment. | `references/coverage-strategy.md` |
+| Regression Suite | `regression` | | Add regression tests from Scout handoffs | Only after a Scout or Builder handoff. Add bug-reproducing tests fail-first, then confirm green after the fix. | `references/testing-patterns.md`, `references/advanced-techniques.md` |
+| CI Optimize | `ci` | | Test selection and CI speed improvements | Reduce suite runtime with TIA or skip conditions. Delegate CI infrastructure changes to Gear. | `references/test-selection-strategy.md` |
+| Unit Test Design | `unit` | | Design unit test architecture from scratch (AAA, test doubles, boundary isolation) across Jest/Vitest, pytest, Go testing, cargo-test | Design unit test architecture from scratch or restructure an existing suite. Enforce AAA (Arrange-Act-Assert), pick the right test double (fake > stub > mock > spy in that preference order), isolate at the unit boundary, and keep tests deterministic (no clock, network, or filesystem without injection). Multi-language: Vitest 4.x / Jest 30 for TS/JS, pytest 8.x for Python, Go `testing`, `cargo test` / cargo-nextest for Rust, JUnit 5.12+ / JUnit 6 for Java. Use `coverage` instead when the goal is filling gaps in an existing suite, not redesigning it. | `references/unit-testing.md` |
+| Integration Test Design | `integration` | | Design backend-integration test architecture with Testcontainers, WireMock/MSW, DB fixture strategy | Design backend-service integration tests (component-to-component: service ↔ DB / cache / queue / downstream HTTP). Prefer Testcontainers for ephemeral Postgres/MySQL/Redis/Kafka, WireMock or MSW for HTTP stubbing at the boundary, and pick a DB fixture strategy (transaction rollback fastest, truncate if triggers matter, per-test DB only when schema migrations are under test). Playwright API mode is acceptable for backend HTTP assertions. Route to `Voyager` for browser-level E2E and full user journeys — this recipe does NOT cover user-to-system flows. Use `edge` instead when extending an existing integration suite with edge cases. | `references/integration-testing.md` |
+| Mutation Testing | `mutation` | | Run Stryker/PIT/mutmut/cargo-mutants, analyze survivors, triage equivalent mutants, enforce CI mutation-score threshold | Run a mutation testing tool against an existing suite to measure test-suite effectiveness. StrykerJS 7.0+ for JS/TS (supports Vitest, Jest, Node Tap; `npx stryker run`), PIT for Java/Kotlin, mutmut (or cosmic-ray) for Python, cargo-mutants for Rust. Analyze survived mutants as weak assertions, triage equivalent mutants (functionally identical — accept the survivor), and wire a mutation-score threshold into CI (critical modules ≥85%, project-wide ≥60% per Siege baselines). Scope: author-side code-quality mutation (strengthening unit-test assertions day-to-day). Route to `Siege` for program-level mutation strategy, tiered CI (PR/nightly/release) design, operator selection at scale, and mutation as a non-functional resilience verification — Siege owns the broader mutation testing program and Radar `mutation` complements it at the individual-developer layer. | `references/mutation-testing.md` |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
-- Otherwise → default Recipe (`edge` = Edge Cases). Apply SCAN → LOCK → PING → VERIFY workflow.
-
-Behavior notes per Recipe:
-- `edge`: Prioritize boundary values, null, empty, timeout, and error branches. Confirm regressions fail-first.
-- `flaky`: Identify the root cause (async timing / shared state / order dependency) before fixing. No automatic retries.
-- `coverage`: Target 80%+ diff coverage and select priority gaps by risk assessment.
-- `regression`: Only after a Scout or Builder handoff. Add bug-reproducing tests fail-first, then confirm green after the fix.
-- `ci`: Reduce suite runtime with TIA or skip conditions. Delegate CI infrastructure changes to Gear.
-- `unit`: Design unit test architecture from scratch or restructure an existing suite. Enforce AAA (Arrange-Act-Assert), pick the right test double (fake > stub > mock > spy in that preference order), isolate at the unit boundary, and keep tests deterministic (no clock, network, or filesystem without injection). Multi-language: Vitest 4.x / Jest 30 for TS/JS, pytest 8.x for Python, Go `testing`, `cargo test` / cargo-nextest for Rust, JUnit 5.12+ / JUnit 6 for Java. Use `coverage` instead when the goal is filling gaps in an existing suite, not redesigning it.
-- `integration`: Design backend-service integration tests (component-to-component: service ↔ DB / cache / queue / downstream HTTP). Prefer Testcontainers for ephemeral Postgres/MySQL/Redis/Kafka, WireMock or MSW for HTTP stubbing at the boundary, and pick a DB fixture strategy (transaction rollback fastest, truncate if triggers matter, per-test DB only when schema migrations are under test). Playwright API mode is acceptable for backend HTTP assertions. Route to `Voyager` for browser-level E2E and full user journeys — this recipe does NOT cover user-to-system flows. Use `edge` instead when extending an existing integration suite with edge cases.
-- `mutation`: Run a mutation testing tool against an existing suite to measure test-suite effectiveness. StrykerJS 7.0+ for JS/TS (supports Vitest, Jest, Node Tap; `npx stryker run`), PIT for Java/Kotlin, mutmut (or cosmic-ray) for Python, cargo-mutants for Rust. Analyze survived mutants as weak assertions, triage equivalent mutants (functionally identical — accept the survivor), and wire a mutation-score threshold into CI (critical modules ≥85%, project-wide ≥60% per Siege baselines). Scope: author-side code-quality mutation (strengthening unit-test assertions day-to-day). Route to `Siege` for program-level mutation strategy, tiered CI (PR/nightly/release) design, operator selection at scale, and mutation as a non-functional resilience verification — Siege owns the broader mutation testing program and Radar `mutation` complements it at the individual-developer layer.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe and load its "Read First" reference.
+- Otherwise → default Recipe (`edge` = Edge Cases).
+- Apply SCAN → LOCK → PING → VERIFY workflow regardless of Recipe.
 
 ## Workflow
 

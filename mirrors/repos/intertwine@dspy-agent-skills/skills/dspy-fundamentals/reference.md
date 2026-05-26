@@ -1,6 +1,6 @@
 # DSPy Fundamentals — API Reference
 
-Extended detail for `dspy-fundamentals`. Source: https://dspy.ai/api/ (DSPy 3.2.x, April 2026).
+Extended detail for `dspy-fundamentals`. Source: https://dspy.ai/api/ and https://dspy.ai/tutorials/cache/ (DSPy 3.2.1, May 2026).
 
 ## `dspy.configure`
 
@@ -58,7 +58,7 @@ class Sig(dspy.Signature):
 
 Fields support any serializable type including Pydantic models, `list[T]`, `dict[K, V]`, `Literal[...]`.
 
-In DSPy 3.2.0, `prefix=`, `format=`, and `parser=` on `InputField` / `OutputField` are deprecated no-ops. Use `desc=` plus real Python types instead.
+In DSPy 3.2.x, `prefix=`, `format=`, and `parser=` on `InputField` / `OutputField` are deprecated no-ops. Use `desc=` plus real Python types instead.
 
 ## Predictor constructors
 
@@ -82,7 +82,7 @@ Base class. Override `forward(self, **kwargs) -> dspy.Prediction`. Key methods:
 - `.get_lm()` — the module's LM (falls back to `dspy.settings.lm`).
 - `.batch(examples, num_threads=8)` — parallel execution.
 
-## Custom LM backends (3.2.0+)
+## Custom LM backends (3.2.x)
 
 If `dspy.LM("provider/model")` is not enough, subclass `dspy.BaseLM`.
 
@@ -108,7 +108,25 @@ class MyLM(dspy.BaseLM):
         ...
 ```
 
-In 3.2.0, DSPy's adapters read those capability properties directly from `BaseLM`, which makes custom backends less coupled to LiteLLM internals. If your provider throws a context-window exception, translate it to `dspy.ContextWindowExceededError(model=self.model, message=...)` so DSPy's retry/truncation logic can respond correctly.
+In 3.2.x, DSPy's adapters read those capability properties directly from `BaseLM`, which makes custom backends less coupled to LiteLLM internals. If your provider throws a context-window exception, translate it to `dspy.ContextWindowExceededError(model=self.model, message=...)` so DSPy's retry/truncation logic can respond correctly.
+
+## Cache and production safety
+
+DSPy uses in-memory and on-disk caches by default. For agent workflows that may reuse caches across projects or machines, prefer a project-local cache directory:
+
+```bash
+export DSPY_CACHEDIR=.cache/dspy
+```
+
+When reading untrusted or long-lived disk caches, enable restricted pickle deserialization:
+
+```python
+dspy.configure_cache(restrict_pickle=True)
+```
+
+If you cache custom dataclasses or Pydantic objects, register every trusted type with `safe_types=[...]`. Otherwise DSPy treats unknown cached objects as cache misses instead of deserializing them.
+
+Provider-side prompt caching is also available for supported providers via `cache_control_injection_points` on `dspy.LM(...)`. Use it for repeated long system prompts, especially `dspy.ReAct` or long instruction modules.
 
 ## Adapters
 

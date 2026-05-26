@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `backbay-labs/clawdstrike` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `backbay-labs/clawdstrike` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `backbay-labs/clawdstrike` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,9 +75,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`docs/src/recipes/claude.md`](docs/src/recipes/claude.md) |
 | 15 | ✓ | [`examples/bb-edr/skills/edr-triage/SKILL.md`](examples/bb-edr/skills/edr-triage/SKILL.md) |
 | 16 | ✓ | [`examples/openclaw-plugin/skills/hello/SKILL.md`](examples/openclaw-plugin/skills/hello/SKILL.md) |
-| 17 | ✓ | [`infra/vendor/comfy-table/AGENTS.md`](infra/vendor/comfy-table/AGENTS.md) |
-| 18 | ✓ | [`infra/vendor/zerocopy/AGENTS.md`](infra/vendor/zerocopy/AGENTS.md) |
-| 19 | ✓ | [`packages/adapters/clawdstrike-openclaw/examples/hello-secure-agent/skills/hello/SKILL.md`](packages/adapters/clawdstrike-openclaw/examples/hello-secure-agent/skills/hello/SKILL.md) |
+| 17 | ✓ | [`packages/adapters/clawdstrike-openclaw/examples/hello-secure-agent/skills/hello/SKILL.md`](packages/adapters/clawdstrike-openclaw/examples/hello-secure-agent/skills/hello/SKILL.md) |
 
 ---
 

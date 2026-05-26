@@ -87,7 +87,7 @@ This repository's skills are authored primarily for **Claude Code**, but the `_c
 
 | Layer | Claude Code | Codex CLI | agy |
 |-------|-------------|-----------|-----|
-| Direct spawn | `Agent(prompt, mode: bypassPermissions)` | `spawn_agent(prompt)` → `wait_agent(id)` | `/agent <name> "<task>"` or `agy -p "<prompt>"` |
+| Direct spawn | `Agent(prompt, mode: bypassPermissions)` | `spawn_agent(prompt)` → `wait_agent(id)` | `/agent <name> "<task>"` or `agy -p "<prompt>" --dangerously-skip-permissions` (flag mandatory for headless — bypasses default `request-review` gate, equivalent to Claude Code's `bypassPermissions`) |
 | Parallel | `Agent(..., run_in_background: true)` × N | multiple `spawn_agent` → `wait_agent` all | multiple `/agent` invocations in TUI |
 | Skill root | `~/.claude/skills/` | `~/.codex/skills/` (未確認) | `~/.gemini/antigravity-cli/skills/` |
 | Workspace skill root | `<repo>/.claude/skills/` | `<repo>/.agents/skills/` | `<repo>/.agents/skills/` |

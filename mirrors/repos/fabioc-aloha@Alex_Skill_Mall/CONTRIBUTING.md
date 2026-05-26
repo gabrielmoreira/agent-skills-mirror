@@ -1,6 +1,6 @@
-# Contributing to Alex Skill Mall
+# Contributing to Alex ACT Plugin Mall
 
-Thank you for sharing your hard-won knowledge. This guide explains how to contribute skills that meet our quality standards.
+Thank you for sharing your hard-won knowledge. This guide explains how to contribute plugins that meet our quality standards.
 
 ---
 

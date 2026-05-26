@@ -148,47 +148,43 @@ Rules: record `SCAN_BASELINE` YAML in `.agents/sweep.md`. When receiving `GROVE_
 
 ## Recipes
 
+Single source of truth for Recipe definitions. Detection-tool detail (per-Recipe linters, scopes, false-positive guards) is folded into the **When to Use** column. Confidence thresholds and action gates are authoritative in **Confidence Gates** above.
+
 | Recipe | Subcommand | Default? | When to Use | Read First |
 |--------|-----------|---------|-------------|------------|
-| Dead Code | `dead` | ✓ | Dead code detection (unused functions/classes/variables) | `references/cleanup-targets.md` |
-| Orphan Files | `orphan` | | Orphan file detection (no imports/no references) | `references/cleanup-targets.md` |
-| Unused Exports | `unused` | | Unused export detection, dependency package audit | `references/dependency-cleanup.md` |
-| Tidy Up | `tidy` | | Comprehensive cleanup via SCAN → CATEGORIZE → PROPOSE | `references/cleanup-protocol.md` |
-| Imports | `imports` | | Import statement cleanup — unused imports, circular dependencies, duplicate imports, side-effect-only import survival, barrel file overhead, type-only import promotion | `references/imports-cleanup.md` |
-| Comments | `comments` | | Stale / obsolete comment detection — TODO/FIXME age out, commented-out code blocks, divergent JSDoc, version-stale "added in v1.x" comments, dead documentation references | `references/stale-comments.md` |
-| Types | `types` | | Unused type definitions (TS/Flow) — orphan interfaces, types referenced only by other unused types, generic constraint pollution, deprecated type re-exports, `any` accumulation cleanup | `references/unused-types.md` |
+| Dead Code | `dead` | ✓ | Dead code detection (unused functions/classes/variables) via knip (TS/JS) / vulture+deadcode (Python) / staticcheck (Go). Confidence ≥ 90 only as deletion candidates; verify with ≥ 2 independent signals. | `references/cleanup-targets.md` |
+| Orphan Files | `orphan` | | Orphan file detection (no imports/no references) via file-graph analysis. Treat `pages/` / `app/` / route files as high-risk false positives. | `references/cleanup-targets.md` |
+| Unused Exports | `unused` | | Unused export detection via knip `--production`, plus dependency package audit. Verify lockfile impact before marking dependencies as deletion candidates. | `references/dependency-cleanup.md` |
+| Tidy Up | `tidy` | | Comprehensive multi-category cleanup via SCAN → CATEGORIZE → PROPOSE. Create backup branch first; delete in batches of ≤ 10 files. | `references/cleanup-protocol.md` |
+| Imports | `imports` | | Import statement cleanup — unused imports via eslint `no-unused-vars` + `import/no-unused-modules`; circular dependencies via madge / dpdm; side-effect imports (e.g., `import 'side-effect-css'`) are protected; barrel files (`index.ts` one-shot re-exports) are tree-shake blockers and removal candidates UNLESS publicly exposed as external API; promote to `import type` (TS 4.5+) via `verbatimModuleSyntax`. | `references/imports-cleanup.md` |
+| Comments | `comments` | | Stale / obsolete comment detection — TODO/FIXME classified by git-blame age (> 180 days = stale candidate); commented-out code blocks (`/* */` runs of N consecutive lines) treated as dead; JSDoc `@param` / `@returns` cross-checked against actual function signatures for divergence; version-stale (`// added in v1.2`) compared against current version; `@deprecated` past N versions becomes deletion candidate. Comments don't affect behavior → confidence ≥ 70 sufficient for deletion. | `references/stale-comments.md` |
+| Types | `types` | | Unused type definitions (TS/Flow) — orphan interfaces / types via ts-prune / knip `--include exports types`; transitively unused types (referenced only by other unused types via type-graph) included; generic-constraint-only types treated as effectively unused; flatten `export type Foo` re-export chains via ts-unused-exports; gradual `any` reduction handed off to Quill as a separate project. | `references/unused-types.md` |
+
+### Signal Keywords → Recipe
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply.
+
+| Keywords | Recipe / Routing |
+|----------|------------------|
+| `dead code`, `unused function`, `unused class`, `unused variable` | `dead` |
+| `orphan`, `orphan file`, `no imports`, `no references`, `post-refactor residue` | `orphan` (targeted scan on changed areas after refactors) |
+| `unused export`, `unused dependency`, `dependency audit`, `lockfile` | `unused` (see also `references/dependency-cleanup.md`) |
+| `tidy`, `comprehensive cleanup`, `multi-category` | `tidy` |
+| `import`, `circular dependency`, `barrel file`, `type-only import` | `imports` |
+| `TODO`, `FIXME`, `stale comment`, `commented-out code`, `divergent JSDoc`, `version-stale` | `comments` |
+| `unused type`, `orphan interface`, `generic constraint pollution`, `any accumulation` | `types` |
+| `monorepo`, `large-scale cleanup`, `enterprise cleanup` | `tidy` with phased cleanup and area ownership (see `references/large-scale-cleanup.md`) |
+| `maintenance`, `scheduled scan`, `baseline comparison`, `trend report` | See `Maintenance Mode` table + `references/maintenance-workflow.md` |
+| complex multi-agent task | Route to Nexus per `_common/BOUNDARIES.md` |
+| unclear request | Clarify scope and route per `_common/BOUNDARIES.md` |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
-- Otherwise → default Recipe (`dead` = Dead Code). Apply normal SCAN → ANALYZE → CATEGORIZE → PROPOSE → EXECUTE → VERIFY workflow.
-
-Behavior notes per Recipe:
-- `dead`: knip (TS/JS) / vulture+deadcode (Python) / staticcheck (Go) で未使用コードを検出。信頼度 ≥ 90 のみ削除候補。≥ 2 シグナルで検証。
-- `orphan`: ファイルグラフ解析で参照ゼロのファイルを特定。`pages/`/`app/`/route ファイルは高リスク偽陽性として扱う。
-- `unused`: knip `--production` で未使用 export を検出。依存パッケージは lockfile 影響を確認後に削除候補に。
-- `tidy`: 複数カテゴリ横断の一括整理。バックアップブランチを作成後、10 ファイル以下のバッチで削除。
-- `imports`: Read `references/imports-cleanup.md` first. unused imports は eslint `no-unused-vars` + `import/no-unused-modules` で検出。circular dependencies は madge / dpdm。`import 'side-effect-css'` は副作用 import として保護。barrel files (`index.ts` 一括 re-export) はツリーシェイク阻害要因として削減候補だが、外部 API として公開されている場合は保護。`import type` への昇格 (TS 4.5+) は `verbatimModuleSyntax` 有効化で検出。
-- `comments`: Read `references/stale-comments.md` first. TODO/FIXME は git blame の年齢で分類 (>180日 = stale 候補)、コメントアウトコード (`/* */` ブロックで連続 N 行) は dead と扱う、JSDoc の `@param` / `@returns` は実関数シグネチャと突き合わせて divergent を検出、version-stale (`// added in v1.2`) は現バージョンと比較、`@deprecated` から N バージョン経過したものは削除候補。コメントは挙動に影響しないため信頼度 ≥ 70 で削除可。
-- `types`: Read `references/unused-types.md` first. TS の orphan interface / type は ts-prune / knip `--include exports types` で検出。型のみ参照される型 (transitively unused via type-graph) も対象。generic constraint で渡されているだけの型は実質 unused。`export type Foo` の re-export 連鎖は ts-unused-exports でフラット化。`any` 漸進削減は別途プロジェクトとして扱い、Quill にハンドオフ。
-
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| dead code / unused file cleanup | Standard Sweep workflow | cleanup report with confidence scores | `references/` |
-| dependency audit request | Dependency-focused scan | unused dependency list with lockfile impact | `references/dependency-cleanup.md` |
-| monorepo / large-scale cleanup | Phased cleanup with area ownership | batched cleanup plan | `references/large-scale-cleanup.md` |
-| post-refactor residue check | Targeted scan on changed areas | orphaned code report | `references/cleanup-targets.md` |
-| maintenance / scheduled scan | Baseline comparison workflow | trend report with delta | `references/maintenance-workflow.md` |
-| complex multi-agent task | Nexus-routed execution | structured handoff | `_common/BOUNDARIES.md` |
-| unclear request | Clarify scope and route | scoped analysis | `references/` |
-
-Routing rules:
-
-- If the request matches another agent's primary role, route to that agent per `_common/BOUNDARIES.md`.
-- Always read relevant `references/` files before producing output.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`dead` = Dead Code).
+- Apply the `SCAN → ANALYZE → CATEGORIZE → PROPOSE → EXECUTE → VERIFY` workflow in all cases; deletion thresholds follow the **Confidence Gates** table above.
+- If the request matches another agent's primary role per `_common/BOUNDARIES.md`, route to that agent; for complex multi-agent tasks, route to Nexus.
 
 ## Output Requirements
 Deliver:

@@ -166,51 +166,53 @@ Use Magi for executive choice, Scribe for formal strategy docs, Canvas for maps 
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| Scenario Planning | `scenario` | ✓ | Business scenario planning (Baseline/Optimistic/Pessimistic 3 scenarios) | `references/simulation-patterns.md`, `references/data-inputs.md` |
-| SWOT Analysis | `swot` | | SWOT analysis + PESTLE→Porter cascade | `references/frameworks.md` |
-| PESTLE Analysis | `pestle` | | PESTLE macro-environment analysis + TPESTRE variants | `references/frameworks.md`, `references/cognitive-biases.md` |
-| Porter Analysis | `porter` | | Porter 5 Forces industry structure analysis + entry evaluation | `references/frameworks.md`, `references/market-sizing-strategy.md` |
-| Forecast | `forecast` | | KPI forecasting, financial modeling, SaaS metrics | `references/simulation-patterns.md`, `references/financial-modeling-pitfalls.md` |
-| Jobs-to-be-Done | `jtbd` | | Christensen JTBD framework — job statement, forces of progress (push/pull/anxiety/habit), competitive set by job not product | `references/jobs-to-be-done.md` |
-| Blue Ocean Strategy | `blue-ocean` | | Kim & Mauborgne Blue Ocean — Value Curve, ERRC grid (Eliminate/Reduce/Raise/Create), Four Actions, non-customer tiers | `references/blue-ocean-strategy.md` |
-| Wardley Mapping | `wardley` | | Simon Wardley value-chain mapping — user-need anchor, visibility axis, evolution axis (Genesis→Custom→Product→Commodity), doctrine and climatic patterns | `references/wardley-mapping.md` |
+Single source of truth for Recipe definitions. Behavior detail lives in the "Behavior" column; the "Read First" column lists files to load at the initial step.
+
+| Recipe | Subcommand | Default? | When to Use | Behavior | Read First |
+|--------|-----------|---------|-------------|----------|------------|
+| Scenario Planning | `scenario` | ✓ | Business scenario planning (Baseline/Optimistic/Pessimistic 3 scenarios) | Baseline/Optimistic (+20-40%)/Pessimistic (-20-40%) 3 scenarios required. Include sensitivity analysis and FORESIGHT record. | `references/simulation-patterns.md`, `references/data-inputs.md` |
+| SWOT Analysis | `swot` | | SWOT analysis + PESTLE→Porter cascade | Execute PESTLE→Porter→SWOT cascade. Always apply Devil's Advocate challenge. | `references/frameworks.md` |
+| PESTLE Analysis | `pestle` | | PESTLE macro-environment analysis + TPESTRE variants | Also evaluate TPESTRE (Tech/Political/Economic/Social/Trust/Regulatory/Environmental) variant. Prefer when Trust/ethics dimensions matter. | `references/frameworks.md`, `references/cognitive-biases.md` |
+| Porter Analysis | `porter` | | Porter 5 Forces industry structure analysis + entry evaluation | 5 Forces quantitative scoring + BCG portfolio linkage + market-entry scoring. | `references/frameworks.md`, `references/market-sizing-strategy.md` |
+| Forecast | `forecast` | | KPI forecasting, financial modeling, SaaS metrics | SaaS Triangle (Gross Margin 75%+/CAC Payback <18mo/NRR 101%+) check. Rule of 40 and Burn Multiple alerts included. Emit benchmark gap analysis + alert flags for SaaS-metrics reviews. | `references/simulation-patterns.md`, `references/financial-modeling-pitfalls.md` |
+| Jobs-to-be-Done | `jtbd` | | Christensen JTBD framework | Write the job statement in `When [situation], I want [motivation], so I can [outcome]` form. Map the four forces of progress (push of current situation / pull of new solution / anxiety of switching / habit of current). Define the competitive set by *job*, not by product category. Identify functional, emotional, and social dimensions. Hand off to Spark for feature mapping, Researcher for interview validation. | `references/jobs-to-be-done.md` |
+| Blue Ocean Strategy | `blue-ocean` | | Kim & Mauborgne Blue Ocean — Value Curve, ERRC grid, Four Actions, non-customer tiers | Build a Strategy Canvas (Value Curve) mapping the existing industry's competition factors. Apply Four Actions (Eliminate / Reduce / Raise / Create) to produce divergent value curve. Identify the three tiers of non-customers (soon-to-be / refusing / unexplored). Pair with buyer utility map. Hand off to Spark for feature expressions, Compete for incumbent analysis. | `references/blue-ocean-strategy.md` |
+| Wardley Mapping | `wardley` | | Simon Wardley value-chain mapping — user-need anchor, visibility + evolution axes, doctrine | Anchor to a specific user need. Map the value chain with visibility on Y-axis (user-facing → invisible) and evolution on X-axis (Genesis → Custom-built → Product/Rental → Commodity/Utility). Annotate inertia, climatic patterns (evolution direction), and doctrine (universal principles). Use for strategic build-vs-buy, outsourcing, and platform-play decisions. Hand off to Atlas (technical architecture alignment), Magi (build vs buy judgment). | `references/wardley-mapping.md` |
+| Market Sizing | (signal-only) | | TAM/SAM/SOM strategic interpretation | Market headroom + entry scoring. Emit strategic market size analysis + portfolio sizing. | `references/market-sizing-strategy.md` |
+| Disruption Detection | (signal-only) | | S-curve, industry lifecycle, Christensen disruption risk | Emit disruption risk score + lifecycle stage + response options. | `references/disruption-detection.md` |
+| Wargaming Simulation | (signal-only — `WARGAME` Scope Mode) | | Competitor response simulation | Emit response-adjusted scenarios + financial impact + contingency plans. | `references/wargaming-simulation.md` |
+| FORESIGHT Escalation | (signal-only) | | Strategy-execution deviation detected | Emit deviation report + corrective options. | `references/strategy-monitoring.md` |
+| Debiasing Review | (signal-only) | | Cognitive bias risk in input data | Debiasing review before simulation. Emit bias-checked assumptions + Devil's Advocate findings. | `references/cognitive-biases.md` |
+
+### Signal Keywords → Recipe
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply.
+
+| Keywords | Recipe |
+|----------|--------|
+| `scenario`, `baseline`, `optimistic`, `pessimistic` | `scenario` |
+| `swot`, `strengths-weaknesses-opportunities-threats` | `swot` |
+| `pestle`, `tpestre`, `macro environment` | `pestle` |
+| `porter`, `5 forces`, `industry structure` | `porter` |
+| `forecast`, `kpi forecast`, `saas metrics`, `rule of 40`, `burn multiple`, `NRR`, `CAC payback` | `forecast` |
+| `jtbd`, `jobs to be done`, `forces of progress` | `jtbd` |
+| `blue ocean`, `value curve`, `ERRC`, `non-customer tiers` | `blue-ocean` |
+| `wardley`, `value chain map`, `evolution axis` | `wardley` |
+| `market sizing`, `TAM`, `SAM`, `SOM`, `market headroom` | Market Sizing (signal-only) |
+| `disruption`, `S-curve`, `industry lifecycle`, `Christensen` | Disruption Detection (signal-only) |
+| `wargame`, `competitor response`, `move-countermove` | Wargaming Simulation (signal-only — `WARGAME` Scope Mode) |
+| `deviation`, `BREACH`, `WATCH`, `RED alert`, `strategy monitoring` | FORESIGHT Escalation (signal-only) |
+| `bias`, `groupthink`, `confirmation bias`, `devil's advocate` | Debiasing Review (signal-only) |
+| complex multi-agent task | Nexus-routed execution (see `_common/BOUNDARIES.md`) |
+| unclear request | Clarify scope and route |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise, if natural-language input matches a Signal Keyword row → activate the mapped Recipe.
 - Otherwise → default Recipe (`scenario` = Scenario Planning). Apply normal SURVEY → PLAN → VERIFY → PRESENT workflow.
-
-Behavior notes per Recipe:
-- `scenario`: Baseline/Optimistic (+20-40%)/Pessimistic (-20-40%) 3 scenarios required. Include sensitivity analysis and FORESIGHT record.
-- `swot`: Execute PESTLE→Porter→SWOT cascade. Always apply Devil's Advocate challenge.
-- `pestle`: Also evaluate TPESTRE (Tech/Political/Economic/Social/Trust/Regulatory/Environmental) variant. Prefer when Trust/ethics dimensions matter.
-- `porter`: 5 Forces quantitative scoring + BCG portfolio linkage + market-entry scoring.
-- `forecast`: SaaS Triangle (Gross Margin 75%+/CAC Payback <18mo/NRR 101%+) check. Rule of 40 and Burn Multiple alerts included.
-- `jtbd`: Write the job statement in `When [situation], I want [motivation], so I can [outcome]` form. Map the four forces of progress (push of current situation / pull of new solution / anxiety of switching / habit of current). Define the competitive set by *job*, not by product category. Identify functional, emotional, and social dimensions. Hand off to Spark for feature mapping, Researcher for interview validation.
-- `blue-ocean`: Build a Strategy Canvas (Value Curve) mapping the existing industry's competition factors. Apply Four Actions (Eliminate / Reduce / Raise / Create) to produce divergent value curve. Identify the three tiers of non-customers (soon-to-be / refusing / unexplored). Pair with buyer utility map. Hand off to Spark for feature expressions, Compete for incumbent analysis.
-- `wardley`: Anchor to a specific user need. Map the value chain with visibility on Y-axis (user-facing → invisible) and evolution on X-axis (Genesis → Custom-built → Product/Rental → Commodity/Utility). Annotate inertia, climatic patterns (evolution direction), and doctrine (universal principles). Use for strategic build-vs-buy, outsourcing, and platform-play decisions. Hand off to Atlas (technical architecture alignment), Magi (build vs buy judgment).
-
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| default request | Standard Helm workflow | analysis / recommendation | `references/` |
-| complex multi-agent task | Nexus-routed execution | structured handoff | `_common/BOUNDARIES.md` |
-| unclear request | Clarify scope and route | scoped analysis | `references/` |
-| strategy-execution deviation detected | FORESIGHT escalation workflow | deviation report + corrective options | `references/strategy-monitoring.md` |
-| cognitive bias risk in input data | Debiasing review before simulation | bias-checked assumptions + Devil's Advocate findings | `references/cognitive-biases.md` |
-| SaaS metrics review | Financial benchmark comparison | benchmark gap analysis + alert flags | `references/financial-modeling-pitfalls.md` |
-| market sizing, TAM/SAM/SOM interpretation | Market headroom + entry scoring | strategic market size analysis + portfolio sizing | `references/market-sizing-strategy.md` |
-| disruption risk, S-curve, industry lifecycle | Disruption detection | disruption risk score + lifecycle stage + response options | `references/disruption-detection.md` |
-| wargame, competitor response simulation | Wargaming simulation | response-adjusted scenarios + financial impact + contingency | `references/wargaming-simulation.md` |
-
-Routing rules:
-
-- If the request matches another agent's primary role, route to that agent per `_common/BOUNDARIES.md`.
-- Always read relevant `references/` files before producing output.
+- If the request matches another agent's primary role, route to that agent per `_common/BOUNDARIES.md`. Always read relevant `references/` files before producing output.
 
 ## Output Requirements
 

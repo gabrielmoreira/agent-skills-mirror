@@ -62,7 +62,7 @@ RPC Layer (rpc/)
 
 2. **Session Layer** (`src/notebooklm/_session.py` + session/kernel collaborators):
    - `_session.py`: concrete `Session` orchestration
-   - `_authed_transport.py`, `_rpc_executor.py`: HTTP client + RPC call abstraction
+   - `_request_types.py`, `_transport_errors.py`, `_streaming_post.py`, `_rpc_executor.py`: request construction, transport errors, streaming HTTP, and RPC dispatch
    - `_session_auth.py`, `_cookie_persistence.py`: Auth refresh + cookie storage
    - `_client_metrics.py`, `_transport_drain.py`, `_reqid_counter.py`: Telemetry, drain coordination, request-counter handling
    - `_conversation_cache.py`, `_polling_registry.py`: Conversation cache + artifact polling helpers
@@ -95,7 +95,9 @@ RPC Layer (rpc/)
 | `_session_auth.py` | `AuthRefreshCoordinator` — refresh task + auth-snapshot lock |
 | `_session_lifecycle.py` | `ClientLifecycle` — loop-affinity guard + keepalive task |
 | `_rpc_executor.py` | RPC dispatch executor with `DecodeResponse` + `RpcOwner` Protocols |
-| `_authed_transport.py` | Authed POST leaf raising `TransportRateLimited` / `TransportServerError` / `TransportAuthExpired` for `RetryMiddleware` (in `_middleware_retry.py`) to act on; hosts the `_AuthedTransportHost` Protocol. |
+| `_request_types.py` | Shared authed POST request construction types: `AuthSnapshot`, `BuildRequest`, `PostBody`, and materialization helpers. |
+| `_transport_errors.py` | Transport exceptions, `Retry-After` parsing, and terminal `Kernel.post` error mapping for retry/auth middleware. |
+| `_streaming_post.py` | Size-capped streaming POST helper used by `Kernel.post`. |
 | `_conversation_cache.py` | Per-instance LRU conversation cache for `ChatAPI` |
 | `_polling_registry.py` | Pending-poll registry for long-running artifact generations |
 | `_cookie_persistence.py` | Cookie-jar persistence + `__Secure-1PSIDTS` rotation |
@@ -126,7 +128,7 @@ RPC Layer (rpc/)
 | `_version_check.py` | Dynamic client-side version deprecation guard |
 | `_chat_notes.py` | Chat-adjacent note saving workflow adapter |
 | `_chat_protocol.py` | Internal types and interfaces for the chat client |
-| `_chat_transport.py` | Chat-specific error mapping over `AuthedTransport` |
+| `_chat_transport.py` | Chat-specific error mapping over the shared transport pipeline |
 | `_middleware_chain.py` | Constructs the middleware chain in the canonical ADR-009 order |
 | `_middleware*.py` | Modular middleware implementations (drain, metrics, semaphore, retry, auth, error injection, tracing) |
 | `rpc/types.py` | RPC method IDs (source of truth) |
@@ -150,7 +152,9 @@ src/notebooklm/
 ├── _session_config.py           # DEFAULT_* knobs + module-level constants
 ├── _session_helpers.py          # is_auth_error / AUTH_ERROR_PATTERNS / keepalive helpers
 ├── _error_injection.py          # Synthetic-error env-var resolver + startup guard
-├── _authed_transport.py         # Authed POST leaf — raises TransportRateLimited / TransportServerError / TransportAuthExpired for RetryMiddleware (_middleware_retry.py) to act on
+├── _request_types.py            # AuthSnapshot, BuildRequest, PostBody, request materialization helpers
+├── _transport_errors.py         # Transport exceptions, Retry-After parsing, Kernel.post error mapping
+├── _streaming_post.py           # Size-capped streaming POST helper
 ├── _rpc_executor.py             # RPC dispatch executor
 ├── _session_auth.py             # AuthRefreshCoordinator (refresh task + auth-snapshot lock)
 ├── _client_metrics.py           # Telemetry / metrics seam

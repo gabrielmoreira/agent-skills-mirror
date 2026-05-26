@@ -150,10 +150,15 @@ the issue, and keep this separate from `triagePriority` and
 `impact:message-loss`: This issue is about lost, duplicated, misrouted, or suppressed channel messages.
 `impact:session-state`: This issue is about session, memory, transcript, context, or agent state drift.
 `impact:auth-provider`: This issue is about auth, provider routing, model choice, or SecretRef resolution.
-Use an empty array when no owned impact label applies. Impact labels are
-searchable GitHub labels only; they describe what the item is about, not the
-risk of merging a PR. They do not close, merge, block, or replace review
-findings.
+`impact:other`: This issue has meaningful maintainer-visible impact outside the owned taxonomy.
+Use `impact:other` only when the issue has a concrete maintainer-visible impact
+but none of the specific owned impact labels fit. Prefer a specific impact label
+over `impact:other`. Use an empty array when no meaningful owned impact signal
+applies. `impact:other` counts toward the same max of 3 labels and requires a
+matching `labelJustifications` entry that explains the actual impact. Impact
+labels are searchable GitHub labels only; they describe what the item is about,
+not the risk of merging a PR. They do not close, merge, block, or replace
+review findings.
 
 Set `mergeRiskLabels` as PR-only ClawSweeper-owned GitHub labels for merge
 risks that green CI does not settle. Use an empty array for issues. Keep these
@@ -169,6 +174,21 @@ discussion:
 `merge-risk: 🚨 security-boundary`: 🚨 Merging this PR could weaken sandboxing, authorization, credentials, or sensitive data.
 `merge-risk: 🚨 availability`: 🚨 Merging this PR could cause crashes, hangs, restart loops, stalls, or process outages.
 `merge-risk: 🚨 automation`: 🚨 Merging this PR could break CI, automerge, proof capture, label sync, or automation.
+`merge-risk: 🚨 other`: 🚨 Merging this PR has meaningful risk outside the owned taxonomy.
+Use `merge-risk: 🚨 other` only when merging the PR has a concrete risk that
+green CI does not settle but none of the specific owned merge-risk labels fit.
+Prefer a specific merge-risk label over `merge-risk: 🚨 other`. Use an empty
+array when no meaningful owned merge-risk signal applies. `merge-risk: 🚨 other`
+counts toward the same max of 3 labels and requires a matching
+`labelJustifications` entry that explains the actual risk.
+Do not treat a branch being behind the current base as proof that merging the
+PR will delete current-base-only files or commits. When GitHub reports the PR as
+mergeable or clean and the only concern is stale base drift, describe it as
+needing rebase or review refresh in `risks`, `workReason`, or `bestSolution`,
+but leave `reviewFindings` and `mergeRiskLabels` focused on defects or risks
+that survive the actual three-way merge result. Use deletion/drop wording for
+current-base behavior only when a merge result, merge ref, conflict, or concrete
+patch evidence shows that the merged PR would remove or regress it.
 When merge risk is present, explain it in `risks` in maintainer-facing language
 and make `bestSolution` the best end state. Fill `mergeRiskOptions` with 1-3
 risk-specific maintainer options. Do not use a fixed menu. Each option needs a
@@ -183,6 +203,17 @@ multiple valid repair paths. Set `automergeInstruction` only for a recommended
 otherwise set it to an empty string. `automergeInstruction` must be only the
 special-instructions payload. Do not include a bot mention or command such as
 `@clawsweeper automerge`, `@clawsweeper autofix`, or `this PR:`.
+
+Fill `reviewMetrics` with concise quantified PR review facts only when they are
+useful, concrete, maintainer-relevant, and grounded in the diff, current
+behavior, repository policy, or discussion. Use `reviewMetrics: []` for issues
+and ordinary PRs where no top-level metric would help maintainers. Each metric
+must have `label`, `value`, and `reason`. The `value` should contain the count
+or measured/change summary when practical, such as `2 added, 1 changed, 0
+removed`, `1 workflow changed`, or `3 files affected`. The `reason` should
+briefly explain why that measured fact matters before merge. Do not use vague
+labels or values, and do not restate full `risks`, `bestSolution`,
+`mergeRiskOptions`, or label rationale in `reviewMetrics`.
 
 Fill `labelJustifications` with one object for every selected ClawSweeper-managed
 label. Include the selected `triagePriority` unless it is `none`, every selected
@@ -336,7 +367,7 @@ Use reason-specific anchors:
   the decision. Keep the PR open when a meaningful unique fix, feature,
   security hardening, test, doc, migration, or product decision remains.
 - For `clawhub`, inspect `VISION.md` and the relevant plugin/skill/MCP/channel/provider docs or APIs, then confirm the request can be satisfied outside core without a missing extension API.
-- For `duplicate_or_superseded`, read the canonical related report/PR from the provided context or `gh`, and explain whether it is open, closed, merged, or already shipped.
+- For `duplicate_or_superseded`, read the canonical related report/PR from the provided context or `gh`, and explain whether it is open, closed, merged, or already shipped. For pull requests, do not close a PR as superseded by another PR unless the replacement is merged, or it is still open and appears to be a safe landing path with positive real behavior proof. Keep the source PR open when the proposed replacement PR is closed unmerged, missing positive real behavior proof, F-rated, proposed for close, not cleanly mergeable, or otherwise not a safe canonical target.
 - For `low_signal_unmergeable_pr`, inspect the PR title/body, diff, touched files, comments, current docs/code ownership, and any maintainer review notes. Confirm the submitted branch is mostly unrelated, copied, generated, bloated, or incoherent churn relative to the stated useful change, and that landing it would require discarding or replacing most of the branch. Keep open if the branch contains a meaningful unique fix, feature, migration, test, security hardening, or bounded repair path that can preserve most of the contributor work.
 - For `not_actionable_in_repo`, read enough discussion/context to confirm the action belongs to repo/project administration, third-party setup, external ownership, or historical cleanup rather than OpenClaw code/docs.
 - For `stale_insufficient_info`, confirm the missing reproduction data is the blocker after checking current code/docs for an obvious known fix or active path.
@@ -353,7 +384,7 @@ Close only when the evidence is strong and the repository policy allows it. Allo
 - `mostly_implemented_on_main`: an older PR is more than 60 days old, current `main` already implements the central useful part of the PR, and no meaningful unique remainder should be merged from the branch. Use only for pull requests, not issues. The close comment must say what part is already on `main`, what leftover part is minor/obsolete/superseded or separately tracked, and why keeping the stale branch open is not useful.
 - `cannot_reproduce`: you tried a reasonable reproduction path against current `main` and it does not reproduce, or the report is obsolete and no longer matches current behavior.
 - `clawhub`: useful idea, but it belongs as a ClawHub skill/plugin rather than OpenClaw core. Use `VISION.md` as the scope anchor. Prefer this when the requested capability is optional integration/provider/channel/skill/bundle/MCP work, can be built with current skill/MCP/plugin surfaces, has no concrete missing core extension API, and has no protected maintainer signal. This includes service-specific channels, providers, optional skills, and plugin-discovery/publishing ideas when the current plugin or bundle-style interface is sufficient. For OpenClaw PRs that only add bundled skills under paths like `skills/<vendor>/**`, set `itemCategory: "skill"` and prefer `closeReason: "clawhub"` with high confidence; the close comment should ask the contributor to upload or publish it through ClawHub.com instead of bundling it in OpenClaw core. Keep open when the item reports a regression in bundled core behavior, identifies a missing plugin API needed before external implementation is possible, involves security/core hardening, or clearly needs explicit maintainer product judgment.
-- `duplicate_or_superseded`: another issue/PR already tracks the same remaining work, or the linked discussion/PR clearly supersedes this item. Link the canonical item and explain whether it is open or closed/merged. For clusters with the same root cause, keep one canonical issue open and close satellites when their unique logs, platforms, or context can be preserved by linking them in the close comment. Unique evidence blocks duplicate close only when it implies a distinct root cause, platform-specific fix, or separate remaining product behavior.
+- `duplicate_or_superseded`: another issue/PR already tracks the same remaining work, or the linked discussion/PR clearly supersedes this item. Link the canonical item and explain whether it is open or closed/merged. For clusters with the same root cause, keep one canonical issue open and close satellites when their unique logs, platforms, or context can be preserved by linking them in the close comment. For PR-to-PR supersession, the canonical PR must be merged or still open, proof-positive, and viable; do not treat a closed-unmerged, F/no-proof, proposed-close, not-cleanly-mergeable, or otherwise unsafe PR as a reason to close another PR. Unique evidence blocks duplicate close only when it implies a distinct root cause, platform-specific fix, or separate remaining product behavior.
 - `low_signal_unmergeable_pr`: a pull request may contain a small useful idea, but the submitted branch is net-negative and should not stay open as a landing candidate because most of the diff is unrelated, copied, generated, bloated, internally incoherent, or conflicts with the repository's existing structure. Use this for PRs like a narrow docs title that inserts a large unrelated reference block, a tiny bug fix mixed with broad unrelated rewrites, or generated/vendor/config churn unrelated to the stated purpose. The close comment must acknowledge any useful part, explain the concrete unmergeable diff, and invite a new narrow PR for the useful change. Do not use this when the PR has meaningful unique work that can be repaired without throwing away most of the branch, when maintainers asked to preserve/adopt the branch, when a protected label or maintainer author requires human judgment, or when the only issue is ordinary missing proof, test coverage, style, or review follow-up.
 - `not_actionable_in_repo`: the request is concrete enough to understand, but the action belongs outside the OpenClaw source repository, such as GitHub/project administration, external hosted setup, third-party service configuration, domain/account ownership, or historical comment/issue cleanup that cannot be fixed by changing OpenClaw code or docs. Do not use this for real product bugs, plugin API gaps, or unclear-but-salvageable reports. Use this for setup/support reports, one-line reports, screenshot-only reports, or credential-redaction incidents only when current code/docs show the behavior is expected or externally configured and the item lacks a concrete source-level reproduction. Do not keep these open only to collect support logs; the close comment should ask for credential rotation/redaction when relevant and point to the exact diagnostic command or docs page needed for a new actionable report.
 - `incoherent`: the item is too unclear or internally contradictory after reading the title/body/comments.
@@ -472,16 +503,14 @@ Keep open any item whose GitHub author association is `OWNER`, `MEMBER`, or `COL
 
 Keep open any item with a protected label: `security`, `beta-blocker`, `release-blocker`, or `maintainer`. These labels mean the item needs explicit maintainer handling even when the discussion looks stale or already implemented. For PRs explicitly opted into `clawsweeper:automerge`, this protected-label rule prevents closing or cleanup, but does not by itself block a clean automerge verdict.
 
-For OpenClaw PR changelog review, repo policy requires user-facing `fix`,
-`feat`, and `perf` changes to have a `CHANGELOG.md` entry, but forbidden bot or
-maintainer handles must not be forced into a `Thanks @...` line. Do not create a
-review finding, needs-changes verdict, contributor action, public author request,
-or next-step blocker solely because a contributor PR lacks a changelog entry.
-Changelog entries are maintainer-owned landing/release work; do not ask the PR
-author to add one. Also do not create a review finding merely because a
-changelog entry lacks `Thanks @steipete`, `Thanks @openclaw`, or `Thanks
-@codex`; if those are the only known source authors, preserving credit in PR
-history/source links is sufficient.
+For OpenClaw PR release-note review, `CHANGELOG.md` is release-owned. Normal
+PRs, repair workers, and automerge/autofix lanes should not edit it. Do not
+make missing `CHANGELOG.md` a review finding, merge blocker, work item, or
+next-step blocker. If release-note context is needed, ask for PR-body or commit
+message context: user-visible behavior, affected surface, issue/PR refs, and
+credited human author/reporter when known. Never request `Thanks @steipete`,
+`Thanks @openclaw`, `Thanks @clawsweeper`, or other forbidden bot/maintainer
+changelog attributions.
 
 When citing docs in the close comment, link the public `docs.openclaw.ai` page rather than the internal `docs/*.md` GitHub file whenever a public page exists. The docs site publishes the same content and is the user-facing target. Keep `file`, `line`, and `sha` populated in the structured `evidence` object for auditability, but the prose/comment should prefer links like `https://docs.openclaw.ai/plugins/building-plugins` over `https://github.com/openclaw/openclaw/blob/.../docs/plugins/building-plugins.md`.
 
@@ -560,6 +589,18 @@ concise sentences: "Is this the best way to solve the issue?" Say
 yes/no/unclear/not applicable and explain whether the current implementation,
 PR diff, suggested repair, or requested direction is the narrowest maintainable
 solution. If there is a safer alternative, name it.
+
+Always fill `agentsPolicyStatus` after checking the target repository's
+`AGENTS.md`. Use `found_applied` only when `AGENTS.md` was found, read fully,
+and relevant repository guidance affected the review. Use
+`found_not_applicable` when it was found and read fully but did not affect this
+item, `not_found` when no target repository `AGENTS.md` was found,
+`conflict_not_applied` when relevant guidance conflicted with ClawSweeper's
+review contract, and `unreadable_or_unclear` when you could not confirm a full
+read or policy application status. Do not duplicate AGENTS.md policy text in the
+public comment; route concrete PR defects through `reviewFindings` and broader
+policy concerns through existing fields such as `risks`, `bestSolution`,
+`solutionAssessment`, or `workReason`.
 
 Always fill `reviewFindings`, `overallCorrectness`, and
 `overallConfidenceScore`. For issues or close-only cleanup where there is no
@@ -684,6 +725,11 @@ explain why the risk matters in `risks`, and fill `mergeRiskOptions` with
 decision-useful maintainer options. Use `mergeRiskOptions: []` whenever
 `mergeRiskLabels` is empty. Avoid making ClawSweeper sound more certain than the
 evidence supports.
+
+Always fill `reviewMetrics`. Use `[]` unless a PR has concise quantified facts
+that are useful near the top of the report. Good metrics name the measured
+surface, provide a concrete count or change summary, and explain why maintainers
+should notice it before merge.
 
 Always fill `labelJustifications` too. There must be exactly one justification
 for each selected triage priority label, impact label, and merge-risk label, and

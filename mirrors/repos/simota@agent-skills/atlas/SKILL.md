@@ -123,51 +123,47 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 Detailed checklists: `references/daily-process-checklists.md`
 
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| `dependency`, `circular`, `coupling` | Dependency analysis | Dependency graph + metrics report | `references/dependency-analysis-patterns.md` |
-| `god class`, `large module`, `SRP` | God Class detection | Decomposition proposal | `references/zen-integration.md` |
-| `ADR`, `architecture decision` | ADR authoring | ADR document | `references/adr-rfc-templates.md` |
-| `RFC`, `architectural change` | RFC authoring | RFC document | `references/adr-rfc-templates.md` |
-| `technical debt`, `debt inventory` | Debt assessment | Debt inventory + repayment plan | `references/technical-debt-scoring.md` |
-| `module boundary`, `restructure` | Module boundary design | Restructuring proposal | `references/architecture-patterns.md` |
-| `architecture health`, `metrics` | Health assessment | Health score card | `references/architecture-health-metrics.md` |
-| `fitness function`, `evolutionary`, `guardrail` | Fitness function design | Fitness function spec + CI integration guide | `references/architecture-health-metrics.md` |
-| `multi-engine`, `tri-engine architecture`, `parallel ADR`, `cross-engine arch review`, `multi`, `architectural style trade-off` | Tri-engine architecture deliberation | Consensus + Dissenting Options ADR with load-bearing trade-off matrix | `references/tri-engine-architect.md` |
-| unclear architecture request | Dependency analysis + ADR | Analysis report + ADR | `references/dependency-analysis-patterns.md` |
-
 ## Recipes
+
+Single source of truth for Recipe definitions. Full phase contracts live in the "Read First" reference files.
 
 | Recipe | Subcommand | Default? | When to Use | Read First |
 |--------|-----------|---------|-------------|------------|
-| Architecture Analysis | `analyze` | ✓ | Full architecture analysis, combined evaluation of dependency/coupling/module boundaries | `references/dependency-analysis-patterns.md` |
-| Dependency Audit | `deps` | | Dependency graph, circular reference detection | `references/dependency-analysis-patterns.md` |
-| God Class Detection | `godclass` | | God Class / bloated module detection | `references/zen-integration.md` |
-| ADR Authoring | `adr` | | Author Architecture Decision Record | `references/adr-rfc-templates.md` |
-| RFC Drafting | `rfc` | | RFC draft for large-scale changes | `references/adr-rfc-templates.md` |
-| Cycle Break | `cycle` | | Circular dependency (SCC) detection and removal strategies (dependency inversion / interface extraction / re-layering) | `references/circular-dependency-remediation.md` |
-| Coupling Assessment | `coupling` | | Quantitative module coupling assessment (Ca/Ce/I/A/D) and improvement guidance | `references/coupling-metrics.md` |
-| Boundary Evaluation | `boundary` | | Bounded Context boundary evaluation, cross-boundary leak detection, anti-corruption layer proposals | `references/module-boundary-evaluation.md` |
-| Multi-Engine | `multi` | | Tri-engine architecture deliberation (Codex + Antigravity + Claude in parallel) with Pattern H scoring. Concurrence on architectural smells calibrates ADR Context; divergence on architectural styles populates the Considered Options section. Produces one Consensus + Dissenting Options ADR with a load-bearing trade-off matrix. | `references/tri-engine-architect.md`, `_common/MULTI_ENGINE_RECIPE.md` |
+| Architecture Analysis | `analyze` | ✓ | Full architecture analysis, combined evaluation of dependency/coupling/module boundaries; full dependency graph + coupling metrics + health score; focus on SURVEY phase | `references/dependency-analysis-patterns.md` |
+| Dependency Audit | `deps` | | Dependency graph, circular reference detection; identify circular references and high-frequency bidirectional dependencies; suggest fix candidates (merge/extract/tolerate) | `references/dependency-analysis-patterns.md` |
+| God Class Detection | `godclass` | | God Class / bloated module / SRP-violating module detection; generate ZEN_HANDOFF draft for Zen | `references/zen-integration.md` |
+| ADR Authoring | `adr` | | Author Architecture Decision Record using MADR 4.0 template; always include Considered Options + pros/cons | `references/adr-rfc-templates.md` |
+| RFC Drafting | `rfc` | | RFC draft for large-scale architectural changes; include migration strategy and rollback plan | `references/adr-rfc-templates.md` |
+| Cycle Break | `cycle` | | Circular dependency (SCC) detection and prioritized removal strategies per SCC (dependency inversion / interface extraction / re-layering / merge); recommend Canvas visualization of the dependency graph | `references/circular-dependency-remediation.md` |
+| Coupling Assessment | `coupling` | | Quantitative module coupling — Martin metrics (Ca/Ce/Instability/Abstractness/Distance); identify modules off the Main Sequence and present target values + improvement candidates | `references/coupling-metrics.md` |
+| Boundary Evaluation | `boundary` | | Bounded Context boundary evaluation — alignment between domain boundaries and repository structure; detect cross-boundary leak, excessive shared kernel, missing anti-corruption layers | `references/module-boundary-evaluation.md` |
+| Multi-Engine | `multi` | | Tri-engine architecture deliberation (Codex + Antigravity + Claude in parallel) with Pattern H two-axis scoring. Smells: confidence axis (`CONFIRMED` 3/3 → `LIKELY` 2/3 → `CANDIDATE` 1/3 ground-or-drop). Options: perspective axis (`CONVERGENT` 3/3 → `CONVERGENT-PARTIAL` 2/3 → `DIVERGENT-{style}` 1/3 preserved). Critical Atlas rule: options targeting the same problem with **different architectural styles** are NOT merged — they ride into the ADR as separate Options entries, replacing single-engine strawmen with a load-bearing trade-off matrix. Loose subagent prompts (Role + Target + Output format only — no MADR template or style catalog passed in). Produces one Consensus + Dissenting Options ADR (extended MADR 4.0 structure). | `references/tri-engine-architect.md`, `_common/MULTI_ENGINE_RECIPE.md` |
+
+### Signal Keywords → Recipe
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply.
+
+| Keywords | Recipe |
+|----------|--------|
+| `dependency`, `circular`, `coupling` (audit) | `deps` |
+| `god class`, `large module`, `SRP` | `godclass` |
+| `ADR`, `architecture decision` | `adr` |
+| `RFC`, `architectural change` | `rfc` |
+| `technical debt`, `debt inventory` | `analyze` (debt-focused; produces inventory + repayment plan via `references/technical-debt-scoring.md`) |
+| `module boundary`, `restructure` | `boundary` |
+| `architecture health`, `metrics` | `analyze` (health-focused; score card via `references/architecture-health-metrics.md`) |
+| `fitness function`, `evolutionary`, `guardrail` | `analyze` (fitness-function-focused; spec + CI integration via `references/architecture-health-metrics.md`) |
+| `coupling assessment`, Ca/Ce/I/A/D, Main Sequence | `coupling` |
+| `cycle`, SCC, strongly connected component | `cycle` |
+| `multi-engine`, `tri-engine architecture`, `parallel ADR`, `cross-engine arch review`, `architectural style trade-off` | `multi` |
+| unclear architecture request | `analyze` (default) |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" column files at the initial step.
 - Otherwise → default Recipe (`analyze` = Architecture Analysis). Apply normal SURVEY → PLAN → VERIFY → PRESENT workflow.
-
-Behavior notes per Recipe:
-- `analyze`: Generate full dependency graph + coupling metrics + health score. Focus on the SURVEY phase.
-- `deps`: Identify circular references and high-frequency bidirectional dependencies. Suggest fix candidates (merge/extract/tolerate).
-- `godclass`: Identify SRP-violating modules and generate a ZEN_HANDOFF draft for Zen.
-- `adr`: Author ADR using MADR 4.0 template. Always include Considered Options + pros/cons.
-- `rfc`: RFC draft for large-scale changes. Include migration strategy and rollback plan.
-- `cycle`: Detect SCCs (strongly connected components) and present prioritized removal strategies (DIP / interface extraction / re-layering / merge) per SCC. Recommend Canvas visualization of the dependency graph.
-- `coupling`: Calculate Martin metrics (Ca/Ce/Instability/Abstractness/Distance) and identify modules off the Main Sequence. Present target values and improvement candidates.
-- `boundary`: Evaluate alignment between Bounded Context boundaries and repository structure. Detect cross-boundary data leakage, excessive shared kernel, and missing anti-corruption layers.
-- `multi`: Tri-engine architecture deliberation. Spawn Codex / Antigravity / Claude subagents in one message; each produces an independent assessment (2-3 architectural smells + 1-2 ADR options) with loose prompts (Role + Target + Output format only — no MADR template or style catalog passed in). Pattern H two-axis scoring: smells use confidence axis (`CONFIRMED` 3/3 → `LIKELY` 2/3 → `CANDIDATE` 1/3 ground-or-drop); options use perspective axis (`CONVERGENT` 3/3 → `CONVERGENT-PARTIAL` 2/3 → `DIVERGENT-{style}` 1/3 preserved). Critical Atlas rule: options targeting the same problem with **different architectural styles** are NOT merged — they ride into the ADR as separate Options entries. Synthesis emits one Consensus + Dissenting Options ADR (extended MADR 4.0 structure) with a load-bearing trade-off matrix that replaces the single-engine strawmen typically found in the Considered Options section. See `references/tri-engine-architect.md` for the full SCOPE → PREFLIGHT → FAN-OUT → NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE → PRESENT flow, JSON schema, and subagent prompt skeleton.
+- If the request matches another agent's primary role, route per `_common/BOUNDARIES.md`.
 
 ## Output Requirements
 

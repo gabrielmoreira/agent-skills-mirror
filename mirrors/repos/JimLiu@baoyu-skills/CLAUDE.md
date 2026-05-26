@@ -68,19 +68,21 @@ Skills that render images MUST declare the backend-selection convention **inline
 
 ### `codex-imagegen` Backend
 
-A backend for non-Codex runtimes (e.g., Claude Code) that generates images by spawning `codex exec --json --sandbox danger-full-access` and delegating to Codex CLI's built-in `image_gen` tool. Uses the user's Codex subscription — no `OPENAI_API_KEY` required.
+A backend for non-Codex runtimes (e.g., Claude Code) that generates images by spawning `codex exec --json --sandbox danger-full-access` and delegating to Codex CLI's built-in `image_gen` tool. Uses the user's Codex subscription — no `OPENAI_API_KEY` required. Lives under [packages/baoyu-codex-imagegen](packages/baoyu-codex-imagegen) so it follows the same workspace layout as other shared packages.
 
-Invoke via:
+Invoke via (TS entrypoint with `#!/usr/bin/env bun` shebang):
 
 ```bash
-./scripts/codex-imagegen.sh \
+bun packages/baoyu-codex-imagegen/src/main.ts \
   --image <output.png> \
   --prompt-file prompts/01-cover.md \
   --aspect 16:9 \
   --cache-dir ~/.cache/baoyu-codex-imagegen
 ```
 
-Stdout emits a single JSON line: `{"status":"ok","path":...,"bytes":N,...}`. On failure, `{"status":"error","error_kind":...}`. Skills route here by setting `preferred_image_backend: codex-imagegen` in EXTEND.md. Full reference: [docs/codex-imagegen-backend.md](docs/codex-imagegen-backend.md).
+Without bun installed: `npx -y bun packages/baoyu-codex-imagegen/src/main.ts …`.
+
+Stdout emits a single JSON line: `{"status":"ok","path":...,"bytes":N,...}`. On failure, `{"status":"error","error_kind":...}`. Skills route here by setting `preferred_image_backend: codex-imagegen` in EXTEND.md, or by running `baoyu-image-gen --provider codex-cli` (which spawns the same wrapper internally). Full reference: [docs/codex-imagegen-backend.md](docs/codex-imagegen-backend.md).
 
 ## Release Process
 

@@ -11,6 +11,13 @@ Prefix your first line with 🥷 inline, not as its own paragraph.
 
 A patch applied to a symptom creates a new bug somewhere else.
 
+## Outcome Contract
+
+- Outcome: the root cause is identified before any fix is applied.
+- Done when: one sentence explains the cause, every observed symptom fits it, and the fix or handoff is verified against a reproducible check.
+- Evidence: source trace, repro command or UI path, logs or state, targeted test/build output, and runtime evidence for UI or native defects.
+- Output: root cause, fix or handoff, verification result, and any unswept sibling risks.
+
 **Do not touch code until you can state the root cause in one sentence:**
 > "I believe the root cause is [X] because [evidence]."
 
@@ -48,6 +55,7 @@ If the bug genuinely needs a refactor first (e.g. the cause cannot be addressed 
 
 Activate when: "以前是好的", "之前是好的", "used to work", "上一次提交还是对的", "broke after update", or the user remembers a specific good commit or version.
 
+0. Protect the user's worktree first: run `git status --short --branch -uall`. If modified, staged, or untracked files exist, do not bisect in the current checkout. Create a temporary detached worktree from the same HEAD, run bisect there, then `git bisect reset` and remove the temporary worktree when done. If a temporary worktree is impossible, stop and ask for explicit cleanup/stash approval.
 1. Find candidate good tag: `git tag --sort=-version:refname | head -10` or ask the user for the last known-good commit.
 2. Define a non-interactive pass/fail test command before starting bisect. Bisect is worthless without a reproducible check.
 3. Run: `git bisect start && git bisect bad HEAD && git bisect good <tag-or-hash>`

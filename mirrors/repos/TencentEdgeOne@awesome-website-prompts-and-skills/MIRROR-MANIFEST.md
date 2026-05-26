@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `TencentEdgeOne/awesome-website-prompts-and-skills` — 26 default patterns, 0 followed patterns, 172 file(s) materialized.
+Mirror of `TencentEdgeOne/awesome-website-prompts-and-skills` — 26 default patterns, 0 followed patterns, 201 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `TencentEdgeOne/awesome-website-prompts-and-skills` — 26 default pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 172 |
+| Files         | 201 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -154,83 +154,112 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 93 | ✓ | [`prompts/sop-engine.md`](prompts/sop-engine.md) |
 | 94 | ✓ | [`prompts/soul-trace.md`](prompts/soul-trace.md) |
 | 95 | ✓ | [`prompts/start-somewhere.md`](prompts/start-somewhere.md) |
-| 96 | ✓ | [`prompts/sui-ji-chi.md`](prompts/sui-ji-chi.md) |
-| 97 | ✓ | [`prompts/trailai.md`](prompts/trailai.md) |
-| 98 | ✓ | [`prompts/tu-shu-guan-li-xi-tong.md`](prompts/tu-shu-guan-li-xi-tong.md) |
-| 99 | ✓ | [`prompts/wu-fan-yao-hao-xi-tong.md`](prompts/wu-fan-yao-hao-xi-tong.md) |
-| 100 | ✓ | [`prompts/xiao-shi-de-hang-dang.md`](prompts/xiao-shi-de-hang-dang.md) |
-| 101 | ✓ | [`prompts/xin-tiao-shou-hu-zhe.md`](prompts/xin-tiao-shou-hu-zhe.md) |
-| 102 | ✓ | [`prompts/xuan-ku-ke-ji-feng-ge-ren-zhu-ye.md`](prompts/xuan-ku-ke-ji-feng-ge-ren-zhu-ye.md) |
-| 103 | ✓ | [`prompts/xue-xi-yu-mao-qiu-hui-pai-dong-zuo.md`](prompts/xue-xi-yu-mao-qiu-hui-pai-dong-zuo.md) |
-| 104 | ✓ | [`prompts/yi-fu-shou-mai-tao-bao-mai-jia-wang-ye.md`](prompts/yi-fu-shou-mai-tao-bao-mai-jia-wang-ye.md) |
-| 105 | ✓ | [`prompts/yi-kuan-tong-yong-hu-dong-ren-ge-ce-shi-wang-zhan-.md`](prompts/yi-kuan-tong-yong-hu-dong-ren-ge-ce-shi-wang-zhan-.md) |
-| 106 | ✓ | [`prompts/you-sheng-you-yu-wang-zhan.md`](prompts/you-sheng-you-yu-wang-zhan.md) |
-| 107 | ✓ | [`prompts/yun-he-fu-shou-ju-kang-yang-zhong-xin.md`](prompts/yun-he-fu-shou-ju-kang-yang-zhong-xin.md) |
-| 108 | ✓ | [`prompts/yun-lai-zhang-gui-qi-ye-guan-wang.md`](prompts/yun-lai-zhang-gui-qi-ye-guan-wang.md) |
-| 109 | ✓ | [`prompts/zhan-guan-yu-yue.md`](prompts/zhan-guan-yu-yue.md) |
-| 110 | ✓ | [`prompts/zhi-hui-ban-ji-chou-jiang-xi-tong.md`](prompts/zhi-hui-ban-ji-chou-jiang-xi-tong.md) |
-| 111 | ✓ | [`prompts/zhi-neng-zhao-pin-yi-biao-pan.md`](prompts/zhi-neng-zhao-pin-yi-biao-pan.md) |
-| 112 | ✓ | [`prompts/zhi-yu-da-ti-xiao-cheng-xu.md`](prompts/zhi-yu-da-ti-xiao-cheng-xu.md) |
-| 113 | ✓ | [`prompts/zhong-guo-you-zheng-gao-kao-zhu-ti.md`](prompts/zhong-guo-you-zheng-gao-kao-zhu-ti.md) |
-| 114 | ✓ | [`prompts/zhong-yuan-ji.md`](prompts/zhong-yuan-ji.md) |
-| 115 | ✓ | [`prompts/zhu-jing-she-ji-quan-zhan-zuo-pin-ji-wang-zhan.md`](prompts/zhu-jing-she-ji-quan-zhan-zuo-pin-ji-wang-zhan.md) |
-| 116 | ✓ | [`prompts/zhuan-shu-jia-shi-cang.md`](prompts/zhuan-shu-jia-shi-cang.md) |
-| 117 | ✓ | [`skills/academic-hub-skills.md`](skills/academic-hub-skills.md) |
-| 118 | ✓ | [`skills/ai-76.md`](skills/ai-76.md) |
-| 119 | ✓ | [`skills/ai-saas-builder.md`](skills/ai-saas-builder.md) |
-| 120 | ✓ | [`skills/ai-saas-skill/README.md`](skills/ai-saas-skill/README.md) |
-| 121 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/references/customization.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/references/customization.md) |
-| 122 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/references/env-setup.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/references/env-setup.md) |
-| 123 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/references/template-setup.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/references/template-setup.md) |
-| 124 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/references/user-prompt-intake.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/references/user-prompt-intake.md) |
-| 125 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/SKILL.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/SKILL.md) |
-| 126 | ✓ | [`skills/ai-saas.md`](skills/ai-saas.md) |
-| 127 | ✓ | [`skills/ai-skill.md`](skills/ai-skill.md) |
-| 128 | ✓ | [`skills/ai-writing-assistant-saas-skill.md`](skills/ai-writing-assistant-saas-skill.md) |
-| 129 | ✓ | [`skills/birthday-wish-generator.md`](skills/birthday-wish-generator.md) |
-| 130 | ✓ | [`skills/chipagent-pro-148.md`](skills/chipagent-pro-148.md) |
-| 131 | ✓ | [`skills/clat-167.md`](skills/clat-167.md) |
-| 132 | ✓ | [`skills/coffee-wed-skills.md`](skills/coffee-wed-skills.md) |
-| 133 | ✓ | [`skills/datalens.md`](skills/datalens.md) |
-| 134 | ✓ | [`skills/dian-ying-gan-yu-yue-guan-wang-sheng-cheng-qi.md`](skills/dian-ying-gan-yu-yue-guan-wang-sheng-cheng-qi.md) |
-| 135 | ✓ | [`skills/dreamybot-studio-118.md`](skills/dreamybot-studio-118.md) |
-| 136 | ✓ | [`skills/edgeone-market-story-lab.md`](skills/edgeone-market-story-lab.md) |
-| 137 | ✓ | [`skills/edgeone-pages.md`](skills/edgeone-pages.md) |
-| 138 | ✓ | [`skills/fei-zhan.md`](skills/fei-zhan.md) |
-| 139 | ✓ | [`skills/hui-lian-yi-fei-yong-bao-xiao.md`](skills/hui-lian-yi-fei-yong-bao-xiao.md) |
-| 140 | ✓ | [`skills/jue-ce-sha-pan.md`](skills/jue-ce-sha-pan.md) |
-| 141 | ✓ | [`skills/lv-ji-rou-mian.md`](skills/lv-ji-rou-mian.md) |
-| 142 | ✓ | [`skills/ming-yun-tea-48.md`](skills/ming-yun-tea-48.md) |
-| 143 | ✓ | [`skills/multi-agent.md`](skills/multi-agent.md) |
-| 144 | ✓ | [`skills/neway-commerce-os.md`](skills/neway-commerce-os.md) |
-| 145 | ✓ | [`skills/nexuschat-125.md`](skills/nexuschat-125.md) |
-| 146 | ✓ | [`skills/noc-events.md`](skills/noc-events.md) |
-| 147 | ✓ | [`skills/nomadport-122.md`](skills/nomadport-122.md) |
-| 148 | ✓ | [`skills/opc-site.md`](skills/opc-site.md) |
-| 149 | ✓ | [`skills/pages-skill.md`](skills/pages-skill.md) |
-| 150 | ✓ | [`skills/portfolioflow.md`](skills/portfolioflow.md) |
-| 151 | ✓ | [`skills/ren-wu-qian-qiu-161.md`](skills/ren-wu-qian-qiu-161.md) |
-| 152 | ✓ | [`skills/renthub.md`](skills/renthub.md) |
-| 153 | ✓ | [`skills/restaurant-booking-skill.md`](skills/restaurant-booking-skill.md) |
-| 154 | ✓ | [`skills/ru-guo-hu-lian-wang-xiao-shi-ni-hai-sheng-xia-shui-51.md`](skills/ru-guo-hu-lian-wang-xiao-shi-ni-hai-sheng-xia-shui-51.md) |
-| 155 | ✓ | [`skills/saas-landing-page-generator.md`](skills/saas-landing-page-generator.md) |
-| 156 | ✓ | [`skills/skill-120.md`](skills/skill-120.md) |
-| 157 | ✓ | [`skills/skill-89.md`](skills/skill-89.md) |
-| 158 | ✓ | [`skills/soul-137.md`](skills/soul-137.md) |
-| 159 | ✓ | [`skills/sui-ji-chi-98.md`](skills/sui-ji-chi-98.md) |
-| 160 | ✓ | [`skills/tax-skill.md`](skills/tax-skill.md) |
-| 161 | ✓ | [`skills/tech-stack-analyzer-skill.md`](skills/tech-stack-analyzer-skill.md) |
-| 162 | ✓ | [`skills/thesis-master.md`](skills/thesis-master.md) |
-| 163 | ✓ | [`skills/token-save.md`](skills/token-save.md) |
-| 164 | ✓ | [`skills/union-pan.md`](skills/union-pan.md) |
-| 165 | ✓ | [`skills/wang-ye-she-ji-xiang-dao-ji-neng.md`](skills/wang-ye-she-ji-xiang-dao-ji-neng.md) |
-| 166 | ✓ | [`skills/webcraft.md`](skills/webcraft.md) |
-| 167 | ✓ | [`skills/website-skeleton-skill.md`](skills/website-skeleton-skill.md) |
-| 168 | ✓ | [`skills/work-142.md`](skills/work-142.md) |
-| 169 | ✓ | [`skills/wu-fan-yao-hao-xi-tong-93.md`](skills/wu-fan-yao-hao-xi-tong-93.md) |
-| 170 | ✓ | [`skills/xiao-yuan-ying-jie-sheng-qiu-zhi-fu-wu-quan-zhan-w.md`](skills/xiao-yuan-ying-jie-sheng-qiu-zhi-fu-wu-quan-zhan-w.md) |
-| 171 | ✓ | [`skills/ying-shi-hua-quan-liu-cheng-zhi-neng-chuang-zuo-zh.md`](skills/ying-shi-hua-quan-liu-cheng-zhi-neng-chuang-zuo-zh.md) |
-| 172 | ✓ | [`skills/zheng-ce-zhi-shi-xue-xi-ping-tai.md`](skills/zheng-ce-zhi-shi-xue-xi-ping-tai.md) |
+| 96 | ✓ | [`prompts/stellar-vista.md`](prompts/stellar-vista.md) |
+| 97 | ✓ | [`prompts/sui-ji-chi.md`](prompts/sui-ji-chi.md) |
+| 98 | ✓ | [`prompts/trailai.md`](prompts/trailai.md) |
+| 99 | ✓ | [`prompts/tu-shu-guan-li-xi-tong.md`](prompts/tu-shu-guan-li-xi-tong.md) |
+| 100 | ✓ | [`prompts/wu-fan-yao-hao-xi-tong.md`](prompts/wu-fan-yao-hao-xi-tong.md) |
+| 101 | ✓ | [`prompts/xiao-shi-de-hang-dang.md`](prompts/xiao-shi-de-hang-dang.md) |
+| 102 | ✓ | [`prompts/xin-tiao-shou-hu-zhe.md`](prompts/xin-tiao-shou-hu-zhe.md) |
+| 103 | ✓ | [`prompts/xuan-ku-ke-ji-feng-ge-ren-zhu-ye.md`](prompts/xuan-ku-ke-ji-feng-ge-ren-zhu-ye.md) |
+| 104 | ✓ | [`prompts/xue-xi-yu-mao-qiu-hui-pai-dong-zuo.md`](prompts/xue-xi-yu-mao-qiu-hui-pai-dong-zuo.md) |
+| 105 | ✓ | [`prompts/yi-fu-shou-mai-tao-bao-mai-jia-wang-ye.md`](prompts/yi-fu-shou-mai-tao-bao-mai-jia-wang-ye.md) |
+| 106 | ✓ | [`prompts/yi-kuan-tong-yong-hu-dong-ren-ge-ce-shi-wang-zhan-.md`](prompts/yi-kuan-tong-yong-hu-dong-ren-ge-ce-shi-wang-zhan-.md) |
+| 107 | ✓ | [`prompts/you-sheng-you-yu-wang-zhan.md`](prompts/you-sheng-you-yu-wang-zhan.md) |
+| 108 | ✓ | [`prompts/yun-he-fu-shou-ju-kang-yang-zhong-xin.md`](prompts/yun-he-fu-shou-ju-kang-yang-zhong-xin.md) |
+| 109 | ✓ | [`prompts/yun-lai-zhang-gui-qi-ye-guan-wang.md`](prompts/yun-lai-zhang-gui-qi-ye-guan-wang.md) |
+| 110 | ✓ | [`prompts/zhan-guan-yu-yue.md`](prompts/zhan-guan-yu-yue.md) |
+| 111 | ✓ | [`prompts/zhi-hui-ban-ji-chou-jiang-xi-tong.md`](prompts/zhi-hui-ban-ji-chou-jiang-xi-tong.md) |
+| 112 | ✓ | [`prompts/zhi-neng-zhao-pin-yi-biao-pan.md`](prompts/zhi-neng-zhao-pin-yi-biao-pan.md) |
+| 113 | ✓ | [`prompts/zhi-yu-da-ti-xiao-cheng-xu.md`](prompts/zhi-yu-da-ti-xiao-cheng-xu.md) |
+| 114 | ✓ | [`prompts/zhong-guo-you-zheng-gao-kao-zhu-ti.md`](prompts/zhong-guo-you-zheng-gao-kao-zhu-ti.md) |
+| 115 | ✓ | [`prompts/zhong-yuan-ji.md`](prompts/zhong-yuan-ji.md) |
+| 116 | ✓ | [`prompts/zhu-jing-she-ji-quan-zhan-zuo-pin-ji-wang-zhan.md`](prompts/zhu-jing-she-ji-quan-zhan-zuo-pin-ji-wang-zhan.md) |
+| 117 | ✓ | [`prompts/zhuan-shu-jia-shi-cang.md`](prompts/zhuan-shu-jia-shi-cang.md) |
+| 118 | ✓ | [`skills/academic-hub-skills.md`](skills/academic-hub-skills.md) |
+| 119 | ✓ | [`skills/ai-76.md`](skills/ai-76.md) |
+| 120 | ✓ | [`skills/ai-saas-builder.md`](skills/ai-saas-builder.md) |
+| 121 | ✓ | [`skills/ai-saas-skill/README.md`](skills/ai-saas-skill/README.md) |
+| 122 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/references/customization.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/references/customization.md) |
+| 123 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/references/env-setup.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/references/env-setup.md) |
+| 124 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/references/template-setup.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/references/template-setup.md) |
+| 125 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/references/user-prompt-intake.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/references/user-prompt-intake.md) |
+| 126 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/SKILL.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/SKILL.md) |
+| 127 | ✓ | [`skills/ai-saas.md`](skills/ai-saas.md) |
+| 128 | ✓ | [`skills/ai-skill.md`](skills/ai-skill.md) |
+| 129 | ✓ | [`skills/ai-writing-assistant-saas-skill.md`](skills/ai-writing-assistant-saas-skill.md) |
+| 130 | ✓ | [`skills/birthday-wish-generator.md`](skills/birthday-wish-generator.md) |
+| 131 | ✓ | [`skills/chipagent-pro-148.md`](skills/chipagent-pro-148.md) |
+| 132 | ✓ | [`skills/clat-167.md`](skills/clat-167.md) |
+| 133 | ✓ | [`skills/coffee-wed-skills.md`](skills/coffee-wed-skills.md) |
+| 134 | ✓ | [`skills/datalens.md`](skills/datalens.md) |
+| 135 | ✓ | [`skills/dian-ying-gan-yu-yue-guan-wang-sheng-cheng-qi.md`](skills/dian-ying-gan-yu-yue-guan-wang-sheng-cheng-qi.md) |
+| 136 | ✓ | [`skills/dreamybot-studio-118.md`](skills/dreamybot-studio-118.md) |
+| 137 | ✓ | [`skills/edgeone-market-story-lab.md`](skills/edgeone-market-story-lab.md) |
+| 138 | ✓ | [`skills/edgeone-pages.md`](skills/edgeone-pages.md) |
+| 139 | ✓ | [`skills/fei-zhan.md`](skills/fei-zhan.md) |
+| 140 | ✓ | [`skills/hui-lian-yi-fei-yong-bao-xiao.md`](skills/hui-lian-yi-fei-yong-bao-xiao.md) |
+| 141 | ✓ | [`skills/jue-ce-sha-pan.md`](skills/jue-ce-sha-pan.md) |
+| 142 | ✓ | [`skills/lv-ji-rou-mian.md`](skills/lv-ji-rou-mian.md) |
+| 143 | ✓ | [`skills/ming-yun-tea-48.md`](skills/ming-yun-tea-48.md) |
+| 144 | ✓ | [`skills/multi-agent.md`](skills/multi-agent.md) |
+| 145 | ✓ | [`skills/neway-commerce-os.md`](skills/neway-commerce-os.md) |
+| 146 | ✓ | [`skills/nexuschat-125.md`](skills/nexuschat-125.md) |
+| 147 | ✓ | [`skills/noc-events.md`](skills/noc-events.md) |
+| 148 | ✓ | [`skills/nomadport-122.md`](skills/nomadport-122.md) |
+| 149 | ✓ | [`skills/opc-site.md`](skills/opc-site.md) |
+| 150 | ✓ | [`skills/pages-skill.md`](skills/pages-skill.md) |
+| 151 | ✓ | [`skills/portfolio-flow/.DS_Store`](skills/portfolio-flow/.DS_Store) |
+| 152 | ✓ | [`skills/portfolio-flow/references/ai-generate.md`](skills/portfolio-flow/references/ai-generate.md) |
+| 153 | ✓ | [`skills/portfolio-flow/references/auth-jwt.md`](skills/portfolio-flow/references/auth-jwt.md) |
+| 154 | ✓ | [`skills/portfolio-flow/references/deploy-workflow.md`](skills/portfolio-flow/references/deploy-workflow.md) |
+| 155 | ✓ | [`skills/portfolio-flow/references/design-system.md`](skills/portfolio-flow/references/design-system.md) |
+| 156 | ✓ | [`skills/portfolio-flow/references/portfolio-crud.md`](skills/portfolio-flow/references/portfolio-crud.md) |
+| 157 | ✓ | [`skills/portfolio-flow/references/portfolio-knowledge.md`](skills/portfolio-flow/references/portfolio-knowledge.md) |
+| 158 | ✓ | [`skills/portfolio-flow/references/stats-kv.md`](skills/portfolio-flow/references/stats-kv.md) |
+| 159 | ✓ | [`skills/portfolio-flow/SKILL.md`](skills/portfolio-flow/SKILL.md) |
+| 160 | ✓ | [`skills/portfolio-flow/templates/admin.html`](skills/portfolio-flow/templates/admin.html) |
+| 161 | ✓ | [`skills/portfolio-flow/templates/functions/_middleware.js`](skills/portfolio-flow/templates/functions/_middleware.js) |
+| 162 | ✓ | [`skills/portfolio-flow/templates/functions/api/assistant.js`](skills/portfolio-flow/templates/functions/api/assistant.js) |
+| 163 | ✓ | [`skills/portfolio-flow/templates/functions/api/auth.js`](skills/portfolio-flow/templates/functions/api/auth.js) |
+| 164 | ✓ | [`skills/portfolio-flow/templates/functions/api/generate.js`](skills/portfolio-flow/templates/functions/api/generate.js) |
+| 165 | ✓ | [`skills/portfolio-flow/templates/functions/api/portfolios.js`](skills/portfolio-flow/templates/functions/api/portfolios.js) |
+| 166 | ✓ | [`skills/portfolio-flow/templates/functions/api/stats.js`](skills/portfolio-flow/templates/functions/api/stats.js) |
+| 167 | ✓ | [`skills/portfolio-flow/templates/index.html`](skills/portfolio-flow/templates/index.html) |
+| 168 | ✓ | [`skills/portfolio-flow/templates/login.html`](skills/portfolio-flow/templates/login.html) |
+| 169 | ✓ | [`skills/portfolio-flow/templates/portfolio-detail.html`](skills/portfolio-flow/templates/portfolio-detail.html) |
+| 170 | ✓ | [`skills/portfolio-flow/templates/styles.css`](skills/portfolio-flow/templates/styles.css) |
+| 171 | ✓ | [`skills/portfolioflow.md`](skills/portfolioflow.md) |
+| 172 | ✓ | [`skills/ren-wu-qian-qiu-161.md`](skills/ren-wu-qian-qiu-161.md) |
+| 173 | ✓ | [`skills/renthub.md`](skills/renthub.md) |
+| 174 | ✓ | [`skills/restaurant-booking-skill.md`](skills/restaurant-booking-skill.md) |
+| 175 | ✓ | [`skills/ru-guo-hu-lian-wang-xiao-shi-ni-hai-sheng-xia-shui-51.md`](skills/ru-guo-hu-lian-wang-xiao-shi-ni-hai-sheng-xia-shui-51.md) |
+| 176 | ✓ | [`skills/saas-landing-gen/SKILL.md`](skills/saas-landing-gen/SKILL.md) |
+| 177 | ✓ | [`skills/saas-landing-page-generator.md`](skills/saas-landing-page-generator.md) |
+| 178 | ✓ | [`skills/skill-120.md`](skills/skill-120.md) |
+| 179 | ✓ | [`skills/skill-89.md`](skills/skill-89.md) |
+| 180 | ✓ | [`skills/soul-137.md`](skills/soul-137.md) |
+| 181 | ✓ | [`skills/sui-ji-chi-98.md`](skills/sui-ji-chi-98.md) |
+| 182 | ✓ | [`skills/tax-skill.md`](skills/tax-skill.md) |
+| 183 | ✓ | [`skills/tech-stack-analyzer-skill.md`](skills/tech-stack-analyzer-skill.md) |
+| 184 | ✓ | [`skills/thesis-master.md`](skills/thesis-master.md) |
+| 185 | ✓ | [`skills/token-save.md`](skills/token-save.md) |
+| 186 | ✓ | [`skills/union-pan.md`](skills/union-pan.md) |
+| 187 | ✓ | [`skills/wang-ye-she-ji-xiang-dao-ji-neng.md`](skills/wang-ye-she-ji-xiang-dao-ji-neng.md) |
+| 188 | ✓ | [`skills/webcraft.md`](skills/webcraft.md) |
+| 189 | ✓ | [`skills/website-skeleton-skill.md`](skills/website-skeleton-skill.md) |
+| 190 | ✓ | [`skills/website-skeleton-skill/README.md`](skills/website-skeleton-skill/README.md) |
+| 191 | ✓ | [`skills/website-skeleton-skill/skills/edgeone-pages-website-skeleton/references/ai-chat-module.md`](skills/website-skeleton-skill/skills/edgeone-pages-website-skeleton/references/ai-chat-module.md) |
+| 192 | ✓ | [`skills/website-skeleton-skill/skills/edgeone-pages-website-skeleton/references/auth-module.md`](skills/website-skeleton-skill/skills/edgeone-pages-website-skeleton/references/auth-module.md) |
+| 193 | ✓ | [`skills/website-skeleton-skill/skills/edgeone-pages-website-skeleton/references/kv-storage.md`](skills/website-skeleton-skill/skills/edgeone-pages-website-skeleton/references/kv-storage.md) |
+| 194 | ✓ | [`skills/website-skeleton-skill/skills/edgeone-pages-website-skeleton/references/payment-module.md`](skills/website-skeleton-skill/skills/edgeone-pages-website-skeleton/references/payment-module.md) |
+| 195 | ✓ | [`skills/website-skeleton-skill/skills/edgeone-pages-website-skeleton/references/templates.md`](skills/website-skeleton-skill/skills/edgeone-pages-website-skeleton/references/templates.md) |
+| 196 | ✓ | [`skills/website-skeleton-skill/skills/edgeone-pages-website-skeleton/SKILL.md`](skills/website-skeleton-skill/skills/edgeone-pages-website-skeleton/SKILL.md) |
+| 197 | ✓ | [`skills/work-142.md`](skills/work-142.md) |
+| 198 | ✓ | [`skills/wu-fan-yao-hao-xi-tong-93.md`](skills/wu-fan-yao-hao-xi-tong-93.md) |
+| 199 | ✓ | [`skills/xiao-yuan-ying-jie-sheng-qiu-zhi-fu-wu-quan-zhan-w.md`](skills/xiao-yuan-ying-jie-sheng-qiu-zhi-fu-wu-quan-zhan-w.md) |
+| 200 | ✓ | [`skills/ying-shi-hua-quan-liu-cheng-zhi-neng-chuang-zuo-zh.md`](skills/ying-shi-hua-quan-liu-cheng-zhi-neng-chuang-zuo-zh.md) |
+| 201 | ✓ | [`skills/zheng-ce-zhi-shi-xue-xi-ping-tai.md`](skills/zheng-ce-zhi-shi-xue-xi-ping-tai.md) |
 
 ---
 

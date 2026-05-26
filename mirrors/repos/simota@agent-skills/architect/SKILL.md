@@ -119,22 +119,27 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 `UNDERSTAND → ENVISION → ANALYZE → DESIGN → GENERATE → VALIDATE`
 
-| Phase | Purpose | Key Activities |
-|-------|---------|----------------|
-| `UNDERSTAND` | Goal framing | Category intent, collaboration surface, requirements |
-| `ENVISION` | Divergent exploration | Creative thinking, value-first checklist, 20-30% of effort |
-| `ANALYZE` | Ecosystem fit | Overlap scoring, topology checks, anti-pattern detection |
-| `DESIGN` | Specification | Section contract, boundaries, naming, collaboration design |
-| `GENERATE` | Package creation | SKILL.md + references, Nexus compatibility, AUTORUN support |
-| `VALIDATE` | Quality gate | 16-item checklist, evaluation guardrails, delivery block |
+Single source of truth for the canonical CREATE-mode phase chain. Each phase row keeps the in-line activities AND the reference file to load on entry. Other Modes substitute their own phase chains in `## Operating Flows`.
+
+| Phase | Purpose / Keep Inline | Read When |
+|-------|------------------------|-----------|
+| `UNDERSTAND` | Goal framing — category intent, collaboration surface, requirements | `agent-category-guide.md` for first-pass category choice; `agent-categories.md` only when you need the full roster |
+| `ENVISION` | Divergent exploration — creative thinking, value-first checklist; mandatory and typically `20-30%` of design effort | `creative-thinking.md` for question banks, sessions, and value templates |
+| `ANALYZE` | Ecosystem fit — overlap scoring, topology checks, anti-pattern detection | `overlap-detection.md`, `ecosystem-architecture-anti-patterns.md`, `multi-agent-system-anti-patterns.md` |
+| `DESIGN` | Specification — section contract, boundaries, naming, collaboration design | `skill-template.md`, `naming-conventions.md`, `agent-specification-anti-patterns.md`, `official-design-patterns.md` |
+| `GENERATE` | Package creation — SKILL.md + references, Nexus compatibility, AUTORUN support | `skill-template.md`, `nexus-integration.md` |
+| `VALIDATE` | Quality gate — 16-item checklist, evaluation guardrails; delivery is blocked until this passes | `validation-checklist.md`, `agent-evaluation-guardrails.md` |
+| `COMPRESS` | Post-phase only; must remain equivalent under the 4-axis check | `context-compression.md` |
 
 ## Operating Flows
 
 ### Work Modes
 
+Mode-specific phase chains. CREATE uses the default chain above; other modes override.
+
 | Mode | When to Use | Core Flow | Read When |
 |------|-------------|-----------|-----------|
-| `CREATE` | New agent or major redesign | `UNDERSTAND → ENVISION → ANALYZE → DESIGN → GENERATE → VALIDATE` | `creative-thinking.md`, `overlap-detection.md`, `skill-template.md`, `validation-checklist.md` |
+| `CREATE` | New agent or major redesign | `UNDERSTAND → ENVISION → ANALYZE → DESIGN → GENERATE → VALIDATE` (default — see Workflow table) | `creative-thinking.md`, `overlap-detection.md`, `skill-template.md`, `validation-checklist.md` |
 | `IMPROVE` | Existing skill enhancement | `UNDERSTAND → ANALYZE → SCORE → PRIORITIZE → VALIDATE` | `review-loop.md`, `enhancement-framework.md` |
 | `COMPRESS` | Context-cost reduction after correctness is stable | `SCAN → CLASSIFY → COMPRESS → VERIFY → PROPOSE` | `context-compression.md`, `agent-evaluation-guardrails.md` |
 | `EVOLVE` | Architect self-improvement only | `INTROSPECT → DIAGNOSE → PRESCRIBE → MUTATE → VERIFY → PERSIST` | `self-evolution.md` |
@@ -161,18 +166,6 @@ Behavior notes per Recipe:
 - `compress`: Token-budget analysis before changes. Verify 4-axis equivalence (Behavioral/Structural/Integration/Routing). Confirm if reduction > 20%.
 - `audit-verbosity`: COLLECT samples → MEASURE 5 metrics (filler/tier/format/header/tautology) → PROPOSE diff to Output Contract → emit `OUTPUT_AUDIT_REPORT`. Refuse if zero samples; never grade on speculation.
 - `evolve`: Architect self-modification only. Strictly enforce Safety Level A/B/C/D. Rollback snapshot is mandatory.
-
-### Phase Contract
-
-| Phase | Keep Inline | Read This When |
-|------|-------------|----------------|
-| `UNDERSTAND` | Goal framing, category intent, collaboration surface | `agent-category-guide.md` for first-pass category choice; `agent-categories.md` only when you need the full roster |
-| `ENVISION` | `ENVISION` is mandatory and typically consumes `20-30%` of design effort | `creative-thinking.md` for question banks, sessions, and value templates |
-| `ANALYZE` | Overlap handling, ecosystem fit, and topology checks | `overlap-detection.md`, `ecosystem-architecture-anti-patterns.md`, `multi-agent-system-anti-patterns.md` |
-| `DESIGN` | Section contract, boundaries, naming, and collaboration | `skill-template.md`, `naming-conventions.md`, `agent-specification-anti-patterns.md`, `official-design-patterns.md` |
-| `GENERATE` | Complete skill package and Nexus compatibility | `skill-template.md`, `nexus-integration.md` |
-| `VALIDATE` | Delivery is blocked until validation passes | `validation-checklist.md`, `agent-evaluation-guardrails.md` |
-| `COMPRESS` | Compression is post-phase only and must remain equivalent | `context-compression.md` |
 
 ### Critical Thresholds
 

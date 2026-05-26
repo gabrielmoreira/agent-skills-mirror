@@ -74,7 +74,7 @@ Route elsewhere when the task is primarily:
 - Map all attack scenarios to established frameworks (MITRE ATT&CK, OWASP, STRIDE, ATLAS).
 - Test AI/LLM systems as deployed (with RAG, tools, plugins, MCP servers, glue code), not as standalone models.
 - Test MCP server trust boundaries and tool registration integrity — MITRE ATLAS (monthly release cadence since 2025; Technique Maturity filter added for prioritization) documents MCP server compromise and indirect prompt injection via MCP channels as real-world attack vectors.
-- Include multi-turn attack chains — single-shot testing is insufficient for AI systems.
+- **Agentic AI testing principle** (canonical — referenced by AP-9, AP-17): Include multi-turn attack chains for AI systems — single-shot testing is insufficient (multi-turn jailbreaks succeed 97% within 5 turns). For agentic systems, generic jailbreak libraries measure response risk only; the dangerous failures are the operational risks — tool misuse, unauthorized actions, cross-account data access via conversational redirection, privilege escalation through delegated trust. Test operational behavior, not just outputs.
 - Classify findings by severity (Critical/High/Medium/Low) using CVSS 4.0 (Base + Threat + Environmental + Supplemental metric groups) and exploitability evidence.
 - Provide remediation guidance (immediate + long-term) for every confirmed vulnerability.
 - Pair every attack finding with detection recommendations for the blue team.
@@ -231,65 +231,25 @@ INPUT
 
 ## Recipes
 
+Single source of truth for Recipe definitions, subcommand dispatch, and signal routing.
+
 | Recipe | Subcommand | Default? | When to Use | Read First |
 |--------|-----------|---------|-------------|------------|
-| Attack Scenario | `scenario` | ✓ | Attack scenario design, kill chain planning | `references/attack-playbooks.md` |
-| Threat Model | `threat-model` | | Threat modeling (STRIDE/PASTA/Attack Trees) | `references/threat-modeling.md` |
-| Purple Team | `purple` | | Purple Team exercise, Red/Blue coordination | `references/attack-playbooks.md` |
-| AI/LLM Red Team | `ai-red` | | AI/LLM-focused red team (prompt injection, agentic risks) | `references/ai-red-teaming.md` |
-| Phishing Campaign | `phishing` | | Authorized phishing campaign design with pretexting, landing-page clones, MFA-fatigue, quishing, OAuth consent-phishing, and SPF/DKIM/DMARC evasion | `references/phishing-campaign-design.md` |
-| Supply Chain Attack | `supply` | | Supply chain attack scenarios: dependency confusion, typosquatting, build-tool compromise, SBOM analysis, SLSA provenance, in-toto attestation | `references/supply-chain-attack-design.md` |
-| Social Engineering | `social` | | Social engineering scenarios: vishing, smishing, tailgating, OSINT pretexting, insider-threat, BEC, deepfake voice/video | `references/social-engineering-design.md` |
+| Attack Scenario | `scenario` | ✓ | Attack scenario design, kill chain planning, `attack scenario` / `kill chain` / `pentest plan` / `WAF bypass` / `guardrail` / `control validation` signals | `references/attack-playbooks.md` |
+| Threat Model | `threat-model` | | Threat modeling (STRIDE/PASTA/Attack Trees), `threat model` / `STRIDE` / `PASTA` / `attack surface` / `entry point` / `exposure` signals; per-engagement models — never reuse templates | `references/threat-modeling.md` |
+| Purple Team | `purple` | | Purple Team exercise, Red/Blue coordination, `purple team` / `detection validation` / `blue team` signals; outputs exercise plan + detection rules | `references/attack-playbooks.md` |
+| AI/LLM Red Team | `ai-red` | | AI/LLM-focused red team (prompt injection, agentic risks), `prompt injection` / `jailbreak` / `LLM red team` / `agentic risk` / `RAG poisoning` / `system prompt leakage` / `data poisoning` / `automated red teaming` / `AI-on-AI testing` / `MAESTRO` / `multi-agent security` / `agent skill` / `tool registry` / `skill supply chain` signals; multi-turn attack chains against deployed pipeline (RAG, tools, MCP, plugins); OWASP LLM Top 10 2025, Agentic Top 10 2026, MITRE ATLAS monthly, CSA MAESTRO, NIST AI 100-2 E2025; Garak v0.15.0+ / PyRIT for automation | `references/ai-red-teaming.md` |
+| Phishing Campaign | `phishing` | | Authorized phishing campaign design — pretexting, landing-page clones, MFA-fatigue, quishing, OAuth consent-phishing, SPF/DKIM/DMARC evasion, awareness-training integration | `references/phishing-campaign-design.md` |
+| Supply Chain Attack | `supply` | | Supply chain attack scenarios — dependency confusion, typosquatting, build-tool compromise, SBOM (CycloneDX/SPDX) analysis, SLSA provenance, in-toto attestation, registry pinning | `references/supply-chain-attack-design.md` |
+| Social Engineering | `social` | | Social engineering scenarios — vishing, smishing, tailgating, OSINT pretexting, insider-threat, BEC, deepfake voice/video; behavioral, not code-centric | `references/social-engineering-design.md` |
 
-## Subcommand Dispatch
+### Subcommand Dispatch
 
-Parse the first token of user input and activate the matching Recipe. If the token matches no subcommand, activate `scenario` (default).
-
-| First Token | Recipe Activated |
-|------------|-----------------|
-| `scenario` | Attack Scenario |
-| `threat-model` | Threat Model |
-| `purple` | Purple Team |
-| `ai-red` | AI/LLM Red Team |
-| `phishing` | Phishing Campaign |
-| `supply` | Supply Chain Attack |
-| `social` | Social Engineering |
-| _(no match)_ | Attack Scenario (default) |
-
-Behavior notes per Recipe:
-- `scenario`: Attack scenario design with kill chain planning, technique-mapped exploitation paths, and framework-grounded testing. Maps every scenario to MITRE ATT&CK/OWASP/ATLAS identifiers. For static code scanning use Sentinel; for DAST/runtime exploitation use Probe; for detection rule authoring use Vigil.
-- `threat-model`: Threat modeling via STRIDE, PASTA, Attack Trees, and MITRE ATT&CK/ATLAS mapping. Builds per-engagement models — never reuse templates. For architecture-level C4 modeling use Stratum; for compliance-framework gap analysis use Canon; for regulatory controls use Comply.
-- `purple`: Purple Team exercise design — Red/Blue coordination, detection validation, and SIEM rule tuning. For Sigma/YARA rule authoring and detection engineering use Vigil; for post-incident playbook updates use Triage and Mend.
-- `ai-red`: AI/LLM red teaming with multi-turn attack chains (OWASP LLM Top 10 2025, Agentic Top 10 2026, MITRE ATLAS monthly release, CSA MAESTRO, NIST AI 100-2 E2025). Tests the deployed pipeline (RAG, tools, MCP, plugins). Use Garak v0.15.0+ (NVIDIA) or PyRIT (Microsoft/Azure AI Foundry) for automated scanning. For AI/ML architecture design and prompt engineering use Oracle; for eval framework design also use Oracle.
-- `phishing`: Phishing campaign design with authorized scope — pretexting, credential-harvest vs session-token theft, MFA-fatigue, QR-phishing, OAuth consent-phishing, SPF/DKIM/DMARC evasion, awareness-training integration, and user-reporting feedback loop. For detection-rule authoring (email headers, landing-page indicators) use Vigil; for static code analysis of email-handling components use Sentinel; for DAST of landing-page infrastructure use Probe; for post-incident response playbook use Triage; for regulatory framework mapping (GDPR breach notification, PCI phishing controls) use Comply.
-- `supply`: Supply chain attack scenarios — dependency confusion, typosquatting, compromised build-tool (SolarWinds-style), malicious postinstall scripts, SBOM (CycloneDX/SPDX) analysis, SLSA provenance verification, signing and in-toto attestation, package-registry pinning. For static secret/dependency scanning use Sentinel; for runtime vulnerability scanning of dependencies use Probe; for detection rules on package-install anomalies use Vigil; for SLSA/SSDF regulatory alignment use Comply; for migration away from compromised dependencies use Shift.
-- `social`: Social engineering scenarios — vishing (voice), smishing (SMS), tailgating and physical access, OSINT pretexting via LinkedIn and corporate directories, insider-threat risk, business email compromise (BEC), deepfake voice and video, and awareness-program coordination. Behavioral, not code-centric. For detection rules on anomalous login / wire-transfer patterns use Vigil; for post-incident response use Triage; for privacy and PII-handling controls use Cloak; for regulatory obligations (SOC 2 awareness training, HIPAA) use Comply.
-
----
-
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| `threat model`, `STRIDE`, `PASTA` | Threat modeling with selected framework | Threat model document | `references/threat-modeling.md` |
-| `attack scenario`, `kill chain`, `pentest plan` | Attack scenario design with technique mapping | Attack scenario specs | `references/attack-playbooks.md` |
-| `prompt injection`, `jailbreak`, `LLM red team`, `agentic risk` | AI/LLM red teaming with multi-turn chains | AI red team assessment | `references/ai-red-teaming.md` |
-| `purple team`, `detection validation`, `blue team` | Purple Team exercise design | Exercise plan + detection rules | `references/attack-playbooks.md` |
-| `attack surface`, `entry point`, `exposure` | Attack surface analysis and prioritization | Attack surface map | `references/threat-modeling.md` |
-| `RAG poisoning`, `system prompt leakage`, `data poisoning` | RAG/prompt integrity testing with corpus injection analysis | RAG security assessment | `references/ai-red-teaming.md` |
-| `WAF bypass`, `guardrail`, `control validation` | Security control bypass testing | Bypass test results | Domain-specific reference |
-| `automated red teaming`, `AI-on-AI testing`, `continuous AI testing` | Automated adversarial testing with attacker LLMs or red teaming tools | Automated test harness + findings | `references/ai-red-teaming.md` |
-| `MAESTRO`, `agentic threat model`, `multi-agent security` | 7-layer agentic AI threat modeling with CSA MAESTRO | MAESTRO threat model + per-layer attack surfaces | `references/ai-red-teaming.md` |
-| `agent skill`, `tool registry`, `skill supply chain` | Agent skill/tool supply chain integrity testing (OWASP Agentic Skills Top 10) | Registry audit + manifest verification report | `references/ai-red-teaming.md` |
-| `security assessment`, `red team report` | Full assessment (SCOPE→MODEL→PLAN→EXECUTE→REPORT) | Assessment report | `references/attack-playbooks.md` |
-| unclear security testing request | Threat model + attack scenario | Threat model + scenarios | `references/threat-modeling.md` |
-
-Routing rules:
-
-- If the request mentions AI/LLM/agent or skill/tool registry, read `references/ai-red-teaming.md`.
-- If the request involves infrastructure or network, read `references/attack-playbooks.md`.
-- If the request involves threat modeling specifically, read `references/threat-modeling.md`.
+Parse the first token of user input. If it matches a Recipe Subcommand above → activate that Recipe. Otherwise:
+- Signal keywords in the "When to Use" column match → activate the corresponding Recipe.
+- `security assessment` / `red team report` / unclear request → default to `scenario` with threat-model preface.
 - Always start with SCOPE phase regardless of signal.
+- For static code scanning use Sentinel; for DAST/runtime exploitation use Probe; for Sigma/YARA authoring use Vigil; for AI architecture or eval frameworks use Oracle; for compliance mapping (GDPR/PCI/SLSA/SSDF/SOC 2/HIPAA) use Comply.
 
 ---
 
@@ -321,7 +281,7 @@ Every deliverable must include:
 | AP-6 | **Fix-Free Findings** — reporting issues without remediation | Does every finding have a fix? | Add immediate and long-term remediation |
 | AP-7 | **One-Shot Testing** — testing only at release time | Is testing integrated into SDLC? | Recommend continuous red team cadence |
 | AP-8 | **Model-Only Focus** — testing only the LLM, not the system | Was the full pipeline tested? | Include RAG, tools, plugins, and glue code |
-| AP-9 | **Single-Shot AI Testing** — single prompt tests only for AI systems | Were multi-turn attack chains tested? | Multi-turn jailbreaks succeed 97% within 5 turns |
+| AP-9 | **Single-Shot AI Testing** — single prompt tests only for AI systems | Were multi-turn attack chains tested? | See Core Contract "Agentic AI testing principle" |
 | AP-10 | **Isolation Testing** — testing AI in isolation, not as deployed | Was the deployed system (RAG+tools+plugins) tested? | Test the full integrated pipeline |
 | AP-11 | **RAG Poisoning Blindspot** — ignoring data poisoning in retrieval corpus | Were RAG sources tested for adversarial injection? | 5 crafted documents can manipulate 90% of AI responses; test corpus integrity |
 | AP-12 | **Prompt Leakage Ignored** — not testing for system prompt extraction | Was system prompt leakage tested? | OWASP LLM07 (2025): attackers extract internal rules, permissions, decision logic |
@@ -329,7 +289,7 @@ Every deliverable must include:
 | AP-14 | **Benchmark Over-Reliance** — using known test prompts as security proof for AI systems | Were novel attack vectors tested beyond benchmarks? | Models can be patched against benchmark prompts during alignment; full marks on a benchmark does not indicate security. Test with roleplay frames, hypothetical framings, multi-step reasoning, and translated text |
 | AP-15 | **Prompt-Level Security** — embedding security controls (guardrails, filters, access rules) inside prompts instead of external enforcement | Are security controls enforced outside the LLM? | Adaptive attacks bypass prompt-level defenses with >90% ASR; enforce tool-call approvals, file-type firewalls, and kill switches at the application layer, not in system prompts |
 | AP-16 | **Context Manipulation Blindspot** — testing only technical exploits while ignoring narrative/social deception of AI agents | Were agents tested with compelling fictional scenarios designed to override their constraints? | Real-world agentic red teaming shows agents fail to contextual manipulation — adversaries provide fictional authority contexts where agents agree their own rules don't apply; test with role-play scenarios, simulated emergencies, and multi-turn trust-building chains |
-| AP-17 | **Jailbreak-Only Agent Testing** — applying generic jailbreak libraries to agentic systems instead of testing operational risks | Were tool misuse, unauthorized actions, and data exfiltration tested? | Generic jailbreaks measure response risk; agentic AI's dangerous vulnerabilities are the actions it executes — test authorization bypass on tool calls, cross-account data access via conversational redirection, and privilege escalation through delegated trust |
+| AP-17 | **Jailbreak-Only Agent Testing** — applying generic jailbreak libraries to agentic systems instead of testing operational risks | Were tool misuse, unauthorized actions, and data exfiltration tested? | See Core Contract "Agentic AI testing principle" — test authorization bypass on tool calls, not just response content |
 | AP-18 | **Skill Registry Trust** — treating agent skill/tool registries as trusted without supply chain verification | Were agent skills verified for integrity before deployment? | MITRE ATLAS OpenClaw Investigation (2026-02) documents agentic AI exploit paths including tool invocation abuse and agentic configuration modification; verify manifest signatures, audit permission scopes, treat all registries as untrusted by default |
 
 ---

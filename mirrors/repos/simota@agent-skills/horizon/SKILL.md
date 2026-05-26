@@ -137,42 +137,44 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| Deprecated Detection | `detect` | ✓ | Detect deprecated libraries | `references/deprecation-detection.md`, `references/deprecated-library-catalog.md` |
-| Native API Replace | `replace` | | Replace with native APIs | `references/native-replacements.md`, `references/native-api-replacement-guide.md` |
-| Migration PoC | `poc` | | Create a migration PoC | `references/migration-patterns.md` |
-| Stack Refresh | `refresh` | | Refresh the full stack | `references/migration-risk-assessment.md` |
-| Codemod Transformation | `codemod` | | AST-based automated code transformation (jscodeshift / ast-grep / ts-morph / comby) with safety checks and dry-run | `references/codemod-transformation.md` |
-| Strangler Fig Migration | `strangler` | | Incremental replacement of legacy system via Strangler Fig façade routing, parallel-run validation, ramp-up | `references/strangler-fig-migration.md` |
-| Deprecation Lifecycle | `sunset` | | warn → deprecate → sunset → remove timeline, communication plan, compatibility windows, breaking-change policy | `references/deprecation-lifecycle.md` |
+Single source of truth for Recipe definitions. Behavior detail lives in the "Behavior" column; the "Read First" column lists files to load at the initial step.
+
+| Recipe | Subcommand | Default? | When to Use | Behavior | Read First |
+|--------|-----------|---------|-------------|----------|------------|
+| Deprecated Detection | `detect` | ✓ | Detect deprecated libraries | Identify deprecated libs via npm audit + maintenance signals. Default entry. Emit replacement report + migration plan. | `references/deprecation-detection.md`, `references/deprecated-library-catalog.md` |
+| Native API Replace | `replace` | | Replace with native APIs | Swap library with native API (Intl, Fetch, Temporal, Dialog, Observer, etc.) with bundle impact analysis. Emit PoC + bundle impact analysis. | `references/native-replacements.md`, `references/native-api-replacement-guide.md` |
+| Migration PoC | `poc` | | Create a migration PoC | Build isolated migration PoC alongside old code; emit comparison. | `references/migration-patterns.md` |
+| Stack Refresh | `refresh` | | Refresh the full stack | Full-stack modernization planning (multi-library); emit step-by-step plan + risk matrix. | `references/migration-risk-assessment.md` |
+| Codemod Transformation | `codemod` | | AST-based automated code transformation | Author and apply AST-based transformations (jscodeshift for JS/TS, ts-morph for typed refactors, ast-grep for polyglot pattern rewrites, comby for lightweight syntactic patches). Emit dry-run output, before/after diff sample, idempotency check, and rollout ordering (file batches, commit granularity). | `references/codemod-transformation.md` |
+| Strangler Fig Migration | `strangler` | | Incremental replacement of legacy system | Martin Fowler's Strangler Fig pattern — introduce a façade that routes a growing share of traffic to the new system while the legacy shrinks. Design façade placement, per-route cutover criteria, parallel-run validation (shadow), rollback plan, and final-shutdown conditions. Pair with ripple `canary-scope` for traffic ramp and ripple `rollback-plan` for reversibility. | `references/strangler-fig-migration.md` |
+| Deprecation Lifecycle | `sunset` | | warn → deprecate → sunset → remove timeline | Deprecation lifecycle from "announce" through "remove". Emit timeline (warn → deprecate → sunset → remove), compatibility window, customer communication plan (docs + changelog + email + in-product banner), breaking-change policy alignment (SemVer), and observability (usage metrics to know when it is safe to remove). Coordinate with Prose (notification copy), Launch (version policy), and Pulse (usage metrics). | `references/deprecation-lifecycle.md` |
+| Compatibility Assessment | (signal-only) | | Browser/runtime compatibility check | Emit compatibility matrix + recommendations. | `references/browser-compatibility-matrix.md` |
+| Bundle Size Analysis | (signal-only) | | Bundle size / tree-shake review | Emit size report + optimization suggestions. | `references/bundle-size-analysis.md` |
+| Dependency Health Scan | (signal-only) | | Dependency health audit | Emit health report + action items. | `references/dependency-health-scan.md` |
+
+### Signal Keywords → Recipe
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply.
+
+| Keywords | Recipe |
+|----------|--------|
+| `deprecated`, `outdated`, `unmaintained` | `detect` |
+| `native`, `Temporal`, `Intl`, `Fetch`, `Dialog`, `Observer` | `replace` |
+| `PoC`, `proof of concept`, `prototype`, `experiment` | `poc` |
+| `migrate`, `migration`, `upgrade` | `refresh` |
+| `codemod`, `jscodeshift`, `ast-grep`, `ts-morph`, `comby` | `codemod` |
+| `strangler`, `strangler fig`, `façade routing` | `strangler` |
+| `sunset`, `deprecation lifecycle`, `breaking change policy` | `sunset` |
+| `compatibility`, `browser`, `Node.js version` | Compatibility Assessment (signal-only) |
+| `bundle`, `size`, `tree shake` | Bundle Size Analysis (signal-only) |
+| `dependency health`, `scan`, `audit` | Dependency Health Scan (signal-only) |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise, if natural-language input matches a Signal Keyword row → activate the mapped Recipe.
 - Otherwise → default Recipe (`detect` = Deprecated Detection). Apply normal SCOUT → LAB → EXPERIMENT → PRESENT workflow.
-
-Behavior notes per Recipe:
-- `detect`: Identify deprecated libs via npm audit + maintenance signals. Default entry.
-- `replace`: Swap library with native API (Intl, Fetch, etc.) with bundle impact.
-- `poc`: Build isolated migration PoC alongside old code.
-- `refresh`: Full-stack modernization planning (multi-library).
-- `codemod`: Author and apply AST-based code transformations (jscodeshift for JS/TS, ts-morph for typed refactors, ast-grep for polyglot pattern rewrites, comby for lightweight syntactic patches). Emit dry-run output, before/after diff sample, idempotency check, and rollout ordering (file batches, commit granularity).
-- `strangler`: Martin Fowler's Strangler Fig pattern — introduce a façade that routes a growing share of traffic to the new system while the legacy shrinks. Design façade placement, per-route cutover criteria, parallel-run validation (shadow), rollback plan, and final-shutdown conditions. Pair with ripple `canary-scope` for traffic ramp and ripple `rollback-plan` for reversibility.
-- `sunset`: Deprecation lifecycle from "announce" through "remove". Emit timeline (warn → deprecate → sunset → remove), compatibility window, customer communication plan (docs + changelog + email + in-product banner), breaking-change policy alignment (SemVer), and observability (usage metrics to know when it is safe to remove). Coordinate with Prose (notification copy), Launch (version policy), and Pulse (usage metrics).
-
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| `deprecated`, `outdated`, `unmaintained` | Deprecated library detection | Replacement report + migration plan | `references/deprecated-library-catalog.md` |
-| `native`, `Temporal`, `Intl`, `Fetch`, `Dialog`, `Observer` | Native API replacement | PoC + bundle impact analysis | `references/native-api-replacement-guide.md` |
-| `PoC`, `proof of concept`, `prototype`, `experiment` | PoC creation | Isolated PoC + comparison | `references/migration-patterns.md` |
-| `migrate`, `migration`, `upgrade` | Migration planning | Step-by-step plan + risk matrix | `references/migration-risk-assessment.md` |
-| `compatibility`, `browser`, `Node.js version` | Compatibility assessment | Compatibility matrix + recommendations | `references/browser-compatibility-matrix.md` |
-| `bundle`, `size`, `tree shake` | Bundle size analysis | Size report + optimization suggestions | `references/bundle-size-analysis.md` |
-| `dependency health`, `scan`, `audit` | Dependency health scan | Health report + action items | `references/dependency-health-scan.md` |
 
 ## Output Requirements
 

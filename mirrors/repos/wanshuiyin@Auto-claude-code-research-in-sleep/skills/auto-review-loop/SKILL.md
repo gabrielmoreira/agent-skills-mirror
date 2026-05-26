@@ -25,6 +25,7 @@ Autonomously iterate: review → implement fixes → re-review, until the extern
   - `medium` (default): Current behavior — MCP-based review, Claude controls what context GPT sees.
   - `hard`: Adds **Reviewer Memory** (GPT tracks its own suspicions across rounds) + **Debate Protocol** (Claude can rebut, GPT rules).
   - `nightmare`: Everything in `hard` + **GPT reads the repo directly** via `codex exec` (Claude cannot filter what GPT sees) + **Adversarial Verification** (GPT independently checks if code matches claims).
+- **RENDER_HTML = true** — When `true` (default), auto-render `review-stage/AUTO_REVIEW.md` to HTML on loop termination via `/render-html`. Uses `--no-review` (the loop itself IS the cross-model review; the HTML is a structural conversion). Set `false` to skip, or pass `— render html: false`.
 
 > 💡 Override: `/auto-review-loop "topic" — compact: true, human checkpoint: true, difficulty: hard`
 
@@ -418,7 +419,12 @@ When loop ends (positive assessment or max rounds):
    - List remaining blockers
    - Estimate effort needed for each
    - Suggest whether to continue manually or pivot
-5. **Feishu notification** (if configured): Send `pipeline_done` with final score progression table
+7. **Feishu notification** (if configured): Send `pipeline_done` with final score progression table
+8. **Render HTML view** (if `RENDER_HTML = true`, default): invoke `/render-html` on the cumulative review log:
+   ```
+   /render-html "review-stage/AUTO_REVIEW.md" --no-review --state review-stage/REVIEW_STATE.json
+   ```
+   Pass `--state` explicitly (the helper does not auto-discover the sidecar). Drop the `--state` flag if `REVIEW_STATE.json` doesn't exist. HTML lands at `review-stage/AUTO_REVIEW.html` with embedded source SHA256. **Non-blocking**: if `/render-html` fails, log the error and continue — the HTML is a convenience, not a termination prerequisite. Skip if `RENDER_HTML = false`.
 
 ## Key Rules
 

@@ -1,6 +1,6 @@
 # `dspy.GEPA` — Full Reference
 
-Source: https://dspy.ai/api/optimizers/GEPA/overview/ (DSPy 3.2.x, April 2026).
+Source: https://dspy.ai/api/optimizers/GEPA/overview/ (DSPy 3.2.1 surface verified May 2026).
 
 ## Location
 
@@ -69,15 +69,15 @@ metric(
     trace: DSPyTrace | None = None,
     pred_name: str | None = None,
     pred_trace: DSPyTrace | None = None,
-) -> float | dspy.Prediction | str
+) -> float | dspy.Prediction | bool
 ```
 
-Recommended return: `dspy.Prediction(score=float, feedback=str)`. When `pred_name` is set, return feedback targeted at that specific predictor's `pred_trace`. A plain dict with the same keys crashes `dspy.Evaluate`'s parallel aggregator (`TypeError: unsupported operand type(s) for +: 'int' and 'dict'`); GEPA uses `dspy.Evaluate` internally for candidate scoring, so the crash happens inside GEPA too. `dspy.Prediction` defines `__float__`/`__add__` so it aggregates correctly.
+Recommended return: `dspy.Prediction(score=float, feedback=str)`. When `pred_name` is set, return feedback targeted at that specific predictor's `pred_trace`. Some upstream GEPA prose describes score/feedback as a dict-like shape, but a literal dict still crashes `dspy.Evaluate`'s parallel aggregator in DSPy 3.2.1 (`TypeError: unsupported operand type(s) for +: 'int' and 'dict'`). GEPA uses `dspy.Evaluate` internally for candidate scoring, so the crash can happen inside GEPA too. `dspy.Prediction` defines `__float__`/`__add__` so it aggregates correctly.
 
 ## `component_selector` options
 
-- `"round_robin"` (default): cycle through predictors evenly.
-- `"random"`: uniform random.
+- `"round_robin"` (default): cycle through predictors one at a time.
+- `"all"`: optimize all predictors together.
 - Callable: `ReflectionComponentSelector` that decides which predictors get mutated this round based on past success.
 
 ## `instruction_proposer`
@@ -92,9 +92,9 @@ dspy.GEPA(..., log_dir="./gepa_logs", use_wandb=True, use_mlflow=True)
 
 Writes per-round artifacts: `candidates/<id>.json`, `scores.jsonl`, `reflections/`. Resume by pointing `log_dir` at the same path.
 
-## `dspy.BetterTogether` in 3.2.0
+## `dspy.BetterTogether` in 3.2.x
 
-DSPy 3.2.0 expanded `dspy.BetterTogether` from a fixed prompt/weight pair into an arbitrary optimizer-chain wrapper:
+DSPy 3.2.x expanded `dspy.BetterTogether` from a fixed prompt/weight pair into an arbitrary optimizer-chain wrapper:
 
 ```python
 optimizer = dspy.BetterTogether(
@@ -111,7 +111,7 @@ optimized = optimizer.compile(
 )
 ```
 
-The strategy keys come directly from the constructor kwargs (`bootstrap`, `gepa`, etc.), and `BetterTogether` evaluates each stage on the valset before returning the best program. Pass `strategy=` explicitly for named stages: DSPy 3.2.0's default remains `"p -> w -> p"`, which assumes your optimizer keys are literally `p` and `w`.
+The strategy keys come directly from the constructor kwargs (`bootstrap`, `gepa`, etc.), and `BetterTogether` evaluates each stage on the valset before returning the best program. Pass `strategy=` explicitly for named stages: DSPy 3.2.1's default remains `"p -> w -> p"`, which assumes your optimizer keys are literally `p` and `w`.
 
 ## Tuning guide
 
@@ -123,9 +123,13 @@ The strategy keys come directly from the constructor kwargs (`bootstrap`, `gepa`
 | Cost too high | Set explicit `max_metric_calls` instead of `auto="heavy"`. |
 | Optimized program worse on held-out test | Valset too small / not representative; expand valset, set `skip_perfect_score=True`. |
 
+## Data splits
+
+For most prompt optimizers, the DSPy docs recommend a validation-heavy split such as 20% train / 80% validation. GEPA is the exception: maximize the training set so reflection has enough failures and traces to learn from, while keeping a separate validation set large enough to represent the downstream task distribution.
+
 ## Related optimizers (for comparison)
 
 - `dspy.MIPROv2` — Bayesian optimization over instructions + demos; best for large trainsets and scalar metrics.
 - `dspy.BootstrapFewShot` — vanilla few-shot extraction; fast, low-signal.
-- `dspy.BetterTogether` — as of DSPy 3.2.0, chains arbitrary named optimizers via `**optimizers` and a strategy string.
-- `dspy.SIMBA` — simpler reflective optimizer, lighter-weight than GEPA.
+- `dspy.BetterTogether` — as of DSPy 3.2.x, chains arbitrary named optimizers via `**optimizers` and a strategy string.
+- `dspy.SIMBA` — simpler reflective optimizer, lighter-weight than GEPA; useful for quick reflective exploration before a full GEPA run.

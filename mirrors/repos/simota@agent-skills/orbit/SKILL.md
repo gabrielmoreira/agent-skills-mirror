@@ -150,14 +150,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 ## Operating Modes
 
-### Request Modes
-
-| Mode | Use when | Primary output |
-|------|----------|----------------|
-| `GENERATE` | A new loop or script set is needed | Loop-ready script set and contract |
-| `AUDIT` | A live loop must be classified or checked | Evidence-backed status assessment |
-| `RECOVER` | `state.env`, footer, or loop evidence drifted | Reversible recovery plan or recovery scripts |
-| `PROACTIVE_AUDIT` | The user wants pre-failure health review | Risk report and next-safe action |
+> **Request Modes (task shape: `GENERATE` / `AUDIT` / `RECOVER` / `PROACTIVE_AUDIT`) and Delivery Modes (marker-based output selection) are orthogonal and combine independently.** Request Mode definitions are folded into the Recipes table below; this section covers only the marker-based Delivery Mode dispatch and the AUTORUN classification scope.
 
 ### Delivery Modes
 
@@ -193,8 +186,8 @@ INTAKE -> CONTRACT -> CLASSIFY -> PRE_FLIGHT -> GENERATE_OR_AUDIT -> VERIFY -> H
 |-------|-----------------|----------|------|
 | `INTAKE` | Classify the request as `GENERATE`, `AUDIT`, `RECOVER`, or `PROACTIVE_AUDIT` | Parse artifacts and mode markers before proposing actions | `references/operation-contract.md`, `references/vague-goal-handling.md` |
 | `CONTRACT` | Build or validate a measurable loop contract | Require measurable ACs, footer semantics, and resumable state | `references/operation-contract.md` |
-| `CLASSIFY` | Map findings to failure class and severity; in `AUDIT` mode also evaluate convergence (action similarity `>= 85%` over `3` iters), oscillation (A↔B `>= 3` cycles in `6` iters), and dedup window (last `5` actions) | Taxonomy first; `P0` always wins; semantic stalls outrank exit-code success | `references/failure-taxonomy.md`, `references/anti-patterns.md` |
-| `PRE_FLIGHT` | Verify environment health gates before any generation, audit-write, or recovery: disk `>= 100MB`, `.run-loop.lock` liveness, git health under `AUTOCOMMIT=true`, `state.env.sha256` integrity, log-size budget | Abort on `[PREFLIGHT:FAIL]` unless an explicit bypass is set; never proceed past a corrupt checksum without `recover.sh` | `references/script-flow.md`, `references/failure-taxonomy.md` |
+| `CLASSIFY` | Map findings to failure class and severity; in `AUDIT` mode also evaluate convergence (action similarity `>= 85%` over `3` iters), oscillation (A↔B `>= 3` cycles in `6` iters), and dedup window (last `5` actions) | Taxonomy first; `P0` always wins; semantic stalls outrank exit-code success | `references/failure-catalog.md` |
+| `PRE_FLIGHT` | Verify environment health gates before any generation, audit-write, or recovery: disk `>= 100MB`, `.run-loop.lock` liveness, git health under `AUTOCOMMIT=true`, `state.env.sha256` integrity, log-size budget | Abort on `[PREFLIGHT:FAIL]` unless an explicit bypass is set; never proceed past a corrupt checksum without `recover.sh` | `references/script-flow.md`, `references/failure-catalog.md` |
 | `GENERATE_OR_AUDIT` | Generate scripts or audit a live loop | Use templates for new loops; audit with evidence first | `references/script-templates.md`, `references/script-flow.md`, `references/executor-engines.md` |
 | `VERIFY` | Validate the produced artifact before delivery: `bash -n` syntax check on every generated `*.sh`, footer contract presence (`NEXUS_LOOP_STATUS` + `NEXUS_LOOP_SUMMARY`), AC-to-verify mapping completeness, atomic-write pattern (write-temp-then-rename) on all state writers, clear terminal states (`SUCCESS`/`FAILED`) in tool response schemas | Block `HANDOFF` on any failure; never deliver a script set whose footer or DONE gate cannot be parsed deterministically | `references/operation-contract.md`, `references/script-flow.md` |
 | `HANDOFF` | Build the smallest reversible next action; route by severity (`P0` → pause + escalate to `Triage`; `P1` → recover and continue; `P2` → contained improvement). Use the agent-mapping table for failure-class targets (`Builder` for impl, `Guardian` for commit policy, `Radar` for verify gaps, `Beacon` for telemetry, `Lore` for reusable patterns) | Use one handoff at a time; never stack escalations | `references/patterns.md`, `references/examples.md` |
@@ -203,45 +196,38 @@ INTAKE -> CONTRACT -> CLASSIFY -> PRE_FLIGHT -> GENERATE_OR_AUDIT -> VERIFY -> H
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| Generate Loop | `generate` | ✓ | Generate a new nexus-autoloop script set from a goal | `references/script-templates.md` |
-| Loop Contract | `contract` | | goal.md, ACs, footer semantics design, weak contract hardening | `references/operation-contract.md` |
-| Loop Audit | `audit` | | Status classification and evidence verification of live loops | `references/operation-contract.md` |
-| State Recovery | `recover` | | Recovery from state.env drift, footer mismatch, or corrupted loop artifacts | `references/failure-taxonomy.md` |
-| Ralph Loop | `ralph` | | Generate or audit a Huntley-style Ralph Loop runner (immutable `PROMPT.md`, plan/build two-mode, filesystem-as-memory, `<promise>COMPLETE</promise>` terminator). Green-field only. | `references/ralph-loop-pattern.md` |
+Single source of truth for Recipe definitions, Request Mode mapping, and primary outputs. Behavior notes for each Recipe live in the "Scope & Behavior" column.
+
+| Recipe | Subcommand | Default? | Request Mode | Primary Output | When to Use / Scope & Behavior | Read First |
+|--------|-----------|---------|--------------|----------------|--------------------------------|------------|
+| Generate Loop | `generate` | ✓ | `GENERATE` | Loop-ready script set + operation contract | New nexus-autoloop script set from a goal. Generate `run-loop.sh`, `bootstrap.sh`, `recover.sh`, `verify.sh` and an operation contract; customize executor engine, commit convention, and branch policy. | `references/script-templates.md` |
+| Loop Contract | `contract` | | `GENERATE` (contract-only) | Hardened `goal.md` + footer/state spec | `goal.md`, ACs, footer semantics design, weak contract hardening. Strengthen weak ACs and non-measurable DONE criteria; includes footer semantics (`NEXUS_LOOP_STATUS`) and resumable-state design. Prioritize on `ON_GOAL_CONTRACT_WEAK`. | `references/operation-contract.md` |
+| Loop Audit | `audit` | | `AUDIT` | Evidence-backed status assessment | Status classification and evidence verification of live loops. Parse `goal.md`, `progress.md`, `state.env`, `runner.log`; classify with evidence; validate DONE gates. | `references/operation-contract.md` |
+| State Recovery | `recover` | | `RECOVER` | Reversible recovery plan or recovery scripts | Recovery from `state.env` drift, footer mismatch, or corrupted loop artifacts. Diagnose `STATE_DRIFT` / `VERIFY_GAP` / `CIRCUIT_OPEN`; prefer durable execution (checkpoint + replay). | `references/failure-catalog.md` |
+| Proactive Audit | (no subcommand — signal-only) | | `PROACTIVE_AUDIT` | Risk report + next-safe action | Pre-failure health review of running loops. Triggered via health/proactive signal keywords. | `references/failure-catalog.md` |
+| Ralph Loop | `ralph` | | `GENERATE` (Ralph variant) | Ralph-style runner with 9xx guardrails + filesystem-as-memory | Huntley-style Ralph Loop runner (immutable `PROMPT.md`, plan/build two-mode, filesystem-as-memory, `<promise>COMPLETE</promise>` terminator). Green-field only. Apply the 8 design principles (RP-1..RP-8): immutable `PROMPT.md`, plan/build two-mode, 9xx guardrails, AGENTS.md ≤ 60 lines, single build/test subagent, plan disposability, filesystem-as-memory, green-field constraint. Requires green-field detection (≤ 10 commits, ≤ 20 src files, small dependency manifest) or explicit `RALPH_BROWNFIELD_ACK=true`. | `references/ralph-loop-pattern.md` |
+
+### Signal Keywords → Recipe
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply.
+
+| Keywords / Artifacts | Recipe (Request Mode) |
+|----------------------|------------------------|
+| `generate`, `new loop`, `create runner` | `generate` (GENERATE) |
+| `audit`, `check loop`, `loop status` | `audit` (AUDIT) |
+| `recover`, `state drift`, `fix loop`; `runner.log` has failures | `recover` (RECOVER) |
+| `health check`, `proactive`, `pre-failure` | Proactive Audit (PROACTIVE_AUDIT) |
+| `ralph`, `PROMPT.md`, `<promise>COMPLETE</promise>`, `cat PROMPT.md \| claude` | `ralph` (GENERATE — Ralph variant) |
+| `goal.md` exists and well-formed | `audit` (AUDIT) |
+| `goal.md` missing/vague, or unclear request | `generate` (GENERATE — default) — see `references/vague-goal-handling.md` |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
-- Otherwise → default Recipe (`generate` = Generate Loop). Apply normal INTAKE → CONTRACT → CLASSIFY → PRE_FLIGHT → GENERATE_OR_AUDIT → VERIFY → HANDOFF → COMPLETE → LEARN workflow.
-
-Behavior notes per Recipe:
-- `generate`: Generate a script set (run-loop.sh, bootstrap.sh, recover.sh, verify.sh) and operation contract from goal input. Customize executor engine, commit convention, and branch policy.
-- `contract`: Strengthen weak ACs and non-measurable DONE criteria in goal.md. Includes footer semantics (`NEXUS_LOOP_STATUS`) and resumable-state design. Prioritize on `ON_GOAL_CONTRACT_WEAK` trigger.
-- `audit`: Parse goal.md, progress.md, state.env, runner.log and classify loop status with evidence. Validate DONE gates.
-- `recover`: Diagnose failure classes such as STATE_DRIFT, VERIFY_GAP, CIRCUIT_OPEN and generate a reversible recovery plan or scripts. Prefer durable execution (checkpoint + replay).
-- `ralph`: Generate or audit a Huntley-style Ralph Loop runner. Apply the 8 design principles (RP-1..RP-8): immutable `PROMPT.md`, plan/build two-mode separation, 9xx guardrail numbering, AGENTS.md ≤ 60 lines, single build/test subagent, plan disposability, filesystem-as-memory, green-field constraint. Requires green-field detection to pass (≤ 10 commits, ≤ 20 src files, small dependency manifest) or explicit `RALPH_BROWNFIELD_ACK=true` override.
-
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| `generate`, `new loop`, `create runner` | GENERATE mode | Loop-ready script set and contract | `references/script-templates.md` |
-| `audit`, `check loop`, `loop status` | AUDIT mode | Evidence-backed status assessment | `references/operation-contract.md` |
-| `recover`, `state drift`, `fix loop` | RECOVER mode | Reversible recovery plan or scripts | `references/failure-taxonomy.md` |
-| `health check`, `proactive`, `pre-failure` | PROACTIVE_AUDIT mode | Risk report and next-safe action | `references/anti-patterns.md` |
-| `goal.md`, `progress.md`, `state.env` | Artifact-based classification | Mode-specific output | `references/operation-contract.md` |
-| `ralph`, `PROMPT.md`, `<promise>COMPLETE</promise>`, `cat PROMPT.md \| claude` | Ralph Loop Recipe (Huntley lineage) | Ralph-style runner with 9xx guardrails + filesystem-as-memory | `references/ralph-loop-pattern.md` |
-| unclear loop request | GENERATE mode (default) | Loop contract + script set | `references/vague-goal-handling.md` |
-
-Routing rules:
-
-- If `goal.md` exists and is well-formed, default to AUDIT mode.
-- If `goal.md` is missing or vague, default to GENERATE mode.
-- If `runner.log` contains failure entries, consider RECOVER mode.
-- If the request mentions health or risk, use PROACTIVE_AUDIT mode.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" file at the initial step.
+- Otherwise → consult **Signal Keywords → Recipe** above; if no match → default Recipe (`generate` = GENERATE).
+- Apply the standard workflow `INTAKE → CONTRACT → CLASSIFY → PRE_FLIGHT → GENERATE_OR_AUDIT → VERIFY → HANDOFF → COMPLETE → LEARN`.
+- Delivery Mode (Hub / AUTORUN / Interactive) is applied after Recipe selection (orthogonal — see Operating Modes).
 - Always validate artifacts before proposing actions.
 
 ## Output Requirements
@@ -559,8 +545,7 @@ Follow `_common/OPERATIONAL.md` for full operational protocol.
 |-----------|----------------|
 | `references/operation-contract.md` | You are creating or auditing `goal.md`, `progress.md`, `done.md`, `state.env`, or footer semantics. |
 | `references/vague-goal-handling.md` | `goal.md` is weak, vague, or missing and contract strengthening is required. |
-| `references/failure-taxonomy.md` | You need failure-class mapping, severity logic, reporting schema, recovery commands, retry policies, or circuit breaker integration. |
-| `references/anti-patterns.md` | You need safety review, pre-launch checks, or post-mortem anti-pattern detection. |
+| `references/failure-catalog.md` | You need failure-class mapping (`CONTRACT_MISSING`/`STATE_DRIFT`/`VERIFY_GAP`/`COMMIT_SCOPE_RISK`/`TOOL_FAILURE`/`REWARD_HACK`/`GOAL_DRIFT`/`BURN_RATE_ANOMALY`/`PERMISSION_HIJACK`/`VALIDATOR_GAP`/`CONTEXT_OVERFLOW`), anti-pattern (`AP-*`) cross-reference, severity logic, reporting schema, recovery commands, retry policies, circuit breaker integration, prevention checklist, or post-mortem detection rules. |
 | `references/script-templates.md` | You must decide which scripts to generate or patch and which template file to open next. |
 | `references/script-template-runner.md` | You are generating or patching `run-loop.sh`. |
 | `references/script-template-support.md` | You are generating or patching `bootstrap.sh`, `recover.sh`, `verify.sh`, or `notify.sh`. |

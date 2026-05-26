@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
+Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 20 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,8 +77,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`agents/openclaw.js`](agents/openclaw.js) |
 | 17 | ✓ | [`agents/opencode.js`](agents/opencode.js) |
 | 18 | ✓ | [`agents/pi.js`](agents/pi.js) |
-| 19 | ✓ | [`agents/registry.js`](agents/registry.js) |
-| 20 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 19 | ✓ | [`agents/qwen-code.js`](agents/qwen-code.js) |
+| 20 | ✓ | [`agents/registry.js`](agents/registry.js) |
+| 21 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

@@ -3,7 +3,7 @@ type: skill
 lifecycle: stable
 inheritance: inheritable
 name: guide-advanced-remediation
-description: >
+description: "Complex multi-step remediation scenarios for S360 Tenant Isolation violations that require code changes, Federated Identity Credential (FIC) setup, and bilateral coordination between service teams."
 tier: standard
 applyTo: '**/*guide*,**/*advanced*,**/*remediation*'
 currency: 2026-04-30

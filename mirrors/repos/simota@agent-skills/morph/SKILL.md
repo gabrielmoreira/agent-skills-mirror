@@ -57,7 +57,7 @@ Route elsewhere when the task is primarily:
 - Verify output quality before delivery using the quality score weights: Structure 30%, Visual 25%, Content 30%, Metadata 15%. Minimum passing grade: B (80+).
 - Document unsupported features and expected loss before conversion when fidelity risk exists — especially complex LaTeX equations, custom fonts, and nested tables which are top failure points. Note: Pandoc 3.9 (released February 4, 2026) adds row spans and column spans to its AST and grid tables via new functions `tableWithSpans`/`toTableComponentsWithSpans`, so merged cells are no longer a blanket failure point — but verify the target writer supports them (e.g., DOCX and HTML do; pipe tables do not). Source: https://github.com/jgm/pandoc/discussions/11439
 - Prefer reusable commands, configs, templates, and scripts over one-off manual work.
-- For accessibility-critical outputs, target both PDF/UA and WCAG 2.1 Level AA compliance. PDF/UA defines PDF-specific technical requirements (tag structure, role maps, DOM order); WCAG defines outcome-based success criteria. Both together achieve the highest accessibility level. Two PDF/UA standards coexist: PDF/UA-1 (ISO 14289-1, based on PDF 1.7) and PDF/UA-2 (ISO 14289-2:2024, based on PDF 2.0) — choose based on the target PDF version. Regulatory deadlines: ADA Title II — April 24, 2026 (populations ≥50K) / April 26, 2027 (<50K); European Accessibility Act (EAA) — in force since June 28, 2025.
+- For accessibility-critical outputs, target both PDF/UA and WCAG compliance; see **Critical Decision Rules → Accessibility minimums** for version-specific targets and regulatory deadlines.
 - Use Pandoc Lua filters over JSON filters for AST manipulation — they run in Pandoc's embedded interpreter with no external dependencies and are significantly faster.
 - Use Pandoc defaults files (YAML or JSON) to centralize conversion options — they capture `--from`, `--to`, filters, metadata, and variables in a single reusable config, reducing command-line drift across environments.
 - Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read source-document structure, target format constraints, and existing conversion pipelines at SCAN — conversion fidelity depends on grounding in actual AST/markup state), P5 (think step-by-step at Pandoc filter selection (Lua vs JSON), PDF/UA vs WCAG compliance scoping, and defaults-file centralization)** as critical for Morph. P2 recommended: calibrated conversion spec preserving Pandoc defaults, accessibility verdict, and filter selection. P1 recommended: front-load source/target formats, accessibility tier, and CI context at SCAN.
@@ -155,32 +155,25 @@ Route elsewhere when the task is primarily:
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| Markdown Conversion | `md` | ✓ | Markdown → PDF/Word/HTML conversion (Pandoc/XeLaTeX/Typst) | `references/pandoc-recipes.md` |
-| PDF Generation | `pdf` | | High-quality PDF generation, PDF/A archival, PDF/UA accessibility | `references/pandoc-recipes.md` |
-| Word Export | `docx` | | Word (.docx) output, LibreOffice conversion, style preservation | `references/conversion-matrix.md` |
-| Excel Export | `xlsx` | | Excel (.xlsx) output, CSV/HTML conversion | `references/conversion-matrix.md` |
-| HTML Export | `html` | | HTML output, CSS Paged Media, accessibility support | `references/pandoc-recipes.md` |
-| EPUB Generation | `epub` | | EPUB 3 generation, KF8/MOBI export, reflowable layout, EPUB Accessibility 1.1 | `references/epub-generation.md` |
-| LaTeX Typesetting | `latex` | | LaTeX/XeLaTeX/Typst academic typesetting (papers, theses, books, BibTeX/biblatex) | `references/latex-typesetting.md` |
-| Batch Pipeline | `batch` | | Pandoc batch pipeline with Lua filters, Makefile/CI orchestration, parallel conversion | `references/batch-conversion-pipeline.md` |
+Single source of truth for Recipe definitions. Behavior depth lives in the Behavior column; load only the "Read First" column files at the initial step.
+
+| Recipe | Subcommand | Default? | When to Use | Behavior | Read First |
+|--------|-----------|---------|-------------|----------|------------|
+| Markdown Conversion | `md` | ✓ | Markdown → PDF/Word/HTML conversion (Pandoc/XeLaTeX/Typst) | Conversion anchored on Markdown input. Analyze the target format and pick the optimal tool (pandoc + xelatex/typst/weasyprint). For Japanese documents, default to A4, 25mm margins, line height 1.7-1.8. | `references/pandoc-recipes.md` |
+| PDF Generation | `pdf` | | High-quality PDF generation, PDF/A archival, PDF/UA accessibility | Focused on PDF generation. Grade via quality score (Structure 30%, Visual 25%, Content 30%, Metadata 15%) with B-or-better (80+) required. Confirm PDF/A and PDF/UA compliance needs before selecting a tool. | `references/pandoc-recipes.md` |
+| Word Export | `docx` | | Word (.docx) output, LibreOffice conversion, style preservation | Prefer LibreOffice. Warn about font substitution and style-mapping loss. Surface constraints upfront for complex LaTeX equations and nested tables. | `references/conversion-matrix.md` |
+| Excel Export | `xlsx` | | Excel (.xlsx) output, CSV/HTML conversion | Prefer LibreOffice. Since sheet structure and formulas do not convert cleanly, consider CSV or HTML as alternatives. | `references/conversion-matrix.md` |
+| HTML Export | `html` | | HTML output, CSS Paged Media, accessibility support | Choose between Chrome/Puppeteer (CSS Grid/Flexbox), weasyprint (CSS Paged Media), and pagedjs-cli (Paged.js) per use case. Confirm WCAG 2.1 AA compliance. | `references/pandoc-recipes.md` |
+| EPUB Generation | `epub` | | EPUB 3 generation, KF8/MOBI export, reflowable layout, EPUB Accessibility 1.1 | Default reflowable; fixed-layout only for design-driven content. Validate with EPUBCheck. Convert to KF8/MOBI via Calibre `ebook-convert` for Kindle. Apply EPUB Accessibility 1.1 (declare schema:accessibilityFeature, ARIA roles in XHTML). | `references/epub-generation.md` |
+| LaTeX Typesetting | `latex` | | LaTeX/XeLaTeX/Typst academic typesetting (papers, theses, books, BibTeX/biblatex) | XeLaTeX for non-Latin scripts (CJK / RTL). Typst when build speed matters. Use BibTeX/biblatex for citations; pin TeX Live edition for reproducibility. | `references/latex-typesetting.md` |
+| Batch Pipeline | `batch` | | Pandoc batch pipeline with Lua filters, Makefile/CI orchestration, parallel conversion | Author Lua filters for AST transforms, drive via Makefile or CI matrix, parallelize per-file. Cache intermediate AST and pin tool versions; emit a manifest with input/output checksums. | `references/batch-conversion-pipeline.md` |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
-- Otherwise → default Recipe (`md` = Markdown Conversion). Apply normal ANALYZE → CONFIGURE → CONVERT → VERIFY → DELIVER → TRANSMUTE workflow.
-
-Behavior notes per Recipe:
-- `md`: Conversion anchored on Markdown input. Analyze the target format and pick the optimal tool (pandoc + xelatex/typst/weasyprint). For Japanese documents, default to A4, 25mm margins, line height 1.7-1.8.
-- `pdf`: Focused on PDF generation. Grade via quality score (Structure 30%, Visual 25%, Content 30%, Metadata 15%) with B-or-better (80+) required. Confirm PDF/A and PDF/UA compliance needs before selecting a tool.
-- `docx`: Word output. Prefer LibreOffice. Warn about font substitution and style-mapping loss. Surface constraints upfront for complex LaTeX equations and nested tables.
-- `xlsx`: Excel output. Prefer LibreOffice. Since sheet structure and formulas do not convert cleanly, consider CSV or HTML as alternatives.
-- `html`: HTML output. Choose between Chrome/Puppeteer (CSS Grid/Flexbox), weasyprint (CSS Paged Media), and pagedjs-cli (Paged.js) per use case. Confirm WCAG 2.1 AA compliance.
-- `epub`: EPUB 3 generation. Default reflowable; fixed-layout only for design-driven content. Validate with EPUBCheck. Convert to KF8/MOBI via Calibre `ebook-convert` for Kindle. Apply EPUB Accessibility 1.1 (declare schema:accessibilityFeature, ARIA roles in XHTML).
-- `latex`: LaTeX/XeLaTeX/Typst typesetting for academic and book-length output. XeLaTeX for non-Latin scripts (CJK / RTL). Typst when build speed matters. Use BibTeX/biblatex for citations; pin TeX Live edition for reproducibility.
-- `batch`: Pandoc-driven batch pipeline. Author Lua filters for AST transforms, drive via Makefile or CI matrix, parallelize per-file. Cache intermediate AST and pin tool versions; emit a manifest with input/output checksums.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe and load its "Read First" reference.
+- Otherwise → default Recipe (`md` = Markdown Conversion).
+- Apply ANALYZE → CONFIGURE → CONVERT → VERIFY → DELIVER → TRANSMUTE workflow regardless of Recipe.
 
 ## Output Routing
 

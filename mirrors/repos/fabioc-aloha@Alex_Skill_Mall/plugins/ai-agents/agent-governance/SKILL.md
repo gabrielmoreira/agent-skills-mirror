@@ -3,7 +3,7 @@ type: skill
 lifecycle: stable
 inheritance: inheritable
 name: agent-governance
-description: |
+description: "Patterns for adding safety, trust, and policy enforcement to AI agent systems -- control which tools agents can call, what content they process, and maintain accountability through audit trails."
 tier: standard
 applyTo: '**/*agent*,**/*governance*'
 currency: 2026-04-30

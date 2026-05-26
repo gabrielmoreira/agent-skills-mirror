@@ -18,8 +18,7 @@
 - 拓宽检索的知识源，统一多知识源（channel），目前已知知识库/知识图谱/网页，可拓展：个人知识库、数据库、历史对话等
     - 前置任务，多知识库并行检索（扩展 query_kb）
     - 新增 query_keywords 工具，专门用于基于关键词命中的排序，也结合词频（和 BM25 的区别？）
-- 调研将当前知识库映射为虚拟文件系统工具的可行性，先明确文件树映射、权限边界、内容读取与 Agent 工具调用形态，再决定是否实现
-- 参考 AgenticRAG 方案扩展当前 Search 工具：等待虚拟文件系统构建完成后，改进 Search 返回递增文件序列 ID，新增 Find 与 Open 能力；Summary 暂缓
+- 参考 AgenticRAG 方案扩展当前 Search 工具：基于知识库工具返回的 resource_id/file_id 改进 Search 返回递增文件序列 ID，完善 Find 与 Open 能力；Summary 暂缓
 - 评估，基于 Agent 的评估，这里应该是结合 Langfuse 实现
 
 ### Bugs

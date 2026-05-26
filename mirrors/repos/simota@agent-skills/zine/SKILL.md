@@ -86,13 +86,12 @@ Interaction triggers → `_common/INTERACTION.md`
 
 ### Always
 
-- Read the source material (draft, notes, retrospective, git log) before writing any prose.
-- Confirm target platform and series position at FRAME; defaults differ per platform.
-- Open every article with a hook (contradiction / number / scene / question / stake) within the first 100-300 characters.
-- Close with an explicit CTA calibrated to article intent.
-- Check `.agents/PROJECT.md` for existing series context, tone conventions, and previous episode links.
-- For series articles, update the index article's episode list in the same pass.
-- Attach a platform-appropriate metadata block (note: タグ 3-5 / Zenn: emoji + topics max 5 / Qiita: tags max 5 / dev.to: cover image 1000×420 + tags max 4).
+> Phase-level actions live in the **Workflow** table below. This section carries the non-negotiable thresholds and rules that apply across all Recipes.
+
+- Hook within first 100-300 characters using one of 5 patterns (contradiction / number / scene / question / stake); no `本記事では` / `今回は〜について` / `In this article we will` openers.
+- Close with an explicit CTA calibrated to article intent — never `以上です` / `最後までお読みいただきありがとうございました` alone.
+- Platform-appropriate metadata block: note タグ 3-5 / Zenn emoji + topics max 5 / Qiita tags max 5 / dev.to cover image 1000×420 + tags max 4.
+- Check `.agents/PROJECT.md` for series context, tone conventions, and previous episode links; for series articles, update the index in the same pass.
 - Article output language follows the user's request for the target platform; platform defaults: Japanese for note/Qiita, English for dev.to, bilingual-friendly for Zenn. Internal reports/handoffs follow the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 
 ### Ask First
@@ -192,44 +191,41 @@ questions:
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| note Article | `note` | ✓ | note long-form Japanese articles, magazine series episode authoring | `references/platform-optimization.md` |
-| Zenn Article | `zenn` | | Zenn articles for engineers, topic and emoji configuration | `references/platform-optimization.md` |
-| Qiita Article | `qiita` | | Qiita tech tips, tag strategy, LGTM optimization | `references/platform-optimization.md` |
-| dev.to Article | `devto` | | dev.to articles for a global English audience, cover image and tag configuration | `references/platform-optimization.md` |
-| Series Design | `series` | | Series design, index articles, cross-links, and episode management | `references/series-management.md` |
-| Headline | `headline` | | Title and headline patterns — CTR-tested formulas, number/curiosity/promise/contrarian variants, platform-specific length tuning | `references/headline-patterns.md` |
-| Repurpose | `repurpose` | | Cross-platform content repurposing — canonical → note/Zenn/Qiita/dev.to/X-thread/LinkedIn variants, atomic asset extraction | `references/content-repurposing.md` |
-| Interview | `interview` | | Interview-format article authoring — Q&A reshape from raw transcripts, podcast-to-article adaptation, lightning-talk to long-form | `references/interview-format.md` |
+Single source of truth for Recipe definitions. Primary-output shape and behavior depth live in the "Output / Behavior" column.
+
+| Recipe | Subcommand | Default? | When to Use | Output / Behavior | Read First |
+|--------|-----------|---------|-------------|-------------------|------------|
+| note Article | `note` | ✓ | note long-form Japanese articles, magazine series episode authoring | JP long-form + 目次 + タグ 3-5 (1 primary) + マガジン link | `references/platform-optimization.md` |
+| Zenn Article | `zenn` | | Zenn articles for engineers, topic and emoji configuration | emoji + topics max 5 + GitHub-linkable, Tech/Idea type | `references/platform-optimization.md` |
+| Qiita Article | `qiita` | | Qiita tech tips, tag strategy, LGTM optimization | Tags + "TL;DR" opening + code-heavy | `references/platform-optimization.md` |
+| dev.to Article | `devto` | | dev.to articles for a global English audience, cover image and tag configuration | Cover image 1000×420 + liquid tags + canonical_url | `references/platform-optimization.md` |
+| Series Design | `series` | | Series design, index articles, cross-links, and episode management | Article + updated index + prev/next cross-links | `references/series-management.md` |
+| Headline | `headline` | | Title and headline patterns — CTR-tested formulas, number/curiosity/promise/contrarian variants, platform-specific length tuning | Generate 5–10 title variants across formulas (number / curiosity gap / promise / contrarian / how-to / question), score against platform-specific length and tone, recommend top 3 with rationale | `references/headline-patterns.md` |
+| Repurpose | `repurpose` | | Cross-platform content repurposing — canonical → note/Zenn/Qiita/dev.to/X-thread/LinkedIn variants, atomic asset extraction | One canonical draft → platform-adapted variants (note / Zenn / Qiita / dev.to / X thread / LinkedIn) plus atomic assets (quote cards, threads, snippets) without lossy translation | `references/content-repurposing.md`, `references/handoffs.md` |
+| Interview | `interview` | | Interview-format article authoring — Q&A reshape from raw transcripts, podcast-to-article adaptation, lightning-talk to long-form | Reshape raw Q&A (transcripts, podcasts, AMAs, lightning talks) into polished Q&A article — preserve voice, remove filler, re-sequence for narrative arc | `references/interview-format.md` |
+
+### Signal Keywords → Recipe
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply. Signals that match article patterns (`tutorial`, `retrospective`, `listicle`, `announcement`, `hook`) are not Recipes — see **Article Structure** and **Hook Design** below.
+
+| Keywords | Recipe |
+|----------|--------|
+| `note`, `マガジン`, `目次` | `note` |
+| `Zenn`, `zenn`, `scrap` | `zenn` |
+| `Qiita`, `qiita`, `LGTM` | `qiita` |
+| `dev.to`, `devto`, `canonical URL` | `devto` |
+| `series`, `連載`, `エピソード`, `index article` | `series` |
+| `headline`, `title`, `タイトル`, `CTR` | `headline` |
+| `repurpose`, `cross-post`, `multi-platform`, `両方に`, `canonical + variant` | `repurpose` |
+| `interview`, `Q&A`, `podcast`, `transcript`, `AMA` | `interview` |
+| unclear or platform unspecified | `note` (default) |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
-- Otherwise → default Recipe (`note` = note Article). Apply normal FRAME → DRAFT → STRUCTURE → POLISH → PUBLISH workflow.
-
-Behavior notes per Recipe:
-- `headline`: Generate 5–10 title variants across CTR-tested formulas (number / curiosity gap / promise / contrarian / how-to / question), score against platform-specific length and tone, then recommend top 3 with rationale.
-- `repurpose`: Take one canonical draft and produce platform-adapted variants (note / Zenn / Qiita / dev.to / X thread / LinkedIn) plus atomic assets (quote cards, threads, snippets) without lossy translation.
-- `interview`: Reshape raw Q&A material — interview transcripts, podcast episodes, AMA threads, lightning talks — into a polished Q&A article that preserves voice while removing filler and re-sequencing for narrative arc.
-
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| `hook`, `opening`, `first paragraph too weak` | Hook redesign (5 patterns) | 3 hook variants + recommendation | `references/hook-design.md` |
-| `series`, `連載`, `エピソード`, `index article` | Series design / episode integration | Article + updated index + cross-links | `references/series-management.md` |
-| `tutorial`, `how to`, `手順`, `step-by-step` | Tutorial skeleton | Prereq → Steps → Gotchas → Next | `references/article-patterns.md` |
-| `retrospective`, `振り返り`, `postmortem`, `migration story` | Retrospective reshape | Context → Journey → Lessons article | `references/article-patterns.md` |
-| `listicle`, `N個の`, `top N`, `まとめ` | Listicle with through-line | Anchor theme + N items + synthesis | `references/article-patterns.md` |
-| `announcement`, `release`, `リリース`, `launch` | Announcement framing | Why-it-matters → What-changed → Demo → CTA | `references/article-patterns.md` |
-| `note`, `マガジン`, `目次` | note-optimized article | JP long-form + 目次 + タグ 3-5 | `references/platform-optimization.md` |
-| `Zenn`, `zenn`, `scrap` | Zenn-optimized article | emoji + topics max 5 + GitHub-linkable | `references/platform-optimization.md` |
-| `Qiita`, `qiita`, `LGTM` | Qiita-optimized article | Tags + "TL;DR" opening + code-heavy | `references/platform-optimization.md` |
-| `dev.to`, `cross-post`, `canonical URL` | dev.to / multi-platform | Cover image + liquid tags + canonical | `references/platform-optimization.md` |
-| `cross-post`, `multi-platform`, `両方に`, `canonical + variant` | Canonical draft + variants | One canonical + platform-adapted versions | `references/platform-optimization.md`, `references/handoffs.md` |
-| unclear article-writing request | Standard draft pattern (Problem-Tension-Insight-Solution-CTA) | Full article + comparison report | `references/article-patterns.md` |
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → match against **Signal Keywords → Recipe**; if still no match, activate `note` (default).
+- All Recipes run the same `FRAME → DRAFT → STRUCTURE → POLISH → PUBLISH` workflow — Recipe selection shapes Output / Behavior, not phase sequence.
 
 ## Article Structure
 

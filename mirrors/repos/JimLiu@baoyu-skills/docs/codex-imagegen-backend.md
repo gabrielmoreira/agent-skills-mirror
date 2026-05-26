@@ -35,13 +35,13 @@ codex login            # signs in with your OpenAI account (subscription)
 codex --version        # confirm >= 0.130
 ```
 
-`bun` is preferred for running the wrapper. On macOS:
+`bun` is required for running the wrapper. On macOS:
 
 ```bash
 brew install oven-sh/bun/bun
 ```
 
-If `bun` is missing, the shell entrypoint falls back to `npx -y bun`.
+If `bun` is not on `PATH`, fall back to `npx -y bun packages/baoyu-codex-imagegen/src/main.ts …`.
 
 ## Usage
 
@@ -49,19 +49,31 @@ If `bun` is missing, the shell entrypoint falls back to `npx -y bun`.
 
 ```bash
 # Inline prompt
-./scripts/codex-imagegen.sh \
+bun packages/baoyu-codex-imagegen/src/main.ts \
   --image /tmp/cat.png \
   --prompt "A friendly orange cat, watercolor"
 
 # Prompt from file
-./scripts/codex-imagegen.sh \
+bun packages/baoyu-codex-imagegen/src/main.ts \
   --image cover.png \
   --prompt-file prompts/01-cover.md \
   --aspect 16:9
 
 # Verbose mode for debugging
-./scripts/codex-imagegen.sh -v --image dog.png --prompt "A corgi" --aspect 1:1
+bun packages/baoyu-codex-imagegen/src/main.ts -v --image dog.png --prompt "A corgi" --aspect 1:1
 ```
+
+### Through `baoyu-image-gen`
+
+```bash
+${BUN_X} skills/baoyu-image-gen/scripts/main.ts \
+  --provider codex-cli \
+  --prompt "A friendly orange cat, watercolor" \
+  --image /tmp/cat.png \
+  --ar 1:1
+```
+
+The `codex-cli` provider spawns the bundled `codex-imagegen` TS entrypoint internally and surfaces its retry/cache machinery through baoyu-image-gen's standard CLI + batch flow.
 
 On success, stdout emits a single JSON line:
 
@@ -80,7 +92,7 @@ Image-generating skills (e.g., `baoyu-cover-image`, `baoyu-article-illustrator`)
 preferred_image_backend: codex-imagegen
 ```
 
-When the LLM runs the skill, it reads the preference and — guided by the `### codex-imagegen Backend` section in `CLAUDE.md` — invokes `scripts/codex-imagegen.sh`.
+When the LLM runs the skill, it reads the preference and — guided by the `### codex-imagegen Backend` section in `CLAUDE.md` — invokes `bun packages/baoyu-codex-imagegen/src/main.ts`.
 
 > **Note**: The integration is mediated by the LLM reading `CLAUDE.md`. It is not a hard binding. If a skill does not route to the backend automatically, mentioning it explicitly in the prompt works.
 
@@ -191,24 +203,26 @@ On failure, exit code is `1` and the JSON contains `error` and `error_kind`:
 ## Architecture
 
 ```
-scripts/codex-imagegen.sh        # thin bash entrypoint
-scripts/codex-imagegen/
-├── main.ts        # parseArgs → cache → lock → retry loop → emit JSON
-├── types.ts       # CliOptions, GenerateResult, GenError, ErrorKind
-├── spawn.ts       # spawn codex exec --json --sandbox danger-full-access
-├── parser.ts      # parse JSONL event stream → toolCalls, usage, thread_id
-├── validator.ts   # verify image_gen invocation + PNG magic + file size
-├── cache.ts       # cacheKey(sha256), FileLock, lookup/store
-├── logger.ts      # JsonLogger (verbose stderr + JSONL file)
-├── parser.test.ts
-├── cache.test.ts
-└── validator.test.ts
+packages/baoyu-codex-imagegen/
+├── src/
+│   ├── main.ts             # parseArgs → cache → lock → retry loop → emit JSON (`#!/usr/bin/env bun`)
+│   ├── types.ts            # CliOptions, GenerateResult, GenError, ErrorKind
+│   ├── spawn.ts            # spawn codex exec --json --sandbox danger-full-access
+│   ├── parser.ts           # parse JSONL event stream → toolCalls, usage, thread_id
+│   ├── validator.ts        # verify image_gen invocation + PNG magic + file size
+│   ├── cache.ts            # cacheKey(sha256), FileLock, lookup/store
+│   ├── logger.ts           # JsonLogger (verbose stderr + JSONL file)
+│   ├── parser.test.ts
+│   ├── cache.test.ts
+│   └── validator.test.ts
+├── package.json            # workspace package: `bin` → `src/main.ts`, no build step
+└── README.md
 ```
 
 Run tests:
 
 ```bash
-cd scripts/codex-imagegen && bun test
+cd packages/baoyu-codex-imagegen && bun test
 ```
 
 ## Internal Flow
@@ -216,7 +230,7 @@ cd scripts/codex-imagegen && bun test
 ```mermaid
 flowchart LR
     CC[Claude Code / any caller]
-    WRAPPER[scripts/codex-imagegen.sh]
+    WRAPPER[bun packages/baoyu-codex-imagegen/<br/>src/main.ts]
     CODEX["codex exec --json<br/>--sandbox danger-full-access"]
     AGENT[Codex agent]
     TOOL[image_gen built-in tool]
@@ -239,18 +253,20 @@ flowchart LR
 
 ## Design Decisions
 
-1. **Bash entrypoint + TypeScript implementation** — the shell wrapper picks the runtime (`bun` preferred, falling back to `npx -y bun`); TypeScript handles the orchestration, parsing, retry, cache, and logging. This mirrors the project's existing `scripts/*.mjs` and `skills/<skill>/scripts/main.ts` pattern.
+1. **Pure TypeScript entrypoint** — `src/main.ts` carries a `#!/usr/bin/env bun` shebang and is the sole entry. There is no shell shim: callers either invoke `bun src/main.ts …` directly, run the file as an executable (when `bun` is on `PATH`), or fall back to `npx -y bun src/main.ts …`. This matches the project's `skills/<skill>/scripts/main.ts` convention.
 2. **`--sandbox danger-full-access`** — necessary so the spawned agent can `cp`/`mv` the rendered PNG out of `$CODEX_HOME/generated_images/` to the user-specified path. Standard sandboxes block this.
 3. **Parse the JSONL event stream** — the final `agent_message` and intermediate `command_execution` events let the wrapper verify what actually happened (was `image_gen` called? did `cp` reach the right destination?), which is far more reliable than scraping freeform stdout.
-4. **Infrastructure, not a skill** — this backend is a CLI utility that skills route to via `preferred_image_backend`. It belongs in `scripts/`, not `skills/`, because it has no `SKILL.md` and is never loaded directly by an agent.
+4. **Shared package, not a skill** — this backend is a CLI utility that skills route to via `preferred_image_backend` and that `baoyu-image-gen --provider codex-cli` spawns internally. It lives under `packages/` alongside the other shared workspaces (`baoyu-md`, `baoyu-chrome-cdp`, `baoyu-fetch`) because it has no `SKILL.md` and is never loaded directly by an agent.
 5. **File lock instead of internal queue** — keeps the implementation small and works across multiple shell sessions or processes invoking the same wrapper concurrently.
 
 ## Related Files
 
 | File | Role |
 |------|------|
-| `scripts/codex-imagegen.sh` | CLI entrypoint |
-| `scripts/codex-imagegen/` | TypeScript implementation |
+| `packages/baoyu-codex-imagegen/src/main.ts` | TypeScript CLI entrypoint (`#!/usr/bin/env bun`) |
+| `packages/baoyu-codex-imagegen/src/` | TypeScript implementation |
+| `packages/baoyu-codex-imagegen/package.json` | Workspace manifest |
+| `skills/baoyu-image-gen/scripts/providers/codex-cli.ts` | Provider adapter that lets `baoyu-image-gen --provider codex-cli` spawn this wrapper |
 | `docs/codex-imagegen-backend.md` | This document |
 | `CLAUDE.md` | Tells LLMs how to invoke this backend |
 | `.github/workflows/codex-imagegen-tests.yml` | CI unit tests |

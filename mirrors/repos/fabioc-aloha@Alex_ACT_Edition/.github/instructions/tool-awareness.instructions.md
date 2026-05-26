@@ -48,7 +48,7 @@ If picker noise is the problem, the lever is the user-level setting:
 **Never strip the SKILL.md `description` to declutter the picker.** The `description` field has three consumers and the picker is the least important of them:
 
 1. **Agent skill discovery (primary)** — every session loads SKILL.md descriptions into the `<skills>` block; this is how the parent agent decides whether to invoke the skill
-2. **Brain QA enforcement** — `scripts/brain-qa.cjs` hard-fails on missing/empty description
+2. **Brain QA enforcement** — where a brain-qa script exists (Supervisor ships one as `scripts/brain-qa.cjs`), it hard-fails on missing/empty description
 3. **Chat picker tooltip** — the surface visible to humans
 
 Stripping (1) and (2) to fix (3) is a Type III error (right cost, wrong problem). The setting is the right scope.

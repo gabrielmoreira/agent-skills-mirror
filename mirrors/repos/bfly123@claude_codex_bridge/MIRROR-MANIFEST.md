@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bfly123/claude_codex_bridge` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `bfly123/claude_codex_bridge` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bfly123/claude_codex_bridge` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,17 +61,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`dev_tools/skills/ccb-github/SKILL.md`](dev_tools/skills/ccb-github/SKILL.md) |
 | 2 | ✓ | [`inherit_skills/claude_skills/ask/SKILL.md`](inherit_skills/claude_skills/ask/SKILL.md) |
-| 3 | ✓ | [`inherit_skills/claude_skills/ccb-config/SKILL.md`](inherit_skills/claude_skills/ccb-config/SKILL.md) |
-| 4 | ✓ | [`inherit_skills/codex_skills/ask/SKILL.md`](inherit_skills/codex_skills/ask/SKILL.md) |
-| 5 | ✓ | [`inherit_skills/codex_skills/ccb-config/SKILL.md`](inherit_skills/codex_skills/ccb-config/SKILL.md) |
-| 6 | ✓ | [`inherit_skills/droid_skills/ask/SKILL.md`](inherit_skills/droid_skills/ask/SKILL.md) |
-| 7 | ✓ | [`mcp/ccb-delegation/server_runtime_io.py`](mcp/ccb-delegation/server_runtime_io.py) |
-| 8 | ✓ | [`mcp/ccb-delegation/server_runtime_protocol.py`](mcp/ccb-delegation/server_runtime_protocol.py) |
-| 9 | ✓ | [`mcp/ccb-delegation/server_runtime_schema.py`](mcp/ccb-delegation/server_runtime_schema.py) |
-| 10 | ✓ | [`mcp/ccb-delegation/server_runtime_tools.py`](mcp/ccb-delegation/server_runtime_tools.py) |
-| 11 | ✓ | [`mcp/ccb-delegation/server.py`](mcp/ccb-delegation/server.py) |
-| 12 | ✓ | [`useful_tools/claude_skills/plan-tree/SKILL.md`](useful_tools/claude_skills/plan-tree/SKILL.md) |
-| 13 | ✓ | [`useful_tools/codex_skills/plan-tree/SKILL.md`](useful_tools/codex_skills/plan-tree/SKILL.md) |
+| 3 | ✓ | [`inherit_skills/claude_skills/ccb-clear/SKILL.md`](inherit_skills/claude_skills/ccb-clear/SKILL.md) |
+| 4 | ✓ | [`inherit_skills/claude_skills/ccb-config/SKILL.md`](inherit_skills/claude_skills/ccb-config/SKILL.md) |
+| 5 | ✓ | [`inherit_skills/codex_skills/ask/SKILL.md`](inherit_skills/codex_skills/ask/SKILL.md) |
+| 6 | ✓ | [`inherit_skills/codex_skills/ccb-clear/SKILL.md`](inherit_skills/codex_skills/ccb-clear/SKILL.md) |
+| 7 | ✓ | [`inherit_skills/codex_skills/ccb-config/SKILL.md`](inherit_skills/codex_skills/ccb-config/SKILL.md) |
+| 8 | ✓ | [`inherit_skills/droid_skills/ask/SKILL.md`](inherit_skills/droid_skills/ask/SKILL.md) |
+| 9 | ✓ | [`mcp/ccb-delegation/server_runtime_io.py`](mcp/ccb-delegation/server_runtime_io.py) |
+| 10 | ✓ | [`mcp/ccb-delegation/server_runtime_protocol.py`](mcp/ccb-delegation/server_runtime_protocol.py) |
+| 11 | ✓ | [`mcp/ccb-delegation/server_runtime_schema.py`](mcp/ccb-delegation/server_runtime_schema.py) |
+| 12 | ✓ | [`mcp/ccb-delegation/server_runtime_tools.py`](mcp/ccb-delegation/server_runtime_tools.py) |
+| 13 | ✓ | [`mcp/ccb-delegation/server.py`](mcp/ccb-delegation/server.py) |
+| 14 | ✓ | [`useful_tools/claude_skills/plan-tree/SKILL.md`](useful_tools/claude_skills/plan-tree/SKILL.md) |
+| 15 | ✓ | [`useful_tools/codex_skills/plan-tree/SKILL.md`](useful_tools/codex_skills/plan-tree/SKILL.md) |
 
 ---
 

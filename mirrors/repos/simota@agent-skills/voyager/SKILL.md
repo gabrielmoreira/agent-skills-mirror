@@ -58,7 +58,7 @@ Browser-based E2E specialist for critical user journeys, cross-browser validatio
 ## Trigger Guidance
 
 - Use Voyager for browser-level journey verification, auth/session coverage, visual regression, accessibility checks, cloud-browser runs, or CI-integrated E2E automation.
-- **Native mobile E2E**: Use Voyager when the artifact is a shipping `.ipa` / `.apk` / `.aab` (or React Native bundle) and reusable test automation is needed — choose Detox (RN grey-box, fastest feedback; New Architecture officially supported on RN 0.77-0.84 as of 2026-04), Maestro (cross-platform YAML DSL, lowest authoring cost; Studio + MaestroGPT for AI-assisted flow authoring and AI test analysis), Appium 3.x (widest device matrix, W3C-only, decoupled drivers/plugins, `appium:` capability prefix mandatory, Node 20.19+ — released 2025-08-07), XCUITest (iOS-only deep integration; still required for UI automation under Xcode 26 / Swift Testing 6.2), or Espresso + Compose UI Test (Android-only; Robolectric 4.16 covers Android 16 / SDK 36 Baklava on JDK 21). Read `references/mobile-e2e-testing.md` first.
+- **Native mobile E2E**: Use Voyager when the artifact is a shipping `.ipa` / `.apk` / `.aab` (or React Native bundle) and reusable test automation is needed — choose Detox (RN grey-box, fastest feedback; New Architecture officially supported on RN 0.77-0.84 as of 2026-04), Maestro (cross-platform YAML DSL, lowest authoring cost; Studio + MaestroGPT for AI-assisted flow authoring and AI test analysis), Appium 3.x (widest device matrix, W3C-only, decoupled drivers/plugins, `appium:` capability prefix mandatory, Node 20.19+ — released 2025-08-07), XCUITest (iOS-only deep integration; still required for UI automation under Xcode 26 / Swift Testing 6.2), or Espresso + Compose UI Test (Android-only; Robolectric 4.16 covers Android 16 / SDK 36 Baklava on JDK 21). Read `references/mobile-testing.md` first.
 - **Remote device-farm orchestration**: Use Voyager when ≥3 device combos are required, when the PR-blocking smoke must run on a real device, or when remote WebDriver / Appium server endpoints are involved — route to BrowserStack App Automate (App Percy bundled visual AI), Sauce Labs Real Device Cloud, AWS Device Farm, Firebase Test Lab (Android-only, cheap, actively maintained as of 2026-04 — *not* the same as Firebase Studio which is being shut down 2026-03-19 → 2027-03-22), or LambdaTest HyperExecute (rebranded TestMu AI 2026-01). Tier the matrix: local sim/emu for dev loop → 1 farm for PR smoke → real-device lab for release gate. Read `references/cloud-testing.md` for cloud session control, parallel session caps, tunnels, and credential management.
 - **Adaptive / foldable E2E**: When the product targets foldables (Galaxy Z Fold, Pixel Fold), tablets with multitasking, or window-size-aware layouts, exercise the Compose Material 3 `WindowSizeClass` breakpoints (compact / medium / expanded, plus large / extra-large) and iPadOS Stage Manager / Split View postures explicitly. Add at least one fold/unfold posture transition test to the release-gate tier.
 - **Privacy-aware E2E**: When the app must comply with Apple Privacy Manifest enforcement (required-reason APIs for disk space, active keyboard, user defaults, file timestamp; tracking-domain declarations) — since 2024-05-01 for new submissions and 2025-02-12 for new privacy-impacting SDKs — verify that test scaffolding (XCUITest helpers, Appium plugins, mock SDKs) carries its own `PrivacyInfo.xcprivacy` and does not break the host app's manifest aggregation.
@@ -146,12 +146,14 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 `PLAN → AUTOMATE → STABILIZE → SCALE`
 
-| Phase | Focus | Required checks | Read |
-|-------|-------|-----------------|------|
-| PLAN | Choose framework, scope, and environment | Critical journeys, tags, test-data strategy, environment plan | `references/framework-selection.md` |
-| AUTOMATE | Implement reusable tests | Page Objects, fixtures/helpers, stable selectors, deterministic assertions | `references/playwright-patterns.md` |
-| STABILIZE | Remove flake and false confidence | Wait strategy, auth reuse, data isolation, retry evidence, console/a11y checks | `references/debug-monitoring.md` |
-| SCALE | Operationalize in CI/CD | Sharding, artifacts, reports, browser/device matrix, failure diagnostics | `references/ci-reporting.md` |
+| Phase | Focus | Required checks |
+|-------|-------|-----------------|
+| PLAN | Choose framework, scope, and environment | Critical journeys, tags, test-data strategy, environment plan |
+| AUTOMATE | Implement reusable tests | Page Objects, fixtures/helpers, stable selectors, deterministic assertions |
+| STABILIZE | Remove flake and false confidence | Wait strategy, auth reuse, data isolation, retry evidence, console/a11y checks |
+| SCALE | Operationalize in CI/CD | Sharding, artifacts, reports, browser/device matrix, failure diagnostics |
+
+See `## Reference Map` below for per-phase reading guidance.
 
 ## Collaboration
 
@@ -199,7 +201,7 @@ Voyager receives test escalations, feature specs, and acceptance criteria from u
 | Accessibility | `a11y` | | Accessibility automated testing | `references/visual-a11y-testing.md` |
 | Visual Regression | `visual` | | Visual regression testing | `references/visual-a11y-testing.md` |
 | API E2E | `api` | | User-journey E2E through an API-only interface (no UI): HTTP call → backend state → downstream API validation chain | `references/api-e2e-testing.md` |
-| Mobile E2E | `mobile` | | E2E testing for shipped mobile apps (Detox / Maestro / Appium / device farm) | `references/mobile-e2e-testing.md` |
+| Mobile E2E | `mobile` | | E2E testing for shipped mobile apps (Detox / Maestro / Appium / device farm) | `references/mobile-testing.md` |
 | Component Test | `component` | | Component tests executed in a real browser (Playwright CT / Cypress CT / Storybook Interactions) | `references/component-testing.md` |
 
 ## Subcommand Dispatch
@@ -217,38 +219,37 @@ Behavior notes per Recipe:
 - `mobile`: E2E for a shipped mobile app (not a throwaway PoC). Pick Detox for React Native (grey-box, fastest feedback on RN internals), Maestro for cross-platform YAML DSL (lowest authoring cost, best for smoke flows), Appium for cross-platform native + hybrid (widest device matrix), and route the matrix through a device farm (BrowserStack / Sauce Labs / AWS Device Farm) once ≥3 device combos are required. Distinct from Forge `mobile` (throwaway PoC) and Native (production build) — this recipe is the test harness around an already-shipped app. Real-device flake dominates here; quarantine device-specific noise separately from logic flake.
 - `component`: Component tests executed in a **real browser** with real DOM, real events, and real CSS — distinct from Radar `unit` which runs in Node/jsdom. Prefer Playwright Component Testing for Playwright-native stacks, Cypress Component Testing when the project already uses Cypress, and Storybook Interactions (`play` function + `@storybook/test`) when stories are the source of truth. If Showcase owns the Storybook stories, this recipe executes tests against those stories rather than duplicating the mount setup. Scope each test to a single component or composition — page-level assertions belong in `playwright`.
 
-## Output Routing
+### Signal Keywords → Recipe
 
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| `playwright`, `e2e`, `browser test`, `journey test` | Playwright E2E workflow | Test suite with POM | `references/playwright-patterns.md` |
-| `cypress`, `cy.` | Cypress workflow | Cypress test suite | `references/cypress-guide.md` |
-| `visual regression`, `screenshot`, `pixel diff` | Visual regression testing | Screenshot baseline + diff config | `references/visual-a11y-testing.md` |
-| `accessibility`, `a11y`, `axe`, `WCAG` | A11y E2E testing | axe-core integration + WCAG report | `references/visual-a11y-testing.md` |
-| `auth flow`, `login test`, `session` | Auth flow E2E testing | storageState setup + auth fixtures | `references/playwright-patterns.md` |
-| `CI`, `pipeline`, `sharding`, `parallel` | CI integration workflow | Sharding config + artifact upload | `references/ci-reporting.md` |
-| `flaky`, `flake`, `retry`, `instability` | Flake diagnosis workflow | Retry evidence + root cause report | `references/debug-monitoring.md` |
-| `mobile emulation`, `mobile viewport`, `responsive E2E`, `PWA mobile` | Mobile-browser emulation (Playwright devices) | Viewport + UA emulation config | `references/mobile-native-testing.md` |
-| `native mobile E2E`, `appium`, `detox`, `maestro`, `xcuitest`, `espresso`, `.ipa`, `.apk`, `.aab` | Native mobile E2E harness | Framework choice + Page Object + accessibility-id locators | `references/mobile-e2e-testing.md` |
-| `device farm`, `browserstack app automate`, `app percy`, `sauce labs real device`, `aws device farm`, `firebase test lab`, `lambdatest`, `hyperexecute`, `testmu ai`, `real device`, `parallel session`, `cloud session`, `remote webdriver`, `appium server`, `appium 3`, `webdriver bidi` | Remote device-farm orchestration | Tiered matrix (PR / nightly / release) + cloud session config + tunnels + Appium 3.x capability handling | `references/cloud-testing.md`, `references/mobile-e2e-testing.md` |
-| `foldable`, `galaxy z fold`, `pixel fold`, `window size class`, `compact medium expanded`, `stage manager`, `split view`, `multi-window`, `posture` | Adaptive / foldable E2E | Window-size-class breakpoint matrix + posture transition tests | `references/mobile-native-testing.md`, `references/mobile-e2e-testing.md` |
-| `privacy manifest`, `PrivacyInfo.xcprivacy`, `required reason api`, `tracking domain`, `privacy sandbox`, `data access auditing` | Privacy-aware E2E | Manifest-aware test scaffolding + tracking-domain leak verification | `references/mobile-native-testing.md` |
-| `applitools`, `app percy`, `testrigor`, `mabl`, `native visual ai`, `self-healing mobile`, `vision ai`, `maestro ai` | Native visual AI / self-healing | Tool selection (Applitools Eyes / App Percy / testRigor / Mabl / MaestroGPT) + review checklist | `references/ai-powered-e2e-testing.md`, `references/mobile-e2e-testing.md` |
-| `container`, `testcontainers`, `docker test` | Container-based testing | Testcontainers setup + dynamic port config | `references/container-testing.md` |
-| `web component`, `shadow DOM`, `lit`, `stencil` | Web Component testing | Shadow DOM traversal + Playwright locators | `references/web-component-testing.md` |
-| `AI test`, `MCP`, `self-healing`, `codegen`, `playwright cli` | AI-powered test lifecycle | Playwright MCP or @playwright/cli (prefer CLI for token efficiency) + Planner/Generator/Healer config | `references/ai-powered-e2e-testing.md` |
-| `screencast`, `video receipt`, `visual proof`, `recording` | Agentic screencast recording | page.screencast setup + action annotations + overlay config | `references/ai-powered-e2e-testing.md` |
-| `API test`, `request context`, `backend verify` | API testing via Playwright | APIRequestContext setup + schema validation | `references/playwright-patterns.md` |
-| complex multi-agent task | Nexus-routed execution | Structured handoff | `_common/BOUNDARIES.md` |
-| unclear request | Clarify scope and route | Scoped analysis | `references/framework-selection.md` |
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply. See `## Reference Map` for the file pointer associated with each Recipe.
 
-Routing rules:
+| Keywords | Recipe |
+|----------|--------|
+| `playwright`, `e2e`, `browser test`, `journey test` | `playwright` |
+| `cypress`, `cy.` | `playwright` (Cypress branch — read `cypress-guide.md`) |
+| `visual regression`, `screenshot`, `pixel diff` | `visual` |
+| `accessibility`, `a11y`, `axe`, `WCAG` | `a11y` |
+| `auth flow`, `login test`, `session` | `auth` |
+| `CI`, `pipeline`, `sharding`, `parallel` | `playwright` (CI scope — read `ci-reporting.md`) |
+| `flaky`, `flake`, `retry`, `instability` | `playwright` (flake diagnosis — read `debug-monitoring.md`) |
+| `mobile emulation`, `mobile viewport`, `responsive E2E`, `PWA mobile` | `playwright` (mobile emulation — read `mobile-testing.md`) |
+| `native mobile E2E`, `appium`, `detox`, `maestro`, `xcuitest`, `espresso`, `.ipa`, `.apk`, `.aab` | `mobile` |
+| `device farm`, `browserstack app automate`, `app percy`, `sauce labs real device`, `aws device farm`, `firebase test lab`, `lambdatest`, `hyperexecute`, `testmu ai`, `real device`, `parallel session`, `cloud session`, `remote webdriver`, `appium server`, `appium 3`, `webdriver bidi` | `mobile` (device-farm tier — read `cloud-testing.md` + `mobile-testing.md`) |
+| `foldable`, `galaxy z fold`, `pixel fold`, `window size class`, `compact medium expanded`, `stage manager`, `split view`, `multi-window`, `posture` | `mobile` (adaptive/foldable — read `mobile-testing.md`) |
+| `privacy manifest`, `PrivacyInfo.xcprivacy`, `required reason api`, `tracking domain`, `privacy sandbox`, `data access auditing` | `mobile` (privacy-aware — read `mobile-testing.md`) |
+| `applitools`, `app percy`, `testrigor`, `mabl`, `native visual ai`, `self-healing mobile`, `vision ai`, `maestro ai` | `visual` / `mobile` (native visual AI — read `ai-powered-e2e-testing.md` + `mobile-testing.md`) |
+| `container`, `testcontainers`, `docker test` | `playwright` (container — read `container-testing.md`) |
+| `web component`, `shadow DOM`, `lit`, `stencil` | `component` (read `web-component-testing.md`) |
+| `AI test`, `MCP`, `self-healing`, `codegen`, `playwright cli` | `playwright` (AI lifecycle — read `ai-powered-e2e-testing.md`) |
+| `screencast`, `video receipt`, `visual proof`, `recording` | `playwright` (screencast — read `ai-powered-e2e-testing.md`) |
+| `API test`, `request context`, `backend verify` | `api` |
+| complex multi-agent task | Hand off to Nexus per `_common/BOUNDARIES.md` |
+| unclear request | Default `playwright`; clarify via `framework-selection.md` |
 
-- If the request involves a fresh web app or standard browser E2E work, use `references/playwright-patterns.md` and keep Playwright as the default.
-- If the project already uses Cypress, use `references/cypress-guide.md`.
-- If framework choice is unclear, read `references/framework-selection.md` before implementation.
-- If real-device native mobile behavior is required (shipping `.ipa`/`.apk`/`.aab`, or RN bundle), start at `references/mobile-e2e-testing.md` for framework selection (Detox/Maestro/Appium/XCUITest/Espresso); use `references/mobile-native-testing.md` for WebdriverIO + Appium configuration patterns and Playwright mobile-emulation alternatives.
-- If a device-farm matrix or remote WebDriver/Appium session is required (BrowserStack / Sauce Labs / AWS Device Farm / Firebase Test Lab), read `references/cloud-testing.md` for cloud session config, tunnels, parallel session caps, and cost-tier strategy; cross-reference `references/mobile-e2e-testing.md` for the device-farm tier matrix (PR / nightly / release gate).
+### Handoff Thresholds
+
+Operational thresholds that trigger a recipe choice or a cross-agent handoff (distinct from per-recipe behavior, which is documented under `## Subcommand Dispatch`):
+
 - For shipped mobile apps: never run the full device matrix on PRs — keep PR gate on 1 sim + 1 emu (smoke only), push the matrix to nightly, gate releases on real devices for oldest + newest supported OS per platform.
 - If E2E flake rate exceeds 10%, prioritize flake stabilization before adding new tests.
 - If suite duration exceeds 10 min, investigate sharding, parallelization, or test pruning before scaling further.
@@ -259,7 +260,6 @@ Routing rules:
 - If load, chaos, or resilience testing is required, hand off to `Siege`.
 - If the request is interactive browser operation, not reusable E2E automation, hand off to `Navigator`.
 - If the request matches another agent's primary role, route to that agent per `_common/BOUNDARIES.md`.
-- Always read relevant `references/` files before producing output.
 
 ## Output Requirements
 
@@ -287,8 +287,7 @@ Routing rules:
 | [debug-monitoring.md](references/debug-monitoring.md) | You are diagnosing flake, console issues, traces, HARs, or retries |
 | [edge-cases-i18n.md](references/edge-cases-i18n.md) | Timezone, locale, cookie, storage, offline, or network-condition cases matter |
 | [cloud-testing.md](references/cloud-testing.md) | BrowserStack, Sauce Labs, LambdaTest, AWS Device Farm, or Firebase Test Lab cloud sessions are involved — covers cloud browser matrices, App Automate / Real Device Cloud config, tunnels, parallel session caps, cost-tier strategy, credential management |
-| [mobile-e2e-testing.md](references/mobile-e2e-testing.md) | The artifact is a shipping `.ipa`/`.apk`/`.aab` (or RN bundle) — covers framework selection (Detox/Maestro/Appium/XCUITest/Espresso), mobile Page Object, accessibility-id locators, two-axis flake taxonomy (logic vs device), device-farm tier matrix (PR / nightly / release gate). **Start here for native mobile E2E.** |
-| [mobile-native-testing.md](references/mobile-native-testing.md) | You need concrete WebdriverIO + Appium configuration patterns, real-device session capabilities, Playwright mobile-emulation alternatives, or mobile-specific test patterns (rotation, push notification, airplane-mode toggle). Read after `mobile-e2e-testing.md` decides framework. |
+| [mobile-testing.md](references/mobile-testing.md) | The artifact is a shipping `.ipa`/`.apk`/`.aab` (or RN bundle) — covers framework selection (Detox/Maestro/Appium/XCUITest/Espresso), mobile Page Object, accessibility-id locators, two-axis flake taxonomy (logic vs device), device-farm tier matrix (PR / nightly / release gate), concrete WebdriverIO + Appium configuration patterns, real-device session capabilities, Playwright mobile-emulation alternatives, and mobile-specific test patterns (rotation, push notification, airplane-mode toggle). **Start here for native mobile E2E.** |
 | [e2e-anti-patterns.md](references/e2e-anti-patterns.md) | You need suite architecture, anti-pattern checks, or flaky-prevention thresholds |
 | [ai-powered-e2e-testing.md](references/ai-powered-e2e-testing.md) | AI-assisted planning, generation, healing, or cost/risk tradeoffs are in scope |
 | [container-testing.md](references/container-testing.md) | Container-based test environments, Testcontainers, or Docker-integrated E2E are required |

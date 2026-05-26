@@ -146,45 +146,48 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| Generate Persona | `generate` | ✓ | Persona generation (CONJURE) — create new personas from sources | `references/generation-workflows.md` |
-| Registry | `registry` | | Registry management — lifecycle check, audit, archive | `references/registry-spec.md` |
-| Evolve | `evolve` | | Data-driven evolution — drift updates from Trace/Voice/Pulse | `references/evolution-engine.md` |
-| Distribute | `distribute` | | Packaging for other agents (Echo/Spark/Retain, etc.) | `references/distribution-adapters.md` |
-| Archetype Mapping | `archetype` | | Map personas to Jung 12 brand archetypes + Jobs-To-Be-Done archetype model | `references/archetype-mapping.md` |
-| Segmentation | `segment` | | RFM scoring, behavioral cohort, psychographic clustering for evidence-grounded personas | `references/segmentation-methods.md` |
-| Bias Audit | `bias-audit` | | Representation bias detection, intersectionality coverage, ethical-persona checklist | `references/persona-bias-audit.md` |
+> **Recipes represent task shape; Operating Modes represent execution state. They are orthogonal and combine independently.**
+
+Single source of truth for Recipe definitions. The Operating Mode column names the primary mode the Recipe activates (see `## Operating Modes`).
+
+| Recipe | Subcommand | Default? | Operating Mode | When to Use | Read First |
+|--------|-----------|---------|----------------|-------------|------------|
+| Generate Persona | `generate` | ✓ | CONJURE | Persona generation — create new personas from sources | `references/generation-workflows.md` |
+| Registry | `registry` | | AUDIT | Registry management — lifecycle check, audit, archive (freshness/duplication/coverage/Echo-compat) | `references/registry-spec.md` |
+| Evolve | `evolve` | | EVOLVE | Data-driven evolution — drift updates from Trace/Voice/Pulse; confirm ≥5% trigger → version bump → evolution log | `references/evolution-engine.md` |
+| Fuse | `fuse` | | FUSE | Merge upstream evidence into existing personas; produce diff-aware summary | `references/evolution-engine.md` |
+| Distribute | `distribute` | | DISTRIBUTE | Per-target-agent adapter conversion (Echo/Spark/Retain/Compete/Accord) → delivery package | `references/distribution-adapters.md` |
+| Speak | `speak` | | SPEAK | Persona voice output (transcript + optional audio) with engine selection and fallback | `references/speak-engine.md` |
+| Retire | `retire` | | RETIRE | Persona retirement assessment + archive + downstream notification | `references/persona-governance.md` |
+| Archetype Mapping | `archetype` | | CONJURE/AUDIT | Tag personas with Jung 12 brand archetypes + JTBD-aligned archetype (Functional/Emotional/Social); validate brand-archetype consistency | `references/archetype-mapping.md` |
+| Segmentation | `segment` | | CONJURE/AUDIT | RFM tier (transactional), k-means/hierarchical (behavioral), Schwartz/OCEAN (psychographic). Persona must trace to a segment with sample size ≥30 | `references/segmentation-methods.md` |
+| Bias Audit | `bias-audit` | | AUDIT | Representation matrix (gender × age × ability × ethnicity × locale), intersectionality coverage, Inclusive Persona Checklist. Flag stereotyping; require evidence citation per attribute | `references/persona-bias-audit.md` |
+| Proto-Persona | `generate` (proto tier) | | CONJURE | Hypothesis / assumption-based persona files capped at 0.50 confidence | `references/generation-workflows.md` |
+| Predictive Evolution | `evolve` (predictive) **[DEFERRED — requires Trace pipeline]** | | EVOLVE | Leading-indicator drift prediction → predicted drift report + recommended changes | `references/evolution-engine.md` |
+
+### Signal Keywords → Recipe / Mode
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply.
+
+| Keywords | Recipe / Mode |
+|----------|---------------|
+| `generate`, `create`, `conjure`, `persona from` | `generate` (CONJURE) |
+| `merge`, `integrate`, `fuse`, `new evidence` | `fuse` (FUSE) |
+| `evolve`, `update`, `drift`, `refresh` | `evolve` (EVOLVE) |
+| `audit`, `check`, `freshness`, `coverage` | `registry` (AUDIT) |
+| `distribute`, `deliver`, `package`, `for echo` | `distribute` (DISTRIBUTE) |
+| `speak`, `voice`, `TTS`, `audio` | `speak` (SPEAK) |
+| `retire`, `sunset`, `archive persona`, `zombie` | `retire` (RETIRE) |
+| `proto-persona`, `hypothesis`, `assumption-based` | `generate` (CONJURE, proto tier) |
+| `predict`, `leading indicators`, `proactive evolution` | `evolve` (EVOLVE, predictive) **[DEFERRED]** |
+| unclear persona request | `generate` (CONJURE) |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" file at the initial step.
 - Otherwise → default Recipe (`generate` = Generate Persona). Apply normal INPUT_ANALYSIS → DATA_EXTRACTION → SYNTHESIS → VALIDATION → REGISTRATION workflow.
-
-Behavior notes per Recipe:
-- `generate`: CONJURE mode. Source detection → schema-compliant persona generation → registry.yaml registration.
-- `registry`: AUDIT mode. Evaluate and report freshness, duplication, coverage, and Echo compatibility.
-- `evolve`: EVOLVE mode. Confirm deviation ≥5% trigger → bump version → record evolution log.
-- `distribute`: DISTRIBUTE mode. Per-target-agent adapter conversion → generate delivery package.
-- `archetype`: Tag each persona with primary Jung archetype (Hero/Sage/Lover/Caregiver/...) and JTBD-aligned archetype (Functional/Emotional/Social). Validate brand-archetype consistency across persona set.
-- `segment`: Compute RFM tier (Recency / Frequency / Monetary) for transactional, k-means or hierarchical clustering for behavioral, and psychographic factors (Schwartz values, OCEAN). Persona must trace to a segment with sample size ≥30.
-- `bias-audit`: Run representation matrix (gender × age × ability × ethnicity × locale), intersectionality coverage check, and the WCAG-style "Inclusive Persona Checklist". Flag stereotyping; require evidence citation per attribute.
-
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| `generate`, `create`, `conjure`, `persona from` | CONJURE mode | New persona files + registry | `references/generation-workflows.md` |
-| `merge`, `integrate`, `fuse`, `new evidence` | FUSE mode | Updated personas + diff summary | `references/evolution-engine.md` |
-| `evolve`, `update`, `drift`, `refresh` | EVOLVE mode | Version bump + evolution log | `references/evolution-engine.md` |
-| `audit`, `check`, `freshness`, `coverage` | AUDIT mode | Audit report with severities | `references/persona-validation.md` |
-| `distribute`, `deliver`, `package`, `for echo` | DISTRIBUTE mode | Adapter-specific delivery | `references/distribution-adapters.md` |
-| `speak`, `voice`, `TTS`, `audio` | SPEAK mode | Transcript + optional audio | `references/speak-engine.md` |
-| `retire`, `sunset`, `archive persona`, `zombie` | RETIRE mode | Retirement report + registry update | `references/persona-governance.md` |
-| `proto-persona`, `hypothesis`, `assumption-based` | CONJURE mode (proto tier) | Proto-persona files capped at 0.50 confidence | `references/generation-workflows.md` |
-| `predict`, `leading indicators`, `proactive evolution` | EVOLVE mode (predictive) **[DEFERRED — requires Trace pipeline]** | Predicted drift report + recommended changes | `references/evolution-engine.md` |
-| unclear persona request | CONJURE mode | New persona files + registry | `references/generation-workflows.md` |
+- Operating Mode (CONJURE / FUSE / EVOLVE / AUDIT / DISTRIBUTE / SPEAK / RETIRE) is applied after Recipe selection per the Recipes table.
 
 ## Critical Decision Rules
 

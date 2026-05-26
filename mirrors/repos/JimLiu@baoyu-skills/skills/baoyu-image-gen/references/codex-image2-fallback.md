@@ -19,7 +19,7 @@ This is expected. The `openai` provider uses the public OpenAI Images API and ne
 2. If it fails only because `OPENAI_API_KEY` is missing, do not leave the user waiting.
 3. Prefer a Codex/native raster backend in this order:
    - Codex runtime native `imagegen` skill/tool, if available.
-   - Repo-level `scripts/codex-imagegen.sh`, if `codex` CLI is installed/logged in and the calling skill supports the wrapper.
+   - `baoyu-image-gen --provider codex-cli` (preferred — wraps the bundled `scripts/codex-imagegen/main.ts`; the underlying repo-level package lives at `packages/baoyu-codex-imagegen/src/main.ts` for standalone callers), if `codex` CLI is installed/logged in.
    - Hermes native `image_generate`, if available.
 4. Be transparent about reference-image behavior:
    - If the fallback backend accepts references, pass the reference images.

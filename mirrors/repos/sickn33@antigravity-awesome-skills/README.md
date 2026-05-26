@@ -481,7 +481,6 @@ We officially thank the following contributors for their help in making this rep
 - [@Enreign](https://github.com/Enreign)
 - [@sohamganatra](https://github.com/sohamganatra)
 - [@Silverov](https://github.com/Silverov)
-- [@conspirafi](https://github.com/conspirafi)
 - [@shubhamdevx](https://github.com/shubhamdevx)
 - [@ronanguilloux](https://github.com/ronanguilloux)
 - [@sraphaz](https://github.com/sraphaz)

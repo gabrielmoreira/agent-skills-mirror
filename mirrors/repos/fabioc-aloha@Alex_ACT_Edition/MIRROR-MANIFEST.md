@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `fabioc-aloha/Alex_ACT_Edition` — 26 default patterns, 0 followed patterns, 75 file(s) materialized.
+Mirror of `fabioc-aloha/Alex_ACT_Edition` — 26 default patterns, 0 followed patterns, 76 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `fabioc-aloha/Alex_ACT_Edition` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 75 |
+| Files         | 76 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -97,43 +97,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 36 | ✓ | [`.github/prompts/audit-brain.prompt.md`](.github/prompts/audit-brain.prompt.md) |
 | 37 | ✓ | [`.github/prompts/banner.prompt.md`](.github/prompts/banner.prompt.md) |
 | 38 | ✓ | [`.github/prompts/checkin.prompt.md`](.github/prompts/checkin.prompt.md) |
-| 39 | ✓ | [`.github/prompts/convert.prompt.md`](.github/prompts/convert.prompt.md) |
-| 40 | ✓ | [`.github/prompts/critical-thinking.prompt.md`](.github/prompts/critical-thinking.prompt.md) |
-| 41 | ✓ | [`.github/prompts/feedback.prompt.md`](.github/prompts/feedback.prompt.md) |
-| 42 | ✓ | [`.github/prompts/format-markdown.prompt.md`](.github/prompts/format-markdown.prompt.md) |
-| 43 | ✓ | [`.github/prompts/initialize.prompt.md`](.github/prompts/initialize.prompt.md) |
-| 44 | ✓ | [`.github/prompts/lint-markdown.prompt.md`](.github/prompts/lint-markdown.prompt.md) |
-| 45 | ✓ | [`.github/prompts/mall-contribute.prompt.md`](.github/prompts/mall-contribute.prompt.md) |
-| 46 | ✓ | [`.github/prompts/mall-install.prompt.md`](.github/prompts/mall-install.prompt.md) |
-| 47 | ✓ | [`.github/prompts/mall-refresh.prompt.md`](.github/prompts/mall-refresh.prompt.md) |
-| 48 | ✓ | [`.github/prompts/mall-search.prompt.md`](.github/prompts/mall-search.prompt.md) |
-| 49 | ✓ | [`.github/prompts/meditate.prompt.md`](.github/prompts/meditate.prompt.md) |
-| 50 | ✓ | [`.github/prompts/migrate-from-alex-master.prompt.md`](.github/prompts/migrate-from-alex-master.prompt.md) |
-| 51 | ✓ | [`.github/prompts/note.prompt.md`](.github/prompts/note.prompt.md) |
-| 52 | ✓ | [`.github/prompts/problem-framing-audit.prompt.md`](.github/prompts/problem-framing-audit.prompt.md) |
-| 53 | ✓ | [`.github/prompts/save-session-note.prompt.md`](.github/prompts/save-session-note.prompt.md) |
-| 54 | ✓ | [`.github/prompts/status.prompt.md`](.github/prompts/status.prompt.md) |
-| 55 | ✓ | [`.github/prompts/upgrade.prompt.md`](.github/prompts/upgrade.prompt.md) |
-| 56 | ✓ | [`.github/prompts/welcome-verify.prompt.md`](.github/prompts/welcome-verify.prompt.md) |
-| 57 | ✓ | [`.github/prompts/welcome.prompt.md`](.github/prompts/welcome.prompt.md) |
-| 58 | ✓ | [`.github/skills/academic-paper-drafting/SKILL.md`](.github/skills/academic-paper-drafting/SKILL.md) |
-| 59 | ✓ | [`.github/skills/ai-memory-setup/SKILL.md`](.github/skills/ai-memory-setup/SKILL.md) |
-| 60 | ✓ | [`.github/skills/alex-banner-generation/SKILL.md`](.github/skills/alex-banner-generation/SKILL.md) |
-| 61 | ✓ | [`.github/skills/brain-audit/SKILL.md`](.github/skills/brain-audit/SKILL.md) |
-| 62 | ✓ | [`.github/skills/creative-writing/SKILL.md`](.github/skills/creative-writing/SKILL.md) |
-| 63 | ✓ | [`.github/skills/critical-thinking/SKILL.md`](.github/skills/critical-thinking/SKILL.md) |
-| 64 | ✓ | [`.github/skills/docx-to-md/SKILL.md`](.github/skills/docx-to-md/SKILL.md) |
-| 65 | ✓ | [`.github/skills/greeting-checkin/SKILL.md`](.github/skills/greeting-checkin/SKILL.md) |
-| 66 | ✓ | [`.github/skills/html-to-md/SKILL.md`](.github/skills/html-to-md/SKILL.md) |
-| 67 | ✓ | [`.github/skills/lint-clean-markdown/SKILL.md`](.github/skills/lint-clean-markdown/SKILL.md) |
-| 68 | ✓ | [`.github/skills/markdown-mermaid/SKILL.md`](.github/skills/markdown-mermaid/SKILL.md) |
-| 69 | ✓ | [`.github/skills/markdown-sanitization-chain/SKILL.md`](.github/skills/markdown-sanitization-chain/SKILL.md) |
-| 70 | ✓ | [`.github/skills/md-to-eml/SKILL.md`](.github/skills/md-to-eml/SKILL.md) |
-| 71 | ✓ | [`.github/skills/md-to-html/SKILL.md`](.github/skills/md-to-html/SKILL.md) |
-| 72 | ✓ | [`.github/skills/md-to-txt/SKILL.md`](.github/skills/md-to-txt/SKILL.md) |
-| 73 | ✓ | [`.github/skills/md-to-word/SKILL.md`](.github/skills/md-to-word/SKILL.md) |
-| 74 | ✓ | [`.github/skills/meditation/SKILL.md`](.github/skills/meditation/SKILL.md) |
-| 75 | ✓ | [`.github/skills/problem-framing-audit/SKILL.md`](.github/skills/problem-framing-audit/SKILL.md) |
+| 39 | ✓ | [`.github/prompts/configure-vscode-verify.prompt.md`](.github/prompts/configure-vscode-verify.prompt.md) |
+| 40 | ✓ | [`.github/prompts/configure-vscode.prompt.md`](.github/prompts/configure-vscode.prompt.md) |
+| 41 | ✓ | [`.github/prompts/convert.prompt.md`](.github/prompts/convert.prompt.md) |
+| 42 | ✓ | [`.github/prompts/critical-thinking.prompt.md`](.github/prompts/critical-thinking.prompt.md) |
+| 43 | ✓ | [`.github/prompts/feedback.prompt.md`](.github/prompts/feedback.prompt.md) |
+| 44 | ✓ | [`.github/prompts/format-markdown.prompt.md`](.github/prompts/format-markdown.prompt.md) |
+| 45 | ✓ | [`.github/prompts/initialize.prompt.md`](.github/prompts/initialize.prompt.md) |
+| 46 | ✓ | [`.github/prompts/lint-markdown.prompt.md`](.github/prompts/lint-markdown.prompt.md) |
+| 47 | ✓ | [`.github/prompts/mall-contribute.prompt.md`](.github/prompts/mall-contribute.prompt.md) |
+| 48 | ✓ | [`.github/prompts/mall-install.prompt.md`](.github/prompts/mall-install.prompt.md) |
+| 49 | ✓ | [`.github/prompts/mall-refresh.prompt.md`](.github/prompts/mall-refresh.prompt.md) |
+| 50 | ✓ | [`.github/prompts/mall-search.prompt.md`](.github/prompts/mall-search.prompt.md) |
+| 51 | ✓ | [`.github/prompts/meditate.prompt.md`](.github/prompts/meditate.prompt.md) |
+| 52 | ✓ | [`.github/prompts/migrate-from-alex-master.prompt.md`](.github/prompts/migrate-from-alex-master.prompt.md) |
+| 53 | ✓ | [`.github/prompts/note.prompt.md`](.github/prompts/note.prompt.md) |
+| 54 | ✓ | [`.github/prompts/problem-framing-audit.prompt.md`](.github/prompts/problem-framing-audit.prompt.md) |
+| 55 | ✓ | [`.github/prompts/save-session-note.prompt.md`](.github/prompts/save-session-note.prompt.md) |
+| 56 | ✓ | [`.github/prompts/status.prompt.md`](.github/prompts/status.prompt.md) |
+| 57 | ✓ | [`.github/prompts/upgrade.prompt.md`](.github/prompts/upgrade.prompt.md) |
+| 58 | ✓ | [`.github/prompts/welcome.prompt.md`](.github/prompts/welcome.prompt.md) |
+| 59 | ✓ | [`.github/skills/academic-paper-drafting/SKILL.md`](.github/skills/academic-paper-drafting/SKILL.md) |
+| 60 | ✓ | [`.github/skills/ai-memory-setup/SKILL.md`](.github/skills/ai-memory-setup/SKILL.md) |
+| 61 | ✓ | [`.github/skills/alex-banner-generation/SKILL.md`](.github/skills/alex-banner-generation/SKILL.md) |
+| 62 | ✓ | [`.github/skills/brain-audit/SKILL.md`](.github/skills/brain-audit/SKILL.md) |
+| 63 | ✓ | [`.github/skills/creative-writing/SKILL.md`](.github/skills/creative-writing/SKILL.md) |
+| 64 | ✓ | [`.github/skills/critical-thinking/SKILL.md`](.github/skills/critical-thinking/SKILL.md) |
+| 65 | ✓ | [`.github/skills/docx-to-md/SKILL.md`](.github/skills/docx-to-md/SKILL.md) |
+| 66 | ✓ | [`.github/skills/greeting-checkin/SKILL.md`](.github/skills/greeting-checkin/SKILL.md) |
+| 67 | ✓ | [`.github/skills/html-to-md/SKILL.md`](.github/skills/html-to-md/SKILL.md) |
+| 68 | ✓ | [`.github/skills/lint-clean-markdown/SKILL.md`](.github/skills/lint-clean-markdown/SKILL.md) |
+| 69 | ✓ | [`.github/skills/markdown-mermaid/SKILL.md`](.github/skills/markdown-mermaid/SKILL.md) |
+| 70 | ✓ | [`.github/skills/markdown-sanitization-chain/SKILL.md`](.github/skills/markdown-sanitization-chain/SKILL.md) |
+| 71 | ✓ | [`.github/skills/md-to-eml/SKILL.md`](.github/skills/md-to-eml/SKILL.md) |
+| 72 | ✓ | [`.github/skills/md-to-html/SKILL.md`](.github/skills/md-to-html/SKILL.md) |
+| 73 | ✓ | [`.github/skills/md-to-txt/SKILL.md`](.github/skills/md-to-txt/SKILL.md) |
+| 74 | ✓ | [`.github/skills/md-to-word/SKILL.md`](.github/skills/md-to-word/SKILL.md) |
+| 75 | ✓ | [`.github/skills/meditation/SKILL.md`](.github/skills/meditation/SKILL.md) |
+| 76 | ✓ | [`.github/skills/problem-framing-audit/SKILL.md`](.github/skills/problem-framing-audit/SKILL.md) |
 
 ---
 

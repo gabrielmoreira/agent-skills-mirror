@@ -192,11 +192,11 @@ Behavior notes per Recipe:
 - `coverage`: Default. Confirm threshold (default 80% line / 70% branch) and target directory at INGEST. Render treemap or sunburst — choose treemap when files >100, sunburst otherwise.
 - `results`: Confirm time window and CI source. Output is a per-suite heatmap plus top failure clusters.
 - `trace`: Requires explicit spec/requirement ID source (markdown frontmatter, GherkinFeature tags, or an external matrix). If no IDs are detected, refuse and request the source.
-- `shape` (alias: `pyramid`): Compute unit/integration/E2E/manual counts from path conventions (`*.test.ts` vs `*.integration.test.ts` vs `e2e/`) or explicit user-provided regex; auto-classify into Pyramid / Trophy / Trophy-2025 / Honeycomb / Diamond / Cupcake / Hourglass / Ice-Cream-Cone / Inverted; flag the matching anti-pattern when ≥2 signals match.
-- `mutation`: Requires Stryker / PIT / mutmut / cargo-mutants results. Overlay mutation kill rate on coverage map. Flag LINE-NOT-MUTATION zones (100% line, <60% mutation).
-- `ai-lens`: Requires git author + commit metadata (and optionally diff signature). Detect AI-generated tests via author patterns, assertion density, snapshot-to-assertion ratio, and mutation kill rate; emit AI-ORIGIN-VANITY findings.
+- `shape` (alias: `pyramid`): Compute unit/integration/E2E/manual counts from path conventions (`*.test.ts` vs `*.integration.test.ts` vs `e2e/`) or explicit user-provided regex; auto-classify into Pyramid / Trophy / Trophy-2025 / Honeycomb / Diamond / Cupcake / Hourglass / Ice-Cream-Cone / Inverted; apply anti-pattern thresholds from Critical Thresholds.
+- `mutation`: Requires Stryker / PIT / mutmut / cargo-mutants results. Overlay mutation kill rate on coverage map; apply LINE-NOT-MUTATION threshold from Critical Thresholds.
+- `ai-lens`: Requires git author + commit metadata (and optionally diff signature). Detect AI-generated tests via author patterns, assertion density, snapshot-to-assertion ratio, and mutation kill rate; emit AI-ORIGIN-VANITY findings per Critical Thresholds.
 - `otel`: Requires OpenTelemetry trace data for tests (Tracetest / OTel Demo pattern). Render spans as Gantt timeline beside the suite tree.
-- `flake`: Requires ≥30 runs in the window. If fewer, refuse and report the sample-size limitation.
+- `flake`: Apply Wilson lower-bound + sample-size gates from Critical Thresholds. If fewer than the minimum runs, refuse and report the sample-size limitation.
 - `timeline`: Requires git correlation (commit SHA per run). Without SHAs, fall back to date-only timeline.
 - `diff`: Requires base and head artifacts. If only one is provided, refuse.
 - `journey`: Requires user journey map source (Echo journey output or user-provided JSON/YAML); overlay E2E test results.

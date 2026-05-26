@@ -25,7 +25,7 @@ Call the evaluator as `evaluator(program)`; it returns `EvaluationResult`:
 @dataclass
 class EvaluationResult:
     score: float
-    results: list[tuple[dspy.Example, dspy.Prediction, float | dict]]
+    results: list[tuple[dspy.Example, dspy.Prediction, float | dspy.Prediction | bool]]
 ```
 
 ## Metric signatures
@@ -39,17 +39,16 @@ metric(
     trace: DSPyTrace | None = None,     # set during .compile()
     pred_name: str | None = None,       # GEPA only — which predictor
     pred_trace: DSPyTrace | None = None, # GEPA only — that predictor's trace
-) -> float | dspy.Prediction | str
+) -> float | dspy.Prediction | bool
 ```
 
 Return values:
 
 - `float` — treated as the score; works with `dspy.Evaluate` and most optimizers.
 - **`dspy.Prediction(score=float, feedback=str)`** — GEPA-compatible; feedback is fed to the reflection LM. This is the recommended shape for any metric that will be used with an optimizer.
-- `str` — rare; GEPA interprets as feedback with score derived separately.
 - `bool` — treated as 0.0 / 1.0.
 
-**Why not a dict?** A dict looks like it should work (it has `score` and `feedback` keys), but `dspy.Evaluate`'s parallel executor aggregates per-example outputs via `sum()`, which raises `TypeError: unsupported operand type(s) for +: 'int' and 'dict'`. `dspy.Prediction` defines `__float__`/`__add__` so it aggregates correctly.
+**Why not a dict or string?** A dict looks like it should work (it has `score` and `feedback` keys), and a string looks like natural feedback, but `dspy.Evaluate` aggregates per-example outputs via `sum()`. Under DSPy 3.2.1, literal dict and string metric returns raise `TypeError`. `dspy.Prediction` defines `__float__`/`__add__` so it aggregates correctly while preserving feedback.
 
 GEPA's per-predictor feedback: when `pred_name` is non-None, return feedback targeted at *that* predictor's trace. This lets GEPA assign credit.
 
@@ -66,7 +65,7 @@ class Judge(dspy.Signature):
 
 judge = dspy.ChainOfThought(Judge)
 
-def judge_metric(gold, pred, trace=None, **kwargs):
+def judge_metric(gold, pred, trace=None, pred_name=None, pred_trace=None):
     j = judge(question=gold.question, gold_answer=gold.answer, pred_answer=pred.answer)
     return dspy.Prediction(score=float(j.score), feedback=j.critique)
 ```

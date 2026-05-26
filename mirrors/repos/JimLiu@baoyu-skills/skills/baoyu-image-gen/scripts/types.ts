@@ -8,7 +8,8 @@ export type Provider =
   | "replicate"
   | "jimeng"
   | "seedream"
-  | "azure";
+  | "azure"
+  | "codex-cli";
 export type Quality = "normal" | "2k";
 export type OpenAIImageApiDialect = "openai-native" | "ratio-metadata";
 
@@ -74,6 +75,7 @@ export type ExtendConfig = {
     jimeng: string | null;
     seedream: string | null;
     azure: string | null;
+    "codex-cli": string | null;
   };
   batch?: {
     max_workers?: number | null;

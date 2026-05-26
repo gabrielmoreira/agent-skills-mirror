@@ -27,7 +27,7 @@ Write the typed `dspy.Signature` + `dspy.Module` subclass per `dspy-fundamentals
 
 ### 3. Data
 
-Build `trainset` (15–50) and **separate** `valset` (15–50) as `dspy.Example(...).with_inputs(...)`. Held-out `testset` is reported on at the end only. See `dspy-evaluation-harness`.
+Build `trainset` and **separate** `valset` as `dspy.Example(...).with_inputs(...)`. For GEPA, maximize trainset size and keep validation just large enough to represent downstream behavior; held-out `testset` is reported on at the end only. See `dspy-evaluation-harness`.
 
 ### 4. Rich metric
 
@@ -47,7 +47,7 @@ print("Baseline:", baseline.score)
 ### 6. GEPA optimize
 
 ```python
-reflection_lm = dspy.LM("openai/gpt-4o", temperature=1.0, max_tokens=8000)
+reflection_lm = dspy.LM("openai/gpt-5", temperature=1.0, max_tokens=32000)
 optimizer = dspy.GEPA(
     metric=rich_metric,
     auto="medium",
@@ -125,7 +125,7 @@ print("Baseline:", evaluator(program).score)
 optimizer = dspy.GEPA(
     metric=rich_metric,
     auto="medium",
-    reflection_lm=dspy.LM("openai/gpt-4o", temperature=1.0, max_tokens=8000),
+    reflection_lm=dspy.LM("openai/gpt-5", temperature=1.0, max_tokens=32000),
     candidate_selection_strategy="pareto",
     track_stats=True, track_best_outputs=True,
     log_dir="./gepa_logs", num_threads=8, seed=0,

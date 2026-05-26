@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `LC044/TrailSnap` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `LC044/TrailSnap` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `LC044/TrailSnap` — 26 default patterns, 0 followed patterns, 7 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,13 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`package/official-site/docs/guide/install.md`](package/official-site/docs/guide/install.md) |
-| 2 | ✓ | [`package/official-site/en/docs/guide/install.md`](package/official-site/en/docs/guide/install.md) |
-| 3 | ✓ | [`package/official-site/public/install.md`](package/official-site/public/install.md) |
-| 4 | ✓ | [`skills/trailsnap-cli/examples/simple.md`](skills/trailsnap-cli/examples/simple.md) |
-| 5 | ✓ | [`skills/trailsnap-cli/install.md`](skills/trailsnap-cli/install.md) |
-| 6 | ✓ | [`skills/trailsnap-cli/reference.md`](skills/trailsnap-cli/reference.md) |
-| 7 | ✓ | [`skills/trailsnap-cli/SKILL.md`](skills/trailsnap-cli/SKILL.md) |
+| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`package/official-site/docs/guide/install.md`](package/official-site/docs/guide/install.md) |
+| 3 | ✓ | [`package/official-site/en/docs/guide/install.md`](package/official-site/en/docs/guide/install.md) |
+| 4 | ✓ | [`package/official-site/public/install.md`](package/official-site/public/install.md) |
+| 5 | ✓ | [`skills/trailsnap-cli/examples/simple.md`](skills/trailsnap-cli/examples/simple.md) |
+| 6 | ✓ | [`skills/trailsnap-cli/install.md`](skills/trailsnap-cli/install.md) |
+| 7 | ✓ | [`skills/trailsnap-cli/reference.md`](skills/trailsnap-cli/reference.md) |
+| 8 | ✓ | [`skills/trailsnap-cli/SKILL.md`](skills/trailsnap-cli/SKILL.md) |
 
 ---
 

@@ -1,7 +1,54 @@
 # Claude SEO: Multi-Platform Agent Instructions
 
-> For **Cursor**, **Cursor Cloud Agents**, **Google Antigravity**, and **Gemini CLI**.
+> For **Cursor**, **Cursor Cloud Agents**, **Google Antigravity**, **Gemini CLI**,
+> **OpenAI Codex CLI**, **Cline**, **Aider**, and any other agent harness that
+> reads project-root agent instructions.
+>
 > Claude Code users: see `CLAUDE.md` instead.
+
+## Cross-platform portability (v2.0.0)
+
+Every skill in `skills/*/SKILL.md` is authored to a portable subset of the
+Claude Code skill spec. Validate compatibility with your harness via:
+
+```bash
+python scripts/portability_check.py
+```
+
+The check confirms each `SKILL.md` has the minimum frontmatter every harness
+expects (`name`, `description`, optional `model`, optional `tools`) and warns
+on Claude-Code-specific features (`maxTurns`, multi-line tool list with
+descriptive comments) that other harnesses may ignore but do not reject.
+
+### Per-harness notes
+
+| Harness | How to load claude-seo |
+|---|---|
+| **Cursor** | Symlink or copy `skills/` and `agents/` into `.cursor/rules/`. Commands are invoked as text prompts; the harness reads `SKILL.md` body as system context. |
+| **Cursor Cloud Agents** | Push the repo; Cloud Agents read `AGENTS.md` automatically at session start. |
+| **Google Antigravity** | Point the workspace at this repo root; Antigravity reads `AGENTS.md` first, falls back to `skills/`. |
+| **Gemini CLI** | `gemini init` in this repo loads `AGENTS.md`. Skills are activated via `activate_skill <name>` in conversation. |
+| **OpenAI Codex CLI** | Reads `AGENTS.md` from project root. Bash tools work as documented; some Claude-specific tool names (Read/Write/Edit) are aliased to Codex equivalents transparently. |
+| **Cline** | Loads `AGENTS.md` from project root. Skills appear as system messages; subagent delegation falls back to in-context expansion. |
+| **Aider** | Reads `AGENTS.md` if present; otherwise falls back to README. Aider does not support sub-agent dispatch; the seo-* skills run inline. |
+
+### Tool-name compatibility
+
+Where claude-seo skills mention Claude Code tools (`Read`, `Write`, `Edit`,
+`Bash`, `Glob`, `Grep`, `WebFetch`), each harness typically has an equivalent:
+
+| Claude Code | Codex | Cline | Aider | Cursor / Antigravity |
+|---|---|---|---|---|
+| Read       | read_file        | read_file       | (inline)        | read |
+| Write      | write_file       | write_file      | /add then edit  | write |
+| Edit       | apply_diff       | replace_in_file | /edit           | edit |
+| Bash       | bash             | execute_command | /run            | shell |
+| Glob       | glob             | search_files    | (inline)        | find |
+| Grep       | grep             | search_files    | /grep           | grep |
+| WebFetch   | fetch / browse   | (browser tool)  | (n/a)           | fetch |
+
+These mappings are automatic in most harnesses; we list them for transparency
+in case a recipe needs a specific call.
 
 ## Overview
 

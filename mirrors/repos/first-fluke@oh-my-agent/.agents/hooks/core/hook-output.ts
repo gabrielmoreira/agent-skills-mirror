@@ -10,6 +10,8 @@ export function makePromptOutput(
   additionalContext: string,
 ): string {
   switch (vendor) {
+    case "antigravity":
+      return JSON.stringify({ additionalContext });
     case "claude":
       return JSON.stringify({ additionalContext });
     case "codex":
@@ -49,6 +51,7 @@ export function makePromptOutput(
 export function makeBlockOutput(vendor: Vendor, reason: string): string {
   switch (vendor) {
     case "claude":
+    case "antigravity":
     case "codex":
     case "cursor":
     case "qwen":
@@ -78,6 +81,7 @@ export function makePreToolOutput(
         },
       });
     case "claude":
+    case "antigravity":
     case "codex":
     case "qwen":
       return JSON.stringify({

@@ -146,6 +146,7 @@ Key points:
 - Compact/hybrid config without `[windows]` is a legacy-compatible single-window layout even when CCB supports windows topology.
 - Hybrid TOML overlay may only add fields for agents already declared in the compact header and must not redefine `provider` or `workspace_mode`.
 - Explicit windows topology uses `version = 2`, `[windows]`, and optional `[ui.sidebar]`; it must not include `default_agents`, `layout`, or `cmd_enabled`.
+- In explicit windows topology, `[windows]` defines the effective configured-agent set; same-name `[agents.<name>]` tables are overlays and may override `workspace_mode`, while stale tables for names no longer in `[windows]` are ignored.
 - `cmd` is not supported inside `[windows]` topology. Use compact/hybrid config when a persistent command pane is required.
 - Migration to `[windows]` is opt-in and should preserve existing agent fields unless the user asks for role/provider/workspace changes.
 - `agent:provider(worktree)` maps to `workspace_mode = "git-worktree"`.

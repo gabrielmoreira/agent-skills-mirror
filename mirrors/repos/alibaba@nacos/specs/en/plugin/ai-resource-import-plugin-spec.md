@@ -176,6 +176,17 @@ the artifact contains `sourceMetadata.artifactUrl`, the Skill operator should
 record that URL as the imported resource source (`ai_resource.c_from`). If
 `artifactUrl` is absent, it should fall back to `sourceMetadata.source`.
 
+Skill conflict handling follows the AI resource working-version lifecycle:
+
+- If the Skill does not exist, import creates a new draft.
+- If the Skill exists and has no editing or reviewing version, import creates
+  the next draft version.
+- If the Skill has an editing or reviewing version, validation returns a
+  working-version conflict. Execute must skip the item unless
+  `overwriteExisting=true`; with overwrite enabled, the current editable draft
+  may be replaced or a new draft may be created according to the Skill service
+  lifecycle.
+
 ## Built-in Importers
 
 The default built-in importers are delivered by the
@@ -375,18 +386,28 @@ Existing MCP import APIs may remain during a compatibility window:
 ```text
 POST /v3/console/ai/mcp/import/validate
 POST /v3/console/ai/mcp/import/execute
-GET  /v3/console/ai/mcp/importToolsFromMcp
 ```
 
 The validate and execute endpoints should be routed through a compatibility
 adapter into the unified import manager. They must not continue to grow as an
 independent implementation.
 
+`GET /v3/console/ai/mcp/importToolsFromMcp` is not part of external registry
+import compatibility. It is a Console helper for building an MCP Server schema
+from a user-owned MCP runtime endpoint and remains outside the AI resource
+marketplace or registry import flow.
+
+The compatibility endpoints are disabled by default. Operators may reopen them
+temporarily with `nacos.ai.resource.import.legacy-mcp-api-enabled=true` while
+clients migrate to `/v3/{admin|console}/ai/import/*`.
+
 For legacy `importType=url`, the request must not use a user-provided URL as a
 network target by default. It may be interpreted as a `sourceId` when it matches
 an enabled source. Otherwise the request should fail with a migration message.
 Legacy direct URL import may only be enabled by explicit operator configuration
-for controlled deployments.
+for controlled deployments by setting
+`nacos.ai.resource.import.allow-user-url=true` together with the legacy API
+switch.
 
 Legacy `importType=json` and `importType=file` may be mapped to built-in local
 importers because they do not require server-side network access.
@@ -394,8 +415,17 @@ importers because they do not require server-side network access.
 ## Dependency Handling
 
 Imported artifacts may reference other AI resources. A Skill may require MCP
-tools or servers, for example. The unified import flow should support these
-dependency policies:
+tools or servers, for example.
+
+Dependency handling is a reserved extension point and is not required for the
+initial unified import implementation. Until resource types expose concrete,
+versioned dependency descriptors, importers may leave `dependencies` empty and
+the import manager should not require a `dependencyPolicy` request parameter.
+Built-in importers must not infer, install, or recursively import hidden
+dependencies.
+
+When Nacos adds explicit AI resource dependency descriptors, the unified import
+flow may introduce these dependency policies:
 
 | Policy | Meaning |
 |--------|---------|
@@ -404,8 +434,9 @@ dependency policies:
 | `LINK_EXISTING` | Link to existing matching resources when possible. |
 | `IMPORT_SELECTED` | Import only dependencies explicitly selected by the user. |
 
-The default should be `VALIDATE_ONLY`. Automatic recursive import must not be
-the default because it expands the supply-chain and authorization boundary.
+The default should be `VALIDATE_ONLY` after dependency descriptors are
+available. Automatic recursive import must not be the default because it expands
+the supply-chain and authorization boundary.
 
 ## Security Requirements
 
@@ -418,11 +449,19 @@ The import flow must treat external sources as untrusted:
 - localhost, loopback, link-local, multicast, and private-network source
   endpoint targets must be rejected unless an operator-owned source
   configuration explicitly enables `allow-private-network`;
+- built-in importer HTTP requests must re-apply the same scheme and network
+  policy to every derived request URL, including URLs discovered from indexes
+  or search responses;
+- built-in importer HTTP requests must resolve request hosts before sending and
+  reject loopback, link-local, multicast, and private-network DNS results unless
+  the source explicitly enables `allow-private-network`;
 - redirects must be disabled or revalidated against the same safety policy;
 - loopback, link-local, multicast, and private network targets should be blocked
   by default after DNS resolution;
 - source requests must enforce connect timeout, read timeout, response size,
-  page count, and artifact size limits;
+  page count, and artifact size limits. Built-in importers should cap each HTTP
+  response by the source `max-artifact-size` unless a stricter per-protocol
+  limit applies;
 - fetched Skill packages must not execute scripts during import, query, or
   download;
 - importer plugins must not leak secrets in API responses, trace events, or

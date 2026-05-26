@@ -21,11 +21,14 @@ docs/              # installation.md, usage.md, CHANGELOG.md
 ## Commands you'll actually run
 
 ```bash
-# Validate all skill metadata, manifests, example syntax, and skill-doc correctness (80+ tests)
+# Validate all skill metadata, manifests, example syntax, and skill-doc correctness
 uv run --with pytest python -m pytest tests/ -v
 
 # Smoke-test every example offline (no API key needed)
 for f in skills/*/example_*.py; do uv run --with dspy python "$f" --dry-run; done
+
+# Validate the live DSPy API surface taught by these skills
+env -u UV_EXCLUDE_NEWER uv run --with dspy==3.2.1 python scripts/check_dspy_surface.py
 
 # Install skills locally into Claude Code and Codex (symlinks, idempotent)
 ./scripts/install.sh
@@ -38,10 +41,10 @@ cd skills/dspy-advanced-workflow
 OPENAI_API_KEY=... uv run --with dspy python example_pipeline.py --auto light
 ```
 
-If `uv run --with dspy` unexpectedly resolves DSPy `3.1.3`, check for `UV_EXCLUDE_NEWER` or another resolver policy that hides recent uploads. For an exact DSPy 3.2.0 validation run, use:
+If `uv run --with dspy` unexpectedly resolves an older DSPy release, check for `UV_EXCLUDE_NEWER` or another resolver policy that hides recent uploads. For an exact DSPy 3.2.1 validation run, use:
 
 ```bash
-env -u UV_EXCLUDE_NEWER uv run --with dspy==3.2.0 python -c 'import dspy; print(dspy.__version__)'
+env -u UV_EXCLUDE_NEWER uv run --with dspy==3.2.1 python -c 'import dspy; print(dspy.__version__)'
 ```
 
 ## Authoring / editing conventions

@@ -7,6 +7,24 @@ description: Explore and prototype rvAgent + RVF integration for RuView agentic 
 
 Surface area for wiring `vendor/ruvector/crates/rvAgent/` into RuView so the existing sensing pipeline becomes the substrate an agentic flow can read, reason about, and respond to.
 
+## Quickstart — published MCP server (`@ruvnet/rvagent` v0.1.0)
+
+Installing this plugin registers `@ruvnet/rvagent` as an MCP server. On activation, Claude Code spawns `npx -y @ruvnet/rvagent` and exposes its tools directly:
+
+| Tool | Purpose |
+|------|---------|
+| `bfld_last_scan` | Most recent BFLD event from the sensing server |
+| `bfld_subscribe` | Stream BFLD events for a window |
+| `presence_now` | Current room-level presence state |
+| `vitals_get_breathing` | Latest breathing-rate sample |
+| `vitals_get_heart_rate` | Latest heart-rate sample |
+| `vitals_get_all` | Composite vitals snapshot |
+| `vitals_fetch` | Historical vitals window |
+
+Override the sensing-server URL via the `RVAGENT_SENSING_URL` env var (default `http://localhost:3000`). Source lives at `tools/ruview-mcp/`; ADR-124 captures the design.
+
+Smoke-check the wiring: `npm view @ruvnet/rvagent version` should return `0.1.0` (or newer).
+
 ## When to use this skill
 
 - "I want an agent that reacts to BFLD presence in the kitchen and pages the carer."

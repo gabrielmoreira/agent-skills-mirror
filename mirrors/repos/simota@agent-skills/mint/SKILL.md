@@ -244,53 +244,38 @@ Full techniques and pipeline -> `references/anonymization.md`
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| Factory Design | `factory` | ✓ | Factory pattern design and type-safe test data construction | `references/factory-patterns.md` |
-| Boundary Values | `boundary` | | Boundary value and edge-case data set generation | `references/boundary-values.md` |
-| Synthetic Data | `synthetic` | | Large-scale synthetic data generation and load-test datasets | `references/seed-management.md` |
-| Seed Management | `seed` | | Idempotent seed script design and snapshot management | `references/seed-management.md` |
-| PII Masking | `pii` | | Test-data masking / de-identification (tokenization, FPE, k-anon / l-div / t-close, DP) | `references/pii-masking-deidentification.md` |
-| LLM Fixtures | `llm` | | LLM-generated fixtures with schema validation, bias audit, deterministic caching, cost cap | `references/llm-generated-fixtures.md` |
-| Replay Scrub | `replay` | | Production-log replay set: capture -> PII scrub -> time shift -> id remap -> retention | `references/replay-production-scrub.md` |
+Single source of truth for Recipe definitions. Behavior depth lives in the **Behavior** column; full details in each `Read First` reference.
+
+| Recipe | Subcommand | Default? | When to Use | Behavior | Read First |
+|--------|-----------|---------|-------------|----------|------------|
+| Factory Design | `factory` | ✓ | Factory pattern design and type-safe test data construction | Design factories per entity with traits, sequences, and FK-resolving associations. Deterministic seed required. | `references/factory-patterns.md` |
+| Boundary Values | `boundary` | | Boundary value and edge-case data set generation | Build a BVA matrix per constrained field (empty / min / max / off-by-one / Unicode / null) plus equivalence partitions. | `references/boundary-values.md` |
+| Synthetic Data | `synthetic` | | Large-scale synthetic data generation and load-test datasets | Bulk generation (10K-1M records) with progress tracking and deterministic seed; hand volume datasets to Siege. | `references/seed-management.md` |
+| Seed Management | `seed` | | Idempotent seed script design and snapshot management | Idempotent upsert / truncate-reload scripts with versioned snapshot and FK build order. | `references/seed-management.md` |
+| PII Masking | `pii` | | Test-data masking / de-identification (tokenization, FPE, k-anon / l-div / t-close, DP) | Test-data masking / de-id algorithms (tokenization / FPE / k-anon / l-diversity / t-closeness / DP). For production-system privacy engineering use Cloak; for regulatory GDPR / HIPAA framework mapping use Comply; for load-test dataset amplification use Siege. | `references/pii-masking-deidentification.md` |
+| LLM Fixtures | `llm` | | LLM-generated fixtures with schema validation, bias audit, deterministic caching, cost cap | LLM as fixture generator behind schema validation, bias audit, and deterministic cache. For production LLM feature / prompt / RAG design use Oracle; for throwaway prototype mock data use Forge; for adversarial LLM inputs use Siege. | `references/llm-generated-fixtures.md` |
+| Replay Scrub | `replay` | | Production-log replay set: capture -> PII scrub -> time shift -> id remap -> retention | Capture -> scrub -> time-shift -> id-remap -> retention-bounded replay bundle. For live-system privacy governance use Cloak; for regulatory capture approval use Comply; for replay-as-stress (amplify / time-warp) use Siege; for replay execution against staging use Voyager. | `references/replay-production-scrub.md` |
+
+### Signal Keywords → Recipe
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply.
+
+| Keywords | Recipe |
+|----------|--------|
+| `factory`, `factory pattern`, `test data builder`, `type-safe fixtures` | `factory` |
+| `boundary`, `edge case`, `BVA`, `equivalence partition` | `boundary` |
+| `synthetic`, `bulk data`, `volume dataset`, `load test data` | `synthetic` |
+| `seed`, `seed script`, `idempotent seeds`, `snapshot` | `seed` |
+| `pii masking`, `de-identification`, `anonymize`, `tokenization`, `k-anonymity`, `differential privacy` | `pii` |
+| `llm fixture`, `synthesize with LLM`, `bias audit`, `deterministic cache` | `llm` |
+| `replay`, `production capture`, `scrub-and-replay`, `time shift`, `id remap` | `replay` |
+| unclear test-data request | `factory` (default) |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input and activate the matching Recipe. If the token matches no subcommand, activate `factory` (default).
-
-| First Token | Recipe Activated |
-|------------|-----------------|
-| `factory` | Factory Design |
-| `boundary` | Boundary Values |
-| `synthetic` | Synthetic Data |
-| `seed` | Seed Management |
-| `pii` | PII Masking |
-| `llm` | LLM Fixtures |
-| `replay` | Replay Scrub |
-| _(no match)_ | Factory Design (default) |
-
-Behavior notes per Recipe:
-- `factory`: Design factories per entity with traits, sequences, and FK-resolving associations. Deterministic seed required.
-- `boundary`: Build a BVA matrix per constrained field (empty / min / max / off-by-one / Unicode / null) plus equivalence partitions.
-- `synthetic`: Bulk generation (10K-1M records) with progress tracking and deterministic seed; hand volume datasets to Siege.
-- `seed`: Idempotent upsert / truncate-reload scripts with versioned snapshot and FK build order.
-- `pii`: Test-data masking / de-id algorithms (tokenization / FPE / k-anon / l-diversity / t-closeness / DP). For production-system privacy engineering use Cloak; for regulatory GDPR / HIPAA framework mapping use Comply; for load-test dataset amplification use Siege.
-- `llm`: LLM as fixture generator behind schema validation, bias audit, and deterministic cache. For production LLM feature / prompt / RAG design use Oracle; for throwaway prototype mock data use Forge; for adversarial LLM inputs use Siege.
-- `replay`: Capture -> scrub -> time-shift -> id-remap -> retention-bounded replay bundle. For live-system privacy governance use Cloak; for regulatory capture approval use Comply; for replay-as-stress (amplify / time-warp) use Siege; for replay execution against staging use Voyager.
-
----
-
-## Output Routing
-
-| Signal | Approach / Output | Read next |
-|--------|-------------------|-----------|
-| Need factories for unit tests | Factory definitions with traits + Faker seeds | `references/factory-patterns.md` |
-| Need E2E scenario data | Seed scripts with relational data + fixture files | `references/seed-management.md` |
-| Need boundary/edge-case data | BVA matrix per entity with equivalence partitions | `references/boundary-values.md` |
-| Need load test volume data | Bulk generation scripts (100K-1M records) with progress tracking | `references/seed-management.md` |
-| Need anonymized production data | PII masking pipeline with Faker replacement or consistent hashing | `references/anonymization.md` |
-| Need property-based generators | Arbitrary/generator definitions for fuzzing frameworks | `references/property-based-generators.md` |
-| Schema changed, factories broken | Re-analyze schema, update factory types, verify FK integrity | `references/factory-patterns.md` |
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → skip ANALYZE and pass that Recipe's Behavior directly to DESIGN. Read the Recipe's `Read First` reference for full details before executing.
+- Otherwise → `factory` (default) — normal ANALYZE → DESIGN → GENERATE → VALIDATE → DELIVER workflow.
 
 ---
 

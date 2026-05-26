@@ -65,7 +65,9 @@ while IFS=$'\t' read -r name url version; do
   if [ -d "$dir" ]; then
     if [ -n "$version" ]; then
       # 检查当前是否已在目标版本
-      current_tag=$(cd "$dir" && git describe --tags --exact-match 2>/dev/null)
+      # 注意：git describe 在没有匹配 tag 时返回非 0，配合 set -e 会让整个脚本静默退出
+      # 用 || true 兜底，让 current_tag 为空时走下方"更新"分支自动 fetch tags
+      current_tag=$(cd "$dir" && git describe --tags --exact-match 2>/dev/null || true)
       if [ "$current_tag" = "$version" ] || [ "$current_tag" = "v${version}" ]; then
         echo "[跳过] $name $version"
         skip_count=$((skip_count + 1))

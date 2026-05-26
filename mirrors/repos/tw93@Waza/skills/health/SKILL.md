@@ -1,11 +1,11 @@
 ---
 name: health
-description: "Runs a budget-aware Agent Health audit for Codex, Claude Code, Pi, agent instructions, hooks/MCP, verifier surfaces, and AI maintainability. Use when users ask 检查claude/检查codex/检查pi/配置检查/健康度 or report agents ignoring instructions, missing validation, or code becoming hard to maintain. Not for debugging code or reviewing PRs."
+description: "Runs a budget-aware agent-assisted engineering health audit for instruction/config drift, hooks/MCP, verifier surfaces, and AI maintainability. Use when users ask 检查claude/检查codex/检查pi/配置检查/健康度 or report agents ignoring instructions, missing validation, or code becoming hard to maintain. Not for debugging code or reviewing PRs."
 when_to_use: "检查claude, 检查codex, 检查pi, Codex 配置, Pi 配置, AGENTS.md, config.toml, agent instructions, 健康度, 配置检查, 配置对不对, AI coding 腐化, 代码变烂, 维护性, 上下文混乱, 验证缺失, 验证命令失真, Claude ignoring instructions, Pi coding agent, check config, settings not working, audit config"
 dispatch_intent: "Codex/Claude/Pi ignoring instructions, agent config audit, hooks/MCP broken, health token usage, AI coding code rot, hotspot ownership, unclear context, missing verification, stale verifier output"
 ---
 
-# Health: Agent Config and AI Maintainability
+# Health: Agent-Assisted Engineering Health
 
 Prefix your first line with 🥷 inline, not as its own paragraph.
 
@@ -13,6 +13,18 @@ Audit the current project's agent setup and AI coding maintainability against th
 `agent config → instruction surfaces → tools/runtime → verifiers → maintainability`
 
 Find violations. Identify the misaligned layer. Calibrate to project complexity only.
+
+## Outcome Contract
+
+- Outcome: a budget-aware health report that separates agent configuration risk from AI maintainability risk.
+- Done when: each finding names the misaligned layer, the concrete evidence, and a copy-pasteable action or diagnostic command.
+- Evidence: collected health script output, tracked project instructions, runtime config summaries, verifier logs, hooks/MCP surfaces, and live probes when needed.
+- Output: prioritized findings with status, impact, and next action, or a clear clean bill with residual risk.
+
+Two lanes share one report:
+
+- **Agent config health**: Codex/Claude/Pi instruction drift, permissions, hooks, MCP, skills, and memory supply chain.
+- **AI maintainability health**: project context surface, verifier wrapper, generated-artifact checks, hotspot ownership, and stale or misleading durable docs.
 
 **Output language:** Check in order: (1) project agent instructions (`AGENTS.md` before runtime-specific files); (2) global agent instructions; (3) user's recent language; (4) English.
 
@@ -78,7 +90,7 @@ Test every MCP server: call one harmless tool per server. Record `live=yes/no` w
 
 Run these on every audit, regardless of tier. They are the floor, not the ceiling.
 
-**Deny-list floor.** The project's agent settings should deny, at minimum: credential and key directories (SSH, cloud providers, GPG, gh CLI), secret files (`.env`, `credentials*`, `secrets*`), pipe-to-shell installers (`curl ... | bash`, `wget ... | sh`), and outbound shells (`ssh`, `scp`, `nc`). Flag missing categories as Critical findings; let the reviewer fill in the exact paths from the project's environment.
+**Deny-list floor.** Apply this only when the project or runtime exposes agent permission settings, hook settings, MCP settings, allowed/denied tools, or a documented autonomous-agent launcher. In that case, the settings should deny, at minimum: credential and key directories (SSH, cloud providers, GPG, gh CLI), secret files (`.env`, `credentials*`, `secrets*`), pipe-to-shell installers (`curl ... | bash`, `wget ... | sh`), and outbound shells (`ssh`, `scp`, `nc`). Report this as one concise WARN with the missing categories and suggested fix; let the reviewer fill in exact local paths from the environment. If no agent settings surface exists, report the deny-list as not applicable rather than a failure.
 
 **Environment override surface.** Treat the following as attack surface, report when set in tracked files or shipped settings without a justification comment: API base-URL overrides (redirect all traffic to a third party), auto-trust flags for project-local MCP servers, wildcard tool allowlists (`allowedTools: ["*"]`), and permission-skip flags (`--dangerously-skip-permissions` or equivalents). Print file:line and the key name only; never print secrets.
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `intellectronica/ruler` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `intellectronica/ruler` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `intellectronica/ruler` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,7 +63,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.ruler/AGENTS.md`](.ruler/AGENTS.md) |
 | 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 4 | ✓ | [`tests/integration/fixtures/unified/.ruler/AGENTS.md`](tests/integration/fixtures/unified/.ruler/AGENTS.md) |
-| 5 | ✓ | [`tmp-fixtures/unified-basic/.ruler/AGENTS.md`](tmp-fixtures/unified-basic/.ruler/AGENTS.md) |
 
 ---
 

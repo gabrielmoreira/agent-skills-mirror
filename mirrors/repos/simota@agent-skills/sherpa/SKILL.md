@@ -227,35 +227,31 @@ Use this map during `GUIDE` to assign the right agent for each step type.
 | Walking Skeleton First | `walking-skeleton` | | Alistair Cockburn Walking Skeleton — thinnest end-to-end slice that exercises architecture before broadening | `references/walking-skeleton.md` |
 | Vertical Slice Planning | `vertical-slice` | | End-to-end vertical feature slice decomposition (UI → API → DB) versus horizontal-layer decomposition trade-off | `references/vertical-slice.md` |
 
+### Signal Keywords → Recipe / Phase
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply. Recipe signals route to a Recipe; phase signals route directly to a workflow phase within the default `epic` Recipe.
+
+| Keywords | Route |
+|----------|-------|
+| `decompose`, `break down`, `plan epic` | `epic` Recipe (MAP-led) |
+| `story`, `single feature plan` | `story` Recipe |
+| `replan`, `re-plan`, `scope changed`, `drift recovery` | `replan` Recipe |
+| `parking lot`, `inventory side-tracks`, `review backlog` | `review` Recipe |
+| `atomic step`, `INVEST`, `commit point contract` | `atomic` Recipe |
+| `walking skeleton`, `thinnest slice`, `end-to-end placeholder` | `walking-skeleton` Recipe |
+| `vertical slice`, `feature slice`, `UI to DB slice` | `vertical-slice` Recipe |
+| `next step`, `guide me`, `what now` | GUIDE phase (single-step guidance) — Read `references/context-switching-anti-patterns.md` |
+| `drifting`, `off track`, `scope creep` | LOCATE phase — Read `references/anti-drift.md` |
+| `risk`, `weather`, `blocker` | ASSESS phase — Read `references/risk-and-weather.md` |
+| `checkpoint`, `progress`, `commit` | PACK phase — Read `references/progress-tracking.md` |
+| `estimate`, `calibrate`, `velocity` | CALIBRATE phase — Read `references/execution-learning.md` |
+| unclear request | Clarify scope, then default `epic` Recipe |
+
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
-- Otherwise → default Recipe (`epic` = Epic Decompose). Apply full MAP → GUIDE → LOCATE → ASSESS → PACK → CALIBRATE workflow.
-
-Behavior notes per Recipe:
-- `epic`: Generate the complete Step list in the MAP phase. Prioritize vertical slices and break down into 15-minute atomic steps.
-- `story`: Break a single Story into Task → Atomic Step. Reference Decomposition Anti-Patterns for quality checks.
-- `replan`: Identify the completion rate and drift factors of the existing plan in LOCATE, and re-order the remaining tasks.
-- `review`: Evaluate Parking Lot items for importance in ASSESS, and decide Base Camp promotion / disposal.
-- `atomic`: Deep-dive atomic-step decomposition. Apply INVEST (Independent / Negotiable / Valuable / Estimable / Small / Testable), cap at 15 minutes, classify reversibility (reversible / expand-contract / one-way), and emit an explicit commit-point contract per step.
-- `walking-skeleton`: Design the thinnest end-to-end slice (Alistair Cockburn). Exercise every architectural layer (UI → API → DB → auth → deploy) with placeholder logic before broadening any single layer. Validates integration early; defers feature depth.
-- `vertical-slice`: Decompose by end-to-end customer value, not by technical layer. Each slice ships real user-visible behavior. Explicitly rejects horizontal-layer ("build all DB first, then all API") decomposition for product work; allow horizontal only for infra/platform bottom-up.
-
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| `decompose`, `break down`, `plan epic` | MAP → full workflow | task hierarchy + step list | `references/task-breakdown.md` |
-| `next step`, `guide me`, `what now` | GUIDE current step | single-step guidance | `references/context-switching-anti-patterns.md` |
-| `drifting`, `off track`, `scope creep` | LOCATE drift check | refocus or Parking Lot | `references/anti-drift.md` |
-| `risk`, `weather`, `blocker` | ASSESS risk/weather | condition + pace adjustment | `references/risk-and-weather.md` |
-| `checkpoint`, `progress`, `commit` | PACK checkpoint | progress snapshot + commit point | `references/progress-tracking.md` |
-| `estimate`, `calibrate`, `velocity` | CALIBRATE | accuracy analysis | `references/execution-learning.md` |
-| unclear request | Clarify scope, then MAP | scoped analysis | `references/task-breakdown.md` |
-
-Routing rules:
-
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" column files at the initial step. Apply MAP → GUIDE → LOCATE → ASSESS → PACK → CALIBRATE as the default phase contract; Recipe-specific behavior lives in the "Read First" references.
+- Otherwise → default Recipe (`epic` = Epic Decompose) with the full workflow.
 - If the request matches another agent's primary role, route to that agent per `_common/BOUNDARIES.md`.
 - Always read relevant `references/` files before producing output.
 

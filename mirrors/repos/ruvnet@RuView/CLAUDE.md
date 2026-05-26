@@ -73,9 +73,9 @@ All 5 ruvector crates integrated in workspace:
 
 | Device | Port | Chip | Role | Cost |
 |--------|------|------|------|------|
-| ESP32-S3 (8MB flash) | COM7 | Xtensa dual-core | WiFi CSI sensing node | ~$9 |
+| ESP32-S3 (8MB flash) | COM9 (ruvzen, was COM7) | Xtensa dual-core | WiFi CSI sensing node | ~$9 |
 | ESP32-S3 SuperMini (4MB) | — | Xtensa dual-core | WiFi CSI (compact) | ~$6 |
-| ESP32-C6 + Seeed MR60BHA2 | COM4 | RISC-V + 60 GHz FMCW | mmWave HR/BR/presence | ~$15 |
+| ESP32-C6 + Seeed MR60BHA2 | COM12 (ruvzen, was COM4) | RISC-V + 60 GHz FMCW | mmWave HR/BR/presence + WiFi CSI | ~$15 |
 | HLK-LD2410 | — | 24 GHz FMCW | Presence + distance | ~$3 |
 
 **Not supported:** ESP32 (original), ESP32-C3 — single-core, can't run CSI DSP pipeline.

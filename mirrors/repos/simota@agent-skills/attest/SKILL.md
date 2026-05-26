@@ -333,49 +333,41 @@ Handoff tokens:
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| AC Verify | `verify` | ✓ | FULL-mode verification that implementation meets spec acceptance criteria | `references/compliance-report.md` |
-| BDD Scenarios | `bdd` | | Generate Given/When/Then scenarios from spec | `references/bdd-generation.md` |
-| Traceability Matrix | `trace` | | Generate spec ↔ code traceability matrix | `references/traceability-advanced.md` |
-| Compliance Report | `report` | | Audit-oriented compliance report (AUDIT mode) | `references/compliance-report.md` |
-| Gherkin Authoring | `gherkin` | | Gherkin/Cucumber/SpecFlow/Behave feature files with step-definition mapping | `references/gherkin-authoring.md` |
-| Property-Based | `property` | | Property-based test design from spec invariants (Hypothesis / fast-check / jqwik / ScalaCheck / proptest) | `references/property-based-testing.md` |
-| Test Oracle | `oracle` | | Test oracle design — golden master, metamorphic, differential, model-based | `references/test-oracle-design.md` |
+Single source of truth for Recipe definitions. The Mode column binds each Recipe to an Operating Mode (see `## Operating Modes` for auto-detect); the Behavior column captures verdict thresholds, scope guidance, and per-Recipe framework details.
+
+| Recipe | Subcommand | Default? | Mode | When to Use | Behavior | Read First |
+|--------|-----------|---------|------|-------------|----------|------------|
+| AC Verify | `verify` | ✓ | `FULL` | FULL-mode verification that implementation meets spec acceptance criteria | Requires both spec and implementation. All CRITICAL criteria must PASS. Issue a verdict of CERTIFIED/CONDITIONAL/REJECTED. | `references/compliance-report.md` |
+| BDD Scenarios | `bdd` | | `EXTRACT` | Generate Given/When/Then scenarios from spec | Extract ACs from spec only and generate minimum scenario counts per priority (CRITICAL: 5, HIGH: 3, MEDIUM: 2, LOW: 1). | `references/bdd-generation.md` |
+| Traceability Matrix | `trace` | | `AUDIT` | Generate spec ↔ code traceability matrix | Generate bidirectional traceability from spec section → implementation code. Coverage ≥ 90% is the CERTIFIED condition. | `references/traceability-advanced.md` |
+| Compliance Report | `report` | | `AUDIT` | Audit-oriented compliance report (AUDIT mode) | Full-section compliance report generation. Hand off to Warden as audit evidence. | `references/compliance-report.md` |
+| Gherkin Authoring | `gherkin` | | `EXTRACT` / `GENERATE` | Gherkin/Cucumber/SpecFlow/Behave feature files with step-definition mapping | Author Gherkin .feature files with Background, Scenario Outline, Examples tables, Tags, and step-definition stubs for the target framework (Cucumber-JVM/JS, SpecFlow→Reqnroll, Behave, pytest-bdd). Map each Gherkin step to a code step-def with regex/cucumber-expression. | `references/gherkin-authoring.md` |
+| Property-Based | `property` | | `GENERATE` | Property-based test design from spec invariants (Hypothesis / fast-check / jqwik / ScalaCheck / proptest) | Identify spec invariants and generalize them into properties (idempotency, commutativity, round-trip, monotonicity, associativity). Produce framework-specific code (Hypothesis, fast-check, jqwik, proptest, ScalaCheck) with shrinking and stateful-machine tests. | `references/property-based-testing.md` |
+| Test Oracle | `oracle` | | `GENERATE` | Test oracle design — golden master, metamorphic, differential, model-based | Choose the test oracle pattern per criterion. Golden master for legacy; metamorphic relations when expected output is unknown; differential testing across implementations; model-based via state machine; consistency oracle for cross-API invariants. | `references/test-oracle-design.md` |
+
+### Signal Keywords → Recipe
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply. Operating Mode auto-detect (see `## Operating Modes`) runs in parallel — explicit Recipe selection overrides mode detection.
+
+| Keywords | Recipe |
+|----------|--------|
+| `verify`, `compliance`, `spec check` | `verify` |
+| `extract criteria`, `acceptance criteria` | `bdd` (with `EXTRACT` mode) |
+| `audit`, `traceability`, `coverage gap` | `trace` |
+| `adversarial`, `probe`, `edge cases` | `verify` (with `ADVERSARIAL` mode) |
+| `bdd`, `scenarios`, `given when then` | `bdd` |
+| `gherkin`, `feature file`, `step definitions`, `cucumber`, `specflow`, `reqnroll`, `behave`, `pytest-bdd` | `gherkin` |
+| `property-based`, `invariant`, `hypothesis`, `fast-check`, `jqwik`, `proptest`, `scalacheck` | `property` |
+| `oracle`, `golden master`, `metamorphic`, `differential testing`, `model-based test` | `oracle` |
+| unclear spec verification request | `verify` |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
-- Otherwise → default Recipe (`verify` = AC Verify). Apply normal INGEST → EXTRACT → GENERATE → VERIFY → ATTEST workflow.
-
-Behavior notes per Recipe:
-- `verify`: FULL mode. Requires both spec and implementation. All CRITICAL criteria must PASS. Issue a verdict of CERTIFIED/CONDITIONAL/REJECTED.
-- `bdd`: EXTRACT mode. Extract ACs from spec only and generate minimum scenario counts per priority (CRITICAL: 5, HIGH: 3).
-- `trace`: AUDIT mode. Generate bidirectional traceability from spec section → implementation code. Coverage ≥ 90% is the CERTIFIED condition.
-- `report`: AUDIT mode + full-section compliance report generation. Hand off to Warden as audit evidence.
-- `gherkin`: Author Gherkin .feature files with Background, Scenario Outline, Examples tables, Tags, and step-definition stubs for the target framework (Cucumber-JVM/JS, SpecFlow, Behave, pytest-bdd). Map each Gherkin step to a code step-def with regex/cucumber-expression.
-- `property`: Identify spec invariants and generalize them into properties (idempotency, commutativity, round-trip, monotonicity, associativity). Produce framework-specific code (Hypothesis, fast-check, jqwik, proptest, ScalaCheck) with shrinking and stateful-machine tests.
-- `oracle`: Choose the test oracle pattern per criterion. Golden master for legacy; metamorphic relations when expected output is unknown; differential testing across implementations; model-based via state machine; consistency oracle for cross-API invariants.
-
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| `verify`, `compliance`, `spec check` | FULL mode | Compliance report with verdict | `references/compliance-report.md` |
-| `extract criteria`, `acceptance criteria` | EXTRACT mode | AC set + BDD scenarios | `references/criteria-extraction.md` |
-| `audit`, `traceability`, `coverage gap` | AUDIT mode | Traceability + gap analysis | `references/traceability-advanced.md` |
-| `adversarial`, `probe`, `edge cases` | ADVERSARIAL mode | Adversarial probe report | `references/adversarial-probing.md` |
-| `bdd`, `scenarios`, `given when then` | GENERATE phase | BDD scenario set | `references/bdd-generation.md` |
-| unclear spec verification request | FULL mode | Compliance report | `references/compliance-report.md` |
-
-Routing rules:
-
-- If a specification and implementation are both provided, default to FULL mode.
-- If only a specification is provided, use EXTRACT mode.
-- If test coverage data is included, use AUDIT mode.
-- If the request explicitly mentions adversarial or deep probing, use ADVERSARIAL mode.
-- Always read `references/criteria-extraction.md` for the EXTRACT phase.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" file at the initial step.
+- Otherwise → default Recipe (`verify` = AC Verify).
+- Operating Mode binds from the Recipe's Mode column; auto-detect (see `## Operating Modes`) only fills in when the Recipe leaves mode unspecified.
+- Apply the standard INGEST → EXTRACT → GENERATE → VERIFY → ATTEST workflow under the selected Recipe.
 
 ## Output Requirements
 

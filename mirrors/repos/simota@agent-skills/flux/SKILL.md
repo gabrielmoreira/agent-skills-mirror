@@ -243,34 +243,32 @@ Dedicated mode for detecting cognitive biases in decision-making processes, inde
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| Reframe | `reframe` | ✓ | Reframing of assumptions (full DEEP pipeline) | `references/thinking-frameworks.md` |
-| Perspective Shift | `shift` | | Perspective shift (RAPID) | `references/thinking-frameworks.md` |
-| Cross-Domain | `cross` | | Cross-domain knowledge fusion (LENS COMBINE) | `references/combination-engine.md` |
-| Challenge Assumption | `challenge` | | Challenge preconceptions (LENS CHALLENGE) | `references/thinking-frameworks.md` |
-| SCAMPER | `scamper` | | 7-lens artifact transformation (Substitute/Combine/Adapt/Modify/Put-to-other-use/Eliminate/Reverse) | `references/scamper-technique.md` |
-| Analogy | `analogy` | | Structural mapping from a source domain (Gentner; biomimicry; cross-industry) | `references/analogical-thinking.md` |
-| Inversion | `inversion` | | Munger inversion — invert the goal, enumerate failure-guarantees, derive avoid-list | `references/inversion-method.md` |
-| Multi-Engine | `multi` | | Tri-engine reframe generation (Codex + Antigravity + Claude in parallel) with Pattern D Divergence-primary scoring. Portfolio-only merge — `VERIFIED-DIVERGENT × HIGH` reframes top-billed because they are structurally unreachable by other engines. Use when stuck thinking is suspected to share the same training-data prior across one or two engines. | `references/tri-engine-reframe.md`, `_common/MULTI_ENGINE_RECIPE.md` |
+> **Flux Recipes represent reframing shape. `## Work Modes` represent pipeline depth. They combine independently — each Recipe pins its default mode (column "Mode"), but the user can override.**
+
+Single source of truth for Recipe definitions. Behavior details for each Recipe are documented inline in the Notes column.
+
+| Recipe | Subcommand | Default? | Mode | When to Use | Notes | Read First |
+|--------|-----------|---------|------|-------------|-------|------------|
+| Reframe | `reframe` | ✓ | DEEP | Reframing of assumptions (full pipeline) | All 5 phases. Cynefin classification → assumption surfacing → Serendipity Injection → CRYSTALLIZE. | `references/thinking-frameworks.md` |
+| Perspective Shift | `shift` | | RAPID | Perspective shift / unblocking | CLASSIFY → SHIFT → CRYSTALLIZE. Specializes in perspective rotation and Oblique Strategies. | `references/thinking-frameworks.md` |
+| Cross-Domain | `cross` | | LENS | Cross-domain knowledge fusion | CLASSIFY → COMBINE → CRYSTALLIZE. Specializes in cross-domain Bisociation and SCAMPER. | `references/combination-engine.md` |
+| Challenge Assumption | `challenge` | | LENS | Challenge preconceptions | CLASSIFY → CHALLENGE → CRYSTALLIZE. Specializes in First Principles and Assumption Reversal. | `references/thinking-frameworks.md` |
+| SCAMPER | `scamper` | | LENS | 7-lens artifact transformation (S/C/A/M/P/E/R) | CLASSIFY → SCAMPER probe → CRYSTALLIZE. Apply 7 lenses (Eberle 1971) with prompt banks; ≥3 ideas per lens, ASN-test filter, deliver 7-lens × N matrix. Pair with `challenge` or `shift` upstream — SCAMPER alone produces incremental ideas. | `references/scamper-technique.md` |
+| Analogy | `analogy` | | LENS | Structural mapping from source domain (Gentner; biomimicry; cross-industry) | CLASSIFY → ANALOGY map → CRYSTALLIZE. Gentner structural mapping — align relations not objects; budget near vs far analogies; mark breakdown points; rate transferability. Generate ≥5 candidates and kill 4. | `references/analogical-thinking.md` |
+| Inversion | `inversion` | | LENS | Munger inversion — invert goal, enumerate failure-guarantees, derive avoid-list | CLASSIFY → INVERT → ENUMERATE → AVOID → CRYSTALLIZE. Munger goal-flip and Taleb via negativa. Enumerate ≥10 failure-guarantees across 6 categories (technical/social/economic/cognitive/temporal/structural), derive avoid-list with owners. Hand failure-paths to Omen for RPN/AP scoring. | `references/inversion-method.md` |
+| Multi-Engine | `multi` | | DEEP (multi) | Tri-engine reframe generation (Codex + Antigravity + Claude in parallel) with Pattern D Divergence-primary scoring. Use when stuck thinking is suspected to share the same training-data prior across one or two engines. | Spawn Codex / Antigravity / Claude subagents in one message; each produces 4-6 reframes independently with loose prompts (Role + Target + Output format only — no framework names, no Cynefin rules, no ASN criteria passed to subagents). Pattern D scoring on TWO axes: Concurrence (`UNIVERSAL` 3/3 / `LIKELY` 2/3 / `VERIFIED-DIVERGENT` 1/3) × Novelty (`HIGH` / `MEDIUM` / `LOW`). Critical Flux rule: `VERIFIED-DIVERGENT × HIGH` reframes are **top-billed** ahead of UNIVERSAL — they represent perspective shifts other engines' training-data priors cannot reach. Portfolio merge only — Compete merge (`multi --compete`) is offered on explicit request but preserves alternatives in an appendix. CLUSTER preserves "same assumption inverted differently" as separate clusters under a shared `assumption_root` heading. Full flow: SCOPE → PREFLIGHT → FAN-OUT → NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE → PRESENT. | `references/tri-engine-reframe.md`, `_common/MULTI_ENGINE_RECIPE.md` |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
-- Otherwise → default Recipe (`reframe` = Reframe). Apply normal CLASSIFY → CHALLENGE → COMBINE → SHIFT → CRYSTALLIZE workflow.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`reframe`). Apply normal CLASSIFY → CHALLENGE → COMBINE → SHIFT → CRYSTALLIZE workflow.
 
-Behavior notes per Recipe:
-- `reframe`: All 5 phases in DEEP mode. Cynefin classification → assumption surfacing → Serendipity Injection → CRYSTALLIZE.
-- `shift`: RAPID mode CLASSIFY → SHIFT → CRYSTALLIZE. Specializes in perspective rotation and Oblique Strategies.
-- `cross`: LENS mode CLASSIFY → COMBINE → CRYSTALLIZE. Specializes in cross-domain Bisociation and SCAMPER.
-- `challenge`: LENS mode CLASSIFY → CHALLENGE → CRYSTALLIZE. Specializes in First Principles and Assumption Reversal.
-- `scamper`: LENS mode CLASSIFY → SCAMPER probe → CRYSTALLIZE. Apply 7 lenses (S/C/A/M/P/E/R, Eberle 1971) with prompt banks; ≥3 ideas per lens, ASN-test filter, deliver 7-lens × N matrix. Pair with `challenge` or `shift` upstream — SCAMPER alone produces incremental ideas.
-- `analogy`: LENS mode CLASSIFY → ANALOGY map → CRYSTALLIZE. Gentner structural mapping — align relations not objects; budget near vs far analogies; mark breakdown points; rate transferability. Generate ≥5 candidates and kill 4.
-- `inversion`: LENS mode CLASSIFY → INVERT → ENUMERATE → AVOID → CRYSTALLIZE. Munger goal-flip and Taleb via negativa. Enumerate ≥10 failure-guarantees across 6 categories (technical/social/economic/cognitive/temporal/structural), derive avoid-list with owners. Hand failure-paths to Omen for RPN/AP scoring.
-- `multi`: Tri-engine reframe generation. Spawn Codex / Antigravity / Claude subagents in one message; each produces 4-6 reframes independently with loose prompts (Role + Target + Output format only — no framework names, no Cynefin rules, no ASN criteria passed to subagents). Pattern D Divergence-primary scoring on TWO axes: Concurrence (`UNIVERSAL` 3/3 / `LIKELY` 2/3 / `VERIFIED-DIVERGENT` 1/3) × Novelty (`HIGH` / `MEDIUM` / `LOW`). Critical Flux rule: `VERIFIED-DIVERGENT × HIGH` reframes are **top-billed** ahead of UNIVERSAL because they represent perspective shifts other engines' training-data priors cannot reach. Portfolio merge only — Compete merge (`multi --compete`) is offered on explicit request but preserves alternatives in an appendix because in reframing the "second-best" perspective often becomes the breakthrough once the user encounters the problem in a new context. CLUSTER preserves "same assumption inverted differently" as separate clusters under a shared `assumption_root` heading. See `references/tri-engine-reframe.md` for the full SCOPE → PREFLIGHT → FAN-OUT → NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE → PRESENT flow.
+Work Mode (DEEP / RAPID / LENS / AUDIT) follows each Recipe's pinned default but may be overridden by the user.
 
 ## Output Routing
+
+Routes on **user-signal keywords** (natural-language input without an explicit subcommand) — distinct from Subcommand Dispatch. Subcommand match wins if both apply.
 
 | Signal | Mode | Primary Output | Next |
 |--------|------|----------------|------|

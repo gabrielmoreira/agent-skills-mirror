@@ -156,30 +156,38 @@ Supply-chain trust spec → `_common/SECURITY.md`
 
 ## Recipes
 
+Single source of truth for Recipe definitions. Behavior depth (gating, scope, surfaces) lives in the "When to Use" column.
+
 | Recipe | Subcommand | Default? | When to Use | Read First |
 |--------|-----------|---------|-------------|------------|
-| Full IoC Scan | `scan` | ✓ | Run all IoC families against the current environment | `references/scan-procedures.md`, `references/ioc-database.md` |
-| Campaign-Specific Scan | `shai-hulud` | | Mini Shai-Hulud (1st 2026-04 and 2nd 2026-05 waves) only — narrow but deep | `references/ioc-database.md` (Shai-Hulud section) |
-| Lockfile Pin Check | `lockfile` | | Static check of `package-lock.json` / `pnpm-lock.yaml` / `yarn.lock` / `requirements.txt` against known-bad version pins; no FS traversal | `references/ioc-database.md` (package@version table) |
-| Eradication Runbook | `eradicate` | | Produce the ordered removal runbook after `CONFIRMED` grade | `references/eradication-playbook.md` |
-| Rotation Runbook | `rotate` | | Produce the credential rotation sequence after eradication is verified | `references/eradication-playbook.md` (rotation section) |
-| Hardening Checklist | `harden` | | Prevention controls — Dependency Cooldown, `--ignore-scripts`, provenance, registry proxy, GitHub Actions hardening | `references/scan-procedures.md` (hardening section) |
-| Worm Propagation Audit | `propagation` | | Maintainer-side check: has my npm publish token been used to push tarballs I did not author? | `references/scan-procedures.md` (maintainer section) |
+| Full IoC Scan | `scan` | ✓ | Run all IoC families × all surfaces (persistence, droplets, lockfiles, process tree, network passive logs). Default cadence after suspected exposure. Applies full `SURVEY → SCAN → TRIAGE → ERADICATE → ROTATE → REPORT` workflow. | `references/scan-procedures.md`, `references/ioc-database.md` |
+| Campaign-Specific Scan | `shai-hulud` | | Mini Shai-Hulud only — narrow but deep. 1st wave (2026-04, 6 packages, IDE-fork-only) and 2nd wave (2026-05, 200+ packages, OS-level persistence + 3-channel exfil + retaliation payload). Cross-cuts persistence, lockfiles, IDE hooks, GitHub anomaly. | `references/ioc-database.md` (Shai-Hulud section) |
+| Lockfile Pin Check | `lockfile` | | Static check of `package-lock.json` / `pnpm-lock.yaml` / `yarn.lock` / `requirements.txt` against known-bad version pins. Pure file read; no FS traversal beyond lockfiles. Fast pre-merge check. | `references/ioc-database.md` (package@version table) |
+| Eradication Runbook | `eradicate` | | Produce the ordered removal runbook after `CONFIRMED` grade. Gated on `CONFIRMED` from a recent `scan` run — refuses to run on `SUSPECTED` (insufficient grounding). | `references/eradication-playbook.md` |
+| Rotation Runbook | `rotate` | | Produce the credential rotation sequence after eradication is verified. Gated on eradication-verified second scan — refuses to run before. Order in `references/eradication-playbook.md` is load-bearing; do not reorder. | `references/eradication-playbook.md` (rotation section) |
+| Hardening Checklist | `harden` | | Prevention controls — Dependency Cooldown, `--ignore-scripts`, provenance, registry proxy, GitHub Actions hardening. Independent of grade; can run on `CLEAN` environments as prevention. | `references/scan-procedures.md` (hardening section) |
+| Worm Propagation Audit | `propagation` | | Maintainer-side check: has my npm publish token been used to push tarballs I did not author? Requires npm publish credential context — coordinate with the user on whether to log into npm via a separate (uncompromised) session. | `references/scan-procedures.md` (maintainer section) |
+
+### Signal Keywords → Recipe
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply.
+
+| Keywords | Recipe |
+|----------|--------|
+| `scan`, `infected`, `compromise`, `suspicious npm install` | `scan` |
+| `shai-hulud`, `tanstack`, `mini shai-hulud`, `dune`, `s1ngularity`, `lottie-player`, named campaign | `shai-hulud` (or other campaign-specific lookup in IoC DB) |
+| `lockfile`, `package-lock`, `pnpm-lock`, `yarn.lock`, `requirements.txt` | `lockfile` |
+| `eradicate`, `clean up`, `remove malware`, `gh-token-monitor`, `LaunchAgent`, `systemd` persistence | `eradicate` |
+| `rotate`, `revoke`, `new credentials` | `rotate` |
+| `harden`, `prevent`, `cooldown`, `provenance` | `harden` |
+| `propagation`, `my packages`, `maintainer` | `propagation` |
+| unclear request mentioning supply-chain risk | `scan` (default) |
 
 ### Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
-- Otherwise → default Recipe (`scan` = Full IoC Scan). Apply the full `SURVEY → SCAN → TRIAGE → ERADICATE → ROTATE → REPORT` workflow.
-
-Behavior notes per Recipe:
-- `scan`: All IoC families × all surfaces (persistence, droplets, lockfiles, process tree, network passive logs). Default cadence after suspected exposure.
-- `shai-hulud`: 1st wave (2026-04, 6 packages, IDE-fork-only) and 2nd wave (2026-05, 200+ packages, OS-level persistence + 3-channel exfil + retaliation payload). Cross-cuts persistence, lockfiles, IDE hooks, GitHub anomaly.
-- `lockfile`: Pure file read; no FS traversal beyond lockfiles. Fast pre-merge check.
-- `eradicate`: Gated on `CONFIRMED` grade from a recent `scan` run. Refuses to run on `SUSPECTED` (insufficient grounding).
-- `rotate`: Gated on eradication-verified second scan. Refuses to run before. Order published in `references/eradication-playbook.md` is load-bearing — do not reorder.
-- `harden`: Independent of grade. Can run on `CLEAN` environments as prevention.
-- `propagation`: Maintainer-side. Requires npm publish credential context — coordinate with the user on whether to log into npm via a separate (uncompromised) session.
+- Parse the first token of user input. If it matches a Recipe Subcommand → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`scan` = Full IoC Scan).
+- Routing rules: `CONFIRMED` / `ACTIVELY_BLEEDING` → always include a Triage handoff block. Confirmed `.claude/` / `.vscode/` / `.github/workflows/` artifacts → always include a Chain handoff. Confirmed lockfile pin → always include a Sentinel handoff. Lockfile-only checks with no infection evidence → suppress eradication and rotation sections.
 
 ---
 
@@ -201,32 +209,6 @@ Behavior notes per Recipe:
 | New `.npmrc` token description `IfYouRevokeThisTokenItWillWipeTheComputerOfTheOwner` | Retaliation hook | **Do not revoke yet** — eradicate persistence first |
 | Process matching `tanstack_runner` / `router_runtime` / `gh-token-monitor` / `bun` in unexpected paths | Live execution | `ACTIVELY_BLEEDING` grade |
 | Outbound passive trace to `git-tanstack[.]com`, `api[.]masscan[.]cloud`, `filev2.getsession[.]org`, `seed1-3.getsession[.]org` | Exfil channel | Passive log inspection — never probe |
-
-Full IoC table → `references/ioc-database.md`.
-
----
-
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| `scan`, `infected`, `compromise`, `suspicious npm install` | Full IoC scan | Grade + evidence chain + runbook | `references/scan-procedures.md` |
-| `shai-hulud`, `tanstack`, `mini shai-hulud`, `dune` | Campaign-specific scan | Targeted IoC matches | `references/ioc-database.md` |
-| `s1ngularity`, `lottie-player`, named campaign | Campaign-specific scan | Targeted IoC matches | `references/ioc-database.md` |
-| `lockfile`, `package-lock`, `pnpm-lock`, `yarn.lock`, `requirements.txt` | Lockfile pin check | Version-pin diff vs IoC table | `references/ioc-database.md` |
-| `eradicate`, `clean up`, `remove malware` | Eradication runbook | Ordered removal sequence | `references/eradication-playbook.md` |
-| `rotate`, `revoke`, `new credentials` | Rotation runbook | Dependency-ordered checklist | `references/eradication-playbook.md` |
-| `harden`, `prevent`, `cooldown`, `provenance` | Hardening checklist | Prevention controls | `references/scan-procedures.md` |
-| `propagation`, `my packages`, `maintainer` | Propagation audit | Publish-history anomaly report | `references/scan-procedures.md` |
-| `gh-token-monitor`, `LaunchAgent`, `systemd` persistence | Persistence sweep | Process + unit-file inventory + safe-stop sequence | `references/eradication-playbook.md` |
-| unclear request mentioning supply-chain risk | Default to `scan` | Full IoC scan | `references/scan-procedures.md` |
-
-Routing rules:
-
-- If grade reaches `CONFIRMED` or `ACTIVELY_BLEEDING`, **always** include a Triage handoff block.
-- If `.claude/` / `.vscode/` / `.github/workflows/` artifacts are confirmed-malicious, **always** include a Chain handoff block.
-- If a malicious package@version is confirmed-pinned in a lockfile, **always** include a Sentinel handoff block.
-- For lockfile-only checks with no infection evidence, suppress eradication and rotation sections.
 
 ---
 

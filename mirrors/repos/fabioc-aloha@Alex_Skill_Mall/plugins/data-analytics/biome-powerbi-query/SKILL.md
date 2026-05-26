@@ -3,7 +3,7 @@ type: skill
 lifecycle: stable
 inheritance: inheritable
 name: biome-powerbi-query
-description: >
+description: "Execute read-only DAX queries against Power BI semantic models via the Power BI MCP server -- metadata discovery with INFO.VIEW functions and data retrieval with EVALUATE."
 tier: standard
 applyTo: '**/*biome*,**/*powerbi*,**/*query*'
 currency: 2026-04-30

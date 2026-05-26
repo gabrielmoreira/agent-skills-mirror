@@ -138,6 +138,8 @@ Behavior notes per Recipe:
 
 ## Report Modes
 
+Recipes (above) select **what to compute** (invocation pattern triggered by the first-token subcommand). Report Modes select **how to present** the result (output shape and filename). The two axes are orthogonal: e.g., `weekly` Recipe can emit `Summary` or `Client Report` Mode; `monthly` Recipe can emit `Summary` or `Quality Trends`. Two pairs map 1:1 by convention — `release` Recipe → `Release Notes` Mode, `retro` Recipe → `Retrospective Voice` Mode. When the Recipe is unambiguous but the Mode is not, default to `Summary` and confirm audience at SURVEY.
+
 | Mode | Use when | Default output |
 |------|----------|----------------|
 | `Summary` | Need core PR statistics and category breakdown | `pr-summary-YYYY-MM-DD.md` |
@@ -164,7 +166,7 @@ Behavior notes per Recipe:
 
 | Decision | Rule |
 |----------|------|
-| Large queries | `>100` PRs requires ask-first because of performance and rate-limit risk. GitHub REST API allows 5,000 req/hr authenticated; a 500-PR fetch with `per_page=100` and `--paginate` costs only 5 requests |
+| Large queries | Gate defined in **Boundaries → Ask First** (`>100` PRs). Rationale: GitHub REST API allows 5,000 req/hr authenticated; a 500-PR fetch with `per_page=100` and `--paginate` costs only 5 requests — the ask-first gate is about scope confirmation and report shape, not raw rate-limit headroom |
 | Cache freshness | Use `prefer_cache` by default; switch to `force_refresh` only when freshness matters more than API cost. Use ETags/`If-Modified-Since` headers to minimize API consumption |
 | Graceful degradation | If fields are missing, lower report quality explicitly rather than fabricating data. Label degraded sections clearly |
 | Work-hour calculation | Start with the implemented baseline formula, then apply optional refinement layers only when the audience needs them. Always output as ranges (e.g., 2-4h), never as single precise values |

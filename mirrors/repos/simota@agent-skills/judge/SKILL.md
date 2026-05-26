@@ -111,16 +111,11 @@ Route elsewhere when the task is primarily:
 
 ## Review Modes
 
-| Mode | Trigger | Flow | Output |
-|------|---------|------|--------|
-| **Tri-Engine Review (DEFAULT for `/judge`)** | `/judge`, "review PR", "check this PR", "review changes" | Fan out to 3 parallel subagents (Codex + Antigravity + Claude) → integrate → ground → filter | Verified, actionable findings only |
-| **Single-Engine Review** | User explicitly names one engine, or two engines unavailable, or trivial scope (<50 LOC low-risk) | Run the named engine via its usage reference | Engine-native report |
-| **GitHub Async Review** | "review on GitHub", CI/CD trigger | `@codex review` in PR comment | Async PR review posted as GH review |
-
-**Engine selection per subagent (tri-engine default):**
-- `review-codex` subagent → Codex CLI per `codex-review-usage.md`
-- `review-agy` subagent → Antigravity CLI per `antigravity-review-usage.md`
-- `review-claude` subagent → Claude Code CLI per `claude-review-usage.md` (fresh `-p` session guarantees no self-bias)
+| Mode | Trigger | Flow | Output | Subagent → CLI |
+|------|---------|------|--------|----------------|
+| **Tri-Engine Review (DEFAULT for `/judge`)** | `/judge`, "review PR", "check this PR", "review changes" | Fan out to 3 parallel subagents (Codex + Antigravity + Claude) → integrate → ground → filter | Verified, actionable findings only | `review-codex` → `codex-review-usage.md`; `review-agy` → `antigravity-review-usage.md`; `review-claude` → `claude-review-usage.md` (fresh `-p` session, no self-bias) |
+| **Single-Engine Review** | User explicitly names one engine, or two engines unavailable, or trivial scope (<50 LOC low-risk) | Run the named engine via its usage reference | Engine-native report | Named engine's usage reference |
+| **GitHub Async Review** | "review on GitHub", CI/CD trigger | `@codex review` in PR comment | Async PR review posted as GH review | n/a (PR-comment trigger) |
 
 **Invocation invariants (all engines):** subscription auth only (never set `OPENAI_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, or any provider API key); always use the default model (never pass `-m`, `--model`, or `-c model=...`); always attach a focused prompt requiring structured JSON output.
 
@@ -200,28 +195,23 @@ For single-engine mode (user-requested or degraded), collapse to `SCOPE → EXEC
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| Tri-Engine PR Review | `pr` | ✓ | Full diff review of an entire PR (Codex + Antigravity + Claude in parallel) | `references/tri-engine-review.md`, `references/review-effectiveness.md` |
-| Security-First | `security` | | CWE/OWASP focus, stricter checks on AI-generated code | `references/tri-engine-review.md`, `references/codex-integration.md` |
-| Perf Focus | `perf` | | Focus on N+1 / render cost / bundle size | `references/tri-engine-review.md`, `references/review-effectiveness.md` |
-| Style Readability | `style` | | Naming and structure only (no bug flagging, Claude single engine) | `references/code-smell-detection.md`, `references/consistency-patterns.md` |
-| Quick Check | `quick` | | <50 LOC low-risk, Claude single engine | `references/claude-review-usage.md` |
-| Intent Alignment | `intent` | | Focus on alignment between code and PR body | `references/tri-engine-review.md`, `references/review-anti-patterns.md` |
+Single source of truth for Recipe definitions. The `Engine + Focus` column encodes per-Recipe behavior (engine count and focus area / extra rule); load `Read First` files at activation.
+
+| Recipe | Subcommand | Default? | When to Use | Engine + Focus | Read First |
+|--------|-----------|---------|-------------|----------------|------------|
+| Tri-Engine PR Review | `pr` | ✓ | Full diff review of an entire PR (Codex + Antigravity + Claude in parallel) | Tri-engine fan-out; apply cognitive-load gate + SNR optimization | `references/tri-engine-review.md`, `references/review-effectiveness.md` |
+| Security-First | `security` | | CWE/OWASP focus, stricter checks on AI-generated code | Tri-engine fan-out + security focus; attach OWASP/CWE mapping to every finding; scrutinize AI-generated code | `references/tri-engine-review.md`, `references/codex-integration.md` |
+| Perf Focus | `perf` | | Focus on N+1 / render cost / bundle size | Tri-engine fan-out + perf focus (N+1, render cost, bundle size) | `references/tri-engine-review.md`, `references/review-effectiveness.md` |
+| Style Readability | `style` | | Naming and structure only (no bug flagging, Claude single engine) | Claude single-engine subagent; naming/structure/consistency only; no bug or security flags | `references/code-smell-detection.md`, `references/consistency-patterns.md` |
+| Quick Check | `quick` | | <50 LOC low-risk, Claude single engine | Claude single-engine subagent; all findings treated as CANDIDATE and grounded | `references/claude-review-usage.md` |
+| Intent Alignment | `intent` | | Focus on alignment between code and PR body | Tri-engine fan-out + intent focus (PR body vs diff) | `references/tri-engine-review.md`, `references/review-anti-patterns.md` |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
-- Otherwise → default Recipe (`pr` = Tri-Engine PR Review). Apply full SCOPE → FAN-OUT → ... → REPORT workflow.
-
-Behavior notes per Recipe:
-- `pr`: Tri-engine fan-out (Codex + Antigravity + Claude Code in parallel). Apply cognitive-load gate and SNR optimization.
-- `security`: Tri-engine fan-out + security focus area. Attach OWASP/CWE mapping to every finding. Scrutinize AI-generated code closely.
-- `perf`: Tri-engine fan-out + performance focus area. Concentrate on N+1, render cost, and bundle size.
-- `style`: Claude single engine (subagent). No bug or security flags. Naming, structure, and consistency only.
-- `quick`: Claude single engine (subagent). For <50 LOC / low risk only. All findings require grounding as CANDIDATE.
-- `intent`: Focus on alignment between PR body and code changes. Scrutinize diffs via tri-engine.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`pr` = Tri-Engine PR Review). Apply full SCOPE → FAN-OUT → … → REPORT workflow.
+- For single-engine fallback (user-named engine, ≥2 engines unavailable, or trivial scope) → collapse to SCOPE → EXECUTE → ANALYZE → REPORT → ROUTE; all findings require grounding.
 
 ## Output Routing
 
@@ -339,13 +329,13 @@ In all suppression cases, write a one-line note in the report explaining why.
 | `references/codex-integration.md` | You need severity categories, output interpretation, severity override rules, false positive filtering, report template, REVIEW.md interpretation, PR size assessment, or multi-agent verification. |
 | `references/bug-patterns.md` | You need the full bug pattern catalog with code examples. |
 | `references/framework-reviews.md` | You need framework-specific review prompts and code examples. |
-| `references/consistency-patterns.md` | You need detection heuristics, code examples, or false positive filtering for consistency issues. |
+| `references/consistency-patterns.md` | You need detection heuristics or false-positive filtering for consistency issues. Pairs with `_common/CONSISTENCY_FRAMEWORK.md` (shared taxonomy / severity rubric / finding schema). |
 | `references/test-quality-patterns.md` | You need scoring details, test quality catalog, or handoff formats. |
 | `references/collaboration-patterns.md` | You need full flow diagrams (Pattern A-F). |
 | `references/review-anti-patterns.md` | You need review process anti-patterns (AWS 6 types), behavioral anti-patterns (8 types), cognitive bias countermeasures. |
 | `references/ai-review-patterns.md` | You need 2026 AI review patterns, tool landscape, or specialist-agent architecture. |
 | `references/review-effectiveness.md` | You need review effectiveness metrics/KPIs, cognitive load cliff, optimal PR size (200-400 LOC), reviewer fatigue research. |
-| `references/code-smell-detection.md` | You need structural code smell Top 10 (God Class/Spaghetti/Primitive Obsession etc.), detection thresholds, routing targets. |
+| `references/code-smell-detection.md` | You need Judge-specific detection heuristics during review, severity weighting rules, or routing targets. Pairs with `_common/CODE_SMELL_CATALOG.md` (shared smell taxonomy / definitions / canonical examples). |
 | `references/skill-review-criteria.md` | You are reviewing SKILL.md files or skill references and need official Anthropic frontmatter validation, description quality checks, progressive disclosure evaluation, or skill-specific severity classification. |
 | `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing a Judge-specific verb (APPLY-FIX / REWRITE / REVERT-AND-RESTART / BREAKING-FIX / INVESTIGATE-FURTHER / DOWNGRADE), or deciding whether to suppress the prompt for nit-only / escalations / single-engine findings. |
 | `_common/LLM_PROMPT_GENERATION.md` | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Scout/Trail/Sentinel/Plea. |

@@ -162,60 +162,46 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 ## Recipes
 
+Single source of truth for Recipe definitions. Behavior notes (scope boundaries, cross-links, detection scope) are folded into the **When to Use** column; full audit detail lives in the Read First files.
+
 | Recipe | Subcommand | Default? | When to Use | Read First |
 |--------|-----------|---------|-------------|------------|
-| Full Security Scan | `scan` | ✓ | Full static security scan (OWASP Top 10) | `references/vulnerability-patterns.md`, `references/owasp-2025-checklist.md` |
-| Secrets Audit | `secrets` | | Hardcoded credential and API key detection | `references/vulnerability-patterns.md`, `references/defensive-controls.md` |
-| Injection Check | `injection` | | SQL/XSS/command injection focus | `references/vulnerability-patterns.md`, `references/owasp-2025-checklist.md` |
-| Dependency CVE | `deps` | | Dependency vulnerability scan and supply-chain risk | `references/supply-chain-security.md` |
-| Headers Audit | `headers` | | Security header audit (CSP/CORS/HSTS) | `references/defensive-controls.md` |
-| Authentication Audit | `authn` | | Session / JWT / OAuth-OIDC / MFA / password-storage review (OWASP A07:2025) | `references/authn-audit.md`, `references/api-security.md` |
-| Authorization Audit | `authz` | | RBAC / ABAC correctness, IDOR, BOLA/BFLA, privilege-escalation review (OWASP A01:2025) | `references/authz-audit.md`, `references/api-security.md` |
-| AI Security Audit | `aisec` | | LLM integration static review — prompt injection, PII leakage, unsafe tool-use (OWASP LLM Top 10 2025) | `references/ai-security.md`, `references/ai-code-security.md` |
-| Mobile Security | `mobile` | | MASVS v2.1.0 + MAS Checklist static audit across 8 categories, MASWE-mapped findings (MASWE-0005 hardcoded keys priority), iOS / Android secret scan beyond source (`Info.plist`, `gradle.properties`), insecure-storage / first-party-only pinning verification, MobSF integration | `references/vulnerability-patterns.md` |
-| Multi-Engine | `multi` | | Tri-engine parallel SAST (Codex + Antigravity + Claude Code in one Agent-tool message); Pattern C concurrence scoring + Sentinel-strict grounding; high-assurance scan for AI-authored code, security-critical surfaces, or whenever single-engine confidence is insufficient (78% single-tool miss rate) | `references/tri-engine-scan.md`, `_common/MULTI_ENGINE_RECIPE.md` |
+| Full Security Scan | `scan` | ✓ | Full static security scan covering every OWASP Top 10:2025 category. Prefer delta scans for new/changed code with periodic full scans. Multi-engine recommended for high-assurance. | `references/vulnerability-patterns.md`, `references/owasp-2025-checklist.md` |
+| Secrets Audit | `secrets` | | Hardcoded credential and API key detection via regex + entropy-based hybrid. Cover git history as well — secrets persist after file deletion. Not considered complete until revocation is confirmed. | `references/vulnerability-patterns.md`, `references/defensive-controls.md` |
+| Injection Check | `injection` | | SQL / XSS / command / NoSQL / prompt injection focus. Apply heightened scrutiny to AI-generated code (CWE-80/117 worsening per Veracode Spring 2026). | `references/vulnerability-patterns.md`, `references/owasp-2025-checklist.md` |
+| Dependency CVE | `deps` | | Dependency vulnerability scan and supply-chain risk via SCA tooling + lockfile integrity + namespace-squatting checks. Manage SBOM in the operational workflow (SPDX/CycloneDX + VEX). | `references/supply-chain-security.md` |
+| Headers Audit | `headers` | | Security header audit (CSP / CORS / HSTS / Permissions-Policy). Start in report-only and enforce incrementally. | `references/defensive-controls.md` |
+| Authentication Audit | `authn` | | Static audit of authentication surfaces — session lifecycle (rotation, fixation, idle/absolute timeout), JWT handling (algorithm pinning, `none`/alg-confusion, `kid` injection, expiry + audience validation), OAuth/OIDC flows (PKCE, state, redirect-URI allowlist, token storage), MFA enforcement paths, password storage (bcrypt/argon2id cost, pepper handling). Maps to OWASP A07:2025 and CWE-287/384/521/798. **Scope boundary**: Sentinel reviews USE of crypto primitives — algorithm/key design belongs to `Crypt`; runtime exploitability (credential stuffing, session hijack demo) belongs to `Probe`. Cross-link both on CRITICAL findings. | `references/authn-audit.md`, `references/api-security.md` |
+| Authorization Audit | `authz` | | Static audit of access-control enforcement — RBAC/ABAC correctness, missing `requireRole` / `requirePermission` wiring on handlers, IDOR (CWE-639) via unverified path/query IDs, BOLA/BFLA on REST+GraphQL resolvers, horizontal (same-role cross-tenant) and vertical (role-escalation) privilege checks, tenant-scope leaks in ORM queries. Maps to OWASP A01:2025 and CWE-285/639/863. Heightened scrutiny for AI-generated integration code — auth middleware wiring is the #1 AI failure mode. **Scope boundary**: Sentinel finds the missing check statically; `Probe` confirms exploitability against a live endpoint. Cross-link to `Probe` when the gap is high-confidence. | `references/authz-audit.md`, `references/api-security.md` |
+| AI Security Audit | `aisec` | | Static review of LLM integration code — prompt-template injection surfaces, output handling (markdown / HTML escaping to block rendered-prompt attacks), indirect prompt injection via retrieved content (RAG sources, tool results, user-uploaded docs), PII scrubbing before prompt assembly and before logging, tool-use boundary (allowlisted tools, parameter validation, no shell/SQL passthrough), model-output-to-action gating, rate/cost limits. Maps to OWASP LLM Top 10 2025: LLM01 / LLM02 / LLM06 / LLM07. **Scope boundary**: Sentinel audits the integration code path; adversarial jailbreak/red-team validation belongs to `Breach`. Cross-link to `Breach` for adversarial validation after static findings are remediated. | `references/ai-security.md`, `references/ai-code-security.md` |
+| Mobile Security | `mobile` | | OWASP MASVS v2.1.0 + MAS Checklist static audit for iOS / Android apps across 8 categories: **STORAGE** (Keychain `.biometryCurrentSet` + `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` for iOS; Tink-encrypted DataStore for Android — flag `UserDefaults` / plain `SharedPreferences` / deprecated `EncryptedSharedPreferences` for token storage); **CRYPTO** (route algorithm/parameter design to `Crypt`; verify constant-time comparison, no custom primitives); **AUTH** (Passkey / Credential Manager wiring, Sign in with Apple alongside 3rd-party SSO, session/JWT defaults — cross-link `authn`); **NETWORK** (TLS 1.2+, first-party-only certificate pinning with ≥ 2 backup public keys; flag wide third-party pinning); **PLATFORM** (deep-link allowlist, IPC validation, WebView `javascriptEnabled` review, AT/AS hardening); **CODE** (third-party SDK CVE check, MASWE-0005 hardcoded credentials priority — scan `Info.plist` / `*.xcconfig` / `gradle.properties` / `local.properties` / `BuildConfig` / strings.xml / decompiled binary, not just source); **RESILIENCE** (root/jailbreak detection trade-offs, anti-tamper for high-risk apps only); **PRIVACY** (Required Reasons API usage, ANDROID_ID handling — cross-link `Cloak` for Privacy Manifest review). Run MobSF v4.4.2 SAST/DAST as a CI step on APK/IPA artifacts and merge findings. **Scope boundary**: Sentinel finds static gaps and MASWE mappings; `Probe` confirms exploitability with Frida 17+ / MobSF dynamic / Drozer; `Crypt` owns algorithm and key-management design; `Cloak` owns privacy-side compliance; `Native` implements the fix. | `references/vulnerability-patterns.md` |
+| Multi-Engine | `multi` | | Tri-engine parallel SAST — spawn Codex + Antigravity + Claude Code subagents in a single Agent-tool message; results integrated via Pattern C concurrence (CONFIRMED 3/3 / LIKELY 2/3 / CANDIDATE 1/3-must-ground). PREFLIGHT engine binaries in main context before fan-out. GROUND every CANDIDATE with Sentinel-strict checks (Plausible Hallucination, lockfile reality, registry probe, upstream-mitigation rule-out). FILTER aggressively — every shipped finding actionable. Use for AI-authored code, single-engine ambiguity, or security-critical surfaces (auth/payments/PII); reserve for high-assurance (78% single-tool miss rate). | `references/tri-engine-scan.md`, `_common/MULTI_ENGINE_RECIPE.md` |
+
+### Signal Keywords → Recipe
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply.
+
+| Keywords | Recipe |
+|----------|--------|
+| `secret`, `credential`, `API key`, `hardcoded` | `secrets` |
+| `injection`, `SQL`, `XSS`, `CSRF`, `command injection` | `injection` |
+| `CVE`, `dependency`, `SBOM`, `supply chain`, `dependency confusion`, `typosquatting`, `slopsquatting`, `lockfile` | `deps` |
+| `header`, `CSP`, `CORS`, `HSTS` | `headers` |
+| `auth`, `JWT`, `OAuth`, `rate limit` | `authn` / `authz` (route by access-control vs identity focus) |
+| `AI-generated`, `LLM`, `MCP`, `prompt injection`, `vibe coding`, `Copilot` | `aisec` (heightened CWE-918/798/22/78 scrutiny; for MCP also scan config files for leaked secrets and validate tool descriptions for injection payloads) |
+| `OWASP`, `audit`, `checklist` | `scan` (full OWASP Top 10 audit) |
+| `MASVS`, `MASTG`, `MASWE`, `mobile security`, `iOS security`, `Android security`, `MobSF`, `Info.plist`, `gradle.properties`, `local.properties`, `xcconfig`, `BuildConfig` | `mobile` |
+| `multi-engine`, `tri-engine security`, `tri-engine scan`, `parallel SAST`, `cross-engine vulnerability scan`, `high-assurance scan` | `multi` |
+| `SARIF`, `machine-readable` | any Recipe with `--sarif` output mode (see `references/defensive-controls.md`) |
+| unclear request | clarify scope and route per `_common/BOUNDARIES.md` |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
-- Otherwise → default Recipe (`scan` = Full Security Scan). Apply SCAN → PRIORITIZE → FILTER → SECURE → VERIFY → PRESENT workflow.
-
-Behavior notes per Recipe:
-- `scan`: Cover every OWASP Top 10:2025 category. Prefer delta scans with periodic full scans. Multi-engine recommended.
-- `secrets`: regex + entropy-based hybrid. Cover git history as well. Not considered complete until revocation is confirmed.
-- `injection`: SQL / XSS / command / NoSQL / prompt injection. Apply heightened scrutiny to AI-generated code.
-- `deps`: SCA tooling + lockfile integrity + namespace-squatting checks. Manage SBOM in the operational workflow.
-- `headers`: CSP / CORS / HSTS / Permissions-Policy. Start in report-only and enforce incrementally.
-- `authn`: Static audit of authentication surfaces — session lifecycle (rotation, fixation, idle/absolute timeout), JWT handling (algorithm pinning, `none`/alg-confusion, `kid` injection, expiry + audience validation), OAuth/OIDC flows (PKCE, state, redirect-URI allowlist, token storage), MFA enforcement paths, password storage (bcrypt/argon2id cost, pepper handling). Maps to OWASP A07:2025 and CWE-287/384/521/798. Scope boundary: Sentinel reviews USE of crypto primitives — algorithm/key design belongs to `Crypt`; runtime exploitability (credential stuffing, session hijack demo) belongs to `Probe`. Cross-link both on CRITICAL findings.
-- `authz`: Static audit of access-control enforcement — RBAC/ABAC correctness, missing `requireRole` / `requirePermission` wiring on handlers, IDOR (CWE-639) via unverified path/query IDs, BOLA/BFLA on REST+GraphQL resolvers, horizontal (same-role cross-tenant) and vertical (role-escalation) privilege checks, tenant-scope leaks in ORM queries. Maps to OWASP A01:2025 and CWE-285/639/863. Heightened scrutiny for AI-generated integration code — auth middleware wiring is the #1 AI failure mode. Scope boundary: Sentinel finds the missing check statically; `Probe` confirms exploitability against a live endpoint. Cross-link to `Probe` when the gap is high-confidence.
-- `aisec`: Static review of LLM integration code — prompt-template injection surfaces, output handling (markdown / HTML escaping to block rendered-prompt attacks), indirect prompt injection via retrieved content (RAG sources, tool results, user-uploaded docs), PII scrubbing before prompt assembly and before logging, tool-use boundary (allowlisted tools, parameter validation, no shell/SQL passthrough), model-output-to-action gating, rate/cost limits. Maps to OWASP LLM Top 10 2025: LLM01 Prompt Injection, LLM02 Sensitive Information Disclosure, LLM06 Excessive Agency, LLM07 System Prompt Leakage. Scope boundary: Sentinel audits the integration code path; adversarial jailbreak/red-team validation belongs to `Breach`. Cross-link to `Breach` for adversarial validation after static findings are remediated.
-- `mobile`: OWASP MASVS v2.1.0 + MAS Checklist static audit for iOS / Android apps. Walk 8 categories: **STORAGE** (Keychain `.biometryCurrentSet` + `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` for iOS secrets; Tink-encrypted DataStore for Android — flag `UserDefaults` / plain `SharedPreferences` / deprecated `EncryptedSharedPreferences` for token storage); **CRYPTO** (route algorithm/parameter design to `Crypt`; verify constant-time comparison, no custom primitives); **AUTH** (Passkey / Credential Manager wiring, Sign in with Apple alongside 3rd-party SSO, session/JWT defaults — cross-link `authn`); **NETWORK** (TLS 1.2+, first-party-only certificate pinning with ≥ 2 backup public keys; flag wide third-party pinning); **PLATFORM** (deep-link allowlist, IPC validation, WebView `javascriptEnabled` review, AT/AS hardening); **CODE** (third-party SDK CVE check, MASWE-0005 hardcoded credentials priority — scan `Info.plist` / `*.xcconfig` / `gradle.properties` / `local.properties` / `BuildConfig` / strings.xml / decompiled binary, not just source); **RESILIENCE** (root/jailbreak detection trade-offs, anti-tamper for high-risk apps only); **PRIVACY** (Required Reasons API usage, ANDROID_ID handling — cross-link `Cloak` for Privacy Manifest review). Run MobSF v4.4.2 SAST/DAST as a CI step on APK/IPA artifacts and merge findings. Scope boundary: Sentinel finds static gaps and MASWE mappings; `Probe` confirms exploitability with Frida 17+ / MobSF dynamic / Drozer; `Crypt` owns algorithm and key-management design; `Cloak` owns privacy-side compliance; `Native` implements the fix.
-- `multi`: Tri-engine parallel SAST — spawn Codex + Antigravity + Claude Code subagents in a single Agent-tool message, each runs an independent scan, results integrated via Pattern C concurrence (CONFIRMED 3/3 / LIKELY 2/3 / CANDIDATE 1/3-must-ground). PREFLIGHT engine binaries in main context before fan-out (probe `command -v` then fallback paths). GROUND every CANDIDATE with Sentinel-strict checks: Plausible Hallucination check on cited sink, lockfile reality check for dependency CVEs, registry probe for slopsquat/typosquat, upstream-mitigation rule-out. FILTER aggressively — every shipped finding must be actionable (no style-only, no already-mitigated, no hallucinated sinks). Use when AI-authored code is being reviewed, when single-engine confidence is insufficient, or when the scope is security-critical (auth/payments/PII handling). Default to `scan` for routine work; reserve `multi` for high-assurance.
-
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| `secret`, `credential`, `API key`, `hardcoded` | Secret detection scan | Finding report with severity + remediation | `references/vulnerability-patterns.md` |
-| `injection`, `SQL`, `XSS`, `CSRF`, `command injection` | Injection vulnerability scan | OWASP-mapped finding + fix | `references/vulnerability-patterns.md` |
-| `CVE`, `dependency`, `SBOM`, `supply chain` | Dependency / supply-chain scan — demand operational SBOM workflows (not static compliance snapshots) | CVE report + upgrade path | `references/supply-chain-security.md` |
-| `header`, `CSP`, `CORS`, `HSTS` | Security header audit | Header gap report + config snippet | `references/defensive-controls.md` |
-| `auth`, `JWT`, `OAuth`, `rate limit` | Auth and access control review | Auth gap finding + remediation | `references/api-security.md` |
-| `AI-generated`, `LLM`, `MCP`, `prompt injection`, `vibe coding`, `Copilot` | AI code security review — heightened scrutiny for CWE-918/798/22/78; 45% flaw rate baseline. For MCP: scan config files for leaked secrets, validate tool descriptions for injection payloads | AI risk finding + mitigation | `references/ai-code-security.md` |
-| `supply chain`, `dependency confusion`, `typosquatting`, `slopsquatting`, `lockfile` | Supply-chain attack surface audit — verify provenance, lockfile integrity, namespace squatting | Supply-chain risk report + remediation | `references/supply-chain-security.md` |
-| `SARIF`, `machine-readable` | SARIF output mode | SARIF-compatible JSON report | `references/defensive-controls.md` |
-| `multi-engine`, `tri-engine security`, `tri-engine scan`, `parallel SAST`, `cross-engine vulnerability scan`, `high-assurance scan` | Tri-engine parallel SAST fan-out (Codex + Antigravity + Claude Code subagents in one Agent-tool message) — Pattern C concurrence scoring + Sentinel-strict grounding (Plausible Hallucination, lockfile reality, registry probe, upstream-mitigation rule-out) | Engine-attributed finding set (CONFIRMED 3/3 / LIKELY 2/3 / VERIFIED 1/3-grounded), rejection ledger, AI-code section if applicable | `references/tri-engine-scan.md`, `_common/MULTI_ENGINE_RECIPE.md` |
-| `OWASP`, `audit`, `checklist` | Full OWASP Top 10 audit | Checklist-based report | `references/owasp-2025-checklist.md` |
-| `MASVS`, `MASTG`, `MASWE`, `mobile security`, `iOS security`, `Android security`, `MobSF` | Mobile static audit (MASVS v2.1.0 + MASWE) | MASVS-categorized findings + MASWE mappings + MobSF integration | `references/vulnerability-patterns.md` |
-| `Info.plist`, `gradle.properties`, `local.properties`, `xcconfig`, `BuildConfig` | Mobile binary secret scan | Hardcoded credential findings (MASWE-0005) | `references/vulnerability-patterns.md` |
-| unclear request | Clarify scope and route | Scoped analysis | `references/vulnerability-patterns.md` |
-
-Routing rules:
-
-- If the request matches another agent's primary role, route to that agent per `_common/BOUNDARIES.md`.
-- Always read relevant `references/` files before producing output.
-- For complex multi-agent tasks, route to Nexus.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`scan` = Full Security Scan).
+- Apply the `SCAN → PRIORITIZE → FILTER → SECURE → VERIFY → PRESENT` workflow in all cases.
+- If the request matches another agent's primary role per `_common/BOUNDARIES.md`, route to that agent; for complex multi-agent tasks, route to Nexus.
 
 ## Output Requirements
 

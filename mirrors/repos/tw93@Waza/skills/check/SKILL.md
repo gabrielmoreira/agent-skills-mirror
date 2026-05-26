@@ -13,6 +13,13 @@ Prefix your first line with 🥷 inline, not as its own paragraph.
 
 Read the diff, find the problems, fix what can be fixed safely, ask about the rest. Done means verification ran in this session and passed.
 
+## Outcome Contract
+
+- Outcome: a review, release decision, or maintainer action grounded in the current diff, project context, and live evidence.
+- Done when: findings, fixes, shipped state, or blockers are stated with the commands, artifacts, or remote state that prove them.
+- Evidence: worktree status, diff, public project docs, manifests, CI, package contents, release or registry state, and current command output.
+- Output: concise findings first, then verification and shipped-state summary when applicable.
+
 ## Worktree Safety Preflight
 
 Before any review, triage, ship, release, or PR operation, read the current worktree with:
@@ -91,7 +98,7 @@ Activate when the user mentions: issue, PR, "review all", triage, "batch", or "�
 
 **Action-first rule:** Items with a clear disposition (already fixed, duplicate, already released) get acted on immediately without analysis paragraphs. When analyzing screenshots or images, state what you see and the suggested action in one message. Only ask the user when the disposition is genuinely ambiguous.
 
-**Flow:** Pull open items with `gh issue list -R <repo> --state open --limit 20` and `gh pr list -R <repo> --state open`. For each item, check if a fix already shipped: `git log --oneline <latest-tag>..HEAD | grep -i "<keyword>"`. If shipped: close with note. If merged but unreleased: reply "已修复，等下一个版本 release" and close. If no fix: analyze and act. Fix now if possible (`fix: closes #N` commit); when the target project documents a nightly, beta, or pre-release channel that already contains the fix, reply with that exact upgrade path and close; for valid-but-unreleased items acknowledge and leave open; for invalid items give one-two sentence reason and close.
+**Flow:** First identify the project's issue/PR host from public context. For GitHub projects, pull open items with `gh issue list -R <repo> --state open --limit 20` and `gh pr list -R <repo> --state open`. For non-GitHub projects, use the platform CLI/API named by the project docs or user request; if none exists, stop and report the missing integration instead of pretending GitHub commands apply. For each item, check if a fix already shipped: `git log --oneline <latest-tag>..HEAD | grep -i "<keyword>"`. If shipped: close with note. If merged but unreleased: reply "已修复，等下一个版本 release" and close. If no fix: analyze and act. Fix now if possible (`fix: closes #N` commit); when the target project documents a nightly, beta, or pre-release channel that already contains the fix, reply with that exact upgrade path and close; for valid-but-unreleased items acknowledge and leave open; for invalid items give one-two sentence reason and close.
 
 Before final conclusions in a live queue, refresh the issue/PR list once more and re-read any item that changed during the run. If evidence is incomplete, hold the item instead of closing it on a guess.
 
@@ -128,8 +135,8 @@ This mode extends review; it does not skip review. Before any public or irrevers
 3. Verify generated or bundled outputs, version fields, release notes, package contents, and required artifacts are in sync. Prefer dry-run commands when the ecosystem provides them.
 4. Commit only intended files. Preserve unrelated dirty work, and serialize git operations so index locks or overlapping adds do not corrupt the workflow.
 5. Push, publish, tag, or create a release only when the user has explicitly approved that action. If auth, OTP, CI, registry, or network state blocks the operation, pause and report the exact blocker.
-6. For issue/PR follow-through, confirm the item identity with `gh issue view` or `gh pr view` before posting. Use `references/public-reply.md` for the maintainer reply template (mention, single thanks, facts, explicit next release or verification step) and its closure criteria.
-7. For GitHub release reaction follow-through, only do it when project context or the current thread asks for it. After the release exists and required assets are verified, resolve the release id from the tag, POST every positive release reaction to `repos/<owner>/<repo>/releases/<id>/reactions` with `gh api`, and re-read reactions to confirm. Positive release reactions are `+1`, `laugh`, `heart`, `hooray`, `rocket`, and `eyes`.
+6. For issue/PR follow-through, confirm the item identity with the host's read command before posting. On GitHub, use `gh issue view` or `gh pr view`; on other hosts, use the CLI/API named by project docs or the current request. Use `references/public-reply.md` for the maintainer reply template (mention, single thanks, facts, explicit next release or verification step) and its closure criteria.
+7. For GitHub release reaction follow-through, only do it when project context or the current thread asks for it. After the release exists and required assets are verified, resolve the release id from the tag, POST every positive release reaction to `repos/<owner>/<repo>/releases/<id>/reactions` with `gh api` or the available GitHub tool, and re-read reactions to confirm. Positive release reactions are `+1`, `laugh`, `heart`, `hooray`, `rocket`, and `eyes`.
 8. After network or API failures, re-read the end state instead of assuming success or failure.
 
 End with the concrete shipped state: commit hash, tag, release URL, registry/version result, pushed branch, release asset state, release reaction state, issue/PR state, and any remaining blockers. Omit fields that do not apply.
@@ -140,7 +147,7 @@ Activate when the user asks for a project-wide code-quality scorecard: "audit", 
 
 **Flow**
 
-1. Run `python3 <waza>/skills/check/scripts/audit_signals.py --root <project>` from the target repo. The script emits ten labelled blocks (`=== FILE SIZE HOTSPOTS ===` ... `=== DENYLIST IN BUILD ===`) each ending with `status: PASS|WARN|FAIL`.
+1. Run `python3 <waza>/skills/check/scripts/audit_signals.py --root <project>` from the target repo. The script emits labelled blocks (`=== FILE SIZE HOTSPOTS ===` ... `=== DENYLIST IN BUILD ===`) each ending with `status: PASS|WARN|FAIL|N/A`.
 2. Skim the largest source files surfaced by `FILE SIZE HOTSPOTS` (typically 3-5; stop sooner if the architecture is already clear).
 3. Read `CLAUDE.md` / `AGENTS.md` / `README.md` to learn the project's own stated conventions before judging it against generic ones.
 4. Apply the four-axis rubric below. Each axis is independently scored 0-10. Overall = arithmetic mean.
@@ -207,6 +214,8 @@ State the depth before proceeding.
 
 Before reading code, check scope drift: do the diff and the stated goal match? Label: **on target** / **drift** / **incomplete**.
 
+Also check surgical traceability: every changed file and every new public surface must trace back to the user's stated goal. If a file, dependency, config knob, abstraction, generated artifact, workflow permission, or release behavior cannot be explained in one sentence from the request, label it drift until proven necessary.
+
 Drift signals (examples, not exhaustive -- any one is enough to label drift):
 - A changed file has no connection to the stated goal
 - The diff includes pure refactoring (renames, formatting, restructuring) when the goal was a bug fix or feature
@@ -218,6 +227,14 @@ Drift signals (examples, not exhaustive -- any one is enough to label drift):
 ## Pattern-Fix Completeness
 
 When the diff fixes one instance of a class-of-bug (a missing validation, a wrong selector, an off-by-one, a missing lock), the same shape often lives elsewhere. Extract the pattern signature, `grep -rn` it across the repo (exclude generated dirs), and confirm sibling instances were also handled. List any unswept sibling: flag it as a hard stop when it carries the same risk, advisory when lower-risk. For a deeper sweep playbook, see hunt's Scope Blast Mode.
+
+## CLI Command Surface
+
+When a diff touches a CLI entrypoint, installer, completion, config/env handling, package wrapper, or a mutating command such as cleanup, update, uninstall, migration, or cache removal, fill the CLI Command Surface from `references/project-context.md` before sign-off.
+
+Check command contract and installed-runtime behavior, not just library tests: help/version, subcommands/flags, exit codes, stdout/stderr, JSON/schema output, TTY/non-interactive paths, env/config precedence, shebang/executable bit, PATH shim, and package-manager install path when applicable.
+
+For mutating CLI commands, also run the Safety Sink Review: dry-run or confirmation path, operation log or rollback story, retry/idempotency, signal/partial-failure handling, and test-mode guards for auth prompts or real system changes.
 
 ## Hard Stops (fix before merging)
 
@@ -297,9 +314,9 @@ Apply all `safe_auto` fixes first. Batch all `gated_auto` into one confirmation 
 
 "If I were trying to break this system through this specific diff, what would I exploit?" Four angles (see `references/persona-catalog.md`): assumption violation, composition failures, cascade construction, abuse cases. Suppress findings below 0.60 confidence.
 
-## GitHub Operations
+## Platform Operations
 
-Use `gh` CLI for all GitHub interactions, not MCP or raw API. Confirm CI passes before merging.
+Use the platform tool that matches the project. For GitHub projects, prefer `gh` or the available GitHub integration and confirm CI passes before merging. For non-GitHub projects, derive the CLI/API from public project docs or the user's explicit platform context; do not force GitHub commands onto other hosts.
 
 ## Verification
 

@@ -125,6 +125,7 @@ const VALID_USER_EVENTS = new Set([
   "UserPromptSubmit",
   "beforeSubmitPrompt", // Cursor
   "BeforeAgent", // Gemini (fires before agent processes user prompt)
+  "PreInvocation", // Antigravity CLI (agy)
 ]);
 
 /**
@@ -255,6 +256,8 @@ export function recordKwTrigger(
 
 function inferVendorFromScriptPath(): Vendor | null {
   const path = import.meta.filename;
+  if (path.includes(`${join(".gemini", "antigravity-cli", "hooks")}`))
+    return "antigravity";
   if (path.includes(`${join(".cursor", "hooks")}`)) return "cursor";
   if (path.includes(`${join(".qwen", "hooks")}`)) return "qwen";
   if (path.includes(`${join(".claude", "hooks")}`)) return "claude";
@@ -267,6 +270,7 @@ function detectVendor(input: Record<string, unknown>): Vendor {
   const event = input.hook_event_name as string | undefined;
   const byScriptPath = inferVendorFromScriptPath();
   if (byScriptPath) return byScriptPath;
+  if (event === "PreInvocation") return "antigravity";
   if (event === "BeforeAgent") return "gemini";
   if (event === "beforeSubmitPrompt") return "cursor";
   if (event === "UserPromptSubmit") {
@@ -287,6 +291,13 @@ function getProjectDir(vendor: Vendor, input: Record<string, unknown>): string {
       break;
     case "gemini":
       dir = process.env.GEMINI_PROJECT_DIR || process.cwd();
+      break;
+    case "antigravity":
+      dir =
+        (input.cwd as string) ||
+        process.env.ANTIGRAVITY_PROJECT_DIR ||
+        process.env.AGY_PROJECT_DIR ||
+        process.cwd();
       break;
     case "qwen":
       dir = process.env.QWEN_PROJECT_DIR || process.cwd();
@@ -607,6 +618,35 @@ function activateMode(
   );
 }
 
+async function activateL1WorkflowSession(
+  projectDir: string,
+  workflow: string,
+  vendor: string,
+  vendorSid: string,
+  category = "main",
+): Promise<string | null> {
+  try {
+    const [{ setActiveSession }, { createEventId, emitEvent }] =
+      await Promise.all([
+        import("./state-marker.ts"),
+        import("./state-emit.ts"),
+      ]);
+    const sid = `oma-${createEventId()}`;
+    setActiveSession(projectDir, category, sid);
+    emitEvent(projectDir, sid, {
+      kind: "session.created",
+      vendor,
+      vendorSid,
+      payload: { workflow, category },
+    });
+    return sid;
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    process.stderr.write(`[oma] L1 session activation failed: ${msg}\n`);
+    return null;
+  }
+}
+
 // ── Deactivation Detection ───────────────────────────────────
 
 export const DEACTIVATION_PHRASES: Record<string, string[]> = {
@@ -739,6 +779,7 @@ async function main() {
       if (def.persistent) {
         activateMode(projectDir, workflow, sessionId);
       }
+      await activateL1WorkflowSession(projectDir, workflow, vendor, sessionId);
       // Record this trigger for reinforcement tracking
       const updatedState = recordKwTrigger(kwState, workflow);
       saveKwState(projectDir, updatedState);

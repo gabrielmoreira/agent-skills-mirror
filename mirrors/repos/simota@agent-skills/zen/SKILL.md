@@ -137,56 +137,46 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `VERIFY` | Re-run tests and compare metrics/baselines | All tests must pass; coverage >= previous | `references/refactoring-anti-patterns.md` |
 | `PRESENT` | Return the required report or handoff | Include scope, verification, and metrics | `references/review-report-templates.md` |
 
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| `rename`, `naming`, `variable name`, `function name` | Variable/function renaming | Refactoring report | `references/refactoring-recipes.md` |
-| `extract`, `long method`, `decompose`, `split function` | Function extraction | Refactoring report | `references/refactoring-recipes.md` |
-| `magic number`, `constant`, `hardcoded` | Magic number extraction | Refactoring report | `references/refactoring-recipes.md` |
-| `dead code`, `unused`, `unreachable` | Dead code removal | Refactoring report | `references/dead-code-detection.md` |
-| `review`, `PR`, `readability`, `audit` | Code review | Review report | `references/review-report-templates.md` |
-| `consistency`, `standardize`, `migration` | Consistency audit | Audit report | `references/consistency-audit.md` |
-| `complexity`, `nesting`, `cognitive` | Complexity reduction | Refactoring report | `references/cognitive-complexity-research.md` |
-| `defensive`, `fallback`, `guard` | Defensive cleanup | Refactoring report | `references/defensive-excess.md` |
-| `test structure`, `test readability` | Test refactoring | Test refactoring report | `references/test-refactoring.md` |
-| unclear refactoring request | Code smell survey + plan | Refactoring report | `references/code-smells-metrics.md` |
-
-Routing rules:
-
-- If the request mentions specific smell types, read `references/refactoring-recipes.md`.
-- If the request mentions dead code, read `references/dead-code-detection.md`.
-- If the request is a PR review, read `references/review-report-templates.md`.
-- If coverage is < 80%, hand off to Radar first before refactoring.
-
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| General Refactor | `refactor` | ✓ | General refactoring (composite improvements, code smell fixes) | `references/refactoring-recipes.md` |
-| Naming Improvement | `naming` | | Variable and function name improvements only | `references/refactoring-recipes.md` |
-| Extract Function | `extract` | | Split and extract long functions | `references/refactoring-recipes.md` |
-| Magic Constants | `constants` | | Replace magic numbers with named constants | `references/refactoring-recipes.md` |
-| Dead Code Removal | `dead` | | Unused code removal | `references/dead-code-detection.md` |
-| Simplify Logic | `simplify` | | Compress redundant branches, ternaries, and unnecessary conversions into equivalent concise forms | `references/logic-simplification.md` |
-| Split Function | `split` | | Incrementally split overly long functions along responsibility boundaries (enhanced `extract`) | `references/function-splitting.md` |
-| Guard Clauses | `guard` | | Convert nested `if` to early return / guard clauses | `references/guard-clauses.md` |
+Single source of truth for Recipe definitions. Use `Read First` column files at activation. Behavior notes encode each Recipe's scope discipline and verification rule.
+
+| Recipe | Subcommand | Default? | When to Use | Behavior | Read First |
+|--------|-----------|---------|-------------|----------|------------|
+| General Refactor | `refactor` | ✓ | General refactoring (composite improvements, code smell fixes) | 複合的なコードスメルを対象。SURVEY でホットスポット特定後、最優先 1 件に絞って適用。 | `references/refactoring-recipes.md` |
+| Naming Improvement | `naming` | | Variable and function name improvements only | 命名のみに限定。スコープ Focused 固定。public API 変更は Ask First。 | `references/refactoring-recipes.md` |
+| Extract Function | `extract` | | Split and extract long functions | 長いメソッドを 1 関数抽出。cognitive complexity 15 超を優先。テストパスを VERIFY で確認。 | `references/refactoring-recipes.md` |
+| Magic Constants | `constants` | | Replace magic numbers with named constants | マジックナンバーを検索し名前付き定数化。型注釈を付与する。 | `references/refactoring-recipes.md` |
+| Dead Code Removal | `dead` | | Unused code removal | ローカル/private から着手。export・動的利用は確認後に実施。Sweep との境界: ファイルレベルは Sweep。TypeScript/JS は `knip` 推奨 (ts-prune は 2025-09 アーカイブ済)。 | `references/dead-code-detection.md` |
+| Simplify Logic | `simplify` | | Compress redundant branches, ternaries, and unnecessary conversions into equivalent concise forms | 冗長な条件・三項演算チェーン・`if/else return true/false` 等を等価圧縮。behavior-preserving 変換パターンのみ採用。ユニットテスト通過を VERIFY 必須。 | `references/logic-simplification.md` |
+| Split Function | `split` | | Incrementally split overly long functions along responsibility boundaries (enhanced `extract`) | 50 行超または cognitive complexity 20 超の関数を責務単位で段階分割。extract より構造的 (境界設計 → 段階実行 → 検証)。テストカバレッジ維持を VERIFY 必須。 | `references/function-splitting.md` |
+| Guard Clauses | `guard` | | Convert nested `if` to early return / guard clauses | ネスト深度 3 以上の条件を早期 return / guard clause に変換。複雑度削減の測定可能な前後比較を添付。 | `references/guard-clauses.md` |
+
+### Signal Keywords → Recipe / Mode
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply.
+
+| Keywords | Routes to |
+|----------|-----------|
+| `rename`, `naming`, `variable name`, `function name` | `naming` |
+| `extract`, `long method`, `decompose`, `split function` | `extract` or `split` |
+| `magic number`, `constant`, `hardcoded` | `constants` |
+| `dead code`, `unused`, `unreachable` | `dead` |
+| `simplify`, `redundant branch`, `ternary chain` | `simplify` |
+| `guard`, `early return`, `nested if`, `defensive`, `fallback` | `guard` (logic) / defensive cleanup (`references/defensive-excess.md`) |
+| `complexity`, `nesting`, `cognitive` | Review mode + appropriate refactor recipe (`references/cognitive-complexity-research.md`) |
+| `review`, `PR`, `readability`, `audit` | Review mode (`references/review-report-templates.md`) |
+| `consistency`, `standardize`, `migration` | Consistency audit (`references/consistency-audit.md`) |
+| `test structure`, `test readability` | Test refactoring (`references/test-refactoring.md`) |
+| unclear refactoring request | Default `refactor` recipe (`references/code-smells-metrics.md`) |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
-- Otherwise → default Recipe (`refactor` = General Refactor). Apply normal SURVEY → PLAN → APPLY → VERIFY → PRESENT workflow.
-
-Behavior notes per Recipe:
-- `refactor`: 複合的なコードスメルを対象。SURVEY でホットスポット特定後、最優先 1 件に絞って適用。
-- `naming`: 命名のみに限定。スコープ Focused 固定。public API 変更は Ask First。
-- `extract`: 長いメソッドを 1 関数抽出。cognitive complexity 15 超を優先。テストパスを VERIFY で確認。
-- `constants`: マジックナンバーを検索し名前付き定数化。型注釈を付与する。
-- `dead`: ローカル/private から着手。export・動的利用は確認後に実施。Sweep との境界: ファイルレベルは Sweep。TypeScript/JS は `knip` 推奨 (ts-prune は 2025-09 アーカイブ済)。
-- `simplify`: 冗長な条件・三項演算チェーン・`if/else return true/false` 等を等価圧縮。behavior-preserving 変換パターンのみ採用。ユニットテスト通過を VERIFY 必須。
-- `split`: 50 行超または cognitive complexity 20 超の関数を責務単位で段階分割。extract より構造的 (境界設計 → 段階実行 → 検証)。テストカバレッジ維持を VERIFY 必須。
-- `guard`: ネスト深度 3 以上の条件を早期 return / guard clause に変換。複雑度削減の測定可能な前後比較を添付。
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`refactor` = General Refactor). Apply SURVEY → PLAN → APPLY → VERIFY → PRESENT.
+- If the request is Review-only (no code changes) → activate Review mode (see `## Review Mode`) instead of a Recipe.
+- If coverage is `< 80%` before refactoring → hand off to Radar first.
 
 ## Output Requirements
 
@@ -268,11 +258,11 @@ Read `_common/SUBAGENT.md` section `MULTI_ENGINE` when this mode is requested.
 
 | Reference | Read this when |
 |-----------|----------------|
-| `references/code-smells-metrics.md` | You need smell taxonomy, complexity thresholds, or measurement commands. |
+| `references/code-smells-metrics.md` | You need Zen refactor mechanics per smell, complexity thresholds, or measurement commands. Pairs with `_common/CODE_SMELL_CATALOG.md` (shared smell taxonomy / definitions / severity hints). |
 | `references/refactoring-recipes.md` | You need a specific refactoring recipe. |
 | `references/dead-code-detection.md` | You plan to remove code. |
 | `references/defensive-excess.md` | You suspect fallback-heavy code is hiding bugs or noise. |
-| `references/consistency-audit.md` | You need cross-file standardization or migration planning. |
+| `references/consistency-audit.md` | You need cross-file standardization or migration planning. Pairs with `_common/CONSISTENCY_FRAMEWORK.md` (shared taxonomy / severity rubric). |
 | `references/test-refactoring.md` | The target is test structure or you need the Zen vs Radar boundary. |
 | `references/review-report-templates.md` | You need exact output anchors or report shapes. |
 | `references/agent-integrations.md` | You need Radar, Canvas, Judge, Guardian, AUTORUN, or Nexus collaboration rules. |

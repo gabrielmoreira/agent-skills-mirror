@@ -95,35 +95,38 @@ For detailed design rules, see .claude/rules/moai/design/constitution.md
 
 ## 4. Agent Catalog
 
+The MoAI agent catalog consists of exactly **8 retained agents** (7 MoAI-custom + 1 Anthropic built-in `Explore`). The catalog is aligned with Anthropic's published best practices: "Subagents cannot spawn other subagents" (claude.com/docs/en/sub-agents), "Start with 3-5 teammates for most workflows" (claude.com/docs/en/agent-teams), and "Define a custom subagent when you keep spawning the same kind of worker" (claude.com/docs/en/best-practices).
+
 ### Selection Decision Tree
 
-1. Read-only codebase exploration? Use the Explore subagent
+1. Read-only codebase exploration? Use the `Explore` subagent (Anthropic built-in)
 2. External documentation or API research? Use WebSearch, WebFetch, Context7 MCP tools
-3. Domain expertise needed? Use the expert-[domain] subagent
-4. Workflow coordination needed? Use the manager-[workflow] subagent
-5. Complex multi-step tasks? Use the manager-strategy subagent
+3. SPEC plan-phase authoring? Use the `manager-spec` subagent
+4. Run-phase implementation (DDD/TDD/autofix)? Use the `manager-develop` subagent with the appropriate `cycle_type`
+5. Sync-phase documentation? Use the `manager-docs` subagent
+6. PR creation per Tier-based routing (Tier L OR explicit `--pr`)? Use the `manager-git` subagent
+7. Plan-phase independent audit (bias prevention)? Use the `plan-auditor` subagent
+8. Sync-phase quality 4-dimension scoring? Use the `evaluator-active` subagent
+9. Dynamic specialist generation (project-specific harness)? Use the `builder-harness` subagent
 
-### Manager Agents (8)
+### Retained Agents (8 total)
 
-spec, develop, docs, quality, project, strategy, brain, git
+| Agent | Class | Phase scope | Reference |
+|-------|-------|-------------|-----------|
+| `manager-spec` | core/manager | Plan-phase artifact authoring (spec/plan/acceptance/research/design) | `.claude/agents/moai/manager-spec.md` |
+| `manager-develop` | core/manager | Run-phase implementation (cycle_type ∈ {ddd, tdd, autofix}) | `.claude/agents/moai/manager-develop.md` |
+| `manager-docs` | core/manager | Sync-phase documentation (CHANGELOG, README, frontmatter transitions) | `.claude/agents/moai/manager-docs.md` |
+| `manager-git` | core/manager | PR creation per Tier-based routing + Late-Branch closure | `.claude/agents/moai/manager-git.md` |
+| `plan-auditor` | meta/evaluator | Independent plan-phase audit, bias prevention, GEARS compliance | `.claude/agents/moai/plan-auditor.md` |
+| `evaluator-active` | meta/evaluator | Independent skeptical quality assessment, 4-dimension scoring | `.claude/agents/moai/evaluator-active.md` |
+| `builder-harness` | builder | Dynamic project-specific harness specialist generation | `.claude/agents/builder/builder-harness.md` |
+| `Explore` | Anthropic built-in | Read-only codebase exploration (no MoAI file — invoked directly) | claude.com/docs/en/sub-agents |
 
-### Expert Agents (6)
+### Archived Agents (legacy references rejected at spawn)
 
-backend, frontend, security, devops, performance, refactoring
+The following agent names are **archived** and MUST NOT be spawned: `manager-strategy`, `manager-quality`, `manager-brain`, `manager-project`, `claude-code-guide`, `researcher`, `expert-backend`, `expert-frontend`, `expert-security`, `expert-devops`, `expert-performance`, `expert-refactoring`.
 
-### Builder Agents (1)
-
-platform
-
-### Evaluator Agents (2)
-
-evaluator-active (independent skeptical quality assessment, 4-dimension scoring)
-plan-auditor (independent plan-phase document audit, bias prevention, EARS compliance)
-
-### Agency Agents (2) — copywriter and designer retained as fallback path B skills
-
-copywriter (absorbed into moai-domain-copywriting skill), designer (absorbed into moai-domain-brand-design skill)
-planner, builder, evaluator, learner removed in SPEC-AGENCY-ABSORB-001 M5
+When a paste-ready resume message or `Agent()` invocation references one of these archived agents, the orchestrator MUST reject the spawn and consult the migration table at `.claude/rules/moai/workflow/archived-agent-rejection.md`. The retained-agent replacement pattern (per-spawn `Agent(general-purpose)` with domain-specific instructions, or routing to one of the 8 retained agents above) is documented there.
 
 ### Dynamic Team Generation (Experimental)
 
@@ -133,7 +136,7 @@ Role profiles (in `workflow.yaml`): researcher, analyst, architect, implementer,
 
 Requires: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` env var AND `workflow.team.enabled: true` in workflow.yaml.
 
-For detailed agent descriptions, see the Agent Catalog section above. For agent creation guidelines, use the builder-harness subagent or see `.claude/rules/moai/development/agent-authoring.md`.
+For detailed agent descriptions, see the Retained Agents table above. For agent creation guidelines, use the `builder-harness` subagent or see `.claude/rules/moai/development/agent-authoring.md`. For migration of references to the 12 archived agents, see `.claude/rules/moai/workflow/archived-agent-rejection.md`.
 
 ---
 
@@ -333,7 +336,7 @@ MoAI-ADK uses Claude Code's official rules system at `.claude/rules/moai/`:
 - **Language rules**: Path-specific rules for 16 programming languages
 - **Design rules**: Design system constitution (.claude/rules/moai/design/constitution.md)
 
-### Design System Configuration (absorbed from agency, SPEC-AGENCY-ABSORB-001)
+### Design System Configuration (absorbed from agency per the design-system absorption policy)
 
 - `.moai/config/sections/design.yaml`: Design pipeline settings, GAN loop parameters, sprint contract, evolution thresholds
 - `.moai/project/brand/`: Brand voice (brand-voice.md), visual identity (visual-identity.md), target audience (target-audience.md)

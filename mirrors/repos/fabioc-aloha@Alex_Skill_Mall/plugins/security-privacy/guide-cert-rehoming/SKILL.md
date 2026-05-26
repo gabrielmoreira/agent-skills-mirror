@@ -3,7 +3,7 @@ type: skill
 lifecycle: stable
 inheritance: inheritable
 name: guide-cert-rehoming
-description: >
+description: "End-to-end process of rehoming (moving or reissuing) certificates so every production Entra app credential lives in the same tenant and cloud as the app itself."
 tier: standard
 applyTo: '**/*guide*,**/*cert*,**/*rehoming*'
 currency: 2026-04-30

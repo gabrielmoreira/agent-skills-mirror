@@ -7,9 +7,9 @@ Codex / ChatGPT login is different. Codex image generation is driven by Codex OA
 ## What to use instead
 
 - If running inside Codex and the native `imagegen` skill/tool is available, use it directly.
-- If running outside Codex but the `codex` CLI is installed and logged in, use the repo-level `scripts/codex-imagegen.sh` wrapper when the calling skill supports it. The wrapper invokes `codex exec` and the Codex `image_gen` tool; no `OPENAI_API_KEY` is required.
+- If running outside Codex but the `codex` CLI is installed and logged in, call `baoyu-image-gen --provider codex-cli` (preferred). It spawns the bundled `scripts/codex-imagegen/main.ts` and surfaces its retry/cache/log machinery through baoyu-image-gen's standard CLI + batch flow. Standalone callers outside this skill can run the same code at `packages/baoyu-codex-imagegen/src/main.ts`. Both invoke `codex exec` and the Codex `image_gen` tool; no `OPENAI_API_KEY` is required.
 - If running inside Hermes and a native `image_generate` tool is available, use that as a runtime-native fallback. Be explicit about whether reference images are passed directly or only reconstructed from extracted traits.
-- If the user wants `baoyu-image-gen` itself to support Codex OAuth, add a distinct provider such as `openai-codex` rather than modifying the existing `openai` provider.
+- `baoyu-image-gen` already exposes a distinct `codex-cli` provider (wraps the bundled `scripts/codex-imagegen/`); do not modify the existing `openai` provider to add Codex OAuth.
 
 ## Reference-image prompting note
 

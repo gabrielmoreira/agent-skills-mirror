@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `intertwine/dspy-agent-skills` — 26 default patterns, 1 followed patterns, 18 file(s) materialized.
+Mirror of `intertwine/dspy-agent-skills` — 26 default patterns, 1 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `intertwine/dspy-agent-skills` — 26 default patterns, 1 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,21 +62,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`skills/dspy-advanced-workflow/example_pipeline.py`](skills/dspy-advanced-workflow/example_pipeline.py) |
-| 4 | ✓ | [`skills/dspy-advanced-workflow/SKILL.md`](skills/dspy-advanced-workflow/SKILL.md) |
-| 5 | ✓ | [`skills/dspy-evaluation-harness/example_metric.py`](skills/dspy-evaluation-harness/example_metric.py) |
-| 6 | ✓ | [`skills/dspy-evaluation-harness/reference.md`](skills/dspy-evaluation-harness/reference.md) |
-| 7 | ✓ | [`skills/dspy-evaluation-harness/SKILL.md`](skills/dspy-evaluation-harness/SKILL.md) |
-| 8 | ✓ | [`skills/dspy-fundamentals/example_qa.py`](skills/dspy-fundamentals/example_qa.py) |
-| 9 | ✓ | [`skills/dspy-fundamentals/reference.md`](skills/dspy-fundamentals/reference.md) |
-| 10 | ✓ | [`skills/dspy-fundamentals/SKILL.md`](skills/dspy-fundamentals/SKILL.md) |
-| 11 | ✓ | [`skills/dspy-gepa-optimizer/example_bettertogether.py`](skills/dspy-gepa-optimizer/example_bettertogether.py) |
-| 12 | ✓ | [`skills/dspy-gepa-optimizer/example_gepa.py`](skills/dspy-gepa-optimizer/example_gepa.py) |
-| 13 | ✓ | [`skills/dspy-gepa-optimizer/reference.md`](skills/dspy-gepa-optimizer/reference.md) |
-| 14 | ✓ | [`skills/dspy-gepa-optimizer/SKILL.md`](skills/dspy-gepa-optimizer/SKILL.md) |
-| 15 | ✓ | [`skills/dspy-rlm-module/example_rlm.py`](skills/dspy-rlm-module/example_rlm.py) |
-| 16 | ✓ | [`skills/dspy-rlm-module/reference.md`](skills/dspy-rlm-module/reference.md) |
-| 17 | ✓ | [`skills/dspy-rlm-module/SKILL.md`](skills/dspy-rlm-module/SKILL.md) |
-| 18 | → | [`docs/CHANGELOG.md`](docs/CHANGELOG.md) |
+| 4 | ✓ | [`skills/dspy-advanced-workflow/reference.md`](skills/dspy-advanced-workflow/reference.md) |
+| 5 | ✓ | [`skills/dspy-advanced-workflow/SKILL.md`](skills/dspy-advanced-workflow/SKILL.md) |
+| 6 | ✓ | [`skills/dspy-evaluation-harness/example_metric.py`](skills/dspy-evaluation-harness/example_metric.py) |
+| 7 | ✓ | [`skills/dspy-evaluation-harness/reference.md`](skills/dspy-evaluation-harness/reference.md) |
+| 8 | ✓ | [`skills/dspy-evaluation-harness/SKILL.md`](skills/dspy-evaluation-harness/SKILL.md) |
+| 9 | ✓ | [`skills/dspy-fundamentals/example_qa.py`](skills/dspy-fundamentals/example_qa.py) |
+| 10 | ✓ | [`skills/dspy-fundamentals/reference.md`](skills/dspy-fundamentals/reference.md) |
+| 11 | ✓ | [`skills/dspy-fundamentals/SKILL.md`](skills/dspy-fundamentals/SKILL.md) |
+| 12 | ✓ | [`skills/dspy-gepa-optimizer/example_bettertogether.py`](skills/dspy-gepa-optimizer/example_bettertogether.py) |
+| 13 | ✓ | [`skills/dspy-gepa-optimizer/example_gepa.py`](skills/dspy-gepa-optimizer/example_gepa.py) |
+| 14 | ✓ | [`skills/dspy-gepa-optimizer/reference.md`](skills/dspy-gepa-optimizer/reference.md) |
+| 15 | ✓ | [`skills/dspy-gepa-optimizer/SKILL.md`](skills/dspy-gepa-optimizer/SKILL.md) |
+| 16 | ✓ | [`skills/dspy-rlm-module/example_rlm.py`](skills/dspy-rlm-module/example_rlm.py) |
+| 17 | ✓ | [`skills/dspy-rlm-module/reference.md`](skills/dspy-rlm-module/reference.md) |
+| 18 | ✓ | [`skills/dspy-rlm-module/SKILL.md`](skills/dspy-rlm-module/SKILL.md) |
+| 19 | → | [`docs/CHANGELOG.md`](docs/CHANGELOG.md) |
 
 ---
 

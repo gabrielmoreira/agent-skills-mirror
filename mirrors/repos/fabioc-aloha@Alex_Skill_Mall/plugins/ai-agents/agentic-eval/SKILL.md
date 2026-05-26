@@ -3,7 +3,7 @@ type: skill
 lifecycle: stable
 inheritance: inheritable
 name: agentic-eval
-description: |
+description: "Patterns for agent self-improvement through iterative evaluation and refinement -- generate, evaluate, critique, refine loops that move beyond single-shot generation."
 tier: standard
 applyTo: '**/*agentic*,**/*eval*'
 currency: 2026-04-30

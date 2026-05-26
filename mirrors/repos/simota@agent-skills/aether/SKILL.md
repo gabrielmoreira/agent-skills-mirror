@@ -156,58 +156,53 @@ Execution loop: `SURVEY → PLAN → VERIFY → PRESENT`.
 
 ## Recipes
 
+> **Recipes represent task shape; Operating Modes represent execution control. They are orthogonal and combine independently.**
+
+Single source of truth for Recipe definitions.
+
 | Recipe | Subcommand | Default? | When to Use | Read First |
 |--------|-----------|---------|-------------|------------|
-| Streaming Pipeline | `stream` | ✓ | Full real-time streaming pipeline design (Chat → LLM → TTS → Avatar → OBS) | `references/pipeline-architecture.md` |
-| Live Chat | `chat` | | Live chat integration (YouTube/Twitch/Bilibili) | `references/chat-platforms.md` |
-| Avatar Control | `avatar` | | Live2D/VRM avatar control, lip-sync, expression mapping | `references/avatar-control.md` |
-| TTS | `tts` | | TTS engine integration, selection, latency optimization | `references/tts-engines.md` |
-| OBS Automation | `obs` | | OBS WebSocket automation, scene management, streaming config | `references/obs-streaming.md` |
-| Latency Budget | `latency` | | End-to-end latency budget design — Chat → LLM → TTS → Avatar → OBS pipeline; per-stage targets and bottleneck audit | `references/latency-budget.md` |
-| Content Safety | `safety` | | Content moderation pipeline — chat NG-word filter, prompt-injection defense, persona-drift detection, age-rating compliance | `references/content-safety.md` |
-| Monetization | `monetize` | | AITuber monetization — Super Chat / Bits / membership / sponsorship integration with safety and tax compliance | `references/aituber-monetization.md` |
+| Streaming Pipeline | `stream` | ✓ | Full real-time pipeline design (Chat → LLM → TTS → Avatar → OBS). Focus on PIPELINE phase. Latency budget mandatory. | `references/pipeline-architecture.md` |
+| Live Chat | `chat` | | Live chat integration (YouTube/Twitch/Bilibili) — platform API, message normalization, safety filtering | `references/chat-platforms.md` |
+| Avatar Control | `avatar` | | Live2D/VRM avatar control, lip-sync, expression mapping — control contract, expression map, idle-motion design | `references/avatar-control.md` |
+| TTS | `tts` | | TTS engine integration / selection / tuning — engine comparison, TTSAdapter, TTFA measurement, fallback design | `references/tts-engines.md` |
+| OBS Automation | `obs` | | OBS WebSocket automation, scene management, RTMP/SRT selection, launch automation | `references/obs-streaming.md` |
+| Latency Budget | `latency` | | End-to-end latency budget (default ≤ 2 s); allocate per-stage budgets (chat ingest / LLM / TTS / avatar / OBS / RTMP), measure each, identify bottleneck stages | `references/latency-budget.md` |
+| Content Safety | `safety` | | Content moderation — chat NG-word/regex/hash filter, prompt-injection defense, persona-drift detection, output moderation, age-rating compliance | `references/content-safety.md` |
+| Monetization | `monetize` | | Super Chat / Bits / membership / sponsorship integration with persona consistency, donation gating, tax / disclosure compliance per region | `references/aituber-monetization.md` |
+| Lip Sync | (use `avatar`) | | Phoneme→viseme rules, VOICEVOX timing extraction, lip-sync / emotion compositing | `references/lip-sync-expression.md` |
+| Response Generation | (use `stream`) | | System-prompt template, streaming sentence strategy, token budget, LLM output sanitization | `references/response-generation.md` |
+| Persona Extension | (use `stream`) | | Streaming personality fields, voice profile, Cast integration | `references/persona-extension.md` |
+| Launch Gate | (use `stream` + LAUNCH mode) | | Launch readiness, dry-run protocol, go-live gating | All references |
+
+### Signal Keywords → Recipe
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply.
+
+| Keywords | Recipe |
+|----------|--------|
+| `aituber`, `ai vtuber`, `streaming pipeline` | `stream` |
+| `tts`, `voice synthesis`, `voicevox`, `style-bert` | `tts` |
+| `avatar`, `live2d`, `vrm`, `expression` | `avatar` |
+| `lip sync`, `viseme`, `phoneme`, `mouth` | `avatar` (lip-sync sub-spec) |
+| `obs`, `scene`, `streaming`, `rtmp`, `srt` | `obs` |
+| `chat`, `youtube live`, `twitch`, `bilibili`, `superchat` | `chat` |
+| `latency`, `performance`, `optimize` | `latency` |
+| `safety`, `moderation`, `ng word`, `prompt injection`, `age rating` | `safety` |
+| `monetize`, `super chat`, `bits`, `membership`, `sponsorship` | `monetize` |
+| `monitor`, `alert`, `health`, `metrics` | `stream` (WATCH mode) |
+| `persona`, `character`, `voice profile` | `stream` (PERSONA phase) |
+| `launch`, `dry-run`, `go-live` | `stream` (LAUNCH mode) |
+| `response`, `prompt`, `llm output` | `stream` (response-generation sub-spec) |
+| unclear AITuber request | `stream` |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" file at the initial step.
 - Otherwise → default Recipe (`stream` = Streaming Pipeline). Apply normal PERSONA → PIPELINE → STAGE → STREAM → MONITOR → EVOLVE workflow.
-
-Behavior notes per Recipe:
-- `stream`: Full pipeline design. Focus on the PIPELINE phase. Latency budget is mandatory.
-- `chat`: Include platform API integration, message normalization, and safety filtering.
-- `avatar`: Include Live2D/VRM contract, expression map, and idle-motion design.
-- `tts`: Include engine comparison, TTSAdapter, TTFA measurement, and fallback design.
-- `obs`: Include OBS WebSocket control, scene management, RTMP/SRT selection, and launch automation.
-- `latency`: Set a target end-to-end latency budget (default ≤ 2 s), allocate per-stage budgets (chat ingest / LLM / TTS / avatar / OBS / RTMP), measure each, and identify bottleneck stages.
-- `safety`: Layer chat-side filtering (NG terms, regex, hash-based block lists), prompt-injection defense in LLM stage, persona-drift detection, output moderation, and platform-specific age-rating compliance.
-- `monetize`: Design Super Chat / Bits / membership reactions with persona consistency, sponsorship slots, donation gating, and tax / disclosure compliance per region.
-
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| `aituber`, `ai vtuber`, `streaming pipeline` | Full pipeline design | Pipeline architecture doc | `references/pipeline-architecture.md` |
-| `tts`, `voice synthesis`, `voicevox`, `style-bert` | TTS engine integration | TTS integration spec | `references/tts-engines.md` |
-| `avatar`, `live2d`, `vrm`, `expression` | Avatar control design | Avatar control contract | `references/avatar-control.md` |
-| `lip sync`, `viseme`, `phoneme`, `mouth` | Lip sync and expression mapping | Lip sync spec | `references/lip-sync-expression.md` |
-| `obs`, `scene`, `streaming`, `rtmp`, `srt` | OBS automation and streaming config | OBS control spec | `references/obs-streaming.md` |
-| `chat`, `youtube live`, `twitch`, `bilibili`, `superchat` | Chat platform integration | Chat integration spec | `references/chat-platforms.md` |
-| `latency`, `performance`, `optimize` | Latency budget analysis and tuning | Latency analysis report | `references/pipeline-architecture.md` |
-| `monitor`, `alert`, `health`, `metrics` | Monitoring and recovery design | Monitoring spec | `references/pipeline-architecture.md`, `references/obs-streaming.md` |
-| `persona`, `character`, `voice profile` | Persona extension for streaming | Persona extension doc | `references/persona-extension.md` |
-| `launch`, `dry-run`, `go-live` | Launch readiness and gating | Launch checklist | All references |
-| `response`, `prompt`, `llm output` | Response generation design | Response pipeline spec | `references/response-generation.md` |
-| unclear AITuber request | Full pipeline design | Pipeline architecture doc | `references/pipeline-architecture.md` |
-
-Routing rules:
-
-- If the request mentions latency or performance, read `references/pipeline-architecture.md`.
-- If the request involves avatar or expression, read `references/avatar-control.md` and `references/lip-sync-expression.md`.
-- If the request involves TTS or voice, read `references/tts-engines.md`.
-- If the request involves chat platforms or viewer interaction, read `references/chat-platforms.md`.
-- If the request involves OBS or streaming output, read `references/obs-streaming.md`.
-- Always validate latency budget against `references/pipeline-architecture.md`.
+- Operating Mode (DESIGN / BUILD / LAUNCH / WATCH / TUNE / AUDIT) is applied after Recipe selection (orthogonal).
+- Always validate latency budget against `references/pipeline-architecture.md` regardless of Recipe.
 
 ## Output Requirements
 

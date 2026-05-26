@@ -199,6 +199,61 @@ Part of the Claude Code skill family:
 3. **Parallel Execution**: Full audits spawn up to 15 subagents simultaneously
 4. **Extension System**: DataForSEO MCP for live data, Firecrawl MCP for site crawling, Banana MCP for AI image generation
 
+## Repository Topology (public + private)
+
+This project is mirrored across two GitHub remotes that share git history.
+Both originate from the same local checkout; neither is a GitHub fork of
+the other (different orgs, no parent/child relationship in the GitHub UI).
+
+| Remote | URL | Visibility | Role |
+|---|---|---|---|
+| `origin` | `https://github.com/AgriciDaniel/claude-seo` | **Public** | Published distribution. Users discover, clone, and install from here. `main` only reflects released history. |
+| `aimh` | `https://github.com/AI-Marketing-Hub/claude-seo` | **Private** | Working repo inside the AI Marketing Hub org. Daily development. v2 branch + post-release work lives here before promotion to public. |
+
+### Workflow
+
+Daily development:
+- Work on `v2` (or feature branches off `v2`) locally.
+- `git push aimh <branch>` to publish work-in-progress to the private repo
+  (Dependabot, Actions, and CI run there).
+
+Promoting to public on release:
+1. Merge `v2` into local `main` when ready to release (fast-forward).
+2. Tag the release locally (`git tag -a vX.Y.Z`).
+3. Push the tag and main to **both** remotes in this order:
+   - First: `git push aimh main && git push aimh vX.Y.Z`
+   - Then: `git push origin main && git push origin vX.Y.Z`
+   - The "tag before merge" sequence (see `feedback_push_caution` memory)
+     applies on `origin` to avoid the `curl|bash` outage window where
+     users pull a tag that doesn't yet point at code on `main`.
+4. `gh release create vX.Y.Z --repo AgriciDaniel/claude-seo` (public-only).
+5. `/release-blog` to publish the release post.
+
+### Safety rules
+
+- **Never push to `origin/main` autonomously.** The public is release-only;
+  pushes are user-authorized per-release.
+- **`aimh` accepts day-to-day pushes.** No release-gate ceremony required
+  for the private remote.
+- **Tags push to private first.** v2.0.0 is the current example: tag lives
+  on `aimh` (private) but not yet on `origin` (public) — that's intentional
+  until release.
+- **History stays shared.** Never rewrite history on either remote with
+  force-push unless explicitly authorized for that specific operation.
+
+### Verifying the topology
+
+```bash
+# Both remotes configured
+git remote -v        # expects: origin (public) + aimh (private)
+
+# Both share main HEAD
+git ls-remote --heads aimh main
+git ls-remote --heads origin main   # SHAs must match for a clean release
+```
+
+Full workflow reference: `docs/WORKFLOW-public-private.md`.
+
 ## Release Blog Post
 
 After cutting a new release (git tag + `gh release create`), run:

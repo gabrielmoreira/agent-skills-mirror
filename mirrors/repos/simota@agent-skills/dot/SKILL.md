@@ -118,52 +118,49 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| SVG Output | `svg` | ✓ | SVG pixel art generation | `references/code-patterns.md`, `references/pixel-craft.md` |
-| Canvas Output | `canvas` | | Canvas drawing | `references/code-patterns.md` |
-| Phaser 3 | `phaser` | | Phaser 3 sprites | `references/code-patterns.md`, `references/engine-integration.md` |
-| Pillow (Python) | `pillow` | | Image output via Pillow | `references/code-patterns.md`, `references/sprite-animation.md` |
-| CSS Pixel Art | `css` | | CSS pixel art | `references/code-patterns.md` |
-| Animation Cycle | `animation` | | Sprite animation cycles (idle / walk / run / attack / hit / death) with frame timing | `references/animation-cycles.md` |
-| Limited Palette | `palette` | | Limited-palette pixel art (NES / Game Boy / PICO-8 / CGA / Pico-Pix) with color-cycling | `references/limited-palettes.md` |
-| Tilesheet Design | `tilesheet` | | Tile-based sheet design for Tiled / LDtk / Phaser tilemap (autotiles, terrain, atlas pack) | `references/tilesheet-design.md` |
+Single source of truth for Recipe definitions. The Notes column captures the unique technical behavior per Recipe; the Signal Keywords sub-table below maps natural-language input to Recipes when no explicit subcommand is given.
+
+| Recipe | Subcommand | Default? | When to Use | Primary output | Notes | Read First |
+|--------|-----------|---------|-------------|----------------|-------|------------|
+| SVG Output | `svg` | ✓ | SVG pixel art generation; icons, simple sprites, web assets | `.svg` | SVG `<rect>` grid; supports up to ~500 pixel elements; `image-rendering: pixelated` required | `references/code-patterns.md`, `references/pixel-craft.md` |
+| Canvas Output | `canvas` | | Canvas drawing; previews, interactive, 32x32+ sprites, multi-frame scenes | `.html` preview/export | HTML Canvas; use off-screen canvas to maintain 60fps | `references/code-patterns.md` |
+| Phaser 3 | `phaser` | | Phaser 3 sprites; game sprites, Realm handoff | `.js` | `generateTexture()` with `pixelArt: true`; intended for Realm | `references/code-patterns.md`, `references/engine-integration.md` |
+| Pillow (Python) | `pillow` | | Batch PNG/GIF export, spritesheets, AI-assisted pipelines | `.py` → PNG/GIF | Python + Pillow with spritesheet metadata JSON | `references/code-patterns.md`, `references/sprite-animation.md` |
+| CSS Pixel Art | `css` | | CSS pixel art; decorative, very small assets | `.css` | CSS `box-shadow` or CSS Grid | `references/code-patterns.md` |
+| Animation Cycle | `animation` | | Sprite animation cycles (idle / walk / run / attack / hit / death) with frame timing | frames + JSON timing | Canonical cycles — idle (8-12fr @ 6fps), walk (4-6fr @ 8fps), run (4-6fr @ 12fps), attack (4-8fr @ 12-15fps), hit (2-3fr), death (4-8fr non-looping). Apply squash-and-stretch and anticipation ticks. | `references/animation-cycles.md` |
+| Limited Palette | `palette` | | Limited-palette pixel art (NES / Game Boy / PICO-8 / CGA / Pico-Pix) with color-cycling | base format + palette JSON | NES (54 colors, 4 per sprite), Game Boy (4 greys), PICO-8 (16), CGA (4 modes), Famicompo (16 from 64). Validate via Lospec. | `references/limited-palettes.md` |
+| Tilesheet Design | `tilesheet` | | Tile-based sheet design for Tiled / LDtk / Phaser tilemap (autotiles, terrain, atlas pack) | target-specific asset code | Base tile (typically 16×16 / 32×32), autotile masks (47 / Wang / Blob), terrain transitions; emits `.tsx` / `.ldtk` / Phaser config | `references/tilesheet-design.md` |
+| Antigravity Delegation | `agy` | | Single-SVG generation delegated to Antigravity CLI | sanitized `.svg` | Sanitize output to raw SVG with `-agy` suffix. Safe sizes: 8x8 / 16x16; 32x32 best-effort; 64x64+ switch to Dot direct. | `references/antigravity-delegation.md` |
+| AI Spritesheet | `ai-sheet` | | AI-assisted spritesheet via GPT Image Edit API / Stable Diffusion (SDXL + Pixel-Art-XL LoRA, Retro Diffusion) / PixelLab (skeleton animation, directional views, inpainting, scene animation, environment) | `.py` → PNG | Python pipeline with canvas prep, prompt engineering, normalization, post-process | `references/gpt-image-edit.md`, `references/sprite-animation.md` |
+| Accessible Palette | `a11y` | | Colorblind-friendly palette variants (deuteranopia/protanopia/tritanopia) and shape-based differentiation | base format + palette JSON | Base route + colorblind variants; supplement color with shape/pattern | `references/pixel-craft.md` |
+| HD-2D | `hd2d` | | Pixel sprite designed for 3D environment compositing | `.svg` / `.html` | SVG or Canvas with alpha channel, no background | `references/code-patterns.md`, `references/engine-integration.md` |
+
+### Signal Keywords → Recipe
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply.
+
+| Keywords | Recipe |
+|----------|--------|
+| `icon`, `simple`, web asset | `svg` |
+| `preview`, `interactive` | `canvas` |
+| game sprite, `Phaser`, `Realm` | `phaser` |
+| `batch`, `spritesheet`, `gif` | `pillow` |
+| `decoration`, `css`, very small asset | `css` |
+| `tileset`, `autotile`, terrain transition | `tilesheet` |
+| `agy`, `delegate`, external SVG generation | `agy` |
+| `ai spritesheet`, `GPT Image edit`, `stable diffusion`, `SDXL LoRA`, `retro diffusion`, `pixellab`, skeleton animation, AI directional views, inpainting, scene animation, environment creation, animation-to-animation | `ai-sheet` |
+| `accessible`, `colorblind`, a11y palette | `a11y` |
+| `HD-2D`, pixel sprite for 3D compositing | `hd2d` |
+| unclear request | `svg` (lowest dependency) |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
-- Otherwise → default Recipe (`svg` = SVG Output). Apply normal PLAN → PALETTE → PIXEL → PACK → PREVIEW workflow.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → check the Signal Keywords sub-table for natural-language match.
+- Fallback → default Recipe (`svg` = SVG Output). Apply the normal PLAN → PALETTE → PIXEL → PACK → PREVIEW workflow.
 
-Behavior notes per Recipe:
-- `svg`: Generate pixel art with an SVG `<rect>` grid. Supports up to ~500 pixel elements. `image-rendering: pixelated` required.
-- `canvas`: Draw via HTML Canvas. Suited to 32x32+ sprites and multi-frame scenes. Use off-screen canvas to maintain 60fps.
-- `phaser`: Generate Phaser 3 `generateTexture()` code with `pixelArt: true`. Intended for handoff to Realm.
-- `pillow`: Generate a batch PNG/GIF export script via Python + Pillow, with spritesheet metadata JSON.
-- `css`: Generate pixel art via CSS `box-shadow` or CSS Grid. Suited to small decorative assets.
-- `animation`: Author canonical cycles — idle (8-12fr @ 6fps), walk (4-6fr @ 8fps), run (4-6fr @ 12fps), attack (4-8fr @ 12-15fps), hit (2-3fr), death (4-8fr non-looping). Apply squash-and-stretch and anticipation ticks. Output frames + JSON timing.
-- `palette`: Pin to a constrained palette — NES (54 colors, 4 per sprite), Game Boy (4 greys), PICO-8 (16 colors), CGA (4 modes), Famicompo (16 from 64). Validate via Lospec. Optional color-cycling for water/lava.
-- `tilesheet`: Design tile-based sheets — base tile (typically 16×16 / 32×32), autotile masks (47 / Wang / Blob), terrain transitions, atlas packing for Tiled / LDtk / Phaser tilemap. Emit `.tsx` / `.ldtk` / Phaser config alongside the sheet.
-
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| `icon`, `simple`, web asset | SVG `<rect>` grid | `.svg` | `references/code-patterns.md` |
-| `preview`, `interactive` | HTML Canvas | `.html` preview/export | `references/code-patterns.md` |
-| game sprite, `Phaser`, `Realm` | Phaser 3 `generateTexture()` | `.js` | `references/code-patterns.md`, `references/engine-integration.md` |
-| `batch`, `spritesheet`, `gif` | Python + Pillow | `.py` -> PNG/GIF | `references/code-patterns.md`, `references/sprite-animation.md` |
-| `decoration`, `css`, very small asset | CSS `box-shadow` or CSS Grid | `.css` | `references/code-patterns.md` |
-| `tileset`, `autotile`, terrain transition | Engine-ready tileset plan plus code template | target-specific asset code | `references/tileset-design.md`, `references/code-patterns.md` |
-| `agy`, `delegate`, external SVG generation | Antigravity CLI delegation | sanitized `.svg` | `references/antigravity-delegation.md` |
-| `ai spritesheet`, `GPT Image edit`, AI-assisted animation | Python (canvas prep + normalize) | `.py` → PNG | `references/gpt-image-edit.md`, `references/sprite-animation.md` |
-| `stable diffusion`, `SDXL LoRA`, `retro diffusion`, AI pixel generation pipeline | Python (SDXL + Pixel-Art-XL LoRA / Replicate API + post-process) | `.py` -> PNG | `references/code-patterns.md`, `references/gpt-image-edit.md` |
-| `pixellab`, skeleton animation, AI directional views, inpainting, scene animation, environment creation, animation-to-animation | Python (PixelLab API + post-process) | `.py` -> PNG | `references/gpt-image-edit.md`, `references/sprite-animation.md` |
-| `accessible`, `colorblind`, a11y palette | Base route + colorblind variant palettes | base format + palette JSON | `references/pixel-craft.md` |
-| `HD-2D`, pixel sprite for 3D compositing | SVG or Canvas with alpha channel, no background | `.svg` / `.html` | `references/code-patterns.md`, `references/engine-integration.md` |
-| unclear request | SVG (lowest dependency) | `.svg` | `references/code-patterns.md` |
-
-Routing rules:
+Cross-cutting routing rules (apply on top of Recipe selection):
 
 - If the request includes animation, multi-frame layout, or spritesheet metadata, read `references/sprite-animation.md`.
 - If the request includes an engine or browser target, read `references/engine-integration.md`.

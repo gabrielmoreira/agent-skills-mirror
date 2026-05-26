@@ -54,7 +54,9 @@ Examples: `verify_skills.py` is a script; `rules/english.md` and `rules/chinese.
 - `rules/anti-patterns.md` owns cross-skill always-on behavioral guardrails (AI failure modes that apply regardless of active skill). Per-skill gotchas stay in each `skills/*/SKILL.md` Gotchas table; a gotcha belongs in `rules/anti-patterns.md` only when it applies identically across all eight skills.
 - Keep `skills/RESOLVER.md` in sync when a skill description, trigger, or scope changes.
 - Keep each `description` concrete enough for automatic routing.
+- Write skill entrypoints outcome-first: name the target result, what counts as done, which constraints and evidence matter, and what the final answer or artifact should look like. Keep detailed process in mode sections and references.
 - Avoid broad skills that mix unrelated workflows.
+- Eight skills is the hard cap. Do not propose a 9th skill or split an existing one. Behavior additions land in `references/`, `rules/`, `scripts/`, or `rules/anti-patterns.md`, not as a new skill.
 - Keep generic programmer capabilities in Waza. Project-specific constraints should be extracted from public repository context or user-provided task context.
 - Treat `code-review` as an invocation alias for Waza `check`, not as a separate generic skill.
 - Waza `check` must remain project-aware without depending on unpublished local files. It extracts commands, generated artifacts, risk areas, and release rules from the target diff, public docs, manifests, CI config, and user-provided context.
@@ -105,6 +107,7 @@ Use this path for any new skill or meaningful behavior change:
 ## Commit And Release
 
 - Commit convention: `{type}: {description}` where type is `feat`, `fix`, `refactor`, `docs`, or `chore`.
+- Keep commits atomic. A commit touching more than ~20 files should split into packaging / docs / scripts / per-skill units, unless every file is the same codegen output from `make regenerate`.
 - Release tags use lowercase `v{version}`.
 - Rebuild packaged artifacts before publishing release assets. Run `make package` before publishing; CI should upload the ZIP on published releases.
 - After a GitHub release is published and assets are verified, add every positive release reaction with `gh api`: `+1`, `laugh`, `heart`, `hooray`, `rocket`, and `eyes`. Resolve the release id from the tag, POST each reaction to `repos/<owner>/<repo>/releases/<id>/reactions`, then re-read reactions to confirm them.

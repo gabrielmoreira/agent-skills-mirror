@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Leonxlnx/taste-skill` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `Leonxlnx/taste-skill` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Leonxlnx/taste-skill` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,7 +73,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`skills/soft-skill/SKILL.md`](skills/soft-skill/SKILL.md) |
 | 13 | ✓ | [`skills/stitch-skill/DESIGN.md`](skills/stitch-skill/DESIGN.md) |
 | 14 | ✓ | [`skills/stitch-skill/SKILL.md`](skills/stitch-skill/SKILL.md) |
-| 15 | ✓ | [`skills/taste-skill/SKILL.md`](skills/taste-skill/SKILL.md) |
+| 15 | ✓ | [`skills/taste-skill-v1/SKILL.md`](skills/taste-skill-v1/SKILL.md) |
+| 16 | ✓ | [`skills/taste-skill/SKILL.md`](skills/taste-skill/SKILL.md) |
 
 ---
 

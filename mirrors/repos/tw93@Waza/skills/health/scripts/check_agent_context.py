@@ -20,6 +20,10 @@ from pathlib import Path
 SENSITIVE_RE = re.compile(r"(api[_-]?key|token|secret|password|credential)", re.IGNORECASE)
 PROJECT_RE = re.compile(r'^\[projects\."(.+)"\]\s*$')
 TABLE_RE = re.compile(r'^\[([A-Za-z0-9_.@"\-/]+)\]\s*$')
+OPERATIONAL_RULE_RE = re.compile(
+    r"(Git Safety|Public Issue Replies|Investigation Honesty|Verification|Response Style|Commit|Security)",
+    re.IGNORECASE,
+)
 
 
 def rel(path: Path, root: Path) -> str:
@@ -119,6 +123,20 @@ def claude_delegates_to_agents(path: Path) -> bool:
         if line.strip() and not line.strip().startswith("#")
     ]
     return any("AGENTS.md" in line for line in meaningful)
+
+
+def has_operational_rules(path: Path) -> bool:
+    text = read(path, 40_000)
+    if not text:
+        return False
+    return len(set(m.group(1).lower() for m in OPERATIONAL_RULE_RE.finditer(text))) >= 2
+
+
+def looks_identity_only(path: Path) -> bool:
+    text = read(path, 40_000)
+    if not text:
+        return False
+    return "nian-identity:start" in text and not has_operational_rules(path)
 
 
 def parse_codex_config(
@@ -343,6 +361,25 @@ def main() -> int:
         claude_findings.append("CLAUDE.md delegates to AGENTS.md")
     if not global_claude.is_file() and not claude.is_file():
         claude_findings.append("Claude instruction surface not found")
+
+    if (
+        global_claude.is_file()
+        and has_operational_rules(global_claude)
+        and global_codex_agents.is_file()
+        and looks_identity_only(global_codex_agents)
+    ):
+        codex_findings.append(
+            "global Codex AGENTS.md has identity/memory context but lacks operational rules present in global Claude CLAUDE.md"
+        )
+    codex_config_text = read(codex_config) if codex_config.is_file() else ""
+    if (
+        'sandbox_mode = "danger-full-access"' in codex_config_text
+        and 'approval_policy = "never"' in codex_config_text
+        and "deny" not in codex_config_text.lower()
+    ):
+        codex_findings.append(
+            "Codex high-permission mode lacks a deny floor; add denies for secrets, credentials, pipe-to-shell installers, and outbound shells"
+        )
 
     conflict_findings: list[str] = []
     if agents.is_file() and claude.is_file() and not claude_delegates:

@@ -309,6 +309,9 @@ Validation expectations:
 - `## Background` or `## Goal`
 - `## Proposed change`
 - `## Acceptance criteria`
+- an autopilot-suitability footer at the end of the body (visible
+  line + `<!-- <marker-prefix>-autopilot-suitability: N -->` marker;
+  see [Autopilot-suitability score](#autopilot-suitability-score))
 
 Validation expectations:
 
@@ -317,6 +320,8 @@ Validation expectations:
 - acceptance criteria are explicitly verifiable
 - the issue stays discoverable under the target repository's
   `issue-scope` setting
+- exactly one autopilot-suitability footer with an integer 1-5
+  marker; a score of `1` also carries `status:blocked-by-human`
 
 ### Roadmap issue
 
@@ -326,6 +331,8 @@ Validation expectations:
 - `## Tracks`
 - `## Success criteria`
 - one `<!-- <marker-prefix>-roadmap-id: <roadmap-id> -->` marker
+- an autopilot-suitability footer at the end of the body (visible
+  line + `<!-- <marker-prefix>-autopilot-suitability: N -->` marker)
 
 Validation expectations:
 
@@ -336,6 +343,8 @@ Validation expectations:
 - each dependency edge is justified and preserves natural cohesion
 - nested roadmap entries stay identifiable as coordination/audit nodes
   instead of normal execution leaves
+- exactly one autopilot-suitability footer with an integer 1-5
+  marker; a score of `1` also carries `status:blocked-by-human`
 
 ### Child issue under a roadmap
 
@@ -344,6 +353,8 @@ Validation expectations:
 - `## Proposed change`
 - `## Acceptance criteria`
 - optional dependency line or sequential roadmap marker when needed
+- an autopilot-suitability footer at the end of the body (visible
+  line + `<!-- <marker-prefix>-autopilot-suitability: N -->` marker)
 
 Validation expectations:
 
@@ -352,6 +363,8 @@ Validation expectations:
 - any dependency marker is resolvable, intentionally chosen, and
   justified
 - the issue can be claimed independently without absorbing sibling work
+- exactly one autopilot-suitability footer with an integer 1-5
+  marker; a score of `1` also carries `status:blocked-by-human`
 
 ## A4.5 Suitability Gate Alignment
 
@@ -384,6 +397,73 @@ Pre-publish validation checklist:
 If any check is uncertain, route the issue to `needs-decision` or
 `blocked-by-human` during drafting instead of publishing a
 marginally-ready issue.
+
+## Autopilot-suitability score
+
+> **Status.** Authoring **emits** the score footer now (this is
+> the active contract). Discover ranking + routing by the score is
+> still planned (T3 / #762 of roadmap #759); until it lands the
+> score is recorded but does not yet influence candidate selection.
+
+Authored issues carry a persisted **autopilot-suitability score**
+from 1 to 5 (higher = more autopilot-suitable). It is the durable,
+graded form of the **Autonomous completion** execution axis: the
+author makes the judgment once, while context is fresh, so the
+Discover phase can rank and route candidates by a cheap read
+instead of re-deriving autonomy per candidate.
+
+| Score | Meaning                     | Typical signals                                                                                                          |
+| ----- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 5     | Autopilot-ideal             | Fully specified; deterministic verification (tests/lint/CI/mechanical); no external systems; no human judgment; isolated |
+| 4     | Strongly autopilot-suitable | Well-specified and verifiable; minor ambiguity resolvable from repo context; no external/human dependency                |
+| 3     | Borderline / mixed          | Autopilot can likely finish but with notable judgment, weaker verification, or review-attention risk                     |
+| 2     | Mostly human                | Agent may draft a partial result; completion needs human judgment, an asset, or review the agent cannot supply           |
+| 1     | Human-only                  | Interactive credentials, real deployment, subjective/design/product judgment, or external coordination                   |
+
+Scores below the configured discovery floor
+(`autopilotSuitability.floor`, default `3`) designate
+**human-oriented issues**: once T3 lands, Discover will route them
+to humans rather than autopilot.
+
+The score is recorded as a **footer at the end of the issue
+body** — a visible line paired with a hidden, prefix-aware
+machine marker, mirroring the `claimed-by` convention (visible
+note + HTML marker):
+
+```text
+---
+
+_Autopilot suitability: N / 5 -- higher is more autopilot-suitable;
+below the configured floor is human-oriented._
+
+<!-- {marker-prefix}-autopilot-suitability: N -->
+```
+
+Binding rules:
+
+- **Authoritative value = the HTML marker**, read prefix-aware via
+  `createMarkerRegex(markerPrefix, "autopilot-suitability")` exactly
+  as `roadmap-id` / `blocked-by` are. `N` is an integer 1-5. The
+  visible line is a human-readable mirror authoring keeps in sync;
+  discovery parses only the marker.
+- **Authoring marker, not operational marker.** This is body
+  content like `roadmap-id`; it must never be added to
+  `OPERATIONAL_MARKERS` in `scripts/protocol-helpers.mjs` or
+  subjected to F4 minimization.
+- **One source of truth.** A score of `1` must agree with
+  `status:blocked-by-human`; never publish a contradiction.
+- **Advisory, never a gate.** The score only ranks/routes
+  candidates. The A4.5 suitability gate and A5 claim safety checks
+  still run unchanged on whatever issue is selected; a high score
+  never bypasses a gate.
+- **Fail-safe on absence.** A missing, non-integer, or
+  out-of-range marker means "no score": Discover evaluates the
+  issue the normal way and never skips it. Pre-existing issues
+  with no score keep flowing.
+
+Backfill is opportunistic: when an existing open issue without a
+score footer is next edited by the authoring flow, add one. No
+bulk backfill of the existing backlog is required.
 
 ## Publication boundary
 

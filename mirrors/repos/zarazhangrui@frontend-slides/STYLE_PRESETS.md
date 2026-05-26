@@ -344,4 +344,3 @@ margin-left: calc(-1 * min(10vw, 100px));     /* Works */
 ```
 
 CSS does not allow a leading `-` before function names. The browser silently discards the entire declaration — no error, the element just appears in the wrong position. **Always use `calc(-1 * ...)` to negate CSS function values.**
-

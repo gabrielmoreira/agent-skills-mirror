@@ -63,6 +63,8 @@ function loadPersistentWorkflows(): string[] {
 
 function detectVendor(input: Record<string, unknown>): Vendor {
   const event = input.hook_event_name as string | undefined;
+  if (event === "Stop" && process.env.ANTIGRAVITY_PROJECT_DIR)
+    return "antigravity";
   if (event === "AfterAgent") return "gemini";
   if (event === "Stop") {
     if ("session_id" in input && !("sessionId" in input)) return "codex";
@@ -79,6 +81,13 @@ function getProjectDir(vendor: Vendor, input: Record<string, unknown>): string {
       break;
     case "gemini":
       dir = process.env.GEMINI_PROJECT_DIR || process.cwd();
+      break;
+    case "antigravity":
+      dir =
+        (input.cwd as string) ||
+        process.env.ANTIGRAVITY_PROJECT_DIR ||
+        process.env.AGY_PROJECT_DIR ||
+        process.cwd();
       break;
     case "qwen":
       dir = process.env.QWEN_PROJECT_DIR || process.cwd();

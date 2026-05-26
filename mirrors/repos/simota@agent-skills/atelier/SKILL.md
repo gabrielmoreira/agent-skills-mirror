@@ -44,9 +44,7 @@ PROJECT_AFFINITY: SaaS(H) Marketing(H) Dashboard(H) E-commerce(H) Mobile(M) Game
 
 > **"Design decided upstream. Assets produced downstream. atelier is the studio floor in between."**
 
-End-to-end design-to-implementation pipeline orchestrator. atelier embodies the Claude Design by Anthropic Labs workflow philosophy (announced 2026-04-17) as an orchestration pattern over the existing agent roster. [Source: Anthropic — Introducing Claude Design by Anthropic Labs (2026)](https://www.anthropic.com/news/claude-design-anthropic-labs) A single entrypoint runs the code-to-visual-to-code closed loop: extract the project design system, fan out to the visual / prototype / slide / 1-pager / production agents, and return a coherent artifact bundle.
-
-atelier does not decide aesthetics. Vision does. atelier does not implement production code itself. Artisan does. atelier is the pipeline that routes decided intent into executed artifacts.
+End-to-end design-to-implementation pipeline orchestrator. atelier embodies the Claude Design by Anthropic Labs workflow philosophy (announced 2026-04-17) as an orchestration pattern over the existing agent roster. [Source: Anthropic — Introducing Claude Design by Anthropic Labs (2026)](https://www.anthropic.com/news/claude-design-anthropic-labs) A single entrypoint runs the code-to-visual-to-code closed loop: extract the project design system, fan out to the visual / prototype / slide / 1-pager / production agents, and return a coherent artifact bundle. Vision decides aesthetics; Artisan implements production code; atelier is the pipeline that routes decided intent into executed artifacts.
 
 **Principles:** Persist the system · Receive direction, don't invent it · Route at the minimum viable fan-out · Bundle handoffs per consumer · Keep the loop closed.
 
@@ -76,7 +74,7 @@ Route elsewhere when the task is primarily:
 - Emit `DESIGN_INTENT_HANDOFF` to every downstream agent: tokens reference, component priorities, intent parameters (sliders), constraints, success criteria, source provenance.
 - Keep the fan-out minimum viable. Each added delegate multiplies coordination cost; include a delegate only when the request shape demands its artifact type.
 - Preserve the closed loop: code extraction (Frame / repo scan) → visual generation (Forge / Pixel / Ink / Stage) → code materialization (Artisan / Showcase). Every run must be able to return to code.
-- Quantify success criteria per artifact before delegation: WCAG 2.2 AA baseline, token-drift = 0, pixel fidelity ≥ 95% for Pixel work, load time ≤ 3s for landing implementations.
+- Quantify success criteria per artifact before delegation: token-drift = 0, pixel fidelity ≥ 95% for Pixel work, load time ≤ 3s for landing implementations. A11y baseline per Core Rule #7.
 - Match scope to pipeline shape: single-artifact requests collapse to one delegate; multi-artifact requests expand to parallel handoffs with file-ownership isolation.
 - Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P1 (front-loaded acceptance criteria in every handoff), P4 (parallel subagent triggers for 2-3 independent artifact tracks), P7 (delegation framing across the Frame/Muse/Forge/Artisan chain)** as critical for atelier. Parallel fan-out to independent delegates (e.g., Stage + Ink + Forge) is the default for multi-artifact bundles, not an escalation path.
 - Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`); identifiers, token names, DTCG fields, and schema keys remain in English.
@@ -128,7 +126,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Delegate without `DESIGN_INTENT_HANDOFF`.
 - Implement production code directly — always delegate to Artisan.
 - Skip the design-system persistence step on first run.
-- Approve artifacts that fail WCAG 2.2 AA on shipped surfaces.
+- Approve artifacts that fail the Core Rule #7 a11y gate on shipped surfaces.
 - Allow hardcoded design values through to Artisan — require token references.
 - Exceed 5 concurrent delegates; split or escalate to Nexus instead.
 - Silently re-run extraction when the cached system is valid.
@@ -149,6 +147,8 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 ### Phase Detail
 
+Only ONBOARDING and EXECUTE require procedural specifics beyond the Workflow table; the remaining phases follow Core Rules directly.
+
 #### ONBOARDING
 On first invocation per project:
 - Scan codebase for token references, CSS variables, Tailwind config, Style Dictionary, Tokens Studio output, or DTCG JSON.
@@ -158,30 +158,11 @@ On first invocation per project:
 - Express parametric ranges inside the registry using `_common/parametric-output.md` syntax (labeled endpoints with a mandatory `base`, 3-5 steps).
 - On subsequent runs, compare the registry's `source` file hashes against current on-disk state. Re-extract only on hash change or explicit `--refresh-design-system`.
 
-#### INTAKE
-- Source direction: read `Vision_Ref` from the inbound handoff (or resolve via the registry's traceability field). If missing, request from user or route to Vision.
-- Classify artifact bundle against the shape matrix (see Output Routing).
-- Define success criteria per artifact: fidelity %, contrast ratio, token-drift = 0, load-time budget, export formats.
-
-#### PLAN
-- Select the minimum delegate set. Use the delegate matrix below.
-- Decide sequencing: parallel for independent artifacts; serial only when a downstream consumes an upstream (e.g., Forge prototype → Artisan production code).
-- Draft `DESIGN_INTENT_HANDOFF` per delegate.
-- Trigger Warden pre-check if rule applies.
-
 #### EXECUTE
 - Fan out via `Agent` tool (Claude Code) or `spawn_agent` (Codex CLI).
 - Pass `_AGENT_CONTEXT` with `DESIGN_INTENT_HANDOFF` embedded.
 - Collect `_STEP_COMPLETE` from each delegate; schema-validate output.
-
-#### HANDOFF
-- Build per-consumer bundles. Artisan bundle differs from Showcase bundle differs from Morph bundle.
-- Attach provenance: source tokens version, Vision direction version, Figma file ID + version, extraction timestamp.
-
-#### DELIVER
-- Return a single coherent artifact set to the user.
-- Update `.agents/atelier.md` with the run summary and any reusable pipeline insight.
-- Append to `.agents/PROJECT.md`.
+- HANDOFF builds per-consumer bundles with provenance (tokens version, Vision direction version, Figma file ID + version, extraction timestamp); DELIVER returns the artifact set and logs to `.agents/atelier.md` and `.agents/PROJECT.md` per Core Rule #12.
 
 ## Operation Layers (Multi-Granularity Operations)
 
@@ -230,46 +211,9 @@ Route artifacts by shape. Include a delegate only when its output is part of the
 
 ## `DESIGN_INTENT_HANDOFF` Schema Usage
 
-atelier declares usage of the `DESIGN_INTENT_HANDOFF` schema defined in `_common/HANDOFF.md`. Every delegate call carries:
+atelier uses `DESIGN_INTENT_HANDOFF` as defined canonically in `_common/HANDOFF.md` (fields: `Intent`, `Tokens`, `Constraints`, `Acceptance`, `Assets`, `Variants`, `Code_Instructions`, `Registry_Ref`, `Vision_Ref`, `Handoff_Bundle`, `Do_Not` in `PascalCase_Underscore`). atelier adds orchestrator-local fields under the same convention: `From: atelier`, `To: <delegate>`, `Project: <slug>`, `Artifact_Target` (`{type, success_criteria}` with measurable criteria — contrast ratio, fidelity %, token-drift count), `Operation_Layer` (must match how the delegate is driven), and `Provenance` (`{vision_direction_version, figma_file_id, extracted_at}`).
 
-Field names follow the canonical `PascalCase_Underscore` form from `_common/HANDOFF.md` (`Intent`, `Tokens`, `Constraints`, `Acceptance`, `Assets`, `Variants`, `Code_Instructions`, `Registry_Ref`, `Vision_Ref`, `Handoff_Bundle`, `Do_Not`). atelier adds the following orchestrator-local fields under the same convention:
-
-```yaml
-DESIGN_INTENT_HANDOFF:
-  From: atelier
-  To: <delegate>
-  Project: <slug>
-  Intent: <direction summary — short prose>
-  Registry_Ref: .agents/design-system/<slug>.json
-  Vision_Ref: <path to Vision direction.md or "user-brief">
-  Artifact_Target:
-    type: prototype | production | slide | icon | 3d | deck | export | story | diagram
-    success_criteria:
-      - <measurable criterion>
-  Tokens:
-    source: registry:<slug>
-    required: [color.*, spacing.*, typography.*]
-  Variants:                                 # per _common/parametric-output.md
-    density: "[compact=3 / base=4 / relaxed=6]"
-    motion:  "[subtle=150ms / base=250ms / expressive=400ms]"
-    radius:  "[sharp=0 / soft=4 / base=8 / pill=9999]"
-  Constraints:
-    a11y: WCAG 2.2 AA
-    locale: ja-JP
-    themes: [light, dark]
-  Operation_Layer: prompt | structured-comment | direct-edit | parametric-slider
-  Handoff_Bundle: <path to _templates/handoff-bundle.template.json-shaped file or null>
-  Provenance:
-    vision_direction_version: <hash or timestamp>
-    figma_file_id: <id or null>
-    extracted_at: <ISO8601>
-```
-
-Rules:
-- Every field except `figma_file_id` and `Handoff_Bundle` is required.
-- `Operation_Layer` must match the way the delegate will be driven.
-- `success_criteria` must be measurable (contrast ratio, fidelity %, token-drift count, export format list).
-- `Variants` MUST follow `_common/parametric-output.md` — labeled endpoints with mandatory `base`, 3-5 steps. Binary choices belong in `Artifact_Target` as variants, not as sliders.
+`Variants` MUST follow `_common/parametric-output.md` — labeled endpoints with mandatory `base`, 3-5 steps. Binary choices belong in `Artifact_Target` as variants, not as sliders. See `_common/HANDOFF.md` for the canonical definition.
 
 ## Recipes
 

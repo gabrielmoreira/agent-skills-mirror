@@ -36,7 +36,7 @@ The third leg of epistemic integrity. A system that never fabricates and always 
 
 Critical thinking is the only leg that challenges _correct-looking_ output. Anti-hallucination catches lies. Awareness catches mistakes. Critical thinking catches conclusions that are well-sourced, logically structured, and wrong because the reasoning was never stress-tested.
 
-> **Framework binding**: The 10 tenets and 6 falsifiers that name the disciplines below as a coherent system live in `ACT/ACT-MANIFESTO.md`. The tenet → artifact map and outstanding work are in `ACT/IMPLEMENTING-ACT-IN-ALEX.md`. The brain integration plan (lanes 0–3) is in `ACT/PLAN-act-brain-integration.md`. This skill holds Disciplines -1, 0, 1, 6, 7. Disciplines I/III/IX gain a Two-Hypothesis Floor visible marker (Lane D). Tenet IV (system-prompt skepticism) ships as a sibling instruction. The composite 7-step pass lives in `act-pass/SKILL.md`.
+> **Framework binding**: This skill holds Disciplines -1, 0, 1, 6, 7 of the ACT framework. Disciplines I/III/IX gain a Two-Hypothesis Floor visible marker. Tenet IV (system-prompt skepticism) ships as a sibling instruction (`system-prompt-skepticism.instructions.md`). The composite 7-step pass lives in [`act-pass.instructions.md`](../../instructions/act-pass.instructions.md). The 10 tenets and 6 falsifiers that name these disciplines as a coherent system are authored in Supervisor; heirs receive them through this skill and the sibling always-on instructions.
 
 ---
 

@@ -64,6 +64,7 @@ const DEFAULT_PROVIDER_RATE_LIMITS: Record<Provider, ProviderRateLimit> = {
   jimeng: { concurrency: 3, startIntervalMs: 1100 },
   seedream: { concurrency: 3, startIntervalMs: 1100 },
   azure: { concurrency: 3, startIntervalMs: 1100 },
+  "codex-cli": { concurrency: 1, startIntervalMs: 2000 },
 };
 
 function printUsage(): void {
@@ -78,7 +79,7 @@ Options:
   --image <path>            Output image path (required in single-image mode)
   --batchfile <path>        JSON batch file for multi-image generation
   --jobs <count>            Worker count for batch mode (default: auto, max from config, built-in default 10)
-  --provider google|openai|openrouter|dashscope|zai|minimax|replicate|jimeng|seedream|azure  Force provider (auto-detect by default)
+  --provider google|openai|openrouter|dashscope|zai|minimax|replicate|jimeng|seedream|azure|codex-cli  Force provider (auto-detect by default)
   -m, --model <id>          Model ID
   --ar <ratio>              Aspect ratio (e.g., 16:9, 1:1, 4:3)
   --size <WxH>              Size (e.g., 1024x1024)
@@ -154,8 +155,13 @@ Environment variables:
   AZURE_OPENAI_IMAGE_MODEL  Backward-compatible Azure deployment/model alias (defaults to gpt-image-2)
   SEEDREAM_BASE_URL         Custom Seedream endpoint
   BAOYU_IMAGE_GEN_MAX_WORKERS  Override batch worker cap
-  BAOYU_IMAGE_GEN_<PROVIDER>_CONCURRENCY  Override provider concurrency
+  BAOYU_IMAGE_GEN_<PROVIDER>_CONCURRENCY  Override provider concurrency (use underscores: BAOYU_IMAGE_GEN_CODEX_CLI_CONCURRENCY)
   BAOYU_IMAGE_GEN_<PROVIDER>_START_INTERVAL_MS  Override provider start gap in ms
+  BAOYU_CODEX_IMAGEGEN_BIN  Path to codex-imagegen wrapper (default: bundled scripts/codex-imagegen/main.ts; accepts .ts or legacy .sh/binary)
+  BAOYU_CODEX_IMAGEGEN_CACHE_DIR  Enable idempotency cache for codex-cli provider (default: disabled)
+  BAOYU_CODEX_IMAGEGEN_TIMEOUT_MS  Per-attempt codex exec timeout for codex-cli provider (default: 300000)
+  BAOYU_CODEX_IMAGEGEN_RETRIES  Codex-side retry attempts on retryable errors (default: 2)
+  BAOYU_CODEX_IMAGEGEN_LOG_FILE  Append JSONL diagnostic log for codex-cli provider
 
 Env file load order: CLI args > EXTEND.md > process.env > <cwd>/.baoyu-skills/.env > ~/.baoyu-skills/.env`);
 }
@@ -258,7 +264,8 @@ export function parseArgs(argv: string[]): CliArgs {
         v !== "replicate" &&
         v !== "jimeng" &&
         v !== "seedream" &&
-        v !== "azure"
+        v !== "azure" &&
+        v !== "codex-cli"
       ) {
         throw new Error(`Invalid provider: ${v}`);
       }
@@ -430,6 +437,7 @@ export function parseSimpleYaml(yaml: string): Partial<ExtendConfig> {
           jimeng: null,
           seedream: null,
           azure: null,
+          "codex-cli": null,
         };
         currentKey = "default_model";
         currentProvider = null;
@@ -458,7 +466,8 @@ export function parseSimpleYaml(yaml: string): Partial<ExtendConfig> {
           key === "replicate" ||
           key === "jimeng" ||
           key === "seedream" ||
-          key === "azure"
+          key === "azure" ||
+          key === "codex-cli"
         )
       ) {
         config.batch ??= {};
@@ -477,7 +486,8 @@ export function parseSimpleYaml(yaml: string): Partial<ExtendConfig> {
           key === "replicate" ||
           key === "jimeng" ||
           key === "seedream" ||
-          key === "azure"
+          key === "azure" ||
+          key === "codex-cli"
         )
       ) {
         const cleaned = value.replace(/['"]/g, "");
@@ -630,10 +640,11 @@ export function getConfiguredProviderRateLimits(
     jimeng: { ...DEFAULT_PROVIDER_RATE_LIMITS.jimeng },
     seedream: { ...DEFAULT_PROVIDER_RATE_LIMITS.seedream },
     azure: { ...DEFAULT_PROVIDER_RATE_LIMITS.azure },
+    "codex-cli": { ...DEFAULT_PROVIDER_RATE_LIMITS["codex-cli"] },
   };
 
-  for (const provider of ["replicate", "google", "openai", "openrouter", "dashscope", "zai", "minimax", "jimeng", "seedream", "azure"] as Provider[]) {
-    const envPrefix = `BAOYU_IMAGE_GEN_${provider.toUpperCase()}`;
+  for (const provider of ["replicate", "google", "openai", "openrouter", "dashscope", "zai", "minimax", "jimeng", "seedream", "azure", "codex-cli"] as Provider[]) {
+    const envPrefix = `BAOYU_IMAGE_GEN_${provider.toUpperCase().replace(/-/g, "_")}`;
     const extendLimit = extendConfig.batch?.provider_limits?.[provider];
     configured[provider] = {
       concurrency:
@@ -699,10 +710,11 @@ export function detectProvider(args: CliArgs): Provider {
     args.provider !== "replicate" &&
     args.provider !== "seedream" &&
     args.provider !== "minimax" &&
-    args.provider !== "dashscope"
+    args.provider !== "dashscope" &&
+    args.provider !== "codex-cli"
   ) {
     throw new Error(
-      "Reference images require a ref-capable provider. Use --provider google (Gemini multimodal), --provider openai (GPT Image edits), --provider azure (Azure OpenAI), --provider openrouter (OpenRouter multimodal), --provider replicate, --provider dashscope with a wan2.7 image model, --provider seedream for supported Seedream models, or --provider minimax for MiniMax subject-reference workflows."
+      "Reference images require a ref-capable provider. Use --provider google (Gemini multimodal), --provider openai (GPT Image edits), --provider azure (Azure OpenAI), --provider openrouter (OpenRouter multimodal), --provider replicate, --provider dashscope with a wan2.7 image model, --provider seedream for supported Seedream models, --provider minimax for MiniMax subject-reference workflows, or --provider codex-cli (Codex image_gen with references)."
     );
   }
 
@@ -839,6 +851,7 @@ async function loadProviderModule(provider: Provider): Promise<ProviderModule> {
   if (provider === "jimeng") return (await import("./providers/jimeng")) as ProviderModule;
   if (provider === "seedream") return (await import("./providers/seedream")) as ProviderModule;
   if (provider === "azure") return (await import("./providers/azure")) as ProviderModule;
+  if (provider === "codex-cli") return (await import("./providers/codex-cli")) as ProviderModule;
   return (await import("./providers/openai")) as ProviderModule;
 }
 
@@ -870,6 +883,7 @@ function getModelForProvider(
     if (provider === "jimeng" && extendConfig.default_model.jimeng) return extendConfig.default_model.jimeng;
     if (provider === "seedream" && extendConfig.default_model.seedream) return extendConfig.default_model.seedream;
     if (provider === "azure" && extendConfig.default_model.azure) return extendConfig.default_model.azure;
+    if (provider === "codex-cli" && extendConfig.default_model["codex-cli"]) return extendConfig.default_model["codex-cli"];
   }
   return providerModule.getDefaultModel();
 }
@@ -1104,7 +1118,7 @@ async function runBatchTasks(
   const acquireProvider = createProviderGate(providerRateLimits);
   const workerCount = getWorkerCount(tasks.length, jobs, maxWorkers);
   console.error(`Batch mode: ${tasks.length} tasks, ${workerCount} workers, parallel mode enabled.`);
-  for (const provider of ["replicate", "google", "openai", "openrouter", "dashscope", "zai", "minimax", "jimeng", "seedream", "azure"] as Provider[]) {
+  for (const provider of ["replicate", "google", "openai", "openrouter", "dashscope", "zai", "minimax", "jimeng", "seedream", "azure", "codex-cli"] as Provider[]) {
     const limit = providerRateLimits[provider];
     console.error(`- ${provider}: concurrency=${limit.concurrency}, startIntervalMs=${limit.startIntervalMs}`);
   }

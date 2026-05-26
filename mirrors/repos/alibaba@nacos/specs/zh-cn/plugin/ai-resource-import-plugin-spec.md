@@ -155,6 +155,13 @@ Resource Operator 位于 AI Registry 领域内，不属于导入插件。它们�
 如果 artifact 包含 `sourceMetadata.artifactUrl`，Skill Operator 应将该 URL 记录为导入后资源的来源
 字段（`ai_resource.c_from`）；如果没有 `artifactUrl`，则回退使用 `sourceMetadata.source`。
 
+Skill 冲突处理遵循 AI 资源 working-version 生命周期：
+
+- 如果 Skill 不存在，导入会创建新草稿；
+- 如果 Skill 已存在且没有 editing/reviewing 版本，导入会创建下一个草稿版本；
+- 如果 Skill 已存在 editing 或 reviewing 版本，validate 返回 working-version 冲突；execute 默认跳过
+  该项，只有 `overwriteExisting=true` 时才允许覆盖当前可编辑草稿，或按 Skill 服务生命周期创建新草稿。
+
 ## 内置 Importer
 
 默认内置 importer 由 `plugin-default-impl` 下的 `nacos-default-ai-importer-plugin` 模块提供。
@@ -327,21 +334,36 @@ source 下多次校验批次累积出的有效候选项。
 ```text
 POST /v3/console/ai/mcp/import/validate
 POST /v3/console/ai/mcp/import/execute
-GET  /v3/console/ai/mcp/importToolsFromMcp
 ```
 
 validate 和 execute 端点应通过兼容 adapter 路由到统一导入管理器，不应继续作为独立导入实现扩展。
 
+`GET /v3/console/ai/mcp/importToolsFromMcp` 不属于外部 registry 导入兼容范围。它是 Console
+在构建 MCP Server schema 时，从用户自有 MCP runtime endpoint 拉取 tools 的辅助能力，不属于
+AI 资源市场或 registry 导入流程。
+
+兼容端点默认关闭。运维可以在迁移窗口期通过
+`nacos.ai.resource.import.legacy-mcp-api-enabled=true` 临时重新开启，客户端应迁移到
+`/v3/{admin|console}/ai/import/*`。
+
 对于旧的 `importType=url`，请求默认不得把用户传入 URL 作为网络目标。当 `data` 匹配已启用
 source 时，可以按 `sourceId` 解释；否则应失败并提示迁移到
-`nacos.ai.resource.import.sources` 配置。旧的直接 URL 导入只能由运维显式配置后用于受控部署。
+`nacos.ai.resource.import.sources` 配置。旧的直接 URL 导入只能由运维同时开启
+`nacos.ai.resource.import.legacy-mcp-api-enabled=true` 和
+`nacos.ai.resource.import.allow-user-url=true` 后用于受控部署。
 
 旧的 `importType=json` 和 `importType=file` 可以映射为内置本地 importer，因为它们不需要服务端
 发起网络访问。
 
 ## 依赖处理
 
-导入 artifact 可以引用其他 AI 资源。例如 Skill 可能需要 MCP tools 或 servers。统一导入流程应支持：
+导入 artifact 可以引用其他 AI 资源。例如 Skill 可能需要 MCP tools 或 servers。
+
+依赖处理是预留扩展点，不要求在统一导入初始实现中完整落地。在资源类型暴露明确、可版本化的依赖描述之前，
+importer 可以保持 `dependencies` 为空，导入管理器也不应要求请求中必须提供 `dependencyPolicy`。
+内置 importer 不得推断、安装或递归导入隐藏依赖。
+
+当 Nacos 后续补充明确的 AI 资源依赖描述后，统一导入流程可以引入如下依赖策略：
 
 | 策略 | 含义 |
 |------|------|
@@ -350,7 +372,7 @@ source 时，可以按 `sourceId` 解释；否则应失败并提示迁移到
 | `LINK_EXISTING` | 尽量关联已有匹配资源。 |
 | `IMPORT_SELECTED` | 只导入用户显式选择的依赖。 |
 
-默认应为 `VALIDATE_ONLY`。自动递归导入不应作为默认行为，因为它会扩大供应链和鉴权边界。
+依赖描述可用后的默认策略应为 `VALIDATE_ONLY`。自动递归导入不应作为默认行为，因为它会扩大供应链和鉴权边界。
 
 ## 安全要求
 
@@ -361,9 +383,15 @@ source 时，可以按 `sourceId` 解释；否则应失败并提示迁移到
 - 非 HTTPS source endpoint 必须被拒绝，除非运维在 source 配置中显式开启 `allow-http`；
 - localhost、loopback、link-local、multicast 和私网 source endpoint 必须被拒绝，除非运维在
   source 配置中显式开启 `allow-private-network`；
+- 内置 importer 的 HTTP 请求必须对每个派生出来的请求 URL 重新执行同一套 scheme 和网络策略校验，
+  包括从 index 或 search response 中发现的 URL；
+- 内置 importer 的 HTTP 请求必须在发送前解析目标 host，并在 DNS 结果为 loopback、link-local、
+  multicast 或私网地址时默认拒绝，除非 source 显式开启 `allow-private-network`；
 - redirect 必须禁用或按同一安全策略重新校验；
 - DNS 解析后默认阻断 loopback、link-local、multicast 和私网目标；
 - 来源请求必须强制连接超时、读超时、响应大小、页数和 artifact 大小限制；
+  内置 importer 应默认使用 source `max-artifact-size` 限制单次 HTTP 响应大小，除非具体协议定义了
+  更严格的限制；
 - 导入、查询或下载 Skill 包时不得执行包内脚本；
 - importer 插件不得在 API 响应、Trace 事件或日志中泄露 secret。
 

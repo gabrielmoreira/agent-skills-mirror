@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `upstash/context7` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `upstash/context7` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `upstash/context7` — 26 default patterns, 0 followed patterns, 8 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,14 +59,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`plugins/claude/context7/skills/context7-mcp/SKILL.md`](plugins/claude/context7/skills/context7-mcp/SKILL.md) |
-| 2 | ✓ | [`plugins/cursor/context7/skills/context7-mcp/SKILL.md`](plugins/cursor/context7/skills/context7-mcp/SKILL.md) |
-| 3 | ✓ | [`skills/context7-cli/references/docs.md`](skills/context7-cli/references/docs.md) |
-| 4 | ✓ | [`skills/context7-cli/references/setup.md`](skills/context7-cli/references/setup.md) |
-| 5 | ✓ | [`skills/context7-cli/references/skills.md`](skills/context7-cli/references/skills.md) |
-| 6 | ✓ | [`skills/context7-cli/SKILL.md`](skills/context7-cli/SKILL.md) |
-| 7 | ✓ | [`skills/context7-mcp/SKILL.md`](skills/context7-mcp/SKILL.md) |
-| 8 | ✓ | [`skills/find-docs/SKILL.md`](skills/find-docs/SKILL.md) |
+| 1 | ✓ | [`packages/pi/skills/context7-docs/SKILL.md`](packages/pi/skills/context7-docs/SKILL.md) |
+| 2 | ✓ | [`plugins/claude/context7/skills/context7-mcp/SKILL.md`](plugins/claude/context7/skills/context7-mcp/SKILL.md) |
+| 3 | ✓ | [`plugins/cursor/context7/skills/context7-mcp/SKILL.md`](plugins/cursor/context7/skills/context7-mcp/SKILL.md) |
+| 4 | ✓ | [`skills/context7-cli/references/docs.md`](skills/context7-cli/references/docs.md) |
+| 5 | ✓ | [`skills/context7-cli/references/setup.md`](skills/context7-cli/references/setup.md) |
+| 6 | ✓ | [`skills/context7-cli/references/skills.md`](skills/context7-cli/references/skills.md) |
+| 7 | ✓ | [`skills/context7-cli/SKILL.md`](skills/context7-cli/SKILL.md) |
+| 8 | ✓ | [`skills/context7-mcp/SKILL.md`](skills/context7-mcp/SKILL.md) |
+| 9 | ✓ | [`skills/find-docs/SKILL.md`](skills/find-docs/SKILL.md) |
 
 ---
 

@@ -3,7 +3,7 @@ type: skill
 lifecycle: stable
 inheritance: inheritable
 name: generate-report
-description: >
+description: "Generate an interactive, self-contained HTML dashboard displaying SFI-TI3.2.2 tenant isolation violations for a service, org, or alias -- includes filtering, sorting, severity coding, TSG links, S360 deep links."
 tier: standard
 applyTo: '**/*generate*,**/*report*'
 currency: 2026-04-30

@@ -304,30 +304,40 @@ Detailed performance optimization → delegate to Growth / Bolt. LP-specific pri
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| Build LP | `build` | ✓ | Full LP design (starting from AIDA/PAS/BAB/4Ps framework selection) | `references/patterns.md` |
-| CTA Optimization | `cta` | | CTA placement, copy, micro-copy optimization | — |
-| Conversion Audit | `conversion` | | Conversion improvement and section audit for an existing LP | `references/patterns.md` |
-| Responsive Design | `responsive` | | Mobile-first implementation, tap targets, viewport optimization | `references/examples.md` |
-| Form Optimization | `form` | | LP form field minimization, progressive disclosure, autofill/password-manager cooperation, real-time validation, submit-button friction | `references/form-lp-optimization.md` |
-| Copy Authoring | `copy` | | LP headline formulas (PAS/BAB/4U), hero body, value-prop clarity, microcopy shells, readability targets, LP tone and voice | `references/copy-lp-authoring.md` |
-| Trust Signal Placement | `trust` | | Testimonial shape and quantity, logo bars, case studies, certification badges, review aggregation, scarcity/urgency vs dark patterns | `references/trust-signal-placement.md` |
+Single source of truth for Recipe definitions. Primary-output shape and behavior depth live in the "Output / Behavior" column; downstream-agent delegations are spelled out there.
+
+| Recipe | Subcommand | Default? | When to Use | Output / Behavior | Read First |
+|--------|-----------|---------|-------------|-------------------|------------|
+| Build LP | `build` | ✓ | Full LP design (starting from AIDA/PAS/BAB/4Ps framework selection) | Section map + copy direction + CTA placement (≥3) + responsive specs + CWV targets | `references/patterns.md` |
+| CTA Optimization | `cta` | | CTA placement, copy, micro-copy optimization | CTA placement plan + button copy variants + constraints (size, contrast, microcopy) | — |
+| Conversion Audit | `conversion` | | Conversion improvement and section audit for an existing LP | Audit findings + section-level improvement plan + prioritized fix list | `references/patterns.md` |
+| Responsive Design | `responsive` | | Mobile-first implementation, tap targets, viewport optimization | Responsive section spec + breakpoint plan + tap-target / viewport rules | `references/examples.md` |
+| Form Optimization | `form` | | LP form field minimization, progressive disclosure, autofill/password-manager cooperation, real-time validation, submit-button friction | LP form spec — field-count cost model, single vs multi-step disclosure, `autocomplete` / `inputmode` contract, password-manager cooperation, blur-time validation, submit-button copy and state machine. Delegate: Artisan (React/Vue impl), Prose (exact field-label / error wording), Growth (A/B on field count + cross-page analytics), Muse (input/label/error design tokens) | `references/form-lp-optimization.md` |
+| Copy Authoring | `copy` | | LP headline formulas (PAS/BAB/4U), hero body, value-prop clarity, microcopy shells, readability targets, LP tone and voice | LP copy — PAS/BAB/4U headline formulas, hero anatomy, value-prop clarity tests, benefit-vs-feature conversion, button/helper/tooltip/trust-line microcopy shells, readability targets, LP-context tone. Delegate: Prose (exact microcopy + voice/tone system), Growth (copy framework for ads/nurture), Muse (typographic tokens + `text-wrap: balance`), Vision (brand positioning + master narrative) | `references/copy-lp-authoring.md` |
+| Trust Signal Placement | `trust` | | Testimonial shape and quantity, logo bars, case studies, certification badges, review aggregation, scarcity/urgency vs dark patterns | Trust-signal placement map — testimonial shape/quantity/placement, logo bar treatment, metric-forward vs story-forward case studies, certifications/guarantees, review-aggregation integration, honest-urgency vs dark-pattern red lines. Delegate: Prose (testimonial wording polish), Growth (live review-aggregation APIs + rich-result schema + harvesting cadence), Muse (testimonial/logo/badge tokens), Clause (FTC claim substantiation + endorsement disclosure) | `references/trust-signal-placement.md` |
+
+### Signal Keywords → Recipe
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply.
+
+| Keywords | Recipe |
+|----------|--------|
+| `LP`, `landing page`, `new LP`, `hero`, `first view`, `above the fold` | `build` |
+| `CTA`, `button`, `conversion button` | `cta` |
+| `conversion`, `CV rate`, `LP improvement`, `audit` | `conversion` |
+| `responsive`, `mobile-first`, `tap target`, `viewport` | `responsive` |
+| `form`, `lead`, `signup form`, `progressive disclosure` | `form` |
+| `copy`, `headline`, `microcopy`, `value prop` | `copy` |
+| `trust`, `social proof`, `testimonial`, `logo bar` | `trust` |
+| `A/B`, `variant`, `test` | `build` + delegate variant execution to Experiment |
+| unclear LP request | `build` (default) |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input and activate the matching Recipe. If the token matches no subcommand, activate `build` (default).
-
-| First Token | Recipe Activated |
-|------------|-----------------|
-| `build` | Build LP |
-| `cta` | CTA Optimization |
-| `conversion` | Conversion Audit |
-| `responsive` | Responsive Design |
-| `form` | Form Optimization |
-| `copy` | Copy Authoring |
-| `trust` | Trust Signal Placement |
-| _(no match)_ | Build LP (default) |
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → match against **Signal Keywords → Recipe**; if still no match, activate `build` (default).
+- All Recipes run the `BRIEF → STRUCTURE → COPY → BUILD → OPTIMIZE → DELIVER` workflow — Recipe selection shapes Output / Behavior and downstream delegation, not phase sequence.
 
 ### A/B Testing Platform Landscape (2025–2026)
 
@@ -354,25 +364,7 @@ Source: [GrowthBook — Best A/B Platforms 2025](https://blog.growthbook.io/the-
 
 **CSS Scroll-Driven Animations:** Use `animation-timeline: scroll()` / `view()` for progress bars, fade-ins, and parallax — zero JS scroll listeners, direct INP benefit. Delegate implementation to Flow or Artisan; specify in LP performance requirements.
 
-Behavior notes per Recipe:
-
-- `form`: LP form specification — field-count cost model, single vs multi-step progressive disclosure, autofill / `autocomplete` / `inputmode` contract, password-manager cooperation, blur-time validation, error-prevention patterns, submit-button copy and state machine. For production React/Vue form implementation use Artisan; for exact field-label and error-message wording use Prose; for A/B experimentation on field count and cross-page form analytics use Growth; for input/label/error-state design tokens use Muse.
-- `copy`: LP headline and body copy authoring — PAS/BAB/4U headline formulas, hero-section anatomy, value-prop clarity tests, benefit-vs-feature conversion, button/helper/tooltip/trust-line microcopy shells, readability targets, LP-context tone and voice. For exact microcopy authority and voice/tone design system use Prose; for copy framework reused across ads and nurture email use Growth; for typographic tokens and `text-wrap: balance` wiring use Muse; for brand positioning and master-narrative upstream use Vision.
-- `trust`: LP trust-signal placement — testimonial shape/quantity/placement, logo bar (customer and media) treatment, metric-forward vs story-forward case studies, certifications and guarantees, review-aggregation integration, and honest-urgency vs dark-pattern red lines. For testimonial wording polish use Prose; for live review-aggregation APIs, rich-result schema, and ongoing harvesting cadence use Growth; for testimonial/logo/badge design tokens use Muse; for FTC claim substantiation and endorsement disclosure use Clause.
-
 ---
-
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| `LP`, `landing page`, `new LP` | Full LP design | Section map + copy + specs | `references/patterns.md` |
-| `hero`, `first view`, `above the fold` | Hero section design | Hero layout + headline + CTA | — |
-| `CTA`, `conversion`, `button` | CTA optimization | CTA placement + copy + constraints | — |
-| `social proof`, `testimonial` | Social proof design | Proof hierarchy + structure | — |
-| `form`, `lead`, `signup form` | Form design | Form specs + progressive disclosure | — |
-| `A/B`, `variant`, `test` | Variant design | Variant specs → delegate to Experiment | `references/handoffs.md` |
-| `LP improvement`, `CV rate` | LP optimization | Audit + improvement plan | — |
 
 ## Output Requirements
 

@@ -1,6 +1,29 @@
 # Changelog
 
-## v0.2.2 — Unreleased
+## v0.2.3 — 2026-05-25
+
+### DSPy 3.2.1 refresh
+
+- Retargeted install and maintainer validation guidance from exact DSPy `3.2.0` to current `3.2.1`, while keeping committed example artifacts labeled by the DSPy version that produced them.
+- Added `scripts/check_dspy_surface.py` to validate the live DSPy API surface taught by the skills (`GEPA`, `BetterTogether`, `Evaluate`, `LM`, `SIMBA`, `Embedder`, `configure_cache`, and current primitives).
+- Updated GEPA guidance for current upstream best practices: train-heavy GEPA splits, GPT-5-class reflection model shape, literal-dict metric mismatch, supported `component_selector` strings, and when to try `dspy.SIMBA`.
+- Tightened the evaluation-harness reference around DSPy 3.2.1 semantics: GEPA-compatible five-argument metric signatures and aggregation-safe metric return shapes.
+- Added production cache guidance for `dspy.configure_cache(restrict_pickle=True)`, project-local `DSPY_CACHEDIR`, and provider-side prompt caching.
+
+### Validation
+
+- `uv run --with pytest python -m pytest tests/ -v` -> 114 passed
+- `env -u UV_EXCLUDE_NEWER uv run --with dspy==3.2.1 python scripts/check_dspy_surface.py` -> passed
+
+## v0.2.2 — 2026-05-25
+
+### Test suite hardening
+
+- Extended regression guards (`.overall_score`, dict metrics, stale RLM defaults, stale BetterTogether API) to cover `articles/**/*.md` in addition to `skills/` and `docs/`. Uses recursive glob for parity with the `skills/**` pattern.
+- Added version consistency test: asserts `plugin.json`, `marketplace.json`, and `README.md` all carry the same version string. Regex is anchored to the `## Version` heading to avoid false matches on changelog or prose mentions.
+- Added `reference.md` presence test: every skill directory must ship a `reference.md` for progressive disclosure.
+- Moved `_ANTIPATTERN_MARKERS` and `_is_antipattern_context()` above Rule 1 so both Rule 1 (`.overall_score`) and Rule 2 (dict metrics) share the same anti-pattern context check. Added `"enforces"` marker to allow meta-references that describe prohibitions. Dropped the overly broad `"no "` marker — `"enforces"` alone covers the article line that triggered it.
+- Test count: 87 → 105.
 
 ### Example artifacts
 
@@ -8,9 +31,20 @@
 - Kept `examples/03-invoice-extraction` on its historical DSPy 3.1.3 artifact after a clean probe: the 3.1.3 GEPA run was stopped before completion after finding a `0.944` candidate, and the 3.2.0 baseline on the same model pair already reached `0.944`.
 - Updated README, examples index, and per-example `version_comparison.{md,json}` files so the published docs describe the clean comparison path and no longer depend on `.venv-dspy313` / `.venv-dspy320` state.
 
+### New content
+
+- Created `skills/dspy-advanced-workflow/reference.md` — the only skill that was missing one. Covers step-by-step failure modes, `auto` level selection, plateau debugging, export format tradeoffs, `BetterTogether` chaining, and sub-skill cross-references.
+- GEPA constructor snippet marked as a subset with pointer to the full surface in `dspy-gepa-optimizer/reference.md`.
+- `reflection_minibatch_size` guidance annotated with symptom context (plateau vs. oscillation) to avoid contradicting the advice in the GEPA optimizer reference.
+
+### Installer
+
+- Added `--verify` flag to `scripts/install.sh`: validates each expected skill exists at the destination, checks symlink targets or directory presence, and reports pass/fail per skill.
+- Updated `docs/installation.md` verification section to reference `--verify`.
+
 ### Validation
 
-- `uv run --with pytest python -m pytest tests/ -v` -> full suite passed
+- `uv run --with pytest python -m pytest tests/ -v` -> 108 passed
 - Live reruns/probes:
   - `examples/01-rag-qa` -> `80.47 -> 100.00` with `openrouter/mistralai/ministral-3b-2512`
   - `examples/03-invoice-extraction` -> clean probe recorded `0.944` baseline under DSPy 3.2.0; historical artifact retained

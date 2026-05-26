@@ -143,30 +143,47 @@ DISCOVER → MODEL → VERIFY → EXPORT
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| New Model | `model` | ✓ | Create a new C4 model (Context/Container/Component/Code base 4 levels) | `references/c4-methodology.md` |
-| Evaluate Existing | `evaluate` | | Evaluate existing architecture (ATAM, SAAM, etc.) | `references/patterns.md` |
-| Structurizr DSL | `dsl` | | Generate or update Structurizr DSL | `references/structurizr-dsl.md` |
-| C4 Level Switch | `c4` | | C4 level switching (select L1-L4 detail) | `references/c4-methodology.md` |
-| ADR Authoring | `adr` | | Author Architecture Decision Records (Nygard/MADR) with status lifecycle and indexing | `references/adr-authoring.md` |
-| Quality Attribute Scenarios | `quality-attr` | | Elicit and structure SEI 6-part scenarios; build utility tree; QAW facilitation | `references/quality-attribute-scenarios.md` |
-| Tradeoff Analysis | `tradeoff` | | ATAM sensitivity/tradeoff/risk identification, optional CBAM cost-benefit extension | `references/tradeoff-analysis.md` |
+Single source of truth for Recipe definitions. Behavior depth lives in the "Behavior" column; full templates and lifecycle details live in the "Read First" file.
+
+| Recipe | Subcommand | Default? | When to Use | Behavior | Read First |
+|--------|-----------|---------|-------------|----------|------------|
+| New Model | `model` | ✓ | Create a new C4 model (Context/Container/Component/Code base 4 levels) | DISCOVER scans the actual codebase; generate L1-L2 as the baseline before expanding. | `references/c4-methodology.md` |
+| Evaluate Existing | `evaluate` | | Evaluate existing architecture (ATAM, SAAM, etc.) | Evaluate quality attributes and trade-offs of the existing architecture. | `references/patterns.md` |
+| Structurizr DSL | `dsl` | | Generate or update Structurizr DSL | Generate or update DSL; consider `workspace extends`, `archetypes`, and `!adrs`. | `references/structurizr-dsl.md` |
+| C4 Level Switch | `c4` | | C4 level switching (select L1-L4 detail) | Switch to L1/L2/L3/L4; match granularity to audience; VERIFY cross-level consistency. | `references/c4-methodology.md` |
+| ADR Authoring | `adr` | | Author Architecture Decision Records (Nygard/MADR) with status lifecycle and indexing | Nygard or MADR template; status lifecycle, monotonic IDs, Y-statements, `!adrs`-ready; ground LLM drafts with existing ADRs + codebase context. | `references/adr-authoring.md` |
+| Quality Attribute Scenarios | `quality-attr` | | Elicit and structure SEI 6-part scenarios; build utility tree; QAW facilitation | SEI 6-part scenarios + utility tree + QAW workshop; hand (H,H)/(H,M) leaves to `evaluate` or `tradeoff`. | `references/atam-workflow.md` |
+| Tradeoff Analysis | `tradeoff` | | ATAM sensitivity/tradeoff/risk identification, optional CBAM cost-benefit extension | ATAM Phase 2: classify levers as sensitivity / tradeoff / risk / non-risk; optional CBAM; hand contested points to Magi and decisions to `adr`. | `references/atam-workflow.md` |
+
+### Signal Keywords → Recipe
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply.
+
+| Keywords | Recipe |
+|----------|--------|
+| `c4`, `architecture model`, `system context` | `model` |
+| `review`, `audit`, `consistency check` | `evaluate` (REVIEW mode — verify existing model) |
+| `update`, `evolve`, `change`, `refactor` | `model` (EVOLVE mode — see Work Modes) |
+| `deployment`, `infrastructure`, `production topology` | `model` (Deployment view; coordinate with Scaffold) |
+| `dynamic`, `sequence`, `flow`, `interaction` | `model` (Dynamic view) |
+| `landscape`, `organization`, `multi-system` | `model` (System Landscape view) |
+| `mermaid`, `plantuml`, `convert`, `export` | `dsl` (EXPORT mode — format conversion only) |
+| `adr`, `decision record`, `architecture decision` | `adr` |
+| `quality attribute`, `QAS`, `QAW`, `utility tree` | `quality-attr` |
+| `tradeoff`, `ATAM`, `sensitivity point`, `risk theme` | `tradeoff` |
+| unclear architecture modeling request | `model` (default — L1-L2) |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
-- Otherwise → default Recipe (`model` = New Model). Apply normal DISCOVER → MODEL → VERIFY → EXPORT workflow.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" file at the initial step.
+- Otherwise → default Recipe (`model` = New Model). Apply normal `DISCOVER → MODEL → VERIFY → EXPORT` workflow.
 
-Behavior notes per Recipe:
-- `model`: Create a new C4 model. In the DISCOVER phase, scan the actual codebase and generate L1-L2 as the baseline.
-- `evaluate`: Evaluate the quality attributes and trade-offs of the existing architecture with methodologies such as ATAM/SAAM.
-- `dsl`: Generate Structurizr DSL or update existing DSL. Consider workspace extends, archetypes, and !adrs.
-- `c4`: Switch to the specified level (L1/L2/L3/L4). Select the detail granularity to match the audience, and verify consistency in the VERIFY phase.
-- `adr`: Author Architecture Decision Records using the Nygard or MADR template. Apply the status lifecycle (proposed → accepted → deprecated/superseded), assign monotonic IDs, write Y-statements, and produce embedding-ready files for `!adrs`. Distinguish ADR (record after consensus) from RFC (proposal before consensus). When using LLMs to draft ADRs, ground the prompt with existing ADRs + codebase context — empirical research (2026) demonstrates that richer context strategies yield significantly better rationale quality; always validate LLM-generated rationale before acceptance. [Source: arxiv.org/abs/2604.03826, equalexperts.com/blog/our-thinking/accelerating-architectural-decision-records-adrs-with-generative-ai]
-- `quality-attr`: Elicit Quality Attribute Scenarios in SEI 6-part form (source/stimulus/artifact/environment/response/measure). Build a utility tree, facilitate QAW workshops, and prioritize via the importance × difficulty matrix. Hand off the (H,H)/(H,M) leaves to `evaluate` or `tradeoff`.
-- `tradeoff`: Run ATAM Phase 2 analysis core. Enumerate architectural approaches, classify each lever as sensitivity / tradeoff / risk / non-risk, capture rationale, and optionally extend with CBAM cost-benefit. Hand contested points to Magi and recordable decisions to `adr`.
+Routing rules:
+- Request mentions deployment or infrastructure → coordinate with Scaffold for topology data.
+- Request involves change impact → read Ripple's change signals first.
+- Request involves rendering/styling → delegate to Canvas after DSL export.
+- Always run VERIFY before any EXPORT.
 
 ### Work Modes
 
@@ -257,25 +274,6 @@ Output the verified model as Structurizr DSL.
 1. **Structurizr DSL** (recommended, primary format) — canonical model representation
 2. **Mermaid** — for GitHub/Wiki integration
 3. **C4-PlantUML** — for PlantUML environments
-
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| `c4`, `architecture model`, `system context` | Full C4 model creation | Structurizr DSL + consistency report | Structurizr DSL template below |
-| `review`, `audit`, `consistency check` | Model verification | Consistency report + improvement proposals | Consistency checklist |
-| `update`, `evolve`, `change`, `refactor` | Incremental model update | Delta DSL + change summary | Existing model + Ripple change signals |
-| `deployment`, `infrastructure`, `production topology` | Deployment diagram | Deployment view DSL | Scaffold infra topology |
-| `dynamic`, `sequence`, `flow`, `interaction` | Dynamic diagram | Dynamic view DSL | Use case description |
-| `landscape`, `organization`, `multi-system` | System Landscape diagram | Landscape view DSL | Atlas dependency maps |
-| `mermaid`, `plantuml`, `convert`, `export` | Format conversion only | Mermaid/PlantUML code | Existing Structurizr DSL |
-| unclear architecture modeling request | Full C4 model (L1-L2) | Structurizr DSL + consistency report | Structurizr DSL template below |
-
-Routing rules:
-- If the request mentions deployment or infrastructure, coordinate with Scaffold for topology data.
-- If the request involves change impact, read Ripple's change signals first.
-- If the request involves rendering/styling, delegate to Canvas after DSL export.
-- Always run VERIFY phase before any EXPORT.
 
 ## Output Requirements
 
@@ -463,8 +461,7 @@ STRATUM_TO_SCRIBE_HANDOFF:
 | `references/examples.md` | You need worked C4 model examples. |
 | `references/handoffs.md` | You need detailed handoff payload templates. |
 | `references/adr-authoring.md` | You are running the `adr` recipe — Nygard/MADR templates, status lifecycle, Y-statements, ADR vs RFC, repo organization, adr-tools/log4brains. |
-| `references/quality-attribute-scenarios.md` | You are running the `quality-attr` recipe — 6-part scenarios, utility tree, QAW facilitation, importance × difficulty prioritization. |
-| `references/tradeoff-analysis.md` | You are running the `tradeoff` recipe — ATAM sensitivity/tradeoff/risk classification, CBAM extension, decision rationale capture, when to escalate to Magi. |
+| `references/atam-workflow.md` | You are running the `quality-attr` recipe (6-part scenarios, utility tree, QAW facilitation, importance × difficulty prioritization) or the `tradeoff` recipe (ATAM Phase 2 sensitivity/tradeoff/risk classification, CBAM extension, decision rationale capture, when to escalate to Magi) — both phases share this end-to-end ATAM reference. |
 | `_common/BOUNDARIES.md` | You need agent role boundary definitions. |
 | `_common/OPERATIONAL.md` | You need standard operational protocols. |
 | `_common/HANDOFF.md` | You need handoff format specifications. |

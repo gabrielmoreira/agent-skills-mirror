@@ -83,8 +83,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`.agents/skills/cli/references/search-config.md`](.agents/skills/cli/references/search-config.md) |
 | 23 | ✓ | [`.agents/skills/cli/references/skills-plugins.md`](.agents/skills/cli/references/skills-plugins.md) |
 | 24 | ✓ | [`.agents/skills/cli/SKILL.md`](.agents/skills/cli/SKILL.md) |
-| 25 | ✓ | [`.agents/skills/data-fetching/references/walkthrough.md`](.agents/skills/data-fetching/references/walkthrough.md) |
-| 26 | ✓ | [`.agents/skills/data-fetching/SKILL.md`](.agents/skills/data-fetching/SKILL.md) |
+| 25 | ✓ | [`.agents/skills/data-fetching-architecture/references/walkthrough.md`](.agents/skills/data-fetching-architecture/references/walkthrough.md) |
+| 26 | ✓ | [`.agents/skills/data-fetching-architecture/SKILL.md`](.agents/skills/data-fetching-architecture/SKILL.md) |
 | 27 | ✓ | [`.agents/skills/db-migrations/SKILL.md`](.agents/skills/db-migrations/SKILL.md) |
 | 28 | ✓ | [`.agents/skills/debug-package/SKILL.md`](.agents/skills/debug-package/SKILL.md) |
 | 29 | ✓ | [`.agents/skills/desktop/references/feature-implementation.md`](.agents/skills/desktop/references/feature-implementation.md) |
@@ -139,7 +139,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 78 | ✓ | [`.agents/skills/react/SKILL.md`](.agents/skills/react/SKILL.md) |
 | 79 | ✓ | [`.agents/skills/response-compliance/SKILL.md`](.agents/skills/response-compliance/SKILL.md) |
 | 80 | ✓ | [`.agents/skills/review-checklist/SKILL.md`](.agents/skills/review-checklist/SKILL.md) |
-| 81 | ✓ | [`.agents/skills/source-command-dedupe/SKILL.md`](.agents/skills/source-command-dedupe/SKILL.md) |
+| 81 | ✓ | [`.agents/skills/skills-audit/SKILL.md`](.agents/skills/skills-audit/SKILL.md) |
 | 82 | ✓ | [`.agents/skills/spa-routes/SKILL.md`](.agents/skills/spa-routes/SKILL.md) |
 | 83 | ✓ | [`.agents/skills/store-data-structures/references/reducer.md`](.agents/skills/store-data-structures/references/reducer.md) |
 | 84 | ✓ | [`.agents/skills/store-data-structures/references/types.md`](.agents/skills/store-data-structures/references/types.md) |

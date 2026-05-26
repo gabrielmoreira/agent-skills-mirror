@@ -13,17 +13,17 @@ GEPA (Genetic-Pareto) is a reflective optimizer: it mutates a program's instruct
 ## Prerequisites — do these first or GEPA wastes rollouts
 
 1. A `dspy.Module` that runs end-to-end (see `dspy-fundamentals`).
-2. A rich-feedback metric returning `dspy.Prediction(score=float, feedback=str)` (see `dspy-evaluation-harness`). **A float-only metric makes GEPA no better than MIPRO.** A dict with the same fields crashes `dspy.Evaluate`'s parallel aggregator — use `dspy.Prediction`.
-3. `trainset` (15–50 examples) and a **separate** `valset` (15–50 examples). Optimizer will overfit trainset; valset selects the best candidate.
-4. A `reflection_lm` — a strong LM (often the same or stronger than the task LM) set to `temperature=1.0` for creative proposals.
+2. A rich-feedback metric returning `dspy.Prediction(score=float, feedback=str)` (see `dspy-evaluation-harness`). **A float-only metric makes GEPA no better than MIPRO.** A dict with the same fields still crashes `dspy.Evaluate` under DSPy 3.2.1 — use `dspy.Prediction`.
+3. `trainset` and a **separate** `valset`. For GEPA, maximize training examples and keep validation just large enough to represent the downstream distribution; do not reuse the same examples for both.
+4. A `reflection_lm` — a strong LM (often the same or stronger than the task LM) set to `temperature=1.0` for creative proposals. Current DSPy docs use a GPT-5-class reflection model with a large output budget.
 
 ## Canonical call
 
 ```python
 import dspy
 
-dspy.configure(lm=dspy.LM("openai/gpt-4o"))
-reflection_lm = dspy.LM("openai/gpt-4o", temperature=1.0, max_tokens=8000)
+dspy.configure(lm=dspy.LM("openai/gpt-5-mini"))
+reflection_lm = dspy.LM("openai/gpt-5", temperature=1.0, max_tokens=32000)
 
 optimizer = dspy.GEPA(
     metric=rich_metric,
@@ -75,9 +75,9 @@ def rich_metric(gold, pred, trace=None, pred_name=None, pred_trace=None):
     return dspy.Prediction(score=score, feedback=feedback)
 ```
 
-**Return `dspy.Prediction`, not a dict.** A dict with the same keys crashes `dspy.Evaluate`'s parallel aggregator (`TypeError: unsupported operand type(s) for +: 'int' and 'dict'`). GEPA uses `dspy.Evaluate` internally for candidate scoring, so the dict-return will fail inside GEPA too, not just in your explicit `Evaluate(...)` calls.
+**Return `dspy.Prediction`, not a dict.** Some upstream GEPA prose describes score/feedback as a dict-like shape, but `dspy.Evaluate` in DSPy 3.2.1 still crashes on a literal dict metric (`TypeError: unsupported operand type(s) for +: 'int' and 'dict'`). GEPA uses `dspy.Evaluate` internally for candidate scoring, so a dict return can fail inside GEPA too, not just in your explicit `Evaluate(...)` calls.
 
-- `pred_name` / `pred_trace` are set during reflection on a specific predictor inside your module — write per-predictor feedback when possible (credit assignment).
+- `pred_name` / `pred_trace` are set during reflection on a specific predictor inside your module — write per-predictor feedback when possible (credit assignment). If you cannot localize feedback, return program-level feedback rather than a vague score-only critique.
 - Feedback quality is the load-bearing part: specifics about *why* it failed and *what good looks like* are what the reflection LM acts on.
 
 ## Budget knobs
@@ -129,6 +129,10 @@ dspy.GEPA(
 
 `.compile(student, *, trainset, valset=None, teacher=None)` — `teacher` is not currently used.
 
+## Data split guidance
+
+DSPy's general prompt-optimizer docs often recommend a validation-heavy split, such as 20% train / 80% validation, because small prompt optimizers can overfit tiny trainsets. GEPA is different: maximize the training set and reserve only enough validation examples to represent downstream behavior. The Pareto frontier still needs a real valset, but GEPA learns from traces and textual feedback on training examples, so starving trainset hurts.
+
 ## BetterTogether in DSPy 3.2.x
 
 If you want a multi-stage optimizer loop, DSPy 3.2.0's `BetterTogether` now accepts arbitrary named optimizers instead of the older fixed `prompt_optimizer` / `weight_optimizer` pair:
@@ -164,6 +168,10 @@ Keep plain GEPA as the default first pass. Reach for `BetterTogether` only when 
 - You want pure few-shot bootstrapping with no instruction mutation.
 - Very large trainset (500+) where Bayesian search over demos pays off.
 
+## When SIMBA is worth trying
+
+`dspy.SIMBA` is a lighter reflective optimizer. Try it when you want a cheaper reflective pass than GEPA, your program is simple, or you need quick exploration before committing to a full GEPA run. Keep GEPA as the default for multi-predictor programs where per-predictor feedback and Pareto candidate selection matter.
+
 ## Resume & checkpointing
 
 `log_dir` writes candidate programs + scores per round. To resume an interrupted run, point `log_dir` at the same directory — GEPA picks up from the last checkpoint. Inspect `<log_dir>/candidates/` to see every proposed program.
@@ -188,7 +196,7 @@ With `track_best_outputs=True`, GEPA records, per task, the best prediction seen
 AssertionError: GEPA requires a reflection language model...
 ```
 
-add `reflection_lm=dspy.LM("openai/gpt-4o", temperature=1.0, max_tokens=8000)` to the constructor. `dspy.LM(...)` is a cheap stub until you actually call it, so constructing one doesn't hit the network.
+add `reflection_lm=dspy.LM("openai/gpt-5", temperature=1.0, max_tokens=32000)` to the constructor, or substitute the strongest instruction-following model available on your provider. `dspy.LM(...)` is a cheap stub until you actually call it, so constructing one doesn't hit the network.
 
 ## Next
 

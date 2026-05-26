@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Michael-A-Kuykendall/shimmy` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `Michael-A-Kuykendall/shimmy` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Michael-A-Kuykendall/shimmy` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,7 +60,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`.github/instructions/release-validation.instructions.md`](.github/instructions/release-validation.instructions.md) |
+| 2 | ✓ | [`.github/instructions/emergency-rollback.instructions.md`](.github/instructions/emergency-rollback.instructions.md) |
+| 3 | ✓ | [`.github/instructions/frontend-switching.instructions.md`](.github/instructions/frontend-switching.instructions.md) |
+| 4 | ✓ | [`.github/instructions/github-pages-deployment.instructions.md`](.github/instructions/github-pages-deployment.instructions.md) |
+| 5 | ✓ | [`.github/instructions/lifecycle-testing.instructions.md`](.github/instructions/lifecycle-testing.instructions.md) |
+| 6 | ✓ | [`.github/instructions/post-launch-monitoring.instructions.md`](.github/instructions/post-launch-monitoring.instructions.md) |
+| 7 | ✓ | [`.github/instructions/release-validation.instructions.md`](.github/instructions/release-validation.instructions.md) |
+| 8 | ✓ | [`.github/instructions/wrangler-setup.instructions.md`](.github/instructions/wrangler-setup.instructions.md) |
+| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

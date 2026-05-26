@@ -78,16 +78,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`.agents/skills/cline-sdk/SKILL.md`](.agents/skills/cline-sdk/SKILL.md) |
 | 17 | ✓ | [`.agents/skills/create-pull-request/SKILL.md`](.agents/skills/create-pull-request/SKILL.md) |
 | 18 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 19 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 20 | ✓ | [`evals/ARCHITECTURE.md`](evals/ARCHITECTURE.md) |
-| 21 | ✓ | [`sdk/AGENTS.md`](sdk/AGENTS.md) |
-| 22 | ✓ | [`sdk/apps/cli/.agents/skills/opentui/SKILL.md`](sdk/apps/cli/.agents/skills/opentui/SKILL.md) |
-| 23 | ✓ | [`sdk/apps/cli/.cline/skills/publish-cli/SKILL.md`](sdk/apps/cli/.cline/skills/publish-cli/SKILL.md) |
-| 24 | ✓ | [`sdk/apps/examples/desktop-app/sidecar/ARCHITECTURE.md`](sdk/apps/examples/desktop-app/sidecar/ARCHITECTURE.md) |
-| 25 | ✓ | [`sdk/ARCHITECTURE.md`](sdk/ARCHITECTURE.md) |
-| 26 | ✓ | [`sdk/CONTRIBUTING.md`](sdk/CONTRIBUTING.md) |
-| 27 | ✓ | [`sdk/packages/llms/AGENTS.md`](sdk/packages/llms/AGENTS.md) |
-| 28 | ✓ | [`src/core/prompts/system-prompt/CONTRIBUTING.md`](src/core/prompts/system-prompt/CONTRIBUTING.md) |
+| 19 | ✓ | [`apps/vscode/src/core/prompts/system-prompt/CONTRIBUTING.md`](apps/vscode/src/core/prompts/system-prompt/CONTRIBUTING.md) |
+| 20 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 21 | ✓ | [`evals/ARCHITECTURE.md`](evals/ARCHITECTURE.md) |
+| 22 | ✓ | [`sdk/AGENTS.md`](sdk/AGENTS.md) |
+| 23 | ✓ | [`sdk/apps/cli/.agents/skills/opentui/SKILL.md`](sdk/apps/cli/.agents/skills/opentui/SKILL.md) |
+| 24 | ✓ | [`sdk/apps/cli/.cline/skills/publish-cli/SKILL.md`](sdk/apps/cli/.cline/skills/publish-cli/SKILL.md) |
+| 25 | ✓ | [`sdk/apps/examples/desktop-app/sidecar/ARCHITECTURE.md`](sdk/apps/examples/desktop-app/sidecar/ARCHITECTURE.md) |
+| 26 | ✓ | [`sdk/ARCHITECTURE.md`](sdk/ARCHITECTURE.md) |
+| 27 | ✓ | [`sdk/CONTRIBUTING.md`](sdk/CONTRIBUTING.md) |
+| 28 | ✓ | [`sdk/packages/llms/AGENTS.md`](sdk/packages/llms/AGENTS.md) |
 | 29 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
 | 30 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 

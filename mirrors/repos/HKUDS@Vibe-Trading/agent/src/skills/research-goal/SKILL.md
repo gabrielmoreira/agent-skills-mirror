@@ -26,6 +26,7 @@ Do not start a goal for a tiny one-shot answer unless the user explicitly asks.
 3. Before continuing an existing task, call `get_research_goal`.
 4. After a market-data lookup, backtest, document read, web source, or manual reasoning step, call `add_goal_evidence`.
 5. Link evidence to a criterion using `criterion_id` or `criterion_index`.
+6. When all required criteria have been audited, call `update_research_goal_status`.
 
 ## Criteria Template
 
@@ -41,7 +42,15 @@ Use this shape when the user did not provide criteria:
 - Keep evidence short and concrete.
 - Prefer artifact-backed evidence when a tool produced a run or file.
 - Include `run_id`, `artifact_path`, `source_provider`, `source_type`, `symbol_universe`, `benchmark`, and `data_as_of` when known.
+- `tool_call_id` is traceability only. Completion needs verified evidence from an existing `run_id` or an allowed `artifact_path` with a matching sha256 hash.
 - Do not mark live trading instructions as evidence. Refuse or reframe them as research-only analysis.
+
+## Completion Rules
+
+- Use `update_research_goal_status(status="complete")` only after every required criterion has an audit row.
+- Satisfied audit rows must cite verified `evidence_ids`.
+- Use `status="blocked"` or `status="insufficient_evidence"` when evidence is missing, stale, contradictory, or not verifiable.
+- Use `status="cancelled"` only when the user explicitly asks to end or discard the goal.
 
 ## Response Style
 

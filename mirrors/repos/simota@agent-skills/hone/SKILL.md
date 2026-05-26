@@ -280,18 +280,14 @@ Behavior notes per Recipe:
 | `GEMINI.md`, `agy instructions` | Antigravity instructions audit | GEMINI.md proposals | `references/audit-checklist.md` (GI1-GI2) |
 | `claude code`, `claude`, `.claude/` | Claude Code audit | Claude Code config proposals | `references/claude-code-config-schema.md` |
 | `permissions`, `allow`, `deny` | Claude Code permissions audit | Permission proposals | `references/claude-code-config-schema.md` (CCP1-CCP4) |
-| `CLAUDE.md`, `claude instructions` | Claude Code instructions audit | CLAUDE.md proposals | `references/audit-checklist.md` (CCI1-CCI4) |
-| `hooks`, `claude hooks` | Claude Code hooks structural audit | Hooks validity proposals (design → Latch) | `references/claude-code-config-schema.md` (CCH1-CCH2) |
+| `CLAUDE.md`, `claude instructions`, `CLAUDE.md too long`, `instruction count`, `optimize instructions` | Claude Code instructions + density audit | CLAUDE.md proposals; line count + progressive disclosure | `references/claude-code-config-schema.md` (CCI1-CCI6) |
+| `rules`, `.claude/rules`, `path-scoped`, `globs`, `instruction budget`, `linter duplication`, `context waste` | Path-scoped rules + instruction budget audit | Rule glob validation + duplicate linter rule removal proposals | `references/claude-code-config-schema.md` (CCI1-CCI7) |
+| `hooks`, `claude hooks`, `hook handler`, `prompt hook`, `agent hook` | Claude Code hooks structural + handler audit | Hooks validity + handler type security/cost proposals (design → Latch) | `references/claude-code-config-schema.md` (CCH1-CCH8) |
 | `commands`, `slash commands` | Claude Code commands audit | Command proposals | `references/audit-checklist.md` (CCK1-CCK2) |
 | `settings hierarchy`, `override`, `conflict` | Settings hierarchy audit | Override conflict proposals | `references/claude-code-config-schema.md` (CCG1-CCG2) |
-| `CLAUDE.md too long`, `instruction count`, `optimize instructions` | CLAUDE.md density audit | Line count + progressive disclosure proposals | `references/claude-code-config-schema.md` (CCI1-CCI6) |
 | `managed settings`, `organization policy`, `MDM` | Managed policy audit | Policy compliance proposals | `references/claude-code-config-schema.md` |
-| `MCP security`, `PAT scope`, `tool poisoning` | MCP security audit | Least-privilege + integrity proposals | `references/claude-code-config-schema.md` (CCS1-CCS9) |
-| `MCP transport`, `OAuth`, `token passthrough`, `version pinning` | MCP transport security audit | OAuth 2.1 + version pinning proposals | `references/claude-code-config-schema.md` (CCS1-CCS9) |
+| `MCP security`, `PAT scope`, `tool poisoning`, `MCP transport`, `OAuth`, `token passthrough`, `version pinning` | MCP security + transport audit | Least-privilege + integrity + OAuth 2.1 + version pinning proposals | `references/claude-code-config-schema.md` (CCS1-CCS9) |
 | `wire_api`, `codex deprecation`, `responses API` | Codex wire_api migration audit | wire_api migration proposals | `references/codex-config-schema.md` (W1) |
-| `rules`, `.claude/rules`, `path-scoped`, `globs` | Path-scoped rules audit | Rule glob validation + specificity proposals | `references/claude-code-config-schema.md` (CCI1-CCI7) |
-| `instruction budget`, `linter duplication`, `context waste` | Instruction budget audit | Duplicate linter rule removal proposals | `references/claude-code-config-schema.md` (CCI1-CCI7) |
-| `hook handler`, `prompt hook`, `agent hook` | Hook handler type audit | Handler type security + cost proposals | `references/claude-code-config-schema.md` (CCH1-CCH8) |
 | `plugin`, `marketplace`, `skills install` | Plugin audit | Plugin source/trust/auto-update proposals | `references/claude-code-config-schema.md` (CCPL1-CCPL4) |
 | `resource indicator`, `RFC 8707`, `token binding` | MCP resource indicator audit | RFC 8707 compliance proposals | `references/claude-code-config-schema.md` (CCS11) |
 | unclear config request | Full audit (all CLIs) | Comprehensive report | `references/audit-checklist.md` |

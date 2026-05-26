@@ -179,55 +179,43 @@ Tuner receives performance issues and context from upstream agents. Tuner sends 
 
 ## Recipes
 
+Single source of truth for Recipe definitions. Subcommand match wins over natural-language signal-keyword match.
+
 | Recipe | Subcommand | Default? | When to Use | Read First |
 |--------|-----------|---------|-------------|------------|
-| Explain Analyze | `explain` | ✓ | EXPLAIN ANALYZE analysis | `references/explain-analyze-guide.md` |
-| Slow Query Hunt | `slow` | | Slow query detection and fix | `references/slow-query-benchmarks.md` |
-| Index Recommendation | `index` | | Index recommendation | `references/query-index-anti-patterns.md` |
-| Plan Optimization | `plan` | | Query plan improvement | `references/optimization-patterns.md` |
-| Cache Strategy | `cache` | | Query/DB cache layer tuning (Redis, Memcached, shared_buffers) | `references/cache-strategy.md` |
-| Connection Pool Tuning | `connection` | | Pool sizing, lifetime, prepared-statement cache, leak detection | `references/connection-pool-tuning.md` |
-| VACUUM & Autovacuum | `vacuum` | | Bloat, autovacuum thresholds, freeze horizon, statistics target | `references/vacuum-autovacuum-tuning.md` |
+| Explain Analyze | `explain` | ✓ | EXPLAIN ANALYZE analysis — annotate plan nodes, identify bottleneck nodes, propose improvements | `references/explain-analyze-guide.md` |
+| Slow Query Hunt | `slow` | | Slow query detection and fix — extract high-cost queries from slow-query logs or pg_stat_statements and propose rewrite candidates | `references/slow-query-benchmarks.md` |
+| Index Recommendation | `index` | | Index recommendation — analyze access patterns and produce DDL for covering, partial, and composite indexes | `references/query-index-anti-patterns.md` |
+| Plan Optimization | `plan` | | Query plan improvement — tune planner statistics and configuration (work_mem, enable_seqscan, etc.) to steer the planner | `references/optimization-patterns.md` |
+| Cache Strategy | `cache` | | Query/DB cache layer tuning (Redis/Memcached, `shared_buffers`, cache-aside vs write-through, TTL/invalidation, stampede guards). Scope: app/query cache layer. Gateway owns HTTP/edge cache; Schema owns design-time denormalization/MVs; hand off repository integration to Builder | `references/cache-strategy.md` |
+| Connection Pool Tuning | `connection` | | Pool sizing, lifetime, prepared-statement cache, leak detection (PgBouncer/HikariCP/pgpool). Scope: DB-side pool. Gateway owns HTTP keep-alive; Bolt owns app-side thread/async pool; coordinate with Schema when `max_connections` must rise | `references/connection-pool-tuning.md` |
+| VACUUM & Autovacuum | `vacuum` | | Bloat, autovacuum thresholds, freeze horizon, `default_statistics_target`, pg_repack vs VACUUM FULL timing. Scope: runtime maintenance. Schema owns design-time `fillfactor`/partitioning; Beacon owns bloat monitoring/dashboards | `references/vacuum-autovacuum-tuning.md` |
+
+### Signal Keywords → Recipe
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply.
+
+| Keywords | Recipe |
+|----------|--------|
+| `explain`, `execution plan`, `query plan` | `explain` |
+| `slow query`, `latency`, `timeout`, `P99`, `latency SLA`, `percentile` | `slow` |
+| `index`, `covering index`, `partial index` | `index` |
+| `N+1`, `ORM`, `eager loading` | `slow` (see `references/orm-performance-pitfalls.md`) |
+| `connection pool`, `max_connections` | `connection` |
+| `materialized view`, `partition` | `plan` (see `references/materialized-views-partitioning.md`) |
+| `monitoring`, `pg_stat`, `observability` | `slow` (see `references/db-monitoring-observability.md`) |
+| `vector`, `pgvector`, `embedding` | `index` (see `references/vector-search-query-optimization.md`) |
+| `cloud db`, `Aurora`, `Neon` | `plan` (see `references/cloud-db-optimization-patterns.md`) |
+| `PostgreSQL 18`, `AIO`, `skip scan` | `plan` (see `references/postgresql-18-performance.md`) |
+| unclear request | Clarify scope, then `explain` (default) |
 
 ## Subcommand Dispatch
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
-- Otherwise → default Recipe (`explain` = Explain Analyze). Apply normal INTAKE → ANALYZE → RECOMMEND → VALIDATE workflow.
 
-Behavior notes per Recipe:
-- `explain`: Take EXPLAIN ANALYZE output and annotate each plan node, decomposing the plan into readable steps. Identify bottleneck nodes and propose improvements.
-- `slow`: Extract high-cost queries from slow-query logs or pg_stat_statements and propose rewrite candidates.
-- `index`: Analyze access patterns and recommend DDL for covering, partial, and composite indexes.
-- `plan`: Tune planner statistics and configuration parameters (work_mem, enable_seqscan, etc.) to steer the planner toward the optimal execution plan.
-- `cache`: Query-result and DB-layer cache strategy (Redis/Memcached in front of SQL, `shared_buffers` sizing, cache-aside vs write-through, TTL and invalidation design, stampede guards). Scope: application/query cache layer. For HTTP/edge/API-gateway-level caching use Gateway; for design-time denormalization or materialized views use Schema. Hand off repository integration to Builder.
-- `connection`: Connection-pool tuning (PgBouncer/HikariCP/pgpool sizing, pool mode trade-offs, prepared-statement cache behavior, idle/max-lifetime coordination, connection-leak detection). Scope: DB-side pool. For HTTP/upstream connection keep-alive use Gateway; for application-side thread-pool or async-runtime sizing use Bolt; when `max_connections` itself must rise, coordinate with Schema.
-- `vacuum`: PostgreSQL VACUUM/ANALYZE/autovacuum tuning (per-table autovacuum overrides, bloat detection, `fillfactor`, freeze horizon, `default_statistics_target`, pg_repack vs VACUUM FULL timing). Scope: runtime maintenance. For design-time `fillfactor`/partitioning/column layout decisions use Schema; for bloat monitoring and alerting dashboards hand off to Beacon.
-
-## Output Routing
-
-| Signal | Approach | Primary output | Read next |
-|--------|----------|----------------|-----------|
-| `explain`, `execution plan`, `query plan` | Execution plan analysis | EXPLAIN ANALYZE annotated breakdown | `references/explain-analyze-guide.md` |
-| `slow query`, `latency`, `timeout` | Slow query diagnosis | Root cause and rewrite recommendation | `references/optimization-patterns.md` |
-| `index`, `covering index`, `partial index` | Index recommendation | Index DDL with read/write trade-off | `references/query-index-anti-patterns.md` |
-| `N+1`, `ORM`, `eager loading` | ORM optimization | Eager-load fix or raw SQL switch | `references/orm-performance-pitfalls.md` |
-| `connection pool`, `max_connections` | Connection pool optimization | Pool sizing recommendation | `references/connection-pool-guide.md` |
-| `materialized view`, `partition` | MV/Partition evaluation | DDL + maintenance plan | `references/materialized-views-partitioning.md` |
-| `monitoring`, `pg_stat`, `observability` | DB monitoring | Monitoring query set | `references/db-monitoring-observability.md` |
-| `vector`, `pgvector`, `embedding` | Vector search optimization | Index parameter tuning + filter strategy | `references/vector-search-query-optimization.md` |
-| `cloud db`, `Aurora`, `Neon` | Cloud DB optimization | Cloud-specific tuning recommendations | `references/cloud-db-optimization-patterns.md` |
-| `PostgreSQL 18`, `AIO`, `skip scan` | PG18 feature optimization | AIO/skip scan/parallel GIN leverage plan | `references/postgresql-18-performance.md` |
-| `P99`, `latency SLA`, `percentile` | Latency threshold analysis | P50/P95/P99 breakdown with SLO mapping | `references/slow-query-benchmarks.md` |
-| default request | Standard Tuner workflow | Analysis / recommendation | `references/` |
-| complex multi-agent task | Nexus-routed execution | Structured handoff | `_common/BOUNDARIES.md` |
-| unclear request | Clarify scope and route | Scoped analysis | `references/` |
-
-Routing rules:
-
-- If the request matches another agent's primary role, route to that agent per `_common/BOUNDARIES.md`.
-- If the request involves schema changes, route recommendations to Schema via `TUNER_TO_SCHEMA`.
-- If the request involves application-side changes, route to Builder via `TUNER_TO_BUILDER`.
-- Always read relevant `references/` files before producing output.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" file at the initial step.
+- Otherwise, match against **Signal Keywords → Recipe** for natural-language input.
+- Fallback → default Recipe (`explain` = Explain Analyze). Apply standard ANALYZE → DIAGNOSE → OPTIMIZE → VALIDATE workflow.
+- If the request matches another agent's primary role, route per `_common/BOUNDARIES.md` (Schema for migrations via `TUNER_TO_SCHEMA`, Builder for app rewrites via `TUNER_TO_BUILDER`).
 
 ## Output Requirements
 
@@ -282,8 +270,7 @@ In all suppression cases, write a one-line note in the report explaining why the
 | [slow-query-benchmarks.md](references/slow-query-benchmarks.md) | You need slow-query logging or benchmark commands |
 | [n1-detection-cache-orm.md](references/n1-detection-cache-orm.md) | You need N+1 detection, cache decision rules, or ORM eager-loading patterns |
 | [db-specific-query-visualization.md](references/db-specific-query-visualization.md) | You need PostgreSQL/MySQL/SQLite tuning baselines or Canvas query-plan visualization |
-| [connection-pool-guide.md](references/connection-pool-guide.md) | You need connection-pool sizing, pooler selection, or monitoring checks |
-| [connection-pool-tuning.md](references/connection-pool-tuning.md) | You need in-depth pool tuning — lifetime coordination, prepared-statement cache, leak detection, HikariCP/PgBouncer knobs |
+| [connection-pool-tuning.md](references/connection-pool-tuning.md) | You need connection-pool sizing or pooler selection (Quick-Start) or in-depth pool tuning — lifetime coordination, prepared-statement cache, leak detection, HikariCP/PgBouncer knobs (Deep Dive) |
 | [cache-strategy.md](references/cache-strategy.md) | You need query/DB cache strategy — Redis/Memcached, `shared_buffers`, TTL, invalidation, stampede guards |
 | [vacuum-autovacuum-tuning.md](references/vacuum-autovacuum-tuning.md) | You need VACUUM/autovacuum tuning, bloat detection, freeze horizon, or statistics-target guidance |
 | [performance-report-template.md](references/performance-report-template.md) | You need the exact output schema for a performance report |
@@ -291,6 +278,7 @@ In all suppression cases, write a one-line note in the report explaining why the
 | [orm-performance-pitfalls.md](references/orm-performance-pitfalls.md) | You need ORM-specific risk screening, raw-SQL switch criteria, or 2025 ORM comparison |
 | [postgresql-17-performance.md](references/postgresql-17-performance.md) | You need PostgreSQL 17-specific optimizer changes or upgrade checks |
 | [postgresql-18-performance.md](references/postgresql-18-performance.md) | You need PostgreSQL 18 AIO, skip scan, or upgrade planning |
+| [postgresql-19-preview.md](references/postgresql-19-preview.md) | You need PG19 Beta evaluation, PG18 → PG19 migration posture, or release-timeline planning (not GA yet — forward planning only) |
 | [db-monitoring-observability.md](references/db-monitoring-observability.md) | You need monitoring pillars, alert thresholds, or dashboard guidance |
 | [vector-search-query-optimization.md](references/vector-search-query-optimization.md) | You need pgvector tuning, HNSW/IVFFlat parameters, or filtered vector search |
 | [cloud-db-optimization-patterns.md](references/cloud-db-optimization-patterns.md) | You need Aurora QPM, Neon cold-start tuning, or cloud DB selection guidance |

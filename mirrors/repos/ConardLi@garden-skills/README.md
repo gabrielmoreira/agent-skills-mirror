@@ -94,7 +94,7 @@ Highlights:
 - Includes practical implementation rules for inline React + Babel, CSS tokens, `oklch()` color work, container queries, and reduced-motion handling
 - Ships an advanced patterns reference for device frames, slide engines, animation timelines, dashboards, and other reusable web artifacts
 
-Links: [README](./skills/web-design-engineer/README.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[Download v1.2.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.2.0/web-design-engineer-1.2.0.zip)<!-- DOWNLOAD:web-design-engineer:end -->
+Links: [README](./skills/web-design-engineer/README.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[Download v1.2.1 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.2.1/web-design-engineer-1.2.1.zip)<!-- DOWNLOAD:web-design-engineer:end -->
 
 ---
 

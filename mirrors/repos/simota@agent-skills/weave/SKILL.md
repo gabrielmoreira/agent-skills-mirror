@@ -170,43 +170,46 @@ CAPTURE → MODEL → VALIDATE → REFINE → HANDOFF
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| State Design | `design` | ✓ | State transition design | `references/state-machine-patterns.md` |
-| Saga Pattern | `saga` | | Saga pattern distributed transactions | `references/saga-patterns.md` |
-| Approval Flow | `approval` | | Approval flow design | `references/approval-flow-patterns.md` |
-| Invalid Transition Detection | `detect` | | Invalid transition detection | `references/state-machine-patterns.md` |
-| Retry State Machine | `retry` | | Exponential backoff, jitter, max-attempt cap, DLQ terminal state, idempotency contract | `references/retry-state-machine.md` |
-| Timeout / TTL / Deadline | `timeout` | | TTL state design, deadline propagation, grace-period transitions, stuck-state recovery | `references/timeout-ttl-design.md` |
-| Compensation Transactions | `compensation` | | Saga compensation per forward step, idempotency keys, compensation-of-compensation, ordering | `references/compensation-transactions.md` |
+Single source of truth for Recipe definitions. Behavior depth lives in the "Behavior" column; full templates and edge cases live in the "Read First" file.
+
+| Recipe | Subcommand | Default? | When to Use | Behavior | Read First |
+|--------|-----------|---------|-------------|----------|------------|
+| State Design | `design` | ✓ | State transition design | General state-machine design. Transition table + reachability + deadlock check. | `references/state-machine-patterns.md` |
+| Saga Pattern | `saga` | | Saga pattern distributed transactions | Top-level Saga shape (orchestration vs choreography, participants, boundary). For per-step compensation depth, switch to `compensation`. | `references/saga-patterns.md` |
+| Approval Flow | `approval` | | Approval flow design | Approval flow with BPMN 2.0 boundary timer + escalation (never error events). Includes SLA, delegation, and audit trail. | `references/approval-flow-patterns.md` |
+| Invalid Transition Detection | `detect` | | Invalid transition detection | Scan existing transition tables / code for invalid or missing transitions. | `references/state-machine-patterns.md` |
+| Retry State Machine | `retry` | | Exponential backoff, jitter, max-attempt cap, DLQ terminal state, idempotency contract | Exponential backoff (base × 2^n), jitter (full/equal/decorrelated), max-attempt cap, DLQ as terminal state, retriable-vs-non-retriable classification, idempotency key. Pair with `tempo` for schedules, Beacon for retry-exhaustion alerts. | `references/retry-state-machine.md` |
+| Timeout / TTL / Deadline | `timeout` | | TTL state design, deadline propagation, grace-period transitions, stuck-state recovery | Per-state timeout from business SLA, deadline propagation (context.deadline), grace-period transitions, stuck-state escape, soft-timeout (warn) vs hard-timeout (abort). Hand off to `tempo` for cron integration. | `references/timeout-ttl-design.md` |
+| Compensation Transactions | `compensation` | | Saga compensation per forward step, idempotency keys, compensation-of-compensation, ordering | Per-forward-step compensation; each idempotent, LIFO-ordered by default, handles compensation-of-compensation. Emit compensation table with idempotency keys, ordering, and failure-of-compensation escalation (hand off to Triage). | `references/compensation-transactions.md` |
+
+### Signal Keywords → Recipe
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply.
+
+| Keywords | Recipe |
+|----------|--------|
+| `state machine`, `FSM`, `statechart`, `transition design` | `design` |
+| `saga`, `orchestration`, `choreography`, `distributed transaction` | `saga` |
+| `approval`, `escalation`, `SLA timeout` on approval | `approval` |
+| `invalid transition`, `deadlock check`, `unreachable state`, `transition audit` | `detect` |
+| `retry`, `backoff`, `jitter`, `DLQ`, `max attempts` | `retry` |
+| `timeout`, `TTL`, `deadline`, `expiry`, `stuck state` | `timeout` |
+| `compensation`, `rollback step`, `compensating transaction`, `LIFO undo` | `compensation` |
+| `long-running transaction`, `durable workflow`, `engine selection` | `saga` (engine recommendation included) |
+| `AI agent workflow`, `LLM state transitions`, `human-in-the-loop` | `design` (graph-based — LangGraph / Temporal / DBOS) |
+| unclear workflow design request | `design` (default) |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
-- Otherwise → default Recipe (`design` = State Design). Apply normal CAPTURE → MODEL → VALIDATE → REFINE → HANDOFF workflow.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" file at the initial step.
+- Otherwise → default Recipe (`design` = State Design). Apply normal `CAPTURE → MODEL → VALIDATE → REFINE → HANDOFF` workflow.
 
-Behavior notes per Recipe:
-- `design`: General state-machine design. Transition table + reachability + deadlock check.
-- `saga`: Saga pattern at the top level (orchestration vs choreography, participants, boundary). For per-step compensation depth, switch to `compensation`.
-- `approval`: Approval flow with BPMN 2.0 boundary timer + escalation. Includes SLA, delegation, and audit trail.
-- `detect`: Scan existing transition tables / code for invalid or missing transitions.
-- `retry`: Design retry state machine — exponential backoff (base × 2^n), jitter (full / equal / decorrelated), max-attempt cap, DLQ as terminal state, retriable vs non-retriable error classification, idempotency key contract. Pair with tempo for schedule design and Beacon for retry-exhaustion alerts.
-- `timeout`: TTL / deadline / expiry state design. Derive per-state timeout from business SLA, propagate deadline through downstream calls (context.deadline), design grace-period transitions, stuck-state escape (unknown → recovery), and distinguish soft-timeout (warn) vs hard-timeout (abort). Hand off to tempo for cron/schedule integration.
-- `compensation`: Per-forward-step compensation design (Saga depth). Each compensation must be idempotent, ordered (LIFO by default), and handle compensation-of-compensation. Emit compensation table with idempotency keys, execution order, and failure-of-compensation escalation (hand off to Triage).
-
-## Output Routing
-
-| Signal | Approach | Read Next |
-|--------|----------|-----------|
-| State machine ready for code | Package transition table + validation report; hand to Builder | `references/handoffs.md` |
-| Visualization requested | Emit Statechart / BPMN definition for Canvas to render | `references/state-machine-patterns.md` |
-| Test case generation requested | Extract state × event matrix; hand to Radar | `references/state-machine-patterns.md` |
-| Saga spans 5+ participating services | Default to Orchestration; name coordinator ownership and retry budget | `references/saga-patterns.md` |
-| Long-running transaction (minutes to days) | Recommend Temporal-class durable engine; pin explicit `cancellationType` | `references/engine-selection.md` |
-| AI agent workflow (LLM-driven state transitions) | Model as graph-based state machine (LangGraph) or durable workflow (Temporal / DBOS) with explicit human-in-the-loop states | `references/engine-selection.md` |
-| Approval flow with timeout / escalation | Model with BPMN 2.0 boundary timer + escalation events (never error events) | `references/approval-flow-patterns.md` |
-| Spec extract received from Scribe | Re-ground against existing transitions; reject if business rules conflict | `references/handoffs.md` |
+Routing rules:
+- Saga spans 5+ participating services → default to Orchestration; name coordinator ownership and retry budget.
+- Long-running transaction (minutes to days) → recommend Temporal-class durable engine; pin explicit `cancellationType`.
+- Spec extract received from Scribe → re-ground against existing transitions; reject if business rules conflict.
+- Visualization / test-case requests → hand off to Canvas / Radar after VALIDATE.
 
 ---
 
@@ -317,19 +320,13 @@ Details → `references/approval-flow-patterns.md`
 
 ## Workflow Engine Selection
 
-| Engine | Best For | Language | Hosting |
-|--------|----------|----------|---------|
-| Temporal | General-purpose, long-running workflows | Go / Java / TS / Python | Self-hosted / Cloud |
-| AWS Step Functions | AWS-native, serverless, large-scale parallel (Distributed Map) | ASL (JSON) | AWS Managed |
-| Inngest | Event-driven, serverless, Next.js / Vercel | TS / Go / Python | Cloud / Self-hosted |
-| Restate | Durable async/await at service boundaries | TS / Java / Go / Rust | Self / Cloud |
-| DBOS Transact | Postgres-backed durable execution, minimal infra | TS / Python / Java / Go | Self / Cloud |
-| XState v5 | In-process state management, Actor model | TS / JS | Client-side / Node |
-| LangGraph | Stateful AI agent workflows, human-in-the-loop | Python / TS | Self / Cloud |
+Full comparison matrix, decision tree, and cost models → `references/engine-selection.md`.
 
-> **Removed:** Cadence is superseded by Temporal for new projects. See [temporal.io](https://temporal.io).
-
-Details → `references/engine-selection.md`
+Quick orientation:
+- **Durable, long-running, polyglot** → Temporal (general default); Restate or DBOS Transact when minimal infra / Postgres-backed is preferred.
+- **Serverless / cloud-native** → AWS Step Functions (AWS-only), Inngest (event-driven / Next.js).
+- **In-process / frontend** → XState v5 (Actor model). **AI agent workflows** → LangGraph or Temporal + Agents SDK.
+- Cadence is superseded by Temporal for new projects.
 
 ---
 

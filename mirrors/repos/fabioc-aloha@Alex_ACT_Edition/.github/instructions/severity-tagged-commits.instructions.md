@@ -13,7 +13,7 @@ lastReviewed: 2026-05-24
 
 Every commit that touches a brain artefact must carry a severity tag. The tag determines the level of pre-commit scrutiny required and restores credit-assignment fidelity that flat commit lists destroy — without tags, a typo fix and a constitutional rule change have identical weight in `git log`.
 
-Lifted from Karpathy_Loop's heir-side discipline (Phase 3 deliverable, 2026-05-23) and adopted as Supervisor always-on per [docs/proposals/brain-qa-2026-05-24-02.md](../../docs/proposals/brain-qa-2026-05-24-02.md).
+Lifted from Karpathy_Loop's heir-side discipline (Phase 3 deliverable, 2026-05-23) and adopted as Supervisor always-on per the brain-qa-2026-05-24-02 proposal (Supervisor-only artefact).
 
 ## The four tiers
 
@@ -91,7 +91,7 @@ Files exempt:
 
 ## Brain-qa-changelog integration
 
-Every row in [docs/ledgers/brain-qa-changelog.md](../../docs/ledgers/brain-qa-changelog.md) must include the severity tag of the shipping commit (in the Notes column or as a dedicated column). Enforced by [brain-curation-rules.instructions.md](brain-curation-rules.instructions.md) § Severity + Falsifiability Gate.
+Where the repo maintains a brain-qa-changelog (Supervisor ships one at `docs/ledgers/brain-qa-changelog.md`), every row must include the severity tag of the shipping commit (in the Notes column or as a dedicated column). Enforced by [brain-curation-rules.instructions.md](brain-curation-rules.instructions.md) § Severity + Falsifiability Gate.
 
 ## Falsification
 

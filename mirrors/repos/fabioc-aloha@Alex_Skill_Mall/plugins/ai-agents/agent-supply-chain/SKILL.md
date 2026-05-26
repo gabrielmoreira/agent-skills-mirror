@@ -3,7 +3,7 @@ type: skill
 lifecycle: stable
 inheritance: inheritable
 name: agent-supply-chain
-description: |
+description: "Generate and verify integrity manifests for AI agent plugins and tools -- detect tampering, enforce version pinning, and establish supply chain provenance (the SLSA/Sigstore gap for agent ecosystems)."
 tier: standard
 applyTo: '**/*agent*,**/*supply*,**/*chain*'
 currency: 2026-04-30

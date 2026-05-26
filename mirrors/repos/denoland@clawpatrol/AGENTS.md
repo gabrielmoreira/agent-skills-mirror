@@ -1,0 +1,1 @@
+cache/repos/github.com/denoland@clawpatrol/.claude/CLAUDE.md

@@ -122,7 +122,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Landing Page | `landing` | | LP-focused PoC (Funnel supporting role) | `references/ui-templates.md`, `references/rapid-iteration-methodology.md` |
 | Mobile PoC | `mobile` | | React Native / Flutter / Expo prototype with stubbed native capabilities and device preview | `references/mobile-prototyping.md` |
 | Dashboard PoC | `dashboard` | | Admin / analytics dashboard with charts, tables, filters, and seeded mock time-series | `references/dashboard-prototyping.md` |
-| AI Feature PoC | `ai` | | Chat UI / RAG demo / agent UI with streaming response shell and injection-safe input | `references/ai-feature-prototyping.md` |
+| AI Feature PoC | `ai` | | Chat UI / RAG demo / agent UI with streaming response shell and injection-safe input | `references/ai-assisted-prototyping.md` (see "AI Feature PoC Pattern") |
 
 ## Subcommand Dispatch
 
@@ -197,12 +197,11 @@ Forge receives concepts and direction from upstream agents, builds rapid prototy
 | `references/prototyping-anti-patterns.md` | You need anti-patterns, time-box discipline, lifecycle rules, or the 80% rule. |
 | `references/prototype-to-production.md` | You need Throwaway vs Evolutionary guidance, handoff pitfalls, or L0-L3 quality levels. |
 | `references/rapid-iteration-methodology.md` | You need fast iteration tactics, demo structure, or pivot rules. |
-| `references/ai-assisted-prototyping.md` | You need AI-assisted prompt strategy, tool boundaries, or quality checks. |
+| `references/ai-assisted-prototyping.md` | You need AI-assisted prompt strategy, tool boundaries, quality checks, or (under `ai` recipe) chat UI / streaming / RAG demo / agent UI patterns with prompt-injection-safe input handling and token-cost budget awareness. |
 | `references/moodboard-workflow.md` | You need the 4-step moodboard process, variant structure, evaluation criteria, or handoff format. |
 | `references/html-artifacts.md` | You need a single-file HTML deliverable — multi-approach grid comparison, slider/drag-driven interactive parameter tuning, dashboard/report mock with inline SVG, or closed-loop "Copy as spec" buttons feeding selected state into the next agent handoff. |
 | `references/mobile-prototyping.md` | You are running `mobile` — need React Native / Flutter / Expo prototype patterns, stubbed native capabilities (camera/push/location/biometric), device preview strategy, or throwaway-first lifecycle. |
 | `references/dashboard-prototyping.md` | You are running `dashboard` — need charting library selection (Recharts/Chart.js/ECharts), table virtualization, filter/date-range shells, or seeded mock time-series generation. |
-| `references/ai-feature-prototyping.md` | You are running `ai` — need chat UI / streaming response shell / RAG demo / agent UI patterns with prompt-injection-safe input handling and token-cost budget awareness. |
 | `_common/UX_TRENDS_2026.md` | You need 2025-2026 frontend stack defaults — React 19.2 RSC, Svelte 5 Runes, Vue 3.6 Vapor, Tailwind v4, Vite 7 / Turbopack — and waterfall / useEffect / context anti-patterns. Read §3 Frontend. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the demo summary, deciding effort-level for the time-box, or front-loading hypothesis/L-tier at the first phase. Critical for Forge: P3, P6. |
 

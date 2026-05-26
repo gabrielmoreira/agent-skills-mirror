@@ -443,6 +443,8 @@ Useful WebVNC commands:
 ../crabbox/bin/crabbox desktop key --provider hetzner --id <cbx_id-or-slug> ctrl+l
 ../crabbox/bin/crabbox artifacts collect --id <cbx_id-or-slug> --all --output artifacts/<slug>
 ../crabbox/bin/crabbox artifacts publish --dir artifacts/<slug> --pr <number>
+../crabbox/bin/crabbox artifacts list <artifact-manifest.json-or-url>
+../crabbox/bin/crabbox artifacts pull <artifact-manifest.json-or-url> --output /tmp/<slug>-proof
 ```
 
 `desktop launch --webvnc --open` is usually the nicest one-shot: it starts the
@@ -451,6 +453,12 @@ WebVNC portal, and opens the portal. Keep browsers windowed for human QA; use
 `--fullscreen` only for capture/video workflows.
 For human handoff, include `--take-control` so the opened portal viewer gets
 keyboard/mouse control automatically instead of landing as an observer.
+
+Artifact publishing writes and uploads `artifact-manifest.json` by default. Use
+that URL for PR-ready proof handoff; `artifacts pull` verifies size and SHA256.
+Use `--skip-manifest` only for legacy markdown-only output.
+Never push screenshots, videos, or proof assets to the product repo or a temp
+artifact branch.
 
 Human handoff preflight:
 

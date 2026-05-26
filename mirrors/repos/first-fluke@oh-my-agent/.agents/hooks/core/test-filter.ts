@@ -12,6 +12,8 @@ import type { Vendor } from "./types.ts";
 function detectVendor(input: Record<string, unknown>): Vendor {
   const event = input.hook_event_name as string | undefined;
   if (event === "BeforeTool") return "gemini";
+  if (event === "PreToolUse" && process.env.ANTIGRAVITY_PROJECT_DIR)
+    return "antigravity";
   if (event === "PreToolUse") {
     if ("session_id" in input && !("sessionId" in input)) return "codex";
   }
@@ -27,6 +29,13 @@ function getProjectDir(vendor: Vendor, input: Record<string, unknown>): string {
       break;
     case "gemini":
       dir = process.env.GEMINI_PROJECT_DIR || process.cwd();
+      break;
+    case "antigravity":
+      dir =
+        (input.cwd as string) ||
+        process.env.ANTIGRAVITY_PROJECT_DIR ||
+        process.env.AGY_PROJECT_DIR ||
+        process.cwd();
       break;
     case "qwen":
       dir = process.env.QWEN_PROJECT_DIR || process.cwd();
@@ -44,6 +53,8 @@ function getHookDir(vendor: Vendor): string {
       return ".codex/hooks";
     case "gemini":
       return ".gemini/hooks";
+    case "antigravity":
+      return ".gemini/antigravity-cli/hooks";
     case "qwen":
       return ".qwen/hooks";
     default:

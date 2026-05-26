@@ -270,45 +270,41 @@ Legal-readability checks: are technical terms explained, are clauses concrete, a
 
 ## Recipes
 
+Single source of truth for Recipe definitions. Behavior depth is encoded in the "When to Use" column.
+
 | Recipe | Subcommand | Default? | When to Use | Read First |
 |--------|-----------|---------|-------------|------------|
-| ToS Review | `tos` | ✓ | Terms of Service clause coverage check and risk flagging | `references/legal-checklists.md` |
-| Privacy Policy | `privacy` | | Privacy Policy GDPR/APPI alignment check | `references/legal-checklists.md` |
-| Tokushoho | `tokushoho` | | Tokushoho (Specified Commercial Transactions Act) required-field check | `references/legal-checklists.md` |
-| Gap Analysis | `gap` | | Multi-document consistency check, missing clause detection | `references/patterns.md` |
-| DPA Review | `dpa` | | Data Processing Agreement review (GDPR Art. 28, sub-processor chain, SCC, Schrems II TIA) | `references/dpa-review.md` |
-| EULA Review | `eula` | | End User License Agreement review (license type, IP, warranty/indemnity, jurisdiction overrides) | `references/eula-review.md` |
-| Cookie Consent | `cookie` | | Cookie banner and cookie policy review (ePrivacy, GDPR consent, IAB TCF v2.2, categorization) | `references/cookie-consent.md` |
-| App Store Disclosures | `appstore` | | DSA Trader / DMA Anti-Steering / 5.1.2(i) third-party-AI consent / Sign in with Apple / Google Play AI labeling / EAA accessibility statement wording review for mobile apps | `references/legal-checklists.md` |
+| ToS Review | `tos` | ✓ | Terms of Service clause coverage check and risk flagging. Default when intent is unclear. | `references/legal-checklists.md` |
+| Privacy Policy | `privacy` | | Privacy Policy GDPR/APPI alignment check (including statute-specific deep-dives when the request names GDPR or APPI directly). | `references/legal-checklists.md` |
+| Tokushoho | `tokushoho` | | Tokushoho (Specified Commercial Transactions Act) required-field check (Japan e-commerce / paid services). | `references/legal-checklists.md` |
+| Gap Analysis | `gap` | | Multi-document consistency check, missing-clause detection, cross-document review (pre-launch comprehensive sweep). | `references/patterns.md` |
+| DPA Review | `dpa` | | Data Processing Agreement review. Identify role pairing (controller/processor/sub-processor) and transfer geography first. Walk Art. 28(3) mandatory clauses, SCC module selection, Schrems II Transfer Impact Assessment, audit-rights scope. Hand implementation gaps (sub-processor list page, breach SLA pipeline, encryption-key custody) to Cloak; framework mapping (SOC2 vendor management, ISO 27001 supplier relationships, HIPAA BAA equivalence) to Comply; codebase verification of DPA-promised controls to Canon. | `references/dpa-review.md` |
+| EULA Review | `eula` | | End User License Agreement review. Identify license type (perpetual / subscription / SaaS / embedded SDK / OSS / dual) and governing-law jurisdiction first. Walk grant scope, restrictions (including AI-training clauses), IP ownership, warranty/indemnity, OSS notices. Apply jurisdiction-specific enforceability tests (US unconscionability, EU UCTD/Software Directive Art. 6 interoperability carve-out, Japan Consumer Contract Act). Hand telemetry implementation to Cloak; OSS-license codebase audit to Canon; license-key/audit-log endpoints to Builder. | `references/eula-review.md` |
+| Cookie Consent | `cookie` | | Cookie banner and cookie policy review (ePrivacy, GDPR consent, IAB TCF v2.2, categorization). Identify target jurisdictions (EU/UK/CH/CA/CO/JP/etc.) and CMP/TCF participation first. Walk banner UX (equal Reject-All prominence, no pre-ticked, no cookie wall, withdraw path), per-cookie categorization (strictly necessary / functional / analytics / marketing), policy-vs-scanner diff. Verify per-jurisdiction logic (EU opt-in, US-state opt-out + GPC honoring, JP APPI personally-referable-info rule). Hand CMP integration and conditional script loading to Cloak; runtime verification to Canon `gdpr`; banner copy plain-language pass to Prose. | `references/cookie-consent.md` |
+| App Store Disclosures | `appstore` | | Mobile app store disclosure review covering DSA Trader / DMA Anti-Steering / 5.1.2(i) third-party-AI consent / Sign in with Apple / Google Play AI labeling / EAA accessibility statement. Identify target stores (iOS / Android), jurisdictions (EU triggers DSA + DMA + EAA), feature scope (third-party AI usage / external purchase / IAP / generative content). Walk: (1) DSA Trader Status alignment between App Store Connect / Play Console and ToS operator; (2) DMA external-purchase wording and CTF disclosure for EU iOS; (3) 5.1.2(i) third-party-AI consent screen — must be provider-named (e.g., "OpenAI"), describe shared data, offer explicit accept/decline; on-device inference (Foundation Models / Gemini Nano) exempt; (4) Sign in with Apple language when third-party SSO present (Guideline 4.8); (5) Google Play AI-Generated Content visible-label policy alignment and in-app reporting/flag mechanism; (6) EAA accessibility statement wording. Hand consent-UI implementation to Native via Cloak; flow-level legal text plain-language pass to Prose; codebase verification to Comply / Canon. Cite specific deadlines (2025-11-13 5.1.2(i), 2025-02-17 DSA enforcement, 2026-01-01 CTF unification, 2025-06-28 EAA). | `references/legal-checklists.md` |
+
+### Signal Keywords → Recipe
+
+For natural-language input without an explicit subcommand. Subcommand match wins if both apply.
+
+| Keywords | Recipe |
+|----------|--------|
+| `ToS`, `terms of service`, `利用規約` | `tos` |
+| `privacy policy`, `プライバシーポリシー`, `GDPR`, `APPI` | `privacy` |
+| `tokushoho`, `特商法` | `tokushoho` |
+| `pre-launch`, `ローンチ前`, `consistency`, `整合性`, `missing clause`, `cross-document` | `gap` |
+| `DPA`, `data processing agreement`, `SCC`, `Schrems II`, `sub-processor` | `dpa` |
+| `EULA`, `end user license`, `license agreement`, `AI training clause` | `eula` |
+| `cookie banner`, `cookie consent`, `IAB TCF`, `ePrivacy` | `cookie` |
+| `DSA`, `digital services act`, `trader status`, `DMA`, `digital markets act`, `anti-steering`, `external purchase`, `5.1.2(i)`, `app store AI disclosure`, `third-party AI consent screen`, `EAA`, `EU Accessibility Act`, `EN 301 549 statement`, `app store metadata`, `play console metadata`, `store disclosure` | `appstore` |
+| unclear legal request | `tos` |
 
 ## Subcommand Dispatch
 
-Parse the first token of user input.
-- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+Parse the first token of user input:
+- If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise, if natural-language keywords match a row in **Signal Keywords → Recipe** → activate that Recipe.
 - Otherwise → default Recipe (`tos` = ToS Review). Apply normal SCOPE → SCAN → ASSESS → REPORT → SUGGEST workflow.
-
-### Subcommand Behavior Notes
-
-- `dpa`: Identify role pairing (controller/processor/sub-processor) and transfer geography first. Walk Art. 28(3) mandatory clauses, SCC module selection, Schrems II Transfer Impact Assessment, and audit-rights scope. Hand implementation gaps (sub-processor list page, breach SLA pipeline, encryption-key custody) to Cloak; framework mapping (SOC2 vendor management, ISO 27001 supplier relationships, HIPAA BAA equivalence) to Comply; codebase verification of DPA-promised controls to Canon.
-- `eula`: Identify license type (perpetual / subscription / SaaS / embedded SDK / OSS / dual) and governing-law jurisdiction first. Walk grant scope, restrictions (including AI-training clauses), IP ownership, warranty/indemnity, and OSS notices. Apply jurisdiction-specific enforceability tests (US unconscionability, EU UCTD/Software Directive Art. 6 interoperability carve-out, Japan Consumer Contract Act). Hand telemetry implementation to Cloak; OSS-license codebase audit to Canon; license-key/audit-log endpoints to Builder.
-- `cookie`: Identify target jurisdictions (EU/UK/CH/CA/CO/JP/etc.) and CMP/TCF participation first. Walk banner UX (equal Reject-All prominence, no pre-ticked, no cookie wall, withdraw path), per-cookie categorization (strictly necessary / functional / analytics / marketing), and policy-vs-scanner diff. Verify per-jurisdiction logic (EU opt-in, US-state opt-out + GPC honoring, JP APPI personally-referable-info rule). Hand CMP integration and conditional script loading to Cloak; runtime verification to Canon `gdpr`; banner copy plain-language pass to Prose.
-- `appstore`: Mobile app store disclosure review. Identify target stores (iOS / Android), jurisdictions (EU triggers DSA + DMA + EAA), and feature scope (third-party AI usage / external purchase / IAP / generative content). Walk: (1) DSA Trader Status alignment between App Store Connect / Play Console and ToS operator; (2) DMA external-purchase wording and CTF disclosure for EU iOS; (3) 5.1.2(i) third-party-AI consent screen — must be provider-named (e.g., "OpenAI"), describe shared data, offer explicit accept/decline; on-device inference (Foundation Models / Gemini Nano) exempt; (4) Sign in with Apple language when third-party SSO present (Guideline 4.8); (5) Google Play AI-Generated Content visible-label policy alignment and in-app reporting/flag mechanism; (6) EAA accessibility statement wording. Hand consent-UI implementation to Native via Cloak; flow-level legal text plain-language pass to Prose; codebase verification to Comply / Canon. Cite specific deadlines (2025-11-13 5.1.2(i), 2025-02-17 DSA enforcement, 2026-01-01 CTF unification, 2025-06-28 EAA).
-
-## Output Routing
-
-| Signal | Approach | Read |
-|--------|----------|------|
-| `ToS`, `terms of service`, `利用規約` | Standalone ToS review | `references/legal-checklists.md` |
-| `privacy policy`, `プライバシーポリシー` | Standalone privacy-policy review | `references/legal-checklists.md` |
-| `tokushoho`, `特商法` | Tokushoho notation check | `references/legal-checklists.md` |
-| `GDPR`, `APPI` | Statute-specific compliance check | `references/legal-checklists.md` |
-| `pre-launch`, `ローンチ前` | Comprehensive review across all documents | `references/patterns.md` |
-| `consistency`, `整合性` | Cross-document consistency check | `references/patterns.md` |
-| `DSA`, `digital services act`, `trader status` | DSA trader-status disclosure check | `references/legal-checklists.md` |
-| `DMA`, `digital markets act`, `anti-steering`, `external purchase` | DMA anti-steering / external-purchase wording review (EU iOS) | `references/legal-checklists.md` |
-| `5.1.2(i)`, `app store AI disclosure`, `third-party AI consent screen` | 5.1.2(i) consent-screen wording review | `references/legal-checklists.md` |
-| `EAA`, `EU Accessibility Act`, `EN 301 549 statement` | EAA accessibility statement wording | `references/legal-checklists.md` |
-| `app store metadata`, `play console metadata`, `store disclosure` | Mobile app store disclosure suite (DSA / DMA / 5.1.2(i) / Sign in with Apple / EAA) | `references/legal-checklists.md` |
 
 ---
 

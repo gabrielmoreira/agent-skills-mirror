@@ -77,7 +77,18 @@ ${BUN_X} {baseDir}/scripts/main.ts --prompt "A cinematic portrait" --image out.p
 
 # Replicate Wan 2.7 Image Pro
 ${BUN_X} {baseDir}/scripts/main.ts --prompt "A concept frame" --image out.png --provider replicate --model wan-video/wan-2.7-image-pro --size 2048x1152
+
+# Codex CLI (uses Codex / ChatGPT subscription — no OPENAI_API_KEY; requires `codex` on PATH and `codex login`)
+${BUN_X} {baseDir}/scripts/main.ts --prompt "A cinematic portrait" --image out.png --provider codex-cli --ar 16:9
+
+# Codex CLI with reference images (style/composition guidance)
+${BUN_X} {baseDir}/scripts/main.ts --prompt "Match this color palette" --image out.png --provider codex-cli --ref source.png --ar 1:1
 ```
+
+Notes on `codex-cli`:
+- Never auto-selected — pin via `--provider codex-cli` or `default_provider: codex-cli` in EXTEND.md.
+- Only `n=1` supported (Codex `image_gen` returns one image per call); `--size`, `--imageSize`, `--quality`, and `--imageApiDialect` are ignored or rejected.
+- Typically 5–10× slower than direct OpenAI / Google API calls (except on cache hits). Tune via `BAOYU_CODEX_IMAGEGEN_TIMEOUT_MS`, `BAOYU_CODEX_IMAGEGEN_RETRIES`, and `BAOYU_CODEX_IMAGEGEN_CACHE_DIR`.
 
 ## Batch Mode
 

@@ -7,6 +7,16 @@ description: AI DevKit · Structured SDLC workflow with 8 phases — requirement
 
 Sequential phases producing docs in `docs/ai/`. Flow: 1→2→3→4→(5 after each task)→6→7→8.
 
+## Early-Phase Clarification Contract
+
+For Phases 1-3, converge on shared understanding before docs or implementation momentum:
+
+1. List every material product, UX, architecture, scope, validation, rollout, contradiction, trade-off, or open question from the request, memory, and existing docs.
+2. Ask until each item is answered, explicitly deferred, or accepted by the user as a named assumption. Do not silently infer material decisions.
+3. Ask one decision at a time; include why it matters, 2-3 viable options when useful, and your recommended answer with brief rationale.
+4. Do not create, update, approve, or transition past requirements/design/planning while material open questions remain.
+5. Restate the shared understanding before updating docs or suggesting the next phase.
+
 ## Prerequisite
 
 Before starting any phase, run `npx ai-devkit@latest lint` to verify the base `docs/ai/` structure exists and is valid.
@@ -64,7 +74,11 @@ Not every phase moves forward. When a phase reveals problems, loop back:
 
 ## Doc Convention
 
-Feature docs: `docs/ai/{phase}/feature-{name}.md` (copy from `README.md` template in each directory, preserve frontmatter). Keep `<name>` aligned with the worktree/branch name `feature-<name>`.
+New features: run `npx ai-devkit@latest docs init-feature <name>` and fill the returned paths. The command uses configured phases and creates `docs/ai/{phase}/YYYY-MM-DD-feature-{name}.md` with the current local date.
+
+Existing features: use the latest matching `docs/ai/{phase}/YYYY-MM-DD-feature-{name}.md`. If none exists, use `docs/ai/{phase}/feature-{name}.md`. Keep `<name>` aligned with branch/worktree `feature-<name>`.
+
+Older CLI fallback: copy each configured phase `README.md` to `docs/ai/{phase}/feature-{name}.md`, preserving frontmatter.
 
 Phases: `requirements/`, `design/`, `planning/`, `implementation/`, `testing/`.
 
