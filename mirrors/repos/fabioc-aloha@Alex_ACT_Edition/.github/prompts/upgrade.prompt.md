@@ -1,7 +1,6 @@
 ---
 description: "Pull the latest Edition into this heir — apply directly, summarize, surface notable changes"
-mode: agent
-lastReviewed: 2026-05-05
+lastReviewed: 2026-05-26
 ---
 
 # Upgrade
@@ -46,3 +45,7 @@ Run `upgrade-self.cjs --apply` and report what changed. The script uses an atomi
 ## Why apply-first instead of dry-run-then-confirm?
 
 The script's own safeguards (heir-owned recovery, backup before overwrite, major-bump gate, downgrade refusal) already make it safe. Dry-run adds friction without safety. Apply directly, then summarize. If the user disagrees with what landed, the backup directory is right there for manual recovery, and `git checkout -- .github/` restores the git-tracked state.
+
+## Would Revise If
+
+Revisit this prompt by **2026-08-26** (90 days) or sooner if any of the following fires: the workflow it invokes ceases to produce its intended output (skill body changed but prompt steps stale); the visible markers / verification steps in its body are consistently skipped; or the slash-command name is no longer discoverable in the prompt picker.

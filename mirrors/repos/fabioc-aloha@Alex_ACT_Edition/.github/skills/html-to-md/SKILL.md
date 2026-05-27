@@ -1,24 +1,17 @@
 ---
-type: skill
-lifecycle: stable
 name: "html-to-md"
 description: "Convert HTML documents to clean Markdown via pandoc"
-tier: standard
-applyTo: '**/*html-to-md*,**/*.html'
-muscle: .github/muscles/html-to-md.cjs
-inheritance: inheritable
-currency: 2026-04-30
-lastReviewed: 2026-04-30
+lastReviewed: 2026-05-26
 ---
 
-# HTML to Markdown
+# Html To Md
 
 Convert HTML documents to clean Markdown. Strips inline styles, scripts, and tracking pixels while preserving semantic structure.
 
 ## Quick Start
 
 ```bash
-node .github/muscles/html-to-md.cjs page.html page.md
+node .github/skills/html-to-md/scripts/html-to-md.cjs page.html page.md
 ```
 
 ## What's preserved
@@ -52,3 +45,7 @@ node .github/muscles/html-to-md.cjs page.html page.md
 
 - [docx-to-md](../docx-to-md/SKILL.md) — Word source
 - [lint-clean-markdown](../lint-clean-markdown/SKILL.md) — clean up the result
+
+## Would Revise If
+
+Revisit this skill by **2026-08-26** (90 days) or sooner if any of the following fires: pandoc upstream changes html-to-md behavior in a way that breaks the documented flag semantics; the `--download-images` flow fails on a real source the user runs through it; or `lint-clean-markdown` post-processing stops being the right finishing step (e.g., a stricter linter ships and the pipeline needs to chain to it instead).

@@ -1,12 +1,6 @@
 ---
-type: skill
-lifecycle: stable
-inheritance: inheritable
 name: ai-memory-setup
 description: "Detect, create, and manage the AI-Memory fleet communication channel. Fires on bootstrap, session start (announcements), and feedback writes."
-tier: standard
-applyTo: '**/AI-Memory/**,**/cognitive-config*,**/*feedback*,**/*announcement*,**/*fleet*,**/*memory-setup*'
-currency: 2026-05-18
 lastReviewed: 2026-05-18
 ---
 
@@ -42,7 +36,7 @@ Resolve the AI-Memory root in this order:
 1. **Config override**: read `.github/config/cognitive-config.json`. If `ai_memory_root` is set, use `<HOME>/<ai_memory_root>/AI-Memory`.
 2. **Auto-discovery**: scan `<HOME>` for folders matching known cloud provider patterns. Skip any folder listed in `ai_memory_exclude`. Among matches, prefer drives that already contain an `AI-Memory/` subfolder.
 3. **Local fallback**: `~/AI-Memory` (no cloud sync, still functional)
-4. **Exclusion list**: `ai_memory_exclude` in cognitive-config.json lists folder names to skip (e.g., `["OneDrive - Microsoft"]` to avoid the work account).
+4. **Exclusion list**: `ai_memory_exclude` in cognitive-config.json lists folder names to skip (e.g., `["OneDrive - <your-work-org>"]` to avoid a work account).
 
 The resolution order matches `_registry.cjs` (the muscle used by `bootstrap-heir.cjs` and `upgrade-self.cjs`). LLM heirs and scripts must agree on the same path.
 
@@ -116,7 +110,7 @@ When AI-Memory is needed but doesn't exist (bootstrap, first feedback write):
    ```json
    {
      "ai_memory_root": "Dropbox",
-     "ai_memory_exclude": ["OneDrive - Microsoft"]
+     "ai_memory_exclude": ["OneDrive - <your-work-org>"]
    }
    ```
 
@@ -167,7 +161,7 @@ Users may have multiple OneDrive accounts (personal + work). The `ai_memory_excl
 | Anti-pattern | Correction |
 | --- | --- |
 | Hardcoding an absolute path | Use the resolution algorithm; paths differ per user and OS |
-| Creating AI-Memory in `OneDrive - Microsoft` (work account) | Personal cloud drive only; work drives may have retention policies |
+| Creating AI-Memory in a work-account cloud drive (e.g. `OneDrive - <your-employer>`) | Personal cloud drive only; work drives may have retention policies |
 | Writing feedback without stripping project context | Always apply `cross-project-isolation` before writing |
 | Reading feedback as a heir | Feedback is for the Supervisor; heirs read announcements only |
 | Creating AI-Memory on every session | Create once on bootstrap; subsequent sessions just resolve |

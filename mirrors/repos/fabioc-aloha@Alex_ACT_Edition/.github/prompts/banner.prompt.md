@@ -1,14 +1,13 @@
 ---
 description: "Generate a 1200×300 SVG banner for a document — title, subtitle, watermark category, on-brand for Alex — ACT Edition"
-mode: agent
-lastReviewed: 2026-05-01
+lastReviewed: 2026-05-26
 ---
 
 # Banner
 
 Generate an SVG banner for the top of a markdown document. Wraps the `generate-banner.cjs` muscle and the `alex-banner-generation` skill.
 
-Skill: [alex-banner-generation](../skills/alex-banner-generation/SKILL.md). Muscle: `.github/muscles/generate-banner.cjs`.
+Skill: [alex-banner-generation](../skills/alex-banner-generation/SKILL.md). Muscle: `.github/skills/alex-banner-generation/scripts/generate-banner.cjs`.
 
 ## When to Use
 
@@ -36,7 +35,7 @@ Skill: [alex-banner-generation](../skills/alex-banner-generation/SKILL.md). Musc
 5. **Run**:
 
    ```sh
-   node .github/muscles/generate-banner.cjs \
+   node .github/skills/alex-banner-generation/scripts/generate-banner.cjs \
      --title "Project Name" \
      --subtitle "One-line value statement" \
      --watermark DOCS \
@@ -58,3 +57,7 @@ Skill: [alex-banner-generation](../skills/alex-banner-generation/SKILL.md). Musc
 - **Watermark whitelist is enforced.** Custom watermarks are rejected by the muscle. If you need a new category, add it to the muscle's `ALLOWED_WATERMARKS` list (governance change, not a per-banner choice).
 - **No PNG conversion.** The muscle outputs SVG only. Convert to PNG with `npx svgexport` if needed (separate workflow).
 - **Pastel-color variants live in the Mall.** If you need a non-Edition aesthetic (e.g. `document-banner-pastel`), install from the Plugin Mall -- don't shoehorn this muscle.
+
+## Would Revise If
+
+Revisit this prompt by **2026-08-26** (90 days) or sooner if any of the following fires: the workflow it invokes ceases to produce its intended output (skill body changed but prompt steps stale); the visible markers / verification steps in its body are consistently skipped; or the slash-command name is no longer discoverable in the prompt picker.

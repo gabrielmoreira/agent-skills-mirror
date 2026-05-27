@@ -1,12 +1,6 @@
 ---
-type: skill
-lifecycle: stable
 name: "lint-clean-markdown"
 description: "Write markdown that passes markdownlint on first attempt — encode the most common rules as muscle memory"
-tier: standard
-inheritance: inheritable
-applyTo: '**/*.md'
-currency: 2026-05-01
 lastReviewed: 2026-05-01
 ---
 

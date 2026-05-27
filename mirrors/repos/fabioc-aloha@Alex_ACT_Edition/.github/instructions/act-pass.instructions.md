@@ -1,12 +1,7 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Run the 7-step ACT pass on medium and high stakes work — Materiality first, then Hypothesise, Alternatives, Disconfirmers, Audit-priors, Severity, Commit"
-application: "When a request is non-trivial (architectural choice, plan change, release, deployment, irreversible op) or uses high-stakes language (fix, ship, deploy, merge, is this safe)"
 applyTo: "**/*"
-currency: 2026-04-30
-lastReviewed: 2026-04-30
+lastReviewed: 2026-05-26
 ---
 
 # ACT Pass
@@ -80,6 +75,19 @@ If you fail to catch yourself but the user does, that's not a graceful recovery 
 - **Repeated trivial requests in flow state** — the user is iterating fast on a known-good path; pass would create friction
 - **The pass would re-derive existing brain policy** — don't relitigate "should I sanitize input" every time; the answer is already encoded
 
+## Brain-edit scope (Supervisor curation work)
+
+Brain editing has different materiality than user-request work because consequences propagate to heirs.
+
+| Brain-edit kind | Pass type | Rationale |
+|---|---|---|
+| `[typo]` — spelling, punctuation, broken link | **Skip** | Mechanical; no policy change |
+| `[clarification]` — rewording, prose tightening, falsifier addition without rule change | **Trimmed** | Low-stakes but visible; markers in the commit message suffice |
+| `[behaviour]` — new rule, modified rule, new artefact, content removal | **Full** | Propagates to heirs; required by `severity-tagged-commits.instructions.md` |
+| `[constitutional]` — ACT tenet / manifesto / claims registry / contract change | **Full + ADR** | Framework-level; precedent setting; needs ADR in `docs/adrs/` |
+
+The routing applies before file content matters — a one-line edit to a `[behaviour]`-class file (like adding a load-bearing rule to an always-on instruction) earns the full pass even though the diff is small. The severity is in the *kind* of change, not the size.
+
 ## Anti-Patterns
 
 | Anti-pattern | Correction |
@@ -98,4 +106,4 @@ Revisit this pass structure if any of the following occur within a quarter:
 - Trimmed-pass outputs repeatedly miss disconfirmers that later invalidate the chosen approach
 - Full-pass usage drops to near-zero on clearly high-stakes operations (ritual becoming decorative)
 
-Track these in `docs/ledgers/curation-log.md` tagged `[ACT-PASS-DRIFT]`.
+Track these in `docs/ledgers/brain-qa-changelog.md` tagged `[ACT-PASS-DRIFT]`.

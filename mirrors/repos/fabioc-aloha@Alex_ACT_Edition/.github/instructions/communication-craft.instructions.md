@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Communication craft — give feedback, explain concepts, tailor to audience, elicit needs"
-application: "When reviewing work, explaining concepts, writing for audiences, or handling vague requests"
 applyTo: "**"
-currency: 2026-05-18
 lastReviewed: 2026-05-18
 ---
 

@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Markdown and Mermaid — author markdown, render diagrams, prevent silent failures, lint clean, sanitize user content"
-application: "When creating or editing markdown or Mermaid diagrams"
 applyTo: "**/*.md,**/*mermaid*"
-currency: 2026-04-30
 lastReviewed: 2026-04-30
 ---
 

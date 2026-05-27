@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `strands-agents/sdk-python` — 26 default patterns, 5 followed patterns, 6 file(s) materialized.
+Mirror of `strands-agents/sdk-python` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `strands-agents/sdk-python` — 26 default patterns, 5 followed patter
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 6 |
+| Followed pats | 0 |
+| Files         | 1 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,11 +51,7 @@ Mirror of `strands-agents/sdk-python` — 26 default patterns, 5 followed patter
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `CONTRIBUTING.md`
-- `docs/STYLE_GUIDE.md`
-- `docs/HOOKS.md`
-- `docs/PR.md`
-- `docs/MCP_CLIENT_ARCHITECTURE.md`
+_None._
 
 ## File Index
 
@@ -63,12 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 3 | → | [`docs/HOOKS.md`](docs/HOOKS.md) |
-| 4 | → | [`docs/MCP_CLIENT_ARCHITECTURE.md`](docs/MCP_CLIENT_ARCHITECTURE.md) |
-| 5 | → | [`docs/PR.md`](docs/PR.md) |
-| 6 | → | [`docs/STYLE_GUIDE.md`](docs/STYLE_GUIDE.md) |
+| 1 | ✓ | [`strands-py/AGENTS.md`](strands-py/AGENTS.md) |
 
 ---
 

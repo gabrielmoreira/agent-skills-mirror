@@ -1,12 +1,7 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Frame audit before solving — restate the problem, flag user-framing mismatches, surface symptom→cause reframes"
-application: "Every non-trivial request — multi-file changes, > 15-minute estimates, or requests using fix/improve/broken/just-do-X language"
 applyTo: "**/*"
-currency: 2026-05-21
-lastReviewed: 2026-05-21
+lastReviewed: 2026-05-26
 ---
 
 # Problem Framing Audit (Discipline -1)
@@ -37,19 +32,13 @@ This rule is asymmetric. Trivial tasks pass through unchanged. Non-trivial tasks
 
 ## Explain/Summarize Frame: verify before parroting
 
-When the user asks to **explain, describe, summarize, or read-and-explain** a doc/spec/README/config, the default failure is treating the doc text as ground truth. Docs drift from code.
+When the user asks to **explain, describe, summarize, or read-and-explain** a doc/spec/README/config (literal triggers: "explain X", "summarize <doc>", "walk me through", "what does <doc> say about"), the default failure is treating doc text as ground truth. Docs drift from code.
 
-| Literal trigger phrase in the user prompt | Required action before responding |
-| --- | --- |
-| "Explain X", "Tell me how Y works", "Describe Z" | Name source file(s) read; cross-check ≥1 structural claim against filesystem |
-| "Summarize <doc>", "Read <file> and..." | Same; if doc and filesystem disagree, surface the gap and report both |
-| "Walk me through...", "What does <doc> say about..." | Same |
+**Required action**: name source file(s) read; cross-check ≥1 structural claim against the filesystem (subfolder/file layout, listed fields, version numbers, counts — pick what the user's question depends on). If doc and filesystem disagree, surface both and report the gap.
 
-Structural claims worth cross-checking: subfolder/file layout, listed fields, named sections, version numbers, counts. Not every claim — pick ≥1 the user's question depends on.
+**Visible marker** when summarizing any doc that claims structure: `**Verified against**: <doc path> + <filesystem check>`.
 
-**Visible marker**: `**Verified against**: <doc path> + <filesystem check>` — fire when summarizing any doc that claims structure.
-
-This is distinct from the Core Rule above (which asks "is the user solving the right problem?"). Here the user's frame is fine; the discipline is **don't parrot the doc as fact without confirming it still matches reality**.
+Distinct from the Core Rule (which asks "is the user solving the right problem?"). Here the user's frame is fine; the discipline is **don't parrot the doc as fact without confirming it still matches reality**.
 
 ## Visible Markers
 

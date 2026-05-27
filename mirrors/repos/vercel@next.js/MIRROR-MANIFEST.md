@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 32 file
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,13 +84,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`.claude-plugin/plugins/cache-components/skills/cache-components/TROUBLESHOOTING.md`](.claude-plugin/plugins/cache-components/skills/cache-components/TROUBLESHOOTING.md) |
 | 24 | ✓ | [`.cursor/commands/gt-workflow.md`](.cursor/commands/gt-workflow.md) |
 | 25 | ✓ | [`.cursor/worktrees.json`](.cursor/worktrees.json) |
-| 26 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 27 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 28 | ✓ | [`packages/next/AGENTS.md`](packages/next/AGENTS.md) |
-| 29 | ✓ | [`skills/next-cache-components-optimizer/instant-nav-loop.md`](skills/next-cache-components-optimizer/instant-nav-loop.md) |
-| 30 | ✓ | [`skills/next-cache-components-optimizer/ppr-loop.md`](skills/next-cache-components-optimizer/ppr-loop.md) |
-| 31 | ✓ | [`skills/next-cache-components-optimizer/SKILL.md`](skills/next-cache-components-optimizer/SKILL.md) |
-| 32 | ✓ | [`skills/next-dev-loop/SKILL.md`](skills/next-dev-loop/SKILL.md) |
+| 26 | ✓ | [`.github/AGENTS.md`](.github/AGENTS.md) |
+| 27 | ✓ | [`.github/CLAUDE.md`](.github/CLAUDE.md) |
+| 28 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 29 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 30 | ✓ | [`packages/next/AGENTS.md`](packages/next/AGENTS.md) |
+| 31 | ✓ | [`skills/next-cache-components-optimizer/instant-nav-loop.md`](skills/next-cache-components-optimizer/instant-nav-loop.md) |
+| 32 | ✓ | [`skills/next-cache-components-optimizer/ppr-loop.md`](skills/next-cache-components-optimizer/ppr-loop.md) |
+| 33 | ✓ | [`skills/next-cache-components-optimizer/SKILL.md`](skills/next-cache-components-optimizer/SKILL.md) |
+| 34 | ✓ | [`skills/next-dev-loop/SKILL.md`](skills/next-dev-loop/SKILL.md) |
 
 ---
 

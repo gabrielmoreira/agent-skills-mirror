@@ -1,6 +1,6 @@
 ---
 name: variant-design
-description: AI-driven interactive design generation and style analysis with Impeccable design system. Four modes — (1) Generate: 3 distinct, fully-animated design variations from a prompt; (2) Analyze: audit existing sites, extract design tokens, generate style-matched pages; (3) Content formats: HTML pitch decks (dark flip / light scroll-snap), WeChat article layout with inline styles + API upload flow; (4) Writing: anti-AI-taste Chinese copywriting with banned word list and before/after rewrites. Built-in Wu Xing (五行) color system with 40-tone palette, 26 combos, and cultural brand mapping. 14 domain references (including presentation, wechat, wuxing-colors, voice), full design system (typography, color, spatial, motion, micro-interactions, interaction, responsive, UX writing, style audit), interactive pattern library, and anti-AI-slop quality gates. Triggers on: "design options for X", "show me variations", "vary this design", "audit", "analyze my site", "match this style", "extract tokens", "migrate", "add motion", "dramatize", "make interactive", "pitch deck", "slides", "幻灯片", "PPT", "公众号", "wechat article", "微信文章", "五行配色", "wu xing", "brand color", "moodboard", "去AI味", "写文案", "copywriting".
+description: AI-driven interactive design generation, style analysis, and UX evaluation with Impeccable design system. Context-aware output — auto-detects React projects (package.json with react dependency) and generates .tsx components; otherwise generates zero-dependency interactive HTML. Six modes — (1) Generate: 3 distinct, fully-animated design variations from a prompt, with zone-level iteration (vary/remix/shuffle a specific section); (2) Component: isolated UI components with all 8 states and variants — button systems, forms, cards, modals, nav; (3) Analyze: audit existing sites, extract design tokens, generate style-matched pages; (4) UX Review: heuristic evaluation (Nielsen's 10), cognitive load analysis, mental model diagnosis, affordance audit, dark pattern detection — grounded in NNG research; (5) Content formats: HTML pitch decks, WeChat article layout with 4 color schemes + 3 structural templates + inline styles + API upload flow; (6) Writing: anti-AI-taste Chinese copywriting across 4 text types (opinion/story/tutorial/product copy) and 3 platforms (公众号/小红书/产品内文案), with banned word list and before/after rewrites. Built-in Wu Xing (五行) color system with 40-tone palette, 26 combos, and cultural brand mapping. 16 domain references (including ux-heuristics, ux-psychology, presentation, wechat, wuxing-colors, voice), full design system (typography, color, spatial, motion, micro-interactions, interaction, responsive, UX writing, style audit), interactive pattern library, and anti-AI-slop quality gates. Triggers on: "design options for X", "show me variations", "vary this design", "audit", "analyze my site", "match this style", "extract tokens", "migrate", "add motion", "dramatize", "make interactive", "component button/form/card", "ux review", "heuristic evaluation", "usability audit", "cognitive load", "mental models", "affordances", "dark patterns", "review this design", "export to vue/astro/svelte", "pitch deck", "slides", "幻灯片", "PPT", "公众号", "wechat article", "微信文章", "五行配色", "wu xing", "brand color", "moodboard", "去AI味", "写文案", "copywriting".
 ---
 
 # Variant Design
@@ -13,13 +13,256 @@ Inspired by the [Variant](https://variant.com) design community — a space wher
 
 Built on the **Impeccable design system** — a comprehensive set of design references covering typography, color theory, spatial design, motion, interaction patterns, responsive design, and UX writing. Every design decision is grounded in these principles.
 
-**Supports:** Interactive HTML (default) · React + Framer Motion · 10 domain reference libraries · 39 palettes · design system references · micro-interaction library · interactive pattern library · style audit & token extraction · variation actions
+**Supports:** Context-aware output (HTML default · React .tsx when React project detected) · Framer Motion (when installed) · 10 domain reference libraries · 39 palettes · design system references · micro-interaction library · interactive pattern library · style audit & token extraction · variation actions
 
 ---
 
 ## CLI Workflow (Claude Code)
 
 This skill runs inside Claude Code — a terminal. Design decisions must account for the fact that the user **cannot see the output** without opening a browser. Every step of the workflow should minimize friction between "idea" and "eyes on pixels."
+
+### Output Format Detection
+
+Before generating any design, detect the output format. Run this detection once per session and cache the result.
+
+**Step 1: Read package.json**
+
+```bash
+cat package.json 2>/dev/null
+```
+
+If absent or unreadable → **HTML output** (fail-safe), print warning if unreadable. Do not traverse parent directories — check cwd only.
+
+**Step 2: Walk the decision tree**
+
+Parse dependencies / devDependencies / peerDependencies / optionalDependencies. Check for **exact keys only** — never substring-match (`react-scripts` ≠ `react`, `@vitejs/plugin-react` ≠ `vite`).
+
+```
+package.json exists?
+│
+├─ no  →  HTML (zero-dep default)
+│
+└─ yes → check keys:
+    │
+    ├─ "react" present?
+    │   ├─ yes → React branch:
+    │   │         ├─ "next" present?          → Next.js App Router .tsx
+    │   │         │                              add "use client" on components
+    │   │         │                              using hooks/animations/browser APIs
+    │   │         ├─ "vite" or               → Vite .tsx
+    │   │         │  "@vitejs/plugin-react"     preview: read scripts.dev → npm run dev
+    │   │         └─ neither                 → Generic React .tsx
+    │   │
+    │   └─ no → non-React branch:
+    │           ├─ "vue" present?             → Vue 3 .vue SFC
+    │           │                               <script setup> + <template> + <style scoped>
+    │           │                               preview: npm run dev (Vite assumed)
+    │           ├─ "astro" present?           → Astro .astro component
+    │           │                               frontmatter + HTML template
+    │           │                               no client-side JS unless :is="client:load"
+    │           ├─ "svelte" or               → Svelte .svelte component
+    │           │  "@sveltejs/kit" present?     <script> + markup + <style>
+    │           │                               SvelteKit if @sveltejs/kit detected
+    │           └─ none of the above         → HTML (zero-dep default)
+```
+
+**Step 3: Check for animation library (React branch only)**
+
+- `"framer-motion"` or `"motion"` in deps → use Framer Motion (`motion.div`, `AnimatePresence`, `useInView`)
+- Not found → CSS animations only — do **not** import Framer Motion (missing package = runtime error)
+
+**Step 4: Apply user override**
+
+Explicit user instruction always wins over detection:
+
+| User says | Output |
+|---|---|
+| `--react` or `react [A/B/C]` | Force React (auto-detect Next/Vite sub-type) |
+| `--html` | Force zero-dep HTML |
+| `--vue` | Force Vue 3 SFC |
+| `--astro` | Force Astro component |
+| `--svelte` | Force Svelte component |
+| `export to next/vite/astro/svelte` | Force that framework |
+
+**Step 5: Announce the format**
+
+Print one line before generating:
+
+```
+✦ Output format: Next.js .tsx — detected next in package.json
+✦ Output format: Vue 3 SFC .vue — detected vue in package.json
+✦ Output format: Astro .astro — detected astro in package.json
+✦ Output format: Svelte .svelte — detected @sveltejs/kit in package.json
+✦ Output format: Interactive HTML — no framework detected in cwd
+✦ Output format: React .tsx — user requested --react
+```
+
+**Edge cases:**
+- `.tsx` files exist but no `react` key → HTML output (Preact/Solid/stale files don't count)
+- Both `vue` and `nuxt` detected → treat as Nuxt 3 (same SFC format, note `useNuxtApp` available)
+- Monorepo: check cwd only, never traverse to parent `package.json`
+- Multiple frameworks in same `package.json` (unusual) → print ambiguity warning, ask user to pass `--[framework]`
+
+---
+
+### Framework Output Templates
+
+Each framework has its own file template, preview command, and import note.
+
+#### Next.js App Router
+
+```tsx
+// variant-output/VariantA.tsx
+// Generated by variant-design — move to app/components/ or src/components/
+// Preview: npm run dev (then import this component in your page)
+"use client"; // include when component uses hooks, animations, or browser APIs
+
+import { useState, useEffect, useRef } from "react";
+// import { motion } from "framer-motion"; // only if framer-motion detected
+
+export default function VariantA() {
+  // ...
+}
+```
+
+Preview instruction after writing file:
+```
+✦ Written: variant-output/VariantA.tsx
+  Move to app/components/VariantA.tsx, then import in your page:
+  import VariantA from "@/components/VariantA"
+  Preview: npm run dev
+```
+
+#### Vite React
+
+```tsx
+// variant-output/VariantA.tsx
+// Generated by variant-design — move to src/components/
+// Preview: npm run dev (Vite), then import this component
+
+import { useState, useEffect, useRef } from "react";
+
+export default function VariantA() {
+  // ...
+}
+```
+
+Preview: read `package.json scripts` → use `npm run dev` / `pnpm dev` / `yarn dev` based on detected package manager. Fallback: `npx vite`.
+
+#### Generic React
+
+Same as Vite template without Vite-specific notes. Preview: `npx vite` as fallback.
+
+#### Vue 3 SFC
+
+```vue
+<!-- variant-output/VariantA.vue -->
+<!-- Generated by variant-design — move to src/components/ -->
+<!-- Preview: npm run dev -->
+
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+// animations: use CSS transitions/animations (no framer-motion in Vue)
+// for complex motion: @vueuse/motion or vanilla CSS
+</script>
+
+<template>
+  <div class="variant-a">
+    <!-- ... -->
+  </div>
+</template>
+
+<style scoped>
+/* OKLCH colors as CSS custom properties */
+.variant-a {
+  --color-primary: oklch(65% 0.2 250);
+  /* ... */
+}
+</style>
+```
+
+**Vue rules:**
+- `<script setup>` always — no Options API
+- `lang="ts"` unless project has no TypeScript
+- Animations via CSS transitions + `v-enter-active` / `v-leave-active` transition classes
+- No Framer Motion — Vue has its own `<Transition>` and `<TransitionGroup>`
+- Reactivity: `ref()` for primitives, `reactive()` for objects, `computed()` for derived state
+
+#### Astro Component
+
+```astro
+---
+// variant-output/VariantA.astro
+// Generated by variant-design — move to src/components/ or src/pages/
+// Preview: npm run dev
+
+// Astro components have no client-side reactivity by default
+// Use client:load / client:visible for interactive islands
+interface Props {
+  title?: string;
+}
+const { title = "Default Title" } = Astro.props;
+---
+
+<section class="variant-a">
+  <!-- ... -->
+</section>
+
+<style>
+  /* Scoped by default in Astro */
+  .variant-a {
+    --color-primary: oklch(65% 0.2 250);
+  }
+</style>
+
+<!-- Add client:load only for interactive sections -->
+<!-- <InteractiveIsland client:load /> -->
+```
+
+**Astro rules:**
+- Frontmatter (`---`) for server-side logic only — no `useState`, no `useEffect`
+- Styles scoped by default — no need for CSS modules
+- Interactive sections: extract to a separate `.tsx` / `.vue` / `.svelte` island, import with `client:load` or `client:visible`
+- No JavaScript in `<script>` unless truly necessary — Astro ships zero JS by default
+
+#### Svelte / SvelteKit
+
+```svelte
+<!-- variant-output/VariantA.svelte -->
+<!-- Generated by variant-design — move to src/lib/components/ -->
+<!-- Preview: npm run dev -->
+
+<script lang="ts">
+  import { onMount } from "svelte";
+  // animations: svelte/transition and svelte/animate built-in
+  import { fade, fly, slide } from "svelte/transition";
+  import { tweened } from "svelte/motion";
+
+  let visible = false;
+  onMount(() => { visible = true; });
+</script>
+
+<div class="variant-a">
+  {#if visible}
+    <section transition:fly={{ y: 20, duration: 400 }}>
+      <!-- ... -->
+    </section>
+  {/if}
+</div>
+
+<style>
+  .variant-a {
+    --color-primary: oklch(65% 0.2 250);
+  }
+</style>
+```
+
+**Svelte rules:**
+- Use built-in `svelte/transition` and `svelte/animate` — no Framer Motion
+- `tweened()` and `spring()` from `svelte/motion` for number animations (counters, progress bars)
+- `{#if}` / `{#each}` / `{#await}` blocks — no JSX
+- Reactivity is assignment-based: `count += 1` triggers re-render automatically
+- SvelteKit: routes in `src/routes/`, components in `src/lib/components/`
 
 ### Output Convention
 
@@ -123,20 +366,24 @@ Terminal space is precious. Keep text responses short and structured:
   Tune    — Vary subtle · Remix colors · Mix (A+B)
   Animate — Add motion · Dramatize · Make interactive
   Refine  — Polish · Critique · See other views
-  Export  — Extract tokens
+  Export  — Extract tokens · react A · react B · react C
 ```
+
+After initial generation, write context with detected scenario, the chosen palettes, and fonts for all 3 variations. Do not write `picked` yet — user hasn't chosen.
 
 **On iteration:**
 ```
-✦ Variation A — Vary subtle · iteration 2
+✦ Variation A — Vary subtle · iteration 2  [Terroir Warm · Editorial]
 
   Changed: tightened spacing to 4pt grid, added tabular-nums on stats,
   hover now lifts 4px→6px with shadow, scroll stagger 60ms→80ms
 
   variant-output/variant-coffee-A.html  ← updated & opened
 
-  Next action?
+  Next action? (react A to export as React component)
 ```
+
+After each iteration, update context: increment `iterations`, update `picked` if the user is iterating on a specific variation (implies selection).
 
 **Never dump the full HTML in the chat.** Write to file, open in browser, show a 2-3 line summary of what changed. The user reads code in their editor, not in the terminal.
 
@@ -155,6 +402,40 @@ Support shorthand prompts for fast iteration in the terminal:
 | `open B` | Re-open Variation B in browser |
 | `dark mode A` | Generate dark ↔ light toggle variant of A |
 | `compare` | Open all 3 variations side-by-side (writes a comparison HTML) |
+| `react A` | Export Variation A as React .tsx component (alias for `export to react`, Variation A) |
+| `react B` | Export Variation B as React .tsx component |
+| `react C` | Export Variation C as React .tsx component |
+| `reset context` | Delete `.variant-context.json` and start fresh — next generation ignores all persisted preferences |
+| `show context` | Print the current `.variant-context.json` contents in the terminal |
+| `A vary strong — hero` | Zone-level: vary strong on hero section only, rest unchanged |
+| `B remix colors — card` | Zone-level: remix colors on card zone only |
+| `zones A` | List all `data-zone` sections found in Variation A |
+| `component button` | Component mode: button system with all variants and states |
+| `component form` | Component mode: form components |
+| `component card` | Component mode: card variants |
+
+### Context Commands
+
+**`show context`** — Print the current context:
+
+```bash
+cat ./variant-output/.variant-context.json 2>/dev/null || echo "(no context saved yet)"
+```
+
+Display as a formatted single-line summary, e.g.:
+```
+✦ Context: Amber Warm · Editorial · Instrument Serif + Instrument Sans · picked B · 4 iterations
+  Framework: next · Scenario: landing-page
+  Notes: user prefers high contrast, no dark mode
+```
+
+**`reset context`** — Delete the context file and confirm:
+
+```bash
+rm -f ./variant-output/.variant-context.json
+```
+
+Print: `✦ Context cleared — next generation starts fresh.`
 
 ### Comparison View
 
@@ -175,16 +456,34 @@ When the user says "compare" or wants to see all variations together, generate a
 
 ### Framework Export
 
-When the user says "export to [framework]", transform the winning variation into the target structure:
+When the user says "export to [framework]" or `react [A/B/C]`, transform the winning variation into the target structure:
 
 | Target | Action |
 |---|---|
-| `export to next` | Create `app/page.tsx` + `app/globals.css` with tokens + `public/` for images |
-| `export to vite` | Create `src/App.jsx` + `src/index.css` + `index.html` |
-| `export to astro` | Create `src/pages/index.astro` + `src/styles/tokens.css` |
-| `export to static` | Clean HTML (remove dev scripts), optimize images, inline critical CSS |
+| `export to next` | Next.js App Router .tsx — `"use client"` where needed, tokens in CSS file |
+| `export to vite` | Vite React .tsx — `src/App.tsx` structure, preview via `npm run dev` |
+| `export to vue` | Vue 3 SFC .vue — `<script setup lang="ts">` + scoped styles + `svelte/transition` equivalents via CSS |
+| `export to astro` | Astro .astro — frontmatter + template + scoped styles, interactive parts as `client:load` islands |
+| `export to svelte` | Svelte .svelte — `svelte/transition` animations, `tweened()` for counters, no Framer Motion |
+| `export to static` | Clean HTML — remove dev scripts, inline critical CSS |
+| `react [A/B/C]` | Shorthand for `export to react` — auto-detects Next vs Vite vs generic from cwd |
+| `vue [A/B/C]` | Shorthand for `export to vue` on the specified variation |
+| `astro [A/B/C]` | Shorthand for `export to astro` on the specified variation |
+| `svelte [A/B/C]` | Shorthand for `export to svelte` on the specified variation |
 
 Always ask which variation to export if the user hasn't picked one yet.
+
+**Preview after React export:** Do not run `vite --open` directly — it may bypass project config. Instead, read `package.json.scripts` and print the correct dev command:
+- If scripts contains `"dev"` → print `npm run dev` (or `pnpm dev` / `yarn dev` / `bun dev` based on detected package manager)
+- If scripts contains `"start"` → print `npm start`
+- If no scripts found → print `npx vite` as fallback, with a note
+
+Example output after React export:
+```
+✦ Exported: variant-output/VariantA.tsx
+  Move to src/components/ to include in your project's build.
+  Preview: npm run dev  (then open the page that imports this component)
+```
 
 ### Clipboard Mode
 
@@ -201,6 +500,27 @@ Useful for pasting into CodePen, Claude.ai artifacts, or other tools.
 
 ## Project Context Initialization
 
+### Session Start: Read Persisted Context
+
+**Before doing anything else**, check for a context file in the output directory:
+
+```bash
+cat ./variant-output/.variant-context.json 2>/dev/null
+```
+
+If the file exists and is valid JSON, load it silently and print one line:
+
+```
+✦ Resuming context: [palette] · [direction] · picked [variation] · iteration [n]
+  (reset context to start fresh)
+```
+
+Use all fields as constraints for the current session — the user should not need to re-specify preferences they've already confirmed.
+
+If the file does not exist, proceed to the first-use questions below.
+
+### First Use: Gather Context
+
 On first use in a project, gather design context to ground all future generations. Ask the user:
 
 1. **Users & Purpose** — Who uses this? What problem does it solve? What's the core task?
@@ -210,7 +530,36 @@ On first use in a project, gather design context to ground all future generation
 
 If the user can't answer, infer from their codebase: scan for existing color variables, font imports, component patterns, and README/brand docs. Confirm inferences before proceeding.
 
-Persist context as a comment block at the top of generated files or in the conversation — reference it in every subsequent generation to ensure consistency across variations.
+### Persist Context After Each Decision
+
+Write `./variant-output/.variant-context.json` whenever the user makes a meaningful choice. Create `variant-output/` first if it doesn't exist.
+
+**Schema:**
+
+```json
+{
+  "palette": "Amber Warm",
+  "fonts": ["Instrument Serif", "Instrument Sans"],
+  "direction": "Editorial",
+  "scenario": "landing-page",
+  "picked": "B",
+  "iterations": 3,
+  "framework": "next",
+  "notes": "user prefers high contrast, no dark mode"
+}
+```
+
+**When to update:**
+- After user picks a palette or confirms a direction → update `palette`, `direction`, `fonts`
+- After user says `pick A/B/C` → update `picked`
+- After each variation action (vary, remix, shuffle) → increment `iterations`
+- After scenario is detected and confirmed → update `scenario`
+- After framework is detected → update `framework`
+- After user gives a preference constraint → append to `notes`
+
+**Fields are optional** — write only what's known. Do not guess or fill in defaults.
+
+Write the file silently (no terminal output). If write fails (e.g. no write permission), continue silently — context persistence is best-effort, never blocking.
 
 ---
 
@@ -295,6 +644,183 @@ When generating new pages for an existing project, the workflow changes:
 
 ---
 
+## UX Review Mode
+
+When the user wants to evaluate usability rather than generate visuals, switch to UX Review mode. Load `references/ux-heuristics.md` and `references/ux-psychology.md`.
+
+### Triggers
+
+| User says | Action |
+|---|---|
+| "ux review" / "heuristic review" / "usability audit" | Full heuristic evaluation against Nielsen's 10 |
+| "review this design" / "what's wrong with this UI" | Heuristic scan → findings list with severity |
+| "check usability" / "is this good UX" | Walk through flow, flag violations |
+| "cognitive load" / "too complex?" | Cognitive load analysis → reduction suggestions |
+| "why do users get confused here" | Mental model analysis → mismatch diagnosis |
+| "affordances" / "does this look clickable" | Affordance/signifier audit |
+| "dark patterns" / "is this ethical" | Dark pattern scan |
+
+### UX Review Workflow
+
+Two paths depending on what's available:
+- **Code in cwd** → run Code Scan (Steps 1a–1b) first, then layer conceptual analysis
+- **No code / screenshots / description only** → skip to Step 2
+
+**Step 1a: Auto-detect project files**
+
+```bash
+# Find component files in cwd (skip node_modules, .git, dist)
+find . \( -name "*.tsx" -o -name "*.jsx" -o -name "*.vue" -o -name "*.svelte" -o -name "*.html" \) \
+  -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/dist/*" | head -30
+```
+
+If files found, proceed to Step 1b. Otherwise skip to Step 2.
+
+**Step 1b: Code-level heuristic scan**
+
+Run these greps against the found files. Each maps to a specific heuristic:
+
+```bash
+# H9 — Generic error messages (critical pattern)
+grep -rn "error occurred\|something went wrong\|invalid input\|please try again\|An error\|Unknown error" \
+  --include="*.tsx" --include="*.jsx" --include="*.vue" --include="*.html" \
+  --exclude-dir=node_modules --exclude-dir=dist . 2>/dev/null
+
+# H1 — Missing loading states: async handlers without loading flag
+grep -rn "onClick\|onSubmit\|handleSubmit" \
+  --include="*.tsx" --include="*.jsx" --exclude-dir=node_modules . 2>/dev/null | head -20
+# (then read those files to check if loading/disabled state is managed)
+
+# H3 — Destructive actions: delete/remove calls without confirmation guard
+grep -rn "delete\|remove\|destroy\|clearAll\|reset" \
+  --include="*.tsx" --include="*.jsx" -i --exclude-dir=node_modules . 2>/dev/null | \
+  grep -iv "confirm\|modal\|dialog\|undo\|trash\|soft" | head -20
+
+# H4 — Terminology inconsistency: mixed action words for same concept
+grep -rn '"Delete"\|"Remove"\|"Erase"\|"Discard"\|"Clear"' \
+  --include="*.tsx" --include="*.jsx" --exclude-dir=node_modules . 2>/dev/null
+# Flag if multiple terms coexist in same codebase
+
+# H6 — Icon-only buttons missing accessible label
+grep -rn "<button\|<Button\|<IconButton" \
+  --include="*.tsx" --include="*.jsx" --exclude-dir=node_modules . 2>/dev/null | \
+  grep -v "aria-label\|title=\|children\|tooltip" | head -20
+
+# H5 — Forms missing inline validation
+grep -rn "<form\|<Form\|onSubmit" \
+  --include="*.tsx" --include="*.jsx" --exclude-dir=node_modules . 2>/dev/null | head -10
+# (then read those files to check for inline validation vs. submit-only)
+
+# H10 — Empty states: no empty state handling
+grep -rn "\.length === 0\|\.length == 0\|items\.length\|data\.length" \
+  --include="*.tsx" --include="*.jsx" --exclude-dir=node_modules . 2>/dev/null | \
+  grep -v "EmptyState\|empty\|nothing\|no items\|no results" | head -15
+
+# Accessibility baseline
+grep -rn "<img " \
+  --include="*.tsx" --include="*.jsx" --include="*.html" \
+  --exclude-dir=node_modules . 2>/dev/null | grep -v "alt=" | head -10
+```
+
+For each grep that returns results: read the flagged files at the relevant lines to confirm whether it's a real violation or a false positive. Report only confirmed violations.
+
+**Step 2: Define scope** — What task(s) is the user trying to complete? What screens/flows are in scope?
+
+**Step 3: Walk the flow** — Step through each screen as a first-time user would. For each screen, check:
+- What is the user trying to do here? (H1: visibility of goal)
+- Can they figure out how to do it? (affordances, signifiers)
+- Will they know when it worked? (feedback, system status)
+- What could go wrong? (error prevention)
+- Is anything adding unnecessary mental work? (cognitive load)
+
+**Step 4: Log violations** — For each violation found (from code scan or conceptual walk):
+```
+File: [path:line] or Screen: [name]
+Heuristic: [H1–H10, or cognitive load / mental model / affordance]
+Violation: [specific description — quote actual code or UI text where possible]
+Severity: [1=cosmetic / 2=minor / 3=major / 4=critical]
+Fix: [concrete recommendation with code example if applicable]
+```
+
+**Step 5: Report** — Present as a prioritized list, critical issues first. Group by heuristic to surface systemic problems.
+
+**Step 6: Offer next step** — After the report, offer:
+- `fix [H9]` → Generate corrected error messages as a code snippet or new component
+- `generate fix` → Generate redesigned version of worst-offending screen as HTML/TSX
+- `compare` → Side-by-side: current vs. fixed version opened in browser
+- `checklist` → Generate a dev-ready fix checklist (markdown, copy-pasteable to GitHub Issues)
+
+### UX Review Output Format
+
+```
+✦ UX Review: [screen/flow name]
+  Scanned: 23 components · 4 violations found
+
+  Critical (fix before launch)
+  ────────────────────────────
+  [H9] src/components/LoginForm.tsx:47
+       catch(e) { setError("An error occurred") }
+       Fix: setError(`Login failed: ${e.message}. Check your email and password.`)
+
+  [H1] src/components/UploadButton.tsx:23
+       onClick={handleUpload} — no loading/disabled state managed
+       Fix: setLoading(true) on click; disabled={loading}; show <Spinner /> inside button
+
+  Major (high priority)
+  ─────────────────────
+  [H3] src/pages/ProjectList.tsx:89
+       onClick={() => deleteProject(id)} — no confirmation, immediate delete
+       Fix: Move to trash: softDelete(id) + undo toast for 5s, or confirm dialog
+
+  Minor (low priority)
+  ────────────────────
+  [H4] "Remove" (src/components/MemberList.tsx:34) vs "Delete" (src/pages/Settings.tsx:102)
+       Same destructive action, two different words
+       Fix: Standardize to "Remove" for members, "Delete" for owned resources
+
+  Summary: 2 critical · 1 major · 1 minor
+  Next: fix H9 · fix H1 · generate fix · checklist
+```
+
+### Quick Triggers for UX Review
+
+| User types | Action |
+|---|---|
+| `ux scan` | Code scan only — run all heuristic greps, report file:line violations, no conceptual walk |
+| `ux review` | Full review — code scan + conceptual walk + report |
+| `ux review src/components/` | Scope scan to specific directory |
+| `fix H9` | Generate corrected error message patterns as a code snippet |
+| `fix H1` | Generate loading state pattern for flagged component |
+| `fix H3` | Generate soft-delete / confirmation dialog pattern |
+| `generate fix` | Generate redesigned screen that resolves all critical violations |
+| `checklist` | Output dev-ready markdown checklist of all violations (copy to GitHub Issues) |
+| `compare ux` | Side-by-side: current vs. UX-fixed version in browser |
+
+### Cross-Mode Bridges
+
+**From Site Analysis → UX Review:**
+After `audit` extracts tokens and consistency issues, you can continue with `ux scan` — the two modes complement each other. Style audit catches visual/token issues; UX scan catches behavioral/interaction issues.
+
+**From UX Review → Generate:**
+After flagging violations, offer to generate a fixed version:
+- `generate fix` → generate corrected screen as HTML/TSX, written to `variant-output/ux-fix-[screen].html`, opened in browser
+- `compare ux` → write both current (screenshot or recreation) and fixed version, open side-by-side in `variant-output/_ux-compare.html`
+
+**From Generate → UX Review:**
+Every generated design silently runs the heuristic checklist before being presented (part of the AI Slop Test gate). If any H1–H10 critical violations are found in the generated code, fix before writing the file — don't present broken UX as a variation.
+
+### When to Load Which Reference
+
+| Question | Load |
+|---|---|
+| Nielsen heuristics evaluation | `references/ux-heuristics.md` |
+| Mental models, cognitive load, Gestalt | `references/ux-psychology.md` |
+| Both | Load both — they complement each other |
+
+**For generation tasks:** Load these references as silent quality constraints. Every generated design should pass the heuristic checklist before being presented — this is part of the quality gate, same as the AI Slop Test.
+
+---
+
 ## Smart Prompt Handling
 
 Before generating, apply these three rules in order:
@@ -324,7 +850,8 @@ Identify the scenario and load the corresponding reference file before designing
 | Pitch deck, slides, presentation, keynote, investor deck | 幻灯片, PPT, 演讲稿, deck | `references/presentation.md` |
 | WeChat article, 公众号, wechat post, 微信文章 | 公号排版, 推文, 内容排版 | `references/wechat.md` |
 | Brand color, moodboard, 五行, wu xing, chinese color, 品牌配色 | 东方美学, 传统配色, 文化品牌 | `references/wuxing-colors.md` |
-| Writing, 文案, copywriting, 去AI味, anti-AI writing | 公众号文章写作, 内容语气, voice | `references/voice.md` |
+| Writing, 文案, copywriting, 去AI味, anti-AI writing | 公众号, 小红书, 产品文案, 观点文, 故事文, 教程文, voice | `references/voice.md` |
+| UX review, heuristic evaluation, usability audit, cognitive load, mental models | "is this good UX", affordances, dark patterns | `references/ux-heuristics.md` + `references/ux-psychology.md` |
 | Unsure / general | | Use aesthetic directions table below + `references/palettes.md` |
 
 **Always also load the relevant design system references** from `references/design-system/` based on what matters most for the design:
@@ -345,6 +872,10 @@ Identify the scenario and load the corresponding reference file before designing
 For initial generation, load at minimum: **typography**, **color-and-contrast**, **spatial-design**, and **micro-interactions**. Load **interactive-patterns** when the design involves filtering, forms, charts, galleries, or drag-and-drop. Load others as the design demands.
 
 ## Core Workflow
+
+### 0. Load Persisted Context (Every Session)
+
+Before parsing the prompt, run the context check from "Project Context Initialization → Session Start". If a `.variant-context.json` exists, apply its values as soft constraints on all generation steps: palette selection, font choices, direction, and framework output format. The user can override any field by stating a preference explicitly.
 
 ### 1. Parse → Detect → Load
 Identify scenario, load domain reference file + relevant design system references, pick 3 starter prompts and palettes. Study the Real Community Examples for composition patterns and what makes each design work — extract the principle, not the surface style.
@@ -412,6 +943,94 @@ After presenting, always offer grouped by intent:
 > **Export** — Extract tokens
 >
 > Can't decide? Say **"Mix A + B"** or **"A's layout + C's colors"**.
+
+---
+
+## Zone-Level Variation
+
+By default, variation actions replace the entire design. **Zone syntax** lets you target a specific section — everything outside the zone stays untouched.
+
+### Zone Syntax
+
+```
+[variation] [action] — [zone]
+
+Examples:
+  A vary strong — hero
+  B remix colors — card
+  C shuffle layout — sidebar
+  A vary subtle — nav
+  B distill — footer
+```
+
+Zones are **semantic** — they refer to the role of the section, not a CSS class name. Recognized zone names:
+
+| Zone | Matches |
+|------|---------|
+| `hero` | Top section, headline, CTA, background |
+| `nav` / `header` | Navigation bar, logo, links |
+| `card` | Any card component or card grid |
+| `sidebar` | Side panel, filters, secondary nav |
+| `footer` | Bottom section |
+| `form` | Any form or input group |
+| `chart` / `data` | Data visualization, metrics, stats |
+| `cta` | Call-to-action button or section |
+| `modal` | Overlay, dialog, drawer |
+| `[custom]` | User can name any section: "pricing table", "testimonials", "team grid" |
+
+### How to Apply Zone Variations
+
+**Step 1: Identify the zone in the file**
+
+Before making changes, read the current file and locate the zone by its semantic role — look for the `data-zone` attribute (if present), or identify it from the HTML structure.
+
+**Step 2: Mark zones on first generation**
+
+When generating initial HTML/TSX, annotate major sections with `data-zone`:
+
+```html
+<section data-zone="hero"> ... </section>
+<nav data-zone="nav"> ... </nav>
+<section data-zone="cards"> ... </section>
+<aside data-zone="sidebar"> ... </aside>
+<section data-zone="cta"> ... </section>
+<footer data-zone="footer"> ... </footer>
+```
+
+For TSX, use a `data-zone` prop on the top-level element of each section component.
+
+**Step 3: Isolate and rewrite the zone**
+
+Read the current file. Extract only the content inside the target `data-zone`. Apply the action (vary strong, remix colors, etc.) to that section alone. Rewrite only that section in the file — preserve everything else character-for-character.
+
+**Step 4: Report**
+
+```
+✦ Variation A — Remix colors · hero zone only · iteration 3
+
+  Changed: hero background oklch(15% 0.02 240) → oklch(20% 0.15 45) (warm amber)
+  hero headline color, gradient, and CTA button updated to match
+  Cards, nav, footer unchanged
+
+  variant-output/variant-coffee-A.html ← updated & opened
+```
+
+### Zone Variation Rules
+
+- **Preserve outside zones exactly.** Do not reflow, re-indent, or reformat code outside the target zone — even if it looks messy.
+- **Tokens cascade.** If the zone uses CSS custom properties (`--color-accent`, `--bg`), update the token values in `:root` only if the zone exclusively uses them. If tokens are shared across zones, override inline within the zone instead.
+- **Motion is zone-scoped.** Only change animation/transition properties within the target zone. Don't touch `@keyframes` or animation values used by other zones.
+- **If zone not found:** Tell the user which zones are present (`data-zone` attributes found), and ask which one to target. Do not guess.
+
+### Zone Quick Triggers
+
+| User types | Action |
+|---|---|
+| `A vary strong — hero` | Vary strong applied to hero zone only |
+| `B remix colors — card` | Remix colors applied to card zone only |
+| `C shuffle layout — sidebar` | Shuffle layout applied to sidebar only |
+| `A vary subtle — nav` | Refine nav zone only |
+| `zones A` | List all `data-zone` sections found in Variation A |
 
 ---
 
@@ -693,10 +1312,106 @@ Grounded in the Impeccable design system. Consult individual references for deep
 
 ---
 
+## Component Mode
+
+When the user asks for a **component** rather than a full page, switch to Component Mode. Generates isolated, self-contained UI pieces — not full layouts.
+
+### Triggers
+
+| User says | Action |
+|---|---|
+| "design a button system" / "button variants" | Button component set: all sizes, all states |
+| "design a form" / "input components" | Form component set: inputs, selects, errors, validation |
+| "card component" / "design a card" | Card variants: default, hover, selected, loading, empty |
+| "modal" / "dialog component" | Modal with header, body, footer, dismiss, focus trap |
+| "design a [X] component" | Single component, all 8 interactive states |
+| "component library" / "design system components" | Set of 5–8 related components as a unified system |
+| "nav component" / "sidebar component" | Navigation piece with all states and responsive behavior |
+
+### Component Mode Workflow
+
+**Step 1: Clarify scope** — single component or a system of related components?
+
+**Step 2: Define states** — for every component, design all 8 states before coding:
+`default → hover → focus → active → disabled → loading → error → success`
+
+**Step 3: Define variants** — size scales, visual emphasis, semantic variants:
+
+| Component | Common variants |
+|-----------|----------------|
+| Button | sizes (sm/md/lg) × types (primary/secondary/ghost/destructive) |
+| Input | sizes × states × types (text/password/search/textarea) |
+| Card | default / interactive (hover) / selected / loading (skeleton) / empty |
+| Badge / Tag | semantic colors (info/success/warning/error) × sizes |
+| Avatar | sizes × states (online/offline/loading) × fallback (initials/icon) |
+| Modal | sizes (sm/md/lg/fullscreen) × dismissible/non-dismissible |
+
+**Step 4: Generate** — produce a single HTML file (or TSX) showing all variants side by side on a neutral background, with clear labels. Component files go to `variant-output/component-[name].html`.
+
+**Step 5: State showcase** — always include an interactive state showcase section: hover the component, click it, tab to it — all states visible and working.
+
+### Component Output Format
+
+```html
+<!-- Component showcase layout -->
+<section data-zone="showcase" style="background:#f5f5f5; padding:48px; font-family:...">
+  <h2>Button System</h2>
+
+  <!-- Row per variant group -->
+  <div data-zone="primary-buttons">
+    <!-- sm, md, lg sizes, all states inline -->
+  </div>
+
+  <div data-zone="secondary-buttons"> ... </div>
+  <div data-zone="destructive-buttons"> ... </div>
+
+  <!-- State showcase — interactive -->
+  <div data-zone="states">
+    <p>Hover, click, or tab through to see all states</p>
+    <!-- live interactive demo -->
+  </div>
+</section>
+```
+
+Terminal output:
+
+```
+✦ Component: Button System
+  Variants: primary · secondary · ghost · destructive
+  Sizes: sm · md · lg
+  States: default · hover · focus · active · disabled · loading
+
+  variant-output/component-buttons.html ← opened in browser
+
+  Next: vary strong · remix colors — [variant] · export tokens · react component
+```
+
+### Component + Zone Bridge
+
+Components can be injected into full-page variations using zone syntax:
+
+```
+A use new button component    → replace all buttons in Variation A with the new component system
+B update card — card zone     → apply new card component to the card zone in Variation B
+```
+
+### Quick Triggers for Component Mode
+
+| User types | Action |
+|---|---|
+| `component button` | Button system: all variants + all states |
+| `component form` | Form components: inputs, labels, errors, submit |
+| `component card` | Card variants: default/hover/selected/loading/empty |
+| `component nav` | Navigation component with responsive behavior |
+| `states [component]` | Show all 8 interactive states for a specific component |
+| `dark component` | Re-generate component set in dark mode |
+
+---
+
 ## Code Export
 
-- **Interactive HTML**: Single-file, embedded CSS + JavaScript. Alive by default. **Default.**
-- **React**: Functional components, Tailwind or CSS modules — state assumptions upfront.
+- **Interactive HTML**: Single-file, embedded CSS + JavaScript. Alive by default. **Default when no React project detected.**
+- **React .tsx**: Functional components — auto-selected when React project detected in cwd, or via `react [A/B/C]` / `--react` / `export to react`.
 
 ### Interactive HTML Output Spec (Default)
 
@@ -747,16 +1462,38 @@ Every HTML output must feel alive — static mockups are not acceptable. Follow 
 - `references/interactive-patterns.md` — functional interaction patterns (filter, drag, charts, forms)
 
 ### React Output Spec
+
+**When to use:** Auto-triggered when React project is detected (see Output Format Detection), or explicitly requested via `react [A/B/C]` / `--react` / `export to react`.
+
+**File output:**
+- Write to `variant-output/VariantA.tsx` (preserves same directory convention as HTML)
+- Add this comment at the top of every generated `.tsx` file:
+  ```tsx
+  // Generated by variant-design — move to src/components/ to include in your project's build.
+  // Preview: run your project's dev server (npm run dev / pnpm dev) then import this component.
+  ```
+
+**Component structure:**
 - Functional components only — no class components
+- Single default export: `export default function VariantA() { ... }`
 - Declare color tokens as `const theme = { ... }` with OKLCH values and hex fallbacks
 - Google Fonts: add a `<link>` in the returned JSX or instruct user to add to `index.html`
 - Prefer inline styles for one-off values; extract repeated patterns to a `styles` object
 - State assumptions upfront in a comment block: which components are stateful, what props to pass
-- If Tailwind: use `@apply` for repeated patterns; if CSS modules: one `.module.css` per component
+- If Tailwind detected in project: use Tailwind classes; if CSS modules: one `.module.css` per component; otherwise inline styles
 - Use `useEffect` sparingly — CSS animations and transitions preferred for entrances and states; JS for scroll observers and data-driven interactions
 - Prop defaults must be realistic content (no `undefined`, no "Lorem ipsum")
 - **Include interaction hooks**: `useScrollReveal`, `useCounter`, `useThemeToggle` as custom hooks where reusable
-- **Framer Motion**: Allowed and encouraged for React outputs. Use `motion.div`, `AnimatePresence`, `useInView` for scroll reveals, `layout` prop for animated filtering/sorting
+
+**Animation:**
+- Check whether `framer-motion` or `motion` is in `package.json` dependencies before importing
+- **If Framer Motion detected:** use `motion.div`, `AnimatePresence`, `useInView` for scroll reveals, `layout` prop for animated filtering/sorting
+- **If Framer Motion NOT detected:** implement animations with CSS transitions + `IntersectionObserver` in `useEffect` — same visual result, zero extra dependencies. Do NOT add `framer-motion` import.
+
+**Framework-specific rules:**
+- **Next.js (key `"next"` detected):** Add `"use client"` directive at the top of any component that uses hooks (`useState`, `useEffect`, `useRef`), browser APIs, event handlers, or animation libraries. Server components are the default in App Router — `"use client"` is required.
+- **Vite:** Standard React component, no special directives needed.
+- **Generic React:** Standard functional component.
 
 ### Multi-Screen / Flow Support
 

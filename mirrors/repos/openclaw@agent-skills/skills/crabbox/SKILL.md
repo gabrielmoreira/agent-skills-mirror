@@ -1,6 +1,8 @@
 ---
 name: crabbox
 description: "Use the Crabbox wrapper for OpenClaw remote validation across Linux, macOS, Windows, and WSL2, including delegated Blacksmith Testbox proof. Report the actual provider and id."
+metadata:
+  version: "2026-05-27"
 ---
 
 # Crabbox
@@ -255,10 +257,14 @@ Use these on debugging runs before inventing ad hoc logging:
   `coverage`, JUnit XML, and nearby logs. Treat as secret-bearing until reviewed.
 - `--keep-on-failure`: leave a failed one-shot lease alive for live debugging
   until idle/TTL expiry. Useful on direct providers and delegated one-shots.
+- `--results-auto`: after test commands, scan common JUnit XML filenames and
+  feed them into the failure digest. Use explicit `--junit <path>` for
+  nonstandard result paths or when auto discovery misses a framework.
 - `--timing-json`: final machine-readable timing. Add
   `echo CRABBOX_PHASE:install`, `CRABBOX_PHASE:test`, etc. in long shell
   commands; direct providers and Blacksmith Testbox both report them as
-  `commandPhases`.
+  `commandPhases`, and failed runs can use them to show the failed phase and
+  observed phase order.
 
 Live-provider debug template for direct AWS/Hetzner leases:
 
@@ -681,8 +687,11 @@ Use `--market spot|on-demand` only on AWS warmup/one-shot runs.
   the hydration step.
 - Sync failed: rerun with `--debug`; check changed-file count and whether the
   checkout is dirty.
-- Command failed: rerun only the failing shard/file first. Do not rerun a full
-  suite until the focused failure is understood.
+- Command failed: read the failure digest before rerunning. Use `phase`, `area`,
+  `retryable`, `failed_phase`, `observed_phases`, shell-chain skip notes,
+  `test_results`, and `failed_test` lines to choose the smallest focused rerun.
+  Do not rerun a full suite until the failing shard/file or skipped `&&` segment
+  is understood.
 - Cleanup uncertain: `crabbox list --provider aws`; for explicit Blacksmith
   runs, use `blacksmith testbox list` and stop owned `tbx_...` leases you
   created.

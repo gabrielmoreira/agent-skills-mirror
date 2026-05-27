@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Worldview — ethical reasoning, moral foundations, and constitutional principles for AI decisions"
-application: "Always active — ethics is contextual judgment, not rule-following"
 applyTo: "**/*ethic*,**/*moral*,**/*privacy*,**/*harm*,**/*bias*,**/*responsible*,**/*consent*"
-currency: 2026-04-30
 lastReviewed: 2026-04-30
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getsentry/XcodeBuildMCP` — 26 default patterns, 2 followed patterns, 38 file(s) materialized.
+Mirror of `getsentry/XcodeBuildMCP` — 26 default patterns, 2 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `getsentry/XcodeBuildMCP` — 26 default patterns, 2 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 38 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -89,15 +89,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 27 | ✓ | [`.cursor/environment.json`](.cursor/environment.json) |
 | 28 | ✓ | [`.github/workflows/README.md`](.github/workflows/README.md) |
 | 29 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 30 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 31 | ✓ | [`example_projects/iOS_Calculator/AGENTS.md`](example_projects/iOS_Calculator/AGENTS.md) |
-| 32 | ✓ | [`example_projects/iOS/.cursor/rules/errors.mdc`](example_projects/iOS/.cursor/rules/errors.mdc) |
-| 33 | ✓ | [`example_projects/Weather/AGENTS.md`](example_projects/Weather/AGENTS.md) |
-| 34 | ✓ | [`example_projects/Weather/README.md`](example_projects/Weather/README.md) |
-| 35 | ✓ | [`skills/xcodebuildmcp-cli/SKILL.md`](skills/xcodebuildmcp-cli/SKILL.md) |
-| 36 | ✓ | [`skills/xcodebuildmcp/SKILL.md`](skills/xcodebuildmcp/SKILL.md) |
-| 37 | → | [`README.md`](README.md) |
-| 38 | → | [`THIRD_PARTY_PACKAGE_LICENSES.md`](THIRD_PARTY_PACKAGE_LICENSES.md) |
+| 30 | ✓ | [`benchmarks/claude-ui/README.md`](benchmarks/claude-ui/README.md) |
+| 31 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 32 | ✓ | [`example_projects/iOS_Calculator/AGENTS.md`](example_projects/iOS_Calculator/AGENTS.md) |
+| 33 | ✓ | [`example_projects/iOS/.cursor/rules/errors.mdc`](example_projects/iOS/.cursor/rules/errors.mdc) |
+| 34 | ✓ | [`example_projects/Weather/AGENTS.md`](example_projects/Weather/AGENTS.md) |
+| 35 | ✓ | [`example_projects/Weather/README.md`](example_projects/Weather/README.md) |
+| 36 | ✓ | [`skills/xcodebuildmcp-cli/SKILL.md`](skills/xcodebuildmcp-cli/SKILL.md) |
+| 37 | ✓ | [`skills/xcodebuildmcp/SKILL.md`](skills/xcodebuildmcp/SKILL.md) |
+| 38 | → | [`README.md`](README.md) |
+| 39 | → | [`THIRD_PARTY_PACKAGE_LICENSES.md`](THIRD_PARTY_PACKAGE_LICENSES.md) |
 
 ---
 

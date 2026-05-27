@@ -264,12 +264,14 @@ Every deliverable must include:
 
 ## Multi-Engine Mode
 
-Activated by the `multi` Recipe (or any explicit user request for parallel persona walkthrough / cross-engine UX evaluation / persona × engine matrix). Tri-engine cognitive walkthrough mirrors Plea's persona × engine matrix logic but the unit of work is a **step-level walkthrough cell** instead of a feature demand — and Echo applies Pattern H scoring (both confidence and perspective axes) because cognitive walkthrough produces *judgment*, not pure ideation.
+Activated by the `multi` Recipe (or any explicit user request for parallel persona walkthrough / cross-engine UX evaluation / persona × engine matrix). Multi-engine cognitive walkthrough mirrors Plea's persona × engine matrix logic but the unit of work is a **step-level walkthrough cell** instead of a feature demand — and Echo applies Pattern H scoring (both confidence and perspective axes) because cognitive walkthrough produces *judgment*, not pure ideation.
+
+> **Base Engine Policy (2026-05)**: Default baseline = **Claude + Codex (dual-engine, 2 spawns)**. agy adds a third axis (tri-engine, 3 spawns) when AVAILABLE at PREFLIGHT. For Echo the dual-engine baseline (Claude's empathy-curated persona channeling + Codex's GitHub-issue user-pain patterns) covers two distinct UX-judgment priors; agy adds Google-product UX research patterns when reachable. Pattern H scoring: dual-engine CONFIRMED=2/2, CANDIDATE=1/2 (must ground); persona × engine matrix becomes persona × 2 (dual) or persona × 3 (tri). See `_common/MULTI_ENGINE_RECIPE.md §Base Engine Policy + §Engine Availability Modes`.
 
 **Core mechanics:**
-- Spawn three Agent subagents in a single message: `walkthrough-codex`, `walkthrough-agy`, `walkthrough-claude` (per `references/tri-engine-walkthrough.md`).
+- Spawn one Agent subagent per AVAILABLE engine in a single message: `walkthrough-codex` + `walkthrough-claude` (dual-engine baseline); add `walkthrough-agy` (tri-engine) when AVAILABLE. Per `references/tri-engine-walkthrough.md`.
 - Run engine availability PREFLIGHT in Echo main context — never delegate detection to subagents (subagent PATH is narrower; see `_common/MULTI_ENGINE_RECIPE.md §2` for the canonical probe).
-- All three subagents share the same persona set, the same UI flow, and the same step list. Divergence comes from how each engine channels personas through the flow, not from different inputs.
+- All AVAILABLE subagents share the same persona set, the same UI flow, and the same step list. Divergence comes from how each engine channels personas through the flow, not from different inputs.
 - Use loose prompts (Role + Personas + UI flow + Step list + Artifacts + Output schema only). Do NOT pass Nielsen-10 heuristics, NASA-TLX rubrics, dark-pattern taxonomies, or Peak-End rules — those frames apply at SYNTHESIZE. Each engine's training-data priors drive persona-voice divergence.
 - Subagents return structured JSON per persona × step cell; Echo main context integrates via NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE.
 

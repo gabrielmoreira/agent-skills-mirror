@@ -12,9 +12,17 @@ The opinionated playbook for **talk decks** built on open-slide. Defines:
 - **The JourneyBar** — the single unifying visual on every slide
 - **Companion-skill orchestration** — yuv-design-system, slide-authoring, nano-banana-pro, hyperframes, mermaid
 
-**Visual palette is pulled from `yuv-design-system`** — Fly High purple by default (matches the rest of Yuval's brand). For talks whose central metaphor IS literal flight, opt into the **cinematic-flight** mode (sky-blue + hot pink) — see Step 5.
+**Visual palette is pulled from `yuv-design-system` in Decks mode** — Fly High purple/yellow/grey (the dedicated palette for slide-based output). For talks whose central metaphor IS literal flight, this skill's own **cinematic-flight** opt-in mode (sky-blue + hot pink) — see Step 5 — overrides the design system's Decks tokens. Never use Neon mode for slides; Decks mode is exclusive to presentations.
 
 This skill is the distillation of building "Build Agents That Ship" for the NICE pre-hackathon (May 2026). Read it end-to-end before drafting any slides.
+
+## Where this skill sits in the YUV.AI pyramid
+
+`yuv-decks` is in the **middle tier** of the YUV.AI skills pyramid. The top-tier orchestrator `yuv-pilot` routes here when the user wants a slide deck. You can also be invoked directly when the user says "make me a deck" without going through yuv-pilot first.
+
+When this skill calls `yuv-design-system`, it **MUST lock the mode to "Decks"** — never let it fall through to Neon (web/app palette) or Warm Editorial. Decks mode is the only palette mode for slides.
+
+See `yuv-pilot/SKILL.md` for the full pyramid map and routing table.
 
 **Reference implementation**: <https://github.com/hoodini/build-agents-that-ship> (private — clone if you have access; the entire pattern this skill describes is implemented there).
 

@@ -19,7 +19,7 @@ CAPABILITIES_SUMMARY:
 - cognitive_bias_detection: Anchoring, confirmation, sunk cost, groupthink detection and mitigation during deliberation; consider-the-opposite debiasing
 - collaborative_calibration: Iterative confidence adjustment across multiple agent assessments for improved calibration
 - devils_advocate_challenge: Mandatory challenge on 3-0 unanimous verdicts to counter groupthink
-- tri_engine_deliberate: `multi` Recipe — parallel Codex + Antigravity + Claude subagents, each independently deliberating all three viewpoints (Logos/Pathos/Sophia) → 9-cell deliberation matrix (3 engines × 3 viewpoints); Hybrid Pattern H (concurrence within a viewpoint raises confidence, divergence across viewpoints surfaces decision trade-offs); two-pass scoring (per-viewpoint concurrence + per-engine consistency); pattern-based final verdict (GO / NO-GO / CONDITIONAL / ESCALATE derived from matrix shape, not averaged confidence)
+- multi_engine_deliberate: `multi` Recipe — parallel subagents per AVAILABLE engine (default baseline Claude + Codex = 6-cell matrix; tri-engine when agy AVAILABLE = 9-cell matrix), each independently deliberating all three viewpoints (Logos/Pathos/Sophia); Hybrid Pattern H (concurrence within a viewpoint raises confidence, divergence across viewpoints surfaces decision trade-offs); two-pass scoring (per-viewpoint concurrence + per-engine consistency); pattern-based final verdict (GO / NO-GO / CONDITIONAL / ESCALATE derived from matrix shape, not averaged confidence). agy optional per `_common/MULTI_ENGINE_RECIPE.md §Base Engine Policy`
 - Three-axis reframing toolkit (absorbed from Refract)
 
 COLLABORATION_PATTERNS:
@@ -46,7 +46,7 @@ PROJECT_AFFINITY: universal
 
 > **"Three minds, one verdict. Consensus through diversity."**
 
-Deliberation engine that evaluates decisions through three independent perspectives. **Simple Mode** (default): three internal lenses (Logos/Pathos/Sophia). **Engine Mode**: three external engines (Claude/Codex/Antigravity). Both conduct independent votes and deliver a unified verdict. **Magi does not write code.** It deliberates, evaluates, and decides.
+Deliberation engine that evaluates decisions through three independent perspectives. **Simple Mode** (default): three internal lenses (Logos/Pathos/Sophia). **Engine Mode**: multiple external engines (dual-engine baseline Claude + Codex; tri-engine when agy AVAILABLE — see `_common/MULTI_ENGINE_RECIPE.md §Base Engine Policy`). Both conduct independent votes and deliver a unified verdict. **Magi does not write code.** It deliberates, evaluates, and decides.
 
 | Perspective | Lens | Tone |
 |-------------|------|------|
@@ -150,7 +150,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Six Thinking Hats | `sixhat` | | Parallel-thinking across White/Red/Black/Yellow/Green/Blue modes before voting; Black always paired with equal-time Yellow | `references/six-thinking-hats.md` |
 | Devil's Advocate | `devil` | | Formal red-team stress test on high-stakes irreversible proposals; mandatory on 3-0 unanimity. Rotated DA, 3-7 ranked objections, addressed/partial/unaddressed scoring | `references/devils-advocate.md` |
 | Delphi Method | `delphi` | | Anonymous multi-round (2-4) expert convergence for forecasts/uncertain estimates. Bimodal kept as stable disagreement, not flattened | `references/delphi-method.md` |
-| Multi-Engine | `multi` | | Tri-engine deliberation (Codex + Antigravity + Claude in parallel); each engine emits all three viewpoints → 9-cell matrix; pattern-based verdict (GO/NO-GO/CONDITIONAL/ESCALATE) preserving cross-viewpoint trade-offs. Engine influence capped at 50% (Byzantine resilience); 9-cell unanimous triggers mandatory DA | `references/tri-engine-deliberate.md`, `_common/MULTI_ENGINE_RECIPE.md` |
+| Multi-Engine | `multi` | | Multi-engine deliberation. Default baseline Claude + Codex (dual-engine, 6-cell matrix); tri-engine (Codex + agy + Claude, 9-cell matrix) when agy AVAILABLE. Each engine emits all three viewpoints; pattern-based verdict (GO/NO-GO/CONDITIONAL/ESCALATE) preserving cross-viewpoint trade-offs. Engine influence capped at 50% (Byzantine resilience); all-cells-unanimous (6/6 or 9/9) triggers mandatory DA | `references/tri-engine-deliberate.md`, `_common/MULTI_ENGINE_RECIPE.md` |
 
 ### Signal Keywords → Recipe / Approach
 
@@ -242,11 +242,13 @@ Every deliverable must include:
 
 ## Multi-Engine Mode
 
-Activated by the `multi` Recipe (or explicit user request for tri-engine deliberation / 9-cell matrix / cross-engine arbitration). Tri-engine deliberation extends Magi's three-viewpoint model with three physically-independent engines, producing a **9-cell deliberation matrix** (3 engines × 3 viewpoints = Logos / Pathos / Sophia × codex / agy / claude).
+Activated by the `multi` Recipe (or explicit user request for multi-engine deliberation / cross-engine arbitration). Multi-engine deliberation extends Magi's three-viewpoint model with multiple physically-independent engines, producing a **deliberation matrix sized by AVAILABLE engines × 3 viewpoints**: **dual-engine baseline = 6-cell** (Claude + Codex × Logos/Pathos/Sophia), **tri-engine = 9-cell** when agy is also AVAILABLE at PREFLIGHT.
+
+> **Base Engine Policy (2026-05)**: Default baseline is **Claude + Codex (dual-engine, 6-cell)**. agy is added as a third axis when AVAILABLE — never required. See `_common/MULTI_ENGINE_RECIPE.md §Base Engine Policy + §Engine Availability Modes`. Filename `tri-engine-deliberate.md` retained for backward compatibility; covers both dual and tri modes.
 
 **Core mechanics:**
-- Spawn three Agent subagents in a single message: `deliberate-codex`, `deliberate-agy`, `deliberate-claude` (per `references/tri-engine-deliberate.md`).
-- **Each subagent independently emits all three viewpoints in one JSON payload** — so the matrix is 9 cells produced from 3 fan-out calls (not 9). Cross-engine independence comes from parallel spawn; cross-viewpoint independence comes from prompt discipline inside each subagent.
+- Spawn one Agent subagent per AVAILABLE engine in a single message: `deliberate-codex` + `deliberate-claude` (dual-engine baseline); add `deliberate-agy` (tri-engine) when AVAILABLE. See `references/tri-engine-deliberate.md`.
+- **Each subagent independently emits all three viewpoints in one JSON payload** — so the matrix is N×3 cells produced from N fan-out calls (not 6/9). Cross-engine independence comes from parallel spawn; cross-viewpoint independence comes from prompt discipline inside each subagent.
 - Run engine availability PREFLIGHT in Magi main context — never delegate detection to subagents (subagent PATH is narrower; see `_common/MULTI_ENGINE_RECIPE.md §2`).
 - Use loose prompts (Role + Target + Output format only). Do NOT pass decision-domain matrices, voting rubrics, bias checklists, or viewpoint templates to subagents — apply framework rules in SYNTHESIZE, not at FAN-OUT. Each engine's training-data priors should drive divergence across the matrix.
 - Subagents return structured JSON keyed by viewpoint; main context integrates via NORMALIZE → CLUSTER (two-pass) → SCORE → GROUND → SYNTHESIZE.
@@ -256,7 +258,7 @@ Activated by the `multi` Recipe (or explicit user request for tri-engine deliber
 - **Divergence across viewpoints** surfaces the decision's real trade-offs. "All Logos APPROVE, all Pathos REJECT" is not noise to average away — it IS the decision's shape, and the verdict reflects it as `CONDITIONAL`, not a meaningless 50%.
 
 **Two-pass scoring (Magi-specific):**
-- **Pass A — per-viewpoint engine clustering** (concurrence axis): for each viewpoint, label engines `CONFIRMED` (3/3 same verdict) / `LIKELY` (2/3) / `CANDIDATE` (1/1/1 split) / `UNDECIDED` (3/3 ABSTAIN), with perspective tag `CONVERGENT` / `DIVERGENT-1` / `DIVERGENT-2`.
+- **Pass A — per-viewpoint engine clustering** (concurrence axis): for each viewpoint, label engines per the active engine count. **Tri-engine**: `CONFIRMED` (3/3 same verdict) / `LIKELY` (2/3) / `CANDIDATE` (1/1/1 split) / `UNDECIDED` (3/3 ABSTAIN), with perspective tag `CONVERGENT` / `DIVERGENT-1` / `DIVERGENT-2`. **Dual-engine**: `CONFIRMED` (2/2 same verdict) / `CANDIDATE` (1/1 split — LIKELY is unreachable with 2 engines, so the bar for shipping a single-engine verdict is naturally tighter) / `UNDECIDED` (2/2 ABSTAIN), with perspective tag `CONVERGENT` / `DIVERGENT-1`.
 - **Pass B — per-engine viewpoint clustering** (consistency axis): for each engine, label its three viewpoints as `consistent` (3-0) / `mostly-aligned` (2-1) / `internally-split` (1-1-1) / `consistent-reject` (0-3).
 
 **Pattern-based final verdict (not averaged confidence):**
@@ -272,15 +274,19 @@ Map the matrix shape to a verdict — examples from `references/tri-engine-delib
 | All three engines `internally-split` | `ESCALATE TO HUMAN` |
 
 **Engine-attribution tags (mandatory on every shipped viewpoint):**
-- Concurrence tag: `[codex+agy+claude]` (3/3) / `[codex+agy]` etc. (2/3) / `[codex-verified]` (1/3 grounded)
-- Perspective tag: `[CONVERGENT]` / `[DIVERGENT-1]` / `[DIVERGENT-2]`
-- Final verdict carries matrix-pattern label: `[matrix:all-9-approve]`, `[matrix:pathos-block]`, `[matrix:logos-sophia-split]`, etc.
+- Concurrence tag — tri-engine: `[codex+agy+claude]` (3/3) / `[codex+agy]` etc. (2/3) / `[codex-verified]` (1/3 grounded). Dual-engine: `[codex+claude]` (2/2) / `[codex-verified]` / `[claude-verified]` (1/2 grounded).
+- Perspective tag: `[CONVERGENT]` / `[DIVERGENT-1]` / `[DIVERGENT-2]` (tri-engine) or `[CONVERGENT]` / `[DIVERGENT-1]` (dual-engine).
+- Final verdict carries matrix-pattern label: `[matrix:all-cells-approve]`, `[matrix:pathos-block]`, `[matrix:logos-sophia-split]`, etc. Cell count in the label adapts to engine count (`all-6-approve` for dual, `all-9-approve` for tri).
 
-**9-cell-unanimous trigger:** if all 9 cells reach the same verdict (CONFIRMED+CONVERGENT on all three viewpoints), Magi's 3-0 groupthink rule applies and a devil's advocate challenge is mandatory before finalizing. In `multi` mode the DA must attack the matrix pattern itself, not just one cell.
+**All-cells-unanimous trigger:** if all cells reach the same verdict (CONFIRMED+CONVERGENT on all three viewpoints — 6/6 dual or 9/9 tri), Magi's 3-0 groupthink rule applies and a devil's advocate challenge is mandatory before finalizing. In `multi` mode the DA must attack the matrix pattern itself, not just one cell.
 
-**Output structure:** the 9-cell matrix table is the primary deliverable artifact — never collapse it into a single averaged verdict. Per-cell rationale summaries, cross-cutting matrix pattern, pattern-based final verdict, risk register (aggregated from per-cell trade-offs), and dissent record all sit on top of the matrix.
+**Output structure:** the deliberation matrix table (6-cell dual / 9-cell tri) is the primary deliverable artifact — never collapse it into a single averaged verdict. Per-cell rationale summaries, cross-cutting matrix pattern, pattern-based final verdict, risk register (aggregated from per-cell trade-offs), and dissent record all sit on top of the matrix.
 
-**Degraded modes:** 1 engine down → 6-cell matrix with concurrence labels adjusted to 2/2-CONFIRMED, 1/2-LIKELY; 2 engines down → 3-cell single-engine matrix, all cells treated as CANDIDATE, matrix-pattern detection disabled; all 3 down → degrade to standard `decide` Recipe (Simple Mode three internal lenses).
+**Engine Availability Modes:**
+- **Tri-engine** (Claude + Codex + agy AVAILABLE): 9-cell matrix, standard tri-engine scoring.
+- **Dual-engine** (Claude + Codex; agy UNAVAILABLE or RUNTIME-BROKEN — DEFAULT BASELINE): 6-cell matrix, dual-engine scoring (CONFIRMED 2/2 or CANDIDATE 1/2). NOT degraded — record agy absence as informational header line.
+- **Single-engine** (only one of Claude/Codex available — actually degraded): 3-cell single-engine matrix, all cells CANDIDATE, matrix-pattern detection disabled. Flag reduced confidence.
+- **Zero engines**: degrade to standard `decide` Recipe (Simple Mode three internal lenses).
 
 Full algorithm, JSON schema, prompt skeletons, two-pass cluster rules, grounding checks, and matrix-pattern catalog: `references/tri-engine-deliberate.md`.
 

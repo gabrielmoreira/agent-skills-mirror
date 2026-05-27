@@ -1,14 +1,13 @@
 ---
 description: "Validate Markdown files against converter requirements — frontmatter, mermaid syntax, SVG presence, structural rules — before running converters"
-mode: agent
-lastReviewed: 2026-05-01
+lastReviewed: 2026-05-26
 ---
 
 # Lint Markdown
 
 Run the markdown validator on a file before converting it to Word, HTML, EML, or TXT. Catches issues that cause conversion failures or degraded output.
 
-Skill: [lint-clean-markdown](../skills/lint-clean-markdown/SKILL.md). Muscle: `.github/muscles/markdown-lint.cjs`. Always-on rule: [lint-discipline.instructions.md](../instructions/lint-discipline.instructions.md) ("fix lint always — even if not yours").
+Skill: [lint-clean-markdown](../skills/lint-clean-markdown/SKILL.md). Muscle: `.github/skills/markdown-mermaid/scripts/markdown-lint.cjs`. Always-on rule: [lint-discipline.instructions.md](../instructions/lint-discipline.instructions.md) ("fix lint always — even if not yours").
 
 ## When to Use
 
@@ -31,8 +30,8 @@ Skill: [lint-clean-markdown](../skills/lint-clean-markdown/SKILL.md). Muscle: `.
 2. **Run**:
 
    ```sh
-   node .github/muscles/markdown-lint.cjs FILE.md
-   node .github/muscles/markdown-lint.cjs docs/ --recursive
+   node .github/skills/markdown-mermaid/scripts/markdown-lint.cjs FILE.md
+   node .github/skills/markdown-mermaid/scripts/markdown-lint.cjs docs/ --recursive
    ```
 
 3. **Read the report**:
@@ -45,6 +44,10 @@ Skill: [lint-clean-markdown](../skills/lint-clean-markdown/SKILL.md). Muscle: `.
 ## Boundaries
 
 - **Not a formatter.** This validates; it doesn't modify files. For whitespace cleanup, use `/format-markdown` first.
-- **Converter-specific rules.** What's valid here is what the converters in `.github/muscles/md-to-*.cjs` expect. Markdown that lints clean here may still fail other markdown processors that have stricter rules.
+- **Converter-specific rules.** What's valid here is what the converters in `.github/skills/md-to-*/scripts/md-to-*.cjs` expect. Markdown that lints clean here may still fail other markdown processors that have stricter rules.
 - **Mermaid validation is best-effort.** The linter parses syntax but doesn't render diagrams. Genuine render failures only show up in `/md-to-word` or `/md-to-html` output.
 - **Frontmatter rules vary by file type.** A SKILL.md needs different fields than an instructions.md needs different fields than a prompt.md. The linter applies the right rule by filename pattern.
+
+## Would Revise If
+
+Revisit this prompt by **2026-08-26** (90 days) or sooner if any of the following fires: the workflow it invokes ceases to produce its intended output (skill body changed but prompt steps stale); the visible markers / verification steps in its body are consistently skipped; or the slash-command name is no longer discoverable in the prompt picker.

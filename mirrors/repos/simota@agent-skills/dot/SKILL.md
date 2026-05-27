@@ -202,14 +202,16 @@ Rules:
 
 ### Antigravity CLI Delegation Boundaries
 
-| Situation | Route |
-|-----------|-------|
-| explicit `agy` or delegation request | Antigravity CLI |
-| quick prototype or variation for a single sprite | Antigravity CLI |
-| strict pixel placement, spritesheet, or animation | Dot direct |
-| tile system, autotiling, or batch export | Dot direct |
+> **agy is OPTIONAL** — when AVAILABLE at PREFLIGHT, Dot may delegate single-SVG generation to agy. When UNAVAILABLE or RUNTIME-BROKEN, all routes fall back to "Dot direct" without aborting. Per `_common/MULTI_ENGINE_RECIPE.md §Base Engine Policy`.
 
-Limits:
+| Situation | Route (when agy AVAILABLE) | Fallback (when agy UNAVAILABLE) |
+|-----------|---------------------------|--------------------------------|
+| explicit `agy` or delegation request | Antigravity CLI | Dot direct + warn user |
+| quick prototype or variation for a single sprite | Antigravity CLI | Dot direct |
+| strict pixel placement, spritesheet, or animation | Dot direct | Dot direct |
+| tile system, autotiling, or batch export | Dot direct | Dot direct |
+
+Limits (apply only when delegating to agy):
 
 - `8x8` and `16x16` are the safest sizes for delegation.
 - `32x32` is best-effort only; require run-length compression in the prompt.

@@ -22,3 +22,13 @@ Append a short dated note to **MASTER_CONTEXT.md** under Changelog (Decision / W
 ## Skill edits
 
 Edit the canonical source under `skills/`. Run `./scripts/sync-skill.sh` to copy changes to `.claude/skills/` and `.cursor/skills/`.
+
+## Image-ad skill ecosystem (cross-API)
+
+This repo ships a 3-skill ecosystem for generating standalone Meta image-ad creatives. **Read [shared/skills/image-ad-prompting/OVERVIEW.md](shared/skills/image-ad-prompting/OVERVIEW.md) before invoking any of these skills** — it explains the decision tree (gpt-image-2 vs Nano Banana), the shared 37-template library, the hand-off to the separate `meta-ad-builder` skill, and what's out of scope.
+
+Quick map:
+- **Generate from a brief** → `chatgpt-image-ad` (typography / UI mimicry) or `nano-banana-image-ad` (photoreal / lifestyle / multi-ref).
+- **Clone an existing ad into a reusable template** → `image-ad-clone` (single backend-agnostic skill; asks you which generator to validate against at Phase 1, optionally cross-validates against the other backend at Phase 8).
+- **Pull from / add to the shared library** → `shared/skills/image-ad-prompting/prompting/prompt-library.md` (37 ready-to-use validated prompts).
+- **Hand off finished images to Meta** → separate `meta-ad-builder` skill; the image-ad skills produce images only.

@@ -513,11 +513,13 @@ Five embodiment tactics drive demand from lived friction rather than abstraction
 
 ## Multi-Engine Mode
 
-Activated by the `multi` Recipe (or any explicit user request for parallel persona channeling / tri-engine demand generation). Tri-engine demand generation mirrors Judge's tri-engine review pattern but optimizes for *persona-voice diversity* instead of *defect agreement*.
+Activated by the `multi` Recipe (or any explicit user request for parallel persona channeling / multi-engine demand generation). Multi-engine demand generation mirrors Judge's multi-engine review pattern but optimizes for *persona-voice diversity* instead of *defect agreement*.
+
+> **Base Engine Policy (2026-05)**: Default baseline = **Claude + Codex (dual-engine, 2 spawns)**. agy adds a third axis (tri-engine, 3 spawns) only when AVAILABLE at PREFLIGHT. dual-engine is NOT degraded — it is the normal operating state. See `_common/MULTI_ENGINE_RECIPE.md §Base Engine Policy + §Engine Availability Modes`.
 
 **Core mechanics:**
-- Spawn three Agent subagents in a single message: `demand-codex`, `demand-agy`, `demand-claude` (per `references/tri-engine-demand.md`).
-- **All three engines work with the same persona set** — divergence comes from independent channeling of identical personas, not from different persona pools. Cast registry personas (`.agents/personas/registry.yaml`) are shared verbatim across subagents.
+- Spawn one Agent subagent per AVAILABLE engine in a single message: `demand-codex` + `demand-claude` (dual-engine baseline); add `demand-agy` (tri-engine) when AVAILABLE. Per `references/tri-engine-demand.md`.
+- **All AVAILABLE engines work with the same persona set** — divergence comes from independent channeling of identical personas, not from different persona pools. Cast registry personas (`.agents/personas/registry.yaml`) are shared verbatim across subagents.
 - Run engine availability PREFLIGHT in Plea main context — never delegate detection to subagents (subagent PATH is narrower; see `judge/references/tri-engine-review.md §2` for the canonical probe).
 - Use loose prompts (Role + Persona-channel block + Target + Output format). Do NOT pass the Plea "curse of knowledge" table, JTBD templates, or assumption-challenge taxonomies — apply those Plea-specific frames in SYNTHESIZE, not at FAN-OUT.
 - Subagents return structured JSON; main context integrates via NORMALIZE → CLUSTER → SCORE → CALIBRATE → SYNTHESIZE.

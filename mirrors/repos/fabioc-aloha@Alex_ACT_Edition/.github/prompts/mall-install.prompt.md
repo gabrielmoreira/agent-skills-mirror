@@ -1,10 +1,9 @@
 ---
 description: "Install a plugin from the Alex ACT Plugin Mall into local/ paths"
-mode: agent
-lastReviewed: 2026-05-02
+lastReviewed: 2026-05-26
 ---
 
-# /mall install
+# /mall-install
 
 Install a plugin from the Plugin Mall into this project's `local/` paths.
 
@@ -31,7 +30,7 @@ Install a plugin from the Plugin Mall into this project's `local/` paths.
    Token cost: ~<token_cost> tokens
    Artifacts:
      - skill -> .github/skills/local/<name>/SKILL.md
-     - muscle -> .github/muscles/local/<name>.cjs (if applicable)
+     - script -> .github/scripts/local/<name>.cjs (if applicable)
      - instruction -> .github/instructions/local/<file> (if applicable)
    ```
 
@@ -62,7 +61,7 @@ Install a plugin from the Plugin Mall into this project's `local/` paths.
 7. **Commit**:
 
    ```bash
-   git add .github/skills/local .github/instructions/local .github/muscles/local .github/prompts/local
+   git add .github/skills/local .github/instructions/local .github/scripts/local .github/prompts/local
    git commit -m "Install plugin: <name> from ACT Plugin Mall"
    ```
 
@@ -74,3 +73,7 @@ Install a plugin from the Plugin Mall into this project's `local/` paths.
 - Already installed (ask to overwrite or skip)
 - `requires_edition` not met (suggest upgrading Edition first)
 - Plugin overlaps with Edition baseline (explain which artifact already covers it)
+
+## Would Revise If
+
+Revisit this prompt by **2026-08-26** (90 days) or sooner if any of the following fires: the workflow it invokes ceases to produce its intended output (skill body changed but prompt steps stale); the visible markers / verification steps in its body are consistently skipped; or the slash-command name is no longer discoverable in the prompt picker.

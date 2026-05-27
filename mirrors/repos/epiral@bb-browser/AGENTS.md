@@ -126,6 +126,49 @@ CLOSED           → overlay 显示断开原因, 可点 Connect 重连
 - 不用 `BigInt`（兼容性），用 `Math.floor` + `>>>`
 - `disconnect` 里 `invoke("stream.close")` 是 fire-and-forget，不 await
 
+## Docker 运行模式
+
+Docker 中 Chrome 必须以**有头模式**运行在 Xvfb 虚拟帧缓冲上。
+
+```
+Xvfb (:99) ← Chrome (headed, DISPLAY=:99) ← CDP screencast → bb-viewer → WebRTC
+```
+
+**为什么不能用 `--headless=new`：** Linux 上 `--headless=new` 跳过整个 X11/Ozone 显示层，导致 WebGL、`navigator.plugins`、屏幕信息等 API 返回异常值。Google 等反自动化系统检测这些底层渲染差异来识别 headless 浏览器。macOS 上 headless 没问题，因为 Chrome 仍链接完整的 Cocoa/CoreGraphics 框架，只是不显示窗口。
+
+Chrome 始终以有头模式启动，不使用 `--headless=new`。macOS 上没有聚焦的用户 session 时 Chrome 自动离屏渲染（无可见窗口），效果等同 headless 但保留完整 GUI API。
+
+**Docker 关键环境变量：**
+- `DISPLAY=:99` — Xvfb 虚拟显示（Dockerfile 已设置）
+
+**Stealth 注入 = 有害：** Google 的反自动化不检测 CDP 本身，而是检测 `Emulation.setUserAgentOverride`、`Page.addScriptToEvaluateOnNewDocument` 等 CDP domain 调用。不注入任何 stealth，用裸 CDP 即可。
+
+### Docker 构建
+
+```bash
+# 前置：下载 Chrome for Testing 到 bin/（gitignored）
+curl -L -o bin/chrome-linux64.zip \
+  "https://storage.googleapis.com/chrome-for-testing-public/149.0.7827.22/linux64/chrome-linux64.zip"
+
+# 构建（Dockerfile 已配置阿里云 apt/Go/npm 镜像）
+docker build --platform linux/amd64 -t bb-browser:amd64 .
+
+# 运行
+docker run -d --platform linux/amd64 --name bb-browser \
+  -v bb-browser-data:/data -p 19825:19824 --shm-size=2g \
+  -e TURN_URL=turn:<host>:3478 \
+  -e TURN_SECRET=<secret> \
+  -e CHROME_WINDOW_SIZE=1280,720 \
+  bb-browser:amd64 --host 0.0.0.0 \
+  --hub https://hub.pinixai.com --hub-token <token>
+```
+
+镜像内预装了 Chrome for Testing，运行时无需下载。`--shm-size=2g` 防止 Chrome 因共享内存不足 crash。
+
+### bb-viewer (streamer) 解码器
+
+JPEG → I420 解码使用 `tjDecompress2` (RGB) 再手动转 I420，而非 `tjDecompressToYUVPlanes`。后者在 libturbojpeg 2.1.x 上对奇数高度帧有 chroma plane 计算 bug。Chrome headless 在 Linux 上的 viewport 高度经常是奇数（如 577），decoder 会自动 round down 到偶数。
+
 ## 代码规范
 
 - Commit：`<type>(<scope>): <summary>`，英文

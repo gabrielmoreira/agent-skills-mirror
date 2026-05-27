@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Fix lint always — if I edited a file, I own its lint state on exit, even for pre-existing findings"
-application: "Whenever get_errors or a linter reports findings in a file I touched in the current change"
 applyTo: "**"
-currency: 2026-04-30
 lastReviewed: 2026-04-30
 ---
 

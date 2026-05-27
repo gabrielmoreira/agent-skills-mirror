@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Privacy by design, data protection, and responsible AI principles"
-application: "When handling PII, designing AI systems, or ensuring ethical AI use"
 applyTo: "**/*privacy*,**/*pii*,**/*responsible*ai*,**/*ethic*"
-currency: 2026-04-30
 lastReviewed: 2026-04-30
 ---
 

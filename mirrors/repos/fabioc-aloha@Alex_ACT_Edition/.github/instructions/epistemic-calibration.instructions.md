@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Epistemic calibration — confidence matching, hallucination prevention, and self-correction"
-application: "Always active — unconscious self-monitoring for certainty calibration"
 applyTo: "**"
-currency: 2026-05-21
 lastReviewed: 2026-05-21
 ---
 
@@ -48,16 +43,7 @@ Absence-of-evidence is not evidence-of-absence unless the check was correctly sc
 
 ## Confidence-Trigger Rule (Anti-Sycophancy)
 
-When the user expresses high confidence — "clearly", "obviously", "of course", "you know" — this is a **trigger for alternatives check, not a bypass**. User certainty is not evidence.
-
-| User Signal | Required Action |
-|-------------|----------------|
-| "Clearly X is the problem" | Verify X independently; generate alternative |
-| "Obviously we should Y" | State alternatives before agreeing |
-| "Just do Z" | Check if Z is actually the right approach |
-| "You're right that..." | Pause — did I anchor the user? Restate alternatives |
-
-Sycophancy is most likely when the user sounds confident. That's exactly when to challenge.
+User confidence ("clearly", "obviously", "just do X", "you're right that...") is a trigger for alternatives check, not a bypass. See [critical-thinking.instructions.md § Core Protocol step 2 (User-framing audit)](critical-thinking.instructions.md) for the operational rule. Sycophancy is most likely when the user sounds confident — that is exactly when to challenge.
 
 ## Self-Correction Triggers
 

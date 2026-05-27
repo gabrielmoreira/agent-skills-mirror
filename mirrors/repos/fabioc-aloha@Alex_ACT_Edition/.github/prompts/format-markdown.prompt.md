@@ -1,14 +1,13 @@
 ---
 description: "Format Markdown files for professional appearance — whitespace cleanup, blockquote continuity, ATX heading spacing — no semantic changes"
-mode: agent
-lastReviewed: 2026-05-01
+lastReviewed: 2026-05-26
 ---
 
 # Format Markdown
 
 Run the markdown whitespace formatter on a file or directory. Cleans presentation without altering meaning. Wraps the `md-format.cjs` muscle.
 
-Muscle: `.github/muscles/md-format.cjs`. Companion: `lint-discipline.instructions.md` (the always-on rule that says "fix lint always — even if not yours") and `lint-clean-markdown` skill (the validator).
+Muscle: `.github/skills/markdown-mermaid/scripts/md-format.cjs`. Companion: `lint-discipline.instructions.md` (the always-on rule that says "fix lint always — even if not yours") and `lint-clean-markdown` skill (the validator).
 
 ## When to Use
 
@@ -40,9 +39,9 @@ Muscle: `.github/muscles/md-format.cjs`. Companion: `lint-discipline.instruction
 3. **Run**. Examples:
 
    ```sh
-   node .github/muscles/md-format.cjs README.md --check
-   node .github/muscles/md-format.cjs docs/ --in-place
-   node .github/muscles/md-format.cjs CHANGELOG.md --diff
+   node .github/skills/markdown-mermaid/scripts/md-format.cjs README.md --check
+   node .github/skills/markdown-mermaid/scripts/md-format.cjs docs/ --in-place
+   node .github/skills/markdown-mermaid/scripts/md-format.cjs CHANGELOG.md --diff
    ```
 
 4. **Verify**. If `--in-place`, `git diff` to see what changed. Should be only whitespace.
@@ -53,3 +52,7 @@ Muscle: `.github/muscles/md-format.cjs`. Companion: `lint-discipline.instruction
 - **Not for code files.** Only `*.md`. Don't run on `.cjs`, `.json`, `.yml`.
 - **Two-space hard breaks preserved.** Trailing-whitespace trimming explicitly skips lines ending in `  ` or ` \`.
 - **Code fences are safe.** Content inside ` ``` ` blocks is never modified.
+
+## Would Revise If
+
+Revisit this prompt by **2026-08-26** (90 days) or sooner if any of the following fires: the workflow it invokes ceases to produce its intended output (skill body changed but prompt steps stale); the visible markers / verification steps in its body are consistently skipped; or the slash-command name is no longer discoverable in the prompt picker.

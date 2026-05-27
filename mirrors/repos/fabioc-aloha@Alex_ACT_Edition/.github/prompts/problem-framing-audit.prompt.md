@@ -1,7 +1,6 @@
 ---
 description: "Audit the framing of a problem before solving — restate, generalise, specialise, invert, ask why, pre-mortem, check stakeholders, surface alternative framings"
-mode: agent
-lastReviewed: 2026-05-01
+lastReviewed: 2026-05-26
 ---
 
 # Problem Framing Audit
@@ -56,3 +55,7 @@ Skill: [problem-framing-audit](../skills/problem-framing-audit/SKILL.md). Always
 - **One sharp question beats five generic ones.** If you need to clarify, ask once and stop.
 - **Don't run all eight checks.** Pick the one or two most likely to surface a different framing.
 - **Frame audits that find nothing are still successful.** Say "frame holds" and proceed — silent passes need no markers.
+
+## Would Revise If
+
+Revisit this prompt by **2026-08-26** (90 days) or sooner if any of the following fires: the workflow it invokes ceases to produce its intended output (skill body changed but prompt steps stale); the visible markers / verification steps in its body are consistently skipped; or the slash-command name is no longer discoverable in the prompt picker.

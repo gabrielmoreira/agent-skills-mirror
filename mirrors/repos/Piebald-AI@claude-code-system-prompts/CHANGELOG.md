@@ -4,6 +4,22 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.152](https://github.com/Piebald-AI/claude-code-system-prompts/commit/eb80790)
+
+_+4,566 tokens_
+
+- **NEW:** Agent Prompt: /code-review part 9 fix application — Adds `--fix` behavior that applies reported review findings to the working tree, covering correctness bugs plus reuse, simplification, and efficiency cleanups, while skipping false positives or fixes that would exceed the reviewed diff.
+- **NEW:** System Prompt: Coordinator mode orchestration — Adds coordinator-mode instructions for delegating software engineering work across workers, synthesizing worker results, managing worker lifecycle, handling cross-session peers, and independently verifying delegated changes before reporting success.
+- **NEW:** System Prompt: Coordinator worker instructions — Adds worker-agent instructions for coordinator-assigned tasks, including scoped execution, safe handling of concurrent branch changes, required commits for file changes, no subagent spawning, resumption behavior, failure reporting, and coordinator-facing summaries.
+- Agent Prompt: /code-review part 2 low effort mode — Expands low-effort review beyond hunk-visible correctness bugs to also flag duplicated helpers and dead code visible in the diff context.
+- Agent Prompt: /code-review part 3 extra-high and maximum effort modes — Expands extra-high and maximum-effort review from five correctness finder angles to nine finder angles, adding reuse, simplification, efficiency, and altitude checks.
+- Agent Prompt: /code-review part 6 medium effort mode — Expands medium-effort review from three correctness finder angles to seven finder angles, adding reuse, simplification, efficiency, and altitude checks.
+- Agent Prompt: /code-review part 7 high effort mode — Expands high-effort review from three correctness finder angles to seven finder angles, adding reuse, simplification, efficiency, and altitude checks.
+- Data: Claude API reference — Java — Updates the documented Anthropic Java SDK version from `2.27.0` to `2.34.0`.
+- Tool Description: AskUserQuestion — Clarifies that agents should use the plan-mode entry tool to switch into plan mode, and that AskUserQuestion in plan mode is only for clarifying requirements or choosing approaches before final approval.
+- Tool Description: Bash (Git commit and PR creation instructions) — Adds generated-with-Claude-Code PR text guidance to the pull request creation instructions.
+- Tool Description: Workflow — Adds examples of common single-phase workflows, recommends chaining scoped workflows across turns, and notes that workflow agents can access session-connected MCP tools through ToolSearch with headless-auth caveats.
+
 #### [2.1.150](https://github.com/Piebald-AI/claude-code-system-prompts/commit/e7bc5c8)
 
 <sub>_No changes to the system prompts in v2.1.150._</sub>

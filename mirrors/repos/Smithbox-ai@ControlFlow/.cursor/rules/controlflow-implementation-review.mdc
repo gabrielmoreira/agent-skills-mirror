@@ -1,0 +1,14 @@
+---
+description: "Guidelines for implementation, testing, review, and governance alignment."
+globs:
+  - "*.agent.md"
+  - "governance/*.json"
+  - "schemas/*.json"
+---
+# ControlFlow Implementation And Review
+
+Agent files must adhere exactly to the P.A.R.T. order (Prompt, Archive, Resources, Tools) per `docs/agent-engineering/PART-SPEC.md`.
+Implementation and refactoring follow the core-first migration strategy defined in `docs/agent-engineering/MIGRATION-CORE-FIRST.md`.
+Never modify agent tool or permission profiles without updating `governance/agent-grants.json` and `governance/tool-grants.json`.
+All agent execution reports must conform to their schemas (e.g., `schemas/*execution-report.schema.json`).
+Ensure structured failure classification (`transient`, `fixable`, `needs_replan`, `escalate`) is applied in all outputs.

@@ -1,0 +1,608 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-05-25",
+  "purpose": "同一场景在 11 个 AI 视频生成模型上的最佳 prompt 对照矩阵。每条 prompt 严格遵循对应模型的官方公式与最佳实践，便于横向对比各模型 prompt 风格差异，也为未来 prompt-translator skill 提供基准数据。",
+  "methodology_note": "5 个核心场景保持视觉与叙事元素的高度一致(核心 anchor),仅按各模型的看家公式调整结构、字段标签、措辞密度与音频处理方式。",
+  "total_scenarios": 10,
+  "total_models": 11,
+  "total_prompts": 110,
+  "video_slot_schema": "每条 prompt 可选附加 'effect_video_url' 字段(实测视频展示链接) + 'tested_at' (测试日期) + 'tested_by' (贡献者),详见 CONTRIBUTING.md",
+  "scenarios": [
+    {
+      "id": "scene-1-perfume",
+      "title": "奢华香水旋转广告",
+      "category": "product-commercial",
+      "core_anchor": {
+        "subject": "透明矩形玻璃香水瓶,金色琥珀色液体",
+        "scene": "黑色大理石台面 / 极简白色背景,侧光与镜面反射",
+        "motion": "缓慢 360° 旋转,喷雾在慢动作中扩散",
+        "mood": "高端优雅 / 商业广告"
+      },
+      "use_case": "电商 / 品牌广告 / 时尚视频",
+      "by_model": {
+        "seedance-2.0": {
+          "method": "8 要素工程指令(精准主体+动作细节+场景环境+光影色调+镜头运镜+视觉风格+画质+约束条件)",
+          "prompt": "A transparent rectangular glass perfume bottle filled with amber-gold liquid, centered on a polished black marble pedestal. The bottle rotates slowly 360 degrees as a fine mist erupts from the atomizer in slow motion, particles drifting through soft side-key light. The camera orbits the bottle in a steady arc at hip height, ending in a macro push to the gold label. Cool tungsten key light with warm bounce, deep black background with subtle vignette. Cinematic luxury commercial style, photorealistic glass and liquid materials, 4K detail. Avoid morphing, no watermark, no logo other than the bottle's own."
+        },
+        "happyhorse-1.0": {
+          "method": "30-55 词紧凑 + 音频激活路径 + 主体先行",
+          "prompt": "A transparent rectangular glass perfume bottle with amber-gold liquid rotating slowly on a polished black marble surface, soft side-key light catching the bezel, fine mist erupting from the atomizer in slow motion, with subtle atomizer hiss and ambient piano audible. Luxury commercial style, photorealistic, 8 seconds."
+        },
+        "kling-3.0": {
+          "method": "5 层进阶公式(Scene/Characters/Action/Camera/Audio & Style)",
+          "prompt": "Scene: A polished black marble pedestal under soft studio key light, vignette background.\nCharacters: A transparent rectangular glass perfume bottle with amber-gold liquid and gold label.\nAction: The bottle rotates slowly 360 degrees; midway through, a fine mist erupts from the atomizer in slow motion, particles drifting through the light beam.\nCamera: Steady orbit at hip height, ending in macro push-in to the gold label.\nAudio & Style: Crisp atomizer hiss, soft piano underscore, faint marble surface contact. Luxury commercial cinematic polish, 1080p."
+        },
+        "sora-2": {
+          "method": "分层 Shot List(Style → Scene → Cinematography → Actions → Background Sound)",
+          "prompt": "Style: Luxury fragrance commercial. 35mm digital capture emulating photochemical contrast, fine grain, subtle halation on speculars; black-and-amber palette with deep negative space.\n\nA transparent rectangular glass perfume bottle filled with amber-gold liquid sits on polished black marble. A fine atomized mist hovers around the bezel.\n\nCinematography: Slow 360-degree orbit at hip height, 50mm spherical lens, shallow DOF; ending macro push-in on the gold label. Soft tungsten side-key with cool window spill on opposite face. Refined, opulent, contemplative mood.\n\nActions:\n- Bottle rotates one full revolution\n- Atomizer erupts; mist drifts through light beam\n- Camera pushes in to extreme macro on gold label\n\nBackground Sound: Diegetic only — atomizer hiss, faint marble contact, room tone."
+        },
+        "veo-3": {
+          "method": "8 元素 + Dialogue: + Audio: 双层标记",
+          "prompt": "A close orbiting shot of a transparent rectangular glass perfume bottle filled with amber-gold liquid, rotating slowly 360 degrees on a polished black marble pedestal. Soft tungsten side-key light from camera left, cool fill from the right, fine atomized mist erupting from the bezel in slow motion. The camera ends with a macro push-in to the gold label. Photorealistic luxury commercial style, shallow depth of field, 4K.\n\nDialogue: (no dialogue)\n\nAudio: Crisp atomizer hiss with each spray, soft solo piano underscore, faint glass contact on marble, ambient room tone, no music swell."
+        },
+        "runway-gen4": {
+          "method": "subject + action + setting + camera + motion + style + constraints",
+          "prompt": "A transparent rectangular glass perfume bottle with amber-gold liquid rotates slowly on a polished black marble pedestal. Atomized mist erupts in slow motion. Slow 360-degree orbital camera at hip height, ending in macro push-in to the gold label. Soft tungsten side-key with cool fill, deep black background, photorealistic luxury commercial cinematic style. No morphing, no watermark, preserve glass refraction."
+        },
+        "pika-2.5": {
+          "method": "Pika 短聚焦模板(subject + action + style + 'no morphing')",
+          "prompt": "A transparent rectangular glass perfume bottle with amber-gold liquid rotating slowly on polished black marble, fine atomized mist in slow motion, cinematic lighting with shallow depth of field, soft studio reflections, 35mm lens feel, slow orbital dolly, premium commercial style, ultra-realistic glass refraction, 1080p, no morphing."
+        },
+        "hailuo-02": {
+          "method": "Director's AI 克制简洁 + 物理细节强调",
+          "prompt": "A transparent rectangular glass perfume bottle with amber-gold liquid rotates slowly on polished black marble. A fine atomized mist erupts from the bezel; droplets disperse in accurate fluid dynamics, refracting and re-focusing the key light. Camera orbits at hip height with steady ease, ending in macro push to the gold label. Soft tungsten side-key, cool ambient fill. Real-time speed with slight slow-motion on the mist eruption. Hyperreal liquid and glass refraction."
+        },
+        "hunyuan-video": {
+          "method": "Master 模式 prompt rewrite(强调构图/光照/运镜)",
+          "prompt": "A polished black marble pedestal under refined studio lighting, deep vignette background. A transparent rectangular glass perfume bottle filled with luminous amber-gold liquid stands centered, label catching highlight. Camera executes a precise slow 360-degree orbit at hip height, then drifts to macro push-in on the gold label. Mid-rotation an atomized mist erupts from the bezel, particles drifting through the side-key beam with photorealistic refraction. Warm tungsten key from camera left, cool spill from the right, soft floor bounce. Cinematic luxury commercial aesthetic, 35mm equivalent shallow DOF, fine grain, photorealistic glass and liquid materials."
+        },
+        "wan-2.5": {
+          "method": "Entity + Scene + Motion + Sound 公式",
+          "prompt": "Entity: A transparent rectangular glass perfume bottle with amber-gold liquid and gold label.\nScene: Polished black marble pedestal in a softly lit studio, deep vignette background, refined commercial set.\nMotion: The bottle rotates slowly 360 degrees on the pedestal; midway through a fine atomized mist erupts from the bezel in slow motion. Camera orbits at hip height then pushes in to a macro shot of the gold label.\nSound: Warm female voiceover: \"Discover the science of timeless beauty.\" Crisp atomizer hiss, faint glass contact on marble, subtle ambient piano underscore."
+        },
+        "jimeng-3": {
+          "method": "8 维度公式(中文友好) + 中式商业美学",
+          "prompt": "极简高级感商业广告场景。镜头中央一只透明矩形玻璃香水瓶,瓶身内盛琥珀金色液体,瓶颈印有金色标识,稳稳置于光滑黑色大理石台面上。瓶身缓慢 360 度旋转,中途瓶口处喷洒出细腻雾化液体,慢动作下颗粒分明,在侧光中折射出宝石般的光泽。镜头以髋部高度沿圆弧轨迹缓慢环绕,最终推近至瓶身金色标识特写。冷色调钨丝灯主光从镜头左侧打入,右侧暖色补光,深黑背景带渐晕。整体高级、克制、电影质感,真实玻璃与液体材质,4K 精度。配音:克制温润的中年女声轻声说\"时间,会沉淀真正的美\"。"
+        }
+      }
+    },
+    {
+      "id": "scene-2-reunion",
+      "title": "金色时刻情侣重逢",
+      "category": "cinematic / dialogue-driven",
+      "core_anchor": {
+        "subject": "两位 30 岁左右的老朋友(男女或同性,设定为两位 30 岁初的男性,衣着随性)",
+        "scene": "黄金时刻的公园长椅,落叶飘落,暖色背景",
+        "motion": "一位坐下犹豫开口,另一位转头识别,两人共笑",
+        "mood": "10 年未见后的温暖与释怀",
+        "dialogue": [
+          "A(犹豫):'真没想到你还会出现。'",
+          "B(温暖):'一直在等你说这句话。'"
+        ]
+      },
+      "use_case": "短剧 / 情感广告 / 影视片段",
+      "by_model": {
+        "seedance-2.0": {
+          "method": "分镜时序公式(镜头1/镜头2/镜头3)",
+          "prompt": "黄金时刻的公园长椅,枫叶在空中缓缓飘落,温暖琥珀色阳光斜射。\n\n镜头 1:中景平稳跟拍。一位 30 岁初的男性 A(羊毛大衣 + 围巾)从画面右侧缓步走近长椅,在长椅旁犹豫片刻,缓慢坐下,眼神望向远处。\n镜头 2:过肩特写切到长椅另一端,30 岁初男性 B(牛仔夹克,表情外放)缓慢转头,眼睛微张露出辨认神情。镜头慢推。\n镜头 3:全景两人并肩坐在长椅上,共同发出一声短促轻笑,打破沉默。镜头定格在两人侧脸轮廓上,落叶飘过画面。\n\n整体画面 35mm 胶片质感,黄金时刻暖色调,光影柔和,人物面部稳定不变形,动作自然流畅。无水印 Logo 字幕。"
+        },
+        "happyhorse-1.0": {
+          "method": "30-55 词紧凑 + audio 路径(单镜头时序节拍)",
+          "prompt": "8s duration. Two men in their early 30s on a park bench at golden hour, autumn leaves drifting. First 4s: A sits down hesitantly. Final 4s: B turns and recognizes him; both share a quiet laugh. Static medium two-shot, warm amber light, with subtle wind and leaf rustle audible, no music."
+        },
+        "kling-3.0": {
+          "method": "5 层进阶公式(强项:角色定向发声)",
+          "prompt": "Scene: A park bench at golden hour in late autumn, amber sunlight filtering through bare branches, fall leaves drifting through the frame.\nCharacters: Character A (early 30s, wool coat and scarf, hesitant) and Character B (early 30s, denim jacket, expressive).\nAction: A walks up and sits down beside B with visible hesitation. A says: \"真没想到你还会出现。\" B turns slowly, eyes widening with recognition, replies warmly: \"一直在等你说这句话。\" They share a quiet laugh that breaks the tension.\nCamera: Slow push-in on A as he speaks, over-the-shoulder cut to B's reaction, ending on a held wide two-shot.\nAudio & Style: Soft solo piano underscore building gently, ambient park sounds (distant kids playing, leaves rustling), warm cinematic teal-and-amber grade, naturalistic dialogue delivery."
+        },
+        "sora-2": {
+          "method": "分层 Shot List + Actions 含 dialogue beats",
+          "prompt": "Style: 2010s American indie drama, 35mm with warm halation and natural film grain, slight handheld micro-shake. Teal-and-amber grade with deep negative space.\n\nA park bench at golden hour in late autumn. Fall leaves drift through the amber light. Character A (early 30s, wool coat and scarf) approaches with hesitation. Character B (early 30s, denim jacket) sits already on the bench, not yet aware.\n\nCinematography: Medium-wide establishing, slow dolly-in on A; cut to over-the-shoulder on B's reaction; final held wide two-shot. 40mm spherical lens, shallow focus, warm key from sunset with cool ambient bounce.\n\nActions:\n- A sits down hesitantly beside B\n- A (low, hesitant): \"真没想到你还会出现。\"\n- B turns slowly, eyes widening with recognition\n- B (warm, slight smile): \"一直在等你说这句话。\"\n- Both pause, share a quiet broken laugh\n\nBackground Sound: Soft solo piano underscore, ambient park (distant kids, leaves rustling, faint wind). No score swell."
+        },
+        "veo-3": {
+          "method": "8 元素 + Dialogue:(多人) + Audio:(多层)",
+          "prompt": "A medium-wide cinematic shot of a park bench at golden hour in late autumn, amber sunlight filtering through bare branches, fall leaves drifting. Character A (early 30s, wool coat) sits down hesitantly beside Character B (early 30s, denim jacket). Slow push-in on A then over-the-shoulder cut to B's reaction, ending on a wide two-shot. 40mm spherical lens, shallow focus, warm key.\n\nDialogue:\n  A (low, hesitant): \"真没想到你还会出现。\"\n  B (warm, slight smile): \"一直在等你说这句话。\"\n\nAudio: Soft solo piano underscore, ambient park sounds (distant kids playing, leaves rustling, gentle wind), faint shared laugh at the end, no music swell."
+        },
+        "runway-gen4": {
+          "method": "subject + action + setting + camera + motion + style (Aleph 编辑可后续 re-light)",
+          "prompt": "Two men in their early 30s on a park bench at golden hour in late autumn, fall leaves drifting through amber sunlight. Character A in wool coat sits down hesitantly beside Character B in denim jacket; B turns slowly with recognition; they share a quiet laugh. Slow dolly-in on A, then over-the-shoulder cut to B, ending on held wide two-shot. 40mm cinematic feel, shallow focus, warm teal-and-amber grade. Quiet indie drama mood. Preserve face stability, no morphing."
+        },
+        "pika-2.5": {
+          "method": "Pika 单一焦点 + 短聚焦写法(Pika 不擅多人对白,只刻画一个关键瞬间)",
+          "prompt": "Two men in their early 30s sitting on a park bench at golden hour, autumn leaves drifting between them, one slowly turning to recognize the other, soft amber backlight catching their faces, shallow depth of field, 35mm cinematic feel, slow gentle dolly-in, emotional indie drama style, 1080p, no morphing."
+        },
+        "hailuo-02": {
+          "method": "Director's AI 克制叙事 + 物理细节(光照+面部微表情)",
+          "prompt": "A park bench at golden hour in late autumn, amber sunlight filtering through bare branches, fall leaves drifting through the frame with accurate gravity and air resistance. Character A (early 30s, wool coat) sits down beside Character B (early 30s, denim jacket); his hand tenses on his knee. B turns slowly, eyes widening, lips parting then forming a faint smile. They share a quiet laugh, breath visible in cool air. Camera holds a steady medium two-shot then drifts gently to wide. Real-time pacing, photorealistic skin texture, naturalistic lighting."
+        },
+        "hunyuan-video": {
+          "method": "Master 模式 + 跨维度生成可选(此处用写实)",
+          "prompt": "A serene park bench at golden hour in late autumn, amber sunlight filtering through bare branches, fall leaves drifting through frame. Two men in their early 30s sit side by side — Character A in wool coat with hesitant expression, Character B in denim jacket with quiet warmth. A leans forward slightly and speaks; B turns slowly, eyes catching recognition, lips forming a slow smile; both share a brief quiet laugh. Slow handheld push-in then over-the-shoulder cut, ending on a held wide two-shot. 35mm film grain, warm teal-and-amber cinematic grade, photorealistic skin texture, shallow depth of field. Quiet indie drama aesthetic."
+        },
+        "wan-2.5": {
+          "method": "Entity + Scene + Motion + Sound(多人对话最佳)",
+          "prompt": "Entity: Character A (early 30s, wool coat and scarf, hesitant); Character B (early 30s, denim jacket, expressive warmth).\nScene: A park bench at golden hour in late autumn, amber light through bare branches, fall leaves drifting.\nMotion: A walks up and sits hesitantly beside B; B turns slowly with recognition; both share a quiet laugh at the end. Slow push-in on A, over-the-shoulder cut to B, held wide two-shot.\nSound: Voice A (low, hesitant): \"真没想到你还会出现。\" Voice B (warm, slight smile): \"一直在等你说这句话。\" Soft solo piano underscore, ambient park sounds (distant kids playing, leaves rustling), faint shared laugh."
+        },
+        "jimeng-3": {
+          "method": "8 维度公式中文 + 中式情感美学",
+          "prompt": "晚秋黄金时刻的公园木质长椅,枫叶在金黄阳光中缓缓飘落。\n\n人物 A:30 岁初的男性,身穿米色羊毛大衣,围着藏青色围巾,神情犹豫拘谨。\n人物 B:30 岁初的男性,穿牛仔夹克,神情温和外放。\n\n镜头 1(中景跟拍 + 缓推):A 从画面右侧缓步走近,在长椅旁犹豫片刻后缓慢坐下,目光望向远方,低声说:\"真没想到你还会出现。\"\n镜头 2(越肩切镜):B 听到声音缓慢转头,眼神由平静转为惊讶继而柔软,嘴角浮起淡淡微笑,温暖回应:\"一直在等你说这句话。\"\n镜头 3(全景定格):两人并肩坐在长椅上,共同发出一声短促轻笑。落叶在他们之间飘落,光影柔和。\n\n整体国风+电影质感,35mm 胶片颗粒,暖色调与冷调过渡,人物面部稳定不变形。背景:钢琴独奏轻柔渐入,远处孩童嬉笑声,落叶沙沙声。"
+        }
+      }
+    },
+    {
+      "id": "scene-3-kickflip",
+      "title": "滑板 Kickflip 慢动作",
+      "category": "physics-sim / action",
+      "core_anchor": {
+        "subject": "20 岁左右滑板少年,简约街头服饰",
+        "scene": "城市傍晚的空旷停车场,湿润沥青地面",
+        "motion": "起跳 → 板飞旋 → 接板落地一气呵成",
+        "mood": "城市潮酷,运动美学",
+        "physics_key": "板的旋转、起跳惯性、落地缓冲、湿地反光"
+      },
+      "use_case": "运动品牌广告 / 短视频爆款 / 体育纪录",
+      "by_model": {
+        "seedance-2.0": {
+          "method": "8 要素工程 + 动作细化(肢体细化+程度量化)",
+          "prompt": "A young skateboarder in his early 20s, simple black hoodie and dark jeans, performs a kickflip in slow motion on damp asphalt in an empty parking lot at dusk. He pops the tail with his back foot, drags his front foot diagonally across the deck; the board flips one full rotation under him while his body suspends mid-air arms held wide for balance; he catches the deck cleanly with both feet and absorbs impact through bent knees. Low-angle side tracking shot moving with him at board level. Yellow sodium streetlight overhead casting strong shadows; reflections on the wet asphalt. Realistic motion blur on the rotating deck. Photorealistic urban skate cinematography, fine film grain. No watermark, preserve body proportion stability."
+        },
+        "happyhorse-1.0": {
+          "method": "30-55 词 + 时序节拍(8s duration. First Ns... Final Ns...)",
+          "prompt": "8s duration. A young skateboarder in his early 20s, hoodie and jeans, lands a kickflip on damp asphalt in an empty parking lot at dusk. Low-angle side tracking shot at board level, slow motion on the deck rotation and landing absorption, yellow sodium overhead light, wet ground reflections, with subtle board impact and wheels rolling audible."
+        },
+        "kling-3.0": {
+          "method": "5 层进阶(强项:物理感动作)",
+          "prompt": "Scene: An empty city parking lot at dusk, damp asphalt reflecting yellow sodium streetlights overhead, soft urban ambient mist.\nCharacters: A young skateboarder in his early 20s, simple black hoodie and dark jeans, focused expression.\nAction: He approaches at moderate speed; pops the tail with his back foot; drags his front foot diagonally; the board flips one full rotation under him; he catches the deck cleanly with both feet and absorbs impact through bent knees.\nCamera: Low-angle side tracking at board level, slow motion at the apex and landing.\nAudio & Style: Tail pop, wheels rolling on wet asphalt, deck slap on catch, faint city ambient. Photorealistic urban skate cinematography, fine grain."
+        },
+        "sora-2": {
+          "method": "分层 Shot List + Actions 拆 beats",
+          "prompt": "Style: Urban skate cinematography, 35mm digital with fine grain, slight halation on streetlights, contrasty teal-and-amber dusk grade.\n\nAn empty city parking lot at dusk after rain. Damp asphalt reflects yellow sodium streetlights overhead. A young skateboarder, early 20s, simple black hoodie and dark jeans, rolls into frame.\n\nCinematography: Low-angle side tracking at board level, 24mm spherical lens, shallow DOF. Slow motion at apex and landing, real-time approach and roll-out.\n\nActions:\n- Skater pops the tail with his back foot\n- Front foot drags diagonally across the deck\n- Board flips one full rotation mid-air\n- Skater catches deck with both feet\n- Knees absorb impact, rolls away\n\nBackground Sound: Tail pop crack, wheels rolling on wet asphalt, deck slap on catch, faint city ambient, distant traffic, no music."
+        },
+        "veo-3": {
+          "method": "8 元素 + Audio: 多层(强项:精确音效同步)",
+          "prompt": "A low-angle side tracking shot at board level following a young skateboarder in his early 20s, black hoodie and dark jeans, landing a clean kickflip on damp asphalt in an empty city parking lot at dusk. He pops the tail, the board flips one full rotation under him, he catches it cleanly and absorbs the landing through bent knees. Yellow sodium streetlight overhead, reflections on wet ground, slow motion on the rotation and landing, fine film grain, 35mm cinematic feel.\n\nDialogue: (no dialogue)\n\nAudio: Sharp tail pop crack, wheels rolling steadily on wet asphalt, deck slap on the catch with knee absorption thud, faint city ambient with distant traffic and a single distant dog bark, no music."
+        },
+        "runway-gen4": {
+          "method": "subject + action + setting + camera + motion + style + constraints",
+          "prompt": "A young skateboarder in his early 20s, black hoodie and dark jeans, lands a kickflip on damp asphalt in an empty city parking lot at dusk. Low-angle side tracking shot at board level moving with him, slow motion at the apex of the rotation and on the landing absorption. Yellow sodium streetlight overhead, wet ground reflections, 35mm cinematic feel, urban gritty grade. Preserve clean body proportion, accurate board rotation physics, no morphing, no watermark."
+        },
+        "pika-2.5": {
+          "method": "Pika 短聚焦单一动作时刻",
+          "prompt": "Slow motion close-up of a young skateboarder landing a kickflip on damp asphalt in an empty parking lot at dusk, low-angle side view, board spinning beneath feet caught mid-rotation, wet ground reflections of yellow sodium lights, urban skate aesthetic, dramatic shadows, 35mm cinematic feel, 1080p, no morphing."
+        },
+        "hailuo-02": {
+          "method": "Director's AI 物理仿真之王",
+          "prompt": "A young skateboarder in his early 20s, black hoodie and dark jeans, lands a kickflip on damp asphalt in an empty city parking lot at dusk. He pops the tail with accurate downforce, drags his front foot diagonally; the board rotates one full revolution with realistic angular momentum, lighting catching the grip tape; he catches it cleanly with both feet and absorbs the landing through bent knees with proper weight transfer. Wheels spray a fine mist of water on the wet asphalt. Low-angle side tracking shot, yellow sodium streetlight overhead, slow motion on the rotation and impact. Hyperreal physics, photorealistic skate culture aesthetic."
+        },
+        "hunyuan-video": {
+          "method": "Master 模式 + 精确物理描述",
+          "prompt": "An empty city parking lot at dusk, damp asphalt reflecting yellow sodium streetlights overhead, thin urban mist hanging in the air. A young skateboarder, early 20s, simple black hoodie and dark jeans, rolls into frame and lands a perfectly executed kickflip — back foot pops the tail crisply, front foot drags diagonally, board rotates one full revolution under him with photorealistic motion blur on the grip tape, he catches cleanly with both feet and absorbs impact through bent knees rolling away smoothly. Low-angle side tracking shot at board level, slow motion at the apex and landing, fine film grain, urban skate cinematic grade."
+        },
+        "wan-2.5": {
+          "method": "Entity + Scene + Motion + Sound 公式(滑板音效精彩)",
+          "prompt": "Entity: A young skateboarder in his early 20s, simple black hoodie and dark jeans, focused intense expression.\nScene: An empty city parking lot at dusk, damp asphalt, yellow sodium streetlights overhead, urban ambient mist.\nMotion: He pops the tail with his back foot, drags his front foot diagonally; the board flips one full rotation under him; he catches cleanly and absorbs the landing through bent knees, rolling away. Low-angle side tracking shot at board level, slow motion at apex and landing.\nSound: Sharp tail pop crack, wheels rolling on wet asphalt, deck slap on catch, knee absorption thud, faint city ambient with distant traffic, single distant dog bark, no music."
+        },
+        "jimeng-3": {
+          "method": "中文 8 维度 + 中式潮酷美学",
+          "prompt": "傍晚雨后空旷的城市停车场,潮湿沥青地面反射着头顶昏黄钠灯光,薄雾弥漫城市气息。\n\n人物:20 岁出头的滑板少年,黑色卫衣 + 深色牛仔裤,神情专注。\n\n动作分解:他用后脚轻点板尾发出清脆的响声,前脚斜向滑过板面,滑板在他脚下完成一个完整的翻转,他双脚精准接住,屈膝缓冲落地,顺势继续滑行。\n\n镜头:低角度从板的高度侧面跟拍,慢动作捕捉翻板瞬间和落地缓冲的细节,运动模糊真实自然。\n\n光影:头顶钠灯黄光是主光源,湿润地面反射形成第二层光源,人物轮廓被勾勒得有质感。\n\n风格:35mm 胶片质感,城市潮酷美学,真实物理感。\n\n背景音:清脆的板尾响,板轮在湿沥青上滚动声,接板时的板面拍击声,膝盖缓冲的低沉响动,远处微弱车流声,无背景音乐。"
+        }
+      }
+    },
+    {
+      "id": "scene-4-i2v-cafe",
+      "title": "图生视频:让咖啡馆肖像动起来",
+      "category": "image-to-video",
+      "core_anchor": {
+        "subject": "(参考图中)咖啡馆窗边的年轻女子",
+        "scene": "(参考图中)雨夜咖啡馆,霓虹反光",
+        "motion": "她抬头微笑望向镜头 + 雨势加大 + 窗外霓虹闪烁",
+        "mood": "电影感,克制温暖",
+        "rule": "只描述运动,不重复图片已有的视觉内容"
+      },
+      "use_case": "已有静态海报 / 摄影作品想做动态短视频",
+      "by_model": {
+        "seedance-2.0": {
+          "method": "图生视频(参考图任务)写法",
+          "prompt": "参考@图片1。在原图基础上添加自然运动:画面中的女子缓慢将咖啡杯放回托盘,目光从窗外移回望向镜头,嘴角浮起淡淡微笑。窗外雨势逐渐变大,雨痕在玻璃上加速流下,霓虹反光在玻璃和地面上闪烁加强。镜头从她的中景缓慢推近至面部特写。保持原图人物面部、服装、咖啡馆陈设完全一致,仅添加自然运动。"
+        },
+        "happyhorse-1.0": {
+          "method": "图生视频 + 30-55 词 + 只描述运动",
+          "prompt": "The woman in the reference image lowers her coffee cup, turns her gaze from the window back to camera with a faint smile, while rain intensifies on the glass and neon reflections shimmer brighter, slow push-in to her face, with rain on glass and distant café ambience audible, 8 seconds."
+        },
+        "kling-3.0": {
+          "method": "图生视频专用(只描述运动,Kling 这个最擅长)",
+          "prompt": "She lowers her cup to the saucer, gazing out at the rain. Lightning cracks outside, illuminating the wet street for an instant — she turns toward the camera with a faint smile. Rain intensifies on the glass, streaks racing down, neon reflections rippling on the cobblestones. Slow dolly-in toward her face."
+        },
+        "sora-2": {
+          "method": "Sora 2 图生视频(用 Style 锚定 + Actions 描述运动)",
+          "prompt": "Style: Continuation of the reference image — preserve all visual details (woman, café interior, neon reflections, rain on glass) exactly. 35mm cinematic continuation with the same warm-cool color grade.\n\nActions:\n- She slowly lowers her coffee cup to the saucer\n- Her gaze drifts from the window back to camera\n- Faint smile forms on her lips\n- Rain intensifies on the glass, streaks racing down\n- Neon reflections shimmer brighter on glass and cobblestones outside\n\nCinematography: Slow dolly-in from medium to close-up on her face. Preserve original framing and depth.\n\nBackground Sound: Rain on glass intensifying, faint café ambient (espresso machine hiss, low murmur), distant traffic, no music."
+        },
+        "veo-3": {
+          "method": "图生视频 + Audio: 多层标记",
+          "prompt": "Continuation of the reference image. She slowly lowers her coffee cup to the saucer, her gaze drifts from the window back to camera, a faint smile forms. Rain intensifies on the glass, streaks racing down, neon reflections shimmer brighter on glass and cobblestones outside. Slow dolly-in from medium to close-up. Preserve all original visual details exactly.\n\nDialogue: (no dialogue)\n\nAudio: Rain on glass intensifying, faint café ambient (espresso machine hiss, low murmur, ceramic cup clink as it touches the saucer), distant traffic, no music."
+        },
+        "runway-gen4": {
+          "method": "Gen-4 图生视频 / Aleph 编辑 — 这里用 Gen-4 模式",
+          "prompt": "Continuation of the reference image: the woman lowers her coffee cup to the saucer, turns her gaze from the window back to camera with a faint smile. Rain intensifies on the glass, streaks racing down, neon reflections shimmer brighter outside. Slow dolly-in from medium shot to close-up on her face. Preserve all original visual details exactly, no morphing, natural motion only."
+        },
+        "pika-2.5": {
+          "method": "Pika 图生视频(单一聚焦,简短)",
+          "prompt": "She lowers her coffee cup and turns to look at camera with a faint smile, rain intensifies on the window, neon reflections shimmer outside, slow dolly-in to her face, cinematic feel, preserve original image style exactly, no morphing."
+        },
+        "hailuo-02": {
+          "method": "图生视频(2.3 + 02 工作流推荐) + 物理细节",
+          "prompt": "Continuation of the reference image with accurate motion physics. She slowly lowers the coffee cup; ceramic cup contacts saucer with realistic weight; her head turns smoothly with natural neck muscle tension; lips form a faint smile through micro facial movements. Rain intensifies on the glass — droplets gain weight, streaks accelerate down realistically. Neon reflections shimmer with accurate refraction on wet cobblestones. Slow dolly-in. Preserve every original visual detail with photorealistic continuity."
+        },
+        "hunyuan-video": {
+          "method": "HunyuanVideo I2V(只描述运动,Hunyuan 重视首帧)",
+          "prompt": "The woman in the image lowers her coffee cup to the saucer, gaze drifting from the window back to camera, a faint smile forms on her lips. Rain on the window intensifies, streaks racing down, neon reflections shimmer brighter on glass and cobblestones outside. Slow dolly-in from medium shot to close-up. Subtle hair drift and slight collar shift add natural micro-motion."
+        },
+        "wan-2.5": {
+          "method": "Wan I2V + Entity+Scene+Motion+Sound(图生视频 + 音频)",
+          "prompt": "Entity: The woman in the reference image.\nScene: The reference image — a rainy night café interior with neon reflections on the window.\nMotion: She slowly lowers her coffee cup to the saucer, turns her gaze from the window back to camera, a faint smile forms. Rain intensifies on the glass with streaks racing down, neon reflections shimmer brighter on the cobblestones outside. Slow dolly-in from medium shot to close-up on her face.\nSound: Rain on glass intensifying with audible droplet rhythm, faint café ambient (espresso machine hiss, low murmur, ceramic cup contact on saucer), distant traffic, no music."
+        },
+        "jimeng-3": {
+          "method": "中文图生视频 + 8 维度 + 中式电影质感",
+          "prompt": "图生视频。基于参考图,保持人物外貌、服装、咖啡馆陈设、霓虹色调完全一致。\n\n仅添加自然运动:画面中的女子缓慢将咖啡杯轻放回托盘,目光由窗外慢慢移回望向镜头,嘴角浮起淡淡的、克制的微笑。\n\n环境变化:窗外雨势逐渐加大,雨水痕迹在玻璃上加速流下;街道上的霓虹色彩在湿地面的倒影中变得更鲜明、更晃动。\n\n镜头:从中景平稳缓慢推近至面部特写。\n\n质感:35mm 胶片颗粒,温暖暖色与冷色霓虹的撞色,人物面部完全稳定不变形,光影连贯自然。\n\n背景音:雨打玻璃声渐强,咖啡馆轻微人声背景,咖啡杯触碰托盘的轻响,无音乐。"
+        }
+      }
+    },
+    {
+      "id": "scene-5-meeting",
+      "title": "办公室会议三人讨论",
+      "category": "dialogue-driven / multi-character",
+      "core_anchor": {
+        "subject": "3 位 30 岁专业人士(2 男 1 女)围圆桌讨论项目方案",
+        "scene": "现代极简会议室,白墙落地窗自然光",
+        "motion": "依次发言:女经理(M)指着白板 → 男设计师 D 提出担忧 → 男工程师 E 给出方案",
+        "mood": "理性专业,带轻微紧张但建设性",
+        "dialogue": [
+          "M:'我们的截稿期是下周五,功能 A 必须上线。'",
+          "D(担忧):'但用户测试反馈说交互流程还不够顺。'",
+          "E(冷静):'我可以先发 A 的核心,把交互优化放到下个迭代。'"
+        ]
+      },
+      "use_case": "企业宣传片 / SaaS 产品演示 / 团队文化视频",
+      "by_model": {
+        "seedance-2.0": {
+          "method": "分镜时序 + 多主体场景(明确角色标签)",
+          "prompt": "现代极简会议室,白墙 + 落地窗自然光。圆形会议桌上散落几本笔记本和咖啡杯。\n\n将穿米色西装的女性定义为经理 M,深色衬衫的男性定义为设计师 D,白色 T 恤的男性定义为工程师 E。\n\n镜头 1:中景三人围桌坐定,经理 M 起身走向白板,手指白板说:\"我们的截稿期是下周五,功能 A 必须上线。\"镜头跟随她的手势缓慢右摇。\n镜头 2:切到设计师 D 的过肩近景,他眉头微皱,身体前倾说:\"但用户测试反馈说交互流程还不够顺。\"\n镜头 3:切到工程师 E 的中近景,他停顿一秒,冷静开口:\"我可以先发 A 的核心,把交互优化放到下个迭代。\"经理 M 点头。\n\n整体真实纪录片风格,自然光线,人物面部稳定不变形,无水印。"
+        },
+        "happyhorse-1.0": {
+          "method": "30-55 词 + audio(多人对话超出 HappyHorse 优势区,主推单一角色镜头)",
+          "prompt": "8s duration. A medium shot of a female manager in beige blazer standing at a whiteboard in a modern minimalist meeting room, gesturing as she speaks to two seated colleagues. Natural window light, with her clear professional voice and faint office ambient audible."
+        },
+        "kling-3.0": {
+          "method": "5 层进阶 + 角色定向发声(强项)",
+          "prompt": "Scene: A modern minimalist meeting room with white walls, floor-to-ceiling windows, soft natural daylight. Round conference table with notebooks and coffee cups.\nCharacters: M — female manager in beige blazer, confident; D — male designer in dark shirt, thoughtful and concerned; E — male engineer in white tee, calm pragmatic.\nAction: M stands and walks to the whiteboard, gestures and says: \"我们的截稿期是下周五,功能 A 必须上线。\" Cut to D leaning forward, brow furrowed: \"但用户测试反馈说交互流程还不够顺。\" Cut to E pausing then calmly: \"我可以先发 A 的核心,把交互优化放到下个迭代。\" M nods.\nCamera: Medium establishing, slow right pan with M, over-the-shoulder cuts to D and E in turn.\nAudio & Style: Each character's distinct voice synced to lip movement, faint HVAC office ambient, no music. Naturalistic corporate cinematic feel."
+        },
+        "sora-2": {
+          "method": "分层 Shot List + 多 dialogue beats",
+          "prompt": "Style: Modern corporate documentary, naturalistic lighting, shallow DOF, clean teal-and-beige grade, 35mm digital with subtle grain.\n\nA modern minimalist meeting room with white walls and floor-to-ceiling windows. Three professionals around a round table: M (female, beige blazer), D (male, dark shirt), E (male, white tee). Notebooks and coffee cups on the table.\n\nCinematography: Medium establishing, slow right pan with M as she walks to the whiteboard; over-the-shoulder cuts to D's reaction then E's response; ending on a wide three-shot. 35mm spherical lens, shallow focus on speaker.\n\nActions:\n- M stands, walks to whiteboard, points at a feature spec\n- M (clear, decisive): \"我们的截稿期是下周五,功能 A 必须上线。\"\n- D leans forward, brow furrowed\n- D (concerned): \"但用户测试反馈说交互流程还不够顺。\"\n- E pauses two beats, sets down pen\n- E (calm, pragmatic): \"我可以先发 A 的核心,把交互优化放到下个迭代。\"\n- M nods slowly, slight smile\n\nBackground Sound: Soft HVAC office ambient, faint keyboard tap from another room, no music."
+        },
+        "veo-3": {
+          "method": "8 元素 + Dialogue: 多人(Veo 多人对话最强)",
+          "prompt": "A modern minimalist meeting room with white walls and floor-to-ceiling windows. Three professionals at a round conference table — M (female, beige blazer, confident), D (male, dark shirt, thoughtful), E (male, white tee, calm). Medium establishing then slow right pan with M as she walks to the whiteboard; over-the-shoulder cuts to D then E; ending wide three-shot. Naturalistic daylight, 35mm cinematic feel, shallow focus on speaker.\n\nDialogue:\n  M (clear, decisive, at the whiteboard): \"我们的截稿期是下周五,功能 A 必须上线。\"\n  D (concerned, leaning forward): \"但用户测试反馈说交互流程还不够顺。\"\n  E (calm, pragmatic): \"我可以先发 A 的核心,把交互优化放到下个迭代。\"\n\nAudio: Each speaker's distinct voice synced to their lip movement, ambient HVAC office hum, faint keyboard tap from another room, M's marker tap on whiteboard, no music."
+        },
+        "runway-gen4": {
+          "method": "Gen-4.5 多镜头(可后续用 Aleph re-light 调情绪)",
+          "prompt": "A modern minimalist meeting room with white walls and floor-to-ceiling windows, three professionals at a round table — female manager in beige blazer at the whiteboard, male designer in dark shirt, male engineer in white tee. Medium establishing then slow right pan with the manager; over-the-shoulder cuts to each colleague speaking in turn; ending wide three-shot. Naturalistic daylight, 35mm cinematic feel, shallow focus on speaker. Preserve face stability, no morphing, naturalistic corporate documentary style."
+        },
+        "pika-2.5": {
+          "method": "Pika 单聚焦 — 改成女经理白板单一时刻",
+          "prompt": "A confident female manager in beige blazer at a whiteboard in a modern minimalist meeting room, gesturing decisively as she explains, two seated colleagues visible blurred in foreground, naturalistic daylight from floor-to-ceiling windows, shallow depth of field, 35mm cinematic feel, slow gentle push-in, corporate documentary style, 1080p, no morphing."
+        },
+        "hailuo-02": {
+          "method": "Director's AI 多人物动作物理 + 克制叙事",
+          "prompt": "A modern minimalist meeting room with white walls and floor-to-ceiling windows, soft daylight. Three professionals around a round conference table. M (female, beige blazer) stands, walks to the whiteboard with confident stride, taps it twice with a marker, lips moving in clear speech. D (male, dark shirt) leans forward, hands clasping the table edge, brow tensing. E (male, white tee) sets his pen down deliberately, lips forming a measured reply, M nods. Camera holds steady on each speaker with subtle drift. Real-time pacing, photorealistic skin texture and natural body language."
+        },
+        "hunyuan-video": {
+          "method": "Master 模式 + 多角色描述 + Cross-Dimensional 可选",
+          "prompt": "A modern minimalist meeting room bathed in soft natural daylight from floor-to-ceiling windows, white walls and clean lines. Three professionals at a round wooden conference table — Manager M (female, beige blazer, confident), Designer D (male, dark shirt, contemplative), Engineer E (male, white tee, pragmatic calm). M stands, walks to the whiteboard with measured stride and gestures with her marker; D leans forward responsively, brow furrowed; E pauses then speaks with quiet authority, M nods. Medium establishing, slow right pan with M, over-the-shoulder cuts to D and E in turn, ending on held wide three-shot. 35mm cinematic feel, photorealistic skin and fabric, shallow focus on speaker, corporate documentary aesthetic."
+        },
+        "wan-2.5": {
+          "method": "Entity + Scene + Motion + Sound(多人 lip-sync 强项)",
+          "prompt": "Entity: M — female manager in beige blazer, confident; D — male designer in dark shirt, thoughtful; E — male engineer in white tee, calm.\nScene: Modern minimalist meeting room with white walls and floor-to-ceiling windows, soft daylight, round conference table with notebooks and coffee.\nMotion: M stands and walks to the whiteboard, gestures as she speaks; cut to D leaning forward speaking; cut to E pausing then responding; M nods. Medium establishing, slow right pan, over-the-shoulder cuts.\nSound: M (clear decisive female): \"我们的截稿期是下周五,功能 A 必须上线。\" D (concerned male): \"但用户测试反馈说交互流程还不够顺。\" E (calm pragmatic male): \"我可以先发 A 的核心,把交互优化放到下个迭代。\" Faint HVAC office ambient, marker tap on whiteboard, no music."
+        },
+        "jimeng-3": {
+          "method": "中文 8 维度 + 国内职场美学",
+          "prompt": "现代极简风格的会议室,白色墙面 + 落地窗,自然光线充足。圆形原木会议桌上放着笔记本电脑、纸质笔记本和咖啡杯。\n\n人物:\n- 经理 M:30 岁女性,身穿米色西装外套,自信干练。\n- 设计师 D:30 岁男性,深色衬衫,思考细致。\n- 工程师 E:30 岁男性,白色 T 恤,冷静务实。\n\n镜头 1(中景缓慢右摇):M 起身走到白板前,用马克笔点了点白板,转头说:\"我们的截稿期是下周五,功能 A 必须上线。\"\n镜头 2(越肩近景):切到 D,他眉头微皱,身体前倾,声音带着担忧:\"但用户测试反馈说交互流程还不够顺。\"\n镜头 3(中近景):切到 E,他停顿两秒放下笔,冷静开口:\"我可以先发 A 的核心,把交互优化放到下个迭代。\"M 听完点头。\n镜头 4(全景三人):定格在三人继续讨论的画面。\n\n质感:35mm 电影感,自然光柔和,人物面部稳定,口型同步精准。\n\n背景音:每位发言者的声音清晰且唇同步精确,空调白噪音,白板上马克笔轻敲声,远处键盘声,无背景音乐。"
+        }
+      }
+    },
+    {
+      "id": "scene-6-horror-balloon",
+      "title": "走廊深处的红气球",
+      "category": "horror / suspense",
+      "core_anchor": {
+        "subject": "一个鲜红色的气球",
+        "scene": "夜晚长长的空荡住宅走廊,头顶日光灯管间歇性闪烁",
+        "motion": "气球从走廊尽头深处缓慢飘向镜头,灯光每隔几秒短暂熄灭",
+        "mood": "高悬念低强度恐怖,缓慢累积",
+        "rule": "克制 jump scare,靠氛围而非血腥"
+      },
+      "use_case": "恐怖短片 / 悬疑预告 / 怪谈类 viral 短视频",
+      "by_model": {
+        "seedance-2.0": {
+          "method": "8 要素 + 约束词强调氛围克制",
+          "prompt": "Static wide handheld shot looking down a long empty residential hallway at night. Worn beige wallpaper, scuffed wooden floor, identical white doors line both sides receding into darkness. Overhead fluorescent tubes flicker intermittently — light, flicker, brief darkness, light. From the far end of the hallway, a single bright red helium balloon drifts slowly toward the camera at chest height, its string trailing limply, no person attached. The balloon moves at a steady unnatural pace, indifferent to drafts. Found footage handheld micro-shake. Cold grey-green color grade with crushed shadows. 35mm grain. No music, no jump scare, no overt gore. Preserve hallway perspective stability."
+        },
+        "happyhorse-1.0": {
+          "method": "30-55 词紧凑 + audio 路径(氛围音强项)",
+          "prompt": "Static wide shot down a long empty residential hallway at night, flickering overhead fluorescent tubes, a single red balloon drifting slowly from the far end toward the camera, found footage handheld feel, cold grey-green grade, with electrical buzz of the tubes and faint distant heartbeat audible, no music."
+        },
+        "kling-3.0": {
+          "method": "5 层进阶 + 氛围渐进",
+          "prompt": "Scene: A long empty residential hallway at night with worn beige wallpaper and scuffed wooden floor, identical white doors lining both sides, overhead fluorescent tubes flickering intermittently.\nCharacters: A single bright red helium balloon, string trailing limply, no person attached.\nAction: The balloon drifts slowly from the far end of the hallway toward the camera at chest height, steady unnatural pace. Mid-drift the tubes flicker into brief total darkness for one second; when light returns the balloon is noticeably closer.\nCamera: Static wide handheld with slight micro-shake, found footage feel.\nAudio & Style: Electrical buzz of fluorescent tubes, faint distant heartbeat, no music. Cold grey-green color grade with crushed shadows."
+        },
+        "sora-2": {
+          "method": "Shot List 分层 + Style 锚定 found footage",
+          "prompt": "Style: Late-90s found footage horror, MiniDV digital with native compression artifacts, slight chromatic aberration on highlights, crushed cold grey-green grade with deep blacks. Handheld micro-shake.\n\nA long empty residential hallway at night. Worn beige wallpaper, scuffed wooden floor, identical white doors. Overhead fluorescent tubes flicker intermittently.\n\nCinematography: Static wide handheld at eye level, 24mm spherical lens, deep DOF showing hallway recession. No camera moves except subtle handheld drift.\n\nActions:\n- Hallway empty, tubes flickering for two beats\n- Far down the hallway a red balloon enters frame, drifting forward\n- Tubes flicker into one full second of total darkness\n- Light returns; balloon noticeably closer at chest height\n- Camera holds; balloon continues drifting toward lens\n\nBackground Sound: Electrical buzz of fluorescent tubes, faint distant heartbeat, no music, no overt jump scare effects."
+        },
+        "veo-3": {
+          "method": "8 元素 + Audio: 多层氛围",
+          "prompt": "A static wide handheld shot down a long empty residential hallway at night. Worn beige wallpaper, scuffed wooden floor, identical white doors on both sides. Overhead fluorescent tubes flicker intermittently. A single bright red helium balloon drifts slowly from the far end toward the camera at chest height. Mid-drift the tubes flicker into brief total darkness; when light returns the balloon is noticeably closer. Found footage handheld feel, cold grey-green grade, deep crushed shadows, 35mm grain.\n\nDialogue: (no dialogue)\n\nAudio: Electrical buzz of fluorescent tubes (steady), faint distant heartbeat (slow accelerating), occasional far-off door creak, no music, no jump scare stings."
+        },
+        "runway-gen4": {
+          "method": "Gen-4.5 + Aleph 编辑可后续调灯光",
+          "prompt": "Static wide handheld shot down a long empty residential hallway at night, worn beige wallpaper, scuffed wooden floor, identical white doors, overhead fluorescent tubes flickering intermittently. A single bright red helium balloon drifts slowly from the far end toward camera at chest height, string trailing limply. Found footage feel, cold grey-green grade, deep crushed shadows, 35mm grain. Preserve hallway perspective and balloon physics, no morphing, no jump scare effects."
+        },
+        "pika-2.5": {
+          "method": "短聚焦单一氛围",
+          "prompt": "A handheld found-footage shot of a long, dark hallway at night, flickering fluorescent lights overhead, a single red balloon floats slowly toward the camera from the far end, cold grey-green grade, deep shadows, slow burn horror atmosphere, no morphing."
+        },
+        "hailuo-02": {
+          "method": "Director's AI 克制 + 物理(氦气球漂浮的真实运动)",
+          "prompt": "A long empty residential hallway at night, overhead fluorescent tubes flickering with realistic electrical sputter pattern. A single red helium balloon drifts forward at chest height with accurate buoyant physics — slight tilt response to air currents, string trailing limply with real weight. Camera holds static with subtle handheld breath drift. Mid-shot the tubes plunge into one full second of total darkness; lighting returns and balloon has covered notable distance toward lens. Photorealistic late-night residential look, cold grey-green ambient grade."
+        },
+        "hunyuan-video": {
+          "method": "Master 模式 + 氛围光感构图",
+          "prompt": "A long empty residential hallway at night, worn beige wallpaper, scuffed wooden floor receding into darkness, identical white doors lining both sides. Overhead fluorescent tubes flicker with realistic intermittent pattern, casting unstable cold light on surfaces. A single bright red helium balloon, string trailing limply, drifts slowly from the far end of the hallway toward the camera at chest height. Static wide handheld shot with subtle micro-drift, 24mm cinematic feel, found footage aesthetic with cold grey-green grade and deep crushed shadows, fine grain."
+        },
+        "wan-2.5": {
+          "method": "Entity + Scene + Motion + Sound(氛围音强项)",
+          "prompt": "Entity: A single bright red helium balloon, string trailing limply, no person.\nScene: A long empty residential hallway at night, worn beige wallpaper, scuffed wooden floor, identical white doors, overhead fluorescent tubes flickering intermittently.\nMotion: The balloon drifts slowly from the far end of the hallway toward camera at chest height, steady unnatural pace. Mid-drift the tubes flicker into one second of total darkness; when light returns, the balloon is noticeably closer. Static wide handheld shot with subtle micro-drift.\nSound: Electrical buzz of fluorescent tubes (steady humming), faint distant heartbeat (slow accelerating beat), occasional far-off door creak, no music, no jump scare stings."
+        },
+        "jimeng-3": {
+          "method": "中文 8 维度 + 中式都市怪谈氛围",
+          "prompt": "深夜的住宅楼长走廊,土黄色斑驳壁纸,木地板有刮痕,两侧整齐排列着相同的白色房门,走廊尽头隐没在黑暗中。\n\n头顶日光灯管间歇性闪烁,光-灭-亮-灭的节奏不规则。\n\n走廊深处缓缓飘来一个鲜红色的氦气球,绳子无力地拖在身后,周围没有人。气球以一种不自然的稳定速度向镜头方向飘近,不受任何气流影响。\n\n镜头:静止广角手持拍摄,带有 found footage 的轻微手抖,无任何运镜。\n\n中途:灯管突然全部熄灭,持续一秒完全黑暗;光线恢复时,气球已明显更近。\n\n画面:冷青绿色调,深暗阴影,35mm 颗粒感,克制的恐怖氛围。\n\n背景音:日光灯管嗡嗡声,远处隐约的心跳声节奏渐快,远端偶尔木门吱呀,无音乐,无尖叫音效。"
+        }
+      }
+    },
+    {
+      "id": "scene-7-mountain-sunrise",
+      "title": "山顶日出延时(无人环境)",
+      "category": "nature / timelapse",
+      "core_anchor": {
+        "subject": "一棵孤树立在雪山山脊上",
+        "scene": "高山雪脊,前景孤树,远景层叠山峦",
+        "motion": "时间从黎明前的星空缓慢过渡到日出后金光洒满群山",
+        "mood": "宁静壮丽,地球感,自然纪录片",
+        "rule": "无人物,无音乐,只有环境音"
+      },
+      "use_case": "纪录片片头 / 冥想视频 / 旅行频道 / 屏保",
+      "by_model": {
+        "seedance-2.0": {
+          "method": "8 要素 + 延时镜头描述",
+          "prompt": "Locked-off wide static shot of a high snowy mountain ridge at dawn. Foreground: a single weathered pine tree silhouetted at the ridgeline. Background: layers of distant peaks receding into pre-dawn blue. Time-lapse compression: stars rotate visibly across the dark sky, then the eastern horizon glows deep red, soft amber light spreads across the snow ridges in waves, finally golden sunlight floods the foreground tree and ridge. Camera completely static. National Geographic documentary cinematography, photorealistic snow textures and atmospheric haze, 4K detail. No music, no people, only ambient wind tone."
+        },
+        "happyhorse-1.0": {
+          "method": "30-55 词 + 延时节拍 + 环境音 audible",
+          "prompt": "8s duration. Time-lapse of a high snowy mountain ridge at dawn, single weathered pine tree silhouetted in foreground, stars rotating across pre-dawn sky transitioning to amber sunrise spreading across snow peaks, completely static camera, with steady high-altitude wind audible, no music."
+        },
+        "kling-3.0": {
+          "method": "5 层 + 时间过渡描述",
+          "prompt": "Scene: A high snowy mountain ridge at dawn, layers of distant peaks receding into pre-dawn blue, foreground a single weathered pine tree silhouetted at the ridgeline.\nCharacters: (none — pure landscape)\nAction: Time-lapse compression — stars rotate visibly across the dark sky; the eastern horizon glows deep red; soft amber light spreads across the snow ridges in waves; finally golden sunlight floods the foreground tree and ridge.\nCamera: Locked-off completely static wide shot, no movement at all.\nAudio & Style: Steady high-altitude wind tone, faint distant tree branches creaking in foreground, no music. National Geographic documentary aesthetic, photorealistic snow and atmosphere."
+        },
+        "sora-2": {
+          "method": "Shot List + 延时美学 + 无对白",
+          "prompt": "Style: National Geographic documentary timelapse, 65mm digital capture emulating large-format photochemical contrast, fine grain, naturalistic palette with deep blues and warm amber transitions.\n\nA high snowy mountain ridge at dawn. Foreground: a single weathered pine tree silhouetted at the ridgeline. Background: layers of distant peaks receding into pre-dawn blue atmosphere.\n\nCinematography: Locked-off wide static shot, 40mm spherical lens, deep DOF showing all ridges sharp. Camera does not move.\n\nActions:\n- Pre-dawn: stars visible, rotating slowly across dark sky\n- Eastern horizon flushes deep red\n- Soft amber light spreads in waves across snow ridges\n- Golden sunrise floods foreground tree and ridge\n- Steady wind moves through frame visibly stirring fine snow\n\nBackground Sound: Steady high-altitude wind tone, faint distant pine branch creaking, no music, no human presence."
+        },
+        "veo-3": {
+          "method": "8 元素 + Audio: 环境单层 + no dialogue",
+          "prompt": "A locked-off wide static shot of a high snowy mountain ridge at dawn. Foreground a single weathered pine tree silhouetted at the ridgeline, background layers of distant peaks receding into pre-dawn blue. Time-lapse compression: stars rotate across the dark sky, eastern horizon glows red, amber light spreads across snow ridges, finally golden sunrise floods the tree. 65mm cinematic feel, deep DOF, naturalistic documentary palette.\n\nDialogue: (no dialogue)\n\nAudio: Steady high-altitude wind tone, faint distant pine branch creaking, occasional snow particle drift in wind, no music."
+        },
+        "runway-gen4": {
+          "method": "Gen-4.5 延时(可 Aleph re-light 调色温)",
+          "prompt": "Locked-off wide static shot of a high snowy mountain ridge at dawn. Foreground a single weathered pine tree silhouetted at the ridgeline, background layers of distant peaks. Time-lapse compression from pre-dawn star-filled sky through red horizon glow to golden sunrise flooding the ridge. Camera completely static, no movement. 65mm cinematic feel, deep DOF, naturalistic palette. Preserve atmospheric depth and snow texture, no morphing."
+        },
+        "pika-2.5": {
+          "method": "Pika 延时单焦点",
+          "prompt": "A time-lapse of sunrise over a snowy mountain ridge, single weathered pine tree silhouetted in foreground, sky transitioning from pre-dawn stars through red horizon to golden sunrise, static wide shot, cinematic documentary feel, no morphing."
+        },
+        "hailuo-02": {
+          "method": "Director's AI + 物理(雪/风/光照真实过渡)",
+          "prompt": "A high snowy mountain ridge at dawn, single weathered pine tree silhouetted at the ridgeline, layers of distant peaks in pre-dawn blue atmosphere. Time-lapse compression with photorealistic light physics — stars rotate with accurate celestial motion, dawn horizon flush follows real Rayleigh scattering colors from deep red through orange to gold, amber light advances across snow ridges with realistic shadow recession, fine snow particles visibly drift in the wind. Camera locked-off completely static. Photorealistic atmospheric textures, deep DOF."
+        },
+        "hunyuan-video": {
+          "method": "Master 模式延时构图",
+          "prompt": "A high snowy mountain ridge captured at dawn from a locked-off wide static angle. Foreground a single weathered pine tree silhouetted at the ridgeline, background layers of distant peaks receding into a pre-dawn blue atmosphere. Photographic time-lapse compression — stars rotate slowly across the dark sky, eastern horizon flushes through deep red and orange tones, soft amber sunlight spreads across the snow ridges in advancing waves, golden sunrise finally floods the foreground tree. Naturalistic documentary palette, photorealistic snow and atmospheric haze, fine 65mm grain, deep DOF."
+        },
+        "wan-2.5": {
+          "method": "Entity + Scene + Motion + Sound(纯环境)",
+          "prompt": "Entity: A single weathered pine tree silhouetted at a high snowy mountain ridge.\nScene: Dawn at altitude, layers of distant peaks receding into pre-dawn blue, fine snow drifting in steady wind.\nMotion: Time-lapse compression — stars rotate across the dark sky, eastern horizon flushes deep red, amber light spreads across the snow ridges in waves, golden sunrise floods the foreground tree and ridge. Camera locked-off completely static.\nSound: Steady high-altitude wind tone, faint distant pine branch creaking, occasional snow particle drift sound, no music, no human voice."
+        },
+        "jimeng-3": {
+          "method": "中文 8 维度 + 中式山水延时美学",
+          "prompt": "高海拔雪山山脊,黎明时分。\n\n前景:一棵饱经风霜的孤独松树,剪影般立在山脊上。\n背景:层层叠叠的远山,隐没在黎明前的深蓝色雾气中。\n\n时间压缩延时:从满天星辰缓缓旋转的夜空,过渡到东方地平线泛起深红色光晕,继而柔和的琥珀色光线一波波铺洒在雪山脊上,最终金色阳光彻底洒满前景孤松与山脊。\n\n镜头:完全静止的广角锁定镜头,无任何运镜。\n\n质感:国家地理纪录片美学,65mm 大画幅胶片质感,真实雪面与大气雾感细节,深景深所有层次清晰。\n\n背景音:高海拔稳定风声,远处偶尔松枝吱呀声,细雪粒被风吹动的微响,无音乐,无人声。"
+        }
+      }
+    },
+    {
+      "id": "scene-8-liquid-metal",
+      "title": "液态金属变形循环",
+      "category": "experimental / abstract",
+      "core_anchor": {
+        "subject": "一团水银色液态金属",
+        "scene": "纯黑无重力背景,单一聚光",
+        "motion": "从完美球体缓慢变形为复杂几何体,再无缝回到球体,可循环",
+        "mood": "满足感 / 未来感 / ASMR-like",
+        "rule": "无人物,无环境,纯抽象视觉"
+      },
+      "use_case": "满足感循环视频 / 抽象艺术 / 品牌动态 Logo 灵感 / 屏保",
+      "by_model": {
+        "seedance-2.0": {
+          "method": "8 要素 + 流体物理强调 + 循环描述",
+          "prompt": "A perfectly smooth sphere of liquid mercury floats at center frame against pure black void. Single soft key light from upper right creates a crisp specular highlight on its surface. The sphere slowly deforms — surface tension breaks, it elongates into a vertical column, folds inward to form a faceted geometric polyhedron, holds for a beat showing reflective faces, then dissolves back through column to perfect sphere in a seamless loop. Macro lens, shallow depth of field, hyperreal liquid dynamics with accurate surface tension and reflection physics. Electric blue and silver palette in the reflections. End frame matches start frame for seamless loop. 4K detail. No background, no people."
+        },
+        "happyhorse-1.0": {
+          "method": "30-55 词 + 循环短描述",
+          "prompt": "8s seamless loop. A sphere of liquid mercury floats against pure black void, slowly morphs into a faceted geometric polyhedron then back to a perfect sphere, macro lens, single key light with crisp specular highlight, electric blue and silver reflections, hyperreal surface tension physics, no audio."
+        },
+        "kling-3.0": {
+          "method": "5 层 + 抽象主体描述",
+          "prompt": "Scene: Pure black void background, single soft key light from upper right.\nCharacters: A perfectly smooth sphere of liquid mercury at center frame, electric blue and silver reflections.\nAction: The sphere slowly deforms — elongates into a vertical column, folds inward to form a faceted geometric polyhedron, holds for one beat showing reflective faces, then dissolves back through column to perfect sphere. End frame matches start frame for seamless loop.\nCamera: Static macro lens, shallow depth of field.\nAudio & Style: Abstract minimal electronic pulse synced to morph phases, no narrative. Hyperreal liquid dynamics with accurate surface tension and reflection physics."
+        },
+        "sora-2": {
+          "method": "Shot List + Style 抽象锚定 + 循环",
+          "prompt": "Style: Hyperreal abstract product visualization, anamorphic 2x squeeze with subtle lens distortion, electric blue and silver reflection palette, deep void background.\n\nPure black void at center frame, single soft key light from upper right.\n\nCinematography: Static macro lens, anamorphic 2x, shallow DOF locked on subject, no camera moves.\n\nActions:\n- Perfect liquid mercury sphere floats at center, reflecting key light\n- Sphere elongates slowly into a vertical column\n- Column folds inward forming a faceted geometric polyhedron\n- Polyhedron holds one beat showing reflective faces\n- Dissolves back through column to perfect sphere — end frame matches start frame seamlessly\n\nBackground Sound: Abstract minimal electronic pulse synced to each morph phase, no narrative."
+        },
+        "veo-3": {
+          "method": "8 元素 + Audio: 抽象电子音",
+          "prompt": "A static macro shot of a perfectly smooth sphere of liquid mercury floating at center frame against pure black void, single soft key light from upper right creating crisp specular highlight, electric blue and silver reflections. The sphere slowly deforms — elongates into a vertical column, folds inward to form a faceted geometric polyhedron, holds one beat, then dissolves back through column to perfect sphere. End frame matches start frame for seamless loop. Anamorphic feel, shallow DOF, hyperreal liquid physics.\n\nDialogue: (no dialogue)\n\nAudio: Abstract minimal electronic pulse synced to each morph phase, subtle metallic surface tension shimmer, no music narrative."
+        },
+        "runway-gen4": {
+          "method": "Gen-4.5 + 循环动画",
+          "prompt": "A perfectly smooth sphere of liquid mercury floats at center frame against pure black void, single soft key light from upper right with crisp specular highlight, slowly morphs into a faceted geometric polyhedron then dissolves back to perfect sphere in a seamless loop. Static macro lens, shallow DOF, electric blue and silver reflections, hyperreal liquid surface tension physics. End frame matches start frame. No morphing distortion errors, preserve reflection accuracy."
+        },
+        "pika-2.5": {
+          "method": "Pika 抽象单焦点 + Pikaffect Levitate 风味",
+          "prompt": "A floating sphere of liquid mercury slowly morphs into a faceted geometric shape and back into a sphere in seamless loop, macro close-up, single key light, pure black background, electric blue and silver reflections, hyperreal liquid metal surface, satisfying ASMR style, no morphing artifacts, 1080p."
+        },
+        "hailuo-02": {
+          "method": "Director's AI + 物理仿真最强项",
+          "prompt": "A perfectly smooth sphere of liquid mercury floats at center frame against pure black void with single soft key light from upper right. The sphere deforms through accurate surface tension physics — molecular cohesion stretches the form into an elongated column, then internal viscous folding pulls it into a faceted geometric polyhedron with each face showing precise specular reflection, holds one beat, then through reverse capillary action dissolves back to a perfect sphere. End frame seamlessly matches start. Electric blue and silver palette in reflections, hyperreal liquid dynamics throughout."
+        },
+        "hunyuan-video": {
+          "method": "Master 模式 + 抽象构图",
+          "prompt": "A perfectly smooth sphere of liquid mercury floats at exact center frame against absolute black void background. A single soft key light from upper right creates a crisp moving specular highlight on its surface. The sphere slowly deforms through hyperreal liquid surface tension — elongates vertically into a tall column, folds inward forming a multi-faceted geometric polyhedron with each face perfectly reflective showing distorted highlights, holds for one beat, then through reverse motion dissolves smoothly back through the column form into the original perfect sphere. End frame matches start frame for seamless loop. Macro lens, shallow depth of field, electric blue and silver chromatic reflections."
+        },
+        "wan-2.5": {
+          "method": "Entity + Scene + Motion + Sound(抽象电子配乐)",
+          "prompt": "Entity: A perfectly smooth sphere of liquid mercury, electric blue and silver chromatic reflections.\nScene: Pure black void background, single soft key light from upper right creating crisp specular highlight.\nMotion: The sphere slowly elongates into a vertical column, folds inward to form a faceted geometric polyhedron, holds for one beat showing reflective faces, then dissolves back through column to perfect sphere. End frame matches start frame for seamless loop. Static macro lens, shallow DOF.\nSound: Abstract minimal electronic pulse synced to each morph phase (sphere → column → polyhedron → column → sphere), subtle metallic surface tension shimmer, faint sub-bass throb, no narrative."
+        },
+        "jimeng-3": {
+          "method": "中文 8 维度 + 抽象艺术风",
+          "prompt": "纯黑无重力背景,正中央一团完美光滑的水银色液态金属球体悬浮,右上方单一柔和聚光灯打出清晰的高光镜面反射,反射中可见电流蓝与银白色调。\n\n球体缓慢变形:首先表面张力被打破,垂直拉伸成一根细长立柱;立柱再向内折叠,形成一个多面几何体,每个面都呈现精准的镜面反射;停顿一拍展示多面体的反射光泽;然后通过逆向运动,无缝回到原来的完美球体形态。\n\n首尾帧完全一致,可循环播放。\n\n镜头:静止微距镜头,浅景深,锁定主体。\n\n质感:超真实液态金属表面张力物理仿真,4K 精度。\n\n背景音:抽象极简电子脉冲,与变形阶段精准同步,微妙的金属表面颤音,极低频次低音搏动,无叙事音乐。"
+        }
+      }
+    },
+    {
+      "id": "scene-9-wuxia-duel",
+      "title": "竹林雨夜剑客决斗",
+      "category": "wuxia / action / chinese",
+      "core_anchor": {
+        "subject": "白衣剑客与黑衣剑客",
+        "scene": "翠绿竹林,雨夜,泥泞地面,雷电闪烁",
+        "motion": "蓄势对峙 → 闪电劈下瞬间双方冲出 → 慢动作剑光相撞 → 雨滴四散",
+        "mood": "中式武侠诗意 + 宿命感",
+        "rule": "运镜从静到动,留白与留声"
+      },
+      "use_case": "古装短剧 / 武侠预告 / 中式美学视频",
+      "by_model": {
+        "seedance-2.0": {
+          "method": "分镜时序 + 武侠美学 + 中文",
+          "prompt": "翠绿竹林深处,雨夜,泥泞地面,雨水沿竹叶滚落。\n\n镜头 1(全景静态):白衣剑客与黑衣剑客在竹林中相距十米,雨水浸透衣袂,各执长剑微微倾斜。镜头缓慢拉远,展现整片竹林雨夜的诗意。\n镜头 2(中景特写交替):闪电瞬间劈下,照亮两人面孔。白衣剑客眼神锐利如刀;黑衣剑客嘴角微扬。两人同时蹬地冲出,衣袂翻飞。\n镜头 3(慢动作剑光相撞):两剑在画面中央相撞,迸发蓝白色金属火花,雨滴在冲击波中向四周飞散,竹叶随之颤动。镜头 360° 围绕碰撞点旋转一圈后定格。\n\n整体画面武侠电影感,冷蓝色调,雨夜质感,慢动作清晰展现剑光与水花物理细节。无背景音乐。"
+        },
+        "happyhorse-1.0": {
+          "method": "30-55 词 + 时序节拍 + 雨夜音频",
+          "prompt": "8s duration. White-clad swordsman and black-clad swordsman face each other in a bamboo forest at rainy night, lightning cracks and both rush forward, swords clash mid-frame with slow-motion spark burst and scattering raindrops, with thunder rumble, rain through bamboo leaves, and metal clang audible, no music."
+        },
+        "kling-3.0": {
+          "method": "5 层 + 武侠中文混合英文(Kling 中文最强)",
+          "prompt": "Scene: 翠绿竹林深处,雨夜,泥泞地面,雨水沿竹叶滚落,远处雷声轰鸣,闪电偶尔劈下。\nCharacters: 白衣剑客(冷峻,眼神锐利)与黑衣剑客(嘴角微扬,神情玩味),相距十米,各执长剑微倾。\nAction: 两人对峙数秒;闪电瞬间劈下照亮全场;两人同时蹬地冲出,衣袂翻飞;长剑在画面中央相撞,迸发蓝白色火花,雨滴在冲击波中向四周飞散。\nCamera: 全景静态对峙 → 闪电时切到双方近景交替 → 慢动作剑光相撞时镜头 360° 围绕碰撞点旋转一圈,最后定格。\nAudio & Style: Thunder rumble, rain through bamboo leaves, sharp metal sword clang on contact, scattered water droplet impact, no music. 武侠电影冷蓝色调,雨夜质感,慢动作物理细节清晰。"
+        },
+        "sora-2": {
+          "method": "Shot List + Style 锚定胡金铨/张艺谋武侠美学",
+          "prompt": "Style: Chinese wuxia cinema in the tradition of King Hu and Zhang Yimou. 35mm anamorphic with subtle lens flare on lightning, cool desaturated blue grade with selective saturation on the warm lightning, fine film grain.\n\nA dense bamboo forest at rainy night, muddy ground, heavy rain rolling off green bamboo leaves. White-clad swordsman with sharp eyes stands ten meters from black-clad swordsman whose mouth shows a faint smirk; both hold long jian swords slightly tilted.\n\nCinematography: Wide static establishing pulling out slowly; alternating tight medium close-ups during lightning flash; final slow-motion 360-degree orbital camera around the central clash point. 40mm anamorphic spherical, deep focus.\n\nActions:\n- Both swordsmen hold position; rain pours\n- Lightning cracks brilliantly across the sky illuminating both faces\n- Both push off the muddy ground simultaneously, robes flying\n- Slow motion: swords meet center frame, blue-white metal sparks burst outward\n- Raindrops scatter explosively in the shockwave; bamboo leaves quiver\n- Camera holds final frame on the locked blades\n\nBackground Sound: Thunder rumble, rain through bamboo leaves, sharp metal clang on contact, scattered water impacts, no music."
+        },
+        "veo-3": {
+          "method": "8 元素 + Audio: 多层雨夜声场",
+          "prompt": "A wuxia duel in a dense bamboo forest at rainy night. White-clad swordsman and black-clad swordsman stand ten meters apart on muddy ground, both holding jian swords. Wide static establishing pulls out slowly; lightning flashes alternate tight close-ups; both rush forward simultaneously; slow-motion swords clash center frame with blue-white sparks bursting outward and raindrops scattering in the shockwave; 360-degree orbital camera around the locked blades; final freeze. 40mm anamorphic, cool desaturated blue grade with warm lightning, 35mm grain.\n\nDialogue: (no dialogue, only blades and elements)\n\nAudio: Deep thunder rumble building, heavy rain pattering on bamboo leaves continuously, the sharp metal clang at sword contact with reverb tail, scattered water droplet impacts radiating outward, distant bamboo creaking, no music."
+        },
+        "runway-gen4": {
+          "method": "Gen-4.5 + Aleph 可后续调对比度/色彩",
+          "prompt": "A wuxia duel in a dense bamboo forest at rainy night, muddy ground, heavy rain through green bamboo leaves. White-clad swordsman with sharp eyes faces black-clad swordsman with a smirk, ten meters apart, both holding jian swords. Wide static pulls out, then lightning flash with alternating close-ups, both rush forward, slow-motion swords clash center frame with blue-white spark burst and scattering raindrops, 360-degree orbital around the locked blades. 40mm anamorphic cinematic feel, cool blue grade, 35mm grain. Preserve clean body proportions, accurate sword physics, no morphing."
+        },
+        "pika-2.5": {
+          "method": "Pika 单一关键瞬间(剑光相撞)",
+          "prompt": "Slow motion close-up of two jian swords clashing center frame in a rainy bamboo forest at night, blue-white sparks bursting outward, raindrops scattering in the shockwave, cool blue cinematic grade, 35mm anamorphic feel, wuxia aesthetic, dramatic lighting from lightning above, 1080p, no morphing."
+        },
+        "hailuo-02": {
+          "method": "Director's AI + 物理(雨水/剑光火花动量准确)",
+          "prompt": "A dense bamboo forest at rainy night with muddy ground. White-clad swordsman and black-clad swordsman face off ten meters apart, both holding jian swords slightly tilted. Heavy rain rolls off bamboo leaves with accurate water surface tension. Lightning cracks across the sky; both push off the muddy ground simultaneously with realistic kinetic transfer, robes flying with accurate fabric physics in the wet air. Slow-motion swords meet center frame; blue-white metal sparks burst outward with accurate ballistic trajectory; raindrops in the shockwave scatter with proper angular momentum; bamboo leaves quiver in the air pressure wave. 360-degree orbital camera. Hyperreal wet physics throughout."
+        },
+        "hunyuan-video": {
+          "method": "Master 模式 + 中式美学构图",
+          "prompt": "A dense Chinese bamboo forest at rainy night with muddy ground, heavy rain rolling off green bamboo leaves. White-clad swordsman with cold sharp eyes stands ten meters from black-clad swordsman whose mouth bears a subtle smirk; both hold long jian swords slightly tilted. Wide static establishing pulls out slowly revealing the poetic atmosphere; lightning cracks across the sky illuminating both faces in alternating close-ups; both rush forward simultaneously, robes flying through the wet air; slow-motion swords meet center frame with blue-white metal spark burst, raindrops scattering explosively in the shockwave, bamboo leaves quivering. Final 360-degree orbital camera around the locked blades. Wuxia cinema aesthetic, cool desaturated blue grade with warm lightning, 40mm anamorphic feel."
+        },
+        "wan-2.5": {
+          "method": "Entity + Scene + Motion + Sound(雨夜声场强项)",
+          "prompt": "Entity: White-clad swordsman with sharp cold eyes; black-clad swordsman with a faint smirk. Both hold long jian swords.\nScene: A dense bamboo forest at rainy night, muddy ground, heavy rain rolling off green bamboo leaves, occasional lightning flashes.\nMotion: Both face off ten meters apart in tense pause. Lightning cracks; both push off the muddy ground simultaneously, robes flying. Slow-motion swords clash center frame; blue-white sparks burst outward; raindrops scatter in the shockwave; bamboo leaves quiver. 360-degree orbital camera around the locked blades, final freeze.\nSound: Deep thunder rumble building, continuous rain pattering on bamboo leaves, sharp metal clang on sword contact with reverb tail, scattered water droplet impacts radiating outward, distant bamboo creaking, no music."
+        },
+        "jimeng-3": {
+          "method": "中文 8 维度 + 中式武侠诗意美学",
+          "prompt": "雨夜的深山竹林,翠绿竹叶在雨中摇曳,雨水汇成涓流顺竹竿滑落,泥泞地面映着远处雷电的微光。\n\n人物:\n- 白衣剑客:面容清冷,眼神锐利如刀。\n- 黑衣剑客:嘴角带着玩味的微笑,神情玩世不恭。\n两人相距十米,各执长剑微倾,衣袂被雨水浸透。\n\n镜头 1(广角静止 + 缓拉):全景展现两人对峙与整片竹林的诗意,镜头缓慢拉远。\n镜头 2(闪电近景交替):一道闪电骤然劈下,照亮两人面孔。镜头快速在两人特写之间切换。\n镜头 3(蓄势冲出 + 慢动作剑光):两人同时蹬地冲出,泥水在脚下飞溅。慢动作中,两剑在画面中央相撞,蓝白色金属火花迸发,雨滴在冲击波中向四周飞散,周围竹叶颤动。镜头围绕碰撞点 360 度旋转一圈,定格在两剑紧贴的画面。\n\n质感:中式武侠电影,冷蓝色调,雨夜质感,35mm 胶片感。\n\n背景音:雷声渐起,雨打竹叶声不绝,剑刃相撞时清脆金属声带着混响,水滴碰撞声四散扩散,远处竹竿吱呀,无背景音乐。"
+        }
+      }
+    },
+    {
+      "id": "scene-10-surfing-dog",
+      "title": "戴墨镜冲浪的金毛(萌宠爆款)",
+      "category": "viral / pet / comedy",
+      "core_anchor": {
+        "subject": "一只戴黑色雷朋飞行员墨镜的金毛犬",
+        "scene": "夕阳下的海边碧蓝海浪,白色冲浪板",
+        "motion": "金毛保持平衡站在冲浪板上,舌头伸出,毛发被海风吹动,板划过浪尖",
+        "mood": "爆款 viral / 治愈 / 反差萌",
+        "rule": "拟人但保持狗的真实物理感"
+      },
+      "use_case": "宠物品牌广告 / TikTok 抖音爆款 / 生活方式视频",
+      "by_model": {
+        "seedance-2.0": {
+          "method": "8 要素 + 拟人化 + 海上物理细节",
+          "prompt": "A photorealistic Golden Retriever wearing black Ray-Ban aviator sunglasses balances confidently on a white surfboard cruising along a curling blue ocean wave at golden hour sunset. His tongue lolls out happily, ears flapping in the sea breeze, golden fur catching the warm light. The surfboard slices through the wave crest spraying fine mist into the air. Low-angle side tracking shot from sea level moving with the board, slight handheld feel for documentary energy. Vibrant sunset palette with deep teal water and warm orange sky. Photorealistic but slightly whimsical aspirational lifestyle style, 4K. Preserve realistic dog body and fur physics, no morphing."
+        },
+        "happyhorse-1.0": {
+          "method": "30-55 词 + 海风音频 + 爆款短",
+          "prompt": "8s duration. A Golden Retriever in black aviator sunglasses balances on a white surfboard cruising a blue ocean wave at golden hour, tongue out, fur catching warm light, low-angle side tracking, with crashing waves and happy excited bark audible, vertical 9:16 framing, viral feel."
+        },
+        "kling-3.0": {
+          "method": "5 层 + 拟人化萌宠",
+          "prompt": "Scene: A golden hour ocean, deep teal water with curling blue waves, warm orange sky.\nCharacters: A photorealistic Golden Retriever wearing black Ray-Ban aviator sunglasses, golden fur ruffled by sea breeze, tongue lolling happily.\nAction: He balances confidently on a white surfboard cruising along the wave crest, ears flapping, surfboard slicing through the wave spraying fine mist. He gives a quick happy bark mid-ride.\nCamera: Low-angle side tracking shot from sea level moving with the board, slight handheld feel.\nAudio & Style: Crashing wave foam, one happy excited bark, sea breeze, distant gull cry, vibrant warm-meets-teal aspirational lifestyle aesthetic, vertical 9:16 framing."
+        },
+        "sora-2": {
+          "method": "Shot List + Style 锚定 GoPro 户外纪录 + Cameos 灵感",
+          "prompt": "Style: GoPro adventure aesthetic meets aspirational lifestyle commercial, vibrant warm-and-teal grade with slight lens distortion at edges, fine grain, low golden hour sunlight.\n\nA Golden Retriever wearing black Ray-Ban aviator sunglasses balances on a white surfboard on a curling blue ocean wave at sunset. Tongue lolling, fur ruffled by sea breeze.\n\nCinematography: Low-angle side tracking shot from sea level moving parallel to the board, 18mm wide spherical lens, deep DOF, slight handheld documentary feel. Vertical 9:16 framing for social.\n\nActions:\n- Dog stabilizes weight on surfboard as wave curls forward\n- Surfboard slices wave crest spraying fine mist\n- Dog opens mouth wide, gives one happy bark\n- Tongue lolls out, ears flap in sea breeze\n- Camera holds tracking as board rides into sunset glare\n\nBackground Sound: Crashing wave foam continuously, one bright happy bark, steady sea breeze, distant seagull cry, no music."
+        },
+        "veo-3": {
+          "method": "8 元素 + Audio: 海浪+狗叫",
+          "prompt": "A photorealistic Golden Retriever wearing black Ray-Ban aviator sunglasses balances confidently on a white surfboard cruising along a curling blue ocean wave at golden hour sunset. Tongue lolling, ears flapping in sea breeze, golden fur catching warm light. Low-angle side tracking shot from sea level moving with the board, 18mm wide cinematic feel, slight handheld energy. Vertical 9:16 framing, vibrant warm-and-teal lifestyle aesthetic.\n\nDialogue: (no dialogue, dog gives one happy bark mid-ride)\n\nAudio: Continuous crashing wave foam, one bright happy 'woof' from the dog with natural timbre, steady sea breeze, distant seagull cry, no music."
+        },
+        "runway-gen4": {
+          "method": "Gen-4.5 + Aleph 后续 re-style 可调动漫风",
+          "prompt": "A photorealistic Golden Retriever wearing black aviator sunglasses balances on a white surfboard cruising a curling blue ocean wave at golden hour sunset, tongue lolling happily, fur ruffled by sea breeze. Low-angle side tracking shot from sea level moving with the board, vertical 9:16 framing, vibrant warm-and-teal lifestyle aesthetic, slight handheld feel. Preserve realistic dog body anatomy and fur physics, accurate wave dynamics, no morphing."
+        },
+        "pika-2.5": {
+          "method": "Pika 单焦点 viral 短",
+          "prompt": "A Golden Retriever wearing aviator sunglasses surfing on a wave at sunset, tongue out happy expression, fur ruffled by sea breeze, low-angle side tracking, vertical 9:16, warm sunset glow, viral TikTok style, 1080p, no morphing."
+        },
+        "hailuo-02": {
+          "method": "Director's AI + 物理(动物动态+水流+毛发)",
+          "prompt": "A photorealistic Golden Retriever wearing black Ray-Ban aviator sunglasses balances on a white surfboard on a curling blue ocean wave at golden hour sunset. The dog shifts weight with accurate canine balance dynamics — paws gripping the deck, slight back-leg flex with each wave undulation, tail counter-balancing. Golden fur ripples in the sea breeze with realistic strand physics. The wave curls with accurate fluid dynamics, board slicing through spraying fine mist with proper droplet trajectory. Tongue extends with natural saliva sheen catching the warm light. Low-angle side tracking shot at sea level. Hyperreal animal anatomy and aquatic physics."
+        },
+        "hunyuan-video": {
+          "method": "Master 模式 + 拟人化构图",
+          "prompt": "A photorealistic Golden Retriever wearing black Ray-Ban aviator sunglasses balances confidently on a white surfboard cruising along a beautifully curling blue ocean wave at golden hour sunset. His pink tongue lolls happily out the side of his mouth, ears flapping in the warm sea breeze, golden fur ruffled and catching the low warm sunlight. The surfboard slices through the wave crest spraying a fine mist into the air. Low-angle side tracking shot from sea level moving parallel with the board, vertical 9:16 framing, vibrant warm-and-teal aspirational lifestyle aesthetic, slight handheld documentary feel for authentic adventure energy."
+        },
+        "wan-2.5": {
+          "method": "Entity + Scene + Motion + Sound(狗叫+海浪)",
+          "prompt": "Entity: A photorealistic Golden Retriever wearing black Ray-Ban aviator sunglasses, golden fur, tongue lolling happily.\nScene: A curling blue ocean wave at golden hour sunset, deep teal water with warm orange sky, sea spray in the air.\nMotion: The dog balances confidently on a white surfboard, paws gripping deck, ears flapping in sea breeze; surfboard slices wave crest spraying fine mist; dog gives one happy mid-ride bark. Low-angle side tracking shot from sea level moving with the board.\nSound: Continuous crashing wave foam, one bright happy 'woof' from the dog with natural canine timbre, steady sea breeze, distant seagull cry, no music."
+        },
+        "jimeng-3": {
+          "method": "中文 8 维度 + 治愈系萌宠美学",
+          "prompt": "夕阳下的碧蓝海面,卷起一道完美海浪,远处橙红色天空。\n\n主角:一只金毛犬,戴着黑色雷朋飞行员墨镜,毛发被海风吹得蓬松柔顺,粉嫩舌头愉快地伸在嘴角外,耳朵随风轻颤。\n\n动作:金毛自信地站在一块白色冲浪板上,四肢稳稳抓住板面保持平衡,身体随波浪起伏微调重心,尾巴自然摆动。冲浪板穿过浪尖,溅起细密水花;金毛兴奋地朝镜头方向 \"汪\" 了一声。\n\n镜头:低角度从海面贴水平行跟拍,广角带有轻微纪录片手持感,竖屏 9:16 构图。\n\n质感:真实写实但带有治愈轻快感,温暖橙金与海水深蓝撞色,4K 精度,真实犬类身体动态与毛发物理。\n\n背景音:持续不断的海浪拍打声,金毛清亮的一声欢快吠叫,海风稳定,远处海鸥鸣叫,无背景音乐。"
+        }
+      }
+    }
+  ]
+}

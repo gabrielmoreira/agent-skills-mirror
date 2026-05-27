@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 6 followed patterns, 521 file(s) materialized.
+Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 6 followed patterns, 563 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 6 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 521 |
+| Files         | 563 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -525,66 +525,108 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 459 | ✓ | [`showcase/integrations/strands/src/app/demos/tool-rendering/README.md`](showcase/integrations/strands/src/app/demos/tool-rendering/README.md) |
 | 460 | ✓ | [`showcase/README.md`](showcase/README.md) |
 | 461 | ✓ | [`showcase/shell-docs/src/app/llms.txt/route.ts`](showcase/shell-docs/src/app/llms.txt/route.ts) |
-| 462 | ✓ | [`skills/0-to-working-chat/SKILL.md`](skills/0-to-working-chat/SKILL.md) |
-| 463 | ✓ | [`skills/a2ui-renderer/SKILL.md`](skills/a2ui-renderer/SKILL.md) |
-| 464 | ✓ | [`skills/debug-and-troubleshoot/references/error-codes.md`](skills/debug-and-troubleshoot/references/error-codes.md) |
-| 465 | ✓ | [`skills/debug-and-troubleshoot/SKILL.md`](skills/debug-and-troubleshoot/SKILL.md) |
-| 466 | ✓ | [`skills/go-to-production/SKILL.md`](skills/go-to-production/SKILL.md) |
-| 467 | ✓ | [`skills/react-core/references/agent-access.md`](skills/react-core/references/agent-access.md) |
-| 468 | ✓ | [`skills/react-core/references/attachments.md`](skills/react-core/references/attachments.md) |
-| 469 | ✓ | [`skills/react-core/references/capabilities.md`](skills/react-core/references/capabilities.md) |
-| 470 | ✓ | [`skills/react-core/references/chat-components.md`](skills/react-core/references/chat-components.md) |
-| 471 | ✓ | [`skills/react-core/references/client-side-tools.md`](skills/react-core/references/client-side-tools.md) |
-| 472 | ✓ | [`skills/react-core/references/custom-message-renderers.md`](skills/react-core/references/custom-message-renderers.md) |
-| 473 | ✓ | [`skills/react-core/references/debug-mode.md`](skills/react-core/references/debug-mode.md) |
-| 474 | ✓ | [`skills/react-core/references/human-in-the-loop.md`](skills/react-core/references/human-in-the-loop.md) |
-| 475 | ✓ | [`skills/react-core/references/provider-setup.md`](skills/react-core/references/provider-setup.md) |
-| 476 | ✓ | [`skills/react-core/references/rendering-activity-messages.md`](skills/react-core/references/rendering-activity-messages.md) |
-| 477 | ✓ | [`skills/react-core/references/rendering-tool-calls.md`](skills/react-core/references/rendering-tool-calls.md) |
-| 478 | ✓ | [`skills/react-core/references/suggestions.md`](skills/react-core/references/suggestions.md) |
-| 479 | ✓ | [`skills/react-core/references/switching-agents-recipes.md`](skills/react-core/references/switching-agents-recipes.md) |
-| 480 | ✓ | [`skills/react-core/references/switching-agents.md`](skills/react-core/references/switching-agents.md) |
-| 481 | ✓ | [`skills/react-core/references/threads.md`](skills/react-core/references/threads.md) |
-| 482 | ✓ | [`skills/react-core/SKILL.md`](skills/react-core/SKILL.md) |
-| 483 | ✓ | [`skills/runtime/references/agent-runners-custom.md`](skills/runtime/references/agent-runners-custom.md) |
-| 484 | ✓ | [`skills/runtime/references/agent-runners-in-memory.md`](skills/runtime/references/agent-runners-in-memory.md) |
-| 485 | ✓ | [`skills/runtime/references/agent-runners-sqlite.md`](skills/runtime/references/agent-runners-sqlite.md) |
-| 486 | ✓ | [`skills/runtime/references/agent-runners.md`](skills/runtime/references/agent-runners.md) |
-| 487 | ✓ | [`skills/runtime/references/built-in-agent-factory-modes.md`](skills/runtime/references/built-in-agent-factory-modes.md) |
-| 488 | ✓ | [`skills/runtime/references/built-in-agent-helper-utilities.md`](skills/runtime/references/built-in-agent-helper-utilities.md) |
-| 489 | ✓ | [`skills/runtime/references/built-in-agent-model-identifiers.md`](skills/runtime/references/built-in-agent-model-identifiers.md) |
-| 490 | ✓ | [`skills/runtime/references/built-in-agent.md`](skills/runtime/references/built-in-agent.md) |
-| 491 | ✓ | [`skills/runtime/references/intelligence-mode.md`](skills/runtime/references/intelligence-mode.md) |
-| 492 | ✓ | [`skills/runtime/references/middleware.md`](skills/runtime/references/middleware.md) |
-| 493 | ✓ | [`skills/runtime/references/server-side-tools.md`](skills/runtime/references/server-side-tools.md) |
-| 494 | ✓ | [`skills/runtime/references/setup-endpoint.md`](skills/runtime/references/setup-endpoint.md) |
-| 495 | ✓ | [`skills/runtime/references/transcription.md`](skills/runtime/references/transcription.md) |
-| 496 | ✓ | [`skills/runtime/references/wiring-a2a.md`](skills/runtime/references/wiring-a2a.md) |
-| 497 | ✓ | [`skills/runtime/references/wiring-adk.md`](skills/runtime/references/wiring-adk.md) |
-| 498 | ✓ | [`skills/runtime/references/wiring-ag2.md`](skills/runtime/references/wiring-ag2.md) |
-| 499 | ✓ | [`skills/runtime/references/wiring-agno.md`](skills/runtime/references/wiring-agno.md) |
-| 500 | ✓ | [`skills/runtime/references/wiring-aws-strands.md`](skills/runtime/references/wiring-aws-strands.md) |
-| 501 | ✓ | [`skills/runtime/references/wiring-crewai-crews.md`](skills/runtime/references/wiring-crewai-crews.md) |
-| 502 | ✓ | [`skills/runtime/references/wiring-crewai-flows.md`](skills/runtime/references/wiring-crewai-flows.md) |
-| 503 | ✓ | [`skills/runtime/references/wiring-external-agents.md`](skills/runtime/references/wiring-external-agents.md) |
-| 504 | ✓ | [`skills/runtime/references/wiring-langgraph.md`](skills/runtime/references/wiring-langgraph.md) |
-| 505 | ✓ | [`skills/runtime/references/wiring-llamaindex.md`](skills/runtime/references/wiring-llamaindex.md) |
-| 506 | ✓ | [`skills/runtime/references/wiring-mastra.md`](skills/runtime/references/wiring-mastra.md) |
-| 507 | ✓ | [`skills/runtime/references/wiring-mcp-apps-middleware.md`](skills/runtime/references/wiring-mcp-apps-middleware.md) |
-| 508 | ✓ | [`skills/runtime/references/wiring-ms-agent-framework.md`](skills/runtime/references/wiring-ms-agent-framework.md) |
-| 509 | ✓ | [`skills/runtime/references/wiring-pydantic-ai.md`](skills/runtime/references/wiring-pydantic-ai.md) |
-| 510 | ✓ | [`skills/runtime/SKILL.md`](skills/runtime/SKILL.md) |
-| 511 | ✓ | [`skills/scale-to-multi-agent/SKILL.md`](skills/scale-to-multi-agent/SKILL.md) |
-| 512 | ✓ | [`skills/spa-without-runtime/SKILL.md`](skills/spa-without-runtime/SKILL.md) |
-| 513 | ✓ | [`skills/v1-to-v2-migration/references/migration-playbook.md`](skills/v1-to-v2-migration/references/migration-playbook.md) |
-| 514 | ✓ | [`skills/v1-to-v2-migration/references/rename-table.md`](skills/v1-to-v2-migration/references/rename-table.md) |
-| 515 | ✓ | [`skills/v1-to-v2-migration/SKILL.md`](skills/v1-to-v2-migration/SKILL.md) |
-| 516 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
-| 517 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
-| 518 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
-| 519 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
-| 520 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 521 | → | [`README.md`](README.md) |
+| 462 | ✓ | [`skills/a2ui-renderer/SKILL.md`](skills/a2ui-renderer/SKILL.md) |
+| 463 | ✓ | [`skills/copilotkit-agui/references/building-agents.md`](skills/copilotkit-agui/references/building-agents.md) |
+| 464 | ✓ | [`skills/copilotkit-agui/references/client-sdk.md`](skills/copilotkit-agui/references/client-sdk.md) |
+| 465 | ✓ | [`skills/copilotkit-agui/references/event-flow-diagrams.md`](skills/copilotkit-agui/references/event-flow-diagrams.md) |
+| 466 | ✓ | [`skills/copilotkit-agui/references/protocol-spec.md`](skills/copilotkit-agui/references/protocol-spec.md) |
+| 467 | ✓ | [`skills/copilotkit-agui/SKILL.md`](skills/copilotkit-agui/SKILL.md) |
+| 468 | ✓ | [`skills/copilotkit-agui/sources.md`](skills/copilotkit-agui/sources.md) |
+| 469 | ✓ | [`skills/copilotkit-contribute/references/contribution-guide.md`](skills/copilotkit-contribute/references/contribution-guide.md) |
+| 470 | ✓ | [`skills/copilotkit-contribute/references/pr-guidelines.md`](skills/copilotkit-contribute/references/pr-guidelines.md) |
+| 471 | ✓ | [`skills/copilotkit-contribute/references/repo-structure.md`](skills/copilotkit-contribute/references/repo-structure.md) |
+| 472 | ✓ | [`skills/copilotkit-contribute/references/testing-guide.md`](skills/copilotkit-contribute/references/testing-guide.md) |
+| 473 | ✓ | [`skills/copilotkit-contribute/SKILL.md`](skills/copilotkit-contribute/SKILL.md) |
+| 474 | ✓ | [`skills/copilotkit-contribute/sources.md`](skills/copilotkit-contribute/sources.md) |
+| 475 | ✓ | [`skills/copilotkit-debug/references/agent-debugging.md`](skills/copilotkit-debug/references/agent-debugging.md) |
+| 476 | ✓ | [`skills/copilotkit-debug/references/error-patterns.md`](skills/copilotkit-debug/references/error-patterns.md) |
+| 477 | ✓ | [`skills/copilotkit-debug/references/quick-workflows.md`](skills/copilotkit-debug/references/quick-workflows.md) |
+| 478 | ✓ | [`skills/copilotkit-debug/references/runtime-debugging.md`](skills/copilotkit-debug/references/runtime-debugging.md) |
+| 479 | ✓ | [`skills/copilotkit-debug/SKILL.md`](skills/copilotkit-debug/SKILL.md) |
+| 480 | ✓ | [`skills/copilotkit-debug/sources.md`](skills/copilotkit-debug/sources.md) |
+| 481 | ✓ | [`skills/copilotkit-develop/eval.yaml`](skills/copilotkit-develop/eval.yaml) |
+| 482 | ✓ | [`skills/copilotkit-develop/references/api-surface.md`](skills/copilotkit-develop/references/api-surface.md) |
+| 483 | ✓ | [`skills/copilotkit-develop/references/chat-customization.md`](skills/copilotkit-develop/references/chat-customization.md) |
+| 484 | ✓ | [`skills/copilotkit-develop/references/runtime-api.md`](skills/copilotkit-develop/references/runtime-api.md) |
+| 485 | ✓ | [`skills/copilotkit-develop/SKILL.md`](skills/copilotkit-develop/SKILL.md) |
+| 486 | ✓ | [`skills/copilotkit-develop/sources.md`](skills/copilotkit-develop/sources.md) |
+| 487 | ✓ | [`skills/copilotkit-integrations/references/integrations/a2a.md`](skills/copilotkit-integrations/references/integrations/a2a.md) |
+| 488 | ✓ | [`skills/copilotkit-integrations/references/integrations/adk.md`](skills/copilotkit-integrations/references/integrations/adk.md) |
+| 489 | ✓ | [`skills/copilotkit-integrations/references/integrations/agno.md`](skills/copilotkit-integrations/references/integrations/agno.md) |
+| 490 | ✓ | [`skills/copilotkit-integrations/references/integrations/crewai.md`](skills/copilotkit-integrations/references/integrations/crewai.md) |
+| 491 | ✓ | [`skills/copilotkit-integrations/references/integrations/langgraph.md`](skills/copilotkit-integrations/references/integrations/langgraph.md) |
+| 492 | ✓ | [`skills/copilotkit-integrations/references/integrations/llamaindex.md`](skills/copilotkit-integrations/references/integrations/llamaindex.md) |
+| 493 | ✓ | [`skills/copilotkit-integrations/references/integrations/mastra.md`](skills/copilotkit-integrations/references/integrations/mastra.md) |
+| 494 | ✓ | [`skills/copilotkit-integrations/references/integrations/ms-agent-framework.md`](skills/copilotkit-integrations/references/integrations/ms-agent-framework.md) |
+| 495 | ✓ | [`skills/copilotkit-integrations/references/integrations/pydantic-ai.md`](skills/copilotkit-integrations/references/integrations/pydantic-ai.md) |
+| 496 | ✓ | [`skills/copilotkit-integrations/references/integrations/strands.md`](skills/copilotkit-integrations/references/integrations/strands.md) |
+| 497 | ✓ | [`skills/copilotkit-integrations/SKILL.md`](skills/copilotkit-integrations/SKILL.md) |
+| 498 | ✓ | [`skills/copilotkit-integrations/sources.md`](skills/copilotkit-integrations/sources.md) |
+| 499 | ✓ | [`skills/copilotkit-self-update/SKILL.md`](skills/copilotkit-self-update/SKILL.md) |
+| 500 | ✓ | [`skills/copilotkit-setup/assets/express-runtime.ts`](skills/copilotkit-setup/assets/express-runtime.ts) |
+| 501 | ✓ | [`skills/copilotkit-setup/assets/nextjs-app-router-page.tsx`](skills/copilotkit-setup/assets/nextjs-app-router-page.tsx) |
+| 502 | ✓ | [`skills/copilotkit-setup/assets/nextjs-app-router-route.ts`](skills/copilotkit-setup/assets/nextjs-app-router-route.ts) |
+| 503 | ✓ | [`skills/copilotkit-setup/eval.yaml`](skills/copilotkit-setup/eval.yaml) |
+| 504 | ✓ | [`skills/copilotkit-setup/references/framework-detection.md`](skills/copilotkit-setup/references/framework-detection.md) |
+| 505 | ✓ | [`skills/copilotkit-setup/references/runtime-architecture.md`](skills/copilotkit-setup/references/runtime-architecture.md) |
+| 506 | ✓ | [`skills/copilotkit-setup/references/telemetry-setup.md`](skills/copilotkit-setup/references/telemetry-setup.md) |
+| 507 | ✓ | [`skills/copilotkit-setup/SKILL.md`](skills/copilotkit-setup/SKILL.md) |
+| 508 | ✓ | [`skills/copilotkit-setup/sources.md`](skills/copilotkit-setup/sources.md) |
+| 509 | ✓ | [`skills/copilotkit-upgrade/references/breaking-changes.md`](skills/copilotkit-upgrade/references/breaking-changes.md) |
+| 510 | ✓ | [`skills/copilotkit-upgrade/references/deprecation-map.md`](skills/copilotkit-upgrade/references/deprecation-map.md) |
+| 511 | ✓ | [`skills/copilotkit-upgrade/references/v1-to-v2-migration.md`](skills/copilotkit-upgrade/references/v1-to-v2-migration.md) |
+| 512 | ✓ | [`skills/copilotkit-upgrade/SKILL.md`](skills/copilotkit-upgrade/SKILL.md) |
+| 513 | ✓ | [`skills/copilotkit-upgrade/sources.md`](skills/copilotkit-upgrade/sources.md) |
+| 514 | ✓ | [`skills/react-core/references/agent-access.md`](skills/react-core/references/agent-access.md) |
+| 515 | ✓ | [`skills/react-core/references/attachments.md`](skills/react-core/references/attachments.md) |
+| 516 | ✓ | [`skills/react-core/references/capabilities.md`](skills/react-core/references/capabilities.md) |
+| 517 | ✓ | [`skills/react-core/references/chat-components.md`](skills/react-core/references/chat-components.md) |
+| 518 | ✓ | [`skills/react-core/references/client-side-tools.md`](skills/react-core/references/client-side-tools.md) |
+| 519 | ✓ | [`skills/react-core/references/custom-message-renderers.md`](skills/react-core/references/custom-message-renderers.md) |
+| 520 | ✓ | [`skills/react-core/references/debug-mode.md`](skills/react-core/references/debug-mode.md) |
+| 521 | ✓ | [`skills/react-core/references/human-in-the-loop.md`](skills/react-core/references/human-in-the-loop.md) |
+| 522 | ✓ | [`skills/react-core/references/provider-setup.md`](skills/react-core/references/provider-setup.md) |
+| 523 | ✓ | [`skills/react-core/references/rendering-activity-messages.md`](skills/react-core/references/rendering-activity-messages.md) |
+| 524 | ✓ | [`skills/react-core/references/rendering-tool-calls.md`](skills/react-core/references/rendering-tool-calls.md) |
+| 525 | ✓ | [`skills/react-core/references/suggestions.md`](skills/react-core/references/suggestions.md) |
+| 526 | ✓ | [`skills/react-core/references/switching-agents-recipes.md`](skills/react-core/references/switching-agents-recipes.md) |
+| 527 | ✓ | [`skills/react-core/references/switching-agents.md`](skills/react-core/references/switching-agents.md) |
+| 528 | ✓ | [`skills/react-core/references/threads.md`](skills/react-core/references/threads.md) |
+| 529 | ✓ | [`skills/react-core/SKILL.md`](skills/react-core/SKILL.md) |
+| 530 | ✓ | [`skills/runtime/references/agent-runners-custom.md`](skills/runtime/references/agent-runners-custom.md) |
+| 531 | ✓ | [`skills/runtime/references/agent-runners-in-memory.md`](skills/runtime/references/agent-runners-in-memory.md) |
+| 532 | ✓ | [`skills/runtime/references/agent-runners-sqlite.md`](skills/runtime/references/agent-runners-sqlite.md) |
+| 533 | ✓ | [`skills/runtime/references/agent-runners.md`](skills/runtime/references/agent-runners.md) |
+| 534 | ✓ | [`skills/runtime/references/built-in-agent-factory-modes.md`](skills/runtime/references/built-in-agent-factory-modes.md) |
+| 535 | ✓ | [`skills/runtime/references/built-in-agent-helper-utilities.md`](skills/runtime/references/built-in-agent-helper-utilities.md) |
+| 536 | ✓ | [`skills/runtime/references/built-in-agent-model-identifiers.md`](skills/runtime/references/built-in-agent-model-identifiers.md) |
+| 537 | ✓ | [`skills/runtime/references/built-in-agent.md`](skills/runtime/references/built-in-agent.md) |
+| 538 | ✓ | [`skills/runtime/references/intelligence-mode.md`](skills/runtime/references/intelligence-mode.md) |
+| 539 | ✓ | [`skills/runtime/references/middleware.md`](skills/runtime/references/middleware.md) |
+| 540 | ✓ | [`skills/runtime/references/server-side-tools.md`](skills/runtime/references/server-side-tools.md) |
+| 541 | ✓ | [`skills/runtime/references/setup-endpoint.md`](skills/runtime/references/setup-endpoint.md) |
+| 542 | ✓ | [`skills/runtime/references/transcription.md`](skills/runtime/references/transcription.md) |
+| 543 | ✓ | [`skills/runtime/references/wiring-a2a.md`](skills/runtime/references/wiring-a2a.md) |
+| 544 | ✓ | [`skills/runtime/references/wiring-adk.md`](skills/runtime/references/wiring-adk.md) |
+| 545 | ✓ | [`skills/runtime/references/wiring-ag2.md`](skills/runtime/references/wiring-ag2.md) |
+| 546 | ✓ | [`skills/runtime/references/wiring-agno.md`](skills/runtime/references/wiring-agno.md) |
+| 547 | ✓ | [`skills/runtime/references/wiring-aws-strands.md`](skills/runtime/references/wiring-aws-strands.md) |
+| 548 | ✓ | [`skills/runtime/references/wiring-crewai-crews.md`](skills/runtime/references/wiring-crewai-crews.md) |
+| 549 | ✓ | [`skills/runtime/references/wiring-crewai-flows.md`](skills/runtime/references/wiring-crewai-flows.md) |
+| 550 | ✓ | [`skills/runtime/references/wiring-external-agents.md`](skills/runtime/references/wiring-external-agents.md) |
+| 551 | ✓ | [`skills/runtime/references/wiring-langgraph.md`](skills/runtime/references/wiring-langgraph.md) |
+| 552 | ✓ | [`skills/runtime/references/wiring-llamaindex.md`](skills/runtime/references/wiring-llamaindex.md) |
+| 553 | ✓ | [`skills/runtime/references/wiring-mastra.md`](skills/runtime/references/wiring-mastra.md) |
+| 554 | ✓ | [`skills/runtime/references/wiring-mcp-apps-middleware.md`](skills/runtime/references/wiring-mcp-apps-middleware.md) |
+| 555 | ✓ | [`skills/runtime/references/wiring-ms-agent-framework.md`](skills/runtime/references/wiring-ms-agent-framework.md) |
+| 556 | ✓ | [`skills/runtime/references/wiring-pydantic-ai.md`](skills/runtime/references/wiring-pydantic-ai.md) |
+| 557 | ✓ | [`skills/runtime/SKILL.md`](skills/runtime/SKILL.md) |
+| 558 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
+| 559 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
+| 560 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
+| 561 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
+| 562 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 563 | → | [`README.md`](README.md) |
 
 ---
 

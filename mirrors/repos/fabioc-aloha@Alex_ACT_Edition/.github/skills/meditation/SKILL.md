@@ -1,12 +1,6 @@
 ---
-type: skill
-lifecycle: stable
 name: "meditation"
 description: "Consolidate session learning into permanent architecture — extract patterns into skills, instructions, prompts, or memory"
-tier: core
-applyTo: '**/*meditat*,**/*consolidat*'
-inheritance: inheritable
-currency: 2026-05-13
 lastReviewed: 2026-05-13
 ---
 
@@ -43,7 +37,8 @@ Separate signal from noise. For each candidate pattern, ask: *"Is this already c
 | Reusable domain knowledge | Skill (`.github/skills/<name>/SKILL.md`) |
 | Always-on behavior or rule | Instruction (`.github/instructions/<name>.instructions.md`) |
 | Repeatable workflow / slash command | Prompt (`.github/prompts/<name>.prompt.md`) |
-| Automatable mechanical task | Muscle (`.github/muscles/<name>.cjs`) |
+| Automatable task tied to one skill | Script in that skill's folder (`.github/skills/<skill>/scripts/<name>.cjs`) |
+| Cross-cutting automation | Script (`.github/scripts/<name>.cjs`) |
 | User preference (cross-project) | User memory (`/memories/<name>.md`) |
 | Project / repo convention | Repo memory (`/memories/repo/<name>.md`) |
 | Cross-session handoff (next session needs to know) | Repo file (`HANDOFF.md` at repo root) — NOT session memory |

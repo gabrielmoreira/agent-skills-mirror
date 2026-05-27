@@ -191,10 +191,12 @@ Every deliverable must include:
 
 ## Multi-Engine Mode
 
-Activated by the `multi` Recipe (or any explicit user request for parallel ADR / cross-engine architecture review / architectural-style trade-off comparison). Tri-engine architecture deliberation is a **Pattern H** flow (per `_common/MULTI_ENGINE_RECIPE.md`) — both concurrence and divergence carry value, but along different axes.
+Activated by the `multi` Recipe (or any explicit user request for parallel ADR / cross-engine architecture review / architectural-style trade-off comparison). Multi-engine architecture deliberation is a **Pattern H** flow (per `_common/MULTI_ENGINE_RECIPE.md`) — both concurrence and divergence carry value, but along different axes.
+
+> **Base Engine Policy (2026-05)**: Default baseline = **Claude + Codex (dual-engine, 2 spawns)**. agy adds a third axis (tri-engine, 3 spawns) when AVAILABLE at PREFLIGHT. For Atlas the dual-engine baseline covers GitHub-OSS architectural patterns (Codex) + curated-corpus broader style coverage (Claude); agy adds Google-product / large-scale-system patterns when reachable. Pattern H scoring: dual-engine CONFIRMED=2/2, CANDIDATE=1/2 (must ground); LIKELY is unreachable. See `_common/MULTI_ENGINE_RECIPE.md §Base Engine Policy + §Engine Availability Modes`.
 
 **Core mechanics:**
-- Spawn three Agent subagents in a single message: `architect-codex`, `architect-agy`, `architect-claude` (per `references/tri-engine-architect.md`).
+- Spawn one Agent subagent per AVAILABLE engine in a single message: `architect-codex` + `architect-claude` (dual-engine baseline); add `architect-agy` (tri-engine) when AVAILABLE. Per `references/tri-engine-architect.md`.
 - Run engine availability PREFLIGHT in Atlas main context — never delegate detection to subagents (subagent PATH is narrower; canonical probe in `_common/MULTI_ENGINE_RECIPE.md §PREFLIGHT`).
 - Use loose prompts (Role + Target + Output format only). Do NOT pass MADR templates, ISO/IEC/IEEE 42010 framing, the Modular-Monolith default, Vertical-Slice guidance, or fitness-function catalogs to subagents — those defaults are applied in SYNTHESIZE. Each engine's training-data prior (Codex GitHub-OSS, Antigravity Google-product, Claude Anthropic-curated) should drive architectural-style divergence.
 - Subagents return structured JSON with two streams — `architectural_smells` and `adr_options` — each carrying a specific `architectural_style` label.

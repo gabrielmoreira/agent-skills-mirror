@@ -1,11 +1,11 @@
 ---
 name: judge
-description: Automated code review agent orchestrating tri-engine parallel review (Codex + Antigravity + Claude Code) via subagents with grounding verification that ships only findings worth fixing. For PR review and pre-commit checks — detects bugs, vulnerabilities, logic errors, and intent misalignment. Complements Zen's refactoring.
+description: Automated code review agent orchestrating multi-engine parallel review via subagents with grounding verification that ships only findings worth fixing. Default baseline Claude + Codex (dual-engine); agy added as optional third axis when AVAILABLE. For PR review and pre-commit checks — detects bugs, vulnerabilities, logic errors, and intent misalignment. Complements Zen's refactoring.
 ---
 
 <!--
 CAPABILITIES_SUMMARY:
-- tri_engine_orchestration: Default `/judge` flow — preflight engine availability in main context, then spawn Codex + Antigravity + Claude Code subagents in parallel (one Agent-tool message), integrate findings via NORMALIZE→CLUSTER→SCORE→GROUND→ARBITRATE→FILTER, return only actionable verified findings. Independent subagent contexts eliminate self-bias
+- multi_engine_orchestration: Default `/judge` flow — preflight engine availability in main context, then spawn one Agent-tool subagent per AVAILABLE engine in a single message (dual-engine baseline: Claude + Codex; tri-engine when agy AVAILABLE), integrate findings via NORMALIZE→CLUSTER→SCORE→GROUND→ARBITRATE→FILTER, return only actionable verified findings. Independent subagent contexts eliminate self-bias. agy is optional per `_common/MULTI_ENGINE_RECIPE.md §Base Engine Policy`
 - engine_availability_preflight: Robust binary detection in main Judge context with fallback path probing (`~/.bun/bin/`, `~/.local/bin/`, `/usr/local/bin/`, `/opt/homebrew/bin/`, `~/.npm-global/bin/`) before fan-out. Subagent PATH is narrower than interactive shell — never delegate availability detection. Auth/network/quota errors are runtime failures, not unavailability
 - concurrence_scoring: Label each finding cluster by engine agreement — CONFIRMED (3/3), LIKELY (2/3), CANDIDATE (1/3-must-ground)
 - grounding_verification: Judge-main-context verification of CANDIDATE findings by reading actual code; mark VERIFIED / REJECTED / NEEDS-INFO based on existence, mitigation, style-only, or unrelated-fix criteria
@@ -83,7 +83,7 @@ Route elsewhere when the task is primarily:
 
 ## Core Contract
 
-- **Tri-engine parallel review is the default `/judge` flow**: spawn three Agent subagents in a single message (Codex, Antigravity, Claude Code), integrate findings, verify via grounding, and return **only findings that warrant fixing**. See `references/tri-engine-review.md` for the full algorithm. Single-engine mode is used only when the user explicitly requests one engine, when two engines are unavailable, or for trivial scope (<50 LOC low-risk).
+- **Multi-engine parallel review is the default `/judge` flow**: spawn one Agent subagent per AVAILABLE engine in a single message. **Default baseline: Claude + Codex (dual-engine, 2 spawns)**; **tri-engine (3 spawns)** when agy is also AVAILABLE at PREFLIGHT. Integrate findings, verify via grounding, and return **only findings that warrant fixing**. See `references/tri-engine-review.md` for the full algorithm (filename retained for backward-compat; covers both modes). Single-engine mode is used only when the user explicitly requests one engine, when only one of Claude/Codex is available, or for trivial scope (<50 LOC low-risk).
 - Execute each engine's review CLI with appropriate flags per its usage reference; never skip CLI execution inside a subagent.
 - Classify all findings by severity (CRITICAL/HIGH/MEDIUM/LOW/INFO) with line-specific references.
 - Verify intent alignment between code changes and PR/commit descriptions.
@@ -113,7 +113,7 @@ Route elsewhere when the task is primarily:
 
 | Mode | Trigger | Flow | Output | Subagent → CLI |
 |------|---------|------|--------|----------------|
-| **Tri-Engine Review (DEFAULT for `/judge`)** | `/judge`, "review PR", "check this PR", "review changes" | Fan out to 3 parallel subagents (Codex + Antigravity + Claude) → integrate → ground → filter | Verified, actionable findings only | `review-codex` → `codex-review-usage.md`; `review-agy` → `antigravity-review-usage.md`; `review-claude` → `claude-review-usage.md` (fresh `-p` session, no self-bias) |
+| **Multi-Engine Review (DEFAULT for `/judge`)** | `/judge`, "review PR", "check this PR", "review changes" | Fan out to 2 (Claude + Codex baseline) or 3 (when agy AVAILABLE) parallel subagents → integrate → ground → filter | Verified, actionable findings only | `review-codex` → `codex-review-usage.md`; `review-claude` → `claude-review-usage.md` (fresh `-p` session, no self-bias); `review-agy` (when AVAILABLE) → `antigravity-review-usage.md` |
 | **Single-Engine Review** | User explicitly names one engine, or two engines unavailable, or trivial scope (<50 LOC low-risk) | Run the named engine via its usage reference | Engine-native report | Named engine's usage reference |
 | **GitHub Async Review** | "review on GitHub", CI/CD trigger | `@codex review` in PR comment | Async PR review posted as GH review | n/a (PR-comment trigger) |
 
@@ -184,7 +184,7 @@ Default tri-engine flow: `SCOPE → PREFLIGHT → FAN-OUT → NORMALIZE → CLUS
 | `FAN-OUT` | Spawn one Agent subagent per AVAILABLE engine in a single message: `review-codex`, `review-agy`, `review-claude`. Each runs its engine's CLI (using the absolute path from PREFLIGHT if provided) and returns JSON-structured findings. | Parallel execution via one message with N Agent calls; no shared context between engines | `references/tri-engine-review.md`, `references/codex-review-usage.md`, `references/antigravity-review-usage.md`, `references/claude-review-usage.md` |
 | `NORMALIZE` | Parse all three JSON outputs into a unified finding list tagged with source engine. If an engine returns free-form, ask its subagent to re-emit JSON. | Deterministic schema: `{severity, file, line, line_end?, issue_class, issue, evidence, suggested_fix}` (`line_end` optional, defaults to `line`) | `references/tri-engine-review.md` |
 | `CLUSTER` | Group findings describing the same defect: same file + line range overlap (±3) + same issue_class / semantic equivalence. Record concurrence set. | One defect = one cluster; multi-engine matches dedup to a single entry | `references/tri-engine-review.md` |
-| `SCORE` | Label each cluster: 3/3 = CONFIRMED · 2/3 = LIKELY · 1/3 = CANDIDATE. | Concurrence raises confidence; single-engine findings must be grounded | `references/tri-engine-review.md` |
+| `SCORE` | Label each cluster: **tri-engine** 3/3 = CONFIRMED · 2/3 = LIKELY · 1/3 = CANDIDATE; **dual-engine** 2/2 = CONFIRMED · 1/2 = CANDIDATE (LIKELY is unreachable, so dual-engine bar for shipping is naturally tighter). | Concurrence raises confidence; single-engine findings must be grounded | `references/tri-engine-review.md` |
 | `GROUND` | Judge (main context) verifies each CANDIDATE by reading the actual code: does the defect exist? already mitigated? style-only? fix unrelated? Mark VERIFIED / REJECTED / NEEDS-INFO. Spot-check first CONFIRMED too. | Grounding is Judge's own work, never delegated | `references/bug-patterns.md`, `references/framework-reviews.md` |
 | `ARBITRATE` | Resolve severity conflicts (default to max, then apply override rules). Choose remediation agent per finding (Builder / Sentinel / Zen / Radar / Atlas). | Evidence-based severity wins; remediation routing per collaboration map | `references/codex-integration.md` |
 | `FILTER` | Keep only findings that are VERIFIED/CONFIRMED **and** severity ≥ MEDIUM (or user-requested) **and** have concrete fix **and** not already mitigated **and** not style-only. Drop everything else. | Every shipped finding must be worth fixing | `references/tri-engine-review.md`, `references/review-anti-patterns.md` |

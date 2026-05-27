@@ -1,12 +1,6 @@
 ---
-type: skill
-lifecycle: stable
-inheritance: inheritable
 name: brain-audit
 description: Perform a local brain audit for ACT Edition using deterministic QA plus targeted file review, then produce severity-ranked fixes.
-tier: standard
-applyTo: '**/*audit*brain*,**/*brain*qa*,**/*epistemic*qa*,**/*quality*'
-currency: 2026-05-13
 lastReviewed: 2026-05-13
 ---
 

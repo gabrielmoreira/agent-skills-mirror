@@ -1,13 +1,6 @@
 ---
-type: skill
-lifecycle: stable
 name: "alex-banner-generation"
 description: "Generate on-brand Alex — ACT Edition SVG banners for documents (READMEs, plans, notes, release artifacts)"
-tier: standard
-inheritance: inheritable
-applyTo: '**/*banner*,**/assets/**,**/README*,**/PLAN*,**/CHANGELOG*'
-muscle: .github/muscles/generate-banner.cjs
-currency: 2026-04-30
 lastReviewed: 2026-04-30
 ---
 
@@ -64,7 +57,7 @@ Ask the user only for what's missing. Defaults:
 ### Step 2 — Generate
 
 ```sh
-node .github/muscles/generate-banner.cjs \
+node .github/skills/alex-banner-generation/scripts/generate-banner.cjs \
   --title "Document Title" \
   --subtitle "One-line purpose statement." \
   --watermark PLAN

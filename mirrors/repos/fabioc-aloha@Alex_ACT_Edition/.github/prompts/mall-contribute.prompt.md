@@ -1,7 +1,6 @@
 ---
 description: "Propose a local skill for contribution to the Plugin Mall — strip project specifics, format as a Mall-compatible proposal, submit via feedback channel"
-mode: agent
-lastReviewed: 2026-05-02
+lastReviewed: 2026-05-26
 ---
 
 # Contribute a Skill to the Plugin Mall
@@ -102,3 +101,7 @@ Propose a local skill (from `.github/skills/local/`) for inclusion in the Alex A
 - Never submit a skill that contains PII, credentials, or project-identifying information.
 - The Supervisor evaluates proposals against the Mall's 5-dimension scorecard (maintenance, adoption, license, fit, documentation). Writing a quality proposal with clear generalizability evidence increases acceptance odds.
 - Token cost estimate: count characters in the SKILL.md body, divide by 4.
+
+## Would Revise If
+
+Revisit this prompt by **2026-08-26** (90 days) or sooner if any of the following fires: the workflow it invokes ceases to produce its intended output (skill body changed but prompt steps stale); the visible markers / verification steps in its body are consistently skipped; or the slash-command name is no longer discoverable in the prompt picker.

@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Monitor session health, manage context window, and ensure continuity across sessions"
-application: "Always active — unconscious monitoring of session state and context capacity"
 applyTo: "**"
-currency: 2026-05-19
 lastReviewed: 2026-05-19
 ---
 

@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: provisional
-inheritance: inheritable
 description: "Every new or edited brain artefact (instruction / skill / prompt / agent / muscle) must declare a specific falsification deadline — a literal date, an observable event, or count+time bound — not 'after N passes' or 'when conditions warrant'."
-application: "Always active when authoring or materially editing brain artefacts in Supervisor or Edition"
-applyTo: "**/.github/instructions/**,**/.github/skills/**,**/.github/prompts/**,**/.github/muscles/**,**/.github/agents/**"
-currency: 2026-05-24
+applyTo: "**/.github/instructions/**,**/.github/skills/**,**/.github/prompts/**,**/.github/agents/**"
 lastReviewed: 2026-05-24
 ---
 
@@ -19,9 +14,9 @@ Lifted from Karpathy_Loop's Phase 2b meditation diagnosis (2026-05-23) and adopt
 
 Every artefact's `## Falsifiability` or `## Would Revise If` section must include at least one of:
 
-1. **Date-based deadline**: "If <condition> not met by <YYYY-MM-DD>, downgrade `lifecycle` to `sinking`."
-2. **Event-based trigger**: "If <observable event> occurs without the artefact firing as designed, downgrade `lifecycle` to `sinking`."
-3. **Count-based with time bound**: "If after N <units> AND by <YYYY-MM-DD>, <condition> hasn't held, downgrade `lifecycle`." (N-only is **not** sufficient.)
+1. **Date-based deadline**: "If <condition> not met by <YYYY-MM-DD>, sunset this artefact."
+2. **Event-based trigger**: "If <observable event> occurs without the artefact firing as designed, sunset this artefact."
+3. **Count-based with time bound**: "If after N <units> AND by <YYYY-MM-DD>, <condition> hasn't held, sunset this artefact." (N-only is **not** sufficient.)
 
 The deadline must be specific enough that "did it happen?" is answerable by a third party reading the brain six months later.
 
@@ -29,10 +24,10 @@ The deadline must be specific enough that "did it happen?" is answerable by a th
 
 | Failure mode | Without deadline | With deadline |
 |---|---|---|
-| Skill never invoked, no one notices | Stays at `lifecycle: provisional` forever; accumulates in brain | At deadline, gets evaluated; if unused, sinks |
+| Skill never invoked, no one notices | Accumulates in brain indefinitely | At deadline, gets evaluated; if unused, sunsets |
 | Skill invoked but never produces signal | No clock running | Deadline forces explicit "did it produce signal?" check |
 | Author hopes future evidence will materialise | Hope continues indefinitely | Hope expires on date D |
-| Reader can't tell if artefact is alive or stalled | Frontmatter says `lifecycle: provisional` permanently | `lifecycle` transitions on a known schedule |
+| Reader can't tell if artefact is alive or stalled | No sunset clock | Sunset triggers on a known schedule |
 
 ## What this doesn't require
 
@@ -46,13 +41,12 @@ Add to the artefact's `## Falsifiability` (skills) or `## Would Revise If` (inst
 
 ```markdown
 **Falsification deadline**: <date-based, event-based, or count+time bound>
-- If <condition>, downgrade `lifecycle: provisional → sinking`
-- If still failing at next deadline check (<date+30>), `lifecycle: sinking → archived`
+- If <condition> by <date>, sunset this rule (delete the file or strip it to a stub).
 ```
 
-The `lifecycle` transitions are: `provisional → sinking → archived`. Two-step transition prevents premature archival; the second deadline gives one more pass before the artefact is sunk for good.
+A "sunset" is a single decisive action at the deadline: either the rule has earned its keep (revise and reset the deadline) or it hasn't (remove it). There is no intermediate marker. The next quarterly retraining pass picks up un-acted-on deadlines.
 
-`lifecycle: stable` artefacts may opt out of the deadline once they have ≥ 6 months of evidence and have survived one quarterly retraining pass.
+Long-lived artefacts that have already survived one full quarterly retraining pass with ≥ 6 months of evidence may drop the deadline. New or recently-edited artefacts always carry one.
 
 ## Diversity audit (gate)
 
@@ -70,20 +64,19 @@ Per Supervisor's four-repos comparison tracker (§0.1 row 2), after this instruc
 
 ## Self-application
 
-This instruction is itself `lifecycle: provisional` and so this rule applies to it:
+This instruction is itself provisional and so this rule applies to it.
 
 **Falsification deadline (this instruction)**:
 
-- **Event**: 5 new or materially edited brain artefacts created with this instruction active. If the deadline declaration is consistently absent, ignored, or treated as boilerplate, downgrade `lifecycle: provisional → sinking`.
-- **Date**: 2026-08-23 (90 days from adoption). If by then this instruction hasn't fired on at least 2 new artefacts AND the deadlines on those artefacts haven't influenced any concrete `lifecycle` transition, downgrade `lifecycle: provisional → sinking`.
-- **Sink to archived**: at next deadline check (2026-09-22), if still failing, transition `lifecycle: sinking → archived`.
+- **Event**: 5 new or materially edited brain artefacts created with this instruction active. If the deadline declaration is consistently absent, ignored, or treated as boilerplate, sunset this instruction.
+- **Date**: 2026-08-23 (90 days from adoption). If by then this instruction hasn't fired on at least 2 new artefacts AND those deadlines haven't influenced any concrete sunset decision, sunset this instruction.
 
 ## Would Revise If
 
 Revise this instruction if:
 
 - The deadline declaration becomes boilerplate (every artefact picks the same date or template) — sharpen the requirement
-- Multiple artefacts hit their deadline simultaneously and produce a cascading downgrade that destabilises the brain — the two-step sink rule is the safety net but if it doesn't help, revisit
+- Multiple artefacts hit their deadline simultaneously and produce a cascading sunset that destabilises the brain — revisit pacing
 - Setting deadlines becomes the bottleneck for creating new artefacts (paralysis-by-deadline) — relax the rule for low-stakes artefacts
 
-**Falsification deadline**: 2026-08-23 (date-based), 5 new artefacts adopting deadlines (event-based). Whichever fires first. See § Self-application for two-step sink rule.
+**Falsification deadline**: 2026-08-23 (date-based), 5 new artefacts adopting deadlines (event-based). Whichever fires first.

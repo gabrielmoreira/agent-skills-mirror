@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Automatic memory formation triggers — when to persist without being asked"
-application: "Always active — unconscious monitoring for memory-worthy events"
 applyTo: "**"
-currency: 2026-04-30
 lastReviewed: 2026-04-30
 ---
 

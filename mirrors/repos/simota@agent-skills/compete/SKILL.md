@@ -190,19 +190,21 @@ Behavior notes per Recipe:
 
 ## Multi-Engine Mode
 
-Activated by the `multi` Recipe (or any explicit user request for tri-engine / cross-engine competitive coverage). Pattern D Divergence-primary — Compete optimizes for *competitive coverage breadth*, not concurrence. The load-bearing deliverable is the **VERIFIED-DIVERGENT competitor** that single-engine analysis would have missed.
+Activated by the `multi` Recipe (or any explicit user request for multi-engine / cross-engine competitive coverage). Pattern D Divergence-primary — Compete optimizes for *competitive coverage breadth*, not concurrence. The load-bearing deliverable is the **VERIFIED-DIVERGENT competitor** that single-engine analysis would have missed.
 
-**Why three engines for Compete specifically:**
+> **Base Engine Policy (2026-05)**: Default baseline = **Claude + Codex (dual-engine, 2 spawns)**. agy adds a third axis (tri-engine, 3 spawns) when AVAILABLE at PREFLIGHT. dual-engine is NOT degraded — but for Compete specifically, the third engine's coverage uplift is **larger than for other Pattern D skills** because agy's Google-product / APAC bias patches a structural blind-spot that Claude + Codex share (both under-index large-cap APAC enterprise SaaS). When agy is UNAVAILABLE, surface this coverage gap explicitly in the Uncommon-Competitors callout and recommend a manual WebSearch sweep for APAC + enterprise segments. See `_common/MULTI_ENGINE_RECIPE.md §Base Engine Policy + §Engine Availability Modes`.
+
+**Why multiple engines for Compete specifically:**
 
 - Codex (GitHub-heavy / OSS / dev tools / indie SaaS) under-indexes large-cap enterprise SaaS and consumer brands
 - Antigravity (Google product / large-cap SaaS / APAC enterprise) under-indexes OSS / indie tools and AI-native startups
 - Claude (Anthropic-curated / diverse industries / regulated verticals / AI-native players) under-indexes regional Asia-Pacific players and certain dev-infra niches
 
-Each engine has structural training-data blind-spots that are **knowable** (we can predict which segments it under-indexes) but **invisible to that engine alone** (a single-engine analysis cannot self-report its own gap). Tri-engine fan-out is the only practical way to patch these blind-spots.
+Each engine has structural training-data blind-spots that are **knowable** (we can predict which segments it under-indexes) but **invisible to that engine alone** (a single-engine analysis cannot self-report its own gap). Multi-engine fan-out is the only practical way to patch these blind-spots — dual-engine covers two of the three blind-spot axes (codex/claude), tri-engine adds the third (agy).
 
 **Core mechanics:**
 
-- Spawn three Agent subagents in a single message: `compete-codex`, `compete-agy`, `compete-claude` (per `references/tri-engine-compete.md`).
+- Spawn one Agent subagent per AVAILABLE engine in a single message: `compete-codex` + `compete-claude` (dual-engine baseline); add `compete-agy` (tri-engine) when AVAILABLE. Per `references/tri-engine-compete.md`.
 - Run engine availability PREFLIGHT in Compete main context — never delegate detection to subagents (subagent PATH is narrower; see `_common/MULTI_ENGINE_RECIPE.md §PREFLIGHT`).
 - Use loose prompts (Role + Target + Output format only). Do NOT pass SWOT templates, 7 Powers rubrics, positioning-map axes, or analysis-template structures to subagents — apply framework rules in SYNTHESIZE, not at FAN-OUT. Each engine's training-data priors should drive divergent competitor discovery.
 - Subagents return structured JSON (competitor schema: name/aliases/category/positioning/segment/geography/features/strengths/weaknesses/pricing_posture/evidence_sources/source_engine_bias_note).

@@ -1,17 +1,10 @@
 ---
-type: skill
-lifecycle: stable
 name: "docx-to-md"
 description: "Convert Word documents (.docx) to clean Markdown with image extraction and pandoc cleanup"
-tier: extended
-inheritance: inheritable
-applyTo: '**/*.docx,**/*word*,**/*docx*'
-muscle: .github/muscles/docx-to-md.cjs
-currency: 2026-04-30
 lastReviewed: 2026-04-30
 ---
 
-# Word to Markdown Conversion
+# Docx To Md
 
 > Ingest Word documents into your Markdown workflow — clean, linted, version-control ready
 
@@ -65,22 +58,22 @@ Convert .docx files into clean, linted Markdown with extracted images, normalize
 
 ```bash
 # Basic conversion
-node .github/muscles/docx-to-md.cjs report.docx
+node .github/skills/docx-to-md/scripts/docx-to-md.cjs report.docx
 
 # With frontmatter and heading normalization
-node .github/muscles/docx-to-md.cjs spec.docx --add-frontmatter --fix-headings
+node .github/skills/docx-to-md/scripts/docx-to-md.cjs spec.docx --add-frontmatter --fix-headings
 
 # Strip review comments
-node .github/muscles/docx-to-md.cjs reviewed.docx --strip-comments
+node .github/skills/docx-to-md/scripts/docx-to-md.cjs reviewed.docx --strip-comments
 
 # Custom output path
-node .github/muscles/docx-to-md.cjs input.docx output/document.md
+node .github/skills/docx-to-md/scripts/docx-to-md.cjs input.docx output/document.md
 
 # Debug mode (keeps raw pandoc output)
-node .github/muscles/docx-to-md.cjs input.docx --debug
+node .github/skills/docx-to-md/scripts/docx-to-md.cjs input.docx --debug
 
 # Full cleanup pipeline
-node .github/muscles/docx-to-md.cjs spec.docx --add-frontmatter --fix-headings --strip-comments --clean-tables
+node .github/skills/docx-to-md/scripts/docx-to-md.cjs spec.docx --add-frontmatter --fix-headings --strip-comments --clean-tables
 ```
 
 ---
@@ -162,11 +155,11 @@ Image references in markdown are updated automatically:
 
 ```bash
 # Convert with full cleanup
-node .github/muscles/docx-to-md.cjs stakeholder-spec.docx \
+node .github/skills/docx-to-md/scripts/docx-to-md.cjs stakeholder-spec.docx \
   --add-frontmatter --fix-headings --strip-comments
 
 # Validate formatting (exits 1 if file would be reformatted)
-node .github/muscles/md-format.cjs stakeholder-spec.md --check
+node .github/skills/markdown-mermaid/scripts/md-format.cjs stakeholder-spec.md --check
 
 # Review and commit
 git add stakeholder-spec.md images/
@@ -178,7 +171,7 @@ git commit -m "docs: ingest stakeholder specification"
 ```bash
 # Batch convert all Word docs
 Get-ChildItem *.docx | ForEach-Object {
-  node .github/muscles/docx-to-md.cjs $_.FullName --add-frontmatter --fix-headings
+  node .github/skills/docx-to-md/scripts/docx-to-md.cjs $_.FullName --add-frontmatter --fix-headings
 }
 ```
 
@@ -216,7 +209,7 @@ Get-ChildItem *.docx | ForEach-Object {
 
 ## Muscle Script
 
-`.github/muscles/docx-to-md.cjs` (v1.0.0)
+`.github/skills/docx-to-md/scripts/docx-to-md.cjs` (v1.0.0)
 
 ---
 

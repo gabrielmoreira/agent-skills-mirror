@@ -436,12 +436,14 @@ SCOUT_TO_TRAIL_HANDOFF:
 
 ## Multi-Engine Mode
 
-Activated by the `multi` Recipe (or any explicit user request for parallel investigation / cross-engine root cause comparison / consensus RCA), and auto-promoted from the default `bug` Recipe when 3 hypotheses stall without progress. Tri-engine parallel RCA breaks single-engine hypothesis lock-in by fanning out across three engines with non-overlapping training-data priors, then synthesizes a Primary RCA backed by consensus plus Alternative Hypotheses preserved from divergence.
+Activated by the `multi` Recipe (or any explicit user request for parallel investigation / cross-engine root cause comparison / consensus RCA), and auto-promoted from the default `bug` Recipe when 3 hypotheses stall without progress. Multi-engine parallel RCA breaks single-engine hypothesis lock-in by fanning out across AVAILABLE engines with non-overlapping training-data priors, then synthesizes a Primary RCA backed by consensus plus Alternative Hypotheses preserved from divergence.
+
+> **Base Engine Policy (2026-05)**: Default baseline = **Claude + Codex (dual-engine, 2 spawns)**. agy adds a third axis (tri-engine, 3 spawns) when AVAILABLE at PREFLIGHT. For Scout the dual-engine baseline (Codex sandbox-execution priors + Claude judgment) breaks the most common hypothesis lock-in cases; agy adds whole-codebase 1M-context investigation when reachable. Pattern H scoring: dual-engine Primary = 2/2 CONFIRMED; Alternative = 1/2 grounded; LIKELY unreachable. See `_common/MULTI_ENGINE_RECIPE.md §Base Engine Policy + §Engine Availability Modes`.
 
 **Pattern type: H (Hybrid)** — both axes carry value. Concurrence raises confidence on the primary root cause; divergence preserves alternative hypotheses as pre-grounded verification branches for Builder.
 
 **Core mechanics:**
-- Spawn three Agent subagents in a single message: `investigate-codex`, `investigate-agy`, `investigate-claude` (per `references/tri-engine-investigate.md`).
+- Spawn one Agent subagent per AVAILABLE engine in a single message: `investigate-codex` + `investigate-claude` (dual-engine baseline); add `investigate-agy` (tri-engine) when AVAILABLE. Per `references/tri-engine-investigate.md`.
 - Run engine availability PREFLIGHT in Scout main context — never delegate detection to subagents (subagent PATH is narrower; see `_common/MULTI_ENGINE_RECIPE.md §2`).
 - Use loose prompts (Role + Symptom evidence + Reproduction state + Ruled-out hypotheses + Output format only). Do NOT pass 5-Whys templates, Fishbone categories, Causal Graph rules, or Scout's confidence rubric — apply RCA frameworks at SYNTHESIZE, not at FAN-OUT. Each engine's training-data priors should drive root cause hypothesis diversity.
 - Subagents return structured JSON with 1-3 hypotheses each (symptom, root-cause-hypothesis, causal-chain, evidence, reproduction-steps, affected-areas, severity, confidence, rca_method, ruled_out); main context integrates via NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE.

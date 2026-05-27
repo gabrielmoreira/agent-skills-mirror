@@ -223,10 +223,12 @@ In all suppression cases, write a one-line note in the report explaining why the
 
 ## Multi-Engine Mode
 
-Activated by the `multi` Recipe (or any explicit user request for parallel failure enumeration / cross-engine pre-mortem). Tri-engine failure-mode enumeration applies Pattern D (Divergence-primary) — different training-data biases map directly to different failure-class blindspots, so a single-engine `VERIFIED-DIVERGENT` mode is often the most catastrophic finding, not a low-value outlier.
+Activated by the `multi` Recipe (or any explicit user request for parallel failure enumeration / cross-engine pre-mortem). Multi-engine failure-mode enumeration applies Pattern D (Divergence-primary) — different training-data biases map directly to different failure-class blindspots, so a single-engine `VERIFIED-DIVERGENT` mode is often the most catastrophic finding, not a low-value outlier.
+
+> **Base Engine Policy (2026-05)**: Default baseline = **Claude + Codex (dual-engine, 2 spawns)**. agy adds a third axis (tri-engine, 3 spawns) when AVAILABLE at PREFLIGHT. For Omen the agy uplift is meaningful because failure-class blindspots are highly engine-specific (Codex misses non-code failure modes; Claude under-indexes hardware/infrastructure failures; agy adds the third-axis coverage when reachable). Dual-engine still covers the load-bearing diversity for pre-mortem use. See `_common/MULTI_ENGINE_RECIPE.md §Base Engine Policy + §Engine Availability Modes`.
 
 **Core mechanics:**
-- Spawn three Agent subagents in a single message: `failure-codex`, `failure-agy`, `failure-claude` (per `references/tri-engine-failure.md`).
+- Spawn one Agent subagent per AVAILABLE engine in a single message: `failure-codex` + `failure-claude` (dual-engine baseline); add `failure-agy` (tri-engine) when AVAILABLE. Per `references/tri-engine-failure.md`.
 - Run engine availability PREFLIGHT in Omen main context — never delegate detection to subagents (subagent PATH is narrower; canonical probe in `_common/MULTI_ENGINE_RECIPE.md §PREFLIGHT`).
 - Use loose prompts (Role + Target + Output format only). Do NOT pass the FMEA scoring rubric, AIAG-VDA AP table, Swiss-Cheese layer taxonomy, severity-9 critical gate, or example failure-mode IDs to subagents — apply framework rules in the Omen main context at SYNTHESIZE, not at FAN-OUT. Each engine's training-data priors should drive **independent failure-class discovery**.
 - Subagents return structured JSON (failure_mode with id / category / cause_chain / effect / severity / occurrence / detectability / current_controls / scenario); main context integrates via NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE.

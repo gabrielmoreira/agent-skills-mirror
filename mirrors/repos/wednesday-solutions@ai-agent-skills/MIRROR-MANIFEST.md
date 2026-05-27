@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wednesday-solutions/ai-agent-skills` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `wednesday-solutions/ai-agent-skills` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wednesday-solutions/ai-agent-skills` — 26 default patterns, 0 follo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,26 +66,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`skills/agents/onboard-dev/SKILL.md`](skills/agents/onboard-dev/SKILL.md) |
 | 6 | ✓ | [`skills/agents/pr-review-agent/agent.yml`](skills/agents/pr-review-agent/agent.yml) |
 | 7 | ✓ | [`skills/agents/pr-review-agent/SKILL.md`](skills/agents/pr-review-agent/SKILL.md) |
-| 8 | ✓ | [`skills/brownfield-chat/SKILL.md`](skills/brownfield-chat/SKILL.md) |
-| 9 | ✓ | [`skills/brownfield-drift/SKILL.md`](skills/brownfield-drift/SKILL.md) |
-| 10 | ✓ | [`skills/brownfield-enrich/SKILL.md`](skills/brownfield-enrich/SKILL.md) |
-| 11 | ✓ | [`skills/brownfield-fix/SKILL.md`](skills/brownfield-fix/SKILL.md) |
-| 12 | ✓ | [`skills/brownfield-gaps/SKILL.md`](skills/brownfield-gaps/SKILL.md) |
-| 13 | ✓ | [`skills/brownfield-query/SKILL.md`](skills/brownfield-query/SKILL.md) |
-| 14 | ✓ | [`skills/deploy-checklist/SKILL.md`](skills/deploy-checklist/SKILL.md) |
-| 15 | ✓ | [`skills/git-os/SKILL.md`](skills/git-os/SKILL.md) |
-| 16 | ✓ | [`skills/greenfield/SKILL.md`](skills/greenfield/SKILL.md) |
-| 17 | ✓ | [`skills/pr-create/SKILL.md`](skills/pr-create/SKILL.md) |
-| 18 | ✓ | [`skills/pr-review/SKILL.md`](skills/pr-review/SKILL.md) |
-| 19 | ✓ | [`skills/sprint/SKILL.md`](skills/sprint/SKILL.md) |
-| 20 | ✓ | [`skills/wednesday-design/references/ANIMATIONS.md`](skills/wednesday-design/references/ANIMATIONS.md) |
-| 21 | ✓ | [`skills/wednesday-design/references/COMPONENT-LIBRARY.md`](skills/wednesday-design/references/COMPONENT-LIBRARY.md) |
-| 22 | ✓ | [`skills/wednesday-design/references/COMPONENTS.md`](skills/wednesday-design/references/COMPONENTS.md) |
-| 23 | ✓ | [`skills/wednesday-design/references/TOKENS.md`](skills/wednesday-design/references/TOKENS.md) |
-| 24 | ✓ | [`skills/wednesday-design/SKILL.md`](skills/wednesday-design/SKILL.md) |
-| 25 | ✓ | [`skills/wednesday-dev/references/COMPLEXITY.md`](skills/wednesday-dev/references/COMPLEXITY.md) |
-| 26 | ✓ | [`skills/wednesday-dev/references/NAMING.md`](skills/wednesday-dev/references/NAMING.md) |
-| 27 | ✓ | [`skills/wednesday-dev/SKILL.md`](skills/wednesday-dev/SKILL.md) |
+| 8 | ✓ | [`skills/brownfield-drift/SKILL.md`](skills/brownfield-drift/SKILL.md) |
+| 9 | ✓ | [`skills/brownfield-e2e-gen/FLOW.md`](skills/brownfield-e2e-gen/FLOW.md) |
+| 10 | ✓ | [`skills/codebase-intel/SKILL.md`](skills/codebase-intel/SKILL.md) |
+| 11 | ✓ | [`skills/deploy-checklist/SKILL.md`](skills/deploy-checklist/SKILL.md) |
+| 12 | ✓ | [`skills/greenfield/SKILL.md`](skills/greenfield/SKILL.md) |
+| 13 | ✓ | [`skills/pr-review/SKILL.md`](skills/pr-review/SKILL.md) |
+| 14 | ✓ | [`skills/standards-kit/references/LOGIC.md`](skills/standards-kit/references/LOGIC.md) |
+| 15 | ✓ | [`skills/standards-kit/references/VISUALS.md`](skills/standards-kit/references/VISUALS.md) |
+| 16 | ✓ | [`skills/standards-kit/SKILL.md`](skills/standards-kit/SKILL.md) |
+| 17 | ✓ | [`skills/wednesday-git/SKILL.md`](skills/wednesday-git/SKILL.md) |
 
 ---
 

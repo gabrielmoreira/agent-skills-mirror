@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kimlawtech/korean-privacy-terms` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `kimlawtech/korean-privacy-terms` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kimlawtech/korean-privacy-terms` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,10 +61,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`SKILL.md`](SKILL.md) |
 | 2 | ✓ | [`skills/privacy-eu/SKILL.md`](skills/privacy-eu/SKILL.md) |
-| 3 | ✓ | [`skills/privacy-global/SKILL.md`](skills/privacy-global/SKILL.md) |
-| 4 | ✓ | [`skills/privacy-kr/SKILL.md`](skills/privacy-kr/SKILL.md) |
-| 5 | ✓ | [`skills/privacy-terms/SKILL.md`](skills/privacy-terms/SKILL.md) |
-| 6 | ✓ | [`skills/privacy-us/SKILL.md`](skills/privacy-us/SKILL.md) |
+| 3 | ✓ | [`skills/privacy-global-jp/SKILL.md`](skills/privacy-global-jp/SKILL.md) |
+| 4 | ✓ | [`skills/privacy-global/SKILL.md`](skills/privacy-global/SKILL.md) |
+| 5 | ✓ | [`skills/privacy-jp/SKILL.md`](skills/privacy-jp/SKILL.md) |
+| 6 | ✓ | [`skills/privacy-kr/SKILL.md`](skills/privacy-kr/SKILL.md) |
+| 7 | ✓ | [`skills/privacy-terms/SKILL.md`](skills/privacy-terms/SKILL.md) |
+| 8 | ✓ | [`skills/privacy-us/SKILL.md`](skills/privacy-us/SKILL.md) |
 
 ---
 

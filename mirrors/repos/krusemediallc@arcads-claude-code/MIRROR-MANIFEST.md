@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `krusemediallc/arcads-claude-code` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `krusemediallc/arcads-claude-code` — 26 default patterns, 1 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `krusemediallc/arcads-claude-code` — 26 default patterns, 0 followed
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 29 |
+| Followed pats | 1 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `krusemediallc/arcads-claude-code` — 26 default patterns, 0 followed
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `shared/skills/image-ad-prompting/OVERVIEW.md`
 
 ## File Index
 
@@ -86,8 +86,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/veo-3-1.md`](skills/arcads-external-api/prompting/prompt-library/veo-3-1.md) |
 | 26 | ✓ | [`skills/arcads-external-api/reference.md`](skills/arcads-external-api/reference.md) |
 | 27 | ✓ | [`skills/arcads-external-api/SKILL.md`](skills/arcads-external-api/SKILL.md) |
-| 28 | ✓ | [`skills/generate-youtube-thumbnail/scripts/generate-batch.sh`](skills/generate-youtube-thumbnail/scripts/generate-batch.sh) |
-| 29 | ✓ | [`skills/generate-youtube-thumbnail/SKILL.md`](skills/generate-youtube-thumbnail/SKILL.md) |
+| 28 | ✓ | [`skills/chatgpt-image-ad/scripts/generate_image.py`](skills/chatgpt-image-ad/scripts/generate_image.py) |
+| 29 | ✓ | [`skills/chatgpt-image-ad/SKILL.md`](skills/chatgpt-image-ad/SKILL.md) |
+| 30 | ✓ | [`skills/generate-youtube-thumbnail/scripts/generate-batch.sh`](skills/generate-youtube-thumbnail/scripts/generate-batch.sh) |
+| 31 | ✓ | [`skills/generate-youtube-thumbnail/SKILL.md`](skills/generate-youtube-thumbnail/SKILL.md) |
+| 32 | ✓ | [`skills/image-ad-clone/SKILL.md`](skills/image-ad-clone/SKILL.md) |
+| 33 | ✓ | [`skills/nano-banana-image-ad/scripts/generate_image.py`](skills/nano-banana-image-ad/scripts/generate_image.py) |
+| 34 | ✓ | [`skills/nano-banana-image-ad/SKILL.md`](skills/nano-banana-image-ad/SKILL.md) |
+| 35 | → | [`shared/skills/image-ad-prompting/OVERVIEW.md`](shared/skills/image-ad-prompting/OVERVIEW.md) |
 
 ---
 

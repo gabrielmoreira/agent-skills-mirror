@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nexu-io/open-design` — 26 default patterns, 0 followed patterns, 557 file(s) materialized.
+Mirror of `nexu-io/open-design` — 26 default patterns, 0 followed patterns, 561 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nexu-io/open-design` — 26 default patterns, 0 followed patterns, 55
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 557 |
+| Files         | 561 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -557,65 +557,69 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 496 | ✓ | [`skills/release-notes-one-pager/SKILL.md`](skills/release-notes-one-pager/SKILL.md) |
 | 497 | ✓ | [`skills/remotion/SKILL.md`](skills/remotion/SKILL.md) |
 | 498 | ✓ | [`skills/replicate/SKILL.md`](skills/replicate/SKILL.md) |
-| 499 | ✓ | [`skills/resume-modern/example.html`](skills/resume-modern/example.html) |
-| 500 | ✓ | [`skills/resume-modern/example.md`](skills/resume-modern/example.md) |
-| 501 | ✓ | [`skills/resume-modern/SKILL.md`](skills/resume-modern/SKILL.md) |
-| 502 | ✓ | [`skills/screenshot/SKILL.md`](skills/screenshot/SKILL.md) |
-| 503 | ✓ | [`skills/screenshots-marketing/SKILL.md`](skills/screenshots-marketing/SKILL.md) |
-| 504 | ✓ | [`skills/shadcn-ui/SKILL.md`](skills/shadcn-ui/SKILL.md) |
-| 505 | ✓ | [`skills/shader-dev/SKILL.md`](skills/shader-dev/SKILL.md) |
-| 506 | ✓ | [`skills/slack-gif-creator/SKILL.md`](skills/slack-gif-creator/SKILL.md) |
-| 507 | ✓ | [`skills/slides/SKILL.md`](skills/slides/SKILL.md) |
-| 508 | ✓ | [`skills/social-reddit-card/example.html`](skills/social-reddit-card/example.html) |
-| 509 | ✓ | [`skills/social-reddit-card/example.md`](skills/social-reddit-card/example.md) |
-| 510 | ✓ | [`skills/social-reddit-card/SKILL.md`](skills/social-reddit-card/SKILL.md) |
-| 511 | ✓ | [`skills/social-spotify-card/example.html`](skills/social-spotify-card/example.html) |
-| 512 | ✓ | [`skills/social-spotify-card/example.md`](skills/social-spotify-card/example.md) |
-| 513 | ✓ | [`skills/social-spotify-card/SKILL.md`](skills/social-spotify-card/SKILL.md) |
-| 514 | ✓ | [`skills/social-x-post-card/example.html`](skills/social-x-post-card/example.html) |
-| 515 | ✓ | [`skills/social-x-post-card/example.md`](skills/social-x-post-card/example.md) |
-| 516 | ✓ | [`skills/social-x-post-card/SKILL.md`](skills/social-x-post-card/SKILL.md) |
-| 517 | ✓ | [`skills/sora/SKILL.md`](skills/sora/SKILL.md) |
-| 518 | ✓ | [`skills/speech/SKILL.md`](skills/speech/SKILL.md) |
-| 519 | ✓ | [`skills/stitch-loop/SKILL.md`](skills/stitch-loop/SKILL.md) |
-| 520 | ✓ | [`skills/swiftui-design/SKILL.md`](skills/swiftui-design/SKILL.md) |
-| 521 | ✓ | [`skills/swiss-creative-mode-template/assets/template.html`](skills/swiss-creative-mode-template/assets/template.html) |
-| 522 | ✓ | [`skills/swiss-creative-mode-template/example.html`](skills/swiss-creative-mode-template/example.html) |
-| 523 | ✓ | [`skills/swiss-creative-mode-template/references/checklist.md`](skills/swiss-creative-mode-template/references/checklist.md) |
-| 524 | ✓ | [`skills/swiss-creative-mode-template/SKILL.md`](skills/swiss-creative-mode-template/SKILL.md) |
-| 525 | ✓ | [`skills/swiss-user-research-video-template/assets/template.html`](skills/swiss-user-research-video-template/assets/template.html) |
-| 526 | ✓ | [`skills/swiss-user-research-video-template/example.html`](skills/swiss-user-research-video-template/example.html) |
-| 527 | ✓ | [`skills/swiss-user-research-video-template/references/checklist.md`](skills/swiss-user-research-video-template/references/checklist.md) |
-| 528 | ✓ | [`skills/swiss-user-research-video-template/SKILL.md`](skills/swiss-user-research-video-template/SKILL.md) |
-| 529 | ✓ | [`skills/taste-skill/SKILL.md`](skills/taste-skill/SKILL.md) |
-| 530 | ✓ | [`skills/theme-factory/SKILL.md`](skills/theme-factory/SKILL.md) |
-| 531 | ✓ | [`skills/threejs/SKILL.md`](skills/threejs/SKILL.md) |
-| 532 | ✓ | [`skills/ui-skills/SKILL.md`](skills/ui-skills/SKILL.md) |
-| 533 | ✓ | [`skills/ui-ux-pro-max/SKILL.md`](skills/ui-ux-pro-max/SKILL.md) |
-| 534 | ✓ | [`skills/venice-audio-music/SKILL.md`](skills/venice-audio-music/SKILL.md) |
-| 535 | ✓ | [`skills/venice-audio-speech/SKILL.md`](skills/venice-audio-speech/SKILL.md) |
-| 536 | ✓ | [`skills/venice-image-edit/SKILL.md`](skills/venice-image-edit/SKILL.md) |
-| 537 | ✓ | [`skills/venice-image-generate/SKILL.md`](skills/venice-image-generate/SKILL.md) |
-| 538 | ✓ | [`skills/venice-video/SKILL.md`](skills/venice-video/SKILL.md) |
-| 539 | ✓ | [`skills/vfx-text-cursor/example.html`](skills/vfx-text-cursor/example.html) |
-| 540 | ✓ | [`skills/vfx-text-cursor/example.md`](skills/vfx-text-cursor/example.md) |
-| 541 | ✓ | [`skills/vfx-text-cursor/SKILL.md`](skills/vfx-text-cursor/SKILL.md) |
-| 542 | ✓ | [`skills/video-downloader/SKILL.md`](skills/video-downloader/SKILL.md) |
-| 543 | ✓ | [`skills/video-hyperframes/example.html`](skills/video-hyperframes/example.html) |
-| 544 | ✓ | [`skills/video-hyperframes/example.md`](skills/video-hyperframes/example.md) |
-| 545 | ✓ | [`skills/video-hyperframes/SKILL.md`](skills/video-hyperframes/SKILL.md) |
-| 546 | ✓ | [`skills/web-artifacts-builder/SKILL.md`](skills/web-artifacts-builder/SKILL.md) |
-| 547 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
-| 548 | ✓ | [`skills/weread-year-in-review-video-template/assets/default-showcase.mp4`](skills/weread-year-in-review-video-template/assets/default-showcase.mp4) |
-| 549 | ✓ | [`skills/weread-year-in-review-video-template/assets/template.html`](skills/weread-year-in-review-video-template/assets/template.html) |
-| 550 | ✓ | [`skills/weread-year-in-review-video-template/example.html`](skills/weread-year-in-review-video-template/example.html) |
-| 551 | ✓ | [`skills/weread-year-in-review-video-template/references/checklist.md`](skills/weread-year-in-review-video-template/references/checklist.md) |
-| 552 | ✓ | [`skills/weread-year-in-review-video-template/SKILL.md`](skills/weread-year-in-review-video-template/SKILL.md) |
-| 553 | ✓ | [`skills/wpds/SKILL.md`](skills/wpds/SKILL.md) |
-| 554 | ✓ | [`skills/youtube-clipper/SKILL.md`](skills/youtube-clipper/SKILL.md) |
-| 555 | ✓ | [`tools/AGENTS.md`](tools/AGENTS.md) |
-| 556 | ✓ | [`tools/pack/AGENTS.md`](tools/pack/AGENTS.md) |
-| 557 | ✓ | [`tools/serve/AGENTS.md`](tools/serve/AGENTS.md) |
+| 499 | ✓ | [`skills/research-decision-room/example.html`](skills/research-decision-room/example.html) |
+| 500 | ✓ | [`skills/research-decision-room/references/checklist.md`](skills/research-decision-room/references/checklist.md) |
+| 501 | ✓ | [`skills/research-decision-room/references/evidence-model.md`](skills/research-decision-room/references/evidence-model.md) |
+| 502 | ✓ | [`skills/research-decision-room/SKILL.md`](skills/research-decision-room/SKILL.md) |
+| 503 | ✓ | [`skills/resume-modern/example.html`](skills/resume-modern/example.html) |
+| 504 | ✓ | [`skills/resume-modern/example.md`](skills/resume-modern/example.md) |
+| 505 | ✓ | [`skills/resume-modern/SKILL.md`](skills/resume-modern/SKILL.md) |
+| 506 | ✓ | [`skills/screenshot/SKILL.md`](skills/screenshot/SKILL.md) |
+| 507 | ✓ | [`skills/screenshots-marketing/SKILL.md`](skills/screenshots-marketing/SKILL.md) |
+| 508 | ✓ | [`skills/shadcn-ui/SKILL.md`](skills/shadcn-ui/SKILL.md) |
+| 509 | ✓ | [`skills/shader-dev/SKILL.md`](skills/shader-dev/SKILL.md) |
+| 510 | ✓ | [`skills/slack-gif-creator/SKILL.md`](skills/slack-gif-creator/SKILL.md) |
+| 511 | ✓ | [`skills/slides/SKILL.md`](skills/slides/SKILL.md) |
+| 512 | ✓ | [`skills/social-reddit-card/example.html`](skills/social-reddit-card/example.html) |
+| 513 | ✓ | [`skills/social-reddit-card/example.md`](skills/social-reddit-card/example.md) |
+| 514 | ✓ | [`skills/social-reddit-card/SKILL.md`](skills/social-reddit-card/SKILL.md) |
+| 515 | ✓ | [`skills/social-spotify-card/example.html`](skills/social-spotify-card/example.html) |
+| 516 | ✓ | [`skills/social-spotify-card/example.md`](skills/social-spotify-card/example.md) |
+| 517 | ✓ | [`skills/social-spotify-card/SKILL.md`](skills/social-spotify-card/SKILL.md) |
+| 518 | ✓ | [`skills/social-x-post-card/example.html`](skills/social-x-post-card/example.html) |
+| 519 | ✓ | [`skills/social-x-post-card/example.md`](skills/social-x-post-card/example.md) |
+| 520 | ✓ | [`skills/social-x-post-card/SKILL.md`](skills/social-x-post-card/SKILL.md) |
+| 521 | ✓ | [`skills/sora/SKILL.md`](skills/sora/SKILL.md) |
+| 522 | ✓ | [`skills/speech/SKILL.md`](skills/speech/SKILL.md) |
+| 523 | ✓ | [`skills/stitch-loop/SKILL.md`](skills/stitch-loop/SKILL.md) |
+| 524 | ✓ | [`skills/swiftui-design/SKILL.md`](skills/swiftui-design/SKILL.md) |
+| 525 | ✓ | [`skills/swiss-creative-mode-template/assets/template.html`](skills/swiss-creative-mode-template/assets/template.html) |
+| 526 | ✓ | [`skills/swiss-creative-mode-template/example.html`](skills/swiss-creative-mode-template/example.html) |
+| 527 | ✓ | [`skills/swiss-creative-mode-template/references/checklist.md`](skills/swiss-creative-mode-template/references/checklist.md) |
+| 528 | ✓ | [`skills/swiss-creative-mode-template/SKILL.md`](skills/swiss-creative-mode-template/SKILL.md) |
+| 529 | ✓ | [`skills/swiss-user-research-video-template/assets/template.html`](skills/swiss-user-research-video-template/assets/template.html) |
+| 530 | ✓ | [`skills/swiss-user-research-video-template/example.html`](skills/swiss-user-research-video-template/example.html) |
+| 531 | ✓ | [`skills/swiss-user-research-video-template/references/checklist.md`](skills/swiss-user-research-video-template/references/checklist.md) |
+| 532 | ✓ | [`skills/swiss-user-research-video-template/SKILL.md`](skills/swiss-user-research-video-template/SKILL.md) |
+| 533 | ✓ | [`skills/taste-skill/SKILL.md`](skills/taste-skill/SKILL.md) |
+| 534 | ✓ | [`skills/theme-factory/SKILL.md`](skills/theme-factory/SKILL.md) |
+| 535 | ✓ | [`skills/threejs/SKILL.md`](skills/threejs/SKILL.md) |
+| 536 | ✓ | [`skills/ui-skills/SKILL.md`](skills/ui-skills/SKILL.md) |
+| 537 | ✓ | [`skills/ui-ux-pro-max/SKILL.md`](skills/ui-ux-pro-max/SKILL.md) |
+| 538 | ✓ | [`skills/venice-audio-music/SKILL.md`](skills/venice-audio-music/SKILL.md) |
+| 539 | ✓ | [`skills/venice-audio-speech/SKILL.md`](skills/venice-audio-speech/SKILL.md) |
+| 540 | ✓ | [`skills/venice-image-edit/SKILL.md`](skills/venice-image-edit/SKILL.md) |
+| 541 | ✓ | [`skills/venice-image-generate/SKILL.md`](skills/venice-image-generate/SKILL.md) |
+| 542 | ✓ | [`skills/venice-video/SKILL.md`](skills/venice-video/SKILL.md) |
+| 543 | ✓ | [`skills/vfx-text-cursor/example.html`](skills/vfx-text-cursor/example.html) |
+| 544 | ✓ | [`skills/vfx-text-cursor/example.md`](skills/vfx-text-cursor/example.md) |
+| 545 | ✓ | [`skills/vfx-text-cursor/SKILL.md`](skills/vfx-text-cursor/SKILL.md) |
+| 546 | ✓ | [`skills/video-downloader/SKILL.md`](skills/video-downloader/SKILL.md) |
+| 547 | ✓ | [`skills/video-hyperframes/example.html`](skills/video-hyperframes/example.html) |
+| 548 | ✓ | [`skills/video-hyperframes/example.md`](skills/video-hyperframes/example.md) |
+| 549 | ✓ | [`skills/video-hyperframes/SKILL.md`](skills/video-hyperframes/SKILL.md) |
+| 550 | ✓ | [`skills/web-artifacts-builder/SKILL.md`](skills/web-artifacts-builder/SKILL.md) |
+| 551 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
+| 552 | ✓ | [`skills/weread-year-in-review-video-template/assets/default-showcase.mp4`](skills/weread-year-in-review-video-template/assets/default-showcase.mp4) |
+| 553 | ✓ | [`skills/weread-year-in-review-video-template/assets/template.html`](skills/weread-year-in-review-video-template/assets/template.html) |
+| 554 | ✓ | [`skills/weread-year-in-review-video-template/example.html`](skills/weread-year-in-review-video-template/example.html) |
+| 555 | ✓ | [`skills/weread-year-in-review-video-template/references/checklist.md`](skills/weread-year-in-review-video-template/references/checklist.md) |
+| 556 | ✓ | [`skills/weread-year-in-review-video-template/SKILL.md`](skills/weread-year-in-review-video-template/SKILL.md) |
+| 557 | ✓ | [`skills/wpds/SKILL.md`](skills/wpds/SKILL.md) |
+| 558 | ✓ | [`skills/youtube-clipper/SKILL.md`](skills/youtube-clipper/SKILL.md) |
+| 559 | ✓ | [`tools/AGENTS.md`](tools/AGENTS.md) |
+| 560 | ✓ | [`tools/pack/AGENTS.md`](tools/pack/AGENTS.md) |
+| 561 | ✓ | [`tools/serve/AGENTS.md`](tools/serve/AGENTS.md) |
 
 ---
 

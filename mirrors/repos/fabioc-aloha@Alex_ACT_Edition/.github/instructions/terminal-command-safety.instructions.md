@@ -1,12 +1,7 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Prevent terminal command failures from shell metacharacter interpretation, output capture issues, and hanging commands"
-application: "When running terminal commands, especially those with special characters or long output"
 applyTo: "**"
-currency: 2026-05-19
-lastReviewed: 2026-05-19
+lastReviewed: 2026-05-26
 ---
 
 # Terminal Command Safety
@@ -58,29 +53,16 @@ Terminal output can be silently lost or truncated.
 5. One command at a time — no chaining unrelated commands
 6. Kill stuck: `send_to_terminal` with Ctrl+C, or start fresh terminal
 
-## VS Code 1.117 Terminal Improvements
+## VS Code platform changes (1.117–1.121) — reduce manual capture
 
-Two behavioral changes reduce manual output handling:
+Recent VS Code agentic-execution improvements reduce the need for some manual patterns above. Treat as additive shortcuts; the file-redirect fallback above remains the safe default when full unfiltered output matters.
 
-1. **Auto-include output after `send_to_terminal`**: Terminal output is automatically included in the next turn after `send_to_terminal`. No need to call `get_terminal_output` immediately after — the output arrives with the next user/system message.
-2. **Background terminal notifications**: When an async terminal command completes, a system notification fires automatically. No need to poll with `get_terminal_output` — wait for the notification instead.
-
-These reduce the need for manual output capture patterns in 1.117+ environments. The redirect-to-file fallback remains valid for edge cases.
-
-## VS Code 1.118 Agentic Execution Sub-Tool
-
-The agentic execution sub-tool in 1.118 pre-filters terminal output before the agent sees it. This reduces noise (build warnings, progress bars, ANSI escapes) but means some output may be silently trimmed from the agent's view. The redirect-to-file fallback from "Output Capture Failures" above remains critical when full unfiltered output matters (e.g., parsing exact error messages, capturing full test results, or diagnosing encoding issues).
-
-## VS Code 1.120 + 1.121 Terminal Output Compression (Preview)
-
-Setting: `chat.tools.compressOutput.enabled`. When enabled, VS Code post-processes long terminal output before sending it to the model — collapses large diff hunks, drops lockfile/snapshot diffs, reduces `ls -l` to entry names, strips `npm install` progress bars / deprecation warnings / audit summaries. A short banner is prepended naming the filters that fired so the model can disable compression if it needs raw text.
-
-1.121 (May 13) expanded coverage beyond `git diff` / `ls -l` / `npm install` to test runners (`pytest`, `jest`, `cargo test`), build tools (`tsc`, `cargo build`, `make`), linters, Docker, and package managers.
-
-1.121 (May 13) also auto-disposes background terminals created by the chat agent once their command finishes — manual `kill_terminal` no longer required for one-shot async commands.
-
-The "Output Capture Failures" file-redirect fallback remains valid when full unfiltered output matters and compression strips data the agent needs to inspect.
+| Surface | Behavior change | When the manual pattern still wins |
+|---|---|---|
+| 1.117 | Terminal output auto-included after `send_to_terminal`; async-completion notifications fire automatically | When you need exact byte-for-byte output for diagnostics |
+| 1.118 | Agentic execution sub-tool pre-filters terminal output (drops noise) | When parsing exact error strings, full test results, encoding-sensitive output |
+| 1.120–1.121 | `chat.tools.compressOutput.enabled` post-processes long output (diffs, test runners, builds); chat-agent background terminals auto-dispose after one-shot async commands | When you need raw lockfile diffs, full npm install logs, or output the compressor filters strip |
 
 ## Falsifier — Backtick Hazard
 
-The Backtick Hazard rule is load-bearing because the underlying defect is unfixed in VS Code through 1.121. Tracking issue: [microsoft/vscode#295620](https://github.com/microsoft/vscode/issues/295620) ("Copilot with Claude models fails to handle backticks with gh") — open, milestone *On Deck*, no scheduled fix. Adjacent terminal-tool work shipped in 1.118 ([PR #307960](https://github.com/microsoft/vscode/pull/307960) heredoc handling) and 1.120/1.121 (output compression, idle-silence auto-promotion) does not address backtick interpretation in double-quoted arguments. Re-evaluate this rule when #295620 closes; until then, the temp-file pattern is mandatory.
+The Backtick Hazard rule is load-bearing because the underlying defect is unfixed in VS Code through 1.121 ([microsoft/vscode#295620](https://github.com/microsoft/vscode/issues/295620), open, milestone *On Deck*). Re-evaluate when #295620 closes; until then, the temp-file pattern is mandatory.

@@ -21,6 +21,13 @@ Authoritative terminology. UI label wins. Don't invent synonyms; use what's here
 - **Schedule** — Cron-style trigger that creates remote agents. UI: CLI only (`paseo schedule`). Code: `ScheduleCreateRequest` (re-exported from `packages/server/src/shared/messages.ts`). Don't confuse with: Loop (iterative re-execution of one agent).
 - **Mode** — Provider-specific operational mode (plan, default, full-access, …). UI: icon-only. Code: `modeId` in `AgentSessionConfig` (`packages/server/src/shared/messages.ts:257`).
 - **Attachment** — GitHub PR or Issue bound to an agent prompt. UI: "Attach issue or PR". Code: `AgentAttachment` (`packages/server/src/shared/messages.ts:782`).
+- **Composer** — The whole prompt surface for sending work to an agent. Code: `Composer` (`packages/app/src/composer/index.tsx`). Don't call this "message input" except for the text-entry subcomponent.
+- **Composer input** — The text-entry surface inside the composer. Code: `MessageInput` (`packages/app/src/composer/input/input.tsx`).
+- **Composer toolbar** — The bottom control row inside the composer input. Contains agent controls, attachment button, voice controls, and stop/send controls. Code: `leftContent`, `beforeVoiceContent`, and `rightContent` slots in `MessageInput` (`packages/app/src/composer/input/input.tsx`). Forbidden: "Status bar".
+- **Agent controls** — Provider, model, mode, thinking, and provider-feature controls for an agent or draft agent. Code: `AgentControls` / `DraftAgentControls` (`packages/app/src/composer/agent-controls/index.tsx`). Forbidden: "Agent status bar".
+- **Composer footer** — Optional area rendered below the composer input but still inside the keyboard-shifted composer layout. Code: `Composer.footer` (`packages/app/src/composer/index.tsx`).
+- **Composer track** — A contextual lane above the composer input. Specific tracks use the `<thing> track` form: **Queue track**, **Subagents track**. Code: queue track inside `Composer` (`packages/app/src/composer/index.tsx`), `SubagentsTrack` (`packages/app/src/subagents/track.tsx`).
+- **Attachment tray** — The selected-attachments row inside the composer input, above the text input. Code: `renderAttachmentTray` (`packages/app/src/composer/index.tsx`). Forbidden: "Attachment bar".
 - **Conflict** — Two distinct senses; do NOT use the bare word in UI copy without qualifying which: (a) **stale-write conflict** on `paseo.json` ("Config changed on disk", code `stale_project_config`, `packages/app/src/screens/project-settings-screen.tsx:593`); (b) **git merge conflict** (no current UI string).
 
 ## Inconsistencies (documented, not papered over)

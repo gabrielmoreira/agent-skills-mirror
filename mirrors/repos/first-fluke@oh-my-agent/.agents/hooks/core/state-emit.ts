@@ -1,7 +1,19 @@
 #!/usr/bin/env bun
 import { appendFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { observeWithTimeout } from "./agentmemory-client.ts";
 import { atomicWriteJson, sessionDir } from "./state-marker.ts";
+
+const RETRY_FILE = join(".agents", "state", "retry", "observe.jsonl");
+const SEMANTIC_KINDS = new Set([
+  "workflow.phase",
+  "gate.passed",
+  "gate.failed",
+  "blocker.raised",
+  "session.ended",
+  "decision.made",
+  "decision.missing",
+]);
 
 export interface OmaEvent {
   eventId: string;
@@ -42,11 +54,11 @@ export function metaPath(projectDir: string, sid: string): string {
   return join(sessionDir(projectDir, sid), "meta.json");
 }
 
-export function emitEvent(
+export async function emitEvent(
   projectDir: string,
   sid: string,
   event: Omit<Partial<OmaEvent>, "sid"> & { kind: string },
-): OmaEvent {
+): Promise<OmaEvent> {
   const enriched: OmaEvent = {
     eventId: event.eventId ?? createEventId(),
     ts: event.ts ?? new Date().toISOString(),
@@ -79,7 +91,21 @@ export function emitEvent(
   ) {
     refreshMeta(projectDir, sid);
   }
+  if (SEMANTIC_KINDS.has(enriched.kind)) {
+    const observed = await observeWithTimeout({
+      session_id: sid,
+      content: `${JSON.stringify(enriched)}\n`,
+      source: "oma-workflow",
+    });
+    if (!observed) enqueueRetry(projectDir, enriched);
+  }
   return enriched;
+}
+
+function enqueueRetry(projectDir: string, event: OmaEvent): void {
+  const path = join(projectDir, RETRY_FILE);
+  mkdirSync(dirname(path), { recursive: true });
+  appendFileSync(path, `${JSON.stringify(event)}\n`, "utf-8");
 }
 
 export function sortEvents(events: OmaEvent[]): OmaEvent[] {

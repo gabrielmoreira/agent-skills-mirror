@@ -91,7 +91,7 @@ export async function onBoundary(
     return null;
   }
 
-  emitEvent(projectDir, sid, {
+  await emitEvent(projectDir, sid, {
     kind: "boundary",
     vendor,
     vendorSid,

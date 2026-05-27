@@ -1,12 +1,6 @@
 ---
-type: skill
-lifecycle: stable
-inheritance: inheritable
 name: greeting-checkin
 description: "Greeting-triggered self-check — recognise greetings, check Edition version against the upstream tag, scan AI-Memory announcements, and report inside the greeting reply"
-tier: standard
-applyTo: "**/*checkin*,**/*greeting*,**/*welcome*,**/*hello*,**/*hey*"
-currency: 2026-04-30
 lastReviewed: 2026-04-30
 ---
 
@@ -131,7 +125,7 @@ Wrap the findings inside a normal greeting response. Keep it short — one parag
 | `upgrade-self.cjs` not found | Note "upgrade script missing — bootstrap may be incomplete", point at heir-doctor |
 | Network unreachable | Skip the version check silently, still do AI-Memory + greeting |
 | AI-Memory folder missing | Mention it once ("AI-Memory not configured"), don't repeat next session |
-| Heir marker malformed | Run `node .github/muscles/heir-doctor.cjs` and report what it says |
+| Heir marker malformed | Run `node .github/skills/greeting-checkin/scripts/heir-doctor.cjs` and report what it says |
 
 ## Falsifiability
 

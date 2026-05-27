@@ -1,6 +1,6 @@
 ---
 name: video-to-landing-page
-description: Turn any video into a cinematic scroll-driven landing page — Apple-style hero where scrolling progresses the visible frame through the video. Use when the user provides a video file and asks for "a landing page from this video", "scroll-frame website", "Apple-style scroll site", "hero that scrubs the video", "like the GitHub Copilot landing", or any equivalent. Extracts N evenly-spaced frames via ffmpeg, builds a self-contained HTML page with a sticky hero + JS scroll listener that swaps the visible frame as you scroll, plus headline, sections and CTA below. Respects the yuv-design-system skill's typography (Anton + Inter for English, Rubik + Assistant for Hebrew) and Fly High purple palette default. Output is one folder with `index.html` and a `frames/` directory — drop on any static host.
+description: Turn any video into a cinematic scroll-driven landing page — Apple-style hero where scrolling progresses the visible frame through the video. Use when the user provides a video file and asks for "a landing page from this video", "scroll-frame website", "Apple-style scroll site", "hero that scrubs the video", "like the GitHub Copilot landing", or any equivalent. Extracts N evenly-spaced frames via ffmpeg, builds a self-contained HTML page with a sticky hero + JS scroll listener that swaps the visible frame as you scroll, plus headline, sections and CTA below. For YUV.AI projects, applies the yuv-design-system skill in Neon mode (pink/cyan/white, default for YUV.AI web) — Decks (purple/yellow) is reserved for slides only. For generic / non-YUV.AI projects, picks an appropriate palette per the source video. Output is one folder with `index.html` and a `frames/` directory — drop on any static host.
 ---
 
 # Video → Scroll-Driven Landing Page
@@ -51,9 +51,13 @@ Final path: `~/Documents/yuv-projects/landings/<slug>/`. Tell the user where the
 
 ## Design rules
 
-- Use the project's design system if specified, otherwise default to the **yuv-design-system** skill: Anton + Inter (English) / Rubik + Assistant (Hebrew), **Fly High purple** (`#5E17EB`) + yellow (`#FFEC00`) + grey (`#F1F2F2`) palette, off-white (never pure `#fff`), 0px or 999px radii (no 8–12px corners). Warm Editorial (pink+yellow+bone) is reserved for the Hope/bigcats brand family only.
+- If the project is **YUV.AI-branded** (Yuval personally, his portfolio, his brand): call `yuv-design-system` and lock it to a mode by medium —
+  - **Neon mode** (DEFAULT for YUV.AI web): hot pink (`#FF1464`) + neon cyan (`#00E5FF`) + white or rich black canvas. Anton + Inter (English) / Rubik + Assistant (Hebrew). 0px or 999px radii.
+  - **Warm Editorial mode**: only for Hope, Marcus, bigcats.ai, practical.yuv.ai — pink + yellow + bone, off-white never pure `#fff`.
+  - **Never use Decks mode (Fly High purple/yellow)** for a landing page — that palette is reserved for slide decks only.
+- If the project is **not YUV.AI-branded**: do not apply yuv-design-system. Pick a palette that fits the source video's mood. Anton + Inter remain reasonable defaults but aren't mandatory.
 - Hero overlays should be **subtle** — a vignette and a single big headline; don't drown the frame.
-- Below-hero sections: bone background, large Anton heading, body copy in Inter at 18–22px, CTA as a sharp pink rectangle with Anton text.
+- Below-hero sections: light canvas (white in Neon mode, off-white in Warm Editorial, bone if going generic-warm), large Anton heading, body copy in Inter at 18–22px, CTA as a sharp pill (`border-radius: 999px`) — pink fill in Neon mode, brand-appropriate color otherwise.
 - For Hebrew: respect RTL, use Rubik 900 for headlines, Assistant 400/500 for body.
 
 ## File references

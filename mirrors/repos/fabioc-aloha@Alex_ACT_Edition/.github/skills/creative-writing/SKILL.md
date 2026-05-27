@@ -1,18 +1,12 @@
 ---
-type: skill
-inheritance: inheritable
-lifecycle: stable
 name: creative-writing
-description: Patterns for fiction, narrative structure, character development, dialogue, and storytelling craft.
-tier: standard
-applyTo: '**/*fiction*,**/*story*,**/*narrative*,**/*dialogue*,**/*character*'
-currency: 2026-05-02
-lastReviewed: 2026-05-02
+description: "Scaffold book-writing projects with folder structure, BOOK-PLAN template, character development matrices, and chapter organization patterns. Use when starting a new book project, planning multi-chapter structure, or building character bibles."
+lastReviewed: 2026-05-26
 ---
 
 # Creative Writing Skill
 
-> Patterns for fiction, narrative structure, character development, dialogue, and storytelling craft.
+Patterns for fiction, narrative structure, character development, dialogue, and storytelling craft.
 
 ---
 

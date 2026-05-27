@@ -250,10 +250,12 @@ Spark receives product signals and insights from upstream agents, generates feat
 
 ## Multi-Engine Mode
 
-Activated by the `multi` Recipe (or any explicit user request for parallel ideation / cross-engine comparison). Tri-engine proposal generation mirrors Judge's tri-engine review pattern but optimizes for *ideation breadth* instead of *defect agreement*.
+Activated by the `multi` Recipe (or any explicit user request for parallel ideation / cross-engine comparison). Multi-engine proposal generation mirrors Judge's multi-engine review pattern but optimizes for *ideation breadth* instead of *defect agreement*.
+
+> **Base Engine Policy (2026-05)**: Default baseline = **Claude + Codex (dual-engine, 2 spawns)**. agy adds a third axis (tri-engine, 3 spawns) only when AVAILABLE at PREFLIGHT. dual-engine is NOT degraded — it is the normal operating state. See `_common/MULTI_ENGINE_RECIPE.md §Base Engine Policy + §Engine Availability Modes`.
 
 **Core mechanics:**
-- Spawn three Agent subagents in a single message: `propose-codex`, `propose-agy`, `propose-claude` (per `references/tri-engine-proposal.md`).
+- Spawn one Agent subagent per AVAILABLE engine in a single message: `propose-codex` + `propose-claude` (dual-engine baseline); add `propose-agy` (tri-engine) when AVAILABLE. Per `references/tri-engine-proposal.md`.
 - Run engine availability PREFLIGHT in Spark main context — never delegate detection to subagents (subagent PATH is narrower; see `judge/references/tri-engine-review.md §2` for the canonical probe).
 - Use loose prompts (Role + Target + Output format only). Do NOT pass JTBD templates, RICE rubrics, OST taxonomies, or persona archetypes to subagents — apply framework rules in SYNTHESIZE, not at FAN-OUT. Each engine's training-data priors should drive divergence.
 - Subagents return structured JSON; main context integrates via NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE.

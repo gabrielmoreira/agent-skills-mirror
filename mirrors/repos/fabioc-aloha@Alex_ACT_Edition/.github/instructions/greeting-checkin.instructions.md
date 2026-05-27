@@ -1,12 +1,7 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Greeting-triggered check-in — when the user opens the session with a greeting, run the Edition + AI-Memory check before responding"
-application: "First user message of a session that reads as a greeting (hi, hello, hey, good morning, how are you, what's up, etc.) — fires once per session"
 applyTo: "**/*checkin*,**/*greeting*,**/*welcome*,**/*hello*,**/*hey*"
-currency: 2026-04-30
-lastReviewed: 2026-04-30
+lastReviewed: 2026-05-26
 ---
 
 # Greeting Check-in
@@ -41,3 +36,7 @@ The Edition used to ship a GitHub Action that opened weekly PRs against heirs. T
 | Long preamble in the greeting reply | One paragraph, max — link to `/checkin` for detail |
 | Running silently with no user-visible findings | If you ran the check, say what you found, even if it's "nothing new" |
 | Treating "thanks" or "ok" as a greeting | Greeting recogniser is conservative; if in doubt, don't fire |
+
+## Would Revise If
+
+Revisit this instruction by **2026-08-26** (90 days) or sooner if any of the following fires: the greeting-checkin skill's check protocol substantively changes; the marker-file gate fails to suppress repeated firing within a session; or user feedback indicates the once-per-session cadence is wrong (too noisy or too silent).

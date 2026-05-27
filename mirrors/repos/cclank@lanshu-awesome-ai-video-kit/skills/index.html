@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code Skills · 7 个 · lanshu-awesome-ai-video-kit</title>
+<meta name="description" content="7 个 Claude Code Skill,把 AI 视频提示词写作方法论自动化。覆盖 15 模型。">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site-theme.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  .wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  .hero { padding: 140px 0 36px; text-align: center; }
+  .hero-eyebrow { display: inline-block; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--m-sd); font-weight: 600; padding: 6px 14px; border-radius: var(--r-full);
+    background: rgba(251,146,60,0.12); border: 1px solid var(--glass-border); }
+  .hero h1 { font-size: clamp(32px, 5vw, 48px); font-weight: 800; line-height: 1.15;
+    margin-top: 20px; letter-spacing: -0.02em; color: var(--text-primary); }
+  .hero h1 .grad { background: linear-gradient(135deg, var(--m-sd), var(--accent));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { margin-top: 14px; color: var(--text-secondary); font-size: 16px; line-height: 1.6;
+    max-width: 680px; margin-left: auto; margin-right: auto; }
+  .stats { margin-top: 26px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .stat { padding: 10px 16px; border-radius: var(--r-md); background: var(--glass-1);
+    border: 1px solid var(--glass-border); font-size: 13px; color: var(--text-secondary);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .stat b { color: var(--text-primary); font-weight: 700; }
+
+  .install-box { margin: 30px auto; max-width: 680px;
+    background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: var(--r-md);
+    padding: 18px 22px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.85;
+    text-align: left; overflow-x: auto;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  [data-theme="light"] .install-box { background: rgba(15,12,25,0.9); color: rgba(255,255,255,0.95); }
+  .install-box .c { color: var(--text-muted); }
+  .install-box .k { color: var(--m-sd); }
+  .install-box .s { color: var(--m-hl); }
+
+  .section { padding: 36px 0; position: relative; z-index: 1; }
+  .section-title { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 600; margin-bottom: 16px; padding-left: 4px; }
+
+  .featured-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+  .featured-card { padding: 24px;
+    background: linear-gradient(135deg, rgba(167,139,250,0.12), rgba(244,114,182,0.08));
+    border: 1px solid rgba(167,139,250,0.3); border-radius: var(--r-lg); text-decoration: none;
+    color: var(--text-primary); transition: all .2s; display: block;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .featured-card:hover { transform: translateY(-2px); border-color: rgba(167,139,250,0.5); }
+  .featured-card .badge { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+    padding: 3px 8px; border-radius: 5px; background: var(--accent-soft); color: var(--accent);
+    text-transform: uppercase; margin-bottom: 10px; }
+  .featured-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); }
+  .featured-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.55; }
+  .featured-card .when { margin-top: 10px; font-size: 12px; color: var(--accent); font-style: italic; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+  .card { display: block; padding: 22px; background: var(--glass-1); border: 1px solid var(--glass-border);
+    border-radius: var(--r-md); text-decoration: none; color: var(--text-primary); transition: all .2s;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .card:hover { background: var(--glass-2); border-color: rgba(251,146,60,0.3); transform: translateY(-2px); }
+  .card-model { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+    padding: 3px 8px; border-radius: 5px; background: rgba(251,146,60,0.18); color: var(--m-sd);
+    text-transform: uppercase; margin-bottom: 10px; }
+  .card-title { font-size: 16px; font-weight: 700; margin-bottom: 6px;
+    font-family: 'JetBrains Mono', monospace; letter-spacing: -0.02em; color: var(--text-primary); }
+  .card-desc { font-size: 13px; line-height: 1.55; color: var(--text-secondary); }
+  .card-when { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--glass-border);
+    font-size: 12px; color: var(--text-muted); font-style: italic; }
+
+  .tree { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); border-radius: var(--r-md);
+    padding: 22px 26px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.9;
+    color: var(--text-secondary); white-space: pre; overflow-x: auto;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  [data-theme="light"] .tree { background: rgba(15,12,25,0.9); color: rgba(255,255,255,0.9); }
+  .tree .b { color: var(--text-primary); font-weight: 600; }
+  .tree .acc { color: var(--m-sd); }
+  .tree .star { color: #facc15; }
+
+  footer { margin-top: 80px; padding: 30px 0; border-top: 1px solid var(--glass-border);
+    text-align: center; font-size: 13px; color: var(--text-muted); position: relative; z-index: 1; }
+  footer a { color: var(--m-sd); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 720px) {
+    .hero { padding: 110px 0 24px; }
+    .featured-grid, .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a class="brand" href="../"><span class="brand-dot"></span><span>lanshu-video-kit</span></a>
+  <a class="nav-link" href="../methodology/">📖 Methodology</a>
+  <a class="nav-link" href="../prompts/">📚 Prompts</a>
+  <a class="nav-link active" href="./">🛠️ Skills</a>
+  <a class="nav-link" href="../tools/prompt-browser/">🌐 Browser</a>
+  <a class="nav-link" href="../tools/cross-model/">🔀 Matrix</a>
+  <a class="nav-link cta" href="../">⌂ 主页</a>
+  <button class="nav-icon-btn" id="themeToggle" title="切换主题" aria-label="切换主题">
+    <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  </button>
+</nav>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-eyebrow">🛠️ Claude Code Skills</div>
+    <h1>7 个<span class="grad">把方法论自动化的 Skill</span></h1>
+    <p>每个 Skill 都是 SKILL.md + 真实示例。让 Claude 自动写、修、拆、选、翻 — 覆盖 15 大主流视频模型。</p>
+    <div class="stats">
+      <div class="stat">🛠️ <b>7</b> Skills</div>
+      <div class="stat">🎯 <b>15</b> models</div>
+      <div class="stat">📊 <b>110</b> 条 translator 基准</div>
+    </div>
+    <div class="install-box">
+<span class="c"># 一键安装到 Claude Code</span>
+<span class="k">for</span> s <span class="k">in</span> seedance-prompter seedance-storyboard seedance-debugger \
+         happyhorse-prompter kling-prompter model-selector prompt-translator<span class="k">; do</span>
+  ln -s <span class="s">"$(pwd)/$s"</span> ~/.claude/skills/<span class="s">$s</span>
+<span class="k">done</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-title">★ 跨模型核心 · 全 15 模型适用</div>
+    <div class="featured-grid">
+      <a class="featured-card" href="../viewer.html?file=skills/model-selector/SKILL.md">
+        <span class="badge">★ 推荐</span>
+        <h3>model-selector</h3>
+        <p>15 模型购物顾问。覆盖商业 11 + 开源 4。"用哪个模型好" / "Sora 还是 Kling" / "哪个支持中文" / "哪个能本地部署" — 推荐 1-3 个模型 + 理由 + 对应 skill 链接。</p>
+        <div class="when">触发:不知道用哪个</div>
+      </a>
+      <a class="featured-card" href="../viewer.html?file=skills/prompt-translator/SKILL.md">
+        <span class="badge">★ 数据驱动</span>
+        <h3>prompt-translator</h3>
+        <p>跨 11 商业模型转换器。基于 110 条人工对照基准的查表式转换,不靠 LLM 直觉。"把 Sora prompt 转成 Kling 写法" → 目标公式 prompt + 字段映射表 + 注意事项。</p>
+        <div class="when">触发:已有 prompt 想换模型</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-title">🎯 模型专属 · Seedance / HappyHorse / Kling</div>
+    <div class="grid">
+      <a class="card" href="../viewer.html?file=skills/seedance-prompter/SKILL.md">
+        <span class="card-model">Seedance</span>
+        <div class="card-title">seedance-prompter</div>
+        <div class="card-desc">8 要素结构化提示词。来源:火山方舟 53 页 PDF。</div>
+        <div class="card-when">触发:"帮我写 Seedance 提示词" / "做个视频"</div>
+      </a>
+      <a class="card" href="../viewer.html?file=skills/seedance-storyboard/SKILL.md">
+        <span class="card-model">Seedance</span>
+        <div class="card-title">seedance-storyboard</div>
+        <div class="card-desc">3-5 个分镜 + 4 维度组织。复杂剧情拆"镜头 1/2/3"。</div>
+        <div class="card-when">触发:"把剧情拆成分镜" / "多镜头视频"</div>
+      </a>
+      <a class="card" href="../viewer.html?file=skills/seedance-debugger/SKILL.md">
+        <span class="card-model">Seedance</span>
+        <div class="card-title">seedance-debugger</div>
+        <div class="card-desc">12 类诊断 + 修复版本。症状 → 根因 → 解法。</div>
+        <div class="card-when">触发:"我的提示词出问题了" / "人脸不像了"</div>
+      </a>
+      <a class="card" href="../viewer.html?file=skills/happyhorse-prompter/SKILL.md">
+        <span class="card-model">HappyHorse</span>
+        <div class="card-title">happyhorse-prompter</div>
+        <div class="card-desc">30-55 词紧凑 + 8s 节拍 + 原生音频路径(with X audible)。</div>
+        <div class="card-when">触发:"5/10/15 秒紧凑短片" / "要原生环境音"</div>
+      </a>
+      <a class="card" href="../viewer.html?file=skills/kling-prompter/SKILL.md">
+        <span class="card-model">Kling</span>
+        <div class="card-title">kling-prompter</div>
+        <div class="card-desc">三套写法自适应(4 部分基础 / 5 层进阶 / 图生视频)。</div>
+        <div class="card-when">触发:"可灵" / "图生视频" / "角色对话" / "中文剧情"</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-title">🌲 选 Skill 决策树</div>
+<div class="tree">你想要什么?
+├── <span class="acc">不知道用哪个模型(含 4 开源)</span>          → <span class="b">model-selector</span> <span class="star">★</span>
+├── <span class="acc">已有 prompt 想换模型(Sora→Kling 等)</span>  → <span class="b">prompt-translator</span> <span class="star">★</span>
+├── 中文剧情、原生音频+对话、图生视频           → <span class="b">kling-prompter</span>
+├── 5/10/15 秒紧凑 + 要原生环境音                   → <span class="b">happyhorse-prompter</span>
+├── 10-15 秒单镜头复杂叙事                      → <span class="b">seedance-prompter</span>
+├── 多镜头剧情切换                              → <span class="b">seedance-storyboard</span>
+└── 已有 Seedance 提示词但效果不对              → <span class="b">seedance-debugger</span></div>
+    <p style="color: var(--text-secondary); font-size: 13px; margin-top: 14px; line-height: 1.7;">
+      💡 还没单独写 skill 的模型(Sora/Veo/Runway/Pika/Hailuo/Hunyuan/Wan/即梦 + 4 开源),可以让 Claude 直接基于 <a href="../methodology/" style="color:var(--m-sd);text-decoration:none">methodology/</a> 里的公式手写(尤其是 13 商业速查 + 14 开源速查)。或者用 model-selector 帮你选最匹配的现有 skill。
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>🛠️ 7 个 SKILL.md · 100% 可移植到你的 Claude Code</p>
+    <p style="margin-top:8px"><a href="../">← 返回主页</a> · <a href="../viewer.html?file=skills/README.md">README</a> · <a href="../methodology/">方法论</a></p>
+  </div>
+</footer>
+
+<script src="/assets/site-theme.js" defer></script>
+</body>
+</html>

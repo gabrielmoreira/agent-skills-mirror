@@ -1,10 +1,9 @@
 ---
 description: "Search the Alex ACT Plugin Mall by keyword, category, shape, or tier"
-mode: agent
-lastReviewed: 2026-05-02
+lastReviewed: 2026-05-26
 ---
 
-# /mall search
+# /mall-search
 
 Search the Plugin Mall catalog for plugins matching a query.
 
@@ -38,3 +37,7 @@ Search the Plugin Mall catalog for plugins matching a query.
 - Read-only: searching does not modify anything
 - Shape notation: `.S..` (skill), `.S.M` (skill+muscle), `ISP.` (trifecta), etc.
 - Plugin count and categories are derived from CATALOG.json at runtime
+
+## Would Revise If
+
+Revisit this prompt by **2026-08-26** (90 days) or sooner if any of the following fires: the workflow it invokes ceases to produce its intended output (skill body changed but prompt steps stale); the visible markers / verification steps in its body are consistently skipped; or the slash-command name is no longer discoverable in the prompt picker.

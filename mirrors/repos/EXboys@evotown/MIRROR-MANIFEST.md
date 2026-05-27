@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `EXboys/evotown` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `EXboys/evotown` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `EXboys/evotown` — 26 default patterns, 0 followed patterns, 6 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,11 +60,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.cursor/rules/git-workflow.mdc`](.cursor/rules/git-workflow.mdc) |
-| 2 | ✓ | [`backend/arena_skills/agent-browser/SKILL.md`](backend/arena_skills/agent-browser/SKILL.md) |
-| 3 | ✓ | [`backend/arena_skills/calculator/SKILL.md`](backend/arena_skills/calculator/SKILL.md) |
-| 4 | ✓ | [`backend/arena_skills/find-skills/SKILL.md`](backend/arena_skills/find-skills/SKILL.md) |
-| 5 | ✓ | [`backend/arena_skills/http-request/SKILL.md`](backend/arena_skills/http-request/SKILL.md) |
-| 6 | ✓ | [`backend/arena_skills/skill-creator/SKILL.md`](backend/arena_skills/skill-creator/SKILL.md) |
+| 2 | ✓ | [`.cursor/rules/issue-pr-workflow.mdc`](.cursor/rules/issue-pr-workflow.mdc) |
+| 3 | ✓ | [`backend/arena_skills/agent-browser/SKILL.md`](backend/arena_skills/agent-browser/SKILL.md) |
+| 4 | ✓ | [`backend/arena_skills/calculator/SKILL.md`](backend/arena_skills/calculator/SKILL.md) |
+| 5 | ✓ | [`backend/arena_skills/find-skills/SKILL.md`](backend/arena_skills/find-skills/SKILL.md) |
+| 6 | ✓ | [`backend/arena_skills/http-request/SKILL.md`](backend/arena_skills/http-request/SKILL.md) |
+| 7 | ✓ | [`backend/arena_skills/skill-creator/SKILL.md`](backend/arena_skills/skill-creator/SKILL.md) |
+| 8 | ✓ | [`integrations/openclaw/evotown/skills/evotown-dispatch-complete/SKILL.md`](integrations/openclaw/evotown/skills/evotown-dispatch-complete/SKILL.md) |
+| 9 | ✓ | [`integrations/openclaw/evotown/skills/evotown-handoff/SKILL.md`](integrations/openclaw/evotown/skills/evotown-handoff/SKILL.md) |
 
 ---
 

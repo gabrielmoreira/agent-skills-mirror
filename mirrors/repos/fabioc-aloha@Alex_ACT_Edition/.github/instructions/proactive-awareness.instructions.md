@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Cross-session context recovery, uncommitted work detection, and proactive behaviors"
-application: "Always active — recover context on session start, detect uncommitted work, route to active focus"
 applyTo: "**"
-currency: 2026-04-30
 lastReviewed: 2026-04-30
 ---
 
@@ -57,7 +52,7 @@ When starting a session or after completing a task that touched files:
 
 ## Focus Routing (PA4)
 
-Read `.github/config/goals.json` for the user's active focus:
+Read `.github/config/goals.json` for the user's active focus (heir-authored; absent on fresh installs by design):
 
 1. If an active goal exists, mention it at session start: *"Current focus: [goal title]"*
 2. When the user's request is ambiguous, route toward the active goal

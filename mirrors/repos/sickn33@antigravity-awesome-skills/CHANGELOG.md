@@ -9,6 +9,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [11.7.0] - 2026-05-26 - "Community Skill Intake and Merge Hygiene"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills --help`
+- Choose your tool: [README.md#choose-your-tool](README.md#choose-your-tool)
+- Best skills by tool: [README.md#best-skills-by-tool](README.md#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](docs/users/workflows.md)
+
+This release merges the clean community skill PRs from the current maintainer batch, refreshes generated catalog/plugin/web assets to `1,470+` skills, and hardens batch merges so unwanted Claude co-author trailers are stripped from future squash commits.
+
+## New Skills
+
+- **mesh-memory** - structured memory mesh workflow for persistent agent context and recall.
+- **flowhunt-skill** - automation discovery audit for workflow intake, tool-by-tool review, and productivity opportunity prioritization.
+- **socialclaw** - social media campaign scheduling and publishing across major platforms from a single workspace API key.
+- **geminiignore-finops** - `.geminiignore` setup patterns for context-window efficiency and token cost reduction.
+- **ii-commons** - deterministic research retrieval across arXiv, PubMed/PMC, and supported US policy corpora.
+
+## Improvements
+
+- Synced generated registry, catalog, compatibility, plugin mirror, documentation, and web assets to the new `1,470+` skill count.
+- Updated the maintainer batch merge script to pass explicit squash commit subjects/bodies and remove Claude/Anthropic co-author trailers from future merge commits.
+
+## Credits
+
+- **[@dklymentiev](https://github.com/dklymentiev)** for PR #613 (`mesh-memory`).
+- **[@konradbachowski](https://github.com/konradbachowski)** and **[heyneuron/flowhunt-skill](https://github.com/heyneuron/flowhunt-skill)** for PR #614 (`flowhunt-skill`).
+- **[@ndesv21](https://github.com/ndesv21)** for PR #619 (`socialclaw`).
+- **[@iradoweck](https://github.com/iradoweck)** for PR #620 (`geminiignore-finops`).
+- **[@liujuanjuan1984](https://github.com/liujuanjuan1984)** and **[Intelligent-Internet/II-Commons-Skills](https://github.com/Intelligent-Internet/II-Commons-Skills)** for PR #621 (`ii-commons`).
+
 ## [11.6.0] - 2026-05-23 - "Audit Hardening and Karpathy Guidelines"
 
 > Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.

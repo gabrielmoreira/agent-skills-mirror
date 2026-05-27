@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>提示词库 · 539 条 · 15 模型 · lanshu-awesome-ai-video-kit</title>
+<meta name="description" content="429 条分散 + 110 条跨模型对照 = 539 条 AI 视频提示词,覆盖 15 大模型。">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site-theme.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  .wrap { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  .hero { padding: 140px 0 36px; text-align: center; }
+  .hero-eyebrow {
+    display: inline-block;
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--m-sd); font-weight: 600;
+    padding: 6px 14px; border-radius: var(--r-full);
+    background: rgba(251,146,60,0.12);
+    border: 1px solid var(--glass-border);
+  }
+  .hero h1 { font-size: clamp(32px, 5vw, 48px); font-weight: 800; line-height: 1.15;
+    margin-top: 20px; letter-spacing: -0.02em; color: var(--text-primary); }
+  .hero h1 .grad {
+    background: linear-gradient(135deg, var(--m-sd), #f472b6);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p { margin-top: 14px; color: var(--text-secondary); font-size: 16px; line-height: 1.6;
+    max-width: 720px; margin-left: auto; margin-right: auto; }
+  .stats { margin-top: 26px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .stat { padding: 10px 16px; border-radius: var(--r-md);
+    background: var(--glass-1); border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    font-size: 13px; color: var(--text-secondary); }
+  .stat b { color: var(--text-primary); font-weight: 700; }
+  .cta-row { margin-top: 28px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 22px; border-radius: var(--r-md); text-decoration: none;
+    font-weight: 600; font-size: 14px; transition: all .15s; }
+  .btn-primary { background: linear-gradient(135deg, var(--m-sd), #f472b6); color: white;
+    box-shadow: 0 8px 24px rgba(251,146,60,0.3); }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 30px rgba(251,146,60,0.4); }
+  .btn-ghost { background: var(--glass-1); color: var(--text-primary); border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .btn-ghost:hover { background: var(--glass-2); }
+  .btn svg { width: 16px; height: 16px; }
+
+  .section { padding: 36px 0; position: relative; z-index: 1; }
+  .section-title { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 600; margin-bottom: 16px; padding-left: 4px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+
+  .card { display: block; padding: 20px; background: var(--glass-1); border: 1px solid var(--glass-border);
+    border-radius: var(--r-md); text-decoration: none; color: var(--text-primary); transition: all .2s;
+    position: relative; overflow: hidden;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .card::before { content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, var(--card-glow, var(--accent-soft)), transparent 50%);
+    opacity: 0; transition: opacity .25s; pointer-events: none; }
+  .card:hover { background: var(--glass-2); border-color: var(--card-border, var(--glass-border-strong));
+    transform: translateY(-2px); }
+  .card:hover::before { opacity: 1; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px;
+    vertical-align: middle; box-shadow: 0 0 10px var(--dot-color); background: var(--dot-color); }
+  .card-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.01em;
+    color: var(--text-primary); display: flex; align-items: center; gap: 4px; }
+  .card-title .star { color: #facc15; }
+  .card-vendor { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-bottom: 8px; }
+  .card-desc { font-size: 13px; line-height: 1.55; color: var(--text-secondary); }
+  .card-meta { margin-top: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .tag { font-size: 11px; padding: 3px 8px; border-radius: 6px;
+    background: var(--glass-2); color: var(--text-muted); }
+  .tag.cnt { background: var(--accent-soft); color: var(--accent); font-weight: 600;
+    font-family: 'JetBrains Mono', monospace; }
+
+  .featured-card { display: grid; grid-template-columns: auto 1fr auto; gap: 24px; align-items: center;
+    padding: 28px; background: linear-gradient(135deg, rgba(244,114,182,0.10), rgba(167,139,250,0.10));
+    border: 1px solid rgba(244,114,182,0.25); border-radius: var(--r-lg); text-decoration: none; color: var(--text-primary);
+    transition: all .2s; margin-bottom: 14px;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .featured-card:hover { transform: translateY(-2px); border-color: rgba(244,114,182,0.5); }
+  .featured-icon { width: 56px; height: 56px; border-radius: var(--r-md); display: grid; place-items: center;
+    background: linear-gradient(135deg, #f472b6, var(--accent)); box-shadow: 0 8px 24px rgba(244,114,182,0.4); }
+  .featured-icon svg { width: 28px; height: 28px; color: white; }
+  .featured-body h3 { font-size: 18px; font-weight: 700; margin-bottom: 4px; color: var(--text-primary); }
+  .featured-body p { color: var(--text-secondary); font-size: 14px; }
+  .featured-arrow { font-size: 22px; color: #f472b6; }
+
+  footer { margin-top: 80px; padding: 30px 0; border-top: 1px solid var(--glass-border);
+    text-align: center; font-size: 13px; color: var(--text-muted); position: relative; z-index: 1; }
+  footer a { color: var(--m-sd); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 110px 0 24px; }
+    .grid { grid-template-columns: 1fr; }
+    .featured-card { grid-template-columns: 1fr; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a class="brand" href="../"><span class="brand-dot"></span><span>lanshu-video-kit</span></a>
+  <a class="nav-link" href="../methodology/">📖 Methodology</a>
+  <a class="nav-link active" href="./">📚 Prompts</a>
+  <a class="nav-link" href="../skills/">🛠️ Skills</a>
+  <a class="nav-link" href="../tools/prompt-browser/">🌐 Browser</a>
+  <a class="nav-link" href="../tools/cross-model/">🔀 Matrix</a>
+  <a class="nav-link cta" href="../">⌂ 主页</a>
+  <button class="nav-icon-btn" id="themeToggle" title="切换主题" aria-label="切换主题">
+    <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  </button>
+</nav>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-eyebrow">📚 Prompts Library</div>
+    <h1>539 条<span class="grad">实测精选提示词</span></h1>
+    <p>429 条按单模型最佳实践分散收录 + 110 条跨模型对照矩阵(10 场景 × 11 商业模型)。每条遵循对应模型的官方公式与最佳实践。</p>
+    <div class="stats">
+      <div class="stat">📚 <b>539</b> prompts</div>
+      <div class="stat">🎯 <b>15</b> models</div>
+      <div class="stat">🏷️ <b>29</b> categories</div>
+      <div class="stat">📊 <b>110</b> 跨模型对照</div>
+    </div>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="../tools/prompt-browser/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Prompt Browser →
+      </a>
+      <a class="btn btn-ghost" href="data/all-prompts.json">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        JSON 数据源
+      </a>
+      <a class="btn btn-ghost" href="../viewer.html?file=prompts/README.md">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Schema 文档
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-title">★ 精华入口</div>
+    <a class="featured-card" href="../tools/cross-model/">
+      <span class="featured-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </span>
+      <div class="featured-body">
+        <h3>Cross-Model Matrix v2 — 110 条跨模型对照</h3>
+        <p>同一场景在 11 商业模型上的最佳 prompt 对照。10 场景:产品 / 双人对话 / 物理动作 / 图生视频 / 多人会议 / 恐怖 / 自然延时 / 抽象 / 武侠 / 萌宠。是 prompt-translator skill 的查表基准。</p>
+      </div>
+      <span class="featured-arrow">→</span>
+    </a>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-title">🏢 11 商业模型 · 257 条</div>
+    <div class="grid">
+      <a class="card" style="--dot-color:var(--m-sd);--card-glow:rgba(251,146,60,0.10);--card-border:rgba(251,146,60,0.3)" href="../viewer.html?file=prompts/seedance/README.md">
+        <div class="card-title"><span class="dot"></span>Seedance 2.0 <span class="star">⭐</span></div>
+        <div class="card-vendor">字节 · 火山方舟 · 综合 SOTA</div>
+        <div class="card-desc">复杂多镜头叙事 + 8 要素公式 + 即梦底层引擎。来源:火山方舟 53 页官方 PDF。</div>
+        <div class="card-meta"><span class="tag cnt">64 条</span><span class="tag">sd-*</span><span class="tag">60s 2K</span></div>
+      </a>
+      <a class="card" style="--dot-color:var(--m-hh);--card-glow:rgba(56,189,248,0.10);--card-border:rgba(56,189,248,0.3)" href="../viewer.html?file=prompts/happyhorse/README.md">
+        <div class="card-title"><span class="dot"></span>HappyHorse 1.0</div>
+        <div class="card-vendor">阿里巴巴 · 紧凑短片专精</div>
+        <div class="card-desc">8s 时序节拍 + 30-55 词紧凑 + 原生环境音(with X audible)。</div>
+        <div class="card-meta"><span class="tag cnt">57 条</span><span class="tag">hh-*</span><span class="tag">8s 节拍</span></div>
+      </a>
+      <a class="card" style="--dot-color:var(--m-kl);--card-glow:rgba(244,114,182,0.10);--card-border:rgba(244,114,182,0.3)" href="../viewer.html?file=prompts/kling/README.md">
+        <div class="card-title"><span class="dot"></span>Kling 3.0</div>
+        <div class="card-vendor">快手 · 可灵 · S 级</div>
+        <div class="card-desc">三套写法(4 部分 / 5 层 / 图生视频)+ 中文最强 + 48fps 1080p + lip-sync。</div>
+        <div class="card-meta"><span class="tag cnt">36 条</span><span class="tag">kl-*</span><span class="tag">中文 S 级</span></div>
+      </a>
+      <a class="card" style="--dot-color:var(--m-so);--card-glow:rgba(52,211,153,0.10);--card-border:rgba(52,211,153,0.3)" href="../viewer.html?file=prompts/sora/README.md">
+        <div class="card-title"><span class="dot"></span>Sora 2 ⚠️</div>
+        <div class="card-vendor">OpenAI · web/app 已停 2026-04-26</div>
+        <div class="card-desc">OpenAI Cookbook 官方 Shot List + 超精细参数化样板。</div>
+        <div class="card-meta"><span class="tag cnt">20 条</span><span class="tag">so-*</span><span class="tag">⚠️ EOL</span></div>
+      </a>
+      <a class="card" style="--dot-color:var(--m-ve);--card-glow:rgba(250,204,21,0.10);--card-border:rgba(250,204,21,0.3)" href="../viewer.html?file=prompts/veo/README.md">
+        <div class="card-title"><span class="dot"></span>Veo 3.1</div>
+        <div class="card-vendor">Google DeepMind · 原生音频最强</div>
+        <div class="card-desc">8 元素 + Dialogue:/Audio: 双层标记 + 多人对话。</div>
+        <div class="card-meta"><span class="tag cnt">20 条</span><span class="tag">ve-*</span><span class="tag">音频 S 级</span></div>
+      </a>
+      <a class="card" style="--dot-color:var(--m-rw);--card-glow:rgba(192,132,252,0.10);--card-border:rgba(192,132,252,0.3)" href="../tools/prompt-browser/#model=runway-gen4">
+        <div class="card-title"><span class="dot"></span>Runway Gen-4.5 / Aleph</div>
+        <div class="card-vendor">Runway · ELO 综合第一</div>
+        <div class="card-desc">Aleph 视频编辑独家(add/remove/relight/restyle)。仅在 JSON: rw-*</div>
+        <div class="card-meta"><span class="tag cnt">12 条</span><span class="tag">rw-*</span><span class="tag">视频编辑</span></div>
+      </a>
+      <a class="card" style="--dot-color:var(--m-pk);--card-glow:rgba(253,164,175,0.10);--card-border:rgba(253,164,175,0.3)" href="../tools/prompt-browser/#model=pika-2.5">
+        <div class="card-title"><span class="dot"></span>Pika 2.5</div>
+        <div class="card-vendor">Pika Labs · 性价比之王</div>
+        <div class="card-desc">Pikaffects 15+ 创意特效 + Pikaframes 关键帧。仅在 JSON: pk-*</div>
+        <div class="card-meta"><span class="tag cnt">12 条</span><span class="tag">pk-*</span><span class="tag">Pikaffects</span></div>
+      </a>
+      <a class="card" style="--dot-color:var(--m-hl);--card-glow:rgba(94,234,212,0.10);--card-border:rgba(94,234,212,0.3)" href="../tools/prompt-browser/#model=hailuo-02">
+        <div class="card-title"><span class="dot"></span>Hailuo 02</div>
+        <div class="card-vendor">MiniMax · 物理仿真业界第一</div>
+        <div class="card-desc">水/火/烟/布料/重力 准确度第一。仅在 JSON: hl-*</div>
+        <div class="card-meta"><span class="tag cnt">12 条</span><span class="tag">hl-*</span><span class="tag">物理仿真</span></div>
+      </a>
+      <a class="card" style="--dot-color:var(--m-hy);--card-glow:rgba(147,197,253,0.10);--card-border:rgba(147,197,253,0.3)" href="../tools/prompt-browser/#model=hunyuan-video">
+        <div class="card-title"><span class="dot"></span>Hunyuan Video 1.5</div>
+        <div class="card-vendor">腾讯 · 开源最强商业版</div>
+        <div class="card-desc">13B/8.3B 开源 + LoRA + RTX 4090 可跑。仅在 JSON: hy-*</div>
+        <div class="card-meta"><span class="tag cnt">12 条</span><span class="tag">hy-*</span><span class="tag">开源</span></div>
+      </a>
+      <a class="card" style="--dot-color:var(--m-wn);--card-glow:rgba(252,211,77,0.10);--card-border:rgba(252,211,77,0.3)" href="../tools/prompt-browser/#model=wan-2.5">
+        <div class="card-title"><span class="dot"></span>Wan 2.7</div>
+        <div class="card-vendor">阿里通义 · 数字人 lip-sync 最准</div>
+        <div class="card-desc">Entity+Scene+Motion+Sound 公式。仅在 JSON: wn-*</div>
+        <div class="card-meta"><span class="tag cnt">12 条</span><span class="tag">wn-*</span><span class="tag">lip-sync</span></div>
+      </a>
+      <a class="card" style="--dot-color:var(--m-jm);--card-glow:rgba(249,168,212,0.10);--card-border:rgba(249,168,212,0.3)" href="../tools/prompt-browser/#model=jimeng-3">
+        <div class="card-title"><span class="dot"></span>即梦 AI</div>
+        <div class="card-vendor">字节剪映 · 中文最强(Seedance 引擎)</div>
+        <div class="card-desc">中式美学(江南/汉服/仙侠/水墨)。仅在 JSON: jm-*</div>
+        <div class="card-meta"><span class="tag cnt">12 条</span><span class="tag">jm-*</span><span class="tag">中文 S 级</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-title">🔓 4 开源 / 开源友好 · 32 条</div>
+    <div class="grid">
+      <a class="card" style="--dot-color:var(--m-lt);--card-glow:rgba(163,230,53,0.10);--card-border:rgba(163,230,53,0.3)" href="../tools/prompt-browser/#model=ltx-video">
+        <div class="card-title"><span class="dot"></span>LTX-Video 0.9.7</div>
+        <div class="card-vendor">Lightricks · Apache 2.0 · 实时生成</div>
+        <div class="card-desc">5s 视频在 5s 内生成 + 单段 prose + screenplay 对话格式。</div>
+        <div class="card-meta"><span class="tag cnt">8 条</span><span class="tag">lt-*</span><span class="tag">实时</span></div>
+      </a>
+      <a class="card" style="--dot-color:var(--m-mo);--card-glow:rgba(251,113,133,0.10);--card-border:rgba(251,113,133,0.3)" href="../tools/prompt-browser/#model=mochi-1">
+        <div class="card-title"><span class="dot"></span>Mochi 1</div>
+        <div class="card-vendor">Genmo · Apache 2.0 · 10B 最大开源</div>
+        <div class="card-desc">AsymmDiT 10B + 强 prompt 遵循 + 物理细节(time-lapse / shattering / arcing)。</div>
+        <div class="card-meta"><span class="tag cnt">8 条</span><span class="tag">mo-*</span><span class="tag">10B</span></div>
+      </a>
+      <a class="card" style="--dot-color:var(--m-cg);--card-glow:rgba(96,165,250,0.10);--card-border:rgba(96,165,250,0.3)" href="../tools/prompt-browser/#model=cogvideox-5b">
+        <div class="card-title"><span class="dot"></span>CogVideoX 5B / 1.5</div>
+        <div class="card-vendor">智谱 · 清华 · Apache 2.0 · 中国开源</div>
+        <div class="card-desc">226 token 长 prompt + 768×1360 高分辨率 + T2V/I2V 专门权重。</div>
+        <div class="card-meta"><span class="tag cnt">8 条</span><span class="tag">cg-*</span><span class="tag">I2V</span></div>
+      </a>
+      <a class="card" style="--dot-color:var(--m-hg);--card-glow:rgba(232,121,249,0.10);--card-border:rgba(232,121,249,0.3)" href="../tools/prompt-browser/#model=higgsfield-soul">
+        <div class="card-title"><span class="dot"></span>Higgsfield Soul / DoP</div>
+        <div class="card-vendor">Higgsfield AI · 部分开源</div>
+        <div class="card-desc">Soul ID 业界最强角色一致性 + DoP 模板 + AI Director 60-90s 分镜。</div>
+        <div class="card-meta"><span class="tag cnt">8 条</span><span class="tag">hg-*</span><span class="tag">Soul ID</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>📚 539 条提示词 · 单一数据源:<a href="data/all-prompts.json">data/all-prompts.json</a></p>
+    <p style="margin-top:8px"><a href="../">← 返回主页</a> · <a href="../methodology/">方法论</a> · <a href="../skills/">Skills</a> · <a href="../tools/prompt-browser/">Browser</a></p>
+  </div>
+</footer>
+
+<script src="/assets/site-theme.js" defer></script>
+</body>
+</html>

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `garrytan/gstack` — 26 default patterns, 1 followed patterns, 65 file(s) materialized.
+Mirror of `garrytan/gstack` — 26 default patterns, 1 followed patterns, 66 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `garrytan/gstack` — 26 default patterns, 1 followed patterns, 65 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 65 |
+| Files         | 66 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -121,9 +121,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 60 | ✓ | [`ship/SKILL.md`](ship/SKILL.md) |
 | 61 | ✓ | [`SKILL.md`](SKILL.md) |
 | 62 | ✓ | [`skillify/SKILL.md`](skillify/SKILL.md) |
-| 63 | ✓ | [`sync-gbrain/SKILL.md`](sync-gbrain/SKILL.md) |
-| 64 | ✓ | [`unfreeze/SKILL.md`](unfreeze/SKILL.md) |
-| 65 | → | [`docs/howto-ios-testing-with-gstack.md`](docs/howto-ios-testing-with-gstack.md) |
+| 63 | ✓ | [`spec/SKILL.md`](spec/SKILL.md) |
+| 64 | ✓ | [`sync-gbrain/SKILL.md`](sync-gbrain/SKILL.md) |
+| 65 | ✓ | [`unfreeze/SKILL.md`](unfreeze/SKILL.md) |
+| 66 | → | [`docs/howto-ios-testing-with-gstack.md`](docs/howto-ios-testing-with-gstack.md) |
 
 ---
 

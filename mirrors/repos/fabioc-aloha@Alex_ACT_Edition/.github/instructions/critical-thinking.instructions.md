@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Critical thinking framework — challenge assumptions, evaluate evidence, detect bias, and test falsifiability"
-application: "When evaluating claims, reviewing proposals, assessing evidence quality, or performing adversarial analysis"
 applyTo: "**/*"
-currency: 2026-04-30
 lastReviewed: 2026-04-30
 ---
 

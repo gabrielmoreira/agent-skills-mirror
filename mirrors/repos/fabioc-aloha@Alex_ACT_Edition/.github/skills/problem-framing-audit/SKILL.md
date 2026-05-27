@@ -1,12 +1,6 @@
 ---
-type: skill
-lifecycle: stable
-inheritance: inheritable
 name: problem-framing-audit
 description: Step-back protocol — restate, generalise, specialise, invert, ask why, pre-mortem, check stakeholders, and audit framings before solving
-tier: core
-applyTo: '**/*problem*,**/*framing*,**/*audit*'
-currency: 2026-04-26
 lastReviewed: 2026-04-30
 ---
 

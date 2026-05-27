@@ -174,6 +174,7 @@ Reference for bd Latest. Generated from `bd help --all`.
 - [bd migrate](#bd-migrate) — Database migration commands
   - [bd migrate hooks](#bd-migrate-hooks) — Plan or apply git hook migration to marker-managed format
   - [bd migrate issues](#bd-migrate-issues) — Move issues between repositories
+  - [bd migrate schema](#bd-migrate-schema) — Apply pending schema migrations (idempotent)
   - [bd migrate sync](#bd-migrate-sync) — Set up sync.branch workflow for multi-clone setups
 - [bd ping](#bd-ping) — Check database connectivity
 - [bd preflight](#bd-preflight) — Show PR readiness checklist
@@ -921,6 +922,7 @@ bd list [flags]
       --priority-min string          Filter by minimum priority (inclusive, 0-4 or P0-P4)
       --ready                        Show only ready issues (no active blockers, same semantics as bd ready)
   -r, --reverse                      Reverse sort order
+      --skip-labels                  Skip label hydration. The labels field in output will be empty regardless of actual labels. Use only when the caller does not depend on label data. Cannot combine with --label, --label-any, --label-pattern, --label-regex, --exclude-label, or --no-labels.
       --sort string                  Sort by field: priority, created, updated, closed, status, id, title, type, assignee
       --spec string                  Filter by spec_id prefix
   -s, --status string                Filter by stored status (open, in_progress, blocked, deferred, closed). Comma-separated for multiple: --status open,in_progress
@@ -3408,7 +3410,7 @@ bd init [flags]
       --server-user string                Dolt server MySQL user (default: root)
       --setup-exclude                     Configure .git/info/exclude to keep beads files local (for forks)
       --shared-server                     Enable shared Dolt server mode (all projects share one server at ~/.beads/shared-server/)
-      --skip-agents                       Skip AGENTS.md and Claude settings generation
+      --skip-agents                       Skip AGENTS.md and Claude/Codex setup generation
       --skip-hooks                        Skip git hooks installation
       --stealth                           Enable stealth mode: global gitattributes and gitignore, no local repo tracking
       --team                              Run team workflow setup wizard
@@ -3511,7 +3513,7 @@ by default. This approach:
   • bd prime provides dynamic, always-current workflow details
   • Hooks auto-inject bd prime at session start
 
-For agents that don't support hooks (Codex, Factory, etc.), use
+For agents or environments that do not auto-inject hook output, use
 'bd init --agents-profile=full' to embed the complete command reference.
 
 ```
@@ -3605,8 +3607,8 @@ include cursor, claude, copilot, gemini, aider, factory, codex, mux, opencode, j
 
 Examples:
   bd setup cursor          # Install Cursor IDE integration
-  bd setup codex           # Install Codex skill + AGENTS.md guidance
-  bd setup codex --global  # Install global Codex skill + global AGENTS.md guidance
+  bd setup codex           # Install Codex skill + AGENTS.md guidance + native hooks
+  bd setup codex --global  # Install global Codex skill + guidance + native hooks
   bd setup copilot         # Install Copilot CLI plugin + repository instructions
   bd setup mux --project   # Install Mux workspace layer (.mux/AGENTS.md)
   bd setup mux --global    # Install Mux global layer (~/.mux/AGENTS.md)
@@ -3969,6 +3971,7 @@ Without subcommand, checks and updates database metadata to current version.
 Subcommands:
   hooks       Plan git hook migration to marker-managed format
   issues      Move issues between repositories
+  schema      Apply pending schema migrations (idempotent)
   sync        Set up sync.branch workflow for multi-clone setups
 
 
@@ -4055,6 +4058,28 @@ bd migrate issues [flags]
       --type string        Filter by issue type (bug/feature/task/epic/chore/decision)
       --within-from-only   Only include dependencies from source repo (default true)
       --yes                Skip confirmation prompt
+```
+
+#### bd migrate schema
+
+Apply pending schema migrations idempotently.
+
+Schema migrations also run automatically on store open, so this subcommand
+is typically a no-op. It exists to make migration explicit and observable
+in CI, release gates, and recovery scenarios.
+
+Example:
+  bd migrate schema
+  bd migrate schema --json
+
+```
+bd migrate schema [flags]
+```
+
+**Flags:**
+
+```
+      --json   Output in JSON format
 ```
 
 #### bd migrate sync

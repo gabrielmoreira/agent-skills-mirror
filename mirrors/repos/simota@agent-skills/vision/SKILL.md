@@ -259,12 +259,14 @@ Vision receives research and analysis from upstream agents. Vision sends design 
 
 ## Multi-Engine Mode
 
-Activated by the `multi` Recipe (or any explicit user request for parallel design-direction generation / cross-engine aesthetic comparison). Tri-engine design-direction generation mirrors Spark's Pattern D pattern but optimizes for *aesthetic spectrum coverage and brand-defining divergence* instead of feature ideation.
+Activated by the `multi` Recipe (or any explicit user request for parallel design-direction generation / cross-engine aesthetic comparison). Multi-engine design-direction generation mirrors Spark's Pattern D pattern but optimizes for *aesthetic spectrum coverage and brand-defining divergence* instead of feature ideation.
+
+> **Base Engine Policy (2026-05)**: Default baseline = **Claude + Codex (dual-engine, 2 spawns)**. agy adds a third axis (tri-engine, 3 spawns) when AVAILABLE at PREFLIGHT. For Vision the agy uplift is meaningful because Antigravity surfaces Material 3 Expressive / Google design-language patterns that Claude and Codex under-index; dual-engine still covers GitHub component libraries (Codex) + editorial-brand aesthetics (Claude). See `_common/MULTI_ENGINE_RECIPE.md §Base Engine Policy + §Engine Availability Modes`.
 
 **Core mechanics:**
-- Spawn three Agent subagents in a single message: `direction-codex`, `direction-agy`, `direction-claude` (per `references/tri-engine-direction.md`).
+- Spawn one Agent subagent per AVAILABLE engine in a single message: `direction-codex` + `direction-claude` (dual-engine baseline); add `direction-agy` (tri-engine) when AVAILABLE. Per `references/tri-engine-direction.md`.
 - Run engine availability PREFLIGHT in Vision main context — never delegate detection to subagents (subagent PATH is narrower; see `_common/MULTI_ENGINE_RECIPE.md §2` for the canonical probe).
-- Use loose prompts (Role + Target + Output format only). Do NOT pass the V.A.I.R.E. rubric, 2026 trend taxonomy, aesthetic vocabulary, or design-system anti-pattern list to subagents — apply framework rules in SYNTHESIZE, not at FAN-OUT. Each engine's training-data aesthetic priors (Codex/GitHub component libraries, Antigravity/Material 3 Expressive, Claude/Anthropic editorial-brand corpus) should drive divergence.
+- Use loose prompts (Role + Target + Output format only). Do NOT pass the V.A.I.R.E. rubric, 2026 trend taxonomy, aesthetic vocabulary, or design-system anti-pattern list to subagents — apply framework rules in SYNTHESIZE, not at FAN-OUT. Each engine's training-data aesthetic priors (Codex/GitHub component libraries, Claude/Anthropic editorial-brand corpus, Antigravity/Material 3 Expressive when AVAILABLE) should drive divergence.
 - Subagents return structured JSON; main context integrates via NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE → DELIVER.
 
 **Concurrence vs Divergence scoring (Pattern D, identical to Spark/Plea):**

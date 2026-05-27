@@ -12,7 +12,7 @@ End-to-end autonomous research workflow for: **$ARGUMENTS**
 - **AUTO_PROCEED = true** — When `true`, Gate 1 auto-selects the top-ranked idea (highest pilot signal + novelty confirmed) and continues to implementation. When `false`, always waits for explicit user confirmation before proceeding.
 - **ARXIV_DOWNLOAD = false** — When `true`, `/research-lit` downloads the top relevant arXiv PDFs during literature survey. When `false` (default), only fetches metadata via arXiv API. Passed through to `/idea-discovery` → `/research-lit`.
 - **HUMAN_CHECKPOINT = false** — When `true`, the auto-review loops (Stage 3) pause after each round's review to let you see the score and provide custom modification instructions before fixes are implemented. When `false` (default), loops run fully autonomously. Passed through to `/auto-review-loop`.
-- **REVIEWER_DIFFICULTY = medium** — How adversarial the reviewer is. `medium` (default): standard MCP review. `hard`: adds reviewer memory + debate protocol. `nightmare`: GPT reads repo directly via `codex exec` + memory + debate. Passed through to `/auto-review-loop`.
+- **REVIEWER_DIFFICULTY = medium** — How adversarial the reviewer is. `medium` (default): standard MCP review. `hard`: adds **Reviewer Memory** + **Debate Protocol**. `nightmare`: GPT reads repo directly via `codex exec` + memory + debate. Passed through to `/auto-review-loop`.
 - **CODE_REVIEW = true** — GPT-5.4 xhigh reviews experiment code before deployment. Catches logic bugs before wasting GPU hours. Set `false` to skip. Passed through to `/experiment-bridge`.
 - **BASE_REPO = false** — GitHub repo URL to use as base codebase. When set, `/experiment-bridge` clones the repo first and implements experiments on top of it. When `false` (default), writes code from scratch or reuses existing project files. Passed through to `/experiment-bridge`.
 - **COMPACT = false** — When `true`, generates compact summary files for short-context models and session recovery. Passed through to `/idea-discovery` and `/experiment-bridge`.
@@ -48,6 +48,8 @@ Invoke the idea discovery pipeline:
 This internally runs: `/research-lit` → `/idea-creator` → `/novelty-check` → `/research-review`
 
 **Output:** `idea-stage/IDEA_REPORT.md` with ranked, validated, pilot-tested ideas.
+
+**Review Tracing** follows the downstream review skills. Stage 1 and Stage 3 preserve reviewer prompts/responses through their own trace protocols so the final handoff can be audited.
 
 **🚦 Gate 1 — Human Checkpoint:**
 
@@ -165,7 +167,9 @@ The narrative report must contain:
 - [items flagged by reviewer that weren't addressed]
 ```
 
-### Stage 5: Paper Writing (Workflow 3 — Optional)
+### Stage 5 / Stage 6: Paper Writing (Workflow 3 — Optional)
+
+This is the **Stage 6: Paper Writing** handoff in the broader research lifecycle; it is numbered Stage 5 here because this consolidated pipeline counts the writing handoff after the Stage 4 narrative report.
 
 **Skip this stage if `AUTO_WRITE=false` (default).** Present the `/paper-writing` command for manual use:
 

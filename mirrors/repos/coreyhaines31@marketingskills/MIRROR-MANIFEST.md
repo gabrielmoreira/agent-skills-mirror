@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `coreyhaines31/marketingskills` — 26 default patterns, 0 followed patterns, 164 file(s) materialized.
+Mirror of `coreyhaines31/marketingskills` — 26 default patterns, 0 followed patterns, 171 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `coreyhaines31/marketingskills` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 164 |
+| Files         | 171 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -178,51 +178,58 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 117 | ✓ | [`skills/programmatic-seo/evals/evals.json`](skills/programmatic-seo/evals/evals.json) |
 | 118 | ✓ | [`skills/programmatic-seo/references/playbooks.md`](skills/programmatic-seo/references/playbooks.md) |
 | 119 | ✓ | [`skills/programmatic-seo/SKILL.md`](skills/programmatic-seo/SKILL.md) |
-| 120 | ✓ | [`skills/referrals/evals/evals.json`](skills/referrals/evals/evals.json) |
-| 121 | ✓ | [`skills/referrals/references/affiliate-programs.md`](skills/referrals/references/affiliate-programs.md) |
-| 122 | ✓ | [`skills/referrals/references/program-examples.md`](skills/referrals/references/program-examples.md) |
-| 123 | ✓ | [`skills/referrals/SKILL.md`](skills/referrals/SKILL.md) |
-| 124 | ✓ | [`skills/revops/evals/evals.json`](skills/revops/evals/evals.json) |
-| 125 | ✓ | [`skills/revops/references/automation-playbooks.md`](skills/revops/references/automation-playbooks.md) |
-| 126 | ✓ | [`skills/revops/references/lifecycle-definitions.md`](skills/revops/references/lifecycle-definitions.md) |
-| 127 | ✓ | [`skills/revops/references/routing-rules.md`](skills/revops/references/routing-rules.md) |
-| 128 | ✓ | [`skills/revops/references/scoring-models.md`](skills/revops/references/scoring-models.md) |
-| 129 | ✓ | [`skills/revops/SKILL.md`](skills/revops/SKILL.md) |
-| 130 | ✓ | [`skills/sales-enablement/evals/evals.json`](skills/sales-enablement/evals/evals.json) |
-| 131 | ✓ | [`skills/sales-enablement/references/deck-frameworks.md`](skills/sales-enablement/references/deck-frameworks.md) |
-| 132 | ✓ | [`skills/sales-enablement/references/demo-scripts.md`](skills/sales-enablement/references/demo-scripts.md) |
-| 133 | ✓ | [`skills/sales-enablement/references/objection-library.md`](skills/sales-enablement/references/objection-library.md) |
-| 134 | ✓ | [`skills/sales-enablement/references/one-pager-templates.md`](skills/sales-enablement/references/one-pager-templates.md) |
-| 135 | ✓ | [`skills/sales-enablement/SKILL.md`](skills/sales-enablement/SKILL.md) |
-| 136 | ✓ | [`skills/schema/evals/evals.json`](skills/schema/evals/evals.json) |
-| 137 | ✓ | [`skills/schema/references/schema-examples.md`](skills/schema/references/schema-examples.md) |
-| 138 | ✓ | [`skills/schema/SKILL.md`](skills/schema/SKILL.md) |
-| 139 | ✓ | [`skills/seo-audit/evals/evals.json`](skills/seo-audit/evals/evals.json) |
-| 140 | ✓ | [`skills/seo-audit/references/ai-writing-detection.md`](skills/seo-audit/references/ai-writing-detection.md) |
-| 141 | ✓ | [`skills/seo-audit/references/international-seo.md`](skills/seo-audit/references/international-seo.md) |
-| 142 | ✓ | [`skills/seo-audit/SKILL.md`](skills/seo-audit/SKILL.md) |
-| 143 | ✓ | [`skills/signup/evals/evals.json`](skills/signup/evals/evals.json) |
-| 144 | ✓ | [`skills/signup/SKILL.md`](skills/signup/SKILL.md) |
-| 145 | ✓ | [`skills/site-architecture/evals/evals.json`](skills/site-architecture/evals/evals.json) |
-| 146 | ✓ | [`skills/site-architecture/references/mermaid-templates.md`](skills/site-architecture/references/mermaid-templates.md) |
-| 147 | ✓ | [`skills/site-architecture/references/navigation-patterns.md`](skills/site-architecture/references/navigation-patterns.md) |
-| 148 | ✓ | [`skills/site-architecture/references/site-type-templates.md`](skills/site-architecture/references/site-type-templates.md) |
-| 149 | ✓ | [`skills/site-architecture/SKILL.md`](skills/site-architecture/SKILL.md) |
-| 150 | ✓ | [`skills/sms/evals/evals.json`](skills/sms/evals/evals.json) |
-| 151 | ✓ | [`skills/sms/references/compliance.md`](skills/sms/references/compliance.md) |
-| 152 | ✓ | [`skills/sms/references/platforms.md`](skills/sms/references/platforms.md) |
-| 153 | ✓ | [`skills/sms/references/sequence-templates.md`](skills/sms/references/sequence-templates.md) |
-| 154 | ✓ | [`skills/sms/SKILL.md`](skills/sms/SKILL.md) |
-| 155 | ✓ | [`skills/social/evals/evals.json`](skills/social/evals/evals.json) |
-| 156 | ✓ | [`skills/social/references/platform-limits.md`](skills/social/references/platform-limits.md) |
-| 157 | ✓ | [`skills/social/references/platforms.md`](skills/social/references/platforms.md) |
-| 158 | ✓ | [`skills/social/references/post-templates.md`](skills/social/references/post-templates.md) |
-| 159 | ✓ | [`skills/social/references/reverse-engineering.md`](skills/social/references/reverse-engineering.md) |
-| 160 | ✓ | [`skills/social/references/short-form-video.md`](skills/social/references/short-form-video.md) |
-| 161 | ✓ | [`skills/social/SKILL.md`](skills/social/SKILL.md) |
-| 162 | ✓ | [`skills/video/evals/evals.json`](skills/video/evals/evals.json) |
-| 163 | ✓ | [`skills/video/references/ai-video-prompting.md`](skills/video/references/ai-video-prompting.md) |
-| 164 | ✓ | [`skills/video/SKILL.md`](skills/video/SKILL.md) |
+| 120 | ✓ | [`skills/prospecting/evals/evals.json`](skills/prospecting/evals/evals.json) |
+| 121 | ✓ | [`skills/prospecting/references/b2b-prospecting.md`](skills/prospecting/references/b2b-prospecting.md) |
+| 122 | ✓ | [`skills/prospecting/references/compliance.md`](skills/prospecting/references/compliance.md) |
+| 123 | ✓ | [`skills/prospecting/references/data-sources.md`](skills/prospecting/references/data-sources.md) |
+| 124 | ✓ | [`skills/prospecting/references/local-prospecting.md`](skills/prospecting/references/local-prospecting.md) |
+| 125 | ✓ | [`skills/prospecting/references/saas-prospecting.md`](skills/prospecting/references/saas-prospecting.md) |
+| 126 | ✓ | [`skills/prospecting/SKILL.md`](skills/prospecting/SKILL.md) |
+| 127 | ✓ | [`skills/referrals/evals/evals.json`](skills/referrals/evals/evals.json) |
+| 128 | ✓ | [`skills/referrals/references/affiliate-programs.md`](skills/referrals/references/affiliate-programs.md) |
+| 129 | ✓ | [`skills/referrals/references/program-examples.md`](skills/referrals/references/program-examples.md) |
+| 130 | ✓ | [`skills/referrals/SKILL.md`](skills/referrals/SKILL.md) |
+| 131 | ✓ | [`skills/revops/evals/evals.json`](skills/revops/evals/evals.json) |
+| 132 | ✓ | [`skills/revops/references/automation-playbooks.md`](skills/revops/references/automation-playbooks.md) |
+| 133 | ✓ | [`skills/revops/references/lifecycle-definitions.md`](skills/revops/references/lifecycle-definitions.md) |
+| 134 | ✓ | [`skills/revops/references/routing-rules.md`](skills/revops/references/routing-rules.md) |
+| 135 | ✓ | [`skills/revops/references/scoring-models.md`](skills/revops/references/scoring-models.md) |
+| 136 | ✓ | [`skills/revops/SKILL.md`](skills/revops/SKILL.md) |
+| 137 | ✓ | [`skills/sales-enablement/evals/evals.json`](skills/sales-enablement/evals/evals.json) |
+| 138 | ✓ | [`skills/sales-enablement/references/deck-frameworks.md`](skills/sales-enablement/references/deck-frameworks.md) |
+| 139 | ✓ | [`skills/sales-enablement/references/demo-scripts.md`](skills/sales-enablement/references/demo-scripts.md) |
+| 140 | ✓ | [`skills/sales-enablement/references/objection-library.md`](skills/sales-enablement/references/objection-library.md) |
+| 141 | ✓ | [`skills/sales-enablement/references/one-pager-templates.md`](skills/sales-enablement/references/one-pager-templates.md) |
+| 142 | ✓ | [`skills/sales-enablement/SKILL.md`](skills/sales-enablement/SKILL.md) |
+| 143 | ✓ | [`skills/schema/evals/evals.json`](skills/schema/evals/evals.json) |
+| 144 | ✓ | [`skills/schema/references/schema-examples.md`](skills/schema/references/schema-examples.md) |
+| 145 | ✓ | [`skills/schema/SKILL.md`](skills/schema/SKILL.md) |
+| 146 | ✓ | [`skills/seo-audit/evals/evals.json`](skills/seo-audit/evals/evals.json) |
+| 147 | ✓ | [`skills/seo-audit/references/ai-writing-detection.md`](skills/seo-audit/references/ai-writing-detection.md) |
+| 148 | ✓ | [`skills/seo-audit/references/international-seo.md`](skills/seo-audit/references/international-seo.md) |
+| 149 | ✓ | [`skills/seo-audit/SKILL.md`](skills/seo-audit/SKILL.md) |
+| 150 | ✓ | [`skills/signup/evals/evals.json`](skills/signup/evals/evals.json) |
+| 151 | ✓ | [`skills/signup/SKILL.md`](skills/signup/SKILL.md) |
+| 152 | ✓ | [`skills/site-architecture/evals/evals.json`](skills/site-architecture/evals/evals.json) |
+| 153 | ✓ | [`skills/site-architecture/references/mermaid-templates.md`](skills/site-architecture/references/mermaid-templates.md) |
+| 154 | ✓ | [`skills/site-architecture/references/navigation-patterns.md`](skills/site-architecture/references/navigation-patterns.md) |
+| 155 | ✓ | [`skills/site-architecture/references/site-type-templates.md`](skills/site-architecture/references/site-type-templates.md) |
+| 156 | ✓ | [`skills/site-architecture/SKILL.md`](skills/site-architecture/SKILL.md) |
+| 157 | ✓ | [`skills/sms/evals/evals.json`](skills/sms/evals/evals.json) |
+| 158 | ✓ | [`skills/sms/references/compliance.md`](skills/sms/references/compliance.md) |
+| 159 | ✓ | [`skills/sms/references/platforms.md`](skills/sms/references/platforms.md) |
+| 160 | ✓ | [`skills/sms/references/sequence-templates.md`](skills/sms/references/sequence-templates.md) |
+| 161 | ✓ | [`skills/sms/SKILL.md`](skills/sms/SKILL.md) |
+| 162 | ✓ | [`skills/social/evals/evals.json`](skills/social/evals/evals.json) |
+| 163 | ✓ | [`skills/social/references/platform-limits.md`](skills/social/references/platform-limits.md) |
+| 164 | ✓ | [`skills/social/references/platforms.md`](skills/social/references/platforms.md) |
+| 165 | ✓ | [`skills/social/references/post-templates.md`](skills/social/references/post-templates.md) |
+| 166 | ✓ | [`skills/social/references/reverse-engineering.md`](skills/social/references/reverse-engineering.md) |
+| 167 | ✓ | [`skills/social/references/short-form-video.md`](skills/social/references/short-form-video.md) |
+| 168 | ✓ | [`skills/social/SKILL.md`](skills/social/SKILL.md) |
+| 169 | ✓ | [`skills/video/evals/evals.json`](skills/video/evals/evals.json) |
+| 170 | ✓ | [`skills/video/references/ai-video-prompting.md`](skills/video/references/ai-video-prompting.md) |
+| 171 | ✓ | [`skills/video/SKILL.md`](skills/video/SKILL.md) |
 
 ---
 

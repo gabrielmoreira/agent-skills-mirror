@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Knowledge coverage taxonomy and visible uncertainty indicators — assess brain coverage per domain, display confidence badges"
-application: "Always active — unconscious coverage assessment before responding"
 applyTo: "**"
-currency: 2026-05-18
 lastReviewed: 2026-05-18
 ---
 

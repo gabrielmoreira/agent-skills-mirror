@@ -1,13 +1,7 @@
 ---
-type: skill
-lifecycle: stable
 name: "markdown-sanitization-chain"
 description: "Render user-supplied markdown safely — marked.js → DOMPurify → Mermaid (order matters; skipping the sanitizer is XSS)"
-tier: standard
-inheritance: inheritable
-applyTo: '**/*markdown*,**/*sanitiz*,**/*xss*'
-currency: 2026-04-30
-lastReviewed: 2026-04-30
+lastReviewed: 2026-05-26
 ---
 
 # Markdown Sanitization Chain
@@ -95,3 +89,7 @@ const config = {
 - [markdown-mermaid](../markdown-mermaid/SKILL.md) — markdown + Mermaid style guide
 - [markdown-mermaid § Mode Fragility](../markdown-mermaid/SKILL.md) — silent render failures
 - [lint-clean-markdown](../lint-clean-markdown/SKILL.md) — author-side hygiene
+
+## Would Revise If
+
+Revisit this skill by **2026-08-26** (90 days) or sooner if any of the following fires: DOMPurify or marked.js publishes a breaking change that invalidates the documented chain order; a real XSS payload bypasses the chain in production use; or Mermaid changes its render-time HTML interface in a way that makes the post-sanitization step unsafe.

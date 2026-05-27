@@ -2,7 +2,7 @@
 name: idea-creator
 description: Generate and rank research ideas given a broad direction. Use when user says "找idea", "brainstorm ideas", "generate research ideas", "what can we work on", or wants to explore a research area for publishable directions.
 argument-hint: [research-direction]
-allowed-tools: Bash(*), Read, Write, Grep, Glob, WebSearch, WebFetch, Agent, mcp__codex__codex, mcp__codex__codex-reply
+allowed-tools: Bash(*), Read, Write, Grep, Glob, WebSearch, WebFetch, Agent, mcp__codex__codex, mcp__codex__codex-reply, mcp__manual_review__review, mcp__manual_review__review_reply
 ---
 
 # Research Idea Creator
@@ -19,11 +19,32 @@ Given a broad research direction from the user, systematically generate, validat
 - **PILOT_TIMEOUT_HOURS = 3** — Hard timeout: kill pilots exceeding 3 hours. Collect partial results if available.
 - **MAX_PILOT_IDEAS = 3** — Pilot at most 3 ideas in parallel. Additional ideas are validated on paper only.
 - **MAX_TOTAL_GPU_HOURS = 8** — Total GPU budget for all pilots combined.
-- **REVIEWER_MODEL = `gpt-5.5`** — Model used via Codex MCP for brainstorming and review. Must be an OpenAI model (e.g., `gpt-5.5`, `o3`, `gpt-4o`).
-- **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (xhigh). Override with `— reviewer: oracle-pro` for GPT-5.4 Pro via Oracle MCP. See `shared-references/reviewer-routing.md`.
+- **REVIEWER_MODEL = `gpt-5.5`** — Default model for the Codex backend. Must be an OpenAI model (e.g., `gpt-5.5`, `o3`, `gpt-4o`). Manual backend uses whatever model the user chooses.
+- **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (xhigh). Override with `— reviewer: oracle-pro` for Oracle MCP, or `— reviewer: manual` for Manual Review MCP. If manual-review MCP is unavailable, stop and print the install command; do not fall back to Codex. See `shared-references/reviewer-routing.md`.
 - **OUTPUT_DIR = `idea-stage/`** — All idea-stage outputs go here. Create the directory if it doesn't exist.
 
 > 💡 Override via argument, e.g., `/idea-creator "topic" — pilot budget: 4h per idea, 20h total`.
+
+## Reviewer Calling Convention
+
+When calling the reviewer for idea evaluation, branch on REVIEWER_BACKEND:
+
+**If REVIEWER_BACKEND = `codex`:**
+  Use `mcp__codex__codex` for new review threads.
+  Use `mcp__codex__codex-reply` for follow-up rounds (reuse threadId).
+
+**If REVIEWER_BACKEND = `manual`:**
+  Use `mcp__manual_review__review` for new review threads with:
+    prompt: [exact same prompt that would go to Codex]
+    config: {"model_reasoning_effort": "xhigh"}
+  Save the returned `threadId`.
+  Use `mcp__manual_review__review_reply` for follow-up rounds with:
+    threadId: [saved manual-review threadId]
+    prompt: [follow-up prompt]
+    config: {"model_reasoning_effort": "xhigh"}
+
+Prompt fidelity: the manual prompt must be exactly the same text that Codex would receive.
+Review tracing applies equally to both backends.
 
 ## Workflow
 
@@ -89,13 +110,23 @@ Map the research area to understand what exists and where the gaps are.
 
 ### Phase 2: Idea Generation (brainstorm with external LLM)
 
-Use the external LLM via Codex MCP for divergent thinking:
+Use the selected reviewer backend (see Reviewer Calling Convention) for divergent thinking.
+
+*For `codex` backend:*
 
 ```
 mcp__codex__codex:
   model: REVIEWER_MODEL
   config: {"model_reasoning_effort": "xhigh"}
   prompt: |
+    You are a senior ML researcher brainstorming research ideas.
+```
+
+*For `manual` backend:* use `mcp__manual_review__review` with the exact same prompt text and `config: {"model_reasoning_effort": "xhigh"}`. Save the returned `threadId` for Phase 4 follow-up.
+
+The brainstorming prompt:
+
+```
     You are a senior ML researcher brainstorming research ideas.
 
     Research direction: [user's direction]
@@ -147,9 +178,9 @@ Eliminate ideas that fail any of these. Typically 8-12 ideas reduce to 4-6.
 
 For each surviving idea, run a deeper evaluation:
 
-1. **Novelty check**: Use the `/novelty-check` workflow (multi-source search + GPT-5.4 cross-verification) for each idea
+1. **Novelty check**: Use the `/novelty-check` workflow (multi-source search + cross-model verification) for each idea
 
-2. **Critical review**: Use GPT-5.4 via `mcp__codex__codex-reply` (same thread):
+2. **Critical review**: Use the selected reviewer backend (see Reviewer Calling Convention). For `codex`, use `mcp__codex__codex-reply` (same thread). For `manual`, use `mcp__manual_review__review_reply` with the saved threadId:
    ```
    Here are our top ideas after filtering:
    [paste surviving ideas with novelty check results]
@@ -161,7 +192,7 @@ For each surviving idea, run a deeper evaluation:
    - Which 2-3 would you actually work on?
    ```
 
-3. **Combine rankings**: Merge your assessment with GPT-5.4's ranking. Select top 2-3 ideas for pilot experiments.
+3. **Combine rankings**: Merge your assessment with the reviewer's ranking. Select top 2-3 ideas for pilot experiments.
 
 ### Phase 5: Parallel Pilot Experiments (for top 2-3 ideas)
 
@@ -319,4 +350,4 @@ implement                     → write code
 
 ## Review Tracing
 
-After each `mcp__codex__codex` or `mcp__codex__codex-reply` reviewer call, save the trace following `shared-references/review-tracing.md` (Policy C — forensic; never silently skip). Use `save_trace.sh` (resolved per the chain in `shared-references/integration-contract.md` §2) or write files directly to `.aris/traces/<skill>/<date>_run<NN>/`. Respect the `--- trace:` parameter (default: `full`).
+After each reviewer call (`mcp__codex__codex`, `mcp__codex__codex-reply`, `mcp__manual_review__review`, or `mcp__manual_review__review_reply`), save the trace following `shared-references/review-tracing.md` (Policy C — forensic; never silently skip). Use `save_trace.sh` (resolved per the chain in `shared-references/integration-contract.md` §2) or write files directly to `.aris/traces/<skill>/<date>_run<NN>/`. Respect the `--- trace:` parameter (default: `full`).

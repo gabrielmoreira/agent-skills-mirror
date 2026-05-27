@@ -1,0 +1,11 @@
+---
+description: "Core ControlFlow identity, source hierarchy, and offline validations for the repository."
+alwaysApply: true
+---
+# ControlFlow Core
+
+This is a prompt/governance/eval repository, not a runtime application.
+Canonical multi-agent policies, roster, and tiers are governed by `.github/copilot-instructions.md` and `plans/project-context.md`.
+Use local sources for context; `AGENTS.md` is compatibility context only, not the primary artifact.
+Cursor cannot execute VS Code-only subagent semantics (`agent/runSubagent`), read policies rather than assuming a runtime capability.
+All changes must pass the deterministic offline validation gate: run `cd evals && npm test`.

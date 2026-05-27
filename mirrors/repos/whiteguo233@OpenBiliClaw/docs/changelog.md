@@ -4,6 +4,14 @@
 
 ---
 
+## v0.3.91 / extension v0.3.50: XHS 自发布内容推荐池过滤（2026-05-27）
+
+- 修复小红书登录用户自己发布的笔记被推荐回给自己的问题：`get_pool_candidates` / `count_pool_candidates` / `count_pool_readiness` 及后台整理查询（evaluation / copy / delight）在 SQL 层增加 self-author guard，排除 `up_name` 或 `author_name` 匹配自身昵称的小红书行；Bilibili 等其他平台不受影响，空昵称为安全 no-op。
+- `_purge_self_authored_pool_items` 现在同时匹配 `up_name` 和 `author_name` 两列（此前只查 `up_name`），改昵称后旧行也能被清理。
+- `_persist_xhs_self_info` 在 self_info 首次到达或内容变更时立即触发一次 purge，缩短"self_info 未到达"窗口期内自发布内容停留在池中的时间。
+- `RecommendationEngine` 新增 `xhs_self_info_provider` 回调参数；`RuntimeContext`、`ContinuousRefreshController` 和 CLI 推荐引擎构造处均已接入，`Database` 保持纯存储层不直接读 runtime state。
+- 新增 4 项 DB 层单元测试 + 2 项 API 层测试 + 4 项端到端生命周期测试（含大小写不敏感、幂等、昵称变更场景）。
+
 ## v0.3.91 / extension v0.3.49: 挑战式兴趣探针与跨源推荐点击修复（2026-05-25）
 
 - 安全清理：移除误提交的 `config.toml.bak`，并将 `config.toml.*` 加入 ignore，避免本地配置备份文件再次进入版本库。
@@ -20,6 +28,7 @@
 - 插件 side panel、移动 Web 和桌面 Web 的消息区把普通 `near` 兴趣探针、`lateral/bridge/wildcard` 挑战探针和避雷探针分成不同视觉语义与提示文案：普通兴趣用于“继续探索”，挑战探针提示“把口味往侧边推一点”，避雷用于“少看这类 / 猜错点不是”。
 - 移动 Web 推荐页首屏请求增加超时兜底：推荐 / 惊喜推荐最多等待 12 秒，runtime status / activity 最多等待 5 秒；推荐接口慢或暂时失败时会结束 loading 并显示当前可用状态，避免手机端一直停在加载中。
 - 移动 Web 推荐页加载优化：`recommendations.created_at/id` 与 `content_cache.content_id` 增加读取索引，修复 `/api/recommendations` 的双表扫描；推荐页首屏先渲染 `/api/recommendations` 结果，再异步补 runtime status / activity / delight，消息 badge 首次加载不再额外拉取未使用的 delight batch。
+- 插件 side panel 与移动 Web 不再把后台 `refresh.pool_updated` 当成推荐列表全量重拉信号；该事件现在只同步池子状态 / header，用户向下滚动 append 出来的历史卡片不会被 `/api/recommendations` 最新前 20 条覆盖，只有主动“换一批”、初始化或重连类全量 hydration 才替换列表。
 
 ## v0.3.91 / extension v0.3.47: 真实可换库存口径修正 + 不喜欢领域探针（2026-05-24）
 

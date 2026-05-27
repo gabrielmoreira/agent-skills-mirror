@@ -1,7 +1,6 @@
 ---
 description: "Save session state for handoff in repo-root HANDOFF.md (and mirror to AI-Memory)"
-mode: agent
-lastReviewed: 2026-05-13
+lastReviewed: 2026-05-26
 ---
 
 # Save Session Note
@@ -50,3 +49,7 @@ Capture a short observation, reminder, or open thread in repo-root `HANDOFF.md` 
 ## Legacy migration
 
 If the heir repo still has a `SESSION-HANDOFF.md` at root from before the rename, mention it in the confirm step (do not auto-merge): suggest the user manually review and either merge content into `HANDOFF.md` or delete the legacy file. Never silently discard content the heir may still need.
+
+## Would Revise If
+
+Revisit this prompt by **2026-08-26** (90 days) or sooner if any of the following fires: the workflow it invokes ceases to produce its intended output (skill body changed but prompt steps stale); the visible markers / verification steps in its body are consistently skipped; or the slash-command name is no longer discoverable in the prompt picker.

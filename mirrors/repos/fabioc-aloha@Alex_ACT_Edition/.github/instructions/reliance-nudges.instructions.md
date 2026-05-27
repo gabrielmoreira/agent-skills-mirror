@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Detect human over-reliance failure modes and surface targeted nudges — operational replacement for educational content"
-application: "Always active — detect signals in user behavior and produce calibration nudges"
 applyTo: "**"
-currency: 2026-04-30
 lastReviewed: 2026-04-30
 ---
 

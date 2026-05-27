@@ -79,6 +79,7 @@ Cross-platform React Native app that connects to one or more daemons.
 - Expo Router navigation (`/h/[serverId]/workspace/[workspaceId]`, `/h/[serverId]/agent/[agentId]`, etc.)
 - `HostRuntimeController` manages saved host connections, reconnection, and per-host runtime state
 - `SessionContext` wraps the daemon client for the active session
+- Composer UI and submit/draft behavior live in `packages/app/src/composer/`; screens and panels should integrate it from there instead of dropping composer internals into `components/`, `hooks/`, or `screens/workspace/`
 - Timeline reducers in `timeline/session-stream-reducers.ts` handle compaction, gap detection, sequence-based deduplication
 - Voice features: dictation (STT) and voice agent (realtime)
 

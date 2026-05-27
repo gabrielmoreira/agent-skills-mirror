@@ -1,10 +1,9 @@
 ---
 description: "Audit installed Mall plugins for upstream drift, then update or remove with explicit user consent"
-mode: agent
-lastReviewed: 2026-05-13
+lastReviewed: 2026-05-26
 ---
 
-# /mall refresh
+# /mall-refresh
 
 Audit this heir's installed Mall plugins for upstream drift, then apply updates and removals only after explicit consent.
 
@@ -13,13 +12,13 @@ Audit this heir's installed Mall plugins for upstream drift, then apply updates 
 1. **Run mechanical drift check**:
 
    ```bash
-   node .github/muscles/audit-mall-drift.cjs --json
+   node .github/scripts/audit-mall-drift.cjs --json
    ```
 
    If the command fails because catalog is not found, retry with:
 
    ```bash
-   node .github/muscles/audit-mall-drift.cjs --allow-gh --json
+   node .github/scripts/audit-mall-drift.cjs --allow-gh --json
    ```
 
 2. **If no actionable drift** (`UPDATED_UPSTREAM`, `DEPRECATED_UPSTREAM`, `UNMANAGED_LOCAL_PLUGIN` all zero):
@@ -54,7 +53,7 @@ Audit this heir's installed Mall plugins for upstream drift, then apply updates 
 8. **Re-run drift check and report final state**:
 
    ```bash
-   node .github/muscles/audit-mall-drift.cjs
+   node .github/scripts/audit-mall-drift.cjs
    ```
 
    Include counts by state and list any remaining action items.
@@ -69,3 +68,7 @@ Audit this heir's installed Mall plugins for upstream drift, then apply updates 
 - Never delete unrelated local files outside plugin install paths.
 - If a fetch fails for one plugin, continue with the rest and report partial completion.
 - This command manages only locally installed Mall plugins (`.github/skills/local/*`).
+
+## Would Revise If
+
+Revisit this prompt by **2026-08-26** (90 days) or sooner if any of the following fires: the workflow it invokes ceases to produce its intended output (skill body changed but prompt steps stale); the visible markers / verification steps in its body are consistently skipped; or the slash-command name is no longer discoverable in the prompt picker.

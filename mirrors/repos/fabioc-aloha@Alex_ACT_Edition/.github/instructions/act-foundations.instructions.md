@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "The 10 tenets of ACT with rationale — why each exists, what it prevents, how to apply it"
-application: "Loads when the topic is ACT, reasoning, framework discipline, or epistemic integrity. Operationalized by 5 always-on ACT instructions (act-pass, critical-thinking, problem-framing-audit, system-prompt-skepticism, epistemic-calibration) that cite tenet numbers; this file is the rationale."
 applyTo: "**/*ACT*,**/*tenet*,**/*reason*,**/*think*,**/*epistem*,**/*framework*,**/*manifesto*"
-currency: 2026-05-18
 lastReviewed: 2026-05-18
 ---
 

@@ -1,7 +1,6 @@
 ---
 description: "Run the greeting check-in on demand — Edition version + AI-Memory announcements"
-mode: agent
-lastReviewed: 2026-04-30
+lastReviewed: 2026-05-26
 ---
 
 # Check-in
@@ -17,3 +16,5 @@ Run the full check protocol from [greeting-checkin/SKILL.md](../skills/greeting-
 5. **Rewrite the marker** — overwrite `/memories/session/greeting-checkin.md` with today's findings so the greeting trigger stays quiet for the rest of the session.
 
 If the user wants to act on findings, point them at `/upgrade` for version bumps and at the AI-Memory folder for announcements.
+
+**Would revise if**: the [greeting-checkin](../skills/greeting-checkin/SKILL.md) skill changes its check protocol, or `upgrade-self.cjs` changes its dry-run output shape. Re-evaluate 2026-08-26.

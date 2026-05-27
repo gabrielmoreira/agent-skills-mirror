@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Knowledge consolidation — transform working memory into permanent architecture"
-application: "When ending significant sessions or when patterns emerge worth persisting"
 applyTo: "**/*meditat*,**/*consolidat*"
-currency: 2026-05-13
 lastReviewed: 2026-05-13
 ---
 
@@ -37,7 +32,9 @@ Scan the session:
 |------------------|--------|
 | Reusable domain knowledge | Skill (`.github/skills/*/SKILL.md`) |
 | Always-on behavior | Instruction (`.github/instructions/*.instructions.md`) |
-| Automatable task | Muscle (`.github/muscles/*.cjs`) |
+| Automatable task tied to one skill | Script in that skill's folder (`.github/skills/<skill>/scripts/<name>.cjs`) |
+| Cross-cutting automation (used by multiple skills) | Script (`.github/scripts/<name>.cjs`) |
+| Shared library code (imported by other scripts) | Library module (`.github/scripts/shared/<name>.cjs`) |
 | Repeatable workflow | Prompt (`.github/prompts/*.prompt.md`) |
 | User preference | User memory (`/memories/`) |
 | Project convention | Repo memory (`/memories/repo/`) |

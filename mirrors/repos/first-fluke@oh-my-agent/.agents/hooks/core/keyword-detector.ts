@@ -633,7 +633,7 @@ async function activateL1WorkflowSession(
       ]);
     const sid = `oma-${createEventId()}`;
     setActiveSession(projectDir, category, sid);
-    emitEvent(projectDir, sid, {
+    await emitEvent(projectDir, sid, {
       kind: "session.created",
       vendor,
       vendorSid,

@@ -1,7 +1,6 @@
 ---
 description: "Read-only audit of user-level VS Code/Copilot settings compliance"
-mode: agent
-lastReviewed: 2026-05-25
+lastReviewed: 2026-05-26
 ---
 
 # Configure VS Code — Verify
@@ -51,3 +50,7 @@ Recommendation:
 - Do not modify files.
 - User-scope only (never evaluate workspace `.vscode/settings.json` for policy compliance).
 - Treat unknown extra keys as informational only, not non-compliance.
+
+## Would Revise If
+
+Revisit this prompt by **2026-08-26** (90 days) or sooner if any of the following fires: the workflow it invokes ceases to produce its intended output (skill body changed but prompt steps stale); the visible markers / verification steps in its body are consistently skipped; or the slash-command name is no longer discoverable in the prompt picker.

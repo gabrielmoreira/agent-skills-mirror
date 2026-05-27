@@ -88,7 +88,7 @@ When enhancing existing presentations, fixed-stage fitting is the biggest risk:
 
 ## Phase 1: Content Discovery (New Presentations)
 
-**Ask ALL questions in a single AskUserQuestion call** so the user fills everything out at once:
+**Ask ALL questions together** so the user fills everything out at once. If the current environment provides a native structured-question UI, use it; otherwise ask in one concise message with clearly numbered choices:
 
 **Question 1 — Purpose** (header: "Purpose"):
 What is this presentation for? Options: Pitch deck / Teaching-Tutorial / Conference talk / Internal presentation
@@ -118,10 +118,10 @@ If user selected "No images" → skip to Phase 2.
 If user provides an image folder:
 
 1. **Scan** — List all image files (.png, .jpg, .svg, .webp, etc.)
-2. **View each image** — Use the Read tool (Claude is multimodal)
+2. **Inspect each image** — Use the agent's available image-understanding capability. If image reading is unavailable, use filenames/metadata and ask the user to clarify only when needed
 3. **Evaluate** — For each: what it shows, USABLE or NOT USABLE (with reason), what concept it represents, dominant colors
 4. **Co-design the outline** — Curated images inform slide structure alongside text. This is NOT "plan slides then add images" — design around both from the start (e.g., 3 screenshots → 3 feature slides, 1 logo → title/closing slide)
-5. **Confirm via AskUserQuestion** (header: "Outline"): "Does this slide outline and image selection look right?" Options: Looks good / Adjust images / Adjust outline
+5. **Confirm the outline** using the same structured-question mechanism when available: "Does this slide outline and image selection look right?" Options: Looks good / Adjust images / Adjust outline
 
 **Logo in previews:** If a usable logo was identified, embed it (base64) into each style preview in Phase 2 — the user sees their brand styled three different ways.
 
@@ -186,7 +186,7 @@ Read [STYLE_PRESETS.md](STYLE_PRESETS.md) for safe preset candidates. If [bold-t
 - If the slide needs chrome, use real deck chrome only: the deck title, section title, date, author, company, page number, or a genuine content phrase from the user's material.
 - Before opening previews, inspect the visible text and revise if any internal metadata appears.
 
-Save previews to `.claude-design/slide-previews/` (style-a.html, style-b.html, style-c.html). Each should be self-contained and compact, showing one animated title slide.
+Save previews to `.frontend-slides/slide-previews/` (style-a.html, style-b.html, style-c.html). Each should be self-contained and compact, showing one animated title slide.
 
 Open each preview automatically for the user.
 
@@ -260,7 +260,7 @@ When converting PowerPoint files:
 
 ## Phase 5: Delivery
 
-1. **Clean up** — Delete `.claude-design/slide-previews/` if it exists
+1. **Clean up** — Delete `.frontend-slides/slide-previews/` if it exists
 2. **Open** — Use `open [filename].html` to launch in browser
 3. **Summarize** — Tell the user:
    - File location, style name, slide count

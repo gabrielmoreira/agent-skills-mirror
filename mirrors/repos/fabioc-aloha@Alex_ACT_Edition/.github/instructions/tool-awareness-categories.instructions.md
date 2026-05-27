@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Common deferred tool categories and search-query patterns — scoped reference loaded when working with tools, MCP servers, or GitHub APIs"
-application: "Loads when working with tools, MCP servers, GitHub operations, browser automation, or notebook execution. Companion to always-on tool-awareness.instructions.md."
 applyTo: "**/*tool*,**/*mcp*,**/*github*,**/*notebook*,**/*browser*,**/*playwright*,**/*figma*,**/*mcp*/**,**/*tool*/**"
-currency: 2026-05-18
 lastReviewed: 2026-05-18
 ---
 

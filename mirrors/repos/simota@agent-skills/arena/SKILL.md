@@ -148,7 +148,17 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 ## Engine Availability
 
-**2+ engines:** Cross-Engine Competition (default). **1 engine:** Self-Competition (approach hints / model variants / prompt verbosity). **0 engines:** ABORT → notify user.
+> **Base Engine Policy (2026-05)**: Default baseline is **Codex (always) + Claude subagent (host)** for the dual-engine path; **agy** is an optional addon for tri-engine diversity when AVAILABLE at PREFLIGHT. agy v1.0.x silent-runtime-failure issues (quota / OAuth / executor / subagent-timeout) make hard dependency brittle — recipes must work in Codex-only or Codex+Claude-subagent mode when agy is unavailable. See `_common/MULTI_ENGINE_RECIPE.md §Base Engine Policy`.
+
+**Engine count matrix:**
+
+| Engines AVAILABLE | Recommended path |
+|-------------------|------------------|
+| Codex + Claude + agy | Cross-Engine Competition with 3 engines (full diversity) |
+| Codex + Claude (default baseline) | Cross-Engine Competition with 2 engines (codex variant + Claude subagent variant) OR Self-Competition with Codex (2-3 approach variants) — pick per task |
+| Codex only | Self-Competition (approach hints / model variants / prompt verbosity) |
+| 0 engines | ABORT → notify user |
+
 See `references/engine-cli-guide.md` → "Self-Competition Mode" for strategy templates.
 
 ## Workflow
@@ -292,7 +302,7 @@ _STEP_COMPLETE:
     parameters:
       paradigm: "[COMPETE | COLLABORATE]"
       mode: "[Solo | Team | Quick]"
-      engines_used: ["[codex | agy]"]
+      engines_used: ["[codex | agy | claude-subagent]"]
       variant_count: "[number]"
       winner: "[engine or hybrid]"
       aes_score: "[A | B | C | D | F]"

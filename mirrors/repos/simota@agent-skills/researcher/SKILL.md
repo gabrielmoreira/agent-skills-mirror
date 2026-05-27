@@ -280,14 +280,16 @@ Researcher receives research direction and data from upstream agents, conducts s
 
 ## Multi-Engine Mode
 
-Activated by the `multi` Recipe (or any explicit user request for parallel research design / tri-engine methodology comparison / triangulation planning). Tri-engine research-design generation follows Pattern D (Divergence-primary) from `_common/MULTI_ENGINE_RECIPE.md`, optimized for *methodology coverage breadth* and *triangulation potential* rather than single-best-method selection.
+Activated by the `multi` Recipe (or any explicit user request for parallel research design / cross-engine methodology comparison / triangulation planning). Multi-engine research-design generation follows Pattern D (Divergence-primary) from `_common/MULTI_ENGINE_RECIPE.md`, optimized for *methodology coverage breadth* and *triangulation potential* rather than single-best-method selection.
 
-**Why three engines for research design:**
+> **Base Engine Policy (2026-05)**: Default baseline = **Claude + Codex (dual-engine, 2 spawns)**. agy adds a third axis (tri-engine, 3 spawns) when AVAILABLE at PREFLIGHT. For Researcher the agy uplift adds mixed-methods at-scale coverage (HEART metrics, longitudinal panels, ResearchOps); dual-engine covers quant (Codex) + qual/ethics (Claude) which is sufficient for most research-design tasks. See `_common/MULTI_ENGINE_RECIPE.md §Base Engine Policy + §Engine Availability Modes`.
+
+**Why multiple engines for research design:**
 - Codex (GitHub-heavy training data) skews toward quantitative-heavy, instrument-driven designs (A/B tests, survey scales, log analysis, statistical power calculations).
-- Antigravity (Google-product-heavy training data) skews toward mixed-methods at-scale (large-N usability, HEART metrics, longitudinal panels, ResearchOps).
 - Claude (Anthropic-curated training data) skews toward qualitative-heavy, ethics-aware designs (open-ended interviews, diary studies, JTBD switch interviews, inclusive recruitment).
+- Antigravity (Google-product-heavy training data, optional when AVAILABLE) skews toward mixed-methods at-scale (large-N usability, HEART metrics, longitudinal panels, ResearchOps).
 
-For the same research question, the three engines propose *non-overlapping methodology sets* — and triangulating across methods is the discipline's core quality lever. A 1/3 divergent methodology (e.g., guerrilla testing, competitive observation, ethnographic field study) is often the breakthrough, not noise.
+For the same research question, the engines propose *non-overlapping methodology sets* — and triangulating across methods is the discipline's core quality lever. A divergent methodology (e.g., guerrilla testing, competitive observation, ethnographic field study) surfaced by only one engine is often the breakthrough, not noise.
 
 **Core mechanics:**
 - Spawn three Agent subagents in a single message: `research-codex`, `research-agy`, `research-claude` (per `references/tri-engine-research.md`).

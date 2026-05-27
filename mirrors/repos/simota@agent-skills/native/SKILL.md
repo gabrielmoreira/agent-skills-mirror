@@ -28,6 +28,7 @@ CAPABILITIES_SUMMARY:
 - adaptive_layouts: Compose Adaptive Layouts 1.2+ Window Size Classes (compact / medium / expanded / large / extra-large); SwiftUI `NavigationSplitView` for iPad / foldable; Trifold support
 - foreground_service_types: Manifest-declared service types (Android 14+); 6h cap on `dataSync` / `mediaProcessing` (Android 15+)
 - store_compliance: App Store Review Guidelines (incl. 5.1.2(i) AI disclosure UI, Sign in with Apple, Liquid Glass icon variants), Google Play Policy (incl. AI Content Policy labeling, Photo Picker, Foreground Service Types), DMA, EU Accessibility Act, Children Age Rating
+- cli_tooling: Terminal automation for simulator/device control, test result parsing, crash symbolication, App Store submission, and Android device shell — `xcrun` (simctl / devicectl / xctrace / xcresulttool / notarytool / atos) and `adb` (pm / am / logcat / dumpsys / pair / Perfetto / screenrecord) — referenced by the `cli` Recipe
 - mobile_ci_cd: Xcode Cloud / Fastlane / GitHub Actions for iOS; Gradle + Fastlane / GitHub Actions for Android; signing, provisioning, automated TestFlight / Play Internal Testing builds
 - 16kb_page_size: Audit and rebuild NDK dependencies for 16KB page-size alignment (Android, mandatory for new releases since 2025-11-01)
 - staged_rollout: TestFlight Internal → External → App Review → Phased Release (iOS); Play Internal → Closed → Open → Production Staged Rollout (Android); rollback via halt + hotfix; server-driven feature flags as primary mitigation
@@ -304,6 +305,7 @@ Check status → Already granted? → Proceed
 | Privacy Manifest | `privacy` | | Apple Privacy Manifest declarations + Google Data Safety form | `references/store-compliance.md` |
 | Staged Rollout | `rollout` | | TestFlight phased release / Play staged rollout, server-driven feature flags, halt + hotfix | `references/release-rollout.md` |
 | Store Compliance | `store` | | App Store / Play submission preparation, full compliance audit | `references/store-compliance.md` |
+| CLI Tooling | `cli` | | Terminal automation reference for `xcrun` (simctl / devicectl / xctrace / xcresulttool / notarytool / atos) and `adb` (pm / am / logcat / dumpsys / pair / Perfetto). Use when scripting simulator/emulator automation, parsing test results, symbolicating crashes, debugging deep links from terminal, recording demos, or wiring CI install / launch / log capture. | `references/xcrun-cli.md`, `references/adb-cli.md` |
 
 ## Subcommand Dispatch
 
@@ -324,6 +326,7 @@ Behavior notes per Recipe:
 - `privacy`: Apple Privacy Manifest with Required Reasons API declarations (mandatory since 2024-05; 3rd-party SDKs since 2025-02-12). Google Data Safety form across all tracks (Android ID is "Device or other IDs" since 2025-04). Hand off to `Cloak` for review.
 - `rollout`: TestFlight Internal → External → App Review → Phased Release (1%/10%/50%/100% over 7 days) on iOS. Play Internal → Closed → Open → Production Staged Rollout (5%/20%/50%/100%) on Android. Halt + hotfix on regression. Server-driven feature flags as the primary mitigation since mobile rollback is slower than web.
 - `store`: Pre-submission compliance audit. Privacy Manifest, Data Safety, 5-tier Age Rating questionnaire (Apple, by 2026-01-31), DSA trader declaration, DMA fee model (EU), Sign in with Apple alongside any third-party login, AI disclosure UI per 5.1.2(i) and Play AI Content Policy, Photo Picker (Android), Foreground Service Types (Android 14+), Liquid Glass icon variants (iOS 26).
+- `cli`: Terminal-driven workflows. Load `references/xcrun-cli.md` for iOS (`simctl boot/install/launch/push`, `devicectl` for physical devices Xcode 15+, `xctrace record` for performance, `xcresulttool` for test JSON, `notarytool` for macOS notarization, `atos` for crash symbolication). Load `references/adb-cli.md` for Android (`pm` / `am` / `logcat --pid` / `dumpsys` / `pair` for Android 11+ Wi-Fi ADB / `screenrecord` / Perfetto trace / `monkey` fuzz). The adb reference includes an iOS ↔ Android command map at the end — read both files when the task spans both platforms.
 
 ## Output Routing
 
@@ -338,6 +341,10 @@ Behavior notes per Recipe:
 | Store submission preparation | Compliance audit, Privacy Manifest / Data Safety, metadata, build artifacts, staged rollout plan | `references/store-compliance.md`, `references/release-rollout.md` |
 | Phased release / Staged rollout | TestFlight phased + Play staged rollout with halt-and-hotfix | `references/release-rollout.md` |
 | Cross-platform UI framework request (RN/Flutter/KMP/CMP) | Out of scope — route to Forge for prototyping | — |
+| `xcrun` / `simctl` / `devicectl` / `xctrace` / `notarytool` / iOS simulator automation / iOS crash symbolicate (`atos`) | `cli` Recipe — iOS terminal tooling | `references/xcrun-cli.md` |
+| `adb` / `logcat` / `dumpsys` / `am start` / `pm install` / Android device shell / Wireless ADB pairing / `screenrecord` | `cli` Recipe — Android terminal tooling | `references/adb-cli.md` |
+| Perfetto trace / `xctrace` profiling / cold-start measurement / jank detection from terminal | `cli` Recipe — performance CLIs (both platforms) | `references/xcrun-cli.md`, `references/adb-cli.md` |
+| Demo recording / screen capture from CLI / E2E test scripting from terminal | `cli` Recipe — `simctl io recordVideo` (iOS) + `screenrecord` / `scrcpy` (Android) | `references/xcrun-cli.md`, `references/adb-cli.md` |
 
 ## Output Requirements
 
@@ -448,6 +455,8 @@ NATIVE_TO_LAUNCH_HANDOFF:
 | `references/push-notifications.md` | APNs (Live Activities) and FCM (Channels), token lifecycle, soft pre-prompt UX, payload shape, delivery analytics, quota budgeting |
 | `references/deeplink-routing.md` | Universal Links (AASA), App Links (assetlinks.json), routing architecture, attribution parameters |
 | `references/bg-execution.md` | iOS BGTaskScheduler, Android WorkManager, Doze / App Standby, Foreground Service Types, execution-time budgeting |
+| `references/xcrun-cli.md` | `xcrun` toolchain reference — `simctl` (simulator), `devicectl` (physical device, Xcode 15+ replacing `ios-deploy`), `xctrace` (Instruments CLI), `xcresulttool` (test JSON), `notarytool` / `altool` (App Store submit + macOS notarization), binary introspection (`lipo` / `atos` / `dwarfdump` / `codesign`), recipes + gotchas |
+| `references/adb-cli.md` | `adb` reference — package mgmt (`pm`), activity launching (`am`), `logcat` filters, file transfer (`push` / `pull` / `run-as`), Wi-Fi pairing (Android 11+), screen capture / record, device-state simulation (`dumpsys battery` / `deviceidle` / `settings`), Perfetto tracing, monkey fuzz, plus iOS ↔ Android command map at the end |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the implementation summary, choosing effort-level for offline-tier scope, or front-loading platform / framework at Assess. Critical for Native: P3, P6 |
 
 ---

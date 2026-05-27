@@ -7,6 +7,16 @@ description: Edit any video into a captioned showcase — transcribe (any langua
 
 End-to-end captioned video editor on top of HyperFrames. The user gives you a video; you orchestrate transcribe → review → render and ALWAYS pause for transcript approval before the long render.
 
+## Where this skill sits in the YUV.AI pyramid
+
+`video-edit` is in the **middle tier** of the YUV.AI skills pyramid alongside `yuv-design-system`, `yuv-decks`, `yuv-viral-video`, `parallax-landing-page`, and `video-to-landing-page`. The top-tier orchestrator `yuv-pilot` routes here whenever the user wants a captioned showcase, tutorial, or talking-head edit with subtitles.
+
+This is the more general video sibling to `yuv-viral-video`. The split:
+- `yuv-viral-video` — opinionated YUV.AI viral-short pipeline (MrBeast pacing, signature editorial style)
+- `video-edit` — general captioned editor with transcript-review-before-render (Hebrew + English + any Whisper language)
+
+For YUV.AI-branded captioned video, pair this skill with `yuv-design-system` (Neon mode for type/palette decisions). For generic / third-party captioned video, this skill works standalone.
+
 ## When to invoke
 
 - A path to a video file (mp4/mov/mkv) + a request to "edit", "caption", "add subtitles", "make a reel/promo", "do the same"

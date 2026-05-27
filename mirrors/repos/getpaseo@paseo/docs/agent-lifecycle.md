@@ -56,7 +56,7 @@ The asymmetry is intentional: a subagent's home is the parent's track, not the t
 
 ## The subagents track
 
-The collapsible section above the composer in an agent's pane (`packages/app/src/subagents/subagents-section.tsx`). Membership rule (`packages/app/src/subagents/subagents.ts`):
+The collapsible track above the composer in an agent's pane (`packages/app/src/subagents/track.tsx`). Membership rule (`packages/app/src/subagents/select.ts`):
 
 ```
 parentAgentId === thisAgent.id  AND  !archivedAt

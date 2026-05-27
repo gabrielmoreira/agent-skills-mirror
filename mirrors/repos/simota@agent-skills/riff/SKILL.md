@@ -226,10 +226,12 @@ Every session deliverable must include:
 
 ## Multi-Engine Mode
 
-Activated by the `multi` Recipe (or any explicit user request for parallel brainstorming / cross-engine ideation). Riff's `multi` is a **single fan-out turn inside an ongoing dialogue** — not a replacement for dialogue. The 9-12 (or up to 36 in `--all-modes`) ideas surfaced become **seeds for the next normal Riff turn**, picked by the user.
+Activated by the `multi` Recipe (or any explicit user request for parallel brainstorming / cross-engine ideation). Riff's `multi` is a **single fan-out turn inside an ongoing dialogue** — not a replacement for dialogue. The ideas surfaced (6-8 per turn dual-engine, 9-12 tri-engine, up to 24/36 in `--all-modes`) become **seeds for the next normal Riff turn**, picked by the user.
+
+> **Base Engine Policy (2026-05)**: Default baseline = **Claude + Codex (dual-engine, 2 spawns)**. agy adds a third axis (tri-engine, 3 spawns) when AVAILABLE at PREFLIGHT. dual-engine is NOT degraded — Riff's value comes from generating divergent seed ideas for human selection, and 2 engines with non-overlapping training-data priors already produce meaningful seed diversity. See `_common/MULTI_ENGINE_RECIPE.md §Base Engine Policy + §Engine Availability Modes`.
 
 **Core mechanics:**
-- Spawn three Agent subagents in a single message: `riff-codex`, `riff-agy`, `riff-claude` (per `references/tri-engine-riff.md`).
+- Spawn one Agent subagent per AVAILABLE engine in a single message: `riff-codex` + `riff-claude` (dual-engine baseline); add `riff-agy` (tri-engine) when AVAILABLE. Per `references/tri-engine-riff.md`.
 - Run engine availability PREFLIGHT in Riff main context — never delegate (subagent PATH is narrower; canonical probe in `_common/MULTI_ENGINE_RECIPE.md §PREFLIGHT`).
 - Loose prompts (Role + Theme + Active mode + Output format only). Do NOT pass SCAMPER lenses, Crazy-8 axes, Steelman protocol, Mode Selection Guide, or any other Riff Recipe taxonomies — Riff main context applies framework rules at SYNTHESIZE only. Each engine's training-data priors drive divergence.
 - Subagents return structured JSON; main context integrates via NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE.

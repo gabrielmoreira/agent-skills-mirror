@@ -33,11 +33,15 @@ needs-decision, blocked-by-human, and out-of-scope.
 
 1. Read the bundled contract in
    [references/contract.md](references/contract.md).
-2. Reuse or extend an existing issue before creating a new one.
+2. Reuse or extend an existing issue before creating a new one — but
+   never edit the body of an actively-claimed or open-PR issue (its
+   claimed agent will not pick the change up); cover it with a follow-up
+   issue instead. See the contract's claim-state precondition.
 3. Choose the smallest safe output shape:
    - orphan issue for one ready autonomous task only when the target
-     repository is discoverable through `issue-scope: orphan-first` and
-     any configured `orphan-first-policy` approval step can be completed
+     repository discovers orphans (`issue-scope: roadmap-first`, the
+     default, via the orphan fallback, or `orphan-first`) and any
+     configured `orphan-first-policy` approval step can be completed
      after drafting
    - roadmap plus sub-issues for multi-task or multi-session work
    - stable non-ready buckets for deferred, needs-decision,

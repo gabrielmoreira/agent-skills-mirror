@@ -9,6 +9,12 @@ Turn a short video into a one-screen cinematic landing page where the user's scr
 
 This skill encodes the patterns proven in the bundled reference at [`../../examples/parasites/`](../../examples/parasites/) (the github / lion / hope landings — three working pages built with this exact skill). Treat that folder as the ground truth if anything here is ambiguous.
 
+## Where this skill sits in the YUV.AI pyramid
+
+`parallax-landing-page` is in the **middle tier** of the YUV.AI skills pyramid, alongside `yuv-design-system`, `yuv-decks`, `yuv-viral-video`, and `video-to-landing-page`. The top-tier orchestrator `yuv-pilot` routes here whenever a 5–15s video clip needs to become a single-hero scroll-scrub landing.
+
+This skill **brings its own visual language** (Anton + Caveat + Inter, gold/amber/accent/cream accent palette) — it does NOT call into `yuv-design-system`. The two systems coexist: yuv-design-system owns the brand palette across web/app/deck surfaces, parallax-landing-page owns the cinematic scroll-scrub aesthetic specifically. For YUV.AI parallax landings, you can OPTIONALLY add a phoenix watermark + the canonical Linktree URL in the footer area as a brand throughline — see `yuv-design-system/assets/` for the watermark file. Do NOT swap the Anton/Caveat type stack for the design system's Neon palette — that would lose the signature look.
+
 ## What you're building
 
 Each landing is a single locked viewport with:

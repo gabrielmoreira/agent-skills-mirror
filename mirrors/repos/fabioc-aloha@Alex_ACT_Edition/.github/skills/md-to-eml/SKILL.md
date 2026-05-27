@@ -1,21 +1,12 @@
 ---
-type: skill
-lifecycle: stable
-inheritance: inheritable
 name: "md-to-eml"
 description: Convert Markdown to RFC 5322 email (.eml) with inline CSS and CID images
-tier: standard
-applyTo: '**/*eml*'
-currency: 2026-04-22
-lastReviewed: 2026-04-30
+lastReviewed: 2026-05-26
 ---
 
-# Markdown to Email Conversion
-
+# Md To Eml
 
 > Write in Markdown, send as professional email — works in any email client
-
-> **Staleness Watch**: If the heir maintains an `EXTERNAL-API-REGISTRY.md` (e.g. the Extension surface ships one), check it for source URLs and recheck cadence.
 
 Convert Markdown documents with YAML frontmatter into RFC 5322-compliant `.eml` files ready for governance, newsletter, and stakeholder communication workflows.
 
@@ -68,16 +59,16 @@ Convert Markdown documents with YAML frontmatter into RFC 5322-compliant `.eml` 
 
 ```bash
 # Basic conversion
-node .github/muscles/md-to-eml.cjs newsletter.md
+node .github/skills/md-to-eml/scripts/md-to-eml.cjs newsletter.md
 
 # With test recipient override (safe preview)
-node .github/muscles/md-to-eml.cjs newsletter.md --test --test-to me@example.com
+node .github/skills/md-to-eml/scripts/md-to-eml.cjs newsletter.md --test --test-to me@example.com
 
 # Embed images as CID attachments
-node .github/muscles/md-to-eml.cjs update.md --inline-images
+node .github/skills/md-to-eml/scripts/md-to-eml.cjs update.md --inline-images
 
 # Debug mode (saves intermediate HTML)
-node .github/muscles/md-to-eml.cjs update.md --debug
+node .github/skills/md-to-eml/scripts/md-to-eml.cjs update.md --debug
 ```
 
 ---
@@ -192,7 +183,7 @@ For high-fidelity diagrams, pre-render to PNG and include as images.
 
 ## Muscle Script
 
-`.github/muscles/md-to-eml.cjs` (v1.0.0)
+`.github/skills/md-to-eml/scripts/md-to-eml.cjs` (v1.0.0)
 
 ---
 

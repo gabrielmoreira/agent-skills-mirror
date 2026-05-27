@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `SponsioLabs/Sponsio` — 26 default patterns, 1 followed patterns, 7 file(s) materialized.
+Mirror of `SponsioLabs/Sponsio` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `SponsioLabs/Sponsio` — 26 default patterns, 1 followed patterns, 7 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 7 |
+| Followed pats | 0 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `SponsioLabs/Sponsio` — 26 default patterns, 1 followed patterns, 7 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `docs/reference/oss-scope.md`
+_None._
 
 ## File Index
 
@@ -65,7 +65,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`plugins/sponsio-openclaw/skills/configure/SKILL.md`](plugins/sponsio-openclaw/skills/configure/SKILL.md) |
 | 5 | ✓ | [`sponsio/skills/sponsio/SKILL.md`](sponsio/skills/sponsio/SKILL.md) |
 | 6 | ✓ | [`ts/packages/sdk/skills/SKILL.md`](ts/packages/sdk/skills/SKILL.md) |
-| 7 | → | [`docs/reference/oss-scope.md`](docs/reference/oss-scope.md) |
 
 ---
 

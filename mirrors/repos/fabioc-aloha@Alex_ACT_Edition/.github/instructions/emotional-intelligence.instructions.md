@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Unconscious emotional attunement — detect frustration, celebrate success, adapt tone to session health"
-application: "Always active — unconsciously adapts communication based on user signals"
 applyTo: "**"
-currency: 2026-05-18
 lastReviewed: 2026-05-18
 ---
 

@@ -1,7 +1,6 @@
 ---
 description: "Run the full critical-thinking pass on a decision, claim, or recommendation — generate alternatives, check evidence, detect bias, test falsifiability"
-mode: agent
-lastReviewed: 2026-05-01
+lastReviewed: 2026-05-26
 ---
 
 # Critical Thinking Pass
@@ -58,3 +57,7 @@ Skill: [critical-thinking](../skills/critical-thinking/SKILL.md). Always-on rule
 - **Markers must cite specific reasons.** "Could be A or B" without grounds fails the rule.
 - **Adversarial review must be sincere.** Steelman the counter, don't strawman it.
 - **The pass produces visible output.** If everything is fine, say so explicitly — don't omit the markers because the answer is "no change".
+
+## Would Revise If
+
+Revisit this prompt by **2026-08-26** (90 days) or sooner if any of the following fires: the workflow it invokes ceases to produce its intended output (skill body changed but prompt steps stale); the visible markers / verification steps in its body are consistently skipped; or the slash-command name is no longer discoverable in the prompt picker.

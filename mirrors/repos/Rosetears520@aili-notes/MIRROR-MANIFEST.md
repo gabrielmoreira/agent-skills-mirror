@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Rosetears520/aili-notes` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `Rosetears520/aili-notes` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Rosetears520/aili-notes` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,22 +61,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`prompts/writing/High-Fidelity Polishing Simulator.md`](prompts/writing/High-Fidelity%20Polishing%20Simulator.md) |
 | 2 | ✓ | [`prompts/writing/old_Scientific Writing Expert.md`](prompts/writing/old_Scientific%20Writing%20Expert.md) |
-| 3 | ✓ | [`skills/code-polish/references/c-cpp.md`](skills/code-polish/references/c-cpp.md) |
-| 4 | ✓ | [`skills/code-polish/references/go.md`](skills/code-polish/references/go.md) |
-| 5 | ✓ | [`skills/code-polish/references/js-ts.md`](skills/code-polish/references/js-ts.md) |
-| 6 | ✓ | [`skills/code-polish/references/python.md`](skills/code-polish/references/python.md) |
-| 7 | ✓ | [`skills/code-polish/SKILL.md`](skills/code-polish/SKILL.md) |
-| 8 | ✓ | [`skills/openspec-change-interviewer/references/doc-templates.md`](skills/openspec-change-interviewer/references/doc-templates.md) |
-| 9 | ✓ | [`skills/openspec-change-interviewer/SKILL.md`](skills/openspec-change-interviewer/SKILL.md) |
-| 10 | ✓ | [`skills/openspec-feature-list/SKILL.md`](skills/openspec-feature-list/SKILL.md) |
-| 11 | ✓ | [`skills/openspec-unblock-research/references/examples.md`](skills/openspec-unblock-research/references/examples.md) |
-| 12 | ✓ | [`skills/openspec-unblock-research/references/portable-unblock-report.v1.md`](skills/openspec-unblock-research/references/portable-unblock-report.v1.md) |
-| 13 | ✓ | [`skills/openspec-unblock-research/references/templates.md`](skills/openspec-unblock-research/references/templates.md) |
-| 14 | ✓ | [`skills/openspec-unblock-research/SKILL.md`](skills/openspec-unblock-research/SKILL.md) |
-| 15 | ✓ | [`workflows/claudecode_openspec_codex/CLAUDE.md`](workflows/claudecode_openspec_codex/CLAUDE.md) |
-| 16 | ✓ | [`workflows/claudecode_openspec_codex/skills/.claude/skills/openspec-unblock-research/SKILL.md`](workflows/claudecode_openspec_codex/skills/.claude/skills/openspec-unblock-research/SKILL.md) |
-| 17 | ✓ | [`workflows/claudecode_openspec_codex/skills/.codex/skills/openspec-change-interviewer/SKILL.md`](workflows/claudecode_openspec_codex/skills/.codex/skills/openspec-change-interviewer/SKILL.md) |
-| 18 | ✓ | [`workflows/claudecode_openspec_codex/skills/.codex/skills/openspec-feature-list/SKILL.md`](workflows/claudecode_openspec_codex/skills/.codex/skills/openspec-feature-list/SKILL.md) |
+| 3 | ✓ | [`skills/aigc-paper-rewrite/references/method-detail.md`](skills/aigc-paper-rewrite/references/method-detail.md) |
+| 4 | ✓ | [`skills/aigc-paper-rewrite/references/patterns.md`](skills/aigc-paper-rewrite/references/patterns.md) |
+| 5 | ✓ | [`skills/aigc-paper-rewrite/SKILL.md`](skills/aigc-paper-rewrite/SKILL.md) |
+| 6 | ✓ | [`skills/code-polish/references/c-cpp.md`](skills/code-polish/references/c-cpp.md) |
+| 7 | ✓ | [`skills/code-polish/references/go.md`](skills/code-polish/references/go.md) |
+| 8 | ✓ | [`skills/code-polish/references/js-ts.md`](skills/code-polish/references/js-ts.md) |
+| 9 | ✓ | [`skills/code-polish/references/python.md`](skills/code-polish/references/python.md) |
+| 10 | ✓ | [`skills/code-polish/SKILL.md`](skills/code-polish/SKILL.md) |
+| 11 | ✓ | [`skills/openspec-change-interviewer/references/doc-templates.md`](skills/openspec-change-interviewer/references/doc-templates.md) |
+| 12 | ✓ | [`skills/openspec-change-interviewer/SKILL.md`](skills/openspec-change-interviewer/SKILL.md) |
+| 13 | ✓ | [`skills/openspec-feature-list/SKILL.md`](skills/openspec-feature-list/SKILL.md) |
+| 14 | ✓ | [`skills/openspec-unblock-research/references/examples.md`](skills/openspec-unblock-research/references/examples.md) |
+| 15 | ✓ | [`skills/openspec-unblock-research/references/portable-unblock-report.v1.md`](skills/openspec-unblock-research/references/portable-unblock-report.v1.md) |
+| 16 | ✓ | [`skills/openspec-unblock-research/references/templates.md`](skills/openspec-unblock-research/references/templates.md) |
+| 17 | ✓ | [`skills/openspec-unblock-research/SKILL.md`](skills/openspec-unblock-research/SKILL.md) |
+| 18 | ✓ | [`workflows/claudecode_openspec_codex/CLAUDE.md`](workflows/claudecode_openspec_codex/CLAUDE.md) |
+| 19 | ✓ | [`workflows/claudecode_openspec_codex/skills/.claude/skills/openspec-unblock-research/SKILL.md`](workflows/claudecode_openspec_codex/skills/.claude/skills/openspec-unblock-research/SKILL.md) |
+| 20 | ✓ | [`workflows/claudecode_openspec_codex/skills/.codex/skills/openspec-change-interviewer/SKILL.md`](workflows/claudecode_openspec_codex/skills/.codex/skills/openspec-change-interviewer/SKILL.md) |
+| 21 | ✓ | [`workflows/claudecode_openspec_codex/skills/.codex/skills/openspec-feature-list/SKILL.md`](workflows/claudecode_openspec_codex/skills/.codex/skills/openspec-feature-list/SKILL.md) |
 
 ---
 

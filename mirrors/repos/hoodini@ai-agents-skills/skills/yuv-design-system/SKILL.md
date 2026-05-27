@@ -1,72 +1,150 @@
 ---
 name: yuv-design-system
-description: Yuval Avidani's brand and design system. Use for ANY visual output by Yuval — websites, landing pages, dashboards, React/HTML/CSS, slide decks, keynotes, infographics, charts, data viz, social images, profile pages, video banners, presentations, posters. Triggers: website, landing page, React, HTML, CSS, frontend, design system, typography, dashboard, slides, deck, keynote, infographic, chart, profile, banner, logo, brand. Hebrew: אתר, דף נחיתה, עיצוב, דאשבורד, מצגת, אינפוגרפיקה, גרף, לוגו. Apply automatically. Encodes two palette modes (Fly High purple/yellow/grey default; Warm Editorial pink/yellow/bone for Hope/bigcats/practical.yuv.ai), typography (Anton + Inter for English, Rubik + Assistant for Hebrew, letter-spacing 0 default), brand assets, canonical social links and credentials. Components PurpleBar, YellowUnderline, FlightHUD, CompassDial, CounterUp, HeroBg at references/components/. Project brand wins when specified.
+description: Yuval Avidani's YUV.AI brand and design system. Apply ONLY when YUV.AI-branded output is requested — presentations, decks, keynotes, portfolio, brand site, profile, speaker bio, brand assets, or any prompt mentioning YUV.AI / "my brand" / "my deck" / "my site" / "for me". Do NOT auto-trigger on generic "build a game / web app / dashboard / landing page" without YUV.AI context — those use whatever palette fits. Three modes; NEON (hot pink #FF1464 + neon cyan #00E5FF + white, DEFAULT for YUV.AI web, apps, games, dashboards, social, general visual work); DECKS (Fly High purple/yellow/grey, presentations and slides ONLY); Warm Editorial (pink/yellow/bone for Hope, Marcus, bigcats.ai, practical.yuv.ai). Universal Fly High throughline across all modes; flight/progress motifs (HUD strips, dials, "Let's Fly High" tagline, phoenix mark). Anton + Inter (EN), Rubik + Assistant (HE), letter-spacing 0 default. Bundled brand assets, canonical socials, credentials. Project brand wins if specified.
 ---
 
 # yuv-design-system
 
-The canonical personal design system for **Yuval Avidani** (yuv.ai). Apply automatically whenever Yuval asks for any visual output and a brand isn't otherwise specified.
+The canonical personal brand and design system for **Yuval Avidani** (yuv.ai). This skill encodes how YUV.AI work should *look* — palette, typography, motifs, assets, links — and **when** to apply those rules at all.
 
-**Source of truth:** This is the canonical specification — rules, brand assets, links — for Yuval's visual system across web, presentations, infographics, and social. Public location: <https://github.com/hoodini/ai-agents-skills/tree/master/skills/yuv-design-system>. A private companion repo at <https://github.com/hoodini/yuv-design-system> holds runnable React components, Tailwind preset, and an install script — this skill bundles the LLM-readable spec + the four core brand images so it works standalone.
+**Source of truth:** Public reference repo at https://github.com/hoodini/yuv-design-system (private). The repo holds runnable tokens and components; this skill encodes the rules so Claude can apply them in any context.
 
-## How to use this skill
+**Where this skill sits in the YUV.AI pyramid:** `yuv-design-system` is the middle-tier visual-rules skill. Above it is `yuv-pilot` — the top-of-pyramid orchestrator that routes ambiguous or multi-medium YUV.AI requests to the right combination of downstream skills. Below it (and beside it in the middle tier) are `yuv-decks` (slide builds) and `yuv-viral-video` (viral short MP4s). When `yuv-pilot` or a sibling skill calls into here, they pin a specific palette mode (Neon / Decks / Warm Editorial) — never let the mode drift mid-task. See `yuv-pilot/SKILL.md` for the full pyramid map.
 
-1. **Pick the palette mode** (Fly High vs Warm Editorial — see §1). Default to Fly High.
+---
+
+## §0. WHEN TO APPLY THIS SKILL — read this before anything else
+
+This skill is the **YUV.AI brand identity**, not a generic visual-design skill. Apply it conservatively.
+
+### ✅ Apply when
+
+- The output is explicitly for **YUV.AI** or **Yuval personally** — his portfolio, his brand site, his keynote, his deck, his speaker bio, his profile, his social cards, his About page, his linktree, his course landing, an artifact featuring his brand assets or logos.
+- Yuval mentions "**my brand**", "**my design system**", "**my deck**", "**my site**", "**my presentation**", "**for me**", "**YUV.AI**", "Fly High", "Let's Fly High", or anything that signals the output is *his* brand identity.
+- A YUV.AI brand asset (logo, profile photo, watermark) is needed.
+
+### ❌ Do NOT apply when
+
+- Yuval asks for a **generic** game, web app, dashboard, landing page, demo, prototype, or visual without YUV.AI context. *("Build me a snake game" → pick whatever palette fits the game, NOT the brand palette.)*
+- The work is for a different brand, a client, a third party, or anyone other than Yuval personally.
+- Yuval explicitly names a different palette or framework.
+
+### When unsure
+
+Ask once: *"Is this for the YUV.AI brand, or open palette?"* — then commit. Don't drift mid-task.
+
+**Default behavior across Claude / Copilot / Cursor: if a YUV.AI signal is missing, stay out and let the chosen tool's own design instincts apply. Over-triggering this skill is worse than under-triggering it.**
+
+---
+
+## How to use this skill (when it applies)
+
+1. **Pick the palette mode by medium** (see §1):
+   - Presentation / deck / keynote → **Decks** (Fly High purple/yellow/grey)
+   - Web / app / game / dashboard / social / general → **Neon** (DEFAULT — pink/cyan/white)
+   - Hope / Marcus / bigcats / course-landing → **Warm Editorial** (pink/yellow/bone)
 2. **Apply mandatory typography** (Anton/Inter + Rubik/Assistant — see §2).
-3. **Use the bundled brand assets** when a logo, profile, or watermark is appropriate (see §3).
-4. **Include the canonical link set** in footers, profile blocks, credits, and "find me elsewhere" sections (see §4).
-5. **For deep dives** — load the reference file that matches the medium:
+3. **Carry the universal Fly High throughline** (motifs across modes — see §1a).
+4. **Use bundled brand assets** when a logo, profile, or watermark fits (see §3).
+5. **Include the canonical link set + credentials** in footers, About blocks, credits, speaker bios (see §4).
+6. **Deep-dive references** — load the file that matches the medium:
 
    | Medium | Read this file |
    |---|---|
-   | Web / landing / React | `references/web-and-react.md` |
+   | YUV.AI web / app / game / dashboard | `references/palettes-neon.md` + `references/web-and-react.md` |
    | Slide decks / keynotes | `references/presentations.md` |
    | Infographics / charts / data viz | `references/visuals-and-charts.md` |
    | Social images / posters | `references/social-images.md` |
    | Hebrew / bilingual / RTL | `references/typography.md` § Hebrew |
-   | Hardened patterns (bilingual toggle, mobile nav, cert flow, etc.) | `references/lessons-learned.md` |
+   | Hardened patterns | `references/lessons-learned.md` |
 
-   Load only what's relevant — keeps the working context small.
+   Load only what's relevant — keeps context small.
 
 ---
 
-## §1. Palette modes — pick one
+## §1. Palette modes — pick by medium
 
-Two named modes. **Default Fly High** unless the project belongs to the Warm Editorial family (Hope the cheetah, Marcus the lion, bigcats.ai, the practical.yuv.ai course landing).
+Three named modes. **Pick by the kind of output, not your gut feel.** Don't drift.
 
-| Mode | Default? | Use for | Vibe |
-|---|---|---|---|
-| **Fly High** | yes | Keynotes, hackathon decks, dashboards, dev-facing UIs, product pages, marketing for technical audiences | Purple / yellow / light-grey · bold, optimistic, electric, slightly playful |
-| **Warm Editorial** | only for the brand family above | Hope, bigcats.ai, course landing, anywhere a "warm, confrontational, paper-feel" mood fits | Pink / yellow / bone · warm, confident, premium, editorial |
+| Mode | When to use | Palette |
+|---|---|---|
+| **Neon** *(DEFAULT for YUV.AI brand work)* | Websites, web apps, games, dashboards, social images, posters, AI tools, profile/about content, ANY YUV.AI visual that isn't a slide deck | Hot pink + neon cyan + white + black |
+| **Decks** *(Fly High)* | Presentations, slides, keynotes, hackathon decks, talk recordings, video banners formatted as a deck | Purple + yellow + light-grey |
+| **Warm Editorial** | Hope (cheetah), Marcus (white lion), bigcats.ai, practical.yuv.ai course landing — any project in the editorial-pink-bone brand family | Warm pink + yellow + off-white + bone |
 
-When unsure, ask once: *"Fly High (purple/yellow/grey) or Warm Editorial (pink/yellow/bone)?"* then commit.
+If you're picking a mode mid-task and it isn't obvious, ask once and commit.
 
-### Fly High tokens (default)
+### §1a. The Universal Fly High throughline (applies to ALL modes)
+
+Regardless of palette, YUV.AI work carries the same brand DNA — these motifs are what makes something *feel* YUV.AI:
+
+- **Flight metaphors** in copy: climb / cruise / descent / pre-flight / landed / takeoff / heading / altitude / "let's fly high".
+- **Progress visualisations:** gradient progress bars (purple→yellow on Decks, pink→cyan on Neon, pink→yellow on Warm Editorial), HUD strips, altimeter/compass-style dials, count-up animations on stats.
+- **Phoenix mark** (or the Y-bird) somewhere meaningful — hero, About, watermark.
+- **"LET'S FLY HIGH · YUV.AI" watermark** in the bottom-right corner of any shareable surface (slide, social card, hero crop).
+- **Anton uppercase** display type with `letter-spacing: 0` default.
+- **JetBrains Mono** for instrument-style readouts and section eyebrows in tracking 0.2em+.
+
+These DNA elements travel across every mode. The palette tells you *which* brand chapter; the motifs tell you it's still YUV.AI.
+
+### §1b. Neon — NEW DEFAULT mode (web, apps, games, general visual work)
+
+The everyday YUV.AI brand. Tavus-inspired: hot pink as the lead, neon cyan as electric counterpoint, white or rich black as the canvas. Best for product surfaces, web apps, games, dashboards, anything browser-rendered or interactive.
 
 ```css
 :root {
-  --yuv-purple:      #5E17EB;   /* primary brand, act-slide backgrounds, vertical accent bars */
+  --yuv-pink:       #FF1464;   /* primary brand — CTAs, accents, the thread color */
+  --yuv-pink-hot:   #FF0080;   /* high-energy variant for glow / shadow / hover */
+  --yuv-cyan:       #00E5FF;   /* electric secondary — data, highlights, focus rings */
+  --yuv-cyan-edge:  #00FFFF;   /* max-neon variant — small surfaces only */
+  --yuv-white:      #FFFFFF;   /* canvas (light mode) or text-on-dark */
+  --yuv-black:      #0A0A0A;   /* canvas (dark mode) or text-on-light */
+  --yuv-charcoal:   #1A1A1A;   /* secondary surface (dark mode), text on light */
+  --yuv-soft:       #F4F4F6;   /* alt light surface for layering on white */
+}
+```
+
+**Neon mode rules:**
+
+- **Two canvas options:** white `#FFFFFF` or rich black `#0A0A0A`. Pick ONE per surface. No grey middle ground.
+- **Pink is the thread** — primary CTA fill, hero headline accents, brand stripe.
+- **Cyan is the second voice** — secondary CTAs, focus rings, hero data points, link hover, progress fill (cyan against pink). Cyan never floods — accent only.
+- **Glow allowed.** `text-shadow: 0 0 24px var(--yuv-pink)`, `box-shadow: 0 0 32px rgba(0,229,255,0.4)`. The brand can shimmer; it can't sparkle (no rainbows, no multi-hue gradients).
+- **Gradients:** pink → cyan only. Small surfaces (buttons, text underlines, progress bars). Never full-page wash.
+- **Headlines:** Anton uppercase, white or pink on dark / black on white. Tight `line-height: 1.0`, `letter-spacing: 0` default.
+- **Card pattern:** rich black `#0A0A0A` background with `1px solid rgba(255,20,100,0.25)` border, optional `0 0 0 1px #00E5FF` inner glow on hover. On light canvas: white card with `1px solid rgba(0,0,0,0.08)` and `4px solid #FF1464` left stripe.
+- **Cursors and UI affordances** can be cyan-tinted; the heroes are pink.
+
+Full deep dive — composition patterns, glow recipes, neon-themed components → `references/palettes-neon.md`.
+
+### §1c. Decks (Fly High) — presentations only
+
+This is the existing purple/yellow/grey deck system. **Use ONLY for slides, keynotes, presentations.** Don't apply to a web app or game.
+
+```css
+:root {
+  --yuv-purple:      #5E17EB;   /* primary deck brand, act-slide backgrounds, vertical accent bars */
   --yuv-purple-dark: #3D0DA8;   /* decorative depth, diagonal accents */
-  --yuv-yellow:      #FFEC00;   /* loud accent only — never a background */
-  --yuv-grey:        #F1F2F2;   /* page / content-slide background */
+  --yuv-yellow:      #FFEC00;   /* loud accent only — never a slide background */
+  --yuv-grey:        #F1F2F2;   /* content-slide background */
   --yuv-white:       #FFFFFF;   /* cards on grey, headers on purple */
   --yuv-black:       #000000;   /* headers on grey, body */
   --yuv-grey-dark:   #D4D6D6;   /* dividers on grey */
 }
 ```
 
-Full token file (CSS + JSON + Tailwind preset) lives in `references/tokens/`. Copy `palette.css` straight into any project.
+Full deck rules — two-background rule, FlightHUD, PurpleBar, YellowUnderline, signature video banner pattern — live in `references/presentations.md`. **Decks mode is the only mode where the purple/yellow palette applies.**
 
-### The two-background rule (Fly High, non-negotiable)
+#### The two-background rule (Decks mode, non-negotiable)
 
-Every slide or page section lives in one of two states. **Never invent a third.** Yellow is an accent, never a background.
+Every slide lives in one of two states. **Never invent a third.** Yellow is an accent, never a background.
 
 | Type | Background | Headline color | Use for |
 |---|---|---|---|
 | **Act** | Purple `#5E17EB` | White `#FFFFFF` | Title, section divider, closer, hero |
-| **Content** | Light grey `#F1F2F2` | Black `#000000` | Everything else — info, evidence, lists, dashboards |
+| **Content** | Light grey `#F1F2F2` | Black `#000000` | Everything else — info, evidence, lists |
 
-### Warm Editorial tokens
+### §1d. Warm Editorial tokens
 
 ```css
 :root {
@@ -81,14 +159,21 @@ Every slide or page section lives in one of two states. **Never invent a third.*
 
 Full Warm Editorial rules (paper grain, warm shadows, gradient bans, etc.) → `references/palettes-warm-editorial.md`.
 
-### Rules that apply to BOTH modes
+### Rules that apply to ALL modes
 
-- **No pure `#FFFFFF` as the root** of a page or slide. Cards on grey in Fly High *can* be pure white; the canvas itself never is.
-- **No blue, slate, indigo, emerald, cyan, zinc.** No default Tailwind palette. Stay in the chosen mode or in the project's brand.
+- **No default Tailwind palette.** No `slate`, `zinc`, `indigo`, `emerald`, etc. Stay in the chosen mode.
 - **Border radius: `0` or `999px` only.** The 8–12px middle ground is the single most "AI template" tell.
-- **Asymmetric over grid-perfect.** Offset columns. One element breaking the grid is the move.
+- **Asymmetric over grid-perfect** wherever possible. Offset columns. One element breaks the grid.
 - **Whitespace is generous.** Premium comes from restraint.
 - **Max content width 1440px.** Section padding 120–160px desktop, 64–80px mobile.
+
+### Mode-specific canvas / white rules
+
+| Mode | Pure `#FFFFFF` at root? | Where white is allowed |
+|---|---|---|
+| **Neon** | YES — `#FFFFFF` is a valid canvas (one of two — the other is rich black `#0A0A0A`). | Anywhere, but pick ONE per surface. No grey-white middle. |
+| **Decks** | NO — page/slide root is `#5E17EB` (act) or `#F1F2F2` (content). | Pure white allowed on cards inside content slides. |
+| **Warm Editorial** | NO — `#FFFFFF` banned everywhere. Use `#FAFAF7` off-white. | — |
 
 ---
 
@@ -239,23 +324,26 @@ linkedin: https://www.linkedin.com/in/yuval-avidani-87081474/
 - **Email signatures / certificate footers:** website + linkedin + linktree.
 - **Linktree-as-shortcut:** for any "follow me everywhere" CTA, link directly to https://linktr.ee/yuvai instead of listing all eight — punchier and one tap.
 
-### Drop-in HTML snippet (Fly High mode)
+### Drop-in HTML snippet (Neon mode — DEFAULT for YUV.AI web/apps)
 
 ```html
-<footer class="yuv-socials" style="display:flex;gap:16px;align-items:center;justify-content:center;padding:48px 0;background:var(--yuv-grey)">
-  <a href="https://yuv.ai" aria-label="Website" style="color:var(--yuv-purple)"><i class="ph ph-globe"></i></a>
-  <a href="https://x.com/yuvalav" aria-label="X" style="color:var(--yuv-purple)"><i class="ph ph-x-logo"></i></a>
-  <a href="https://instagram.com/yuval_770" aria-label="Instagram" style="color:var(--yuv-purple)"><i class="ph ph-instagram-logo"></i></a>
-  <a href="https://www.tiktok.com/@yuval.ai" aria-label="TikTok" style="color:var(--yuv-purple)"><i class="ph ph-tiktok-logo"></i></a>
-  <a href="https://youtube.com/@yuv-ai" aria-label="YouTube" style="color:var(--yuv-purple)"><i class="ph ph-youtube-logo"></i></a>
-  <a href="https://github.com/hoodini" aria-label="GitHub" style="color:var(--yuv-purple)"><i class="ph ph-github-logo"></i></a>
-  <a href="https://facebook.com/yuval.avidani" aria-label="Facebook" style="color:var(--yuv-purple)"><i class="ph ph-facebook-logo"></i></a>
-  <a href="https://www.linkedin.com/in/yuval-avidani-87081474/" aria-label="LinkedIn" style="color:var(--yuv-purple)"><i class="ph ph-linkedin-logo"></i></a>
-  <a href="https://linktr.ee/yuvai" aria-label="Linktree" style="color:var(--yuv-purple)"><i class="ph ph-tree-structure"></i></a>
+<footer class="yuv-socials" style="display:flex;gap:16px;align-items:center;justify-content:center;padding:48px 0;background:#FFFFFF">
+  <a href="https://yuv.ai" aria-label="Website" style="color:#FF1464"><i class="ph ph-globe"></i></a>
+  <a href="https://x.com/yuvalav" aria-label="X" style="color:#FF1464"><i class="ph ph-x-logo"></i></a>
+  <a href="https://instagram.com/yuval_770" aria-label="Instagram" style="color:#FF1464"><i class="ph ph-instagram-logo"></i></a>
+  <a href="https://www.tiktok.com/@yuval.ai" aria-label="TikTok" style="color:#FF1464"><i class="ph ph-tiktok-logo"></i></a>
+  <a href="https://youtube.com/@yuv-ai" aria-label="YouTube" style="color:#FF1464"><i class="ph ph-youtube-logo"></i></a>
+  <a href="https://github.com/hoodini" aria-label="GitHub" style="color:#FF1464"><i class="ph ph-github-logo"></i></a>
+  <a href="https://facebook.com/yuval.avidani" aria-label="Facebook" style="color:#FF1464"><i class="ph ph-facebook-logo"></i></a>
+  <a href="https://www.linkedin.com/in/yuval-avidani-87081474/" aria-label="LinkedIn" style="color:#FF1464"><i class="ph ph-linkedin-logo"></i></a>
+  <a href="https://linktr.ee/yuvai" aria-label="Linktree" style="color:#00E5FF"><i class="ph ph-tree-structure"></i></a>
 </footer>
 ```
 
-Full machine-readable link list (JSON, with handles + URLs for programmatic use): `references/social-and-links.md`.
+For **Decks mode**, swap `#FF1464` → `var(--yuv-purple)` and `#FFFFFF` → `var(--yuv-grey)`.
+For **Warm Editorial**, swap `#FF1464` → `#FF1464` (already pink), `#FFFFFF` → `var(--off-white)`.
+
+Full machine-readable link list (JSON, handles + URLs): `references/social-and-links.md`.
 
 ---
 
@@ -265,7 +353,8 @@ Yuval prefers visual explanation over prose wherever possible. Charts, infograph
 
 ### Encoding rules in brand
 
-- **Fly High primary series colour:** `#5E17EB` purple. Highlight or "hero" data point: `#FFEC00` yellow. Secondary series: charcoal / `#3D0DA8` / `#D4D6D6` greys. Never blue.
+- **Neon (default) primary series:** `#FF1464` pink. Highlight or "hero" data point: `#00E5FF` cyan. Secondary series: charcoal `#1A1A1A`, soft grey `#F4F4F6`. Never blue (other than the brand cyan), never default chart palettes.
+- **Decks (Fly High) primary series:** `#5E17EB` purple. Highlight: `#FFEC00` yellow. Secondary: `#3D0DA8` / `#1A1A1A` / `#D4D6D6`. Charts in decks only.
 - **Warm Editorial primary series:** `#FF1464` pink. Highlight: `#E5FF00` yellow. Secondary: charcoal / warm grey.
 - **Always label the hero number.** If there's a big stat, render it with `<CounterUp>` (component in `references/components/CounterUp.tsx`) — count from 0 with `requestAnimationFrame`, ease-out cubic, ~1400ms.
 - **No 3D bar charts. No pie charts with > 4 slices. No rainbow palettes.** Pick categorical or sequential, never both.
@@ -286,7 +375,9 @@ Full chart-skinning guidance, sample Chart.js options object, recharts override 
 
 ---
 
-## §6. Signature components (Fly High)
+## §6. Signature components (Decks mode — Fly High)
+
+> **These components apply ONLY in Decks mode**, where the purple/yellow palette and slide-canvas rules are in play. Don't drop them into a Neon-mode web app or game — that's the wrong language.
 
 These are the recognisable fingerprints. Full source in `references/components/`.
 
@@ -386,7 +477,8 @@ Full hardened bilingual toggle (HTML + CSS + JS) and mobile-nav pattern → `ref
 - **Pure `#FFFFFF`** as a page/slide root.
 - **Blue as a default accent** unless the project explicitly requires it.
 - **Yellow as a slide / page background.** Accent only.
-- **A third background colour** in Fly High. Two-background rule is non-negotiable.
+- **A third background colour** in Decks mode. Two-background rule is non-negotiable for slides.
+- **Mixing modes within one surface.** A web app in Neon shouldn't have a purple act section. A slide in Decks mode shouldn't have a pink CTA. Pick one mode per project; stay in it.
 - **Anton at large sizes with `line-height < 1.0`** inside a multi-line headline that has a `box-decoration-break: clone` span. Descenders get eaten.
 - **`<YellowUnderline>` floating with no anchor.** Always under a specific word.
 - **WebFetch on JS-rendered SPAs** (Teachable, Kajabi, practical.yuv.ai, etc.). Use Claude-in-Chrome.
@@ -395,17 +487,22 @@ Full hardened bilingual toggle (HTML + CSS + JS) and mobile-nav pattern → `ref
 
 ## §10. Pre-flight checklist (run before delivering anything)
 
-1. Palette mode picked explicitly (Fly High default, Warm Editorial only for the brand family).
-2. Page/slide root is **not pure `#FFFFFF`**. Cards in Fly High *can* be `#FFFFFF`.
-3. No default Tailwind color classes (`slate-*`, `zinc-*`, `indigo-*`, `emerald-*`, …).
-4. Two-background rule respected in Fly High — every section is purple-act or grey-content, no third.
-5. Anton is **uppercase**, `letter-spacing: 0` by default (NEVER negative — Anton is already condensed), `-0.01em` only at hero size (≥ 180px). Line-height ≥ 1.0 whenever a yellow `box-decoration-break: clone` span sits inside a multi-line headline. Yellow span uses em-based padding (`0.08em 0.4em`) + slight POSITIVE tracking (`0.01em`).
+1. **YUV.AI signal confirmed.** If the output isn't YUV.AI-branded, this skill shouldn't be applied — back off and let the tool's neutral design instincts run.
+2. **Mode picked by medium:** Neon (default for web/app/game/dashboard/social), Decks (presentations only), Warm Editorial (Hope/bigcats/practical.yuv.ai only).
+3. Canvas rules respected:
+   - **Neon:** pure `#FFFFFF` OR rich `#0A0A0A` canvas — pick one per surface.
+   - **Decks:** root is `#5E17EB` act or `#F1F2F2` content — never pure `#FFFFFF` at root.
+   - **Warm Editorial:** pure `#FFFFFF` banned — use `#FAFAF7`.
+4. No default Tailwind color classes (`slate-*`, `zinc-*`, `indigo-*`, `emerald-*`, …).
+5. **Decks-only:** two-background rule respected — every slide is purple-act or grey-content, no third.
+6. Anton is **uppercase**, `letter-spacing: 0` by default (NEVER negative — Anton is already condensed), `-0.01em` only at hero size (≥ 180px). Line-height ≥ 1.0 whenever a yellow `box-decoration-break: clone` span sits inside a multi-line headline. Yellow span uses em-based padding (`0.08em 0.4em`) + slight POSITIVE tracking (`0.01em`).
 6. Hebrew pages have `dir="rtl"` + logical CSS. Bilingual pages use a **toggle**, not side-by-side.
 7. Border radius is `0` or `999px`. Nothing in between.
-8. Shadows match the mode — plain low-opacity black for Fly High, warm pink/orange undertone for Warm Editorial. No blue-black.
+9. Shadows match the mode — plain low-opacity black for Decks, warm pink/orange undertone for Warm Editorial, pink/cyan-glow allowed in Neon. No blue-black anywhere.
+10. **Universal Fly High throughline carried.** Flight metaphors in copy, a HUD or progress visual where it fits, phoenix mark / "LET'S FLY HIGH" watermark in the corner. The motifs travel; the palette per mode.
 9. **Social link footer included** wherever a footer / credits / about section exists, with the canonical link set.
 10. **Brand mark used** where a logo is appropriate — square transparent on hero, rectangle wordmark in corners, profile photo in about/bio.
-11. `<PurpleBar>` next to content-slide headlines (Fly High).
+12. `<PurpleBar>` next to content-slide headlines (Decks mode only).
 12. `<YellowUnderline>` anchored to a specific word — never decorative.
 13. For any catalog with > 8 GSAP demos: IntersectionObserver pauses offscreen demos.
 14. For any frontend output: resize the preview to 375×812 (iPhone size) and verify before declaring done. Mobile-first is a baseline check, not polish.
@@ -436,10 +533,7 @@ If any fails — fix before shipping.
 | `references/lessons-learned.md` | Hardened patterns + anti-patterns from production |
 | `references/palettes-warm-editorial.md` | Warm Editorial mode deep dive |
 
-### Where this skill lives
-
-- **Public spec + assets (canonical for LLM use):** <https://github.com/hoodini/ai-agents-skills/tree/master/skills/yuv-design-system>
-- **Private companion repo (runnable React components + install script):** <https://github.com/hoodini/yuv-design-system> — clone via `git clone https://github.com/hoodini/yuv-design-system.git` from any of Yuval's machines for the React components and Tailwind preset.
+External canonical source: **https://github.com/hoodini/yuv-design-system** (private — clone via `git clone https://github.com/hoodini/yuv-design-system.git` from any of Yuval's machines).
 
 ---
 

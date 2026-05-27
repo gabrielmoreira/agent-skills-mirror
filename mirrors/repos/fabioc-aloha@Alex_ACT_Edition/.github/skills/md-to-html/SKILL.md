@@ -1,17 +1,10 @@
 ---
-type: skill
-lifecycle: stable
 name: "md-to-html"
 description: "Convert Markdown to standalone HTML pages with embedded CSS, images, and Mermaid diagrams"
-tier: standard
-inheritance: inheritable
-applyTo: '**/*md-to-html*,**/*convert*html*'
-muscle: .github/muscles/md-to-html.cjs
-currency: 2026-04-30
 lastReviewed: 2026-04-30
 ---
 
-# Markdown to HTML Conversion
+# Md To Html
 
 > Write in Markdown, share as a polished web page — zero dependencies for viewers
 
@@ -68,25 +61,25 @@ Convert Markdown documents into self-contained HTML files with embedded CSS, bas
 
 ```bash
 # Basic conversion (professional style)
-node .github/muscles/md-to-html.cjs report.md
+node .github/skills/md-to-html/scripts/md-to-html.cjs report.md
 
 # Academic style with TOC
-node .github/muscles/md-to-html.cjs thesis.md --style academic --toc
+node .github/skills/md-to-html/scripts/md-to-html.cjs thesis.md --style academic --toc
 
 # Dark mode output
-node .github/muscles/md-to-html.cjs docs.md --style dark
+node .github/skills/md-to-html/scripts/md-to-html.cjs docs.md --style dark
 
 # Mermaid diagrams rendered as PNG (high quality)
-node .github/muscles/md-to-html.cjs architecture.md --mermaid-png
+node .github/skills/md-to-html/scripts/md-to-html.cjs architecture.md --mermaid-png
 
 # Custom output path
-node .github/muscles/md-to-html.cjs README.md output/readme.html
+node .github/skills/md-to-html/scripts/md-to-html.cjs README.md output/readme.html
 
 # Dry run (validate without generating)
-node .github/muscles/md-to-html.cjs report.md --dry-run
+node .github/skills/md-to-html/scripts/md-to-html.cjs report.md --dry-run
 
 # Debug mode (save preprocessed markdown)
-node .github/muscles/md-to-html.cjs report.md --debug
+node .github/skills/md-to-html/scripts/md-to-html.cjs report.md --debug
 ```
 
 ---
@@ -154,12 +147,12 @@ HTML output includes `@media print` CSS rules:
 ```bash
 # Convert all markdown files in a directory
 for file in docs/*.md; do
-  node .github/muscles/md-to-html.cjs "$file" --style professional
+  node .github/skills/md-to-html/scripts/md-to-html.cjs "$file" --style professional
 done
 
 # PowerShell equivalent
 Get-ChildItem docs/*.md | ForEach-Object {
-  node .github/muscles/md-to-html.cjs $_.FullName --style professional
+  node .github/skills/md-to-html/scripts/md-to-html.cjs $_.FullName --style professional
 }
 ```
 
@@ -187,7 +180,7 @@ Get-ChildItem docs/*.md | ForEach-Object {
 
 ## Muscle Script
 
-`.github/muscles/md-to-html.cjs` (v1.0.0)
+`.github/skills/md-to-html/scripts/md-to-html.cjs` (v1.0.0)
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Ar9av/obsidian-wiki` — 26 default patterns, 0 followed patterns, 41 file(s) materialized.
+Mirror of `Ar9av/obsidian-wiki` — 26 default patterns, 0 followed patterns, 42 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Ar9av/obsidian-wiki` — 26 default patterns, 0 followed patterns, 41
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 41 |
+| Files         | 42 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -89,17 +89,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 28 | ✓ | [`.skills/wiki-ingest/SKILL.md`](.skills/wiki-ingest/SKILL.md) |
 | 29 | ✓ | [`.skills/wiki-lint/SKILL.md`](.skills/wiki-lint/SKILL.md) |
 | 30 | ✓ | [`.skills/wiki-query/SKILL.md`](.skills/wiki-query/SKILL.md) |
-| 31 | ✓ | [`.skills/wiki-rebuild/SKILL.md`](.skills/wiki-rebuild/SKILL.md) |
-| 32 | ✓ | [`.skills/wiki-research/SKILL.md`](.skills/wiki-research/SKILL.md) |
-| 33 | ✓ | [`.skills/wiki-setup/SKILL.md`](.skills/wiki-setup/SKILL.md) |
-| 34 | ✓ | [`.skills/wiki-stage-commit/SKILL.md`](.skills/wiki-stage-commit/SKILL.md) |
-| 35 | ✓ | [`.skills/wiki-status/SKILL.md`](.skills/wiki-status/SKILL.md) |
-| 36 | ✓ | [`.skills/wiki-switch/SKILL.md`](.skills/wiki-switch/SKILL.md) |
-| 37 | ✓ | [`.skills/wiki-synthesize/SKILL.md`](.skills/wiki-synthesize/SKILL.md) |
-| 38 | ✓ | [`.skills/wiki-update/SKILL.md`](.skills/wiki-update/SKILL.md) |
-| 39 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 40 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 41 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 31 | ✓ | [`.skills/wiki-quick-chat-capture/SKILL.md`](.skills/wiki-quick-chat-capture/SKILL.md) |
+| 32 | ✓ | [`.skills/wiki-rebuild/SKILL.md`](.skills/wiki-rebuild/SKILL.md) |
+| 33 | ✓ | [`.skills/wiki-research/SKILL.md`](.skills/wiki-research/SKILL.md) |
+| 34 | ✓ | [`.skills/wiki-setup/SKILL.md`](.skills/wiki-setup/SKILL.md) |
+| 35 | ✓ | [`.skills/wiki-stage-commit/SKILL.md`](.skills/wiki-stage-commit/SKILL.md) |
+| 36 | ✓ | [`.skills/wiki-status/SKILL.md`](.skills/wiki-status/SKILL.md) |
+| 37 | ✓ | [`.skills/wiki-switch/SKILL.md`](.skills/wiki-switch/SKILL.md) |
+| 38 | ✓ | [`.skills/wiki-synthesize/SKILL.md`](.skills/wiki-synthesize/SKILL.md) |
+| 39 | ✓ | [`.skills/wiki-update/SKILL.md`](.skills/wiki-update/SKILL.md) |
+| 40 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 41 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 42 | ✓ | [`GEMINI.md`](GEMINI.md) |
 
 ---
 

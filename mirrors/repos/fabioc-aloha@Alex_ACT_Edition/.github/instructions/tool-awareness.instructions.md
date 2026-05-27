@@ -1,11 +1,6 @@
 ---
-type: instruction
-lifecycle: stable
-inheritance: inheritable
 description: "Platform awareness for VS Code tool system: deferred tools require tool_search, external ingest provides context in remote workspaces, skill SKILL.md descriptions surface in the slash picker"
-application: "Always active: agents must know which tools are deferred and how to discover them"
 applyTo: "**"
-currency: 2026-05-24
 lastReviewed: 2026-05-24
 ---
 

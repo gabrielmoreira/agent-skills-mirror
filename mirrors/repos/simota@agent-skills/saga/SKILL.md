@@ -323,13 +323,15 @@ Inputs/outputs are listed in the `COLLABORATION_PATTERNS` / `BIDIRECTIONAL_PARTN
 
 ## Multi-Engine Mode
 
-Activated by the `multi` Recipe (or any explicit user request for parallel narrative generation, cross-engine arcs, archetype portfolio, or A/B/C narrative testing). Tri-engine narrative generation mirrors Spark/Plea's Pattern D — Divergence-Primary — and is optimized for *narrative-archetype diversity* across the same customer-feature pair.
+Activated by the `multi` Recipe (or any explicit user request for parallel narrative generation, cross-engine arcs, archetype portfolio, or A/B/C narrative testing). Multi-engine narrative generation mirrors Spark/Plea's Pattern D — Divergence-Primary — and is optimized for *narrative-archetype diversity* across the same customer-feature pair.
+
+> **Base Engine Policy (2026-05)**: Default baseline = **Claude + Codex (dual-engine, 2 spawns)**. agy adds a third axis (tri-engine, 3 spawns) when AVAILABLE at PREFLIGHT. For Saga the dual-engine baseline (Claude's emotionally-calibrated Promised Land narratives + Codex's JTBD/technical case study patterns) covers two distinct narrative archetypes; agy adds Hero's Journey / BAB archetype coverage when reachable. See `_common/MULTI_ENGINE_RECIPE.md §Base Engine Policy + §Engine Availability Modes`.
 
 **Core mechanics:**
-- Spawn three Agent subagents in a single message: `narrate-codex`, `narrate-agy`, `narrate-claude` (per `references/tri-engine-narrate.md`).
+- Spawn one Agent subagent per AVAILABLE engine in a single message: `narrate-codex` + `narrate-claude` (dual-engine baseline); add `narrate-agy` (tri-engine) when AVAILABLE. Per `references/tri-engine-narrate.md`.
 - Run engine availability PREFLIGHT in Saga main context — never delegate detection to subagents (subagent PATH is narrower; see `_common/MULTI_ENGINE_RECIPE.md §2` for the canonical probe).
-- Use loose prompts (Role + Customer + Feature + Channel + Output format only). Do NOT pass framework choice, the AP-1~AP-9 checklist, or length targets to subagents — apply Saga's rules in SYNTHESIZE, not at FAN-OUT. Each engine's narrative-archetype training-data priors should drive divergence (Codex → JTBD / technical case study; Antigravity → Hero's Journey / BAB; Claude → Promised Land / emotionally calibrated transformation).
-- Each subagent produces 2-3 narratives using **different arc_types** (target 6-9 raw narratives total before clustering).
+- Use loose prompts (Role + Customer + Feature + Channel + Output format only). Do NOT pass framework choice, the AP-1~AP-9 checklist, or length targets to subagents — apply Saga's rules in SYNTHESIZE, not at FAN-OUT. Each engine's narrative-archetype training-data priors should drive divergence (Codex → JTBD / technical case study; Claude → Promised Land / emotionally calibrated transformation; Antigravity when AVAILABLE → Hero's Journey / BAB).
+- Each subagent produces 2-3 narratives using **different arc_types** (target 4-6 raw narratives dual-engine, 6-9 tri-engine, before clustering).
 - Subagents return structured JSON; Saga main context integrates via NORMALIZE → CLUSTER → SCORE → GROUND → SYNTHESIZE.
 
 **Concurrence vs Divergence scoring (Pattern D):**
