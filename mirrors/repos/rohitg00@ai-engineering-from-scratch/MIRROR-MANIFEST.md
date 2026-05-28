@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,7 +61,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/check-understanding/SKILL.md`](.claude/skills/check-understanding/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/find-your-level/SKILL.md`](.claude/skills/find-your-level/SKILL.md) |
-| 3 | ✓ | [`phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md`](phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md`](phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md) |
 
 ---
 

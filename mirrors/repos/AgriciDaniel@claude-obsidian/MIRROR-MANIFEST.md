@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AgriciDaniel/claude-obsidian` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `AgriciDaniel/claude-obsidian` — 26 default patterns, 3 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `AgriciDaniel/claude-obsidian` — 26 default patterns, 0 followed pat
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 28 |
+| Followed pats | 3 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,9 @@ Mirror of `AgriciDaniel/claude-obsidian` — 26 default patterns, 0 followed pat
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/compound-vault-guide.md`
+- `docs/methodology-modes-guide.md`
+- `wiki/references/transport-fallback.md`
 
 ## File Index
 
@@ -62,31 +64,47 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.cursor/rules/claude-obsidian.mdc`](.cursor/rules/claude-obsidian.mdc) |
 | 2 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 4 | ✓ | [`agents/wiki-ingest.md`](agents/wiki-ingest.md) |
-| 5 | ✓ | [`agents/wiki-lint.md`](agents/wiki-lint.md) |
-| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 7 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 8 | ✓ | [`skills/autoresearch/references/program.md`](skills/autoresearch/references/program.md) |
-| 9 | ✓ | [`skills/autoresearch/SKILL.md`](skills/autoresearch/SKILL.md) |
-| 10 | ✓ | [`skills/canvas/references/canvas-spec.md`](skills/canvas/references/canvas-spec.md) |
-| 11 | ✓ | [`skills/canvas/SKILL.md`](skills/canvas/SKILL.md) |
-| 12 | ✓ | [`skills/defuddle/SKILL.md`](skills/defuddle/SKILL.md) |
-| 13 | ✓ | [`skills/obsidian-bases/SKILL.md`](skills/obsidian-bases/SKILL.md) |
-| 14 | ✓ | [`skills/obsidian-markdown/SKILL.md`](skills/obsidian-markdown/SKILL.md) |
-| 15 | ✓ | [`skills/save/SKILL.md`](skills/save/SKILL.md) |
-| 16 | ✓ | [`skills/wiki-fold/references/fold-template.md`](skills/wiki-fold/references/fold-template.md) |
-| 17 | ✓ | [`skills/wiki-fold/SKILL.md`](skills/wiki-fold/SKILL.md) |
-| 18 | ✓ | [`skills/wiki-ingest/SKILL.md`](skills/wiki-ingest/SKILL.md) |
-| 19 | ✓ | [`skills/wiki-lint/SKILL.md`](skills/wiki-lint/SKILL.md) |
-| 20 | ✓ | [`skills/wiki-query/SKILL.md`](skills/wiki-query/SKILL.md) |
-| 21 | ✓ | [`skills/wiki/references/css-snippets.md`](skills/wiki/references/css-snippets.md) |
-| 22 | ✓ | [`skills/wiki/references/frontmatter.md`](skills/wiki/references/frontmatter.md) |
-| 23 | ✓ | [`skills/wiki/references/git-setup.md`](skills/wiki/references/git-setup.md) |
-| 24 | ✓ | [`skills/wiki/references/mcp-setup.md`](skills/wiki/references/mcp-setup.md) |
-| 25 | ✓ | [`skills/wiki/references/modes.md`](skills/wiki/references/modes.md) |
-| 26 | ✓ | [`skills/wiki/references/plugins.md`](skills/wiki/references/plugins.md) |
-| 27 | ✓ | [`skills/wiki/references/rest-api.md`](skills/wiki/references/rest-api.md) |
-| 28 | ✓ | [`skills/wiki/SKILL.md`](skills/wiki/SKILL.md) |
+| 4 | ✓ | [`agents/verifier.md`](agents/verifier.md) |
+| 5 | ✓ | [`agents/wiki-ingest.md`](agents/wiki-ingest.md) |
+| 6 | ✓ | [`agents/wiki-lint.md`](agents/wiki-lint.md) |
+| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 8 | ✓ | [`docs/dragonscale-guide.md`](docs/dragonscale-guide.md) |
+| 9 | ✓ | [`docs/install-guide.md`](docs/install-guide.md) |
+| 10 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 11 | ✓ | [`skills/autoresearch/references/program.md`](skills/autoresearch/references/program.md) |
+| 12 | ✓ | [`skills/autoresearch/SKILL.md`](skills/autoresearch/SKILL.md) |
+| 13 | ✓ | [`skills/canvas/references/canvas-spec.md`](skills/canvas/references/canvas-spec.md) |
+| 14 | ✓ | [`skills/canvas/SKILL.md`](skills/canvas/SKILL.md) |
+| 15 | ✓ | [`skills/defuddle/SKILL.md`](skills/defuddle/SKILL.md) |
+| 16 | ✓ | [`skills/obsidian-bases/SKILL.md`](skills/obsidian-bases/SKILL.md) |
+| 17 | ✓ | [`skills/obsidian-markdown/SKILL.md`](skills/obsidian-markdown/SKILL.md) |
+| 18 | ✓ | [`skills/save/SKILL.md`](skills/save/SKILL.md) |
+| 19 | ✓ | [`skills/think/SKILL.md`](skills/think/SKILL.md) |
+| 20 | ✓ | [`skills/wiki-cli/SKILL.md`](skills/wiki-cli/SKILL.md) |
+| 21 | ✓ | [`skills/wiki-fold/references/fold-template.md`](skills/wiki-fold/references/fold-template.md) |
+| 22 | ✓ | [`skills/wiki-fold/SKILL.md`](skills/wiki-fold/SKILL.md) |
+| 23 | ✓ | [`skills/wiki-ingest/SKILL.md`](skills/wiki-ingest/SKILL.md) |
+| 24 | ✓ | [`skills/wiki-lint/SKILL.md`](skills/wiki-lint/SKILL.md) |
+| 25 | ✓ | [`skills/wiki-mode/SKILL.md`](skills/wiki-mode/SKILL.md) |
+| 26 | ✓ | [`skills/wiki-mode/templates/lyt/atomic-template.md`](skills/wiki-mode/templates/lyt/atomic-template.md) |
+| 27 | ✓ | [`skills/wiki-mode/templates/lyt/moc-template.md`](skills/wiki-mode/templates/lyt/moc-template.md) |
+| 28 | ✓ | [`skills/wiki-mode/templates/para/area-template.md`](skills/wiki-mode/templates/para/area-template.md) |
+| 29 | ✓ | [`skills/wiki-mode/templates/para/project-template.md`](skills/wiki-mode/templates/para/project-template.md) |
+| 30 | ✓ | [`skills/wiki-mode/templates/para/resource-template.md`](skills/wiki-mode/templates/para/resource-template.md) |
+| 31 | ✓ | [`skills/wiki-mode/templates/zettel/atomic-template.md`](skills/wiki-mode/templates/zettel/atomic-template.md) |
+| 32 | ✓ | [`skills/wiki-query/SKILL.md`](skills/wiki-query/SKILL.md) |
+| 33 | ✓ | [`skills/wiki-retrieve/SKILL.md`](skills/wiki-retrieve/SKILL.md) |
+| 34 | ✓ | [`skills/wiki/references/css-snippets.md`](skills/wiki/references/css-snippets.md) |
+| 35 | ✓ | [`skills/wiki/references/frontmatter.md`](skills/wiki/references/frontmatter.md) |
+| 36 | ✓ | [`skills/wiki/references/git-setup.md`](skills/wiki/references/git-setup.md) |
+| 37 | ✓ | [`skills/wiki/references/mcp-setup.md`](skills/wiki/references/mcp-setup.md) |
+| 38 | ✓ | [`skills/wiki/references/modes.md`](skills/wiki/references/modes.md) |
+| 39 | ✓ | [`skills/wiki/references/plugins.md`](skills/wiki/references/plugins.md) |
+| 40 | ✓ | [`skills/wiki/references/rest-api.md`](skills/wiki/references/rest-api.md) |
+| 41 | ✓ | [`skills/wiki/SKILL.md`](skills/wiki/SKILL.md) |
+| 42 | → | [`docs/compound-vault-guide.md`](docs/compound-vault-guide.md) |
+| 43 | → | [`docs/methodology-modes-guide.md`](docs/methodology-modes-guide.md) |
+| 44 | → | [`wiki/references/transport-fallback.md`](wiki/references/transport-fallback.md) |
 
 ---
 

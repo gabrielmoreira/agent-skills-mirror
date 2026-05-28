@@ -4,7 +4,7 @@
 
 [English](./README.md) · [返回集合首页](../../README.zh-CN.md)
 
-![Web Video Presentation Skill](../../dist/imgs/web-video-presentation-skill.png)
+![Web Video Presentation Skill](https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video-presentation-skill.webp)
 
 ---
 
@@ -132,13 +132,13 @@ Skill 内置 **23 套**主题，每套都有独立的设计 DNA —— 不是简
 <table>
 <tr>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/midnight-press.png"><img src="../../dist/imgs/web-video/midnight-press.png" alt="midnight-press 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/midnight-press.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/midnight-press.webp" alt="midnight-press 预览" /></a>
 <br /><strong><code>midnight-press</code> · 暗色印刷</strong>
 <br /><sub>电影感编辑暗底 · 暖暗底 + 火热橙</sub>
 <br /><sub><b>适合</b> · 开发者教程 · AI / 工具评测 · 技术 deep dive</sub>
 </td>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/dark-botanical.png"><img src="../../dist/imgs/web-video/dark-botanical.png" alt="dark-botanical 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/dark-botanical.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/dark-botanical.webp" alt="dark-botanical 预览" /></a>
 <br /><strong><code>dark-botanical</code> · 暗夜植物</strong>
 <br /><sub>高级时尚刊物 · 暖陶 / 玫粉 / 鎏金叠层</sub>
 <br /><sub><b>适合</b> · 品牌故事 · 时尚 / 美妆 · 高端产品发布</sub>
@@ -146,13 +146,13 @@ Skill 内置 **23 套**主题，每套都有独立的设计 DNA —— 不是简
 </tr>
 <tr>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/chalk-garden.png"><img src="../../dist/imgs/web-video/chalk-garden.png" alt="chalk-garden 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/chalk-garden.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/chalk-garden.webp" alt="chalk-garden 预览" /></a>
 <br /><strong><code>chalk-garden</code> · 粉笔花园</strong>
 <br /><sub>深石板黑板 · 手写 Patrick Hand + 粉笔黄</sub>
 <br /><sub><b>适合</b> · 科普讲解 · 教学课堂 · 面向初学者的亲切口吻</sub>
 </td>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/blueprint.png"><img src="../../dist/imgs/web-video/blueprint.png" alt="blueprint 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/blueprint.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/blueprint.webp" alt="blueprint 预览" /></a>
 <br /><strong><code>blueprint</code> · 工程蓝图</strong>
 <br /><sub>制图工作台 · 深海军 + 制图青 + 60 px 网格</sub>
 <br /><sub><b>适合</b> · 技术架构 · 系统拆解 · API / SDK 介绍</sub>
@@ -160,13 +160,13 @@ Skill 内置 **23 套**主题，每套都有独立的设计 DNA —— 不是简
 </tr>
 <tr>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/terminal-green.png"><img src="../../dist/imgs/web-video/terminal-green.png" alt="terminal-green 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/terminal-green.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/terminal-green.webp" alt="terminal-green 预览" /></a>
 <br /><strong><code>terminal-green</code> · 终端绿</strong>
 <br /><sub>80 年代磷光 CRT · 纯等宽 + 扫描线</sub>
 <br /><sub><b>适合</b> · CLI 工具教程 · 黑客 / 安全话题 · 复古技术致敬</sub>
 </td>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/neon-cyber.png"><img src="../../dist/imgs/web-video/neon-cyber.png" alt="neon-cyber 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/neon-cyber.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/neon-cyber.webp" alt="neon-cyber 预览" /></a>
 <br /><strong><code>neon-cyber</code> · 霓虹赛博</strong>
 <br /><sub>赛博朋克未来 · 电光青 + 玫红双霓虹</sub>
 <br /><sub><b>适合</b> · AI / 大模型评测 · web3 / 安全 · 未来主义与赛博朋克</sub>
@@ -174,13 +174,13 @@ Skill 内置 **23 套**主题，每套都有独立的设计 DNA —— 不是简
 </tr>
 <tr>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/bold-signal.png"><img src="../../dist/imgs/web-video/bold-signal.png" alt="bold-signal 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/bold-signal.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/bold-signal.webp" alt="bold-signal 预览" /></a>
 <br /><strong><code>bold-signal</code> · 焦点信号</strong>
 <br /><sub>Pitch Deck 主舞台 · 暗渐变 + 大橙焦点卡</sub>
 <br /><sub><b>适合</b> · pitch deck / 路演 · 产品发布 · 大字宣言 / brand keynote</sub>
 </td>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/creative-voltage.png"><img src="../../dist/imgs/web-video/creative-voltage.png" alt="creative-voltage 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/creative-voltage.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/creative-voltage.webp" alt="creative-voltage 预览" /></a>
 <br /><strong><code>creative-voltage</code> · 电压创意</strong>
 <br /><sub>饱和电光蓝 + 霓虹黄 + halftone 网点</sub>
 <br /><sub><b>适合</b> · 设计周 / 创意分享 · 工作室作品集 · 字体 / 视觉文化</sub>
@@ -195,13 +195,13 @@ Skill 内置 **23 套**主题，每套都有独立的设计 DNA —— 不是简
 <table>
 <tr>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/paper-press.png"><img src="../../dist/imgs/web-video/paper-press.png" alt="paper-press 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/paper-press.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/paper-press.webp" alt="paper-press 预览" /></a>
 <br /><strong><code>paper-press</code> · 亮色印刷</strong>
 <br /><sub>编辑纸张 · 暖奶油 + 火热橙</sub>
 <br /><sub><b>适合</b> · 杂志型内容 · 生活方式 · 日常工具评测</sub>
 </td>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/newsroom.png"><img src="../../dist/imgs/web-video/newsroom.png" alt="newsroom 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/newsroom.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/newsroom.webp" alt="newsroom 预览" /></a>
 <br /><strong><code>newsroom</code> · 报社</strong>
 <br /><sub>NYT 大报 · 新闻纸奶油 + 旗红</sub>
 <br /><sub><b>适合</b> · 纪录片 / 报道 · 深度评测 · 时事 / 热点解读</sub>
@@ -209,13 +209,13 @@ Skill 内置 **23 套**主题，每套都有独立的设计 DNA —— 不是简
 </tr>
 <tr>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/monochrome-print.png"><img src="../../dist/imgs/web-video/monochrome-print.png" alt="monochrome-print 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/monochrome-print.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/monochrome-print.webp" alt="monochrome-print 预览" /></a>
 <br /><strong><code>monochrome-print</code> · 黑白印刷</strong>
 <br /><sub>精炼克制 · Monocle / Wallpaper 气质</sub>
 <br /><sub><b>适合</b> · 深度阅读改编 · 学术 / 思想型内容 · 文化艺术评论</sub>
 </td>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/vintage-editorial.png"><img src="../../dist/imgs/web-video/vintage-editorial.png" alt="vintage-editorial 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/vintage-editorial.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/vintage-editorial.webp" alt="vintage-editorial 预览" /></a>
 <br /><strong><code>vintage-editorial</code> · 复古编辑</strong>
 <br /><sub>俏皮 Fraunces + 几何叠层（圆 / 线 / 点）</sub>
 <br /><sub><b>适合</b> · 个人见解 / 评论 · 文化随笔 · 设计 / 字体话题</sub>
@@ -223,13 +223,13 @@ Skill 内置 **23 套**主题，每套都有独立的设计 DNA —— 不是简
 </tr>
 <tr>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/sunset-zine.png"><img src="../../dist/imgs/web-video/sunset-zine.png" alt="sunset-zine 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/sunset-zine.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/sunset-zine.webp" alt="sunset-zine 预览" /></a>
 <br /><strong><code>sunset-zine</code> · 日落 Zine</strong>
 <br /><sub>Risograph 拼贴 · 暖桃 + 玫红 + 虚线剪贴</sub>
 <br /><sub><b>适合</b> · 生活向 vlog · 创意分享 · 小红书 / 抖音风</sub>
 </td>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/pastel-dream.png"><img src="../../dist/imgs/web-video/pastel-dream.png" alt="pastel-dream 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/pastel-dream.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/pastel-dream.webp" alt="pastel-dream 预览" /></a>
 <br /><strong><code>pastel-dream</code> · 柔光梦</strong>
 <br /><sub>柔粉 + 鼠尾草绿 + 右侧 pill 色条</sub>
 <br /><sub><b>适合</b> · 产品 onboarding · 友好教学 · 心理 / 健康 / 母婴</sub>
@@ -237,13 +237,13 @@ Skill 内置 **23 套**主题，每套都有独立的设计 DNA —— 不是简
 </tr>
 <tr>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/warm-keynote.png"><img src="../../dist/imgs/web-video/warm-keynote.png" alt="warm-keynote 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/warm-keynote.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/warm-keynote.webp" alt="warm-keynote 预览" /></a>
 <br /><strong><code>warm-keynote</code> · 暖色 Keynote</strong>
 <br /><sub>现代 SaaS Keynote · glass slab + 青绿 + 暖色网格</sub>
 <br /><sub><b>适合</b> · SaaS keynote · B 端产品发布 · 团队对外汇报</sub>
 </td>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/electric-studio.png"><img src="../../dist/imgs/web-video/electric-studio.png" alt="electric-studio 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/electric-studio.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/electric-studio.webp" alt="electric-studio 预览" /></a>
 <br /><strong><code>electric-studio</code> · 电光企业</strong>
 <br /><sub>企业级清晰 · 净白 + 贴底电光蓝色条</sub>
 <br /><sub><b>适合</b> · B2B 产品演讲 · 投资人路演 · 企业财报 / 季度更新</sub>
@@ -251,13 +251,13 @@ Skill 内置 **23 套**主题，每套都有独立的设计 DNA —— 不是简
 </tr>
 <tr>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/bauhaus-bold.png"><img src="../../dist/imgs/web-video/bauhaus-bold.png" alt="bauhaus-bold 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/bauhaus-bold.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/bauhaus-bold.webp" alt="bauhaus-bold 预览" /></a>
 <br /><strong><code>bauhaus-bold</code> · 包豪斯</strong>
 <br /><sub>宣言式现代主义 · 0 圆角 + 4 px 厚边</sub>
 <br /><sub><b>适合</b> · 产品发布 · 观点宣言 · 品牌主张</sub>
 </td>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/swiss-ikb.png"><img src="../../dist/imgs/web-video/swiss-ikb.png" alt="swiss-ikb 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/swiss-ikb.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/swiss-ikb.webp" alt="swiss-ikb 预览" /></a>
 <br /><strong><code>swiss-ikb</code> · 瑞士克莱因蓝</strong>
 <br /><sub>极细 200 Helvetica + IKB + 1 px 发丝网格</sub>
 <br /><sub><b>适合</b> · AI / 科技产品发布 · 年度数据汇报 · 信息图</sub>
@@ -265,13 +265,13 @@ Skill 内置 **23 套**主题，每套都有独立的设计 DNA —— 不是简
 </tr>
 <tr>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/dune.png"><img src="../../dist/imgs/web-video/dune.png" alt="dune 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/dune.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/dune.webp" alt="dune 预览" /></a>
 <br /><strong><code>dune</code> · 沙丘</strong>
 <br /><sub>炭褐 + 沙底 · 近乎零 accent，建筑画廊感</sub>
 <br /><sub><b>适合</b> · 建筑 / 室内 / 空间 · 艺术展览 · 高端品牌画册</sub>
 </td>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/indigo-porcelain.png"><img src="../../dist/imgs/web-video/indigo-porcelain.png" alt="indigo-porcelain 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/indigo-porcelain.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/indigo-porcelain.webp" alt="indigo-porcelain 预览" /></a>
 <br /><strong><code>indigo-porcelain</code> · 靛蓝瓷</strong>
 <br /><sub>靛蓝<em>本身即墨</em>（不是 accent）+ 瓷白</sub>
 <br /><sub><b>适合</b> · 学术 / 论文解读 · AI / 数据深度 · 严肃技术汇报</sub>
@@ -279,13 +279,13 @@ Skill 内置 **23 套**主题，每套都有独立的设计 DNA —— 不是简
 </tr>
 <tr>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/forest-ink.png"><img src="../../dist/imgs/web-video/forest-ink.png" alt="forest-ink 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/forest-ink.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/forest-ink.webp" alt="forest-ink 预览" /></a>
 <br /><strong><code>forest-ink</code> · 森林墨</strong>
 <br /><sub>森林绿<em>本身即墨</em> + 象牙 · 旧版国家地理</sub>
 <br /><sub><b>适合</b> · 自然 / 可持续 · 纪录 / 非虚构 · 慢生活</sub>
 </td>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/kraft-paper.png"><img src="../../dist/imgs/web-video/kraft-paper.png" alt="kraft-paper 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/kraft-paper.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/kraft-paper.webp" alt="kraft-paper 预览" /></a>
 <br /><strong><code>kraft-paper</code> · 牛皮纸</strong>
 <br /><sub>深棕<em>本身即墨</em> + 牛皮米 + 紫铜 accent</sub>
 <br /><sub><b>适合</b> · 书评 / 文学随笔 · 历史 / 怀旧 · 手工艺 / 食物</sub>
@@ -293,7 +293,7 @@ Skill 内置 **23 套**主题，每套都有独立的设计 DNA —— 不是简
 </tr>
 <tr>
 <td align="center" width="50%">
-<a href="../../dist/imgs/web-video/split-canvas.png"><img src="../../dist/imgs/web-video/split-canvas.png" alt="split-canvas 预览" /></a>
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/split-canvas.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/split-canvas.webp" alt="split-canvas 预览" /></a>
 <br /><strong><code>split-canvas</code> · 双拼画布</strong>
 <br /><sub>50/50 双底色 · 蜜桃左 + 薰衣草右</sub>
 <br /><sub><b>适合</b> · 双主题对比 / 辩论 · 故事讲述 · 概念对照科普</sub>

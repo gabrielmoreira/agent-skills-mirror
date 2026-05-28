@@ -6,6 +6,7 @@ import { makePromptOutput } from "./hook-output.ts";
 import { emitEvent, readEvents } from "./state-emit.ts";
 import { getActiveSid, readIndex, setLastSession } from "./state-marker.ts";
 import type { Vendor } from "./types.ts";
+import { renderStateSnapshot } from "./vendor-renderer.ts";
 
 function inferVendorFromScriptPath(): Vendor | null {
   const path = import.meta.filename;
@@ -16,13 +17,20 @@ function inferVendorFromScriptPath(): Vendor | null {
   if (path.includes(`${join(".claude", "hooks")}`)) return "claude";
   if (path.includes(`${join(".gemini", "hooks")}`)) return "gemini";
   if (path.includes(`${join(".codex", "hooks")}`)) return "codex";
+  if (path.includes(`${join(".grok", "hooks")}`)) return "grok";
   return null;
 }
 
 function detectVendor(input: Record<string, unknown>): Vendor {
   const event = input.hook_event_name as string | undefined;
+  const hookEventName = input.hookEventName as string | undefined;
   const byScriptPath = inferVendorFromScriptPath();
   if (byScriptPath) return byScriptPath;
+
+  if (process.env.GROK_WORKSPACE_ROOT || hookEventName?.includes("prompt")) {
+    if (process.env.GROK_WORKSPACE_ROOT) return "grok";
+  }
+
   if (event === "PreInvocation") return "antigravity";
   if (event === "BeforeAgent") return "gemini";
   if (event === "beforeSubmitPrompt") return "cursor";
@@ -46,6 +54,12 @@ function getProjectDir(vendor: Vendor, input: Record<string, unknown>): string {
       break;
     case "gemini":
       dir = process.env.GEMINI_PROJECT_DIR || process.cwd();
+      break;
+    case "grok":
+      dir =
+        process.env.GROK_WORKSPACE_ROOT ||
+        (input.cwd as string) ||
+        process.cwd();
       break;
     case "antigravity":
       dir =
@@ -72,7 +86,7 @@ function getVendorSid(input: Record<string, unknown>): string {
 
 export async function onBoundary(
   projectDir: string,
-  vendor: string,
+  vendor: Vendor,
   vendorSid: string,
 ): Promise<string | null> {
   const idx = readIndex(projectDir);
@@ -106,15 +120,13 @@ export async function onBoundary(
   });
   setLastSession(projectDir, vendor, vendorSid);
 
-  const recent = readEvents(projectDir, sid).slice(-10);
-  const lines = [
-    "[OMA STATE SNAPSHOT]",
-    `sid: ${sid}`,
-    "reason: vendor/session boundary",
-    "recent events:",
-    ...recent.map((e) => `- ${e.ts} ${e.kind}`),
-  ];
-  return lines.join("\n");
+  return renderStateSnapshot({
+    vendor,
+    sid,
+    reason: "vendor/session boundary",
+    recentEvents: readEvents(projectDir, sid).slice(-10),
+    facts: [],
+  });
 }
 
 async function main() {

@@ -1,6 +1,6 @@
 ---
 name: darwin-skill
-description: "Darwin Skill (达尔文.skill): autonomous skill optimizer inspired by Karpathy's autoresearch. Evaluates SKILL.md files using an 8-dimension rubric (structure + effectiveness), runs hill-climbing with git version control, validates improvements through test prompts, and generates visual result cards. Use when user mentions \"优化skill\", \"skill评分\", \"自动优化\", \"auto optimize\", \"skill质量检查\", \"达尔文\", \"darwin\", \"帮我改改skill\", \"skill怎么样\", \"提升skill质量\", \"skill review\", \"skill打分\"."
+description: "Darwin Skill (达尔文.skill): autonomous skill optimizer inspired by Karpathy's autoresearch and validated by SkillLens (arXiv 2605.23899). Evaluates SKILL.md files using a 9-dimension rubric (structure + effectiveness + meta-skill blacklists), runs hill-climbing with git version control, spawns independent judge agents for blind evaluation, validates improvements through test prompts with auto-break on diminishing returns, and generates visual result cards. Use when user mentions \"优化skill\", \"skill评分\", \"自动优化\", \"auto optimize\", \"skill质量检查\", \"达尔文\", \"darwin\", \"帮我改改skill\", \"skill怎么样\", \"提升skill质量\", \"skill review\", \"skill打分\"."
 ---
 
 # Darwin Skill
@@ -24,31 +24,50 @@ autoresearch 的精髓：
 
 ---
 
-## 评估 Rubric（8维度，总分100）
+## 评估 Rubric（9维度，总分100）
 
-### 结构维度（60分）— 静态分析
+> **设计依据**：基于 SkillLens 论文（arXiv 2605.23899）实证发现——LLM-as-judge 评估 skill 质量准确率仅 46.4%（接近随机），加入 meta-skill 三维度后提升到 73.8%。本 rubric 强化 dim3 / dim5 评分标准，新增 dim9「反例与黑名单」，权重平衡到 100。**目的：让评分对真实质量更敏感，减少 LLM judge 的乐观偏差。**
 
-| # | 维度 | 权重 | 评分标准 |
-|---|------|------|---------|
-| 1 | **Frontmatter质量** | 8 | name规范、description包含做什么+何时用+触发词、≤1024字符 |
-| 2 | **工作流清晰度** | 15 | 步骤明确可执行、有序号、每步有明确输入/输出 |
-| 3 | **边界条件覆盖** | 10 | 处理异常情况、有fallback路径、错误恢复 |
-| 4 | **检查点设计** | 7 | 关键决策前有用户确认、防止自主失控 |
-| 5 | **指令具体性** | 15 | 不模糊、有具体参数/格式/示例、可直接执行 |
-| 6 | **资源整合度** | 5 | references/scripts/assets引用正确、路径可达 |
-
-### 效果维度（40分）— 需要实测
+### 结构维度（59分）— 静态分析
 
 | # | 维度 | 权重 | 评分标准 |
 |---|------|------|---------|
-| 7 | **整体架构** | 15 | 结构层次清晰、不冗余不遗漏、与花叔生态一致 |
-| 8 | **实测表现** | 25 | 用测试prompt跑一遍，输出质量是否符合skill宣称的能力 |
+| 1 | **Frontmatter质量** | 7 | name规范、description包含做什么+何时用+触发词、≤1024字符、**禁结尾加"灵活应用/根据情况判断"等空话尾巴** |
+| 2 | **工作流清晰度** | 12 | 步骤明确可执行、有序号、每步有明确输入/输出 |
+| 3 | **失败模式编码** | 12 | **必须显式编码失败模式**（写出"如果 X 失败 → Y"的明确分支）；有fallback路径、错误恢复；**只写正向流程而不写失败分支扣 ≥3 分**（SkillLens meta-skill 维度） |
+| 4 | **检查点设计** | 6 | 关键决策前有用户确认、防止自主失控；**检查点必须显性标记（🔴/STOP/CHECKPOINT），仅靠"如果...建议..."措辞不算** |
+| 5 | **可执行具体性** | 17 | 不模糊、有具体参数/格式/示例、可直接执行；**禁止"建议/可以考虑/根据情况/灵活把握/视情况而定"等软化措辞**——出现 ≥3 处扣 ≥3 分（SkillLens actionable specificity 维度） |
+| 6 | **资源整合度** | 4 | references/scripts/assets引用正确、路径可达 |
+
+### 效果维度（35分）— 需要实测
+
+| # | 维度 | 权重 | 评分标准 |
+|---|------|------|---------|
+| 7 | **整体架构** | 12 | 结构层次清晰、不冗余不遗漏、与花叔生态一致；**冗余/AI腔废话段落（说白了/换句话说/首先其次综上等花叔禁用词）出现一处扣 1 分** |
+| 8 | **实测表现** | 23 | 用测试prompt跑一遍，输出质量是否符合skill宣称的能力 |
+
+### Meta-skill 维度（6分）— 反例与黑名单
+
+| # | 维度 | 权重 | 评分标准 |
+|---|------|------|---------|
+| 9 | **反例与黑名单** | 6 | **skill 必须有"不要做什么"的反例清单**；只写"应该做 X"没有"不要做 Y"扣 ≥3 分；红灯/危险动作/反模式应单独章节列出（SkillLens risk-action blacklist 维度） |
 
 ### 评分规则
-- 维度1-7：每个维度打 1-10 分，乘以权重得到该维度得分
+- 维度1-7、9：每个维度打 1-10 分，乘以权重得到该维度得分
 - 维度8（实测表现）：跑2-3个测试prompt，按输出质量打1-10分
 - **总分 = Σ(维度分 × 权重) / 10**，满分100
 - 改进后总分必须 **严格高于** 改进前才保留
+
+### Rubric 的实证基础
+
+rubric 设计依据来自 **SkillLens 论文（arXiv 2605.23899）** + **本机 controlled study**：
+
+- SkillLens 发现 LLM-as-judge 准确率仅 46.4%（接近随机），加入 meta-skill 三维度后升到 73.8%
+- 本机对 huashu-research 做 4 类 degradation → 5 个独立 judge 盲测一致 V1>V2，Δ 均值 +46.5（5/5 high confidence）
+
+**结论**：rubric 能识别 gross degradation，但 fine-grained quality difference 仍不可信，**重要决策必须人审**。
+
+→ 详细论文证据 + 5 judges 完整数据 + HL 实战案例数字见 [references/skilllens-evidence.md](references/skilllens-evidence.md)
 
 ### 关于「实测表现」维度
 
@@ -61,60 +80,27 @@ autoresearch 的精髓：
    - 相比不带skill的baseline，质量提升明显吗？
    - 有没有skill引入的负面影响（过度冗余、跑偏、格式奇怪）？
 
-如果无法跑子agent（时间/资源限制），可以退化为「干跑验证」：读完skill后模拟一个典型prompt的执行思路，判断流程是否合理。但要在results.tsv中标注 `dry_run`。
+若子 agent 不可用（超时/资源限制），退化为「干跑验证」：读完 skill 后模拟一个典型 prompt 的执行思路，判断流程是否合理；必须在 results.tsv 标注 `dry_run`。**dry_run 比例 > 30% → 评估失效警告**（来自本机 controlled study：dim8 实测维度权重 23%，无 full_test 验证时分数不可信）。
 
 ---
 
-## Runtime 适配性审查（gate 项，独立于 8 维度评分）
+## Runtime 适配性审查（gate 项，独立于 9 维度评分）
 
-**背景**：花叔的 skills 基于 Anthropic 开放的 [Agent Skills](https://agentskills.io) 协议，应当能在 Claude Code、Codex、Cursor、OpenClaw、Hermes Agent、CodeBuddy、Workbuddy、Gemini CLI、OpenCode 等 50+ skills-compatible runtime 上通用。这是 skill 分发力的根本——一个被误判为「单一 runtime 绑定」的 skill，会被其他 agent 直接拒绝安装（实例：nuwa-skill 因 README 写「在 Claude Code 里使用」被 Marvis agent 拒绝）。
+skill 应当能在 Claude Code / Codex / Cursor / OpenClaw / Hermes / Gemini CLI / OpenCode 等 50+ skills-compatible runtime 通用——否则其他 agent 解析时会被「在 Claude Code 里」「Claude Code skill」等措辞误判为「不是给我用的」直接拒装（实例：nuwa-skill 因此被 Marvis agent 拒绝）。
 
-**适用范围**：除非 skill 名字明确声明绑定单一 runtime（如 `huashu-slides-codex`、`xxx-for-claude-code`），所有 skill 都必须通过本审查。
-
-### 红灯信号（出现即扣分，且必须在优化循环里修复）
-
-| 红灯类型 | 典型表现 | 危害 |
-|---|---|---|
-| Badge 钉死 | `[![Claude Code Skill]]`、`[![Cursor Only]]` 之类的单一 runtime badge | 视觉上首屏定调，其他 runtime 用户直接退出 |
-| 措辞钉死 | 「在 Claude Code 里」「Cursor 用户可以」「Codex 中使用」「Claude Code skill」 | 让 agent 解析时误判为"不是给我用的" |
-| 安装命令钉死 | 只给 `~/.claude/skills/` 路径、只给 `/plugin install`、只给某 runtime 私有 CLI | 不知道这是 Claude Code 命令的 agent 会拒绝 |
-| 工具调用钉死 | 工作流里硬编码 `mcp__claude-in-chrome__*`、`PostToolUse hook` 等单 runtime 能力，且不给替代方案 | 其他 runtime 没这些工具 → 流程跑不通 |
-| 路径硬编码 | `~/.claude/skills/xxx/`、`.claude/agents/yyy` 作为唯一路径 | 其他 runtime 用 `~/.cursor/skills/` `~/.codex/skills/` |
-
-### 绿灯措辞（推荐改写）
-
-| 红灯 | 绿灯 |
-|---|---|
-| "在 Claude Code 里" | "在你的 agent 里" / "在任何 skills-compatible runtime 中" |
-| "Claude Code skill" | "Agent Skill" |
-| "Claude Code 用户" | "skills-aware agent 用户" |
-| 单一 badge 钉死 | `Agent Skills Standard` + `skills.sh Compatible` + `Multi-Runtime` 三个中立 badge |
-| 只给 `npx skills add ...` 一行 | 三层结构：① 自动检测的一行命令 ② 折叠展开的各 runtime 手动路径 ③ 「作为参考资料 cat 进 context」fallback |
-| 工具名硬编码 | "用一个 browser automation 工具（例如 Claude 的 chrome MCP、Playwright 等）" |
-
-### 例外清单（允许的「Claude Code 痕迹」）
-
-不是所有 Claude-Code 相关字符都要清除。下面这些是**正当出现**的，不算红灯：
-
-1. **Frontmatter `description` 里的中英文触发词**——这是 skill 入口，其他 runtime 解析 frontmatter 时同样能匹配
-2. **花叔生态内部联动的 skill 名引用**——如「调用 huashu-design」「跟 darwin-skill 配套」
-3. **明确标注的 runtime-specific 章节**——如「### 仅 Claude Code 优化（可选）」+ 解释清楚是 nice-to-have
-4. **commit message、changelog、内部脚本**——不属于用户读到的 skill 内容
-
-### 审查时机
-
-- **Phase 1 基线评估时**：每个 skill 跑一次红灯扫描，命中项以 `runtime_warn=N` 形式写入 results.tsv 的 `note` 列（不新增列、保持向后兼容）
-- **Phase 2 优化循环时**：红灯命中数 ≥ 1 的 skill，强制把第一轮优化方向定为 P0「runtime drift 修复」（详见 P0 章节），优先于其他维度
-- **Phase 3 汇总报告时**：单独一栏「runtime 中立度」展示修复进度（命中数从 X → 0）
-
-### 红灯扫描快速命令
+### Phase 1 基线评估时强制跑一次红灯扫描
 
 ```bash
-# 在 skill 目录跑这个 grep，输出即红灯命中
 grep -nE "(在 Claude Code|Claude Code skill|Claude Code 用户|Cursor only|Codex 中|^\[!\[Claude Code|~/\.claude/skills/[a-z]|/plugin install\b)" SKILL.md README.md 2>/dev/null
 ```
 
-输出非空 = 该 skill 未通过 gate，必须在优化循环里修复。
+输出非空 = 红灯命中 → 强制把 Phase 2 第一轮定为 P0「runtime drift 修复」（写入 results.tsv 的 note 列 `runtime_warn=N`）。
+
+### 例外（允许的「Claude Code 痕迹」）
+
+frontmatter 触发词、花叔生态内部 skill 名引用、明确标注 runtime-specific 章节、commit message——这些正当出现，不算红灯。
+
+→ 红灯/绿灯完整对照表 + 例外清单详细规则 + Phase 1/2/3 各阶段审查时机见 [references/runtime-neutrality.md](references/runtime-neutrality.md)
 
 ---
 
@@ -185,7 +171,7 @@ for each skill in 优化范围:
 └──────────────────────────┴───────┴──────────────┴──────────────┘
 ```
 
-**暂停等用户确认，再进入优化循环。**
+**🔴 CHECKPOINT · 🛑 STOP：暂停等用户确认，再进入优化循环。**
 
 ### Phase 2: 优化循环
 
@@ -199,6 +185,8 @@ for each skill:
 
     # Step 1: 诊断
     找出得分最低的维度（结构或效果都算）
+    # HL-3 警告：dim2/dim3/dim4 是相关簇，修一个时另两个常跟着涨
+    # → 不要因为 dim3 最低就单独修，要看整簇短板再决定是否同步改
 
     # Step 2: 提出改进方案
     针对最低维度，生成1个具体改进方案：
@@ -217,6 +205,10 @@ for each skill:
     # Step 5: 决策
     if 新总分 > 旧总分:
       status = "keep"，更新旧总分
+      # HL-4 见好就收：连续2轮 Δ < 2 分 → break 进 Phase 3
+      if last_delta < 2.0 and this_delta < 2.0:
+        print("触顶信号：连续2轮边际收益 < 2 分，停止优化避免过度调整")
+        break
     else:
       status = "revert"
       git revert HEAD（创建新commit回滚，不用reset --hard）
@@ -226,7 +218,7 @@ for each skill:
     # Step 6: 日志
     results.tsv 追加行
 
-  # === 每个skill优化完后的人类检查点 ===
+  # === 🔴 CHECKPOINT · 每个 skill 优化完后强制人审 ===
   展示该skill的改动摘要：
     - git diff（改前 vs 改后）
     - 分数变化（哪些维度提升/下降）
@@ -235,7 +227,7 @@ for each skill:
   如果用户说"不好"，回滚到该skill的优化前版本。
 ```
 
-### Phase 2.5: 探索性重写（可选）
+### Phase 2.5: 探索性重写（按需触发）
 
 当 hill-climbing 连续2个skill都在 round 1 就 break（涨不动）时，提议一次「探索性重写」：
 
@@ -249,7 +241,7 @@ for each skill:
 ```
 
 这解决了 hill-climbing 的局部最优问题——有时候需要「先拆后建」才能突破瓶颈。
-**必须征得用户同意后才执行。**
+**🔴 CHECKPOINT · 🛑 STOP：必须征得用户同意后才执行。**
 
 ### Phase 3: 汇总报告
 
@@ -294,6 +286,17 @@ timestamp	commit	skill	old_score	new_score	status	dimension	note	eval_mode
 
 ---
 
+## 实战 high-leverage 操作（精髓速查）
+
+4 条经实战验证（huashu-gpt-image +10.85 / huashu-weread-advisor +14.9 / claude-design +16.5）。详细案例数据见 [references/skilllens-evidence.md](references/skilllens-evidence.md) 的「HL 实战案例」节。
+
+- **HL-1（dim4）显性视觉标记是杠杆**：加 🔴 CHECKPOINT / 🛑 STOP，靠「必须」措辞不行——LLM 解析时扫描视觉标记。4 行改动撬动 dim4 +3 分
+- **HL-2（dim3）if-then 三段式 fallback 表**：把「症状/解法」两列升级为「触发条件 / 一线修复 / 仍失败兜底」三段式。SkillLens failure-mechanism encoding 维度的落地
+- **HL-3（Phase 2 诊断）维度相关簇警告**：dim2/3/4 是相关簇——修 dim3 时 dim2 常跟着涨。「找最低维度」时同时看相关簇短板再决定是否同步改
+- **HL-4（Phase 2 退出）触顶自动 break**：连续 2 轮 Δ < 2 分 → break 进 Phase 3。+0.15 是停手信号不是继续信号；硬凑 MAX_ROUNDS=3 引入 over-engineering
+
+---
+
 ## 优化策略库
 
 按优先级排序，每轮只做最高优先级的一个：
@@ -333,7 +336,7 @@ timestamp	commit	skill	old_score	new_score	status	dimension	note	eval_mode
 
 | 场景 | 触发条件 | 处理动作 |
 |---|---|---|
-| 不在 git 仓库 | `git rev-parse` 失败 | 提示用户「建议 git init」；若拒绝，用 `cp SKILL.md SKILL.md.bak.YYYYMMDD-HHMM` 文件备份代替 revert |
+| 不在 git 仓库 | `git rev-parse` 失败 | 询问用户：执行 `git init` 或回退到文件备份；用户选后者则 `cp SKILL.md SKILL.md.bak.YYYYMMDD-HHMM` 代替 revert |
 | results.tsv 缺失 | 文件不存在 | 新建并写表头行（9列：含 eval_mode） |
 | results.tsv 损坏 | 列数不匹配 / 非TSV | 备份为 `.bak.YYYYMMDD-HHMM` 后重建，告知用户 |
 | 分支已存在 | `git checkout -b` 失败 | 分支名末尾加 `-2` / `-3`；第3次失败则切回现有分支并询问继续还是新起 |
@@ -345,6 +348,25 @@ timestamp	commit	skill	old_score	new_score	status	dimension	note	eval_mode
 | 分数计算规则 | 浮点精度漂移 | 总分保留 1 位小数，改进需严格 > 旧分（不靠四舍五入） |
 
 **原则**：异常先告知用户，再按规则处理；绝不静默跳过或静默失败。
+
+---
+
+## darwin 操作反例黑名单（dim9 应用：darwin 自己优化时不要做的事）
+
+来自本机 results.tsv 早期 40 次 0 revert 的教训 + Judge G/H 自指评估暴露的反模式。每条都是**真实踩过的坑**。
+
+| # | 反模式 | 为什么不要做 | 替代做法 |
+|---|---|---|---|
+| 1 | **同 context 自评自改** | 改完后立刻在同一 Claude session 打分，会有「我刚改的肯定更好」乐观偏差（SkillLens 实证 LLM-as-judge 准确率仅 46.4%）| 必须 spawn **独立子 agent** 评分，且至少 2 个 judge 共识才信 |
+| 2 | **`git reset --hard` 当回滚** | 会丢工作树未提交改动；CI 历史断裂 | 用 `git revert HEAD` 创建反向 commit，保留可追溯链 |
+| 3 | **为凑分增冗余** | 触顶后继续硬改往往是「加废话/加段落让 LLM 觉得更详细」，实际质量不变 | 触顶信号（连续 2 轮 Δ<2 分）→ break 进 Phase 3，**见好就收** |
+| 4 | **跳过 test-prompts 直接评分** | 没有 test-prompts 的 dim8 是凭空打分，权重 23% 等于编造 | Phase 0.5 强制设计 2-3 prompts；若用户不给，默认编 3 个并展示确认 |
+| 5 | **轮内改多个维度** | 多变量同时变，分数升降无法归因到具体改动 | 每轮 1 个维度；相关簇（dim2/3/4）改其一时观察另两个是否跟涨 |
+| 6 | **dry_run 比例 > 30%** | dim8 实测维度形同虚设，分数虚高（早期 40 次记录 67% dry_run，0 revert） | 强制至少 1 个真实 full_test；dry_run 多的优化在 results.tsv 显式打 ⚠️ |
+| 7 | **静默跳过异常** | 遇到 git/tsv 异常时静默继续，破坏 ratchet 完整性 | 异常表 10 条 fallback 必须先告知用户再处理 |
+| 8 | **忽视维度相关性单独优化** | dim2/3/4 是相关簇，单独优化 dim2 时常发现已被前轮 dim3 修复推到顶 | 找最低维度时同时看相关簇短板，决定是否同步改 |
+
+**触发场景**：每轮 Phase 2 改动前对照本表一次。任一反模式命中 → 改方案重写。
 
 ---
 
@@ -367,7 +389,7 @@ timestamp	commit	skill	old_score	new_score	status	dimension	note	eval_mode
 ```
 用户："优化所有skills"
 → Phase 0-3 完整流程
-→ 建议：先基线评估，选择分数最低的5-10个重点优化
+→ 默认：先基线评估，按分数升序优先优化最低 5-10 个
 ```
 
 ### 单个优化
@@ -398,7 +420,7 @@ timestamp	commit	skill	old_score	new_score	status	dimension	note	eval_mode
 本skill的对应关系：
 - **program.md** → 本文件（评估rubric和约束规则）
 - **train.py** → 每个SKILL.md
-- **val_bpb** → 8维加权总分（含实测表现）
+- **val_bpb** → 9维加权总分（含实测表现 + meta-skill 反例黑名单）
 - **git ratchet** → 只保留有改进的commit
 - **test set** → 每个skill的test-prompts.json
 
@@ -429,7 +451,7 @@ timestamp	commit	skill	old_score	new_score	status	dimension	note	eval_mode
 2. 用 sed/编辑工具 替换占位数据：
    - data-field="skill-name" → 实际skill名
    - data-field="score-before/after/delta" → 实际分数
-   - 8个维度的 dim-bar-before/after width → 实际百分比
+   - 9个维度的 dim-bar-before/after width → 实际百分比（若模板仍是旧 8 维布局，加一行 dim9 反例黑名单条目）
    - data-field="improvement-1/2/3" → 实际改进摘要
    - data-field="date" → 当前日期
 3. 随机选择风格：hash 设为 swiss/terminal/newspaper 之一
@@ -450,7 +472,6 @@ timestamp	commit	skill	old_score	new_score	status	dimension	note	eval_mode
 | `scripts/screenshot.mjs` | 2x 高清截图，只截 .card，自动 open |
 | `results.tsv` | 历次优化日志（9列含 eval_mode） |
 | `{skill目录}/test-prompts.json` | 每个 skill 的测试 prompt 集（用于维度8实测） |
-```
 
 ### 何时生成
 

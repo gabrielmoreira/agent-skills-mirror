@@ -1,0 +1,10 @@
+interface:
+  display_name: "Electron Live Test"
+  short_description: "Live-test Electron apps through CDP"
+  default_prompt: "Use $electron-live-test to verify this running Electron app through native-devtools-mcp, CDP, screenshots, OCR, or accessibility tools."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "native-devtools-mcp"
+      description: "Native desktop automation and screenshot/accessibility control for live Electron app verification."
+      transport: "stdio"

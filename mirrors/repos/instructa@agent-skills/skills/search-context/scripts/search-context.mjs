@@ -24,7 +24,8 @@ const BOOL_FLAGS = new Set([
   'no-clone',
   'project-local',
   'allow-unignored-worktree',
-  'use-library'
+  'use-library',
+  'github-code-proof'
 ]);
 
 const STOPWORDS = new Set([
@@ -157,7 +158,7 @@ function shortFlag(flag) {
 }
 
 function printHelp() {
-  console.log(`github-reference-context\n\nUsage:\n  search-context check\n  search-context run <query> [options]\n  search-context library add <path> [options]\n  search-context library list [options]\n  search-context library search <query> [options]\n  search-context clean [options]\n\nExamples:\n  search-context run "visual progress indicator ring for ios app latest 2026" --preset ios-swift\n  search-context run "React circular progress ring" --preset web-react --use-library\n  search-context run "SwiftUI progress ring" --sources library,github --project current\n  search-context library add ../third-party/some-repo --tags react,ui --presets web-react --project current\n  search-context library search "Circle().trim"\n\nRun options:\n  --preset <id>          ios-swift, web-react, generic\n  --sources <list>       github, library, or library,github; default github\n  --use-library          shorthand for --sources library,github\n  --project <id>         use a named library cluster; use current for this worktree\n  --max-repos <n>        repos to include in the manifest, default 5\n  --candidates <n>       candidates per GitHub search phrase, default 12\n  --library-candidates <n> local library candidates to inspect, default max repos\n  --searches <n>         max expanded search phrases, default 6\n  --min-stars <n>        minimum stars, default 5\n  --fresh <yyyy-mm-dd>   pushed-after filter, default Jan 1 two years ago\n  --cache-dir <path>     cache root, default OS user cache\n  --refs-dir <path>      clone target, default <cache>/refs\n  --output <path>        manifest path, default <cache>/runs/<timestamp>/reference-context.md\n  --project-local        use .refs and .context in the current directory\n  --allow-unignored-worktree  allow writes inside a git worktree even if not ignored\n  --ssh                  clone via ssh_url\n  --include-forks        include forks\n  --include-archived     include archived repositories\n  --include-private      do not add is:public to GitHub search\n  --refresh              refresh cached repos\n  --dry-run              discover and rank without cloning\n  --json                 print JSON summary\n  --verbose              print extra details\n`);
+  console.log(`search-context\n\nUsage:\n  search-context check\n  search-context run <query> [options]\n  search-context library add <path> [options]\n  search-context library list [options]\n  search-context library search <query> [options]\n  search-context clean [options]\n\nExamples:\n  search-context run "visual progress indicator ring for ios app latest 2026" --preset ios-swift\n  search-context run "React circular progress ring" --preset web-react --use-library\n  search-context run "SwiftUI progress ring" --sources library,github --project current\n  search-context library add ../third-party/some-repo --tags react,ui --presets web-react --project current\n  search-context library search "Circle().trim"\n\nRun options:\n  --preset <id>          ios-swift, web-react, generic\n  --sources <list>       github, library, or library,github; default github\n  --use-library          shorthand for --sources library,github\n  --project <id>         use a named library cluster; use current for this worktree\n  --max-repos <n>        repos to include in the manifest, default 5\n  --candidates <n>       candidates per GitHub search phrase, default 12\n  --proof-candidates <n> candidates to proof/inspect, default max(max repos * 2, 8)\n  --github-code-proof    use GitHub Code Search as an optional pre-clone proof gate\n  --library-candidates <n> local library candidates to inspect, default max repos\n  --searches <n>         max expanded search phrases, default 6\n  --min-stars <n>        minimum stars, default 5\n  --fresh <yyyy-mm-dd>   pushed-after filter, default Jan 1 two years ago\n  --cache-dir <path>     cache root, default OS user cache\n  --refs-dir <path>      clone target, default <cache>/refs\n  --output <path>        manifest path, default <cache>/runs/<timestamp>/reference-context.md\n  --project-local        use .refs and .context in the current directory\n  --allow-unignored-worktree  allow writes inside a git worktree even if not ignored\n  --ssh                  clone via ssh_url\n  --include-forks        include forks\n  --include-archived     include archived repositories\n  --include-private      do not add is:public to GitHub search\n  --refresh              refresh cached repos\n  --dry-run              discover and rank without cloning\n  --json                 print JSON summary\n  --verbose              print extra details\n`);
 }
 
 function commandCheck() {
@@ -205,6 +206,7 @@ function commandRun(rawQuery, opts) {
   const maxRepos = intOption(opts, 'max-repos', 5);
   const candidates = intOption(opts, 'candidates', 12);
   const maxSearches = intOption(opts, 'searches', 6);
+  const proofCandidates = intOption(opts, 'proof-candidates', Math.max(maxRepos * 2, 8));
   const minStars = intOption(opts, 'min-stars', 5);
   const fresh = normalizeFresh(opts.fresh || defaultFreshDate());
   const { refsDir, output, cacheRoot, projectLocal } = resolveRunPaths(opts);
@@ -215,8 +217,10 @@ function commandRun(rawQuery, opts) {
   ensureDir(path.dirname(output));
   if (!dryRun) ensureDir(refsDir);
 
-  const searchPhrases = expandSearchPhrases(query, preset).slice(0, maxSearches);
+  const searchPlan = buildSearchPlan(query, preset, maxSearches);
+  const searchPhrases = searchPlan.phrases;
   const inspectTerms = buildInspectTerms(query, preset);
+  const proofProfiles = buildProofProfiles(query, searchPlan);
 
   log(opts, `Preset: ${preset.id}`);
   log(opts, `Sources: ${sources.join(', ')}`);
@@ -234,7 +238,17 @@ function commandRun(rawQuery, opts) {
     .map((repo) => scoreRepoMetadata(repo, query, preset, { fresh }))
     .sort((a, b) => b.score - a.score);
 
-  const githubSelected = scored.slice(0, Math.max(maxRepos, 0));
+  const proof = proveRepositories({
+    scored,
+    query,
+    searchPlan,
+    searchPhrases,
+    maxRepos: proofCandidates,
+    enabled: Boolean(opts['github-code-proof']),
+    opts
+  });
+
+  const githubSelected = selectDiverseRepositories(proof.accepted, Math.max(maxRepos, 0), searchPhrases);
   const failures = [...libraryDiscovery.failures, ...githubDiscovery.failures];
 
   if (libraryDiscovery.repositories.length === 0 && githubSelected.length === 0) {
@@ -262,13 +276,18 @@ function commandRun(rawQuery, opts) {
       repo.inspection = inspectRepository(repo, preset, inspectTerms, opts);
       repo.score += repo.inspection.score;
       repo.reasons.push(...repo.inspection.reasons);
+      repo.proof = runLocalRepositoryProof(repo, proofProfiles);
+      repo.score += repo.proof.score;
+      repo.reasons.push(...repo.proof.reasons);
+      repo.rejected = repo.proof.rejected;
     } catch (error) {
       repo.inspection = { matches: [], files: [], score: 0, terms: inspectTerms, reasons: [] };
       failures.push(`Inspection failed for ${repo.fullName}: ${error.message}`);
     }
   }
 
-  const selected = [...libraryDiscovery.repositories, ...githubSelected].sort((a, b) => b.score - a.score).slice(0, Math.max(maxRepos, 0));
+  const rejectedRepositories = uniqueRepos([...proof.rejected, ...githubSelected.filter((repo) => repo.rejected)]);
+  const selected = [...libraryDiscovery.repositories, ...githubSelected.filter((repo) => !repo.rejected)].sort((a, b) => b.score - a.score).slice(0, Math.max(maxRepos, 0));
   selected.sort((a, b) => b.score - a.score);
 
   const summary = {
@@ -278,6 +297,7 @@ function commandRun(rawQuery, opts) {
     settings: {
       maxRepos,
       candidates,
+      proofCandidates,
       minStars,
       fresh,
       refsDir,
@@ -287,15 +307,18 @@ function commandRun(rawQuery, opts) {
       sources,
       dryRun
     },
+    searchPlan,
     searchPhrases,
     inspectTerms,
     discovery: {
       total: libraryDiscovery.total + githubDiscovery.repositories.length,
       failures: [...libraryDiscovery.failures, ...githubDiscovery.failures],
       reports: githubDiscovery.reports,
-      library: libraryDiscovery.reports
+      library: libraryDiscovery.reports,
+      proof: proof.reports
     },
     repositories: selected,
+    rejectedRepositories,
     failures
   };
 
@@ -824,6 +847,266 @@ function scoreRepoMetadata(repo, query, preset, settings) {
   return { ...repo, score, reasons };
 }
 
+function selectDiverseRepositories(scored, maxRepos, searchPhrases) {
+  if (maxRepos <= 0) return [];
+
+  const selected = [];
+  const seen = new Set();
+
+  for (const phrase of searchPhrases) {
+    const repo = scored.find((candidate) => {
+      if (seen.has(candidate.fullName)) return false;
+      const phrases = candidate.matchedSearchPhrases || [];
+      return phrases.has ? phrases.has(phrase) : phrases.includes?.(phrase);
+    });
+    if (!repo) continue;
+    selected.push(repo);
+    seen.add(repo.fullName);
+    if (selected.length >= maxRepos) return selected;
+  }
+
+  for (const repo of scored) {
+    if (seen.has(repo.fullName)) continue;
+    selected.push(repo);
+    seen.add(repo.fullName);
+    if (selected.length >= maxRepos) return selected;
+  }
+
+  return selected;
+}
+
+function proveRepositories({ scored, query, searchPlan, searchPhrases, maxRepos, enabled, opts }) {
+  const profiles = buildProofProfiles(query, searchPlan);
+  const candidates = selectDiverseRepositories(scored, maxRepos, searchPhrases);
+  const reports = [];
+
+  if (!enabled || profiles.length === 0) {
+    return { accepted: candidates, rejected: [], reports };
+  }
+
+  for (const repo of candidates) {
+    repo.proof = runRepositoryProof(repo, profiles, opts);
+    repo.score += repo.proof.score;
+    repo.reasons.push(...repo.proof.reasons);
+    reports.push({
+      repo: repo.fullName,
+      score: repo.proof.score,
+      groups: repo.proof.groups.map((group) => ({
+        id: group.id,
+        hits: group.hits.length,
+        required: group.required
+      })),
+      rejected: repo.proof.rejected,
+      reasons: repo.proof.reasons
+    });
+  }
+
+  const accepted = candidates
+    .filter((repo) => !repo.proof?.rejected)
+    .sort((a, b) => b.score - a.score);
+  const rejected = candidates
+    .filter((repo) => repo.proof?.rejected)
+    .sort((a, b) => b.score - a.score);
+
+  return { accepted, rejected, reports };
+}
+
+function buildProofProfiles(query, searchPlan) {
+  const tokens = new Set(extractTokens(query));
+  const lower = cleanGoal(query).toLowerCase();
+  const profiles = [];
+
+  if ((tokens.has('tanstack') && tokens.has('start')) || lower.includes('tanstack start')) {
+    profiles.push({
+      id: 'tanstack-start',
+      label: 'TanStack Start architecture',
+      required: false,
+      terms: ['@tanstack/react-start', 'createServerFn', 'StartServer', 'StartClient', 'routeTree.gen', 'vinxi'],
+      weight: 12
+    });
+  }
+
+  if (tokens.has('habit') || tokens.has('habits') || lower.includes('habit tracker')) {
+    profiles.push({
+      id: 'habit-domain',
+      label: 'habit domain behavior',
+      required: false,
+      terms: ['habit', 'streak', 'completion', 'calendar', 'routine'],
+      weight: 9
+    });
+  }
+
+  const domainTerms = searchPlan?.facets?.domain || [];
+  if (profiles.length === 0 && domainTerms.length > 0) {
+    profiles.push({
+      id: 'domain',
+      label: 'domain terms',
+      required: false,
+      terms: domainTerms.flatMap((phrase) => extractTokens(phrase)).slice(0, 6),
+      weight: 7
+    });
+  }
+
+  profiles.push({
+    id: 'noise',
+    label: 'noise signals',
+    noise: true,
+    required: false,
+    terms: ['raw/refs/heads'],
+    weight: -30
+  });
+
+  return profiles.filter((profile) => profile.noise || profile.terms.length > 0);
+}
+
+function runRepositoryProof(repo, profiles, opts) {
+  const groups = [];
+  const reasons = [];
+  let score = 0;
+  let positiveHitGroups = 0;
+  let noiseHitGroups = 0;
+
+  for (const profile of profiles) {
+    const hits = [];
+    for (const term of unique(profile.terms).slice(0, profile.noise ? 1 : 2)) {
+      const result = searchRepositoryCode(repo.fullName, term, opts);
+      if (result.error) {
+        hits.push({ term, error: result.error, paths: [] });
+        continue;
+      }
+      if (result.paths.length > 0) {
+        hits.push({ term, paths: result.paths.slice(0, 3) });
+      }
+      if (!profile.noise && hits.some((hit) => hit.paths?.length > 0)) break;
+      if (profile.noise && hits.some((hit) => hit.paths?.length > 0)) break;
+    }
+
+    const concreteHits = hits.filter((hit) => hit.paths?.length > 0);
+    const groupScore = profile.noise
+      ? (concreteHits.length > 0 ? profile.weight : 0)
+      : Math.min(profile.weight * 3, concreteHits.length * profile.weight);
+
+    if (profile.noise && concreteHits.length > 0) {
+      noiseHitGroups += 1;
+      reasons.push(`noise proof matched ${profile.label}: ${concreteHits.map((hit) => hit.term).join(', ')}`);
+    } else if (!profile.noise && concreteHits.length > 0) {
+      positiveHitGroups += 1;
+      reasons.push(`code proof matched ${profile.label}: ${concreteHits.map((hit) => hit.term).join(', ')}`);
+    } else if (!profile.noise) {
+      reasons.push(`no code proof for ${profile.label}`);
+    }
+
+    score += groupScore;
+    groups.push({
+      id: profile.id,
+      label: profile.label,
+      required: Boolean(profile.required),
+      noise: Boolean(profile.noise),
+      score: groupScore,
+      hits
+    });
+  }
+
+  const hasPositiveProfiles = profiles.some((profile) => !profile.noise);
+  const rejected = noiseHitGroups > 0 || (hasPositiveProfiles && positiveHitGroups === 0);
+  if (rejected && positiveHitGroups === 0) {
+    reasons.push('rejected: no stack/domain code proof matched');
+    score -= 25;
+  }
+  if (noiseHitGroups > 0) {
+    reasons.push('rejected: suspicious code-search proof matched');
+  }
+
+  return { score, groups, reasons, rejected };
+}
+
+function runLocalRepositoryProof(repo, profiles) {
+  const usableProfiles = profiles.filter((profile) => !profile.noise || profile.terms.length > 0);
+  if (usableProfiles.length === 0) {
+    return { score: 0, groups: [], reasons: [], rejected: false };
+  }
+
+  const text = [
+    repo.description || '',
+    ...(repo.inspection?.matches || []).map((match) => `${match.file} ${match.text}`)
+  ].join('\n').toLowerCase();
+
+  const groups = [];
+  const reasons = [];
+  let score = 0;
+  let positiveHitGroups = 0;
+  let noiseHitGroups = 0;
+
+  for (const profile of usableProfiles) {
+    const hits = unique(profile.terms).map((term) => {
+      const matched = text.includes(term.toLowerCase());
+      return { term, paths: matched ? ['local-inspection'] : [] };
+    }).filter((hit) => hit.paths.length > 0);
+
+    const groupScore = profile.noise
+      ? (hits.length > 0 ? profile.weight : 0)
+      : Math.min(profile.weight * 3, hits.length * profile.weight);
+
+    if (profile.noise && hits.length > 0) {
+      noiseHitGroups += 1;
+      reasons.push(`noise proof matched ${profile.label}: ${hits.map((hit) => hit.term).join(', ')}`);
+    } else if (!profile.noise && hits.length > 0) {
+      positiveHitGroups += 1;
+      reasons.push(`local proof matched ${profile.label}: ${hits.map((hit) => hit.term).join(', ')}`);
+    } else if (!profile.noise) {
+      reasons.push(`no local proof for ${profile.label}`);
+    }
+
+    score += groupScore;
+    groups.push({
+      id: profile.id,
+      label: profile.label,
+      required: Boolean(profile.required),
+      noise: Boolean(profile.noise),
+      score: groupScore,
+      hits
+    });
+  }
+
+  const hasPositiveProfiles = usableProfiles.some((profile) => !profile.noise);
+  const rejected = noiseHitGroups > 0 || (hasPositiveProfiles && positiveHitGroups === 0);
+  if (rejected && positiveHitGroups === 0) {
+    reasons.push('rejected: no stack/domain local proof matched');
+    score -= 25;
+  }
+  if (noiseHitGroups > 0) {
+    reasons.push('rejected: suspicious local proof matched');
+  }
+
+  return { score, groups, reasons, rejected };
+}
+
+function searchRepositoryCode(fullName, term, opts) {
+  const args = [
+    'search',
+    'code',
+    term,
+    '--repo', fullName,
+    '--json', 'path,repository',
+    '--limit', '3'
+  ];
+  log(opts, `gh ${args.map(shellQuote).join(' ')}`);
+  const result = runCommand('gh', args, { allowFailure: true, maxBuffer: 1024 * 1024, timeout: 10000 });
+  if (!result.ok) {
+    return { term, paths: [], error: compactWhitespace(result.stderr || result.stdout || `gh search code failed with status ${result.status}`) };
+  }
+
+  try {
+    const parsed = JSON.parse(result.stdout);
+    const paths = Array.isArray(parsed)
+      ? parsed.map((item) => item.path).filter(Boolean)
+      : [];
+    return { term, paths: unique(paths) };
+  } catch (error) {
+    return { term, paths: [], error: error.message };
+  }
+}
+
 function cloneRepository(repo, refsDir, opts) {
   const localName = sanitizeRepoName(repo.fullName);
   const localPath = path.join(refsDir, localName);
@@ -1005,6 +1288,7 @@ function renderManifest(summary, preset) {
   lines.push(`- Preset: \`${summary.preset}\``);
   lines.push(`- Sources: \`${summary.settings.sources.join(', ')}\``);
   lines.push(`- Max cloned repos: \`${summary.settings.maxRepos}\``);
+  lines.push(`- Proof candidates: \`${summary.settings.proofCandidates || 0}\``);
   lines.push(`- Freshness: \`${summary.settings.fresh || 'none'}\``);
   lines.push(`- Minimum stars: \`${summary.settings.minStars}\``);
   lines.push(`- Dry run: \`${summary.settings.dryRun ? 'yes' : 'no'}\``);
@@ -1017,6 +1301,18 @@ function renderManifest(summary, preset) {
     lines.push(`- ${phrase}`);
   }
   lines.push('');
+
+  if (summary.searchPlan) {
+    lines.push('## Search plan');
+    lines.push('');
+    lines.push(`- Mode: \`${summary.searchPlan.mode}\``);
+    for (const [name, values] of Object.entries(summary.searchPlan.facets || {})) {
+      if (!Array.isArray(values) || values.length === 0) continue;
+      lines.push(`- ${name}: ${values.slice(0, 6).map((value) => `\`${value}\``).join(', ')}`);
+    }
+    lines.push('');
+  }
+
   lines.push('## Agent instructions');
   lines.push('');
   lines.push('Open only the listed relevant files first. Study implementation patterns, API choices, state flow, animation behavior, styling, and example usage. Do not copy large code blocks. Respect repository licenses.');
@@ -1072,6 +1368,16 @@ function renderManifest(summary, preset) {
     }
     lines.push('');
 
+    if (repo.proof) {
+      lines.push('Proof:');
+      lines.push('');
+      for (const group of repo.proof.groups.filter((item) => !item.noise).slice(0, 4)) {
+        const hits = group.hits.filter((hit) => hit.paths?.length > 0);
+        lines.push(`- ${group.label}: ${hits.length > 0 ? hits.map((hit) => `\`${hit.term}\``).join(', ') : 'none'}`);
+      }
+      lines.push('');
+    }
+
     const files = repo.inspection?.files || [];
     if (files.length > 0) {
       lines.push('Relevant files:');
@@ -1093,6 +1399,15 @@ function renderManifest(summary, preset) {
       lines.push('');
     }
   });
+
+  if (Array.isArray(summary.rejectedRepositories) && summary.rejectedRepositories.length > 0) {
+    lines.push('## Rejected references');
+    lines.push('');
+    for (const repo of summary.rejectedRepositories.slice(0, 12)) {
+      lines.push(`- ${repo.fullName}: ${unique(repo.proof?.reasons || ['rejected by proof gate']).slice(0, 3).join('; ')}`);
+    }
+    lines.push('');
+  }
 
   lines.push('## Search diagnostics');
   lines.push('');
@@ -1117,7 +1432,116 @@ function renderManifest(summary, preset) {
   return `${lines.join('\n')}\n`;
 }
 
-function expandSearchPhrases(raw, preset) {
+function buildSearchPlan(raw, preset, maxSearches) {
+  const clean = cleanGoal(raw);
+  const tokens = extractTokens(clean);
+  const focused = tokens.length <= 5;
+  const facets = buildSearchFacets(clean, tokens);
+  const phrases = [];
+
+  phrases.push(...facets.primary);
+  phrases.push(...facets.stack);
+  phrases.push(...facets.domain);
+  phrases.push(...facets.pattern);
+  phrases.push(...expandSearchPhrases(clean, preset, { includePresetDefaults: focused }));
+
+  const selected = unique(phrases.map(compactWhitespace).filter(Boolean)).slice(0, maxSearches);
+  return {
+    mode: focused ? 'focused' : 'faceted',
+    phrases: selected,
+    facets
+  };
+}
+
+function buildSearchFacets(clean, tokens) {
+  const lower = clean.toLowerCase();
+  const tokenSet = new Set(tokens);
+  const primary = [];
+  const stack = [];
+  const domain = [];
+  const pattern = [];
+
+  const compact = tokens.slice(0, 6).join(' ');
+  if (compact) primary.push(compact);
+
+  for (const compound of compoundTerms()) {
+    if (compound.tokens.every((token) => tokenSet.has(token)) || compound.match.test(lower)) {
+      stack.push(compound.phrase);
+    }
+  }
+
+  const stackTokens = new Set(compoundTerms().flatMap((term) => term.tokens));
+  for (const token of tokens) {
+    if (stackTokens.has(token) || PLATFORM_TOKENS.has(token) || APP_TOKENS.has(token)) continue;
+    domain.push(token);
+  }
+
+  const domainPhrases = ngrams(domain, 2, 4);
+  const strongestStack = stack[0] || stackFallback(tokens);
+  for (const expansion of CONCEPT_EXPANSIONS) {
+    if (expansion.whenAny.some((token) => tokenSet.has(token))) {
+      pattern.push(...expansion.phrases);
+    }
+  }
+  if (domainPhrases.length > 0) pattern.push(...domainPhrases.slice(0, 3));
+  if (domain.length > 0 && strongestStack) {
+    pattern.push(`${domain.slice(0, 3).join(' ')} ${strongestStack}`);
+  }
+
+  return {
+    primary: unique(primary),
+    stack: unique(stack),
+    domain: unique(domainPhrases),
+    pattern: unique(pattern)
+  };
+}
+
+function compoundTerms() {
+  return [
+    { phrase: 'tanstack start', tokens: ['tanstack', 'start'], match: /\btanstack\s+start\b/ },
+    { phrase: 'tanstack router', tokens: ['tanstack', 'router'], match: /\btanstack\s+router\b/ },
+    { phrase: 'tanstack query', tokens: ['tanstack', 'query'], match: /\btanstack\s+query\b/ },
+    { phrase: 'react typescript', tokens: ['react', 'typescript'], match: /\breact\b.*\btypescript\b|\btypescript\b.*\breact\b/ },
+    { phrase: 'next.js', tokens: ['next.js'], match: /\bnext\.?js\b/ },
+    { phrase: 'react native', tokens: ['react', 'native'], match: /\breact\s+native\b/ },
+    { phrase: 'tailwind css', tokens: ['tailwind'], match: /\btailwind(?:\s+css)?\b/ },
+    { phrase: 'shadcn ui', tokens: ['shadcn'], match: /\bshadcn(?:\s+ui)?\b/ },
+    { phrase: 'swiftui', tokens: ['swiftui'], match: /\bswiftui\b/ }
+  ];
+}
+
+const PLATFORM_TOKENS = new Set([
+  'app', 'application', 'dashboard', 'frontend', 'full', 'ios', 'mobile', 'native', 'server',
+  'stack', 'starter', 'template', 'web'
+]);
+
+const APP_TOKENS = new Set([
+  'clone', 'example', 'examples', 'kit', 'sample', 'samples', 'starter', 'template'
+]);
+
+const CONCEPT_EXPANSIONS = [
+  {
+    whenAny: ['habit', 'habits'],
+    phrases: ['habit tracker', 'streak calendar', 'habit dashboard']
+  }
+];
+
+function stackFallback(tokens) {
+  const candidates = ['react', 'typescript', 'swiftui', 'next.js', 'vite', 'tailwind'];
+  return candidates.find((candidate) => tokens.includes(candidate)) || null;
+}
+
+function ngrams(tokens, min, max) {
+  const phrases = [];
+  for (let size = Math.min(max, tokens.length); size >= min; size -= 1) {
+    for (let i = 0; i <= tokens.length - size; i += 1) {
+      phrases.push(tokens.slice(i, i + size).join(' '));
+    }
+  }
+  return unique(phrases);
+}
+
+function expandSearchPhrases(raw, preset, options = {}) {
   const clean = cleanGoal(raw);
   const tokens = extractTokens(clean);
   const lowerTokens = new Set(tokens.map((t) => t.toLowerCase()));
@@ -1133,7 +1557,9 @@ function expandSearchPhrases(raw, preset) {
     }
   }
 
-  phrases.push(...(preset.searchPhrases || []));
+  if (options.includePresetDefaults !== false) {
+    phrases.push(...(preset.searchPhrases || []));
+  }
 
   if (phrases.length === 0 && clean) phrases.push(clean);
   return unique(phrases.map(compactWhitespace).filter(Boolean));
@@ -1197,6 +1623,7 @@ function runCommand(cmd, args, options = {}) {
   const result = spawnSync(cmd, args, {
     encoding: 'utf8',
     maxBuffer: options.maxBuffer || 5 * 1024 * 1024,
+    timeout: options.timeout || 0,
     env: process.env
   });
 
@@ -1366,16 +1793,17 @@ function resolveCacheRoot(opts = {}) {
   if (configured) return path.resolve(process.cwd(), configured);
 
   if (process.platform === 'darwin') {
-    return path.join(os.homedir(), 'Library', 'Caches', 'github-reference-context');
+    return path.join(os.homedir(), 'Library', 'Caches', 'search-context');
   }
   if (process.platform === 'win32') {
-    return path.join(process.env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local'), 'github-reference-context');
+    return path.join(process.env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local'), 'search-context');
   }
-  return path.join(process.env.XDG_CACHE_HOME || path.join(os.homedir(), '.cache'), 'github-reference-context');
+  return path.join(process.env.XDG_CACHE_HOME || path.join(os.homedir(), '.cache'), 'search-context');
 }
 
 function createRunId() {
-  return new Date().toISOString().replace(/\.\d{3}Z$/, 'Z').replace(/[:]/g, '-');
+  const stamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z').replace(/[:]/g, '-');
+  return `${stamp}-${process.pid}`;
 }
 
 function guardRunTargets({ refsDir, output, dryRun, opts }) {
@@ -1579,6 +2007,18 @@ function unique(values) {
     if (seen.has(key)) continue;
     seen.add(key);
     out.push(value);
+  }
+  return out;
+}
+
+function uniqueRepos(repos) {
+  const seen = new Set();
+  const out = [];
+  for (const repo of repos) {
+    const key = repo.fullName || repo.id || repo.url;
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(repo);
   }
   return out;
 }

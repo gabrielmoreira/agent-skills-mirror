@@ -1,7 +1,7 @@
 ---
 description: "How heirs install plugins from the Alex ACT Plugin Mall into local/ paths so Edition upgrades don't clobber them"
 applyTo: "**/.github/skills/local/**,**/.github/instructions/local/**,**/.github/scripts/local/**,**/.github/prompts/local/**,**/.mcp.json,**/mcp.json"
-lastReviewed: 2026-05-02
+lastReviewed: 2026-05-27
 ---
 
 # Mall Installation
@@ -77,6 +77,24 @@ The catalog has 282 plugins across 16 categories. Filter by:
 Every plugin has a README that explains what it does, what Edition version it needs, and what artifacts it installs. Read it before installing.
 
 ## Installation
+
+### Discovery setup (one-time, runs automatically on init/upgrade)
+
+VS Code Copilot's skill / prompt / agent discovery walks each registered root **one level only**, looking for `<root>/<name>/SKILL.md` (and equivalents). Instruction discovery recurses; the others do not. To make `.github/skills/local/<name>/SKILL.md` etc. discoverable, `local/` is registered as a SECOND root via the matching `chat.*FilesLocations` setting in the heir's `.vscode/settings.json`.
+
+`bootstrap-heir.cjs` (on init) and `upgrade-self.cjs` (on upgrade) merge these three keys non-destructively from `.github/config/heir-workspace-settings-baseline.json`:
+
+```jsonc
+{
+  "chat.agentSkillsLocations":  { ".github/skills":  true, ".github/skills/local":  true },
+  "chat.promptFilesLocations":  { ".github/prompts": true, ".github/prompts/local": true },
+  "chat.agentFilesLocations":   { ".github/agents":  true, ".github/agents/local":  true }
+}
+```
+
+**Manual fallback** (for heirs on an older Edition that pre-dates the merger): copy the three keys above into `.vscode/settings.json` by hand, or run the Supervisor helper `scripts/apply-skill-discovery-settings.cjs --repo <heir-path>` from a sibling-cloned Supervisor checkout. Without these keys, every Mall plugin you install under `local/` will silently fail to load.
+
+The name of each `local/<plugin>` directory MUST match the `name:` field in the plugin's `SKILL.md` frontmatter (one-level walk = name-is-discovery). Mall plugins ship with matching names; if you rename a plugin dir, rename the frontmatter too.
 
 ### Cardinal Rule: Use `local/` Subdirs
 

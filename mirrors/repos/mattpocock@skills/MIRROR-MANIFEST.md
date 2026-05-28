@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mattpocock/skills` — 26 default patterns, 0 followed patterns, 57 file(s) materialized.
+Mirror of `mattpocock/skills` — 26 default patterns, 0 followed patterns, 62 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mattpocock/skills` — 26 default patterns, 0 followed patterns, 57 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 57 |
+| Files         | 62 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -99,23 +99,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 38 | ✓ | [`skills/engineering/zoom-out/SKILL.md`](skills/engineering/zoom-out/SKILL.md) |
 | 39 | ✓ | [`skills/in-progress/README.md`](skills/in-progress/README.md) |
 | 40 | ✓ | [`skills/in-progress/review/SKILL.md`](skills/in-progress/review/SKILL.md) |
-| 41 | ✓ | [`skills/in-progress/writing-beats/SKILL.md`](skills/in-progress/writing-beats/SKILL.md) |
-| 42 | ✓ | [`skills/in-progress/writing-fragments/SKILL.md`](skills/in-progress/writing-fragments/SKILL.md) |
-| 43 | ✓ | [`skills/in-progress/writing-shape/SKILL.md`](skills/in-progress/writing-shape/SKILL.md) |
-| 44 | ✓ | [`skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh`](skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh) |
-| 45 | ✓ | [`skills/misc/git-guardrails-claude-code/SKILL.md`](skills/misc/git-guardrails-claude-code/SKILL.md) |
-| 46 | ✓ | [`skills/misc/migrate-to-shoehorn/SKILL.md`](skills/misc/migrate-to-shoehorn/SKILL.md) |
-| 47 | ✓ | [`skills/misc/README.md`](skills/misc/README.md) |
-| 48 | ✓ | [`skills/misc/scaffold-exercises/SKILL.md`](skills/misc/scaffold-exercises/SKILL.md) |
-| 49 | ✓ | [`skills/misc/setup-pre-commit/SKILL.md`](skills/misc/setup-pre-commit/SKILL.md) |
-| 50 | ✓ | [`skills/personal/edit-article/SKILL.md`](skills/personal/edit-article/SKILL.md) |
-| 51 | ✓ | [`skills/personal/obsidian-vault/SKILL.md`](skills/personal/obsidian-vault/SKILL.md) |
-| 52 | ✓ | [`skills/personal/README.md`](skills/personal/README.md) |
-| 53 | ✓ | [`skills/productivity/caveman/SKILL.md`](skills/productivity/caveman/SKILL.md) |
-| 54 | ✓ | [`skills/productivity/grill-me/SKILL.md`](skills/productivity/grill-me/SKILL.md) |
-| 55 | ✓ | [`skills/productivity/handoff/SKILL.md`](skills/productivity/handoff/SKILL.md) |
-| 56 | ✓ | [`skills/productivity/README.md`](skills/productivity/README.md) |
-| 57 | ✓ | [`skills/productivity/write-a-skill/SKILL.md`](skills/productivity/write-a-skill/SKILL.md) |
+| 41 | ✓ | [`skills/in-progress/teach/GLOSSARY-FORMAT.md`](skills/in-progress/teach/GLOSSARY-FORMAT.md) |
+| 42 | ✓ | [`skills/in-progress/teach/LEARNING-RECORD-FORMAT.md`](skills/in-progress/teach/LEARNING-RECORD-FORMAT.md) |
+| 43 | ✓ | [`skills/in-progress/teach/MISSION-FORMAT.md`](skills/in-progress/teach/MISSION-FORMAT.md) |
+| 44 | ✓ | [`skills/in-progress/teach/RESOURCES-FORMAT.md`](skills/in-progress/teach/RESOURCES-FORMAT.md) |
+| 45 | ✓ | [`skills/in-progress/teach/SKILL.md`](skills/in-progress/teach/SKILL.md) |
+| 46 | ✓ | [`skills/in-progress/writing-beats/SKILL.md`](skills/in-progress/writing-beats/SKILL.md) |
+| 47 | ✓ | [`skills/in-progress/writing-fragments/SKILL.md`](skills/in-progress/writing-fragments/SKILL.md) |
+| 48 | ✓ | [`skills/in-progress/writing-shape/SKILL.md`](skills/in-progress/writing-shape/SKILL.md) |
+| 49 | ✓ | [`skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh`](skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh) |
+| 50 | ✓ | [`skills/misc/git-guardrails-claude-code/SKILL.md`](skills/misc/git-guardrails-claude-code/SKILL.md) |
+| 51 | ✓ | [`skills/misc/migrate-to-shoehorn/SKILL.md`](skills/misc/migrate-to-shoehorn/SKILL.md) |
+| 52 | ✓ | [`skills/misc/README.md`](skills/misc/README.md) |
+| 53 | ✓ | [`skills/misc/scaffold-exercises/SKILL.md`](skills/misc/scaffold-exercises/SKILL.md) |
+| 54 | ✓ | [`skills/misc/setup-pre-commit/SKILL.md`](skills/misc/setup-pre-commit/SKILL.md) |
+| 55 | ✓ | [`skills/personal/edit-article/SKILL.md`](skills/personal/edit-article/SKILL.md) |
+| 56 | ✓ | [`skills/personal/obsidian-vault/SKILL.md`](skills/personal/obsidian-vault/SKILL.md) |
+| 57 | ✓ | [`skills/personal/README.md`](skills/personal/README.md) |
+| 58 | ✓ | [`skills/productivity/caveman/SKILL.md`](skills/productivity/caveman/SKILL.md) |
+| 59 | ✓ | [`skills/productivity/grill-me/SKILL.md`](skills/productivity/grill-me/SKILL.md) |
+| 60 | ✓ | [`skills/productivity/handoff/SKILL.md`](skills/productivity/handoff/SKILL.md) |
+| 61 | ✓ | [`skills/productivity/README.md`](skills/productivity/README.md) |
+| 62 | ✓ | [`skills/productivity/write-a-skill/SKILL.md`](skills/productivity/write-a-skill/SKILL.md) |
 
 ---
 

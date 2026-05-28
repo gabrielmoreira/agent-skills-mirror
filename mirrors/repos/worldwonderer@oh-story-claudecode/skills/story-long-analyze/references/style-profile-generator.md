@@ -52,10 +52,12 @@ grep -hE '基调：(紧张|轻松|悲伤|热血|温馨|压抑)' 章节/*_摘要.
 **正确 Grep 模式**：
 
 ```bash
-grep -nE '^第[一二三四五六七八九十百零0-9]+章' 原文/原文.txt
+grep -nE '^第[一二三四五六七八九十百千两零0-9]+章' 原文/原文.txt
 ```
 
-模式覆盖中文数字（`第一章`）+ 阿拉伯数字（`第1章`）+ 三位数（`第一百零一章`），锚定行首防误匹配正文内提及。
+模式覆盖中文数字（`第一章`）+ 阿拉伯数字（`第1章`）+ 千位数（`第一千零一章` / `第两千五百章`，盘龙 / 诡秘之主级别的长篇必需），锚定行首防误匹配正文内提及。
+
+**与 Stage 0.5 章节边界表的关系**：Stage 0.5 已用同一模式产出权威「章节边界」表（在 `_progress.md`）。Stage 6 优先读该表，跳过本步 grep；只有当 `_progress.md` 缺失或 schema v1 未 migrate 时才退回这里现跑。
 
 **如果模式不匹配**：
 
@@ -66,7 +68,37 @@ grep -nE '^第[一二三四五六七八九十百零0-9]+章' 原文/原文.txt
 
 - 拿到 grep 的 `行号:第N章` 列表后，选第 1 章、第 10 章、第 20 章（如总章数 <20，按 1/3、2/3、收尾比例挑）
 - 每章用 `Read offset={该章起始行} limit=50` 切出约 1000 字
-- 这 3 个样本用于「整体语感」的句长/标点眼测统计
+- 把 3 段拼接写入 `/tmp/style-sample.txt`（追加 `>>`，不要换文件名）
+
+**确定性句长/标点统计**（替代旧版「眼测」）：
+
+Stage 6 由**主线程**执行，Bash 工具可用。把上一步拼好的 `/tmp/style-sample.txt` 喂给下面的脚本（heredoc 作 Python 源，脚本内 open 样本文件，避免 `python3 - <<EOF < file` 双重重定向冲突）：
+
+```bash
+python3 <<'PYEOF'
+import re
+with open('/tmp/style-sample.txt', 'r', encoding='utf-8') as f:
+    text = f.read()
+sents = [s for s in re.split(r'[。！？]+', text) if s.strip()]
+total = max(len(sents), 1)
+short = sum(1 for s in sents if len(s) < 15)
+mid   = sum(1 for s in sents if 15 <= len(s) <= 30)
+lng   = sum(1 for s in sents if len(s) > 30)
+chars = max(sum(1 for c in text if not c.isspace()), 1)
+puncts = sum(1 for c in text if c in '，。！？；：、…—""\'\'')
+avg = sum(len(s) for s in sents) // total
+print(f'sentences={total}; short_lt15={100*short//total}%; mid_15to30={100*mid//total}%; long_gt30={100*lng//total}%; avg_len={avg}; punct_density={100*puncts//chars}%')
+PYEOF
+```
+
+实测输出形如 `sentences=6; short_lt15=66%; mid_15to30=33%; long_gt30=0%; avg_len=12; punct_density=15%`。
+
+把输出的 `short_lt15 / mid_15to30 / long_gt30 / avg_len / punct_density` 数值直接填进 `style-profile-protocol.md` 模板第 40 行的 `{...X% / Y% / Z%}` 占位符——`confidence: high`，因为是确定性测量，不是抽样估计。
+
+**Bash 不可用时的降级**（仅子代理上下文等极端情况，主线程不会触发）：
+
+- 跳过本步骤；句长段写「Bash 工具不可用，跳过确定性统计」
+- `confidence: low`，narrative-writer 让位回默认 Gate D（句长拆短）
 
 ### Step 5: 选原文锚点片段 (4-6 段)
 
@@ -92,7 +124,7 @@ grep -nE '^第[一二三四五六七八九十百零0-9]+章' 原文/原文.txt
 - 每段标 `confidence: high/med/low`（内部给写作 agent 判断强弱，普通用户可忽略）：
   - `high`：数据直接来自拆文产物（如「写法技巧」直接引用拆文报告）
   - `med`：从样本归纳且样本充足（如基调序列从 ≥10 章摘要统计）
-  - `low`：样本不足（如句长眼测，仅 3 章 1000 字采样）
+  - `low`：样本不足或采样失败（如锚点缺失、Bash 不可用导致 Step 4 句长统计跳过）
 - 字数预算：硬上限 ~4000 字。**描述段 ≤ 1500 字 + 锚点 4-6 段 × 300-500 字**
 - 如果 Step 4 失败（章节分隔符识别不出）→ 「生成记录」写 `文风可用：否：无法识别章节分隔符`；原文锚点段全填占位符 "原文缺失，需手动补充"，confidence 全 low
 
@@ -109,7 +141,7 @@ grep -nE '^第[一二三四五六七八九十百零0-9]+章' 原文/原文.txt
 
 **不修改 chapter-extractor**。文风直接从既有字段（基调/主题标签/可借鉴要素）整理生成即可。
 
-若将来发现信息不足（如句长统计 confidence 长期 low），可考虑给 chapter-extractor 加 `punctuation_density` / `sentence_length_distribution` 字段——但**不在本次范围内**。
+句长 / 标点密度由 Step 4 的 `python3` 1-liner 在 Stage 6 主线程直接算出，不依赖 chapter-extractor。若将来需要章级精细分布（如「第 N 章 短句占比」），再考虑给 chapter-extractor 加 `punctuation_density` / `sentence_length_distribution` 字段——但**不在本次范围内**。
 
 ## 与写作端的关系
 

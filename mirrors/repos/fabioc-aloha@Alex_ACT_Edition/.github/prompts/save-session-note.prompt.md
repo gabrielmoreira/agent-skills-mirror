@@ -28,7 +28,7 @@ Capture a short observation, reminder, or open thread in repo-root `HANDOFF.md` 
    ```
 
    If it exists, update `Last updated` and append the new item under `## Pending Actions` as `- [ ] <user note>`.
-4. **Mirror to AI-Memory (optional but recommended)**: resolve AI-Memory root using the standard algorithm (check `cognitive-config.json` for `ai_memory_root`, then auto-discover cloud drives, skip `ai_memory_exclude`, pick the first with `AI-Memory/`). Append to `notes.md` at that root, creating the file if needed. Format:
+4. **Mirror to shared memory (optional but recommended)**: resolve memory bus via `resolveMemoryBus()` (sibling `../Alex_ACT_Memory`). Append to `notes.md` at that root, creating the file if needed. Format:
 
    ```markdown
    ## YYYY-MM-DD HH:MM (heir: <heir_id>)

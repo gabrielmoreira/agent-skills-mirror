@@ -1,7 +1,7 @@
 {
-  "schema_version": "1.12",
+  "schema_version": "1.13",
   "updated": "2026-05-27",
-  "total": 429,
+  "total": 430,
   "models": {
     "seedance-2.0": {
       "name": "Doubao Seedance 2.0",
@@ -5633,6 +5633,32 @@
         "tier": "reputable-3rd-party"
       },
       "notes": "源:网格生成 prompt (Nano Banana / Kling 配合) — 用于建立 Elements 源图。"
+    },
+    {
+      "id": "kl-156",
+      "model": "kling-3.0",
+      "title": "AI 网红品牌合作视频 — Starbucks 推近镜头(Dan Kieft Pack 原文)",
+      "prompt": "The camera pushes in slowly from a medium to a close-up as she lifts the Starbucks cup to take a sip, then lowers it with a soft smile while glancing toward the side. Her hand stays in her pocket, posture relaxed but confident. The street behind her softly blurs as warm lights inside the cafe begin to glow subtly.",
+      "tags": [
+        "brand-collab",
+        "influencer",
+        "push-in",
+        "character-consistency",
+        "image-to-video",
+        "starbucks-style"
+      ],
+      "category": "product-commercial",
+      "params": {
+        "aspect": "9:16",
+        "duration": "5s",
+        "resolution": "1080p"
+      },
+      "source": {
+        "name": "YouTube fxiDS2C9XYA · Dan Kieft AI Influencer Prompt Pack (237K views)",
+        "url": "https://www.youtube.com/watch?v=fxiDS2C9XYA",
+        "tier": "reputable-3rd-party",
+        "note": "Google Docs Prompt Pack 原文(角色卡 + 图像 + 视频 prompt 串联),对应 methodology/20 §3.6"
+      }
     },
     {
       "id": "lt-001",

@@ -80,13 +80,63 @@ Before reading other context files, check whether `openspec/project.opsx.yaml` e
       - Then continue with creation
 
    d. **After the `specs` artifact is complete in a spec-driven change, generate `opsx-delta.yaml`**
-      - Read `proposal.md` to extract the capability list
-      - Read all delta specs in `openspec/changes/<name>/specs/*/spec.md`
-      - Read `openspec/project.opsx.yaml` if it exists for current-system context
-      - Generate `openspec/changes/<name>/opsx-delta.yaml` using ADDED / MODIFIED / REMOVED sections
-      - Keep this agent-driven: capture merge intent in the YAML, not in programmatic code
+      **Generate opsx-delta.yaml**:
+- Read `openspec instructions opsx-delta --change "<name>" --json`
+- Use the returned `template`, `instruction`, and `outputPath` to generate `opsx-delta.yaml`
+- Read `proposal.md` to extract the capability list
+- Read all delta specs in `openspec/changes/<name>/specs/*/spec.md`
+- Read `openspec/project.opsx.yaml` if it exists for current-system context
+- Treat `ADDED`, `MODIFIED`, and `REMOVED` as YAML object keys, not Markdown headings
+- Follow a concrete YAML object structure such as:
+  ```yaml
+  schema_version: 1
+  ADDED:
+    capabilities:
+      - id: cap.example.feature
+        type: capability
+        intent: Describe the new capability
+    relations:
+      - from: cap.example.feature
+        type: contains
+        to: dom.example
+  MODIFIED:
+    capabilities:
+      - id: cap.example.existing
+        intent: Updated intent text
+  REMOVED:
+    capabilities:
+      - id: cap.example.legacy
+  ```
+- Delta nodes contain only id, type, intent, status — no code_refs or spec_refs
+- Keep this agent-driven: capture merge intent in the YAML, not in programmatic code
 
-5. **Show final status**
+5. **Run post-propose validation before the final summary**
+
+   **Run post-propose warning validation**:
+- This validation is warning-only. Do NOT turn `/opsx:propose` into a blocking gate.
+- Validate generated change specs against the same contract used by downstream change delta validation:
+  - Prefer `openspec validate "<name>" --type change --json` when available
+  - Align with `Validator.validateChangeDeltaSpecs()` semantics for delta sections, SHALL/MUST requirement text, and required `#### Scenario:` blocks
+- Validate `opsx-delta.yaml` through the same programmatic CLI path used by downstream change validation:
+  - Prefer `openspec validate "<name>" --type change --json` when available
+  - Align with `Validator.validateOpsxDelta()` semantics for Zod parsing, dry-run `applyOpsxDelta()`, referential integrity, and code-map integrity
+  - Do NOT run `openspec sync` for this check because it mutates project files
+  - If `openspec/project.opsx.yaml` does not exist, `Validator.validateOpsxDelta()` skips this check and the final summary must report the skip
+- Run lightweight structure checks for `proposal.md`, `design.md`, and `tasks.md` against the current schema templates, not scattered examples:
+  - Read `openspec instructions proposal --change "<name>" --json`, `openspec instructions design --change "<name>" --json`, and `openspec instructions tasks --change "<name>" --json`
+  - Check only key required headings and checkbox structure
+  - For `tasks.md`, run a deterministic Actions/Checks structure check equivalent to `validateTaskStructure` in `src/core/parsers/task-structure.ts`
+  - Programmatically verify `Actions` and `Checks` sections, `A`-prefixed action checkboxes, `C`-prefixed check checkboxes, required `Covers:` fields, valid `Covers:` references, every action covered by at least one check, required non-empty `Verifies:` fields, change-local `Verifies:` spec paths plus Requirement/Scenario references when local change specs exist, and at least one `Command:`, `Evidence:`, or `Expect:` field on every check
+  - Do NOT invent semantic lint rules beyond the current templates
+  - Do NOT judge whether a check is semantically sufficient; defer semantic suitability to verify/reviewer
+- If warnings are found, do exactly one repair pass on the generated artifacts, then re-check once
+- Final summary MUST separate:
+  - fixed warnings
+  - remaining warnings
+  - skipped checks
+- Even with remaining warnings, you MAY still declare the change ready for `/opsx:apply`, but disclose the residual issues explicitly
+
+6. **Show final status**
    ```bash
    openspec status --change "<name>"
    ```
@@ -96,6 +146,7 @@ Before reading other context files, check whether `openspec/project.opsx.yaml` e
 After completing all artifacts, summarize:
 - Change name and location
 - List of artifacts created with brief descriptions
+- Validation summary with fixed warnings, remaining warnings, and skipped checks
 - What's ready: "All artifacts created! Ready for implementation."
 - Prompt: "Run `/opsx:apply` to start implementing."
 
@@ -107,11 +158,11 @@ After completing all artifacts, summarize:
 - Use `template` as the structure for your output file - fill in its sections
 
 **Document Language Contract**:
-- Before creating or updating any OpenSpec artifact, read `openspec/config.yaml` if it exists
-- If it defines `docLanguage`, use it only for natural-language prose you write in the artifact body
+- Treat `openspec/config.yaml` as the compact source of truth, but consume its compiled prompt projection rather than reinterpreting raw keys ad hoc
+- If the compiled projection includes `docLanguage`, apply it only to natural-language prose you write in the artifact body
 - Follow the existing template structure exactly; do not invent a different layout because the prose language changes
 - Keep template headings, IDs, schema keys, relation types, BDD keywords, file paths, commands, and code identifiers in their canonical form
-- If `docLanguage` is missing, keep the default writing behavior for prose
+- If no `docLanguage` projection is present, keep the default writing behavior for prose
 
 - **IMPORTANT**: `context` and `rules` are constraints for YOU, not content for the file
   - Do NOT copy `<context>`, `<rules>`, `<project_context>` blocks into the artifact

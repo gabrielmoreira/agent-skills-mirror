@@ -2,9 +2,9 @@
 
 Generated at: 2026-02-08T00:00:00.000Z
 
-Total skills: 1470
+Total skills: 1480
 
-## architecture (96)
+## architecture (97)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -41,6 +41,7 @@ Total skills: 1470
 | `ddd-context-mapping` | Map relationships between bounded contexts and define integration contracts using DDD context mapping patterns. | ddd, context-map, anti-corruption-layer, integration | ddd, context-map, anti-corruption-layer, integration, context, mapping, map, relationships, between, bounded, contexts, define |
 | `ddd-strategic-design` | Design DDD strategic artifacts including subdomains, bounded contexts, and ubiquitous language for complex business domains. | ddd, strategic-design, bounded-context, ubiquitous-language | ddd, strategic-design, bounded-context, ubiquitous-language, strategic, artifacts, including, subdomains, bounded, contexts, ubiquitous, language |
 | `ddd-tactical-patterns` | Apply DDD tactical patterns in code using entities, value objects, aggregates, repositories, and domain events with explicit invariants. | ddd, tactical, aggregates, value-objects, domain-events | ddd, tactical, aggregates, value-objects, domain-events, apply, code, entities, value, objects, repositories, domain |
+| `decision-navigator` | Guide stuck or overwhelmed users through targeted branching questions until they reach concrete next steps. | decision, navigator | decision, navigator, stuck, overwhelmed, users, through, targeted, branching, questions, until, reach, concrete |
 | `docs-architect` | Creates comprehensive technical documentation from existing codebases. Analyzes architecture, design patterns, and implementation details to produce long-for... | docs | docs, architect, creates, technical, documentation, existing, codebases, analyzes, architecture, details, produce, long |
 | `domain-driven-design` | Plan and route Domain-Driven Design work from strategic modeling to tactical implementation and evented architecture patterns. | ddd, domain, bounded-context, architecture | ddd, domain, bounded-context, architecture, driven, plan, route, work, strategic, modeling, tactical, evented |
 | `e2e-testing-patterns` | Build reliable, fast, and maintainable end-to-end test suites that provide confidence to ship code quickly and catch regressions before users do. | e2e | e2e, testing, reliable, fast, maintainable, test, suites, provide, confidence, ship, code, quickly |
@@ -105,7 +106,7 @@ Total skills: 1470
 | `workflow-patterns` | Use this skill when implementing tasks according to Conductor's TDD workflow, handling phase checkpoints, managing git commits for tasks, or understanding th... |  | skill, implementing, tasks, according, conductor, tdd, handling, phase, checkpoints, managing, git, commits |
 | `zapier-make-patterns` | No-code automation democratizes workflow building. Zapier and Make (formerly Integromat) let non-developers automate business processes without writing code.... | zapier, make | zapier, make, no, code, automation, democratizes, building, formerly, integromat, let, non, developers |
 
-## business (83)
+## business (84)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -132,6 +133,7 @@ Total skills: 1470
 | `free-tool-strategy` | You are an expert in engineering-as-marketing strategy. Your goal is to help plan and evaluate free tools that generate leads, attract organic traffic, and b... | free | free, engineering, marketing, goal, plan, evaluate, generate, leads, attract, organic, traffic, brand |
 | `growth-engine` | Motor de crescimento para produtos digitais -- growth hacking, SEO, ASO, viral loops, email marketing, CRM, referral programs e aquisicao organica. | growth, seo, marketing, viral, acquisition | growth, seo, marketing, viral, acquisition, engine, motor, de, crescimento, para, produtos, digitais |
 | `hr-pro` | Professional, ethical HR partner for hiring, onboarding/offboarding, PTO and leave, performance, compliant policies, and employee relations. | hr | hr, pro, professional, ethical, partner, hiring, onboarding, offboarding, pto, leave, performance, compliant |
+| `invariant-guard` | Correctness-first: forces writing the function contract, loop invariant, termination argument, and edge cases BEFORE code. Catches Boyer-Moore, leftmost bina... | algorithms, correctness, loop-invariants, contracts, edge-cases, verification | algorithms, correctness, loop-invariants, contracts, edge-cases, verification, invariant, guard, first, forces, writing, function |
 | `keyword-extractor` | Extracts up to 50 highly relevant SEO keywords from text. Use when user wants to generate or extract keywords for given text. | keyword, extractor | keyword, extractor, extracts, up, 50, highly, relevant, seo, keywords, text, user, wants |
 | `kotler-macro-analyzer` | Professional PESTEL/SWOT analysis agent based on Kotler's methodology for strategic market audits. | marketing, economics, strategy, kotler, pestel | marketing, economics, strategy, kotler, pestel, macro, analyzer, professional, swot, analysis, agent, methodology |
 | `launch-strategy` | You are an expert in SaaS product launches and feature announcements. Your goal is to help users plan launches that build momentum, capture attention, and co... | launch | launch, saas, product, launches, feature, announcements, goal, users, plan, momentum, capture, attention |
@@ -193,7 +195,7 @@ Total skills: 1470
 | `wordpress-centric-high-seo-optimized-blogwriting-skill` | Create long-form, high-quality, SEO-optimized blog posts ready for WordPress with truth boxes and FAQ schema. | writing, blog, seo, content, wordpress | writing, blog, seo, content, wordpress, centric, high, optimized, blogwriting, skill, long, form |
 | `xiaohongshu-content-strategist` | Create viral Xiaohongshu (小红书) content with platform-native strategy, save-rate optimization, trending formats, and search SEO for China's #1 lifestyle platf... | xiaohongshu, chinese-market, content-strategy, social-media, marketing, 红书, 小红书 | xiaohongshu, chinese-market, content-strategy, social-media, marketing, 红书, 小红书, content, strategist, viral, platform, native |
 
-## data-ai (283)
+## data-ai (284)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -368,6 +370,7 @@ Total skills: 1470
 | `itil-expert` | Expert advisor for ITIL 4 and ITIL 5 (2026 digital product paradigm), specialized in AI-native governance, sustainability, and value co-creation. | itil | itil, advisor, 2026, digital, product, paradigm, specialized, ai, native, governance, sustainability, value |
 | `langchain-architecture` | Master the LangChain framework for building sophisticated LLM applications with agents, chains, memory, and tool integration. | langchain, architecture | langchain, architecture, framework, building, sophisticated, llm, applications, agents, chains, memory, integration |
 | `langgraph` | Expert in LangGraph - the production-grade framework for building stateful, multi-actor AI applications. Covers graph construction, state management, cycles ... | langgraph | langgraph, grade, framework, building, stateful, multi, actor, ai, applications, covers, graph, construction |
+| `lemmaly` | Algorithm-first discipline: state Big-O, data structure, and algorithm family BEFORE writing loops, queries, or recursion. Catches O(n^2), N+1, and brute-for... | algorithms, big-o, performance, code-review, complexity, gateway | algorithms, big-o, performance, code-review, complexity, gateway, lemmaly, algorithm, first, discipline, state, big |
 | `libreoffice/base` | Database management, forms, reports, and data operations with LibreOffice Base. | libreoffice/base | libreoffice/base, base, database, forms, reports, data, operations, libreoffice |
 | `libreoffice/calc` | Spreadsheet creation, format conversion (ODS/XLSX/CSV), formulas, data automation with LibreOffice Calc. | libreoffice/calc | libreoffice/calc, calc, spreadsheet, creation, format, conversion, ods, xlsx, csv, formulas, data, automation |
 | `libreoffice/draw` | Vector graphics and diagram creation, format conversion (ODG/SVG/PDF) with LibreOffice Draw. | libreoffice/draw | libreoffice/draw, draw, vector, graphics, diagram, creation, format, conversion, odg, svg, pdf, libreoffice |
@@ -481,7 +484,7 @@ Total skills: 1470
 | `yes-md` | 6-layer AI governance: safety gates, evidence-based debugging, anti-slack detection, and machine-enforced hooks. Makes AI safe, thorough, and honest. | yes, md | yes, md, layer, ai, governance, safety, gates, evidence, debugging, anti, slack, detection |
 | `youtube-automation` | Automate YouTube tasks via Rube MCP (Composio): upload videos, manage playlists, search content, get analytics, and handle comments. Always search tools firs... | youtube | youtube, automation, automate, tasks, via, rube, mcp, composio, upload, videos, playlists, search |
 
-## development (209)
+## development (211)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -658,6 +661,8 @@ Total skills: 1470
 | `rust-async-patterns` | Master Rust async programming with Tokio, async traits, error handling, and concurrent patterns. Use when building async Rust applications, implementing conc... | rust, async | rust, async, programming, tokio, traits, error, handling, concurrent, building, applications, implementing, debugging |
 | `rust-pro` | Master Rust 1.75+ with modern async patterns, advanced type system features, and production-ready systems programming. | rust | rust, pro, 75, async, type, features, programming |
 | `seaborn` | Seaborn is a Python visualization library for creating publication-quality statistical graphics. Use this skill for dataset-oriented plotting, multivariate a... | seaborn | seaborn, python, visualization, library, creating, publication, quality, statistical, graphics, skill, dataset, oriented |
+| `sendblue/sendblue-api` | Send and receive iMessage, SMS, and RCS from application code via the Sendblue HTTP API — text, media, group messages, send styles, reactions, typing indicat... | sendblue, imessage, sms, rcs, messaging, api, webhooks | sendblue, imessage, sms, rcs, messaging, api, webhooks, send, receive, application, code, via |
+| `sendblue/sendblue-cli` | Send iMessage and SMS from the shell via the @sendblue/cli npm package — outbound sends, contact management, and account setup with no API client or webhook ... | sendblue, imessage, sms, cli, messaging, notifications | sendblue, imessage, sms, cli, messaging, notifications, send, shell, via, npm, package, outbound |
 | `senior-frontend` | Frontend development skill for React, Next.js, TypeScript, and Tailwind CSS applications. Use when building React components, optimizing Next.js performance,... | senior, frontend | senior, frontend, development, skill, react, next, js, typescript, tailwind, css, applications, building |
 | `shopify-apps` | Expert patterns for Shopify app development including Remix/React Router apps, embedded apps with App Bridge, webhook handling, GraphQL Admin API, Polaris co... | shopify, apps | shopify, apps, app, development, including, remix, react, router, embedded, bridge, webhook, handling |
 | `shopify-development` | Build Shopify apps, extensions, themes using GraphQL Admin API, Shopify CLI, Polaris UI, and Liquid. | shopify | shopify, development, apps, extensions, themes, graphql, admin, api, cli, polaris, ui, liquid |
@@ -695,7 +700,7 @@ Total skills: 1470
 | `zod-validation-expert` | Expert in Zod — TypeScript-first schema validation. Covers parsing, custom errors, refinements, type inference, and integration with React Hook Form, Next.js... | zod, validation | zod, validation, typescript, first, schema, covers, parsing, custom, errors, refinements, type, inference |
 | `zustand-store-ts` | Create Zustand stores following established patterns with proper TypeScript types and middleware. | zustand, store, ts | zustand, store, ts, stores, following, established, proper, typescript, types, middleware |
 
-## general (356)
+## general (358)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -765,6 +770,7 @@ Total skills: 1470
 | `codebase-cleanup-tech-debt` | You are a technical debt expert specializing in identifying, quantifying, and prioritizing technical debt in software projects. Analyze the codebase to uncov... | codebase, cleanup, tech, debt | codebase, cleanup, tech, debt, technical, specializing, identifying, quantifying, prioritizing, software, analyze, uncover |
 | `cold-email` | Write B2B cold emails and follow-up sequences that earn replies. Use when creating outbound prospecting emails, SDR outreach, personalized opening lines, sub... | cold, email | cold, email, write, b2b, emails, follow, up, sequences, earn, replies, creating, outbound |
 | `commit` | ALWAYS use this skill when committing code changes — never commit directly without it. Creates commits following Sentry conventions with proper conventional ... | commit | commit, always, skill, committing, code, changes, never, directly, without, creates, commits, following |
+| `complexity-cuts` | Lower Big-O on existing code via a one-transformation-at-a-time playbook with verify-revert-stop. For new code use lemmaly; for math-level wins escalate to m... | algorithms, big-o, refactoring, optimization, performance, n-plus-one | algorithms, big-o, refactoring, optimization, performance, n-plus-one, complexity, cuts, lower, big, existing, code |
 | `comprehensive-review-full-review` | Use when working with comprehensive review full review | comprehensive, full | comprehensive, full, review, working |
 | `computer-vision-expert` | SOTA Computer Vision Expert (2026). Specialized in YOLO26, Segment Anything 3 (SAM 3), Vision Language Models, and real-time spatial analysis. | computer, vision | computer, vision, sota, 2026, specialized, yolo26, segment, anything, sam, language, models, real |
 | `concise-planning` | Use when a user asks for a plan for a coding task, to generate a clear, actionable, and atomic checklist. | concise, planning | concise, planning, user, asks, plan, coding, task, generate, clear, actionable, atomic, checklist |
@@ -902,6 +908,7 @@ Total skills: 1470
 | `makepad-shaders` | CRITICAL: Use for Makepad shader system. Triggers on: makepad shader, makepad draw_bg, Sdf2d, makepad pixel, makepad glsl, makepad sdf, draw_quad, makepad gp... | makepad, shaders | makepad, shaders, critical, shader, triggers, draw, bg, sdf2d, pixel, glsl, sdf, quad |
 | `makepad-widgets` | Version: makepad-widgets (dev branch) \| Last Updated: 2026-01-19 > > Check for updates: https://crates.io/crates/makepad-widgets | makepad, widgets | makepad, widgets, version, dev, branch, last, updated, 2026, 01, 19, check, updates |
 | `matematico-tao` | Matemático ultra-avançado inspirado em Terence Tao. Análise rigorosa de código e arquitetura com teoria matemática profunda: teoria da informação, teoria dos... | mathematics, code-analysis, algorithms, formal-methods | mathematics, code-analysis, algorithms, formal-methods, matematico, tao, matem, tico, ultra, avan, ado, inspirado |
+| `mathguard` | Math-heavy escalation for n >= 10^6 — Bloom, HyperLogLog, Count-Min, MinHash/LSH, FFT, JL projection, sweep line. Use when classical O(n log n) is the floor ... | algorithms, probabilistic-data-structures, approximate-algorithms, bloom-filter, hyperloglog, fft, performance | algorithms, probabilistic-data-structures, approximate-algorithms, bloom-filter, hyperloglog, fft, performance, mathguard, math, heavy, escalation, 10 |
 | `mcp-builder` | Create MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. The quality of an MCP server is ... | mcp, builder | mcp, builder, model, context, protocol, servers, enable, llms, interact, external, through, well |
 | `memory-systems` | Design short-term, long-term, and graph-based memory architectures. Use when building agents that must persist across sessions, needing to maintain entity co... | memory | memory, short, term, long, graph, architectures, building, agents, must, persist, sessions, needing |
 | `mental-health-analyzer` | 分析心理健康数据、识别心理模式、评估心理健康状况、提供个性化心理健康建议。支持与睡眠、运动、营养等其他健康数据的关联分析。 | mental, health, analyzer | mental, health, analyzer |
@@ -1196,7 +1203,7 @@ Total skills: 1470
 | `whatsapp-cloud-api` | Integracao com WhatsApp Business Cloud API (Meta). Mensagens, templates, webhooks HMAC-SHA256, automacao de atendimento. Boilerplates Node.js e Python. | messaging, whatsapp, meta, webhooks | messaging, whatsapp, meta, webhooks, cloud, api, integracao, com, business, mensagens, hmac, sha256 |
 | `workflow-automation` | Workflow automation is the infrastructure that makes AI agents reliable. Without durable execution, a network hiccup during a 10-step payment flow means lost... |  | automation, infrastructure, makes, ai, agents, reliable, without, durable, execution, network, hiccup, during |
 
-## security (175)
+## security (176)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -1229,6 +1236,7 @@ Total skills: 1470
 | `backend-security-coder` | Expert in secure backend coding practices specializing in input validation, authentication, and API security. Use PROACTIVELY for backend security implementa... | backend, security, coder | backend, security, coder, secure, coding, specializing, input, validation, authentication, api, proactively, implementations |
 | `bdistill-behavioral-xray` | X-ray any AI model's behavioral patterns — refusal boundaries, hallucination tendencies, reasoning style, formatting defaults. No API key needed. | ai, testing, behavioral-analysis, model-evaluation, red-team, compliance, mcp | ai, testing, behavioral-analysis, model-evaluation, red-team, compliance, mcp, bdistill, behavioral, xray, ray, any |
 | `broken-authentication` | Identify and exploit authentication and session management vulnerabilities in web applications. Broken authentication consistently ranks in the OWASP Top 10 ... | broken, authentication | broken, authentication, identify, exploit, session, vulnerabilities, web, applications, consistently, ranks, owasp, top |
+| `bumblebee` | Run Bumblebee supply-chain inventory and exposure scans on macOS/Linux to detect compromised packages, extensions, and MCP host configs. | security, supply-chain, incident-response, npm, pypi, tooling | security, supply-chain, incident-response, npm, pypi, tooling, bumblebee, run, supply, chain, inventory, exposure |
 | `burp-suite-testing` | Execute comprehensive web application security testing using Burp Suite's integrated toolset, including HTTP traffic interception and modification, request a... | burp, suite | burp, suite, testing, execute, web, application, security, integrated, toolset, including, http, traffic |
 | `burpsuite-project-parser` | Searches and explores Burp Suite project files (.burp) from the command line. Use when searching response headers or bodies with regex patterns, extracting s... | burpsuite, parser | burpsuite, parser, searches, explores, burp, suite, files, command, line, searching, response, headers |
 | `cc-skill-security-review` | This skill ensures all code follows security best practices and identifies potential vulnerabilities. Use when implementing authentication or authorization, ... | cc, skill, security | cc, skill, security, review, ensures, all, code, follows, identifies, potential, vulnerabilities, implementing |
@@ -1413,7 +1421,7 @@ Total skills: 1470
 | `wiki-qa` | Answer repository questions grounded entirely in source code evidence. Use when user asks a question about the codebase, user wants to understand a specific ... | wiki, qa | wiki, qa, answer, repository, questions, grounded, entirely, source, code, evidence, user, asks |
 | `windows-privilege-escalation` | Provide systematic methodologies for discovering and exploiting privilege escalation vulnerabilities on Windows systems during penetration testing engagements. | windows, privilege, escalation | windows, privilege, escalation, provide, systematic, methodologies, discovering, exploiting, vulnerabilities, during, penetration, testing |
 
-## workflow (101)
+## workflow (103)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -1494,6 +1502,8 @@ Total skills: 1470
 | `render-automation` | Automate Render tasks via Rube MCP (Composio): services, deployments, projects. Always search tools first for current schemas. | render | render, automation, automate, tasks, via, rube, mcp, composio, deployments, always, search, first |
 | `salesforce-automation` | Automate Salesforce tasks via Rube MCP (Composio): leads, contacts, accounts, opportunities, SOQL queries. Always search tools first for current schemas. | salesforce | salesforce, automation, automate, tasks, via, rube, mcp, composio, leads, contacts, accounts, opportunities |
 | `segment-automation` | Automate Segment tasks via Rube MCP (Composio): track events, identify users, manage groups, page views, aliases, batch operations. Always search tools first... | segment | segment, automation, automate, tasks, via, rube, mcp, composio, track, events, identify, users |
+| `sendblue/sendblue-notify` | Text the user's phone when a long-running task, agent turn, or scheduled job finishes — via @sendblue/cli for outbound, optionally wired to a Claude Code Sto... | sendblue, imessage, sms, notifications, hooks, claude-code, automation | sendblue, imessage, sms, notifications, hooks, claude-code, automation, notify, text, user, phone, long |
+| `sendblue/textme` | Text Claude from your phone — set up the njerschow/textme daemon so inbound iMessages drive a Claude Code session on your laptop, with voice notes, image inp... | textme, sendblue, imessage, sms, claude-code, daemon, remote-control, automation | textme, sendblue, imessage, sms, claude-code, daemon, remote-control, automation, text, claude, phone, set |
 | `sentry-automation` | Automate Sentry tasks via Rube MCP (Composio): manage issues/events, configure alerts, track releases, monitor projects and teams. Always search tools first ... | sentry | sentry, automation, automate, tasks, via, rube, mcp, composio, issues, events, configure, alerts |
 | `shopify-automation` | Automate Shopify tasks via Rube MCP (Composio): products, orders, customers, inventory, collections. Always search tools first for current schemas. | shopify | shopify, automation, automate, tasks, via, rube, mcp, composio, products, orders, customers, inventory |
 | `slack-automation` | Automate Slack workspace operations including messaging, search, channel management, and reaction workflows through Composio's Slack toolkit. | slack | slack, automation, automate, workspace, operations, including, messaging, search, channel, reaction, through, composio |

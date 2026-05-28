@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/clinical-research/../../../research-ops/skills/clinical-research/SKILL.md

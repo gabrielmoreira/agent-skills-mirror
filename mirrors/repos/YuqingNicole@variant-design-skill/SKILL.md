@@ -1,6 +1,6 @@
 ---
 name: variant-design
-description: AI-driven interactive design generation, style analysis, and UX evaluation with Impeccable design system. Context-aware output — auto-detects React projects (package.json with react dependency) and generates .tsx components; otherwise generates zero-dependency interactive HTML. Six modes — (1) Generate: 3 distinct, fully-animated design variations from a prompt, with zone-level iteration (vary/remix/shuffle a specific section); (2) Component: isolated UI components with all 8 states and variants — button systems, forms, cards, modals, nav; (3) Analyze: audit existing sites, extract design tokens, generate style-matched pages; (4) UX Review: heuristic evaluation (Nielsen's 10), cognitive load analysis, mental model diagnosis, affordance audit, dark pattern detection — grounded in NNG research; (5) Content formats: HTML pitch decks, WeChat article layout with 4 color schemes + 3 structural templates + inline styles + API upload flow; (6) Writing: anti-AI-taste Chinese copywriting across 4 text types (opinion/story/tutorial/product copy) and 3 platforms (公众号/小红书/产品内文案), with banned word list and before/after rewrites. Built-in Wu Xing (五行) color system with 40-tone palette, 26 combos, and cultural brand mapping. 16 domain references (including ux-heuristics, ux-psychology, presentation, wechat, wuxing-colors, voice), full design system (typography, color, spatial, motion, micro-interactions, interaction, responsive, UX writing, style audit), interactive pattern library, and anti-AI-slop quality gates. Triggers on: "design options for X", "show me variations", "vary this design", "audit", "analyze my site", "match this style", "extract tokens", "migrate", "add motion", "dramatize", "make interactive", "component button/form/card", "ux review", "heuristic evaluation", "usability audit", "cognitive load", "mental models", "affordances", "dark patterns", "review this design", "export to vue/astro/svelte", "pitch deck", "slides", "幻灯片", "PPT", "公众号", "wechat article", "微信文章", "五行配色", "wu xing", "brand color", "moodboard", "去AI味", "写文案", "copywriting".
+description: AI-driven interactive design generation, style analysis, and UX evaluation with Impeccable design system. Context-aware output — auto-detects React projects (package.json with react dependency) and generates .tsx components; otherwise generates zero-dependency interactive HTML. Seven modes — (0) Design System: tokens → components → pages workflow: generate a complete token set (palette/type/spacing/motion/elevation/radius), confirm it, then all downstream outputs are visually consistent; (1) Generate: 3 distinct, fully-animated design variations from a prompt — when DS confirmed, variations differ in layout only (visual language locked); (2) Component: isolated UI components with all 8 states and variants — button systems, forms, cards, modals, nav — DS-aware when design system confirmed; (3) Compose: assemble confirmed components into page layouts, 3 structural variations (layout-only, no aesthetic invention); (4) Analyze: audit existing sites, extract design tokens, generate style-matched pages; (5) UX Review: heuristic evaluation (Nielsen's 10), cognitive load analysis, mental model diagnosis, affordance audit, dark pattern detection — grounded in NNG research; (6) Content formats: HTML pitch decks, WeChat article layout with 4 color schemes + 3 structural templates + inline styles + API upload flow; (7) Writing: anti-AI-taste Chinese copywriting across 4 text types (opinion/story/tutorial/product copy) and 3 platforms (公众号/小红书/产品内文案), with banned word list and before/after rewrites. Built-in Wu Xing (五行) color system with 40-tone palette, 26 combos, and cultural brand mapping. 16 domain references (including ux-heuristics, ux-psychology, presentation, wechat, wuxing-colors, voice), full design system (typography, color, spatial, motion, micro-interactions, interaction, responsive, UX writing, style audit), interactive pattern library, and anti-AI-slop quality gates. Triggers on: "create a design system", "define tokens", "ds", "compose", "design options for X", "show me variations", "vary this design", "audit", "analyze my site", "match this style", "extract tokens", "migrate", "add motion", "dramatize", "make interactive", "component button/form/card", "ux review", "heuristic evaluation", "usability audit", "cognitive load", "mental models", "affordances", "dark patterns", "review this design", "export to vue/astro/svelte", "pitch deck", "slides", "幻灯片", "PPT", "公众号", "wechat article", "微信文章", "五行配色", "wu xing", "brand color", "moodboard", "去AI味", "写文案", "copywriting".
 ---
 
 # Variant Design
@@ -413,6 +413,13 @@ Support shorthand prompts for fast iteration in the terminal:
 | `component button` | Component mode: button system with all variants and states |
 | `component form` | Component mode: form components |
 | `component card` | Component mode: card variants |
+| `ds` | Design System mode: generate tokens → preview |
+| `ds confirm` | Lock design system — constrains all future outputs |
+| `ds show` | Print design system summary |
+| `ds edit palette` | Regenerate palette section only |
+| `ds reset` | Unlock design system — allow aesthetic invention again |
+| `compose [page]` | Assemble page from registered components, 3 layout variations |
+| `registry` | Print which components have been built |
 
 ### Context Commands
 
@@ -545,9 +552,23 @@ Write `./variant-output/.variant-context.json` whenever the user makes a meaning
   "picked": "B",
   "iterations": 3,
   "framework": "next",
-  "notes": "user prefers high contrast, no dark mode"
+  "notes": "user prefers high contrast, no dark mode",
+  "designSystem": {
+    "confirmed": true,
+    "file": "variant-output/design-system.css",
+    "palette": "Amber Warm",
+    "fonts": ["DM Sans", "Newsreader"],
+    "confirmedAt": "2026-05-27T10:00:00Z"
+  },
+  "components": {
+    "button": "variant-output/component-button.html",
+    "card":   "variant-output/component-card.html",
+    "form":   "variant-output/component-form.html"
+  }
 }
 ```
+
+`designSystem.confirmed: true` is the gating flag. When true, all Generate/Component/Compose outputs read `variant-output/design-system.css` and must not introduce tokens outside it. When absent or false, full aesthetic invention is allowed.
 
 **When to update:**
 - After user picks a palette or confirms a direction → update `palette`, `direction`, `fonts`
@@ -556,6 +577,9 @@ Write `./variant-output/.variant-context.json` whenever the user makes a meaning
 - After scenario is detected and confirmed → update `scenario`
 - After framework is detected → update `framework`
 - After user gives a preference constraint → append to `notes`
+- After `ds confirm` → write `designSystem` object with `confirmed: true`, `file`, `palette`, `fonts`, `confirmedAt`
+- After each `component [name]` build → add entry to `components` map
+- After `ds reset` → set `designSystem.confirmed: false`, clear `components`
 
 **Fields are optional** — write only what's known. Do not guess or fill in defaults.
 
@@ -594,6 +618,64 @@ find . -name "*.html" -o -name "*.css" -o -name "*.tsx" -o -name "*.jsx" \
 **Step 2: Extract** — Pull all design primitives following the Token Extraction schema in `style-audit.md`: colors, typography, spacing, components, transitions. Group by semantic role.
 
 **Step 3: Detect** — Run all consistency checks from `style-audit.md` Section 2. For each finding, record severity (error/warning/info), the specific values, file locations, and a concrete fix.
+
+**Step 3.5: Visual Quality Audit** — In addition to consistency checks from `style-audit.md`, run this anti-slop checklist. Flag any item that fails with severity **warning** or **error**:
+
+**Typography**
+- [ ] Display font is NOT Inter/Roboto/Arial/Open Sans — use something with character
+- [ ] Headlines have presence: tight tracking, compressed line-height, strong weight contrast
+- [ ] Body text max-width ~65ch; line-height ≥ 1.5
+- [ ] Weight range uses at least 3 stops (e.g. 400 / 500 / 700) — not just Regular + Bold
+- [ ] Numbers in data contexts use `font-variant-numeric: tabular-nums` or monospace
+- [ ] No orphaned single words on last line — use `text-wrap: balance` / `text-wrap: pretty`
+- [ ] Headers use sentence case — not Title Case On Every Word
+
+**Color & Surfaces**
+- [ ] No pure `#000000` background — use off-black / dark charcoal / tinted dark
+- [ ] Accent saturation below 80% — no neon or screaming accents
+- [ ] Only one accent color — remove all others
+- [ ] Grays are from one family — no mixing warm and cool grays
+- [ ] No purple-to-blue "AI gradient" aesthetic
+- [ ] Shadows are tinted to match background hue — not pure black at low opacity
+- [ ] No random isolated dark section in a light-mode page (or vice versa)
+
+**Layout**
+- [ ] Not everything centered and symmetrical — break with offset, left-align, or asymmetry
+- [ ] No 3 equal-column feature card row — use zig-zag, asymmetric grid, or horizontal scroll
+- [ ] Uses `min-height: 100dvh` not `height: 100vh` (iOS Safari viewport jump)
+- [ ] Has `max-width` container constraint — content doesn't stretch edge-to-edge
+- [ ] Cards vary in size or weight — not uniformly identical
+- [ ] Card group CTAs pin to bottom so buttons align across variable-length cards
+
+**Interactivity & States**
+- [ ] All buttons/links/cards have hover state (not just `opacity: 0.8`)
+- [ ] Active/pressed feedback: `scale(0.98)` or `translateY(1px)`
+- [ ] Transitions have non-zero duration (200-300ms)
+- [ ] Visible `:focus-visible` ring — never `outline: none` alone
+- [ ] Loading state exists — skeleton loaders, not generic spinners
+- [ ] Empty state has content: acknowledge → explain value → CTA
+- [ ] Error state has inline message — no `window.alert()`
+
+**Content**
+- [ ] No generic names: John Doe, Acme Corp, Nexus, SmartFlow
+- [ ] No fake round numbers: `99.99%`, `$100.00`, `50,000 users`
+- [ ] No AI clichés: Elevate, Seamless, Unleash, Next-Gen, Game-changer, Delve
+- [ ] No Lorem Ipsum
+- [ ] No exclamation marks in success/confirmation messages
+- [ ] No passive voice in errors
+
+**Iconography**
+- [ ] Not using only Lucide/Feather icons — consider Phosphor or Radix UI Icons
+- [ ] Consistent stroke width across all icons
+- [ ] Favicon exists
+
+**Code Quality**
+- [ ] Semantic HTML: `<nav>`, `<main>`, `<article>`, `<section>` — not div soup
+- [ ] No arbitrary z-index values (`9999`)
+- [ ] All `<img>` have meaningful `alt` text
+- [ ] Animations use only `transform` and `opacity` — no `top`/`left`/`width`/`height`
+
+Score: subtract 2 points per failed item from 100. Present as `Quality Score: XX/100`.
 
 **Step 4: Report** — Present findings using the compact terminal format from `style-audit.md` Section 3. Score out of 100. List priority fixes.
 
@@ -646,19 +728,40 @@ When generating new pages for an existing project, the workflow changes:
 
 ## UX Review Mode
 
-When the user wants to evaluate usability rather than generate visuals, switch to UX Review mode. Load `references/ux-heuristics.md` and `references/ux-psychology.md`.
+When the user wants to evaluate usability rather than generate visuals, switch to UX Review mode. Load `references/ux-heuristics.md` and `references/ux-psychology.md`. Load additional references as the review scope demands (see "When to Load Which Reference" below).
 
 ### Triggers
 
-| User says | Action |
-|---|---|
-| "ux review" / "heuristic review" / "usability audit" | Full heuristic evaluation against Nielsen's 10 |
-| "review this design" / "what's wrong with this UI" | Heuristic scan → findings list with severity |
-| "check usability" / "is this good UX" | Walk through flow, flag violations |
-| "cognitive load" / "too complex?" | Cognitive load analysis → reduction suggestions |
-| "why do users get confused here" | Mental model analysis → mismatch diagnosis |
-| "affordances" / "does this look clickable" | Affordance/signifier audit |
-| "dark patterns" / "is this ethical" | Dark pattern scan |
+| User says | Action | Load |
+|---|---|---|
+| "ux review" / "heuristic review" / "usability audit" | Full heuristic evaluation against Nielsen's 10 | `ux-heuristics.md` + `ux-psychology.md` |
+| "review this design" / "what's wrong with this UI" | Heuristic scan → findings list with severity | `ux-heuristics.md` |
+| "check usability" / "is this good UX" | Walk through flow, flag violations | `ux-heuristics.md` + `ux-psychology.md` |
+| "cognitive load" / "too complex?" | Cognitive load analysis → reduction suggestions | `ux-psychology.md` |
+| "why do users get confused here" | Mental model analysis → mismatch diagnosis | `ux-psychology.md` |
+| "affordances" / "does this look clickable" | Affordance/signifier audit | `ux-psychology.md` |
+| "dark patterns" / "is this ethical" | Dark pattern scan | `ux-psychology.md` |
+| "navigation" / "can't find" / "information architecture" / "IA" | IA audit — labels, hierarchy, findability | `ux-information-architecture.md` |
+| "site structure" / "how to organize" / "card sort" / "tree test" | IA design or validation | `ux-information-architecture.md` |
+| "accessibility" / "a11y" / "screen reader" / "keyboard navigation" | Accessibility audit against WCAG 2.1 AA | `ux-accessibility.md` |
+| "WCAG" / "alt text" / "aria" / "focus" | Specific accessibility check | `ux-accessibility.md` |
+| "user testing" / "how to test this" / "usability test" | Research method recommendation + test plan | `ux-research-methods.md` |
+| "what do users think" / "how do I get feedback" | Research method selection | `ux-research-methods.md` |
+| "NPS" / "SUS" / "survey" / "interview users" | Measurement framework or interview guidance | `ux-research-methods.md` |
+| "transition feels wrong" / "animation timing" / "state choreography" / "loading feels laggy" | Component transition audit | `ux-interaction-transitions.md` |
+| "touch target" / "thumb zone" / "mobile gesture" / "iOS vs Android" | Mobile interaction audit | `ux-mobile-patterns.md` |
+| "onboarding" / "empty state" / "first use" / "aha moment" / "activation" | Onboarding flow review | `ux-onboarding.md` |
+| "chart" / "dashboard" / "data viz" / "KPI card" / "which chart" | Data visualization audit or recommendation | `ux-data-visualization.md` |
+| "content model" / "taxonomy" / "multilingual" / "RTL" / "localization" | Content structure review | `ux-content-strategy.md` |
+| "design tokens" / "token naming" / "theming" / "dark mode architecture" | Token architecture review | `ux-design-tokens.md` |
+| "component spec" / "button states" / "modal behavior" / "ARIA" | Component spec review | `ux-component-specs.md` |
+| "design critique" / "feedback on design" / "design review meeting" | Critique framework guidance | `ux-design-critique.md` |
+| "conversion" / "landing page" / "trust signals" / "CTA copy" / "pricing page" | Conversion UX audit | `ux-conversion-patterns.md` |
+| "error message" / "error state" / "form error" / "validation" / "recovery path" / "prevent errors" | Error design audit — classification, messaging, prevention | `ux-error-design.md` |
+| "empty state" / "no data" / "blank state" / "nothing here" / "zero state" | Empty state design — all 4 types | `ux-empty-states.md` |
+| "notification" / "toast" / "banner" / "badge" / "push notification" / "alert priority" | Notification system design and priority rules | `ux-notifications.md` |
+| "table" / "data table" / "sorting" / "filtering" / "pagination" / "bulk select" / "row actions" | Table and list interaction design | `ux-tables-lists.md` |
+| "search" / "autocomplete" / "search results" / "search bar" / "faceted search" / "command palette" | Search pattern design — input, suggestions, results | `ux-search-patterns.md` |
 
 ### UX Review Workflow
 
@@ -716,10 +819,31 @@ grep -rn "\.length === 0\|\.length == 0\|items\.length\|data\.length" \
   --include="*.tsx" --include="*.jsx" --exclude-dir=node_modules . 2>/dev/null | \
   grep -v "EmptyState\|empty\|nothing\|no items\|no results" | head -15
 
-# Accessibility baseline
+# A11y — Images missing alt text
 grep -rn "<img " \
   --include="*.tsx" --include="*.jsx" --include="*.html" \
   --exclude-dir=node_modules . 2>/dev/null | grep -v "alt=" | head -10
+
+# A11y — Buttons missing accessible name (icon-only)
+grep -rn "<button\|<Button\|<IconButton" \
+  --include="*.tsx" --include="*.jsx" --exclude-dir=node_modules . 2>/dev/null | \
+  grep -v "aria-label\|aria-labelledby\|title=" | head -15
+
+# A11y — onClick on non-interactive elements (no keyboard access)
+grep -rn "onClick" \
+  --include="*.tsx" --include="*.jsx" --exclude-dir=node_modules . 2>/dev/null | \
+  grep -E "<div|<span|<p" | head -15
+
+# A11y — outline:none removing focus indicators
+grep -rn "outline:\s*none\|outline:\s*0" \
+  --include="*.css" --include="*.scss" --include="*.tsx" --include="*.jsx" \
+  --exclude-dir=node_modules . 2>/dev/null | head -10
+
+# A11y — Inputs missing associated label
+grep -rn "<input" \
+  --include="*.tsx" --include="*.jsx" --include="*.html" \
+  --exclude-dir=node_modules . 2>/dev/null | \
+  grep -v "type=\"hidden\"\|aria-label\|aria-labelledby\|id=" | head -10
 ```
 
 For each grep that returns results: read the flagged files at the relevant lines to confirm whether it's a real violation or a false positive. Report only confirmed violations.
@@ -814,10 +938,27 @@ Every generated design silently runs the heuristic checklist before being presen
 | Question | Load |
 |---|---|
 | Nielsen heuristics evaluation | `references/ux-heuristics.md` |
-| Mental models, cognitive load, Gestalt | `references/ux-psychology.md` |
-| Both | Load both — they complement each other |
+| Mental models, cognitive load, Gestalt, affordances | `references/ux-psychology.md` |
+| Navigation, findability, IA structure, labeling, search | `references/ux-information-architecture.md` |
+| Accessibility, WCAG, keyboard nav, screen readers, a11y | `references/ux-accessibility.md` |
+| User research methods, usability testing, interviews, surveys | `references/ux-research-methods.md` |
+| Component state transitions, timing, easing, choreography | `references/ux-interaction-transitions.md` |
+| Mobile gestures, thumb zones, iOS/Android conventions, touch targets | `references/ux-mobile-patterns.md` |
+| Onboarding, empty states, Aha moment, first-use experience | `references/ux-onboarding.md` |
+| Charts, dashboards, data visualization, chart selection | `references/ux-data-visualization.md` |
+| Content models, taxonomy, multilingual UX, content lifecycle | `references/ux-content-strategy.md` |
+| Design tokens, token architecture, theming, dark mode | `references/ux-design-tokens.md` |
+| Component specs, button/form/modal states, ARIA patterns | `references/ux-component-specs.md` |
+| Design critique, feedback frameworks, design review | `references/ux-design-critique.md` |
+| Conversion, landing pages, trust signals, pricing UX, CTAs | `references/ux-conversion-patterns.md` |
+| Error messages, validation, recovery paths, prevention layers | `references/ux-error-design.md` |
+| Empty states (first use / cleared / no results / error) | `references/ux-empty-states.md` |
+| Notifications — Toast, Banner, Badge, Push, priority management | `references/ux-notifications.md` |
+| Tables, lists, sorting, filtering, pagination, bulk selection | `references/ux-tables-lists.md` |
+| Search patterns — autocomplete, facets, results page, command palette | `references/ux-search-patterns.md` |
+| Full UX review | Load all relevant references above |
 
-**For generation tasks:** Load these references as silent quality constraints. Every generated design should pass the heuristic checklist before being presented — this is part of the quality gate, same as the AI Slop Test.
+**For generation tasks:** Load `ux-heuristics.md` and `ux-psychology.md` as silent quality constraints. Every generated design should pass the heuristic checklist before being presented — this is part of the quality gate, same as the AI Slop Test.
 
 ---
 
@@ -825,7 +966,24 @@ Every generated design silently runs the heuristic checklist before being presen
 
 Before generating, apply these three rules in order:
 
-1. **Confirm scenario detection.** State the detected scenario and aesthetic direction. Ask the user to confirm before proceeding: *"I'm reading this as a [scenario] with [direction] vibes — correct?"*
+1. **Confirm scenario detection.** Before generating, output a one-line Design Read summary, then ask the user to confirm:
+
+   Format:
+   ```
+   Design Read: [page kind] for [audience] — [vibe keywords] · [constraints if any]
+   ```
+   Example:
+   ```
+   Design Read: SaaS landing page for dev-tools B2B — minimal, Linear-style · dark mode preferred
+   ```
+   Then ask: *"Correct? Or redirect me before I generate."*
+
+   Read these signals to build the Design Read:
+   - **Page kind**: landing / portfolio / dashboard / editorial / app screen / redesign
+   - **Vibe words**: adjectives the user used or implied ("clean", "brutalist", "premium", "editorial", "agency-y")
+   - **Audience**: B2B procurement vs design-conscious consumer vs recruiter vs general public
+   - **Reference signals**: URLs, product names, competitor brands mentioned
+   - **Quiet constraints**: accessibility-first, regulated industry, kids' product, trust-first commerce — these OVERRIDE aesthetic preference
 2. **Resolve vague prompts — max 2 questions.** If the prompt lacks enough signal to differentiate 3 variations (e.g. "design something cool"), ask at most 2 clarifying questions. Focus on: (a) what it's for / who uses it, (b) any aesthetic leaning. If the user says "surprise me," pick 3 maximally divergent directions and proceed.
 3. **Never generate blind.** Do not produce code until you have either (a) user confirmation of the scenario, or (b) answers to your clarifying questions, or (c) an explicit "surprise me."
 
@@ -852,6 +1010,18 @@ Identify the scenario and load the corresponding reference file before designing
 | Brand color, moodboard, 五行, wu xing, chinese color, 品牌配色 | 东方美学, 传统配色, 文化品牌 | `references/wuxing-colors.md` |
 | Writing, 文案, copywriting, 去AI味, anti-AI writing | 公众号, 小红书, 产品文案, 观点文, 故事文, 教程文, voice | `references/voice.md` |
 | UX review, heuristic evaluation, usability audit, cognitive load, mental models | "is this good UX", affordances, dark patterns | `references/ux-heuristics.md` + `references/ux-psychology.md` |
+| Information architecture, navigation, findability, site structure | "can't find", IA audit, card sort, tree test, nav labels, search design | `references/ux-information-architecture.md` |
+| Accessibility, a11y, WCAG, screen reader, keyboard navigation | alt text, focus indicator, ARIA, color contrast, inclusive design | `references/ux-accessibility.md` |
+| User research, usability testing, user interviews, surveys, A/B test | "how do I test this", NPS, SUS, research methods, "what do users think" | `references/ux-research-methods.md` |
+| Component transitions, animation timing, state choreography, easing | "feels laggy", "transition wrong", button loading, modal enter/exit, skeleton | `references/ux-interaction-transitions.md` |
+| Mobile interactions, touch targets, gestures, thumb zone, iOS vs Android | swipe, bottom sheet, tap, safe area, mobile form | `references/ux-mobile-patterns.md` |
+| Onboarding, first-use, empty states, Aha moment, sign-up flow | new user experience, activation, "blank slate", progressive disclosure | `references/ux-onboarding.md` |
+| Charts, data viz, dashboard design, KPIs, data tables | bar chart, line chart, color encoding, tooltip, filter | `references/ux-data-visualization.md` |
+| Content model, taxonomy, multilingual, RTL, content lifecycle | structured content, metadata, localization, i18n, translation | `references/ux-content-strategy.md` |
+| Design tokens, token naming, theming, dark mode architecture | CSS variables, semantic tokens, primitive tokens, brand theming | `references/ux-design-tokens.md` |
+| Component specs, button states, modal behavior, form input | component library, ARIA, state machine, variant, anatomy | `references/ux-component-specs.md` |
+| Design critique, design review, feedback frameworks | "how to give feedback", "review this design", design review meeting | `references/ux-design-critique.md` |
+| Conversion, landing pages, pricing design, trust signals, CTA | "increase conversions", "improve signup rate", checkout UX, CRO | `references/ux-conversion-patterns.md` |
 | Unsure / general | | Use aesthetic directions table below + `references/palettes.md` |
 
 **Always also load the relevant design system references** from `references/design-system/` based on what matters most for the design:
@@ -871,6 +1041,386 @@ Identify the scenario and load the corresponding reference file before designing
 
 For initial generation, load at minimum: **typography**, **color-and-contrast**, **spatial-design**, and **micro-interactions**. Load **interactive-patterns** when the design involves filtering, forms, charts, galleries, or drag-and-drop. Load others as the design demands.
 
+## Design System Mode
+
+The canonical workflow for production-quality work. Define once, generate consistently.
+
+```
+ds → confirm → component [name] → compose [page]
+↑                    ↑                   ↑
+Token foundation   Atomic pieces     Assembled layouts
+```
+
+### Triggers
+
+| User says | Action |
+|---|---|
+| `ds` / "create a design system" / "define tokens" / "set up tokens" | Generate design system → preview → confirm |
+| `ds confirm` | Lock current design system as constraint for all future outputs |
+| `ds edit [section]` | Edit one section of the design system (palette / type / spacing / motion) without regenerating all |
+| `ds show` | Print current design system token summary in terminal |
+| `component [name]` (after DS confirmed) | Generate component using locked DS tokens, all 8 states |
+| `compose [page name]` | Assemble confirmed components into a page, 3 layout variations |
+| `compose [page] using A B C` | Compose page from specific named components |
+
+### Step 1 — Generate Design System (`ds`)
+
+**Before generating**, ask 3 focused questions (can be answered in one message):
+
+1. **Brand personality** — 2–3 adjectives that describe the feel (e.g. "precise, warm, understated")
+2. **Color direction** — existing brand color, or a reference (hex / site URL / mood word)
+3. **Typeface preference** — existing fonts, or a direction ("editorial serif", "clean geometric sans", "monospace-forward")
+
+If user says "surprise me" or has no preferences, infer from their codebase (README, existing CSS, component names) or pick a strongly opinionated direction and state it.
+
+**Generate `variant-output/design-system.css`** — a complete, self-documenting token file:
+
+```css
+/* ═══════════════════════════════════════════════════
+   DESIGN SYSTEM — [Project Name]
+   Generated by variant-design · [date]
+   Confirm with: ds confirm
+   Edit with:    ds edit [palette | type | spacing | motion | elevation | radius]
+   ═══════════════════════════════════════════════════ */
+
+/* ── Primitives ─────────────────────────────────── */
+:root {
+  /* Color primitives — OKLCH */
+  --p-brand-50:  oklch(97% 0.02 [H]);
+  --p-brand-100: oklch(93% 0.04 [H]);
+  --p-brand-200: oklch(86% 0.08 [H]);
+  --p-brand-300: oklch(76% 0.13 [H]);
+  --p-brand-400: oklch(66% 0.18 [H]);
+  --p-brand-500: oklch(56% 0.20 [H]);   /* primary */
+  --p-brand-600: oklch(46% 0.18 [H]);
+  --p-brand-700: oklch(36% 0.15 [H]);
+  --p-brand-800: oklch(26% 0.10 [H]);
+  --p-brand-900: oklch(16% 0.06 [H]);
+
+  --p-neutral-50:  oklch(98% 0.005 [H]);
+  --p-neutral-100: oklch(95% 0.008 [H]);
+  --p-neutral-200: oklch(90% 0.010 [H]);
+  --p-neutral-300: oklch(82% 0.012 [H]);
+  --p-neutral-400: oklch(68% 0.010 [H]);
+  --p-neutral-500: oklch(55% 0.008 [H]);
+  --p-neutral-600: oklch(42% 0.008 [H]);
+  --p-neutral-700: oklch(30% 0.006 [H]);
+  --p-neutral-800: oklch(20% 0.005 [H]);
+  --p-neutral-900: oklch(12% 0.004 [H]);
+
+  --p-success: oklch(55% 0.18 145);
+  --p-warning: oklch(60% 0.18 80);
+  --p-error:   oklch(55% 0.22 25);
+  --p-info:    oklch(55% 0.18 250);
+}
+
+/* ── Semantic tokens ─────────────────────────────── */
+:root {
+  /* Surfaces */
+  --color-bg:         var(--p-neutral-50);
+  --color-surface:    #ffffff;
+  --color-surface-2:  var(--p-neutral-100);
+  --color-surface-3:  var(--p-neutral-200);
+
+  /* Borders */
+  --color-border:       var(--p-neutral-200);
+  --color-border-strong: var(--p-neutral-300);
+
+  /* Text */
+  --color-text-primary:   var(--p-neutral-900);
+  --color-text-secondary: var(--p-neutral-600);
+  --color-text-tertiary:  var(--p-neutral-400);
+  --color-text-on-accent: #ffffff;
+
+  /* Brand */
+  --color-accent:         var(--p-brand-500);
+  --color-accent-hover:   var(--p-brand-600);
+  --color-accent-subtle:  var(--p-brand-50);
+  --color-accent-border:  var(--p-brand-200);
+
+  /* Semantic */
+  --color-success:        var(--p-success);
+  --color-success-subtle: oklch(97% 0.03 145);
+  --color-warning:        var(--p-warning);
+  --color-warning-subtle: oklch(98% 0.03 80);
+  --color-error:          var(--p-error);
+  --color-error-subtle:   oklch(97% 0.03 25);
+}
+
+/* ── Typography ─────────────────────────────────── */
+:root {
+  --font-display: '[Display Font]', serif;      /* or sans-serif */
+  --font-body:    '[Body Font]', sans-serif;
+  --font-mono:    'IBM Plex Mono', monospace;
+
+  /* Scale — ratio [ratio] */
+  --text-xs:   clamp(0.69rem, 0.65rem + 0.2vw,  0.75rem);
+  --text-sm:   clamp(0.8rem,  0.77rem + 0.2vw,  0.875rem);
+  --text-base: clamp(0.95rem, 0.9rem  + 0.25vw, 1.0625rem);
+  --text-lg:   clamp(1.1rem,  1rem    + 0.5vw,  1.25rem);
+  --text-xl:   clamp(1.3rem,  1.1rem  + 1vw,    1.75rem);
+  --text-2xl:  clamp(1.6rem,  1.2rem  + 2vw,    2.5rem);
+  --text-3xl:  clamp(2rem,    1.4rem  + 3vw,    3.5rem);
+  --text-4xl:  clamp(2.5rem,  1.6rem  + 5vw,    5.5rem);
+
+  /* Weights */
+  --font-weight-normal:   400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+
+  /* Line heights */
+  --leading-tight:  1.2;
+  --leading-snug:   1.35;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.7;
+
+  /* Tracking */
+  --tracking-tight:  -0.04em;
+  --tracking-snug:   -0.02em;
+  --tracking-normal:  0;
+  --tracking-wide:    0.04em;
+  --tracking-caps:    0.08em;
+}
+
+/* ── Spacing ─────────────────────────────────────── */
+:root {
+  /* 4pt base grid */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* Layout */
+  --container-sm:  640px;
+  --container-md:  768px;
+  --container-lg:  1024px;
+  --container-xl:  1280px;
+  --container-2xl: 1440px;
+}
+
+/* ── Radius ──────────────────────────────────────── */
+:root {
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+}
+
+/* ── Elevation (shadow) ──────────────────────────── */
+:root {
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.04);
+  --shadow-xl: 0 16px 48px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.05);
+
+  /* Focus ring */
+  --ring-width: 2px;
+  --ring-offset: 2px;
+  --ring-color: var(--color-accent);
+}
+
+/* ── Motion ──────────────────────────────────────── */
+:root {
+  /* Durations */
+  --duration-instant: 80ms;
+  --duration-fast:    150ms;
+  --duration-normal:  250ms;
+  --duration-slow:    400ms;
+  --duration-slower:  600ms;
+
+  /* Easings */
+  --ease-out:         cubic-bezier(0.0, 0.0, 0.2, 1);
+  --ease-in:          cubic-bezier(0.4, 0.0, 1, 1);
+  --ease-in-out:      cubic-bezier(0.4, 0.0, 0.2, 1);
+  --ease-out-expo:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring:      cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* Common transitions */
+  --transition-fast:   all var(--duration-fast)   var(--ease-out);
+  --transition-normal: all var(--duration-normal) var(--ease-out);
+  --transition-colors: color var(--duration-fast) var(--ease-out),
+                       background-color var(--duration-fast) var(--ease-out),
+                       border-color var(--duration-fast) var(--ease-out);
+}
+
+/* ── Z-index ─────────────────────────────────────── */
+:root {
+  --z-base:    0;
+  --z-raised:  10;
+  --z-dropdown: 100;
+  --z-sticky:  200;
+  --z-overlay: 300;
+  --z-modal:   400;
+  --z-toast:   500;
+}
+```
+
+**Also generate `variant-output/design-system-preview.html`** — a visual token preview showing:
+- Color palette swatches (brand scale + neutrals + semantic)
+- Typography specimens at each size step with sample text
+- Spacing scale as a visual bar chart
+- Shadow/elevation showcase
+- Motion demo (hover cards to see transition, animated duration reference)
+- Border radius examples
+
+Open the preview immediately in browser.
+
+### Step 2 — Confirm Design System (`ds confirm`)
+
+When the user approves (says `ds confirm`, "looks good", "confirm this", "ship it"):
+
+1. Write the confirmed status to `.variant-context.json`:
+```json
+{
+  "designSystem": {
+    "confirmed": true,
+    "file": "variant-output/design-system.css",
+    "palette": "[palette name]",
+    "fonts": ["[Display]", "[Body]"],
+    "confirmedAt": "[ISO date]"
+  }
+}
+```
+
+2. Print confirmation:
+```
+✦ Design system confirmed — locked as visual foundation
+  File:    variant-output/design-system.css
+  Palette: [name] · [hue]° OKLCH
+  Type:    [Display font] + [Body font]
+
+  Next steps:
+    component [name]   → build atomic components on this foundation
+    compose [page]     → assemble components into page layouts
+    ds edit palette    → refine colors before building
+```
+
+3. From this point forward, **all Generate, Component, and Compose outputs** must `<link rel="stylesheet" href="design-system.css">` (or inline the tokens) — no aesthetic invention allowed outside the locked token system.
+
+### Step 3 — Build Components (`component [name]`)
+
+When design system is confirmed, Component Mode runs on a tighter brief:
+- All colors from `design-system.css` semantic tokens — **no new colors**
+- All spacing from `design-system.css` spacing scale — **no new values**
+- Typography from `design-system.css` type tokens
+- Add to component registry in `.variant-context.json`:
+
+```json
+{
+  "components": {
+    "button": "variant-output/component-button.html",
+    "card":   "variant-output/component-card.html",
+    "form":   "variant-output/component-form.html"
+  }
+}
+```
+
+Terminal output:
+```
+✦ Component: Button System  [DS: confirmed · Amber Warm · DM Sans]
+  Tokens used: --color-accent, --color-surface, --space-2/3/4, --radius-md
+  New tokens added: none
+
+  variant-output/component-button.html ← opened in browser
+
+  Registry: button · (no other components yet)
+  Next: component card · component form · compose [page] using button
+```
+
+### Step 4 — Compose Pages (`compose [page name]`)
+
+Assembles registered components into page layouts. **3 structural variations** — layout and composition differ; visual language does not.
+
+**Process:**
+1. Read `.variant-context.json` to get component registry
+2. Read `design-system.css` for tokens
+3. For each variation, invent a different **structural arrangement**:
+   - Variation A: canonical / expected layout for this page type
+   - Variation B: unconventional hierarchy (e.g. sidebar-dominant, reversed stack)
+   - Variation C: density variant (compact/information-dense vs. spacious/editorial)
+4. All three use identical tokens and components — the only differences are grid, order, proportion, and density
+5. Write `variant-output/compose-[page]-A.html`, `-B.html`, `-C.html`
+
+**What changes across compose variations:**
+
+| Dimension | Can vary | Cannot vary |
+|---|---|---|
+| Grid structure | ✓ | |
+| Section order / hierarchy | ✓ | |
+| Column count / proportion | ✓ | |
+| Density (padding, gap) | ✓ — within spacing scale | |
+| Which components are prominent | ✓ | |
+| Colors | | ✗ — all from DS |
+| Typography | | ✗ — all from DS |
+| Component visual design | | ✗ — use as-built |
+| New spacing values | | ✗ — DS scale only |
+
+Terminal output:
+```
+✦ Compose: Dashboard page  [DS confirmed · 3 components registered]
+  Components used: button · card · data-table
+  Layout variations:
+    A — Standard: left sidebar + main content grid
+    B — Topbar: horizontal nav + full-width zones
+    C — Focused: single column, task-driven, no sidebar
+
+  Files:
+    variant-output/compose-dashboard-A.html ← opened in browser
+    variant-output/compose-dashboard-B.html
+    variant-output/compose-dashboard-C.html
+
+  Next: pick A/B/C · compose [another page] · tokens A
+```
+
+### DS Quick Triggers
+
+| User types | Action |
+|---|---|
+| `ds` | Start design system generation workflow |
+| `ds confirm` | Lock design system — constrains all future outputs |
+| `ds show` | Print current DS summary (palette, fonts, status) |
+| `ds edit palette` | Regenerate color section only, keep everything else |
+| `ds edit type` | Regenerate typography section only |
+| `ds edit spacing` | Regenerate spacing/radius section only |
+| `ds edit motion` | Regenerate motion/animation section only |
+| `ds preview` | Re-open design-system-preview.html in browser |
+| `ds reset` | Remove DS lock, allow aesthetic invention again |
+| `compose [page]` | Assemble page from registered components |
+| `compose [page] using A B C` | Compose using only specified components |
+| `registry` | Print component registry (which components are built) |
+
+### When DS is NOT Confirmed
+
+Standard Generate mode — full aesthetic invention per the normal workflow. Each variation picks its own palette, fonts, and direction.
+
+### When DS IS Confirmed
+
+Visual language is locked. The freedom space narrows to:
+- Layout composition (grid, order, proportion)
+- Content hierarchy (what's prominent, what's secondary)
+- Interaction specifics (animation choreography within motion tokens)
+- Copywriting and content strategy
+
+Print a one-line reminder on every generation:
+```
+✦ DS locked: Amber Warm · DM Sans + Newsreader · variations differ in layout only
+```
+
+---
+
 ## Core Workflow
 
 ### 0. Load Persisted Context (Every Session)
@@ -878,11 +1428,27 @@ For initial generation, load at minimum: **typography**, **color-and-contrast**,
 Before parsing the prompt, run the context check from "Project Context Initialization → Session Start". If a `.variant-context.json` exists, apply its values as soft constraints on all generation steps: palette selection, font choices, direction, and framework output format. The user can override any field by stating a preference explicitly.
 
 ### 1. Parse → Detect → Load
-Identify scenario, load domain reference file + relevant design system references, pick 3 starter prompts and palettes. Study the Real Community Examples for composition patterns and what makes each design work — extract the principle, not the surface style.
+
+Check `designSystem.confirmed` in context first:
+
+**If `designSystem.confirmed: true`:**
+- Read `variant-output/design-system.css` — load all token values
+- Print: `✦ DS locked: [palette] · [fonts] · variations differ in layout only`
+- Skip palette/font selection — tokens are fixed
+- Load scenario reference for layout and interaction patterns only
+
+**If no confirmed DS:**
+- Standard flow: identify scenario, load domain reference file + relevant design system references, pick 3 starter prompts and palettes
 
 ### 2. Generate 3 Distinct Variations
 
-Each variation = a different studio's interpretation. Never two in the same direction.
+**If DS confirmed:** Each variation = a different structural arrangement. Visual language (colors, fonts, components) does not change between A, B, C. Variations differ in:
+- Grid and layout pattern
+- Information hierarchy (what leads, what's secondary)
+- Density and spacing rhythm (using only DS spacing tokens)
+- Which components are focal vs. supporting
+
+**If no DS confirmed:** Each variation = a different studio's interpretation. Never two in the same direction.
 
 **Universal aesthetic directions:**
 
@@ -1413,6 +1979,25 @@ B update card — card zone     → apply new card component to the card zone in
 - **Interactive HTML**: Single-file, embedded CSS + JavaScript. Alive by default. **Default when no React project detected.**
 - **React .tsx**: Functional components — auto-selected when React project detected in cwd, or via `react [A/B/C]` / `--react` / `export to react`.
 
+### Output Completeness
+
+Generated code is production input — partial output is broken output.
+
+**Banned output patterns — never produce:**
+- `// ...` / `/* ... */` standing in for omitted code
+- `// rest of code` / `// rest of component` / `// implement here`
+- `// similar to above` / `// continue pattern` / `// add more as needed`
+- `// TODO` in delivered output
+- Describing what code should do instead of writing it
+
+**Handling long outputs:** Write at full quality up to a clean breakpoint (end of function / end of file). Then output:
+```
+[PAUSED — X of Y complete. Send "continue" to resume from: <next section name>]
+```
+On "continue": pick up exactly where stopped. No recap, no repetition.
+
+**Cross-check before responding:** Every code block must contain runnable code. Every component the user requested must be present and complete.
+
 ### Interactive HTML Output Spec (Default)
 
 Every HTML output must feel alive — static mockups are not acceptable. Follow this checklist:
@@ -1590,6 +2175,11 @@ Avoid these in every output — they are the telltale signs of AI-generated desi
 | JavaScript in `<script>` but nothing actually moves | Wire up scroll observer, counters, lightbox — code must produce visible motion |
 | Hover effects limited to `opacity: 0.8` | Use card lift, image zoom, underline slide, color shift — see `micro-interactions.md` |
 | Charts/numbers that appear fully rendered | Animate bar growth, counter count-up, donut draw on scroll into view |
+| Fake round numbers: `99.99%`, `$100.00`, `10,000 users` | Organic messy data: `47.2%`, `$99.00`, `8,400 users` |
+| AI copywriting clichés: Elevate, Seamless, Unleash, Next-Gen, Game-changer, Delve, Tapestry | Plain specific language: say exactly what it does |
+| Title Case On Every Single Header | Sentence case — capitalize proper nouns only |
+| Exclamation marks in success messages: "Saved!" "Done!" | Confident without loud: "Saved." "Done." |
+| Passive voice in error messages: "Mistakes were made" | Active voice: "We couldn't save your changes. Try again." |
 | **Slides & WeChat (extra rules)** | |
 | Emoji in slides or WeChat articles | Never — `references/presentation.md` + `references/wechat.md` |
 | CSS variables `var(--xxx)` in WeChat HTML | All styles must be inline; WeChat strips class/var | 

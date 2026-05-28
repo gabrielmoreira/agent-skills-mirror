@@ -4,7 +4,7 @@
 
 [English](./README.md) · [返回集合首页](../../README.zh-CN.md)
 
-![Kb Retriever Skill](../../dist/imgs/kb-retriever-skill.png)
+![Kb Retriever Skill](https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/kb-retriever-skill.webp)
 
 ## 这个 Skill 干什么
 

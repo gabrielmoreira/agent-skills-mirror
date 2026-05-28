@@ -4,7 +4,7 @@
 
 [中文文档](./README.zh-CN.md) · [Back to collection root](../../README.md)
 
-![GPT Image 2 Skill](../../dist/imgs/gpt-image-2-skill.png)
+![GPT Image 2 Skill](https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/gpt-image-2-skill.webp)
 
 ---
 
@@ -15,7 +15,7 @@ This skill is a structured prompt-engineering and image-generation pack built ar
 It bundles:
 
 - A **mode-aware workflow** so the same skill works whether the agent itself owns the image API key, the host has its own image tool, or there is no image tool at all.
-- A **structured template library** of 18 categories and 70+ prompt templates covering posters, UI mockups, product visuals, infographics, academic figures, technical diagrams, comics, avatars, and editing workflows.
+- A **structured template library** of 18 categories and 79 prompt templates covering posters, UI mockups, product visuals, infographics, academic figures, technical diagrams, comics, avatars, and editing workflows.
 - **Reproducible prompt + image archival** under `garden-gpt-image-2/prompt/` and `garden-gpt-image-2/image/` with task-slug + timestamp naming.
 
 ---
@@ -86,6 +86,92 @@ node skills/gpt-image-2/scripts/edit.js \
 ```
 
 For Mode B / C there is no CLI entry point — the skill just renders the final prompt and either hands it to the host's image tool (B) or shows it to the user (C).
+
+---
+
+## Case Gallery
+
+The public case library covers 18 categories, 79 templates, and 160+ generated / edited results. This gallery is a curated map of the most important capability families: each thumbnail opens the live case page, while the image itself is served from the dedicated `ConardLi/gpt-image-2-101` case repository.
+
+### UI Mockups
+
+<table>
+  <tr>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/ui-mockups%2Flive-commerce-ui%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/ui-mockups/live-commerce-ui/1-thumb.webp" alt="Live commerce UI case" width="100%"></a><br/><strong><code>live-commerce-ui</code></strong><br/><sub>Celebrity livestream commerce interface.</sub></td>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/ui-mockups%2Fsocial-interface-mockup%2F3"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/ui-mockups/social-interface-mockup/3-thumb.webp" alt="Social interface mockup case" width="100%"></a><br/><strong><code>social-interface-mockup</code></strong><br/><sub>Official product announcement in a social feed.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/ui-mockups%2Fproduct-card-overlay%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/ui-mockups/product-card-overlay/1-thumb.webp" alt="Product card overlay case" width="100%"></a><br/><strong><code>product-card-overlay</code></strong><br/><sub>Skincare landing-page hero with product, model, and badges.</sub></td>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/ui-mockups%2Fchat-interface-scene%2F3"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/ui-mockups/chat-interface-scene/3-thumb.webp" alt="Chat interface scene case" width="100%"></a><br/><strong><code>chat-interface-scene</code></strong><br/><sub>Claude-style assistant screenshot with structured conversation.</sub></td>
+  </tr>
+</table>
+
+### Product And Branding
+
+<table>
+  <tr>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/product-visuals%2Fexploded-view-poster%2F2"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/product-visuals/exploded-view-poster/2-thumb.webp" alt="Exploded view poster case" width="100%"></a><br/><strong><code>exploded-view-poster</code></strong><br/><sub>Vision Pro 2 optical and compute-module teardown.</sub></td>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/product-visuals%2Fpremium-studio-product%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/product-visuals/premium-studio-product/1-thumb.webp" alt="Premium studio product case" width="100%"></a><br/><strong><code>premium-studio-product</code></strong><br/><sub>Luxury skincare still life for editorial product pages.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/branding-and-packaging%2Fcosmetic-packaging%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/branding-and-packaging/cosmetic-packaging/1-thumb.webp" alt="Cosmetic packaging case" width="100%"></a><br/><strong><code>cosmetic-packaging</code></strong><br/><sub>Premium skincare gift box with material polish.</sub></td>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/branding-and-packaging%2Fbeverage-label-design%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/branding-and-packaging/beverage-label-design/1-thumb.webp" alt="Beverage label design case" width="100%"></a><br/><strong><code>beverage-label-design</code></strong><br/><sub>Guochao sparkling-water bottle label and commercial scene.</sub></td>
+  </tr>
+</table>
+
+### Editing Workflows
+
+<table>
+  <tr>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/editing-workflows%2Fbackground-replacement%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/editing-workflows/background-replacement/1-thumb.webp" alt="Background replacement case" width="100%"></a><br/><strong><code>background-replacement</code></strong><br/><sub>Portrait moved into Times Square night ambience.</sub></td>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/editing-workflows%2Fobject-removal%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/editing-workflows/object-removal/1-thumb.webp" alt="Object removal case" width="100%"></a><br/><strong><code>object-removal</code></strong><br/><sub>Remove unwanted people from a graduation group photo.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/editing-workflows%2Fproduct-retouching%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/editing-workflows/product-retouching/1-thumb.webp" alt="Product retouching case" width="100%"></a><br/><strong><code>product-retouching</code></strong><br/><sub>Commerce-grade AirPods product cleanup.</sub></td>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/editing-workflows%2Fportrait-local-edit%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/editing-workflows/portrait-local-edit/1-thumb.webp" alt="Portrait local edit case" width="100%"></a><br/><strong><code>portrait-local-edit</code></strong><br/><sub>Hair color and style edit while preserving identity.</sub></td>
+  </tr>
+</table>
+
+### Infographics And Visual Docs
+
+<table>
+  <tr>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/infographics%2Fbento-grid-infographic%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/infographics/bento-grid-infographic/1-thumb.webp" alt="Bento grid infographic case" width="100%"></a><br/><strong><code>bento-grid-infographic</code></strong><br/><sub>iPhone 16 Pro feature breakdown in a compact grid.</sub></td>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/infographics%2Fcomparison-infographic%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/infographics/comparison-infographic/1-thumb.webp" alt="Comparison infographic case" width="100%"></a><br/><strong><code>comparison-infographic</code></strong><br/><sub>Phone comparison designed for decision support.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/slides-and-visual-docs%2Fdense-explainer-slides%2F2"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/slides-and-visual-docs/dense-explainer-slides/2-thumb.webp" alt="Dense explainer slide case" width="100%"></a><br/><strong><code>dense-explainer-slides</code></strong><br/><sub>One-page AI Agent mechanism explainer.</sub></td>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/slides-and-visual-docs%2Fvisual-report-page%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/slides-and-visual-docs/visual-report-page/1-thumb.webp" alt="Visual report page case" width="100%"></a><br/><strong><code>visual-report-page</code></strong><br/><sub>Business summary page with KPI cards and chart rhythm.</sub></td>
+  </tr>
+</table>
+
+### Academic And Technical
+
+<table>
+  <tr>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/academic-figures%2Fmethod-pipeline-overview%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/academic-figures/method-pipeline-overview/1-thumb.webp" alt="Method pipeline overview case" width="100%"></a><br/><strong><code>method-pipeline-overview</code></strong><br/><sub>RAG-based long-context QA pipeline for papers.</sub></td>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/academic-figures%2Fneural-network-architecture%2F2"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/academic-figures/neural-network-architecture/2-thumb.webp" alt="Neural network architecture case" width="100%"></a><br/><strong><code>neural-network-architecture</code></strong><br/><sub>ViT-B/16 architecture figure with tensor flow.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/technical-diagrams%2Fsystem-architecture%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/technical-diagrams/system-architecture/1-thumb.webp" alt="System architecture case" width="100%"></a><br/><strong><code>system-architecture</code></strong><br/><sub>Multi-tenant AI SaaS production architecture.</sub></td>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/technical-diagrams%2Fsequence-diagram%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/technical-diagrams/sequence-diagram/1-thumb.webp" alt="Sequence diagram case" width="100%"></a><br/><strong><code>sequence-diagram</code></strong><br/><sub>OAuth 2.0 authorization code + PKCE sequence.</sub></td>
+  </tr>
+</table>
+
+### Story, Maps And Characters
+
+<table>
+  <tr>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/storyboards-and-sequences%2Fanime-key-visual%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/storyboards-and-sequences/anime-key-visual/1-thumb.webp" alt="Anime key visual case" width="100%"></a><br/><strong><code>anime-key-visual</code></strong><br/><sub>Fantasy game launch key visual with crop-safe layout.</sub></td>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/maps%2Ffood-map%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/maps/food-map/1-thumb.webp" alt="Food map case" width="100%"></a><br/><strong><code>food-map</code></strong><br/><sub>Shanghai city-walk food map with illustrated landmarks.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/maps%2Ftravel-route-map%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/maps/travel-route-map/1-thumb.webp" alt="Travel route map case" width="100%"></a><br/><strong><code>travel-route-map</code></strong><br/><sub>Kyoto three-day route map with illustrated stops.</sub></td>
+    <td width="50%" align="center"><a href="https://gpt-image2.mmh1.top/#/case/portraits-and-characters%2Fprofessional-portrait%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/portraits-and-characters/professional-portrait/1-thumb.webp" alt="Professional portrait case" width="100%"></a><br/><strong><code>professional-portrait</code></strong><br/><sub>Restrained executive portrait for company and media pages.</sub></td>
+  </tr>
+</table>
+
+<sub>Full library: <a href="https://gpt-image2.mmh1.top/#/case"><b>live case browser</b></a> · <a href="https://github.com/ConardLi/gpt-image-2-101/tree/main/public/case">case source repository</a> · local index at <code>website/gpt-image2-website/public/case/INDEX.md</code>.</sub>
 
 ---
 

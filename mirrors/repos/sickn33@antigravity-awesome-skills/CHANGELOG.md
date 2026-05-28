@@ -9,6 +9,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [11.8.0] - 2026-05-27 - "Decision, Messaging, Algorithm, and Supply-Chain Skills"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills --help`
+- Choose your tool: [README.md#choose-your-tool](README.md#choose-your-tool)
+- Best skills by tool: [README.md#best-skills-by-tool](README.md#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](docs/users/workflows.md)
+
+This release merges the accepted community skill PRs from the current maintainer batch, adding decision support, Sendblue messaging workflows, algorithmic discipline playbooks, and a Bumblebee supply-chain inventory wrapper.
+
+## New Skills
+
+- **lemmaly** - gateway discipline for stating Big-O, data structure, and algorithm family before writing loops, queries, or recursion.
+- **mathguard** - large-input acceleration playbook for Bloom filters, HyperLogLog, Count-Min Sketch, FFT, LSH, and related techniques.
+- **invariant-guard** - correctness-first workflow for contracts, loop invariants, termination arguments, and edge cases.
+- **complexity-cuts** - corrective workflow for improving shipped code with poor Big-O one transformation at a time.
+- **sendblue-cli** - Sendblue CLI guidance for iMessage, SMS, and RCS workflows.
+- **sendblue-api** - Sendblue HTTP/JSON API guidance for application code.
+- **sendblue-notify** - notification patterns for texting a user when an agent task is done.
+- **textme** - local daemon workflow for bridging inbound iMessages into Claude Code sessions.
+- **bumblebee** - read-only supply-chain inventory and exposure scanning with Perplexity's Bumblebee CLI.
+- **decision-navigator** - targeted-question workflow for helping users gain clarity on decisions before choosing a path.
+
+## Improvements
+
+- Added a stdlib-only Bumblebee report renderer for local Markdown summaries from NDJSON scan output.
+- Synced generated registry, catalog, compatibility, plugin mirror, documentation, and web assets for the expanded skill catalog.
+
+## Credits
+
+- **[@morsechimwai](https://github.com/morsechimwai)** and **[morsechimwai/lemmaly](https://github.com/morsechimwai/lemmaly)** for PR #622 (`lemmaly`, `mathguard`, `invariant-guard`, `complexity-cuts`).
+- **[@AnthonyFirth](https://github.com/AnthonyFirth)** for PR #623 (`sendblue-cli`, `sendblue-api`, `sendblue-notify`, `textme`).
+- **[@stefan-kp](https://github.com/stefan-kp)**, **[perplexityai/bumblebee](https://github.com/perplexityai/bumblebee)**, and **[mycelos-ai/bumblebee-skill](https://github.com/mycelos-ai/bumblebee-skill)** for PR #625 (`bumblebee`).
+- **[@kavinduUdhara](https://github.com/kavinduUdhara)** for PR #627 (`decision-navigator`).
+
 ## [11.7.0] - 2026-05-26 - "Community Skill Intake and Merge Hygiene"
 
 > Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.

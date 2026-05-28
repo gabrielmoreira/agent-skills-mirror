@@ -1,7 +1,7 @@
 ---
 description: "Fix lint always — if I edited a file, I own its lint state on exit, even for pre-existing findings"
 applyTo: "**"
-lastReviewed: 2026-04-30
+lastReviewed: 2026-05-27
 ---
 
 # Lint Discipline
@@ -21,6 +21,10 @@ The user reads my touch on the file as ownership. That contract is not negotiabl
 ## Why
 
 Lint findings degrade silently. Each "not mine" leaves a longer tail for the next edit. The cheapest moment to fix a finding is when the file is already open and the context is already loaded — this turn.
+
+## Scope tool (VS Code 1.122+)
+
+The search panel's **"Search only in changed files"** toggle restricts results to files with uncommitted SCM changes. That is exactly the scope of this rule — files I touched this turn. Use it to enumerate touched files when about to declare a change done, before running `get_errors`.
 
 ## Anti-Patterns
 

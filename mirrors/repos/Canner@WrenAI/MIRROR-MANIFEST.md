@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Canner/WrenAI` — 26 default patterns, 4 followed patterns, 44 file(s) materialized.
+Mirror of `Canner/WrenAI` — 26 default patterns, 4 followed patterns, 47 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Canner/WrenAI` — 26 default patterns, 4 followed patterns, 44 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 44 |
+| Files         | 47 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -97,15 +97,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 33 | ✓ | [`skills/wren-dlt-connector/references/dlt_sources.md`](skills/wren-dlt-connector/references/dlt_sources.md) |
 | 34 | ✓ | [`skills/wren-dlt-connector/scripts/introspect_dlt.py`](skills/wren-dlt-connector/scripts/introspect_dlt.py) |
 | 35 | ✓ | [`skills/wren-dlt-connector/SKILL.md`](skills/wren-dlt-connector/SKILL.md) |
-| 36 | ✓ | [`skills/wren-generate-mdl/SKILL.md`](skills/wren-generate-mdl/SKILL.md) |
-| 37 | ✓ | [`skills/wren-onboarding/SKILL.md`](skills/wren-onboarding/SKILL.md) |
-| 38 | ✓ | [`skills/wren-usage/references/memory.md`](skills/wren-usage/references/memory.md) |
-| 39 | ✓ | [`skills/wren-usage/references/wren-sql.md`](skills/wren-usage/references/wren-sql.md) |
-| 40 | ✓ | [`skills/wren-usage/SKILL.md`](skills/wren-usage/SKILL.md) |
-| 41 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 42 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 43 | → | [`README.md`](README.md) |
-| 44 | → | [`SECURITY.md`](SECURITY.md) |
+| 36 | ✓ | [`skills/wren-enrich-context/references/cube_proposals.md`](skills/wren-enrich-context/references/cube_proposals.md) |
+| 37 | ✓ | [`skills/wren-enrich-context/references/gap_catalog.md`](skills/wren-enrich-context/references/gap_catalog.md) |
+| 38 | ✓ | [`skills/wren-enrich-context/SKILL.md`](skills/wren-enrich-context/SKILL.md) |
+| 39 | ✓ | [`skills/wren-generate-mdl/SKILL.md`](skills/wren-generate-mdl/SKILL.md) |
+| 40 | ✓ | [`skills/wren-onboarding/SKILL.md`](skills/wren-onboarding/SKILL.md) |
+| 41 | ✓ | [`skills/wren-usage/references/memory.md`](skills/wren-usage/references/memory.md) |
+| 42 | ✓ | [`skills/wren-usage/references/wren-sql.md`](skills/wren-usage/references/wren-sql.md) |
+| 43 | ✓ | [`skills/wren-usage/SKILL.md`](skills/wren-usage/SKILL.md) |
+| 44 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 45 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 46 | → | [`README.md`](README.md) |
+| 47 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

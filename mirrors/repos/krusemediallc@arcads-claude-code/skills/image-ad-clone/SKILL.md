@@ -1,6 +1,6 @@
 ---
 name: image-ad-clone
-description: Use when the user wants to reverse-engineer an existing image ad into a reusable, parameterizable prompt template that can be reused with any brand and any product. Validates the template by round-tripping through the Arcads external API — either ChatGPT Image 2 (gpt-image-2) or Nano Banana (nano-banana-2 / -pro / -edit). Triggers on phrases like "clone this ad as a template", "reverse engineer this ad", "turn this ad into a prompt", "extract a template from this image", "make this ad reusable", "add this to my prompt library", "study this ad and make a template", "clone this ad with chatgpt image", "clone this ad with nano banana". Anchors on input being an EXISTING ad image the user provides — does NOT trigger for fresh ad generation requests (use chatgpt-image-ad or nano-banana-image-ad for that).
+description: Use when the user wants to reverse-engineer an existing image ad into a reusable prompt template. Validates via Arcads — picks gpt-image-2 or Nano Banana at Phase 1. Triggers on "clone this ad as a template", "reverse engineer this ad", "turn this ad into a prompt", "extract a template", "make this ad reusable", "add to my prompt library", "study this ad and make a template". Input is an EXISTING ad image; does NOT trigger for fresh generation (use chatgpt-image-ad or nano-banana-image-ad).
 ---
 
 # image-ad-clone (Arcads)

@@ -1,7 +1,7 @@
 ---
 description: "Strip project specifics before writing to user-shared fleet channels — prevent one heir's project context from leaking into the rest of the fleet"
-applyTo: "**/AI-Memory/**,**/feedback/**,**/announcements/**,**/*fleet*,**/*feedback*"
-lastReviewed: 2026-04-30
+applyTo: "**/Alex_ACT_Memory/**,**/feedback/**,**/announcements/**,**/*fleet*,**/*feedback*"
+lastReviewed: 2026-05-28
 ---
 
 # Cross-Project Isolation
@@ -14,10 +14,10 @@ Whenever I am about to write to a channel that other heirs in the user's fleet w
 
 | Channel | Path |
 |---|---|
-| Fleet feedback | `AI-Memory/feedback/alex-act/` |
-| Fleet notes | `AI-Memory/notes/` |
-| Fleet announcements | `AI-Memory/announcements/alex-act/` (Supervisor or user only) |
-| Anything else under shared OneDrive `AI-Memory/` |
+| Fleet feedback | `../Alex_ACT_Memory/feedback/` |
+| Fleet notes | `../Alex_ACT_Memory/notes.md` |
+| Fleet announcements | `../Alex_ACT_Memory/announcements/` (Supervisor or user only) |
+| Anything else under shared `../Alex_ACT_Memory/` |
 
 This does **not** fire for:
 

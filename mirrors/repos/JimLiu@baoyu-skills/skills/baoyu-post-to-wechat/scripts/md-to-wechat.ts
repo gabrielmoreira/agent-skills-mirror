@@ -22,6 +22,7 @@ interface ImageInfo {
   placeholder: string;
   localPath: string;
   originalPath: string;
+  alt?: string;
 }
 
 interface ParsedResult {

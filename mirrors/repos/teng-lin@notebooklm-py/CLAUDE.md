@@ -84,7 +84,7 @@ RPC Layer (rpc/)
 | File | Purpose |
 |------|---------|
 | `client.py` | Main `NotebookLMClient` class |
-| `_session.py` | Concrete `Session` orchestrator; HTTP client lifecycle; late-binding wrappers |
+| `_session.py` | Concrete `Session` lifecycle root (no longer a compatibility facade as of Waves 5 + 11 of session-decoupling — see [ADR-014](docs/adr/0014-feature-local-runtime-adapters.md)). Constructs the collaborator graph in `__init__`; owns open/close lifecycle; exposes a narrow retention set (Stage-A accessors `collaborators` / `session_transport` / `rpc_executor`, the `_authed_post_chain_terminal` middleware leaf, provider-closure capture targets, and AST-guarded auth surface). Retention list pinned by [`docs/session-method-retention.md`](docs/session-method-retention.md) + [`tests/_lint/test_session_retention.py`](tests/_lint/test_session_retention.py); Stage-A accessor leakage outside `client.py` / `_session.py` / `tests/` blocked by [`tests/_lint/test_client_composition.py`](tests/_lint/test_client_composition.py). |
 | `_kernel.py` | Concrete `Kernel` transport core (owns `httpx.AsyncClient` + cookie jar) |
 | `_session_config.py` | `DEFAULT_*` knobs and module-level constants |
 | `_session_helpers.py` | `is_auth_error`, `AUTH_ERROR_PATTERNS`, `_resolve_keepalive_interval` |
@@ -94,7 +94,7 @@ RPC Layer (rpc/)
 | `_reqid_counter.py` | `ReqidCounter` — monotonic `_reqid` for the chat backend |
 | `_session_auth.py` | `AuthRefreshCoordinator` — refresh task + auth-snapshot lock |
 | `_session_lifecycle.py` | `ClientLifecycle` — loop-affinity guard + keepalive task |
-| `_rpc_executor.py` | RPC dispatch executor with `DecodeResponse` + `RpcOwner` Protocols |
+| `_rpc_executor.py` | RPC dispatch executor. Takes its `Kernel`, `SessionTransport`, `AuthRefreshCoordinator`, and `ClientMetrics` collaborators directly via keyword-only constructor parameters (ADR-014 Rule 5). The `RpcOwner` Protocol that previously re-declared Session's private attribute surface was deleted in Wave 4 of session-decoupling (#1068); only the local `DecodeResponse` Protocol remains. |
 | `_request_types.py` | Shared authed POST request construction types: `AuthSnapshot`, `BuildRequest`, `PostBody`, and materialization helpers. |
 | `_transport_errors.py` | Transport exceptions, `Retry-After` parsing, and terminal `Kernel.post` error mapping for retry/auth middleware. |
 | `_streaming_post.py` | Size-capped streaming POST helper used by `Kernel.post`. |
@@ -132,7 +132,7 @@ RPC Layer (rpc/)
 | `_middleware_chain.py` | Constructs the middleware chain in the canonical ADR-009 order |
 | `_middleware*.py` | Modular middleware implementations (drain, metrics, semaphore, retry, auth, error injection, tracing) |
 | `rpc/types.py` | RPC method IDs (source of truth) |
-| `auth.py` | Authentication facade and host for retained surface. Still owns `AuthTokens`, `load_auth_from_storage()`, and the `_validate_required_cookies()` write-through that propagates `auth.py`-level policy rebindings into `_auth.cookie_policy` (and mirrors `_SECONDARY_BINDING_WARNED` back). Tests still pin `notebooklm.auth.<name>` monkeypatch behavior (see `tests/unit/test_public_shims.py`); `_AuthFacadeModule` itself was retired in [arch-d1-auth-side](https://github.com/teng-lin/notebooklm-py/pull/834) (#834), but the flat re-export goal in ADR-003 is **deferred** — full retirement of `AuthTokens` / `load_auth_from_storage` to `_auth/` has not happened. |
+| `auth.py` | Authentication facade — **almost pure re-exports** (the only remaining function body is `async def enumerate_accounts`, which binds `_poke_session` as a default dependency; ADR-003 records the optional-`async` audit command). Every other top-level name forwards from the relevant `_auth/*` module. The previous write-through (`_validate_required_cookies` copy-forwarding `MINIMUM_REQUIRED_COOKIES` / `_EXTRACTION_HINT` / `_has_valid_secondary_binding` into `_cookie_policy` and mirroring `_SECONDARY_BINDING_WARNED` back) was inverted in Wave 4 T2.2 (#1070); `auth._validate_required_cookies` is now identity-equal to `_auth.cookie_policy._validate_required_cookies`. `load_auth_from_storage` body was moved to `_auth/tokens.py` in Wave 3a (#1066). `AuthTokens` was moved to `_auth/tokens.py` in #1055. **ADR-003 flat-re-export goal closed by ADR-014** (session-decoupling Waves 3a + 4 T2.2 + 5). Tests that need to rebind policy names patch `_auth.cookie_policy.X` directly. |
 | `_auth/paths.py` | Storage paths and filesystem helpers |
 | `_auth/extraction.py` | Cookie/token extraction from browser sessions |
 | `_auth/headers.py` | HTTP header construction |
@@ -145,7 +145,7 @@ RPC Layer (rpc/)
 src/notebooklm/
 ├── __init__.py                  # Public exports
 ├── client.py                    # NotebookLMClient
-├── auth.py                      # Authentication facade hosting `AuthTokens`, `load_auth_from_storage()`, and `_validate_required_cookies()` write-through into `_auth.cookie_policy` (ADR-003 flat re-export goal deferred; `_AuthFacadeModule` retired in #834)
+├── auth.py                      # Authentication facade — almost pure re-exports (`enumerate_accounts` exception; ADR-003 flat-re-export goal closed by ADR-014; see file table above)
 ├── types.py                     # Dataclasses
 ├── _session.py                  # Concrete Session orchestration (NotebookLMClient internals)
 ├── _kernel.py                   # Concrete Kernel transport core

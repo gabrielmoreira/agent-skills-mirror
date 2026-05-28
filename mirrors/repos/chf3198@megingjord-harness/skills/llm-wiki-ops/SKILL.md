@@ -43,7 +43,7 @@ Keyword scoring → top 5 pages → shows matches with excerpts.
 ```bash
 npm run wiki:ingest -- raw/articles/<source>.md
 ```
-Raw → LLM summary → wiki/sources/ page → index + log update.
+Raw → LLM summary → wiki/wisdom/global/sources/ page → index + log update.
 
 ### Lint (devenv-ops only)
 ```bash

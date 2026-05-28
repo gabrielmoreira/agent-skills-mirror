@@ -760,6 +760,71 @@ happy, cartoon, stylized anime
 
 ---
 
+### 27a. 純抽象 VFX — 時空裂縫 / 維度突破 (15s, OiiOii-safe) ⭐ v1.4.4
+
+**Use case:** 想做 dramatic VFX 但避開所有版權 / IP / 高風險視覺類別 (機甲/超英/光劍/怪獸 都會被擋)。純抽象幾何 + 粒子 + 光線 = OiiOii copyright filter 完全友善 + 仍極致電影感。
+
+**Target:** OiiOii 自由畫布 + Seedance 2.0 pro, 15s, 16:9 (140 STAR ≈ NT$33)
+
+```
+[00:00-00:05] 純黑虛空中央，一道{ENERGY_FORM: 金白色閃電裂痕}緩慢撕開空間，邊緣噴發白熾粒子與青藍電弧。相機極端微距 dolly-in 推進核心，呈現極致細節，粒子在四周漂浮翻轉。Smooth transition to: {EXPANSION: 裂痕劇烈擴張}。
+
+[00:05-00:10] {EXPANSION_PAYOFF: 裂痕爆發，內部湧出另一維度視覺}：{GEOMETRY: 液態水銀構成的莫比烏斯幾何結構}、漂浮的水晶碎片、扭曲折射的光線、緩慢翻轉的{COSMIC: 紫金星雲}。相機高速 orbit 環繞 270 度，揭示結構複雜性。Match cut to: {ACCELERATION: 變形加速}。
+
+[00:10-00:15] 鏡頭穿越進維度核心，揭示{FINAL_FORM: 無限循環的莫比烏斯能量結構}，由純光與粒子構成，緩慢呼吸般脈動。Final beat: 鏡頭緩慢拉遠 (dolly pull-back)，整個結構在黑色虛空中如{ANCHOR: 鑽石}般閃爍，定格畫面。
+
+[視覺風格] AAA 級電影 VFX 製作，IMAX 8K 級畫質，多層次粒子模擬，超寫實光線追蹤，極致景深，電影感色彩分級。
+[色彩] 純黑底 + {COLOR_1: 金白高光} + {COLOR_2: 青藍電弧} + {COLOR_3: 深紫星雲} + {COLOR_4: 水銀銀白}。
+[音訊] 低頻 sub-bass 環境，{SFX_TEXTURE: 維度撕裂金屬聲}，能量爆發 whoosh，定格水晶共振音。
+[Constraints] 平滑鏡頭轉場、ONE camera motion per shot、無變形漂移、無人類角色、無建築、無 IP、無機甲、純抽象視覺。
+```
+
+**Negative (內建在 Constraints 行)：**
+```
+人類角色、建築、IP 角色、機甲、辨識的影視特徵、變形、漂移
+```
+
+**Why:**
+- 3-shot 結構 + `Smooth transition to` / `Match cut to` / `Final beat` = Seedance 2.0 pro multi-shot 信號
+- 「純黑虛空 + 抽象幾何 + 粒子 + 光」= 零 IP 觸發風險
+- 4 行 metadata (視覺/色彩/音訊/Constraints) = agent 完整解析所有指令
+- 「無 IP、無機甲、純抽象視覺」明寫進 Constraints = 強化 copyright safety
+- 「ONE camera motion per shot」防止 Seedance 在一個 shot 內亂切鏡
+
+**Swap points (可換的 placeholder)：**
+
+| Placeholder | 替代範例 |
+|---|---|
+| `ENERGY_FORM` | 液態水銀球 / 漂浮水晶 / 旋轉星雲 / 能量漩渦 / 光繭 |
+| `EXPANSION` | 球體扭曲變形 / 水晶生長 / 星雲爆發 / 流體炸開 |
+| `GEOMETRY` | 莫比烏斯 / 克萊因瓶 / 分形幾何 / 蜂巢結構 / 螺旋 DNA |
+| `COSMIC` | 紫金星雲 / 銀河旋臂 / 太陽風暴 / 黑洞吸積盤 |
+| `FINAL_FORM` | 莫比烏斯能量 / 完美鑽石 / 旋轉銀河 / 神聖幾何 |
+| `ANCHOR` | 鑽石 / 水晶 / 黑洞 / 星座 / 光繭 |
+| `COLOR_*` | 純黑/金白/青藍/紫/銀白/翡翠/血紅/海藍/橘紅 |
+| `SFX_TEXTURE` | 維度撕裂金屬 / 液態流動 / 風暴呼嘯 / 水晶共振 |
+
+**OiiOii-safe 替代主題（同公式換 placeholder 即可）：**
+
+1. **液態金屬星雲幾何**：水銀球 → 克萊因瓶 → 鑽石
+2. **時空裂縫**：閃電裂痕 → 莫比烏斯 → 黑洞
+3. **水晶宇宙生成**：水晶種子 → 分形生長 → 銀河系
+4. **能量花苞綻放**：光繭 → 蜂巢結構 → 太陽
+5. **水墨宇宙**：墨滴入水 → 銀河擴散 → 黑洞收縮
+6. **光譜萬花筒**：白光分裂 → 萬花筒幾何 → 鑽石折射
+
+**禁忌（OiiOii copyright filter 會擋）：**
+- ❌ 巨型機甲 / 鋼鐵巨人 → 撞 Pacific Rim / Transformers / Gundam
+- ❌ 超英雄飛行戰鬥 → 撞 Marvel / DC
+- ❌ 光劍 / 絕地武士 → 撞 Star Wars
+- ❌ 巨型怪獸破壞城市 → 撞 Godzilla / Pacific Rim Kaiju
+- ❌ 動漫熱血少年 → 撞 Naruto / DBZ / One Piece
+- ❌ 賽博龐克偵探 + trench coat → 撞 Blade Runner
+
+實測 2026-05-21 連續兩次 「巨型機甲」prompt 都觸發攔截（即使第 2 次完全沒寫 IP 名稱），所以**整個視覺類別**都要避開，不只 IP 名稱。
+
+---
+
 ### 28. 80s Synthwave Neon Drive (10s)
 
 **Use case:** 復古未來、合成波、Drive / Kavinsky MV 感

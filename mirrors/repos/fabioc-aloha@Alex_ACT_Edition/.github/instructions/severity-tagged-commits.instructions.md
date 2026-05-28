@@ -1,8 +1,10 @@
 ---
 description: "Every commit touching brain artefacts (instructions / skills / prompts / agents / scripts / config / docs/ledgers / HANDOFF) must carry a severity tag in the commit subject: [typo | clarification | behaviour | constitutional]. [behaviour] and [constitutional] require an ACT pass before commit."
 applyTo: "**/.github/**,**/docs/**,**/HANDOFF.md,**/CHANGELOG.md,**/VERSION,**/README.md"
-lastReviewed: 2026-05-24
+lastReviewed: 2026-05-27
 ---
+
+<!-- intentional divergence from Supervisor: Edition `applyTo` omits `ACT/**` (heirs don't ship the framework folder); Brain-qa-changelog integration is generalized (no Supervisor-only `brain-curation-rules` cross-ref); Edition's trigger list includes `.github/scripts/**` (Supervisor keeps scripts at root). Audited 2026-05-26, retained 2026-05-27. -->
 
 # Severity-tagged brain edits
 

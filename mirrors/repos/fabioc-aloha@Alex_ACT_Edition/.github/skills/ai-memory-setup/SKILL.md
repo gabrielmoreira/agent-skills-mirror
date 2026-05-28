@@ -1,202 +1,125 @@
 ---
 name: ai-memory-setup
-description: "Detect, create, and manage the AI-Memory fleet communication channel. Fires on bootstrap, session start (announcements), and feedback writes."
-lastReviewed: 2026-05-18
+description: "Detect, resolve, and manage the Alex_ACT_Memory shared memory bus. Fires on bootstrap, session start (announcements), and feedback writes."
+lastReviewed: 2026-05-28
 ---
 
 # AI-Memory Setup
 
-AI-Memory is the shared folder on the user's cloud drive where ACT heirs exchange feedback, announcements, and registry data. This skill covers detection, creation, path resolution, and ongoing read/write operations.
+Alex_ACT_Memory is a shared git repo (sibling clone at `../Alex_ACT_Memory`) where ACT heirs exchange feedback, announcements, knowledge, and profile data. This skill covers resolution, bootstrapping, and ongoing read/write operations.
 
-## Formal contract
+## Resolution Algorithm (3-state)
 
-Once AI-Memory exists, `AI-Memory/SCHEMA.md` is the source of truth for subfolder ownership, required frontmatter, and lifecycle rules (announcement expiry, feedback inbox-not-archive, knowledge-package retirement). Read it when in doubt about *what an artifact should look like* or *when it should be pruned*. This skill covers *how to set up and access* AI-Memory; SCHEMA.md covers *what lives inside it*.
+The `_registry.cjs` script resolves the memory bus in this order:
 
-If SCHEMA.md is missing on a heir's resolved AI-Memory root, the Supervisor hasn't initialized it yet. The Create operation below installs the base structure; SCHEMA.md is added by Supervisor curation, not by heirs.
+1. **Sibling exists**: `../Alex_ACT_Memory/.git` is present → use it, pull updates (best-effort)
+2. **Clone from remote**: sibling absent, remote URL configured → `git clone`
+3. **Scaffold**: clone fails or no remote → create minimal local repo
 
-## Supported Cloud Providers
-
-| Provider | Folder patterns detected | Notes |
-| --- | --- | --- |
-| OneDrive | `OneDrive`, `OneDrive - *` (personal, family, business) | Most common; multiple accounts create multiple folders |
-| iCloud | `iCloudDrive`, `iCloud Drive`, `iCloud~com~apple~CloudDocs` | macOS and Windows variants |
-| Dropbox | `Dropbox`, `Dropbox (Personal)`, `Dropbox (Business)` | Personal and business variants |
-| Google Drive | `Google Drive`, `My Drive` | Drive for Desktop sync folder |
-| Box | `Box`, `Box Sync` | Enterprise cloud storage |
-| MEGA | `MEGA`, `MEGAsync` | Encrypted cloud storage |
-| pCloud | `pCloud`, `pCloud Drive` | European cloud storage |
-| Nextcloud | `Nextcloud` | Self-hosted cloud |
-
-Discovery scans the user's HOME directory for any folder matching these patterns. Unknown cloud drives are ignored (the user can still point to them manually via `ai_memory_root`).
-
-## Path Resolution Algorithm
-
-Resolve the AI-Memory root in this order:
-
-1. **Config override**: read `.github/config/cognitive-config.json`. If `ai_memory_root` is set, use `<HOME>/<ai_memory_root>/AI-Memory`.
-2. **Auto-discovery**: scan `<HOME>` for folders matching known cloud provider patterns. Skip any folder listed in `ai_memory_exclude`. Among matches, prefer drives that already contain an `AI-Memory/` subfolder.
-3. **Local fallback**: `~/AI-Memory` (no cloud sync, still functional)
-4. **Exclusion list**: `ai_memory_exclude` in cognitive-config.json lists folder names to skip (e.g., `["OneDrive - <your-work-org>"]` to avoid a work account).
-
-The resolution order matches `_registry.cjs` (the muscle used by `bootstrap-heir.cjs` and `upgrade-self.cjs`). LLM heirs and scripts must agree on the same path.
+Resolution always succeeds (scaffold is the floor). Heirs never need to configure cloud drives or pin paths.
 
 ## Folder Structure
 
 ```text
-<cloud-drive>/AI-Memory/
-  README.md                           # Channel overview
-  SCHEMA.md                           # Formal contract (subfolder ownership, frontmatter, lifecycle)
-  feedback/
+../Alex_ACT_Memory/
+  README.md
+  announcements/           # Fleet-wide release notes and guidance
     README.md
-    alex-act/                         # Heir feedback inbox
-      README.md
-  announcements/
-    alex-act/                         # Fleet-wide announcements
-      README.md
-  heirs/
-    registry.json                     # Fleet registry (auto-maintained)
-  knowledge/                          # Shared knowledge base (see index.json)
-  insights/                           # Analytical insights
+  feedback/                # Heir friction reports
+    README.md
+  knowledge/               # Shared knowledge packages
+    index.json
+    README.md
+  profile/                 # Per-user profiles
+    default/README.md
+    <username>/user-profile.json
+  insights/                # Analytical insights
+  docs/
+    MIGRATION.md           # OneDrive → git migration guide
 ```
-
-### Knowledge Packages
-
-`AI-Memory/knowledge/` contains reference material installed from the Plugin Mall. These are **not** loaded into the brain -- they are consulted on demand when a task matches their domain.
-
-Read `AI-Memory/knowledge/index.json` to discover available packages. Each entry has `name`, `keywords`, `use_phase`, and `path`. When a task involves a matching phase (planning, audit, review, implementation) or keyword, read the referenced `reference.md` for guidance.
-
-This costs zero tokens until you actually read it.
 
 ## Operations
 
 ### Detect (session start)
 
-On every session start, resolve the AI-Memory root. If found:
+On every session start, resolve the memory bus via `resolveMemoryBus(repoRoot)`. If found:
 
-1. Check `announcements/alex-act/` for unread files
+1. Check `announcements/` for unread files
 2. Report any new announcements to the user (one line each)
 3. Do NOT read or report feedback (that's the Supervisor's job)
 
-If not found: note it silently. Do not prompt the user unless they explicitly ask about fleet communication.
+If resolution fails completely (should not happen — scaffold is the floor): note silently, do not prompt.
 
-### Create (first time setup)
+### Bootstrap (first time)
 
-When AI-Memory is needed but doesn't exist (bootstrap, first feedback write):
+Handled automatically by `bootstrap-heir.cjs`. The script calls `resolveMemoryBus(targetAbs)` which clones or scaffolds as needed. No user interaction required.
 
-1. Discover which cloud drives exist:
+To manually resolve:
 
-   ```bash
-   node .github/scripts/_registry.cjs --discover
-   ```
-
-   Output lists all detected cloud drives with provider name and whether AI-Memory exists.
-
-2. If multiple drives found, ask the user which one to use. If only one, use it. If none, offer `~/AI-Memory` as local fallback.
-
-3. Create the folder structure:
-
-   ```bash
-   node .github/scripts/_registry.cjs --init "<drive-name>"
-   ```
-
-   Or during bootstrap, use the `--ai-memory` flag:
-
-   ```bash
-   node bootstrap-heir.cjs --target . --heir-id my-project --ai-memory "Dropbox" --apply
-   ```
-
-4. The choice is automatically persisted in `.github/config/cognitive-config.json`:
-
-   ```json
-   {
-     "ai_memory_root": "Dropbox",
-     "ai_memory_exclude": ["OneDrive - <your-work-org>"]
-   }
-   ```
-
-5. Verify: `node .github/scripts/_registry.cjs --resolve .` should return the AI-Memory path.
+```bash
+node .github/scripts/_registry.cjs --resolve .
+```
 
 ### Write Feedback
 
 When the heir observes friction worth surfacing:
 
-1. Resolve AI-Memory root
-2. Write one markdown file per item to `feedback/alex-act/`
+1. Resolve memory bus
+2. Write one markdown file to `feedback/`
 3. Filename format: `YYYY-MM-DD-<heir-id>-<short-slug>.md`
 4. Strip project specifics per `cross-project-isolation.instructions.md`
-5. Frontmatter per `AI-Memory/SCHEMA.md` § Feedback (lowercase keys): `date`, `heir_id` (from `.github/.act-heir.json`), `severity` (critical/high/medium/low), `category` (bug/friction/feature-request/success/framework). Body: what you were doing, what happened, what you expected, repro steps, file or rule references.
+5. Commit and push (best-effort; push may fail without remote)
 
 ### Read Announcements
 
 On session start (triggered by `greeting-checkin.instructions.md`):
 
-1. Resolve AI-Memory root
-2. List files in `announcements/alex-act/` (skip README.md)
+1. Resolve memory bus
+2. List files in `announcements/` (skip README.md)
 3. For each unread file, report the title and date
 4. Do NOT delete announcement files (they persist for all heirs)
 
-## Multi-Cloud-Drive Disambiguation
+### Profile
 
-Users may have multiple OneDrive accounts (personal + work). The `ai_memory_exclude` field prevents heirs from writing to the wrong drive.
+User profiles live at `profile/<username>/user-profile.json`. Read via `readProfile(memoryRoot)`, write via `writeProfile(memoryRoot, profile)`.
 
-| Scenario | Resolution |
+## Programmatic API (`_registry.cjs`)
+
+| Function | Purpose |
 | --- | --- |
-| One OneDrive | Auto-detected, no config needed |
-| Two OneDrives, AI-Memory in one | `ai_memory_root` pins the correct one |
-| Two OneDrives, AI-Memory in both | `ai_memory_exclude` blocks the wrong one |
-| No OneDrive, has iCloud | iCloud candidate resolves |
-| No cloud drive at all | `~/AI-Memory` local fallback |
+| `resolveMemoryBus(repoRoot?)` | Returns `{ root, level, message }` — always succeeds |
+| `scaffoldMemoryRepo(memoryPath)` | Creates minimal folder structure + git init |
+| `readProfile(memoryRoot)` | Returns user profile object or null |
+| `writeProfile(memoryRoot, profile)` | Writes profile + best-effort commit/push |
 
-## Configuration Reference
+### CLI
 
-`cognitive-config.json` fields (heir-owned, not overwritten on upgrade):
+```bash
+node .github/scripts/_registry.cjs --resolve [dir]     # Resolve memory bus
+node .github/scripts/_registry.cjs --profile [dir]     # Read user profile
+```
 
-| Field | Type | Default | Purpose |
-| --- | --- | --- | --- |
-| `ai_memory_root` | string | (auto-detect) | Cloud drive folder name to use |
-| `ai_memory_exclude` | string[] | [] | Folder names to skip during detection |
+## Migration from OneDrive-based AI-Memory
+
+Users upgrading from Edition <3.0.0 need a one-time migration:
+
+1. Clone `Alex_ACT_Memory` as a sibling: `git clone https://github.com/fabioc-aloha/Alex_ACT_Memory.git ../Alex_ACT_Memory`
+2. Copy content from old `<cloud-drive>/AI-Memory/` to the new repo
+3. Remove `ai_memory_root` and `ai_memory_exclude` from `cognitive-config.json`
+4. Full guide: `../Alex_ACT_Memory/docs/MIGRATION.md`
 
 ## Anti-Patterns
 
 | Anti-pattern | Correction |
 | --- | --- |
-| Hardcoding an absolute path | Use the resolution algorithm; paths differ per user and OS |
-| Creating AI-Memory in a work-account cloud drive (e.g. `OneDrive - <your-employer>`) | Personal cloud drive only; work drives may have retention policies |
+| Hardcoding an absolute path to memory | Use `resolveMemoryBus()` — it handles all three states |
 | Writing feedback without stripping project context | Always apply `cross-project-isolation` before writing |
 | Reading feedback as a heir | Feedback is for the Supervisor; heirs read announcements only |
-| Creating AI-Memory on every session | Create once on bootstrap; subsequent sessions just resolve |
-
-## Muscle Reference
-
-The `_registry.cjs` script (shipped with Edition) provides both a programmatic API and a CLI:
-
-### Programmatic API
-
-| Function | Purpose |
-| --- | --- |
-| `resolveAiMemoryRoot(heirRoot?)` | Returns the AI-Memory path or null; honors cognitive-config.json |
-| `discoverCloudDrives(heirRoot?)` | Scans HOME for cloud drive folders; returns `[{ name, path, provider, hasAiMemory }]` |
-| `initAiMemory(driveName)` | Creates full folder structure + READMEs |
-| `upsertHeir(marker, repoPath)` | Updates `heirs/registry.json` |
-
-### CLI
-
-```bash
-node .github/scripts/_registry.cjs --discover          # List cloud drives
-node .github/scripts/_registry.cjs --init "<name>"     # Create AI-Memory in named drive
-node .github/scripts/_registry.cjs --resolve [dir]     # Resolve AI-Memory root
-```
-
-### Bootstrap Flag
-
-```bash
-node .github/scripts/bootstrap-heir.cjs --ai-memory "<drive-name>" ...
-```
-
-Overrides auto-selection during bootstrap. Persists to cognitive-config.json.
+| Calling `scaffoldMemoryRepo` directly | Use `resolveMemoryBus()` which handles the full fallback chain |
+| Expecting OneDrive/iCloud/Dropbox discovery | Removed in Edition 3.0.0; memory bus is git-only now |
 
 ## Falsifiability
 
-- This skill has failed if heirs report AI-Memory not loading, cross-project contamination, or irrelevant search results within 30 days of following the setup procedure
-- The folder structure convention is wrong if OneDrive sync conflicts corrupt the knowledge store on multi-device setups
-- The bootstrap sequence is stale if the cognitive-config.json schema changes and this skill references obsolete fields
+- This skill has failed if heirs report memory bus resolution errors within 30 days of following the setup procedure
+- The 3-state algorithm is wrong if `scaffoldMemoryRepo` produces repos that can't later accept a remote and sync
+- The bootstrap sequence is stale if `_registry.cjs` exports change and this skill references obsolete functions

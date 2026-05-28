@@ -57,11 +57,9 @@ node <edition-path>/.github/scripts/bootstrap-heir.cjs \
 2. Confirm with user.
 3. Re-run with `--apply`.
 4. Run `node .github/skills/greeting-checkin/scripts/heir-doctor.cjs` -- must exit 0.
-5. **AI-Memory setup**: The bootstrap script auto-detects cloud drives and creates `AI-Memory/` if none exists. If it reports "No AI-Memory folder found", help the user:
-   - List detected cloud drives (OneDrive variants, iCloud, Dropbox)
-   - Ask which one to use for fleet communication
-   - Run: `node -e "require('./.github/scripts/_registry.cjs').initAiMemory('<drive-name>')"`
-   - Verify `ai_memory_root` was persisted in `.github/config/cognitive-config.json`
+5. **Shared memory**: The bootstrap script auto-resolves the `Alex_ACT_Memory` sibling repo (clone or scaffold). If it reports a scaffold, suggest the user clone the shared memory repo:
+   - Run: `git clone https://github.com/fabioc-aloha/Alex_ACT_Memory.git ../Alex_ACT_Memory`
+   - Or verify resolution: `node .github/scripts/_registry.cjs --resolve .`
 6. Stage but do NOT commit. Suggest commit message: `chore: bootstrap as Alex_ACT_Edition heir`.
 
 ## Path C — Quick Register (path-1)

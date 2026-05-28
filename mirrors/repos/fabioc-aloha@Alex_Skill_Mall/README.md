@@ -6,7 +6,7 @@ The plugin marketplace for ACT (Artificial Critical Thinking) agents and heirs. 
 
 ## What's Here
 
-301 plugins organized into 16 categories, plus knowledge packages for on-demand reference material. Each plugin is a self-contained folder with a human-readable README, machine-readable manifest (`plugin.json`), brain artifact (`SKILL.md`), and optional instructions, prompts, or muscles.
+360 plugins organized into 21 categories, plus 19 knowledge packages across 9 categories for on-demand reference material. Each plugin is a self-contained folder with a human-readable README, machine-readable manifest (`plugin.json`), brain artifact (`SKILL.md`), and optional instructions, prompts, or muscles.
 
 **Knowledge packages** (`knowledge/`) are reference material installed to `AI-Memory/knowledge/` instead of the brain. They cost zero tokens until consulted -- ideal for architecture planning, compliance audits, and other periodic tasks.
 
@@ -14,11 +14,12 @@ Install plugins into any ACT heir project without losing them to Edition upgrade
 
 | Metric | Value |
 | --- | --- |
-| Plugins | 301 |
-| Categories | 16 |
+| Plugins | 360 |
+| Categories | 21 |
+| Knowledge packages | 19 across 9 categories |
 | Shape types | 7 (see notation below) |
 | Install path | `.github/skills/local/` (or matching `local/` dirs) |
-| Primary consumer | Alex ACT Edition v1.2.0+ |
+| Primary consumer | Alex ACT Edition v2.4.0+ |
 | Also works with | GitHub Copilot, Claude, Cursor, Windsurf, any AI reading `.github/` |
 
 ## Quick Start
@@ -49,26 +50,31 @@ Plugins install into `local/` paths so Edition upgrades never clobber them.
 
 Three axes for discovery: **category** (what domain), **shape** (how complex), **tier** (how specialized).
 
-### Categories (301 plugins)
+### Categories (360 plugins)
 
 | Category | Count | Coverage |
 | --- | --- | --- |
+| [Media & Graphics](plugins/media-graphics/) | 37 | Banners, SVG, slides, presentations, video, image handling, deck building |
+| [AI & Agents](plugins/ai-agents/) | 30 | MCP servers, agent design, RAG, prompt engineering, evals |
 | [Security & Privacy](plugins/security-privacy/) | 30 | XSS, injection, secrets, threat modeling, SFI compliance, responsible AI |
-| [DevOps & Process](plugins/devops-process/) | 30 | Git workflow, release, deployment, CI/CD, project management, PM planning, SDLC, Atlassian, product |
-| [Documentation](plugins/documentation/) | 26 | Mermaid, diagrams, docs decay, VitePress, publishing, version stamps |
-| [Cloud & Infrastructure](plugins/cloud-infrastructure/) | 24 | Azure, Fabric, IaC, Bicep, deployment, cost optimization |
-| [Code Quality](plugins/code-quality/) | 25 | Code review, testing, audit patterns, refactoring, coverage, adversarial review |
-| [AI & Agents](plugins/ai-agents/) | 19 | MCP servers, agent design, RAG, prompt engineering, evals |
-| [Media & Graphics](plugins/media-graphics/) | 22 | Banners, SVG, slides, presentations, video, image handling, deck building |
+| [DevOps & Process](plugins/devops-process/) | 29 | Git workflow, release, deployment, CI/CD, project management, PM planning, SDLC, Atlassian, product |
+| [Documentation](plugins/documentation/) | 26 | Mermaid, docs decay, VitePress, publishing, version stamps |
 | [Data & Analytics](plugins/data-analytics/) | 25 | Power BI, KQL, Fabric, dashboards, data visualization, semantic models |
+| [Cloud & Infrastructure](plugins/cloud-infrastructure/) | 24 | Azure, Fabric, IaC, Bicep, deployment, cost optimization |
+| [Code Quality](plugins/code-quality/) | 24 | Code review, testing, audit patterns, refactoring, coverage, adversarial review |
+| [Academic & Research](plugins/academic-research/) | 17 | Paper drafting, citations, survey verification, lit review |
+| [Supervisor & Fleet](plugins/supervisor-fleet/) | 16 | Fleet governance, Mall curation, release ritual, AI-Memory setup |
+| [Productivity](plugins/productivity/) | 15 | Personal productivity, time management, task tracking, focus |
 | [Reasoning & Metacognition](plugins/reasoning-metacognition/) | 15 | ACT pass, hypothesis debugging, root cause, calibration |
 | [Platform & Tooling](plugins/platform-tooling/) | 14 | VS Code, cross-platform, Node.js, frontend patterns |
 | [Architecture & Patterns](plugins/architecture-patterns/) | 13 | Microservices, saga, API design, workflow orchestration |
-| [Supervisor & Fleet](plugins/supervisor-fleet/) | 14 | Fleet governance, Mall curation, release ritual, AI-Memory setup |
-| [Domain Expertise](plugins/domain-expertise/) | 15 | Healthcare, legal, finance, game design, marketing, regulatory, executive leadership |
 | [Converters](plugins/converters/) | 13 | Word, HTML, email, PDF, EPUB, LaTeX, PPTX, plain text, Loop |
+| [Domain Expertise](plugins/domain-expertise/) | 13 | Healthcare, legal, finance, game design, marketing, regulatory, executive leadership |
 | [Communication & People](plugins/communication-people/) | 9 | Stakeholder management, coaching, collaboration |
-| [Academic & Research](plugins/academic-research/) | 7 | Paper drafting, citations, survey verification, lit review |
+| [Image Generation](plugins/image-generation/) | 4 | Image-gen prompts, model selection, style direction |
+| [Diagrams](plugins/diagrams/) | 3 | Diagram authoring, visual notation |
+| [3D Graphics](plugins/3d-graphics/) | 2 | 3D rendering, graphics pipelines |
+| [Bioinformatics](plugins/bioinformatics/) | 1 | Genomics and biological data workflows |
 
 ### Shape Notation
 

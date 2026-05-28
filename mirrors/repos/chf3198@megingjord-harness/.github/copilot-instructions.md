@@ -91,10 +91,10 @@ AI-authored baton artifacts, PR evidence, and governance docs must include human
 
 All governed provider calls route through HAMR (`https://hamr.chf3198.workers.dev`). Activate per-checkout: `npm run hamr:activate`. Canonical contract: `instructions/hamr-routing.instructions.md`. The Global Task Router (lane selection) and HAMR (cost/observability mechanics) are complementary — HAMR does not duplicate lane policy.
 
-## Harness Goal Constitution (priority)
-
-Apply this decision order: Governance > Quality > Zero Cost > Privacy > Portability > Resilience > Throughput > Observability > Interoperability > Maintainability. Record rationale in ticket/PR evidence when a lower-priority goal wins.
+## Harness Goal Constitution — Governance > Quality > Zero Cost > Privacy > Portability > Resilience > Throughput > Observability > Interoperability > Maintainability. Record rationale in ticket/PR evidence when a lower-priority goal wins.
 ## Cross-Team Artifact-Write Contract — see `instructions/cross-team-artifact-write.instructions.md` (target-runtime team owns schema/contract test; required before manager-handoff on cross-runtime config writes).
 ## Hook Behavior Overrides — see `instructions/hook-behavior-overrides.instructions.md` (advisory-vs-blocking contract; Tier-2 self-anneal threshold).
 ## OWASP Agentic Security — see `instructions/owasp-agentic-mapping.instructions.md` (OA1-OA10 risk-to-goal mapping; G1-G10 coverage classification).
 ## Skill Index — auto-derived per `docs/skills-copilot.md`; regenerate via `node scripts/global/skill-views-derive.js`.
+## Role Taxonomy — 7-role canonical set: Manager / Collaborator / Admin / Consultant / IT / Red-Team / Client. Guest-Collaborator reserved. Operator is a meta-term (not a role). Canonical: `instructions/role-baton-routing.instructions.md` §"Role Taxonomy".
+## Merge-evidence convention (cross-runtime, Epic #2295 P1.3) — PR bodies MUST include merge evidence: preferred `merge-evidence-deferred-final: #N` (no auto-close, Consultant retains terminal-finalize) or backward-compat `Closes #N`. Same marker across Claude Code / Codex / Copilot. Rationale: `governance-carve-outs/index.md`.

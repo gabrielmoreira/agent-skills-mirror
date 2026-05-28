@@ -26,7 +26,7 @@ Cross-family review of architectural fit for the diff.
 
 When a diff touches 3+ modules, the reviewer must consider whether the change respects existing module boundaries. Suggest:
 
-- Use `wiki/concepts/` synthesis pages to verify existing module contracts.
+- Use `wiki/wisdom/global/concepts/` synthesis pages to verify existing module contracts.
 - Reference `instructions/global-task-router.instructions.md` for lane / runtime / family boundaries.
 
 ## Confidence calibration

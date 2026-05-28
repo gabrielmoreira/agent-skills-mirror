@@ -1,10 +1,9 @@
 # Architecture (post-v0.5.0)
 
 This document describes the runtime shape of `notebooklm-py` after the
-v0.5.0 refactor program closed (Phases 1-4 of the multi-phase refactor
-plan; the proposal that drove the work is preserved at
-[`docs/refactor-history.md`](./refactor-history.md)). It is the canonical post-refactor
-map.
+v0.5.0 refactor program closed. It is the canonical post-refactor map;
+the historical narrative lives in
+[`docs/refactor-history.md`](./refactor-history.md).
 
 ## Layered overview
 
@@ -56,31 +55,76 @@ Most public methods (`client.notebooks.list()`, `client.sources.rename()`,
 `client.settings.get()`, artifact generation, note CRUD, etc.) follow this path:
 
 ```text
-CLI command or user code
-  -> NotebookLMClient.<feature>.<method>()
-  -> feature API / service builds params and chooses RPCMethod
-  -> RpcCaller.rpc_call(...) (production: Session.rpc_call)
-  -> RpcExecutor.rpc_call(...)
-       - pre-open guard via Kernel.get_http_client()
-       - logical-RPC request id + rpc_calls_started metric
-  -> RpcExecutor._execute_once(...)
-       - idempotency policy / client-token injection
-       - method-id override resolution, request encoding, URL/body builder
-  -> Session._perform_authed_post(...)
-  -> SessionTransport.perform_authed_post(...)
-       - loop-affinity guard, auth snapshot, RpcRequest materialization
-  -> ADR-009 middleware chain
-  -> Session._authed_post_chain_terminal(...)
-  -> SessionTransport.terminal(...)
-       - final auth-freshness rebuild immediately before POST
-  -> Kernel.post(...) -> _streaming_post -> httpx.AsyncClient
-  <- RpcExecutor decodes response with rpc.decode_response(...)
-  <- feature API maps decoded payload to a typed/domain result
++----------------------------------------------------------------+
+| CLI command or user code                                       |
++----------------------------------------------------------------+
+                                 |
+                                 v
++----------------------------------------------------------------+
+| NotebookLMClient.<feature>.<method>()                          |
+|   feature API / service builds params and chooses RPCMethod   |
++----------------------------------------------------------------+
+                                 |
+                                 v
++----------------------------------------------------------------+
+| RpcExecutor.rpc_call(...)                 satisfies RpcCaller  |
+|   - pre-open guard via Kernel.get_http_client()                |
+|   - logical-RPC request id + rpc_calls_started metric          |
++----------------------------------------------------------------+
+                                 |
+                                 v
++----------------------------------------------------------------+
+| RpcExecutor._execute_once(...)                                 |
+|   - idempotency policy / client-token injection                |
+|   - method-id resolution, request encoding, URL/body builder   |
++----------------------------------------------------------------+
+                                 |
+                                 v
++----------------------------------------------------------------+
+| SessionTransport.perform_authed_post(...)                      |
+|   - loop-affinity guard, auth snapshot                         |
+|   - RpcRequest materialization                                 |
++----------------------------------------------------------------+
+                                 |
+                                 v
++----------------------------------------------------------------+
+| ADR-009 middleware chain                                       |
+|   Drain -> Metrics -> Sema -> Retry -> AuthRefresh             |
+|   -> ErrInj -> Tracing                                         |
++----------------------------------------------------------------+
+                                 |
+                                 v
++----------------------------------------------------------------+
+| MiddlewareChainHost._authed_post_chain_terminal(...)           |
+|   chain leaf — ADR-014 Rule 4                                  |
++----------------------------------------------------------------+
+                                 |
+                                 v
++----------------------------------------------------------------+
+| SessionTransport.terminal(...)                                 |
+|   - final auth-freshness rebuild immediately before POST       |
++----------------------------------------------------------------+
+                                 |
+                                 v
++----------------------------------------------------------------+
+| Kernel.post(...) -> _streaming_post -> httpx.AsyncClient       |
++----------------------------------------------------------------+
+                                 |
+                                 v  response unwinds back up
++----------------------------------------------------------------+
+| RpcExecutor decodes via rpc.decode_response(...)               |
+| Feature API maps decoded payload -> typed/domain result        |
++----------------------------------------------------------------+
 ```
+
+Production wires `RpcExecutor` directly into each feature as its
+`RpcCaller` per ADR-014 Rule 1; `NotebookLMClient.rpc_call` dispatches
+through the same `RpcExecutor` stored as `NotebookLMClient._rpc_executor`
+for the public raw-RPC escape hatch.
 
 `NotebookLMClient.rpc_call(method, params)` is the public raw-RPC escape hatch.
 It skips feature-specific param builders and result parsers, but still enters
-the same `Session.rpc_call → RpcExecutor.rpc_call → SessionTransport → Kernel`
+the same `RpcExecutor.rpc_call → SessionTransport → Kernel`
 pipeline.
 
 ### Chat ask path
@@ -90,16 +134,43 @@ pipeline.
 error mapping, so the first ask POST goes through:
 
 ```text
-ChatAPI.ask(...)
-  -> assert_bound_loop(), source-id lookup, conversation lock/cache, next_reqid()
-  -> chat_aware_authed_post(...)
-  -> ChatRuntime.transport_post(...) (production: Session.transport_post)
-  -> Session._perform_authed_post(...)
-  -> SessionTransport.perform_authed_post(...)
-  -> ADR-009 middleware chain
-  -> SessionTransport.terminal(...) -> Kernel.post
-  <- streaming chat parser + citation/reference parser
++----------------------------------------------------------------+
+| ChatAPI.ask(...)                                               |
+|   - loop_guard.assert_bound_loop()                             |
+|   - source-id lookup                                           |
+|   - conversation lock / cache                                  |
+|   - reqid.next_reqid()                                         |
++----------------------------------------------------------------+
+                                 |
+                                 v
++----------------------------------------------------------------+
+| chat_aware_authed_post(transport, ...)                         |
++----------------------------------------------------------------+
+                                 |
+                                 v
++----------------------------------------------------------------+
+| SessionTransport.perform_authed_post(...)                      |
++----------------------------------------------------------------+
+                                 |
+                                 v
++----------------------------------------------------------------+
+| ADR-009 middleware chain                                       |
++----------------------------------------------------------------+
+                                 |
+                                 v
++----------------------------------------------------------------+
+| SessionTransport.terminal(...) -> Kernel.post                  |
++----------------------------------------------------------------+
+                                 |
+                                 v  streaming response
++----------------------------------------------------------------+
+| streaming chat parser + citation/reference parser              |
++----------------------------------------------------------------+
 ```
+
+`ChatAPI` holds the four collaborators it needs (`rpc`, `transport`,
+`reqid`, `loop_guard`) directly — there is no `ChatRuntime` composite
+or `Session.transport_post` indirection.
 
 For a new conversation, `ChatAPI.ask()` then calls `GET_LAST_CONVERSATION_ID`
 through the normal `RpcExecutor` path. Other chat methods such as
@@ -234,7 +305,15 @@ See [ADR-011](./adr/0011-schema-validation-policy.md).
 
 ADR-013 ("Composable Session Capabilities") is the design rationale:
 feature APIs depend on narrow capability Protocols rather than on the
-concrete `Session` class. Six Protocols live in
+concrete `Session` class.
+[ADR-014](./adr/0014-feature-local-runtime-adapters.md) extends that
+intent at runtime: each feature receives the *collaborator* (for
+single-capability Protocols) or a *feature-local frozen-dataclass
+adapter* (for composite Protocols) that satisfies its Protocol —
+never `Session` itself. `NotebookLMClient.__init__` is the composition
+root that wires each feature with the satisfier it needs.
+
+Six Protocols live in
 [`_session_contracts.py`](../src/notebooklm/_session_contracts.py) —
 four shared capability Protocols used by ≥2 features, plus `AuthMetadata`
 and `Kernel`, whose sole consumer today is `SourceUploadPipeline`. Per
@@ -253,42 +332,50 @@ Protocols live next to their single consumer.
 | `RpcCaller` | Exposes `rpc_call(method, params, ...)` — the chokepoint every feature API uses for batchexecute calls. |
 | `LoopGuard` | Exposes `assert_bound_loop()` — single-method cross-loop affinity check; consumed by anything that may touch the HTTP client. |
 | `OperationScopeProvider` | Exposes `operation_scope(label)` — async context manager that scopes drain admission for graceful shutdown. |
-| `AsyncWorkRuntime` | Composes `LoopGuard` + `OperationScopeProvider` for features that own async work. |
+| `AsyncWorkRuntime` | Composes `LoopGuard` + `OperationScopeProvider` for features that own async work. No production consumer at present (the artifact polling service now takes the two underlying Protocols directly); retained because the composition rule it pins is still useful documentation. |
 | `AuthMetadata` | Selected-account routing metadata — `authuser` + `account_email` properties. Single consumer today: `SourceUploadPipeline`. |
 | `Kernel` | Pure transport surface — `post()` method, `cookies` property, `aclose()`. Single consumer today: `SourceUploadPipeline`. |
 
-**Feature-module-local Protocols** (composite runtime unions + the single-consumer
-capability slice `DrainHookRegistration`; each lives next to its consumer and is
-not exported from `_session_contracts.py`):
+**Feature-module-local Protocols.** No feature-local composite-runtime
+unions or adapter dataclasses exist in production. Every
+multi-capability feature takes its collaborators by keyword-only
+constructor argument:
 
-| Protocol | Module | Responsibility |
-|----------|--------|----------------|
-| `ChatRuntime` | [`_chat.py`](../src/notebooklm/_chat.py) | Chat-feature capability union — composes `RpcCaller` + `LoopGuard` and adds chat-specific `transport_post()` + `next_reqid()` methods. (The `ConversationCache` lives on `ChatAPI`, not the Protocol.) |
-| `ArtifactsRuntime` | [`_artifacts.py`](../src/notebooklm/_artifacts.py) | Artifact-feature capability union — composes `RpcCaller` + `AsyncWorkRuntime` + `DrainHookRegistration`. No own members; used by `ArtifactsAPI` for RPC dispatch, loop affinity, operation scopes, and close-time drain-hook registration. The `PollRegistry` lives on `ArtifactsAPI`, not the Protocol. |
-| `UploadRuntime` | [`_source_upload.py`](../src/notebooklm/_source_upload.py) | Upload-pipeline capability union — composes `RpcCaller` + `OperationScopeProvider` + `LoopGuard`. The upload semaphore is internal to `SourceUploadPipeline`, not the Protocol. |
-| `DrainHookRegistration` | [`_artifacts.py`](../src/notebooklm/_artifacts.py) | Exposes `register_drain_hook(name, hook)` for close-time cleanup. Sole `DrainHookRegistration` after the broad-`Session` Protocol was deleted from `_session_contracts.py` (see the `_session_contracts.py` module docstring). |
+- `ArtifactsAPI` and `SourceUploadPipeline` take `rpc: RpcCaller`,
+  `drain: TransportDrainTracker`, `lifecycle: ClientLifecycle`.
+- `ChatAPI` takes `rpc: RpcCaller`, `transport: SessionTransport`,
+  `reqid: ReqidCounter`, `loop_guard: LoopGuard`.
 
-Production satisfies the shared Protocols via `Session`; tests substitute
+Production satisfies the shared Protocols via the underlying
+collaborators (ADR-014 Rule 1: `RpcExecutor` satisfies `RpcCaller`,
+`ClientLifecycle` satisfies `LoopGuard`, `TransportDrainTracker`
+satisfies `OperationScopeProvider`).
+`Session` no longer claims to satisfy the shared Protocols itself.
+Tests substitute
 [`tests/_fixtures/fake_core.py:FakeSession`](../tests/_fixtures/fake_core.py)
 (constructed via `make_fake_core(...)`) — the sanctioned ADR-007 / ADR-013
-fixture pattern.
+fixture pattern; tests that inject narrow fakes into a single feature
+(e.g. `MagicMock(spec=RpcCaller, rpc_call=AsyncMock(...))`) construct
+the feature directly under ADR-014.
 
-### Executor protocols are narrow too
+### Executor takes its collaborators directly
 
-The executor-facing Protocols are intentionally implementation-local,
-but they no longer depend on Session's historical private attribute
-surface. `RpcOwner` in
-[`_rpc_executor.py`](../src/notebooklm/_rpc_executor.py) declares only
-the kernel plus the methods the executor still calls; timeout,
-refresh-callback, and retry-delay values are supplied through constructor
-providers. The executor enters transport through
-`Session._perform_authed_post`, which forwards to
-`SessionTransport.perform_authed_post`; the middleware terminal is
-`Session._authed_post_chain_terminal → SessionTransport.terminal → Kernel.post`.
-Request types, transport errors, and streaming helpers live in separate owning
-modules instead of one catch-all transport helper. This keeps feature APIs on
-narrow capability Protocols while avoiding a near-`Session` structural contract
-inside the RPC stack.
+Per ADR-014 Rule 5, `RpcExecutor` takes its kernel, transport,
+auth-refresh coordinator, and metrics tracker directly — there is no
+Session-shaped owner Protocol. The constructor takes
+`kernel: Kernel`, `transport: SessionTransport`,
+`auth_refresh: AuthRefreshCoordinator`, and `metrics: ClientMetrics`
+as keyword-only parameters, plus constructor-injected providers for
+timeout, refresh-callback enablement, and retry-delay values. The
+executor enters transport through
+`SessionTransport.perform_authed_post` directly; the middleware
+terminal is `MiddlewareChainHost._authed_post_chain_terminal →
+SessionTransport.terminal → Kernel.post`. The chain leaf lives on
+`MiddlewareChainHost` so the chain owns its own terminal and retry
+tunables (ADR-014 Rule 4 chain-ownership carve-out). Request types,
+transport errors, and streaming helpers live in separate owning
+modules. This keeps feature APIs on narrow capability Protocols and
+the executor on direct collaborator dependencies.
 
 ## Post-refactor `Session` collaborator graph
 
@@ -332,11 +419,12 @@ Exec  Ref    Life    Chain Trans Drain  Tracker Coun  Pers
 
 | Collaborator | Module | Responsibility |
 |--------------|--------|----------------|
-| `RpcExecutor` | [`_rpc_executor.py`](../src/notebooklm/_rpc_executor.py) | Single logical batchexecute RPC dispatch path. Owns request-id/started-metric bracketing, idempotency policy lookup, method-ID resolution, request encoding, response decode, RPC error mapping, and decode-time auth refresh retry. Consumes the `RpcOwner` Protocol declared at module top and enters transport through `Session._perform_authed_post`. |
-| `SessionTransport` | [`_session_transport.py`](../src/notebooklm/_session_transport.py) | Authed POST collaborator. Owns `perform_authed_post()` (loop guard, auth snapshot, request materialization, chain dispatch, queue-wait recording), `refresh_request_for_current_auth()`, and `terminal()` (freshness rebuild + `Kernel.post`). Reached through the Session forwards `_perform_authed_post`, `transport_post`, and `_authed_post_chain_terminal`. |
-| `AuthRefreshCoordinator` | [`_session_auth.py`](../src/notebooklm/_session_auth.py) | Owns the auth-snapshot lock and the refresh task. Canonical implementation for `AuthRefreshCoordinator.snapshot(host)` and token updates. `Session.update_auth_tokens()` remains a one-line delegate for the `RefreshAuthCore` Protocol; the old `Session._snapshot` delegate was inlined. |
+| `RpcExecutor` | [`_rpc_executor.py`](../src/notebooklm/_rpc_executor.py) | Single logical batchexecute RPC dispatch path. Owns request-id/started-metric bracketing, idempotency policy lookup, method-ID resolution, request encoding, response decode, RPC error mapping, and decode-time auth refresh retry. Takes its `Kernel`, `SessionTransport`, `AuthRefreshCoordinator`, and `ClientMetrics` collaborators directly via keyword-only constructor parameters (ADR-014 Rule 5). Enters transport through `SessionTransport.perform_authed_post`. |
+| `SessionTransport` | [`_session_transport.py`](../src/notebooklm/_session_transport.py) | Authed POST collaborator. Owns `perform_authed_post()` (loop guard, auth snapshot, request materialization, chain dispatch, queue-wait recording), `refresh_request_for_current_auth()`, and `terminal()` (freshness rebuild + `Kernel.post`). Called directly by `RpcExecutor` and by `chat_aware_authed_post` (ChatAPI's chat-flavoured transport call); the middleware chain leaf at `MiddlewareChainHost._authed_post_chain_terminal` continues to dispatch through `SessionTransport.terminal` per ADR-014 Rule 4. |
+| `MiddlewareChainHost` | [`_middleware_chain_host.py`](../src/notebooklm/_middleware_chain_host.py) | Owns the wired middleware chain (`_authed_post_chain`), the chain leaf (`_authed_post_chain_terminal`), the three retry-budget tunables (`_rate_limit_max_retries`, `_server_error_max_retries`, `_refresh_retry_delay`), and the dynamic `await_refresh` delegate that the auth-refresh middleware captures. The chain's provider lambdas and the transport's `chain_provider` closure read the host's attributes live, so post-construction mutation (e.g. tests setting `core._chain_host._rate_limit_max_retries = 0`) still steers the live chain. `Session` references the host as `self._chain_host` but exposes no Session-side aliases. |
+| `AuthRefreshCoordinator` | [`_session_auth.py`](../src/notebooklm/_session_auth.py) | Owns the auth-snapshot lock and the refresh task. Canonical implementation for `AuthRefreshCoordinator.snapshot(host)` and token updates. `Session.update_auth_tokens()` is a one-line delegate for the `RefreshAuthCore` Protocol. |
 | `ClientLifecycle` | [`_session_lifecycle.py`](../src/notebooklm/_session_lifecycle.py) | HTTP-client open/close, keepalive task, cookie save coordination. Holds `_timeout`, `_bound_loop`, `_http_client`, `_keepalive_*`. |
-| `MiddlewareChainBuilder` | [`_middleware_chain.py`](../src/notebooklm/_middleware_chain.py) | Constructs the middleware chain in the canonical ADR-009 order. Extracted in Phase 3 PR 7. |
+| `MiddlewareChainBuilder` | [`_middleware_chain.py`](../src/notebooklm/_middleware_chain.py) | Constructs the middleware chain in the canonical ADR-009 order. |
 | `TransportDrainTracker` | [`_transport_drain.py`](../src/notebooklm/_transport_drain.py) | Tracks in-flight transport operations + the drain condition variable. Gates graceful shutdown. |
 | `ClientMetrics` | [`_client_metrics.py`](../src/notebooklm/_client_metrics.py) | Per-instance counters (`ClientMetricsSnapshot`) + the `on_rpc_event` user callback. |
 | `ReqidCounter` | [`_reqid_counter.py`](../src/notebooklm/_reqid_counter.py) | Monotonic `_reqid` for the chat backend; lock-protected `await core.next_reqid()`. |
@@ -346,7 +434,7 @@ Exec  Ref    Life    Chain Trans Drain  Tracker Coun  Pers
 | `_transport_errors` | [`_transport_errors.py`](../src/notebooklm/_transport_errors.py) | Owns transport-level exceptions, `Retry-After` parsing, and raw `Kernel.post` error mapping consumed by `RetryMiddleware` and `AuthRefreshMiddleware`. |
 | `_streaming_post` | [`_streaming_post.py`](../src/notebooklm/_streaming_post.py) | Low-level streaming POST helper with the response-size cap used by `Kernel.post`. |
 | `Kernel` | [`_kernel.py`](../src/notebooklm/_kernel.py) | Pure transport core. Owns the `httpx.AsyncClient` and cookie jar; exposes `post()`, the `cookies` property, and `aclose()` (the close path wraps it in `asyncio.shield` from `ClientLifecycle.close()`). Concrete class behind the `Kernel` Protocol in `_session_contracts.py`; constructed by `Session.__init__()` and called from the middleware leaf via `SessionTransport.terminal → Kernel.post`. |
-| `_session_init` | [`_session_init.py`](../src/notebooklm/_session_init.py) | Construction-time helpers extracted from `Session.__init__`: `validate_constructor_args` (kwarg validation/normalization), `build_collaborators` (the 8 collaborators in dependency order), `build_session_transport`, and `wire_middleware_chain`. Lets `Session.__init__` stay short while keeping the seam-resolution boundary documented (`None`-default resolution for `sleep` / `async_client_factory` stays in `_session.py` so the documented monkeypatch paths still steer construction). |
+| `_session_init` | [`_session_init.py`](../src/notebooklm/_session_init.py) | Construction-time helpers extracted from `Session.__init__`: `validate_constructor_args` (kwarg validation/normalization), `build_collaborators` (the seven collaborators in dependency order: `metrics`, `drain_tracker`, `reqid`, `auth_coord`, `kernel`, `lifecycle`, `cookie_persistence`), `build_session_transport`, and `wire_middleware_chain`. Lets `Session.__init__` stay short while keeping the seam-resolution boundary documented (`None`-default resolution for `sleep` / `async_client_factory` stays in `_session.py` so the documented monkeypatch paths still steer construction). |
 | `_loop_affinity` | [`_loop_affinity.py`](../src/notebooklm/_loop_affinity.py) | Tiny free-function `assert_bound_loop(bound_loop)` shared by every helper that captures a loop reference at `open()` time (`TransportDrainTracker`, `ReqidCounter`, `AuthRefreshCoordinator`, `ArtifactPollingService`, `ChatAPI`). Module-private on purpose so those helpers can guard without importing `Session`. Enforces ADR-004. |
 
 ## Domain-service collaborators
@@ -369,13 +457,12 @@ Beyond the Session-orchestration graph, several feature APIs are implemented via
 
 [`auth.py`](../src/notebooklm/auth.py) is a thin public facade that
 re-exports the canonical implementations under
-[`_auth/`](../src/notebooklm/_auth). The facade still hosts the public
-`AuthTokens` name (re-exported from `_auth.tokens`), owns
-`load_auth_from_storage()`, and owns the
-`_validate_required_cookies()` write-through that propagates
-`auth.py`-level policy rebindings into `_auth.cookie_policy` (the flat
-re-export goal in ADR-003 is **deferred** — see CLAUDE.md's `auth.py`
-row for the current status).
+[`_auth/`](../src/notebooklm/_auth). ADR-014 closed ADR-003's deferred
+flat-re-export goal: `AuthTokens` and `load_auth_from_storage()` now live
+in `_auth.tokens`, `_validate_required_cookies` is a direct
+`_auth.cookie_policy` re-export, and `async def enumerate_accounts` is the
+only remaining `auth.py` function body because it binds `_poke_session` as
+the default dependency.
 
 | Module | Responsibility |
 |--------|----------------|
@@ -398,16 +485,77 @@ keepalive contract is — is documented separately in
 
 ## CLI layer (ADR-008)
 
-The CLI is intentionally a thin adapter. Click commands in
+The CLI is intentionally a thin adapter over the public Python client.
+It does not build raw batchexecute payloads, import the RPC layer, or
+reach into private `notebooklm._*` implementation modules. Click
+commands in
 [`src/notebooklm/cli/*_cmd.py`](../src/notebooklm/cli) own argument
 parsing, user-visible rendering, JSON envelopes, and exit codes;
-business logic lives in
+workflow logic lives in
 [`src/notebooklm/cli/services/`](../src/notebooklm/cli/services). This
 separation is the [ADR-008](./adr/0008-cli-services-extraction-pattern.md)
 extraction pattern.
 
+The console-script entry point is
+[`notebooklm_cli.py`](../src/notebooklm/notebooklm_cli.py). It declares
+the root `notebooklm` Click group with
+[`SectionedGroup`](../src/notebooklm/cli/grouped.py), owns process-wide
+options (`--storage`, `--profile`, `--verbose`, `--quiet`),
+canonicalizes the storage path into `ctx.obj`, stores the selected
+profile/quiet values there, and registers the top-level commands plus
+command groups. `SectionedGroup` is a presentation concern only: it
+bins commands in help output, and
+[`tests/unit/cli/test_grouped.py`](../tests/unit/cli/test_grouped.py)
+rejects new unbinned commands.
+
+A typical authenticated command follows this path:
+
+```text
++----------------------------------------------------------------+
+| notebooklm_cli.cli root group                                  |
+|   - SectionedGroup                                             |
+|   - process-wide options:                                      |
+|     --storage / --profile / --verbose / --quiet                |
++----------------------------------------------------------------+
+                                 |
+                                 v
++----------------------------------------------------------------+
+| cli/<domain>_cmd.py Click command                              |
++----------------------------------------------------------------+
+                                 |
+                                 v
++----------------------------------------------------------------+
+| cli.auth_runtime.with_auth_and_errors(...)                     |
+|   or run_client_workflow(...)                                  |
+|   - handle_errors(...) wraps command-body failures             |
+|   - AuthSource resolves precedence:                            |
+|     --storage > NOTEBOOKLM_AUTH_JSON > active profile storage  |
+|   - get_auth_tokens(...) builds AuthTokens                     |
+|   - cli.runtime.run_async(...) -> one top-level asyncio.run    |
++----------------------------------------------------------------+
+                                 |
+                                 v
++----------------------------------------------------------------+
+| async with NotebookLMClient(auth) as client                    |
++----------------------------------------------------------------+
+                                 |
+                                 v
++----------------------------------------------------------------+
+| cli/services/<domain>.py plan/executor                         |
+|   or direct public client call                                 |
++----------------------------------------------------------------+
+                                 |
+                                 v
++----------------------------------------------------------------+
+| command module:                                                |
+|   - renders text / JSON                                        |
+|   - applies exit-code policy                                   |
++----------------------------------------------------------------+
+```
+
 | Layer | Owns | Does NOT own |
 |-------|------|--------------|
+| `notebooklm_cli.py` | Root Click group, global options, profile/storage setup, command registration | Per-command workflows, rendering of command results |
 | `cli/*_cmd.py` | Click decorators, option parsing, stdout/stderr rendering, JSON output, exit codes | Business logic, RPC dispatch, retry loops |
 | `cli/services/*.py` | Workflow orchestration, plan dataclasses, result types, retry/wait policy | Click context, `console.print`, `SystemExit` (target end-state; some modules are still mid-migration) |
 
@@ -421,9 +569,34 @@ CLI services are organised by feature family; notable examples include
 `cli/services/login/` (browser-profile enumeration split across Chromium
 and Firefox cookie jars), `cli/services/source_*` (URL/file/research
 source flows), and `cli/services/artifact_generation.py`. The CLI
-assembler entry point is
-[`notebooklm_cli.py`](../src/notebooklm/notebooklm_cli.py), which
-imports each command group and registers it on the root Click group.
+service-layer boundary is guarded by
+[`tests/unit/cli/test_services_boundary.py`](../tests/unit/cli/test_services_boundary.py):
+new service modules must either be fully cleaned of Click/rendering/exit
+ownership or be added to the explicit transitional inventory with the
+current violations and rationale.
+
+The cross-command helpers form a small internal CLI stack:
+
+| Module | Role |
+|--------|------|
+| [`cli/runtime.py`](../src/notebooklm/cli/runtime.py) | Leaf runtime helpers: root `--quiet` lookup and the single `asyncio.run(...)` bridge for sync Click handlers. |
+| [`cli/auth_runtime.py`](../src/notebooklm/cli/auth_runtime.py) | Shared auth bootstrap, command-body error wrapping, and optional opened-client workflow helper. |
+| [`cli/services/auth_source.py`](../src/notebooklm/cli/services/auth_source.py) | Single resolver for CLI auth-source precedence (`--storage`, `NOTEBOOKLM_AUTH_JSON`, active profile). |
+| [`cli/context.py`](../src/notebooklm/cli/context.py) | Profile/storage-scoped `context.json` persistence for active notebook, conversation, and account metadata. |
+| [`cli/resolve.py`](../src/notebooklm/cli/resolve.py) | Notebook/source/artifact/note ID resolution, including partial-ID matching against public client list calls. |
+| [`cli/options.py`](../src/notebooklm/cli/options.py) + [`cli/completion.py`](../src/notebooklm/cli/completion.py) | Shared Click option decorators and best-effort shell completion. Completion providers may load auth and list public client resources, but swallow all failures so shells never print diagnostics during TAB completion. |
+| [`cli/rendering.py`](../src/notebooklm/cli/rendering.py) | Rich/text/JSON rendering helpers. Status lines in JSON mode go to stderr so stdout remains parseable JSON. |
+| [`cli/error_handler.py`](../src/notebooklm/cli/error_handler.py) | Canonical CLI error-to-exit mapping. Under `--json`, command-body failures use the typed error envelope from [ADR-015](./adr/0015-json-envelope-contract-for-post-parse-click-exceptions.md). Parse-time Click parser errors remain Click-owned. |
+| [`cli/helpers.py`](../src/notebooklm/cli/helpers.py) | Backward-compatible facade for historical imports and test patch targets. New production code should import from the owning helper module instead. |
+
+The boundary is enforced statically by
+[`tests/unit/test_cli_boundary.py`](../tests/unit/test_cli_boundary.py):
+CLI modules may import public `notebooklm` modules and their own
+intra-CLI private helpers, but not `notebooklm._*`, `notebooklm.rpc.*`,
+or private names from public modules. The same test keeps low-level
+helpers (`runtime`, `context`, `resolve`, `rendering`, `auth_runtime`,
+`options`) from growing upward dependencies on command modules or the
+`cli.helpers` compatibility facade.
 
 ## Middleware chain (ADR-009)
 
@@ -435,7 +608,7 @@ The runtime chain order is pinned by
 simultaneously updating the pin tests
 (`test_chain_seeded_with_final_adr_009_ordering`) is a bug.
 
-The chain list in [`MiddlewareChainBuilder.build()`](../src/notebooklm/_middleware_chain.py) (PR [#883](https://github.com/teng-lin/notebooklm-py/pull/883))
+The chain list in [`MiddlewareChainBuilder.build()`](../src/notebooklm/_middleware_chain.py)
 reads outermost-first (index 0 wraps everything below it):
 
 ```text
@@ -458,33 +631,69 @@ TracingMiddleware            innermost — structured-logging boundary
 Authed POST leaf             (SessionTransport.terminal → Kernel → httpx)
 ```
 
-## Session as facade
+## Session as lifecycle root
 
-`Session` is large (~780 lines) because it is the historical orchestration
-class plus a compatibility facade. The post-v0.5.0 collaborator graph above
-shows what `Session` actually delegates today; almost everything it exposes
-is a one-line forward to a focused collaborator (`AuthRefreshCoordinator`,
-`SessionTransport`, `RpcExecutor`, `ClientLifecycle`, `ClientMetrics`,
-`TransportDrainTracker`, `ReqidCounter`, `CookiePersistence`).
+`Session` is a narrow lifecycle root, not a compatibility facade. It
+constructs the collaborator graph at `__init__` time, owns the
+open/close lifecycle (loop-affinity binding, keepalive task), and
+exposes the few surfaces that remain load-bearing for the public API
+or the middleware chain ([ADR-014](./adr/0014-feature-local-runtime-adapters.md)).
+The exact retention list is checked-in at
+[`docs/session-method-retention.md`](./session-method-retention.md)
+and enforced by
+[`tests/_lint/test_session_retention.py`](../tests/_lint/test_session_retention.py)
+— a new method on `Session` cannot land without a documented
+disposition.
 
-The facade survives for three reasons:
+Concretely, `Session` retains:
 
-1. **Public API stability.** `NotebookLMClient.rpc_call(method, params)`
-   forwards to `Session.rpc_call`, and feature APIs satisfy `RpcCaller` via
-   `Session`. Removing the facade is a public-surface change.
-2. **Compatibility shims.** A handful of `Session` methods
-   (`_perform_authed_post`, `transport_post`,
-   `_authed_post_chain_terminal`, `update_auth_tokens`) are the
-   structural Protocol surface other collaborators or the
-   `RefreshAuthCore` Protocol depend on.
-3. **Test seams.** Module-level binding paths (e.g.
-   `notebooklm._session.asyncio.sleep`, `notebooklm._session.httpx.AsyncClient`)
-   are documented monkeypatch targets steered from `Session.__init__`.
-   See [ADR-007](./adr/0007-test-monkeypatch-policy.md).
+1. **Late-bound composition slots.** `Session._transport`, the chain
+   metadata slots (`_chain_builder` / `_middlewares`), and
+   `Session._rpc_executor` are bound exactly once by
+   `compose_session_internals(...)` through the write-once
+   `_bind_transport` / `_bind_chain_metadata` / `_bind_executor`
+   setters; pre-binding access trips the `_require_constructed` guard.
+   `NotebookLMClient.__init__` reads `composed.collaborators` /
+   `composed.transport` / `composed.executor` from the `ComposedSession`
+   return value and threads them into feature APIs directly — `Session`
+   exposes no public collaborator accessors.
+   [`tests/_lint/test_client_composition.py`](../tests/_lint/test_client_composition.py)
+   guards against re-adding them: AST reads of `collaborators`,
+   `session_transport`, or `rpc_executor` trip the lint anywhere
+   outside `client.py` + `_session.py`.
+2. **Middleware-chain seams.** The chain leaf
+   (`_authed_post_chain_terminal`), the chain slot (`_authed_post_chain`),
+   the dynamic refresh delegate (`await_refresh`), and the three
+   retry-budget tunables (`_rate_limit_max_retries`,
+   `_server_error_max_retries`, `_refresh_retry_delay`) all live on
+   `MiddlewareChainHost` after the chain-ownership carve-out (ADR-014
+   Rule 4). `wire_middleware_chain` and `build_session_transport` take
+   `chain_host: MiddlewareChainHost` directly and read the host
+   attributes live; tests rebind through `core._chain_host._<attr>`.
+   The only middleware-chain capture target that remains on `Session`
+   is `assert_bound_loop`, which is reached as `host.assert_bound_loop`
+   from `build_session_transport`'s `bound_loop_check` lambda.
+3. **Lifecycle methods.** `open`, `close`, `is_open`, `_keepalive_loop`,
+   and `assert_bound_loop` (now a one-line forward to
+   `ClientLifecycle.assert_bound_loop` since
+   `ClientLifecycle` satisfies the `LoopGuard` Protocol directly).
+4. **AST-guarded auth surface.** `update_auth_tokens` is asserted by
+   `tests/unit/test_concurrency_refresh_race.py`.
 
-Known follow-up work is to narrow the executor/session callback cycle
-further and continue retiring facade-only compatibility surfaces as their
-callers move to collaborator-owned contracts.
+`NotebookLMClient.rpc_call(method, params)` dispatches directly through
+`self._rpc_executor.rpc_call(...)` — the `RpcExecutor` captured during
+`NotebookLMClient.__init__` from `compose_session_internals(...)` and
+shared with every feature API. There is no Session-side `rpc_call`
+wrapper.
+
+Feature APIs do **not** receive `Session`. They receive the
+collaborator (`RpcExecutor` for `RpcCaller`, `ClientLifecycle` for
+`LoopGuard`, `TransportDrainTracker` for `OperationScopeProvider` /
+`register_drain_hook`) per ADR-014 Rules 1 + 3. Features that need
+more than one capability — `ChatAPI`, `ArtifactsAPI`, and
+`SourceUploadPipeline` — take each collaborator by keyword-only
+constructor argument. The composition wiring is in
+[`client.py`](../src/notebooklm/client.py).
 
 ## Testing patterns
 
@@ -494,12 +703,16 @@ Two policies define how tests interact with the architecture above.
 
 The forbidden patterns are `monkeypatch.setattr("notebooklm.…")` against
 module-level seams and direct attribute assignment like
-`core.rpc_call = AsyncMock(...)`. The sanctioned substitute is
+`target.rpc_call = AsyncMock(...)`. The sanctioned substitute is
 [`tests/_fixtures/fake_core.py:make_fake_core(...)`](../tests/_fixtures/fake_core.py),
-which returns a `FakeSession` configured to satisfy the narrow capability
-Protocols a feature actually consumes (`RpcCaller`, `LoopGuard`,
-`OperationScopeProvider`, `AuthMetadata`, `Kernel`, plus feature-local
-runtimes like `ChatRuntime` / `ArtifactsRuntime` / `UploadRuntime`).
+which returns a `FakeSession` configured to satisfy the narrow
+capability Protocols features consume (`RpcCaller`, `LoopGuard`,
+`OperationScopeProvider`, `AuthMetadata`, `Kernel`). Multi-capability
+features (`ChatAPI`, `ArtifactsAPI`, `SourceUploadPipeline`) take
+their direct collaborators by keyword-only constructor argument, so
+unit tests can inject narrow
+`MagicMock(spec=RpcCaller, rpc_call=AsyncMock(...))`-style fakes
+directly via those constructors.
 
 The meta-lint at `tests/_lint/test_no_forbidden_monkeypatches.py`
 enforces the policy; the file-level allowlist shrinks as legacy tests
@@ -524,8 +737,8 @@ A fuller taxonomy is in
 
 ## Implementation surface convention (ADR-012)
 
-`notebooklm-py` keeps a small set of public-named modules (`auth.py`,
-`client.py`, `config.py`, `exceptions.py`, `io.py`, `log.py`,
+`notebooklm-py` keeps a small set of public-named modules (`artifacts.py`,
+`auth.py`, `client.py`, `config.py`, `exceptions.py`, `io.py`, `log.py`,
 `migration.py`, `notebooklm_cli.py`, `paths.py`, `research.py`,
 `types.py`, `urls.py`, `utils.py`) and routes everything else through
 underscore-prefixed seam modules. Anything underscored is *not* a
@@ -535,6 +748,32 @@ deprecation cycle. See [ADR-012](./adr/0012-implementation-surface-convention.md
 The corollary for contributors: if you find yourself reaching into
 `notebooklm._foo`, prefer a capability Protocol or a public function in
 one of the named modules.
+
+## Boundary moratorium
+
+New architectural carve-outs are expensive: every ADR amendment,
+[`session-method-retention.md`](./session-method-retention.md) entry,
+and `tests/_lint/` pin becomes load-bearing for contributors who have
+to read the docs before touching the relevant seam. To keep that
+surface from drifting upward without bound, the following discipline
+applies to any future change that would *expand* the documented
+boundary set:
+
+- **Justify by failure mode.** A new ADR amendment,
+  [`session-method-retention.md`](./session-method-retention.md) row,
+  or `tests/_lint/` pin must cite a concrete user-visible failure mode
+  it prevents (loop-affinity break, auth-snapshot tear, transport drain
+  regression, public-API breakage, etc.). "Future-proofing" or "in case
+  someone refactors X" is not sufficient.
+- **Prefer deletion over carve-out.** When a compatibility seam can be
+  removed instead of documented, remove it. Carve-outs are the fallback
+  when removal is genuinely infeasible, not the default.
+- **One owner per rule.** A pin without a corresponding ADR clause (and
+  vice versa) is a smell — it means the rule is enforced but not
+  explained, or explained but not enforced.
+
+The intent is architectural: shrink the boundary set whenever the
+underlying code allows it, and resist growing it on speculative grounds.
 
 ## Glossary
 
@@ -554,8 +793,8 @@ Vocabulary that recurs in this document and the surrounding code.
 ## ADR cross-references
 
 - [ADR-001](./adr/0001-layered-core-seams-and-property-bridge-policy.md) — Layered seams + property-bridge policy (superseded; shims retired).
-- [ADR-002](./adr/0002-capability-protocol-pattern.md) — Capability Protocol pattern (Superseded by [arch-d2-cutover](https://github.com/teng-lin/notebooklm-py/pull/835) (#835)).
-- [ADR-003](./adr/0003-auth-facade-write-through.md) — `auth.py` write-through facade (Superseded by [arch-d1-auth-side](https://github.com/teng-lin/notebooklm-py/pull/834) (#834); flat re-export goal is deferred).
+- [ADR-002](./adr/0002-capability-protocol-pattern.md) — Capability Protocol pattern (Superseded by ADR-013).
+- [ADR-003](./adr/0003-auth-facade-write-through.md) — `auth.py` write-through facade (Superseded — closed by [ADR-014](./adr/0014-feature-local-runtime-adapters.md); `auth.py` is now almost pure re-exports with `enumerate_accounts` as the sole function-body exception).
 - [ADR-004](./adr/0004-loop-affinity-contract.md) — Loop-affinity contract (Accepted; enforced by `_loop_affinity.assert_bound_loop`).
 - [ADR-005](./adr/0005-idempotency-taxonomy.md) — Mutating-RPC idempotency taxonomy (Accepted; enforced by `_idempotency.IdempotencyRegistry`).
 - [ADR-006](./adr/0006-vcr-scrubber-strategy.md) — VCR cassette scrubber strategy (Accepted).
@@ -566,6 +805,8 @@ Vocabulary that recurs in this document and the surrounding code.
 - [ADR-011](./adr/0011-schema-validation-policy.md) — Schema validation policy (Accepted; `safe_index` is the canonical decode helper).
 - [ADR-012](./adr/0012-implementation-surface-convention.md) — Implementation surface convention (Accepted; underscore-prefix = unsupported import surface).
 - [ADR-013](./adr/0013-composable-session-capabilities.md) — Composable Session Capabilities (the post-v0.5.0 capability model).
+- [ADR-014](./adr/0014-feature-local-runtime-adapters.md) — Feature-local runtime adapters (Accepted; features receive direct collaborators instead of `Session`).
+- [ADR-015](./adr/0015-json-envelope-contract-for-post-parse-click-exceptions.md) — Typed JSON error envelope for post-parse CLI failures (Accepted).
 
 ## See also
 

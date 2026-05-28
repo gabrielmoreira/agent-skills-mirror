@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `unifapi-agent/skills` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `unifapi-agent/skills` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `unifapi-agent/skills` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,19 +59,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`skills/kol-pricing/agents/openai.yaml`](skills/kol-pricing/agents/openai.yaml) |
-| 4 | ✓ | [`skills/kol-pricing/references/original-license.md`](skills/kol-pricing/references/original-license.md) |
-| 5 | ✓ | [`skills/kol-pricing/references/pricing-logic.md`](skills/kol-pricing/references/pricing-logic.md) |
-| 6 | ✓ | [`skills/kol-pricing/scripts/analyze-snapshot.mjs`](skills/kol-pricing/scripts/analyze-snapshot.mjs) |
-| 7 | ✓ | [`skills/kol-pricing/SKILL.md`](skills/kol-pricing/SKILL.md) |
-| 8 | ✓ | [`skills/unifapi/agents/openai.yaml`](skills/unifapi/agents/openai.yaml) |
-| 9 | ✓ | [`skills/unifapi/references/http-api.md`](skills/unifapi/references/http-api.md) |
-| 10 | ✓ | [`skills/unifapi/references/mcp.md`](skills/unifapi/references/mcp.md) |
-| 11 | ✓ | [`skills/unifapi/references/public-data.md`](skills/unifapi/references/public-data.md) |
-| 12 | ✓ | [`skills/unifapi/references/twitter-x.md`](skills/unifapi/references/twitter-x.md) |
-| 13 | ✓ | [`skills/unifapi/SKILL.md`](skills/unifapi/SKILL.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`plugins/unifapi/skills/kol-pricing/SKILL.md`](plugins/unifapi/skills/kol-pricing/SKILL.md) |
+| 5 | ✓ | [`plugins/unifapi/skills/unifapi/references/twitter-x.md`](plugins/unifapi/skills/unifapi/references/twitter-x.md) |
+| 6 | ✓ | [`plugins/unifapi/skills/unifapi/SKILL.md`](plugins/unifapi/skills/unifapi/SKILL.md) |
+| 7 | ✓ | [`skills/kol-pricing/agents/openai.yaml`](skills/kol-pricing/agents/openai.yaml) |
+| 8 | ✓ | [`skills/kol-pricing/references/original-license.md`](skills/kol-pricing/references/original-license.md) |
+| 9 | ✓ | [`skills/kol-pricing/references/pricing-logic.md`](skills/kol-pricing/references/pricing-logic.md) |
+| 10 | ✓ | [`skills/kol-pricing/scripts/analyze-snapshot.mjs`](skills/kol-pricing/scripts/analyze-snapshot.mjs) |
+| 11 | ✓ | [`skills/kol-pricing/SKILL.md`](skills/kol-pricing/SKILL.md) |
+| 12 | ✓ | [`skills/unifapi/agents/openai.yaml`](skills/unifapi/agents/openai.yaml) |
+| 13 | ✓ | [`skills/unifapi/references/http-api.md`](skills/unifapi/references/http-api.md) |
+| 14 | ✓ | [`skills/unifapi/references/mcp.md`](skills/unifapi/references/mcp.md) |
+| 15 | ✓ | [`skills/unifapi/references/public-data.md`](skills/unifapi/references/public-data.md) |
+| 16 | ✓ | [`skills/unifapi/references/twitter-x.md`](skills/unifapi/references/twitter-x.md) |
+| 17 | ✓ | [`skills/unifapi/SKILL.md`](skills/unifapi/SKILL.md) |
 
 ---
 

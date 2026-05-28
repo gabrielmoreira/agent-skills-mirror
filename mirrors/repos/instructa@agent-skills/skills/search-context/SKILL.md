@@ -1,5 +1,5 @@
 ---
-name: github-reference-context
+name: search-context
 description: Find, clone, inspect, and summarize high-quality GitHub reference repositories for coding agents. Use when a user asks for GitHub reference projects, examples, prior art, inspiration, implementation patterns, or includes "$search-context" in a coding prompt.
 license: MIT
 metadata:
@@ -11,7 +11,7 @@ metadata:
     - node
 ---
 
-# GitHub Reference Context
+# Search Context
 
 Use this skill when the user wants an agent to find useful GitHub reference projects for a feature, UI pattern, implementation pattern, platform, framework, or library.
 
@@ -27,14 +27,15 @@ The goal is not faster raw code search. The goal is better reference selection, 
 
 ## Default workflow
 
-1. Convert the user request into concise GitHub search phrases.
+1. Convert the user request into concise GitHub search phrases. For broad app/product requests, split the request into stack, domain, and pattern facets instead of running one overloaded query.
 2. If the user asks for local/third-party references, search the local reference library first.
 3. Use GitHub repository discovery for fresh references, not GitHub code search.
 4. Prefer recent, maintained, readable repositories.
-5. Clone only the top candidates using blobless shallow clone.
+5. Clone only the top candidate pool using blobless shallow clone.
 6. Inspect local and cloned repositories with `rg`.
-7. Write a compact Markdown reference manifest.
-8. Tell the agent which files are worth reading and why.
+7. Verify candidates with local proof terms and reject generic/noisy references.
+8. Write a compact Markdown reference manifest with rejected/noisy references.
+9. Tell the agent which files are worth reading and why.
 
 ## Required local tools
 
@@ -75,7 +76,7 @@ Use a preset when the platform or stack is clear.
 - `web-react`: React, Next.js, Vite, Tailwind, component patterns.
 - `generic`: fallback when the stack is unknown.
 
-The preset controls GitHub language filters, query expansion, local `rg` terms, file globs, and scoring hints.
+The preset controls GitHub language filters, query expansion, local `rg` terms, file globs, and scoring hints. Presets are hints, not the whole plan: broad requests should still be decomposed into narrower searches such as framework architecture, domain examples, and UI/workflow patterns.
 
 ## Local reference library
 
@@ -96,7 +97,7 @@ Keep FFF or any future long-lived index as an optional search backend under this
 Use blobless shallow clones for reference repositories:
 
 ```bash
-git clone --depth=1 --filter=blob:none --single-branch --no-tags <repo-url> <user-cache>/github-reference-context/refs/owner__repo
+git clone --depth=1 --filter=blob:none --single-branch --no-tags <repo-url> <user-cache>/search-context/refs/owner__repo
 ```
 
 Do not use normal full clones by default.
@@ -111,9 +112,17 @@ By default, keep cloned repositories and manifests in the OS user cache, not in 
 
 Use repository discovery first.
 Avoid using `gh search code` as the primary source.
-Use local `rg` after cloning to verify that the repository actually contains relevant implementation files.
+Use local `rg` after cloning to verify that the repository actually contains relevant implementation files. GitHub Code Search can be used as an optional pre-clone proof gate, but do not depend on it by default because the API is rate-limited.
 
 Good reference selection beats raw search speed.
+
+For mixed requests, prefer several narrow repository searches over one broad query. Example: "habit life app with TanStack Start" should produce stack queries like `tanstack start`, domain queries like `habit life`, and pattern queries like `habit life tanstack start`. Do not let a general React preset drown the run in unrelated component libraries.
+
+Proof gates should reject or down-rank candidates that only match generic terms like `react`, `start`, or `full`. For known stacks/domains, require concrete code proof where possible:
+
+- TanStack Start: `@tanstack/react-start`, `createServerFn`, `StartServer`, `StartClient`, `routeTree.gen`, `vinxi`.
+- Habit apps: `habit`, `streak`, `completion`, `calendar`, `routine`.
+- Noise: raw GitHub zip links, default secrets, and README-only bait.
 
 Score repositories by:
 
@@ -132,18 +141,20 @@ Score repositories by:
 Always produce a Markdown manifest. The default output is:
 
 ```text
-<user-cache>/github-reference-context/runs/<timestamp>/reference-context.md
+<user-cache>/search-context/runs/<timestamp>/reference-context.md
 ```
 
 The manifest must include:
 
 - user goal
 - preset used
+- search plan mode and facets, when generated
 - GitHub search phrases used
 - top reference repositories
 - why each repository is useful
 - local path for each cloned repository
 - relevant files with short snippets only
+- rejected references with short reasons
 - what to study
 - what not to copy
 - any failures or uncertainty

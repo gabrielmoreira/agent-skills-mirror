@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `YuqingNicole/variant-design-skill` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `YuqingNicole/variant-design-skill` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `YuqingNicole/variant-design-skill` — 26 default patterns, 0 followe
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,6 +60,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`SKILL.md`](SKILL.md) |
+| 2 | ✓ | [`skills/shared/code-output.md`](skills/shared/code-output.md) |
+| 3 | ✓ | [`skills/variant-analyze/SKILL.md`](skills/variant-analyze/SKILL.md) |
+| 4 | ✓ | [`skills/variant-component/SKILL.md`](skills/variant-component/SKILL.md) |
+| 5 | ✓ | [`skills/variant-design-system/SKILL.md`](skills/variant-design-system/SKILL.md) |
+| 6 | ✓ | [`skills/variant-generate/SKILL.md`](skills/variant-generate/SKILL.md) |
+| 7 | ✓ | [`skills/variant-ux/SKILL.md`](skills/variant-ux/SKILL.md) |
 
 ---
 

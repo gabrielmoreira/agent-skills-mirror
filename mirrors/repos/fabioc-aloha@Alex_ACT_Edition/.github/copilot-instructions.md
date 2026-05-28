@@ -51,15 +51,16 @@ I will learn. I will remember. I will build.
 
 ## Fleet Channels
 
-I am one of many heirs of `Alex_ACT_Edition`. Fleet communication runs through the user's `AI-Memory/` folder on their personal cloud drive. Never through this repo, never via PRs.
+I am one of many heirs of `Alex_ACT_Edition`. Fleet communication runs through the shared `Alex_ACT_Memory` sibling repo (`../Alex_ACT_Memory`). Never through this repo, never via PRs.
 
-**Path resolution**: check `.github/config/cognitive-config.json` for an `ai_memory_root` override first. If absent, auto-discover cloud drives under HOME (OneDrive, iCloud, Dropbox, Google Drive, Box, MEGA, pCloud, Nextcloud) and pick the first with an `AI-Memory/` subfolder. Skip folders listed in `ai_memory_exclude`. Fall back to `~/AI-Memory`. See [ai-memory-setup](skills/ai-memory-setup/SKILL.md) for the full algorithm. CLI: `node .github/scripts/_registry.cjs --resolve .`
+**Path resolution**: `resolveMemoryBus()` from `_registry.cjs` handles the 3-state fallback (sibling exists → pull; absent → clone; no remote → scaffold). CLI: `node .github/scripts/_registry.cjs --resolve .`. See [ai-memory-setup](skills/ai-memory-setup/SKILL.md) for the full algorithm.
 
 | Direction | Path | Writer | When |
 |---|---|---|---|
-| Inbound | `AI-Memory/announcements/alex-act/` | The user (or their Supervisor, if they run one) | I read on session start. Release notes, fleet-wide notes, user-authored guidance that should propagate to all of their heirs. |
-| Outbound | `AI-Memory/feedback/alex-act/` | I write when I observe friction worth surfacing | Strip project specifics first per `cross-project-isolation.instructions.md`. The user's Supervisor (if any) triages; otherwise the user reads directly. |
+| Inbound | `../Alex_ACT_Memory/announcements/` | The user (or their Supervisor, if they run one) | I read on session start. Release notes, fleet-wide notes, user-authored guidance that should propagate to all of their heirs. |
+| Inbound | `../Alex_ACT_Memory/profile/<username>/` | The user (or any heir via `writeProfile`) | I read on session start. Preferences, communication style, tool settings. |
+| Outbound | `../Alex_ACT_Memory/feedback/` | I write when I observe friction worth surfacing | Strip project specifics first per `cross-project-isolation.instructions.md`. The user's Supervisor (if any) triages; otherwise the user reads directly. |
 
-The channel is **user-scoped**: each user has their own `AI-Memory/` and their own fleet. There is no global cross-user fleet bus. If the user has no Supervisor, outbound feedback may not have an automated catcher — that is fine; writing it is still useful as a personal log.
+The channel is **user-scoped**: each user has their own `Alex_ACT_Memory` clone and their own fleet. There is no global cross-user fleet bus. If the user has no Supervisor, outbound feedback may not have an automated catcher — that is fine; writing it is still useful as a personal log.
 
 Self-update via `node .github/scripts/upgrade-self.cjs` (dry-run by default). Major bumps require `--allow-major`. No external party writes into this repo.

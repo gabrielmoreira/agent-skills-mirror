@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `GarethManning/education-agent-skills` — 26 default patterns, 0 followed patterns, 156 file(s) materialized.
+Mirror of `GarethManning/education-agent-skills` — 26 default patterns, 0 followed patterns, 169 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `GarethManning/education-agent-skills` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 156 |
+| Files         | 169 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -195,26 +195,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 134 | ✓ | [`skills/self-regulated-learning/metacognitive-prompt-library/SKILL.md`](skills/self-regulated-learning/metacognitive-prompt-library/SKILL.md) |
 | 135 | ✓ | [`skills/self-regulated-learning/self-regulation-scaffold-generator/SKILL.md`](skills/self-regulated-learning/self-regulation-scaffold-generator/SKILL.md) |
 | 136 | ✓ | [`skills/self-regulated-learning/study-strategy-selector/SKILL.md`](skills/self-regulated-learning/study-strategy-selector/SKILL.md) |
-| 137 | ✓ | [`skills/systems-thinking/agency-circles-for-systems-action/SKILL.md`](skills/systems-thinking/agency-circles-for-systems-action/SKILL.md) |
-| 138 | ✓ | [`skills/systems-thinking/aspirational-systems-iceberg/SKILL.md`](skills/systems-thinking/aspirational-systems-iceberg/SKILL.md) |
-| 139 | ✓ | [`skills/systems-thinking/hexagon-complexity-mapper/SKILL.md`](skills/systems-thinking/hexagon-complexity-mapper/SKILL.md) |
-| 140 | ✓ | [`skills/systems-thinking/ladder-of-inference-reflection/SKILL.md`](skills/systems-thinking/ladder-of-inference-reflection/SKILL.md) |
-| 141 | ✓ | [`skills/systems-thinking/leverage-and-response-design/SKILL.md`](skills/systems-thinking/leverage-and-response-design/SKILL.md) |
-| 142 | ✓ | [`skills/systems-thinking/mental-model-mapper/SKILL.md`](skills/systems-thinking/mental-model-mapper/SKILL.md) |
-| 143 | ✓ | [`skills/systems-thinking/systems-awareness-iceberg/SKILL.md`](skills/systems-thinking/systems-awareness-iceberg/SKILL.md) |
-| 144 | ✓ | [`skills/systems-thinking/systems-wellbeing-impact-mapper/SKILL.md`](skills/systems-thinking/systems-wellbeing-impact-mapper/SKILL.md) |
-| 145 | ✓ | [`skills/wellbeing-motivation-agency/agency-scaffold-generator/SKILL.md`](skills/wellbeing-motivation-agency/agency-scaffold-generator/SKILL.md) |
-| 146 | ✓ | [`skills/wellbeing-motivation-agency/awe-wonder-experience-designer/SKILL.md`](skills/wellbeing-motivation-agency/awe-wonder-experience-designer/SKILL.md) |
-| 147 | ✓ | [`skills/wellbeing-motivation-agency/belonging-classroom-culture-designer/SKILL.md`](skills/wellbeing-motivation-agency/belonging-classroom-culture-designer/SKILL.md) |
-| 148 | ✓ | [`skills/wellbeing-motivation-agency/flow-state-condition-designer/SKILL.md`](skills/wellbeing-motivation-agency/flow-state-condition-designer/SKILL.md) |
-| 149 | ✓ | [`skills/wellbeing-motivation-agency/implementation-intention-designer/SKILL.md`](skills/wellbeing-motivation-agency/implementation-intention-designer/SKILL.md) |
-| 150 | ✓ | [`skills/wellbeing-motivation-agency/motivation-diagnostic-task-redesign/SKILL.md`](skills/wellbeing-motivation-agency/motivation-diagnostic-task-redesign/SKILL.md) |
-| 151 | ✓ | [`skills/wellbeing-motivation-agency/perma-based-lesson-designer/SKILL.md`](skills/wellbeing-motivation-agency/perma-based-lesson-designer/SKILL.md) |
-| 152 | ✓ | [`skills/wellbeing-motivation-agency/restorative-practice-protocol-designer/SKILL.md`](skills/wellbeing-motivation-agency/restorative-practice-protocol-designer/SKILL.md) |
-| 153 | ✓ | [`skills/wellbeing-motivation-agency/ruler-emotional-literacy-sequence/SKILL.md`](skills/wellbeing-motivation-agency/ruler-emotional-literacy-sequence/SKILL.md) |
-| 154 | ✓ | [`skills/wellbeing-motivation-agency/self-efficacy-builder-sequence/SKILL.md`](skills/wellbeing-motivation-agency/self-efficacy-builder-sequence/SKILL.md) |
-| 155 | ✓ | [`skills/wellbeing-motivation-agency/trauma-informed-practice-designer/SKILL.md`](skills/wellbeing-motivation-agency/trauma-informed-practice-designer/SKILL.md) |
-| 156 | ✓ | [`skills/wellbeing-motivation-agency/wellbeing-learning-connection-mapper/SKILL.md`](skills/wellbeing-motivation-agency/wellbeing-learning-connection-mapper/SKILL.md) |
+| 137 | ✓ | [`skills/student-learning/ai-claim-checker/SKILL.md`](skills/student-learning/ai-claim-checker/SKILL.md) |
+| 138 | ✓ | [`skills/student-learning/confidence-calibration-check/SKILL.md`](skills/student-learning/confidence-calibration-check/SKILL.md) |
+| 139 | ✓ | [`skills/student-learning/explain-first-interrogator/SKILL.md`](skills/student-learning/explain-first-interrogator/SKILL.md) |
+| 140 | ✓ | [`skills/student-learning/fading-manager/SKILL.md`](skills/student-learning/fading-manager/SKILL.md) |
+| 141 | ✓ | [`skills/student-learning/productive-failure-protocol/SKILL.md`](skills/student-learning/productive-failure-protocol/SKILL.md) |
+| 142 | ✓ | [`skills/student-learning/progressive-hint-ladder/SKILL.md`](skills/student-learning/progressive-hint-ladder/SKILL.md) |
+| 143 | ✓ | [`skills/student-learning/retrieve-first-gate/SKILL.md`](skills/student-learning/retrieve-first-gate/SKILL.md) |
+| 144 | ✓ | [`skills/student-learning/srl-session-wrapper/SKILL.md`](skills/student-learning/srl-session-wrapper/SKILL.md) |
+| 145 | ✓ | [`skills/student-learning/stuck-and-error-diagnosis-coach/SKILL.md`](skills/student-learning/stuck-and-error-diagnosis-coach/SKILL.md) |
+| 146 | ✓ | [`skills/student-learning/teach-back-evaluator/SKILL.md`](skills/student-learning/teach-back-evaluator/SKILL.md) |
+| 147 | ✓ | [`skills/student-learning/transfer-bridge/SKILL.md`](skills/student-learning/transfer-bridge/SKILL.md) |
+| 148 | ✓ | [`skills/student-learning/unassisted-evidence-checkpoint/SKILL.md`](skills/student-learning/unassisted-evidence-checkpoint/SKILL.md) |
+| 149 | ✓ | [`skills/student-learning/weekly-agency-review/SKILL.md`](skills/student-learning/weekly-agency-review/SKILL.md) |
+| 150 | ✓ | [`skills/systems-thinking/agency-circles-for-systems-action/SKILL.md`](skills/systems-thinking/agency-circles-for-systems-action/SKILL.md) |
+| 151 | ✓ | [`skills/systems-thinking/aspirational-systems-iceberg/SKILL.md`](skills/systems-thinking/aspirational-systems-iceberg/SKILL.md) |
+| 152 | ✓ | [`skills/systems-thinking/hexagon-complexity-mapper/SKILL.md`](skills/systems-thinking/hexagon-complexity-mapper/SKILL.md) |
+| 153 | ✓ | [`skills/systems-thinking/ladder-of-inference-reflection/SKILL.md`](skills/systems-thinking/ladder-of-inference-reflection/SKILL.md) |
+| 154 | ✓ | [`skills/systems-thinking/leverage-and-response-design/SKILL.md`](skills/systems-thinking/leverage-and-response-design/SKILL.md) |
+| 155 | ✓ | [`skills/systems-thinking/mental-model-mapper/SKILL.md`](skills/systems-thinking/mental-model-mapper/SKILL.md) |
+| 156 | ✓ | [`skills/systems-thinking/systems-awareness-iceberg/SKILL.md`](skills/systems-thinking/systems-awareness-iceberg/SKILL.md) |
+| 157 | ✓ | [`skills/systems-thinking/systems-wellbeing-impact-mapper/SKILL.md`](skills/systems-thinking/systems-wellbeing-impact-mapper/SKILL.md) |
+| 158 | ✓ | [`skills/wellbeing-motivation-agency/agency-scaffold-generator/SKILL.md`](skills/wellbeing-motivation-agency/agency-scaffold-generator/SKILL.md) |
+| 159 | ✓ | [`skills/wellbeing-motivation-agency/awe-wonder-experience-designer/SKILL.md`](skills/wellbeing-motivation-agency/awe-wonder-experience-designer/SKILL.md) |
+| 160 | ✓ | [`skills/wellbeing-motivation-agency/belonging-classroom-culture-designer/SKILL.md`](skills/wellbeing-motivation-agency/belonging-classroom-culture-designer/SKILL.md) |
+| 161 | ✓ | [`skills/wellbeing-motivation-agency/flow-state-condition-designer/SKILL.md`](skills/wellbeing-motivation-agency/flow-state-condition-designer/SKILL.md) |
+| 162 | ✓ | [`skills/wellbeing-motivation-agency/implementation-intention-designer/SKILL.md`](skills/wellbeing-motivation-agency/implementation-intention-designer/SKILL.md) |
+| 163 | ✓ | [`skills/wellbeing-motivation-agency/motivation-diagnostic-task-redesign/SKILL.md`](skills/wellbeing-motivation-agency/motivation-diagnostic-task-redesign/SKILL.md) |
+| 164 | ✓ | [`skills/wellbeing-motivation-agency/perma-based-lesson-designer/SKILL.md`](skills/wellbeing-motivation-agency/perma-based-lesson-designer/SKILL.md) |
+| 165 | ✓ | [`skills/wellbeing-motivation-agency/restorative-practice-protocol-designer/SKILL.md`](skills/wellbeing-motivation-agency/restorative-practice-protocol-designer/SKILL.md) |
+| 166 | ✓ | [`skills/wellbeing-motivation-agency/ruler-emotional-literacy-sequence/SKILL.md`](skills/wellbeing-motivation-agency/ruler-emotional-literacy-sequence/SKILL.md) |
+| 167 | ✓ | [`skills/wellbeing-motivation-agency/self-efficacy-builder-sequence/SKILL.md`](skills/wellbeing-motivation-agency/self-efficacy-builder-sequence/SKILL.md) |
+| 168 | ✓ | [`skills/wellbeing-motivation-agency/trauma-informed-practice-designer/SKILL.md`](skills/wellbeing-motivation-agency/trauma-informed-practice-designer/SKILL.md) |
+| 169 | ✓ | [`skills/wellbeing-motivation-agency/wellbeing-learning-connection-mapper/SKILL.md`](skills/wellbeing-motivation-agency/wellbeing-learning-connection-mapper/SKILL.md) |
 
 ---
 

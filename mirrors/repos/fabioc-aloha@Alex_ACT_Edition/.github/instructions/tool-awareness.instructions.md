@@ -1,7 +1,7 @@
 ---
 description: "Platform awareness for VS Code tool system: deferred tools require tool_search, external ingest provides context in remote workspaces, skill SKILL.md descriptions surface in the slash picker"
 applyTo: "**"
-lastReviewed: 2026-05-24
+lastReviewed: 2026-05-27
 ---
 
 # Tool Awareness
@@ -22,6 +22,14 @@ For common deferred tool categories and search-query patterns, see [tool-awarene
 ## External Ingest (VS Code 1.119+)
 
 In remote or virtual-filesystem workspaces (GitHub.dev, VS Code Remote, Codespaces), the editor provides codebase context automatically. `semantic_search` and file operations work transparently — no agent action needed.
+
+## VS Code 1.122 conveniences
+
+| Capability | What it changes for me |
+|---|---|
+| `/models` slash command | Opens the model picker from chat input. Useful when the user asks to switch models mid-task without leaving chat. |
+| BYOK air-gapped | Bring Your Own Key models work without GitHub authentication. Heirs in regulated/enterprise contexts can run Copilot Chat fully offline; the BYOK token counter (introduced 1.120) keeps working. |
+| Local agent host default-on (Insiders only) | Watchpoint: when this reaches Stable, deferred-tool resolution may shift. No action until first observed behavior change. |
 
 ## Skill Picker Surfacing (VS Code 1.118+)
 

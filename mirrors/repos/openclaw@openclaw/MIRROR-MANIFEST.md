@@ -252,8 +252,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 191 | ✓ | [`skills/xurl/SKILL.md`](skills/xurl/SKILL.md) |
 | 192 | ✓ | [`src/agents/AGENTS.md`](src/agents/AGENTS.md) |
 | 193 | ✓ | [`src/agents/CLAUDE.md`](src/agents/CLAUDE.md) |
-| 194 | ✓ | [`src/agents/pi-embedded-runner/run/AGENTS.md`](src/agents/pi-embedded-runner/run/AGENTS.md) |
-| 195 | ✓ | [`src/agents/pi-embedded-runner/run/CLAUDE.md`](src/agents/pi-embedded-runner/run/CLAUDE.md) |
+| 194 | ✓ | [`src/agents/embedded-agent-runner/run/AGENTS.md`](src/agents/embedded-agent-runner/run/AGENTS.md) |
+| 195 | ✓ | [`src/agents/embedded-agent-runner/run/CLAUDE.md`](src/agents/embedded-agent-runner/run/CLAUDE.md) |
 | 196 | ✓ | [`src/agents/tools/AGENTS.md`](src/agents/tools/AGENTS.md) |
 | 197 | ✓ | [`src/agents/tools/CLAUDE.md`](src/agents/tools/CLAUDE.md) |
 | 198 | ✓ | [`src/channels/AGENTS.md`](src/channels/AGENTS.md) |

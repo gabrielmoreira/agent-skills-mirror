@@ -1,7 +1,7 @@
 ---
 description: "PII filter at memory write boundaries — prevent sensitive data from entering persistent storage tiers"
 applyTo: "**"
-lastReviewed: 2026-04-30
+lastReviewed: 2026-05-26
 ---
 
 # PII Memory Filter
@@ -19,6 +19,8 @@ This filter applies whenever you write to ANY persistent tier:
 | Session Memory | `memory create /memories/session/` | No |
 | AI-Memory | File creation in `AI-Memory/` | No |
 | Feedback | File creation in `AI-Memory/feedback/` | No |
+
+For tier *selection* (where content goes), see [memory-triggers.instructions.md § Memory Tier Selection](memory-triggers.instructions.md). This filter constrains *what* may be written; MT constrains *where*.
 
 ## Never Write These Categories
 

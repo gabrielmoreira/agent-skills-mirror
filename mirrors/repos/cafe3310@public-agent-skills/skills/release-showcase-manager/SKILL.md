@@ -1,8 +1,13 @@
 ---
 name: release-showcase-manager
 description: 全生命周期模型发布演示管理。涵盖从素材收集、开发任务设计到视频录制与模型评价的完整流程。
-author: cafe3310
 license: Apache-2.0
+author: github/cafe3310
+depends_on_skill:
+  - github/cafe3310/public-agent-skills -> doc-todo-log-loop
+  - github/cafe3310/public-agent-skills -> showcase-video-processor
+  - github/cafe3310/public-agent-skills -> oneshot-website
+depends_on_binary: []
 ---
 
 # 技能：release-showcase-manager

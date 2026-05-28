@@ -53,7 +53,7 @@ Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 2
 
 - `CONTRIBUTING.md`
 - `README.md`
-- `README-en.md`
+- `README-zh.md`
 - `SECURITY-SCAN-REPORT.md`
 
 ## File Index
@@ -2921,7 +2921,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2857 | ✓ | [`skills/50-brycewang-aer-skills/templates/stata/run_all.do`](skills/50-brycewang-aer-skills/templates/stata/run_all.do) |
 | 2858 | ✓ | [`test-skill/SKILL.md`](test-skill/SKILL.md) |
 | 2859 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 2860 | → | [`README-en.md`](README-en.md) |
+| 2860 | → | [`README-zh.md`](README-zh.md) |
 | 2861 | → | [`README.md`](README.md) |
 | 2862 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
 

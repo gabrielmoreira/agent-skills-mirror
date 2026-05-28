@@ -40,6 +40,12 @@ Flow:
 4. Verify the real running surface or generated artifact. Check long words, localized strings, compact states, and at least one narrow viewport when applicable.
 5. If the fix touches three or more components, changes product behavior, or reveals a direction problem, stop and switch to Screenshot Iteration Mode or Lock the Direction First.
 
+**Spacing unification rule.** If a magic spacing or sizing value has been adjusted three times and the layout still looks off, stop tuning. Replace the N independent padding / gap / margin / size values with one shared named token (`Spacing.s4`, `--gap-content`, `gap-4`). Outer container padding defaults to the same value as inner element gap. Asymmetry that survives tuning is structural, not numeric, so more rounds of magic numbers will not converge. Reduce the count of independent values first, then argue about the specific value.
+
+**Fixed-height action slot, uniform typography.** Any container that swaps children based on state (status bar, action slot, toolbar row, menu item) must use one font size across every state. Vary fill, stroke, opacity, color, or icon, never font size. A 1pt height delta between `secondary 13px` and `primary 14px` becomes visible jitter at the state transition. CTA pill buttons in the same slot use the same size (typically 14px), distinguished by background and border, not by typography.
+
+**Completion screen layout.** Operation-complete surfaces show the single result the user came for: the actual reclaimed size / processed count / changed state. Long explanations belong in a details overlay opened from a summary row, not in the primary completion line. Do not add a separate "Review" button next to the summary row when one tap on the row already opens details; do not show an empty "0 skipped" entry point. If there is no skipped or failed item, hide the details affordance entirely.
+
 ## Screenshot Iteration Mode
 
 Activate when the user sends a screenshot or image alongside a complaint ("这里很丑", "这个不对", "fix this", "looks wrong"). The existing product is the direction. Skip the five-question direction lock.
@@ -91,6 +97,10 @@ When the user provides a repository URL or pastes source code of an existing pro
 Lift exact values: hex codes, spacing scale entries, font stacks, border radii. A rough approximation is not pixel fidelity.
 
 Only attach the target component folder or package. Exclude `.git`, `node_modules`, `dist`, and lock files. Dragging in an entire monorepo pollutes the context with irrelevant code and degrades output quality.
+
+### Existing-native-app exception (do not propose wholesale platform restyling)
+
+When the target is an existing macOS / iOS / Android native app that already has a coherent visual direction, do not propose a wholesale port to a newer platform style (macOS 26 Liquid Glass, iOS 18 frosted material, Material You, Fluent Design, etc.) as the default improvement plan. Wholesale restyling reads as "I do not have a specific design intent, here is the platform's." Default to incremental polish on the existing direction: spacing, alignment, hover and focus states, typography hierarchy, copy tightening, motion timing. Only propose a platform-style migration when the user has explicitly asked for it in this turn, or when the existing direction is broken in a way that incremental polish cannot fix. State the existing direction in one sentence before proposing changes so the user can correct the read.
 
 ### App shell exception (sidebar + main workspace)
 

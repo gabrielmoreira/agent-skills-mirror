@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/soc2-audit-prep/../../../compliance-os/skills/soc2-audit-prep/SKILL.md

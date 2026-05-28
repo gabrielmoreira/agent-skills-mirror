@@ -37,6 +37,11 @@ export function makePromptOutput(
           additionalContext,
         },
       });
+    case "grok":
+      // Grok hook context injection: return additionalContext; Grok may surface
+      // it via hook annotations or ignore for prompt events. State side-effects
+      // (mode activation, L1 events) are the primary mechanism.
+      return JSON.stringify({ additionalContext });
     case "qwen":
       // Qwen Code fork uses hookSpecificOutput (same as Codex)
       return JSON.stringify({
@@ -59,6 +64,10 @@ export function makeBlockOutput(vendor: Vendor, reason: string): string {
     case "gemini":
       // Gemini AfterAgent uses "deny" to reject response and force retry
       return JSON.stringify({ decision: "deny", reason });
+    case "grok":
+      // Grok Stop hooks are generally advisory. Emit block decision + rich
+      // stderr message (persistent-mode already prints the reason to stderr).
+      return JSON.stringify({ decision: "block", reason });
   }
 }
 
@@ -89,6 +98,12 @@ export function makePreToolOutput(
           hookEventName: "PreToolUse",
           updatedInput,
         },
+      });
+    case "grok":
+      // Grok PreToolUse uses decision + possibly updated tool input
+      return JSON.stringify({
+        decision: "allow",
+        toolInput: updatedInput,
       });
   }
 }

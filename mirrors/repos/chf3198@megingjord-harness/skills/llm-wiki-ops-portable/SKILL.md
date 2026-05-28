@@ -44,19 +44,19 @@ Every wiki page uses this structure:
 
 ### Concepts
 Distilled knowledge written by the agent after research.
-One idea per page. Name: `wiki/concepts/<slug>.md`
+One idea per page. Name: `wiki/wisdom/global/concepts/<slug>.md`
 
 ### Sources
 Summarized external material (articles, docs, papers).
-One source per page. Name: `wiki/sources/<slug>.md`
+One source per page. Name: `wiki/wisdom/global/sources/<slug>.md`
 
 ### Entities
 Named things: tools, services, platforms, people.
-Name: `wiki/entities/<slug>.md`
+Name: `wiki/wisdom/global/entities/<slug>.md`
 
 ### Syntheses
 Cross-cutting analysis combining multiple concepts/sources.
-Name: `wiki/syntheses/<slug>.md`
+Name: `wiki/wisdom/global/syntheses/<slug>.md`
 
 ## Searching
 Search the wiki with keyword matching across all pages:

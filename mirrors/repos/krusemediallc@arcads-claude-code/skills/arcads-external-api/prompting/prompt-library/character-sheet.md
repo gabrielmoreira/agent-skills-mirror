@@ -1,6 +1,10 @@
-# Character sheet — generate an AI influencer from a text description
+# Character sheet (Nano Banana) — generate an AI influencer from a text description
 
 **Use when:** The user wants to create a new AI influencer from scratch by describing them in plain English. Generates a 10-image character sheet (multiple angles, white background) that becomes the reference set for all future generations with that character.
+
+**Model:** Nano Banana 2 (default) or Nano Banana Pro (`model: "nano-banana"`). Up to 14 reference images for tight cross-angle continuity. **This is the default character-sheet workflow** — start here for pure photoreal AI-influencer use.
+
+**See also:** [character-sheet-gpt-image-2.md](character-sheet-gpt-image-2.md) — the same workflow on **ChatGPT Image 2** (`gpt-image-2`). 5-ref cap and stylized-photoreal aesthetic; pick that one for editorial / stylized brand looks or A/B comparison runs.
 
 ## Required flow (do NOT skip steps)
 

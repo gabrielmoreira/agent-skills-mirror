@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `strands-agents/sdk-python` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `strands-agents/sdk-python` — 26 default patterns, 3 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `strands-agents/sdk-python` — 26 default patterns, 0 followed patter
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 1 |
+| Followed pats | 3 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,9 @@ Mirror of `strands-agents/sdk-python` — 26 default patterns, 0 followed patter
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `CONTRIBUTING.md`
+- `strands-py/docs/STYLE_GUIDE.md`
+- `strands-py/docs/PR.md`
 
 ## File Index
 
@@ -59,7 +61,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`strands-py/AGENTS.md`](strands-py/AGENTS.md) |
+| 1 | ✓ | [`.agents/references/code-verification.md`](.agents/references/code-verification.md) |
+| 2 | ✓ | [`.agents/references/mdx-authoring.md`](.agents/references/mdx-authoring.md) |
+| 3 | ✓ | [`.agents/references/terminology.md`](.agents/references/terminology.md) |
+| 4 | ✓ | [`.agents/references/voice-guide.md`](.agents/references/voice-guide.md) |
+| 5 | ✓ | [`.agents/skills/docs-audit/SKILL.md`](.agents/skills/docs-audit/SKILL.md) |
+| 6 | ✓ | [`.agents/skills/docs-planner/SKILL.md`](.agents/skills/docs-planner/SKILL.md) |
+| 7 | ✓ | [`.agents/skills/docs-reviewer/SKILL.md`](.agents/skills/docs-reviewer/SKILL.md) |
+| 8 | ✓ | [`.agents/skills/docs-writer/SKILL.md`](.agents/skills/docs-writer/SKILL.md) |
+| 9 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
+| 10 | ✓ | [`site/CONTRIBUTING.md`](site/CONTRIBUTING.md) |
+| 11 | ✓ | [`site/SITE-ARCHITECTURE.md`](site/SITE-ARCHITECTURE.md) |
+| 12 | ✓ | [`strands-py/AGENTS.md`](strands-py/AGENTS.md) |
+| 13 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 14 | → | [`strands-py/docs/PR.md`](strands-py/docs/PR.md) |
+| 15 | → | [`strands-py/docs/STYLE_GUIDE.md`](strands-py/docs/STYLE_GUIDE.md) |
 
 ---
 

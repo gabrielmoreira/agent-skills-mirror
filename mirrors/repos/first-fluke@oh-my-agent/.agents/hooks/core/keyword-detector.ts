@@ -123,6 +123,7 @@ export function shouldSkipAllWorkflows(text: string): boolean {
 // Hook event names that represent genuine user input (not agent responses)
 const VALID_USER_EVENTS = new Set([
   "UserPromptSubmit",
+  "user_prompt_submit", // Grok
   "beforeSubmitPrompt", // Cursor
   "BeforeAgent", // Gemini (fires before agent processes user prompt)
   "PreInvocation", // Antigravity CLI (agy)
@@ -263,13 +264,22 @@ function inferVendorFromScriptPath(): Vendor | null {
   if (path.includes(`${join(".claude", "hooks")}`)) return "claude";
   if (path.includes(`${join(".gemini", "hooks")}`)) return "gemini";
   if (path.includes(`${join(".codex", "hooks")}`)) return "codex";
+  if (path.includes(`${join(".grok", "hooks")}`)) return "grok";
   return null;
 }
 
 function detectVendor(input: Record<string, unknown>): Vendor {
   const event = input.hook_event_name as string | undefined;
+  const hookEventName = input.hookEventName as string | undefined;
   const byScriptPath = inferVendorFromScriptPath();
   if (byScriptPath) return byScriptPath;
+
+  // Grok uses hookEventName (e.g. "user_prompt_submit") + GROK_* env vars
+  if (process.env.GROK_WORKSPACE_ROOT || hookEventName?.includes("prompt")) {
+    // Prefer explicit grok signal; fall through to other checks only if ambiguous
+    if (process.env.GROK_WORKSPACE_ROOT) return "grok";
+  }
+
   if (event === "PreInvocation") return "antigravity";
   if (event === "BeforeAgent") return "gemini";
   if (event === "beforeSubmitPrompt") return "cursor";
@@ -301,6 +311,12 @@ function getProjectDir(vendor: Vendor, input: Record<string, unknown>): string {
       break;
     case "qwen":
       dir = process.env.QWEN_PROJECT_DIR || process.cwd();
+      break;
+    case "grok":
+      dir =
+        process.env.GROK_WORKSPACE_ROOT ||
+        (input.cwd as string) ||
+        process.cwd();
       break;
     default:
       dir = process.env.CLAUDE_PROJECT_DIR || process.cwd();

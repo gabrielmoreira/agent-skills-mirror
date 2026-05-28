@@ -89,7 +89,8 @@ ClientError, ConfigurationError, ValidationError
 # found" types — see docs/python-api.md#error-handling for migration prose.
 SourceError, SourceAddError, SourceProcessingError, SourceTimeoutError, SourceNotFoundError
 NotebookError, NotebookNotFoundError
-ArtifactError, ArtifactDownloadError, ArtifactNotFoundError, ArtifactNotReadyError, ArtifactParseError
+ArtifactError, ArtifactDownloadError, ArtifactFeatureUnavailableError, ArtifactNotFoundError, ArtifactNotReadyError, ArtifactParseError
+ArtifactTimeoutError, ArtifactPendingTimeoutError, ArtifactInProgressTimeoutError
 ChatError
 
 # Enums

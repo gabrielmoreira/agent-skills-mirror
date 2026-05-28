@@ -3,7 +3,7 @@ name: skillshare
 description: |
   Manages and syncs AI CLI skills and agents across 50+ tools from a single source.
   Use this skill whenever the user mentions "skillshare", runs skillshare commands,
-  manages skills or agents (install, update, uninstall, sync, audit, analyze, check, diff, search),
+  manages skills or agents (install, update, uninstall, sync, commit, audit, analyze, check, diff, search),
   or troubleshoots skill/agent configuration (orphaned symlinks, broken targets, sync
   issues). Covers both global (~/.config/skillshare/) and project (.skillshare/)
   modes. Also use when: adding new AI tool targets (Claude, Cursor, Windsurf, etc.),
@@ -15,7 +15,7 @@ description: |
   `.agentignore` and `enable`/`disable` for per-agent toggles.
 argument-hint: "[command] [target] [--json] [--dry-run] [-p|-g]"
 metadata:
-  version: v0.19.23
+  version: v0.19.24
 ---
 
 # Skillshare CLI
@@ -94,6 +94,7 @@ skillshare sync                                  # Always sync after toggle
 # Creator: init project (see Getting Started) → add skills → commit .skillshare/
 skillshare install -p && skillshare sync                  # Member: clone → install → sync
 skillshare install github.com/team/repo --track -p        # Track shared repo
+skillshare commit -m "Update skill"                       # Local checkpoint, no push
 skillshare push                                           # Cross-machine: push on A
 skillshare pull                                           # Cross-machine: pull on B
 ```
@@ -162,7 +163,7 @@ See [TROUBLESHOOTING.md](references/TROUBLESHOOTING.md) for more.
 | `target`, `audit`, `analyze`, `trash`, `log`, `hub` | ✓ (`-p`) | ✓ (target list, audit, analyze, log) |
 | `extras init/list/remove/collect/source/mode` | ✓ (`-p`, except source) | ✓ (list, mode) |
 | `enable`, `disable` | ✓ (auto) | ✗ |
-| `push`, `pull`, `backup`, `restore` | ✗ | ✗ |
+| `commit`, `push`, `pull`, `backup`, `restore` | ✗ | ✗ |
 | `tui`, `upgrade` | ✗ | ✗ |
 | `ui` | ✓ (`-p`) | ✗ |
 
@@ -177,7 +178,7 @@ See [TROUBLESHOOTING.md](references/TROUBLESHOOTING.md) for more.
 | Topic | File |
 |-------|------|
 | Init flags | [init.md](references/init.md) |
-| Sync/collect/push/pull | [sync.md](references/sync.md) |
+| Sync/collect/commit/push/pull | [sync.md](references/sync.md) |
 | Install/update/uninstall/new | [install.md](references/install.md) |
 | Status/diff/list/search/check | [status.md](references/status.md) |
 | Security audit | [audit.md](references/audit.md) |

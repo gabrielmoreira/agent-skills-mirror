@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
+Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 38 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 38 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -94,9 +94,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 33 | ✓ | [`.agents/skills/convex-setup-auth/references/workos-authkit.md`](.agents/skills/convex-setup-auth/references/workos-authkit.md) |
 | 34 | ✓ | [`.agents/skills/convex-setup-auth/SKILL.md`](.agents/skills/convex-setup-auth/SKILL.md) |
 | 35 | ✓ | [`.agents/skills/convex/SKILL.md`](.agents/skills/convex/SKILL.md) |
-| 36 | ✓ | [`.agents/skills/crabbox/SKILL.md`](.agents/skills/crabbox/SKILL.md) |
-| 37 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 38 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 36 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 37 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `vinta/awesome-python` — 26 default patterns, 1 followed patterns, 3 file(s) materialized.
+Mirror of `vinta/awesome-python` — 26 default patterns, 1 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vinta/awesome-python` — 26 default patterns, 1 followed patterns, 3
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 3 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,9 +59,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`website/templates/llms.txt`](website/templates/llms.txt) |
-| 3 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`website/templates/llms.txt`](website/templates/llms.txt) |
+| 4 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

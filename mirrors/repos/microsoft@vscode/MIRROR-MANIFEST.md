@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/vscode` — 26 default patterns, 0 followed patterns, 104 file(s) materialized.
+Mirror of `microsoft/vscode` — 26 default patterns, 0 followed patterns, 105 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/vscode` — 26 default patterns, 0 followed patterns, 104 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 104 |
+| Files         | 105 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -152,17 +152,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 91 | ✓ | [`extensions/copilot/src/platform/authentication/common/AGENTS.md`](extensions/copilot/src/platform/authentication/common/AGENTS.md) |
 | 92 | ✓ | [`src/vs/platform/agentHost/common/state/AGENTS.md`](src/vs/platform/agentHost/common/state/AGENTS.md) |
 | 93 | ✓ | [`src/vs/platform/agentHost/test/node/AGENTS.md`](src/vs/platform/agentHost/test/node/AGENTS.md) |
-| 94 | ✓ | [`src/vs/sessions/skills/act-on-feedback/SKILL.md`](src/vs/sessions/skills/act-on-feedback/SKILL.md) |
-| 95 | ✓ | [`src/vs/sessions/skills/commit/SKILL.md`](src/vs/sessions/skills/commit/SKILL.md) |
-| 96 | ✓ | [`src/vs/sessions/skills/create-draft-pr/SKILL.md`](src/vs/sessions/skills/create-draft-pr/SKILL.md) |
-| 97 | ✓ | [`src/vs/sessions/skills/create-pr/SKILL.md`](src/vs/sessions/skills/create-pr/SKILL.md) |
-| 98 | ✓ | [`src/vs/sessions/skills/generate-run-commands/SKILL.md`](src/vs/sessions/skills/generate-run-commands/SKILL.md) |
-| 99 | ✓ | [`src/vs/sessions/skills/merge/SKILL.md`](src/vs/sessions/skills/merge/SKILL.md) |
-| 100 | ✓ | [`src/vs/sessions/skills/sync-upstream/SKILL.md`](src/vs/sessions/skills/sync-upstream/SKILL.md) |
-| 101 | ✓ | [`src/vs/sessions/skills/sync/SKILL.md`](src/vs/sessions/skills/sync/SKILL.md) |
-| 102 | ✓ | [`src/vs/sessions/skills/update-pr/SKILL.md`](src/vs/sessions/skills/update-pr/SKILL.md) |
-| 103 | ✓ | [`src/vs/sessions/skills/update-skills/SKILL.md`](src/vs/sessions/skills/update-skills/SKILL.md) |
-| 104 | ✓ | [`src/vs/workbench/contrib/imageCarousel/AGENTS.md`](src/vs/workbench/contrib/imageCarousel/AGENTS.md) |
+| 94 | ✓ | [`src/vs/sessions/browser/parts/mobile/contributions/AGENTS.md`](src/vs/sessions/browser/parts/mobile/contributions/AGENTS.md) |
+| 95 | ✓ | [`src/vs/sessions/skills/act-on-feedback/SKILL.md`](src/vs/sessions/skills/act-on-feedback/SKILL.md) |
+| 96 | ✓ | [`src/vs/sessions/skills/commit/SKILL.md`](src/vs/sessions/skills/commit/SKILL.md) |
+| 97 | ✓ | [`src/vs/sessions/skills/create-draft-pr/SKILL.md`](src/vs/sessions/skills/create-draft-pr/SKILL.md) |
+| 98 | ✓ | [`src/vs/sessions/skills/create-pr/SKILL.md`](src/vs/sessions/skills/create-pr/SKILL.md) |
+| 99 | ✓ | [`src/vs/sessions/skills/generate-run-commands/SKILL.md`](src/vs/sessions/skills/generate-run-commands/SKILL.md) |
+| 100 | ✓ | [`src/vs/sessions/skills/merge/SKILL.md`](src/vs/sessions/skills/merge/SKILL.md) |
+| 101 | ✓ | [`src/vs/sessions/skills/sync-upstream/SKILL.md`](src/vs/sessions/skills/sync-upstream/SKILL.md) |
+| 102 | ✓ | [`src/vs/sessions/skills/sync/SKILL.md`](src/vs/sessions/skills/sync/SKILL.md) |
+| 103 | ✓ | [`src/vs/sessions/skills/update-pr/SKILL.md`](src/vs/sessions/skills/update-pr/SKILL.md) |
+| 104 | ✓ | [`src/vs/sessions/skills/update-skills/SKILL.md`](src/vs/sessions/skills/update-skills/SKILL.md) |
+| 105 | ✓ | [`src/vs/workbench/contrib/imageCarousel/AGENTS.md`](src/vs/workbench/contrib/imageCarousel/AGENTS.md) |
 
 ---
 

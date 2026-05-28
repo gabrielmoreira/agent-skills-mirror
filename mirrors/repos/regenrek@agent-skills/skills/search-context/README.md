@@ -1,4 +1,4 @@
-# GitHub Reference Context
+# Search Context
 
 Find, clone, inspect, and summarize high-quality GitHub reference repositories for coding agents.
 
@@ -20,6 +20,7 @@ npx skills add instructa/agent-skills --skill search-context --agent cursor
 - The user asks for GitHub references, examples, prior art, inspiration, or implementation patterns.
 - A coding agent needs curated repository context before implementation.
 - The prompt includes `$search-context`.
+- The request is a broad app idea that needs separate stack, domain, and UI/workflow references.
 
 ## Requirements
 
@@ -74,17 +75,17 @@ node scripts/search-context.mjs run "visual progress indicator ring for ios app 
 This creates:
 
 ```text
-<user-cache>/github-reference-context/runs/<timestamp>/reference-context.md
-<user-cache>/github-reference-context/runs/<timestamp>/reference-context.json
-<user-cache>/github-reference-context/refs/<owner>__<repo>/
+<user-cache>/search-context/runs/<timestamp>/reference-context.md
+<user-cache>/search-context/runs/<timestamp>/reference-context.json
+<user-cache>/search-context/refs/<owner>__<repo>/
 ```
 
 The default cache root is OS-native:
 
 ```text
-macOS:   ~/Library/Caches/github-reference-context/
-Linux:   $XDG_CACHE_HOME/github-reference-context/ or ~/.cache/github-reference-context/
-Windows: %LOCALAPPDATA%\github-reference-context\
+macOS:   ~/Library/Caches/search-context/
+Linux:   $XDG_CACHE_HOME/search-context/ or ~/.cache/search-context/
+Windows: %LOCALAPPDATA%\search-context\
 ```
 
 Use `--project-local` only when you intentionally want `.refs/` and `.context/` in the current directory. Inside a Git worktree those paths must be ignored, or the CLI refuses to write them.
@@ -117,6 +118,8 @@ search-context clean [options]
 --project <id>         use a named library cluster; use current for this worktree
 --max-repos <n>        number of repos to clone and inspect, default 5
 --candidates <n>       number of candidate repos to fetch per search phrase, default 12
+--proof-candidates <n> candidates to proof/inspect, default max(max repos * 2, 8)
+--github-code-proof    use GitHub Code Search as an optional pre-clone proof gate
 --library-candidates <n> local library candidates to inspect, default max repos
 --min-stars <n>        minimum stars, default 5
 --fresh <yyyy-mm-dd>   pushed-after filter, default is Jan 1 two years ago
@@ -134,6 +137,18 @@ search-context clean [options]
 --json                 print the JSON summary to stdout
 --verbose              print commands and scoring details
 ```
+
+## Broad request behavior
+
+For focused requests, the CLI still uses preset expansions. For broad product requests, it builds a search plan and splits phrases into facets:
+
+- stack references, such as `tanstack start`
+- domain references, such as `habit life`
+- pattern references, such as `habit life tanstack start`
+
+This keeps framework architecture, product/domain examples, and UI patterns from drowning each other out in one generic search.
+
+After shallow clone, candidates are checked with local proof terms. For example, TanStack Start candidates should show concrete terms such as `@tanstack/react-start` or `createServerFn`, while habit app candidates should show terms such as `habit`, `streak`, `completion`, `calendar`, or `routine`. Candidates that only match generic words are rejected or down-ranked and listed separately in the manifest. `--github-code-proof` enables an optional pre-clone GitHub Code Search proof pass, but it is off by default because the API is rate-limited.
 
 ## Local reference library
 

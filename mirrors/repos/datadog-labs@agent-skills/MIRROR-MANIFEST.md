@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -90,7 +90,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`dd-monitors/SKILL.md`](dd-monitors/SKILL.md) |
 | 30 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
 | 31 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
-| 32 | ✓ | [`SKILL.md`](SKILL.md) |
+| 32 | ✓ | [`dd-software-delivery/triage-flaky-test/SKILL.md`](dd-software-delivery/triage-flaky-test/SKILL.md) |
+| 33 | ✓ | [`dd-software-delivery/unblock-pr/SKILL.md`](dd-software-delivery/unblock-pr/SKILL.md) |
+| 34 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

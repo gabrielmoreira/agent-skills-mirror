@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 23 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,9 +79,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md) |
 | 19 | ✓ | [`packages/core/src/skills/bundled/batch/SKILL.md`](packages/core/src/skills/bundled/batch/SKILL.md) |
 | 20 | ✓ | [`packages/core/src/skills/bundled/loop/SKILL.md`](packages/core/src/skills/bundled/loop/SKILL.md) |
-| 21 | ✓ | [`packages/core/src/skills/bundled/qc-helper/SKILL.md`](packages/core/src/skills/bundled/qc-helper/SKILL.md) |
-| 22 | ✓ | [`packages/core/src/skills/bundled/review/SKILL.md`](packages/core/src/skills/bundled/review/SKILL.md) |
-| 23 | ✓ | [`packages/core/src/skills/bundled/stuck/SKILL.md`](packages/core/src/skills/bundled/stuck/SKILL.md) |
+| 21 | ✓ | [`packages/core/src/skills/bundled/new-app/SKILL.md`](packages/core/src/skills/bundled/new-app/SKILL.md) |
+| 22 | ✓ | [`packages/core/src/skills/bundled/qc-helper/SKILL.md`](packages/core/src/skills/bundled/qc-helper/SKILL.md) |
+| 23 | ✓ | [`packages/core/src/skills/bundled/review/SKILL.md`](packages/core/src/skills/bundled/review/SKILL.md) |
+| 24 | ✓ | [`packages/core/src/skills/bundled/stuck/SKILL.md`](packages/core/src/skills/bundled/stuck/SKILL.md) |
 
 ---
 

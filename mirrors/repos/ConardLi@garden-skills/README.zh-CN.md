@@ -9,24 +9,24 @@
 <table>
 <tr>
 <td width="50%" valign="top">
-<a href="#web-video-presentation"><img src="./dist/imgs/web-video-presentation-skill.png" alt="Web Video Presentation Skill" width="100%"></a>
+<a href="#web-video-presentation"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video-presentation-skill.webp" alt="Web Video Presentation Skill" width="100%"></a>
 <br/><a href="#web-video-presentation"><strong>web-video-presentation</strong></a>
 <br/><sub>网页视频 / 演示工程</sub>
 </td>
 <td width="50%" valign="top">
-<a href="#web-design-engineer"><img src="./dist/imgs/web-design-skill.png" alt="Web Design Skill" width="100%"></a>
+<a href="#web-design-engineer"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design-skill.webp" alt="Web Design Skill" width="100%"></a>
 <br/><a href="#web-design-engineer"><strong>web-design-engineer</strong></a>
 <br/><sub>设计 / 前端</sub>
 </td>
 </tr>
 <tr>
 <td width="50%" valign="top">
-<a href="#gpt-image-2"><img src="./dist/imgs/gpt-image-2-skill.png" alt="GPT Image 2 Skill" width="100%"></a>
+<a href="#gpt-image-2"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/gpt-image-2-skill.webp" alt="GPT Image 2 Skill" width="100%"></a>
 <br/><a href="#gpt-image-2"><strong>gpt-image-2</strong></a>
 <br/><sub>图像生成 / Prompt</sub>
 </td>
 <td width="50%" valign="top">
-<a href="#kb-retriever"><img src="./dist/imgs/kb-retriever-skill.png" alt="KB Retriever Skill" width="100%"></a>
+<a href="#kb-retriever"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/kb-retriever-skill.webp" alt="KB Retriever Skill" width="100%"></a>
 <br/><a href="#kb-retriever"><strong>kb-retriever</strong></a>
 <br/><sub>本地知识库检索</sub>
 </td>
@@ -55,7 +55,7 @@
 
 ### [`web-video-presentation`](./skills/web-video-presentation)
 
-![Web Video Presentation Skill](./dist/imgs/web-video-presentation-skill.png)
+![Web Video Presentation Skill](https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video-presentation-skill.webp)
 
 **类别：** 网页视频 / 演示工程  
 **适合：** 把口播稿、文章、课程、产品演示和 talk 做成视频（网页模拟）。
@@ -74,14 +74,14 @@
 
 <table>
 <tr>
-<td align="center" width="25%"><a href="./skills/web-video-presentation/README.zh-CN.md#主题画廊"><img src="./dist/imgs/web-video/creative-voltage.png" alt="creative-voltage 预览" /></a><br /><sub><code>creative-voltage</code><br />创意分享</sub></td>
-<td align="center" width="25%"><a href="./skills/web-video-presentation/README.zh-CN.md#主题画廊"><img src="./dist/imgs/web-video/blueprint.png" alt="blueprint 预览" /></a><br /><sub><code>blueprint</code><br />技术架构</sub></td>
-<td align="center" width="25%"><a href="./skills/web-video-presentation/README.zh-CN.md#主题画廊"><img src="./dist/imgs/web-video/swiss-ikb.png" alt="swiss-ikb 预览" /></a><br /><sub><code>swiss-ikb</code><br />数据汇报</sub></td>
-<td align="center" width="25%"><a href="./skills/web-video-presentation/README.zh-CN.md#主题画廊"><img src="./dist/imgs/web-video/chalk-garden.png" alt="chalk-garden 预览" /></a><br /><sub><code>chalk-garden</code><br />科普讲解</sub></td>
+<td align="center" width="25%"><a href="./skills/web-video-presentation/README.zh-CN.md#主题画廊"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/creative-voltage.webp" alt="creative-voltage 预览" /></a><br /><sub><code>creative-voltage</code><br />创意分享</sub></td>
+<td align="center" width="25%"><a href="./skills/web-video-presentation/README.zh-CN.md#主题画廊"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/blueprint.webp" alt="blueprint 预览" /></a><br /><sub><code>blueprint</code><br />技术架构</sub></td>
+<td align="center" width="25%"><a href="./skills/web-video-presentation/README.zh-CN.md#主题画廊"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/swiss-ikb.webp" alt="swiss-ikb 预览" /></a><br /><sub><code>swiss-ikb</code><br />数据汇报</sub></td>
+<td align="center" width="25%"><a href="./skills/web-video-presentation/README.zh-CN.md#主题画廊"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/chalk-garden.webp" alt="chalk-garden 预览" /></a><br /><sub><code>chalk-garden</code><br />科普讲解</sub></td>
 </tr>
 </table>
 
-<a href="./skills/web-video-presentation/README.zh-CN.md#主题画廊"><img src="./dist/imgs/web-video/gallery.png" alt="web-video-presentation 主题画廊 —— 23 套内置主题一览" /></a>
+<a href="./skills/web-video-presentation/README.zh-CN.md#主题画廊"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video/gallery.webp" alt="web-video-presentation 主题画廊 —— 23 套内置主题一览" /></a>
 
 <sub>↑ 23 套主题一览 —— <a href="./skills/web-video-presentation/README.zh-CN.md#主题画廊"><b>打开完整画廊</b></a>，含真实预览图、设计签名与适合场景标签。</sub>
 
@@ -91,7 +91,7 @@
 
 ### [`web-design-engineer`](./skills/web-design-engineer)
 
-![Web Design Skill](./dist/imgs/web-design-skill.png)
+![Web Design Skill](https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design-skill.webp)
 
 **类别：** 设计 / 前端  
 **适合：** 网页、落地页、仪表盘、交互原型、HTML 幻灯片、动画、UI 样机、数据可视化和设计系统探索。
@@ -107,13 +107,36 @@
 - 包含 inline React + Babel、CSS tokens、`oklch()` 配色、container queries、reduced-motion 等实现规则
 - 提供高级模式参考，覆盖设备框、幻灯片引擎、动画时间线、仪表盘等常见 Web 产物
 
+<table>
+<tr>
+<td align="center" width="25%"><a href="./skills/web-design-engineer/README.zh-CN.md#风格配方画廊"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/aesop.webp" alt="aesop 预览" /></a><br /><sub><code>aesop</code><br />药剂师页</sub></td>
+<td align="center" width="25%"><a href="./skills/web-design-engineer/README.zh-CN.md#风格配方画廊"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/muji-kenya-hara.webp" alt="muji-kenya-hara 预览" /></a><br /><sub><code>muji-kenya-hara</code><br />器物目录</sub></td>
+<td align="center" width="25%"><a href="./skills/web-design-engineer/README.zh-CN.md#风格配方画廊"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/monocle-magazine.webp" alt="monocle-magazine 预览" /></a><br /><sub><code>monocle-magazine</code><br />杂志目录</sub></td>
+<td align="center" width="25%"><a href="./skills/web-design-engineer/README.zh-CN.md#风格配方画廊"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/stripe-press.webp" alt="stripe-press 预览" /></a><br /><sub><code>stripe-press</code><br />书籍详情</sub></td>
+</tr>
+<tr>
+<td align="center" width="25%"><a href="./skills/web-design-engineer/README.zh-CN.md#风格配方画廊"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/bloomberg-terminal.webp" alt="bloomberg-terminal 预览" /></a><br /><sub><code>bloomberg-terminal</code><br />交易仪表盘</sub></td>
+<td align="center" width="25%"><a href="./skills/web-design-engineer/README.zh-CN.md#风格配方画廊"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/linear.webp" alt="linear 预览" /></a><br /><sub><code>linear</code><br />开发者落地页</sub></td>
+<td align="center" width="25%"><a href="./skills/web-design-engineer/README.zh-CN.md#风格配方画廊"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/vercel-mesh.webp" alt="vercel-mesh 预览" /></a><br /><sub><code>vercel-mesh</code><br />部署落地页</sub></td>
+<td align="center" width="25%"><a href="./skills/web-design-engineer/README.zh-CN.md#风格配方画廊"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/tufte-dataink.webp" alt="tufte-dataink 预览" /></a><br /><sub><code>tufte-dataink</code><br />数据叙事</sub></td>
+</tr>
+<tr>
+<td align="center" width="25%"><a href="./skills/web-design-engineer/README.zh-CN.md#风格配方画廊"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/mid-century-modern.webp" alt="mid-century-modern 预览" /></a><br /><sub><code>mid-century-modern</code><br />海报致敬</sub></td>
+<td align="center" width="25%"><a href="./skills/web-design-engineer/README.zh-CN.md#风格配方画廊"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/y2k-retrofuturism.webp" alt="y2k-retrofuturism 预览" /></a><br /><sub><code>y2k-retrofuturism</code><br />Y2K 门户</sub></td>
+<td align="center" width="25%"><a href="./skills/web-design-engineer/README.zh-CN.md#风格配方画廊"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/bloomberg-businessweek-turley.webp" alt="bloomberg-businessweek-turley 预览" /></a><br /><sub><code>businessweek-turley</code><br />编辑封面</sub></td>
+<td align="center" width="25%"><a href="./skills/web-design-engineer/README.zh-CN.md#风格配方画廊"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/active-theory.webp" alt="active-theory 预览" /></a><br /><sub><code>active-theory</code><br />电影感发布</sub></td>
+</tr>
+</table>
+
+<sub>↑ 25 套有 anchor 的配方里挑出最具代表性的 12 套 —— <a href="./skills/web-design-engineer/README.zh-CN.md#风格配方画廊"><b>打开完整画廊</b></a>，含全部 25 个真实作品（药剂师页、交易工作站、杂志封面、Y2K 门户、Mid-Century 海报……），含签名手法与适合场景标签。</sub>
+
 链接：[README](./skills/web-design-engineer/README.zh-CN.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[下载 v1.2.1 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.2.1/web-design-engineer-1.2.1.zip)<!-- DOWNLOAD:web-design-engineer:end -->
 
 ---
 
 ### [`gpt-image-2`](./skills/gpt-image-2)
 
-![GPT Image 2 Skill](./dist/imgs/gpt-image-2-skill.png)
+![GPT Image 2 Skill](https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/gpt-image-2-skill.webp)
 
 **类别：** 图像生成 / Prompt 工程  
 **适合：** 海报、UI 样机、产品图、信息图、学术图、技术架构图、漫画、头像、分镜、品牌板和图像编辑工作流。
@@ -124,9 +147,82 @@
 
 - 支持三种运行模式：**Mode A Garden 本地生图**、**Mode B 委托宿主出图**、**Mode C 纯提示词顾问**
 - 每次任务先做模式探测，避免静默走错执行路径
-- 在 `references/` 下提供 18 大类、80+ 个结构化提示词模板
+- 在 `references/` 下提供 18 大类、79 个结构化提示词模板
 - 同时覆盖图像生成和图像编辑，并配套专门工作流与脚本
 - Garden 模式下会把 prompt 与生成图片保存到 `garden-gpt-image-2/`，方便复用、审查和版本管理
+
+#### 精选线上案例
+
+<table>
+  <tr>
+    <td width="25%" align="center">
+      <a href="https://gpt-image2.mmh1.top/#/case/editing-workflows%2Fbackground-replacement%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/editing-workflows/background-replacement/1-thumb.webp" alt="背景替换案例" width="100%"></a><br/>
+      <strong><code>background-replacement</code></strong><br/>
+      <sub>人像背景替换与时代广场霓虹补光。</sub>
+    </td>
+    <td width="25%" align="center">
+      <a href="https://gpt-image2.mmh1.top/#/case/ui-mockups%2Fchat-interface-scene%2F3"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/ui-mockups/chat-interface-scene/3-thumb.webp" alt="AI 助手 UI 样机案例" width="100%"></a><br/>
+      <strong><code>chat-interface-scene</code></strong><br/>
+      <sub>Claude 风格 AI 助手产品截图。</sub>
+    </td>
+    <td width="25%" align="center">
+      <a href="https://gpt-image2.mmh1.top/#/case/ui-mockups%2Flive-commerce-ui%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/ui-mockups/live-commerce-ui/1-thumb.webp" alt="直播带货 UI 案例" width="100%"></a><br/>
+      <strong><code>live-commerce-ui</code></strong><br/>
+      <sub>明星直播带货产品界面。</sub>
+    </td>
+    <td width="25%" align="center">
+      <a href="https://gpt-image2.mmh1.top/#/case/ui-mockups%2Fproduct-card-overlay%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/ui-mockups/product-card-overlay/1-thumb.webp" alt="产品落地页叠层案例" width="100%"></a><br/>
+      <strong><code>product-card-overlay</code></strong><br/>
+      <sub>护肤落地页 Hero 主视觉。</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="25%" align="center">
+      <a href="https://gpt-image2.mmh1.top/#/case/infographics%2Fbento-grid-infographic%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/infographics/bento-grid-infographic/1-thumb.webp" alt="便当格信息图案例" width="100%"></a><br/>
+      <strong><code>bento-grid-infographic</code></strong><br/>
+      <sub>iPhone 16 Pro 高密度一图流解析。</sub>
+    </td>
+    <td width="25%" align="center">
+      <a href="https://gpt-image2.mmh1.top/#/case/technical-diagrams%2Fsystem-architecture%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/technical-diagrams/system-architecture/1-thumb.webp" alt="系统架构图案例" width="100%"></a><br/>
+      <strong><code>system-architecture</code></strong><br/>
+      <sub>多租户 AI 客服 SaaS 生产架构。</sub>
+    </td>
+    <td width="25%" align="center">
+      <a href="https://gpt-image2.mmh1.top/#/case/slides-and-visual-docs%2Fdense-explainer-slides%2F2"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/slides-and-visual-docs/dense-explainer-slides/2-thumb.webp" alt="高密度讲解单页案例" width="100%"></a><br/>
+      <strong><code>dense-explainer-slides</code></strong><br/>
+      <sub>AI Agent 工作机制一页讲清。</sub>
+    </td>
+    <td width="25%" align="center">
+      <a href="https://gpt-image2.mmh1.top/#/case/maps%2Ffood-map%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/maps/food-map/1-thumb.webp" alt="美食地图案例" width="100%"></a><br/>
+      <strong><code>food-map</code></strong><br/>
+      <sub>City Walk 编辑型美食地图。</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="25%" align="center">
+      <a href="https://gpt-image2.mmh1.top/#/case/product-visuals%2Fexploded-view-poster%2F2"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/product-visuals/exploded-view-poster/2-thumb.webp" alt="产品爆炸图案例" width="100%"></a><br/>
+      <strong><code>exploded-view-poster</code></strong><br/>
+      <sub>Vision Pro 2 光机与算力模块拆解。</sub>
+    </td>
+    <td width="25%" align="center">
+      <a href="https://gpt-image2.mmh1.top/#/case/academic-figures%2Fneural-network-architecture%2F2"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/academic-figures/neural-network-architecture/2-thumb.webp" alt="神经网络架构图案例" width="100%"></a><br/>
+      <strong><code>neural-network-architecture</code></strong><br/>
+      <sub>适合论文配图的 ViT-B/16 架构图。</sub>
+    </td>
+    <td width="25%" align="center">
+      <a href="https://gpt-image2.mmh1.top/#/case/branding-and-packaging%2Fcosmetic-packaging%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/branding-and-packaging/cosmetic-packaging/1-thumb.webp" alt="化妆品包装案例" width="100%"></a><br/>
+      <strong><code>cosmetic-packaging</code></strong><br/>
+      <sub>国货高端护肤礼盒与影棚主视觉。</sub>
+    </td>
+    <td width="25%" align="center">
+      <a href="https://gpt-image2.mmh1.top/#/case/storyboards-and-sequences%2Fanime-key-visual%2F1"><img src="https://cdn.jsdelivr.net/gh/ConardLi/gpt-image-2-101@main/public/case/storyboards-and-sequences/anime-key-visual/1-thumb.webp" alt="动漫主视觉案例" width="100%"></a><br/>
+      <strong><code>anime-key-visual</code></strong><br/>
+      <sub>游戏首发 KV 与可裁切主视觉构图。</sub>
+    </td>
+  </tr>
+</table>
+
+<sub>↑ 从 160+ 公开案例库里挑出的 12 个精选入口 —— <a href="./skills/gpt-image-2/README.zh-CN.md#案例画廊"><b>打开 Skill 案例画廊</b></a> 查看更多模板，也可以直接浏览 <a href="https://gpt-image2.mmh1.top/#/case">线上案例站</a>。</sub>
 
 链接：[README](./skills/gpt-image-2/README.zh-CN.md) · [SKILL.md](./skills/gpt-image-2/SKILL.md) · [Website](./website/gpt-image2-website) · <!-- DOWNLOAD:gpt-image-2:start -->[下载 v1.0.3 .zip](https://github.com/ConardLi/garden-skills/releases/download/gpt-image-2-v1.0.3/gpt-image-2-1.0.3.zip)<!-- DOWNLOAD:gpt-image-2:end -->
 
@@ -134,7 +230,7 @@
 
 ### [`kb-retriever`](./skills/kb-retriever)
 
-![Kb Retriever Skill](./dist/imgs/kb-retriever-skill.png)
+![Kb Retriever Skill](https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/kb-retriever-skill.webp)
 
 **类别：** 检索 / 本地知识库  
 **适合：** 从本地 `knowledge/` 目录回答问题，检索结构化文档，并在不撑爆上下文的前提下从 Markdown、文本、PDF、Excel 中提取证据。

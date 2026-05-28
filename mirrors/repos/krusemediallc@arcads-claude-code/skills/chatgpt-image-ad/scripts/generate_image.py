@@ -169,23 +169,67 @@ def http_download(url: str, dest: Path, timeout: int = 120) -> None:
 
 
 def probe_dimensions(path: Path) -> tuple[int, int]:
-    """Return (width, height) using macOS `sips`. Falls back to (0, 0) on error."""
+    """Return (width, height) for a PNG/JPEG/WebP using stdlib only — cross-platform.
+
+    Reads the file header bytes directly so we don't need ImageMagick, sips
+    (macOS), or Pillow. Returns (0, 0) on any error.
+    """
     try:
-        out = subprocess.run(
-            ["sips", "-g", "pixelWidth", "-g", "pixelHeight", str(path)],
-            capture_output=True,
-            text=True,
-            timeout=10,
-            check=True,
-        ).stdout
-        w = h = 0
-        for line in out.splitlines():
-            line = line.strip()
-            if line.startswith("pixelWidth:"):
-                w = int(line.split(":", 1)[1].strip())
-            elif line.startswith("pixelHeight:"):
-                h = int(line.split(":", 1)[1].strip())
-        return w, h
+        with path.open("rb") as f:
+            header = f.read(32)
+        if len(header) < 24:
+            return 0, 0
+        # PNG: signature 89 50 4E 47 0D 0A 1A 0A, then IHDR chunk:
+        # [4B length][4B "IHDR"][4B width BE][4B height BE]...
+        if header[:8] == b"\x89PNG\r\n\x1a\n" and header[12:16] == b"IHDR":
+            w = int.from_bytes(header[16:20], "big")
+            h = int.from_bytes(header[20:24], "big")
+            return w, h
+        # JPEG: walk SOF markers to find dimensions. SOFn = 0xFFC0..0xFFCF
+        # (excluding 0xFFC4 DHT, 0xFFC8 reserved, 0xFFCC DAC).
+        if header[:2] == b"\xff\xd8":
+            with path.open("rb") as f:
+                data = f.read()
+            i = 2
+            while i < len(data) - 8:
+                if data[i] != 0xFF:
+                    i += 1
+                    continue
+                marker = data[i + 1]
+                if marker in (0xD8, 0xD9):  # SOI / EOI
+                    i += 2
+                    continue
+                if 0xC0 <= marker <= 0xCF and marker not in (0xC4, 0xC8, 0xCC):
+                    h = int.from_bytes(data[i + 5:i + 7], "big")
+                    w = int.from_bytes(data[i + 7:i + 9], "big")
+                    return w, h
+                seg_len = int.from_bytes(data[i + 2:i + 4], "big")
+                i += 2 + seg_len
+            return 0, 0
+        # WebP (VP8/VP8L/VP8X): "RIFF????WEBP"
+        if header[:4] == b"RIFF" and header[8:12] == b"WEBP":
+            chunk = header[12:16]
+            if chunk == b"VP8X" and len(header) >= 30:
+                # VP8X: width-1 (3B LE) at offset 24, height-1 at offset 27
+                w = int.from_bytes(header[24:27], "little") + 1
+                h = int.from_bytes(header[27:30], "little") + 1
+                return w, h
+            if chunk == b"VP8 ":
+                with path.open("rb") as f:
+                    data = f.read(40)
+                if len(data) >= 30:
+                    w = int.from_bytes(data[26:28], "little") & 0x3FFF
+                    h = int.from_bytes(data[28:30], "little") & 0x3FFF
+                    return w, h
+            if chunk == b"VP8L":
+                with path.open("rb") as f:
+                    data = f.read(25)
+                if len(data) >= 25 and data[20] == 0x2F:
+                    b0, b1, b2, b3 = data[21], data[22], data[23], data[24]
+                    w = ((b1 & 0x3F) << 8 | b0) + 1
+                    h = ((b3 & 0x0F) << 10 | b2 << 2 | (b1 >> 6)) + 1
+                    return w, h
+        return 0, 0
     except Exception as e:  # noqa: BLE001
         log(f"warn: could not probe dimensions for {path}: {e}")
         return 0, 0

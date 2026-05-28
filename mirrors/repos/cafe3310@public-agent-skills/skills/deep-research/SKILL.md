@@ -1,8 +1,12 @@
 ---
 name: deep-research
 description: A comprehensive, autonomous deep research framework. Use this skill when the user requests a thorough, multi-dimensional investigation into a complex topic, market research, technology landscape, or any task requiring extensive web browsing, data synthesis, and structured reporting. It orchestrates subagents and uses file-system-based state management to prevent context bloat.
-author: cafe3310
 license: MIT
+author: github/cafe3310
+depends_on_skill:
+  - github/cafe3310/public-agent-skills -> agent-browser
+depends_on_binary:
+  - python3
 ---
 
 # Deep Research Architect

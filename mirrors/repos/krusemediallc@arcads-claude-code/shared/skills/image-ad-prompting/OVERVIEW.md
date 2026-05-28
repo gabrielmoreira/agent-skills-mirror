@@ -2,7 +2,7 @@
 
 **One-line summary:** four skills + one shared prompt library let you generate standalone Meta image-ad creatives with either ChatGPT Image 2 or Nano Banana (Gemini Flash Image), and reverse-engineer existing ads into reusable templates. Output is image files. Meta-side uploading is handled by a *separate* `meta-ad-builder` skill, not by these.
 
-**Read this whole file** at the start of any session where the user mentions: making an ad, image creative, ad library, gpt-image-2, ChatGPT Image, Nano Banana, Gemini Image, cloning an ad, reverse-engineering an ad, or anything in the `T1–T39` template namespace.
+**Read this whole file** at the start of any session where the user mentions: making an ad, image creative, ad library, gpt-image-2, ChatGPT Image 2, Nano Banana, Gemini Image, cloning an ad, reverse-engineering an ad, or anything in the `T1–T39` template namespace.
 
 ---
 

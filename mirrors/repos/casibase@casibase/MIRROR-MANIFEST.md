@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `casibase/casibase` — 26 default patterns, 0 followed patterns, 63 file(s) materialized.
+Mirror of `casibase/casibase` — 26 default patterns, 0 followed patterns, 65 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `casibase/casibase` — 26 default patterns, 0 followed patterns, 63 f
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 63 |
+| Files         | 65 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -103,25 +103,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | ✓ | [`skills/oracle/SKILL.md`](skills/oracle/SKILL.md) |
 | 43 | ✓ | [`skills/ordercli/SKILL.md`](skills/ordercli/SKILL.md) |
 | 44 | ✓ | [`skills/peekaboo/SKILL.md`](skills/peekaboo/SKILL.md) |
-| 45 | ✓ | [`skills/sag/SKILL.md`](skills/sag/SKILL.md) |
-| 46 | ✓ | [`skills/session-logs/SKILL.md`](skills/session-logs/SKILL.md) |
-| 47 | ✓ | [`skills/sherpa-onnx-tts/SKILL.md`](skills/sherpa-onnx-tts/SKILL.md) |
-| 48 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
-| 49 | ✓ | [`skills/slack/SKILL.md`](skills/slack/SKILL.md) |
-| 50 | ✓ | [`skills/songsee/SKILL.md`](skills/songsee/SKILL.md) |
-| 51 | ✓ | [`skills/sonoscli/SKILL.md`](skills/sonoscli/SKILL.md) |
-| 52 | ✓ | [`skills/spotify-player/SKILL.md`](skills/spotify-player/SKILL.md) |
-| 53 | ✓ | [`skills/summarize/SKILL.md`](skills/summarize/SKILL.md) |
-| 54 | ✓ | [`skills/taskflow-inbox-triage/SKILL.md`](skills/taskflow-inbox-triage/SKILL.md) |
-| 55 | ✓ | [`skills/taskflow/SKILL.md`](skills/taskflow/SKILL.md) |
-| 56 | ✓ | [`skills/things-mac/SKILL.md`](skills/things-mac/SKILL.md) |
-| 57 | ✓ | [`skills/tmux/SKILL.md`](skills/tmux/SKILL.md) |
-| 58 | ✓ | [`skills/trello/SKILL.md`](skills/trello/SKILL.md) |
-| 59 | ✓ | [`skills/video-frames/SKILL.md`](skills/video-frames/SKILL.md) |
-| 60 | ✓ | [`skills/voice-call/SKILL.md`](skills/voice-call/SKILL.md) |
-| 61 | ✓ | [`skills/wacli/SKILL.md`](skills/wacli/SKILL.md) |
-| 62 | ✓ | [`skills/weather/SKILL.md`](skills/weather/SKILL.md) |
-| 63 | ✓ | [`skills/xurl/SKILL.md`](skills/xurl/SKILL.md) |
+| 45 | ✓ | [`skills/powerpoint/references/pptxgenjs.md`](skills/powerpoint/references/pptxgenjs.md) |
+| 46 | ✓ | [`skills/powerpoint/SKILL.md`](skills/powerpoint/SKILL.md) |
+| 47 | ✓ | [`skills/sag/SKILL.md`](skills/sag/SKILL.md) |
+| 48 | ✓ | [`skills/session-logs/SKILL.md`](skills/session-logs/SKILL.md) |
+| 49 | ✓ | [`skills/sherpa-onnx-tts/SKILL.md`](skills/sherpa-onnx-tts/SKILL.md) |
+| 50 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
+| 51 | ✓ | [`skills/slack/SKILL.md`](skills/slack/SKILL.md) |
+| 52 | ✓ | [`skills/songsee/SKILL.md`](skills/songsee/SKILL.md) |
+| 53 | ✓ | [`skills/sonoscli/SKILL.md`](skills/sonoscli/SKILL.md) |
+| 54 | ✓ | [`skills/spotify-player/SKILL.md`](skills/spotify-player/SKILL.md) |
+| 55 | ✓ | [`skills/summarize/SKILL.md`](skills/summarize/SKILL.md) |
+| 56 | ✓ | [`skills/taskflow-inbox-triage/SKILL.md`](skills/taskflow-inbox-triage/SKILL.md) |
+| 57 | ✓ | [`skills/taskflow/SKILL.md`](skills/taskflow/SKILL.md) |
+| 58 | ✓ | [`skills/things-mac/SKILL.md`](skills/things-mac/SKILL.md) |
+| 59 | ✓ | [`skills/tmux/SKILL.md`](skills/tmux/SKILL.md) |
+| 60 | ✓ | [`skills/trello/SKILL.md`](skills/trello/SKILL.md) |
+| 61 | ✓ | [`skills/video-frames/SKILL.md`](skills/video-frames/SKILL.md) |
+| 62 | ✓ | [`skills/voice-call/SKILL.md`](skills/voice-call/SKILL.md) |
+| 63 | ✓ | [`skills/wacli/SKILL.md`](skills/wacli/SKILL.md) |
+| 64 | ✓ | [`skills/weather/SKILL.md`](skills/weather/SKILL.md) |
+| 65 | ✓ | [`skills/xurl/SKILL.md`](skills/xurl/SKILL.md) |
 
 ---
 

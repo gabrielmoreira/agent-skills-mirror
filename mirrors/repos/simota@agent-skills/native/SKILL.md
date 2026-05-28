@@ -295,8 +295,8 @@ Check status → Already granted? → Proceed
 |--------|-----------|---------|-------------|------------|
 | SwiftUI (iOS) | `swiftui` | ✓ (iOS) | iOS implementation with Swift 6.2 + SwiftUI + `@Observable` | `references/patterns.md`, `references/modern-stack.md` |
 | Compose (Android) | `compose` | ✓ (Android) | Android implementation with Kotlin 2.x + Jetpack Compose + Material 3 Expressive | `references/patterns.md`, `references/modern-stack.md` |
-| Liquid Glass | `liquidglass` | | iOS 26 Liquid Glass adoption (translucent / depth controls, dynamic tab-bar shrink, 4-variant icons) | `references/modern-stack.md` |
-| M3 Expressive | `expressive` | | Material 3 Expressive adoption (LoadingIndicator, PullToRefreshBox, FloatingToolbar / DockedToolbar, Carousel, spring motion) | `references/modern-stack.md` |
+| Liquid Glass | `liquidglass` | | iOS 26 Liquid Glass adoption (translucent / depth controls, dynamic tab-bar shrink, 4-variant icons) | `references/ios-hig.md`, `references/modern-stack.md` |
+| M3 Expressive | `expressive` | | Material 3 Expressive adoption (LoadingIndicator, PullToRefreshBox, FloatingToolbar / DockedToolbar, Carousel, spring motion) | `references/android-material3.md`, `references/modern-stack.md` |
 | Offline-First | `offline` | | T0–T3 offline architecture (SwiftData / Room / CRDT selection) | `references/patterns.md` |
 | Push Notifications | `push` | | APNs (Live Activities) and FCM (Channels) wiring, soft pre-prompt UX | `references/push-notifications.md` |
 | Deep Links | `deeplink` | | Universal Links (AASA) and App Links (assetlinks.json), Coordinator / NavController routing | `references/deeplink-routing.md` |
@@ -335,8 +335,9 @@ Behavior notes per Recipe:
 | iOS-only feature request | SwiftUI implementation with Swift 6.2 + `@Observable` + offline T1+ | `references/patterns.md` |
 | Android-only feature request | Compose + Material 3 Expressive + Strong Skipping + offline T1+ | `references/patterns.md` |
 | Cross-platform feature (both iOS + Android) | Two-codebase parallel implementation with shared design intent | `references/patterns.md` |
-| iOS 26 Liquid Glass adoption | New SwiftUI material APIs + 4-variant icons + dynamic tab-bar shrink | `references/modern-stack.md` |
-| Android Material 3 Expressive | New components (LoadingIndicator, PullToRefreshBox, FloatingToolbar, Carousel) + spring motion | `references/modern-stack.md` |
+| iOS 26 Liquid Glass adoption | New SwiftUI material APIs + 4-variant icons + dynamic tab-bar shrink | `references/ios-hig.md`, `references/modern-stack.md` |
+| Android Material 3 Expressive | New components (LoadingIndicator, PullToRefreshBox, FloatingToolbar, Carousel) + spring motion | `references/android-material3.md`, `references/modern-stack.md` |
+| HIG / Material 3 design guideline lookup (foundations, color roles, typography, components catalog) | Per-platform OEM design system reference | `references/ios-hig.md`, `references/android-material3.md` |
 | Performance regression | Profile cold start, re-render / recomposition (Compose `Self._printChanges()` / Compose Effect Graph), memory | `references/patterns.md` |
 | Store submission preparation | Compliance audit, Privacy Manifest / Data Safety, metadata, build artifacts, staged rollout plan | `references/store-compliance.md`, `references/release-rollout.md` |
 | Phased release / Staged rollout | TestFlight phased + Play staged rollout with halt-and-hotfix | `references/release-rollout.md` |
@@ -444,6 +445,8 @@ NATIVE_TO_LAUNCH_HANDOFF:
 
 | File | Content |
 |------|---------|
+| `references/ios-hig.md` | Apple Human Interface Guidelines reference — Foundations / Patterns / Components / Inputs, iOS 26 Liquid Glass adoption rules (where to apply / where NOT, variants, fallback), Dynamic Type / SF Pro / accessibility, App Store technology integration hooks |
+| `references/android-material3.md` | Material 3 + Material 3 Expressive reference — Foundations / Styles / Components (Jetpack Compose API names) / Patterns, design tokens (color roles / type scale / shape / motion / elevation), Expressive new components (LoadingIndicator / SplitButton / FloatingToolbar / FlexibleBottomAppBar / FAB Menu / Carousel / SecureTextField), Compose BOM 2025.12+ / Material 3 1.4+ adoption checklist |
 | `references/patterns.md` | Navigation, state management, offline-first, Compose recomposition, SwiftUI body invalidation, platform adaptation patterns |
 | `references/examples.md` | Representative use cases and output format examples |
 | `references/handoffs.md` | Incoming / outgoing handoff templates for all collaboration partners |

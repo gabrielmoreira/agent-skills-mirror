@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `alchaincyf/darwin-skill` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `alchaincyf/darwin-skill` — 26 default patterns, 2 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `alchaincyf/darwin-skill` — 26 default patterns, 0 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 1 |
+| Followed pats | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,8 @@ Mirror of `alchaincyf/darwin-skill` — 26 default patterns, 0 followed patterns
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `references/skilllens-evidence.md`
+- `references/runtime-neutrality.md`
 
 ## File Index
 
@@ -60,6 +61,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`SKILL.md`](SKILL.md) |
+| 2 | → | [`references/runtime-neutrality.md`](references/runtime-neutrality.md) |
+| 3 | → | [`references/skilllens-evidence.md`](references/skilllens-evidence.md) |
 
 ---
 

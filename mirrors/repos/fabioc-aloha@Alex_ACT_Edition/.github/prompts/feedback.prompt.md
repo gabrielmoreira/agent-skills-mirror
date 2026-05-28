@@ -14,14 +14,14 @@ Capture friction, bugs, feature ideas, or success notes from this session and wr
    - `category`: `bug` | `friction` | `feature-request` | `success`
    - `severity`: `low` | `medium` | `high` | `critical`
    - `skill`: name of the skill if specific to one, otherwise empty
-3. **Resolve the AI-Memory root** using the standard algorithm: check `cognitive-config.json` for `ai_memory_root` override, then auto-discover cloud drives (OneDrive, iCloud, Dropbox, Google Drive, Box, etc.), skip `ai_memory_exclude` entries, pick the first with `AI-Memory/`. Run `node .github/scripts/_registry.cjs --resolve .` if unsure. If none found, offer to create one: `node .github/scripts/_registry.cjs --discover` then `--init <name>`.
+3. **Resolve the shared memory bus** via `resolveMemoryBus()` (sibling `../Alex_ACT_Memory`). CLI: `node .github/scripts/_registry.cjs --resolve .`. If the sibling doesn't exist, it will be cloned or scaffolded automatically.
 4. **Strip per `cross-project-isolation.instructions.md`** before writing:
    - No file paths from the heir project
    - No client names, domain entities, or business specifics
    - No code snippets longer than 5 lines
    - No configuration values, connection strings, endpoints
    - No PII (contact info, names + identifiers, health/financial data)
-5. **Write the file** at `<ai-memory-root>/feedback/alex-act/YYYY-MM-DD-<heir-id>-<short-slug>.md` with frontmatter:
+5. **Write the file** at `../Alex_ACT_Memory/feedback/YYYY-MM-DD-<heir-id>-<short-slug>.md` with frontmatter:
 
    ```yaml
    ---

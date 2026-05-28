@@ -96,8 +96,8 @@ Propose a local skill (from `.github/skills/local/`) for inclusion in the Alex A
 
 ## Notes
 
-- Resolve the AI-Memory root using the standard algorithm: check `cognitive-config.json` for `ai_memory_root` override, then auto-discover cloud drives, fall back to `~/AI-Memory`. CLI: `node .github/scripts/_registry.cjs --resolve .`
-- If AI-Memory is not set up, offer to run `/initialize` first.
+- Resolve the shared memory bus via `resolveMemoryBus()` (sibling `../Alex_ACT_Memory`). CLI: `node .github/scripts/_registry.cjs --resolve .`
+- If the memory bus is not set up, offer to run `/initialize` first.
 - Never submit a skill that contains PII, credentials, or project-identifying information.
 - The Supervisor evaluates proposals against the Mall's 5-dimension scorecard (maintenance, adoption, license, fit, documentation). Writing a quality proposal with clear generalizability evidence increases acceptance odds.
 - Token cost estimate: count characters in the SKILL.md body, divide by 4.

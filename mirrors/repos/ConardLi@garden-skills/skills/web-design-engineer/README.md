@@ -4,7 +4,7 @@
 
 [中文文档](./README.zh-CN.md) · [Back to collection root](../../README.md)
 
-![Web Design Skill](../../dist/imgs/web-design-skill.png)
+![Web Design Skill](https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design-skill.webp)
 
 ---
 
@@ -117,7 +117,293 @@ The agent will automatically pick up the skill when your request involves visual
 
 ---
 
-## Demos
+## Style Recipe Gallery
+
+The skill ships **25 named recipes**, each tied to a real brand, studio, or designer. Every recipe has a working, full-page artefact in the demo gallery — not a shared template, not a thumbnail mood-board, but the form each recipe was actually designed for: an apothecary product page for Aesop, a trading workstation for Bloomberg Terminal, a Saul-Bass poster for Mid-Century, a Y2K portal for Retrofuturism. Browse by school below, pick the one whose vibe matches your brief, or read the spec file at `references/style-recipes/<recipe>.md`. Click any preview to open the full-resolution 2:1 frame.
+
+> Frames are real artefacts rendered by the live React + Vite gallery at [`demo/web-design-engineer-demo`](../../demo/web-design-engineer-demo/) — same fonts, same palettes, same signature moves as the recipe spec. Each demo is in `src/recipes/<id>.tsx`.
+
+### Editorial / Minimalist · 5 recipes
+
+> Whitespace, refined typography, quiet luxury — the apothecary, the museum catalogue, the hardware product page.
+
+<table>
+<tr>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/apple-hig.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/apple-hig.webp" alt="apple-hig preview" /></a>
+<br /><strong><code>apple-hig</code></strong>
+<br /><sub>SF Pro Display, generous whitespace, soft elevation — the Apple Store voice</sub>
+<br /><sub><b>Best for</b> · hardware product pages · device launches · premium consumer tech</sub>
+</td>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/muji-kenya-hara.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/muji-kenya-hara.webp" alt="muji-kenya-hara preview" /></a>
+<br /><strong><code>muji-kenya-hara</code></strong>
+<br /><sub>Emptiness as canvas, ash &amp; paper, every object photographed in air</sub>
+<br /><sub><b>Best for</b> · object catalogues · houseware brands · slow-living storefronts</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/aesop.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/aesop.webp" alt="aesop preview" /></a>
+<br /><strong><code>aesop</code></strong>
+<br /><sub>Warm chamois, sage &amp; amber, serif copy that reads like a literary magazine</sub>
+<br /><sub><b>Best for</b> · apothecary product pages · beauty &amp; wellness · independent retailers</sub>
+</td>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/dieter-rams-braun.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/dieter-rams-braun.webp" alt="dieter-rams-braun preview" /></a>
+<br /><strong><code>dieter-rams-braun</code></strong>
+<br /><sub>Ten principles, monochrome grids, technical orthographics — function as form</sub>
+<br /><sub><b>Best for</b> · industrial-design archives · hardware specs · brand-principle pages</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/monocle-magazine.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/monocle-magazine.webp" alt="monocle-magazine preview" /></a>
+<br /><strong><code>monocle-magazine</code></strong>
+<br /><sub>Cosmopolitan briefings, navy &amp; coral, footnoted curiosity</sub>
+<br /><sub><b>Best for</b> · magazine contents · city &amp; travel briefings · lifestyle journals</sub>
+</td>
+<td align="center" width="50%" valign="middle">
+<br />
+<strong>Best when the brief says</strong>
+<br /><sub>"refined" · "premium" · "quiet" · "editorial" · "less is more"</sub>
+<br /><br />
+<sub>See specs in <a href="./references/style-recipes/">style-recipes/</a></sub>
+<br /><br />
+</td>
+</tr>
+</table>
+
+### Information Architecture · 5 recipes
+
+> Rational, data-driven, restrained — wayfinding, terminals, footnoted essays, the newspaper of record.
+
+<table>
+<tr>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/pentagram.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/pentagram.webp" alt="pentagram preview" /></a>
+<br /><strong><code>pentagram</code></strong>
+<br /><sub>One bold typeface used as artwork, grid as scaffold, ink + ground only</sub>
+<br /><sub><b>Best for</b> · identity specimens · type-led portfolios · gallery announcements</sub>
+</td>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/vignelli-swiss-helvetica.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/vignelli-swiss-helvetica.webp" alt="vignelli-swiss-helvetica preview" /></a>
+<br /><strong><code>vignelli-swiss-helvetica</code></strong>
+<br /><sub>Helvetica at every size, six primary colours, the NYC Subway diagram</sub>
+<br /><sub><b>Best for</b> · wayfinding &amp; transit · public-info posters · brand-system specimens</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/bloomberg-terminal.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/bloomberg-terminal.webp" alt="bloomberg-terminal preview" /></a>
+<br /><strong><code>bloomberg-terminal</code></strong>
+<br /><sub>Amber on navy-black, mono everywhere, density over comfort</sub>
+<br /><sub><b>Best for</b> · trading dashboards · ops consoles · power-user dense tools</sub>
+</td>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/tufte-dataink.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/tufte-dataink.webp" alt="tufte-dataink preview" /></a>
+<br /><strong><code>tufte-dataink</code></strong>
+<br /><sub>Sparklines in body copy, small multiples, no chartjunk</sub>
+<br /><sub><b>Best for</b> · data narratives · research write-ups · academic essays</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/nyt-the-daily.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/nyt-the-daily.webp" alt="nyt-the-daily preview" /></a>
+<br /><strong><code>nyt-the-daily</code></strong>
+<br /><sub>Cheltenham over Imperial, dateline above all, the gravity of the broadsheet</sub>
+<br /><sub><b>Best for</b> · news features · podcast hubs · long-form journalism</sub>
+</td>
+<td align="center" width="50%" valign="middle">
+<br />
+<strong>Best when the brief says</strong>
+<br /><sub>"data-heavy" · "wayfinding" · "dense" · "rational" · "of record"</sub>
+<br /><br />
+<sub>See specs in <a href="./references/style-recipes/">style-recipes/</a></sub>
+<br /><br />
+</td>
+</tr>
+</table>
+
+### Modern Tool / Builder SaaS · 4 recipes
+
+> Hairline detail, warm dark, single accent — the developer-tool aesthetic of the late 2020s.
+
+<table>
+<tr>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/linear.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/linear.webp" alt="linear preview" /></a>
+<br /><strong><code>linear</code></strong>
+<br /><sub>Warm dark, hairline borders, purple flicks of accent, shortcut chips</sub>
+<br /><sub><b>Best for</b> · dev-tool landing pages · issue / project SaaS · API &amp; infra products</sub>
+</td>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/vercel-mesh.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/vercel-mesh.webp" alt="vercel-mesh preview" /></a>
+<br /><strong><code>vercel-mesh</code></strong>
+<br /><sub>Pure black, geometric mesh gradient, Geist Sans, command-line clarity</sub>
+<br /><sub><b>Best for</b> · deploy / runtime tools · framework launches · technical hero pages</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/raycast.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/raycast.webp" alt="raycast preview" /></a>
+<br /><strong><code>raycast</code></strong>
+<br /><sub>Glass card on red-tinted void, keyboard-first, condensed list cells</sub>
+<br /><sub><b>Best for</b> · command palettes · launcher apps · keyboard-driven tooling</sub>
+</td>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/notion-pre-ai.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/notion-pre-ai.webp" alt="notion-pre-ai preview" /></a>
+<br /><strong><code>notion-pre-ai</code></strong>
+<br /><sub>Off-white pages, drag-handle dots, casual emoji headings, callouts everywhere</sub>
+<br /><sub><b>Best for</b> · workspace docs · internal wikis · friendly productivity apps</sub>
+</td>
+</tr>
+</table>
+
+### Motion / Experimental · 3 recipes
+
+> Bold, generative, sensory — when the brief asks for "cinematic", "WebGL", or "award-bait".
+
+<table>
+<tr>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/field-io.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/field-io.webp" alt="field-io preview" /></a>
+<br /><strong><code>field-io</code></strong>
+<br /><sub>Particle systems behind editorial type, code-art aesthetic, dark studio</sub>
+<br /><sub><b>Best for</b> · creative-tech studios · generative-art case studies · WebGL portfolios</sub>
+</td>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/active-theory.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/active-theory.webp" alt="active-theory preview" /></a>
+<br /><strong><code>active-theory</code></strong>
+<br /><sub>WebGL ambitions, full-bleed type, candy colours over deep black</sub>
+<br /><sub><b>Best for</b> · cinematic product launches · campaign sites · award-bait microsites</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/resn-storytelling.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/resn-storytelling.webp" alt="resn-storytelling preview" /></a>
+<br /><strong><code>resn-storytelling</code></strong>
+<br /><sub>Surreal, lush, every frame a tableau, headlines on textured noise</sub>
+<br /><sub><b>Best for</b> · narrative scrolls · entertainment / IP sites · agency reels</sub>
+</td>
+<td align="center" width="50%" valign="middle">
+<br />
+<strong>Best when the brief says</strong>
+<br /><sub>"cinematic" · "WebGL" · "experiential" · "Awwwards-grade"</sub>
+<br /><br />
+<sub>See specs in <a href="./references/style-recipes/">style-recipes/</a></sub>
+<br /><br />
+</td>
+</tr>
+</table>
+
+### Brutalist / Raw · 3 recipes
+
+> Anti-design, honest, unpolished — the system-default web, tabloid covers, anti-luxury luxury.
+
+<table>
+<tr>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/are-na.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/are-na.webp" alt="are-na preview" /></a>
+<br /><strong><code>are-na</code></strong>
+<br /><sub>System fonts on purpose, browser-default blue links, the honest web</sub>
+<br /><sub><b>Best for</b> · research channels · indie communities · anti-design content tools</sub>
+</td>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/bloomberg-businessweek-turley.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/bloomberg-businessweek-turley.webp" alt="bloomberg-businessweek-turley preview" /></a>
+<br /><strong><code>bloomberg-businessweek-turley</code></strong>
+<br /><sub>Yellow caution + black ink, type as collage, hand-cut headlines</sub>
+<br /><sub><b>Best for</b> · editorial covers · opinion pieces · campaign posters</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/balenciaga-post-2017.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/balenciaga-post-2017.webp" alt="balenciaga-post-2017 preview" /></a>
+<br /><strong><code>balenciaga-post-2017</code></strong>
+<br /><sub>All caps, broken grids, deadpan product on white, anti-luxury luxury</sub>
+<br /><sub><b>Best for</b> · fashion collections · drop announcements · contrarian luxury</sub>
+</td>
+<td align="center" width="50%" valign="middle">
+<br />
+<strong>Best when the brief says</strong>
+<br /><sub>"raw" · "honest" · "anti-design" · "tabloid" · "uncomfortable"</sub>
+<br /><br />
+<sub>See specs in <a href="./references/style-recipes/">style-recipes/</a></sub>
+<br /><br />
+</td>
+</tr>
+</table>
+
+### Warm Humanist · 3 recipes
+
+> Approachable, organic, hand-touched — small-business cheerleader, hand-bound book, daily reset.
+
+<table>
+<tr>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/mailchimp-freddie.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/mailchimp-freddie.webp" alt="mailchimp-freddie preview" /></a>
+<br /><strong><code>mailchimp-freddie</code></strong>
+<br /><sub>Cavendish yellow, hand-drawn doodles, conversational copy, the SMB cheerleader</sub>
+<br /><sub><b>Best for</b> · onboarding flows · SMB marketing tools · friendly consumer apps</sub>
+</td>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/stripe-press.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/stripe-press.webp" alt="stripe-press preview" /></a>
+<br /><strong><code>stripe-press</code></strong>
+<br /><sub>Cream paper, GT Super, hand-bound luxury, ideas as objects</sub>
+<br /><sub><b>Best for</b> · book detail pages · long-form essays · publisher / press sites</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/headspace-meditation.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/headspace-meditation.webp" alt="headspace-meditation preview" /></a>
+<br /><strong><code>headspace-meditation</code></strong>
+<br /><sub>Orange suns, rounded blobs, hand-illustrated calm, a daily reset</sub>
+<br /><sub><b>Best for</b> · meditation &amp; wellness · habit / mood apps · cosy consumer cards</sub>
+</td>
+<td align="center" width="50%" valign="middle">
+<br />
+<strong>Best when the brief says</strong>
+<br /><sub>"friendly" · "approachable" · "human" · "cosy" · "hand-touched"</sub>
+<br /><br />
+<sub>See specs in <a href="./references/style-recipes/">style-recipes/</a></sub>
+<br /><br />
+</td>
+</tr>
+</table>
+
+### Specialty / Genre · 2 recipes
+
+> Period-coded, decade-coded, theme-coded — only reachable by direct anchor name.
+
+<table>
+<tr>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/y2k-retrofuturism.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/y2k-retrofuturism.webp" alt="y2k-retrofuturism preview" /></a>
+<br /><strong><code>y2k-retrofuturism</code></strong>
+<br /><sub>Chrome bevels, frosted glass, lava blobs, MSN-blue everywhere</sub>
+<br /><sub><b>Best for</b> · Y2K nostalgia · early-web portals · gen-Z brand stunts</sub>
+</td>
+<td align="center" width="50%">
+<a href="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/mid-century-modern.webp"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design/mid-century-modern.webp" alt="mid-century-modern preview" /></a>
+<br /><strong><code>mid-century-modern</code></strong>
+<br /><sub>Mustard, brick, cyan; cut-paper geometry; the optimism of 1957</sub>
+<br /><sub><b>Best for</b> · poster homages · cultural events · vintage-print brand voice</sub>
+</td>
+</tr>
+</table>
+
+### Run the gallery yourself
+
+```bash
+cd demo/web-design-engineer-demo
+npm install && npm run dev    # http://localhost:5181/
+```
+
+Hash-routed URLs (`#/linear`, `#/aesop`, …) deep-link to any recipe. Press `H` to toggle the recipe HUD, `Esc` to return to the gallery. See the demo's own [README](../../demo/web-design-engineer-demo/README.md) for layout details.
+
+---
+
+## Before & after: skill on / off
 
 The repository's [`demo/web-design-demo/`](../../demo/web-design-demo) directory contains side-by-side comparisons of pages generated with and without this skill, using identical prompts. Open [`demo/web-design-demo/demo2/index.html`](../../demo/web-design-demo/demo2/index.html) for a side-by-side viewer.
 

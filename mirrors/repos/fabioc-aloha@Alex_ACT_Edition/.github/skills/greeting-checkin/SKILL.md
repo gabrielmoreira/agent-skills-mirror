@@ -52,25 +52,17 @@ Outcomes:
 - **New major available** → "Edition `vX.0.0` is out — **major** bump from `vA.B.C`. `/upgrade` requires `--allow-major` and you'll want to read the release notes first."
 - **Network error / git failure** → "couldn't reach Edition; will retry next session" — don't block
 
-### 3. Check AI-Memory announcements
+### 3. Check shared memory announcements
 
-Resolve the AI-Memory root using the resolution algorithm from [ai-memory-setup](../ai-memory-setup/SKILL.md):
+Resolve the shared memory bus using `resolveMemoryBus()` from `_registry.cjs` (sibling `../Alex_ACT_Memory`). CLI: `node .github/scripts/_registry.cjs --resolve .`
 
-1. Check `cognitive-config.json` for `ai_memory_root` override
-2. Auto-discover cloud drives (OneDrive, iCloud, Dropbox, Google Drive, Box, MEGA, pCloud, Nextcloud)
-3. Skip folders listed in `ai_memory_exclude`
-4. Pick the first drive with an existing `AI-Memory/` subfolder
-5. Fall back to `~/AI-Memory`
+Once the root is resolved, check `<root>/announcements/` for `*.md` files (skip `README.md`).
 
-Or use the CLI: `node .github/scripts/_registry.cjs --resolve .`
-
-Once the root is resolved, check `<root>/announcements/alex-act/` for `*.md` files (skip `README.md`).
-
-If the root resolves, check for announcements. Parse frontmatter for `date` (or fall back to file mtime). Filter to files newer than `last_sync_at` from the heir marker.
+Parse frontmatter for `date` (or fall back to file mtime). Filter to files newer than `last_sync_at` from the heir marker.
 
 Outcomes:
 
-- **AI-Memory not found** → "AI-Memory isn't set up yet. Run `node .github/scripts/_registry.cjs --discover` to see available cloud drives, then `--init <name>` to create it."
+- **Memory bus not found** → note silently; do not prompt
 - **No new announcements** → "no new announcements"
 - **1-3 new announcements** → list them by title, with one-line summaries
 - **4+ new announcements** → say how many, list the most recent 3, point at the folder
@@ -86,6 +78,12 @@ For each auto_action:
 3. If the file is absent, execute the `if_absent` instruction
 4. After all actions, stage changes and commit silently (unless nothing changed)
 5. Report what was done in the greeting reply — one line per action with its result
+
+### 3c. Load user profile
+
+Read the user profile from the memory bus: call `readProfile(memoryRoot)` (or read `<memoryRoot>/profile/<username>/user-profile.json` directly). If found, apply any session-relevant preferences (communication style, confidence badge visibility, tool preferences). If absent, continue without — profiles are optional.
+
+Do not report profile loading in the greeting reply unless the profile contains an explicit `greeting_note` field.
 
 ### 4. Write the session marker
 

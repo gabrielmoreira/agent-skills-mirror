@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `instructa/agent-skills` — 26 default patterns, 0 followed patterns, 96 file(s) materialized.
+Mirror of `instructa/agent-skills` — 26 default patterns, 0 followed patterns, 100 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `instructa/agent-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 96 |
+| Files         | 100 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,82 +79,86 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`skills/debug-lldb/references/triage.md`](skills/debug-lldb/references/triage.md) |
 | 19 | ✓ | [`skills/debug-lldb/scripts/collect_stacks.sh`](skills/debug-lldb/scripts/collect_stacks.sh) |
 | 20 | ✓ | [`skills/debug-lldb/SKILL.md`](skills/debug-lldb/SKILL.md) |
-| 21 | ✓ | [`skills/find-duplicate-ownership/agents/duplicate-ownership-explorer.toml`](skills/find-duplicate-ownership/agents/duplicate-ownership-explorer.toml) |
-| 22 | ✓ | [`skills/find-duplicate-ownership/agents/openai.yaml`](skills/find-duplicate-ownership/agents/openai.yaml) |
-| 23 | ✓ | [`skills/find-duplicate-ownership/agents/ownership-taxonomy-mapper.toml`](skills/find-duplicate-ownership/agents/ownership-taxonomy-mapper.toml) |
-| 24 | ✓ | [`skills/find-duplicate-ownership/agents/ssot-judge.toml`](skills/find-duplicate-ownership/agents/ssot-judge.toml) |
-| 25 | ✓ | [`skills/find-duplicate-ownership/README.md`](skills/find-duplicate-ownership/README.md) |
-| 26 | ✓ | [`skills/find-duplicate-ownership/references/audit-prompts.md`](skills/find-duplicate-ownership/references/audit-prompts.md) |
-| 27 | ✓ | [`skills/find-duplicate-ownership/SKILL.md`](skills/find-duplicate-ownership/SKILL.md) |
-| 28 | ✓ | [`skills/gh-repo-bootstrap/README.md`](skills/gh-repo-bootstrap/README.md) |
-| 29 | ✓ | [`skills/gh-repo-bootstrap/scripts/gh_repo_bootstrap.py`](skills/gh-repo-bootstrap/scripts/gh_repo_bootstrap.py) |
-| 30 | ✓ | [`skills/gh-repo-bootstrap/SKILL.md`](skills/gh-repo-bootstrap/SKILL.md) |
-| 31 | ✓ | [`skills/git-safe-workflow/README.md`](skills/git-safe-workflow/README.md) |
-| 32 | ✓ | [`skills/git-safe-workflow/SKILL.md`](skills/git-safe-workflow/SKILL.md) |
-| 33 | ✓ | [`skills/gitwhat/README.md`](skills/gitwhat/README.md) |
-| 34 | ✓ | [`skills/gitwhat/scripts/gitwhat.sh`](skills/gitwhat/scripts/gitwhat.sh) |
-| 35 | ✓ | [`skills/gitwhat/SKILL.md`](skills/gitwhat/SKILL.md) |
-| 36 | ✓ | [`skills/go-local-health/README.md`](skills/go-local-health/README.md) |
-| 37 | ✓ | [`skills/go-local-health/scripts/go-local-health`](skills/go-local-health/scripts/go-local-health) |
-| 38 | ✓ | [`skills/go-local-health/SKILL.md`](skills/go-local-health/SKILL.md) |
-| 39 | ✓ | [`skills/hard-cut/agents/openai.yaml`](skills/hard-cut/agents/openai.yaml) |
-| 40 | ✓ | [`skills/hard-cut/README.md`](skills/hard-cut/README.md) |
-| 41 | ✓ | [`skills/hard-cut/SKILL.md`](skills/hard-cut/SKILL.md) |
-| 42 | ✓ | [`skills/homebrew-publish/README.md`](skills/homebrew-publish/README.md) |
-| 43 | ✓ | [`skills/homebrew-publish/references/formula-go.md`](skills/homebrew-publish/references/formula-go.md) |
-| 44 | ✓ | [`skills/homebrew-publish/references/formula-node.md`](skills/homebrew-publish/references/formula-node.md) |
-| 45 | ✓ | [`skills/homebrew-publish/references/formula-prebuilt.md`](skills/homebrew-publish/references/formula-prebuilt.md) |
-| 46 | ✓ | [`skills/homebrew-publish/references/formula-python.md`](skills/homebrew-publish/references/formula-python.md) |
-| 47 | ✓ | [`skills/homebrew-publish/references/formula-rust.md`](skills/homebrew-publish/references/formula-rust.md) |
-| 48 | ✓ | [`skills/homebrew-publish/SKILL.md`](skills/homebrew-publish/SKILL.md) |
-| 49 | ✓ | [`skills/no-mistakes/agents/openai.yaml`](skills/no-mistakes/agents/openai.yaml) |
-| 50 | ✓ | [`skills/no-mistakes/README.md`](skills/no-mistakes/README.md) |
-| 51 | ✓ | [`skills/no-mistakes/scripts/check_no_mistakes.py`](skills/no-mistakes/scripts/check_no_mistakes.py) |
-| 52 | ✓ | [`skills/no-mistakes/SKILL.md`](skills/no-mistakes/SKILL.md) |
-| 53 | ✓ | [`skills/package-security-check/agents/openai.yaml`](skills/package-security-check/agents/openai.yaml) |
-| 54 | ✓ | [`skills/package-security-check/data/iocs/npm-supply-chain-2026-05.json`](skills/package-security-check/data/iocs/npm-supply-chain-2026-05.json) |
-| 55 | ✓ | [`skills/package-security-check/README.md`](skills/package-security-check/README.md) |
-| 56 | ✓ | [`skills/package-security-check/scripts/check_js_supply_chain.py`](skills/package-security-check/scripts/check_js_supply_chain.py) |
-| 57 | ✓ | [`skills/package-security-check/SKILL.md`](skills/package-security-check/SKILL.md) |
-| 58 | ✓ | [`skills/redesign-my-landingpage/assets/vite-shadcn-iconify-landing/src/pages/LandingPage.tsx`](skills/redesign-my-landingpage/assets/vite-shadcn-iconify-landing/src/pages/LandingPage.tsx) |
-| 59 | ✓ | [`skills/redesign-my-landingpage/README.md`](skills/redesign-my-landingpage/README.md) |
-| 60 | ✓ | [`skills/redesign-my-landingpage/references/aesthetic-directions.md`](skills/redesign-my-landingpage/references/aesthetic-directions.md) |
-| 61 | ✓ | [`skills/redesign-my-landingpage/references/copy-templates.md`](skills/redesign-my-landingpage/references/copy-templates.md) |
-| 62 | ✓ | [`skills/redesign-my-landingpage/references/iconify.md`](skills/redesign-my-landingpage/references/iconify.md) |
-| 63 | ✓ | [`skills/redesign-my-landingpage/references/landing-page-anatomy.md`](skills/redesign-my-landingpage/references/landing-page-anatomy.md) |
-| 64 | ✓ | [`skills/redesign-my-landingpage/references/section-templates.md`](skills/redesign-my-landingpage/references/section-templates.md) |
-| 65 | ✓ | [`skills/redesign-my-landingpage/references/shadcn-vite-setup.md`](skills/redesign-my-landingpage/references/shadcn-vite-setup.md) |
-| 66 | ✓ | [`skills/redesign-my-landingpage/SKILL.md`](skills/redesign-my-landingpage/SKILL.md) |
-| 67 | ✓ | [`skills/root-cause-finder/README.md`](skills/root-cause-finder/README.md) |
-| 68 | ✓ | [`skills/root-cause-finder/SKILL.md`](skills/root-cause-finder/SKILL.md) |
-| 69 | ✓ | [`skills/search-context/.gitignore`](skills/search-context/.gitignore) |
-| 70 | ✓ | [`skills/search-context/agents/openai.yaml`](skills/search-context/agents/openai.yaml) |
-| 71 | ✓ | [`skills/search-context/examples/example-ios-progress-ring-output.md`](skills/search-context/examples/example-ios-progress-ring-output.md) |
-| 72 | ✓ | [`skills/search-context/examples/usage.md`](skills/search-context/examples/usage.md) |
-| 73 | ✓ | [`skills/search-context/LICENSE`](skills/search-context/LICENSE) |
-| 74 | ✓ | [`skills/search-context/package.json`](skills/search-context/package.json) |
-| 75 | ✓ | [`skills/search-context/presets/generic.json`](skills/search-context/presets/generic.json) |
-| 76 | ✓ | [`skills/search-context/presets/ios-swift.json`](skills/search-context/presets/ios-swift.json) |
-| 77 | ✓ | [`skills/search-context/presets/web-react.json`](skills/search-context/presets/web-react.json) |
-| 78 | ✓ | [`skills/search-context/README.md`](skills/search-context/README.md) |
-| 79 | ✓ | [`skills/search-context/references/security.md`](skills/search-context/references/security.md) |
-| 80 | ✓ | [`skills/search-context/references/workflow.md`](skills/search-context/references/workflow.md) |
-| 81 | ✓ | [`skills/search-context/scripts/search-context.mjs`](skills/search-context/scripts/search-context.mjs) |
-| 82 | ✓ | [`skills/search-context/SKILL.md`](skills/search-context/SKILL.md) |
-| 83 | ✓ | [`skills/search-context/templates/reference-manifest.md`](skills/search-context/templates/reference-manifest.md) |
-| 84 | ✓ | [`skills/search-context/VERSION`](skills/search-context/VERSION) |
-| 85 | ✓ | [`skills/secleak-check/references/examples.md`](skills/secleak-check/references/examples.md) |
-| 86 | ✓ | [`skills/secleak-check/references/guardrails.md`](skills/secleak-check/references/guardrails.md) |
-| 87 | ✓ | [`skills/secleak-check/scripts/block-forbidden-staged-files.mjs`](skills/secleak-check/scripts/block-forbidden-staged-files.mjs) |
-| 88 | ✓ | [`skills/secleak-check/scripts/secleak-check.sh`](skills/secleak-check/scripts/secleak-check.sh) |
-| 89 | ✓ | [`skills/secleak-check/SKILL.md`](skills/secleak-check/SKILL.md) |
-| 90 | ✓ | [`skills/shellck/README.md`](skills/shellck/README.md) |
-| 91 | ✓ | [`skills/shellck/scripts/run_shellck.sh`](skills/shellck/scripts/run_shellck.sh) |
-| 92 | ✓ | [`skills/shellck/SKILL.md`](skills/shellck/SKILL.md) |
-| 93 | ✓ | [`skills/stage-review/agents/openai.yaml`](skills/stage-review/agents/openai.yaml) |
-| 94 | ✓ | [`skills/stage-review/README.md`](skills/stage-review/README.md) |
-| 95 | ✓ | [`skills/stage-review/scripts/stage_review.py`](skills/stage-review/scripts/stage_review.py) |
-| 96 | ✓ | [`skills/stage-review/SKILL.md`](skills/stage-review/SKILL.md) |
+| 21 | ✓ | [`skills/electron-live-test/agents/openai.yaml`](skills/electron-live-test/agents/openai.yaml) |
+| 22 | ✓ | [`skills/electron-live-test/README.md`](skills/electron-live-test/README.md) |
+| 23 | ✓ | [`skills/electron-live-test/references/cdp-targeting.md`](skills/electron-live-test/references/cdp-targeting.md) |
+| 24 | ✓ | [`skills/electron-live-test/SKILL.md`](skills/electron-live-test/SKILL.md) |
+| 25 | ✓ | [`skills/find-duplicate-ownership/agents/duplicate-ownership-explorer.toml`](skills/find-duplicate-ownership/agents/duplicate-ownership-explorer.toml) |
+| 26 | ✓ | [`skills/find-duplicate-ownership/agents/openai.yaml`](skills/find-duplicate-ownership/agents/openai.yaml) |
+| 27 | ✓ | [`skills/find-duplicate-ownership/agents/ownership-taxonomy-mapper.toml`](skills/find-duplicate-ownership/agents/ownership-taxonomy-mapper.toml) |
+| 28 | ✓ | [`skills/find-duplicate-ownership/agents/ssot-judge.toml`](skills/find-duplicate-ownership/agents/ssot-judge.toml) |
+| 29 | ✓ | [`skills/find-duplicate-ownership/README.md`](skills/find-duplicate-ownership/README.md) |
+| 30 | ✓ | [`skills/find-duplicate-ownership/references/audit-prompts.md`](skills/find-duplicate-ownership/references/audit-prompts.md) |
+| 31 | ✓ | [`skills/find-duplicate-ownership/SKILL.md`](skills/find-duplicate-ownership/SKILL.md) |
+| 32 | ✓ | [`skills/gh-repo-bootstrap/README.md`](skills/gh-repo-bootstrap/README.md) |
+| 33 | ✓ | [`skills/gh-repo-bootstrap/scripts/gh_repo_bootstrap.py`](skills/gh-repo-bootstrap/scripts/gh_repo_bootstrap.py) |
+| 34 | ✓ | [`skills/gh-repo-bootstrap/SKILL.md`](skills/gh-repo-bootstrap/SKILL.md) |
+| 35 | ✓ | [`skills/git-safe-workflow/README.md`](skills/git-safe-workflow/README.md) |
+| 36 | ✓ | [`skills/git-safe-workflow/SKILL.md`](skills/git-safe-workflow/SKILL.md) |
+| 37 | ✓ | [`skills/gitwhat/README.md`](skills/gitwhat/README.md) |
+| 38 | ✓ | [`skills/gitwhat/scripts/gitwhat.sh`](skills/gitwhat/scripts/gitwhat.sh) |
+| 39 | ✓ | [`skills/gitwhat/SKILL.md`](skills/gitwhat/SKILL.md) |
+| 40 | ✓ | [`skills/go-local-health/README.md`](skills/go-local-health/README.md) |
+| 41 | ✓ | [`skills/go-local-health/scripts/go-local-health`](skills/go-local-health/scripts/go-local-health) |
+| 42 | ✓ | [`skills/go-local-health/SKILL.md`](skills/go-local-health/SKILL.md) |
+| 43 | ✓ | [`skills/hard-cut/agents/openai.yaml`](skills/hard-cut/agents/openai.yaml) |
+| 44 | ✓ | [`skills/hard-cut/README.md`](skills/hard-cut/README.md) |
+| 45 | ✓ | [`skills/hard-cut/SKILL.md`](skills/hard-cut/SKILL.md) |
+| 46 | ✓ | [`skills/homebrew-publish/README.md`](skills/homebrew-publish/README.md) |
+| 47 | ✓ | [`skills/homebrew-publish/references/formula-go.md`](skills/homebrew-publish/references/formula-go.md) |
+| 48 | ✓ | [`skills/homebrew-publish/references/formula-node.md`](skills/homebrew-publish/references/formula-node.md) |
+| 49 | ✓ | [`skills/homebrew-publish/references/formula-prebuilt.md`](skills/homebrew-publish/references/formula-prebuilt.md) |
+| 50 | ✓ | [`skills/homebrew-publish/references/formula-python.md`](skills/homebrew-publish/references/formula-python.md) |
+| 51 | ✓ | [`skills/homebrew-publish/references/formula-rust.md`](skills/homebrew-publish/references/formula-rust.md) |
+| 52 | ✓ | [`skills/homebrew-publish/SKILL.md`](skills/homebrew-publish/SKILL.md) |
+| 53 | ✓ | [`skills/no-mistakes/agents/openai.yaml`](skills/no-mistakes/agents/openai.yaml) |
+| 54 | ✓ | [`skills/no-mistakes/README.md`](skills/no-mistakes/README.md) |
+| 55 | ✓ | [`skills/no-mistakes/scripts/check_no_mistakes.py`](skills/no-mistakes/scripts/check_no_mistakes.py) |
+| 56 | ✓ | [`skills/no-mistakes/SKILL.md`](skills/no-mistakes/SKILL.md) |
+| 57 | ✓ | [`skills/package-security-check/agents/openai.yaml`](skills/package-security-check/agents/openai.yaml) |
+| 58 | ✓ | [`skills/package-security-check/data/iocs/npm-supply-chain-2026-05.json`](skills/package-security-check/data/iocs/npm-supply-chain-2026-05.json) |
+| 59 | ✓ | [`skills/package-security-check/README.md`](skills/package-security-check/README.md) |
+| 60 | ✓ | [`skills/package-security-check/scripts/check_js_supply_chain.py`](skills/package-security-check/scripts/check_js_supply_chain.py) |
+| 61 | ✓ | [`skills/package-security-check/SKILL.md`](skills/package-security-check/SKILL.md) |
+| 62 | ✓ | [`skills/redesign-my-landingpage/assets/vite-shadcn-iconify-landing/src/pages/LandingPage.tsx`](skills/redesign-my-landingpage/assets/vite-shadcn-iconify-landing/src/pages/LandingPage.tsx) |
+| 63 | ✓ | [`skills/redesign-my-landingpage/README.md`](skills/redesign-my-landingpage/README.md) |
+| 64 | ✓ | [`skills/redesign-my-landingpage/references/aesthetic-directions.md`](skills/redesign-my-landingpage/references/aesthetic-directions.md) |
+| 65 | ✓ | [`skills/redesign-my-landingpage/references/copy-templates.md`](skills/redesign-my-landingpage/references/copy-templates.md) |
+| 66 | ✓ | [`skills/redesign-my-landingpage/references/iconify.md`](skills/redesign-my-landingpage/references/iconify.md) |
+| 67 | ✓ | [`skills/redesign-my-landingpage/references/landing-page-anatomy.md`](skills/redesign-my-landingpage/references/landing-page-anatomy.md) |
+| 68 | ✓ | [`skills/redesign-my-landingpage/references/section-templates.md`](skills/redesign-my-landingpage/references/section-templates.md) |
+| 69 | ✓ | [`skills/redesign-my-landingpage/references/shadcn-vite-setup.md`](skills/redesign-my-landingpage/references/shadcn-vite-setup.md) |
+| 70 | ✓ | [`skills/redesign-my-landingpage/SKILL.md`](skills/redesign-my-landingpage/SKILL.md) |
+| 71 | ✓ | [`skills/root-cause-finder/README.md`](skills/root-cause-finder/README.md) |
+| 72 | ✓ | [`skills/root-cause-finder/SKILL.md`](skills/root-cause-finder/SKILL.md) |
+| 73 | ✓ | [`skills/search-context/.gitignore`](skills/search-context/.gitignore) |
+| 74 | ✓ | [`skills/search-context/agents/openai.yaml`](skills/search-context/agents/openai.yaml) |
+| 75 | ✓ | [`skills/search-context/examples/example-ios-progress-ring-output.md`](skills/search-context/examples/example-ios-progress-ring-output.md) |
+| 76 | ✓ | [`skills/search-context/examples/usage.md`](skills/search-context/examples/usage.md) |
+| 77 | ✓ | [`skills/search-context/LICENSE`](skills/search-context/LICENSE) |
+| 78 | ✓ | [`skills/search-context/package.json`](skills/search-context/package.json) |
+| 79 | ✓ | [`skills/search-context/presets/generic.json`](skills/search-context/presets/generic.json) |
+| 80 | ✓ | [`skills/search-context/presets/ios-swift.json`](skills/search-context/presets/ios-swift.json) |
+| 81 | ✓ | [`skills/search-context/presets/web-react.json`](skills/search-context/presets/web-react.json) |
+| 82 | ✓ | [`skills/search-context/README.md`](skills/search-context/README.md) |
+| 83 | ✓ | [`skills/search-context/references/security.md`](skills/search-context/references/security.md) |
+| 84 | ✓ | [`skills/search-context/references/workflow.md`](skills/search-context/references/workflow.md) |
+| 85 | ✓ | [`skills/search-context/scripts/search-context.mjs`](skills/search-context/scripts/search-context.mjs) |
+| 86 | ✓ | [`skills/search-context/SKILL.md`](skills/search-context/SKILL.md) |
+| 87 | ✓ | [`skills/search-context/templates/reference-manifest.md`](skills/search-context/templates/reference-manifest.md) |
+| 88 | ✓ | [`skills/search-context/VERSION`](skills/search-context/VERSION) |
+| 89 | ✓ | [`skills/secleak-check/references/examples.md`](skills/secleak-check/references/examples.md) |
+| 90 | ✓ | [`skills/secleak-check/references/guardrails.md`](skills/secleak-check/references/guardrails.md) |
+| 91 | ✓ | [`skills/secleak-check/scripts/block-forbidden-staged-files.mjs`](skills/secleak-check/scripts/block-forbidden-staged-files.mjs) |
+| 92 | ✓ | [`skills/secleak-check/scripts/secleak-check.sh`](skills/secleak-check/scripts/secleak-check.sh) |
+| 93 | ✓ | [`skills/secleak-check/SKILL.md`](skills/secleak-check/SKILL.md) |
+| 94 | ✓ | [`skills/shellck/README.md`](skills/shellck/README.md) |
+| 95 | ✓ | [`skills/shellck/scripts/run_shellck.sh`](skills/shellck/scripts/run_shellck.sh) |
+| 96 | ✓ | [`skills/shellck/SKILL.md`](skills/shellck/SKILL.md) |
+| 97 | ✓ | [`skills/stage-review/agents/openai.yaml`](skills/stage-review/agents/openai.yaml) |
+| 98 | ✓ | [`skills/stage-review/README.md`](skills/stage-review/README.md) |
+| 99 | ✓ | [`skills/stage-review/scripts/stage_review.py`](skills/stage-review/scripts/stage_review.py) |
+| 100 | ✓ | [`skills/stage-review/SKILL.md`](skills/stage-review/SKILL.md) |
 
 ---
 
