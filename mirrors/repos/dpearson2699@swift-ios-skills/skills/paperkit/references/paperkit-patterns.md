@@ -72,18 +72,10 @@ func saveWithThumbnail(
     let data = try await markup.dataRepresentation()
     try data.write(to: dataURL, options: .atomic)
 
-    // Render and save thumbnail
-    let renderer = UIGraphicsImageRenderer(size: thumbnailSize)
-    let options = RenderingOptions(traitCollection: .current)
-
-    let image = renderer.image { ctx in
-        let frame = CGRect(origin: .zero, size: thumbnailSize)
-        Task {
-            await markup.draw(in: ctx.cgContext, frame: frame, options: options)
-        }
-    }
-
-    if let pngData = image.pngData() {
+    // Render and save thumbnail. PaperMarkup.draw is async; await it before
+    // creating the image data.
+    if let cgImage = await render(markup: markup, size: thumbnailSize),
+       let pngData = UIImage(cgImage: cgImage).pngData() {
         try pngData.write(to: thumbnailURL, options: .atomic)
     }
 }
@@ -170,17 +162,9 @@ func handleVersionMismatch(
     in view: UIImageView,
     size: CGSize
 ) async {
-    let options = RenderingOptions(traitCollection: .current)
-    let renderer = UIGraphicsImageRenderer(size: size)
-
-    let thumbnail = renderer.image { ctx in
-        let frame = CGRect(origin: .zero, size: size)
-        Task {
-            await markup.draw(in: ctx.cgContext, frame: frame, options: options)
-        }
+    if let cgImage = await render(markup: markup, size: size) {
+        view.image = UIImage(cgImage: cgImage)
     }
-
-    view.image = thumbnail
 }
 ```
 
@@ -261,10 +245,10 @@ await markup.draw(
 ### Platform-Conditional Insertion UI
 
 ```swift
-#if os(iOS) || os(visionOS)
+#if os(iOS) || os(visionOS) || targetEnvironment(macCatalyst)
 import PaperKit
 
-func setupInsertionUI(
+func setupPopoverInsertionUI(
     features: FeatureSet,
     markupVC: PaperMarkupViewController
 ) -> UIViewController {
@@ -280,7 +264,7 @@ func setupInsertionUI(
 #if os(macOS)
 import PaperKit
 
-func setupInsertionUI(
+func setupToolbarInsertionUI(
     features: FeatureSet,
     markupVC: PaperMarkupViewController
 ) -> NSViewController {
@@ -289,7 +273,22 @@ func setupInsertionUI(
     return toolbar
 }
 #endif
+
+#if targetEnvironment(macCatalyst)
+import PaperKit
+
+func setupCatalystToolbarInsertionUI(
+    features: FeatureSet,
+    markupVC: PaperMarkupViewController
+) -> UIViewController {
+    let toolbar = MarkupToolbarViewController(supportedFeatureSet: features)
+    toolbar.delegate = markupVC
+    return toolbar
+}
+#endif
 ```
+
+`MarkupEditViewController` is available on iOS, iPadOS, Mac Catalyst, and visionOS for popover-style insertion. `MarkupToolbarViewController` is available on macOS and Mac Catalyst for toolbar-style insertion. Pass the same `FeatureSet` used by the `PaperMarkupViewController` to either controller.
 
 ### macOS Toolbar Properties
 
@@ -461,12 +460,32 @@ features.lineMarkerPositions = .single  // Single-ended arrows only
 var features = FeatureSet.latest
 features.colorMaximumLinearExposure = view.window?.windowScene?.screen.potentialEDRHeadroom ?? 1.0
 // Also set on tool picker:
-toolPicker.maximumLinearExposure = features.colorMaximumLinearExposure
+toolPicker.colorMaximumLinearExposure = features.colorMaximumLinearExposure
 ```
 
 ## Programmatic Markup Construction
 
 Build markup content in code without user interaction — useful for generating templates, reports, or test content.
+
+### PencilKit Coexistence Boundary
+
+Keep an existing `PKCanvasView` path when the app still needs custom brush behavior, raw `PKDrawing` / `PKStroke` analytics, or custom lasso workflows. Use PaperKit as a separate annotation layer for structured review elements and system insertion UI:
+
+```swift
+let reviewMarkup = PaperMarkup(bounds: pageBounds)
+let reviewVC = PaperMarkupViewController(
+    markup: reviewMarkup,
+    supportedFeatureSet: reviewFeatures
+)
+reviewVC.contentView = pdfPageView
+```
+
+When the team is ready to make a saved PencilKit drawing visible in the PaperKit layer, append the drawing explicitly instead of replacing the low-level PencilKit editor wholesale:
+
+```swift
+var markup = PaperMarkup(bounds: pageBounds)
+markup.append(contentsOf: existingPKDrawing)
+```
 
 ### Building a Template
 

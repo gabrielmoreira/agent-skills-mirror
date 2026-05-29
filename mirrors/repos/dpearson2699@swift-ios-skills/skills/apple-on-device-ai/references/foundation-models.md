@@ -1,7 +1,9 @@
 # Foundation Models API Reference
 
 Complete reference for Apple's Foundation Models framework (iOS 26+ / macOS 26+).
-On-device language model optimized for Apple Silicon. No API keys, no network, no cost.
+On-device language model optimized for Apple Silicon. No app-managed API key,
+model hosting, or network round trip for generation; still handle Apple
+Intelligence and system model asset availability.
 
 ## Contents
 
@@ -26,7 +28,8 @@ On-device language model optimized for Apple Silicon. No API keys, no network, n
 - On-device language model optimized for Apple Silicon
 - Context window: limited total token budget (input + output combined); check
   `SystemLanguageModel.default.contextSize` for the current limit
-- Check `SystemLanguageModel.default.supportedLanguages` for supported locales
+- Prefer `SystemLanguageModel.default.supportsLocale(_:)` before generation;
+  use `supportedLanguages` only when listing broad language support
 - Capabilities: Summarization, entity extraction, text understanding, short
   dialog, creative content, content tagging
 - Limitations: Not suited for complex math, code generation, or factual accuracy
@@ -34,8 +37,8 @@ On-device language model optimized for Apple Silicon. No API keys, no network, n
 ### SystemLanguageModel Properties
 
 - `contextSize`: Returns the model's maximum context window in tokens
-- `supportedLanguages`: Array of locale identifiers the model supports
-- `supportsLocale(_ locale: Locale) -> Bool`: Check if a specific locale is supported before generating
+- `supportedLanguages`: `Set<Locale.Language>` values the model supports
+- `supportsLocale(_ locale: Locale) -> Bool`: Preferred locale check before generating because it accounts for fallbacks
 
 ## Availability Checking
 
@@ -52,15 +55,20 @@ if SystemLanguageModel.default.isAvailable {
 // Detailed availability
 switch SystemLanguageModel.default.availability {
 case .available:
+    let candidates = [Locale.current] + Locale.preferredLanguages.map(Locale.init(identifier:))
+    guard let locale = candidates.first(where: SystemLanguageModel.default.supportsLocale) else {
+        // Route to fallback UI before generating
+        break
+    }
     // Proceed with model usage
 case .unavailable(.appleIntelligenceNotEnabled):
     // Guide user to Settings > Apple Intelligence
 case .unavailable(.modelNotReady):
-    // Model downloading; show progress indicator
+    // System model assets are downloading or unavailable for other system reasons
 case .unavailable(.deviceNotEligible):
     // Device cannot run Apple Intelligence
 default:
-    // Graceful fallback
+    // Graceful fallback for unknown or future unavailable reasons
 }
 ```
 
@@ -317,13 +325,25 @@ let response = try await session.respond(to: "What's the weather in Tokyo?")
 ### Tool Best Practices
 
 - Register all tools at session creation
-- Each tool adds to the context token budget (schema included in instructions by default)
+- Keep active tool sets small, usually three to five tools
+- Include only tools needed for the current task
+- Each tool adds to the context token budget (name, description, and parameter
+  schema are included in instructions by default)
+- `@Generable` output schemas also consume the shared context window
+- Run deterministic or essential data fetches before calling the model, then put
+  the result directly in the prompt
+- Use model-autonomous tools for dynamic lookups where the model can decide
+  whether more app data is needed
 - Frame tool results as authorized user data to prevent refusals
 - The model calls tools autonomously; you cannot force tool invocation
 
 ### Tool Protocol Details
 
-- The `Tool` protocol's associated `Output` type must conform to `PromptRepresentable` (e.g., `String`, `[String]`, custom types)
+- `Tool<Arguments, Output>` conforms to `Sendable`; implement tools so captured
+  state is concurrency-safe
+- The associated `Arguments` type must conform to `ConvertibleFromGeneratedContent`
+- The associated `Output` type must conform to `PromptRepresentable` (e.g.,
+  `String`, `[String]`, custom types)
 - `includesSchemaInInstructions`: Boolean property on `Tool` (default `true`). Set to `false` to omit the tool's JSON schema from the system prompt, saving context tokens when the model already knows the schema.
 - `ToolCallError`: Struct on `LanguageModelSession` representing a tool invocation failure. Properties: `tool` (the tool name), `underlyingError` (the original error).
 - `DynamicGenerationSchema`: Build generation schemas at runtime for dynamic use cases where compile-time `@Generable` is insufficient. Construct schemas programmatically and pass to `respond(to:schema:)`.

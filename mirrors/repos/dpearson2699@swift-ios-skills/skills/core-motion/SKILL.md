@@ -1,13 +1,14 @@
 ---
 name: core-motion
-description: "Access accelerometer, gyroscope, magnetometer, pedometer, and activity-recognition data using CoreMotion. Use when reading device sensor data, counting steps, detecting user activity (walking/running/driving), tracking altitude changes, or implementing motion-based interactions in iOS/watchOS apps."
+description: "Access Core Motion accelerometer, gyroscope, magnetometer, device-motion, pedometer, activity-recognition, altitude, headphone motion, batched high-frequency workout motion, and water-submersion/depth data. Use when reading device sensors, counting steps, detecting walking/running/driving/cycling, tracking altitude, building motion interactions, handling AirPods head tracking, or implementing watchOS dive/depth features."
 ---
 
 # CoreMotion
 
-Read device sensor data -- accelerometer, gyroscope, magnetometer, pedometer, and
-activity recognition -- on iOS and watchOS. CoreMotion fuses raw sensor inputs into
-processed device-motion data and provides pedometer/activity APIs for fitness and
+Read device sensor data -- accelerometer, gyroscope, magnetometer, pedometer,
+activity recognition, altitude, headphone motion, batched motion, and submersion
+depth -- on iOS and watchOS. CoreMotion fuses raw sensor inputs into processed
+device-motion data and provides pedometer/activity APIs for fitness and
 navigation use cases. Targets Swift 6.3 / iOS 26+.
 
 ## Contents
@@ -37,9 +38,12 @@ why your app needs motion data. Without this key, the app crashes on first acces
 
 ### Authorization
 
-CoreMotion uses `CMAuthorizationStatus` for pedometer and activity APIs. Sensor
-APIs (accelerometer, gyro) do not require explicit authorization but do require
-the usage description key.
+Use the matching manager's `authorizationStatus()` or `authorizationStatus`
+property when an API exposes one (`CMPedometer`, `CMMotionActivityManager`,
+`CMAltimeter`, headphone motion, batched sensors, and submersion). Raw
+`CMMotionManager` accelerometer/gyro/device-motion streams have no explicit
+authorization request API; still ship the usage string and handle errors from
+start/update callbacks.
 
 ```swift
 import CoreMotion
@@ -121,13 +125,22 @@ Device motion fuses accelerometer, gyroscope, and magnetometer into a single
 `CMDeviceMotion` object with attitude, user acceleration (gravity removed),
 rotation rate, and calibrated magnetic field.
 
+When giving device-motion guidance, show the runtime frame check in the snippet
+instead of hard-coding a corrected, magnetic-north, or true-north frame. Fall
+back to `.xArbitraryZVertical` when the preferred frame is unavailable.
+
 ```swift
 guard motionManager.isDeviceMotionAvailable else { return }
+
+let availableFrames = CMMotionManager.availableAttitudeReferenceFrames()
+let frame: CMAttitudeReferenceFrame = availableFrames.contains(.xArbitraryCorrectedZVertical)
+    ? .xArbitraryCorrectedZVertical
+    : .xArbitraryZVertical
 
 motionManager.deviceMotionUpdateInterval = 1.0 / 60.0
 
 motionManager.startDeviceMotionUpdates(
-    using: .xArbitraryZVertical,
+    using: frame,
     to: .main
 ) { motion, error in
     guard let motion else { return }
@@ -135,7 +148,7 @@ motionManager.startDeviceMotionUpdates(
     let attitude = motion.attitude       // roll, pitch, yaw
     let userAccel = motion.userAcceleration
     let gravity = motion.gravity
-    let heading = motion.heading         // 0-360 degrees (requires magnetometer)
+    let heading = motion.heading         // degrees relative to the current frame
 
     print("Pitch: \(attitude.pitch), Roll: \(attitude.roll)")
 }
@@ -144,6 +157,12 @@ motionManager.stopDeviceMotionUpdates()
 ```
 
 ### Attitude Reference Frames
+
+For simple tilt controls, use `.xArbitraryZVertical` or
+`.xArbitraryCorrectedZVertical`; they avoid magnetometer/location dependencies.
+Before requesting corrected, magnetic-north, or true-north frames, call
+`CMMotionManager.availableAttitudeReferenceFrames()` and fall back to an
+available frame.
 
 | Frame | Use Case |
 |---|---|
@@ -249,6 +268,9 @@ activityManager.queryActivityStarting(
 
 ## CMAltimeter: Altitude Data
 
+Altimeter access is covered by `NSMotionUsageDescription`; handle denied motion
+access through unavailable data and update-handler errors.
+
 ```swift
 let altimeter = CMAltimeter()
 
@@ -263,7 +285,10 @@ altimeter.startRelativeAltitudeUpdates(to: .main) { data, error in
 altimeter.stopRelativeAltitudeUpdates()
 ```
 
-For absolute altitude (GPS-based):
+Absolute altitude is altitude relative to sea level, not GPS-based altitude.
+First check availability. Absolute altitude is available only on supported
+hardware such as iPhone 12 or later and Apple Watch Series 6, Apple Watch SE, or
+later.
 
 ```swift
 guard CMAltimeter.isAbsoluteAltitudeAvailable() else { return }
@@ -285,8 +310,11 @@ altimeter.stopAbsoluteAltitudeUpdates()
 | `1.0 / 60.0` | 60 | Action games | High |
 | `1.0 / 100.0` | 100 | Max rate (iPhone) | Very High |
 
-Use the lowest frequency that meets your needs. `CMMotionManager` caps at 100 Hz
-per sample. For higher frequencies, use `CMBatchedSensorManager` on watchOS/iOS 17+.
+Use the lowest frequency that meets your needs. Do not assume a fixed maximum
+sample rate across devices. For high-frequency workout motion, use
+`CMBatchedSensorManager` where supported and read its reported
+`accelerometerDataFrequency` or `deviceMotionDataFrequency` instead of assigning
+those read-only properties.
 
 ## Common Mistakes
 
@@ -373,16 +401,21 @@ if activity.walking && activity.confidence == .high {
 - [ ] Handlers dispatched to appropriate queues (not blocking main for heavy processing)
 - [ ] `CMMotionActivity.confidence` checked before acting on activity type
 - [ ] Error parameters checked in update handlers
+- [ ] Device-motion snippets call `CMMotionManager.availableAttitudeReferenceFrames()` before requesting a specific attitude frame
 - [ ] Attitude reference frame chosen based on actual need (not defaulting to true north unnecessarily)
 
 ## References
 
-- Extended patterns (SwiftUI integration, batched sensor manager, headphone motion): [references/motion-patterns.md](references/motion-patterns.md)
+- Extended patterns (SwiftUI integration, batched sensor manager, headphone motion, water submersion): [references/motion-patterns.md](references/motion-patterns.md)
 - [CoreMotion framework](https://sosumi.ai/documentation/coremotion)
 - [CMMotionManager](https://sosumi.ai/documentation/coremotion/cmmotionmanager)
 - [CMPedometer](https://sosumi.ai/documentation/coremotion/cmpedometer)
 - [CMMotionActivityManager](https://sosumi.ai/documentation/coremotion/cmmotionactivitymanager)
 - [CMDeviceMotion](https://sosumi.ai/documentation/coremotion/cmdevicemotion)
 - [CMAltimeter](https://sosumi.ai/documentation/coremotion/cmaltimeter)
+- [CMAbsoluteAltitudeData](https://sosumi.ai/documentation/coremotion/cmabsolutealtitudedata)
 - [CMBatchedSensorManager](https://sosumi.ai/documentation/coremotion/cmbatchedsensormanager)
+- [CMHeadphoneMotionManager](https://sosumi.ai/documentation/coremotion/cmheadphonemotionmanager)
+- [CMWaterSubmersionManager](https://sosumi.ai/documentation/coremotion/cmwatersubmersionmanager)
+- [Accessing submersion data](https://sosumi.ai/documentation/coremotion/accessing-submersion-data)
 - [Getting processed device-motion data](https://sosumi.ai/documentation/coremotion/getting-processed-device-motion-data)

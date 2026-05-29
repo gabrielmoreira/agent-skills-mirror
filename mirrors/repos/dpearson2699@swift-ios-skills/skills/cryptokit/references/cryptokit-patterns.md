@@ -10,6 +10,7 @@ interop, and additional CryptoKit features beyond the core SKILL.md.
 - [AES Key Wrapping](#aes-key-wrapping)
 - [HKDF Key Derivation](#hkdf-key-derivation)
 - [HPKE (Hybrid Public Key Encryption)](#hpke-hybrid-public-key-encryption)
+- [Post-Quantum APIs](#post-quantum-apis)
 - [Insecure Module](#insecure-module)
 - [SealedBox Anatomy](#sealedbox-anatomy)
 - [Signing with Digest](#signing-with-digest)
@@ -316,7 +317,8 @@ let okm = HKDF<SHA256>.expand(
 ## HPKE (Hybrid Public Key Encryption)
 
 HPKE (RFC 9180) combines key encapsulation with authenticated encryption
-for public-key encryption workflows.
+for public-key encryption workflows. It is available on iOS 17+; the X-Wing
+post-quantum hybrid ciphersuite requires iOS 26+.
 
 ### Sending an encrypted message
 
@@ -349,12 +351,53 @@ let plaintext = try recipient.open(ciphertext)
 
 ### Available ciphersuites
 
-| Ciphersuite | KEM | KDF | AEAD |
-|---|---|---|---|
-| `.P256_SHA256_AES_GCM_256` | P256 | HKDF-SHA256 | AES-GCM-256 |
-| `.P384_SHA384_AES_GCM_256` | P384 | HKDF-SHA384 | AES-GCM-256 |
-| `.P521_SHA512_AES_GCM_256` | P521 | HKDF-SHA512 | AES-GCM-256 |
-| `.Curve25519_SHA256_ChachaPoly` | X25519 | HKDF-SHA256 | ChaCha20Poly1305 |
+| Ciphersuite | KEM | KDF | AEAD | Availability |
+|---|---|---|---|---|
+| `.P256_SHA256_AES_GCM_256` | P256 | HKDF-SHA256 | AES-GCM-256 | iOS 17+ |
+| `.P384_SHA384_AES_GCM_256` | P384 | HKDF-SHA384 | AES-GCM-256 | iOS 17+ |
+| `.P521_SHA512_AES_GCM_256` | P521 | HKDF-SHA512 | AES-GCM-256 | iOS 17+ |
+| `.Curve25519_SHA256_ChachaPoly` | X25519 | HKDF-SHA256 | ChaCha20Poly1305 | iOS 17+ |
+| `.XWingMLKEM768X25519_SHA256_AES_GCM_256` | X-Wing hybrid | HKDF-SHA256 | AES-GCM-256 | iOS 26+ |
+
+## Post-Quantum APIs
+
+iOS 26+ adds ML-KEM key encapsulation, ML-DSA signatures, and the X-Wing
+hybrid HPKE KEM. Guard these APIs with availability checks unless the
+deployment target is iOS 26+.
+
+### ML-KEM encapsulation
+
+```swift
+if #available(iOS 26.0, *) {
+    let privateKey = try MLKEM768.PrivateKey()
+    let result = try privateKey.publicKey.encapsulate()
+
+    let sharedKey = result.sharedSecret
+    let encapsulated = result.encapsulated
+    let recovered = try privateKey.decapsulate(encapsulated)
+}
+```
+
+`encapsulated` is what the sender transmits. `sharedSecret` and the decapsulated
+result are `SymmetricKey` values.
+
+### ML-DSA signatures
+
+```swift
+if #available(iOS 26.0, *) {
+    let privateKey = try MLDSA65.PrivateKey()
+    let signature = try privateKey.signature(for: message)
+    let isValid = privateKey.publicKey.isValidSignature(signature, for: message)
+}
+```
+
+Secure Enclave variants exist for `SecureEnclave.MLKEM768`,
+`SecureEnclave.MLKEM1024`, `SecureEnclave.MLDSA65`, and
+`SecureEnclave.MLDSA87` on supported hardware.
+
+Sources: [CryptoKit](https://sosumi.ai/documentation/cryptokit),
+[HPKE](https://sosumi.ai/documentation/cryptokit/hpke), and
+[quantum-secure workflows](https://sosumi.ai/documentation/cryptokit/enhancing-your-app-s-privacy-and-security-with-quantum-secure-workflows).
 
 ## Insecure Module
 

@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `niaka3dayo/agent-skills-vrc-udon` — 26 default patterns, 1 followed patterns, 65 file(s) materialized.
+Mirror of `niaka3dayo/agent-skills-vrc-udon` — 26 default patterns, 1 followed patterns, 66 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `niaka3dayo/agent-skills-vrc-udon` — 26 default patterns, 1 followed
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 65 |
+| Files         | 66 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,46 +84,47 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`skills/unity-vrc-udon-sharp/LICENSE.txt`](skills/unity-vrc-udon-sharp/LICENSE.txt) |
 | 24 | ✓ | [`skills/unity-vrc-udon-sharp/references/api.md`](skills/unity-vrc-udon-sharp/references/api.md) |
 | 25 | ✓ | [`skills/unity-vrc-udon-sharp/references/constraints.md`](skills/unity-vrc-udon-sharp/references/constraints.md) |
-| 26 | ✓ | [`skills/unity-vrc-udon-sharp/references/dynamics.md`](skills/unity-vrc-udon-sharp/references/dynamics.md) |
-| 27 | ✓ | [`skills/unity-vrc-udon-sharp/references/editor-scripting.md`](skills/unity-vrc-udon-sharp/references/editor-scripting.md) |
-| 28 | ✓ | [`skills/unity-vrc-udon-sharp/references/events.md`](skills/unity-vrc-udon-sharp/references/events.md) |
-| 29 | ✓ | [`skills/unity-vrc-udon-sharp/references/image-loading-vram.md`](skills/unity-vrc-udon-sharp/references/image-loading-vram.md) |
-| 30 | ✓ | [`skills/unity-vrc-udon-sharp/references/networking-antipatterns.md`](skills/unity-vrc-udon-sharp/references/networking-antipatterns.md) |
-| 31 | ✓ | [`skills/unity-vrc-udon-sharp/references/networking-bandwidth.md`](skills/unity-vrc-udon-sharp/references/networking-bandwidth.md) |
-| 32 | ✓ | [`skills/unity-vrc-udon-sharp/references/networking.md`](skills/unity-vrc-udon-sharp/references/networking.md) |
-| 33 | ✓ | [`skills/unity-vrc-udon-sharp/references/patterns-core.md`](skills/unity-vrc-udon-sharp/references/patterns-core.md) |
-| 34 | ✓ | [`skills/unity-vrc-udon-sharp/references/patterns-networking.md`](skills/unity-vrc-udon-sharp/references/patterns-networking.md) |
-| 35 | ✓ | [`skills/unity-vrc-udon-sharp/references/patterns-performance.md`](skills/unity-vrc-udon-sharp/references/patterns-performance.md) |
-| 36 | ✓ | [`skills/unity-vrc-udon-sharp/references/patterns-ui.md`](skills/unity-vrc-udon-sharp/references/patterns-ui.md) |
-| 37 | ✓ | [`skills/unity-vrc-udon-sharp/references/patterns-utilities.md`](skills/unity-vrc-udon-sharp/references/patterns-utilities.md) |
-| 38 | ✓ | [`skills/unity-vrc-udon-sharp/references/patterns-video.md`](skills/unity-vrc-udon-sharp/references/patterns-video.md) |
-| 39 | ✓ | [`skills/unity-vrc-udon-sharp/references/persistence.md`](skills/unity-vrc-udon-sharp/references/persistence.md) |
-| 40 | ✓ | [`skills/unity-vrc-udon-sharp/references/sdk-migration.md`](skills/unity-vrc-udon-sharp/references/sdk-migration.md) |
-| 41 | ✓ | [`skills/unity-vrc-udon-sharp/references/sync-examples.md`](skills/unity-vrc-udon-sharp/references/sync-examples.md) |
-| 42 | ✓ | [`skills/unity-vrc-udon-sharp/references/testing.md`](skills/unity-vrc-udon-sharp/references/testing.md) |
-| 43 | ✓ | [`skills/unity-vrc-udon-sharp/references/troubleshooting.md`](skills/unity-vrc-udon-sharp/references/troubleshooting.md) |
-| 44 | ✓ | [`skills/unity-vrc-udon-sharp/references/web-loading-advanced.md`](skills/unity-vrc-udon-sharp/references/web-loading-advanced.md) |
-| 45 | ✓ | [`skills/unity-vrc-udon-sharp/references/web-loading.md`](skills/unity-vrc-udon-sharp/references/web-loading.md) |
-| 46 | ✓ | [`skills/unity-vrc-udon-sharp/rules/udonsharp-constraints.md`](skills/unity-vrc-udon-sharp/rules/udonsharp-constraints.md) |
-| 47 | ✓ | [`skills/unity-vrc-udon-sharp/rules/udonsharp-networking.md`](skills/unity-vrc-udon-sharp/rules/udonsharp-networking.md) |
-| 48 | ✓ | [`skills/unity-vrc-udon-sharp/rules/udonsharp-sync-selection.md`](skills/unity-vrc-udon-sharp/rules/udonsharp-sync-selection.md) |
-| 49 | ✓ | [`skills/unity-vrc-udon-sharp/SKILL.md`](skills/unity-vrc-udon-sharp/SKILL.md) |
-| 50 | ✓ | [`skills/unity-vrc-world-sdk-3/assets/templates/VRC_Pickup_Rigidbody.cs`](skills/unity-vrc-world-sdk-3/assets/templates/VRC_Pickup_Rigidbody.cs) |
-| 51 | ✓ | [`skills/unity-vrc-world-sdk-3/assets/templates/VRC_Station_Basic.cs`](skills/unity-vrc-world-sdk-3/assets/templates/VRC_Station_Basic.cs) |
-| 52 | ✓ | [`skills/unity-vrc-world-sdk-3/CHEATSHEET.md`](skills/unity-vrc-world-sdk-3/CHEATSHEET.md) |
-| 53 | ✓ | [`skills/unity-vrc-world-sdk-3/LICENSE.txt`](skills/unity-vrc-world-sdk-3/LICENSE.txt) |
-| 54 | ✓ | [`skills/unity-vrc-world-sdk-3/references/audio-video.md`](skills/unity-vrc-world-sdk-3/references/audio-video.md) |
-| 55 | ✓ | [`skills/unity-vrc-world-sdk-3/references/components.md`](skills/unity-vrc-world-sdk-3/references/components.md) |
-| 56 | ✓ | [`skills/unity-vrc-world-sdk-3/references/layers.md`](skills/unity-vrc-world-sdk-3/references/layers.md) |
-| 57 | ✓ | [`skills/unity-vrc-world-sdk-3/references/lighting.md`](skills/unity-vrc-world-sdk-3/references/lighting.md) |
-| 58 | ✓ | [`skills/unity-vrc-world-sdk-3/references/performance.md`](skills/unity-vrc-world-sdk-3/references/performance.md) |
-| 59 | ✓ | [`skills/unity-vrc-world-sdk-3/references/troubleshooting.md`](skills/unity-vrc-world-sdk-3/references/troubleshooting.md) |
-| 60 | ✓ | [`skills/unity-vrc-world-sdk-3/references/upload.md`](skills/unity-vrc-world-sdk-3/references/upload.md) |
-| 61 | ✓ | [`skills/unity-vrc-world-sdk-3/SKILL.md`](skills/unity-vrc-world-sdk-3/SKILL.md) |
-| 62 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
-| 63 | ✓ | [`templates/CLAUDE.md`](templates/CLAUDE.md) |
-| 64 | ✓ | [`templates/GEMINI.md`](templates/GEMINI.md) |
-| 65 | → | [`unity-project-for-sdk-search/README.md`](unity-project-for-sdk-search/README.md) |
+| 26 | ✓ | [`skills/unity-vrc-udon-sharp/references/context-preservation.md`](skills/unity-vrc-udon-sharp/references/context-preservation.md) |
+| 27 | ✓ | [`skills/unity-vrc-udon-sharp/references/dynamics.md`](skills/unity-vrc-udon-sharp/references/dynamics.md) |
+| 28 | ✓ | [`skills/unity-vrc-udon-sharp/references/editor-scripting.md`](skills/unity-vrc-udon-sharp/references/editor-scripting.md) |
+| 29 | ✓ | [`skills/unity-vrc-udon-sharp/references/events.md`](skills/unity-vrc-udon-sharp/references/events.md) |
+| 30 | ✓ | [`skills/unity-vrc-udon-sharp/references/image-loading-vram.md`](skills/unity-vrc-udon-sharp/references/image-loading-vram.md) |
+| 31 | ✓ | [`skills/unity-vrc-udon-sharp/references/networking-antipatterns.md`](skills/unity-vrc-udon-sharp/references/networking-antipatterns.md) |
+| 32 | ✓ | [`skills/unity-vrc-udon-sharp/references/networking-bandwidth.md`](skills/unity-vrc-udon-sharp/references/networking-bandwidth.md) |
+| 33 | ✓ | [`skills/unity-vrc-udon-sharp/references/networking.md`](skills/unity-vrc-udon-sharp/references/networking.md) |
+| 34 | ✓ | [`skills/unity-vrc-udon-sharp/references/patterns-core.md`](skills/unity-vrc-udon-sharp/references/patterns-core.md) |
+| 35 | ✓ | [`skills/unity-vrc-udon-sharp/references/patterns-networking.md`](skills/unity-vrc-udon-sharp/references/patterns-networking.md) |
+| 36 | ✓ | [`skills/unity-vrc-udon-sharp/references/patterns-performance.md`](skills/unity-vrc-udon-sharp/references/patterns-performance.md) |
+| 37 | ✓ | [`skills/unity-vrc-udon-sharp/references/patterns-ui.md`](skills/unity-vrc-udon-sharp/references/patterns-ui.md) |
+| 38 | ✓ | [`skills/unity-vrc-udon-sharp/references/patterns-utilities.md`](skills/unity-vrc-udon-sharp/references/patterns-utilities.md) |
+| 39 | ✓ | [`skills/unity-vrc-udon-sharp/references/patterns-video.md`](skills/unity-vrc-udon-sharp/references/patterns-video.md) |
+| 40 | ✓ | [`skills/unity-vrc-udon-sharp/references/persistence.md`](skills/unity-vrc-udon-sharp/references/persistence.md) |
+| 41 | ✓ | [`skills/unity-vrc-udon-sharp/references/sdk-migration.md`](skills/unity-vrc-udon-sharp/references/sdk-migration.md) |
+| 42 | ✓ | [`skills/unity-vrc-udon-sharp/references/sync-examples.md`](skills/unity-vrc-udon-sharp/references/sync-examples.md) |
+| 43 | ✓ | [`skills/unity-vrc-udon-sharp/references/testing.md`](skills/unity-vrc-udon-sharp/references/testing.md) |
+| 44 | ✓ | [`skills/unity-vrc-udon-sharp/references/troubleshooting.md`](skills/unity-vrc-udon-sharp/references/troubleshooting.md) |
+| 45 | ✓ | [`skills/unity-vrc-udon-sharp/references/web-loading-advanced.md`](skills/unity-vrc-udon-sharp/references/web-loading-advanced.md) |
+| 46 | ✓ | [`skills/unity-vrc-udon-sharp/references/web-loading.md`](skills/unity-vrc-udon-sharp/references/web-loading.md) |
+| 47 | ✓ | [`skills/unity-vrc-udon-sharp/rules/udonsharp-constraints.md`](skills/unity-vrc-udon-sharp/rules/udonsharp-constraints.md) |
+| 48 | ✓ | [`skills/unity-vrc-udon-sharp/rules/udonsharp-networking.md`](skills/unity-vrc-udon-sharp/rules/udonsharp-networking.md) |
+| 49 | ✓ | [`skills/unity-vrc-udon-sharp/rules/udonsharp-sync-selection.md`](skills/unity-vrc-udon-sharp/rules/udonsharp-sync-selection.md) |
+| 50 | ✓ | [`skills/unity-vrc-udon-sharp/SKILL.md`](skills/unity-vrc-udon-sharp/SKILL.md) |
+| 51 | ✓ | [`skills/unity-vrc-world-sdk-3/assets/templates/VRC_Pickup_Rigidbody.cs`](skills/unity-vrc-world-sdk-3/assets/templates/VRC_Pickup_Rigidbody.cs) |
+| 52 | ✓ | [`skills/unity-vrc-world-sdk-3/assets/templates/VRC_Station_Basic.cs`](skills/unity-vrc-world-sdk-3/assets/templates/VRC_Station_Basic.cs) |
+| 53 | ✓ | [`skills/unity-vrc-world-sdk-3/CHEATSHEET.md`](skills/unity-vrc-world-sdk-3/CHEATSHEET.md) |
+| 54 | ✓ | [`skills/unity-vrc-world-sdk-3/LICENSE.txt`](skills/unity-vrc-world-sdk-3/LICENSE.txt) |
+| 55 | ✓ | [`skills/unity-vrc-world-sdk-3/references/audio-video.md`](skills/unity-vrc-world-sdk-3/references/audio-video.md) |
+| 56 | ✓ | [`skills/unity-vrc-world-sdk-3/references/components.md`](skills/unity-vrc-world-sdk-3/references/components.md) |
+| 57 | ✓ | [`skills/unity-vrc-world-sdk-3/references/layers.md`](skills/unity-vrc-world-sdk-3/references/layers.md) |
+| 58 | ✓ | [`skills/unity-vrc-world-sdk-3/references/lighting.md`](skills/unity-vrc-world-sdk-3/references/lighting.md) |
+| 59 | ✓ | [`skills/unity-vrc-world-sdk-3/references/performance.md`](skills/unity-vrc-world-sdk-3/references/performance.md) |
+| 60 | ✓ | [`skills/unity-vrc-world-sdk-3/references/troubleshooting.md`](skills/unity-vrc-world-sdk-3/references/troubleshooting.md) |
+| 61 | ✓ | [`skills/unity-vrc-world-sdk-3/references/upload.md`](skills/unity-vrc-world-sdk-3/references/upload.md) |
+| 62 | ✓ | [`skills/unity-vrc-world-sdk-3/SKILL.md`](skills/unity-vrc-world-sdk-3/SKILL.md) |
+| 63 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
+| 64 | ✓ | [`templates/CLAUDE.md`](templates/CLAUDE.md) |
+| 65 | ✓ | [`templates/GEMINI.md`](templates/GEMINI.md) |
+| 66 | → | [`unity-project-for-sdk-search/README.md`](unity-project-for-sdk-search/README.md) |
 
 ---
 

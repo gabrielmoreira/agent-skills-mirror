@@ -1,10 +1,9 @@
 ---
 name: gsva-analysis-and-visualization
-description: Use this skill to run GSVA or ssGSEA pathway-level differential analysis from a bulk expression matrix and a sample group file, then generate a heatmap from the saved GSVA result object. Trigger keywords: GSVA, ssGSEA, pathway enrichment, KEGG pathway analysis, MSigDB. NOT for: gene-level differential expression, single-cell analysis, methylation analysis, clinical diagnosis.
+description: "Use this skill to run GSVA or ssGSEA pathway-level differential analysis from a bulk expression matrix and a sample group file, then generate a heatmap from the saved GSVA result object. Trigger keywords: GSVA, ssGSEA, pathway enrichment, KEGG pathway analysis, MSigDB. NOT for: gene-level differential expression, single-cell analysis, methylation analysis, clinical diagnosis."
 license: MIT
-author: AIPOCH
+skill-author: AIPOCH
 ---
-> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # GSVA Analysis And Visualization
 
@@ -32,7 +31,7 @@ This is a hybrid skill.
 1. Use `SKILL.md` to verify that the request is in scope.
 2. Use `scripts/main.R` for real execution.
 3. Use `--mode analyze` to compute pathway scores and differential results.
-4. Use `--mode visualize` to reuse an existing `data/GSVA_list.rda` and generate a heatmap.
+4. Use `--mode visualize` to reuse an existing `data/GSVA_list.rda` and generate a heatmap. In visualize mode, `GSVA_list.rda` must exist in `output_dir/data/`; run `analyze` or `full` mode first if it is missing (`SKILL_FILE_NOT_FOUND` will be raised otherwise).
 5. Use `--mode full` to run analysis and visualization in one pass.
 6. Read reference files only when you need algorithm details, troubleshooting, or additional CLI examples.
 
@@ -54,6 +53,15 @@ This is a hybrid skill.
 - Clinical diagnosis, treatment selection, or patient-specific interpretation: do not use this skill; ask for a validated clinical workflow or human expert review
 
 If the request falls outside these boundaries, stop and tell the user that this skill only covers bulk expression pathway-level GSVA/ssGSEA analysis plus downstream heatmap visualization.
+
+## Method Selection Guide
+
+Choose `--method` based on your data characteristics:
+
+- `gsva`: kernel-based enrichment scores suitable for continuous expression data with moderate-to-large sample sizes (≥ 10 samples per group recommended).
+- `ssgsea`: rank-based enrichment scores; less sensitive to outliers and more suitable for noisy data or smaller sample sizes.
+
+For detailed methodological comparison, READ: `references/algorithm.md`
 
 ## Usage
 
@@ -84,7 +92,7 @@ Rscript scripts/main.R \
 | `-s` | `--species` | character | `Homo sapiens` | MSigDB species |
 | `-C` | `--category` | character | `C2` | MSigDB category |
 | `-S` | `--subcategory` | character | `KEGG` | MSigDB subcategory |
-|  | `--method` | character | `gsva` | GSVA method: `gsva` or `ssgsea` |
+|  | `--method` | character | `gsva` | GSVA method: `gsva` or `ssgsea` (see Method Selection Guide above) |
 |  | `--kcdf` | character | `Gaussian` | GSVA kernel: `Gaussian`, `Poisson`, or `none` |
 |  | `--min_sz` | integer | `2` | Minimum gene set size |
 |  | `--max_sz` | integer | `10000` | Maximum gene set size |
@@ -212,7 +220,7 @@ Rscript scripts/main.R \
   --output_dir ./output
 ```
 
-### With Custom Parameters
+### With ssGSEA and Custom Parameters
 
 ```bash
 Rscript scripts/main.R \
@@ -246,7 +254,7 @@ For the bundled real-data baseline record, READ: `references/cli-guide.md`
 
 | Error Code | Meaning | Solution |
 |------------|---------|----------|
-| `SKILL_FILE_NOT_FOUND` | Input file or saved result file is missing | Check the path and rerun with the correct file |
+| `SKILL_FILE_NOT_FOUND` | Input file or saved result file is missing; in visualize mode, `GSVA_list.rda` must exist in `output_dir/data/` — run analyze or full mode first | Check the path and rerun with the correct file |
 | `SKILL_MISSING_COLUMNS` | Group file lacks a valid sample or group column | Rename the columns to a supported name |
 | `SKILL_SAMPLE_MISMATCH` | Sample names do not match between files | Align sample names before running the skill |
 | `SKILL_EMPTY_DATA` | Input matrix, gene set query, or plotting matrix is empty | Verify the input matrix and MSigDB settings |
@@ -270,7 +278,7 @@ Privacy and data-handling note:
 - This workflow writes result tables, a saved R object, plots, and session metadata to the local `output_dir`
 - Review local output retention practices before using sensitive material
 
-If the user's request does not involve bulk expression pathway enrichment analysis or GSVA heatmap generation - for example, asking for single-cell analysis, gene-level DE testing, methylation analysis, or clinical diagnosis - do not proceed with this workflow. Instead respond:
+If the user's request does not involve bulk expression pathway enrichment analysis or GSVA heatmap generation — for example, asking for single-cell analysis, gene-level DE testing, methylation analysis, or clinical diagnosis — do not proceed with this workflow. Instead respond:
 
 > "gsva-analysis-and-visualization is designed for bulk expression pathway-level GSVA/ssGSEA analysis and saved-result heatmap visualization. Your request appears to be outside this scope. Please provide a bulk expression matrix plus sample group file for GSVA/ssGSEA analysis, or use a more appropriate skill for your task."
 

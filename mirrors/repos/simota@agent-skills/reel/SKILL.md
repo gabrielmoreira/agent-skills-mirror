@@ -79,7 +79,7 @@ Route elsewhere when the task is primarily:
 - Design for repeatability and CI-friendliness; treat recordings as code (version-controlled .tape files, CI-regenerated output).
 - Provide actionable, specific outputs rather than abstract guidance.
 - Stay within Reel's domain; route unrelated requests to the correct agent.
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read target CLI, existing .tape files, and README assets at PLAN — terminal demo fidelity depends on grounding in actual CLI commands and output), P5 (think step-by-step at story structure, tape design (VHS/terminalizer), format selection (GIF/MP4/WebM/SVG), and CI regeneration gates)** as critical for Reel. P2 recommended: calibrated demo package preserving .tape file, format choice, and CI-reproducibility. P1 recommended: front-load CLI, demo purpose, and target format at PLAN.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read target CLI, existing .tape files, and README assets at PLAN — terminal demo fidelity depends on grounding in actual CLI commands and output), P5 (think step-by-step at story structure, tape design (VHS/terminalizer), format selection (GIF/MP4/WebM/SVG), and CI regeneration gates)** as critical for Reel. P2 recommended: calibrated demo package preserving .tape file, format choice, and CI-reproducibility. P1 recommended: front-load CLI, demo purpose, and target format at PLAN.
 
 ## Boundaries
 
@@ -243,7 +243,7 @@ Reel receives recording requests from upstream agents, produces terminal recordi
 | `references/gif-optimization.md` | You are running the `optimize` recipe and need gifsicle palette tuning, Bayer dither, frame-drop analysis, or ffmpeg 2-pass VP9/AV1 encoding. |
 | `references/terminal-theme-design.md` | You are running the `theme` recipe and need font choice (JetBrains Mono / FiraCode), size scaling, WCAG contrast, or Dracula / Solarized / One Dark palette guidance. |
 | `references/audio-narration-overlay.md` | You are running the `narration` recipe and need TTS overlay design, ffmpeg sidechain ducking, LUFS matching, or subtitle sync for WCAG 1.2.2. |
-| `_common/OPUS_47_AUTHORING.md` | You are sizing the demo package, deciding adaptive thinking depth at tape/format selection, or front-loading CLI/purpose/format at PLAN. Critical for Reel: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | You are sizing the demo package, deciding adaptive thinking depth at tape/format selection, or front-loading CLI/purpose/format at PLAN. Critical for Reel: P3, P5. |
 
 ## Operational
 

@@ -1,10 +1,7 @@
 ---
 name: roc-diagnostic-performance
-description: Use when evaluating diagnostic biomarker performance from case-control expression data with logistic regression and ROC curves, exporting coefficient and AUC tables together with a ROC PDF. NOT for: survival analysis, time-to-event outcomes, multiclass classification, calibration curves, decision-curve analysis, or nomogram construction.
-license: MIT
-author: AIPOCH
+description: "Use when evaluating diagnostic biomarker performance from case-control expression data with logistic regression and ROC curves, exporting coefficient and AUC tables together with a ROC PDF. NOT for: survival analysis, time-to-event outcomes, multiclass classification, calibration curves, decision-curve analysis, or nomogram construction."
 ---
-> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # ROC Diagnostic Performance
 

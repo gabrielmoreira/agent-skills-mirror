@@ -1,11 +1,16 @@
 ---
 name: focus-engine
-description: "Implements keyboard, directional, and scene-level focus behavior across SwiftUI and UIKit. Use when managing @FocusState, defaultFocus, focused values, focusable interactions, focus sections, tvOS geometric focus model and Siri Remote navigation, watchOS Digital Crown focus, visionOS gaze/hover and RealityKit InputTargetComponent, macOS key view loop and Full Keyboard Access, focus restoration after presentation changes, custom focus routing with UIFocusGuide, or debugging focus with UIFocusDebugger."
+description: "Implements keyboard, directional, and scene-level focus behavior across SwiftUI and UIKit. Use when managing @FocusState, defaultFocus, focused values, focusable interactions, focus sections, tvOS geometric focus and Siri Remote navigation, watchOS Digital Crown input, visionOS connected-device focus versus gaze hover/input targets, macOS key view loop and Full Keyboard Access, focus restoration after presentation changes, custom focus routing with UIFocusGuide, or debugging focus with UIFocusDebugger."
 ---
 
 # Focus Engine
 
-Focus behavior for SwiftUI and UIKit apps targeting iOS 26+, iPadOS, macOS, and tvOS. Covers keyboard focus, directional focus, scene-focused values, focus restoration, and UIKit focus guides. `focusSection()` guidance in this skill applies to macOS and tvOS. Accessibility-specific focus for VoiceOver and Switch Control lives in the `ios-accessibility` skill.
+Focus behavior for SwiftUI and UIKit apps targeting iOS 26+, iPadOS, macOS, tvOS, and visionOS connected-input paths. Covers keyboard focus, directional focus, scene-focused values, focus restoration, and UIKit focus guides. `focusSection()` guidance in this skill applies to macOS and tvOS. visionOS gaze-driven hover is an input affordance, not focus. Accessibility-specific focus for VoiceOver and Switch Control lives in the `ios-accessibility` skill.
+
+When a request mixes focus with accessibility or spatial input, keep the boundary explicit:
+- Use this skill for keyboard, remote, game-controller, and scene focus behavior.
+- For visionOS, describe gaze, direct touch, and pointer targeting as hover/input affordances, not focus.
+- For VoiceOver, Switch Control, Voice Control, or accessibility element ordering, give only a brief handoff to `ios-accessibility`.
 
 ## Contents
 
@@ -128,7 +133,7 @@ struct SelectableCard: View {
 }
 ```
 
-Use `.activate` for button-like controls. Reserve broader interactions for views that genuinely need editing or multiple focus-driven behaviors.
+Prefer semantic `Button`, `Toggle`, `TextField`, and other system controls before making arbitrary gesture-driven views focusable. Use `.focusable(interactions: .activate)` for custom button-like controls only when a semantic control cannot express the UI. Reserve broader interactions for views that genuinely need editing or multiple focus-driven behaviors.
 
 ## Focus Sections
 
@@ -221,6 +226,7 @@ final class DashboardViewController: UIViewController {
 5. Forgetting focus restoration after sheets, popovers, or custom overlays.
 6. Reaching for `UIFocusGuide` before trying `focusSection()` on macOS or tvOS, or better layout grouping in SwiftUI.
 7. Using gesture handlers for primary actions on custom focusable controls instead of a semantic `Button` when possible.
+8. Treating visionOS gaze hover as focus; reserve focus guidance for connected input such as keyboards and game controllers.
 
 ## Review Checklist
 
@@ -232,6 +238,7 @@ final class DashboardViewController: UIViewController {
 - [ ] `focusSection()` is used for uneven directional layouts on macOS or tvOS before dropping to UIKit
 - [ ] Focus returns to a stable element after temporary presentations dismiss
 - [ ] `UIFocusGuide` geometry and preferred destinations match the intended route
+- [ ] visionOS guidance distinguishes connected-device focus from gaze-driven hover or RealityKit input targets
 - [ ] Accessibility focus concerns are handled in `ios-accessibility`, not mixed into keyboard-directional focus logic
 
 ## References

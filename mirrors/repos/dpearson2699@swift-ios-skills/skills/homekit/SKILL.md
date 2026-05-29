@@ -38,10 +38,12 @@ device commissioning into your ecosystem. Targets Swift 6.3 / iOS 26+.
 
 For Matter commissioning into your own ecosystem:
 
-1. Enable the **MatterSupport** capability
-2. Add a **MatterSupport Extension** target to your project
-3. Add the `com.apple.developer.matter.allow-setup-payload` entitlement if
-   your app provides the setup code directly
+1. Add a **MatterSupport Extension** target and set its principal class to a
+   `MatterAddDeviceExtensionRequestHandler` subclass
+2. Add `NSBonjourServices` entries for `_matter._tcp`, `_matterc._udp`, and
+   `_matterd._udp`
+3. Add `com.apple.developer.matter.allow-setup-payload` only if the caller
+   supplies a Matter setup payload programmatically
 
 ### Availability Check
 
@@ -50,7 +52,8 @@ import HomeKit
 
 let homeManager = HMHomeManager()
 
-// HomeKit is available on iPhone, iPad, Apple TV, Apple Watch, Mac, and Vision Pro.
+// HomeKit is available on iPhone, iPad, Apple TV, Apple Watch,
+// Mac Catalyst, and Vision Pro.
 // Authorization is handled through the delegate:
 homeManager.delegate = self
 ```
@@ -121,6 +124,8 @@ let defaultRoom = home.roomForEntireHome()
 ## Managing Accessories
 
 ### Discovering and Adding Accessories
+
+Use HomeKit and MatterSupport for home-model work: homes, rooms, `HMAccessory` services and characteristics, action sets, triggers and automations, HomeKit accessory setup UI, and Matter commissioning. If the same request asks about lower-level Bluetooth or Wi-Fi accessory discovery or authorization, name AccessorySetupKit as the boundary for discovery descriptors, picker authorization, `ASAccessorySession` events, and migration. After AccessorySetupKit setup, explicitly name both post-setup handoff targets: CoreBluetooth/GATT for Bluetooth accessories and NetworkExtension for Wi-Fi accessory network flows; neither handoff is HomeKit automation logic.
 
 ```swift
 // System UI for accessory discovery
@@ -241,20 +246,20 @@ home.executeActionSet(actionSet) { error in
 ### Creating a Timer Trigger
 
 ```swift
-var dateComponents = DateComponents()
-dateComponents.hour = 22
-dateComponents.minute = 30
+var timeOfDay = DateComponents()
+timeOfDay.hour = 22
+timeOfDay.minute = 30
+
+let firstFireDate = Calendar.current.nextDate(
+    after: Date(),
+    matching: timeOfDay,
+    matchingPolicy: .nextTime
+)!
 
 let trigger = HMTimerTrigger(
     name: "Nightly",
-    fireDate: Calendar.current.nextDate(
-        after: Date(),
-        matching: dateComponents,
-        matchingPolicy: .nextTime
-    )!,
-    timeZone: .current,
-    recurrence: dateComponents,  // Repeats daily at 22:30
-    recurrenceCalendar: .current
+    fireDate: firstFireDate,
+    recurrence: DateComponents(day: 1)  // Repeat every day after firstFireDate
 )
 
 home.addTrigger(trigger) { error in
@@ -293,7 +298,8 @@ home.addTrigger(eventTrigger) { error in
 ## Matter Commissioning
 
 Use `MatterAddDeviceRequest` to commission a Matter device into your ecosystem.
-This is separate from HomeKit -- it handles the pairing flow.
+This is separate from the `HMHome` home-automation model; it handles the
+Matter setup flow and calls into your MatterSupport extension.
 
 ### Basic Commissioning
 
@@ -324,6 +330,10 @@ func addMatterDevice() async throws {
 }
 ```
 
+When providing a setup code directly, import Matter and pass an
+`MTRSetupPayload` as `setupPayload`; this is the case that requires the
+setup-payload entitlement.
+
 ### Filtering Devices
 
 ```swift
@@ -337,19 +347,14 @@ let request = MatterAddDeviceRequest(
 )
 ```
 
-### Combining Device Criteria
-
-```swift
-let criteria = MatterAddDeviceRequest.DeviceCriteria.all([
-    .vendorID(0x1234),
-    .not(.productID(0x0001))  // Exclude a specific product
-])
-```
+Combine criteria with `.all([.vendorID(...), .not(.productID(...))])` or use
+`.any(...)` when any one criterion is enough.
 
 ## MatterAddDeviceExtensionRequestHandler
 
 For full ecosystem support, create a MatterSupport Extension. The extension
-handles commissioning callbacks:
+handles commissioning callbacks. Override the needed methods, but do not call
+`super` from those overrides.
 
 ```swift
 import MatterSupport
@@ -357,7 +362,8 @@ import MatterSupport
 final class MatterHandler: MatterAddDeviceExtensionRequestHandler {
 
     override func validateDeviceCredential(
-        _ deviceCredential: DeviceCredential
+        _ deviceCredential:
+            MatterAddDeviceExtensionRequestHandler.DeviceCredential
     ) async throws {
         // Validate the device attestation certificate
         // Throw to reject the device
@@ -422,17 +428,11 @@ let request = MatterAddDeviceRequest(
 try await request.perform()
 ```
 
-### DON'T: Forget required entitlements
+### DON'T: Forget required configuration
 
-```swift
-// WRONG -- calling Matter APIs without the MatterSupport entitlement
-// Results in runtime error
-
-// CORRECT -- ensure these are set up:
-// 1. HomeKit capability for HMHomeManager access
-// 2. MatterSupport Extension target for ecosystem commissioning
-// 3. com.apple.developer.matter.allow-setup-payload if providing setup codes
-```
+Matter ecosystem commissioning needs the MatterSupport extension, principal
+handler class, and Matter Bonjour services. Add the setup-payload entitlement
+only when your app provides setup codes directly.
 
 ### DON'T: Create multiple HMHomeManager instances
 
@@ -473,7 +473,9 @@ if let metadata = characteristic.metadata,
 - [ ] `HMAccessoryDelegate` set on accessories to receive characteristic updates
 - [ ] Characteristic metadata checked before writing values
 - [ ] Error handling in all completion handlers
-- [ ] MatterSupport capability and extension target added for Matter commissioning
+- [ ] MatterSupport extension target and principal handler configured
+- [ ] Matter discovery `NSBonjourServices` entries added
+- [ ] `com.apple.developer.matter.allow-setup-payload` used only when providing setup codes
 - [ ] `MatterAddDeviceRequest.isSupported` checked before performing requests
 - [ ] Matter extension handler implements `commissionDevice(in:onboardingPayload:commissioningID:)`
 - [ ] Action sets tested with the HomeKit Accessory Simulator before shipping

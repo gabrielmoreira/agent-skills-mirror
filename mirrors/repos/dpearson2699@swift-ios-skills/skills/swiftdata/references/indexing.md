@@ -54,17 +54,21 @@ A compound index on `(isFavorite, startDate)` accelerates queries that filter on
 **Index when:**
 - A property appears in `#Predicate` filters on large collections (1000+ rows)
 - A property is used in `SortDescriptor` on large collections
-- `@Attribute(.unique)` properties (automatically indexed)
 
 **Don't index when:**
 - The collection is small (< few hundred rows)
 - The property is rarely queried
 - The property changes very frequently (index maintenance cost)
 - The property has very low cardinality (e.g., a Boolean on a small table)
+- Another schema constraint or existing index already covers the query pattern,
+  unless profiling shows a separate index helps
 
 ## Index and Migration
 
-Adding or removing an index is a lightweight migration — SwiftData handles it automatically without a `SchemaMigrationPlan`. The index is rebuilt on first launch after the schema change.
+Treat adding or removing an index as a schema change. Test it on representative
+stores and keep a `VersionedSchema` / `SchemaMigrationPlan` ready for any
+release where the aggregate schema changes exceed SwiftData's automatic
+migration support.
 
 ## Verifying Index Usage
 

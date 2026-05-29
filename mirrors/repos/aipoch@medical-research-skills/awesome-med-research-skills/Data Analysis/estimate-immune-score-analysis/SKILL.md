@@ -1,10 +1,9 @@
 ---
 name: estimate-immune-score-analysis
-description: Use this skill to compute ESTIMATE immune-related microenvironment scores from a bulk expression matrix, generate an ESTIMATE score heatmap, and optionally generate group-wise ESTIMATE score boxplots plus significance tables when a sample group file is supplied. Trigger keywords: ESTIMATE, immune score, stromal score, tumor microenvironment score. NOT for: immune cell deconvolution, single-cell analysis, differential expression, clinical diagnosis.
+description: "Use this skill to compute ESTIMATE immune-related microenvironment scores from a bulk expression matrix, generate an ESTIMATE score heatmap, and optionally generate group-wise ESTIMATE score boxplots plus significance tables when a sample group file is supplied. Trigger keywords: ESTIMATE, immune score, stromal score, tumor microenvironment score. NOT for: immune cell deconvolution, single-cell analysis, differential expression, clinical diagnosis."
 license: MIT
-author: AIPOCH
+skill-author: AIPOCH
 ---
-> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # ESTIMATE Immune Score Analysis
 
@@ -109,7 +108,7 @@ Rscript scripts/main.R \
 - First column contains gene identifiers
 - Remaining columns are sample names
 - Expression values must be numeric and non-missing
-- Sample column names must be unique
+- Sample column names must be unique; duplicate sample column names raise `SKILL_INVALID_PARAMETER`
 
 Example:
 
@@ -126,7 +125,8 @@ The bundled `tests/data/expression_matrix.csv` was copied from `cibersort-immune
 - CSV or TSV file
 - Must contain one sample column and one group column
 - Sample names must match the ESTIMATE score table sample IDs
-- At least two matched group levels are required for boxplot comparison
+- **Exactly two group levels are supported** for boxplot comparison. If more than two groups are present in the group file, `SKILL_INVALID_PARAMETER` is raised.
+- Each group must contain **at least 3 samples** for valid statistical testing. Groups with fewer samples trigger `SKILL_INVALID_PARAMETER`.
 - If the group file is provided but grouped comparison fails after core scoring, the command exits with a `SKILL_*` error after preserving the core ESTIMATE outputs and failure records
 
 Example:
@@ -227,7 +227,7 @@ For the real-data baseline execution record, READ: `references/cli-guide.md`
 | `SKILL_FILE_NOT_FOUND` | Input file is missing or an expected intermediate file was not created | Check file paths and rerun |
 | `SKILL_MISSING_COLUMNS` | The gene identifier column contains missing values | Repair the first column and rerun |
 | `SKILL_EMPTY_DATA` | The matrix or ESTIMATE output is empty | Verify input content and identifier compatibility |
-| `SKILL_INVALID_PARAMETER` | A CLI argument is unsupported or the matrix contains invalid values | Review arguments and input values |
+| `SKILL_INVALID_PARAMETER` | A CLI argument is unsupported; the matrix contains invalid values; duplicate sample column names detected; more than two group levels provided; or a group contains fewer than 3 samples | Review arguments and input values |
 | `SKILL_SAMPLE_MISMATCH` | Sample names in the group file do not overlap the ESTIMATE score table | Align sample IDs before rerunning |
 | `SKILL_PACKAGE_NOT_FOUND` | Required R packages are not installed | Install missing packages listed in `references/cli-guide.md` |
 

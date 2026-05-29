@@ -1,15 +1,17 @@
 ---
 name: cryptokit
-description: "Perform cryptographic operations using Apple CryptoKit. Use when hashing data with SHA256/SHA384/SHA512, generating HMAC authentication codes, encrypting with AES-GCM or ChaChaPoly, signing with P256/P384/P521/Curve25519 keys, performing ECDH key agreement, storing keys in the Secure Enclave, or migrating from CommonCrypto to CryptoKit."
+description: "Use Apple CryptoKit for Swift cryptographic primitives. Use when hashing with SHA-2 or SHA-3, generating HMACs, encrypting with AES-GCM or ChaChaPoly, signing with P256/P384/P521/Curve25519 or ML-DSA keys, performing ECDH, HPKE, ML-KEM, or X-Wing key exchange, using Secure Enclave CryptoKit keys, or migrating CommonCrypto code to CryptoKit."
 ---
 
 # CryptoKit
 
 Apple CryptoKit provides a Swift-native API for cryptographic operations:
 hashing, message authentication, symmetric encryption, public-key signing,
-key agreement, and Secure Enclave key storage. Available on iOS 13+.
-Prefer CryptoKit over CommonCrypto or raw Security framework APIs in all
-new code targeting Swift 6.3+.
+key agreement, HPKE, quantum-secure key encapsulation/signing, and Secure
+Enclave-backed keys. Most core primitives are available on iOS 13+; check
+availability for HPKE (iOS 17+) and SHA-3 / post-quantum APIs (iOS 26+).
+Prefer CryptoKit over CommonCrypto or raw Security framework APIs for new
+cryptographic primitive code targeting Swift 6.3+.
 
 ## Contents
 
@@ -18,6 +20,8 @@ new code targeting Swift 6.3+.
 - [Symmetric Encryption](#symmetric-encryption)
 - [Public-Key Signing](#public-key-signing)
 - [Key Agreement](#key-agreement)
+- [HPKE](#hpke)
+- [Post-Quantum CryptoKit](#post-quantum-cryptokit)
 - [Secure Enclave](#secure-enclave)
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
@@ -25,7 +29,8 @@ new code targeting Swift 6.3+.
 
 ## Hashing
 
-CryptoKit provides SHA256, SHA384, and SHA512 hash functions. All conform
+CryptoKit provides SHA256, SHA384, and SHA512 hash functions on iOS 13+.
+SHA3_256, SHA3_384, and SHA3_512 are available on iOS 26+. All conform
 to the `HashFunction` protocol.
 
 ### One-shot hashing
@@ -40,6 +45,17 @@ let hex = digest.compactMap { String(format: "%02x", $0) }.joined()
 
 SHA384 and SHA512 work identically -- substitute the type name.
 
+### SHA-3 availability
+
+Use SHA-3 only behind an availability check unless the deployment target is
+iOS 26+:
+
+```swift
+if #available(iOS 26.0, *) {
+    let digest = SHA3_256.hash(data: data)
+}
+```
+
 ### Incremental hashing
 
 For large data or streaming input, hash incrementally:
@@ -53,8 +69,8 @@ let digest = hasher.finalize()
 
 ### Digest comparison
 
-CryptoKit digests use constant-time comparison by default. Direct `==`
-checks between digests are safe against timing attacks.
+Compare CryptoKit digest values directly. Do not convert digests to
+strings or arrays for security-sensitive equality checks.
 
 ```swift
 let expected = SHA256.hash(data: reference)
@@ -150,21 +166,8 @@ let decrypted = try AES.GCM.open(
 )
 ```
 
-### SymmetricKey sizes
-
-| Size | Use |
-|---|---|
-| `.bits128` | AES-128-GCM; adequate for most uses |
-| `.bits192` | AES-192-GCM; uncommon |
-| `.bits256` | AES-256-GCM or ChaChaPoly; recommended default |
-
-### Generating a key
-
-```swift
-let key = SymmetricKey(size: .bits256)
-```
-
-To create a key from existing data:
+Use `.bits256` as the default `SymmetricKey` size for AES-256-GCM or
+ChaChaPoly. To create a key from existing data:
 
 ```swift
 let key = SymmetricKey(data: existingKeyData)
@@ -190,18 +193,9 @@ let isValid = publicKey.isValidSignature(signature, for: data)
 
 P384 and P521 use the same API -- substitute the curve name.
 
-NIST key representations:
-
-```swift
-// Export
-let der = signingKey.derRepresentation
-let pem = signingKey.pemRepresentation
-let x963 = signingKey.x963Representation
-let raw = signingKey.rawRepresentation
-
-// Import
-let restored = try P256.Signing.PrivateKey(derRepresentation: der)
-```
+NIST keys support DER, PEM, X9.63, and raw representations. See
+[references/cryptokit-patterns.md](references/cryptokit-patterns.md) for
+serialization examples.
 
 ### Curve25519 / Ed25519
 
@@ -292,12 +286,59 @@ a key using one of:
 Always provide a non-empty `sharedInfo` string to bind the derived key
 to a specific protocol context.
 
+## HPKE
+
+HPKE is available on iOS 17+ for public-key encryption workflows. Prefer it over
+hand-rolled ECDH + HKDF + AEAD protocols when encrypting to a recipient public key.
+
+```swift
+let info = Data("my-protocol-v1".utf8)
+let recipientKey = Curve25519.KeyAgreement.PrivateKey()
+var sender = try HPKE.Sender(
+    recipientKey: recipientKey.publicKey,
+    ciphersuite: .Curve25519_SHA256_ChachaPoly,
+    info: info
+)
+let encapsulatedKey = sender.encapsulatedKey
+let ciphertext = try sender.seal(
+    plaintext,
+    authenticating: Data("metadata".utf8)
+)
+
+var recipient = try HPKE.Recipient(
+    privateKey: recipientKey,
+    ciphersuite: .Curve25519_SHA256_ChachaPoly,
+    info: info,
+    encapsulatedKey: encapsulatedKey
+)
+```
+
+`HPKE.Sender` and `HPKE.Recipient` are stateful; keep them as `var`, send
+`encapsulatedKey` alongside the ciphertext, and open messages in the same
+order they were sealed. See [references/cryptokit-patterns.md](references/cryptokit-patterns.md)
+for ciphersuite selection and post-quantum HPKE.
+
+## Post-Quantum CryptoKit
+
+iOS 26+ adds quantum-secure APIs:
+
+- Key encapsulation: `MLKEM768`, `MLKEM1024`
+- Hybrid HPKE: `XWingMLKEM768X25519` with `.XWingMLKEM768X25519_SHA256_AES_GCM_256`
+- Digital signatures: `MLDSA65`, `MLDSA87`
+- Secure Enclave variants: `SecureEnclave.MLKEM768`, `SecureEnclave.MLKEM1024`,
+  `SecureEnclave.MLDSA65`, `SecureEnclave.MLDSA87`
+
+Use hybrid mechanisms for migration when both classical and quantum-secure
+resistance matter. Account for much larger public keys, ciphertexts, and
+signatures than P256 or Curve25519.
+
 ## Secure Enclave
 
 The Secure Enclave provides hardware-backed key storage. Private keys
-never leave the hardware. Only P256 signing and key agreement are
-supported for ECDH operations. Post-quantum key types (MLKEM, MLDSA)
-are also available in the Secure Enclave on supported hardware.
+never leave the hardware. For classical elliptic-curve CryptoKit, Secure
+Enclave supports P256 signing and key agreement. On iOS 26+ supported
+hardware, CryptoKit also exposes Secure Enclave ML-KEM key encapsulation
+and ML-DSA signing types.
 
 ### Availability check
 
@@ -320,20 +361,9 @@ let isValid = publicKey.isValidSignature(signature, for: data)
 
 ### Access control
 
-Require biometric authentication to use the key:
-
-```swift
-let accessControl = SecAccessControlCreateWithFlags(
-    nil,
-    kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly,
-    [.privateKeyUsage, .biometryCurrentSet],
-    nil
-)!
-
-let privateKey = try SecureEnclave.P256.Signing.PrivateKey(
-    accessControl: accessControl
-)
-```
+Use `SecAccessControl` with `.privateKeyUsage` when the key requires biometric
+or passcode-gated use. Keep detailed Keychain policy decisions in the
+`swift-security` domain.
 
 ### Persisting Secure Enclave keys
 
@@ -367,7 +397,9 @@ let sharedSecret = try seKey.sharedSecretFromKeyAgreement(
 
 ```swift
 // DON'T
-let badKey = SymmetricKey(data: sharedSecret)
+let badKey = sharedSecret.withUnsafeBytes { bytes in
+    SymmetricKey(data: Data(bytes))
+}
 
 // DO -- derive with HKDF
 let goodKey = sharedSecret.hkdfDerivedSymmetricKey(
@@ -416,7 +448,7 @@ security-sensitive operations.
 
 ```swift
 // DON'T
-UserDefaults.standard.set(key.rawBytes, forKey: "encryptionKey")
+UserDefaults.standard.set(rawKeyData, forKey: "encryptionKey")
 
 // DO -- store in Keychain
 // See references/cryptokit-patterns.md for Keychain storage patterns
@@ -443,6 +475,8 @@ let key = try SecureEnclave.P256.Signing.PrivateKey()
 - [ ] Authenticated data (AAD) used where metadata needs integrity
 - [ ] SharedSecret derived via HKDF, not used directly
 - [ ] sharedInfo parameter is non-empty and context-specific
+- [ ] HPKE used instead of custom ECDH+HKDF+AEAD for recipient public-key encryption on iOS 17+
+- [ ] SHA-3 and post-quantum APIs guarded with iOS 26+ availability
 - [ ] Secure Enclave availability checked before use
 - [ ] Secure Enclave key `dataRepresentation` stored in Keychain
 - [ ] Private keys not logged, printed, or serialized unnecessarily
@@ -453,5 +487,7 @@ let key = try SecureEnclave.P256.Signing.PrivateKey()
 
 - Extended patterns (key serialization, Insecure module, Keychain integration, AES key wrapping, HPKE): [references/cryptokit-patterns.md](references/cryptokit-patterns.md)
 - Apple documentation: [CryptoKit](https://sosumi.ai/documentation/cryptokit)
+- Apple documentation: [HPKE](https://sosumi.ai/documentation/cryptokit/hpke)
+- Apple documentation: [Quantum-secure workflows](https://sosumi.ai/documentation/cryptokit/enhancing-your-app-s-privacy-and-security-with-quantum-secure-workflows)
 - Apple sample: [Performing Common Cryptographic Operations](https://sosumi.ai/documentation/cryptokit/performing-common-cryptographic-operations)
 - Apple sample: [Storing CryptoKit Keys in the Keychain](https://sosumi.ai/documentation/cryptokit/storing-cryptokit-keys-in-the-keychain)

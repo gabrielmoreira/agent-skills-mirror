@@ -8,9 +8,38 @@ Primary sources: Apple Platform Security Guide (Secure Enclave chapter), Apple D
 
 ---
 
+## Contents
+
+- [What the Secure Enclave actually is](#what-the-secure-enclave-actually-is)
+- [Hardware limitations you must design around](#hardware-limitations-you-must-design-around)
+- [CryptoKit SecureEnclave API (iOS 13+)](#cryptokit-secureenclave-api-ios-13)
+  - [Creating signing keys](#creating-signing-keys)
+  - [Signing and verification](#signing-and-verification)
+  - [Key agreement (ECDH) with HKDF derivation](#key-agreement-ecdh-with-hkdf-derivation)
+- [Persisting SE keys via dataRepresentation](#persisting-se-keys-via-datarepresentation)
+- [Biometric-gated SE keys with SecAccessControl](#biometric-gated-se-keys-with-secaccesscontrol)
+- [Legacy Security framework approach (iOS 10+)](#legacy-security-framework-approach-ios-10)
+- [iOS 26: Post-quantum cryptography in the Secure Enclave](#ios-26-post-quantum-cryptography-in-the-secure-enclave)
+- [When to use SE versus software keys](#when-to-use-se-versus-software-keys)
+- [Six correctness traps AI generators get wrong](#six-correctness-traps-ai-generators-get-wrong)
+  - [1. Not checking isAvailable (and the simulator double-trap)](#1-not-checking-isavailable-and-the-simulator-double-trap)
+  - [2. Attempting to import external keys](#2-attempting-to-import-external-keys)
+  - [3. Attempting AES/symmetric encryption directly](#3-attempting-aessymmetric-encryption-directly)
+  - [4. Assuming SE keys can be backed up or transferred](#4-assuming-se-keys-can-be-backed-up-or-transferred)
+  - [5. Using legacy Security framework when CryptoKit is available](#5-using-legacy-security-framework-when-cryptokit-is-available)
+  - [6. Omitting .privateKeyUsage in access control](#6-omitting-privatekeyusage-in-access-control)
+- [Testing and CI/CD strategies](#testing-and-cicd-strategies)
+  - [Protocol-based abstraction for testable SE code](#protocol-based-abstraction-for-testable-se-code)
+  - [Factory with SE → software fallback](#factory-with-se-software-fallback)
+  - [XCTest patterns](#xctest-patterns)
+  - [CI/CD reality](#cicd-reality)
+- [Operational guidance: rotation, migration, and incident response](#operational-guidance-rotation-migration-and-incident-response)
+- [Conclusion](#conclusion)
+- [Summary Checklist](#summary-checklist)
+
 ## What the Secure Enclave actually is
 
-The SE is a dedicated security subsystem embedded in Apple's SoC, running its own microkernel (sepOS — a customized L4 microkernel on a proprietary AKF ARMv7a core at 300–400 MHz). It has its own boot ROM (immutable, cryptographically verified at startup), hardware true random number generator (TRNG), AES engine, public key accelerator (PKA), and encrypted memory region. Communication with the application processor happens exclusively through an interrupt-driven mailbox — a hardware filter blocks all other access paths.
+The SE is a dedicated security subsystem embedded in Apple's SoC. It has its own secure boot chain, hardware-backed key handling, and isolated execution boundary. Apps interact with it only through system frameworks such as CryptoKit and Security.
 
 The SE's core guarantee: **private key material generated inside the Secure Enclave never leaves its hardware boundary.** When your code "uses" an SE key, it sends a request through the mailbox, the SE performs the cryptographic operation internally, and only the result (a signature, a shared secret) comes back. There is no API, debug interface, or JTAG path to extract the raw key.
 
@@ -29,14 +58,14 @@ These constraints are architectural, not bugs — they are fundamental to the SE
 - **No key export** — `SecKeyCopyExternalRepresentation()` on an SE private key fails. The `dataRepresentation` property returns an encrypted opaque blob, not raw key material.
 - **No key import** — Keys must be generated inside the SE. `init(dataRepresentation:)` accepts only the opaque blob from a previously created SE key — not arbitrary key material. There is no `init(rawRepresentation:)` on SE key types.
 - **Device-bound** — Keys are tied to the device's UID fused at manufacturing. They do not survive factory resets, cannot be backed up to iCloud, cannot sync via iCloud Keychain, and cannot be transferred to a replacement device.
-- **Limited storage** — The SE has approximately 4 MB of flash storage for keys. Not a concern for typical apps (a few dozen keys), but relevant if generating keys at high volume.
+- **Limited storage** — Treat SE key storage as scarce and reserve it for high-value keys. For bulk data, use an SE-protected root key to derive or unwrap software symmetric keys.
 - **Performance overhead** — Each operation requires an interrupt-driven round-trip to the isolated coprocessor. The SE is not suitable for high-frequency operations (thousands of signatures per second). Batch signing or bulk encryption should use SE-derived symmetric keys instead.
 
 ---
 
 ## CryptoKit SecureEnclave API (iOS 13+)
 
-CryptoKit's `SecureEnclave` module is the primary API for new code. It wraps the lower-level Security framework with Swift-native types that provide compile-time type safety, automatic memory zeroing on deallocation, and a curated surface that makes misuse difficult.
+CryptoKit's `SecureEnclave` module is the primary API for new code. It wraps the lower-level Security framework with Swift-native types and a curated surface that makes misuse harder.
 
 Two operation families are supported: **signing** (`SecureEnclave.P256.Signing`) and **key agreement** (`SecureEnclave.P256.KeyAgreement`).
 
@@ -64,8 +93,6 @@ enum SecureEnclaveError: Error {
 ```
 
 The `#if targetEnvironment(simulator)` compile-time guard is essential. **`SecureEnclave.isAvailable` can return `true` on the Simulator** when the host Mac has SE hardware (T2/M-series), but actual key generation fails at runtime. This behavior varies across Xcode versions — some return `false` consistently, others reflect the host's hardware. The compile-time check eliminates the ambiguity entirely.
-
-> **Cross-validation note:** The Claude research source documents the simulator `isAvailable` returning `true` as a confirmed trap; the Parallel research source states `isAvailable` is always `false` on simulator. Real-world behavior depends on Xcode version and host hardware. The defensive pattern above (compile-time guard + runtime check) is correct regardless of which behavior your environment exhibits.
 
 ```swift
 // ❌ INCORRECT: No availability check — crashes on simulator and old devices

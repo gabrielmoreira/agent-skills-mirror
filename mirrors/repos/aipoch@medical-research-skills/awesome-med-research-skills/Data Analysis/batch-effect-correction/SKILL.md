@@ -1,12 +1,25 @@
 ---
 name: batch-effect-correction
-description: Use when correcting batch effects in merged bulk expression matrices with sample-level batch metadata while preserving biological group structure and generating before-and-after QC plots. NOT for: single-cell integration, raw FASTQ processing, differential expression without batch labels, or datasets without biological groups.
+description: "Use when correcting batch effects in merged bulk expression matrices with sample-level batch metadata while preserving biological group structure and generating before-and-after QC plots. NOT for: single-cell integration, raw FASTQ processing, differential expression without batch labels, or datasets without biological groups."
 license: MIT
-author: AIPOCH
+skill-author: AIPOCH
 ---
-> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Batch Effect Correction
+
+## Prerequisites
+
+Run the following before the first analysis to install all required R packages:
+
+```bash
+Rscript -e "if (!require('BiocManager', quietly=TRUE)) install.packages('BiocManager'); BiocManager::install(c('sva', 'limma')); install.packages('ggplot2', repos='https://cloud.r-project.org')"
+```
+
+> Note: `sva` and `limma` are Bioconductor packages and require `BiocManager` for installation. `ggplot2` is a standard CRAN package.
+
+**The skill cannot run until these packages are installed.** In new or bare R environments, always run the prerequisite step first.
+
+---
 
 ## When to Read External Files
 
@@ -99,8 +112,8 @@ Requirements:
 | `matched_sample_info.csv` | Standardized metadata used in the analysis |
 | `batch_before_boxplot.pdf` | Sample distribution boxplot before correction |
 | `batch_after_boxplot.pdf` | Sample distribution boxplot after correction |
-| `batch_before_pca.pdf` | PCA scatter plot before correction with batch-colored points; batch ellipses are added when batch size/covariance supports stable fitting |
-| `batch_after_pca.pdf` | PCA scatter plot after correction with batch-colored points; batch ellipses are added when batch size/covariance supports stable fitting |
+| `batch_before_pca.pdf` | PCA scatter plot before correction with batch-colored points |
+| `batch_after_pca.pdf` | PCA scatter plot after correction with batch-colored points |
 | `batch_before_clustering.pdf` | Hierarchical clustering before correction |
 | `batch_after_clustering.pdf` | Hierarchical clustering after correction |
 | `session_info.txt` | R session and package version info |
@@ -118,7 +131,7 @@ Requirements:
 ### Step 2: Align and Prepare Matrix
 - Reorder expression columns to match metadata sample order
 - Keep only metadata-matched samples; warn if the expression matrix contains extra samples absent from metadata
-- Decide whether log transformation is needed
+- Decide whether log transformation is needed (`auto`, `yes`, or `no`)
 - Apply `log2(x + 1)` only when required
 
 ### Step 3: Run Batch Correction
@@ -146,6 +159,18 @@ Post-correction normalization with `limma::normalizeBetweenArrays()` to reduce r
 
 ### QC Visualization
 Generates paired boxplots, PCA scatter plots with conditional batch ellipses, and hierarchical clustering plots before and after correction to assess whether batch-driven structure is reduced.
+
+---
+
+## Agent Response Contract
+
+After a successful run, report:
+
+1. **Sample count** retained after metadata matching and any subset filtering
+2. **Batch count** and **group count** used in the ComBat design matrix
+3. **Log transformation** applied (auto-detected, forced yes, or skipped)
+4. **QC assessment**: describe whether before/after PCA plots show reduced batch clustering
+5. **Artifact paths**: `corrected_expression_matrix.csv`, `batch_after_pca.pdf`, `batch_after_clustering.pdf`
 
 ---
 
@@ -193,13 +218,27 @@ Rscript scripts/main.R \
 | `SKILL_EMPTY_FILE` | Input file exists but contains no data | Recreate or re-export the file |
 | `SKILL_MISSING_COLUMNS` | Metadata file is missing sample, group, or batch columns | Check header names or pass custom column names |
 | `SKILL_SAMPLE_MISMATCH` | Metadata sample IDs do not match expression matrix columns | Verify sample names between files |
-| `SKILL_INVALID_DATA` | Dataset fails minimum design checks | Review group counts, batch counts, and ID validity |
+| `SKILL_INVALID_DATA` | Dataset fails minimum design checks (< 2 batches, < 2 groups, < 2 samples per batch/group) | Review group counts, batch counts, and ID validity |
 | `SKILL_INVALID_TYPE` | Expression values are non-numeric or non-finite | Clean matrix values before running |
 | `SKILL_TIMEOUT` | Run exceeded the configured time limit | Increase `--timeout_seconds` or set it to `0` |
-| `SKILL_DEPENDENCY_MISSING` | Required R package is not installed | Install missing dependencies |
+| `SKILL_DEPENDENCY_MISSING` | Required R package is not installed | Install with: `Rscript -e "BiocManager::install(c('sva','limma')); install.packages('ggplot2')"` |
 | `SKILL_RUNTIME_ERROR` | Runtime I/O or filesystem error occurred | Check read/write permissions and environment |
 
 **IF error persists**, READ: `references/troubleshooting.md`
+
+**Troubleshooting note:** In environments where packages are not yet installed, `SKILL_DEPENDENCY_MISSING` will fire before file-validation or `--help`. Install dependencies first, then re-run to expose file-related errors or access `--help`.
+
+---
+
+## Input Validation
+
+This skill accepts:
+1. A bulk RNA-seq or microarray expression matrix (CSV, genes as rows, samples as columns)
+2. A sample metadata file (CSV) with sample ID, biological group, and batch columns; at least 2 batches and 2 biological groups are required
+
+If the user's request does not involve batch effect correction on merged bulk expression matrices — for example, asking to integrate single-cell RNA-seq data, process raw FASTQ files, run differential expression without batch labels, or analyze datasets with only one batch — do not proceed with the workflow. Instead respond:
+
+> "Batch Effect Correction is designed to remove batch-driven variation from merged bulk expression matrices using ComBat, while preserving biological group structure. Your request appears to be outside this scope. Please provide a multi-batch expression matrix with sample-level batch metadata, or use a more appropriate tool for single-cell integration, differential expression, or raw sequencing processing."
 
 ---
 
@@ -208,7 +247,7 @@ Rscript scripts/main.R \
 ### Test with Sample Data
 
 ```bash
-# Check help
+# Check help (requires packages installed)
 Rscript scripts/main.R --help
 
 # Run with bundled test data
@@ -249,4 +288,4 @@ ls -la tests/output/batch_after_pca.pdf
 
 ---
 
-*Last updated: 2026-04-20 | Version: 1.0.0*
+*Last updated: 2026-04-27 | Version: 1.1.0*

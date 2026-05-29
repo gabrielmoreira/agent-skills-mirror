@@ -35,13 +35,13 @@ These are probes, not a checklist. Use different probes if the situation calls f
 
 A single prompt is a thin signal. Before extracting intent, read what already exists in the **target repo's `.trail/` folder** (in the root of the repo being worked on — never in the skills install directory) — in this order:
 
-- **Vision** (`.trail/vision.md`) — the operator-held destination. If present, this is the most important context. The prompt is a single instruction; vision is the overarching goal it serves. Read it first. Interpret the prompt in light of where the operator has said they are trying to go.
+- **Destination** (`.trail/destination.md`, with `.trail/vision.md` as legacy fallback) — the operator-held destination. If present, this is the most important context. The prompt is a single instruction; the destination is the overarching goal it serves. Read it first. Interpret the prompt in light of where the operator has said they are trying to go.
 - **retrospect.md** (`.trail/retrospect.md`) — the Retrospect-derived current orientation. Where the work actually is right now, what the loop has been attending to, what findings have accumulated. The prompt means something different depending on whether the target is early-stage, mid-refactor, or nearly converged.
 - **The trail** (`.trail/audit-trail.md`) — past decisions, reversals, and realisations reveal what the user has consistently cared about, what they rejected, and where things went wrong before. A pattern of `[!REVERSAL]` entries around a particular approach is stronger evidence of intent than any single prompt.
 - **The conversation** — corrections, approvals, and the moments the user stepped in all carry intent signal. A user who keeps redirecting toward simplicity is telling you something that no single prompt states explicitly.
 - **Past sessions** (`.trail/sessions/`) — if earlier sessions exist, read their intent sections. Accumulated learnings about how this user frames problems, what they consider done, and what they care about carry over.
 
-If none of these exist yet — no `.trail/` at all — run **Vision** first to establish vision before the loop starts. A loop that begins without vision is navigating without a destination.
+If none of these exist yet — no `.trail/` at all — run **Destination** first to establish the destination before the loop starts. A loop that begins without a destination is navigating without one.
 
 The immediate prompt is the latest instruction. The trail and conversation history are the context that determines what it actually means. An agent that reads only the prompt is working with the thinnest possible signal.
 
@@ -77,7 +77,7 @@ Proceed with the interpreted task. If during the work the interpretation turns o
 
 **Not self-justification.** "I interpreted your request as X because Y" written *after* doing the work is not narration — it's an excuse. The interpretation must precede the action.
 
-**Not Vision.** Intent decodes what the user means by *this specific prompt*. If the question is where the operator is heading overall — implicit goals across sessions, a destination that has not yet been articulated — run [Vision](../vision/SKILL.md) instead. Intent is per-prompt; Vision is per-direction.
+**Not Destination.** Intent decodes what the user means by *this specific prompt*. If the question is where the operator is heading overall — implicit goals across sessions, a destination that has not yet been articulated — run [Destination](../destination/SKILL.md) instead. Intent is per-prompt; Destination is per-direction.
 
 ---
 
@@ -85,7 +85,7 @@ Proceed with the interpreted task. If during the work the interpretation turns o
 
 This skill runs first. When Improve or Probe is also active, Intent operates on the prompt that identifies the target before those skills examine the target itself. If Intent changes what the target is, the downstream skill works on the corrected target.
 
-When Vision or Retrospect is also active, their output files (`vision.md`, `retrospect.md`) are already read as part of Intent's own 'Read the accumulated context' step — no additional ordering is needed. Intent reads these files; it never writes them.
+When Destination or Retrospect is also active, their output files (`destination.md` — with `vision.md` as legacy fallback — and `retrospect.md`) are already read as part of Intent's own 'Read the accumulated context' step — no additional ordering is needed. Intent reads these files; it never writes them.
 
 When Trail is also active, paste the Intent narration verbatim into the "Interpretation of the ask" section of the log entry. A session with Intent but no Trail means the next session starts cold — the interpretation was visible once and is now gone.
 

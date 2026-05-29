@@ -134,7 +134,7 @@ let waveShader = """
 float amplitude;
 float frequency;
 
-float wave = amplitude * sin(frequency * _geometry.position.x + scn_frame.time);
+float wave = amplitude * sin(frequency * _geometry.position.x + u_time);
 _geometry.position.y += wave;
 """
 
@@ -172,11 +172,12 @@ name to `#pragma arguments` declarations:
 
 ```swift
 material.setValue(NSValue(scnVector3: SCNVector3(1, 0, 0)), forKey: "customDirection")
-material.setValue(Float(scn_frame.time), forKey: "elapsed")  // scn_frame.time is built-in
+material.setValue(Float(0.25), forKey: "amplitude")
 ```
 
-Built-in uniforms: `scn_frame.time`, `scn_frame.sinTime`, `scn_frame.cosTime`,
-`scn_frame.inverseResolution`.
+Shader modifiers receive documented SceneKit uniforms such as `u_time`,
+`u_modelTransform`, `u_viewTransform`, and `u_projectionTransform`. `scn_frame`
+is for custom `SCNProgram` Metal shader functions, not shader modifiers.
 
 ## Node Constraints
 
@@ -358,14 +359,22 @@ let success = scene.write(to: url, options: nil, delegate: nil) { totalProgress,
 }
 ```
 
-### Scene Attributes
+### Loading Options and Scene Attributes
+
+Use `SCNSceneSource.LoadingOption` when importing files that need unit or axis
+conversion:
 
 ```swift
-scene.setAttribute(
-    ["UnitMetersPerUnit": 1.0, "UpAxis": "Y"],
-    forKey: SCNScene.Attribute.unit.rawValue
-)
+let source = SCNSceneSource(url: url, options: nil)!
+let scene = try source.scene(options: [
+    .checkConsistency: true,
+    .convertToYUp: true,
+    .convertUnitsToMeters: 1.0
+])
 ```
+
+Use `SCNScene.Attribute` only for documented scene metadata such as `.startTime`,
+`.endTime`, `.frameRate`, and `.upAxis`.
 
 ### Archiving Nodes
 
@@ -604,6 +613,11 @@ struct VertexIn {
     float3 position [[attribute(SCNVertexSemanticPosition)]];
     float3 normal   [[attribute(SCNVertexSemanticNormal)]];
     float2 texcoord [[attribute(SCNVertexSemanticTexcoord0)]];
+};
+
+struct NodeBuffer {
+    float4x4 modelTransform;
+    float4x4 normalTransform;
 };
 
 struct VertexOut {

@@ -2,7 +2,7 @@
 
 Complete implementation patterns for ActivityKit Live Activities, Dynamic
 Island, push-to-update, and lifecycle management. All patterns use modern
-Swift async/await and target iOS 16.1+ unless noted.
+Swift async/await and `ActivityContent`, so they target iOS 16.2+ unless noted.
 
 ## Contents
 
@@ -41,7 +41,9 @@ struct RideAttributes: ActivityAttributes {
         var driverName: String
         var driverPhoto: String        // SF Symbol name or asset name
         var vehicleDescription: String
-        var eta: ClosedRange<Date>
+        var etaStartSeconds: Int
+        var etaEndSeconds: Int
+        // For server pushes, prefer scalar fields or coordinated custom Codable keys.
         var status: RideStatus
         var distanceRemaining: Double   // miles
     }
@@ -55,12 +57,20 @@ enum RideStatus: String, Codable, Hashable {
     case arriving
     case completed
     case cancelled
+    case failed
+}
+
+extension RideAttributes.ContentState {
+    var etaRange: ClosedRange<Date> {
+        Date(timeIntervalSince1970: TimeInterval(etaStartSeconds))...
+            Date(timeIntervalSince1970: TimeInterval(etaEndSeconds))
+    }
 }
 ```
 
-Keep `ContentState` lightweight. Every update serializes the entire struct, and
-push payloads have a 4 KB size limit. Avoid storing images, large strings, or
-deeply nested objects.
+Keep `ContentState` lightweight. ActivityKit attributes and content-state data
+must fit within the framework's 4 KB data limit. Avoid storing images, large
+strings, or deeply nested objects.
 
 ## Starting a Live Activity with All Parameters
 
@@ -91,7 +101,8 @@ func startRideActivity(
         driverName: driver,
         driverPhoto: "car.fill",
         vehicleDescription: vehicle,
-        eta: Date()...Date().addingTimeInterval(600),
+        etaStartSeconds: Int(Date().timeIntervalSince1970),
+        etaEndSeconds: Int(Date().addingTimeInterval(600).timeIntervalSince1970),
         status: .driverAssigned,
         distanceRemaining: 2.5
     )
@@ -145,19 +156,31 @@ let activity = try Activity.request(
     attributes: attributes,
     content: content,
     pushType: .token,
+    style: .standard,
+    alertConfiguration: AlertConfiguration(
+        title: "Game Starting",
+        body: "The live score is ready.",
+        sound: .default
+    ),
     start: gameTime  // iOS 26+
 )
 ```
 
-### Starting with ActivityStyle (iOS 16.1+ type, `style:` parameter iOS 26+)
+### Starting with ActivityStyle (iOS 18+ request parameter)
+
+Use `.standard` for persistent Live Activities that should remain visible until
+the app, push, user, or system duration limit ends them. `.transient` is only
+for short-lived expanded Dynamic Island presentations that can auto-end when the
+user locks the device, collapses or shrinks the expanded presentation, leaves
+the app, or does other work outside Dynamic Island; it is wrong for persistent
+Live Activities.
 
 ```swift
-// Transient: system may auto-dismiss after a period
 let activity = try Activity.request(
     attributes: attributes,
     content: content,
     pushType: .token,
-    style: .transient  // style: parameter requires iOS 26+
+    style: .standard
 )
 ```
 
@@ -175,7 +198,8 @@ func updateRideActivity(
         driverName: activity.content.state.driverName,
         driverPhoto: activity.content.state.driverPhoto,
         vehicleDescription: activity.content.state.vehicleDescription,
-        eta: eta,
+        etaStartSeconds: Int(eta.lowerBound.timeIntervalSince1970),
+        etaEndSeconds: Int(eta.upperBound.timeIntervalSince1970),
         status: newStatus,
         distanceRemaining: distance
     )
@@ -220,10 +244,8 @@ private func alertMessage(for status: RideStatus) -> String {
             "driverName": "Maria",
             "driverPhoto": "car.fill",
             "vehicleDescription": "White Toyota Camry",
-            "eta": {
-                "lowerBound": 1700000000,
-                "upperBound": 1700000300
-            },
+            "etaStartSeconds": 1700000000,
+            "etaEndSeconds": 1700000300,
             "status": "driverArrived",
             "distanceRemaining": 0.0
         },
@@ -250,10 +272,8 @@ private func alertMessage(for status: RideStatus) -> String {
             "driverName": "Maria",
             "driverPhoto": "car.fill",
             "vehicleDescription": "White Toyota Camry",
-            "eta": {
-                "lowerBound": 1700002000,
-                "upperBound": 1700002000
-            },
+            "etaStartSeconds": 1700002000,
+            "etaEndSeconds": 1700002000,
             "status": "completed",
             "distanceRemaining": 0.0
         }
@@ -263,7 +283,7 @@ private func alertMessage(for status: RideStatus) -> String {
 
 ### Push-to-Start Payload (iOS 17.2+)
 
-Send to the push-to-start token to remotely create an activity:
+Send to the push-to-start token to remotely create an activity. The `alert` field is required for push-to-start:
 
 ```json
 {
@@ -280,10 +300,8 @@ Send to the push-to-start token to remotely create an activity:
             "driverName": "Maria",
             "driverPhoto": "car.fill",
             "vehicleDescription": "White Toyota Camry",
-            "eta": {
-                "lowerBound": 1700000000,
-                "upperBound": 1700000600
-            },
+            "etaStartSeconds": 1700000000,
+            "etaEndSeconds": 1700000600,
             "status": "driverAssigned",
             "distanceRemaining": 3.2
         },
@@ -301,12 +319,35 @@ Send to the push-to-start token to remotely create an activity:
 |---|---|
 | `apns-push-type` | `liveactivity` |
 | `apns-topic` | `<bundle-id>.push-type.liveactivity` |
-| `apns-priority` | `5` (silent) or `10` (alert, updates with sound/banner) |
+| `apns-priority` | `5` (lower priority) or `10` (immediate, counts against budget) |
 | `authorization` | `bearer <jwt>` (token auth) or use certificate auth |
 
-The `content-state` JSON keys and value types must match the `ContentState`
-Codable representation exactly. A type mismatch (e.g., sending a string where
-a number is expected) causes the update to fail silently.
+The `aps.alert` payload controls visible alert/banner/sound behavior; priority
+alone does not create an alert. The `content-state` JSON must decode into
+`ActivityAttributes.ContentState`. Use the default synthesized `Codable` key and
+value shape unless the Swift model declares custom `CodingKeys`; then coordinate
+those exact keys and value shapes server-side. Do not assume `Date` or
+`ClosedRange<Date>` values are Unix timestamp dictionaries unless your Swift
+model explicitly encodes them that way. A type mismatch (e.g., sending a string
+where a number is expected) can prevent ActivityKit from applying the update.
+
+### Channel / Broadcast Updates (iOS 18+)
+
+Use channel-based push only with a valid APNs-created channel ID. Enable the
+broadcast capability outside Xcode, have the server create the channel, and pass
+that channel ID to the app:
+
+```swift
+let activity = try Activity.request(
+    attributes: attributes,
+    content: content,
+    pushType: .channel(channelIDFromServer)
+)
+```
+
+Channel pushes can update or end Live Activities, but cannot start them. Use
+`apns-channel-id` and expiration for channel requests instead of the device-token
+`apns-topic` header.
 
 ## Ending with Different Dismissal Policies
 
@@ -319,7 +360,8 @@ func endRideActivity(
         driverName: activity.content.state.driverName,
         driverPhoto: activity.content.state.driverPhoto,
         vehicleDescription: activity.content.state.vehicleDescription,
-        eta: Date()...Date(),
+        etaStartSeconds: Int(Date().timeIntervalSince1970),
+        etaEndSeconds: Int(Date().timeIntervalSince1970),
         status: finalStatus,
         distanceRemaining: 0
     )
@@ -339,6 +381,37 @@ func endRideActivity(
         // Let the system decide
         await activity.end(content, dismissalPolicy: .default)
     }
+}
+```
+
+When reviewing duration claims, distinguish the active lifetime (up to 8 hours
+unless the app or user ends it sooner), system-ended Lock Screen presence (up to
+4 additional hours, for 12 hours total from start), and app-ended `.default`
+dismissal linger (up to 4 hours after ending).
+
+### Ending on Terminal Server Failure
+
+When a server reports that the tracked event failed or can no longer be
+represented accurately, publish a terminal state and end the activity instead of
+leaving stale progress visible.
+
+```swift
+func handleTerminalServerFailure(
+    _ activity: Activity<RideAttributes>,
+    message: String
+) async {
+    let failedState = RideAttributes.ContentState(
+        driverName: activity.content.state.driverName,
+        driverPhoto: activity.content.state.driverPhoto,
+        vehicleDescription: message,
+        etaStartSeconds: Int(Date().timeIntervalSince1970),
+        etaEndSeconds: Int(Date().timeIntervalSince1970),
+        status: .failed,
+        distanceRemaining: 0
+    )
+
+    let content = ActivityContent(state: failedState, staleDate: nil, relevanceScore: 0)
+    await activity.end(content, dismissalPolicy: .immediate)
 }
 ```
 
@@ -375,7 +448,7 @@ struct RideActivityWidget: Widget {
 
                 DynamicIslandExpandedRegion(.trailing) {
                     VStack(alignment: .trailing) {
-                        Text(timerInterval: context.state.eta, countsDown: true)
+                        Text(timerInterval: context.state.etaRange, countsDown: true)
                             .font(.title3.monospacedDigit())
                         Text(String(format: "%.1f mi", context.state.distanceRemaining))
                             .font(.caption2)
@@ -415,7 +488,7 @@ struct RideActivityWidget: Widget {
                     .foregroundStyle(.green)
             } compactTrailing: {
                 // COMPACT TRAILING: one key value
-                Text(timerInterval: context.state.eta, countsDown: true)
+                Text(timerInterval: context.state.etaRange, countsDown: true)
                     .frame(width: 44)
                     .monospacedDigit()
             } minimal: {
@@ -448,7 +521,7 @@ struct RideLockScreenView: View {
                 }
                 Spacer()
                 // Live countdown timer (auto-updating, no code needed)
-                Text(timerInterval: context.state.eta, countsDown: true)
+                Text(timerInterval: context.state.etaRange, countsDown: true)
                     .font(.title2.monospacedDigit().bold())
                     .foregroundStyle(.green)
             }
@@ -555,7 +628,7 @@ func observeActivityState(_ activity: Activity<RideAttributes>) {
                 // iOS 26+: scheduled but not yet displayed
                 print("Activity is pending start")
             case .stale:
-                // The staleDate passed without an update
+                // iOS 16.2+: staleDate passed without an update
                 print("Content is stale -- update or end")
             case .ended:
                 // Ended but may still be visible on Lock Screen
@@ -601,7 +674,8 @@ func observePushToken(for activity: Activity<RideAttributes>) {
     }
 }
 
-/// Observe the push-to-start token for remote activity creation (iOS 17.2+)
+/// Observe the ActivityKit push-to-start token for remote activity creation (iOS 17.2+).
+/// This token is distinct from ordinary app/device APNs tokens and per-activity update tokens.
 func observePushToStartToken() {
     Task {
         for await token in Activity<RideAttributes>.pushToStartTokenUpdates {
@@ -620,13 +694,11 @@ Live Activities in Settings at any time.
 ```swift
 func checkLiveActivityAuthorization() async -> Bool {
     let authInfo = ActivityAuthorizationInfo()
+    return authInfo.areActivitiesEnabled
+}
 
-    // Synchronous check
-    guard authInfo.areActivitiesEnabled else {
-        return false
-    }
-
-    return true
+func checkFrequentPushAuthorization() -> Bool {
+    ActivityAuthorizationInfo().frequentPushesEnabled
 }
 
 /// Observe authorization changes to react when user toggles the setting
@@ -635,12 +707,17 @@ func observeAuthorization() {
         let authInfo = ActivityAuthorizationInfo()
         for await enabled in authInfo.activityEnablementUpdates {
             if enabled {
-                // Re-register push-to-start token
                 observePushToStartToken()
             } else {
-                // Inform server to stop sending push updates
                 try? await ServerAPI.shared.disableActivityPush()
             }
+        }
+    }
+
+    Task {
+        let authInfo = ActivityAuthorizationInfo()
+        for await frequentPushesEnabled in authInfo.frequentPushEnablementUpdates {
+            try? await ServerAPI.shared.setFrequentPushesEnabled(frequentPushesEnabled)
         }
     }
 }
@@ -666,7 +743,7 @@ func startActivitySafely(
             // User disabled Live Activities in Settings
             print("Live Activities disabled by user")
         case .globalMaximumExceeded:
-            // Too many Live Activities across all apps (system limit ~5)
+            // Device-level ongoing Live Activity maximum reached
             print("System-wide activity limit reached")
         case .targetMaximumExceeded:
             // Too many Live Activities for this app
@@ -683,9 +760,10 @@ func startActivitySafely(
 ## Background Handling Considerations
 
 Live Activities continue to display when the app is backgrounded or suspended.
-Push-to-update is the primary mechanism for background updates. When the app
-returns to foreground, reconcile local state with the activity's current
-content.
+The Live Activity UI runs in a widget extension sandbox and cannot fetch network
+data or receive location updates directly. Push-to-update is the primary
+mechanism for background updates. When the app returns to foreground, reconcile
+local state with the activity's current content.
 
 ```swift
 @MainActor
@@ -731,17 +809,17 @@ func handleAppBecameActive() {
 ```
 
 For truly background-driven updates, rely on push-to-update rather than
-Background App Refresh. Push updates are delivered reliably even when the app
-is suspended, while Background App Refresh has limited and unpredictable
-scheduling.
+Background App Refresh. Push updates can arrive while the app is suspended, but
+APNs delivery, priority, budget, and throttling still apply; use `staleDate` and
+foreground reconciliation for missed updates.
 
 ## Testing in Simulator and on Device
 
 ### Simulator
 
 The Simulator supports Live Activity rendering on the Lock Screen and displays
-the Dynamic Island on iPhone 14 Pro+ simulator models. Use Xcode previews for
-rapid iteration:
+the Dynamic Island on simulator models that include Dynamic Island. Use Xcode
+previews for rapid iteration:
 
 ```swift
 #Preview("Lock Screen", as: .content, using: RideAttributes.preview) {
@@ -751,7 +829,8 @@ rapid iteration:
         driverName: "Alex",
         driverPhoto: "car.fill",
         vehicleDescription: "White Toyota Camry",
-        eta: Date()...Date().addingTimeInterval(300),
+        etaStartSeconds: Int(Date().timeIntervalSince1970),
+        etaEndSeconds: Int(Date().addingTimeInterval(300).timeIntervalSince1970),
         status: .driverEnRoute,
         distanceRemaining: 1.5
     )
@@ -759,7 +838,8 @@ rapid iteration:
         driverName: "Alex",
         driverPhoto: "car.fill",
         vehicleDescription: "White Toyota Camry",
-        eta: Date()...Date().addingTimeInterval(60),
+        etaStartSeconds: Int(Date().timeIntervalSince1970),
+        etaEndSeconds: Int(Date().addingTimeInterval(60).timeIntervalSince1970),
         status: .arriving,
         distanceRemaining: 0.1
     )
@@ -772,7 +852,8 @@ rapid iteration:
         driverName: "Alex",
         driverPhoto: "car.fill",
         vehicleDescription: "White Toyota Camry",
-        eta: Date()...Date().addingTimeInterval(300),
+        etaStartSeconds: Int(Date().timeIntervalSince1970),
+        etaEndSeconds: Int(Date().addingTimeInterval(300).timeIntervalSince1970),
         status: .driverEnRoute,
         distanceRemaining: 1.5
     )
@@ -785,7 +866,8 @@ rapid iteration:
         driverName: "Alex",
         driverPhoto: "car.fill",
         vehicleDescription: "White Toyota Camry",
-        eta: Date()...Date().addingTimeInterval(300),
+        etaStartSeconds: Int(Date().timeIntervalSince1970),
+        etaEndSeconds: Int(Date().addingTimeInterval(300).timeIntervalSince1970),
         status: .driverEnRoute,
         distanceRemaining: 1.5
     )
@@ -798,7 +880,8 @@ rapid iteration:
         driverName: "Alex",
         driverPhoto: "car.fill",
         vehicleDescription: "White Toyota Camry",
-        eta: Date()...Date().addingTimeInterval(300),
+        etaStartSeconds: Int(Date().timeIntervalSince1970),
+        etaEndSeconds: Int(Date().addingTimeInterval(300).timeIntervalSince1970),
         status: .driverEnRoute,
         distanceRemaining: 1.5
     )
@@ -833,15 +916,16 @@ curl -v \
   --header "apns-topic: com.example.app.push-type.liveactivity" \
   --header "apns-priority: 10" \
   --header "authorization: bearer $JWT_TOKEN" \
-  --data '{"aps":{"timestamp":1700000000,"event":"update","content-state":{"driverName":"Alex","driverPhoto":"car.fill","vehicleDescription":"White Toyota Camry","eta":{"lowerBound":1700000000,"upperBound":1700000300},"status":"driverArrived","distanceRemaining":0.0},"alert":{"title":"Driver Arrived","body":"Your driver is here!"}}}' \
+  --data '{"aps":{"timestamp":1700000000,"event":"update","content-state":{"driverName":"Alex","driverPhoto":"car.fill","vehicleDescription":"White Toyota Camry","etaStartSeconds":1700000000,"etaEndSeconds":1700000300,"status":"driverArrived","distanceRemaining":0.0},"alert":{"title":"Driver Arrived","body":"Your driver is here!"}}}' \
   https://api.push.apple.com/3/device/$DEVICE_PUSH_TOKEN
 ```
 
 ### Debugging Tips
 
 - Check Console.app for `ActivityKit` log messages when activities fail to start.
-- Verify `content-state` JSON keys match `ContentState` property names exactly
-  (including camelCase). Mismatches cause silent failures.
+- Verify `content-state` JSON keys match the default `ContentState` `Codable`
+  shape or coordinated `CodingKeys`. Mismatches can prevent ActivityKit from
+  applying updates.
 - Use `Activity<T>.activities` to inspect all running activities in the debugger.
 - Set a breakpoint in `pushTokenUpdates` to verify tokens are being delivered.
 - If activities do not appear, confirm `NSSupportsLiveActivities = YES` is in
@@ -852,7 +936,7 @@ curl -v \
 | Key | Value | Purpose |
 |---|---|---|
 | `NSSupportsLiveActivities` | `YES` | Enable Live Activities (required) |
-| `NSSupportsLiveActivitiesFrequentUpdates` | `YES` | Increase push update budget |
+| `NSSupportsLiveActivitiesFrequentUpdates` | `YES` | Increase the system-managed push update budget |
 
 Both keys belong in the host app's Info.plist, not the widget extension.
 
@@ -866,3 +950,4 @@ Both keys belong in the host app's Info.plist, not the widget extension.
 - [DynamicIsland](https://sosumi.ai/documentation/widgetkit/dynamicisland)
 - [ActivityConfiguration](https://sosumi.ai/documentation/widgetkit/activityconfiguration)
 - [Starting and updating with push notifications](https://sosumi.ai/documentation/activitykit/starting-and-updating-live-activities-with-activitykit-push-notifications)
+- [Sending broadcast push notifications](https://sosumi.ai/documentation/usernotifications/sending-broadcast-push-notification-requests-to-apns)

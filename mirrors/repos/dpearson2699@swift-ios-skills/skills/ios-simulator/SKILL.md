@@ -7,7 +7,7 @@ description: "Manages iOS Simulator devices and tests app behavior using xcrun s
 
 Manage iOS Simulator devices and test app behavior from the command line using `xcrun simctl`. Covers the full device lifecycle, app deployment, push and location simulation, permission control, screenshot and video recording, log streaming, and compile-time simulator detection.
 
-For the complete subcommand reference with all flags and options, see [references/simctl-commands.md](references/simctl-commands.md).
+For common subcommands, syntax, and examples, see [references/simctl-commands.md](references/simctl-commands.md).
 
 ## Contents
 
@@ -63,6 +63,9 @@ The returned UDID identifies the device for all subsequent commands. Use descrip
 # Boot a specific device
 xcrun simctl boot <UDID>
 
+# Boot if needed and wait until the device is ready
+xcrun simctl bootstatus <UDID> -b
+
 # Shutdown a running device
 xcrun simctl shutdown <UDID>
 
@@ -87,6 +90,8 @@ xcrun simctl shutdown booted
 
 If multiple simulators are booted, `booted` picks one of them non-deterministically. Prefer explicit UDIDs when running parallel simulators.
 
+In scripts and CI, use `xcrun simctl bootstatus <UDID> -b` before install, launch, push, or location commands. If you call `simctl boot` separately, follow it with `xcrun simctl bootstatus <UDID>` before continuing.
+
 ## App Install and Launch
 
 ### Installing an App
@@ -98,8 +103,11 @@ xcodebuild build \
     -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
     -derivedDataPath build/
 
+# Boot and wait for SpringBoard/services before install
+xcrun simctl bootstatus <UDID> -b
+
 # Install the .app bundle
-xcrun simctl install booted build/Build/Products/Debug-iphonesimulator/MyApp.app
+xcrun simctl install <UDID> build/Build/Products/Debug-iphonesimulator/MyApp.app
 ```
 
 The path must point to a `.app` directory built for the simulator architecture, not a `.ipa` file.
@@ -181,11 +189,19 @@ xcrun simctl location booted list
 # Run a predefined scenario
 xcrun simctl location booted run "City Run"
 
+# Follow custom command-line waypoints
+xcrun simctl location booted start --speed=15 --interval=1 \
+    37.3349,-122.0090 37.3317,-122.0307
+
+# Read waypoints from stdin, one "lat,lon" pair per line
+printf "37.3349,-122.0090\n37.3317,-122.0307\n" | \
+    xcrun simctl location booted start --distance=100 -
+
 # Clear the simulated location
 xcrun simctl location booted clear
 ```
 
-The `run` subcommand accepts predefined scenario names (e.g., "City Run", "Freeway Drive"), not GPX file paths. Use Xcode's Debug > Simulate Location menu for GPX-based routes.
+Use `set` for one coordinate, `run` for predefined scenario names, and `start` for custom waypoint routes. The command boundary matters: `simctl location run` accepts built-in scenario names (e.g., "City Run", "Freeway Drive"), not GPX file paths; `simctl location start` is the command-line path for custom coordinate waypoints. Use Xcode's Debug > Simulate Location menu for GPX-based routes.
 
 Location simulation affects all apps using Core Location on the booted device. Clear the location when done to avoid unexpected test results.
 
@@ -204,7 +220,7 @@ xcrun simctl privacy booted reset all com.example.MyApp
 
 Common service names: `photos`, `microphone`, `contacts`, `calendar`, `reminders`, `location`, `location-always`, `motion`, `siri`. See [references/simctl-commands.md](references/simctl-commands.md) for the full list.
 
-Pre-granting permissions in CI avoids system permission dialogs that block automated test runs.
+Pre-granting permissions in CI avoids system permission dialogs that block automated test runs, but it can mask missing usage description keys. Keep the required Info.plist privacy strings in place and still test the normal prompt flow.
 
 ### Deep Links and URLs
 
@@ -326,22 +342,39 @@ Prefer compile-time checks (`#if targetEnvironment(simulator)`) over runtime che
 
 ## Simulator Limitations
 
+When classifying a test as Simulator-supported or hardware-required, separate "can trigger this behavior" from "can validate real-device fidelity":
+
+- Simulator-supported triggers/proxies: local push with `simctl push`, location changes, memory warnings, Face ID or Touch ID enrollment/match/nonmatch menu actions, manual iCloud sync trigger, privacy grants/resets, status bar overrides, screenshots, and video capture.
+- Hardware-required validation: APNs delivery, BLE and NFC, real camera or microphone input, motion sensors, Secure Enclave, App Attest, automatic iCloud propagation/conflicts/background behavior, CPU throughput, general processing speed, networking throughput or latency, Metal shader correctness, GPU limits, memory bandwidth, frame timing, memory pressure, Jetsam, and thermal behavior.
+
+Do not classify "iCloud sync" as a single hardware-only item. Split it explicitly:
+
+- Simulator-supported: manual iCloud sync triggering and basic app response to sync callbacks.
+- Hardware-required: automatic iCloud propagation, multiple real devices/accounts, conflict resolution, notification-triggered sync, background delivery, and account/device state differences.
+
 | Capability | Simulator Support |
 |-----------|------------------|
 | APNs push delivery | No — use `simctl push` for local simulation |
-| Metal GPU family parity | Partial — host GPU, not device GPU; some shaders differ |
+| Performance fidelity | Relative only — Simulator is not accurate for CPU/processing performance, networking speed, graphics/Metal, memory bandwidth, frame timing, memory pressure, Jetsam, shader correctness, or thermal behavior; verify performance-sensitive work on hardware |
+| Metal GPU family parity | Partial — Simulator uses the host Mac GPU, not the device GPU; some shaders and limits differ |
 | Camera hardware | No — use photo library injection or mock `AVCaptureSession` |
-| Microphone | No hardware mic — audio input is routed from Mac microphone |
+| Audio input / microphone | No general app audio input; Siri can be activated from Simulator menus |
 | Secure Enclave | No — `kSecAttrTokenIDSecureEnclave` operations fail |
 | App Attest (DCAppAttestService) | No — `isSupported` returns `false` |
 | DockKit motor control | No — no physical accessory connection |
-| Accelerometer / Gyroscope | No real sensors — use `CMMotionManager` simulation in Xcode |
+| Accelerometer / Gyroscope | No motion sensor support; use real devices for motion-dependent behavior |
 | Barometer | No |
 | NFC (Core NFC) | No |
 | Bluetooth (Core Bluetooth) | No — use a real device for BLE testing |
-| CarPlay hardware | No — use the separate CarPlay Simulator companion app |
+| CarPlay display simulation | Supported through Simulator's external display/CarPlay option; still verify in vehicle or device setups |
 | Face ID / Touch ID hardware | No hardware — use Features > Face ID / Touch ID menu in Simulator |
+| Memory warnings, manual iCloud sync trigger, location changes | Supported through Simulator menus or `simctl` where available |
+| Automatic iCloud sync behavior | Not fully simulated — validate notification-triggered sync, real account/device propagation, conflicts, and background behavior on hardware |
 | Cellular network conditions | No — use Network Link Conditioner on Mac |
+
+Treat Simulator performance as a functional smoke signal only. When answering performance-boundary questions, explicitly name CPU throughput/general processing speed and networking throughput/latency alongside graphics, Metal shader correctness, memory bandwidth, frame timing, memory pressure, Jetsam behavior, and thermal behavior.
+
+Use this minimum wording in release-checklist answers: "Simulator is not an accurate performance proxy for processing/CPU, graphics/Metal, memory, networking throughput/latency, Metal GPU behavior, frame timing, memory pressure/Jetsam, or thermal behavior." If a prompt only names "Metal performance," still include processing, memory, and networking in the device-verification list.
 
 ## Common Mistakes
 
@@ -434,7 +467,7 @@ xcrun simctl erase all
 - [ ] Scripts use `booted` or parsed UDID from JSON output, not hardcoded values
 - [ ] Push notification payloads tested via `simctl push` during development
 - [ ] Push notification delivery verified on a real device before release
-- [ ] Location simulation tested with both fixed coordinates and predefined scenarios
+- [ ] Location simulation tested with fixed coordinates, predefined scenarios, and custom waypoints when needed
 - [ ] Privacy permissions pre-granted in CI to avoid blocking dialogs
 - [ ] `#if targetEnvironment(simulator)` guards around APIs unavailable in Simulator
 - [ ] Status bar overrides cleared after capturing screenshots
@@ -446,4 +479,7 @@ xcrun simctl erase all
 
 - [Running your app in Simulator or on a device](https://sosumi.ai/documentation/xcode/running-your-app-in-simulator-or-on-a-device)
 - [Downloading and installing additional Xcode components](https://sosumi.ai/documentation/xcode/installing-additional-simulator-runtimes)
+- [Testing in Simulator versus testing on hardware devices](https://sosumi.ai/documentation/xcode/testing-in-simulator-versus-testing-on-hardware-devices)
+- [Testing complex hardware device scenarios in Simulator](https://sosumi.ai/documentation/xcode/testing-complex-hardware-device-scenarios-in-simulator)
+- [Simulating an external display or CarPlay](https://sosumi.ai/documentation/xcode/simulating-an-external-display-or-carplay)
 - simctl command reference: [references/simctl-commands.md](references/simctl-commands.md)

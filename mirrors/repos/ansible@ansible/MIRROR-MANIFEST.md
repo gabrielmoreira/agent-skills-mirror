@@ -7,7 +7,7 @@ ref: devel
 
 # Mirror Manifest
 
-Mirror of `ansible/ansible` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `ansible/ansible` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ansible/ansible` — 26 default patterns, 0 followed patterns, 4 file
 | Ref           | `devel` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,9 +60,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/azp-logs/SKILL.md`](.claude/skills/azp-logs/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/review/SKILL.md`](.claude/skills/review/SKILL.md) |
-| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`.claude/skills/context/SKILL.md`](.claude/skills/context/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/review/SKILL.md`](.claude/skills/review/SKILL.md) |
+| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

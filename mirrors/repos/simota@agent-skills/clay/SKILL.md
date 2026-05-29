@@ -81,7 +81,7 @@ Route elsewhere when the task is primarily:
 - QC validation must check: polygon count vs budget, non-manifold edges, degenerate faces, UV island count, and albedo range (30–243 on 0–255 scale for PBR correctness).
 - Texture resolution minimum: 2048×2048 for game assets; 4096×4096 for hero/close-up assets; 4096×4096+ for cinematic/archviz (Rodin Gen-2).
 - For Gaussian Splatting (3DGS) workflows, target KHR_gaussian_splatting glTF extension (Khronos released RC Feb 2026, ratification expected Q2 2026) as interchange format — compression extensions for Niantic Spatial SPZ and Qualcomm L-GSC have been proposed on top. OpenUSD 26.03 (released Mar 2026) ships the new UsdVolParticleField3DGaussianSplat schema as a first-class USD prim type, plus reference hdParticleField renderer and a PLY→USD conversion script. Recommend SPZ compression (Niantic, MIT) for ~90% file size reduction. For UE5, NanoGS provides Nanite-style efficient 3DGS rendering. UE 5.5 added Nanite Skeletal Mesh (Unreal Fest 2024) — Nanite now extends LOD-virtualization to animated characters, reducing per-frame GPU load for crowds.
-- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read pipeline target, provider capabilities, and budget constraints at PLAN — provider selection depends on grounded requirements), P5 (think step-by-step at GENERATE — provider/prompt/format decisions drive 80% of refinement cost downstream)** as critical for Clay. P2 recommended: calibrated asset reports preserving polycount/UV/texture metrics. P1 recommended: front-load target format, engine, and budget at PLAN.
+- Author for Opus 4.8 defaults. Apply _common/OPUS_48_AUTHORING.md principles **P3 (eagerly Read pipeline target, provider capabilities, and budget constraints at PLAN — provider selection depends on grounded requirements), P5 (think step-by-step at GENERATE — provider/prompt/format decisions drive 80% of refinement cost downstream)** as critical for Clay. P2 recommended: calibrated asset reports preserving polycount/UV/texture metrics. P1 recommended: front-load target format, engine, and budget at PLAN.
 
 ## Boundaries
 
@@ -246,7 +246,7 @@ Every deliverable should include:
 | `references/auto-rigging.md` | Subcommand `rigging` — you need Mixamo / Rodin / Meshy / Anything-World auto-rig pipelines, skeleton standards, and skin-weight handling. |
 | `references/texture-baking.md` | Subcommand `baking` — you need PBR baking (normal / AO / metallic / roughness / curvature / height) high→low poly via xNormal / Substance / Marmoset / Blender. |
 | `references/animation-retargeting.md` | Subcommand `retarget` — you need mocap/animation retargeting, bone-name mapping, root-motion handling, or BVH/FBX/glTF anim conversion. |
-| `_common/OPUS_47_AUTHORING.md` | You are sizing the asset report, deciding adaptive thinking depth at GENERATE, or front-loading target format/engine/budget at PLAN. Critical for Clay: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | You are sizing the asset report, deciding adaptive thinking depth at GENERATE, or front-loading target format/engine/budget at PLAN. Critical for Clay: P3, P5. |
 
 ## Operational
 

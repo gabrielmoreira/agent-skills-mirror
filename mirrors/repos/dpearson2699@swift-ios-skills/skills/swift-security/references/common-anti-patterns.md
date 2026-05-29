@@ -6,6 +6,24 @@
 
 ---
 
+## Contents
+
+- [Why AI Generates Insecure iOS Code](#why-ai-generates-insecure-ios-code)
+- [Anti-Pattern #1 — Storing Secrets in UserDefaults](#anti-pattern-1-storing-secrets-in-userdefaults)
+- [Anti-Pattern #2 — Hardcoded API Keys](#anti-pattern-2-hardcoded-api-keys)
+- [Anti-Pattern #3 — LAContext-Only Biometric Authentication](#anti-pattern-3-lacontext-only-biometric-authentication)
+- [Anti-Pattern #4 — Ignoring SecItem Error Codes](#anti-pattern-4-ignoring-secitem-error-codes)
+- [Anti-Pattern #5 — Wrong or Missing Data Protection Class](#anti-pattern-5-wrong-or-missing-data-protection-class)
+- [Anti-Pattern #6 — Nonce Reuse in AES-GCM](#anti-pattern-6-nonce-reuse-in-aes-gcm)
+- [Anti-Pattern #7 — MD5/SHA-1 for Security Purposes](#anti-pattern-7-md5sha-1-for-security-purposes)
+- [Anti-Pattern #8 — Logging Sensitive Data](#anti-pattern-8-logging-sensitive-data)
+- [Anti-Pattern #9 — Not Clearing Keychain on First Launch](#anti-pattern-9-not-clearing-keychain-on-first-launch)
+- [Anti-Pattern #10 — Non-Cryptographic RNG for Security Operations](#anti-pattern-10-non-cryptographic-rng-for-security-operations)
+- [Quick Reference Matrix](#quick-reference-matrix)
+- [CI/CD Detection Strategy](#cicd-detection-strategy)
+- [iOS 26 / WWDC 2025 Implications](#ios-26-wwdc-2025-implications)
+- [Summary Checklist](#summary-checklist)
+
 ## Why AI Generates Insecure iOS Code
 
 AI assistants optimize for functional correctness, not security — reproducing the most common patterns from training data, which are overwhelmingly insecure-by-default. Veracode's 2025 analysis: 45% of AI-generated code fails security tests. Cybernews: 815,000+ hardcoded secrets across 156,000 iOS apps (71% leaking ≥1 credential). Stanford: developers using AI write less secure code yet feel more confident.
@@ -683,7 +701,7 @@ When reviewing iOS code for security anti-patterns, verify each item:
 1. **All SecItem calls checked** — `SecItemAdd` handles `errSecDuplicateItem` with `SecItemUpdate` fallback; `SecItemCopyMatching` handles `errSecItemNotFound`; no discarded `OSStatus` return values
 1. **Explicit data protection class** — every `SecItemAdd` includes `kSecAttrAccessible` or `kSecAttrAccessControl`; no `kSecAttrAccessibleAlways`; `ThisDeviceOnly` variants used for non-syncing items
 1. **No nonce reuse** — `AES.GCM.seal` called without explicit `nonce:` parameter (auto-random); no stored/global/counter-based nonce variables
-1. **No broken hashes** — no `Insecure.MD5`, `Insecure.SHA1`, `CC_MD5`, `CC_SHA1` for security purposes; passwords use KDF (Argon2id, bcrypt, PBKDF2 with ≥310,000 iterations)
+1. **No broken hashes** — no `Insecure.MD5`, `Insecure.SHA1`, `CC_MD5`, `CC_SHA1` for security purposes; passwords use a password KDF such as Argon2id, bcrypt, or PBKDF2-HMAC-SHA256 with at least 600,000 iterations
 1. **No sensitive data in logs** — `print()` and `NSLog()` never contain tokens, keys, or credentials; `os_log` uses `%{private}@`; `Logger` uses `.private` or `.private(mask: .hash)`
 1. **First-launch keychain cleanup** — `UserDefaults` flag + `SecItemDelete` for all classes runs before SDK initialization at app startup
 1. **Cryptographic RNG only** — `SecRandomCopyBytes` or CryptoKit APIs for tokens, nonces, salts, keys; no `arc4random` / `rand()` / `drand48()` / GameplayKit RNG in security contexts

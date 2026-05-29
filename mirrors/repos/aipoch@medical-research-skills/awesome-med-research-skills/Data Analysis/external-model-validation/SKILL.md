@@ -1,12 +1,19 @@
 ---
 name: external-model-validation
-description: Use when validating an existing prognostic risk signature on an external bulk expression cohort with survival outcomes, producing risk scores, Kaplan-Meier survival curves, risk distribution plots, heatmap, and time-dependent ROC curves. NOT for: model training, feature selection, nomogram construction, calibration analysis, or single-cell data.
+description: "Use when validating an existing prognostic risk signature on an external bulk expression cohort with survival outcomes, producing risk scores, Kaplan-Meier curves, risk distribution plots, heatmap, and time-dependent ROC curves. NOT for: model training, feature selection, nomogram construction, calibration analysis, or single-cell data."
 license: MIT
-author: AIPOCH
+skill-author: AIPOCH
 ---
-> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # External Model Validation
+
+## Input Validation
+
+This skill accepts: an existing prognostic gene signature (model coefficient file with `Gene` and `Coef` columns), a bulk expression matrix in CSV format (genes as rows, samples as columns), and a clinical file with `OS` and `OS.time` survival columns.
+
+If the user's request does not involve validating a pre-existing prognostic model on an external cohort — for example, asking to train a new model, perform feature selection, build a nomogram, run calibration curves, analyze single-cell data, or process data without survival endpoints — do not proceed with the workflow. Instead respond:
+
+> "external-model-validation is designed to validate an existing prognostic risk signature on an external bulk expression cohort with survival outcomes. Your request appears to be outside this scope. Please provide a fixed model coefficient file plus expression and clinical data with OS/OS.time columns, or use a more appropriate tool for model training, nomogram construction, or single-cell analysis."
 
 ## When to Read External Files
 
@@ -54,7 +61,7 @@ Rscript scripts/main.R \
 |  | `--col_high` | character | `#E64B35` | Color for high-risk samples |
 |  | `--col_low` | character | `#4DBBD5` | Color for low-risk samples |
 |  | `--roc_cols` | character | `#E64B35,#00A087,#3C5488` | Comma-separated colors for ROC curves |
-|  | `--roc_times` | character | `1,3,5` | Comma-separated ROC time points in years |
+|  | `--roc_times` | character | `1,3,5` | Comma-separated ROC time points **always in years**, regardless of `--time_unit`. When follow-up is in days or months, still provide `--roc_times` in years (e.g., `1,3,5` for 1, 3, and 5 years). |
 |  | `--roc_pos` | character | `bottomright` | ROC legend position |
 |  | `--km_breaks` | integer | `0` | Kaplan-Meier x-axis break in years; `0` selects automatically |
 | `-s` | `--seed` | integer | `42` | Random seed for reproducibility |
@@ -70,14 +77,15 @@ Rscript scripts/main.R \
 
 ## When Not to Use
 
-- Do not use this Skill to train or re-fit a prognostic model.
+- Do not use this skill to train or re-fit a prognostic model.
 - Do not use it for nomogram construction, calibration curves, DCA, or diagnostic classification.
 - Do not use it for single-cell expression matrices or cohorts without survival endpoints.
 - Do not use identifiable patient data without de-identification and local compliance approval.
+- Do not use for cohorts with very few events (fewer than 5 events may produce unreliable Kaplan-Meier and ROC results).
 
 ## Research Use Notice
 
-- This Skill is for research and validation workflows only.
+- This skill is for research and validation workflows only.
 - It does not provide diagnosis, treatment recommendations, or clinical decision support.
 - Use de-identified data and follow IRB, ethics, and data-use requirements before running on human cohorts.
 
@@ -169,7 +177,7 @@ DPM1,0.32
 
 ### Risk Score Formula
 
-For sample `i`, the Skill computes:
+For sample `i`, the skill computes:
 
 ```text
 riskScore_i = sum(expression_ig * coefficient_g)
@@ -192,6 +200,7 @@ using all genes listed in `model_file`.
 
 - ROC analysis is performed with `timeROC::timeROC` using follow-up time in years.
 - All `--roc_times` values must be smaller than the maximum observed follow-up time.
+- `--roc_times` is always interpreted in years, regardless of `--time_unit`.
 
 ---
 
@@ -218,6 +227,8 @@ Rscript scripts/main.R \
   -u day \
   --roc_times 1,2,3
 ```
+
+Note: `--roc_times 1,2,3` means 1, 2, and 3 years — even though `--time_unit day` was supplied. The skill converts `OS.time` from days to years internally before ROC computation.
 
 ### Custom Plot Colors and ROC Settings
 
@@ -246,8 +257,8 @@ Rscript scripts/main.R \
 | `SKILL_MISSING_COLUMNS` | Clinical or model file lacks required columns | Ensure `OS`, `OS.time`, `Gene`, and `Coef` exist |
 | `SKILL_SAMPLE_MISMATCH` | No overlapping samples between expression and clinical data | Align sample IDs exactly |
 | `SKILL_EMPTY_DATA` | An input file is empty after loading | Verify the CSV contains at least one row and one column of usable data |
-| `SKILL_INVALID_DATA` | Duplicate genes, empty data, non-numeric coefficients, or invalid survival values | Clean input tables and verify formats |
-| `SKILL_ANALYSIS_ERROR` | Risk groups collapse or event count is too low | Use a valid signature and cohort with enough events |
+| `SKILL_INVALID_DATA` | Duplicate genes, empty data, non-numeric coefficients, or invalid survival values. For duplicate genes: deduplicate with `dplyr::distinct()` or keep the row with highest mean expression (e.g., `mat[order(-rowMeans(mat[,-1])),] %>% distinct(Gene, .keep_all=TRUE)`) | Clean input tables and verify formats |
+| `SKILL_ANALYSIS_ERROR` | Risk groups collapse or event count is too low | Use a valid signature and cohort with enough events (minimum ~5) |
 | `SKILL_INVALID_PARAMETER` | Bad `--time_unit`, invalid color, or impossible ROC time point | Correct the parameter value |
 | `SKILL_DEPENDENCY_MISSING` | Required R package is not installed | Install the missing package |
 | `SKILL_PKG_VERSION` | Installed package version is below the required minimum | Upgrade the package to the required version |
@@ -294,62 +305,4 @@ The repository stores a documented real-data baseline summary in `references/bas
 
 **IF you need exact benchmark outputs or runtime expectations**, READ: `references/baseline-run.md`
 
----
-
-## Directory Structure
-
-```text
-external-model-validation/
-├── SKILL.md
-├── scripts/
-│   ├── main.R
-│   ├── run_analysis.R
-│   ├── functions.R
-│   ├── io.R
-│   ├── plotting.R
-│   └── utils.R
-├── references/
-│   ├── algorithm.md
-│   ├── troubleshooting.md
-│   ├── cli-guide.md
-│   └── baseline-run.md
-└── tests/
-    ├── output/
-    │   ├── analysis.log
-    │   ├── run_parameters.tsv
-    │   ├── session_info.txt
-    │   ├── data/
-    │   ├── table/
-    │   └── plot/
-    ├── refresh_example_output.R
-    ├── testthat.R
-    ├── testthat/
-    │   └── test_external_model_validation.R
-    └── data/
-        ├── BRCA_data.csv
-        ├── BRCA_clinic.csv
-        └── BRCA_coef.csv
-```
-
----
-
-## Implementation Checklist
-
-- [x] CLI parsing with `optparse`
-- [x] `set.seed()` for reproducibility
-- [x] Dependency checks with `requireNamespace()`
-- [x] Structured logging to console and file
-- [x] Timeout control with `setTimeLimit()`
-- [x] Session info recording
-- [x] Real test data provided in `tests/data/`
-- [x] R tests provided in `tests/testthat/`
-- [x] Overwrite protection for non-empty output directories
-- [x] Retained-output refresh helper provided in `tests/refresh_example_output.R`
-- [x] File reading instructions in `SKILL.md`
-- [x] Modular script structure in `scripts/`
-- [x] Error handling with `SKILL_*` codes
-- [x] Baseline run captured for manual review and future audits
-
----
-
-*Last updated: 2026-04-15 | Version: 1.0.0*
+→ Directory structure and implementation details: [references/project-structure.md](references/project-structure.md)

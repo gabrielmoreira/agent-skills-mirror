@@ -366,7 +366,8 @@ import MatterSupport
 final class MyMatterHandler: MatterAddDeviceExtensionRequestHandler {
 
     override func validateDeviceCredential(
-        _ deviceCredential: DeviceCredential
+        _ deviceCredential:
+            MatterAddDeviceExtensionRequestHandler.DeviceCredential
     ) async throws {
         // Validate the Device Attestation Certificate (DAC) against
         // your Product Attestation Authority (PAA) root certificates.
@@ -415,15 +416,19 @@ final class MyMatterHandler: MatterAddDeviceExtensionRequestHandler {
     }
 
     override func selectWiFiNetwork(
-        from networks: [WiFiScanResult]
-    ) async throws -> WiFiNetworkAssociation {
+        from networks:
+            [MatterAddDeviceExtensionRequestHandler.WiFiScanResult]
+    ) async throws
+        -> MatterAddDeviceExtensionRequestHandler.WiFiNetworkAssociation {
         // Use the system default network or specify one
         return .defaultSystemNetwork
     }
 
     override func selectThreadNetwork(
-        from networks: [ThreadScanResult]
-    ) async throws -> ThreadNetworkAssociation {
+        from networks:
+            [MatterAddDeviceExtensionRequestHandler.ThreadScanResult]
+    ) async throws
+        -> MatterAddDeviceExtensionRequestHandler.ThreadNetworkAssociation {
         return .defaultSystemNetwork
     }
 }

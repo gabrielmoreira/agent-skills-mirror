@@ -21,16 +21,20 @@ URLSessionWebSocketTask with structured concurrency.
 
 ## Background URLSession Configuration
 
-Background sessions allow transfers to continue when the app is
-suspended or terminated. The system manages the transfer in a separate
-process and wakes the app on completion.
+Background sessions allow HTTP/HTTPS upload and download transfers to continue
+when the app is suspended or terminated by the system. The system manages the
+transfer in a separate process and wakes the app on completion.
 
 ### Why Background Sessions
 
-- Downloads/uploads survive app suspension, termination, and device restarts.
+- Downloads/uploads survive app suspension, system termination, and device restarts.
 - The system handles retries for network failures automatically.
 - Required for any transfer the user expects to complete even if they
   switch away from the app (e.g., file sync, media downloads).
+
+If the user force-quits the app from the multitasking screen, iOS cancels the
+background transfers and does not relaunch the app until the user opens it
+again.
 
 ### Configuration
 
@@ -113,8 +117,8 @@ extension BackgroundDownloadManager: URLSessionDownloadDelegate {
         downloadTask: URLSessionDownloadTask,
         didFinishDownloadingTo location: URL
     ) {
-        // CRITICAL: Move the file before this method returns.
-        // The temporary file is deleted immediately after.
+        // CRITICAL: Move or open the file before this method returns.
+        // The temporary file is only available until the delegate returns.
         let destinationDir = FileManager.default.urls(
             for: .documentDirectory,
             in: .userDomainMask
@@ -177,8 +181,9 @@ extension BackgroundDownloadManager: URLSessionDownloadDelegate {
 ## Handling Background Session Events
 
 When the system completes a background transfer and the app is not
-running, it relaunches the app and calls the `AppDelegate` method. You
-must call the system's completion handler after processing all events.
+running, it relaunches the app and calls the `AppDelegate` method. If you use
+the completion-handler overload, call the system's completion handler after
+processing all events.
 
 ### UIKit App Delegate
 
@@ -232,9 +237,10 @@ struct MyApp: App {
 }
 ```
 
-**Important:** The completion handler must be called exactly once and
-on the main thread. Failing to call it causes the system to take a
-snapshot of the app in the wrong state and may waste background runtime.
+**Important:** For the handler-based `UIApplicationDelegate` overload, the
+completion handler must be called exactly once and on the main thread. Failing
+to call it causes the system to take a snapshot of the app in the wrong state
+and may waste background runtime.
 
 ---
 
@@ -291,7 +297,10 @@ extension BackgroundDownloadManager {
 ## URLSessionWebSocketTask
 
 `URLSessionWebSocketTask` provides native WebSocket support without
-third-party libraries. Available since iOS 13.
+third-party libraries. Available since iOS 13. WebSockets use `ws:` or `wss:`
+URLs and are foreground/default-session realtime networking; background
+URLSession configuration does not make a WebSocket connection durable after
+suspension.
 
 ### Basic Connection
 
@@ -721,15 +730,18 @@ on background sessions. Use `downloadTask(with:)` and the delegate.
 ### Only download and upload tasks are supported
 Data tasks (`dataTask`) are not supported in background sessions. Convert
 data requests to download tasks if needed for background execution.
+WebSocket tasks are not background transfer tasks; reconnect them when the app
+is active again.
 
 ### The app may be terminated and relaunched
 Store any state you need (task identifiers, file destinations) to disk.
 Do not rely on in-memory state surviving a background relaunch.
+User force-quit is different from system termination: iOS cancels outstanding
+background transfers and will not relaunch the app automatically.
 
-### File must be moved in didFinishDownloadingTo
-The temporary file at `location` is deleted as soon as the delegate
-method returns. Always move or copy the file synchronously within the
-callback.
+### File must be moved or opened in didFinishDownloadingTo
+The temporary file at `location` is available until the delegate method
+returns. Move it to preserve it, or open it for reading before returning.
 
 ### Call the system completion handler exactly once
 Store the completion handler from

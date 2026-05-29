@@ -29,6 +29,7 @@ import Foundation
 
 struct AppDataMigration: ResourcesExportingWithOptions, ResourcesImporting {
     typealias OptionsType = MigrationDefaultSupportedOptions
+    private let importProgress = Progress(totalUnitCount: 100)
 
     // MARK: - Export Properties
 
@@ -77,15 +78,12 @@ struct AppDataMigration: ResourcesExportingWithOptions, ResourcesImporting {
 
     // MARK: - Import
 
-    var resourcesImportProgress: Progress {
-        Progress(totalUnitCount: 100)
-    }
+    var resourcesImportProgress: Progress { importProgress }
 
     func importResources(
         at importedDataURL: URL,
         request: ResourcesImportRequest
     ) async throws {
-        let progress = resourcesImportProgress
         let docs = appContainer.documentsDirectory
         let appSupport = appContainer.applicationSupportDirectory
         let fm = FileManager.default
@@ -98,7 +96,7 @@ struct AppDataMigration: ResourcesExportingWithOptions, ResourcesImporting {
                 to: docs.appending(path: "profile.json")
             )
         }
-        progress.completedUnitCount = 40
+        importProgress.completedUnitCount = 40
 
         // Phase 2: Import settings (20%)
         let settingsSource = importedDataURL.appending(path: "config/settings.json")
@@ -108,7 +106,7 @@ struct AppDataMigration: ResourcesExportingWithOptions, ResourcesImporting {
                 to: appSupport.appending(path: "settings.json")
             )
         }
-        progress.completedUnitCount = 60
+        importProgress.completedUnitCount = 60
 
         // Phase 3: Import media (40%)
         let mediaSource = importedDataURL.appending(path: "media")
@@ -118,7 +116,7 @@ struct AppDataMigration: ResourcesExportingWithOptions, ResourcesImporting {
                 to: docs.appending(path: "media")
             )
         }
-        progress.completedUnitCount = 100
+        importProgress.completedUnitCount = 100
     }
 
     // MARK: - Helpers
@@ -397,25 +395,24 @@ touch app group containers. Implement defensive import to handle this.
 
 ```swift
 struct DefensiveMigration: ResourcesImporting {
-    var resourcesImportProgress: Progress {
-        Progress(totalUnitCount: 100)
-    }
+    private let importProgress = Progress(totalUnitCount: 100)
+
+    var resourcesImportProgress: Progress { importProgress }
 
     func importResources(
         at importedDataURL: URL,
         request: ResourcesImportRequest
     ) async throws {
-        let progress = resourcesImportProgress
         let fm = FileManager.default
 
         // Step 1: Clear shared containers before any writes
         clearAppGroupContainers()
-        progress.completedUnitCount = 10
+        importProgress.completedUnitCount = 10
 
         // Step 2: Validate imported data before committing
         let manifest = try loadManifest(from: importedDataURL)
         try validateManifest(manifest, sourceVersion: request.sourceVersion)
-        progress.completedUnitCount = 20
+        importProgress.completedUnitCount = 20
 
         // Step 3: Import with file-level error handling
         let files = try fm.contentsOfDirectory(
@@ -429,17 +426,17 @@ struct DefensiveMigration: ResourcesImporting {
         for file in filesExcludingManifest {
             do {
                 try importFile(file)
-                progress.completedUnitCount += progressPerFile
+                importProgress.completedUnitCount += progressPerFile
             } catch {
-                // Log but continue -- partial import is better than none
-                // for non-critical files
+                // Log optional-file failures only when the app can safely
+                // regenerate or omit that data after launch.
                 if isCriticalFile(file) {
                     throw error  // System clears container on throw
                 }
                 logImportWarning(file: file, error: error)
             }
         }
-        progress.completedUnitCount = 100
+        importProgress.completedUnitCount = 100
     }
 
     private func clearAppGroupContainers() {

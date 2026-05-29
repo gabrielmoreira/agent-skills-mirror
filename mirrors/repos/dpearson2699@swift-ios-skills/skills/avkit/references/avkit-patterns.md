@@ -75,6 +75,11 @@ final class CustomPlayerController: UIViewController, AVPictureInPictureControll
         player.play()
     }
 
+    @IBAction func userTappedPictureInPictureButton(_ sender: UIButton) {
+        guard pipController?.isPictureInPicturePossible == true else { return }
+        pipController?.startPictureInPicture()
+    }
+
     // MARK: - AVPictureInPictureControllerDelegate
 
     func pictureInPictureControllerWillStartPictureInPicture(
@@ -121,6 +126,11 @@ func setupSampleBufferPiP(
     return controller
 }
 ```
+
+Only show a custom PiP start affordance after device support is known. When the
+user taps that affordance, check the controller's `isPictureInPicturePossible`
+because support can still be false for the current layer, item, media format,
+or playback state. Start custom PiP only in response to user interaction.
 
 The playback delegate must report timing and play/pause state:
 
@@ -175,49 +185,50 @@ final class SampleBufferPlaybackHandler: NSObject, AVPictureInPictureSampleBuffe
 
 ## Interstitial Content
 
-Mark time ranges in the media timeline as interstitial (ads, legal notices).
-The player dims these ranges in the scrubber and can enforce linear playback
-during them.
+Use interstitials for ads, legal notices, and other timeline ranges with
+special playback rules. `AVPlayerViewController` can mark these ranges in the
+timeline and call delegate methods when interstitial playback begins and ends.
 
-### AVInterstitialTimeRange (tvOS / iOS)
+### Stream-Defined Interstitial Ranges
 
 ```swift
 import AVKit
-import CoreMedia
 
-func configureInterstitials(for playerItem: AVPlayerItem) {
-    let adStart = CMTime(seconds: 30, preferredTimescale: 600)
-    let adDuration = CMTime(seconds: 15, preferredTimescale: 600)
-    let adRange = CMTimeRange(start: adStart, duration: adDuration)
-
-    let interstitial = AVInterstitialTimeRange(timeRange: adRange)
-
-    // Add a second ad break
-    let secondAdStart = CMTime(seconds: 120, preferredTimescale: 600)
-    let secondAdDuration = CMTime(seconds: 30, preferredTimescale: 600)
-    let secondAdRange = CMTimeRange(start: secondAdStart, duration: secondAdDuration)
-    let secondInterstitial = AVInterstitialTimeRange(timeRange: secondAdRange)
-
-    playerItem.interstitialTimeRanges = [interstitial, secondInterstitial]
+func inspectInterstitials(for playerItem: AVPlayerItem) {
+    for interstitial in playerItem.interstitialTimeRanges {
+        let range = interstitial.timeRange
+        print("Interstitial starts at \(range.start.seconds)s")
+    }
 }
 ```
 
-### Server-Side Ad Insertion with AVPlayerInterstitialEventController
+On iOS, valid scheduling sources are either stream-defined interstitials or
+app-created schedules through `AVPlayerInterstitialEventController`. For
+stream-defined breaks, the manifest or source media owns the schedule, and
+AVFoundation exposes it through `playerItem.interstitialTimeRanges` for
+inspection and delegate coordination. Do not assign to
+`playerItem.interstitialTimeRanges` directly as the scheduling recipe.
 
-For HLS streams with server-side ad insertion, use `AVPlayerInterstitialEventController`
-from AVFoundation:
+### App-Scheduled Interstitials
+
+For app-scheduled interstitial content, use `AVPlayerInterstitialEventController`
+from AVFoundation. Creating a controller schedule causes playback to ignore
+interstitial events present in the source media, so use it only when the app
+owns the schedule.
 
 ```swift
 import AVFoundation
 
 func setupInterstitialEvents(primaryPlayer: AVPlayer) {
+    guard let primaryItem = primaryPlayer.currentItem else { return }
+
     let controller = AVPlayerInterstitialEventController(primaryPlayer: primaryPlayer)
 
     let adAsset = AVURLAsset(url: URL(string: "https://example.com/ad.m3u8")!)
     let adItem = AVPlayerItem(asset: adAsset)
 
     let event = AVPlayerInterstitialEvent(
-        primaryItem: primaryPlayer.currentItem!,
+        primaryItem: primaryItem,
         time: CMTime(seconds: 60, preferredTimescale: 600)
     )
     event.templateItems = [adItem]
@@ -260,30 +271,13 @@ Add the `audio` background mode:
 </array>
 ```
 
-### Handling App Lifecycle
+### Runtime Behavior
 
-The system pauses video upon scene backgrounding automatically. For audio-only
-background playback (e.g., a podcast app with video), detach the player from
-the view layer:
-
-```swift
-func sceneDidEnterBackground(_ scene: UIScene) {
-    // Remove the player from the view layer to continue audio-only playback
-    playerVC.player = nil
-    // Keep a strong reference to the AVPlayer to prevent deallocation
-}
-
-func sceneWillEnterForeground(_ scene: UIScene) {
-    // Re-attach the player
-    playerVC.player = player
-}
-```
-
-### Preventing Background Pause
-
-If PiP is active when the app backgrounds, playback continues in the PiP
-window. Without PiP, audio-only playback requires removing the player layer
-as shown above, and the audio session must be `.playback`.
+Set the audio session category to `.playback`, activate it when playback begins,
+and keep a strong reference to the `AVPlayer` for as long as playback should
+continue. iOS generally pauses video when a scene backgrounds unless playback
+moves to PiP. Use PiP for background video continuity; use background audio mode
+for audio that should continue after the user leaves the app.
 
 ## Error Handling
 
@@ -367,7 +361,8 @@ func handleAVKitError(_ error: Error) {
 
     switch avkitError.code {
     case .pictureInPictureStartFailed:
-        // PiP could not start — check audio session and entitlements
+        // Check audio session/background mode, support, current possibility,
+        // and whether the player layer or content source is active.
         break
     case .contentRatingUnknown:
         // Content rating could not be determined

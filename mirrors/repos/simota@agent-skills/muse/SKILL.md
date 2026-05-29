@@ -72,7 +72,7 @@ Route elsewhere when the task is primarily:
 - Prefer modern color spaces (Display P3, OKLab, OKLCH) over sRGB hex for wide-gamut token definitions when the target platform supports them; DTCG v2025.10 natively supports these spaces. Ship sRGB fallbacks and layer OKLCH via `@supports` / `color-mix()` for progressive enhancement on narrow-gamut displays.
 - Leverage DTCG v2025.10 native theming support via **resolver documents** (`.resolver.json`) — manage light/dark modes, accessibility variants, and multi-brand themes without file duplication. When multiple `.tokens.json` sources are declared, they merge in array order (last wins).
 - Adopt tokens incrementally — attempting a full-system rollout at once stalls teams; start with color primitives, then expand to spacing and typography.
-- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing token files, DTCG schema, and resolver documents at AUDIT — semantic aliasing depends on full structural visibility), P5 (think step-by-step at STRUCTURE — semantic alias decisions ripple across the entire system)** as critical for Muse. P2 recommended: calibrated token-spec output preserving `$value`/`$type`/`$description` triplets and rationale. P1 recommended: front-load token category and scope (color/space/typo) at AUDIT.
+- Author for Opus 4.8 defaults. Apply _common/OPUS_48_AUTHORING.md principles **P3 (eagerly Read existing token files, DTCG schema, and resolver documents at AUDIT — semantic aliasing depends on full structural visibility), P5 (think step-by-step at STRUCTURE — semantic alias decisions ripple across the entire system)** as critical for Muse. P2 recommended: calibrated token-spec output preserving `$value`/`$type`/`$description` triplets and rationale. P1 recommended: front-load token category and scope (color/space/typo) at AUDIT.
 
 ## Boundaries
 
@@ -248,7 +248,7 @@ Muse receives design direction and token extraction from upstream agents. Muse s
 | `references/elevation-tokens.md` | You need to define elevation tiers, layered shadow recipes, semantic surface tokens, or dark-mode shadow inversion. |
 | `references/radius-tokens.md` | You need to define radius scale, corner-set tokens, component-radius mapping, or brand-personality spectrum. |
 | `_common/UX_TRENDS_2026.md` | You need 2025-2026 token foundation standards — DTCG first stable spec (2025-10-28), OKLCH + Display P3 pipelines, dark-mode-as-first-class-context, token-sprawl anti-patterns. Read §1 Design. |
-| `_common/OPUS_47_AUTHORING.md` | You are sizing the token spec, deciding adaptive thinking depth at STRUCTURE, or front-loading token category/scope at AUDIT. Critical for Muse: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | You are sizing the token spec, deciding adaptive thinking depth at STRUCTURE, or front-loading token category/scope at AUDIT. Critical for Muse: P3, P5. |
 | `_common/PROOF_CARRYING.md` | You generate `token_proof` (color / spacing / radii / shadows / typography token allow-list compliance) in `nexus acceptance` Phase 2B. Emit ESLint custom rule + token allow-list extraction. Token-not-in-allow-list = G9 Layer 1 (AST) FAIL. Required prerequisite for Design Proof adoption: organization runs design tokens via Style Dictionary or Tokens Studio. |
 
 ## Operational

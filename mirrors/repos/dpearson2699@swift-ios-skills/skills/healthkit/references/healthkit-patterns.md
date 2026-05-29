@@ -5,6 +5,8 @@ Overflow reference for the `healthkit` skill. Contains advanced patterns that ex
 ## Contents
 
 - [Workout Session Lifecycle](#workout-session-lifecycle)
+- [Platform and Authorization Edge Cases](#platform-and-authorization-edge-cases)
+- [Background Delivery Details](#background-delivery-details)
 - [Anchored Object Queries](#anchored-object-queries)
 - [Predicate-Based Filtering](#predicate-based-filtering)
 - [Statistics Collection for Charts](#statistics-collection-for-charts)
@@ -12,6 +14,18 @@ Overflow reference for the `healthkit` skill. Contains advanced patterns that ex
 - [Characteristic Types](#characteristic-types)
 
 ## Workout Session Lifecycle
+
+`HKWorkoutSession` is available on iOS/iPadOS 17+, visionOS 1+, and watchOS
+2+. `HKLiveWorkoutBuilder` is available on iOS/iPadOS 26+ and watchOS 5+.
+When supporting iOS or iPadOS earlier than 26, gate live-builder code and use a
+non-live workout save path where appropriate.
+
+iPhone and iPad do not provide built-in live heart-rate samples. They require a
+paired external heart-rate sensor for live heart-rate collection, while Apple
+Watch workout sessions collect high-frequency heart-rate samples. iPhone also
+often locks during workouts; if the app shows health metrics on the Lock
+Screen, design around the system's workout-data access prompt and Live Activity
+surface.
 
 ### Full Workout Manager
 
@@ -157,6 +171,12 @@ extension WorkoutManager: HKLiveWorkoutBuilderDelegate {
 
 ### Multi-Device Mirroring (watchOS + iOS)
 
+Start mirroring from the primary watchOS session. In the iOS companion app,
+assign `workoutSessionMirroringStartHandler` as the app launches so it can
+receive mirrored sessions even when launched in the background. The handler runs
+on an arbitrary background queue and may be called more than once if the devices
+disconnect and reconnect during a workout.
+
 ```swift
 // On watchOS: start mirroring to companion iPhone
 func startMirroring() async throws {
@@ -178,6 +198,67 @@ func sendDataToRemote(_ data: Data) async throws {
     try await session?.sendToRemoteWorkoutSession(data: data)
 }
 ```
+
+## Platform and Authorization Edge Cases
+
+- Call `HKHealthStore.isHealthDataAvailable()` before any other HealthKit API.
+  Current Apple docs say Health data is available on iOS, watchOS, visionOS,
+  iPadOS 17+, and iOS apps running on Vision Pro. It is unavailable on iPadOS
+  16 or earlier and may be restricted by managed device policy.
+- Enabling the HealthKit capability for an iOS app can add `healthkit` to
+  `UIRequiredDeviceCapabilities`, preventing installation on unsupported
+  devices. Remove that entry only when HealthKit is optional and the app has a
+  useful non-HealthKit mode.
+- `authorizationStatus(for:)` is for write/share authorization. HealthKit does
+  not reveal whether read access was granted or denied. If read access is
+  denied, queries return samples your app saved successfully, which can look
+  like partial or empty data.
+- People can change HealthKit permissions later in Settings or the Health app.
+  Refresh permission-sensitive UI and write paths instead of assuming the
+  original authorization outcome still applies.
+- In Vision Pro Guest User sessions, previously authorized data may be readable,
+  but new authorization and writes can fail. Treat HealthKit writes as
+  best-effort unless the user explicitly initiated a save action that needs an
+  explanation.
+
+## Background Delivery Details
+
+Background delivery requires the HealthKit Background Delivery capability
+(`com.apple.developer.healthkit.background-delivery` on current Apple docs) and
+an executed `HKObserverQuery` for the same sample type. Set up observer queries
+when the app launches, then call `enableBackgroundDelivery` once; the system
+persists the registration.
+
+```swift
+func configureHealthKitBackgroundDelivery() async throws {
+    let stepType = HKQuantityType(.stepCount)
+
+    let query = HKObserverQuery(
+        sampleType: stepType,
+        predicate: nil
+    ) { _, completionHandler, error in
+        defer { completionHandler() }
+        guard error == nil else { return }
+        Task {
+            // Run an anchored query or statistics refresh here.
+        }
+    }
+
+    healthStore.execute(query)
+
+    try await healthStore.enableBackgroundDelivery(
+        for: stepType,
+        frequency: .hourly
+    )
+}
+```
+
+Treat `HKUpdateFrequency` as a maximum delivery rate, not a guarantee. Some
+types have tighter system caps; for example, iOS step-count background delivery
+is capped at hourly even if `.immediate` is requested. Background server queries
+are not supported on Simulator, so validate delivery on real hardware. If the
+observer completion handler is not called, HealthKit backs off and can stop
+sending background updates after repeated failures.
 
 ## Anchored Object Queries
 

@@ -1,6 +1,6 @@
 ---
 name: swift-testing
-description: "Writes and migrates tests using the Swift Testing framework with @Test, @Suite, #expect, #require, confirmation, parameterized tests, test tags, traits, withKnownIssue, XCTest UI testing, XCUITest, test plan, mocking, test doubles, testable architecture, snapshot testing, async test patterns, test organization, and test-driven development in Swift. Use when writing or migrating tests with Swift Testing framework, implementing parameterized tests, working with test traits, converting XCTest to Swift Testing, or setting up test organization and mocking patterns."
+description: "Writes and migrates Swift Testing framework tests with @Test, @Suite, #expect, #require, confirmation, traits, withKnownIssue, Attachment.record, processExitsWith exit tests and capture lists, Test.cancel, Issue.record warnings/manual failures, XCTest-to-Swift Testing migration, XCUITest UI-test boundaries, performance/snapshot boundaries, mocking, async patterns, and test organization. Use when writing tests, converting XCTest assertions such as XCTUnwrap or XCTFail, reviewing advanced Swift Testing API availability, or deciding when to keep XCTest/XCUITest."
 ---
 
 # Swift Testing
@@ -14,11 +14,14 @@ Swift Testing is the modern testing framework for Swift (Xcode 16+, Swift 6+). P
 - [#expect and #require](#expect-and-require)
 - [`@Suite and Test Organization`](#suite-and-test-organization)
 - [Execution Model](#execution-model)
+- [XCTest Migration Boundaries](#xctest-migration-boundaries)
 - [Known Issues](#known-issues)
 - [Additional Patterns](#additional-patterns)
 - [Common Mistakes](#common-mistakes)
 - [Test Attachments](#test-attachments)
 - [Exit Testing](#exit-testing)
+- [Version-Gated APIs](#version-gated-apis)
+- [Advanced API Review Checklist](#advanced-api-review-checklist)
 - [Review Checklist](#review-checklist)
 - [References](#references)
 
@@ -105,6 +108,33 @@ Use `.serialized` when a test or suite must run one-at-a-time because it touches
 - `@Suite(.serialized)` is for exclusive execution, not for expressing logical ordering between tests.
 - If tests depend on sequence, combine them into one test or move the sequence into shared helper code.
 
+## XCTest Migration Boundaries
+
+Swift Testing unit tests do not inherit from `XCTestCase`. Declare `@Test` on free functions, global functions, or methods on suite types such as `struct`, `class`, or `actor`; use `static` or `class` methods when instance fixtures are not needed.
+
+When reviewing migration code or plans, do not collapse every XCTest construct into `#expect`. Include a compact assertion-mapping note or table in the answer so required unwraps and unconditional manual failures are not lost, even when the user only says "replace every XCTAssert with #expect."
+
+State coexistence explicitly: XCTest and Swift Testing can coexist during migration. Keep UI automation, performance benchmarks, and common snapshot-test flows on XCTest/XCUITest or snapshot tooling, and separate files or targets when that makes runner expectations clearer.
+
+Migration defaults:
+- `XCTAssert*` -> `#expect(...)`
+- `XCTUnwrap` or any value required by later checks -> `try #require(...)`
+- `XCTFail("...")` or manual unconditional issues -> `Issue.record("...")`
+- UI tests, performance benchmarks, and common snapshot-test flows stay on XCTest/XCUITest or snapshot tooling.
+- Put `@available` on individual `@Test` functions, not on suite types or their containing types.
+
+```swift
+let user = try #require(optionalUser)
+#expect(user.isActive)
+
+guard featureFlag.isEnabled else {
+    Issue.record("Expected feature flag to be enabled")
+    return
+}
+```
+
+See [references/testing-patterns.md](references/testing-patterns.md) for migration examples and [references/testing-advanced.md](references/testing-advanced.md) for Swift/Xcode version gates.
+
 ## Known Issues
 
 Mark expected failures so they do not cause test failure:
@@ -145,7 +175,7 @@ Attach diagnostic data to test results for debugging failures. See [references/t
 }
 ```
 
-Image attachments are available via cross-import overlays — import both `Testing` and a UI framework:
+Image attachments require Swift 6.3 / Xcode 26.4 or newer. Import `Testing` plus the relevant UI framework, then record the platform image value directly:
 
 ```swift
 import Testing
@@ -153,13 +183,13 @@ import UIKit
 
 @Test func renderedChart() async throws {
     let image = renderer.image { ctx in chartView.drawHierarchy(in: bounds, afterScreenUpdates: true) }
-    Attachment.record(image, named: "chart.png")
+    Attachment.record(image, named: "chart", as: .png)
 }
 ```
 
 ## Exit Testing
 
-Test code that calls `exit()`, `fatalError()`, or `preconditionFailure()`. See [references/testing-patterns.md](references/testing-patterns.md) for details.
+Test code that calls `exit()`, `fatalError()`, or `preconditionFailure()`. Exit testing requires Swift 6.2 / Xcode 26.0 or newer and is supported on macOS, Linux, FreeBSD, OpenBSD, and Windows runtime targets, not iOS, tvOS, or watchOS. When correcting exit-test code, name both the toolchain floor and runtime support. See [references/testing-patterns.md](references/testing-patterns.md) for details.
 
 ```swift
 @Test func invalidInputCausesExit() async {
@@ -168,6 +198,35 @@ Test code that calls `exit()`, `fatalError()`, or `preconditionFailure()`. See [
     }
 }
 ```
+
+## Version-Gated APIs
+
+For advanced Swift Testing APIs, check the toolchain before recommending them. When reviewing user code that mentions one of these APIs, name the gate for each API you correct:
+- Exit testing requires Swift 6.2 / Xcode 26.0 and does not support iOS, tvOS, or watchOS runtime targets.
+- Exit-test capture lists require the Swift 6.3 compiler. If an exit-test closure reads parent-process values, use an explicit capture list and state that captured values must be `Sendable` and `Codable`.
+- `Test.cancel(_:)`, `Issue.record(_:severity:)`, and image attachment recording require Swift 6.3 / Xcode 26.4-era support as noted in [references/testing-advanced.md](references/testing-advanced.md).
+- When fixing a `Test.cancel(_:)` sample, state both shape and gate: the test must be `throws` or `async throws`, and `Test.cancel(_:)` requires Swift 6.3 / Xcode 26.4-era support.
+
+```swift
+@Test func exitsWithCapturedCode() async {
+    let expectedCode: Int32 = 42
+    await #expect(processExitsWith: .failure) { [expectedCode] in
+        exit(expectedCode)
+    }
+}
+```
+
+## Advanced API Review Checklist
+
+When reviewing stale or beta-era Swift Testing samples, include the exact correction and the gate for every API the prompt mentions:
+
+| User code to correct | Current guidance |
+|---|---|
+| `#expect(exitsWith:)` | Use `await #expect(processExitsWith: .failure) { ... }`. Exit testing requires Swift 6.2 / Xcode 26.0 or newer and is supported on macOS, Linux, FreeBSD, OpenBSD, and Windows runtime targets, not iOS, tvOS, or watchOS. For an iOS app target, test fatal-path logic through a smaller non-exiting API or a supported host/tool target. |
+| Exit-test closure reads outer values | Add an explicit capture list, for example `{ [expectedCode] in ... }`. Exit-test capture lists require the Swift 6.3 compiler; captured values must be `Sendable` and `Codable`. |
+| `Test.cancel()` in a test that awaits work | Make the test `async throws` and call `try Test.cancel("reason")`. `Test.cancel(_:)` requires Swift 6.3 / Xcode 26.4-era support. |
+| `Issue.record(..., severity: .warning)` | Use `Issue.record("message", severity: .warning)`. Warning severity is reported but does not fail the test, and requires Swift 6.3 / Xcode 26.4-era support. |
+| `Attachment(image, named:).record()` | Use `Attachment.record(image, named: "name", as: .png)`. Import `Testing` plus the relevant image framework; Apple-platform image values include `UIImage`, `CGImage`, `CIImage`, and `NSImage`. Image attachment recording requires Swift 6.3 / Xcode 26.4-era support. |
 
 ## Common Mistakes
 
@@ -178,7 +237,7 @@ Test code that calls `exit()`, `fatalError()`, or `preconditionFailure()`. See [
 5. **Missing accessibility identifiers in UI tests.** XCUITest queries rely on them.
 6. **Using `sleep` in tests.** Use `confirmation`, clock injection, or `withKnownIssue`.
 7. **Not testing cancellation.** If code supports `Task` cancellation, verify it cancels cleanly.
-8. **Mixing XCTest and Swift Testing in one file.** Keep them in separate files.
+8. **Unclear XCTest migration boundaries.** Apple allows XCTest and Swift Testing in one file during migration; prefer separate files when it keeps imports, ownership, and runner expectations clearer.
 9. **Non-Sendable test helpers shared across tests.** Ensure test helper types are Sendable when shared across concurrent test cases. Annotate MainActor-dependent test code with `@MainActor`.
 10. **Assuming tests run in declaration order.** Swift Testing runs in parallel by default; use `.serialized` only when exclusive execution is required.
 11. **Using `.serialized` to express workflow steps.** Serialized execution does not make one test feed another; keep dependent steps in one test.

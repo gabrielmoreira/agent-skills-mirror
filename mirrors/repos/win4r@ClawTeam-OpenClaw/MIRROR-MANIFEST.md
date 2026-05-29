@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `win4r/ClawTeam-OpenClaw` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `win4r/ClawTeam-OpenClaw` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `win4r/ClawTeam-OpenClaw` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,16 +59,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/clawteam-dev/SKILL.md`](.agents/skills/clawteam-dev/SKILL.md) |
-| 2 | ✓ | [`.agents/skills/clawteam/references/cli-reference.md`](.agents/skills/clawteam/references/cli-reference.md) |
-| 3 | ✓ | [`.agents/skills/clawteam/references/workflows.md`](.agents/skills/clawteam/references/workflows.md) |
-| 4 | ✓ | [`.agents/skills/clawteam/SKILL.md`](.agents/skills/clawteam/SKILL.md) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`skills/clawteam/references/cli-reference.md`](skills/clawteam/references/cli-reference.md) |
-| 7 | ✓ | [`skills/clawteam/references/workflows.md`](skills/clawteam/references/workflows.md) |
-| 8 | ✓ | [`skills/clawteam/SKILL.md`](skills/clawteam/SKILL.md) |
-| 9 | ✓ | [`skills/hermes/SKILL.md`](skills/hermes/SKILL.md) |
-| 10 | ✓ | [`skills/openclaw/SKILL.md`](skills/openclaw/SKILL.md) |
+| 1 | ✓ | [`.agents/skills/clawteam-dev/scripts/bootstrap_clawteam_dev.sh`](.agents/skills/clawteam-dev/scripts/bootstrap_clawteam_dev.sh) |
+| 2 | ✓ | [`.agents/skills/clawteam-dev/scripts/link_local_clawteam_skills.sh`](.agents/skills/clawteam-dev/scripts/link_local_clawteam_skills.sh) |
+| 3 | ✓ | [`.agents/skills/clawteam-dev/SKILL.md`](.agents/skills/clawteam-dev/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/frontend-design/LICENSE.txt`](.agents/skills/frontend-design/LICENSE.txt) |
+| 5 | ✓ | [`.agents/skills/frontend-design/SKILL.md`](.agents/skills/frontend-design/SKILL.md) |
+| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 7 | ✓ | [`docs/skills/clawteam/SKILL.md`](docs/skills/clawteam/SKILL.md) |
+| 8 | ✓ | [`skills/clawteam/agents/openai.yaml`](skills/clawteam/agents/openai.yaml) |
+| 9 | ✓ | [`skills/clawteam/references/cli-reference.md`](skills/clawteam/references/cli-reference.md) |
+| 10 | ✓ | [`skills/clawteam/references/workflows.md`](skills/clawteam/references/workflows.md) |
+| 11 | ✓ | [`skills/clawteam/SKILL.md`](skills/clawteam/SKILL.md) |
+| 12 | ✓ | [`skills/hermes/SKILL.md`](skills/hermes/SKILL.md) |
+| 13 | ✓ | [`skills/openclaw/SKILL.md`](skills/openclaw/SKILL.md) |
 
 ---
 

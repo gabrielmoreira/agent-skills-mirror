@@ -5,7 +5,7 @@ description: "Prepare for App Store review and prevent rejections. Covers App St
 
 # App Store Review Preparation
 
-Guidance for catching App Store rejection risks before submission. Apple reviewed 7.7 million submissions in 2024 and rejected 1.9 million. Most rejections are preventable with proper preparation.
+Guidance for catching App Store rejection risks before submission. Apple's May 2026 fraud-prevention update says App Review evaluated more than 9.1 million submissions in 2025 and rejected more than 2 million, so treat rejection prevention as a normal release-readiness step and re-check official Apple sources before quoting annual statistics.
 
 ## Contents
 
@@ -28,6 +28,20 @@ Guidance for catching App Store rejection risks before submission. Apple reviewe
 ## Overview
 
 Use this SKILL.md for quick guidance on common rejection reasons and key policies. Use the references for detailed checklists and privacy manifest specifics.
+
+For prompts about keywords, screenshot captions, product-page metadata, or metadata rejection risk, answer from a compliance angle and explicitly defer keyword research, ranking strategy, conversion optimization, screenshot ordering, and A/B testing to `app-store-optimization`. Keep App Review metadata guidance limited to accuracy, field limits, misleading-content risk, and screenshot compliance. Always surface the rejection-prone format checks: app name 30 characters, subtitle 30 characters, keyword field 100 characters with comma-separated keywords and no spaces after commas, screenshots showing actual app UI, 6.9-inch iPhone screenshots as the primary current iPhone set, and 13-inch iPad screenshots when the app runs on iPad.
+
+For full submission readiness audits, separate blocking upload/review issues from ordinary cleanup. Treat Xcode 26+ with the relevant platform SDK 26+ as a blocking App Store Connect upload requirement after April 28, 2026. Cross-check privacy manifests, App Store privacy nutrition labels, privacy policy, ATT state, runtime network behavior, and SDK behavior against each other; the declarations and observed behavior must align.
+
+### Blocking Submission Checks
+
+Escalate these as blockers before ordinary cleanup:
+
+- Uploads after April 28, 2026 that are not built with Xcode 26+ and the relevant platform SDK 26+
+- Privacy manifest, privacy label, privacy policy, ATT state, SDK transmissions, or audited runtime network behavior mismatches
+- Digital goods and subscriptions that bypass StoreKit IAP, or external purchase paths/links/buttons/CTAs for digital goods, unless current rules or approved entitlements allow them
+- Missing required screenshot sets: 6.9-inch iPhone screenshots, and 13-inch iPad screenshots when the app runs on iPad
+- Login-gated or non-obvious features without demo credentials, demo mode, and clear App Review notes
 
 ## Top Rejection Reasons and How to Avoid Them
 
@@ -65,36 +79,38 @@ Apple rejects apps that are too simple or are just websites in a wrapper:
 ### Guideline 2.5.1 -- Software Requirements
 
 - Must use public APIs only -- private API usage is an instant rejection
-- Must be built with the current Xcode GM release or later
-- Must support the latest two major iOS versions (guideline, not strict rule)
-- Must not download or execute code dynamically (except JavaScript in WKWebView)
+- As of April 28, 2026, uploads to App Store Connect must be built with Xcode 26 or later using the relevant platform SDK 26 or later
+- Deployment target support is a product and compatibility decision, not an App Review rule
+- Must not download or execute code that introduces or changes app features or functionality after review, except where Apple guidelines and agreements explicitly allow interpreted code
 
 ## PrivacyInfo.xcprivacy -- Privacy Manifest Requirements
 
-This is the fastest-growing rejection category (Guideline 5.1.1). A privacy manifest is **required** if your app or any of its dependencies uses certain categories of APIs.
+A privacy manifest is required when your app code, an executable, a dynamic library, or a third-party SDK uses Apple's required-reason API categories or declares collected data/tracking behavior.
 
 **See:** [references/privacy-manifest.md](references/privacy-manifest.md) for the full structure, reason codes, and checklists.
 
 ### Summary
 
-- File timestamp, system boot time, disk space, user defaults, and active keyboard APIs all require reason codes.
-- Every third-party SDK must ship its own privacy manifest.
-- Manifest declarations must match App Store privacy nutrition labels and actual network behavior.
+- Required-reason API categories are file timestamps, system boot time, disk space, active keyboards, and UserDefaults; each requires an approved reason code when used.
+- Before final submission, re-check Apple's current required-reason API documentation and do not choose broad, convenient, or invented reason codes.
+- Required-reason API declarations belong in the bundle that contains the code using the API; every app target, executable, dynamic library, framework, or SDK bundle containing manifest-relevant code needs the matching manifest declarations.
+- Each SDK, executable, or dynamic library that collects data, uses required-reason APIs, enables data collection/tracking, or contacts tracking domains needs manifest attention in the bundle containing that code; SDK code cannot rely on the host app's manifest to report the SDK's own usage.
+- Manifest declarations must match App Store privacy nutrition labels, SDK behavior, and the app's presented functionality.
 
 ## Data Use, Sharing, and Privacy Policy (Guideline 5.1.2)
 
 - A privacy policy URL must be set in App Store Connect AND accessible within the app
 - The privacy policy must accurately describe what data you collect, how you use it, and who you share it with
 - App Store privacy nutrition labels must match your actual data collection practices
-- Apple cross-references your privacy manifest, nutrition labels, and observed network traffic
+- Privacy labels, privacy manifests, SDK disclosures, and runtime behavior should tell the same story
 
 ## In-App Purchase and StoreKit Rules (Guideline 3.1.1)
 
 IAP rules are strict and heavily enforced.
 
-### What Requires Apple IAP
+### What Generally Requires Apple IAP
 
-All digital content and services must use Apple's In-App Purchase system:
+Digital content, features, subscriptions, and services unlocked in the app generally must use Apple's In-App Purchase system unless a specific App Review guideline exception, regional rule, or approved entitlement applies. Remove external purchase paths unless the current rules or an approved entitlement allow them:
 
 - Premium features or content unlocks
 - Subscriptions to app functionality
@@ -112,8 +128,8 @@ All digital content and services must use Apple's In-App Purchase system:
 ### Subscription Display Requirements
 
 - Price, duration, and auto-renewal terms must be clearly displayed before purchase
-- Free trials must state what happens when they end (price, billing frequency)
-- No links, buttons, or language directing users to purchase outside the app
+- Free trials must clearly show trial duration, post-trial price, billing frequency, auto-renewal, and cancellation terms before purchase
+- Remove external purchase links, buttons, calls to action, or purchase paths for digital goods unless the current storefront rules or an approved entitlement explicitly allow them
 - "Reader" apps (Netflix, Spotify) may link to external sign-up but cannot offer IAP bypass
 
 ### StoreKit Implementation Checklist
@@ -133,8 +149,8 @@ See [references/review-checklists.md](references/review-checklists.md) for the f
 
 If your app tracks users across other companies' apps or websites, you must:
 
-1. Request permission via `ATTrackingManager.requestTrackingAuthorization` before any tracking occurs
-2. Respect the user's choice -- do not track if the user denies permission
+1. Request permission via `ATTrackingManager.requestTrackingAuthorization` before any cross-app or cross-website tracking occurs, including tracking-capable SDK behavior
+2. Respect the user's choice -- disable cross-app and cross-website tracking if the user denies permission
 3. Not gate app functionality behind tracking consent ("Accept tracking or you cannot use this app" is rejected)
 4. Provide a clear purpose string in `NSUserTrackingUsageDescription` explaining what tracking is used for
 
@@ -147,6 +163,7 @@ If you do not track users across apps or websites, do not show the ATT prompt. A
 ```swift
 import AppTrackingTransparency
 
+@MainActor
 func requestTrackingPermission() async {
     let status = await ATTrackingManager.requestTrackingAuthorization()
     switch status {
@@ -154,7 +171,7 @@ func requestTrackingPermission() async {
         // Enable tracking, initialize ad SDKs with tracking
         break
     case .denied, .restricted:
-        // Use non-personalized ads, disable cross-app tracking
+        // Use non-personalized ads and disable cross-app/cross-website tracking
         break
     case .notDetermined:
         // Should not happen after request, handle gracefully
@@ -165,11 +182,11 @@ func requestTrackingPermission() async {
 }
 ```
 
-**Timing:** Request ATT permission after the app has launched and the user has context for why tracking is being requested. Do not show the prompt immediately on first launch.
+**Timing:** Request ATT permission after the app is active and the user has context for why tracking is being requested. Do not show the prompt immediately on first launch or stack it with another system permission prompt.
 
 ## EU Digital Markets Act (DMA) Considerations
 
-For apps distributed in the EU:
+For apps distributed in the EU, and for other region-specific distribution models as Apple updates them:
 
 - Alternative browser engines are permitted on iOS in the EU
 - Alternative app marketplaces exist -- apps may be distributed outside the App Store
@@ -217,8 +234,8 @@ Apple rejects vague usage descriptions. Always state what the data is used for i
 1. **Archive in Xcode.** Product > Archive (requires a Distribution signing identity). Verify the archive builds clean with zero warnings in Release configuration.
 2. **Upload to App Store Connect.** Use the Organizer window (Distribute App > App Store Connect) or `xcodebuild -exportArchive`. Automated uploads via `altool` or Transporter also work.
 3. **TestFlight internal testing.** The build is available to internal testers (your team) within minutes of processing. Walk through every screen and flow on at least two device sizes.
-4. **TestFlight external testing.** External groups require a brief Beta App Review (usually < 24 hours). Use this to validate with real users before full submission.
-5. **Submit for App Review.** In App Store Connect, select the build, fill in all metadata fields, attach screenshots, and click Submit for Review. Average review time is under 24 hours, but allow 48 hours.
+4. **TestFlight external testing.** External groups require Beta App Review before first external distribution. Use this to validate with real users before full submission.
+5. **Submit for App Review.** In App Store Connect, select the build, fill in all metadata fields, attach screenshots, and click Submit for Review. Review timing varies; allow buffer for rejections, appeals, and metadata fixes.
 
 ### Expedited Review Requests
 
@@ -259,20 +276,20 @@ Users who manually check for updates in the App Store will receive the update im
 
 ### Screenshot Requirements
 
-- Provide screenshots for every required device size (6.9", 6.7", 6.5", 5.5" for iPhone; 13" for iPad if supporting iPad).
+- Provide 1-10 screenshots per required platform and localization.
+- For iPhone, use the current App Store Connect screenshot specifications. As of May 2026, 6.9-inch iPhone screenshots are the primary accepted iPhone set; 6.5-inch screenshots are required only when 6.9-inch screenshots are not provided, and smaller iPhone displays can use scaled screenshots from larger sets.
+- For iPad apps, 13-inch iPad screenshots are required; smaller iPad displays can use scaled screenshots from larger sets.
 - Screenshots must show the **actual app UI** -- no misleading content, no features that do not exist.
 - Text overlays and marketing frames are allowed but must not obscure or misrepresent the actual interface.
-- Up to 10 screenshots per localization. Lead with your most compelling screen.
+- Up to 10 screenshots per localization.
 - Screenshots for different localizations should show localized UI.
 
-### Keywords Optimization
+### Keyword Field Compliance
 
 - 100-character limit, comma-separated, no spaces after commas.
 - Do not duplicate words already in your app name or subtitle (Apple indexes those automatically).
 - Use singular or plural, not both ("game" not "game,games").
 - No competitor names, trademarked terms, or irrelevant words.
-- Place highest-value keywords first.
-- Update keywords with each release based on Search Ads and analytics data.
 
 ### App Preview Videos
 
@@ -280,7 +297,7 @@ Users who manually check for updates in the App Store will receive the update im
 - Up to 3 preview videos per localization.
 - Must show the actual app running on device -- no pre-rendered animations of features that look different in practice.
 - App audio is captured; narration and background music are optional.
-- No device frames or hands unless showing real device interaction.
+- Avoid any framing, hand footage, or visual treatment that makes the preview misleading about the actual app experience.
 - First frame is used as the poster frame on the product page (choose carefully).
 
 ## Appeal Process
@@ -315,26 +332,30 @@ If the Resolution Center exchange does not resolve the issue:
 ## Common Mistakes
 
 1. **Missing demo credentials.** Provide App Review login credentials in App Store Connect notes. Most Guideline 2.1 rejections are from reviewers unable to test behind a login.
-2. **Privacy manifest mismatch.** Declared data collection in PrivacyInfo.xcprivacy must match App Store privacy nutrition labels and actual network traffic.
+2. **Privacy manifest mismatch.** Declared data collection in PrivacyInfo.xcprivacy must match App Store privacy nutrition labels, SDK behavior, and app functionality.
 3. **Unnecessary ATT prompt.** Do not show the App Tracking Transparency prompt unless you actually track users across apps or websites. Apple rejects unnecessary prompts.
 4. **Vague usage descriptions.** "This app needs your location" is rejected. State the specific feature that uses the data.
-5. **External payment links for digital content.** Any language or button directing users to purchase digital content outside the app is rejected.
-6. **Missing concurrency annotations.** Ensure ATT request and StoreKit calls run on `@MainActor` or appropriate actor context. Mark shared state types as `Sendable` for Swift 6 concurrency safety.
+5. **Unapproved external purchase paths.** External payment links for digital goods are region- and entitlement-sensitive; do not add them without checking current Guideline 3.1.1(a) rules.
+6. **Treating code quality as review compliance.** Swift 6 concurrency annotations and StoreKit transaction handling matter, but they do not replace privacy, payment, metadata, and entitlement compliance checks.
 
 ## Review Checklist
 
 Quick-check before every submission (full version in [references/review-checklists.md](references/review-checklists.md)):
 
 - [ ] No placeholder/test content; all features functional; demo credentials provided
-- [ ] App name matches functionality; screenshots are real; no prices in description
-- [ ] PrivacyInfo.xcprivacy present with reason codes; nutrition labels match reality
+- [ ] App name matches functionality; screenshots are real; no prices in description; 6.9-inch iPhone and 13-inch iPad screenshots supplied when applicable
+- [ ] PrivacyInfo.xcprivacy present when required-reason APIs, tracking, collected data declarations, or SDK tracking domains apply; nutrition labels match reality
 - [ ] Privacy policy URL set and accessible in-app
-- [ ] Digital content uses IAP; subscription terms visible; restore purchases works
+- [ ] Digital content uses IAP; subscription terms visible; restore purchases works; external purchase links/buttons/CTAs removed unless current rules or approved entitlements allow them
 - [ ] Dark Mode and Dynamic Type supported; standard navigation patterns
-- [ ] Built with current Xcode GM; no private APIs; entitlements justified
-- [ ] ATT prompt only if cross-app tracking occurs
+- [ ] Built with Xcode 26+ and platform SDK 26+ for uploads after April 28, 2026; no private APIs; entitlements justified
+- [ ] ATT prompt only if cross-app or cross-website tracking occurs
 
 ## References
 
 - Review checklists: [references/review-checklists.md](references/review-checklists.md)
 - Privacy manifest guide: [references/privacy-manifest.md](references/privacy-manifest.md)
+- Apple App Review Guidelines: https://developer.apple.com/app-store/review/guidelines/
+- Apple upcoming SDK requirements: https://developer.apple.com/news/upcoming-requirements/
+- App Store Connect screenshot specifications: https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/
+- Sosumi required-reason API docs: https://sosumi.ai/documentation/bundleresources/describing-use-of-required-reason-api

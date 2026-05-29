@@ -23,8 +23,8 @@ Search for videos on Bilibili based on the user's interests and soul profile. Su
 ## How It Works
 
 1. **Query generation** — If no explicit `keywords` are provided, the skill uses an LLM to generate multiple search queries from the user's soul profile (top interests, cognitive style, deep needs). If `keywords` are provided, they are used directly.
-2. **Concurrent search** — Each query is sent to the Bilibili WBI-signed search endpoint concurrently. A dedicated API client is used per strategy to isolate rate-limiting.
-3. **Resilience** — Individual query failures (including Bilibili `412 Precondition Failed`) degrade gracefully and do not interrupt the overall flow.
+2. **Sequential search** — Each query is sent to the Bilibili WBI-signed search endpoint sequentially, with a jitter-randomised 0.5–1.0s delay between queries (v0.3.61+) so the requests don't land in the same Bilibili rate-limit bucket. A dedicated API client is used per strategy to isolate rate-limiting.
+3. **Resilience & storm mode** — Individual query failures (including Bilibili `412 Precondition Failed`) degrade gracefully and don't interrupt the overall flow. `client.search` retries `v_voucher` challenges 3× internally; three consecutive empty results trip "storm mode" (v0.3.61+) and the remaining queries are skipped (filled with empty results) rather than burned against an IP that's being challenged — the next refresh tick (~60s) gets a fresh shot. An active search cooldown short-circuits the remaining plan the same way.
 4. **Scoring** — Results are evaluated against the soul profile via LLM and assigned a `relevance_score` (0.0–1.0). Items below the threshold are discarded.
 5. **Output** — Returns scored `DiscoveredContent` items.
 
@@ -55,7 +55,6 @@ Search for videos on Bilibili based on the user's interests and soul profile. Su
     "limit": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 50,
       "default": 20
     },
     "order": {
@@ -105,18 +104,18 @@ Each result is a `DiscoveredContent` object with the following fields:
 ### Empty Keywords
 When `keywords` is empty or not provided:
 1. The skill automatically generates search queries based on the user's soul profile (top interests, cognitive style, deep needs)
-2. Multiple queries are generated and executed concurrently
+2. Multiple queries are generated and executed sequentially with delays between requests
 3. Results are aggregated and deduplicated
 
 ### 412 Precondition Failed
 When Bilibili returns `412 Precondition Failed`:
 1. The skill treats this as a temporary failure for that query
-2. Other concurrent queries continue execution
+2. Other queries continue execution
 3. The skill returns results from successful queries only
 4. If all queries fail, returns an empty result set with appropriate logging
 
 ### Network Errors & Timeouts
-- **Connection Timeout**: Retries once before marking the query as failed
+- **`v_voucher` challenge / transient failure**: `client.search` retries the WBI request up to 3× internally; an empty list at the strategy layer means the keyword exhausted its retries (the IP is being challenged), which feeds the storm-mode counter above
 - **DNS Failure**: Falls back gracefully without breaking other queries
 - **SSL Errors**: Logs the error and skips to next query
 
@@ -126,17 +125,17 @@ When Bilibili returns `412 Precondition Failed`:
 - The discovery engine will try alternative strategies
 
 ### Invalid Parameters
-- **Invalid `page`**: Clamped to minimum value of 1
-- **Invalid `limit`**: Clamped to range [1, 50]
-- **Invalid `order`**: Falls back to `"totalrank"`
+- **Invalid `page`**: Passed directly to API (no clamping — caller should validate)
+- **Invalid `limit`**: Passed directly to API (no clamping — caller should validate)
+- **Invalid `order`**: Passed directly to API; defaults to `"totalrank"` if not provided
 - **Empty string keywords**: Treated as auto-generate mode
 
 ### Special Characters in Keywords
 - Keywords are URL-encoded before sending to Bilibili API
 - Unicode characters are supported
-- Long keywords (>100 characters) are truncated with a warning
+- Long keywords are passed as-is (no length truncation)
 
 ### API Response Edge Cases
 - **Unexpected response format**: Gracefully parses what it can, logs warnings for missing fields
 - **Partial results**: Returns valid items even if some fields are missing
-- **Rate limiting headers**: Respects `Retry-After` headers when present
+- **Rate limiting**: Handled via the per-query jitter delay, internal `v_voucher` retries, and storm-mode/cooldown short-circuit described above (no `Retry-After` header parsing)

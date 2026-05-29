@@ -10,6 +10,7 @@ and production patterns.
 - [Vision Framework Integration](#vision-framework-integration)
 - [AVCaptureSession Integration](#avcapturesession-integration)
 - [Multi-Subject Tracking Logic](#multi-subject-tracking-logic)
+- [Tracking, Events, and Availability Boundaries](#tracking-events-and-availability-boundaries)
 - [Custom Motor Animations](#custom-motor-animations)
 - [SwiftUI Integration](#swiftui-integration)
 - [Camera Control via Accessory Events](#camera-control-via-accessory-events)
@@ -86,20 +87,25 @@ extension DockControlService {
         _ accessory: DockAccessory,
         cameraDelegate: CameraCaptureDelegate
     ) {
+        guard #available(iOS 17.4, *) else { return }
         Task {
-            for await event in accessory.accessoryEvents {
-                switch event {
-                case .cameraShutter:
-                    await cameraDelegate.startOrStopCapture()
-                case .cameraFlip:
-                    await cameraDelegate.switchCamera()
-                case .cameraZoom(factor: let factor):
-                    await cameraDelegate.zoom(factor: factor)
-                case .button(id: _, pressed: _):
-                    break
-                @unknown default:
-                    break
+            do {
+                for await event in try accessory.accessoryEvents {
+                    switch event {
+                    case .cameraShutter:
+                        await cameraDelegate.startOrStopCapture()
+                    case .cameraFlip:
+                        await cameraDelegate.switchCamera()
+                    case .cameraZoom(factor: let factor):
+                        await cameraDelegate.zoom(factor: factor)
+                    case .button(id: _, pressed: _):
+                        break
+                    @unknown default:
+                        break
+                    }
                 }
+            } catch {
+                // Handle accessory event subscription errors
             }
         }
     }
@@ -329,7 +335,9 @@ extension CaptureService {
 
 ```swift
 func trackMostSalient(accessory: DockAccessory) async throws {
-    for await state in accessory.trackingStates {
+    guard #available(iOS 18.0, *) else { return }
+
+    for await state in try accessory.trackingStates {
         // Find the subject with saliency rank 1 (most important)
         let primary = state.trackedSubjects.first { subject in
             switch subject {
@@ -356,7 +364,9 @@ func trackMostSalient(accessory: DockAccessory) async throws {
 
 ```swift
 func trackEngagedSubjects(accessory: DockAccessory) async throws {
-    for await state in accessory.trackingStates {
+    guard #available(iOS 18.0, *) else { return }
+
+    for await state in try accessory.trackingStates {
         let engaged = state.trackedSubjects.compactMap { subject -> UUID? in
             guard case .person(let person) = subject,
                   let confidence = person.lookingAtCameraConfidence,
@@ -392,6 +402,31 @@ func convertToViewSpace(
     )
 }
 ```
+
+## Tracking, Events, and Availability Boundaries
+
+Use availability checks around newer DockKit streams:
+
+| API | Availability | Notes |
+|---|---|---|
+| `accessoryEvents` | iOS 17.4+ | Throwing async sequence; can throw `.notConnected` or `.notSupportedByDevice` |
+| `trackingStates` | iOS 18+ | Throwing async sequence; emits active tracking summaries |
+| `batteryStates` | iOS 18+ | Throwing async sequence; emits accessory battery summaries |
+
+`TrackingState.trackedSubjects` contains `.person(TrackedPerson)` and
+`.object(TrackedObject)`. Person fields are `identifier`, `rect`,
+`speakingConfidence`, `lookingAtCameraConfidence`, and `saliencyRank`.
+Object fields are `identifier`, `rect`, and `saliencyRank`. Identifiers are
+random session identifiers and do not persist across tracking sessions.
+
+Accessory event cases are:
+
+| Case | Use |
+|---|---|
+| `.cameraShutter` | Toggle capture or recording |
+| `.cameraFlip` | Switch front/back camera |
+| `.cameraZoom(factor:)` | Apply relative zoom intent |
+| `.button(id:pressed:)` | Custom accessory button press/release |
 
 ## Custom Motor Animations
 
@@ -464,6 +499,7 @@ import DockKit
 final class DockViewModel {
     var isConnected = false
     var accessoryName: String?
+    var batteryName: String?
     var batteryLevel: Double?
     var isCharging = false
     var trackingMode: TrackingMode = .system
@@ -490,6 +526,7 @@ final class DockViewModel {
                             isConnected = false
                             accessory = nil
                             accessoryName = nil
+                            batteryName = nil
                             batteryLevel = nil
                         @unknown default:
                             break
@@ -506,10 +543,12 @@ final class DockViewModel {
     }
 
     private func observeBattery(_ accessory: DockAccessory) {
+        guard #available(iOS 18.0, *) else { return }
         Task {
             do {
                 for await battery in try accessory.batteryStates {
                     await MainActor.run {
+                        batteryName = battery.name
                         batteryLevel = battery.batteryLevel
                         isCharging = battery.chargeState == .charging
                     }
@@ -681,8 +720,8 @@ func handlePanorama(
 | `.notSupported` | Operation not available | Check framework availability |
 | `.notSupportedByDevice` | Device lacks DockKit support | Degrade gracefully |
 | `.invalidParameter` | Bad input value | Validate before calling |
-| `.cameraTCCMissing` | Camera permission not granted | Request camera access |
-| `.frameRateTooHigh` | Observations exceed 30 fps | Reduce call frequency |
+| `.cameraTCCMissing` | Camera terms or authorization missing | Explain the camera access requirement |
+| `.frameRateTooHigh` | `track()` exceeds 30 fps, or `animate` / `setOrientation` exceeds 2 calls per second | Reduce call frequency |
 | `.frameRateTooLow` | Observations below 10 fps | Increase call frequency |
 | `.noSubjectFound` | No trackable subject detected | Show user guidance |
 

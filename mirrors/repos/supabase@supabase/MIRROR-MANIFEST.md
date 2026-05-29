@@ -83,11 +83,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`.claude/skills/studio-best-practices/SKILL.md`](.claude/skills/studio-best-practices/SKILL.md) |
 | 23 | ✓ | [`.claude/skills/studio-e2e-tests/SKILL.md`](.claude/skills/studio-e2e-tests/SKILL.md) |
 | 24 | ✓ | [`.claude/skills/studio-error-handling/SKILL.md`](.claude/skills/studio-error-handling/SKILL.md) |
-| 25 | ✓ | [`.claude/skills/studio-queries/SKILL.md`](.claude/skills/studio-queries/SKILL.md) |
-| 26 | ✓ | [`.claude/skills/studio-testing/SKILL.md`](.claude/skills/studio-testing/SKILL.md) |
-| 27 | ✓ | [`.claude/skills/studio-ui-patterns/SKILL.md`](.claude/skills/studio-ui-patterns/SKILL.md) |
-| 28 | ✓ | [`.claude/skills/telemetry-standards/SKILL.md`](.claude/skills/telemetry-standards/SKILL.md) |
-| 29 | ✓ | [`.claude/skills/use-static-effect-event/SKILL.md`](.claude/skills/use-static-effect-event/SKILL.md) |
+| 25 | ✓ | [`.claude/skills/studio-mock-api-tests/SKILL.md`](.claude/skills/studio-mock-api-tests/SKILL.md) |
+| 26 | ✓ | [`.claude/skills/studio-queries/SKILL.md`](.claude/skills/studio-queries/SKILL.md) |
+| 27 | ✓ | [`.claude/skills/studio-testing/SKILL.md`](.claude/skills/studio-testing/SKILL.md) |
+| 28 | ✓ | [`.claude/skills/studio-ui-patterns/SKILL.md`](.claude/skills/studio-ui-patterns/SKILL.md) |
+| 29 | ✓ | [`.claude/skills/telemetry-standards/SKILL.md`](.claude/skills/telemetry-standards/SKILL.md) |
 | 30 | ✓ | [`.claude/skills/vercel-composition-patterns/AGENTS.md`](.claude/skills/vercel-composition-patterns/AGENTS.md) |
 | 31 | ✓ | [`.claude/skills/vercel-composition-patterns/SKILL.md`](.claude/skills/vercel-composition-patterns/SKILL.md) |
 | 32 | ✓ | [`.cursor/rules/docs/docs-embeddings-generation/RULE.md`](.cursor/rules/docs/docs-embeddings-generation/RULE.md) |

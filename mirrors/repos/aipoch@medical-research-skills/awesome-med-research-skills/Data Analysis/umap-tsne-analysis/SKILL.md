@@ -1,12 +1,31 @@
 ---
 name: umap-tsne-analysis
-description: Use when performing sample-level dimensionality reduction and visualization on abundance or OTU-style matrices with a companion group file, generating UMAP and/or t-SNE coordinates and plots for group separation assessment. NOT for: differential expression testing, single-cell workflows requiring dedicated embeddings pipelines, or analyses without a sample grouping file.
+description: "Use when performing sample-level dimensionality reduction and visualization on abundance or OTU-style matrices with a companion group file, generating UMAP and/or t-SNE coordinates and plots for group separation assessment. NOT for: differential expression testing, single-cell workflows requiring dedicated embeddings pipelines, or analyses without a sample grouping file."
 license: MIT
-author: AIPOCH
+skill-author: AIPOCH
 ---
-> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # UMAP and t-SNE Analysis
+
+## Prerequisites
+
+Run the following before the first analysis to install all required R packages:
+
+```bash
+Rscript scripts/install_dependencies.R
+```
+
+Alternative manual installation:
+
+```bash
+Rscript -e "install.packages(c('optparse','data.table','Rtsne','umap','ggplot2','vegan','R.utils'), repos='https://cloud.r-project.org')"
+```
+
+> Note: `R.utils` is only required when `--timeout > 0`, but pre-installing it avoids environment drift across runs. `testthat` is installed by `scripts/install_dependencies.R` as the development test dependency.
+
+**The skill cannot run until these packages are installed.** In new or bare R environments, always run the prerequisite step first.
+
+---
 
 ## When to Read External Files
 
@@ -21,24 +40,6 @@ author: AIPOCH
 ---
 
 ## Usage
-
-### Environment Setup
-
-Install the required R packages before the first run:
-
-```bash
-Rscript scripts/install_dependencies.R
-```
-
-The tested dependency baseline is recorded in `dependencies.lock.tsv`.
-
-Manual CRAN installation is also supported:
-
-```bash
-Rscript -e "install.packages(c('optparse','data.table','Rtsne','umap','ggplot2','vegan','R.utils'), repos='https://cloud.r-project.org')"
-```
-
-`R.utils` is only required when `--timeout > 0`, but preinstalling it avoids environment drift across runs. `testthat` is installed by `scripts/install_dependencies.R` as the development test dependency.
 
 ```bash
 Rscript scripts/main.R \
@@ -117,6 +118,12 @@ S3,Treatment
 S4,Treatment
 ```
 
+Requirements:
+
+- At least 2 groups with at least 2 samples per group are required.
+- All sample IDs in the group file must exist in the matrix columns.
+- Single-group inputs will produce a `SKILL_INVALID_PARAMETER` error because dimensionality reduction without group contrast produces uninterpretable plots.
+
 ---
 
 ## Output Files
@@ -172,6 +179,18 @@ When `--normalize TRUE`, the script uses `vegan::decostand()` with the selected 
 
 ---
 
+## Agent Response Contract
+
+After a successful run, report:
+
+1. **Method(s) run** (tsne, umap, or both)
+2. **Sample count** and **group count** processed
+3. **Key parameters** used (perplexity for t-SNE, n_neighbors for UMAP)
+4. **Group separation quality** (describe visible clustering from coordinate ranges if accessible)
+5. **Artifact paths**: coordinate CSV(s) and plot PDF(s) produced
+
+---
+
 ## Examples
 
 ### Basic Usage
@@ -217,11 +236,25 @@ Rscript scripts/main.R \
 | `SKILL_MISSING_COLUMNS` | Group or matrix file lacks required columns | Verify file format |
 | `SKILL_SAMPLE_MISMATCH` | Sample IDs in group file do not match matrix columns | Check sample naming consistency |
 | `SKILL_EMPTY_DATA` | Matrix becomes empty after preprocessing | Check input values and filtering |
-| `SKILL_INVALID_PARAMETER` | Invalid method or parameter value | Adjust CLI arguments |
-| `SKILL_PACKAGE_NOT_FOUND` | Required R package is missing | Run `Rscript scripts/install_dependencies.R` |
+| `SKILL_INVALID_PARAMETER` | Invalid method, invalid parameter value, or single-group input | Adjust CLI arguments; ensure at least 2 groups are present |
+| `SKILL_PACKAGE_NOT_FOUND` | Required R package is missing | Run `Rscript scripts/install_dependencies.R`; note that file errors will only surface after packages are installed |
 | `SKILL_TIMEOUT` | Analysis exceeded the configured timeout | Increase `--timeout` or set `--timeout 0` |
 
 **IF error persists**, READ: `references/troubleshooting.md`
+
+**Troubleshooting note:** In environments where packages are not yet installed, `SKILL_PACKAGE_NOT_FOUND` will fire before file-validation errors. Install dependencies first, then re-run to expose any file-related errors.
+
+---
+
+## Input Validation
+
+This skill accepts:
+1. An abundance or OTU-style feature matrix (CSV/TSV, features as rows, samples as columns)
+2. A group file with at least two groups (CSV/TSV, sample IDs and group labels)
+
+If the user's request does not involve UMAP or t-SNE dimensionality reduction for group separation visualization — for example, asking to run differential expression testing, process single-cell RNA-seq with specialized pipelines, perform clustering without a group file, or impute missing values — do not proceed with the workflow. Instead respond:
+
+> "UMAP and t-SNE Analysis is designed to perform sample-level dimensionality reduction and visualization on abundance or OTU-style matrices. Your request appears to be outside this scope. Please provide a feature matrix and group file for UMAP/t-SNE, or use a more appropriate tool for differential expression testing, single-cell analysis, or clustering."
 
 ---
 
@@ -278,4 +311,4 @@ The canonical sample data live in `tests/data/`. Use those files for examples, s
 
 ---
 
-*Last updated: 2026-04-14 | Version: 1.0.2*
+*Last updated: 2026-04-27 | Version: 1.1.0*

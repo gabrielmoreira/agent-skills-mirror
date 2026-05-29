@@ -1,16 +1,15 @@
 ---
 name: swift-charts
-description: "Implement, review, or improve data visualizations using Swift Charts. Use when building bar, line, area, point, pie, or donut charts; when adding chart selection, scrolling, or annotations; when plotting functions with vectorized BarPlot, LinePlot, AreaPlot, or PointPlot; when customizing axes, scales, legends, or foregroundStyle grouping; or when creating specialized visualizations like heat maps, Gantt charts, stacked/grouped bars, sparklines, or threshold lines."
+description: "Implement, review, or improve data visualizations using Swift Charts. Use when building bar, line, area, point, pie, donut, or iOS 26 3D charts; when adding chart selection, scrolling, annotations, axes, scales, legends, or foregroundStyle grouping; when plotting functions with BarPlot, LinePlot, AreaPlot, PointPlot, Chart3D, or SurfacePlot; or when creating heat maps, Gantt charts, grouped bars, sparklines, threshold lines, or spatial visualizations."
 ---
 
 # Swift Charts
 
 Build data visualizations with Swift Charts targeting iOS 26+. Compose marks
-inside a `Chart` container, configure axes and scales with view modifiers, and
-use vectorized plots for large datasets.
+inside `Chart` or `Chart3D`, configure axes and scales with view modifiers, and
+use vectorized plots or 3D plots when the data calls for them.
 
-See [references/charts-patterns.md](references/charts-patterns.md) for extended patterns, accessibility, and
-theming guidance.
+See [references/charts-patterns.md](references/charts-patterns.md) for extended patterns, 3D charts, accessibility, and theming guidance.
 
 ## Contents
 
@@ -25,6 +24,7 @@ theming guidance.
 - [Annotations](#annotations)
 - [Legend](#legend)
 - [Vectorized Plots (iOS 18+)](#vectorized-plots-ios-18)
+- [3D Charts (iOS 26+)](#3d-charts-ios-26)
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
 - [References](#references)
@@ -35,13 +35,13 @@ theming guidance.
 
 1. Define data as an `Identifiable` struct or use `id:` key path.
 2. Choose mark type(s): `BarMark`, `LineMark`, `PointMark`, `AreaMark`,
-   `RuleMark`, `RectangleMark`, or `SectorMark`.
-3. Wrap marks in a `Chart` container.
+   `RuleMark`, `RectangleMark`, `SectorMark`, or `SurfacePlot`.
+3. Wrap 2D marks in `Chart`; use `Chart3D` only for real spatial or surface data.
 4. Encode visual channels: `.foregroundStyle(by:)`, `.symbol(by:)`, `.lineStyle(by:)`.
 5. Configure axes with `.chartXAxis` / `.chartYAxis`.
 6. Set scale domains with `.chartXScale(domain:)` / `.chartYScale(domain:)`.
 7. Add selection, scrolling, or annotations as needed.
-8. For 1000+ data points, use vectorized plots (`BarPlot`, `LinePlot`, etc.).
+8. For 1000+ 2D data points, use vectorized plots (`BarPlot`, `LinePlot`, etc.).
 
 ### 2. Review existing chart code
 
@@ -157,7 +157,7 @@ RectangleMark(x: .value("Hour", item.hour), y: .value("Day", item.day))
 ```
 
 ### SectorMark (iOS 17+)
-
+Use `SectorMark` for strictly positive values; filter, aggregate, or explain zero/negative values outside the pie or donut.
 ```swift
 // Pie chart
 Chart(data, id: \.name) { item in
@@ -232,7 +232,7 @@ AreaMark(...).foregroundStyle(                                         // Gradie
 ```swift
 @State private var selectedDate: Date?
 @State private var selectedRange: ClosedRange<Date>?
-@State private var selectedAngle: String?
+@State private var selectedAngle: Double?
 
 // Point selection
 Chart(data) { item in
@@ -243,7 +243,7 @@ Chart(data) { item in
 // Range selection
 .chartXSelection(range: $selectedRange)
 
-// Angular selection (pie/donut)
+// Angular selection binds the plottable angle value; derive the category from ranges.
 .chartAngleSelection(value: $selectedAngle)
 ```
 
@@ -322,29 +322,31 @@ BarPlot(data, x: .value("X", \.x), y: .value("Y", \.y))
     .opacity(0.8)                // Value modifier second
 ```
 
-## Common Mistakes
+## 3D Charts (iOS 26+)
 
-### 1. Using ObservableObject instead of `@Observable`
+Use `Chart3D` for spatial data or bivariate surfaces, not as a decorative
+replacement for ordinary 2D categorical or time-series charts. `Chart3D`
+accepts `SurfacePlot` plus 3D initializers of `PointMark`, `RuleMark`, and
+`RectangleMark`.
 
 ```swift
-// WRONG
-class ChartModel: ObservableObject {
-    @Published var data: [Sale] = []
-}
-struct ChartView: View {
-    @StateObject private var model = ChartModel()
-}
+@State private var pose: Chart3DPose = .default
 
-// CORRECT
-@Observable class ChartModel {
-    var data: [Sale] = []
+Chart3D {
+    SurfacePlot(x: "x", y: "y", z: "z") { x, z in
+        sin(2 * x) * cos(2 * z)
+    }
+    .foregroundStyle(.heightBased)
 }
-struct ChartView: View {
-    @State private var model = ChartModel()
-}
+.chartXScale(domain: -2...2)
+.chartYScale(domain: -1...1)
+.chartZScale(domain: -2...2)
+.chart3DPose($pose)
 ```
 
-### 2. Missing series parameter for multi-line charts
+## Common Mistakes
+
+### 1. Missing series parameter for multi-line charts
 
 ```swift
 // WRONG -- all points connect into one line
@@ -363,7 +365,7 @@ Chart {
 }
 ```
 
-### 3. Too many SectorMark slices
+### 2. Too many SectorMark slices
 
 ```swift
 // WRONG -- 20 tiny sectors are unreadable
@@ -378,7 +380,7 @@ Chart(groupedData, id: \.name) { item in
 }
 ```
 
-### 4. Missing scale domain when zero-baseline matters
+### 3. Missing scale domain when zero-baseline matters
 
 ```swift
 // WRONG -- axis starts at ~95; small changes look dramatic
@@ -393,7 +395,7 @@ Chart(data) {
 .chartYScale(domain: 0...100)
 ```
 
-### 5. Static foregroundStyle overriding data encoding
+### 4. Static foregroundStyle overriding data encoding
 
 ```swift
 // WRONG -- static color overrides by-value encoding
@@ -406,7 +408,7 @@ BarMark(x: .value("X", item.x), y: .value("Y", item.y))
     .foregroundStyle(by: .value("Category", item.category))
 ```
 
-### 6. Individual marks for 10,000+ data points
+### 5. Individual marks for 10,000+ data points
 
 ```swift
 // WRONG -- creates 10,000 mark views; slow
@@ -420,7 +422,7 @@ Chart {
 }
 ```
 
-### 7. Fixed chart height breaking Dynamic Type
+### 6. Fixed chart height breaking Dynamic Type
 
 ```swift
 // WRONG -- clips axis labels at large text sizes
@@ -432,7 +434,7 @@ Chart(data) { ... }
     .frame(minHeight: 200, maxHeight: 400)
 ```
 
-### 8. KeyPath modifier after value modifier on vectorized plots
+### 7. KeyPath modifier after value modifier on vectorized plots
 
 ```swift
 // WRONG -- compiler error
@@ -446,7 +448,7 @@ BarPlot(data, x: .value("X", \.x), y: .value("Y", \.y))
     .opacity(0.8)
 ```
 
-### 9. Missing accessibility labels
+### 8. Missing accessibility labels
 
 ```swift
 // WRONG -- VoiceOver users get no context
@@ -462,19 +464,26 @@ Chart(data) { item in
 }
 ```
 
+### 9. Treating angle selection as category selection
+
+`chartAngleSelection(value:)` binds the selected plottable angle value. For
+pie and donut charts, map that numeric value through cumulative sector ranges
+before comparing it to a category label.
+
 ## Review Checklist
 
 - [ ] Data model uses `Identifiable` or chart uses `id:` key path
-- [ ] Model uses `@Observable` with `@State`, not `ObservableObject`
 - [ ] Mark type matches goal (bar=comparison, line=trend, sector=proportion)
 - [ ] Multi-series lines use `series:` parameter or `.foregroundStyle(by:)`
 - [ ] Axes configured with appropriate labels, ticks, and grid lines
 - [ ] Scale domain set explicitly when zero-baseline matters
-- [ ] Pie/donut limited to 5-7 sectors; small values grouped into "Other"
+- [ ] Pie/donut uses positive values, 5-7 sectors, and "Other" grouping
 - [ ] Selection binding type matches axis data type (`Date?` for date axis)
+- [ ] Pie/donut angle selection maps numeric angle values back to categories
 - [ ] Scrollable charts set `.chartXVisibleDomain(length:)` for viewport
 - [ ] Vectorized plots used for datasets exceeding 1000 points
 - [ ] KeyPath modifiers applied before value modifiers on vectorized plots
+- [ ] `Chart3D` used only for real 3D data or surfaces, with z scale and pose reviewed
 - [ ] Accessibility labels added to marks for VoiceOver
 - [ ] Chart tested with Dynamic Type and Dark Mode
 - [ ] Legend visible and positioned, or intentionally hidden
@@ -485,3 +494,6 @@ Chart(data) { item in
 - Extended patterns: [references/charts-patterns.md](references/charts-patterns.md)
 - Apple docs: [Swift Charts](https://sosumi.ai/documentation/charts)
 - Apple docs: [Creating a chart using Swift Charts](https://sosumi.ai/documentation/charts/Creating-a-chart-using-Swift-Charts)
+- Apple docs: [Swift Charts updates](https://sosumi.ai/documentation/updates/swiftcharts)
+- Apple docs: [Chart3D](https://sosumi.ai/documentation/charts/Chart3D)
+- Apple docs: [SurfacePlot](https://sosumi.ai/documentation/charts/SurfacePlot)

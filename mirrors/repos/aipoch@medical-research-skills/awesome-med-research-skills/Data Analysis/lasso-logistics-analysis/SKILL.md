@@ -1,10 +1,7 @@
 ---
 name: lasso-logistics-analysis
-description: Use when building a binary classification model from an expression matrix or other omics feature matrix with LASSO logistic regression, cross-validation, and coefficient path visualization. NOT for: multiclass classification, survival/Cox models, or ordinary linear regression.
-license: MIT
-author: AIPOCH
+description: "Use when building a binary classification model from an expression matrix or other omics feature matrix with LASSO logistic regression, cross-validation, and coefficient path visualization. NOT for: multiclass classification, survival/Cox models, or ordinary linear regression."
 ---
-> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # LASSO Logistic Regression Analysis
 

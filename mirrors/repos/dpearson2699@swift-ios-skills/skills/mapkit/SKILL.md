@@ -10,8 +10,10 @@ MapKit and modern CoreLocation async APIs. Use `Map` with `MapContentBuilder`
 for views, `CLLocationUpdate.liveUpdates()` for streaming location, and
 `CLMonitor` for geofencing.
 
-See [references/mapkit-patterns.md](references/mapkit-patterns.md) for extended MapKit patterns and
-[references/mapkit-corelocation-patterns.md](references/mapkit-corelocation-patterns.md) for CoreLocation patterns.
+Read [references/mapkit-patterns.md](references/mapkit-patterns.md) when you need full map setup, search,
+routes, Look Around, snapshots, or iOS 26 place APIs. Read
+[references/mapkit-corelocation-patterns.md](references/mapkit-corelocation-patterns.md) when the task involves
+location update lifecycle, geofencing, background location, testing, or privacy keys.
 
 ## Contents
 
@@ -195,25 +197,36 @@ Map(selection: $selectedMarker) {
 
 Replace `CLLocationManagerDelegate` callbacks with a single async sequence.
 Each iteration yields a `CLLocationUpdate` containing an optional `CLLocation`.
+On iOS 18+, handle diagnostic states such as denied authorization, globally
+disabled Location Services, unavailable location, and insufficient in-use
+conditions with a visible degraded path instead of silently waiting forever.
+Store the task so the feature can cancel it, and reject invalid, inaccurate,
+stale, or unusable movement data before driving map UI or background work.
 
 ```swift
 import CoreLocation
 
+@MainActor
 @Observable
-final class LocationTracker: @unchecked Sendable {
+final class LocationTracker {
     var currentLocation: CLLocation?
     private var updateTask: Task<Void, Never>?
 
     func startTracking() {
         updateTask = Task {
-            let updates = CLLocationUpdate.liveUpdates()
-            for try await update in updates {
-                guard let location = update.location else { continue }
-                // Filter by horizontal accuracy
-                guard location.horizontalAccuracy < 50 else { continue }
-                await MainActor.run {
-                    self.currentLocation = location
+            do {
+                let updates = CLLocationUpdate.liveUpdates()
+                for try await update in updates {
+                    guard let location = update.location else { continue }
+                    // Filter by horizontal accuracy
+                    guard location.horizontalAccuracy >= 0,
+                          location.horizontalAccuracy < 50 else { continue }
+                    currentLocation = location
                 }
+            } catch is CancellationError {
+                // Expected when tracking stops.
+            } catch {
+                currentLocation = nil
             }
         }
     }
@@ -411,10 +424,9 @@ func getETA(from source: MKMapItem, to destination: MKMapItem) async throws -> T
 }
 ```
 
-### Cycling Directions (iOS 26+)
+### Cycling Directions (iOS 14+)
 
 ```swift
-@available(iOS 26, *)
 func getCyclingDirections(to destination: MKMapItem) async throws -> MKRoute? {
     let request = MKDirections.Request()
     request.source = MKMapItem.forCurrentLocation()
@@ -432,6 +444,8 @@ Create rich place references from coordinates or addresses without needing a
 Place ID. Requires `import GeoToolbox`.
 
 ```swift
+import GeoToolbox
+
 @available(iOS 26, *)
 func lookupPlace(name: String, coordinate: CLLocationCoordinate2D) async throws -> MKMapItem {
     let descriptor = PlaceDescriptor(
@@ -445,14 +459,19 @@ func lookupPlace(name: String, coordinate: CLLocationCoordinate2D) async throws 
 
 ## Common Mistakes
 
-**DON'T:** Request `.authorizedAlways` upfront — users distrust broad permissions.
-**DO:** Start with `.requestWhenInUseAuthorization()`, escalate to `.always` only when the user enables a background feature.
+**DON'T:** Request always authorization upfront.
+**DO:** Start with when-in-use authorization. On iOS 18+, hold a `CLServiceSession`
+for the feature lifetime; request `.always` only for background features that
+need system relaunch after termination.
 
 **DON'T:** Use `CLLocationManagerDelegate` for simple location fetches on iOS 17+.
 **DO:** Use `CLLocationUpdate.liveUpdates()` async stream for cleaner, more concise code.
 
-**DON'T:** Keep location updates running when the map/view is not visible (drains battery).
-**DO:** Use `.task { }` in SwiftUI so updates cancel automatically on disappear.
+**DON'T:** Ignore `CLLocationUpdate` diagnostics such as denied, globally denied, or unavailable location.
+**DO:** Stop or degrade the feature, show recovery UI such as Settings guidance, and keep search/manual flows usable.
+
+**DON'T:** Let `liveUpdates()` run from an unowned task after the map/view is gone.
+**DO:** Store the `Task`, cancel it when the feature stops, and filter invalid, inaccurate, stale, or impossible movement fixes.
 
 **DON'T:** Force-unwrap `CLPlacemark` properties — they are all optional.
 **DO:** Use nil-coalescing: `placemark.locality ?? "Unknown"`.

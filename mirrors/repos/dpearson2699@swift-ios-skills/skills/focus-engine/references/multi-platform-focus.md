@@ -18,7 +18,8 @@ on the Siri Remote.
 
 ### Key Differences from iOS
 
-- All interactive elements must be focusable — there is no touch.
+- All actions must be reachable through focus movement and select/activate;
+  there is no touch path to fall back on.
 - The focus engine moves focus automatically based on geometry; you cannot
   programmatically set focus to an arbitrary item without the engine's consent.
 - `UIFocusEnvironment.preferredFocusEnvironments` determines the preferred
@@ -105,11 +106,14 @@ struct CrownScrollView: View {
 Focus on watchOS is simpler than tvOS — most views are linearly scrollable
 and focus is implicit via the crown/scroll position.
 
-## visionOS Focus
+## visionOS Focus and Hover
 
-visionOS uses **gaze and hand tracking** for focus. The system determines
-which element the user is looking at and highlights it. Pinch gestures act
-as taps.
+visionOS supports the focus system for connected input devices such as
+keyboards and game controllers. When a person looks at, directly touches, or
+points at a virtual object, the system uses hover feedback, not focus, to show
+the interaction target. Keep these paths separate: focus is for
+keyboard/game-controller navigation, while gaze, direct touch, hand input, and
+pointer input use hover effects and gestures.
 
 ### Hover Effects
 
@@ -122,10 +126,11 @@ Button("Action") { }
     .hoverEffect(.lift)       // Raises the element
 ```
 
-### RealityKit Focus
+### RealityKit Hover and Input Targets
 
-In RealityKit scenes, use `InputTargetComponent` and `HoverEffectComponent`
-to make entities respond to gaze:
+In RealityKit scenes, use `InputTargetComponent`, `HoverEffectComponent`, and
+a `CollisionComponent` to make entities receive system input and show hover
+feedback:
 
 ```swift
 let entity = ModelEntity(mesh: .generateBox(size: 0.1))
@@ -134,11 +139,16 @@ entity.components.set(HoverEffectComponent())
 entity.components.set(CollisionComponent(shapes: [.generateBox(size: [0.1, 0.1, 0.1])]))
 ```
 
+`HoverEffectComponent` is visual feedback for gaze, direct touch, or pointer
+hover. It is not a callback mechanism, does not move SwiftUI `@FocusState`, and
+does not make an entity part of the focus system.
+
 ### Accessibility in visionOS
 
-Users who cannot use gaze tracking rely on Switch Control, Voice Control,
-or pointer devices. Ensure all focusable elements have proper accessibility
-labels and traits.
+Do not expand this skill into VoiceOver, Switch Control, Voice Control, or
+accessibility focus ordering. Mention that those details belong in the
+`ios-accessibility` skill, then keep this reference focused on keyboard,
+game-controller, hover, and RealityKit input-target behavior.
 
 ## macOS Focus
 

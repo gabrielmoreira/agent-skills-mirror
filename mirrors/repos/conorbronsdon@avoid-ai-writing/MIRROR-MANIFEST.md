@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `conorbronsdon/avoid-ai-writing` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `conorbronsdon/avoid-ai-writing` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `conorbronsdon/avoid-ai-writing` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,7 +60,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`SKILL.md`](SKILL.md) |
+| 2 | ✓ | [`plugins/avoid-ai-writing/skills/avoid-ai-writing/SKILL.md`](plugins/avoid-ai-writing/skills/avoid-ai-writing/SKILL.md) |
+| 3 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

@@ -101,3 +101,34 @@ timestamp: <ISO8601>
 - `instructions/global-standards.instructions.md` — IT-ops bypass definition (#2142)
 - `scripts/global/hamr-provider-wrapper.js` — HAMR activation target
 - Epic #2299 — parent Epic that ratified the IT-role contract
+
+## Usage Telemetry (Refs #2351)
+
+IT-ops bypass usage is measured automatically to detect drift between the
+aspirational "fleet-first, bypass-rarely" contract and actual usage.
+
+Every time `pretool_guard.py` grants an IT-ops bypass (`allow` decision), it
+emits a best-effort event to `~/.megingjord/it-bypass-usage.jsonl`:
+
+```json
+{"ts":"...","marker":"commit-subject-marker","commit_sha":"abc1234",
+ "justification":"chore(it-ops): pull qwen2.5-coder:32b [it-ops]"}
+```
+
+Three marker values are recorded:
+
+| Marker value | Source |
+|---|---|
+| `env:MEGINGJORD_IT_OPS=1` | Environment variable on commit/run |
+| `commit-subject-marker` | `[it-ops]` literal or `chore(it-ops):` prefix in commit subject |
+
+Run the weekly aggregator to see per-marker-per-week counts:
+
+```bash
+npm run it-ops:usage-report
+```
+
+A Tier-2 anneal event fires automatically when any marker exceeds 5 uses per
+week (configurable via `IT_BYPASS_THRESHOLD` env var). High bypass frequency
+is a signal that recurring IT work should be formalized as a service or cron
+job rather than manual operator bypasses.

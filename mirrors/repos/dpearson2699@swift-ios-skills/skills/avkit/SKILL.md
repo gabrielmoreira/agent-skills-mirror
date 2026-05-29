@@ -26,22 +26,32 @@ subtitle/caption display. Targets Swift 6.3 / iOS 26+.
 
 ### Audio Session Configuration
 
-Configure the audio session and background modes before any playback. Without
-this, PiP and background audio fail silently.
+Playback apps need an audio session category and the matching background mode
+when they support background audio, AirPlay, or PiP.
 
-1. Add the `audio` background mode to `UIBackgroundModes` in Info.plist
+1. Enable Background Modes > Audio, AirPlay, and Picture in Picture (the
+   `audio` value in `UIBackgroundModes`)
 2. Set the audio session category to `.playback`
+3. Defer `setActive(true)` until playback begins so you do not interrupt other
+   audio prematurely
 
 ```swift
 import AVFoundation
 
-func configureAudioSession() {
+func configureAudioSessionForPlayback() {
     let session = AVAudioSession.sharedInstance()
     do {
         try session.setCategory(.playback, mode: .moviePlayback)
-        try session.setActive(true)
     } catch {
-        print("Audio session configuration failed: \(error)")
+        print("Audio session category failed: \(error)")
+    }
+}
+
+func activateAudioSessionWhenPlaybackBegins() {
+    do {
+        try AVAudioSession.sharedInstance().setActive(true)
+    } catch {
+        print("Audio session activation failed: \(error)")
     }
 }
 ```
@@ -162,7 +172,9 @@ struct PlayerView: View {
 
 ### Video Overlay
 
-Add a non-interactive SwiftUI overlay on top of video content.
+Add a SwiftUI overlay above the video content and below the system playback
+controls. The overlay can be interactive, but it only receives events the system
+controls do not handle.
 
 ```swift
 VideoPlayer(player: player) {
@@ -189,13 +201,19 @@ pattern in [references/avkit-patterns.md](references/avkit-patterns.md).
 ## Picture-in-Picture
 
 PiP lets users watch video in a floating window while using other apps.
-`AVPlayerViewController` supports PiP automatically once the audio session is
-configured. For custom player UIs, use `AVPictureInPictureController` directly.
+`AVPlayerViewController` supports PiP automatically once the app is configured,
+the device supports PiP, and the current `AVPlayerItem` is playable video
+content in an `AVPlayer`-compatible format. Audio-only items, unsupported
+containers/codecs, or items that are not ready to display video can make PiP
+unavailable even when app and device setup are correct. For custom player UIs,
+use `AVPictureInPictureController` directly.
 
 ### Prerequisites
 
 1. Audio session category set to `.playback` (see [Setup](#setup))
-2. `audio` background mode in `UIBackgroundModes`
+2. Background Modes > Audio, AirPlay, and Picture in Picture enabled
+3. Ready `AVPlayerItem` with playable video media, not audio-only content
+4. Current playback context allows PiP; for custom players, observe `isPictureInPicturePossible`
 
 ### Standard Player PiP
 
@@ -234,20 +252,30 @@ func playerViewController(
 ### Custom Player PiP
 
 For custom player UIs, use `AVPictureInPictureController` with an `AVPlayerLayer`
-or sample buffer content source. Check `isPictureInPictureSupported()` first.
-See [references/avkit-patterns.md](references/avkit-patterns.md) for full custom player and sample buffer
-PiP patterns.
+or sample buffer content source. Check device support before creating PiP UI,
+then check the controller's `isPictureInPicturePossible` before starting PiP in
+the current playback context. See [references/avkit-patterns.md](references/avkit-patterns.md)
+for full custom player and sample buffer PiP patterns.
 
 ```swift
 guard AVPictureInPictureController.isPictureInPictureSupported() else { return }
 let pipController = AVPictureInPictureController(playerLayer: playerLayer)
 pipController.delegate = self
 pipController.canStartPictureInPictureAutomaticallyFromInline = true
+
+// Call this from the user's PiP button action, never automatically.
+if pipController.isPictureInPicturePossible {
+    pipController.startPictureInPicture()
+}
 ```
 
 ### Linear Playback During Ads
 
-Prevent seeking during ads or legal notices by toggling `requiresLinearPlayback`:
+Interstitial breaks can come from the media stream/manifest, which AVFoundation
+exposes through `AVPlayerItem.interstitialTimeRanges`, or from an app-owned
+`AVPlayerInterstitialEventController` schedule. Do not assign
+`interstitialTimeRanges` directly on iOS. Use `requiresLinearPlayback` only to
+prevent seeking during required ad or legal segments:
 
 ```swift
 // During an ad
@@ -259,7 +287,8 @@ playerVC.requiresLinearPlayback = false
 
 ## AirPlay
 
-`AVPlayerViewController` supports AirPlay automatically. No additional code is
+`AVPlayerViewController` supports AirPlay automatically when app configuration,
+media, routes, and device support allow external playback. No additional code is
 required when using the standard player. The system displays the AirPlay button
 in the transport controls when AirPlay-capable devices are available.
 
@@ -278,14 +307,18 @@ func addRoutePicker(to containerView: UIView) {
 }
 ```
 
-### Enabling External Playback
+### External Playback
 
-Ensure `AVPlayer` allows external playback (enabled by default):
+`AVPlayer` allows external playback by default. Leave it enabled for AirPlay,
+or set it explicitly when code elsewhere may disable it:
 
 ```swift
 player.allowsExternalPlayback = true
-player.usesExternalPlaybackWhileExternalScreenIsActive = true
 ```
+
+Set `usesExternalPlaybackWhileExternalScreenIsActive` only when you want the
+player to automatically switch to external playback while an external screen
+mode is active.
 
 ## Transport Controls and Playback Speed
 
@@ -305,14 +338,12 @@ playerVC.speeds = [
 
 Use `AVPlaybackSpeed.systemDefaultSpeeds` to restore the default speed options.
 
-### Skipping Behavior
+### Skipping and Seeking
 
-Configure forward/backward skip controls:
-
-```swift
-playerVC.isSkipForwardEnabled = true
-playerVC.isSkipBackwardEnabled = true
-```
+On iOS, use the standard transport controls and `AVPlayer.seek(...)` for custom
+app controls. `AVPlayerViewController` skipping behavior APIs such as
+`isSkipForwardEnabled`, `isSkipBackwardEnabled`, and `skippingBehavior` are
+tvOS-focused; keep them out of iOS player implementations.
 
 ### Now Playing Integration
 
@@ -329,42 +360,30 @@ AVKit handles subtitle and closed caption display automatically when the media
 contains appropriate text tracks. Users control subtitle preferences in
 Settings > Accessibility > Subtitles & Captioning.
 
-### Restricting Subtitle Languages
+### Programmatic Selection
 
 ```swift
-// Only show English and Spanish subtitle options
-playerVC.allowedSubtitleOptionLanguages = ["en", "es"]
-```
+let asset = player.currentItem?.asset
 
-### Requiring Subtitles
-
-Force subtitles to always display (the user cannot turn them off):
-
-```swift
-playerVC.requiresFullSubtitles = true
-```
-
-### Media Selection (Delegate)
-
-Respond to the user changing subtitle or audio track selection:
-
-```swift
-func playerViewController(
-    _ playerViewController: AVPlayerViewController,
-    didSelect mediaSelectionOption: AVMediaSelectionOption?,
-    in mediaSelectionGroup: AVMediaSelectionGroup
-) {
-    if let option = mediaSelectionOption {
-        print("Selected: \(option.displayName)")
-    }
+if let group = try await asset?.loadMediaSelectionGroup(for: .legible),
+   let english = group.options.first(where: { option in
+       option.locale?.language.languageCode?.identifier == "en"
+   }) {
+    player.currentItem?.select(english, in: group)
 }
 ```
+
+`allowedSubtitleOptionLanguages`, `requiresFullSubtitles`, and the
+`AVPlayerViewControllerDelegate` media-selection callback are tvOS-only. For iOS,
+load the asset's `.legible` media selection group and select an option on the
+`AVPlayerItem` when the app needs a default.
 
 ### Providing Subtitle Tracks in HLS
 
 Subtitles and closed captions are embedded in HLS manifests. AVKit reads them
-from `AVMediaSelectionGroup` on the `AVAsset`. For local files, use
-`AVMutableComposition` to add `AVMediaCharacteristic.legible` tracks.
+from `AVMediaSelectionGroup` on the `AVAsset`. For local files, use media that
+already includes legible subtitle or closed-caption tracks, or author those
+tracks into the playable asset before presenting it with AVKit.
 
 ## Common Mistakes
 
@@ -384,15 +403,15 @@ playerVC.delegate = coordinator
 
 ### DON'T: Skip audio session configuration for PiP
 
-PiP fails silently if the audio session is not set to `.playback`. Background
-audio also stops working.
+PiP and background playback depend on the playback audio session category and
+the Audio, AirPlay, and Picture in Picture background mode.
 
 ```swift
 // WRONG: Default audio session
 let playerVC = AVPlayerViewController()
 playerVC.player = player // PiP won't work
 
-// CORRECT: Configure audio session first
+// CORRECT: Configure the category, then activate when playback starts
 try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
 try AVAudioSession.sharedInstance().setActive(true)
 let playerVC = AVPlayerViewController()
@@ -447,14 +466,19 @@ struct PlayerView: View {
 ## Review Checklist
 
 - [ ] Audio session category set to `.playback` with `mode: .moviePlayback`
-- [ ] `audio` background mode added to `UIBackgroundModes` in Info.plist
+- [ ] Audio session activation deferred until playback begins
+- [ ] Audio, AirPlay, and Picture in Picture background mode added to `UIBackgroundModes`
 - [ ] `AVPlayerViewController` is not subclassed
+- [ ] PiP tested with supported video media, not only app/device setup
 - [ ] PiP restore delegate method implemented and calls `completionHandler(true)`
+- [ ] Custom PiP checks both device support and current `isPictureInPicturePossible`
+- [ ] Custom PiP starts only from explicit user interaction
 - [ ] `AVPlayer` deferred to `.task` in SwiftUI (not created eagerly)
 - [ ] `canStartPictureInPictureAutomaticallyFromInline` set for inline players
 - [ ] `requiresLinearPlayback` toggled only during required ad/legal segments
-- [ ] `allowsExternalPlayback` enabled on `AVPlayer` for AirPlay support
-- [ ] Subtitle language restrictions tested with actual media tracks
+- [ ] tvOS-only skipping APIs are not used for iOS transport controls
+- [ ] External playback is not disabled accidentally when AirPlay is required
+- [ ] Subtitle selection tested with actual media tracks
 - [ ] Video gravity set appropriately (`.resizeAspect` vs `.resizeAspectFill`)
 - [ ] `isReadyForDisplay` observed before showing the player view
 - [ ] Error handling for network-streamed content (HLS failures, timeouts)

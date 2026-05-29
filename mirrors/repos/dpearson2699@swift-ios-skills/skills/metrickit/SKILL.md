@@ -1,6 +1,6 @@
 ---
 name: metrickit
-description: "Collect and analyze on-device performance metrics and crash diagnostics using MetricKit. Use when setting up MXMetricManager, handling MXMetricPayload or MXDiagnosticPayload, processing crash/hang/disk-write diagnostics via MXCallStackTree, adding custom signpost metrics, or uploading telemetry to an analytics backend."
+description: "Collect and analyze on-device performance metrics and crash diagnostics using MetricKit. Use when setting up MXMetricManager, handling MXMetricPayload or MXDiagnosticPayload, processing crash/hang/disk-write diagnostics via MXCallStackTree, adding custom signpost metrics, correcting mxSignpost or extended launch measurement code, or uploading telemetry to an analytics backend."
 ---
 
 # MetricKit
@@ -8,8 +8,8 @@ description: "Collect and analyze on-device performance metrics and crash diagno
 Collect aggregated performance metrics and crash diagnostics from production
 devices using MetricKit. The framework delivers daily metric payloads (CPU,
 memory, launch time, hang rate, animation hitches, network usage) and
-immediate diagnostic payloads (crashes, hangs, disk-write exceptions) with
-full call-stack trees for triage.
+diagnostic payloads (crashes, hangs, disk-write exceptions) with call-stack
+trees for triage.
 
 ## Contents
 
@@ -22,6 +22,7 @@ full call-stack trees for triage.
 - [Exporting and Uploading Payloads](#exporting-and-uploading-payloads)
 - [Extended Launch Measurement](#extended-launch-measurement)
 - [Xcode Organizer Integration](#xcode-organizer-integration)
+- [Scope Boundaries](#scope-boundaries)
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
 - [References](#references)
@@ -31,6 +32,9 @@ full call-stack trees for triage.
 Register a subscriber as early as possible — ideally in
 `application(_:didFinishLaunchingWithOptions:)` or `App.init`. MetricKit
 starts accumulating reports after the first access to `MXMetricManager.shared`.
+When backfilling, state precisely that `pastPayloads` and
+`pastDiagnosticPayloads` return reports generated since the last allocation of
+the shared manager instance.
 
 ```swift
 import MetricKit
@@ -39,7 +43,12 @@ final class MetricsSubscriber: NSObject, MXMetricManagerSubscriber {
     static let shared = MetricsSubscriber()
 
     func subscribe() {
-        MXMetricManager.shared.add(self)
+        let manager = MXMetricManager.shared
+        manager.add(self)
+
+        // Reports generated since the last allocation of the shared manager.
+        processMetricPayloads(manager.pastPayloads)
+        processDiagnosticPayloads(manager.pastDiagnosticPayloads)
     }
 
     func unsubscribe() {
@@ -47,11 +56,11 @@ final class MetricsSubscriber: NSObject, MXMetricManagerSubscriber {
     }
 
     func didReceive(_ payloads: [MXMetricPayload]) {
-        // Handle daily metrics
+        processMetricPayloads(payloads)
     }
 
     func didReceive(_ payloads: [MXDiagnosticPayload]) {
-        // Handle diagnostics (crashes, hangs, disk writes)
+        processDiagnosticPayloads(payloads)
     }
 }
 ```
@@ -99,55 +108,70 @@ func didReceive(_ payloads: [MXMetricPayload]) {
         let jsonData = payload.jsonRepresentation()
         persistPayload(jsonData, from: begin, to: end)
 
-        processMetrics(payload)
+        enqueueMetricProcessing(jsonData)
     }
 }
 ```
 
-**Availability**: `MXMetricPayload` — iOS 13.0+, macOS 10.15+, visionOS 1.0+
+**Availability**: `MXMetricPayload` — iOS 13.0+, iPadOS 13.0+,
+Mac Catalyst 13.1+, macOS 10.15+, visionOS 1.0+
 
 ## Receiving Diagnostic Payloads
 
 `MXDiagnosticPayload` delivers crash, hang, CPU exception, disk-write, and
-app-launch diagnostics. On iOS 15+ and macOS 12+, diagnostics arrive
-immediately rather than bundled with the daily report.
+app-launch diagnostics where supported. On iOS 15+ and macOS 12+, supported
+diagnostics can arrive as soon as available rather than bundled with the daily
+report.
 
 ```swift
 func didReceive(_ payloads: [MXDiagnosticPayload]) {
     for payload in payloads {
         let jsonData = payload.jsonRepresentation()
         persistPayload(jsonData)
-
-        if let crashes = payload.crashDiagnostics {
-            for crash in crashes {
-                handleCrash(crash)
-            }
-        }
-        if let hangs = payload.hangDiagnostics {
-            for hang in hangs {
-                handleHang(hang)
-            }
-        }
-        if let diskWrites = payload.diskWriteExceptionDiagnostics {
-            for diskWrite in diskWrites {
-                handleDiskWrite(diskWrite)
-            }
-        }
-        if let cpuExceptions = payload.cpuExceptionDiagnostics {
-            for cpuException in cpuExceptions {
-                handleCPUException(cpuException)
-            }
-        }
-        if let launchDiags = payload.appLaunchDiagnostics {
-            for launchDiag in launchDiags {
-                handleSlowLaunch(launchDiag)
-            }
-        }
+        enqueueDiagnosticProcessing(jsonData)
     }
 }
 ```
 
-**Availability**: `MXDiagnosticPayload` — iOS 14.0+, macOS 12.0+, visionOS 1.0+
+In the background processor, inspect the typed diagnostic arrays after the raw
+payload is durable:
+
+```swift
+func processDiagnosticPayload(_ payload: MXDiagnosticPayload) {
+    if let crashes = payload.crashDiagnostics {
+        for crash in crashes {
+            handleCrash(crash)
+        }
+    }
+    if let hangs = payload.hangDiagnostics {
+        for hang in hangs {
+            handleHang(hang)
+        }
+    }
+    if let diskWrites = payload.diskWriteExceptionDiagnostics {
+        for diskWrite in diskWrites {
+            handleDiskWrite(diskWrite)
+        }
+    }
+    if let cpuExceptions = payload.cpuExceptionDiagnostics {
+        for cpuException in cpuExceptions {
+            handleCPUException(cpuException)
+        }
+    }
+    #if os(iOS) || targetEnvironment(macCatalyst) || os(visionOS)
+    if #available(iOS 16.0, macCatalyst 16.0, visionOS 1.0, *),
+       let launchDiagnostics = payload.appLaunchDiagnostics {
+        for launchDiagnostic in launchDiagnostics {
+            handleSlowLaunch(launchDiagnostic)
+        }
+    }
+    #endif
+}
+```
+
+**Availability**: `MXDiagnosticPayload` — iOS 14.0+, iPadOS 14.0+,
+Mac Catalyst 14.0+, macOS 12.0+, visionOS 1.0+. `appLaunchDiagnostics`
+requires iOS 16.0+, iPadOS 16.0+, Mac Catalyst 16.0+, or visionOS 1.0+.
 
 ## Key Metrics
 
@@ -217,37 +241,58 @@ if let exits = payload.applicationExitMetrics {
 
 See [references/metrickit-patterns.md](references/metrickit-patterns.md) for crash/hang handling code and JSON structure details.
 
-**Availability**: `MXCallStackTree` — iOS 14.0+, macOS 12.0+, visionOS 1.0+
+**Availability**: `MXCallStackTree` — iOS 14.0+, iPadOS 14.0+,
+Mac Catalyst 14.0+, macOS 12.0+, visionOS 1.0+
 
 ## Custom Signpost Metrics
 
 Use `mxSignpost` with a MetricKit log handle to capture custom performance
-intervals. These appear in the daily `MXMetricPayload` under `signpostMetrics`.
+intervals. Leave the advanced `dso`, `signpostID`, and `format` parameters at
+their documented defaults. Custom metrics appear in the daily `MXMetricPayload`
+under `signpostMetrics`; call that out when reviewing custom MetricKit
+instrumentation. When correcting custom signpost code, explicitly name
+`MXMetricPayload.signpostMetrics` so the caller knows where the data lands.
+Do not allocate or pass an `OSSignpostID` for the basic MetricKit pattern; use
+the defaulted `mxSignpost(.begin/.end, log:name:)` calls unless there is a
+specific overlapping-interval reason to do otherwise.
 
 ```swift
 let metricLog = MXMetricManager.makeLogHandle(category: "Networking")
+mxSignpost(.begin, log: metricLog, name: "DataFetch")
+defer { mxSignpost(.end, log: metricLog, name: "DataFetch") }
+
+let data = try await fetchData()
 ```
 
 See [references/metrickit-patterns.md](references/metrickit-patterns.md) for signpost emission patterns and reading custom metrics from payloads.
 
 ## Exporting and Uploading Payloads
 
-Both payload types provide `jsonRepresentation()` for serialization. Always persist raw JSON to disk before processing — the system delivers each payload once. Use `pastPayloads` and `pastDiagnosticPayloads` on launch to recover missed deliveries.
+Both payload types provide `jsonRepresentation()` for serialization. Always
+persist raw JSON to disk before processing. Use `pastPayloads` and
+`pastDiagnosticPayloads` on launch to retrieve reports generated since the last
+allocation of the shared manager instance.
 
 See [references/metrickit-patterns.md](references/metrickit-patterns.md) for export code and past payload retrieval.
 
 ## Extended Launch Measurement
 
-Track post-first-draw setup work as part of the launch metric:
+Track post-first-draw setup work as part of the launch metric on iOS 16+,
+iPadOS 16+, Mac Catalyst 16+, macOS 13+, and visionOS 1+:
 
 ```swift
 let taskID = MXLaunchTaskID("com.example.app.loadDatabase")
-MXMetricManager.shared.extendLaunchMeasurement(forTaskID: taskID)
-await database.load()
-MXMetricManager.shared.finishExtendedLaunchMeasurement(forTaskID: taskID)
+try MXMetricManager.extendLaunchMeasurement(forTaskID: taskID)
+defer { try? MXMetricManager.finishExtendedLaunchMeasurement(forTaskID: taskID) }
+restoreCachedState()
 ```
 
-Extended launch times appear under `histogrammedExtendedLaunch` in `MXAppLaunchMetric`.
+When correcting extended launch code, include the whole operational contract:
+availability is iOS/iPadOS/Mac Catalyst 16+, macOS 13+, and visionOS 1+; call
+the throwing `MXMetricManager` type methods on the main thread; start the first
+task before the first scene becomes active; keep task windows overlapping;
+finish every task; and stay within the 16-task limit. Extended launch times
+appear under `histogrammedExtendedLaunch` in `MXAppLaunchMetric`.
 
 ## Xcode Organizer Integration
 
@@ -255,12 +300,23 @@ Xcode Organizer shows aggregated MetricKit data across opted-in users. Use it fo
 
 See [references/metrickit-patterns.md](references/metrickit-patterns.md) for Organizer tab details.
 
+## Scope Boundaries
+
+Use this skill for production MetricKit ingestion, payload export, custom
+MetricKit signposts, and diagnostic upload/symbolication. Route SwiftUI runtime
+stutters, body-update cost, identity churn, and view invalidation fixes to
+`swiftui-performance`. Route local Instruments, LLDB, Memory Graph, and
+`xctrace` workflows to `debugging-instruments`. When explaining production
+telemetry, distinguish daily metric payloads from supported diagnostics that
+can arrive as soon as available.
+
 ## Common Mistakes
 
 ### DON'T: Subscribe to MXMetricManager too late
 
-The system may deliver pending payloads shortly after launch. Subscribing
-late (e.g., in a view controller) risks missing them entirely.
+Allocate `MXMetricManager.shared` and register the subscriber during app startup
+so the manager can accumulate reports and deliver any previously undelivered
+daily reports. Registering from a later view lifecycle hook is too easy to miss.
 
 ```swift
 // WRONG — subscribing in a view controller
@@ -295,8 +351,8 @@ func didReceive(_ payloads: [MXDiagnosticPayload]) { /* ... */ }
 
 ### DON'T: Process payloads without persisting first
 
-The system delivers each payload once. If your subscriber crashes during
-processing, the data is lost permanently.
+Do not assume callback delivery will repeat if your own processing fails. Save
+the raw JSON before parsing, symbolication, or upload work.
 
 ```swift
 // WRONG — process inline, crash loses data
@@ -318,8 +374,9 @@ func didReceive(_ payloads: [MXDiagnosticPayload]) {
 
 ### DON'T: Do heavy work synchronously in didReceive
 
-The callback runs on an arbitrary thread. Blocking it with heavy processing
-or synchronous network calls delays delivery of subsequent payloads.
+Apple documents that it is safe to process payloads on a separate thread. Keep
+the subscriber callback small: persist the JSON, then move expensive parsing
+or uploading out of the callback.
 
 ```swift
 // WRONG — synchronous upload in callback
@@ -348,17 +405,24 @@ MetricKit aggregates data over 24-hour windows. Payloads do not arrive
 immediately after instrumenting. Use Xcode Organizer or simulated payloads
 for faster iteration during development.
 
+### DON'T: Invent MetricKit signpost IDs
+
+`MXSignpostIntervalData.makeSignpostID(log:)` is not documented MetricKit API.
+For basic MetricKit custom metrics, create an `MXMetricManager` log handle and
+call `mxSignpost(.begin/.end, log:name:)` without `OSSignpostID` allocation or
+custom `dso`, `signpostID`, or `format` arguments.
+
 ## Review Checklist
 
 - [ ] `MXMetricManager.shared.add(subscriber)` called in `application(_:didFinishLaunchingWithOptions:)` or `App.init`
 - [ ] Subscriber conforms to `MXMetricManagerSubscriber` and inherits `NSObject`
 - [ ] Both `didReceive(_: [MXMetricPayload])` and `didReceive(_: [MXDiagnosticPayload])` implemented
 - [ ] Raw `jsonRepresentation()` persisted to disk before processing
-- [ ] Heavy processing dispatched asynchronously off the callback thread
+- [ ] Heavy processing dispatched asynchronously after raw payload persistence
 - [ ] `MXCallStackTree` JSON uploaded with dSYMs for symbolication
 - [ ] Custom signpost metrics limited to critical code paths
 - [ ] `pastPayloads` and `pastDiagnosticPayloads` checked on launch for missed deliveries
-- [ ] Extended launch tasks call both `extendLaunchMeasurement` and `finishExtendedLaunchMeasurement`
+- [ ] Extended launch tasks call the throwing `MXMetricManager` type methods on the main thread and finish every started task
 - [ ] Analytics backend accepts and stores MetricKit JSON format
 - [ ] Xcode Organizer reviewed for regression trends alongside on-device data
 

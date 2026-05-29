@@ -1,13 +1,13 @@
 ---
 name: authentication
-description: "Implement iOS authentication patterns including Sign in with Apple (ASAuthorizationAppleIDProvider, ASAuthorizationController, ASAuthorizationAppleIDCredential), credential state checking, identity token validation, ASWebAuthenticationSession for OAuth and third-party auth flows, ASAuthorizationPasswordProvider for AutoFill credential suggestions, and biometric authentication with LAContext. Use when implementing Sign in with Apple, handling Apple ID credentials, building OAuth login flows, integrating Password AutoFill, checking credential revocation state, or validating identity tokens server-side."
+description: "Implement iOS authentication flows with AuthenticationServices and LocalAuthentication. Use when building Sign in with Apple, passkey/WebAuthn registration or sign-in with ASAuthorizationPlatformPublicKeyCredentialProvider, ASAuthorizationController credential state and revocation handling, ASWebAuthenticationSession OAuth or third-party login, Password AutoFill, identity-token server validation, or local biometric re-authentication with LAContext."
 ---
 
 # Authentication
 
 Implement authentication flows on iOS using the AuthenticationServices
-framework, including Sign in with Apple, OAuth/third-party web auth,
-Password AutoFill, and biometric authentication.
+framework, including Sign in with Apple, passkeys, OAuth/third-party web
+auth, Password AutoFill, and biometric re-authentication.
 
 ## Contents
 
@@ -16,9 +16,11 @@ Password AutoFill, and biometric authentication.
 - [Credential State Checking](#credential-state-checking)
 - [Token Validation](#token-validation)
 - [Existing Account Setup Flows](#existing-account-setup-flows)
+- [Passkeys](#passkeys)
 - [ASWebAuthenticationSession (OAuth)](#aswebauthenticationsession-oauth)
 - [Password AutoFill Credentials](#password-autofill-credentials)
 - [Biometric Authentication](#biometric-authentication)
+- [Security Boundaries](#security-boundaries)
 - [SwiftUI SignInWithAppleButton](#swiftui-signinwithapplebutton)
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
@@ -110,9 +112,9 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
 | `user` | `String` | Always | Always |
 | `email` | `String?` | Provided if requested | `nil` |
 | `fullName` | `PersonNameComponents?` | Provided if requested | `nil` |
-| `identityToken` | `Data?` | JWT (Base64) | JWT (Base64) |
+| `identityToken` | `Data?` | JWT encoded as UTF-8 data | JWT encoded as UTF-8 data |
 | `authorizationCode` | `Data?` | Short-lived code | Short-lived code |
-| `realUserStatus` | `ASUserDetectionStatus` | `.likelyReal` / `.unknown` | `.unknown` |
+| `realUserStatus` | `ASUserDetectionStatus` | Fraud-prevention signal | Do not rely on later attempts |
 
 **Critical:** `email` and `fullName` are provided ONLY on the first
 authorization. Cache them immediately during the initial sign-up flow. If the
@@ -140,33 +142,31 @@ Check credential state on every app launch. The user may revoke access at
 any time via Settings > Apple Account > Sign-In & Security.
 
 ```swift
-func checkCredentialState() async {
+func checkCredentialState() {
     let provider = ASAuthorizationAppleIDProvider()
     guard let userID = loadSavedUserID() else {
         showLoginScreen()
         return
     }
 
-    do {
-        let state = try await provider.credentialState(forUserID: userID)
-        switch state {
-        case .authorized:
-            proceedToMainApp()
-        case .revoked:
-            // User revoked -- sign out and clear local data
-            signOut()
-            showLoginScreen()
-        case .notFound:
-            showLoginScreen()
-        case .transferred:
-            // App transferred to new team -- migrate user identifier
-            migrateUser()
-        @unknown default:
-            showLoginScreen()
+    provider.getCredentialState(forUserID: userID) { state, _ in
+        DispatchQueue.main.async {
+            switch state {
+            case .authorized:
+                proceedToMainApp()
+            case .revoked:
+                // User revoked -- sign out and clear local data
+                signOut()
+                showLoginScreen()
+            case .notFound:
+                showLoginScreen()
+            case .transferred:
+                // App transferred to new team -- migrate user identifier
+                migrateUser()
+            @unknown default:
+                showLoginScreen()
+            }
         }
-    } catch {
-        // Network error -- allow offline access or retry
-        proceedToMainApp()
     }
 }
 ```
@@ -244,6 +244,58 @@ Call this in `viewDidAppear` or on app launch. If no existing credentials
 are found, the delegate receives a `.notInteractive` error -- handle it
 silently and show your normal login UI.
 
+## Passkeys
+
+Use passkeys for passwordless WebAuthn-style registration and sign-in. The
+app must have an Associated Domains entitlement for the relying party domain
+using the `webcredentials:` service; passkey requests fail for services the app
+has not configured as associated domains.
+
+For platform passkeys synced through iCloud Keychain, request a server-provided
+challenge and create requests with `ASAuthorizationPlatformPublicKeyCredentialProvider`:
+
+```swift
+let challenge: Data = try await server.registrationChallenge()
+let userID: Data = try await server.passkeyUserID()
+let provider = ASAuthorizationPlatformPublicKeyCredentialProvider(
+    relyingPartyIdentifier: "example.com"
+)
+let request = provider.createCredentialRegistrationRequest(
+    challenge: challenge,
+    name: username,
+    userID: userID
+)
+
+let controller = ASAuthorizationController(authorizationRequests: [request])
+controller.delegate = self
+controller.presentationContextProvider = self
+controller.performRequests()
+```
+
+For sign-in, use `createCredentialAssertionRequest(challenge:)` with a fresh
+server challenge, then send the resulting registration or assertion object to
+the relying-party server for verification:
+
+```swift
+let request = provider.createCredentialAssertionRequest(challenge: challenge)
+
+switch authorization.credential {
+case let registration as ASAuthorizationPlatformPublicKeyCredentialRegistration:
+    try await server.finishPasskeyRegistration(registration)
+case let assertion as ASAuthorizationPlatformPublicKeyCredentialAssertion:
+    try await server.finishPasskeySignIn(assertion)
+default:
+    break
+}
+```
+
+For inline passkey suggestions, set the username field's `textContentType` to
+`.username`, include the passkey assertion request in the controller, and call
+`performAutoFillAssistedRequests()`. Use `ASAuthorizationSecurityKeyPublicKeyCredentialProvider`
+only when the user must authenticate with a physical security key. See
+[references/passkeys.md](references/passkeys.md) for complete registration,
+assertion, AutoFill, and security-key patterns.
+
 ## ASWebAuthenticationSession (OAuth)
 
 Use `ASWebAuthenticationSession` for OAuth and third-party authentication
@@ -253,6 +305,12 @@ Use `ASWebAuthenticationSession` for OAuth and third-party authentication
 import AuthenticationServices
 
 final class OAuthController: NSObject, ASWebAuthenticationPresentationContextProviding {
+    private weak var presentationAnchor: ASPresentationAnchor?
+
+    init(presentationAnchor: ASPresentationAnchor) {
+        self.presentationAnchor = presentationAnchor
+    }
+
     func startOAuthFlow() {
         let authURL = URL(string:
             "https://provider.com/oauth/authorize?client_id=YOUR_ID&redirect_uri=myapp://callback&response_type=code"
@@ -271,33 +329,18 @@ final class OAuthController: NSObject, ASWebAuthenticationPresentationContextPro
     }
 
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        ASPresentationAnchor()
-    }
-}
-```
-
-### SwiftUI WebAuthenticationSession
-
-```swift
-struct OAuthLoginView: View {
-    @Environment(\.webAuthenticationSession) private var webAuthSession
-
-    var body: some View {
-        Button("Sign in with Provider") {
-            Task {
-                let url = URL(string: "https://provider.com/oauth/authorize?client_id=YOUR_ID")!
-                let callbackURL = try await webAuthSession.authenticate(
-                    using: url, callback: .customScheme("myapp")
-                )
-                // Extract authorization code from callbackURL
-            }
+        guard let presentationAnchor else {
+            fatalError("ASWebAuthenticationSession needs the active window")
         }
+        return presentationAnchor
     }
 }
 ```
 
-Callback types: `.customScheme("myapp")` for URL scheme redirects;
-`.https(host:path:)` for universal link redirects (preferred).
+In SwiftUI, use `@Environment(\.webAuthenticationSession)` and call
+`authenticate(using:callback:preferredBrowserSession:additionalHeaderFields:)`
+with `.customScheme("myapp")` or `.https(host:path:)`; prefer `.ephemeral`
+only when the provider flow should avoid shared browser cookies.
 
 ## Password AutoFill Credentials
 
@@ -348,10 +391,11 @@ passwordField.textContentType = .password
 
 ## Biometric Authentication
 
-Use `LAContext` from LocalAuthentication for Face ID / Touch ID as a
-sign-in or re-authentication mechanism. For protecting Keychain items
-with biometric access control (`SecAccessControl`, `.biometryCurrentSet`),
-see the `swift-security` skill.
+Use `LAContext` from LocalAuthentication for local re-authentication before
+showing account settings or starting sensitive actions. Do not treat a returned
+`Bool` as proof to unlock a stored secret; protect secrets with Keychain access
+control instead. See [references/keychain-biometric.md](references/keychain-biometric.md)
+for `SecAccessControl` and `.biometryCurrentSet` patterns.
 
 ```swift
 import LocalAuthentication
@@ -376,102 +420,48 @@ func authenticateWithBiometrics() async throws -> Bool {
 **Required:** Add `NSFaceIDUsageDescription` to Info.plist. Missing this
 key crashes on Face ID devices.
 
+## Security Boundaries
+
+This skill owns user-facing account authentication: Sign in with Apple,
+passkeys, Password AutoFill, ASAuthorizationController, OAuth session
+presentation, credential state, and local biometric re-authentication. Route
+deep security work to `swift-security`: Keychain architecture/migration,
+CryptoKit, Secure Enclave, certificate pinning/trust, keychain sharing, storage
+hardening, and OWASP MASVS/MASTG. Keep only the storage minimum here: tokens and
+secrets belong in Keychain; `LAContext.evaluatePolicy` alone must not release
+protected secrets.
+
 ## SwiftUI SignInWithAppleButton
 
-```swift
-import AuthenticationServices
-
-struct AppleSignInView: View {
-    @Environment(\.colorScheme) var colorScheme
-
-    var body: some View {
-        SignInWithAppleButton(.signIn) { request in
-            request.requestedScopes = [.fullName, .email]
-        } onCompletion: { result in
-            switch result {
-            case .success(let authorization):
-                guard let credential = authorization.credential
-                    as? ASAuthorizationAppleIDCredential else { return }
-                handleCredential(credential)
-            case .failure(let error):
-                handleError(error)
-            }
-        }
-        .signInWithAppleButtonStyle(
-            colorScheme == .dark ? .white : .black
-        )
-        .frame(height: 50)
-    }
-}
-```
+Use `SignInWithAppleButton` in SwiftUI views when the login surface is SwiftUI.
+Request `.fullName` and `.email`, handle `.success` and `.failure`, downcast to
+`ASAuthorizationAppleIDCredential`, and send the credential through the same
+server-validation flow as UIKit. Style with `.signInWithAppleButtonStyle(...)`.
 
 ## Common Mistakes
 
-### 1. Not checking credential state on app launch
-
-```swift
-// DON'T: Assume the user is still authorized
-func appDidLaunch() {
-    if UserDefaults.standard.bool(forKey: "isLoggedIn") {
-        showMainApp()  // User may have revoked access!
-    }
-}
-
-// DO: Check credential state every launch
-func appDidLaunch() async {
-    await checkCredentialState()  // See "Credential State Checking" above
-}
-```
-
-### 2. Not performing existing account setup flows
-
-```swift
-// DON'T: Always show a full login screen on launch
-// DO: Call performExistingAccountSetupFlows() first;
-//     show login UI only if .notInteractive error received
-```
-
-### 3. Assuming email/name are always provided
-
-```swift
-// DON'T: Force-unwrap email or fullName
-let email = credential.email!  // Crashes on subsequent logins
-
-// DO: Handle nil gracefully -- only available on first authorization
-if let email = credential.email {
-    saveEmail(email)  // Persist immediately
-}
-```
-
-### 4. Not implementing ASAuthorizationControllerPresentationContextProviding
-
-```swift
-// DON'T: Skip the presentation context provider
-controller.delegate = self
-controller.performRequests()  // May not display UI correctly
-
-// DO: Always set the presentation context provider
-controller.delegate = self
-controller.presentationContextProvider = self  // Required for proper UI
-controller.performRequests()
-```
-
-### 5. Storing identityToken in UserDefaults
-
-```swift
-// DON'T: Store tokens in UserDefaults
-UserDefaults.standard.set(tokenString, forKey: "identityToken")
-
-// DO: Store in Keychain
-// See references/keychain-biometric.md for Keychain patterns
-try KeychainHelper.save(tokenData, forKey: "identityToken")
-```
+- Assuming a saved local session means the Apple ID credential is still valid.
+  Check credential state at launch and handle revocation notifications.
+- Showing a full login screen before trying existing account setup flows.
+  Treat `.notInteractive` as the normal "no local credential" path.
+- Force-unwrapping `email` or `fullName`. Cache them on first authorization and
+  handle `nil` later.
+- Creating an `ASAuthorizationController` without a presentation context
+  provider. Authorization UI needs the active presentation anchor.
+- Storing identity tokens, authorization codes, access tokens, passwords, or
+  passkey server state in `UserDefaults`, files, or Core Data. Store secrets in
+  Keychain and keep relying-party passkey verification server-side.
+- Adding passkey requests without `webcredentials:` Associated Domains for the
+  relying-party domain, or trying to use app-native passkeys for unrelated
+  websites.
+- Expanding authentication work into CryptoKit, Secure Enclave, certificate
+  pinning, or OWASP MASVS. Route those to `swift-security`.
 
 ## Review Checklist
 
 - [ ] "Sign in with Apple" capability added in Xcode project
 - [ ] `ASAuthorizationControllerPresentationContextProviding` implemented
-- [ ] Credential state checked on every app launch (`credentialState(forUserID:)`)
+- [ ] Credential state checked on every app launch (`getCredentialState(forUserID:completion:)`)
 - [ ] `credentialRevokedNotification` observer registered; sign-out handled
 - [ ] `email` and `fullName` cached on first authorization (not assumed available later)
 - [ ] `identityToken` sent to server for validation, not trusted client-side only
@@ -482,15 +472,21 @@ try KeychainHelper.save(tokenData, forKey: "identityToken")
 - [ ] `ASWebAuthenticationSession` used for OAuth (not `WKWebView`)
 - [ ] `prefersEphemeralWebBrowserSession` set for OAuth when appropriate
 - [ ] `textContentType` set on username/password fields for AutoFill
+- [ ] Passkey relying party has `webcredentials:` Associated Domains configured
+- [ ] Passkey registration/assertion challenges come from the server and are verified server-side
+- [ ] Deep Keychain, CryptoKit, Secure Enclave, certificate pinning, and MASVS work routed to `swift-security`
 
 ## References
 
 - Keychain & biometric patterns: [references/keychain-biometric.md](references/keychain-biometric.md)
+- Passkey patterns: [references/passkeys.md](references/passkeys.md)
 - [AuthenticationServices](https://sosumi.ai/documentation/authenticationservices)
 - [ASAuthorizationAppleIDProvider](https://sosumi.ai/documentation/authenticationservices/asauthorizationappleidprovider)
 - [ASAuthorizationAppleIDCredential](https://sosumi.ai/documentation/authenticationservices/asauthorizationappleidcredential)
 - [ASAuthorizationController](https://sosumi.ai/documentation/authenticationservices/asauthorizationcontroller)
 - [ASWebAuthenticationSession](https://sosumi.ai/documentation/authenticationservices/aswebauthenticationsession)
+- [Supporting passkeys](https://sosumi.ai/documentation/authenticationservices/supporting-passkeys)
+- [ASAuthorizationPlatformPublicKeyCredentialProvider](https://sosumi.ai/documentation/authenticationservices/asauthorizationplatformpublickeycredentialprovider)
 - [ASAuthorizationPasswordProvider](https://sosumi.ai/documentation/authenticationservices/asauthorizationpasswordprovider)
 - [SignInWithAppleButton](https://sosumi.ai/documentation/authenticationservices/signinwithapplebutton)
 - [Implementing User Authentication with Sign in with Apple](https://sosumi.ai/documentation/authenticationservices/implementing-user-authentication-with-sign-in-with-apple)

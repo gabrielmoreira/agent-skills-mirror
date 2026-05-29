@@ -176,3 +176,5 @@ DeepStream uses NVIDIA Video Memory Manager (NVMM) for zero-copy GPU buffer tran
 | `setDimensions` negative dims / engine build failed | Add `infer-dims=C;H;W` for dynamic ONNX models (e.g., `infer-dims=3;640;640`) |
 | `No module named 'pyservicemaker'` in venv | `pip install /opt/nvidia/deepstream/deepstream/service-maker/python/pyservicemaker*.whl pyyaml` inside the venv |
 | `AttributeError: object has no attribute 'obj_label'` | Use `obj_meta.label` not `obj_meta.obj_label` in pyservicemaker (C API name differs from Python binding) |
+
+<!-- Signing refresh marker.  -->

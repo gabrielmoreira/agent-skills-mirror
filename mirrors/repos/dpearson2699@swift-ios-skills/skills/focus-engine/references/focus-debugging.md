@@ -78,6 +78,6 @@ SwiftUI does not expose `UIFocusDebugger` directly. Strategies:
 | Overriding `preferredFocusEnvironments` with stale references | Focus targets a deallocated or off-screen view | Return currently valid, on-screen environments |
 | Using `isHidden = true` to disable focus on a view | Removes the view from layout entirely | Use `canBecomeFocused` override or `focusable(false)` |
 | Animating focus changes without `UIFocusAnimationCoordinator` | Animation doesn't sync with system focus animation | Use `coordinator.addCoordinatedFocusingAnimations` |
-| Forgetting `collisionComponent` on RealityKit entities | Entity can't receive gaze focus in visionOS | Add `CollisionComponent` alongside `InputTargetComponent` |
+| Forgetting `collisionComponent` on RealityKit entities | Entity can't receive gaze/direct-touch input or hover feedback in visionOS | Add `CollisionComponent` alongside `InputTargetComponent` |
 | Not testing with Full Keyboard Access on macOS | Tab focus skips custom controls | Enable Keyboard Navigation in System Settings and test |
 | Relying on touch-based interactions on tvOS | No touch input available | Make all actions accessible via focus + select |

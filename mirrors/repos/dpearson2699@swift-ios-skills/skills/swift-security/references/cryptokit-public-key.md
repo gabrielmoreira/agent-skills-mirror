@@ -10,6 +10,43 @@ CryptoKit was introduced at WWDC 2019 (session 709, "Cryptography and Your Apps"
 
 ---
 
+## Contents
+
+- [Curve and Algorithm Selection Guide](#curve-and-algorithm-selection-guide)
+  - [Classical Curves](#classical-curves)
+  - [Post-Quantum Algorithms (iOS 26+)](#post-quantum-algorithms-ios-26)
+  - [Selection Decision Matrix](#selection-decision-matrix)
+  - [Algorithm Quick Reference](#algorithm-quick-reference)
+- [Signing and Key Agreement Are Separate Type Hierarchies](#signing-and-key-agreement-are-separate-type-hierarchies)
+  - [✅ Correct: P256 key generation, signing, and verification](#correct-p256-key-generation-signing-and-verification)
+  - [❌ Wrong: Mixing signing and key agreement key types](#wrong-mixing-signing-and-key-agreement-key-types)
+- [Key Agreement with HKDF Derivation](#key-agreement-with-hkdf-derivation)
+  - [✅ Correct: Curve25519 key agreement with HKDF derivation](#correct-curve25519-key-agreement-with-hkdf-derivation)
+  - [❌ Wrong: Using SharedSecret directly as an encryption key](#wrong-using-sharedsecret-directly-as-an-encryption-key)
+- [HPKE Simplifies Public-Key Encryption (iOS 17+)](#hpke-simplifies-public-key-encryption-ios-17)
+  - [Built-in Cipher Suites](#built-in-cipher-suites)
+  - [✅ Correct: HPKE encryption and decryption](#correct-hpke-encryption-and-decryption)
+  - [Three Critical HPKE Details AI Generators Get Wrong](#three-critical-hpke-details-ai-generators-get-wrong)
+- [Post-Quantum Cryptography (iOS 26+)](#post-quantum-cryptography-ios-26)
+  - [✅ Correct: ML-KEM-768 key encapsulation](#correct-ml-kem-768-key-encapsulation)
+  - [✅ Correct: ML-DSA-65 signing](#correct-ml-dsa-65-signing)
+  - [✅ Correct: Hybrid post-quantum with HPKE (recommended migration path)](#correct-hybrid-post-quantum-with-hpke-recommended-migration-path)
+  - [✅ Correct: Hybrid signing (ML-DSA + ECDSA) for transition period](#correct-hybrid-signing-ml-dsa-ecdsa-for-transition-period)
+- [PEM and DER Interoperability (iOS 14+)](#pem-and-der-interoperability-ios-14)
+  - [✅ Correct: PEM key export and import](#correct-pem-key-export-and-import)
+  - [Key Format Reference](#key-format-reference)
+  - [Keychain Storage of CryptoKit Keys](#keychain-storage-of-cryptokit-keys)
+- [Secure Enclave Integration (Brief — See `secure-enclave.md`)](#secure-enclave-integration-brief-see-secure-enclavemd)
+- [Stop Using RSA for New Apple Development](#stop-using-rsa-for-new-apple-development)
+  - [❌ Wrong: RSA when EC is available](#wrong-rsa-when-ec-is-available)
+  - [Preferred replacement: P256 signing in CryptoKit](#preferred-replacement-p256-signing-in-cryptokit)
+- [Common AI-Generator Mistakes](#common-ai-generator-mistakes)
+- [iOS Version Requirements](#ios-version-requirements)
+- [Performance and Thread Safety](#performance-and-thread-safety)
+- [WWDC Sessions and Documentation References](#wwdc-sessions-and-documentation-references)
+- [Conclusion](#conclusion)
+- [Summary Checklist](#summary-checklist)
+
 ## Curve and Algorithm Selection Guide
 
 The single most important decision is choosing the right curve or algorithm. AI generators frequently recommend Curve25519 when Secure Enclave protection is required, or default to P-256 when modern constant-time performance matters more.
@@ -213,8 +250,6 @@ let plaintext = try recipient.open(
 
 3. **Message ordering matters.** If the sender seals messages A then B, the recipient must open A before B. The internal counter must stay synchronized.
 
-> **Source discrepancy (flagged):** The parallel research source shows `seal()` returning a struct with `.encapsulatedKey` and `.ciphertext` properties. The Claude source shows `encapsulatedKey` as a property on `HPKE.Sender` and `seal()` returning `Data`. Per Apple's documentation, `encapsulatedKey` is a property of `HPKE.Sender` and `seal(_:authenticating:)` returns `Data`. The Claude source is correct.
-
 ---
 
 ## Post-Quantum Cryptography (iOS 26+)
@@ -413,8 +448,6 @@ let signature = try signingKey.signature(for: message)
 let isValid = signingKey.publicKey.isValidSignature(signature, for: message)
 ```
 
-> **Source discrepancy (flagged):** The parallel research source shows `Insecure.RSA.PrivateKey(keySize: .bits2048)` as an anti-pattern example. This API does not exist in CryptoKit — there is no `Insecure.RSA` type. RSA is only available through the Security framework's `SecKeyCreateRandomKey` with `kSecAttrKeyTypeRSA`. The Claude source's Security framework example is the correct API.
-
 RSA-2048 provides only ~112-bit security with 256-byte keys and signatures. P256 achieves ~128-bit security with 32-byte private keys and 64-byte signatures — an 8× reduction in signature size with stronger security. Valid reasons to still use RSA: legacy server interoperability, X.509 certificates from CAs that mandate RSA, and JWT specifications locked to RS256.
 
 ---
@@ -472,11 +505,11 @@ Post-quantum operations are computationally competitive with classical algorithm
 - **WWDC 2019, Session 709** — "Cryptography and Your Apps" — CryptoKit introduction, curve selection, key management
 - **WWDC 2020** — "What's New in CryptoKit" — PEM/DER support, HKDF standalone API
 - **WWDC 2025, Session 314** — "Get ahead with quantum-secure cryptography" — ML-KEM, ML-DSA, X-Wing, formally verified implementations, quantum-secure TLS
-- [Apple CryptoKit Documentation](https://developer.apple.com/documentation/cryptokit/)
-- [SharedSecret Documentation](https://developer.apple.com/documentation/cryptokit/sharedsecret) — HKDF derivation requirement
-- [HPKE Documentation](https://developer.apple.com/documentation/cryptokit/hpke) — Sender/Recipient API
-- [Storing CryptoKit Keys in the Keychain](https://developer.apple.com/documentation/CryptoKit/storing-cryptokit-keys-in-the-keychain) — GenericPasswordConvertible pattern
-- [Protecting Keys with the Secure Enclave](https://developer.apple.com/documentation/security/protecting-keys-with-the-secure-enclave)
+- [Apple CryptoKit Documentation](https://sosumi.ai/documentation/cryptokit/)
+- [SharedSecret Documentation](https://sosumi.ai/documentation/cryptokit/sharedsecret) — HKDF derivation requirement
+- [HPKE Documentation](https://sosumi.ai/documentation/cryptokit/hpke) — Sender/Recipient API
+- [Storing CryptoKit Keys in the Keychain](https://sosumi.ai/documentation/cryptokit/storing-cryptokit-keys-in-the-keychain) — GenericPasswordConvertible pattern
+- [Protecting Keys with the Secure Enclave](https://sosumi.ai/documentation/security/protecting-keys-with-the-secure-enclave)
 - [Quantum-Secure Cryptography in Apple Operating Systems](https://support.apple.com/guide/security/quantum-secure-cryptography-apple-devices-secc7c82e533/web)
 
 ---

@@ -16,6 +16,7 @@ configuration.
 - [Attribution Rules Configuration](#attribution-rules-configuration)
 - [Conversion Tags for Overlapping Windows](#conversion-tags-for-overlapping-windows)
 - [Error Handling](#error-handling)
+- [References](#references)
 
 ## Postback Verification
 
@@ -189,7 +190,7 @@ to the publisher app.
 }
 ```
 
-Use `ES256` encryption. The `kid` is the registered ad network ID.
+Use `ES256` signing. The `kid` is the registered ad network ID.
 
 ### JWS payload
 
@@ -209,7 +210,7 @@ Use `ES256` encryption. The `kid` is the registered ad network ID.
 | Field                          | Required | Notes                                  |
 |--------------------------------|----------|----------------------------------------|
 | `impression-identifier`        | Yes      | UUID generated per impression          |
-| `publisher-item-identifier`    | Yes      | Set to `0` for development impressions |
+| `publisher-item-identifier`    | Yes      | Use `0` for Developer Mode development impressions |
 | `impression-type`              | Yes      | Always `"app-impression"`              |
 | `ad-network-identifier`        | Yes      | Must match `kid` in header             |
 | `source-identifier`            | Yes      | 2-4 digit hierarchical ID              |
@@ -263,9 +264,9 @@ delays from hours to 5-10 minutes.
 
 ### Create development impressions
 
-Use `publisher-item-identifier: 0` in the JWS payload to create development
-impressions. The system prioritizes production impressions over development
-impressions if both exist.
+Use `publisher-item-identifier: 0` in the JWS payload for Developer Mode
+development impressions. The system prioritizes production impressions over
+development impressions if both exist.
 
 ### Inspect postbacks via HTTP proxy
 
@@ -303,6 +304,7 @@ instead of waiting for automatic delivery.
 
 - `kid` in JWS header: `apple-development-identifier/1`
 - `ad-network-identifier`: `development.adattributionkit`
+- `conversion-type`: `"download"`, `"redownload"`, or `"re-engagement"`
 - `advertised-item-identifier`: `0` for Xcode-installed apps; actual ID for
   App Store / marketplace installs.
 
@@ -322,18 +324,27 @@ the system evaluates impressions from both when determining attribution winners.
 | Conversion value API           | `SKAdNetwork.updatePostbackConversionValue` | `Postback.updateConversionValue` |
 | Framework import               | `StoreKit`           | `AdAttributionKit`   |
 | Conversion tags                | No                   | Yes (iOS 18.4+)      |
-| Attribution rules config       | No                   | Yes (iOS 26+)        |
+| Attribution rules config       | No                   | Yes (current docs)   |
 
 ### Dual framework support
 
-If supporting both frameworks during migration, call both update APIs:
+During interoperability, AdAttributionKit and SKAdNetwork impressions are ranked
+together and only one impression wins a conversion. Click-through ads take
+precedence over view-through ads. Within click-through impressions, the most
+recent tap wins; if there are no taps, the most recent view-through impression
+wins.
+
+Use the conversion update API for the framework that owns the pending postback:
+AdAttributionKit APIs for AdAttributionKit integrations, SKAdNetwork APIs for
+SKAdNetwork integrations, and both sets when the app is integrated with both.
+The system ignores update calls when there are no pending postbacks for that
+framework.
 
 ```swift
 import AdAttributionKit
 import StoreKit
 
 func updateConversion(value: Int, coarse: CoarseConversionValue) async {
-    // Update AdAttributionKit
     do {
         try await Postback.updateConversionValue(
             value,
@@ -344,10 +355,6 @@ func updateConversion(value: Int, coarse: CoarseConversionValue) async {
         print("AdAttributionKit update failed: \(error)")
     }
 
-    // Update SKAdNetwork
-    // Note: SKAdNetwork bridges to AdAttributionKit automatically,
-    // but calling both ensures coverage if only one framework has
-    // active postbacks.
     do {
         try await SKAdNetwork.updatePostbackConversionValue(
             value,
@@ -360,9 +367,10 @@ func updateConversion(value: Int, coarse: CoarseConversionValue) async {
 }
 ```
 
-When an app calls the SKAdNetwork update API, SKAdNetwork automatically
-bridges the conversion values to AdAttributionKit. Calling both APIs
-explicitly is still recommended for clarity and coverage.
+Apple documents bridging from SKAdNetwork conversion-update calls into
+AdAttributionKit postback update APIs, but this is not a universal one-API
+migration shortcut. Dual-framework apps should still call both APIs so each
+framework receives the update it expects.
 
 ### Ad network ID compatibility
 
@@ -406,8 +414,8 @@ the marketplace identifier based on where the app was installed from.
 
 ## Attribution Rules Configuration
 
-iOS 26+ supports configurable attribution windows and cooldown periods through
-Info.plist.
+Current AdAttributionKit documentation describes configurable attribution
+windows and cooldown periods through Info.plist.
 
 ### Attribution windows
 
@@ -559,3 +567,16 @@ func safeHandleImpression(_ jwsString: String) async {
     }
 }
 ```
+
+## References
+
+- [Apple: Configuring an advertised app](https://sosumi.ai/documentation/adattributionkit/configuring-an-advertised-app)
+- [Apple: Generating JWS impressions](https://sosumi.ai/documentation/adattributionkit/generating-jws-impressions)
+- [Apple: Identifying postback parameters](https://sosumi.ai/documentation/adattributionkit/identifying-the-parameters-in-a-postback)
+- [Apple: Receiving postbacks in multiple conversion windows](https://sosumi.ai/documentation/adattributionkit/receiving-postbacks-in-multiple-conversion-windows)
+- [Apple: Testing with Developer Mode](https://sosumi.ai/documentation/adattributionkit/testing-adattributionkit-with-developer-mode)
+- [Apple: Creating postbacks in Developer Settings](https://sosumi.ai/documentation/adattributionkit/creating-postbacks-in-developer-settings)
+- [Apple: SKAdNetwork interoperability](https://sosumi.ai/documentation/adattributionkit/adattributionkit-skadnetwork-interoperability)
+- [Apple: Configuring attribution rules](https://sosumi.ai/documentation/adattributionkit/configuring-attribution-rules-for-your-app)
+- [WWDC24: Meet AdAttributionKit](https://sosumi.ai/videos/play/wwdc2024/10060)
+- [WWDC25: What's new in AdAttributionKit](https://sosumi.ai/videos/play/wwdc2025/221)

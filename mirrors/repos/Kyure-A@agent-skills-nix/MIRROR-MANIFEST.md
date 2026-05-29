@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `Kyure-A/agent-skills-nix` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `Kyure-A/agent-skills-nix` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Kyure-A/agent-skills-nix` — 26 default patterns, 0 followed pattern
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,9 +59,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`test/fixtures/nested-skills/cat-a/skill-1/SKILL.md`](test/fixtures/nested-skills/cat-a/skill-1/SKILL.md) |
-| 2 | ✓ | [`test/fixtures/nested-skills/cat-a/skill-2/SKILL.md`](test/fixtures/nested-skills/cat-a/skill-2/SKILL.md) |
-| 3 | ✓ | [`test/fixtures/test-skill/SKILL.md`](test/fixtures/test-skill/SKILL.md) |
+| 1 | ✓ | [`test/fixtures/escaping-skill-target/SKILL.md`](test/fixtures/escaping-skill-target/SKILL.md) |
+| 2 | ✓ | [`test/fixtures/multi-skill-shared-root/skill-a/SKILL.md`](test/fixtures/multi-skill-shared-root/skill-a/SKILL.md) |
+| 3 | ✓ | [`test/fixtures/multi-skill-shared-root/skill-b/SKILL.md`](test/fixtures/multi-skill-shared-root/skill-b/SKILL.md) |
+| 4 | ✓ | [`test/fixtures/nested-skills/cat-a/skill-1/SKILL.md`](test/fixtures/nested-skills/cat-a/skill-1/SKILL.md) |
+| 5 | ✓ | [`test/fixtures/nested-skills/cat-a/skill-2/SKILL.md`](test/fixtures/nested-skills/cat-a/skill-2/SKILL.md) |
+| 6 | ✓ | [`test/fixtures/source-root-symlinks/skill-a/SKILL.md`](test/fixtures/source-root-symlinks/skill-a/SKILL.md) |
+| 7 | ✓ | [`test/fixtures/test-skill/SKILL.md`](test/fixtures/test-skill/SKILL.md) |
 
 ---
 

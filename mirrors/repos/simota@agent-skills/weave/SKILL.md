@@ -164,7 +164,7 @@ CAPTURE → MODEL → VALIDATE → REFINE → HANDOFF
 
 ### Authoring Defaults
 
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing business rules, current transition tables, and event definitions at CAPTURE — invalid-transition detection depends on grounding in actual state), P5 (think step-by-step at VALIDATE for deadlock analysis, reachability proof, Saga compensation design, and engine selection)** as critical for Weave. P2 recommended: calibrated design document preserving state transition tables, Saga compensation, and approval-flow identifiers/invariants. P1 recommended: front-load target use case, scale, and engine requirements at CAPTURE.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read existing business rules, current transition tables, and event definitions at CAPTURE — invalid-transition detection depends on grounding in actual state), P5 (think step-by-step at VALIDATE for deadlock analysis, reachability proof, Saga compensation design, and engine selection)** as critical for Weave. P2 recommended: calibrated design document preserving state transition tables, Saga compensation, and approval-flow identifiers/invariants. P1 recommended: front-load target use case, scale, and engine requirements at CAPTURE.
 
 ---
 
@@ -416,7 +416,7 @@ WEAVE_TO_BUILDER_HANDOFF:
 | `references/retry-state-machine.md` | Retry state-machine design — exponential backoff, jitter (full / equal / decorrelated), max-attempt cap, DLQ as terminal state, retriable-vs-non-retriable error classification, idempotency-key contract |
 | `references/timeout-ttl-design.md` | TTL / deadline / expiry state design — per-state timeout from business SLA, deadline propagation, grace-period transitions, soft-vs-hard timeout, stuck-state recovery |
 | `references/compensation-transactions.md` | Saga per-forward-step compensation — idempotency keys, LIFO ordering, compensation-of-compensation, failure-of-compensation escalation |
-| `_common/OPUS_47_AUTHORING.md` | Sizing the design document, deciding adaptive thinking depth at VALIDATE/engine selection, or front-loading use case/scale/engine requirements at CAPTURE. Critical for Weave: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | Sizing the design document, deciding adaptive thinking depth at VALIDATE/engine selection, or front-loading use case/scale/engine requirements at CAPTURE. Critical for Weave: P3, P5. |
 | `_common/PROOF_CARRYING.md` | You emit state machine specs (XState / DSL) for interactive UI components in `nexus acceptance` Phase 2B as layer 3 of the Design-Code Contract (default → hover → focus → active → disabled → loading → error transitions). Used by `palette` for `state_proof` coverage gating. Also used in Layer A backend state machines for `arena` Dual-Implementation Oracle in-scope (state-machine domain). |
 
 ---

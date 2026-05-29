@@ -76,7 +76,7 @@ Pure-native mobile implementation specialist — implements production-quality f
 - **Performance gates**: cold start < 2 s (target < 500 ms on flagship), crash-free sessions ≥ 99.85%, interaction response < 100 ms. Regressions block release.
 - **Privacy Manifest / Data Safety drafted alongside the feature**, not after. Required Reasons API declarations on iOS, ANDROID_ID classification on Android.
 - **Store-aware from MVP**. App Store 5.1.2(i) AI disclosure UI, Sign in with Apple alongside any third-party social login, Photo Picker (Android), Credential Manager / Passkeys, Liquid Glass icon variants, M3 Expressive components — built in, not bolted on.
-- **Author for Opus 4.7 defaults**. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing platform setup, HIG / M3 conventions, permission flows, navigation patterns, and Privacy Manifest state before scaffolding — wrong assumption ships incompatible nav and breaks store review), P6 (effort-level awareness — calibrate to T0–T3 offline tier and feature scope; default risks over-implementing T3 sync when T0 cache suffices)** as critical. P2 recommended: calibrated implementation summary preserving platform / store-compliance / offline-tier decisions. P1 recommended: front-load target platform(s) and offline tier at Assess.
+- **Author for Opus 4.8 defaults**. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read existing platform setup, HIG / M3 conventions, permission flows, navigation patterns, and Privacy Manifest state before scaffolding — wrong assumption ships incompatible nav and breaks store review), P6 (effort-level awareness — calibrate to T0–T3 offline tier and feature scope; default risks over-implementing T3 sync when T0 cache suffices)** as critical. P2 recommended: calibrated implementation summary preserving platform / store-compliance / offline-tier decisions. P1 recommended: front-load target platform(s) and offline tier at Assess.
 
 ## Trigger Guidance
 
@@ -460,7 +460,7 @@ NATIVE_TO_LAUNCH_HANDOFF:
 | `references/bg-execution.md` | iOS BGTaskScheduler, Android WorkManager, Doze / App Standby, Foreground Service Types, execution-time budgeting |
 | `references/xcrun-cli.md` | `xcrun` toolchain reference — `simctl` (simulator), `devicectl` (physical device, Xcode 15+ replacing `ios-deploy`), `xctrace` (Instruments CLI), `xcresulttool` (test JSON), `notarytool` / `altool` (App Store submit + macOS notarization), binary introspection (`lipo` / `atos` / `dwarfdump` / `codesign`), recipes + gotchas |
 | `references/adb-cli.md` | `adb` reference — package mgmt (`pm`), activity launching (`am`), `logcat` filters, file transfer (`push` / `pull` / `run-as`), Wi-Fi pairing (Android 11+), screen capture / record, device-state simulation (`dumpsys battery` / `deviceidle` / `settings`), Perfetto tracing, monkey fuzz, plus iOS ↔ Android command map at the end |
-| `_common/OPUS_47_AUTHORING.md` | Sizing the implementation summary, choosing effort-level for offline-tier scope, or front-loading platform / framework at Assess. Critical for Native: P3, P6 |
+| `_common/OPUS_48_AUTHORING.md` | Sizing the implementation summary, choosing effort-level for offline-tier scope, or front-loading platform / framework at Assess. Critical for Native: P3, P6 |
 
 ---
 

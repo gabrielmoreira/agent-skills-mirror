@@ -1,24 +1,18 @@
 ---
 name: app-clips
-description: "Build iOS App Clips with invocation URLs, NFC, QR codes, App Clip Codes, Safari banners, Maps, Messages, and shared App Group data handoff to the full app. Covers target setup, experience configuration, size limits, NSUserActivity handling, SKOverlay promotion, location confirmation, and capability limits. Use when creating App Clips or wiring App Clip invocation and full-app migration."
+description: "Build iOS App Clips with invocation URLs, App Clip Codes, NFC, QR codes, Safari banners, Maps, Messages, target setup, App Store Connect experiences, size/capability constraints, NSUserActivity routing, SKOverlay promotion, App Group/keychain handoff, ephemeral notifications, location confirmation, and full-app migration. Use when creating App Clips or wiring App Clip invocation, experience configuration, or full-app handoff."
 ---
 
 # App Clips
 
-Lightweight, instantly-available versions of your iOS app for in-the-moment experiences or demos. Targets iOS 26+ / Swift 6.3 unless noted.
+Lightweight, instantly available versions of your iOS app for in-the-moment experiences or demos. Targets iOS 26+ / Swift 6.3 unless noted.
 
 ## Contents
 
 - [App Clip Target Setup](#app-clip-target-setup)
-- [Invocation URL Handling](#invocation-url-handling)
-- [App Clip Experience Configuration](#app-clip-experience-configuration)
-- [Size Limits](#size-limits)
-- [Invocation Methods](#invocation-methods)
-- [Data Migration to Full App](#data-migration-to-full-app)
-- [SKOverlay for Full App Promotion](#skoverlay-for-full-app-promotion)
-- [Location Confirmation](#location-confirmation)
-- [Lifecycle and Ephemeral Nature](#lifecycle-and-ephemeral-nature)
-- [Capabilities and Limitations](#capabilities-and-limitations)
+- [Invocation and Experience Routing](#invocation-and-experience-routing)
+- [Size and Capability Decisions](#size-and-capability-decisions)
+- [Data, Notifications, and Location](#data-notifications-and-location)
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
 - [References](#references)
@@ -27,399 +21,133 @@ Lightweight, instantly-available versions of your iOS app for in-the-moment expe
 
 An App Clip is a **separate target** in the same Xcode project as your full app:
 
-1. **File → New → Target → App Clip** — Xcode creates the target with the `com.apple.developer.on-demand-install-capable` entitlement and a `Parent Application Identifiers` entitlement linking back to the full app.
-2. The App Clip bundle ID **must** be a suffix of the full app's: `com.example.MyApp.Clip`.
-3. Xcode adds an **Embed App Clip** build phase to the full app target automatically.
+1. **File → New → Target → App Clip** — Xcode creates the App Clip target, adds the **Embed App Clip** build phase to the full app target, and wires the association entitlements.
+2. The App Clip bundle ID **must** be prefixed by the full app's bundle ID: `com.example.MyApp.Clip`.
+3. Verify raw entitlement keys when diagnosing archive, signing, or App Store Connect failures:
+   - App Clip target: `com.apple.developer.on-demand-install-capable`
+   - App Clip target parent app link: `com.apple.developer.parent-application-identifiers`
+   - Full app target associated App Clip link: `com.apple.developer.associated-appclip-app-identifiers`
 
-### Share code between targets
+Use Swift packages or shared source files for code needed by both targets. Add App Clip-specific compile branches with the `APPCLIP` active compilation condition, and avoid linking full-app-only frameworks into the App Clip target.
 
-Use Swift packages or shared source files. Add files to **both** targets, or use the `APPCLIP` active compilation condition:
+## Invocation and Experience Routing
 
-```swift
-// In App Clip target Build Settings → Active Compilation Conditions: APPCLIP
+Read [`references/routing-and-experiences.md`](references/routing-and-experiences.md) when implementing invocation URL routing, App Store Connect experiences, Local Experiences, Safari Smart App Banners, QR/NFC/App Clip Codes, AASA, or associated domains.
 
-#if !APPCLIP
-// Full-app-only code (e.g., background tasks, App Intents)
-#else
-// App Clip specific code
-#endif
-```
+App Clips receive `NSUserActivityTypeBrowsingWeb` activities. Keep the invocation router shared with the full app because, after installation, the full app replaces the App Clip and receives future invocations.
 
-Prefer local Swift packages for shared modules — add the package as a dependency of both targets.
+- SwiftUI: use `.onContinueUserActivity(NSUserActivityTypeBrowsingWeb)`.
+- UIKit cold launch: inspect `connectionOptions.userActivities` in `scene(_:willConnectTo:options:)`.
+- UIKit continuation: handle the actual `NSUserActivity` in `scene(_:continue:)`.
+- `scene(_:willContinueUserActivityWithType:)` is only advance notice and does not provide the URL.
 
-### Shared asset catalogs
+Configure the required default App Clip experience in App Store Connect. Use advanced experiences for Maps integration, location association, production App Clip Codes, per-location cards, and precise physical-place routing; demo App Clip Codes can use the short demo App Clip link.
 
-Create a shared asset catalog included in both targets to avoid duplicating images and colors.
+For custom URLs, add `appclips:example.com` to Associated Domains on both the full app and App Clip targets, and host an AASA file with the App Clip app identifier. For Safari banners, use `app-id`, `app-clip-bundle-id`, and optional `app-clip-display=card`; do not rely on `app-argument` for App Clip launches.
 
-## Invocation URL Handling
+## Size and Capability Decisions
 
-App Clips receive an `NSUserActivity` of type `NSUserActivityTypeBrowsingWeb` on launch. Handle it with `onContinueUserActivity`:
+Read [`references/size-capabilities-and-promotion.md`](references/size-capabilities-and-promotion.md) before feasibility reviews or capability audits, and when checking size budgets, measurement, Background Assets, SKOverlay, Live Activities App Clip extension constraints, CloudKit limits, or unsupported capabilities.
 
-```swift
-@main
-struct DonutShopClip: App {
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-                .onContinueUserActivity(
-                    NSUserActivityTypeBrowsingWeb
-                ) { activity in
-                    handleInvocation(activity)
-                }
-        }
-    }
+Always measure App Clip size with the App Thinning Size Report. In feasibility reviews, explicitly choose the size limit from deployment target, invocation support, and connectivity: the larger iOS 17+ limit applies to digital-only App Clips where reliable internet is likely; physical invocation or iOS 16 support uses a smaller budget; demo links can use the current 100 MB limit while supporting NFC/QR test invocations, and demo App Clip Codes require the short demo link. Apple has changed App Clip size policy over time, so re-check current App Store Connect and App Clip documentation before release-blocking size decisions.
 
-    private func handleInvocation(_ activity: NSUserActivity) {
-        guard let url = activity.webpageURL,
-              let components = URLComponents(url: url, resolvingAgainstBaseURL: true)
-        else { return }
+Use Background Assets only for content that can arrive after launch without blocking the in-the-moment task, and do not mark App Clip background asset downloads as essential. Large bundled media, ML models, catalogs, or downloads that must finish before useful work are poor App Clip fits; state that required pre-task downloads are not acceptable for in-the-moment App Clips, and check download size plus whether any required download blocks useful work. Move those flows to streaming/server-backed content, post-task assets, or the full app. Show `SKOverlay.AppClipConfiguration` or SwiftUI `appStoreOverlay` only after task completion, never as a gate.
 
-        // Extract path/query to determine context
-        let locationID = components.queryItems?
-            .first(where: { $0.name == "location" })?.value
+App Clips can use CloudKit public database reads on iOS 16+ with `CloudKit-Anonymous`, but cannot write the public database or use iCloud Documents, key-value storage, private containers, or shared containers. App Clips can offer Live Activities through an App Clip-only widget extension starting in iOS 16. That extension can include only Live Activities and needs the App Clip Extension capability; always include the raw entitlement key `com.apple.developer.on-demand-install-capable` when reviewing this boundary.
 
-        // Update UI for this location
-    }
-}
-```
+In feasibility reviews, explicitly name unsupported App Clip runtime features instead of summarizing them generically. Always list `SKAdNetwork`, `App Tracking Transparency`, and custom URL schemes when discussing excluded runtime features, alongside App Intents, Background Tasks, background URL sessions, in-app purchases, durable persistent local state, and background/persistent assumptions. Route detailed ActivityKit/WidgetKit Live Activity work, StoreKit purchase/full-app monetization, BackgroundTasks processing, CloudKit schema or sync beyond public reads, durable credentials, and long-term state to sibling or full-app domains without implementation detail. For product/PM feasibility reviews, stay at the App Clip boundary level: capability fit, size basis, invocation constraints, and handoff destinations. Describe location confirmation, install promotion, App Group/keychain handoff, and Live Activities conceptually. Do not add Swift package decomposition, API symbols such as `APActivationPayload`, `CLCircularRegion`, or `SKOverlay.AppClipConfiguration`, App Group/keychain implementation recipes, or other API-level implementation guidance unless the user asks for implementation.
 
-For UIKit scene-based apps, implement `scene(_:willConnectTo:options:)` for cold launch and `scene(_:continue:)` for warm launch.
+## Data, Notifications, and Location
 
-**Key rule:** The full app **must** handle all invocation URLs identically — when a user installs the full app, it replaces the App Clip and receives all future invocations.
+Read [`references/data-handoff-notifications-location.md`](references/data-handoff-notifications-location.md) when implementing App Group/full-app migration, keychain or Sign in with Apple handoff, ephemeral notifications, notification relaunch routing, or physical location confirmation.
 
-## App Clip Experience Configuration
+Use App Groups/shared containers for non-secret handoff data only. Any target provisioned with the App Group entitlement can read and write the shared container/defaults suite, so it is not a trust boundary. Do not put passwords, refresh tokens, payment credentials, or other secrets there.
 
-Configure experiences in **App Store Connect** after uploading a build containing the App Clip.
+Starting in iOS 15.4, the full app can access keychain items created by its corresponding App Clip only when the App Clip and full app have the correct association entitlements, including the full app's `com.apple.developer.associated-appclip-app-identifiers`. The App Clip cannot read keychain items created by the full app.
 
-### Default App Clip experience (required)
+For Sign in with Apple handoff, store the `ASAuthorizationAppleIDCredential.user` identifier and have the full app verify `ASAuthorizationAppleIDProvider.getCredentialState(forUserID:) == .authorized`.
 
-- Provide: header image, subtitle (≤56 chars), call-to-action verb
-- App Store Connect generates a **default App Clip link**: `https://appclip.apple.com/id?=<bundle_id>&key=value`
-- Supports: QR codes, NFC tags, Messages, Spotlight, other apps
+For ephemeral notifications, set `NSAppClipRequestEphemeralUserNotification` under the App Clip target's `NSAppClip` `Info.plist` dictionary. Authorization can last up to 8 hours after each launch, but users can disable it on the App Clip card, so check notification settings for `.ephemeral` before scheduling. Notification taps relaunch without the original invocation URL, so route multi-experience notifications with APNs `target-content-id` for remote notifications or `UNNotificationContent.targetContentIdentifier` for local notifications. Use a URL matching the relevant App Store Connect advanced App Clip experience, not an arbitrary opaque ID.
 
-### Demo App Clip link
-
-- Auto-generated by App Store Connect for demo versions of your app
-- Supports **all invocations** including physical (App Clip Codes, NFC, QR)
-- Allows larger binary size (up to 100 MB uncompressed)
-- Cannot contain URL parameters
-
-### Advanced App Clip experiences (optional)
-
-- Required for: Maps integration, location association, App Clip Codes, per-location card imagery
-- Each experience has its own invocation URL, header image, and metadata
-- URL **prefix matching** lets one registered URL cover many sub-paths
-- Use the App Store Connect API to manage large numbers of experiences programmatically
-
-### Associated domains
-
-For custom URLs (not the default Apple-generated link), add entries to the Associated Domains entitlement and host an AASA file:
-
-```text
-appclips:example.com
-```
-
-## Size Limits
-
-App Clip binaries must stay within strict uncompressed size limits (measured via App Thinning Size Report):
-
-| iOS Version | Maximum Uncompressed Size |
-|---|---|
-| iOS 15 and earlier | 10 MB |
-| iOS 16 | 15 MB |
-| iOS 17+ (digital invocations only) | 100 MB |
-| iOS 17+ (via demo link, all invocations) | 100 MB |
-
-The 100 MB limit on iOS 17+ for non-demo links requires: digital-only invocations, no physical invocation support (no App Clip Codes / NFC / QR), and the App Clip must not support iOS 16 or earlier.
-
-**Measure size:** Archive the app → Distribute → Export as Ad Hoc/Development with App Thinning → check `App Thinning Size Report.txt`.
-
-Use Background Assets to download additional content post-launch (e.g., game levels) if needed. App Clip downloads cannot use `isEssential`.
-
-## Invocation Methods
-
-| Method | Requirements |
-|---|---|
-| **App Clip Codes** | Advanced experience or demo link; NFC-integrated or scan-only |
-| **NFC tags** | Encode invocation URL in NDEF payload |
-| **QR codes** | Encode invocation URL; works with default or advanced experience |
-| **Safari Smart Banners** | Associate App Clip with website; add `<meta>` tag |
-| **Maps** | Advanced experience with place association |
-| **Messages** | Share invocation URL as text; limited preview with demo links |
-| **Siri Suggestions** | Location-based; requires advanced experience for location suggestions |
-| **Other apps** | iOS 17+; use Link Presentation or `UIApplication.open(_:)` |
-
-### Safari Smart App Banner
-
-Add this meta tag to your website to show the App Clip banner:
-
-```html
-<meta name="apple-itunes-app"
-      content="app-id=YOUR_APP_ID, app-clip-bundle-id=com.example.MyApp.Clip,
-               app-clip-display=card">
-```
-
-## Data Migration to Full App
-
-When a user installs the full app, it replaces the App Clip. Use a **shared App Group container** to migrate data:
-
-```swift
-// In both targets: add App Groups capability with the same group ID
-
-// App Clip — write data
-func saveOrderHistory(_ orders: [Order]) throws {
-    guard let containerURL = FileManager.default.containerURL(
-        forSecurityApplicationGroupIdentifier: "group.com.example.myapp.shared"
-    ) else { return }
-
-    let data = try JSONEncoder().encode(orders)
-    let fileURL = containerURL.appendingPathComponent("orders.json")
-    try data.write(to: fileURL)
-}
-
-// Full app — read migrated data
-func loadMigratedOrders() throws -> [Order] {
-    guard let containerURL = FileManager.default.containerURL(
-        forSecurityApplicationGroupIdentifier: "group.com.example.myapp.shared"
-    ) else { return [] }
-
-    let fileURL = containerURL.appendingPathComponent("orders.json")
-    guard FileManager.default.fileExists(atPath: fileURL.path) else { return [] }
-    let data = try Data(contentsOf: fileURL)
-    return try JSONDecoder().decode([Order].self, from: data)
-}
-```
-
-### Shared UserDefaults
-
-```swift
-// Write (App Clip)
-let shared = UserDefaults(suiteName: "group.com.example.myapp.shared")
-shared?.set(userToken, forKey: "authToken")
-
-// Read (Full app)
-let shared = UserDefaults(suiteName: "group.com.example.myapp.shared")
-let token = shared?.string(forKey: "authToken")
-```
-
-### Keychain sharing
-
-Starting iOS 15.4, App Clip keychain items are accessible to the corresponding full app via the `parent-application-identifiers` and `associated-appclip-app-identifiers` entitlements. Use distinct `kSecAttrLabel` values to distinguish App Clip vs. full app entries.
-
-### Sign in with Apple
-
-Store the `ASAuthorizationAppleIDCredential.user` in the shared container so the full app can silently verify without re-prompting login.
-
-## SKOverlay for Full App Promotion
-
-Display an overlay recommending the full app from within the App Clip:
-
-### SwiftUI
-
-```swift
-struct OrderCompleteView: View {
-    @State private var showOverlay = false
-
-    var body: some View {
-        VStack {
-            Text("Order placed!")
-            Button("Get the full app") { showOverlay = true }
-        }
-        .appStoreOverlay(isPresented: $showOverlay) {
-            SKOverlay.AppClipConfiguration(position: .bottom)
-        }
-    }
-}
-```
-
-### UIKit
-
-```swift
-func displayOverlay() {
-    guard let scene = view.window?.windowScene else { return }
-
-    let config = SKOverlay.AppClipConfiguration(position: .bottom)
-    let overlay = SKOverlay(configuration: config)
-    overlay.delegate = self
-    overlay.present(in: scene)
-}
-```
-
-`SKOverlay.AppClipConfiguration` automatically resolves to the parent app. Available iOS 14.0+.
-
-**Never** block the user's task to force installation — show the overlay after task completion.
-
-## Location Confirmation
-
-Use `APActivationPayload` to verify a user's physical location without requesting full location access:
-
-```swift
-import AppClip
-import CoreLocation
-
-func verifyLocation(from activity: NSUserActivity) {
-    guard let payload = activity.appClipActivationPayload,
-          let url = activity.webpageURL
-    else { return }
-
-    // Build the expected region (up to 500m radius)
-    let center = CLLocationCoordinate2D(latitude: 37.334722, longitude: -122.008889)
-    let region = CLCircularRegion(center: center, radius: 100, identifier: "store-42")
-
-    payload.confirmAcquired(in: region) { inRegion, error in
-        if let error = error as? APActivationPayloadError {
-            switch error.code {
-            case .doesNotMatch:
-                // URL doesn't match registered App Clip URL
-                break
-            case .disallowed:
-                // User denied location, or invocation wasn't NFC/visual code
-                break
-            @unknown default:
-                break
-            }
-            return
-        }
-
-        if inRegion {
-            // Confirmed — user is at the expected location
-        } else {
-            // User is not at expected location (e.g., NFC tag was moved)
-        }
-    }
-}
-```
-
-Enable location confirmation in `Info.plist`:
-
-```xml
-<key>NSAppClip</key>
-<dict>
-    <key>NSAppClipRequestLocationConfirmation</key>
-    <true/>
-</dict>
-```
-
-This is **lightweight** — the system verifies location without granting your App Clip continuous access. The App Clip card shows a note that the clip can verify location. Available iOS 14.0+.
-
-## Lifecycle and Ephemeral Nature
-
-- **No Home Screen icon** — App Clips appear in the App Library and recent apps
-- **Automatic removal** — the system deletes the App Clip and its data after a period of inactivity (typically ~30 days, system-determined)
-- **No persistent state guarantee** — treat App Clip storage as ephemeral; migrate important data to the shared container or a server
-- **Relaunching** — returning to a previously launched App Clip from the App Library uses the last invocation URL; returning from the App Switcher launches without an invocation URL (restore saved state)
-- **Notifications** — App Clips can request ephemeral notification permission (up to 8 hours) via `Info.plist`; set `NSAppClipRequestEphemeralUserNotification` to `true`
-- **Location access** — `requestWhenInUseAuthorization()` only; resets daily at 4:00 AM
-
-## Capabilities and Limitations
-
-### Available to App Clips
-
-SwiftUI, UIKit, Core Location (when-in-use), Sign in with Apple, Apple Pay, CloudKit (public database read-only, iOS 16+), Background Assets, StoreKit (`SKOverlay`), Keychain, App Groups, Push Notifications (ephemeral), Live Activities (iOS 16.1+)
-
-### Not available / no-op at runtime
-
-App Intents, Background Tasks, CallKit, Contacts, CoreMotion, EventKit, HealthKit, HomeKit, MediaPlayer, Messages, NearbyInteraction, PhotoKit, SensorKit, Speech, SKAdNetwork, App Tracking Transparency
-
-### Additional restrictions
-
-- No background URL sessions
-- No background Bluetooth
-- No multiple scenes on iPad
-- No on-demand resources
-- No custom URL schemes
-- No in-app purchases (reserve for full app)
-- `UIDevice.name` and `identifierForVendor` return empty strings
+For physical-location confirmation, use `NSUserActivity.appClipActivationPayload` / `APActivationPayload.confirmAcquired(in:)` with a `CLCircularRegion` radius up to 500 meters, and set `NSAppClipRequestLocationConfirmation` under the App Clip target's `NSAppClip` `Info.plist` dictionary, not the full app's. This confirms eligible physical invocations without granting continuous location access.
 
 ## Common Mistakes
 
-### Exceeding App Clip size limit
+### Exceeding the applicable App Clip size limit
 
-```swift
-// ❌ DON'T: Include large frameworks or bundled assets
-// Importing heavyweight frameworks like RealityKit or large ML models
-// pushes the App Clip well over 10–15 MB.
+Choose the limit based on deployment target and invocation support. A physically invoked App Clip that supports iOS 16 has a much smaller budget than an iOS 17+ digital-only App Clip. Measure with the App Thinning Size Report after meaningful target changes.
 
-// ✅ DO: Use Asset Catalog thinning, exclude unused architectures,
-// strip debug symbols, and split shared code into lean Swift packages.
-// Measure with App Thinning Size Report after every change.
+### Mixing up App Clip entitlement names
+
+```text
+App Clip target:
+com.apple.developer.on-demand-install-capable
+com.apple.developer.parent-application-identifiers
+
+Full app target:
+com.apple.developer.associated-appclip-app-identifiers
 ```
+
+Display names in Xcode differ from raw entitlement keys; use raw keys when debugging signing output or archived entitlements.
+
+### Treating UIKit continuation notification as URL handling
+
+`scene(_:willContinueUserActivityWithType:)` does not include the `NSUserActivity`. Handle the URL in `scene(_:willConnectTo:options:)` for cold launch and `scene(_:continue:)` for activity continuation.
 
 ### Not testing invocation URLs locally
 
-```swift
-// ❌ DON'T: Only test App Clip with a direct Xcode launch
-// This skips invocation URL handling and misses bugs.
-
-// ✅ DO: Use the _XCAppClipURL environment variable in the scheme,
-// or register a Local Experience in Settings → Developer → Local Experiences
-// to test with realistic invocation URLs and App Clip cards.
-```
+A direct Xcode launch can skip the invocation path and hide routing bugs. Use the `_XCAppClipURL` scheme environment variable or register a Local Experience in Settings → Developer → Local Experiences.
 
 ### Not handling the full app replacing the App Clip
 
-```swift
-// ❌ DON'T: Assume only the App Clip receives invocations
-// When the user installs the full app, ALL invocations go to it.
+Share invocation routing with the full app. After install, all future invocations go to the full app.
 
-// ✅ DO: Share invocation-handling code between both targets.
-// The full app must handle every invocation URL the App Clip supports.
-#if !APPCLIP
-// Full app can additionally show richer features for the same URL
-#endif
-```
+### Storing secrets in App Group storage
 
-### Storing critical data only in App Clip storage
+Use App Groups for non-secret handoff state only. Use keychain or server-side verification for credentials.
 
-```swift
-// ❌ DON'T: Store important data in the App Clip's sandboxed container
-let fileURL = documentsDirectory.appendingPathComponent("userData.json")
-// This data is DELETED when the system removes the App Clip.
+### Designing a marketing-only or web-view-heavy App Clip
 
-// ✅ DO: Write to the shared App Group container or sync to a server
-guard let shared = FileManager.default.containerURL(
-    forSecurityApplicationGroupIdentifier: "group.com.example.shared"
-) else { return }
-let fileURL = shared.appendingPathComponent("userData.json")
-```
+App Clips should let people complete a focused task or full demo without installing the app. Avoid marketing-only clips, ad-heavy flows, splash screens, launch-blocking downloads, repeated install prompts, and web-view-heavy experiences that would work better as a website.
 
 ### Missing associated domains configuration
 
-```swift
-// ❌ DON'T: Configure App Clip experiences in App Store Connect
-// without setting up associated domains and the AASA file.
-// Invocations from your website and advanced experiences will fail.
-
-// ✅ DO: Add the Associated Domains entitlement with:
-//   appclips:example.com
-// AND host /.well-known/apple-app-site-association on your server:
-// {
-//   "appclips": {
-//     "apps": ["TEAMID.com.example.MyApp.Clip"]
-//   }
-// }
-```
+Add `appclips:example.com` to Associated Domains on both the full app and App Clip targets, and host `/.well-known/apple-app-site-association` with the App Clip app identifier for custom URL invocations and advanced experiences.
 
 ## Review Checklist
 
-- [ ] App Clip target bundle ID is a suffix of the full app's bundle ID
-- [ ] `Parent Application Identifiers` entitlement is set correctly
-- [ ] Shared code uses Swift packages or compilation conditions (`APPCLIP`)
-- [ ] `onContinueUserActivity(NSUserActivityTypeBrowsingWeb)` handles invocation URLs
-- [ ] Full app handles all invocation URLs the App Clip supports
-- [ ] App Thinning Size Report confirms binary is within size limits for target iOS
-- [ ] Associated Domains entitlement includes `appclips:yourdomain.com` (if using custom URLs)
-- [ ] AASA file hosted at `/.well-known/apple-app-site-association` (if using custom URLs)
-- [ ] Default App Clip experience configured in App Store Connect
-- [ ] Shared App Group container used for data the full app needs
-- [ ] `SKOverlay` / `appStoreOverlay` shown **after** task completion, never blocking
-- [ ] `NSAppClipRequestLocationConfirmation` set in Info.plist if using location verification
-- [ ] No reliance on background processing, restricted frameworks, or persistent local storage
-- [ ] Tested with Local Experiences (Settings → Developer) and `_XCAppClipURL` env var
-- [ ] Handles launch without invocation URL (App Switcher / notification re-entry)
+- [ ] App Clip target bundle ID is prefixed by the full app's bundle ID.
+- [ ] App Clip target has `com.apple.developer.on-demand-install-capable`.
+- [ ] App Clip target has `com.apple.developer.parent-application-identifiers`.
+- [ ] Full app target has `com.apple.developer.associated-appclip-app-identifiers`.
+- [ ] Shared code uses Swift packages or compilation conditions (`APPCLIP`).
+- [ ] SwiftUI uses `.onContinueUserActivity(NSUserActivityTypeBrowsingWeb)` for invocation routing.
+- [ ] UIKit cold launch checks `connectionOptions.userActivities` and continuation handles `scene(_:continue:)`.
+- [ ] Full app handles every invocation URL the App Clip supports.
+- [ ] App Thinning Size Report confirms the binary is within the limit for deployment target and invocation support; size reviews name the 10 MB, 15 MB, and current 100 MB tiers when size is at issue.
+- [ ] Associated Domains entitlement includes `appclips:yourdomain.com` on both full app and App Clip targets when using custom URLs.
+- [ ] AASA file is hosted at `/.well-known/apple-app-site-association` when using custom URLs.
+- [ ] Default App Clip experience is configured in App Store Connect.
+- [ ] Production App Clip Codes, Maps, or per-location cards use advanced experiences; demo App Clip Codes use the short demo link.
+- [ ] Live Activities, when mentioned, are limited to an App Clip-only widget extension with only Live Activities and the raw `com.apple.developer.on-demand-install-capable` entitlement.
+- [ ] Shared App Group storage contains only non-secret data the full app needs, never credentials or payment secrets.
+- [ ] Keychain handoff states the one-way rule: the full app can read App Clip-created items on iOS 15.4+ with correct association entitlements, but the App Clip cannot read full-app keychain items.
+- [ ] Sign in with Apple migration verifies credential state in the full app.
+- [ ] `SKOverlay` / `appStoreOverlay` appears after task completion, never as a gate.
+- [ ] `NSAppClipRequestLocationConfirmation` is set only in the App Clip target if using location confirmation.
+- [ ] Ephemeral notification code checks for `.ephemeral` authorization before scheduling because the card permission can be disabled.
+- [ ] Ephemeral notification routing handles relaunch without an invocation URL.
+- [ ] HIG review rejects marketing-only, ad-heavy, web-view-heavy, install-gated, or launch-blocking App Clip designs.
+- [ ] Unsupported runtime features are named explicitly, including durable persistent local state and background/persistent assumptions, not just unavailable frameworks.
+- [ ] No reliance on background processing, restricted frameworks, custom URL schemes, in-app purchases, or persistent local storage.
+- [ ] Sibling handoff is boundary-only, with no ActivityKit, StoreKit, BackgroundTasks, CloudKit, Swift package, App Group/keychain recipe, location-confirmation API symbol, `SKOverlay`, or framework-snippet implementation detail in App Clip feasibility answers.
+- [ ] Tested with Local Experiences and `_XCAppClipURL`.
 
 ## References
 
+- [Routing and experiences](references/routing-and-experiences.md)
+- [Data handoff, notifications, and location](references/data-handoff-notifications-location.md)
+- [Size, capabilities, and promotion](references/size-capabilities-and-promotion.md)
 - [App Clips framework](https://sosumi.ai/documentation/appclip/)
 - [Creating an App Clip with Xcode](https://sosumi.ai/documentation/appclip/creating-an-app-clip-with-xcode/)
 - [Configuring App Clip experiences](https://sosumi.ai/documentation/appclip/configuring-the-launch-experience-of-your-app-clip/)
@@ -427,6 +155,9 @@ let fileURL = shared.appendingPathComponent("userData.json")
 - [Choosing the right functionality](https://sosumi.ai/documentation/appclip/choosing-the-right-functionality-for-your-app-clip/)
 - [Confirming a person's physical location](https://sosumi.ai/documentation/appclip/confirming-a-person-s-physical-location/)
 - [Sharing data between App Clip and full app](https://sosumi.ai/documentation/appclip/sharing-data-between-your-app-clip-and-your-full-app/)
+- [Enabling notifications in App Clips](https://sosumi.ai/documentation/appclip/enabling-notifications-in-app-clips/)
+- [Supporting invocations from your website and the Messages app](https://sosumi.ai/documentation/appclip/supporting-invocations-from-your-website-and-the-messages-app/)
+- [Offering Live Activities with your App Clip](https://sosumi.ai/documentation/appclip/offering-live-activities-with-your-app-clip/)
 - [Recommending your app to App Clip users](https://sosumi.ai/documentation/appclip/recommending-your-app-to-app-clip-users/)
 - [APActivationPayload](https://sosumi.ai/documentation/appclip/apactivationpayload/)
 - [SKOverlay.AppClipConfiguration](https://sosumi.ai/documentation/storekit/skoverlay/appclipconfiguration/)

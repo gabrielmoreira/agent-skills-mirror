@@ -39,7 +39,7 @@ final class WebContentProxy: Sendable {
         xpc_connection_set_event_handler(connection) { event in
             // Handle connection errors
         }
-        xpc_connection_resume(connection)
+        xpc_connection_activate(connection)
     }
 
     func loadURL(_ url: URL) async throws -> Data {
@@ -110,13 +110,14 @@ func handleBootstrap(
 ### Extension-Side Connection Handling
 
 Extensions receive incoming XPC connections via their `handle(xpcConnection:)`
-override:
+implementation:
 
 ```swift
+@main
 final class MyWebContentExtension: WebContentExtension {
     private var hostConnection: xpc_connection_t?
 
-    override func handle(xpcConnection: xpc_connection_t) {
+    func handle(xpcConnection: xpc_connection_t) {
         hostConnection = xpcConnection
         xpc_connection_set_event_handler(xpcConnection) { [weak self] event in
             guard let self else { return }
@@ -124,7 +125,7 @@ final class MyWebContentExtension: WebContentExtension {
                 self.handleMessage(event)
             }
         }
-        xpc_connection_resume(xpcConnection)
+        xpc_connection_activate(xpcConnection)
     }
 
     private func handleMessage(_ message: xpc_object_t) {
@@ -285,24 +286,30 @@ let handle = try LayerHierarchyHandle(xpcRepresentation: xpcRep)
 ### Synchronized Transactions
 
 When both the host app and the rendering extension need to update layers
-atomically:
+atomically, create one coordinator and pass its XPC representation to the other
+process:
 
 ```swift
-// Both processes create coordinators from the same XPC representation
+// Host app: create coordinator and send its XPC representation to rendering
 let coordinator = try LayerHierarchyHostingTransactionCoordinator()
-
-// Host app adds its hosting view
 coordinator.add(hostingView)
+let xpcRep = coordinator.createXPCRepresentation()
+try await renderProxy.prepareTransaction(coordinatorRepresentation: xpcRep)
 
-// Rendering extension adds its hierarchy
-coordinator.add(hierarchy)
+// Rendering extension: reconstruct from the received representation
+let renderCoordinator = try LayerHierarchyHostingTransactionCoordinator(
+    xpcRepresentation: xpcRep
+)
+renderCoordinator.add(hierarchy)
 
-// Either side commits when ready
+// Commit every coordinator instance after both processes add their participants
+renderCoordinator.commit()
 coordinator.commit()
 ```
 
 The coordinator ensures that layer changes from both processes appear in the
-same frame.
+same frame. Keep coordinator lifetimes short, and call `commit()` as the final
+operation on each instance.
 
 ## Scroll View Integration
 
@@ -370,6 +377,13 @@ import BrowserEngineKit
 
 final class BrowserDragHandler: NSObject, BEDragInteractionDelegate {
     func dragInteraction(
+        _ interaction: UIDragInteraction,
+        itemsForBeginning session: any UIDragSession
+    ) -> [UIDragItem] {
+        []
+    }
+
+    func dragInteraction(
         _ interaction: BEDragInteraction,
         prepare session: any UIDragSession,
         completion: () -> Bool
@@ -378,7 +392,7 @@ final class BrowserDragHandler: NSObject, BEDragInteractionDelegate {
         // (e.g., hit-test the DOM at the drag point)
         let dragItems = prepareDragItems(for: session)
         session.items.append(contentsOf: dragItems)
-        completion()  // Return true if drag should proceed
+        _ = completion()
     }
 
     func dragInteraction(
@@ -388,7 +402,7 @@ final class BrowserDragHandler: NSObject, BEDragInteractionDelegate {
         completion: ([UIDragItem]) -> Bool
     ) {
         // Add more items to an existing drag session
-        completion([])
+        _ = completion([])
     }
 }
 
@@ -423,7 +437,7 @@ func handleContextMenu(at point: CGPoint) {
 ### Web Content Filtering
 
 `BEWebContentFilter` integrates with system content restrictions (Screen Time,
-parental controls):
+parental controls). It is available on iOS 26.2+:
 
 ```swift
 import BrowserEngineKit
@@ -645,7 +659,8 @@ actor BrowserProcessManager {
 ## File Access in Extensions
 
 Web content extensions run in a restricted sandbox. To access user-selected
-files, send a security-scoped bookmark from the host app:
+files, send a minimal bookmark from the host app. Resolving the bookmark in the
+extension grants access for that extension process lifetime:
 
 ```swift
 // Host app: create bookmark for a file URL
@@ -654,7 +669,7 @@ func sendFileToExtension(
     via proxy: WebContentProxy
 ) async throws {
     let bookmarkData = try url.bookmarkData(
-        options: .withSecurityScope,
+        options: .minimalBookmark,
         includingResourceValuesForKeys: nil,
         relativeTo: nil
     )
@@ -666,12 +681,9 @@ func handleBookmark(_ data: Data) throws {
     var isStale = false
     let url = try URL(
         resolvingBookmarkData: data,
-        options: .withSecurityScope,
+        options: .withoutUI,
         bookmarkDataIsStale: &isStale
     )
-    guard url.startAccessingSecurityScopedResource() else {
-        throw BrowserError.fileAccessDenied
-    }
     defer { url.stopAccessingSecurityScopedResource() }
 
     let fileData = try Data(contentsOf: url)

@@ -15,7 +15,7 @@ Common runtime crashes and build errors when using `#Predicate` with SwiftData.
 | Custom computed property | Runtime crash | Only stored `@Attribute` properties work in predicates |
 | `Date.now` captured by value | Stale predicate | Create a `let now = Date()` before the predicate and capture it |
 | Enum raw value comparison | Runtime crash (pre-iOS 18) | Store the raw value as a separate property, or target iOS 18+ |
-| `if`/`else`, `switch`, `for` | Build error | Not valid inside `#Predicate` |
+| Loops, declarations, mutation, or switch-heavy control flow | Build error or runtime failure | Use boolean logic, ternary expressions, optional chaining, or optional binding patterns supported by Foundation `Predicate` |
 | Arbitrary method calls | Runtime crash | Only supported methods (see below) work |
 
 ## Supported Operations

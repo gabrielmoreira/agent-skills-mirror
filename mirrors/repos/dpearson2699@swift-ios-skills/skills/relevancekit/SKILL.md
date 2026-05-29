@@ -1,28 +1,25 @@
 ---
 name: relevancekit
-description: "Increase widget visibility on Apple Watch using RelevanceKit. Use when providing contextual relevance signals for watchOS widgets, declaring time-based or location-based relevance, combining multiple relevance providers, or helping the system surface the right widget at the right time on watchOS 26."
+description: "Increase widget visibility on Apple Watch using RelevanceKit. Use when providing contextual relevance signals for watchOS widgets, declaring time-based or location-based relevance, combining multiple relevance providers, helping the system surface the right widget at the right time on watchOS 26, or routing mixed RelevanceKit/WidgetKit/HealthKit/MapKit Smart Stack scope."
 ---
 
 # RelevanceKit
 
 Provide on-device contextual clues that increase a widget's visibility in the
-Smart Stack on Apple Watch. RelevanceKit tells the system *when* a widget is
-relevant -- by time, location, fitness state, sleep schedule, or connected
-hardware -- so the Smart Stack can surface the right widget at the right moment.
+Apple Watch Smart Stack. RelevanceKit tells the system *when* a widget is
+relevant by time, location, fitness state, sleep schedule, or connected hardware.
 Targets Swift 6.3 / watchOS 26+.
 
-> **Beta-sensitive.** RelevanceKit shipped with watchOS 26. Re-check Apple
-> documentation before making strong claims about API availability or behavior.
+> **Beta-sensitive.** Re-check Apple documentation before making strong RelevanceKit availability or behavior claims.
 
-See [references/relevancekit-patterns.md](references/relevancekit-patterns.md) for complete code patterns including
-relevant widgets, timeline provider integration, grouping, previews, and
-permission handling.
+See [references/relevancekit-patterns.md](references/relevancekit-patterns.md) for complete relevant-widget, timeline provider, grouping, preview, and permission patterns.
 
 ## Contents
 
 - [Overview](#overview)
 - [Setup](#setup)
 - [Relevance Providers](#relevance-providers)
+- [Boundary Routing](#boundary-routing)
 - [Time-Based Relevance](#time-based-relevance)
 - [Location-Based Relevance](#location-based-relevance)
 - [Fitness and Sleep Relevance](#fitness-and-sleep-relevance)
@@ -62,6 +59,10 @@ several upcoming calendar events).
 | `RelevanceEntriesProvider` | WidgetKit | Provides entries for a relevance-configured widget (watchOS 26+) |
 | `RelevanceEntry` | WidgetKit | Data needed to render one relevant widget card (watchOS 26+) |
 
+`RelevanceConfiguration`, `RelevanceEntriesProvider`, and `RelevanceEntry` are
+WidgetKit APIs. Keep them in this skill's scope only when they are part of the
+watchOS relevant-widget workflow that exposes RelevanceKit clues.
+
 ## Setup
 
 ### Import
@@ -75,25 +76,31 @@ import WidgetKit
 
 `RelevantContext` is declared across platforms (iOS 17+, watchOS 10+), but
 **RelevanceKit functionality only takes effect on watchOS**. Calling the API on
-other platforms has no effect. `RelevanceConfiguration`, `RelevanceEntriesProvider`,
-and `RelevanceEntry` are watchOS 26+ only.
+other platforms has no effect. Timeline-provider `relevance()` is available on
+iOS 18+, macOS 15+, visionOS 26+, and watchOS 11+ for shared provider code.
+`RelevanceConfiguration`, `RelevanceEntriesProvider`, and `RelevanceEntry` are
+watchOS 26+ only.
 
 ### Permissions
 
-Certain relevance clues require the user to grant permission to both the app
-and the widget extension:
+Certain relevance clues require authorization or target setup:
 
 | Clue | Required Permission |
 |---|---|
-| `.location(inferred:)` | Location access |
-| `.location(_:)` (CLRegion) | Location access |
-| `.location(category:)` | Location access |
-| `.fitness(_:)` | HealthKit workout/activity rings permission |
+| `.location(inferred:)` | Containing app requests location access; widget extension declares `NSWidgetWantsLocation` |
+| `.location(_:)` (CLRegion) | Containing app requests location access; widget extension declares `NSWidgetWantsLocation` |
+| `.location(category:)` | Containing app requests location access; widget extension declares `NSWidgetWantsLocation` |
+| `.fitness(.workoutActive)` | HealthKit access to `HKWorkoutType` |
+| `.fitness(.activityRingsIncomplete)` | HealthKit access to `appleExerciseTime`, `appleMoveTime`, and `appleStandTime` |
 | `.sleep(_:)` | HealthKit `sleepAnalysis` permission |
 | `.hardware(headphones:)` | None |
 | `.date(...)` | None |
 
-Request permissions in both the main app target and the widget extension target.
+Add location purpose strings to the containing app's `Info.plist`, not only the
+widget extension. In widget code, check `CLLocationManager.isAuthorizedForWidgetUpdates`
+before relying on location clues. For fitness and sleep clues, enable HealthKit
+and request the exact read types in the app and widget extension target that
+provides relevance.
 
 ## Relevance Providers
 
@@ -130,6 +137,7 @@ Build a widget that only appears when conditions match. The system calls
 the matching configuration to get render data.
 
 ```swift
+@available(watchOS 26.0, *)
 struct MyRelevanceProvider: RelevanceEntriesProvider {
     func relevance() async -> WidgetRelevance<MyWidgetIntent> {
         let attributes = events.map { event in
@@ -156,6 +164,18 @@ struct MyRelevanceProvider: RelevanceEntriesProvider {
     }
 }
 ```
+
+## Boundary Routing
+
+When a feature mixes widgets, location, workouts, and Smart Stack relevance,
+keep RelevanceKit focused on `RelevantContext`, `WidgetRelevanceAttribute`,
+provider `relevance()`, `RelevantIntentManager`, relevant-widget handoffs, and
+permissions for relevance clues. Route timelines, reload budgets, families,
+rendering, APNs widget pushes, Live Activities, and widget Controls to
+WidgetKit; `HKWorkoutSession`, `HKLiveWorkoutBuilder`, `HKWorkoutRoute`,
+queries, activity-ring/sleep data, and authorization UX to HealthKit; and
+`MKLocalSearch`, `MKLocalSearchCompleter`, `MKDirections`, geocoding,
+authorization, regions, geofencing, and place data to MapKit/CoreLocation.
 
 ## Time-Based Relevance
 
@@ -208,7 +228,8 @@ RelevantContext.location(inferred: .school)
 RelevantContext.location(inferred: .commute)
 ```
 
-Requires location permission in both the app and widget extension.
+Requires app location authorization plus `NSWidgetWantsLocation` in the widget
+extension.
 
 ### Specific Region
 
@@ -223,10 +244,11 @@ let region = CLCircularRegion(
 RelevantContext.location(region)
 ```
 
-### Point-of-Interest Category (watchOS 26+)
+### Point-of-Interest Category (26.0+ SDKs)
 
 Indicate relevance near any location of a given category. Returns `nil` if the
-category is unsupported.
+category is unsupported. The factory is SDK-available on Apple platforms 26.0+,
+but RelevanceKit clues still only affect Smart Stack behavior on watchOS.
 
 ```swift
 import MapKit
@@ -248,7 +270,9 @@ RelevantContext.fitness(.activityRingsIncomplete)
 RelevantContext.fitness(.workoutActive)
 ```
 
-Requires HealthKit workout/activity permission.
+Requires the specific HealthKit read types for the clue: `HKWorkoutType` for
+`.workoutActive`; `appleExerciseTime`, `appleMoveTime`, and `appleStandTime`
+for `.activityRingsIncomplete`.
 
 ### Sleep
 
@@ -427,9 +451,11 @@ bypass Smart Stack rotation limits during development.
 
 - **Ignoring return order.** The system may only use a subset of relevance
   attributes. Return them sorted by priority (most important first).
-- **Missing permissions in widget extension.** Location, fitness, and sleep
-  clues require permission in *both* the app and the widget extension. If only
-  the app has permission, the clues are silently ignored.
+- **Mixing app and widget location setup.** The containing app requests location
+  authorization and owns the purpose strings; the widget extension declares
+  `NSWidgetWantsLocation` and checks `isAuthorizedForWidgetUpdates`.
+- **Using generic HealthKit permission for fitness clues.** Request the exact
+  HealthKit types required by the clue instead of a broad "activity" permission.
 - **Using RelevanceKit API expecting iOS behavior.** The API compiles on all
   platforms but only has effect on watchOS.
 - **Duplicate Smart Stack cards.** When offering both a timeline widget and a
@@ -449,12 +475,16 @@ bypass Smart Stack rotation limits during development.
 - [ ] `import RelevanceKit` is present alongside `import WidgetKit`
 - [ ] `RelevantContext` clues match the app's actual data model
 - [ ] Relevance attributes are ordered by priority
-- [ ] Permissions requested in both app target and widget extension for location/fitness/sleep clues
+- [ ] Location clues: app has purpose strings and authorization flow; widget extension has `NSWidgetWantsLocation`
+- [ ] Widget location code checks `CLLocationManager.isAuthorizedForWidgetUpdates`
+- [ ] Fitness clues request `HKWorkoutType` or activity-ring quantity types as appropriate
+- [ ] Sleep clues request HealthKit `sleepAnalysis`
 - [ ] `RelevanceEntriesProvider` implements `entry`, `placeholder`, and `relevance`
 - [ ] `context.isPreview` handled in `entry(configuration:context:)` to return preview data
 - [ ] `.associatedKind(_:)` used when a timeline widget and relevant widget show the same data
 - [ ] `RelevantIntentManager.updateRelevantIntents` called when data changes (timeline provider path)
 - [ ] `location(category:)` nil return handled
+- [ ] Mixed-framework plans keep WidgetKit, HealthKit, and MapKit/CoreLocation implementation details in sibling-skill scope
 - [ ] WidgetKit Developer Mode used for testing
 - [ ] Widget previews verify appearance across display sizes
 

@@ -8,6 +8,37 @@ Authoritative sources: Apple Developer Documentation (Keychain Services, Authent
 
 ---
 
+## Contents
+
+- [The Six Anti-Patterns AI Code Generators Reproduce](#the-six-anti-patterns-ai-code-generators-reproduce)
+  - [Anti-Pattern 1 — Tokens in UserDefaults](#anti-pattern-1-tokens-in-userdefaults)
+  - [Anti-Pattern 2 — Hardcoded API Keys in Source Code](#anti-pattern-2-hardcoded-api-keys-in-source-code)
+  - [Anti-Pattern 3 — Production Secrets in .xcconfig](#anti-pattern-3-production-secrets-in-xcconfig)
+  - [Anti-Pattern 4 — Missing kSecAttrAccessible Specification](#anti-pattern-4-missing-ksecattraccessible-specification)
+  - [Anti-Pattern 5 — Non-Atomic Token Refresh](#anti-pattern-5-non-atomic-token-refresh)
+  - [Anti-Pattern 6 — Incomplete Credential Clearing on Logout](#anti-pattern-6-incomplete-credential-clearing-on-logout)
+  - [Correct Baseline for Credential Storage](#correct-baseline-for-credential-storage)
+- [Data Protection Class Selection for Credentials](#data-protection-class-selection-for-credentials)
+- [Actor-Based KeychainManager — Thread-Safe Credential Storage](#actor-based-keychainmanager-thread-safe-credential-storage)
+- [OAuth2 Token Storage and Retrieval Cycle](#oauth2-token-storage-and-retrieval-cycle)
+  - [Token Model](#token-model)
+  - [ASWebAuthenticationSession + PKCE Flow](#aswebauthenticationsession-pkce-flow)
+- [Atomic Token Refresh with Rotation Support](#atomic-token-refresh-with-rotation-support)
+  - [Refresh Coordinator with Promise Coalescing](#refresh-coordinator-with-promise-coalescing)
+- [Runtime API Key Fetching with Keychain Cache and TTL](#runtime-api-key-fetching-with-keychain-cache-and-ttl)
+- [Comprehensive Credential Clearing on Logout](#comprehensive-credential-clearing-on-logout)
+- [Key Rotation and Versioned Migration](#key-rotation-and-versioned-migration)
+  - [Rotation Strategies by Secret Type](#rotation-strategies-by-secret-type)
+  - [Versioned Keychain Items for Migration](#versioned-keychain-items-for-migration)
+  - [Detecting Compromised Credentials](#detecting-compromised-credentials)
+- [Device Binding and Backup Implications](#device-binding-and-backup-implications)
+- [Biometric Protection for High-Value Credentials](#biometric-protection-for-high-value-credentials)
+- [iOS 17+ and 18+ Modernizations](#ios-17-and-18-modernizations)
+- [Static Analysis and CI/CD Guardrails](#static-analysis-and-cicd-guardrails)
+- [OWASP MASTG Compliance Mapping](#owasp-mastg-compliance-mapping)
+- [Conclusion](#conclusion)
+- [Summary Checklist](#summary-checklist)
+
 ## The Six Anti-Patterns AI Code Generators Reproduce
 
 AI coding assistants routinely generate insecure credential handling. Each anti-pattern below is documented with evidence, an incorrect code sample, and the correct alternative.

@@ -1,7 +1,8 @@
 # GameKit Patterns
 
-Advanced GameKit patterns for voice chat, saved games, custom matchmaking UI,
-leaderboard images, challenge handling, and rule-based matchmaking.
+Advanced GameKit patterns for player identity verification, legacy voice chat,
+saved games, custom matchmaking UI, leaderboard images, challenge handling, and
+rule-based matchmaking.
 
 ## Contents
 
@@ -22,39 +23,49 @@ leaderboard images, challenge handling, and rule-based matchmaking.
 ## Server-Side Identity Verification
 
 Verify the local player on a backend server using a cryptographic signature
-from `fetchItems(forIdentityVerificationSignature:)`:
+from the async identity-verification API:
 
 ```swift
+enum GameKitIdentityError: Error {
+    case missingBundleIdentifier
+}
+
 func verifyPlayerOnServer() async throws {
     let (publicKeyURL, signature, salt, timestamp) =
-        try await GKLocalPlayer.local.fetchItems(forIdentityVerificationSignature: nil)
+        try await GKLocalPlayer.local.fetchItemsForIdentityVerificationSignature()
 
-    // Send publicKeyURL, signature, salt, timestamp, playerID, and bundleID
-    // to your server for verification against Apple's public key.
+    // Send these values plus the bundle ID and a scoped player identifier.
+    // Use teamPlayerID for most games, or gamePlayerID for Apple Arcade games.
+    let playerID = GKLocalPlayer.local.teamPlayerID
+    guard let bundleID = Bundle.main.bundleIdentifier else {
+        throw GameKitIdentityError.missingBundleIdentifier
+    }
+    sendToServer(publicKeyURL, signature, salt, timestamp, playerID, bundleID)
 }
 ```
 
 The server fetches the public key from the URL Apple provides, then verifies
-the signature over the concatenation of: playerID + bundleID + timestamp + salt.
+that Apple signed it. Verify the signature over this byte sequence:
+`teamPlayerID` (or Apple Arcade `gamePlayerID`) as UTF-8, bundle ID as UTF-8,
+timestamp as big-endian `UInt64`, then salt. Reject stale timestamps and trust
+only fields covered by the signature.
 
 ## Voice Chat
 
-GameKit provides built-in voice chat between players in a real-time match
-through `GKVoiceChat`. Each named channel supports independent volume and mute
-controls.
+`GKVoiceChat` is deprecated. Prefer SharePlay for new voice or social audio
+work. Keep this section only for maintaining existing GameKit voice chat.
+Each named channel supports independent volume and mute controls.
 
 ### Prerequisites
 
-Add `NSMicrophoneUsageDescription` to Info.plist and configure an audio session
-before starting voice chat.
+Add `NSMicrophoneUsageDescription` to Info.plist, activate an audio session, and
+check `GKVoiceChat.isVoIPAllowed()` before creating channels.
 
 ```swift
 import AVFoundation
 
 func configureAudioSession() throws {
     let session = AVAudioSession.sharedInstance()
-    try session.setCategory(.playAndRecord, mode: .gameChat,
-                            options: [.defaultToSpeaker, .allowBluetooth])
     try session.setActive(true)
 }
 ```
@@ -68,9 +79,9 @@ func startVoiceChat(in match: GKMatch) {
     guard GKVoiceChat.isVoIPAllowed() else { return }
 
     guard let voiceChat = match.voiceChat(withName: "teamChat") else { return }
-    voiceChat.isActive = true
     voiceChat.volume = 0.8
     voiceChat.start()
+    voiceChat.isActive = true
 
     voiceChat.playerVoiceChatStateDidChangeHandler = { player, state in
         switch state {
@@ -137,9 +148,11 @@ func stopVoiceChat(_ voiceChat: GKVoiceChat) {
 
 ## Saved Games
 
-GameKit stores game data in the player's iCloud account, accessible from any
-device signed in to the same Game Center account. Saved games are managed
-through `GKLocalPlayer` and represented by `GKSavedGame`.
+GameKit stores game data in the player's iCloud account, accessible from devices
+using the same Game Center account. The player must have an iCloud account and
+iCloud Drive enabled, and the app needs the iCloud capability with an iCloud
+container identifier. Saved games are managed through `GKLocalPlayer` and
+represented by `GKSavedGame`.
 
 ### Saving Game Data
 
@@ -152,14 +165,15 @@ func saveGame(state: GameState, name: String) async throws {
 }
 ```
 
-Multiple saves with the same name create separate entries. The most recent
-save is returned first from fetch calls.
+Saving with an existing filename overwrites that file. Use unique filenames for
+multiple save slots. Duplicate filenames from multiple devices are conflicts
+that your game must resolve.
 
 ### Fetching Saved Games
 
 ```swift
 func fetchSavedGames() async throws -> [GKSavedGame] {
-    try await GKLocalPlayer.local.fetchSavedGames() ?? []
+    try await GKLocalPlayer.local.fetchSavedGames()
 }
 ```
 
@@ -189,7 +203,9 @@ func resolveConflicts(_ conflicts: [GKSavedGame], using data: Data) async throws
 
 ### Listening for Saved Game Events
 
-Implement `GKSavedGameListener` to respond to save events from other devices:
+Implement `GKSavedGameListener`, or `GKLocalPlayerListener` if the same object
+handles multiple Game Center events, to respond to save events from other
+devices:
 
 ```swift
 extension GameManager: GKSavedGameListener {
@@ -321,11 +337,11 @@ the leaderboards within each set:
 
 ```swift
 func loadLeaderboardSets() async throws -> [GKLeaderboardSet] {
-    try await GKLeaderboardSet.loadLeaderboardSets() ?? []
+    try await GKLeaderboardSet.loadLeaderboardSets()
 }
 
 func loadLeaderboards(in set: GKLeaderboardSet) async throws -> [GKLeaderboard] {
-    try await set.loadLeaderboards() ?? []
+    try await set.loadLeaderboards()
 }
 ```
 
@@ -352,7 +368,7 @@ where the score was achieved:
 ```swift
 try await GKLeaderboard.submitScore(
     score,
-    context: UInt64(levelID),
+    context: levelID,
     player: GKLocalPlayer.local,
     leaderboardIDs: ["com.mygame.scores"]
 )
@@ -377,7 +393,7 @@ func challengeFriends(
     ) { composeVC, issued, sentPlayers in
         composeVC.dismiss(animated: true)
     }
-    if let vc { present(vc, animated: true) }
+    present(vc, animated: true)
 }
 ```
 
@@ -385,7 +401,7 @@ func challengeFriends(
 
 ```swift
 func loadChallengeableFriends() async throws -> [GKPlayer] {
-    try await GKLocalPlayer.local.loadChallengableFriends() ?? []
+    try await GKLocalPlayer.local.loadChallengableFriends()
 }
 ```
 
@@ -399,7 +415,7 @@ func findEligiblePlayers(
     from players: [GKPlayer]
 ) async throws -> [GKPlayer] {
     let achievement = GKAchievement(identifier: achievementID)
-    return try await achievement.selectChallengeablePlayers(players) ?? []
+    return try await achievement.selectChallengeablePlayers(players)
 }
 ```
 
@@ -413,7 +429,13 @@ GKAccessPoint.shared.triggerForChallenges { }
 
 Configure matchmaking rules in App Store Connect to refine player matching
 based on game-specific criteria. Rules evaluate player properties to determine
-compatible matches.
+compatible matches. `queueName`, `properties`, `recipientProperties`,
+`GKMatch.properties`, and `GKMatch.playerProperties` require iOS 17.2+ or the
+equivalent platform releases.
+
+`queueName` must be a case-sensitive reverse-DNS-style identifier using only
+letters, numbers, hyphens, and periods. `properties` and `recipientProperties`
+must be JSON-serializable, and the key `gc` is reserved by GameKit.
 
 ### Setting Up Rule-Based Matching
 
@@ -422,7 +444,7 @@ func findRuleBasedMatch(skill: Int, region: String) async throws -> GKMatch {
     let request = GKMatchRequest()
     request.minPlayers = 2
     request.maxPlayers = 4
-    request.queueName = "competitive"  // Matches the queue in App Store Connect
+    request.queueName = "com.mygame.competitive"
     request.properties = [
         "skill": skill,
         "region": region
@@ -452,7 +474,8 @@ func inspectMatchProperties(_ match: GKMatch) {
 
 ### Rule-Based Matching with Invited Players
 
-Set properties for invited recipients:
+Set properties for invited recipients. Every key in `recipientProperties` must
+also be present in `recipients`.
 
 ```swift
 func inviteWithRules(
@@ -462,7 +485,7 @@ func inviteWithRules(
     let request = GKMatchRequest()
     request.minPlayers = 2
     request.maxPlayers = 4
-    request.queueName = "competitive"
+    request.queueName = "com.mygame.competitive"
     request.recipients = players
     request.properties = properties
 
@@ -498,23 +521,24 @@ Use groups to separate players by game mode, difficulty, or map.
 
 ### Player Attributes
 
-Use a bitmask to specify the role a player wants. GameKit ensures all bits are
-covered across participants:
+Use `playerAttributes` only for simple non-rule-based matchmaking. If the value
+is nonzero, GameKit tries to combine players so the bitwise OR of all
+participants' masks equals `0xFFFFFFFF`:
 
 ```swift
-// Define roles as bitmask values
-let roleAttacker: UInt32 = 0x0001
-let roleDefender: UInt32 = 0x0002
-let roleSupport:  UInt32 = 0x0004
+let attackerMask: UInt32 = 0x000000FF
+let defenderMask: UInt32 = 0x0000FF00
+let supportMask:  UInt32 = 0xFFFF0000
 
 let request = GKMatchRequest()
 request.minPlayers = 3
 request.maxPlayers = 3
-request.playerAttributes = roleAttacker  // This player wants the attacker role
+request.playerAttributes = attackerMask
 ```
 
-GameKit ORs the attributes of all matched players and verifies all bits are
-filled. This guarantees each role is represented.
+Use matchmaking rules for modern skill, region, version, party-code, and team
+assignment logic. When `queueName` is set, GameKit ignores `playerGroup` and
+`playerAttributes`.
 
 ## Hosted Matches
 
@@ -542,7 +566,7 @@ func findPlayersWithRules() async throws -> GKMatchedPlayers {
     let request = GKMatchRequest()
     request.minPlayers = 2
     request.maxPlayers = 8
-    request.queueName = "ranked"
+    request.queueName = "com.mygame.ranked"
     request.properties = ["elo": 1500]
 
     let matchedPlayers = try await GKMatchmaker.shared().findMatchedPlayers(
@@ -564,11 +588,19 @@ turns. Useful for trading items, sending gifts, or requesting actions.
 ### Sending an Exchange
 
 ```swift
+enum TurnExchangeError: Error {
+    case dataTooLarge
+}
+
 func sendExchange(
     match: GKTurnBasedMatch,
     to recipients: [GKTurnBasedParticipant],
     data: Data
 ) async throws -> GKTurnBasedExchange {
+    guard data.count <= match.exchangeDataMaximumSize else {
+        throw TurnExchangeError.dataTooLarge
+    }
+
     try await match.sendExchange(
         to: recipients,
         data: data,
@@ -654,7 +686,7 @@ Requires the `NSGKFriendListUsageDescription` key in Info.plist:
 func loadFriends() async throws -> [GKPlayer] {
     let status = try await GKLocalPlayer.local.loadFriendsAuthorizationStatus()
     guard status == .authorized else { return [] }
-    return try await GKLocalPlayer.local.loadFriends() ?? []
+    return try await GKLocalPlayer.local.loadFriends()
 }
 ```
 
@@ -675,7 +707,7 @@ func sendFriendRequest(from viewController: UIViewController) async {
 
 ```swift
 func loadRecentPlayers() async throws -> [GKPlayer] {
-    try await GKLocalPlayer.local.loadRecentPlayers() ?? []
+    try await GKLocalPlayer.local.loadRecentPlayers()
 }
 ```
 
@@ -701,7 +733,9 @@ func stopBrowsing() {
 
 ## SharePlay Integration
 
-Start a multiplayer game through FaceTime using SharePlay:
+Use GameKit's SharePlay bridge when a FaceTime or Messages SharePlay session
+should add players to a GameKit match. Keep full GroupActivities session design
+outside this GameKit reference.
 
 ```swift
 func startSharePlayMatch() {

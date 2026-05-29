@@ -117,6 +117,8 @@ final class EnergyManager {
 ## EV Charging Session Manager
 
 Manage the full lifecycle of an EV charging session with guidance tracking.
+Use only a `guidanceToken` returned by EnergyKit for the venue and device that
+requested guidance. Do not synthesize placeholder tokens.
 
 ```swift
 import EnergyKit
@@ -133,6 +135,7 @@ final class EVChargingManager {
     private let deviceID: String
     private var venue: EnergyVenue?
     private var guidanceToken: UUID?
+    private var pendingEvents: [ElectricVehicleLoadEvent] = []
 
     init(deviceID: String) {
         self.deviceID = deviceID
@@ -154,13 +157,13 @@ final class EVChargingManager {
         self.stateOfCharge = stateOfCharge
         isCharging = true
 
-        let event = makeEvent(
+        let event = try makeEvent(
             sessionState: .begin,
             stateOfCharge: stateOfCharge,
             power: 0,
             energy: 0
         )
-        try await venue.submitEvents([event])
+        pendingEvents = [event]
     }
 
     func updateCharging(
@@ -174,28 +177,41 @@ final class EVChargingManager {
         self.currentPower = power
         self.totalEnergy = energy
 
-        let event = makeEvent(
+        let event = try makeEvent(
             sessionState: .active,
             stateOfCharge: stateOfCharge,
             power: power,
             energy: energy
         )
-        try await venue.submitEvents([event])
+        pendingEvents.append(event)
+
+        if pendingEvents.count >= 4 {
+            try await flushPendingEvents()
+        }
     }
 
     func stopCharging() async throws {
         guard let venue, isCharging else { return }
 
-        let event = makeEvent(
+        let event = try makeEvent(
             sessionState: .end,
             stateOfCharge: stateOfCharge,
             power: 0,
             energy: totalEnergy
         )
-        try await venue.submitEvents([event])
+        pendingEvents.append(event)
+        try await flushPendingEvents()
 
         isCharging = false
         currentSessionID = nil
+    }
+
+    func flushPendingEvents() async throws {
+        guard let venue, !pendingEvents.isEmpty else { return }
+
+        let events = pendingEvents
+        pendingEvents.removeAll()
+        try await venue.submitEvents(events)
     }
 
     private func makeEvent(
@@ -203,14 +219,17 @@ final class EVChargingManager {
         stateOfCharge: Int,
         power: Double,
         energy: Double
-    ) -> ElectricVehicleLoadEvent {
+    ) throws -> ElectricVehicleLoadEvent {
+        guard let guidanceToken else { throw EVError.missingGuidanceToken }
+        guard let currentSessionID else { throw EVError.noActiveSession }
+
         let guidanceState = ElectricVehicleLoadEvent.Session.GuidanceState(
-            wasFollowingGuidance: guidanceToken != nil,
-            guidanceToken: guidanceToken ?? UUID()
+            wasFollowingGuidance: true,
+            guidanceToken: guidanceToken
         )
 
         let session = ElectricVehicleLoadEvent.Session(
-            id: currentSessionID ?? UUID(),
+            id: currentSessionID,
             state: sessionState,
             guidanceState: guidanceState
         )
@@ -232,6 +251,8 @@ final class EVChargingManager {
 
     enum EVError: Error {
         case noVenue
+        case missingGuidanceToken
+        case noActiveSession
     }
 }
 ```
@@ -239,6 +260,13 @@ final class EVChargingManager {
 ## HVAC Control Manager
 
 Track HVAC load events with guidance compliance.
+Submit events when the heating or cooling stage changes, and use the real
+guidance token that was in effect for that venue.
+Treat heat stage 1 -> heat stage 2, heat -> cooling, cooling -> idle, and
+equipment stop as distinct load events instead of one summarized session row.
+For devices that emit frequent stage/runtime samples, buffer events and submit
+periodically or at the end of a session, while still recording significant state
+changes as they occur.
 
 ```swift
 import EnergyKit
@@ -258,7 +286,7 @@ final class HVACManager {
         self.deviceID = deviceID
     }
 
-    func configure(venue: EnergyVenue, guidanceToken: UUID?) {
+    func configure(venue: EnergyVenue, guidanceToken: UUID) {
         self.venue = venue
         self.guidanceToken = guidanceToken
     }
@@ -269,7 +297,7 @@ final class HVACManager {
         currentStage = stage
         isRunning = true
 
-        let event = makeEvent(state: .begin, stage: stage)
+        let event = try makeEvent(state: .begin, stage: stage)
         try await venue.submitEvents([event])
     }
 
@@ -277,14 +305,14 @@ final class HVACManager {
         guard let venue, isRunning else { return }
         currentStage = stage
 
-        let event = makeEvent(state: .active, stage: stage)
+        let event = try makeEvent(state: .active, stage: stage)
         try await venue.submitEvents([event])
     }
 
     func stop() async throws {
         guard let venue, isRunning else { return }
 
-        let event = makeEvent(state: .end, stage: 0)
+        let event = try makeEvent(state: .end, stage: 0)
         try await venue.submitEvents([event])
 
         isRunning = false
@@ -294,14 +322,17 @@ final class HVACManager {
     private func makeEvent(
         state: ElectricHVACLoadEvent.Session.State,
         stage: Int
-    ) -> ElectricHVACLoadEvent {
+    ) throws -> ElectricHVACLoadEvent {
+        guard let guidanceToken else { throw HVACError.missingGuidanceToken }
+        guard let sessionID else { throw HVACError.noActiveSession }
+
         let guidanceState = ElectricHVACLoadEvent.Session.GuidanceState(
-            wasFollowingGuidance: guidanceToken != nil,
-            guidanceToken: guidanceToken ?? UUID()
+            wasFollowingGuidance: true,
+            guidanceToken: guidanceToken
         )
 
         let session = ElectricHVACLoadEvent.Session(
-            id: sessionID ?? UUID(),
+            id: sessionID,
             state: state,
             guidanceState: guidanceState
         )
@@ -314,6 +345,11 @@ final class HVACManager {
             session: session,
             deviceID: deviceID
         )
+    }
+
+    enum HVACError: Error {
+        case missingGuidanceToken
+        case noActiveSession
     }
 }
 ```
@@ -422,6 +458,8 @@ struct EnergyDashboardView: View {
 ## Insight Data Visualization
 
 Prepare insight records for chart display.
+`dataByGridCleanliness` is iOS/iPadOS 26.1+, so keep the chart model optional
+and guard access when supporting 26.0.
 
 ```swift
 struct InsightDataPoint: Identifiable {
@@ -438,13 +476,23 @@ func processInsightRecords(
     records.compactMap { record in
         guard let total = record.totalEnergy else { return nil }
 
+        let cleanliness: (cleaner: Double?, lessClean: Double?)
+        if #available(iOS 26.1, iPadOS 26.1, *) {
+            cleanliness = (
+                record.dataByGridCleanliness?.cleaner?
+                    .converted(to: .kilowattHours).value,
+                record.dataByGridCleanliness?.lessClean?
+                    .converted(to: .kilowattHours).value
+            )
+        } else {
+            cleanliness = (nil, nil)
+        }
+
         return InsightDataPoint(
             date: record.range.start,
             energy: total.converted(to: .kilowattHours).value,
-            cleanerEnergy: record.dataByGridCleanliness?.cleaner?
-                .converted(to: .kilowattHours).value,
-            lessCleanEnergy: record.dataByGridCleanliness?.lessClean?
-                .converted(to: .kilowattHours).value
+            cleanerEnergy: cleanliness.cleaner,
+            lessCleanEnergy: cleanliness.lessClean
         )
     }
 }

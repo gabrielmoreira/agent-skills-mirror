@@ -191,7 +191,10 @@ PromptHub/
 
 PromptHub uses a project-native Documentation Operating System (DOS). Internal SSD assets live under `spec/`, while repository-facing docs stay under `docs/`.
 
-The structure is intentionally aligned with OpenSpec: stable domain docs live in `spec/domains/`, active delta specs live under `spec/changes/active/<change-key>/specs/<domain>/spec.md`, finished changes move to `spec/changes/archive/`, and the workflow is iterative rather than phase-locked.
+PromptHub now uses `spec-init` directories for stable project docs and an OpenSpec-style change workflow for deltas:
+
+- `spec-init` provides the project-level document boundaries for workflow / knowledge / changes / records
+- PromptHub's change-management backbone remains `spec/changes/active/<change-key>/specs/<domain>/spec.md` plus `spec/changes/archive/`; stable truth now lives in `spec/workflow/*`, `spec/knowledge/*`, `spec/rules/`, `spec/releases/`, and related record folders
 
 The expected SSD loop is:
 
@@ -199,10 +202,24 @@ The expected SSD loop is:
 
 #### Document Roles
 
-- `spec/domains/`: long-lived source-of-truth docs for current system behavior by domain.
-- `spec/architecture/`: long-lived source-of-truth docs for stable internal architecture and accepted engineering constraints.
-- `spec/logic/`: long-lived docs for stable business logic, semantic models, and derivation rules.
-- `spec/assets/`: long-lived docs for fixed assets such as platform matrices, canonical file mappings, and durable resource inventories.
+- `spec/workflow/00-intake/`: project-level intake entry for why the work matters, target users, constraints, and non-goals.
+- `spec/workflow/01-requirements/`: project-level requirements entry for FR / NFR / AC style requirements.
+- `spec/workflow/02-design/`: project-level design entry for architecture, module boundaries, data, interfaces, and tradeoffs.
+- `spec/workflow/03-implementation/`: project-level implementation-planning entry for sequencing and milestones.
+- `spec/workflow/04-verification/`: project-level verification-planning entry.
+- `spec/workflow/05-tasks/`: project-level executable task entry.
+- `spec/knowledge/context/`: long-lived context docs for stable terminology, actors, entities, and business boundaries.
+- `spec/knowledge/structure/`: long-lived docs for stable system structure and module boundaries.
+- `spec/knowledge/behavior/`: long-lived docs for stable workflows, state transitions, and business rules.
+- `spec/knowledge/reference/`: long-lived reference docs for schemas, samples, fixtures, and protocols.
+- `spec/rules/`: project-level default engineering rules entry.
+- `spec/releases/`: project-level release-summary entry.
+- `spec/archive/`: project-level archive entry.
+- `spec/adr/`: project-level ADR entry.
+- `spec/knowledge/context/`: long-lived source-of-truth docs for stable terminology, actors, entities, and product boundaries.
+- `spec/knowledge/structure/`: long-lived source-of-truth docs for stable internal architecture and accepted engineering constraints.
+- `spec/knowledge/behavior/`: long-lived docs for stable workflows, semantic rules, and derivation boundaries.
+- `spec/knowledge/reference/`: long-lived docs for fixed assets such as platform matrices, canonical file mappings, schemas, and durable reference inventories.
 - `spec/README.md`: the internal SSD entry point.
 - `spec/changes/active/<change-key>/`: active change folders for feature work, larger bug fixes, refactors, and migrations.
 - `spec/changes/archive/<date>-<change-key>/`: completed or superseded changes kept for history.
@@ -228,11 +245,12 @@ Use one or more domain spec files under `specs/` when the change spans multiple 
 #### Workflow Expectations
 
 1. Start with the change folder before writing significant code.
-2. Refine `proposal.md`, `specs/<domain>/spec.md`, and `design.md` as understanding improves; the workflow is iterative, not phase-locked.
-3. Use `tasks.md` as the implementation checklist and mark items complete as work lands.
-4. Update `implementation.md` during or immediately after implementation so the executed work does not live only in git diff or chat history.
-5. When the change ships, sync current behavior back into `spec/domains/` and stable engineering guidance back into `spec/architecture/`, `spec/logic/`, or `spec/assets/` where appropriate.
-6. After shipping or abandoning the work, move the change folder to `spec/changes/archive/` rather than deleting it.
+2. Use the `spec-init` document boundaries to decide what kind of document a piece of content belongs in, but keep non-trivial implementation work inside `spec/changes/active/<change-key>/`.
+3. Refine `proposal.md`, `specs/<domain>/spec.md`, and `design.md` as understanding improves; the workflow is iterative, not phase-locked.
+4. Use `tasks.md` as the implementation checklist and mark items complete as work lands.
+5. Update `implementation.md` during or immediately after implementation so the executed work does not live only in git diff or chat history.
+6. When the change ships, sync current behavior back into `spec/workflow/*` and `spec/knowledge/*`, and sync stable rules, release summaries, or decisions into `spec/rules/`, `spec/releases/`, or `spec/adr/` where appropriate.
+7. After shipping or abandoning the work, move the change folder to `spec/changes/archive/` rather than deleting it.
 
 #### When To Update Existing Change vs Start New One
 
@@ -242,7 +260,8 @@ Use one or more domain spec files under `specs/` when the change spans multiple 
 #### Implementation Discipline
 
 - Do not let requirements live only in chat history when the work is significant.
-- Do not edit `spec/domains/`, `spec/logic/`, `spec/assets/`, or `spec/architecture/` as if they were scratchpads for active work; active deltas belong in `spec/changes/active/` first.
+- Do not confuse the new `spec/workflow/*` and `spec/knowledge/*` project-level entry points with replacements for active change records; they classify document intent, while `spec/changes/active/` remains the execution record for non-trivial work.
+- Do not edit `spec/workflow/*`, `spec/knowledge/*`, `spec/rules/`, `spec/releases/`, or `spec/adr/` as if they were scratchpads for active work; active deltas belong in `spec/changes/active/` first.
 - Do not treat `tasks.md` as optional for substantial changes; it is the execution contract.
 - Do not treat `implementation.md` as optional for substantial changes; it is the executed record of what really landed.
 - Do not close a change folder without updating its verification status and follow-up notes.
@@ -255,7 +274,7 @@ Use one or more domain spec files under `specs/` when the change spans multiple 
 3. **IPC:** If adding new features requiring backend access, update `ipc-channels.ts`, implement handler in `main/ipc`, and expose via `preload`.
 4. **Test:** Run `pnpm test -- --run` to verify logic. Run `pnpm lint` to verify code quality.
 5. **Record:** Update `implementation.md` with the actual execution path, verification, and follow-up notes.
-6. **Sync Docs:** Update `spec/domains/` when shipped behavior changed, update `spec/logic/` or `spec/assets/` when stable logic/assets changed, update `spec/architecture/` when the shipped internal architecture contract changed, and update user-facing docs in `docs/` or `README.md` when the contributor/user contract changed.
+6. **Sync Docs:** Update `spec/workflow/*` when project-level goals or requirements changed, update `spec/knowledge/behavior/` or `spec/knowledge/reference/` when stable behavior/assets changed, update `spec/knowledge/structure/` when the shipped internal architecture contract changed, update `spec/releases/` or `spec/adr/` when release or decision records changed, and update user-facing docs in `docs/` or `README.md` when the contributor/user contract changed.
 7. **Commit:** Use Conventional Commits (e.g., `feat: ...`, `fix: ...`, `refactor: ...`, `test: ...`).
 
 ## 7. Testing Standards

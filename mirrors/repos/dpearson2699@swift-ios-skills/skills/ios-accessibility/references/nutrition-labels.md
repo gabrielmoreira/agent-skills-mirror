@@ -1,79 +1,114 @@
 # App Store Accessibility Nutrition Labels
 
 App Store Connect lets you declare which accessibility features your app
-supports. These labels appear on your product page, helping users find apps
-that meet their needs.
+supports. These labels appear on the product page and help users find apps
+that support their needs before they download.
 
-Docs: [Overview of Accessibility Nutrition Labels](https://developer.apple.com/help/app-store-connect/manage-app-accessibility/overview-of-accessibility-nutrition-labels)
+Docs:
+- [Overview of Accessibility Nutrition Labels](https://developer.apple.com/help/app-store-connect/manage-app-accessibility/overview-of-accessibility-nutrition-labels)
+- [Manage Accessibility Nutrition Labels](https://developer.apple.com/help/app-store-connect/manage-app-accessibility/manage-accessibility-nutrition-labels)
 
-## The 9 Label Categories
+## Contents
+
+- [Current Label Categories](#current-label-categories)
+- [Claim Rule](#claim-rule)
+- [Pass / Fail Criteria](#pass--fail-criteria)
+- [SwiftUI Audit Example](#swiftui-audit-example)
+- [Related Non-Label Accessibility Work](#related-non-label-accessibility-work)
+
+## Current Label Categories
+
+Apple's current App Store Accessibility Nutrition Labels are:
 
 | Label | What It Means | Key Implementation |
 |-------|---------------|-------------------|
-| **VoiceOver** | App is fully navigable and usable with VoiceOver | All controls have accessibility labels; images have descriptions; custom views use `accessibilityElement(children:)` |
-| **Full Keyboard Access** | App supports complete keyboard navigation | All interactive elements are focusable; keyboard shortcuts for key actions; no touch-only gestures required |
-| **Switch Control** | App works with external switch devices | All actions reachable through scanning; no timing-dependent interactions; custom actions via `accessibilityCustomContent` |
-| **Voice Control** | App responds to voice commands | All buttons and controls have visible or accessibility labels matching voice command targets |
-| **Closed Captions / SDH** | Media includes closed captions or subtitles for the deaf and hard of hearing | AVPlayer content tagged with `transcribesSpokenDialogForAccessibility` and `describesMusicAndSoundForAccessibility` |
-| **Audio Descriptions** | Media includes narrated descriptions of visual content | Audio tracks tagged with `describesVideoForAccessibility` |
-| **Larger Text** | App supports Dynamic Type at all sizes | All text uses `UIFont.preferredFont(forTextStyle:)` or SwiftUI's default text styles; layouts adapt without truncation through Accessibility XXL sizes |
-| **Reduce Motion** | App respects the Reduce Motion setting | Check `UIAccessibility.isReduceMotionEnabled` or `@Environment(\.accessibilityReduceMotion)`; provide non-animated alternatives |
-| **Increase Contrast** | App respects the Increase Contrast setting | Use semantic colors (system colors adapt automatically); check `UIAccessibility.isDarkerSystemColorsEnabled` for custom elements |
+| **VoiceOver** | Users can navigate, understand, and operate the app with VoiceOver | Concise labels, values, traits, logical order, alternatives for images/charts, accessible custom controls |
+| **Voice Control** | Users can navigate and operate the app with voice commands | Speakable visible/accessibility labels, `accessibilityInputLabels`, custom actions for hidden or gesture-only behavior |
+| **Larger Text** | Text can scale to at least 200% where supported | Dynamic Type or an equivalent in-app scaling control, layouts that avoid clipping and overlap |
+| **Dark Interface** | The app can keep common-task UI dark | System Dark Mode or an equivalent dark mode without bright flashes in common tasks |
+| **Differentiate Without Color Alone** | Color is not the only way to convey information | Text, shape, icon, position, or pattern alternatives for color-coded state and data |
+| **Sufficient Contrast** | Text, icons, controls, and state indicators have enough contrast | Semantic colors, high-contrast variants, Reduce Transparency handling, contrast checks in light and dark appearances |
+| **Reduced Motion** | Problematic motion can be reduced or replaced | Respect Reduce Motion; replace parallax, spinning, scaling, depth, and ongoing motion with fades or static states where appropriate |
+| **Captions** | Dialogue and relevant sounds are available as text for video or audio content | Captions, SDH, subtitles, or transcripts; detect and honor system caption settings |
+| **Audio Descriptions** | Visual time-based content has narrated descriptions | Audio description tracks or equivalent narration for video, cut scenes, and visual-only cues |
+
+Apple states these labels appear on Apple devices running iOS 26, iPadOS 26,
+macOS 26, tvOS 26, visionOS 26, and watchOS 26 or later. App Store Connect asks
+only for labels that apply to the device type.
+
+## Claim Rule
+
+Only claim a label when users can complete all common tasks of the app using
+that feature. Build a task matrix per device and test the common workflows
+before answering in App Store Connect.
+
+Keep claims accurate over time and do not treat App Store accessibility answers
+as marketing claims. Apple notes that App Review may contact developers to
+update intentionally misleading or harmful accessibility labels.
 
 ## Pass / Fail Criteria
 
-To legitimately claim a label, your app must pass real testing with that
-assistive technology. Apple may audit these claims.
+### VoiceOver
 
-### VoiceOver Pass Criteria
+- Every interactive element has a concise, meaningful label.
+- Labels avoid control types and state words that VoiceOver already announces.
+- Images and charts provide useful descriptions or text alternatives.
+- Decorative images are hidden.
+- Custom controls expose role, value, action, and traversal order.
+- Dynamic content that matters is announced with the appropriate accessibility notification.
 
-- Every interactive element has a meaningful `accessibilityLabel`
-- Decorative images are hidden (`accessibilityHidden(true)` or `.decorative`)
-- Custom views expose children or combine into logical elements
-- No information is conveyed only through color, shape, or position
-- All alerts, toasts, and dynamic content are announced via `UIAccessibility.post(notification:argument:)`
-- Navigation order is logical (top-to-bottom, leading-to-trailing)
+### Voice Control
 
-### Full Keyboard Access Pass Criteria
+- Common tasks work using only voice commands.
+- Visible labels and Voice Control names match whenever practical.
+- `accessibilityInputLabels` provide short spoken alternatives for long labels.
+- "Show Names" and "Show Numbers" expose all interactive elements.
+- Swipes, long presses, hover-only controls, and hidden actions have a speech-only path, usually through custom accessibility actions.
 
-- All actions achievable without touch
-- Clear focus indicators visible on all interactive elements
-- Tab order follows visual layout
-- Keyboard shortcuts don't conflict with system shortcuts
-- No dead-end focus traps
+### Larger Text
 
-### Closed Captions Pass Criteria
+- Text reaches at least 200% of the default size where the platform supports the label.
+- Main workflows avoid clipped, overlapped, or severely truncated text.
+- Layouts adapt at accessibility text sizes, often by switching from horizontal to vertical composition.
+- Meaningful icons or text-like graphics scale or have an equivalent perceivable alternative.
 
-- All spoken dialog is captioned
-- Sound effects relevant to comprehension are described in brackets
-- Speaker identification is included when multiple speakers are present
-- Captions are synchronized with audio
-- Captions use `AVMediaCharacteristic.transcribesSpokenDialogForAccessibility`
+### Dark Interface
 
-### Audio Descriptions Pass Criteria
+- Common-task screens remain dark when the user selects a dark appearance or the app's dark setting.
+- Bright loading flashes, interstitials, and modal surfaces are avoided.
+- Dark mode is tested together with sufficient contrast settings.
 
-- Visual-only information (actions, scene changes, on-screen text) is narrated
-- Descriptions fit between dialog without overlapping
-- Audio description tracks tagged with `AVMediaCharacteristic.describesVideoForAccessibility`
+### Differentiate Without Color Alone
 
-### Larger Text Pass Criteria
+- Status, validation, selection, chart series, and game/team state never rely on color alone.
+- Use text, symbols, shape, order, pattern, or direct labels in addition to color.
+- Test important workflows with grayscale or color filters to find hidden reliance on color.
 
-- App uses Dynamic Type (preferred font text styles)
-- No text is clipped or truncated at Accessibility sizes (up to AX5)
-- ScrollViews accommodate expanded content
-- Images with text provide scaled alternatives
+### Sufficient Contrast
 
-### Reduce Motion Pass Criteria
+- Most text meets generally accepted contrast guidance, commonly 4.5:1 against its background.
+- Non-text state indicators and custom controls have sufficient contrast, commonly 3:1.
+- Test light mode, dark mode, Increase Contrast, Bold Text, and Reduce Transparency combinations.
+- Custom colors provide high-contrast variants when semantic system colors are not enough.
 
-- `@Environment(\.accessibilityReduceMotion)` or `UIAccessibility.isReduceMotionEnabled` checked
-- Parallax, sliding, and spring animations replaced with fades or instant transitions
-- Auto-playing animations are paused or replaced with static content
+### Reduced Motion
 
-### Increase Contrast Pass Criteria
+- Disable or replace parallax, spinning, scaling, vortex, multi-axis, multi-speed, and depth-simulating motion when Reduce Motion is enabled.
+- Stop ongoing motion such as auto-advancing carousels or provide a user control to stop it.
+- Preserve meaning when replacing motion; use fades, highlights, or instant transitions for state changes.
 
-- System semantic colors used (they auto-adapt)
-- Custom colors provide higher-contrast variants when `accessibilityContrast == .high`
-- Borders or other visual separators added for elements that rely on subtle color differences
+### Captions
+
+- Video dialogue and comprehension-relevant sound effects are captioned.
+- Captions are synchronized, readable, and identify speakers where needed.
+- Audio-only dialogue has a transcript when time-synchronized captions do not apply.
+- AVFoundation media uses appropriate characteristics such as `.transcribesSpokenDialogForAccessibility` and `.describesMusicAndSoundForAccessibility`.
+
+### Audio Descriptions
+
+- Visual-only story, instructions, scene changes, on-screen text, and important cues are narrated.
+- Descriptions fit natural pauses and do not obscure essential dialogue.
+- AVFoundation media uses `.describesVideoForAccessibility` for audio description options.
 
 ## SwiftUI Audit Example
 
@@ -88,7 +123,7 @@ struct ContentView: View {
                 .accessibilityLabel("Mountain landscape at sunset")
 
             Text("Welcome")
-                .font(.title)   // Uses Dynamic Type automatically
+                .font(.title)
 
             Button("Get Started") { }
                 .accessibilityHint("Opens the onboarding flow")
@@ -97,3 +132,10 @@ struct ContentView: View {
     }
 }
 ```
+
+## Related Non-Label Accessibility Work
+
+Switch Control and Full Keyboard Access remain important app accessibility
+requirements, but they are not current App Store Accessibility Nutrition Label
+categories. Keep their implementation guidance in `SKILL.md` and
+`references/a11y-patterns.md`.

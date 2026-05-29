@@ -14,6 +14,7 @@ outlines, and custom annotation drawing.
 - [Document Outlines](#document-outlines)
 - [Custom Annotation Subclasses](#custom-annotation-subclasses)
 - [Custom Page Subclasses](#custom-page-subclasses)
+- [Page Overlay Lifecycle](#page-overlay-lifecycle)
 - [Rendering Pages to Images](#rendering-pages-to-images)
 - [Page Rotation and Cropping](#page-rotation-and-cropping)
 - [Burning In Annotations](#burning-in-annotations)
@@ -357,7 +358,8 @@ func extractPages(
     let extracted = PDFDocument()
     var insertIndex = 0
     for pageIndex in range {
-        guard pageIndex < document.pageCount,
+        guard pageIndex >= 0,
+              pageIndex < document.pageCount,
               let page = document.page(at: pageIndex) else { continue }
         extracted.insert(page, at: insertIndex)
         insertIndex += 1
@@ -464,25 +466,26 @@ if let root = document.outlineRoot {
 func buildOutline(for document: PDFDocument) {
     let root = PDFOutline()
 
+    func destination(for pageIndex: Int) -> PDFDestination? {
+        guard pageIndex >= 0,
+              pageIndex < document.pageCount,
+              let page = document.page(at: pageIndex) else { return nil }
+        return PDFDestination(page: page, at: .zero)
+    }
+
     let chapter1 = PDFOutline()
     chapter1.label = "Chapter 1"
-    if let page = document.page(at: 0) {
-        chapter1.destination = PDFDestination(page: page, at: .zero)
-    }
+    chapter1.destination = destination(for: 0)
     root.insertChild(chapter1, at: 0)
 
     let section1_1 = PDFOutline()
     section1_1.label = "Section 1.1"
-    if let page = document.page(at: 2) {
-        section1_1.destination = PDFDestination(page: page, at: .zero)
-    }
+    section1_1.destination = destination(for: 2)
     chapter1.insertChild(section1_1, at: 0)
 
     let chapter2 = PDFOutline()
     chapter2.label = "Chapter 2"
-    if let page = document.page(at: 5) {
-        chapter2.destination = PDFDestination(page: page, at: .zero)
-    }
+    chapter2.destination = destination(for: 5)
     root.insertChild(chapter2, at: 1)
 
     document.outlineRoot = root
@@ -601,6 +604,44 @@ class HeaderFooterPage: PDFPage {
     }
 }
 ```
+
+## Page Overlay Lifecycle
+
+`PDFView.pageOverlayViewProvider` is weak. Store the provider on a view
+controller, SwiftUI coordinator, or another object that outlives the `PDFView`.
+
+PDFKit requests overlay views for pages it is preparing or displaying, then
+calls the lifecycle hooks as pages enter and leave the visible range. Keep
+overlay state outside the view so scrolling does not discard edits.
+
+```swift
+class PageOverlayProvider: NSObject, PDFPageOverlayViewProvider {
+    private var pageNotes: [PDFPage: String] = [:]
+
+    func pdfView(_ view: PDFView, overlayViewFor page: PDFPage) -> UIView? {
+        let textView = UITextView()
+        textView.text = pageNotes[page] ?? ""
+        textView.backgroundColor = .clear
+        return textView
+    }
+
+    func pdfView(
+        _ view: PDFView,
+        willEndDisplayingOverlayView overlayView: UIView,
+        for page: PDFPage
+    ) {
+        if let textView = overlayView as? UITextView {
+            pageNotes[page] = textView.text
+        }
+    }
+}
+```
+
+Overlay views are UIKit/AppKit views, not PDF content. Before calling
+`write(to:)` or `dataRepresentation()`, convert overlay data into PDF
+annotations, custom annotation appearance streams, or rendered page content.
+Use `.burnInAnnotationsOption` when saved annotations should become permanent
+page content.
 
 ## Rendering Pages to Images
 
@@ -729,6 +770,7 @@ struct ManagedPDFView: UIViewRepresentable {
         pdfView.displayMode = .singlePageContinuous
         pdfView.document = document
         pdfView.delegate = context.coordinator
+        context.coordinator.attach(to: pdfView)
         return pdfView
     }
 
@@ -736,10 +778,16 @@ struct ManagedPDFView: UIViewRepresentable {
         if pdfView.document !== document {
             pdfView.document = document
         }
-        if let page = document.page(at: currentPageIndex),
+        if currentPageIndex >= 0,
+           currentPageIndex < document.pageCount,
+           let page = document.page(at: currentPageIndex),
            pdfView.currentPage !== page {
             pdfView.go(to: page)
         }
+    }
+
+    static func dismantleUIView(_ uiView: PDFView, coordinator: Coordinator) {
+        NotificationCenter.default.removeObserver(coordinator)
     }
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
@@ -750,19 +798,26 @@ struct ManagedPDFView: UIViewRepresentable {
         init(_ parent: ManagedPDFView) {
             self.parent = parent
             super.init()
+        }
 
+        func attach(to pdfView: PDFView) {
+            NotificationCenter.default.removeObserver(self)
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(pageChanged),
                 name: .PDFViewPageChanged,
-                object: nil
+                object: pdfView
             )
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(annotationHit),
                 name: .PDFViewAnnotationHit,
-                object: nil
+                object: pdfView
             )
+        }
+
+        deinit {
+            NotificationCenter.default.removeObserver(self)
         }
 
         @objc func pageChanged(_ notification: Notification) {

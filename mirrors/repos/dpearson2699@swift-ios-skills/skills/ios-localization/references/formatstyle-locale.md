@@ -1,6 +1,6 @@
 # FormatStyle & Locale-Aware Formatting
 
-Comprehensive reference for locale-aware formatting in iOS 15+ using `FormatStyle`. Never hard-code date, number, or measurement formats -- these break in every locale except the one you tested.
+Comprehensive reference for locale-aware formatting in iOS 15+ using `FormatStyle`. Never hard-code date, number, or measurement formats -- these break in every locale except the one you tested. `ios-localization` owns `FormatStyle` guidance when the issue is locale-aware user-facing display: numbers, dates, currency, units, names, lists, calendars, separators, and locale preview/testing. Locale-aware formatting matters even in single-language apps; explicitly recommend testing or previewing user-facing output under multiple locales. Use the `swift-formatstyle` skill for broader standalone FormatStyle API design.
 
 ## Contents
 

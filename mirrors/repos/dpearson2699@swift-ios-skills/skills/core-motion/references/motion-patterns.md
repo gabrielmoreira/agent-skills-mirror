@@ -10,7 +10,7 @@ exceed the main skill file's scope.
 - [Headphone Motion](#headphone-motion)
 - [Pedometer SwiftUI View](#pedometer-swiftui-view)
 - [Activity-Based Navigation](#activity-based-navigation)
-- [Water Submersion (watchOS Ultra)](#water-submersion-watchos-ultra)
+- [Water Submersion (watchOS)](#water-submersion-watchos)
 
 ## SwiftUI Integration with `@Observable`
 
@@ -114,8 +114,10 @@ struct LevelIndicator: View {
 
 ## CMBatchedSensorManager (High-Frequency)
 
-`CMBatchedSensorManager` delivers batched data at higher frequencies (up to 800 Hz
-on Apple Watch Ultra). Available on iOS 17+ and watchOS 10+.
+`CMBatchedSensorManager` delivers batches of high-frequency accelerometer and
+device-motion data for workout-style motion analysis, such as golf swings or bat
+swings. The async update sequences are watchOS 10+ APIs; check availability and
+authorization before starting updates.
 
 ### AsyncSequence Pattern
 
@@ -131,7 +133,10 @@ final class BatchedMotionService {
     var latestAcceleration: CMAcceleration?
 
     func startBatchedAccelerometer() {
-        guard CMBatchedSensorManager.isAccelerometerSupported else { return }
+        let authorization = CMBatchedSensorManager.authorizationStatus
+        guard CMBatchedSensorManager.isAccelerometerSupported,
+              authorization != .denied,
+              authorization != .restricted else { return }
 
         updateTask = Task {
             for await batch in batchedManager.accelerometerUpdates() {
@@ -151,23 +156,31 @@ final class BatchedMotionService {
     func stop() {
         updateTask?.cancel()
         updateTask = nil
+        batchedManager.stopAccelerometerUpdates()
     }
 }
 ```
 
-### Configuring Frequency
+### Reading Frequency
 
 ```swift
 let batchedManager = CMBatchedSensorManager()
 
-// Set frequency before starting updates
-batchedManager.accelerometerDataFrequency = 200  // Hz
+// Start updates, then read the frequency the device reports.
 batchedManager.startAccelerometerUpdates()
+let reportedHz = batchedManager.accelerometerDataFrequency
 ```
+
+`accelerometerDataFrequency` and `deviceMotionDataFrequency` are read-only. Do
+not assign them; use the reported values to size buffers, throttle UI updates, or
+downsample processed results.
 
 ## Headphone Motion
 
 Track head motion using AirPods Pro / AirPods Max via `CMHeadphoneMotionManager`.
+On iOS and macOS, include `NSMotionUsageDescription`. Use connection-status
+updates when the app needs connect/disconnect events outside an active motion
+session.
 
 ```swift
 import CoreMotion
@@ -185,6 +198,7 @@ final class HeadphoneMotionService: NSObject {
         guard headphoneManager.isDeviceMotionAvailable else { return }
 
         headphoneManager.delegate = self
+        headphoneManager.startConnectionStatusUpdates()
         headphoneManager.startDeviceMotionUpdates(to: .main) { [weak self] motion, error in
             guard let self, let motion else { return }
             self.headPitch = motion.attitude.pitch
@@ -194,6 +208,7 @@ final class HeadphoneMotionService: NSObject {
 
     func stop() {
         headphoneManager.stopDeviceMotionUpdates()
+        headphoneManager.stopConnectionStatusUpdates()
     }
 }
 
@@ -341,9 +356,22 @@ final class NavigationModeService {
 }
 ```
 
-## Water Submersion (watchOS Ultra)
+## Water Submersion (watchOS)
 
-Track water depth and temperature for dive apps on Apple Watch Ultra.
+Track water depth and temperature for dive apps on supported Apple Watch
+hardware. Use `waterSubmersionAvailable` rather than hard-coding model checks:
+Apple Watch Ultra supports submersion data, and Apple Watch Series 10 supports
+the Shallow Depth and Pressure capability.
+
+Setup checklist:
+
+- Add `NSMotionUsageDescription`.
+- Add the Shallow Depth and Pressure capability for dives up to 6 meters, or
+  apply for the full Submerged Depth and Pressure entitlement for dives up to
+  40 meters.
+- Add `WKBackgroundModes` with `underwater-depth` so the app can remain
+  frontmost and eligible for dive autolaunch.
+- Check availability before instantiating `CMWaterSubmersionManager`.
 
 ```swift
 import CoreMotion
@@ -351,7 +379,7 @@ import CoreMotion
 @Observable
 @MainActor
 final class DiveService: NSObject {
-    private let submersionManager = CMWaterSubmersionManager()
+    private var submersionManager: CMWaterSubmersionManager?
 
     var isSubmerged = false
     var currentDepth: Double?
@@ -359,7 +387,9 @@ final class DiveService: NSObject {
 
     func start() {
         guard CMWaterSubmersionManager.waterSubmersionAvailable else { return }
-        submersionManager.delegate = self
+        let manager = CMWaterSubmersionManager()
+        manager.delegate = self
+        submersionManager = manager
     }
 }
 
@@ -401,5 +431,6 @@ extension DiveService: CMWaterSubmersionManagerDelegate {
 ```
 
 **Important:** `CMWaterSubmersionManager` requires the
-`com.apple.developer.submerged-shallow-depth-and-pressure` entitlement and runs
-only on Apple Watch Ultra hardware.
+Shallow Depth and Pressure capability or the full Submerged Depth and Pressure
+entitlement. If the app lacks the entitlement, the delegate receives
+`CMError.notEntitled` and no submersion data.

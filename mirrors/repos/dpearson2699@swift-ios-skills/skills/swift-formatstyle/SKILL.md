@@ -9,6 +9,8 @@ Format values for human-readable display using the `FormatStyle` protocol
 and Foundation's concrete format styles. Replaces legacy `Formatter` subclasses
 with a type-safe, composable, cacheable API.
 
+Locale-aware display is an i18n concern even when the app is not adding new languages. For user-facing formatted output, always recommend previewing or testing representative locales such as `en_US`, `de_DE`, `ar_SA`, and `ja_JP`; check separators, numbering systems, calendars, currency and unit conventions, text direction, and layout-sensitive output. Keep this skill focused on `FormatStyle`, `ParseableFormatStyle`, parsing, and reusable formatter API design; route broader localization work such as String Catalogs, bundles, plurals, localized copy, and RTL layout review to `ios-localization`. Do not use "not adding languages" as the reason to skip `ios-localization`; locale-sensitive formatting can be a localization review issue without translation work.
+
 Docs: [FormatStyle](https://sosumi.ai/documentation/foundation/formatstyle)
 
 ## Contents

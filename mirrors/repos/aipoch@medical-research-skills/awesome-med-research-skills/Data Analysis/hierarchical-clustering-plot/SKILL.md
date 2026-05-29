@@ -1,10 +1,7 @@
 ---
 name: hierarchical-clustering-plot
-description: Use when building a sample-level hierarchical clustering dendrogram from a bulk expression matrix and sample annotation table, especially for QC, batch inspection, or sample similarity assessment. Trigger keywords: hierarchical clustering, dendrogram, sample QC, batch inspection, sample similarity. NOT for: differential expression testing, gene clustering heatmaps, single-cell clustering workflows.
-license: MIT
-author: AIPOCH
+description: "Use when building a sample-level hierarchical clustering dendrogram from a bulk expression matrix and sample annotation table, especially for QC, batch inspection, or sample similarity assessment. Trigger keywords: hierarchical clustering, dendrogram, sample QC, batch inspection, sample similarity. NOT for: differential expression testing, gene clustering heatmaps, single-cell clustering workflows."
 ---
-> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Hierarchical Clustering Plot
 

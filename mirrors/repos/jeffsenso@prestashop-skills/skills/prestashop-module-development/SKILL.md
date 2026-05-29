@@ -51,7 +51,7 @@ Key rules:
 - If using a shared company group tab, check its existence before creating it — never unconditionally create it
 - `getContent()` must only redirect to the Symfony route, never render HTML
 - **No SQL in the main module class** — all database access (including in hooks like `hookActionShopDataDuplication` and widget methods like `getWidgetVariables`) must be delegated to the Repository or Manager class via `$this->get('service.id')`
-- **Always guard service access** — use `$this->has()` + null check in admin context; use try/catch + `instanceof` in front-office context (stale container can make `has()` return `true` while `get()` still throws). See `references/module-class-and-installer.md` → *Guard patterns* section.
+- **Service access**: use `$this->has()` + null check in admin context; use plain `$this->get()` + null check in front-office context. **NEVER use `ContainerFinder`** — it is unnecessary. See `references/module-class-and-installer.md` → *Guard patterns* section.
 
 ### 2) Modern configuration pages
 
@@ -60,7 +60,7 @@ Read: `references/configuration-page.md`
 Key rules:
 - **Do NOT use `HelperForm`** — use Symfony form components + `FrameworkBundleAdminController`
 - Four classes: `DataConfiguration`, `FormDataProvider`, `FormType`, `Controller`
-- Wire everything in `config/services.yml` and `config/routes.yml`
+- Wire everything in `config/components/` sub-folders (imported by `config/admin/services.yml`) and `config/routes.yml`
 
 ### 3) Database operations & entities
 
@@ -71,22 +71,26 @@ For translatable entities with Grid: read `references/entity-doctrine.md`
 - ObjectModel is legacy — do not use in new or modernised modules
 - **Entity class name = table name without `_DB_PREFIX_`** — PS adds the prefix globally; use `@ORM\Table()` with no `name=` parameter
 - Prefix table names with a consistent company or module prefix (e.g. `prefix_mymodule_items`, `prefix_mymodule_items_lang`) — to group tables together and avoid conflicts with PS core tables
+- **Lang entity property types must match the DB column nullability**: columns declared `NOT NULL DEFAULT ''` use `string $field = ''`; columns declared `NULL` use `?string $field = null`
+- **`TranslatableType` returns `null` for languages the user did not fill in** — in the Manager, always coerce null to `''` for `NOT NULL` string fields: `$row->setName((string) ($value ?? ''))`. Never pass the raw form value directly to a setter on a `NOT NULL` column
 - Do NOT create `MetadataListener` or Doctrine event listeners for table naming
 - Always sanitize raw DBAL SQL: cast IDs with `(int)`, use bound parameters
 - **No raw SQL (`Db::getInstance()`, `pSQL()`, `_DB_PREFIX_` string concatenation) outside Repository and Manager classes.** This applies everywhere: main module class, Installer, FixturesInstaller, hooks, widget methods. The only exception is `Installer` SQL schema queries (`CREATE TABLE`, `DROP TABLE`) which have no Repository equivalent.
-- **FixturesInstaller must NOT call module-own services** — the module's services are not in the container at install time. Instantiate Manager directly using core Doctrine services. See `references/module-class-and-installer.md` → *FixturesInstaller — service resolution* section.
+- **FixturesInstaller must use `Db::getInstance()` raw SQL** — `SymfonyContainer::getInstance()` returns `null` in the `pr:mo` Symfony console context (`global $kernel` is never set). All Doctrine ORM calls silently do nothing at install time. See `references/module-class-and-installer.md` → *FixturesInstaller* section.
+- **`Db::getValue()` appends `LIMIT 1` internally** — never write `LIMIT 1` in the SQL string passed to it; causes a MariaDB syntax error.
 
 ### Services split & components architecture
 
 Read: `references/services-split.md`
 
 Key rules:
-- `config/services.yml` is loaded by **both** kernels — import only `common.yml` here
+- **Do NOT create `config/services.yml`** — only `config/admin/services.yml` and `config/front/services.yml` are needed; a root-level `config/services.yml` is never required and should not exist
 - `config/admin/services.yml` is loaded by admin kernel only — import `../common.yml` + admin components (never `common.yml` without the `../` prefix)
 - Repository services only in `config/common.yml` components (Doctrine-level, no `PrestaShopBundle` deps)
 - All `PrestaShopBundle`-dependent services go in `config/admin/services.yml`
 - Always split into component sub-folders under `config/components/` — never one flat `services.yml`
 - **All component yml files must declare `_defaults: public: true`** — required for `$this->get('service.id')` to work in both front and admin module class contexts
+- **Services that use `parent:` (e.g. `parent: form.type.translatable.aware`) do NOT inherit `_defaults: public: true` in PrestaShop — always add `public: true` explicitly on the service definition itself**
 - **Never point `config/services.yml` at `admin/services.yml`** — this loads admin-only services into the front kernel, breaking container compilation and making all `$this->get()` calls fail silently
 
 ### 4) Security (mandatory)
@@ -105,11 +109,20 @@ Read: `references/hooks-and-front-office.md`
 - Load assets only for the relevant controller in `hookDisplayBackOfficeHeader`
 - Implement `WidgetInterface` for front office widgets
 
+### 5b) Theme template injection (widget call on install)
+
+Read: `references/theme-template-injection.md`
+
+- PS8 does not support theme overrides from modules — use marker-based file patching instead
+- Two-class design: `ThemeTemplateInjector` (service, reusable) + `ThemeTemplateInstaller` (install orchestrator)
+- **Never use `Theme::getThemes()`** in install context — legacy class, not autoloaded in Symfony console; use `scandir(_PS_ALL_THEMES_DIR_)` instead
+- Wrap install/uninstall calls in try/catch returning `true` — theme injection must never block module install
+
 ### 6) Translations
 
 Read: `references/translations.md`
 
-- Use `$this->trans('Text', [], 'Modules.Mymodule.Admin')` in PHP
+- **`FrameworkBundleAdminController::trans()` signature is `trans($id, $domain, $parameters = [])` — NOT Symfony's order** — always call as `$this->trans('Text', 'Modules.Mymodule.Admin')` (never `$this->trans('Text', [], 'Domain')` — passing `[]` as domain and a string as `$parameters` causes a fatal type error)
 - Use `'Text'|trans({}, 'Modules.Mymodule.Admin')` in Twig
 - Declare `isUsingNewTranslationSystem(): true` in the module class
 
@@ -129,7 +142,7 @@ Read: `references/services-and-di.md`
 - ❌ `Context::getContext()->getTranslator()` — inject `@translator` instead
 
 Key rules:
-- Define services in `config/services.yml`
+- Define services in `config/components/` sub-folders (imported by `config/admin/services.yml`)
 - Use `$this->get('service.id')` in Symfony controllers
 - Use Expression Language (`@=`) for computed constructor arguments (context, language ID, shop ID)
 - Always inject dependencies via constructor, never use static accessors
@@ -142,7 +155,8 @@ Full pattern for building CRUD list pages with the PS Grid system:
 - `GridDefinitionFactory` — columns (`PositionColumn`, `ToggleColumn`, `ActionColumn`), filters, row actions
 - `QueryBuilder` — Doctrine DBAL query with sorting, pagination, and filters
 - `Filters` — default sort/limit settings
-- 5 service definitions in `services.yml` (factory, query, data, grid, position)
+- 5 service definitions in `config/components/grid/` (factory, query, data, grid, position) + 1 Twig FilesystemLoader
+- **Twig FilesystemLoader path is `%kernel.project_dir%/modules/mymodule/views`** — `%kernel.project_dir%` is the PS root (parent of `app/`), so `modules/` is a direct child. Never use `%kernel.project_dir%/../modules/`
 - 4 routes in `routes.yml` (index, search, toggle, update-position)
 - 4 controller actions (`indexAction`, `searchAction`, `toggleStatus`, `updatePositionAction`)
 - Pre-built JS bundle (copied from `ws-entity-grid-skeleton`, grid ID replaced via `sed`)

@@ -10,7 +10,7 @@ Localize iOS 26+ apps using String Catalogs, modern string types, FormatStyle, a
 ## Contents
 
 - [String Catalogs (.xcstrings)](#string-catalogs-xcstrings)
-- [Generated Localizable Symbols (Xcode 26+)](#generated-localizable-symbols-xcode-26)
+- [String Catalogs (Xcode 15+) and Generated Symbols (Xcode 26+)](#string-catalogs-xcode-15-and-generated-symbols-xcode-26)
 - [String Types -- Decision Guide](#string-types-decision-guide)
 - [String Interpolation in Localized Strings](#string-interpolation-in-localized-strings)
 - [Pluralization](#pluralization)
@@ -22,7 +22,7 @@ Localize iOS 26+ apps using String Catalogs, modern string types, FormatStyle, a
 
 ## String Catalogs (.xcstrings)
 
-String Catalogs replaced `.strings` and `.stringsdict` files starting in Xcode 15 / iOS 17. They unify all localizable strings, pluralization rules, and device variations into a single JSON-based file with a visual editor.
+String Catalogs are the recommended Xcode 15+ workflow for new localization work. They keep localizable strings, pluralization rules, and device variations together in an Xcode-managed JSON file with a visual editor. Legacy `.strings` and `.stringsdict` files can coexist during migration, but new Swift and SwiftUI code should default to String Catalogs.
 
 **Why String Catalogs exist:**
 - `.strings` files required manual key management and fell out of sync
@@ -52,19 +52,19 @@ Xcode adds discovered keys to the String Catalog automatically. Mark translation
 
 For detailed String Catalog workflows, migration, and testing strategies, see [references/string-catalogs.md](references/string-catalogs.md).
 
-## Generated Localizable Symbols (Xcode 26+)
+## String Catalogs (Xcode 15+) and Generated Symbols (Xcode 26+)
 
-Xcode 26 can generate type-safe `LocalizedStringResource` symbols from String Catalog keys, replacing stringly-typed localization with compiler-checked access.
+For generated-symbol or migration answers, start by stating: "String Catalogs are the recommended Xcode 15+ localization workflow. Xcode 26 generated symbols are a separate typed-access layer on top of String Catalogs." Then explain generated symbols, plurals, or migration details. Do not describe catalogs themselves as requiring Xcode 26 or iOS 17.
 
 **Enable:** Build Settings > Localization > Generate String Catalog Symbols → `Yes` (on by default in new Xcode 26 projects). Requires catalog format version `1.1`.
 
-**Workflow:** Add a key manually via the (+) button in the String Catalog editor — manual keys have the **Generate Swift Symbol** checkbox enabled by default. Auto-extracted keys can also opt in via Refactor > Convert Strings to Symbols. Use stable symbol-style key names — not English text — so renaming UI copy never breaks code references.
+**Workflow:** Add a key manually via the (+) button in the String Catalog editor — manual keys have the **Generate Swift Symbol** checkbox enabled by default. Auto-extracted keys can also opt in via Refactor > Convert Strings to Symbols. Use stable manual keys for generated-symbol strings. Avoid source-copy-derived keys for API-facing strings because wording edits can rename generated identifiers and churn call sites.
 
 ```swift
 // Generated from key "room_available" in Localizable.xcstrings
 Text(.roomAvailable)
 
-// Parameterized key "landmarks_count" with %(count)lld
+// Parameterized key "landmarks_count" with %1$(count)lld
 Text(.landmarksCount(count: 42))
 
 // Non-default table "Booking.xcstrings"
@@ -95,7 +95,7 @@ Use `LocalizedStringKey` when passing strings directly to SwiftUI view initializ
 
 ### String(localized:) -- Modern NSLocalizedString replacement
 
-Use for any localized string outside a SwiftUI view initializer. Returns a plain `String`. Available iOS 16+.
+Use for any localized string outside a SwiftUI view initializer. Returns a plain `String`. The literal/interpolated initializer is available iOS 15+; resolving a `LocalizedStringResource` is iOS 16+.
 
 ```swift
 // Basic
@@ -115,9 +115,17 @@ let btn = String(localized: "Save",
                  comment: "Button title to save the current document")
 ```
 
+For Swift package localization failures, answer with this explicit resource checklist before bundle debugging:
+1. `Package.swift` declares `defaultLocalization`.
+2. The target `resources` list processes the catalog location, such as `.process("Resources")`.
+3. `Localizable.xcstrings` is actually inside that processed target-resource path.
+Only after those pass, debug lookup with `bundle: .module` or `Text(..., bundle: .module)`.
+
+Existing `NSLocalizedString` literal keys can still be exported or migrated by Xcode tooling, but new Swift code should prefer `String(localized:)`, SwiftUI literals, `LocalizedStringResource`, or generated symbols.
+
 ### LocalizedStringResource -- Pass localization info without resolving
 
-Use when you need to pass a localized string to an API that resolves it later (App Intents, widgets, notifications, system frameworks). Available iOS 16+.
+Use when a string must be carried as a localizable value for later resolution, especially for App Intents, widgets, notifications, generated localizable symbols, and system APIs that accept `LocalizedStringResource` directly. Use `String(localized:)` when code needs the resolved string immediately. Available iOS 16+.
 
 ```swift
 // App Intents require LocalizedStringResource
@@ -214,7 +222,7 @@ String Catalogs support device-specific text (iPhone vs iPad vs Mac):
 // Mac:    "Click to continue"
 ```
 
-### Grammar Agreement (iOS 17+)
+### Grammar Agreement (iOS 15+)
 
 Use `^[...]` inflection syntax for automatic grammatical agreement:
 
@@ -228,6 +236,10 @@ Text("^[\(count) \("photo")](inflect: true) added")
 ## FormatStyle -- Locale-Aware Formatting
 
 Never hard-code date, number, or measurement formats. Use `FormatStyle` (iOS 15+) so formatting adapts to the user's locale automatically.
+
+Locale-aware formatting matters even in single-language apps because user locale affects separators, calendars, currency, units, names, and list formatting. When giving user-facing formatting advice, explicitly recommend testing or previewing output under multiple locales such as `en_US`, `de_DE`, `ar_SA`, and `ja_JP`.
+
+`ios-localization` owns `FormatStyle` guidance when the issue is locale-aware user-facing display, including numbers, dates, currency, units, names, lists, calendars, separators, and locale preview/testing. For custom `FormatStyle`, `ParseableFormatStyle`, parsing, `Date.IntervalFormatStyle`, `URL.FormatStyle`, or reusable formatter API design, route to `swift-formatstyle`; keep `ios-localization` advice to locale risks and testing unless implementation is explicitly requested.
 
 ### Dates
 
@@ -333,9 +345,9 @@ Text("+1 (555) 123-4567")
 
 ## Common Mistakes
 
-### DON'T: Use NSLocalizedString in new code
+### DON'T: Use NSLocalizedString in new Swift code
 ```swift
-// WRONG -- legacy API, verbose, no compiler integration with String Catalogs
+// LEGACY -- Xcode can export literal keys, but new Swift code should use modern APIs
 let title = NSLocalizedString("welcome_title", comment: "Welcome screen title")
 ```
 
@@ -457,4 +469,3 @@ Use Xcode scheme settings to override the app language without changing device l
 
 - FormatStyle patterns: [references/formatstyle-locale.md](references/formatstyle-locale.md)
 - String Catalogs guide: [references/string-catalogs.md](references/string-catalogs.md)
-

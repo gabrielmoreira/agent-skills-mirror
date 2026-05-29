@@ -7,6 +7,7 @@ Overflow reference for the `core-nfc` skill. Contains advanced patterns that exc
 - [ISO 7816 APDU Commands](#iso-7816-apdu-commands)
 - [ISO 15693 Tag Reading](#iso-15693-tag-reading)
 - [MIFARE Tag Operations](#mifare-tag-operations)
+- [FeliCa Tag Operations](#felica-tag-operations)
 - [Multi-Record NDEF Messages](#multi-record-ndef-messages)
 - [NDEF Tag Locking](#ndef-tag-locking)
 - [SwiftUI NFC Scanner](#swiftui-nfc-scanner)
@@ -129,7 +130,9 @@ func readMiFare(
     case .ultralight:
         readMiFareUltralight(tag: tag, session: session)
     case .desfire:
-        readMiFareDESFire(tag: tag, session: session)
+        session.invalidate(
+            errorMessage: "Use app-specific DESFire commands for this card."
+        )
     case .plus:
         print("MIFARE Plus tag detected")
         session.invalidate()
@@ -155,6 +158,33 @@ func readMiFareUltralight(
         }
         print("Read \(data.count) bytes from MIFARE Ultralight")
         session.alertMessage = "Tag read successfully."
+        session.invalidate()
+    }
+}
+```
+
+## FeliCa Tag Operations
+
+FeliCa discovery requires `.iso18092` polling and
+`com.apple.developer.nfc.readersession.felica.systemcodes` entries in
+Info.plist. Each system code must be explicit; wildcard values are not allowed.
+
+```swift
+func readFeliCa(
+    tag: NFCFeliCaTag,
+    session: NFCTagReaderSession
+) {
+    tag.requestSystemCode { systemCodes, error in
+        guard error == nil else {
+            session.invalidate(errorMessage: "System code request failed.")
+            return
+        }
+
+        let codes = systemCodes.map {
+            $0.map { String(format: "%02x", $0) }.joined()
+        }
+        print("FeliCa system codes: \(codes.joined(separator: ", "))")
+        session.alertMessage = "FeliCa tag read successfully."
         session.invalidate()
     }
 }

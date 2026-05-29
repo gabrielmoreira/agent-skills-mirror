@@ -8,6 +8,41 @@ Sources: Apple Platform Security Guide (2024–2026 editions), Apple Keychain Se
 
 ---
 
+## Contents
+
+- [The "When" Layer: Seven Accessibility Constants](#the-when-layer-seven-accessibility-constants)
+  - [The Protection Spectrum](#the-protection-spectrum)
+  - [Quick Reference Table](#quick-reference-table)
+  - [Lock-State Spectrum Explained](#lock-state-spectrum-explained)
+- [The "How" Layer: SecAccessControl Flags](#the-how-layer-secaccesscontrol-flags)
+  - [Available Flags](#available-flags)
+  - [Flag Compatibility Matrix](#flag-compatibility-matrix)
+  - [Composing Constraints](#composing-constraints)
+- [The Cardinal Rule: Never Set Both Attributes](#the-cardinal-rule-never-set-both-attributes)
+- [Decision Matrix: Choosing the Right Accessibility Level](#decision-matrix-choosing-the-right-accessibility-level)
+  - [`WhenPasscodeSetThisDeviceOnly` — Data that should self-destruct](#whenpasscodesetthisdeviceonly-data-that-should-self-destruct)
+  - [`WhenUnlockedThisDeviceOnly` — Standard device-bound credentials](#whenunlockedthisdeviceonly-standard-device-bound-credentials)
+  - [`AfterFirstUnlockThisDeviceOnly` — Background operations (most common for services)](#afterfirstunlockthisdeviceonly-background-operations-most-common-for-services)
+  - [`AfterFirstUnlock` — Background + backup migration](#afterfirstunlock-background-backup-migration)
+  - [Dual-Item Strategy for Mixed Contexts](#dual-item-strategy-for-mixed-contexts)
+- [Common AI-Generated Mistakes](#common-ai-generated-mistakes)
+  - [Mistake 1: Omitting `kSecAttrAccessible` (inheriting the wrong default)](#mistake-1-omitting-ksecattraccessible-inheriting-the-wrong-default)
+  - [Mistake 2: Using deprecated `kSecAttrAccessibleAlways`](#mistake-2-using-deprecated-ksecattraccessiblealways)
+  - [Mistake 3: Not handling `ThisDeviceOnly` item loss after device migration](#mistake-3-not-handling-thisdeviceonly-item-loss-after-device-migration)
+  - [Mistake 4: Biometric flags on background-accessible protection levels](#mistake-4-biometric-flags-on-background-accessible-protection-levels)
+  - [Mistake 5: Conflicting flags without logical operator](#mistake-5-conflicting-flags-without-logical-operator)
+- [Code Patterns](#code-patterns)
+  - [Biometric protection with highest security](#biometric-protection-with-highest-security)
+  - [Background-accessible token (push notifications, VPN, widgets)](#background-accessible-token-push-notifications-vpn-widgets)
+  - [Accessing a `WhenUnlocked` item from a background extension](#accessing-a-whenunlocked-item-from-a-background-extension)
+- [macOS: `kSecUseDataProtectionKeychain`](#macos-ksecusedataprotectionkeychain)
+- [NSFileProtection Sidebar](#nsfileprotection-sidebar)
+- [Error Codes Reference](#error-codes-reference)
+- [iOS Version Timeline](#ios-version-timeline)
+- [Testing Requirements](#testing-requirements)
+- [Cross-References](#cross-references)
+- [Summary Checklist](#summary-checklist)
+
 ## The "When" Layer: Seven Accessibility Constants
 
 Every keychain item is encrypted with a class key derived from the device's hardware UID and (for most classes) the user's passcode. The `kSecAttrAccessible` attribute selects which class key protects the item, determining when the system can decrypt it. **If you omit `kSecAttrAccessible`, the default is `kSecAttrAccessibleWhenUnlocked`** — confirmed by Apple documentation. This default breaks all background operations.
@@ -30,7 +65,7 @@ Listed from most restrictive to least:
 
 **`kSecAttrAccessibleAlways`** ⚠️ DEPRECATED — Same deprecation. Items encrypted with only the device UID (no passcode involvement), equivalent to `NSFileProtectionNone`.
 
-> **Cross-validation note — deprecated "Always" runtime behavior:** One research source reports these constants "still function at runtime" with original semantics on iOS 15–18. The other reports modern iOS silently remaps them to `AfterFirstUnlock` behavior. The practical guidance is identical either way: **migrate immediately to `kSecAttrAccessibleAfterFirstUnlock`**. Block these constants in CI linting. Do not rely on any specific runtime behavior for deprecated constants across OS versions.
+Deprecated "Always" constants have OS-version-specific behavior and should not be used for new or migrated code. **Migrate to `kSecAttrAccessibleAfterFirstUnlock` or a stricter class**, and block these constants in CI linting rather than relying on runtime behavior across OS versions.
 
 ### Quick Reference Table
 

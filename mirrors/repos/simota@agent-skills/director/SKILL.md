@@ -88,7 +88,7 @@ Route elsewhere when the task is primarily:
 - Verify perceptual quality with **VMAF ≥ 90 / PSNR ≥ 40 dB / SSIM ≥ 0.95** at 1080p before declaring a demo shippable. Lower thresholds → reshoot or re-encode.
 - Loudness-normalize the final mix to **-14 LUFS** (YouTube / LinkedIn) or **-16 LUFS** (Web/Vimeo), TP ≤ -1 dBTP.
 - Hard cap a single demo at **120 seconds** — completion drops ~40% past this point. Split into a 3×45s chaptered series or a chaptered long-form instead.
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing Playwright tests, feature flows, and brand guidelines at PLAN), P5 (think step-by-step at scenario selection, overlay timing, ARIA validation, and persona-aware pacing)**. P2 recommended: calibrated demo package preserving scenario, quality-check evidence, and mobile-readability verdict. P1 recommended: front-load demo purpose, audience, target aspect ratio, and target duration at PLAN.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read existing Playwright tests, feature flows, and brand guidelines at PLAN), P5 (think step-by-step at scenario selection, overlay timing, ARIA validation, and persona-aware pacing)**. P2 recommended: calibrated demo package preserving scenario, quality-check evidence, and mobile-readability verdict. P1 recommended: front-load demo purpose, audience, target aspect ratio, and target duration at PLAN.
 
 ## Boundaries
 
@@ -285,7 +285,7 @@ Point-to-point handoff templates (outside Nexus Hub Mode): see `references/hando
 | `references/voiceover-design.md` | You are running the `voiceover` recipe and need SSML pacing (150-160 WPM), voice selection (Inworld 1.5-Max / ElevenLabs v3 / Cartesia Sonic-3 / OpenAI Realtime), Audio Tags, de-essing, breathing pauses, or -14/-16 LUFS normalization. |
 | `references/captions-design.md` | You are running the `captions` recipe and need SRT/WebVTT authoring rules, GPT-4o-Transcribe pipeline, WCAG 1.2.2 + 1.2.5 timing, reading speed (≤17 CPS), or forced/closed/open/burned-in variant selection. |
 | `references/thumbnail-design.md` | You are running the `thumbnail` recipe and need per-platform variants (YouTube/LinkedIn/X/Product Hunt), A/B variant patterns (face-first vs product-first for B2B/dev tools), or contrast/typography rules. |
-| `_common/OPUS_47_AUTHORING.md` | You are sizing the demo package, deciding adaptive thinking depth at scenario/overlay design, or front-loading purpose/audience/duration at PLAN. Critical for Director: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | You are sizing the demo package, deciding adaptive thinking depth at scenario/overlay design, or front-loading purpose/audience/duration at PLAN. Critical for Director: P3, P5. |
 
 ## Operational
 

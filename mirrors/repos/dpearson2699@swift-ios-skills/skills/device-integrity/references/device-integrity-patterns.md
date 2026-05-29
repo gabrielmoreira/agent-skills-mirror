@@ -9,7 +9,7 @@ Overflow reference for the `device-integrity` skill. Contains server verificatio
 - [Server Architecture](#server-architecture)
 - [Error Handling](#error-handling)
 - [Retry Strategy](#retry-strategy)
-- [Handling Invalidated Keys](#handling-invalidated-keys)
+- [Handling Rejected Keys](#handling-rejected-keys)
 - [Full Integration Manager](#full-integration-manager)
 - [Gradual Rollout](#gradual-rollout)
 - [Environment Entitlement](#environment-entitlement)
@@ -19,8 +19,17 @@ Overflow reference for the `device-integrity` skill. Contains server verificatio
 Your server must:
 1. Verify the attestation object is a valid CBOR-encoded structure.
 2. Extract the certificate chain and validate it against Apple's App Attest root CA.
-3. Verify the `nonce` in the attestation matches `SHA256(challenge)`.
-4. Extract and store the public key and receipt for future assertion verification.
+3. Compute `clientDataHash = SHA256(challenge)`, append it to the decoded
+   `authData`, then compute `nonce = SHA256(authData || clientDataHash)`.
+4. Extract the credential certificate extension with OID
+   `1.2.840.113635.100.8.2` and verify its octet string equals `nonce`.
+5. Verify the public-key hash matches the app-provided `keyId`.
+6. Verify the `RP ID` hash matches `SHA256(teamID + "." + bundleID)`.
+7. Verify the initial counter is `0`, the `aaguid` matches the expected
+   development or production environment, and `credentialId` equals `keyId`.
+8. Store the verified public key and receipt for future assertion verification.
+9. Mark the challenge consumed only after every verification step succeeds,
+   ideally in the same transaction that stores the key state.
 
 See [Validating apps that connect to your server](https://sosumi.ai/documentation/devicecheck/validating-apps-that-connect-to-your-server) for the full server verification algorithm.
 
@@ -28,10 +37,16 @@ See [Validating apps that connect to your server](https://sosumi.ai/documentatio
 
 Your server must:
 1. Decode the assertion (CBOR).
-2. Verify the authenticator data, including the counter (must be greater than the stored counter).
-3. Verify the signature using the stored public key from attestation.
-4. Confirm the `clientDataHash` matches the SHA-256 of the received request body.
-5. Update the stored counter to prevent replay attacks.
+2. Recompute `clientDataHash = SHA256(clientData)`, where `clientData`
+   includes a one-time server challenge and request context.
+3. Verify the signature using the stored public key over
+   `SHA256(authenticatorData || clientDataHash)`.
+4. Verify the `RP ID` hash and the counter (greater than the stored counter, or
+   greater than `0` for the first assertion).
+5. Confirm the embedded challenge matches the issued challenge and the request
+   context binds the assertion to the received request.
+6. Mark the challenge consumed and update the stored counter only after every
+   verification step succeeds, ideally atomically.
 
 ## Server Architecture
 
@@ -39,18 +54,27 @@ Your server must:
 
 | Phase | When | What It Proves | Frequency |
 |-------|------|---------------|-----------|
-| **Attestation** | After key generation | The key lives on a genuine Apple device running your unmodified app | Once per key |
+| **Attestation** | After key generation | The key lives on a genuine Apple device running a legitimate instance of your app | Once per key |
 | **Assertion** | With each sensitive request | The request came from the attested app instance | Per request |
 
 ### Recommended Server Architecture
 
-1. **Challenge endpoint** -- generate a random nonce, store it server-side with a short TTL (e.g., 5 minutes).
+1. **Challenge endpoint** -- generate a random nonce with at least 16 bytes of entropy, store it server-side with a short TTL (e.g., 5 minutes), purpose, and expected request/key context.
 2. **Attestation verification endpoint** -- validate the attestation object, store the public key and receipt keyed by `keyId`.
 3. **Assertion verification middleware** -- verify assertions on sensitive endpoints (purchases, account changes).
+
+Reject expired, missing, mismatched, or already-consumed challenges. Consume a
+challenge only after the corresponding attestation or assertion is fully
+verified; consuming on receipt can block safe retries after transient failures.
 
 ### Risk Assessment
 
 Combine App Attest with [fraud risk assessment](https://sosumi.ai/documentation/devicecheck/assessing-fraud-risk) for defense in depth. App Attest alone does not guarantee the user is not abusing the app -- it confirms the app is genuine.
+
+App Attest is not a user authentication, session, entitlement, TLS, certificate
+pinning, or subscription validation system. Keep those controls in the
+appropriate authentication, networking, or broader security layer, and require
+them in addition to App Attest on protected endpoints.
 
 ## Error Handling
 
@@ -70,14 +94,14 @@ func handleAttestError(_ error: Error) {
             // Fall back to alternative verification
             break
         case .invalidKey:
-            // Key is corrupted or was invalidated
-            // Generate a new key and re-attest
+            // Already-attested key, unattested assertion key, or service rejection
+            // Inspect local/server state; discard and regenerate only when bad
             break
         case .invalidInput:
             // The clientDataHash or keyId was malformed
             break
         case .serverUnavailable:
-            // Apple's attestation server is unreachable -- retry later
+            // Retry attestation later with the same keyId and clientDataHash
             break
         @unknown default:
             break
@@ -89,13 +113,20 @@ func handleAttestError(_ error: Error) {
 ## Retry Strategy
 
 ```swift
+import CryptoKit
+
 extension AppAttestManager {
-    func attestKeyWithRetry(maxAttempts: Int = 3) async throws -> Data {
+    func attestKeyWithRetry(challenge: Data, maxAttempts: Int = 3) async throws -> Data {
+        guard let keyId else {
+            throw DeviceIntegrityError.keyNotGenerated
+        }
+
+        let clientDataHash = Data(SHA256.hash(data: challenge))
         var lastError: Error?
 
         for attempt in 0..<maxAttempts {
             do {
-                return try await attestKey()
+                return try await service.attestKey(keyId, clientDataHash: clientDataHash)
             } catch let error as DCError where error.code == .serverUnavailable {
                 lastError = error
                 if attempt < maxAttempts - 1 {
@@ -111,15 +142,20 @@ extension AppAttestManager {
 }
 ```
 
-## Handling Invalidated Keys
+Use the same `challenge`, `keyId`, and `clientDataHash` for each retry after
+`.serverUnavailable`. Do not fetch a fresh challenge for that retry loop unless
+you are also starting over with a new attestation attempt.
 
-If `attestKey` returns `DCError.invalidKey`, the Secure Enclave key has been
-invalidated (e.g., OS update, Secure Enclave reset). Delete the stored `keyId`
-from Keychain and generate a new key:
+## Handling Rejected Keys
+
+`DCError.invalidKey` means the app called `attestKey` for an already-attested
+key, called `generateAssertion` with an unattested key, or the App Attest service
+rejected the key. If local/server state confirms the key cannot be used, delete
+the stored `keyId` and generate a new key:
 
 ```swift
 extension AppAttestManager {
-    func handleInvalidKey() async throws -> String {
+    func handleRejectedKey() async throws -> String {
         deleteKeyIdFromKeychain()
         keyId = nil
         return try await generateKeyIfNeeded()
@@ -140,15 +176,22 @@ extension AppAttestManager {
 
 Combine the patterns above into a single `actor` that manages the full lifecycle:
 1. Check `isSupported` and fall back to `DCDevice` tokens on unsupported devices.
-2. Call `generateKeyIfNeeded()` on launch to create or load the persisted key.
-3. Call `attestKeyWithRetry()` once after key generation.
-4. Use `generateAssertion(for:)` on each sensitive server request.
-5. Handle `DCError.invalidKey` by regenerating and re-attesting.
+2. Call `generateKeyIfNeeded()` for each user account on each device, reuse the
+   account/device-scoped `keyId`, and limit new key generation to new
+   account/device/install enrollment or confirmed bad-key recovery.
+3. Attest once per key; if `.serverUnavailable` occurs, retry with the same
+   challenge, key, and `clientDataHash`.
+4. For each sensitive request, obtain a one-time assertion challenge and sign
+   client data that includes the challenge plus request context.
+5. Handle `DCError.invalidKey` by checking whether the key was already attested,
+   not yet attested, or rejected before regenerating.
 
 ## Gradual Rollout
 
 Apple recommends a gradual rollout. Gate App Attest behind a remote feature
-flag and fall back to `DCDevice` tokens on unsupported devices.
+flag and fall back to `DCDevice` tokens on unsupported devices. For large apps,
+ramp production adoption gradually and be prepared to reduce attestation traffic
+if `.serverUnavailable` or rate-limit behavior increases during rollout.
 
 ## Environment Entitlement
 
@@ -160,8 +203,16 @@ during testing and `production` for App Store builds:
 <string>production</string>
 ```
 
-When the entitlement is missing, the system uses `development` in debug builds
-and `production` for App Store and TestFlight builds.
+When the entitlement is omitted during development, the app uses the App Attest
+sandbox by default. After distribution through TestFlight, the App Store, or the
+Apple Developer Enterprise Program, the app ignores the entitlement value and
+uses production. Sandbox keys and receipts do not work in production, and
+production keys and receipts do not work in sandbox.
+
+If an App Clip or extension uses App Attest, configure the capability for that
+target too. App Attest is supported only in Action, extensible SSO, and watchOS
+extensions; other extension types are unsupported even if `isSupported` returns
+`true`.
 
 ### Error Type
 
@@ -184,3 +235,6 @@ enum DeviceIntegrityError: Error {
 - [Establishing your app's integrity](https://sosumi.ai/documentation/devicecheck/establishing-your-app-s-integrity)
 - [Validating apps that connect to your server](https://sosumi.ai/documentation/devicecheck/validating-apps-that-connect-to-your-server)
 - [Assessing fraud risk](https://sosumi.ai/documentation/devicecheck/assessing-fraud-risk)
+- [Preparing to use the app attest service](https://sosumi.ai/documentation/devicecheck/preparing-to-use-the-app-attest-service)
+- [Attestation Object Validation Guide](https://sosumi.ai/documentation/devicecheck/attestation-object-validation-guide)
+- [App Attest Environment](https://sosumi.ai/documentation/bundleresources/entitlements/com.apple.developer.devicecheck.appattest-environment)

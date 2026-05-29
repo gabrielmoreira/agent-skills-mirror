@@ -286,15 +286,16 @@ let localConfig = ModelConfiguration(
 1. Enable iCloud capability in Xcode.
 2. Add CloudKit entitlement (`com.apple.developer.icloud-services`).
 3. Configure a CloudKit container identifier.
-4. Use the container identifier in `ModelConfiguration`.
+4. Enable Background Modes > Remote notifications.
+5. Use the container identifier in `ModelConfiguration`.
 
 ### CloudKit-Compatible Model Design
 
 ```swift
 @Model
 class SyncedNote {
-    // Use optional properties -- records may arrive partially from other devices
-    var title: String?
+    // Keep required scalars nonoptional when defaults/initializers support them
+    var title: String = ""
     var body: String?
 
     // Encrypt sensitive fields in CloudKit
@@ -318,12 +319,14 @@ class SyncedNote {
 - **Unique constraints**: CloudKit does not enforce uniqueness server-side.
   Avoid `@Attribute(.unique)` and `#Unique` on CloudKit-synced models. Use
   `cloudKitDatabase: .none` for local-only stores that need uniqueness.
-- **Optional properties**: Prefer optionals for all properties on synced models.
-  Records from other devices may arrive with missing fields.
-- **Delete rules**: `.cascade` may cause unexpected deletions when sync delivers
-  partial data. Test thoroughly.
-- **Schema changes**: CloudKit schemas are additive-only in production. New
-  fields are fine; removing or renaming fields requires careful migration.
+- **Relationships**: CloudKit requires optional relationships. Do not make every
+  scalar optional just for CloudKit; keep required scalars when defaults,
+  initializers, or migrations provide valid values.
+- **Delete rules**: `.deny` is unsupported for CloudKit sync; enforce that
+  invariant in app logic if needed.
+- **Schema changes**: Initialize and verify the development schema in
+  nonproduction builds, promote it before release, and treat production changes
+  as additive-only.
 
 ### Multiple Stores: Local + Synced
 
@@ -482,7 +485,8 @@ let trips = try modelContext.fetch(descriptor)
 - Use `fetchCount` when only the count is needed.
 - Use `fetchIdentifiers` when only IDs are needed.
 - Use `propertiesToFetch` to limit loaded data.
-- Use `@Attribute(.externalStorage)` for `Data` properties over ~100KB.
+- Use `@Attribute(.externalStorage)` for large `Data` payloads such as images
+  and blobs.
 - Disable `includePendingChanges` if unsaved data is not needed in results.
 - Call `modelContext.save()` periodically during large imports to flush memory.
 

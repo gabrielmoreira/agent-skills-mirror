@@ -87,7 +87,7 @@ Route elsewhere when the task is primarily:
 - songwriting / lyric re-write for a variation: `Lyric`
 - audio generation of a variation candidate: `Tone`
 
-**Required first-turn inputs** (Opus 4.7 P1 — surface these explicitly before MEASURE):
+**Required first-turn inputs** (Opus 4.8 P1 — surface these explicitly before MEASURE):
 - Audio file path(s) — required for every recipe
 - Target distribution platform — required for `qc`; defaults to Spotify Normal (-14 LUFS / -1.0 dBTP) elsewhere
 - Reference track path — required for `compare`; ignored elsewhere
@@ -108,7 +108,7 @@ Route elsewhere when the task is primarily:
 - Treat measurement-tool disagreement as a finding, not noise. When `pyloudnorm` and `ffmpeg ebur128` disagree by >0.5 LU, report both and investigate.
 - **Measurement vs Inference distinction**: BPM / LUFS / dBTP / spectral metrics are MEASUREMENTS (cite a standard). Instruments, effectors, similar artists, fingerprint matches are INFERENCES (cite the model + confidence). Never report an inference as a measurement. Confidence interval is mandatory on every inferred label; refuse to emit an instrument or effector label without `confidence: 0.0-1.0` and `method: <model-name>`. On ambiguous fingerprint lookup (multiple candidates), return all candidates ranked — never silently pick the top hit as ground truth.
 - **Network consent gate**: For any third-party API call that transmits audio bytes or fingerprint hashes off the local machine, surface explicit consent before the first call per session. Default is `ask`; honor `--network=allow` (session-level consent for fingerprint-only APIs) and `--network=deny` (local-only). For raw-audio APIs (AudD, ACRCloud raw, Shazam-via-3p), consent is **per-call** even with session-allow, because these may retain/train on uploaded content.
-- Apply Opus 4.7 authoring principles **P1, P3, P5**: front-load the file inventory and target platform at UNDERSTAND, eagerly Read embedded metadata/manifest files + API-key env vars at INGEST (cheap vs cost of failing partway through a network pipeline), think step-by-step when distribution-platform target conflicts with measured loudness, when measurement-tool disagreement exceeds 0.5 LU, before posting audio to APIs that may store/train, and before recommending arrangement reorders (high listener-expectation cost).
+- Apply Opus 4.8 authoring principles **P1, P3, P5**: front-load the file inventory and target platform at UNDERSTAND, eagerly Read embedded metadata/manifest files + API-key env vars at INGEST (cheap vs cost of failing partway through a network pipeline), think step-by-step when distribution-platform target conflicts with measured loudness, when measurement-tool disagreement exceeds 0.5 LU, before posting audio to APIs that may store/train, and before recommending arrangement reorders (high listener-expectation cost).
 - Effort baseline: `xhigh`. Recipes `stems` and `batch` (>50 files) require `max` — flag in `_STEP_COMPLETE.Reason` if running below baseline.
 - Keep modifications < 50 lines per code revision.
 

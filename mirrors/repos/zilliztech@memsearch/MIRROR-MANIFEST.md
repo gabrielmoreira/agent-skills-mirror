@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zilliztech/memsearch` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `zilliztech/memsearch` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zilliztech/memsearch` — 26 default patterns, 0 followed patterns, 5
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,10 +60,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`plugins/claude-code/skills/memory-recall/SKILL.md`](plugins/claude-code/skills/memory-recall/SKILL.md) |
-| 3 | ✓ | [`plugins/codex/skills/memory-recall/SKILL.md`](plugins/codex/skills/memory-recall/SKILL.md) |
-| 4 | ✓ | [`plugins/openclaw/skills/memory-recall/SKILL.md`](plugins/openclaw/skills/memory-recall/SKILL.md) |
-| 5 | ✓ | [`plugins/opencode/skills/memory-recall/SKILL.md`](plugins/opencode/skills/memory-recall/SKILL.md) |
+| 2 | ✓ | [`plugins/claude-code/skills/memory-config/SKILL.md`](plugins/claude-code/skills/memory-config/SKILL.md) |
+| 3 | ✓ | [`plugins/claude-code/skills/memory-recall/SKILL.md`](plugins/claude-code/skills/memory-recall/SKILL.md) |
+| 4 | ✓ | [`plugins/codex/skills/memory-config/SKILL.md`](plugins/codex/skills/memory-config/SKILL.md) |
+| 5 | ✓ | [`plugins/codex/skills/memory-recall/SKILL.md`](plugins/codex/skills/memory-recall/SKILL.md) |
+| 6 | ✓ | [`plugins/openclaw/skills/memory-config/SKILL.md`](plugins/openclaw/skills/memory-config/SKILL.md) |
+| 7 | ✓ | [`plugins/openclaw/skills/memory-recall/SKILL.md`](plugins/openclaw/skills/memory-recall/SKILL.md) |
+| 8 | ✓ | [`plugins/opencode/skills/memory-config/SKILL.md`](plugins/opencode/skills/memory-config/SKILL.md) |
+| 9 | ✓ | [`plugins/opencode/skills/memory-recall/SKILL.md`](plugins/opencode/skills/memory-recall/SKILL.md) |
 
 ---
 

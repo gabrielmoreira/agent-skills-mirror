@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `sugarforever/01coder-agent-skills` — 26 default patterns, 0 followed patterns, 98 file(s) materialized.
+Mirror of `sugarforever/01coder-agent-skills` — 26 default patterns, 0 followed patterns, 99 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `sugarforever/01coder-agent-skills` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 98 |
+| Files         | 99 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -148,15 +148,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 87 | ✓ | [`skills/subtitle-correction/SKILL.md`](skills/subtitle-correction/SKILL.md) |
 | 88 | ✓ | [`skills/tweet-insight/SKILL.md`](skills/tweet-insight/SKILL.md) |
 | 89 | ✓ | [`skills/video-script/references/blog-guidelines.md`](skills/video-script/references/blog-guidelines.md) |
-| 90 | ✓ | [`skills/video-script/references/examples.md`](skills/video-script/references/examples.md) |
-| 91 | ✓ | [`skills/video-script/references/platform-differences.md`](skills/video-script/references/platform-differences.md) |
-| 92 | ✓ | [`skills/video-script/references/script-guidelines.md`](skills/video-script/references/script-guidelines.md) |
-| 93 | ✓ | [`skills/video-script/SKILL.md`](skills/video-script/SKILL.md) |
-| 94 | ✓ | [`skills/video-script/templates/bilibili.md`](skills/video-script/templates/bilibili.md) |
-| 95 | ✓ | [`skills/video-script/templates/blog.md`](skills/video-script/templates/blog.md) |
-| 96 | ✓ | [`skills/video-script/templates/script.md`](skills/video-script/templates/script.md) |
-| 97 | ✓ | [`skills/video-script/templates/x.md`](skills/video-script/templates/x.md) |
-| 98 | ✓ | [`skills/video-script/templates/youtube.md`](skills/video-script/templates/youtube.md) |
+| 90 | ✓ | [`skills/video-script/references/examples-tutorial.md`](skills/video-script/references/examples-tutorial.md) |
+| 91 | ✓ | [`skills/video-script/references/examples.md`](skills/video-script/references/examples.md) |
+| 92 | ✓ | [`skills/video-script/references/platform-differences.md`](skills/video-script/references/platform-differences.md) |
+| 93 | ✓ | [`skills/video-script/references/script-guidelines.md`](skills/video-script/references/script-guidelines.md) |
+| 94 | ✓ | [`skills/video-script/SKILL.md`](skills/video-script/SKILL.md) |
+| 95 | ✓ | [`skills/video-script/templates/bilibili.md`](skills/video-script/templates/bilibili.md) |
+| 96 | ✓ | [`skills/video-script/templates/blog.md`](skills/video-script/templates/blog.md) |
+| 97 | ✓ | [`skills/video-script/templates/script.md`](skills/video-script/templates/script.md) |
+| 98 | ✓ | [`skills/video-script/templates/x.md`](skills/video-script/templates/x.md) |
+| 99 | ✓ | [`skills/video-script/templates/youtube.md`](skills/video-script/templates/youtube.md) |
 
 ---
 

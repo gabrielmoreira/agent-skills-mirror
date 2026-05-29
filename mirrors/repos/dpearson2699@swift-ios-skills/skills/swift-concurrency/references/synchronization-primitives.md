@@ -148,9 +148,11 @@ defer { lock.unlock() }
 | **Manual lock/unlock** | Not available | Available (`lock()` / `unlock()`) |
 | **Recommendation** | Preferred for iOS 18+ code | Use when targeting iOS 16–17 |
 
-**Guideline:** Use `Mutex` for new code targeting iOS 18+. Use
-`OSAllocatedUnfairLock` when you need to support iOS 16–17, or when you need
-ownership assertions for debugging.
+**Guideline:** Use `Mutex` for new code targeting iOS 18+. For apps that run on
+iOS 16 through current releases, either keep the shared abstraction backed by
+`OSAllocatedUnfairLock` or branch with `#available(iOS 18, *)` so iOS 18+ uses
+`Mutex` and iOS 16–17 uses `OSAllocatedUnfairLock`. Prefer
+`OSAllocatedUnfairLock` when you need ownership assertions for debugging.
 
 ## Atomic
 
@@ -231,6 +233,9 @@ expensive ordering.
 
 - **Async isolation is natural.** The protected state is accessed from async
   contexts and you can afford the hop.
+- **Callers can suspend.** Actor-isolated APIs are `async` from outside the
+  actor, so they fit task-based code but not synchronous C callbacks, real-time
+  hooks, or other no-suspension call sites.
 - **Structured concurrency.** You want the compiler to enforce isolation
   boundaries and prevent data races statically.
 - **Most Swift code.** Actors are the default recommendation for shared mutable
@@ -319,10 +324,11 @@ actor GoodCache {
 }
 ```
 
-**Never use `DispatchSemaphore` or `NSLock` in modern Swift.** Use `Mutex`
-(iOS 18+) or `OSAllocatedUnfairLock` (iOS 16+) instead. Legacy lock types
-have no `Sendable` conformance and are not designed for structured
-concurrency.
+**Avoid reaching first for `DispatchSemaphore` or `NSLock` in modern Swift.**
+`NSLock` is `Sendable`, but `Mutex` (iOS 18+) and `OSAllocatedUnfairLock`
+(iOS 16+) make the protected state and lock ownership clearer in Swift
+concurrency code. Use `NSLock` only when compatibility or existing API shape
+requires it.
 
 **Never hold a lock across `await`.** This blocks the thread and can deadlock
 the cooperative thread pool.

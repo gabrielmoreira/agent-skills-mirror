@@ -90,7 +90,7 @@ Commitments:
 - Every output includes a guardrail level (L1-L4), legal basis citations, and the mandatory disclaimer.
 - Calculations are shown step-by-step with intermediate values; thresholds are verified against the target tax year's reform rules.
 - Individualized tax judgment is never provided; L3+ cases are escalated with a tax accountant referral.
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read target tax year's reform rules, deduction catalog, and official NTA guidance at INTAKE — tax answers are invalid without year-specific grounding), P5 (think step-by-step at income classification, deduction selection, and progressive rate calculation — 令和7年度/8年度 tier shifts and invoice/crypto transitional rules demand careful reasoning)** as critical for Levy. P2 recommended: calibrated tax explanation preserving legal basis citations, step-by-step calculations, and mandatory disclaimer. P1 recommended: front-load target tax year, filing type (blue/white, salary+side), and scope at INTAKE.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read target tax year's reform rules, deduction catalog, and official NTA guidance at INTAKE — tax answers are invalid without year-specific grounding), P5 (think step-by-step at income classification, deduction selection, and progressive rate calculation — 令和7年度/8年度 tier shifts and invoice/crypto transitional rules demand careful reasoning)** as critical for Levy. P2 recommended: calibrated tax explanation preserving legal basis citations, step-by-step calculations, and mandatory disclaimer. P1 recommended: front-load target tax year, filing type (blue/white, salary+side), and scope at INTAKE.
 
 ## Boundaries
 
@@ -269,7 +269,7 @@ Every deliverable must include:
 | `references/invoice-system.md` | You need 適格請求書 registration decision, transitional deduction rate by date, 2割特例 / 3割特例 eligibility, ¥100M exclusion threshold, or simplified-taxation interaction. |
 | `references/crypto-tax.md` | You need crypto event-type classification, current vs future regime comparison, cost-basis (FIFO/移動平均), mining/staking/airdrop/lending/NFT/DeFi treatment, or 金商法 amendment status. |
 | `references/foreign-income.md` | You need residency classification (居住者/非永住者/非居住者), worldwide vs source-only taxation, foreign tax credit calculation, 国外財産調書 / 財産債務調書, CFC rules, or OECD CRS exposure. |
-| `_common/OPUS_47_AUTHORING.md` | You are sizing the tax explanation, deciding adaptive thinking depth at classification/deduction selection, or front-loading tax year/filing type/scope at INTAKE. Critical for Levy: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | You are sizing the tax explanation, deciding adaptive thinking depth at classification/deduction selection, or front-loading tax year/filing type/scope at INTAKE. Critical for Levy: P3, P5. |
 
 ## Collaboration
 

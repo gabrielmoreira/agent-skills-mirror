@@ -129,6 +129,9 @@ story-architect 属于高层级结构设计 agent。轻量题材定位优先由�
 - **设定/关系.md**：角色关系映射（参考 character-relations.md「四种关系类型」）
 - **设定/题材定位.md**：题材核心梗三分法+对标分析（参考 genre-core-mechanics.md「核心梗解析」）。对标分析表保留 2-3 行摘要，详细数据见 `对标/` 目录
 
+<!-- cross-book-recall:trigger:structure-positioning -->
+> **多对标书时**：参 `references/cross-book-recall.md`，副对标 anchor 入「对标分析」表附录
+
 #### Agent 调用：story-architect + character-designer
 
 核心设定阶段，如果项目已部署对应 agent，可 spawn 以下 agent 辅助：
@@ -159,6 +162,9 @@ story-architect 属于高层级结构设计 agent。轻量题材定位优先由�
 - 核心事件：{一句话}
 ```
 
+<!-- cross-book-recall:trigger:tempo-volume -->
+> **多对标书时**：参 `references/cross-book-recall.md`，副对标 `章节/*_摘要.md` + `剧情/*.md` 召回卷级节奏
+
 #### 细纲（全书每章）
 
 ⚠️ **大纲四检（每卷/每章设计前必答）**：① 本卷交付什么情绪？什么剧情模式能可靠交付？② 本卷核心冲突是什么？③ 卷节奏（起承转合）哪段加速哪段减速？④ 本卷需要新埋设的伏笔有哪些？上一卷待回收的伏笔如何处理？
@@ -185,11 +191,14 @@ story-architect 属于高层级结构设计 agent。轻量题材定位优先由�
 
 **细纲质量要求**：每章细纲一视同仁，全部用最高标准打磨——钩子+人设+爽点+悬念+伏笔。
 
+<!-- cross-book-recall:trigger:tempo-chapter -->
+> **多对标书时**：参 `references/cross-book-recall.md`，副对标同基调 `章节/*_摘要.md` 作细纲钩子
+
 **章节标题规则**：只做轻量去重；发现同名或明显重复标题时，按本章核心事件改名，并保持细纲标题与正文文件名一致。
 
 大纲完成后，创建以下 artifact（加载 [references/artifact-protocols.md](references/artifact-protocols.md) 中对应模板）：
 - **大纲/大纲.md**：全书卷级鸟瞰（卷名+字数+章数+核心事件+状态变化，一段式汇总）
-- **大纲/卷纲_第X卷.md**：每卷的爽点节奏+情绪弧线+人物弧线+伏笔+反转（参考 outline-methods.md「大纲三个维度结构法」 + emotional-arc-design.md「六种弧线速查」 + reversal-toolkit.md「五种反转类型」）
+- **大纲/卷纲_第X卷.md**：每卷的爽点节奏+情绪弧线+人物弧线+伏笔+反转（参考 outline-methods.md「大纲三个维度结构法」 + emotional-arc-design.md「六种弧线速查」 + reversal-toolkit.md「反转类型」）
 - **追踪/伏笔.md** + **追踪/时间线.md** + **追踪/角色状态.md**：伏笔状态表+故事时间线+角色状态快照（参考 plot-core-methods.md「连续性追踪」、state-tracking.md「角色状态快照格式」）
 
 前 3 章细纲额外加载 [references/opening-design.md](references/opening-design.md)（黄金三章法则+六大标准）。
@@ -312,7 +321,7 @@ story-architect 属于高层级结构设计 agent。轻量题材定位优先由�
      - (a) **文风召回**：按「对标书路径查找」规则读 `{对标书路径}/文风.md`（路径优先 `{项目}/对标/{书名}/`，回退 `拆文库/{书名}/`）；多本对标书时从 `设定/题材定位.md` 读 `主对标书` 字段。文风文件不存在 → **fail-fast 报错**：「对标书 X 缺少 文风.md。请用 `/story-long-analyze` 跑 Stage 6 生成文风，再 `/story-import` 同步。」不 inline 生成
      - (b) **匹配章节挑选**：从 `{对标书路径}/章节/*_摘要.md` grep `基调：(紧张|轻松|悲伤|热血|温馨|压抑)`（全角冒号），按本章目标情绪挑章 K——多章同基调时选择规则：先看爽点类型是否接近，再看情节点数量/原文章节估算字数是否接近本章目标字数，最后取章节号最小者；必读 `{对标书路径}/章节/第K章_摘要.md`，若同章存在 `第K章_深度拆解.md` 则加读，否则回退黄金三章深度拆解/文风文件里的可借鉴技巧，不因非黄金三章缺少深度拆解而失败
      - (c) **模块召回**：从对标的结构化子目录（角色/剧情/设定）中按本章情节检索相关模块
-     - (d) 输出"对标召回摘要 + 文风召回指令 + 原文锚点片段引用"（合计 ≤10 条），作为 narrative-writer 的输入
+     - (d) <!-- cross-book-recall:trigger:execution-output --> 输出"对标召回摘要 + 文风召回指令 + 原文锚点片段引用"（合计 ≤10 条），作为 narrative-writer 的输入。**多对标书时**参 `references/cross-book-recall.md`，进 prompt 的只主对标（副对标不入正文）
      - **快捷路径**：项目已部署 story-explorer agent 时（检查 `.claude/agents/story-explorer.md`），直接 spawn `Agent(subagent_type: "story-explorer", prompt: "项目目录：{dir}\n查询类型：benchmark_style_load\n查询参数：我要写第 {N} 章；这一章按细纲偏{紧张/热血/轻松等}，目标字数约 {N}，爽点类型={如有}")` 一次拿到 `{style_profile_path, style_profile_summary, matched_chapter_K, matched_chapter_techniques, anchor_excerpts, gaps}`；准备层必须原样保留 `gaps`，若 `gaps.matched_deep_dive_missing: true`，文风召回指令必须说明已用黄金三章/文风文件里的技巧回退
    - 3.3 **指令确认**：综合细纲+最简记忆包+模块召回结果，确认本章节奏（快/慢）和情绪目标，用一句话概括本章写作意图。例：「快节奏打脸——读者等了三章，这章必须一拳到位。技法=信息差揭示（hooks-suspense.md），用于第2-4段。」
 4. **资料研究**（按需）：如果写作中遇到需要查证的外部事实（历史年代、地理方位、职业细节等），spawn `story-researcher` agent 搜索并输出到 `参考资料/` 目录。研究完成后再继续写作。
@@ -444,8 +453,7 @@ story-architect 属于高层级结构设计 agent。轻量题材定位优先由�
 | 商业创作核心方法 | `references/style-commercial-theory.md` |
 | 对话 | `references/dialogue-mastery.md` |
 | 人物深化 | `references/character-design-methods.md` |
-| 情绪技法 | `references/plot-emotion-system.md` + `references/emotional-methods.md` |
-| 叙事单元 | `references/narrative-units.md` |
+| 情绪技法 + 叙事单元 | `references/plot-emotion-system.md` + `references/emotional-methods.md` |
 | 写作技法全程参考 | `references/writing-craft.md` |
 | 格式与结构规范 | `references/format-and-structure.md`（仅对话/段落格式适用长篇） |
 | 状态追踪协议 | `references/state-tracking.md` |

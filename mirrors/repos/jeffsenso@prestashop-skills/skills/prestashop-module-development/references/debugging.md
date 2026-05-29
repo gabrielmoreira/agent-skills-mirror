@@ -34,7 +34,8 @@
 |---|---|---|
 | "Service not found" on Grid factory | Service not defined in `services.yml` | Add all 5 Grid services (factory, query, data, grid, position) |
 | Toggle AJAX fails | Route param mismatch | `route_param_name` in `ToggleColumn` must match controller param name exactly |
-| Drag-and-drop not working | Bundle JS not loaded or wrong grid ID | Check `wsfaq.bundle.js` is added in header hook; verify grid ID in bundle |
+| Drag-and-drop not working | Bundle JS not loaded or wrong grid ID | Verify bundle path in `{% block javascripts %}` uses the exact module folder name; verify grid ID in bundle |
+| Toggle/position silently broken (404 on bundle) | Module folder name typo in asset path | Asset path must be `../modules/{exact-folder-name}/views/js/{modulename}.bundle.js`; a single character difference (e.g. underscore) causes a silent 404 |
 | PHPStan: `getFilters()` return type | Returning concrete `FilterCollection` | Change return type to `FilterCollectionInterface` |
 | PHPStan: `getGridActions()` return type | Returning concrete `GridActionCollection` | Change return type to `GridActionCollectionInterface` |
 

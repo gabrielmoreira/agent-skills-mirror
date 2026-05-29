@@ -4,6 +4,43 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+#### [2.1.156](https://github.com/Piebald-AI/claude-code-system-prompts/commit/b48f2fd)
+
+<sub>_No changes to the system prompts in v2.1.156._</sub>
+
+# [2.1.154](https://github.com/Piebald-AI/claude-code-system-prompts/commit/f636ff2)
+
+_+11,516 tokens_
+
+- **NEW:** Agent Prompt: /simplify slash command — Adds `/simplify` behavior that runs four cleanup agents for reuse, simplification, efficiency, and altitude findings, then applies safe fixes while skipping behavior-changing or out-of-scope suggestions.
+- **NEW:** Data: Claude Code live documentation sources — Adds official Claude Code documentation URLs and topic-specific WebFetch prompts for commands, settings, hooks, MCP, skills, subagents, IDEs, deployment, security, and related surfaces.
+- **NEW:** Data: Claude Code recent changes reference — Adds a reference for renamed or removed Claude Code commands, flags, and terms, including `/output-style`, `/pr-comments`, `/vim`, `/extra-usage`, `--enable-auto-mode`, and stale naming guidance.
+- **NEW:** Skill: Claude Code configuration guide — Adds a Claude Code configuration skill that checks the live build, bundled recent-change references, and current documentation before answering questions about commands, flags, settings, hooks, skills, MCP servers, subagents, IDE integrations, and related configuration.
+- Agent Prompt: Claude guide agent — Adds stale-knowledge handling that tells the guide agent to disclose documentation fetch failures instead of silently answering Claude Code command, flag, or settings questions from memory.
+- Agent Prompt: Security monitor for autonomous agent actions (first part) — Expands security review with explicit final-destination tracing for writes, commits, pushes, uploads, publishes, and sent data before deciding whether a boundary-crossing action should be blocked.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Strengthens data-exfiltration rules around trust boundaries, automated pathways, unverified destinations, credential leakage into persistent artifacts, and destination/resource/operation-scoped allow exceptions.
+- Data: Anthropic CLI — Updates Anthropic CLI authentication guidance to cover SDK-style credential resolution, OAuth profiles from `ant auth login`, `ant auth print-credentials`, bearer-token usage for raw HTTP, and precedence between API keys and auth tokens.
+- Data: Claude API reference — cURL — Updates examples and adaptive-thinking guidance for Opus 4.8.
+- Data: Claude API reference — Go — Updates the recommended Go SDK model constant and examples from Opus 4.7 to Opus 4.8.
+- Data: Claude API reference — Python — Updates credential guidance for API keys, auth tokens, and `ant auth login`; adds beta mid-conversation system-message examples; and extends adaptive thinking and compaction guidance to Opus 4.8.
+- Data: Claude API reference — TypeScript — Updates credential guidance for API keys, auth tokens, and `ant auth login`; adds beta mid-conversation system-message examples; and extends adaptive thinking and compaction guidance to Opus 4.8.
+- Data: Claude model catalog — Adds Claude Opus 4.8 as the current most powerful Opus model with a 1M input window and updates Opus model-selection examples and legacy recommendations to prefer `claude-opus-4-8`.
+- Data: HTTP error codes reference — Updates authentication fixes for OAuth bearer tokens and expands Opus model-specific 400 guidance to include Opus 4.8.
+- Data: Managed Agents reference — Python — Updates client initialization examples to prefer environment, auth-token, or `ant auth login` credential resolution before explicit API-key injection.
+- Data: Managed Agents reference — TypeScript — Updates client initialization examples to prefer environment, auth-token, or `ant auth login` credential resolution before explicit API-key injection.
+- Data: Prompt Caching — Design & Optimization — Adds beta mid-conversation system-message guidance as a cache-preserving and prompt-injection-safe way to send operator instructions without editing the top-level system prompt.
+- Data: Streaming reference — Python — Updates adaptive-thinking examples for Opus 4.8.
+- Data: Streaming reference — TypeScript — Updates adaptive-thinking examples for Opus 4.8.
+- Data: Tool use concepts — Updates adaptive-thinking examples for Opus 4.8.
+- Skill: Agent Design Patterns — Replaces mid-session `<system-reminder>` guidance with beta `role: "system"` messages for supported models, with `<system-reminder>` retained as the fallback.
+- Skill: Building LLM-powered applications with Claude — Adds Opus 4.8 to current model guidance, updates adaptive thinking, effort, task-budget, compaction, and migration recommendations, and documents beta mid-conversation operator instructions.
+- Skill: Model migration guide — Adds Opus 4.8 migration guidance, including no new API breaking changes from Opus 4.7, model-ID updates, mid-session system prompts, long-horizon agentic tuning, effort recommendations, tool-triggering behavior, narration changes, ask-rate calibration, and visible-reasoning mitigation.
+- System Prompt: Background session instructions — Changes temporary-file guidance from `$CLAUDE_JOB_DIR` to `$CLAUDE_JOB_DIR/tmp` for background sessions.
+- System Prompt: Coordinator mode orchestration — Updates PR activity subscription guidance and changes worker summary accounting from total tokens to subagent tokens.
+- Tool Description: AskUserQuestion — Tightens usage guidance so agents ask only when blocked on a decision that cannot be resolved from the request, code, or sensible defaults.
+- Tool Description: Bash (sandbox — tmpdir) — Clarifies that `$TMPDIR` is set to the same sandbox-writable temporary directory for both sandboxed and unsandboxed commands.
+- Tool Description: Workflow — Adds ultracode as standing workflow opt-in, requires inline workflow scripts for first invocation, clarifies JSON `args` passing, and notes that workflow scripts are plain JavaScript rather than TypeScript.
+
 # [2.1.153](https://github.com/Piebald-AI/claude-code-system-prompts/commit/83b436e)
 
 _+303 tokens_

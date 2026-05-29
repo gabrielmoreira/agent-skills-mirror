@@ -1,6 +1,6 @@
 ---
 name: browserenginekit
-description: "Build alternative browser engines using BrowserEngineKit. Use when developing a non-WebKit browser engine for iOS in the EU, managing web content rendering processes, configuring GPU and networking processes for browser functionality, checking device eligibility for alternative engines, or working with BrowserEngineKit entitlements."
+description: "Build alternative browser engines using BrowserEngineKit. Use when developing a non-WebKit browser engine for iOS/iPadOS in supported regions, managing web content/rendering/networking extension processes, configuring GPU and networking process capabilities, checking alternative-engine device eligibility, or reviewing BrowserEngineKit entitlements and Info.plist setup."
 ---
 
 # BrowserEngineKit
@@ -8,17 +8,18 @@ description: "Build alternative browser engines using BrowserEngineKit. Use when
 Framework for building web browsers with alternative (non-WebKit) rendering
 engines on iOS and iPadOS. Provides process isolation, XPC communication,
 capability management, and system integration for browser apps that implement
-their own HTML/CSS/JavaScript engine. Targets Swift 6.3 / iOS 26+.
+their own HTML/CSS/JavaScript engine. Examples target Swift 6.3 and current
+Apple SDKs.
 
 BrowserEngineKit is a specialized framework. Alternative browser engines are
-currently supported for distribution in the EU. Japan requires Memory Integrity
-Enforcement (MIE) for alternative browser engine distribution. Development and
-testing can occur anywhere. The companion
-frameworks BrowserEngineCore (low-level primitives) and BrowserKit (eligibility
-checks, data transfer) support the overall browser engine workflow.
+available only through Apple-approved entitlement profiles and supported-region
+device eligibility. EU support applies to eligible users on iOS 17.4+ and
+iPadOS 18+; Japan support starts with iOS 26.2 and adds explicit PAC/MIE
+security requirements for browser apps. Development and testing can occur
+anywhere. The companion frameworks BrowserEngineCore (low-level primitives) and
+BrowserKit (eligibility checks, data transfer) support the overall workflow.
 
 ## Contents
-
 - [Overview and Eligibility](#overview-and-eligibility)
 - [Entitlements](#entitlements)
 - [Architecture](#architecture)
@@ -38,30 +39,27 @@ checks, data transfer) support the overall browser engine workflow.
 ### Eligibility Checking
 
 Use `BEAvailability` from the BrowserKit framework to check whether the device
-is eligible for alternative browser engines:
+is eligible for alternative browser engines. `BEAvailability` is available on
+iOS/iPadOS 18.4+:
 
 ```swift
 import BrowserKit
 
-BEAvailability.isEligible(for: .webBrowser) { eligible, error in
-    if eligible {
-        // Device supports alternative browser engines
-    } else {
-        // Fall back or show explanation
-    }
+do {
+    let eligible = try await BEAvailability.isEligible(for: .webBrowser)
+    guard eligible else { return /* fall back or explain */ }
+    // Device supports alternative browser engines
+} catch {
+    // Handle eligibility lookup failure
 }
 ```
 
 Eligibility depends on the device region and OS version. Do not hard-code
 region checks; rely on the system API.
 
-### Related Frameworks
-
-| Framework | Purpose |
-|---|---|
-| BrowserEngineKit | Process management, extensions, text/view integration |
-| BrowserEngineCore | Low-level primitives: kernel events, JIT tag, audio session |
-| BrowserKit | Eligibility checks, browser data import/export |
+Availability anchors: process APIs are iOS/iPadOS 17.4+, `BEDownloadMonitor`
+is iOS 18.2+, `.revision2` restricted sandbox is iOS 26+, and
+`RenderingExtensionFeature.coreML` is iOS 26.2+.
 
 ## Entitlements
 
@@ -92,8 +90,8 @@ Each extension target requires its type-specific entitlement set to `true`:
 |---|---|---|
 | `com.apple.security.cs.allow-jit` | Web content | JIT compilation of scripts |
 | `com.apple.developer.kernel.extended-virtual-addressing` | Web content | Required alongside JIT |
-| `com.apple.developer.memory.transfer_send` | Rendering | Send memory attribution |
-| `com.apple.developer.memory.transfer_accept` | Web content | Accept memory attribution |
+| `com.apple.developer.memory.transfer_send` | Rendering | Send memory attribution; value is host app bundle ID |
+| `com.apple.developer.memory.transfer_accept` | Web content | Accept memory attribution; value is host app bundle ID |
 | `com.apple.developer.web-browser-engine.restrict.notifyd` | Web content | Restrict notification daemon access |
 
 ### Embedded Browser Engine (Non-Browser Apps)
@@ -106,14 +104,19 @@ use different entitlements:
 | `com.apple.developer.embedded-web-browser-engine` | Enable embedded engine |
 | `com.apple.developer.embedded-web-browser-engine.engine-association` | Declare engine ownership |
 
-Embedded engines use `arm64` only (not `arm64e`), cannot include browser
-extensions, and cannot use JIT compilation.
+`engine-association` is available starting iOS/iPadOS/Mac Catalyst 26.2 and is
+set to `first-party` when you own the engine or `third-party` when another
+developer owns it. Embedded engines use `arm64` only (not `arm64e`), cannot
+include browser extensions, and cannot use JIT compilation.
 
 ### Japan-Specific Requirements
 
-Browser apps distributed in Japan must enable hardware memory tagging via
-`com.apple.security.hardened-process.checked-allocations`. Apple strongly
-recommends enabling this in the EU as well.
+Browser apps distributed in Japan are supported on iOS 26.2+ and must adopt the
+current security mitigations Apple lists for Japan, including Pointer
+Authentication Codes and Memory Integrity Enforcement for relevant allocators
+and extension processes. Enable hardware memory tagging with
+`com.apple.security.hardened-process.checked-allocations`; Apple strongly
+recommends enabling it in the EU as well.
 
 ## Architecture
 
@@ -205,13 +208,14 @@ are valid.
 ### Web Content Extension
 
 Hosts the browser engine's HTML parser, CSS engine, JavaScript interpreter,
-and DOM. Subclass `WebContentExtension` to handle incoming XPC connections:
+and DOM. Conform to `WebContentExtension` to handle incoming XPC connections:
 
 ```swift
 import BrowserEngineKit
 
-final class MyWebContentExtension: WebContentExtension {
-    override func handle(xpcConnection: xpc_connection_t) {
+@main
+struct MyWebContentExtension: WebContentExtension {
+    func handle(xpcConnection: xpc_connection_t) {
         // Set up message handlers on the connection
     }
 }
@@ -228,8 +232,9 @@ serves all tabs:
 ```swift
 import BrowserEngineKit
 
-final class MyNetworkingExtension: NetworkingExtension {
-    override func handle(xpcConnection: xpc_connection_t) {
+@main
+struct MyNetworkingExtension: NetworkingExtension {
+    func handle(xpcConnection: xpc_connection_t) {
         // Handle network request messages
     }
 }
@@ -245,18 +250,18 @@ rendering. One instance typically serves the entire browser:
 ```swift
 import BrowserEngineKit
 
-final class MyRenderingExtension: RenderingExtension {
-    override func handle(xpcConnection: xpc_connection_t) {
+@main
+struct MyRenderingExtension: RenderingExtension {
+    init() {
+        if #available(iOS 26.2, macOS 26.2, *) {
+            enableFeature(.coreML)
+        }
+    }
+
+    func handle(xpcConnection: xpc_connection_t) {
         // Handle rendering commands
     }
 }
-```
-
-The rendering extension can enable optional features:
-
-```swift
-// Enable CoreML in the rendering extension
-extension.enableFeature(.coreML)
 ```
 
 Configure via `RenderingExtensionConfiguration`.
@@ -340,12 +345,15 @@ sandbox:
 
 ```swift
 // In the web content extension, after setup:
-extension.applyRestrictedSandbox(revision: .revision2)
+if #available(iOS 26.0, macOS 26.0, *) {
+    applyRestrictedSandbox(revision: .revision2)
+} else {
+    applyRestrictedSandbox(revision: .revision1)
+}
 ```
 
 This removes access to resources the extension used during startup but no
-longer needs. Use the latest revision (`.revision2`) for the strongest
-restrictions.
+longer needs. Use the latest available revision for the strongest restrictions.
 
 ### JIT Compilation
 
@@ -384,6 +392,7 @@ Report download progress to the system using `BEDownloadMonitor`. Create an
 access token, initialize the monitor with source/destination URLs and a
 `Progress` object, then call `beginMonitoring()` to show the system download
 UI. Use `resumeMonitoring(placeholderURL:)` to resume interrupted downloads.
+`BEDownloadMonitor` is available on iOS 18.2+.
 
 See [references/browserenginekit-patterns.md](references/browserenginekit-patterns.md) for full download management
 examples.
@@ -447,8 +456,9 @@ if Locale.current.region?.identifier == "DE" {
 }
 
 // CORRECT - use the system eligibility API
-BEAvailability.isEligible(for: .webBrowser) { eligible, _ in
-    if eligible { useAlternativeEngine() }
+let eligible = try await BEAvailability.isEligible(for: .webBrowser)
+if eligible {
+    useAlternativeEngine()
 }
 ```
 
@@ -472,13 +482,12 @@ unsupported devices can download the app and hit runtime failures.
 - [ ] Visibility propagation interaction added to browser content views
 - [ ] Restricted sandbox applied to content extensions after initialization
 - [ ] `BEAvailability` used for eligibility checks instead of manual region logic
-- [ ] Memory attribution configured if rendering extension memory is high
-- [ ] Download progress reported via `BEDownloadMonitor` for active downloads
-- [ ] Memory tagging enabled for Japan distribution (recommended for EU)
+- [ ] Memory attribution entitlements use the host app bundle ID as their value
+- [ ] Download progress reported via `BEDownloadMonitor` for active downloads on iOS 18.2+
+- [ ] Memory tagging enabled for Japan distribution on iOS 26.2+ (recommended for EU)
 
 ## References
-
-- Extended patterns (text interaction, layer hosting, scroll views, XPC communication, content filtering): [references/browserenginekit-patterns.md](references/browserenginekit-patterns.md)
+- Extended patterns (text interaction, layer hosting, scroll views, file bookmarks, XPC communication, content filtering): [references/browserenginekit-patterns.md](references/browserenginekit-patterns.md)
 - [BrowserEngineKit framework](https://sosumi.ai/documentation/browserenginekit)
 - [Designing your browser architecture](https://sosumi.ai/documentation/browserenginekit/designing-your-browser-architecture)
 - [Creating browser extensions in Xcode](https://sosumi.ai/documentation/browserenginekit/creating-browser-extensions-in-xcode)

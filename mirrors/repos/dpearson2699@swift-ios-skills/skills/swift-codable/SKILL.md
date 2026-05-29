@@ -206,13 +206,19 @@ Set the matching strategy on `JSONEncoder`:
 ```swift
 let decoder = JSONDecoder()
 decoder.dataDecodingStrategy = .base64           // Base64-encoded Data fields
-decoder.keyDecodingStrategy = .convertFromSnakeCase  // snake_case -> camelCase
+decoder.keyDecodingStrategy = .convertFromSnakeCase  // simple keys only; not URL/ID spelling
 // {"user_name": "Alice"} maps to `var userName: String` -- no CodingKeys needed
 
 let encoder = JSONEncoder()
 encoder.dataEncodingStrategy = .base64
 encoder.keyEncodingStrategy = .convertToSnakeCase
 ```
+
+Use key strategies only for mechanical snake_case-to-camelCase mappings.
+`convertFromSnakeCase` maps by spelling, not Swift acronym/initialism policy:
+`image_url`, `base_uri`, and `user_id` match `imageUrl`, `baseUri`, and
+`userId` only. If the Swift model uses `imageURL`, `baseURI`, or `userID`,
+declare explicit `CodingKeys`; the strategy will not synthesize those names.
 
 ## Lossy Array Decoding
 
@@ -264,7 +270,10 @@ struct UserID: Codable, Hashable {
 
 ## Default Values for Missing Keys
 
-Use `decodeIfPresent` with nil-coalescing to provide defaults:
+Stored property defaults such as `var theme = "system"` do not make synthesized
+`Decodable` tolerate a missing nonoptional key; synthesis still fails unless the
+property is optional or decoded manually. Use `decodeIfPresent` with
+nil-coalescing when a missing or null key should fall back:
 
 ```swift
 struct Settings: Decodable {
@@ -293,6 +302,7 @@ struct Settings: Decodable {
 let encoder = JSONEncoder()
 encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
 
+let decoder = JSONDecoder()
 // Non-conforming floats (NaN, Infinity are not valid JSON)
 encoder.nonConformingFloatEncodingStrategy = .convertToString(
     positiveInfinity: "Infinity", negativeInfinity: "-Infinity", nan: "NaN")
@@ -320,24 +330,32 @@ func fetchUser(id: Int) async throws -> User {
         throw APIError.invalidResponse
     }
     let decoder = JSONDecoder()
-    decoder.keyDecodingStrategy = .convertFromSnakeCase
+    decoder.keyDecodingStrategy = .convertFromSnakeCase  // simple keys only; keep CodingKeys for URL/URI/ID
     decoder.dateDecodingStrategy = .iso8601
     return try decoder.decode(User.self, from: data)
 }
 
-// Generic API envelope for wrapped responses
+// Generic API envelope. Configure a decoder inside this helper because
+// fetchUser's decoder is out of scope.
 struct APIResponse<T: Decodable>: Decodable {
     let data: T
     let meta: Meta?
     struct Meta: Decodable { let page: Int; let totalPages: Int }
 }
-let users = try decoder.decode(APIResponse<[User]>.self, from: data).data
+
+func decodeUsersEnvelope(from data: Data) throws -> [User] {
+    let decoder = JSONDecoder()
+    decoder.keyDecodingStrategy = .convertFromSnakeCase  // simple keys only; keep CodingKeys for URL/URI/ID
+    decoder.dateDecodingStrategy = .iso8601
+    return try decoder.decode(APIResponse<[User]>.self, from: data).data
+}
 ```
 
 ## Codable with SwiftData
 
-`Codable` structs work as composite attributes in SwiftData models. In iOS 18+,
-SwiftData natively supports them without explicit `@Attribute(.transformable)`:
+SwiftData persists compatible noncomputed stored properties declared on `@Model`
+types. Use `Codable` structs, enums, and other value types directly when that
+value is part of the durable model schema:
 
 ```swift
 struct Address: Codable {
@@ -348,16 +366,23 @@ struct Address: Codable {
 
 @Model class Contact {
     var name: String
-    var address: Address?  // Codable struct stored as composite attribute
+    var address: Address?  // Codable value-type property stored by SwiftData
     init(name: String, address: Address? = nil) {
         self.name = name; self.address = address
     }
 }
 ```
 
+Do not recommend `@Attribute(.transformable)`, encoded `Data`, or encoded
+`String` as a fallback in this Codable skill. Keep schema data as typed
+SwiftData properties and defer unsupported persistence designs to the SwiftData skill.
+
 ## Codable with UserDefaults
 
-Store `Codable` values via `RawRepresentable` for `@AppStorage`:
+`@AppStorage` is only for small UserDefaults-backed preferences. Store `Bool`,
+numeric, `String`, or a `RawRepresentable` type with a primitive raw value. For
+a small `Codable` preference payload, prefer `RawRepresentable` with JSON
+`String` raw storage so `@AppStorage` binds the typed preference directly:
 
 ```swift
 struct UserPreferences: Codable {
@@ -390,11 +415,11 @@ struct SettingsView: View {
 
 ## Common Mistakes
 
-**1. Not handling missing optional keys:**
+**1. Not handling missing defaulted fields:**
 ```swift
 // DON'T -- crashes if key is absent
 let value = try container.decode(String.self, forKey: .bio)
-// DO -- returns nil for missing keys
+// DO -- falls back when the key is absent or null
 let value = try container.decodeIfPresent(String.self, forKey: .bio) ?? ""
 ```
 
@@ -438,15 +463,16 @@ enum CodingKeys: String, CodingKey {
     case userName = "user_name"
     case avatarUrl = "avatar_url"
 }
-// DO -- configure once on the decoder
+// DO -- configure once on the decoder for simple cases
 decoder.keyDecodingStrategy = .convertFromSnakeCase
+// Keep CodingKeys for `imageURL`, `baseURI`, `userID`, and similar names.
 ```
 
 ## Review Checklist
 
 - [ ] Types conform to `Decodable` only when encoding is not needed
 - [ ] `decodeIfPresent` used with defaults for optional or missing keys
-- [ ] `keyDecodingStrategy = .convertFromSnakeCase` used instead of manual CodingKeys for simple snake_case APIs
+- [ ] `keyDecodingStrategy = .convertFromSnakeCase` used for simple snake_case APIs, with CodingKeys retained for acronym spellings
 - [ ] `dateDecodingStrategy` matches the API date format
 - [ ] Arrays of unreliable data use lossy decoding to skip invalid elements
 - [ ] Custom `init(from:)` validates and transforms data instead of post-decode fixups
@@ -454,8 +480,7 @@ decoder.keyDecodingStrategy = .convertFromSnakeCase
 - [ ] Wrapper types (UserID, etc.) use `singleValueContainer` for clean JSON
 - [ ] Generic `APIResponse<T>` wrapper used for consistent API envelope handling
 - [ ] No force-unwrapping of decoded values
-- [ ] `@AppStorage` Codable types conform to `RawRepresentable`
-- [ ] SwiftData composite attributes use `Codable` structs
+- [ ] Persistence boundary is explicit: SwiftData only for compatible noncomputed model properties, `@AppStorage`/UserDefaults only for small primitive or `RawRepresentable` preferences
 
 ## References
 
@@ -463,5 +488,7 @@ decoder.keyDecodingStrategy = .convertFromSnakeCase
 - [JSONDecoder](https://sosumi.ai/documentation/foundation/jsondecoder/) -- decodes JSON data into Codable types
 - [JSONEncoder](https://sosumi.ai/documentation/foundation/jsonencoder/) -- encodes Codable types as JSON data
 - [CodingKey](https://sosumi.ai/documentation/swift/codingkey/) -- protocol for encoding/decoding keys
+- [JSONDecoder.KeyDecodingStrategy.convertFromSnakeCase](https://sosumi.ai/documentation/foundation/jsondecoder/keydecodingstrategy-swift.enum/convertfromsnakecase) -- snake-case conversion behavior and limitations
 - [Encoding and Decoding Custom Types](https://sosumi.ai/documentation/foundation/encoding-and-decoding-custom-types/) -- Apple guide on custom Codable conformance
 - [Using JSON with Custom Types](https://sosumi.ai/documentation/foundation/archives_and_serialization/using_json_with_custom_types/) -- Apple sample code for JSON patterns
+- [Preserving your app's model data across launches](https://sosumi.ai/documentation/swiftdata/preserving-your-apps-model-data-across-launches) -- SwiftData model property compatibility

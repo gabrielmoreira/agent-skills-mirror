@@ -68,11 +68,11 @@ If the clones aren't present, run `npm run sdk:clone` from `site/`, or fall back
 If the local clones aren't available, fetch source through the GitHub API:
 
 ```bash
-# Python SDK
-gh api repos/strands-agents/sdk-python/contents/src/strands/[path]
+# Python SDK (now local at strands-py/src/strands/)
+gh api repos/strands-agents/sdk-python/contents/strands-py/src/strands/[path]
 
-# TypeScript SDK
-gh api repos/strands-agents/sdk-typescript/contents/strands-ts/src/[path]
+# TypeScript SDK (now local at strands-ts/src/)
+gh api repos/strands-agents/sdk-python/contents/strands-ts/src/[path]
 ```
 
 ## Tier 3: Installed Package Introspection

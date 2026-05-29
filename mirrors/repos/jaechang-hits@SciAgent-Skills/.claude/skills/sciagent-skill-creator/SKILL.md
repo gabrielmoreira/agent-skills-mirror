@@ -92,6 +92,34 @@ The generated SKILL.md is a **skeleton with placeholders**. The agent's remainin
 
 The scaffold script does not pretend to write content. Content stays with the agent and the source material.
 
+## Content authoring rules (what NOT to bake into a SKILL.md)
+
+Skills document a tool's *analysis surface*, not the consumer's *house style*. A SKILL.md is read by many agents for many downstream tasks — visual choices that fit one analysis brief leak into every future invocation. Strip the following before committing:
+
+- **Color palettes, cmaps, themes** — no hex codes (`#08306b`), no `LinearSegmentedColormap.from_list(...)`, no `ListedColormap([...])`, no prescribed `cmap=` arguments unless the cmap *is* the tool's API (e.g., a tool that ships its own palette). Let matplotlib pick defaults; the consumer overrides downstream.
+- **Per-replicate / per-condition color dicts** — e.g., `colors = {"rep1": "#1f77b4", ...}`. Matplotlib auto-cycles colors.
+- **Font choices, dpi presets, figure sizes tuned for one report** — `figsize=(8, 4)` for a routine line plot is fine; `figsize=(12, 4)` chosen to fit a slide deck is not.
+- **One-shot user-brief specifics** — if the user asked for "blue for low, red for high" in *their* analysis, that belongs in their code, not the skill. The skill teaches *how to compute* phi/psi density; *how to color it* is consumer choice.
+- **Hardcoded paths beyond the tool's defaults** — `"figures/"`, `"results/"`, `f"{pdb_id}_protein.pdb"` are fine as illustrative outputs; `"/Users/me/proj42/output"` is not.
+
+What to keep: the analysis logic, the data shape, the units, the parameter semantics, the expected output *structure* (columns, axes, units), and any visual choice the tool itself enforces.
+
+Rule of thumb: if a downstream consumer would *override* the choice, don't ship the choice in the skill.
+
+## Writing style: be succinct
+
+A SKILL.md is reference material for agents, not a tutorial. Token cost matters — every line is paid for on every retrieval. Write like documentation, not like a walkthrough:
+
+- **One sentence per section intro, not a paragraph.** Drop hedging ("typically", "in general", "you may want to"), filler ("note that", "it's worth mentioning"), and softeners. State the rule.
+- **Comments inside code blocks earn their place.** Only annotate non-obvious lines — units, gotchas, why this parameter. Don't restate what the code already says (`# load the trajectory` above `traj = md.load(...)` is noise).
+- **Code over prose when possible.** A four-line code block beats a paragraph describing the same call. The agent runs the code; the prose is for what the code can't show.
+- **No preamble before code.** "The following snippet demonstrates how one might..." → delete. The header and code speak for themselves.
+- **No closing recap.** Each section ends when the information ends. No "In summary..." or "As shown above...".
+- **Cut redundancy across sections.** If Workflow Step 2 already shows the parameter, the Key Parameters table row doesn't need to re-explain it — just list it.
+- **Tables for enumerations, not bullets.** Parameters, troubleshooting, codes → table. Prose lists waste vertical space.
+
+Target density: a reader scanning the file should reach the next code block within ~5 lines of prose. If a section's prose is longer than its code, tighten the prose.
+
 ## Files in this skill
 
 - `SKILL.md` — this file (when/how/what)

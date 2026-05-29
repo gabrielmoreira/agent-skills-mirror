@@ -8,12 +8,17 @@ PrestaShop is **not fully migrated** — front office runs a legacy light contai
 
 | File | Loaded by |
 |------|----------|
-| `config/services.yml` | **Both** front and admin kernels |
-| `config/admin/services.yml` | Admin kernel **only**, in addition to `config/services.yml` |
+| `config/services.yml` | **Admin** kernel only (via `PrestaShopBundle::build()`) |
+| `config/admin/services.yml` | **Admin** kernel only, in addition to `config/services.yml` |
+| `config/front/services.yml` | **Front-office** kernel only (via `Adapter\ContainerBuilder`) |
 
-**`config/services.yml`** is the main entry point for both kernels. It must import `common.yml` (and nothing admin-specific). This is what makes repository services available in front-office hooks.
+**`config/services.yml`** is an admin-kernel-only entry point loaded by `PrestaShopBundle::build()` via `LoadServicesFromModulesPass()` (no container name = empty = `config/services.yml`). It is **NOT** loaded by the front kernel.
 
-**`config/common.yml`** — imported by `config/services.yml`, available in both kernels:
+**`config/front/services.yml`** is the front-kernel entry point, loaded by `Adapter\ContainerBuilder` via `LoadServicesFromModulesPass('front')`. It must import `../common.yml`. This is what makes repository services available in front-office hooks.
+
+> ⚠️ **Front services must be in `config/front/services.yml`**, not `config/services.yml`. Putting repository services only in `config/services.yml` means the front kernel never sees them and `$this->get()` calls in `getWidgetVariables()` will silently return null.
+
+**`config/common.yml`** — imported by both `config/front/services.yml` and `config/admin/services.yml`:
 - Imports `components/repository/*.yml` only
 - No inline service definitions
 - No dependency on any `PrestaShop\` class
@@ -57,16 +62,23 @@ config/
       controllers.yml                     # All FrameworkBundleAdminController services
 ```
 
-**`config/services.yml`** pattern (PS entry point — both kernels):
+**`config/services.yml`** pattern (admin kernel only, optional):
 ```yaml
-# PS entry point — loaded by BOTH front and admin kernels.
+# Admin kernel only — loaded by PrestaShopBundle in addition to config/admin/services.yml.
 imports:
     - { resource: "common.yml" }
 ```
 
+**`config/front/services.yml`** pattern (front kernel only, **required for front-office hooks**):
+```yaml
+# Front-office only — loaded by Adapter\ContainerBuilder (config/front/services.yml).
+imports:
+    - { resource: "../common.yml" }
+```
+
 **`config/common.yml`** pattern:
 ```yaml
-# Loaded by BOTH front and admin kernels — Doctrine-only services.
+# Loaded by both kernels (via config/front/services.yml and config/admin/services.yml) — Doctrine-only services.
 imports:
     - { resource: "components/repository/*.yml" }
 ```

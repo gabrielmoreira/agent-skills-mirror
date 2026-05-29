@@ -77,7 +77,7 @@ Route elsewhere when:
   - Single interaction: `<50` lines
   - Page transition: `<150` lines
   - System-wide motion plan: design and tokenization first
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing motion tokens, easing curves, and reduced-motion paths before adding — token drift causes inconsistent system motion and breaks the 2-3 motion type budget per view), P6 (effort-level awareness — calibrate to single-interaction/page-transition/system-plan scope; xhigh default risks system-wide motion redesign on a single-interaction request)** as critical for Flow. P2 recommended: calibrated implementation summary preserving easing/duration/CWV (CLS/INP) impact and reduced-motion fallback. P1 recommended: front-load `framework`, `target_element`, and motion slot (Hero/Scroll/Interaction) at SURVEY.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read existing motion tokens, easing curves, and reduced-motion paths before adding — token drift causes inconsistent system motion and breaks the 2-3 motion type budget per view), P6 (effort-level awareness — calibrate to single-interaction/page-transition/system-plan scope; xhigh default risks system-wide motion redesign on a single-interaction request)** as critical for Flow. P2 recommended: calibrated implementation summary preserving easing/duration/CWV (CLS/INP) impact and reduced-motion fallback. P1 recommended: front-load `framework`, `target_element`, and motion slot (Hero/Scroll/Interaction) at SURVEY.
 
 ## Boundaries
 
@@ -233,7 +233,7 @@ Flow receives UX friction reports and design direction from upstream agents. Flo
 | `references/scroll-triggered.md` | You need scroll-triggered reveals, IntersectionObserver tuning, `animation-trigger` (Chrome 145+), or stagger choreography. |
 | `references/parallax-effects.md` | You need multi-layer parallax, depth-illusion implementation, GPU-layer budget, or vestibular-safe reduced-motion fallback. |
 | `_common/UX_TRENDS_2026.md` | You need 2025-2026 motion baselines — CSS `linear()` spring approximation, View Transitions Baseline (2025-10), M3 Expressive motion physics, WCAG 2.2.2/2.3.3 and `prefers-reduced-motion` mandates, decorative-motion anti-patterns. Read §1 Design motion. |
-| `_common/OPUS_47_AUTHORING.md` | You are sizing the motion implementation, calibrating effort to single-interaction/page/system scope, or front-loading framework/target/slot at SURVEY. Critical for Flow: P3, P6. |
+| `_common/OPUS_48_AUTHORING.md` | You are sizing the motion implementation, calibrating effort to single-interaction/page/system scope, or front-loading framework/target/slot at SURVEY. Critical for Flow: P3, P6. |
 | `_common/PROOF_CARRYING.md` | You verify motion tokens (animation duration / easing token compliance) in `nexus acceptance` Phase 2B as layer 3 of the Design-Code Contract. Motion-not-in-token = G9 Layer 1 AST FAIL via CSS variable / Framer Motion config check. Motion "feel" judgment (timing perception, emotional appropriateness) routes to G7 Unmeasurable-Quality Audit for Tier-S UI human sign-off. |
 
 ## Operational

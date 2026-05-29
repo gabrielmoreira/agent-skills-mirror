@@ -44,10 +44,10 @@ Determine which system feature the intent targets:
 
 ### Step 2: Define the data model
 
-- Create `AppEntity` shadow models (do NOT conform core data models directly).
+- Prefer `AppEntity` shadow models for app data exposed to the system.
 - Create `AppEnum` types for fixed parameter choices.
 - Choose the right `EntityQuery` variant for resolution.
-- Mark searchable entities with `IndexedEntity` and `@Property(indexingKey:)`.
+- Mark searchable entities with `IndexedEntity` and `indexingKey` metadata.
 
 ### Step 3: Implement the intent
 
@@ -61,7 +61,7 @@ Determine which system feature the intent targets:
 
 - Build and run in Shortcuts app to confirm parameter resolution.
 - Test Siri phrases with the intent preview in Xcode.
-- Confirm Spotlight results for `IndexedEntity` types.
+- Confirm `IndexedEntity` instances are indexed in a named Spotlight index.
 - Check widget configuration for `WidgetConfigurationIntent` intents.
 
 ## AppIntent Protocol
@@ -93,27 +93,31 @@ Optional members: `description` (`IntentDescription`), `openAppWhenRun` (`Bool`)
 
 ## `@Parameter`
 
-Declare each user-facing input with `@Parameter`. Optional parameters are not
-required; non-optional parameters with a `default` are pre-filled.
+Declare each user-facing input with `@Parameter`. Non-optional parameters are
+required; the system requests values when needed. Defaults pre-fill a useful
+value. Optional parameters are not requested automatically, so ask for them in
+`perform()` when the intent cannot continue without a value.
 
 ```swift
-// WRONG: Non-optional parameter without default -- system cannot preview
+// Required; the system asks for a value when needed
 @Parameter(title: "Count")
 var count: Int
 
-// CORRECT: Provide a default or make optional
+// Required and pre-filled
 @Parameter(title: "Count", default: 1)
 var count: Int
 
+// Optional; request it yourself if it becomes necessary
 @Parameter(title: "Count")
 var count: Int?
 ```
 
 ### Supported value types
 
-Primitives: `Int`, `Double`, `Bool`, `String`, `URL`, `Date`, `DateComponents`.
-Framework: `Currency`, `Person`, `IntentFile`. Measurements: `Measurement<UnitLength>`,
-`Measurement<UnitTemperature>`, and others. Custom: any `AppEntity` or `AppEnum`.
+Primitives: `Bool`, `Int`, `Double`, `String`, `Duration`, `Date`, `Decimal`,
+`Measurement`, and `URL`. Collections: `Array` and `Set` of supported element
+types. Framework: `IntentPerson`, `IntentFile`. Custom: any `AppEntity` or
+`AppEnum`.
 
 ### Common initializer patterns
 
@@ -147,8 +151,9 @@ See [references/appintents-advanced.md](references/appintents-advanced.md) for a
 
 ## AppEntity
 
-Create shadow models that mirror app data -- never conform core data model
-types directly.
+Prefer shadow models that mirror app data and expose only system-facing fields.
+Direct model conformance is allowed when the model is lightweight, stable, and
+appropriate for App Intents lifecycles.
 
 ```swift
 struct SoupEntity: AppEntity {
@@ -228,7 +233,7 @@ struct AppSettingsEntity: UniqueAppEntity {
 }
 
 struct AppSettingsQuery: UniqueAppEntityQuery {
-    func entity() async throws -> AppSettingsEntity {
+    func uniqueEntity() async throws -> AppSettingsEntity {
         AppSettingsEntity()
     }
 }
@@ -239,8 +244,9 @@ filter/sort support.
 
 ## AppEnum
 
-Define fixed sets of selectable values. Must be backed by a
-`LosslessStringConvertible` raw value (use `String`).
+Define fixed sets of selectable values. `RawValue` must conform to
+`LosslessStringConvertible`; prefer `String` raw values for readable, stable
+identifiers.
 
 ```swift
 enum SoupSize: String, AppEnum {
@@ -257,12 +263,12 @@ enum SoupSize: String, AppEnum {
 ```
 
 ```swift
-// WRONG: Using Int raw value
-enum Priority: Int, AppEnum { // Compiler error -- Int is not LosslessStringConvertible
+// Valid, but less readable in saved shortcuts and URL representations
+enum Priority: Int, AppEnum {
     case low = 1, medium = 2, high = 3
 }
 
-// CORRECT: Use String raw value
+// Preferred
 enum Priority: String, AppEnum {
     case low, medium, high
     // ...
@@ -319,6 +325,10 @@ Conform to `PredictableIntent` for Siri prediction of upcoming actions.
 
 Use `AppIntent` with `Button`/`Toggle` in widgets. Use
 `WidgetConfigurationIntent` for configurable widget parameters.
+Treat configuration intents as parameter contracts; put mutations in a separate
+action intent. For sensitive actions such as smart-home control, payments, or
+deletion, use an appropriate `authenticationPolicy` and/or
+`requestConfirmation(...)` before changing state.
 
 ```swift
 struct ToggleFavoriteIntent: AppIntent {
@@ -357,8 +367,10 @@ struct MyWidget: Widget {
 
 ## Control Center Widgets (iOS 18+)
 
-Expose controls in Control Center and Lock Screen with
-`ControlConfigurationIntent` and `ControlWidget`.
+Expose controls in Control Center and Lock Screen with `ControlConfigurationIntent`
+and `ControlWidget`. Parameters without defaults must be optional.
+Trigger state changes from a separate `AppIntent` / `SetValueIntent` with
+explicit entity parameters, not from the configuration intent.
 
 ```swift
 struct LightControlConfig: ControlConfigurationIntent {
@@ -368,8 +380,15 @@ struct LightControlConfig: ControlConfigurationIntent {
 
 struct ToggleLightIntent: AppIntent {
     static var title: LocalizedStringResource = "Toggle Light"
+    static var authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
+
     @Parameter(title: "Light") var light: LightEntity
+
     func perform() async throws -> some IntentResult {
+        try await requestConfirmation(
+            actionName: .toggle,
+            dialog: "Toggle \(light.name)?"
+        )
         try await LightService.shared.toggle(light.id)
         return .result()
     }
@@ -393,17 +412,55 @@ for structured metadata:
 struct RecipeEntity: IndexedEntity {
     static let defaultQuery = RecipeQuery()
     static var typeDisplayRepresentation: TypeDisplayRepresentation = "Recipe"
-    var id: String
+    var id: String  // Stable recipe UUID or slug; do not use recycled row IDs
 
-    @Property(title: "Name", indexingKey: .title) var name: String   // iOS 26+
-    @ComputedProperty(indexingKey: .description)                      // iOS 26+
+    @Property(title: "Name", indexingKey: \.title) var name: String  // iOS 26+
+    @ComputedProperty(indexingKey: \.contentDescription)              // iOS 26+
     var summary: String { "\(name) -- a delicious recipe" }
 
     var displayRepresentation: DisplayRepresentation {
         DisplayRepresentation(title: "\(name)")
     }
+
+    var attributeSet: CSSearchableItemAttributeSet {
+        let attrs = defaultAttributeSet
+        attrs.keywords = ["recipe"]
+        return attrs
+    }
+}
+
+struct RecipeQuery: EntityQuery {
+    func entities(for identifiers: [RecipeEntity.ID]) async throws -> [RecipeEntity] {
+        identifiers.compactMap { id in
+            RecipeStore.shared.recipe(id: id).map(RecipeEntity.init)
+        }
+    }
+}
+
+struct OpenRecipeIntent: OpenIntent {
+    static var title: LocalizedStringResource = "Open Recipe"
+    @Parameter(title: "Recipe") var target: RecipeEntity
 }
 ```
+
+`IndexedEntity` describes metadata; still index instances in a named Spotlight
+index, e.g. `CSSearchableIndex(name: "...").indexAppEntities(entities)`.
+If you customize `attributeSet`, start from `defaultAttributeSet`; returning a
+fresh attribute set replaces display representation and property-derived
+metadata. Prefer `indexingKey` for metadata already exposed on the entity.
+Update and delete changed records in that same named index:
+
+```swift
+let recipeIndex = CSSearchableIndex(name: "Recipes")
+try await recipeIndex.indexAppEntities(changedRecipes)
+try await recipeIndex.deleteAppEntities(
+    identifiedBy: deletedRecipeIDs,
+    ofType: RecipeEntity.self
+)
+```
+
+For large syncs, use `beginBatch()`, `endBatch(withClientState:)`, and
+`fetchLastClientState()` so indexing can resume after a crash or jetsam.
 
 ## iOS 26 Additions
 
@@ -418,70 +475,106 @@ struct OrderStatusSnippet: SnippetIntent {
         let status = await OrderTracker.currentStatus()
         return .result(view: OrderStatusSnippetView(status: status))
     }
-    static func reload() { /* notify system to refresh */ }
 }
 
-// A calling intent can display this snippet via:
-// return .result(snippetIntent: OrderStatusSnippet())
-```
-
-### IntentValueQuery (Visual Intelligence)
-
-```swift
-struct ProductValueQuery: IntentValueQuery {
-    typealias Input = String
-    typealias Result = ProductEntity
-    func values(for input: String) async throws -> [ProductEntity] {
-        ProductStore.shared.search(input).map { ProductEntity(from: $0) }
+struct CheckOrderStatusIntent: AppIntent {
+    static var title: LocalizedStringResource = "Check Order Status"
+    func perform() async throws -> some IntentResult & ShowsSnippetIntent {
+        .result(snippetIntent: OrderStatusSnippet())
     }
 }
 ```
 
+The system may call `perform()` multiple times, including after snippet button
+or toggle actions; keep `SnippetIntent.perform()` side-effect-free and do
+mutations in the calling action intent or a separate button/toggle action. A
+snippet-only intent is not discoverable in Shortcuts or Spotlight unless
+`isDiscoverable` is `true`.
+
+### IntentValueQuery (Visual Intelligence)
+
+```swift
+@available(iOS 26, *)
+@UnionValue
+enum ShoppingVisualResult {
+    case product(ProductEntity)
+    case store(StoreEntity)
+}
+
+@available(iOS 26, *)
+struct ShoppingVisualQuery: IntentValueQuery {
+    func values(for input: SemanticContentDescriptor) async throws -> [ShoppingVisualResult] {
+        try Task.checkCancellation()
+        async let productMatches = ProductStore.shared.matches(
+            labels: input.labels,
+            pixelBuffer: input.pixelBuffer,
+            limit: 5
+        )
+        async let storeMatches = StoreStore.shared.matches(
+            labels: input.labels,
+            pixelBuffer: input.pixelBuffer,
+            limit: 3
+        )
+        let ranked = await rank(productMatches, storeMatches)
+        return Array(ranked.prefix(8))
+    }
+}
+```
+
+Only one `IntentValueQuery` can take `SemanticContentDescriptor`; use
+`@UnionValue` when one query must return multiple app entity types. Treat
+`labels` as high-level English descriptors, not exhaustive synonyms or app
+taxonomy; combine them with `pixelBuffer` when available. Return small, ranked,
+cancellation-friendly results, and provide an `OpenIntent`, URL representation,
+or in-app search handoff for details and more results. Do not implement camera
+capture, Vision `VN*` requests, barcode classification, or Spotlight indexing
+inside the App Intents query; call an existing bounded app search or image-match
+service instead, with explicit result caps and timeouts when work may exceed a
+system UI budget.
+
 ## Common Mistakes
 
-1. **Conforming core data models to AppEntity.** Create dedicated shadow models
-   instead. Core models carry persistence logic that conflicts with intent
-   lifecycle.
+1. **Exposing too much app model state through AppEntity.** Prefer dedicated
+   shadow models with stable persistent IDs and only system-facing properties.
 
 2. **Missing `\(.applicationName)` in phrases.** Every `AppShortcut` phrase
    MUST include the application name token. Siri uses it for disambiguation.
 
-3. **Non-optional `@Parameter` without default.** The system cannot preview or
-   pre-fill such parameters. Make non-optional parameters have a `default`, or
-   mark them optional.
+3. **Treating optional `@Parameter` as required.** Optional parameters are not
+   requested automatically; call `requestValue` / `needsValueError` when the
+   intent cannot proceed without one.
 
    ```swift
-   // WRONG
+   // Optional, so request it yourself if needed
    @Parameter(title: "Count")
-   var count: Int
-
-   // CORRECT
-   @Parameter(title: "Count", default: 1)
-   var count: Int
+   var count: Int?
    ```
 
-4. **Using Int raw value for AppEnum.** `AppEnum` requires `RawRepresentable`
-   where `RawValue: LosslessStringConvertible`. Use `String`.
+4. **Using unstable AppEnum raw values.** `Int` is valid, but `String` raw values
+   are usually clearer for persistence and URL representations.
 
 5. **Forgetting `suggestedEntities()`.** Without it, the Shortcuts picker shows no defaults.
 6. **Throwing for missing entities in `entities(for:)`.** Omit missing entities instead.
-7. **Stale Spotlight index.** Call `updateAppShortcutParameters()` when entity data changes.
+7. **Stale Spotlight index.** Re-index entities with a named `CSSearchableIndex`.
 8. **Missing `typeDisplayRepresentation`.** Both `AppEntity` and `AppEnum` require it.
-9. **Using deprecated `@AssistantEntity(schema:)` / `@AssistantEnum(schema:)`.** Use `@AppEntity(schema:)` and `@AppEnum(schema:)` instead. Note: `@AssistantIntent(schema:)` is still active.
-10. **Blocking perform().** `perform()` is async -- use `await` for I/O.
+9. **Using deprecated `@Assistant*` schema macros.** Use `@AppIntent(schema:)`, `@AppEntity(schema:)`, and `@AppEnum(schema:)`.
+10. **Blocking or side-effecting perform().** Use `await` for I/O; keep `SnippetIntent.perform()` side-effect-free because the system may rerun it.
+11. **Mutating sensitive state from system surfaces without a guard.** Use confirmation and/or authentication for actions such as door locks, lights, purchases, and deletes.
 
 ## Review Checklist
 
 - [ ] Every `AppIntent` has a descriptive `title` (verb + noun, title case)
-- [ ] `@Parameter` types are optional or have defaults for system preview
-- [ ] `AppEntity` types are shadow models, not core data model conformances
+- [ ] Required `@Parameter` values are non-optional; optional values are requested when needed
+- [ ] `AppEntity` types expose stable IDs and only system-facing properties
 - [ ] `AppEntity` has `displayRepresentation` and `typeDisplayRepresentation`
 - [ ] `EntityQuery.entities(for:)` omits missing IDs; `suggestedEntities()` implemented
-- [ ] `AppEnum` uses `String` raw value with `caseDisplayRepresentations`
+- [ ] `AppEnum` prefers stable `String` raw values with `caseDisplayRepresentations`
 - [ ] `AppShortcutsProvider` phrases include `\(.applicationName)`; `parameterSummary` defined
-- [ ] `IndexedEntity` properties use `@Property(indexingKey:)` on iOS 26+
-- [ ] Control Center intents conform to `ControlConfigurationIntent`; widget intents to `WidgetConfigurationIntent`
-- [ ] No deprecated `@AssistantEntity` / `@AssistantEnum` macros (note: `@AssistantIntent(schema:)` is still active)
+- [ ] `IndexedEntity` properties use key-path `indexingKey` values and entities are indexed
+- [ ] Control Center intents conform to `ControlConfigurationIntent`; widget intents to `WidgetConfigurationIntent`; no-default control parameters are optional
+- [ ] Sensitive App Intents request confirmation and/or authentication before mutating state
+- [ ] Visual Intelligence `IntentValueQuery` uses `SemanticContentDescriptor`, bounded results, opening paths, and iOS 26 availability
+- [ ] No deprecated `@AssistantIntent` / `@AssistantEntity` / `@AssistantEnum` schema macros
 - [ ] `perform()` uses async/await (no blocking); runs in expected isolation context; intent types are `Sendable`
 
 ## References

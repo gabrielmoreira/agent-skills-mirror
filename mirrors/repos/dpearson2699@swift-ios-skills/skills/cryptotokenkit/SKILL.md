@@ -1,21 +1,19 @@
 ---
 name: cryptotokenkit
-description: "Access security tokens and smart cards using CryptoTokenKit. Use when building token driver extensions with TKTokenDriver and TKToken, communicating with smart cards via TKSmartCard, implementing certificate-based authentication, managing token sessions, or integrating hardware security tokens with the system keychain."
+description: "Access security tokens and smart cards using CryptoTokenKit. Use when building TKTokenDriver or TKSmartCardTokenDriver extensions, communicating with smart cards via TKSmartCard/TKSmartCardSlotManager, using iOS 26+ NFC smart-card sessions, registering smart cards, querying token-backed keychain items with kSecAttrTokenID, monitoring TKTokenWatcher, or configuring certificate-based smart-card authentication."
 ---
 
 # CryptoTokenKit
 
-Access security tokens and the cryptographic assets they store using the
-CryptoTokenKit framework. Covers token driver extensions, smart card
-communication, token sessions, keychain integration, and certificate-based
-authentication. Targets Swift 6.3.
+Use CryptoTokenKit for token driver extensions, smart-card communication,
+token sessions, token-backed keychain integration, and certificate-based
+authentication in Swift 6.3 apps.
 
-**Platform availability:** CryptoTokenKit is primarily a macOS framework.
-Smart card reader access (`TKSmartCard`, `TKSmartCardSlotManager`) requires
-macOS. Token extension APIs (`TKTokenDriver`, `TKToken`, `TKTokenSession`)
-are macOS-only. Client-side token watching (`TKTokenWatcher`) and keychain
-queries filtered by `kSecAttrTokenID` are available on iOS 14+/macOS 11+.
-NFC smart card slot sessions are available on iOS 16.4+.
+**Platform availability:** CryptoTokenKit classes are available across Apple
+platforms, but capability depends on extension point, entitlement, hardware, and
+OS version. The smart-card app extension flow for login/keychain unlock is macOS.
+`TKSmartCardSlotManager.default` is optional and returns `nil` unless smart-card
+access is enabled. iOS/iPadOS 26+ add NFC smart-card slots and registration.
 
 ## Contents
 
@@ -34,36 +32,42 @@ NFC smart card slot sessions are available on iOS 16.4+.
 ## Architecture Overview
 
 CryptoTokenKit bridges hardware security tokens (smart cards, USB tokens)
-with macOS authentication and keychain services. The framework has two main
-usage modes:
+with authentication and keychain services. The framework has three main usage
+modes:
 
-**Token driver extensions** (macOS only) -- App extensions that make a
-hardware token's cryptographic items available to the system. The driver
-handles token lifecycle, session management, and cryptographic operations.
+**Smart-card token extensions** -- macOS app extensions that make a hardware
+token's cryptographic items available to system login and keychain unlock. The
+driver handles token lifecycle, session management, and cryptographic operations.
 
-**Client-side token access** (macOS + iOS) -- Apps query the keychain for
-items backed by tokens. CryptoTokenKit automatically exposes token items as
-standard keychain entries when a token is present.
+**Client-side token access** -- Apps query the keychain for items backed by
+tokens. CryptoTokenKit exposes token items as standard keychain entries when a
+token is present.
+
+**NFC smart-card access** -- iOS/iPadOS 26+ apps create a temporary NFC smart
+card slot and communicate with the presented contactless card through
+`TKSmartCard`.
+
+**Boundary routing:** Own token/smart-card sessions, token-backed keychain
+items, and certificate-based smart-card auth. Route passkeys/WebAuthn and
+account sign-in to `authentication`; route Secure Enclave, CryptoKit primitives,
+keychain architecture, certificate pinning, and trust policy to `swift-security`.
 
 ### Key Types
 
 | Type | Role | Platform |
 |---|---|---|
-| `TKTokenDriver` | Base class for token driver extensions | macOS |
-| `TKToken` | Represents a hardware cryptographic token | macOS |
-| `TKTokenSession` | Manages authentication state for a token | macOS |
-| `TKSmartCardTokenDriver` | Entry point for smart card extensions | macOS |
-| `TKSmartCard` | Low-level smart card communication | macOS |
-| `TKSmartCardSlotManager` | Discovers and manages card reader slots | macOS |
-| `TKTokenWatcher` | Observes token insertion and removal | macOS, iOS 14+ |
-| `TKTokenKeychainKey` | A key stored on a token | macOS |
-| `TKTokenKeychainCertificate` | A certificate stored on a token | macOS |
+| `TKTokenDriver` / `TKToken` / `TKTokenSession` | Token driver, token, and session primitives | iOS 10+, macOS 10.12+ |
+| `TKSmartCardTokenDriver` | Entry point for smart card token extensions | iOS 10+, macOS 10.12+; macOS extension flow |
+| `TKSmartCard` / `TKSmartCardSlotManager` | Low-level APDU communication and slot discovery | iOS 9+, macOS 10.10+; `default` is optional |
+| `TKTokenWatcher` | Observes token insertion and removal | iOS 10+, macOS 10.12+ |
+| `TKSmartCardSlotNFCSession` | NFC-backed smart card slot session | iOS/iPadOS 26+ |
+| `TKSmartCardTokenRegistrationManager` | Registers NFC smart cards for later keychain use | iOS/iPadOS 26+ |
 
 ## Token Extensions
 
-A token driver is a macOS app extension that makes a hardware token's
-cryptographic capabilities available to the system. The host app exists
-only as a delivery mechanism for the extension.
+For system login and keychain unlock on macOS, a token driver is an app
+extension that makes a hardware token's cryptographic capabilities available to
+the system. The host app exists only as a delivery mechanism for the extension.
 
 A smart card token extension has three core classes:
 
@@ -222,8 +226,9 @@ func tokenSession(
 
 ## Smart Card Communication
 
-`TKSmartCard` provides low-level APDU communication with smart cards
-connected via readers (macOS-only).
+`TKSmartCard` provides low-level APDU communication with smart cards.
+`TKSmartCardSlotManager.default` is optional; treat `nil` as unavailable
+hardware, missing entitlement/access, or unsupported runtime capability.
 
 ### Discovering Card Readers
 
@@ -268,18 +273,22 @@ func selectApplication(card: TKSmartCard, aid: Data) throws {
 For raw APDU bytes or non-standard formats, use `transmit(_:reply:)` with
 manual `beginSession`/`endSession` lifecycle management.
 
-### NFC Smart Card Sessions (iOS 16.4+)
+### NFC Smart Card Sessions (iOS/iPadOS 26+)
 
-On supported iOS devices, create NFC smart card sessions to communicate
-with contactless smart cards:
+On iOS/iPadOS 26+, guard `isNFCSupported()` before calling
+`createNFCSlot(message:completion:)` to communicate with contactless cards:
 
 ```swift
+@available(iOS 26.0, iPadOS 26.0, *)
 func readNFCSmartCard() {
     guard let slotManager = TKSmartCardSlotManager.default,
           slotManager.isNFCSupported() else { return }
 
     slotManager.createNFCSlot(message: "Hold card near iPhone") { session, error in
-        guard let session else { return }
+        guard let session else {
+            handleNFCError(error)
+            return
+        }
         defer { session.end() }
 
         guard let slotName = session.slotName,
@@ -350,8 +359,8 @@ revocation, `3` = + hard revocation.
 
 ## Token Watching
 
-`TKTokenWatcher` monitors token insertion and removal. Available on both
-macOS and iOS 14+.
+`TKTokenWatcher` monitors token insertion and removal. Available on iOS 10+
+and macOS 10.12+.
 
 ```swift
 import CryptoTokenKit
@@ -410,15 +419,15 @@ guard watcher.tokenIDs.contains(savedTokenID) else {
 let key = try findTokenKey(tokenID: savedTokenID)
 ```
 
-### DON'T: Assume smart card APIs work on iOS
+### DON'T: Treat API availability as an access guarantee
 
 ```swift
-// WRONG -- TKSmartCardSlotManager.default is nil on iOS
-let manager = TKSmartCardSlotManager.default!  // Crashes on iOS
+// WRONG -- may be nil without entitlement, hardware, or runtime support
+let manager = TKSmartCardSlotManager.default!  // Crashes when unavailable
 
-// CORRECT -- guard availability
+// CORRECT -- guard availability/access before using smart card slots
 guard let manager = TKSmartCardSlotManager.default else {
-    print("Smart card services unavailable on this platform")
+    print("Smart card services unavailable")
     return
 }
 ```
@@ -458,8 +467,9 @@ the system attempts unsupported operations.
 
 ## Review Checklist
 
-- [ ] Platform availability verified (`TKSmartCard` macOS-only, `TKTokenWatcher` iOS 14+)
-- [ ] Token extension target uses `NSExtensionPointIdentifier` = `com.apple.ctk-tokens`
+- [ ] Platform availability verified for the exact capability (`TKTokenWatcher` iOS 10+, NFC smart-card sessions iOS/iPadOS 26+)
+- [ ] `TKSmartCardSlotManager.default` guarded for missing entitlement, hardware, or runtime support
+- [ ] macOS token extension target uses `NSExtensionPointIdentifier` = `com.apple.ctk-tokens`
 - [ ] `com.apple.ctk.driver-class` set to the correct driver class in Info.plist
 - [ ] Extension registered via `_securityagent` launch during installation
 - [ ] `TKTokenSessionDelegate` checks specific algorithms, not blanket `true`
@@ -471,16 +481,19 @@ the system attempts unsupported operations.
 - [ ] `TKTokenKeychainKey` capabilities (`canSign`, `canDecrypt`) match hardware
 - [ ] Certificate trust level configured appropriately for deployment environment
 - [ ] `errSecItemNotFound` handled for persistent references when token is removed
+- [ ] iOS 26+ NFC sessions ended with `TKSmartCardSlotNFCSession.end()`
 
 ## References
 
 - Extended patterns (PIV commands, TLV parsing, generic token drivers, APDU helpers, secure PIN): [references/cryptotokenkit-patterns.md](references/cryptotokenkit-patterns.md)
-- [CryptoTokenKit framework](https://sosumi.ai/documentation/cryptotokenkit)
 - [TKTokenDriver](https://sosumi.ai/documentation/cryptotokenkit/tktokendriver)
 - [TKToken](https://sosumi.ai/documentation/cryptotokenkit/tktoken)
 - [TKTokenSession](https://sosumi.ai/documentation/cryptotokenkit/tktokensession)
 - [TKSmartCard](https://sosumi.ai/documentation/cryptotokenkit/tksmartcard)
 - [TKSmartCardSlotManager](https://sosumi.ai/documentation/cryptotokenkit/tksmartcardslotmanager)
+- [com.apple.security.smartcard entitlement](https://sosumi.ai/documentation/BundleResources/Entitlements/com.apple.security.smartcard)
+- [TKSmartCardSlotNFCSession](https://sosumi.ai/documentation/cryptotokenkit/tksmartcardslotnfcsession)
+- [TKSmartCardTokenRegistrationManager](https://sosumi.ai/documentation/cryptotokenkit/tksmartcardtokenregistrationmanager)
 - [TKTokenWatcher](https://sosumi.ai/documentation/cryptotokenkit/tktokenwatcher)
 - [Authenticating Users with a Cryptographic Token](https://sosumi.ai/documentation/cryptotokenkit/authenticating-users-with-a-cryptographic-token)
 - [Using Cryptographic Assets Stored on a Smart Card](https://sosumi.ai/documentation/cryptotokenkit/using-cryptographic-assets-stored-on-a-smart-card)

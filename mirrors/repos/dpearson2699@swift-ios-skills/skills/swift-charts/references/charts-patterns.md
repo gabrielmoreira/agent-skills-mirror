@@ -20,6 +20,7 @@ import Charts
 - [Chart Selection with Overlay Annotation](#chart-selection-with-overlay-annotation)
 - [Scrollable Chart with Visible Domain](#scrollable-chart-with-visible-domain)
 - [Function Plotting (LinePlot, iOS 18+)](#function-plotting-lineplot-ios-18)
+- [3D Charts and Surfaces (Chart3D, iOS 26+)](#3d-charts-and-surfaces-chart3d-ios-26)
 - [Accessibility](#accessibility)
 - [Dynamic Type and Color Considerations](#dynamic-type-and-color-considerations)
 - [Performance: Vectorized Plots for Large Datasets](#performance-vectorized-plots-for-large-datasets)
@@ -267,6 +268,9 @@ Chart(recentData) { item in
 
 ## Pie and Donut Chart Patterns (SectorMark, iOS 17+)
 
+Use strictly positive values for sectors. Filter, aggregate, or show zero and
+negative values outside the pie or donut so angular sizes remain meaningful.
+
 ### Basic pie chart
 
 ```swift
@@ -317,7 +321,24 @@ Chart(products, id: \.name) { item in
 ### Angular selection on donut
 
 ```swift
-@State private var selectedProduct: String?
+struct ProductSales: Identifiable {
+    let id = UUID()
+    let name: String
+    let sales: Double
+}
+
+@State private var selectedAngle: Double?
+
+var selectedProduct: ProductSales? {
+    guard let selectedAngle else { return nil }
+    var runningTotal = 0.0
+
+    return products.first { product in
+        let range = runningTotal..<(runningTotal + product.sales)
+        runningTotal += product.sales
+        return range.contains(selectedAngle)
+    }
+}
 
 Chart(products, id: \.name) { item in
     SectorMark(
@@ -327,14 +348,18 @@ Chart(products, id: \.name) { item in
     )
     .cornerRadius(4)
     .foregroundStyle(by: .value("Product", item.name))
-    .opacity(selectedProduct == nil || selectedProduct == item.name ? 1.0 : 0.4)
+    .opacity(selectedProduct == nil || selectedProduct?.name == item.name ? 1.0 : 0.4)
 }
-.chartAngleSelection(value: $selectedProduct)
+.chartAngleSelection(value: $selectedAngle)
 ```
+
+`chartAngleSelection(value:)` binds the selected plottable angle value, not the
+sector label. Convert that value through cumulative sector ranges before using
+it to highlight or annotate a category.
 
 ### Grouping small slices
 
-Limit pie/donut charts to 5-7 sectors. Group the rest into "Other":
+Limit pie/donut charts to 5-7 positive-value sectors. Group the rest into "Other":
 
 ```swift
 func groupSmallSlices(_ data: [CategorySales], topN: Int = 5) -> [CategorySales] {
@@ -513,6 +538,53 @@ Chart {
     .foregroundStyle(.blue.opacity(0.2))
 }
 ```
+
+---
+
+## 3D Charts and Surfaces (Chart3D, iOS 26+)
+
+Use `Chart3D` when the data has a real third dimension, such as `(x, y, z)`
+points, 3D regions, or a bivariate surface. Keep ordinary category comparison,
+time series, and proportions in 2D charts because they are easier to label,
+compare, and make accessible.
+
+### SurfacePlot for bivariate functions
+
+```swift
+@State private var pose: Chart3DPose = .default
+
+Chart3D {
+    SurfacePlot(x: "x", y: "y", z: "z") { x, z in
+        sin(2 * x) * cos(2 * z)
+    }
+    .foregroundStyle(.heightBased)
+}
+.chartXScale(domain: -2...2)
+.chartYScale(domain: -1...1)
+.chartZScale(domain: -2...2)
+.chart3DPose($pose)
+```
+
+### 3D point cloud
+
+```swift
+Chart3D(points) { point in
+    PointMark(
+        x: .value("Width", point.x),
+        y: .value("Height", point.y),
+        z: .value("Depth", point.z)
+    )
+    .foregroundStyle(by: .value("Cluster", point.cluster))
+}
+.chart3DCameraProjection(.perspective)
+```
+
+### 3D review notes
+
+- Confirm the z dimension is meaningful and labeled; do not use depth only for decoration.
+- Set explicit x/y/z domains when users need stable comparisons across states.
+- Bind `Chart3DPose` when users need to inspect the scene interactively.
+- Use `SurfacePlot` for `y = f(x, z)` surfaces; use 3D mark initializers for observed data points or regions.
 
 ---
 
@@ -859,7 +931,13 @@ Use `chartOverlay` or `chartBackground` to access `ChartProxy`:
 ### Scales
 - `chartXScale(domain:range:type:)` and variants
 - `chartYScale(domain:range:type:)` and variants
+- `chartZScale(domain:range:type:)` for `Chart3D`
 - `chartForegroundStyleScale(_:)` -- custom color mapping
+
+### 3D charts (iOS 26+)
+- `Chart3D` with `SurfacePlot` or 3D mark initializers
+- `chart3DPose(_:)` for interactive pose binding
+- `chart3DCameraProjection(_:)` for orthographic/perspective projection
 
 ### Legend
 - `chartLegend(_:)` -- visibility
@@ -891,5 +969,8 @@ Use `chartOverlay` or `chartBackground` to access `ChartProxy`:
 - [BarMark](https://sosumi.ai/documentation/charts/BarMark)
 - [LineMark](https://sosumi.ai/documentation/charts/LineMark)
 - [SectorMark](https://sosumi.ai/documentation/charts/SectorMark)
+- [Chart3D](https://sosumi.ai/documentation/charts/Chart3D)
+- [SurfacePlot](https://sosumi.ai/documentation/charts/SurfacePlot)
 - [LinePlot](https://sosumi.ai/documentation/charts/LinePlot)
 - [AxisMarks](https://sosumi.ai/documentation/charts/AxisMarks)
+- [Swift Charts updates](https://sosumi.ai/documentation/updates/swiftcharts)

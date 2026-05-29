@@ -5,7 +5,7 @@ description: "Apply Swift API Design Guidelines to name, label, and document Swi
 
 # Swift API Design Guidelines
 
-Apply the Swift API Design Guidelines when naming types, methods, properties, parameters, and argument labels. Targets Swift 6.3. For language features and syntax, see `swift-language`. For concurrency patterns, see `swift-concurrency`.
+Apply the Swift API Design Guidelines when naming types, methods, properties, parameters, and argument labels. Targets Swift 6.3. For language features and syntax, see `swift-language`. For concurrency patterns, see `swift-concurrency`. For mixed requests, answer the API naming portion briefly, then route Swift type-system details to `swift-language` and lint configuration to `swiftlint` instead of implementing those sibling domains here.
 
 ## Contents
 
@@ -160,14 +160,15 @@ When the operation is naturally described by a verb:
 - **Mutating:** imperative verb (`sort`, `append`, `reverse`)
 - **Nonmutating:** past participle `-ed` or present participle `-ing`
 
-Default to `-ed` (past participle). When `-ed` is ungrammatical — typically when the verb does not form a natural past participle, or when adding `-ed` produces an awkward phrase — use `-ing` (present participle) instead.
+Default to `-ed` (past participle) when the phrase naturally describes the returned value. Use `-ing` (present participle) only when the `-ed` form is ungrammatical or describes the direct object rather than the returned receiver or result. A direct object is a clue to check the grammar, not the rule by itself.
 
 | Mutating | Nonmutating | Why |
 |----------|-------------|-----|
 | `sort()` | `sorted()` | `-ed` — "a sorted array" |
 | `reverse()` | `reversed()` | `-ed` — "a reversed collection" |
-| `append(y)` | `appending(y)` | `-ing` — "appended" is ungrammatical here |
-| `stripNewlines()` | `strippingNewlines()` | `-ing` — "stripped newlines" is awkward |
+| `sortLines()` | `sortedLines()` | `-ed` — "sorted lines" describes the result |
+| `append(y)` | `appending(y)` | `-ing` — `appended` does not describe the returned receiver clearly |
+| `stripNewlines()` | `strippingNewlines()` | `-ing` — direct-object pattern from the guidelines |
 
 ### Noun-described operations — form- prefix
 
@@ -192,6 +193,8 @@ let iterator = collection.makeIterator()
 let buffer = parser.makeBuffer()
 ```
 
+In mixed routing answers, briefly validate existing `make...` factory names before handing off unrelated type-system or linting details to sibling skills.
+
 ### Pair decision table
 
 | Operation described by | Mutating name | Nonmutating name | Example pair |
@@ -200,7 +203,7 @@ let buffer = parser.makeBuffer()
 | Verb (`-ed` is ungrammatical) | verb | verb + `-ing` | `stripNewlines()` / `strippingNewlines()` |
 | Noun | `form` + Noun | noun | `formUnion(b)` / `union(b)` |
 
-For the full -ed/-ing decision tree and stdlib examples, see [references/side-effects-and-mutating-pairs.md](references/side-effects-and-mutating-pairs.md).
+For the full -ed/-ing decision tree and expanded naming patterns, see [references/side-effects-and-mutating-pairs.md](references/side-effects-and-mutating-pairs.md).
 
 ## Documentation Comments
 

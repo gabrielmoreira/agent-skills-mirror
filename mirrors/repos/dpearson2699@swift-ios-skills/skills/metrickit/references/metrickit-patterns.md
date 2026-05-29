@@ -45,7 +45,8 @@ The JSON structure contains an array of call stack frames with binary name,
 offset, and address. Symbolicate using `atos` or upload dSYMs to your
 analytics service.
 
-**Availability**: `MXCallStackTree` — iOS 14.0+, macOS 12.0+, visionOS 1.0+
+**Availability**: `MXCallStackTree` — iOS 14.0+, iPadOS 14.0+,
+Mac Catalyst 14.0+, macOS 12.0+, visionOS 1.0+
 
 ## Custom Signpost Metrics
 
@@ -64,15 +65,18 @@ let metricLog = MXMetricManager.makeLogHandle(category: "Networking")
 import os
 
 func fetchData() async throws -> Data {
-    let signpostID = MXSignpostIntervalData.makeSignpostID(log: metricLog)
-
-    mxSignpost(.begin, log: metricLog, name: "DataFetch", signpostID: signpostID)
+    mxSignpost(.begin, log: metricLog, name: "DataFetch")
     let data = try await URLSession.shared.data(from: url).0
-    mxSignpost(.end, log: metricLog, name: "DataFetch", signpostID: signpostID)
+    mxSignpost(.end, log: metricLog, name: "DataFetch")
 
     return data
 }
 ```
+
+For MetricKit custom metrics, create the log with
+`MXMetricManager.makeLogHandle(category:)` and leave the `mxSignpost` overload's
+advanced `dso`, `signpostID`, and `format` parameters at their documented
+defaults.
 
 ### Reading Custom Metrics from Payload
 
@@ -120,7 +124,7 @@ func uploadPayloads(_ jsonData: Data) {
 
 If the subscriber was not registered when payloads arrived, retrieve them
 using `pastPayloads` and `pastDiagnosticPayloads`. These return reports
-generated since the last allocation of the shared manager.
+generated since the last allocation of the shared manager instance.
 
 ```swift
 let pastMetrics = MXMetricManager.shared.pastPayloads
@@ -129,20 +133,27 @@ let pastDiags = MXMetricManager.shared.pastDiagnosticPayloads
 
 ## Extended Launch Measurement
 
-Track post-first-draw setup work (loading databases, restoring state) as
-part of the launch metric using extended launch measurement.
+Track post-first-draw setup work (loading databases, restoring state) as part
+of the launch metric using extended launch measurement on iOS 16+, iPadOS 16+,
+Mac Catalyst 16+, macOS 13+, and visionOS 1+.
 
 ```swift
 let taskID = MXLaunchTaskID("com.example.app.loadDatabase")
 
-MXMetricManager.shared.extendLaunchMeasurement(forTaskID: taskID)
-// Perform extended launch work...
-await database.load()
-MXMetricManager.shared.finishExtendedLaunchMeasurement(forTaskID: taskID)
+try MXMetricManager.extendLaunchMeasurement(forTaskID: taskID)
+defer { try? MXMetricManager.finishExtendedLaunchMeasurement(forTaskID: taskID) }
+
+restoreCachedState()
+connectInitialSceneData()
 ```
 
 Extended launch times appear under `histogrammedExtendedLaunch` in
 `MXAppLaunchMetric`.
+
+Use these throwing type methods on the main thread. Start the first task before
+or during state restoration, or before the first scene becomes active. The
+system supports up to 16 tasks; task windows need to overlap, and extended
+launch measurement ends when all running tasks finish.
 
 ## Xcode Organizer Integration
 

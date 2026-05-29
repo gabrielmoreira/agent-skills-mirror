@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `lobehub/lobehub` — 26 default patterns, 0 followed patterns, 116 file(s) materialized.
+Mirror of `lobehub/lobehub` — 26 default patterns, 0 followed patterns, 119 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lobehub/lobehub` — 26 default patterns, 0 followed patterns, 116 fi
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 116 |
+| Files         | 119 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -99,82 +99,85 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 38 | ✓ | [`.agents/skills/hotkey/SKILL.md`](.agents/skills/hotkey/SKILL.md) |
 | 39 | ✓ | [`.agents/skills/i18n/SKILL.md`](.agents/skills/i18n/SKILL.md) |
 | 40 | ✓ | [`.agents/skills/linear/SKILL.md`](.agents/skills/linear/SKILL.md) |
-| 41 | ✓ | [`.agents/skills/local-testing/references/agent-browser-login.md`](.agents/skills/local-testing/references/agent-browser-login.md) |
-| 42 | ✓ | [`.agents/skills/local-testing/references/agent-gateway.md`](.agents/skills/local-testing/references/agent-gateway.md) |
-| 43 | ✓ | [`.agents/skills/local-testing/references/discord.md`](.agents/skills/local-testing/references/discord.md) |
-| 44 | ✓ | [`.agents/skills/local-testing/references/lark.md`](.agents/skills/local-testing/references/lark.md) |
-| 45 | ✓ | [`.agents/skills/local-testing/references/osascript-common.md`](.agents/skills/local-testing/references/osascript-common.md) |
-| 46 | ✓ | [`.agents/skills/local-testing/references/qq.md`](.agents/skills/local-testing/references/qq.md) |
-| 47 | ✓ | [`.agents/skills/local-testing/references/record-app-screen.md`](.agents/skills/local-testing/references/record-app-screen.md) |
-| 48 | ✓ | [`.agents/skills/local-testing/references/slack.md`](.agents/skills/local-testing/references/slack.md) |
-| 49 | ✓ | [`.agents/skills/local-testing/references/telegram.md`](.agents/skills/local-testing/references/telegram.md) |
-| 50 | ✓ | [`.agents/skills/local-testing/references/wechat.md`](.agents/skills/local-testing/references/wechat.md) |
-| 51 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/analyze-events.ts`](.agents/skills/local-testing/scripts/agent-gateway/analyze-events.ts) |
-| 52 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/analyze.mjs`](.agents/skills/local-testing/scripts/agent-gateway/analyze.mjs) |
-| 53 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/probe-dump.js`](.agents/skills/local-testing/scripts/agent-gateway/probe-dump.js) |
-| 54 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/probe-dump.ts`](.agents/skills/local-testing/scripts/agent-gateway/probe-dump.ts) |
-| 55 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/probe-events.ts`](.agents/skills/local-testing/scripts/agent-gateway/probe-events.ts) |
-| 56 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/probe.js`](.agents/skills/local-testing/scripts/agent-gateway/probe.js) |
-| 57 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/run.ts`](.agents/skills/local-testing/scripts/agent-gateway/run.ts) |
-| 58 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/tab-switch.js`](.agents/skills/local-testing/scripts/agent-gateway/tab-switch.js) |
-| 59 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/types.ts`](.agents/skills/local-testing/scripts/agent-gateway/types.ts) |
-| 60 | ✓ | [`.agents/skills/local-testing/scripts/capture-app-window.sh`](.agents/skills/local-testing/scripts/capture-app-window.sh) |
-| 61 | ✓ | [`.agents/skills/local-testing/scripts/electron-dev.sh`](.agents/skills/local-testing/scripts/electron-dev.sh) |
-| 62 | ✓ | [`.agents/skills/local-testing/scripts/record-app-screen.sh`](.agents/skills/local-testing/scripts/record-app-screen.sh) |
-| 63 | ✓ | [`.agents/skills/local-testing/scripts/record-electron-demo.sh`](.agents/skills/local-testing/scripts/record-electron-demo.sh) |
-| 64 | ✓ | [`.agents/skills/local-testing/scripts/test-discord-bot.sh`](.agents/skills/local-testing/scripts/test-discord-bot.sh) |
-| 65 | ✓ | [`.agents/skills/local-testing/scripts/test-lark-bot.sh`](.agents/skills/local-testing/scripts/test-lark-bot.sh) |
-| 66 | ✓ | [`.agents/skills/local-testing/scripts/test-qq-bot.sh`](.agents/skills/local-testing/scripts/test-qq-bot.sh) |
-| 67 | ✓ | [`.agents/skills/local-testing/scripts/test-slack-bot.sh`](.agents/skills/local-testing/scripts/test-slack-bot.sh) |
-| 68 | ✓ | [`.agents/skills/local-testing/scripts/test-telegram-bot.sh`](.agents/skills/local-testing/scripts/test-telegram-bot.sh) |
-| 69 | ✓ | [`.agents/skills/local-testing/scripts/test-wechat-bot.sh`](.agents/skills/local-testing/scripts/test-wechat-bot.sh) |
-| 70 | ✓ | [`.agents/skills/local-testing/SKILL.md`](.agents/skills/local-testing/SKILL.md) |
-| 71 | ✓ | [`.agents/skills/microcopy/references/en.md`](.agents/skills/microcopy/references/en.md) |
-| 72 | ✓ | [`.agents/skills/microcopy/references/zh.md`](.agents/skills/microcopy/references/zh.md) |
-| 73 | ✓ | [`.agents/skills/microcopy/SKILL.md`](.agents/skills/microcopy/SKILL.md) |
-| 74 | ✓ | [`.agents/skills/modal/SKILL.md`](.agents/skills/modal/SKILL.md) |
-| 75 | ✓ | [`.agents/skills/pr/SKILL.md`](.agents/skills/pr/SKILL.md) |
-| 76 | ✓ | [`.agents/skills/project-overview/SKILL.md`](.agents/skills/project-overview/SKILL.md) |
-| 77 | ✓ | [`.agents/skills/react/references/layout-kit.md`](.agents/skills/react/references/layout-kit.md) |
-| 78 | ✓ | [`.agents/skills/react/SKILL.md`](.agents/skills/react/SKILL.md) |
-| 79 | ✓ | [`.agents/skills/response-compliance/SKILL.md`](.agents/skills/response-compliance/SKILL.md) |
-| 80 | ✓ | [`.agents/skills/review-checklist/SKILL.md`](.agents/skills/review-checklist/SKILL.md) |
-| 81 | ✓ | [`.agents/skills/skills-audit/SKILL.md`](.agents/skills/skills-audit/SKILL.md) |
-| 82 | ✓ | [`.agents/skills/spa-routes/SKILL.md`](.agents/skills/spa-routes/SKILL.md) |
-| 83 | ✓ | [`.agents/skills/store-data-structures/references/reducer.md`](.agents/skills/store-data-structures/references/reducer.md) |
-| 84 | ✓ | [`.agents/skills/store-data-structures/references/types.md`](.agents/skills/store-data-structures/references/types.md) |
-| 85 | ✓ | [`.agents/skills/store-data-structures/SKILL.md`](.agents/skills/store-data-structures/SKILL.md) |
-| 86 | ✓ | [`.agents/skills/testing/references/agent-runtime-e2e.md`](.agents/skills/testing/references/agent-runtime-e2e.md) |
-| 87 | ✓ | [`.agents/skills/testing/references/db-model-test.md`](.agents/skills/testing/references/db-model-test.md) |
-| 88 | ✓ | [`.agents/skills/testing/references/desktop-controller-test.md`](.agents/skills/testing/references/desktop-controller-test.md) |
-| 89 | ✓ | [`.agents/skills/testing/references/electron-ipc-test.md`](.agents/skills/testing/references/electron-ipc-test.md) |
-| 90 | ✓ | [`.agents/skills/testing/references/zustand-store-action-test.md`](.agents/skills/testing/references/zustand-store-action-test.md) |
-| 91 | ✓ | [`.agents/skills/testing/SKILL.md`](.agents/skills/testing/SKILL.md) |
-| 92 | ✓ | [`.agents/skills/trpc-router/SKILL.md`](.agents/skills/trpc-router/SKILL.md) |
-| 93 | ✓ | [`.agents/skills/typescript/SKILL.md`](.agents/skills/typescript/SKILL.md) |
-| 94 | ✓ | [`.agents/skills/upstash-workflow/references/best-practices.md`](.agents/skills/upstash-workflow/references/best-practices.md) |
-| 95 | ✓ | [`.agents/skills/upstash-workflow/references/cloud.md`](.agents/skills/upstash-workflow/references/cloud.md) |
-| 96 | ✓ | [`.agents/skills/upstash-workflow/references/examples.md`](.agents/skills/upstash-workflow/references/examples.md) |
-| 97 | ✓ | [`.agents/skills/upstash-workflow/references/implementation.md`](.agents/skills/upstash-workflow/references/implementation.md) |
-| 98 | ✓ | [`.agents/skills/upstash-workflow/SKILL.md`](.agents/skills/upstash-workflow/SKILL.md) |
-| 99 | ✓ | [`.agents/skills/version-release/references/changelog-example/db-migration.md`](.agents/skills/version-release/references/changelog-example/db-migration.md) |
-| 100 | ✓ | [`.agents/skills/version-release/references/changelog-example/hotfix.md`](.agents/skills/version-release/references/changelog-example/hotfix.md) |
-| 101 | ✓ | [`.agents/skills/version-release/references/changelog-example/weekly-release.md`](.agents/skills/version-release/references/changelog-example/weekly-release.md) |
-| 102 | ✓ | [`.agents/skills/version-release/references/minor-release.md`](.agents/skills/version-release/references/minor-release.md) |
-| 103 | ✓ | [`.agents/skills/version-release/references/patch-release-scenarios.md`](.agents/skills/version-release/references/patch-release-scenarios.md) |
-| 104 | ✓ | [`.agents/skills/version-release/references/release-notes-style.md`](.agents/skills/version-release/references/release-notes-style.md) |
-| 105 | ✓ | [`.agents/skills/version-release/SKILL.md`](.agents/skills/version-release/SKILL.md) |
-| 106 | ✓ | [`.agents/skills/zustand/references/action-patterns.md`](.agents/skills/zustand/references/action-patterns.md) |
-| 107 | ✓ | [`.agents/skills/zustand/references/slice-organization.md`](.agents/skills/zustand/references/slice-organization.md) |
-| 108 | ✓ | [`.agents/skills/zustand/SKILL.md`](.agents/skills/zustand/SKILL.md) |
-| 109 | ✓ | [`.cursor/docs/createStaticStyles_migration_guide.md`](.cursor/docs/createStaticStyles_migration_guide.md) |
-| 110 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 111 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 112 | ✓ | [`e2e/CLAUDE.md`](e2e/CLAUDE.md) |
-| 113 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 114 | ✓ | [`packages/agent-templates/src/templates/claw/AGENTS.md`](packages/agent-templates/src/templates/claw/AGENTS.md) |
-| 115 | ✓ | [`packages/builtin-skills/src/task/SKILL.md`](packages/builtin-skills/src/task/SKILL.md) |
-| 116 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
+| 41 | ✓ | [`.agents/skills/local-testing/bot/capture-app-window.sh`](.agents/skills/local-testing/bot/capture-app-window.sh) |
+| 42 | ✓ | [`.agents/skills/local-testing/bot/discord/index.md`](.agents/skills/local-testing/bot/discord/index.md) |
+| 43 | ✓ | [`.agents/skills/local-testing/bot/discord/test-discord-bot.sh`](.agents/skills/local-testing/bot/discord/test-discord-bot.sh) |
+| 44 | ✓ | [`.agents/skills/local-testing/bot/imessage/index.md`](.agents/skills/local-testing/bot/imessage/index.md) |
+| 45 | ✓ | [`.agents/skills/local-testing/bot/imessage/send-imessage-test.sh`](.agents/skills/local-testing/bot/imessage/send-imessage-test.sh) |
+| 46 | ✓ | [`.agents/skills/local-testing/bot/imessage/test-imessage-bridge.sh`](.agents/skills/local-testing/bot/imessage/test-imessage-bridge.sh) |
+| 47 | ✓ | [`.agents/skills/local-testing/bot/lark/index.md`](.agents/skills/local-testing/bot/lark/index.md) |
+| 48 | ✓ | [`.agents/skills/local-testing/bot/lark/test-lark-bot.sh`](.agents/skills/local-testing/bot/lark/test-lark-bot.sh) |
+| 49 | ✓ | [`.agents/skills/local-testing/bot/osascript-common.md`](.agents/skills/local-testing/bot/osascript-common.md) |
+| 50 | ✓ | [`.agents/skills/local-testing/bot/qq/index.md`](.agents/skills/local-testing/bot/qq/index.md) |
+| 51 | ✓ | [`.agents/skills/local-testing/bot/qq/test-qq-bot.sh`](.agents/skills/local-testing/bot/qq/test-qq-bot.sh) |
+| 52 | ✓ | [`.agents/skills/local-testing/bot/slack/index.md`](.agents/skills/local-testing/bot/slack/index.md) |
+| 53 | ✓ | [`.agents/skills/local-testing/bot/slack/test-slack-bot.sh`](.agents/skills/local-testing/bot/slack/test-slack-bot.sh) |
+| 54 | ✓ | [`.agents/skills/local-testing/bot/telegram/index.md`](.agents/skills/local-testing/bot/telegram/index.md) |
+| 55 | ✓ | [`.agents/skills/local-testing/bot/telegram/test-telegram-bot.sh`](.agents/skills/local-testing/bot/telegram/test-telegram-bot.sh) |
+| 56 | ✓ | [`.agents/skills/local-testing/bot/wechat/index.md`](.agents/skills/local-testing/bot/wechat/index.md) |
+| 57 | ✓ | [`.agents/skills/local-testing/bot/wechat/test-wechat-bot.sh`](.agents/skills/local-testing/bot/wechat/test-wechat-bot.sh) |
+| 58 | ✓ | [`.agents/skills/local-testing/references/agent-browser-login.md`](.agents/skills/local-testing/references/agent-browser-login.md) |
+| 59 | ✓ | [`.agents/skills/local-testing/references/agent-gateway.md`](.agents/skills/local-testing/references/agent-gateway.md) |
+| 60 | ✓ | [`.agents/skills/local-testing/references/record-app-screen.md`](.agents/skills/local-testing/references/record-app-screen.md) |
+| 61 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/analyze-events.ts`](.agents/skills/local-testing/scripts/agent-gateway/analyze-events.ts) |
+| 62 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/analyze.mjs`](.agents/skills/local-testing/scripts/agent-gateway/analyze.mjs) |
+| 63 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/probe-dump.js`](.agents/skills/local-testing/scripts/agent-gateway/probe-dump.js) |
+| 64 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/probe-dump.ts`](.agents/skills/local-testing/scripts/agent-gateway/probe-dump.ts) |
+| 65 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/probe-events.ts`](.agents/skills/local-testing/scripts/agent-gateway/probe-events.ts) |
+| 66 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/probe.js`](.agents/skills/local-testing/scripts/agent-gateway/probe.js) |
+| 67 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/run.ts`](.agents/skills/local-testing/scripts/agent-gateway/run.ts) |
+| 68 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/tab-switch.js`](.agents/skills/local-testing/scripts/agent-gateway/tab-switch.js) |
+| 69 | ✓ | [`.agents/skills/local-testing/scripts/agent-gateway/types.ts`](.agents/skills/local-testing/scripts/agent-gateway/types.ts) |
+| 70 | ✓ | [`.agents/skills/local-testing/scripts/electron-dev.sh`](.agents/skills/local-testing/scripts/electron-dev.sh) |
+| 71 | ✓ | [`.agents/skills/local-testing/scripts/record-app-screen.sh`](.agents/skills/local-testing/scripts/record-app-screen.sh) |
+| 72 | ✓ | [`.agents/skills/local-testing/scripts/record-electron-demo.sh`](.agents/skills/local-testing/scripts/record-electron-demo.sh) |
+| 73 | ✓ | [`.agents/skills/local-testing/SKILL.md`](.agents/skills/local-testing/SKILL.md) |
+| 74 | ✓ | [`.agents/skills/microcopy/references/en.md`](.agents/skills/microcopy/references/en.md) |
+| 75 | ✓ | [`.agents/skills/microcopy/references/zh.md`](.agents/skills/microcopy/references/zh.md) |
+| 76 | ✓ | [`.agents/skills/microcopy/SKILL.md`](.agents/skills/microcopy/SKILL.md) |
+| 77 | ✓ | [`.agents/skills/modal/SKILL.md`](.agents/skills/modal/SKILL.md) |
+| 78 | ✓ | [`.agents/skills/pr/SKILL.md`](.agents/skills/pr/SKILL.md) |
+| 79 | ✓ | [`.agents/skills/project-overview/SKILL.md`](.agents/skills/project-overview/SKILL.md) |
+| 80 | ✓ | [`.agents/skills/react/references/layout-kit.md`](.agents/skills/react/references/layout-kit.md) |
+| 81 | ✓ | [`.agents/skills/react/SKILL.md`](.agents/skills/react/SKILL.md) |
+| 82 | ✓ | [`.agents/skills/response-compliance/SKILL.md`](.agents/skills/response-compliance/SKILL.md) |
+| 83 | ✓ | [`.agents/skills/review-checklist/SKILL.md`](.agents/skills/review-checklist/SKILL.md) |
+| 84 | ✓ | [`.agents/skills/skills-audit/SKILL.md`](.agents/skills/skills-audit/SKILL.md) |
+| 85 | ✓ | [`.agents/skills/spa-routes/SKILL.md`](.agents/skills/spa-routes/SKILL.md) |
+| 86 | ✓ | [`.agents/skills/store-data-structures/references/reducer.md`](.agents/skills/store-data-structures/references/reducer.md) |
+| 87 | ✓ | [`.agents/skills/store-data-structures/references/types.md`](.agents/skills/store-data-structures/references/types.md) |
+| 88 | ✓ | [`.agents/skills/store-data-structures/SKILL.md`](.agents/skills/store-data-structures/SKILL.md) |
+| 89 | ✓ | [`.agents/skills/testing/references/agent-runtime-e2e.md`](.agents/skills/testing/references/agent-runtime-e2e.md) |
+| 90 | ✓ | [`.agents/skills/testing/references/db-model-test.md`](.agents/skills/testing/references/db-model-test.md) |
+| 91 | ✓ | [`.agents/skills/testing/references/desktop-controller-test.md`](.agents/skills/testing/references/desktop-controller-test.md) |
+| 92 | ✓ | [`.agents/skills/testing/references/electron-ipc-test.md`](.agents/skills/testing/references/electron-ipc-test.md) |
+| 93 | ✓ | [`.agents/skills/testing/references/zustand-store-action-test.md`](.agents/skills/testing/references/zustand-store-action-test.md) |
+| 94 | ✓ | [`.agents/skills/testing/SKILL.md`](.agents/skills/testing/SKILL.md) |
+| 95 | ✓ | [`.agents/skills/trpc-router/SKILL.md`](.agents/skills/trpc-router/SKILL.md) |
+| 96 | ✓ | [`.agents/skills/typescript/SKILL.md`](.agents/skills/typescript/SKILL.md) |
+| 97 | ✓ | [`.agents/skills/upstash-workflow/references/best-practices.md`](.agents/skills/upstash-workflow/references/best-practices.md) |
+| 98 | ✓ | [`.agents/skills/upstash-workflow/references/cloud.md`](.agents/skills/upstash-workflow/references/cloud.md) |
+| 99 | ✓ | [`.agents/skills/upstash-workflow/references/examples.md`](.agents/skills/upstash-workflow/references/examples.md) |
+| 100 | ✓ | [`.agents/skills/upstash-workflow/references/implementation.md`](.agents/skills/upstash-workflow/references/implementation.md) |
+| 101 | ✓ | [`.agents/skills/upstash-workflow/SKILL.md`](.agents/skills/upstash-workflow/SKILL.md) |
+| 102 | ✓ | [`.agents/skills/version-release/references/changelog-example/db-migration.md`](.agents/skills/version-release/references/changelog-example/db-migration.md) |
+| 103 | ✓ | [`.agents/skills/version-release/references/changelog-example/hotfix.md`](.agents/skills/version-release/references/changelog-example/hotfix.md) |
+| 104 | ✓ | [`.agents/skills/version-release/references/changelog-example/weekly-release.md`](.agents/skills/version-release/references/changelog-example/weekly-release.md) |
+| 105 | ✓ | [`.agents/skills/version-release/references/minor-release.md`](.agents/skills/version-release/references/minor-release.md) |
+| 106 | ✓ | [`.agents/skills/version-release/references/patch-release-scenarios.md`](.agents/skills/version-release/references/patch-release-scenarios.md) |
+| 107 | ✓ | [`.agents/skills/version-release/references/release-notes-style.md`](.agents/skills/version-release/references/release-notes-style.md) |
+| 108 | ✓ | [`.agents/skills/version-release/SKILL.md`](.agents/skills/version-release/SKILL.md) |
+| 109 | ✓ | [`.agents/skills/zustand/references/action-patterns.md`](.agents/skills/zustand/references/action-patterns.md) |
+| 110 | ✓ | [`.agents/skills/zustand/references/slice-organization.md`](.agents/skills/zustand/references/slice-organization.md) |
+| 111 | ✓ | [`.agents/skills/zustand/SKILL.md`](.agents/skills/zustand/SKILL.md) |
+| 112 | ✓ | [`.cursor/docs/createStaticStyles_migration_guide.md`](.cursor/docs/createStaticStyles_migration_guide.md) |
+| 113 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 114 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 115 | ✓ | [`e2e/CLAUDE.md`](e2e/CLAUDE.md) |
+| 116 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 117 | ✓ | [`packages/agent-templates/src/templates/claw/AGENTS.md`](packages/agent-templates/src/templates/claw/AGENTS.md) |
+| 118 | ✓ | [`packages/builtin-skills/src/task/SKILL.md`](packages/builtin-skills/src/task/SKILL.md) |
+| 119 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
 
 ---
 

@@ -1,10 +1,9 @@
 ---
 name: nomogram-construction
-description: Use when constructing a prognosis nomogram from survival-related clinical predictors, exporting the nomogram bundle and C-index table, and optionally rendering the final nomogram PDF. NOT for: univariate/multivariable Cox feature screening, calibration curves, ROC analysis, decision-curve analysis, or non-survival outcomes.
+description: "Use when constructing a prognosis nomogram from survival-related clinical predictors, exporting the nomogram bundle and C-index table, and optionally rendering the final nomogram PDF. NOT for: univariate/multivariable Cox feature screening, calibration curves, ROC analysis, decision-curve analysis, or non-survival outcomes."
 license: MIT
-author: AIPOCH
+skill-author: AIPOCH
 ---
-> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Nomogram Construction
 
@@ -37,6 +36,36 @@ Do not use this skill for:
 | **Encounter errors** | `references/troubleshooting.md` | Common `SKILL_*` errors and solutions |
 | **Need CLI examples** | `references/cli-guide.md` | Detailed command-line examples |
 | **Need test data** | `tests/data/` | Example clinical CSV for smoke testing |
+
+## Input Validation
+
+This skill accepts:
+
+- A clinical CSV file with survival time, event indicator, and pre-selected prognostic features
+- Requests to build a Cox-based prognostic nomogram and compute the C-index
+- Requests to re-render a nomogram PDF from an existing `.qs` bundle (plot mode)
+
+If the user's request does not involve nomogram construction from survival data — for example, asking to screen features with Cox regression, generate calibration curves, perform ROC analysis, or analyze non-survival binary outcomes — do not proceed with this workflow. Instead respond:
+
+> "nomogram-construction is designed to build a prognosis nomogram from pre-selected survival predictors and export the nomogram bundle with C-index table. Your request appears to be outside this scope. Please use a Cox feature-screening skill for variable selection, or a calibration-curve/ROC skill for model validation."
+
+---
+
+## Prerequisites
+
+R packages required: `rms`, `openxlsx`, `qs`, `optparse`.
+
+Install with:
+```r
+install.packages(c("rms", "openxlsx", "qs", "optparse"), repos = "https://cloud.r-project.org")
+```
+
+Or run the bootstrap installer:
+```bash
+Rscript scripts/install_dependencies.R
+```
+
+> Note: `--help` requires `optparse` to be loaded. If the package check fires before option parsing, install `optparse` first, then run `--help`.
 
 ---
 
@@ -226,7 +255,7 @@ Rscript scripts/main.R \
 | `SKILL_INSUFFICIENT_DATA` | Too few features, complete samples, or events | Provide more valid predictors or samples |
 | `SKILL_ANALYSIS_ERROR` | `cph()` fitting, nomogram construction, or output writing failed | Check data quality, factor levels, and event distribution |
 | `SKILL_INVALID_PARAMETER` | Missing required CLI value, invalid mode, invalid years, or overwrite conflict | Review command-line arguments |
-| `SKILL_PACKAGE_NOT_FOUND` | Required R package is not installed | Install the listed CRAN packages |
+| `SKILL_PACKAGE_NOT_FOUND` | Required R package is not installed | Install with: `Rscript -e "install.packages(c('rms', 'openxlsx', 'qs'), repos='https://cloud.r-project.org')"` |
 | `SKILL_TIMEOUT` | The configured timeout was exceeded | Increase `--timeout_seconds` or reduce workload |
 
 **IF error persists**, READ: `references/troubleshooting.md`
@@ -306,4 +335,4 @@ Historical development artifacts may still exist in `tests/output/`, but standar
 
 ---
 
-*Last updated: 2026-04-16 | Version: 2.0.0*
+*Last updated: 2026-04-27 | Version: 2.1.0*

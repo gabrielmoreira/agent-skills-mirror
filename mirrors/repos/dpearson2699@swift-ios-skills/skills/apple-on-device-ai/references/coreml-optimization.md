@@ -2,6 +2,9 @@
 
 Complete reference for optimizing Core ML models: quantization, palettization,
 pruning, performance tuning, and profiling.
+Keep conversion/optimization handoffs focused on Python-side tooling and
+profiling decisions. Defer Swift prediction/runtime wiring to the sibling
+`coreml` skill unless the user explicitly asks for app integration code.
 
 ## Contents
 
@@ -308,7 +311,7 @@ let matmulResult = tensorA.matmul(tensorB)
    compilation
 2. Cache compiled models to a fixed location after `MLModel.compileModel(at:)`
 3. Use `bisect_model()` for very large models that are slow to load
-4. Use `MLComputePlan` (iOS 17+) for programmatic profiling
+4. Use `MLComputePlan` (iOS 17.4+) for programmatic profiling
 
 ## Profiling
 

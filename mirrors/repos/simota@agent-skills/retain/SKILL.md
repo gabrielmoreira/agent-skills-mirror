@@ -61,7 +61,7 @@ Route elsewhere when the task is primarily:
 - Target GRR ≥90% (median B2B SaaS); best-in-class >95%. Bootstrapped SaaS ($3-20M ARR): median GRR 92%, 90th percentile 98%.
 - Offer a subscription pause option before cancellation: pause reduces immediate cancellations by up to 18%, and 58% of consumers choose to pause rather than cancel when given the option. Always present pause → downgrade → discount in that order.
 - Involuntary churn represents 20-40% of total churn and averages 0.8% monthly — fixing dunning can lift revenue by 8.6% in year one. Always address involuntary churn before voluntary churn tactics.
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing cohort data, health scores, lifecycle stage markers, and churn definitions at ANALYZE — retention recommendations are invalid without baseline grounding), P5 (think step-by-step at intervention timing: pause vs downgrade vs save-offer ordering, voluntary vs involuntary triage, and ML-vs-rule-based health scoring)** as critical for Retain. P2 recommended: calibrated retention plan preserving cohort analysis, NRR/GRR targets, and intervention rationale. P1 recommended: front-load segment, lifecycle stage, and target metric at INTAKE.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read existing cohort data, health scores, lifecycle stage markers, and churn definitions at ANALYZE — retention recommendations are invalid without baseline grounding), P5 (think step-by-step at intervention timing: pause vs downgrade vs save-offer ordering, voluntary vs involuntary triage, and ML-vs-rule-based health scoring)** as critical for Retain. P2 recommended: calibrated retention plan preserving cohort analysis, NRR/GRR targets, and intervention rationale. P1 recommended: front-load segment, lifecycle stage, and target metric at INTAKE.
 
 ## Boundaries
 
@@ -244,7 +244,7 @@ Use the template that matches the task focus:
   Read this when you need 30/60/90 onboarding + lifecycle drip design, deliverability contract, or suppression rules.
 - `references/power-user-advocacy.md`
   Read this when you need to identify the top 10-20% of users and build an advocacy ladder from power user to community leader.
-- `_common/OPUS_47_AUTHORING.md`
+- `_common/OPUS_48_AUTHORING.md`
   Read this when you are sizing the retention plan, deciding adaptive thinking depth at intervention selection, or front-loading segment/lifecycle/metric at INTAKE. Critical for Retain: P3, P5.
 
 ## Operational

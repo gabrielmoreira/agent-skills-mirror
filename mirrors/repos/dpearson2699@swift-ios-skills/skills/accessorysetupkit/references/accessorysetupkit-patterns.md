@@ -21,7 +21,9 @@ error handling, authorization management, and picker display settings.
 The default picker shows all matching accessories automatically. For apps that
 need to inspect over-the-air data before showing an accessory (e.g., verifying
 authenticity, checking pairing mode), use custom filtering with
-`ASPickerDisplaySettings`.
+`ASPickerDisplaySettings` on iOS 26+. Showing filtered discovered accessories
+requires `ASDiscoveredAccessory`, `ASDiscoveredDisplayItem`, `updatePicker`, and
+`finishPickerDiscovery` on iOS 26.1+.
 
 ### Enabling Filtered Discovery
 
@@ -51,7 +53,7 @@ session.activate(on: .main) { [weak self] event in
     case .accessoryAdded:
         guard let accessory = event.accessory else { return }
         handleAccessoryAdded(accessory)
-    default:
+    @unknown default:
         break
     }
 }
@@ -191,12 +193,14 @@ modelB.bluetoothManufacturerDataBlob = Data([0x02, 0x00])
 modelB.bluetoothManufacturerDataMask = Data([0xFF, 0x00])
 ```
 
-The blob and mask must be the same length. The system performs a bitwise AND
-with the mask on the scanned data and compares to the blob.
+Manufacturer data filters require a company identifier. The blob and mask must
+be the same length. The system performs a bitwise AND with the mask on the
+scanned data and compares to the blob.
 
 ### Service Data Matching
 
-Match accessories by service data instead of manufacturer data:
+Match accessories by service data instead of manufacturer data. Service data
+filters require a service UUID, and the blob and mask must have the same length:
 
 ```swift
 var descriptor = ASDiscoveryDescriptor()
@@ -457,7 +461,7 @@ session.showPicker(for: items) { error in
     case .invalidRequest:
         // Developer error — check descriptor and Info.plist configuration
         assertionFailure("Invalid AccessorySetupKit request")
-    default:
+    @unknown default:
         self.showErrorAlert(error)
     }
 }
@@ -546,7 +550,7 @@ final class AccessoryManager {
         case .invalidated:
             session = ASAccessorySession()
             activate()
-        default:
+        @unknown default:
             break
         }
     }

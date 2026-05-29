@@ -1,10 +1,7 @@
 ---
 name: univariate-multivariable-cox-regression
-description: Use when running prognostic survival analysis on a clinical cohort with time-to-event data to estimate univariate and multivariable Cox proportional hazards models, export result tables, and generate forest plots. NOT for: nomogram construction, calibration curves, time-dependent ROC analysis, or model training/feature selection beyond the built-in univariate screening rule.
-license: MIT
-author: AIPOCH
+description: "Use when running prognostic survival analysis on a clinical cohort with time-to-event data to estimate univariate and multivariable Cox proportional hazards models, export result tables, and generate forest plots. NOT for: nomogram construction, calibration curves, time-dependent ROC analysis, or model training/feature selection beyond the built-in univariate screening rule."
 ---
-> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Univariate and Multivariable Cox Regression
 

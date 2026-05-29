@@ -10,9 +10,8 @@ description: >-
   explicit research framing, trigger on any topic touching disease, therapeutics,
   or clinical decision-making. Part of the AIPOCH Medical Research Skill Hub.
 license: MIT
-author: AIPOCH
+skill-author: AIPOCH
 ---
-> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # 扁鹊 — Bian Que
 

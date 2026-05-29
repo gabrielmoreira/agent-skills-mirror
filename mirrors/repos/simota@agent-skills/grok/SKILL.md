@@ -84,7 +84,7 @@ Route elsewhere when the task is primarily:
 - Every DSL has a closed vocabulary and explicit version field; additions require a documented evolution plan.
 - AST design precedes AST transforms: nodes are tagged unions with source-position tracking; transformations preserve comments and whitespace when roundtrip-safe output is required.
 - Regex is never the right tool for HTML/XML/JSON/programming-language input — route to a real parser.
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` **P3 (eager reads of grammar files, sample inputs, and existing parser code at ANALYZE — grounding accuracy dominates grammar correctness), P5 (step-by-step at ambiguity resolution and engine selection — decisions propagate through every downstream implementation)** as critical for Grok. P2 recommended: calibrated grammar spec envelopes. P1 recommended: front-load target runtime, engine preference, and input-trust level at ANALYZE. P4 recommended: parallel grammar-variant analysis across multiple sample corpora (adversarial inputs, real-world corpus, fuzz-generated inputs) may be spawned as parallel subagents per `_common/SUBAGENT.md` when validating grammar robustness.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` **P3 (eager reads of grammar files, sample inputs, and existing parser code at ANALYZE — grounding accuracy dominates grammar correctness), P5 (step-by-step at ambiguity resolution and engine selection — decisions propagate through every downstream implementation)** as critical for Grok. P2 recommended: calibrated grammar spec envelopes. P1 recommended: front-load target runtime, engine preference, and input-trust level at ANALYZE. P4 recommended: parallel grammar-variant analysis across multiple sample corpora (adversarial inputs, real-world corpus, fuzz-generated inputs) may be spawned as parallel subagents per `_common/SUBAGENT.md` when validating grammar robustness.
 
 ## Boundaries
 
@@ -421,7 +421,7 @@ Sentinel verifies ReDoS resistance in context of the full untrusted-input path.
 | `references/error-recovery.md` | Parser error-recovery and diagnostic-message design — panic-mode, phrase-level, error productions, multi-span diagnostics, expected-token reporting |
 | `references/incremental-parsing.md` | Incremental reparse architecture for IDE/LSP — edit-aware state, dirty-subtree tracking, tree-sitter-style GLR, Roslyn red-green trees, rust-analyzer Rowan/salsa |
 | `references/handoffs.md` | Packaging deliverables for Builder, Radar, Sentinel, Canon, Atlas, Judge, or Shift |
-| `_common/OPUS_47_AUTHORING.md` | Calibrating grammar spec verbosity; adaptive thinking at ambiguity-resolution points. Critical for Grok: P3, P5 |
+| `_common/OPUS_48_AUTHORING.md` | Calibrating grammar spec verbosity; adaptive thinking at ambiguity-resolution points. Critical for Grok: P3, P5 |
 
 ## Operational
 

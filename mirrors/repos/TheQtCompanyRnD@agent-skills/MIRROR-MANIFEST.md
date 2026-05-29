@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `TheQtCompanyRnD/agent-skills` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
+Mirror of `TheQtCompanyRnD/agent-skills` — 26 default patterns, 0 followed patterns, 52 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `TheQtCompanyRnD/agent-skills` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 34 |
+| Files         | 52 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -86,13 +86,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`skills/qt-qml-review/references/lint-scripts/qt_qml_lint.py`](skills/qt-qml-review/references/lint-scripts/qt_qml_lint.py) |
 | 26 | ✓ | [`skills/qt-qml-review/references/qt-qml-review-checklist.md`](skills/qt-qml-review/references/qt-qml-review-checklist.md) |
 | 27 | ✓ | [`skills/qt-qml-review/SKILL.md`](skills/qt-qml-review/SKILL.md) |
-| 28 | ✓ | [`skills/qt-qml/LICENSE.txt`](skills/qt-qml/LICENSE.txt) |
-| 29 | ✓ | [`skills/qt-qml/platforms/windsurf.md`](skills/qt-qml/platforms/windsurf.md) |
-| 30 | ✓ | [`skills/qt-qml/README.md`](skills/qt-qml/README.md) |
-| 31 | ✓ | [`skills/qt-qml/SKILL.md`](skills/qt-qml/SKILL.md) |
-| 32 | ✓ | [`skills/qt-ui-design/LICENSE.txt`](skills/qt-ui-design/LICENSE.txt) |
-| 33 | ✓ | [`skills/qt-ui-design/README.md`](skills/qt-ui-design/README.md) |
-| 34 | ✓ | [`skills/qt-ui-design/SKILL.md`](skills/qt-ui-design/SKILL.md) |
+| 28 | ✓ | [`skills/qt-qml-test-run/LICENSE.txt`](skills/qt-qml-test-run/LICENSE.txt) |
+| 29 | ✓ | [`skills/qt-qml-test-run/README.md`](skills/qt-qml-test-run/README.md) |
+| 30 | ✓ | [`skills/qt-qml-test-run/references/qt-quick-test-cmake.md`](skills/qt-qml-test-run/references/qt-quick-test-cmake.md) |
+| 31 | ✓ | [`skills/qt-qml-test-run/references/qt-quick-test-report-format.md`](skills/qt-qml-test-run/references/qt-quick-test-report-format.md) |
+| 32 | ✓ | [`skills/qt-qml-test-run/references/scripts/parse-qmltestrunner-output.py`](skills/qt-qml-test-run/references/scripts/parse-qmltestrunner-output.py) |
+| 33 | ✓ | [`skills/qt-qml-test-run/SKILL.md`](skills/qt-qml-test-run/SKILL.md) |
+| 34 | ✓ | [`skills/qt-qml-test/LICENSE.txt`](skills/qt-qml-test/LICENSE.txt) |
+| 35 | ✓ | [`skills/qt-qml-test/platforms/copilot.prompt.md`](skills/qt-qml-test/platforms/copilot.prompt.md) |
+| 36 | ✓ | [`skills/qt-qml-test/README.md`](skills/qt-qml-test/README.md) |
+| 37 | ✓ | [`skills/qt-qml-test/references/qt-quick-test-controls.md`](skills/qt-qml-test/references/qt-quick-test-controls.md) |
+| 38 | ✓ | [`skills/qt-qml-test/references/qt-quick-test-pitfalls.md`](skills/qt-qml-test/references/qt-quick-test-pitfalls.md) |
+| 39 | ✓ | [`skills/qt-qml-test/references/qt-quick-test-pre-send-scan.md`](skills/qt-qml-test/references/qt-quick-test-pre-send-scan.md) |
+| 40 | ✓ | [`skills/qt-qml-test/references/qt-quick-test-project-context.md`](skills/qt-qml-test/references/qt-quick-test-project-context.md) |
+| 41 | ✓ | [`skills/qt-qml-test/references/qt-quick-test-properties.md`](skills/qt-qml-test/references/qt-quick-test-properties.md) |
+| 42 | ✓ | [`skills/qt-qml-test/references/qt-quick-test-rules.md`](skills/qt-qml-test/references/qt-quick-test-rules.md) |
+| 43 | ✓ | [`skills/qt-qml-test/references/qt-quick-test-source-import.md`](skills/qt-qml-test/references/qt-quick-test-source-import.md) |
+| 44 | ✓ | [`skills/qt-qml-test/references/qt-quick-test-template.md`](skills/qt-qml-test/references/qt-quick-test-template.md) |
+| 45 | ✓ | [`skills/qt-qml-test/SKILL.md`](skills/qt-qml-test/SKILL.md) |
+| 46 | ✓ | [`skills/qt-qml/LICENSE.txt`](skills/qt-qml/LICENSE.txt) |
+| 47 | ✓ | [`skills/qt-qml/platforms/windsurf.md`](skills/qt-qml/platforms/windsurf.md) |
+| 48 | ✓ | [`skills/qt-qml/README.md`](skills/qt-qml/README.md) |
+| 49 | ✓ | [`skills/qt-qml/SKILL.md`](skills/qt-qml/SKILL.md) |
+| 50 | ✓ | [`skills/qt-ui-design/LICENSE.txt`](skills/qt-ui-design/LICENSE.txt) |
+| 51 | ✓ | [`skills/qt-ui-design/README.md`](skills/qt-ui-design/README.md) |
+| 52 | ✓ | [`skills/qt-ui-design/SKILL.md`](skills/qt-ui-design/SKILL.md) |
 
 ---
 

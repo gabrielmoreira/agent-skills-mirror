@@ -24,6 +24,7 @@ The north star: **don't stop at "code compiles." Stop at "verified working in pr
 1. **Scan open issues/PRs for human claims.** If a human said "picking this up" / "working on" / "I'll take" in the last 7 days, do NOT open a competing PR. Automation is the night-shift janitor, not the day-shift engineer.
 2. **Scan the user's recent comments** on open PRs/issues and address them first.
 3. **Re-read the goal.** If invoked via `/goal`, the goal persists until the *outcome* is achieved and verified — not until the code is written.
+4. **Work in an isolated worktree.** Multiple Claude Code agents and crons run against this repo at the same time. Editing the main checkout is unsafe: another process can switch branches mid-edit and clobber uncommitted changes (burned 2026-05-28 — `feat/asset-registry` working-tree wiped when a concurrent agent checked out `release/hash-chain-2210` in the same checkout). Always start with `EnterWorktree`, or `git worktree add .claude/worktrees/<slug> -b feat/<slug> origin/main`. The worktree gives you your own branch + working tree; the shared checkout is for the human, not for parallel automation. Use `ExitWorktree` (or `git worktree remove`) once the PR is merged.
 
 ## 1. The data-flow rule (this is the one that bites)
 
@@ -37,12 +38,41 @@ ClawMetry is **read-only** and **DuckDB-first**:
 - The daemon **owns the DuckDB writer lock**. Build snapshot data on the daemon's **own** store handle (`local_store.get_store()`), never a `read_only=True` re-open — that deadlocks the writer (the `#1771` brick-lock: a cached RO handle blocks every subsequent write; symptom is `cannot open writer — read-only handle already exists`). When you need a read in a separate process, go through the daemon's `/__local_query__/<method>` HTTP proxy (`local_store_via_daemon`), not a direct open.
 - If the agent runtime's **model** is needed (e.g. Self-Evolve), don't try to make ClawMetry call an LLM or get gateway write scope — it's read-only by design and its gateway token is `operator.read` only. Shell out to **`openclaw agent --session-id <stable> --message <prompt> --json`**: OpenClaw runs the turn on its own credentials, the transcript lands on disk → DuckDB, and you parse the result. (`openclaw` is a Node script — under the daemon's launchd PATH `node` isn't found, so pass an augmented `PATH` to the subprocess.)
 
+## 1b. Open-core code placement — where does this change go?
+
+ClawMetry is open-core. There are **four repos**, each with a clear remit; agents must pick the right one *before* writing code or the change ships in the wrong tier. Strategy + matrix: `clawmetry-cloud/docs/TIERING_AND_LICENSING.md` (private).
+
+| Repo | Visibility | Holds |
+|---|---|---|
+| **clawmetry** (this repo) | **Public OSS** | OpenClaw runtime + NeMo governance + 21 chat-channel adapters + entitlement gate (`clawmetry/entitlements.py`) + license client (`clawmetry/license.py`) + **hook points / stubs** for every gated feature. |
+| **clawmetry-pro** | **Private** (not on public PyPI; served only to activated installs by the license server) | The gated runtime adapters (Claude Code, Codex, Cursor, Aider, Goose, opencode, Qwen Code, Hermes, PicoClaw, NanoClaw) and the Pro paid CLI / analytical features. Plugs into OSS via the `clawmetry.extensions` entry point. |
+| **clawmetry-cloud** | Private | Cloud SaaS server + license server (`/api/license/*`) + Stripe + admin + heartbeat-relay + the closed-wheel hosting (`wheels/` baked into the Cloud Run image). Business + revenue + funnel docs (private). |
+| **clawmetry-landing** | Private repo, public site `clawmetry.com` | Marketing + pricing page + public Buy buttons + installer script. Storefront only; no gated code. |
+
+### Decision tree (do this before opening a PR)
+
+1. **A new agent-runtime adapter** (something OpenClaw-shaped that emits sessions/events from a *different* harness — Codex/Cursor/etc.) → **clawmetry-pro** (`clawmetry_pro/adapters/<runtime>.py`), registered in `clawmetry_pro.__init__._PAID_ADAPTERS`. Import only `from clawmetry.adapters.base import …` — never an OSS sibling adapter — so the file stays valid when OSS strips its bundled copies at enforce.
+2. **An advanced / paid feature** (custom alerts, multi-node fleet, anomaly detection, Self-Evolve, cost optimizer) → implementation in **clawmetry-pro**; OSS may ship a thin stub route guarded by `entitlements.get_entitlement().allows_feature(<key>)` that defers to the plugin when present and returns an upgrade CTA otherwise.
+3. **An Enterprise feature** (OTel export, SSO, audit logs, RBAC, air-gapped license) → OSS route, **entitlement-gated** (`allows_feature('otel_export'|'audit_logs'|'sso'|'rbac'|…)`). Examples already merged: `routes/otel_export.py`, `routes/audit.py`. Grace mode is permissive; enforce returns HTTP 402 `upgrade_required`.
+4. **A billing / Stripe / license / wheel-serving endpoint** → **clawmetry-cloud** `routes/`. Cloud-native routes need no `cloud_route_policy` entry; remember to exempt public ones (`/api/license/*`) from the `cm_`-key gate in `dashboard.py:before_request`.
+5. **Marketing / pricing / public copy / Buy button** → **clawmetry-landing**. i18n via `data-i18n` (missing keys fall back to English). No em-dashes in user-facing copy. Proactive screenshots on every landing PR.
+6. **Core OpenClaw observability** (anything OpenClaw-shaped, NeMo governance, chat-channel adapters, the dashboard tabs that serve OpenClaw data) → **stays in OSS** (this repo). Free in every tier.
+
+### Hard rules that fall out of the split
+
+- **OSS routes for gated features must call `entitlements.allows_feature(...)`** and return HTTP 402 (`upgrade_required`) when blocked. Never silently disable — the upgrade prompt is the conversion moment.
+- **Plugin override seam.** `dashboard.py` family-adapter loop must skip when `registry.get(name) is not None` (clawmetry-pro registered it first). Tested by `tests/test_adapter_registry_override.py`. Don't reintroduce a clobber.
+- **`load_plugins()` is already wired at `dashboard.py:162`** (import time) and works on Python 3.9+ via `_select_entry_points` — don't roll your own.
+- **The signing keypair.** PUBLIC Ed25519 key is embedded in `clawmetry/license.py` *and* `clawmetry-cloud/routes/license.py`. PRIVATE key lives ONLY in `clawmetry-cloud/secrets/license_signing_key.pem` (gitignored) + the `license-signing-key` Cloud Run Secret Manager entry. Rotating means bumping both embedded constants + an OSS release.
+- **Closed wheel distribution.** `clawmetry-pro` builds → wheel committed to `clawmetry-cloud/wheels/` (private repo) → `.dockerignore` allowlist must include `wheels/` and `wheels/**` (allowlist-style; new top-level dirs silently 404 without it) → `COPY wheels/ wheels/` in Dockerfile → `/api/license/download` streams it gated by activation. Never expose the wheel via a public URL.
+- **Business numbers stay private.** Pricing, MRR, funnel, conversion roadmaps → `clawmetry-cloud/docs/` only. Public OSS docs can mention features but never prices/funnels.
+
 ## 2. Make the change
 
 - New HTTP endpoints go in `routes/<feature>.py` on that feature's Blueprint, not in `dashboard.py`. Shared helpers reach back via late `import dashboard as _d`.
 - Embedded frontend lives in `dashboard.py` template strings AND in `clawmetry/static/` + `clawmetry/templates/`. Note: `dashboard.py` defines `DASHBOARD_HTML` twice — the **second** wins and loads `static/css/dashboard.css` + `templates/tabs/*.html`. The inline `<style>`/HTML earlier in the file is dead. Edit the static/template files.
 - Match surrounding style: `snake_case` funcs, minimal deps (Flask + waitress + cryptography), never crash on bad input (graceful fallbacks + a logged warning).
-- No em-dashes / double-dashes in user-facing copy (banners, marketing). Code comments + PR text are fine.
+- **No em-dashes (`—`, U+2014), no double-dashes (`--`), no `X, Y, and Z [emdash] coda` pattern in user-facing copy.** That pattern is an AI-tell, and the user has explicitly banned it. Applies to: landing HTML, dashboard banners, marketing copy, blog posts, CHANGELOG release entries, bounty and job posts (incl. external platforms like rentahuman.ai), public docs, email templates, modal copy, and any PR description users see. Allowed in: code comments, internal notes in `docs/`, commit messages, and internal-only PR bodies. Use a comma, parenthetical, colon, or full stop instead. **Belt-and-braces:** before sending any user-facing text (a PR via someone else's API, a CHANGELOG entry, landing copy, modal text), grep the payload for `—` or `--` and refuse to send if matched. Burned twice: 2026-05-26 on landing PR #211 (em-dashes in marketing copy), 2026-05-28 on the rentahuman.ai bounty redraft (em-dashes everywhere despite the rule being in memory, so the user had to re-flag it).
 - **Keep business internals out of this public repo.** This repo is public — investors, competitors, and prospective hires browse it. Any doc with live revenue/MRR/funnel/conversion numbers or monetization/pricing strategy (conversion roadmaps, conversion PRDs, pricing analysis) goes in **`clawmetry-cloud/docs/` (private), NEVER `clawmetry/docs/`**. Same rule as `[intel/*]` issues. Before creating any doc, ask: would this leak positioning, lead pipeline, or revenue if a competitor read it? If yes → private repo. (Burned 2026-05-26: a conversion roadmap + PRDs with the real paying-customer/MRR funnel were written into public `docs/` and had to be relocated.)
 
 ## 3. Verify locally BEFORE the PR (the loop that actually catches bugs)
@@ -77,6 +107,7 @@ git checkout -B feat/<slug> origin/main      # branch off origin/main, never a s
 gh pr create --title "feat: …" --body "…"    # explain WHY + the verification you did
 ```
 
+- **Never push directly to `main`. No exceptions.** Not for empty re-trigger commits. Not for `Dockerfile` cache-bust comments. Not for one-line CI tweaks. Not for typo fixes. Not even for reverts. Every change goes through a branch + PR + CI, including changes whose only purpose is to nudge CI itself. The 30 seconds a one-line PR costs is the price of every other agent and human being able to trust `main`. If a deploy is stuck and you think the fix is "obvious," that means it is a perfect 1-line PR, not a justification to bypass review. Burned 2026-05-28 on `clawmetry-landing`: I pushed two commits straight to `main` (`a2cfb7b` empty re-trigger and `acfa10e` 2-line Dockerfile cache-bust) framing the urgency of a stuck Cloud Run deploy as license to skip the rule. Both would have taken 30 seconds as PRs. The user rightly called it out.
 - End commit messages with the `Co-Authored-By` trailer; end PR bodies with the Claude Code footer.
 - **CI must be 100% green before merge — red means it will not deploy.** The matrix includes: Syntax & Lint, API Tests (3 OS), E2E Browser Tests, **Live OpenClaw E2E (real gateway)**, MOAT Verifier + Keystone, Eval Suite Gate, Sync matrix (3 OS × 3 Py), Install/boot/health, wheel/asset presence, pip install.
 - A red check is a real signal. **Fix the cause — code or test — never skip or `xfail` to get green.** If a test encodes the wrong expectation (e.g. an IA-v2 rename), fix the test to match reality; read the *rendered* HTML before "fixing" a selector so you don't fix half of it.

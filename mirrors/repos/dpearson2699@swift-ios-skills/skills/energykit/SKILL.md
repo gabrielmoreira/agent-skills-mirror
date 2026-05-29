@@ -6,9 +6,9 @@ description: "Query grid electricity forecasts and submit load events using Ener
 # EnergyKit
 
 Provide grid electricity forecasts to help users choose when to use electricity.
-EnergyKit identifies times when there is relatively cleaner or less expensive
-electricity on the grid, enabling apps to shift or reduce load accordingly.
-Targets Swift 6.3 / iOS 26+.
+EnergyKit identifies times when grid electricity is relatively cleaner and,
+when cost information is available, less expensive. Apps use that guidance to
+shift or reduce managed device load. Targets Swift 6.3 / iOS 26+.
 
 > **Beta-sensitive.** EnergyKit is new in iOS 26 and may change before GM.
 > Re-check current Apple documentation before relying on specific API details.
@@ -30,8 +30,11 @@ Targets Swift 6.3 / iOS 26+.
 
 ### Entitlement
 
-EnergyKit requires the `com.apple.developer.energykit` entitlement. Add it
-to your app's entitlements file.
+EnergyKit requires the `com.apple.developer.energykit` entitlement. Enable the
+EnergyKit capability in Xcode so the entitlement is added to the app target.
+Treat this as a top-level setup prerequisite before writing guidance queries,
+venue lookup, load-event submission, or insight code. Missing permission can
+surface as `EnergyKitError.permissionDenied`.
 
 ### Import
 
@@ -39,16 +42,19 @@ to your app's entitlements file.
 import EnergyKit
 ```
 
-**Platform availability:** iOS 26+, iPadOS 26+.
+**Platform availability:** Core EnergyKit APIs are iOS 26.0+ and iPadOS 26.0+.
+Some insight breakdown APIs, including grid cleanliness categories, are iOS
+26.1+ / iPadOS 26.1+ and need availability guards.
 
 ## Core Concepts
 
 EnergyKit provides two main capabilities:
 
 1. **Electricity Guidance** -- time-weighted forecasts telling apps when
-   electricity is cleaner or cheaper, so devices can shift or reduce consumption
-2. **Load Events** -- telemetry from devices (EV chargers, HVAC) submitted back
-   to the system to track how well the app follows guidance
+   electricity is cleaner and, when rate data is available, less expensive
+2. **Load Events** -- telemetry from managed devices (EV chargers, HVAC)
+   submitted by the same device/app that requested guidance so EnergyKit can
+   generate insights
 
 ### Key Types
 
@@ -62,7 +68,7 @@ EnergyKit provides two main capabilities:
 | `ElectricVehicleLoadEvent` | Load event for EV charger telemetry |
 | `ElectricHVACLoadEvent` | Load event for HVAC system telemetry |
 | `ElectricityInsightService` | Service for querying energy/runtime insights |
-| `ElectricityInsightRecord` | Historical energy data broken down by cleanliness/tariff |
+| `ElectricityInsightRecord` | Historical energy or runtime data, optionally broken down by tariff or 26.1+ grid cleanliness |
 | `ElectricityInsightQuery` | Query for historical insight data |
 
 ### Suggested Actions
@@ -216,7 +222,9 @@ print("Venue name: \(venue.name)")
 ## Submitting Load Events
 
 Report device consumption data back to the system. This helps the system
-improve future guidance accuracy.
+generate electricity insights. The same EnergyKit-capable device/app that
+requested electricity guidance must submit the corresponding load events, using
+the guidance token returned by EnergyKit. Do not invent a token.
 
 ### EV Charger Load Events
 
@@ -292,20 +300,42 @@ func submitHVACEvent(
 | `.active` | Device is actively consuming (periodic updates) |
 | `.end` | Device stops consuming electricity |
 
+For EV charging, record begin/end, one steady sample about every 15 minutes,
+and extra samples for user actions, pauses, new guidance, or rapid power
+changes. For HVAC, submit separate events when equipment starts, when heating
+or cooling stage changes (heat stage 1 -> 2, heat -> cool, cool -> idle), and
+when equipment stops. Batch events when practical for performance. Insights
+are only available for submitted events, and load events for an `EnergyVenue`
+are visible to people who share the associated Home in the Home app.
+
 ## Electricity Insights
 
 Query historical energy and runtime data for devices using
-`ElectricityInsightService`.
+`ElectricityInsightService`. An empty `ElectricityInsightQuery.Options` option
+set returns totals only; it does not populate cleanliness or tariff breakdowns.
+Request `.cleanliness` and/or `.tariff` only when the UI needs those breakdowns.
+Do not substitute MetricKit app power metrics for EnergyKit insights; EnergyKit
+insights depend on EnergyKit load events submitted for the managed device.
+
+Choose insight granularity from the requested range. For a seven-day view,
+query `.hourly`; use `.daily` only when the query covers at least a calendar
+month.
 
 ```swift
 func queryEnergyInsights(deviceID: String, venueID: UUID) async throws {
+    let sevenDaysAgo = Calendar.current.date(
+        byAdding: .day,
+        value: -7,
+        to: Date()
+    )!
+
     let query = ElectricityInsightQuery(
         options: [.cleanliness, .tariff],
         range: DateInterval(
-            start: Calendar.current.date(byAdding: .day, value: -7, to: Date())!,
+            start: sevenDaysAgo,
             end: Date()
         ),
-        granularity: .daily,
+        granularity: .hourly,
         flowDirection: .imported
     )
 
@@ -316,7 +346,9 @@ func queryEnergyInsights(deviceID: String, venueID: UUID) async throws {
 
     for await record in stream {
         if let total = record.totalEnergy { print("Total: \(total)") }
-        if let cleaner = record.dataByGridCleanliness?.cleaner {
+
+        if #available(iOS 26.1, iPadOS 26.1, *),
+           let cleaner = record.dataByGridCleanliness?.cleaner {
             print("Cleaner: \(cleaner)")
         }
     }
@@ -325,22 +357,18 @@ func queryEnergyInsights(deviceID: String, venueID: UUID) async throws {
 
 Use `runtimeInsights(forDeviceID:using:atVenue:)` for runtime data instead
 of energy. Granularity options: `.hourly`, `.daily`, `.weekly`, `.monthly`,
-`.yearly`. See [references/energykit-patterns.md](references/energykit-patterns.md) for full insight examples.
+`.yearly`. Choose a range that matches Apple's minimum aggregation windows:
+hourly for at least a calendar week, daily for at least a calendar month,
+weekly for at least six months, and monthly or yearly for at least a calendar
+year. See [references/energykit-patterns.md](references/energykit-patterns.md) for full insight examples.
 
 ## Common Mistakes
 
 ### DON'T: Forget the EnergyKit entitlement
 
-Without the entitlement, all EnergyKit calls fail silently or throw errors.
-
-```swift
-// WRONG: No entitlement configured
-let service = ElectricityGuidance.sharedService  // Will fail
-
-// CORRECT: Add com.apple.developer.energykit to entitlements
-// Then use the service
-let service = ElectricityGuidance.sharedService
-```
+Without the entitlement, EnergyKit APIs can fail with permission errors such as
+`EnergyKitError.permissionDenied`. Treat the EnergyKit capability as setup, not
+as an implementation detail to discover after writing queries.
 
 ### DON'T: Ignore unsupported regions
 
@@ -380,13 +408,14 @@ do {
 
 ### DON'T: Discard the guidance token
 
-The `guidanceToken` links load events to the guidance that influenced them.
-Always store and pass it through to load event submissions.
+The `guidanceToken` links load events to the guidance that was in effect. Store
+the token returned from EnergyKit on the device that fetched it and pass that
+real token to load event submissions.
 
 ```swift
 // WRONG: Ignore the guidance token
 for try await guidance in guidanceStream {
-    startCharging()
+    startCharging(followingGuidanceToken: UUID())  // fabricated token
 }
 
 // CORRECT: Store the token for load events
@@ -437,11 +466,18 @@ let guidanceStream = service.guidance(using: query, at: venue.id)
 - [ ] `EnergyKitError.unsupportedRegion` handled with user-facing message
 - [ ] `EnergyKitError.permissionDenied` handled gracefully
 - [ ] Guidance token stored and passed to load event submissions
+- [ ] No placeholder or fabricated guidance tokens are used in load events
+- [ ] The same EnergyKit-capable device/app that requested guidance submits the corresponding load events
 - [ ] Venues discovered via `EnergyVenue.venues()` before querying guidance
 - [ ] Load event sessions follow `.begin` -> `.active` -> `.end` lifecycle
+- [ ] EV/HVAC event cadence follows Apple guidance and events are batched when practical
 - [ ] `ElectricityGuidance.Value.rating` interpreted correctly (lower is better)
 - [ ] `SuggestedAction` matches the device type (`.shift` for EV, `.reduce` for HVAC)
-- [ ] Insight queries use appropriate granularity for the time range
+- [ ] Insight queries use appropriate minimum ranges for their granularity
+- [ ] Empty insight query options are treated as totals-only, not as cleanliness or tariff requests
+- [ ] MetricKit power telemetry is not used as a substitute for EnergyKit load events or insights
+- [ ] Grid cleanliness insight fields are guarded for iOS/iPadOS 26.1+
+- [ ] Users understand load events are shared with people who share the Home
 - [ ] Rate limiting handled via `EnergyKitError.rateLimitExceeded`
 - [ ] Service unavailability handled with retry logic
 

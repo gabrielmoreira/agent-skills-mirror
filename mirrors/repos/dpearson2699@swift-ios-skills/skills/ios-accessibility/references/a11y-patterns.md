@@ -47,6 +47,18 @@ HStack {
     }
 }
 .accessibilityElement(children: .combine)
+
+// Binary custom control: prefer Toggle when possible; otherwise expose toggle state
+HStack {
+    Image(systemName: isFavorite ? "heart.fill" : "heart")
+    Text(product.name)
+}
+.onTapGesture { isFavorite.toggle() }
+.accessibilityElement()
+.accessibilityLabel("Favorite \(product.name)")
+.accessibilityValue(isFavorite ? "On" : "Off")
+.accessibilityAddTraits(.isToggle)
+.accessibilityAction { isFavorite.toggle() }
 ```
 
 ## Custom Controls and Adjustable Actions
@@ -64,6 +76,8 @@ HStack { /* custom star rating UI */ }
         }
     }
 ```
+
+For custom quantity controls, steppers, ratings, sliders, or other adjustable values, prefer the native control first. If the control is custom, SwiftUI needs `.accessibilityAdjustableAction`; UIKit custom controls also need `accessibilityTraits.insert(.adjustable)`.
 
 ## Focus Management Patterns
 
@@ -92,16 +106,23 @@ enum A11yFocus: Hashable { case nameField, emailField, submitButton }
 
 ```swift
 @ScaledMetric(relativeTo: .title) private var iconSize: CGFloat = 24
+@ScaledMetric(relativeTo: .body) private var rowSpacing: CGFloat = 12
+@ScaledMetric(relativeTo: .body) private var controlHeight: CGFloat = 44
 @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
 var body: some View {
-    if dynamicTypeSize.isAccessibilitySize {
-        VStack(alignment: .leading) { icon; textContent }
-    } else {
-        HStack { icon; textContent }
+    Group {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading) { icon; textContent }
+        } else {
+            HStack { icon; textContent }
+        }
     }
+    .frame(minHeight: controlHeight)
 }
 ```
+
+Use `@ScaledMetric(relativeTo:)` for non-text dimensions that need to track text size, including icon sizes, spacing, control heights, and custom hit-region dimensions.
 
 ## Custom Rotors
 
@@ -205,7 +226,7 @@ Voice Control generates tap targets from accessibility labels. Labels must be sp
 
 ### accessibilityInputLabels (iOS 14+)
 
-Provide shorter spoken alternatives when the primary label is long:
+Provide shorter spoken alternatives when the primary label is long, awkward, repeated, localized, acronym-heavy, or commonly shortened in speech:
 
 ```swift
 // Primary label is descriptive but long to speak
@@ -228,6 +249,8 @@ NavigationLink {
 }
 .accessibilityInputLabels(["Account", "Settings", "Privacy"])
 ```
+
+Also consider input labels for repeated row actions, quantity controls, media controls, and product-name labels where Voice Control users are likely to speak a shorter command than the visible text.
 
 ### Speakable Label Guidelines
 
@@ -307,94 +330,16 @@ HStack {
 
 ## Full Keyboard Access Patterns
 
-Full Keyboard Access (iOS/iPadOS 13.4+) uses Tab/Shift-Tab for navigation, Space/Enter for activation, and arrow keys for directional movement.
+Full Keyboard Access review checks whether keyboard users can complete the same common tasks without touch. Keep the implementation mechanics in the `focus-engine` skill when the fix requires Tab-order wiring, skipped custom cards, `.focusable()`, SwiftUI keyboard focus state, focus sections, directional movement, tvOS focus, or `UIFocusGuide`.
 
-### Making Custom Views Focusable (iOS 17+)
-
-```swift
-struct SelectableCard: View {
-    let title: String
-    let action: () -> Void
-    @FocusState private var isFocused: Bool
-
-    var body: some View {
-        RoundedRectangle(cornerRadius: 12)
-            .fill(isFocused ? Color.tint.opacity(0.1) : Color.clear)
-            .overlay {
-                Text(title)
-            }
-            .focusable()
-            .focused($isFocused)
-            .onKeyPress(.return) {
-                action()
-                return .handled
-            }
-    }
-}
-```
-
-### FocusInteractions (iOS 17+)
-
-Control which focus interactions a view supports:
-
-```swift
-// Tap-equivalent only (no text editing)
-CustomButton(title: "Play")
-    .focusable(interactions: .activate)
-
-// Text input only
-CustomInputField()
-    .focusable(interactions: .edit)
-
-// Both activation and editing
-SearchBar()
-    .focusable(interactions: [.activate, .edit])
-```
-
-### Keyboard Shortcuts
-
-```swift
-Button("New Document") { createDocument() }
-    .keyboardShortcut("n", modifiers: .command)
-
-Button("Find") { showSearch() }
-    .keyboardShortcut("f", modifiers: .command)
-
-// Delete with confirmation
-Button("Delete", role: .destructive) { confirmDelete() }
-    .keyboardShortcut(.delete, modifiers: .command)
-```
-
-### Focus State for Multi-Field Navigation
-
-```swift
-enum Field: Hashable {
-    case username, password, confirmPassword
-}
-
-struct SignupForm: View {
-    @FocusState private var focusedField: Field?
-
-    var body: some View {
-        Form {
-            TextField("Username", text: $username)
-                .focused($focusedField, equals: .username)
-            SecureField("Password", text: $password)
-                .focused($focusedField, equals: .password)
-            SecureField("Confirm", text: $confirm)
-                .focused($focusedField, equals: .confirmPassword)
-        }
-        .onSubmit {
-            switch focusedField {
-            case .username: focusedField = .password
-            case .password: focusedField = .confirmPassword
-            case .confirmPassword: submit()
-            case nil: break
-            }
-        }
-    }
-}
-```
+- Every interactive control is reachable by keyboard.
+- Activation works with expected keyboard input.
+- Focus indicators are visible and not hidden by custom styling.
+- Focus traversal is logical and does not trap users in a region.
+- Gesture-only interactions have keyboard-operable alternatives.
+- App shortcuts do not override system shortcuts.
+- Custom controls skipped by Tab should be filed as keyboard focus implementation issues and routed to `focus-engine`; keep the accessibility finding here.
+- Explicitly assess traversal impact: accessibility element order and grouping affect VoiceOver swipe order, Switch Control scan order, Voice Control overlay targeting, and Full Keyboard Access reachability review.
 
 ## Automated Accessibility Testing
 

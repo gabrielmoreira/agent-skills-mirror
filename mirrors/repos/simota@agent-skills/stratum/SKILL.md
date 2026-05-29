@@ -88,7 +88,7 @@ Route elsewhere when:
 - Set workspace `scope` (`softwaresystem` | `landscape`) inside the `configuration` block — this triggers built-in validation that a software-system-scoped workspace defines containers/docs/decisions for exactly one system, and that a landscape-scoped workspace defines no containers. Strict validation mode rejects unscoped workspaces. Unscoped (`none`) is legacy and loses this safety net. [Source: docs.structurizr.com/workspaces/scope]
 - Stay current with the C4 model ecosystem. Simon Brown's O'Reilly book (early access live as of 2026, physical publication Q3 2026) supersedes the Leanpub edition and adds new guidance on microservices, message-driven architectures, and enterprise-scale decentralized modeling. Refer to the O'Reilly edition for the most current notation rules. [Source: oreilly.com/library/view/the-c4-model/9798341660113]
 - Inform stakeholders of C4 adoption patterns from empirical data. The IcePanel State of Software Architecture Report 2025 (75 respondents, 57% architects) found: Context (L1) diagrams used by 81%, Container (L2) by 79%, Component (L3) by 41%; Dynamic and System Landscape supplementary diagrams each used by ~27-28%. Top challenges: lack of standards/consistency across teams, difficulty finding the right level of detail, and keeping documentation up to date. [Source: icepanel.io/blog/2026-01-21-state-of-software-architecture-survey-2025]
-- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing landscape, identifiers, archetypes, and team workspaces at MODEL — DSL composition depends on grounded structure), P5 (think step-by-step at MODEL — workspace extension, grouping, and identifier decisions cascade across every consuming view)** as critical for Stratum. P2 recommended: calibrated DSL + ADR/RFC outputs preserving rationale. P1 recommended: front-load target abstraction level (C1/C2/C3/C4) and audience at the first phase.
+- Author for Opus 4.8 defaults. Apply _common/OPUS_48_AUTHORING.md principles **P3 (eagerly Read existing landscape, identifiers, archetypes, and team workspaces at MODEL — DSL composition depends on grounded structure), P5 (think step-by-step at MODEL — workspace extension, grouping, and identifier decisions cascade across every consuming view)** as critical for Stratum. P2 recommended: calibrated DSL + ADR/RFC outputs preserving rationale. P1 recommended: front-load target abstraction level (C1/C2/C3/C4) and audience at the first phase.
 
 ## Boundaries
 
@@ -465,7 +465,7 @@ STRATUM_TO_SCRIBE_HANDOFF:
 | `_common/BOUNDARIES.md` | You need agent role boundary definitions. |
 | `_common/OPERATIONAL.md` | You need standard operational protocols. |
 | `_common/HANDOFF.md` | You need handoff format specifications. |
-| `_common/OPUS_47_AUTHORING.md` | You are sizing the DSL/ADR output, deciding adaptive thinking depth at MODEL, or front-loading target abstraction level/audience. Critical for Stratum: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | You are sizing the DSL/ADR output, deciding adaptive thinking depth at MODEL, or front-loading target abstraction level/audience. Critical for Stratum: P3, P5. |
 
 ## Operational
 

@@ -80,7 +80,7 @@ Route elsewhere when the task is primarily:
 - Honor robots.txt, ai.txt, TDM Reservation Protocol, meta tags, HTTP opt-out headers, and source-specific ToS before any fetch — not after.
 - Apply per-source token-bucket rate limiting with jittered delays; honor `Retry-After` on 429 responses; adaptive backoff on 5xx.
 - Never bypass paywalls, CAPTCHAs, DRM, or anti-bot defenses. Refuse the task if the only path requires circumvention.
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read product list, schema, matching keys, source allowlist, and license context at INTAKE — image acquisition without grounded matching keys produces ambiguous matches that look right but ship wrong product imagery), P5 (think step-by-step at MATCH (identifier vs text vs visual fallback chain), at quality-floor decisions, and at license-class boundary cases)** as critical for Haul. P2 recommended: calibrated manifest preserving provenance, match score, license class, dedup result, and quality verdict per image. P1 recommended: front-load product list, identifier types, source allowlist, resolution floor, and license scope at INTAKE.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read product list, schema, matching keys, source allowlist, and license context at INTAKE — image acquisition without grounded matching keys produces ambiguous matches that look right but ship wrong product imagery), P5 (think step-by-step at MATCH (identifier vs text vs visual fallback chain), at quality-floor decisions, and at license-class boundary cases)** as critical for Haul. P2 recommended: calibrated manifest preserving provenance, match score, license class, dedup result, and quality verdict per image. P1 recommended: front-load product list, identifier types, source allowlist, resolution floor, and license scope at INTAKE.
 
 ---
 
@@ -286,7 +286,7 @@ Haul receives product lists, identifier sets, source allowlists, and schema feed
 | [`_common/BOUNDARIES.md`](../_common/BOUNDARIES.md) | Role boundaries with Navigator / Spider / Sketch / Pixel are ambiguous |
 | [`_common/OPERATIONAL.md`](../_common/OPERATIONAL.md) | You need journal, activity log, AUTORUN, Nexus, Git, or shared operational defaults |
 | [`_common/SUBAGENT.md`](../_common/SUBAGENT.md) | You need parallelism-layer choice for multi-source batches |
-| [`_common/OPUS_47_AUTHORING.md`](../_common/OPUS_47_AUTHORING.md) | You are sizing the manifest, deciding adaptive thinking depth at MATCH boundary cases, or front-loading product list / sources / license scope at INTAKE. Critical for Haul: P3, P5. |
+| [`_common/OPUS_48_AUTHORING.md`](../_common/OPUS_48_AUTHORING.md) | You are sizing the manifest, deciding adaptive thinking depth at MATCH boundary cases, or front-loading product list / sources / license scope at INTAKE. Critical for Haul: P3, P5. |
 
 ---
 

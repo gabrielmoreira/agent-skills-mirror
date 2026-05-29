@@ -158,18 +158,18 @@ SKTextureAtlas.preloadTextureAtlasesNamed(["Characters", "Environment"]) {
 }
 ```
 
-Alternatively, preload using async:
+Alternatively, use SpriteKit's async preload APIs:
 
 ```swift
-func preloadAssets() async {
-    await withCheckedContinuation { continuation in
-        SKTextureAtlas.preloadTextureAtlases([
-            SKTextureAtlas(named: "Characters"),
-            SKTextureAtlas(named: "Environment")
-        ]) {
-            continuation.resume()
-        }
-    }
+func preloadAssets() async throws {
+    _ = try await SKTextureAtlas.preloadTextureAtlasesNamed([
+        "Characters",
+        "Environment"
+    ])
+
+    await SKTextureAtlas.preloadTextureAtlases([
+        SKTextureAtlas(named: "Effects")
+    ])
 }
 ```
 
@@ -444,16 +444,20 @@ sprite.shader = shader
 shader.uniformNamed("u_threshold")?.floatValue = newValue
 ```
 
-### Built-in Shader Variables
+### Built-in Shader Symbols
 
-| Variable | Type | Description |
+| Symbol | Type | Description |
 |----------|------|-------------|
 | `u_texture` | `sampler2D` | The node's texture |
 | `u_time` | `float` | Time since shader attached |
 | `u_path_length` | `float` | Path length (shape nodes) |
 | `v_tex_coord` | `vec2` | Texture coordinate |
 | `v_color_mix` | `vec4` | Node's blend color |
-| `u_sprite_size` | `vec2` | Sprite size in points |
+| `v_path_distance` | `float` | Distance along a shape-node stroke path |
+| `SKDefaultShading()` | function | Default SpriteKit shading behavior |
+
+Values such as `u_sprite_size` are app-defined uniforms or attributes, not
+SpriteKit-provided built-ins.
 
 ### Attribute Values
 

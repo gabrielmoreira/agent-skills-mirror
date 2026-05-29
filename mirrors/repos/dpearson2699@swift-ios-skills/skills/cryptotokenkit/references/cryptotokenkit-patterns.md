@@ -694,7 +694,10 @@ func addTokenConfiguration(
 
 ## Smart Card Slot Monitoring
 
-Monitor smart card slot state changes for reader-aware applications.
+Monitor smart card slot state changes for reader-aware applications. Always
+guard `TKSmartCardSlotManager.default`; Apple documents that it returns `nil`
+unless smart-card access is enabled, and available APIs still depend on device
+hardware and runtime support.
 
 ```swift
 import CryptoTokenKit
@@ -751,10 +754,13 @@ final class SlotMonitor {
 
 ## Token Registration
 
-Register and unregister smart card tokens using
-`TKSmartCardTokenRegistrationManager`.
+On iOS/iPadOS 26+, register and unregister NFC smart card tokens using
+`TKSmartCardTokenRegistrationManager`. A registered smart card remains
+reachable through Keychain Services, and the system can invoke an NFC slot when
+a cryptographic operation needs the registered card.
 
 ```swift
+@available(iOS 26.0, *)
 func registerSmartCardToken(tokenID: String) {
     let manager = TKSmartCardTokenRegistrationManager.default
 
@@ -769,6 +775,7 @@ func registerSmartCardToken(tokenID: String) {
     }
 }
 
+@available(iOS 26.0, *)
 func unregisterSmartCardToken(tokenID: String) {
     let manager = TKSmartCardTokenRegistrationManager.default
 
@@ -780,6 +787,7 @@ func unregisterSmartCardToken(tokenID: String) {
     }
 }
 
+@available(iOS 26.0, *)
 func listRegisteredTokens() {
     let manager = TKSmartCardTokenRegistrationManager.default
     for tokenID in manager.registeredSmartCardTokens {

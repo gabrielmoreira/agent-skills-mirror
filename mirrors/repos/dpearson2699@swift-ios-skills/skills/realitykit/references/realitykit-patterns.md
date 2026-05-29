@@ -417,13 +417,13 @@ let model = ModelEntity(
     mesh: .generateBox(size: 0.1),
     materials: [SimpleMaterial(color: .blue, isMetallic: false)]
 )
-model.components.set(AccessibilityComponent(
-    label: "Blue cube",
-    value: "Interactive 3D object",
-    isAccessibilityElement: true,
-    traits: [.button],
-    systemActions: [.activate]
-))
+var accessibility = AccessibilityComponent()
+accessibility.isAccessibilityElement = true
+accessibility.label = "Blue cube"
+accessibility.value = "Interactive 3D object"
+accessibility.traits = [.button]
+accessibility.systemActions = [.activate]
+model.components.set(accessibility)
 ```
 
 ## Performance Tips

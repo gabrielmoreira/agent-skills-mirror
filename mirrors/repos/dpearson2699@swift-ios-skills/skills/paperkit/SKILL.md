@@ -58,10 +58,13 @@ class MarkupViewController: UIViewController, PaperMarkupViewController.Delegate
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let markup = PaperMarkup(bounds: view.bounds)
+        let pageBounds = CGRect(origin: .zero, size: CGSize(width: 612, height: 792))
+        let markup = PaperMarkup(bounds: pageBounds)
+        let features = FeatureSet.latest
+
         paperVC = PaperMarkupViewController(
             markup: markup,
-            supportedFeatureSet: .latest
+            supportedFeatureSet: features
         )
         paperVC.delegate = self
 
@@ -111,10 +114,16 @@ paperVC.directTouchAutomaticallyDraws = true  // System decides based on Pencil 
 
 ### Content Background
 
-Set any view beneath the markup layer for templates, document pages, or images being annotated:
+Set any view beneath the markup layer for templates, document pages, or images being annotated. Keep the `PaperMarkup(bounds:)` coordinate space aligned to the background content, such as a PDF page or rendered image size, so saved annotations restore in the right place:
 
 ```swift
-paperVC.contentView = UIImageView(image: UIImage(named: "template"))
+let pageBounds = CGRect(origin: .zero, size: pageImage.size)
+let imageView = UIImageView(image: pageImage)
+imageView.frame = pageBounds
+
+let markup = PaperMarkup(bounds: pageBounds)
+paperVC = PaperMarkupViewController(markup: markup, supportedFeatureSet: features)
+paperVC.contentView = imageView
 ```
 
 ### Delegate Callbacks
@@ -133,7 +142,7 @@ paperVC.contentView = UIImageView(image: UIImage(named: "template"))
 ### Creating and Persisting
 
 ```swift
-// New empty model
+// New empty model. Bounds define the saved document coordinate space.
 let markup = PaperMarkup(bounds: CGRect(x: 0, y: 0, width: 612, height: 792))
 
 // Load from saved data
@@ -199,14 +208,14 @@ Use `suggestedFrameForInserting(contentInFrame:)` on the view controller to get 
 
 ## Insertion Controllers
 
-### MarkupEditViewController (iOS, iPadOS, visionOS)
+### MarkupEditViewController (iOS, iPadOS, Mac Catalyst, visionOS)
 
 Presents a popover menu for inserting shapes, text boxes, lines, and other elements.
 
 ```swift
 func showInsertionMenu(from barButtonItem: UIBarButtonItem) {
     let editVC = MarkupEditViewController(
-        supportedFeatureSet: .latest,
+        supportedFeatureSet: paperVC.supportedFeatureSet,
         additionalActions: []
     )
     editVC.delegate = paperVC  // PaperMarkupViewController conforms to the delegate
@@ -218,10 +227,10 @@ func showInsertionMenu(from barButtonItem: UIBarButtonItem) {
 
 ### MarkupToolbarViewController (macOS, Mac Catalyst)
 
-Provides a toolbar with drawing tools and insertion buttons.
+Provides a toolbar with drawing tools and insertion buttons. Use it for native macOS and for Mac Catalyst toolbar-style UI; Catalyst apps that want a UIKit popover can use `MarkupEditViewController`.
 
 ```swift
-let toolbar = MarkupToolbarViewController(supportedFeatureSet: .latest)
+let toolbar = MarkupToolbarViewController(supportedFeatureSet: paperVC.supportedFeatureSet)
 toolbar.delegate = paperVC
 addChild(toolbar)
 toolbar.view.frame = toolbarContainerView.bounds
@@ -276,7 +285,7 @@ Set `colorMaximumLinearExposure` above `1.0` on both the `FeatureSet` and `PKToo
 ```swift
 var features = FeatureSet.latest
 features.colorMaximumLinearExposure = 4.0
-toolPicker.maximumLinearExposure = features.colorMaximumLinearExposure
+toolPicker.colorMaximumLinearExposure = features.colorMaximumLinearExposure
 ```
 
 Use `view.window?.windowScene?.screen.potentialEDRHeadroom` to match the device screen's capability. Use `1.0` for SDR-only.
@@ -292,6 +301,8 @@ features.lineMarkerPositions = .all  // .single, .double, .plain, or .all
 ## Integration with PencilKit
 
 PaperKit accepts `PKTool` for drawing and can append `PKDrawing` content.
+
+PaperKit is not a drop-in replacement for a low-level `PKCanvasView` when the app depends on custom brush behavior, raw `PKDrawing` / `PKStroke` analytics, or custom lasso-centric editing. Keep those workflows owned by PencilKit, and add PaperKit beside them for structured review markup such as callouts, arrows, text boxes, labels, image stamps, and system-standard insertion UI. Migrate or duplicate existing drawings into a PaperKit annotation layer with `PaperMarkup.append(contentsOf: PKDrawing)` only when the low-level editing path no longer needs to own that content.
 
 ```swift
 import PencilKit
@@ -329,9 +340,10 @@ Wrap `PaperMarkupViewController` in `UIViewControllerRepresentable`:
 ```swift
 struct MarkupView: UIViewControllerRepresentable {
     @Binding var markup: PaperMarkup
+    let features: FeatureSet
 
     func makeUIViewController(context: Context) -> PaperMarkupViewController {
-        let vc = PaperMarkupViewController(markup: markup, supportedFeatureSet: .latest)
+        let vc = PaperMarkupViewController(markup: markup, supportedFeatureSet: features)
         vc.delegate = context.coordinator
         let toolPicker = PKToolPicker()
         toolPicker.addObserver(vc)
@@ -357,6 +369,29 @@ struct MarkupView: UIViewControllerRepresentable {
         ) {
             if let markup = controller.markup { parent.markup = markup }
         }
+    }
+}
+```
+
+Initialize the bound `PaperMarkup` from the document or page size before creating the SwiftUI bridge:
+
+```swift
+struct DocumentMarkupScreen: View {
+    let pageSize: CGSize
+    @State private var markup: PaperMarkup
+    private let features = FeatureSet.latest
+
+    init(pageSize: CGSize) {
+        self.pageSize = pageSize
+        _markup = State(
+            initialValue: PaperMarkup(
+                bounds: CGRect(origin: .zero, size: pageSize)
+            )
+        )
+    }
+
+    var body: some View {
+        MarkupView(markup: $markup, features: features)
     }
 }
 ```
@@ -423,11 +458,15 @@ var toolPicker: PKToolPicker!
 ### Wrong Insertion Controller for Platform
 
 ```swift
-// DON'T — MarkupEditViewController is iOS/iPadOS/visionOS only
+// DON'T — treat MarkupEditViewController as unavailable on Mac Catalyst
 
-// DO
+// DO — use the right UI for the presentation style
 #if os(macOS)
 let toolbar = MarkupToolbarViewController(supportedFeatureSet: features)
+#elseif targetEnvironment(macCatalyst)
+// Catalyst supports both: toolbar-style UI or UIKit popover insertion.
+let toolbar = MarkupToolbarViewController(supportedFeatureSet: features)
+let editVC = MarkupEditViewController(supportedFeatureSet: features, additionalActions: [])
 #else
 let editVC = MarkupEditViewController(supportedFeatureSet: features, additionalActions: [])
 #endif
@@ -442,9 +481,9 @@ let editVC = MarkupEditViewController(supportedFeatureSet: features, additionalA
 - [ ] `PKToolPicker` retained as a stored property
 - [ ] Delegate set on `PaperMarkupViewController` for change callbacks
 - [ ] Content version checked when loading saved data
-- [ ] Correct insertion controller per platform (`MarkupEditViewController` vs `MarkupToolbarViewController`)
+- [ ] Correct insertion controller per platform (`MarkupToolbarViewController` for macOS/Catalyst toolbar UI; `MarkupEditViewController` for UIKit/Catalyst popovers)
 - [ ] `MarkupError` cases handled on deserialization
-- [ ] HDR: `colorMaximumLinearExposure` set on both `FeatureSet` and `PKToolPicker`
+- [ ] HDR: `colorMaximumLinearExposure` set on `FeatureSet` and `PKToolPicker.colorMaximumLinearExposure`
 
 ## References
 

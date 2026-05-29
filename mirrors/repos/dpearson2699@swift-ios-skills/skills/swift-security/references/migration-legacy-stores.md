@@ -8,6 +8,26 @@
 
 ---
 
+## Contents
+
+- [Why Migrate — The Risk of Legacy Storage](#why-migrate-the-risk-of-legacy-storage)
+- [The Five Correctness Traps](#the-five-correctness-traps)
+- [First-Launch Keychain Cleanup](#first-launch-keychain-cleanup)
+- [Atomic Migration: Read → Write → Verify → Delete](#atomic-migration-read-write-verify-delete)
+- [Versioned Migration with Schema Tracking](#versioned-migration-with-schema-tracking)
+- [Orphaned Items: Why You Must Never Rename kSecAttrService](#orphaned-items-why-you-must-never-rename-ksecattrservice)
+- [Background Launch and the Locked-Device Trap](#background-launch-and-the-locked-device-trap)
+- [The Phantom Mismatch Bug](#the-phantom-mismatch-bug)
+- [Team ID Change: The App Transfer Edge Case](#team-id-change-the-app-transfer-edge-case)
+- [Deferred Legacy Cleanup with Rollback Window](#deferred-legacy-cleanup-with-rollback-window)
+- [Complete App Launch Sequence](#complete-app-launch-sequence)
+- [Thread Safety Note](#thread-safety-note)
+- [Testing Migration Paths](#testing-migration-paths)
+- [Handling Very Old Versions and Collapse Strategy](#handling-very-old-versions-and-collapse-strategy)
+- [Secure Deletion: Trust Cryptographic Erasure](#secure-deletion-trust-cryptographic-erasure)
+- [Conclusion](#conclusion)
+- [Summary Checklist](#summary-checklist)
+
 ## Why Migrate — The Risk of Legacy Storage
 
 UserDefaults, `.plist` files, and NSCoding archives store data as unencrypted plaintext within the app sandbox. This data is readable on jailbroken devices and included in unencrypted iTunes/Finder backups — anyone with backup access can extract tokens, passwords, and PII. OWASP ranks insecure data storage as a top-10 mobile risk (M9).
@@ -613,7 +633,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 ## Thread Safety Note
 
-> **Cross-validation note:** One research source claims SecItem C-APIs are non-thread-safe and recommends a serial `DispatchQueue`. Apple's documentation and Quinn "The Eskimo" (DTS) confirm that **SecItem\* functions are thread-safe on iOS**. However, your wrapper's mutable state (caches, migration flags, version tracking) does need synchronization. An `actor` provides this naturally in modern Swift concurrency — prefer actors over serial queues for new code (iOS 15+).
+`SecItem*` functions are safe to call from concurrent code, but your wrapper's mutable state (caches, migration flags, version tracking) still needs synchronization. An `actor` provides this naturally in modern Swift concurrency; prefer actors over serial queues for new code when the deployment target allows it.
 
 ---
 

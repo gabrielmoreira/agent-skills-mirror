@@ -39,7 +39,9 @@ import DockKit
 DockKit requires a physical DockKit-compatible accessory and a real device.
 The Simulator cannot connect to dock hardware.
 
-No special entitlements or Info.plist keys are required. The framework
+DockKit itself requires no special entitlements or DockKit-specific
+Info.plist keys. Camera apps that use device cameras still need normal
+camera privacy handling, including `NSCameraUsageDescription`. The framework
 communicates with paired accessories automatically through the DockKit
 system daemon.
 
@@ -70,22 +72,10 @@ func observeAccessories() async throws {
 }
 ```
 
-`accessoryStateChanges` is an `AsyncSequence` that emits
-`DockAccessory.StateChange` values. Each change includes:
-
-- `state` -- `.docked` or `.undocked`
-- `accessory` -- the `DockAccessory` instance (present when docked)
-- `trackingButtonEnabled` -- whether the physical tracking button is active
-
-### Accessory Identity
-
-Each `DockAccessory` has an `identifier` with:
-
-- `name` -- human-readable accessory name
-- `category` -- `.trackingStand` (currently the only category)
-- `uuid` -- unique identifier for this accessory
-
-Hardware details are available via `firmwareVersion` and `hardwareModel`.
+`accessoryStateChanges` emits `DockAccessory.StateChange` values with `state`,
+`accessory`, and `trackingButtonEnabled`. Use `accessory.identifier` for the
+name, category, and UUID; hardware details are available via `firmwareVersion`
+and `hardwareModel`.
 
 ## System Tracking
 
@@ -104,12 +94,6 @@ try await DockAccessoryManager.shared.setSystemTrackingEnabled(true)
 try await DockAccessoryManager.shared.setSystemTrackingEnabled(false)
 ```
 
-Check current state:
-
-```swift
-let isEnabled = DockAccessoryManager.shared.isSystemTrackingEnabled
-```
-
 System tracking state does not persist across app termination, reboots,
 or background/foreground transitions. Set it explicitly whenever the app
 needs a specific value.
@@ -119,7 +103,7 @@ needs a specific value.
 Allow users to select a specific subject by tapping:
 
 ```swift
-// Select the subject at a screen coordinate
+// Select the subject at a unit point in video-frame coordinates
 try await accessory.selectSubject(at: CGPoint(x: 0.5, y: 0.5))
 
 // Select specific subjects by identifier
@@ -146,51 +130,55 @@ import AVFoundation
 func processFrame(
     _ sampleBuffer: CMSampleBuffer,
     accessory: DockAccessory,
-    device: AVCaptureDevice
+    activeDevice: AVCaptureDevice
 ) async throws {
     let cameraInfo = DockAccessory.CameraInformation(
-        captureDevice: device.deviceType,
-        cameraPosition: device.position,
+        captureDevice: activeDevice.deviceType,
+        cameraPosition: activeDevice.position,
         orientation: .corrected,
-        cameraIntrinsics: nil,
-        referenceDimensions: nil
+        cameraIntrinsics: frameIntrinsics(from: sampleBuffer),
+        referenceDimensions: frameDimensions(from: sampleBuffer)
     )
 
-    // Create observation from your detection output
+    let detection = try await detector.detect(sampleBuffer)
+    let observationType: DockAccessory.Observation.ObservationType = switch detection.kind {
+    case .face: .humanFace
+    case .body: .humanBody
+    case .object: .object
+    }
+
     let observation = DockAccessory.Observation(
-        identifier: 0,
-        type: .humanFace,
-        rect: detectedFaceRect,       // CGRect in normalized coordinates
-        faceYawAngle: nil
+        identifier: detection.id,
+        type: observationType,
+        rect: detection.rect,       // normalized, lower-left origin
+        faceYawAngle: detection.faceYawAngle
     )
 
-    try await accessory.track(
-        [observation],
-        cameraInformation: cameraInfo
-    )
+    try await accessory.track([observation], cameraInformation: cameraInfo)
 }
 ```
 
 ### Observation Types
 
-| Type | Use |
-|---|---|
-| `.humanFace` | Preserves system multi-person tracking and framing optimizations |
-| `.humanBody` | Full body tracking |
-| `.object` | Arbitrary objects (pets, hands, barcodes, etc.) |
+When reviewing custom tracking, explicitly choose among the only supported
+`ObservationType` cases: `.humanFace`, `.humanBody`, and `.object`.
+Do not answer with only `.humanFace` when body or object detections are possible.
 
 The `rect` uses normalized coordinates with a lower-left origin (same
 coordinate system as Vision framework -- no conversion needed).
 
 ### Camera Information
 
-`DockAccessory.CameraInformation` describes the active camera. Set
-orientation to `.corrected` when coordinates are already relative to the
-bottom-left corner of the screen. Optional `cameraIntrinsics` and
-`referenceDimensions` improve tracking accuracy.
+`DockAccessory.CameraInformation` describes the active camera; do not hardcode
+placeholder device, intrinsics, or frame-size values. Set orientation to
+`.corrected` when coordinates are already relative to the bottom-left corner.
+In review answers, reject opaque optional `cameraInfo` placeholders and show
+construction from the active `AVCaptureDevice` plus the current `CMSampleBuffer`.
 
-Track variants also accept `[AVMetadataObject]` instead of observations,
-and an optional `CVPixelBuffer` for enhanced tracking.
+Track variants also accept `[AVMetadataObject]` instead of observations.
+Use the `image: CVPixelBuffer` overloads when DockKit should combine
+observations or metadata with the captured image buffer; the image argument
+is required in those overloads.
 
 ## Framing and Region of Interest
 
@@ -199,23 +187,20 @@ and an optional `CVPixelBuffer` for enhanced tracking.
 Control how the system frames tracked subjects:
 
 ```swift
-try await accessory.setFramingMode(.center)
+try await accessory.setFramingMode(.automatic) // documented default
+try await accessory.setFramingMode(.center)    // explicit opt-in
 ```
 
 | Mode | Behavior |
 |---|---|
-| `.automatic` | System decides optimal framing |
-| `.center` | Keep subject centered (default) |
+| `.automatic` | Documented default; system decides optimal framing |
+| `.center` | Explicit opt-in mode to keep subject centered |
 | `.left` | Frame subject in left third |
 | `.right` | Frame subject in right third |
 
-Read the current mode:
-
-```swift
-let currentMode = accessory.framingMode
-```
-
-Use `.left` or `.right` when graphic overlays occupy part of the frame.
+Default system behavior often centers the primary subject, but `.center` is
+never the default-like mode; `.automatic` is. Use `.left` or `.right` when
+graphic overlays occupy part of the frame.
 
 ### Region of Interest
 
@@ -225,12 +210,6 @@ Constrain tracking to a specific area of the video frame:
 // Normalized coordinates, origin at upper-left
 let squareRegion = CGRect(x: 0.25, y: 0.0, width: 0.5, height: 1.0)
 try await accessory.setRegionOfInterest(squareRegion)
-```
-
-Read the current region:
-
-```swift
-let currentROI = accessory.regionOfInterest
 ```
 
 Use region of interest when cropping to a non-standard aspect ratio
@@ -283,7 +262,7 @@ Also accepts `Rotation3D` for quaternion-based orientation. Set
 Monitor the accessory's current position and velocity:
 
 ```swift
-for await state in accessory.motionStates {
+for await state in try accessory.motionStates {
     let positions = state.angularPositions   // Vector3D
     let velocities = state.angularVelocities // Vector3D
     let time = state.timestamp
@@ -333,74 +312,88 @@ try await DockAccessoryManager.shared.setSystemTrackingEnabled(true)
 | `.kapow` | Dramatic pendulum swing |
 
 Animations start from the accessory's current position and execute
-asynchronously. Always restore tracking state after completion.
+asynchronously. Always restore tracking state after completion. Keep
+`animate(motion:)` and `setOrientation(_:duration:relative:)` calls to no
+more than twice per second; higher call rates can throw `.frameRateTooHigh`.
 
 ## Tracking State and Subject Selection
 
-iOS 18+ exposes ML-derived tracking signals through `trackingStates`.
-Each `TrackingState` contains a timestamp and a list of
-`TrackedSubjectType` values (`.person` or `.object`). Persons include
+iOS 18+ exposes ML-derived tracking signals through the throwing
+`trackingStates` async sequence. Each state has `time` and `trackedSubjects`
+(`.person` or `.object`); persons include `identifier`, `rect`,
 `speakingConfidence`, `lookingAtCameraConfidence`, and `saliencyRank`
-(1 = most important, lower is more salient).
+(lower rank is more salient).
 
 ```swift
-for await state in accessory.trackingStates {
-    for subject in state.trackedSubjects {
-        switch subject {
-        case .person(let person):
-            let speaking = person.speakingConfidence   // 0.0 - 1.0
-            let saliency = person.saliencyRank
-        case .object(let object):
-            let saliency = object.saliencyRank
+if #available(iOS 18.0, *) {
+    for await state in try accessory.trackingStates {
+        var speaker: UUID?
+        var engaged: UUID?
+        var salient: (id: UUID, rank: Int)?
+        for subject in state.trackedSubjects {
+            switch subject {
+            case .person(let person):
+                let id = person.identifier, rect = person.rect
+                let speaking = person.speakingConfidence
+                let looking = person.lookingAtCameraConfidence
+                let rank = person.saliencyRank
+                updateSubjectOverlay(id: id, rect: rect)
+                if let speaking, speaking > 0.7 { speaker = id }
+                if let looking, looking > 0.7 { engaged = id }
+                if let rank, salient == nil || rank < salient!.rank { salient = (id, rank) }
+            case .object(let object):
+                let id = object.identifier, rect = object.rect
+                let rank = object.saliencyRank
+                updateSubjectOverlay(id: id, rect: rect)
+                if let rank, salient == nil || rank < salient!.rank { salient = (id, rank) }
+            }
+        }
+        if let id = speaker ?? engaged ?? salient?.id { try await accessory.selectSubjects([id]) }
+    }
+}
+```
+
+Use `selectSubjects(_:)` to lock tracking by UUID; pass `[]` to return to
+automatic selection. Use `speakingConfidence` for speakers,
+`lookingAtCameraConfidence` for engagement, `rect` for overlays, and lower
+`saliencyRank` values as fallback.
+In review answers, consume `lookingAtCameraConfidence` and `rect` in code, not
+just prose.
+
+## Accessory Events
+
+Physical buttons on the dock trigger events through the throwing
+`accessoryEvents` async sequence (iOS 17.4+):
+
+```swift
+if #available(iOS 17.4, *) {
+    for await event in try accessory.accessoryEvents {
+        switch event {
+        case .cameraShutter: break
+        case .cameraFlip: break
+        case .cameraZoom(factor: let factor): break
+        case .button(id: let id, pressed: let pressed): break
+        @unknown default: break
         }
     }
 }
 ```
 
-Use `selectSubjects(_:)` to lock tracking onto specific subjects by UUID.
-Pass an empty array to return to automatic selection. See
-[references/dockkit-patterns.md](references/dockkit-patterns.md) for speaker-tracking and saliency
-filtering recipes.
-
-## Accessory Events
-
-Physical buttons on the dock trigger events:
-
-```swift
-for await event in accessory.accessoryEvents {
-    switch event {
-    case .cameraShutter:
-        // Start or stop recording / take photo
-        break
-    case .cameraFlip:
-        // Switch front/back camera
-        break
-    case .cameraZoom(factor: let factor):
-        // factor > 0 means zoom in, < 0 means zoom out
-        break
-    case .button(id: let id, pressed: let pressed):
-        // Custom button with identifier
-        break
-    @unknown default:
-        break
-    }
-}
-```
-
-For first-party apps (Camera, FaceTime), shutter/flip/zoom events work
-automatically. Third-party apps receive these events and implement
-behavior through AVFoundation.
+Third-party apps receive these events and implement behavior through
+AVFoundation.
 
 ## Battery Monitoring
 
-Monitor the dock's battery status (iOS 18+). A dock can report multiple
-batteries, each identified by `name`:
+Monitor the dock's battery status through the throwing `batteryStates` async
+sequence (iOS 18+). A dock can report multiple batteries, each identified by
+`name`:
 
 ```swift
-for await battery in accessory.batteryStates {
-    let level = battery.batteryLevel       // 0.0 - 1.0
-    let charging = battery.chargeState     // .charging, .notCharging, .notChargeable
-    let low = battery.lowBattery
+if #available(iOS 18.0, *) {
+    var batteryRows: [String: (Double, DockAccessory.BatteryChargeState, Bool)] = [:]
+    for await battery in try accessory.batteryStates {
+        batteryRows[battery.name] = (battery.batteryLevel, battery.chargeState, battery.lowBattery)
+    }
 }
 ```
 
@@ -444,6 +437,12 @@ try await accessory.track(observations, cameraInformation: cameraInfo)
 // Hook into AVCaptureVideoDataOutputSampleBufferDelegate for per-frame calls
 ```
 
+### DON'T: Spam orientation or animation calls
+
+DockKit can throw `.frameRateTooHigh` if `animate(motion:)` or
+`setOrientation(_:duration:relative:)` is called more than twice per second.
+Set a trajectory, observe its `Progress`, and avoid tight command loops.
+
 ### DON'T: Forget to restore tracking after animations
 
 ```swift
@@ -474,13 +473,16 @@ available.
 - [ ] System tracking disabled before custom tracking or motor control
 - [ ] System tracking restored after animations complete
 - [ ] Custom observations supplied at 10-30 fps
+- [ ] `animate` and `setOrientation` commands limited to 2 calls per second
 - [ ] Observation `rect` uses normalized coordinates (lower-left origin)
-- [ ] Camera information matches the active capture device
+- [ ] Camera information is built inline from the active `AVCaptureDevice` and current sample buffer
+- [ ] Observation type choice names `.humanFace`, `.humanBody`, and `.object`
 - [ ] `@unknown default` handled in all switch statements over DockKit enums
 - [ ] Motion limits set if restricting accessory range of motion
 - [ ] Tracking state re-applied after app returns to foreground
-- [ ] Accessory events handled for physical button integration
-- [ ] Battery state monitored when showing dock status to user
+- [ ] `accessoryEvents` guarded with `#available(iOS 17.4, *)`
+- [ ] `trackingStates` and `batteryStates` guarded with `#available(iOS 18.0, *)`
+- [ ] Battery UI preserves `BatteryState.name` for multi-battery docks
 - [ ] No DockKit code paths executed in Simulator builds
 
 ## References

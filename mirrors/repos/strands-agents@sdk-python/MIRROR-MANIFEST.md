@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `strands-agents/sdk-python` — 26 default patterns, 3 followed patterns, 15 file(s) materialized.
+Mirror of `strands-agents/sdk-python` — 26 default patterns, 5 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `strands-agents/sdk-python` — 26 default patterns, 3 followed patter
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 3 |
-| Files         | 15 |
+| Followed pats | 5 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,8 +52,10 @@ Mirror of `strands-agents/sdk-python` — 26 default patterns, 3 followed patter
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `CONTRIBUTING.md`
-- `strands-py/docs/STYLE_GUIDE.md`
 - `strands-py/docs/PR.md`
+- `dev-docs/PR.md`
+- `strands-py/docs/STYLE_GUIDE.md`
+- `site/CONTRIBUTING.md`
 
 ## File Index
 
@@ -69,13 +71,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`.agents/skills/docs-planner/SKILL.md`](.agents/skills/docs-planner/SKILL.md) |
 | 7 | ✓ | [`.agents/skills/docs-reviewer/SKILL.md`](.agents/skills/docs-reviewer/SKILL.md) |
 | 8 | ✓ | [`.agents/skills/docs-writer/SKILL.md`](.agents/skills/docs-writer/SKILL.md) |
-| 9 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
-| 10 | ✓ | [`site/CONTRIBUTING.md`](site/CONTRIBUTING.md) |
-| 11 | ✓ | [`site/SITE-ARCHITECTURE.md`](site/SITE-ARCHITECTURE.md) |
-| 12 | ✓ | [`strands-py/AGENTS.md`](strands-py/AGENTS.md) |
-| 13 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 14 | → | [`strands-py/docs/PR.md`](strands-py/docs/PR.md) |
-| 15 | → | [`strands-py/docs/STYLE_GUIDE.md`](strands-py/docs/STYLE_GUIDE.md) |
+| 9 | ✓ | [`.agents/skills/strands-review/SKILL.md`](.agents/skills/strands-review/SKILL.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
+| 12 | ✓ | [`site/SITE-ARCHITECTURE.md`](site/SITE-ARCHITECTURE.md) |
+| 13 | ✓ | [`strands-py/AGENTS.md`](strands-py/AGENTS.md) |
+| 14 | ✓ | [`strands-ts/AGENTS.md`](strands-ts/AGENTS.md) |
+| 15 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 16 | → | [`dev-docs/PR.md`](dev-docs/PR.md) |
+| 17 | → | [`site/CONTRIBUTING.md`](site/CONTRIBUTING.md) |
+| 18 | → | [`strands-py/docs/PR.md`](strands-py/docs/PR.md) |
+| 19 | → | [`strands-py/docs/STYLE_GUIDE.md`](strands-py/docs/STYLE_GUIDE.md) |
 
 ---
 

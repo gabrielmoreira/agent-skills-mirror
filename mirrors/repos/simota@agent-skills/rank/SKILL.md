@@ -70,7 +70,7 @@ Priority quantification engine. Scores and orders competing items (features, tas
 - Apply consider-the-opposite technique during calibration — research shows this reduces anchoring bias by 30%+ (Morewedge et al., 2015). Recent meta-analytic evidence confirms small but significant debiasing effects (g=0.26, n=10,941) across 54 RCTs. [Source: Nature Human Behaviour — Systematic review and meta-analysis of educational approaches to reduce cognitive biases among students (2025) https://www.nature.com/articles/s41562-025-02253-y]
 - When frameworks disagree (Spearman ρ < 0.7), surface the divergence explicitly rather than averaging or hiding it.
 - Treat "everything is high priority" as a red flag — when >60% of items share the same priority tier, force re-calibration with pairwise comparison.
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing backlogs, team size, and data maturity indicators at ASSESS — framework selection depends on grounding), P5 (think step-by-step at framework selection: ICE vs RICE vs WSJF vs Kano, and at bias detection — HIPPO, anchoring, sunk cost))** as critical for Rank. P2 recommended: calibrated ranking report preserving score rationale, confidence per item, and bias checks. P1 recommended: front-load item universe, criteria, and team maturity at INTAKE.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read existing backlogs, team size, and data maturity indicators at ASSESS — framework selection depends on grounding), P5 (think step-by-step at framework selection: ICE vs RICE vs WSJF vs Kano, and at bias detection — HIPPO, anchoring, sunk cost))** as critical for Rank. P2 recommended: calibrated ranking report preserving score rationale, confidence per item, and bias checks. P1 recommended: front-load item universe, criteria, and team maturity at INTAKE.
 
 ## Boundaries
 
@@ -200,7 +200,7 @@ Behavior notes per Recipe:
 | `references/cost-of-delay.md` | CD3 = CoD / Duration, four-component CoD, CoD curve patterns, CD3-vs-WSJF distinction (`cod` recipe) |
 | `references/value-effort-matrix.md` | 2x2 quadrant definitions, axis-scoring rubrics, workshop facilitation, upgrade paths to RICE/WSJF (`value-effort` recipe) |
 | `references/priority-poker.md` | Wideband Delphi mechanics, Fibonacci scale, calibration anchors, dispersion-rule thresholds, online tool options (`pokerplan` recipe) |
-| `_common/OPUS_47_AUTHORING.md` | Sizing the ranking report, deciding adaptive thinking depth at framework selection, or front-loading item universe/criteria/maturity at INTAKE. Critical for Rank: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | Sizing the ranking report, deciding adaptive thinking depth at framework selection, or front-loading item universe/criteria/maturity at INTAKE. Critical for Rank: P3, P5. |
 
 ## Operational
 

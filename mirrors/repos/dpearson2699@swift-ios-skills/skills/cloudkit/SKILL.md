@@ -28,8 +28,7 @@ with Swift 6.3; older availability noted where relevant.
 
 ## Container and Database Setup
 
-Enable iCloud + CloudKit in Signing & Capabilities. A container provides
-three databases:
+Enable iCloud + CloudKit in Signing & Capabilities. A container provides three databases:
 
 | Database | Scope | Requires iCloud | Storage Quota |
 |----------|-------|-----------------|---------------|
@@ -73,9 +72,12 @@ let updated = try await privateDB.save(fetched)
 try await privateDB.deleteRecord(withID: recordID)
 ```
 
-### Custom Record Zones (Private/Shared Only)
+### Custom Record Zones
 
-Custom zones support atomic commits, change tracking, and sharing.
+Apps create custom zones in the private database. Shared databases expose zones
+that other users share with the current user. Custom zones support atomic
+commits, change tracking, and sharing; public databases do not support custom
+zones.
 
 ```swift
 let zoneID = CKRecordZone.ID(zoneName: "NotesZone")
@@ -91,6 +93,13 @@ let record = CKRecord(recordType: "Note", recordID: recordID)
 Query records with NSPredicate. Supported: `==`, `!=`, `<`, `>`, `<=`, `>=`,
 `BEGINSWITH`, `CONTAINS`, `IN`, `AND`, `NOT`, `BETWEEN`,
 `distanceToLocation:fromLocation:`.
+
+`CONTAINS` tests list membership except for tokenized full-text search with
+`self CONTAINS`. `BEGINSWITH` is the string-prefix operator; unsupported
+operators, key paths, or field types fail when the query executes.
+For every encryption review, explicitly call out field eligibility: encrypted
+values cannot be queried or sorted; `CKAsset` is encrypted by default; and
+`CKRecord.Reference` cannot be encrypted because CloudKit needs it server-side.
 
 ```swift
 let predicate = NSPredicate(format: "title BEGINSWITH %@", "Meeting")
@@ -122,7 +131,9 @@ let compound = NSCompoundPredicate(andPredicateWithSubpredicates: [
 ## CKSubscription
 
 Subscriptions trigger push notifications when records change server-side.
-CloudKit auto-enables APNs -- no explicit push entitlement needed.
+CloudKit/Xcode handles the APNs entitlement when CloudKit is enabled; no
+separate explicit App ID push setup is needed. Silent/background processing
+still needs Background Modes > Remote notifications.
 
 ```swift
 // Query subscription -- fires when matching records change
@@ -167,9 +178,12 @@ func application(
 
 ## CKSyncEngine (iOS 17+)
 
-`CKSyncEngine` is the recommended sync approach. It handles scheduling,
-transient error retries, change tokens, and push notifications automatically.
-Works with private and shared databases only.
+`CKSyncEngine` is the recommended sync approach for custom model data. It
+handles scheduling, transient retries, change tokens, and database
+subscriptions, but not app-specific save failures: `CKError.serverRecordChanged`
+from `sentRecordZoneChanges.failedRecordSaves` still requires custom conflict
+resolution and rescheduling. Automatic sync timing is indeterminate. Requires
+CloudKit capability + Remote notifications; private/shared databases only.
 
 ```swift
 import CloudKit
@@ -186,7 +200,7 @@ final class SyncManager: CKSyncEngineDelegate {
         self.syncEngine = CKSyncEngine(config)
     }
 
-    func handleEvent(_ event: CKSyncEngine.Event, syncEngine: CKSyncEngine) {
+    func handleEvent(_ event: CKSyncEngine.Event, syncEngine: CKSyncEngine) async {
         switch event {
         case .stateUpdate(let update):
             Self.saveState(update.stateSerialization)
@@ -205,10 +219,11 @@ final class SyncManager: CKSyncEngineDelegate {
     func nextRecordZoneChangeBatch(
         _ context: CKSyncEngine.SendChangesContext,
         syncEngine: CKSyncEngine
-    ) -> CKSyncEngine.RecordZoneChangeBatch? {
+    ) async -> CKSyncEngine.RecordZoneChangeBatch? {
         let pending = syncEngine.state.pendingRecordZoneChanges
-        return CKSyncEngine.RecordZoneChangeBatch(
-            pendingChanges: Array(pending)
+            .filter { context.options.zoneIDs.contains($0) }
+        return await CKSyncEngine.RecordZoneChangeBatch(
+            pendingChanges: pending
         ) { recordID in self.recordToSend(for: recordID) }
     }
 }
@@ -228,8 +243,15 @@ to resume from the correct change token.
 
 ## SwiftData + CloudKit
 
-`ModelConfiguration` supports CloudKit sync. CloudKit models must use optional
-properties and avoid unique constraints.
+`ModelConfiguration` supports CloudKit sync. In every SwiftData CloudKit
+implementation or review, always report two verdicts:
+
+- **Model compatibility**: no `#Unique` or unique constraints, optional
+  relationships, no `.deny`, and external storage for large `Data`.
+- **Schema rollout**: initialize the development schema in nonproduction builds,
+  verify it in CloudKit Dashboard, promote it before release, and after
+  production promotion only add schema; don't delete model types or change
+  existing attributes.
 
 ```swift
 import SwiftData
@@ -254,10 +276,6 @@ let config = ModelConfiguration(
 )
 let container = try ModelContainer(for: Note.self, configurations: config)
 ```
-
-**CloudKit model rules**: all relationships must be optional; avoid
-`#Unique` (unique constraints are unsupported); keep models flat; use
-`@Attribute(.externalStorage)` for large data; avoid complex relationship graphs.
 
 ## NSUbiquitousKeyValueStore
 
@@ -300,34 +318,27 @@ NotificationCenter.default.addObserver(
 
 ## iCloud Drive File Sync
 
-Use `FileManager` ubiquity APIs for document-level sync.
+Use `FileManager` ubiquity APIs for document-level sync. Call
+`url(forUbiquityContainerIdentifier:)` and `setUbiquitous` off the main thread;
+`setUbiquitous` performs coordinated file work and can block. If the app is
+presenting the file, configure an active file presenter before moving it.
 
 ```swift
-guard let ubiquityURL = FileManager.default.url(
-    forUbiquityContainerIdentifier: "iCloud.com.example.app"
-) else { return }  // iCloud not available
+Task.detached {
+    guard let ubiquityURL = FileManager.default.url(
+        forUbiquityContainerIdentifier: "iCloud.com.example.app"
+    ) else { return }  // iCloud not available
 
-let docsURL = ubiquityURL.appendingPathComponent("Documents")
-let cloudURL = docsURL.appendingPathComponent("report.pdf")
-try FileManager.default.setUbiquitous(true, itemAt: localURL, destinationURL: cloudURL)
-
-// Monitor iCloud files
-let query = NSMetadataQuery()
-query.predicate = NSPredicate(format: "%K LIKE '*.pdf'", NSMetadataItemFSNameKey)
-query.searchScopes = [NSMetadataQueryUbiquitousDocumentsScope]
-NotificationCenter.default.addObserver(
-    forName: .NSMetadataQueryDidFinishGathering, object: query, queue: .main
-) { _ in
-    query.disableUpdates()
-    for item in query.results as? [NSMetadataItem] ?? [] {
-        let name = item.value(forAttribute: NSMetadataItemFSNameKey) as? String
-        let status = item.value(
-            forAttribute: NSMetadataUbiquitousItemDownloadingStatusKey) as? String
-    }
-    query.enableUpdates()
+    let docsURL = ubiquityURL.appendingPathComponent("Documents")
+    try FileManager.default.createDirectory(at: docsURL, withIntermediateDirectories: true)
+    let cloudURL = docsURL.appendingPathComponent("report.pdf")
+    try FileManager.default.setUbiquitous(true, itemAt: localURL, destinationURL: cloudURL)
 }
-query.start()
 ```
+
+Monitor files with `NSMetadataQuery` scoped to
+`NSMetadataQueryUbiquitousDocumentsScope` or
+`NSMetadataQueryUbiquitousDataScope`.
 
 ## Account Status and Error Handling
 
@@ -435,9 +446,6 @@ try await privateDB.save(record)
 **DON'T:** Store user-specific data in the public database.
 **DO:** Use private database for personal data; public only for app-wide content.
 
-**DON'T:** Assume data is available immediately after save.
-**DO:** Update local cache optimistically and reconcile on fetch.
-
 **DON'T:** Poll for changes on a timer.
 **DO:** Use `CKDatabaseSubscription` or `CKSyncEngine` for push-based sync.
 ```swift
@@ -453,8 +461,8 @@ try await privateDB.save(sub)
 **DON'T:** Retry immediately on rate limiting.
 **DO:** Use `CKError.retryAfterSeconds` to wait the required duration.
 
-**DON'T:** Merge conflict changes into `clientRecord`.
-**DO:** Always merge into `serverRecord` -- it has the correct change tag.
+**DON'T:** Assume `CKSyncEngine` handles `.serverRecordChanged` conflicts for you.
+**DO:** Resolve `failedRecordSaves` with a three-way merge, then reschedule the save.
 
 **DON'T:** Pass nil change token on every fetch.
 **DO:** Persist change tokens to disk and supply them on subsequent fetches.
@@ -464,22 +472,21 @@ try await privateDB.save(sub)
 - [ ] iCloud + CloudKit capability enabled in Signing & Capabilities
 - [ ] Account status checked before sync; `.noAccount` handled gracefully
 - [ ] Private database used for user data; public only for shared content
+- [ ] Custom record zones created in private DB; shared DB zones discovered from shares
 - [ ] `CKError.serverRecordChanged` handled with three-way merge into `serverRecord`
 - [ ] Network failures queued for retry; `retryAfterSeconds` respected
-- [ ] `CKDatabaseSubscription` or `CKSyncEngine` used for push-based sync
+- [ ] `CKDatabaseSubscription` or `CKSyncEngine` used for push-based sync; Remote notifications enabled for background delivery
 - [ ] Change tokens persisted to disk; `changeTokenExpired` resets and refetches
 - [ ] `.partialFailure` errors inspected per-item via `partialErrorsByItemID`
 - [ ] `.userDeletedZone` handled by recreating zone and resyncing
-- [ ] SwiftData CloudKit models use optionals, no `#Unique`, `.externalStorage` for large data
+- [ ] SwiftData CloudKit review reports model compatibility and schema rollout: initialized/verified development schema, promoted before release, and additive-only production changes
 - [ ] `NSUbiquitousKeyValueStore.didChangeExternallyNotification` observed
-- [ ] Sensitive data uses `encryptedValues` on CKRecord (not plain fields)
+- [ ] Encryption review says `CKRecord.Reference` cannot use `encryptedValues` because CloudKit needs it server-side; no query/sort on encrypted fields; `CKAsset` is encrypted by default
 - [ ] `CKSyncEngine` state serialization persisted across launches (iOS 17+)
 
 ## References
 
-- See [references/cloudkit-patterns.md](references/cloudkit-patterns.md) for CKFetchRecordZoneChangesOperation
-  incremental sync, CKShare collaboration, record zone management, CKAsset
-  file storage, batch operations, and CloudKit Dashboard usage.
+- See [references/cloudkit-patterns.md](references/cloudkit-patterns.md) for incremental sync, CKShare, zones, CKAsset storage, batch operations, and Dashboard usage.
 - [CloudKit Framework](https://sosumi.ai/documentation/cloudkit)
 - [CKContainer](https://sosumi.ai/documentation/cloudkit/ckcontainer)
 - [CKRecord](https://sosumi.ai/documentation/cloudkit/ckrecord)
@@ -489,4 +496,4 @@ try await privateDB.save(sub)
 - [CKShare](https://sosumi.ai/documentation/cloudkit/ckshare)
 - [CKError](https://sosumi.ai/documentation/cloudkit/ckerror)
 - [NSUbiquitousKeyValueStore](https://sosumi.ai/documentation/foundation/nsubiquitouskeyvaluestore)
-- [CKAsset](https://sosumi.ai/documentation/cloudkit/ckasset)
+- [SwiftData CloudKit sync](https://sosumi.ai/documentation/swiftdata/syncing-model-data-across-a-persons-devices)

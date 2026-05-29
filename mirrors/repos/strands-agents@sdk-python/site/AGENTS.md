@@ -1,9 +1,9 @@
-# Agent Development Guide - strands-agents/private-docs-staging
+# Agent Development Guide - Documentation Site
 
-This document provides guidance specifically for AI agents working on the strands-agents/private-docs-staging codebase. For human contributor guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+This document provides guidance for AI agents working on the Strands Agents documentation site (the `site/` directory). For human contributor guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Purpose and Scope
-The goal of this repository is to revamp this documentation repo so that it provides clear and well organized documentation on how to develop with Strands SDK with either Python or Typescript.
+This directory contains the documentation site for Strands Agents, providing guides on how to develop with the SDK in both Python and TypeScript.
 
 **AGENTS.md** contains agent-specific repository information including:
 - Directory structure with summaries of what is included in each directory
@@ -17,10 +17,10 @@ The goal of this repository is to revamp this documentation repo so that it prov
 
 When working on SDK features or documentation, familiarize yourself with these team processes:
 
-* **[Feature Lifecycle Process](team/FEATURE_LIFECYCLE.md)**: How features are added, versioned, deprecated, and graduated from experimental status
-* **[API Bar Raising](team/API_BAR_RAISING.md)**: Standards for API design quality
-* **[Decisions](team/DECISIONS.md)**: Key architectural and design decisions
-* **[Tenets](team/TENETS.md)**: Core principles guiding SDK development
+* **[Feature Lifecycle Process](../team/FEATURE_LIFECYCLE.md)**: How features are added, versioned, deprecated, and graduated from experimental status
+* **[API Bar Raising](../team/API_BAR_RAISING.md)**: Standards for API design quality
+* **[Decisions](../team/DECISIONS.md)**: Key architectural and design decisions
+* **[Tenets](../team/TENETS.md)**: Core principles guiding SDK development
 
 These documents define the standards and processes that ensure consistency and quality across the Strands SDK.
 
@@ -212,7 +212,7 @@ import type { Options, Config } from '../types'
 - [TSDoc Reference](https://tsdoc.org/)
 - [Conventional Commits](https://www.conventionalcommits.org/)
 - [Strands Agents Documentation](https://strandsagents.com/)
-- [Typescript SDK](https://github.com/strands-agents/sdk-typescript/)
+- [TypeScript SDK](../strands-ts/)
 
 # TypeScript Code Examples Guide
 

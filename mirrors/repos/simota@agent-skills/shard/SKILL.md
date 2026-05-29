@@ -64,7 +64,7 @@ Route elsewhere when the task is primarily:
 - Provide migration path from current state, not greenfield assumptions.
 - Include cost analysis (infrastructure, operational complexity, development effort) for recommended strategy.
 - Design for tenant count growth: current scale and 10x projection.
-- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing tenant model, RLS policies, routing layer, and compliance constraints at SCAN — cross-tenant leakage detection depends on full grounding), P5 (think step-by-step at DESIGN — isolation-level selection (database/schema/row), RLS policy, and migration-path decisions cascade across compliance/cost/scale axes)** as critical for Shard. P2 recommended: calibrated tenancy spec preserving isolation rationale and leakage vectors. P1 recommended: front-load compliance scope and 10x scale projection at SCAN.
+- Author for Opus 4.8 defaults. Apply _common/OPUS_48_AUTHORING.md principles **P3 (eagerly Read existing tenant model, RLS policies, routing layer, and compliance constraints at SCAN — cross-tenant leakage detection depends on full grounding), P5 (think step-by-step at DESIGN — isolation-level selection (database/schema/row), RLS policy, and migration-path decisions cascade across compliance/cost/scale axes)** as critical for Shard. P2 recommended: calibrated tenancy spec preserving isolation rationale and leakage vectors. P1 recommended: front-load compliance scope and 10x scale projection at SCAN.
 
 ## Boundaries
 
@@ -220,7 +220,7 @@ Key design points:
 | `references/tenant-migration.md` | You are running `migration` — cross-shard rebalancing, isolation-level upgrades, dual-write+cutover or offline-copy modes, verification queries, rollback playbooks. |
 | `references/tenant-provisioning.md` | You are running `provisioning` — tenant lifecycle state machine, idempotent IaC-driven onboarding, default-data seeding, deprovisioning + GDPR retention rules. |
 | `references/tenant-quota-throttling.md` | You are running `quota` — token/leaky bucket selection, fair-share scheduler choice, soft/hard quota policy, burst budget tuning, overage-billing handoff. |
-| `_common/OPUS_47_AUTHORING.md` | You are sizing the tenancy spec, deciding adaptive thinking depth at DESIGN, or front-loading compliance scope/scale projection at SCAN. Critical for Shard: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | You are sizing the tenancy spec, deciding adaptive thinking depth at DESIGN, or front-loading compliance scope/scale projection at SCAN. Critical for Shard: P3, P5. |
 
 ## Operational
 

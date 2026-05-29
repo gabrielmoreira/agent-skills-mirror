@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `sgl-project/sglang` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `sgl-project/sglang` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `sgl-project/sglang` — 26 default patterns, 0 followed patterns, 26 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,26 +65,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.claude/skills/clean-startup-log/SKILL.md`](.claude/skills/clean-startup-log/SKILL.md) |
 | 5 | ✓ | [`.claude/skills/debug-cuda-crash/SKILL.md`](.claude/skills/debug-cuda-crash/SKILL.md) |
 | 6 | ✓ | [`.claude/skills/debug-distributed-hang/SKILL.md`](.claude/skills/debug-distributed-hang/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/generate-profile/SKILL.md`](.claude/skills/generate-profile/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/large-class-init-style/SKILL.md`](.claude/skills/large-class-init-style/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/llm-serving-auto-benchmark/SKILL.md`](.claude/skills/llm-serving-auto-benchmark/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/llm-torch-profiler-analysis/SKILL.md`](.claude/skills/llm-torch-profiler-analysis/SKILL.md) |
-| 11 | ✓ | [`.claude/skills/mechanical-refactor-verify/SKILL.md`](.claude/skills/mechanical-refactor-verify/SKILL.md) |
-| 12 | ✓ | [`.claude/skills/sglang-bisect-ci-regression/SKILL.md`](.claude/skills/sglang-bisect-ci-regression/SKILL.md) |
-| 13 | ✓ | [`.claude/skills/sglang-cherrypick/SKILL.md`](.claude/skills/sglang-cherrypick/SKILL.md) |
-| 14 | ✓ | [`.claude/skills/sglang-prod-incident-triage/SKILL.md`](.claude/skills/sglang-prod-incident-triage/SKILL.md) |
-| 15 | ✓ | [`.claude/skills/sglang-sota-performance/SKILL.md`](.claude/skills/sglang-sota-performance/SKILL.md) |
-| 16 | ✓ | [`.claude/skills/speculative-naming/SKILL.md`](.claude/skills/speculative-naming/SKILL.md) |
-| 17 | ✓ | [`.claude/skills/write-sglang-test/SKILL.md`](.claude/skills/write-sglang-test/SKILL.md) |
-| 18 | ✓ | [`docs_new/AGENTS.md`](docs_new/AGENTS.md) |
-| 19 | ✓ | [`python/sglang/multimodal_gen/.claude/CLAUDE.md`](python/sglang/multimodal_gen/.claude/CLAUDE.md) |
-| 20 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-add-model/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-add-model/SKILL.md) |
-| 21 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-ako4all-kernel/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-ako4all-kernel/SKILL.md) |
-| 22 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/benchmark-and-profile.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/benchmark-and-profile.md) |
-| 23 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/existing-fast-paths.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/existing-fast-paths.md) |
-| 24 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/SKILL.md) |
-| 25 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-modelopt-quant/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-modelopt-quant/SKILL.md) |
-| 26 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-performance/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-performance/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/env-var-conventions/SKILL.md`](.claude/skills/env-var-conventions/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/generate-profile/SKILL.md`](.claude/skills/generate-profile/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/large-class-init-style/SKILL.md`](.claude/skills/large-class-init-style/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/llm-serving-auto-benchmark/SKILL.md`](.claude/skills/llm-serving-auto-benchmark/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/llm-torch-profiler-analysis/SKILL.md`](.claude/skills/llm-torch-profiler-analysis/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/mechanical-refactor-verify/SKILL.md`](.claude/skills/mechanical-refactor-verify/SKILL.md) |
+| 13 | ✓ | [`.claude/skills/sglang-bisect-ci-regression/SKILL.md`](.claude/skills/sglang-bisect-ci-regression/SKILL.md) |
+| 14 | ✓ | [`.claude/skills/sglang-cherrypick/SKILL.md`](.claude/skills/sglang-cherrypick/SKILL.md) |
+| 15 | ✓ | [`.claude/skills/sglang-prod-incident-triage/SKILL.md`](.claude/skills/sglang-prod-incident-triage/SKILL.md) |
+| 16 | ✓ | [`.claude/skills/sglang-sota-performance/SKILL.md`](.claude/skills/sglang-sota-performance/SKILL.md) |
+| 17 | ✓ | [`.claude/skills/speculative-naming/SKILL.md`](.claude/skills/speculative-naming/SKILL.md) |
+| 18 | ✓ | [`.claude/skills/write-sglang-test/SKILL.md`](.claude/skills/write-sglang-test/SKILL.md) |
+| 19 | ✓ | [`docs_new/AGENTS.md`](docs_new/AGENTS.md) |
+| 20 | ✓ | [`python/sglang/multimodal_gen/.claude/CLAUDE.md`](python/sglang/multimodal_gen/.claude/CLAUDE.md) |
+| 21 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-add-model/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-add-model/SKILL.md) |
+| 22 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-ako4all-kernel/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-ako4all-kernel/SKILL.md) |
+| 23 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/benchmark-and-profile.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/benchmark-and-profile.md) |
+| 24 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/existing-fast-paths.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/existing-fast-paths.md) |
+| 25 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/SKILL.md) |
+| 26 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-modelopt-quant/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-modelopt-quant/SKILL.md) |
+| 27 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-performance/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-performance/SKILL.md) |
 
 ---
 

@@ -26,15 +26,15 @@ Swift 6.3 / iOS 26+.
 
 ### Project Configuration
 
-1. Add `NSContactsUsageDescription` to Info.plist explaining why the app accesses contacts
-2. No additional capability or entitlement is required for basic Contacts access
-3. For contact notes access, add the `com.apple.developer.contacts.notes` entitlement
+1. Add `NSContactsUsageDescription` to Info.plist explaining why the app accesses contacts. The app crashes if it uses contact data APIs without this key.
+2. No additional capability or entitlement is required for ordinary Contacts access.
+3. Add `com.apple.developer.contacts.notes` only when reading or writing `CNContactNoteKey` / `CNContact.note`; this entitlement requires Apple approval before public distribution.
 
 ### Imports
 
 ```swift
-import Contacts       // CNContactStore, CNSaveRequest, CNContact
-import ContactsUI     // CNContactPickerViewController
+@preconcurrency import Contacts  // CNContactStore, CNSaveRequest, CNContact
+import ContactsUI                // CNContactPickerViewController
 ```
 
 ## Authorization
@@ -66,10 +66,18 @@ func checkStatus() -> CNAuthorizationStatus {
 | `.restricted` | Parental controls or MDM restrict access |
 | `.limited` | iOS 18+: user granted access to selected contacts only |
 
+Treat both `.authorized` and `.limited` as usable Contacts API states. With
+`.limited`, fetch, edit, and delete operations only apply to contacts the user
+granted or the app created. Use `ContactAccessButton` or
+`contactAccessPicker(isPresented:completionHandler:)` to let users add contacts
+to the app's limited-access set.
+
 ## Fetching Contacts
 
 Use `unifiedContacts(matching:keysToFetch:)` for predicate-based queries.
 Use `enumerateContacts(with:usingBlock:)` for batch enumeration of all contacts.
+For large cached address books, first fetch identifiers, then fetch detailed
+contacts in batches by identifier.
 
 ### Fetch by Name
 
@@ -313,13 +321,15 @@ Over-fetching wastes memory and slows queries, especially for contacts with
 large photos.
 
 ```swift
-// WRONG: Fetches everything including full-resolution photos
-let keys: [CNKeyDescriptor] = [CNContactCompleteNameKey as CNKeyDescriptor,
+// WRONG: Fetches far more than the UI displays, including full-resolution photos
+let keys: [CNKeyDescriptor] = [
+    CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
     CNContactImageDataKey as CNKeyDescriptor,
     CNContactPhoneNumbersKey as CNKeyDescriptor,
     CNContactEmailAddressesKey as CNKeyDescriptor,
     CNContactPostalAddressesKey as CNKeyDescriptor,
-    CNContactBirthdayKey as CNKeyDescriptor]
+    CNContactBirthdayKey as CNKeyDescriptor
+]
 
 // CORRECT: Fetch only what you display
 let keys: [CNKeyDescriptor] = [
@@ -362,7 +372,9 @@ mutable.givenName = "New Name"
 
 ### DON'T: Skip authorization and assume access
 
-Without calling `requestAccess(for:)`, fetch methods return empty results or throw.
+Do not let fetch or save calls be the first place the user sees authorization.
+If status is `.notDetermined`, request access; if access was denied, contact
+operations fail with an authorization error.
 
 ```swift
 // WRONG: Jump straight to fetch
@@ -377,6 +389,9 @@ let contacts = try store.unifiedContacts(matching: predicate, keysToFetch: keys)
 ### DON'T: Run heavy fetches on the main thread
 
 `enumerateContacts` performs I/O. Running it on the main thread blocks the UI.
+When strict concurrency checks complain about `CNContact` crossing task or actor
+boundaries, use `@preconcurrency import Contacts` in that file or map contacts
+into Sendable view models before returning them.
 
 ```swift
 // WRONG: Main thread enumeration
@@ -400,6 +415,8 @@ func loadContacts() async throws -> [CNContact] {
 
 - [ ] `NSContactsUsageDescription` added to Info.plist
 - [ ] `requestAccess(for: .contacts)` called before fetch or save operations
+- [ ] `.limited` treated as usable access with selected-contact caveats
+- [ ] `ContactAccessButton` or `contactAccessPicker` offered when users need to expand limited access
 - [ ] Authorization denial handled gracefully (guide user to Settings)
 - [ ] Only needed `CNKeyDescriptor` keys included in fetch requests
 - [ ] `CNContactFormatter.descriptorForRequiredKeys(for:)` used when formatting names
@@ -423,3 +440,6 @@ func loadContacts() async throws -> [CNContact] {
 - [CNContactPickerDelegate](https://sosumi.ai/documentation/contactsui/cncontactpickerdelegate)
 - [Accessing the contact store](https://sosumi.ai/documentation/contacts/accessing-the-contact-store)
 - [NSContactsUsageDescription](https://sosumi.ai/documentation/bundleresources/information-property-list/nscontactsusagedescription)
+- [ContactAccessButton](https://sosumi.ai/documentation/contactsui/contactaccessbutton)
+- [contactAccessPicker(isPresented:completionHandler:)](https://sosumi.ai/documentation/swiftui/view/contactaccesspicker(ispresented:completionhandler:))
+- [Contact Keys](https://sosumi.ai/documentation/contacts/contact-keys)

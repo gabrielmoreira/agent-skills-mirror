@@ -1,11 +1,13 @@
 ---
 name: financekit
-description: "Access Apple Card, Apple Cash, and Wallet financial data using FinanceKit. Use when querying transaction history, reading account balances, accessing Wallet orders, requesting financial data authorization, or building personal finance features that integrate with Apple's financial services."
+description: "Access eligible Wallet financial data using FinanceKit and FinanceKitUI. Use when querying transactions or balances, reading Apple Card, Apple Cash, Savings, or U.K. connected-account data, requesting financial-data authorization, using TransactionPicker, enabling iOS 26 background delivery, or saving and checking Wallet orders."
 ---
 
 # FinanceKit
 
-Access financial data from Apple Wallet including Apple Card, Apple Cash, and Apple Card Savings. FinanceKit provides on-device, offline access to accounts, balances, and transactions with user-controlled authorization. Targets Swift 6.3 / iOS 26+. Query APIs are available from iOS 17.4; background delivery requires iOS 26.
+Access eligible financial data from Apple Wallet, including U.S. Apple Card, Apple Cash, Savings, and U.K. connected-account data. FinanceKit provides on-device access to accounts, balances, and transactions with user-controlled authorization. Targets Swift 6.3 / current Apple platforms; query APIs are available from iOS/iPadOS 17.4, `TransactionPicker` from iOS/iPadOS 18, and background delivery from iOS/iPadOS 26.
+
+Keep FinanceKit guidance focused on financial-data access, Wallet order storage/querying, TransactionPicker, and background delivery. Route Apple Pay checkout to PassKit, widget UI/timeline work to WidgetKit, and Wallet order-tracking email or Apple Business Connect optimization outside this skill.
 
 ## Contents
 
@@ -30,11 +32,15 @@ Access financial data from Apple Wallet including Apple Card, Apple Cash, and Ap
 1. **Managed entitlement** -- request `com.apple.developer.financekit` from Apple via the [FinanceKit entitlement request form](https://developer.apple.com/contact/request/financekit/). This is a managed capability; Apple reviews each application.
 2. **Organization-level Apple Developer account** (individual accounts are not eligible).
 3. **Account Holder role** required to request the entitlement.
+4. **Eligible App Store app** -- the app must be in the Finance category, distributed through the App Store for iPhone in the United States or United Kingdom, and provide financial-management tools such as net-worth, spending, or budgeting features.
+5. **Per-bundle-ID approval** -- Apple assigns the entitlement to the approved bundle ID; do not assume it applies to sibling apps or extensions automatically.
+6. If the app offers financial products directly or through a regulated institution, it must allow customers to connect those accounts to Apple Wallet and share the data with FinanceKit.
 
 ### Project Configuration
 
 1. Add the FinanceKit entitlement through Xcode managed capabilities after Apple approves the request.
 2. Add `NSFinancialDataUsageDescription` to Info.plist -- this string is shown to the user during the authorization prompt.
+3. For iOS 26 background delivery, add the FinanceKit entitlement to both the app and extension targets, then use App Groups for shared storage.
 
 ```xml
 <key>NSFinancialDataUsageDescription</key>
@@ -42,6 +48,8 @@ Access financial data from Apple Wallet including Apple Card, Apple Cash, and Ap
 ```
 
 ## Data Availability
+
+U.S. FinanceKit financial data requires iOS/iPadOS 17.4+ and currently covers eligible Apple Card, Apple Cash, and Savings data; Apple Card Family participants and Apple Cash Family children are excluded. U.K. support requires iOS/iPadOS 18.4+ and uses open banking for supported institutions. Orders APIs are available separately from financial-data query APIs.
 
 Check whether the device supports FinanceKit before making any API calls. This value is constant across launches and iOS versions.
 
@@ -202,39 +210,23 @@ let groceries = TransactionQuery.predicate(forMerchantCategoryCodes: [
 ])
 ```
 
-### Transaction Properties Reference
-
-| Property | Type | Notes |
-|---|---|---|
-| `id` | `UUID` | Unique per device |
-| `accountID` | `UUID` | Links to parent account |
-| `transactionDate` | `Date` | When the transaction occurred |
-| `postedDate` | `Date?` | When booked; nil if pending |
-| `transactionAmount` | `CurrencyAmount` | Always positive |
-| `creditDebitIndicator` | `CreditDebitIndicator` | `.debit` or `.credit` |
-| `transactionDescription` | `String` | Display-friendly description |
-| `originalTransactionDescription` | `String` | Raw institution description |
-| `merchantName` | `String?` | Merchant name if available |
-| `merchantCategoryCode` | `MerchantCategoryCode?` | ISO 18245 code |
-| `transactionType` | `TransactionType` | `.pointOfSale`, `.transfer`, etc. |
-| `status` | `TransactionStatus` | `.authorized`, `.pending`, `.booked`, `.memo`, `.rejected` |
-| `foreignCurrencyAmount` | `CurrencyAmount?` | Foreign currency if applicable |
-| `foreignCurrencyExchangeRate` | `Decimal?` | Exchange rate if applicable |
+For a transaction field table and more query patterns, read [references/financekit-patterns.md](references/financekit-patterns.md).
 
 ## Long-Running Queries and History
 
-Use `AsyncSequence`-based history APIs for live updates or resumable sync. These return `FinanceStore.Changes` (inserted, updated, deleted items) plus a `HistoryToken` for resumption.
+Use `AsyncSequence`-based history APIs for catch-up sync, live updates, or resumable sync. These return inserted, updated, and deleted item IDs plus a `HistoryToken`.
 
 ```swift
-func monitorTransactions(for accountID: UUID) async throws {
+func catchUpTransactions(for accountID: UUID) async throws {
     let history = store.transactionHistory(
         forAccountID: accountID,
         since: loadSavedToken(),
-        isMonitoring: true  // true = keep streaming; false = terminate after catch-up
+        isMonitoring: false  // finish after saved-token catch-up
     )
 
     for try await changes in history {
-        // changes.inserted, changes.updated, changes.deleted
+        removeLocalRecords(withIDs: changes.deleted)
+        upsert(changes.inserted + changes.updated)
         saveToken(changes.newToken)
     }
 }
@@ -257,7 +249,7 @@ func loadSavedToken() -> FinanceStore.HistoryToken? {
 }
 ```
 
-If a saved token points to compacted history, the framework throws `FinanceError.historyTokenInvalid`. Discard the token and start fresh.
+If a saved token points to compacted history, the framework throws `FinanceError.historyTokenInvalid`. Discard the token, then immediately run a fresh catch-up query for the affected account or balance stream so local state and the replacement token are rebuilt. Use `isMonitoring: true` only for a separate live monitor.
 
 ### Account and Balance History
 
@@ -265,6 +257,8 @@ If a saved token points to compacted history, the framework throws `FinanceError
 let accountChanges = store.accountHistory(since: nil, isMonitoring: true)
 let balanceChanges = store.accountBalanceHistory(forAccountID: accountID, since: nil, isMonitoring: true)
 ```
+
+Ongoing budgeting sync should cover the data model the user authorized: account objects for account additions/removals, account balances for trend and widget state, and transactions for spending detail. Use separate history tokens per stream or account so a compacted token only forces resync of the affected stream.
 
 ## Transaction Picker
 
@@ -325,50 +319,50 @@ AddOrderToWalletButton(signedArchive: orderData) { result in
 
 ## Background Delivery
 
-iOS 26+ supports background delivery extensions that notify your app of financial data changes outside its lifecycle. Requires App Groups to share data between the app and extension.
+iOS 26+ supports background delivery extensions that notify your app of financial data changes outside its lifecycle. User authorization made in the main app is inherited by the extension. Both targets need the FinanceKit entitlement; use App Groups to share data between the app, extension, and related widgets.
 
 ### Enabling Background Delivery
 
+These registration methods are synchronous and nonthrowing; do not write `try` or `await`.
+
 ```swift
-try await store.enableBackgroundDelivery(
-    for: [.transactions, .accountBalances],
+store.enableBackgroundDelivery(
+    for: [.accounts, .accountBalances, .transactions],
     frequency: .daily
 )
 ```
 
-Available frequencies: `.hourly`, `.daily`, `.weekly`.
+Available frequencies: `.hourly`, `.daily`, `.weekly`. These are expected minimum intervals between extension launches when data changes; longer frequencies give the extension a larger processing window.
 
 Disable selectively or entirely:
 
 ```swift
-try await store.disableBackgroundDelivery(for: [.transactions])
-try await store.disableAllBackgroundDelivery()
+store.disableBackgroundDelivery(for: [.transactions])
+store.disableAllBackgroundDelivery()
 ```
 
 ### Background Delivery Extension
 
-Create a background delivery extension target in Xcode (Background Delivery Extension template). Both the app and extension must belong to the same App Group.
+Create a background delivery extension target in Xcode (Background Delivery Extension template). Implement the two async entry points directly on the extension type and return from `didReceiveData(for:)` only after essential work is saved.
 
 ```swift
 import FinanceKit
 
+@main
 struct MyFinanceExtension: BackgroundDeliveryExtension {
-    var body: some BackgroundDeliveryExtensionProviding { FinanceDataHandler() }
-}
-
-struct FinanceDataHandler: BackgroundDeliveryExtensionProviding {
-    func didReceiveData(for dataTypes: [FinanceStore.BackgroundDataType]) async {
-        for dataType in dataTypes {
-            switch dataType {
-            case .transactions:    await processNewTransactions()
-            case .accountBalances: await updateBalanceCache()
-            case .accounts:        await refreshAccountList()
-            @unknown default:      break
-            }
+    func didReceiveData(for types: [FinanceStore.BackgroundDataType]) async {
+        if types.contains(.transactions) {
+            await processNewTransactions()
+        }
+        if types.contains(.accountBalances) {
+            await updateBalanceCache()
+        }
+        if types.contains(.accounts) {
+            await refreshAccountList()
         }
     }
 
-    func willTerminate() async { /* Clean up */ }
+    func willTerminate() async { await savePartialWork() }
 }
 ```
 
@@ -438,7 +432,8 @@ let history = store.transactionHistory(
     isMonitoring: false
 )
 for try await changes in history {
-    processChanges(changes)
+    removeLocalRecords(withIDs: changes.deleted)
+    upsert(changes.inserted + changes.updated)
     saveToken(changes.newToken)
 }
 ```
@@ -456,7 +451,8 @@ for try await changes in history {
 DO -- save every token:
 ```swift
 for try await changes in history {
-    processChanges(changes)
+    removeLocalRecords(withIDs: changes.deleted)
+    upsert(changes.inserted + changes.updated)
     saveToken(changes.newToken)
 }
 ```
@@ -468,24 +464,28 @@ Both asset and liability accounts use `.debit` for outgoing money. But `.credit`
 ## Review Checklist
 
 - [ ] `FinanceStore.isDataAvailable(.financialData)` checked before any API call
-- [ ] `com.apple.developer.financekit` entitlement requested and approved by Apple
+- [ ] App eligibility checked: Finance category, App Store iPhone distribution in the U.S. or U.K., financial-management feature set, organization account, Account Holder request
+- [ ] `com.apple.developer.financekit` entitlement requested and approved for the app bundle ID
 - [ ] `NSFinancialDataUsageDescription` set in Info.plist with a clear, specific message
-- [ ] Organization-level Apple Developer account used
 - [ ] Authorization status handled for all cases (`.authorized`, `.denied`, `.notDetermined`)
 - [ ] `FinanceError.dataRestricted` caught and handled gracefully
 - [ ] `CreditDebitIndicator` applied correctly to amounts (not treated as signed)
 - [ ] History tokens persisted for resumable queries
-- [ ] `FinanceError.historyTokenInvalid` handled by discarding token and restarting
+- [ ] `FinanceError.historyTokenInvalid` handled by discarding token and immediately resyncing the affected stream
+- [ ] Ongoing sync plan covers authorized accounts, balances, and transactions, not transactions alone
 - [ ] Long-running queries use `isMonitoring: false` when live updates are not needed
 - [ ] Transaction picker used when full authorization is unnecessary
 - [ ] Only data the app genuinely needs is queried
-- [ ] Deleted data from history changes is removed from local storage
-- [ ] Background delivery extension in same App Group as the main app (iOS 26+)
+- [ ] Deleted IDs from history changes are explicitly removed from local account, balance, or transaction storage
+- [ ] Background delivery calls use the synchronous iOS 26 APIs and the extension is in the same App Group as the main app
+- [ ] Background delivery registers every needed data type: `.accounts`, `.accountBalances`, and/or `.transactions`
+- [ ] FinanceKit entitlement added to both app and background delivery extension targets
 - [ ] Financial data deleted when user revokes access
 
 ## References
 
 - Extended patterns (predicates, sorting, pagination, currency formatting, background updates): [references/financekit-patterns.md](references/financekit-patterns.md)
+- [Get started with FinanceKit](https://developer.apple.com/financekit/)
 - [FinanceKit framework](https://sosumi.ai/documentation/financekit)
 - [FinanceKitUI framework](https://sosumi.ai/documentation/financekitui)
 - [FinanceStore](https://sosumi.ai/documentation/financekit/financestore)
@@ -495,3 +495,4 @@ Both asset and liability accounts use `.debit` for outgoing money. But `.credit`
 - [FinanceKit entitlement](https://sosumi.ai/documentation/bundleresources/entitlements/com.apple.developer.financekit)
 - [Implementing a background delivery extension](https://sosumi.ai/documentation/financekit/implementing-a-background-delivery-extension)
 - [Meet FinanceKit (WWDC24)](https://sosumi.ai/videos/play/wwdc2024/2023/)
+- [What's new in Apple Pay (WWDC25)](https://sosumi.ai/videos/play/wwdc2025/201/)

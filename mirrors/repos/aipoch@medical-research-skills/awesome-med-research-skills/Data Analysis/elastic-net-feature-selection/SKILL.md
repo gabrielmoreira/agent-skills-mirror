@@ -1,10 +1,7 @@
 ---
 name: elastic-net-feature-selection
-description: Use when selecting predictive genes or other molecular features from bulk expression matrices for binary case-vs-control classification with elastic net logistic regression, including coefficient path and cross-validation plots. Trigger keywords: elastic net, glmnet, feature selection, binary classification, lambda.min, lambda.1se. NOT for: survival/Cox modeling, multiclass outcomes, single-cell data, or non-expression tables.
-license: MIT
-author: AIPOCH
+description: "Use when selecting predictive genes or other molecular features from bulk expression matrices for binary case-vs-control classification with elastic net logistic regression, including coefficient path and cross-validation plots. Trigger keywords: elastic net, glmnet, feature selection, binary classification, lambda.min, lambda.1se. NOT for: survival/Cox modeling, multiclass outcomes, single-cell data, or non-expression tables."
 ---
-> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Elastic Net Feature Selection
 

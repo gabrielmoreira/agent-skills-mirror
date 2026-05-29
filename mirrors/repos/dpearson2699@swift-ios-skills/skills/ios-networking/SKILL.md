@@ -25,9 +25,10 @@ needs.
 
 ## Core URLSession async/await
 
-URLSession gained native async/await overloads in iOS 15. These are the
-only networking APIs to use in new code. Never use completion-handler
-variants in new projects.
+URLSession gained native async/await overloads in iOS 15. Prefer these for
+foreground data, upload, download, and streaming work. Background URLSession
+transfers are the main exception: they still use task/delegate APIs so the
+system can deliver events after suspension or relaunch.
 
 ### Data Requests
 
@@ -91,10 +92,19 @@ loading the entire payload into memory.
 // Download to a temporary file
 let (localURL, response) = try await URLSession.shared.download(for: request)
 
-// Move from temp location before the method returns
+// Move or copy the returned temporary file promptly.
 let destination = documentsDirectory.appendingPathComponent("file.zip")
 try FileManager.default.moveItem(at: localURL, to: destination)
 ```
+
+For delegate-based `URLSessionDownloadDelegate`, move or open the temporary
+file before `urlSession(_:downloadTask:didFinishDownloadingTo:)` returns.
+
+Background sessions are delegate-driven transfer queues. Use task creation
+APIs such as `downloadTask(with:)` and file-backed `uploadTask(with:fromFile:)`,
+then handle `URLSessionDelegate` / task delegate callbacks. Do not use async
+convenience APIs such as `data(for:)`, `download(for:)`, or `upload(for:)` as
+the durable background-session pattern.
 
 ```swift
 // Upload data
@@ -172,6 +182,12 @@ and an array of `RequestMiddleware` interceptors. Each method builds a
 validates the status code, and decodes the result. See
 [references/urlsession-patterns.md](references/urlsession-patterns.md) for the complete `APIClient` implementation
 with convenience methods, request builder, and test setup.
+
+Production clients should receive an injected, configured `URLSession` instead
+of calling `URLSession.shared` internally. Configure `URLSessionConfiguration`
+with request/resource timeouts, cache policy or `URLCache`,
+`waitsForConnectivity`, data-cost policy, and delegates when authentication
+challenges, redirects, metrics, pinning, or background transfer handling matter.
 
 ### Lightweight Closure-Based Client
 
@@ -262,7 +278,7 @@ enum NetworkError: Error, Sendable {
 | `.cancelled` | Task was cancelled | No action needed; do not show error |
 | `.cannotFindHost` | DNS failure | Check URL, show error |
 | `.secureConnectionFailed` | TLS handshake failed | Check cert pinning, ATS config |
-| `.userAuthenticationRequired` | 401 from proxy | Trigger auth flow |
+| `.userAuthenticationRequired` | Authentication required to access a resource | Trigger auth flow |
 
 ### Decoding Server Error Bodies
 
@@ -324,24 +340,29 @@ offset-based implementations.
 
 ## Network Reachability
 
-Use `NWPathMonitor` from the Network framework — not third-party
-Reachability libraries. Wrap in `AsyncStream` for structured concurrency.
+Use `NWPathMonitor` from the Network framework -- not third-party
+Reachability libraries. On current OS targets it conforms to `AsyncSequence`;
+wrap `pathUpdateHandler` only for compatibility or custom projections.
 
 ```swift
 import Network
 
-func networkStatusStream() -> AsyncStream<NWPath.Status> {
-    AsyncStream { continuation in
-        let monitor = NWPathMonitor()
-        monitor.pathUpdateHandler = { continuation.yield($0.status) }
-        continuation.onTermination = { _ in monitor.cancel() }
-        monitor.start(queue: DispatchQueue(label: "NetworkMonitor"))
+func observeNetworkStatus() async {
+    let monitor = NWPathMonitor()
+
+    for await path in monitor {
+        handle(path.status)
     }
 }
 ```
 
 Check `path.isExpensive` (cellular) and `path.isConstrained` (Low Data
 Mode) to adapt behavior (reduce image quality, skip prefetching).
+
+Use Network.framework for low-level TCP, UDP, listeners, Bonjour, path
+monitoring, or WebSocket protocol work -- not ordinary REST APIs. For iOS 26
+`NetworkConnection<QUIC>`, `openStream(...)` and `inboundStreams(...)` are
+async throwing APIs; see [references/network-framework.md#quic-multiplexed-streams](references/network-framework.md#quic-multiplexed-streams).
 
 ## Configuring URLSession
 
@@ -370,37 +391,21 @@ feedback.
 ## App Transport Security (ATS)
 
 ATS enforces HTTPS for all connections by default. Do not disable it.
+ATS is URL Loading System policy, so it covers `URLSession` rather than making
+lower-level `Network.framework` connections secure automatically. When using
+Network.framework, configure secure TLS parameters and trust handling correctly
+for that protocol stack.
 
-### Requirements
-
-- TLS 1.2 or later
-- Forward secrecy cipher suites (ECDHE)
-- SHA-256 or better certificates
-- 2048-bit or greater RSA keys (or 256-bit ECC)
-
-### Exception Domains (Last Resort)
-
-```xml
-<key>NSAppTransportSecurity</key>
-<dict>
-    <key>NSExceptionDomains</key>
-    <dict>
-        <key>legacy-api.example.com</key>
-        <dict>
-            <key>NSExceptionAllowsInsecureHTTPLoads</key>
-            <true/>
-            <key>NSExceptionMinimumTLSVersion</key>
-            <string>TLSv1.2</string>
-        </dict>
-    </dict>
-</dict>
-```
+Use domain-specific ATS exceptions only as a last resort.
 
 **Rules:**
-- Never set `NSAllowsArbitraryLoads` to `true` in production. App Review will reject it without justification.
-- Exception domains require justification in App Review notes.
+- Never set `NSAllowsArbitraryLoads` to `true` in production unless there is no narrower option.
+- ATS exceptions require justification and may trigger additional App Store review.
 - Use exception domains only for third-party servers you cannot upgrade to HTTPS.
 - `NSAllowsLocalNetworking` is acceptable for local device communication (Bonjour, IoT).
+- Prefer ATS `NSPinnedDomains` for declarative pinning when possible. Raw bytes
+  from `SecKeyCopyExternalRepresentation` are not sufficient for SPKI pinning;
+  correct SPKI pinning hashes Subject Public Key Info and belongs in `swift-security`.
 
 ## Common Mistakes
 
@@ -446,7 +451,7 @@ a 500 with an error body require different handling.
 
 ## Review Checklist
 
-- [ ] All network calls use async/await (not completion handlers)
+- [ ] Foreground transfers use async/await; background sessions use delegate/task APIs
 - [ ] Error handling covers URLError cases (.notConnectedToInternet, .timedOut, .cancelled)
 - [ ] Requests are cancellable (respect Task cancellation via `.task` modifier or stored Task references)
 - [ ] Authentication tokens injected via middleware, not hardcoded
@@ -454,11 +459,15 @@ a 500 with an error body require different handling.
 - [ ] Large downloads use `download(for:)` not `data(for:)`
 - [ ] Network calls happen off `@MainActor` (only UI updates on main)
 - [ ] URLSession configured with appropriate timeouts and caching
+- [ ] Production clients inject configured sessions instead of using `URLSession.shared`
+- [ ] Background transfers use task/delegate APIs, not async convenience APIs
 - [ ] Retry logic excludes cancellation and 4xx client errors
 - [ ] Pagination checks `Task.isCancelled` between pages
 - [ ] Sensitive tokens stored in Keychain (not UserDefaults or plain files)
 - [ ] No force-unwrapped URLs from dynamic input
 - [ ] Server error responses decoded and surfaced to users
+- [ ] Network.framework code configures TLS/trust explicitly and keeps deep pinning work in `swift-security`
+- [ ] `NetworkConnection<QUIC>` stream APIs are treated as async throwing
 - [ ] Ensure network response model types conform to Sendable; use @MainActor for UI-updating completion paths
 
 ## References

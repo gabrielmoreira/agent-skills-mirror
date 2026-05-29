@@ -10,6 +10,45 @@ The keychain is an encrypted SQLite database optimized for small secrets. Each i
 
 ---
 
+## Contents
+
+- [Composite Primary Keys by Class](#composite-primary-keys-by-class)
+- [kSecClassGenericPassword — App-Specific Secrets](#ksecclassgenericpassword-app-specific-secrets)
+  - [The kSecAttrGeneric trap](#the-ksecattrgeneric-trap)
+- [kSecClassInternetPassword — AutoFill and Credential Sharing](#ksecclassinternetpassword-autofill-and-credential-sharing)
+  - [How AutoFill Integration Works](#how-autofill-integration-works)
+  - [Protocol and Authentication Constants](#protocol-and-authentication-constants)
+  - [Credential Provider Extensions (iOS 12+)](#credential-provider-extensions-ios-12)
+- [kSecClassKey — Cryptographic Key Management](#ksecclasskey-cryptographic-key-management)
+  - [ApplicationTag vs ApplicationLabel — The Critical Distinction](#applicationtag-vs-applicationlabel-the-critical-distinction)
+  - [SecKeyCreateRandomKey — The Preferred API](#seckeycreaterandomkey-the-preferred-api)
+  - [CryptoKit Key Storage Mapping](#cryptokit-key-storage-mapping)
+- [kSecClassCertificate — DER-Encoded Certificate Storage](#ksecclasscertificate-der-encoded-certificate-storage)
+- [kSecClassIdentity — The Virtual Join](#ksecclassidentity-the-virtual-join)
+  - [Why SecItemAdd with kSecClassIdentity Fails](#why-secitemadd-with-ksecclassidentity-fails)
+  - [Three Correct Approaches to Creating an Identity](#three-correct-approaches-to-creating-an-identity)
+- [Correctness Issues AI Generators Get Wrong](#correctness-issues-ai-generators-get-wrong)
+  - [1. GenericPassword for Everything](#1-genericpassword-for-everything)
+  - [2. Direct Identity Creation](#2-direct-identity-creation)
+  - [3. Missing Key Type Attributes](#3-missing-key-type-attributes)
+  - [4. ApplicationTag / ApplicationLabel Confusion](#4-applicationtag-applicationlabel-confusion)
+  - [5. No Duplicate Handling](#5-no-duplicate-handling)
+  - [6. Missing kSecUseDataProtectionKeychain on macOS](#6-missing-ksecusedataprotectionkeychain-on-macos)
+  - [7. Storing Large Blobs in Keychain](#7-storing-large-blobs-in-keychain)
+- [Modern API Patterns and Platform Differences](#modern-api-patterns-and-platform-differences)
+  - [kSecUseDataProtectionKeychain Unifies Cross-Platform Behavior](#ksecusedataprotectionkeychain-unifies-cross-platform-behavior)
+  - [TN3137 Key Takeaways](#tn3137-key-takeaways)
+  - [iCloud Keychain Sync Restrictions](#icloud-keychain-sync-restrictions)
+- [Size Limits, Performance, and When to Use Files](#size-limits-performance-and-when-to-use-files)
+  - [Performance Architecture](#performance-architecture)
+  - [Envelope Encryption for Large Data](#envelope-encryption-for-large-data)
+  - [Querying with kSecReturnAttributes for Metadata Inspection](#querying-with-ksecreturnattributes-for-metadata-inspection)
+- [Testing Matrix for Class Correctness](#testing-matrix-for-class-correctness)
+- [Migration: GenericPassword to InternetPassword](#migration-genericpassword-to-internetpassword)
+- [Cross-Reference Index](#cross-reference-index)
+- [Conclusion](#conclusion)
+- [Summary Checklist](#summary-checklist)
+
 ## Composite Primary Keys by Class
 
 Every `kSecClass` defines a specific attribute set forming its uniqueness constraint. `kSecAttrAccessGroup` and `kSecAttrSynchronizable` participate in the primary key for all classes.

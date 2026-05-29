@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jeffsenso/prestashop-skills` — 26 default patterns, 0 followed patterns, 159 file(s) materialized.
+Mirror of `jeffsenso/prestashop-skills` — 26 default patterns, 0 followed patterns, 161 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jeffsenso/prestashop-skills` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 159 |
+| Files         | 161 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -214,10 +214,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 153 | ✓ | [`skills/prestashop-module-development/references/security.md`](skills/prestashop-module-development/references/security.md) |
 | 154 | ✓ | [`skills/prestashop-module-development/references/services-and-di.md`](skills/prestashop-module-development/references/services-and-di.md) |
 | 155 | ✓ | [`skills/prestashop-module-development/references/services-split.md`](skills/prestashop-module-development/references/services-split.md) |
-| 156 | ✓ | [`skills/prestashop-module-development/references/translations.md`](skills/prestashop-module-development/references/translations.md) |
-| 157 | ✓ | [`skills/prestashop-module-development/references/validation.md`](skills/prestashop-module-development/references/validation.md) |
-| 158 | ✓ | [`skills/prestashop-module-development/scripts/translatable-form.bundle.js`](skills/prestashop-module-development/scripts/translatable-form.bundle.js) |
-| 159 | ✓ | [`skills/prestashop-module-development/SKILL.md`](skills/prestashop-module-development/SKILL.md) |
+| 156 | ✓ | [`skills/prestashop-module-development/references/theme-template-injection.md`](skills/prestashop-module-development/references/theme-template-injection.md) |
+| 157 | ✓ | [`skills/prestashop-module-development/references/translations.md`](skills/prestashop-module-development/references/translations.md) |
+| 158 | ✓ | [`skills/prestashop-module-development/references/validation.md`](skills/prestashop-module-development/references/validation.md) |
+| 159 | ✓ | [`skills/prestashop-module-development/scripts/grid.bundle.js`](skills/prestashop-module-development/scripts/grid.bundle.js) |
+| 160 | ✓ | [`skills/prestashop-module-development/scripts/translatable-form.bundle.js`](skills/prestashop-module-development/scripts/translatable-form.bundle.js) |
+| 161 | ✓ | [`skills/prestashop-module-development/SKILL.md`](skills/prestashop-module-development/SKILL.md) |
 
 ---
 

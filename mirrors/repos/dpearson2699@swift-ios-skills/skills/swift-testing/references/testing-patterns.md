@@ -9,6 +9,7 @@
 - Confirmation and Known Issues
 - Tags
 - TestScoping and Test Organization
+- XCTest Migration Patterns
 - Mocking and Test Doubles
 - Testable Architecture
 - Async and Concurrent Tests
@@ -244,8 +245,13 @@ struct DatabaseScope: TestTrait, SuiteTrait, TestScoping {
         performing body: @Sendable () async throws -> Void
     ) async throws {
         let db = try await TestDatabase.create()
-        defer { Task { try? await db.destroy() } }
-        try await body()
+        do {
+            try await body()
+            try await db.destroy()
+        } catch {
+            try? await db.destroy()
+            throw error
+        }
     }
 }
 
@@ -259,6 +265,55 @@ func insertsRecord() async throws {
 }
 ```
 
+## XCTest Migration Patterns
+
+Swift Testing tests are functions annotated with `@Test`; they do not need `XCTestCase`. Use the smallest shape that needs the fixture:
+
+```swift
+@Test func validatesTotal() {
+    #expect(Cart(items: [.sample]).total == 9.99)
+}
+
+@Suite("Checkout")
+struct CheckoutTests {
+    let calculator = PriceCalculator()
+
+    @Test func appliesDiscount() {
+        #expect(calculator.total(discount: .percent(10)) == 8.99)
+    }
+}
+
+@Suite("Shared Cache")
+actor CacheTests {
+    var cache = TestCache()
+
+    @Test func storesValue() async {
+        await cache.store("value", forKey: "key")
+        #expect(await cache.value(forKey: "key") == "value")
+    }
+}
+
+struct PureHelperTests {
+    @Test static func normalizesInput() {
+        #expect(normalize("  email@example.com ") == "email@example.com")
+    }
+}
+```
+
+Common XCTest mappings:
+
+| XCTest | Swift Testing |
+|---|---|
+| `XCTAssertTrue(x)` / `XCTAssert(x)` | `#expect(x)` |
+| `XCTAssertFalse(x)` | `#expect(!x)` |
+| `XCTAssertEqual(a, b)` | `#expect(a == b)` |
+| `XCTAssertThrowsError(try f())` | `#expect(throws: (any Error).self) { try f() }` |
+| `XCTAssertNoThrow(try f())` | `#expect(throws: Never.self) { try f() }` |
+| `try XCTUnwrap(value)` | `try #require(value)` |
+| `XCTFail("message")` | `Issue.record("message")` |
+
+Convert `setUp` into isolated suite `init()` state. Avoid moving fixtures into singletons or shared globals; Swift Testing runs tests in parallel by default. Use actors or per-test fixtures for mutable test doubles, and use `.serialized` only when an external shared resource cannot be isolated.
+
 ## Mocking and Test Doubles
 
 Define testable boundaries with protocols:
@@ -269,10 +324,15 @@ protocol UserRepository: Sendable {
     func save(_ user: User) async throws
 }
 
-struct MockUserRepository: UserRepository {
+actor MockUserRepository: UserRepository {
     var users: [String: User] = [:]
-    var fetchError: Error?
-    var savedUsers: [User] = []
+    var fetchError: (any Error)?
+    private(set) var savedUsers: [User] = []
+
+    init(users: [String: User] = [:], fetchError: (any Error)? = nil) {
+        self.users = users
+        self.fetchError = fetchError
+    }
 
     func fetch(id: String) async throws -> User {
         if let error = fetchError { throw error }
@@ -280,14 +340,14 @@ struct MockUserRepository: UserRepository {
         return user
     }
 
-    mutating func save(_ user: User) async throws {
+    func save(_ user: User) async throws {
         savedUsers.append(user)
         users[user.id] = user
     }
 }
 ```
 
-**Pattern:** Mocks conform to protocols, never subclass concrete types. Store call counts and arguments for verification.
+**Pattern:** Mocks conform to protocols, never subclass concrete types. For parallel Swift Testing runs, keep mutable mock state isolated in an actor or another Sendable-safe fixture. Store call counts and arguments for verification behind that isolation boundary.
 
 ## Testable Architecture
 
@@ -298,9 +358,9 @@ Inject dependencies through initializers for testability:
 class ProfileViewModel {
     var user: User?
     var error: Error?
-    private let repository: UserRepository
+    private let repository: any UserRepository
 
-    init(repository: UserRepository) {
+    init(repository: any UserRepository) {
         self.repository = repository
     }
 
@@ -322,8 +382,7 @@ class ProfileViewModel {
 }
 
 @Test @MainActor func viewModelHandlesError() async {
-    var mock = MockUserRepository()
-    mock.fetchError = URLError(.notConnectedToInternet)
+    let mock = MockUserRepository(fetchError: URLError(.notConnectedToInternet))
     let vm = ProfileViewModel(repository: mock)
     await vm.load()
     #expect(vm.user == nil)
@@ -353,8 +412,7 @@ class ProfileViewModel {
 
 // Error path testing
 @Test func fetchThrowsOnNetworkError() async {
-    var mock = MockUserRepository()
-    mock.fetchError = URLError(.notConnectedToInternet)
+    let mock = MockUserRepository(fetchError: URLError(.notConnectedToInternet))
     #expect(throws: URLError.self) {
         try await mock.fetch(id: "1")
     }
@@ -470,11 +528,11 @@ Attach diagnostic data to test results for debugging failures:
 }
 ```
 
-Attachments support any `Attachable` type and images via `AttachableAsImage`.
+Attachments support standard `Attachable` values such as `Data`, `[UInt8]`, strings, and Encodable values when Foundation is imported. Image attachments require Swift 6.3 / Xcode 26.4 or newer and support platform image types such as `UIImage`, `CGImage`, `CIImage`, and `NSImage`; pass `as: .png` or another supported format when the filename should be explicit.
 
 ## Exit Testing
 
-Test code that calls `exit()`, `fatalError()`, or `preconditionFailure()`:
+Test code that calls `exit()`, `fatalError()`, or `preconditionFailure()`. Exit testing requires Swift 6.2 / Xcode 26.0 or newer and is supported on macOS, Linux, FreeBSD, OpenBSD, and Windows runtime targets, not iOS, tvOS, or watchOS:
 
 ```swift
 @Test func invalidInputCausesExit() async {
@@ -484,7 +542,7 @@ Test code that calls `exit()`, `fatalError()`, or `preconditionFailure()`:
 }
 ```
 
-Exit testing runs the closure in a subprocess. The test passes if the process exits with the expected status.
+Exit testing runs the closure in a subprocess. The test passes if the process exits with the expected status. Capturing values from the parent process in an exit-test capture list requires the Swift 6.3 compiler.
 
 ## Test File Organization
 
@@ -543,6 +601,8 @@ func usesNewAPI() async throws {
 
 Swift Testing skips `@available`-gated tests when running on older OS versions. This replaces XCTest's `#available` guard + early return pattern.
 
+Do not put `@available` on a suite type or a type that contains a suite; Swift Testing requires suite types to always be available. Put availability gates on individual `@Test` functions instead.
+
 ## Common Mistakes and Review Checklist
 
 1. **Testing implementation, not behavior.** Test what the code does, not how.
@@ -552,7 +612,7 @@ Swift Testing skips `@available`-gated tests when running on older OS versions. 
 5. **Missing accessibility identifiers in UI tests.** XCUITest queries rely on them.
 6. **Using `sleep` in tests.** Use `confirmation`, clock injection, or `withKnownIssue`.
 7. **Not testing cancellation.** If code supports `Task` cancellation, verify it cancels cleanly.
-8. **Mixing XCTest and Swift Testing in one file.** Keep them in separate files.
+8. **Unclear XCTest migration boundaries.** Apple allows XCTest and Swift Testing in one file during migration; prefer separate files when it keeps imports, ownership, and runner expectations clearer.
 9. **Non-Sendable test helpers shared across tests.** Ensure test helper types are Sendable when shared across concurrent test cases.
 10. **Assuming test order.** Parallel default execution means declaration order and suite nesting do not create a workflow.
 11. **Using `.serialized` as a dependency chain.** Serialized scopes avoid overlap; they do not pass state from one test to the next.

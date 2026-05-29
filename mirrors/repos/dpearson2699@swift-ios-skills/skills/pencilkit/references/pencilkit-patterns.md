@@ -50,10 +50,11 @@ class DrawingController: UIViewController, PKToolPickerObserver {
 
 ## Custom Tool Picker Items
 
-Create custom tools with unique behaviors and icons.
+Create custom tools with unique behaviors and icons. Custom tool picker items
+require iOS/iPadOS 18+, Mac Catalyst 18+, or visionOS 2+.
 
 ```swift
-let customConfig = PKToolPickerCustomItem.Configuration(
+var customConfig = PKToolPickerCustomItem.Configuration(
     identifier: "com.app.highlighter",
     name: "Highlighter"
 )
@@ -74,7 +75,7 @@ customConfig.imageProvider = { item in
 let customItem = PKToolPickerCustomItem(configuration: customConfig)
 
 let toolPicker = PKToolPicker(toolItems: [
-    PKToolPickerInkingItem(type: .pen),
+    PKToolPickerInkingItem(type: .pen, color: .black, width: 5),
     customItem,
     PKToolPickerEraserItem(type: .vector)
 ])
@@ -185,15 +186,11 @@ func strokeSimilarity(
     tolerance: CGFloat = 20
 ) -> Double {
     let refPoints = reference.strokes.flatMap { stroke in
-        stride(from: 0, to: CGFloat(stroke.path.count), by: 1).map { i in
-            stroke.path.interpolatedLocation(at: i)
-        }
+        stroke.path.interpolatedPoints(by: .distance(5)).map(\.location)
     }
 
     let candPoints = candidate.strokes.flatMap { stroke in
-        stride(from: 0, to: CGFloat(stroke.path.count), by: 1).map { i in
-            stroke.path.interpolatedLocation(at: i)
-        }
+        stroke.path.interpolatedPoints(by: .distance(5)).map(\.location)
     }
 
     guard !refPoints.isEmpty else { return 0 }
@@ -217,29 +214,63 @@ Handle backward compatibility when sharing drawings across OS versions.
 
 ```swift
 // Check if a drawing uses features beyond a version
-let drawing: PKDrawing = // loaded drawing
+let drawing = canvasView.drawing
 let version = drawing.requiredContentVersion
 
 switch version {
 case .version1:
-    // Basic inks: pen, pencil, marker
+    // iPadOS 14-era inks: marker, pen, pencil
     break
 case .version2:
-    // Adds monoline and fountain pen
+    // iPadOS 17 inks: monoline, fountain pen, watercolor, crayon
     break
 case .version3:
-    // Adds watercolor and crayon
+    // Barrel-roll angle data
     break
 case .version4:
-    // Latest inks including reed
+    // Reed pen
     break
 @unknown default:
     break
 }
 
-// Limit canvas to a specific version
-canvasView.maximumSupportedContentVersion = .version2
-toolPicker.maximumSupportedContentVersion = .version2
+// Limit both canvas and picker to a specific version.
+// Use .version1 when saved drawings must load on pre-iPadOS 17 systems.
+if #available(iOS 17.0, *) {
+    canvasView.maximumSupportedContentVersion = .version1
+    toolPicker.maximumSupportedContentVersion = .version1
+}
+```
+
+When you allow newer inks, branch before CloudKit or cross-device sync and
+upload either the original drawing or a verified fallback drawing.
+
+```swift
+func drawingForPreiPadOS17Sync(_ drawing: PKDrawing) -> PKDrawing? {
+    switch drawing.requiredContentVersion {
+    case .version1:
+        return drawing
+    case .version2, .version3, .version4:
+        let fallback = version1Fallback(from: drawing)
+        guard fallback.requiredContentVersion == .version1 else {
+            // Reusing paths can preserve newer metadata, such as barrel-roll data.
+            // Sync a thumbnail/message instead of incompatible drawing data.
+            return nil
+        }
+        return fallback
+    @unknown default:
+        return nil
+    }
+}
+
+func version1Fallback(from drawing: PKDrawing) -> PKDrawing {
+    let strokes = drawing.strokes.map { stroke -> PKStroke in
+        var fallback = stroke
+        fallback.ink = PKInkingTool(.pen, color: .black, width: 2).ink
+        return fallback
+    }
+    return PKDrawing(strokes: strokes)
+}
 ```
 
 ## Advanced SwiftUI Wrapper

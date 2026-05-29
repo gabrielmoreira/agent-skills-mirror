@@ -13,26 +13,26 @@ Step-by-step process for identifying, scoring, and maintaining the keyword field
 
 ## How Apple Indexes Metadata
 
-Apple indexes different metadata fields with different weights and behaviors:
+Apple documents the main App Store search signals as text relevance, including matches for the app title, subtitle, keywords, and primary category, plus user behavior such as downloads, ratings, and reviews. Use this table as a practical planning map, not as a precise ranking-weight model:
 
 | Field | Indexed for search? | Controllable per version? | Notes |
 |-------|---------------------|--------------------------|-------|
-| App name | Yes -- high weight | Yes (with new binary) | 30 characters. Strongest ranking signal. |
-| Subtitle | Yes -- high weight | Yes (with new binary) | 30 characters. Second strongest signal. |
-| Keyword field | Yes -- medium weight | Yes (with new binary) | 100 characters. Primary keyword surface. |
-| In-app purchase display names | Yes -- lower weight | Yes (with IAP update) | Each IAP name is indexed. |
-| In-app event name | Yes -- during event window | Yes (per event) | Only indexed while the event is active. |
-| Description | No | Yes (with new binary) | Not indexed for search. Affects conversion only. |
-| Promotional text | No | Yes (anytime, no binary) | Not indexed. Conversion only. |
-| Developer name | Yes -- low weight | Account-level | Rarely useful for keyword strategy. |
-| Category | Yes -- automatic | Yes (with new binary) | Apple adds the category term automatically. Do not repeat it in keywords. |
+| App name | Yes | Yes (with new version/status permitting) | 30 characters. Choose a distinctive name that hints at what the app does. |
+| Subtitle | Yes | Yes (with new version/status permitting) | 30 characters. Summarize value or typical use in a concise phrase. |
+| Keyword field | Yes | Yes (with new version/status permitting) | Up to 100 bytes. Use comma-separated terms with no spaces after commas. |
+| Primary category | Yes | Yes (with new version/status permitting) | Apple includes the primary category in search relevance. Do not repeat the category name in keywords. |
+| Custom Product Page assigned keywords | Yes, for approved visible pages | Yes (in App Store Connect) | Can route matching searches to a custom page instead of the default product page. |
+| In-app event name and short description | Visible in Search/event cards | Yes (per event) | Use query-relevant language for the event card, but avoid treating event copy as a hidden keyword field. |
+| Description | Conversion-focused | Yes (with new version/status permitting) | Apple's product page guidance says not to add unnecessary keywords to improve search results. |
+| Promotional text | No ranking effect | Yes (anytime) | Apple says promotional text does not affect search ranking. Use it for timely conversion messaging. |
+| Ratings and reviews | Behavior/search signal | Ongoing | Ratings and reviews influence search and conversion, but review text should be used as customer research rather than keyword stuffing. |
 
 ### Indexing behavior details
 
-- Apple matches both singular and plural forms from a singular keyword. Always use singular.
-- Apple does not match partial words -- "photo" does not match "photography". Include both if both are search terms.
-- Title and subtitle words are indexed with the highest weight. Repeating them in the keyword field has no additional benefit and wastes characters.
-- Apple combines words across the title, subtitle, and keyword field when matching multi-word queries. "Budget" in the title and "tracker" in the keyword field will match "budget tracker" as a search query.
+- Avoid plurals of words already included in singular form; Apple treats them as duplicates.
+- Do not repeat words from the app name, subtitle, or category in the keyword field.
+- Use spaces only inside real keyword phrases; do not add spaces after commas.
+- Include separate related terms when both are genuine search terms, such as "photo" and "photography".
 
 ## Research Process
 
@@ -41,7 +41,7 @@ Apple indexes different metadata fields with different weights and behaviors:
 Identify the top 5-10 apps ranking for the primary category terms. For each competitor, note:
 
 - Title and subtitle keywords
-- Visible keyword patterns (terms that appear frequently across top-ranking apps)
+- Visible positioning patterns (terms that appear frequently across top-ranking titles, subtitles, and screenshots)
 - Gaps -- relevant terms that competitors are not targeting
 
 Use App Store search autocomplete to discover what users actually type. Start typing a category term and note the suggested completions.
@@ -126,7 +126,7 @@ selfie,portrait,collage,crop,blur,preset,enhance,adjust,brightness,contrast,satu
 ### Allocation principles
 
 - Each comma costs 1 character. Fewer, longer keywords are not inherently better than more, shorter ones -- Apple matches individual words, not phrases.
-- If two keywords are always searched together (e.g., "meal prep"), include both words separately ("meal,prep") since Apple combines across fields anyway.
+- If two terms are searched as a phrase (e.g., "meal prep"), use the phrase when it matches real query behavior; use separate terms when each word is independently valuable.
 - Reserve 5-10 characters for experimental keywords that rotate each release based on performance data.
 
 ## Seasonal Keyword Rotation

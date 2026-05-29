@@ -27,9 +27,9 @@ and `MPRemoteCommandCenter`. Targets Swift 6.3 / iOS 26+.
 
 ### Project Configuration
 
-1. Enable the **MusicKit** capability in Xcode (adds the `com.apple.developer.musickit` entitlement)
-2. Add `NSAppleMusicUsageDescription` to Info.plist explaining why the app accesses Apple Music
-3. For background playback, add the `audio` background mode to `UIBackgroundModes`
+1. Enable the **MusicKit App Service** for the app's explicit bundle ID in the Apple Developer portal so MusicKit can generate developer tokens automatically.
+2. Add `NSAppleMusicUsageDescription` to Info.plist explaining why the app accesses the user's media library.
+3. For background playback, add the `audio` background mode to `UIBackgroundModes`.
 
 ### Imports
 
@@ -40,7 +40,9 @@ import MediaPlayer    // MPRemoteCommandCenter, MPNowPlayingInfoCenter
 
 ## Authorization
 
-Request permission before accessing the user's music data or playing Apple Music content. Authorization is a one-time prompt per app install.
+Request permission before accessing the user's music data or playing Apple Music
+content. `request()` presents Apple's consent dialog when necessary; use
+`currentStatus` to read the current setting without prompting.
 
 ```swift
 func requestMusicAccess() async -> MusicAuthorization.Status {
@@ -66,7 +68,9 @@ let current = MusicAuthorization.currentStatus
 
 ## Catalog Search
 
-Use `MusicCatalogSearchRequest` to search the Apple Music catalog. The user must have an Apple Music subscription for full catalog access.
+Use `MusicCatalogSearchRequest` to search the Apple Music catalog. Catalog lookup
+can fetch Apple Music resources, but playback of subscription catalog content
+must still be gated on `MusicSubscription.current.canPlayCatalogContent`.
 
 ```swift
 func searchCatalog(term: String) async throws -> MusicItemCollection<Song> {
@@ -115,6 +119,8 @@ func observeSubscription() async {
 ### Offering Apple Music
 
 Present the Apple Music subscription offer sheet when the user is not subscribed.
+Check `canBecomeSubscriber` first, and pass `MusicSubscriptionOffer.Options` or
+`onLoadCompletion` when the sheet needs contextual metadata or load-error handling.
 
 ```swift
 import MusicKit
@@ -125,9 +131,21 @@ struct MusicOfferView: View {
 
     var body: some View {
         Button("Subscribe to Apple Music") {
-            showOffer = true
+            Task {
+                let subscription = try? await MusicSubscription.current
+                showOffer = subscription?.canBecomeSubscriber == true
+            }
         }
-        .musicSubscriptionOffer(isPresented: $showOffer)
+        .musicSubscriptionOffer(
+            isPresented: $showOffer,
+            options: .default,
+            onLoadCompletion: { error in
+                if let error {
+                    // Surface loading errors in app UI or diagnostics.
+                    print(error)
+                }
+            }
+        )
     }
 }
 ```
@@ -284,17 +302,18 @@ func enableScrubbing() {
 
 ## Common Mistakes
 
-### DON'T: Skip the MusicKit entitlement or usage description
+### DON'T: Skip MusicKit App Service setup or usage description
 
-Without the MusicKit entitlement your app crashes at authorization. Without
-`NSAppleMusicUsageDescription`, App Review rejects the submission.
+Without the MusicKit App Service on the app's explicit bundle ID, automatic
+developer token generation for Apple Music API requests is not configured.
+Without `NSAppleMusicUsageDescription`, the app cannot access the user's media
+library on Apple platforms that require the purpose string.
 
 ```swift
-// WRONG: No entitlement configured
-let status = await MusicAuthorization.request() // Crashes
+// WRONG: MusicKit App Service not enabled for this bundle ID
 
-// CORRECT: Enable MusicKit capability in Xcode first,
-// then add NSAppleMusicUsageDescription to Info.plist
+// CORRECT: Enable MusicKit App Service in the developer portal,
+// set the matching bundle ID, then add NSAppleMusicUsageDescription.
 let status = await MusicAuthorization.request()
 ```
 
@@ -369,10 +388,12 @@ center.skipForwardCommand.isEnabled = false
 
 ## Review Checklist
 
-- [ ] MusicKit capability enabled in Xcode project
+- [ ] MusicKit App Service enabled for the app's explicit bundle ID
 - [ ] `NSAppleMusicUsageDescription` added to Info.plist
 - [ ] `MusicAuthorization.request()` called before any MusicKit access
 - [ ] Subscription checked before attempting catalog playback
+- [ ] `canBecomeSubscriber` checked before presenting a subscription offer
+- [ ] `hasCloudLibraryEnabled` checked before library writes
 - [ ] `ApplicationMusicPlayer` used (not `SystemMusicPlayer`) for app-scoped playback
 - [ ] Background audio mode enabled if music plays in background
 - [ ] Now Playing info updated on every track change (for custom audio)
@@ -386,10 +407,16 @@ center.skipForwardCommand.isEnabled = false
 
 - Extended patterns (SwiftUI integration, genre browsing, playlist management): [references/musickit-patterns.md](references/musickit-patterns.md)
 - [MusicKit framework](https://sosumi.ai/documentation/musickit)
+- [Using automatic developer token generation for Apple Music API](https://sosumi.ai/documentation/musickit/using-automatic-token-generation-for-apple-music-api)
 - [MusicAuthorization](https://sosumi.ai/documentation/musickit/musicauthorization)
 - [ApplicationMusicPlayer](https://sosumi.ai/documentation/musickit/applicationmusicplayer)
 - [MusicCatalogSearchRequest](https://sosumi.ai/documentation/musickit/musiccatalogsearchrequest)
 - [MusicSubscription](https://sosumi.ai/documentation/musickit/musicsubscription)
+- [canPlayCatalogContent](https://sosumi.ai/documentation/musickit/musicsubscription/canplaycatalogcontent)
+- [canBecomeSubscriber](https://sosumi.ai/documentation/musickit/musicsubscription/canbecomesubscriber)
+- [hasCloudLibraryEnabled](https://sosumi.ai/documentation/musickit/musicsubscription/hascloudlibraryenabled)
+- [MusicCatalogChartsRequest initializer](https://sosumi.ai/documentation/musickit/musiccatalogchartsrequest/init(genre:kinds:types:))
+- [musicSubscriptionOffer(isPresented:options:onLoadCompletion:)](https://sosumi.ai/documentation/swiftui/view/musicsubscriptionoffer(ispresented:options:onloadcompletion:))
 - [MPRemoteCommandCenter](https://sosumi.ai/documentation/mediaplayer/mpremotecommandcenter)
 - [MPNowPlayingInfoCenter](https://sosumi.ai/documentation/mediaplayer/mpnowplayinginfocenter)
 - [NSAppleMusicUsageDescription](https://sosumi.ai/documentation/bundleresources/information-property-list/nsapplemusicusagedescription)

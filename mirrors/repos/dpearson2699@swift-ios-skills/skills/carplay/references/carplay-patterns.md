@@ -25,19 +25,25 @@ in the CarPlay Dashboard. Add `CPSupportsDashboardNavigationScene` and a
 dashboard scene configuration to Info.plist alongside the main scene.
 
 ```plist
-<key>CPSupportsDashboardNavigationScene</key>
-<true/>
-<key>CPTemplateApplicationDashboardSceneSessionRoleApplication</key>
-<array>
+<key>UIApplicationSceneManifest</key>
+<dict>
+    <key>CPSupportsDashboardNavigationScene</key>
+    <true/>
+    <key>UISceneConfigurations</key>
     <dict>
-        <key>UISceneClassName</key>
-        <string>CPTemplateApplicationDashboardScene</string>
-        <key>UISceneConfigurationName</key>
-        <string>CarPlayDashboardConfiguration</string>
-        <key>UISceneDelegateClassName</key>
-        <string>$(PRODUCT_MODULE_NAME).DashboardSceneDelegate</string>
+        <key>CPTemplateApplicationDashboardSceneSessionRoleApplication</key>
+        <array>
+            <dict>
+                <key>UISceneClassName</key>
+                <string>CPTemplateApplicationDashboardScene</string>
+                <key>UISceneConfigurationName</key>
+                <string>CarPlayDashboardConfiguration</string>
+                <key>UISceneDelegateClassName</key>
+                <string>$(PRODUCT_MODULE_NAME).DashboardSceneDelegate</string>
+            </dict>
+        </array>
     </dict>
-</array>
+</dict>
 ```
 
 ### Dashboard Scene Delegate
@@ -499,7 +505,7 @@ Query `CPSessionConfiguration` to adapt content to vehicle constraints.
 func configureForVehicle(sessionConfig: CPSessionConfiguration) {
     let limits = sessionConfig.limitedUserInterfaces
     if limits.contains(.keyboard) {
-        // Vehicle does not support keyboard -- hide search
+        // Vehicle is limiting keyboard display -- adapt text entry/search.
     }
 
     // Always respect template maximums
@@ -522,6 +528,6 @@ final class AppState {
 }
 
 // Both PhoneSceneDelegate and CarPlaySceneDelegate read/write AppState.shared.
-// All CarPlay template classes are @MainActor -- ensure template mutations
-// happen on the main actor when updating from background threads.
+// CPTemplate subclasses are @MainActor -- ensure template mutations happen
+// on the main actor when updating from background threads.
 ```

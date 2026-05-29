@@ -5,9 +5,21 @@ description: "Implement, review, or improve Live Activities and Dynamic Island e
 
 # ActivityKit
 
-Build real-time, glanceable experiences on the Lock Screen, Dynamic Island,
-StandBy, CarPlay, and a paired Mac using ActivityKit. Patterns target iOS 26+
-with Swift 6.3, backward-compatible to iOS 16.1 unless noted.
+ActivityKit owns real-time, glanceable Live Activities displayed on the Lock
+Screen and, on supported devices, Dynamic Island. StandBy, CarPlay, and a
+paired Mac can also display Live Activities, but do not blur that core routing:
+ordinary Home Screen/timeline widgets belong in `widgetkit`, and generic APNs
+setup belongs in `push-notifications`. Live Activity push payload shape stays in
+ActivityKit: device-token updates use `apns-push-type: liveactivity` and
+`apns-topic: <bundle-id>.push-type.liveactivity`, while `aps.content-state` must
+decode into the app's actual `ActivityAttributes.ContentState` `Codable` shape.
+Do not assume `Date` or `ClosedRange<Date>` use Unix timestamp
+`lowerBound`/`upperBound` dictionaries unless the Swift model and server
+contract coordinate that encoding. Boundary answers that keep ActivityKit APNs
+payloads, `content-state`, or Live Activity data contracts in scope should
+include these payload-shape invariants even when routing generic APNs setup
+elsewhere. Patterns target iOS 26+ with Swift 6.3;
+modern `ActivityContent` lifecycle examples require iOS 16.2+ unless noted.
 
 See [references/activitykit-patterns.md](references/activitykit-patterns.md) for complete code patterns including push payload formats, concurrent activities, state observation, and testing.
 
@@ -19,7 +31,7 @@ See [references/activitykit-patterns.md](references/activitykit-patterns.md) for
 - [Lock Screen Presentation](#lock-screen-presentation)
 - [Dynamic Island](#dynamic-island)
 - [Push-to-Update](#push-to-update)
-- [iOS 26 Additions](#ios-26-additions)
+- [Recent Additions](#recent-additions)
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
 - [References](#references)
@@ -94,7 +106,8 @@ let content = ActivityContent(
 ### Starting
 
 Use `Activity.request` to create and display a Live Activity. Pass `.token` as
-the `pushType` to enable remote updates via APNs.
+the `pushType` to enable remote updates via APNs. The `ActivityContent` request
+shown here requires iOS 16.2+.
 
 ```swift
 let attributes = DeliveryAttributes(orderNumber: 42, restaurantName: "Pizza Place")
@@ -168,87 +181,50 @@ await activity.end(finalContent, dismissalPolicy: .immediate)
 await activity.end(finalContent, dismissalPolicy: .after(Date().addingTimeInterval(3600)))
 ```
 
-Always end activities on all code paths -- success, error, and cancellation.
-A leaked activity stays on the Lock Screen until the system kills it (up to
-8 hours), which frustrates users.
+Always end activities on all terminal code paths -- success, user/app
+cancellation, sign-out/session stop, unrecoverable app error, and terminal server
+failure. If the server says the tracked event can no longer continue or be
+represented accurately, apply or send a final terminal state and end the activity
+instead of leaving stale progress visible. When reviewing duration claims,
+distinguish the active lifetime (up to 8 hours unless the app or user ends it
+sooner), system-ended Lock Screen presence (up to 4 additional hours, for 12
+hours total from start), and app-ended `.default` dismissal linger (up to 4 hours
+after ending).
 
 ## Lock Screen Presentation
 
-The Lock Screen is the primary surface for Live Activities. Every device with
-iOS 16.1+ displays Live Activities here. Design this layout first.
+The Lock Screen is the primary Live Activity display surface. Every device with
+iOS 16.1+ displays Live Activities here. Design this layout first, then adapt
+for Dynamic Island where available.
 
 ```swift
 struct DeliveryActivityWidget: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: DeliveryAttributes.self) { context in
-            // Lock Screen / StandBy / CarPlay / paired Mac content
             VStack(alignment: .leading) {
-                HStack {
-                    Text(context.attributes.restaurantName)
-                        .font(.headline)
-                    Spacer()
-                    Text("Order #\(context.attributes.orderNumber)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+                Text(context.attributes.restaurantName).font(.headline)
 
                 if context.isStale {
                     Label("Updating...", systemImage: "arrow.trianglehead.2.clockwise")
-                        .font(.subheadline)
                         .foregroundStyle(.secondary)
                 } else {
-                    HStack {
-                        Label(context.state.driverName, systemImage: "person.fill")
-                        Spacer()
-                        Text(timerInterval: context.state.estimatedDeliveryTime,
-                             countsDown: true)
-                            .monospacedDigit()
-                    }
-                    .font(.subheadline)
-
-                    // Progress steps
-                    HStack {
-                        ForEach(DeliveryStep.allCases, id: \.self) { step in
-                            Image(systemName: step.icon)
-                                .foregroundStyle(
-                                    step <= context.state.currentStep ? .primary : .tertiary
-                                )
-                        }
-                    }
+                    Text(timerInterval: context.state.estimatedDeliveryTime, countsDown: true)
+                        .monospacedDigit()
                 }
             }
             .padding()
         } dynamicIsland: { context in
-            // Dynamic Island closures (see next section)
             DynamicIsland {
-                // Expanded regions...
-                DynamicIslandExpandedRegion(.leading) {
-                    Image(systemName: "box.truck.fill").font(.title2)
-                }
-                DynamicIslandExpandedRegion(.trailing) {
-                    Text(timerInterval: context.state.estimatedDeliveryTime,
-                         countsDown: true)
-                        .font(.caption).monospacedDigit()
-                }
                 DynamicIslandExpandedRegion(.center) {
                     Text(context.attributes.restaurantName).font(.headline)
                 }
-                DynamicIslandExpandedRegion(.bottom) {
-                    HStack {
-                        ForEach(DeliveryStep.allCases, id: \.self) { step in
-                            Image(systemName: step.icon)
-                                .foregroundStyle(
-                                    step <= context.state.currentStep ? .primary : .tertiary
-                                )
-                        }
-                    }
+                DynamicIslandExpandedRegion(.trailing) {
+                    Text(timerInterval: context.state.estimatedDeliveryTime, countsDown: true)
                 }
             } compactLeading: {
                 Image(systemName: "box.truck.fill")
             } compactTrailing: {
-                Text(timerInterval: context.state.estimatedDeliveryTime,
-                     countsDown: true)
-                    .frame(width: 40).monospacedDigit()
+                Text(timerInterval: context.state.estimatedDeliveryTime, countsDown: true)
             } minimal: {
                 Image(systemName: "box.truck.fill")
             }
@@ -257,11 +233,12 @@ struct DeliveryActivityWidget: Widget {
 }
 ```
 
-### Lock Screen Sizing
+### Supplemental Activity Families
 
 The Lock Screen presentation has limited vertical space. Avoid layouts taller
-than roughly 160 points. Use `supplementalActivityFamilies` to opt into
-`.small` (compact) or `.medium` (standard) sizing:
+than roughly 160 points. On iOS 18+, use `supplementalActivityFamilies` when
+you provide adaptive layouts beyond the default: `.medium` for iOS/macOS
+Live Activity sizing and `.small` for watchOS Live Activity sizing.
 
 ```swift
 ActivityConfiguration(for: DeliveryAttributes.self) { context in
@@ -269,19 +246,19 @@ ActivityConfiguration(for: DeliveryAttributes.self) { context in
 } dynamicIsland: { context in
     // Dynamic Island
 }
-.supplementalActivityFamilies([.small, .medium])
+.supplementalActivityFamilies([.medium, .small])
 ```
 
 ## Dynamic Island
 
-The Dynamic Island is available on iPhone 14 Pro and later. It has three
-presentation modes. Design all three, but treat the Lock Screen as the primary
-surface since not all devices have a Dynamic Island.
+Dynamic Island presentations appear only on devices that include Dynamic Island.
+Design all three modes, but treat the Lock Screen as the primary surface since
+not all devices have a Dynamic Island.
 
 ### Compact (Leading + Trailing)
 
-Always visible when a single Live Activity is active. Space is extremely
-limited -- show only the most critical information.
+Used when one Live Activity occupies Dynamic Island compact space. Space is
+extremely limited -- show only the most critical information.
 
 | Region | Purpose |
 |---|---|
@@ -319,12 +296,14 @@ DynamicIsland { /* expanded */ }
 ## Push-to-Update
 
 Push-to-update sends Live Activity updates through APNs, which is more
-efficient than polling from the app and works when the app is suspended.
+efficient than polling from the app and works when the app is suspended, subject
+to APNs delivery, priority, budget, and throttling.
 
 ### Setup
 
 Pass `.token` as the `pushType` when starting the activity, then forward the
-push token to your server:
+per-activity update token to your server. Update tokens can rotate, so observe
+`activity.pushTokenUpdates` and re-register every emitted token:
 
 ```swift
 let activity = try Activity.request(
@@ -348,43 +327,21 @@ Task {
 
 Send an HTTP/2 POST to APNs with these headers and JSON body:
 
-**Required HTTP headers:**
+**Required device-token HTTP headers:**
 - `apns-push-type: liveactivity`
 - `apns-topic: <bundle-id>.push-type.liveactivity`
-- `apns-priority: 5` (low) or `10` (high, triggers alert)
+- `apns-priority: 5` (lower priority) or `10` (immediate, counts against budget)
 
-**Update payload:**
+The `aps.alert` payload controls visible alert/banner/sound behavior; priority
+alone does not create an alert.
 
-```json
-{
-    "aps": {
-        "timestamp": 1700000000,
-        "event": "update",
-        "content-state": {
-            "driverName": "Alex",
-            "estimatedDeliveryTime": {
-                "lowerBound": 1700000000,
-                "upperBound": 1700001800
-            },
-            "currentStep": "delivering"
-        },
-        "stale-date": 1700000300,
-        "alert": {
-            "title": "Delivery Update",
-            "body": "Your driver is nearby!"
-        }
-    }
-}
-```
+**Payload body:** Put `timestamp`, `event`, and the full `content-state` inside `aps`. Use `event: "update"` for updates, `event: "end"` plus optional `dismissal-date` for ending, and `event: "start"` with `attributes-type`, `attributes`, `content-state`, and required `alert` for push-to-start. Add `stale-date`, `relevance-score`, or `alert` when appropriate.
 
-**End payload:** Same structure with `"event": "end"` and optional `"dismissal-date"`.
-
-The `content-state` JSON must match the `ContentState` Codable structure
-exactly. Mismatched keys or types cause silent failures.
+The `content-state` JSON must decode into `ActivityAttributes.ContentState`. Use the default synthesized `Codable` key and value shape unless the Swift model declares custom `CodingKeys`; then coordinate those exact keys and value shapes server-side. Do not assume `Date` or `ClosedRange<Date>` values are Unix timestamp dictionaries unless your Swift model explicitly encodes them that way. Mismatched keys or types can prevent ActivityKit from applying the update.
 
 ### Push-to-Start
 
-Start a Live Activity remotely without the app running (iOS 17.2+):
+Start a Live Activity remotely without the app running (iOS 17.2+). Push-to-start tokens are ActivityKit-specific tokens from `Activity<Attributes>.pushToStartTokenUpdates`; they are distinct from ordinary app/device APNs tokens and per-activity update tokens:
 
 ```swift
 Task {
@@ -398,10 +355,11 @@ Task {
 ### Frequent Push Updates
 
 Add `NSSupportsLiveActivitiesFrequentUpdates = YES` to Info.plist to increase
-the push update budget. Use for activities that update more than once per
-minute (sports scores, ride tracking).
+the system-managed push update budget. When cadence matters, check
+`ActivityAuthorizationInfo.frequentPushesEnabled` and observe
+`frequentPushEnablementUpdates`; Apple does not guarantee a fixed update rate.
 
-## iOS 26 Additions
+## Recent Additions
 
 ### Scheduled Live Activities (iOS 26+)
 
@@ -418,33 +376,50 @@ let activity = try Activity.request(
     attributes: attributes,
     content: content,
     pushType: .token,
+    style: .standard,
+    alertConfiguration: AlertConfiguration(
+        title: "Game Starting",
+        body: "The live score is ready.",
+        sound: .default
+    ),
     start: scheduledDate
 )
 ```
 
-### ActivityStyle (iOS 16.1+ type, `style:` parameter iOS 26+)
+### ActivityStyle (iOS 18+ request parameter)
 
-Control persistence: `.standard` (persists until ended, default) or `.transient` (system may dismiss automatically). Use `.transient` for short-lived updates like transit arrivals. The `style:` parameter on `Activity.request` requires iOS 26+.
+Use the iOS 18+ `style:` request parameter to choose persistence behavior. Use
+`.standard` for persistent Live Activities such as deliveries, rides, sports
+scores, timers, and flight/status boards. Use `.transient` only for a
+short-lived expanded Dynamic Island presentation; it can auto-end when the user
+locks the device, collapses or shrinks the expanded presentation, leaves the
+app, or does other work outside Dynamic Island.
 
 ```swift
 let activity = try Activity.request(
-    attributes: attributes, content: content,
-    pushType: .token, style: .transient
+    attributes: attributes,
+    content: content,
+    pushType: .token,
+    style: .standard
 )
 ```
 
 ### Paired Mac & CarPlay (iOS 26+)
 
-Live Activities automatically appear on a paired Mac running macOS Tahoe and on the CarPlay Home Screen. No additional code needed — ensure Lock Screen layout is legible at smaller scales.
+Live Activities can appear on a paired Mac and on the CarPlay Home Screen. No additional ActivityKit API is required, but validate compact layouts; buttons and toggles in Live Activities do not perform actions in CarPlay.
 
 ### Channel-Based Push (iOS 18+)
 
-Broadcast updates to many Live Activities at once with `.channel`:
+Broadcast updates to many Live Activities at once with an APNs-created channel
+ID. Enable the broadcast capability outside Xcode, create the channel on the
+server, then subscribe with `.channel(channelID)`. Channel pushes update or end
+Live Activities; they do not start them. Use `apns-channel-id` and expiration
+for channel pushes instead of the device-token `apns-topic` example above.
 
 ```swift
 let activity = try Activity.request(
     attributes: attributes, content: content,
-    pushType: .channel("delivery-updates")
+    pushType: .channel(channelIDFromServer)
 )
 ```
 
@@ -456,11 +431,17 @@ let activity = try Activity.request(
 **DON'T:** Update Live Activities too frequently from the app (drains battery).
 **DO:** Use push-to-update for server-driven updates. Limit app-side updates to user actions.
 
-**DON'T:** Forget to end the activity when the event completes.
-**DO:** Always end activities on success, error, and cancellation paths. A leaked activity frustrates users.
+**DON'T:** Forget to end the activity when the event reaches any terminal state.
+**DO:** End activities on success, cancellation, sign-out, unrecoverable errors, and terminal server failures. A leaked activity frustrates users.
 
-**DON'T:** Assume the Dynamic Island is available (only iPhone 14 Pro+).
+**DON'T:** Assume every device has Dynamic Island.
 **DO:** Design for the Lock Screen as the primary surface; Dynamic Island is supplementary.
+
+**DON'T:** Treat Lock Screen or Dynamic Island Live Activities as ordinary Home Screen/timeline widgets.
+**DO:** Use ActivityKit for the Live Activity lifecycle and those display surfaces; route ordinary Home Screen/timeline widgets to `widgetkit`.
+
+**DON'T:** Reduce Live Activity payload routing to generic `content-state` matching when the prompt involves APNs payloads.
+**DO:** Include the actual `ContentState` `Codable` contract and coordinated `Date`/`ClosedRange<Date>` encoding caveat; route generic APNs auth and registration to `push-notifications`.
 
 **DON'T:** Store sensitive information in ActivityAttributes (visible on Lock Screen).
 **DO:** Keep sensitive data in the app and show only safe-to-display summaries.
@@ -477,23 +458,31 @@ let activity = try Activity.request(
 **DON'T:** Use the deprecated `contentState`-based API for request/update/end.
 **DO:** Use `ActivityContent` for all lifecycle calls.
 
-**DON'T:** Put heavy logic in Live Activity views. They render in a size-limited widget process.
-**DO:** Pre-compute display values and pass them through `ContentState`.
+**DON'T:** Fetch network data or location directly from Live Activity views.
+**DO:** Pre-compute display values in the app or server and pass them through ActivityKit updates or pushes.
 
 ## Review Checklist
 
 - [ ] `ActivityAttributes` defines static properties and `ContentState`
 - [ ] `NSSupportsLiveActivities = YES` in host app Info.plist
 - [ ] Activity uses `ActivityContent` (not deprecated contentState API)
-- [ ] Activity ended in all code paths (success, error, cancellation)
-- [ ] Lock Screen layout handles `context.isStale`
-- [ ] Dynamic Island compact, expanded, and minimal implemented
-- [ ] Push token forwarded to server via `activity.pushTokenUpdates`
-- [ ] `AlertConfiguration` used for important updates
+- [ ] Activity ended in all terminal paths (success, error, cancellation, sign-out, terminal server failure)
+- [ ] ActivityKit lifecycle and Lock Screen/Dynamic Island Live Activity surfaces are separated from ordinary Home Screen/timeline widget work
+- [ ] Lock Screen layout, the primary Live Activity surface, handles `context.isStale`
+- [ ] Dynamic Island compact, expanded, and minimal implemented with Lock Screen fallback
+- [ ] Push update token forwarded to server via `activity.pushTokenUpdates`
+- [ ] Push-to-start token collected via `Activity<Attributes>.pushToStartTokenUpdates`
+- [ ] Push-to-start payload includes required `alert`
+- [ ] `content-state` JSON matches the actual `ContentState` `Codable` shape, including coordinated date/range encoding
+- [ ] Review distinguishes 8-hour active lifetime, 12-hour total system-ended Lock Screen presence, and 4-hour app-ended `.default` linger
 - [ ] `ActivityAuthorizationInfo` checked before starting
+- [ ] `frequentPushesEnabled` checked before assuming high-cadence pushes
 - [ ] ContentState kept small (serialized on every update)
-- [ ] Tested on device (Dynamic Island differs from Simulator)
-- [ ] Ensure ActivityAttributes and ContentState types are Sendable; update Live Activity UI on @MainActor
+- [ ] iOS 18+ availability guarded for `style:`, `.channel`, and supplemental families
+- [ ] iOS 18+ `style:` choices are justified: `.standard` for persistent Live Activities, `.transient` only for short-lived expanded Dynamic Island presentations
+- [ ] ActivityKit push priority and `aps.alert` behavior are handled separately
+- [ ] Live Activity views avoid direct network/location work
+- [ ] Tested on device for push delivery and Dynamic Island behavior
 
 ## References
 

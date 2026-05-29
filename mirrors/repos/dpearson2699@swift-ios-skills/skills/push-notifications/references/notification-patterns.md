@@ -26,7 +26,7 @@ import UserNotifications
 @main
 struct MyApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @State private var router = DeepLinkRouter()
+    @State private var router = DeepLinkRouter.shared
 
     init() {
         // Set delegate as early as possible so no notifications are missed.
@@ -48,25 +48,16 @@ struct MyApp: App {
         let center = UNUserNotificationCenter.current()
         let settings = await center.notificationSettings()
 
-        switch settings.authorizationStatus {
-        case .notDetermined:
-            let granted = try? await center.requestAuthorization(
+        if settings.authorizationStatus == .notDetermined {
+            _ = try? await center.requestAuthorization(
                 options: [.alert, .sound, .badge]
             )
-            if granted == true {
-                await MainActor.run {
-                    UIApplication.shared.registerForRemoteNotifications()
-                }
-            }
-        case .authorized, .provisional, .ephemeral:
-            await MainActor.run {
-                UIApplication.shared.registerForRemoteNotifications()
-            }
-        case .denied:
-            // User denied -- do not prompt again. Show in-app UI if needed.
-            break
-        @unknown default:
-            break
+        }
+
+        // APNs registration is independent from alert authorization. If the
+        // user denies alerts, remote notifications can still arrive silently.
+        await MainActor.run {
+            UIApplication.shared.registerForRemoteNotifications()
         }
     }
 }
@@ -103,8 +94,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         didFailToRegisterForRemoteNotificationsWithError error: Error
     ) {
         #if targetEnvironment(simulator)
-        // Simulator cannot register for remote notifications. This is expected.
-        print("Simulator: APNs registration not available.")
+        // Simulator can simulate pushes with .apns files or simctl, but it
+        // does not register with APNs for a real device token.
+        print("Simulator: APNs device-token registration is unavailable.")
         #else
         print("APNs registration failed: \(error.localizedDescription)")
         // Log to your analytics/crash reporting service
@@ -125,7 +117,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 ```swift
 @MainActor
-final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, Sendable {
+final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationDelegate()
 
     private override init() { super.init() }
@@ -320,7 +312,7 @@ Silent pushes wake the app in the background to fetch new content. The system gi
 
 ```swift
 @MainActor
-final class BackgroundNotificationHandler: Sendable {
+final class BackgroundNotificationHandler {
     static let shared = BackgroundNotificationHandler()
 
     func handle(userInfo: [AnyHashable: Any]) async -> UIBackgroundFetchResult {
@@ -353,7 +345,9 @@ final class BackgroundNotificationHandler: Sendable {
 }
 ```
 
-**Important:** The Background Modes capability with "Remote notifications" must be enabled in the Xcode project for silent push to work. Without it, `didReceiveRemoteNotification` is never called for silent pushes.
+**Important:** The Background Modes capability with "Remote notifications" must be enabled in the Xcode project for silent push to work. Send background pushes with `aps.content-available = 1`, no alert/sound/badge keys, `apns-push-type: background`, and `apns-priority: 5`. Delivery is low priority, throttled, and not guaranteed; Apple cautions against more than two or three per hour, so do not use silent pushes for every-few-minutes polling or user-visible notification behavior. Keep `didReceiveRemoteNotification` work bounded and return the correct `UIBackgroundFetchResult` within the background execution window.
+
+When reviewing a background-push proposal, explicitly call out these contracts: background pushes are not immediate freshness signals; APNs may throttle or drop them; the app needs Background Modes > Remote notifications; the app delegate handler must finish promptly and return `.newData`, `.noData`, or `.failed` based on the actual result.
 
 ## Notification Scheduling Manager
 
@@ -457,7 +451,7 @@ final class NotificationScheduler {
 
 ## Token Refresh and Update Flow
 
-Device tokens can change between app launches. Treat the token as ephemeral and always send the latest to your server.
+Device tokens can change between app launches. Treat the token as ephemeral and always send the latest to your server from every `didRegisterForRemoteNotificationsWithDeviceToken` callback. Do not use `UserDefaults` as the source of truth for skipping upload, and do not assume a fixed token length.
 
 ```swift
 @MainActor
@@ -468,13 +462,9 @@ final class TokenService {
     private(set) var currentToken: String?
 
     func upload(token: String) async {
-        // Skip if token has not changed since last successful upload
-        if token == currentToken { return }
-
         do {
             try await APIClient.shared.registerDeviceToken(token)
             currentToken = token
-            UserDefaults.standard.set(token, forKey: "lastUploadedAPNsToken")
         } catch {
             print("Failed to upload APNs token: \(error)")
             // Retry on next launch -- didRegisterForRemoteNotifications fires again
@@ -486,7 +476,6 @@ final class TokenService {
         guard let token = currentToken else { return }
         try? await APIClient.shared.unregisterDeviceToken(token)
         currentToken = nil
-        UserDefaults.standard.removeObject(forKey: "lastUploadedAPNsToken")
     }
 }
 ```
@@ -586,14 +575,14 @@ xcrun simctl push booted com.example.myapp payload.apns
 Use the APNs sandbox environment during development. The device token from a development build uses the sandbox; production builds use the production APNs endpoint.
 
 For quick testing without a server, use tools like:
-- **Xcode Console** to send test payloads via the APNs provider API
-- Third-party push testing tools that send directly to APNs with your key/certificate
+- **Apple Push Notification Console** to send development-environment test payloads and inspect delivery logs
+- Command-line APNs requests generated by the console or your own provider scripts
 
 ### Debugging Delivery
 
 1. **Check entitlements:** Ensure the push notification entitlement is in the app's provisioning profile. The `aps-environment` key must be present.
 
-2. **Verify token format:** The token must be a hex string (64 characters for most devices). If your server receives something shorter or with non-hex characters, the conversion is wrong.
+2. **Verify token format:** The token you send to your provider should be the hexadecimal bytes from `deviceToken`. Do not hard-code a token length; APNs says not to make assumptions about device token size.
 
 3. **Check APNs response codes:**
 
@@ -648,7 +637,7 @@ struct ContentView: View {
 }
 ```
 
-`setBadgeCount(_:)` (iOS 16+) is the modern replacement for setting `UIApplication.shared.applicationIconBadgeNumber`, which is deprecated.
+`setBadgeCount(_:)` (iOS 16+) is the modern `UserNotifications` API for updating the badge count. Use availability checks if you still support older deployment targets.
 
 ## Provisional to Full Authorization Upgrade
 

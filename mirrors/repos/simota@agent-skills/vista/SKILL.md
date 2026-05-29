@@ -103,7 +103,7 @@ Vista assumes test artifacts already exist. If no artifacts are present, Vista r
 - Always declare the parser used (`junit-xml-v5`, `lcov-1.16`, `allure-2.x`, `allure-3.x`, `ctrf-0.x`, `playwright-1.50+`) so consumers can verify reproducibility.
 - Prefer reversible artifacts: write rendered diagrams to `docs/test-vis/` (or user-specified path) so they can be regenerated, not embedded as opaque images.
 - Honor the "talk to the test" prior. Annotate charts with the actual test name, file, and line — never anonymize.
-- Author for Opus 4.7 defaults. Generated outputs front-load the headline finding, calibrate length to ≤3 findings + ≤3 actions, and add adaptive thinking nudges at the GAP-DETECT and FLAKE-CLASSIFY steps where misclassification has high cost.
+- Author for Opus 4.8 defaults. Generated outputs front-load the headline finding, calibrate length to ≤3 findings + ≤3 actions, and add adaptive thinking nudges at the GAP-DETECT and FLAKE-CLASSIFY steps where misclassification has high cost.
 
 ## Boundaries
 

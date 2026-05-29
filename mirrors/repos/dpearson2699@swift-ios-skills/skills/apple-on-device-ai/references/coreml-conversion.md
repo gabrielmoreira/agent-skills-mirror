@@ -1,6 +1,10 @@
 # Core ML Model Conversion Reference
 
 Complete reference for converting models to Core ML format using coremltools.
+Use this reference for Python-side export, conversion, deployment-target,
+shape, and compression decisions. For Swift app runtime wiring, hand off to the
+sibling `coreml` skill; in conversion reviews, describe runtime availability in
+prose unless the user explicitly asks for Swift integration code.
 
 ## Contents
 
@@ -31,7 +35,9 @@ Complete reference for converting models to Core ML format using coremltools.
 pip install coremltools
 ```
 
-Current version: 9.0 (November 2025). Requires Python 3.10-3.13.
+Use a fresh virtual environment and verify the wheel matrix for your Python and
+source-framework versions. The 9.0 release publishes wheels through CPython
+3.13 and adds iOS 26 / macOS 26 deployment targets.
 
 ## Architecture Overview
 

@@ -9,15 +9,17 @@ Overflow reference for the `contacts-framework` skill. Contains advanced pattern
 - [Search and Filtering](#search-and-filtering)
 - [vCard Import and Export](#vcard-import-and-export)
 - [Contact Groups](#contact-groups)
-- [Change History](#change-history)
+- [Change Notifications and Swift Boundaries](#change-notifications-and-swift-boundaries)
 
 ## Contacts SwiftUI Integration
 
 ### Contact Manager with `@Observable`
 
 ```swift
-import Contacts
+@preconcurrency import Contacts
+import ContactsUI
 import SwiftUI
+import UIKit
 
 @Observable
 @MainActor
@@ -25,22 +27,27 @@ final class ContactManager {
     let store = CNContactStore()
 
     var contacts: [CNContact] = []
-    var isAuthorized = false
+    var canAccessContacts = false
+    var hasLimitedAccess = false
     var authorizationStatus: CNAuthorizationStatus = .notDetermined
 
     func checkAuthorization() {
-        authorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
-        isAuthorized = authorizationStatus == .authorized
+        updateAuthorization(CNContactStore.authorizationStatus(for: .contacts))
     }
 
     func requestAccess() async throws {
-        let granted = try await store.requestAccess(for: .contacts)
-        isAuthorized = granted
-        authorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
+        _ = try await store.requestAccess(for: .contacts)
+        updateAuthorization(CNContactStore.authorizationStatus(for: .contacts))
+    }
+
+    func updateAuthorization(_ status: CNAuthorizationStatus) {
+        authorizationStatus = status
+        canAccessContacts = status == .authorized || status == .limited
+        hasLimitedAccess = status == .limited
     }
 
     func loadContacts() async throws {
-        guard isAuthorized else { return }
+        guard canAccessContacts else { return }
 
         let keys: [CNKeyDescriptor] = [
             CNContactGivenNameKey as CNKeyDescriptor,
@@ -78,7 +85,7 @@ struct ContactListView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if !manager.isAuthorized {
+                if !manager.canAccessContacts {
                     ContentUnavailableView {
                         Label("Contacts Access", systemImage: "person.crop.circle.badge.questionmark")
                     } description: {
@@ -91,12 +98,15 @@ struct ContactListView: View {
                     }
                 } else {
                     contactList
+                    if manager.hasLimitedAccess {
+                        limitedAccessControls
+                    }
                 }
             }
             .navigationTitle("Contacts")
             .task {
                 manager.checkAuthorization()
-                if manager.isAuthorized {
+                if manager.canAccessContacts {
                     try? await manager.loadContacts()
                 }
             }
@@ -136,8 +146,27 @@ struct ContactListView: View {
                 .foregroundStyle(.secondary)
         }
     }
+
+    @State private var isPresentingContactAccessPicker = false
+
+    private var limitedAccessControls: some View {
+        Button {
+            isPresentingContactAccessPicker = true
+        } label: {
+            Label("Add Contacts", systemImage: "person.crop.circle.badge.plus")
+        }
+        .contactAccessPicker(isPresented: $isPresentingContactAccessPicker) { identifiers in
+            guard !identifiers.isEmpty else { return }
+            Task { try? await manager.loadContacts() }
+        }
+    }
 }
 ```
+
+Under `.limited`, the app can still use Contacts APIs, but only for contacts the
+user has granted or the app created. `ContactAccessButton` works well beside a
+search field; `contactAccessPicker(isPresented:completionHandler:)` presents a
+management sheet and returns identifiers for newly granted contacts only.
 
 ## Multi-Select Contact Picker
 
@@ -354,45 +383,16 @@ func removeContactFromGroup(contact: CNContact, group: CNGroup) throws {
 }
 ```
 
-## Change History
+## Change Notifications and Swift Boundaries
 
-Use `CNChangeHistoryFetchRequest` to fetch incremental changes since a saved token.
-This is efficient for syncing contact data.
-
-```swift
-func fetchChanges(since token: Data?) throws {
-    let request = CNChangeHistoryFetchRequest()
-    request.startingToken = token
-    request.additionalContactKeyDescriptors = [
-        CNContactGivenNameKey as CNKeyDescriptor,
-        CNContactFamilyNameKey as CNKeyDescriptor
-    ]
-
-    let result = try store.enumerateChanges(matching: request)
-
-    for event in result {
-        switch event {
-        case let addEvent as CNChangeHistoryAddContactEvent:
-            let contact = addEvent.contact
-            print("Added: \(contact.givenName) \(contact.familyName)")
-
-        case let updateEvent as CNChangeHistoryUpdateContactEvent:
-            let contact = updateEvent.contact
-            print("Updated: \(contact.givenName) \(contact.familyName)")
-
-        case let deleteEvent as CNChangeHistoryDeleteContactEvent:
-            let identifier = deleteEvent.contactIdentifier
-            print("Deleted: \(identifier)")
-
-        default:
-            break
-        }
-    }
-
-    // Save the new token for next sync
-    let newToken = store.currentHistoryToken
-}
-```
+For Swift-first apps, use `CNContactStoreDidChange` to invalidate caches and
+refetch the contacts your authorization status allows. Do not write Swift code
+that calls `store.enumerateChanges(matching:)`; that method does not exist.
+Apple's change-history fetch entry point is the Objective-C
+`enumeratorForChangeHistoryFetchRequest:error:` selector, while the Swift
+`enumerator(for:)` overlay is marked unavailable. If a product truly needs
+incremental history tokens, isolate that bridge in Objective-C and expose a
+small Swift wrapper; otherwise, refetch on change notifications.
 
 ### Watching for Real-Time Changes
 

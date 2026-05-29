@@ -29,14 +29,14 @@
 ## Key Resources
 
 ### For Quick Start
-- Cheatsheet (2 min): https://cc.bruniaux.com/cheatsheet.html
+- Cheatsheet (2 min): https://cc.bruniaux.com/cheatsheet/
 - 5 Golden Rules: Always review diffs, /compact at 70%, be specific (WHAT+WHERE+HOW+VERIFY), Plan Mode first, create CLAUDE.md
 
 ### For Learning
 - Full Guide (~10h): https://github.com/FlorianBruniaux/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md
-- Interactive Quiz (334 questions): https://cc.bruniaux.com/quiz.html
+- Interactive Quiz (334 questions): https://cc.bruniaux.com/quiz/
 
-- Whitepapers (FR + EN, 9 titles): https://www.florian.bruniaux.com/guides
+- Whitepapers (FR + EN, 9 titles): https://cc.bruniaux.com/whitepapers/
 - Landing site: https://cc.bruniaux.com
 
 ### For Templates

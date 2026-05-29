@@ -6,6 +6,36 @@
 
 ---
 
+## Contents
+
+- [The Boolean Gate Vulnerability](#the-boolean-gate-vulnerability)
+  - [The Dangerous Pattern — Boolean Gate](#the-dangerous-pattern-boolean-gate)
+  - [How Attackers Bypass It](#how-attackers-bypass-it)
+- [The Secure Pattern — Hardware-Bound Secrets](#the-secure-pattern-hardware-bound-secrets)
+  - [Step 1 — Create the Access Control Object](#step-1-create-the-access-control-object)
+  - [Step 2 — Store a Secret Bound to Biometric Auth](#step-2-store-a-secret-bound-to-biometric-auth)
+  - [Step 3 — Retrieve the Secret (Biometric Prompt Appears Automatically)](#step-3-retrieve-the-secret-biometric-prompt-appears-automatically)
+- [`evaluatePolicy` vs `evaluateAccessControl`](#evaluatepolicy-vs-evaluateaccesscontrol)
+- [Biometric Flag Selection](#biometric-flag-selection)
+  - [`.biometryCurrentSet` — Banking, Payments, Credential Storage](#biometrycurrentset-banking-payments-credential-storage)
+  - [`.biometryAny` — Convenience Features, Moderate Sensitivity](#biometryany-convenience-features-moderate-sensitivity)
+  - [`.userPresence` — Maximum Device Compatibility](#userpresence-maximum-device-compatibility)
+  - [Combining Flags](#combining-flags)
+- [Biometric Availability Checks and Graceful Degradation](#biometric-availability-checks-and-graceful-degradation)
+  - [Incomplete Availability Check](#incomplete-availability-check)
+  - [Complete Availability Evaluation](#complete-availability-evaluation)
+  - [Graceful Degradation Flow](#graceful-degradation-flow)
+- [Enrollment Change Detection](#enrollment-change-detection)
+- [Thread Safety and async/await](#thread-safety-and-asyncawait)
+  - [Actor-Isolated Biometric Keychain (iOS 15+)](#actor-isolated-biometric-keychain-ios-15)
+  - [SwiftUI ViewModel Integration](#swiftui-viewmodel-integration)
+- [Secure Enclave-Backed Keys with Biometric Protection](#secure-enclave-backed-keys-with-biometric-protection)
+- [SDLC Controls — Catching the Anti-Pattern in CI](#sdlc-controls-catching-the-anti-pattern-in-ci)
+- [Dynamic Verification — Proving Bypass Resistance](#dynamic-verification-proving-bypass-resistance)
+- [Key References](#key-references)
+- [Cross-References](#cross-references)
+- [Summary Checklist](#summary-checklist)
+
 ## The Boolean Gate Vulnerability
 
 The most dangerous pattern AI coding assistants generate for iOS biometric authentication is `LAContext.evaluatePolicy()` used as a standalone authentication gate. This pattern appears in virtually every tutorial, Stack Overflow answer, and AI training corpus — and it is **trivially bypassable**.

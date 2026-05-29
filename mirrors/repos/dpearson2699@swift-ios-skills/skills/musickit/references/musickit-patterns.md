@@ -178,7 +178,11 @@ struct MusicSearchView: View {
 
 ```swift
 func fetchTopSongs() async throws -> MusicItemCollection<Song> {
-    var request = MusicCatalogChartsRequest(kinds: [.mostPlayed], types: [Song.self])
+    var request = MusicCatalogChartsRequest(
+        genre: nil,
+        kinds: [.mostPlayed],
+        types: [Song.self]
+    )
     request.limit = 50
     let response = try await request.response()
     return response.songCharts.first?.items ?? []
@@ -198,14 +202,26 @@ func fetchSongsByGenre(_ genre: Genre) async throws -> MusicItemCollection<Song>
 
 ## Library Management
 
+Library writes require MusicKit authorization and an enabled iCloud Music Library.
+Check `MusicSubscription.current.hasCloudLibraryEnabled` before adding items or
+modifying playlists.
+
 ### Adding to Library
 
 ```swift
 func addToLibrary(_ song: Song) async throws {
+    guard MusicAuthorization.currentStatus == .authorized else { return }
+    let subscription = try await MusicSubscription.current
+    guard subscription.hasCloudLibraryEnabled else { return }
+
     try await MusicLibrary.shared.add(song)
 }
 
 func addAlbumToLibrary(_ album: Album) async throws {
+    guard MusicAuthorization.currentStatus == .authorized else { return }
+    let subscription = try await MusicSubscription.current
+    guard subscription.hasCloudLibraryEnabled else { return }
+
     try await MusicLibrary.shared.add(album)
 }
 ```
@@ -239,6 +255,10 @@ func fetchPlaylists() async throws -> MusicItemCollection<Playlist> {
 
 ```swift
 func addToPlaylist(_ playlist: Playlist, songs: [Song]) async throws {
+    guard MusicAuthorization.currentStatus == .authorized else { return }
+    let subscription = try await MusicSubscription.current
+    guard subscription.hasCloudLibraryEnabled else { return }
+
     try await MusicLibrary.shared.add(songs, to: playlist)
 }
 ```

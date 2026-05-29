@@ -1,5 +1,19 @@
 # Services & dependency injection
 
+## **CRITICAL: `SymfonyContainer::getInstance()` is null in console context**
+
+`PrestaShop\PrestaShop\Adapter\SymfonyContainer::getInstance()` relies on reading `global $kernel`.
+
+**In the Symfony console context (`php bin/console pr:mo install mymodule`), `$kernel` is never set as a global variable.** The method always returns `null`. Any code that depends on it silently does nothing.
+
+**NEVER use `SymfonyContainer::getInstance()` in install-time code** (FixturesInstaller, ThemeTemplateInstaller, Installer, etc.).
+
+For data access at install time, use `Db::getInstance()` raw SQL. See `module-class-and-installer.md`.
+
+For services at runtime (web request), use `$this->get('service.id')` from the module class or inject via constructor.
+
+---
+
 ## **CRITICAL: Avoid legacy static calls**
 
 ❌ **DO NOT USE** legacy static accessor patterns in modern services/controllers:
@@ -125,3 +139,66 @@ arguments:
 
 - [Symfony DI documentation](https://symfony.com/doc/current/service_container.html)
 - [PS service container](https://devdocs.prestashop-project.org/9/development/architecture/dependency-injection/)
+
+## PITFALL: `public` cannot be inherited from `_defaults` when `parent` is set
+
+Symfony throws a fatal error if a service uses `parent:` and relies on `public: true` from `_defaults`:
+
+```
+Attribute "public" on service "mymodule.form.type.foo" cannot be inherited from "_defaults"
+when a "parent" is set.
+```
+
+This affects any form type that extends `form.type.translatable.aware` (or any other parent service).
+
+**Fix**: declare `public: true` explicitly on every service that has a `parent:`.
+
+```yaml
+# ❌ WRONG — public inherited from _defaults, but parent is set
+services:
+  _defaults:
+    public: true
+
+  mymodule.form.type.foo:
+    class: Vendor\MyModule\Form\FooType
+    parent: "form.type.translatable.aware"   # ← triggers the error
+    tags:
+      - { name: form.type }
+
+# ✅ CORRECT — public declared explicitly on the child service
+services:
+  _defaults:
+    public: true
+
+  mymodule.form.type.foo:
+    class: Vendor\MyModule\Form\FooType
+    public: true                             # ← explicit, not inherited
+    parent: "form.type.translatable.aware"
+    tags:
+      - { name: form.type }
+```
+
+This applies to **every service** that has a `parent:` key, regardless of whether the parent is a PS core service or a custom one.
+
+
+## PITFALL: `FrameworkBundleAdminController::trans()` has a non-standard argument order
+
+The PS parent controller overrides Symfony's `trans()` with a **different signature**:
+
+```php
+// PrestaShop FrameworkBundleAdminController
+protected function trans($key, $domain, array $parameters = [])
+//                              ^^^^^^^ domain is 2nd, parameters 3rd
+```
+
+Symfony's standard `TranslatorInterface::trans()` is `trans($id, array $parameters, string $domain)` — the opposite order.
+
+```php
+// ❌ WRONG — Symfony order, throws TypeError at runtime
+$this->trans('My label', [], 'Modules.Mymodule.Admin');
+
+// ✅ CORRECT — PS FrameworkBundleAdminController order
+$this->trans('My label', 'Modules.Mymodule.Admin', []);
+```
+
+This applies to **all** `$this->trans()` calls inside controllers that extend `FrameworkBundleAdminController`.

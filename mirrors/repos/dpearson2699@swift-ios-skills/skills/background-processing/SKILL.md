@@ -32,7 +32,7 @@ Every task identifier **must** be declared in `Info.plist` under
 <array>
     <string>com.example.app.refresh</string>
     <string>com.example.app.db-cleanup</string>
-    <string>com.example.app.export</string>
+    <string>com.example.app.export.*</string>
 </array>
 ```
 
@@ -46,14 +46,12 @@ Also enable the required `UIBackgroundModes`:
 </array>
 ```
 
-In Xcode: target > Signing & Capabilities > Background Modes > enable
-"Background fetch" and "Background processing".
+In Xcode: target > Signing & Capabilities > Background Modes > enable "Background fetch" and "Background processing".
 
 ## BGTaskScheduler Registration
 
 Register handlers **before** app launch completes. In UIKit, register in
-`application(_:didFinishLaunchingWithOptions:)`. In SwiftUI, register in the
-`App` initializer.
+`application(_:didFinishLaunchingWithOptions:)`; in SwiftUI, register in `App.init()`.
 
 ### UIKit Registration
 
@@ -113,7 +111,8 @@ struct MyApp: App {
 ## BGAppRefreshTask Patterns
 
 Short-lived tasks (~30 seconds) for fetching small data updates. The system
-decides when to launch based on usage patterns.
+decides when to launch based on usage patterns. Review notes should say
+`earliestBeginDate` is a lower-bound hint and the system may run the task later.
 
 ```swift
 func scheduleAppRefresh() {
@@ -121,7 +120,7 @@ func scheduleAppRefresh() {
         identifier: "com.example.app.refresh"
     )
     request.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60)
-
+    // earliestBeginDate is a lower-bound hint; the system may delay launch.
     do {
         try BGTaskScheduler.shared.submit(request)
     } catch {
@@ -154,7 +153,8 @@ func handleAppRefresh(task: BGAppRefreshTask) {
 ## BGProcessingTask Patterns
 
 Long-running tasks (minutes) for maintenance, data processing, or cleanup.
-Runs only when device is idle and (optionally) charging.
+Runs only when device is idle and (optionally) charging. Review notes should say
+`earliestBeginDate` is a lower-bound hint and the system may run the task later.
 
 ```swift
 func scheduleProcessingTask() {
@@ -164,7 +164,7 @@ func scheduleProcessingTask() {
     request.requiresNetworkConnectivity = false
     request.requiresExternalPower = true
     request.earliestBeginDate = Date(timeIntervalSinceNow: 60 * 60)
-
+    // earliestBeginDate is a lower-bound hint; the system may delay launch.
     do {
         try BGTaskScheduler.shared.submit(request)
     } catch {
@@ -202,7 +202,7 @@ background. The system displays progress via a Live Activity. Conforms to
 
 Unlike `BGAppRefreshTask` and `BGProcessingTask`, this task starts immediately
 from the foreground. The system can terminate it under resource pressure,
-prioritizing tasks that report minimal progress first.
+prioritizing tasks that report minimal progress first. Set `expirationHandler` for user or system cancellation, cancel in-flight work, and clean up partial output before reporting completion.
 
 ```swift
 import BackgroundTasks
@@ -210,11 +210,14 @@ import BackgroundTasks
 func startExport() {
     // Register the task handler at app launch, not here.
     // BGTaskScheduler requires registration before app launch completes.
+    let jobID = UUID().uuidString
     let request = BGContinuedProcessingTaskRequest(
-        identifier: "com.example.app.export",
+        identifier: "com.example.app.export.\(jobID)",
         title: "Exporting Photos",
         subtitle: "Processing 247 items"
     )
+    // Use a permitted base wildcard identifier: com.example.app.export.*
+    // earliestBeginDate is ignored for continued processing requests.
     // .queue: begin as soon as possible if can't run immediately
     // .fail: fail submission if can't run immediately
     request.strategy = .queue
@@ -248,7 +251,7 @@ func performExport(task: BGContinuedProcessingTask) async {
 }
 ```
 
-Check whether the system supports the resources your task needs:
+For GPU work, check support and enable Background GPU Access (`com.apple.developer.background-tasks.continued-processing.gpu`):
 
 ```swift
 let supported = BGTaskScheduler.supportedResources
@@ -333,6 +336,11 @@ Silent push notifications wake your app briefly to fetch new content. Set
 ```json
 { "aps": { "content-available": 1 }, "custom-data": "new-messages" }
 ```
+
+Send the APNs request with `apns-push-type: background` and
+`apns-priority: 5`. Background push delivery is low priority and not
+guaranteed; keep sends infrequent, generally no more than two or three per
+hour.
 
 Handle in AppDelegate:
 
@@ -466,11 +474,12 @@ func handleRefresh(task: BGAppRefreshTask) {
 - [ ] `setTaskCompleted(success:)` called on every code path
 - [ ] `expirationHandler` set and cancels in-flight work
 - [ ] Next task scheduled inside the handler (re-schedule pattern)
-- [ ] `earliestBeginDate` uses reasonable intervals (15+ min for refresh)
+- [ ] `earliestBeginDate` uses reasonable intervals and is treated as a hint
 - [ ] Background URLSession uses delegate (not async/closures)
 - [ ] Background URLSession file moved in `didFinishDownloadingTo` before return
 - [ ] `handleEventsForBackgroundURLSession` stores and calls completion handler
 - [ ] Background push payload includes `content-available: 1`
+- [ ] Background push APNs request uses `apns-push-type: background` and `apns-priority: 5`
 - [ ] `fetchCompletionHandler` called promptly with correct result
 - [ ] BGContinuedProcessingTask reports progress via `ProgressReporting`
 - [ ] Work is incremental and cancellation-safe (`Task.checkCancellation()`)

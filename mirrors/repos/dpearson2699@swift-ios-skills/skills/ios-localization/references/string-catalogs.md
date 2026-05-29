@@ -20,9 +20,9 @@
 
 ## What is a String Catalog?
 
-A String Catalog is a single `.xcstrings` file (JSON-based) that holds every localizable string in a target, along with all translations, plural forms, and device variations. It replaces the combination of `.strings` and `.stringsdict` files that previously required manual synchronization.
+A String Catalog is a single Xcode-managed `.xcstrings` file (JSON-based) that holds localizable strings in a target, along with translations, plural forms, and device variations. In Xcode 15 and later, String Catalogs are the recommended workflow for new localization work because they replace much of the manual synchronization previously required across `.strings` and `.stringsdict` files.
 
-**Availability:** Xcode 15+, all Apple platforms.
+**Availability:** Xcode 15+, all Apple platforms. String Catalogs are the recommended Xcode 15+ workflow for app localization. Xcode 26 adds generated localizable symbols on top of String Catalogs; do not describe catalogs themselves as requiring Xcode 26 or iOS 17.
 
 ## Creating a String Catalog
 
@@ -73,10 +73,10 @@ static var title: LocalizedStringResource = "Title"  // extracted
 ```swift
 let x: String = "Not localized"          // plain String assignment
 print("debug info")                      // not user-facing
-NSLocalizedString("legacy", comment: "") // NOT auto-extracted into .xcstrings
+NSLocalizedString("legacy", comment: "") // legacy API; Xcode can export literal keys
 ```
 
-If automatic extraction misses a string, add it manually in the String Catalog editor.
+Prefer `String(localized:)`, SwiftUI localizable literals, or `LocalizedStringResource` in new Swift code so String Catalog syncing and generated-symbol workflows stay straightforward. If automatic extraction misses a string, add it manually in the String Catalog editor.
 
 ## Manual Key Management
 
@@ -164,9 +164,8 @@ String(localized: "Hello")
 // .module refers to the package's resource bundle
 String(localized: "Hello", bundle: .module)
 
-// In SwiftUI, Text uses the module's bundle automatically
-// if the .xcstrings file is in the package's resources
-Text("Hello")  // looks up in the package's Localizable.xcstrings
+// In SwiftUI, pass the package bundle explicitly for package resources
+Text("Hello", bundle: .module)
 ```
 
 ### Framework
@@ -183,11 +182,17 @@ Each Swift package target that contains user-facing strings needs its own String
 
 ### Package.swift setup
 ```swift
-.target(
+let package = Package(
     name: "SharedUI",
-    dependencies: [],
-    resources: [
-        .process("Resources")  // Localizable.xcstrings goes here
+    defaultLocalization: "en",
+    targets: [
+        .target(
+            name: "SharedUI",
+            dependencies: [],
+            resources: [
+                .process("Resources")  // Localizable.xcstrings goes here
+            ]
+        )
     ]
 )
 ```
@@ -204,7 +209,7 @@ Sources/
 
 ### Accessing strings from the package
 ```swift
-// Inside the package -- .module resolves automatically
+// Inside the package -- bundle: .module resolves package-owned resources
 public struct SaveButton: View {
     public var body: some View {
         Button(String(localized: "Save", bundle: .module)) { }
@@ -212,7 +217,13 @@ public struct SaveButton: View {
 }
 ```
 
-**Important:** SwiftUI `Text("Save")` inside an SPM target looks up in `.module` automatically only if the `.xcstrings` file is properly included in the target's resources. Verify by checking that Xcode shows the file under the target in the project navigator.
+**Important:** Code outside the main app bundle needs an explicit bundle. Use `bundle: .module` in Swift packages, `Bundle(for:)` in frameworks, or the current-target bundle macro when available.
+
+For Swift package localization failures, answer with this explicit resource checklist before bundle debugging:
+1. `Package.swift` declares `defaultLocalization`.
+2. The target `resources` list processes the catalog location, such as `.process("Resources")`.
+3. `Localizable.xcstrings` is actually inside that processed target-resource path.
+Only after those pass, debug lookup with `bundle: .module` or `Text(..., bundle: .module)`.
 
 ## Pluralization in String Catalogs
 
@@ -229,8 +240,8 @@ public struct SaveButton: View {
 
 ### English plural forms
 ```text
-one:   "%lld item in your cart"
-other: "%lld items in your cart"
+one:   "%1$(itemCount)lld item in your cart"
+other: "%1$(itemCount)lld items in your cart"
 ```
 
 ### Arabic plural forms (all six categories)
@@ -300,7 +311,7 @@ xcodebuild -importLocalizations \
 
 ## String Catalog JSON Structure
 
-The `.xcstrings` file is JSON. Understanding the structure enables programmatic manipulation (CI validation, batch updates, translation memory integration).
+The `.xcstrings` file is Xcode-managed JSON. Understanding the observed structure can help with parser-backed validation or careful batch updates, but prefer Xcode's editor/export/import workflows for normal localization changes and validate any automated edit before committing.
 
 ```json
 {
@@ -336,7 +347,7 @@ The `.xcstrings` file is JSON. Understanding the structure enables programmatic 
         }
       }
     },
-    "%lld items": {
+    "%1$(count)lld items": {
       "localizations": {
         "en": {
           "variations": {
@@ -344,13 +355,13 @@ The `.xcstrings` file is JSON. Understanding the structure enables programmatic 
               "one": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld item"
+                  "value": "%1$(count)lld item"
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld items"
+                  "value": "%1$(count)lld items"
                 }
               }
             }
@@ -362,7 +373,7 @@ The `.xcstrings` file is JSON. Understanding the structure enables programmatic 
 }
 ```
 
-Note the `"room_available"` key above: it uses `"extractionState": "manual"` and a stable symbol-style key with the English text in `"value"`, not in the key itself. This is the pattern that enables generated symbols in Xcode 26+.
+Note the `"room_available"` key above: it uses `"extractionState": "manual"` and a stable symbol-style key with the English text in `"value"`, not in the key itself. Use stable manual keys for generated-symbol strings. Avoid source-copy-derived keys for API-facing strings because wording edits can rename generated identifiers and churn call sites.
 
 ### Translation states
 - `"new"` -- Xcode extracted the key but no translation exists
@@ -385,7 +396,7 @@ The `manual` state is significant: manual keys have the **Generate Swift Symbol*
 
 ## Generated Localizable Symbols (Xcode 26+)
 
-Xcode 26 generates type-safe Swift symbols from String Catalog keys, replacing stringly-typed localization access with compiler-checked `LocalizedStringResource` properties and functions.
+For generated-symbol or migration answers, start by stating: "String Catalogs are the recommended Xcode 15+ localization workflow. Xcode 26 generated symbols are a separate typed-access layer on top of String Catalogs." Then explain generated symbols, plurals, or migration details. Do not describe catalogs themselves as requiring Xcode 26 or iOS 17.
 
 ### Enabling symbol generation
 
@@ -403,11 +414,11 @@ Xcode camelCases the key name, lowercasing the first segment:
 | `settings.notifications.toggle` | `.settingsNotificationsToggle` |
 | `TITLE` | `.title` |
 
-Keys with format specifiers become functions. Use named placeholders `%(name)lld` for descriptive argument labels; bare `%lld` produces generic labels:
+Keys with format specifiers become functions. Use positional named placeholders such as `%1$(name)lld` for descriptive argument labels; bare `%lld` produces generic labels:
 
 | Catalog key | Format | Generated symbol |
 |-------------|--------|-----------------|
-| `landmarks_count` | `%(count)lld` | `.landmarksCount(count: Int)` |
+| `landmarks_count` | `%1$(count)lld` | `.landmarksCount(count: Int)` |
 | `greeting` | `%@` | `.greeting(_ param1: String)` |
 
 You can rename parameters during refactoring for more descriptive signatures.

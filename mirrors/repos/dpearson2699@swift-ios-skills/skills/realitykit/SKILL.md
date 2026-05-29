@@ -1,6 +1,6 @@
 ---
 name: realitykit
-description: "Build augmented reality experiences with RealityKit and ARKit on iOS. Use when adding 3D content with RealityView, loading entities and models, placing objects via raycasting, configuring AR camera sessions, handling world tracking, scene understanding, or implementing entity interactions and gestures."
+description: "Build iOS augmented reality and 3D experiences with RealityKit and ARKit. Use when adding RealityView content, loading entities or USDZ models, anchoring objects to planes or world positions, distinguishing entity hit tests from ARKit real-world raycasts, handling AR camera availability, world tracking, scene updates, or RealityKit entity gestures and interactions."
 ---
 
 # RealityKit
@@ -27,13 +27,13 @@ understanding, and gesture-based interactions. Targets Swift 6.3 / iOS 26+.
 ### Project Configuration
 
 1. Add `NSCameraUsageDescription` to Info.plist
-2. For iOS, RealityKit uses the device camera by default via `RealityViewCameraContent` (iOS 18+, macOS 15+)
-3. No additional capabilities required for basic AR on iOS
+2. On iOS, `RealityViewCameraContent` displays an AR camera view by default (iOS 18+, macOS 15+); use `.virtual` camera mode for explicit non-AR fallback
+3. No entitlement is required for basic AR. If AR is core to the app, add the `arkit` required-device capability; otherwise gate AR UI with `isSupported`.
 
 ### Device Requirements
 
-AR features require devices with an A9 chip or later. Always verify support
-before presenting AR UI.
+AR features require devices with an A9 chip or later. Always check
+`ARWorldTrackingConfiguration.isSupported` before presenting AR UI.
 
 ```swift
 import ARKit
@@ -49,24 +49,30 @@ guard ARWorldTrackingConfiguration.isSupported else {
 | Type | Platform | Role |
 |---|---|---|
 | `RealityView` | iOS 18+, visionOS 1+ | SwiftUI view that hosts RealityKit content |
-| `RealityViewCameraContent` | iOS 18+, macOS 15+ | Content displayed through the device camera |
+| `RealityViewCameraContent` | iOS 18+, macOS 15+ | Content displayed through an AR camera view on iOS, non-AR on macOS |
 | `Entity` | All | Base class for all scene objects |
 | `ModelEntity` | All | Entity with a visible 3D model |
 | `AnchorEntity` | All | Tethers entities to a real-world anchor |
 
 ## RealityView Basics
 
-`RealityView` is the SwiftUI entry point for RealityKit. On iOS, it provides
-`RealityViewCameraContent` which renders through the device camera for AR.
+`RealityView` is the SwiftUI entry point for RealityKit.
+`RealityViewCameraContent` is the iOS/macOS content type. On iOS, it uses an AR
+camera view by default and can use `content.camera = .virtual` for non-AR mode
+when requested or when AR/camera access is unavailable.
 
 ```swift
+import ARKit
 import SwiftUI
 import RealityKit
 
 struct ARExperienceView: View {
     var body: some View {
-        RealityView { content in
-            // content is RealityViewCameraContent on iOS
+        RealityView { (content: RealityViewCameraContent) in
+            if !ARWorldTrackingConfiguration.isSupported {
+                content.camera = .virtual
+            }
+
             let sphere = ModelEntity(
                 mesh: .generateSphere(radius: 0.05),
                 materials: [SimpleMaterial(
@@ -135,28 +141,6 @@ RealityView { content in
 }
 ```
 
-### Programmatic Mesh Generation
-
-```swift
-// Box
-let box = ModelEntity(
-    mesh: .generateBox(size: [0.1, 0.2, 0.1], cornerRadius: 0.005),
-    materials: [SimpleMaterial(color: .gray, isMetallic: true)]
-)
-
-// Sphere
-let sphere = ModelEntity(
-    mesh: .generateSphere(radius: 0.05),
-    materials: [SimpleMaterial(color: .blue, roughness: 0.2, isMetallic: true)]
-)
-
-// Plane
-let plane = ModelEntity(
-    mesh: .generatePlane(width: 0.3, depth: 0.3),
-    materials: [SimpleMaterial(color: .green, isMetallic: false)]
-)
-```
-
 ### Adding Components
 
 Entities use an ECS (Entity Component System) architecture. Add components
@@ -219,11 +203,36 @@ RealityView { content in
 
 ## Raycasting
 
-Use `RealityViewCameraContent` to convert between SwiftUI view coordinates
-and RealityKit world space. Pair with `SpatialTapGesture` to place objects
-where the user taps on a detected surface.
+Keep RealityKit scene queries separate from ARKit real-world raycasts:
+
+- `RealityViewCameraContent.ray(through:in:to:)` returns a camera ray in
+  RealityKit coordinate spaces. It projects a screen point into the virtual
+  scene; it is not proof of a detected physical surface.
+- `RealityViewCameraContent.hitTest(point:in:query:mask:)` hits virtual
+  entities made hittable by `CollisionComponent` shapes. Use those shapes for
+  entity picking and targeted gestures, not ARKit plane detection.
+- Use `AnchorEntity(.plane(...))` for simple placement on detected planes.
+- Use ARKit `ARRaycastQuery` plus `ARSession.raycast(_:)` when the task needs
+  a one-shot intersection with real-world surfaces, then anchor with
+  `AnchorEntity(raycastResult:)`.
+
+```swift
+let results = session.raycast(query)
+if let result = results.first {
+    let anchor = AnchorEntity(raycastResult: result)
+    anchor.addChild(model)
+    content.add(anchor)
+}
+```
+
+Do not treat entity hit tests as substitutes for ARKit surface raycasts.
 
 ## Gestures and Interaction
+
+For gesture-based entity interaction, add `CollisionComponent` for the hittable
+shape and `InputTargetComponent` for input targeting. Use
+`AccessibilityComponent` for entity labels/actions. Hand detailed SwiftUI gesture
+composition and VoiceOver/Switch Control policy to sibling skills.
 
 ### Drag Gesture on Entities
 
@@ -260,18 +269,10 @@ struct DraggableARView: View {
 }
 ```
 
-### Tap to Select
-
-```swift
-.gesture(
-    SpatialTapGesture()
-        .targetedToAnyEntity()
-        .onEnded { value in
-            let tappedEntity = value.entity
-            highlightEntity(tappedEntity)
-        }
-)
-```
+For selection, `CollisionComponent` is the mechanism that makes an entity
+hittable by `RealityViewCameraContent.hitTest`, `SpatialTapGesture`, or
+`targetedToAnyEntity()`. Pair it with `InputTargetComponent`; this enables
+virtual entity picking, not ARKit surface detection.
 
 ## Scene Understanding
 
@@ -295,12 +296,25 @@ RealityView { content in
 }
 ```
 
-### visionOS Note
+### Platform Boundaries
 
 On visionOS, ARKit provides a different API surface with `ARKitSession`,
 `WorldTrackingProvider`, and `PlaneDetectionProvider`. These visionOS-specific
 types are not available on iOS. On iOS, RealityKit handles world tracking
 automatically through `RealityViewCameraContent`.
+
+For iOS architecture or migration notes, explicitly name the iOS RealityKit path and handoffs:
+
+- Gate AR with `ARWorldTrackingConfiguration.isSupported`.
+- Host content with `RealityViewCameraContent`.
+- Build scenes from `Entity`/`ModelEntity` and place with `AnchorEntity`.
+- Include a compact `Handoffs` line in architecture/review notes:
+  `CollisionComponent` + `InputTargetComponent` handle RealityKit interaction;
+  `AccessibilityComponent` handles RealityKit entity accessibility metadata;
+  detailed SwiftUI gestures and VoiceOver/Switch Control policy belong to siblings.
+
+Treat existing `SCNView`/`SCNNode` work as either a separate SceneKit path or an
+explicit migration to RealityKit, not a mixed scene graph.
 
 ## Common Mistakes
 
@@ -455,10 +469,13 @@ struct ARContainerView: View {
 - [ ] `NSCameraUsageDescription` set in Info.plist
 - [ ] AR device capability checked before presenting AR views
 - [ ] Camera permission requested and denial handled with a fallback UI
+- [ ] `arkit` required-device capability added when AR is the app's core purpose
 - [ ] 3D models loaded asynchronously in the `make` closure
 - [ ] Entities created in `make`, modified in `update` (not created in `update`)
-- [ ] Interactive entities have both `CollisionComponent` and `InputTargetComponent`
-- [ ] Collision shapes match the visual size of the entity
+- [ ] Interaction notes say `CollisionComponent` makes entities hittable/pickable and pairs with `InputTargetComponent`
+- [ ] Boundary/review notes include a `Handoffs` line naming `AccessibilityComponent` and routing detailed SwiftUI/accessibility policy to siblings
+- [ ] Entity hit tests, `RealityViewCameraContent.ray(...)`, and ARKit real-world surface raycasts are not conflated
+- [ ] ARKit surface raycast placements use `ARSession.raycast(_:)` and `AnchorEntity(raycastResult:)`
 - [ ] `SceneEvents.Update` subscriptions used for per-frame logic (not SwiftUI timers)
 - [ ] Large scenes use `ModelEntity(named:)` async loading, not `Entity.load(named:)`
 - [ ] Anchor entities target appropriate surface types for the use case
@@ -466,14 +483,18 @@ struct ARContainerView: View {
 
 ## References
 
-- Extended patterns (physics, animations, lighting, ECS): [references/realitykit-patterns.md](references/realitykit-patterns.md)
+- Read [references/realitykit-patterns.md](references/realitykit-patterns.md) for physics, animations, lighting, ECS, accessibility, and performance patterns.
 - [RealityKit framework](https://sosumi.ai/documentation/realitykit)
 - [RealityView](https://sosumi.ai/documentation/realitykit/realityview)
 - [RealityViewCameraContent](https://sosumi.ai/documentation/realitykit/realityviewcameracontent)
+- [RealityViewCamera](https://sosumi.ai/documentation/realitykit/realityviewcamera)
 - [Entity](https://sosumi.ai/documentation/realitykit/entity)
 - [ModelEntity](https://sosumi.ai/documentation/realitykit/modelentity)
 - [AnchorEntity](https://sosumi.ai/documentation/realitykit/anchorentity)
 - [ARKit framework](https://sosumi.ai/documentation/arkit)
 - [ARKit in iOS](https://sosumi.ai/documentation/arkit/arkit-in-ios)
+- [Verifying Device Support and User Permission](https://sosumi.ai/documentation/arkit/verifying-device-support-and-user-permission)
 - [ARWorldTrackingConfiguration](https://sosumi.ai/documentation/arkit/arworldtrackingconfiguration)
+- [ARRaycastQuery](https://sosumi.ai/documentation/arkit/arraycastquery)
+- [ARSession.raycast(_:)](https://sosumi.ai/documentation/arkit/arsession/raycast(_:))
 - [Loading entities from a file](https://sosumi.ai/documentation/realitykit/loading-entities-from-a-file)

@@ -2,7 +2,8 @@
 
 Complete implementation patterns for AlarmKit alarms, countdown timers,
 authorization, state observation, and Live Activity integration. All patterns
-target iOS 26+ / iPadOS 26+ with Swift 6.3.
+target iOS 26+ / iPadOS 26+ with Swift 6.3. The alerting UI is system-managed;
+countdown and paused states use a widget extension for custom Live Activity UI.
 
 ## Contents
 - Complete Alarm Scheduling Flow
@@ -73,7 +74,9 @@ func scheduleWakeUpAlarm(
     )
 
     let id = UUID()
-    let config = AlarmManager.AlarmConfiguration.alarm(
+    let snooze = Alarm.CountdownDuration(preAlert: nil, postAlert: 300)
+    let config = AlarmManager.AlarmConfiguration(
+        countdownDuration: snooze,
         schedule: .relative(.init(
             time: .init(hour: hour, minute: minute), repeats: .never
         )),
@@ -232,7 +235,9 @@ final class AlarmStore {
     private let manager = AlarmManager.shared
     private(set) var alarms: [Alarm] = []
 
-    init() { alarms = manager.alarms }
+    func refreshAlarms() throws {
+        alarms = try manager.alarms
+    }
 
     func startObserving() async {
         for await updatedAlarms in manager.alarmUpdates {
@@ -273,15 +278,19 @@ struct AlarmListView: View {
                 }
             }
         }
-        .task { await store.startObserving() }
+        .task {
+            try? store.refreshAlarms()
+            await store.startObserving()
+        }
     }
 }
 ```
 
 ## Live Activity Widget Extension for Alarms
 
-Widget extension that renders countdown and paused states. Required when
-your alarm uses countdown presentation.
+Widget extension that renders countdown and paused states. AlarmKit expects this
+when your alarm uses countdown presentation; the system fallback countdown UI is
+limited to cases such as after restart before first unlock.
 
 ```swift
 import WidgetKit
@@ -518,23 +527,21 @@ func scheduleAlarmWithOpenAction(hour: Int, minute: Int) async throws -> Alarm {
 This key is **mandatory**. If missing or empty, `schedule(id:configuration:)`
 will fail and no alarms can be created by the app.
 
-### Recommended: NSSupportsLiveActivities
+### Countdown UI setup
 
-Since alarms create Live Activities, also include:
-
-```xml
-<key>NSSupportsLiveActivities</key>
-<true/>
-```
+If you support countdown presentation, add a widget extension target for the
+custom Live Activity UI. Keep `NSAlarmKitUsageDescription` in the host app's
+Info.plist; Apple does not document `NSSupportsLiveActivities` as an AlarmKit
+setup key.
 
 ## Error Handling
 
 ```swift
 import AlarmKit
 
-func scheduleAlarmSafely(
+func scheduleAlarmSafely<Metadata: AlarmMetadata>(
     id: UUID,
-    configuration: AlarmManager.AlarmConfiguration<some AlarmMetadata>
+    configuration: AlarmManager.AlarmConfiguration<Metadata>
 ) async {
     guard AlarmManager.shared.authorizationState == .authorized else {
         print("Not authorized -- request authorization first")

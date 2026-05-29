@@ -16,6 +16,8 @@ that exceed the main skill file's scope.
 ## Full UIKit Integration
 
 Complete UIKit view controller with permission request and response handling.
+Keep the pending state explicit: if the child cancels the iMessage send flow,
+PermissionKit does not deliver a `PermissionResponse` for that question.
 
 ```swift
 import UIKit
@@ -56,6 +58,7 @@ class ContactViewController: UIViewController {
             do {
                 try await AskCenter.shared.ask(question, in: self)
                 showPendingState(for: contact)
+                schedulePendingExpiration(for: question.id)
             } catch AskError.communicationLimitsNotEnabled {
                 enableMessaging(for: contact)
             } catch AskError.notAvailable {
@@ -100,6 +103,7 @@ class ContactViewController: UIViewController {
     }
 
     private func showPendingState(for contact: Contact) { }
+    private func schedulePendingExpiration(for id: UUID) { }
     private func enableMessaging(for contact: Contact) { }
     private func enableCommunication(for handle: CommunicationHandle) { }
     private func showDeniedState(for handle: CommunicationHandle) { }
@@ -122,6 +126,7 @@ final class PermissionManager {
 
     var approvedHandles: Set<String> = []
     var deniedHandles: Set<String> = []
+    var pendingHandleValues: Set<String> = []
     var pendingQuestionIDs: Set<UUID> = []
 
     private var observerTask: Task<Void, Never>?
@@ -157,7 +162,13 @@ final class PermissionManager {
         )
 
         try await AskCenter.shared.ask(question, in: viewController)
+        let handleValues = handles.map(\.value)
         pendingQuestionIDs.insert(question.id)
+        pendingHandleValues.formUnion(handleValues)
+        schedulePendingExpiration(
+            for: question.id,
+            handleValues: handleValues
+        )
     }
 
     func isApproved(_ handleValue: String) -> Bool {
@@ -166,6 +177,10 @@ final class PermissionManager {
 
     func isDenied(_ handleValue: String) -> Bool {
         deniedHandles.contains(handleValue)
+    }
+
+    func isPending(_ handleValue: String) -> Bool {
+        pendingHandleValues.contains(handleValue)
     }
 
     private func startObserving() {
@@ -188,6 +203,9 @@ final class PermissionManager {
 
         let handleValues = response.question.topic.personInformation
             .map(\.handle.value)
+        for value in handleValues {
+            pendingHandleValues.remove(value)
+        }
 
         switch response.choice.answer {
         case .approval:
@@ -202,6 +220,14 @@ final class PermissionManager {
         @unknown default:
             break
         }
+    }
+
+    private func schedulePendingExpiration(
+        for id: UUID,
+        handleValues: [String]
+    ) {
+        // Expire or offer retry if no response arrives after your product's
+        // chosen pending window. Child cancellation produces no response.
     }
 }
 ```
@@ -250,7 +276,10 @@ func requestGroupPermission(
 
 ## Communication Limits Checking Pattern
 
-Check handles before building the permission UI.
+Check which handles are already known to the system before building the
+permission UI. This does not prove communication limits are enabled; still
+handle `AskError.communicationLimitsNotEnabled` when asking. `knownHandles(in:)`
+requires a non-nil, nonempty app bundle identifier.
 
 ```swift
 @Observable
@@ -262,18 +291,22 @@ final class ContactListViewModel {
         let id: String
         let name: String
         let handle: CommunicationHandle
-        var isKnown: Bool = false
-        var needsPermission: Bool = false
+        var isKnownBySystem: Bool = false
+        var needsPermissionPrompt: Bool = false
     }
 
     func refreshContactStatus() async {
+        guard Bundle.main.bundleIdentifier?.isEmpty == false else { return }
+
         let limits = CommunicationLimits.current
         let allHandles = Set(contacts.map(\.handle))
         let knownHandles = await limits.knownHandles(in: allHandles)
 
         for i in contacts.indices {
-            contacts[i].isKnown = knownHandles.contains(contacts[i].handle)
-            contacts[i].needsPermission = !contacts[i].isKnown
+            contacts[i].isKnownBySystem = knownHandles.contains(
+                contacts[i].handle
+            )
+            contacts[i].needsPermissionPrompt = !contacts[i].isKnownBySystem
         }
     }
 }
@@ -293,7 +326,8 @@ struct ContactDetailView: View {
     @Environment(PermissionManager.self) private var permissionManager
 
     enum PermissionState {
-        case unknown, checking, needsPermission, approved, denied, error(String)
+        case unknown, checking, needsPermission, approved, denied
+        case pending, error(String)
     }
 
     var body: some View {
@@ -322,6 +356,10 @@ struct ContactDetailView: View {
                     }
                     .buttonStyle(.borderedProminent)
                 }
+
+            case .pending:
+                Label("Waiting for parent response", systemImage: "clock")
+                    .foregroundStyle(.secondary)
 
             case .approved:
                 Label("Messaging enabled", systemImage: "checkmark.circle.fill")
@@ -356,6 +394,8 @@ struct ContactDetailView: View {
             permissionState = .approved
         } else if permissionManager.isDenied(contact.phoneNumber) {
             permissionState = .denied
+        } else if permissionManager.isPending(contact.phoneNumber) {
+            permissionState = .pending
         } else {
             permissionState = .needsPermission
         }
@@ -365,7 +405,7 @@ struct ContactDetailView: View {
 
 ## macOS Integration
 
-On macOS, pass an `NSWindow` instead of `UIViewController`.
+On macOS 26.2+, pass an `NSWindow` instead of `UIViewController`.
 
 ```swift
 #if os(macOS)

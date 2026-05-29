@@ -659,20 +659,18 @@ func processFaceMetrics(_ result: SRFetchResult<AnyObject>) {
 
 ## Wrist Temperature
 
-`SRWristTemperatureSession` provides temperature readings collected during sleep:
+The `.wristTemperature` stream returns `SRWristTemperatureSession` samples.
+Each session contains `SRWristTemperature` readings.
 
 ```swift
 func processWristTemperature(_ result: SRFetchResult<AnyObject>) {
     guard let session = result.sample as? SRWristTemperatureSession else { return }
 
-    let startDate = session.startDate
-    let duration = session.duration
-
-    print("Temperature session: \(startDate), duration: \(duration)s")
+    print("Temperature session: \(session.startDate), duration: \(session.duration)s")
 
     for temp in session.temperatures {
         let timestamp = temp.timestamp
-        let value = temp.value        // Measurement<UnitTemperature>
+        let value = temp.value         // Measurement<UnitTemperature>, in Celsius
         let error = temp.errorEstimate // Measurement<UnitTemperature>
 
         // Check conditions that affect accuracy
@@ -690,7 +688,7 @@ func processWristTemperature(_ result: SRFetchResult<AnyObject>) {
 
         let celsius = value.converted(to: .celsius).value
         let errorC = error.converted(to: .celsius).value
-        print("Temp: \(celsius)C +/- \(errorC)C")
+        print("Temp at \(timestamp): \(celsius)C +/- \(errorC)C")
     }
 }
 ```
@@ -701,17 +699,19 @@ func processWristTemperature(_ result: SRFetchResult<AnyObject>) {
 
 ```swift
 func processECG(_ result: SRFetchResult<AnyObject>) {
-    guard let sample = result.sample as? SRElectrocardiogramSample else { return }
+    guard let samples = result.sample as? [SRElectrocardiogramSample] else { return }
 
-    let frequency = sample.frequency
-    let session = sample.session
-    let isGuided = session.sessionGuidance == .guided
+    for sample in samples {
+        let frequency = sample.frequency
+        let session = sample.session
+        let isGuided = session.sessionGuidance == .guided
 
-    // ECG voltage data points -- skip invalid readings
-    for dataPoint in sample.data {
-        guard !dataPoint.flags.contains(.signalInvalid) else { continue }
-        let microvolts = dataPoint.value.converted(to: .microvolts).value
-        print("ECG: \(microvolts) uV, crown: \(dataPoint.flags.contains(.crownTouched))")
+        // ECG voltage data points -- skip invalid readings
+        for dataPoint in sample.data {
+            guard !dataPoint.flags.contains(.signalInvalid) else { continue }
+            let microvolts = dataPoint.value.converted(to: .microvolts).value
+            print("ECG: \(microvolts) uV, guided: \(isGuided), crown: \(dataPoint.flags.contains(.crownTouched))")
+        }
     }
 }
 ```
@@ -720,20 +720,24 @@ func processECG(_ result: SRFetchResult<AnyObject>) {
 
 ```swift
 func processPPG(_ result: SRFetchResult<AnyObject>) {
-    guard let sample = result.sample as? SRPhotoplethysmogramSample else { return }
+    guard let samples = result.sample as? [SRPhotoplethysmogramSample] else { return }
 
-    // Usage: .foregroundHeartRate, .foregroundBloodOxygen, .deepBreathing, .backgroundSystem
-    for usage in sample.usage {
-        print("PPG usage: \(usage)")
-    }
+    for sample in samples {
+        // Usage: .foregroundHeartRate, .foregroundBloodOxygen, .deepBreathing, .backgroundSystem
+        for usage in sample.usage {
+            print("PPG usage: \(usage)")
+        }
 
-    // Optical sensor data with signal quality checks
-    for optical in sample.opticalSamples {
-        let wavelength = optical.nominalWavelength
-        let reflectance = optical.normalizedReflectance
-        let hasIssues = optical.conditions.contains { $0 == .signalSaturation || $0 == .unreliableNoise }
-        if !hasIssues, let reflectance {
-            print("Reflectance: \(reflectance) at \(wavelength)")
+        // Optical sensor data with signal quality checks
+        for optical in sample.opticalSamples {
+            let wavelength = optical.nominalWavelength
+            let reflectance = optical.normalizedReflectance
+            let hasIssues = optical.conditions.contains {
+                $0 == .signalSaturation || $0 == .unreliableNoise
+            }
+            if !hasIssues, let reflectance {
+                print("Reflectance: \(reflectance) at \(wavelength)")
+            }
         }
     }
 }

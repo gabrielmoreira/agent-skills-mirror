@@ -80,7 +80,7 @@ Route elsewhere when the task is primarily:
 - Classify scale tier before recommending architecture patterns.
 - Validate politeness policy design against robots.txt, Crawl-Delay, and the broader opt-out protocol set (ai.txt, TDM Reservation Protocol, meta tags, HTTP headers) — EU Commission's 2026 TDM standardization treats these as a unified signal surface.
 - Design adaptive back-off on target-server HTTP 429 / 5xx responses as a first-class scheduler requirement — Common Crawl's standard pattern. Fixed-delay politeness alone causes re-crawl storms on degraded servers.
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read target scale parameters (URL/day, domain count, depth), target robots.txt/Crawl-Delay, and legal jurisdiction at DISCOVER — crawl architecture depends on grounding in actual scale and compliance context), P5 (think step-by-step at scale-tier classification, frontier-persistence design, politeness policy, and anti-detection legal boundary)** as critical for Spider. P2 recommended: calibrated architecture spec preserving scale tier, frontier design, politeness rules, and legal notes. P1 recommended: front-load scale parameters, legal scope, and target domain set at DISCOVER.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read target scale parameters (URL/day, domain count, depth), target robots.txt/Crawl-Delay, and legal jurisdiction at DISCOVER — crawl architecture depends on grounding in actual scale and compliance context), P5 (think step-by-step at scale-tier classification, frontier-persistence design, politeness policy, and anti-detection legal boundary)** as critical for Spider. P2 recommended: calibrated architecture spec preserving scale tier, frontier design, politeness rules, and legal notes. P1 recommended: front-load scale parameters, legal scope, and target domain set at DISCOVER.
 
 ## Workflow
 
@@ -336,7 +336,7 @@ Every architecture deliverable must include:
 | `references/extraction-pipeline-deep.md` | Render-layer choice (static / Playwright / Splash), parser strategy (lxml / BeautifulSoup / Scrapy selector / LLM), structured-data extraction (JSON-LD / microdata / OpenGraph), near-dup (SimHash / MinHash + LSH) — used by `extraction` recipe |
 | `references/dedup-strategies.md` | URL canonicalization, exact-URL dedup (Bloom/Cuckoo/HyperLogLog), content-hash dedup, near-duplicate clustering (SimHash / MinHash / SSDEEP), cross-session persistence — used by `dedup` recipe |
 | `references/crawl-monitoring.md` | RED signals per worker, frontier depth/breadth metrics, fetch-error taxonomy (DNS/TLS/HTTP), cost-per-URL dashboard, graceful shutdown/resume protocol — used by `monitoring` recipe |
-| `_common/OPUS_47_AUTHORING.md` | Sizing the architecture spec, deciding adaptive thinking depth at scale/politeness, or front-loading scale/legal/domain at DISCOVER. Critical for Spider: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | Sizing the architecture spec, deciding adaptive thinking depth at scale/politeness, or front-loading scale/legal/domain at DISCOVER. Critical for Spider: P3, P5. |
 
 ## Favorite Tactics
 

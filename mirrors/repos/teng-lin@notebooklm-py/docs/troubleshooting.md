@@ -267,9 +267,11 @@ URL is populated.
 **Solution:**
 - Increase the wait budget with `--timeout` or the Python
   `wait_for_completion(..., timeout=...)` argument.
-- For CLI waits, the built-in defaults are 1800s for standard video and
-  3600s for cinematic video; pass a larger `--timeout` if your account's media
-  queue is slower.
+- For `generate <kind> --wait`, the built-in media defaults are 1200s for
+  audio, 1800s for standard video, and 3600s for cinematic video; pass a
+  larger `--timeout` if your account's media queue is slower.
+- `artifact wait` is intentionally generic and still defaults to 300s; when
+  waiting manually on a media task ID, pass the matching media timeout.
 - Catch `ArtifactPendingTimeoutError` to retry queued tasks separately from
   `ArtifactInProgressTimeoutError`, which means the task started but did not
   finish before the timeout.
@@ -285,6 +287,24 @@ URL is populated.
 - Try regenerating with different/fewer sources
 
 ### File Upload Issues
+
+#### HTML/XHTML files are rejected before upload
+
+**Cause:** NotebookLM's file-upload endpoint rejects HTML-family uploads, even
+though the web UI may accept pasted rich text.
+
+**Solution:** Convert saved web pages to text, Markdown, or PDF before adding
+them with your preferred extractor:
+
+```bash
+notebooklm source add ./article.txt
+```
+
+You can also pipe extracted text through stdin:
+
+```bash
+python extract_article_text.py ./article.html | notebooklm source add - --type text --title "Article"
+```
 
 #### Text/Markdown files upload but return None
 

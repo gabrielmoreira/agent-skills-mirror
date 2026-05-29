@@ -61,36 +61,30 @@ Use this decision tree to choose between `-ed` and `-ing` for the nonmutating va
 **Step 1: Try the past participle (`-ed`).** Read the phrase: "a [verb]-ed [noun]". If it sounds grammatical, use `-ed`.
 
 ```
-sort → sorted     ✓  "a sorted array" sounds correct
-reverse → reversed ✓  "a reversed collection" sounds correct
-shuffle → shuffled ✓  "a shuffled deck" sounds correct
+sort → sorted          ✓  "a sorted array" sounds correct
+sortLines → sortedLines ✓ "sorted lines" describes the result
+reverse → reversed      ✓ "a reversed collection" sounds correct
+shuffle → shuffled      ✓ "a shuffled deck" sounds correct
 ```
 
-**Step 2: Does -ed sound ungrammatical?**
+**Step 2: Does -ed fail the result-description test?**
 
-If the past participle does not read naturally, use the present participle (`-ing`).
-
-```
-append → appending     "an appended element" is awkward → use -ing
-strip → stripping      "a stripped newlines" is awkward → use -ing
-```
-
-**Step 3: Verb without a direct object?**
-
-If the verb has no direct object, `-ing` is almost always correct.
+Use the present participle (`-ing`) only when the `-ed` form is ungrammatical or describes the direct object rather than the returned receiver or result. A direct object is a clue to check the grammar, not the rule by itself.
 
 ```
-overlap → overlapping   "overlapping with" not "overlapped with"
+append → appending                  "appended" does not describe the returned receiver clearly
+stripNewlines → strippingNewlines   direct-object pattern from the guidelines
 ```
 
-### Extended -ed/-ing examples from the standard library
+### Extended -ed/-ing examples and naming patterns
 
 | Mutating | Nonmutating | Suffix | Reasoning |
 |----------|-------------|--------|-----------|
 | `sort()` | `sorted()` | -ed | "a sorted array" |
+| `sortLines()` | `sortedLines()` | -ed | "sorted lines" describes the result |
 | `reverse()` | `reversed()` | -ed | "a reversed collection" |
 | `shuffle()` | `shuffled()` | -ed | "a shuffled deck" |
-| `append(_:)` | `appending(_:)` | -ing | "an appended item" is awkward |
+| `append(_:)` | `appending(_:)` | -ing | `appended` does not describe the returned receiver clearly |
 | `filter(_:)` | `filter(_:)` | n/a | nonmutating only in stdlib |
 | `drop(while:)` | `drop(while:)` | n/a | nonmutating only in stdlib |
 

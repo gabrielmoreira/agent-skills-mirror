@@ -314,6 +314,7 @@ Why it matters:
 
 - prevents very large OpenClaw session JSONL files from choking fallback/gateway startup while LCM owns the durable context
 - runtime rotation only creates or replaces the rolling `rotate-latest` DB backup when `createBackups` is `true`; manual `/lossless rotate` / `/lcm rotate` always keeps its backup-backed behavior
+- runtime JSONL rewrites run from `afterTurn()` after the host turn completes; `maintain()` skips rotation and leaves it to `afterTurn()` or startup because background maintenance can overlap an embedded model call
 - startup scans OpenClaw's current indexed session stores for configured agents, intersects those candidates with active LCM bootstrap state, and creates one pre-rotation DB backup for the startup batch only when `createBackups` is `true`
 - only runs for active, writable LCM conversations; ignored sessions, stateless sessions, sessions outside the indexed startup candidate set, and sessions without active LCM state are skipped
 - the preserved transcript tail follows the normal rotate behavior controlled by `freshTailCount`

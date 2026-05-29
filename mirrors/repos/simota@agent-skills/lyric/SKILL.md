@@ -67,7 +67,7 @@ Route elsewhere when:
 - V5 Studio-aware formatting: structure tags double as edit anchors — clean `[Verse 1]`, `[Chorus]` boundaries enable precise editing. Studio supports five section operations: Remake (regenerate in place), Rewrite (new prompt for section), Extend (continue from endpoint), Reorder (rearrange sections), and Delete. Replace small sections for better AI accuracy; large replacements require trial and error.
 - Extend drift mitigation: extended tracks frequently deviate from the original style. Re-inject genre/mood keywords every 1-2 Extends and use `[Callback: <reference>]` (e.g., `[Callback: Chorus melody]`) to anchor feel. Raising Style Influence slider during Extend reduces drift.
 - Target 5-8 style tags for tag-based prompts; ≤ 4 is too vague (Suno fills defaults producing generic output), > 10 introduces conflicting signals that muddy the result. Text beyond the character limit is silently truncated without warning — always front-load the most important genre/mood tags.
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read theme, genre conventions, and mood intent at FRAME — lyric resonance depends on grounding in genre-specific idioms, not generic templates), P5 (think step-by-step at section structure ([Verse]/[Chorus]/[Bridge]), Suno V5 Studio edit anchors, Extend drift mitigation, and 5–8 tag calibration)** as critical for Lyric. P2 recommended: calibrated lyric package preserving structure tags, style prompt (front-loaded), and callback anchors. P1 recommended: front-load theme, genre, mood, and target length at FRAME.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read theme, genre conventions, and mood intent at FRAME — lyric resonance depends on grounding in genre-specific idioms, not generic templates), P5 (think step-by-step at section structure ([Verse]/[Chorus]/[Bridge]), Suno V5 Studio edit anchors, Extend drift mitigation, and 5–8 tag calibration)** as critical for Lyric. P2 recommended: calibrated lyric package preserving structure tags, style prompt (front-loaded), and callback anchors. P1 recommended: front-load theme, genre, mood, and target length at FRAME.
 
 ## Core Rules
 
@@ -294,7 +294,7 @@ Next action: [LYRIC_TO_TONE_HANDOFF for audio generation | return to user for re
 | `references/verse-craft.md` | バース節の作詞技法 — POV/時制、Pat Pattison のオブジェクト・ライティング、行長コントゥア、内部韻密度、歌唱可能性チェック |
 | `references/hook-craft.md` | フック/コーラスの作詞技法 — 記憶性原則、アンカーワード選定、タイトル配置戦略、メロディフック vs リリックフック、Earworm 研究知見 |
 | `references/bridge-craft.md` | ブリッジ節の作詞技法 — 出発と帰還、視点シフト、Suno のキーチェンジ/ビルド指示、偽ブリッジとプリコーラスの区別 |
-| `_common/OPUS_47_AUTHORING.md` | Sizing the lyric package, deciding adaptive thinking depth at structure/tag design, or front-loading theme/genre/mood/length at FRAME. Critical for Lyric: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | Sizing the lyric package, deciding adaptive thinking depth at structure/tag design, or front-loading theme/genre/mood/length at FRAME. Critical for Lyric: P3, P5. |
 
 ## Operational
 

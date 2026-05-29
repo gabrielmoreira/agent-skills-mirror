@@ -1,6 +1,6 @@
 ---
 name: carplay
-description: "Build CarPlay-enabled apps using the CarPlay framework. Use when creating navigation, audio, communication, EV charging, parking, or food ordering apps for the car display, working with CPTemplateApplicationScene, CPListTemplate, CPMapTemplate, CPNowPlayingTemplate, configuring CarPlay entitlements, or integrating with CarPlay Simulator for testing."
+description: "Build CarPlay-enabled apps using the CarPlay framework. Use when creating navigation, audio, communication, EV charging, parking, or food ordering apps for the car display, working with CPTemplateApplicationScene, CPInterfaceController template hierarchies, CPListTemplate, CPMapTemplate, CPNowPlayingTemplate, configuring CarPlay entitlements, or integrating with CarPlay Simulator for testing."
 ---
 
 # CarPlay
@@ -13,6 +13,13 @@ Targets Swift 6.3 / iOS 26+.
 
 See [references/carplay-patterns.md](references/carplay-patterns.md) for extended patterns including full
 navigation sessions, dashboard scenes, and advanced template composition.
+
+Scope boundary: full CarPlay framework apps use category entitlements,
+`CPTemplateApplicationScene`, `CPTemplateApplicationSceneDelegate`,
+`CPInterfaceController`, and system `CPTemplate` navigation. CarPlay-visible
+WidgetKit widgets and ActivityKit Live Activities are separate system
+experiences; route their implementation to those domains while keeping
+CarPlay-specific validation here.
 
 ## Contents
 
@@ -59,7 +66,7 @@ and agree to the CarPlay Entitlement Addendum.
 |---|---|
 | `CPTemplateApplicationScene` | UIScene subclass for the CarPlay display |
 | `CPTemplateApplicationSceneDelegate` | Scene connect/disconnect lifecycle |
-| `CPInterfaceController` | Manages the template navigation hierarchy |
+| `CPInterfaceController` | CarPlay-provided controller for setting the root template and pushing, presenting, or popping templates |
 | `CPTemplate` | Abstract base for all CarPlay templates |
 | `CPSessionConfiguration` | Vehicle display limits and content style |
 
@@ -281,6 +288,7 @@ extension CarPlaySceneDelegate: CPSearchTemplateDelegate {
 
 Audio apps use `com.apple.developer.carplay-audio`. They display browsable
 content in lists and use `CPNowPlayingTemplate` for playback controls.
+`CPInformationTemplate` is not available to audio-entitled apps.
 
 ### Now Playing Template
 
@@ -317,17 +325,23 @@ let listTemplate = CPListTemplate(
 Communication apps use `com.apple.developer.carplay-communication`.
 They display message lists and contacts, and support `INStartCallIntent`
 for Siri-initiated calls.
+`CPMessageListItem` has no app-provided selection handler. When selected,
+CarPlay invokes Siri compose, read, or reply behavior based on the item's
+phone/email, unread state, or existing conversation configuration.
 
 ```swift
+let leading = CPMessageListItemLeadingConfiguration(
+    leadingItem: .star, leadingImage: nil, unread: true)
+let trailing = CPMessageListItemTrailingConfiguration(
+    trailingItem: .none, trailingImage: nil)
+
 let message = CPMessageListItem(
     conversationIdentifier: "conv-123",
-    text: "Meeting at 3pm",
-    leadingConfiguration: CPMessageListItem.LeadingConfiguration(
-        leadingItem: .init(text: "Jane", textStyle: .abbreviated),
-        unread: true),
-    trailingConfiguration: CPMessageListItem.TrailingConfiguration(
-        trailingItem: .init(text: "2:45 PM")),
-    trailingText: nil, trailingImage: nil)
+    text: "Jane",
+    leadingConfiguration: leading,
+    trailingConfiguration: trailing,
+    detailText: "Meeting at 3pm",
+    trailingText: "2:45 PM")
 
 let messageList = CPListTemplate(title: "Messages",
                                  sections: [CPListSection(items: [message])])
@@ -337,6 +351,7 @@ let messageList = CPListTemplate(title: "Messages",
 
 EV charging, parking, and food ordering apps use `CPPointOfInterestTemplate`
 and `CPInformationTemplate` to display locations and details.
+`CPPointOfInterestTemplate` displays a maximum of 12 points of interest.
 
 ### CPPointOfInterestTemplate
 
@@ -398,6 +413,8 @@ defaults write com.apple.iphonesimulator CarPlayExtraOptions -bool YES
 Simulator cannot test locked-iPhone behavior, Siri, audio coexistence with
 car radio, or physical input hardware (knobs, touch pads). Test on a real
 CarPlay-capable vehicle or aftermarket head unit when possible.
+Design primary CarPlay flows so they do not require iPhone input while
+CarPlay is active.
 
 ## Common Mistakes
 
@@ -422,6 +439,17 @@ Use `setRootTemplate(_:animated:completion:)`.
 
 Use `CPNowPlayingTemplate.shared`. Creating a new instance causes issues.
 
+### DON'T: Add handlers to CPMessageListItem
+
+`CPMessageListItem` is Siri-managed, unlike `CPListItem`. Do not set
+`message.handler`; use the item configuration and `userInfo` for context.
+
+### DON'T: Treat widgets as CarPlay template apps
+
+CarPlay-visible widgets and Live Activities belong to WidgetKit and
+ActivityKit. Use this skill for category-entitled CarPlay template app scenes
+and for validating those surfaces in the car context.
+
 ### DON'T: Ignore vehicle display limits
 
 Check `CPSessionConfiguration.limitedUserInterfaces` and respect
@@ -443,6 +471,8 @@ Failure leaves the list in a loading state.
 - [ ] Interface controller and window references cleared on disconnect
 - [ ] `CPTabBarTemplate` only used as root, never pushed
 - [ ] `CPNowPlayingTemplate.shared` used, not a new instance
+- [ ] Communication rows use `CPMessageListItem` without custom handlers
+- [ ] WidgetKit/ActivityKit surfaces routed outside CarPlay template app code
 - [ ] `maximumItemCount`/`maximumSectionCount` checked before populating lists
 - [ ] `CPListItem.handler` calls completion in every path
 - [ ] Map-only content in `CPWindow` root view controller (navigation apps)

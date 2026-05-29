@@ -10,8 +10,8 @@ Detailed template-by-template guide for profiling iOS apps with Instruments. Com
 - [Leaks](#leaks)
 - [Network](#network)
 - [SwiftUI Instruments](#swiftui-instruments)
-- [Core Animation](#core-animation)
-- [Energy Log](#energy-log)
+- [Animation Hitches and Core Animation](#animation-hitches-and-core-animation)
+- [Power Profiler](#power-profiler)
 - [File Activity](#file-activity)
 - [System Trace](#system-trace)
 - [xctrace CLI](#xctrace-cli)
@@ -167,15 +167,20 @@ redraws, or identity churn in lists.
 - Cross-reference with Time Profiler to see if body evaluations are expensive.
 - See the `swiftui-performance` skill for remediation patterns.
 
-## Core Animation
+## Animation Hitches and Core Animation
 
 **When to use**: Frame drops, off-screen rendering, excessive blending.
 
 ### Key Workflow
 
-1. Record with the Core Animation template on a real device.
-2. Check the **FPS** lane for drops below 60 (or 120 on ProMotion devices).
-3. Enable these debug options in the Recording Options:
+1. Record with the **Animation Hitches** template on a real device when the
+   symptom is stutter or missed frames.
+2. Add Core Animation instruments such as **Core Animation FPS**,
+   **Core Animation Commits**, or **Core Animation Activity** when you need
+   lower-level render pipeline detail.
+3. Check FPS, hitches, commits, and frame lifetime lanes for drops or long
+   commit/render work.
+4. Enable these debug options in Recording Options or Xcode view debugging:
    - **Color Blended Layers** — red areas have multiple overlapping layers
    - **Color Off-screen Rendered** — yellow areas use off-screen passes
    - **Color Hits Green and Misses Red** — rasterization cache hits/misses
@@ -189,15 +194,15 @@ redraws, or identity churn in lists.
 | Shadow without path | Off-screen rendering | Set `shadowPath` explicitly |
 | Large images not downsampled | High memory + slow rendering | Downsample before display |
 
-## Energy Log
+## Power Profiler
 
 **When to use**: Battery drain complaints, background energy impact, or
 App Store rejection for excessive energy use.
 
 ### Key Workflow
 
-1. Record with the Energy Log template on a physical device.
-2. Check the **Energy Impact** lane for high/very high readings.
+1. Record with the **Power Profiler** template on a physical device.
+2. Check power, thermal, and energy-impact lanes for high readings.
 3. Examine component breakdown:
    - CPU
    - Network
@@ -253,21 +258,21 @@ xcrun xctrace record \
     --device "iPhone" \
     --output ~/traces/profile.trace \
     --time-limit 30s \
-    --launch com.example.MyApp
+    --launch -- /path/to/MyApp.app
 
 # Record Allocations trace for a running app
 xcrun xctrace record \
     --template "Allocations" \
     --device "iPhone" \
     --output ~/traces/alloc.trace \
-    --attach com.example.MyApp
+    --attach MyApp
 
 # Record with multiple instruments
 xcrun xctrace record \
     --template "Time Profiler" \
-    --template "Allocations" \
+    --instrument "Allocations" \
     --output ~/traces/combined.trace \
-    --launch com.example.MyApp
+    --launch -- /path/to/MyApp.app
 ```
 
 ### Exporting Data
@@ -295,8 +300,8 @@ xcrun xctrace list templates
 # Connected devices
 xcrun xctrace list devices
 
-# Running processes on a device
-xcrun xctrace list processes --device "iPhone"
+# Available instruments
+xcrun xctrace list instruments
 ```
 
 ## Custom Instruments with os_signpost
@@ -309,11 +314,12 @@ import os
 let signposter = OSSignposter(subsystem: "com.example.app", category: "Networking")
 
 func fetchUser(id: String) async throws -> User {
-    let state = signposter.beginInterval("fetchUser", id: signposter.makeSignpostID())
+    let signpostID = signposter.makeSignpostID()
+    let state = signposter.beginInterval("fetchUser", id: signpostID)
     defer { signposter.endInterval("fetchUser", state) }
 
     let (data, _) = try await URLSession.shared.data(from: userURL(id))
-    signposter.emitEvent("dataReceived", "\(data.count) bytes")
+    signposter.emitEvent("dataReceived", id: signpostID, "\(data.count) bytes")
 
     return try JSONDecoder().decode(User.self, from: data)
 }
@@ -321,7 +327,8 @@ func fetchUser(id: String) async throws -> User {
 
 ### Viewing in Instruments
 
-1. Open Instruments with the **os_signpost** or **Points of Interest** template.
+1. Open Instruments with a Blank document, then add the **os_signpost**
+   instrument, or start from a template that includes **Points of Interest**.
 2. Your custom intervals appear as labeled bars in the timeline.
 3. Events appear as point markers.
 4. Filter by subsystem or category to isolate your signposts.
@@ -351,7 +358,7 @@ xcrun xctrace record \
     --template "$TEMPLATE" \
     --output "$TRACE_OUTPUT" \
     --time-limit 60s \
-    --launch "$APP_BUNDLE"
+    --launch -- "$APP_BUNDLE"
 
 # Export data for analysis
 xcrun xctrace export \

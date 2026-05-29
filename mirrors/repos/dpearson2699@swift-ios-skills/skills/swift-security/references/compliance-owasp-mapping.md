@@ -6,6 +6,42 @@
 
 ---
 
+## Contents
+
+- [What Changed: 2016 → 2024 OWASP Mobile Top 10](#what-changed-2016-2024-owasp-mobile-top-10)
+- [Master Traceability Matrix](#master-traceability-matrix)
+- [M1 — Improper Credential Usage](#m1-improper-credential-usage)
+  - [MASTG Test Cases](#mastg-test-cases)
+  - [Compliant: Keychain credential storage](#compliant-keychain-credential-storage)
+  - [Anti-pattern: common AI-generated credential storage](#anti-pattern-common-ai-generated-credential-storage)
+- [M3 — Insecure Authentication/Authorization](#m3-insecure-authenticationauthorization)
+  - [MASTG Test Cases](#mastg-test-cases)
+  - [The LAContext Vulnerability](#the-lacontext-vulnerability)
+  - [`.biometryCurrentSet` vs `.biometryAny`](#biometrycurrentset-vs-biometryany)
+  - [Compliant: hardware-bound biometric authentication](#compliant-hardware-bound-biometric-authentication)
+  - [Anti-pattern: LAContext-only authentication](#anti-pattern-lacontext-only-authentication)
+- [M9 — Insecure Data Storage](#m9-insecure-data-storage)
+  - [iOS Storage Security Properties](#ios-storage-security-properties)
+  - [MASTG Test Cases](#mastg-test-cases)
+  - [NSFileProtection Classes](#nsfileprotection-classes)
+  - [Compliant: file storage with Data Protection](#compliant-file-storage-with-data-protection)
+  - [Anti-pattern: insecure data storage](#anti-pattern-insecure-data-storage)
+- [M10 — Insufficient Cryptography](#m10-insufficient-cryptography)
+  - [Deprecated vs. Approved Algorithms](#deprecated-vs-approved-algorithms)
+  - [MASTG Test Cases](#mastg-test-cases)
+  - [Compliant: CryptoKit encryption](#compliant-cryptokit-encryption)
+  - [Anti-pattern: insecure cryptography](#anti-pattern-insecure-cryptography)
+- [kSecAttrAccessible Selection Guide](#ksecattraccessible-selection-guide)
+- [Enterprise Audit Workflow](#enterprise-audit-workflow)
+  - [How Security Teams Evaluate iOS Apps](#how-security-teams-evaluate-ios-apps)
+  - [Top 10 Audit Findings](#top-10-audit-findings)
+  - [Evidence Kit (5 Artifacts)](#evidence-kit-5-artifacts)
+  - [Jailbreak-Era Testing (2025–2026)](#jailbreak-era-testing-20252026)
+- [Post-Quantum Cryptography Roadmap](#post-quantum-cryptography-roadmap)
+- [Cross-Reference Index](#cross-reference-index)
+- [Conclusion](#conclusion)
+- [Summary Checklist](#summary-checklist)
+
 ## What Changed: 2016 → 2024 OWASP Mobile Top 10
 
 The 2024 edition is a complete overhaul. Four categories are entirely new, two pairs were merged, and everything was renumbered. Any code comment or documentation citing the 2016 numbering is outdated.
@@ -29,7 +65,7 @@ The 2024 edition is a complete overhaul. Four categories are entirely new, two p
 
 ## Master Traceability Matrix
 
-This matrix links each OWASP 2024 category to its MASVS controls, MASTG test cases, iOS APIs, and required audit evidence. Both research sources agree on the core mappings; this table unifies them.
+This matrix links each OWASP 2024 category to its MASVS controls, MASTG test cases, iOS APIs, and required audit evidence.
 
 | OWASP 2024                        | MASVS v2 Controls                             | Key MASTG Tests (New IDs)                                        | iOS APIs / Flags                                                                        | Required Evidence                                                   |
 | --------------------------------- | --------------------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
@@ -437,7 +473,7 @@ Keychain accessibility is the single most important iOS security decision — it
 
 **Critical:** `kSecAttrAccessible` and `kSecAttrAccessControl` are mutually exclusive. When using `SecAccessControlCreateWithFlags`, the accessibility level is the function's first parameter — do not also set `kSecAttrAccessible` in the query dictionary, or you get `errSecParam (-50)`. See `keychain-access-control.md`.
 
-> **Cross-validation note:** The parallel research source recommends `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` as the standard; the Claude source recommends `kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly`. Both are valid. The `WhenPasscodeSet` variant is strictly more secure (items are deleted if passcode is removed) but may surprise users. Choose based on threat model: `WhenPasscodeSet` for high-security credentials, `WhenUnlocked` for general sensitive data.
+`kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly` is the strictest common choice for high-security credentials because items become unavailable when the passcode is removed. `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` is a safer general default when passcode-removal data loss would surprise users. Choose based on the threat model and recovery plan.
 
 ---
 

@@ -5,6 +5,7 @@ Overflow reference for the `financekit` skill. Contains advanced query patterns,
 ## Contents
 
 - [Predicate-Based Queries](#predicate-based-queries)
+- [Transaction Field Reference](#transaction-field-reference)
 - [Sorting and Pagination](#sorting-and-pagination)
 - [Merchant Category Codes](#merchant-category-codes)
 - [Currency Formatting](#currency-formatting)
@@ -117,6 +118,25 @@ let predicate = #Predicate<Transaction> { transaction in
     transaction.status == .booked
 }
 ```
+
+## Transaction Field Reference
+
+| Property | Type | Notes |
+|---|---|---|
+| `id` | `UUID` | Unique internal ID; WWDC24 notes it is unique per device |
+| `accountID` | `UUID` | Links the transaction to its parent account |
+| `transactionDate` | `Date` | Time the transaction took place; may differ from posting time |
+| `postedDate` | `Date?` | Posting time; if absent, use `transactionDate` as the posted date |
+| `transactionAmount` | `CurrencyAmount` | Positive decimal amount plus ISO 4217 currency code |
+| `creditDebitIndicator` | `CreditDebitIndicator` | `.debit` or `.credit`; interpret by account type |
+| `transactionDescription` | `String` | Display-friendly description |
+| `originalTransactionDescription` | `String` | Unmodified institution description |
+| `merchantName` | `String?` | Merchant name if available |
+| `merchantCategoryCode` | `MerchantCategoryCode?` | ISO 18245 code wrapper with `Int16` raw value |
+| `transactionType` | `TransactionType` | Includes `.pointOfSale`, `.transfer`, `.refund`, `.unknown`, and other documented cases |
+| `status` | `TransactionStatus` | `.authorized`, `.pending`, `.booked`, `.memo`, or `.rejected` |
+| `foreignCurrencyAmount` | `CurrencyAmount?` | Original foreign-currency amount if applicable |
+| `foreignCurrencyExchangeRate` | `Decimal?` | Exchange rate if applicable |
 
 ## Sorting and Pagination
 
@@ -452,7 +472,7 @@ func direction(
 
 ## Resumable Sync Manager
 
-A complete manager for incremental sync with token persistence and error recovery.
+A manager for catch-up sync (`isMonitoring: false`), live monitoring (`true`), token persistence, and explicit deletion removal.
 
 ```swift
 import FinanceKit
@@ -464,6 +484,7 @@ final class FinanceSyncManager {
     private let tokenKey = "financekit.sync.token"
 
     private(set) var accounts: [Account] = []
+    private(set) var balances: [UUID: [AccountBalance]] = [:]
     private(set) var transactions: [UUID: [Transaction]] = [:]
     private(set) var syncError: Error?
 
@@ -476,12 +497,15 @@ final class FinanceSyncManager {
             let status = try await store.authorizationStatus()
             guard status == .authorized else { return }
             accounts = try await fetchAllAccounts()
+            for account in accounts {
+                balances[account.id] = try await fetchBalances(for: account.id)
+            }
         } catch {
             syncError = error
         }
     }
 
-    // MARK: - Incremental Sync
+    // MARK: - Catch-Up Sync
 
     func syncTransactions(for accountID: UUID) async {
         let token = loadToken(for: accountID)
@@ -498,8 +522,10 @@ final class FinanceSyncManager {
                 saveToken(changes.newToken, for: accountID)
             }
         } catch let error as FinanceError where error == .historyTokenInvalid {
-            // Token expired -- full resync
+            // Token expired: discard it, then immediately rebuild local state
+            // and replacement token from a fresh catch-up sequence.
             clearToken(for: accountID)
+            transactions[accountID] = []
             await syncTransactions(for: accountID)
         } catch {
             syncError = error
@@ -539,13 +565,24 @@ final class FinanceSyncManager {
         return try await store.accounts(query: query)
     }
 
+    private func fetchBalances(for accountID: UUID) async throws -> [AccountBalance] {
+        let predicate = #Predicate<AccountBalance> { $0.accountID == accountID }
+        let query = AccountBalanceQuery(
+            sortDescriptors: [SortDescriptor(\AccountBalance.id)],
+            predicate: predicate,
+            limit: nil,
+            offset: nil
+        )
+        return try await store.accountBalances(query: query)
+    }
+
     private func applyChanges(
         _ changes: FinanceStore.Changes<Transaction>,
         for accountID: UUID
     ) {
         var current = transactions[accountID] ?? []
 
-        // Remove deleted
+        // Remove deleted IDs first so local storage matches Wallet removals.
         let deletedSet = Set(changes.deleted)
         current.removeAll { deletedSet.contains($0.id) }
 
@@ -563,6 +600,25 @@ final class FinanceSyncManager {
         current.sort { $0.transactionDate > $1.transactionDate }
 
         transactions[accountID] = current
+    }
+
+    private func applyBalanceChanges(
+        _ changes: FinanceStore.Changes<AccountBalance>,
+        for accountID: UUID
+    ) {
+        var current = balances[accountID] ?? []
+        // Remove deleted IDs first so local storage matches Wallet removals.
+        let deletedSet = Set(changes.deleted)
+        current.removeAll { deletedSet.contains($0.id) }
+
+        for updated in changes.updated {
+            if let index = current.firstIndex(where: { $0.id == updated.id }) {
+                current[index] = updated
+            }
+        }
+
+        current.append(contentsOf: changes.inserted)
+        balances[accountID] = current
     }
 
     private func saveToken(_ token: FinanceStore.HistoryToken, for accountID: UUID) {
@@ -675,6 +731,7 @@ The background delivery extension requires:
 1. A new extension target using the Background Delivery Extension template.
 2. Both app and extension in the same App Group for shared data access.
 3. The FinanceKit entitlement on both targets.
+4. Financial-data authorization requested in the main app before enabling delivery; the extension inherits the app's authorization.
 
 ### Shared Data with App Groups
 
@@ -701,7 +758,9 @@ func processNewTransactions() async {
 ### Extension Lifecycle
 
 - `didReceiveData(for:)` is called when the system detects changes matching the registered data types.
+- Returning from `didReceiveData(for:)` closes the extension, so save essential work before returning.
 - `willTerminate()` provides a cleanup opportunity before the system terminates the extension.
+- `willTerminate()` may not be called for every system termination path.
 - The extension has limited runtime. Perform only essential work (data sync, cache updates).
 - Do not start long-running tasks or network requests that may not complete.
 

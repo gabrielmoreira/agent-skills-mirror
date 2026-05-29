@@ -175,3 +175,5 @@ Located in `scripts/`.
 | ForeignNode build failure (DETR) | Use dynamo export path or run `onnxsim` — see references/engine-build.md |
 | Zero detections | Wrong `net-scale-factor` — check model family table in references/pipeline-run.md |
 | `No module named 'pyservicemaker'` | Install into venv: `pip install /opt/nvidia/deepstream/.../pyservicemaker*.whl` |
+
+<!-- Signing refresh marker.  -->

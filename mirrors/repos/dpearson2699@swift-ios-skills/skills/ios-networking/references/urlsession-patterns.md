@@ -1,13 +1,13 @@
 # URLSession Patterns Reference
 
-Complete implementation patterns for URLSession-based networking. Each
-section is self-contained with production-ready code.
+Complete implementation patterns for URLSession-based networking.
 
 ---
 
 ## Contents
 
 - [Complete API Client with Protocol](#complete-api-client-with-protocol)
+- [Request Middleware](#request-middleware)
 - [Request Builder Pattern](#request-builder-pattern)
 - [Multipart Form Upload](#multipart-form-upload)
 - [Download with Progress Tracking](#download-with-progress-tracking)
@@ -248,6 +248,25 @@ enum NetworkError: Error, Sendable, LocalizedError {
 struct APIErrorBody: Decodable, Sendable {
     let code: String?
     let message: String?
+}
+```
+
+### Request Middleware
+
+```swift
+protocol RequestMiddleware: Sendable {
+    func prepare(_ request: URLRequest) async throws -> URLRequest
+}
+
+struct AuthMiddleware: RequestMiddleware {
+    let tokenProvider: @Sendable () async throws -> String
+
+    func prepare(_ request: URLRequest) async throws -> URLRequest {
+        var request = request
+        let token = try await tokenProvider()
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        return request
+    }
 }
 ```
 
@@ -831,76 +850,18 @@ let users = try await withRetry {
 
 ## Certificate Pinning (URLSessionDelegate)
 
-Pin the server's public key hash rather than the certificate itself.
-Certificates rotate; public keys are more stable. Always include a
-backup pin.
-
-```swift
-import CryptoKit
-
-final class PinningDelegate: NSObject, URLSessionDelegate, Sendable {
-    /// SHA-256 hashes of Subject Public Key Info (SPKI) in base64
-    private let pinnedKeyHashes: Set<String>
-
-    init(pinnedKeyHashes: Set<String>) {
-        self.pinnedKeyHashes = pinnedKeyHashes
-    }
-
-    nonisolated func urlSession(
-        _ session: URLSession,
-        didReceive challenge: URLAuthenticationChallenge
-    ) async -> (URLSession.AuthChallengeDisposition, URLCredential?) {
-        guard challenge.protectionSpace.authenticationMethod
-                == NSURLAuthenticationMethodServerTrust,
-              let trust = challenge.protectionSpace.serverTrust else {
-            return (.performDefaultHandling, nil)
-        }
-
-        // Evaluate the trust chain
-        var error: CFError?
-        guard SecTrustEvaluateWithError(trust, &error) else {
-            return (.cancelAuthenticationChallenge, nil)
-        }
-
-        // Extract the leaf certificate's public key
-        guard let chain = SecTrustCopyCertificateChain(trust) as? [SecCertificate],
-              let leafCert = chain.first,
-              let publicKey = SecCertificateCopyKey(leafCert),
-              let publicKeyData = SecKeyCopyExternalRepresentation(
-                  publicKey, nil
-              ) as Data? else {
-            return (.cancelAuthenticationChallenge, nil)
-        }
-
-        let keyHash = SHA256.hash(data: publicKeyData)
-        let hashString = Data(keyHash).base64EncodedString()
-
-        if pinnedKeyHashes.contains(hashString) {
-            return (.useCredential, URLCredential(trust: trust))
-        }
-
-        return (.cancelAuthenticationChallenge, nil)
-    }
-}
-
-// Usage
-let delegate = PinningDelegate(pinnedKeyHashes: [
-    "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=",  // Primary
-    "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=",  // Backup
-])
-
-let session = URLSession(
-    configuration: .default,
-    delegate: delegate,
-    delegateQueue: nil
-)
-```
+Prefer ATS `NSPinnedDomains` for declarative certificate pinning when the
+pinset can ship in `Info.plist`. For manual `URLSessionDelegate` trust work,
+defer to the `swift-security` skill: correct SPKI pinning requires hashing
+the Subject Public Key Info structure, not just the raw key bytes returned by
+`SecKeyCopyExternalRepresentation`.
 
 **Important considerations:**
 - Pin at least two keys (primary + backup) to avoid lockout during rotation.
 - Have a remote kill switch (feature flag) to disable pinning in emergencies.
 - Test certificate rotation in staging before deploying to production.
-- Do not pin intermediate CA certificates -- they rotate more frequently.
+- Always evaluate system trust before applying pins.
+- Keep certificate-trust implementation details in the security boundary.
 
 ---
 
@@ -1084,6 +1045,12 @@ func sseStream(from url: URL) -> AsyncThrowingStream<ServerSentEvent, Error> {
 ---
 
 ## Configured URLSession for Production
+
+Use a configured session for production clients instead of calling
+`URLSession.shared` from request methods. Set explicit request/resource
+timeouts, cache behavior, connectivity policy, and any delegates needed for
+authentication challenges, redirects, metrics, pinning boundaries, or
+background transfers before creating the `URLSession`.
 
 ```swift
 enum SessionFactory {

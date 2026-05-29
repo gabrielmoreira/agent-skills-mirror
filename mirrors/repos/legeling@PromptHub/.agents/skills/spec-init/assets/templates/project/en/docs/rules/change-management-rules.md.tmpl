@@ -1,0 +1,20 @@
+# Change Management Rules
+
+## Core Principles
+
+- Current-state docs and historical change docs must both be maintained.
+- New requirements, bug fixes, refactors, and releases must not land without document traces.
+
+## Recording Rules
+
+- New requirements or requirement changes: update the affected workflow and knowledge docs, and create a workspace under `docs/changes/active/<change-key>/`
+- Bug fixes: update affected docs and record symptom, root cause, verification, and impact inside `docs/changes/active/<change-key>/`
+- Architecture or major technical changes: update `docs/workflow/02-design/README.md`, `docs/knowledge/structure/README.md`, and record an ADR
+- Releases: add or update `docs/releases/vx.y.z.md`
+- Once a change is done: move the workspace into `docs/changes/completed/`
+
+## Minimum Requirements
+
+- Every change workspace must include background, impact scope, synced docs, and open questions
+- Every bug record must include symptom, root cause, fix approach, and regression requirements
+- Every release record must include added items, fixed items, breaking changes, and known issues

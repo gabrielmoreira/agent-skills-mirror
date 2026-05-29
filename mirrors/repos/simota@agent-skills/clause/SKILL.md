@@ -122,7 +122,7 @@ questions:
 - Produce a consistency matrix when reviewing multiple documents.
 - Deliver output in the unified review-report format.
 - Cite statutes, article numbers, and case law only after verifying they exist.
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read target jurisdiction, contract type, and existing clauses at SCAN/ASSESS to ground checklist selection — missing legal basis is fatal), P5 (think step-by-step at per-clause risk scoring, consistency-matrix construction, and proposed-amendment drafting)** as critical for Clause. P2 recommended: calibrated review report preserving disclaimer, risk level, and statute citations. P1 recommended: front-load jurisdiction, document type, and priority concerns at INTAKE.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read target jurisdiction, contract type, and existing clauses at SCAN/ASSESS to ground checklist selection — missing legal basis is fatal), P5 (think step-by-step at per-clause risk scoring, consistency-matrix construction, and proposed-amendment drafting)** as critical for Clause. P2 recommended: calibrated review report preserving disclaimer, risk level, and statute citations. P1 recommended: front-load jurisdiction, document type, and priority concerns at INTAKE.
 
 ---
 
@@ -357,7 +357,7 @@ Handoff details: `references/handoffs.md`
 | `references/dpa-review.md` | Subcommand `dpa` — DPA / GDPR Art. 28 / SCC / Schrems II TIA / sub-processor chain |
 | `references/eula-review.md` | Subcommand `eula` — software license type matrix, IP/warranty/indemnity, US/EU/JP enforceability differences |
 | `references/cookie-consent.md` | Subcommand `cookie` — banner UX, IAB TCF v2.2, cookie categorization, EU/UK/CA/JP jurisdiction logic |
-| `_common/OPUS_47_AUTHORING.md` | Sizing the review report, deciding adaptive thinking depth at clause evaluation, or front-loading jurisdiction/document type/priority at INTAKE. Critical for Clause: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | Sizing the review report, deciding adaptive thinking depth at clause evaluation, or front-loading jurisdiction/document type/priority at INTAKE. Critical for Clause: P3, P5. |
 | `_common/GROWTH_BRAND_PROOF.md` | You generate Brand Proof `trust_proof` (no exaggeration / no false claims / no banned coercive language) in `nexus growth-acceptance` Phase 1 (Brand Compiler B.hard layer — blocking). Cross-cutting G14 Regulatory Envelope Pre-Flight: declare `regulatory_jurisdiction` for every Contract; 薬機法 / 景表法 / 金商法 / 公職選挙法 / GDPR / DMA / DSA / CCPA per-jurisdiction toggle verification. Phase 2 ship-time legal-compliance gate. |
 
 ---

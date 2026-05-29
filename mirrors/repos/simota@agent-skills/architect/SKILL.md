@@ -16,7 +16,7 @@ CAPABILITIES_SUMMARY:
 - naming: Agent naming with syllable scoring and conflict checks
 - ecosystem_architecture: Anti-pattern detection for multi-agent systems (Bag-of-Agents, role overlap, topology gaps)
 - context_engineering: Context-aware agent design prioritizing information architecture over prompt tuning, with intelligence harnessing principles (general tools, scaffold audit, boundary-aware design)
-- opus_47_authoring: Generated-skill authoring tuned for Opus 4.7 defaults (front-loaded context, calibrated length, explicit tool-use rationale, parallel subagent triggers, adaptive thinking hints, effort-level awareness, delegation-engineer framing)
+- opus_48_authoring: Generated-skill authoring tuned for Opus 4.8 defaults (front-loaded context, calibrated length, explicit tool-use rationale, parallel subagent triggers, adaptive thinking hints, effort-level awareness, delegation-engineer framing)
 
 COLLABORATION_PATTERNS:
 - User -> Architect: New agent requests, skill improvement requests
@@ -74,7 +74,7 @@ Route elsewhere when the task is primarily:
 - Respect self-evolution safety levels `A/B/C/D` and take a rollback snapshot before any mutation.
 - Design context architecture first, prompt wording second. Agent failures are primarily context failures — structure what information reaches the agent, when, and in what form.
 - Require formal topology for every multi-agent design. Unstructured agent networks ("Bag of Agents") amplify errors up to 17x vs single-agent baselines.
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing roster, CAPABILITIES_SUMMARY, COLLABORATION_PATTERNS, and overlap candidates at ANALYZE — gap/overlap decisions require grounding in current ecosystem state), P5 (think step-by-step at topology choice (hub-spoke vs hierarchy vs pipeline), category selection, and naming/overlap threshold handling)** as critical for Architect. P2 recommended: calibrated skill package preserving CAPABILITIES_SUMMARY, partner declarations, and 16-item validation verdict. P1 recommended: front-load agent intent, category, and collaboration surface at UNDERSTAND.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read existing roster, CAPABILITIES_SUMMARY, COLLABORATION_PATTERNS, and overlap candidates at ANALYZE — gap/overlap decisions require grounding in current ecosystem state), P5 (think step-by-step at topology choice (hub-spoke vs hierarchy vs pipeline), category selection, and naming/overlap threshold handling)** as critical for Architect. P2 recommended: calibrated skill package preserving CAPABILITIES_SUMMARY, partner declarations, and 16-item validation verdict. P1 recommended: front-load agent intent, category, and collaboration surface at UNDERSTAND.
 
 ## Core Rules
 
@@ -85,7 +85,7 @@ Route elsewhere when the task is primarily:
 - Prefer general tools composed into patterns over specialized single-purpose tools. Promote to declarative tools only for security boundaries, reversibility, UX presentation, or observability requirements. See `references/official-design-patterns.md` Section 10.3.
 - Choose the right parallelism layer for multi-agent designs: skill-internal subagents (2-3 independent subtasks, same session) vs Agent Teams (4+ workers, cross-session coordination, file ownership isolation). Refer to `_common/SUBAGENT.md` for the decision flow.
 - When invoking the `Agent` tool, append `Open with the deliverable, not with completion preamble. See _common/OUTPUT_STYLE.md §Subagent Completion Pattern.` to the prompt. Banned subagent openers cost tokens without signal.
-- Author for Opus 4.7 defaults. Generated skills must front-load context capture, calibrate response length explicitly, document tool-use "when/why", spell out parallel subagent triggers, and include adaptive thinking hints at high-stakes decisions. See `references/official-design-patterns.md` Section 11.
+- Author for Opus 4.8 defaults. Generated skills must front-load context capture, calibrate response length explicitly, document tool-use "when/why", spell out parallel subagent triggers, and include adaptive thinking hints at high-stakes decisions. See `references/official-design-patterns.md` Section 11.
 
 ## Boundaries
 
@@ -189,7 +189,7 @@ Behavior notes per Recipe:
 - Design skills for three-level progressive disclosure: L1 (frontmatter ~100 tokens, loaded every call), L2 (SKILL.md instructions, loaded on activation), L3 (references/, loaded on demand). Keep L1 lean and triggerable; move methodology and examples to L3.
 - Generated skills must remain Nexus-compatible and preserve hub-and-spoke routing.
 - Use references for detailed methodology, examples, and templates; keep `SKILL.md` procedural and routable.
-- Tune for Opus 4.7 defaults: front-load required inputs in Trigger Guidance, calibrate response length envelopes (line/bullet counts), document tool-use "when/why", spell out parallel subagent fan-out instructions, and add adaptive thinking nudges at high-stakes decision points. See `references/official-design-patterns.md` Section 11.
+- Tune for Opus 4.8 defaults: front-load required inputs in Trigger Guidance, calibrate response length envelopes (line/bullet counts), document tool-use "when/why", spell out parallel subagent fan-out instructions, and add adaptive thinking nudges at high-stakes decision points. See `references/official-design-patterns.md` Section 11.
 
 ### Compression Contract
 
@@ -325,8 +325,8 @@ Read only the files required for the current decision.
 | `references/agent-specification-anti-patterns.md` | The spec, prompt structure, tool design, or role definition looks weak |
 | `references/ecosystem-architecture-anti-patterns.md` | Ecosystem fit, modularity, governance, or discoverability looks risky |
 | `references/agent-evaluation-guardrails.md` | You need production-grade evaluation, guardrails, or validation design |
-| `references/official-design-patterns.md` | You need official use case categories, skill patterns, agentic composable patterns, simplicity-first design, intelligence harnessing principles, interoperability guidance, success criteria, or Opus 4.7 authoring principles (Section 11). |
-| `_common/OPUS_47_AUTHORING.md` | You are sizing the skill package, deciding adaptive thinking depth at topology/category selection, or front-loading intent/category/collaboration at UNDERSTAND. Critical for Architect: P3, P5. |
+| `references/official-design-patterns.md` | You need official use case categories, skill patterns, agentic composable patterns, simplicity-first design, intelligence harnessing principles, interoperability guidance, success criteria, or Opus 4.8 authoring principles (Section 11). |
+| `_common/OPUS_48_AUTHORING.md` | You are sizing the skill package, deciding adaptive thinking depth at topology/category selection, or front-loading intent/category/collaboration at UNDERSTAND. Critical for Architect: P3, P5. |
 
 ## Operational
 

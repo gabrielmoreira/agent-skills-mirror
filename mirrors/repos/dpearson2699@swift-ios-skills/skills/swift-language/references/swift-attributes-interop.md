@@ -14,16 +14,18 @@ Attributes and interoperability features for Swift. Covers C-calling-convention 
 The `@c` attribute (SE-0495) marks a Swift function for direct C-calling-convention export. The function becomes callable from C, C++, and Objective-C without bridging headers or `@_cdecl`.
 
 ```swift
-@c func processBuffer(_ buffer: UnsafeBufferPointer<UInt8>) -> Int32 {
-    // Directly callable from C as: int32_t processBuffer(const uint8_t *, size_t)
-    return Int32(buffer.count)
+@c(MyLib_processBuffer)
+public func processBuffer(_ buffer: UnsafePointer<UInt8>?, _ count: Int32) -> Int32 {
+    guard let buffer else { return 0 }
+    return buffer.pointee == 0 ? 0 : count
 }
 ```
 
 **Requirements:**
 - Parameters and return types must be C-compatible (primitives, pointers, tuples of C-compatible types)
-- No Swift-only types (String, Array, closures, etc.) in the signature
+- No Swift-only types (`String`, `Array`, `UnsafeBufferPointer`, closures, generic placeholders, etc.) in the signature
 - The function must be a module-level free function (not a method)
+- Use `@c(CustomName)` when the C symbol should differ from the Swift function name
 
 ## Module Selectors
 

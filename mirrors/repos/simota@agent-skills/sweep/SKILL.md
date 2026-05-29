@@ -61,7 +61,7 @@ Route elsewhere when:
 - Target 0% dead code rate as the ideal benchmark; track dead-code percentage per scan to measure cleanup progress over time.
 - Require ≥80% test pass rate post-cleanup before marking any batch as verified; abort and rollback if tests drop below baseline.
 - Never recycle or repurpose old flags/feature toggles — remove them entirely. Reuse of dead flags caused the Knight Capital $440M loss (2012).
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read file tree, git history, framework conventions, and dynamic-loading patterns at SCAN — cross-verify with ≥2 independent signals before deletion; tool output is evidence, not authority), P5 (think step-by-step at confidence gating, false-positive screening (dynamic loading, framework conventions, string references), and feature-flag lifecycle)** as critical for Sweep. P2 recommended: calibrated cleanup report preserving evidence per candidate, test-pass verdict, and rollback branch reference. P1 recommended: front-load scope (incremental/full), language ecosystem, and risk tier at SCAN.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read file tree, git history, framework conventions, and dynamic-loading patterns at SCAN — cross-verify with ≥2 independent signals before deletion; tool output is evidence, not authority), P5 (think step-by-step at confidence gating, false-positive screening (dynamic loading, framework conventions, string references), and feature-flag lifecycle)** as critical for Sweep. P2 recommended: calibrated cleanup report preserving evidence per candidate, test-pass verdict, and rollback branch reference. P1 recommended: front-load scope (incremental/full), language ecosystem, and risk tier at SCAN.
 ## Boundaries
 ### Always
 - Create a backup branch before deletions.
@@ -242,7 +242,7 @@ When scanning a polyglot monorepo, spawn language-specific scanner subagents in 
 | `references/imports-cleanup.md` | you need import-statement cleanup patterns: unused imports, circular dependencies, duplicate imports, side-effect import survival, barrel-file overhead, type-only import promotion |
 | `references/stale-comments.md` | you need stale-comment detection: aged TODO/FIXME, commented-out code blocks, divergent JSDoc, version-stale annotations, dead doc references |
 | `references/unused-types.md` | you need unused TypeScript type detection: orphan interfaces, transitively unused types, generic constraint pollution, deprecated type re-exports, `any` accumulation handoff |
-| `_common/OPUS_47_AUTHORING.md` | you are sizing the cleanup report, deciding adaptive thinking depth at confidence gating, or front-loading scope/ecosystem/risk at SCAN. Critical for Sweep: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | you are sizing the cleanup report, deciding adaptive thinking depth at confidence gating, or front-loading scope/ecosystem/risk at SCAN. Critical for Sweep: P3, P5. |
 
 ## Operational
 

@@ -284,7 +284,7 @@ packages/
 │       ├── errors.ts         # UnknownProviderError
 │       ├── claude/           # ClaudeProvider + parseClaudeConfig + MCP/hooks/skills translation
 │       ├── codex/            # CodexProvider + parseCodexConfig + binary-resolver
-│       ├── community/pi/     # PiProvider (builtIn: false) — @mariozechner/pi-coding-agent, ~20 LLM backends
+│       ├── community/pi/     # PiProvider (builtIn: false) — @earendil-works/pi-coding-agent, ~20 LLM backends
 │       ├── community/opencode/ # OpenCodeProvider (builtIn: false) — @archon/opencode SDK, local embedded runtime
 │       └── index.ts          # Package exports
 ├── core/                     # @archon/core - Shared business logic
@@ -399,15 +399,17 @@ import type { DagNode, WorkflowDefinition } from '@/lib/api';
 
 ### Database Schema
 
-**8 Tables (all prefixed with `remote_agent_`):**
+**10 Tables (all prefixed with `remote_agent_`):**
 1. **`codebases`** - Repository metadata and commands (JSONB)
-2. **`conversations`** - Track platform conversations with titles and soft-delete support
+2. **`conversations`** - Track platform conversations with titles and soft-delete support; nullable `user_id` records first creator
 3. **`sessions`** - Track AI SDK sessions with resume capability
-4. **`isolation_environments`** - Git worktree isolation tracking
-5. **`workflow_runs`** - Workflow execution tracking and state
+4. **`isolation_environments`** - Git worktree isolation tracking; nullable `created_by_user_id` preserves first creator
+5. **`workflow_runs`** - Workflow execution tracking and state; nullable `user_id` for per-run attribution
 6. **`workflow_events`** - Step-level workflow event log (step transitions, artifacts, errors)
-7. **`messages`** - Conversation message history with tool call metadata (JSONB)
+7. **`messages`** - Conversation message history with tool call metadata (JSONB); nullable `user_id` (NULL for assistant rows)
 8. **`codebase_env_vars`** - Per-project env vars injected into project-scoped execution surfaces (Claude, Codex, bash/script nodes, and direct chat when codebase-scoped), managed via Web UI or `env:` in config
+9. **`users`** - Archon-internal identity (one row per human/bot); created lazily on first sight by any adapter
+10. **`user_identities`** - Per-platform mapping (Slack U-id, Telegram chat id, Discord snowflake, GitHub login) → `users.id`; `UNIQUE(platform, platform_user_id)`
 
 **Key Patterns:**
 - Conversation ID format: Platform-specific (`thread_ts`, `chat_id`, `user/repo#123`)
@@ -469,7 +471,7 @@ import type { DagNode, WorkflowDefinition } from '@/lib/api';
 - Implement `IAgentProvider` interface
 - **ClaudeProvider**: `@anthropic-ai/claude-agent-sdk`
 - **CodexProvider**: `@openai/codex-sdk`
-- **PiProvider** (community, `builtIn: false`): `@mariozechner/pi-coding-agent` — one harness for ~20 LLM backends via `<provider>/<model>` refs (e.g. `anthropic/claude-haiku-4-5`, `openrouter/qwen/qwen3-coder`); supports extensions, skills, tool restrictions, thinking level, best-effort structured output. See `packages/docs-web/src/content/docs/getting-started/ai-assistants.md` for setup, capability matrix, and extension config.
+- **PiProvider** (community, `builtIn: false`): `@earendil-works/pi-coding-agent` — one harness for ~20 LLM backends via `<provider>/<model>` refs (e.g. `anthropic/claude-haiku-4-5`, `openrouter/qwen/qwen3-coder`); supports extensions, skills, tool restrictions, thinking level, best-effort structured output. See `packages/docs-web/src/content/docs/getting-started/ai-assistants.md` for setup, capability matrix, and extension config.
 - Streaming: `for await (const event of events) { await platform.send(event) }`
 
 ### Configuration
@@ -840,10 +842,14 @@ Pattern: Use `classifyIsolationError()` (from `@archon/isolation`) to map git er
 - Signature verification required (HMAC SHA-256)
 - Return 200 immediately, process async
 
+**Internal (App mode only; bind 127.0.0.1):**
+- `POST /internal/git-credential` - Git credential helper endpoint. Returns `{token}` for the installation matching the requested host/path. Used by the `git-credential-archon` script in worktree `.git/config` to refresh installation tokens for long-running workflow `git` operations. Hands out installation tokens — MUST NOT be exposed beyond loopback. Server **refuses to start** (not just WARN) if App mode is active and `hostname != 127.0.0.1/localhost`, unless `ARCHON_ALLOW_INTERNAL_ON_PUBLIC_BIND=1` is set as an opt-in escape hatch for deployments where the reverse proxy already drops `/internal/*`.
+
 **Security:**
 - Verify webhook signatures (GitHub: `X-Hub-Signature-256`)
 - Use `c.req.text()` for raw webhook body (signature verification)
 - Never log or expose tokens in responses
+- `/internal/*` paths hand out live credentials — the reverse proxy in production MUST drop them, or the server MUST bind to `127.0.0.1` only.
 
 **@Mention Detection:**
 - Parse `@archon` in issue/PR **comments only** (not descriptions)

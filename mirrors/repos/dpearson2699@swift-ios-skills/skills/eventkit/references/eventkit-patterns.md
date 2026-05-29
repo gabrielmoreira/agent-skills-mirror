@@ -10,8 +10,14 @@ Overflow reference for the `eventkit` skill. Contains advanced patterns that exc
 - [Calendar Management](#calendar-management)
 - [Reminder Workflows](#reminder-workflows)
 - [EventKitUI in SwiftUI](#eventkitui-in-swiftui)
+- [Typed Change Notifications](#typed-change-notifications)
 
 ## SwiftUI Calendar Integration
+
+Read event data only after full calendar access. Write-only access can create
+events but cannot read calendars or events, including events the app created.
+When supporting iOS 16 or earlier, availability-guard iOS 17+ access requests
+and use `requestAccess(to:)` only on the older path.
 
 ### Observable Event Manager
 
@@ -96,6 +102,11 @@ struct CalendarEventsView: View {
 ```
 
 ## Advanced Predicate Queries
+
+Event predicates search at most a four-year span. `events(matching:)` and
+`enumerateEvents(matching:using:)` are synchronous and include only committed
+events, so commit batched changes before querying and move large reads off the
+main actor when needed.
 
 ### Events in a Specific Calendar
 
@@ -230,20 +241,35 @@ let writableCalendars = eventCalendars.filter { $0.allowsContentModifications }
 ### Reminder with Location-Based Alarm
 
 ```swift
+import CoreLocation
+import EventKit
+
+enum CalendarError: Error {
+    case remindersAccessRequired
+    case missingDefaultReminderList
+}
+
 func createLocationReminder(
     title: String,
     latitude: Double,
     longitude: Double
 ) throws {
+    guard EKEventStore.authorizationStatus(for: .reminder) == .fullAccess else {
+        throw CalendarError.remindersAccessRequired
+    }
+    guard let reminderCalendar = eventStore.defaultCalendarForNewReminders() else {
+        throw CalendarError.missingDefaultReminderList
+    }
+
     let reminder = EKReminder(eventStore: eventStore)
     reminder.title = title
-    reminder.calendar = eventStore.defaultCalendarForNewReminders()
+    reminder.calendar = reminderCalendar
 
     let location = EKStructuredLocation(title: "Target Location")
     location.geoLocation = CLLocation(latitude: latitude, longitude: longitude)
     location.radius = 200 // meters
 
-    let alarm = EKAlarm()
+    let alarm = EKAlarm(relativeOffset: 0)
     alarm.structuredLocation = location
     alarm.proximity = .enter  // .enter or .leave
     reminder.addAlarm(alarm)
@@ -251,6 +277,10 @@ func createLocationReminder(
     try eventStore.save(reminder, commit: true)
 }
 ```
+
+If the app uses the person's current location while creating location-based
+reminders, add `NSLocationWhenInUseUsageDescription` and request Core Location
+authorization in the location layer.
 
 ### Reminder with Priority
 
@@ -306,6 +336,10 @@ struct EventEditView: UIViewControllerRepresentable {
 }
 ```
 
+On iOS 17+, the editor can create events without app calendar authorization. It
+runs out of process, so the app cannot inspect the dismissed controller to learn
+what the person saved unless the app separately has full access and refetches.
+
 ### Usage in SwiftUI
 
 ```swift
@@ -321,6 +355,22 @@ struct CalendarView: View {
                     isPresented: $showEditor
                 )
             }
+    }
+}
+```
+
+## Typed Change Notifications
+
+Use `.EKEventStoreChanged` for broad compatibility. On iOS 26+, the typed
+notification message is available when you want Foundation's message API:
+
+```swift
+if #available(iOS 26.0, *) {
+    let observation = NotificationCenter.default.addObserver(
+        of: eventStore,
+        for: .changed
+    ) { _ in
+        fetchThisWeekEvents()
     }
 }
 ```

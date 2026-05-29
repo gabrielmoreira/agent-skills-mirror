@@ -8,7 +8,7 @@ Overflow reference for the `callkit` skill. Contains advanced patterns that exce
 - [Hold and Mute Actions](#hold-and-mute-actions)
 - [Multiple Concurrent Calls](#multiple-concurrent-calls)
 - [Call State Tracking](#call-state-tracking)
-- [End-to-End Encrypted VoIP Push Handling](#end-to-end-encrypted-voip-push-handling)
+- [Encrypted VoIP Push Filtering](#encrypted-voip-push-filtering)
 - [Call Directory Incremental Updates](#call-directory-incremental-updates)
 - [Testing VoIP Locally](#testing-voip-locally)
 
@@ -165,6 +165,8 @@ extension VoIPCallManager: CXProviderDelegate {
     ) {
         Task { @MainActor in
             activeCalls[action.callUUID]?.isMuted = action.isMuted
+            // If call translation is active, mute app input without deactivating
+            // upstream audio that translated audio may need.
             setMicrophoneMuted(action.isMuted)
             action.fulfill()
         }
@@ -176,9 +178,19 @@ extension VoIPCallManager: CXProviderDelegate {
     ) {
         Task { @MainActor in
             configureAudioSession()
-            connectToServer(callUUID: action.callUUID)
-            activeCalls[action.callUUID]?.isConnected = true
-            action.fulfill()
+            connectToServer(callUUID: action.callUUID) { success in
+                if success {
+                    activeCalls[action.callUUID]?.isConnected = true
+                    action.fulfill()
+                } else {
+                    provider.reportCall(
+                        with: action.callUUID,
+                        endedAt: Date(),
+                        reason: .failed
+                    )
+                    action.fail()
+                }
+            }
         }
     }
 
@@ -294,10 +306,13 @@ final class CallStateObserver: NSObject, CXCallObserverDelegate {
 }
 ```
 
-## End-to-End Encrypted VoIP Push Handling
+## Encrypted VoIP Push Filtering
 
-For end-to-end encrypted calls where the push payload is encrypted, use a
-notification service extension with `CXProvider.reportNewIncomingVoIPPushPayload`:
+Use a notification service extension with
+`CXProvider.reportNewIncomingVoIPPushPayload` only when server-side metadata
+encryption means the server cannot determine whether the outgoing notification
+is a VoIP call request or some other data. If the server knows the content is
+a VoIP call, send a normal PushKit VoIP push instead.
 
 ```swift
 import UserNotifications
@@ -366,6 +381,10 @@ private func addOrRemoveIncrementalEntries(
     }
 }
 ```
+
+Call Directory data is bulk data. The system calls `beginRequest(with:)` when
+loading the extension, not for each individual incoming call, so keep web
+lookups and dataset sync in the containing app before reloading the extension.
 
 ## Testing VoIP Locally
 

@@ -64,7 +64,7 @@ Route elsewhere when:
 - Design cache-friendly topology. Group files by change frequency so prompt cache prefixes remain stable across turns.
 - Exclude generated files, build artifacts, and third-party / vendored code via `.claudeignore` (Claude Code) and `.gitignore` patterns Claude Code respects. Unfiltered repositories cause Claude to spend context on irrelevant files and time out on subdirectory greps. Treat `.claudeignore` as a first-class structural artifact, not an afterthought — it sits next to root `CLAUDE.md` and is audited alongside it. [Source: claude.com — *How Claude Code works in large codebases* (2026)]
 - Use `git mv` for all file moves during APPLY phase. Verify build passes after each batch of moves before proceeding.
-- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing layout, CLAUDE.md, file token sizes, and grep-discoverability of names at AUDIT — LLM-friendly topology depends on grounded baseline), P5 (think step-by-step at DESIGN — cache-friendly grouping by change frequency and progressive-disclosure ordering decisions drive context-cost across every future call)** as critical for Nest. P2 recommended: calibrated structure proposal preserving naming/token-budget rationale. P1 recommended: front-load LLM target and per-file token budget at AUDIT.
+- Author for Opus 4.8 defaults. Apply _common/OPUS_48_AUTHORING.md principles **P3 (eagerly Read existing layout, CLAUDE.md, file token sizes, and grep-discoverability of names at AUDIT — LLM-friendly topology depends on grounded baseline), P5 (think step-by-step at DESIGN — cache-friendly grouping by change frequency and progressive-disclosure ordering decisions drive context-cost across every future call)** as critical for Nest. P2 recommended: calibrated structure proposal preserving naming/token-budget rationale. P1 recommended: front-load LLM target and per-file token budget at AUDIT.
 
 ## Boundaries
 
@@ -279,7 +279,7 @@ When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical
 | `references/naming-guide.md` | Evaluating or fixing file/folder naming for LLM discoverability |
 | `references/sharding-strategy.md` | Splitting large CLAUDE.md/reference docs via @import while preserving cache prefixes |
 | `references/monorepo-topology.md` | Designing per-workspace CLAUDE.md cascade for turborepo / nx / pnpm-workspace |
-| `_common/OPUS_47_AUTHORING.md` | Sizing the structure proposal, deciding adaptive thinking depth at DESIGN, or front-loading LLM target/token budget at AUDIT. Critical for Nest: P3, P5 |
+| `_common/OPUS_48_AUTHORING.md` | Sizing the structure proposal, deciding adaptive thinking depth at DESIGN, or front-loading LLM target/token budget at AUDIT. Critical for Nest: P3, P5 |
 
 ## Operational
 

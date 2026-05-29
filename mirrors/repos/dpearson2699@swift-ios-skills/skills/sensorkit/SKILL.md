@@ -1,6 +1,6 @@
 ---
 name: sensorkit
-description: "Access research-grade sensor data using SensorKit. Use when reading ambient light levels, accelerometer data, rotation rates, device usage patterns, keyboard metrics, or media events for approved research studies. Requires SensorKit entitlement and research study authorization."
+description: "Access research-grade sensor data using SensorKit for approved studies. Use when an app needs SensorKit entitlement setup, Research Sensor & Usage Data authorization, ambient light, recorded motion, device usage, keyboard metrics, visits, speech, face, wrist temperature, ECG, PPG, acoustic settings, or sleep-session data. Route ordinary motion to CoreMotion and health records/workouts to HealthKit."
 ---
 
 # SensorKit
@@ -14,7 +14,8 @@ Swift 6.3 / iOS 26+.
 **SensorKit is restricted to Apple-approved research studies.** Apps must submit
 a research proposal to Apple and receive the `com.apple.developer.sensorkit.reader.allow`
 entitlement before any sensor data is accessible. This is not a general-purpose
-sensor API -- use CoreMotion for standard accelerometer/gyroscope needs.
+sensor API -- use CoreMotion for ordinary accelerometer, gyroscope, pedometer,
+or activity-recognition features, and HealthKit for health records and workouts.
 
 ## Contents
 
@@ -51,7 +52,7 @@ An app can access up to 7 days of prior recorded data for an active sensor.
 ## Entitlements
 
 Add the SensorKit reader entitlement to a `.entitlements` file. List only the
-sensors your study uses:
+sensors Apple approved for the study. Common entitlement values include:
 
 ```xml
 <key>com.apple.developer.sensorkit.reader.allow</key>
@@ -66,17 +67,21 @@ sensors your study uses:
     <string>visits</string>
     <string>pedometer</string>
     <string>on-wrist</string>
+    <string>speech-metrics-siri</string>
+    <string>speech-metrics-telephony</string>
+    <string>ambient-pressure</string>
+    <string>ecg</string>
+    <string>ppg</string>
 </array>
 ```
 
-Xcode build settings for manual signing:
+Verify newer or specialized sensors against their individual `SRSensor` pages.
+For example, Apple's ECG and PPG sensor pages explicitly require `ecg` and
+`ppg` entitlement values in addition to their `NSSensorKitUsageDetail` entries.
 
-| Setting | Value |
-|---|---|
-| Code Signing Entitlements | `YourApp.entitlements` |
-| Code Signing Identity | `Apple Developer` |
-| Code Signing Style | `Manual` |
-| Provisioning Profile | Explicit profile with SensorKit capability |
+For manual signing, set Code Signing Entitlements to the entitlements file,
+Code Signing Identity to `Apple Developer`, Code Signing Style to `Manual`,
+and Provisioning Profile to the explicit profile with SensorKit capability.
 
 ## Info.plist Configuration
 
@@ -111,6 +116,11 @@ Three keys are required:
 
 If `Required` is `true` and the user denies that sensor, the system warns them
 that the study needs it and offers a chance to reconsider.
+
+Use the exact usage-detail dictionary for each requested sensor. Examples:
+motion sensors use `SRSensorUsageMotion`, ambient pressure uses `SRSensorUsageElevation`,
+ECG uses `SRSensorUsageECG`, PPG uses `SRSensorUsagePPG`, heart rate uses
+`SRSensorUsageHeartRate`, and wrist temperature uses `SRSensorUsageWristTemperature`.
 
 ## Authorization
 
@@ -173,6 +183,7 @@ func sensorReader(_ reader: SRSensorReader, didChange authorizationStatus: SRAut
 | `.deviceUsageReport` | Device usage | `SRDeviceUsageReport` |
 | `.keyboardMetrics` | Keyboard activity | `SRKeyboardMetrics` |
 | `.onWristState` | Watch wrist state | `SRWristDetection` |
+| `.acousticSettings` | Acoustic/accessibility settings | `SRAcousticSettings` |
 
 ### App Activity Sensors
 
@@ -185,26 +196,27 @@ func sensorReader(_ reader: SRSensorReader, didChange authorizationStatus: SRAut
 
 | Sensor | Type | Sample Type |
 |---|---|---|
-| `.accelerometer` | Acceleration data | `CMAccelerometerData` |
-| `.rotationRate` | Rotation rate | `CMGyroData` |
+| `.accelerometer` | Acceleration data | `[CMRecordedAccelerometerData]` |
+| `.rotationRate` | Rotation rate | `[CMRecordedRotationRateData]` |
 | `.pedometerData` | Step/distance data | `CMPedometerData` |
 | `.visits` | Visited locations | `SRVisit` |
 | `.mediaEvents` | Media interactions | `SRMediaEvent` |
 | `.faceMetrics` | Face expressions | `SRFaceMetrics` |
-| `.heartRate` | Heart rate | Heart rate data |
-| `.odometer` | Speed/slope | Odometer data |
+| `.heartRate` | Heart rate | `CMHighFrequencyHeartRateData` |
+| `.odometer` | Speed/slope | `CMOdometerData` |
 | `.siriSpeechMetrics` | Siri speech | `SRSpeechMetrics` |
 | `.telephonySpeechMetrics` | Phone speech | `SRSpeechMetrics` |
 | `.wristTemperature` | Wrist temp (sleep) | `SRWristTemperatureSession` |
-| `.photoplethysmogram` | PPG stream | `SRPhotoplethysmogramSample` |
-| `.electrocardiogram` | ECG stream | `SRElectrocardiogramSample` |
+| `.sleepSessions` | Sleep session summaries | `SRSleepSession` |
+| `.photoplethysmogram` | PPG stream | `[SRPhotoplethysmogramSample]` |
+| `.electrocardiogram` | ECG stream | `[SRElectrocardiogramSample]` |
 
 ### Environment Sensors
 
 | Sensor | Type | Sample Type |
 |---|---|---|
 | `.ambientLightSensor` | Ambient light | `SRAmbientLightSample` |
-| `.ambientPressure` | Pressure/temp | Pressure data |
+| `.ambientPressure` | Pressure/temp | `[CMRecordedPressureData]` |
 
 ## SRSensorReader
 
@@ -231,7 +243,9 @@ The reader communicates entirely through `SRSensorReaderDelegate`:
 | `sensorReaderWillStartRecording(_:)` | Recording is about to start |
 | `sensorReader(_:startRecordingFailedWithError:)` | Recording failed to start |
 | `sensorReaderDidStopRecording(_:)` | Recording stopped |
+| `sensorReader(_:stopRecordingFailedWithError:)` | Recording failed to stop |
 | `sensorReader(_:didFetch:)` | Devices fetched |
+| `sensorReader(_:fetchDevicesDidFailWithError:)` | Device fetch failed |
 | `sensorReader(_:fetching:didFetchResult:)` | Sample received |
 | `sensorReader(_:didCompleteFetch:)` | Fetch completed |
 | `sensorReader(_:fetching:failedWithError:)` | Fetch failed |
@@ -312,6 +326,10 @@ func sensorReader(
     print("Fetch failed: \(error)")
 }
 ```
+
+Cast `result.sample` to the sample shape for the reader's sensor. Some streams
+return one object per result, while recorded motion, ECG, PPG, and ambient
+pressure streams can return arrays of recorded samples.
 
 ### Data Holding Period
 

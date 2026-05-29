@@ -79,7 +79,7 @@ Route elsewhere when the task is primarily:
 - Retry policies declare: max attempts, max total duration, backoff formula, jitter flavor, retryable error classes (4xx is NOT retryable unless 408/429), and DLQ destination.
 - Overlap behavior is explicit: a long-running job declares `skip` (drop the new tick), `queue` (run after previous), or `concurrent` (with a lock / semaphore). Cron does NOT guarantee non-overlap.
 - Backfill strategy declares catchup bound (how far back), idempotency contract, watermark location, and late-arriving-data tolerance.
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eager reads of existing cron/timezone/scheduler code at ANALYZE — grounding cost is low vs silent DST bug cost), P5 (think step-by-step at DST boundary and retry-budget decisions — these drive downstream bug exposure)** as critical for Tempo. P1 recommended: front-load platform choice, timezone stance, and DST policy at ANALYZE. P2 recommended: calibrated SPECIFY output in the documented deliverable envelope. P4 recommended: parallel next-fire simulation across multiple timezones and DST-boundary days may be spawned as parallel subagents per `_common/SUBAGENT.md` when VERIFYing complex multi-region schedules.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eager reads of existing cron/timezone/scheduler code at ANALYZE — grounding cost is low vs silent DST bug cost), P5 (think step-by-step at DST boundary and retry-budget decisions — these drive downstream bug exposure)** as critical for Tempo. P1 recommended: front-load platform choice, timezone stance, and DST policy at ANALYZE. P2 recommended: calibrated SPECIFY output in the documented deliverable envelope. P4 recommended: parallel next-fire simulation across multiple timezones and DST-boundary days may be spawned as parallel subagents per `_common/SUBAGENT.md` when VERIFYing complex multi-region schedules.
 - Deliverable must include: cron expression (with timezone annotation), DST policy statement, retry policy, idempotency key contract, overlap behavior, observability targets, and platform-specific config snippet.
 
 ## Boundaries
@@ -450,7 +450,7 @@ Each scenario: input time, expected fire(s), assertion.
 | `references/async-boundaries.md` | Async-boundary time contracts — deadline propagation (context/AbortSignal/gRPC, budget-chain math, partial-progress policy) AND time-window semantics (tumbling/sliding/session, watermark, allowed-lateness, window-join) |
 | `references/idempotent-keys.md` | Idempotency-key design, dedup window (request vs storage TTL), effectively-once semantics, Stripe/Square-style patterns |
 | `references/handoffs.md` | Packaging deliverables for Builder, Gear, Weave, Beacon, Voyager, Judge, or Pipe |
-| `_common/OPUS_47_AUTHORING.md` | Sizing the spec deliverable, deciding where to eagerly read at ANALYZE, or where to think step-by-step at VERIFY. Critical for Tempo: P3, P5 |
+| `_common/OPUS_48_AUTHORING.md` | Sizing the spec deliverable, deciding where to eagerly read at ANALYZE, or where to think step-by-step at VERIFY. Critical for Tempo: P3, P5 |
 | `_common/BOUNDARIES.md` | Disambiguating tempo vs Weave / Launch / Beacon / Gear / Builder at the routing boundary |
 
 ## Operational

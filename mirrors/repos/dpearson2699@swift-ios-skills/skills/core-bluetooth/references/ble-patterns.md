@@ -7,6 +7,7 @@ Overflow reference for the `core-bluetooth` skill. Contains advanced patterns th
 - [SwiftUI BLE Integration](#swiftui-ble-integration)
 - [Reconnection Strategies](#reconnection-strategies)
 - [Data Parsing Helpers](#data-parsing-helpers)
+- [Write Flow Control](#write-flow-control)
 - [Multiple Peripheral Management](#multiple-peripheral-management)
 - [L2CAP Channels](#l2cap-channels)
 - [Peripheral Role: Responding to Requests](#peripheral-role-responding-to-requests)
@@ -156,6 +157,7 @@ extension BLEViewModel: CBPeripheralDelegate {
         let flags = data[0]
         let bpm: Int
         if (flags & 0x01) != 0 {
+            guard data.count >= 3 else { return }
             bpm = Int(data[1]) | (Int(data[2]) << 8)
         } else {
             bpm = Int(data[1])
@@ -292,6 +294,28 @@ extension Data {
 ```swift
 func parseBatteryLevel(_ data: Data) -> Int? {
     data.readUInt8(at: 0).map { Int($0) }
+}
+```
+
+## Write Flow Control
+
+Use `.withResponse` for commands that need delivery confirmation. Reserve
+`.withoutResponse` for streaming or fire-and-forget payloads, and pause when the
+peripheral cannot accept more unacknowledged writes.
+
+```swift
+func writeChunks(_ chunks: [Data],
+                 to characteristic: CBCharacteristic,
+                 on peripheral: CBPeripheral) {
+    for chunk in chunks {
+        guard chunk.count <= peripheral.maximumWriteValueLength(for: .withoutResponse),
+              peripheral.canSendWriteWithoutResponse else { return }
+        peripheral.writeValue(chunk, for: characteristic, type: .withoutResponse)
+    }
+}
+
+func peripheralIsReady(toSendWriteWithoutResponse peripheral: CBPeripheral) {
+    // Continue draining queued chunks here.
 }
 ```
 

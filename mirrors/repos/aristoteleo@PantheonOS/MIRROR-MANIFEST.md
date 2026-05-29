@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns, 85 file(s) materialized.
+Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns, 108 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 85 |
+| Files         | 108 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -135,15 +135,38 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 74 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/openst/openst_computational.md`](pantheon/factory/templates/skills/omics/upstream_processing/openst/openst_computational.md) |
 | 75 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/openst/SKILL.md`](pantheon/factory/templates/skills/omics/upstream_processing/openst/SKILL.md) |
 | 76 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/SKILL.md`](pantheon/factory/templates/skills/omics/upstream_processing/SKILL.md) |
-| 77 | ✓ | [`pantheon/factory/templates/skills/paper_writing/latex_cn.md`](pantheon/factory/templates/skills/paper_writing/latex_cn.md) |
-| 78 | ✓ | [`pantheon/factory/templates/skills/paper_writing/latex_en.md`](pantheon/factory/templates/skills/paper_writing/latex_en.md) |
-| 79 | ✓ | [`pantheon/factory/templates/skills/paper_writing/report_academic.md`](pantheon/factory/templates/skills/paper_writing/report_academic.md) |
-| 80 | ✓ | [`pantheon/factory/templates/skills/paper_writing/report_standard.md`](pantheon/factory/templates/skills/paper_writing/report_standard.md) |
-| 81 | ✓ | [`pantheon/factory/templates/skills/paper_writing/SKILL.md`](pantheon/factory/templates/skills/paper_writing/SKILL.md) |
-| 82 | ✓ | [`pantheon/factory/templates/skills/presentation/marp_slides.md`](pantheon/factory/templates/skills/presentation/marp_slides.md) |
-| 83 | ✓ | [`pantheon/factory/templates/skills/presentation/marp_template.md`](pantheon/factory/templates/skills/presentation/marp_template.md) |
-| 84 | ✓ | [`pantheon/factory/templates/skills/presentation/SKILL.md`](pantheon/factory/templates/skills/presentation/SKILL.md) |
-| 85 | ✓ | [`pantheon/factory/templates/skills/structural_biology/SKILL.md`](pantheon/factory/templates/skills/structural_biology/SKILL.md) |
+| 77 | ✓ | [`pantheon/factory/templates/skills/paper_writing/COMPILE.md`](pantheon/factory/templates/skills/paper_writing/COMPILE.md) |
+| 78 | ✓ | [`pantheon/factory/templates/skills/paper_writing/latex_cn.md`](pantheon/factory/templates/skills/paper_writing/latex_cn.md) |
+| 79 | ✓ | [`pantheon/factory/templates/skills/paper_writing/latex_en.md`](pantheon/factory/templates/skills/paper_writing/latex_en.md) |
+| 80 | ✓ | [`pantheon/factory/templates/skills/paper_writing/paper_fetch.md`](pantheon/factory/templates/skills/paper_writing/paper_fetch.md) |
+| 81 | ✓ | [`pantheon/factory/templates/skills/paper_writing/report_academic.md`](pantheon/factory/templates/skills/paper_writing/report_academic.md) |
+| 82 | ✓ | [`pantheon/factory/templates/skills/paper_writing/report_standard.md`](pantheon/factory/templates/skills/paper_writing/report_standard.md) |
+| 83 | ✓ | [`pantheon/factory/templates/skills/paper_writing/reporting_guideline_check.md`](pantheon/factory/templates/skills/paper_writing/reporting_guideline_check.md) |
+| 84 | ✓ | [`pantheon/factory/templates/skills/paper_writing/scenarios/conference_paper.md`](pantheon/factory/templates/skills/paper_writing/scenarios/conference_paper.md) |
+| 85 | ✓ | [`pantheon/factory/templates/skills/paper_writing/scenarios/conference_talk.md`](pantheon/factory/templates/skills/paper_writing/scenarios/conference_talk.md) |
+| 86 | ✓ | [`pantheon/factory/templates/skills/paper_writing/scenarios/grant_proposal.md`](pantheon/factory/templates/skills/paper_writing/scenarios/grant_proposal.md) |
+| 87 | ✓ | [`pantheon/factory/templates/skills/paper_writing/scenarios/group_report.md`](pantheon/factory/templates/skills/paper_writing/scenarios/group_report.md) |
+| 88 | ✓ | [`pantheon/factory/templates/skills/paper_writing/scenarios/journal_article.md`](pantheon/factory/templates/skills/paper_writing/scenarios/journal_article.md) |
+| 89 | ✓ | [`pantheon/factory/templates/skills/paper_writing/scenarios/lab_report.md`](pantheon/factory/templates/skills/paper_writing/scenarios/lab_report.md) |
+| 90 | ✓ | [`pantheon/factory/templates/skills/paper_writing/scenarios/paper_submission.md`](pantheon/factory/templates/skills/paper_writing/scenarios/paper_submission.md) |
+| 91 | ✓ | [`pantheon/factory/templates/skills/paper_writing/scenarios/revision_response.md`](pantheon/factory/templates/skills/paper_writing/scenarios/revision_response.md) |
+| 92 | ✓ | [`pantheon/factory/templates/skills/paper_writing/scenarios/SKILL.md`](pantheon/factory/templates/skills/paper_writing/scenarios/SKILL.md) |
+| 93 | ✓ | [`pantheon/factory/templates/skills/paper_writing/scenarios/workshop_share.md`](pantheon/factory/templates/skills/paper_writing/scenarios/workshop_share.md) |
+| 94 | ✓ | [`pantheon/factory/templates/skills/paper_writing/SKILL.md`](pantheon/factory/templates/skills/paper_writing/SKILL.md) |
+| 95 | ✓ | [`pantheon/factory/templates/skills/paper_writing/workflow/SKILL.md`](pantheon/factory/templates/skills/paper_writing/workflow/SKILL.md) |
+| 96 | ✓ | [`pantheon/factory/templates/skills/paper_writing/writing/abstract.md`](pantheon/factory/templates/skills/paper_writing/writing/abstract.md) |
+| 97 | ✓ | [`pantheon/factory/templates/skills/paper_writing/writing/claim_evidence_check.md`](pantheon/factory/templates/skills/paper_writing/writing/claim_evidence_check.md) |
+| 98 | ✓ | [`pantheon/factory/templates/skills/paper_writing/writing/discussion.md`](pantheon/factory/templates/skills/paper_writing/writing/discussion.md) |
+| 99 | ✓ | [`pantheon/factory/templates/skills/paper_writing/writing/introduction.md`](pantheon/factory/templates/skills/paper_writing/writing/introduction.md) |
+| 100 | ✓ | [`pantheon/factory/templates/skills/paper_writing/writing/method.md`](pantheon/factory/templates/skills/paper_writing/writing/method.md) |
+| 101 | ✓ | [`pantheon/factory/templates/skills/paper_writing/writing/response_letter.md`](pantheon/factory/templates/skills/paper_writing/writing/response_letter.md) |
+| 102 | ✓ | [`pantheon/factory/templates/skills/paper_writing/writing/results.md`](pantheon/factory/templates/skills/paper_writing/writing/results.md) |
+| 103 | ✓ | [`pantheon/factory/templates/skills/paper_writing/writing/reviewer_rubric.md`](pantheon/factory/templates/skills/paper_writing/writing/reviewer_rubric.md) |
+| 104 | ✓ | [`pantheon/factory/templates/skills/paper_writing/writing/SKILL.md`](pantheon/factory/templates/skills/paper_writing/writing/SKILL.md) |
+| 105 | ✓ | [`pantheon/factory/templates/skills/presentation/marp_slides.md`](pantheon/factory/templates/skills/presentation/marp_slides.md) |
+| 106 | ✓ | [`pantheon/factory/templates/skills/presentation/marp_template.md`](pantheon/factory/templates/skills/presentation/marp_template.md) |
+| 107 | ✓ | [`pantheon/factory/templates/skills/presentation/SKILL.md`](pantheon/factory/templates/skills/presentation/SKILL.md) |
+| 108 | ✓ | [`pantheon/factory/templates/skills/structural_biology/SKILL.md`](pantheon/factory/templates/skills/structural_biology/SKILL.md) |
 
 ---
 

@@ -35,7 +35,7 @@ machine-readable/         # For LLM consumption
 whitepapers/              # Focused whitepapers (FR + EN)
 ├── fr/                   # 10 source files in French (.qmd)
 └── en/                   # 10 translated files in English (.qmd)
-# Published at: https://www.florian.bruniaux.com/guides
+# Published at: https://cc.bruniaux.com/whitepapers/
 
 tools/                    # Interactive utilities
 ├── audit-prompt.md       # Setup audit prompt

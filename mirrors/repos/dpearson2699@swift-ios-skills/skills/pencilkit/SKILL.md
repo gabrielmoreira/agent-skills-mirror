@@ -1,6 +1,6 @@
 ---
 name: pencilkit
-description: "Add Apple Pencil drawing, canvas views, tool pickers, and ink serialization using PencilKit. Use when building drawing apps, annotation features, handwriting capture, signature fields, or any Apple Pencil-powered experience on iOS/iPadOS/visionOS."
+description: "Add Apple Pencil drawing with PKCanvasView, PKToolPicker, PKDrawing serialization/export, stroke inspection, and PencilKit/PaperKit handoffs. Use when building drawing apps, annotation features, handwriting capture, signature fields, content-version-safe ink workflows, or Apple Pencil-powered experiences on iOS/iPadOS/visionOS."
 ---
 
 # PencilKit
@@ -15,6 +15,7 @@ PencilKit in SwiftUI. Targets Swift 6.3 / iOS 26+.
 - [PKCanvasView Basics](#pkcanvasview-basics)
 - [PKToolPicker](#pktoolpicker)
 - [PKDrawing Serialization](#pkdrawing-serialization)
+- [Content Version Compatibility](#content-version-compatibility)
 - [Exporting to Image](#exporting-to-image)
 - [Stroke Inspection](#stroke-inspection)
 - [SwiftUI Integration](#swiftui-integration)
@@ -66,13 +67,18 @@ class DrawingViewController: UIViewController, PKCanvasViewDelegate {
 
 | Policy | Behavior |
 |---|---|
-| `.default` | Apple Pencil draws; finger scrolls |
+| `.default` | Respects `UIPencilInteraction.prefersPencilOnlyDrawing` when the tool picker is visible; otherwise Pencil-only |
 | `.anyInput` | Both pencil and finger draw |
-| `.pencilOnly` | Only Apple Pencil draws; finger always scrolls |
+| `.pencilOnly` | Only Apple Pencil touches draw on the canvas |
 
 ```swift
 canvasView.drawingPolicy = .pencilOnly
 ```
+
+Use `.default` for system-standard Pencil-primary canvases when the tool
+picker's drawing-policy control should follow the user's Pencil preference. Use
+`.anyInput` for signature pads, whiteboards, or explicit finger-drawing modes.
+Use `.pencilOnly` when finger input should never create strokes.
 
 ### Configuring the Canvas
 
@@ -100,8 +106,8 @@ class DrawingViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        toolPicker.setVisible(true, forFirstResponder: canvasView)
         toolPicker.addObserver(canvasView)
+        toolPicker.setVisible(true, forFirstResponder: canvasView)
         canvasView.becomeFirstResponder()
     }
 }
@@ -109,13 +115,15 @@ class DrawingViewController: UIViewController {
 
 ### Custom Tool Picker Items
 
-Create a tool picker with specific tools.
+Create a tool picker with specific tools. `PKToolPicker(toolItems:)` and
+custom tool picker item classes require iOS/iPadOS 18+, Mac Catalyst 18+, and
+visionOS 2+; those item classes are available on macOS starting in macOS 26.
 
 ```swift
 let toolPicker = PKToolPicker(toolItems: [
-    PKToolPickerInkingItem(type: .pen, color: .black),
-    PKToolPickerInkingItem(type: .pencil, color: .gray),
-    PKToolPickerInkingItem(type: .marker, color: .yellow),
+    PKToolPickerInkingItem(type: .pen, color: .black, width: 5),
+    PKToolPickerInkingItem(type: .pencil, color: .gray, width: 5),
+    PKToolPickerInkingItem(type: .marker, color: .yellow, width: 12),
     PKToolPickerEraserItem(type: .vector),
     PKToolPickerLassoItem(),
     PKToolPickerRulerItem()
@@ -133,6 +141,26 @@ let toolPicker = PKToolPicker(toolItems: [
 | `.fountainPen` | Variable-width calligraphy pen |
 | `.watercolor` | Blendable watercolor brush |
 | `.crayon` | Textured crayon |
+| `.reed` | Reed pen (iOS/iPadOS/macOS/visionOS 26+) |
+
+### Content Versions
+
+When drawings sync to older OS versions, check `requiredContentVersion` before
+uploading or cap new content by setting `maximumSupportedContentVersion` on
+both the `PKCanvasView` and `PKToolPicker`.
+
+| Version | Content |
+|---|---|
+| `.version1` | iPadOS 14-era inks: marker, pen, pencil |
+| `.version2` | iPadOS 17 inks: monoline, fountain pen, watercolor, crayon |
+| `.version3` | Barrel-roll angle data |
+| `.version4` | Reed pen |
+
+In compatibility reviews, state the complete version map before recommending a
+cap. If the plan exposes a curated picker or specific ink choices, also mention
+the availability of `PKToolPicker(toolItems:)` and custom picker item APIs.
+When existing content exceeds the target OS version, sync a verified fallback
+`PKDrawing` or restrict editing up front; do not rely only on a warning.
 
 ## PKDrawing Serialization
 
@@ -153,6 +181,17 @@ func loadDrawing() throws -> PKDrawing {
 }
 ```
 
+When loading synced or user-provided drawings, handle decode failures explicitly
+instead of suppressing them with `try?`:
+
+```swift
+do {
+    canvasView.drawing = try PKDrawing(data: data)
+} catch {
+    showReadOnlyPreview(for: document, loadError: error)
+}
+```
+
 ### Combining Drawings
 
 ```swift
@@ -170,6 +209,38 @@ let combined = drawing1.appending(drawing2)
 let scaled = drawing.transformed(using: CGAffineTransform(scaleX: 2, y: 2))
 let translated = drawing.transformed(using: CGAffineTransform(translationX: 100, y: 0))
 ```
+
+## Content Version Compatibility
+
+For sync, migration, downgrade, or cross-device editing tasks, use
+`requiredContentVersion` as the compatibility gate and choose an explicit
+`maximumSupportedContentVersion` when old clients must keep editing.
+
+```swift
+let targetVersion: PKContentVersion = .version1
+canvasView.maximumSupportedContentVersion = targetVersion
+toolPicker.maximumSupportedContentVersion = targetVersion
+
+switch drawing.requiredContentVersion {
+case .version1:
+    // Older marker, pen, and pencil ink set
+    syncEditable(drawing)
+case .version2:
+    // iPadOS 17-era inks: monoline, fountain pen, watercolor, crayon
+    syncIfRecipientsSupportVersion2(drawing)
+case .version3, .version4:
+    // Later features such as barrel-roll data and Reed Pen
+    syncEditableOnlyToCurrentClients(drawing)
+@unknown default:
+    showReadOnlyPreview(for: drawing)
+}
+```
+
+If a drawing requires a newer version than a recipient can load, preserve the
+full-fidelity `PKDrawing` for capable clients and provide a read-only preview or
+separate fallback instead of silently overwriting it. See
+[references/pencilkit-patterns.md](references/pencilkit-patterns.md) for the
+deeper compatibility table.
 
 ## Exporting to Image
 
@@ -241,6 +312,7 @@ struct CanvasView: UIViewRepresentable {
         canvas.delegate = context.coordinator
         canvas.drawingPolicy = .anyInput
         canvas.drawing = drawing
+        context.coordinator.toolPicker.addObserver(canvas)
         return canvas
     }
 
@@ -271,6 +343,12 @@ struct CanvasView: UIViewRepresentable {
 }
 ```
 
+For SwiftUI wrappers, call out the input-policy choice in the wrapper guidance.
+Use `.anyInput` when finger drawing is part of the product. Use `.pencilOnly`
+when touch should stay reserved for scrolling or selection. Use `.default` when
+you want PencilKit's system behavior: with the tool picker visible, it follows
+the user's Pencil-only drawing setting; otherwise only Apple Pencil draws.
+
 ### Usage in SwiftUI
 
 ```swift
@@ -288,8 +366,9 @@ struct DrawingScreen: View {
 ## PaperKit Relationship
 
 PaperKit (iOS 26+) extends PencilKit with a complete markup experience
-including shapes, text boxes, images, stickers, and loupes. Use PaperKit
-when you need more than freeform drawing.
+including shapes, text boxes, images, stickers, and loupes. Use the sibling
+`paperkit` skill when you need structured markup rather than only freeform
+drawing.
 
 | Capability | PencilKit | PaperKit |
 |---|---|---|
@@ -297,11 +376,13 @@ when you need more than freeform drawing.
 | Shapes & lines | No | Yes |
 | Text boxes | No | Yes |
 | Images & stickers | No | Yes |
+| Loupes | No | Yes |
 | Markup toolbar | No | Yes |
+| Markup insertion UI | No | `MarkupEditViewController`, `MarkupToolbarViewController` |
 | Data model | `PKDrawing` | `PaperMarkup` |
 
-PaperKit uses PencilKit under the hood -- `PaperMarkupViewController` accepts
-`PKTool` for its `drawingTool` property and `PaperMarkup` can append a
+PaperKit uses PencilKit under the hood: `PaperMarkupViewController` accepts
+`PKTool` for its `drawingTool` property, and `PaperMarkup` can append a
 `PKDrawing`.
 
 ## Common Mistakes
@@ -319,6 +400,12 @@ toolPicker.setVisible(true, forFirstResponder: canvasView)
 canvasView.becomeFirstResponder()
 ```
 
+### DON'T: Oversimplify `.default` drawing policy
+
+When explaining input behavior, `.default` is system-setting aware. If the tool
+picker is visible, it respects the user's Pencil-only drawing preference;
+otherwise only Apple Pencil draws.
+
 ### DON'T: Create multiple tool pickers for the same canvas
 
 One `PKToolPicker` per canvas. Creating extras causes visual conflicts.
@@ -334,23 +421,30 @@ func viewDidAppear(_ animated: Bool) {
 let toolPicker = PKToolPicker()
 ```
 
-### DON'T: Ignore content version for backward compatibility
+### DON'T: Ignore content versions for backward compatibility
 
-Newer ink types crash on older OS versions. Set `maximumSupportedContentVersion`
-if you need backward-compatible drawings.
+Earlier OS versions throw when loading `PKDrawing` data that uses unsupported
+inks. Check `requiredContentVersion` before syncing, or set
+`maximumSupportedContentVersion` on both the canvas and tool picker to restrict
+new content.
 
 ```swift
-// WRONG: Saves a drawing with .watercolor, crashes on iOS 16
+// WRONG: only limits the canvas; picker can still expose newer inks
 canvasView.tool = PKInkingTool(.watercolor, color: .blue)
+canvasView.maximumSupportedContentVersion = .version1
 
-// CORRECT: Limit content version for compatibility
-canvasView.maximumSupportedContentVersion = .version2
+// CORRECT: limit both surfaces for iPadOS 14-era ink compatibility
+if #available(iOS 17.0, *) {
+    canvasView.maximumSupportedContentVersion = .version1
+    toolPicker.maximumSupportedContentVersion = .version1
+}
 ```
 
 ### DON'T: Compare drawings by data representation
 
-`PKDrawing` data is not deterministic; the same visual drawing can produce
-different bytes. Use equality operators instead.
+`dataRepresentation()` is for persistence and interchange, not comparison.
+Use `PKDrawing` equality for exact value checks, and inspect strokes or rendered
+images for visual/approximate comparisons.
 
 ```swift
 // WRONG
@@ -362,20 +456,21 @@ if drawing1 == drawing2 { }
 
 ## Review Checklist
 
-- [ ] `PKCanvasView.drawingPolicy` set appropriately (`.default` for Pencil-primary apps)
+- [ ] `PKCanvasView.drawingPolicy` set appropriately and `.default` explained as system-setting aware
 - [ ] `PKToolPicker` stored as a property, not recreated each appearance
 - [ ] `canvasView.becomeFirstResponder()` called to show the tool picker
+- [ ] Canvas added as a `PKToolPicker` observer before showing the picker
 - [ ] Drawing serialized via `dataRepresentation()` and loaded via `PKDrawing(data:)`
 - [ ] `canvasViewDrawingDidChange` delegate method used to track changes
-- [ ] `maximumSupportedContentVersion` set if backward compatibility needed
+- [ ] `maximumSupportedContentVersion` set on both canvas and tool picker if backward compatibility is needed
+- [ ] Custom tool picker item code guarded for iOS/iPadOS 18+ and visionOS 2+
 - [ ] Exported images use appropriate scale factor for the device
 - [ ] SwiftUI wrapper avoids infinite update loops by checking `drawing != binding`
-- [ ] Tool picker observer added before becoming first responder
 - [ ] Drawing bounds checked before image export (empty drawings have `.zero` bounds)
 
 ## References
 
-- Extended PencilKit patterns (advanced strokes, Scribble, delegate): [references/pencilkit-patterns.md](references/pencilkit-patterns.md)
+- Extended PencilKit patterns (advanced strokes, content versions, delegates): [references/pencilkit-patterns.md](references/pencilkit-patterns.md)
 - [PencilKit framework](https://sosumi.ai/documentation/pencilkit)
 - [PKCanvasView](https://sosumi.ai/documentation/pencilkit/pkcanvasview)
 - [PKDrawing](https://sosumi.ai/documentation/pencilkit/pkdrawing-swift.struct)

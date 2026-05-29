@@ -18,7 +18,10 @@ SwiftUI integration patterns.
 ### Simulating Task Launches in Xcode
 
 Use the LLDB console to trigger tasks instantly during development. The app must
-be running in the debugger with a breakpoint hit or paused.
+be running on a device in the debugger with a breakpoint hit or paused.
+
+These are Apple-documented private functions for development only. Do not
+include references to them in App Store-submitted code.
 
 ```swift
 e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"com.example.app.refresh"]
@@ -54,10 +57,13 @@ BGTaskScheduler.shared.getPendingTaskRequests { requests in
 |---|---|---|
 | Task never fires | Identifier not in Info.plist | Add to `BGTaskSchedulerPermittedIdentifiers` |
 | Task never fires | Background modes not enabled | Enable `fetch` and/or `processing` in capabilities |
-| Task never fires on device | Device in Low Power Mode | Low Power Mode suppresses background tasks |
+| Task never fires on device | Background App Refresh disabled or Low Power Mode active | Check `UIApplication.shared.backgroundRefreshStatus`; Low Power Mode reduces background runtime |
 | `.notPermitted` error | Identifier mismatch | Verify exact string match between code and plist |
 | `.unavailable` error | Running in extension | BGTaskScheduler not available in app extensions |
-| `.tooManyPendingTaskRequests` | Over 10 pending refresh or 1 processing per identifier | Cancel old requests before submitting new ones |
+| `.tooManyPendingTaskRequests` | More than 1 refresh task or 10 processing tasks scheduled in total | Cancel old requests before submitting new ones |
+
+Submitting an unexecuted task request with the same identifier replaces the
+previous request.
 
 ## Advanced BGProcessingTask Patterns
 
@@ -266,17 +272,25 @@ The `content-available: 1` flag is required. You can include custom data:
 **Do not** include `alert`, `badge`, or `sound` if you only want a silent push.
 Including visual notification keys changes the push behavior.
 
+Send background notification requests with APNs headers:
+
+```http
+apns-push-type: background
+apns-priority: 5
+```
+
 ### Rate Limiting
 
 Apple throttles background push delivery. Guidelines:
 
-- System limits to a few pushes per hour per app
-- If the user force-quits the app, background pushes stop entirely until next
-  manual launch
-- High-priority pushes (`apns-priority: 10`) are delivered immediately but must
-  only be used when the notification triggers user-visible content
-- Low-priority pushes (`apns-priority: 5`) are batched and delivered
-  opportunistically
+- Delivery is low priority and not guaranteed.
+- Do not send more than two or three background notifications per hour.
+- The system may hold only the newest background notification and discard older
+  held notifications.
+- If the user force-quits the app, background pushes stop until the next manual
+  launch.
+- Use `apns-priority: 5`; high-priority pushes are for user-visible
+  notifications, not silent refresh.
 
 ### Handling Push with Async Work
 
@@ -338,18 +352,20 @@ struct MyApp: App {
 }
 ```
 
-This is a convenience wrapper. Under the hood it registers with
-`BGTaskScheduler`. You still need the Info.plist identifiers and background
-modes.
+This is a SwiftUI handler for matching background tasks. You still need the
+Info.plist identifiers, background modes, scheduling, and cancellation-safe work
+patterns.
 
 ## BGContinuedProcessingTask — Extended Patterns
 
 ### Checking Supported Resources
 
-Before requesting GPU or other resources, verify the device supports them:
+Before requesting GPU or other resources, verify the device supports them and
+enable Background GPU Access
+(`com.apple.developer.background-tasks.continued-processing.gpu`) for GPU work:
 
 ```swift
-let supported = BGTaskScheduler.shared.supportedResources
+let supported = BGTaskScheduler.supportedResources
 if supported.contains(.gpu) {
     request.requiredResources = .gpu
 }

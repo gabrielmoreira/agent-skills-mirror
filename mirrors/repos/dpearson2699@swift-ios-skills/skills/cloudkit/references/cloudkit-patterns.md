@@ -383,8 +383,12 @@ database.add(operation)
 
 ## Encrypted Fields
 
-Use `encryptedValues` (iOS 15+) for sensitive data. Encrypted fields are not
-searchable or sortable.
+Use `encryptedValues` (iOS 15+) for sensitive private or shared data that does
+not need query or sort indexes. CloudKit can encrypt only new schema fields;
+you cannot convert an existing field to encrypted storage, and encrypted values
+are unavailable for public database records. `CKAsset` data is encrypted by
+default, while `CKRecord.Reference` is not encrypted because CloudKit needs it
+for server-side relationship handling.
 
 ```swift
 let record = CKRecord(recordType: "HealthEntry")

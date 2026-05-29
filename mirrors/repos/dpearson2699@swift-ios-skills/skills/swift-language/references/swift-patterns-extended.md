@@ -309,7 +309,7 @@ struct SignUpForm {
 
 ## Advanced Regex Builder Patterns
 
-### Named captures with strong typing
+### Reference captures with strong typing
 
 ```swift
 import RegexBuilder
@@ -320,14 +320,27 @@ struct LogEntry {
     let message: String
 }
 
+let timestampRef = Reference(Substring.self)
+let levelRef = Reference(Substring.self)
+let messageRef = Reference(Substring.self)
+
 let logRegex = Regex {
-    Capture(as: Reference<Substring>(\.self)) { /\[.+?\]/ }
+    Capture(as: timestampRef) { /\[.+?\]/ }
     " "
-    Capture(as: Reference<Substring>(\.self)) {
+    Capture(as: levelRef) {
         ChoiceOf { "INFO"; "WARN"; "ERROR"; "DEBUG" }
     }
     ": "
-    Capture(as: Reference<Substring>(\.self)) { OneOrMore(.any) }
+    Capture(as: messageRef) { OneOrMore(.any) }
+}
+
+if let match = "[2026-05-28] INFO: Started".firstMatch(of: logRegex) {
+    let entry = LogEntry(
+        timestamp: String(match[timestampRef]),
+        level: String(match[levelRef]),
+        message: String(match[messageRef])
+    )
+    _ = entry
 }
 ```
 

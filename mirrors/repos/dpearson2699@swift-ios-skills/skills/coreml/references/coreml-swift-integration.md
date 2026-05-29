@@ -8,7 +8,7 @@ to iOS 14 unless noted.
 - Actor-Based Model Loading and Caching
 - Auto-Generated Class Usage
 - Manual MLFeatureProvider
-- Async Prediction Patterns
+- Prediction in Async Workflows
 - MLBatchProvider for Batch Inference
 - Stateful Predictions with MLState (iOS 18+)
 - Image Preprocessing
@@ -116,11 +116,11 @@ final class ClassifierViewModel {
 
             let model = try await modelManager.model(named: "ImageClassifier", configuration: config)
 
-            let pixelBuffer = try image.toPixelBuffer(width: 224, height: 224)
+            let pixelBuffer = try createPixelBuffer(from: image, width: 224, height: 224)
             let input = try MLDictionaryFeatureProvider(dictionary: [
                 "image": MLFeatureValue(pixelBuffer: pixelBuffer),
             ])
-            let output = try await model.prediction(from: input)
+            let output = try model.prediction(from: input)
 
             classLabel = output.featureValue(for: "classLabel")?.stringValue ?? "Unknown"
             confidence = output.featureValue(for: "classLabelProbs")?
@@ -135,7 +135,7 @@ final class ClassifierViewModel {
 
 ## Auto-Generated Class Usage
 
-When you add a `.mlpackage` or `.mlmodelc` to your Xcode project, Xcode
+When you add a `.mlmodel` or `.mlpackage` to your Xcode project, Xcode
 generates a Swift class with typed inputs and outputs.
 
 ```swift
@@ -206,9 +206,13 @@ let input = CustomImageInput(image: pixelBuffer, confidenceThreshold: 0.7)
 let output = try model.prediction(from: input)
 ```
 
-## Async Prediction Patterns
+## Prediction in Async Workflows
 
-### Single Prediction with Swift Concurrency (iOS 17+)
+`MLModel.prediction(...)` is synchronous. Use Swift concurrency to keep loading,
+preprocessing, and caller coordination off the main actor, then call prediction
+without `await`.
+
+### Single Prediction from an Actor
 
 ```swift
 actor PredictionService {
@@ -218,8 +222,8 @@ actor PredictionService {
         self.model = model
     }
 
-    func predict(input: MLFeatureProvider) async throws -> MLFeatureProvider {
-        try await model.prediction(from: input)
+    func predict(input: any MLFeatureProvider) async throws -> any MLFeatureProvider {
+        try model.prediction(from: input)
     }
 }
 ```
@@ -227,20 +231,24 @@ actor PredictionService {
 ### Streaming Predictions
 
 ```swift
-func classifyFrames(_ frames: AsyncStream<CVPixelBuffer>) async throws -> AsyncStream<String> {
+func classifyFrames(_ frames: AsyncStream<CVPixelBuffer>) async throws -> AsyncThrowingStream<String, Error> {
     let model = try await ModelManager().model(named: "Classifier")
 
-    return AsyncStream { continuation in
+    return AsyncThrowingStream { continuation in
         Task {
-            for await frame in frames {
-                let input = try MLDictionaryFeatureProvider(dictionary: [
-                    "image": MLFeatureValue(pixelBuffer: frame),
-                ])
-                let output = try await model.prediction(from: input)
-                let label = output.featureValue(for: "classLabel")?.stringValue ?? "unknown"
-                continuation.yield(label)
+            do {
+                for await frame in frames {
+                    let input = try MLDictionaryFeatureProvider(dictionary: [
+                        "image": MLFeatureValue(pixelBuffer: frame),
+                    ])
+                    let output = try model.prediction(from: input)
+                    let label = output.featureValue(for: "classLabel")?.stringValue ?? "unknown"
+                    continuation.yield(label)
+                }
+                continuation.finish()
+            } catch {
+                continuation.finish(throwing: error)
             }
-            continuation.finish()
         }
     }
 }
@@ -258,7 +266,7 @@ func batchClassify(images: [CVPixelBuffer], model: MLModel) throws -> [(label: S
         ])
     })
 
-    let batchOutput = try model.predictions(from: batchInputs)
+    let batchOutput = try model.predictions(fromBatch: batchInputs)
 
     var results: [(String, Double)] = []
     for i in 0..<batchOutput.count {
@@ -271,6 +279,20 @@ func batchClassify(images: [CVPixelBuffer], model: MLModel) throws -> [(label: S
     return results
 }
 ```
+
+Batch prediction has two valid API labels:
+
+```swift
+// No explicit prediction options
+let output = try model.predictions(fromBatch: batchInputs)
+
+// Explicit prediction options
+let options = MLPredictionOptions()
+let outputWithOptions = try model.predictions(from: batchInputs, options: options)
+```
+
+Do not write `predictions(from:)` for the no-options batch path; the `from:`
+label belongs to the overload that also takes `options:`.
 
 ## Stateful Predictions with MLState (iOS 18+)
 
@@ -305,7 +327,7 @@ actor AudioClassifier {
             "audio_features": MLFeatureValue(multiArray: audioFeatures)
         ])
 
-        let output = try await model.prediction(from: input, using: state)
+        let output = try model.prediction(from: input, using: state)
         return output.featureValue(for: "label")?.stringValue ?? "unknown"
     }
 
@@ -322,8 +344,14 @@ enum ClassifierError: Error {
 
 ### Key Rules for MLState
 
-- **Not Sendable:** Use `MLState` from a single actor or task. Do not share
-  across concurrency domains.
+- **Serialized use:** `MLState` is `Sendable`, but predictions that use the same
+  state must be serialized. `Sendable` permits transfer across concurrency
+  domains; it does not permit concurrent predictions on one state. Do not read or
+  write state buffers while a prediction is in flight.
+- **Async options overload:** Use the synchronous `prediction(from:using:)`
+  overload for simple serialized loops. If you need `MLPredictionOptions`, iOS
+  18+ also provides async `prediction(from:using:options:)`; keep one in-flight
+  prediction per state.
 - **Independent streams:** Call `model.makeState()` per stream when processing
   multiple concurrent sequences (e.g., multiple audio channels).
 - **Resettable:** Create a new state to reset accumulated context. There is no
@@ -428,12 +456,12 @@ let mean = tensor1D.mean()
 let argmax = tensor1D.argmax()
 
 // Activation functions
-let softmaxed = tensor1D.softmax()
+let softmaxed = tensor1D.softmax(alongAxis: -1)
 
-// Interop with MLMultiArray
-let multiArray = try MLMultiArray([1.0, 2.0, 3.0])
-let fromMultiArray = MLTensor(multiArray)
-let shaped = tensor1D.shapedArray(of: Float.self) // MLShapedArray
+// Interop with MLShapedArray / MLMultiArray
+let shaped = await tensor1D.shapedArray(of: Float.self) // MLShapedArray<Float>
+let multiArray = try MLMultiArray(shaped)
+let shapedAgain = MLShapedArray<Float>(multiArray)
 
 // Concatenation
 let a = MLTensor([1.0, 2.0])
@@ -568,7 +596,7 @@ func analyzeSentiment(text: String) throws -> (label: String, confidence: Double
 }
 ```
 
-## MLComputePlan Detailed Usage (iOS 17+)
+## MLComputePlan Detailed Usage (iOS 17.4+)
 
 ```swift
 import CoreML
@@ -587,7 +615,7 @@ func profileModel(at url: URL) async throws {
     for operation in mainFunction.block.operations {
         let opName = operation.operatorName
         if let deviceUsage = computePlan.deviceUsage(for: operation) {
-            print("  \(opName): \(deviceUsage.preferredComputeDevice)")
+            print("  \(opName): \(deviceUsage.preferred)")
         }
         if let cost = computePlan.estimatedCost(of: operation) {
             print("    Estimated weight: \(cost.weight)")
@@ -665,7 +693,7 @@ struct MyApp: App {
 ```swift
 import CoreML
 
-func loadAndPredict(modelName: String, input: MLFeatureProvider) async -> MLFeatureProvider? {
+func loadAndPredict(modelName: String, input: any MLFeatureProvider) async -> (any MLFeatureProvider)? {
     let config = MLModelConfiguration()
     config.computeUnits = .all
 
@@ -675,7 +703,7 @@ func loadAndPredict(modelName: String, input: MLFeatureProvider) async -> MLFeat
             return nil
         }
         let model = try await MLModel.load(contentsOf: url, configuration: config)
-        return try await model.prediction(from: input)
+        return try model.prediction(from: input)
     } catch {
         print("Model error: \(error)")
         return nil
@@ -692,6 +720,11 @@ func loadAndPredict(modelName: String, input: MLFeatureProvider) async -> MLFeat
 | Input shape mismatch | Wrong image dimensions or tensor shape | Match model's expected input shape |
 | Out of memory | Model too large for device | Use smaller model or `.cpuOnly` compute |
 | Compute unit fallback | Ops unsupported on requested device | Use `.all` or check `MLComputePlan` |
+
+For MLTensor preprocessing, keep examples to source-confirmed operations. Do not
+use `MLTensor(multiArray)`, `tensor.std()`, `tensor.standardDeviation()`, direct
+lazy-buffer access, or synchronous extraction unless Apple documents that exact
+API and availability.
 
 ## Testing Patterns
 
@@ -755,11 +788,23 @@ private func createTestPixelBuffer(width: Int, height: Int) throws -> CVPixelBuf
 
 1. **Unload on background.** Unload models when `scenePhase == .background`
    and reload on return to foreground. iOS reclaims memory aggressively.
-2. **Use `.cpuOnly` for background processing.** GPU and Neural Engine may not
-   be available in background execution contexts.
+2. **Choose compute units by context.** Use `.all` by default. Consider
+   `.cpuOnly` only when profiling or app policy shows accelerator contention,
+   thermal state, energy budget, deterministic testing, or a legitimate
+   background execution constraint makes CPU the right tradeoff.
+   Do not claim GPU or Neural Engine are categorically unavailable for every
+   background-adjacent task; background behavior depends on app mode, suspension,
+   system policy, thermal state, energy, and contention.
 3. **Prefer compiled models.** `.mlmodelc` loads faster and uses less transient
-   memory than compiling `.mlpackage` at runtime.
-4. **Share model instances.** Use an actor (like `ModelManager` above) to
+   memory than compiling `.mlpackage` at runtime. If a model is downloaded as
+   `.mlmodel` or `.mlpackage`, compile once with `MLModel.compileModel(at:)`,
+   move the `.mlmodelc` out of Core ML's temporary location, and cache it by
+   model version. Do not call `compileModel(at:)` on every launch for the same
+   model.
+4. **Validate on physical devices.** Measure model load, first prediction,
+   repeated predictions, background/foreground transitions, and low-memory
+   behavior on the lowest-memory supported device.
+5. **Share model instances.** Use an actor (like `ModelManager` above) to
    ensure only one instance of each model exists.
-5. **Release batch providers promptly.** Large `MLArrayBatchProvider` instances
+6. **Release batch providers promptly.** Large `MLArrayBatchProvider` instances
    hold references to all input data.

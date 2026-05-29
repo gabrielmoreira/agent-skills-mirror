@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 6 followed patterns, 21 file(s) materialized.
+Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 4 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 6 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 21 |
+| Followed pats | 4 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,8 +53,6 @@ Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 6 followed patterns,
 
 - `docs/installation.md`
 - `CONTRIBUTING.md`
-- `docs/adr/0014-feature-local-runtime-adapters.md`
-- `docs/session-method-retention.md`
 - `docs/development.md`
 - `docs/cli-exit-codes.md`
 
@@ -66,25 +64,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`docs/adr/0003-auth-facade-write-through.md`](docs/adr/0003-auth-facade-write-through.md) |
-| 4 | ✓ | [`docs/adr/0007-test-monkeypatch-policy.md`](docs/adr/0007-test-monkeypatch-policy.md) |
-| 5 | ✓ | [`docs/adr/0013-composable-session-capabilities.md`](docs/adr/0013-composable-session-capabilities.md) |
-| 6 | ✓ | [`docs/architecture.md`](docs/architecture.md) |
-| 7 | ✓ | [`docs/cli-reference.md`](docs/cli-reference.md) |
-| 8 | ✓ | [`docs/configuration.md`](docs/configuration.md) |
-| 9 | ✓ | [`docs/conventions.md`](docs/conventions.md) |
-| 10 | ✓ | [`docs/refactor-history.md`](docs/refactor-history.md) |
-| 11 | ✓ | [`docs/rpc-development.md`](docs/rpc-development.md) |
-| 12 | ✓ | [`docs/session-decoupling-plan-2026-05-26.md`](docs/session-decoupling-plan-2026-05-26.md) |
-| 13 | ✓ | [`docs/stability.md`](docs/stability.md) |
-| 14 | ✓ | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
-| 15 | ✓ | [`SKILL.md`](SKILL.md) |
-| 16 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 17 | → | [`docs/adr/0014-feature-local-runtime-adapters.md`](docs/adr/0014-feature-local-runtime-adapters.md) |
-| 18 | → | [`docs/cli-exit-codes.md`](docs/cli-exit-codes.md) |
-| 19 | → | [`docs/development.md`](docs/development.md) |
-| 20 | → | [`docs/installation.md`](docs/installation.md) |
-| 21 | → | [`docs/session-method-retention.md`](docs/session-method-retention.md) |
+| 3 | ✓ | [`docs/architecture.md`](docs/architecture.md) |
+| 4 | ✓ | [`docs/cli-reference.md`](docs/cli-reference.md) |
+| 5 | ✓ | [`docs/configuration.md`](docs/configuration.md) |
+| 6 | ✓ | [`docs/conventions.md`](docs/conventions.md) |
+| 7 | ✓ | [`docs/refactor-history.md`](docs/refactor-history.md) |
+| 8 | ✓ | [`docs/rpc-development.md`](docs/rpc-development.md) |
+| 9 | ✓ | [`docs/stability.md`](docs/stability.md) |
+| 10 | ✓ | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
+| 11 | ✓ | [`SKILL.md`](SKILL.md) |
+| 12 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 13 | → | [`docs/cli-exit-codes.md`](docs/cli-exit-codes.md) |
+| 14 | → | [`docs/development.md`](docs/development.md) |
+| 15 | → | [`docs/installation.md`](docs/installation.md) |
 
 ---
 

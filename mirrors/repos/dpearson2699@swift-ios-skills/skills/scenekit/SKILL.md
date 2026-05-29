@@ -1,13 +1,14 @@
 ---
 name: scenekit
-description: "Build 3D scenes and visualizations using SceneKit. Use when creating 3D views with SCNView and SCNScene, building node hierarchies with SCNNode, applying materials and lighting, animating with SCNAction, simulating physics with SCNPhysicsBody, loading 3D models (.usdz, .scn), adding particle effects, or embedding SceneKit in SwiftUI with SceneView. Note: SceneKit was deprecated at WWDC 2025 and is in maintenance mode; RealityKit is recommended for new projects."
+description: "Maintain and extend existing SceneKit 3D scenes and visualizations. Use when working with SCNView, SCNScene, SCNNode scene graphs, SceneKit geometry/materials/lights/cameras, SCNAction animation, SCNPhysicsBody physics, SCNParticleSystem effects, .scn/.dae/.abc SceneKit assets, shader modifiers, or SwiftUI SceneView. SceneKit is soft-deprecated and in maintenance mode; route new apps, significant updates, USD/USDZ pipelines, and migration planning toward RealityKit."
 ---
 
 # SceneKit
 
-Apple's high-level 3D rendering framework for building scenes and visualizations
-on iOS using Swift 6.3. Provides a node-based scene graph, built-in geometry
-primitives, physically based materials, lighting, animation, and physics.
+Apple's high-level 3D rendering framework for maintaining existing scenes and
+visualizations on iOS using Swift 6.3. Provides a node-based scene graph,
+built-in geometry primitives, physically based materials, lighting, animation,
+and physics.
 
 **Deprecation notice (WWDC 2025):** SceneKit is officially deprecated across all
 Apple platforms and is now in maintenance mode (critical bug fixes only). Existing
@@ -52,10 +53,10 @@ disabled in production where custom camera control is needed.
 
 ```swift
 let scene = SCNScene()                                          // Empty
-guard let scene = SCNScene(named: "art.scnassets/ship.scn")     // .scn asset catalog
+guard let scene = SCNScene(named: "art.scnassets/ship.scn")     // .scn in .scnassets
     else { fatalError("Missing scene asset") }
-let scene = try SCNScene(url: Bundle.main.url(                  // .usdz from bundle
-    forResource: "spaceship", withExtension: "usdz")!)
+let url = Bundle.main.url(forResource: "ship", withExtension: "dae")!
+let scene = try SCNScene(url: url, options: [.checkConsistency: true])
 ```
 
 ## Nodes and Geometry
@@ -363,17 +364,32 @@ collide with geometry via `colliderNodes`.
 
 ## Loading Models
 
-SceneKit loads `.usdz`, `.scn`, `.dae`, `.obj`, and `.abc`. Prefer `.usdz`.
+SceneKit's documented scene-source formats are `.scn`, `.dae`, and `.abc`.
+For bundled assets, place scene files in a `.scnassets` folder and texture
+images in asset catalogs so Xcode can optimize them for target devices.
+
+USD/USDZ is the RealityKit migration path, not the default SceneKit loading
+path. For new projects, significant updates, or SCN-to-USD asset conversion,
+handoff to the RealityKit skill.
 
 ```swift
 guard let scene = SCNScene(named: "art.scnassets/ship.scn") else { return }
 let scene = try SCNScene(url: Bundle.main.url(
-    forResource: "model", withExtension: "usdz")!)
+    forResource: "model", withExtension: "dae")!,
+    options: [.checkConsistency: true])
 guard let modelNode = scene.rootNode.childNode(withName: "mesh", recursively: true) else { return }
 ```
 
-Use `SCNReferenceNode` with `.onDemand` loading policy for large models.
-Use `SCNSceneSource` to inspect or selectively load entries from a file.
+Use `SCNReferenceNode` with `.onDemand` loading policy for large models. For
+import-time unit conversion, use `SCNSceneSource.LoadingOption`:
+
+```swift
+let source = SCNSceneSource(url: url, options: nil)!
+let scene = try source.scene(options: [.convertUnitsToMeters: 1.0])
+```
+
+Do not use `SCNScene.Attribute.unit` or `UnitMetersPerUnit`. `SCNScene.Attribute`
+is metadata only: `.startTime`, `.endTime`, `.frameRate`, and `.upAxis`.
 
 ## SwiftUI Integration
 
@@ -429,7 +445,7 @@ sceneView.autoenablesDefaultLighting = true
 ```swift
 // DON'T
 node.physicsBody = SCNPhysicsBody(type: .dynamic,
-    shape: SCNPhysicsShape(geometry: complexMesh))
+    shape: SCNPhysicsShape(geometry: complexMesh, options: nil))
 
 // DO: Simplified primitive
 node.physicsBody = SCNPhysicsBody(type: .dynamic,
@@ -448,21 +464,6 @@ dynamicNode.position = SCNVector3(5, 0, 0)
 dynamicNode.physicsBody?.applyForce(SCNVector3(10, 0, 0), asImpulse: true)
 ```
 
-### Exceeding 8 lights per node
-
-```swift
-// DON'T: 20 lights with no attenuation
-for _ in 0..<20 {
-    let light = SCNNode()
-    light.light = SCNLight()
-    light.light?.type = .omni
-    scene.rootNode.addChildNode(light)
-}
-
-// DO: Set attenuationEndDistance so SceneKit skips distant lights
-light.light?.attenuationEndDistance = 10
-```
-
 ## Review Checklist
 
 - [ ] Scene has at least one camera node set as `pointOfView`
@@ -473,7 +474,11 @@ light.light?.attenuationEndDistance = 10
 - [ ] Dynamic body transforms changed via forces/impulses, not direct position
 - [ ] Lights limited to 8 per node; `attenuationEndDistance` set on point/spot lights
 - [ ] Materials use `.physicallyBased` lighting model for realistic rendering
-- [ ] 3D assets use `.usdz` format where possible
+- [ ] SceneKit assets use documented `.scn`, `.dae`, or `.abc` scene-source formats
+- [ ] Bundled SceneKit textures/images use asset catalogs or Xcode-optimized resources
+- [ ] Scene metadata/import options use documented API; no invented `SCNScene.Attribute.unit`
+- [ ] New USD/USDZ pipelines or significant updates are routed to RealityKit
+- [ ] Game Center authentication, leaderboards, achievements, or multiplayer are handed off to GameKit
 - [ ] `SCNReferenceNode` used for large models to enable lazy loading
 - [ ] Particle `birthRate` and `particleLifeSpan` balanced to control particle count
 - [ ] `categoryBitMask` used to scope lights and cameras to relevant nodes
@@ -482,19 +487,7 @@ light.light?.attenuationEndDistance = 10
 
 ## References
 
-- See [references/scenekit-patterns.md](references/scenekit-patterns.md) for custom geometry, shader modifiers,
-  node constraints, morph targets, hit testing, scene serialization, render loop
-  delegates, performance optimization, SpriteKit overlay, LOD, and Metal shaders.
-- [SceneKit documentation](https://sosumi.ai/documentation/scenekit)
-- [SCNScene](https://sosumi.ai/documentation/scenekit/scnscene)
-- [SCNNode](https://sosumi.ai/documentation/scenekit/scnnode)
-- [SCNView](https://sosumi.ai/documentation/scenekit/scnview)
-- [SceneView (SwiftUI)](https://sosumi.ai/documentation/scenekit/sceneview)
-- [SCNGeometry](https://sosumi.ai/documentation/scenekit/scngeometry)
-- [SCNMaterial](https://sosumi.ai/documentation/scenekit/scnmaterial)
-- [SCNLight](https://sosumi.ai/documentation/scenekit/scnlight)
-- [SCNCamera](https://sosumi.ai/documentation/scenekit/scncamera)
-- [SCNAction](https://sosumi.ai/documentation/scenekit/scnaction)
-- [SCNPhysicsBody](https://sosumi.ai/documentation/scenekit/scnphysicsbody)
-- [SCNParticleSystem](https://sosumi.ai/documentation/scenekit/scnparticlesystem)
+- See [references/scenekit-patterns.md](references/scenekit-patterns.md) for custom geometry, shader modifiers, constraints, morph targets, hit testing, scene serialization, render loop delegates, performance, SpriteKit overlay, LOD, and Metal shaders.
+- [SceneKit documentation](https://sosumi.ai/documentation/scenekit), [SCNSceneSource](https://sosumi.ai/documentation/scenekit/scnscenesource), [SCNView](https://sosumi.ai/documentation/scenekit/scnview), [SceneView](https://sosumi.ai/documentation/scenekit/sceneview)
+- [SCNPhysicsShape](https://sosumi.ai/documentation/scenekit/scnphysicsshape), [SCNShadable](https://sosumi.ai/documentation/scenekit/scnshadable)
 - [WWDC 2025 session 288: Bring your SceneKit project to RealityKit](https://sosumi.ai/videos/play/wwdc2025/288/)

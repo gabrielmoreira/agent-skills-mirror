@@ -34,8 +34,10 @@ When diagnosing a concurrency issue, follow this sequence:
 - Copy the exact compiler diagnostic(s) and the offending symbol(s).
 - Identify the project's concurrency settings:
   - Swift language version (must be 6.2+).
-  - Whether approachable concurrency (default MainActor isolation) is enabled.
-  - Strict concurrency checking level (Complete / Targeted / Minimal).
+  - Whether Approachable Concurrency is enabled.
+  - Whether Default Actor Isolation is set to `MainActor`.
+  - Swift 6 strict concurrency status: complete/errors in Swift 6 language mode;
+    Complete / Targeted / Minimal only when auditing Swift 5 migration settings.
 - Determine the current actor context of the code (`@MainActor`, custom `actor`,
   `nonisolated`) and whether a default isolation mode is active.
 - Confirm whether the code is UI-bound or intended to run off the main actor.
@@ -63,12 +65,17 @@ Prefer edits that preserve existing behavior while satisfying data-race safety.
 
 Swift 6.2 introduces "approachable concurrency" -- a set of language changes
 that make concurrent code safer by default while reducing annotation burden.
+In Xcode, Approachable Concurrency and Default Actor Isolation are separate
+build settings: use Approachable Concurrency for the bundled upcoming-feature
+flags, and set Default Actor Isolation to `MainActor` when you want unannotated
+code inferred as `@MainActor`.
 
 ### SE-0466: Default MainActor Isolation
 
-With the `-default-isolation MainActor` compiler flag (or the Xcode 26
-"Approachable Concurrency" build setting), all code in a module runs on
-`@MainActor` by default unless explicitly opted out.
+With the `-default-isolation MainActor` compiler flag, SwiftPM
+`.defaultIsolation(MainActor.self)`, or Xcode's `Default Actor Isolation`
+setting set to `MainActor`, unannotated declarations in the module are inferred
+as `@MainActor` unless explicitly opted out.
 
 **Effect:** Eliminates most data-race safety errors for UI-bound code and
 global/static state without writing `@MainActor` everywhere.
@@ -419,4 +426,3 @@ and a decision guide for choosing locks vs actors.
 - [references/bridging-interop.md](references/bridging-interop.md) — checked continuations, delegate bridging, GCD migration table
 - [references/diagnostics.md](references/diagnostics.md) — compiler diagnostic → fix reference, strict concurrency adoption
 - [references/async-algorithms.md](references/async-algorithms.md) — swift-async-algorithms: debounce, throttle, merge, combineLatest, chunks
-

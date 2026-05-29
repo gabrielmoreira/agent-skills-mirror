@@ -30,25 +30,28 @@ Apple Silicon via unified memory architecture.
 ```swift
 import MLX
 import MLXLLM
+import MLXLMCommon
+import MLXLMHFAPI
+import MLXLMTokenizers
 
-let config = ModelConfiguration(
-    id: "mlx-community/Mistral-7B-Instruct-v0.3-4bit"
-)
-let model = try await LLMModelFactory.shared.loadContainer(
-    configuration: config
+let container = try await LLMModelFactory.shared.loadContainer(
+    from: HubClient.default,
+    using: TokenizersLoader(),
+    configuration: .init(id: "mlx-community/Qwen3-4B-4bit")
 )
 
-try await model.perform { context in
-    let input = try await context.processor.prepare(
-        input: UserInput(prompt: "Hello")
-    )
-    let stream = try generate(
-        input: input,
-        parameters: GenerateParameters(temperature: 0.0),
-        context: context
-    )
-    for await part in stream {
-        print(part.chunk ?? "", terminator: "")
+let session = ChatSession(container)
+print(try await session.respond(to: "Hello"))
+
+// Use ModelContainer directly when you need streaming control.
+let input = try await container.prepare(input: UserInput(prompt: "Hello"))
+let stream = try await container.generate(
+    input: input,
+    parameters: GenerateParameters(temperature: 0.0)
+)
+for await event in stream {
+    if case .chunk(let text) = event {
+        print(text, terminator: "")
     }
 }
 ```
@@ -65,36 +68,37 @@ try await model.perform { context in
 ### Memory Management Rules
 
 1. Never exceed 60% of total RAM on iOS
-2. Set GPU cache limits:
+2. Set MLX cache limits:
    ```swift
-   MLX.GPU.set(cacheLimit: 512 * 1024 * 1024) // 512 MB
+   Memory.cacheLimit = 512 * 1024 * 1024 // 512 MB
    ```
-3. Monitor memory pressure and reduce cache under pressure
-4. Unload models on app backgrounding
+3. Monitor memory pressure with `Memory.snapshot()` and reduce cache under pressure
+4. Unload MLX and llama.cpp models on backgrounding or memory pressure; for MLX,
+   also call `Memory.clearCache()` after generation-heavy phases
 5. Use "Increased Memory Limit" entitlement for larger models on iOS
 6. Pre-flight memory checks before loading models
-7. Physical device required (no simulator support for Metal GPU)
+7. Validate MLX Swift and llama.cpp on physical Apple Silicon; Simulator cannot
+   exercise Metal-dependent inference, memory, or performance
 
 ### Model Lifecycle Management
 
 ```swift
 @Observable
 class ModelManager {
-    private var model: LLMModelContainer?
+    private var model: ModelContainer?
     private var generationCount = 0
 
     func loadModel() async throws {
-        let config = ModelConfiguration(
-            id: "mlx-community/Llama-3.2-3B-Instruct-4bit"
-        )
         model = try await LLMModelFactory.shared.loadContainer(
-            configuration: config
+            from: HubClient.default,
+            using: TokenizersLoader(),
+            configuration: .init(id: "mlx-community/Qwen3-4B-4bit")
         )
     }
 
     func unloadModel() {
         model = nil
-        MLX.GPU.set(cacheLimit: 0)
+        Memory.clearCache()
     }
 }
 ```
@@ -182,7 +186,7 @@ When an app needs multiple AI backends:
 
 ```swift
 func respond(to prompt: String) async throws -> String {
-    // Try Foundation Models first (zero setup, best integration)
+    // Try Foundation Models first when available (system-integrated backend)
     if SystemLanguageModel.default.isAvailable {
         return try await foundationModelsRespond(prompt)
     }
@@ -276,7 +280,7 @@ Training custom classifiers directly on device or Mac:
 - [ ] Model size appropriate for target device RAM
 - [ ] Memory pressure monitoring implemented
 - [ ] Models unloaded on app backgrounding
-- [ ] GPU cache limits set appropriately
+- [ ] MLX cache limits set appropriately
 - [ ] Pre-flight memory check before loading large models
 - [ ] Fallback strategy when model unavailable
 - [ ] All model access serialized through coordinator

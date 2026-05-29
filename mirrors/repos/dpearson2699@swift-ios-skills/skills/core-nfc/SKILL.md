@@ -27,13 +27,15 @@ and background tag reading. Targets Swift 6.3 / iOS 26+.
 
 1. Add the **Near Field Communication Tag Reading** capability in Xcode
 2. Add `NFCReaderUsageDescription` to Info.plist with a user-facing reason string
-3. Add the `com.apple.developer.nfc.readersession.formats` entitlement with the tag types your app reads (e.g., `NDEF`, `TAG`)
+3. Add the `com.apple.developer.nfc.readersession.formats` entitlement with the current `TAG` value; do not add legacy `NDEF`
 4. For ISO 7816 tags, add supported application identifiers to `com.apple.developer.nfc.readersession.iso7816.select-identifiers` in Info.plist
+5. For FeliCa tags, add supported system codes to `com.apple.developer.nfc.readersession.felica.systemcodes`; do not use wildcard system codes
 
 ### Device Requirements
 
 NFC reading requires iPhone 7 or later. Always check for reader session
-availability before presenting NFC UI.
+availability before creating NFC UI or sessions. Use the concrete reader
+session type you are about to create.
 
 ```swift
 import CoreNFC
@@ -167,13 +169,21 @@ func readerSession(
 Use `NFCTagReaderSession` when you need direct access to the native tag
 protocol (ISO 7816, ISO 15693, FeliCa, or MIFARE).
 
+Polling options are protocol-specific: `.iso14443` detects ISO
+7816-compatible and MIFARE tags, `.iso15693` detects ISO 15693 tags, and
+`.iso18092` detects FeliCa tags. Do not use `NFCTagReaderSession` for
+payment-related AIDs; Apple documents `NFCPaymentTagReaderSession` for
+eligible EU payment use cases.
+
 ```swift
 final class TagReader: NSObject, NFCTagReaderSessionDelegate {
     private var session: NFCTagReaderSession?
 
     func beginScanning() {
+        guard NFCTagReaderSession.readingAvailable else { return }
+
         session = NFCTagReaderSession(
-            pollingOption: [.iso14443, .iso15693],
+            pollingOption: [.iso14443, .iso15693, .iso18092],
             delegate: self,
             queue: nil
         )
@@ -319,11 +329,15 @@ func processRecord(_ record: NFCNDEFPayload) {
 ## Background Tag Reading
 
 On iPhone XS and later, iOS can read NFC tags in the background without
-opening your app. To opt in:
+opening your app. The NDEF message must contain a URI record
+(`typeNameFormat == .nfcWellKnown`, type `U`). If there are multiple URI
+records, the system uses the first one.
 
-1. Add associated domains or universal links that match the URL on your tags
-2. Register your app for the tag's NDEF content type
-3. Include your app's bundle ID in the tag's NDEF record
+For app-specific routing, write a universal link to the tag and configure the
+Associated Domains capability for that domain. Background tag reading also
+supports specific system URL schemes such as web, email, SMS, telephone,
+FaceTime, Maps, and HomeKit setup. It does not support custom URL schemes, and
+the system does not route by bundle ID or arbitrary NDEF content type.
 
 When a user taps a compatible tag, iOS displays a notification that opens
 your app. Handle the tag data via `NSUserActivity`:
@@ -336,60 +350,30 @@ func scene(
     guard userActivity.activityType ==
         NSUserActivityTypeBrowsingWeb else { return }
 
-    if let message = userActivity.ndefMessagePayload {
-        for record in message.records {
-            processRecord(record)
-        }
+    let message = userActivity.ndefMessagePayload
+    guard message.records.first?.typeNameFormat != .empty else { return }
+
+    for record in message.records {
+        processRecord(record)
     }
 }
 ```
 
 ## Common Mistakes
 
-### DON'T: Forget the NFC entitlement
+### DON'T: Use stale or missing NFC entitlements
 
 Without the `com.apple.developer.nfc.readersession.formats` entitlement,
-session creation crashes at runtime.
-
-```swift
-// WRONG -- entitlement not added, crashes
-let session = NFCNDEFReaderSession(
-    delegate: self, queue: nil, invalidateAfterFirstRead: true
-)
-
-// CORRECT -- add entitlement in Signing & Capabilities first
-// Then the same code works:
-let session = NFCNDEFReaderSession(
-    delegate: self, queue: nil, invalidateAfterFirstRead: true
-)
-```
+reader sessions cannot access NFC hardware. Use the current `TAG` value for
+Core NFC reader sessions; do not copy older examples that add `NDEF`.
 
 ### DON'T: Skip the readingAvailable check
 
-Attempting to create an NFC session on an unsupported device (iPad, iPod
-touch, or iPhone 6s and earlier) crashes.
+Creating an NFC session on an unsupported or restricted device fails before
+the scan UI can do useful work.
 
-```swift
-// WRONG
-func scan() {
-    let session = NFCNDEFReaderSession(
-        delegate: self, queue: nil, invalidateAfterFirstRead: true
-    )
-    session.begin()
-}
-
-// CORRECT
-func scan() {
-    guard NFCNDEFReaderSession.readingAvailable else {
-        showUnsupportedAlert()
-        return
-    }
-    let session = NFCNDEFReaderSession(
-        delegate: self, queue: nil, invalidateAfterFirstRead: true
-    )
-    session.begin()
-}
-```
+Check `NFCNDEFReaderSession.readingAvailable` or
+`NFCTagReaderSession.readingAvailable` before creating the matching session.
 
 ### DON'T: Ignore session invalidation errors
 
@@ -468,15 +452,18 @@ tag.queryNDEFStatus { status, capacity, error in
 
 - [ ] NFC capability added in Signing & Capabilities
 - [ ] `NFCReaderUsageDescription` set in Info.plist
-- [ ] `com.apple.developer.nfc.readersession.formats` entitlement configured with correct tag types
-- [ ] `NFCNDEFReaderSession.readingAvailable` checked before creating sessions
+- [ ] `com.apple.developer.nfc.readersession.formats` entitlement uses `TAG`, not legacy `NDEF`
+- [ ] `NFCNDEFReaderSession.readingAvailable` or `NFCTagReaderSession.readingAvailable` checked before creating sessions
 - [ ] Session delegate set before calling `begin()`
 - [ ] Session reference set to nil after invalidation
 - [ ] `didInvalidateWithError` distinguishes user cancellation from actual errors
 - [ ] NDEF status queried before write operations
 - [ ] Tag capacity checked before writing large messages
 - [ ] ISO 7816 application identifiers listed in Info.plist if using `NFCTagReaderSession`
-- [ ] Background tag reading configured with associated domains if needed
+- [ ] FeliCa system codes listed in Info.plist when polling `.iso18092`
+- [ ] Background tag reading uses a URI NDEF record and universal links or supported system URL schemes
+- [ ] Custom URL schemes, bundle IDs, or arbitrary NDEF content types are not used for background routing
+- [ ] Payment-related AIDs are routed away from `NFCTagReaderSession`
 - [ ] Only one reader session active at a time
 
 ## References
@@ -493,3 +480,5 @@ tag.queryNDEFStatus { status, capacity, error in
 - [Building an NFC Tag-Reader App](https://sosumi.ai/documentation/corenfc/building_an_nfc_tag-reader_app)
 - [Adding Support for Background Tag Reading](https://sosumi.ai/documentation/corenfc/adding-support-for-background-tag-reading)
 - [Near Field Communication Tag Reader Session Formats Entitlement](https://sosumi.ai/documentation/bundleresources/entitlements/com.apple.developer.nfc.readersession.formats)
+- [ISO7816 application identifiers for NFC Tag Reader Session](https://sosumi.ai/documentation/bundleresources/entitlements/com.apple.developer.nfc.readersession.iso7816.select-identifiers)
+- [ISO18092 system codes for NFC Tag Reader Session](https://sosumi.ai/documentation/bundleresources/entitlements/com.apple.developer.nfc.readersession.felica.systemcodes)

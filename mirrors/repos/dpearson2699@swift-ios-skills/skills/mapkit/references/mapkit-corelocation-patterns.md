@@ -44,8 +44,9 @@ Filter out stale, inaccurate, or duplicate updates to avoid unnecessary UI
 refreshes and reduce battery impact.
 
 ```swift
+@MainActor
 @Observable
-final class LocationService: @unchecked Sendable {
+final class LocationService {
     var currentLocation: CLLocation?
     var isTracking = false
 
@@ -56,43 +57,58 @@ final class LocationService: @unchecked Sendable {
     private let distanceFilter: CLLocationDistance = 10
     /// Maximum acceptable horizontal accuracy in meters.
     private let accuracyThreshold: CLLocationAccuracy = 100
+    /// Maximum acceptable age for a delivered location.
+    private let maximumLocationAge: TimeInterval = 15
 
     func startTracking() {
         guard !isTracking else { return }
         isTracking = true
 
-        trackingTask = Task { [weak self] in
-            guard let self else { return }
-            let updates = CLLocationUpdate.liveUpdates(.default)
+        trackingTask = Task {
+            do {
+                let updates = CLLocationUpdate.liveUpdates(.default)
 
-            for try await update in updates {
-                if Task.isCancelled { break }
+                for try await update in updates {
+                    if Task.isCancelled { break }
 
-                // Skip updates without a location
-                guard let location = update.location else { continue }
+                    // Skip updates without a location
+                    guard let location = update.location else { continue }
 
-                // Skip inaccurate readings
-                guard location.horizontalAccuracy >= 0,
-                      location.horizontalAccuracy < self.accuracyThreshold else {
-                    continue
+                    // Skip inaccurate readings
+                    guard location.horizontalAccuracy >= 0,
+                          location.horizontalAccuracy < accuracyThreshold else {
+                        continue
+                    }
+
+                    // Skip stale readings
+                    guard abs(location.timestamp.timeIntervalSinceNow) < maximumLocationAge else {
+                        continue
+                    }
+
+                    // Skip impossible movement when speed/course are available
+                    if location.speed >= 0, location.speed > 80 {
+                        continue
+                    }
+                    if location.course >= 0, location.courseAccuracy < 0 {
+                        continue
+                    }
+
+                    // Skip if the user has not moved enough
+                    if let last = lastReportedLocation,
+                       location.distance(from: last) < distanceFilter {
+                        continue
+                    }
+
+                    lastReportedLocation = location
+                    currentLocation = location
                 }
-
-                // Skip if the user has not moved enough
-                if let last = self.lastReportedLocation,
-                   location.distance(from: last) < self.distanceFilter {
-                    continue
-                }
-
-                self.lastReportedLocation = location
-
-                await MainActor.run {
-                    self.currentLocation = location
-                }
+            } catch is CancellationError {
+                // Expected when tracking stops.
+            } catch {
+                currentLocation = nil
             }
 
-            await MainActor.run {
-                self.isTracking = false
-            }
+            isTracking = false
         }
     }
 
@@ -125,7 +141,12 @@ CLLocationUpdate.liveUpdates(.otherNavigation)
 CLLocationUpdate.liveUpdates(.airborne)
 ```
 
-### Handling Stationary and Error States (iOS 18+)
+### Handling Diagnostics and Degraded Behavior (iOS 18+)
+
+Keep every `liveUpdates()` stream in an owned `Task` so the feature can cancel
+it when the map, route, or monitoring workflow stops. Treat diagnostics and bad
+location samples as state changes: update UI, fall back to cached/manual input,
+or suspend background work instead of continuing an invisible loop.
 
 ```swift
 for try await update in CLLocationUpdate.liveUpdates() {
@@ -165,6 +186,20 @@ Note: `authorizationDenied`, `authorizationDeniedGlobally`,
 available on iOS 18+. On iOS 17, check `update.location == nil` to detect
 unavailable location.
 
+Map diagnostics to user-visible behavior instead of silently waiting:
+
+- `authorizationDenied`: stop location work and show a Settings recovery path.
+- `authorizationDeniedGlobally`: explain that system Location Services are off.
+- `insufficientlyInUse`: suspend live updates until the feature is active again.
+- `locationUnavailable`: keep the feature usable with cached, typed, or map-region
+  input while waiting for recovery.
+- Reduced or approximate accuracy: widen search/geofence assumptions or request
+  full accuracy only from a user-triggered feature that needs it.
+
+Before publishing a location, filter for valid horizontal accuracy, acceptable
+timestamp age, and plausible movement. Use `speed` and `course` only when their
+values are valid; negative values mean the measurement is unavailable.
+
 ---
 
 ## CLServiceSession (iOS 18+)
@@ -175,6 +210,7 @@ unavailable location.
 Hold a strong reference for the session's entire duration.
 
 ```swift
+@MainActor
 @Observable
 final class LocationFeature {
     private var serviceSession: CLServiceSession?
@@ -185,9 +221,15 @@ final class LocationFeature {
         serviceSession = CLServiceSession(authorization: .whenInUse)
 
         locationTask = Task {
-            for try await update in CLLocationUpdate.liveUpdates() {
-                guard let location = update.location else { continue }
-                // process location
+            do {
+                for try await update in CLLocationUpdate.liveUpdates() {
+                    guard let location = update.location else { continue }
+                    // process location
+                }
+            } catch is CancellationError {
+                // Expected when the feature stops.
+            } catch {
+                // Show a degraded state or retry from user action.
             }
         }
     }
@@ -244,8 +286,8 @@ need an explicit session when:
 
 ### Basic Setup
 
-`CLMonitor` replaces `CLLocationManager` region monitoring. It is an `actor`,
-so all its APIs require `await`.
+Use `CLMonitor` for modern condition monitoring. It is an `actor`, so its
+async APIs require `await`.
 
 ```swift
 @available(iOS 17, *)
@@ -400,10 +442,16 @@ actor BackgroundLocationTracker {
         backgroundSession = CLBackgroundActivitySession()
 
         trackingTask = Task {
-            for try await update in CLLocationUpdate.liveUpdates(.fitness) {
-                guard let location = update.location else { continue }
-                // Record location for fitness tracking, navigation, etc.
-                await recordLocation(location)
+            do {
+                for try await update in CLLocationUpdate.liveUpdates(.fitness) {
+                    guard let location = update.location else { continue }
+                    // Record location for fitness tracking, navigation, etc.
+                    await recordLocation(location)
+                }
+            } catch is CancellationError {
+                // Expected when background tracking stops.
+            } catch {
+                // Persist an error state or retry from user action.
             }
         }
     }
@@ -480,10 +528,9 @@ func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
 
 ## Region Monitoring Migration (CLCircularRegion to CLMonitor)
 
-### Legacy Approach (Deprecated)
+### Older Delegate Approach
 
 ```swift
-// DEPRECATED
 let region = CLCircularRegion(center: coordinate, radius: 200, identifier: "office")
 region.notifyOnEntry = true
 region.notifyOnExit = true
@@ -679,12 +726,12 @@ Fix: reuse the existing monitor instance. Only create a new one after the
 old one has been fully torn down (conditions removed, reference released,
 NOT in the same run loop).
 
-### CLLocationUpdate.liveUpdates() returns nothing on iOS 17 without full accuracy
+### Accuracy-limited updates need explicit handling
 
-On iOS 17 (not iOS 18+), `liveUpdates()` may return no updates when the user
-has denied full accuracy. This is resolved in iOS 18. Target iOS 18+ or
-fall back to `CLLocationManager` if you need to handle approximate-only
-location on iOS 17.
+Approximate location may update infrequently. On iOS 18+, check diagnostic
+properties such as `accuracyLimited` and `locationUnavailable`; otherwise,
+treat `update.location == nil` as a state change and provide a degraded
+experience instead of spinning or timing out.
 
 ### Forgetting to hold CLBackgroundActivitySession
 

@@ -38,11 +38,12 @@ Add these keys to the app's Info.plist:
 | `NSAccessorySetupSupports` | `[String]` | Required. Array containing `Bluetooth` and/or `WiFi` |
 | `NSAccessorySetupBluetoothServices` | `[String]` | Service UUIDs the app discovers (Bluetooth) |
 | `NSAccessorySetupBluetoothNames` | `[String]` | Bluetooth names or substrings to match |
-| `NSAccessorySetupBluetoothCompanyIdentifiers` | `[Number]` | Bluetooth company identifiers |
+| `NSAccessorySetupBluetoothCompanyIdentifiers` | `[String]` | Two-byte Bluetooth company identifiers |
 
 The Bluetooth-specific keys must match the values used in `ASDiscoveryDescriptor`.
 If the app uses identifiers, names, or services not declared in Info.plist, the
-app crashes at discovery time.
+app crashes during AccessorySetupKit discovery. For Wi-Fi accessories, include
+`WiFi` in `NSAccessorySetupSupports` and match the descriptor's SSID rule.
 
 ### No Bluetooth Permission Required
 
@@ -69,12 +70,14 @@ descriptor.bluetoothNameSubstring = "MyDevice"
 descriptor.bluetoothRange = .immediate  // Only nearby devices
 ```
 
-A Bluetooth descriptor requires `bluetoothCompanyIdentifier` or
-`bluetoothServiceUUID`, plus at least one of:
+A Bluetooth descriptor needs at least one of `bluetoothCompanyIdentifier` or
+`bluetoothServiceUUID`. Add narrower matchers as needed:
 
-- `bluetoothNameSubstring`
-- `bluetoothManufacturerDataBlob` and `bluetoothManufacturerDataMask` (same length)
-- `bluetoothServiceDataBlob` and `bluetoothServiceDataMask` (same length)
+- `bluetoothNameSubstring` with a company identifier or service UUID
+- `bluetoothManufacturerDataBlob` and `bluetoothManufacturerDataMask` with a
+  company identifier; blob and mask must have the same length
+- `bluetoothServiceDataBlob` and `bluetoothServiceDataMask` with a service UUID;
+  blob and mask must have the same length
 
 ### Wi-Fi Descriptor
 
@@ -115,7 +118,7 @@ descriptor.supportedOptions = [.bluetoothPairingLE, .bluetoothTransportBridging]
 
 ### Creating the Session
 
-Create and activate an `ASAccessorySession` to manage discovery lifecycle:
+Create and activate an `ASAccessorySession` to manage discovery lifecycle. Wait for `.activated` before reading `session.accessories` or presenting the picker:
 
 ```swift
 import AccessorySetupKit
@@ -146,7 +149,7 @@ final class AccessoryManager {
         case .invalidated:
             // Session invalidated, cannot be reused
             break
-        default:
+        @unknown default:
             break
         }
     }
@@ -156,7 +159,7 @@ final class AccessoryManager {
 ### Showing the Picker
 
 Create `ASPickerDisplayItem` instances with a name, product image, and
-discovery descriptor, then pass them to the session:
+discovery descriptor, then pass them to the activated session:
 
 ```swift
 func showAccessoryPicker() {
@@ -251,7 +254,7 @@ private func handleEvent(_ event: ASAccessoryEvent) {
             pendingAccessory = nil
             beginCustomSetup(accessory)
         }
-    default:
+    @unknown default:
         break
     }
 }

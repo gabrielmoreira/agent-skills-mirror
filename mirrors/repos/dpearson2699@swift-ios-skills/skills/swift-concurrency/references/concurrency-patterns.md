@@ -11,7 +11,7 @@ code stays single-threaded by default until you choose to introduce concurrency.
 - [`@concurrent Attribute`](#concurrent-attribute)
 - [SE-0472: Task.immediate](#se-0472-taskimmediate)
 - [Isolated Conformances](#isolated-conformances)
-- [SE-0481: weak let (Proposed)](#se-0481-weak-let-proposed--swift-62)
+- [SE-0481: weak let](#se-0481-weak-let)
 - [SE-0475: Transactional Observation (Observations)](#se-0475-transactional-observation-observations)
 - [Global and Static State](#global-and-static-state)
 - [Migration and Build Settings](#migration-and-build-settings)
@@ -62,11 +62,18 @@ final class StickerModel {
 
 ## SE-0466: Default MainActor Isolation
 
-Enable with the `-default-isolation MainActor` compiler flag or the Xcode 26
-"Approachable Concurrency" build setting.
+Enable with the `-default-isolation MainActor` compiler flag, SwiftPM
+`.defaultIsolation(MainActor.self)`, or Xcode's separate `Default Actor
+Isolation` build setting set to `MainActor`.
+
+Do not confuse this with Xcode's `Approachable Concurrency` build setting, which
+enables a bundle of upcoming-feature flags such as nonisolated-nonsending by
+default, isolated-conformance inference, inferred Sendable captures, and related
+global-actor usability changes.
 
 **What it does:**
-- All declarations in the module are implicitly `@MainActor` unless opted out.
+- Unannotated declarations in the module are inferred as `@MainActor` unless
+  opted out.
 - Global and static variables are protected by the main actor by default.
 - Protocol conformances are implicitly isolated to `@MainActor`.
 - Eliminates most annotation burden for single-threaded UI code.
@@ -185,11 +192,11 @@ nonisolated struct GenericExporter {
 }
 ```
 
-## SE-0481: weak let (Proposed — Swift 6.2+)
+## SE-0481: weak let
 
 Immutable weak references (`weak let`) enable `Sendable` conformance for types
-that hold weak references, since immutability guarantees thread safety. Proposed
-in SE-0481; may not yet be available in shipping toolchains.
+that hold weak references, since immutability guarantees thread safety.
+SE-0481 is implemented in Swift 6.3.
 
 ## SE-0475: Transactional Observation (Observations)
 
@@ -221,6 +228,10 @@ With default MainActor isolation (SE-0466), this annotation is implicit.
 All approachable concurrency features are opt-in via:
 - **Xcode 26:** Swift Compiler > Concurrency section in build settings.
 - **SwiftPM:** `swiftSettings` in Package.swift using the `SwiftSetting` API.
+
+For Swift 6 language mode, strict concurrency checking is complete and
+data-race diagnostics are errors. Use Targeted or Minimal only as Swift 5
+migration settings while preparing code for Swift 6.
 
 Swift 6.2 includes migration tooling to help make necessary code changes
 automatically. See swift.org/migration for details.

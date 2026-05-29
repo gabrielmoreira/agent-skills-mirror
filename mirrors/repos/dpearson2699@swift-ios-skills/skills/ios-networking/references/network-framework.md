@@ -254,25 +254,11 @@ constrained paths (Low Data Mode).
 **Documentation:**
 [sosumi.ai/documentation/network/nwpathmonitor](https://sosumi.ai/documentation/network/nwpathmonitor)
 
-### Basic Reachability with AsyncStream
+### Basic Reachability with AsyncSequence
 
 ```swift
 import Network
 
-func networkStatusStream() -> AsyncStream<NWPath> {
-    AsyncStream { continuation in
-        let monitor = NWPathMonitor()
-        monitor.pathUpdateHandler = { path in
-            continuation.yield(path)
-        }
-        continuation.onTermination = { _ in
-            monitor.cancel()
-        }
-        monitor.start(queue: DispatchQueue(label: "NetworkMonitor"))
-    }
-}
-
-// Usage in a view model
 @MainActor @Observable
 class ConnectivityModel {
     var isConnected = true
@@ -280,7 +266,9 @@ class ConnectivityModel {
     var isConstrained = false
 
     func startMonitoring() async {
-        for await path in networkStatusStream() {
+        let monitor = NWPathMonitor()
+
+        for await path in monitor {
             isConnected = path.status == .satisfied
             isExpensive = path.isExpensive       // Cellular
             isConstrained = path.isConstrained   // Low Data Mode
@@ -314,7 +302,9 @@ wifiMonitor.start(queue: .global())
 ### Adapting Behavior
 
 ```swift
-for await path in networkStatusStream() {
+let monitor = NWPathMonitor()
+
+for await path in monitor {
     if path.isConstrained {
         // Low Data Mode: reduce image quality, skip prefetch
         imageQuality = .low
@@ -372,6 +362,11 @@ let connection = NWConnection(
 ## TLS Configuration
 
 Configure TLS for secure connections using `NWProtocolTLS.Options`.
+Network.framework operates below the URL Loading System, so ATS does not
+automatically enforce URLSession-style policy here. When you use
+Network.framework for a secure protocol, configure TLS parameters and trust
+handling for that protocol stack; keep deep certificate-trust and SPKI pinning
+implementation in `swift-security`.
 
 ```swift
 import Network
@@ -511,52 +506,82 @@ with async/await via closure-based state handlers.
 | **Wi-Fi Aware** | Not supported | `wifiAware` property |
 | **API style** | Callback-based | Closure-based with `Sendable` support |
 
-### Basic Usage
+### Basic Usage Shape
 
 ```swift
 import Network
 
-// Create with protocol stack parameters
-let connection = NetworkConnection(
-    to: .hostPort(host: "api.example.com", port: 443),
-    using: .tls
-)
+let endpoint = NWEndpoint.hostPort(host: "api.example.com", port: 443)
+```
 
-connection.onStateUpdate { state in
-    switch state {
-    case .ready:
-        print("Connected")
-    case .failed(let error):
-        print("Failed: \(error)")
-    case .cancelled:
-        print("Cancelled")
-    default:
-        break
-    }
+Use the initializer variant that matches your protocol stack. The documented
+forms are:
+
+```swift
+// Protocol-stack builder form.
+NetworkConnection(to: endpoint) {
+    // ProtocolStackBuilder<ApplicationProtocol>
 }
 
-connection.start()
+// Parameters-builder form.
+NetworkConnection(to: endpoint, using: builder)
 ```
+
+After constructing a concrete connection for your app's protocol stack, install
+state handlers and start it:
+
+```swift
+func startConnection<ApplicationProtocol>(
+    _ connection: NetworkConnection<ApplicationProtocol>
+) where ApplicationProtocol: NetworkProtocolOptions {
+    connection.onStateUpdate { state in
+        switch state {
+        case .ready:
+            print("Connected")
+        case .failed(let error):
+            print("Failed: \(error)")
+        case .cancelled:
+            print("Cancelled")
+        default:
+            break
+        }
+    }
+
+    connection.start()
+}
+```
+
+`NetworkConnection` is for lower-level protocol stacks and QUIC-style transport
+work. Keep ordinary HTTP APIs on `URLSession` unless you need capabilities that
+the URL Loading System does not provide.
 
 ### QUIC Multiplexed Streams
 
-`NetworkConnection` supports QUIC stream multiplexing natively:
+`NetworkConnection<QUIC>` supports QUIC stream multiplexing natively.
+Opening and accepting streams are asynchronous and throwing operations.
 
 ```swift
-// Open a new bidirectional stream
-let stream = connection.openStream(directionality: .bidirectional)
+func openBidirectionalStream(
+    on connection: NetworkConnection<QUIC>
+) async throws -> QUIC.Stream<QUICStream> {
+    try await connection.openStream(directionality: .bidirectional)
+}
 
-// Handle inbound streams
-connection.inboundStreams { stream in
-    // Process incoming stream
+func handleInboundStreams(
+    on connection: NetworkConnection<QUIC>
+) async throws {
+    try await connection.inboundStreams { stream in
+        // Process each incoming QUIC stream.
+    }
 }
 ```
 
 ### Migration Guidance
 
-For new iOS 26+ projects, prefer `NetworkConnection` over `NWConnection`:
+For new iOS 26+ low-level networking work, evaluate `NetworkConnection` before
+adding new `NWConnection` code:
 - It provides stronger type safety through its generic `ApplicationProtocol`.
-- Stream multiplexing is a first-class concept.
+- Stream multiplexing is a first-class concept for QUIC.
 - The API is designed for modern Swift with `Sendable` conformance.
 
 For projects supporting iOS versions before 26, continue using `NWConnection`.

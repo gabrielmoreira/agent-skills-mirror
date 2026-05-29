@@ -1,10 +1,9 @@
 ---
 name: decision-curve-analysis
-description: Use when evaluating the clinical utility of a binary prediction model from a single clinical CSV file by fitting a logistic decision-curve model, plotting decision and clinical-impact curves, and exporting summary outputs. NOT for: survival calibration, ROC-only discrimination analysis, nomogram construction, or time-to-event outcomes.
+description: "Use when evaluating the clinical utility of a binary prediction model from a single clinical CSV file by fitting a logistic decision-curve model, plotting decision and clinical-impact curves, and exporting summary outputs. NOT for: survival calibration, ROC-only discrimination analysis, nomogram construction, or time-to-event outcomes."
 license: MIT
-author: AIPOCH
+skill-author: AIPOCH
 ---
-> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Decision Curve Analysis
 
@@ -59,8 +58,8 @@ Rscript scripts/main.R \
 |  | `--outcome_col` | character | `fustat` | Binary outcome column encoded as `0/1` |
 |  | `--predictor_col` | character | `riskScore` | Numeric predictor column used in the logistic DCA model |
 |  | `--study_design` | character | `case-control` | Study design: `case-control` or `cohort` |
-|  | `--population_prevalence` | double | `0.3` | Population prevalence for case-control DCA |
-|  | `--threshold_by` | double | `0.01` | Threshold step size used to generate the threshold grid |
+|  | `--population_prevalence` | double | `0.3` | Population prevalence for case-control DCA (ignored for cohort design) |
+|  | `--threshold_by` | double | `0.01` | Threshold step size; values below 0.005 significantly increase computation time |
 |  | `--confidence_level` | double | `0.95` | Confidence level passed to `rmda::decision_curve()` |
 |  | `--population_size` | integer | `1000` | Population size used in the clinical-impact plot |
 |  | `--n_cost_benefits` | integer | `8` | Number of cost-benefit labels in the clinical-impact plot |
@@ -97,9 +96,11 @@ Patient_3,1,0.534809528754818,5.46860669585825,3.40086667402884
 - File extension must be `.csv`.
 - Row names must be non-missing, unique sample IDs.
 - `outcome_col` and `predictor_col` must exist.
-- Outcome values must use `0/1` encoding.
+- Outcome values must use `0/1` encoding. Outcome values are coerced to numeric before validation; logical `TRUE`/`FALSE` are converted to `1`/`0`. Factor or character values will produce `SKILL_INVALID_PARAMETER`.
 - Predictor values must be finite numeric values.
 - At least 20 rows, 5 positive outcomes, and 5 negative outcomes are required.
+
+**Design note:** When `--study_design cohort` is selected, `--population_prevalence` has no statistical effect; the raw observed event rate is used instead. A warning is emitted if you set a non-default `population_prevalence` with cohort design.
 
 ---
 
@@ -107,11 +108,11 @@ Patient_3,1,0.534809528754818,5.46860669585825,3.40086667402884
 
 | File | Format | Description |
 |------|--------|-------------|
-| `data/dca_model.rds` | R serialized object (`.rds`) | Saved `rmda::decision_curve()` result object |
-| `table/dca_summary.txt` | Plain text (`.txt`) | Text summary of decision-curve net benefit statistics |
-| `plot/decision_curve.pdf` | PDF (`.pdf`) | Decision-curve plot |
-| `plot/clinical_impact_curve.pdf` | PDF (`.pdf`) | Clinical-impact plot |
-| `session_info.txt` | Plain text (`.txt`) | Session information and run parameters |
+| `data/dca_model.rds` | RDS | Saved `rmda::decision_curve()` result object |
+| `table/dca_summary.txt` | Plain text | Text summary of decision-curve net benefit statistics |
+| `plot/decision_curve.pdf` | PDF | Decision-curve plot |
+| `plot/clinical_impact_curve.pdf` | PDF | Clinical-impact plot |
+| `session_info.txt` | Plain text | Session information and run parameters |
 
 ### `dca_summary.txt`
 
@@ -128,6 +129,7 @@ Summary fields include:
 - Confirm the clinical CSV exists and is readable.
 - Check that the requested outcome and predictor columns are present.
 - Validate sample IDs, binary outcome coding, and numeric predictor values.
+- Emit warning if `population_prevalence` is non-default and `study_design` is `cohort`.
 
 ### Step 2: Prepare Analysis Dataset
 - Keep only the outcome and predictor columns required for DCA.
@@ -144,6 +146,18 @@ Summary fields include:
 - Export the text summary as `.txt`.
 - Render the decision curve and clinical-impact curve as PDFs.
 - Record session metadata for reproducibility.
+
+---
+
+## Agent Response Contract
+
+After a successful run, report:
+
+1. **Study design and predictor** used (e.g., case-control, riskScore)
+2. **Net benefit metric** reported (NB or sNB)
+3. **Threshold range and step** used for the grid
+4. **Key finding**: net benefit at clinically relevant threshold(s) from `dca_summary.txt`
+5. **Artifact paths**: `plot/decision_curve.pdf`, `plot/clinical_impact_curve.pdf`, `data/dca_model.rds`
 
 ---
 
@@ -191,14 +205,24 @@ Rscript scripts/main.R \
 
 | Error | Cause | Solution |
 |-------|-------|----------|
-| `SKILL_INVALID_PARAMETER` | Invalid design, invalid numeric range, invalid outcome coding, insufficient rows, insufficient class counts, or failed model fitting | Check arguments, data ranges, and binary outcome coding |
+| `SKILL_INVALID_PARAMETER` | Invalid design, invalid numeric range, invalid outcome coding, insufficient rows/class counts, or failed model fitting | Check arguments, data ranges, and binary outcome coding |
 | `SKILL_FILE_NOT_FOUND` | Input CSV does not exist | Verify the input path |
 | `SKILL_MISSING_COLUMNS` | Required columns are absent | Check `outcome_col` and `predictor_col` names |
 | `SKILL_EMPTY_DATA` | Input file is empty or contains no usable rows/columns | Check the CSV content |
 | `SKILL_SAMPLE_MISMATCH` | Reserved for cross-file sample mismatch scenarios | Not expected for this single-file workflow |
-| `SKILL_PACKAGE_NOT_FOUND` | Required R package is missing | Install the listed CRAN package(s) |
+| `SKILL_PACKAGE_NOT_FOUND` | Required R package is missing | Install with: `Rscript -e "install.packages('rmda', repos='https://cloud.r-project.org')"` |
 
 **IF error persists**, READ: `references/troubleshooting.md`
+
+---
+
+## Input Validation
+
+This skill accepts: a single clinical CSV file with a binary outcome column (0/1 encoded) and a numeric predictor column, for decision curve analysis of a binary prediction model.
+
+If the user's request does not involve decision curve analysis of a binary prediction model — for example, asking to run survival analysis, build ROC curves only, construct a nomogram, or analyze multiclass outcomes — do not proceed with the workflow. Instead respond:
+
+> "Decision Curve Analysis is designed to evaluate the clinical utility of binary prediction models by computing net benefit across decision thresholds. Your request appears to be outside this scope. Please provide a binary outcome dataset for DCA, or use a more appropriate tool for survival analysis, ROC analysis, or nomogram construction."
 
 ---
 
@@ -263,3 +287,7 @@ tests/output/
 - [x] Test data provided in `tests/data/`
 - [x] Error handling with `SKILL_*` codes
 - [x] Reference docs provided in `references/`
+
+---
+
+*Last updated: 2026-04-27 | Version: 1.1.0*

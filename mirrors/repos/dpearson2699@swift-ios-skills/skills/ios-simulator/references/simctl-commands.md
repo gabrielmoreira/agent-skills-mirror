@@ -1,6 +1,6 @@
 # simctl Command Reference
 
-Complete reference for `xcrun simctl` subcommands with syntax, flags, and examples. For workflows and patterns, see the main [SKILL.md](../SKILL.md).
+Common `xcrun simctl` subcommands with syntax, flags, and examples. For workflows and patterns, see the main [SKILL.md](../SKILL.md).
 
 ## Contents
 
@@ -24,6 +24,7 @@ Complete reference for `xcrun simctl` subcommands with syntax, flags, and exampl
 | `rename` | `simctl rename <UDID> <new-name>` | |
 | `erase` | `simctl erase <UDID\|all>` | Factory reset — wipes apps and data, keeps the device. |
 | `boot` | `simctl boot <UDID>` | Starts the device runtime. |
+| `bootstatus` | `simctl bootstatus <UDID> [-b]` | Waits until the device finishes booting. Use `-b` in scripts to boot if needed and block until ready. |
 | `shutdown` | `simctl shutdown <UDID\|all>` | Stops the device runtime. |
 | `upgrade` | `simctl upgrade <UDID> <runtime-id>` | Upgrades device to a newer runtime. |
 | `pair` | `simctl pair <watch-UDID> <phone-UDID>` | Pairs a watchOS simulator with an iOS simulator. |
@@ -59,6 +60,15 @@ Use the identifier strings (e.g., `com.apple.CoreSimulator.SimDeviceType.iPhone-
 | `get_app_container` | `simctl get_app_container <UDID> <bundle-id> [app\|data\|groups\|<group-id>]` | Returns the filesystem path to the container. `groups` lists all App Group containers. |
 | `appinfo` | `simctl appinfo <UDID> <bundle-id>` | Prints Info.plist-derived information as JSON. |
 
+For scripts that boot a simulator before installing, prefer:
+
+```bash
+xcrun simctl bootstatus <UDID> -b
+xcrun simctl install <UDID> build/Build/Products/Debug-iphonesimulator/MyApp.app
+```
+
+`bootstatus -b` safely boots if needed and waits until the simulator finishes booting. If you call `simctl boot` separately, follow it with `xcrun simctl bootstatus <UDID>` before `install`, `launch`, `push`, or `location`.
+
 ### Launch Arguments and Environment
 
 ```bash
@@ -68,15 +78,17 @@ xcrun simctl launch booted com.example.MyApp --reset-onboarding --debug-mode
 # Override language and locale
 xcrun simctl launch booted com.example.MyApp -AppleLanguages "(ja)" -AppleLocale "ja_JP"
 
-# Set environment variables via spawn
-xcrun simctl spawn booted env MY_VAR=value /path/to/MyApp.app/MyApp
+# Set environment variables for the launched app
+SIMCTL_CHILD_MY_VAR=value xcrun simctl launch booted com.example.MyApp
 ```
+
+Use the `SIMCTL_CHILD_` prefix for environment variables passed to `simctl launch`. Use `simctl spawn` for arbitrary processes inside the simulator, such as `log stream`, not as the default way to launch an installed app with environment.
 
 ## Testing and Simulation Commands
 
 | Command | Synopsis | Notes |
 |---------|----------|-------|
-| `push` | `simctl push <UDID> <bundle-id> <payload.json\|->` | Simulates local push delivery. Use `-` for stdin. |
+| `push` | `simctl push <UDID> [<bundle-id>] <payload.json\|->` | Simulates local push delivery. Use `-` for stdin. Bundle ID is optional when the payload contains `Simulator Target Bundle`. |
 | `openurl` | `simctl openurl <UDID> <URL>` | Triggers universal links or custom URL schemes. |
 | `location` | `simctl location <UDID> <set\|clear\|list\|run\|start> [args]` | `set <lat,lon>`, `run <scenario>`, `list`, `start`, or `clear`. |
 | `privacy` | `simctl privacy <UDID> <grant\|revoke\|reset> <service> <bundle-id>` | See [Privacy Service Names](#privacy-service-names) for service values. |
@@ -106,6 +118,8 @@ The JSON payload mirrors the APNs payload format. The `Simulator Target Bundle` 
 }
 ```
 
+The payload must be a top-level JSON object, include a valid `aps` dictionary, and be 4096 bytes or less. `simctl push` supports only application remote push notifications; it does not support VoIP, Complication, File Provider, or other push types.
+
 ### Location Scenarios
 
 The `run` subcommand accepts predefined scenario names, not GPX file paths:
@@ -117,6 +131,14 @@ xcrun simctl location booted list
 # Run a predefined scenario
 xcrun simctl location booted run "City Run"
 
+# Follow custom command-line waypoints
+xcrun simctl location booted start --speed=15 --interval=1 \
+    37.3349,-122.0090 37.3317,-122.0307
+
+# Read waypoints from stdin, one "lat,lon" pair per line
+printf "37.3349,-122.0090\n37.3317,-122.0307\n" | \
+    xcrun simctl location booted start --distance=100 -
+
 # Set a fixed coordinate
 xcrun simctl location booted set 37.3349,-122.0090
 
@@ -126,7 +148,7 @@ xcrun simctl location booted clear
 
 Available scenarios include "City Run", "City Bicycle Ride", "Freeway Drive", and "Apple" (stationary at Apple Park). Use `list` to see all options on your system.
 
-For custom routes using GPX files, use Xcode's Debug > Simulate Location menu instead of `simctl location run`.
+Use `start` for command-line waypoint routes. It accepts at least two latitude/longitude pairs, optional speed, and either distance- or interval-based update cadence. The command boundary matters: `simctl location run` accepts built-in scenario names, not GPX file paths; for custom routes already stored as GPX files, use Xcode's Debug > Simulate Location menu instead.
 
 ## Media and IO Commands
 
@@ -183,7 +205,7 @@ Service names accepted by `simctl privacy grant|revoke|reset`:
 
 | Service | Description |
 |---------|-------------|
-| `all` | All services (reset only) |
+| `all` | All services. `grant` and `revoke` require a bundle identifier; `reset` may omit it. |
 | `calendar` | EventKit calendar access |
 | `contacts-limited` | Limited contacts access |
 | `contacts` | Full contacts access |

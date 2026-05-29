@@ -13,7 +13,9 @@ Rich notifications enhance the standard notification banner with images, video, 
 
 ## Notification Service Extension
 
-A Notification Service Extension runs when a notification with `mutable-content: 1` arrives. It has approximately 30 seconds to modify the notification content before the system displays it. If the extension does not call the content handler in time, the system displays the original notification.
+A Notification Service Extension runs for an alerting remote notification whose payload has `mutable-content: 1` and an `alert` dictionary with title, subtitle, or body content. It has approximately 30 seconds to modify the notification content before the system displays it. Call the content handler on every path: success, partial failure, invalid payload, and `serviceExtensionTimeWillExpire()`. If the extension does not call the handler in time, the system displays the original notification.
+
+When reviewing a flawed rich-notification design, explicitly correct four contracts: silent pushes do not trigger service extensions; attachments must be supported files on disk and are validated and stored by the system; communication notifications require the capability, `NSUserActivityTypes`, `INInteraction` donation, and `content.updating(from:)`; every service-extension path, including download/decryption failures and `serviceExtensionTimeWillExpire()`, must call the content handler exactly once with original, best-attempt, or updated content.
 
 ### Creating the Extension
 
@@ -25,6 +27,7 @@ import UserNotifications
 class NotificationService: UNNotificationServiceExtension {
     private var contentHandler: ((UNNotificationContent) -> Void)?
     private var bestAttemptContent: UNMutableNotificationContent?
+    private var didComplete = false
 
     override func didReceive(
         _ request: UNNotificationRequest,
@@ -127,8 +130,8 @@ extension NotificationService {
             return "New notification"  // fallback
         }
         // Use your encryption library (CryptoKit, etc.) to decrypt
-        // The decryption key should be stored in the shared Keychain
-        // accessible to both the main app and the extension via App Groups.
+        // Store notification decryption keys in a Keychain access group shared
+        // by the app and extension, not in UserDefaults or the APNs payload.
         do {
             let decrypted = try EncryptionService.shared.decrypt(data)
             return String(data: decrypted, encoding: .utf8) ?? "New notification"
@@ -139,12 +142,13 @@ extension NotificationService {
 }
 ```
 
-### App Groups for Data Sharing
+### Sharing Data with Extensions
 
-The service extension runs in a separate process from the main app. Use App Groups to share data (Keychain items, UserDefaults, files) between them.
+The service extension runs in a separate process from the main app. Use App Groups for shared files and `UserDefaults`; use Keychain Sharing for secrets or tokens.
 
 1. Enable "App Groups" capability on both the main app target and the extension target.
 2. Use the same group identifier (e.g., `group.com.example.myapp`).
+3. Enable "Keychain Sharing" on both targets for shared keychain items. The `kSecAttrAccessGroup` value must be one of the target's keychain access groups, not the App Group container identifier.
 
 ```swift
 // Shared UserDefaults
@@ -155,11 +159,11 @@ let sharedContainer = FileManager.default.containerURL(
     forSecurityApplicationGroupIdentifier: "group.com.example.myapp"
 )
 
-// Shared Keychain: set kSecAttrAccessGroup to your App Group identifier
-// when storing/retrieving Keychain items.
+// Shared Keychain: set kSecAttrAccessGroup to a Keychain Sharing access group
+// that both targets include in their entitlements.
 ```
 
-**Extension memory limit:** Notification Service Extensions have a strict memory limit (approximately 24 MB). Do not load large frameworks or perform memory-intensive operations. If the extension exceeds memory limits, the system terminates it and shows the original notification.
+**Extension memory:** Notification Service Extensions are memory-constrained. Do not load large frameworks or perform memory-intensive operations. If the system terminates the extension, it shows the original notification.
 
 ## Notification Attachments
 
@@ -198,7 +202,7 @@ let attachment = try UNNotificationAttachment(
 content.attachments = [attachment]
 ```
 
-**Important:** The file URL must point to a file that the notification system can access. For service extensions, write to the extension's temporary directory. For local notifications, write to a location accessible by the notification system (not the app's sandbox). The system moves the file after attachment creation, so the original URL becomes invalid.
+**Important:** The file URL must point to a supported audio, image, or video file on disk. For service extensions, write downloads to the extension's temporary directory before creating `UNNotificationAttachment`; do not attach arbitrary remote URLs or unsupported file types. For local notifications, create the attachment from a file the app can read when scheduling. The system validates attachments and moves them into its attachment data store; it copies attachments located inside the app bundle.
 
 ### Multiple Attachments
 
@@ -211,7 +215,7 @@ content.attachments = [imageAttachment, audioAttachment]
 
 ### GIF Animations
 
-GIFs animate automatically in the expanded notification view. No special handling needed -- attach the GIF file as any other image.
+GIF files are supported image attachments and may contain an animated image sequence. Test the expanded notification UI for the actual presentation you need.
 
 ```swift
 let gifURL = tempDir.appendingPathComponent("animation.gif")
@@ -241,9 +245,7 @@ The extension's `Info.plist` must declare which notification categories it handl
     <key>NSExtensionAttributes</key>
     <dict>
         <key>UNNotificationExtensionCategory</key>
-        <!-- Single category -->
-        <string>MESSAGE_CATEGORY</string>
-        <!-- Or multiple categories -->
+        <!-- Use a string for one category, or an array for multiple. -->
         <array>
             <string>MESSAGE_CATEGORY</string>
             <string>PHOTO_CATEGORY</string>
@@ -428,12 +430,14 @@ class InteractiveNotificationViewController: UIViewController, UNNotificationCon
 
 ## Communication Notifications
 
-Communication notifications display the sender's avatar and name prominently. They use SiriKit intents (`INSendMessageIntent`) to provide sender information.
+Communication notifications display the sender's avatar and name prominently. They use SiriKit intents (`INSendMessageIntent` or `INStartCallIntent`) to provide participant information and can have different Focus and summary behavior, so use them only for real person-to-person communication.
 
 ### Setup
 
-1. Add the `Intents` framework to the Notification Service Extension target.
-2. Configure `INSendMessageIntent` in the service extension before delivery.
+1. Enable the Communication Notifications capability on the app target.
+2. Add supported intent class names, such as `INSendMessageIntent`, to `NSUserActivityTypes` in `Info.plist`.
+3. Add the `Intents` framework to the Notification Service Extension target.
+4. Configure an `INSendMessageIntent`, create an `INInteraction`, set `direction = .incoming`, donate the interaction, then call `content.updating(from:)` before passing the updated content to the content handler.
 
 ```swift
 import Intents
@@ -445,7 +449,7 @@ extension NotificationService {
         senderName: String,
         senderImageURL: String?,
         conversationId: String
-    ) async {
+    ) async -> UNNotificationContent? {
         // Create the sender identity
         let handle = INPersonHandle(value: conversationId, type: .unknown)
         var avatar: INImage? = nil
@@ -458,9 +462,12 @@ extension NotificationService {
             }
         }
 
+        let nameComponents = PersonNameComponentsFormatter()
+            .personNameComponents(from: senderName)
+
         let sender = INPerson(
             personHandle: handle,
-            nameComponents: try? PersonNameComponents(senderName),
+            nameComponents: nameComponents,
             displayName: senderName,
             image: avatar,
             contactIdentifier: nil,
@@ -484,15 +491,11 @@ extension NotificationService {
         interaction.direction = .incoming
         try? await interaction.donate()
 
-        // Update the notification content with the intent
         do {
-            let updatedContent = try content.updating(from: intent)
-            // Copy updated properties back to mutable content
-            // The updating(from:) method returns a new UNNotificationContent,
-            // so we need to use the content handler with the updated version.
-            // In practice, call the content handler with updatedContent directly.
+            return try content.updating(from: intent)
         } catch {
             print("Failed to update content with intent: \(error)")
+            return nil
         }
     }
 }
@@ -531,9 +534,12 @@ override func didReceive(
                 avatar = INImage(imageData: data)
             }
 
+            let nameComponents = PersonNameComponentsFormatter()
+                .personNameComponents(from: senderName)
+
             let sender = INPerson(
                 personHandle: handle,
-                nameComponents: try? PersonNameComponents(senderName),
+                nameComponents: nameComponents,
                 displayName: senderName,
                 image: avatar,
                 contactIdentifier: nil,
@@ -571,8 +577,8 @@ override func didReceive(
 **Service extension not running:**
 - Verify `mutable-content: 1` is set in the APNs payload.
 - The notification must have an alert (title or body). Silent pushes do not trigger the service extension.
-- Check that the extension's bundle identifier is `<main-app-bundle-id>.NotificationServiceExtension`.
-- Confirm the extension is included in the same App Group as the main app if sharing data.
+- Confirm the service extension target is embedded in the containing app and its bundle identifier/provisioning profile are valid.
+- Confirm both targets include the same App Group or Keychain Sharing entitlements if they share data.
 
 **Content extension not showing:**
 - Verify the `UNNotificationExtensionCategory` in Info.plist matches the `categoryIdentifier` in the notification.
@@ -580,10 +586,14 @@ override func didReceive(
 - Ensure `UNNotificationExtensionInitialContentSizeRatio` is set to a reasonable value.
 
 **Memory pressure:**
-- Service extensions have approximately 24 MB of memory.
-- Content extensions have more memory but should still be conservative.
+- Extensions are memory-constrained and can be terminated under pressure.
 - Avoid loading large frameworks (no SwiftUI, no heavy networking libraries).
 - Use `URLSession` directly for network requests in extensions.
+
+**Fallback handling:**
+- Always call the content handler exactly once on every path.
+- On download, decryption, donation, or `content.updating(from:)` failure, return the original or best-attempt content rather than dropping the notification.
+- In `serviceExtensionTimeWillExpire()`, stop waiting for in-flight work and call the content handler immediately with the best content available.
 
 **Network access in extensions:**
 - Extensions can make network requests. Use `URLSession` with the `.default` configuration.
@@ -641,28 +651,34 @@ class NotificationService: UNNotificationServiceExtension {
                     senderImageURL: content.userInfo["senderImage"] as? String,
                     conversationId: convId
                 ) {
-                    contentHandler(updated)
+                    finish(with: updated)
                     return
                 }
             }
 
-            contentHandler(content)
+            finish(with: content)
         }
     }
 
     override func serviceExtensionTimeWillExpire() {
-        if let handler = contentHandler, let content = bestAttemptContent {
-            handler(content)
+        if let content = bestAttemptContent {
+            finish(with: content)
         }
     }
 
     // MARK: - Private
 
+    private func finish(with content: UNNotificationContent) {
+        guard !didComplete, let handler = contentHandler else { return }
+        didComplete = true
+        handler(content)
+    }
+
     private func decryptBody(_ base64: String) -> String? {
         guard let data = Data(base64Encoded: base64) else { return nil }
-        // Use shared Keychain via App Group to retrieve encryption key
-        let defaults = UserDefaults(suiteName: "group.com.example.myapp")
-        guard let keyData = defaults?.data(forKey: "encryptionKey") else { return nil }
+        guard let keyData = SharedKeychain.loadData(
+            account: "notificationEncryptionKey"
+        ) else { return nil }
         // Decrypt using CryptoKit or similar
         return try? Decryptor.decrypt(data, key: keyData)
     }
@@ -704,9 +720,12 @@ class NotificationService: UNNotificationServiceExtension {
             avatar = INImage(imageData: data)
         }
 
+        let nameComponents = PersonNameComponentsFormatter()
+            .personNameComponents(from: senderName)
+
         let sender = INPerson(
             personHandle: handle,
-            nameComponents: try? PersonNameComponents(senderName),
+            nameComponents: nameComponents,
             displayName: senderName,
             image: avatar,
             contactIdentifier: nil,

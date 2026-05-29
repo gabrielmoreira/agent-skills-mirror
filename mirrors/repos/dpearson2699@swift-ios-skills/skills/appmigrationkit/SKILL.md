@@ -1,13 +1,15 @@
 ---
 name: appmigrationkit
-description: "Transfer app data between platforms using AppMigrationKit. Use when implementing one-time data migration from Android or other platforms to iOS, managing cross-platform transfer sessions with AppMigrationExtension, packaging and archiving user data for export, importing resources on the destination device, tracking transfer progress, handling migration errors, or building onboarding flows that import existing user data."
+description: "Transfer app data to or from other platforms using AppMigrationKit. Use when implementing system-orchestrated one-time migration between iOS and Android or another platform, building an AppMigrationExtension, packaging transportable resources with ResourcesArchiver, importing resources on the destination device, reporting import progress, handling migration errors and app group cleanup, checking MigrationStatus, or testing migration code with AppMigrationTester."
 ---
 
 # AppMigrationKit
 
 One-time cross-platform data transfer for app resources. Enables apps to
-export data from one platform (e.g., Android) and import it on iOS during
-device setup or onboarding. iOS 26+ / iPadOS 26+ / Swift 6.3.
+export data to or import data from another platform (for example, Android)
+during device setup or onboarding. AppMigrationKit APIs are iOS 26.0+ /
+iPadOS 26.0+; the data-container entitlement is iOS 26.1+ / iPadOS 26.1+ /
+Mac Catalyst 26.1+. Swift 6.3.
 
 > **Beta-sensitive.** AppMigrationKit is new in iOS 26 and may change before GM.
 > Re-check current Apple documentation before relying on specific API details.
@@ -75,7 +77,9 @@ identifier of the containing app:
 
 No other values are valid. This entitlement grants the extension read access
 to the containing app's data container during export and write access during
-import.
+import. The entitlement itself is available on iOS 26.1+, iPadOS 26.1+,
+and Mac Catalyst 26.1+, even though the core AppMigrationKit APIs are
+available on iOS 26.0+ and iPadOS 26.0+.
 
 ### Extension Target
 
@@ -96,14 +100,22 @@ The extension accesses the containing app's files through `appContainer`:
 ```swift
 import AppMigrationKit
 
-struct MyMigrationExtension: ResourcesExportingWithOptions, ResourcesImporting {
-    // Access the containing app's directories
-    let container = appContainer
+struct MyMigrationExtension: ResourcesExporting {
+    var resourcesSizeEstimate: Int { estimateTotalExportSize() }
+    var resourcesVersion: String { "1.0" }
+    var resourcesCompressible: Bool { true }
 
-    // container.bundleIdentifier     -- app's bundle ID
-    // container.containerRootDirectory -- root of the app container
-    // container.documentsDirectory    -- Documents/
-    // container.applicationSupportDirectory -- Application Support/
+    func exportResources(
+        to archiver: sending ResourcesArchiver,
+        request: MigrationRequest
+    ) async throws {
+        let container = appContainer
+
+        // container.bundleIdentifier     -- app's bundle ID
+        // container.containerRootDirectory -- root of the app container
+        // container.documentsDirectory    -- Documents/
+        // container.applicationSupportDirectory -- Application Support/
+    }
 }
 ```
 
@@ -303,24 +315,25 @@ The system uses this to display transfer progress to the user. Update
 `completedUnitCount` incrementally during import:
 
 ```swift
-var resourcesImportProgress: Progress {
-    Progress(totalUnitCount: 100)
-}
+struct MyMigrationExtension: ResourcesImporting {
+    private let importProgress = Progress(totalUnitCount: 100)
 
-func importResources(
-    at importedDataURL: URL,
-    request: ResourcesImportRequest
-) async throws {
-    let progress = resourcesImportProgress
-    let files = try FileManager.default.contentsOfDirectory(
-        at: importedDataURL, includingPropertiesForKeys: nil
-    )
-    let increment = Int64(100 / max(files.count, 1))
-    for file in files {
-        try processFile(file)
-        progress.completedUnitCount += increment
+    var resourcesImportProgress: Progress { importProgress }
+
+    func importResources(
+        at importedDataURL: URL,
+        request: ResourcesImportRequest
+    ) async throws {
+        let files = try FileManager.default.contentsOfDirectory(
+            at: importedDataURL, includingPropertiesForKeys: nil
+        )
+        let increment = Int64(100 / max(files.count, 1))
+        for file in files {
+            try processFile(file)
+            importProgress.completedUnitCount += increment
+        }
+        importProgress.completedUnitCount = 100
     }
-    progress.completedUnitCount = 100
 }
 ```
 

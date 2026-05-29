@@ -240,11 +240,14 @@ extension GameScene: SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         let mask = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
         if mask == PhysicsCategory.player | PhysicsCategory.enemy {
-            handlePlayerHit(contact)
+            queuePlayerHit()
         }
     }
 }
 ```
+
+Contact callbacks run during physics simulation. Make `queuePlayerHit()` set a
+flag or append an event, then apply node/body/world mutations in `update(_:)`.
 
 ### Forces and Impulses
 
@@ -470,6 +473,7 @@ Set `physicsWorld.contactDelegate = self` in `didMove(to:)`, not in
 - [ ] Physics `contactDelegate` set in `didMove(to:)`
 - [ ] Category, collision, and contact bit masks configured correctly
 - [ ] `contactTestBitMask` set for any pair needing `didBegin`/`didEnd` callbacks
+- [ ] Contact callbacks queue changes instead of mutating the physics world directly
 - [ ] Static bodies use `isDynamic = false`
 - [ ] `SKShapeNode` avoided in performance-critical paths; `SKSpriteNode` preferred
 - [ ] Actions that move nodes offscreen include `.removeFromParent()` in sequence

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `holaboss-ai/holaOS` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `holaboss-ai/holaOS` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `holaboss-ai/holaOS` — 26 default patterns, 0 followed patterns, 11 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,11 +65,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`runtime/harnesses/src/embedded-skills/browser-core-efficient/SKILL.md`](runtime/harnesses/src/embedded-skills/browser-core-efficient/SKILL.md) |
 | 5 | ✓ | [`runtime/harnesses/src/embedded-skills/browser-qa/SKILL.md`](runtime/harnesses/src/embedded-skills/browser-qa/SKILL.md) |
 | 6 | ✓ | [`runtime/harnesses/src/embedded-skills/build-dashboard/SKILL.md`](runtime/harnesses/src/embedded-skills/build-dashboard/SKILL.md) |
-| 7 | ✓ | [`runtime/harnesses/src/embedded-skills/frontend-design/SKILL.md`](runtime/harnesses/src/embedded-skills/frontend-design/SKILL.md) |
-| 8 | ✓ | [`runtime/harnesses/src/embedded-skills/interface-design/SKILL.md`](runtime/harnesses/src/embedded-skills/interface-design/SKILL.md) |
-| 9 | ✓ | [`runtime/harnesses/src/embedded-skills/mcp-configurator/SKILL.md`](runtime/harnesses/src/embedded-skills/mcp-configurator/SKILL.md) |
-| 10 | ✓ | [`runtime/harnesses/src/embedded-skills/skill-creator/SKILL.md`](runtime/harnesses/src/embedded-skills/skill-creator/SKILL.md) |
-| 11 | ✓ | [`runtime/harnesses/src/embedded-skills/skill-installer/SKILL.md`](runtime/harnesses/src/embedded-skills/skill-installer/SKILL.md) |
+| 7 | ✓ | [`runtime/harnesses/src/embedded-skills/create-teammate/SKILL.md`](runtime/harnesses/src/embedded-skills/create-teammate/SKILL.md) |
+| 8 | ✓ | [`runtime/harnesses/src/embedded-skills/frontend-design/SKILL.md`](runtime/harnesses/src/embedded-skills/frontend-design/SKILL.md) |
+| 9 | ✓ | [`runtime/harnesses/src/embedded-skills/interface-design/SKILL.md`](runtime/harnesses/src/embedded-skills/interface-design/SKILL.md) |
+| 10 | ✓ | [`runtime/harnesses/src/embedded-skills/mcp-configurator/SKILL.md`](runtime/harnesses/src/embedded-skills/mcp-configurator/SKILL.md) |
+| 11 | ✓ | [`runtime/harnesses/src/embedded-skills/skill-creator/SKILL.md`](runtime/harnesses/src/embedded-skills/skill-creator/SKILL.md) |
+| 12 | ✓ | [`runtime/harnesses/src/embedded-skills/skill-installer/SKILL.md`](runtime/harnesses/src/embedded-skills/skill-installer/SKILL.md) |
+| 13 | ✓ | [`runtime/harnesses/src/embedded-skills/stop-slop/SKILL.md`](runtime/harnesses/src/embedded-skills/stop-slop/SKILL.md) |
 
 ---
 

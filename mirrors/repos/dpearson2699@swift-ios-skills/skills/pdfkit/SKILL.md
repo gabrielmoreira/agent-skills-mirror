@@ -1,13 +1,11 @@
 ---
 name: pdfkit
-description: "Display and manipulate PDF documents using PDFKit. Use when embedding PDFView to show PDF files, creating or modifying PDFDocument instances, adding annotations (highlights, notes, signatures), extracting text with PDFSelection, navigating pages, generating thumbnails, filling PDF forms, or wrapping PDFView in SwiftUI."
+description: "Display and manipulate PDF documents using PDFKit. Use when embedding PDFView to show PDF files, creating or modifying PDFDocument instances, adding annotations (highlights, notes, signature widgets), extracting text with PDFSelection, navigating pages, generating thumbnails, filling PDF forms, or wrapping PDFView in SwiftUI."
 ---
 
 # PDFKit
 
-Display, navigate, search, annotate, and manipulate PDF documents with
-`PDFView`, `PDFDocument`, `PDFPage`, `PDFAnnotation`, and `PDFSelection`.
-Targets Swift 6.3 / iOS 26+.
+Display, navigate, search, annotate, and manipulate PDF documents with `PDFView`, `PDFDocument`, `PDFPage`, `PDFAnnotation`, and `PDFSelection`. Targets Swift 6.3 / iOS 26+.
 
 ## Contents
 
@@ -31,8 +29,7 @@ PDFKit requires no entitlements or Info.plist entries.
 import PDFKit
 ```
 
-**Platform availability:** iOS 11+, iPadOS 11+, Mac Catalyst 13.1+,
-macOS 10.4+, tvOS 11+, visionOS 1.0+.
+**Platform availability:** iOS 11+, iPadOS 11+, Mac Catalyst 13.1+, macOS 10.4+, tvOS 11+, visionOS 1.0+.
 
 ## Displaying PDFs
 
@@ -114,11 +111,15 @@ document.write(to: outputURL, withOptions: [
 ])
 let data = document.dataRepresentation()
 
-// Pages (0-based)
+// Pages are zero-based. Validate indices; out-of-range calls raise exceptions.
 let count = document.pageCount
 document.insert(PDFPage(), at: count)
-document.removePage(at: 2)
-document.exchangePage(at: 0, withPageAt: 3)
+if document.pageCount > 2 {
+    document.removePage(at: 2)
+}
+if document.pageCount > 3 {
+    document.exchangePage(at: 0, withPageAt: 3)
+}
 ```
 
 ## Page Navigation
@@ -127,7 +128,11 @@ document.exchangePage(at: 0, withPageAt: 3)
 
 ```swift
 // Go to a specific page
-if let page = pdfView.document?.page(at: 5) {
+let pageIndex = 5
+if let document = pdfView.document,
+   pageIndex >= 0,
+   pageIndex < document.pageCount,
+   let page = document.page(at: pageIndex) {
     pdfView.go(to: page)
 }
 
@@ -143,9 +148,11 @@ if pdfView.canGoToNextPage { /* ... */ }
 // History navigation
 if pdfView.canGoBack { pdfView.goBack(nil) }
 
-// Go to a specific point on a page
-let destination = PDFDestination(page: page, at: CGPoint(x: 0, y: 500))
-pdfView.go(to: destination)
+// Go to a specific point on the current page
+if let page = pdfView.currentPage {
+    let destination = PDFDestination(page: page, at: CGPoint(x: 0, y: 500))
+    pdfView.go(to: destination)
+}
 ```
 
 ### Observing Page Changes
@@ -194,11 +201,12 @@ pdfView.isFindInteractionEnabled = true
 
 ```swift
 let fullText = document.string                          // Entire document
-let pageText = document.page(at: 0)?.string             // Single page
-let attributed = document.page(at: 0)?.attributedString  // With formatting
+let firstPage = document.pageCount > 0 ? document.page(at: 0) : nil
+let pageText = firstPage?.string                        // Single page
+let attributed = firstPage?.attributedString            // With formatting
 
 // Region-based extraction
-if let page = document.page(at: 0) {
+if let page = firstPage {
     let selection = page.selection(for: CGRect(x: 50, y: 50, width: 400, height: 200))
     let text = selection?.string
 }
@@ -283,22 +291,9 @@ for annotation in page.annotations {
 }
 ```
 
-### Annotation Subtypes Reference
-
-| Subtype | Constant | Purpose |
-|---|---|---|
-| Highlight | `.highlight` | Text markup (yellow highlight) |
-| Underline | `.underline` | Text markup (underline) |
-| StrikeOut | `.strikeOut` | Text markup (strikethrough) |
-| Text | `.text` | Sticky note icon |
-| FreeText | `.freeText` | Inline text block |
-| Ink | `.ink` | Freehand drawing paths |
-| Link | `.link` | URL or page destination |
-| Line | `.line` | Straight line with endpoints |
-| Square | `.square` | Rectangle shape |
-| Circle | `.circle` | Ellipse shape |
-| Stamp | `.stamp` | Rubber stamp (Approved, etc.) |
-| Widget | `.widget` | Form element (text field, checkbox) |
+Common subtypes include `.highlight`, `.underline`, `.strikeOut`, `.text`,
+`.freeText`, `.ink`, `.link`, `.line`, `.square`, `.circle`, `.stamp`, and
+`.widget`.
 
 ## Thumbnails
 
@@ -328,7 +323,9 @@ let thumbnails = (0..<document.pageCount).compactMap {
 
 ## SwiftUI Integration
 
-Wrap `PDFView` in a `UIViewRepresentable` for SwiftUI.
+Wrap `PDFView` in a `UIViewRepresentable` for SwiftUI. PDF-specific wrappers
+that configure `PDFView`, pages, annotations, search, thumbnails, or overlays
+belong in this skill; route only generic representable lifecycle, layout, or SwiftUI state architecture questions to SwiftUI/UIKit interop guidance.
 
 ```swift
 import SwiftUI
@@ -387,8 +384,18 @@ class OverlayProvider: NSObject, PDFPageOverlayViewProvider {
     }
 }
 
-pdfView.pageOverlayViewProvider = overlayProvider
+class PDFOverlayController: UIViewController {
+    let pdfView = PDFView()
+    private let overlayProvider = OverlayProvider()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        pdfView.pageOverlayViewProvider = overlayProvider
+    }
+}
 ```
+
+`pageOverlayViewProvider` is weak, so keep the provider strongly owned. For overlay lifecycle and save handling, read [references/pdfkit-patterns.md](references/pdfkit-patterns.md).
 
 ## Common Mistakes
 

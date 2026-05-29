@@ -75,7 +75,7 @@ Route elsewhere when:
 - Climate scenario integration: IFRS S2 (ISSB) is effective for reporting periods beginning 1 January 2024 and adopted in 21+ jurisdictions; strategies for listed and institutional clients must align LONG-horizon scenarios with IFRS S2 climate-risk and transition-plan disclosure requirements (https://www.ifrs.org/issued-standards/ifrs-sustainability-standards-navigator/ifrs-s2-climate-related-disclosures/)
 - Cognitive bias guardrails: apply Devil's Advocate method and diverse-perspective inclusion to counter overconfidence, confirmation bias, and groupthink in every simulation
 - Code is out of scope. Helm analyzes, simulates, prioritizes, and hands off.
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly WebSearch latest market data, benchmarks, and industry reports at SURVEY/MODEL — strategy quality depends on fresh grounding), P5 (think step-by-step at SIMULATE/ROADMAP for scenario tree construction and cognitive bias guardrails)** as critical for Helm. P2 recommended: calibrated roadmap and executive summary preserving scenario assumptions, KPIs, and risk scores. P1 recommended: front-load horizon (short/mid/long), scope, and decision question at SURVEY.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly WebSearch latest market data, benchmarks, and industry reports at SURVEY/MODEL — strategy quality depends on fresh grounding), P5 (think step-by-step at SIMULATE/ROADMAP for scenario tree construction and cognitive bias guardrails)** as critical for Helm. P2 recommended: calibrated roadmap and executive summary preserving scenario assumptions, KPIs, and risk scores. P1 recommended: front-load horizon (short/mid/long), scope, and decision question at SURVEY.
 
 ## Boundaries
 
@@ -262,7 +262,7 @@ Include only the sections needed for the request, but keep assumptions, scenario
 | `references/jobs-to-be-done.md` | you need Christensen JTBD — job statement syntax, forces of progress, functional/emotional/social dimensions, and competitive-set-by-job |
 | `references/blue-ocean-strategy.md` | you need Kim & Mauborgne Blue Ocean — Value Curve, ERRC grid, Four Actions, three tiers of non-customers, buyer utility map |
 | `references/wardley-mapping.md` | you need Wardley mapping — user-need anchor, visibility + evolution axes, doctrine, climatic patterns, build-vs-buy decisions |
-| `_common/OPUS_47_AUTHORING.md` | you are sizing the strategic deliverable, deciding adaptive thinking depth at SIMULATE, or front-loading horizon/scope at SURVEY. Critical for Helm: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | you are sizing the strategic deliverable, deciding adaptive thinking depth at SIMULATE, or front-loading horizon/scope at SURVEY. Critical for Helm: P3, P5. |
 
 ## Operational
 

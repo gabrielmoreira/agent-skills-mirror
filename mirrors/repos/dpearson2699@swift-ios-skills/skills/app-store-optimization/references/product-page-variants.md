@@ -15,9 +15,9 @@ Custom Product Pages, product page optimization (A/B testing), and in-app event 
 
 1. Navigate to **App Store Connect > App > Custom Product Pages**.
 2. Create a new Custom Product Page -- each page needs a reference name (internal only) and a locale.
-3. Customize screenshots, app preview videos, and promotional text for the target audience.
+3. Customize screenshots, app preview videos, promotional text, and assigned keywords for the target audience.
 4. Submit the page for review -- Custom Product Pages go through App Review like regular submissions.
-5. Once approved, the page receives a unique URL.
+5. Once approved, the page is visible through its unique URL and, if configured, through assigned App Store search keywords.
 
 ### URL structure
 
@@ -34,6 +34,13 @@ The `ppid` parameter directs users to the custom page instead of the default pro
 - Email marketing campaigns
 - Web landing pages
 - QR codes in physical marketing
+
+### Search visibility and deep links
+
+- You can create up to 70 Custom Product Pages per app.
+- Assign keywords from the latest approved app version to make an approved, visible custom page appear for matching App Store searches instead of the default page.
+- Use unique keyword sets per custom page so App Store search can choose the most relevant page.
+- Optional app deep links can send users on iOS 18 or iPadOS 18 or later to specific in-app content after they tap Open. Deep links must be approved with the custom page before they work for users.
 
 ### Campaign-to-page mapping
 
@@ -53,13 +60,14 @@ Plan Custom Product Pages around distinct acquisition channels:
 
 - Audit Custom Product Pages quarterly. Remove pages for ended campaigns.
 - Track performance per page in App Analytics -- compare conversion rates against the default page.
-- Custom Product Pages count toward the 35-page limit per app. Reserve capacity for seasonal or ad-hoc campaigns.
+- App Analytics reports custom page metrics after the page receives at least five first-time downloads.
+- Custom Product Pages count toward the 70-page limit per app. Reserve capacity for seasonal or ad-hoc campaigns.
 
 ## Product Page Optimization Tests
 
 ### Test design patterns
 
-Each test compares the default product page (control) against one treatment. Only one test runs at a time.
+Each test compares the original product page against up to three treatments. For clearer results, design each test around one hypothesis even when you create multiple treatments.
 
 #### Icon test
 
@@ -85,25 +93,27 @@ Each test compares the default product page (control) against one treatment. Onl
 ### Running a test
 
 1. In App Store Connect, go to **Product Page Optimization**.
-2. Choose the element to test (icon, screenshots, or preview video).
+2. Choose up to three treatments and the element to test (icon, screenshots, or preview video).
 3. Upload the treatment assets.
-4. Set traffic allocation (typically 50/50 for fastest results, or 70/30 to limit risk).
-5. Start the test and wait for statistical significance.
+4. Set the traffic proportion. App Store Connect splits that treatment traffic evenly across treatments.
+5. Select the localizations to include; all supported localizations are selected by default.
+6. Start the test and monitor App Analytics. A test runs for up to 90 days or until manually stopped.
 
 ### Interpreting results
 
 - App Store Connect reports conversion rate for control vs. treatment with a confidence interval.
+- Results appear after at least five first-time downloads are associated with the test.
 - Do not apply a treatment until the result shows 90%+ confidence.
 - A 2-5% conversion lift is meaningful at scale -- do not dismiss small wins.
-- If the test is inconclusive after 14 days, the variants are likely equivalent. Move to a different hypothesis.
+- If App Store Connect marks a test as likely inconclusive, the current traffic and lift may not be enough to reach confidence within the 90-day window. Consider a stronger creative change or a higher-traffic period.
 - After applying a winner, wait at least one release cycle before starting the next test to establish a clean baseline.
 
 ### Limitations
 
 - Only one test at a time per app.
-- Tests run on the default locale only and affect only that locale.
-- The minimum meaningful test requires several thousand daily impressions. Low-traffic apps may need 3-4 weeks.
-- Icon changes via Product Page Optimization do not affect the icon inside the app -- only the App Store listing.
+- Product Page Optimization tests are unavailable for Custom Product Pages, Apple Watch product pages, and iMessage product pages.
+- Low-traffic apps may need longer to reach 90% confidence, and some tests may remain inconclusive.
+- App icons used in treatments must be included in the app binary for the current App Store version. Applying a treatment applies screenshots and previews; make an icon the default in a future app version if that icon should persist broadly.
 
 ## In-App Event Configuration
 
@@ -133,14 +143,16 @@ Overlap the end of one event with the start of the next by 1-2 days. This preven
 ### Event timing rules
 
 - Events can be published up to 14 days before they start.
+- Events must run at least 15 minutes and can run for up to 31 days.
+- You can publish up to 10 In-App Events on the App Store at a time and keep up to 15 approved events per app in App Store Connect.
 - Events are visible in search results and on the product page during their active window.
 - Ended events are removed from the store automatically.
 - Schedule events around real moments (feature releases, content drops, seasonal relevance) -- manufactured events without real in-app content feel hollow and may be rejected by App Review.
 
 ### Maximizing search impact
 
-- Use the event name and short description as keyword surfaces. Include terms that complement (not duplicate) the app's keyword field.
-- Choose a badge type that matches the actual event nature -- the badge appears prominently on the event card and affects how the App Store surfaces the event editorially.
+- Use the event name and short description as visible search-result copy. Include terms that match the event's real content and user intent.
+- Choose a badge type that matches the actual event nature -- the badge appears prominently on the event card.
 - In-app events can appear on the Today tab, in search results, and on the app's product page. Apple's editorial team curates which events are featured.
 
 ## Screenshot Caption Copywriting

@@ -5,13 +5,20 @@ description: "Implement, review, or improve in-app purchases and subscriptions u
 
 # StoreKit 2 In-App Purchases and Subscriptions
 
-Implement in-app purchases, subscriptions, and paywalls using StoreKit 2 on
-iOS 26+. Use the modern `Product`, `Transaction`, `StoreView`, and
-`SubscriptionStoreView` APIs. Avoid the older original StoreKit APIs
-(`SKProduct`, `SKPaymentQueue`, `SKStoreReviewController`).
+Implement in-app purchases, subscriptions, paywalls, and StoreKit testing using
+StoreKit 2 on iOS 26+. Use the modern Swift-based `Product`, `Transaction`,
+`PurchaseAction`, `StoreView`, and `SubscriptionStoreView` APIs. Avoid original
+In-App Purchase APIs (`SKProduct`, `SKPaymentQueue`) unless legacy OS support
+requires them.
+
+When reviewing StoreKit code, explicitly separate "preferred SwiftUI path" from
+"invalid API": `PurchaseAction` is the preferred custom SwiftUI button path, but
+direct `product.purchase(options:)` is still valid for lower-level custom
+StoreKit flows.
 
 ## Contents
 
+- [Implementation Review Minimums](#implementation-review-minimums)
 - [Product Types](#product-types)
 - [Loading Products](#loading-products)
 - [Purchase Flow](#purchase-flow)
@@ -27,6 +34,33 @@ iOS 26+. Use the modern `Product`, `Transaction`, `StoreView`, and
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
 - [References](#references)
+
+## Implementation Review Minimums
+
+When reviewing a paywall, purchase manager, or entitlement gate, include these
+points explicitly:
+
+- Standard SwiftUI paywalls should prefer `StoreView`, `ProductView`, or
+  `SubscriptionStoreView`; custom SwiftUI buy buttons should prefer
+  `PurchaseAction`; direct `product.purchase(options:)` is valid for
+  lower-level custom StoreKit flows.
+- `Transaction.updates` must start at app launch because it catches purchases
+  from other devices, Family Sharing changes, renewals, Ask to Buy approvals,
+  refunds, revocations, and unfinished transactions.
+- Include this entitlement-scope sentence verbatim when reviewing
+  `Transaction.currentEntitlements`: "It covers non-consumables, active or
+  grace-period auto-renewable subscriptions, and non-renewing subscriptions; it
+  does not include consumable purchase or delivery history."
+- Verify every `VerificationResult` before granting access. Deliver or persist
+  the entitlement first, then call `transaction.finish()`.
+- Pending purchases and user cancellations never unlock content; pending Ask to
+  Buy approvals unlock only after a verified transaction arrives through the
+  launch-time listener.
+- Exclude refunded or revoked transactions from active entitlement state and
+  re-check entitlements when refunds or revocations arrive through
+  `Transaction.updates`.
+- Provide a visible restore purchases path and Terms of Service / Privacy
+  Policy links on subscription paywalls.
 
 ## Product Types
 
@@ -60,12 +94,22 @@ for product in products {
 
 ## Purchase Flow
 
-Call `product.purchase(options:)` and handle all three `PurchaseResult` cases.
-Always verify and finish transactions.
+Prefer StoreKit views for standard paywalls because they initiate purchases,
+restore purchases, and display policy controls. For custom SwiftUI purchase
+buttons, prefer `PurchaseAction` from the environment. Use direct
+`product.purchase(options:)` only for lower-level custom flows, and use
+`purchase(confirmIn:options:)` for UIKit or AppKit confirmation. Always handle
+every `PurchaseResult`, verify before access, deliver durably, then finish.
+
+Review wording: do not call `product.purchase(options:)` inherently wrong. Say
+"prefer `PurchaseAction` for SwiftUI buttons; keep `product.purchase(options:)`
+for lower-level custom flows that need direct StoreKit control."
 
 ```swift
-func purchase(_ product: Product) async throws {
-    let result = try await product.purchase(options: [
+@Environment(\.purchase) private var purchase
+
+func purchaseProduct(_ product: Product) async throws {
+    let result = try await purchase(product, options: [
         .appAccountToken(userAccountToken)
     ])
     switch result {
@@ -76,8 +120,8 @@ func purchase(_ product: Product) async throws {
     case .userCancelled:
         break
     case .pending:
-        // Ask to Buy or deferred approval -- do not unlock content yet
-        break
+        // Ask to Buy or deferred approval: show pending UI, no unlock yet.
+        showPendingApprovalMessage()
     @unknown default:
         break
     }
@@ -93,24 +137,30 @@ func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
 
 ## Transaction.updates Listener
 
-Start at app launch. Catches purchases from other devices, Family Sharing
-changes, renewals, Ask to Buy approvals, refunds, and revocations.
+Start at app launch, not when a paywall appears. Catches purchases from other
+devices, Family Sharing changes, renewals, Ask to Buy approvals, refunds,
+revocations, and unfinished transactions Apple emits once immediately after
+launch. Keep the task retained for the app lifetime.
+
+In implementation reviews, name the launch-time coverage explicitly: purchases
+made on other devices, Family Sharing changes, subscription renewals, Ask to Buy
+approvals, refunds, revocations, and unfinished transactions.
 
 ```swift
 @main
 struct MyApp: App {
-    private var transactionListener: Task<Void, Error>?
+    private let transactionListener: Task<Void, Never>
 
     init() {
-        transactionListener = listenForTransactions()
+        transactionListener = Self.listenForTransactions()
     }
 
     var body: some Scene {
         WindowGroup { ContentView() }
     }
 
-    func listenForTransactions() -> Task<Void, Error> {
-        Task.detached {
+    static func listenForTransactions() -> Task<Void, Never> {
+        Task(priority: .background) {
             for await result in Transaction.updates {
                 guard case .verified(let transaction) = result else { continue }
                 await StoreManager.shared.updateEntitlements()
@@ -123,8 +173,17 @@ struct MyApp: App {
 
 ## Entitlement Checking
 
-Use `Transaction.currentEntitlements` for non-consumable purchases and active
-subscriptions. Always check `revocationDate`.
+Use `Transaction.currentEntitlements` for non-consumables, active or grace
+period auto-renewable subscriptions, and non-renewing subscriptions. It excludes
+consumables and consumable delivery history; track consumable fulfillment in
+your own app or server ledger. It also excludes refunded or revoked
+transactions. Use `Transaction.unfinished` for unfinished consumables and
+recovery sweeps. Always check `revocationDate` when processing transactions.
+
+In reviews, include this sentence verbatim: "Transaction.currentEntitlements
+covers non-consumables, active or grace-period auto-renewable subscriptions, and
+non-renewing subscriptions; it does not include consumable purchase or delivery
+history." Do not replace this with only a code sample or a revocation check.
 
 ```swift
 @Observable
@@ -158,9 +217,10 @@ struct PremiumGatedView: View {
             switch state {
             case .loading: ProgressView()
             case .failure: PaywallView()
-            case .success(let transaction):
-                if transaction != nil { PremiumContentView() }
-                else { PaywallView() }
+            case .success(.some(.verified(let transaction))) where transaction.revocationDate == nil:
+                PremiumContentView()
+            case .success:
+                PaywallView()
             }
         }
         .currentEntitlementTask(for: ProductID.premium) { state in
@@ -184,7 +244,8 @@ SubscriptionStoreView(groupID: "YOUR_GROUP_ID")
     .subscriptionStorePolicyDestination(url: termsURL, for: .termsOfService)
     .subscriptionStorePolicyDestination(url: privacyURL, for: .privacyPolicy)
     .onInAppPurchaseCompletion { product, result in
-        if case .success(.verified(let transaction)) = result {
+        if case .success(.success(.verified(let transaction))) = result {
+            await deliverContent(for: transaction)
             await transaction.finish()
         }
     }
@@ -205,6 +266,10 @@ SubscriptionStoreView(groupID: "YOUR_GROUP_ID") {
 
 ### Hierarchical Layout
 
+`SubscriptionOptionGroup`, `SubscriptionOptionSection`, and
+`SubscriptionPeriodGroupSet` are iOS 18+ helper views for organizing options
+inside `SubscriptionStoreView`.
+
 ```swift
 SubscriptionStoreView(groupID: "YOUR_GROUP_ID") {
     SubscriptionPeriodGroupSet()
@@ -221,7 +286,8 @@ StoreView(ids: [ProductID.gems100, ProductID.premium], prefersPromotionalIcon: t
     .productViewStyle(.large)
     .storeButton(.visible, for: .restorePurchases)
     .onInAppPurchaseCompletion { product, result in
-        if case .success(.verified(let transaction)) = result {
+        if case .success(.success(.verified(let transaction))) = result {
+            await deliverContent(for: transaction)
             await transaction.finish()
         }
     }
@@ -244,7 +310,7 @@ ProductView(id: ProductID.premium) { iconPhase in
 
 ```swift
 func checkSubscriptionActive(groupID: String) async throws -> Bool {
-    let statuses = try await Product.SubscriptionInfo.Status.status(for: groupID)
+    let statuses = try await Product.SubscriptionInfo.status(for: groupID)
     for status in statuses {
         guard case .verified = status.renewalInfo,
               case .verified = status.transaction else { continue }
@@ -319,10 +385,11 @@ try await product.purchase(options: [.simulatesAskToBuyInSandbox(true)])
 
 ```swift
 .onInAppPurchaseStart { product in
-    return true  // Return false to cancel
+    await analytics.trackPurchaseStarted(product.id)
 }
 .onInAppPurchaseCompletion { product, result in
-    if case .success(.verified(let transaction)) = result {
+    if case .success(.success(.verified(let transaction))) = result {
+        await deliverContent(for: transaction)
         await transaction.finish()
     }
 }
@@ -350,9 +417,9 @@ try await product.purchase(options: [.simulatesAskToBuyInSandbox(true)])
 let transaction = try checkVerified(verification)
 unlockFeature(transaction.productID)
 
-// CORRECT: Always finish after delivering content
+// CORRECT: Deliver durably, then finish. If delivery fails, do not finish yet.
 let transaction = try checkVerified(verification)
-unlockFeature(transaction.productID)
+try await recordDelivery(transaction)
 await transaction.finish()
 ```
 
@@ -366,18 +433,16 @@ let transaction = verification.unsafePayloadValue
 let transaction = try checkVerified(verification)
 ```
 
-### 4. Using legacy original StoreKit APIs
+### 4. Using original In-App Purchase APIs in new StoreKit 2 code
 
 ```swift
-// AVOID: Original StoreKit (legacy)
+// AVOID: Original In-App Purchase APIs
 let request = SKProductsRequest(productIdentifiers: ["com.app.premium"])
 SKPaymentQueue.default().add(payment)
-SKStoreReviewController.requestReview()
 
 // PREFERRED: StoreKit 2
 let products = try await Product.products(for: ["com.app.premium"])
 let result = try await product.purchase()
-try await AppStore.requestReview(in: windowScene)
 ```
 
 ### 5. Not checking revocationDate
@@ -410,7 +475,7 @@ Text("Buy \(product.displayName) for \(product.displayPrice)")
 // WRONG: Silently drops pending Ask to Buy
 default: break
 
-// CORRECT: Inform user purchase is awaiting approval
+// CORRECT: Explain approval is pending; unlock only after Transaction.updates
 case .pending:
     showPendingApprovalMessage()
 ```
@@ -453,17 +518,17 @@ SubscriptionStoreView(groupID: "group_id")
 
 - [ ] `Transaction.updates` listener starts at app launch in App init
 - [ ] All transactions verified before granting access
-- [ ] `transaction.finish()` called after content delivery
-- [ ] Revoked transactions excluded from entitlements
-- [ ] `.pending` purchase result handled for Ask to Buy
+- [ ] `transaction.finish()` called only after durable content delivery
+- [ ] Revoked/refunded transactions excluded and entitlement state updated
+- [ ] `.pending` result shows Ask to Buy/deferred-approval feedback
 - [ ] Restore purchases button visible on paywall and store views
 - [ ] Terms of Service and Privacy Policy links on subscription views
 - [ ] Prices shown using `product.displayPrice`, never hardcoded
 - [ ] Subscription terms (price, duration, renewal) clearly displayed
 - [ ] Free trial states post-trial pricing clearly
-- [ ] No original StoreKit APIs (`SKProduct`, `SKPaymentQueue`)
+- [ ] No original In-App Purchase APIs (`SKProduct`, `SKPaymentQueue`) unless legacy OS support requires them
 - [ ] Product IDs defined as constants, not scattered strings
-- [ ] StoreKit configuration file set up for testing
+- [ ] StoreKit tests cover promotional offers, win-back, offer codes, Ask to Buy, renewals, refunds, and revocations
 - [ ] Entitlements re-checked on Transaction.updates and app foreground
 - [ ] Server-side validation uses `jwsRepresentation` if applicable
 - [ ] Consumables delivered and finished promptly
@@ -471,8 +536,9 @@ SubscriptionStoreView(groupID: "group_id")
 
 ## References
 
-- See [references/app-review-guidelines.md](references/app-review-guidelines.md) for IAP rules (Guideline 3.1.1),
-  subscription display requirements, and rejection prevention.
-- See [references/storekit-advanced.md](references/storekit-advanced.md) for subscription control styles,
-  offer management, testing patterns, and advanced subscription handling.
-
+- See [references/app-review-guidelines.md](references/app-review-guidelines.md) for IAP rules (Guideline 3.1.1), subscription display requirements, and rejection prevention.
+- See [references/storekit-advanced.md](references/storekit-advanced.md) for subscription control styles, offer management, testing patterns, and advanced subscription handling.
+- For submission, privacy, metadata, screenshots, and rejection-risk audits use `app-store-review`.
+- For keyword, screenshot-caption, ranking, and conversion strategy use `app-store-optimization`.
+- Official Apple docs: [Choosing a StoreKit API](https://sosumi.ai/documentation/storekit/choosing-a-storekit-api-for-in-app-purchases), [Transaction.updates](https://sosumi.ai/documentation/storekit/transaction/updates), [Transaction.currentEntitlements](https://sosumi.ai/documentation/storekit/transaction/currententitlements),
+  [SubscriptionStoreView](https://sosumi.ai/documentation/storekit/subscriptionstoreview), and [PurchaseAction](https://sosumi.ai/documentation/storekit/purchaseaction).

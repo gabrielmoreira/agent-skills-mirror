@@ -60,7 +60,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`docs/docs/agents/skills.md`](docs/docs/agents/skills.md) |
+| 2 | ✓ | [`docs/docs/guides/skills.md`](docs/docs/guides/skills.md) |
 | 3 | ✓ | [`examples/hf-toad-cards/skills/pr-writing-review/SKILL.md`](examples/hf-toad-cards/skills/pr-writing-review/SKILL.md) |
 | 4 | ✓ | [`examples/hf-toad-cards/skills/session-investigator/SKILL.md`](examples/hf-toad-cards/skills/session-investigator/SKILL.md) |
 

@@ -1,17 +1,19 @@
 ---
 name: alarmkit
-description: "Implement AlarmKit alarms and countdown timers for iOS and iPadOS with Lock Screen, Dynamic Island, and Apple Watch system UI. Covers AlarmManager scheduling, AlarmAttributes and AlarmPresentation, AlarmButton stop and snooze actions, authorization, state observation, and Live Activity integration. Use when building wake-up alarms, countdown timers, or alarm-style alerts that need Apple's system alarm experience."
+description: "Implement AlarmKit alarms and countdown timers for iOS and iPadOS with Lock Screen, Dynamic Island, StandBy, and paired Apple Watch system UI. Covers AlarmManager scheduling, AlarmAttributes and AlarmPresentation, AlarmButton stop and snooze actions, authorization, state observation, countdown widget-extension handoff, and Live Activity integration. Use when building wake-up alarms, countdown timers, or alarm-style alerts that need Apple's system alarm experience."
 ---
 
 # AlarmKit
 
 Schedule prominent alarms and countdown timers that surface on the Lock Screen,
-Dynamic Island, and Apple Watch. AlarmKit requires iOS 26+ / iPadOS 26+. Alarms override
-Focus and Silent mode automatically.
+Dynamic Island, StandBy, and a paired Apple Watch when the alarm fires. AlarmKit
+requires iOS 26+ / iPadOS 26+. Alarms can break through Focus and Silent mode.
 
-AlarmKit builds on Live Activities -- every alarm creates a system-managed Live
-Activity with templated UI. You configure the presentation via `AlarmAttributes`
-and `AlarmPresentation` rather than building custom widget views.
+AlarmKit uses ActivityKit data models for its Live Activity, but the firing alert
+is system-managed alarm UI, not a general custom notification UI surface. Custom
+UI belongs only to countdown and paused Live Activity states rendered by a Widget
+Extension with the same `AlarmAttributes<Metadata>` and
+`AlarmPresentationState` used when scheduling.
 
 See [references/alarmkit-patterns.md](references/alarmkit-patterns.md) for complete code patterns including
 authorization, scheduling, countdown timers, snooze handling, and widget setup.
@@ -40,13 +42,14 @@ import AlarmKit
 ### 1. Create a new alarm or timer
 
 1. Add `NSAlarmKitUsageDescription` to Info.plist with a user-facing string.
-2. Request authorization with `AlarmManager.shared.requestAuthorization()`.
-3. Configure `AlarmPresentation` (alert, countdown, paused states).
-4. Create `AlarmAttributes` with the presentation, optional metadata, and tint color.
-5. Build an `AlarmManager.AlarmConfiguration` (.alarm or .timer).
-6. Schedule with `AlarmManager.shared.schedule(id:configuration:)`.
-7. Observe state changes via `alarmManager.alarmUpdates`.
-8. If using countdown, add a widget extension target for non-alerting Live Activity UI.
+2. Request authorization with `AlarmManager.shared.requestAuthorization()` when the app can explain the value, or handle the first-schedule system prompt.
+3. If authorization is `.denied` or not `.authorized`, show recovery UI instead of scheduling.
+4. Configure `AlarmPresentation` (alert, countdown, paused states).
+5. Create `AlarmAttributes` with the presentation, optional metadata, and tint color.
+6. Build an `AlarmManager.AlarmConfiguration` (.alarm or .timer).
+7. Schedule with `AlarmManager.shared.schedule(id:configuration:)`.
+8. Observe state changes via `alarmManager.alarmUpdates`.
+9. If using countdown, add a Widget Extension target with an `ActivityConfiguration` for the same `AlarmAttributes<Metadata>` type.
 
 ### 2. Review existing alarm code
 
@@ -54,9 +57,10 @@ Run through the Review Checklist at the end of this document.
 
 ## Authorization
 
-AlarmKit requires explicit user authorization. Without it, alarms silently
-fail to schedule. Request early (e.g., at onboarding) or let AlarmKit prompt
-automatically on first schedule.
+AlarmKit requires user authorization. Request early when the app can explain the
+value, or let AlarmKit prompt automatically on first schedule. If authorization
+is not granted after the explicit or automatic prompt, alarms are not scheduled
+and will not alert.
 
 ```swift
 let manager = AlarmManager.shared
@@ -119,14 +123,14 @@ let weekday: Alarm.Schedule = .relative(.init(
 ```swift
 let id = UUID()
 
-let configuration = AlarmManager.AlarmConfiguration.alarm(
+let snooze = Alarm.CountdownDuration(preAlert: nil, postAlert: 300)
+let configuration = AlarmManager.AlarmConfiguration(
+    countdownDuration: snooze,
     schedule: .relative(.init(
         time: .init(hour: 7, minute: 0),
         repeats: .never
     )),
     attributes: attributes,
-    stopIntent: StopAlarmIntent(alarmID: id.uuidString),
-    secondaryIntent: SnoozeIntent(alarmID: id.uuidString),
     sound: .default
 )
 
@@ -135,6 +139,13 @@ let alarm = try await AlarmManager.shared.schedule(
     configuration: configuration
 )
 ```
+
+`stopIntent` and `secondaryIntent` default to `nil`. Omit `stopIntent` for
+AlarmKit's standard system Stop behavior; provide it only when Stop must run app
+cleanup, custom stop behavior, or other side effects. Omit `secondaryIntent` for
+ordinary Snooze/Repeat with `secondaryButtonBehavior: .countdown` and
+`Alarm.CountdownDuration.postAlert`; provide it only for `.custom` secondary
+behavior or app cleanup/custom behavior.
 
 ### Alarm State Transitions
 
@@ -150,11 +161,11 @@ scheduled --> countdown --> alerting
 cancel(id:) removes from system entirely
 ```
 
-- `cancel(id:)` -- remove the alarm completely (any state)
-- `pause(id:)` -- pause a counting-down alarm
-- `resume(id:)` -- resume a paused alarm
-- `stop(id:)` -- stop an alerting alarm
-- `countdown(id:)` -- restart countdown from alerting state (snooze)
+- `cancel(id:)` -- remove the alarm completely, including repeating alarms
+- `pause(id:)` -- pause a counting-down alarm; throws from other states
+- `resume(id:)` -- resume a paused alarm; throws from other states
+- `stop(id:)` -- stop the alarm; one-shot alarms are removed, repeating alarms reschedule
+- `countdown(id:)` -- restart countdown from alerting state (snooze); throws from other states
 
 ## Countdown Timers
 
@@ -196,8 +207,6 @@ let config = AlarmManager.AlarmConfiguration(
         repeats: .never
     )),
     attributes: attributes,
-    stopIntent: stopIntent,
-    secondaryIntent: snoozeIntent,
     sound: .default
 )
 ```
@@ -208,18 +217,22 @@ Each `Alarm` has a `state` property reflecting its current lifecycle position.
 
 | State | Meaning |
 |---|---|
-| `.scheduled` | Waiting to fire (alarm mode) or waiting to start countdown |
+| `.scheduled` | Scheduled and ready to alert at the appropriate time |
 | `.countdown` | Actively counting down (timer or pre-alert phase) |
 | `.paused` | Countdown paused by user or app |
 | `.alerting` | Alarm is firing -- sound playing, UI prominent |
 
 ### Observing State Changes
 
+`AlarmManager.shared.alarms` is a throwing getter for the current daemon
+snapshot. Use `try`, and either propagate the error or wrap launch refresh in
+`do/catch` before relying on the snapshot.
+
 ```swift
 let manager = AlarmManager.shared
 
 // Get all current alarms
-let alarms = manager.alarms
+let alarms = try manager.alarms
 
 // Observe changes as an async sequence
 for await updatedAlarms in manager.alarmUpdates {
@@ -235,20 +248,23 @@ for await updatedAlarms in manager.alarmUpdates {
 }
 ```
 
-An alarm that disappears from `alarmUpdates` has been cancelled or fully stopped
-and is no longer tracked by the system.
+An alarm that disappears from `alarmUpdates` is no longer scheduled with
+AlarmKit. Compare against app-persisted IDs when you need to distinguish fired,
+cancelled, and rescheduled alarms.
 
 ## AlarmAttributes and AlarmPresentation
 
 `AlarmAttributes` conforms to `ActivityAttributes` and defines the static
 data for the alarm's Live Activity. It is generic over a `Metadata` type
-conforming to `AlarmMetadata`.
+conforming to `AlarmMetadata`, which inherits `Decodable`, `Encodable`,
+`Hashable`, and `Sendable`. The `metadata` value itself is optional and defaults
+to `nil`.
 
 ### AlarmPresentation
 
-Defines the UI content for each alarm state. The system renders a templated
-Live Activity using this data -- you do not build custom SwiftUI views for the
-alarm itself.
+Defines the UI content for each alarm state. The system renders the alerting UI,
+while a widget extension can customize countdown and paused Live Activity views
+with the same attributes and presentation state.
 
 ```swift
 // Alert state (required) -- shown when alarm is firing
@@ -302,6 +318,14 @@ let attributes = AlarmAttributes(
     metadata: CookingMetadata(recipeName: "Pasta", stepNumber: 3),
     tintColor: .blue
 )
+
+let attributesWithoutMetadata = AlarmAttributes<EmptyAlarmMetadata>(
+    presentation: presentation,
+    metadata: nil,
+    tintColor: .blue
+)
+
+struct EmptyAlarmMetadata: AlarmMetadata {}
 ```
 
 ### AlarmPresentationState
@@ -345,13 +369,42 @@ The secondary button on the alert UI has two behaviors:
 
 ## Live Activity Integration
 
-AlarmKit alarms automatically appear as Live Activities on the Lock Screen
-and Dynamic Island on iPhone, and in the Smart Stack on Apple Watch. The
-system manages the alerting UI. For countdown and paused states, add a
-widget extension that reads `AlarmAttributes` and `AlarmPresentationState`.
+AlarmKit alarms appear as Live Activities on the Lock Screen, Dynamic Island,
+StandBy, and on a paired Apple Watch when the alarm fires. The system manages
+the alerting UI. For countdown and paused states, add a Widget Extension target
+whose `ActivityConfiguration` uses the same `AlarmAttributes<Metadata>` type
+used when scheduling the alarm.
 
-A widget extension is **required** if your alarm uses countdown presentation.
-Without it, the system may dismiss alarms unexpectedly.
+A widget extension is expected if your alarm uses countdown presentation. Keep
+that lightweight metadata type available to both the app and widget extension.
+Without the extension, alarms may be dismissed unexpectedly or fail to alert,
+though the system can still show a fallback countdown UI in limited cases such
+as after a device restart before first unlock.
+
+When explaining AlarmKit boundaries, say the ownership line explicitly. AlarmKit
+owns alarm authorization, `AlarmManager` scheduling and state, `AlarmAttributes`,
+`AlarmPresentation`, `AlarmPresentationState`, sound, and system Stop/Repeat/Open
+App alarm actions for alarm and timer experiences. The firing alert remains
+system-rendered alarm UI; do not describe AlarmKit as a general custom
+notification UI surface.
+
+Custom countdown or paused alarm UI belongs in a Widget Extension
+`ActivityConfiguration` for the same `AlarmAttributes<Metadata>` type and
+`AlarmPresentationState`. Name the Apple-sourced alarm surfaces together: Lock
+Screen, Dynamic Island, StandBy, and paired Apple Watch. Do not claim Smart Stack
+as an AlarmKit surface.
+
+Route ordinary Home Screen or Smart Stack widgets, `WidgetFamily` layout choices,
+widget timelines, and `WidgetCenter` reload policy to `widgetkit`. Route non-alarm
+Live Activity lifecycle (`Activity.request`, `update`, `end`), push-to-start
+tokens, per-activity update tokens, and remote Live Activity `content-state`
+payload contracts to `activitykit`. Route generic APNs, `UNUserNotificationCenter`,
+notification categories/actions, and custom notification UI to `push-notifications`
+unless app code ultimately calls `AlarmManager`.
+
+For setup, name Apple-documented `NSAlarmKitUsageDescription` and `AlarmManager`
+authorization. Do not require unsupported AlarmKit setup keys or
+`com.apple.developer.alarmkit` unless a current Apple source documents them.
 
 ```swift
 struct AlarmWidgetBundle: WidgetBundle {
@@ -398,18 +451,21 @@ struct AlarmActivityWidget: Widget {
 **DO:** Use `.alarm` with `.weekly([...])` for recurring alarms. Timers are one-shot.
 
 **DON'T:** Omit the widget extension when using countdown presentation.
-**DO:** Add a widget extension target. AlarmKit requires it for countdown/paused Live Activity UI.
-**Why:** Without a widget extension, the system may dismiss alarms before they alert.
+**DO:** Add a widget extension target for countdown/paused Live Activity UI.
+**Why:** Without a widget extension, alarms may be dismissed before they alert; the system fallback is limited.
 
 **DON'T:** Ignore `alarmUpdates` and track alarm state manually.
 **DO:** Observe `alarmManager.alarmUpdates` to stay synchronized with the system.
 **Why:** Alarm state can change while your app is backgrounded.
 
-**DON'T:** Forget to provide a `stopIntent` -- it cannot be nil in practice.
-**DO:** Always provide a `LiveActivityIntent` for stop so the button performs cleanup.
+**DON'T:** Treat `stopIntent` and `secondaryIntent` as mandatory for every alarm.
+**DO:** Omit them for standard system Stop/Snooze; provide intents only for app cleanup or custom behavior.
 
-**DON'T:** Store large data in `AlarmMetadata`. It is serialized with the Live Activity.
-**DO:** Keep metadata lightweight. Store large data in your app and reference by ID.
+**DON'T:** Fold ordinary widgets, generic Live Activities, or push/local notification behavior into AlarmKit.
+**DO:** Route Home Screen/Smart Stack widgets, `WidgetFamily`, timelines, and `WidgetCenter` reloads to `widgetkit`; route non-alarm `Activity.request`/`update`/`end`, push-to-start, update tokens, and remote `content-state` payloads to `activitykit`; route generic APNs, `UNUserNotificationCenter`, and notification categories/actions to `push-notifications` unless app code ultimately calls `AlarmManager`.
+
+**DON'T:** Store large data in `AlarmMetadata`.
+**DO:** Keep metadata lightweight or pass `nil`. Store large data in your app and reference by ID.
 
 **DON'T:** Use deprecated `stopButton` parameter on `AlarmPresentation.Alert`.
 **DO:** Use the current `init(title:secondaryButton:secondaryButtonBehavior:)` initializer.
@@ -419,12 +475,17 @@ struct AlarmActivityWidget: Widget {
 - [ ] `NSAlarmKitUsageDescription` present in Info.plist with non-empty string
 - [ ] Authorization requested and `.denied` state handled in UI
 - [ ] `AlarmPresentation` covers all relevant states (alert, countdown, paused)
-- [ ] Widget extension target added if countdown presentation is used
-- [ ] `AlarmAttributes` metadata type conforms to `AlarmMetadata`
+- [ ] Widget Extension target uses `ActivityConfiguration` for the same `AlarmAttributes<Metadata>` type if countdown presentation is used
+- [ ] `AlarmAttributes` metadata is lightweight, optional when unused, and conforms to `AlarmMetadata`
 - [ ] Alarm ID stored for later cancel/pause/resume/stop operations
 - [ ] `alarmUpdates` async sequence observed to track state changes
-- [ ] `stopIntent` and `secondaryIntent` are valid `LiveActivityIntent` implementations
+- [ ] `stopIntent` and `secondaryIntent` omitted for standard system Stop/Snooze and provided only for cleanup/custom behavior
 - [ ] `postAlert` duration set on `CountdownDuration` if snooze (`.countdown` behavior) is used
+- [ ] AlarmKit ownership is limited to authorization, `AlarmManager` scheduling/state, `AlarmAttributes`, `AlarmPresentation`, `AlarmPresentationState`, sound, and alarm actions
+- [ ] Alerting UI is described as system-managed alarm UI, not a general custom notification UI surface
+- [ ] Custom countdown/paused UI is routed to a Widget Extension `ActivityConfiguration` using the same `AlarmAttributes<Metadata>` and `AlarmPresentationState`
+- [ ] Boundary routing is explicit: Home Screen/Smart Stack widgets, `WidgetFamily`, timelines, and `WidgetCenter` reloads go to `widgetkit`; non-alarm `Activity.request`/`update`/`end`, push-to-start/update tokens, and remote `content-state` payloads go to `activitykit`; generic APNs/`UNUserNotificationCenter` goes to `push-notifications`
+- [ ] Setup is source-grounded: `NSAlarmKitUsageDescription` and authorization are named; unsupported keys such as `com.apple.developer.alarmkit` are not required unless Apple documents them
 - [ ] Tint color set on `AlarmAttributes` to differentiate from other apps
 - [ ] Error handling for `AlarmManager.AlarmError.maximumLimitReached`
 - [ ] Tested on device (alarm sound/vibration differs from Simulator)

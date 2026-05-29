@@ -10,6 +10,38 @@ Key sources: Apple TN3137 "On Mac keychain APIs and implementations," WWDC19-413
 
 ---
 
+## Contents
+
+- [Protocol-Based Keychain Abstraction](#protocol-based-keychain-abstraction)
+  - [KeychainServiceProtocol with Real and Mock Implementations](#keychainserviceprotocol-with-real-and-mock-implementations)
+- [Seven Mistakes AI Generators Make in Keychain Tests](#seven-mistakes-ai-generators-make-in-keychain-tests)
+- [Simulator vs. Device Testing Matrix](#simulator-vs-device-testing-matrix)
+  - [Conditional Compilation and Runtime Guards](#conditional-compilation-and-runtime-guards)
+- [Essential Testing Patterns](#essential-testing-patterns)
+  - [setUp/tearDown Cleanup for Real Keychain Tests](#setupteardown-cleanup-for-real-keychain-tests)
+  - [No Cleanup — Flaky Across Runs](#no-cleanup-flaky-across-runs)
+  - [Testing Error Paths with Injected Failures](#testing-error-paths-with-injected-failures)
+  - [CryptoKit Round-Trip Tests (Simulator-Safe)](#cryptokit-round-trip-tests-simulator-safe)
+- [Secure Enclave Test Strategy — Protocol Fallback](#secure-enclave-test-strategy-protocol-fallback)
+  - [SigningKeyProvider Protocol with SE/Software Implementations](#signingkeyprovider-protocol-with-sesoftware-implementations)
+  - [Testing Secure Enclave Code](#testing-secure-enclave-code)
+- [Biometric Flow Testing — LAContext Mocking](#biometric-flow-testing-lacontext-mocking)
+  - [Protocol-Based Approach (Preferred)](#protocol-based-approach-preferred)
+  - [Biometric Scenarios to Cover](#biometric-scenarios-to-cover)
+- [CI/CD Pipeline Configuration](#cicd-pipeline-configuration)
+  - [GitHub Actions](#github-actions)
+  - [Common CI Error Reference](#common-ci-error-reference)
+  - [Test Host App Requirement](#test-host-app-requirement)
+- [Xcode Test Plans — Separating Simulator from Device](#xcode-test-plans-separating-simulator-from-device)
+- [Swift Testing Framework Patterns](#swift-testing-framework-patterns)
+- [Advanced Patterns](#advanced-patterns)
+  - [Migration Testing: UserDefaults to Keychain](#migration-testing-userdefaults-to-keychain)
+  - [Performance Testing](#performance-testing)
+  - [Mutation Testing](#mutation-testing)
+  - [OWASP MASTG Keychain Validation](#owasp-mastg-keychain-validation)
+- [Conclusion](#conclusion)
+- [Summary Checklist](#summary-checklist)
+
 ## Protocol-Based Keychain Abstraction
 
 The foundation of testable keychain code is a protocol abstracting the four Security framework operations. Every view model, service, or manager that touches the keychain depends on this protocol, never on the Security framework directly.
@@ -335,7 +367,7 @@ final class CryptoKitTests: XCTestCase {
 
 ## Secure Enclave Test Strategy — Protocol Fallback
 
-> **Cross-reference contradiction:** One research source used a function returning `P256.Signing.PrivateKey` for both SE and software paths. This is a type error — `SecureEnclave.P256.Signing.PrivateKey` and `P256.Signing.PrivateKey` are distinct types. The correct approach is a protocol-based abstraction:
+`SecureEnclave.P256.Signing.PrivateKey` and `P256.Signing.PrivateKey` are distinct types, so a single function should not promise to return one concrete type for both SE and software paths. Use a protocol-based abstraction:
 
 ### SigningKeyProvider Protocol with SE/Software Implementations
 

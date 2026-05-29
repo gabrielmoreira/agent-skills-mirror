@@ -41,10 +41,11 @@ AdAttributionKit preserves user privacy through several mechanisms:
 - **Hierarchical source identifiers** -- 2, 3, or 4-digit source IDs where the
   number of digits returned depends on the crowd anonymity tier.
 
-The system evaluates impressions from both AdAttributionKit and SKAdNetwork
-together when determining attribution winners. Only one impression wins per
-conversion. Click-through ads always take precedence over view-through ads,
-with recency as the tiebreaker within each group.
+In migration and interoperability reviews, explicitly state that the system
+evaluates AdAttributionKit and SKAdNetwork impressions together, only one
+impression wins per conversion, click-through beats view-through, and recency
+breaks ties within click-through impressions before falling back to the most
+recent view-through impression.
 
 ## Publisher App Setup
 
@@ -66,9 +67,9 @@ are also accepted -- the frameworks share IDs.
 
 ### Display a UIEventAttributionView
 
-For click-through custom-rendered ads, overlay a `UIEventAttributionView` on
-the ad content. The system requires a tap on this view before `handleTap()`
-succeeds.
+For click-through custom-rendered ads, place one `UIEventAttributionView` over
+each tappable ad/control. It must cover the tappable area and stay above views
+that would intercept touches before `handleTap()` succeeds.
 
 ```swift
 import UIKit
@@ -87,8 +88,8 @@ postback conversion window.
 
 ### Opt in to receive winning postback copies
 
-Add the `AttributionCopyEndpoint` key to Info.plist so the device sends a copy
-of the winning postback to your server:
+Add `AttributionCopyEndpoint` under the top-level `AdAttributionKit` Info.plist
+dictionary so the device sends a copy of the winning postback to your server:
 
 ```xml
 <key>AdAttributionKit</key>
@@ -98,7 +99,8 @@ of the winning postback to your server:
 </dict>
 ```
 
-The system generates a well-known path from the domain:
+The system derives the well-known endpoint from the registrable domain in the
+URL, ignoring subdomains:
 
 ```
 https://example.com/.well-known/appattribution/report-attribution/
@@ -109,7 +111,8 @@ must have a valid SSL certificate.
 
 ### Opt in for re-engagement postback copies
 
-Add a second key to also receive copies of winning re-engagement postbacks:
+Add a second key in the same `AdAttributionKit` dictionary to also receive
+copies of winning re-engagement postbacks:
 
 ```xml
 <key>AdAttributionKit</key>
@@ -190,8 +193,9 @@ try await impression.endView()
 
 ### Click-through impressions
 
-Respond to ad taps by calling `handleTap()`. If the advertised app is not
-installed, the system opens its App Store or marketplace page. If installed,
+Respond to ad taps by calling `handleTap()` within 15 minutes of creating the
+`AppImpression`; otherwise request a fresh impression. If the advertised app is
+not installed, the system opens its App Store or marketplace page. If installed,
 the system launches it directly.
 
 ```swift
@@ -276,8 +280,8 @@ After locking, the system ignores further updates in that conversion window.
 
 ### Fine-grained values
 
-An integer from 0-63 (6 bits). Available only in the first postback and only at
-Tier 2 or higher:
+Fine values are integers from 0...63 (6 bits). They are available only in the
+first postback and only at Tier 2 or higher:
 
 ```swift
 try await Postback.updateConversionValue(
@@ -302,7 +306,9 @@ try await Postback.updateConversionValue(
 
 ### Update by conversion type (iOS 18+)
 
-Separate conversion values for install vs. re-engagement postbacks:
+Separate conversion values for install vs. re-engagement postbacks. In server
+JSON, use `"conversion-type": "re-engagement"` with the hyphen; Swift APIs use
+`.reengagement` without it.
 
 ```swift
 let installUpdate = PostbackUpdate(
@@ -409,18 +415,18 @@ func appDidLaunch() async {
 <string>example123.adattributionkit</string>
 ```
 
-### Calling handleTap without UIEventAttributionView
+### Calling handleTap without a current UIEventAttributionView tap
 
 ```swift
-// DON'T -- tap without attribution view overlay
-try await impression.handleTap()
-// Throws AdAttributionKitError.missingAttributionView
+// DON'T -- tap without a current attribution view tap or fresh impression
+try await staleImpression.handleTap()
+// Throws if the tap cannot be validated or the impression expired
 
-// DO -- ensure UIEventAttributionView covers the ad
+// DO -- ensure UIEventAttributionView covers the ad and the impression is fresh
 let attributionView = UIEventAttributionView()
 attributionView.frame = adView.bounds
 adView.addSubview(attributionView)
-// Then handle the tap after the user taps the attribution view
+// Then handle the tap within 15 minutes after creating the AppImpression
 try await impression.handleTap()
 ```
 
@@ -436,7 +442,7 @@ do {
 } catch let error as AdAttributionKitError {
     switch error {
     case .impressionExpired:
-        // Impression older than 30 days
+        // Impression expired or is stale for click-through handling
         refreshAdImpression()
     case .missingAttributionView:
         // UIEventAttributionView not present
@@ -467,7 +473,8 @@ func handlePostback(request: Request) -> Response {
 - [ ] Publisher app includes all ad network IDs in `AdNetworkIdentifiers`
   (lowercase)
 - [ ] Ad network IDs match between publisher app's Info.plist and JWS `kid`
-- [ ] `UIEventAttributionView` overlays ad content for click-through ads
+- [ ] `UIEventAttributionView` overlays each tappable click-through ad/control
+- [ ] Click-through `AppImpression` is no older than 15 minutes at `handleTap()`
 - [ ] Advertised app calls `updateConversionValue` on first launch
 - [ ] Server endpoint at well-known path accepts HTTPS POST with valid SSL
 - [ ] Postback verification uses correct Apple public key for environment

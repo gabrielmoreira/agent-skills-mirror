@@ -27,6 +27,12 @@ If you find broken links, inaccurate descriptions, or outdated install instructi
 
 If you used a Skill to complete empirical research, we'd love to hear about it in Issues. We may feature your case in the docs.
 
+## Scope
+
+This catalog lists **open-source, self-contained skills** that researchers can install and run independently. To keep every listed skill independently runnable and license-clean, we **do not include** skills whose core functionality depends on a commercial product or proprietary/paid API (e.g. tools that require an account or paid service to work).
+
+This is not a quality judgment — such tools may be excellent. If a tool later ships a fully open, no-account, locally-runnable path (e.g. against open corpora), we're glad to revisit.
+
 ## Especially Welcome
 
 - Skills for social science disciplines: economics, political science, sociology, public administration

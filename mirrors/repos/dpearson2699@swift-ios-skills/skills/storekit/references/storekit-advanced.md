@@ -2,6 +2,8 @@
 
 Covers subscription control styles, offer management, testing, server-side
 validation, and advanced subscription handling patterns for StoreKit 2.
+Use this after the core purchase, transaction listener, and entitlement patterns
+from the top-level StoreKit skill are in place.
 
 ## Contents
 
@@ -55,7 +57,9 @@ Apply control styles to change how subscription options render in
 
 ### Control Placement
 
-Specify where controls appear within the view:
+Specify where controls appear within the view. Not every placement is supported
+by every control style, so let unsupported combinations fall back to the system
+default instead of assuming exact placement on every platform.
 
 ```swift
 .subscriptionStoreControlStyle(.picker, placement: .bottom)
@@ -139,6 +143,9 @@ Control what information subscription buttons display:
 
 ## Subscription Group Management
 
+The option hierarchy helper views in this section are iOS 18+ APIs for
+organizing subscription choices inside `SubscriptionStoreView`.
+
 ### Hierarchical Layouts with SubscriptionOptionGroup
 
 ```swift
@@ -191,17 +198,10 @@ SubscriptionStoreView(groupID: "group_id", visibleRelationships: .upgrade)
 
 ### Custom Subscription Store Controls
 
-```swift
-// Custom button for a specific subscription option
-SubscriptionStoreButton(option)
-
-// Custom picker with confirmation
-SubscriptionStorePicker(pickerContent: { option in
-    Text(option.displayName)
-}, confirmation: { selectedOption in
-    Text("Subscribe to \(selectedOption.displayName)")
-})
-```
+`SubscriptionStoreButton`, `SubscriptionStorePicker`,
+`SubscriptionOptionGroup`, and related option controls are supported inside a
+custom `SubscriptionStoreControlStyle.makeBody(configuration:)`. Do not place
+them as arbitrary standalone content outside a custom control style.
 
 ## Introductory Offers
 
@@ -274,8 +274,19 @@ let result = try await product.purchase(options: [
 
 ### SwiftUI Automatic Promotional Offer
 
+For StoreKit SwiftUI views on iOS 26+, provide the offer and the compact JWS
+signature asynchronously:
+
 ```swift
-.subscriptionPromotionalOffer(offer: promoOffer, signature: signature)
+.subscriptionPromotionalOffer { product, subscription in
+    subscription.promotionalOffers.first
+} compactJWS: { product, subscription, offer in
+    guard let offerID = offer.id else { throw StoreError.invalidOffer }
+    return try await offerSigner.compactJWS(
+        productID: product.id,
+        offerID: offerID
+    )
+}
 ```
 
 ### Preferred Offer Selection
@@ -299,14 +310,25 @@ Target former subscribers who cancelled. Available since iOS 18.
 let winBackOffers = product.subscription?.winBackOffers ?? []
 ```
 
+`winBackOffers` is the raw offer list for the product. Filter it through
+`renewalInfo.eligibleWinBackOfferIDs` before showing or applying offers.
+
 ### Checking Eligibility via Renewal Info
 
 ```swift
-let statuses = try await Product.SubscriptionInfo.Status.status(for: groupID)
-for status in statuses {
-    guard case .verified(let renewalInfo) = status.renewalInfo else { continue }
-    let eligibleIDs = renewalInfo.eligibleWinBackOfferIDs
-    // Display offers matching these IDs
+let statuses = try await Product.SubscriptionInfo.status(for: groupID)
+let eligibleOfferIDs = statuses.flatMap { status -> [String] in
+    guard case .verified(let renewalInfo) = status.renewalInfo else { return [] }
+    return renewalInfo.eligibleWinBackOfferIDs
+}
+
+let offersByID = Dictionary(uniqueKeysWithValues: winBackOffers.compactMap { offer in
+    offer.id.map { ($0, offer) }
+})
+
+let eligibleWinBackOffers = eligibleOfferIDs.compactMap { offersByID[$0] }
+for offer in eligibleWinBackOffers {
+    // Display or apply only eligible offers.
 }
 ```
 
@@ -344,17 +366,33 @@ var body: some View {
 .storeButton(.visible, for: .redeemCode)
 ```
 
+### Testing Offer Codes
+
+Test offer-code redemption in StoreKit configuration files and sandbox. In
+StoreKit testing, use the configured offer-code reference name:
+
+```swift
+try await product.purchase(options: [.codeOffer(referenceName: "SUMMER2024")])
+```
+
+Also test the user-facing redemption path with `.storeButton(.visible, for:
+.redeemCode)` or `.offerCodeRedemption(isPresented:)`, then verify the resulting
+transaction uses `transaction.offer?.type == .code` and the expected
+`transaction.offer?.id`.
+
 ### Verifying Applied Offers in Transactions
 
 ```swift
-if let offerType = transaction.offerType {
-    switch offerType {
+if let offer = transaction.offer {
+    switch offer.type {
     case .introductory: break  // Introductory offer applied
-    case .promotional: break   // Check transaction.offerID
+    case .promotional: break   // Promotional offer applied
     case .code: break          // Offer code redeemed
     case .winBack: break       // Win-back offer applied
     default: break
     }
+
+    let offerID = offer.id
 }
 ```
 
@@ -431,6 +469,7 @@ try await product.purchase(options: [.codeOffer(referenceName: "SUMMER2024")])
 ### StoreKit Testing Capabilities
 
 - Simulate failed transactions, interrupted purchases, refunds
+- Test Ask to Buy pending approvals for promotional, win-back, and offer-code purchases
 - Speed up subscription renewals (renewals happen in minutes, not months)
 - Test grace period and billing retry states
 - Clear purchase history between test runs
@@ -586,8 +625,9 @@ member stops sharing, the transaction is revoked.
 
 ## Ask to Buy Handling
 
-Ask to Buy applies to child accounts in Family Sharing. The purchase
-returns `.pending` and must be approved by the family organizer.
+Ask to Buy applies to child accounts in Family Sharing. The purchase returns
+`.pending`; show a waiting-for-approval state, keep content locked, and unlock
+only after the approved transaction arrives from `Transaction.updates`.
 
 ```swift
 case .pending:
@@ -602,7 +642,9 @@ case .pending:
 try await product.purchase(options: [.simulatesAskToBuyInSandbox(true)])
 ```
 
-Then approve or decline in Xcode's Transaction Manager.
+Then approve or decline in Xcode's Transaction Manager. Include this path when
+testing promotional offers, win-back offers, offer codes, and renewal states so
+deferred approval does not bypass verification or entitlement updates.
 
 ## .currentEntitlementTask SwiftUI Modifier
 
@@ -624,11 +666,16 @@ enum EntitlementTaskState<Value> {
 }
 ```
 
-Use `map` and `flatMap` for transformations:
+Pattern-match the verified optional transaction before granting access:
 
 ```swift
 .currentEntitlementTask(for: ProductID.premium) { state in
-    self.isPremium = state.map { $0 != nil } ?? false
+    if case .success(.some(.verified(let transaction))) = state,
+       transaction.revocationDate == nil {
+        self.isPremium = true
+    } else {
+        self.isPremium = false
+    }
 }
 ```
 
@@ -697,7 +744,9 @@ if case .verified(let renewalInfo) = status.renewalInfo {
 
 ## Unfinished Transactions
 
-Process transactions that were not finished in previous sessions:
+`Transaction.updates` emits unfinished transactions once immediately after app
+launch. Use `Transaction.unfinished` when you need an explicit recovery sweep,
+such as after a delivery-server outage or a late listener startup:
 
 ```swift
 func processUnfinishedTransactions() async {
@@ -709,18 +758,18 @@ func processUnfinishedTransactions() async {
 }
 ```
 
-Call this at app launch alongside the `Transaction.updates` listener to
-ensure no purchases are lost.
+Keep the `Transaction.updates` listener as the primary always-on path, and use
+the sweep as a recovery tool rather than a replacement for the listener.
 
 ## Common Advanced Mistakes
 
-### Not processing unfinished transactions at launch
+### Missing a recovery path for unfinished transactions
 
 ```swift
-// WRONG: Only listen for updates, ignore pending deliveries
-init() { transactionListener = listenForTransactions() }
+// WRONG: No launch listener and no recovery sweep
+init() { }
 
-// CORRECT: Process unfinished transactions AND listen for updates
+// CORRECT: Start updates at launch; sweep unfinished transactions when needed
 init() {
     transactionListener = listenForTransactions()
     Task { await processUnfinishedTransactions() }

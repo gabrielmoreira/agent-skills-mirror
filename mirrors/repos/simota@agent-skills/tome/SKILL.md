@@ -81,7 +81,7 @@ Route elsewhere:
 - **Documents only.** Never write or modify code — Tome's deliverables are learning documents, glossaries, decision records, and tutorials.
 - **Honest narration.** Do not embellish change rationale — include constraints, compromises, and limitations honestly. Post-hoc rationalization degrades trust.
 - **Append-only for accepted decision records.** When a prior ADR/decision record must change, write a new superseding record and cross-link (`Supersedes: ADR-NNN` / `Superseded-by: ADR-MMM`); never silently rewrite an accepted one. Preserving the history of thinking is the point. [Source: adr.github.io; AWS Prescriptive Guidance — ADR process]
-- **Author for Opus 4.7 defaults.** Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read actual diff, commit history, and prior decision records at EXTRACT — learning-document integrity depends on grounding in real change content, never fabricated), P5 (think step-by-step at audience calibration, definition-on-first-use, fact-vs-inference separation, and trade-off documentation)** as critical for Tome. P2 recommended: calibrated learning document preserving diff citations, `[Inference: evidence]` markers, and audience-matched depth. P1 recommended: front-load audience level, document type (glossary/ADR/tutorial), and scope at EXTRACT.
+- **Author for Opus 4.8 defaults.** Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read actual diff, commit history, and prior decision records at EXTRACT — learning-document integrity depends on grounding in real change content, never fabricated), P5 (think step-by-step at audience calibration, definition-on-first-use, fact-vs-inference separation, and trade-off documentation)** as critical for Tome. P2 recommended: calibrated learning document preserving diff citations, `[Inference: evidence]` markers, and audience-matched depth. P1 recommended: front-load audience level, document type (glossary/ADR/tutorial), and scope at EXTRACT.
 
 ---
 
@@ -333,7 +333,7 @@ All handoff templates → `references/handoffs.md`
 | `references/worked-example.md` | You are running the `worked` recipe — Sweller cognitive load theory, expert-reasoning annotation, faded-guidance progression |
 | `references/coding-kata.md` | You are running the `kata` recipe — constraint design, difficulty tiers (Bronze/Silver/Gold), pair vs solo facilitation, common katas |
 | `references/quickstart-guide.md` | You are running the `quickstart` recipe — 15-minute time budget, prerequisite filtering, success anchors, troubleshooting decision tree |
-| `_common/OPUS_47_AUTHORING.md` | You are sizing the learning document, deciding adaptive thinking depth at audience/evidence separation, or front-loading audience/doc-type/scope at EXTRACT. Critical for Tome: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | You are sizing the learning document, deciding adaptive thinking depth at audience/evidence separation, or front-loading audience/doc-type/scope at EXTRACT. Critical for Tome: P3, P5. |
 
 ---
 

@@ -8,6 +8,44 @@ Keychain access groups are the sole mechanism for sharing credentials between ap
 
 ---
 
+## Contents
+
+- [How Access Groups Work](#how-access-groups-work)
+- [Two Entitlements, Two Formats, Different Purposes](#two-entitlements-two-formats-different-purposes)
+  - [Keychain Sharing (`keychain-access-groups`)](#keychain-sharing-keychain-access-groups)
+  - [App Groups (`com.apple.security.application-groups`)](#app-groups-comapplesecurityapplication-groups)
+  - [Comparison Table](#comparison-table)
+- [Code Patterns: Correct and Incorrect](#code-patterns-correct-and-incorrect)
+  - [Storing an item with an explicit access group](#storing-an-item-with-an-explicit-access-group)
+  - [Access group without Team ID prefix (most common AI mistake)](#access-group-without-team-id-prefix-most-common-ai-mistake)
+  - [App extension reading a shared keychain item](#app-extension-reading-a-shared-keychain-item)
+  - [Extension that fails because it lacks the entitlement](#extension-that-fails-because-it-lacks-the-entitlement)
+  - [iCloud Keychain sync with `kSecAttrSynchronizable`](#icloud-keychain-sync-with-ksecattrsynchronizable)
+  - [Assuming items sync by default](#assuming-items-sync-by-default)
+- [Cross-Target Entitlements Setup](#cross-target-entitlements-setup)
+  - [Xcode Configuration Steps](#xcode-configuration-steps)
+  - [Required Entitlements Matrix](#required-entitlements-matrix)
+- [The macOS Keychain Split](#the-macos-keychain-split)
+  - [Cross-platform macOS support with `kSecUseDataProtectionKeychain`](#cross-platform-macos-support-with-ksecusedataprotectionkeychain)
+- [Migrating Items Between Access Groups](#migrating-items-between-access-groups)
+- [Lifecycle Edge Cases](#lifecycle-edge-cases)
+  - [Keychain items persist after app uninstall](#keychain-items-persist-after-app-uninstall)
+  - [App transfers between teams break keychain access](#app-transfers-between-teams-break-keychain-access)
+  - [Cross-developer sharing is impossible via access groups](#cross-developer-sharing-is-impossible-via-access-groups)
+- [Platform-Specific Patterns](#platform-specific-patterns)
+  - [watchOS](#watchos)
+  - [Widget Extensions (WidgetKit)](#widget-extensions-widgetkit)
+- [Build and Distribution Considerations](#build-and-distribution-considerations)
+- [Debugging When Keychain Sharing Breaks](#debugging-when-keychain-sharing-breaks)
+  - [Essential Error Codes](#essential-error-codes)
+  - [Debugging Checklist](#debugging-checklist)
+  - [Test Matrix](#test-matrix)
+- [Security Threat Model Notes](#security-threat-model-notes)
+- [What Changed in 2024–2026](#what-changed-in-20242026)
+- [Cross-References](#cross-references)
+- [Conclusion](#conclusion)
+- [Summary Checklist](#summary-checklist)
+
 ## How Access Groups Work
 
 Every app belongs to one or more **access groups** — string identifiers that tag which processes can read and write specific keychain items. An app can belong to many groups, but each keychain item belongs to **exactly one**. The `securityd` daemon enforces access by checking the calling process's entitlements against the item's group at runtime.

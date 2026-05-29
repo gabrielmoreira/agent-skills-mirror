@@ -110,6 +110,7 @@ struct TVCardButton: View {
 ```
 
 Prefer semantic controls like `Button` first. Add `.focusable(interactions:)` only when the custom control needs explicit focus participation.
+Do not make arbitrary gesture-only views the primary action target on tvOS or keyboard-driven interfaces; expose the action through a semantic control or a custom control with explicit focus and activation behavior.
 
 ## Focus sections for directional movement
 

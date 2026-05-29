@@ -86,8 +86,8 @@ struct Store: Identifiable, Hashable {
 ## Custom Annotation Views
 
 Use `Annotation` for fully custom SwiftUI content at a coordinate. Prefer
-`Marker` for standard pins because it handles clustering and accessibility
-automatically.
+`Marker` for standard pins because it provides the platform marker appearance
+and a title that VoiceOver can announce.
 
 ```swift
 Map {
@@ -483,10 +483,11 @@ func generateMapSnapshot(center: CLLocationCoordinate2D,
 
 ---
 
-## Clustering Annotations
+## Dense Annotations and Clustering
 
-MapKit clusters `Marker` views automatically when they overlap. Control the
-clustering priority and displayed count.
+For dense SwiftUI maps, hide titles at low zoom or reduce visible items based
+on the current camera region. Use `MKMapView` when you need explicit cluster
+configuration.
 
 ```swift
 Map {
@@ -499,8 +500,7 @@ Map {
 ```
 
 For custom clustering behavior with `MKMapView` (UIKit interop), set
-`clusteringIdentifier` on `MKMarkerAnnotationView`. The SwiftUI `Map`
-handles basic clustering automatically.
+`clusteringIdentifier` on `MKMarkerAnnotationView`.
 
 ---
 
@@ -548,7 +548,7 @@ Convert an address string to map items with richer data than `CLGeocoder`:
 func geocodeAddresses(_ addresses: [String]) async -> [MKMapItem] {
     var items: [MKMapItem] = []
     for address in addresses {
-        let request = MKGeocodingRequest(address: address)
+        guard let request = MKGeocodingRequest(addressString: address) else { continue }
         if let mapItems = try? await request.mapItems {
             items.append(contentsOf: mapItems)
         }
@@ -576,14 +576,16 @@ func reverseGeocode(_ coordinate: CLLocationCoordinate2D) async -> MKAddress? {
 
 ### MKAddress and MKAddressRepresentations
 
-`MKAddress` provides structured address components. Use
+`MKAddress` provides full and short address strings. Use an `MKMapItem`'s
 `MKAddressRepresentations` to format addresses for different contexts:
 
 ```swift
 @available(iOS 26, *)
-func formatAddress(_ address: MKAddress) -> String {
+func formatAddress(for item: MKMapItem) -> String {
     // Use address representations for locale-aware formatting
-    return address.representations.fullAddress()
+    item.addressRepresentations?.fullAddress(includingRegion: true, singleLine: true)
+        ?? item.address?.fullAddress
+        ?? ""
 }
 ```
 
@@ -592,24 +594,25 @@ func formatAddress(_ address: MKAddress) -> String {
 Create place references from coordinates when you do not have a Place ID:
 
 ```swift
-@available(iOS 26, *)
 import GeoToolbox
 
-let descriptor = PlaceDescriptor(
-    representations: [.coordinate(myCoordinate)],
-    commonName: "My Favorite Cafe"
-)
+@available(iOS 26, *)
+func mapItem(for myCoordinate: CLLocationCoordinate2D) async throws -> MKMapItem {
+    let descriptor = PlaceDescriptor(
+        representations: [.coordinate(myCoordinate)],
+        commonName: "My Favorite Cafe"
+    )
 
-let request = MKMapItemRequest(placeDescriptor: descriptor)
-let mapItem = try await request.mapItem
+    let request = MKMapItemRequest(placeDescriptor: descriptor)
+    return try await request.mapItem
+}
 
 // Use mapItem with any MapKit API: Marker(item:), directions, place cards
 ```
 
-### Cycling Directions
+### Cycling Directions (iOS 14+)
 
 ```swift
-@available(iOS 26, *)
 func cyclingRoute(to destination: MKMapItem) async throws -> MKRoute? {
     let request = MKDirections.Request()
     request.source = .forCurrentLocation()

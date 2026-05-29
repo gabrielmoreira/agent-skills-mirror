@@ -4,9 +4,35 @@
 >
 > **Key APIs:** `SecItemAdd`, `SecItemCopyMatching`, `SecItemUpdate`, `SecItemDelete`, `kSecClassGenericPassword`, `kSecClassInternetPassword`, `kSecClassKey`, `kSecClassCertificate`, `kSecClassIdentity`
 >
-> **Apple Documentation:** [Keychain Services](https://developer.apple.com/documentation/security/keychain_services), [TN3137](https://developer.apple.com/documentation/technotes/tn3137-on-mac-keychains), Quinn "The Eskimo!" DTS posts: "SecItem: Fundamentals" and "SecItem: Pitfalls and Best Practices"
+> **Apple Documentation:** [Keychain Services](https://sosumi.ai/documentation/security/keychain_services), [TN3137](https://sosumi.ai/documentation/technotes/tn3137-on-mac-keychains), Quinn "The Eskimo!" DTS posts: "SecItem: Fundamentals" and "SecItem: Pitfalls and Best Practices"
 
 ---
+
+## Contents
+
+- [Architecture Overview](#architecture-overview)
+- [The Four Functions and Their Dictionary Contracts](#the-four-functions-and-their-dictionary-contracts)
+- [Uniqueness and Primary Keys](#uniqueness-and-primary-keys)
+- [The Add-or-Update Pattern](#the-add-or-update-pattern)
+- [Reading from the Keychain: Return Flags and Type Casting](#reading-from-the-keychain-return-flags-and-type-casting)
+  - [Return Type Cheat Sheet](#return-type-cheat-sheet)
+  - [String Keys vs. kSec\* Constants](#string-keys-vs-ksec-constants)
+- [Centralized Query Builder](#centralized-query-builder)
+- [OSStatus Error Handling](#osstatus-error-handling)
+- [Actor-Isolated Keychain Manager (iOS 17+ / macOS 14+)](#actor-isolated-keychain-manager-ios-17-macos-14)
+  - [Why Actors over GCD](#why-actors-over-gcd)
+  - [Legacy GCD Pattern (iOS 13–16 codebases)](#legacy-gcd-pattern-ios-1316-codebases)
+- [Performance Architecture](#performance-architecture)
+  - [Two-Tier Encryption and Query Cost](#two-tier-encryption-and-query-cost)
+  - [Query Specificity](#query-specificity)
+  - [App Launch Performance](#app-launch-performance)
+  - [Batch Operations](#batch-operations)
+- [macOS Keychain Routing (TN3137)](#macos-keychain-routing-tn3137)
+- [Accessibility and Data Protection Classes](#accessibility-and-data-protection-classes)
+- [Cross-References](#cross-references)
+- [Authoritative References](#authoritative-references)
+- [Implementation Notes](#implementation-notes)
+- [Summary Checklist](#summary-checklist)
 
 ## Architecture Overview
 
@@ -215,7 +241,7 @@ Both are correct. Pick one style and use it consistently across your codebase.
 
 ## Centralized Query Builder
 
-Both research sources recommend centralizing query construction to prevent flag omissions and key typos:
+Centralize query construction to prevent flag omissions and key typos:
 
 ```swift
 enum KeychainQueryBuilder {
@@ -558,8 +584,8 @@ The `kSecAttrAccessible` attribute controls when a keychain item's secret data c
 
 | Source                                                                                                                          | Relevance                                          |
 | ------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| [Keychain Services](https://developer.apple.com/documentation/security/keychain_services)                                       | Main API landing page                              |
-| [TN3137: On Mac Keychain APIs and Implementations](https://developer.apple.com/documentation/technotes/tn3137-on-mac-keychains) | macOS data protection vs file-based routing        |
+| [Keychain Services](https://sosumi.ai/documentation/security/keychain_services)                                       | Main API landing page                              |
+| [TN3137: On Mac Keychain APIs and Implementations](https://sosumi.ai/documentation/technotes/tn3137-on-mac-keychains) | macOS data protection vs file-based routing        |
 | Quinn "The Eskimo!" — "SecItem: Fundamentals" / "SecItem: Pitfalls and Best Practices"                                          | Most practical DTS reference, updated through 2025 |
 | [Apple Platform Security Guide](https://support.apple.com/guide/security/welcome/web) — Keychain Data Protection chapter        | Two-tier encryption architecture                   |
 | WWDC 2014 Session 711 — "Keychain and Authentication with Touch ID"                                                             | Touch ID/keychain integration patterns             |
@@ -567,15 +593,13 @@ The `kSecAttrAccessible` attribute controls when a keychain item's secret data c
 
 ---
 
-## Contradictions Between Research Sources
+## Implementation Notes
 
-During cross-validation of research inputs, the following discrepancies were noted:
+1. **Dictionary key type convention:** Both `[CFString: Any]` and `[String: Any]` with `kSec* as String` casts are valid. This file uses `[CFString: Any]` for concise examples and shows both styles in the String Keys section.
 
-1. **Dictionary key type convention:** Claude source uses `[CFString: Any]`; Parallel source uses `[String: Any]` with `kSec* as String` casts. **Resolution:** Both are correct. The `[CFString: Any]` style is slightly more concise; the `[String: Any]` style is more common in community code. This file uses `[CFString: Any]` for conciseness but shows both styles in the String Keys section.
+2. **Default accessibility recommendation:** `kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly` is strongest for high-security secrets, but items become unavailable if the user removes their passcode. `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` is a safe general foreground-only default. The actor manager example uses `AfterFirstUnlockThisDeviceOnly` for background compatibility while remaining device-bound.
 
-2. **Default accessibility recommendation:** Claude source cites OWASP recommending `kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly` for highly sensitive data; Parallel source defaults to `kSecAttrAccessibleWhenUnlockedThisDeviceOnly`. **Resolution:** Both are valid for different threat models. `WhenPasscodeSet` is strongest but items are deleted if the user removes their passcode. `WhenUnlockedThisDeviceOnly` is the safe general default for foreground-only access. The actor manager example uses `AfterFirstUnlockThisDeviceOnly` for background compatibility while remaining device-bound.
-
-3. **`kSecReturnData` + `kSecMatchLimitAll` restriction:** Parallel source claims this combination is restricted for password classes. Claude source does not mention this. **Resolution:** This restriction exists in some OS versions / keychain implementations. Safest practice is to use `kSecReturnRef` or `kSecReturnAttributes` with `LimitAll`, then fetch data per-item. Noted in the Return Type Cheat Sheet.
+3. **`kSecReturnData` + `kSecMatchLimitAll`:** Some OS versions and keychain implementations have restrictions around returning data for multiple password-class matches. The safer pattern is to use `kSecReturnRef` or `kSecReturnAttributes` with `LimitAll`, then fetch data per item. See the Return Type Cheat Sheet.
 
 ---
 

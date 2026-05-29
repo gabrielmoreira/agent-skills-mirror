@@ -80,7 +80,7 @@ Route elsewhere when the task is primarily:
 - Always provide alt-text or ASCII fallback for accessibility (WCAG 2.2 compliance).
 - Ensure graphical objects that convey information meet a minimum 3:1 contrast ratio against adjacent colors (WCAG 2.2 SC 1.4.11).
 - For interactive diagram elements (draw.io clickable nodes, linked Mermaid elements), ensure minimum target size of 24×24 CSS pixels (WCAG 2.2 SC 2.5.8).
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read source code, specs, or prior diagrams at SCAN — reverse-generated diagrams must ground in actual structure, not idealized abstraction), P5 (think step-by-step at diagram-type selection (flowchart/sequence/state/class/ER), abstraction level, and accessibility alt-text scoping)** as critical for Canvas. P2 recommended: calibrated diagram preserving alt-text, contrast ratio, and target-size compliance. P1 recommended: front-load source type, diagram purpose, and audience at SCAN.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read source code, specs, or prior diagrams at SCAN — reverse-generated diagrams must ground in actual structure, not idealized abstraction), P5 (think step-by-step at diagram-type selection (flowchart/sequence/state/class/ER), abstraction level, and accessibility alt-text scoping)** as critical for Canvas. P2 recommended: calibrated diagram preserving alt-text, contrast ratio, and target-size compliance. P1 recommended: front-load source type, diagram purpose, and audience at SCAN.
 
 ## Boundaries
 
@@ -262,7 +262,7 @@ For Echo output, state the visualization type and the scoring or friction legend
 | `references/diagram-tools-comparison.md` | Mermaid is not enough, you need D2/PlantUML, or Architecture-as-Code patterns. |
 | `references/diagramming-principles.md` | You need abstraction, density, or review heuristics. |
 | `references/ai-reverse-engineering.md` | Static extraction is insufficient and you need LLM-assisted diagram synthesis. |
-| `_common/OPUS_47_AUTHORING.md` | You are sizing the diagram output, deciding adaptive thinking depth at diagram-type/abstraction selection, or front-loading source/purpose/audience at SCAN. Critical for Canvas: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | You are sizing the diagram output, deciding adaptive thinking depth at diagram-type/abstraction selection, or front-loading source/purpose/audience at SCAN. Critical for Canvas: P3, P5. |
 
 ## Operational
 

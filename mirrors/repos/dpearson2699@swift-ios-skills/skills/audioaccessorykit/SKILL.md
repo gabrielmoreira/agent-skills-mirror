@@ -1,22 +1,24 @@
 ---
 name: audioaccessorykit
-description: "Support audio accessory features like automatic switching using AudioAccessoryKit. Use when implementing automatic audio routing for connected accessories, managing audio accessory sessions, registering device capabilities and placement, providing connected audio source identifiers, or configuring audio accessories connected to iOS devices."
+description: "Support audio accessory features like automatic switching using AudioAccessoryKit. Use when implementing automatic audio routing for paired accessories, registering audio accessory configuration from the container app, updating placement or connected audio source identifiers from an app extension, or handling AccessoryControlDevice capabilities and errors."
 ---
 
 # AudioAccessoryKit
 
-Automatic audio switching and intelligent audio routing for third-party audio
-accessories. Enables companion apps to register audio accessories with the
-system, report device placement, and declare capabilities so the system can
-seamlessly switch audio output. Available iOS 26.4+ / Swift 6.3.
+Automatic audio switching support and intelligent audio routing inputs for
+third-party audio accessories. Enables companion apps to register audio
+accessory configuration with the system, and app extensions to report placement
+and connected source changes that help the system switch audio output.
+Available iOS 26.4+ / iPadOS 26.4+.
 
-> **Beta-sensitive.** AudioAccessoryKit is new in iOS 26.4 and may change before GM.
-> Re-check current Apple documentation before relying on specific API details.
+> **Beta-sensitive.** AudioAccessoryKit is new in iOS 26.4. Re-check current
+> Apple documentation before relying on specific API details.
 
 AudioAccessoryKit builds on top of AccessorySetupKit. The accessory must first
 be paired via AccessorySetupKit before it can be registered for audio features.
-The central type is `AccessoryControlDevice`, which manages registration,
-capability declaration, and ongoing state updates.
+The central type is `AccessoryControlDevice`, which registers a
+`Configuration` from the container app and applies ongoing configuration updates
+from the app extension.
 
 ## Contents
 
@@ -37,7 +39,7 @@ capability declaration, and ongoing state updates.
 
 1. Pair the accessory over Bluetooth using AccessorySetupKit. This yields an
    `ASAccessory` object.
-2. Import both frameworks in the companion app:
+2. Import the frameworks where needed in the container app and extension:
 
 ```swift
 import AccessorySetupKit
@@ -55,23 +57,28 @@ import AudioAccessoryKit
 
 ### Registering an Accessory
 
-After pairing via AccessorySetupKit, register the accessory with
-`AccessoryControlDevice` by specifying the capabilities it supports:
+After pairing via AccessorySetupKit, register the accessory from the container
+app by passing an `AccessoryControlDevice.Configuration` that describes the
+capabilities and any initial state the accessory supports:
 
 ```swift
 let accessory: ASAccessory  // Obtained from AccessorySetupKit pairing
 
-let capabilities: AccessoryControlDevice.Capabilities = [.audioSwitching, .placement]
-try await AccessoryControlDevice.register(accessory, capabilities)
+let configuration = AccessoryControlDevice.Configuration(
+    devicePlacement: .offHead,
+    deviceCapabilities: [.audioSwitching, .placement]
+)
+
+try await AccessoryControlDevice.register(accessory, configuration)
 ```
 
-Registration activates the specified capabilities and tells the system to begin
-routing audio to the accessory.
+Registration activates the specified capabilities and gives the system the
+configuration it needs to participate in audio routing decisions.
 
 ### Retrieving the Current Configuration
 
-Access the device's current configuration at any time using the static
-`current(for:)` method:
+In the app extension, access the device's current configuration using the
+static `current(for:)` method:
 
 ```swift
 let device = try AccessoryControlDevice.current(for: accessory)
@@ -80,11 +87,13 @@ let currentConfig = device.configuration
 
 This returns the `AccessoryControlDevice` instance associated with the paired
 `ASAccessory`. The device exposes both the `accessory` reference and the
-current `configuration`.
+current `configuration`. Apple marks `current(for:)` as app-extension-only.
 
 ### Updating Configuration
 
-Push configuration changes to the system with `update(_:)`:
+In the app extension, push configuration changes to the system with
+`update(_:)`. Only update fields for capabilities that were declared during
+registration:
 
 ```swift
 let device = try AccessoryControlDevice.current(for: accessory)
@@ -95,7 +104,7 @@ try await device.update(config)
 ```
 
 The update call is async and can throw `AccessoryControlDevice.Error` on
-failure.
+failure. Apple marks `update(_:)` as app-extension-only.
 
 ## Audio Switching
 
@@ -104,19 +113,26 @@ the correct device based on placement and connected sources.
 
 ### Enabling Audio Switching
 
-Declare the `.audioSwitching` capability during registration:
+Declare the `.audioSwitching` capability in the registration configuration:
 
 ```swift
-let capabilities: AccessoryControlDevice.Capabilities = [.audioSwitching]
-try await AccessoryControlDevice.register(accessory, capabilities)
+let configuration = AccessoryControlDevice.Configuration(
+    deviceCapabilities: [.audioSwitching]
+)
+
+try await AccessoryControlDevice.register(accessory, configuration)
 ```
 
-For full automatic switching (including placement-based routing), include both
-capabilities:
+For Apple's automatic switching workflow, include both `.audioSwitching` and
+`.placement` when the accessory can report placement:
 
 ```swift
-let capabilities: AccessoryControlDevice.Capabilities = [.audioSwitching, .placement]
-try await AccessoryControlDevice.register(accessory, capabilities)
+let configuration = AccessoryControlDevice.Configuration(
+    devicePlacement: .offHead,
+    deviceCapabilities: [.audioSwitching, .placement]
+)
+
+try await AccessoryControlDevice.register(accessory, configuration)
 ```
 
 ### Capabilities
@@ -128,13 +144,14 @@ try await AccessoryControlDevice.register(accessory, capabilities)
 | `.audioSwitching` | Device supports automatic audio switching |
 | `.placement` | Device can report its physical placement |
 
-Both capabilities can be combined. Audio switching works without placement, but
-providing placement enables more intelligent routing decisions.
+Both capabilities can be combined. Do not declare `.placement` unless the
+accessory can keep the system updated with real placement state.
 
 ## Device Placement
 
-Report the physical position of the accessory to help the system make routing
-decisions. Update placement whenever the accessory detects a position change.
+Report the physical position of the accessory from the app extension to help the
+system make routing decisions. Update placement whenever the accessory detects a
+position change.
 
 ### Placement Values
 
@@ -166,8 +183,8 @@ Common transitions:
 ## Connected Audio Sources
 
 For accessories that connect to multiple Bluetooth devices simultaneously,
-inform the system which devices are connected. This lets the system route audio
-from the appropriate source.
+inform the system from the app extension which devices are connected. This lets
+the system route audio from the appropriate source.
 
 ### Setting Audio Source Identifiers
 
@@ -204,7 +221,7 @@ device connects, existing device disconnects).
 
 ### Querying Capabilities
 
-After registration, inspect the device's declared capabilities through its
+In the app extension, inspect the device's declared capabilities through its
 configuration:
 
 ```swift
@@ -256,8 +273,13 @@ updates:
 Handle errors from registration and update calls:
 
 ```swift
+let configuration = AccessoryControlDevice.Configuration(
+    devicePlacement: .offHead,
+    deviceCapabilities: [.audioSwitching, .placement]
+)
+
 do {
-    try await AccessoryControlDevice.register(accessory, capabilities)
+    try await AccessoryControlDevice.register(accessory, configuration)
 } catch let error as AccessoryControlDevice.Error {
     switch error {
     case .accessoryNotCapable:
@@ -267,7 +289,7 @@ do {
         // Check registration parameters
         break
     case .invalidated:
-        // Re-register the device
+        // Coordinate container-app registration again
         break
     case .unknown:
         // Log and retry
@@ -283,15 +305,17 @@ do {
 ### DON'T: Register before pairing with AccessorySetupKit
 
 ```swift
-// WRONG -- accessory not yet paired
-let rawAccessory = ASAccessory()
-try await AccessoryControlDevice.register(rawAccessory, [.audioSwitching])
+// WRONG -- no ASAccessory from a completed AccessorySetupKit pairing
+try await AccessoryControlDevice.register(unknownAccessory, configuration)
 
 // CORRECT -- use the ASAccessory from a completed pairing session
 session.activate(on: .main) { event in
     if event.eventType == .accessoryAdded, let accessory = event.accessory {
         Task {
-            try await AccessoryControlDevice.register(accessory, [.audioSwitching])
+            let configuration = AccessoryControlDevice.Configuration(
+                deviceCapabilities: [.audioSwitching]
+            )
+            try await AccessoryControlDevice.register(accessory, configuration)
         }
     }
 }
@@ -301,11 +325,13 @@ session.activate(on: .main) { event in
 
 ```swift
 // WRONG -- registers placement but never updates it
-try await AccessoryControlDevice.register(accessory, [.audioSwitching, .placement])
+let registration = AccessoryControlDevice.Configuration(
+    deviceCapabilities: [.audioSwitching, .placement]
+)
+try await AccessoryControlDevice.register(accessory, registration)
 // System never receives placement data, reducing switching accuracy
 
-// CORRECT -- update placement promptly after registration
-try await AccessoryControlDevice.register(accessory, [.audioSwitching, .placement])
+// CORRECT -- extension updates placement when state changes
 let device = try AccessoryControlDevice.current(for: accessory)
 var config = device.configuration
 config.devicePlacement = .offHead
@@ -334,11 +360,11 @@ func onDeviceDisconnected() {
 // WRONG -- ignores invalidation, keeps using stale device reference
 try await device.update(config)  // Throws .invalidated, unhandled
 
-// CORRECT -- catch invalidation and re-register
+// CORRECT -- catch invalidation and ask the container app to re-register
 do {
     try await device.update(config)
 } catch AccessoryControlDevice.Error.invalidated {
-    try await AccessoryControlDevice.register(accessory, capabilities)
+    await notifyContainerAppToRegisterAgain(accessory)
 }
 ```
 
@@ -346,13 +372,16 @@ do {
 
 - [ ] Accessory paired via AccessorySetupKit before AudioAccessoryKit registration
 - [ ] Both `AccessorySetupKit` and `AudioAccessoryKit` imported
-- [ ] Capabilities declared at registration match actual hardware support
+- [ ] Container app calls `register(_: _:)` with `AccessoryControlDevice.Configuration`
+- [ ] App extension calls `current(for:)` and `update(_:)`
+- [ ] Capabilities in the registration configuration match actual hardware support
+- [ ] Updates only touch fields for capabilities declared during registration
 - [ ] `.placement` capability accompanied by ongoing placement updates
 - [ ] Placement transitions (on/off head) reported promptly
 - [ ] Audio source device identifiers updated on Bluetooth connection changes
 - [ ] All `AccessoryControlDevice.Error` cases handled, including `@unknown default`
 - [ ] `update(_:)` calls use `try await` and handle errors
-- [ ] Invalidated device references re-registered when needed
+- [ ] Invalidated device references trigger container-app registration recovery
 - [ ] Deployment target set to iOS 26.4+ or iPadOS 26.4+
 
 ## References
@@ -361,6 +390,9 @@ do {
 - [AudioAccessoryKit framework](https://sosumi.ai/documentation/audioaccessorykit)
 - [Supporting automatic audio switching](https://sosumi.ai/documentation/audioaccessorykit/supporting-automatic-audio-switching)
 - [AccessoryControlDevice](https://sosumi.ai/documentation/audioaccessorykit/accessorycontroldevice)
+- [AccessoryControlDevice.register(_:_:)](<https://sosumi.ai/documentation/audioaccessorykit/accessorycontroldevice/register(_:_:)>)
+- [AccessoryControlDevice.current(for:)](<https://sosumi.ai/documentation/audioaccessorykit/accessorycontroldevice/current(for:)>)
+- [AccessoryControlDevice.update(_:)](<https://sosumi.ai/documentation/audioaccessorykit/accessorycontroldevice/update(_:)>)
 - [AccessoryControlDevice.Configuration](https://sosumi.ai/documentation/audioaccessorykit/accessorycontroldevice/configuration-swift.struct)
 - [AccessoryControlDevice.Capabilities](https://sosumi.ai/documentation/audioaccessorykit/accessorycontroldevice/capabilities)
 - [AccessoryControlDevice.Placement](https://sosumi.ai/documentation/audioaccessorykit/accessorycontroldevice/placement)

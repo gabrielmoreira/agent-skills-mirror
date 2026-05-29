@@ -17,16 +17,17 @@ strategies.
 
 ### Pairing Through Registration
 
-The full lifecycle from discovery to audio switching registration:
+The container app owns AccessorySetupKit pairing and AudioAccessoryKit
+registration. Keep app-extension updates in separate types.
 
 ```swift
 import AccessorySetupKit
 import AudioAccessoryKit
 import CoreBluetooth
 
-final class AudioAccessoryManager {
+final class AudioAccessoryRegistrar {
     private let session = ASAccessorySession()
-    private var registeredDevice: AccessoryControlDevice?
+    private var registeredAccessories = Set<ASAccessory>()
 
     func start() {
         session.activate(on: .main) { [weak self] event in
@@ -45,26 +46,24 @@ final class AudioAccessoryManager {
             guard let accessory = event.accessory else { return }
             Task { await registerIfNeeded(accessory) }
         case .accessoryRemoved:
-            registeredDevice = nil
+            if let accessory = event.accessory {
+                registeredAccessories.remove(accessory)
+            }
         default:
             break
         }
     }
 
     private func registerIfNeeded(_ accessory: ASAccessory) async {
-        // Check if already registered
-        if let existing = try? AccessoryControlDevice.current(for: accessory) {
-            registeredDevice = existing
-            return
-        }
+        guard !registeredAccessories.contains(accessory) else { return }
 
         do {
-            let capabilities: AccessoryControlDevice.Capabilities = [
-                .audioSwitching,
-                .placement
-            ]
-            try await AccessoryControlDevice.register(accessory, capabilities)
-            registeredDevice = try AccessoryControlDevice.current(for: accessory)
+            let configuration = AccessoryControlDevice.Configuration(
+                devicePlacement: .offHead,
+                deviceCapabilities: [.audioSwitching, .placement]
+            )
+            try await AccessoryControlDevice.register(accessory, configuration)
+            registeredAccessories.insert(accessory)
         } catch {
             print("Registration failed: \(error)")
         }
@@ -74,7 +73,7 @@ final class AudioAccessoryManager {
 
 ### Registration with Initial Configuration
 
-Provide full initial state immediately after registration:
+Provide full initial state in the registration configuration:
 
 ```swift
 func registerWithInitialState(
@@ -82,21 +81,19 @@ func registerWithInitialState(
     placement: AccessoryControlDevice.Placement,
     primarySource: Data?
 ) async throws {
-    let capabilities: AccessoryControlDevice.Capabilities = [
-        .audioSwitching,
-        .placement
-    ]
-    try await AccessoryControlDevice.register(accessory, capabilities)
-
-    let device = try AccessoryControlDevice.current(for: accessory)
-    var config = device.configuration
-    config.devicePlacement = placement
-    config.primaryAudioSourceDeviceIdentifier = primarySource
-    try await device.update(config)
+    let configuration = AccessoryControlDevice.Configuration(
+        devicePlacement: placement,
+        deviceCapabilities: [.audioSwitching, .placement],
+        primaryAudioSourceDeviceIdentifier: primarySource
+    )
+    try await AccessoryControlDevice.register(accessory, configuration)
 }
 ```
 
 ## Placement Monitoring
+
+Run placement updates from the app extension after the container app has
+registered the `.placement` capability.
 
 ### Placement State Machine
 
@@ -212,6 +209,8 @@ final class DebouncedPlacementMonitor {
 
 ## Multi-Device Audio Source Management
 
+Run connected-source updates from the app extension after registration.
+
 ### Tracking Connected Bluetooth Sources
 
 Maintain a list of connected Bluetooth devices and update source identifiers
@@ -276,19 +275,19 @@ extension AudioSourceTracker {
 
 ### Retry with Backoff
 
-Handle transient failures during registration or updates:
+Handle transient failures during container-app registration:
 
 ```swift
 func registerWithRetry(
     _ accessory: ASAccessory,
-    capabilities: AccessoryControlDevice.Capabilities,
+    configuration: AccessoryControlDevice.Configuration,
     maxAttempts: Int = 3
 ) async throws {
     var lastError: Error?
 
     for attempt in 0..<maxAttempts {
         do {
-            try await AccessoryControlDevice.register(accessory, capabilities)
+            try await AccessoryControlDevice.register(accessory, configuration)
             return
         } catch let error as AccessoryControlDevice.Error {
             lastError = error
@@ -302,7 +301,7 @@ func registerWithRetry(
                 throw error
             case .invalidated, .unknown:
                 // Potentially transient, retry with backoff
-                let delay = Duration.seconds(pow(2.0, Double(attempt)))
+                let delay = Duration.seconds(Int64(1 << attempt))
                 try await Task.sleep(for: delay)
             @unknown default:
                 throw error
@@ -314,24 +313,26 @@ func registerWithRetry(
 }
 ```
 
-### Re-Registration on Invalidation
+### Invalidation Recovery
 
-Automatically re-register when the device is invalidated:
+When an app-extension update sees invalidation, stop using that device handle
+and coordinate with the container app to register the accessory again:
 
 ```swift
-func updateWithReregistration(
+enum AudioAccessoryUpdateRecovery {
+    case needsContainerRegistration(ASAccessory)
+}
+
+func updateOrRequestRegistration(
     accessory: ASAccessory,
-    capabilities: AccessoryControlDevice.Capabilities,
     config: AccessoryControlDevice.Configuration
-) async throws {
+) async throws -> AudioAccessoryUpdateRecovery? {
     do {
         let device = try AccessoryControlDevice.current(for: accessory)
         try await device.update(config)
+        return nil
     } catch AccessoryControlDevice.Error.invalidated {
-        // Re-register then apply configuration
-        try await AccessoryControlDevice.register(accessory, capabilities)
-        let device = try AccessoryControlDevice.current(for: accessory)
-        try await device.update(config)
+        return .needsContainerRegistration(accessory)
     }
 }
 ```
@@ -387,13 +388,13 @@ final class AccessorySetupCoordinator {
     }
 
     private func registerAudioFeatures(_ accessory: ASAccessory) async {
-        let capabilities: AccessoryControlDevice.Capabilities = [
-            .audioSwitching,
-            .placement
-        ]
+        let configuration = AccessoryControlDevice.Configuration(
+            devicePlacement: .offHead,
+            deviceCapabilities: [.audioSwitching, .placement]
+        )
 
         do {
-            try await AccessoryControlDevice.register(accessory, capabilities)
+            try await AccessoryControlDevice.register(accessory, configuration)
         } catch {
             print("Audio registration failed: \(error)")
         }
@@ -411,10 +412,6 @@ extension AccessorySetupCoordinator {
     func restoreRegistrations() {
         for accessory in session.accessories {
             Task {
-                // Check if already registered
-                if let _ = try? AccessoryControlDevice.current(for: accessory) {
-                    return  // Already registered
-                }
                 await registerAudioFeatures(accessory)
             }
         }
@@ -426,7 +423,7 @@ extension AccessorySetupCoordinator {
 
 ### Observable Audio Accessory State
 
-Expose accessory state to SwiftUI views using Observation:
+Expose app-extension accessory state to SwiftUI views using Observation:
 
 ```swift
 import AudioAccessoryKit
@@ -434,22 +431,15 @@ import AccessorySetupKit
 import Observation
 
 @Observable
-final class AudioAccessoryState {
-    private(set) var isRegistered = false
+final class AudioAccessoryExtensionState {
     private(set) var placement: AccessoryControlDevice.Placement?
     private(set) var hasPrimarySource = false
     private(set) var hasSecondarySource = false
 
     private var accessory: ASAccessory?
 
-    func register(_ accessory: ASAccessory) async throws {
-        let capabilities: AccessoryControlDevice.Capabilities = [
-            .audioSwitching,
-            .placement
-        ]
-        try await AccessoryControlDevice.register(accessory, capabilities)
+    func bind(to accessory: ASAccessory) {
         self.accessory = accessory
-        isRegistered = true
         refreshState()
     }
 
@@ -485,13 +475,11 @@ Use the observable state in a SwiftUI view:
 import SwiftUI
 
 struct AudioAccessoryView: View {
-    @State private var state = AudioAccessoryState()
+    @State private var state = AudioAccessoryExtensionState()
 
     var body: some View {
         List {
             Section("Status") {
-                LabeledContent("Registered", value: state.isRegistered ? "Yes" : "No")
-
                 if let placement = state.placement {
                     LabeledContent("Placement", value: placementLabel(placement))
                 }

@@ -1,10 +1,9 @@
 ---
 name: knn-imputation
-description: Use when filtering genes with high missingness and then imputing missing values in a bulk expression matrix with group-aware KNN through `DMwR2`, where donor samples are restricted by one annotation column before imputation. For strata with 10 or fewer samples, the script falls back to row-wise direct filling with mean or median. `--group_column` defaults to `group` but may be set to one custom grouping column. NOT for: single-cell data, multi-column stratification, non-tabular inputs, network access, or interactive workflows.
+description: "Use when filtering genes with high missingness and then imputing missing values in a bulk expression matrix with group-aware KNN through DMwR2, where donor samples are restricted by one annotation column before imputation. For strata with 10 or fewer samples, the script falls back to row-wise direct filling with mean or median. NOT for: single-cell data, multi-column stratification, non-tabular inputs, network access, or interactive workflows."
 license: MIT
-author: AIPOCH
+skill-author: AIPOCH
 ---
-> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # KNN Imputation
 
@@ -28,6 +27,24 @@ Do not use this skill for:
 | **Encounter errors** | `references/troubleshooting.md` | Common errors and solutions |
 | **Need CLI examples** | `references/cli-guide.md` | Detailed CLI usage examples |
 | **Need sample input fixtures** | `tests/data/` | Repository fixtures for local validation and examples |
+
+## Input Validation
+
+This skill accepts: a bulk expression matrix CSV (features × samples) and a sample annotation CSV file with a single grouping column for KNN stratification.
+
+If the user's request does not involve imputing missing values in a bulk expression matrix — for example, asking to impute single-cell data, use multi-column stratification, or run network-dependent workflows — do not proceed with the workflow. Instead respond:
+> "knn-imputation is designed to filter and impute missing values in bulk expression matrices using group-aware KNN with DMwR2. Your request appears to be outside this scope. Please provide a bulk expression matrix with a single grouping column, or use a more appropriate tool for your task."
+
+## Prerequisites
+
+DMwR2 is **not available on CRAN**. Install it from GitHub before running:
+
+```r
+install.packages("remotes")
+remotes::install_github("cran/DMwR2")
+```
+
+If `SKILL_DEPENDENCY_MISSING` is raised, use the command above to install DMwR2 before retrying. Standard `install.packages("DMwR2")` will not work.
 
 ---
 
@@ -199,7 +216,7 @@ Rscript scripts/main.R \
 | `SKILL_MISSING_COLUMNS` | Requested grouping column is absent | Add that column to the group file or change `--group_column` |
 | `SKILL_INVALID_PARAMETER` | Multiple grouping columns were supplied | Pass exactly one grouping column in `--group_column` |
 | `SKILL_INVALID_DATA` | Matrix or group file structure is invalid | Check input format, duplicated IDs, and group completeness |
-| `SKILL_DEPENDENCY_MISSING` | Required R package is not installed | Install the missing package |
+| `SKILL_DEPENDENCY_MISSING` | DMwR2 not installed | Install with: `Rscript -e "install.packages('remotes'); remotes::install_github('cran/DMwR2')"` — note: DMwR2 is not on CRAN |
 | `SKILL_TIMEOUT` | Timeout limit was exceeded | Increase `--timeout_seconds` or reduce data size |
 
 **IF error persists**, READ: `references/troubleshooting.md`
@@ -241,23 +258,10 @@ wc -l tests/output/basic_run/imputed_expression_matrix.csv
 ls -la tests/output/basic_run
 ```
 
----
+## Reference Files
 
-## Implementation Checklist
-
-- [x] CLI parsing with `optparse`
-- [x] `set.seed()` for reproducibility
-- [x] Seed exposed as CLI parameter with default `42`
-- [x] Dependency checks before execution
-- [x] Session info recording
-- [x] Timeout control parameter
-- [x] Group-aware stratified imputation
-- [x] Output overwrite protection
-- [x] Sample input fixtures for local validation
-- [x] Error handling with `SKILL_*` codes
-- [x] Modular script structure
-- [x] Progressive disclosure file triggers included
-
----
-
-*Last updated: 2026-04-15 | Version: 1.0.0*
+| File | Purpose |
+|---|---|
+| `references/algorithm.md` | Group-stratified KNN method, fallback rules, and assumptions |
+| `references/troubleshooting.md` | Common errors and solutions |
+| `references/cli-guide.md` | CLI usage examples |

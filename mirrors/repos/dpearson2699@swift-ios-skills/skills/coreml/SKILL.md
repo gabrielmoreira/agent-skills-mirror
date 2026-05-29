@@ -1,6 +1,6 @@
 ---
 name: coreml
-description: "Integrate and optimize Core ML models in iOS apps for on-device machine learning inference. Covers model loading (.mlmodelc, .mlpackage), predictions with auto-generated classes and MLFeatureProvider, compute unit configuration (CPU, GPU, Neural Engine), MLTensor, VNCoreMLRequest, MLComputePlan, multi-model pipelines, and deployment strategies. Use when loading Core ML models, making predictions, configuring compute units, or profiling model performance."
+description: "Integrate Core ML models in iOS apps for on-device machine learning inference. Covers model loading (.mlmodel, .mlpackage, .mlmodelc), predictions with auto-generated classes and MLFeatureProvider, compute unit configuration (CPU, GPU, Neural Engine), MLTensor, VNCoreMLRequest, MLComputePlan, multi-model pipelines, and deployment strategies. Use when loading Core ML models, making predictions, configuring compute units, or profiling model performance."
 ---
 
 # Core ML Swift Integration
@@ -37,7 +37,7 @@ actor-based caching, batch inference, image preprocessing, and testing.
 
 ### Auto-Generated Classes
 
-When you drag a `.mlpackage` or `.mlmodelc` into Xcode, it generates a Swift
+When you add a `.mlmodel` or `.mlpackage` to an app target, Xcode generates a Swift
 class with typed input/output. Use this whenever possible.
 
 ```swift
@@ -61,7 +61,7 @@ let modelURL = Bundle.main.url(
 let model = try MLModel(contentsOf: modelURL, configuration: config)
 ```
 
-### Async Loading (iOS 16+)
+### Async Loading (iOS 15+)
 
 Load models without blocking the main thread. Prefer this for large models.
 
@@ -72,18 +72,22 @@ let model = try await MLModel.load(
 )
 ```
 
-### Compile at Runtime
+### Compile at Runtime (iOS 16+)
 
 Compile a `.mlpackage` or `.mlmodel` to `.mlmodelc` on device. Useful for
-models downloaded from a server.
+models downloaded from a server. Do this once per model version, not on every
+launch.
 
 ```swift
 let compiledURL = try await MLModel.compileModel(at: packageURL)
-let model = try MLModel(contentsOf: compiledURL, configuration: config)
+let model = try await MLModel.load(contentsOf: compiledURL, configuration: config)
 ```
 
-Cache the compiled URL -- recompiling on every launch wastes time. Copy
-`compiledURL` to a persistent location (e.g., Application Support).
+Cache the compiled URL -- recompiling on every launch is a bug. Copy
+`compiledURL` to a persistent location (e.g., Application Support). When
+reviewing runtime-loaded models, call out both facts together: async
+`MLModel.compileModel(at:)` is iOS 16+, and compiled models must be cached so the
+app does not recompile on every launch.
 
 ## Model Configuration
 
@@ -94,15 +98,15 @@ Cache the compiled URL -- recompiling on every launch wastes time. Copy
 | Value | Uses | When to Choose |
 |---|---|---|
 | `.all` | CPU + GPU + Neural Engine | Default. Let the system decide. |
-| `.cpuOnly` | CPU | Background tasks, audio sessions, or when GPU is busy. |
+| `.cpuOnly` | CPU | Deterministic tests, CPU-only fallbacks, or constrained work after profiling shows accelerator policy, contention, thermal state, or energy budget is the limiting factor. |
 | `.cpuAndGPU` | CPU + GPU | Need GPU but model has ops unsupported by ANE. |
-| `.cpuAndNeuralEngine` | CPU + Neural Engine | Best energy efficiency for compatible models. |
+| `.cpuAndNeuralEngine` (iOS 16+) | CPU + Neural Engine | Best energy efficiency for compatible models. |
 
 ```swift
 let config = MLModelConfiguration()
 config.computeUnits = .cpuAndNeuralEngine
 
-// Allow low-priority background inference
+// Optional fallback for constrained work after profiling and policy review
 config.computeUnits = .cpuOnly
 ```
 
@@ -141,10 +145,14 @@ let output = try model.prediction(from: inputFeatures)
 let label = output.featureValue(for: "classLabel")?.stringValue
 ```
 
-### Async Prediction (iOS 17+)
+### Prediction Inside Async Workflows
+
+`MLModel.prediction(...)` is synchronous. In async pipelines, keep model loading
+async, then run prediction from an actor or non-main task without adding `await`
+to the prediction call.
 
 ```swift
-let output = try await model.prediction(from: inputFeatures)
+let output = try model.prediction(from: inputFeatures)
 ```
 
 ### Batch Prediction
@@ -155,12 +163,17 @@ Process multiple inputs in one call for better throughput.
 let batchInputs = try MLArrayBatchProvider(array: inputs.map { input in
     try MLDictionaryFeatureProvider(dictionary: ["image": MLFeatureValue(pixelBuffer: input)])
 })
-let batchOutput = try model.predictions(from: batchInputs)
+let batchOutput = try model.predictions(fromBatch: batchInputs)
 for i in 0..<batchOutput.count {
     let result = batchOutput.features(at: i)
     print(result.featureValue(for: "classLabel")?.stringValue ?? "unknown")
 }
 ```
+
+Use `predictions(fromBatch:)` when batching without explicit
+`MLPredictionOptions`. Use `predictions(from:options:)` only when passing both an
+`MLBatchProvider` and `MLPredictionOptions`; `predictions(from:)` by itself is
+not the no-options batch API.
 
 ### Stateful Prediction (iOS 18+)
 
@@ -170,23 +183,28 @@ LLMs, audio accumulators). Create state once and pass it to each prediction call
 ```swift
 let state = model.makeState()
 
-// Each prediction carries forward the internal model state
+// Each synchronous prediction carries forward the internal model state
 for frame in audioFrames {
     let input = try MLDictionaryFeatureProvider(dictionary: [
         "audio_features": MLFeatureValue(multiArray: frame)
     ])
-    let output = try await model.prediction(from: input, using: state)
+    let output = try model.prediction(from: input, using: state)
     let classification = output.featureValue(for: "label")?.stringValue
 }
 ```
 
-State is not `Sendable` -- use it from a single actor or task. Call
-`model.makeState()` to create independent state for concurrent streams.
+`MLState` is `Sendable`, but `Sendable` does not make one state safe for
+concurrent inference. Predictions using the same state must be serialized; do
+not read or write state buffers while a prediction is in flight. Call
+`model.makeState()` for each independent concurrent stream. If you need
+`MLPredictionOptions`, iOS 18+ also provides the async
+`prediction(from:using:options:)` overload; the same one-in-flight-per-state rule
+still applies.
 
 ## MLTensor (iOS 18+)
 
 `MLTensor` is a Swift-native multidimensional array for pre/post-processing.
-Operations run lazily -- call `.shapedArray(of:)` to materialize results.
+Operations run lazily -- call `await tensor.shapedArray(of:)` to materialize results.
 
 ```swift
 import CoreML
@@ -199,14 +217,19 @@ let zeros = MLTensor(zeros: [3, 224, 224], scalarType: Float.self)
 let reshaped = tensor.reshaped(to: [2, 2])
 
 // Math operations
-let softmaxed = tensor.softmax()
-let normalized = (tensor - tensor.mean()) / tensor.standardDeviation()
+let softmaxed = tensor.softmax(alongAxis: -1)
+let centered = tensor - tensor.mean()
 
-// Interop with MLMultiArray
-let multiArray = try MLMultiArray([1.0, 2.0, 3.0, 4.0])
-let fromMultiArray = MLTensor(multiArray)
-let backToArray = tensor.shapedArray(of: Float.self)
+// Interop with MLShapedArray / MLMultiArray
+let shaped = await tensor.shapedArray(of: Float.self)
+let multiArray = try MLMultiArray(shaped)
+let shapedAgain = MLShapedArray<Float>(multiArray)
 ```
+
+Do not invent `MLTensor` APIs for statistics or bridging. Avoid examples such as
+`MLTensor(multiArray)`, `tensor.std()`, `tensor.standardDeviation()`, direct
+lazy-buffer access, or synchronous extraction; perform unsupported DSP/statistics
+outside the tensor pipeline or with source-confirmed tensor operations.
 
 ## Working with MLMultiArray
 
@@ -225,12 +248,9 @@ for i in 0..<128 {
 // Read values
 let value = array[[0, 0, 0] as [NSNumber]].floatValue
 
-// Create from data pointer for zero-copy interop
 let data: [Float] = [1.0, 2.0, 3.0]
-let fromData = try MLMultiArray(dataPointer: UnsafeMutableRawPointer(mutating: data),
-                                 shape: [3],
-                                 dataType: .float32,
-                                 strides: [1])
+let shaped = MLShapedArray(scalars: data, shape: [3])
+let fromShaped = try MLMultiArray(shaped)
 ```
 
 See [references/coreml-swift-integration.md](references/coreml-swift-integration.md) for advanced MLMultiArray patterns
@@ -344,7 +364,7 @@ guard let mainFunction = program.functions["main"] else { return }
 for operation in mainFunction.block.operations {
     let deviceUsage = computePlan.deviceUsage(for: operation)
     let estimatedCost = computePlan.estimatedCost(of: operation)
-    print("\(operation.operatorName): \(deviceUsage?.preferredComputeDevice ?? "unknown")")
+    print("\(operation.operatorName): \(String(describing: deviceUsage?.preferred))")
 }
 ```
 
@@ -360,24 +380,34 @@ Run outside the debugger for accurate results (Xcode: Product > Profile).
 
 ## Model Deployment
 
-### Bundle vs On-Demand Resources
+### Bundle vs Downloaded Assets
 
 | Strategy | Pros | Cons |
 |---|---|---|
 | Bundle in app | Instant availability, works offline | Increases app download size |
-| On-demand resources | Smaller initial download | Requires download before first use |
-| Background Assets (iOS 16+) | Downloads ahead of time | More complex setup |
+| Background Assets | Preferred for large or updateable model assets | Requires asset-pack setup |
+| On-demand resources | Smaller initial download for existing ODR apps | Legacy technology; prefer Background Assets for new work |
 | CloudKit / server | Maximum flexibility | Requires network, longer setup |
 
 ### Size Considerations
 
-- App Store limit: 4 GB for app bundle
-- Cellular download limit: 200 MB (can request exception)
-- Use ODR tags for models > 50 MB
+- For iOS/iPadOS 18+, App Store Connect lists a 4 GB thinned app bundle limit
+  and 8 GB thinned ODR asset-pack limit.
+- Prefer Background Assets for new large or updateable model assets; keep ODR
+  guidance for existing projects that already use it.
 - Pre-compile to `.mlmodelc` to skip on-device compilation
+- For downloaded `.mlmodel` or `.mlpackage` files, compile once with
+  `MLModel.compileModel(at:)`, move the resulting `.mlmodelc` out of Core ML's
+  temporary location, and cache it by model version.
+- Validate memory and performance on physical target devices, especially the
+  lowest-memory supported device. Check model load, first prediction, repeated
+  predictions, background/foreground transitions, and low-memory behavior.
+
+For Background Assets, make the asset pack locally available, resolve the model
+URL, then load the compiled model with `MLModel.load(contentsOf:configuration:)`.
 
 ```swift
-// On-demand resource loading
+// Existing On-Demand Resources project
 let request = NSBundleResourceRequest(tags: ["ml-model-v2"])
 try await request.beginAccessingResources()
 let modelURL = Bundle.main.url(forResource: "LargeModel", withExtension: "mlmodelc")!
@@ -389,8 +419,10 @@ let model = try await MLModel.load(contentsOf: modelURL, configuration: config)
 
 - **Unload on background:** Release model references when the app enters background
   to free GPU/ANE memory. Reload on foreground return.
-- **Use `.cpuOnly` for background tasks:** Background processing cannot use GPU or
-  ANE; setting `.cpuOnly` avoids silent fallback and resource contention.
+- **Choose compute units by context:** use `.all` by default. Consider `.cpuOnly`
+  only when profiling or app policy shows accelerator contention, thermal state,
+  energy budget, deterministic testing, or a legitimate background execution
+  constraint makes CPU the right tradeoff.
 - **Share model instances:** Never create multiple `MLModel` instances from the same
   compiled model. Use an actor to provide shared access.
 - **Monitor memory pressure:** Large models (>100 MB) can trigger memory warnings.
@@ -413,6 +445,13 @@ lifecycle-aware loading and cache eviction.
 **DON'T:** Hardcode `.cpuOnly` unless you have a specific reason.
 **DO:** Use `.all` and let the system choose the optimal compute unit.
 **Why:** `.all` enables Neural Engine and GPU, which are faster and more energy-efficient.
+
+**DON'T:** Claim GPU or Neural Engine are categorically unavailable for all
+background-adjacent work.
+**DO:** Treat background execution as policy-, mode-, contention-, thermal-, and
+energy-dependent, and profile the actual workload on device.
+**Why:** Apps may be suspended, throttled, or limited by their background mode;
+`.cpuOnly` is a tradeoff, not a universal requirement.
 
 **DON'T:** Ignore `MLFeatureValue` type mismatches between input and model expectations.
 **DO:** Match types exactly -- use `MLFeatureValue(pixelBuffer:)` for images, not raw data.
@@ -445,7 +484,7 @@ lifecycle-aware loading and cache eviction.
 - [ ] Image inputs use Vision pipeline (`CoreMLRequest` iOS 18+ or `VNCoreMLRequest`) for correct preprocessing
 - [ ] `MLComputePlan` checked to verify compute device dispatch (iOS 17.4+)
 - [ ] Batch predictions used when processing multiple inputs
-- [ ] Model size appropriate for deployment strategy (bundle vs ODR)
+- [ ] Model size appropriate for deployment strategy (bundle, Background Assets, ODR)
 - [ ] Memory tested on target devices (especially older devices with less RAM)
 - [ ] Predictions run outside debugger for accurate performance measurement
 
@@ -455,4 +494,6 @@ lifecycle-aware loading and cache eviction.
 - Model conversion and optimization (Python-side): covered in the `apple-on-device-ai` skill
 - Apple docs: [Core ML](https://sosumi.ai/documentation/coreml) |
   [MLModel](https://sosumi.ai/documentation/coreml/mlmodel) |
-  [MLComputePlan](https://sosumi.ai/documentation/coreml/mlcomputeplan-1w21n)
+  [MLTensor](https://sosumi.ai/documentation/coreml/mltensor) |
+  [MLComputePlan](https://sosumi.ai/documentation/coreml/mlcomputeplan-1w21n) |
+  [Background Assets](https://sosumi.ai/documentation/backgroundassets)

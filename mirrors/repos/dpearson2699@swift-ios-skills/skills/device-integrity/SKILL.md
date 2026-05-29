@@ -5,10 +5,11 @@ description: "Verify device legitimacy and app integrity using DeviceCheck (DCDe
 
 # Device Integrity
 
-Verify that requests to your server come from a genuine Apple device running
-your unmodified app. DeviceCheck provides per-device bits for simple flags
-(e.g., "claimed promo offer"). App Attest uses Secure Enclave keys and Apple
-attestation to cryptographically prove app legitimacy on each request.
+Verify that requests to your server come from a genuine Apple device running a
+legitimate instance of your app. DeviceCheck provides per-device bits for
+simple flags (e.g., "claimed promo offer"). App Attest uses Secure Enclave keys
+and Apple attestation to cryptographically prove app legitimacy on sensitive
+requests.
 
 ## Contents
 
@@ -27,9 +28,10 @@ attestation to cryptographically prove app legitimacy on each request.
 ## DCDevice (DeviceCheck Tokens)
 
 [`DCDevice`](https://sosumi.ai/documentation/devicecheck/dcdevice) generates a
-unique, ephemeral token that identifies a device. The token is sent to your
-server, which then communicates with Apple's servers to read or set two
-per-device bits. Available on iOS 11+.
+unique, ephemeral token that identifies a device. Treat each token as
+single-use: generate a new token for each server operation instead of caching or
+reusing one. The token is sent to your server, which then communicates with
+Apple's servers to read or set two per-device bits. Available on iOS 11+.
 
 ### Token Generation
 
@@ -77,6 +79,9 @@ Your server uses the device token to call Apple's DeviceCheck API endpoints:
 The server authenticates with a DeviceCheck private key from the Apple Developer
 portal, creating a signed JWT for each request.
 
+Use `https://api.development.devicecheck.apple.com` only while testing; use
+`https://api.devicecheck.apple.com` for production.
+
 ### What the Two Bits Are For
 
 Apple stores two Boolean values per device per developer team. You decide what
@@ -114,11 +119,20 @@ guard attestService.isSupported else {
 }
 ```
 
+For app extensions, App Attest is supported only in Action, extensible SSO, and
+watchOS extensions. Treat other extension types as unsupported even if
+`isSupported` returns `true`.
+
 ## App Attest Key Generation
 
-Generate a cryptographic key pair stored in the Secure Enclave. The returned
-`keyId` is a string identifier you persist (e.g., in Keychain) for later
-attestation and assertion calls.
+Generate one cryptographic key pair per user account on each device. The
+private key stays in the Secure Enclave. The returned `keyId` is the only
+identifier your app can later use to access the key, so record and reuse the
+account/device-scoped `keyId`; do not share one key across users. Avoid
+unnecessary regeneration because each new key affects App Attest key-count risk
+metrics. Only treat the `keyId` as usable after your server verifies
+attestation. If server verification fails, discard the `keyId` and generate a
+new key before retrying.
 
 ```swift
 import DeviceCheck
@@ -127,7 +141,7 @@ actor AppAttestManager {
     private let service = DCAppAttestService.shared
     private var keyId: String?
 
-    /// Generate and persist a key pair for App Attest.
+    /// Generate and record a key pair for App Attest.
     func generateKeyIfNeeded() async throws -> String {
         if let existingKeyId = loadKeyIdFromKeychain() {
             self.keyId = existingKeyId
@@ -146,7 +160,7 @@ actor AppAttestManager {
         let data = Data(keyId.utf8)
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: "app-attest-key-id",
+            kSecAttrAccount as String: "app-attest-key-id-\(currentAccountID)",
             kSecAttrService as String: Bundle.main.bundleIdentifier ?? "",
             kSecValueData as String: data,
             kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
@@ -158,7 +172,7 @@ actor AppAttestManager {
     private func loadKeyIdFromKeychain() -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: "app-attest-key-id",
+            kSecAttrAccount as String: "app-attest-key-id-\(currentAccountID)",
             kSecAttrService as String: Bundle.main.bundleIdentifier ?? "",
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne
@@ -171,14 +185,16 @@ actor AppAttestManager {
 }
 ```
 
-**Important:** Generate the key once and persist the `keyId`. Generating a new
-key invalidates any previous attestation.
+**Important:** Generate the key once per user account on a device, persist that
+account/device `keyId`, and keep the key count low. Generating unnecessary keys
+pollutes App Attest risk metrics.
 
 ## App Attest Attestation Flow
 
 Attestation proves that the key was generated on a genuine Apple device running
-your unmodified app. You perform attestation once per key, then store the
-attestation object on your server.
+a legitimate instance of your app. You perform attestation once per key, then
+store the verified public key and receipt on your server. The app stores the
+`keyId` for future assertions after the server accepts the attestation.
 
 ### Client-Side Attestation
 
@@ -245,12 +261,20 @@ extension AppAttestManager {
 
 ### Server-Side Attestation Verification
 
-Your server validates the attestation object (CBOR), verifies the certificate chain against Apple's App Attest root CA, and stores the public key and receipt for future assertion verification. See [references/device-integrity-patterns.md](references/device-integrity-patterns.md) for the full server verification flow.
+Your server validates the attestation object (CBOR), verifies the certificate
+chain against Apple's App Attest root CA, checks Apple's nonce calculation, and
+stores the verified public key and receipt for future assertion verification.
+The attestation nonce is not `SHA256(challenge)` alone; it is
+`SHA256(authData || SHA256(challenge))` and is compared with the credential
+certificate extension `1.2.840.113635.100.8.2`. See
+[references/device-integrity-patterns.md](references/device-integrity-patterns.md)
+for the full server verification flow.
 
 ## App Attest Assertion Flow
 
-After attestation, use assertions to sign individual requests. Each assertion
-proves the request came from the attested app instance.
+After attestation, use assertions to sign sensitive requests. Each assertion
+proves the request came from the attested app instance and includes a
+server-issued, one-time challenge to prevent replay.
 
 ### Client-Side Assertion
 
@@ -259,16 +283,14 @@ import DeviceCheck
 import CryptoKit
 
 extension AppAttestManager {
-    /// Generate an assertion to accompany a server request.
-    /// - Parameter requestData: The request payload to sign (e.g., JSON body).
-    /// - Returns: The assertion data to include with the request.
-    func generateAssertion(for requestData: Data) async throws -> Data {
+    /// Generate an assertion for encoded client data.
+    /// Client data should include a one-time server challenge and request context.
+    func generateAssertion(for clientData: Data) async throws -> Data {
         guard let keyId else {
             throw DeviceIntegrityError.keyNotGenerated
         }
 
-        // Hash the request data -- the server will verify this matches
-        let clientDataHash = Data(SHA256.hash(data: requestData))
+        let clientDataHash = Data(SHA256.hash(data: clientData))
 
         return try await service.generateAssertion(keyId, clientDataHash: clientDataHash)
     }
@@ -278,6 +300,13 @@ extension AppAttestManager {
 ### Using Assertions in Network Requests
 
 ```swift
+struct AppAttestClientData: Encodable {
+    let challenge: String
+    let method: String
+    let path: String
+    let bodySHA256: String
+}
+
 extension AppAttestManager {
     /// Perform an attested API request.
     func makeAttestedRequest(
@@ -285,37 +314,72 @@ extension AppAttestManager {
         method: String = "POST",
         body: Data
     ) async throws -> (Data, URLResponse) {
-        let assertion = try await generateAssertion(for: body)
+        let challenge = try await fetchAssertionChallenge()
+        let bodyHash = Data(SHA256.hash(data: body)).base64EncodedString()
+        let clientData = try JSONEncoder().encode(
+            AppAttestClientData(
+                challenge: challenge,
+                method: method,
+                path: url.path,
+                bodySHA256: bodyHash
+            )
+        )
+        let assertion = try await generateAssertion(for: clientData)
 
         var request = URLRequest(url: url)
         request.httpMethod = method
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue(assertion.base64EncodedString(), forHTTPHeaderField: "X-App-Assertion")
+        request.setValue(assertion.base64EncodedString(), forHTTPHeaderField: "X-App-Attest-Assertion")
+        request.setValue(clientData.base64EncodedString(), forHTTPHeaderField: "X-App-Attest-Client-Data")
         request.httpBody = body
 
         return try await URLSession.shared.data(for: request)
+    }
+
+    private func fetchAssertionChallenge() async throws -> String {
+        let url = serverURL.appending(path: "assert/challenge")
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return String(decoding: data, as: UTF8.self)
     }
 }
 ```
 
 ### Server-Side Assertion Verification
 
-Your server decodes the assertion (CBOR), verifies the authenticator data and counter, checks the signature against the stored public key, and confirms the `clientDataHash`. See [references/device-integrity-patterns.md](references/device-integrity-patterns.md) for step-by-step server verification.
+Your server decodes the assertion (CBOR), verifies the authenticator data and
+counter, recomputes `clientDataHash` from the submitted client data, verifies
+the signature over `SHA256(authenticatorData || clientDataHash)` with the
+stored public key, and confirms the embedded challenge and request context. See
+[references/device-integrity-patterns.md](references/device-integrity-patterns.md)
+for step-by-step server verification.
 
 ## Server Verification Guidance
 
 See [references/device-integrity-patterns.md](references/device-integrity-patterns.md) for full server architecture guidance including attestation vs. assertion comparison, recommended endpoint design, and risk assessment.
+
+### Security Boundaries
+
+App Attest proves app-instance integrity for selected requests. It does not
+replace user authentication, OAuth/JWT/session handling, API token design,
+entitlement or subscription authorization, TLS, certificate pinning, or general
+networking security. Treat those as handoffs to authentication, networking, or
+broader security guidance, and still enforce normal authentication and
+authorization after App Attest passes.
 
 ## Error Handling
 
 Handle `DCError` codes from DeviceCheck operations. Key cases:
 
 - `.serverUnavailable` — retry with exponential backoff
-- `.invalidKey` — key invalidated (OS update, Secure Enclave reset); regenerate and re-attest
+- `.invalidKey` — the key was already attested, assertion used an unattested key, or the service rejected the key
 - `.featureUnsupported` — fall back to `DCDevice` tokens
 - `.invalidInput` — malformed `clientDataHash` or `keyId`
 
-See [references/device-integrity-patterns.md](references/device-integrity-patterns.md) for full error handling code, retry strategy, and key invalidation recovery.
+For `attestKey`, retry `.serverUnavailable` later with the same `keyId` and the
+same `clientDataHash`. For other attestation errors, discard the key identifier
+and create a new key before retrying. See
+[references/device-integrity-patterns.md](references/device-integrity-patterns.md)
+for full error handling code, retry strategy, and rejected-key recovery.
 
 ## Common Patterns
 
@@ -329,29 +393,36 @@ during testing and `production` for App Store builds:
 <string>production</string>
 ```
 
-When the entitlement is missing, the system uses `development` in debug builds
-and `production` for App Store and TestFlight builds.
+When the entitlement is omitted during development, the app uses the App Attest
+sandbox by default. After distribution through TestFlight, the App Store, or the
+Apple Developer Enterprise Program, the app ignores the entitlement value and
+uses production.
 
 See [references/device-integrity-patterns.md](references/device-integrity-patterns.md) for the full integration manager pattern, gradual rollout guidance, and error type definition.
 
 ## Common Mistakes
 
-1. **Generating a new key on every launch.** Generate once, persist the `keyId` in Keychain.
-2. **Skipping the fallback for unsupported devices.** Not all devices support App Attest. Use `DCDevice` tokens as fallback.
-3. **Trusting attestation client-side.** All verification must happen on your server.
-4. **Not implementing replay protection.** The server must track and increment the assertion counter.
-5. **Missing the environment entitlement.** Without it, debug builds use `development` and App Store uses `production`. Mismatches cause attestation failures.
-6. **Not handling `DCError.invalidKey`.** Keys can be invalidated by OS updates. Detect and regenerate.
+1. **Generating a new key on every launch.** Generate once per user account on a device, persist the `keyId`, and keep key counts low.
+2. **Reusing `DCDevice` tokens.** Treat generated tokens as single-use. Generate a new token for each server operation.
+3. **Skipping the fallback for unsupported devices or extensions.** Not all devices and extension types support App Attest. Use `DCDevice` tokens or other risk assessment as fallback.
+4. **Trusting attestation client-side.** All verification must happen on your server.
+5. **Signing only the raw request body.** Assertion client data must include a one-time server challenge and enough request context for the server to bind the assertion to the request.
+6. **Verifying the wrong attestation nonce.** Compare the certificate extension with `SHA256(authData || SHA256(challenge))`, not `SHA256(challenge)` alone.
+7. **Not implementing replay protection.** The server must validate one-time challenges and track the assertion counter.
+8. **Mixing development and production environments.** Sandbox keys and receipts do not work in production, and production keys and receipts do not work in sandbox.
+9. **Not handling `DCError.invalidKey`.** Check for repeated attestation, unattested assertion keys, or service rejection; regenerate only after the state is known bad.
 
 ## Review Checklist
 
-- [ ] `DCAppAttestService.isSupported` checked before use; fallback to `DCDevice` when unsupported
-- [ ] Key generated once and `keyId` persisted in Keychain
-- [ ] Attestation performed once per key; attestation object sent to server
-- [ ] Server validates attestation against Apple's App Attest root CA
-- [ ] Assertions generated for each sensitive request; server verifies signature and counter
-- [ ] `DCError` cases handled: `.serverUnavailable` with retry, `.invalidKey` with key regeneration
-- [ ] App Attest environment entitlement set correctly for debug vs. production
+- [ ] `DCDevice` tokens generated per server operation and never cached for reuse
+- [ ] `DCAppAttestService.isSupported` checked before use; unsupported devices and extension types have a fallback
+- [ ] Key generated once per user account on each device and `keyId` persisted only for that app account/device
+- [ ] Attestation performed once per key; server stores verified public key and receipt
+- [ ] Server validates attestation certificate chain, App ID hash, environment `aaguid`, credential ID, and nonce `SHA256(authData || SHA256(challenge))`
+- [ ] Assertions include one-time challenge plus request context; server verifies signature, RP ID, counter, challenge, and request binding
+- [ ] Protected endpoints still enforce normal user authentication and entitlement authorization after App Attest passes
+- [ ] `DCError` cases handled: `.serverUnavailable` retries attestation with the same key/hash; bad keys are discarded and regenerated
+- [ ] App Attest environment entitlement and sandbox/production server routing are consistent
 - [ ] Gradual rollout considered; feature flag in place for enabling/disabling
 
 ## References
@@ -361,3 +432,6 @@ See [references/device-integrity-patterns.md](references/device-integrity-patter
 - [DCDevice](https://sosumi.ai/documentation/devicecheck/dcdevice)
 - [DCAppAttestService](https://sosumi.ai/documentation/devicecheck/dcappattestservice)
 - [Establishing your app's integrity](https://sosumi.ai/documentation/devicecheck/establishing-your-app-s-integrity)
+- [Validating apps that connect to your server](https://sosumi.ai/documentation/devicecheck/validating-apps-that-connect-to-your-server)
+- [Attestation Object Validation Guide](https://sosumi.ai/documentation/devicecheck/attestation-object-validation-guide)
+- [App Attest Environment](https://sosumi.ai/documentation/bundleresources/entitlements/com.apple.developer.devicecheck.appattest-environment)

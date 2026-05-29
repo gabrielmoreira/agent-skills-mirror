@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ntholm86/principles-of-earned-autonomy-skills-suite` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `ntholm86/principles-of-earned-autonomy-skills-suite` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ntholm86/principles-of-earned-autonomy-skills-suite` — 26 default p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,12 +66,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`archive/v2/kata/SKILL.md`](archive/v2/kata/SKILL.md) |
 | 6 | ✓ | [`archive/v2/kiroku/SKILL.md`](archive/v2/kiroku/SKILL.md) |
 | 7 | ✓ | [`archive/v2/shiken/SKILL.md`](archive/v2/shiken/SKILL.md) |
-| 8 | ✓ | [`improve/SKILL.md`](improve/SKILL.md) |
-| 9 | ✓ | [`intent/SKILL.md`](intent/SKILL.md) |
-| 10 | ✓ | [`probe/SKILL.md`](probe/SKILL.md) |
-| 11 | ✓ | [`retrospect/SKILL.md`](retrospect/SKILL.md) |
-| 12 | ✓ | [`trail/SKILL.md`](trail/SKILL.md) |
-| 13 | ✓ | [`vision/SKILL.md`](vision/SKILL.md) |
+| 8 | ✓ | [`de-ai/SKILL.md`](de-ai/SKILL.md) |
+| 9 | ✓ | [`destination/SKILL.md`](destination/SKILL.md) |
+| 10 | ✓ | [`improve/SKILL.md`](improve/SKILL.md) |
+| 11 | ✓ | [`intent/SKILL.md`](intent/SKILL.md) |
+| 12 | ✓ | [`probe/SKILL.md`](probe/SKILL.md) |
+| 13 | ✓ | [`retrospect/SKILL.md`](retrospect/SKILL.md) |
+| 14 | ✓ | [`trail/SKILL.md`](trail/SKILL.md) |
 
 ---
 

@@ -1,10 +1,9 @@
 ---
 name: tf-target-gene-regulatory-network
-description: Use when analyzing transcription factor (TF) regulatory networks using Dorothea database. Input gene list, identify regulating transcription factors, generate TF-Target network visualization. For: transcription factor enrichment analysis, gene regulatory network research.
+description: "Use when analyzing transcription factor (TF) regulatory networks using Dorothea database. Input gene list, identify regulating transcription factors, generate TF-Target network visualization. For: transcription factor enrichment analysis, gene regulatory network research."
 license: MIT
-author: AIPOCH
+skill-author: AIPOCH
 ---
-> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Transcription Factor (TF) Regulatory Network Analysis
 
@@ -20,10 +19,17 @@ author: AIPOCH
 - Do not use it to infer causal direction beyond curated Dorothea TF-target relationships.
 - Do not use it when your input genes are aliases or mixed-species symbols that have not been normalized first.
 
+## Input Validation
+
+This skill accepts: a human or mouse gene list (HGNC symbols for human, first-letter-uppercase for mouse) for TF regulatory network analysis using Dorothea.
+
+If the user's request does not involve identifying upstream transcription factors from a gene list — for example, asking to run differential expression, pathway enrichment, cell type annotation, or multi-omics integration — do not proceed with the workflow. Instead respond:
+> "tf-target-gene-regulatory-network is designed to identify upstream transcription factors from a gene list using the Dorothea database and generate a TF-target network visualization. Your request appears to be outside this scope. Please provide a gene list for TF regulatory analysis, or use a more appropriate tool for your task."
+
 ## Entry Point
 
 - Primary CLI entry point: `scripts/main.R`
-- Legacy localized visualization aliases such as `发散(fr)`, `曲线`, and `菱形` are accepted, but the canonical documented values are the English option names shown below.
+- Canonical visualization values: English tokens `fr`, `curve`, `diamond`, `triangle`, `square`
 
 ## When to Read External Files
 
@@ -40,8 +46,6 @@ author: AIPOCH
 ## Installation
 
 ### R Package Dependencies
-
-This skill requires several R packages. Install them with:
 
 ```r
 # CRAN packages
@@ -61,11 +65,10 @@ For faster analysis and offline use, generate local database files:
 Rscript database/database-get.R
 ```
 
-This creates `database/dorothea_hs.rds` (human) and `database/dorothea_mm.rds` (mouse).
+This creates `database/dorothea_hs.rds` (human) and `database/dorothea_mm.rds` (mouse) in the skill root directory.
 
 ### Verification
 
-Test the installation:
 ```bash
 Rscript scripts/main.R --help
 ```
@@ -88,15 +91,16 @@ Rscript scripts/main.R \
 
 | Short | Long | Type | Default | Description |
 |-------|------|------|---------|-------------|
-| `-g` | `--gene` | character | NULL | Comma-separated gene list (e.g., "TP53,MYC,EGFR") - **required if --gene_file not provided** |
-| `-f` | `--gene_file` | character | NULL | File containing gene names (txt or csv, one per line or comma-separated) - **required if --gene not provided** |
+| `-g` | `--gene` | character | NULL | Comma-separated gene list (e.g., `"TP53,MYC,EGFR"`) — **required if `--gene_file` not provided** |
+| `-f` | `--gene_file` | character | NULL | File with gene names (txt or csv, one per line or comma-separated) — **required if `--gene` not provided** |
 | `-s` | `--species` | character | `human` | Species: `human` or `mouse` |
 | `-o` | `--output_dir` | character | `TF_Result` | Output directory name |
-| | `--db_path` | character | NULL | Local database file path (.rds format). If not specified, auto-search in default paths |
+|  | `--db_path` | character | NULL | Local `.rds` database file path. If not specified, auto-searches default paths |
 | `-d` | `--dir` | character | NULL | Working root directory (advanced) |
-| | `--seed` | integer | 42 | Random seed for reproducibility |
+|  | `--seed` | integer | `42` | Random seed for reproducibility |
+|  | `--title` | character | `""` | Main plot title |
 
-**Visualization Parameters**: For complete list of visualization parameters (plot dimensions, colors, labels, layout, etc.), see [`references/visualization-parameters.md`](references/visualization-parameters.md). Canonical values are English tokens such as `fr`, `curve`, and `diamond,triangle`; legacy localized aliases are also accepted.
+**Visualization Parameters**: For complete list (plot dimensions, colors, labels, layout, edge styles), see [`references/visualization-parameters.md`](references/visualization-parameters.md). Canonical values are English tokens: `fr` (force-directed layout), `curve` (curved edges), `diamond` / `triangle` / `square` (node shapes).
 
 ---
 
@@ -106,13 +110,13 @@ Rscript scripts/main.R \
 
 Two ways to provide input genes:
 
-1. **Command line**: `--gene "TP53,MYC,EGFR"` (comma-separated, no spaces)
+1. **Command line**: `--gene "TP53,MYC,EGFR"` (comma-separated)
 2. **File input**: `--gene_file genes.txt` (one gene per line or comma-separated)
 
 ### Gene Naming Convention
 
-- **Human genes**: Uppercase symbols (e.g., TP53, MYC, EGFR)
-- **Mouse genes**: First letter uppercase (e.g., Tp53, Myc, Egfr)
+- **Human genes**: All uppercase symbols (e.g., TP53, MYC, EGFR)
+- **Mouse genes**: First letter uppercase only (e.g., Tp53, Myc, Egfr)
 - Use official gene symbols, not aliases
 - Case-sensitive for species matching
 
@@ -120,6 +124,10 @@ Two ways to provide input genes:
 
 - `human`: Human genes (Homo sapiens)
 - `mouse`: Mouse genes (Mus musculus)
+
+### Performance Guidance
+
+For large gene lists (> 500 genes), Dorothea database queries may take several minutes. Use a local `.rds` database (`--db_path`) for substantially faster lookups. There is currently no `--timeout_seconds` parameter; monitor progress with verbose logging if available.
 
 ---
 
@@ -133,26 +141,15 @@ Two ways to provide input genes:
 | `session_info.txt` | R session and package version info |
 | `tf.Rdata` | R environment data |
 
-### Output Directory Structure
-
-```
-TF_Result/
-├── data/
-│   └── tf.Rdata
-├── plot/
-│   └── TF_Network_Plot.pdf
-└── table/
-    ├── tf_network.xlsx
-    └── TF_Target_Filtered_Core_<species>.xlsx
-```
+Outputs are organized under `TF_Result/` in `data/`, `plot/`, and `table/` subdirectories.
 
 ---
 
 ## Workflow
 
 ### Step 1: Load Database
-- Priority search for local database files (.rds format)
-- If not found, load from Dorothea R package
+- Priority search for local database files (.rds format) in: `--db_path`, `getwd()/database/`, `script_dir/database/`, `dirname(script_dir)/database/`
+- If no local file found, load from Dorothea R package
 - Filter for high-confidence interactions (confidence levels A, B, C)
 
 ### Step 2: Identify Regulating TFs
@@ -182,13 +179,13 @@ TF_Result/
 
 ### Network Analysis
 - **Graph construction**: TF-target relationships as directed edges
-- **Layout algorithms**: Multiple options including sphere, circle, grid, etc.
+- **Layout algorithms**: Multiple options including `fr` (force-directed), `circle`, `grid`, `sphere`
 - **Visual customization**: Full control over colors, shapes, sizes
 
 ### Local Database Feature
-- Option to use pre-saved .rds files for faster analysis
-- Priority search paths for local database files
-- Fallback to R package if local files not found
+- Option to use pre-saved `.rds` files for faster analysis and offline use
+- Priority search paths for local database files (see Step 1 above)
+- Fallback to Dorothea R package if no local file found
 
 ---
 
@@ -246,14 +243,22 @@ Rscript scripts/main.R \
 
 ### Common Errors
 
-| Error Code | Message | Cause | Solution |
-|------------|---------|-------|----------|
-| `SKILL_FILE_NOT_FOUND` | Input gene file does not exist | Check file path and permissions | Verify file exists and is readable |
-| `SKILL_NO_INPUT_GENES` | No valid genes provided | Empty gene list or file | Provide genes using `--gene` or `--gene_file` |
-| `SKILL_INVALID_SPECIES` | Unsupported species specified | Species not 'human' or 'mouse' | Use 'human' or 'mouse' only |
-| `SKILL_INVALID_PARAMETER` | Unsupported visualization or CLI parameter value | Invalid layout, shape, line, label, or legend alias | Use supported values shown by `Rscript scripts/main.R --help` |
-| `SKILL_EMPTY_RESULTS` | No TF-target relationships found | Gene symbols not in database | Check gene symbols and species |
-| `SKILL_DEPENDENCY_MISSING` | Required R package not installed | Missing dorothea, tidygraph, etc. | Install missing packages |
+| Error Code | Cause | Solution |
+|------------|-------|----------|
+| `SKILL_FILE_NOT_FOUND` | Input gene file does not exist | Check file path and permissions |
+| `SKILL_NO_INPUT_GENES` | Empty gene list or file | Provide genes using `--gene` or `--gene_file` |
+| `SKILL_INVALID_SPECIES` | Species not `human` or `mouse` | Use `human` or `mouse` only |
+| `SKILL_INVALID_PARAMETER` | Invalid layout, shape, line, or legend value | Use supported values shown by `Rscript scripts/main.R --help` |
+| `SKILL_EMPTY_RESULTS` | No TF-target relationships found for input genes | Check gene symbols and species; try broadening confidence levels |
+| `SKILL_DEPENDENCY_MISSING` | Missing dplyr, dorothea, tidygraph, etc. | Install missing packages (see Installation section) |
+
+### Exit Status Codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success |
+| `1` | Execution error (see error code for details) |
+| `2` | `SKILL_EMPTY_RESULTS` — no TF-target matches found for the input genes |
 
 **IF error persists**, READ: `references/troubleshooting.md`
 
@@ -273,42 +278,20 @@ Rscript scripts/main.R \
   -s human \
   -o tests/output_human/
 
-# Run with sample mouse genes  
+# Run with sample mouse genes
 Rscript scripts/main.R \
   -g "Tp53,Myc,Egfr" \
   -s mouse \
   -o tests/output_mouse/
 ```
 
-### Validation Commands
+After running, verify `tests/output_human/plot/TF_Network_Plot.pdf` and `tests/output_human/table/tf_network.xlsx` exist and are non-empty.
 
-```bash
-# Check output files exist
-ls -la tests/output_human/
+## Reference Files
 
-# Verify network plot generated
-ls -la tests/output_human/plot/TF_Network_Plot.pdf
-
-# Check Excel file has data
-file tests/output_human/table/tf_network.xlsx
-```
-
----
-
-## Implementation Checklist
-
-- [x] CLI parsing with `optparse`
-- [x] `set.seed()` for reproducibility
-- [x] Dependency checks with `requireNamespace()`
-- [x] Session info recording
-- [x] File reading instructions in SKILL.md
-- [x] Modular script structure
-- [x] Test data provided
-- [x] Error handling with SKILL_* codes
-- [x] Scripts in `scripts/` directory
-- [x] References in `references/` directory
-- [x] Local database support
-
----
-
-*Last updated: 2026-04-15 | Version: 2.1.0*
+| File | Purpose |
+|---|---|
+| `references/algorithm.md` | Statistical methods and Dorothea database details |
+| `references/troubleshooting.md` | Common errors and solutions |
+| `references/cli-guide.md` | CLI usage examples |
+| `references/visualization-parameters.md` | Complete visualization parameter list |

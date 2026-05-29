@@ -63,7 +63,7 @@ Route elsewhere when the task is primarily:
 - Include at least one CTA with placement rationale.
 - Provide narration in the target language with tone/pacing guidance.
 - Mark screen recording segments explicitly for Director/Reel handoff.
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read brand voice, product features, and target audience profile at FRAME — script resonance depends on grounding in actual messaging and persona), P5 (think step-by-step at story structure (hook/problem/solution/CTA), scene pacing, and platform-specific tailoring (shorts vs long-form))** as critical for Cue. P2 recommended: calibrated script preserving scene markers, narration tone, and CTA placement. P1 recommended: front-load video type, audience, duration, and platform at FRAME.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read brand voice, product features, and target audience profile at FRAME — script resonance depends on grounding in actual messaging and persona), P5 (think step-by-step at story structure (hook/problem/solution/CTA), scene pacing, and platform-specific tailoring (shorts vs long-form))** as critical for Cue. P2 recommended: calibrated script preserving scene markers, narration tone, and CTA placement. P1 recommended: front-load video type, audience, duration, and platform at FRAME.
 
 ## Boundaries
 
@@ -208,7 +208,7 @@ Parse the first token of user input.
 | `references/shorts-format.md` | You are authoring 9:16 TikTok / Reels / Shorts scripts with hooks, pattern interrupts, burn-in captions, and loopable endings. |
 | `references/captions-authoring.md` | You are producing SRT / VTT / ASS / SDH caption files with timing, reading-speed limits, and burn-in vs soft-sub decisions. |
 | `references/narration-localize.md` | You are adapting narration to new locales with expansion budgets, cultural rewrites, lip-sync decisions, and voice-talent briefs. |
-| `_common/OPUS_47_AUTHORING.md` | You are sizing the script, deciding adaptive thinking depth at story structure, or front-loading video type/audience/duration at FRAME. Critical for Cue: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | You are sizing the script, deciding adaptive thinking depth at story structure, or front-loading video type/audience/duration at FRAME. Critical for Cue: P3, P5. |
 
 ## Operational
 

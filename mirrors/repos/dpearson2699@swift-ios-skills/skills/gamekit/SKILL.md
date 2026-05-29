@@ -1,13 +1,15 @@
 ---
 name: gamekit
-description: "Integrate Game Center features using GameKit. Use when authenticating players with GKLocalPlayer, submitting scores to leaderboards, unlocking achievements, implementing real-time or turn-based multiplayer matchmaking, showing the Game Center access point or dashboard, or adding challenges and friend invitations to iOS games."
+description: "Integrate Game Center features using GameKit. Use when authenticating GKLocalPlayer, checking player restrictions, submitting leaderboard scores, reporting achievements, implementing real-time or turn-based matchmaking, handling GKMatch data, showing the Game Center dashboard or access point, adding challenges and friend invitations, saving game data, or verifying player identity on a server."
 ---
 
 # GameKit
 
-Integrate Game Center features into iOS 26+ games using GameKit and Swift 6.3.
-Provides player authentication, leaderboards, achievements, multiplayer
-matchmaking, access point, dashboard, challenges, and saved games.
+Integrate Game Center services into iOS 26+ games using GameKit and Swift 6.3:
+authentication, leaderboards, achievements, multiplayer matchmaking, access
+point, dashboard, challenges, and saved games. Keep SpriteKit rendering,
+SceneKit 3D, TabletopKit board logic, and full SharePlay group-activity design
+in their framework domains; use GameKit only for Game Center handoff points.
 
 ## Contents
 
@@ -85,7 +87,8 @@ GKAccessPoint.shared.isActive = false  // Hide during active gameplay
 GKAccessPoint.shared.isActive = true   // Show on pause or menu
 ```
 
-Open the dashboard to a specific state programmatically:
+Open the dashboard to a specific state programmatically. Specific leaderboard
+access-point triggers require iOS 18+.
 
 ```swift
 // Open directly to a leaderboard
@@ -131,7 +134,7 @@ final class GameViewController: UIViewController, GKGameCenterControllerDelegate
 }
 ```
 
-Dashboard states: `.dashboard`, `.leaderboards`, `.achievements`, `.localPlayerProfile`.
+Dashboard states include `.dashboard`, `.leaderboards`, `.achievements`, `.challenges`, `.localPlayerProfile`, and `.localPlayerFriendsList`.
 
 ## Leaderboards
 
@@ -185,20 +188,19 @@ identifier, point value, and localized title/description.
 
 ### Reporting Progress
 
-Set `percentComplete` from 0.0 to 100.0. GameKit only accepts increases;
-setting a lower value than previously reported has no effect.
+Set `percentComplete` from `0...100`. The property type is `Double`, but Apple requires an integer value. GameKit only accepts increases.
 
 ```swift
-func reportAchievement(identifier: String, percentComplete: Double) async throws {
+func reportAchievement(identifier: String, percentComplete: Int) async throws {
     let achievement = GKAchievement(identifier: identifier)
-    achievement.percentComplete = percentComplete
+    achievement.percentComplete = Double(min(max(percentComplete, 0), 100))
     achievement.showsCompletionBanner = true
     try await GKAchievement.report([achievement])
 }
 
 // Unlock an achievement completely
 func unlockAchievement(_ identifier: String) async throws {
-    try await reportAchievement(identifier: identifier, percentComplete: 100.0)
+    try await reportAchievement(identifier: identifier, percentComplete: 100)
 }
 ```
 
@@ -206,7 +208,7 @@ func unlockAchievement(_ identifier: String) async throws {
 
 ```swift
 func loadPlayerAchievements() async throws -> [GKAchievement] {
-    try await GKAchievement.loadAchievements() ?? []
+    try await GKAchievement.loadAchievements()
 }
 ```
 
@@ -246,8 +248,8 @@ extension GameViewController: GKMatchmakerViewControllerDelegate {
         _ viewController: GKMatchmakerViewController,
         didFind match: GKMatch
     ) {
-        viewController.dismiss(animated: true)
         match.delegate = self
+        viewController.dismiss(animated: true)
         startGame(with: match)
     }
 
@@ -297,12 +299,7 @@ extension GameViewController: GKMatchDelegate {
 }
 ```
 
-Data modes: `.reliable` (TCP-like, ordered, guaranteed) and `.unreliable`
-(UDP-like, faster, no guarantee). Use `.reliable` for critical game state and
-`.unreliable` for frequent position updates. Register the local player as a
-listener (`GKLocalPlayer.local.register(self)`) to receive invitations through
-`GKInviteEventListener`. For programmatic matchmaking and custom match UI, see
-[references/gamekit-patterns.md](references/gamekit-patterns.md).
+Data modes: `.reliable` sends until delivery succeeds or the connection times out; `.unreliable` sends once and may arrive out of order. Use `.reliable` for critical state and `.unreliable` for small, time-sensitive updates. Treat received match data as untrusted input. Register the local player as a listener (`GKLocalPlayer.local.register(self)`) to receive invitations. For programmatic matchmaking and custom match UI, see [references/gamekit-patterns.md](references/gamekit-patterns.md).
 
 ## Turn-Based Multiplayer
 
@@ -331,7 +328,7 @@ func endTurn(match: GKTurnBasedMatch, gameState: GameState) async throws {
 
     // Build next participants list: remaining active players
     let nextParticipants = match.participants.filter {
-        $0.matchOutcome == .none && $0 != match.currentParticipant
+        $0.status != .done && $0 != match.currentParticipant
     }
 
     try await match.endTurn(
@@ -357,12 +354,12 @@ func endMatch(_ match: GKTurnBasedMatch, winnerIndex: Int, data: Data) async thr
 
 ### Listening for Turn Events
 
-Register as a listener and implement `GKTurnBasedEventListener`:
+Register as a listener. Prefer `GKLocalPlayerListener` when one object handles multiple Game Center event categories.
 
 ```swift
 GKLocalPlayer.local.register(self)
 
-extension GameViewController: GKTurnBasedEventListener {
+extension GameViewController: GKLocalPlayerListener {
     func player(_ player: GKPlayer, receivedTurnEventFor match: GKTurnBasedMatch,
                 didBecomeActive: Bool) {
         // Load match data and update UI
@@ -377,8 +374,7 @@ extension GameViewController: GKTurnBasedEventListener {
 
 ### Match Data Size
 
-`matchDataMaximumSize` is 64 KB. Store larger state externally and keep only
-references in match data.
+Check the match object's `matchDataMaximumSize` before ending a turn. Store larger state externally and keep only compact references in match data.
 
 ## Common Mistakes
 
@@ -479,17 +475,16 @@ func returnToMenu() {
 - [ ] `GKGameCenterControllerDelegate` dismisses dashboard in `gameCenterViewControllerDidFinish`
 - [ ] Match delegate set immediately when match is found
 - [ ] `finishMatchmaking(for:)` called for programmatic matches; `disconnect()` and nil delegate on exit
-- [ ] Turn-based match data stays under 64 KB
+- [ ] Turn-based match data stays under `match.matchDataMaximumSize`
 - [ ] Turn-based participants have outcomes set before `endMatchInTurn`
-- [ ] Invitation listener registered with `GKLocalPlayer.local.register(_:)`
+- [ ] Invitation or turn listener registered with `GKLocalPlayer.local.register(_:)`
 - [ ] Data mode chosen appropriately: `.reliable` for state, `.unreliable` for frequent updates
-- [ ] `NSMicrophoneUsageDescription` set if using voice chat
+- [ ] New voice/social audio uses SharePlay; legacy `GKVoiceChat` has `NSMicrophoneUsageDescription`
 - [ ] Error handling for all async GameKit calls
 
 ## References
 
-- See [references/gamekit-patterns.md](references/gamekit-patterns.md) for voice chat, saved games, custom match
-  UI, leaderboard images, challenge handling, and rule-based matchmaking.
+- See [references/gamekit-patterns.md](references/gamekit-patterns.md) for identity verification, legacy voice chat, saved games, custom match UI, leaderboard images, challenge handling, and rule-based matchmaking.
 - [GameKit documentation](https://sosumi.ai/documentation/gamekit)
 - [GKLocalPlayer](https://sosumi.ai/documentation/gamekit/gklocalplayer)
 - [GKAccessPoint](https://sosumi.ai/documentation/gamekit/gkaccesspoint)

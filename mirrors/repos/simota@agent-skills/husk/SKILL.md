@@ -83,7 +83,7 @@ Route elsewhere when the task is primarily:
 - Classify infection grade conservatively: `CLEAN` requires zero IoC matches AND zero suspicious patterns; one IoC match is `CONFIRMED`; persistence still running is `ACTIVELY_BLEEDING`.
 - Cross-platform aware. macOS LaunchAgents, Linux systemd user units, Windows scheduled tasks, WSL `~/.config/`, and dev containers each have distinct persistence surfaces — read `references/scan-procedures.md` for the matrix.
 - The IoC database is curated, time-stamped, and source-cited. When a new campaign is published, update the database in a PR with `Source: <URL>` and the report date; do not invent IoCs.
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly read `references/ioc-database.md` and the actual lockfile / persistence paths at SURVEY — IoC grounding cost is trivial vs misclassification cost), P5 (think step-by-step at TRIAGE — grade misclassification compounds through rotation order errors and may fire retaliation payloads)** as critical for Husk. P1 recommended: front-load OS, package manager, suspected campaign, and scan scope at SURVEY.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly read `references/ioc-database.md` and the actual lockfile / persistence paths at SURVEY — IoC grounding cost is trivial vs misclassification cost), P5 (think step-by-step at TRIAGE — grade misclassification compounds through rotation order errors and may fire retaliation payloads)** as critical for Husk. P1 recommended: front-load OS, package manager, suspected campaign, and scan scope at SURVEY.
 
 ---
 
@@ -273,7 +273,7 @@ Husk receives compromise reports from User, slopsquat/CVE escalations from Senti
 | `references/handoffs.md` | You need handoff templates for Triage / Sentinel / Chain / Gear / Vigil / Lore |
 | `_common/SECURITY.md` | You need the trust boundary spec, manifest format, or escalation matrix |
 | `_common/BOUNDARIES.md` | Role boundaries with Sentinel / Chain / Vigil / Triage are ambiguous |
-| `_common/OPUS_47_AUTHORING.md` | You are sizing the report, deciding adaptive thinking depth at TRIAGE (grade classification), or front-loading scope at SURVEY. Critical for Husk: P3, P5 |
+| `_common/OPUS_48_AUTHORING.md` | You are sizing the report, deciding adaptive thinking depth at TRIAGE (grade classification), or front-loading scope at SURVEY. Critical for Husk: P3, P5 |
 | `_common/OPERATIONAL.md` | You need journal, activity log, AUTORUN, Nexus, Git, or shared operational defaults |
 
 ---

@@ -6,6 +6,36 @@
 
 ---
 
+## Contents
+
+- [Core Security Types](#core-security-types)
+- [Trust Evaluation APIs](#trust-evaluation-apis)
+  - [SecTrustEvaluateAsyncWithError — recommended async API (iOS 13+)](#sectrustevaluateasyncwitherror-recommended-async-api-ios-13)
+  - [SecTrustEvaluateWithError — synchronous, still current (iOS 12+)](#sectrustevaluatewitherror-synchronous-still-current-ios-12)
+  - [SecTrustEvaluate — deprecated since iOS 13](#sectrustevaluate-deprecated-since-ios-13)
+  - [SecTrustResultType reference](#sectrustresulttype-reference)
+- [Custom Trust Policy Configuration](#custom-trust-policy-configuration)
+- [Four Pinning Strategies](#four-pinning-strategies)
+  - [Leaf certificate pinning — breaks on every renewal](#leaf-certificate-pinning-breaks-on-every-renewal)
+  - [Intermediate CA pinning — 5–10 year validity window](#intermediate-ca-pinning-510-year-validity-window)
+  - [SPKI hash pinning — survives renewal with same key pair](#spki-hash-pinning-survives-renewal-with-same-key-pair)
+  - [NSPinnedDomains — declarative pinning, zero code (iOS 14+)](#nspinneddomains-declarative-pinning-zero-code-ios-14)
+  - [Pinning Strategy Decision Matrix](#pinning-strategy-decision-matrix)
+- [SecCertificate and SecIdentity](#seccertificate-and-secidentity)
+  - [Creating certificates from DER data](#creating-certificates-from-der-data)
+  - [Importing PKCS#12 for client certificate authentication](#importing-pkcs12-for-client-certificate-authentication)
+  - [Client certificate authentication in URLSession](#client-certificate-authentication-in-urlsession)
+  - [Certificate chain inspection (backward-compatible)](#certificate-chain-inspection-backward-compatible)
+- [Anti-Patterns AI Code Generators Produce](#anti-patterns-ai-code-generators-produce)
+- [Backup Pins, Rotation, and Graceful Degradation](#backup-pins-rotation-and-graceful-degradation)
+- [ATS Interaction Points](#ats-interaction-points)
+- [API Deprecation Timeline](#api-deprecation-timeline)
+- [Thread Safety and Performance](#thread-safety-and-performance)
+- [CI/CD Guardrails](#cicd-guardrails)
+- [Cross-References](#cross-references)
+- [WWDC and Reference Citations](#wwdc-and-reference-citations)
+- [Summary Checklist](#summary-checklist)
+
 ## Core Security Types
 
 | Type             | Purpose                                                           | Key Operations                                                                                                                  |
@@ -197,7 +227,7 @@ Hashes the SubjectPublicKeyInfo (SPKI) structure. When certificates renew **with
 
 **Critical correctness issue**: `SecKeyCopyExternalRepresentation` returns raw key bytes **without** the ASN.1 SPKI header. You must prepend the correct header before hashing. Omitting this produces incorrect hashes that won't match pins generated via OpenSSL.
 
-> ⚠️ **Cross-validation note**: The parallel research source omits the ASN.1 header prepend step and uses deprecated `SecTrustGetCertificateAtIndex`. The code below uses the correct modern APIs with proper SPKI construction.
+The code below uses current APIs with proper SPKI construction. Do not hash raw key bytes directly; they lack the ASN.1 SPKI header expected by common pin-generation workflows.
 
 ```swift
 // ✅ CORRECT: SPKI hash pinning with ASN.1 header and modern APIs
@@ -543,17 +573,6 @@ Use `nscurl --ats-diagnostics https://your-server.com` on macOS to diagnose ATS 
 - **Enforce** that any `NSPinnedDomains` entry contains at least two SPKI hashes (backup pin requirement).
 - **Scan** for deprecated APIs: `SecTrustEvaluate(`, `SecTrustGetCertificateAtIndex(`, `SecTrustCopyPublicKey(`.
 - **Test** pinning with certificate rotation in staging before production deployment.
-
----
-
-## Cross-Validation Notes
-
-Both research sources agree on all major recommendations. Key discrepancies in the parallel source (corrected in this file):
-
-1. **Deprecated API in code example**: Parallel source uses `SecTrustGetCertificateAtIndex(trust, 0)` — deprecated iOS 15. Corrected to `SecTrustCopyCertificateChain`.
-2. **Missing ASN.1 header**: Parallel source hashes raw key bytes without prepending the SPKI ASN.1 header, producing incorrect hashes. Corrected with explicit header prepend.
-3. **Deprecated `SecTrustCopyPublicKey` reference**: Parallel source references this API — deprecated iOS 14. Corrected to `SecCertificateCopyKey`.
-4. **Main queue evaluation**: Parallel source evaluates on `.main` queue. Corrected to background queue.
 
 ---
 

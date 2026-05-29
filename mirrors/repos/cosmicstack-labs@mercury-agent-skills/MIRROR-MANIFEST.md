@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cosmicstack-labs/mercury-agent-skills` — 26 default patterns, 1 followed patterns, 127 file(s) materialized.
+Mirror of `cosmicstack-labs/mercury-agent-skills` — 26 default patterns, 1 followed patterns, 128 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cosmicstack-labs/mercury-agent-skills` — 26 default patterns, 1 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 127 |
+| Files         | 128 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -159,33 +159,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 98 | ✓ | [`categories/mobile/ios-swift-patterns/SKILL.md`](categories/mobile/ios-swift-patterns/SKILL.md) |
 | 99 | ✓ | [`categories/mobile/mobile-performance/SKILL.md`](categories/mobile/mobile-performance/SKILL.md) |
 | 100 | ✓ | [`categories/mobile/react-native-patterns/SKILL.md`](categories/mobile/react-native-patterns/SKILL.md) |
-| 101 | ✓ | [`categories/pdf-generation/invoice-document-pdf/SKILL.md`](categories/pdf-generation/invoice-document-pdf/SKILL.md) |
-| 102 | ✓ | [`categories/pdf-generation/markdown-to-pdf/SKILL.md`](categories/pdf-generation/markdown-to-pdf/SKILL.md) |
-| 103 | ✓ | [`categories/pdf-generation/report-generation/SKILL.md`](categories/pdf-generation/report-generation/SKILL.md) |
-| 104 | ✓ | [`categories/pdf-generation/typesetting-latex/SKILL.md`](categories/pdf-generation/typesetting-latex/SKILL.md) |
-| 105 | ✓ | [`categories/presentation/data-storytelling/SKILL.md`](categories/presentation/data-storytelling/SKILL.md) |
-| 106 | ✓ | [`categories/presentation/pitch-deck-creation/SKILL.md`](categories/presentation/pitch-deck-creation/SKILL.md) |
-| 107 | ✓ | [`categories/presentation/presentation-automation/SKILL.md`](categories/presentation/presentation-automation/SKILL.md) |
-| 108 | ✓ | [`categories/presentation/presentation-design/SKILL.md`](categories/presentation/presentation-design/SKILL.md) |
-| 109 | ✓ | [`categories/product/product-strategy/SKILL.md`](categories/product/product-strategy/SKILL.md) |
-| 110 | ✓ | [`categories/product/user-research/SKILL.md`](categories/product/user-research/SKILL.md) |
-| 111 | ✓ | [`categories/security/secure-coding/SKILL.md`](categories/security/secure-coding/SKILL.md) |
-| 112 | ✓ | [`categories/security/security-audit/SKILL.md`](categories/security/security-audit/SKILL.md) |
-| 113 | ✓ | [`categories/shop-restaurant/daily-pulse/SKILL.md`](categories/shop-restaurant/daily-pulse/SKILL.md) |
-| 114 | ✓ | [`categories/shop-restaurant/inventory-optimizer/SKILL.md`](categories/shop-restaurant/inventory-optimizer/SKILL.md) |
-| 115 | ✓ | [`categories/shop-restaurant/menu-engineer/SKILL.md`](categories/shop-restaurant/menu-engineer/SKILL.md) |
-| 116 | ✓ | [`categories/shop-restaurant/price-scout/SKILL.md`](categories/shop-restaurant/price-scout/SKILL.md) |
-| 117 | ✓ | [`categories/shop-restaurant/review-responder/SKILL.md`](categories/shop-restaurant/review-responder/SKILL.md) |
-| 118 | ✓ | [`categories/shop-restaurant/social-post/SKILL.md`](categories/shop-restaurant/social-post/SKILL.md) |
-| 119 | ✓ | [`categories/shop-restaurant/staff-scheduler/SKILL.md`](categories/shop-restaurant/staff-scheduler/SKILL.md) |
-| 120 | ✓ | [`categories/shop-restaurant/table-manager/SKILL.md`](categories/shop-restaurant/table-manager/SKILL.md) |
-| 121 | ✓ | [`categories/shop-restaurant/zomato-order/SKILL.md`](categories/shop-restaurant/zomato-order/SKILL.md) |
-| 122 | ✓ | [`categories/testing-qa/accessibility-testing/SKILL.md`](categories/testing-qa/accessibility-testing/SKILL.md) |
-| 123 | ✓ | [`categories/testing-qa/api-testing/SKILL.md`](categories/testing-qa/api-testing/SKILL.md) |
-| 124 | ✓ | [`categories/testing-qa/e2e-testing/SKILL.md`](categories/testing-qa/e2e-testing/SKILL.md) |
-| 125 | ✓ | [`categories/testing-qa/performance-testing/SKILL.md`](categories/testing-qa/performance-testing/SKILL.md) |
-| 126 | ✓ | [`categories/testing-qa/test-strategy/SKILL.md`](categories/testing-qa/test-strategy/SKILL.md) |
-| 127 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 101 | ✓ | [`categories/pdf-generation/any2pdf/SKILL.md`](categories/pdf-generation/any2pdf/SKILL.md) |
+| 102 | ✓ | [`categories/pdf-generation/invoice-document-pdf/SKILL.md`](categories/pdf-generation/invoice-document-pdf/SKILL.md) |
+| 103 | ✓ | [`categories/pdf-generation/markdown-to-pdf/SKILL.md`](categories/pdf-generation/markdown-to-pdf/SKILL.md) |
+| 104 | ✓ | [`categories/pdf-generation/report-generation/SKILL.md`](categories/pdf-generation/report-generation/SKILL.md) |
+| 105 | ✓ | [`categories/pdf-generation/typesetting-latex/SKILL.md`](categories/pdf-generation/typesetting-latex/SKILL.md) |
+| 106 | ✓ | [`categories/presentation/data-storytelling/SKILL.md`](categories/presentation/data-storytelling/SKILL.md) |
+| 107 | ✓ | [`categories/presentation/pitch-deck-creation/SKILL.md`](categories/presentation/pitch-deck-creation/SKILL.md) |
+| 108 | ✓ | [`categories/presentation/presentation-automation/SKILL.md`](categories/presentation/presentation-automation/SKILL.md) |
+| 109 | ✓ | [`categories/presentation/presentation-design/SKILL.md`](categories/presentation/presentation-design/SKILL.md) |
+| 110 | ✓ | [`categories/product/product-strategy/SKILL.md`](categories/product/product-strategy/SKILL.md) |
+| 111 | ✓ | [`categories/product/user-research/SKILL.md`](categories/product/user-research/SKILL.md) |
+| 112 | ✓ | [`categories/security/secure-coding/SKILL.md`](categories/security/secure-coding/SKILL.md) |
+| 113 | ✓ | [`categories/security/security-audit/SKILL.md`](categories/security/security-audit/SKILL.md) |
+| 114 | ✓ | [`categories/shop-restaurant/daily-pulse/SKILL.md`](categories/shop-restaurant/daily-pulse/SKILL.md) |
+| 115 | ✓ | [`categories/shop-restaurant/inventory-optimizer/SKILL.md`](categories/shop-restaurant/inventory-optimizer/SKILL.md) |
+| 116 | ✓ | [`categories/shop-restaurant/menu-engineer/SKILL.md`](categories/shop-restaurant/menu-engineer/SKILL.md) |
+| 117 | ✓ | [`categories/shop-restaurant/price-scout/SKILL.md`](categories/shop-restaurant/price-scout/SKILL.md) |
+| 118 | ✓ | [`categories/shop-restaurant/review-responder/SKILL.md`](categories/shop-restaurant/review-responder/SKILL.md) |
+| 119 | ✓ | [`categories/shop-restaurant/social-post/SKILL.md`](categories/shop-restaurant/social-post/SKILL.md) |
+| 120 | ✓ | [`categories/shop-restaurant/staff-scheduler/SKILL.md`](categories/shop-restaurant/staff-scheduler/SKILL.md) |
+| 121 | ✓ | [`categories/shop-restaurant/table-manager/SKILL.md`](categories/shop-restaurant/table-manager/SKILL.md) |
+| 122 | ✓ | [`categories/shop-restaurant/zomato-order/SKILL.md`](categories/shop-restaurant/zomato-order/SKILL.md) |
+| 123 | ✓ | [`categories/testing-qa/accessibility-testing/SKILL.md`](categories/testing-qa/accessibility-testing/SKILL.md) |
+| 124 | ✓ | [`categories/testing-qa/api-testing/SKILL.md`](categories/testing-qa/api-testing/SKILL.md) |
+| 125 | ✓ | [`categories/testing-qa/e2e-testing/SKILL.md`](categories/testing-qa/e2e-testing/SKILL.md) |
+| 126 | ✓ | [`categories/testing-qa/performance-testing/SKILL.md`](categories/testing-qa/performance-testing/SKILL.md) |
+| 127 | ✓ | [`categories/testing-qa/test-strategy/SKILL.md`](categories/testing-qa/test-strategy/SKILL.md) |
+| 128 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

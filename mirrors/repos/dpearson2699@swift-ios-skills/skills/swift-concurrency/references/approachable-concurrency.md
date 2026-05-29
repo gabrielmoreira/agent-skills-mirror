@@ -1,14 +1,20 @@
 # Approachable Concurrency Quick Reference
 
 Use this reference when the project has opted into the Swift 6.2 approachable
-concurrency settings (default MainActor isolation / main-actor-by-default).
+concurrency settings and, when appropriate, default MainActor isolation.
 
 ## Detecting the Mode
 
 **Xcode 26:** Check build settings under Swift Compiler > Concurrency:
 - Swift language version: 6.2+
-- Default Actor Isolation / Main Actor by Default: enabled
-- Strict Concurrency Checking: Complete / Targeted / Minimal
+- Approachable Concurrency: enabled when using the bundled upcoming-feature flags
+  (`NonisolatedNonsendingByDefault`, isolated-conformance inference, inferred
+  Sendable captures, and related usability flags).
+- Default Actor Isolation: `MainActor` when unannotated code should infer
+  `@MainActor` isolation.
+- Strict Concurrency Checking: Swift 6 language mode is complete and emits
+  errors; Complete / Targeted / Minimal are migration settings for earlier
+  language modes.
 
 **SwiftPM:** Inspect `Package.swift` `swiftSettings` for the corresponding flags.
 
@@ -22,7 +28,8 @@ many "sending X risks causing data races" errors.
 
 ### Default MainActor isolation
 
-With SE-0466 enabled, all declarations in the module are implicitly `@MainActor`.
+With Default Actor Isolation set to `MainActor`, unannotated declarations in the
+module are inferred as `@MainActor`.
 This means:
 - Global and static variables are protected by default.
 - Protocol conformances are implicitly isolated.

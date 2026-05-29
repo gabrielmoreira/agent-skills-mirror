@@ -1,16 +1,24 @@
 ---
 name: speech-recognition
-description: "Transcribe speech to text using the Speech framework. Use when implementing live microphone transcription with AVAudioEngine, recognizing pre-recorded audio files, configuring on-device vs server-based recognition, handling authorization flows, or adopting the new SpeechAnalyzer API (iOS 26+) for modern async/await speech-to-text."
+description: "Transcribe speech to text using Apple's Speech framework. Use when implementing live microphone transcription with AVAudioEngine, recognizing recorded audio files, handling speech and microphone authorization, choosing on-device vs server-backed SFSpeechRecognizer behavior, or adopting SpeechAnalyzer, SpeechTranscriber, DictationTranscriber, AssetInventory, and async result streams on iOS 26+."
 ---
 
 # Speech Recognition
 
 Transcribe live and pre-recorded audio to text using Apple's Speech framework.
-Covers `SFSpeechRecognizer` (iOS 10+) and the new `SpeechAnalyzer` API (iOS 26+).
+Covers `SpeechAnalyzer` / `SpeechTranscriber` (iOS 26+) and
+`SFSpeechRecognizer` (iOS 10+). Targets Swift 6.3 / iOS 26+ while preserving
+fallback guidance for apps that support older OS versions.
+
+**Scope boundary:** Use this skill for speech-to-text recognition, speech
+authorization, microphone capture plumbing, and result handling. Hand off text
+analysis, language identification after transcription, sentiment, embeddings,
+and translation to `natural-language`; hand off audio playback UI to `avkit`;
+hand off summarization or generation over transcripts to `apple-on-device-ai`.
 
 ## Contents
 
-- [SpeechAnalyzer (iOS 26+)](#speechanalyzer-ios-26)
+- [SpeechAnalyzer Strategy (iOS 26+)](#speechanalyzer-strategy-ios-26)
 - [SFSpeechRecognizer Setup](#sfspeechrecognizer-setup)
 - [Authorization](#authorization)
 - [Live Microphone Transcription](#live-microphone-transcription)
@@ -21,87 +29,45 @@ Covers `SFSpeechRecognizer` (iOS 10+) and the new `SpeechAnalyzer` API (iOS 26+)
 - [Review Checklist](#review-checklist)
 - [References](#references)
 
-## SpeechAnalyzer (iOS 26+)
+## SpeechAnalyzer Strategy (iOS 26+)
 
-`SpeechAnalyzer` is an actor-based API introduced in iOS 26 that replaces
-`SFSpeechRecognizer` for new projects. It uses Swift concurrency, `AsyncSequence`
-for results, and supports modular analysis via `SpeechTranscriber`.
+Use `SpeechAnalyzer` for modern iOS 26+ speech analysis, especially long-form
+recordings, live transcription, time-indexed transcripts, and fully on-device
+flows. Keep `SFSpeechRecognizer` for iOS 10+ deployment targets, server-backed
+locale coverage, or existing callback/delegate implementations.
 
-### Basic transcription with SpeechAnalyzer
+Read [SpeechAnalyzer patterns](references/speechanalyzer-patterns.md) when
+implementing an iOS 26+ transcription pipeline, model asset handling, volatile
+results, or file/buffer examples.
 
-```swift
-import Speech
+### SpeechAnalyzer setup checklist
 
-// 1. Create a transcriber module
-guard let locale = SpeechTranscriber.supportedLocale(
-    equivalentTo: Locale.current
-) else { return }
-let transcriber = SpeechTranscriber(locale: locale, preset: .offlineTranscription)
+1. Choose the module:
+   - `SpeechTranscriber` for the newer general-purpose on-device model.
+   - `DictationTranscriber` when `SpeechTranscriber` is unavailable for the
+     current device or locale and dictation-compatible support is acceptable.
+   - `SpeechDetector` only in conjunction with a transcriber when voice
+     activity detection is worth the accuracy/power tradeoff.
+2. Check support before creating the session:
+   - `SpeechTranscriber.isAvailable`
+   - `SpeechTranscriber.supportedLocale(equivalentTo:)`
+   - `SpeechTranscriber.installedLocales` / `supportedLocales` when showing
+     language choices.
+3. Pick a documented preset:
+   - `.transcription` for basic accurate transcription.
+   - `.progressiveTranscription` for live UI updates.
+   - `.timeIndexedProgressiveTranscription` when playback highlighting needs
+     `audioTimeRange`.
+4. Install required assets with `AssetInventory.assetInstallationRequest`.
+5. Convert live audio buffers to
+   `SpeechAnalyzer.bestAvailableAudioFormat(compatibleWith:)` before yielding
+   `AnalyzerInput`.
+6. Consume module results from their `AsyncSequence` in a separate task.
+7. Finish explicitly with `finalizeAndFinish(through:)`,
+   `finalizeAndFinishThroughEndOfInput()`, or `cancelAndFinishNow()`.
 
-// 2. Ensure assets are installed
-if let request = try await AssetInventory.assetInstallationRequest(
-    supporting: [transcriber]
-) {
-    try await request.downloadAndInstall()
-}
-
-// 3. Create input stream and analyzer
-let (inputSequence, inputBuilder) = AsyncStream.makeStream(of: AnalyzerInput.self)
-let audioFormat = await SpeechAnalyzer.bestAvailableAudioFormat(
-    compatibleWith: [transcriber]
-)
-let analyzer = SpeechAnalyzer(modules: [transcriber])
-
-// 4. Feed audio buffers (from AVAudioEngine or file)
-Task {
-    // Append PCM buffers converted to audioFormat
-    let pcmBuffer: AVAudioPCMBuffer = // ... your audio buffer
-    inputBuilder.yield(AnalyzerInput(buffer: pcmBuffer))
-    inputBuilder.finish()
-}
-
-// 5. Consume results
-Task {
-    for try await result in transcriber.results {
-        let text = String(result.text.characters)
-        print(text)
-    }
-}
-
-// 6. Run analysis
-let lastSampleTime = try await analyzer.analyzeSequence(inputSequence)
-
-// 7. Finalize
-if let lastSampleTime {
-    try await analyzer.finalizeAndFinish(through: lastSampleTime)
-} else {
-    try analyzer.cancelAndFinishNow()
-}
-```
-
-### Transcribing an audio file with SpeechAnalyzer
-
-```swift
-let transcriber = SpeechTranscriber(locale: locale, preset: .offlineTranscription)
-let audioFile = try AVAudioFile(forReading: fileURL)
-let analyzer = SpeechAnalyzer(
-    inputAudioFile: audioFile, modules: [transcriber], finishAfterFile: true
-)
-for try await result in transcriber.results {
-    print(String(result.text.characters))
-}
-```
-
-### Key differences from SFSpeechRecognizer
-
-| Feature | SFSpeechRecognizer | SpeechAnalyzer |
-|---|---|---|
-| Concurrency | Callbacks/delegates | async/await + AsyncSequence |
-| Type | `class` | `actor` |
-| Modules | Monolithic | Composable (`SpeechTranscriber`, `SpeechDetector`) |
-| Audio input | `append(_:)` on request | `AsyncStream<AnalyzerInput>` |
-| Availability | iOS 10+ | iOS 26+ |
-| On-device | `requiresOnDeviceRecognition` | Asset-based via `AssetInventory` |
+Do not use an `offlineTranscription` preset; Apple does not document one.
+Finishing an `AsyncStream` input sequence does not finish the analyzer session.
 
 ## SFSpeechRecognizer Setup
 
@@ -259,10 +225,14 @@ func transcribeFile(at url: URL) async throws -> String {
     request.shouldReportPartialResults = false
 
     return try await withCheckedThrowingContinuation { continuation in
+        var didResume = false
         recognizer.recognitionTask(with: request) { result, error in
+            guard !didResume else { return }
             if let error {
+                didResume = true
                 continuation.resume(throwing: error)
             } else if let result, result.isFinal {
+                didResume = true
                 continuation.resume(
                     returning: result.bestTranscription.formattedString
                 )
@@ -274,7 +244,10 @@ func transcribeFile(at url: URL) async throws -> String {
 
 ## On-Device vs Server Recognition
 
-On-device recognition (iOS 13+) works offline but supports fewer locales:
+`SFSpeechRecognizer` can use on-device recognition for supported locales on
+iOS 13+. If `supportsOnDeviceRecognition` is false, the recognizer requires a
+network connection. `requiresOnDeviceRecognition` only has effect when the
+recognizer supports it.
 
 ```swift
 let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))!
@@ -286,10 +259,11 @@ if recognizer.supportsOnDeviceRecognition {
 }
 ```
 
-> **Tip:** On-device recognition avoids network latency and the one-minute
-> audio limit imposed by server-based recognition. However, accuracy may be
-> lower and not all locales are supported. Check `supportsOnDeviceRecognition`
-> before forcing on-device mode.
+`SFSpeechRecognizer` requests may still be a poor fit for long-form capture.
+Apple documents a roughly one-minute task limit for speech recognition and
+other service limits. For long recordings on iOS 26+, prefer `SpeechAnalyzer`;
+otherwise chunk or restart recognition before the limit and preserve transcript
+state across tasks.
 
 ## Handling Results
 
@@ -410,7 +384,7 @@ recognizer.recognitionTask(with: request) { result, error in
 ```swift
 // ❌ DON'T: Force on-device without checking support
 let request = SFSpeechAudioBufferRecognitionRequest()
-request.requiresOnDeviceRecognition = true // May silently fail
+request.requiresOnDeviceRecognition = true // Ignored unless the recognizer supports it
 
 // ✅ DO: Check support before requiring on-device
 if recognizer.supportsOnDeviceRecognition {
@@ -425,15 +399,48 @@ if recognizer.supportsOnDeviceRecognition {
 ```swift
 // ❌ DON'T: Start one long continuous recognition session
 func startRecording() {
-    // This will be cut off after ~60 seconds (server-based)
+    // SFSpeechRecognizer tasks can be cut off after about 60 seconds
 }
 
-// ✅ DO: Restart recognition when approaching the limit
-func startRecording() {
-    // Use a timer to restart before the limit
-    recognitionTimer = Timer.scheduledTimer(withTimeInterval: 55, repeats: false) {
-        [weak self] _ in
-        self?.restartRecognition()
+// ✅ DO: roll the segment before the limit and let cleanup end audio once
+func scheduleRecognitionRollover() {
+    recognitionTimer = Timer.scheduledTimer(withTimeInterval: 55, repeats: false) { [weak self] _ in
+        self?.commitLatestPartialText()
+        self?.stopTranscribing()     // owns endAudio(), tap removal, and task cancellation
+        try? self?.startTranscribing()
+    }
+}
+```
+`SFSpeechRecognitionTask` exposes `finish()`, `cancel()`, `state`, and `error`;
+do not invent task properties such as `recognitionTask` to restart work. Keep
+the active `SFSpeechAudioBufferRecognitionRequest` in your manager and call
+`endAudio()` from one cleanup path only.
+
+### Treating SpeechAnalyzer input completion as session completion
+
+```swift
+// ❌ DON'T: Only finish the AsyncStream and expect result streams to close
+inputBuilder.finish()
+
+// ✅ DO: explicitly finish or cancel the analyzer session
+let lastSampleTime = try await analyzer.analyzeSequence(inputSequence)
+if let lastSampleTime {
+    try await analyzer.finalizeAndFinish(through: lastSampleTime)
+} else {
+    try analyzer.cancelAndFinishNow()
+}
+```
+
+### Duplicating volatile SpeechAnalyzer results
+
+```swift
+// ✅ Replace volatile text with the finalized result for the same audio range
+for try await result in transcriber.results {
+    if result.isFinal {
+        volatileTranscript = AttributedString()
+        finalizedTranscript.append(result.text)
+    } else {
+        volatileTranscript = result.text
     }
 }
 ```
@@ -466,15 +473,21 @@ func startRecording() {
 - [ ] Previous `recognitionTask` is canceled before starting a new one
 - [ ] `supportsOnDeviceRecognition` is checked before requiring on-device mode
 - [ ] Partial results are handled separately from final (`isFinal`) results
-- [ ] One-minute limit is accounted for in server-based recognition
+- [ ] `SFSpeechRecognizer` one-minute/service limits are accounted for
 - [ ] For iOS 26+: `AssetInventory` assets are installed before using `SpeechAnalyzer`
-- [ ] For iOS 26+: `SpeechTranscriber.supportedLocale(equivalentTo:)` is checked
+- [ ] For iOS 26+: `SpeechTranscriber.isAvailable` and locale support are checked
+- [ ] For iOS 26+: live buffers are converted to the analyzer-compatible format
+- [ ] For iOS 26+: analyzer sessions are explicitly finalized or canceled
+- [ ] For iOS 26+: volatile results are replaced by finalized results, not duplicated
 
 ## References
 
 - [Speech framework](https://sosumi.ai/documentation/speech)
 - [SpeechAnalyzer](https://sosumi.ai/documentation/speech/speechanalyzer)
 - [SpeechTranscriber](https://sosumi.ai/documentation/speech/speechtranscriber)
+- [SpeechTranscriber.Preset](https://sosumi.ai/documentation/speech/speechtranscriber/preset)
+- [DictationTranscriber](https://sosumi.ai/documentation/speech/dictationtranscriber)
+- [SpeechDetector](https://sosumi.ai/documentation/speech/speechdetector)
 - [SFSpeechRecognizer](https://sosumi.ai/documentation/speech/sfspeechrecognizer)
 - [SFSpeechAudioBufferRecognitionRequest](https://sosumi.ai/documentation/speech/sfspeechaudiobufferrecognitionrequest)
 - [SFSpeechURLRecognitionRequest](https://sosumi.ai/documentation/speech/sfspeechurlrecognitionrequest)
@@ -483,3 +496,4 @@ func startRecording() {
 - [AssetInventory](https://sosumi.ai/documentation/speech/assetinventory)
 - [Asking Permission to Use Speech Recognition](https://sosumi.ai/documentation/speech/asking-permission-to-use-speech-recognition)
 - [Recognizing Speech in Live Audio](https://sosumi.ai/documentation/speech/recognizing-speech-in-live-audio)
+- [Bring advanced speech-to-text to your app with SpeechAnalyzer](https://sosumi.ai/videos/play/wwdc2025/277)

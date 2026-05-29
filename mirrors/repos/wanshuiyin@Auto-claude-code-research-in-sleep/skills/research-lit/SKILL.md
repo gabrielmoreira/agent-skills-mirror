@@ -17,16 +17,15 @@ Research topic: $ARGUMENTS
   2. `literature/` in the current project directory
   3. Custom path specified by user in `CLAUDE.md` under `## Paper Library`
 - **MAX_LOCAL_PAPERS = 20** — Maximum number of local PDFs to scan (read first 3 pages each). If more are found, prioritize by filename relevance to the topic.
+- **SOURCES = `all`** — Which literature sources to search. Options: `zotero`, `obsidian`, `local`, `web`, `semantic-scholar`, `deepxiv`, `exa`, `gemini`, `openalex`, `all`. Full source table and selection rules: see `## Data Sources` below.
 - **ARXIV_DOWNLOAD = false** — When `true`, download top 3-5 most relevant arXiv PDFs to PAPER_LIBRARY after search. When `false` (default), only fetch metadata (title, abstract, authors) via arXiv API — no files are downloaded.
 - **ARXIV_MAX_DOWNLOAD = 5** — Maximum number of PDFs to download when `ARXIV_DOWNLOAD = true`.
 
 > 💡 Overrides:
 > - `/research-lit "topic" — paper library: ~/my_papers/` — custom local PDF path
 > - `/research-lit "topic" — sources: zotero, local` — only search Zotero + local PDFs
-> - `/research-lit "topic" — sources: zotero` — only search Zotero
 > - `/research-lit "topic" — sources: web` — only search the web (skip all local)
 > - `/research-lit "topic" — sources: web, semantic-scholar` — also search Semantic Scholar for published venue papers (IEEE, ACM, etc.)
-> - `/research-lit "topic" — sources: deepxiv` — only search via DeepXiv progressive retrieval
 > - `/research-lit "topic" — sources: all, deepxiv` — use default sources plus DeepXiv
 > - `/research-lit "topic" — arxiv download: true` — download top relevant arXiv PDFs
 > - `/research-lit "topic" — arxiv download: true, max download: 10` — download up to 10 PDFs

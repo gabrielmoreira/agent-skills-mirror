@@ -1,10 +1,9 @@
 ---
 name: model-calibration-curve
-description: Use when assessing how well a survival model's predicted probabilities agree with observed outcomes by fitting a Cox model and generating bootstrap calibration curves at one or more prediction horizons from a clinical CSV file. NOT for: nomogram construction, univariate Cox screening, ROC analysis, or decision-curve analysis.
+description: "Use when assessing how well a survival model's predicted probabilities agree with observed outcomes by fitting a Cox model and generating bootstrap calibration curves at one or more prediction horizons from a clinical CSV file. NOT for: nomogram construction, univariate Cox screening, ROC analysis, or decision-curve analysis."
 license: MIT
-author: AIPOCH
+skill-author: AIPOCH
 ---
-> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Model Calibration Curve
 
@@ -36,6 +35,35 @@ Do not use this skill for:
 | Need to run analysis | `scripts/main.R` | Get the complete command |
 | Encounter errors | `references/troubleshooting.md` | Find solutions |
 | Need CLI examples | `references/cli-guide.md` | Parameter usage examples |
+
+## Input Validation
+
+This skill accepts:
+
+- A clinical CSV file with sample IDs as row names, survival time, event indicator, and pre-selected prognostic features
+- Requests to assess calibration of a survival (Cox) model via bootstrap resampling at one or more prediction horizons
+
+If the user's request does not involve survival model calibration from a clinical CSV file — for example, asking to construct a nomogram, screen Cox features, generate an ROC curve, analyze a decision curve, or work with non-survival outcomes — do not proceed with this workflow. Instead respond:
+
+> "model-calibration-curve is designed to validate survival model calibration by generating bootstrap calibration curves from a clinical CSV file. Your request appears to be outside this scope. Please use a nomogram-construction skill for nomogram building, a roc-diagnostic-performance skill for ROC analysis, or a decision-curve-analysis skill for DCA."
+
+---
+
+## Prerequisites
+
+R packages required: `rms`, `qs`, `openxlsx`, `optparse`.
+
+Install with:
+```r
+install.packages(c("rms", "qs", "openxlsx", "optparse"), repos = "https://cloud.r-project.org")
+```
+
+Or run the bootstrap installer:
+```bash
+Rscript scripts/install_dependencies.R
+```
+
+> Note: `--help` requires `optparse` to be loaded. If the package check fires before option parsing, install `optparse` first, then run `--help`. The root fix (deferring heavy package checks until after argument parsing) must be applied in `scripts/main.R`.
 
 ---
 
@@ -204,7 +232,7 @@ Rscript scripts/main.R \
 | `SKILL_MISSING_COLUMNS` | Required feature/time/event columns are absent | Check column names and spelling |
 | `SKILL_EMPTY_DATA` | Input file is empty, complete-case filtering removed all rows, or no requested features remained | Check file content and requested feature names |
 | `SKILL_SAMPLE_MISMATCH` | Reserved for cross-file sample mismatch scenarios | Not expected for this single-file workflow |
-| `SKILL_PACKAGE_NOT_FOUND` | Required R package is missing | Install the listed CRAN package(s) |
+| `SKILL_PACKAGE_NOT_FOUND` | Required R package is missing | Install with: `Rscript -e "install.packages(c('rms', 'qs', 'openxlsx'), repos='https://cloud.r-project.org')"` |
 
 **IF error persists**, READ: `references/troubleshooting.md`
 
@@ -274,4 +302,4 @@ tests/output/
 
 ---
 
-*Last updated: 2026-04-17 | Version: 2.0.0*
+*Last updated: 2026-04-27 | Version: 2.1.0*

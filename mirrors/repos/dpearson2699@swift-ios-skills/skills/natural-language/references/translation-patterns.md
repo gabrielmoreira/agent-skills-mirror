@@ -172,19 +172,22 @@ struct EditableTranslationView: View {
 
 ## Translation Session Strategies
 
-Control whether translations prioritize quality or speed.
+Control whether translations prioritize quality or speed. Strategy selection
+requires iOS 26.4+ / macOS 26.4+. Translation content is processed on device;
+`.highFidelity` uses Apple Intelligence models when available, and
+`.lowLatency` uses traditional models.
 
 ```swift
 import Translation
 
-// High fidelity: best quality, may use server
+// High fidelity: more fluent translations when Apple Intelligence is available
 let highQualityConfig = TranslationSession.Configuration(
     source: Locale.Language(identifier: "en"),
     target: Locale.Language(identifier: "ja"),
     preferredStrategy: .highFidelity
 )
 
-// Low latency: faster, prefers on-device models
+// Low latency: faster traditional translation models
 let fastConfig = TranslationSession.Configuration(
     source: Locale.Language(identifier: "en"),
     target: Locale.Language(identifier: "ja"),
@@ -198,12 +201,22 @@ Pre-download models before translating to avoid UI delays.
 
 ```swift
 .translationTask(configuration) { session in
-    try await session.prepareTranslation()
-    // Models are now ready, translate without delay
-    let response = try await session.translate(sourceText)
-    translatedText = response.targetText
+    do {
+        try await session.prepareTranslation()
+        // Models are now ready, translate without delay
+        let response = try await session.translate(sourceText)
+        await MainActor.run {
+            translatedText = response.targetText
+        }
+    } catch {
+        // Handle download refusal, cancellation, or unsupported language pairs.
+    }
 }
 ```
+
+For non-UI translation, initialize `TranslationSession(installedSource:target:)`
+only after the source and target languages are installed; this initializer
+throws when the required languages are unavailable.
 
 ## SwiftUI Integration Patterns
 

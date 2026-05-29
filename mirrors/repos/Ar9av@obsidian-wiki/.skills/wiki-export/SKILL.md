@@ -17,11 +17,25 @@ You are exporting the wiki's wikilink graph to structured formats so it can be u
 1. **Resolve config** — follow the Config Resolution Protocol in `llm-wiki/SKILL.md` (walk up CWD for `.env` → `~/.obsidian-wiki/config` → prompt setup). This gives `OBSIDIAN_VAULT_PATH`
 2. Confirm the vault has pages to export — if fewer than 5 pages exist, warn the user and stop
 
+## Project Filter (optional)
+
+If the user's invocation includes a project name — e.g. `/wiki-export prismor`, `"export the prismor project"`, `"export project:security"` — activate **project filter mode**:
+
+1. **Extract the project name** from the argument or phrase. Normalise: lowercase, strip the word "project".
+2. Keep only pages where **either** condition holds:
+   - The page `id` starts with `projects/<name>/` (path-based match)
+   - The page's `tags` array contains `<name>` (tag-based match)
+3. Drop any edge where either endpoint was excluded.
+4. Note the filter in the summary: `(filtered: project:<name> — X of Y pages)`
+5. Set `graph.graph.filter = "project:<name>"` in the JSON output.
+
+If both a project filter and a visibility filter are active, apply both (project filter first, then visibility filter on the remaining set).
+
 ## Visibility Filter (optional)
 
 By default, **all pages are exported** regardless of visibility tags. This preserves existing behavior.
 
-If the user requests a filtered export — phrases like **"public export"**, **"user-facing export"**, **"exclude internal"**, **"no internal pages"** — activate **filtered mode**:
+If the user requests a filtered export — phrases like **"public export"**, **"user-facing export"**, **"exclude internal"**, **"no internal pages"** — activate **visibility filtered mode**:
 
 - Build a **blocked tag set**: `{visibility/internal, visibility/pii}`
 - Skip any page whose frontmatter tags contain a blocked tag when building the node list
@@ -32,7 +46,7 @@ Pages with no `visibility/` tag, or tagged `visibility/public`, are always inclu
 
 ## Step 1: Build the Node and Edge Lists
 
-Glob all `.md` files in the vault (excluding `_archives/`, `_raw/`, `.obsidian/`, `index.md`, `log.md`, `_insights.md`). In filtered mode, also skip pages whose tags contain `visibility/internal` or `visibility/pii`.
+Glob all `.md` files in the vault (excluding `_archives/`, `_raw/`, `.obsidian/`, `index.md`, `log.md`, `_insights.md`). Apply any active filters (project and/or visibility) after collecting the full file list.
 
 For each page, extract from frontmatter:
 - `id` — relative path from vault root, without `.md` extension (e.g. `concepts/transformers`)
@@ -301,10 +315,12 @@ Wiki export complete → wiki-export/
   graph.html    — interactive browser visualization (open in any browser)
 ```
 
-In filtered mode, append a line showing what was excluded:
+Append filter notes when active:
 ```
+  (filtered: project:prismor — 19 of 67 pages)
   (filtered: X of Y pages excluded — visibility/internal, visibility/pii)
 ```
+Only include lines for filters that were actually applied.
 
 ## Notes
 

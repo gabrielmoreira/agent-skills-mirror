@@ -8,11 +8,44 @@
 
 ---
 
+## Contents
+
+- [Hashing: SHA-2 and SHA-3](#hashing-sha-2-and-sha-3)
+  - [One-Shot Hashing](#one-shot-hashing)
+  - [Streaming Hash for Large Files](#streaming-hash-for-large-files)
+  - [SHA-3 with Availability Check](#sha-3-with-availability-check)
+  - [Insecure Hash Functions](#insecure-hash-functions)
+- [HMAC: Message Authentication with Symmetric Keys](#hmac-message-authentication-with-symmetric-keys)
+- [AES-GCM: Authenticated Encryption in One Operation](#aes-gcm-authenticated-encryption-in-one-operation)
+  - [Basic Encryption and Decryption](#basic-encryption-and-decryption)
+  - [Associated Data (AAD)](#associated-data-aad)
+  - [The Catastrophic Danger of Nonce Reuse](#the-catastrophic-danger-of-nonce-reuse)
+- [ChaChaPoly: Software-Friendly AEAD Alternative](#chachapoly-software-friendly-aead-alternative)
+  - [Performance: AES-GCM vs ChaChaPoly on Apple Hardware](#performance-aes-gcm-vs-chachapoly-on-apple-hardware)
+  - [Streaming Encryption Limitation](#streaming-encryption-limitation)
+- [SymmetricKey: Creation, Derivation, and Lifecycle](#symmetrickey-creation-derivation-and-lifecycle)
+  - [Random Key Generation](#random-key-generation)
+  - [Password-Based Key Derivation (PBKDF2 + HKDF)](#password-based-key-derivation-pbkdf2-hkdf)
+  - [HKDF for High-Entropy Key Derivation](#hkdf-for-high-entropy-key-derivation)
+  - [Key Storage and Hardcoding](#key-storage-and-hardcoding)
+- [Migrating from CommonCrypto to CryptoKit](#migrating-from-commoncrypto-to-cryptokit)
+  - [Hashing: CC_SHA256 → SHA256](#hashing-ccsha256-sha256)
+  - [Encryption: CCCrypt (AES-CBC) → AES.GCM](#encryption-cccrypt-aes-cbc-aesgcm)
+  - [HMAC: CCHmac → HMAC](#hmac-cchmac-hmac)
+  - [What to Keep in CommonCrypto](#what-to-keep-in-commoncrypto)
+- [AI Code Generator Mistakes](#ai-code-generator-mistakes)
+- [Quantum Considerations for Symmetric Cryptography](#quantum-considerations-for-symmetric-cryptography)
+- [OWASP Mapping](#owasp-mapping)
+- [Testing Guidance](#testing-guidance)
+- [WWDC and Reference Citations](#wwdc-and-reference-citations)
+- [Conclusion](#conclusion)
+- [Summary Checklist](#summary-checklist)
+
 ## Hashing: SHA-2 and SHA-3
 
 CryptoKit's hash functions follow a unified `HashFunction` protocol. The SHA-2 family (`SHA256`, `SHA384`, `SHA512`) ships with iOS 13+. The SHA-3 family (`SHA3_256`, `SHA3_384`, `SHA3_512`) requires **iOS 26+ / macOS 26+** (added via apple/swift-crypto PR #397, tagged [WWDC25]).
 
-> **Cross-validation note:** The swift-crypto open-source package backports SHA-3 to iOS 13+ using its own XKCP implementation (`import Crypto`). The CryptoKit framework (`import CryptoKit`) requires iOS 26+. Do not confuse package availability with framework availability.
+The swift-crypto open-source package provides SHA-3 under `import Crypto` for older deployment targets. The Apple CryptoKit framework (`import CryptoKit`) requires iOS 26+ for SHA-3. Do not confuse package availability with framework availability.
 
 All hash functions produce digest types that conform to `Sequence` (of `UInt8`), `ContiguousBytes`, `Hashable`, and `CustomStringConvertible`. Digest equality checks use **constant-time comparison** internally to prevent timing side-channels.
 
@@ -300,7 +333,7 @@ let authKey = HKDF<SHA256>.deriveKey(
 )
 ```
 
-> **Iteration count note:** One research source used 100,000 iterations. The OWASP 2023 Password Storage Cheat Sheet recommends **600,000 iterations minimum** for PBKDF2-HMAC-SHA256. Use ≥600,000 for new implementations; only use lower counts if supporting legacy interoperability with documented justification.
+> **Iteration count note:** The OWASP Password Storage Cheat Sheet recommends **600,000 iterations minimum** for PBKDF2-HMAC-SHA256. Use at least 600,000 for new implementations; only use lower counts when supporting legacy interoperability with documented justification.
 
 **Critical distinction:** HKDF is designed for already-high-entropy input (shared secrets, master keys). It does **not** add computational cost. Never use HKDF alone for passwords — always PBKDF2 first.
 
@@ -467,7 +500,7 @@ See [compliance-owasp-mapping.md] for the full compliance matrix.
 - **WWDC 2019-709** — "Cryptography and Your Apps": CryptoKit introduction, SymmetricKey memory zeroing, automatic nonce generation rationale
 - **WWDC 2020** — "What's New in CryptoKit": HKDF addition (iOS 14), expanded key agreement
 - **WWDC 2025 Session 314** — "Get ahead with quantum-secure cryptography": AES-256 quantum guidance, SHA-3 context, ML-KEM/ML-DSA (asymmetric)
-- **Apple CryptoKit Documentation** — https://developer.apple.com/documentation/cryptokit/
+- **Apple CryptoKit Documentation** — https://sosumi.ai/documentation/cryptokit/
 - **Apple Platform Security Guide** — corecrypto FIPS validation, hardware crypto engine, file Data Protection
 - **OWASP Mobile Top 10 (2024)** — M10: Insufficient Cryptography
 - **OWASP MASTG** — iOS cryptographic testing methodology

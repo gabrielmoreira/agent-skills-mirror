@@ -19,6 +19,7 @@ and testing.
 - [Persistent History Tracking](#persistent-history-tracking)
 - [Staged Migration](#staged-migration)
 - [Composite Attributes](#composite-attributes)
+- [SwiftData Boundary](#swiftdata-boundary)
 - [Testing](#testing)
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
@@ -331,14 +332,23 @@ import CoreData
 // Use version checksums from the compiled model versions, not model names.
 let checksumV1 = "<ModelV1 version checksum>"
 let checksumV2 = "<ModelV2 version checksum>"
+let checksumV3 = "<ModelV3 version checksum>"
 let stage1to2 = NSLightweightMigrationStage([checksumV1, checksumV2])
 stage1to2.label = "Add isFavorite property"
 
+let modelV2 = NSManagedObjectModelReference(
+    name: "ModelV2",
+    in: Bundle.main,
+    versionChecksum: checksumV2
+)
+let modelV3 = NSManagedObjectModelReference(
+    name: "ModelV3",
+    in: Bundle.main,
+    versionChecksum: checksumV3
+)
 let stage2to3 = NSCustomMigrationStage(
-    migratingFrom: NSManagedObjectModelReference(
-        named: "ModelV2", in: Bundle.main),
-    to: NSManagedObjectModelReference(
-        named: "ModelV3", in: Bundle.main)
+    migratingFrom: modelV2,
+    to: modelV3
 )
 stage2to3.label = "Split name into firstName/lastName"
 stage2to3.willMigrateHandler = { migrationManager, currentStage in
@@ -385,6 +395,17 @@ Docs: [NSCompositeAttributeDescription](https://sosumi.ai/documentation/coredata
 
 Composite attributes map to `Codable` structs in SwiftData coexistence
 scenarios.
+
+## SwiftData Boundary
+
+Use the `swiftdata` skill for Core Data + SwiftData coexistence or migration
+implementation. Before handing off, preserve these Core Data boundaries:
+
+- SwiftData must point at the existing persistent store URL when it is meant to
+  share or migrate Core Data data.
+- Shared persisted data must keep entity names, property names, types, and
+  schema compatible across the Core Data model and SwiftData `@Model` classes.
+- Map renamed persisted properties with SwiftData `@Attribute(originalName:)`.
 
 ## Testing
 
@@ -454,6 +475,7 @@ func makeTestContainer() throws -> NSPersistentContainer {
 | Modifying fetch request on live `NSFetchedResultsController` without deleting cache | Call `deleteCache(withName:)` first or use `cacheName: nil` |
 | Batch delete ignoring Deny delete rule | Batch delete bypasses delete rules; validate manually |
 | Marking `NSManagedObject` as `@unchecked Sendable` | Do not. Pass `objectID` instead |
+| Pointing SwiftData at a fresh store during coexistence | Use the existing store URL and compatible schema when SwiftData should share or migrate Core Data data |
 
 ## Review Checklist
 
@@ -465,6 +487,7 @@ func makeTestContainer() throws -> NSPersistentContainer {
 - [ ] Batch operation results merged into relevant contexts
 - [ ] `NSFetchedResultsController` fetch requests have sort descriptors
 - [ ] Persistent history tracking enabled for multi-target apps
+- [ ] Core Data + SwiftData handoff preserves store URL, schema compatibility, entity/property names, and rename mappings
 - [ ] Tests use in-memory stores with shared `NSManagedObjectModel`
 - [ ] No `NSManagedObject` instances cross thread boundaries
 

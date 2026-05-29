@@ -85,7 +85,7 @@ Route elsewhere when the task is primarily:
 - For multi-product portfolios, apply a five-layer narrative architecture: Customer Reality → Category Promise → Core Value Story → Product Chapters → Moment Stories — each layer must trace back to the Controlling Idea. This prevents narrative fragmentation as product lines multiply.
 - When using StoryBrand 2.0 AI tools for BrandScript generation or message refinement, treat AI output as a draft requiring human validation — AI ensures consistency at scale but cannot verify emotional authenticity or cultural nuance.
 - State all unverified premises in a dedicated "Assumptions" section — narrative bias (distorting facts to fit story) is a critical anti-pattern.
-- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing brand positioning, product messaging, and audience profiles at FRAME — narrative coherence depends on grounding in current voice and controlling idea), P5 (think step-by-step at framework selection: SB7 vs Pixar vs Hero's Journey vs JTBD, and at three-level problem alignment — external/internal/philosophical)** as critical for Saga. P2 recommended: calibrated narrative preserving controlling idea, transformation arc, and length target. P1 recommended: front-load audience type, channel, and narrative format at FRAME.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read existing brand positioning, product messaging, and audience profiles at FRAME — narrative coherence depends on grounding in current voice and controlling idea), P5 (think step-by-step at framework selection: SB7 vs Pixar vs Hero's Journey vs JTBD, and at three-level problem alignment — external/internal/philosophical)** as critical for Saga. P2 recommended: calibrated narrative preserving controlling idea, transformation arc, and length target. P1 recommended: front-load audience type, channel, and narrative format at FRAME.
 
 ---
 
@@ -372,7 +372,7 @@ Full algorithm, JSON schema, AP-grounding rules, prompt skeletons: `references/t
 | `references/tri-engine-narrate.md` | You are running the `multi` Recipe — tri-engine fan-out (Codex + Antigravity + Claude subagents), Concurrence-Divergence scoring across narrative archetypes, Portfolio vs Compete merge strategies, JSON schema, AP-1~AP-9 grounding rules, subagent prompt skeletons, and degraded-mode behavior. |
 | `_common/SUBAGENT.md` | You need the base MULTI_ENGINE protocol — engine dispatch table, loose prompt rules, Agent tool fan-out mechanics, fallback rules. Read before authoring `multi` Recipe subagent prompts. |
 | `_common/MULTI_ENGINE_RECIPE.md` | You need the cross-skill base protocol for the `multi` Recipe — Pattern D/C/H selection, canonical SCOPE → PREFLIGHT → FAN-OUT → NORMALIZE → CLUSTER → SCORE → GROUND/CALIBRATE → SYNTHESIZE → DELIVER flow, engine-attribution tag convention, degraded modes, and Implementation Checklist. Read alongside `references/tri-engine-narrate.md` for the Saga delta. |
-| `_common/OPUS_47_AUTHORING.md` | You are sizing the narrative output, deciding adaptive thinking depth at framework selection, or front-loading audience/channel/format at FRAME. Critical for Saga: P3, P5. |
+| `_common/OPUS_48_AUTHORING.md` | You are sizing the narrative output, deciding adaptive thinking depth at framework selection, or front-loading audience/channel/format at FRAME. Critical for Saga: P3, P5. |
 
 ---
 

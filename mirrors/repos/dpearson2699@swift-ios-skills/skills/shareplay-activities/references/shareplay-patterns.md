@@ -8,6 +8,7 @@ patterns that exceed the main skill file's scope.
 - [Collaborative Drawing Canvas](#collaborative-drawing-canvas)
 - [Full SharePlay Manager](#full-shareplay-manager)
 - [SwiftUI SharePlay Integration](#swiftui-shareplay-integration)
+  - [ShareLink and AirDrop](#sharelink-and-airdrop)
 - [Custom Activity with State Sync](#custom-activity-with-state-sync)
 - [Participant Tracking](#participant-tracking)
 
@@ -76,12 +77,11 @@ final class DrawingManager {
     var isConnected = false
 
     func startObserving() {
-        let task = Task {
+        Task {
             for await session in DrawTogetherActivity.sessions() {
-                await configureSession(session)
+                configureSession(session)
             }
         }
-        tasks.append(task)
     }
 
     private func configureSession(
@@ -186,13 +186,15 @@ final class SharePlayManager<Activity: GroupActivity> {
 
     private var tasks: [Task<Void, Never>] = []
 
+    // GroupSessionJournal requires iOS/iPadOS/tvOS 17+, macOS 14+,
+    // or visionOS 1+. Gate this property if your deployment target is older.
+
     func startObserving() {
-        let task = Task {
+        Task {
             for await session in Activity.sessions() {
-                await configure(session)
+                configure(session)
             }
         }
-        tasks.append(task)
     }
 
     private func configure(_ session: GroupSession<Activity>) {
@@ -292,6 +294,36 @@ enum SharePlayError: Error {
 
 ## SwiftUI SharePlay Integration
 
+Use this section when surfacing activities through SwiftUI controls. A custom
+button works best when a FaceTime call or Messages conversation is already
+active. Use `ShareLink`, UIKit/AppKit share sheets, or
+`GroupActivitySharingController` when the user needs to choose participants.
+
+### ShareLink and AirDrop
+
+SwiftUI `ShareLink`, SharePlay over AirDrop, and system share sheets require
+the shared item or activity to conform to `Transferable`. Keep the transferable
+payload small; share IDs and URLs, then load heavy content after joining.
+
+```swift
+import CoreTransferable
+import GroupActivities
+import SwiftUI
+
+extension WatchTogetherActivity: Transferable {
+    static var transferRepresentation: some TransferRepresentation {
+        GroupActivityTransferRepresentation { activity in
+            activity
+        }
+    }
+}
+
+ShareLink(
+    item: WatchTogetherActivity(movieID: movieID, movieTitle: movieTitle),
+    preview: SharePreview(movieTitle)
+)
+```
+
 ### SharePlay Button
 
 ```swift
@@ -353,9 +385,13 @@ struct SharePlayStatusView: View {
 
 ### Full Activity View
 
+Create the session manager at an app, scene, or feature coordinator boundary and
+inject it into SwiftUI. The content view should use the manager, not own the
+`sessions()` observation lifecycle.
+
 ```swift
 struct SharedMovieView: View {
-    @State private var manager = SharePlayManager<WatchTogetherActivity>()
+    @Environment(SharePlayManager<WatchTogetherActivity>.self) private var manager
 
     let movieID: String
     let movieTitle: String
@@ -530,7 +566,10 @@ final class ParticipantTracker {
 
 ### Nearby Participant Detection
 
-On iOS 17+ and visionOS, check if participants are physically nearby:
+On visionOS 26+, nearby Apple Vision Pro participants can join the same group
+activity. The core session, messenger, and journal APIs treat nearby and
+FaceTime participants the same; use `isNearbyWithLocalParticipant` only when UI
+or spatial placement needs to distinguish them:
 
 ```swift
 for participant in session.activeParticipants {
