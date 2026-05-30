@@ -1,7 +1,7 @@
 # Security Review Discipline
 
 This skill codifies the discipline for flagging security issues during code review.
-Source: `free-code-main/src/commands/security-review.ts`
+Provenance: adapted from prior art on security-review gating; no local source in this repo.
 
 ## Threshold
 

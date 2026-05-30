@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `UnicomAI/wanwu` — 26 default patterns, 0 followed patterns, 47 file(s) materialized.
+Mirror of `UnicomAI/wanwu` — 26 default patterns, 0 followed patterns, 48 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `UnicomAI/wanwu` — 26 default patterns, 0 followed patterns, 47 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 47 |
+| Files         | 48 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -104,8 +104,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 43 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/ontology/smart-data-analysis/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/ontology/smart-data-analysis/SKILL.md) |
 | 44 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/ontology/smart-search-tables/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/ontology/smart-search-tables/SKILL.md) |
 | 45 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/security/skill-vetter/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/security/skill-vetter/SKILL.md) |
-| 46 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/BEST_PRACTICES.md`](configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/BEST_PRACTICES.md) |
-| 47 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/SKILL.md) |
+| 46 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/wanwu/mcp2skill/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/wanwu/mcp2skill/SKILL.md) |
+| 47 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/BEST_PRACTICES.md`](configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/BEST_PRACTICES.md) |
+| 48 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/SKILL.md) |
 
 ---
 

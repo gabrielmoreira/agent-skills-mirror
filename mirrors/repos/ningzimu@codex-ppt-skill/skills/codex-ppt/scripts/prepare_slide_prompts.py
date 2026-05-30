@@ -192,6 +192,14 @@ def _build_prompt(
     if global_style_reference:
         images.append(global_style_reference)
     images.extend(_slide_images(slide, slide_number=number, base_dir=base_dir))
+    required_background = {
+        key: value
+        for key, value in {
+            "deck_context": deck.get("deck_context"),
+            "slide_local_context": slide.get("local_context"),
+        }.items()
+        if value not in (None, "", [], {})
+    }
 
     prompt_parts = [
         "# Codex PPT Slide Image Prompt\n",
@@ -202,6 +210,7 @@ def _build_prompt(
             "render_slide_number": False,
         }),
         _format_block("Deck Goal", deck.get("goal")),
+        _format_block("Required Background", required_background),
         _format_block("Global Style", style),
     ]
 
@@ -276,6 +285,11 @@ def _write_template(path: Path) -> None:
         "deck_name": "example-deck",
         "language": "Chinese",
         "goal": "Explain the core idea of the source article.",
+        "deck_context": {
+            "source_summary": "Short source-wide summary that workers may need when a slide refers to the broader article.",
+            "core_claim": "The central thesis that should stay consistent across the deck.",
+            "canonical_terms": ["Term one", "Term two", "Term three"],
+        },
         "selected_image_backend": "built-in image tool",
         "max_concurrent_slides": 6,
         "sample_generation_method": {
@@ -307,6 +321,9 @@ def _write_template(path: Path) -> None:
                 "role": "cover",
                 "intent": "Open the talk",
                 "key_points": ["Point one", "Point two"],
+                "local_context": {
+                    "required_background": "Facts, lists, definitions, comparisons, or prior-slide references this slide needs to be self-contained.",
+                },
                 "layout": {"composition": "large title with one supporting visual"},
                 "visual_elements": {"main_visual": "topic-specific hand-drawn metaphor"},
                 "constraints": ["Keep text sparse"],

@@ -67,6 +67,9 @@ test("Google provider helpers normalize model IDs and select image size defaults
     "gemini-3.1-flash-image-preview",
   );
   assert.equal(isGoogleMultimodal("models/gemini-3-pro-image-preview"), true);
+  assert.equal(isGoogleMultimodal("gemini-3-pro-image"), true);
+  assert.equal(isGoogleMultimodal("gemini-3.1-flash-image"), true);
+  assert.equal(isGoogleMultimodal("models/gemini-3-pro-image"), true);
   assert.equal(isGoogleImagen("imagen-3.0-generate-002"), true);
   assert.equal(getGoogleImageSize(makeArgs({ imageSize: null, quality: "2k" })), "2K");
   assert.equal(getGoogleImageSize(makeArgs({ imageSize: "4K", quality: "normal" })), "4K");

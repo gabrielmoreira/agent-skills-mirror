@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ningzimu/codex-ppt-skill` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `ningzimu/codex-ppt-skill` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ningzimu/codex-ppt-skill` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,19 +61,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`skills/codex-ppt/.clawhubignore`](skills/codex-ppt/.clawhubignore) |
-| 3 | ✓ | [`skills/codex-ppt/docs/image-model-configuration.md`](skills/codex-ppt/docs/image-model-configuration.md) |
-| 4 | ✓ | [`skills/codex-ppt/requirements.txt`](skills/codex-ppt/requirements.txt) |
-| 5 | ✓ | [`skills/codex-ppt/scripts/assemble_ppt.py`](skills/codex-ppt/scripts/assemble_ppt.py) |
-| 6 | ✓ | [`skills/codex-ppt/scripts/codex_ppt_runtime.py`](skills/codex-ppt/scripts/codex_ppt_runtime.py) |
-| 7 | ✓ | [`skills/codex-ppt/scripts/image_gen.py`](skills/codex-ppt/scripts/image_gen.py) |
-| 8 | ✓ | [`skills/codex-ppt/scripts/prepare_slide_prompts.py`](skills/codex-ppt/scripts/prepare_slide_prompts.py) |
-| 9 | ✓ | [`skills/codex-ppt/scripts/record_slide_blocker.py`](skills/codex-ppt/scripts/record_slide_blocker.py) |
-| 10 | ✓ | [`skills/codex-ppt/scripts/record_slide_dispatch.py`](skills/codex-ppt/scripts/record_slide_dispatch.py) |
-| 11 | ✓ | [`skills/codex-ppt/scripts/record_slide_result.py`](skills/codex-ppt/scripts/record_slide_result.py) |
-| 12 | ✓ | [`skills/codex-ppt/scripts/remove_chroma_key.py`](skills/codex-ppt/scripts/remove_chroma_key.py) |
-| 13 | ✓ | [`skills/codex-ppt/scripts/slide_job_status.py`](skills/codex-ppt/scripts/slide_job_status.py) |
-| 14 | ✓ | [`skills/codex-ppt/scripts/slide_run_state.py`](skills/codex-ppt/scripts/slide_run_state.py) |
-| 15 | ✓ | [`skills/codex-ppt/SKILL.md`](skills/codex-ppt/SKILL.md) |
+| 3 | ✓ | [`skills/codex-ppt/docs/backend-selection.md`](skills/codex-ppt/docs/backend-selection.md) |
+| 4 | ✓ | [`skills/codex-ppt/docs/cli-api-fallback.md`](skills/codex-ppt/docs/cli-api-fallback.md) |
+| 5 | ✓ | [`skills/codex-ppt/docs/image-model-configuration.md`](skills/codex-ppt/docs/image-model-configuration.md) |
+| 6 | ✓ | [`skills/codex-ppt/docs/outline-style-and-sample.md`](skills/codex-ppt/docs/outline-style-and-sample.md) |
+| 7 | ✓ | [`skills/codex-ppt/docs/project-assembly-and-reporting.md`](skills/codex-ppt/docs/project-assembly-and-reporting.md) |
+| 8 | ✓ | [`skills/codex-ppt/docs/slide-generation-and-subagents.md`](skills/codex-ppt/docs/slide-generation-and-subagents.md) |
+| 9 | ✓ | [`skills/codex-ppt/docs/style-library.md`](skills/codex-ppt/docs/style-library.md) |
+| 10 | ✓ | [`skills/codex-ppt/docs/user-supplied-assets.md`](skills/codex-ppt/docs/user-supplied-assets.md) |
+| 11 | ✓ | [`skills/codex-ppt/docs/workflow-gates-and-progress.md`](skills/codex-ppt/docs/workflow-gates-and-progress.md) |
+| 12 | ✓ | [`skills/codex-ppt/prompts/slide-worker.md`](skills/codex-ppt/prompts/slide-worker.md) |
+| 13 | ✓ | [`skills/codex-ppt/requirements.txt`](skills/codex-ppt/requirements.txt) |
+| 14 | ✓ | [`skills/codex-ppt/scripts/assemble_ppt.py`](skills/codex-ppt/scripts/assemble_ppt.py) |
+| 15 | ✓ | [`skills/codex-ppt/scripts/codex_ppt_runtime.py`](skills/codex-ppt/scripts/codex_ppt_runtime.py) |
+| 16 | ✓ | [`skills/codex-ppt/scripts/image_gen.py`](skills/codex-ppt/scripts/image_gen.py) |
+| 17 | ✓ | [`skills/codex-ppt/scripts/prepare_slide_prompts.py`](skills/codex-ppt/scripts/prepare_slide_prompts.py) |
+| 18 | ✓ | [`skills/codex-ppt/scripts/record_slide_blocker.py`](skills/codex-ppt/scripts/record_slide_blocker.py) |
+| 19 | ✓ | [`skills/codex-ppt/scripts/record_slide_dispatch.py`](skills/codex-ppt/scripts/record_slide_dispatch.py) |
+| 20 | ✓ | [`skills/codex-ppt/scripts/record_slide_result.py`](skills/codex-ppt/scripts/record_slide_result.py) |
+| 21 | ✓ | [`skills/codex-ppt/scripts/remove_chroma_key.py`](skills/codex-ppt/scripts/remove_chroma_key.py) |
+| 22 | ✓ | [`skills/codex-ppt/scripts/slide_job_status.py`](skills/codex-ppt/scripts/slide_job_status.py) |
+| 23 | ✓ | [`skills/codex-ppt/scripts/slide_run_state.py`](skills/codex-ppt/scripts/slide_run_state.py) |
+| 24 | ✓ | [`skills/codex-ppt/SKILL.md`](skills/codex-ppt/SKILL.md) |
 
 ---
 

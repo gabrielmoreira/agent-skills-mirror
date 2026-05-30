@@ -1,5 +1,7 @@
 # Spec-Driven Development
 
+> **Decision rule:** Use once scope/acceptance criteria must be written down (escalation from `idea-to-prompt.md`). If the request is still a vague idea with no concrete scope, start with `idea-to-prompt.md` first.
+
 ## Purpose
 
 Use this skill when a request is large enough that planning would require silent choices about scope, acceptance, constraints, or success. A spec is the pre-planning contract: it records the problem, the boundary, and the evidence that will prove the work is done.

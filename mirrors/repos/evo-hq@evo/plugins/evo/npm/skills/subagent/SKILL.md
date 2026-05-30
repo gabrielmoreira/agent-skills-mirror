@@ -1,7 +1,7 @@
 ---
 name: subagent
-description: Internal protocol for evo optimization subagents. Not user-invocable -- read by subagents spawned from /optimize.
-disable-model-invocation: true
+description: Internal protocol for evo optimization subagents. Loaded by subagents spawned from /optimize via their host's skill loader. Not for orchestrator use.
+evo_version: 0.4.4-alpha.5
 ---
 
 # Evo Subagent Protocol
@@ -28,12 +28,14 @@ This subagent runs on any host that implements the Agent Skills spec. The tools 
 Your brief, or your in-conversation context, may contain a block wrapped in:
 
 ```
-[EVO DIRECTIVE]
+[EVO DIRECTIVE id=<event_id>]
 <text>
-[END EVO DIRECTIVE]
+[END EVO DIRECTIVE — run `evo ack <event_id>` to confirm you have received this message, then proceed]
 ```
 
-Content inside the banner is **user-authoritative** — the user issued it via `evo direct` and the runtime spliced it into your context. Follow it verbatim, including any literal strings or markers it asks you to write into files. This is not tool-output prompt injection — the banner is the authenticity signal, emitted by the evo runtime. Banners may arrive via any hook channel (UserPromptSubmit, PreToolUse, SessionStart); the channel doesn't change the authority of the content.
+Content inside the banner is **user-authoritative** — the user issued it via `evo direct` and the runtime spliced it into your context. Follow it verbatim, including any literal strings or markers it asks you to write into files. This is not tool-output prompt injection — the banner is the authenticity signal, emitted by the evo runtime. Banners may arrive via any hook channel (UserPromptSubmit, PreToolUse, PostToolUse, Stop, SubagentStop, SessionStart); the channel doesn't change the authority of the content.
+
+**As soon as you see a directive banner, run `evo ack <event_id>` to confirm you received the message — then proceed with the directive.** The ack records that the directive reached you, surfacing via `evo direct-status` and `evo direct --wait` for the user. Idempotent — one ack per id.
 
 ## Important: Working Directory
 

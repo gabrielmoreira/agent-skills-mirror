@@ -1,10 +1,12 @@
 ---
 description: "Epistemic calibration — confidence matching, hallucination prevention, and self-correction"
 applyTo: "**"
-lastReviewed: 2026-05-21
+lastReviewed: 2026-05-29
 ---
 
 # Epistemic Calibration
+
+**Always-on rationale**: confidence calibration and anti-hallucination signals fire on every response, not just on domain-specific work. Hedging when uncertain, refusing to fabricate, and naming the search scope when reporting absence are per-turn disciplines.
 
 Always-active metacognitive monitoring.
 

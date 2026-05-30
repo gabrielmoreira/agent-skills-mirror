@@ -15,156 +15,69 @@ Behavioral guardrails to prevent systematic agent anti-patterns in multi-agent w
 | PlatformEngineer-subagent | Think Before Coding, Surgical Changes |
 | TechnicalWriter-subagent | Surgical Changes |
 
----
-
 ## 1. Think Before Coding
 
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
+**Don't assume. Don't hide confusion. Surface tradeoffs.** Before any non-trivial task:
 
-Before implementing any non-trivial task:
-
-- State your assumptions explicitly. If uncertain, ask via `NEEDS_INPUT`.
+- State assumptions explicitly; if uncertain, ask via `NEEDS_INPUT`.
 - If multiple valid interpretations exist, present them — don't pick silently.
 - If a simpler approach exists, say so and push back when warranted.
-- If something is genuinely unclear, stop. Name what's confusing. Return `NEEDS_INPUT` with a `clarification_request`.
+- If genuinely unclear, stop, name what's confusing, return `NEEDS_INPUT` with a `clarification_request`.
 
-**In ControlFlow context:** Assumptions made silently by a subagent propagate invisibly up the delegation chain. An incorrect assumption in CoreImplementer becomes a blocker in CodeReviewer and forces an expensive replan. Surface it early.
-
-### ❌ Anti-pattern: Silent assumption
-
-> Task: "Add an endpoint to export reports"
-
-Agent silently assumes: JSON format, all records, no pagination, authenticated users only — and implements 200 lines without surfacing any of these decisions.
-
-### ✅ Correct behavior - Clarification
-
-```text
-Before implementing, I need to clarify:
-1. Format: JSON, CSV, or caller's choice? (affects schema)
-2. Scope: All records or filtered? (affects performance risk — see data_volume)
-3. Auth: Public endpoint or requires token?
-
-Simplest interpretation: paginated JSON with auth guard.
-Returning NEEDS_INPUT if the above differs from intent.
-```
-
----
+**ControlFlow context:** Silent subagent assumptions propagate invisibly up the delegation chain — an incorrect one in CoreImplementer becomes a CodeReviewer blocker and forces an expensive replan. Surface it early. Example: "Add an endpoint to export reports" → ❌ silently assume JSON/all-records/no-pagination/authed-only and write 200 lines; ✅ clarify format, scope (performance risk), and auth, state simplest interpretation (paginated JSON with auth guard), return `NEEDS_INPUT` if intent differs.
 
 ## 2. Simplicity First
 
 **Minimum code that solves the problem. Nothing speculative.**
 
-- No features beyond what was explicitly asked.
-- No abstractions for single-use code paths.
-- No "flexibility" or "configurability" that was not requested.
-- No error handling for scenarios that cannot happen given the system's constraints.
+- No features beyond what was explicitly asked; no abstractions for single-use paths.
+- No "flexibility"/"configurability" that was not requested.
+- No error handling for scenarios that cannot happen given system constraints.
 - If an implementation is 200 lines and could be 50, rewrite it.
 
-**The test:** Would a senior engineer say this is overcomplicated? If yes, simplify.
+**The test:** Would a senior engineer call this overcomplicated? If yes, simplify.
 
-**In ControlFlow context:** Over-engineered implementations increase CodeReviewer's `validated_blocking_issues` count and trigger rewrites. Bloated scope causes scope drift flagged by PreFlect. Complexity added "for future use" is unprovable and untestable — it's a liability, not an asset.
-
-### ❌ Anti-pattern: Speculative abstraction
-
-```python
-# Requested: "save the user's theme preference"
-class PreferenceManager:
-    def __init__(self, db, cache=None, validator=None, event_bus=None):
-        # 120 lines of pluggable infrastructure for a single column update
-```
-
-### ✅ Correct behavior - Minimal Solution
-
-```python
-# Minimum code that solves the problem
-def save_theme(user_id: int, theme: str) -> None:
-    db.execute("UPDATE users SET theme = ? WHERE id = ?", (theme, user_id))
-```
-
-Add cache, validation, and events only when those requirements are explicit and tested.
-
----
+**ControlFlow context:** Over-engineering raises CodeReviewer's `validated_blocking_issues` and triggers rewrites; bloated scope is flagged by PreFlect. Complexity "for future use" is unprovable and untestable — a liability. Example: "save the user's theme preference" → ❌ a 120-line `PreferenceManager(db, cache, validator, event_bus)`; ✅ `db.execute("UPDATE users SET theme = ? WHERE id = ?", (theme, user_id))`, adding cache/validation/events only when explicit and tested.
 
 ## 3. Surgical Changes
 
-**Touch only what you must. Clean up only your own mess.**
+**Touch only what you must. Clean up only your own mess.** When editing existing files:
 
-When editing existing files:
+- Don't "improve" adjacent code/comments/formatting; don't refactor things that aren't broken.
+- Match existing style even if you'd do it differently.
+- Unrelated dead code → **mention it in the execution report**, do not delete.
+- Remove only orphans (unused imports/vars/functions) that YOUR changes made dead; never pre-existing dead code unless explicitly asked.
 
-- Do not "improve" adjacent code, comments, or formatting.
-- Do not refactor things that aren't broken.
-- Match existing style — even if you'd do it differently.
-- If you notice unrelated dead code, **mention it in the execution report** — do not delete it.
+**The test:** Every changed line traces directly to the delegated task scope.
 
-When your changes create orphans (unused imports, variables, functions YOUR changes made dead):
-
-- Remove only the orphans your changes created.
-- Do not remove pre-existing dead code unless explicitly asked.
-
-**The test:** Every changed line should trace directly to the delegated task scope.
-
-**In ControlFlow context:** CodeReviewer's `validated_blocking_issues` explicitly flags out-of-scope modifications. Orthogonal changes contaminate the diff, make code review harder, and can break sibling phases in parallel wave execution.
-
-### ❌ Anti-pattern: Scope drift
-
-> Task: "Fix null check in `processOrder()`"
-
-Agent fixes the null check **and** reformats 3 functions, renames a parameter, and removes an "obviously dead" helper — none of which were in scope.
-
-### ✅ Correct behavior - Scoped Fix
-
-Fix the null check. In the execution report note: "Observed potentially unused helper `formatOrderLegacy()` in the same file — recommend a cleanup task if confirmed dead."
-
----
+**ControlFlow context:** CodeReviewer's `validated_blocking_issues` flags out-of-scope modifications; orthogonal changes contaminate the diff and can break sibling phases in parallel waves. Example: "Fix null check in `processOrder()`" → ❌ also reformat 3 functions, rename a parameter, delete an "obviously dead" helper; ✅ fix the null check, then report "Observed potentially unused helper `formatOrderLegacy()` — recommend a cleanup task if confirmed dead."
 
 ## 4. Goal-Driven Execution
 
-**Define success criteria. Loop until verified.**
-
-Transform imperative task descriptions into verifiable goals before starting work:
+**Define success criteria. Loop until verified.** Transform imperative descriptions into verifiable goals:
 
 | Instead of... | Transform to... |
 | ------------ | --------------- |
 | "Add validation" | "Write tests for invalid inputs, then make them pass" |
 | "Fix the bug" | "Write a test that reproduces it, then make it pass" |
 | "Refactor X" | "Ensure all existing tests pass before and after" |
-| "Add the feature" | "Define the acceptance criteria, write tests, implement" |
+| "Add the feature" | "Define acceptance criteria, write tests, implement" |
 
-For multi-step phases, state a brief plan with explicit verification:
+For multi-step phases, state a brief plan as `[Step] → verify: [check]` lines. Strong criteria let the agent loop independently; weak criteria ("make it work") guarantee back-and-forth.
 
-```text
-1. [Step] → verify: [check]
-2. [Step] → verify: [check]
-3. [Step] → verify: [check]
-```
-
-Strong success criteria allow the agent to loop independently without constant clarification. Weak criteria ("make it work") guarantee back-and-forth.
-
-**In ControlFlow context:** Planner's phase `tasks` should follow this `[Step] → verify: [check]` pattern. Orchestrator's Phase Verification Checklist (tests pass, build passes, lint clean, review APPROVED) is the final gate — goal-driven execution ensures phases arrive at that gate in a passing state rather than requiring multiple revision loops.
-
-### ❌ Anti-pattern: Unverifiable task definition
-
-> Phase task: "Improve the authentication flow"
-
-No measurable criterion. The agent cannot determine when it is done, and CodeReviewer cannot evaluate completion.
-
-### ✅ Correct behavior - Verifiable Goal
-
-> Phase task: "Add JWT expiry validation to `AuthMiddleware` → verify: `npm test auth` passes with a new test case for expired tokens"
+**ControlFlow context:** Planner phase `tasks` follow the `[Step] → verify: [check]` pattern. Orchestrator's Phase Verification Checklist (tests, build, lint, review APPROVED) is the final gate — goal-driven execution ensures phases arrive passing rather than via multiple revision loops. Example: ❌ "Improve the authentication flow" (no measurable criterion); ✅ "Add JWT expiry validation to `AuthMiddleware` → verify: `npm test auth` passes with a new test case for expired tokens."
 
 ## 5. Prompt Compression Anti-Pattern Lexicon
 
-A bounded list of specific anti-patterns that waste context tokens in agent files. When writing or updating prompts, avoid these:
+Bounded list of anti-patterns that waste context tokens in agent files; avoid when writing/updating prompts:
 
-- **Filler opt-in closers:** Ending prompts with conversational filler (e.g., "Let me know if you want me to proceed" or "Are you ready?"). *Instead: End with a clear structural command like "Emits: [schema name]" or stop after output rules.*
-- **Duplicated routing tables:** Re-stating tier-to-pipeline mappings or retry values directly in an agent's markdown. *Instead: Reference `governance/runtime-policy.json` as the source of truth for routing and budgets.*
-- **Long inline restatements of shared policy:** Copying entire sections of shared specs (like the semantic risk taxonomy) into a subagent's rules. *Instead: Reference `plans/project-context.md` or `.github/copilot-instructions.md` by explicit name and section.*
-
----
+- **Filler opt-in closers:** conversational endings ("Let me know if you want me to proceed"). *Instead: end with a structural command like "Emits: [schema name]".*
+- **Duplicated routing tables:** re-stating tier-to-pipeline mappings or retry values in markdown. *Instead: reference `governance/runtime-policy.json` as source of truth.*
+- **Long inline restatements of shared policy:** copying whole spec sections (e.g., semantic risk taxonomy) into a subagent. *Instead: reference `plans/project-context.md` or `.github/copilot-instructions.md` by name and section.*
 
 ## Anti-Rationalization Table (Canonical)
 
-This is the shared contract for recurring rationalizations in ControlFlow skills. Skill-local anti-rationalization sections should keep only role-specific deltas and point here for the generic rule.
+Shared contract for recurring rationalizations in ControlFlow skills. Skill-local sections keep only role-specific deltas and point here for the generic rule.
 
 | Pattern | Required Action |
 | ------- | --------------- |
@@ -172,8 +85,6 @@ This is the shared contract for recurring rationalizations in ControlFlow skills
 | Add an abstraction because future tasks might need it | Build only the requested behavior; record future options outside the implementation. |
 | Clean up adjacent code while editing nearby lines | Limit changes to delegated scope and report unrelated observations. |
 | Skip verification because the edit seems low-risk | Run the smallest relevant gate plus any suite required for the phase. |
-
----
 
 ## Summary Decision Table
 

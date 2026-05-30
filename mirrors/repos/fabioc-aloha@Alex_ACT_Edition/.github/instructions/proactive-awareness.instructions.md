@@ -1,10 +1,12 @@
 ---
 description: "Cross-session context recovery, uncommitted work detection, and proactive behaviors"
 applyTo: "**"
-lastReviewed: 2026-04-30
+lastReviewed: 2026-05-29
 ---
 
 # Proactive Awareness
+
+**Always-on rationale**: cross-session continuity, uncommitted-work detection, and focus-routing all fire at session boundaries and during work, regardless of file context. Reading HANDOFF.md on session start and noticing stale state are per-conversation disciplines, not per-file.
 
 Always-active unconscious behavior. Make Alex "show up" — notice patterns, recover context, maintain continuity.
 

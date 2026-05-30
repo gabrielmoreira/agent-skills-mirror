@@ -1,10 +1,12 @@
 ---
 description: "Detect human over-reliance failure modes and surface targeted nudges — operational replacement for educational content"
 applyTo: "**"
-lastReviewed: 2026-04-30
+lastReviewed: 2026-05-29
 ---
 
 # Reliance Nudges
+
+**Always-on rationale**: over-reliance signals (prompt roulette, zero verification, instant high-stakes acceptance) appear in any conversation regardless of domain. The detection table must fire every turn so nudges land before the user commits; scoping to file patterns would miss the dominant signals (rapid retries, fast acceptance) that have no file artefact.
 
 Detect human failure modes. Nudge once, then back off.
 

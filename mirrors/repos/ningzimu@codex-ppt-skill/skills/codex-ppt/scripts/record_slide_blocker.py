@@ -8,9 +8,8 @@ import argparse
 from slide_run_state import (
     deck_dir_from_target,
     find_slide,
-    load_jobs,
+    locked_jobs,
     now_iso,
-    save_jobs,
     set_run_status,
     update_jobs_run_status,
 )
@@ -25,21 +24,21 @@ def main() -> int:
     args = parser.parse_args()
 
     deck_dir = deck_dir_from_target(args.deck)
-    jobs = load_jobs(deck_dir)
-    slide = find_slide(jobs, args.slide)
-    if slide.get("status") in {"recorded", "accepted"}:
-        raise SystemExit(f"{slide['slide_id']} is already complete; refusing to mark it blocked.")
-    slide["blocker"] = {
-        "agent_id": args.agent_id,
-        "reason": args.reason,
-        "blocked_at": now_iso(),
-    }
-    slide["status"] = "blocked"
-    update_jobs_run_status(jobs)
-    jobs["run_status"] = "blocked"
-    save_jobs(deck_dir, jobs)
-    set_run_status(deck_dir, "blocked", f"{slide['slide_id']}: {args.reason}")
-    print(f"{slide['slide_id']} -> blocked")
+    with locked_jobs(deck_dir) as jobs:
+        slide = find_slide(jobs, args.slide)
+        if slide.get("status") in {"recorded", "accepted"}:
+            raise SystemExit(f"{slide['slide_id']} is already complete; refusing to mark it blocked.")
+        slide["blocker"] = {
+            "agent_id": args.agent_id,
+            "reason": args.reason,
+            "blocked_at": now_iso(),
+        }
+        slide["status"] = "blocked"
+        update_jobs_run_status(jobs)
+        jobs["run_status"] = "blocked"
+        slide_id = slide["slide_id"]
+    set_run_status(deck_dir, "blocked", f"{slide_id}: {args.reason}")
+    print(f"{slide_id} -> blocked")
     return 0
 
 

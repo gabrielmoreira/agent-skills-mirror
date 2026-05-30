@@ -296,7 +296,7 @@ Why it matters:
 - `deferred` also stores provider/model/cache telemetry so Anthropic-family sessions can avoid rewriting a still-hot prompt cache
 - `inline` preserves the legacy foreground compaction path for hosts that do not yet support deferred execution
 - `/lossless status` and `/lcm status` surface pending/running/last-failure maintenance state so operators can see when compaction is queued
-- background `maintain()` can still do non-prompt-mutating work, but prompt-mutating debt is consumed pre-assembly once cache is cold or the next turn is already approaching overflow
+- after-turn background drain and host-approved `maintain()` consume routine threshold debt; `assemble()` only drains pending threshold debt synchronously as an emergency safeguard when the live prompt estimate is already over budget
 
 ### `autoRotateSessionFiles`
 

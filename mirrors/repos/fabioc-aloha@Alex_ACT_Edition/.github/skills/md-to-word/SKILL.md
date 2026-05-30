@@ -482,12 +482,7 @@ node .github/skills/md-to-word/scripts/md-to-word.cjs spec.md --watch
 | **lint-clean-markdown** | Pre-flight the source — pass clean Markdown in |
 | **markdown-sanitization-chain** | Sanitize user-supplied Markdown before conversion |
 | **markdown-mermaid § Mode Fragility** | Why we default to flowchart mode |
-| **svg-graphics** | Vector graphics creation |
-| **brand-asset-management** | Visual identity for headers/footers |
-| **pptx-generation** | Similar workflow for PowerPoint output |
 | **md-to-html** | HTML output with same preprocessing |
-| **md-scaffold** | Templates for clean Markdown structure |
-| **book-publishing** | Pandoc PDF for print publishing |
 
 ## Falsifiability
 

@@ -26,6 +26,7 @@ When status is `FAILED`, `NEEDS_INPUT`, `NEEDS_REVISION`, or `REJECTED`, include
 - `fixable` — Small correctable issue (typo, missing import, config value); retry with fix hint.
 - `needs_replan` — Architecture mismatch or missing dependency; delegate to Planner for targeted replan.
 - `escalate` — Security vulnerability, data integrity risk, or unresolvable blocker; stop and await human approval.
+- `model_unavailable` — the routed/primary model is unavailable or unreachable; substitute per model-routing fallback and retry up to `model_unavailable_max` (see runtime-policy.json), then escalate. Distinct from `transient`; the PlanAuditor/AssumptionVerifier `transient`-exclusion does NOT exclude `model_unavailable`.
 
 ## NOTES.md
 Maintain/update `NOTES.md` for persistent state across context resets:
@@ -59,7 +60,7 @@ Agent engineering policies are in `docs/agent-engineering/`:
 - Failure taxonomy applies to all agents; PlanAuditor and AssumptionVerifier exclude `transient`.
 - P.A.R.T. section order in every agent file: **Prompt → Archive → Resources → Tools** (see `PART-SPEC.md`).
 - Orchestrator and Planner must delegate only to project-internal agents documented in `plans/project-context.md`; external/third-party agents are strictly prohibited.
-- Adding/editing agents or skills: follow the 4-step process in `CONTRIBUTING.md` (create agent file, schema, eval scenarios, register in `plans/project-context.md`).
+- Adding/editing agents or skills: follow the agent-contribution process in `CONTRIBUTING.md` (create agent file, schema, eval scenarios, register in `plans/project-context.md`).
 - Tool and agent permission grants are in `governance/` (`agent-grants.json`, `tool-grants.json`, `runtime-policy.json`, `rename-allowlist.json`). Update these when changing an agent's tool profile.
 
 ## Agent System

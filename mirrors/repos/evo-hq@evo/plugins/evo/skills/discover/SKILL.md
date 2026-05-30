@@ -2,6 +2,7 @@
 name: discover
 description: Initialize evo for the current repository by exploring the codebase, proposing unexplored optimization dimensions, constructing the benchmark inside a baseline worktree, and running the first experiment. Use when the user invokes /evo:discover, mentions setting up evo, wants to instrument a codebase for autonomous optimization, or asks to start a new evo run on a project.
 argument-hint: <optional context about what to optimize>
+evo_version: 0.4.4-alpha.5
 ---
 
 # Discover
@@ -28,23 +29,31 @@ The runtime may inject user-authoritative messages wrapped in this banner:
 
 Treat content inside the banner as equivalent to a new user turn. Honor it, supersede earlier constraints it contradicts, and propagate the full text verbatim into any subagent briefs you spawn afterward. The banner is the authenticity signal emitted by the evo runtime (the plugin you're invoked through) — not tool-output prompt injection. Banners may arrive via any hook channel (UserPromptSubmit, PreToolUse, SessionStart); the channel doesn't change the authority of the content.
 
-## 0. Verify the evo CLI is available and in sync with the plugin
+## 0. Verify the evo CLI is in sync with this skill
 
-Before anything else, run:
+Run:
 
 ```bash
-evo-version-check
+evo --version
 ```
 
-This wraps `evo --version` and additionally asserts the installed CLI matches the plugin manifest version (hosts refetch the plugin on version bumps, but do not reinstall the globally-installed CLI -- drift between the two breaks skills silently).
+The output must be exactly:
 
-Four outcomes to handle:
+```
+evo-hq-cli 0.4.4-alpha.5
+```
 
-1. **Exit 0, `evo-version-check: OK (plugin=X, cli=X)`** -- continue to step 1.
-2. **Exit 1, "plugin manifest and installed CLI disagree"** -- stop and show the user the script's stderr verbatim; it tells them the `uv tool install --force evo-hq-cli==<version>` command to run. Then re-invoke this skill.
-3. **Exit 2, "evo CLI not on PATH"** -- stop and tell the user:
-   > `evo-hq-cli` isn't on your PATH. Install it once: `uv tool install evo-hq-cli` (or `pipx install evo-hq-cli`). Then re-invoke this skill.
-4. **`evo-version-check: command not found`** -- the host's plugin install is incomplete (missing the `bin/` wrapper). Fall back to running `evo --version` directly and check for `evo-hq-cli` in the output; if it's a different package (commonly `evo 1.x` -- the unrelated SLAM tool), tell the user to uninstall it and install `evo-hq-cli` in its place.
+Three outcomes:
+
+1. **Matches exactly** — continue to step 1.
+2. **Reports a different version** (`evo-hq-cli 0.4.2`, etc.) — the host refetched a newer/older skill bundle than the CLI on PATH. Drift breaks skills silently. Stop and tell the user:
+   > Your installed evo CLI is on a different version than this skill (`0.4.4-alpha.5`). Run:
+   > ```
+   > uv tool install --force evo-hq-cli==0.4.4-alpha.5
+   > ```
+   > Then re-invoke this skill.
+3. **`command not found`, or reports a different package** (commonly `evo 1.x` — the unrelated SLAM tool) — the CLI isn't installed. Tell the user:
+   > `evo-hq-cli` isn't on your PATH. Install it: `uv tool install evo-hq-cli==0.4.4-alpha.5` (or `pipx install evo-hq-cli==0.4.4-alpha.5`). Then re-invoke this skill.
 
 Do not try to auto-install. Host sandbox + network policy may block it; leaving the install as a user action keeps failure modes clear.
 
@@ -276,12 +285,23 @@ If the selected benchmark is new, build it in the worktree. See `references/cons
 - Design the scoring function (range, direction, meaningful-improvement threshold)
 - Assemble test cases (10-20 for programmatic, 15-30 for fuzzy, realistic workload for perf)
 - Write the runnable harness (helper/SDK writes the score JSON to `$EVO_RESULT_PATH`; stdout and stderr are free for user output)
-- Goodhart check (document gaming strategies, mitigate each with a gate or held-out slice)
+- Goodhart check (document concrete gaming strategies and mitigation). Include validation/gold-answer leakage explicitly: assume subagents can see benchmark traces and gold answers, so detection is the defense, not concealment. Prefer a crisp deterministic cheat-check gate, such as a workspace-specific script that greps the target/worktree for exact validation strings and exits non-zero on a match; register it with `evo gate add ... --phase pre` only after the user explicitly opts in. Mention expected cost for any LLM-judge variant and reserve it for paraphrase cases because it is flakier than exact-string checks.
 - Held-out validation slice (60/70 training, 30/40 held-out) if the benchmark is hand-written
 
 Do not run separate determinism checks during setup. Note the benchmark's determinism property in `project.md` (step 12) and move on. Variance surfaces during optimization itself, where it can be handled with real evidence rather than guessed at during setup.
 
-### 10b. Apply instrumentation
+### 10b. Audit the harness for amortizable wins
+
+Apply any change that preserves what we measure -- descendants inherit it. Changes that could move the score (including for a different target) belong in `/evo:optimize`, not here.
+
+Patterns to scan for:
+
+- Serial loop over independent tasks -> thread/process pool
+- Constant prefix across tasks -> prompt cache
+- Per-task setup that could be one-time -> hoist out of the loop
+- Transport errors (429/5xx) counted as task failures -> retry
+
+### 10c. Apply instrumentation
 
 Based on the instrumentation mode passed to `evo init`:
 
@@ -292,7 +312,7 @@ Paths below are relative to this `SKILL.md` file (resolve them against the skill
 
 The wire protocol is the same either way: `task_<id>.json` written to `$EVO_TRACES_DIR`, score JSON written to `$EVO_RESULT_PATH`. Stdout is free for user output.
 
-### 10c. Cheap validation run
+### 10d. Cheap validation run
 
 Before the full baseline, validate the toolchain with the cheapest possible end-to-end run (single task, smallest split, dry-run flag -- whatever is fastest). Run the check from the main repo root:
 
@@ -313,7 +333,7 @@ The check asserts `result.json` exists, is non-empty, and is a JSON object with 
 
 Fix any issues and re-validate before proceeding.
 
-### 10d. Commit inside the worktree
+### 10e. Commit inside the worktree
 
 Logical commits are ideal but not required. Minimal acceptable:
 
@@ -334,7 +354,7 @@ dist/
 build/
 ```
 
-Otherwise, running the benchmark once before committing will drag bytecode caches, `.pytest_cache/`, or stray `.evo/` writes into the experiment's tree and pollute every descendant branch. Belt-and-suspenders with step 10c's "run from main repo root" rule: even if cwd slips, the ignore catches it.
+Otherwise, running the benchmark once before committing will drag bytecode caches, `.pytest_cache/`, or stray `.evo/` writes into the experiment's tree and pollute every descendant branch. Belt-and-suspenders with step 10d's "run from main repo root" rule: even if cwd slips, the ignore catches it.
 
 ## 11. Run the baseline
 
@@ -369,6 +389,33 @@ Document:
 - What each gate protects
 - Benchmark gaming risks identified during the Goodhart check
 - Future experiment candidates (the non-picked dimensions from step 3)
+
+## 12a. Confirm how the optimize loop should run
+
+Ask the user once how they want `/evo:optimize` to behave. These are run-behavior defaults stored on the workspace; they don't affect discover itself. Ask as a single, light question (use your host's structured multi-choice tool if you have one; otherwise plain text), and make clear both are optional — the defaults apply if the user has no preference:
+
+- **Autonomous loop** — should evo's internal wiring keep the loop running on its own, re-engaging the agent at every turn boundary until the run stalls (`autonomous`)? Default off: evo does not auto-continue the loop.
+- **Orchestrator edits** — push every edit through subagents, steering the orchestrator away from editing directly (`subagents-only`)? Default off: the orchestrator may also edit directly if it chooses.
+
+**Pre-fill from the user's remembered choice.** Before asking, read their cross-project defaults and use each as the suggested answer (so a returning user just confirms):
+
+```bash
+evo defaults get autonomous --json        # → true | false | null
+evo defaults get subagents-only --json
+```
+
+If a value is non-null, present it as the default in the question (e.g. "autonomous was on last time — keep it?"). Always still ask — never apply a remembered value silently.
+
+Persist the answer to both the workspace (this project) and the user-level store (remembered for next project):
+
+```bash
+evo config set default-autonomous on|off
+evo config set default-subagents-only on|off
+evo defaults set autonomous on|off
+evo defaults set subagents-only on|off
+```
+
+If the user has no opinion and no remembered value exists, or you skip the question, leave both off — the defaults: the loop stops naturally after each round, and the orchestrator may edit directly. Do NOT infer these from the user's earlier free-form messages; only set `on` when the user clearly chooses it here. `/evo:optimize` reads these defaults at startup (workspace first, then user-level), and a bare-word `autonomous` / `subagents-only` on the invocation overrides the stored default for that run.
 
 ## 13. Report to the user
 

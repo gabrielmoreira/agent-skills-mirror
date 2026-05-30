@@ -1,8 +1,10 @@
 ---
 description: "Knowledge consolidation — transform working memory into permanent architecture"
 applyTo: "**/*meditat*,**/*consolidat*"
-lastReviewed: 2026-05-13
+lastReviewed: 2026-05-29
 ---
+
+<!-- intentional divergence from Supervisor: Edition omits the "Quarterly Retraining Integration" section — quarterly retraining ADRs are a Supervisor-curator activity, not heir work. Heirs run per-session meditation; quarterly ADRs live in Supervisor's docs/adrs/. Audited 2026-05-29. -->
 
 # Meditation Protocol
 
@@ -43,7 +45,7 @@ Scan the session:
 
 For skills and instructions:
 
-- Use proper frontmatter (type, lifecycle, description, applyTo)
+- Use proper frontmatter (description, applyTo for instructions; name + description for skills; `lastReviewed` always)
 - Include concrete examples, not just abstractions
 - Add tables with real data (thresholds, trade-offs)
 - Avoid the "capabilities list" anti-pattern

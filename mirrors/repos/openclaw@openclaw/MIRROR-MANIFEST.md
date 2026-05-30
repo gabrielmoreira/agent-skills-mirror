@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 220 file(s) materialized.
+Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 222 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 220 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 220 |
+| Files         | 222 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -275,10 +275,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 214 | ✓ | [`src/plugins/CLAUDE.md`](src/plugins/CLAUDE.md) |
 | 215 | ✓ | [`src/tui/AGENTS.md`](src/tui/AGENTS.md) |
 | 216 | ✓ | [`src/tui/CLAUDE.md`](src/tui/CLAUDE.md) |
-| 217 | ✓ | [`test/helpers/AGENTS.md`](test/helpers/AGENTS.md) |
-| 218 | ✓ | [`test/helpers/CLAUDE.md`](test/helpers/CLAUDE.md) |
-| 219 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
-| 220 | ✓ | [`ui/CLAUDE.md`](ui/CLAUDE.md) |
+| 217 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 218 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
+| 219 | ✓ | [`test/helpers/AGENTS.md`](test/helpers/AGENTS.md) |
+| 220 | ✓ | [`test/helpers/CLAUDE.md`](test/helpers/CLAUDE.md) |
+| 221 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
+| 222 | ✓ | [`ui/CLAUDE.md`](ui/CLAUDE.md) |
 
 ---
 

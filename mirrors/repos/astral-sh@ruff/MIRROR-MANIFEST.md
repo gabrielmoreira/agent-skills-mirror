@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `astral-sh/ruff` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `astral-sh/ruff` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `astral-sh/ruff` — 26 default patterns, 0 followed patterns, 7 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,8 +64,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.agents/skills/adding-ty-diagnostics/SKILL.md`](.agents/skills/adding-ty-diagnostics/SKILL.md) |
 | 4 | ✓ | [`.agents/skills/minimizing-ty-ecosystem-changes/SKILL.md`](.agents/skills/minimizing-ty-ecosystem-changes/SKILL.md) |
 | 5 | ✓ | [`.agents/skills/summarise-ecosystem-results/SKILL.md`](.agents/skills/summarise-ecosystem-results/SKILL.md) |
-| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 6 | ✓ | [`.agents/skills/working-on-ty/SKILL.md`](.agents/skills/working-on-ty/SKILL.md) |
+| 7 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

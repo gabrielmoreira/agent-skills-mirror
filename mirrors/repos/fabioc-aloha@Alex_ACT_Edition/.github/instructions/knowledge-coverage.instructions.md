@@ -1,10 +1,12 @@
 ---
 description: "Knowledge coverage taxonomy and visible uncertainty indicators — assess brain coverage per domain, display confidence badges"
 applyTo: "**"
-lastReviewed: 2026-05-18
+lastReviewed: 2026-05-29
 ---
 
 # Knowledge Coverage
+
+**Always-on rationale**: coverage taxonomy gates the language calibration of every response. Classifying a topic as High / Medium / Low / Unknown before responding is a per-turn discipline, not a domain check.
 
 Assess coverage depth before responding; calibrate language to match.
 

@@ -180,6 +180,7 @@ Ask method unless specified in EXTEND.md or CLI:
 | Title | Ask, or press Enter to auto-generate from content |
 | Summary | Frontmatter `description` → `summary` → ask or auto-generate |
 | Author | CLI `--author` → frontmatter `author` → EXTEND.md `default_author` |
+| Source URL | CLI `--source-url` → frontmatter `sourceUrl`/`contentSourceUrl`/`content_source_url` |
 
 Auto-generation: title = first H1/H2 or first sentence; summary = first paragraph, truncated to 120 chars.
 
@@ -194,7 +195,7 @@ Auto-generation: title = first H1/H2 or first sentence; summary = first paragrap
 **API method** (accepts `.md` or `.html`):
 
 ```bash
-${BUN_X} {baseDir}/scripts/wechat-api.ts <file> --theme <theme> [--color <color>] [--title <title>] [--summary <summary>] [--author <author>] [--cover <cover_path>] [--no-cite]
+${BUN_X} {baseDir}/scripts/wechat-api.ts <file> --theme <theme> [--color <color>] [--title <title>] [--summary <summary>] [--author <author>] [--cover <cover_path>] [--source-url <url>] [--no-cite]
 ```
 
 Always pass `--theme` even if it's `default`. Only pass `--color` when explicitly set by the user or EXTEND.md.
@@ -212,6 +213,7 @@ Any `--remote-*` flag implies `--remote`. CLI values override account-level then
 - `article_type`: `news` (default) or `newspic`
 - For `news`, include `thumb_media_id` (cover required)
 - Always include `need_open_comment` (default `1`) and `only_fans_can_comment` (default `0`) in the request body, even if the CLI doesn't expose them
+- For `news`, optionally include `content_source_url` (original article URL, shown as "阅读原文" link, max 1KB). Provide via `--source-url` CLI flag or frontmatter `sourceUrl`/`contentSourceUrl`/`content_source_url`
 
 **Browser method** (accepts `--markdown` or `--html`):
 

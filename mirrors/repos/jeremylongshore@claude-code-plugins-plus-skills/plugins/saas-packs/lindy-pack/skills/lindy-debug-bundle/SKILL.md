@@ -148,7 +148,7 @@ Compile the following for a support ticket to support@lindy.ai:
 
 **Account**: [your email]
 **Agent Name**: [agent name]
-**Agent URL**: https://app.lindy.ai/agents/[agent-id]
+**Agent URL**: agents/[agent-id]
 **Issue Start**: [date/time UTC]
 **Frequency**: [every time / intermittent / once]
 
@@ -203,7 +203,7 @@ Agent not working?
 
 ## Resources
 
-- [Lindy Community](https://community.lindy.ai)
+- Lindy Community
 - [Lindy Documentation](https://docs.lindy.ai)
 - [Lindy Status](https://status.lindy.ai)
 

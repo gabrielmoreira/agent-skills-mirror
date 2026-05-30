@@ -142,7 +142,7 @@ default_aspect_ratio: '16:9'
 default_image_size: 2K
 default_image_api_dialect: ratio-metadata
 default_model:
-  google: gemini-3-pro-image-preview
+  google: gemini-3-pro-image
   openai: gpt-image-2
   zai: glm-image
   azure: image-prod
@@ -174,7 +174,7 @@ batch:
   assert.equal(config.default_aspect_ratio, "16:9");
   assert.equal(config.default_image_size, "2K");
   assert.equal(config.default_image_api_dialect, "ratio-metadata");
-  assert.equal(config.default_model?.google, "gemini-3-pro-image-preview");
+  assert.equal(config.default_model?.google, "gemini-3-pro-image");
   assert.equal(config.default_model?.openai, "gpt-image-2");
   assert.equal(config.default_model?.zai, "glm-image");
   assert.equal(config.default_model?.azure, "image-prod");

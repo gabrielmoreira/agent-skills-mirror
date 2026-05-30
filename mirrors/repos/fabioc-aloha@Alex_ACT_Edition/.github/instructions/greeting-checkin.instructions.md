@@ -1,7 +1,7 @@
 ---
-description: "Greeting-triggered check-in — when the user opens the session with a greeting, run the Edition + AI-Memory check before responding"
+description: "Greeting-triggered check-in — when the user opens the session with a greeting, run the Edition + shared memory bus check before responding"
 applyTo: "**/*checkin*,**/*greeting*,**/*welcome*,**/*hello*,**/*hey*"
-lastReviewed: 2026-05-26
+lastReviewed: 2026-05-29
 ---
 
 # Greeting Check-in

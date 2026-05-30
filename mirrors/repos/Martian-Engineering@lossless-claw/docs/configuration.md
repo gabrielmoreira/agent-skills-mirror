@@ -232,7 +232,8 @@ Automatic compaction is threshold-only:
 - `afterTurn()` evaluates `contextThreshold` against the active token budget
 - below threshold, no automatic compaction runs and no leaf debt is recorded
 - at or above threshold, inline mode runs a threshold full sweep immediately
-- deferred mode records one coalesced `"threshold"` maintenance row and drains it in the background, `maintain()`, or pre-assembly
+- deferred mode records one coalesced `"threshold"` maintenance row and normally drains it in the background or host-approved `maintain()`
+- pre-assembly drain is reserved as an emergency safeguard when the live prompt is already over the active token budget
 
 Lossless still records prompt-cache telemetry for status and diagnostics, but cache hotness no longer delays threshold debt. Legacy `cacheAwareCompaction.*` and `dynamicLeafChunkTokens.*` settings remain accepted so existing OpenClaw config continues to load, but they do not change automatic compaction behavior.
 
@@ -318,7 +319,8 @@ Lossless-claw now defaults `proactiveThresholdCompactionMode` to `deferred`.
 - deferred mode records a single coalesced maintenance debt row per conversation
 - new deferred compaction debt is only created for `contextThreshold` pressure and uses reason `"threshold"`
 - `maintain()` consumes threshold debt when the host explicitly opts in to deferred execution
-- `assemble()` consumes pending threshold debt before building the next prompt
+- `assemble()` leaves pending threshold debt for after-turn background drain or host-approved `maintain()` while the live prompt is still within budget
+- `assemble()` only consumes pending threshold debt synchronously as an emergency safeguard when the live prompt estimate is already over the active token budget
 - old non-threshold debt from earlier builds is revalidated; if the conversation is no longer over threshold, it is cleared as a no-op
 - `/lcm status` / `/lossless status` shows the current maintenance state, including pending/running/last-failure details
 - status output also surfaces the latest API/cache telemetry as diagnostics, not as a deferral gate

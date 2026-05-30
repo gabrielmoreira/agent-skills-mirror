@@ -19,8 +19,14 @@ For the complete and always up-to-date list of all style tokens, see the tables 
 
 | Token name            | UI area themed              |
 | --------------------- | --------------------------- |
-| `fabBackground`       | FAB button background color |
-| `containerBackground` | Chat container background   |
+| `fabBackground`            | FAB button background color                 |
+| `fabForegroundColor`       | FAB button text color                       |
+| `fabFontSize`              | FAB button text font size                   |
+| `fabBorderRadius`          | FAB button border radius                    |
+| `floatingButtonImage`      | FAB button custom icon image URL (img tag)  |
+| `floatingButtonImageAlt`   | FAB button custom icon image alt text       |
+| `floatingButtonLabel`      | FAB button label text                       |
+| `containerBackground`      | Chat container background                   |
 | `headerBackground`    | Header background           |
 | `containerWidth`      | Chat container width        |
 | `chatBorderRadius`    | Chat border radius          |
@@ -30,7 +36,9 @@ For the complete and always up-to-date list of all style tokens, see the tables 
 
 | Token name                      | UI area themed                     |
 | ------------------------------- | ---------------------------------- |
-| `headerBlockBackground`         | Header block background            |
+| `headerBlockBackground`         | Header block background                    |
+| `headerImageUrl`                | Header custom icon image URL (img tag)     |
+| `headerImageAlt`                | Header custom icon image alt text          |
 | `headerBlockBorderBottomWidth`  | Header border bottom width         |
 | `headerBlockBorderBottomStyle`  | Header border bottom style         |
 | `headerBlockBorderBottomColor`  | Header border bottom color         |
@@ -80,6 +88,8 @@ For the complete and always up-to-date list of all style tokens, see the tables 
 | Token name                       | UI area themed                                          |
 | -------------------------------- | ------------------------------------------------------- |
 | `messageBlockBorderRadius`       | Message block border radius                             |
+| `agentAvatarUrl`                 | Agent avatar custom image URL (img tag)                 |
+| `agentAvatarAltText`             | Agent avatar custom image alt text                      |
 | `avatarDisplay`                  | Avatar display property (e.g. `block`, `none`)          |
 | `hideMessageActions`             | Message actions display (e.g. `block`, `none` to hide)  |
 | `hideCopyAction`                 | Copy action button display (e.g. `inline-flex`, `none`) |
@@ -146,7 +156,7 @@ Use `renderingConfig.showAvatar` to control whether avatars are rendered in mess
 | `messageInputScrollbarColor`               | Message input scrollbar color                  |
 | `messageInputActionsWidth`                 | Message input actions width                    |
 | `messageInputActionsPaddingRight`          | Message input actions right padding            |
-| `messageInputFooterPlaceholderText`        | Message input placeholder text color           |
+| `messageInputFooterPlaceholderTextColor`   | Message input placeholder text color           |
 | `messageInputPlaceholderFontWeight`        | Placeholder font weight                        |
 | `messageInputErrorTextColor`               | Message input error text color                 |
 | `messageInputActionsGap`                   | Message input actions gap                      |
@@ -170,13 +180,15 @@ Use `renderingConfig.showAvatar` to control whether avatars are rendered in mess
 | Token name             | UI area themed               |
 | ---------------------- | ---------------------------- |
 | `errorBlockBackground` | Error block background color |
+| `errorBlockIconColor`  | Error block icon color       |
 
 ## Token Categories
 
 Style tokens are organized by UI area:
 
-- **Header** : background, text color, hover, active, focus, border, font family
-- **Messages** : colors, padding, margins, border radius, fonts, body width
+- **Container/FAB** : background, border radius, custom icon image (img tag), alt text
+- **Header** : background, text color, hover, active, focus, border, font family, custom icon image (img tag), alt text
+- **Messages** : colors, padding, margins, border radius, fonts, body width, custom agent avatar image (img tag), alt text
 - **Inbound messages** : background, text color, width, alignment, hover
 - **Outbound messages** : background, text color, width, alignment, margin
 - **Input** : colors, borders, fonts, padding, buttons, scrollbar, textarea, actions

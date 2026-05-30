@@ -107,6 +107,7 @@ See [Configuration](configuration.md) for full env-var precedence and CI/CD setu
 | `create <title> --json` | JSON envelope; with `--use` includes `active_notebook_id` | `notebooklm create "X" --use --json` |
 | `delete -n <id>` | Delete notebook (uses current notebook if `-n` omitted) | `notebooklm delete -n abc123` |
 | `delete -n <id> -y` | Skip confirmation | `notebooklm delete -n abc123 -y` |
+| `delete -n <id> --json` | Emit `{notebook_id, success}` envelope (plus `context_cleared: true` when deleting the active notebook); requires `-y` (refuses to prompt in JSON mode) | `notebooklm delete -n abc123 -y --json` |
 | `rename <title>` | Rename current notebook | `notebooklm rename "New Title"` |
 | `summary` | Get AI summary | `notebooklm summary` |
 | `summary --topics` | Include suggested topics | `notebooklm summary --topics` |
@@ -146,11 +147,11 @@ Supported source types: URLs, YouTube videos, files (PDF, text, Markdown, Word, 
 | Command | Arguments | Options | Example |
 |---------|-----------|---------|---------|
 | `list` | - | `--json`, `--limit N`, `--no-truncate` | `source list --limit 20 --no-truncate` |
-| `add <content>` | URL/file/text (use `-` for stdin) | `--title`, `--type`, `--timeout`, `--follow-symlinks`, `--json` (file-source `--mime-type` is deprecated — see [detailed section](#source-add---mime-type-deprecation)) | `source add "https://..." --timeout 90` |
+| `add <content>` | URL/file/text (use `-` for stdin) | `--title`, `--type`, `--timeout`, `--follow-symlinks`, `--json` (file-source `--mime-type` overrides extension inference — see [detailed section](#source-add---mime-type-file-sources)) | `source add "https://..." --timeout 90` |
 | `add-drive <id> <title>` | Drive file ID, title | `--mime-type [google-doc\|google-slides\|google-sheets\|pdf]`, `--json` | `source add-drive abc123 "Doc" --mime-type google-slides` |
 | `add-research [query]` | Search query (or `--prompt-file -` for stdin) | `--mode [fast\|deep]`, `--from [web\|drive]`, `--import-all`, `--cited-only`, `--no-wait`, `--timeout`, `--prompt-file PATH` | `source add-research "AI" --mode deep --no-wait` |
 | `get <id>` | Source ID | `--json` | `source get src123` |
-| `fulltext <id>` | Source ID | `--json`, `-o FILE`, `-f [text\|markdown]` | `source fulltext src123 -f markdown -o out.md` (`-f markdown` requires the `markdown` extra: `pip install "notebooklm-py[markdown]"` — full extras matrix: [docs/installation.md#optional-extras-matrix](installation.md#optional-extras-matrix)) |
+| `fulltext <id>` | Source ID | `--json`, `-o FILE`, `--force`, `--no-clobber`, `-f [text\|markdown]` | `source fulltext src123 -f markdown -o out.md` (`-f markdown` requires the `markdown` extra: `pip install "notebooklm-py[markdown]"` — full extras matrix: [docs/installation.md#optional-extras-matrix](installation.md#optional-extras-matrix)) |
 | `guide <id>` | Source ID | `--json` | `source guide src123` |
 | `stale <id>` | Source ID | `--exit-on-stale`, `--json` | `source stale src123` (exit 0 on success; pass `--exit-on-stale` for the back-compat inverted predicate — see [exit codes](cli-exit-codes.md)) |
 | `wait <id>` | Source ID | `--timeout`, `--interval`, `--json` | `source wait src123 --timeout 300 --interval 5` |
@@ -165,6 +166,8 @@ All `source` subcommands also accept `-n/--notebook ID` (resolves via flag > `NO
 `source delete <id>` accepts only full source IDs or unique partial-ID prefixes. To delete by exact source title, use `source delete-by-title "<title>"`.
 
 `source clean` automatically removes duplicate, error, and access-blocked sources; combine with `--dry-run` to preview the candidate set first.
+
+`source fulltext -o FILE` auto-renames an existing output path by default (`FILE` -> `FILE (2)`, etc.) instead of overwriting it. Pass `--force` to overwrite intentionally, or `--no-clobber` to fail if the path exists.
 
 `source stale` reports whether a URL/Drive source needs a refresh. By default it follows the standard CLI exit convention (`0` on success, `1` on error); branch on the JSON `stale`/`fresh` fields (or stdout text) for the freshness verdict. Pass `--exit-on-stale` to opt into the back-compat inverted predicate (`0` = stale, `1` = fresh) for shell idioms like `if notebooklm source stale --exit-on-stale ID; then refresh; fi`.
 
@@ -718,31 +721,29 @@ notebooklm source add ./link-to-doc.pdf --type file --follow-symlinks
 
 The same gate applies on the explicit `--type file` path (no auto-detect), so typing the source type as `file` does not bypass the check.
 
-### Source: `add` `--mime-type` deprecation
+### Source: `add` `--mime-type` (file sources)
 
 The `--mime-type` flag on `notebooklm source add` (file-source path) is a
-**no-op** and is deprecated. The upload pipeline never consumed it; the MIME
-type is derived server-side from the filename extension. Using the flag with
-a file source prints a deprecation notice to stderr and is scheduled for
-removal in v0.6.0.
+**supported** parameter. It overrides the filename-extension inference and
+sets the content-type header used for the resumable upload handshake. Omit it
+to let the MIME type be inferred from the file extension.
 
 ```bash
-# Deprecated — stderr: "--mime-type is unused for file sources; remove the flag before v0.6.0"
-notebooklm source add ./report.pdf --type file --mime-type application/pdf
-
-# Migrated — drop the flag
+# Inferred from the extension (typical case — no flag needed)
 notebooklm source add ./report.pdf --type file
+
+# Override inference (e.g. an extensionless export, or a misnamed file)
+notebooklm source add ./report.bin --type file --mime-type application/pdf
 ```
 
-To suppress the stderr notice (useful for CI logs where the message would
-repeat across pipeline invocations), set `NOTEBOOKLM_QUIET_DEPRECATIONS=1`
-(exactly `1` — other values like `0` or `false` keep the notice on). See
-[configuration.md#notebooklm_quiet_deprecations](configuration.md#notebooklm_quiet_deprecations).
-
 > **Note:** The same `--mime-type` flag on `notebooklm source add-drive`
-> (Google Drive sources) is **live and functional** — it selects between
-> `google-doc` / `google-slides` / `google-sheets` / `pdf` Drive document
-> types. The deprecation applies only to the file-source path.
+> (Google Drive sources) selects between `google-doc` / `google-slides` /
+> `google-sheets` / `pdf` Drive document types.
+>
+> Historical: an earlier release treated the file-source `--mime-type` as a
+> deprecated no-op. It was re-wired to set the upload content-type and is no
+> longer deprecated; the `NOTEBOOKLM_QUIET_DEPRECATIONS` notice it used to
+> emit is gone.
 
 ### Source: `add-research`
 
@@ -1317,7 +1318,7 @@ Codex does not consume the `skill` subcommand. In this repository it reads the r
 
 ### Source: `add-drive`
 
-Add a Google Drive document, slide deck, sheet, or PDF as a source. The Drive `--mime-type` is **live and functional** on this subcommand (unlike the deprecated file-source `--mime-type` documented above) — it tells the backend which Drive document type to import.
+Add a Google Drive document, slide deck, sheet, or PDF as a source. The Drive `--mime-type` selects which Drive document type to import (Google Doc / Slides / Sheets / PDF). This is distinct from the file-source `--mime-type` documented above, which sets the resumable-upload content-type for a locally-uploaded file.
 
 > **Python equivalent:** [`client.sources.add_drive(nb_id, file_id, title, mime_type=...)`](python-api.md#sourcesapi-clientsources).
 

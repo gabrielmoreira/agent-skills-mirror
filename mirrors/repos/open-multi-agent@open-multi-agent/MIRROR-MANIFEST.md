@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 11 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 0 followe
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 1 |
+| Followed pats | 11 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,17 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 0 followe
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `README.md`
+- `.github/CONTRIBUTING.md`
+- `docs/tool-configuration.md`
+- `docs/context-management.md`
+- `docs/providers.md`
+- `docs/shared-memory.md`
+- `docs/observability.md`
+- `docs/cli.md`
+- `examples/README.md`
+- `examples/production/README.md`
+- `examples/integrations/README.md`
 
 ## File Index
 
@@ -60,6 +70,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`examples/fixtures/paper-replication-triage/README.md`](examples/fixtures/paper-replication-triage/README.md) |
+| 3 | ✓ | [`examples/integrations/express-customer-support/README.md`](examples/integrations/express-customer-support/README.md) |
+| 4 | ✓ | [`examples/integrations/with-vercel-ai-sdk/README.md`](examples/integrations/with-vercel-ai-sdk/README.md) |
+| 5 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
+| 6 | → | [`docs/cli.md`](docs/cli.md) |
+| 7 | → | [`docs/context-management.md`](docs/context-management.md) |
+| 8 | → | [`docs/observability.md`](docs/observability.md) |
+| 9 | → | [`docs/providers.md`](docs/providers.md) |
+| 10 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
+| 11 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
+| 12 | → | [`examples/integrations/README.md`](examples/integrations/README.md) |
+| 13 | → | [`examples/production/README.md`](examples/production/README.md) |
+| 14 | → | [`examples/README.md`](examples/README.md) |
+| 15 | → | [`README.md`](README.md) |
 
 ---
 

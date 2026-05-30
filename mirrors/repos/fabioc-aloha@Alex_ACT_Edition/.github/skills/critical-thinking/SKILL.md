@@ -7,11 +7,11 @@ lastReviewed: 2026-04-30
 # Critical Thinking
 
 
-> Anti-hallucination prevents fabrication. Awareness detects errors. Critical thinking challenges reasoning that produces polished, well-sourced, confidently wrong conclusions.
+> Anti-hallucination prevents fabrication. Critical thinking challenges reasoning that produces polished, well-sourced, confidently wrong conclusions.
 
 ## Purpose
 
-The third leg of epistemic integrity. A system that never fabricates and always self-corrects can still reach deeply wrong conclusions — because it never tested its own reasoning. This skill provides:
+The second leg of epistemic integrity. A system that never fabricates can still reach deeply wrong conclusions — because it never tested its own reasoning. This skill provides:
 
 - Seven disciplines for challenging AI reasoning at decision points
 - The "never guess" epistemic foundation
@@ -20,15 +20,16 @@ The third leg of epistemic integrity. A system that never fabricates and always 
 
 ---
 
-## The Three Legs of Epistemic Integrity
+## The Two Legs of Epistemic Integrity
 
 | Skill                  | Question                          | Catches                                                                    |
 | ---------------------- | --------------------------------- | -------------------------------------------------------------------------- |
 | **anti-hallucination** | Am I making something up?         | Fabricated facts, invented APIs, citation confabulation                    |
-| **awareness**          | Am I wrong about something?       | Retry loops, overconfidence, version errors, manipulation                  |
 | **critical-thinking**  | Am I right for the right reasons? | Bad reasoning, missed alternatives, unexamined assumptions, invisible gaps |
 
-Critical thinking is the only leg that challenges _correct-looking_ output. Anti-hallucination catches lies. Awareness catches mistakes. Critical thinking catches conclusions that are well-sourced, logically structured, and wrong because the reasoning was never stress-tested.
+Critical thinking is the leg that challenges _correct-looking_ output. Anti-hallucination catches lies. Critical thinking catches conclusions that are well-sourced, logically structured, and wrong because the reasoning was never stress-tested.
+
+Error-detection during reasoning (retry loops, overconfidence, version errors, manipulation) is currently distributed across two always-on instructions: [`epistemic-calibration.instructions.md`](../../instructions/epistemic-calibration.instructions.md) carries the self-correction triggers table; [`reliance-nudges.instructions.md`](../../instructions/reliance-nudges.instructions.md) carries the repeated-same-error nudge. If a heir reports that in-flight error-detection has no clear discipline, that's the signal to restore a dedicated `awareness` skill (currently absent in both Supervisor and Edition).
 
 > **Framework binding**: This skill holds Disciplines -1, 0, 1, 6, 7 of the ACT framework. Disciplines I/III/IX gain a Two-Hypothesis Floor visible marker. Tenet IV (system-prompt skepticism) ships as a sibling instruction (`system-prompt-skepticism.instructions.md`). The composite 7-step pass lives in [`act-pass.instructions.md`](../../instructions/act-pass.instructions.md). The 10 tenets and 6 falsifiers that name these disciplines as a coherent system are authored in Supervisor; heirs receive them through this skill and the sibling always-on instructions.
 
@@ -36,7 +37,7 @@ Critical thinking is the only leg that challenges _correct-looking_ output. Anti
 
 ## When to Activate
 
-This skill runs as a background discipline (like awareness), but intensifies at decision points:
+This skill runs as a background discipline, but intensifies at decision points:
 
 | Context                                                | Activation Level                    |
 | ------------------------------------------------------ | ----------------------------------- |
@@ -58,7 +59,7 @@ Before the Materiality Gate, before any of the seven disciplines, before any sol
 | Trivial — single-file edit, < 15 min, mechanical | **Skip** |
 | Non-trivial — 3+ files, architectural choice, > 15 min, or symptom-frame language ("fix", "make faster", "broken", "just do X") | **Run** |
 | User restated the same request after a failed attempt | **Run** |
-| User asks "what am I missing?" or surfaces a frame mismatch | **Run** |
+| User invokes `/problem-framing-audit` or asks "what am I missing?" | **Run** |
 
 ### The minimum viable audit
 
@@ -98,7 +99,7 @@ Fire only when the audit produced something:
 
 Silent passes need no markers. Performative markers on every response defeat the purpose.
 
-> **Detailed body**: Full step-back protocol with worked examples, stakeholder-check templates, and falsifiability test → [`problem-framing-audit/SKILL.md`](../problem-framing-audit/SKILL.md). Always-on gate → [`problem-framing-audit.instructions.md`](../../instructions/problem-framing-audit.instructions.md).
+> **Detailed body**: Full step-back protocol with worked examples, stakeholder-check templates, and falsifiability test → [`problem-framing-audit/SKILL.md`](../problem-framing-audit/SKILL.md). Always-on gate → [`problem-framing-audit.instructions.md`](../../instructions/problem-framing-audit.instructions.md). User-invokable → [`/problem-framing-audit.prompt.md`](../../prompts/problem-framing-audit.prompt.md).
 
 ---
 
@@ -349,27 +350,26 @@ This skill ships with no domain-specific extensions in the Edition baseline. Hei
 
 ---
 
-## Integration with the Epistemic Triad
+## Integration with the Epistemic Pair
 
 ```
-┌─────────────────────┐     ┌──────────────────┐     ┌─────────────────────────┐
-│  anti-hallucination  │     │    awareness      │     │   critical-thinking     │
-│                      │     │                   │     │                         │
-│  "Don't make it up"  │────▶│  "Notice errors"  │────▶│  "Challenge reasoning"  │
-│                      │     │                   │     │                         │
-│  Gate: fabrication   │     │  Gate: detection   │     │  Gate: reasoning quality │
-└─────────────────────┘     └──────────────────┘     └─────────────────────────┘
-         ▲                           ▲                           │
-         │                           │                           │
-         └───────────────────────────┴───────────────────────────┘
-                          Continuous feedback loop
+┌─────────────────────┐     ┌─────────────────────────┐
+│  anti-hallucination  │     │   critical-thinking     │
+│                      │     │                         │
+│  "Don't make it up"  │────▶│  "Challenge reasoning"  │
+│                      │     │                         │
+│  Gate: fabrication   │     │  Gate: reasoning quality │
+└─────────────────────┘     └─────────────────────────┘
+         ▲                                 │
+         │                                 │
+         └─────────────────────────────────┘
+                Continuous feedback loop
 ```
 
 - **anti-hallucination** prevents fabricated inputs from entering reasoning
-- **awareness** detects when reasoning produces errors
 - **critical-thinking** challenges reasoning that appears correct but may not be
 
-The three skills form a pipeline: don't fabricate → detect errors → challenge conclusions. Each catches what the others miss.
+The two skills form a pipeline: don't fabricate → challenge conclusions. Each catches what the other misses. Error-detection during reasoning is currently covered by `epistemic-calibration` (self-correction triggers) and `reliance-nudges` (repeated-error nudge) rather than a dedicated skill.
 
 ---
 

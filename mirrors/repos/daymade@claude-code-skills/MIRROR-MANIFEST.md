@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `daymade/claude-code-skills` — 26 default patterns, 5 followed patterns, 62 file(s) materialized.
+Mirror of `daymade/claude-code-skills` — 26 default patterns, 6 followed patterns, 63 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 5 followed patte
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 62 |
+| Followed pats | 6 |
+| Files         | 63 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 5 followed patte
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `daymade-skill/skill-creator/references/sanitization_checklist.md`
 - `youtube-downloader/references/internal-sop.md`
 - `references/new-skill-guide.md`
 - `references/promotion-policy.md`
@@ -120,11 +121,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 55 | ✓ | [`video-comparer/SKILL.md`](video-comparer/SKILL.md) |
 | 56 | ✓ | [`windows-remote-desktop-connection-doctor/SKILL.md`](windows-remote-desktop-connection-doctor/SKILL.md) |
 | 57 | ✓ | [`youtube-downloader/SKILL.md`](youtube-downloader/SKILL.md) |
-| 58 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
-| 59 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
-| 60 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
-| 61 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
-| 62 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
+| 58 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
+| 59 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
+| 60 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
+| 61 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
+| 62 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
+| 63 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
 
 ---
 

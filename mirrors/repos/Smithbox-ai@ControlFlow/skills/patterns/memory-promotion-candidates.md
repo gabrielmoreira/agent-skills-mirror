@@ -1,6 +1,6 @@
 # Memory Promotion Candidates
 
-Adapted from free-code-main extractMemories — this is a manual checklist for the agent to run, NOT a background task.
+Provenance: adapted from prior art on memory extraction; no local source in this repo. This is a manual checklist for the agent to run, NOT a background task.
 
 ## Process
 

@@ -56,9 +56,9 @@ Propose a local skill (from `.github/skills/local/`) for inclusion in the Alex A
    `/mall-install <name>`
    ```
 
-   **SKILL.md:** The generalized skill body with proper frontmatter (`type: skill`, `lifecycle: stable`, `inheritance: inheritable`, `name`, `description`, `tier`, `applyTo`, `currency`, `lastReviewed`).
+   **SKILL.md:** The generalized skill body with proper frontmatter (`name`, `description`, `lastReviewed`).
 
-5. **Write the proposal to the feedback channel.** Create a markdown file at `AI-Memory/feedback/alex-act/<YYYY-MM-DD>-mall-proposal-<name>.md` with this structure:
+5. **Write the proposal to the feedback channel.** Create a markdown file at `../Alex_ACT_Memory/feedback/<YYYY-MM-DD>-mall-proposal-<name>.md` with this structure:
 
    ```markdown
    ---

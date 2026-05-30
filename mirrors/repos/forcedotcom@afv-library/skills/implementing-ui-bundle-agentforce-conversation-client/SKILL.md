@@ -1,12 +1,11 @@
 ---
 name: implementing-ui-bundle-agentforce-conversation-client
-description: "MUST activate when the project contains a uiBundles/*/src/ directory and the task involves adding or modifying a chat widget, chatbot, or conversational AI. Use this skill when the user asks to add, embed, integrate, configure, style, or remove an agent, chatbot, chat widget, conversation client, or AI assistant. Covers styling (colors, fonts, spacing, borders), layout (inline vs floating, width, height, dimensions), and props (agentId, agentLabel, headerEnabled, showHeaderIcon, showAvatar, styleTokens). Activate when files under uiBundles/*/src/ import AgentforceConversationClient or when adding any chat or agent functionality to a page. Never create a custom agent, chatbot, or chat widget component."
+description: "Use this skill when the user asks to add, embed, integrate, configure, style, or remove an agent, chatbot, chat widget, conversation client, or AI assistant in a UI Bundle project. Covers styling (colors, fonts, spacing, borders), layout (inline vs floating, width, height, dimensions), and props (agentId, agentLabel, headerEnabled, showHeaderIcon, showAvatar, styleTokens). TRIGGER when: project contains a uiBundles/*/src/ directory and the task involves adding or modifying a chat widget, chatbot, or conversational AI; files under uiBundles/*/src/ import AgentforceConversationClient; user asks to add any chat or agent functionality to a page. DO NOT TRIGGER when: user wants to create a custom agent, chatbot, or chat widget component from scratch; the project has no uiBundles directory."
 metadata:
   author: ACC Components
-  version: "1.0"
+  version: "1.1"
   package: "@salesforce/ui-bundle-template-feature-react-agentforce-conversation-client"
   sdk-package: "@salesforce/agentforce-conversation-client"
-  last-updated: 2025-04-01
 ---
 
 # Managing Agentforce Conversation Client
@@ -17,14 +16,11 @@ metadata:
 
 Before the component will work, the following Salesforce settings must be configured by the user. ALWAYS call out the prequisites after successfully embedding the agent.
 
-**Cookie settings:**
-
-- Setup → My Domain → Disable "Require first party use of Salesforce cookies"
-
 **Trusted domains (required only for local development):**
 
 - Setup → Session Settings → Trusted Domains for Inline Frames → Add your domain
-  - Local development: `localhost:<PORT>` (e.g., `localhost:3000`)
+  - Local development: `localhost:5173` (default Vite dev server port)
+  - **Warning:** Remove this trusted domain entry before deploying to production.
 
 ## Instructions
 
@@ -38,6 +34,8 @@ grep -r "AgentforceConversationClient" --include="*.tsx" --include="*.jsx" --exc
 
 **Important:** Look for React files that import and USE the component (for example, shared shells, route components, or feature pages). Do NOT open files named `AgentforceConversationClient.tsx` or `AgentforceConversationClient.jsx` - those are the component implementation.
 
+**If multiple files found:** Ask the user which component file they are referring to. Do not proceed until clarified.
+
 **If found:** Read the file and check the current `agentId` value.
 
 **Agent ID validation rule (deterministic):**
@@ -48,25 +46,99 @@ grep -r "AgentforceConversationClient" --include="*.tsx" --include="*.jsx" --exc
 **Decision:**
 
 - If `agentId` matches `^0Xx[a-zA-Z0-9]{15}$` and user wants to update other props → Go to Step 4 (update props)
+- If `agentId` matches `^0Xx[a-zA-Z0-9]{15}$` and user asks to "embed" or "add" the chat client → Inform: "The Agentforce Conversation Client is already embedded in `<file>` with agent ID `<agentId>`. Would you like to change the agent or update other props?"
+  - Change agent → Step 2
+  - Update props → Step 4b
 - If `agentId` is missing, empty, or does NOT match `^0Xx[a-zA-Z0-9]{15}$` → Continue to Step 2 (need real ID)
 - If not found → Continue to Step 2 (add new)
 
-### Step 2: Get agent ID
+**If user reports an error:**
 
-If component doesn't exist or has an invalid placeholder value, ask user for their Salesforce agent ID.
+If the user says the component is "not working", "showing an error", or similar — ask them for the specific error message. Then proceed to Step 2 to cross-check the configured agentId against the org.
 
-Treat these as placeholder/invalid values:
+### Step 2: Resolve and Validate Agent ID
 
-- `"0Xx..."`
-- `"Placeholder"`
-- `"YOUR_AGENT_ID"`
-- `"<USER_AGENT_ID_18_CHAR_0Xx...>"`
-- Any value that does not match `^0Xx[a-zA-Z0-9]{15}$`
+#### Prerequisites
 
-Skip this step if:
+1. **Verify sf CLI is available:**
+   ```bash
+   sf --version
+   ```
+   If fails:
+   - Inform: "The Salesforce CLI (`sf`) is not installed. It's needed to query available agents from your org."
+   - Ask: "Would you like me to install it?"
+     - Yes → Install via `npm install -g @salesforce/cli`, then continue.
+     - No → "You can find your agent ID manually in Setup → Agentforce Agents → click the agent name → copy the ID from the URL. Would you like to provide it now, or skip this step?"
+       - User provides ID → validate format (`^0Xx[a-zA-Z0-9]{15}$`), store it, proceed to Step 3.
+       - Skip → proceed to Step 4 with placeholder `<YOUR_AGENT_ID>`.
 
-- Component exists with a real agent ID
-- User only wants to update styling or dimensions
+2. **Verify org connectivity:**
+   ```bash
+   sf org display --json
+   ```
+   If fails:
+   - Inform: "No authenticated org found."
+   - Ask: "Would you like to connect to your org now? Run `sf org login web` to authenticate."
+     - User authenticates → retry the query, continue.
+     - User declines → "You can find your agent ID manually in Setup → Agentforce Agents → click the agent name → copy the ID from the URL. Would you like to provide it now, or skip this step?"
+       - User provides ID → validate format, store it, proceed to Step 3.
+       - Skip → proceed to Step 4 with placeholder `<YOUR_AGENT_ID>`.
+
+**Note:** Even if the user provides their own agentId, the org must be connected for the agent to function at runtime. An agentId without a connected org will not work.
+
+#### Query all Employee Agents
+
+Run the SOQL query defined in `references/agent-id-resolution.md`.
+
+#### Handle results
+
+**No records at all:**
+> "No Employee Agents found in this org. Create one in Setup → Agentforce Agents."
+
+Ask user if they want to provide an agent ID manually or skip. If skip, proceed to Step 4 with placeholder `<YOUR_AGENT_ID>`.
+
+**All agents are inactive:**
+> Found Employee Agents but none are active:
+>   - Agentforce Sales Agent (0Xxxx000000001dCAA)
+>   - HR Assistant (0Xxxx0000000002BBB)
+>
+> To activate: Setup → Agentforce Agents → click the agent name → open in Agent Builder → press Activate.
+> Then re-run this step.
+
+Ask user if they want to provide an agent ID manually or skip. If skip, proceed to Step 4 with placeholder `<YOUR_AGENT_ID>`.
+
+**Has active agents — Path A (fresh install / no existing agentId):**
+
+Present only active agents for selection:
+> Which agent should the chat widget use?
+>   1. Property Manager Agent (0Xxxx0000000001CAA)
+>   2. HR Assistant (0Xxxx0000000002BBB)
+
+- One agent → still confirm with user, do not auto-select.
+- If user picks one → store the selected `Id` for use in Step 4.
+- If user declines to pick ("skip", "no", "I don't want to set one") → accept it and move to next steps. Do not re-ask. In Step 4, use placeholder `<YOUR_AGENT_ID>` for fresh installs. For existing projects, leave the component as-is.
+
+**Has active agents — Path B (existing agentId from Step 1, passed format check):**
+
+Cross-check the existing agentId against query results:
+
+- **ID found, agent is Active** → "Agent ID maps to 'Property Manager Agent' — active in the org." Proceed.
+- **ID found, agent is Inactive** → "The configured agent 'Sales Agent' exists but is Inactive. To activate: Setup → Agentforce Agents → click the agent name → open in Agent Builder → press Activate. Or pick a different active agent:" → show active list.
+- **ID not found at all** → "The configured agent (0Xxxx...) doesn't exist in this org — it may have been deleted or belongs to a different org. Pick a replacement:" → show active list. If no active agents available, show inactive list with activation instructions.
+
+If user reported an error → surface the agent name even if active, so user can confirm it's the intended one.
+
+#### Query error handling
+
+If the SOQL query fails, surface the error message from the response directly to the user. Do not guess at the fix — just report what came back. For example:
+> "The query failed with: `[error message from response]`. Check your org permissions or that the API version supports this object."
+
+#### What this step does NOT do
+
+- No fallback to GraphQL or Tooling API — SOQL only
+- No auto-selection (always confirm with user)
+- No programmatic activation (only via Setup UI)
+- No file writes (that's Step 4)
 
 ### Step 3: Canonical import strategy
 
@@ -103,10 +175,16 @@ Determine which sub-step applies:
 import { AgentforceConversationClient } from "@salesforce/ui-bundle-template-feature-react-agentforce-conversation-client";
 ```
 
-4. Insert the `<AgentforceConversationClient />` TSX into the component's return block. Place it as a sibling of existing content — do NOT wrap or restructure existing TSX. Use the real `agentId` obtained in Step 2:
-**Example:**
+4. Insert the `<AgentforceConversationClient />` TSX into the component's return block. Place it as a sibling of existing content — do NOT wrap or restructure existing TSX. Use the real `agentId` obtained in Step 2. If no agentId was resolved (user skipped Step 2), use the placeholder:
+
+**With resolved agentId:**
 ```tsx
 <AgentforceConversationClient agentId="0Xx8X00000001AbCDE" />
+```
+
+**Without resolved agentId (user skipped):**
+```tsx
+<AgentforceConversationClient agentId="<YOUR_AGENT_ID>" />
 ```
 
 5. Do NOT add any other code (wrappers, layout components, new functions) unless the user explicitly requests it.
@@ -120,17 +198,12 @@ import { AgentforceConversationClient } from "@salesforce/ui-bundle-template-fea
    - **Change** prop values the user asked to update.
    - **Preserve** every prop and value the user did NOT mention — do not remove, reorder, or reformat them.
    - **Never** delete the component and recreate it.
-4. If the current `agentId` is a placeholder (failed validation in Step 1) and a real agent ID was obtained in Step 2, replace the placeholder value:
+4. If Step 2 was triggered (cross-check or fresh selection) and a new agent ID was resolved, replace the existing agentId value with the new one.
+5. If the current `agentId` is already valid and the user did not ask to change it and Step 2 confirmed it is active, leave it as-is.
 
-```tsx
-// Before
-<AgentforceConversationClient agentId="Placeholder" />
+#### Post-Step-4 error handling
 
-// After
-<AgentforceConversationClient agentId="0Xx8X00000001AbCDE" />
-```
-
-5. If the current `agentId` is already valid and the user did not ask to change it, leave it as-is.
+If the user reports an error after the component has been set up (e.g., "it's not working", "I see an error"), go to Step 2 to validate the configured agentId against the org. Cross-check whether the agent is active, exists, and belongs to the connected org.
 
 ### Step 5: Configure props
 
@@ -173,174 +246,7 @@ Adding or updating agent label:
 - NEVER apply styling via CSS files, `style` attributes, `className`, or wrapper elements. These approaches will not work and will be ignored by the component.
 - If the user requests a visual change that does not map to a token below, inform them that the change is not supported by the current token set.
 
-### Container
-
-| Token name            | UI area themed              |
-| --------------------- | --------------------------- |
-| `fabBackground`       | FAB button background color |
-| `containerBackground` | Chat container background   |
-| `headerBackground`    | Header background           |
-| `containerWidth`      | Chat container width        |
-| `chatBorderRadius`    | Chat border radius          |
-| `layoutMaxWidth`      | Layout max width            |
-
-### Agentforce Header
-
-| Token name                      | UI area themed                     |
-| ------------------------------- | ---------------------------------- |
-| `headerBlockBackground`         | Header block background            |
-| `headerBlockBorderBottomWidth`  | Header border bottom width         |
-| `headerBlockBorderBottomStyle`  | Header border bottom style         |
-| `headerBlockBorderBottomColor`  | Header border bottom color         |
-| `headerBlockBorderRadius`       | Header corner radius               |
-| `headerBlockPaddingBlock`       | Header block padding (vertical)    |
-| `headerBlockPaddingInline`      | Header inline padding (horizontal) |
-| `headerBlockMinHeight`          | Header minimum height              |
-| `headerBlockBrandingGap`        | Header branding area gap           |
-| `headerBlockFontFamily`         | Header font family                 |
-| `headerBlockFontWeight`         | Header title font weight           |
-| `headerBlockFontSize`           | Header title font size             |
-| `headerBlockLineHeight`         | Header title line height           |
-| `headerBlockTextColor`          | Header text color                  |
-| `headerBlockIconDisplay`        | Header icon display                |
-| `headerBlockIconMargin`         | Header icon margin                 |
-| `headerBlockIconColor`          | Header icon color                  |
-| `headerBlockIconWidth`          | Header icon width                  |
-| `headerBlockIconHeight`         | Header icon height                 |
-| `headerBlockLogoMaxHeight`      | Header logo max height             |
-| `headerBlockLogoMaxWidth`       | Header logo max width              |
-| `headerBlockLogoMinWidth`       | Header logo min width              |
-| `headerBlockButtonHeight`       | Header action button height        |
-| `headerBlockButtonWidth`        | Header action button width         |
-| `headerBlockButtonPadding`      | Header action button padding       |
-| `headerBlockButtonBorderRadius` | Header action button border radius |
-| `headerBlockHoverBackground`    | Header hover background            |
-| `headerBlockActiveBackground`   | Header active background           |
-| `headerBlockFocusBorder`        | Header focus border                |
-
-### Agentforce Welcome Block
-
-| Token name                          | UI area themed                   |
-| ----------------------------------- | -------------------------------- |
-| `welcomeBlockTextContainerWidth`    | Welcome text container width     |
-| `welcomeBlockFontFamily`            | Welcome block font family        |
-| `welcomeBlockFontSize`              | Welcome block font size          |
-| `welcomeBlockFontWeight`            | Welcome block font weight        |
-| `welcomeBlockLineHeight`            | Welcome block line height        |
-| `welcomeBlockLetterSpacing`         | Welcome block letter spacing     |
-| `welcomeBlockTextColor`             | Welcome block text color         |
-| `welcomeBlockPaddingVertical`       | Welcome block vertical padding   |
-| `welcomeBlockPaddingHorizontal`     | Welcome block horizontal padding |
-| `welcomeBlockTextAnimationDuration` | Welcome text animation duration  |
-
-### Agentforce Messages
-
-| Token name                       | UI area themed                                          |
-| -------------------------------- | ------------------------------------------------------- |
-| `messageBlockBorderRadius`       | Message block border radius                             |
-| `avatarDisplay`                  | Avatar display property (e.g. `block`, `none`)          |
-| `hideMessageActions`             | Message actions display (e.g. `block`, `none` to hide)  |
-| `hideCopyAction`                 | Copy action button display (e.g. `inline-flex`, `none`) |
-| `messageBlockPaddingContainer`   | Message block container padding                         |
-| `messageBlockFontSize`           | Message block font size                                 |
-| `messageBlockBackgroundColor`    | Message block background (base)                         |
-| `messageBlockInboundBorder`      | Inbound message border                                  |
-| `messageBlockOutboundBorder`     | Outbound message border                                 |
-| `messageBlockBodyWidth`          | Message block body width                                |
-| `messageBlockPadding`            | Message block padding                                   |
-| `messageBlockContainerMarginTop` | Message block container top margin                      |
-| `messageBlockLineHeight`         | Message block line height                               |
-
-### Avatar visibility (behavioral config)
-
-Use `renderingConfig.showAvatar` to control whether avatars are rendered in message rows.
-
-- `showAvatar: true` (default) renders avatars.
-- `showAvatar: false` hides avatars by removing them from the DOM.
-
-### Inbound message (agent → customer)
-
-| Token name                                | UI area themed                    |
-| ----------------------------------------- | --------------------------------- |
-| `inboundMessgeTextColor`                  | Inbound message text color (base) |
-| `messageBlockInboundBorderRadius`         | Inbound message border radius     |
-| `messageBlockInboundBackgroundColor`      | Inbound message background        |
-| `messageBlockInboundTextColor`            | Inbound message text color        |
-| `messageBlockInboundWidth`                | Inbound message width             |
-| `messageBlockInboundTextAlign`            | Inbound message text alignment    |
-| `messageBlockInboundHoverBackgroundColor` | Inbound message hover background  |
-
-### Outbound message (customer → agent)
-
-| Token name                            | UI area themed                  |
-| ------------------------------------- | ------------------------------- |
-| `messageBlockOutboundBorderRadius`    | Outbound message border radius  |
-| `messageBlockOutboundBackgroundColor` | Outbound message background     |
-| `messageBlockOutboundTextColor`       | Outbound message text color     |
-| `messageBlockOutboundWidth`           | Outbound message width          |
-| `messageBlockOutboundMarginLeft`      | Outbound message left margin    |
-| `messageBlockOutboundTextAlign`       | Outbound message text alignment |
-
-### Agentforce Input
-
-| Token name                                 | UI area themed                                 |
-| ------------------------------------------ | ---------------------------------------------- |
-| `messageInputPadding`                      | Message input container padding                |
-| `messageInputFooterBorderColor`            | Message input footer border color              |
-| `messageInputBorderRadius`                 | Message input border radius                    |
-| `messageInputBorderTransitionDuration`     | Message input border transition duration       |
-| `messageInputBorderTransitionEasing`       | Message input border transition easing         |
-| `messageInputTextColor`                    | Message input text color                       |
-| `messageInputTextBackgroundColor`          | Message input text background color            |
-| `messageInputFooterBorderFocusColor`       | Message input footer focus border color        |
-| `messageInputFocusShadow`                  | Message input focus shadow                     |
-| `messageInputMaxHeight`                    | Message input max height                       |
-| `messageInputLineHeight`                   | Message input line height                      |
-| `messageInputTextPadding`                  | Message input text padding                     |
-| `messageInputFontWeight`                   | Message input font weight                      |
-| `messageInputFontSize`                     | Message input font size                        |
-| `messageInputOverflowY`                    | Message input overflow Y                       |
-| `messageInputScrollbarWidth`               | Message input scrollbar width                  |
-| `messageInputScrollbarColor`               | Message input scrollbar color                  |
-| `messageInputActionsWidth`                 | Message input actions width                    |
-| `messageInputActionsPaddingRight`          | Message input actions right padding            |
-| `messageInputFooterPlaceholderText`        | Message input placeholder text color           |
-| `messageInputPlaceholderFontWeight`        | Placeholder font weight                        |
-| `messageInputErrorTextColor`               | Message input error text color                 |
-| `messageInputActionsGap`                   | Message input actions gap                      |
-| `messageInputActionsPadding`               | Message input actions padding                  |
-| `messageInputActionButtonSize`             | Message input action button size               |
-| `messageInputActionButtonRadius`           | Message input action button radius             |
-| `messageInputFooterSendButton`             | Message input send button color                |
-| `messageInputSendButtonDisabledColor`      | Message input send button disabled color       |
-| `messageInputActionButtonFocusBorder`      | Message input action button focus border       |
-| `messageInputActionButtonActiveIconColor`  | Message input action button active icon color  |
-| `messageInputActionButtonActiveBackground` | Message input action button active background  |
-| `messageInputSendButtonIconColor`          | Message input send button icon color           |
-| `messageInputFooterSendButtonHoverColor`   | Message input send button hover color          |
-| `messageInputActionButtonHoverShadow`      | Message input action button hover shadow       |
-| `messageInputFilePreviewPadding`           | Message input file preview padding             |
-| `messageInputTextareaMaxHeight`            | Message input textarea max height              |
-| `messageInputTextareaWithImageMaxHeight`   | Message input textarea max height (with image) |
-
-### Agentforce Error Block
-
-| Token name             | UI area themed               |
-| ---------------------- | ---------------------------- |
-| `errorBlockBackground` | Error block background color |
-
-Styling with styleTokens:
-
-```tsx
-<AgentforceConversationClient
-  agentId="0Xx..."
-  styleTokens={{
-    headerBlockBackground: "#0176d3",
-    headerBlockTextColor: "#ffffff",
-    messageBlockInboundBackgroundColor: "#4CAF50",
-  }}
-/>
-```
+For the complete list of available style tokens, consult `references/style-tokens.md`.
 
 **For complex patterns,** consult `references/examples.md` for:
 
@@ -363,3 +269,13 @@ If component doesn't appear or authentication fails, see `references/troubleshoo
 - Agent activation and deployment
 - Localhost trusted domains
 - Cookie restriction settings
+
+## Reference File Index
+
+| File | When to read |
+|------|-------------|
+| `references/agent-id-resolution.md` | Step 2 — SOQL query structure, response format, activation path, manual lookup |
+| `references/style-tokens.md` | Step 5 — Complete style token reference for all UI areas |
+| `references/examples.md` | Step 5 — Layout patterns, sizing, theming combinations, host component examples |
+| `references/constraints.md` | Step 4 — Invalid props, invalid styling approaches, files not to edit |
+| `references/troubleshooting.md` | Post-setup — Agent activation, trusted domains, cookie settings |

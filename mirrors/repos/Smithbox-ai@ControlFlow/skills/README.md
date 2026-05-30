@@ -10,27 +10,43 @@ Reusable domain-specific patterns and best practices for agent consumption. Plan
 skills/
 ├── README.md          # This file — overview and discovery protocol
 ├── index.md           # Master index mapping domains to skill files
-└── patterns/          # Domain-specific pattern files
-    ├── tdd-patterns.md
-    ├── error-handling-patterns.md
-    ├── security-patterns.md
-    ├── performance-patterns.md
+└── patterns/          # Domain-specific pattern files (18 files)
+    ├── budget-tracking.md
+    ├── code-simplification.md
     ├── completeness-traceability.md
+    ├── debugging-discipline.md
+    ├── error-handling-patterns.md
+    ├── idea-to-prompt.md
     ├── integration-validator.md
-    └── idea-to-prompt.md
+    ├── llm-behavior-guidelines.md
+    ├── memory-promotion-candidates.md
+    ├── orchestration-audit-playbook.md
+    ├── performance-patterns.md
+    ├── preflect-core.md
+    ├── reflection-loop.md
+    ├── repo-memory-hygiene.md
+    ├── security-patterns.md
+    ├── security-review-discipline.md
+    ├── spec-driven-development.md
+    └── tdd-patterns.md
 ```
 
 ## Format Specification
 
-Each pattern file follows this structure:
+Pattern files are written for direct agent consumption rather than a single rigid template. The conventions that current files share:
 
-- **Title** — Domain name
-- **Applicability** — When to use this skill
-- **Patterns** — Numbered list of best practices (concise, actionable)
-- **Anti-Patterns** — Common mistakes to avoid
-- **References** — Links to authoritative sources
+- **Title** — A top-level `# <Skill Name>` heading naming the skill or canonical gate.
+- **Purpose** — A `## Purpose` section stating what the skill governs and why an agent loads it. Often pairs with a governance flag or "single source of truth" pointer (e.g. `preflect-core.md`, `repo-memory-hygiene.md`).
+- **When to Apply / When to Load** — A section describing the trigger conditions and which agents invoke the skill at which workflow points.
+- **Body sections** — Topic-specific `##`/`###` sections tailored to the domain. Common forms include:
+  - Numbered or named **checklists** with explicit stop/continue outcomes (e.g. `repo-memory-hygiene.md` Step 1–5).
+  - **Decision heuristics** posing a concrete question and branching on the answer (e.g. `tdd-patterns.md`, `preflect-core.md`).
+  - **Tables** mapping scope/layer/risk to guidance (e.g. the TDD test-layer matrix).
+  - Explicit **anti-pattern** call-outs where useful, but not as a mandatory standalone section.
 
-**Constraint:** Each pattern file must be ≤100 lines to fit within agent context budgets.
+Sections beyond Title/Purpose are chosen to fit the skill's domain; the older fixed Applicability/Patterns/Anti-Patterns/References template is no longer required.
+
+**Constraint:** Each pattern file must be ≤100 lines to fit within agent context budgets. This cap is enforced by the eval validator.
 
 ## Discovery Protocol
 
@@ -46,5 +62,6 @@ Treat skills as code — additions require review:
 
 1. Create pattern file in `skills/patterns/`
 2. Add entry to `skills/index.md`
-3. Verify file is ≤100 lines
+3. Verify file is ≤100 lines (enforced by the validator)
 4. Ensure no stale or contradictory patterns
+5. Run the verification suite: `cd evals && npm test`

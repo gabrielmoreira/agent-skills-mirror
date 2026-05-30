@@ -2,133 +2,63 @@
 
 # Alex ACT Plugin Mall
 
-The plugin marketplace for ACT (Artificial Critical Thinking) agents and heirs. Curated plugins that extend the capabilities of Alex ACT Edition and any AI agent that reads `.github/` files.
+Search index + trust scorer for **3220 plugins** across **46 stores**. Heirs install directly from upstream at user-chosen versions.
 
-## What's Here
+## Top 10 stores by trust
 
-360 plugins organized into 21 categories, plus 19 knowledge packages across 9 categories for on-demand reference material. Each plugin is a self-contained folder with a human-readable README, machine-readable manifest (`plugin.json`), brain artifact (`SKILL.md`), and optional instructions, prompts, or muscles.
+| Rank | Store | Trust | Plugins | Provenance |
+| ---: | --- | ---: | ---: | --- |
+| 1 | 🏆 [plugin-mall](catalog/stores/plugin-mall.md) | 82 | 364 | 🏆 first-party |
+| 2 | [addyosmani-agent-skills](catalog/stores/addyosmani-agent-skills.md) | 35 | 25 | third-party |
+| 3 | [agent-skills-context-engineering](catalog/stores/agent-skills-context-engineering.md) | 35 | 15 | third-party |
+| 4 | [alirezarezvani-claude-skills](catalog/stores/alirezarezvani-claude-skills.md) | 35 | 30 | third-party |
+| 5 | [antfu-skills](catalog/stores/antfu-skills.md) | 35 | 17 | third-party |
+| 6 | [antigravity-awesome-skills](catalog/stores/antigravity-awesome-skills.md) | 35 | 1470 | third-party |
+| 7 | [awesome-claude-code-toolkit](catalog/stores/awesome-claude-code-toolkit.md) | 35 | 43 | third-party |
+| 8 | [awesome-copilot](catalog/stores/awesome-copilot.md) | 35 | 424 | third-party |
+| 9 | [awesome-mcp-servers](catalog/stores/awesome-mcp-servers.md) | 35 | 0 | third-party |
+| 10 | [buildwithclaude](catalog/stores/buildwithclaude.md) | 35 | 86 | third-party |
 
-**Knowledge packages** (`knowledge/`) are reference material installed to `AI-Memory/knowledge/` instead of the brain. They cost zero tokens until consulted -- ideal for architecture planning, compliance audits, and other periodic tasks.
+## Score distribution
 
-Install plugins into any ACT heir project without losing them to Edition upgrades.
+| Range | Plugins | Share |
+| --- | ---: | ---: |
+| 0-19 | 14 | 0.4% |
+| 20-39 | 470 | 14.6% |
+| 40-59 | 2372 | 73.7% |
+| 60-79 | 0 | 0.0% |
+| 80-100 | 364 | 11.3% |
 
-| Metric | Value |
-| --- | --- |
-| Plugins | 360 |
-| Categories | 21 |
-| Knowledge packages | 19 across 9 categories |
-| Shape types | 7 (see notation below) |
-| Install path | `.github/skills/local/` (or matching `local/` dirs) |
-| Primary consumer | Alex ACT Edition v2.4.0+ |
-| Also works with | GitHub Copilot, Claude, Cursor, Windsurf, any AI reading `.github/` |
+## Browse
 
-## Quick Start
+- [Full catalog index](catalog/INDEX.md)
+- [By category](catalog/categories/)
+- [By store](catalog/stores/)
+- [Trust audit](scoring/TRUST-AUDIT.md)
+- [Source registry](sources/SOURCES.md)
 
-```bash
-# Clone the Mall
-git clone https://github.com/fabioc-aloha/Alex_Skill_Mall.git
+## Heir commands
 
-# Install a plugin to your project
-cp -r Alex_ACT_Plugin_Mall/plugins/converters/md-to-word/ \
-  /your/project/.github/skills/local/md-to-word/
-```
+- `/mall-search <query>` — search the full catalog
+- `/mall-show <name>` — full metadata + signals for one plugin
+- `/mall-install <name>[@<version>]` — pin a version, install from upstream
+- `/mall-upgrade <name>` — compare installed SHA vs current default
+- `/mall-list` — list locally installed plugins with pinned versions
 
-Then reload your AI agent. The plugin is now available.
+## How trust scoring works
 
-## From ACT Edition
+Every plugin gets a 0–100 score from six published signals:
 
-If you're running Alex ACT Edition, use the in-session commands:
+| Signal | Range | Source |
+| --- | ---: | --- |
+| Provenance | +50 | First-party `plugin-mall` entry |
+| Store maintenance | 0–15 | Last upstream commit recency |
+| Store adoption | 0–10 | GitHub stars + contributors |
+| License clarity | 0–10 | OSI-approved=10, clear non-permissive=7 |
+| Frontmatter completeness | 0–10 | description + version + lastReviewed presence |
+| README presence | 0–5 | README excerpt ≥ 50 chars |
 
-```text
-/mall search azure cosmos
-/mall install md-to-word
-```
+First-party plugins (🏆) rank highest because they earn the +50 provenance bonus. Heirs can override with `--from-store <name>` for any third-party alternative.
 
-Plugins install into `local/` paths so Edition upgrades never clobber them.
-
-## Browse the Mall
-
-Three axes for discovery: **category** (what domain), **shape** (how complex), **tier** (how specialized).
-
-### Categories (360 plugins)
-
-| Category | Count | Coverage |
-| --- | --- | --- |
-| [Media & Graphics](plugins/media-graphics/) | 37 | Banners, SVG, slides, presentations, video, image handling, deck building |
-| [AI & Agents](plugins/ai-agents/) | 30 | MCP servers, agent design, RAG, prompt engineering, evals |
-| [Security & Privacy](plugins/security-privacy/) | 30 | XSS, injection, secrets, threat modeling, SFI compliance, responsible AI |
-| [DevOps & Process](plugins/devops-process/) | 29 | Git workflow, release, deployment, CI/CD, project management, PM planning, SDLC, Atlassian, product |
-| [Documentation](plugins/documentation/) | 26 | Mermaid, docs decay, VitePress, publishing, version stamps |
-| [Data & Analytics](plugins/data-analytics/) | 25 | Power BI, KQL, Fabric, dashboards, data visualization, semantic models |
-| [Cloud & Infrastructure](plugins/cloud-infrastructure/) | 24 | Azure, Fabric, IaC, Bicep, deployment, cost optimization |
-| [Code Quality](plugins/code-quality/) | 24 | Code review, testing, audit patterns, refactoring, coverage, adversarial review |
-| [Academic & Research](plugins/academic-research/) | 17 | Paper drafting, citations, survey verification, lit review |
-| [Supervisor & Fleet](plugins/supervisor-fleet/) | 16 | Fleet governance, Mall curation, release ritual, AI-Memory setup |
-| [Productivity](plugins/productivity/) | 15 | Personal productivity, time management, task tracking, focus |
-| [Reasoning & Metacognition](plugins/reasoning-metacognition/) | 15 | ACT pass, hypothesis debugging, root cause, calibration |
-| [Platform & Tooling](plugins/platform-tooling/) | 14 | VS Code, cross-platform, Node.js, frontend patterns |
-| [Architecture & Patterns](plugins/architecture-patterns/) | 13 | Microservices, saga, API design, workflow orchestration |
-| [Converters](plugins/converters/) | 13 | Word, HTML, email, PDF, EPUB, LaTeX, PPTX, plain text, Loop |
-| [Domain Expertise](plugins/domain-expertise/) | 13 | Healthcare, legal, finance, game design, marketing, regulatory, executive leadership |
-| [Communication & People](plugins/communication-people/) | 9 | Stakeholder management, coaching, collaboration |
-| [Image Generation](plugins/image-generation/) | 4 | Image-gen prompts, model selection, style direction |
-| [Diagrams](plugins/diagrams/) | 3 | Diagram authoring, visual notation |
-| [3D Graphics](plugins/3d-graphics/) | 2 | 3D rendering, graphics pipelines |
-| [Bioinformatics](plugins/bioinformatics/) | 1 | Genomics and biological data workflows |
-
-### Shape Notation
-
-Shape tells you what a plugin contains before you open the folder:
-
-| Shape | Contents | Complexity |
-| --- | --- | --- |
-| `.S..` | Skill only | Minimal (1 file) |
-| `I...` | Instruction only | Minimal (1 file) |
-| `.S.M` | Skill + muscle | Light (2 files) |
-| `ISP.` | Instruction + skill + prompt (trifecta) | Medium (3 files) |
-| `I.P.` | Instruction + prompt | Medium (2 files) |
-| `ISPM` | Full stack | Heavy (4+ files) |
-| `I...L` | Lock (boundary guard) | Minimal but critical |
-
-Position key: **I**nstruction, **S**kill, **P**rompt, **M**uscle. A dot means that artifact type is absent.
-
-## Plugin Structure
-
-Each plugin is a self-contained folder:
-
-```text
-plugin-name/
-  README.md          Human-readable: what, why, when, prerequisites
-  plugin.json        Machine manifest: shape, artifacts, dependencies, token cost
-  SKILL.md           Brain artifact (the actual rules or knowledge)
-  *.instructions.md  Optional instruction artifact
-  *.prompt.md        Optional prompt artifact
-  *.cjs              Optional muscle (executable code)
-```
-
-## Machine-Readable Discovery
-
-[CATALOG.json](CATALOG.json) enables programmatic search:
-
-```bash
-# Search by category
-jq '.plugins[] | select(.category == "security-privacy")' CATALOG.json
-
-# Filter by shape
-jq '.plugins[] | select(.shape == "ISP.")' CATALOG.json
-
-# Find plugins under N tokens
-jq '.plugins[] | select(.token_cost < 500)' CATALOG.json
-```
-
-## Curation
-
-The [Alex ACT Supervisor](https://github.com/fabioc-aloha/Alex_ACT_Supervisor) maintains this Mall. Plugins are evaluated on maintenance health, adoption signal, license clarity, ACT-Edition fit, and documentation quality. Stale plugins are pruned quarterly.
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md). Plugins must solve a real problem, save meaningful time, and encode knowledge that isn't a quick search away.
-
-## License
-
-MIT. See individual plugin folders for any additional license terms.
+---
+*Generated by `scripts/render-catalog.cjs` at 2026-05-29T21:59:01.478Z. Source of truth: `catalog/*.json`. Never hand-edit this README.*

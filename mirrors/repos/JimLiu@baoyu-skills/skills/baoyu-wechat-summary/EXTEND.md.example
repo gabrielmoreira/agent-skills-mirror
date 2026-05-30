@@ -31,3 +31,9 @@ default_version: normal
 # resolves to `{project_root}/wechat`. Useful if you want a shared archive
 # outside the current project.
 # data_root: ~/Documents/wechat-digests
+
+# OPTIONAL — 触发「🤖 @bot 答疑」小节的名字（逗号分隔）。消息含 @<别名> 即视为
+# 冲总结 bot 提的问题/请求，会在每版简报里专门答复。
+# 请选用群里【不存在】的人物/机器人名，以免与真人 @ 混淆。
+# Default: bot, 精华bot
+# bot_aliases: bot, 精华bot

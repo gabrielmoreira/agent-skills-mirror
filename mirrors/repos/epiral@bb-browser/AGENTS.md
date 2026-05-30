@@ -79,8 +79,25 @@ bb-browser daemon start --hub https://hub.pinixai.com --hub-token xxx
 | 交互 | `click/hover/fill/type/press/scroll/check/uncheck/select --tab` |
 | Tab | `tab list`, `tab new [url]` |
 | Site | `site list`, `site info <name>`, `site run <name>` |
-| 调试 | `network/console/errors/trace --tab` |
+| 调试 | `network/console/errors/trace/cookies/source --tab` |
 | 进程 | `daemon start [--hub]`, `daemon stop`, `daemon status` |
+
+### Debug 命令参数约定
+
+Debug 命令（`network`, `console`, `errors`, `trace`, `source`）有子命令的统一用 `--action` 参数：
+
+```bash
+# CLI 用法（位置参数）
+bb-browser source grep "api.example" --tab <id>
+bb-browser trace start --tab <id>
+
+# Hub invoke 用法（命名参数）
+pinix invoke browser source --action grep --pattern "api.example" --tab <id>
+pinix invoke browser trace --action start --tab <id>
+pinix invoke browser network --action requests --excludeStatic true --tab <id>
+```
+
+旧参数名（`sourceCommand`、`traceCommand` 等）仍可用但已 deprecated。
 
 ## 设计不变量
 

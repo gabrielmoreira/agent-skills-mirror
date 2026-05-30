@@ -1,8 +1,8 @@
-# NotFair — Public AI-Agent Plugin (Claude Code, OpenClaw, Codex, Hermes)
+# NotFair — Public AI-Agent Plugin (Claude Code, Codex, Hermes)
 
 **This is the public, open-source repository that ships to all customers and the community.**
 
-NotFair is a host-agnostic plugin providing SEO, Google Ads, and Meta Ads skills for AI coding agents. It is distributed via the `nowork-studio` Claude Code marketplace and via direct agent install on OpenClaw, Codex, and Hermes. Every change here is user-facing.
+NotFair is a host-agnostic plugin providing SEO, Google Ads, and Meta Ads skills for AI coding agents. It is distributed via the `nowork-studio` Claude Code marketplace and via direct agent install on Codex and Hermes. Every change here is user-facing.
 
 ## Engineering Execution Standard
 
@@ -36,7 +36,6 @@ This code ships to real users. Sycophancy and rubber-stamping cost us credibilit
 
 - Home of the `notfair` plugin — the public artifact customers install.
 - Contains host-agnostic skills under `google-ads/`, `seo/`, `meta-ads/`, `gemini/`, and `notfair-upgrade-skill/`.
-- Contains OpenClaw-specific multi-site orchestrators under `openclaw/skills/` that compose the host-agnostic skills above.
 - Registered via `.claude-plugin/plugin.json` + `.claude-plugin/marketplace.json` (Claude Code) and `AGENTS.md` (every other host).
 - Paired with the NotFair-GoogleAds and NotFair-MetaAds MCP servers (OAuth at notfair.co) for ad-platform writes, and Google Search Console for SEO reads.
 
@@ -53,7 +52,7 @@ The product is **NotFair**. All user-facing text, documentation, skill descripti
 ## When adding or modifying a skill
 
 1. Create/edit the skill directory under the appropriate category (`google-ads/`, `seo/`, etc.) with a `SKILL.md` containing valid frontmatter.
-2. **Register it in `AGENTS.md`** under the matching intent table. A skill that isn't in `AGENTS.md` is invisible to OpenClaw, Codex, Hermes, and any non-Claude host.
+2. **Register it in `AGENTS.md`** under the matching intent table. A skill that isn't in `AGENTS.md` is invisible to Codex, Hermes, and any non-Claude host.
 3. **Register it in `.claude-plugin/plugin.json`** under the `skills` array. A skill that exists on disk but isn't listed here will NOT appear in the installed Claude Code plugin — this has already bitten us once with `ads-landing`.
 4. Bump the version in three places so upgrades propagate:
    - `.claude-plugin/plugin.json` → `version`

@@ -238,7 +238,6 @@ Get-ChildItem *.docx | ForEach-Object {
 
 - **md-to-word** — Reverse direction (Markdown to Word)
 - **lint-clean-markdown** — Post-validate converted Markdown
-- **md-scaffold** — Template for structuring imported content
 - **md-to-html** — Convert result to HTML for web
 
 ---

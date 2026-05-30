@@ -13,11 +13,10 @@ from slide_run_state import (
     deck_dir_from_target,
     ensure_file,
     find_slide,
-    load_jobs,
+    locked_jobs,
     now_iso,
     rel_to_deck,
     resolve_deck_path,
-    save_jobs,
     set_run_status,
     sha256_file,
     update_jobs_run_status,
@@ -133,51 +132,52 @@ def main() -> int:
     args = parser.parse_args()
 
     deck_dir = deck_dir_from_target(args.deck)
-    jobs = load_jobs(deck_dir)
-    slide = find_slide(jobs, args.slide)
-    if slide.get("status") != "dispatched":
-        raise SystemExit(f"{slide['slide_id']} must be dispatched before result recording; got {slide.get('status')}")
-    dispatch = slide.get("dispatch") or {}
-    if dispatch.get("agent_id") != args.agent_id:
-        raise SystemExit(
-            f"Agent id mismatch for {slide['slide_id']}: dispatch={dispatch.get('agent_id')} result={args.agent_id}"
-        )
+    with locked_jobs(deck_dir) as jobs:
+        slide = find_slide(jobs, args.slide)
+        if slide.get("status") != "dispatched":
+            raise SystemExit(f"{slide['slide_id']} must be dispatched before result recording; got {slide.get('status')}")
+        dispatch = slide.get("dispatch") or {}
+        if dispatch.get("agent_id") != args.agent_id:
+            raise SystemExit(
+                f"Agent id mismatch for {slide['slide_id']}: dispatch={dispatch.get('agent_id')} result={args.agent_id}"
+            )
 
-    backend_used = _validate_backend(args.backend_used)
-    prompt_job = _load_prompt_job(deck_dir, slide)
-    expected_backend_labels = _expected_backend_labels(jobs, slide, prompt_job)
-    matched_expected_backend = _matched_expected_backend(backend_used, expected_backend_labels)
-    source = ensure_file(Path(args.selected_source).expanduser().resolve(), "selected source image")
-    out_ref = slide.get("out") or f"origin_image/{slide['slide_id']}.png"
-    target = resolve_deck_path(deck_dir, out_ref)
-    try:
-        target.relative_to(deck_dir)
-    except ValueError as exc:
-        raise SystemExit(f"Final slide image must live inside deck dir: {target}") from exc
-    target.parent.mkdir(parents=True, exist_ok=True)
-    if source != target:
-        shutil.copy2(source, target)
+        backend_used = _validate_backend(args.backend_used)
+        prompt_job = _load_prompt_job(deck_dir, slide)
+        expected_backend_labels = _expected_backend_labels(jobs, slide, prompt_job)
+        matched_expected_backend = _matched_expected_backend(backend_used, expected_backend_labels)
+        source = ensure_file(Path(args.selected_source).expanduser().resolve(), "selected source image")
+        out_ref = slide.get("out") or f"origin_image/{slide['slide_id']}.png"
+        target = resolve_deck_path(deck_dir, out_ref)
+        try:
+            target.relative_to(deck_dir)
+        except ValueError as exc:
+            raise SystemExit(f"Final slide image must live inside deck dir: {target}") from exc
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if source != target:
+            shutil.copy2(source, target)
 
-    slide["result"] = {
-        "agent_id": args.agent_id,
-        "backend_used": backend_used,
-        "selected_source": str(source),
-        "selected_source_sha256": sha256_file(source),
-        "final_image": rel_to_deck(deck_dir, target),
-        "final_image_sha256": sha256_file(target),
-        "expected_backend": matched_expected_backend,
-        "expected_backend_labels": expected_backend_labels,
-        "sample_generation_method_matched": bool(matched_expected_backend),
-        "qa_note": args.qa_note,
-        "recorded_at": now_iso(),
-    }
-    slide["status"] = "recorded"
-    update_jobs_run_status(jobs)
-    save_jobs(deck_dir, jobs)
-    if jobs.get("run_status") == "slides_recorded":
+        slide["result"] = {
+            "agent_id": args.agent_id,
+            "backend_used": backend_used,
+            "selected_source": str(source),
+            "selected_source_sha256": sha256_file(source),
+            "final_image": rel_to_deck(deck_dir, target),
+            "final_image_sha256": sha256_file(target),
+            "expected_backend": matched_expected_backend,
+            "expected_backend_labels": expected_backend_labels,
+            "sample_generation_method_matched": bool(matched_expected_backend),
+            "qa_note": args.qa_note,
+            "recorded_at": now_iso(),
+        }
+        slide["status"] = "recorded"
+        update_jobs_run_status(jobs)
+        run_status = jobs.get("run_status")
+        slide_id = slide["slide_id"]
+    if run_status == "slides_recorded":
         set_run_status(deck_dir, "slides_recorded", "all slide images recorded")
 
-    print(json.dumps({"slide_id": slide["slide_id"], "status": "recorded"}, ensure_ascii=False))
+    print(json.dumps({"slide_id": slide_id, "status": "recorded"}, ensure_ascii=False))
     return 0
 
 

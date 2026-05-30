@@ -64,6 +64,7 @@ interface ArticleOptions {
   content: string;
   thumbMediaId: string;
   articleType: ArticleType;
+  contentSourceUrl?: string;
   imageMediaIds?: string[];
   needOpenComment?: number;
   onlyFansCanComment?: number;
@@ -379,6 +380,7 @@ async function publishToDraft(
     };
     if (options.author) article.author = options.author;
     if (options.digest) article.digest = options.digest;
+    if (options.contentSourceUrl) article.content_source_url = options.contentSourceUrl;
   }
 
   const res = await client(url, {
@@ -479,6 +481,7 @@ Options:
   --title <title>     Override title
   --author <name>     Author name (max 16 chars)
   --summary <text>    Article summary/digest (max 128 chars)
+  --source-url <url>  Original article URL ("阅读原文" link, max 1KB)
   --theme <name>      Theme name for markdown (default, grace, simple, modern). Default: default
   --color <name|hex>  Primary color (blue, green, vermilion, etc. or hex)
   --cover <path>      Cover image path (local or URL)
@@ -500,6 +503,7 @@ Frontmatter Fields (markdown):
   title               Article title
   author              Author name
   digest/summary      Article summary
+  sourceUrl/contentSourceUrl/content_source_url   Original article URL
   coverImage/featureImage/cover/image   Cover image path
 
 Comments:
@@ -517,7 +521,7 @@ Config File Locations (in priority order):
 Example:
   npx -y bun wechat-api.ts article.md
   npx -y bun wechat-api.ts article.md --theme grace --cover cover.png
-  npx -y bun wechat-api.ts article.md --author "Author Name" --summary "Brief intro"
+  npx -y bun wechat-api.ts article.md --author "Author Name" --summary "Brief intro" --source-url "https://example.com/original"
   npx -y bun wechat-api.ts article.html --title "My Article"
   npx -y bun wechat-api.ts images/ --type newspic --title "Photo Album"
   npx -y bun wechat-api.ts article.md --dry-run
@@ -533,6 +537,7 @@ interface CliArgs {
   title?: string;
   author?: string;
   summary?: string;
+  sourceUrl?: string;
   theme: string;
   color?: string;
   cover?: string;
@@ -578,6 +583,8 @@ function parseArgs(argv: string[]): CliArgs {
       args.author = argv[++i];
     } else if (arg === "--summary" && argv[i + 1]) {
       args.summary = argv[++i];
+    } else if (arg === "--source-url" && argv[i + 1]) {
+      args.sourceUrl = argv[++i];
     } else if (arg === "--theme" && argv[i + 1]) {
       args.theme = argv[++i]!;
     } else if (arg === "--color" && argv[i + 1]) {
@@ -692,6 +699,7 @@ async function main(): Promise<void> {
   let title = args.title || "";
   let author = args.author || "";
   let digest = args.summary || "";
+  let sourceUrl = args.sourceUrl || "";
   let htmlPath: string;
   let htmlContent: string;
   let frontmatter: Record<string, string> = {};
@@ -708,6 +716,7 @@ async function main(): Promise<void> {
       if (!title && frontmatter.title) title = frontmatter.title;
       if (!author) author = frontmatter.author || "";
       if (!digest) digest = frontmatter.digest || frontmatter.summary || frontmatter.description || "";
+      if (!sourceUrl) sourceUrl = frontmatter.sourceUrl || frontmatter.contentSourceUrl || frontmatter.content_source_url || "";
     }
     if (!title) {
       title = extractHtmlTitle(fs.readFileSync(htmlPath, "utf-8"));
@@ -726,6 +735,7 @@ async function main(): Promise<void> {
     }
     if (!author) author = frontmatter.author || "";
     if (!digest) digest = frontmatter.digest || frontmatter.summary || frontmatter.description || "";
+    if (!sourceUrl) sourceUrl = frontmatter.sourceUrl || frontmatter.contentSourceUrl || frontmatter.content_source_url || "";
 
     console.error(`[wechat-api] Theme: ${args.theme}${args.color ? `, color: ${args.color}` : ""}, citeStatus: ${args.citeStatus}`);
     const rendered = renderMarkdownWithPlaceholders(filePath, args.theme, args.color, args.citeStatus, args.title);
@@ -754,6 +764,7 @@ async function main(): Promise<void> {
   console.error(`[wechat-api] Title: ${title}`);
   if (author) console.error(`[wechat-api] Author: ${author}`);
   if (digest) console.error(`[wechat-api] Digest: ${digest.slice(0, 50)}...`);
+  if (sourceUrl) console.error(`[wechat-api] Source URL: ${sourceUrl}`);
   console.error(`[wechat-api] Type: ${args.articleType}`);
 
   const extConfig = loadWechatExtendConfig();
@@ -768,6 +779,7 @@ async function main(): Promise<void> {
       title,
       author: author || undefined,
       digest: digest || undefined,
+      sourceUrl: sourceUrl || undefined,
       htmlPath,
       contentLength: htmlContent.length,
       placeholderImageCount: contentImages.length || undefined,
@@ -839,6 +851,7 @@ async function main(): Promise<void> {
       content: htmlContent,
       thumbMediaId,
       articleType: args.articleType,
+      contentSourceUrl: sourceUrl || undefined,
       imageMediaIds: args.articleType === "newspic" ? imageMediaIds : undefined,
       needOpenComment: resolved.need_open_comment,
       onlyFansCanComment: resolved.only_fans_can_comment,

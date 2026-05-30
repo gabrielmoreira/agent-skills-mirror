@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `anomalyco/opencode` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `anomalyco/opencode` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `anomalyco/opencode` — 26 default patterns, 0 followed patterns, 16 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,21 +60,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.opencode/skills/effect/SKILL.md`](.opencode/skills/effect/SKILL.md) |
-| 2 | ✓ | [`.opencode/skills/improve-codebase-architecture/INTERFACE-DESIGN.md`](.opencode/skills/improve-codebase-architecture/INTERFACE-DESIGN.md) |
-| 3 | ✓ | [`.opencode/skills/improve-codebase-architecture/LANGUAGE.md`](.opencode/skills/improve-codebase-architecture/LANGUAGE.md) |
-| 4 | ✓ | [`.opencode/skills/improve-codebase-architecture/SKILL.md`](.opencode/skills/improve-codebase-architecture/SKILL.md) |
-| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 6 | ✓ | [`packages/app/AGENTS.md`](packages/app/AGENTS.md) |
-| 7 | ✓ | [`packages/desktop/AGENTS.md`](packages/desktop/AGENTS.md) |
-| 8 | ✓ | [`packages/effect-drizzle-sqlite/AGENTS.md`](packages/effect-drizzle-sqlite/AGENTS.md) |
-| 9 | ✓ | [`packages/llm/AGENTS.md`](packages/llm/AGENTS.md) |
-| 10 | ✓ | [`packages/opencode/AGENTS.md`](packages/opencode/AGENTS.md) |
-| 11 | ✓ | [`packages/opencode/src/server/routes/instance/httpapi/AGENTS.md`](packages/opencode/src/server/routes/instance/httpapi/AGENTS.md) |
-| 12 | ✓ | [`packages/opencode/src/session/llm/AGENTS.md`](packages/opencode/src/session/llm/AGENTS.md) |
-| 13 | ✓ | [`packages/opencode/test/AGENTS.md`](packages/opencode/test/AGENTS.md) |
-| 14 | ✓ | [`packages/opencode/test/fixture/skills/agents-sdk/SKILL.md`](packages/opencode/test/fixture/skills/agents-sdk/SKILL.md) |
-| 15 | ✓ | [`packages/opencode/test/fixture/skills/cloudflare/SKILL.md`](packages/opencode/test/fixture/skills/cloudflare/SKILL.md) |
-| 16 | ✓ | [`packages/opencode/test/server/AGENTS.md`](packages/opencode/test/server/AGENTS.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`packages/app/AGENTS.md`](packages/app/AGENTS.md) |
+| 4 | ✓ | [`packages/desktop/AGENTS.md`](packages/desktop/AGENTS.md) |
+| 5 | ✓ | [`packages/effect-drizzle-sqlite/AGENTS.md`](packages/effect-drizzle-sqlite/AGENTS.md) |
+| 6 | ✓ | [`packages/llm/AGENTS.md`](packages/llm/AGENTS.md) |
+| 7 | ✓ | [`packages/opencode/AGENTS.md`](packages/opencode/AGENTS.md) |
+| 8 | ✓ | [`packages/opencode/src/server/routes/instance/httpapi/AGENTS.md`](packages/opencode/src/server/routes/instance/httpapi/AGENTS.md) |
+| 9 | ✓ | [`packages/opencode/src/session/llm/AGENTS.md`](packages/opencode/src/session/llm/AGENTS.md) |
+| 10 | ✓ | [`packages/opencode/test/AGENTS.md`](packages/opencode/test/AGENTS.md) |
+| 11 | ✓ | [`packages/opencode/test/fixture/skills/agents-sdk/SKILL.md`](packages/opencode/test/fixture/skills/agents-sdk/SKILL.md) |
+| 12 | ✓ | [`packages/opencode/test/fixture/skills/cloudflare/SKILL.md`](packages/opencode/test/fixture/skills/cloudflare/SKILL.md) |
+| 13 | ✓ | [`packages/opencode/test/server/AGENTS.md`](packages/opencode/test/server/AGENTS.md) |
+| 14 | ✓ | [`packages/stats/AGENTS.md`](packages/stats/AGENTS.md) |
 
 ---
 

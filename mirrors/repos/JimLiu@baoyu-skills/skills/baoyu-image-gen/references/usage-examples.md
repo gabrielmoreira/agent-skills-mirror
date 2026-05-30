@@ -34,13 +34,13 @@ ${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --provider a
 ${BUN_X} {baseDir}/scripts/main.ts --prompt "A cinematic landscape" --image out.png --provider openai --model gpt-image-2 --size 3840x2160
 
 # Google with explicit model
-${BUN_X} {baseDir}/scripts/main.ts --prompt "Make blue" --image out.png --provider google --model gemini-3-pro-image-preview --ref source.png
+${BUN_X} {baseDir}/scripts/main.ts --prompt "Make blue" --image out.png --provider google --model gemini-3-pro-image --ref source.png
 
 # OpenRouter (recommended default)
 ${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --provider openrouter
 
 # OpenRouter with reference
-${BUN_X} {baseDir}/scripts/main.ts --prompt "Make blue" --image out.png --provider openrouter --model google/gemini-3.1-flash-image-preview --ref source.png
+${BUN_X} {baseDir}/scripts/main.ts --prompt "Make blue" --image out.png --provider openrouter --model google/gemini-3.1-flash-image --ref source.png
 
 # DashScope (default model)
 ${BUN_X} {baseDir}/scripts/main.ts --prompt "一只可爱的猫" --image out.png --provider dashscope

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `andersonamaral2/Claude-Code-to-Deep-Agents-Skills-Converter` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `andersonamaral2/Claude-Code-to-Deep-Agents-Skills-Converter` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `andersonamaral2/Claude-Code-to-Deep-Agents-Skills-Converter` — 26 d
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,9 +60,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`examples/claude-code-sample-2/SKILL.md`](examples/claude-code-sample-2/SKILL.md) |
-| 2 | ✓ | [`examples/claude-code-sample/SKILL.md`](examples/claude-code-sample/SKILL.md) |
-| 3 | ✓ | [`examples/deep-agents-output-2/SKILL.md`](examples/deep-agents-output-2/SKILL.md) |
-| 4 | ✓ | [`examples/deep-agents-output/SKILL.md`](examples/deep-agents-output/SKILL.md) |
+| 2 | ✓ | [`examples/claude-code-sample-3/SKILL.md`](examples/claude-code-sample-3/SKILL.md) |
+| 3 | ✓ | [`examples/claude-code-sample/SKILL.md`](examples/claude-code-sample/SKILL.md) |
+| 4 | ✓ | [`examples/codex-output/SKILL.md`](examples/codex-output/SKILL.md) |
+| 5 | ✓ | [`examples/cursor-output/python-fastapi-todo-app/SKILL.md`](examples/cursor-output/python-fastapi-todo-app/SKILL.md) |
+| 6 | ✓ | [`examples/deep-agents-output-2/SKILL.md`](examples/deep-agents-output-2/SKILL.md) |
+| 7 | ✓ | [`examples/deep-agents-output-3/SKILL.md`](examples/deep-agents-output-3/SKILL.md) |
+| 8 | ✓ | [`examples/deep-agents-output/SKILL.md`](examples/deep-agents-output/SKILL.md) |
+| 9 | ✓ | [`examples/qwen-output/python-fastapi-todo-app/SKILL.md`](examples/qwen-output/python-fastapi-todo-app/SKILL.md) |
 
 ---
 

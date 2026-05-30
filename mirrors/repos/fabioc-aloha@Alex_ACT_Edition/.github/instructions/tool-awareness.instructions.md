@@ -1,10 +1,12 @@
 ---
 description: "Platform awareness for VS Code tool system: deferred tools require tool_search, external ingest provides context in remote workspaces, skill SKILL.md descriptions surface in the slash picker"
 applyTo: "**"
-lastReviewed: 2026-05-27
+lastReviewed: 2026-05-29
 ---
 
 # Tool Awareness
+
+**Always-on rationale**: deferred-tool resolution and external-ingest awareness apply to any tool-using turn regardless of file context. The `search before calling` discipline must fire on every deferred-tool need; scoping by file pattern would silence the protection exactly when the agent needs an unfamiliar tool.
 
 ## Deferred Tools (VS Code 1.118+)
 

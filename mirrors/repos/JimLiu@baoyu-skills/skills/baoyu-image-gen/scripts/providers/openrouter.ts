@@ -2,7 +2,7 @@ import path from "node:path";
 import { readFile } from "node:fs/promises";
 import type { CliArgs } from "../types";
 
-const DEFAULT_MODEL = "google/gemini-3.1-flash-image-preview";
+const DEFAULT_MODEL = "google/gemini-3.1-flash-image";
 const COMMON_ASPECT_RATIOS = [
   "1:1",
   "2:3",
@@ -67,7 +67,10 @@ function isTextAndImageModel(model: string): boolean {
 
 function getSupportedAspectRatios(model: string): Set<string> {
   const normalized = normalizeModelId(model);
-  if (normalized !== "google/gemini-3.1-flash-image-preview") {
+  if (
+    normalized !== "google/gemini-3.1-flash-image" &&
+    normalized !== "google/gemini-3.1-flash-image-preview"
+  ) {
     return new Set(COMMON_ASPECT_RATIOS);
   }
 

@@ -575,6 +575,35 @@ Optional: set `ARIS_VERIFY_EMAIL=you@institution.edu` in your shell to lift
 CrossRef rate limits to the polite pool.
 
 ### Step 2: Analyze Each Paper
+
+> **Fan-out (Tier-aware).** Per-paper extraction is pure breadth — each paper
+> is independent — so it parallelizes cleanly. **Tier 1** (Workflow): spawn
+> one Claude subagent per paper (or per small batch) to extract the fields
+> below. **Tier 2** (Agent tool, no Workflow): the same per-paper subagents
+> via the Agent tool. **Tier 3**: iterate sequentially. This follows the
+> *extraction* shard schema from
+> [`shared-references/fan-out-pattern.md`](../shared-references/fan-out-pattern.md)
+> — `{shard_id: "<paper-or-batch id>", entries: [{dedup_key: "<canonical
+> arXiv-id / DOI / title-hash, already assigned upstream in Step 1.5>",
+> problem, method, results, relevance, source, verification_status}]}`.
+>
+> The "jury" here is **not a model** — it is the **deterministic**
+> `verify_papers.py` gate already run in Step 1.5 (3-layer arXiv / CrossRef /
+> Semantic Scholar cross-check). Because the acceptance gate is a deterministic
+> verifier, not a model verdict, the cross-model-family rule is automatically
+> satisfied (a process is not a model family — see
+> [`acceptance-gate.md`](../shared-references/acceptance-gate.md)), so this is
+> the **near-zero-risk** corner of the fan-out design space. The per-paper work
+> is **extraction, not adjudication**: shards report what each paper says and
+> its verification status verbatim; they do **not** decide which papers
+> "count" (Step 1.5 already did, mechanically) and they do **not** drop a paper
+> for any status other than `verified`. Synthesis (Step 3) is *interpretive*
+> aggregation — grouping by theme, spotting gaps our work could fill — over an
+> already-admitted set; it is the executor's normal job, NOT an accept/reject
+> verdict on whether a paper *counts*. The cross-model-family rule governs
+> admission verdicts, and here admission is the deterministic Step-1.5 gate, so
+> the invariant is satisfied without a model jury.
+
 For **every** paper in `.aris/verify-papers/verified_papers.json`
 (verified, unverified, `verify_pending`, and `error` alike — see
 Retention rule above), extract:

@@ -4,6 +4,8 @@ import { execFileSync } from "node:child_process";
 import type { CliArgs } from "../types";
 
 const GOOGLE_MULTIMODAL_MODELS = [
+  "gemini-3-pro-image",
+  "gemini-3.1-flash-image",
   "gemini-3-pro-image-preview",
   "gemini-3-flash-preview",
   "gemini-3.1-flash-image-preview",
@@ -14,7 +16,7 @@ const GOOGLE_IMAGEN_MODELS = [
 ];
 
 export function getDefaultModel(): string {
-  return process.env.GOOGLE_IMAGE_MODEL || "gemini-3-pro-image-preview";
+  return process.env.GOOGLE_IMAGE_MODEL || "gemini-3-pro-image";
 }
 
 export function normalizeGoogleModelId(model: string): string {
@@ -333,7 +335,7 @@ export async function generateImage(
   if (isGoogleImagen(model)) {
     if (args.referenceImages.length > 0) {
       throw new Error(
-        "Reference images are not supported with Imagen models. Use gemini-3-pro-image-preview, gemini-3-flash-preview, or gemini-3.1-flash-image-preview.",
+        "Reference images are not supported with Imagen models. Use a Gemini multimodal model such as gemini-3-pro-image, gemini-3.1-flash-image, gemini-3-pro-image-preview, gemini-3-flash-preview, or gemini-3.1-flash-image-preview.",
       );
     }
     return generateWithImagen(prompt, model, args);
@@ -341,7 +343,7 @@ export async function generateImage(
 
   if (!isGoogleMultimodal(model) && args.referenceImages.length > 0) {
     throw new Error(
-      "Reference images are only supported with Gemini multimodal models. Use gemini-3-pro-image-preview, gemini-3-flash-preview, or gemini-3.1-flash-image-preview.",
+      "Reference images are only supported with Gemini multimodal models such as gemini-3-pro-image, gemini-3.1-flash-image, gemini-3-pro-image-preview, gemini-3-flash-preview, or gemini-3.1-flash-image-preview.",
     );
   }
 

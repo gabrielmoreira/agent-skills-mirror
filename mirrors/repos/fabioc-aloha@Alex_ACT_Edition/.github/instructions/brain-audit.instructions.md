@@ -1,7 +1,7 @@
 ---
-description: Brain audit routing -- run local deterministic QA, validate findings in files, and prioritize fixes by severity.
+description: Brain audit routing -- run local deterministic QA on brain artefacts, validate findings in files, and prioritize fixes by severity.
 applyTo: '**/*audit*brain*,**/*brain*qa*,**/*epistemic*qa*,**/*quality*review*'
-lastReviewed: 2026-05-13
+lastReviewed: 2026-05-29
 ---
 
 # Brain Audit Routing
@@ -15,6 +15,8 @@ For any brain-audit request:
 5. Rerun the same local evidence checks after edits.
 
 The audit is complete only after findings are either fixed or explicitly documented as deferred with rationale.
+
+References to the AI-Memory sibling repo at `../Alex_ACT_Memory/...` are valid xref destinations — a missing target in the local tree means *check the sibling repo*, not *broken link*. The sibling repo is checked out independently per heir.
 
 ## Would Revise If
 

@@ -1,11 +1,11 @@
 ---
-description: "File feedback to the user (and their Supervisor, if any) via AI-Memory — guided through stripping rules and file naming"
-lastReviewed: 2026-05-26
+description: "File feedback to the user (and their Supervisor, if any) via the shared memory bus — guided through stripping rules and file naming"
+lastReviewed: 2026-05-29
 ---
 
 # Feedback
 
-Capture friction, bugs, feature ideas, or success notes from this session and write them to `AI-Memory/feedback/alex-act/` so they propagate to the user (and their Supervisor, if they run one).
+Capture friction, bugs, feature ideas, or success notes from this session and write them to `../Alex_ACT_Memory/feedback/` so they propagate to the user (and their Supervisor, if they run one).
 
 ## Steps
 

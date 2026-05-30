@@ -1,5 +1,7 @@
 # Idea-to-Prompt Patterns
 
+> **Decision rule:** Use when the request is a vague idea with no concrete scope yet (no files, no acceptance criteria, no named constraints). Once scope/acceptance must be written down, escalate to `spec-driven-development.md`.
+
 ## Purpose
 
 Transform a vague or abstract user idea into a concrete, structured planning prompt that Planner (or Orchestrator) can decompose into an execution-ready plan.

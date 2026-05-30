@@ -135,19 +135,20 @@ Returns raw PNG. **Never fetch more than 2-3 frames per query** (~1000-2000 toke
 
 ---
 
-## 5. Media Export — `POST /frames/export`
+## 5. Media Export — `POST /export`
+
+Renders a real-time MP4 (screen frames at their true timestamps + synced microphone audio). The clip's duration matches the wall-clock span you ask for — it is NOT a sped-up timelapse.
 
 ```bash
-curl -X POST http://localhost:3030/frames/export \
+curl -X POST http://localhost:3030/export \
   -H "Content-Type: application/json" \
-  -d '{"start_time": "5m ago", "end_time": "now", "fps": 1.0}'
+  -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
+  -d '{"start": "5m ago", "end": "now"}'
 ```
 
-Fields: `start_time`, `end_time` (or `frame_ids` array), `fps` (default 1.0). Max 10,000 frames.
+Fields: `start` + `end` (ISO 8601 or relative like `"2h ago"`, `"now"`; `end` defaults to now), OR `meeting_id` to export a whole meeting. Optional `output_path` writes the MP4 to a specific absolute path (e.g. `~/Downloads/clip.mp4`); otherwise it lands in the data dir's `exports/` folder.
 
-FPS guidelines: 5min→1.0, 30min→0.5, 1h→0.2, 2h+→0.1
-
-Returns `{"file_path": "...", "frame_count": N, "duration_secs": N, "file_size_bytes": N}`. Show path as inline code block for playback.
+Returns `{"output_path": "...", "frame_count": N, "audio_chunk_count": N, "duration_secs": N, "file_size_bytes": N}`. Show `output_path` as an inline code block for playback. Long ranges can take a few minutes.
 
 ### Audio & ffmpeg
 

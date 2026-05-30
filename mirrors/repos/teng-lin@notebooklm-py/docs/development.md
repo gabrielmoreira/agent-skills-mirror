@@ -27,7 +27,7 @@ src/notebooklm/
 ├── auth.py              # Authentication handling
 ├── types.py             # Dataclasses and type definitions
 ├── _client_composed.py  # Client-owned composition holder
-├── _session_init.py     # Runtime collaborator construction and wiring
+├── _runtime_init.py     # Runtime collaborator construction and wiring
 ├── _notebooks.py        # NotebooksAPI implementation
 ├── _notebook_metadata.py # Private notebook metadata composition service
 ├── _sources.py          # SourcesAPI implementation
@@ -75,7 +75,7 @@ src/notebooklm/
                             │
 ┌───────────────────────────▼─────────────────────────────────┐
 │                      Runtime Layer                          │
-│          RpcExecutor, SessionTransport, Kernel, lifecycle    │
+│          RpcExecutor, RuntimeTransport, Kernel, lifecycle    │
 └───────────────────────────┬─────────────────────────────────┘
                             │
 ┌───────────────────────────▼─────────────────────────────────┐
@@ -90,13 +90,13 @@ src/notebooklm/
 |-------|-------|----------------|
 | **CLI** | `cli/*.py` | User commands, input validation, Rich output |
 | **Client** | `client.py`, `_*.py` | High-level Python API, returns typed dataclasses |
-| **Runtime** | `client.py`, `_client_composed.py`, `_session_init.py`, `_kernel.py`, runtime collaborators | `NotebookLMClient` composition root plus seam-module helpers (HTTP client lifecycle, RPC dispatch, metrics, drain bookkeeping, request-id counter, auth refresh, conversation cache, polling registry, cookie persistence) |
+| **Runtime** | `client.py`, `_client_composed.py`, `_runtime_init.py`, `_kernel.py`, runtime collaborators | `NotebookLMClient` composition root plus seam-module helpers (HTTP client lifecycle, RPC dispatch, metrics, drain bookkeeping, request-id counter, auth refresh, conversation cache, polling registry, cookie persistence) |
 | **RPC** | `rpc/*.py` | Protocol encoding/decoding, method IDs |
 
 #### Runtime seam modules
 
 The client runtime is split across `NotebookLMClient` (composition root),
-`ClientComposed` (holder), `_session_init.py` (construction helpers),
+`ClientComposed` (holder), `_runtime_init.py` (construction helpers),
 `_kernel.py` (HTTP client owner), and single-responsibility collaborator
 modules. (The legacy `_core.py` compatibility shim was deleted in v0.5.0;
 callers import directly from the canonical modules.) Each helper exposes
@@ -105,22 +105,22 @@ a narrow Protocol surface so it can be unit-tested against a stub:
 | Module | Class | Responsibility |
 |---|---|---|
 | `_client_composed.py` | `ClientComposed` | Client-owned holder for transport, executor, chain host, middleware metadata, and session collaborator bundle. |
-| `_session_init.py` | `ClientInternals` helpers | Validates constructor args, builds collaborators, wires middleware, and binds `ClientComposed`. |
+| `_runtime_init.py` | `ClientInternals` helpers | Validates constructor args, builds collaborators, wires middleware, and binds `ClientComposed`. |
 | `_client_metrics.py` | `ClientMetrics` | `ClientMetricsSnapshot` counters, queue-wait recorders, `on_rpc_event` async callback. |
 | `_transport_drain.py` | `TransportDrainTracker` | In-flight transport counters, `_TransportOperationToken`, lazy `asyncio.Condition` powering `client.drain(...)`. |
 | `_reqid_counter.py` | `ReqidCounter` | Monotonic `_reqid` counter for chat backend (baseline 100000, step 100000). |
-| `_session_auth.py` | `AuthRefreshCoordinator` | Refresh-task lifecycle, refresh lock, `AuthSnapshot` rotation. |
-| `_session_lifecycle.py` | `ClientLifecycle` | Loop-affinity guard, `aclose` plumbing, keepalive task wiring. |
+| `_runtime_auth.py` | `AuthRefreshCoordinator` | Refresh-task lifecycle, refresh lock, `AuthSnapshot` rotation. |
+| `_runtime_lifecycle.py` | `ClientLifecycle` | Loop-affinity guard, `aclose` plumbing, keepalive task wiring. |
 | `_rpc_executor.py` | `RpcExecutor` | RPC dispatch executor with direct collaborator dependencies. |
 | `_request_types.py` | `AuthSnapshot`, `BuildRequest`, request materialization | Shared request construction Interface. |
 | `_transport_errors.py` | transport exceptions, `parse_retry_after`, `raise_mapped_post_error` | Terminal `Kernel.post` error mapping for middleware retry/auth behavior. |
 | `_streaming_post.py` | `stream_post_with_size_cap` | Low-level POST streaming and response-size guard. |
-| `_conversation_cache.py` | `ConversationCache` | Per-instance LRU conversation cache for `ChatAPI` continuity. |
+| `_conversation_cache.py` | `ConversationCache` | Per-instance true-LRU conversation cache for `ChatAPI` continuity. Caps the conversation count (`MAX_CONVERSATION_CACHE_SIZE`) and the turns retained per conversation (`MAX_TURNS_PER_CONVERSATION`). |
 | `_polling_registry.py` | `PollRegistry` | Pending-poll registry shared by long-running artifact generations. |
 | `_cookie_persistence.py` | `CookiePersistence` | Cookie-jar → storage-state serialization, `__Secure-1PSIDTS` rotation. |
 
 The feature-facing surface is the set of **capability Protocols** in
-`notebooklm._session_contracts` — `RpcCaller`, `LoopGuard`,
+`notebooklm._runtime_contracts` — `RpcCaller`, `LoopGuard`,
 `OperationScopeProvider`, `AsyncWorkRuntime`, plus the standalone
 `AuthMetadata` and `Kernel` consumed by the upload pipeline. The
 broad `Session` Protocol that previously bundled these together was
@@ -638,16 +638,21 @@ f-string eager evaluation defeats lazy formatting and (although the filter would
 
 ### Third-party loggers
 
-`httpx`, `urllib3`, and `asyncio` can emit at DEBUG with full URLs and headers containing notebooklm-py credentials. The CLI calls `install_redaction` automatically when `-vv` is set:
+`httpx`, `urllib3`, and `asyncio` can emit at DEBUG with full URLs and headers containing notebooklm-py credentials.
+
+For `httpx` and `urllib3`, `configure_logging()` (run automatically at package import) attaches a *logger-level* `RedactingFilter` to each. That filter runs before records propagate to ancestor loggers, so a library consumer who enables those loggers via `logging.basicConfig(level=logging.DEBUG)` gets credential-scrubbed request URLs and headers with no extra setup — and without notebooklm-py adding any handler of its own to those loggers.
+
+If you also want those loggers to *emit* through notebooklm-py's default handler (the CLI does this when `-vv` is set), call `install_redaction`, which adds both the filter and a default StreamHandler:
 
 ```python
-from notebooklm._logging import install_redaction
+from notebooklm.log import install_redaction
 install_redaction("httpx", "urllib3")
 ```
 
-Library consumers must do the same if they enable DEBUG on these loggers. If a third-party library sets `propagate=False` on its internal loggers (rare), pass child names explicitly:
+To cover additional third-party loggers (e.g. `asyncio`) or libraries that set `propagate=False` on internal loggers (rare), pass the names explicitly:
 
 ```python
+install_redaction("asyncio")
 install_redaction("httpx._client", "urllib3.connectionpool")
 ```
 

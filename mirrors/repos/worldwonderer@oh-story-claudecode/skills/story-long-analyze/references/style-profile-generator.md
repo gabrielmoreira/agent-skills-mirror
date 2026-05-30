@@ -120,7 +120,7 @@ PYEOF
 
 按 [style-profile-protocol.md](style-profile-protocol.md) 模板填写 `拆文库/{书名}/文风.md`：
 
-- **文风文件必须留在拆文库**（`拆文库/{书名}/文风.md`），**永不写入** `对标/` 或写作项目目录——拆文库是 analyze 的 source of truth，写作项目的 `对标/{书名}/` 由 story-import 从拆文库同步
+- **文风文件必须留在拆文库**（`拆文库/{书名}/文风.md`），**永不写入** `对标/` 或写作项目目录——拆文库是 analyze 的数据源，写作项目的 `对标/{书名}/` 由 story-import 从拆文库同步
 - 每段标 `confidence: high/med/low`（内部给写作 agent 判断强弱，普通用户可忽略）：
   - `high`：数据直接来自拆文产物（如「写法技巧」直接引用拆文报告）
   - `med`：从样本归纳且样本充足（如基调序列从 ≥10 章摘要统计）

@@ -1,10 +1,12 @@
 ---
 description: "Communication craft — give feedback, explain concepts, tailor to audience, elicit needs"
 applyTo: "**"
-lastReviewed: 2026-05-18
+lastReviewed: 2026-05-29
 ---
 
 # Communication Craft
+
+**Always-on rationale**: every response is communication. Feedback shape, audience calibration, and need-elicitation discipline apply on every turn regardless of file context, so the glob is `**` rather than a content-pattern.
 
 Load-bearing patterns for feedback, audience, and elicitation. Inherited LLM behaviors (clear prose, jargon-defining, signposting) are assumed and not re-stated.
 

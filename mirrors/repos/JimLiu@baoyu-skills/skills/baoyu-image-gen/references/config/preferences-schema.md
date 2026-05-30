@@ -22,10 +22,10 @@ default_image_size: null    # 1K|2K|4K|null (Google/OpenRouter, overrides qualit
 default_image_api_dialect: null  # openai-native|ratio-metadata|null (OpenAI-compatible gateways; null = use env/default)
 
 default_model:
-  google: null              # e.g., "gemini-3-pro-image-preview", "gemini-3.1-flash-image-preview"
+  google: null              # e.g., "gemini-3-pro-image", "gemini-3.1-flash-image"
   openai: null              # e.g., "gpt-image-2", "gpt-image-1.5", "gpt-image-1"
   azure: null               # Azure deployment name, e.g., "gpt-image-2" or "image-prod"
-  openrouter: null          # e.g., "google/gemini-3.1-flash-image-preview"
+  openrouter: null          # e.g., "google/gemini-3.1-flash-image"
   dashscope: null           # e.g., "qwen-image-2.0-pro"
   zai: null                 # e.g., "glm-image"
   minimax: null             # e.g., "image-01"
@@ -110,10 +110,10 @@ default_aspect_ratio: "16:9"
 default_image_size: 2K
 default_image_api_dialect: null
 default_model:
-  google: "gemini-3-pro-image-preview"
+  google: "gemini-3-pro-image"
   openai: "gpt-image-2"
   azure: "gpt-image-2"
-  openrouter: "google/gemini-3.1-flash-image-preview"
+  openrouter: "google/gemini-3.1-flash-image"
   dashscope: "qwen-image-2.0-pro"
   zai: "glm-image"
   minimax: "image-01"

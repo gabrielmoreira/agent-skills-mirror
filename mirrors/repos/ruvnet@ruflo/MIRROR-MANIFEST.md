@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ruvnet/ruflo` — 26 default patterns, 0 followed patterns, 337 file(s) materialized.
+Mirror of `ruvnet/ruflo` — 26 default patterns, 1 followed patterns, 338 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ruvnet/ruflo` — 26 default patterns, 0 followed patterns, 337 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 337 |
+| Followed pats | 1 |
+| Files         | 338 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `ruvnet/ruflo` — 26 default patterns, 0 followed patterns, 337 file(
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/reviews/intelligence-system-audit-2026-05-29.md`
 
 ## File Index
 
@@ -396,6 +396,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 335 | ✓ | [`v3/@claude-flow/codex/AGENTS.md`](v3/@claude-flow/codex/AGENTS.md) |
 | 336 | ✓ | [`v3/@claude-flow/mcp/CLAUDE.md`](v3/@claude-flow/mcp/CLAUDE.md) |
 | 337 | ✓ | [`v3/CLAUDE.md`](v3/CLAUDE.md) |
+| 338 | → | [`docs/reviews/intelligence-system-audit-2026-05-29.md`](docs/reviews/intelligence-system-audit-2026-05-29.md) |
 
 ---
 

@@ -56,6 +56,6 @@ Every success criterion in the plan must map to at least one acceptance test:
 | Success Criterion | Test Location | Test Type |
 |---|---|---|
 | "No stale references in governance docs" | Phase 1 Tests section | grep / validate.mjs check |
-| "7 skill files in index" | Phase 2 Tests section | validate.mjs Pass 5 |
+| "18 skill files in index" | Phase 2 Tests section | validate.mjs Pass 5 |
 
 Missing test coverage for a success criterion → MINOR finding.

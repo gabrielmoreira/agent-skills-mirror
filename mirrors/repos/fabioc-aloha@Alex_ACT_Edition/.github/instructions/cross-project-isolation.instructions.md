@@ -1,8 +1,10 @@
 ---
 description: "Strip project specifics before writing to user-shared fleet channels — prevent one heir's project context from leaking into the rest of the fleet"
 applyTo: "**/Alex_ACT_Memory/**,**/feedback/**,**/announcements/**,**/*fleet*,**/*feedback*"
-lastReviewed: 2026-05-28
+lastReviewed: 2026-05-29
 ---
+
+<!-- intentional divergence from Supervisor: Edition includes feedback-channel paths in applyTo, a "Fleet feedback" row in the channel table, and Related links to feedback.prompt.md + mall-installation.instructions.md — all heir-side surfaces Supervisor doesn't write to. Supervisor's narrower copy targets curator writes only. Audited 2026-05-29. -->
 
 # Cross-Project Isolation
 
@@ -69,7 +71,7 @@ If the user explicitly says "just write it, don't strip" — **refuse**. The fle
 
 ## Falsifiability
 
-This instruction is decorative if, after 30 days of fleet activity, an audit of `AI-Memory/feedback/alex-act/` finds zero entries that required stripping (i.e. nothing project-specific ever made it through filtering — meaning the rule is over-restrictive) or any entries containing un-stripped project-identifying detail (under-restrictive). Mitigation: when the Supervisor runs `/triage-feedback`, it explicitly verifies stripping per `feedback-triage.instructions.md`.
+This instruction is decorative if, after 30 days of fleet activity, an audit of `../Alex_ACT_Memory/feedback/` finds zero entries that required stripping (i.e. nothing project-specific ever made it through filtering — meaning the rule is over-restrictive) or any entries containing un-stripped project-identifying detail (under-restrictive). Mitigation: when a heir runs `/feedback` or when the Supervisor writes to any fleet channel, the stripping rules above are explicitly verified before publish.
 
 ## Related
 

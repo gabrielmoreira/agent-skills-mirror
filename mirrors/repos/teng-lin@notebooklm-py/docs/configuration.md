@@ -1,7 +1,7 @@
 # Configuration
 
 **Status:** Active
-**Last Updated:** 2026-05-14
+**Last Updated:** 2026-05-29
 
 This guide covers storage locations, environment settings, and configuration options for `notebooklm-py`.
 
@@ -133,15 +133,28 @@ A persistent Chromium user data directory used during `notebooklm login`.
 | `NOTEBOOKLM_LOG_LEVEL` | Logging level: `DEBUG`, `INFO`, `WARNING`, `ERROR` | `WARNING` |
 | `NOTEBOOKLM_DEBUG_RPC` | Legacy: Enable RPC debug logging (use `LOG_LEVEL=DEBUG` instead) | `false` |
 | `NOTEBOOKLM_DEBUG` | Show untruncated RPC response bodies in error messages instead of the default 80-char preview (verbose; intended for deep debugging) | `0` |
-| `NOTEBOOKLM_STRICT_DECODE` | Raise `UnknownRPCMethodError` on schema drift (default since PR 13.9a). Set to `0` to opt back into warn-and-fallback for one release window. | `1` |
+| `NOTEBOOKLM_STRICT_DECODE` | **Retired (ignored since v0.7.0).** Strict decoding is now the only mode: `safe_index` always raises `UnknownRPCMethodError` on schema drift. The former `0` warn-and-fallback opt-out was removed. | (ignored) |
 | `NOTEBOOKLM_RPC_OVERRIDES` | JSON object mapping `RPCMethod` enum names to RPC ID strings (community self-patch when Google rotates a method ID; e.g. `{"LIST_NOTEBOOKS":"AbC123"}`) | - |
 | `NOTEBOOKLM_REFRESH_CMD` | Optional command (argv list, or shell string with `_USE_SHELL=1`) invoked when auth refresh is required. Must exit `0` after writing a refreshed `storage_state.json`; the parent reloads from disk | - |
 | `NOTEBOOKLM_REFRESH_CMD_USE_SHELL` | Opt the `NOTEBOOKLM_REFRESH_CMD` subprocess back into `shell=True` execution. Default `shell=False` (argv list) — set to the literal `1` (only `"1"` is honored — not `true`/`yes`/`on`) when the refresh command requires shell metacharacters | `0` |
 | `NOTEBOOKLM_REFRESH_PROFILE` | Child-process hint set for `NOTEBOOKLM_REFRESH_CMD`; names the resolved profile being refreshed | resolved profile |
 | `NOTEBOOKLM_REFRESH_STORAGE_PATH` | Child-process hint set for `NOTEBOOKLM_REFRESH_CMD`; path to the `storage_state.json` file the command must rewrite | resolved storage path |
 | `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE` | Disable the proactive `accounts.google.com/RotateCookies` poke that refreshes `__Secure-1PSIDTS` ahead of expiry | `0` |
-| `NOTEBOOKLM_QUIET_DEPRECATIONS` | Suppress stderr deprecation notices for deprecated CLI flags | - |
+| `NOTEBOOKLM_QUIET_DEPRECATIONS` | Legacy no-op. Formerly suppressed the `source add --mime-type` "unused for file sources" stderr notice; `--mime-type` is now a supported file-source parameter, so there is no notice to suppress. | (no effect) |
 | `NOTEBOOKLM_VCR_RECORD_ERRORS` | Synthetic-error injection mode for VCR test cassettes (`429`, `5xx`, `expired_csrf`) | - |
+
+### Public config API vs internal resolvers
+
+`src/notebooklm/_env.py` owns internal environment/default resolution for
+runtime behavior. It reads process environment variables and contains internal
+defaults such as `DEFAULT_BL` for the chat streaming build label.
+
+`notebooklm.config` is the stable public import surface. It intentionally
+re-exports only the supported endpoint/language helpers:
+`DEFAULT_BASE_URL`, `ENTERPRISE_BASE_HOST`, `get_base_host`, `get_base_url`,
+`get_default_language`, and `PERSONAL_BASE_HOST`. Existing imports
+from `notebooklm.config` remain supported; internal-only `_env` names should
+not be imported by downstream code.
 
 ### Env vars and precedence
 
@@ -161,8 +174,8 @@ be audited from one location.
 | `NOTEBOOKLM_DEBUG_RPC` | Legacy alias that sets the package logger to `DEBUG`. Prefer `NOTEBOOKLM_LOG_LEVEL=DEBUG` for new code. | (See `NOTEBOOKLM_LOG_LEVEL`.) | `_logging.configure_logging` |
 | `NOTEBOOKLM_NOTEBOOK` | Default notebook ID when no `-n/--notebook` flag is passed. Composes with `notebooklm use <id>` so per-shell overrides do not clobber the persisted active-notebook context. | `-n/--notebook` flag → `NOTEBOOKLM_NOTEBOOK` → active context (from `notebooklm use`) → error | `cli.helpers.require_notebook` (Click also reads it natively via `cli/options.py:notebook_option`'s `envvar=`) |
 | `NOTEBOOKLM_RPC_OVERRIDES` | **JSON object** mapping `RPCMethod` enum names to RPC ID strings (e.g. `{"LIST_NOTEBOOKS": "AbC123"}`). Overrides runtime RPC IDs — community self-patch when Google rotates a method ID. Empty string / unset disables the mechanism; invalid JSON or non-object payloads emit a `WARNING` and are ignored. | Process env, evaluated per RPC resolve (cached on the raw env string). | `notebooklm.rpc.overrides._parse_rpc_overrides` |
-| `NOTEBOOKLM_QUIET_DEPRECATIONS` | Suppress stderr deprecation notices for deprecated CLI flags (e.g. `source add --mime-type` on file sources). Library-level `DeprecationWarning`s are unaffected. | Set to `1` to suppress; any other value (or unset) leaves the notice enabled. | individual CLI commands; see `NOTEBOOKLM_QUIET_DEPRECATIONS` section below |
-| `NOTEBOOKLM_STRICT_DECODE` | Toggle the decoder's drift behavior — raise `UnknownRPCMethodError` (unset/`1`/`true`/`True`, default since PR 13.9a) vs warn-and-fallback opt-out (`0`/`false`/`False`/`no`/`off`/`""` or any other non-truthy value). | Process env on each decode call. | `_env.is_strict_decode_enabled` |
+| `NOTEBOOKLM_QUIET_DEPRECATIONS` | Legacy no-op. Formerly suppressed the `source add --mime-type` file-source notice; that flag is now a supported parameter, so no notice is emitted and this variable has no effect. | (no effect) | — |
+| `NOTEBOOKLM_STRICT_DECODE` | **Retired (ignored since v0.7.0).** Strict decoding is the only mode — `safe_index` always raises `UnknownRPCMethodError` on schema drift. The former `0` warn-and-fallback opt-out was removed; setting the variable has no effect. | (ignored) | — |
 | `NOTEBOOKLM_BASE_URL` | NotebookLM base URL. Constrained to `https://notebooklm.google.com` (personal) or `https://notebooklm.cloud.google.com` (enterprise); other schemes/hosts/paths raise `ValueError`. | Process env on every base-URL lookup. | `_env.get_base_url` |
 | `NOTEBOOKLM_BL` | `bl` (build label) URL parameter sent on the chat streaming endpoint (`ChatAPI.ask`). Pins the frontend build the request is attributed to. | Process env on every chat stream call; whitespace-only falls back to `_env.DEFAULT_BL`. | `_env.get_default_bl` |
 | `NOTEBOOKLM_DEBUG` | When `1`, RPC error messages include the **full** untruncated response body instead of the default 80-char preview. Verbose; intended for deep debugging only. | Process env on each error formatting call. | `exceptions._truncate_response_preview` |
@@ -175,11 +188,10 @@ be audited from one location.
 
 **Boolean handling.** `NOTEBOOKLM_DEBUG_RPC` treats `1` / `true` / `yes`
 (case-insensitive) as truthy; everything else is falsy.
-`NOTEBOOKLM_STRICT_DECODE` treats `1` / `true` / `True` as truthy (the unset
-default also resolves to truthy post-PR 13.9a); everything else (`0`,
-`false`, `False`, `no`, `off`, `""`, or any other non-truthy value) is
-falsy and opts back into the soft-mode fallback.
-`NOTEBOOKLM_QUIET_DEPRECATIONS` requires the literal string `1`.
+`NOTEBOOKLM_STRICT_DECODE` is ignored as of v0.7.0 (strict decoding is the
+only mode); no value changes decoder behavior.
+`NOTEBOOKLM_QUIET_DEPRECATIONS` is a legacy no-op (its only gated notice,
+`source add --mime-type`, is no longer deprecated).
 `NOTEBOOKLM_NOTEBOOK` is treated as unset when empty or whitespace-only so a
 bare `export NOTEBOOKLM_NOTEBOOK=` does not block `notebooklm use` /
 `-n/--notebook` from resolving.
@@ -294,24 +306,16 @@ back to `en`. For the generate commands, the resolution order is:
 
 ### NOTEBOOKLM_QUIET_DEPRECATIONS
 
-Suppresses stderr deprecation notices emitted by CLI commands when a
-deprecated flag or option is used. Useful in CI logs where the deprecation
-signal would otherwise be repeated across every invocation in a pipeline.
+Legacy no-op. This variable formerly suppressed a stderr notice emitted when
+`source add --mime-type` was passed on a file source (back when that flag was
+a deprecated no-op). `--mime-type` is now a **supported** file-source
+parameter — it sets the resumable-upload content-type header — so no notice is
+emitted and this variable has no effect. Setting it is harmless and ignored;
+it is retained only so existing CI configs that export it do not error.
 
-```bash
-export NOTEBOOKLM_QUIET_DEPRECATIONS=1
-notebooklm source add ./report.pdf --type file --mime-type application/pdf
-# (no "--mime-type is unused for file sources" notice on stderr)
-```
-
-Set the value to ``1`` to suppress the notice; any other value (including
-``0`` or ``false``) leaves the deprecation notice enabled. The underlying
-behavior — that the deprecated flag remains a no-op — is unchanged; only
-the user-facing
-warning text is silenced. Library-level `DeprecationWarning`s emitted from
-the Python API (e.g. `client.sources.add_file(..., mime_type=...)`) are
-**not** affected by this variable; use standard `warnings.filterwarnings`
-to manage those programmatically.
+`client.sources.add_file(..., mime_type=...)` likewise no longer emits a
+`DeprecationWarning` (the parameter is supported), so there is nothing to
+suppress on the Python-API side either.
 
 ### Timeouts
 
@@ -323,7 +327,7 @@ longer read timeout accommodates slow server responses. The timeout is exposed a
 constructor argument on `NotebookLMClient` (`timeout=`)
 for callers that need to tune it per-workload — see the
 `DEFAULT_TIMEOUT` / `DEFAULT_CONNECT_TIMEOUT` constants in
-`src/notebooklm/_session_config.py`. The chat streaming endpoint
+`src/notebooklm/_runtime_config.py`. The chat streaming endpoint
 (`ChatAPI.ask`) keeps its own longer per-stream deadlines because individual
 chat responses can exceed 30 seconds, but this is configured at the client level
 (via the `timeout=` argument on the `NotebookLMClient` constructor or `from_storage` initializer),
@@ -334,28 +338,16 @@ not on individual `ask` calls.
 NotebookLM's batchexecute responses are obfuscated, undocumented, and reshaped
 by Google without notice. The decoder uses a shared `safe_index` helper to walk
 nested response payloads. When it can't descend (an index is out of range, or
-the value at a step isn't indexable), behavior depends on
-`NOTEBOOKLM_STRICT_DECODE`:
+the value at a step isn't indexable), it **raises**
+`UnknownRPCMethodError` (a subclass of `DecodingError` / `RPCError`) with
+structured `method_id`, `path`, `source`, and `data_at_failure` attributes.
 
-| Value | Behavior |
-|-------|----------|
-| unset / `1` / `true` / `True` (default since PR 13.9a) | Raise `UnknownRPCMethodError` (a subclass of `DecodingError` / `RPCError`) with structured `method_id`, `path`, `source`, and `data_at_failure` attributes. |
-| `0` / `false` / `False` / `no` / `off` / `""` (opt-out — or any other non-truthy value) | Log a warning with the failing path, `method_id`, `source` label, and a truncated repr of the data. Emit `DeprecationWarning` when fallback is used, then return `None` so legacy callers keep working during the final migration window. |
-
-The flipped default (PR 13.9a) closes the Tier-12/13 soft-rollout window the
-shared `safe_index` helper was introduced under: every call site that
-descends through `safe_index` already handles both modes, and the
-strict-by-default contract surfaces real schema drift (Google rotating a
-response shape) as a typed exception instead of a silent `None` return. A
-small number of legacy positional decoders in `_artifact_downloads`,
-`_artifact_polling`, and `_chat_protocol` predate the helper and still have
-their own feature-local error-recovery paths; they will be migrated to
-`safe_index` in Tier 13.x follow-ups and are unaffected by this flip. Set
-`NOTEBOOKLM_STRICT_DECODE=0` to opt back into the legacy warn-and-fallback for
-one release if downstream code is not yet ready for the typed exception path.
-As of v0.5.0, every fallback use also emits `DeprecationWarning` naming the
-decoder `source`; the opt-out is scheduled for removal in v0.6.0 alongside
-ADR-011's enforcement timeline.
+Strict decoding is the only mode. The legacy `NOTEBOOKLM_STRICT_DECODE=0`
+warn-and-return-`None` opt-out (which emitted a `DeprecationWarning` through
+v0.5.0/v0.6.0) was **retired in v0.7.0**; the env var is now ignored. The
+strict contract surfaces real schema drift (Google rotating a response shape)
+as a typed exception instead of a silent `None` return, so callers that
+previously treated `None` as a sentinel must handle `UnknownRPCMethodError`.
 
 The same `UnknownRPCMethodError` is also raised by `decode_response()` when the
 batchexecute response contains RPC IDs but not the one the call requested
@@ -573,6 +565,13 @@ notebooklm list 2>&1 | cat
 ```bash
 NOTEBOOKLM_DEBUG_RPC=1 notebooklm list
 ```
+
+### Logger namespace compatibility
+
+Runtime transport and middleware logs still use the historical
+`notebooklm._core` logger key via `CORE_LOGGER_NAME`. That name is a
+compatibility logging contract for existing filters and tests; it does not
+mean the deleted `_core.py` module or a concrete `Session` owner still exists.
 
 ### Check Authentication
 

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `ogulcancelik/herdr` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `ogulcancelik/herdr` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ogulcancelik/herdr` — 26 default patterns, 0 followed patterns, 7 f
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,13 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`SKILL.md`](SKILL.md) |
-| 3 | ✓ | [`vendor/libghostty-vt/.agents/skills/writing-commit-messages/SKILL.md`](vendor/libghostty-vt/.agents/skills/writing-commit-messages/SKILL.md) |
-| 4 | ✓ | [`vendor/libghostty-vt/AGENTS.md`](vendor/libghostty-vt/AGENTS.md) |
-| 5 | ✓ | [`vendor/libghostty-vt/src/benchmark/AGENTS.md`](vendor/libghostty-vt/src/benchmark/AGENTS.md) |
-| 6 | ✓ | [`vendor/libghostty-vt/src/inspector/AGENTS.md`](vendor/libghostty-vt/src/inspector/AGENTS.md) |
-| 7 | ✓ | [`vendor/libghostty-vt/src/terminal/c/AGENTS.md`](vendor/libghostty-vt/src/terminal/c/AGENTS.md) |
+| 1 | ✓ | [`.codex/skills/herdr-pre-release-audit/SKILL.md`](.codex/skills/herdr-pre-release-audit/SKILL.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`SKILL.md`](SKILL.md) |
+| 4 | ✓ | [`vendor/libghostty-vt/.agents/skills/writing-commit-messages/SKILL.md`](vendor/libghostty-vt/.agents/skills/writing-commit-messages/SKILL.md) |
+| 5 | ✓ | [`vendor/libghostty-vt/AGENTS.md`](vendor/libghostty-vt/AGENTS.md) |
+| 6 | ✓ | [`vendor/libghostty-vt/src/benchmark/AGENTS.md`](vendor/libghostty-vt/src/benchmark/AGENTS.md) |
+| 7 | ✓ | [`vendor/libghostty-vt/src/inspector/AGENTS.md`](vendor/libghostty-vt/src/inspector/AGENTS.md) |
+| 8 | ✓ | [`vendor/libghostty-vt/src/terminal/c/AGENTS.md`](vendor/libghostty-vt/src/terminal/c/AGENTS.md) |
 
 ---
 

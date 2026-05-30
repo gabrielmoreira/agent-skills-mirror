@@ -14,26 +14,30 @@ Reusable domain-specific patterns for agent consumption. Planner selects relevan
 
 ## Domain Mapping
 
-| Domain | Skill File | Applicable Agents | Keywords |
+> **Binding legend — read before using the "Applicable Agents" column.** This column is a routing hint, not a guarantee. Two binding modes apply:
+> - **HARD-REFERENCED** — the skill is statically loaded by the named agent because it is cited directly in that agent's `## Resources` / prompt body. Currently only: `preflect-core` (all agents), `repo-memory-hygiene` (Orchestrator, CodeReviewer-subagent, PlanAuditor-subagent), `memory-promotion-candidates` (Orchestrator), `security-review-discipline` (CodeReviewer-subagent), `idea-to-prompt` (Planner), `spec-driven-development` (Planner, as a "consider" reference), and `llm-behavior-guidelines` (CoreImplementer-subagent, UIImplementer-subagent, CodeReviewer-subagent, Planner).
+> - **PLANNER-INJECTED** — all other skills are not statically bound to any agent. Planner selects them dynamically at planning time (≤3 per phase) and injects them via `skill_references`. The agents listed for these rows indicate *likely consumers when injected*, not agents that load the skill unconditionally.
+
+| Domain | Skill File | Applicable Agents (binding; routing hint) | Keywords |
 | -------- | ----------- | ------------------- | ---------- |
-| Testing | `skills/patterns/tdd-patterns.md` | CoreImplementer-subagent, UIImplementer-subagent, CodeReviewer-subagent | test, TDD, coverage, assertion, spec |
-| Spec-Driven Development | `skills/patterns/spec-driven-development.md` | Planner, CoreImplementer-subagent, UIImplementer-subagent | spec, requirements, scope, acceptance-criteria, before-planning |
-| Debugging Discipline | `skills/patterns/debugging-discipline.md` | CoreImplementer-subagent, UIImplementer-subagent, PlatformEngineer-subagent, BrowserTester-subagent | debug, triage, stop-the-line, root-cause, regression |
-| Code Simplification | `skills/patterns/code-simplification.md` | CoreImplementer-subagent, UIImplementer-subagent, CodeReviewer-subagent | simplify, refactor, chesterton, dead-code, behavior-preservation |
-| Error Handling | `skills/patterns/error-handling-patterns.md` | CoreImplementer-subagent, UIImplementer-subagent, PlatformEngineer-subagent | error, exception, retry, fallback, boundary |
-| Security | `skills/patterns/security-patterns.md` | CoreImplementer-subagent, UIImplementer-subagent, CodeReviewer-subagent, PlanAuditor-subagent | auth, input validation, injection, XSS, CSRF, secrets |
-| Performance | `skills/patterns/performance-patterns.md` | CoreImplementer-subagent, UIImplementer-subagent, CodeReviewer-subagent, PlanAuditor-subagent | query, N+1, pagination, cache, batch, index |
-| Completeness | `skills/patterns/completeness-traceability.md` | Planner, PlanAuditor-subagent, CodeReviewer-subagent | requirements, coverage, traceability, orphan, RTM, scope |
-| Integration | `skills/patterns/integration-validator.md` | Planner, PlanAuditor-subagent, CoreImplementer-subagent | dependency, contract, interface, collision, compatibility, wave |
-| Orchestration Audit | `skills/patterns/orchestration-audit-playbook.md` | Planner, Orchestrator, CodeMapper-subagent, Researcher-subagent, PlanAuditor-subagent, AssumptionVerifier-subagent, ExecutabilityVerifier-subagent, CodeReviewer-subagent, TechnicalWriter-subagent | orchestration, audit, traceability, schema, prompt, grants, hidden-defect, validation, approval, phase-boundary |
-| Idea-to-Prompt | `skills/patterns/idea-to-prompt.md` | Planner | idea, vague, abstract, brainstorm, concept, interview |
-| LLM Behavior | `skills/patterns/llm-behavior-guidelines.md` | CoreImplementer-subagent, UIImplementer-subagent, CodeReviewer-subagent, Planner, PlatformEngineer-subagent | overengineering, bloat, abstraction, assumption, surgical, scope drift, simplicity |
-| PreFlect | `skills/patterns/preflect-core.md` | All agents | preflect, pre-action, gate, risk class, scope drift, schema drift, missing evidence, safety |
-| Reflection Loop | `skills/patterns/reflection-loop.md` | Orchestrator, CoreImplementer-subagent, UIImplementer-subagent, PlatformEngineer-subagent | reflection, pre-retry, fix hint, root cause, failure analysis |
-| Budget Tracking | `skills/patterns/budget-tracking.md` | Orchestrator, Planner, CoreImplementer-subagent, UIImplementer-subagent, PlatformEngineer-subagent | budget, token cap, wall-clock, cost, early stop, resource cap |
-| Memory Hygiene | `skills/patterns/repo-memory-hygiene.md` | Orchestrator, Planner, PlanAuditor-subagent, CodeReviewer-subagent | memory, pollution, dedup, NOTES.md, archive, repo-memory |
-| Memory Promotion | `skills/patterns/memory-promotion-candidates.md` | Orchestrator, Planner | memory, candidate, promotion, transcript, classification |
-| Security Review Discipline | `skills/patterns/security-review-discipline.md` | CodeReviewer-subagent | security, vulnerability, confidence, exclusion, false-positive |
+| Testing | `skills/patterns/tdd-patterns.md` | PLANNER-INJECTED: CoreImplementer-subagent, UIImplementer-subagent, CodeReviewer-subagent | test, TDD, coverage, assertion, spec |
+| Spec-Driven Development | `skills/patterns/spec-driven-development.md` | HARD-REFERENCED: Planner (consider). PLANNER-INJECTED: CoreImplementer-subagent, UIImplementer-subagent | spec, requirements, scope, acceptance-criteria, before-planning |
+| Debugging Discipline | `skills/patterns/debugging-discipline.md` | PLANNER-INJECTED: CoreImplementer-subagent, UIImplementer-subagent, PlatformEngineer-subagent, BrowserTester-subagent | debug, triage, stop-the-line, root-cause, regression |
+| Code Simplification | `skills/patterns/code-simplification.md` | PLANNER-INJECTED: CoreImplementer-subagent, UIImplementer-subagent, CodeReviewer-subagent | simplify, refactor, chesterton, dead-code, behavior-preservation |
+| Error Handling | `skills/patterns/error-handling-patterns.md` | PLANNER-INJECTED: CoreImplementer-subagent, UIImplementer-subagent, PlatformEngineer-subagent | error, exception, retry, fallback, boundary |
+| Security | `skills/patterns/security-patterns.md` | PLANNER-INJECTED: CoreImplementer-subagent, UIImplementer-subagent, CodeReviewer-subagent, PlanAuditor-subagent | auth, input validation, injection, XSS, CSRF, secrets |
+| Performance | `skills/patterns/performance-patterns.md` | PLANNER-INJECTED: CoreImplementer-subagent, UIImplementer-subagent, CodeReviewer-subagent, PlanAuditor-subagent | query, N+1, pagination, cache, batch, index |
+| Completeness | `skills/patterns/completeness-traceability.md` | PLANNER-INJECTED: Planner, PlanAuditor-subagent, CodeReviewer-subagent | requirements, coverage, traceability, orphan, RTM, scope |
+| Integration | `skills/patterns/integration-validator.md` | PLANNER-INJECTED: Planner, PlanAuditor-subagent, CoreImplementer-subagent | dependency, contract, interface, collision, compatibility, wave |
+| Orchestration Audit | `skills/patterns/orchestration-audit-playbook.md` | PLANNER-INJECTED: Planner, Orchestrator, CodeMapper-subagent, Researcher-subagent, PlanAuditor-subagent, AssumptionVerifier-subagent, ExecutabilityVerifier-subagent, CodeReviewer-subagent, TechnicalWriter-subagent | orchestration, audit, traceability, schema, prompt, grants, hidden-defect, validation, approval, phase-boundary |
+| Idea-to-Prompt | `skills/patterns/idea-to-prompt.md` | HARD-REFERENCED: Planner | idea, vague, abstract, brainstorm, concept, interview |
+| LLM Behavior | `skills/patterns/llm-behavior-guidelines.md` | HARD-REFERENCED: CoreImplementer-subagent, UIImplementer-subagent, CodeReviewer-subagent, Planner. PLANNER-INJECTED: PlatformEngineer-subagent | overengineering, bloat, abstraction, assumption, surgical, scope drift, simplicity |
+| PreFlect | `skills/patterns/preflect-core.md` | HARD-REFERENCED: All agents | preflect, pre-action, gate, risk class, scope drift, schema drift, missing evidence, safety |
+| Reflection Loop | `skills/patterns/reflection-loop.md` | PLANNER-INJECTED: Orchestrator, CoreImplementer-subagent, UIImplementer-subagent, PlatformEngineer-subagent | reflection, pre-retry, fix hint, root cause, failure analysis |
+| Budget Tracking | `skills/patterns/budget-tracking.md` | PLANNER-INJECTED: Orchestrator, Planner, CoreImplementer-subagent, UIImplementer-subagent, PlatformEngineer-subagent | budget, token cap, wall-clock, cost, early stop, resource cap |
+| Memory Hygiene | `skills/patterns/repo-memory-hygiene.md` | HARD-REFERENCED: Orchestrator, CodeReviewer-subagent, PlanAuditor-subagent. PLANNER-INJECTED: Planner | memory, pollution, dedup, NOTES.md, archive, repo-memory |
+| Memory Promotion | `skills/patterns/memory-promotion-candidates.md` | HARD-REFERENCED: Orchestrator. PLANNER-INJECTED: Planner | memory, candidate, promotion, transcript, classification |
+| Security Review Discipline | `skills/patterns/security-review-discipline.md` | HARD-REFERENCED: CodeReviewer-subagent | security, vulnerability, confidence, exclusion, false-positive |
 
 ## Loading Protocol
 

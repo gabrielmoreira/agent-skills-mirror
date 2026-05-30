@@ -1,79 +1,44 @@
 ---
-description: "Install a plugin from the Alex ACT Plugin Mall into local/ paths"
-lastReviewed: 2026-05-26
+description: "Install a plugin from the Plugin Mall catalog at a user-pinned version — deferred to Phase 5b of PLAN-mall-automation v3"
+lastReviewed: 2026-05-29
 ---
 
 # /mall-install
 
-Install a plugin from the Plugin Mall into this project's `local/` paths.
+**Status: deferred to Phase 5b.** Install logic depends on plugin shape (skill / agent / mcp / hook + single-file vs multi-file with `references/`); shipping it before validating shape-handling against real heir use would lock in the wrong abstractions.
 
-## Steps
+Heirs should use `/mall-search <query>` (Phase 5a, live) to discover plugins, then `/mall-show <name>` (Phase 5a, live) to read full metadata + trust signals + the `source_url` and `available_refs` fields. To install from a heir today:
 
-1. **Identify the plugin** from the user's request. If no specific plugin named, run the selection protocol from `mall-installation.instructions.md` (assess project needs, recommend candidates, ask for confirmation).
+1. Get the plugin's `source_url` and the version you want from `/mall-show <name>` (or pick a tag from `available_refs.tags`).
+2. Use the source_url's GitHub tree URL to fetch the plugin files manually (raw URLs or sparse-clone), placing them under your local `local/` namespace per [mall-installation.instructions.md](../instructions/mall-installation.instructions.md):
+   - skill → `.github/skills/local/<name>/`
+   - instruction → `.github/instructions/local/<name>.instructions.md`
+   - prompt → `.github/prompts/local/<name>.prompt.md`
+   - agent → `.github/agents/local/<name>.agent.md`
+3. Record the install in a sibling `.install.json` so reinstalls and upgrades are deterministic:
 
-2. **Fetch plugin.json** to understand what the plugin ships:
-
-   ```bash
-   gh api repos/fabioc-aloha/Alex_Skill_Mall/contents/plugins/<category>/<name>/plugin.json \
-     --jq .content | base64 -d
+   ```jsonc
+   {
+     "plugin": "<name>",
+     "store": "<store>",
+     "source_url": "<full tree URL at resolved SHA>",
+     "installed_at": "<ISO timestamp>",
+     "trust_score_at_install": <number>,
+     "frontmatter_at_install": { ... }
+   }
    ```
 
-3. **Check prerequisites**:
-   - `requires_edition`: is the heir's Edition version sufficient? Check `.github/VERSION`.
-   - `requires_plugins`: are dependency plugins already installed in `local/`?
-   - Already installed? Check `.github/skills/local/<name>/`.
+Phase 5b will automate this with a `mall-install.cjs` script + a fully-fledged `/mall-install <name>[@<version>]` prompt that handles all shapes uniformly.
 
-4. **Show the user what will be installed**:
+## Why deferred
 
-   ```text
-   Plugin: <name> (<shape>, <tier>)
-   Token cost: ~<token_cost> tokens
-   Artifacts:
-     - skill -> .github/skills/local/<name>/SKILL.md
-     - script -> .github/scripts/local/<name>.cjs (if applicable)
-     - instruction -> .github/instructions/local/<file> (if applicable)
-   ```
+Per [PLAN-mall-automation v3](https://github.com/fabioc-aloha/Alex_ACT_Supervisor/blob/main/docs/plans/PLAN-mall-automation.md) Phase 5 design:
 
-   Ask for confirmation before proceeding.
+> Phase 5a (this commit) ships `/mall-search` + `/mall-show` so heirs can immediately use the catalog for discovery. Phase 5b will ship `/mall-install`, `/mall-upgrade`, `/mall-list` once we have heir feedback on which install workflows actually matter (single-file copy vs multi-file with references? per-shape rules? pinning strategy?).
 
-5. **Download and install** each artifact per `install_paths` in plugin.json:
-
-   ```bash
-   # Create directories
-   mkdir -p .github/skills/local/<name>
-
-   # Download each artifact
-   gh api repos/fabioc-aloha/Alex_Skill_Mall/contents/plugins/<category>/<name>/SKILL.md \
-     --jq .content | base64 -d > .github/skills/local/<name>/SKILL.md
-   ```
-
-   Repeat for each artifact listed in plugin.json.
-
-6. **Copy plugin.json and README.md** into the local skill folder for reference:
-
-   ```bash
-   gh api repos/fabioc-aloha/Alex_Skill_Mall/contents/plugins/<category>/<name>/plugin.json \
-     --jq .content | base64 -d > .github/skills/local/<name>/plugin.json
-   gh api repos/fabioc-aloha/Alex_Skill_Mall/contents/plugins/<category>/<name>/README.md \
-     --jq .content | base64 -d > .github/skills/local/<name>/README.md
-   ```
-
-7. **Commit**:
-
-   ```bash
-   git add .github/skills/local .github/instructions/local .github/scripts/local .github/prompts/local
-   git commit -m "Install plugin: <name> from ACT Plugin Mall"
-   ```
-
-8. **Report**: confirm what was installed, the token cost, and any next steps from the plugin's README.
-
-## Refuse if
-
-- Plugin not found in CATALOG.json
-- Already installed (ask to overwrite or skip)
-- `requires_edition` not met (suggest upgrading Edition first)
-- Plugin overlaps with Edition baseline (explain which artifact already covers it)
+The catalog is the load-bearing change. Heirs can install manually from `source_url` today; the automation lands next.
 
 ## Would Revise If
 
-Revisit this prompt by **2026-08-26** (90 days) or sooner if any of the following fires: the workflow it invokes ceases to produce its intended output (skill body changed but prompt steps stale); the visible markers / verification steps in its body are consistently skipped; or the slash-command name is no longer discoverable in the prompt picker.
+- A heir uses `/mall-install` 3+ times in a week with manual fallback (signal that Phase 5b is overdue — accelerate)
+- Manual install workflow surfaces a shape we missed in Phase 3 normalization (e.g., a hook with a config file pattern) — Phase 5b's installer needs to handle it

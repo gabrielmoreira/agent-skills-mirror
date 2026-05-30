@@ -227,8 +227,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 166 | ✓ | [`skills/181-java-observability-logging/SKILL.md`](skills/181-java-observability-logging/SKILL.md) |
 | 167 | ✓ | [`skills/182-java-observability-metrics-micrometer/references/182-java-observability-metrics-micrometer.md`](skills/182-java-observability-metrics-micrometer/references/182-java-observability-metrics-micrometer.md) |
 | 168 | ✓ | [`skills/182-java-observability-metrics-micrometer/SKILL.md`](skills/182-java-observability-metrics-micrometer/SKILL.md) |
-| 169 | ✓ | [`skills/183-observability-tracing-opentelemetry/references/183-observability-tracing-opentelemetry.md`](skills/183-observability-tracing-opentelemetry/references/183-observability-tracing-opentelemetry.md) |
-| 170 | ✓ | [`skills/183-observability-tracing-opentelemetry/SKILL.md`](skills/183-observability-tracing-opentelemetry/SKILL.md) |
+| 169 | ✓ | [`skills/183-java-observability-tracing-opentelemetry/references/183-java-observability-tracing-opentelemetry.md`](skills/183-java-observability-tracing-opentelemetry/references/183-java-observability-tracing-opentelemetry.md) |
+| 170 | ✓ | [`skills/183-java-observability-tracing-opentelemetry/SKILL.md`](skills/183-java-observability-tracing-opentelemetry/SKILL.md) |
 | 171 | ✓ | [`skills/200-agents-md/references/200-agents-md.md`](skills/200-agents-md/references/200-agents-md.md) |
 | 172 | ✓ | [`skills/200-agents-md/SKILL.md`](skills/200-agents-md/SKILL.md) |
 | 173 | ✓ | [`skills/301-frameworks-spring-boot-core/references/301-frameworks-spring-boot-core.md`](skills/301-frameworks-spring-boot-core/references/301-frameworks-spring-boot-core.md) |

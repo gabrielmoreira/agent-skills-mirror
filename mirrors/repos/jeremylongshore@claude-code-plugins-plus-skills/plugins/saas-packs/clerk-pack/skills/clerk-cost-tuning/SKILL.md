@@ -136,7 +136,7 @@ export async function GET() {
     totalUsers: users.totalCount,
     // Estimate MAU based on recent sign-ins
     estimatedMAU: 'Check Clerk Dashboard > Billing for actual MAU',
-    dashboardUrl: 'https://dashboard.clerk.com/last-active?after=30d',
+    dashboardUrl: 'last-active?after=30d',
   })
 }
 ```
@@ -202,8 +202,8 @@ console.log(estimateMonthlyCost(50_000))  // "Pro tier: $825.00/mo (40,000 extra
 ## Resources
 
 - [Clerk Pricing](https://clerk.com/pricing)
-- [Clerk Usage Dashboard](https://dashboard.clerk.com)
-- [Clerk Fair Use Policy](https://clerk.com/legal/fair-use-policy)
+- Clerk Usage Dashboard
+- Clerk Fair Use Policy
 
 ## Next Steps
 

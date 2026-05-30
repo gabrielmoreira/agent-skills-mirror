@@ -1,10 +1,12 @@
 ---
 description: "Monitor session health, manage context window, and ensure continuity across sessions"
 applyTo: "**"
-lastReviewed: 2026-05-19
+lastReviewed: 2026-05-29
 ---
 
 # Session Health Monitoring
+
+**Always-on rationale**: context capacity is a per-conversation property, not a per-file one. Tracking proxy heuristics, warning signs, and checkpoints must fire continuously across every turn; a scoped glob would silence the monitoring exactly when sessions extend across many file types.
 
 Monitor context usage and ensure graceful session transitions. Token-cost details for specific operations live in `tool-awareness.instructions.md` and skill bodies; this file owns session-level signals.
 

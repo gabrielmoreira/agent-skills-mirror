@@ -20,7 +20,7 @@ Every instruction — including this one — is conditioned on preconditions, ev
 | "User prefers Z" | "Preference Z documented earlier *still applies to this situation*" |
 | "Use the Foo skill" | "Foo is the right tool *given what this request actually is*" |
 
-This extends `worldview-integration.instructions.md` (which authorises ethical refusal) with **factual refusal** — when present-case evidence contradicts an instruction's implicit preconditions, refuse the action and surface the conflict.
+This extends `worldview.instructions.md` (which authorises ethical refusal) with **factual refusal** — when present-case evidence contradicts an instruction's implicit preconditions, refuse the action and surface the conflict.
 
 ## Operational Tells
 

@@ -28,7 +28,7 @@ the historical narrative lives in
 +----------------------------------------------------------+
 | Runtime Layer (client-owned collaborators)               |
 |   NotebookLMClient owns ClientComposed plus focused       |
-|   collaborators such as RpcExecutor, SessionTransport,   |
+|   collaborators such as RpcExecutor, RuntimeTransport,   |
 |   ClientLifecycle, and Kernel.                           |
 +----------------------------------------------------------+
                           ▼
@@ -75,13 +75,13 @@ Most public methods (`client.notebooks.list()`, `client.sources.rename()`,
                                  v
 +----------------------------------------------------------------+
 | RpcExecutor._execute_once(...)                                 |
-|   - idempotency policy / client-token injection                |
+|   - idempotency policy resolution                              |
 |   - method-id resolution, request encoding, URL/body builder   |
 +----------------------------------------------------------------+
                                  |
                                  v
 +----------------------------------------------------------------+
-| SessionTransport.perform_authed_post(...)                      |
+| RuntimeTransport.perform_authed_post(...)                      |
 |   - loop-affinity guard, auth snapshot                         |
 |   - RpcRequest materialization                                 |
 +----------------------------------------------------------------+
@@ -101,7 +101,7 @@ Most public methods (`client.notebooks.list()`, `client.sources.rename()`,
                                  |
                                  v
 +----------------------------------------------------------------+
-| SessionTransport.terminal(...)                                 |
+| RuntimeTransport.terminal(...)                                 |
 |   - final auth-freshness rebuild immediately before POST       |
 +----------------------------------------------------------------+
                                  |
@@ -124,7 +124,7 @@ for the public raw-RPC escape hatch.
 
 `NotebookLMClient.rpc_call(method, params)` is the public raw-RPC escape hatch.
 It skips feature-specific param builders and result parsers, but still enters
-the same `RpcExecutor.rpc_call → SessionTransport → Kernel`
+the same `RpcExecutor.rpc_call → RuntimeTransport → Kernel`
 pipeline.
 
 ### Chat ask path
@@ -149,7 +149,7 @@ error mapping, so the first ask POST goes through:
                                  |
                                  v
 +----------------------------------------------------------------+
-| SessionTransport.perform_authed_post(...)                      |
+| RuntimeTransport.perform_authed_post(...)                      |
 +----------------------------------------------------------------+
                                  |
                                  v
@@ -159,7 +159,7 @@ error mapping, so the first ask POST goes through:
                                  |
                                  v
 +----------------------------------------------------------------+
-| SessionTransport.terminal(...) -> Kernel.post                  |
+| RuntimeTransport.terminal(...) -> Kernel.post                  |
 +----------------------------------------------------------------+
                                  |
                                  v  streaming response
@@ -185,7 +185,7 @@ Some feature workflows intentionally combine RPC with non-RPC HTTP work:
 |------|---------------|
 | Source file upload | `SourcesAPI.add_file()` delegates to `SourceUploadPipeline.add_file()`. The pipeline opens an `operation_scope`, takes its own upload semaphore, registers the file source through `runtime.rpc_call(ADD_SOURCE_FILE)`, then uses a dedicated `httpx.AsyncClient` and live Kernel cookies for the Scotty resumable-upload start/finalize calls. Optional wait/rename steps return to `rpc_call`. |
 | Source URL/text/Drive add | `SourceAddService` wraps URL and Drive mutating RPCs in `idempotent_create(...)` because those flows have stable probes. Text-source adds are intentionally non-idempotent unless the caller handles dedupe externally. |
-| Artifact generation | `ArtifactGenerationService` builds `CREATE_ARTIFACT` params and uses the normal `rpc_call` path. `ArtifactPollingService` owns leader/follower polling with `operation_scope(...)` and a feature-local `PollRegistry`; `ArtifactsAPI` registers a close-time drain hook for poll cleanup. |
+| Artifact generation | `ArtifactsAPI` builds `CREATE_ARTIFACT` params (via the `_artifact_payloads.build_*` helpers) and uses the normal `rpc_call` path directly — the former `ArtifactGenerationService` was folded into the facade (#1205). `ArtifactPollingService` owns leader/follower polling with `operation_scope(...)` and a feature-local `PollRegistry`; `ArtifactsAPI` registers a close-time drain hook for poll cleanup. |
 | Artifact download | `ArtifactDownloadService` lists/selects artifacts through `RpcCaller`, but media downloads use a separate streaming `httpx.AsyncClient` with storage cookies, trusted-host checks, and a producer/writer split. They do not go through `RpcExecutor` or `Kernel.post`. |
 | Notes and mind maps | `NoteService` owns note-row CRUD/classification through `RpcCaller`. `NoteBackedMindMapService` adapts those note rows for artifact-facing mind-map behavior so notes and artifacts do not import each other. |
 
@@ -247,34 +247,37 @@ easy to lose during refactors. The taxonomy makes retry safety a
 **property of the call site** (re-derived every time someone touches
 the code).
 
-**The classification.** Mutating RPCs are classified into six
+**The classification.** Every active RPC is classified into one of five
 retry-safety profiles by the `IdempotencyRegistry` in
 [`_idempotency.py`](../src/notebooklm/_idempotency.py):
 
 | Policy | Meaning | Effect on the inner retry loop |
 |--------|---------|--------------------------------|
-| `UNCLASSIFIED` | Placeholder; never classified | Silent, retries enabled (preserves pre-taxonomy behavior) |
+| `UNCLASSIFIED` | Placeholder for hand-built test/future registries; not used by the production registry for active RPCs | Silent, retries enabled (preserves pre-taxonomy behavior) |
 | `PROBE_THEN_CREATE` | Caller owns a probe loop; transport must not blind-retry | Force-disable inner retries |
-| `IDEMPOTENT_SET_OP` | Server applies set semantics (delete / rename) | Retries are safe; left enabled |
-| `CLIENT_TOKEN_DEDUPE` | Server dedupes on an injected token slot | Retries are safe; client-token injected before encoding |
+| `IDEMPOTENT_SET_OP` | Replay-safe read-only, delete, rename, or set-state RPC | Retries are safe; left enabled |
 | `AT_LEAST_ONCE_ACCEPTED` | Caller has explicitly accepted duplicate side-effect cost (emails / billing / notifications) | Retries enabled; rate-limited WARN emitted so operators can see the trade-off |
 | `NON_IDEMPOTENT_NO_RETRY` | No dedupe key and no probe; first failure must surface | Force-disable inner retries |
 
-The axis is *closed*. A seventh policy would need an ADR update and an
-executor change in lockstep — the six-policy cap is intentional so a
+The axis is *closed*. A sixth policy would need an ADR update and an
+executor change in lockstep — the five-policy cap is intentional so a
 reviewer can hold the whole taxonomy in mind during a code review.
 
 `RpcExecutor._execute_once` consults the registry once per call to
-resolve the effective `disable_internal_retries` and to inject client
-tokens. The caller's explicit `disable_internal_retries=True` always
-wins over the registry default.
+resolve the effective `disable_internal_retries`. The caller's explicit
+`disable_internal_retries=True` always wins over the registry default.
 
-The audit inventory in
-[`_mutating_operations.py`](../src/notebooklm/_mutating_operations.py)
-pairs each `PROBE_THEN_CREATE` entry with a `RecoveryKind` —
-`EXECUTABLE` (a probe/recovery wrapper exists) or `DISABLE_ONLY` (with a
-documented reason). A registry-audit test fails if a new
-`PROBE_THEN_CREATE` policy is added without one of those.
+Every `PROBE_THEN_CREATE` entry must carry a documented `notes`
+rationale describing how that mutation recovers (a probe/recovery wrapper
+exists) or why inner retries stay disabled. The registry-audit test
+`test_retry_disabled_entries_are_intentional_and_documented` fails if a
+new `PROBE_THEN_CREATE` policy is added without one.
+
+The production registry has explicit coverage for every active
+`RPCMethod`, including read-only RPCs. Read-only entries are registered
+as replay-safe `IDEMPOTENT_SET_OP` rows rather than left as
+production-`UNCLASSIFIED`; `UNCLASSIFIED` is retained only as a
+placeholder for tests and future development.
 
 See [ADR-005](./adr/0005-idempotency-taxonomy.md). Side-effect probing
 (`idempotent_create(...)`) is a separate mechanism not owned by the
@@ -290,11 +293,10 @@ silently degrades.
 
 The single helper that decoders use to navigate row shapes is
 `notebooklm.rpc.safe_index` in
-[`rpc/_safe_index.py`](../src/notebooklm/rpc/_safe_index.py). It
-raises a typed shape-drift error by default. Explicit
-`NOTEBOOKLM_STRICT_DECODE=0` opts into the temporary legacy soft mode,
-where missing indices warn and return `None`. The `RpcExecutor` decode
-path narrowly wraps
+[`rpc/_safe_index.py`](../src/notebooklm/rpc/_safe_index.py). It always
+raises a typed shape-drift error: strict decoding is the only mode (the
+`NOTEBOOKLM_STRICT_DECODE=0` soft-mode opt-out was retired in v0.7.0). The
+`RpcExecutor` decode path narrowly wraps
 `json.JSONDecodeError`, `KeyError`, `IndexError`, and `TypeError` into
 `RPCError`; other exception types (e.g. `AttributeError`) intentionally
 propagate as code bugs rather than being conflated with shape drift.
@@ -312,7 +314,7 @@ needs, never a broad runtime facade. `NotebookLMClient.__init__` is the
 composition root that wires each feature with the satisfier it needs.
 
 Six Protocols live in
-[`_session_contracts.py`](../src/notebooklm/_session_contracts.py) —
+[`_runtime_contracts.py`](../src/notebooklm/_runtime_contracts.py) —
 four shared capability Protocols used by ≥2 features, plus `AuthMetadata`
 and `Kernel`, whose sole consumer today is `SourceUploadPipeline`. Per
 ADR-013 §Decision §2, those two stay in the shared contracts module
@@ -323,7 +325,7 @@ transport kernel). ADR-013 explicitly rejects anticipatory promotion —
 Protocols live next to their single consumer.
 
 **Module-level Protocols** (defined in
-[`_session_contracts.py`](../src/notebooklm/_session_contracts.py)):
+[`_runtime_contracts.py`](../src/notebooklm/_runtime_contracts.py)):
 
 | Protocol | Responsibility |
 |----------|----------------|
@@ -341,7 +343,7 @@ constructor argument:
 
 - `ArtifactsAPI` and `SourceUploadPipeline` take `rpc: RpcCaller`,
   `drain: TransportDrainTracker`, `lifecycle: ClientLifecycle`.
-- `ChatAPI` takes `rpc: RpcCaller`, `transport: SessionTransport`,
+- `ChatAPI` takes `rpc: RpcCaller`, `transport: RuntimeTransport`,
   `reqid: ReqidCounter`, `loop_guard: LoopGuard`.
 
 Production satisfies the shared Protocols via the underlying
@@ -362,14 +364,14 @@ the feature directly under ADR-014.
 Per ADR-014 Rule 5, `RpcExecutor` takes its kernel, transport,
 auth-refresh coordinator, and metrics tracker directly — there is no
 Session-shaped owner Protocol. The constructor takes
-`kernel: Kernel`, `transport: SessionTransport`,
+`kernel: Kernel`, `transport: RuntimeTransport`,
 `auth_refresh: AuthRefreshCoordinator`, and `metrics: ClientMetrics`
 as keyword-only parameters, plus constructor-injected providers for
 timeout, refresh-callback enablement, and retry-delay values. The
 executor enters transport through
-`SessionTransport.perform_authed_post` directly; the middleware
+`RuntimeTransport.perform_authed_post` directly; the middleware
 terminal is `MiddlewareChainHost._authed_post_chain_terminal →
-SessionTransport.terminal → Kernel.post`. The chain leaf lives on
+RuntimeTransport.terminal → Kernel.post`. The chain leaf lives on
 `MiddlewareChainHost` so the chain owns its own terminal and retry
 tunables (ADR-014 Rule 4 chain-ownership carve-out). Request types,
 transport errors, and streaming helpers live in separate owning
@@ -391,7 +393,7 @@ the executor on direct collaborator dependencies.
                            runtime callables           artifacts/chat/...
         |
         v
-  _collaborators: SessionCollaborators
+  _collaborators: RuntimeCollaborators
   metrics | drain_tracker | reqid | auth_coord | kernel | lifecycle | cookie_persistence
         |
         v
@@ -400,7 +402,7 @@ the executor on direct collaborator dependencies.
         +--------------------------+
         | _composed: ClientComposed|
         +--------------------------+
-        | transport: SessionTransport
+        | transport: RuntimeTransport
         | executor: RpcExecutor
         | chain_host: MiddlewareChainHost
         | chain_builder + middlewares
@@ -408,31 +410,31 @@ the executor on direct collaborator dependencies.
         +--------------------------+
              |
              v
-  RpcExecutor.rpc_call → SessionTransport.perform_authed_post
-      → ADR-009 chain → SessionTransport.terminal → Kernel.post → httpx
+  RpcExecutor.rpc_call → RuntimeTransport.perform_authed_post
+      → ADR-009 chain → RuntimeTransport.terminal → Kernel.post → httpx
 ```
 
 | Collaborator | Module | Responsibility |
 |--------------|--------|----------------|
 | `NotebookLMClient` | [`client.py`](../src/notebooklm/client.py) | Public surface and composition root. Owns `_auth`, `_seams`, `_composed`, `_collaborators`, `_rpc_executor`, and the eight feature API attributes. `__aenter__`, `close`, `drain`, `is_connected`, `metrics_snapshot`, and `rpc_call` route directly to the owning collaborator. |
 | `ClientSeams` | [`_client_seams.py`](../src/notebooklm/_client_seams.py) | Mutable holder for runtime callables that closures re-read after construction: `decode_response`, `sleep`, and `is_auth_error`. Construction-only seams such as `async_client_factory` stay on `compose_client_internals(...)` and the client-shell test helper, not on the public constructor. |
-| `ClientComposed` | [`_client_composed.py`](../src/notebooklm/_client_composed.py) | Write-once holder for composition state: `transport`, `executor`, `chain_host`, `chain_builder`, `middlewares`, lazy RPC semaphore, and `session_collaborators`. Pre-binding access raises a clear `RuntimeError`; the holder deliberately does not expose a broad `.collaborators` alias. |
-| `RpcExecutor` | [`_rpc_executor.py`](../src/notebooklm/_rpc_executor.py) | Single logical batchexecute RPC dispatch path. Owns request-id/started-metric bracketing, idempotency policy lookup, method-ID resolution, request encoding, response decode, RPC error mapping, and decode-time auth refresh retry. Takes its `Kernel`, `SessionTransport`, `AuthRefreshCoordinator`, and `ClientMetrics` collaborators directly via keyword-only constructor parameters (ADR-014 Rule 5). Enters transport through `SessionTransport.perform_authed_post`. |
-| `SessionTransport` | [`_session_transport.py`](../src/notebooklm/_session_transport.py) | Authed POST collaborator. Owns `perform_authed_post()` (loop guard, auth snapshot, request materialization, chain dispatch, queue-wait recording), `refresh_request_for_current_auth()`, and `terminal()` (freshness rebuild + `Kernel.post`). Called directly by `RpcExecutor` and by `chat_aware_authed_post` (ChatAPI's chat-flavoured transport call); the middleware chain leaf at `MiddlewareChainHost._authed_post_chain_terminal` continues to dispatch through `SessionTransport.terminal` per ADR-014 Rule 4. |
+| `ClientComposed` | [`_client_composed.py`](../src/notebooklm/_client_composed.py) | Write-once holder for composition state: `transport`, `executor`, `chain_host`, `chain_builder`, `middlewares`, lazy RPC semaphore, and `runtime_collaborators`. Pre-binding access raises a clear `RuntimeError`; the holder deliberately does not expose a broad `.collaborators` alias. |
+| `RpcExecutor` | [`_rpc_executor.py`](../src/notebooklm/_rpc_executor.py) | Single logical batchexecute RPC dispatch path. Owns request-id/started-metric bracketing, idempotency policy lookup, method-ID resolution, request encoding, response decode, RPC error mapping, and decode-time auth refresh retry. Takes its `Kernel`, `RuntimeTransport`, `AuthRefreshCoordinator`, and `ClientMetrics` collaborators directly via keyword-only constructor parameters (ADR-014 Rule 5). Enters transport through `RuntimeTransport.perform_authed_post`. |
+| `RuntimeTransport` | [`_runtime_transport.py`](../src/notebooklm/_runtime_transport.py) | Authed POST collaborator. Owns `perform_authed_post()` (loop guard, auth snapshot, request materialization, chain dispatch, queue-wait recording), `refresh_request_for_current_auth()`, and `terminal()` (freshness rebuild + `Kernel.post`). Called directly by `RpcExecutor` and by `chat_aware_authed_post` (ChatAPI's chat-flavoured transport call); the middleware chain leaf at `MiddlewareChainHost._authed_post_chain_terminal` continues to dispatch through `RuntimeTransport.terminal` per ADR-014 Rule 4. |
 | `MiddlewareChainHost` | [`_middleware_chain_host.py`](../src/notebooklm/_middleware_chain_host.py) | Owns the wired middleware chain (`_authed_post_chain`), the chain leaf (`_authed_post_chain_terminal`), the three retry-budget tunables (`_rate_limit_max_retries`, `_server_error_max_retries`, `_refresh_retry_delay`), and the dynamic `await_refresh` delegate that the auth-refresh middleware captures. The chain's provider lambdas and the transport's `chain_provider` closure read the host's attributes live, so post-construction mutation (e.g. tests setting `client._composed.chain_host._rate_limit_max_retries = 0`) still steers the live chain. |
-| `AuthRefreshCoordinator` | [`_session_auth.py`](../src/notebooklm/_session_auth.py) | Owns the auth-snapshot lock and refresh task. Canonical implementation for `AuthRefreshCoordinator.snapshot(auth=...)`, `update_auth_tokens(auth=..., csrf=..., session_id=...)`, and `update_auth_headers(auth=..., kernel=...)`; callers pass explicit collaborators rather than a host object. |
-| `ClientLifecycle` | [`_session_lifecycle.py`](../src/notebooklm/_session_lifecycle.py) | HTTP-client open/close, keepalive task, cookie save coordination. Holds `_timeout`, `_bound_loop`, `_http_client`, `_keepalive_*`. |
+| `AuthRefreshCoordinator` | [`_runtime_auth.py`](../src/notebooklm/_runtime_auth.py) | Owns the auth-snapshot lock and refresh task. Canonical implementation for `AuthRefreshCoordinator.snapshot(auth=...)`, `update_auth_tokens(auth=..., csrf=..., session_id=...)`, and `update_auth_headers(auth=..., kernel=...)`; callers pass explicit collaborators rather than a host object. |
+| `ClientLifecycle` | [`_runtime_lifecycle.py`](../src/notebooklm/_runtime_lifecycle.py) | HTTP-client open/close, keepalive task, cookie save coordination. Holds `_timeout`, `_bound_loop`, `_http_client`, `_keepalive_*`. |
 | `MiddlewareChainBuilder` | [`_middleware_chain.py`](../src/notebooklm/_middleware_chain.py) | Constructs the middleware chain in the canonical ADR-009 order. |
 | `TransportDrainTracker` | [`_transport_drain.py`](../src/notebooklm/_transport_drain.py) | Tracks in-flight transport operations + the drain condition variable. Gates graceful shutdown. |
 | `ClientMetrics` | [`_client_metrics.py`](../src/notebooklm/_client_metrics.py) | Per-instance counters (`ClientMetricsSnapshot`) + the `on_rpc_event` user callback. |
 | `ReqidCounter` | [`_reqid_counter.py`](../src/notebooklm/_reqid_counter.py) | Monotonic `_reqid` for the chat backend; lock-protected `next_reqid(...)`. |
 | `CookiePersistence` | [`_cookie_persistence.py`](../src/notebooklm/_cookie_persistence.py) | Cookie-jar persistence + `__Secure-1PSIDTS` rotation. |
-| `IdempotencyRegistry` | [`_idempotency.py`](../src/notebooklm/_idempotency.py) | Policy/classification registry keyed by `(RPCMethod, operation_variant)`. `RpcExecutor._execute_once()` consults it to resolve `effective_disable_internal_retries` and to inject client tokens for `CLIENT_TOKEN_DEDUPE` methods (most entries are currently `UNCLASSIFIED`, a behaviour-neutral default). It is part of the RPC dispatch path, not lifecycle state. Side-effect probing (`idempotent_create(...)`) is a separate mechanism not owned by this registry. |
+| `IdempotencyRegistry` | [`_idempotency.py`](../src/notebooklm/_idempotency.py) | Policy/classification registry keyed by `(RPCMethod, operation_variant)`. The production registry explicitly covers every active `RPCMethod`; `UNCLASSIFIED` is retained only as a placeholder for hand-built test/future registries. `RpcExecutor._execute_once()` consults it to resolve `effective_disable_internal_retries`. It is part of the RPC dispatch path, not lifecycle state. Side-effect probing (`idempotent_create(...)`) is a separate mechanism not owned by this registry. |
 | `_request_types` | [`_request_types.py`](../src/notebooklm/_request_types.py) | Owns `AuthSnapshot`, `BuildRequest`, and request materialization shapes shared by RPC, chat, auth refresh, and the chain terminal. |
 | `_transport_errors` | [`_transport_errors.py`](../src/notebooklm/_transport_errors.py) | Owns transport-level exceptions, `Retry-After` parsing, and raw `Kernel.post` error mapping consumed by `RetryMiddleware` and `AuthRefreshMiddleware`. |
 | `_streaming_post` | [`_streaming_post.py`](../src/notebooklm/_streaming_post.py) | Low-level streaming POST helper with the response-size cap used by `Kernel.post`. |
-| `Kernel` | [`_kernel.py`](../src/notebooklm/_kernel.py) | Pure transport core. Owns the `httpx.AsyncClient` and cookie jar; exposes `post()`, the `cookies` property, and `aclose()` (the close path wraps it in `asyncio.shield` from `ClientLifecycle.close()`). Concrete class behind the `Kernel` Protocol in `_session_contracts.py`; constructed by `build_collaborators(...)` and called from the middleware leaf via `SessionTransport.terminal → Kernel.post`. |
-| `_session_init` | [`_session_init.py`](../src/notebooklm/_session_init.py) | Construction-time helpers for `NotebookLMClient`: `validate_constructor_args` (kwarg validation/normalization), `build_collaborators` (the seven collaborators in dependency order: `metrics`, `drain_tracker`, `reqid`, `auth_coord`, `kernel`, `lifecycle`, `cookie_persistence`), `build_session_transport`, `wire_middleware_chain`, and `compose_client_internals`. It binds the runtime graph into `ClientComposed` and returns `ClientInternals(collaborators, executor)`. |
+| `Kernel` | [`_kernel.py`](../src/notebooklm/_kernel.py) | Pure transport core. Owns the `httpx.AsyncClient` and cookie jar; exposes `post()`, the `cookies` property, and `aclose()` (the close path wraps it in `asyncio.shield` from `ClientLifecycle.close()`). Concrete class behind the `Kernel` Protocol in `_runtime_contracts.py`; constructed by `build_collaborators(...)` and called from the middleware leaf via `RuntimeTransport.terminal → Kernel.post`. |
+| `_runtime_init` | [`_runtime_init.py`](../src/notebooklm/_runtime_init.py) | Construction-time helpers for `NotebookLMClient`: `validate_constructor_args` (kwarg validation/normalization), `build_collaborators` (the seven collaborators in dependency order: `metrics`, `drain_tracker`, `reqid`, `auth_coord`, `kernel`, `lifecycle`, `cookie_persistence`), `build_runtime_transport`, `wire_middleware_chain`, and `compose_client_internals`. It binds the runtime graph into `ClientComposed` and returns `ClientInternals(collaborators, executor)`. |
 | `_loop_affinity` | [`_loop_affinity.py`](../src/notebooklm/_loop_affinity.py) | Tiny free-function `assert_bound_loop(bound_loop)` shared by every helper that captures a loop reference at `open()` time (`TransportDrainTracker`, `ReqidCounter`, `AuthRefreshCoordinator`, `ArtifactPollingService`, `ChatAPI`). Enforces ADR-004 without coupling those helpers to the public client. |
 
 ### Shipped runtime invariants
@@ -446,8 +448,11 @@ work:
   observe auth must alias it rather than holding detached copies.
 - `CORE_LOGGER_NAME` intentionally remains the literal
   `"notebooklm._core"` even though the `_core.py` compatibility module was
-  deleted. Treat it as a logging compatibility contract, not evidence that
-  `notebooklm._core` is an active module.
+  deleted. Runtime code keeps using this logger key through
+  `CORE_LOGGER_NAME` for downstream log filters and `caplog` selectors.
+  Treat it as a logging compatibility contract, not evidence that
+  `notebooklm._core` is an active module or that a concrete `Session` owner
+  remains in the runtime graph.
 
 ## Domain-service collaborators
 
@@ -460,9 +465,8 @@ Beyond the client-owned runtime graph, several feature APIs are implemented via 
 | `ArtifactDownloadService` | [`_artifact_downloads.py`](../src/notebooklm/_artifact_downloads.py) | Asynchronous download coordinator for finished artifacts. |
 | `_artifact_formatters` | [`_artifact_formatters.py`](../src/notebooklm/_artifact_formatters.py) | Markdown, HTML, and plain text formatters for artifacts. |
 | `_artifact_listing` | [`_artifact_listing.py`](../src/notebooklm/_artifact_listing.py) | Listing and filtering operations for notebook artifacts. |
-| `_row_adapters` | [`_row_adapters.py`](../src/notebooklm/_row_adapters.py) | Wire-shape adapters that wrap raw batchexecute rows (`ArtifactRow`, etc.) behind named accessors so downloads, polling, and listing don't open-code positional indices. Soft-degrade and strict-mode behavior is pinned in `tests/unit/test_row_adapters.py`. |
+| `_row_adapters*` | [`_row_adapters_artifacts.py`](../src/notebooklm/_row_adapters_artifacts.py), [`_row_adapters_notes.py`](../src/notebooklm/_row_adapters_notes.py), [`_row_adapters_sources.py`](../src/notebooklm/_row_adapters_sources.py) | Wire-shape adapters that wrap raw batchexecute rows (`ArtifactRow`, `NoteRow`, `SourceRow`) behind named accessors so downloads, polling, and listing don't open-code positional indices. Soft-degrade and strict-mode behavior is pinned in `tests/unit/test_row_adapters.py`. |
 | `_research_task_parser` | [`_research_task_parser.py`](../src/notebooklm/_research_task_parser.py) | Parses deep-research task results from raw rows. Returns dict-shaped output today; a typed-model migration is not yet complete. |
-| `_mutating_operations` | [`_mutating_operations.py`](../src/notebooklm/_mutating_operations.py) | Audit inventory binding each `PROBE_THEN_CREATE` registry entry to a `RecoveryKind` (`EXECUTABLE` or `DISABLE_ONLY`) with a reason. Cross-checked by the registry-audit unit test so a new `PROBE_THEN_CREATE` policy cannot land without either a recovery wrapper or a documented disable-only justification. |
 | `_types/` | [`_types/`](../src/notebooklm/_types) | Private package holding the dataclass and `Protocol` implementations behind the public `types.py` / per-feature public schemas. Split per domain (`artifacts.py`, `chat.py`, `notebooks.py`, `notes.py`, `sharing.py`, `sources.py`, plus `common.py` for shared shapes like `ConnectionLimits`). |
 
 ## Authentication subpackage
@@ -640,7 +644,7 @@ ErrorInjectionMiddleware     synthetic-error harness; no-op in prod
 TracingMiddleware            innermost — structured-logging boundary
                              (OpenTelemetry export is future work)
    ↓
-Authed POST leaf             (SessionTransport.terminal → Kernel → httpx)
+Authed POST leaf             (RuntimeTransport.terminal → Kernel → httpx)
 ```
 
 ## Client as composition root
@@ -658,7 +662,7 @@ Concretely, the client-owned runtime retains:
    `ClientComposed.executor` are bound exactly once by
    `compose_client_internals(...)` through write-once binders. Pre-binding
    access trips the `ClientComposed` guard. `ClientComposed` exposes
-   `session_collaborators`, not a broad `collaborators` alias.
+   `runtime_collaborators`, not a broad `collaborators` alias.
    [`tests/_lint/test_client_composition.py`](../tests/_lint/test_client_composition.py)
    guards against inlining holder state back onto `NotebookLMClient`.
 2. **Middleware-chain seams.** The chain leaf
@@ -667,7 +671,7 @@ Concretely, the client-owned runtime retains:
    retry-budget tunables (`_rate_limit_max_retries`,
    `_server_error_max_retries`, `_refresh_retry_delay`) live on
    `MiddlewareChainHost`. `wire_middleware_chain` and
-   `build_session_transport` take that host directly and read its
+   `build_runtime_transport` take that host directly and read its
    attributes live.
 3. **Lifecycle methods.** Public client `__aenter__`, `__aexit__`,
    `close`, `drain`, and `is_connected` call `ClientLifecycle` and
@@ -773,7 +777,7 @@ Vocabulary that recurs in this document and the surrounding code.
 |------|---------|
 | `batchexecute` | Google's internal RPC protocol over HTTPS. The wire is positional lists keyed by an obfuscated method id; see [`rpc/types.py`](../src/notebooklm/rpc/types.py). |
 | Capability Protocol | A narrow structural `Protocol` (e.g. `RpcCaller`, `LoopGuard`) a feature depends on instead of taking the deleted concrete `Session` class or a broad runtime facade. See [ADR-013](./adr/0013-composable-session-capabilities.md). |
-| Chain / leaf / terminal | The middleware chain's ordering vocabulary. The chain wraps outermost-first; the **leaf** is the innermost middleware (`TracingMiddleware`); the **terminal** is the authed-POST function (`SessionTransport.terminal → Kernel.post`) that ends the chain. |
+| Chain / leaf / terminal | The middleware chain's ordering vocabulary. The chain wraps outermost-first; the **leaf** is the innermost middleware (`TracingMiddleware`); the **terminal** is the authed-POST function (`RuntimeTransport.terminal → Kernel.post`) that ends the chain. |
 | Drain | Graceful-shutdown waiting on in-flight transport operations to complete. Owned by `TransportDrainTracker` and admitted by `DrainMiddleware`. |
 | `idempotent_create(...)` | Caller-owned probe-then-create wrapper used by source-add / Drive-add flows. Distinct from the `IdempotencyRegistry` (which only classifies retry safety inside the executor). |
 | `operation_variant` | Optional kwarg on `rpc_call(...)` that selects a method-variant-specific idempotency policy from the registry (e.g. `ADD_SOURCE` `"url"` vs `"drive"`). Unknown variants raise `IdempotencyVariantError`. |

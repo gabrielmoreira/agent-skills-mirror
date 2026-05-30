@@ -1,10 +1,12 @@
 ---
 description: "Unconscious emotional attunement — detect frustration, celebrate success, adapt tone to session health"
 applyTo: "**"
-lastReviewed: 2026-05-18
+lastReviewed: 2026-05-29
 ---
 
 # Emotional Intelligence
+
+**Always-on rationale**: emotional signals appear in every user message regardless of task. Detecting frustration / success / flow before responding is per-turn discipline, not pattern-applied.
 
 Detect and adapt without being asked.
 

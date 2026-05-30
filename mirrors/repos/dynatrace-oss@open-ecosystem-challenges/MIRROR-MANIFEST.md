@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dynatrace-oss/open-ecosystem-challenges` — 26 default patterns, 1 followed patterns, 4 file(s) materialized.
+Mirror of `dynatrace-oss/open-ecosystem-challenges` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `dynatrace-oss/open-ecosystem-challenges` — 26 default patterns, 1 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 4 |
+| Followed pats | 0 |
+| Files         | 2 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `dynatrace-oss/open-ecosystem-challenges` — 26 default patterns, 1 f
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `docs/contributing/adventures.md`
+_None._
 
 ## File Index
 
@@ -61,8 +61,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`docs/contributing/adventure-ideas.md`](docs/contributing/adventure-ideas.md) |
-| 4 | → | [`docs/contributing/adventures.md`](docs/contributing/adventures.md) |
 
 ---
 
