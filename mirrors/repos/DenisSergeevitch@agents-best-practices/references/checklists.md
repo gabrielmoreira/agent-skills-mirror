@@ -37,6 +37,7 @@
 - [ ] Memory and durable state plan defined.
 - [ ] Compaction trigger and summary format defined.
 - [ ] Planning mode criteria defined.
+- [ ] Workflow orchestration criteria, packet shape, and verification strategy defined where needed.
 - [ ] Goal loop criteria and budgets defined.
 - [ ] Skills and connector strategy defined.
 - [ ] Observability and eval plan defined.
@@ -105,6 +106,22 @@ For each tool:
 - [ ] Progress log is durable.
 - [ ] Stop rules are explicit.
 
+## Workflow orchestration checklist
+
+- [ ] Workflow is justified by decomposition, broad coverage, parallel read-only work, verification needs, or resume requirements.
+- [ ] Single-worker loop was considered first.
+- [ ] Workflow artifact states objective, scope, success criteria, packet definitions, verification strategy, integration rules, and budgets.
+- [ ] Approval binds to the exact workflow artifact version.
+- [ ] Each packet has one purpose, explicit inputs, narrow tool permissions, output schema, timeout, budget, and evidence requirement.
+- [ ] Worker contexts receive only packet-relevant context and tools.
+- [ ] Risky side effects remain approval-gated and are not delegated to workers.
+- [ ] Parallel execution is limited to independent, concurrency-safe work.
+- [ ] Verifier contexts are independent enough to challenge findings.
+- [ ] Integration rules cover deduplication, conflict resolution, confidence, coverage gaps, and failed packets.
+- [ ] Workflow state is durable: plan, approvals, packet status, worker outputs, verifier outputs, integration notes, errors, and budget usage.
+- [ ] Reproducibility state is captured: workflow version, model/runtime settings, tool calls, result references, source revision or data snapshot, and approval records.
+- [ ] Final output distinguishes verified findings, rejected findings, unresolved questions, partial coverage, and next safe actions.
+
 ## Skills checklist
 
 - [ ] Skill name matches directory name.
@@ -161,7 +178,7 @@ For each tool:
 10. Add skills for reusable workflows.
 11. Add MCP/external connectors with scoped permissions.
 12. Add goal-like loops only after the base agent passes evals.
-13. Add subagents only when decomposition improves measured results.
+13. Add subagents or worker pools only when decomposition improves measured results.
 14. Add recurring knowledge-base and entropy cleanup workflows.
 
 ## Agent legibility checklist

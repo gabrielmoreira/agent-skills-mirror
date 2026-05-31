@@ -1,6 +1,6 @@
 ---
 name: agent-transcript
-description: "Add a redacted agent transcript section to GitHub PR or issue bodies during OpenClaw agent-created PR/issue workflows."
+description: "Add a redacted agent session transcript to a GitHub PR or issue body as local-only provenance for OpenClaw workflows."
 ---
 
 # Agent Transcript
@@ -80,6 +80,12 @@ skills/agent-transcript/scripts/agent-transcript append-body \
 6. Inspect the trimmed transcript text. If it still includes unrelated earlier/later work, trim again before proceeding.
 7. If the user approves, use the enriched trimmed body file for creation/update.
 8. If no safe session is found, say nothing and continue without transcript. If the user declines, continue without transcript and do not add any transcript placeholder section.
+
+## Validate
+
+```bash
+node --test skills/agent-transcript/scripts/agent-transcript.test.mjs
+```
 
 ## Review Artifacts
 

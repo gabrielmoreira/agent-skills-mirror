@@ -9,6 +9,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [11.9.0] - 2026-05-30 - "Container, CI, Market, and Wallet Guard Skills"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills --help`
+- Choose your tool: [README.md#choose-your-tool](README.md#choose-your-tool)
+- Best skills by tool: [README.md#best-skills-by-tool](README.md#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](docs/users/workflows.md)
+
+This release merges the accepted community and official skill PRs from the current maintainer batch, adding container hardening, advanced GitHub Actions workflows, Longbridge market-data guidance, and paid-inference wallet guards.
+
+## New Skills
+
+- **container-security-hardening** - Docker/container image and runtime hardening for base images, CVE scanning, SBOM/signing, seccomp/AppArmor, and Kubernetes pod-security controls.
+- **github-actions-advanced** - production-grade GitHub Actions CI/CD design, debugging, reusable workflows, OIDC authentication, caching, environments, secrets, and release automation.
+- **longbridge** - official Longbridge Securities market-data workflow for quotes, charts, fundamentals, portfolios, options, and trilingual HK/US/A-share/SG market analysis.
+- **runaway-guard** - cost-safety discipline for paid AI/inference APIs with per-run, per-day, iteration, concurrency, and provider-dashboard wallet caps.
+
+## Improvements
+
+- Normalized incoming PR metadata, source credits, and security-sensitive install snippets before merge so maintainer CI stayed green.
+- Synced generated registry, catalog, compatibility, plugin mirror, documentation, and web assets for the expanded skill catalog.
+
+## Credits
+
+- **[@sahilaghara1911](https://github.com/sahilaghara1911)** for PR #632 (`container-security-hardening`) and PR #631 (`github-actions-advanced`).
+- **[@hogan-yuan](https://github.com/hogan-yuan)** and **[longbridge/skills](https://github.com/longbridge/skills)** for PR #630 (`longbridge`).
+- **[@morsechimwai](https://github.com/morsechimwai)** and **[morsechimwai/lemmaly](https://github.com/morsechimwai/lemmaly)** for PR #629 (`runaway-guard`).
+
 ## [11.8.0] - 2026-05-27 - "Decision, Messaging, Algorithm, and Supply-Chain Skills"
 
 > Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.

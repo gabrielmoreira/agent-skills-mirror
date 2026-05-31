@@ -464,6 +464,26 @@ The script is a manual maintainer helper — CI never runs it.
 NOTEBOOKLM_VCR_RECORD=1 uv run pytest tests/integration/test_vcr_*.py -v
 ```
 
+> **Recording reads your real `~/.notebooklm` profile.** Normally the suite
+> pins `NOTEBOOKLM_HOME` at a throwaway tmp dir (autouse `_isolate_notebooklm_home`
+> in `tests/conftest.py`) so runs are reproducible and never touch your real
+> profile. Under `NOTEBOOKLM_VCR_RECORD=1`, `@pytest.mark.vcr` tests instead read
+> the real profile — so `get_vcr_auth()` (via `AuthTokens.from_storage()`) and
+> the CLI auth path resolve live credentials to record against. CLI-VCR tests
+> additionally skip their `mock_auth_for_vcr` patch in record mode for the same
+> reason. Replay runs and non-VCR tests stay isolated (a stray
+> `NOTEBOOKLM_VCR_RECORD` on a normal run never un-isolates a non-VCR test). The
+> test must carry the `vcr` marker — most do via a module-level `pytestmark`.
+> Before #1263 this deferral did not exist and cassettes could only be recorded
+> with a standalone script.
+>
+> **Limitation:** a few cli_vcr tests (`settings` / `profile` / `doctor`)
+> re-pin `NOTEBOOKLM_HOME` at their own tmp dir to isolate config/profile
+> writes. They override this deferral and so are not auto-recordable through
+> pytest — re-record those with a standalone script (or, as a future
+> enhancement, inject `NOTEBOOKLM_AUTH_JSON` from the real storage so auth is
+> resolved independently of `NOTEBOOKLM_HOME`).
+
 The scrubbing pipeline (`tests/vcr_config.py`) redacts cookies, CSRF tokens,
 emails, and other sensitive patterns before the cassette hits disk. Verify
 the result with the cassette guard before committing:
@@ -542,14 +562,12 @@ The gate is a pure-text static check (no pytest, no network) and runs in the
 - at least one cassette whose recorded request/response body contains the
   RPC id.
 
-**Pre-existing gaps.** A small `PREEXISTING_GAPS` set inside the script
-grandfathers methods that lacked coverage when the gate first landed
-(currently: `GET_INTERACTIVE_HTML`, `GET_SUGGESTED_REPORTS`,
-`IMPORT_RESEARCH`, `REFRESH_SOURCE`). The set is a **one-way ratchet** —
-it must not grow. When you backfill coverage for a grandfathered method,
-delete its entry from `PREEXISTING_GAPS` in the same PR. The gate prints a
-`NOTICE:` to stderr when a `PREEXISTING_GAPS` entry has acquired full
-coverage so maintainers see the prompt to remove it.
+**Pre-existing gaps.** A small `PREEXISTING_GAPS` set inside the script can
+grandfather methods that lacked coverage when the gate first landed. It is
+currently empty. The set is a **one-way ratchet** — it must not grow. When
+you backfill coverage for a grandfathered method, delete its entry from
+`PREEXISTING_GAPS` in the same PR. The gate fails when a stale
+`PREEXISTING_GAPS` entry has acquired full coverage so maintainers remove it.
 
 ```bash
 # Run locally before pushing changes that touch RPCMethod

@@ -1,7 +1,7 @@
 {
-  "schema_version": "1.13",
-  "updated": "2026-05-27",
-  "total": 430,
+  "schema_version": "1.14",
+  "updated": "2026-05-30",
+  "total": 433,
   "models": {
     "seedance-2.0": {
       "name": "Doubao Seedance 2.0",
@@ -9337,6 +9337,92 @@
         "name": "YouTube pbpzvmtpAZg · Advanced Prompting Guide (Google Doc)",
         "url": "https://www.youtube.com/watch?v=pbpzvmtpAZg",
         "tier": "reputable-3rd-party"
+      }
+    },
+    {
+      "id": "sd-115",
+      "model": "seedance-2.0",
+      "title": "⭐ 玩法 · 画线 FPV 航拍通用模板(MrLarus 原文)",
+      "prompt": "请擦除红线、箭头和所有辅助标记。红线和箭头仅作为镜头运动路径参考,最终成片中不得出现。镜头以第一人称 FPV 视角呈现,超高速、电影级、一镜到底,严格沿着图片中的红色路径运动,不要偏离、不要跳步、不要简化路线。镜头从【起点】开始,经过【节点1】,随后【节点2】,再到【节点3】,最后到达【终点主体】并完成【收尾动作】。画面要求超写实、运动顺滑稳定、速度感强、空间连续清晰,不要重复建筑、不要变形、不要文字、不要水印。",
+      "tags": [
+        "playbook",
+        "fpv",
+        "path-drawing",
+        "drone-shot",
+        "template",
+        "image-to-video",
+        "viral-technique"
+      ],
+      "category": "creative",
+      "params": {
+        "aspect": "16:9 或 9:16",
+        "duration": "10-15s",
+        "resolution": "1080p"
+      },
+      "source": {
+        "name": "@MrLarus(Larus Canus) · X tweet 评论区 — 画线控制 AI 航拍镜头玩法 (45K 浏览 · 275 赞)",
+        "url": "https://x.com/MrLarus/status/2060588327409959082",
+        "video_url": "https://video.twimg.com/amplify_video/2060586925543559171/vid/avc1/1080x1216/TO9DT93zSB4ChCJe.mp4?tag=27",
+        "tier": "reputable-3rd-party",
+        "note": "玩法集合 #1 — 在图片画红线作为飞行路径,Seedance 沿线生成 FPV 镜头。把【起点/节点/终点/收尾】换成自己场景即可。详见 methodology/21-fpv-航拍路径绘制玩法.md",
+        "author": "@MrLarus (Larus Canus) — 工作流+prompt 模板由其在 X 公开分享"
+      }
+    },
+    {
+      "id": "sd-116",
+      "model": "seedance-2.0",
+      "title": "玩法 · 世界地标大乱斗 FPV(富士山→埃菲尔→罗马→自由女神)",
+      "prompt": "请擦除红线、箭头和所有辅助标记。红线和箭头仅作为镜头运动路径参考,最终成片中不得出现。镜头以第一人称 FPV 视角呈现,超高速、电影级、一镜到底,严格沿着图片中的红色路径运动,不要偏离、不要跳步、不要简化路线。镜头从富士山山顶开始,贴近富士山雪线掠过,经过埃菲尔铁塔尖顶,随后穿过罗马斗兽场圆形竞技场内部,再到纽约自由女神像火炬旁,最后绕火炬上升一周后定格在女神冠冕特写。画面要求超写实、运动顺滑稳定、速度感强、空间连续清晰,不要重复建筑、不要变形、不要文字、不要水印。",
+      "tags": [
+        "playbook",
+        "fpv",
+        "landmarks-mashup",
+        "world-tour",
+        "image-to-video",
+        "viral-technique"
+      ],
+      "category": "creative",
+      "params": {
+        "aspect": "9:16",
+        "duration": "15s",
+        "resolution": "1080p"
+      },
+      "source": {
+        "name": "@MrLarus · World Landmark Mashup FPV(主案例,45K 浏览)",
+        "url": "https://x.com/MrLarus/status/2060588327409959082",
+        "video_url": "https://video.twimg.com/amplify_video/2060586925543559171/vid/avc1/1080x1216/TO9DT93zSB4ChCJe.mp4?tag=27",
+        "tier": "reputable-3rd-party",
+        "note": "玩法集合 #1 实际填充案例。Workflow:画线图 + 此 prompt → Seedance",
+        "author": "@MrLarus (Larus Canus) — 工作流+prompt 模板由其在 X 公开分享"
+      }
+    },
+    {
+      "id": "sd-117",
+      "model": "seedance-2.0",
+      "title": "玩法 · 广州中轴线 FPV(花城广场→楼顶→珠江→小蛮腰)",
+      "prompt": "请擦除红线、箭头和所有辅助标记。红线和箭头仅作为镜头运动路径参考,最终成片中不得出现。镜头以第一人称 FPV 视角呈现,超高速、电影级、一镜到底,严格沿着图片中的红色路径运动,不要偏离、不要跳步、不要简化路线。镜头从花城广场低空开始,贴楼拔高沿着 CBD 玻璃幕墙上升,随后穿过楼顶结构与天台,接着绕楼俯冲掠过珠江水面,再冲向广州塔小蛮腰,最后绕塔螺旋上升一周后定格在塔顶。画面要求超写实、运动顺滑稳定、速度感强、空间连续清晰,城市建筑细节真实,不要重复建筑、不要变形、不要文字、不要水印。",
+      "tags": [
+        "playbook",
+        "fpv",
+        "city-aerial",
+        "guangzhou",
+        "image-to-video",
+        "real-estate",
+        "viral-technique"
+      ],
+      "category": "creative",
+      "params": {
+        "aspect": "9:16",
+        "duration": "15s",
+        "resolution": "1080p"
+      },
+      "source": {
+        "name": "@MrLarus · 广州中轴线 FPV(玩法起源,158K 浏览 · 1389 赞 · 210 RT)",
+        "url": "https://x.com/MrLarus/status/2060267899382542341",
+        "video_url": "https://video.twimg.com/amplify_video/2060267899382542341/vid/avc1/1080x1216/I__iW70_wy-nHwIg.mp4?tag=27",
+        "tier": "reputable-3rd-party",
+        "note": "玩法集合 #1 城市航拍案例。可换任何城市轴线:北京中轴线 / 上海外滩 / 香港维港 / 巴黎香榭大道 等",
+        "author": "@MrLarus (Larus Canus) — 工作流+prompt 模板由其在 X 公开分享"
       }
     },
     {

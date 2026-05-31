@@ -2,13 +2,19 @@
 
 > [根目录](../CLAUDE.md) > **skills-v2**
 
-**Last Updated**: 2026-04-10 (v2.1.16)
+**Last Updated**: 2026-05-30 (v3.1.2)
+
+> ⚠ 本文档主体仍停留在 v2.1.16 架构描述（v3.0 引擎重构后未全量同步）。下方变更记录保留 v3.x 修复轨迹，完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
 ---
 
 ## 变更记录 (Changelog)
 
 > 完整变更历史请查看 [CHANGELOG.md](./CHANGELOG.md)
+
+### 2026-05-30 (v3.1.2)
+- 🐛 **Codex 模式 hook 加载错目录**：`hooks.json` 用相对路径 `python3 .codex/hooks/ccg-workflow.py`，Codex 从项目目录而非用户 home 找脚本。`installCodexMode` 安装时将 `~/` 替换为绝对 home 路径写入。
+- 🐛 **Codex 模式仍调 `--backend gemini`**：`hooks/ccg-workflow.py` 硬编码 "Gemini"/`--backend gemini` 且未走 `injectConfigVariables`，叠加 antigravity 默认 + Gemini CLI 日落导致外部模型空响应。改用 `{{FRONTEND_PRIMARY}}` 占位符 + 安装时注入，AGENTS.md 描述文字同步去硬编码。
 
 ### 2026-04-10 (v2.1.16)
 - ✨ **Init 交互状态机**：`init` 重构为状态机，每步首个 list 内嵌 `← 返回上一步` 和 `× 取消` 哨兵；Step 3 MCP 因首 prompt 是 checkbox，加前导 list 守门；解决"填错要 Ctrl+C 全部重来"痛点

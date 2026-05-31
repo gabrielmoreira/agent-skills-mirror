@@ -23,7 +23,7 @@ Assemble context in layers:
 2. Organization/developer policy
 3. Agent role and operating contract
 4. Active user task
-5. Active plan or goal
+5. Active plan, workflow, or goal
 6. Scoped instructions and memory
 7. Relevant retrieved data
 8. Visible skill index
@@ -66,6 +66,7 @@ user preferences
 organization policy
 project/domain conventions
 active session state
+workflow state
 artifact references
 long-term summaries
 approval records
@@ -135,6 +136,7 @@ current objective
 user constraints
 authoritative instructions loaded
 active plan
+active workflow state
 active goal
 approval state
 resources inspected
@@ -166,6 +168,7 @@ Trigger compaction when:
 - tool results become too large;
 - the run crosses a major milestone;
 - switching from planning to execution;
+- switching between workflow planning, packet execution, verification, and integration;
 - pausing for approval or human handoff;
 - resuming long-running goal work.
 
@@ -181,7 +184,7 @@ Provider-neutral algorithm:
 3. Summarize old messages into a structured handoff.
 4. Store bulky artifacts externally and reference them.
 5. Rebuild the context with summary + active artifacts.
-6. Reattach active plan, goal, approvals, loaded instructions, invoked skills, and connector state.
+6. Reattach active plan, workflow state, goal, approvals, loaded instructions, invoked skills, and connector state.
 7. Add a compaction boundary event to the trace.
 ```
 
@@ -202,6 +205,9 @@ Use this format:
 ...
 
 ## Active plan
+...
+
+## Active workflow
 ...
 
 ## Active goal and done condition

@@ -18,7 +18,7 @@ metadata:
       bins:
       - python3
     always: false
-    emoji: 🧪
+    emoji: 🕰️
     homepage: https://github.com/ClawBio/ClawBio
     os:
     - darwin
@@ -36,9 +36,9 @@ metadata:
     - epigenetic age
     - methylation clock
     - pyaging
-    - horvath
-    - grimage
-    - dunedinpace
+    - Horvath
+    - GrimAge
+    - DunedinPACE
     - GEO
     - GSE
 ---

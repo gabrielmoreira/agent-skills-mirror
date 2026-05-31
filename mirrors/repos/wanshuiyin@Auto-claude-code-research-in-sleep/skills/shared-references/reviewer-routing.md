@@ -2,7 +2,7 @@
 
 ## Default (NEVER changes without explicit user request)
 
-All review calls use **Codex MCP** (`mcp__codex__codex`) with `reasoning_effort: xhigh`.
+All review calls use **Codex MCP** (`mcp__codex__codex`, default model `gpt-5.5`) with `reasoning_effort: xhigh`.
 
 This is the default for ALL skills. No parameter, no config, no effort level changes this.
 

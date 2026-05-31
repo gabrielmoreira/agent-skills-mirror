@@ -1,4 +1,4 @@
-# Auto-Empirical Research Skills (AERS)
+# Auto-Empirical Research Skills (AERS, 23K+ Skills)
 
 > [!NOTE]
 > **仓库已更名 → 突出「Auto 自动化」。** 本项目最初名为 *Awesome Agent Skills for Empirical Research*，现已更名为 **Auto-Empirical-Research-Skills (AERS)**。新名字强调核心理念：它不只是一套技能的「集合」，而是一个能**自动跑通整套实证研究流程**的智能体——从原始数据清洗 → 识别与估计 → 稳健性检验 → 生成表格图形 → 直至产出可投稿的论文初稿，全流程自动化、尽量减少人工介入。

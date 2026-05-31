@@ -40,11 +40,12 @@ A robust harness contains these components:
 8. Memory and retrieval layer
 9. Compactor
 10. Planner and goal controller
-11. Skill registry
-12. MCP/external connector manager
-13. Approval manager
-14. Trace and evaluation system
-15. Sandbox or execution boundary
+11. Workflow scheduler
+12. Skill registry
+13. MCP/external connector manager
+14. Approval manager
+15. Trace and evaluation system
+16. Sandbox or execution boundary
 ```
 
 ## Boundary principle
@@ -108,6 +109,11 @@ skill_invocation
 memory_load
 context_compaction
 connector_call
+workflow_plan
+workflow_packet_started
+workflow_packet_result
+workflow_verification_result
+workflow_integration_result
 error
 final_answer
 ```
@@ -122,6 +128,7 @@ The prompt is not a database. Persist these outside model context:
 - active goal;
 - todo list;
 - approval records;
+- workflow plans, packet status, verifier outputs, and integration notes;
 - tool traces;
 - artifacts;
 - retrieved resource references;
@@ -177,6 +184,23 @@ Start with:
 10. a small eval set.
 
 Add subagents, MCP, skill packages, goal loops, and automation only after the base loop is reliable.
+
+## Workflow orchestration layer
+
+Workflow orchestration is an optional layer for large decomposable tasks. It lets the model propose a workflow plan, while the harness validates, approves, schedules, observes, verifies, and integrates the work.
+
+```text
+objective
+  -> workflow plan
+  -> permission and budget check
+  -> work packets
+  -> worker contexts
+  -> verifier contexts
+  -> integration
+  -> final result with evidence
+```
+
+Use this only when the single-worker loop is measurably insufficient because the task requires broad coverage, independent packet work, parallel read-only inspection, or separate verification. The workflow plan is not trusted policy. It is an artifact that must pass the same validation, permission, budget, and approval gates as any other model-proposed action.
 
 ## Design rule
 

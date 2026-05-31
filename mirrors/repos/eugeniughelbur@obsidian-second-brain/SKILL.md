@@ -83,9 +83,6 @@ python scripts/bootstrap_vault.py --path ~/my-vault --name "Your Name" --preset 
 python scripts/bootstrap_vault.py --path ~/my-vault --name "Your Name" --preset creator
 python scripts/bootstrap_vault.py --path ~/my-vault --name "Your Name" --preset researcher
 
-# With style override:
-python scripts/bootstrap_vault.py --path ~/my-vault --name "Your Name" --style obsidian
-
 # With assistant mode (maintaining vault for someone else):
 python scripts/bootstrap_vault.py --path ~/my-vault --name "Your Name" --mode assistant --subject "Boss Name"
 ```
@@ -109,7 +106,7 @@ See `references/vault-schema.md` for full structural details.
 ## Core Operating Principles
 
 ### AI-first vault rule (applies to every note)
-The vault is designed for **future-Claude** to read and reason over, not for human review. Every note Claude writes - across all 34 commands - must follow `references/ai-first-rules.md`:
+The vault is designed for **future-Claude** to read and reason over, not for human review. Every note Claude writes - across all 38 commands - must follow `references/ai-first-rules.md`:
 
 1. **Self-contained context** - each note explains itself; don't rely on backlinks alone
 2. **"For future Claude" preamble** - 2-3 sentence summary so Claude can decide relevance in 10 seconds
@@ -243,6 +240,13 @@ search(query="keyword from title")
 ```
 Duplicate notes are vault rot. Merge or update instead of creating new.
 
+### Never claim absence from memory, never fabricate
+Two failure modes corrupt the vault silently:
+- **False absence (most common):** never say "no note exists" or create a note on the assumption none exists without searching exhaustively first - by every plausible name, alias, and folder, listing and grepping, not from memory. When in doubt, over-include and label the uncertainty.
+- **Fabrication:** never invent facts, entities, rates, dates, or relationships that were not actually stated. Mark unknowns as `TBD`; an empty section is correct when nothing was said. External claims carry a source URL + recency marker; inferences carry a confidence level.
+
+See the anti-fabrication and search-completeness hard rules in `references/ai-first-rules.md`.
+
 ### Match the vault's voice
 Read existing notes in the same folder before writing new ones.
 Match: frontmatter schema, heading style, list formatting, tone, emoji usage (or lack of it).
@@ -373,6 +377,38 @@ Steps:
 5. If the note already exists, inject new content into the right sections rather than overwriting
 
 Return the path of the daily note when done.
+
+---
+
+### `/obsidian-agenda`
+
+**Reads Google Calendar and writes a re-derivable AI-first snapshot to the vault.** Claude Code only (needs the Google Calendar MCP).
+
+Range argument: `today` (default), `tomorrow`, `week`, `next-week`, `YYYY-MM-DD`, or `YYYY-MM-DD..YYYY-MM-DD`. Pulls the primary calendar, cross-links attendees to `[[Person]]` notes, and flags conflicts, 3+ back-to-back stretches, working-hours focus blocks, and externally-organized events. Saves to `wiki/agenda/` as `type: agenda-snapshot` (Google Calendar stays the source of truth; the note is a snapshot). Never paraphrases event titles or invents attendees.
+
+---
+
+### `/obsidian-schedule`
+
+**Creates or moves a Google Calendar event, then links it back to the vault.** Claude Code only.
+
+Three modes: standalone (`"<title>" <when> <duration>`), from a vault task (`task:<path>`), or suggest-a-time (`task:<...> suggest:<window>`). Resolves attendee emails from each person note's `email:` field and never guesses one; conflict-checks before writing; requests a Meet link when participants span domains. On success it writes `calendar-event-id` / `calendar-event-url` back into the task frontmatter, so a re-run reschedules rather than duplicating.
+
+---
+
+### `/obsidian-meeting`
+
+**Generates a meeting note from a Google Calendar event.** Claude Code only.
+
+Resolve the event (`last`, `next`, `today`, `event-id:<id>`, or fuzzy title), cross-link attendees to person notes, and backlink any task whose frontmatter `calendar-event-id` matches. Saves to `wiki/meetings/` as `type: meeting` with the event metadata pre-filled and **empty** Notes / Decisions / Action items sections - never fabricate meeting content that did not happen.
+
+---
+
+### `/obsidian-recurring`
+
+**Tracks a recurring obligation (payment, filing, ops) with a cadence and a computed next-due date.**
+
+State the obligation and cadence (e.g. "pay social benefits, monthly day 20"). Searches for an existing note first, then builds a `type: recurring-task` note with What / Cadence / Blockers / History sections and frontmatter (`cadence`, `owner`, `blocker`, `next-due`, optional `amount`). Adds a board card for the next occurrence; on each completion, appends a History row and advances `next-due`. Fills the gap that `/obsidian-task` (one-shot) leaves.
 
 ---
 
@@ -1066,6 +1102,29 @@ To list or remove scheduled agents:
 /schedule list
 /schedule remove obsidian-morning
 ```
+
+### Running commands headless (`claude -p`) - important gotcha
+
+Custom slash commands do NOT expand in non-interactive mode. A cron job or launchd
+job that runs `claude -p "/obsidian-daily"` will send the literal text `/obsidian-daily`
+as a prompt - Claude never loads the command file, so nothing happens.
+
+The reliable pattern for any headless run (cron, launchd, a wrapper script) is to point
+Claude at the command file and tell it to carry out the instructions:
+
+```bash
+# Wrong - the slash command is not expanded in -p mode:
+claude -p "/obsidian-daily"
+
+# Right - read the command file and execute its steps:
+cd "$VAULT" && claude --dangerously-skip-permissions \
+  -p "Read ~/.claude/commands/obsidian-daily.md and carry out its instructions exactly."
+```
+
+Because `~/.claude/commands/obsidian-daily.md` is symlinked from this repo (see Testing
+locally in the README), a scheduled run always uses the current command logic. Export an
+explicit `PATH` in launchd jobs - launchd strips the environment, so `claude` and `python3`
+may not be found otherwise.
 
 ---
 

@@ -41,6 +41,22 @@ Inspired by [Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6
 
 Edges are stored in `graph/edges.jsonl` only. The `## Connections` section on each page is **auto-generated** from the graph — never hand-edit it.
 
+### Capture hygiene (anti-self-poisoning)
+
+Before persisting an **idea / claim / experiment** note, screen it for
+operational noise that would harden into a self-cited falsehood (see
+[`shared-references/capture-antipatterns.md`](../shared-references/capture-antipatterns.md)).
+Resolve the helper via the canonical chain (integration-contract §2):
+`.aris/tools/capture_filter.py` → `tools/capture_filter.py` →
+`$ARIS_REPO/tools/capture_filter.py` (warn-and-skip if unresolved). Run
+`python3 <capture_filter> -` on the note text; if it flags **env-failure /
+transient-error / negative-tool-claim**, do NOT store it as a durable node —
+rewrite it to the *fix / missing config / workaround*, or drop it. Never store
+"codex/gemini/the reviewer can't do X" — that gets loaded into every future
+session and cited against the agent long after the real cause is gone. (The wiki's
+"failed ideas → anti-repeat memory" is the GOOD inverse: a class-level *research*
+finding, not operational noise.)
+
 ## Wiki Directory Structure
 
 ```

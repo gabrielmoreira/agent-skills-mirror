@@ -97,6 +97,7 @@ RPC Layer (rpc/)
 | `_env.py`, `config.py` | Runtime environment defaults and the public config re-export surface |
 | `_logging.py`, `log.py` | Redaction/correlation logging internals and the public logging helper surface |
 | `_callbacks.py` | Sync-or-async callback invocation helper used by telemetry/retry hooks |
+| `_deprecation.py` | Deprecation helpers, all gated by `NOTEBOOKLM_QUIET_DEPRECATIONS`: `warn_get_returns_none` — single place for the `get()`-returns-`None` `DeprecationWarning` (public `sources/artifacts/notes.get()` warn on a miss; the private `_get_or_none()` body never warns; flip to raising `*NotFoundError` in v0.8.0, issue #1247); `deprecated_kwarg` / `deprecations_quiet` — keyword-alias helper that names the v0.8.0 removal and errors when both the old and new keyword are passed (used by `ResearchAPI.wait_for_completion` `interval` → `initial_interval`); and `MappingCompatMixin` — dict-subscript backward-compat bridge for dataclasses that replaced `dict[str, Any]` returns (issue #1209: `ResearchTask`/`ResearchStart`/`MindMapResult`/`SourceGuide`); `result["key"]` warns and returns the value from the dataclass's `to_public_dict()`, while `get`/`keys`/`in`/`iter` stay silent; dropped in v0.8.0. See `docs/deprecations.md`. |
 | `_runtime_helpers.py` | `is_auth_error`, `AUTH_ERROR_PATTERNS`, `_resolve_keepalive_interval` |
 | `_error_injection.py` | Synthetic-error env-var resolver + startup guard |
 | `_client_metrics.py` | `ClientMetrics` — `ClientMetricsSnapshot` counters + `on_rpc_event` callback |
@@ -105,6 +106,7 @@ RPC Layer (rpc/)
 | `_backoff.py` | Shared capped exponential-backoff calculation with deterministic test injection |
 | `_reqid_counter.py` | `ReqidCounter` — monotonic `_reqid` for the chat backend |
 | `_runtime_auth.py` | `AuthRefreshCoordinator` — refresh task + auth-snapshot lock |
+| `_auth_refresh_retry.py` | Shared auth refresh-and-retry core for the two retry layers (HTTP-status `AuthRefreshMiddleware` + decoded-RPC `RpcExecutor`): the once-per-logical-call `RefreshBudget` token and the common `refresh_and_count` body (log/refresh/sleep/`rpc_auth_retries` metric). Unifies the previously-divergent copies per issue #1205; the two layers keep their distinct triggers and refresh-failure exception shapes. |
 | `_runtime_lifecycle.py` | `ClientLifecycle` — loop-affinity guard + keepalive task |
 | `_runtime_transport.py` | `RuntimeTransport` — authed-POST transport wrapper that drives the middleware chain and typed transport response handling |
 | `_rpc_executor.py` | RPC dispatch executor. Takes its `Kernel`, `RuntimeTransport`, `AuthRefreshCoordinator`, and `ClientMetrics` collaborators directly via keyword-only constructor parameters (ADR-014 Rule 5). The `RpcOwner` Protocol that previously re-declared the former `Session` facade's private attribute surface was deleted in Wave 4 of session-decoupling (#1068); only the local `DecodeResponse` Protocol remains. |
@@ -138,6 +140,7 @@ RPC Layer (rpc/)
 | `_settings.py` | `client.settings` API |
 | `_note_service.py` | Service layer managing note CRUD, note-backed content generation, and sync |
 | `_mind_map.py` | Specific adapter service representing mind-maps, backed by standard notes |
+| `_mind_maps_api.py` | `client.mind_maps` API — unified surface over both mind-map backends (note-backed JSON + interactive studio-artifact), dispatching each op to the correct RPC family (#1256) |
 | `_artifact_downloads.py` | Asynchronous download coordinator for finished artifacts |
 | `_artifact_formatters.py` | Markdown, HTML, and plain text formatters for artifacts |
 | `_artifact_payloads.py` | Stable CREATE_ARTIFACT / GENERATE_MIND_MAP request payload builders |
@@ -186,11 +189,13 @@ src/notebooklm/
 ├── urls.py                      # Public URL helper facade
 ├── utils.py                     # Public async utility helpers
 ├── _atomic_io.py                # Atomic JSON write/update helpers
+├── _auth_refresh_retry.py       # Shared auth refresh-and-retry core (RefreshBudget + refresh_and_count) for both retry layers
 ├── _backoff.py                  # Shared retry backoff calculation
 ├── _callbacks.py                # Sync/async callback invocation helper
 ├── _client_composed.py          # Client-owned composition holder
 ├── _client_seams.py             # Constructor-only injectable seams
 ├── _deadline.py                 # RuntimeDeadline helper for aggregate timeouts
+├── _deprecation.py              # Deprecation helpers (warn_get_returns_none + deprecated_kwarg keyword-alias + MappingCompatMixin dict-subscript bridge) gated by NOTEBOOKLM_QUIET_DEPRECATIONS
 ├── _env.py                      # Runtime environment/default endpoint helpers
 ├── _idempotency.py              # Mutating-RPC idempotency registry + wrappers
 ├── _kernel.py                   # Concrete Kernel transport core
@@ -219,6 +224,7 @@ src/notebooklm/
 ├── _runtime_contracts.py        # Shared runtime Protocols consumed by feature APIs
 ├── _note_service.py             # NoteService
 ├── _mind_map.py                 # NoteBackedMindMapService
+├── _mind_maps_api.py            # MindMapsAPI — unified mind-map surface over both backends (#1256)
 ├── _artifact_downloads.py       # Artifact download coordinator
 ├── _artifact_formatters.py      # Artifact formatting helpers
 ├── _artifact_payloads.py        # Stable artifact request payload builders
@@ -261,14 +267,17 @@ src/notebooklm/
 │   ├── storage.py               # Profile/state persistence on disk
 │   ├── keepalive.py             # Cookie keepalive + __Secure-1PSIDTS rotation
 │   ├── psidts_recovery.py       # Inline PSIDTS recovery for cold-start (issue #865)
-│   └── refresh.py               # Token refresh driver (external login cmd, coalesced runs, redaction)
+│   ├── refresh.py               # Token refresh driver (external login cmd, coalesced runs, redaction)
+│   └── tokens.py                # AuthTokens container + load_auth_from_storage loader
 ├── _types/                      # Dataclass implementation package re-exported by types.py
 │   ├── __init__.py
 │   ├── artifacts.py
 │   ├── chat.py
 │   ├── common.py
+│   ├── mind_maps.py             # MindMap + MindMapKind pure-value types (#1256)
 │   ├── notebooks.py
 │   ├── notes.py
+│   ├── research.py              # ResearchStatus enum + ResearchTask/ResearchSource/ResearchStart/MindMapResult/SourceGuide typed returns (#1209)
 │   ├── sharing.py
 │   └── sources.py
 ├── _notebooks.py                # NotebooksAPI
@@ -283,7 +292,9 @@ src/notebooklm/
 ├── rpc/                         # RPC protocol layer
 │   ├── types.py                 # Method IDs and enums
 │   ├── encoder.py               # Request encoding
-│   └── decoder.py               # Response parsing
+│   ├── decoder.py               # Response parsing
+│   ├── _safe_index.py           # Strict bounds-checked positional access for decoded RPC payloads
+│   └── overrides.py             # Runtime RPC ID override policy (env-driven)
 └── cli/                         # CLI implementation
     ├── __init__.py              # Re-exports click groups under historical names from *_cmd modules
     ├── _chromium_profiles.py    # Multi-user-data-profile cookie extraction for Chromium browsers

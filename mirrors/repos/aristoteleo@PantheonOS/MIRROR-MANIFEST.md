@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns, 108 file(s) materialized.
+Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns, 111 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 108 |
+| Files         | 111 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -166,7 +166,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 105 | ✓ | [`pantheon/factory/templates/skills/presentation/marp_slides.md`](pantheon/factory/templates/skills/presentation/marp_slides.md) |
 | 106 | ✓ | [`pantheon/factory/templates/skills/presentation/marp_template.md`](pantheon/factory/templates/skills/presentation/marp_template.md) |
 | 107 | ✓ | [`pantheon/factory/templates/skills/presentation/SKILL.md`](pantheon/factory/templates/skills/presentation/SKILL.md) |
-| 108 | ✓ | [`pantheon/factory/templates/skills/structural_biology/SKILL.md`](pantheon/factory/templates/skills/structural_biology/SKILL.md) |
+| 108 | ✓ | [`pantheon/factory/templates/skills/rare_disease/clinical_report_format.md`](pantheon/factory/templates/skills/rare_disease/clinical_report_format.md) |
+| 109 | ✓ | [`pantheon/factory/templates/skills/rare_disease/rd_ontology_first.md`](pantheon/factory/templates/skills/rare_disease/rd_ontology_first.md) |
+| 110 | ✓ | [`pantheon/factory/templates/skills/rare_disease/SKILL.md`](pantheon/factory/templates/skills/rare_disease/SKILL.md) |
+| 111 | ✓ | [`pantheon/factory/templates/skills/structural_biology/SKILL.md`](pantheon/factory/templates/skills/structural_biology/SKILL.md) |
 
 ---
 

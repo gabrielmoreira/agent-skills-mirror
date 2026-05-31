@@ -130,6 +130,9 @@ review = "reviewer:claude"
 - Use `inplace` for `main`, `reviewer`, and `discuss` unless the user asks for isolation.
 - Inherit provider credentials/config by default. Do not write `key`, `url`, `provider_profile`, or API env unless explicitly requested.
 - Keep `restore = "auto"`, `permission = "manual"`, `runtime_mode = "pane-backed"`, and `queue_policy = "serial-per-agent"` unless the user explicitly asks otherwise.
+- For explicit windows topology, expose sidebar view split controls by default:
+  `agents_height = "50%"`, `comms_height = "15%"`, and `tips_height = "35%"`.
+  Treat changes to these fields as UI-only presentation changes.
 - Add `description` fields only when useful; do not add verbose config metadata when memory files already carry the role guidance.
 
 ## Config Knowledge
@@ -146,6 +149,11 @@ Key points:
 - Compact/hybrid config without `[windows]` is a legacy-compatible single-window layout even when CCB supports windows topology.
 - Hybrid TOML overlay may only add fields for agents already declared in the compact header and must not redefine `provider` or `workspace_mode`.
 - Explicit windows topology uses `version = 2`, `[windows]`, and optional `[ui.sidebar]`; it must not include `default_agents`, `layout`, or `cmd_enabled`.
+- `[ui.sidebar.view]` is optional and UI-only. In windows topology proposals,
+  include `agents_height`, `comms_height`, and `tips_height` when the user wants
+  visible sidebar tuning; default them to `50%`, `15%`, and `35%`. These fields
+  control the Tree/Agent, Comms, and Tips panel heights respectively and accept
+  positive row counts or percentage strings.
 - In explicit windows topology, `[windows]` defines the effective configured-agent set; same-name `[agents.<name>]` tables are overlays and may override `workspace_mode`, while stale tables for names no longer in `[windows]` are ignored.
 - `cmd` is not supported inside `[windows]` topology. Use compact/hybrid config when a persistent command pane is required.
 - Migration to `[windows]` is opt-in and should preserve existing agent fields unless the user asks for role/provider/workspace changes.

@@ -66,6 +66,21 @@ Use this in frontmatter (`confidence: high`) or inline (`(confidence: speculatio
 
 ---
 
+## Anti-fabrication and search-completeness (hard rules)
+
+Rules 1-7 govern how a note is written. These govern how Claude reads and reasons over the vault before writing. They are non-negotiable because the failure modes below silently corrupt the vault's value as a memory.
+
+### False absence (the most common failure mode)
+Never assert that a note, person, project, or file does NOT exist without an exhaustive search first. Saying "no note exists" when one does is the single most common observed failure - more common than fabrication. Verify presence or absence by listing and grepping the vault, not from memory or a single lucky query. Search by every plausible name, alias, and folder before concluding something is missing. When unsure, over-include and label the uncertainty rather than under-report.
+
+### Search completeness
+When a command reads or scans the vault, enumerate exhaustively - do not sample. List every matching note, not a representative few. A partial scan that is reported as complete produces confident wrong answers, which are worse than an honest "I only checked X".
+
+### No fabrication
+Never invent facts, entities, rates, dates, or relationships that were not actually stated. Mark unknowns as `TBD`. Attach a recency marker and source URL to every external claim (Rules 4-5); mark inferences with a confidence level (Rule 7). Never fabricate a value just to make a section look complete - an empty `## Decisions` section is correct when no decision was made.
+
+---
+
 ## Type Schemas
 
 Frontmatter schemas by note type. **Add fields specific to your type - never remove the universal fields.**
@@ -208,6 +223,53 @@ related-projects: [...]
 ai-first: true
 ```
 
+### `type: agenda-snapshot`
+Written by `/obsidian-agenda`. A re-derivable point-in-time view of the calendar - Google Calendar is the source of truth, not this note. `fetched-at` is the recency anchor.
+```yaml
+date: YYYY-MM-DD              # date the snapshot was generated
+type: agenda-snapshot
+range: "YYYY-MM-DD..YYYY-MM-DD"
+range-label: today           # today | tomorrow | week | next-week | day | range
+calendar-source: google-calendar
+calendars: [primary]
+fetched-at: "YYYY-MM-DDTHH:MM:SS+HH:MM"   # ISO 8601 with offset
+event-count: 0
+conflict-count: 0
+tags: [agenda, calendar]
+ai-first: true
+```
+
+### `type: meeting`
+Written by `/obsidian-meeting` from a calendar event. Notes / Decisions / Action items sections start empty - never fabricate them (see the anti-fabrication hard rule).
+```yaml
+date: YYYY-MM-DD
+type: meeting
+event-id: ""                 # Google Calendar event id (links the note to the event)
+event-url: ""
+conference-url: ""
+start: "YYYY-MM-DDTHH:MM:SS+HH:MM"
+end: "YYYY-MM-DDTHH:MM:SS+HH:MM"
+duration-min: 0
+organizer: ""
+attendees: ["[[People/...]]", ...]
+tags: [meeting]
+ai-first: true
+```
+
+### `type: recurring-task`
+Written by `/obsidian-recurring`. Tracks a repeating obligation with a cadence and a computed `next-due` that advances on each completion. The History section logs each occurrence.
+```yaml
+date: YYYY-MM-DD
+type: recurring-task
+cadence: ""                  # e.g. "monthly day 20", "every quarter", "weekly Mon"
+owner: ""
+blocker: "[[People/...]]"    # optional - who/what gates it
+next-due: YYYY-MM-DD         # computed next occurrence
+amount: ""                   # optional - for payments
+tags: [recurring-task]
+ai-first: true
+```
+
 ---
 
 ## Preamble Templates by Type
@@ -300,6 +362,8 @@ When auditing an existing note (Phase 2 work or one-off cleanup), verify:
 - [ ] If multi-source, confidence levels marked
 - [ ] No "see above" or context-dependent references
 - [ ] Self-contained - readable with zero context
+- [ ] No fabricated facts, entities, or dates - unknowns marked `TBD`
+- [ ] Any "no note / nothing found" claim was verified by an exhaustive search, not from memory
 
 ---
 

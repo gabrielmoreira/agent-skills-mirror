@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `thClaws/thClaws` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `thClaws/thClaws` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `thClaws/thClaws` — 26 default patterns, 0 followed patterns, 5 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`crates/core/src/default_prompts/compaction.md`](crates/core/src/default_prompts/compaction.md) |
-| 2 | ✓ | [`crates/core/src/default_prompts/subagent.md`](crates/core/src/default_prompts/subagent.md) |
-| 3 | ✓ | [`thclaws-technical-manual/compaction.md`](thclaws-technical-manual/compaction.md) |
-| 4 | ✓ | [`thclaws-technical-manual/skills.md`](thclaws-technical-manual/skills.md) |
-| 5 | ✓ | [`thclaws-technical-manual/subagent.md`](thclaws-technical-manual/subagent.md) |
+| 1 | ✓ | [`crates/core/assets/gui-shells/chatbot/AGENTS.md`](crates/core/assets/gui-shells/chatbot/AGENTS.md) |
+| 2 | ✓ | [`crates/core/src/default_prompts/compaction.md`](crates/core/src/default_prompts/compaction.md) |
+| 3 | ✓ | [`crates/core/src/default_prompts/subagent.md`](crates/core/src/default_prompts/subagent.md) |
+| 4 | ✓ | [`thclaws-technical-manual/compaction.md`](thclaws-technical-manual/compaction.md) |
+| 5 | ✓ | [`thclaws-technical-manual/skills.md`](thclaws-technical-manual/skills.md) |
+| 6 | ✓ | [`thclaws-technical-manual/subagent.md`](thclaws-technical-manual/subagent.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 2 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,29 +59,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/openspec-apply-change/SKILL.md`](.claude/skills/openspec-apply-change/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/openspec-archive-change/SKILL.md`](.claude/skills/openspec-archive-change/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/openspec-bulk-archive-change/SKILL.md`](.claude/skills/openspec-bulk-archive-change/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/openspec-continue-change/SKILL.md`](.claude/skills/openspec-continue-change/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/openspec-explore/SKILL.md`](.claude/skills/openspec-explore/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/openspec-ff-change/SKILL.md`](.claude/skills/openspec-ff-change/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/openspec-new-change/SKILL.md`](.claude/skills/openspec-new-change/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/openspec-onboard/SKILL.md`](.claude/skills/openspec-onboard/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/openspec-sync-specs/SKILL.md`](.claude/skills/openspec-sync-specs/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/openspec-verify-change/SKILL.md`](.claude/skills/openspec-verify-change/SKILL.md) |
-| 11 | ✓ | [`.codex/skills/openspec-apply-change/SKILL.md`](.codex/skills/openspec-apply-change/SKILL.md) |
-| 12 | ✓ | [`.codex/skills/openspec-archive-change/SKILL.md`](.codex/skills/openspec-archive-change/SKILL.md) |
-| 13 | ✓ | [`.codex/skills/openspec-bulk-archive-change/SKILL.md`](.codex/skills/openspec-bulk-archive-change/SKILL.md) |
-| 14 | ✓ | [`.codex/skills/openspec-continue-change/SKILL.md`](.codex/skills/openspec-continue-change/SKILL.md) |
-| 15 | ✓ | [`.codex/skills/openspec-explore/SKILL.md`](.codex/skills/openspec-explore/SKILL.md) |
-| 16 | ✓ | [`.codex/skills/openspec-ff-change/SKILL.md`](.codex/skills/openspec-ff-change/SKILL.md) |
-| 17 | ✓ | [`.codex/skills/openspec-new-change/SKILL.md`](.codex/skills/openspec-new-change/SKILL.md) |
-| 18 | ✓ | [`.codex/skills/openspec-onboard/SKILL.md`](.codex/skills/openspec-onboard/SKILL.md) |
-| 19 | ✓ | [`.codex/skills/openspec-sync-change-docs/SKILL.md`](.codex/skills/openspec-sync-change-docs/SKILL.md) |
-| 20 | ✓ | [`.codex/skills/openspec-sync-specs/SKILL.md`](.codex/skills/openspec-sync-specs/SKILL.md) |
-| 21 | ✓ | [`.codex/skills/openspec-verify-change/SKILL.md`](.codex/skills/openspec-verify-change/SKILL.md) |
-| 22 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 23 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

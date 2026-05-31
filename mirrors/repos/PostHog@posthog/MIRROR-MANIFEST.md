@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `PostHog/posthog` — 26 default patterns, 9 followed patterns, 295 file(s) materialized.
+Mirror of `PostHog/posthog` — 26 default patterns, 9 followed patterns, 296 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PostHog/posthog` — 26 default patterns, 9 followed patterns, 295 fi
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 9 |
-| Files         | 295 |
+| Files         | 296 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -287,81 +287,82 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 218 | ✓ | [`products/signals/eval/AGENTS.md`](products/signals/eval/AGENTS.md) |
 | 219 | ✓ | [`products/signals/eval/CLAUDE.md`](products/signals/eval/CLAUDE.md) |
 | 220 | ✓ | [`products/signals/skills/inbox-exploration/SKILL.md`](products/signals/skills/inbox-exploration/SKILL.md) |
-| 221 | ✓ | [`products/signals/skills/signals/SKILL.md`](products/signals/skills/signals/SKILL.md) |
-| 222 | ✓ | [`products/tasks/backend/services/mts_example/README.md`](products/tasks/backend/services/mts_example/README.md) |
-| 223 | ✓ | [`products/tasks/backend/temporal/process_task/README.md`](products/tasks/backend/temporal/process_task/README.md) |
-| 224 | ✓ | [`products/tracing/skills/exploring-apm-traces/SKILL.md`](products/tracing/skills/exploring-apm-traces/SKILL.md) |
-| 225 | ✓ | [`products/user_interviews/skills/planning-user-interviews/SKILL.md`](products/user_interviews/skills/planning-user-interviews/SKILL.md) |
-| 226 | ✓ | [`products/visual_review/README.md`](products/visual_review/README.md) |
-| 227 | ✓ | [`products/visual_review/skills/triaging-visual-review-runs/SKILL.md`](products/visual_review/skills/triaging-visual-review-runs/SKILL.md) |
-| 228 | ✓ | [`products/web_analytics/skills/exploring-live-traffic/SKILL.md`](products/web_analytics/skills/exploring-live-traffic/SKILL.md) |
-| 229 | ✓ | [`products/web_analytics/skills/managing-path-cleaning-rules/SKILL.md`](products/web_analytics/skills/managing-path-cleaning-rules/SKILL.md) |
-| 230 | ✓ | [`products/workflows/backend/templates/README.md`](products/workflows/backend/templates/README.md) |
-| 231 | ✓ | [`proto/AGENTS.md`](proto/AGENTS.md) |
-| 232 | ✓ | [`proto/CLAUDE.md`](proto/CLAUDE.md) |
-| 233 | ✓ | [`proto/README.md`](proto/README.md) |
-| 234 | ✓ | [`rust/AGENTS.md`](rust/AGENTS.md) |
-| 235 | ✓ | [`rust/batch-import-worker/scripts/README.md`](rust/batch-import-worker/scripts/README.md) |
-| 236 | ✓ | [`rust/capture-logs/README.md`](rust/capture-logs/README.md) |
-| 237 | ✓ | [`rust/common/alloc/README.md`](rust/common/alloc/README.md) |
-| 238 | ✓ | [`rust/common/k8s-awareness/README.md`](rust/common/k8s-awareness/README.md) |
-| 239 | ✓ | [`rust/common/lifecycle/README.md`](rust/common/lifecycle/README.md) |
-| 240 | ✓ | [`rust/common/metrics/README.md`](rust/common/metrics/README.md) |
-| 241 | ✓ | [`rust/common/profiler/README.md`](rust/common/profiler/README.md) |
-| 242 | ✓ | [`rust/common/README.md`](rust/common/README.md) |
-| 243 | ✓ | [`rust/common/s3/tests/README.md`](rust/common/s3/tests/README.md) |
-| 244 | ✓ | [`rust/common/types/README.md`](rust/common/types/README.md) |
-| 245 | ✓ | [`rust/cymbal/README.md`](rust/cymbal/README.md) |
-| 246 | ✓ | [`rust/feature-flags/README.md`](rust/feature-flags/README.md) |
-| 247 | ✓ | [`rust/hogql/parser/README.md`](rust/hogql/parser/README.md) |
-| 248 | ✓ | [`rust/kafka-deduplicator/README.md`](rust/kafka-deduplicator/README.md) |
-| 249 | ✓ | [`rust/personhog-common/README.md`](rust/personhog-common/README.md) |
-| 250 | ✓ | [`rust/personhog-coordination/README.md`](rust/personhog-coordination/README.md) |
-| 251 | ✓ | [`rust/personhog-leader/README.md`](rust/personhog-leader/README.md) |
-| 252 | ✓ | [`rust/personhog-proto/README.md`](rust/personhog-proto/README.md) |
-| 253 | ✓ | [`rust/personhog-replica/AGENTS.md`](rust/personhog-replica/AGENTS.md) |
-| 254 | ✓ | [`rust/personhog-replica/CLAUDE.md`](rust/personhog-replica/CLAUDE.md) |
-| 255 | ✓ | [`rust/personhog-replica/README.md`](rust/personhog-replica/README.md) |
-| 256 | ✓ | [`rust/personhog-router/AGENTS.md`](rust/personhog-router/AGENTS.md) |
-| 257 | ✓ | [`rust/personhog-router/CLAUDE.md`](rust/personhog-router/CLAUDE.md) |
-| 258 | ✓ | [`rust/personhog-router/README.md`](rust/personhog-router/README.md) |
-| 259 | ✓ | [`rust/personhog-writer/README.md`](rust/personhog-writer/README.md) |
-| 260 | ✓ | [`rust/property-defs-rs/README.md`](rust/property-defs-rs/README.md) |
-| 261 | ✓ | [`rust/README.md`](rust/README.md) |
-| 262 | ✓ | [`services/llm-gateway/benchmarks/README.md`](services/llm-gateway/benchmarks/README.md) |
-| 263 | ✓ | [`services/llm-gateway/README.md`](services/llm-gateway/README.md) |
-| 264 | ✓ | [`services/mcp/definitions/README.md`](services/mcp/definitions/README.md) |
-| 265 | ✓ | [`services/mcp/README.md`](services/mcp/README.md) |
-| 266 | ✓ | [`services/mcp/src/tools/README.md`](services/mcp/src/tools/README.md) |
-| 267 | ✓ | [`services/mcp/tests/README.md`](services/mcp/tests/README.md) |
-| 268 | ✓ | [`services/README.md`](services/README.md) |
-| 269 | ✓ | [`services/stripe-app/README.md`](services/stripe-app/README.md) |
-| 270 | ✓ | [`share/README.md`](share/README.md) |
-| 271 | ✓ | [`tools/hedgebox-dummy/README.md`](tools/hedgebox-dummy/README.md) |
-| 272 | ✓ | [`tools/hogli-commands/README.md`](tools/hogli-commands/README.md) |
-| 273 | ✓ | [`tools/hogli/AGENTS.md`](tools/hogli/AGENTS.md) |
-| 274 | ✓ | [`tools/hogli/CLAUDE.md`](tools/hogli/CLAUDE.md) |
-| 275 | ✓ | [`tools/hogli/README.md`](tools/hogli/README.md) |
-| 276 | ✓ | [`tools/infra-scripts/clitools/README.md`](tools/infra-scripts/clitools/README.md) |
-| 277 | ✓ | [`tools/infra-scripts/clitools/toolbox/README.md`](tools/infra-scripts/clitools/toolbox/README.md) |
-| 278 | ✓ | [`tools/infra-scripts/mcp/README.md`](tools/infra-scripts/mcp/README.md) |
-| 279 | ✓ | [`tools/phrocs/README.md`](tools/phrocs/README.md) |
-| 280 | ✓ | [`tools/pr-approval-agent/README.md`](tools/pr-approval-agent/README.md) |
-| 281 | ✓ | [`tools/traffic-sim/README.md`](tools/traffic-sim/README.md) |
-| 282 | ✓ | [`tools/traffic-sim/skills/check-posthog-loading/SKILL.md`](tools/traffic-sim/skills/check-posthog-loading/SKILL.md) |
-| 283 | ✓ | [`tools/traffic-sim/skills/README.md`](tools/traffic-sim/skills/README.md) |
-| 284 | ✓ | [`tools/traffic-sim/skills/simulate-new-user/SKILL.md`](tools/traffic-sim/skills/simulate-new-user/SKILL.md) |
-| 285 | ✓ | [`tools/traffic-sim/skills/simulate-returning-user/SKILL.md`](tools/traffic-sim/skills/simulate-returning-user/SKILL.md) |
-| 286 | ✓ | [`tools/traffic-sim/skills/verify-posthog-instrumentation/SKILL.md`](tools/traffic-sim/skills/verify-posthog-instrumentation/SKILL.md) |
-| 287 | → | [`docs/internal/monorepo-layout.md`](docs/internal/monorepo-layout.md) |
-| 288 | → | [`docs/published/handbook/engineering/ai/implementing-mcp-tools.md`](docs/published/handbook/engineering/ai/implementing-mcp-tools.md) |
-| 289 | → | [`docs/published/handbook/engineering/ai/writing-skills.md`](docs/published/handbook/engineering/ai/writing-skills.md) |
-| 290 | → | [`docs/published/handbook/engineering/type-system.md`](docs/published/handbook/engineering/type-system.md) |
-| 291 | → | [`posthog/models/team/README.md`](posthog/models/team/README.md) |
-| 292 | → | [`products/architecture.md`](products/architecture.md) |
-| 293 | → | [`products/README.md`](products/README.md) |
-| 294 | → | [`README.md`](README.md) |
-| 295 | → | [`services/mcp/CONTRIBUTING.md`](services/mcp/CONTRIBUTING.md) |
+| 221 | ✓ | [`products/signals/skills/signals-scout-general/SKILL.md`](products/signals/skills/signals-scout-general/SKILL.md) |
+| 222 | ✓ | [`products/signals/skills/signals/SKILL.md`](products/signals/skills/signals/SKILL.md) |
+| 223 | ✓ | [`products/tasks/backend/services/mts_example/README.md`](products/tasks/backend/services/mts_example/README.md) |
+| 224 | ✓ | [`products/tasks/backend/temporal/process_task/README.md`](products/tasks/backend/temporal/process_task/README.md) |
+| 225 | ✓ | [`products/tracing/skills/exploring-apm-traces/SKILL.md`](products/tracing/skills/exploring-apm-traces/SKILL.md) |
+| 226 | ✓ | [`products/user_interviews/skills/planning-user-interviews/SKILL.md`](products/user_interviews/skills/planning-user-interviews/SKILL.md) |
+| 227 | ✓ | [`products/visual_review/README.md`](products/visual_review/README.md) |
+| 228 | ✓ | [`products/visual_review/skills/triaging-visual-review-runs/SKILL.md`](products/visual_review/skills/triaging-visual-review-runs/SKILL.md) |
+| 229 | ✓ | [`products/web_analytics/skills/exploring-live-traffic/SKILL.md`](products/web_analytics/skills/exploring-live-traffic/SKILL.md) |
+| 230 | ✓ | [`products/web_analytics/skills/managing-path-cleaning-rules/SKILL.md`](products/web_analytics/skills/managing-path-cleaning-rules/SKILL.md) |
+| 231 | ✓ | [`products/workflows/backend/templates/README.md`](products/workflows/backend/templates/README.md) |
+| 232 | ✓ | [`proto/AGENTS.md`](proto/AGENTS.md) |
+| 233 | ✓ | [`proto/CLAUDE.md`](proto/CLAUDE.md) |
+| 234 | ✓ | [`proto/README.md`](proto/README.md) |
+| 235 | ✓ | [`rust/AGENTS.md`](rust/AGENTS.md) |
+| 236 | ✓ | [`rust/batch-import-worker/scripts/README.md`](rust/batch-import-worker/scripts/README.md) |
+| 237 | ✓ | [`rust/capture-logs/README.md`](rust/capture-logs/README.md) |
+| 238 | ✓ | [`rust/common/alloc/README.md`](rust/common/alloc/README.md) |
+| 239 | ✓ | [`rust/common/k8s-awareness/README.md`](rust/common/k8s-awareness/README.md) |
+| 240 | ✓ | [`rust/common/lifecycle/README.md`](rust/common/lifecycle/README.md) |
+| 241 | ✓ | [`rust/common/metrics/README.md`](rust/common/metrics/README.md) |
+| 242 | ✓ | [`rust/common/profiler/README.md`](rust/common/profiler/README.md) |
+| 243 | ✓ | [`rust/common/README.md`](rust/common/README.md) |
+| 244 | ✓ | [`rust/common/s3/tests/README.md`](rust/common/s3/tests/README.md) |
+| 245 | ✓ | [`rust/common/types/README.md`](rust/common/types/README.md) |
+| 246 | ✓ | [`rust/cymbal/README.md`](rust/cymbal/README.md) |
+| 247 | ✓ | [`rust/feature-flags/README.md`](rust/feature-flags/README.md) |
+| 248 | ✓ | [`rust/hogql/parser/README.md`](rust/hogql/parser/README.md) |
+| 249 | ✓ | [`rust/kafka-deduplicator/README.md`](rust/kafka-deduplicator/README.md) |
+| 250 | ✓ | [`rust/personhog-common/README.md`](rust/personhog-common/README.md) |
+| 251 | ✓ | [`rust/personhog-coordination/README.md`](rust/personhog-coordination/README.md) |
+| 252 | ✓ | [`rust/personhog-leader/README.md`](rust/personhog-leader/README.md) |
+| 253 | ✓ | [`rust/personhog-proto/README.md`](rust/personhog-proto/README.md) |
+| 254 | ✓ | [`rust/personhog-replica/AGENTS.md`](rust/personhog-replica/AGENTS.md) |
+| 255 | ✓ | [`rust/personhog-replica/CLAUDE.md`](rust/personhog-replica/CLAUDE.md) |
+| 256 | ✓ | [`rust/personhog-replica/README.md`](rust/personhog-replica/README.md) |
+| 257 | ✓ | [`rust/personhog-router/AGENTS.md`](rust/personhog-router/AGENTS.md) |
+| 258 | ✓ | [`rust/personhog-router/CLAUDE.md`](rust/personhog-router/CLAUDE.md) |
+| 259 | ✓ | [`rust/personhog-router/README.md`](rust/personhog-router/README.md) |
+| 260 | ✓ | [`rust/personhog-writer/README.md`](rust/personhog-writer/README.md) |
+| 261 | ✓ | [`rust/property-defs-rs/README.md`](rust/property-defs-rs/README.md) |
+| 262 | ✓ | [`rust/README.md`](rust/README.md) |
+| 263 | ✓ | [`services/llm-gateway/benchmarks/README.md`](services/llm-gateway/benchmarks/README.md) |
+| 264 | ✓ | [`services/llm-gateway/README.md`](services/llm-gateway/README.md) |
+| 265 | ✓ | [`services/mcp/definitions/README.md`](services/mcp/definitions/README.md) |
+| 266 | ✓ | [`services/mcp/README.md`](services/mcp/README.md) |
+| 267 | ✓ | [`services/mcp/src/tools/README.md`](services/mcp/src/tools/README.md) |
+| 268 | ✓ | [`services/mcp/tests/README.md`](services/mcp/tests/README.md) |
+| 269 | ✓ | [`services/README.md`](services/README.md) |
+| 270 | ✓ | [`services/stripe-app/README.md`](services/stripe-app/README.md) |
+| 271 | ✓ | [`share/README.md`](share/README.md) |
+| 272 | ✓ | [`tools/hedgebox-dummy/README.md`](tools/hedgebox-dummy/README.md) |
+| 273 | ✓ | [`tools/hogli-commands/README.md`](tools/hogli-commands/README.md) |
+| 274 | ✓ | [`tools/hogli/AGENTS.md`](tools/hogli/AGENTS.md) |
+| 275 | ✓ | [`tools/hogli/CLAUDE.md`](tools/hogli/CLAUDE.md) |
+| 276 | ✓ | [`tools/hogli/README.md`](tools/hogli/README.md) |
+| 277 | ✓ | [`tools/infra-scripts/clitools/README.md`](tools/infra-scripts/clitools/README.md) |
+| 278 | ✓ | [`tools/infra-scripts/clitools/toolbox/README.md`](tools/infra-scripts/clitools/toolbox/README.md) |
+| 279 | ✓ | [`tools/infra-scripts/mcp/README.md`](tools/infra-scripts/mcp/README.md) |
+| 280 | ✓ | [`tools/phrocs/README.md`](tools/phrocs/README.md) |
+| 281 | ✓ | [`tools/pr-approval-agent/README.md`](tools/pr-approval-agent/README.md) |
+| 282 | ✓ | [`tools/traffic-sim/README.md`](tools/traffic-sim/README.md) |
+| 283 | ✓ | [`tools/traffic-sim/skills/check-posthog-loading/SKILL.md`](tools/traffic-sim/skills/check-posthog-loading/SKILL.md) |
+| 284 | ✓ | [`tools/traffic-sim/skills/README.md`](tools/traffic-sim/skills/README.md) |
+| 285 | ✓ | [`tools/traffic-sim/skills/simulate-new-user/SKILL.md`](tools/traffic-sim/skills/simulate-new-user/SKILL.md) |
+| 286 | ✓ | [`tools/traffic-sim/skills/simulate-returning-user/SKILL.md`](tools/traffic-sim/skills/simulate-returning-user/SKILL.md) |
+| 287 | ✓ | [`tools/traffic-sim/skills/verify-posthog-instrumentation/SKILL.md`](tools/traffic-sim/skills/verify-posthog-instrumentation/SKILL.md) |
+| 288 | → | [`docs/internal/monorepo-layout.md`](docs/internal/monorepo-layout.md) |
+| 289 | → | [`docs/published/handbook/engineering/ai/implementing-mcp-tools.md`](docs/published/handbook/engineering/ai/implementing-mcp-tools.md) |
+| 290 | → | [`docs/published/handbook/engineering/ai/writing-skills.md`](docs/published/handbook/engineering/ai/writing-skills.md) |
+| 291 | → | [`docs/published/handbook/engineering/type-system.md`](docs/published/handbook/engineering/type-system.md) |
+| 292 | → | [`posthog/models/team/README.md`](posthog/models/team/README.md) |
+| 293 | → | [`products/architecture.md`](products/architecture.md) |
+| 294 | → | [`products/README.md`](products/README.md) |
+| 295 | → | [`README.md`](README.md) |
+| 296 | → | [`services/mcp/CONTRIBUTING.md`](services/mcp/CONTRIBUTING.md) |
 
 ---
 

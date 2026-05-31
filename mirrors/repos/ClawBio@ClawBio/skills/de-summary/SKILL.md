@@ -19,10 +19,7 @@ metadata:
     - csv
     - tsv
     required: true
-    description: 'DESeq2, edgeR, or limma output table with columns: gene_id or gene_name, log2FoldChange, pvalue, padj (adjusted
-      p-value). Optional columns: baseMean, lfcSE, stat.
-
-      '
+    description: "DESeq2, edgeR, or limma output table with columns: gene_id or gene_name, log2FoldChange, pvalue, padj (adjusted p-value). Optional columns: baseMean, lfcSE, stat."
   outputs:
   - name: report
     type: file

@@ -1,6 +1,6 @@
 ---
 name: session-viewer
-description: "Render Codex, Claude, and OpenClaw/Pi session JSONL as searchable single-file HTML."
+description: "Render Codex, Claude Code, OpenClaw, or Pi session JSONL transcripts as a searchable, shareable single-file HTML viewer."
 ---
 
 # Session Viewer

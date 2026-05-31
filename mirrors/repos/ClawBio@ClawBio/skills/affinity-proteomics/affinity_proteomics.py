@@ -36,6 +36,11 @@ import numpy as np
 import pandas as pd
 
 SCRIPT_DIR = Path(__file__).resolve().parent
+ROOT_DIR = SCRIPT_DIR.parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from clawbio.contract_alerts import make_contract_alert
 
 DISCLAIMER = (
     "ClawBio is a research and educational tool. It is not a medical device "
@@ -711,6 +716,27 @@ def _current_request_workflow_state(request: dict) -> dict:
     return _workflow_state_from_context(_request_context(request))
 
 
+def _stale_action_contract_alert(request: dict) -> dict:
+    if request.get("state_schema") != WORKFLOW_STATE_SCHEMA:
+        return make_contract_alert(
+            kind="skill.version_drift",
+            severity="warning",
+            message="The selected action uses a workflow-state schema this skill does not recognise.",
+            expected="current workflow_state schema",
+            observed="request workflow_state schema",
+            evidence=["schema mismatch"],
+            blocking=True,
+        )
+    return make_contract_alert(
+        kind="skill.state_mismatch",
+        severity="warning",
+        message="The selected action no longer matches the analysis state that produced it.",
+        expected="request state_id",
+        observed="recomputed state_id",
+        blocking=True,
+    )
+
+
 def _write_stale_action_result(request: dict, output_dir: Path, workflow_state: dict) -> dict:
     action = str(request.get("action") or "unknown")
     summary_lines = [
@@ -727,6 +753,7 @@ def _write_stale_action_result(request: dict, output_dir: Path, workflow_state: 
         "action": action,
         "workflow_state": workflow_state,
         "chat_summary_lines": summary_lines,
+        "contract_alerts": [_stale_action_contract_alert(request)],
         "preferred_artifacts": [{"path": "report.md", "label": "Follow-up report"}],
         "report_md": report_md,
         "disclaimer": DISCLAIMER,

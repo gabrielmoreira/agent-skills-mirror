@@ -123,6 +123,8 @@ Connection IDs: `telegram`, `slack`, `discord`, `email`, `todoist`, `teams`, `go
 
 Credentials are stored locally at `~/.screenpipe/connections.json`.
 
+**Per-integration details**: don't guess API shapes from this skill. Run `connection list` or `connection get <id>` — each entry includes a self-describing `description` with credential fields, endpoints, and example bodies. Only fetch the integration you need.
+
 ## Publishing pipes to the store
 
 ```bash

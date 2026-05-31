@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/agent-skills` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
+Mirror of `openclaw/agent-skills` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/agent-skills` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 20 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,24 +61,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`skills/agent-transcript/scripts/agent-transcript`](skills/agent-transcript/scripts/agent-transcript) |
-| 3 | ✓ | [`skills/agent-transcript/SKILL.md`](skills/agent-transcript/SKILL.md) |
-| 4 | ✓ | [`skills/autoreview/scripts/autoreview`](skills/autoreview/scripts/autoreview) |
-| 5 | ✓ | [`skills/autoreview/scripts/test-review-harness`](skills/autoreview/scripts/test-review-harness) |
-| 6 | ✓ | [`skills/autoreview/SKILL.md`](skills/autoreview/SKILL.md) |
-| 7 | ✓ | [`skills/crabbox/SKILL.md`](skills/crabbox/SKILL.md) |
-| 8 | ✓ | [`skills/handoff/SKILL.md`](skills/handoff/SKILL.md) |
-| 9 | ✓ | [`skills/session-viewer/agents/openai.yaml`](skills/session-viewer/agents/openai.yaml) |
-| 10 | ✓ | [`skills/session-viewer/scripts/core/detect.ts`](skills/session-viewer/scripts/core/detect.ts) |
-| 11 | ✓ | [`skills/session-viewer/scripts/core/jsonl.ts`](skills/session-viewer/scripts/core/jsonl.ts) |
-| 12 | ✓ | [`skills/session-viewer/scripts/core/types.ts`](skills/session-viewer/scripts/core/types.ts) |
-| 13 | ✓ | [`skills/session-viewer/scripts/html.ts`](skills/session-viewer/scripts/html.ts) |
-| 14 | ✓ | [`skills/session-viewer/scripts/importers/claude.ts`](skills/session-viewer/scripts/importers/claude.ts) |
-| 15 | ✓ | [`skills/session-viewer/scripts/importers/codex.ts`](skills/session-viewer/scripts/importers/codex.ts) |
-| 16 | ✓ | [`skills/session-viewer/scripts/importers/pi-openclaw.ts`](skills/session-viewer/scripts/importers/pi-openclaw.ts) |
-| 17 | ✓ | [`skills/session-viewer/scripts/session-viewer.test.ts`](skills/session-viewer/scripts/session-viewer.test.ts) |
-| 18 | ✓ | [`skills/session-viewer/scripts/session-viewer.ts`](skills/session-viewer/scripts/session-viewer.ts) |
-| 19 | ✓ | [`skills/session-viewer/SKILL.md`](skills/session-viewer/SKILL.md) |
-| 20 | ✓ | [`skills/session-viewer/tsconfig.json`](skills/session-viewer/tsconfig.json) |
+| 3 | ✓ | [`skills/agent-transcript/scripts/agent-transcript.test.mjs`](skills/agent-transcript/scripts/agent-transcript.test.mjs) |
+| 4 | ✓ | [`skills/agent-transcript/SKILL.md`](skills/agent-transcript/SKILL.md) |
+| 5 | ✓ | [`skills/autoreview/scripts/autoreview`](skills/autoreview/scripts/autoreview) |
+| 6 | ✓ | [`skills/autoreview/scripts/test-review-harness`](skills/autoreview/scripts/test-review-harness) |
+| 7 | ✓ | [`skills/autoreview/scripts/test-review-harness.ps1`](skills/autoreview/scripts/test-review-harness.ps1) |
+| 8 | ✓ | [`skills/autoreview/scripts/test-review-harness.py`](skills/autoreview/scripts/test-review-harness.py) |
+| 9 | ✓ | [`skills/autoreview/SKILL.md`](skills/autoreview/SKILL.md) |
+| 10 | ✓ | [`skills/crabbox/SKILL.md`](skills/crabbox/SKILL.md) |
+| 11 | ✓ | [`skills/handoff/SKILL.md`](skills/handoff/SKILL.md) |
+| 12 | ✓ | [`skills/session-viewer/agents/openai.yaml`](skills/session-viewer/agents/openai.yaml) |
+| 13 | ✓ | [`skills/session-viewer/scripts/core/detect.ts`](skills/session-viewer/scripts/core/detect.ts) |
+| 14 | ✓ | [`skills/session-viewer/scripts/core/jsonl.ts`](skills/session-viewer/scripts/core/jsonl.ts) |
+| 15 | ✓ | [`skills/session-viewer/scripts/core/types.ts`](skills/session-viewer/scripts/core/types.ts) |
+| 16 | ✓ | [`skills/session-viewer/scripts/html.ts`](skills/session-viewer/scripts/html.ts) |
+| 17 | ✓ | [`skills/session-viewer/scripts/importers/claude.ts`](skills/session-viewer/scripts/importers/claude.ts) |
+| 18 | ✓ | [`skills/session-viewer/scripts/importers/codex.ts`](skills/session-viewer/scripts/importers/codex.ts) |
+| 19 | ✓ | [`skills/session-viewer/scripts/importers/pi-openclaw.ts`](skills/session-viewer/scripts/importers/pi-openclaw.ts) |
+| 20 | ✓ | [`skills/session-viewer/scripts/session-viewer.test.ts`](skills/session-viewer/scripts/session-viewer.test.ts) |
+| 21 | ✓ | [`skills/session-viewer/scripts/session-viewer.ts`](skills/session-viewer/scripts/session-viewer.ts) |
+| 22 | ✓ | [`skills/session-viewer/SKILL.md`](skills/session-viewer/SKILL.md) |
+| 23 | ✓ | [`skills/session-viewer/tsconfig.json`](skills/session-viewer/tsconfig.json) |
 
 ---
 

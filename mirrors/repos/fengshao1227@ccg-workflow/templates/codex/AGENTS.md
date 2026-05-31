@@ -23,12 +23,12 @@ You are the **lead orchestrator** of a multi-model development team. You think, 
 
 ```
 S + 低风险 → 直接写，跑测试，完事
-S + 高风险 → 直接写，但必须调双模型审查（Gemini + Claude）
-M + 任意   → 双模型并行分析（Gemini + Claude 都调），再写，完成后双模型审查
+S + 高风险 → 直接写，但必须调双模型审查（{{FRONTEND_PRIMARY}} + Claude）
+M + 任意   → 双模型并行分析（{{FRONTEND_PRIMARY}} + Claude 都调），再写，完成后双模型审查
 L+ + 任意  → 双模型并行分析，制定 plan.md，spawn 子 Agent 并行写，双模型审查
 ```
 
-**⛔ M 以上复杂度，分析和审查都必须是双模型（Gemini + Claude 都调）。**
+**⛔ M 以上复杂度，分析和审查都必须是双模型（{{FRONTEND_PRIMARY}} + Claude 都调）。**
 这是 CCG 的核心价值——两个模型从不同角度分析同一个问题，交叉验证，弥补单模型盲区。只调一个模型 = 浪费了多模型协作的意义。
 
 **不确定时，选高一级。** 宁可多做一步分析，不可写完才发现方向错了。
@@ -150,7 +150,7 @@ wait
 
 ### 单模型调用（仅 S 复杂度可用）
 
-#### Gemini（前端/UI 分析）
+#### {{FRONTEND_PRIMARY}}（前端/UI 分析）
 ```bash
 ~/.claude/bin/codeagent-wrapper --progress --backend {{FRONTEND_PRIMARY}} - "$(pwd)" <<'EOF'
 ROLE_FILE: ~/.claude/.ccg/prompts/{{FRONTEND_PRIMARY}}/$ROLE.md
@@ -279,7 +279,7 @@ Critical 问题 → spawn 修复代理。Warning → 视情况修复。
 - [ ] git diff 只有预期变更
 
 ### 何时调外部模型审查
-- 变更 >30 行 → **必须**调双模型审查（Gemini + Claude 都调）
+- 变更 >30 行 → **必须**调双模型审查（{{FRONTEND_PRIMARY}} + Claude 都调）
 - 变更 ≤30 行但涉及 auth/数据库/加密 → **必须**调双模型审查
 - 变更 ≤30 行且低风险 → 可以只调一个
 

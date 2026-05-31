@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "generated_by": "scripts/generate_catalog.py",
-  "skill_count": 76,
+  "skill_count": 77,
   "galaxy_tool_count": 8182,
   "skills": [
     {
@@ -1341,6 +1341,48 @@
         "find research papers",
         "pubmed search",
         "recent papers on"
+      ],
+      "chaining_partners": []
+    },
+    {
+      "name": "locuscompare-region-render",
+      "cli_alias": null,
+      "description": "Render a 4-panel regional LocusCompare diagnostic for one (lead variant,\nexposure study, outcome study) tuple - overlays GWAS Manhattan, QTL Manhattan,\nGENCODE gene track, and cross-trait scatter colored by LD r². Use when an\nagent needs visual confirmation that two GWAS / QTL signals share the same\ncausal variant (the Liu 2019 LocusCompare convention). Inputs: lead variant +\ntwo pre-fetched harmonised sumstats slices (or eQTL Catalogue / GWAS Catalog\nidentifiers for bundled fetch). Output: PNG + JSON manifest.\n",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/locuscompare-region-render/cli.py --demo",
+      "dependencies": [
+        "python>=3.10",
+        "numpy>=1.24",
+        "scipy>=1.10",
+        "pandas>=2.0",
+        "matplotlib>=3.7",
+        "pysam>=0.22",
+        "pyyaml>=6.0",
+        "pydantic>=2.0",
+        "requests>=2.28"
+      ],
+      "tags": [
+        "regional-plot",
+        "coloc",
+        "eqtl",
+        "gwas",
+        "locuscompare",
+        "mendelian-randomisation",
+        "target-validation",
+        "drug-discovery"
+      ],
+      "trigger_keywords": [
+        "regional locuscompare",
+        "regional coloc plot",
+        "two-trait coloc visualization",
+        "GWAS eQTL overlay",
+        "liu 2019 locuscompare convention",
+        "colocalization plot for a lead variant",
+        "regional plot for coloc lead"
       ],
       "chaining_partners": []
     },

@@ -2,7 +2,7 @@
 name: discover
 description: Initialize evo for the current repository by exploring the codebase, proposing unexplored optimization dimensions, constructing the benchmark inside a baseline worktree, and running the first experiment. Use when the user invokes /evo:discover, mentions setting up evo, wants to instrument a codebase for autonomous optimization, or asks to start a new evo run on a project.
 argument-hint: <optional context about what to optimize>
-evo_version: 0.4.4-alpha.5
+evo_version: 0.4.4
 ---
 
 # Discover
@@ -40,20 +40,20 @@ evo --version
 The output must be exactly:
 
 ```
-evo-hq-cli 0.4.4-alpha.5
+evo-hq-cli 0.4.4
 ```
 
 Three outcomes:
 
 1. **Matches exactly** — continue to step 1.
 2. **Reports a different version** (`evo-hq-cli 0.4.2`, etc.) — the host refetched a newer/older skill bundle than the CLI on PATH. Drift breaks skills silently. Stop and tell the user:
-   > Your installed evo CLI is on a different version than this skill (`0.4.4-alpha.5`). Run:
+   > Your installed evo CLI is on a different version than this skill (`0.4.4`). Run:
    > ```
-   > uv tool install --force evo-hq-cli==0.4.4-alpha.5
+   > uv tool install --force evo-hq-cli==0.4.4
    > ```
    > Then re-invoke this skill.
 3. **`command not found`, or reports a different package** (commonly `evo 1.x` — the unrelated SLAM tool) — the CLI isn't installed. Tell the user:
-   > `evo-hq-cli` isn't on your PATH. Install it: `uv tool install evo-hq-cli==0.4.4-alpha.5` (or `pipx install evo-hq-cli==0.4.4-alpha.5`). Then re-invoke this skill.
+   > `evo-hq-cli` isn't on your PATH. Install it: `uv tool install evo-hq-cli==0.4.4` (or `pipx install evo-hq-cli==0.4.4`). Then re-invoke this skill.
 
 Do not try to auto-install. Host sandbox + network policy may block it; leaving the install as a user action keeps failure modes clear.
 
@@ -123,8 +123,14 @@ For cases 2 and 3, ask once:
 
 > "I can wire up the benchmark in one of two ways:
 >
-> 1. **SDK mode** -- install the evo agent SDK with this project's package manager/runtime (for example `uv add --dev evo-hq-agent`, `python -m pip install evo-hq-agent`, or `npm install @evo-hq/evo-agent`). Richer per-task logs, ~5 lines of user code.
-> 2. **Inline mode** -- paste a ~30-line helper directly into the benchmark. Zero new dependencies. Same data contract."
+> 1. **SDK mode** -- install the evo agent SDK with this project's package manager/runtime (`uv add --dev evo-hq-agent`, `python -m pip install evo-hq-agent`, or `npm install @evo-hq/evo-agent`). ~5 lines of user code, with incremental per-task logging handled for you. **Python and Node only** -- the SDK ships for those two runtimes.
+> 2. **Inline mode** -- implement the trace/result contract directly in the benchmark, in the benchmark's own language. Zero new dependencies, same data.
+>
+> Recommended: SDK mode."
+
+Inline mode is language-native and lives entirely in the user's setup: whatever the benchmark is written in is what the instrumentation is written in, with no evo package added to the project. Do not introduce a Python (or any other) sidecar script to wrap a benchmark written in another language -- that is the friction this avoids. For a Python or Node benchmark, the ready-made paste-in helper (`references/inline_instrumentation.py` / `.js`) is the inline implementation. For any other language, port the ~10-15 line contract from `references/instrumentation-contract.md` into that language. Either way the mode is `inline`.
+
+Order the options SDK first, inline second, and suggest SDK as the recommended default when it's available -- it's the managed path with per-task logging handled for you. Inline stays a first-class choice with the same data contract, though: if the user declines the SDK for any reason -- they don't want a new dependency, can't add evo to their project's tree, internal policy, or plain preference -- honor it without pushback. SDK mode is only *available* when the benchmark runs on Python or Node; when the benchmark's language has no SDK there's nothing to suggest, so go straight to inline.
 
 Pass the answer to `evo init` via `--instrumentation-mode <sdk|inline>` in step 7. **Never install packages without this confirmation.** If you skip the question (case 1), still pass the detected mode to `evo init` so optimize/subagent runs see a consistent value.
 
@@ -303,14 +309,14 @@ Patterns to scan for:
 
 ### 10c. Apply instrumentation
 
-Based on the instrumentation mode passed to `evo init`:
+Both modes satisfy the same file-and-env contract: per-task `task_<id>.json` written to `$EVO_TRACES_DIR`, a result JSON with a numeric `score` written to `$EVO_RESULT_PATH` (stdout if unset). `evo run` reads those files; it never inspects the language. The full spec is `references/instrumentation-contract.md`.
 
 Paths below are relative to this `SKILL.md` file (resolve them against the skill directory).
 
-- **SDK mode**: add `from evo_agent import Run` (Python) or `import { Run } from '@evo-hq/evo-agent'` (Node) to the benchmark script. Wrap the eval loop per `references/sdk_python.py` or `references/sdk_node.js`.
-- **Inline mode**: copy the helper from `references/inline_instrumentation.py` (or `.js`) into the benchmark. Use `log_task` / `logTask` per task and `write_result` / `writeResult` once at the end.
-
-The wire protocol is the same either way: `task_<id>.json` written to `$EVO_TRACES_DIR`, score JSON written to `$EVO_RESULT_PATH`. Stdout is free for user output.
+- **SDK mode** (Python/Node only): add `from evo_agent import Run` (Python) or `import { Run } from '@evo-hq/evo-agent'` (Node) to the benchmark script. Wrap the eval loop per `references/sdk_python.py` or `references/sdk_node.js`.
+- **Inline mode**: implement the contract in the benchmark's own language.
+  - Benchmark is Python or Node: paste `references/inline_instrumentation.py` (or `.js`) and call `log_task` / `logTask` per task, `write_result` / `writeResult` once at the end.
+  - Benchmark is any other language: port the contract from `references/instrumentation-contract.md` directly into that language (~10-15 lines: read the env vars, write each task trace, atomically publish the result). Do not add a Python/JS wrapper around it.
 
 ### 10d. Cheap validation run
 
@@ -325,7 +331,7 @@ evo gate check exp_0000
 
 Use `evo gate check <exp_id>` when only gate wiring changed or when you need to validate inherited gates without running the benchmark. It writes a `gate_check.json` artifact under the same checks directory and also does not mutate experiment state.
 
-The check asserts `result.json` exists, is non-empty, and is a JSON object with a numeric `score`. Also verify:
+This is the authoritative wiring check, and it is language-agnostic -- it runs the real benchmark command and inspects the JSON artifacts, so a native inline implementation in any language is validated the same way a Python one is. The check asserts `result.json` exists, is non-empty, and is a JSON object with a numeric `score`. Also verify:
 
 - All dependencies resolve and the command completes.
 - Traces appear in `$EVO_TRACES_DIR` (if applicable).
@@ -386,36 +392,10 @@ Document:
   - `uses LLMs with temp=0` -- expected to be deterministic in practice; flag if it isn't
   - `sampling-based, variance expected` -- inherent noise; optimize will need multi-run strategies
 - Environment requirements discovered during validation
+- **Resource profile (for run sizing)** -- the binding resource one benchmark run needs (exclusive GPU/accelerator, peak memory, an exclusive port, a shared DB/fixture, or an external API rate limit / $-per-run), whether concurrent benchmark runs are safe on this backend or must serialize, and rough time/cost per run. `/evo:optimize` reads this to size each round (see `plugins/evo/skills/optimize/references/sizing-the-round.md`)
 - What each gate protects
 - Benchmark gaming risks identified during the Goodhart check
 - Future experiment candidates (the non-picked dimensions from step 3)
-
-## 12a. Confirm how the optimize loop should run
-
-Ask the user once how they want `/evo:optimize` to behave. These are run-behavior defaults stored on the workspace; they don't affect discover itself. Ask as a single, light question (use your host's structured multi-choice tool if you have one; otherwise plain text), and make clear both are optional — the defaults apply if the user has no preference:
-
-- **Autonomous loop** — should evo's internal wiring keep the loop running on its own, re-engaging the agent at every turn boundary until the run stalls (`autonomous`)? Default off: evo does not auto-continue the loop.
-- **Orchestrator edits** — push every edit through subagents, steering the orchestrator away from editing directly (`subagents-only`)? Default off: the orchestrator may also edit directly if it chooses.
-
-**Pre-fill from the user's remembered choice.** Before asking, read their cross-project defaults and use each as the suggested answer (so a returning user just confirms):
-
-```bash
-evo defaults get autonomous --json        # → true | false | null
-evo defaults get subagents-only --json
-```
-
-If a value is non-null, present it as the default in the question (e.g. "autonomous was on last time — keep it?"). Always still ask — never apply a remembered value silently.
-
-Persist the answer to both the workspace (this project) and the user-level store (remembered for next project):
-
-```bash
-evo config set default-autonomous on|off
-evo config set default-subagents-only on|off
-evo defaults set autonomous on|off
-evo defaults set subagents-only on|off
-```
-
-If the user has no opinion and no remembered value exists, or you skip the question, leave both off — the defaults: the loop stops naturally after each round, and the orchestrator may edit directly. Do NOT infer these from the user's earlier free-form messages; only set `on` when the user clearly chooses it here. `/evo:optimize` reads these defaults at startup (workspace first, then user-level), and a bare-word `autonomous` / `subagents-only` on the invocation overrides the stored default for that run.
 
 ## 13. Report to the user
 

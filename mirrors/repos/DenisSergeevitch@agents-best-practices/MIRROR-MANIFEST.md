@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `DenisSergeevitch/agents-best-practices` — 26 default patterns, 15 followed patterns, 16 file(s) materialized.
+Mirror of `DenisSergeevitch/agents-best-practices` — 26 default patterns, 16 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `DenisSergeevitch/agents-best-practices` — 26 default patterns, 15 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 15 |
-| Files         | 16 |
+| Followed pats | 16 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,6 +59,7 @@ Mirror of `DenisSergeevitch/agents-best-practices` — 26 default patterns, 15 f
 - `references/context-memory-compaction.md`
 - `references/prompt-caching-and-cost.md`
 - `references/planning-and-goals.md`
+- `references/workflow-orchestration.md`
 - `references/skills-and-connectors.md`
 - `references/system-prompts-instructions.md`
 - `references/provider-api-patterns.md`
@@ -89,6 +90,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | → | [`references/source-links.md`](references/source-links.md) |
 | 15 | → | [`references/system-prompts-instructions.md`](references/system-prompts-instructions.md) |
 | 16 | → | [`references/tools-and-permissions.md`](references/tools-and-permissions.md) |
+| 17 | → | [`references/workflow-orchestration.md`](references/workflow-orchestration.md) |
 
 ---
 

@@ -11,6 +11,7 @@ This file maps the required agent-harness knowledge areas to the Markdown files 
 | Agentic loop | `agentic-loop.md` | Includes canonical loop, invariants, budgets, retries, provider-neutral variants, and termination. |
 | Goal-like loop | `agentic-loop.md`, `planning-and-goals.md` | Includes objective, done condition, budget, checkpoints, progress log, validation, and stop rules. |
 | Planning mode | `planning-and-goals.md` | Covers read-only planning, plan artifact, approval, execution after approval, and plan-validate-execute. |
+| Workflow orchestration | `workflow-orchestration.md`, `architecture.md`, `planning-and-goals.md`, `checklists.md` | Covers planner-generated workflows, work packets, worker and verifier contexts, integration, durable workflow state, budgets, approvals, and anti-patterns. |
 | Auto context and compaction | `context-memory-compaction.md` | Covers context tiers, scoped instruction loading, retrieval, compaction triggers, handoff summaries, and rehydration. |
 | Prompt caching and cost control | `prompt-caching-and-cost.md`, `context-memory-compaction.md`, `provider-api-patterns.md` | Covers stable-prefix design, deterministic serialization, provider cache fields, TTL/retention notes, compaction/cache tradeoffs, and monitoring. |
 | Skills attachment | `skills-and-connectors.md`, `SKILL.md` | Covers Agent Skills structure, progressive disclosure, trigger descriptions, governance, and evals. |
@@ -32,6 +33,7 @@ This file maps the required agent-harness knowledge areas to the Markdown files 
 - The skill contains only Markdown files.
 - The skill includes prompt-cache architecture and cache-hit monitoring.
 - The skill includes agent-legibility, knowledge-base, feedback-loop, and entropy-management practices.
+- The skill includes workflow orchestration as a generic harness pattern without depending on a vendor-specific runtime.
 - The skill uses progressive disclosure: `SKILL.md` is the entry point; detailed guidance is in focused reference files.
 
 ## Minimum file set
@@ -44,6 +46,7 @@ agents-best-practices/
     agent-legibility-feedback-loops.md
     agentic-loop.md
     tools-and-permissions.md
+    workflow-orchestration.md
     context-memory-compaction.md
     prompt-caching-and-cost.md
     planning-and-goals.md

@@ -251,7 +251,31 @@ class TestOlinkDemo:
         assert result["action"] == "top-proteins"
         assert result["workflow_state"]["lifecycle"] == "expired"
         assert result["workflow_state"]["state_label"] == "stale-action-request"
+        assert result["contract_alerts"][0]["kind"] == "skill.state_mismatch"
+        assert result["contract_alerts"][0]["blocking"] is True
         assert any("stale or mismatched" in line for line in result["chat_summary_lines"])
+
+    def test_action_request_flags_schema_version_drift(self, tmp_path):
+        source_dir = tmp_path / "source"
+        run_pipeline(
+            platform="olink", input_path=SKILL_DIR / "example_data" / "olink_demo_npx.csv",
+            meta_path=SKILL_DIR / "example_data" / "olink_demo_meta.csv",
+            group_col="Group", contrast=("Case", "Control"),
+            output_dir=source_dir, demo=True,
+        )
+        source_result = json.loads((source_dir / "result.json").read_text())
+        action = next(
+            action for action in source_result["suggested_actions"]
+            if action["action_id"] == "show-top-proteins"
+        )
+        stale_request = {**action["request"], "state_schema": "affinity_proteomics.workflow_state.v0"}
+
+        output_dir = tmp_path / "schema-drift"
+        result = handle_action_request(stale_request, output_dir)
+
+        assert result["workflow_state"]["lifecycle"] == "expired"
+        assert result["contract_alerts"][0]["kind"] == "skill.version_drift"
+        assert result["contract_alerts"][0]["blocking"] is True
 
 
 # ---------------------------------------------------------------------------

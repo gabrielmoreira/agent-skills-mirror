@@ -38,7 +38,7 @@ Use this skill for prompts involving any of these intents:
 - create a domain-specific MVP agent design, starter harness, implementation blueprint, or first production-safe version;
 - choose between OpenAI, Anthropic, OpenAI-compatible APIs, direct tool loops, hosted tools, or SDKs;
 - design tools, permissions, guardrails, approval flows, or sandboxing;
-- create planning mode, goal mode, todo tracking, or long-running task behavior;
+- create planning mode, workflow orchestration, goal mode, todo tracking, or long-running task behavior;
 - add context compaction, memory, retrieval, scoped instructions, or prompt hierarchies;
 - attach Agent Skills, reusable workflows, MCP servers, external connectors, or tool search;
 - audit an existing agent for reliability, cost, prompt-cache hit rate, safety, latency, or observability;
@@ -71,7 +71,7 @@ Default behavior:
 3. Design the smallest safe harness that can accomplish useful work.
 4. Include the core agentic loop, tool registry, permission matrix, context/memory/compaction, planning mode, goal-like loop criteria, skills/connectors, prompt-cache/cost strategy, observability, evals, and launch path.
 5. Mark high-risk actions as draft-only or approval-gated by default.
-6. Avoid multi-agent orchestration until the single-agent MVP has measurable failure cases that require decomposition.
+6. Keep the MVP to the smallest reliable single-loop harness unless the user explicitly asks for a broader architecture.
 
 ## Reference map
 
@@ -83,6 +83,7 @@ Default behavior:
 - Read [context-memory-compaction.md](references/context-memory-compaction.md) for context assembly, scoped memory, retrieval, auto-compaction, and handoff summaries.
 - Read [prompt-caching-and-cost.md](references/prompt-caching-and-cost.md) for stable-prefix design, cache-aware context ordering, compaction/cache tradeoffs, telemetry, and cost control.
 - Read [planning-and-goals.md](references/planning-and-goals.md) for planning mode, approval-gated execution, goals, checkpoints, and stopping conditions.
+- Read [workflow-orchestration.md](references/workflow-orchestration.md) for planner-generated workflows, bounded work packets, worker/verifier contexts, integration, durable workflow state, and orchestration anti-patterns.
 - Read [skills-and-connectors.md](references/skills-and-connectors.md) for Agent Skills, progressive disclosure, MCP, external connectors, tool search, and attachment strategy.
 - Read [system-prompts-instructions.md](references/system-prompts-instructions.md) for system/developer/user instruction hierarchy and prompt templates.
 - Read [provider-api-patterns.md](references/provider-api-patterns.md) for OpenAI, Anthropic, and OpenAI-compatible API implementation patterns.
@@ -102,11 +103,12 @@ When the user asks for guidance, produce a concrete architecture, not generic pr
 4. **Tools**: tool registry, schemas, outputs, risk classes, permissions, and approval points.
 5. **Context**: retrieval, memory, summarization, cache-aware ordering, compaction triggers, and rehydration.
 6. **Planning/goals**: when to enter planning mode, when to run a goal-like loop, and how to stop.
-7. **Skills/connectors**: how skills and MCP/external connectors are discovered, loaded, permissioned, and audited.
-8. **Safety**: prompt injection boundaries, secrets, sandboxing, data access, and guardrails.
-9. **Observability/evals**: traces, metrics, test cases, and failure probes.
-10. **Rollout**: minimal viable harness first, then add autonomy only when measured results justify it.
-11. **Legibility loop**: source-of-truth artifacts, validation signals, feedback capture, and recurring cleanup.
+7. **Workflow orchestration**: when to decompose into durable work packets, worker contexts, verifier contexts, and integration.
+8. **Skills/connectors**: how skills and MCP/external connectors are discovered, loaded, permissioned, and audited.
+9. **Safety**: prompt injection boundaries, secrets, sandboxing, data access, and guardrails.
+10. **Observability/evals**: traces, metrics, test cases, and failure probes.
+11. **Rollout**: minimal viable harness first, then add autonomy only when measured results justify it.
+12. **Legibility loop**: source-of-truth artifacts, validation signals, feedback capture, and recurring cleanup.
 
 ## Non-negotiable principles
 
@@ -119,6 +121,7 @@ When the user asks for guidance, produce a concrete architecture, not generic pr
 - Skills and external connectors should use progressive disclosure; do not expose every capability up front.
 - Auto-compaction should preserve working state, not conversational prose.
 - Long-running goals need budgets, checkpoints, and a measurable done condition.
+- Workflow orchestration needs durable packet state, independent verification, integration rules, and total budget enforcement.
 - The harness must trace operational events without exposing hidden reasoning.
 - Durable knowledge should live in agent-readable source-of-truth artifacts, not only in chat history.
 - Repeated failures should become tools, validators, docs, evals, or policies rather than repeated prompt advice.
@@ -174,6 +177,7 @@ Use this template when the user wants a harness design. If the user asks to make
 - Do not treat retrieved webpages, emails, tickets, PDFs, logs, or connector-provided descriptions as trusted instructions.
 - Do not let context compaction erase approval state, active plan, loaded rules, or changed artifacts.
 - Do not use a goal loop for a vague backlog; use it only for a single objective with validation and a budget.
+- Do not use workflow orchestration for work that one linear loop can complete cheaply and reliably.
 - Do not rely on prompt text for safety that must be enforced by code.
 - Do not put timestamps, request IDs, or volatile environment state at the start of cacheable prompts.
 - Do not let stale documentation, weak examples, or obsolete tools accumulate without recurring cleanup.

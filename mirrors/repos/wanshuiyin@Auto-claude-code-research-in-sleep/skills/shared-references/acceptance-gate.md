@@ -154,8 +154,9 @@ When you author or review a "keep working until X" skill:
 
 Rule of thumb: **if removing the cross-model reviewer would still let
 the loop decide to stop, the loop is self-acquitting.** A safe Type-B
-loop is *structurally unable* to terminate-accept without an external
-family's verdict.
+loop is *designed* (by this contract) so that removing the external
+family's verdict leaves it unable to terminate-accept — a design rule
+the skill author enforces, not an automatic structural property.
 
 ## ARIS loops mapped to the taxonomy
 

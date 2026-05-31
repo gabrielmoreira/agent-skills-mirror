@@ -1,6 +1,5 @@
 ---
 name: session-metrics
-model: haiku
 description: >
   Tally Claude Code session token usage and cost estimates from the raw JSONL
   conversation log. Trigger when the user asks about session cost, token usage,
@@ -70,24 +69,26 @@ Reached when `$ARGUMENTS[0]` is `export`. Scan the **full argument string** (not
 
 Infer format flags from the argument string: `html` → `html`, `csv` → `csv`, `md` or `markdown` → `md`. Always add `json` alongside any requested format per the post-export audit convention (see `## Optional post-export audit` below).
 
+**Always add `--quiet` to session and project export commands.** When exporting, the per-turn detail lives in the written HTML/JSON, so the full stdout timeline is redundant — and at project scope (or for a long session) it can run to thousands of lines, spilling the run into a harness overflow file that buries the `[export]` path lines you need. `--quiet` collapses stdout to the legend + grand total + footer (plus the `[export]` lines), keeping the run inline. Do **not** add `--quiet` for `--all-projects` — its instance dashboard text is already compact and the flag has no effect there.
+
 **Examples:**
 
 | Full argument string | Command |
 |---|---|
-| `export session` | `--session ${CLAUDE_SESSION_ID} --output json` |
-| `export session to html` | `--session ${CLAUDE_SESSION_ID} --output html json` |
-| `export session metrics to html` | `--session ${CLAUDE_SESSION_ID} --output html json` |
-| `export to html` | `--session ${CLAUDE_SESSION_ID} --output html json` |
-| `export project` | `--project-cost --output json` |
-| `export project to html` | `--project-cost --output html json` |
-| `export project sessions` | `--project-cost --output json` |
-| `export project sessions to html` | `--project-cost --output html json` |
-| `export entire project's session metrics to html` | `--project-cost --output html json` |
-| `export project metrics to html csv` | `--project-cost --output html csv json` |
+| `export session` | `--session ${CLAUDE_SESSION_ID} --quiet --output json` |
+| `export session to html` | `--session ${CLAUDE_SESSION_ID} --quiet --output html json` |
+| `export session metrics to html` | `--session ${CLAUDE_SESSION_ID} --quiet --output html json` |
+| `export to html` | `--session ${CLAUDE_SESSION_ID} --quiet --output html json` |
+| `export project` | `--project-cost --quiet --output json` |
+| `export project to html` | `--project-cost --quiet --output html json` |
+| `export project sessions` | `--project-cost --quiet --output json` |
+| `export project sessions to html` | `--project-cost --quiet --output html json` |
+| `export entire project's session metrics to html` | `--project-cost --quiet --output html json` |
+| `export project metrics to html csv` | `--project-cost --quiet --output html csv json` |
 | `export all-projects` | `--all-projects --output json` |
 | `export all-projects to html` | `--all-projects --output html json` |
 
-`project` and `project-cost` as the first arg also pick up `--output` flags from remaining args the same way (e.g. `/session-metrics project metrics export to html` → `--project-cost --output html json`).
+`project` and `project-cost` as the first arg also pick up `--output` flags from remaining args the same way (e.g. `/session-metrics project metrics export to html` → `--project-cost --quiet --output html json`).
 
 ## Quick usage
 
@@ -109,13 +110,16 @@ uv run python ${CLAUDE_SKILL_DIR}/scripts/session-metrics.py --list
 # All sessions — timeline + per-session subtotals + grand project total
 uv run python ${CLAUDE_SKILL_DIR}/scripts/session-metrics.py --project-cost
 
-# Export to exports/session-metrics/ (one or more formats)
-uv run python ${CLAUDE_SKILL_DIR}/scripts/session-metrics.py --output json
-uv run python ${CLAUDE_SKILL_DIR}/scripts/session-metrics.py --output json csv md html
-uv run python ${CLAUDE_SKILL_DIR}/scripts/session-metrics.py --project-cost --output html
+# Export to exports/session-metrics/ (one or more formats).
+# Add --quiet on exports so a long timeline doesn't bury the [export] paths.
+uv run python ${CLAUDE_SKILL_DIR}/scripts/session-metrics.py --quiet --output json
+uv run python ${CLAUDE_SKILL_DIR}/scripts/session-metrics.py --quiet --output json csv md html
+uv run python ${CLAUDE_SKILL_DIR}/scripts/session-metrics.py --project-cost --quiet --output html
 ```
 
 > `${CLAUDE_SKILL_DIR}` is expanded by Claude Code to the skill's install directory (plugin cache, project-local copy, or bundled template — whichever applies). When running the script manually from a shell, substitute the actual path.
+
+> **Quick shell wrapper.** For manual runs outside Claude Code, the bundled [`scripts/session-metrics-quick.sh`](scripts/session-metrics-quick.sh) auto-locates `session-metrics.py` (including the version-pinned plugin-cache install), detects the current project + newest session, and runs an HTML+JSON export. Pass `--session <uuid>` (or `-s`) to target a specific session instead — it resolves across all projects, so you can run it from a fresh low-context session to export an earlier heavy one; the HTML+JSON default still applies unless you pass `--output`. Other flags (`--project-cost`, `--list`, an explicit `--output …`) pass through verbatim.
 
 ## Export formats
 
@@ -148,6 +152,7 @@ project root, named `session_<id8>_<YYYYMMDD_HHMMSS>.<ext>` (single) or
 | `--tz <IANA>`                | IANA timezone for time-of-day bucketing **and timeline/export timestamps**. Defaults to the system local tz (auto-detected via `TZ` env var or the OS setting). |
 | `--utc-offset <H>`           | Fixed UTC offset, DST-naive. Use `--tz` for DST-aware. |
 | `--no-cache`                 | Skip `~/.cache/session-metrics/parse/` and always re-parse from scratch. |
+| `--quiet` / `-q`             | Suppress the per-turn timeline on stdout — print only the legend, scope header, grand-total subtotal, and footer (the `[export]` path lines still print). Keeps stdout small on large session/project exports so the export paths aren't buried under an overflow-sized dump; the full per-turn detail still lands in the written HTML/JSON. Session and project scopes only (no effect on `--all-projects`). |
 | `--no-self-cost`             | Suppress the self-cost meta-metric (stderr `[self-cost]` line, HTML KPI card, and JSON `self_cost` key). |
 | `--redact-user-prompts`      | Replace freeform `prompt_text` / `prompt_snippet` / `assistant_text` / `assistant_snippet` with `[redacted]` on every turn of single-session and project **JSON** exports, plus compare HTML. Tool inputs, slash-command names, and structured cost / token fields stay visible. HTML / MD / CSV / text are NOT redacted. |
 | `--export-share-safe`        | One-flag pre-share gesture (v1.36.0+): implies `--redact-user-prompts` and `--no-self-cost`, and chmods every written export file to `0600` (`rw-------`). For full prompt redaction, pair with `--output json`. |
@@ -424,26 +429,122 @@ Determine scope from the JSON filename printed by the `[export] JSON` line:
 
 **Session scope:**
 > Want a token-usage audit of this session?
->   `/audit-session-metrics quick   <json-path>`   (Haiku — ~10× cheaper than Sonnet)
->   `/audit-session-metrics detailed <json-path>`  (Haiku, also reads CLAUDE.md + settings)
+>   `/audit-session-metrics quick   <json-path>`
+>   `/audit-session-metrics detailed <json-path>`  (also reads CLAUDE.md + settings)
 
 **Project scope:**
 > Want a per-session cost and cache health audit of this project?
->   `/audit-session-metrics quick   <json-path>`   (Haiku — surfaces top expensive sessions, cache outliers)
->   `/audit-session-metrics detailed <json-path>`  (Haiku, also drills into top session turn patterns)
+>   `/audit-session-metrics quick   <json-path>`   (surfaces top expensive sessions, cache outliers)
+>   `/audit-session-metrics detailed <json-path>`  (also drills into top session turn patterns)
 
 **Instance scope:**
 > Want a cross-project cost breakdown audit?
->   `/audit-session-metrics quick   <json-path>`   (Haiku — per-project cost shares and cache health)
+>   `/audit-session-metrics quick   <json-path>`   (per-project cost shares and cache health)
 
 Substitute `<json-path>` with the actual path printed by the
-`[export] JSON` line.
+`[export] JSON` line. The audit is summarisation-heavy and reads only the
+disk export (not the conversation), so for a ~10× cheaper run the user can
+`/model haiku` before invoking — the skill no longer pins a model itself.
 
 **Do not invoke `audit-session-metrics` programmatically from this
 turn.** It is a separate, user-initiated audit: running it as its own
-slash command keeps the turn focused and lets its `model: haiku`
-frontmatter apply as the entry point. The user runs the slash command
-at their own discretion.
+slash command keeps the turn focused and lets the user decide when to
+spend on it (and on which model). The user runs the slash command at
+their own discretion.
+
+## Automatic Tasks companion (no extra command)
+
+The per-request breakdown is the deterministic foundation for **task grouping**
+("what was I actually trying to do"). To remove the friction of a separate
+`/task-breakdown` step, the Tasks companion is generated **automatically as part
+of an HTML export**, in this same turn — the user gets it for free.
+
+**Scope gate — the auto-companion is a single-session feature.** Generate it
+only for **single-session exports** (the default route / `--session <id>`).
+**Never** auto-generate it for `--project-cost` or `--all-projects`: semantic
+task grouping does not span sessions, and hand-grouping hundreds of requests
+across many sessions is impractical and not meaningful (this is exactly the
+case that produces a single blank "blob" task). At project / instance scope,
+skip both the companion and the nav button, and simply tell the user that
+`/task-breakdown` can be run manually on a *single* session if they want a
+task view.
+
+**When `html` is among the requested formats AND this is a single-session
+export AND the auto-companion will actually be generated** (see the count gate
+below), add `--task-companion-nav` to the script invocation (alongside the
+always-on `json`). This renders a `Tasks` nav button on the dashboard/detail
+pages pointing at `<stem>_tasks.html`. Do **not** add `--task-companion-nav`
+when you are skipping the companion — it would render a button pointing at a
+`<stem>_tasks.html` that was never written (a dead link).
+
+**Then, after the `[export]` lines, if this is a single-session export and the
+JSON export's `request_units` array has between 2 and 40 entries**, generate
+the companion automatically. Skip when there is only one unit (a single-prompt
+session needs no grouping) or when there are more than ~40 units (an unusually
+large session — tell the user it is too large for a clean auto-grouping and
+that `/task-breakdown` remains available manually).
+
+You are an **editor, not an author**: `--prepare-tasks` does the deterministic
+work (clustering, seeded titles, suggested verdicts) and writes a *renderable*
+skeleton; you only refine the semantic parts. This is far cheaper than
+authoring `grouping.json` from scratch.
+
+1. Run `--prepare-tasks` — it prints a compact per-request worksheet to stdout
+   and writes a candidate `<stem>_grouping.json` next to the export:
+
+   ```bash
+   uv run python ${CLAUDE_SKILL_DIR}/scripts/session-metrics.py --prepare-tasks \
+     <export.json>
+   ```
+
+   The worksheet is your single source of grouping signals — **do not re-probe
+   the JSON with `jq`/`Read`.** Each row carries the unit's candidate cluster
+   (`cl`), turns, cost, tokens, `risk/reread/cbreak`, idle gap, snippet, and
+   tools. `[cont]` = an agent-completion continuation, `[blank]` = a no-prompt
+   unit; both are pre-attached to the preceding cluster.
+
+2. **Edit** the skeleton `grouping.json` (do not rewrite it from scratch):
+   - **Titles** — replace each seeded title with a real task name, and **remove
+     that task's `_auto_title` field** (or set it `false`) once you've named it.
+     A leftover `_auto_title` on a task covering >60% of requests trips a
+     collapse warning at render time — that is the safety net for an unedited
+     skeleton, not a target.
+   - **Merge / split** — combine clusters that are one semantic task (rewrite
+     the affected tasks' `request_unit_ids`); split a cluster only when the
+     worksheet clearly shows two distinct goals (e.g. a real prompt that the
+     heuristic over-attached). Keep every `unit_id` covered exactly once.
+   - **Rationales** — write a one-line `rationale` per task.
+   - **Verdicts** — the skeleton pre-fills `worth_it`/`mixed`; a blank `verdict`
+     means the waste signals were high enough that *you* must judge it (use the
+     `_hint.suggested_verdict` and the worksheet's `risk/reread/cbreak` as
+     evidence — **bias toward `mixed`/`worth_it` when unsure**, never re-sum
+     numbers). Override a pre-filled verdict only when you actively disagree.
+
+   The `_auto_title` / `_hint` underscore fields are advisory — the renderer
+   ignores them for all cost/coverage math.
+
+3. Run the renderer (it recomputes all totals from the export and validates the
+   grouping). Make sure the edited JSON still parses first:
+
+   ```bash
+   uv run python ${CLAUDE_SKILL_DIR}/scripts/session-metrics.py --render-tasks \
+     <export.json> <grouping.json>
+   ```
+
+4. Tell the user the task list (verdicts + turns + cost, read back from the
+   renderer's stdout / the rendered `*_tasks.md` — do not recompute) and the
+   `*_tasks.html` / `*_tasks.md` paths. The dashboard `Tasks` nav button now
+   resolves to that page. If the renderer printed a collapse warning, fix the
+   grouping and re-render rather than shipping it.
+
+This is automatic for HTML exports. The standalone `/task-breakdown
+<json-path>` skill remains for re-grouping a saved JSON export later without
+re-running session-metrics. It is session-oriented; pointing it at a
+project-scope export with hundreds of units will produce a coarse grouping at
+best, so prefer a single-session export as its input. Keep it lightweight:
+most sessions are a handful of tasks; don't over- or under-segment. The
+deterministic "Per-request breakdown" section in the dashboard is the honest
+*per-request* view; the Tasks page is the *semantic* layer you just authored.
 
 ## Self-cost meta-metric
 

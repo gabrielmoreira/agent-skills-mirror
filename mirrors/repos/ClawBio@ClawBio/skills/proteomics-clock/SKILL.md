@@ -12,8 +12,8 @@ metadata:
   - aging
   - olink
   - organ-clock
-  - biological-age
-  - goeminne
+  - biological age
+  - Goeminne
   inputs:
   - name: input_file
     type: file
@@ -47,6 +47,7 @@ metadata:
       bins:
       - python3
     always: false
+    emoji: 🕰️
     homepage: https://github.com/ClawBio/ClawBio
     os:
     - darwin
@@ -154,7 +155,7 @@ python skills/proteomics-clock/proteomics_clock.py \
 python skills/proteomics-clock/proteomics_clock.py --demo --output /tmp/proteomics_demo
 ```
 
-Expected output: predictions for 20 synthetic samples across Heart, Brain, Kidney (and more) organ clocks, with distribution boxplots, correlation heatmap, and sample-organ heatmap.
+Expected output: Predictions for 20 synthetic samples across heart, brain, kidney (and more) organ clocks, with distribution boxplots, correlation heatmap, and sample-organ heatmap.
 
 ## Algorithm / Methodology
 
@@ -278,4 +279,3 @@ This skill computes organ ages for a single timepoint. For longitudinal or treat
 - [Goeminne et al. (2025)](https://doi.org/10.1016/j.cmet.2024.10.005) Cell Metabolism 37(1):205-222.e6 — organ-specific proteomic aging clocks
 - [organAging GitHub](https://github.com/ludgergoeminne/organAging) — model coefficients and example scripts
 - [Olink Proteomics](https://olink.com) — Proximity Extension Assay platform
-i

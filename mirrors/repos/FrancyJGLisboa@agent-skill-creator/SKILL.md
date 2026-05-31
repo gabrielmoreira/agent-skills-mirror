@@ -12,7 +12,7 @@ description: >-
 license: MIT
 metadata:
   author: Francy Lisboa Charuto
-  version: 4.0.0
+  version: 6.0.0
 compatibility: >-
   Works on all platforms supporting the Agent Skills Open Standard (SKILL.md):
   Claude Code, GitHub Copilot CLI, VS Code Copilot, Cursor, Windsurf, Cline,
@@ -38,6 +38,31 @@ User invokes `/agent-skill-creator` followed by their input:
 /agent-skill-creator Based on compliance-checklist.pdf, create a skill for SOX audits
 ```
 
+The user can also drop artifacts, paste URLs, share screenshots, or provide minimal context:
+
+```
+/agent-skill-creator here
+  [+ drops 5 files into chat: spreadsheet, PDF output, screenshot, email, half-working script]
+
+/agent-skill-creator [pastes 2 URLs and a half-sentence]
+  https://apps.fas.usda.gov/psdonline/app/index.html
+  same thing as the wasde extractor but for this
+
+/agent-skill-creator [screenshot of Bloomberg terminal + Excel side by side]
+  this is ridiculous. there has to be a better way
+
+/agent-skill-creator freight
+
+/agent-skill-creator [pastes a forwarded email chain with 6 replies and legal disclaimers]
+  my colleague in London built something for this. can we do the same?
+
+/agent-skill-creator [pastes 3 corporate documents: brand voice guidelines, editorial style guide, visual design system]
+  we need everyone writing and designing to follow these
+
+/agent-skill-creator [pastes company wiki page about tone of voice + compliance rules + approved templates]
+  make a skill so the agents know our standards
+```
+
 The user can also activate naturally without the prefix:
 
 ```
@@ -50,7 +75,35 @@ Export this skill for Cursor
 
 ## How the Factory Works
 
-Raw material goes in. A validated, security-scanned, self-contained skill comes out. The factory operates in two stages:
+Raw material goes in. A validated, security-scanned, self-contained skill comes out.
+
+### Evidence-Based Intent Derivation
+
+Before any phase begins, triage whatever the user provided. Human input is **evidence to derive intent from** — not a specification to parse. Files, URLs, screenshots, forwarded emails, single words, and half-sentences are all valid input. The absence of a well-formed description is not the absence of intent.
+
+**Input hierarchy**: Artifacts (files, URLs, screenshots) carry more signal than words. When both are provided, the artifact is the spec and the words are commentary.
+
+**Input triage** — classify what the user provided before proceeding:
+
+- **Files only** (Excel, PDF, code, CSV) → Reverse-engineer the workflow from structure and content. Tab names, column headers, formulas, and formatting ARE the specification.
+- **URLs only** → Fetch each URL. Understand the data source. Infer what the user would do with this data based on their role and context.
+- **Screenshot/image** → Read visually. Identify: what tool is shown? What data? What manual step is visible? What is the pain?
+- **Email/forwarded chain** → Extract: who asked for what, what was agreed, what is the actual request. Ignore disclaimers, scheduling, CC lists.
+- **Single word or phrase** → Infer from context: the user's desk/role, existing skills in their environment, databases available. Present the most likely interpretation and confirm.
+- **Mixed (files + sentence)** → The files are the spec. The sentence is commentary. Cross-reference both.
+- **"here" + files** → The files ARE the input. Process them all. Present your understanding.
+- **Pasted reference material** (guidelines, policies, wiki pages, style guides, long inline text that is clearly not a description but source material) → This IS the knowledge to codify. Read it all. Identify what it governs (writing, design, compliance, process). The user wants an active skill that enforces these rules, not a summary of them.
+- **Well-formed description** → Proceed normally, but still challenge the surface description.
+
+**Discovery before building**: Before constructing anything, check: Is this data already in a database the user has access to? Has a colleague built a skill for this? Is there an API that makes a scraping approach unnecessary? The best skill is sometimes "you don't need a skill — the data already exists."
+
+**Hypothesis, not questionnaire**: Never present 5 questions upfront. Present: "From your files, I understand you do X → Y → Z weekly. The output goes to [person]. Right?" The human confirms or corrects with one word.
+
+**Progressive refinement**: Build at 60% understanding. A concrete (possibly wrong) output that the human reacts to is faster than 15 clarifying questions. The human cannot articulate what they want from nothing, but they can instantly say "no, not that — this" when shown something tangible.
+
+**Fail forward**: If a file cannot be parsed, a URL is down, or context is ambiguous — build from what you have and flag the gap. Never block on a missing piece.
+
+The factory operates in two stages:
 
 ### Stage 1: Understand and Specify (Phases 1-2)
 
@@ -60,8 +113,9 @@ Read every piece of material the user provides. Follow links. Read files. Parse 
 
 **Clarity principles** (self-guided, no external dependency):
 
+0. **Treat input as evidence, not instructions.** The user's files, URLs, and screenshots are primary evidence. Their words (if any) are secondary commentary. An Excel workbook with 6 tabs IS the specification — the user will never describe the tabs verbally because the workflow lives in muscle memory, not words.
 1. **Read everything before concluding anything.** Do not start forming the spec after the first paragraph. Consume all material — every link, every file, every page — then synthesize.
-2. **Challenge the surface description.** The human's words are a starting point, not a specification. Look for what's missing, what's implied, what's contradictory. If someone says "generate a report," ask yourself: report for whom? In what format? With what data? At what frequency? Answering what triggers it?
+2. **Challenge the surface description.** The human's words are a starting point, not a specification. Look for what's missing, what's implied, what's contradictory. If someone says "generate a report," ask yourself: report for whom? In what format? With what data? At what frequency? Answering what triggers it? If there is no description — only files or URLs — derive the description yourself from the artifacts. The absence of words is not the absence of intent.
 3. **Extract implicit requirements.** Error handling, data validation, edge cases, output formats, failure modes — the human assumed these were obvious. They aren't. Make them explicit in your spec.
 4. **Identify the real output.** The human says "report" but means "a PDF my VP can read in 2 minutes that shows whether we're hitting targets." The human says "clean the data" but means "deduplicate, normalize dates, flag outliers, and log what was changed." Dig past the label to the substance.
 5. **Generate a spec that surpasses the human's understanding.** Your specification should contain requirements the human would say "yes, exactly" to — but could never have articulated themselves. That is the standard.
@@ -95,10 +149,12 @@ The human removes the cognitive constraint by providing the raw material. The fa
 
 ```
 skill-name/
-├── SKILL.md          # Starts with "# /skill-name" — the invocation trigger
-├── scripts/          # Functional Python code (no placeholders)
+├── SKILL.md          # Starts with "# /skill-name" — the invocation trigger (~15 tools)
+├── AGENTS.md         # Companion instruction file — AAIF format (~15 tools)
+├── scripts/          # Functional code + run_pipeline.py (multi-script) + run_evals.py
 ├── references/       # Detailed documentation (loaded on demand)
 ├── assets/           # Templates, schemas, data files
+├── evals/            # Bundled eval spec: binary checks + golden cases
 ├── install.sh        # Cross-platform auto-detect installer
 └── README.md         # Multi-platform installation instructions
 ```
@@ -118,6 +174,34 @@ See `references/pipeline-phases.md` for detailed Phase 1 instructions.
 Define 4-6 priority analyses covering 80% of use cases. For each: name, objective, inputs, outputs, methodology. Always include a comprehensive report function.
 
 See `references/pipeline-phases.md` for detailed Phase 2 instructions.
+
+**Phase 2 includes an Artifact Opportunity Assessment step.** After the
+domain is identified, the creator runs `scripts/artifact_detector.py` on
+the description. If the output is visualizable (time series, comparison,
+KPIs, or structured rows), one of four bundled React templates is inlined
+into the generated SKILL.md along with Claude's artifact emission
+protocol. The artifact renders in Claude environments; in other hosts the
+component source appears as fenced code and the markdown analysis is
+unchanged. See `references/phase2-artifact-assessment.md` for details.
+
+**Override flags** — parse the user's prompt for these tokens BEFORE calling the detector:
+- `--no-artifact` anywhere in the user's prompt: skip the assessment entirely and generate the skill without any artifact template, exactly as v4 did. Strip the token from the prompt before passing it to Phase 1.
+- `--artifact <name>` (where `<name>` is `line-chart`, `bar-chart`, `kpi-cards`, or `data-table`): skip the detector and inline the named template directly. If `<name>` is not one of the four valid names, reject with an error listing the four valid values and stop. Strip the flag and value from the prompt before passing it to Phase 1.
+- `--no-eval` anywhere in the user's prompt: skip the Eval Criteria Definition step (below); the generated skill carries no `evals/` directory and no `run_evals.py`. Strip the token from the prompt before passing it to Phase 1.
+
+When neither flag is present, call the detector and let it decide.
+
+**Phase 2 also includes an Eval Criteria Definition step.** After the use
+cases are defined, derive the skill's loss function: 3–6 binary checks (each
+graded by a shell `command` or flagged `llm-judge`) plus at least 3 golden
+cases — seeded from the user's artifacts when available, otherwise synthesized
+as input-only `pending-first-green` cases. Present them for a one-word
+thumbs-up. The spec is written in Phase 5 to `evals/<name>.eval.md` and ships
+with the skill as an instant regression test, formatted so
+`autoresearch-universal` consumes it directly (its rule 18). Eval generation is
+**on by default**; `--no-eval` opts out. See
+`references/phase2-eval-assessment.md` for criteria rules, the golden-case
+strategy, the JSON spec format, and the optimize handoff.
 
 ### Phase 3: Architecture
 
@@ -142,50 +226,64 @@ Create all files in this order:
 
 1. Create directory structure
 2. Write **SKILL.md** — starts with `# /skill-name`, includes trigger section with invocation examples, spec-compliant frontmatter
-3. Implement Python scripts (functional, no placeholders, no TODOs)
-4. Write references (detailed documentation the skill loads on demand)
-5. Write assets (templates, configs)
-6. Generate `install.sh` from `scripts/install-template.sh` (replace `{{SKILL_NAME}}` with actual name, `chmod +x`)
-7. Write `README.md` (multi-platform install instructions showing `git clone` for each platform)
-8. Run **validation** against the official spec
-9. Run **security scan** for hardcoded keys and injection patterns
-10. **Auto-install on the current platform** (see below)
-11. Report results to user with clear next steps
+3. Write **AGENTS.md** — companion instruction file for maximum cross-tool reach (~15 tools read AGENTS.md). Contains skill purpose, activation triggers, usage instructions, and a reference to SKILL.md for full details. Follows the AAIF-governed AGENTS.md format
+4. Implement Python scripts (functional, no placeholders, no TODOs). **For a multi-script pipeline**, also emit a single `scripts/run_pipeline.py` orchestrator that runs the steps in order and wires output→input **in code** — so the agent runs one command instead of sequencing steps from prose. Skip for genuinely interactive/branching skills. See `references/phase5-orchestration.md`
+5. Write references (detailed documentation the skill loads on demand)
+6. Write assets (templates, configs)
+7. **Emit the eval spec** (skip if `--no-eval`): write `evals/<name>.eval.md` (the binary checks + golden cases derived in Phase 2) and copy `scripts/run_evals_template.py` → the generated skill's `scripts/run_evals.py`. See `references/phase2-eval-assessment.md`
+8. Generate `install.sh` from `scripts/install-template.sh` (replace `{{SKILL_NAME}}` with actual name, `chmod +x`)
+9. Write `README.md` (multi-platform install instructions showing `git clone` to each tool's **native** path)
+10. Run **validation** against the official spec, **security scan** for hardcoded keys and injection patterns, **`python3 <skill>/scripts/check_pipeline.py <skill>`** (no compile or undeclared-dependency errors), and — if an eval spec was emitted — `python3 <skill>/scripts/run_evals.py --validate` (must report `VALID`)
+11. **Auto-install on the current platform** (see below)
+12. Report results to user with clear next steps, including the eval/optimize one-liner from `references/phase2-eval-assessment.md`
 
 ### Auto-Install After Creation
 
 After the skill passes validation and security scan, install it immediately on the user's current platform. Do not ask the user to run `install.sh` manually — you are already running inside their environment and can detect their platform.
 
-**Detection logic** (check in order):
+**Detection logic** (check in order, install to each tool's **native** path):
 
 ```
-~/.claude/              exists → Claude Code
-.cursor/                exists → Cursor (project-level)
-~/.cursor/              exists → Cursor (user-level)
-.github/                exists → GitHub Copilot
-~/.codeium/windsurf/    exists → Windsurf (user-level)
-.windsurf/              exists → Windsurf (project-level)
-.clinerules/            exists → Cline
-~/.gemini/              exists → Gemini CLI
-.kiro/                  exists → Kiro
-.trae/                  exists → Trae
-.roo/                   exists → Roo Code
-~/.config/goose/        exists → Goose
-~/.config/opencode/     exists → OpenCode
-~/.agents/              exists → Universal (.agents/skills/)
+~/.claude/              exists → Claude Code         → ~/.claude/skills/
+~/.copilot/             exists → GitHub Copilot CLI  → ~/.copilot/skills/
+.github/                exists → VS Code Copilot     → .github/skills/ (project)
+.cursor/                exists → Cursor              → .cursor/skills/ (project only, no global path)
+~/.codeium/windsurf/    exists → Windsurf            → ~/.codeium/windsurf/skills/ (global) + format adapt
+.windsurf/              exists → Windsurf            → .windsurf/rules/ (project) + format adapt
+.clinerules/ or ~/.cline/ exists → Cline             → .clinerules/skills/ or ~/.cline/skills/
+~/.gemini/              exists → Gemini CLI          → ~/.gemini/skills/
+.kiro/                  exists → Kiro                → .kiro/skills/ (project)
+.trae/                  exists → Trae                → .trae/rules/ + format adapt (plain .md)
+.roo/                   exists → Roo Code            → .roo/skills/
+~/.config/goose/        exists → Goose               → ~/.config/goose/skills/
+~/.config/opencode/     exists → OpenCode            → ~/.config/opencode/skills/
+~/.agents/              exists → Universal           → ~/.agents/skills/
 ```
 
-**Install action**: Copy or symlink the generated skill directory into the platform's skill path:
+After installing to the native path, **also create a symlink at `~/.agents/skills/`** so the skill is discoverable by tools reading the universal path (Codex CLI, Gemini CLI, OpenCode, Goose, Cline, Roo Code).
+
+**Format adaptation**: For Tier 2 platforms (Cursor, Windsurf, Trae), also generate the native format alongside SKILL.md:
+- **Cursor**: Generate `.mdc` file with `alwaysApply: true` and description from frontmatter
+- **Windsurf**: Generate plain `.md` rule, respect 6,000 char per-file limit
+- **Trae**: Generate plain `.md` rule with `type: Always` frontmatter
+
+**Install action**: Copy or symlink the generated skill directory into the platform's native skill path:
 
 ```bash
-# Example for Claude Code (user-level):
+# Claude Code (user-level):
 cp -R ./sales-report-skill ~/.claude/skills/sales-report-skill
 
-# Example for universal path (works with Codex CLI, Gemini CLI, Kiro, Antigravity, etc.):
-cp -R ./sales-report-skill ~/.agents/skills/sales-report-skill
+# GitHub Copilot (user-level — Copilot's own path, not Claude's):
+cp -R ./sales-report-skill ~/.copilot/skills/sales-report-skill
 
-# Example for Cursor (project-level):
-cp -R ./sales-report-skill .cursor/rules/sales-report-skill
+# GitHub Copilot (project-level):
+cp -R ./sales-report-skill .github/skills/sales-report-skill
+
+# Cursor (project-level ONLY — no global path exists):
+cp -R ./sales-report-skill .cursor/skills/sales-report-skill
+
+# Gemini CLI (native path):
+cp -R ./sales-report-skill ~/.gemini/skills/sales-report-skill
 ```
 
 **After installing, tell the user exactly what to do next:**
@@ -487,24 +585,46 @@ See `references/architecture-guide.md` for detailed decision framework.
 
 ## Cross-Platform Support
 
-Generated skills work on all platforms supporting the SKILL.md standard:
+Generated skills work across 20+ tools in 3 tiers. Every generated skill outputs both **SKILL.md** (skill definition, ~15 tools) and **AGENTS.md** (instruction file, ~15 tools) to maximize reach.
 
-| Platform | Install Location | Command |
-|----------|-----------------|---------|
-| **Universal** | `~/.agents/skills/` or `.agents/skills/` | `./install.sh --platform universal` |
-| Claude Code | `~/.claude/skills/` or `.claude/skills/` | `./install.sh` or copy |
-| GitHub Copilot | `.github/skills/` | `./install.sh --platform copilot` |
-| Cursor | `.cursor/rules/` (auto-generates `.mdc`) | `./install.sh --platform cursor` |
-| Windsurf | `.windsurf/rules/` or `global_rules.md` | `./install.sh --platform windsurf` |
-| Cline | `.clinerules/` | `./install.sh --platform cline` |
-| Codex CLI | `~/.agents/skills/` | `./install.sh --platform codex` |
-| Gemini CLI | `~/.gemini/skills/` | `./install.sh --platform gemini` |
-| Kiro | `.kiro/skills/` | `./install.sh --platform kiro` |
-| Trae | `.trae/rules/` | `./install.sh --platform trae` |
-| Goose | `~/.config/goose/skills/` | `./install.sh --platform goose` |
-| OpenCode | `~/.config/opencode/skills/` | `./install.sh --platform opencode` |
-| Roo Code | `.roo/rules/` | `./install.sh --platform roo-code` |
-| Antigravity | `.agents/skills/` | `./install.sh --platform antigravity` |
+### Tier 1 — Native SKILL.md (reads directly, no conversion)
+
+| Platform | Native Global Path | Native Project Path | Command |
+|----------|-------------------|--------------------|---------|
+| Claude Code | `~/.claude/skills/` | `.claude/skills/` | `./install.sh` |
+| GitHub Copilot | `~/.copilot/skills/` | `.github/skills/` | `./install.sh --platform copilot` |
+| Codex CLI | `~/.agents/skills/` | `.agents/skills/` | `./install.sh --platform codex` |
+| Gemini CLI | `~/.gemini/skills/` | `.gemini/skills/` | `./install.sh --platform gemini` |
+| Kiro | `~/.kiro/skills/` | `.kiro/skills/` | `./install.sh --platform kiro` |
+| Goose | `~/.config/goose/skills/` | — | `./install.sh --platform goose` |
+| OpenCode | `~/.config/opencode/skills/` | `.opencode/skills/` | `./install.sh --platform opencode` |
+| Cline | `~/.cline/skills/` | `.clinerules/skills/` | `./install.sh --platform cline` |
+| Roo Code | `~/.roo/skills/` | `.roo/skills/` | `./install.sh --platform roo-code` |
+| Kilo Code | `~/.kilocode/skills/` | `.kilocode/skills/` | `./install.sh --platform kilo-code` |
+| Factory Droid | `~/.factory/skills/` | `.factory/skills/` | `./install.sh --platform factory` |
+| Antigravity | — | `.agent/skills/` | `./install.sh --platform antigravity` |
+
+### Tier 2 — Auto-adapted (installer converts SKILL.md to native format)
+
+| Platform | Native Format | Adaptation | Install Path | Command |
+|----------|--------------|------------|-------------|---------|
+| Cursor | `.mdc` | Generates `.mdc` with `alwaysApply`/`globs` frontmatter | `.cursor/skills/` (project only, no global) | `./install.sh --platform cursor` |
+| Windsurf | `.md` rules | Generates plain `.md` rule (6K char limit per file) | `.windsurf/rules/` (project) or `~/.codeium/windsurf/` (global) | `./install.sh --platform windsurf` |
+| Trae | `.md` rules | Generates plain `.md` with `type:` frontmatter | `.trae/rules/` | `./install.sh --platform trae` |
+| Junie | `guidelines.md` | Extracts body as plain markdown | `.junie/skills/` | `./install.sh --platform junie` |
+
+### Tier 3 — Manual integration
+
+| Platform | Config File | Instructions |
+|----------|------------|-------------|
+| Zed | `.rules` | Copy SKILL.md body into `.rules` file |
+| Augment | `.augment/rules/` | Copy as `.md` with `type: Always` frontmatter |
+| Aider | `CONVENTIONS.md` | Copy SKILL.md body into CONVENTIONS.md |
+| Continue.dev | `.continue/rules/` | Copy as `.md` with Continue frontmatter |
+
+### Companion AGENTS.md
+
+Every generated skill also outputs an `AGENTS.md` file alongside SKILL.md. This extends reach to tools that prioritize AGENTS.md over SKILL.md (Codex CLI, Augment, Continue.dev, Zed, and others). The AGENTS.md contains the skill's purpose, activation triggers, and usage instructions in the AAIF-governed format.
 
 See `references/cross-platform-guide.md` for full platform details.
 
@@ -630,7 +750,6 @@ The `-skill` suffix also serves as a signal to the agent: when it sees a repo or
 | `references/cross-platform-guide.md` | Platform compatibility matrix |
 | `references/export-guide.md` | Cross-platform export system |
 | `references/quality-standards.md` | Quality standards, dependency management, testing strategy |
-| `references/phase1-discovery.md` | Phase 1 deep-dive |
-| `references/phase2-design.md` | Phase 2 deep-dive |
-| `references/phase3-architecture.md` | Phase 3 deep-dive |
-| `references/phase4-detection.md` | Phase 4 deep-dive |
+| `references/phase4-detection.md` | Detection & keyword-design craft reference |
+| `references/phase2-eval-assessment.md` | Phase 2 eval-criteria step, golden-case strategy, spec format, autoresearch handoff |
+| `references/phase5-orchestration.md` | Phase 5 pipeline orchestration: single run_pipeline.py entry-point, deterministic sequencing, check_pipeline.py |

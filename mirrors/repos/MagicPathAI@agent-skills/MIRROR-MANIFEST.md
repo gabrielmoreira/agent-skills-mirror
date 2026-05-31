@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `MagicPathAI/agent-skills` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `MagicPathAI/agent-skills` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MagicPathAI/agent-skills` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,7 +61,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
 | 2 | ✓ | [`skills/magicpath/references/cli-reference.md`](skills/magicpath/references/cli-reference.md) |
-| 3 | ✓ | [`skills/magicpath/SKILL.md`](skills/magicpath/SKILL.md) |
+| 3 | ✓ | [`skills/magicpath/references/working-with-repositories.md`](skills/magicpath/references/working-with-repositories.md) |
+| 4 | ✓ | [`skills/magicpath/SKILL.md`](skills/magicpath/SKILL.md) |
 
 ---
 

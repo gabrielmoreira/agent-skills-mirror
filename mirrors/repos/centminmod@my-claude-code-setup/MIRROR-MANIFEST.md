@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `centminmod/my-claude-code-setup` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `centminmod/my-claude-code-setup` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `centminmod/my-claude-code-setup` — 26 default patterns, 0 followed 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,9 +65,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.claude/skills/consult-codex/SKILL.md`](.claude/skills/consult-codex/SKILL.md) |
 | 5 | ✓ | [`.claude/skills/consult-zai/SKILL.md`](.claude/skills/consult-zai/SKILL.md) |
 | 6 | ✓ | [`.claude/skills/session-metrics/SKILL.md`](.claude/skills/session-metrics/SKILL.md) |
-| 7 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 9 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 7 | ✓ | [`.claude/skills/task-breakdown/SKILL.md`](.claude/skills/task-breakdown/SKILL.md) |
+| 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 10 | ✓ | [`GEMINI.md`](GEMINI.md) |
 
 ---
 

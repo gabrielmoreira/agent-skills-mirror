@@ -13,7 +13,7 @@ Generate one comprehensive Chinese cheat sheet per invocation: formulas + deriva
 
 - **`<topic>`** (required) — narrow enough for one 600-1000 line tutorial. Good: "RLHF / DPO / PPO", "MoE", "KV Cache + Speculative Decoding". Bad (too broad): "all of LLM training", "diffusion" (split into Forward Process / Sampling / CFG separately).
 - **`--effort`** (default `balanced`) — `balanced` ≈ 600 lines, `max` ≈ 1000 lines with deeper proofs and more L3 questions.
-- **`--byline`** (default `"Ruofeng Yang (杨若峰), Shanghai Jiao Tong University"`) — passed to `/render-html --author`.
+- **`--byline`** (default `"<Your Name>, <Affiliation>"`) — passed to `/render-html --author`.
 - **`--commit`** (default `false`) — if `false` (default), stop after rendering; user reviews and commits. Never push without explicit user approval.
 
 ## Style guide — STRICT (read `docs/tutorials/attention_tutorial.md` as canonical reference)
@@ -85,7 +85,7 @@ You are reviewing a long-form Chinese interview-prep tutorial on <TOPIC> for mat
 
 ## Files to read (READ-ONLY)
 - Draft MD: <MD_PATH>
-- Style reference: /Users/yangruofeng/Desktop/aris_paper_discussion/aris_repo/docs/tutorials/attention_tutorial.md
+- Style reference: docs/tutorials/attention_tutorial.md
   (Read this only for STYLE — do NOT score the draft against the reference's content topic.)
 
 ## Return JSON with these 10 checks

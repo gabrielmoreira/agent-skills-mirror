@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ajhcs/healthcare-agents` — 26 default patterns, 0 followed patterns, 53 file(s) materialized.
+Mirror of `ajhcs/healthcare-agents` — 26 default patterns, 0 followed patterns, 54 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ajhcs/healthcare-agents` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 53 |
+| Files         | 54 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -112,6 +112,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 51 | ✓ | [`agents/strategy-healthcare-consultant.md`](agents/strategy-healthcare-consultant.md) |
 | 52 | ✓ | [`agents/strategy-operations-consultant.md`](agents/strategy-operations-consultant.md) |
 | 53 | ✓ | [`agents/strategy-structural-improvement-consultant.md`](agents/strategy-structural-improvement-consultant.md) |
+| 54 | ✓ | [`docs/platforms/claude.md`](docs/platforms/claude.md) |
 
 ---
 

@@ -109,7 +109,7 @@ Extreme close-up of rich cream being poured into a freshly brewed dark espresso 
 - **Masterclass(10 YouTube 教学综合)**：[methodology/15-seedance-masterclass.md](../../methodology/15-seedance-masterclass.md) ⭐ 9 要素公式 / Timeline Prompting / 5 种爆款 / VFX 技巧 / 8 个模板
 - 运镜词典：[methodology/05-运镜词典.md](../../methodology/05-运镜词典.md)
 - 约束词清单：[methodology/06-约束词清单.md](../../methodology/06-约束词清单.md)
-- 114 条实测提示词：[prompts/seedance/README.md](../../prompts/seedance/README.md)
+- 117 条实测提示词：[prompts/seedance/README.md](../../prompts/seedance/README.md)
 
 ## 质量后缀(每条 prompt 都加)
 

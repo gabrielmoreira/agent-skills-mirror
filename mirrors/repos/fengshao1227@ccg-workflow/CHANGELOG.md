@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.1.2] - 2026-05-30
+
+### 🐛 Fixes
+
+- **Codex Mode hook loaded wrong directory** — `hooks.json` used a relative path (`python3 .codex/hooks/ccg-workflow.py`), so Codex looked for `.codex/hooks/` in the project folder instead of the user home. Now resolved to an absolute home path at install time (`installCodexMode` replaces `~/` with the real home dir).
+- **Codex Mode still called `--backend gemini`** — `hooks/ccg-workflow.py` hardcoded "Gemini" / `--backend gemini` and was copied as-is (never passed through `injectConfigVariables`). Combined with the antigravity default switch + Gemini CLI sunset, this produced empty external-model responses. The script now uses `{{FRONTEND_PRIMARY}}` placeholders injected at install time, and AGENTS.md descriptive text was de-hardcoded too. Antigravity (and any configured frontend) now routes correctly in Codex Mode.
+
+---
+
 ## [3.1.1] - 2026-05-23
 
 ### 🐛 Fixes

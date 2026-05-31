@@ -59,9 +59,9 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 11 follow
 - `docs/shared-memory.md`
 - `docs/observability.md`
 - `docs/cli.md`
+- `examples/integrations/README.md`
 - `examples/README.md`
 - `examples/production/README.md`
-- `examples/integrations/README.md`
 
 ## File Index
 

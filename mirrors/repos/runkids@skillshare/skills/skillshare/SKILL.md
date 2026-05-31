@@ -15,7 +15,7 @@ description: |
   `.agentignore` and `enable`/`disable` for per-agent toggles.
 argument-hint: "[command] [target] [--json] [--dry-run] [-p|-g]"
 metadata:
-  version: v0.19.24
+  version: v0.20.0
 ---
 
 # Skillshare CLI
@@ -65,7 +65,7 @@ skillshare sync extras                               # Sync all extras to target
 skillshare sync extras --dry-run --force             # Preview / overwrite conflicts
 skillshare sync --all                                # Sync skills + extras together
 ```
-See [extras.md](references/extras.md) for details.
+A target can set an `extension:` field in config.yaml to transform each source file during sync (e.g. markdown → TOML for Gemini/Codex); implies `copy` mode. See [extras.md](references/extras.md) for details.
 ### Creating & Discovering Skills
 ```bash
 skillshare new my-skill                          # Create with interactive pattern selection

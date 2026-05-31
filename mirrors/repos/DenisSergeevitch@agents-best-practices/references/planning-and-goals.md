@@ -114,6 +114,43 @@ After approval:
 5. Record progress.
 6. Pause if risk increases or assumptions fail.
 
+## Workflow orchestration
+
+Workflow orchestration is a structured execution mode for large plans that need decomposition, parallel read-only work, independent verification, or resumable packet state.
+
+It sits between planning mode and goal-like loops:
+
+```text
+planning mode: decide what should happen
+workflow orchestration: run a decomposed plan through packets and verification
+goal-like loop: continue toward a durable objective across steps or sessions
+```
+
+Use workflow orchestration when:
+
+- one linear loop would overload context;
+- the task can be split into independent packets;
+- multiple areas must be covered systematically;
+- findings need independent verifier passes;
+- the workflow needs pause, resume, replay, or audit;
+- total cost, time, or worker count must be budgeted explicitly.
+
+Do not use workflow orchestration only because a task is important. Use it when decomposition and verification create measurable value.
+
+Workflow execution should follow this sequence:
+
+```text
+1. Create a workflow artifact with objective, scope, packets, verification, integration, budgets, and approval points.
+2. Validate the artifact against permissions, risk policy, source-of-truth availability, and budget.
+3. Ask for approval if the workflow includes risky, expensive, external, destructive, or privileged actions.
+4. Execute bounded packets with narrow worker contexts.
+5. Verify important findings independently.
+6. Integrate results, conflicts, failed packets, coverage gaps, and evidence.
+7. Store workflow state and final output outside the prompt.
+```
+
+Material workflow changes require a new approval check when they expand scope, raise risk, add tools, increase budget, or change the final commit behavior.
+
 ## Goal-like loop
 
 A goal is a durable objective with a measurable done condition. It is different from a plan:

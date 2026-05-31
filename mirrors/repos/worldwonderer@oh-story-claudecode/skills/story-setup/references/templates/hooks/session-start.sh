@@ -9,7 +9,7 @@ HAS_CONTENT=false
 
 # 先做最小 preflight，再 source；否则 lib 缺失时无法输出可修复提示。
 if [ ! -f "$HOOK_DIR/lib/common.sh" ] || [ ! -f "$HOOK_DIR/lib/sentinel.sh" ]; then
-  printf '%b' "[WARN] story hook libraries are missing. Re-run /story-setup to restore .claude/hooks/lib/.\n"
+  printf '%b' "[WARN] story hook 函数库缺失。重新运行 /story-setup 恢复 .claude/hooks/lib/。\n"
   exit 0
 fi
 
@@ -28,20 +28,20 @@ if sentinel_exists "$ROOT/.story-deployed"; then
     fi
   done
   if [ -n "$MISSING_HOOKS" ]; then
-    OUTPUT+="[WARN] .story-deployed exists but hooks are missing: $MISSING_HOOKS\n"
-    OUTPUT+="  Fix: re-run /story-setup to restore missing hooks.\n\n"
+    OUTPUT+="[WARN] .story-deployed 存在但缺少 hook：$MISSING_HOOKS\n"
+    OUTPUT+="  修复：重新运行 /story-setup 恢复缺失的 hook。\n\n"
     HAS_CONTENT=true
   fi
 
   AGENTS_VERSION=$(read_sentinel_field agents_version "$ROOT/.story-deployed")
   case "$AGENTS_VERSION" in
     ''|*[!0-9]*)
-      OUTPUT+="[WARN] .story-deployed missing numeric agents_version. Re-run /story-setup.\n\n"
+      OUTPUT+="[WARN] .story-deployed 缺少数字 agents_version。重新运行 /story-setup。\n\n"
       HAS_CONTENT=true
       ;;
     *)
       if [ "$AGENTS_VERSION" -lt 10 ]; then
-        OUTPUT+="[WARN] story-setup agents_version=$AGENTS_VERSION is older than v10. Re-run /story-setup to refresh hooks, agents, and references.\n\n"
+        OUTPUT+="[WARN] story-setup agents_version=$AGENTS_VERSION 低于 v10。重新运行 /story-setup 刷新 hooks、agents 和 references。\n\n"
         HAS_CONTENT=true
       fi
       ;;
@@ -49,7 +49,7 @@ if sentinel_exists "$ROOT/.story-deployed"; then
 
   for field in setup_skill_version target_cli resolver_strategy references_dir; do
     if [ -z "$(read_sentinel_field "$field" "$ROOT/.story-deployed")" ]; then
-      OUTPUT+="[WARN] .story-deployed missing $field. Re-run /story-setup to refresh deployment metadata.\n\n"
+      OUTPUT+="[WARN] .story-deployed 缺少 $field 字段。重新运行 /story-setup 刷新部署元信息。\n\n"
       HAS_CONTENT=true
     fi
   done
@@ -58,20 +58,20 @@ if sentinel_exists "$ROOT/.story-deployed"; then
   if [ -n "$REFERENCES_DIR" ]; then
     REFERENCES_PATH=$(resolve_project_path "$REFERENCES_DIR")
     if [ ! -d "$REFERENCES_PATH" ] || ! find "$REFERENCES_PATH" -maxdepth 1 -type f -name "*.md" -print -quit 2>/dev/null | grep -q .; then
-      OUTPUT+="[WARN] story-setup reference bundle is missing or empty at $REFERENCES_DIR. Re-run /story-setup.\n\n"
+      OUTPUT+="[WARN] story-setup 参考资料包缺失或为空：${REFERENCES_DIR}。重新运行 /story-setup。\n\n"
       HAS_CONTENT=true
     fi
   fi
 else
-  OUTPUT+="[WARN] Writing infrastructure not deployed. Run /story-setup to initialize.\n\n"
+  OUTPUT+="[WARN] 写作环境未部署。运行 /story-setup 初始化。\n\n"
   HAS_CONTENT=true
 fi
 
 # 显示分支和最近 commit（仅在有 git 历史时）
 BRANCH=$(git -C "$ROOT" branch --show-current 2>/dev/null || echo "")
 if [ -n "$BRANCH" ]; then
-  OUTPUT+="=== Story Writing ===\n"
-  OUTPUT+="Branch: $BRANCH\n"
+  OUTPUT+="=== 写作进度 ===\n"
+  OUTPUT+="分支：$BRANCH\n"
   RECENT=$(git -C "$ROOT" log --oneline -5 2>/dev/null || true)
   if [ -n "$RECENT" ]; then
     OUTPUT+="$RECENT\n"
@@ -93,7 +93,7 @@ fi
 if [ -d "$ROOT/拆文库" ]; then
   PROGRESS_COUNT=$(find "$ROOT/拆文库" -name "_progress.md" 2>/dev/null | wc -l | tr -d ' ')
   if [ "$PROGRESS_COUNT" -gt 0 ]; then
-    OUTPUT+="[INFO] $PROGRESS_COUNT incomplete analysis in 拆文库/. Run /story-long-analyze or /story-short-analyze.\n"
+    OUTPUT+="[INFO] 拆文库/ 中有 $PROGRESS_COUNT 个未完成拆文。运行 /story-long-analyze 或 /story-short-analyze。\n"
     HAS_CONTENT=true
   fi
 fi

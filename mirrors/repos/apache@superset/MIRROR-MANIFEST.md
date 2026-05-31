@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `apache/superset` — 26 default patterns, 1 followed patterns, 8 file(s) materialized.
+Mirror of `apache/superset` — 26 default patterns, 2 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `apache/superset` — 26 default patterns, 1 followed patterns, 8 file
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 8 |
+| Followed pats | 2 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `apache/superset` — 26 default patterns, 1 followed patterns, 8 file
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `SECURITY.md`
 - `GPT.md`
 
 ## File Index
@@ -66,7 +67,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`docs/static/llms.txt`](docs/static/llms.txt) |
 | 6 | ✓ | [`GEMINI.md`](GEMINI.md) |
 | 7 | ✓ | [`superset/mcp_service/CLAUDE.md`](superset/mcp_service/CLAUDE.md) |
-| 8 | → | [`GPT.md`](GPT.md) |
+| 8 | ✓ | [`superset/mcp_service/SECURITY.md`](superset/mcp_service/SECURITY.md) |
+| 9 | → | [`GPT.md`](GPT.md) |
+| 10 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

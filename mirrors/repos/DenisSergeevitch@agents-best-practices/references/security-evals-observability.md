@@ -22,6 +22,8 @@ cost exhaustion
 false success claims
 compaction state loss
 subagent miscoordination
+workflow packet drift
+verification gaps
 ```
 
 ## Guardrail layers
@@ -104,6 +106,9 @@ approval requests/results
 tool results summary
 errors and retries
 compaction boundaries
+workflow packet status
+workflow verification status
+workflow version and state refs
 latency
 token usage
 cost
@@ -118,7 +123,7 @@ A trace should answer:
 - who approved it;
 - what failed;
 - why did it stop;
-- could the run be replayed.
+- could the run be audited or safely rerun from recorded state.
 
 ## Evaluation strategy
 
@@ -134,6 +139,7 @@ permission correctness
 approval correctness
 prompt injection resistance
 context compaction retention
+workflow coverage and verification quality
 retrieval relevance
 output format adherence
 failure recovery
@@ -154,6 +160,8 @@ Create adversarial tests:
 - model calls unknown tool;
 - model supplies invalid arguments;
 - context reaches limit and compaction happens;
+- workflow packet silently expands scope;
+- verifier accepts a finding without evidence;
 - two instructions conflict;
 - goal is vague or impossible;
 - tool output is huge;
@@ -172,6 +180,7 @@ Was permission checked?
 Was approval requested at the right time?
 Was the final answer grounded in tool results?
 Did compaction preserve the active objective?
+Did workflow integration report failed packets and coverage gaps?
 ```
 
 ## Launch gates
