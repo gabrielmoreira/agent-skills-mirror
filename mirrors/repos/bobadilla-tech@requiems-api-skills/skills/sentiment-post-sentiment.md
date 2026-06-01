@@ -13,13 +13,14 @@ description: Analyzes the sentiment of the provided text and returns a classific
 
 ## Analyze Sentiment
 
-Analyzes the sentiment of the provided text and returns a classification, confidence score, and a full breakdown across all three sentiment classes.
+Analyzes the sentiment of the provided text and returns a classification,
+confidence score, and a full breakdown across all three sentiment classes.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `text` | string | yes | body | The text to analyze. |
+| Name   | Type   | Required | Location | Description          |
+| ------ | ------ | -------- | -------- | -------------------- |
+| `text` | string | yes      | body     | The text to analyze. |
 
 ## Request Example
 
@@ -50,13 +51,13 @@ Analyzes the sentiment of the provided text and returns a classification, confid
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `sentiment` | string | The dominant sentiment class: positive, negative, or neutral |
-| `score` | number | Confidence score for the dominant sentiment, between 0.0 and 1.0 |
+| Field                | Type   | Description                                                                |
+| -------------------- | ------ | -------------------------------------------------------------------------- |
+| `sentiment`          | string | The dominant sentiment class: positive, negative, or neutral               |
+| `score`              | number | Confidence score for the dominant sentiment, between 0.0 and 1.0           |
 | `breakdown.positive` | number | Proportional score for positive sentiment (sums to 1.0 with other classes) |
 | `breakdown.negative` | number | Proportional score for negative sentiment (sums to 1.0 with other classes) |
-| `breakdown.neutral` | number | Proportional score for neutral sentiment (sums to 1.0 with other classes) |
+| `breakdown.neutral`  | number | Proportional score for neutral sentiment (sums to 1.0 with other classes)  |
 
 ## Errors
 

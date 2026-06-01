@@ -405,9 +405,22 @@ if research-wiki/ exists:
 ## Output Protocols
 
 > Follow these shared protocols for all output files:
+> - **[Output Composition Protocol](../shared-references/output-composition.md)** — see composed-mode note below
 > - **[Output Versioning Protocol](../shared-references/output-versioning.md)** — write timestamped file first, then copy to fixed name
-> - **[Output Manifest Protocol](../shared-references/output-manifest.md)** — log every output to MANIFEST.md
+> - **[Output Manifest Protocol](../shared-references/output-manifest.md)** — maintain `MANIFEST.md` only above the 15-artifact threshold (not "log every output")
 > - **[Output Language Protocol](../shared-references/output-language.md)** — respect the project's language setting
+
+> **Composed mode** — if invoked with `— composed: <canonical-report-path>` (e.g.
+> `/idea-discovery` passes `— composed: idea-stage/IDEA_REPORT.md`), that report is the
+> single canonical deliverable: fold the literature survey, novelty notes, and any
+> external-review conclusions into it as sections/appendices instead of emitting
+> `LIT_LANDSCAPE.md` / `RESEARCH_REVIEW.md` / `MANIFEST.md` alongside. Pilot scratch is
+> disposable (keep the script + one results file; delete launcher logs and redundant
+> `*_summary.json`); review traces stay in `.aris/traces/…` and the report cites the
+> path. **Default (no `— composed:` directive): standalone — write `IDEA_REPORT.md` and
+> any other documented files as normal.** Never infer composed mode from a report file
+> merely existing. Full rules:
+> [`shared-references/output-composition.md`](../shared-references/output-composition.md).
 
 ## Key Rules
 

@@ -13,16 +13,18 @@ description: Returns a single randomly selected exercise. Accepts the same filte
 
 ## Random Exercise
 
-Returns a single randomly selected exercise. Accepts the same filter parameters as the list endpoint, so you can get a random chest exercise, a random bodyweight exercise, etc.
+Returns a single randomly selected exercise. Accepts the same filter parameters
+as the list endpoint, so you can get a random chest exercise, a random
+bodyweight exercise, etc.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `body_part` | string | no | query | Restrict random selection to this body part. |
-| `equipment` | string | no | query | Restrict random selection to this equipment type. |
-| `muscle` | string | no | query | Restrict random selection to exercises targeting this muscle. |
-| `search` | string | no | query | Restrict random selection to exercises matching this search term. |
+| Name        | Type   | Required | Location | Description                                                       |
+| ----------- | ------ | -------- | -------- | ----------------------------------------------------------------- |
+| `body_part` | string | no       | query    | Restrict random selection to this body part.                      |
+| `equipment` | string | no       | query    | Restrict random selection to this equipment type.                 |
+| `muscle`    | string | no       | query    | Restrict random selection to exercises targeting this muscle.     |
+| `search`    | string | no       | query    | Restrict random selection to exercises matching this search term. |
 
 ## Response Example
 

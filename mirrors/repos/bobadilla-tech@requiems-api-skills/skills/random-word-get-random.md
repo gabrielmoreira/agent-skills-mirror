@@ -33,12 +33,12 @@ Returns a random word with its definition and part of speech
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `id` | integer | Unique identifier for the word |
-| `word` | string | The random word |
-| `definition` | string | Dictionary definition of the word |
-| `part_of_speech` | string | Grammatical classification (e.g., noun, verb, adjective, adverb) |
+| Field            | Type    | Description                                                      |
+| ---------------- | ------- | ---------------------------------------------------------------- |
+| `id`             | integer | Unique identifier for the word                                   |
+| `word`           | string  | The random word                                                  |
+| `definition`     | string  | Dictionary definition of the word                                |
+| `part_of_speech` | string  | Grammatical classification (e.g., noun, verb, adjective, adverb) |
 
 ## Errors
 

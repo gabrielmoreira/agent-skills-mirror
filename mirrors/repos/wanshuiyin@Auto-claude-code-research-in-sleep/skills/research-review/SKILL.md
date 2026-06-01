@@ -114,6 +114,16 @@ Save the full interaction and conclusions to a review document in the project ro
 
 Update project memory/notes with key review conclusions.
 
+> **Composed mode** — if invoked with `— composed: <canonical-report-path>` (an
+> orchestrator like `/idea-discovery` passes this), do **not** write a standalone review
+> `.md` in the project root. The raw conversation is already persisted to `.aris/traces/…`
+> (see *Review Tracing* below — that audit copy is kept in every mode); fold the review
+> *conclusions* (consensus, claims matrix, prioritized TODOs) into the orchestrator's
+> canonical report and cite the trace path there. **Default (no `— composed:` directive):
+> behave exactly as above — write the standalone review document.** Never infer composed
+> mode from a report file merely existing. Full rules:
+> [`shared-references/output-composition.md`](../shared-references/output-composition.md).
+
 ## Key Rules
 
 - ALWAYS use `config: {"model_reasoning_effort": "xhigh"}` for reviews

@@ -30,13 +30,30 @@ export type ElementTransform = {
   zIndex?: number;
 };
 
-export type ElementId = "caption" | "device" | "deviceSecondary";
+export type BuiltInElementId = "caption" | "device" | "deviceSecondary";
+export type TextElementId = `text:${string}`;
+export type ElementId = BuiltInElementId | TextElementId;
+
+export type SelectedElement = {
+  slideId: string;
+  elementId: ElementId;
+};
 
 // Per-locale text keyed by locale code (e.g. "en", "de"). A locale is absent
 // if the user hasn't typed anything for it; renderers fall back to en (see
 // lib/locale.ts). The set of locales a project targets lives on
 // ProjectState.locales.
 export type LocalizedText = Partial<Record<string, string>>;
+
+export type TextElement = {
+  id: string;
+  text: LocalizedText;
+  transform: ElementTransform;
+  fontSize?: number;
+  fontWeight?: number;
+  color?: string;
+  align?: "left" | "center" | "right";
+};
 
 export type Slide = {
   id: string;
@@ -47,13 +64,19 @@ export type Slide = {
   screenshotSecondary?: string; // for two-devices layout — may contain {locale}
   inverted?: boolean;         // dark background variant
   // Per-element overrides; when present, replaces layout default placement.
-  transforms?: Partial<Record<ElementId, ElementTransform>>;
+  transforms?: Partial<Record<BuiltInElementId, ElementTransform>>;
+  textElements?: TextElement[];
 };
 
-export type ThemeId = "clean-light" | "dark-bold" | "warm-editorial" | "ocean-fresh";
+export type ThemeId =
+  | "clean-light"
+  | "dark-bold"
+  | "warm-editorial"
+  | "ocean-fresh"
+  | "bloom-roast";
 
 export type Theme = {
-  id: ThemeId;
+  id: string;
   name: string;
   bg: string;          // primary background
   bgAlt: string;       // inverted background
@@ -64,8 +87,11 @@ export type Theme = {
 };
 
 export type ProjectState = {
+  schemaVersion?: number;
   appName: string;
-  themeId: ThemeId;
+  themeId: string;
+  // v1 projects render as isolated screens until the user opts into connected crops.
+  connectedCanvas: boolean;
   // Locales this project targets. Drives the toolbar dropdown and bulk export.
   // Single-locale projects ship as ["en"] and hide the locale UI.
   locales: string[];

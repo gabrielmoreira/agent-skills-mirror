@@ -13,13 +13,14 @@ description: Checks text for profanity, returning a censored version and the lis
 
 ## Check Profanity
 
-Checks text for profanity, returning a censored version and the list of flagged words.
+Checks text for profanity, returning a censored version and the list of flagged
+words.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `text` | string | yes | body | The text to check for profanity. |
+| Name   | Type   | Required | Location | Description                      |
+| ------ | ------ | -------- | -------- | -------------------------------- |
+| `text` | string | yes      | body     | The text to check for profanity. |
 
 ## Request Example
 
@@ -46,11 +47,11 @@ Checks text for profanity, returning a censored version and the list of flagged 
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `has_profanity` | boolean | Whether any profanity was detected in the text |
-| `censored` | string | The input text with profane words replaced by asterisks |
-| `flagged_words` | array of strings | Deduplicated list of profane words found (lowercase) |
+| Field           | Type             | Description                                             |
+| --------------- | ---------------- | ------------------------------------------------------- |
+| `has_profanity` | boolean          | Whether any profanity was detected in the text          |
+| `censored`      | string           | The input text with profane words replaced by asterisks |
+| `flagged_words` | array of strings | Deduplicated list of profane words found (lowercase)    |
 
 ## Errors
 

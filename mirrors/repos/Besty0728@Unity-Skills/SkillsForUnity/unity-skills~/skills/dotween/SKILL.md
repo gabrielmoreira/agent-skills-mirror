@@ -79,7 +79,7 @@ Add one DOTweenAnimation to a GameObject and configure all core fields.
 
 ### `dotween_pro_batch_add_animation`
 Add the same animation to multiple GameObjects.
-**Parameters:** `targetsJson` (JSON string array) + all params of `dotween_pro_add_animation`.
+**Parameters:** `targetsJson` (JSON string array) + all params of dotween_pro_add_animation.
 
 ### `dotween_pro_stagger_animations`
 Batch-add with incrementing delay — UI cascade entrance pattern.
@@ -119,3 +119,8 @@ Remove one DOTweenAnimation component by index.
 | `Color / CameraBackgroundColor` | `endValueColor` (`"#FF8800"` or `"1,0.5,0,1"`) |
 | `Text` | `endValueString` |
 | `UIRect` | `endValueRect` (`"x,y,width,height"`) |
+
+---
+## Exact Signatures
+
+Exact names, parameters, defaults, and returns are defined by `GET /skills/schema` or `unity_skills.get_skill_schema()`, not by this file.

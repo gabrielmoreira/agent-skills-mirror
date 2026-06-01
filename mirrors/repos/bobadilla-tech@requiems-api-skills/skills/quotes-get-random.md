@@ -32,11 +32,11 @@ Returns a random inspirational quote with author attribution
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `id` | integer | Unique identifier for the quote |
-| `text` | string | The quote text |
-| `author` | string | Name of the person who said or wrote the quote |
+| Field    | Type    | Description                                    |
+| -------- | ------- | ---------------------------------------------- |
+| `id`     | integer | Unique identifier for the quote                |
+| `text`   | string  | The quote text                                 |
+| `author` | string  | Name of the person who said or wrote the quote |
 
 ## Errors
 

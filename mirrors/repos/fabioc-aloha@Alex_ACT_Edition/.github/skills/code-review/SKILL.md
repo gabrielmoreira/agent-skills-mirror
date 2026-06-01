@@ -1,8 +1,10 @@
 ---
 name: "code-review"
 description: "Systematic code review for correctness, security, and growth — not just style enforcement"
-lastReviewed: 2026-05-05
+lastReviewed: 2026-05-31
 ---
+
+<!-- intentional divergence from Supervisor: Edition omits the two Supervisor-specific checklist items ("every export called by production", "filter-style guards have test data") that reference Supervisor-only mutation-testing skill. Heirs don't ship mutation-testing. Audited 2026-05-31. -->
 
 # Code Review Skill
 

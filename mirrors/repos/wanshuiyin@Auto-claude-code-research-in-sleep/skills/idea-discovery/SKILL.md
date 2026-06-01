@@ -117,11 +117,13 @@ Invoke `/research-lit` to map the research landscape. Idea discovery is exactly 
 ```
 # If $ARGUMENTS already contains "— sources:", pass through unchanged
 # (the user is in control of source selection):
-/research-lit "$ARGUMENTS"
+/research-lit "$ARGUMENTS" — composed: idea-stage/IDEA_REPORT.md
 
 # Otherwise (the common case), include gemini explicitly for broader discovery:
-/research-lit "$ARGUMENTS" — sources: all, gemini
+/research-lit "$ARGUMENTS" — sources: all, gemini — composed: idea-stage/IDEA_REPORT.md
 ```
+
+`— composed: idea-stage/IDEA_REPORT.md` puts `/research-lit` in composed mode (see *Output hygiene* above): it returns the landscape for folding into the report instead of writing a standalone landscape file. The report doesn't exist yet at Phase 1 — the directive names the *forthcoming* canonical doc, and `/idea-creator` creates it in Phase 2.
 
 If `gemini-cli` is not installed, `/research-lit` skips the Gemini source gracefully with a warning — no break to the pipeline. Users who want to force-disable Gemini in idea-discovery can pass `/idea-discovery "topic" — sources: all` explicitly (which becomes the literal source list, no auto-injection).
 
@@ -150,8 +152,10 @@ Does this match your understanding? Should I adjust the scope before generating 
 Invoke `/idea-creator` with the landscape context (and `idea-stage/REF_PAPER_SUMMARY.md` if available):
 
 ```
-/idea-creator "$ARGUMENTS"
+/idea-creator "$ARGUMENTS" — composed: idea-stage/IDEA_REPORT.md
 ```
+
+`/idea-creator` owns `idea-stage/IDEA_REPORT.md` as the canonical deliverable; the `— composed:` directive tells it to fold the survey/novelty findings in rather than emitting `LIT_LANDSCAPE.md` / `RESEARCH_REVIEW.md` / `MANIFEST.md` alongside.
 
 **What this does:**
 - If `idea-stage/REF_PAPER_SUMMARY.md` exists, include it as context — ideas should build on, improve, or extend the reference paper
@@ -201,8 +205,10 @@ For each top idea (positive pilot signal), run a thorough novelty check:
 For the surviving top idea(s), get brutal feedback:
 
 ```
-/research-review "[top idea with hypothesis + pilot results]"
+/research-review "[top idea with hypothesis + pilot results]" — composed: idea-stage/IDEA_REPORT.md
 ```
+
+In composed mode `/research-review` folds its conclusions into `idea-stage/IDEA_REPORT.md` and cites the `.aris/traces/…` path instead of writing a standalone review `.md` in the project root.
 
 **What this does:**
 - GPT-5.5 xhigh acts as a senior reviewer (NeurIPS/ICML level)
@@ -311,9 +317,39 @@ This file is intentionally small (~30 lines) so downstream skills and session re
 ## Output Protocols
 
 > Follow these shared protocols for all output files:
+> - **[Output Composition Protocol](../shared-references/output-composition.md)** — ONE canonical deliverable per pipeline; fold sub-skill findings in, don't scatter overlapping `.md` files
 > - **[Output Versioning Protocol](../shared-references/output-versioning.md)** — write timestamped file first, then copy to fixed name
-> - **[Output Manifest Protocol](../shared-references/output-manifest.md)** — log every output to MANIFEST.md
+> - **[Output Manifest Protocol](../shared-references/output-manifest.md)** — maintain `MANIFEST.md` only above the 15-artifact threshold (not "log every output")
 > - **[Output Language Protocol](../shared-references/output-language.md)** — respect the project's language setting
+
+### Output hygiene — ONE canonical doc, no duplicate MDs (REQUIRED)
+
+This pipeline runs its sub-skills in **composed mode** (see
+[`output-composition.md`](../shared-references/output-composition.md)): it owns a single
+canonical deliverable and folds every sub-skill's findings into it rather than letting
+each emit its own overlapping file. Concretely, for this workflow:
+
+1. **`idea-stage/IDEA_REPORT.md` is the single canonical deliverable.** Sub-skills'
+   intermediate findings (literature landscape, novelty notes, external review) are
+   folded into it as sections/appendices — they do NOT become standalone files just
+   because a sub-skill could emit one. If a sub-skill writes a scratch file, inline its
+   unique content into the report and delete the scratch when the phase closes.
+2. **Pass `— composed: idea-stage/IDEA_REPORT.md` to every sub-skill** (`/research-lit`,
+   `/idea-creator`, `/research-review`) so they fold instead of scatter. This is the
+   explicit signal; without it a sub-skill stays standalone by design.
+3. **Refined-method outputs stay in `refine-logs/`** (`FINAL_PROPOSAL.md` /
+   `EXPERIMENT_PLAN.md` / `EXPERIMENT_TRACKER.md`). Do NOT also restate them as separate
+   files under `idea-stage/`; the report **links** to them, it does not copy them.
+4. **No `MANIFEST.md`** for a handful of files — only above the 15-artifact threshold in
+   [`output-manifest.md`](../shared-references/output-manifest.md).
+5. **Pilot scratch is disposable:** keep the pilot script (reusable) + one results file
+   (`pilot_results.jsonl` or a small summary). Delete launcher logs, smoke files, and
+   redundant `*_summary.json` once the numbers are in the report.
+6. **Cross-model review traces belong in `.aris/traces/…`** (the audit trail); do not
+   ALSO keep a human-facing copy under `idea-stage/` — cite the trace path from the report.
+7. **Before finishing,** the `idea-stage/` top level should be roughly: `IDEA_REPORT.md`
+   (+ `.html`), the pilot script + results, and the `refine-logs/` dir. Nothing else
+   unless it carries content not in the report.
 
 ## Render HTML view (auto, when `RENDER_HTML = true`)
 
@@ -337,7 +373,7 @@ Skip this step if `RENDER_HTML = false`.
 - **Checkpoint between phases.** Briefly summarize what was found before moving on.
 - **Kill ideas early.** It's better to kill 10 bad ideas in Phase 3 than to implement one and fail.
 - **Empirical signal > theoretical appeal.** An idea with a positive pilot outranks a "sounds great" idea without evidence.
-- **Document everything.** Dead ends are just as valuable as successes for future reference.
+- **Document everything — inside the one report, not in scattered files.** Dead ends and eliminated ideas are valuable, so record them as sections of `idea-stage/IDEA_REPORT.md` (see *Output hygiene* above). Do not spawn a separate `.md` per phase.
 - **Be honest with the reviewer.** Include negative results and failed pilots in the review prompt.
 - **Feishu notifications are optional.** If `~/.claude/feishu.json` exists, send `checkpoint` at each phase transition and `pipeline_done` at final report. If absent/off, skip silently.
 

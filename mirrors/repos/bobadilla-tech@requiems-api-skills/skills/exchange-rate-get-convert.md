@@ -13,15 +13,16 @@ description: Converts an amount from one currency to another and returns the rat
 
 ## Convert Currency
 
-Converts an amount from one currency to another and returns the rate alongside the converted value.
+Converts an amount from one currency to another and returns the rate alongside
+the converted value.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `from` | string | yes | query | ISO 4217 source currency code (3 letters, e.g. USD) |
-| `to` | string | yes | query | ISO 4217 target currency code (3 letters, e.g. EUR) |
-| `amount` | number | yes | query | Amount to convert. Must be greater than 0. |
+| Name     | Type   | Required | Location | Description                                         |
+| -------- | ------ | -------- | -------- | --------------------------------------------------- |
+| `from`   | string | yes      | query    | ISO 4217 source currency code (3 letters, e.g. USD) |
+| `to`     | string | yes      | query    | ISO 4217 target currency code (3 letters, e.g. EUR) |
+| `amount` | number | yes      | query    | Amount to convert. Must be greater than 0.          |
 
 ## Response Example
 
@@ -43,17 +44,20 @@ Converts an amount from one currency to another and returns the rate alongside t
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `from` | string | Source currency code (uppercased) |
-| `to` | string | Target currency code (uppercased) |
-| `rate` | number | Exchange rate used for the conversion |
-| `amount` | number | The original amount passed in the request |
+| Field       | Type   | Description                                          |
+| ----------- | ------ | ---------------------------------------------------- |
+| `from`      | string | Source currency code (uppercased)                    |
+| `to`        | string | Target currency code (uppercased)                    |
+| `rate`      | number | Exchange rate used for the conversion                |
+| `amount`    | number | The original amount passed in the request            |
 | `converted` | number | Result of amount × rate, rounded to 2 decimal places |
-| `timestamp` | string | Date the rate was published by the ECB (ISO 8601) |
+| `timestamp` | string | Date the rate was published by the ECB (ISO 8601)    |
 
 ## Errors
 
-- `400` **bad_request** — A required parameter is missing, the currency code is not 3 alphabetic characters, or the amount is 0 or negative.
-- `422` **invalid_currency** — One or both currency codes are not recognised by the upstream data source.
-- `503` **upstream_error** — The exchange rate data source is temporarily unavailable.
+- `400` **bad_request** — A required parameter is missing, the currency code is
+  not 3 alphabetic characters, or the amount is 0 or negative.
+- `422` **invalid_currency** — One or both currency codes are not recognised by
+  the upstream data source.
+- `503` **upstream_error** — The exchange rate data source is temporarily
+  unavailable.

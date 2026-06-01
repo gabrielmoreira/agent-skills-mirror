@@ -21,15 +21,22 @@ async function fetchAsDataUrl(path: string): Promise<string | null> {
   }
 }
 
-export async function preloadImages(paths: string[]): Promise<void> {
+export async function preloadImages(
+  paths: string[],
+  options: { retryFailed?: boolean } = {},
+): Promise<void> {
   await Promise.all(
     paths
       .filter(Boolean)
-      .filter((p) => !cache.has(p) && !failed.has(p))
+      .filter((p) => !cache.has(p) && (options.retryFailed || !failed.has(p)))
       .map(async (p) => {
         const data = await fetchAsDataUrl(p);
-        if (data) cache.set(p, data);
-        else failed.add(p);
+        if (data) {
+          cache.set(p, data);
+          failed.delete(p);
+        } else {
+          failed.add(p);
+        }
       }),
   );
 }

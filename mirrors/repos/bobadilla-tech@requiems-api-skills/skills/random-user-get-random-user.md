@@ -40,17 +40,17 @@ Returns a randomly generated fake user profile.
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `name` | string | Full name of the generated user |
-| `email` | string | Email address of the generated user |
-| `phone` | string | Phone number of the generated user |
-| `address.street` | string | Street address |
-| `address.city` | string | City name |
-| `address.state` | string | State or region |
-| `address.zip` | string | Postal / ZIP code |
-| `address.country` | string | Country name |
-| `avatar` | string | URL to a unique identicon avatar for the generated user (DiceBear) |
+| Field             | Type   | Description                                                        |
+| ----------------- | ------ | ------------------------------------------------------------------ |
+| `name`            | string | Full name of the generated user                                    |
+| `email`           | string | Email address of the generated user                                |
+| `phone`           | string | Phone number of the generated user                                 |
+| `address.street`  | string | Street address                                                     |
+| `address.city`    | string | City name                                                          |
+| `address.state`   | string | State or region                                                    |
+| `address.zip`     | string | Postal / ZIP code                                                  |
+| `address.country` | string | Country name                                                       |
+| `avatar`          | string | URL to a unique identicon avatar for the generated user (DiceBear) |
 
 ## Errors
 

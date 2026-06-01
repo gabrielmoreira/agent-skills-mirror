@@ -1,6 +1,6 @@
 ---
 description: "Search the Plugin Mall trust-scored catalog by query; ranks Mall-curated entries (🏆) first, surfaces third-party alternatives with their trust signals"
-lastReviewed: 2026-05-29
+lastReviewed: 2026-05-31
 ---
 
 # /mall-search
@@ -13,10 +13,12 @@ Per [PLAN-mall-automation v3 / ADR-008](https://github.com/fabioc-aloha/Alex_ACT
 
 1. **Get the query** from the user: a topic, technology, problem, capability, or plugin name.
 
-2. **Fetch `catalog/index.json` from the Mall** (try in order):
-   - **Local clone (fast)**: read `C:/Development/Alex_ACT_Plugin_Mall/catalog/index.json` if it exists
+2. **Fetch `catalog/index.json` from the Mall.** The Mall is a sibling repo (canonical clone name `Alex_Skill_Mall`). Try these paths in order, first hit wins:
+   - **Sibling clone**: `../Alex_Skill_Mall/catalog/index.json`
+   - **User-home clone**: `~/Alex_Skill_Mall/catalog/index.json` (resolves the `~` for the current OS)
+   - **Windows default**: `C:/Development/Alex_Skill_Mall/catalog/index.json`
    - **GitHub raw (fallback)**: `https://raw.githubusercontent.com/fabioc-aloha/Alex_Skill_Mall/main/catalog/index.json` (~1.4 MB; cache for the session)
-   - If neither works: link the user to <https://github.com/fabioc-aloha/Alex_Skill_Mall/blob/main/README.md> and stop
+   - If none work: link the user to <https://github.com/fabioc-aloha/Alex_Skill_Mall/blob/main/README.md>, suggest `git clone https://github.com/fabioc-aloha/Alex_Skill_Mall.git ../Alex_Skill_Mall`, and stop.
 
 3. **Match plugins** against the query. Each entry in `index.json` has: `name`, `store`, `shape`, `trust_score`, `version`, `description_short`, `source_url`, `provenance`, `adapted_from`.
 

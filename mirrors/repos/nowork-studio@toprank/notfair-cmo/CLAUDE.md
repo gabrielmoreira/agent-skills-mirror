@@ -28,9 +28,9 @@ Setup file `vitest.setup.ts` imports `@testing-library/jest-dom/vitest` so jest-
 
 ### Mocking external systems
 
-- `openclaw` CLI subprocess: mock `@/server/openclaw/cli` `openclaw` function. Return whatever JSON shape the production CLI would return.
-- MCP HTTP: mock `fetch` globally. The MCP responds with JSON-RPC envelope `{jsonrpc, id, result | error}`. See `src/server/mcp/rpc.ts` (when extracted) for the canonical request shape.
-- SQLite: use the real better-sqlite3 against an in-memory DB or a tmpdir DB — better-sqlite3 is synchronous + fast enough that mocking adds friction without value.
+- **Harness adapters**: under `src/server/adapters/`. The `claude-code-local` and `codex-local` execute paths spawn a real subprocess; in tests, mock the parser modules (`parse.ts`) for unit coverage, or stub `child_process.spawn` in integration tests.
+- **MCP HTTP**: mock `fetch` globally. The MCP responds with JSON-RPC envelope `{jsonrpc, id, result | error}`.
+- **SQLite**: use the real better-sqlite3 against an in-memory DB or a tmpdir DB — better-sqlite3 is synchronous + fast enough that mocking adds friction without value.
 
 ### Prompt/LLM changes (eval suites required)
 
@@ -45,16 +45,18 @@ Light eval harness lives at `tests/evals/`. Pattern: golden scenario JSON + expe
 ## Project structure conventions
 
 - **Database**: SQLite via `better-sqlite3` at `~/.notfair-cmo/db.sqlite` (overridable via `NOTFAIR_CMO_DATA_DIR`). Migrations are forward-only in `src/server/db/migrations.ts` (mirrored in `src/server/db/migrations/`).
-- **Agent state**: lives in OpenClaw at `~/.openclaw/`. We do NOT shadow-store agent state; OpenClaw is the source of truth.
-- **MCP tokens**: stored project-scoped via `openclaw mcp set <project-slug>-<catalog-key>`. Never stored in our own DB.
-- **Cron schedules**: stored in OpenClaw via `openclaw cron add` with naming convention `<project-slug>/<agent-slug>/<cron-slug>`. Frontend parses the prefix to organize the cron tab.
-- **Project memory**: per-agent OpenClaw memory (REM). Tag conventions: `google-ads-baseline:<date>` for audit results, etc.
+- **Agent state**: agent workspaces live at `~/.notfair-cmo/agents/<agent-id>/`. notfair-cmo owns the workspace; the chosen harness adapter writes whatever files it expects (CLAUDE.md for Claude Code, AGENTS.md for Codex, plus the shared IDENTITY.md / SKILL.md / PROJECT.md notfair-cmo writes).
+- **Sessions / transcripts**: stored in SQLite (`sessions`, `transcript_events`). Replaces the OpenClaw JSONL transcript files. The chat route persists every adapter event there; the UI replays them on attach.
+- **MCP tokens**: stored project-scoped in the `mcp_tokens` SQLite table. Adapters expose `registerMcp` / `unregisterMcp` to wire the chosen harness's MCP config to point at the right tokens.
+- **Cron schedules**: stored in the `scheduled_jobs` SQLite table. A node-cron-style tick loop in `src/server/scheduler/tick.ts` polls due jobs every 30s and dispatches them through the project's adapter.
+- **Project memory**: per-agent workspace files (e.g. files the agent writes in its workspace dir). No proprietary REM/memory layer yet; if an agent needs durable memory across sessions it writes to its workspace.
 
 ## Architectural tenets
 
-- **Don't rebuild the wheels.** Before proposing any new abstraction, identify whether OpenClaw, AI SDK, the existing skill ecosystem, or another off-the-shelf tool already solves the sub-problem. Prefer thin attribution/glue layers over custom infrastructure.
+- **Harness-agnostic.** notfair-cmo runs on top of any local AI coding agent that conforms to the `HarnessAdapter` contract under `src/server/adapters/`. Today: Claude Code (`claude-code-local`) and Codex (`codex-local`). Recommended path mirrors paperclip's adapter-registry pattern.
+- **notfair-cmo owns the runtime services.** Cron scheduling, MCP token storage, agent provisioning, session/transcript persistence — all in SQLite + Node. Adapters only handle: (1) spawning the harness to stream a turn, (2) writing harness-specific workspace config, (3) registering MCP servers for the harness to find.
 - **Single-user local CLI.** V1 is a local Next.js process launched via `notfair-cmo` bin. No multi-tenant code paths, no auth, no multi-process state coordination.
-- **OpenClaw is the agent runtime.** Our Next.js is a portal + MCP server. Agents themselves run in OpenClaw.
+- **Don't rebuild the wheels.** Before proposing any new abstraction, identify whether AI SDK, the existing skill ecosystem, or another off-the-shelf tool already solves the sub-problem. Prefer thin attribution/glue layers over custom infrastructure.
 
 ## Commit style
 

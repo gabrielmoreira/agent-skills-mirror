@@ -1,8 +1,10 @@
 ---
 name: skill-review
 description: "Audits a candidate skill (.github/skills/<name>/SKILL.md) against five gates (spec compliance, content quality, scope fit, safety, currency & coherence). Use when reviewing a new skill draft before commit, evaluating a Mall unit or store skill for adoption, or re-auditing existing skills on a periodic cadence. For instructions, prompts, agents — use the matching per-type review skill."
-lastReviewed: 2026-05-26
+lastReviewed: 2026-05-31
 ---
+
+<!-- intentional divergence from Supervisor: Edition strips Supervisor-only refs (ADR-007, `scripts/brain-qa.cjs` per-script citations, instruction-specific Gate 1 rows since heirs review skills only, and retired-entity examples Supervisor uses in Gate 5 illustrations). Same five gates, same criteria. Audited 2026-05-31. -->
 
 # Skill Review
 

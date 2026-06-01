@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 0 followed patterns, 46 file(s) materialized.
+Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 0 followed patterns, 47 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 46 |
+| Files         | 47 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -91,20 +91,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`brewtools/skills/think-short/SKILL.md`](brewtools/skills/think-short/SKILL.md) |
 | 31 | ✓ | [`brewui/skills/glm-design-to-code/SKILL.md`](brewui/skills/glm-design-to-code/SKILL.md) |
 | 32 | ✓ | [`brewui/skills/image-gen/SKILL.md`](brewui/skills/image-gen/SKILL.md) |
-| 33 | ✓ | [`skills/brewpage-publish/LICENSE`](skills/brewpage-publish/LICENSE) |
-| 34 | ✓ | [`skills/brewpage-publish/README.md`](skills/brewpage-publish/README.md) |
-| 35 | ✓ | [`skills/brewpage-publish/SKILL.md`](skills/brewpage-publish/SKILL.md) |
-| 36 | ✓ | [`skills/glm-design-to-code-trial/LICENSE`](skills/glm-design-to-code-trial/LICENSE) |
-| 37 | ✓ | [`skills/glm-design-to-code-trial/README.md`](skills/glm-design-to-code-trial/README.md) |
-| 38 | ✓ | [`skills/glm-design-to-code-trial/SKILL.md`](skills/glm-design-to-code-trial/SKILL.md) |
-| 39 | ✓ | [`skills/memory-optimize/LICENSE`](skills/memory-optimize/LICENSE) |
-| 40 | ✓ | [`skills/memory-optimize/README.md`](skills/memory-optimize/README.md) |
-| 41 | ✓ | [`skills/memory-optimize/references/memory-guide.md`](skills/memory-optimize/references/memory-guide.md) |
-| 42 | ✓ | [`skills/memory-optimize/SKILL.md`](skills/memory-optimize/SKILL.md) |
-| 43 | ✓ | [`skills/text-optimizer/LICENSE`](skills/text-optimizer/LICENSE) |
-| 44 | ✓ | [`skills/text-optimizer/README.md`](skills/text-optimizer/README.md) |
-| 45 | ✓ | [`skills/text-optimizer/references/rules-review.md`](skills/text-optimizer/references/rules-review.md) |
-| 46 | ✓ | [`skills/text-optimizer/SKILL.md`](skills/text-optimizer/SKILL.md) |
+| 33 | ✓ | [`openclaw/brewpage-publish/SKILL.md`](openclaw/brewpage-publish/SKILL.md) |
+| 34 | ✓ | [`skills/brewpage-publish/LICENSE`](skills/brewpage-publish/LICENSE) |
+| 35 | ✓ | [`skills/brewpage-publish/README.md`](skills/brewpage-publish/README.md) |
+| 36 | ✓ | [`skills/brewpage-publish/SKILL.md`](skills/brewpage-publish/SKILL.md) |
+| 37 | ✓ | [`skills/glm-design-to-code-trial/LICENSE`](skills/glm-design-to-code-trial/LICENSE) |
+| 38 | ✓ | [`skills/glm-design-to-code-trial/README.md`](skills/glm-design-to-code-trial/README.md) |
+| 39 | ✓ | [`skills/glm-design-to-code-trial/SKILL.md`](skills/glm-design-to-code-trial/SKILL.md) |
+| 40 | ✓ | [`skills/memory-optimize/LICENSE`](skills/memory-optimize/LICENSE) |
+| 41 | ✓ | [`skills/memory-optimize/README.md`](skills/memory-optimize/README.md) |
+| 42 | ✓ | [`skills/memory-optimize/references/memory-guide.md`](skills/memory-optimize/references/memory-guide.md) |
+| 43 | ✓ | [`skills/memory-optimize/SKILL.md`](skills/memory-optimize/SKILL.md) |
+| 44 | ✓ | [`skills/text-optimizer/LICENSE`](skills/text-optimizer/LICENSE) |
+| 45 | ✓ | [`skills/text-optimizer/README.md`](skills/text-optimizer/README.md) |
+| 46 | ✓ | [`skills/text-optimizer/references/rules-review.md`](skills/text-optimizer/references/rules-review.md) |
+| 47 | ✓ | [`skills/text-optimizer/SKILL.md`](skills/text-optimizer/SKILL.md) |
 
 ---
 

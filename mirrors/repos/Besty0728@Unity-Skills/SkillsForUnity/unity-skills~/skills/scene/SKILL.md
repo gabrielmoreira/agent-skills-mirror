@@ -9,7 +9,7 @@ Control Unity scenes - the containers that hold all your GameObjects.
 
 ## Operating Mode
 
-- **Approval**（默认）：本模块 Mixed —— `scene_get_info` / `scene_get_hierarchy` / `scene_get_loaded` / `scene_find_objects` 标 `SkillMode.SemiAuto`，可直接执行；`scene_screenshot` / `scene_unload` / `scene_set_active` 未设 Mode 字段（默认 FullAuto），Approval 模式下需 grant。
+- **Approval**：本模块 Mixed —— `scene_get_info` / `scene_get_hierarchy` / `scene_get_loaded` / `scene_find_objects` 标 `SkillMode.SemiAuto`，可直接执行；`scene_screenshot` / `scene_unload` / `scene_set_active` 未设 Mode 字段（默认 FullAuto），Approval 模式下需 grant。
 - **Auto / Bypass**：FullAuto 直接执行。
 - **含 NeverInSemi 高危 skill**：`scene_create` / `scene_load` / `scene_save`（标 `RiskLevel="high"`，因为切换/覆盖整个场景文件影响范围极大）。这些在 Approval/Auto 下返 `MODE_FORBIDDEN`，仅 Bypass 或 Allowlist 命中可调。
 

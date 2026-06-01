@@ -1,9 +1,9 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { STORAGE_KEY } from "./constants";
+import { PROJECT_SCHEMA_VERSION, STORAGE_KEY } from "./constants";
 import { DEFAULT_PROJECT } from "./defaults";
 import { coerceLocalized } from "./locale";
-import type { Device, ProjectState, Slide } from "./types";
+import type { Device, ElementTransform, ProjectState, Slide, TextElement } from "./types";
 
 const HISTORY_LIMIT = 50;
 // Coalesce rapid edits (typing, slider drags) into a single undo step.
@@ -11,27 +11,94 @@ const COALESCE_MS = 500;
 // Debounce file/localStorage writes — frequent enough to feel instant, infrequent enough not to thrash disk.
 const SAVE_DEBOUNCE_MS = 600;
 
-// Migrate pre-locale string label/headline into { en: value }.
+function cleanTransform(value: unknown): ElementTransform | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const raw = value as Partial<ElementTransform>;
+  const required = [raw.x, raw.y, raw.width, raw.height];
+  if (!required.every((n) => typeof n === "number" && Number.isFinite(n))) return undefined;
+  return {
+    x: raw.x!,
+    y: raw.y!,
+    width: Math.max(1, raw.width!),
+    height: Math.max(1, raw.height!),
+    ...(typeof raw.rotation === "number" && Number.isFinite(raw.rotation)
+      ? { rotation: raw.rotation }
+      : {}),
+    ...(typeof raw.zIndex === "number" && Number.isFinite(raw.zIndex)
+      ? { zIndex: raw.zIndex }
+      : {}),
+  };
+}
+
+function cleanTextElement(value: unknown): TextElement | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const raw = value as Partial<TextElement>;
+  if (typeof raw.id !== "string" || !raw.id.trim()) return undefined;
+  const transform = cleanTransform(raw.transform);
+  if (!transform) return undefined;
+  return {
+    id: raw.id,
+    text: coerceLocalized(raw.text as unknown),
+    transform,
+    ...(typeof raw.fontSize === "number" && Number.isFinite(raw.fontSize)
+      ? { fontSize: raw.fontSize }
+      : {}),
+    ...(typeof raw.fontWeight === "number" && Number.isFinite(raw.fontWeight)
+      ? { fontWeight: raw.fontWeight }
+      : {}),
+    ...(typeof raw.color === "string" ? { color: raw.color } : {}),
+    ...(raw.align === "left" || raw.align === "center" || raw.align === "right"
+      ? { align: raw.align }
+      : {}),
+  };
+}
+
+// Migrate older projects into the current schema while keeping legacy decks
+// visually stable until they explicitly opt into connected canvas.
 function migrateSlide(slide: Slide): Slide {
+  const transforms = slide.transforms
+    ? Object.fromEntries(
+        Object.entries(slide.transforms)
+          .map(([id, transform]) => [id, cleanTransform(transform)])
+          .filter((entry): entry is [string, ElementTransform] => !!entry[1]),
+      )
+    : undefined;
+  const textElements = Array.isArray(slide.textElements)
+    ? slide.textElements.map(cleanTextElement).filter((t): t is TextElement => !!t)
+    : undefined;
+
   return {
     ...slide,
     label: coerceLocalized(slide.label as unknown),
     headline: coerceLocalized(slide.headline as unknown),
+    ...(transforms && Object.keys(transforms).length > 0 ? { transforms } : { transforms: undefined }),
+    ...(textElements && textElements.length > 0 ? { textElements } : { textElements: undefined }),
   };
 }
 
 function mergeWithDefaults(parsed: Partial<ProjectState>): ProjectState {
+  const connectedCanvas =
+    typeof parsed.connectedCanvas === "boolean"
+      ? parsed.connectedCanvas
+      : false;
+  const themeId =
+    typeof parsed.themeId === "string" && parsed.themeId.trim()
+      ? parsed.themeId
+      : DEFAULT_PROJECT.themeId;
   const slidesByDevice = parsed.slidesByDevice
     ? Object.fromEntries(
         Object.entries(parsed.slidesByDevice).map(([device, slides]) => [
           device,
-          (slides || []).map(migrateSlide),
+          Array.isArray(slides) ? slides.map((slide) => migrateSlide(slide as Slide)) : [],
         ]),
       )
     : {};
   const merged: ProjectState = {
     ...DEFAULT_PROJECT,
     ...parsed,
+    schemaVersion: PROJECT_SCHEMA_VERSION,
+    themeId,
+    connectedCanvas,
     slidesByDevice: {
       ...DEFAULT_PROJECT.slidesByDevice,
       ...slidesByDevice,
@@ -59,16 +126,19 @@ function loadFromLocalStorage(): ProjectState | null {
   }
 }
 
-async function loadFromFile(): Promise<ProjectState | null> {
-  if (typeof window === "undefined") return null;
+async function loadFromFile(): Promise<
+  { ok: true; state: ProjectState | null } | { ok: false; error: string }
+> {
+  if (typeof window === "undefined") return { ok: false, error: "Window is not available" };
   try {
     const resp = await fetch("/api/project", { cache: "no-store" });
-    if (!resp.ok) return null;
+    if (!resp.ok) return { ok: false, error: `HTTP ${resp.status}` };
     const json = (await resp.json()) as { ok: boolean; state: Partial<ProjectState> | null };
-    if (!json.ok || !json.state) return null;
-    return mergeWithDefaults(json.state);
+    if (!json.ok) return { ok: false, error: "Project response was not ok" };
+    if (!json.state) return { ok: true, state: null };
+    return { ok: true, state: mergeWithDefaults(json.state) };
   } catch {
-    return null;
+    return { ok: false, error: "Project file could not be loaded" };
   }
 }
 
@@ -111,6 +181,7 @@ function applyUpdater(updater: Updater, prev: ProjectState): ProjectState {
 export function useProject() {
   const [state, _setState] = useState<ProjectState>(DEFAULT_PROJECT);
   const [hydrated, setHydrated] = useState(false);
+  const [fileReady, setFileReady] = useState(false);
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -131,8 +202,16 @@ export function useProject() {
     void (async () => {
       const fromFile = await loadFromFile();
       if (cancelled) return;
-      if (fromFile) {
-        _setState(fromFile);
+      if (fromFile.ok) {
+        if (fromFile.state) {
+          _setState(fromFile.state);
+        } else {
+          _setState(DEFAULT_PROJECT);
+        }
+        setFileReady(true);
+      } else {
+        setFileReady(false);
+        setSaveError(fromFile.error);
       }
       pastRef.current = [];
       futureRef.current = [];
@@ -147,7 +226,7 @@ export function useProject() {
 
   // Debounced autosave to BOTH localStorage (fast, offline) and file (git-trackable).
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || !fileReady) return;
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => {
       const localResult = saveToLocalStorage(state);
@@ -170,7 +249,7 @@ export function useProject() {
     return () => {
       if (timer.current) clearTimeout(timer.current);
     };
-  }, [state, hydrated]);
+  }, [state, hydrated, fileReady]);
 
   const setState = useCallback((updater: Updater) => {
     _setState((prev) => {

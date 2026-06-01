@@ -9,7 +9,7 @@ Bake / clear NavMesh data, calculate paths, sample positions, and configure NavM
 
 ## Operating Mode
 
-- **Approval**（默认）：查询类 skill（`navmesh_calculate_path` / `navmesh_sample_position` / `navmesh_get_settings`，源码标 `SkillMode.SemiAuto`）直接执行；变更类（`navmesh_bake` / `navmesh_add_agent` / `navmesh_set_agent` / `navmesh_add_obstacle` / `navmesh_set_obstacle` / `navmesh_set_area_cost`，标 `SkillMode.FullAuto`）需用户 grant，grant 后服务端一步执行返结果。
+- **Approval**：查询类 skill（`navmesh_calculate_path` / `navmesh_sample_position` / `navmesh_get_settings`，源码标 `SkillMode.SemiAuto`）直接执行；变更类（`navmesh_bake` / `navmesh_add_agent` / `navmesh_set_agent` / `navmesh_add_obstacle` / `navmesh_set_obstacle` / `navmesh_set_area_cost`，标 `SkillMode.FullAuto`）需用户 grant，grant 后服务端一步执行返结果。
 - **Auto / Bypass**：所有未被禁列表拦截的 skill 直接执行。
 - 本模块**含 Delete 类 skill**：`navmesh_clear` 标记为 `SkillOperation.Delete`，会被 `IsForbiddenInSemi` 静态拦截 —— 仅 **Bypass** 模式或将其加入 **Allowlist** 才能调用。
 - `navmesh_bake` 同步阻塞主线程；大场景可能很慢，调用前提醒用户。

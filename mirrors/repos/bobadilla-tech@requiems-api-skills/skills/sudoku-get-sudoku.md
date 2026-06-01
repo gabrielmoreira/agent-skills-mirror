@@ -13,13 +13,14 @@ description: Returns a randomly generated Sudoku puzzle and its solution. Diffic
 
 ## Get Sudoku Puzzle
 
-Returns a randomly generated Sudoku puzzle and its solution. Difficulty defaults to medium when not specified.
+Returns a randomly generated Sudoku puzzle and its solution. Difficulty defaults
+to medium when not specified.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `difficulty` | string | no | query | Puzzle difficulty level. One of: easy, medium, hard. Defaults to medium. |
+| Name         | Type   | Required | Location | Description                                                              |
+| ------------ | ------ | -------- | -------- | ------------------------------------------------------------------------ |
+| `difficulty` | string | no       | query    | Puzzle difficulty level. One of: easy, medium, hard. Defaults to medium. |
 
 ## Response Example
 
@@ -58,14 +59,15 @@ Returns a randomly generated Sudoku puzzle and its solution. Difficulty defaults
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `difficulty` | string | The difficulty level of the returned puzzle (easy, medium, or hard) |
-| `puzzle` | array[array[integer]] | 9×9 grid representing the puzzle — 0 means an empty cell to be filled in |
-| `solution` | array[array[integer]] | 9×9 grid containing the complete, valid solution |
+| Field        | Type                  | Description                                                              |
+| ------------ | --------------------- | ------------------------------------------------------------------------ |
+| `difficulty` | string                | The difficulty level of the returned puzzle (easy, medium, or hard)      |
+| `puzzle`     | array[array[integer]] | 9×9 grid representing the puzzle — 0 means an empty cell to be filled in |
+| `solution`   | array[array[integer]] | 9×9 grid containing the complete, valid solution                         |
 
 ## Errors
 
-- `400` **bad_request** — The difficulty parameter is not one of easy, medium, or hard
+- `400` **bad_request** — The difficulty parameter is not one of easy, medium,
+  or hard
 - `401` **unauthorized** — Missing API key
 - `403` **forbidden** — Invalid or revoked API key

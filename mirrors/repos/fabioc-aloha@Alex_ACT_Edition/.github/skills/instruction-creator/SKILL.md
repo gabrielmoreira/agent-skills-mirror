@@ -1,8 +1,10 @@
 ---
 name: instruction-creator
 description: "Create instructions that pass instruction-review's five gates (plus Gate 6 for always-on) by construction — intent capture, prior-art scan, applyTo calibration, draft against gates, dogfood self-review. Use when authoring a new instruction, refactoring an existing one, or promoting a Mall instruction into the heir's brain."
-lastReviewed: 2026-05-26
+lastReviewed: 2026-05-31
 ---
+
+<!-- intentional divergence from Supervisor: Edition replaces Supervisor-specific routing ("Forking a Supervisor instruction for Edition", "into Supervisor or Edition") with heir-portable phrasing ("into the heir's brain"). Same workflow. Audited 2026-05-31. -->
 
 # Instruction Creator
 

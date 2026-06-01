@@ -13,15 +13,16 @@ description: Returns the monthly payment, total cost, and full amortization sche
 
 ## Calculate Mortgage
 
-Returns the monthly payment, total cost, and full amortization schedule for a fixed-rate mortgage.
+Returns the monthly payment, total cost, and full amortization schedule for a
+fixed-rate mortgage.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `principal` | number | yes | query | Loan amount in your chosen currency (e.g. 300000 for $300,000) |
-| `rate` | number | yes | query | Annual interest rate as a percentage (e.g. 6.5 for 6.5%). Must be greater than 0. |
-| `years` | integer | yes | query | Loan term in years (1–50) |
+| Name        | Type    | Required | Location | Description                                                                       |
+| ----------- | ------- | -------- | -------- | --------------------------------------------------------------------------------- |
+| `principal` | number  | yes      | query    | Loan amount in your chosen currency (e.g. 300000 for $300,000)                    |
+| `rate`      | number  | yes      | query    | Annual interest rate as a percentage (e.g. 6.5 for 6.5%). Must be greater than 0. |
+| `years`     | integer | yes      | query    | Loan term in years (1–50)                                                         |
 
 ## Response Example
 
@@ -59,22 +60,23 @@ Returns the monthly payment, total cost, and full amortization schedule for a fi
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `principal` | number | The original loan amount passed in the request |
-| `rate` | number | The annual interest rate passed in the request |
-| `years` | integer | The loan term in years passed in the request |
-| `monthly_payment` | number | Fixed monthly payment amount (rounded to 2 decimal places) |
-| `total_payment` | number | Total amount paid over the life of the loan |
-| `total_interest` | number | Total interest paid (total_payment minus principal) |
-| `schedule` | array | Full amortization schedule — one entry per month (years × 12 entries) |
-| `schedule[].month` | integer | Month number (1 to years × 12) |
-| `schedule[].payment` | number | Total payment for this month |
-| `schedule[].principal` | number | Portion of this month's payment applied to principal |
-| `schedule[].interest` | number | Portion of this month's payment applied to interest |
-| `schedule[].balance` | number | Remaining loan balance after this payment |
+| Field                  | Type    | Description                                                           |
+| ---------------------- | ------- | --------------------------------------------------------------------- |
+| `principal`            | number  | The original loan amount passed in the request                        |
+| `rate`                 | number  | The annual interest rate passed in the request                        |
+| `years`                | integer | The loan term in years passed in the request                          |
+| `monthly_payment`      | number  | Fixed monthly payment amount (rounded to 2 decimal places)            |
+| `total_payment`        | number  | Total amount paid over the life of the loan                           |
+| `total_interest`       | number  | Total interest paid (total_payment minus principal)                   |
+| `schedule`             | array   | Full amortization schedule — one entry per month (years × 12 entries) |
+| `schedule[].month`     | integer | Month number (1 to years × 12)                                        |
+| `schedule[].payment`   | number  | Total payment for this month                                          |
+| `schedule[].principal` | number  | Portion of this month's payment applied to principal                  |
+| `schedule[].interest`  | number  | Portion of this month's payment applied to interest                   |
+| `schedule[].balance`   | number  | Remaining loan balance after this payment                             |
 
 ## Errors
 
-- `400` **bad_request** — A required parameter is missing, not a valid number, or out of range (e.g. years > 50 or rate <= 0).
+- `400` **bad_request** — A required parameter is missing, not a valid number,
+  or out of range (e.g. years > 50 or rate <= 0).
 - `500` **internal_error** — Unexpected server error.

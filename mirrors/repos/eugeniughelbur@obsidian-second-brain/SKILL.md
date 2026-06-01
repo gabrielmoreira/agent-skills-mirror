@@ -106,7 +106,7 @@ See `references/vault-schema.md` for full structural details.
 ## Core Operating Principles
 
 ### AI-first vault rule (applies to every note)
-The vault is designed for **future-Claude** to read and reason over, not for human review. Every note Claude writes - across all 38 commands - must follow `references/ai-first-rules.md`:
+The vault is designed for **future-Claude** to read and reason over, not for human review. Every note Claude writes - across all 43 commands - must follow `references/ai-first-rules.md`:
 
 1. **Self-contained context** - each note explains itself; don't rely on backlinks alone
 2. **"For future Claude" preamble** - 2-3 sentence summary so Claude can decide relevance in 10 seconds
@@ -412,6 +412,14 @@ State the obligation and cadence (e.g. "pay social benefits, monthly day 20"). S
 
 ---
 
+### `/obsidian-calendar`
+
+**Reconciles the vault against your calendar - flags commitments implied by notes that are not scheduled.** Claude Code only (needs the Google Calendar MCP).
+
+Window argument (`today` / `this week` / `this month`, default this week). Pulls the calendar, then gathers vault-implied commitments by listing and grepping (project `next_action`s and deadlines, due tasks, commitments in recent daily notes, fixed dates in `CRITICAL_FACTS.md`), and reports the gap in two directions. **Flag only - never adds, moves, or changes calendar events.** The inverse of `/obsidian-daily`'s calendar pull.
+
+---
+
 ### `/obsidian-log`
 
 **Logs a work or dev session to the vault.**
@@ -657,6 +665,14 @@ If `_CLAUDE.md` already exists: show a diff of what would change and ask before 
 
 ---
 
+### `/obsidian-architect`
+
+**Scans a codebase and writes a maintained set of architecture notes into the vault - overview, per-module notes, key decisions. Re-runnable.**
+
+Hybrid command: `scripts/architect_scan.py` does a deterministic scan (stack, modules, dependencies, entry points, git commit) and emits JSON; Claude synthesizes the prose, rationale, a Mermaid diagram, and likely personas, then writes AI-first notes under `Projects/<name>/Architecture/` (`type: architecture-overview` + `type: architecture-module`). Pulls decision candidates from `scripts/mine_commit_decisions.py`. Refresh is the same command re-run: it uses sentinel markers (`<!-- @generated -->` / `<!-- @user -->`, see `references/write-rules.md`) so re-running updates only the generated blocks and never clobbers your hand-edits. For builders who want their code projects documented in the same brain as their ideas and decisions.
+
+---
+
 ### `/obsidian-ingest`
 
 **Ingests a source into the vault - one source touches many pages.**
@@ -775,6 +791,30 @@ Steps:
 8. Link the new project from today's daily note
 
 The idea doesn't die - it evolves. The original note stays as the origin story.
+
+---
+
+### `/obsidian-panel`
+
+**Convenes a panel of distinct perspectives on a decision - one independent verdict per lens, then a synthesis.**
+
+A multi-persona complement to `/obsidian-challenge` (which red-teams from one stance). Uses the vault's `Advisors/` persona notes as panelists if they exist, otherwise four generic lenses (skeptic, user, operator, long-game). Each panelist argues independently before the synthesis; the disagreement is the point and is never hidden. Saves a `type: synthesis` note to `wiki/concepts/`.
+
+---
+
+### `/vault-deep-synthesis [topic]`
+
+**Cross-references everything the vault knows about one topic: agreements, contradictions, stale claims, coverage gaps.**
+
+Topic-driven (unlike `/obsidian-synthesize`, which scans the whole vault unprompted). Pure vault, no network. Greps and reads every note touching the topic, then consolidates into what the vault agrees on, where notes contradict (surfaced, not resolved - that is `/obsidian-reconcile`), what looks stale, and what is missing. Saves a `type: synthesis` note; never modifies the sources.
+
+---
+
+### `/idea-discovery`
+
+**Ranks 3-5 next-direction candidates from ungraduated ideas, open project questions, and orphan research.**
+
+Answers "what is worth doing next" from vault material. Distinct from `/obsidian-emerge` (names unstated patterns) and `/obsidian-graduate` (promotes one chosen idea). Ranks candidates by a stated heuristic (recency, pull, momentum) and gives the smallest next step for each. Does not auto-graduate.
 
 ---
 

@@ -9,7 +9,7 @@ Create and modify Unity Timeline assets — add typed tracks, drop clips on trac
 
 ## Operating Mode
 
-- **Approval**（默认）：查询类 skill（`timeline_list_tracks`，源码标 `SkillMode.SemiAuto`）直接执行；其余变更/播放类（`timeline_create` / add_*_track / `timeline_add_clip` / `timeline_set_duration` / `timeline_play` / `timeline_set_binding`，标 `SkillMode.FullAuto`）需用户 grant，grant 后服务端一步执行返结果。
+- **Approval**：查询类 skill（`timeline_list_tracks`，源码标 `SkillMode.SemiAuto`）直接执行；其余变更/播放类（`timeline_create` / add_*_track / `timeline_add_clip` / `timeline_set_duration` / `timeline_play` / `timeline_set_binding`，标 `SkillMode.FullAuto`）需用户 grant，grant 后服务端一步执行返结果。
 - **Auto / Bypass**：未被禁列表拦截的 skill 直接执行。
 - 本模块**含 Delete 类 skill**：`timeline_remove_track` 标记为 `SkillOperation.Delete`，被 `IsForbiddenInSemi` 静态拦截 —— 仅 **Bypass** 模式或加入 **Allowlist** 才能调用。
 - `timeline_play` 仅驱动 Editor 预览（PlayableDirector.Evaluate / Play 在编辑器上下文），不会进入 Play mode。

@@ -9,7 +9,7 @@ description: "GameObject creation and manipulation. Use when users want to creat
 
 ## Operating Mode
 
-- **Approval**（默认）：本模块多为 `SkillMode.FullAuto`，调用需用户 grant；grant 后服务端一步执行并返结果。
+- **Approval**：本模块多为 `SkillMode.FullAuto`，调用需用户 grant；grant 后服务端一步执行并返结果。
 - **Auto / Bypass**：直接执行。
 - **含 NeverInSemi 高危 skill**：`gameobject_delete` / `gameobject_delete_batch`（标记 Operation.Delete）。这些在 Approval/Auto 下返 `MODE_FORBIDDEN`，仅 Bypass 或用户 Allowlist 命中可调。
 

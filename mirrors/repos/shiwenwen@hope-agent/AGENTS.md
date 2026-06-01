@@ -170,6 +170,19 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `ski
 - **SSRF 统一策略**：出站 HTTP 必须走 `security::ssrf::check_url`；**新出站入口严禁自写 IP 校验**
 - **文件 Diff 元数据**：`write` / `edit` / `apply_patch` / `read` 通过 `ToolExecContext.metadata_sink` 旁路传出 JSON；持久化到 `messages.tool_metadata` 列；前端右侧 `DiffPanel` 渲染（与 PlanPanel / CanvasPanel 视觉互斥）
 
+### Hooks
+
+详见 [`hooks.md`](docs/architecture/hooks.md)（hooks 子系统单一真相源：28 事件矩阵 / 数据流 / 5 handler / 四层 scope / 安全 / 测试 / Roadmap）。
+
+- **字段级对齐 Claude Code hooks 协议**；核心全在 `ha-core::hooks`（**零 Tauri 依赖**），desktop / server / ACP 共用
+- **唯一入口 `HookDispatcher::dispatch(event, input)`** + `hooks::fire_*` 助手：内部封装 per-cwd scope 解析 / matcher 过滤 / 并发执行（catch_unwind 隔离）/ 去重 / 超时 / 聚合，调用方只读 `HookOutcome`；**严禁在业务代码里 match 具体 handler 类型**
+- **28 事件**：24 个真触发（阻断型 `UserPromptSubmit`/`PreToolUse`/`PreCompact` + 21 个观察型），4 个协议保留（`WorktreeCreate`/`WorktreeRemove`/`TeammateIdle`/`InstructionsLoaded`——无对应概念，可配置不 dispatch）。`is_observation_only` 列表里的事件 `block` 决策降级为非阻断 + log
+- **5 种 handler 全实现**：`command` / `http`（SSRF-gated）/ `mcp_tool` / `prompt`（side-query）/ `agent`（spawn 子 Agent）
+- **四层 scope UNION**（无覆盖）：user（`config.json`）+ managed（`/etc/hope-agent/hooks.json`）编进全局 registry；project（`<工作目录>/.hope-agent/hooks.json`）+ local（`hooks.local.json`）按会话工作目录经 [`scopes::resolve_for_cwd`](crates/ha-core/src/hooks/scopes.rs) 合并（per-cwd 缓存 + mtime/generation 失效）。fire 路径统一走 `scopes::any_handlers_for(event, cwd)`，project-only hook 也能触发。**project/local 默认关**（`hooks_allow_project_scope` opt-in，默认 `false`——仓库 check-in 的 hooks 不因会话 cwd 指向就自动执行，供应链防护；Settings → Hooks 开启，`ha-settings` 只读）；`disable_all_hooks` 关所有 scope
+- **配置走 config contract**：读 `cached_config().hooks`，user scope 写 `mutate_config(("hooks", source), …)`；`config:changed` 触发 `registry::reload_from_config`（user+managed 合并 + bump generation）。**`ha-settings` 技能只读 hooks**（写被 `BLOCKED_UPDATE_CATEGORIES` 拦截——可写=模型给自己装命令执行）
+- **四入口统一 preflight**：Tauri / HTTP / IM / ACP 的 user message 持久化前过 [`agent::preflight::user_prompt_preflight`](crates/ha-core/src/agent/preflight.rs)（`UserPromptSubmit` 阻断点）；**新增 user message 入口必须走它**。block 的 prompt 不入会话/LLM 上下文，落一条 `event` 行
+- **新增 hook 事件须埋点 + 测试**：阻断型构造 `HookInput` 调 `dispatch`，观察型走 `hooks::fire_*`；新事件须同步更新 `types.rs` 的 `common()`/`matcher_target()`/`is_observation_only()` 三处 match；审计统一 `category="hooks"`
+
 ### Plan Mode
 
 详见 [`plan-mode.md`](docs/architecture/plan-mode.md)。
@@ -259,10 +272,11 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `ski
 
 详见 [`project.md`](docs/architecture/project.md)。
 
-- system_prompt 三层注入：目录清单永远注入 → 小文件（<4KB）8KB 预算内联 → `project_read_file` 工具按需
+- **项目文件 = 工作目录里的真实文件**：上传文件直接落项目工作目录（无 `project_files` 表、无独立 `files/`/`extracted/`、无文本提取注入、无 `project_read_file` 工具）；模型靠 `# Working Directory` 段的顶层文件清单 + `read` 工具感知。**`project_files` / `ProjectFile` / `project_read_file` 已删，不要重新引入**
 - 记忆优先级 Project > Agent > Global
-- **默认工作目录合并**：优先级 `session > project > 不注入`，**lazy resolve**；唯一入口 [`session/helpers.rs::effective_session_working_dir`](crates/ha-core/src/session/helpers.rs)，写校验入口 [`util.rs::canonicalize_working_dir`](crates/ha-core/src/util.rs)
-- 删除级联：unassign → 删 `projects` + `project_files`（FK） → `rm -rf projects/{id}/` → 删项目记忆（跨 db 单独执行）
+- **工作目录合并（项目会话总有值）**：优先级 `session > project 显式 working_dir > 默认 workspace`；唯一入口 [`session/helpers.rs::effective_session_working_dir`](crates/ha-core/src/session/helpers.rs)（+ `effective_working_dir_for_meta`），**lazy ensure**——默认 workspace `~/.hope-agent/projects/{id}/workspace/` 在首次解析时 `ensure_dir_canonical` 创建并返回（不写进 DB，保持 `HA_DATA_DIR` 可迁移）。`project.working_dir` 留 NULL = 用默认 workspace。落盘解析走 [`project::resolve_project_dir`](crates/ha-core/src/project/files.rs)
+- **文件浏览器作用域**：所有读写经 [`filesystem::WorkspaceScope`](crates/ha-core/src/filesystem/workspace.rs)（canonicalize + `starts_with` 失败闭合），`for_session` / `for_project` / `for_path` 三入口；**`for_path` 是只读 worktree 跳转**，后端把目标锚定到 base session/project 仓库的 worktree 列表（禁止跳到主机上任意 git repo），写操作经 `resolve_writable` 一律拒绝 path scope；ops 在 [`filesystem/ops.rs`](crates/ha-core/src/filesystem/ops.rs)。HTTP `/api/fs/*` 写端点受 `filesystem.allow_remote_writes`（默认 false）闸门，桌面 Tauri 不受限
+- 删除级联（三步）：unassign sessions → 删 `projects` 行 → `rm -rf projects/{id}/`（含默认 workspace；用户显式选的外部目录不删）→ 删项目记忆（跨 db 单独执行）
 - **IM 路由（无反向认领）**：项目不再认领 (channel, account)。要把 IM 中的会话归项目，从该 chat 内 `/project <id>`（或 picker）显式触发；`AssignProject` action 在 channel worker 内 UPDATE `sessions.project_id`，不再通过 channel→project 反查。**`Project.bound_channel` 已删除，不要重新引入**。
 
 ### Agent 解析链（默认 Agent）
@@ -340,6 +354,7 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `ski
 - Rust 依赖变更后 `cargo check --workspace` 先行验证
 - 前端新增 invoke 调用须同步实现 Transport 的 Tauri + HTTP 两套适配
 - 新增/修改接口须同步更新 [`api-reference.md`](docs/architecture/api-reference.md)（Tauri ↔ HTTP 对齐单一真相源）
+- 新增 hook 事件：埋点（`dispatch` 或 `fire_*`）+ 同步 `types.rs` 三处 match（`common`/`matcher_target`/`is_observation_only`）+ 测试
 
 ## 设置（Settings）约定
 

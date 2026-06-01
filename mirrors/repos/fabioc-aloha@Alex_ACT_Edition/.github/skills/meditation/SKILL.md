@@ -1,8 +1,10 @@
 ---
 name: "meditation"
 description: "Consolidate session learning into permanent architecture — extract patterns into skills, instructions, prompts, or memory"
-lastReviewed: 2026-05-13
+lastReviewed: 2026-05-31
 ---
+
+<!-- intentional divergence from Supervisor: Edition omits the "Brain Retraining (longer cycles)" section and Cardinal Rule 3 audit criteria — those govern Supervisor's curation cadence (weekly brain-qa, quarterly retraining ADRs) which heirs don't run. Edition also generalizes the script-location rows (heirs may not have a `scripts/` root). Audited 2026-05-31. -->
 
 # Meditation
 

@@ -1,8 +1,10 @@
 ---
 name: agent-review
 description: "Audits a candidate agent (.agent.md) against five gates (spec compliance, content quality, scope fit, safety, currency & coherence) plus Gate 6 (tool allowlist minimality). Use when reviewing a new agent draft before commit, evaluating a Mall agent or store agent for adoption, or re-auditing existing agents on a periodic cadence."
-lastReviewed: 2026-05-26
+lastReviewed: 2026-05-31
 ---
+
+<!-- intentional divergence from Supervisor: Edition expands the five-gate names inline (heirs don't ship ADR-007) and strips Supervisor-only ADR/script refs. Same gates, same criteria. Audited 2026-05-31. -->
 
 # Agent Review
 

@@ -17,10 +17,10 @@ Compares two texts and returns a cosine similarity score.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `text1` | string | yes | body | The first text to compare. |
-| `text2` | string | yes | body | The second text to compare. |
+| Name    | Type   | Required | Location | Description                 |
+| ------- | ------ | -------- | -------- | --------------------------- |
+| `text1` | string | yes      | body     | The first text to compare.  |
+| `text2` | string | yes      | body     | The second text to compare. |
 
 ## Request Example
 
@@ -47,10 +47,10 @@ Compares two texts and returns a cosine similarity score.
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
+| Field        | Type   | Description                                                         |
+| ------------ | ------ | ------------------------------------------------------------------- |
 | `similarity` | number | Cosine similarity score between the two texts, in the range [0, 1]. |
-| `method` | string | The algorithm used. Currently always 'cosine'. |
+| `method`     | string | The algorithm used. Currently always 'cosine'.                      |
 
 ## Errors
 

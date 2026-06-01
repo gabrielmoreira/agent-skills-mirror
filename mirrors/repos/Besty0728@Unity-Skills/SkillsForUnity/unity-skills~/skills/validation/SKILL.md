@@ -9,7 +9,7 @@ Maintain project health - find problems, clean up, and validate your Unity proje
 
 ## Operating Mode
 
-- **Approval**(默认): 只读分析 skill（`validate_scene` / `validate_find_missing_scripts` / `validate_find_unused_assets` / `validate_texture_sizes` / `validate_project_structure` / `validate_missing_references` / `validate_mesh_collider_convex` / `validate_shader_errors`，标 `SkillMode.SemiAuto`）直接执行；含 Delete 的 skill（`validate_cleanup_empty_folders` 标 `Analyze | Delete`、`validate_fix_missing_scripts` 标 `Execute | Delete`，默认 `SkillMode.FullAuto`）需用户 grant。
+- **Approval**: 只读分析 skill（`validate_scene` / `validate_find_missing_scripts` / `validate_find_unused_assets` / `validate_texture_sizes` / `validate_project_structure` / `validate_missing_references` / `validate_mesh_collider_convex` / `validate_shader_errors`，标 `SkillMode.SemiAuto`）直接执行；含 Delete 的 skill（`validate_cleanup_empty_folders` 标 `Analyze | Delete`、`validate_fix_missing_scripts` 标 `Execute | Delete`，默认 `SkillMode.FullAuto`）需用户 grant。
 - **Auto / Bypass**: 直接执行。
 - **本模块含 Delete 类高危 skill**：`validate_cleanup_empty_folders` / `validate_fix_missing_scripts` 一旦 `dryRun=false` 即真删；它们在 Approval / Auto 下被 `IsForbiddenInSemi` 自动拦截，**仅 Bypass 或 Allowlist 命中可执行**。**强烈建议先用 `dryRun=true` 预览**。
 

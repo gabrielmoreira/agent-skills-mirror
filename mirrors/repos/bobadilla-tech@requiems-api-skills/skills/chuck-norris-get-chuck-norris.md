@@ -31,7 +31,7 @@ Returns a randomly selected Chuck Norris fact from the built-in database.
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `id` | string | Unique fact identifier in the format cn_<index> (e.g. cn_0, cn_7) |
-| `fact` | string | The Chuck Norris fact text |
+| Field  | Type   | Description                                                       |
+| ------ | ------ | ----------------------------------------------------------------- |
+| `id`   | string | Unique fact identifier in the format cn_<index> (e.g. cn_0, cn_7) |
+| `fact` | string | The Chuck Norris fact text                                        |

@@ -1,8 +1,10 @@
 ---
 description: Brain audit routing -- run local deterministic QA on brain artefacts, validate findings in files, and prioritize fixes by severity.
 applyTo: '**/*audit*brain*,**/*brain*qa*,**/*epistemic*qa*,**/*quality*review*'
-lastReviewed: 2026-05-29
+lastReviewed: 2026-05-31
 ---
+
+<!-- intentional divergence from Supervisor: Edition omits the "Boundary with extension-audit" section, the step-6 routing rule, and the dated falsification deadline. Heirs don't ship the Supervisor-only `extension-audit` skill (Marketplace surface curation is Supervisor's duty 5), so the boundary is moot. Heir copy targets the brain-audit-only workflow. Audited 2026-05-31. -->
 
 # Brain Audit Routing
 

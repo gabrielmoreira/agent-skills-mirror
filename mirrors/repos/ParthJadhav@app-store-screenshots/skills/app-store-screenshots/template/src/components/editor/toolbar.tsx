@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { AlertTriangle, Check, Cloud, Download, RotateCcw } from "lucide-react";
+import { AlertTriangle, Check, Cloud, Download, UnfoldHorizontal, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,6 +28,8 @@ import type { Device, Orientation } from "@/lib/types";
 type Props = {
   appName: string;
   setAppName: (v: string) => void;
+  connectedCanvas: boolean;
+  setConnectedCanvas: (v: boolean) => void;
   locale: string;
   setLocale: (v: string) => void;
   locales: string[];
@@ -73,6 +75,26 @@ export function Toolbar(props: Props) {
         title="App name (click to edit)"
         disabled={props.busy}
       />
+
+      <span aria-hidden className="mx-1 h-5 w-px bg-border" />
+
+      <Button
+        type="button"
+        variant={props.connectedCanvas ? "secondary" : "outline"}
+        size="sm"
+        className="h-8 gap-1.5 px-2 text-xs"
+        onClick={() => props.setConnectedCanvas(!props.connectedCanvas)}
+        aria-pressed={props.connectedCanvas}
+        title={
+          props.connectedCanvas
+            ? "Connected canvas enabled"
+            : "Isolated screens; turn on to let elements cross screen edges"
+        }
+        disabled={props.busy}
+      >
+        <UnfoldHorizontal className="h-3.5 w-3.5" />
+        {props.connectedCanvas ? "Connected" : "Isolated"}
+      </Button>
 
       <span aria-hidden className="mx-1 h-5 w-px bg-border" />
 
@@ -158,7 +180,7 @@ export function Toolbar(props: Props) {
           size="icon"
           className="h-8 w-8"
           onClick={() => setResetOpen(true)}
-          title="Reset slides to defaults"
+          title="Reset screens to defaults"
           aria-label="Reset"
           disabled={props.busy}
         >
@@ -181,7 +203,7 @@ export function Toolbar(props: Props) {
           <DialogHeader>
             <DialogTitle>Reset to defaults?</DialogTitle>
             <DialogDescription>
-              Choose whether to reset just <span className="font-medium">{deviceLabel}</span> or every device deck. Your edits, uploaded screenshots, and copy will be lost.
+              Choose whether to reset just <span className="font-medium">{deviceLabel}</span> or every device deck. Your canvas edits, uploaded screenshots, and copy will be lost.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-wrap justify-end gap-2">

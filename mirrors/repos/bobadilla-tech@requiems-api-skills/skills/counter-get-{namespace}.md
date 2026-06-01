@@ -17,9 +17,9 @@ Get the current value of a counter without incrementing it
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `namespace` | string | yes | path | Counter namespace (1-64 chars: alphanumeric, hyphen, underscore) |
+| Name        | Type   | Required | Location | Description                                                      |
+| ----------- | ------ | -------- | -------- | ---------------------------------------------------------------- |
+| `namespace` | string | yes      | path     | Counter namespace (1-64 chars: alphanumeric, hyphen, underscore) |
 
 ## Response Example
 
@@ -37,12 +37,13 @@ Get the current value of a counter without incrementing it
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `namespace` | string | The counter namespace |
-| `value` | integer | The current counter value (returns 0 if counter doesn't exist) |
+| Field       | Type    | Description                                                    |
+| ----------- | ------- | -------------------------------------------------------------- |
+| `namespace` | string  | The counter namespace                                          |
+| `value`     | integer | The current counter value (returns 0 if counter doesn't exist) |
 
 ## Errors
 
-- `undefined` **400** — Invalid namespace: must be 1–64 chars, alphanumeric, hyphen or underscore only
+- `undefined` **400** — Invalid namespace: must be 1–64 chars, alphanumeric,
+  hyphen or underscore only
 - `undefined` **500** — Internal server error

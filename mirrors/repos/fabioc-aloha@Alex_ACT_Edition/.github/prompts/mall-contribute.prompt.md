@@ -1,6 +1,6 @@
 ---
 description: "Propose a local skill for contribution to the Plugin Mall — strip project specifics, format as a Mall-compatible proposal, submit via feedback channel"
-lastReviewed: 2026-05-26
+lastReviewed: 2026-05-31
 ---
 
 # Contribute a Skill to the Plugin Mall
@@ -20,24 +20,22 @@ Propose a local skill (from `.github/skills/local/`) for inclusion in the Alex A
    - Generalize niche tech references (`a vector database`, not `PineconeDB v3.2 on our staging cluster`)
    - Keep: skill/instruction names, categories, severity, abstract patterns, ACT references
 
-4. **Rewrite into Mall plugin structure.** Produce three artifacts:
+4. **Rewrite into the Mall plugin layout.** Post-[ADR-008](https://github.com/fabioc-aloha/Alex_ACT_Supervisor/blob/main/docs/adrs/ADR-008-mall-self-curation.md) Phase 5a, the Mall reads plugin metadata from per-plugin frontmatter and surfaces it in `catalog/index.json` (schema 3.0) via the Mall's own self-curation pipeline — contributors do NOT author `plugin.json` or `CATALOG.json` entries directly. Produce two artifacts:
 
-   **plugin.json:**
-   ```json
-   {
-     "name": "<kebab-case-name>",
-     "title": "<Human Title>",
-     "category": "<one of: academic-research, ai-agents, architecture-patterns, cloud-infrastructure, code-quality, communication-people, converters, data-analytics, devops-process, documentation, domain-expertise, media-graphics, platform-tooling, reasoning-metacognition, security-privacy, supervisor-fleet>",
-     "shape": ["SKILL.md"],
-     "tier": "standard",
-     "description": "<one sentence: what it does AND when it fires>",
-     "token_cost": "<estimated token count of SKILL.md>",
-     "source_store": "heir-contribution",
-     "artifacts": ["SKILL.md"]
-   }
+   **SKILL.md** — the generalized skill body with proper frontmatter. The Mall's catalog renderer reads these fields to populate the catalog entry:
+
+   ```yaml
+   ---
+   name: <kebab-case-name>
+   description: <one sentence: what it does AND when it fires>
+   lastReviewed: <YYYY-MM-DD>
+   ---
    ```
 
-   **README.md:**
+   The skill body follows the standard ACT skill structure (Trigger / Steps / Anti-patterns / Related).
+
+   **README.md** — plain-language summary for human browsing:
+
    ```markdown
    # <Title>
 
@@ -53,12 +51,14 @@ Propose a local skill (from `.github/skills/local/`) for inclusion in the Alex A
 
    ## Install
 
-   `/mall-install <name>`
+   See `/mall-install <name>` (Phase 5b; manual install per [mall-installation.instructions.md](../instructions/mall-installation.instructions.md) until then).
    ```
 
-   **SKILL.md:** The generalized skill body with proper frontmatter (`name`, `description`, `lastReviewed`).
+   The Mall's self-curation pipeline (per [ADR-008](https://github.com/fabioc-aloha/Alex_ACT_Supervisor/blob/main/docs/adrs/ADR-008-mall-self-curation.md)) computes the catalog entry's `{ name, store, shape, trust_score, version, description_short, source_url, provenance, adapted_from }` fields from these two files. The Supervisor's editorial review (per `mall-curation` skill) decides whether the proposal lands in the curated `plugin-mall` store (provenance:true, +50 trust bonus) or gets routed elsewhere.
 
-5. **Write the proposal to the feedback channel.** Create a markdown file at `../Alex_ACT_Memory/feedback/<YYYY-MM-DD>-mall-proposal-<name>.md` with this structure:
+5. **Suggest a category** for the Mall maintainer to slot the plugin under. Use one of: `academic-research`, `ai-agents`, `architecture-patterns`, `cloud-infrastructure`, `code-quality`, `communication-people`, `converters`, `data-analytics`, `devops-process`, `documentation`, `domain-expertise`, `media-graphics`, `platform-tooling`, `reasoning-metacognition`, `security-privacy`, `supervisor-fleet`.
+
+6. **Write the proposal to the feedback channel.** Create a markdown file at `../Alex_ACT_Memory/feedback/<YYYY-MM-DD>-mall-proposal-<name>.md` with this structure:
 
    ```markdown
    ---
@@ -74,9 +74,9 @@ Propose a local skill (from `.github/skills/local/`) for inclusion in the Alex A
 
    <One paragraph: what the skill does, why it generalizes.>
 
-   ## Proposed plugin.json
+   ## Suggested category
 
-   <paste>
+   <one of the 16 Mall categories listed above>
 
    ## Proposed README.md
 
@@ -92,7 +92,7 @@ Propose a local skill (from `.github/skills/local/`) for inclusion in the Alex A
    - <What class of tasks it serves>
    ```
 
-6. **Report result.** Confirm the proposal was written and explain what happens next: the user's Supervisor (if running) or the user themselves will triage the proposal and decide whether to promote it to the Mall.
+7. **Report result.** Confirm the proposal was written and explain what happens next: the user's Supervisor (if running) or the user themselves will triage the proposal and decide whether to promote it to the Mall.
 
 ## Notes
 

@@ -60,6 +60,10 @@ Knowledge and skills usually need to be taught as a 1-2 punch. You teach the kno
 
 Knowledge should first be gathered from trusted resources, then taught to the user via HTML explainers. These explainers should be beautiful, adhere to the glossary, and be saved to the local file system where they can be reviewed later.
 
+Explainers should be littered with citations - links to external resources to back up any claim made.
+
+Explainers should be as interactive as possible, with "try this" callouts to let the user try the knowledge.
+
 You should make opening the HTML explainer as easy as possible for the user, ideally with a CLI command they can run.
 
 Once the user has read the knowledge, allow them to ask questions about it. Answer their questions directly, and amend the explainer if needed (or produce another one).

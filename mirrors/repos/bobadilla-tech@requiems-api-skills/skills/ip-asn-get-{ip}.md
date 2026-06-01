@@ -17,9 +17,9 @@ Look up ASN, organization, ISP, and network details for a specific IP address.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `ip` | string | yes | path | The IP address to look up (supports IPv4 and IPv6) |
+| Name | Type   | Required | Location | Description                                        |
+| ---- | ------ | -------- | -------- | -------------------------------------------------- |
+| `ip` | string | yes      | path     | The IP address to look up (supports IPv4 and IPv6) |
 
 ## Response Example
 
@@ -42,15 +42,15 @@ Look up ASN, organization, ISP, and network details for a specific IP address.
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `ip` | string | The IP address that was looked up |
-| `asn` | string | Autonomous System Number in format "ASxxxx" (e.g., "AS15169") |
-| `org` | string | Organization name owning the IP address range |
-| `isp` | string | Internet Service Provider providing the IP |
-| `domain` | string | Domain name associated with the IP or IP range |
-| `route` | string | CIDR notation of the network route (e.g., "8.8.8.0/24") |
-| `type` | string | Type of network (e.g., "hosting", "isp", "business", "cdn") |
+| Field    | Type   | Description                                                   |
+| -------- | ------ | ------------------------------------------------------------- |
+| `ip`     | string | The IP address that was looked up                             |
+| `asn`    | string | Autonomous System Number in format "ASxxxx" (e.g., "AS15169") |
+| `org`    | string | Organization name owning the IP address range                 |
+| `isp`    | string | Internet Service Provider providing the IP                    |
+| `domain` | string | Domain name associated with the IP or IP range                |
+| `route`  | string | CIDR notation of the network route (e.g., "8.8.8.0/24")       |
+| `type`   | string | Type of network (e.g., "hosting", "isp", "business", "cdn")   |
 
 ## Errors
 

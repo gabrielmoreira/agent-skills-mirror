@@ -17,10 +17,10 @@ Get a paginated list of all disposable domains in the blocklist
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `page` | integer | no | query | Page number (default: 1) |
-| `per_page` | integer | no | query | Items per page (default: 100, max: 1000) |
+| Name       | Type    | Required | Location | Description                              |
+| ---------- | ------- | -------- | -------- | ---------------------------------------- |
+| `page`     | integer | no       | query    | Page number (default: 1)                 |
+| `per_page` | integer | no       | query    | Items per page (default: 100, max: 1000) |
 
 ## Response Example
 
@@ -45,10 +45,10 @@ Get a paginated list of all disposable domains in the blocklist
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `domains` | array | Array of domain names |
-| `total` | integer | Total number of domains in blocklist |
-| `page` | integer | Current page number |
-| `per_page` | integer | Number of items per page |
+| Field      | Type    | Description                            |
+| ---------- | ------- | -------------------------------------- |
+| `domains`  | array   | Array of domain names                  |
+| `total`    | integer | Total number of domains in blocklist   |
+| `page`     | integer | Current page number                    |
+| `per_page` | integer | Number of items per page               |
 | `has_more` | boolean | Whether there are more pages available |

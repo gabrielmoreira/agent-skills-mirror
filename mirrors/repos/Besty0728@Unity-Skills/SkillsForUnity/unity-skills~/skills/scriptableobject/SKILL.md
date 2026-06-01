@@ -9,7 +9,7 @@ Create and manage ScriptableObject assets.
 
 ## Operating Mode
 
-- **Approval**（默认）：本模块 Mixed —— `scriptableobject_get` / `scriptableobject_list_types` / `scriptableobject_find` / `scriptableobject_export_json` 标 `SkillMode.SemiAuto`，可直接执行；写类 skill (`scriptableobject_create` / `scriptableobject_set` / `scriptableobject_set_batch` / `scriptableobject_duplicate` / `scriptableobject_import_json`) 标 `SkillMode.FullAuto`，需 grant 单次执行返结果。
+- **Approval**：本模块 Mixed —— `scriptableobject_get` / `scriptableobject_list_types` / `scriptableobject_find` / `scriptableobject_export_json` 标 `SkillMode.SemiAuto`，可直接执行；写类 skill (`scriptableobject_create` / `scriptableobject_set` / `scriptableobject_set_batch` / `scriptableobject_duplicate` / `scriptableobject_import_json`) 标 `SkillMode.FullAuto`，需 grant 单次执行返结果。
 - **Auto / Bypass**：FullAuto 直接执行。
 - **含 NeverInSemi 高危 skill**：`scriptableobject_delete`（Operation.Delete）。该 skill 在 Approval/Auto 下返 `MODE_FORBIDDEN`，仅 Bypass 或 Allowlist 命中可调。
 

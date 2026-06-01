@@ -35,11 +35,11 @@ Returns all available unit conversion types grouped by measurement category
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `length` | array | Available length units: millimeter (mm), centimeter (cm), meter (m), kilometer (km), inch (in), foot (ft), yard (yd), mile (miles), nautical mile (nmi) |
-| `weight` | array | Available weight units: milligram (mg), gram (g), kilogram (kg), metric ton (t), ounce (oz), pound (lb), stone (stone) |
-| `volume` | array | Available volume units: milliliter (ml), liter (l), teaspoon (tsp), tablespoon (tbsp), fluid ounce (fl_oz), cup (cup), pint (pt), quart (qt), gallon (gal) |
-| `temperature` | array | Available temperature units: celsius (c), fahrenheit (f), kelvin (k) |
-| `area` | array | Available area units: square millimeter (mm2), square centimeter (cm2), square meter (m2), square kilometer (km2), square inch (in2), square foot (ft2), square yard (yd2), acre (acre), hectare (ha) |
-| `speed` | array | Available speed units: meters per second (m_s), kilometers per hour (km_h), miles per hour (mph), knots (knots) |
+| Field         | Type  | Description                                                                                                                                                                                           |
+| ------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `length`      | array | Available length units: millimeter (mm), centimeter (cm), meter (m), kilometer (km), inch (in), foot (ft), yard (yd), mile (miles), nautical mile (nmi)                                               |
+| `weight`      | array | Available weight units: milligram (mg), gram (g), kilogram (kg), metric ton (t), ounce (oz), pound (lb), stone (stone)                                                                                |
+| `volume`      | array | Available volume units: milliliter (ml), liter (l), teaspoon (tsp), tablespoon (tbsp), fluid ounce (fl_oz), cup (cup), pint (pt), quart (qt), gallon (gal)                                            |
+| `temperature` | array | Available temperature units: celsius (c), fahrenheit (f), kelvin (k)                                                                                                                                  |
+| `area`        | array | Available area units: square millimeter (mm2), square centimeter (cm2), square meter (m2), square kilometer (km2), square inch (in2), square foot (ft2), square yard (yd2), acre (acre), hectare (ha) |
+| `speed`       | array | Available speed units: meters per second (m_s), kilometers per hour (km_h), miles per hour (mph), knots (knots)                                                                                       |

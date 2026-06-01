@@ -9,7 +9,7 @@ Editor-time physics queries (raycast / overlap), gravity, PhysicMaterial assets,
 
 ## Operating Mode
 
-- **Approval**（默认）：查询类 skill（`physics_raycast` / `physics_check_overlap` / `physics_get_gravity` / `physics_get_layer_collision` 等，源码标 `SkillMode.SemiAuto`）直接执行；变更类（`physics_set_gravity` / `physics_create_material` / `physics_set_material` / `physics_set_layer_collision`，标 `SkillMode.FullAuto`）需用户 grant，grant 后服务端一步执行返结果。
+- **Approval**：查询类 skill（`physics_raycast` / `physics_check_overlap` / `physics_get_gravity` / `physics_get_layer_collision` 等，源码标 `SkillMode.SemiAuto`）直接执行；变更类（`physics_set_gravity` / `physics_create_material` / `physics_set_material` / `physics_set_layer_collision`，标 `SkillMode.FullAuto`）需用户 grant，grant 后服务端一步执行返结果。
 - **Auto / Bypass**：所有 skill 直接执行；Auto 走 AI 自我评估，Bypass 全放行。
 - 本模块**不含** Delete / PlayMode / Reload / 高危 skill，无 Bypass-only 拦截项。
 - 注意：所有 skill 都在编辑器线程同步运行。真实物理模拟（积分、碰撞响应）仅在 Play mode 下推进；本模块只做单帧 query + 资产/全局设置写入，不会启动模拟。

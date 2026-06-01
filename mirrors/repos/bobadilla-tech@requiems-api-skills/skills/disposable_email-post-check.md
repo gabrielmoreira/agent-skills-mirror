@@ -17,9 +17,9 @@ Validate whether an email address uses a disposable domain
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `email` | string | yes | body | The email address to check |
+| Name    | Type   | Required | Location | Description                |
+| ------- | ------ | -------- | -------- | -------------------------- |
+| `email` | string | yes      | body     | The email address to check |
 
 ## Request Example
 
@@ -46,11 +46,11 @@ Validate whether an email address uses a disposable domain
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `email` | string | The email address that was checked |
+| Field           | Type    | Description                                |
+| --------------- | ------- | ------------------------------------------ |
+| `email`         | string  | The email address that was checked         |
 | `is_disposable` | boolean | Whether the email uses a disposable domain |
-| `domain` | string | The domain part of the email address |
+| `domain`        | string  | The domain part of the email address       |
 
 ## Errors
 

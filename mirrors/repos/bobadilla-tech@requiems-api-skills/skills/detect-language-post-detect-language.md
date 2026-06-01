@@ -13,13 +13,14 @@ description: Identifies the language of the provided text and returns the langua
 
 ## Detect Language
 
-Identifies the language of the provided text and returns the language name, ISO 639-1 code, and confidence score.
+Identifies the language of the provided text and returns the language name, ISO
+639-1 code, and confidence score.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `text` | string | yes | body | The text whose language should be detected. |
+| Name   | Type   | Required | Location | Description                                 |
+| ------ | ------ | -------- | -------- | ------------------------------------------- |
+| `text` | string | yes      | body     | The text whose language should be detected. |
 
 ## Request Example
 
@@ -46,11 +47,11 @@ Identifies the language of the provided text and returns the language name, ISO 
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `language` | string | Full name of the detected language (e.g. French, English, Spanish) |
-| `code` | string | ISO 639-1 two-letter language code (e.g. fr, en, es). Empty string when detection is unreliable. |
-| `confidence` | float | Confidence score between 0.0 and 1.0. 0.0 is returned when the language cannot be reliably detected. |
+| Field        | Type   | Description                                                                                          |
+| ------------ | ------ | ---------------------------------------------------------------------------------------------------- |
+| `language`   | string | Full name of the detected language (e.g. French, English, Spanish)                                   |
+| `code`       | string | ISO 639-1 two-letter language code (e.g. fr, en, es). Empty string when detection is unreliable.     |
+| `confidence` | float  | Confidence score between 0.0 and 1.0. 0.0 is returned when the language cannot be reliably detected. |
 
 ## Errors
 

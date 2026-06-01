@@ -13,14 +13,16 @@ description: Converts multiple Markdown strings into HTML in a single request. R
 
 ## Convert Markdown Batch
 
-Converts multiple Markdown strings into HTML in a single request. Results are returned in the same order as the input array. Supports optional sanitization to remove unsafe HTML tags such as script and iframe.
+Converts multiple Markdown strings into HTML in a single request. Results are
+returned in the same order as the input array. Supports optional sanitization to
+remove unsafe HTML tags such as script and iframe.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `markdowns` | array | yes | body | Array of Markdown strings. Min: 1, Max: 50. |
-| `sanitize` | boolean | no | body | When true, sanitizes HTML output to remove unsafe tags and attributes. |
+| Name        | Type    | Required | Location | Description                                                            |
+| ----------- | ------- | -------- | -------- | ---------------------------------------------------------------------- |
+| `markdowns` | array   | yes      | body     | Array of Markdown strings. Min: 1, Max: 50.                            |
+| `sanitize`  | boolean | no       | body     | When true, sanitizes HTML output to remove unsafe tags and attributes. |
 
 ## Request Example
 
@@ -54,13 +56,14 @@ Converts multiple Markdown strings into HTML in a single request. Results are re
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `results` | array | One HTML result per Markdown input, preserving input order |
-| `results[].html` | string | Rendered HTML output for each Markdown string |
+| Field            | Type   | Description                                                |
+| ---------------- | ------ | ---------------------------------------------------------- |
+| `results`        | array  | One HTML result per Markdown input, preserving input order |
+| `results[].html` | string | Rendered HTML output for each Markdown string              |
 
 ## Errors
 
-- `422` **validation_failed** — Body is invalid: empty array, more than 50 items, or invalid Markdown entry.
+- `422` **validation_failed** — Body is invalid: empty array, more than 50
+  items, or invalid Markdown entry.
 - `400` **bad_request** — Missing or malformed request body.
 - `500` **internal_error** — Unexpected server error.

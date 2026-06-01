@@ -124,12 +124,31 @@ cua-driver stop
 ## Agent cursor overlay
 
 Visual cursor overlay for demos and screen recordings. Default:
-enabled. Toggle with `cua-driver set_agent_cursor_enabled
-'{"enabled":true|false}'`. A triangle pointer Bezier-glides to each
-click target, ring-ripples on landing, idle-hides after ~1.5s.
-Motion knobs: `set_agent_cursor_motion` takes any subset of
-`start_handle`, `end_handle`, `arc_size`, `arc_flow`, `spring` —
-tuneable at runtime, persisted to config.
+enabled — you do NOT need to enable it. Toggle with
+`cua-driver set_agent_cursor_enabled '{"enabled":true|false}'` only to
+hide or re-show it. A triangle pointer Bezier-glides to each click
+target, ring-ripples on landing, idle-hides after ~1.5s. Motion knobs:
+`set_agent_cursor_motion` takes any subset of `start_handle`,
+`end_handle`, `arc_size`, `arc_flow`, `spring` — tuneable at runtime,
+persisted to config.
+
+**Per-session cursors.** Each MCP session automatically owns its own
+cursor, keyed by the session's id (the proxy mints one session id per
+MCP connection and the daemon scopes the cursor, config overrides, and
+recording to it). You normally pass nothing — the session key is wired
+through for you. Pass an explicit `cursor_id` only to *deliberately
+share* one cursor across sessions. When a session ends (the MCP client
+disconnects) its cursor is removed automatically.
+
+**Visibility caveat (AX runs).** On a pure accessibility-action run
+(clicking by `element_index`), the first action **seeds the cursor
+on-screen a short distance from the target and plays a brief glide +
+pulse** — not the long Bezier sweep a cursor already on-screen would
+trace from its previous spot. It's subtle and easy to miss in a
+recording. If you want a clearly *gliding* cursor for a demo or screen
+recording, do a pixel click (`click({pid,x,y})`) or a `move_agent_cursor`
+first to put the cursor on-screen; subsequent AX actions then glide the
+full path normally.
 
 Requires the daemon process's UI runloop, which `cua-driver serve` /
 `mcp` bootstraps. One-shot CLI invocations skip the overlay entirely.
@@ -228,6 +247,15 @@ launch_app(target)
 `launch_app` now returns a `windows` array alongside the pid, so the
 common case collapses to two calls (`launch_app` → `get_window_state`)
 without a separate `list_windows` hop.
+
+**Concurrent sessions:** `launch_app` is idempotent — two sessions that
+launch the same app get the **same** instance (and on single-instance
+apps like Calculator, the same window), so they clobber each other. If
+another agent or session may drive the same app at the same time, pass
+`creates_new_application_instance: true` to get your own isolated
+instance + window. The cache and the per-session cursor are keyed on
+`(pid, window_id)`, so distinct instances keep the two sessions fully
+separated.
 
 `list_apps` is for app-level discovery (answering "what's installed /
 running / frontmost?") — not part of the core action loop. Skip it
@@ -474,10 +502,13 @@ respective companion files.
   is for visual disambiguation, not coordinates. Use the
   `element_index`.
 - **Prefer accessibility actions over pixels.** `click({pid, x, y})`
-  works for canvas / WebView regions, but it lands blindly and skips
-  the agent-cursor overlay. Exhaust accessibility paths (menu bars,
-  cmd-k palettes, toolbar items, keyboard shortcuts) before dropping
-  to coordinates.
+  works for canvas / WebView regions, but it lands blindly on raw
+  coordinates. Exhaust accessibility paths (menu bars, cmd-k palettes,
+  toolbar items, keyboard shortcuts) before dropping to coordinates.
+  (The AX path does **not** skip the agent-cursor overlay — it seeds and
+  pulses the session cursor and draws a focus rect on the targeted
+  element; it just doesn't play a long glide on the very first action.
+  See "Agent cursor overlay" for the demo-recording caveat.)
 - **Never** drive destructive actions (delete files, close unsaved
   documents, send messages, submit forms) without explicit user
   intent for that specific destructive step.

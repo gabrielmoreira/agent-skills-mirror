@@ -13,13 +13,14 @@ description: Returns multiple randomly generated fake user profiles in a single 
 
 ## Batch Generate Users
 
-Returns multiple randomly generated fake user profiles in a single request. Each call consumes count units of quota. Maximum 50 users per request.
+Returns multiple randomly generated fake user profiles in a single request. Each
+call consumes count units of quota. Maximum 50 users per request.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `count` | integer | yes | body | Number of users to generate (min: 1, max: 50). |
+| Name    | Type    | Required | Location | Description                                    |
+| ------- | ------- | -------- | -------- | ---------------------------------------------- |
+| `count` | integer | yes      | body     | Number of users to generate (min: 1, max: 50). |
 
 ## Request Example
 
@@ -72,10 +73,10 @@ Returns multiple randomly generated fake user profiles in a single request. Each
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `results` | array | Ordered list of generated user profiles. Same fields as the single-user endpoint. |
-| `total` | integer | Number of users returned. Matches the requested count. |
+| Field     | Type    | Description                                                                       |
+| --------- | ------- | --------------------------------------------------------------------------------- |
+| `results` | array   | Ordered list of generated user profiles. Same fields as the single-user endpoint. |
+| `total`   | integer | Number of users returned. Matches the requested count.                            |
 
 ## Errors
 

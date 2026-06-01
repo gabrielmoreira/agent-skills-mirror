@@ -13,13 +13,15 @@ description: Returns holidays for up to 50 (country, year) pairs in a single req
 
 ## Batch Get Holidays
 
-Returns holidays for up to 50 (country, year) pairs in a single request. Each pair is processed independently — if one combination has no data, it returns found:false without failing the entire batch.
+Returns holidays for up to 50 (country, year) pairs in a single request. Each
+pair is processed independently — if one combination has no data, it returns
+found:false without failing the entire batch.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `queries` | array | yes | body | Array of (country, year) pairs. Min: 1, Max: 50. |
+| Name      | Type  | Required | Location | Description                                      |
+| --------- | ----- | -------- | -------- | ------------------------------------------------ |
+| `queries` | array | yes      | body     | Array of (country, year) pairs. Min: 1, Max: 50. |
 
 ## Response Example
 
@@ -62,17 +64,18 @@ Returns holidays for up to 50 (country, year) pairs in a single request. Each pa
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `results` | array | One result per query, in the same order as the request |
-| `results[].country` | string | ISO 3166-1 alpha-2 country code |
-| `results[].year` | integer | Year queried |
-| `results[].found` | boolean | false when no holidays exist for that country/year combination |
-| `results[].holidays` | array | List of holidays. Omitted when found is false. |
-| `results[].total` | integer | Number of holidays. Omitted when found is false. |
-| `total` | integer | Total number of results (equals the number of queries sent) |
+| Field                | Type    | Description                                                    |
+| -------------------- | ------- | -------------------------------------------------------------- |
+| `results`            | array   | One result per query, in the same order as the request         |
+| `results[].country`  | string  | ISO 3166-1 alpha-2 country code                                |
+| `results[].year`     | integer | Year queried                                                   |
+| `results[].found`    | boolean | false when no holidays exist for that country/year combination |
+| `results[].holidays` | array   | List of holidays. Omitted when found is false.                 |
+| `results[].total`    | integer | Number of holidays. Omitted when found is false.               |
+| `total`              | integer | Total number of results (equals the number of queries sent)    |
 
 ## Errors
 
 - `400` **bad_request** — Malformed request body
-- `422` **validation_failed** — queries is missing, empty, exceeds 50 items, or contains invalid country codes or years
+- `422` **validation_failed** — queries is missing, empty, exceeds 50 items, or
+  contains invalid country codes or years

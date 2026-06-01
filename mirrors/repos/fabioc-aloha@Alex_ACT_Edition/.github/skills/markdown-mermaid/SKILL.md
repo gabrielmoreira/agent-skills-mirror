@@ -1,12 +1,10 @@
 ---
 name: "markdown-mermaid"
-description: "Author Mermaid diagrams and markdown visualizations following the mandatory init template, pastel palette, and ATACCU workflow. Use when authoring documentation with diagrams, troubleshooting Mermaid rendering, choosing diagram types, or comparing Mermaid/PlantUML/D2/Graphviz."
+description: "Author markdown and Mermaid diagrams that render correctly in VS Code, GitHub, and other Mermaid 10+ consumers — covers diagram-tool selection, mandatory init template, parser pitfalls, and visual design rules. Use when writing technical docs with embedded diagrams, debugging Mermaid render failures, or choosing between Mermaid, Excalidraw, and other diagramming tools."
 lastReviewed: 2026-05-26
 ---
 
 # Markdown & Mermaid
-
-> Clear documentation through visual excellence
 
 A skill for markdown authoring, Mermaid diagramming, multi-tool visualization, VS Code integration, and cross-platform rendering consistency.
 
@@ -166,119 +164,140 @@ Alex: [uses renderMermaidDiagram tool]
 
 ---
 
-## Markdown Best Practices
+## 🎯 Diagram Tool Selection Framework
 
-### Document Structure Template
+### Step 1: Identify Your Communication Goal
 
-```markdown
-# Title
+| What You're Showing | Best Tools | Example Use Cases |
+| ------------------- | ---------- | ----------------- |
+| **Process/Workflow** | Mermaid Flowcharts, User Journey | Onboarding, approvals, troubleshooting |
+| **System Architecture** | Mermaid Flowcharts with subgraphs, D2 | Microservices, API design |
+| **Relationships** | Mermaid ER, Mindmaps, Graphviz | Database schemas, org charts |
+| **Time/Sequence** | Mermaid Sequence, Gantt | API interactions, timelines |
+| **Data/Metrics** | Mermaid XY Charts, Sankey, Quadrant | Performance, resource allocation |
 
-> Brief description or tagline
+### Step 2: Consider Your Audience
 
----
+| Audience | Primary Goal | Recommended Tools | Style |
+| -------- | ------------ | ----------------- | ----- |
+| **Executives** | Strategic overview | D2, simple flowcharts | Clean, minimal |
+| **Architects** | Technical accuracy | PlantUML, Mermaid C4 | Detailed, precise |
+| **Developers** | Implementation | Mermaid Sequence, Class | Code-focused |
+| **Product Managers** | User flows | User Journey, Flowcharts | Business-outcome |
+| **Documentation** | Learning | All Mermaid types | Progressive disclosure |
 
-## Overview
+### Step 3: Consider Platform
 
-Introductory paragraph explaining the purpose.
+| Platform | Best Tools | Why |
+| -------- | ---------- | --- |
+| **GitHub/GitLab** | Mermaid | Native rendering, no setup |
+| **Confluence/Wiki** | Mermaid, PlantUML | Plugin support |
+| **VS Code** | All tools (extensions) | Live preview |
+| **Presentations** | D2, simple Mermaid | Executive-friendly |
 
----
+### Quick Decision Tree
 
-## Section 1
-
-Content with proper formatting.
-
-### Subsection 1.1
-
-More detailed content.
-
----
-
-## Tables
-
-**Table N:** *Description of what the table shows*
-
-| Column 1 | Column 2 |
-| -------- | -------- |
-| Data     | Data     |
-
----
-
-## Diagrams
-
-` ` `mermaid
-flowchart LR
-    A --> B
-` ` `
-
-**Figure N:** *Description of what the diagram shows*
-
----
-
-*Footer or closing statement*
+```text
+Need diagram? → What are you showing?
+├── Process/Workflow → Mermaid Flowchart
+├── System Architecture → Mermaid with subgraphs (or D2 for exec)
+├── Relationships → Mermaid ER/Mindmap (or Graphviz for complex)
+├── Time/Sequence → Mermaid Sequence/Gantt
+└── Data/Metrics → Mermaid XY/Sankey/Quadrant
 ```
 
-### Figure and Table Conventions
+---
 
-**Mandatory Labeling**: Every diagram and table MUST have a label:
+## Companion References
 
-```markdown
-**Figure 1:** *Description in italics*
-**Table 1:** *Description in italics*
+> Bulk content moved out of SKILL.md to stay under the 500-line skill-spec ceiling. Load these on demand when the section header below indicates relevance:
+
+> - **[markdown-best-practices.md](references/markdown-best-practices.md)** — document structure template, figure/table conventions, Shields.io badges, emoji usage
+> - **[tool-ecosystem.md](references/tool-ecosystem.md)** — Mermaid / D2 / PlantUML / Excalidraw comparison, VS Code extension setup, syntax examples
+> - **[diagram-reference.md](references/diagram-reference.md)** — diagram types, node shapes, edge styles, color palettes (legacy + GitHub Pastel v2 + Fishbowl), per-diagram theming, classDef, subgraph styling, Gantt + sequence theming, visual design principles
+> - **[pitfalls.md](references/pitfalls.md)** — parser pitfalls P1–P9, unicode/emoji failures, layout patterns, classDiagram + architecture-beta gotchas, reserved-word handling, cross-diagram compatibility matrix
+
+## 🔍 Diagram Audit Methodology
+
+When performing comprehensive diagram audits across a project or documentation set, follow this 4-step process:
+
+### Step 1: Enumerate
+
+Identify all Mermaid diagrams in the target scope:
+
+```bash
+# bash/zsh
+grep -rl '```mermaid' --include='*.md' | while read f; do echo "$f: $(grep -c '```mermaid' "$f")"; done
 ```
 
-- **Numbering**: Sequential within document, reset per document
-- **Placement**: Label immediately follows the diagram/table block
-
----
-
-## 🏷️ Shields.io Badges
-
-Badges use [Shields.io](https://shields.io). URL structure: `https://img.shields.io/badge/{LABEL}-{MESSAGE}-{COLOR}?{OPTIONS}`
-
-```markdown
-[![Alt Text](https://img.shields.io/badge/Label-Message-color?style=for-the-badge&logo=iconname&logoColor=white)](#)
+```powershell
+# PowerShell
+Get-ChildItem -Recurse -Filter "*.md" |
+  Select-String -Pattern '```mermaid' |
+  Group-Object Path |
+  Select-Object Name, Count
 ```
 
-| Style | Parameter |
-| ----- | --------- |
-| Flat | `style=flat` |
-| **For-the-Badge** | `style=for-the-badge` |
+### Step 2: Categorize
 
-| Encode | As |
-| ------ | -- |
-| Space | `_` or `%20` |
-| Dash | `--` |
-| Underscore | `__` |
+Create an inventory table to track diagram state:
 
-Icons from [Simple Icons](https://simpleicons.org/) via `logo=iconname&logoColor=white`. Colors: `blue`, `green`, `gold`, `red`, `purple`, or custom hex without `#`.
+| # | File | Diagram Type | Status | Issues |
+|---|------|-------------|--------|--------|
+| 1 | README.md | flowchart | ⚠️ | Missing init |
+| 2 | arch.md | sequence | ✅ | None |
+| 3 | flow.md | flowchart | ❌ | Parse error |
+
+**Status codes**: ✅ OK, ⚠️ Needs fix, ❌ Broken
+
+### Step 3: Batch Fix
+
+Apply fixes in batches by issue type:
+
+1. **Reserved word errors** — Rephrase or quote labels
+2. **Parse errors** — Apply 4 safety rules
+3. **Style inconsistencies** — Apply GitHub Pastel v2 palette
+
+### Step 4: Validate
+
+Re-render all diagrams and confirm fixes:
+
+- [ ] All diagrams render in VS Code preview
+- [ ] All diagrams render on GitHub
+- [ ] Color palette is consistent
+- [ ] No parse errors in console
+
+**Typical results**: A 30-40 diagram audit catches 10-15 issues in the first pass.
 
 ---
 
-### Emoji Usage
+## ✅ Quality Checklist
 
-**Recommended** (renders reliably across GitHub, VS Code, and terminal): Use actual emoji characters, not HTML entities or unicode escapes.
+### Before Committing
 
-| Good ✅ | Bad ❌ |
-| ------- | ------ |
-| `# 🧠 Brain` | `# &#x1F9E0; Brain` |
-| `**💻 Local**` | `**\ud83d\udcbb Local**` |
+- [ ] All diagrams have figure labels
+- [ ] All tables have table labels
+- [ ] No unicode escape sequences
+- [ ] Diagrams render correctly in preview AND GitHub
+- [ ] Consistent heading hierarchy
+- [ ] Links are valid
+
+### Diagram Review
+
+- [ ] Node labels are clear and concise (but not over-simplified)
+- [ ] Colors follow consistent palette
+- [ ] Subgraphs logically group related items
+- [ ] Subgraph content is wide enough for title (VS Code)
+
+### Don't Over-Simplify
+
+**KISS ≠ Remove all detail**
+
+KISS means removing **unnecessary** complexity while preserving **meaningful** information. If removing detail reduces understanding, keep it.
 
 ---
 
-
-## Deep-Dive Reference
-
-The following sections moved to [`references/mermaid-reference.md`](references/mermaid-reference.md) to keep this skill body lean. Consult on demand:
-
-- **Diagram Tool Selection Framework** (Mermaid vs PlantUML vs D2 vs Graphviz; communication-goal + audience + platform decision tree)
-- **Multi-Tool Ecosystem** (tool comparison matrix, VS Code extension setup, syntax examples per tool)
-- **Mermaid Diagram Reference** (Pastel v2 template, diagram types, node shapes, edge styles, color palettes — GitHub Pastel v2, Fishbowl Pastel — per-diagram theming, classDef styles, subgraph styling, Gantt + sequence theming)
-- **Visual Design Principles** (color psychology, effectiveness criteria, accessibility standards)
-- **Parser Pitfalls** (P1–P9: quoted labels, HTML entities, edge-list operator, cylinder shape, stateDiagram-v2 classDef, MD060 spacing, MD056 pipes, MD028 blockquotes, MD040 language)
-- **Common Pitfalls & Solutions** (Unicode escapes / broken emojis, emoji mapping table, edge label dark background, multi-line node labels, dark backgrounds, disproportionate layouts, named layout patterns, subgraph title truncation, classDiagram-specific pitfalls, architecture-beta pitfalls, cross-diagram syntax compatibility, reserved words, XY chart coloring, C4 limitations, blockquote tall boxes)
-- **Diagram Audit Methodology** (4-step enumerate / categorize / batch fix / validate)
-- **Quality Checklist** (before-committing + diagram-review + don't-over-simplify)
-## 📚 References
+## 📚 External References
 
 ### Official Documentation
 

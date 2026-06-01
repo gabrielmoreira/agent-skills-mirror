@@ -623,6 +623,28 @@ Why it matters:
 - guards against runaway summaries that are much larger than their target budget
 - useful when summary models are verbose or unstable
 
+### `summaryMaxCallsPerWindow`, `summaryCallWindowMs`, and `summarySpendBackoffMs`
+
+Bounds model-backed compaction and large-file summarization calls per session.
+
+Defaults:
+
+- `summaryMaxCallsPerWindow`: `24`
+- `summaryCallWindowMs`: `600000`
+- `summarySpendBackoffMs`: `1800000`
+
+Env overrides:
+
+- `LCM_SUMMARY_MAX_CALLS_PER_WINDOW`
+- `LCM_SUMMARY_CALL_WINDOW_MS`
+- `LCM_SUMMARY_SPEND_BACKOFF_MS`
+
+Why they matter:
+
+- prevents non-auth provider failures, ineffective compaction, or repeated deferred debt from spending unbounded summarization calls
+- keeps provider-auth failures on the separate auth circuit breaker path
+- direct deterministic fallbacks remain available when model-backed large-file summaries are throttled
+
 ### `customInstructions`
 
 Natural-language instructions injected into summarization prompts.
@@ -631,6 +653,25 @@ Why it matters:
 
 - lets operators steer formatting or emphasis without patching code
 - should be used sparingly; low-quality instructions can degrade summary quality system-wide
+
+### `stripInjectedContextTags`
+
+| | |
+| --- | --- |
+| Type | `string[]` |
+| Default | `["active_memory_plugin", "relevant-memories", "relevant_memories", "hindsight_memories"]` |
+| Env | `LCM_STRIP_INJECTED_CONTEXT_TAGS` (comma-separated) |
+
+XML tag names whose blocks are stripped from message content before compaction summarization.
+
+Why it matters:
+
+- Memory and context plugins (active-memory, memory-lancedb, hindsight-openclaw) prepend XML-tagged blocks to user messages via the `prependContext` hook.  These blocks are ephemeral retrieval context — they helped the model on that specific turn but are not part of the actual conversation.
+- Without stripping, the summarizer treats injected memories as real conversation content, permanently corrupting compacted summaries with auto-retrieved context that the user never said.
+- The default list covers well-known OpenClaw memory plugin tags.  Add custom tag names if you use plugins that inject context via other tags.
+- Set to `[]` (or empty env string) to disable stripping.
+
+Design note: stripping happens at compaction time, not at message ingestion.  The raw message stored in the LCM database still contains the original injected blocks, so `lcm_expand` and `lcm_grep` can still surface the full context the model saw on any given turn.  Only the summarizer input is cleaned.
 
 ## Practical operator workflow
 

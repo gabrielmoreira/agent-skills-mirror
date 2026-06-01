@@ -14,7 +14,21 @@ These rules apply to **every** style in this folder. They override slide-specifi
 - **Use up to 3 visual layers max per slide**: background → phone/illustration → headline + 1 accent. Above this becomes noise.
 - **Never center-vertically a phone with empty bands above AND below**. Anchor the phone to one edge (top bleed, bottom bleed, or flush bottom).
 
-## 2. Illustration & SVG quality bar (anti-clipart)
+## 2. Cross-screen / cross-canvas moments
+
+The template exports crops from one connected canvas. Use that power sometimes, not constantly:
+
+- **Default frequency:** in a 5+ slide deck, include **one** adjacent-screen cross-canvas moment unless the user's brief is strict, formal, or every screen must stand alone for legal/compliance reasons. In 8-10 slide decks, use at most **two**. In 3-4 slide decks, use it only when the concept obviously benefits.
+- **Standalone rule:** every exported PNG must still read as one complete advertisement at thumbnail size. The neighbor may add delight, but it must not be required for comprehension.
+- **Good seam-crossers:** oversized non-critical phone edges, screenshot mosaics, background gradients/photos, map routes, doodle paths, waveforms, sticker trails, glow/starfields, mascot limbs, 3D props, notification cards, and soft shadows.
+- **Bad seam-crossers:** headline text, app name, legal copy, price, rating, CTA, required store info, faces/eyes, key chart numbers, primary product claim, or UI the headline depends on.
+- **Amount:** let 10-30% of a visual cross the seam. Above 40% is allowed only for backgrounds, abstract paths, or deliberate panoramas; otherwise each crop feels like an accident.
+- **Style fit:** minimal/photo-led styles should use background/photo continuation or one quiet card crossing the seam. Editorial and maximalist styles can use tilted devices, doodles, stickers, chips, mascots, or 3D objects, but still obey the style's density rules.
+- **Seam placement:** put the boundary through negative space, a simple shape, or a shadow/texture transition. Never cut through detailed anatomy, text, or the focal point of a screenshot.
+
+If a cross-screen element makes either individual crop feel broken, remove it or turn it into a contained single-screen element.
+
+## 3. Illustration & SVG quality bar (anti-clipart)
 
 The single biggest failure mode is "Figma-quick-draw" mascots and props that read as clipart. Every illustrated element must clear at least **3 of these 5 polish gates**:
 
@@ -26,7 +40,7 @@ The single biggest failure mode is "Figma-quick-draw" mascots and props that rea
 
 A 30-second sanity test: if you cropped the mascot/illustration out and put it next to a piece of art from the style's named inspiration (Cancoco, Mate, Superlist, etc.), would it look like it belongs in the same product, or would it look like a knock-off? If knock-off, re-render.
 
-## 3. Mascot & illustration sizing minimums
+## 4. Mascot & illustration sizing minimums
 
 When a style features a mascot/character/object, it must be **physically large on the canvas** — viewers see thumbnails:
 
@@ -41,7 +55,7 @@ When a style features a mascot/character/object, it must be **physically large o
 
 If the spec gives a specific size, that size wins. Otherwise, use these minimums.
 
-## 4. Typography contrast & legibility
+## 5. Typography contrast & legibility
 
 - All headline text must clear **WCAG AA 4.5:1** against the local pixel underneath it. If your headline sits over a gradient or photo, sample the **worst** pixel under the letter shapes — not the average — and verify against that.
 - **The "emphasis word" trap.** Accent / italic / colored emphasis words are the most common contrast failure point: they're often a pale tint of the brand color (lilac on cream, mustard on sage, peach on tan) chosen for *style* without measuring contrast. **Every emphasis color must independently clear 4.5:1 against its slide bg.** If it doesn't, swap to a darker variant of the same hue family — never just "hope the user catches it." Examples that historically failed:
@@ -54,7 +68,7 @@ If the spec gives a specific size, that size wins. Otherwise, use these minimums
 - **Subtitle / body copy on textured bg** (cork mosaic, paper grain, photo, gradient) must be either (a) larger than 36px equivalent at 1320px canvas width AND ≥ 4.5:1, OR (b) sit on a clean rounded scrim card. Small navy text on cork mosaic at 28px = unreadable at thumbnail size.
 - Never use pure `#FFFFFF` text on a pure-saturated mid-tone background (e.g., white on `#7BC9F5` cyan) — drop to a near-white tinted with the bg's complement, or add a scrim.
 
-## 5. Headline composition rules
+## 6. Headline composition rules
 
 - **Max characters per line, soft cap by canvas width**: `floor(canvasWidth / fontSize × 0.45)` chars. For a 96px Inter Bold headline on 1320px canvas, that's ~13 chars/line including spaces. Going over forces clipping risk.
 - **Max 3 lines** for any headline. 2 is better. 1 is allowed only if the line fits comfortably in < 80% canvas width.
@@ -62,7 +76,7 @@ If the spec gives a specific size, that size wins. Otherwise, use these minimums
 - **Trailing punctuation**: follow the style's spec. Default to a single period at end of full sentences; never a question mark in marketing headlines unless the spec allows it; never multiple exclamation marks.
 - **Tracking and leading for big display type**: leading should be ≤ 1.05 (lines should kiss), tracking should be slightly negative (`-0.01em` to `-0.03em`). Loose default browser leading at display size always looks amateur.
 
-## 6. Phone treatment
+## 7. Phone treatment
 
 - **Bezel sizing matches the iPhone 15 Pro silhouette**: corner radius scales with phone width. At 920px phone width (≈70% canvas), use a 52–56px outer radius and a 36–42px inner screen radius.
 - **Phone screenshot fill**: the user-supplied screenshot must fill the inner screen edge-to-edge with no white margin and no visible status-bar duplication. If the screenshot has a transparent background, that's a bug — flatten it first.
@@ -70,13 +84,13 @@ If the spec gives a specific size, that size wins. Otherwise, use these minimums
 - **Phone drop shadow tinted with the bg**: pure black shadow on a colored bg looks pasted-in. Tint the shadow with the bg complement at 10–20% opacity. Two-shadow stack always (a long soft shadow + a tight contact shadow).
 - **Use the default iPhone bezel.** Every phone-bearing slide MUST render the user's screenshot inside the template's default `Phone` device frame (the iPhone mockup PNG at `public/mockup.png` driven by the `Phone` component in `src/components/editor/device-frames.tsx`). **Do NOT** replace it with a bezelless rounded rectangle, a paper cutout, a cream paper border, or any custom-drawn frame. The bezel is the unifying visual across the whole skill output — strip it and the screenshots lose the iPhone read at thumbnail size. Per-style spec sheets may tint or shadow the area around the bezel, but they must NOT replace the bezel itself.
 
-## 7. Background quality
+## 8. Background quality
 
 - **No accidental gradient on flat-color slides** — if the spec says "flat" the bg must be a single hex, no gradient at all. Inverse: if the spec calls for a gradient, the gradient must use at least 3 stops with intentional hue shift, not a 2-stop near-identical-color gradient.
 - **Noise / grain texture** at the opacity the spec requires. 0% noise on styles that demand grain (Retro Rubberhose, Hand-Drawn Editorial, Moody Curated Dating) is a fail.
 - **Vignette only when the spec calls for it**. Adding a vignette to a Glassy Iridescent slide kills the brightness; omitting it on Moody Curated Dating kills the atmosphere. Follow the spec.
 
-## 8. Decoration density discipline
+## 9. Decoration density discipline
 
 Per slide:
 - **Minimal styles** (Crisp Teal Bezelless Wallet, Editorial Minimal, Moody Curated Dating): **0** floating decorations.
@@ -85,11 +99,13 @@ Per slide:
 
 Decoration density wrong-side either way (sparse maximalist or dense minimalist) reads as a style misfire.
 
-## 9. Auto-reject checks (run before declaring done)
+## 10. Auto-reject checks (run before declaring done)
 
 Before exporting, run through this list. Any "yes" means re-render:
 
 - [ ] Any text running off-canvas or clipped by a slide edge?
+- [ ] Any cross-screen element making an individual export incomprehensible, accidentally clipped, or dependent on its neighbor?
+- [ ] Any seam cutting through headline text, legal/store info, faces/eyes, key UI, or the primary product claim?
 - [ ] Any phone smaller than 65% of canvas height (on a phone-bearing slide)?
 - [ ] Any empty band wider than 22% of canvas height?
 - [ ] Any mascot/object below the minimum size for its role?
@@ -102,7 +118,7 @@ Before exporting, run through this list. Any "yes" means re-render:
 
 The agent's job is not done until all of the above are "no."
 
-## 10. The thumbnail test (mandatory)
+## 11. The thumbnail test (mandatory)
 
 Shrink the rendered PNG to **220px wide** (App Store search-result thumbnail). Squint. Answer in one sentence:
 1. What style is this?

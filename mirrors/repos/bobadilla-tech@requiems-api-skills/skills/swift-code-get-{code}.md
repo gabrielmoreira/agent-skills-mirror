@@ -17,9 +17,9 @@ Look up bank metadata for a SWIFT/BIC code.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `code` | string | yes | path | SWIFT/BIC code (8 or 11 alphanumeric characters) |
+| Name   | Type   | Required | Location | Description                                      |
+| ------ | ------ | -------- | -------- | ------------------------------------------------ |
+| `code` | string | yes      | path     | SWIFT/BIC code (8 or 11 alphanumeric characters) |
 
 ## Response Example
 
@@ -44,20 +44,21 @@ Look up bank metadata for a SWIFT/BIC code.
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `swift_code` | string | Full 11-character SWIFT/BIC code |
-| `bank_code` | string | Institution code (characters 1-4) |
-| `country_code` | string | ISO 3166-1 alpha-2 country code (characters 5-6) |
-| `location_code` | string | Location code (characters 7-8) |
-| `branch_code` | string | Branch code (characters 9-11), XXX for primary office |
-| `bank_name` | string | Bank or institution name |
-| `city` | string | City of the branch or primary office |
-| `country_name` | string | Full country name |
-| `is_primary` | boolean | true when branch_code is XXX |
+| Field           | Type    | Description                                           |
+| --------------- | ------- | ----------------------------------------------------- |
+| `swift_code`    | string  | Full 11-character SWIFT/BIC code                      |
+| `bank_code`     | string  | Institution code (characters 1-4)                     |
+| `country_code`  | string  | ISO 3166-1 alpha-2 country code (characters 5-6)      |
+| `location_code` | string  | Location code (characters 7-8)                        |
+| `branch_code`   | string  | Branch code (characters 9-11), XXX for primary office |
+| `bank_name`     | string  | Bank or institution name                              |
+| `city`          | string  | City of the branch or primary office                  |
+| `country_name`  | string  | Full country name                                     |
+| `is_primary`    | boolean | true when branch_code is XXX                          |
 
 ## Errors
 
-- `400` **bad_request** — Invalid SWIFT/BIC format (must be 8 or 11 valid characters).
+- `400` **bad_request** — Invalid SWIFT/BIC format (must be 8 or 11 valid
+  characters).
 - `404` **not_found** — SWIFT/BIC code not found in the dataset.
 - `500` **internal_error** — Unexpected server error.

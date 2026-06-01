@@ -1,8 +1,10 @@
 ---
 name: prompt-creator
 description: "Create prompts that pass prompt-review's five gates by construction — intent capture, slash-command naming, single-workflow scope, draft as numbered steps, dogfood self-review. Use when authoring a new prompt, refactoring an existing one, or promoting a Mall prompt into the heir's brain."
-lastReviewed: 2026-05-26
+lastReviewed: 2026-05-31
 ---
+
+<!-- intentional divergence from Supervisor: Edition strips Supervisor-only routing tables (curation-only vs. mirror split) and uses heir-portable phrasing ("into the heir's brain"). Same five gates. Audited 2026-05-31. -->
 
 # Prompt Creator
 

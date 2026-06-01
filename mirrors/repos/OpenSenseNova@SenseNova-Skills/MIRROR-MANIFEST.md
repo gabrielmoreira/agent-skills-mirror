@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `OpenSenseNova/SenseNova-Skills` — 26 default patterns, 14 followed patterns, 371 file(s) materialized.
+Mirror of `OpenSenseNova/SenseNova-Skills` — 26 default patterns, 14 followed patterns, 374 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `OpenSenseNova/SenseNova-Skills` — 26 default patterns, 14 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 14 |
-| Files         | 371 |
+| Files         | 374 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -416,33 +416,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 342 | ✓ | [`skills/sn-search-code/scripts/search_utils.py`](skills/sn-search-code/scripts/search_utils.py) |
 | 343 | ✓ | [`skills/sn-search-code/scripts/stackoverflow_search.py`](skills/sn-search-code/scripts/stackoverflow_search.py) |
 | 344 | ✓ | [`skills/sn-search-code/SKILL.md`](skills/sn-search-code/SKILL.md) |
-| 345 | ✓ | [`skills/sn-search-social-cn/requirements.txt`](skills/sn-search-social-cn/requirements.txt) |
-| 346 | ✓ | [`skills/sn-search-social-cn/scripts/bilibili_search.py`](skills/sn-search-social-cn/scripts/bilibili_search.py) |
-| 347 | ✓ | [`skills/sn-search-social-cn/scripts/douyin_search.py`](skills/sn-search-social-cn/scripts/douyin_search.py) |
-| 348 | ✓ | [`skills/sn-search-social-cn/scripts/search_utils.py`](skills/sn-search-social-cn/scripts/search_utils.py) |
-| 349 | ✓ | [`skills/sn-search-social-cn/scripts/zhihu_search.py`](skills/sn-search-social-cn/scripts/zhihu_search.py) |
-| 350 | ✓ | [`skills/sn-search-social-cn/SKILL.md`](skills/sn-search-social-cn/SKILL.md) |
-| 351 | ✓ | [`skills/sn-search-social-en/requirements.txt`](skills/sn-search-social-en/requirements.txt) |
-| 352 | ✓ | [`skills/sn-search-social-en/scripts/reddit_search.py`](skills/sn-search-social-en/scripts/reddit_search.py) |
-| 353 | ✓ | [`skills/sn-search-social-en/scripts/search_utils.py`](skills/sn-search-social-en/scripts/search_utils.py) |
-| 354 | ✓ | [`skills/sn-search-social-en/scripts/twitter_search.py`](skills/sn-search-social-en/scripts/twitter_search.py) |
-| 355 | ✓ | [`skills/sn-search-social-en/scripts/youtube_search.py`](skills/sn-search-social-en/scripts/youtube_search.py) |
-| 356 | ✓ | [`skills/sn-search-social-en/SKILL.md`](skills/sn-search-social-en/SKILL.md) |
-| 357 | ✓ | [`skills/sn-update/SKILL.md`](skills/sn-update/SKILL.md) |
-| 358 | → | [`docs/sn-data-analysis_cn.md`](docs/sn-data-analysis_cn.md) |
-| 359 | → | [`docs/sn-data-analysis.md`](docs/sn-data-analysis.md) |
-| 360 | → | [`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md) |
-| 361 | → | [`docs/sn-deep-research.md`](docs/sn-deep-research.md) |
-| 362 | → | [`docs/sn-image-generate_en.md`](docs/sn-image-generate_en.md) |
-| 363 | → | [`docs/sn-image-generate.md`](docs/sn-image-generate.md) |
-| 364 | → | [`docs/sn-infographic-examples_CN.md`](docs/sn-infographic-examples_CN.md) |
-| 365 | → | [`docs/sn-infographic-examples.md`](docs/sn-infographic-examples.md) |
-| 366 | → | [`docs/sn-ppt-generate_cn.md`](docs/sn-ppt-generate_cn.md) |
-| 367 | → | [`docs/sn-ppt-generate.md`](docs/sn-ppt-generate.md) |
-| 368 | → | [`INSTALL_CN.md`](INSTALL_CN.md) |
-| 369 | → | [`INSTALL.md`](INSTALL.md) |
-| 370 | → | [`README_CN.md`](README_CN.md) |
-| 371 | → | [`README.md`](README.md) |
+| 345 | ✓ | [`skills/sn-search-image/requirements.txt`](skills/sn-search-image/requirements.txt) |
+| 346 | ✓ | [`skills/sn-search-image/scripts/serper_image_search.py`](skills/sn-search-image/scripts/serper_image_search.py) |
+| 347 | ✓ | [`skills/sn-search-image/SKILL.md`](skills/sn-search-image/SKILL.md) |
+| 348 | ✓ | [`skills/sn-search-social-cn/requirements.txt`](skills/sn-search-social-cn/requirements.txt) |
+| 349 | ✓ | [`skills/sn-search-social-cn/scripts/bilibili_search.py`](skills/sn-search-social-cn/scripts/bilibili_search.py) |
+| 350 | ✓ | [`skills/sn-search-social-cn/scripts/douyin_search.py`](skills/sn-search-social-cn/scripts/douyin_search.py) |
+| 351 | ✓ | [`skills/sn-search-social-cn/scripts/search_utils.py`](skills/sn-search-social-cn/scripts/search_utils.py) |
+| 352 | ✓ | [`skills/sn-search-social-cn/scripts/zhihu_search.py`](skills/sn-search-social-cn/scripts/zhihu_search.py) |
+| 353 | ✓ | [`skills/sn-search-social-cn/SKILL.md`](skills/sn-search-social-cn/SKILL.md) |
+| 354 | ✓ | [`skills/sn-search-social-en/requirements.txt`](skills/sn-search-social-en/requirements.txt) |
+| 355 | ✓ | [`skills/sn-search-social-en/scripts/reddit_search.py`](skills/sn-search-social-en/scripts/reddit_search.py) |
+| 356 | ✓ | [`skills/sn-search-social-en/scripts/search_utils.py`](skills/sn-search-social-en/scripts/search_utils.py) |
+| 357 | ✓ | [`skills/sn-search-social-en/scripts/twitter_search.py`](skills/sn-search-social-en/scripts/twitter_search.py) |
+| 358 | ✓ | [`skills/sn-search-social-en/scripts/youtube_search.py`](skills/sn-search-social-en/scripts/youtube_search.py) |
+| 359 | ✓ | [`skills/sn-search-social-en/SKILL.md`](skills/sn-search-social-en/SKILL.md) |
+| 360 | ✓ | [`skills/sn-update/SKILL.md`](skills/sn-update/SKILL.md) |
+| 361 | → | [`docs/sn-data-analysis_cn.md`](docs/sn-data-analysis_cn.md) |
+| 362 | → | [`docs/sn-data-analysis.md`](docs/sn-data-analysis.md) |
+| 363 | → | [`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md) |
+| 364 | → | [`docs/sn-deep-research.md`](docs/sn-deep-research.md) |
+| 365 | → | [`docs/sn-image-generate_en.md`](docs/sn-image-generate_en.md) |
+| 366 | → | [`docs/sn-image-generate.md`](docs/sn-image-generate.md) |
+| 367 | → | [`docs/sn-infographic-examples_CN.md`](docs/sn-infographic-examples_CN.md) |
+| 368 | → | [`docs/sn-infographic-examples.md`](docs/sn-infographic-examples.md) |
+| 369 | → | [`docs/sn-ppt-generate_cn.md`](docs/sn-ppt-generate_cn.md) |
+| 370 | → | [`docs/sn-ppt-generate.md`](docs/sn-ppt-generate.md) |
+| 371 | → | [`INSTALL_CN.md`](INSTALL_CN.md) |
+| 372 | → | [`INSTALL.md`](INSTALL.md) |
+| 373 | → | [`README_CN.md`](README_CN.md) |
+| 374 | → | [`README.md`](README.md) |
 
 ---
 

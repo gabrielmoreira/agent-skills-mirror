@@ -33,9 +33,9 @@ Returns a randomly selected emoji with its full metadata.
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `emoji` | string | The rendered emoji glyph |
-| `name` | string | CLDR short name in snake_case (e.g. grinning_face) |
+| Field      | Type   | Description                                                 |
+| ---------- | ------ | ----------------------------------------------------------- |
+| `emoji`    | string | The rendered emoji glyph                                    |
+| `name`     | string | CLDR short name in snake_case (e.g. grinning_face)          |
 | `category` | string | Unicode category (e.g. Smileys & Emotion, Animals & Nature) |
-| `unicode` | string | Unicode code-point in U+XXXX notation (e.g. U+1F600) |
+| `unicode`  | string | Unicode code-point in U+XXXX notation (e.g. U+1F600)        |

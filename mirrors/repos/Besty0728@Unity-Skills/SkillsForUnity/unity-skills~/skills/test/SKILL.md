@@ -9,7 +9,7 @@ Run and manage Unity tests.
 
 ## Operating Mode
 
-- **Approval**(默认): 只读 skill（`test_get_result` / `test_list` / `test_discover_get_result` / `test_get_last_result` / `test_list_categories` / `test_smoke_skills` / `test_get_summary`，标 `SkillMode.SemiAuto`）直接执行；执行/发现/创建型 skill（`test_run` / `test_run_by_name` / `test_discover_start` / `test_cancel` / `test_create_editmode` / `test_create_playmode`，默认 `SkillMode.FullAuto`）需用户 grant，grant 后服务端一步执行返结果（job 立即排进队列）。
+- **Approval**: 只读 skill（`test_get_result` / `test_list` / `test_discover_get_result` / `test_get_last_result` / `test_list_categories` / `test_smoke_skills` / `test_get_summary`，标 `SkillMode.SemiAuto`）直接执行；执行/发现/创建型 skill（`test_run` / `test_run_by_name` / `test_discover_start` / `test_cancel` / `test_create_editmode` / `test_create_playmode`，默认 `SkillMode.FullAuto`）需用户 grant，grant 后服务端一步执行返结果（job 立即排进队列）。
 - **Auto / Bypass**: 直接执行。
 - **本模块有 4 个 NeverInSemi skill**（按 `IsForbiddenInSemi` 自动判定）：
   - `MayEnterPlayMode = true`: `test_run`、`test_run_by_name`

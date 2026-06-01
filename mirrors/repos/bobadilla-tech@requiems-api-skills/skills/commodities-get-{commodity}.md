@@ -13,13 +13,14 @@ description: Returns the latest annual average price and up to 10 years of histo
 
 ## Get Commodity Price
 
-Returns the latest annual average price and up to 10 years of historical data for the requested commodity slug.
+Returns the latest annual average price and up to 10 years of historical data
+for the requested commodity slug.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `commodity` | string | yes | path | Commodity slug (e.g. gold, silver, oil). See supported slugs below. |
+| Name        | Type   | Required | Location | Description                                                         |
+| ----------- | ------ | -------- | -------- | ------------------------------------------------------------------- |
+| `commodity` | string | yes      | path     | Commodity slug (e.g. gold, silver, oil). See supported slugs below. |
 
 ## Response Example
 
@@ -53,19 +54,20 @@ Returns the latest annual average price and up to 10 years of historical data fo
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `commodity` | string | The commodity slug as provided in the request path |
-| `name` | string | Human-readable commodity name |
-| `price` | number | Latest annual average price in the commodity's display unit |
-| `unit` | string | Price unit (oz, barrel, mmbtu, lb, or metric_ton) |
-| `currency` | string | Currency code — always USD |
-| `change_24h` | number | Year-over-year percentage change from the prior year's annual average (positive = price increased) |
-| `historical` | array | Up to 10 prior years of annual average prices, ordered newest to oldest |
-| `historical[].period` | string | Year of the historical data point |
-| `historical[].price` | number | Annual average price for that year |
+| Field                 | Type   | Description                                                                                        |
+| --------------------- | ------ | -------------------------------------------------------------------------------------------------- |
+| `commodity`           | string | The commodity slug as provided in the request path                                                 |
+| `name`                | string | Human-readable commodity name                                                                      |
+| `price`               | number | Latest annual average price in the commodity's display unit                                        |
+| `unit`                | string | Price unit (oz, barrel, mmbtu, lb, or metric_ton)                                                  |
+| `currency`            | string | Currency code — always USD                                                                         |
+| `change_24h`          | number | Year-over-year percentage change from the prior year's annual average (positive = price increased) |
+| `historical`          | array  | Up to 10 prior years of annual average prices, ordered newest to oldest                            |
+| `historical[].period` | string | Year of the historical data point                                                                  |
+| `historical[].price`  | number | Annual average price for that year                                                                 |
 
 ## Errors
 
-- `404` **not_found** — No data found for the given commodity slug. Check the supported slugs list.
+- `404` **not_found** — No data found for the given commodity slug. Check the
+  supported slugs list.
 - `500` **internal_error** — Unexpected server error.

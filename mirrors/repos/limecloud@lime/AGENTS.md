@@ -1,14 +1,14 @@
 # AI Agent 指南
 
-本文件只用于 **开发 Lime 源码仓库本身**。根 `AGENTS.md` 只保留仓库级约束、导航和统一入口；模块细节与长流程统一下沉到 `docs/`。
+本文件只用于 **开发 Lime 源码仓库本身**。根 `AGENTS.md` 只保留仓库级约束、导航和统一入口；模块细节与长流程统一下沉到 `internal/`。
 
 ## 原则
 
 1. **代码仓库是唯一的记录系统** - 不在 repo 里的知识对智能体不存在；凡影响开发的讨论、决策、外部资料，都必须落成 repo 内的 versioned artifact
 2. **本文件是地图，不是百科全书** - 保持约 `100` 行，只暴露本层信息和下一步导航
 3. **把品味编码为规则** - 优先用 linter、结构测试、CI 检查约束质量；可机械验证优先于散文指南
-4. **计划是一等工件** - 执行计划带进度日志，集中存放于 `docs/exec-plans/`
-5. **持续垃圾回收** - 技术债按小额、持续方式偿还；差距追踪见 `docs/exec-plans/tech-debt-tracker.md`
+4. **计划是一等工件** - 执行计划带进度日志，集中存放于 `internal/exec-plans/`
+5. **持续垃圾回收** - 技术债按小额、持续方式偿还；差距追踪见 `internal/exec-plans/tech-debt-tracker.md`
 6. **卡住时修环境，不是更用力** - 先补上下文、工具、约束，再继续实现；缺口也要写回 repo
 
 ## 工程协作方式
@@ -40,7 +40,7 @@
 3. **协议改动必须同步四侧** - `safeInvoke(...)` / `invoke(...)`、`tauri::generate_handler!`、`agentCommandCatalog`、`mockPriorityCommands` / `defaultMocks` 必须保持一致，并执行 `npm run test:contracts`
 4. **Lime 是 GUI 桌面产品** - 不能只以 `lint`、`typecheck`、单测通过作为“可交付”判断
 5. **高风险 GUI 改动必须做最小冒烟** - 涉及 GUI 壳、DevBridge、Workspace、主路径时执行 `npm run verify:gui-smoke`
-6. **Playwright 续测优先稳定桌面 Chrome 会话** - 真实交互验证优先复用已有 Lime 页签；需要新启浏览器时走持久化 Chrome 上下文，避免本地桌面出现自动化横幅或 `--no-sandbox` 安全横幅，细则见 `docs/aiprompts/playwright-e2e.md`
+6. **Playwright 续测优先稳定桌面 Chrome 会话** - 真实交互验证优先复用已有 Lime 页签；需要新启浏览器时走持久化 Chrome 上下文，避免本地桌面出现自动化横幅或 `--no-sandbox` 安全横幅，细则见 `internal/aiprompts/playwright-e2e.md`
 7. **用户可见 UI 改动必须补稳定回归** - 优先补现有 `*.test.tsx` 或 snapshot 断言
 8. **用户可见文案必须全球本地化** - 新增或改动的按钮、标题、空态、toast、confirm、prompt、placeholder、aria/title、错误提示、导出 Markdown / copy prompt / artifact title 等 presentation 文案，必须覆盖 Lime current 五语言 `zh-CN / zh-TW / en-US / ja-JP / ko-KR`；前端走 key-based resources，Rust / Tauri 导出走 locale copy service；禁止只做中文 / 英文双语兜底，除非路线图明确写出临时例外和退出条件
 9. **配置与依赖改动要成组更新** - schema、校验器、消费者、文档、锁文件保持同步
@@ -53,9 +53,9 @@
 1. **主线任务先重述目标** - 用户要求“对齐路线图 / 继续主线”时，先说明当前主目标、阶段和下一刀
 2. **先补主缺口再磨细节** - 多阶段主线未到可用闭环前，优先做直接提高整体完成度的缺口；协议 polish、错误分类、额外 seam、边缘校验、文案润色、内部抽象等梢枝末节，只有在阻塞主路径、会造成假入口/假配置，或用户明确要求时才做
 3. **下一刀必须按目标增量排序** - 选择下一步前先列出 1-3 个未完成主问题，并优先选“对整体目标完成度提升最大”的一项；不要因为当前文件顺手、测试容易、局部更完整，就继续做低杠杆小项
-4. **每一刀都要可追踪** - 改动要么回挂到 `docs/roadmap/`，要么登记到 `docs/exec-plans/` 或技术债追踪
+4. **每一刀都要可追踪** - 改动要么回挂到 `internal/roadmap/`，要么登记到 `internal/exec-plans/` 或技术债追踪
 5. **清理不能替代交付** - 连续两轮主要在做治理减法后，下一轮优先回到未完成主线
-6. **长任务必须落计划** - 超过一轮的实现、迁移、清理，写入 `docs/exec-plans/` 并持续更新进度日志
+6. **长任务必须落计划** - 超过一轮的实现、迁移、清理，写入 `internal/exec-plans/` 并持续更新进度日志
 7. **主线冲突先清障，不保旧面** - current 规划与旧实现直接冲突时，先删或下线阻碍主线的旧页面、旧命名、旧命令、旧文档，再继续实现；不要为了“看起来兼容”保留双轨
 8. **默认不为顺手问题偏航** - 已经选定本轮主线后，除非该问题直接阻塞当前交付、会让新改动变假配置/假入口，或用户明确要求，否则不要切去处理旁支优化、额外治理、零引用清理或“顺手再修一个”
 9. **清理必须有主线收益句** - 任何治理/重构/删除动作，动手前都要能用一句话说明“它如何直接帮助当前主线交付”；如果说不出来，就记录为后续项而不是立即执行
@@ -67,25 +67,25 @@
 ## 文档导航
 
 - **文档中心**：`docs/README.md`
-- **模块级工程导航**：`docs/aiprompts/README.md`
-- **架构概览**：`docs/aiprompts/overview.md`
-- **工程质量 / 校验**：`docs/aiprompts/quality-workflow.md`
-- **UI 规范**：`docs/aiprompts/design-language.md`
-- **Tauri 命令边界**：`docs/aiprompts/commands.md`
-- **命令运行时**：`docs/aiprompts/command-runtime.md`
-- **任务 / 子代理 taxonomy**：`docs/aiprompts/task-agent-taxonomy.md`
-- **远程运行时**：`docs/aiprompts/remote-runtime.md`
-- **记忆 / 压缩主链**：`docs/aiprompts/memory-compaction.md`
-- **文件持久化主链**：`docs/aiprompts/persistence-map.md`
-- **状态 / 历史 / 遥测主链**：`docs/aiprompts/state-history-telemetry.md`
-- **任务分层 / 模型经济调度路线图**：`docs/roadmap/task/README.md`
-- **治理与收口**：`docs/aiprompts/governance.md`
-- **并行 Agent 协作**：`docs/aiprompts/parallel-agent-collaboration.md`
-- **Harness Engine 治理**：`docs/aiprompts/harness-engine-governance.md`
-- **Playwright / GUI 续测**：`docs/aiprompts/playwright-e2e.md`
-- **计划与进度**：`docs/exec-plans/README.md`
-- **技术债追踪**：`docs/exec-plans/tech-debt-tracker.md`
-- **路线图**：`docs/roadmap/`
+- **模块级工程导航**：`internal/aiprompts/README.md`
+- **架构概览**：`internal/aiprompts/overview.md`
+- **工程质量 / 校验**：`internal/aiprompts/quality-workflow.md`
+- **UI 规范**：`internal/aiprompts/design-language.md`
+- **Tauri 命令边界**：`internal/aiprompts/commands.md`
+- **命令运行时**：`internal/aiprompts/command-runtime.md`
+- **任务 / 子代理 taxonomy**：`internal/aiprompts/task-agent-taxonomy.md`
+- **远程运行时**：`internal/aiprompts/remote-runtime.md`
+- **记忆 / 压缩主链**：`internal/aiprompts/memory-compaction.md`
+- **文件持久化主链**：`internal/aiprompts/persistence-map.md`
+- **状态 / 历史 / 遥测主链**：`internal/aiprompts/state-history-telemetry.md`
+- **任务分层 / 模型经济调度路线图**：`internal/roadmap/task/README.md`
+- **治理与收口**：`internal/aiprompts/governance.md`
+- **并行 Agent 协作**：`internal/aiprompts/parallel-agent-collaboration.md`
+- **Harness Engine 治理**：`internal/aiprompts/harness-engine-governance.md`
+- **Playwright / GUI 续测**：`internal/aiprompts/playwright-e2e.md`
+- **计划与进度**：`internal/exec-plans/README.md`
+- **技术债追踪**：`internal/exec-plans/tech-debt-tracker.md`
+- **路线图**：`internal/roadmap/`
 - **Codex Skills 索引**：`.codex/skills/README.md`
 
 ## 高频命令
@@ -103,6 +103,6 @@ cargo test --manifest-path "src-tauri/Cargo.toml"
 
 ## 维护规则
 
-1. 改仓库级规则时，同时更新本文件和对应 `docs/` 入口
-2. 新增长期流程优先落到 `docs/`；高频复用后再沉淀为 `.codex/skills/`
+1. 改仓库级规则时，同时更新本文件和对应 `internal/` 入口；对外文档站规则同步更新 `docs/README.md`
+2. 新增长期流程优先落到 `internal/`；高频复用后再沉淀为 `.codex/skills/`
 3. 如果某条规则已经能被 linter、结构测试或 CI 机械约束，就把约束写进工具链，而不是继续往本文件堆说明

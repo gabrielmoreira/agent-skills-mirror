@@ -13,13 +13,14 @@ description: Analyzes the sentiment of up to 50 texts in a single request. Resul
 
 ## Analyze Sentiment (Batch)
 
-Analyzes the sentiment of up to 50 texts in a single request. Results are returned in the same order as the input. Each text counts as one unit of usage.
+Analyzes the sentiment of up to 50 texts in a single request. Results are
+returned in the same order as the input. Each text counts as one unit of usage.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `texts` | array | yes | body | The list of texts to analyze. Between 1 and 50 items. |
+| Name    | Type  | Required | Location | Description                                           |
+| ------- | ----- | -------- | -------- | ----------------------------------------------------- |
+| `texts` | array | yes      | body     | The list of texts to analyze. Between 1 and 50 items. |
 
 ## Request Example
 
@@ -65,15 +66,15 @@ Analyzes the sentiment of up to 50 texts in a single request. Results are return
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `results` | array | Sentiment results for each input text, in the same order as the input. |
-| `results[].sentiment` | string | The dominant sentiment class: positive, negative, or neutral |
-| `results[].score` | number | Confidence score for the dominant sentiment, between 0.0 and 1.0 |
+| Field                          | Type   | Description                                                                |
+| ------------------------------ | ------ | -------------------------------------------------------------------------- |
+| `results`                      | array  | Sentiment results for each input text, in the same order as the input.     |
+| `results[].sentiment`          | string | The dominant sentiment class: positive, negative, or neutral               |
+| `results[].score`              | number | Confidence score for the dominant sentiment, between 0.0 and 1.0           |
 | `results[].breakdown.positive` | number | Proportional score for positive sentiment (sums to 1.0 with other classes) |
 | `results[].breakdown.negative` | number | Proportional score for negative sentiment (sums to 1.0 with other classes) |
-| `results[].breakdown.neutral` | number | Proportional score for neutral sentiment (sums to 1.0 with other classes) |
-| `total` | number | Total number of results returned. |
+| `results[].breakdown.neutral`  | number | Proportional score for neutral sentiment (sums to 1.0 with other classes)  |
+| `total`                        | number | Total number of results returned.                                          |
 
 ## Errors
 

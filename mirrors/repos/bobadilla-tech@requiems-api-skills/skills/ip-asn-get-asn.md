@@ -13,7 +13,9 @@ description: Look up ASN, organization, ISP, and network details for the request
 
 ## Lookup ASN (Caller IP)
 
-Look up ASN, organization, ISP, and network details for the requesting client's IP address. Useful when you want information about the user making the request without specifying an IP explicitly.
+Look up ASN, organization, ISP, and network details for the requesting client's
+IP address. Useful when you want information about the user making the request
+without specifying an IP explicitly.
 
 ## Response Example
 
@@ -36,15 +38,15 @@ Look up ASN, organization, ISP, and network details for the requesting client's 
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `ip` | string | The IP address that was looked up (the requesting client's IP) |
-| `asn` | string | Autonomous System Number in format "ASxxxx" (e.g., "AS15169") |
-| `org` | string | Organization name owning the IP address range |
-| `isp` | string | Internet Service Provider providing the IP |
-| `domain` | string | Domain name associated with the IP or IP range |
-| `route` | string | CIDR notation of the network route (e.g., "8.8.8.0/24") |
-| `type` | string | Type of network (e.g., "hosting", "isp", "business", "cdn") |
+| Field    | Type   | Description                                                    |
+| -------- | ------ | -------------------------------------------------------------- |
+| `ip`     | string | The IP address that was looked up (the requesting client's IP) |
+| `asn`    | string | Autonomous System Number in format "ASxxxx" (e.g., "AS15169")  |
+| `org`    | string | Organization name owning the IP address range                  |
+| `isp`    | string | Internet Service Provider providing the IP                     |
+| `domain` | string | Domain name associated with the IP or IP range                 |
+| `route`  | string | CIDR notation of the network route (e.g., "8.8.8.0/24")        |
+| `type`   | string | Type of network (e.g., "hosting", "isp", "business", "cdn")    |
 
 ## Errors
 

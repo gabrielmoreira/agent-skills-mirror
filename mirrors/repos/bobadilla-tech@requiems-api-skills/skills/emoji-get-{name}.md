@@ -13,13 +13,14 @@ description: Returns a specific emoji by its CLDR snake_case name. The name is c
 
 ## Get Emoji by Name
 
-Returns a specific emoji by its CLDR snake_case name. The name is case-insensitive.
+Returns a specific emoji by its CLDR snake_case name. The name is
+case-insensitive.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `name` | string | yes | path | CLDR snake_case emoji name (e.g. grinning_face, thumbs_up) |
+| Name   | Type   | Required | Location | Description                                                |
+| ------ | ------ | -------- | -------- | ---------------------------------------------------------- |
+| `name` | string | yes      | path     | CLDR snake_case emoji name (e.g. grinning_face, thumbs_up) |
 
 ## Response Example
 
@@ -39,12 +40,12 @@ Returns a specific emoji by its CLDR snake_case name. The name is case-insensiti
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `emoji` | string | The rendered emoji glyph |
-| `name` | string | CLDR short name in snake_case |
-| `category` | string | Unicode category |
-| `unicode` | string | Unicode code-point in U+XXXX notation |
+| Field      | Type   | Description                           |
+| ---------- | ------ | ------------------------------------- |
+| `emoji`    | string | The rendered emoji glyph              |
+| `name`     | string | CLDR short name in snake_case         |
+| `category` | string | Unicode category                      |
+| `unicode`  | string | Unicode code-point in U+XXXX notation |
 
 ## Errors
 

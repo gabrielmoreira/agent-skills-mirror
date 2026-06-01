@@ -13,14 +13,26 @@ description: Returns a sorted list of all distinct body part values present in t
 
 ## List Body Parts
 
-Returns a sorted list of all distinct body part values present in the dataset. Use these as valid values for the body_part filter.
+Returns a sorted list of all distinct body part values present in the dataset.
+Use these as valid values for the body_part filter.
 
 ## Response Example
 
 ```json
 {
   "data": {
-    "items": ["back", "cardio", "chest", "lower arms", "lower legs", "neck", "shoulders", "upper arms", "upper legs", "waist"],
+    "items": [
+      "back",
+      "cardio",
+      "chest",
+      "lower arms",
+      "lower legs",
+      "neck",
+      "shoulders",
+      "upper arms",
+      "upper legs",
+      "waist"
+    ],
     "total": 10
   },
   "metadata": {
@@ -31,10 +43,10 @@ Returns a sorted list of all distinct body part values present in the dataset. U
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `items` | array | Sorted list of all distinct body part names |
-| `total` | integer | Total number of distinct body parts |
+| Field   | Type    | Description                                 |
+| ------- | ------- | ------------------------------------------- |
+| `items` | array   | Sorted list of all distinct body part names |
+| `total` | integer | Total number of distinct body parts         |
 
 ## Errors
 

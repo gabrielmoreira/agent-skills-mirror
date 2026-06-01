@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mksglu/context-mode` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `mksglu/context-mode` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mksglu/context-mode` — 26 default patterns, 0 followed patterns, 35
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 35 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -90,10 +90,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`skills/context-mode/references/patterns-shell.md`](skills/context-mode/references/patterns-shell.md) |
 | 30 | ✓ | [`skills/context-mode/SKILL.md`](skills/context-mode/SKILL.md) |
 | 31 | ✓ | [`skills/ctx-doctor/SKILL.md`](skills/ctx-doctor/SKILL.md) |
-| 32 | ✓ | [`skills/ctx-insight/SKILL.md`](skills/ctx-insight/SKILL.md) |
-| 33 | ✓ | [`skills/ctx-purge/SKILL.md`](skills/ctx-purge/SKILL.md) |
-| 34 | ✓ | [`skills/ctx-stats/SKILL.md`](skills/ctx-stats/SKILL.md) |
-| 35 | ✓ | [`skills/ctx-upgrade/SKILL.md`](skills/ctx-upgrade/SKILL.md) |
+| 32 | ✓ | [`skills/ctx-index/SKILL.md`](skills/ctx-index/SKILL.md) |
+| 33 | ✓ | [`skills/ctx-insight/SKILL.md`](skills/ctx-insight/SKILL.md) |
+| 34 | ✓ | [`skills/ctx-purge/SKILL.md`](skills/ctx-purge/SKILL.md) |
+| 35 | ✓ | [`skills/ctx-search/SKILL.md`](skills/ctx-search/SKILL.md) |
+| 36 | ✓ | [`skills/ctx-stats/SKILL.md`](skills/ctx-stats/SKILL.md) |
+| 37 | ✓ | [`skills/ctx-upgrade/SKILL.md`](skills/ctx-upgrade/SKILL.md) |
 
 ---
 

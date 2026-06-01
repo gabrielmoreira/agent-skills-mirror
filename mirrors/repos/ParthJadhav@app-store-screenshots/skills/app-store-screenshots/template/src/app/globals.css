@@ -81,9 +81,45 @@
   outline-style: solid;
 }
 
+.rnd-rotate-handle {
+  position: absolute;
+  right: -14px;
+  top: -14px;
+  z-index: 20;
+  display: flex;
+  height: 28px;
+  width: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(91, 124, 250, 0.65);
+  background: rgba(255, 255, 255, 0.92);
+  color: rgba(30, 41, 59, 0.92);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.2);
+  cursor: grab;
+  opacity: 0;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
+}
+
+.rnd-editable:hover .rnd-rotate-handle,
+.rnd-editable.rnd-selected .rnd-rotate-handle,
+.rnd-rotate-handle:focus-visible {
+  opacity: 1;
+}
+
+.rnd-rotate-handle:hover,
+.rnd-rotate-handle:focus-visible {
+  transform: scale(1.05);
+}
+
+.rnd-rotate-handle:active {
+  cursor: grabbing;
+}
+
 /* Show a visible cursor outline on contenteditable text inside Rnd while focused. */
 .rnd-editable [contenteditable]:focus {
   box-shadow: 0 0 0 2px rgba(91, 124, 250, 0.45);
   border-radius: 2px;
 }
-

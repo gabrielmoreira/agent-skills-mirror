@@ -160,16 +160,11 @@ The architecture tests encode the current layer contract:
   compatibility manifest in `tests/unit/test_public_shims.py` enforces the
   current first-party surface for that move; it is not a broader public API
   decision, and removing a listed name needs a separate deprecation plan.
-- `tests/unit/test_init_order.py` records the temporary baseline of feature
-  APIs that still access `Session` private state directly. Future capability
-  migration PRs should reduce that baseline as private state moves behind
-  explicit `Session` methods; do not add new entries unless the PR also
-  explains the follow-up migration path.
-- `tests/unit/test_init_order.py` also guards the notebook-composition
+- `tests/unit/test_init_order.py` guards the notebook-composition
   boundaries: `NotebookLMClient` constructs `SourcesAPI` before `NotebooksAPI`
   and passes it through the legacy `sources_api=` slot; notebook metadata
   services must not import or construct `SourcesAPI`; artifact/source/notebook
-  composition services must not runtime-import facade APIs or `Session`.
+  composition services must not runtime-import facade APIs.
   Add new private services to those guard lists when they take ownership of
   cross-facade behavior.
 
@@ -205,19 +200,19 @@ from those catalogues rather than introducing parallel patterns.
    [`docs/architecture.md`](./architecture.md) for the protocol
    catalog). Pass each collaborator by keyword-only argument; do not
    bundle them into a feature-local composite-runtime Protocol unless a
-   second consumer materialises. **Do NOT import the concrete
-   `Session` class for type annotations** — the broad `Session`
-   Protocol was deleted in Phase 7 of the capability refactor; see
-   ADR-013 for the rationale.
+   second consumer materialises. **Do NOT depend on a broad runtime
+   facade for type annotations** — there is no concrete `Session` class
+   (the broad `Session` Protocol was deleted; see ADR-013). Depend on the
+   narrow capability Protocols in `_runtime_contracts` instead.
 3. Add to `client.py`: wire each collaborator explicitly from the
-   composition root (e.g. `self.newfeature = NewFeatureAPI(rpc=composed.executor,
-   ...)`). The concrete collaborator instances on
-   `ComposedSession.collaborators` structurally satisfy every
-   capability Protocol, so the wiring stays straightforward.
+   composition root (e.g. `self.newfeature = NewFeatureAPI(rpc=internals.executor,
+   ...)`, where `internals = compose_client_internals(...)`). The concrete
+   collaborator instances on `ClientInternals.collaborators` structurally
+   satisfy every capability Protocol, so the wiring stays straightforward.
 4. **Tests** should use `tests/_fixtures/fake_core.py:FakeSession`
    which exposes the union of all capability protocols — it lets a
    feature test substitute the broad runtime without constructing a
-   real `Session`.
+   real client.
 5. Export types from `__init__.py`.
 
 ---
@@ -378,7 +373,7 @@ tests/
 │   ├── test_research_deep_poll_vcr.py
 │   ├── test_research_idempotency.py
 │   ├── test_save_chat_as_note_integration.py
-│   ├── test_session_integration.py  # Session + RPC plumbing
+│   ├── test_session_integration.py  # Client init + RPC plumbing
 │   ├── test_settings_integration.py  # SettingsAPI integration
 │   ├── test_settings_vcr.py
 │   ├── test_sharing_integration.py   # SharingAPI integration
@@ -514,8 +509,9 @@ response. Three modes are supported:
 
 The plumbing has three opt-in layers:
 
-1. **Env var**: `NOTEBOOKLM_VCR_RECORD_ERRORS=<mode>` activates the transport
-   wrapper inside `Session.open()`.
+1. **Env var**: `NOTEBOOKLM_VCR_RECORD_ERRORS=<mode>` activates the
+   `ErrorInjectionMiddleware` in the middleware chain (the env var is
+   consulted when the client opens).
 2. **Pytest marker**: `@pytest.mark.synthetic_error("<mode>")` sets the env
    var for the duration of a single test (auto-reverted on teardown). Note
    that the `synthetic_error` marker is registered dynamically in
@@ -616,7 +612,7 @@ Need network?
 
 ### Credential redaction
 
-The package handler installed by `configure_logging()` has a `RedactingFilter` attached. It runs for every record reaching the handler, including records originating in child loggers (`notebooklm._session`, `notebooklm._transport_errors`, `notebooklm._chat`, etc.) via Python logging's default propagation. The filter scrubs:
+The package handler installed by `configure_logging()` has a `RedactingFilter` attached. It runs for every record reaching the handler, including records originating in child loggers (`notebooklm._rpc_executor`, `notebooklm._transport_errors`, `notebooklm._chat`, etc.) via Python logging's default propagation. The filter scrubs:
 
 - CSRF tokens (`at=...`)
 - Session IDs (`f.sid=...`)
@@ -680,7 +676,7 @@ The `RedactingFilter` preserves `record.exc_info` (the live exception object) so
 
 - Standard `logging.Formatter` uses `record.exc_text` (scrubbed by our filter) and does NOT re-render from `exc_info`. Safe.
 - Custom formatters that ignore `exc_text` and read `exc_info` directly may render an unredacted traceback. **Mitigation**: wrap such handlers with `apply_redaction()` so the formatter is decorated and post-scrubs the final output regardless of which exception attribute it reads.
-- Records propagate to root by default (`notebooklm.propagate = True`) so `caplog` and `basicConfig` work without changes. Our filter mutates the record before propagation, so downstream handlers (including root's) see the scrubbed version. **Caveat**: if a user attaches an unredacted handler directly to a child logger (`notebooklm._session`), that handler fires *before* propagation reaches our parent handler. Mitigation: `apply_redaction(child_handler)`.
+- Records propagate to root by default (`notebooklm.propagate = True`) so `caplog` and `basicConfig` work without changes. Our filter mutates the record before propagation, so downstream handlers (including root's) see the scrubbed version. **Caveat**: if a user attaches an unredacted handler directly to a child logger (`notebooklm._rpc_executor`), that handler fires *before* propagation reaches our parent handler. Mitigation: `apply_redaction(child_handler)`.
 - Applications that want notebooklm logs *isolated* from root can set `logging.getLogger('notebooklm').propagate = False` themselves.
 
 ---

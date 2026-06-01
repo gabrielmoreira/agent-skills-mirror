@@ -13,13 +13,14 @@ description: Atomically increment a counter in the specified namespace and retur
 
 ## Increment Counter
 
-Atomically increment a counter in the specified namespace and return the new value
+Atomically increment a counter in the specified namespace and return the new
+value
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `namespace` | string | yes | path | Counter namespace (1-64 chars: alphanumeric, hyphen, underscore) |
+| Name        | Type   | Required | Location | Description                                                      |
+| ----------- | ------ | -------- | -------- | ---------------------------------------------------------------- |
+| `namespace` | string | yes      | path     | Counter namespace (1-64 chars: alphanumeric, hyphen, underscore) |
 
 ## Response Example
 
@@ -37,12 +38,13 @@ Atomically increment a counter in the specified namespace and return the new val
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `namespace` | string | The counter namespace |
-| `value` | integer | The new counter value after increment |
+| Field       | Type    | Description                           |
+| ----------- | ------- | ------------------------------------- |
+| `namespace` | string  | The counter namespace                 |
+| `value`     | integer | The new counter value after increment |
 
 ## Errors
 
-- `undefined` **400** — Invalid namespace: must be 1–64 chars, alphanumeric, hyphen or underscore only
+- `undefined` **400** — Invalid namespace: must be 1–64 chars, alphanumeric,
+  hyphen or underscore only
 - `undefined` **500** — Internal server error

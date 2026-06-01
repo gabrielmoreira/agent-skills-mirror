@@ -1,8 +1,10 @@
 ---
 name: instruction-review
 description: "Audits a candidate instruction (.instructions.md) against five gates (spec compliance, content quality, scope fit, safety, currency & coherence) plus optional Gate 6 (token budget for always-on instructions). Use when reviewing a new instruction draft before commit, evaluating a Mall instruction or store instruction for adoption, or re-auditing existing instructions on a periodic cadence."
-lastReviewed: 2026-05-26
+lastReviewed: 2026-05-31
 ---
+
+<!-- intentional divergence from Supervisor: Edition expands gate names inline, replaces Supervisor-specific paths (`scripts/brain-qa.cjs`, ADR-006/007, `docs/adrs/`, `docs/ledgers/audits/`) with heir-portable language ("a brain-qa validator", "where your heir tracks framework-level decisions"). Same six gates, same criteria. Audited 2026-05-31. -->
 
 # Instruction Review
 

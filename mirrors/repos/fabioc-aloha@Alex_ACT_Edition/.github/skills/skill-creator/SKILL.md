@@ -1,8 +1,10 @@
 ---
 name: skill-creator
 description: "Create skills that pass skill-review's five gates by construction — intent capture, prior-art scan, draft against gates, dogfood self-review. Use when authoring a new skill, refactoring an existing one, or adopting a Mall unit into this brain."
-lastReviewed: 2026-05-26
+lastReviewed: 2026-05-31
 ---
+
+<!-- intentional divergence from Supervisor: Edition replaces Supervisor-only path (`docs/references/skill-spec-industry-baseline.md`) with inline summary, and "adopted as Supervisor's" with "adopted by ACT". Same five gates. Audited 2026-05-31. -->
 
 # Skill Creator
 

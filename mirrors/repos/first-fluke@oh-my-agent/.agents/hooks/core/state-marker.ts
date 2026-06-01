@@ -24,6 +24,7 @@ export interface StateIndex {
   active: Record<string, string>;
 }
 
+// Mirror cli/constants/paths.ts → AGENTS_STATE_SESSIONS_DIR (hooks cannot import cli/).
 export const STATE_ROOT = join(".agents", "state", "sessions");
 
 export function sessionsDir(projectDir: string): string {

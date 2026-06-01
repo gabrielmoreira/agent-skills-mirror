@@ -1479,9 +1479,9 @@
         "epigenetic age",
         "methylation clock",
         "pyaging",
-        "horvath",
-        "grimage",
-        "dunedinpace",
+        "Horvath",
+        "GrimAge",
+        "DunedinPACE",
         "GEO",
         "GSE"
       ],
@@ -1834,8 +1834,8 @@
         "aging",
         "olink",
         "organ-clock",
-        "biological-age",
-        "goeminne"
+        "biological age",
+        "Goeminne"
       ],
       "trigger_keywords": [
         "proteomics clock",

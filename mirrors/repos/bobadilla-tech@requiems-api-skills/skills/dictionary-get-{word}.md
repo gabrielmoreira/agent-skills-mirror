@@ -17,9 +17,9 @@ Returns the definition, phonetics, examples, and synonyms for the given word.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `word` | string | yes | path | The word to look up in the dictionary |
+| Name   | Type   | Required | Location | Description                           |
+| ------ | ------ | -------- | -------- | ------------------------------------- |
+| `word` | string | yes      | path     | The word to look up in the dictionary |
 
 ## Response Example
 
@@ -45,15 +45,15 @@ Returns the definition, phonetics, examples, and synonyms for the given word.
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `word` | string | The normalized (lowercased) word that was looked up |
-| `phonetic` | string | IPA phonetic transcription of the word (may be omitted if unavailable) |
-| `definitions` | array of objects | One or more definitions for the word, each with partOfSpeech, definition, and an optional example |
-| `definitions[].partOfSpeech` | string | Grammatical category (e.g. noun, verb, adjective) |
-| `definitions[].definition` | string | Plain-text definition of the word |
-| `definitions[].example` | string | Example sentence using the word (may be omitted) |
-| `synonyms` | array of strings | List of words with similar meaning |
+| Field                        | Type             | Description                                                                                       |
+| ---------------------------- | ---------------- | ------------------------------------------------------------------------------------------------- |
+| `word`                       | string           | The normalized (lowercased) word that was looked up                                               |
+| `phonetic`                   | string           | IPA phonetic transcription of the word (may be omitted if unavailable)                            |
+| `definitions`                | array of objects | One or more definitions for the word, each with partOfSpeech, definition, and an optional example |
+| `definitions[].partOfSpeech` | string           | Grammatical category (e.g. noun, verb, adjective)                                                 |
+| `definitions[].definition`   | string           | Plain-text definition of the word                                                                 |
+| `definitions[].example`      | string           | Example sentence using the word (may be omitted)                                                  |
+| `synonyms`                   | array of strings | List of words with similar meaning                                                                |
 
 ## Errors
 

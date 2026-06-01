@@ -9,7 +9,7 @@ Debug utilities for error checking and diagnostics.
 
 ## Operating Mode
 
-- **Approval**(默认): 只读类 skill（`unity_diagnose` / `debug_get_errors` / `debug_get_logs` / `debug_check_compilation` / `debug_get_system_info` / `debug_get_stack_trace` / `debug_get_assembly_info` / `debug_get_defines` / `debug_get_memory_info`，全部标 `SkillMode.SemiAuto`）直接执行；`debug_force_recompile` / `debug_set_defines` 默认 `SkillMode.FullAuto`，需用户 grant，grant 后一步执行返结果。
+- **Approval**: 只读类 skill（`unity_diagnose` / `debug_get_errors` / `debug_get_logs` / `debug_check_compilation` / `debug_get_system_info` / `debug_get_stack_trace` / `debug_get_assembly_info` / `debug_get_defines` / `debug_get_memory_info`，全部标 `SkillMode.SemiAuto`）直接执行；`debug_force_recompile` / `debug_set_defines` 默认 `SkillMode.FullAuto`，需用户 grant，grant 后一步执行返结果。
 - **Auto / Bypass**: 直接执行。
 - **本模块含 Reload 类高危 skill**：`debug_force_recompile`（标 `MayTriggerReload=true`）必然触发 Domain Reload；`debug_set_defines` 修改 `PlayerSettings` 的 scripting defines 也会触发重编译 —— 这些 skill 在 Approval / Auto 下会被 `IsForbiddenInSemi` 自动拦截，**仅 Bypass 或 Allowlist 命中可执行**，调用后服务端会短暂不可用。
 

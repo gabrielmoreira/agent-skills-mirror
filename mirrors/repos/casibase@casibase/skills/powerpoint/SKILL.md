@@ -5,23 +5,21 @@ description: Create designed, editable PowerPoint .pptx presentations with PptxG
 
 # PowerPoint
 
-Use this skill whenever a PowerPoint deck is involved. For new decks, write a trusted local PptxGenJS `.mjs` build script and run it with the `pptx_write` tool.
+Use this skill whenever a PowerPoint deck is involved. For new decks, pass a trusted PptxGenJS build script directly to the `pptx_write` tool.
 
 ## Workflow
 
 1. Decide the deck outline and choose a visual system: palette, typography, repeated motif, and slide rhythm.
-2. Create a local `.mjs` script that exports `default async function build(pptx, ctx)` or named `build(pptx, ctx)`.
+2. Write JavaScript module content that exports `default async function build(pptx, ctx)` or named `build(pptx, ctx)`.
 3. In the script, add slides directly with PptxGenJS. Do not generate HTML for this workflow.
-4. Call `pptx_write` with `path`, `script_path`, optional `assets_dir`, and optional `data`.
+4. Call `pptx_write` with `path`, `script`, optional `assets_dir`, and optional `data`.
 5. Verify the result with `pptx_read`; for visual QA, convert the PPTX to images if the environment has LibreOffice and Poppler.
 
-## Script File Creation
+## Script Creation
 
-- Prefer `local_file_write` to create the `.mjs` script in one complete write. Use `overwrite: true` when revising a script.
-- Do not build long JavaScript files with repeated `shell` commands such as `echo ... >> build.mjs`, especially on Windows. Shell escaping for `{}`, `()`, `>`, `&`, `|`, `%`, quotes, and newlines is fragile.
-- After the `.mjs` script is written, call `pptx_write` directly. Do not keep appending, rewriting, or checking the script with shell unless there is a concrete error.
-- To inspect a script, prefer `local_file_read`. If only shell is available, use `type C:\path\build.mjs` on Windows or `cat /path/build.mjs` on Linux/macOS.
-- `echo ... >> file` commonly returns no stdout on success. A `(no output)` shell result is not evidence that the write failed; do not retry only because output is empty.
+- Put the complete JavaScript module in the `script` argument.
+- Do not use `local_file_write` or shell commands to create a temporary `.mjs` file for this workflow.
+- If revising a deck, update the `script` content and call `pptx_write` again.
 
 ## Tool Contract
 
@@ -30,7 +28,7 @@ Use this skill whenever a PowerPoint deck is involved. For new decks, write a tr
   "tool": "pptx_write",
   "arguments": {
     "path": "deck.pptx",
-    "script_path": "/absolute/path/to/build_deck.mjs",
+    "script": "export default async function build(pptx, ctx) {\\n  pptx.layout = \"LAYOUT_WIDE\";\\n}",
     "assets_dir": "/absolute/path/to/assets",
     "data": {"title": "Quarterly Review"}
   }

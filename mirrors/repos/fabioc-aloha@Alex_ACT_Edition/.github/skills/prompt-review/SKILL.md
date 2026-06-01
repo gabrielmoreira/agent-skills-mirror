@@ -1,8 +1,10 @@
 ---
 name: prompt-review
 description: "Audits a candidate prompt (.prompt.md) against five gates (spec compliance, content quality, scope fit, safety, currency & coherence). Use when reviewing a new prompt draft before commit, evaluating a Mall prompt or store prompt for adoption, or re-auditing existing prompts on a periodic cadence."
-lastReviewed: 2026-05-26
+lastReviewed: 2026-05-31
 ---
+
+<!-- intentional divergence from Supervisor: Edition expands gate names inline and strips Supervisor-only ADR-007 ref. Same five gates. Audited 2026-05-31. -->
 
 # Prompt Review
 

@@ -1,8 +1,10 @@
 ---
 name: agent-creator
 description: "Create agents that pass agent-review's six gates by construction — role capture, distinct-from-skill check, tool allowlist minimization, draft against gates, dogfood self-review. Use when authoring a new agent, refactoring an existing one, or promoting a Mall agent into the heir's brain."
-lastReviewed: 2026-05-26
+lastReviewed: 2026-05-31
 ---
+
+<!-- intentional divergence from Supervisor: Edition replaces Supervisor-specific phrasing ("Mall agent into Supervisor or Edition", "Supervisor agents folder") with heir-portable phrasing ("into the heir's brain", "the agents folder"). Same six gates, same workflow. Audited 2026-05-31. -->
 
 # Agent Creator
 

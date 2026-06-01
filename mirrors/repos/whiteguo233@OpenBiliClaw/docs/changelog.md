@@ -4,6 +4,33 @@
 
 ---
 
+## extension v0.3.64: 保存列表头图与窄宽度头部修复（2026-06-01）
+
+- 浏览器插件版本提升到 `0.3.64`，准备发布 `extension-v0.3.64`；Chrome / Edge / Brave 走 `openbiliclaw-extension-v0.3.64.zip`，Firefox 140+ 走 `openbiliclaw-extension-v0.3.64-firefox.zip`。
+- 修复插件 side panel「稍后」和「收藏」列表无头图的问题：保存列表条目现在归一化封面 URL，按固定 16:9 缩略图展示，并继续通过后端 `/api/image-proxy` 加载平台 CDN 图片。
+- 修复插件 side panel 默认窄宽度下顶部工具按钮和左侧标题 / 状态重叠的问题：460px 以下宽度会把 Web、二维码、消息、设置按钮换到品牌区下一行靠右排列。
+
+## extension v0.3.63: 惊喜推荐正向反馈保留（2026-06-01）
+
+- 浏览器插件版本提升到 `0.3.63`，准备发布 `extension-v0.3.63`；Chrome / Edge / Brave 走 `openbiliclaw-extension-v0.3.63.zip`，Firefox 140+ 走 `openbiliclaw-extension-v0.3.63-firefox.zip`。
+- 修复惊喜推荐正向反馈被三端立刻移除的问题：喜欢、收藏、稍后再看、聊一聊和去看看都会保留当前卡片并更新状态；只有不感兴趣、忽略或显式关闭会立即移出队列。
+- 补充后端 API、移动 Web、桌面 Web、插件 popup 的回归测试，并用浏览器端到端测试验证桌面 Web、移动 Web、扩展 popup 的正向保留和负向移除行为。
+
+## extension v0.3.62: Chrome Web Store 权限收窄（2026-05-31）
+
+- 浏览器插件版本提升到 `0.3.62`，准备发布 `extension-v0.3.62`；Chrome / Edge / Brave 走 `openbiliclaw-extension-v0.3.62.zip`，Firefox 140+ 走 `openbiliclaw-extension-v0.3.62-firefox.zip`。
+- Chrome / Firefox manifest 移除 `http://*/*` 宽泛主机权限，发布包只声明 Bilibili / 小红书 / 抖音 / YouTube 内容平台和 `127.0.0.1` / `localhost` 本机后端权限，降低 Chrome Web Store “所有网站权限”深入审核风险。
+- 同步隐私政策、README、插件模块文档和设置页提示：商店版默认连接本机后端；局域网 / 远程后端需要带对应 host 权限的开发者构建，或后续补充 `optional_host_permissions` 用户授权流程。
+- 收窄 `docs/specs/auto-update.md` 为后端-only 自动更新 SPEC，并同步 README / runtime / extension 文档边界：插件更新不再由后端查询 `extension-v*` 或显示更新横幅，Chrome Web Store / Edge Add-ons / AMO 交给浏览器原生更新，GitHub zip / sideload 保持手动 fallback。
+
+## extension v0.3.61: 插件收藏 / 稍后再看三端对齐（2026-05-31）
+
+- 对齐插件端收藏 / 稍后再看与 PC Web、移动 Web：side panel tab bar 新增独立「稍后」页，推荐卡和 delight banner 都提供「时钟=稍后再看」「星星=收藏」两个互相独立的 SVG toggle；列表移除、推荐卡和惊喜横幅继续共用 `popup-saved-sync.js` 同步同一 bvid 的状态。
+- 新增 `popup-saved-surfaces-e2e.test.ts`，以真实 HTTP mock 后端跑插件 `popup-api` 往返，并断言稍后再看 / 收藏互相独立、UI 布线完整；补充真实 Chrome 浏览器端到端冒烟，验证 420px side panel 下五 tab 等宽、无横向溢出、保存按钮选中态和列表移除同步。
+- 新增 `docs/specs/auto-update.md`，锁定后端源码自动应用、插件 sideload 自动提示、以及未来商店 / 签名自托管更新通道的边界；明确 `backend-v*` 优先级、更新 API 状态合同和插件不可静默自替换的浏览器限制。
+- 新增 Chrome Web Store API v2 上传自动化：`extension/scripts/chrome-webstore-upload.mjs` 可用官方 OAuth refresh token 上传 Chrome-compatible zip，并可选提交审核；新增手动 GitHub Actions workflow `Publish Chrome Web Store Package`，默认只上传不发布。
+- 新增 `docs/privacy.md`，补齐 Chrome Web Store 隐私权政策页面：说明插件单一用途、权限理由、处理的数据类型、本地后端数据流、无远程代码、无出售或无关第三方传输。
+
 ## extension v0.3.60: 「阿B 最近新记住了什么」改为点击加载更多（2026-05-31）
 
 - 修复画像 tab「阿B 最近新记住了什么」区块过长的问题：该区块的认知卡片此前会随页面滚动到底部**自动续页**（`maybeLoadMoreCognitionHistory` 在 profile 加载后、每次续页结束、以及 `.content` 滚动事件里反复触发），实测会把所有历史认知卡片一次性拉满，使区块无限变长、底部「加载更多」按钮形同虚设。现在改为**纯点击驱动**：首屏只展示最近 3 条，仅当用户点击「加载更多」时才按 `cursor` 分页拉取下一页（每页 3 条），不再随滚动自动续页。推荐列表的滚动自动续页（独立的 `maybeLoadMoreRecommendations` + 意图门控）不受影响。

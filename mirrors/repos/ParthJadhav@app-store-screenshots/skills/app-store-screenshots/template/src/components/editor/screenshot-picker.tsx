@@ -3,10 +3,12 @@ import * as React from "react";
 import { Image as ImageIcon, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { didFail, img, setImage } from "@/lib/image-cache";
+import { resolveScreenshot } from "@/lib/locale";
 
 type Props = {
   label: string;
   value: string;
+  locale?: string;
   onChange: (v: string) => void;
 };
 
@@ -36,11 +38,15 @@ async function uploadDataUrl(dataUrl: string): Promise<string | null> {
   }
 }
 
-export function ScreenshotPicker({ label, value, onChange }: Props) {
+export function ScreenshotPicker({ label, value, locale, onChange }: Props) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [uploading, setUploading] = React.useState(false);
+
+  React.useEffect(() => {
+    setError(null);
+  }, [value, locale]);
 
   async function handleFile(file: File) {
     setError(null);
@@ -76,9 +82,10 @@ export function ScreenshotPicker({ label, value, onChange }: Props) {
 
   const hasValue = !!value;
   const isData = hasValue && value.startsWith("data:");
-  const previewSrc = isData ? value : hasValue ? img(value) : "";
+  const resolvedValue = hasValue && !isData && locale ? resolveScreenshot(value, locale) : value;
+  const previewSrc = isData ? value : hasValue ? img(resolvedValue) : "";
   // Only flag "image not found" when the path is a real URL that we tried and failed.
-  const knownMissing = hasValue && !isData && didFail(value);
+  const knownMissing = hasValue && !isData && didFail(resolvedValue);
   const valueLabel = uploading
     ? "saving…"
     : !hasValue
@@ -169,7 +176,7 @@ export function ScreenshotPicker({ label, value, onChange }: Props) {
       {error ? (
         <p className="text-[11px] text-destructive">{error}</p>
       ) : knownMissing ? (
-        <p className="text-[11px] text-destructive">Image not found at {value}</p>
+        <p className="text-[11px] text-destructive">Image not found at {resolvedValue}</p>
       ) : null}
     </div>
   );

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
+  "name": "io.github.bergside/typeui",
+  "title": "TypeUI",
+  "description": "Design systems, UI prompts, and layout variations for AI coding tools.",
+  "version": "1.0.1",
+  "websiteUrl": "https://www.typeui.sh",
+  "icons": [
+    {
+      "src": "https://www.typeui.sh/logo.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": ["any"],
+      "theme": "light"
+    },
+    {
+      "src": "https://www.typeui.sh/logo-dark.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": ["any"],
+      "theme": "dark"
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.typeui.sh/mcp"
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/bergside/typeui",
+    "source": "github"
+  }
+}

@@ -13,13 +13,14 @@ description: Returns the latest annual CPI inflation rate for a country plus the
 
 ## Get Inflation Rate
 
-Returns the latest annual CPI inflation rate for a country plus the previous 10 years of historical data.
+Returns the latest annual CPI inflation rate for a country plus the previous 10
+years of historical data.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `country` | string | yes | query | ISO 3166-1 alpha-2 country code (e.g. US, GB, DE). Case-insensitive. |
+| Name      | Type   | Required | Location | Description                                                          |
+| --------- | ------ | -------- | -------- | -------------------------------------------------------------------- |
+| `country` | string | yes      | query    | ISO 3166-1 alpha-2 country code (e.g. US, GB, DE). Case-insensitive. |
 
 ## Response Example
 
@@ -50,17 +51,18 @@ Returns the latest annual CPI inflation rate for a country plus the previous 10 
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `country` | string | ISO 3166-1 alpha-2 country code, uppercased |
-| `rate` | number | Latest annual CPI inflation rate as a percentage (e.g. 2.9495 means 2.9495%) |
-| `period` | string | Year of the latest data point (e.g. 2024) |
-| `historical` | array | Up to 10 previous years of inflation data, ordered newest to oldest |
-| `historical[].period` | string | Year of the historical data point |
-| `historical[].rate` | number | Annual CPI inflation rate for that year |
+| Field                 | Type   | Description                                                                  |
+| --------------------- | ------ | ---------------------------------------------------------------------------- |
+| `country`             | string | ISO 3166-1 alpha-2 country code, uppercased                                  |
+| `rate`                | number | Latest annual CPI inflation rate as a percentage (e.g. 2.9495 means 2.9495%) |
+| `period`              | string | Year of the latest data point (e.g. 2024)                                    |
+| `historical`          | array  | Up to 10 previous years of inflation data, ordered newest to oldest          |
+| `historical[].period` | string | Year of the historical data point                                            |
+| `historical[].rate`   | number | Annual CPI inflation rate for that year                                      |
 
 ## Errors
 
-- `400` **bad_request** — The country parameter is missing or is not a valid ISO 3166-1 alpha-2 code.
+- `400` **bad_request** — The country parameter is missing or is not a valid ISO
+  3166-1 alpha-2 code.
 - `404` **not_found** — No inflation data found for the given country code.
 - `500` **internal_error** — Unexpected server error.

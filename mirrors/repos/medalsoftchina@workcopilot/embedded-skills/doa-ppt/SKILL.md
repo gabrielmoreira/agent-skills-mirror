@@ -1,10 +1,9 @@
 ---
 name: doa-ppt
 description: >
-  Use when generating or refining business PPT decks, product introductions, technical proposals,
-  project reports, multi-page HTML slide previews, HTML-to-PPT export, or turning source material
-  such as PDFs, screenshots, notes, and reference docs into a polished presentation. Do not use
-  for standalone web pages or web apps.
+  生成或优化商务PPT演示文稿、产品介绍、技术方案、项目报告，支持多页HTML幻灯片预览、
+  HTML转PPT导出，或将PDF、截图、笔记、参考文档等源材料转化为精美演示文稿。
+  不用于独立网页或Web应用。
 ---
 
 # HTML to PPTX — 商务演示文稿生成
@@ -14,7 +13,7 @@ description: >
 ```
 用户输入（描述 + 参考图）
   → 确认PPT规模
-  → 智能推荐主题配色（用户可选）
+  → 使用公司模板（唯一默认模板）
   → 生成可翻页 HTML 预览
   → 逐页检查 HTML 是否越界/裁切/重叠
   → 用户确认/调整 HTML
@@ -26,6 +25,18 @@ description: >
 ## 本次实战经验固化
 
 当用户提供 PDF、截图、既有 HTML 或已有 PPT，并要求“基于这个继续生成 / 整合 / 扩展 / 转 PPT”时，必须先把资料链路整理清楚，再改版式。
+
+### 2026-05-30 延峰项目增补（强制）
+
+1. **HTML 是唯一语义源**：`slides.html` 才是可维护源文件；截图型 `.pptx/.pdf` 只作为交付物，不作为反向编辑来源。
+2. **双导出链路必须物理分离**：
+  - 截图高保真：`export_pptx.py`
+  - 可编辑重建：`export_editable_pptx.py`
+  - 严禁在同一脚本里混合两种导出逻辑，避免需求反复切换时互相污染。
+3. **需求切换优先级规则**：当用户在“可编辑 / 不可编辑”之间反复切换时，始终以“最后一次明确指令”为准，立即切换导出模式，不纠缠历史决策。
+4. **先定稿再导出**：只有在用户明确确认“按当前 HTML 导出”后，才执行最终导出；导出阶段不再顺手改布局，避免一边改版一边导出导致版本漂移。
+5. **输出文件不得覆盖旧版本**：每次最终交付使用新文件名（建议带日期和后缀，如 `_Editable_YYYYMMDD`、`_HD_YYYYMMDD`），防止 `PermissionError` 和历史交付丢失。
+6. **导出后必须二次验证**：至少校验文件存在、页数一致、截图分辨率正确（高清链路应为 `2560×1440`），再对外宣称“已完成交付”。
 
 ### 资料驱动型 PPT 的处理顺序
 
@@ -56,7 +67,7 @@ description: >
 ### 版式与导出踩坑记录
 
 - 固定幻灯片画布仍使用 `1280×720`。浏览器预览可以通过 CSS/JS 做自适应缩放，但导出截图必须保持 `.slides-viewport` 的原始 1280×720 尺寸。
-- 每次新增 layout class 后，要检查它是否覆盖 `.content{height:590px}`。如果直接把 `.grid-*` 用在 `.content` 上，必须补 `.content.grid-*{height:590px}` 防止内容压到 footer。
+- 每次新增 layout class 后，要检查它是否覆盖 `.content{height:600px}`。如果直接把 `.grid-*` 用在 `.content` 上，必须补 `.content.grid-*{height:600px}` 防止内容压到 footer。
 - 高保真导出脚本激活页面时不要写 `slide.className = 'slide active'`，否则会丢失 `cover` 等特殊 class。应使用 `classList.remove('active','exit-left')` 和 `classList.add('active')`。
 - PowerShell 执行带空格路径的 Python 时必须用调用运算符：`& "c:/path with spaces/.venv/Scripts/python.exe" script.py`。
 - 如果 PPT 文件可能正被 PowerPoint 打开，优先输出到新文件名，避免 `PermissionError`。
@@ -71,13 +82,33 @@ description: >
 
 ### 左右分栏等高对齐踩坑记录
 
-> **强制规则：所有使用 `.grid-2` 左右分栏的内容页，左右两列必须等高对齐，底部齐平。这是不可协商的硬性要求。**
+> **强制规则：所有使用左右分栏的内容页，左右两列必须等高对齐，底部齐平。这是不可协商的硬性要求。**
 
 - **`.grid-2 { align-items: stretch }` 只拉伸直接子元素**：grid 子 div 会被拉伸到等高，但内部元素（表格、卡片）不会自动填满。
 - **必须在 grid 子 div 上加 `display:flex; flex-direction:column`**：让内部元素参与 flex 布局。
 - **需要填满高度的元素加 `flex:1`**：表格用 `style="flex:1"` 填满剩余高度；多张卡片用 `flex:1` 让每张卡片等分空间。
 - **左右卡片数量不对等时，少的一侧每张卡片必须加 `flex:1`**：例如左 3 卡片、右 2 卡片，右侧每张卡片必须加 `flex:1` 使其自动拉伸填满。禁止出现一侧比另一侧短、底部有大段空白的情况。
 - **左右分栏的父容器必须填满内容区**：`.content` 加 `display:flex;flex-direction:column`，`.grid-2` 加 `flex:1` 或 `style="height:100%"`，确保 grid 占满内容区而非只占内容自然高度。
+
+#### 2026-05-31 图文分栏对齐补充（强制）
+
+- **`.screenshot-panel` 默认 padding 导致高度不对齐**：`.screenshot-panel` 类自带 `padding:8px`，会导致图片面板比左侧内容区矮 16px。**必须在 style 中加 `padding:0` 覆盖**，否则左右高度永远对不齐。
+- **背景配图必须用 `object-fit:cover`**：背景类图片（非产品截图）用 `width:100%;height:100%;object-fit:cover` 铺满面板，不留白边。产品截图用 `object-fit:contain` 保留完整界面。
+- **flex 子元素必须加 `min-height:0`**：flex 容器的子元素默认 `min-height:auto`，内容过多时会撑破容器导致溢出。**所有 flex 子元素（左侧内容区、右侧图片面板）都必须加 `min-height:0`**。
+- **图片面板必须加 `overflow:hidden`**：防止图片超出面板边界。
+- **图片不要用 `.product-screenshot` 类**：该类自带 `box-shadow` 和 `border`，适用于产品截图，不适用于背景配图。背景配图直接写内联样式 `border-radius:14px`。
+- **左侧内容区也要 `min-width:0`**：flex 子元素默认 `min-width:auto`，表格等元素可能撑宽导致右侧图片被压缩。加 `min-width:0` 允许内容区按比例缩小。
+
+#### 对齐问题诊断清单
+
+当左右高度不对齐时，按以下顺序检查：
+
+1. ☐ `.content` 是否有 `display:flex;align-items:stretch`？
+2. ☐ 右侧面板是否有 `padding:0` 覆盖默认 padding？
+3. ☐ 图片是否有 `width:100%;height:100%;object-fit:cover`？
+4. ☐ 左右两侧是否都有 `min-height:0`？
+5. ☐ 左侧是否有 `min-width:0`？
+6. ☐ 右侧是否有 `overflow:hidden`？
 - **典型结构**：
   ```html
   <div class="grid-2">
@@ -95,8 +126,8 @@ description: >
 ### 减少空白与紧凑排版踩坑记录
 
 - **页眉上边距应紧凑**：`.header { padding: 24px 56px 0 }` 而非 32px，减少页眉到内容区的间距。色条 `.header::after { top: 68px }` 同步调整。
-- **内容区高度最大化**：`.content { padding: 20px 56px 14px; height: 590px }` 而非旧值 `40px/32px/548px`，可用面积增加约 17%。
-- **`font-size:10px` 全局提升为 11px**：在 `</style>` 前追加 `.content *[style*="font-size:10px"]:not(.step-num):not(.arch-box) { font-size: 11px !important; }`，避免内容页字号过小而浪费视觉空间。
+- **内容区高度最大化**：`.content { padding: 16px 56px 10px; height: 600px }` 而非旧值 `40px/32px/548px`，可用面积增加约 20%。
+- **`font-size` 全局下限 15px**：整个 PPT 中不允许出现小于 15px 的文字。如果内容放不下，优先精简文案或拆页，不要缩小字号。
 - **底部摘要/结论用 `margin-top:auto` 推到底部**：全宽表格页（如对比矩阵 + 底部摘要）应让 `.content` 设为 `display:flex;flex-direction:column`，底部摘要块用 `margin-top:auto` 贴近底部，消除表格与摘要之间的大片空白。
 - **警告/提示框不要用 `position:absolute`**：绝对定位的提示框容易与上方内容重叠或在不同内容量时错位。应放在正常文档流中，用 `margin-top:auto` 或 `margin-top:10px` 控制位置。
 - **grid-2 内部结合 flex:1 填满高度**：`.grid-2` 的父容器 `.content` 设为 `display:flex;flex-direction:column`，然后 `.grid-2` 自身加 `flex:1` 使其填满剩余空间，避免 grid 与 footer 之间出现大段空白。
@@ -109,6 +140,16 @@ description: >
     </div>
   </div>
   ```
+
+### 字体放大与溢出联动踩坑记录
+
+> **当用户反馈"字太小、看不清"时，必须按以下策略系统性放大字体，同时联动调整布局参数防止溢出。**
+
+- **系统性放大而非逐个调整**：使用 Python 正则脚本批量替换，对 `font-size:Npx` 统一 +2px（13→15, 14→16, 15→17, 16→18, 17→19, 18→20），`.page-title` 从 30→34px。不要只改一两处导致大小不统一。
+- **内容区高度联动增加**：字体放大后 `.content { height }` 从 590→600px，`padding` 从 `20px 56px 14px` → `16px 56px 10px`，腾出更多垂直空间。
+- **图片高度联动缩减**：字体放大必然挤压空间，图片高度按比例缩减：280→240, 220→190, 200→175, 150→140。优先保证文字可读性，图片可以小一些。
+- **放大后必须逐页检查溢出**：使用浏览器 JS 遍历所有 `.slide`，计算 `scrollHeight - clientHeight`，任何 > 2px 的页面必须修复（缩减图片、减少间距、精简文案）。1-2px 的误差属于亚像素渲染，可忽略。
+- **时间轴/步骤类页面最容易溢出**：这类页面元素多且垂直堆叠，放大后优先压缩 margin-bottom（20→12px）、图片高度、标题 margin，必要时删除 `<br>` 空行。
 
 ### PDF 导出踩坑记录
 
@@ -123,7 +164,7 @@ description: >
 1. `.pptx` 文件存在
 2. `Presentation(...).slides` 页数等于 HTML 中 `.slide` 数量
 3. `ppt/media/image*.png` 数量等于页数
-4. 首页截图尺寸是 `1280×720`
+4. 首页截图尺寸应与 `VIEWPORT × DEVICE_SCALE` 一致；标准 2x 高清链路下应为 `2560×1440`
 5. 若封面应为深色/有色背景，检查首页或封面页的平均 RGB，避免背景丢失变白
 6. 如果封面被挪到其他页，校验对应媒体图，而不是只校验 `image1.png`
 
@@ -132,9 +173,36 @@ description: >
 向用户收集以下信息：
 
 1. **业务功能描述**：产品/功能的核心卖点、关键特性、目标用户
-2. **参考图**（可选）：用于提取配色方案和视觉风格
+2. **参考图**（可选）：用于参考布局和内容排版
 3. **PPT 规模**（必选）：确认演示文稿的页数范围
-4. **特殊要求**（可选）：品牌色、Logo、指标数据等
+4. **特殊要求**（可选）：Logo、指标数据等
+
+### 确认页眉页脚风格
+
+**必须在生成前与用户确认**，使用 `vscode_askQuestions` 工具提问，提供两个选项：
+
+| 选项 | 说明 | 适用场景 |
+|------|------|----------|
+| **公司品牌模板** | 页眉：左侧渐变圆点 + 标题，右侧 SWO / 微钉双品牌 Logo；页脚：左 "SoftwareOne \| 微钉科技"，右页码胶囊 | 对外商务演示、客户提案、正式交付 |
+| **AI 自动设计** | AI 根据 PPT 主题和内容自动决定页眉页脚的图标、品牌名和排版风格 | 内部分享、读书会、技术沙龙、个人演示等非品牌场景 |
+
+选择"公司品牌模板"时，使用 Step 1.5 中定义的 Logo 和页脚规范；选择"AI 自动设计"时，AI 根据内容主题自行设计页眉标识（如书名缩写、主题 icon 等）和页脚文字，但仍遵循相同的布局结构和字号规范。
+
+#### 公司品牌模板 Logo 素材
+
+品牌素材位于 `.claude/skills/doa-ppt/brand-assets/`，生成 PPT 时需复制到 `output/<项目名>/ppt_softwareonemedlasoft_assets/`：
+
+| 文件名 | 用途 |
+|--------|------|
+| `SoftwareOne.png` | SoftwareOne Logo（黑色，通用于封面/内容页/结尾页） |
+| `Medaslsoft.png` | 微钉科技 Logo（彩色，含中英文图标，通用于封面/内容页/结尾页） |
+| `Medaslsoft_Sample.png` | 微钉小图标（仅 icon，用于目录页和内容页标题左侧的 `.header-dot`） |
+
+CSS 引用方式（统一用 `background: url(...) center/contain no-repeat`）：
+- **页标题左侧图标**：`.header-dot` → `Medaslsoft_Sample.png`（32×32px，替代原来的渐变圆点）
+- **封面**：`.cover-logo-swo` → `SoftwareOne.png`，`.cover-logo-medalsoft` → `Medaslsoft.png`
+- **内容页页眉右侧**：`.header-logo-swo` → `SoftwareOne.png`，`.header-logo-medalsoft` → `Medaslsoft.png`
+- **结尾页**：`.ending-logo-swo` → `SoftwareOne.png`，`.ending-logo-medalsoft` → `Medaslsoft.png`
 
 ### 确认 PPT 规模
 
@@ -146,408 +214,338 @@ description: >
 | **标准版** | 7-12 页 | 产品介绍、项目汇报、方案评审 | 封面 + 概览 + 功能详解 + 架构 + 数据 + 总结 |
 | **完整版** | 17-23 页 | 正式提案、年度汇报、深度技术方案 | 全面覆盖背景、现状、方案、细节、规划、附录 |
 
-## Step 1.5: 智能推荐主题
+## Step 1.5: 默认模板 — 公司模板（唯一模板）
 
-根据用户提供的内容领域和风格偏好，智能推荐合适的主题配色。使用 `vscode_askQuestions` 工具让用户从推荐主题中选择。
+所有 PPT 统一使用公司模板，不做主题选择。此模板来源于 DOA-WorkCopilot Skill 产品介绍 PPT 的实际设计成果。
 
-### 预设主题库
+#### 视觉方向
 
-| 主题名称 | 主色调 | 适用场景 | CSS 变量示例 |
-|----------|--------|----------|-------------|
-| **自定义品牌** | 用户自定义 | 需要品牌一致性的对外方案、客户交付 | 用户提供色值和 Logo |
-| **科技紫光** | `#7C5CFC` 紫色系 | AI/科技/SaaS 产品 | `--primary: #7C5CFC; --bg: #F5F0FF` |
-| **商务蓝** | `#2563EB` 蓝色系 | 企业汇报、方案评审、项目管理 | `--primary: #2563EB; --bg: #EFF6FF` |
-| **极简黑白** | `#18181B` 灰黑系 | 高端品牌、设计展示、极简汇报 | `--primary: #18181B; --bg: #FAFAFA` |
-| **活力橙** | `#EA580C` 橙色系 | 营销推广、创意方案、活动策划 | `--primary: #EA580C; --bg: #FFF7ED` |
-| **自然绿** | `#16A34A` 绿色系 | 环保/健康/农业/ESG 报告 | `--primary: #16A34A; --bg: #F0FDF4` |
-| **沉稳深色** | `#1E293B` 深色系 | 高管汇报、年度总结、数据大屏风格 | `--primary: #60A5FA; --bg: #0F172A; --text: #E2E8F0` |
-| **优雅酒红** | `#9F1239` 酒红系 | 品牌发布、文化/艺术/奢侈品 | `--primary: #9F1239; --bg: #FFF1F2` |
-| **清新青色** | `#0891B2` 青色系 | 医疗/教育/公益/政务 | `--primary: #0891B2; --bg: #ECFEFF` |
-
-### 推荐逻辑
-
-根据用户内容中的关键词和行业信号自动推荐 2-3 个最匹配的主题：
-
-- **科技/AI/SaaS/互联网** → 科技紫光、商务蓝、沉稳深色
-- **企业/咨询/金融** → 商务蓝、极简黑白、沉稳深色
-- **营销/电商/活动** → 活力橙、清新青色、科技紫光
-- **医疗/教育/政务** → 清新青色、商务蓝、自然绿
-- **品牌/设计/奢侈品** → 优雅酒红、极简黑白、沉稳深色
-- **环保/农业/可持续** → 自然绿、清新青色、商务蓝
-- **需要品牌一致性/公司内部** → 自定义品牌（用户提供色值和 Logo）
-
-如果用户提供了参考图，**优先从参考图提取配色**，作为自定义主题，同时展示推荐主题供对比选择。
-
-> **快捷触发**：当用户说"用公司模板""用品牌模板"或在 `vscode_askQuestions` 中选择了"自定义品牌"时，跳过通用主题配色流程，直接进入下方"自定义品牌模板"完整注入流程。
-
-### 自定义品牌模板（完整规范）
-
-当用户选择"自定义品牌"主题时，需要用户提供品牌色值和 Logo 文件，然后自动注入以下全部元素。
+- **整体气质**：科技感 + 柔和感，紫蓝色系为主调，通过大面积薰衣草渐变底色营造精致氛围
+- **核心视觉元素**：3D 紫色球体 + 轨道环 + 旋转玻璃菱形，贯穿封面、章节页和结尾页，形成统一视觉母题
+- **配色风格**：不走深色系，全程使用浅紫灰渐变底色（`#EDE5F8 → #CDD3EC`），保持明亮通透
+- **装饰克制**：内容页只用极轻的 `deco-circle` 渐变圆点缀右上角，不与内容争夺视线
 
 #### 配色体系
 
 | 用途 | 变量 | 色值 |
 |------|------|------|
-| 主色 | `--primary` | `#2F80ED` |
-| 主色深 | `--primary-dark` | `#1456C8` |
-| 主色浅 | `--primary-soft` | `#EEF6FF` |
-| 辅助青 | `--accent` | `#35C6F4` |
-| 辅助青浅 | `--accent-soft` | `#EAFBFF` |
-| 品牌紫 | — | `#9D9AFE` |
-| 品牌青绿 | `--neon` | `#89E0D4` |
-| 品牌橙 | `--amber` | `#F3A875` |
-| 品牌粉 | `--red` | `#FB5387` |
-| 绿色 | `--green` | `#20B8A8` |
-| 背景灰1 | — | `#F6F8FB` |
-| 背景灰2 | — | `#ECEFF1` |
-| 边框灰 | `--border` | `rgba(193,199,217,.58)` |
-| 文字主色 | `--text-primary` | `#111111` |
-| 文字次色 | `--text-secondary` | `#333333` |
-| 文字辅助 | `--text-muted` | `#666666` |
+| 主色 | `--primary` | `#4C78FF` |
+| 主色深 | `--primary-dark` | `#3B32D4` |
+| 主色浅 | `--primary-soft` | `#EEF1FF` |
+| 辅助青 | `--accent` | `#46B6FF` |
+| 品牌紫 | `--purple` | `#9D6BFF` |
+| 品牌橙 | `--amber` | `#F2B27C` |
+| 品牌粉 | `--red` | `#F062C0` |
+| 品牌绿 | `--green` | `#58BFC8` |
+| 文字主色 | `--text-primary` | `#1E1842` |
+| 文字次色 | `--text-secondary` | `#4A4567` |
+| 文字辅助 | `--text-muted` | `#7D78A0` |
+| 边框 | `--border` | `rgba(141, 136, 208, 0.24)` |
 
-#### 品牌资产
+#### 页面级背景策略
 
-以下文件应放在 `ppt_brand_assets/` 目录下（用户需提供自己的品牌素材）：
+| 页面类型 | 背景 |
+|----------|------|
+| **HTML body 背景**（浏览器预览区） | `linear-gradient(135deg, #EDE5F8 0%, #DDD8F0 30%, #D5D6EE 60%, #CDD3EC 100%)` |
+| **所有幻灯片统一底色** | `linear-gradient(90deg, #EDE5F8 0%, #DDD8F0 35%, #D5D6EE 65%, #CDD3EC 100%)` |
+| **底部色条** | `linear-gradient(90deg, var(--accent), var(--primary), var(--purple), var(--red))` |
 
-| 文件 | 用途 | 使用位置 |
-|------|------|----------|
-| `Home_Logo.png` | 白色 Logo（用于深色背景） | 封面左上角 `.cover-logo-primary` |
-| `Home_Logo_Secondary.png` | 白色副品牌 Logo（用于深色背景） | 封面左上角 `.cover-logo-secondary`（可选） |
-| `Content_Logo.png` | 深色 Logo（用于浅色背景） | 内容页右上角 `.header-logo-primary`、结尾页 `.ending-logo-primary` |
-| `Content_Logo_Secondary.png` | 彩色副品牌 Logo（用于浅色背景） | 内容页右上角 `.header-logo-secondary`（可选） |
-| `BackGround_Decoration.png` | 品牌装饰图（圆环+曲线纹理） | 封面右上角 `.slide.cover::before`、结尾页 `.slide.ending::before`（可选） |
+> **硬性要求**：`body` 背景色禁止使用深色（如 `#1a1a2e`），必须使用浅紫到浅蓝的渐变色，与幻灯片底色保持视觉一致。公司模板不在页面间做深浅分层，所有页面使用同一底色。通过"球体+玻璃"装饰强度区分页面类型。
 
-> **兼容旧资产**：如果工作区已有其他命名方式的品牌素材目录，可直接引用，只需调整 CSS 中的路径。
+#### 核心装饰母题：紫色球体 + 轨道环 + 玻璃菱形
 
-#### 自动注入的 CSS 覆盖规则
+三类页面（封面、章节页、结尾页）共享同一组视觉元素，通过位置和大小变化营造统一感：
 
-选择自定义品牌模板后，在 `</style>` 前追加以下覆盖样式块（核心要点，色值和 Logo 路径替换为用户提供的值）：
-
+**球体**（3D 渐变紫色圆球）：
 ```css
-/* ========== 自定义品牌模板覆盖 ========== */
-:root {
-  --primary: #2F80ED; --primary-soft: #EEF6FF; --primary-dark: #1456C8;
-  --accent: #35C6F4; --accent-soft: #EAFBFF;
-  --green: #20B8A8; --green-soft: #E9FBF8;
-  --amber: #F3A875; --amber-soft: #FFF3E8;
-  --red: #FB5387; --red-soft: #FFF0F6;
-  --purple: #9D9AFE;
-  --text-primary: #111; --text-secondary: #333; --text-muted: #666;
-  --border: rgba(193,199,217,.58);
-  --bg-card: rgba(255,255,255,.94);
-  --shadow: 0 20px 52px rgba(47,128,237,.12);
-  --shadow-soft: 0 10px 28px rgba(17,17,17,.055);
-  --neon: #89E0D4;
-}
+background: radial-gradient(circle at 38% 32%, #A480F0, #6535D9 55%, #4520B0);
+box-shadow: 0 28px 80px rgba(91,48,215,.35);
+```
 
-/* ── 页面背景 & 底部色条 ── */
-.slide { background: linear-gradient(180deg, #FFF 0%, #F8FBFF 100%); overflow: hidden; }
-.slide::after {
-  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
-  height: 4px; background: linear-gradient(90deg, #2F80ED, #35C6F4, #9D9AFE);
-}
+**轨道环**（两层同心圆细线）：
+```css
+border: 1px solid rgba(180,175,210,.3);   /* 内环 */
+border: 1px solid rgba(180,175,210,.18);  /* 外环，更淡 */
+```
 
-/* ── 封面页 ── */
-/* 深色渐变背景 */
-.slide.cover {
-  background: radial-gradient(circle at 82% 25%, rgba(137,224,212,.26), transparent 34%),
-              linear-gradient(125deg, #081227, #123A8C 52%, #129AC0);
-  color: white;
-}
-.slide.cover::after { background: linear-gradient(90deg, #2F80ED, #89E0D4, #9D9AFE); }
-
-/* 封面右上角品牌装饰图（圆环+曲线纹理，大尺寸从右上角铺入） */
-.slide.cover::before {
-  content: ''; position: absolute; top: 0; right: 0;
-  width: 900px; height: 560px;
-  background: url('ppt_brand_assets/BackGround_Decoration.png') right top/contain no-repeat;
-  opacity: 1; pointer-events: none; z-index: 0;
-}
-
-/* 封面品牌 Logo — 左上角，白色版本（适配深色背景） */
-.cover-logo {
-  position: absolute; top: 32px; left: 48px;
-  display: flex; align-items: center; gap: 16px;
-  z-index: 1;
-}
-.cover-logo-primary {
-  width: 140px; height: 36px;
-  background: url('ppt_brand_assets/Home_Logo.png') center/contain no-repeat;
-}
-.cover-logo-divider { width: 1px; height: 28px; background: rgba(255,255,255,0.3); }
-.cover-logo-secondary {
-  width: 120px; height: 36px;
-  background: url('ppt_brand_assets/Home_Logo_Secondary.png') center/contain no-repeat;
-}
-
-/* 封面标题样式 */
-.cover-title {
-  font-size: 44px; font-weight: 900; margin-bottom: 16px;
-  background: linear-gradient(135deg, #fff, #89E0D4);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.cover-subtitle { font-size: 20px; font-weight: 300; opacity: 0.85; margin-bottom: 48px; }
-.cover-meta { font-size: 13px; opacity: 0.6; }
-
-/* ── 内容页页眉：左标题 + 右双品牌 Logo ── */
-.header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 24px 56px 0; position: relative;
-}
-.header-left { display: flex; align-items: center; gap: 12px; }
-.header-dot {
-  width: 10px; height: 10px; border-radius: 50%;
-  background: var(--purple); flex-shrink: 0;
-}
-.page-title { font-size: 24px; font-weight: 700; color: var(--text-primary); }
-.header-brand { display: flex; align-items: center; gap: 10px; }
-.header-logo-primary {
-  width: 80px; height: 28px;
-  background: url('ppt_brand_assets/Content_Logo.png') center/contain no-repeat;
-}
-.header-logo-divider { width: 1px; height: 22px; background: var(--border); }
-.header-logo-secondary {
-  width: 100px; height: 28px;
-  background: url('ppt_brand_assets/Content_Logo_Secondary.png') center/contain no-repeat;
-}
-/* 页眉下方蓝青渐变色条 */
-.header::after {
-  content: ''; position: absolute; left: 56px; top: 68px;
-  width: 120px; height: 3px; border-radius: 999px;
-  background: linear-gradient(90deg, #2F80ED, #89E0D4);
-}
-
-/* ── 内容页页脚：左文字 + 右页码 ── */
-.page-footer {
-  position: absolute; bottom: 16px; left: 56px; right: 56px;
-  display: flex; justify-content: space-between; align-items: center;
-  font-size: 11px; color: var(--text-muted);
-}
-.page-footer .brand-text { color: var(--text-muted); }
-.page-no { font-weight: 500; }
-
-/* ── 网格布局对齐规则（左右列等高填满） ── */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: stretch; }
-.grid-2 > div { display: flex; flex-direction: column; min-height: 0; }
-.grid-2 > div > .card { flex: 1; }
-.grid-2 > div > div[style*="flex-direction:column"] { flex: 1; }
-.grid-2 > div > div[style*="flex-direction:column"] > .card { flex: 1; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; align-items: stretch; }
-.grid-3 > div, .grid-3 > .card { display: flex; flex-direction: column; }
-.grid-3 > .card { flex: 1; }
-
-/* ── 结尾页 ── */
-.slide.ending {
-  background: radial-gradient(circle at 50% 50%, rgba(47,128,237,0.08), transparent 60%),
-              linear-gradient(180deg, #FFF 0%, #F0F7FF 100%);
-  overflow: hidden;
-}
-/* 结尾页右上角装饰图（与封面呼应） */
-.slide.ending::before {
-  content: ''; position: absolute; top: 0; right: 0;
-  width: 700px; height: 500px;
-  background: url('ppt_brand_assets/BackGround_Decoration.png') right top/contain no-repeat;
-  opacity: 1; pointer-events: none; z-index: 0;
-}
-.ending-content {
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; height: 100%; text-align: center;
-  position: relative; z-index: 1;
-}
-.ending-logo {
-  display: flex; align-items: center; justify-content: center; gap: 20px;
-  margin-bottom: 24px;
-}
-.ending-logo-primary {
-  width: 120px; height: 42px;
-  background: url('ppt_brand_assets/Content_Logo.png') center/contain no-repeat;
-}
-.ending-logo-divider { width: 1px; height: 28px; background: var(--border); }
-.ending-logo-secondary {
-  width: 160px; height: 42px;
-  background: url('ppt_brand_assets/Content_Logo_Secondary.png') center/contain no-repeat;
-}
-
-/* 卡片：圆角 12px、浅色、轻阴影 */
-.card { border-color: rgba(193,199,217,.62); border-radius: 12px; }
-
-/* pill 标签 */
-.pill       { background: #EEF6FF; border-color: rgba(47,128,237,.2); color: #1456C8; }
-.pill.green { background: #E9FBF8; color: #158A80; }
-.pill.amber { background: #FFF3E8; color: #B66B21; }
-.pill.red   { background: #FFF0F6; color: #D72F6B; }
-
-/* 表格/矩阵/规格表头渐变 */
-.matrix .head, .table .head, .spec-title {
-  background: linear-gradient(135deg, #2F80ED, #35C6F4 58%, #9D9AFE);
+**玻璃矩形**（旋转 50° 的毛玻璃矩形，带左侧渐变边线）：
+```css
+background: linear-gradient(160deg, rgba(255,255,255,.48), rgba(245,240,255,.25), rgba(230,220,250,.10));
+border: 1.5px solid rgba(255,255,255,.50);
+backdrop-filter: blur(14px);
+transform: rotate(50deg);
+border-radius: 24px;
+```
+```css
+/* 左侧渐变边线 */
+.cover-glass1::before {
+  content:''; position:absolute; top:20px; bottom:20px; left:-2px;
+  width:3px; border-radius:99px;
+  background:linear-gradient(180deg, #9D6BFF, #6BB8FF);
 }
 ```
 
-#### HTML 结构约定
+**装饰圆点**（三种颜色点缀）：
+- 蓝色：`linear-gradient(135deg, #6BB8FF, #46B6FF)`
+- 粉色：`linear-gradient(135deg, #FF6BA0, #FF4081)`
+- 紫色：`radial-gradient(circle at 35% 30%, #C4A0FA, #7E50DE 80%)`
 
-##### 封面页 HTML 结构
+**斜切装饰线**（极淡渐变线）：
+```css
+background: linear-gradient(90deg, transparent, rgba(76,120,255,.15), rgba(157,107,255,.20));
+transform: rotate(-30deg);
+```
+
+#### 封面页规范
+
+- **布局**：左侧文字（标题+副标题+作者），右侧球体+轨道环+毛玻璃矩形
+- **左侧对齐规则（强制）**：Logo、标题内容、底部信息三者左侧必须对齐
+  - `.cover-logo { left: 28px }` — Logo 紧靠左侧
+  - `.cover-content { padding: 0 48px }` — 标题/副标题/作者信息
+  - `.cover-bottom { left: 48px }` — 底部网址和品牌名
+- **球体**：460×460px，`right:130px; top:60px`，`z-index:3`
+  ```css
+  background: radial-gradient(circle at 38% 32%, #B898FA, #8050F0 40%, #6030D8 65%, #4A20C0);
+  box-shadow: 0 32px 90px rgba(91,48,215,.28);
+  ```
+- **轨道环**：两层，`z-index:1`
+  - 内环：560×560px，`right:130px; top:40px`，`border: 1px solid rgba(180,175,210,.25)`
+  - 外环：660×660px，`right:80px; top:-10px`，`border: 1px solid rgba(180,175,210,.15)`
+- **毛玻璃矩形**：560×780px，`rotate(50deg)`，`right:50px; top:300px`，`z-index:4`（在球体前面，半透明覆盖）
+  ```css
+  background: linear-gradient(160deg, rgba(255,255,255,.48), rgba(245,240,255,.25), rgba(230,220,250,.10));
+  border: 1.5px solid rgba(255,255,255,.50);
+  backdrop-filter: blur(14px);
+  border-radius: 24px;
+  ```
+- **毛玻璃渐变边线**：左侧竖向紫蓝渐变线（`::before` 伪元素）
+  ```css
+  .cover-glass1::before { position:absolute; top:20px; bottom:20px; left:-2px; width:3px; border-radius:99px; background:linear-gradient(180deg, #9D6BFF, #6BB8FF); }
+  ```
+- **装饰圆点**：三个（非四个），各有独特位置
+  - 蓝色（22px）：`left:130px; top:140px`，在左侧空白区
+  - 粉色（20px）：`right:580px; top:130px`，在轨道环上
+  - 紫色（32px）：`left:-6px; top:380px`，半隐藏在页面左边缘
+- **× 装饰符号**：`right:50px; top:60px`，18px 淡紫色，`z-index:5`
+- **斜切装饰线**：`width:900px; rotate(-25deg); left:-100px; bottom:60px`
+- **标题字体**：52px/900 weight，渐变色（`--primary-dark → --primary → --red`）
+- **子标题**：36px，用第二渐变（`--purple → --accent → --green`）
+- **Logo**：左上方双品牌 Logo，`top:32px; left:28px`，`z-index:5`
+- **底部**：`bottom:24px; left:48px; right:48px`，左侧网址链接，右侧 "Medalsoft"
 
 ```html
 <div class="slide cover active" data-index="0">
-  <div class="cover-decoration"></div>   <!-- 右上角光晕装饰 -->
-  <div class="cover-decoration2"></div>  <!-- 左下角光晕装饰 -->
+  <div class="cover-ring-o2"></div>
+  <div class="cover-ring-o1"></div>
+  <div class="cover-glass1"></div>
+  <div class="cover-sphere"></div>
+  <div class="cover-dot1"></div><div class="cover-dot2"></div><div class="cover-dot3"></div>
+  <div class="cover-x">×</div>
+  <div class="cover-line"></div>
   <div class="cover-content">
-    <!-- 左上角品牌 Logo（白色版本，适配深色背景） -->
-    <div class="cover-logo">
-      <div class="cover-logo-primary"></div>
-      <div class="cover-logo-divider"></div>
-      <div class="cover-logo-secondary"></div>
-    </div>
-    <div class="cover-title">产品名称</div>
-    <div class="cover-subtitle">副标题</div>
-    <div class="cover-meta">补充信息</div>
+    <div class="cover-logo">...</div>
+    <div class="cover-title">产品名称<br><span>子标题</span></div>
+    <div class="cover-subtitle">描述文字</div>
+    <div class="cover-meta">作者 · 公司 · 日期</div>
   </div>
+  <div class="cover-bottom"><a href="#">www.medalsoft.com</a><span>Medalsoft</span></div>
 </div>
 ```
 
-**封面布局要点**：
-- Logo 固定在**左上角** (`top: 32px; left: 48px`)，使用白色版本 (`Home_*.png`)
-- 右上角通过 `::before` 伪元素铺入品牌装饰图 (`BackGround_Decoration.png`)，尺寸 900×560px
-- 标题居中，渐变文字（白→青绿）
-- 两个 `cover-decoration` 做辅助光晕效果
+#### 章节分隔页规范（标题页）
 
-##### 内容页 HTML 结构
+> **章节分隔页是 PPT 必备页面类型，每个主要章节前必须有一张。球体 + 轨道环 + 毛玻璃面板三要素缺一不可。**
+
+> **目录条目与章节分隔页 1:1 对应（强制）**：目录页有 N 个条目，就必须有 N 个章节分隔页。例如目录 8 个条目编号 1-8，则必须有 8 个分隔页（sd-num 为 01-08），每个分隔页的标题必须与目录中对应条目的标题一致。不允许"只给部分章节加分隔页"——这会让读者在翻页时失去节奏感。
+
+- **布局**：球体居左偏中，毛玻璃面板右侧延伸，页码数字叠加在球体上
+- **球体**：280×280px，`left:210px; top:220px`
+- **轨道环**：两层（380px / 460px）
+- **毛玻璃面板**（必须还原）：`width:fit-content`，`padding-left:160px; padding-right:50px`
+  ```css
+  .sd-glass {
+    background: linear-gradient(155deg, rgba(255,255,255,.46), rgba(210,200,240,.12));
+    border: 1px solid rgba(255,255,255,.50);
+    backdrop-filter: blur(6px);
+    border-radius: 24px;
+  }
+  ```
+- **页码数字**：92px 白色斜体（Inter），叠在球体中心
+- **章节标题**：36px/800 weight，深紫色 `#2E1A6E`
+- **不显示底部色条**：`.slide.section-divider::after { display:none; }`
+- **编号必须与目录页一致（强制）**：章节分隔页的 `.sd-num` 数字必须等于目录页中对应条目的序号。例如目录第 2 项“认知革命”，则该章节分隔页显示 `02`，而不是独立从 `01` 开始计数。目录页描述文字也必须与对应内容页的标题一致，不得出现通用词糊弄。
 
 ```html
-<div class="slide" data-index="N">
-  <div class="header">
-    <!-- 左侧：圆点 + 页面标题 -->
-    <div class="header-left">
-      <div class="header-dot"></div>
-      <div class="page-title">页面标题</div>
-    </div>
-    <!-- 右侧：品牌 Logo（深色版本，适配浅色背景） -->
-    <div class="header-brand">
-      <div class="header-logo-primary"></div>
-      <div class="header-logo-divider"></div>
-      <div class="header-logo-secondary"></div>
-    </div>
-  </div>
-  <div class="content">
-    <!-- 页面内容 -->
-  </div>
-  <div class="page-footer">
-    <span class="brand-text">{brand_name}</span>
-    <span class="page-no">02 / 20</span>
-  </div>
+<div class="slide section-divider">
+  <div class="sd-ring r2"></div>
+  <div class="sd-ring r1"></div>
+  <div class="sd-sphere"></div>
+  <div class="sd-num">01</div>
+  <div class="sd-glass"><div class="sd-glass-title">章节标题</div></div>
+  <div class="sd-dot pink"></div>
+  <div class="sd-dot purple"></div>
+  <div class="sd-dot blue"></div>
 </div>
 ```
 
-**内容页布局要点**：
-- 页眉左侧 = 紫色圆点 + 页面标题；右侧 = 主品牌 Logo + 分隔线 + 副品牌 Logo
-- 页眉下方有蓝青渐变色条（通过 `.header::after` 实现）
-- 页脚左侧 = 品牌名称纯文字；右侧 = 页码 "NN / 总数"
-- 内容区 `.content` 高度 590px，padding: 20px 56px 14px（紧凑模式，最大化可用面积）
+#### 结尾页规范
 
-##### 结尾页 HTML 结构
+- **布局**：封面的镜像 — 球体在左侧，大字 "THANK YOU" 在右侧
+- **Logo**：左上方双品牌 Logo，`top:32px; left:28px`（与封面完全一致），`z-index:5`
+- **球体**：440×440px，`left:50px; top:100px`，`z-index:3`
+  ```css
+  background: radial-gradient(circle at 38% 32%, #B898FA, #8050F0 40%, #6030D8 65%, #4A20C0);
+  box-shadow: 0 32px 90px rgba(91,48,215,.28);
+  ```
+- **轨道环**：两层，`z-index:1`
+  - 内环：560×560px，`left:-10px; top:40px`，`border: 1px solid rgba(180,175,210,.25)`
+  - 外环：660×660px，`left:-60px; top:-10px`，`border: 1px solid rgba(180,175,210,.15)`
+- **毛玻璃矩形**：1100×600px，`rotate(28deg)`，`left:450px; top:60px`，`z-index:4`（在球体上面）
+  - **与封面的关键差异**：结尾页的毛玻璃矩形更宽更扁、角度更缓（28° vs 封面 50°），覆盖右半区域直到右下角
+  - **无上方边框**，只有底部渐变色条（`::after` 伪元素）
+  - **无左侧渐变边线**（`::before` 隐藏）
+  ```css
+  .ending-glass {
+    width: 1100px; height: 600px;
+    background: linear-gradient(160deg, rgba(255,255,255,.48), rgba(245,240,255,.25), rgba(230,220,250,.10));
+    border: none;
+    backdrop-filter: blur(10px);
+    transform: rotate(28deg);
+    border-radius: 0 0 24px 24px;
+    overflow: hidden;
+  }
+  /* 左侧渐变边线隐藏 */
+  .ending-glass::before { display: none; }
+  /* 底部渐变色条（粉→紫→蓝） */
+  .ending-glass::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #E95BC2, #8050F0, #3DA5FF);
+    border-radius: 0 0 24px 24px;
+  }
+  ```
+- **装饰圆点**：两个
+  - 粉色（24px）：`left:50px; top:100px`，在 Logo 下方
+  - 蓝色（18px）：`right:60px; top:140px`，在右侧
+- **× 装饰符号**：`right:50px; top:60px`，18px 淡紫色
+- **斜切装饰线**：`width:1000px; rotate(-25deg); left:0px; bottom:60px`
+- **"THANK YOU"**：108px/900 weight，渐变从粉到紫（`linear-gradient(180deg, #E95BC2, #3F2FD7)`），居右
+- **底部**：`bottom:24px; left:48px; right:48px`，左侧 "Medalsoft"，右侧日期
 
 ```html
 <div class="slide ending" data-index="最后">
-  <div class="ending-content">
-    <div class="ending-logo">
-      <div class="ending-logo-primary"></div>
-      <div class="ending-logo-divider"></div>
-      <div class="ending-logo-secondary"></div>
-    </div>
-    <div class="ending-title">产品名称</div>
-    <div class="ending-sub">副标题描述</div>
-    <!-- 可选：数据统计卡片 -->
-    <div style="font-size:14px;color:var(--text-muted);">Thank You & Q&A</div>
+  <div class="ending-ring2"></div><div class="ending-ring1"></div>
+  <div class="ending-glass"></div><div class="ending-sphere"></div>
+  <div class="ending-dot-pink"></div><div class="ending-dot-blue"></div>
+  <div class="ending-x">×</div>
+  <div class="ending-line"></div>
+  <div class="ending-logo-area">
+    <div class="ending-logo-swo"></div>
+    <div class="ending-logo-divider"></div>
+    <div class="ending-logo-medalsoft"></div>
   </div>
+  <div class="ending-content">
+    <div class="ending-copy">
+      <div class="ending-title">THANK<br>YOU</div>
+    </div>
+  </div>
+  <div class="ending-bottom"><span>Medalsoft</span><span>日期</span></div>
 </div>
 ```
 
-**结尾页布局要点**：
-- 右上角通过 `.slide.ending::before` 铺入装饰图（与封面呼应，尺寸 700×500px）
-- 内容区 `z-index: 1` 确保在装饰图之上
-- 品牌 Logo 居中，使用深色版本 (`Content_*.png`)
+#### 内容页组件规范
 
-##### 左右布局对齐规则（关键）
+**页眉**：左侧微钉小图标 `Medaslsoft_Sample.png`（32×32px）+ 标题（34px/800），右侧双品牌 Logo。页眉下方 120px 蓝紫渐变色条。
 
-当内容页使用 `.grid-2` 左右分栏布局时，**左右列必须等高对齐，页面高度尽量填满**：
+**卡片**：圆角 20px，白色半透明（.94/.84），双层边框 + 柔和阴影，`backdrop-filter:blur(10px)`。
 
-```css
-/* 网格列拉伸 + 卡片填满列高 */
-.grid-2 { align-items: stretch; }
-.grid-2 > div { display: flex; flex-direction: column; min-height: 0; }
-.grid-2 > div > .card { flex: 1; }
-.grid-2 > div > div[style*="flex-direction:column"] { flex: 1; }
-.grid-2 > div > div[style*="flex-direction:column"] > .card { flex: 1; }
-```
+**终端代码块**：深色 `#1A1730`，带红黄绿三色窗口按钮，代码用 `JetBrains Mono`，高亮色：蓝 `#7dd3fc`、绿 `#86efac`、紫 `#c4b5fd`。
 
-**验证要点**：左右两列底部必须对齐，卡片不应在中间留大片空白。如果内容不均匀，通过 `flex: 1` 让较短一侧的卡片自动拉伸。左右不等高视为版式缺陷，必须修复后才能继续导出。
+**照片框**：圆角 16px，底部渐变遮罩 + 白色说明文字。
 
-#### 资产准备（自动注入）
+**表格**：表头渐变紫 `linear-gradient(135deg, #6D79C8, #7E6ED7)`，白底行，圆角 14px。
 
-用户需将品牌素材放在本 Skill 的 `brand-assets/` 目录中：
+**Before/After 对比列**：粉色（Before）vs 青色（After），用 `justify-content:space-evenly` 均匀分布条目。
 
-```
-doa-ppt/
-├── SKILL.md
-├── references/
-│   ├── screenshot-pptx-template.py
-│   └── pptx-converter-template.py
-└── brand-assets/                          ← 用户放入品牌素材
-    ├── BackGround_Decoration.png          (装饰图，封面/结尾页，可选)
-    ├── Content_Logo.png                   (深色 Logo，内容页/结尾页)
-    ├── Content_Logo_Secondary.png         (副品牌 Logo，可选)
-    ├── Home_Logo.png                      (白色 Logo，封面)
-    └── Home_Logo_Secondary.png            (白色副品牌 Logo，可选)
-```
+**提示框**：白色毛玻璃底，左侧 3px 蓝色竖线，圆角 16px。
 
-**自动注入流程**：当用户选择"自定义品牌"主题时，在生成 HTML 之前自动执行：
+**流程步骤**：48px 渐变圆球 + 连接线 + 文字标签，颜色从蓝到绿到紫渐变。
 
-1. 定位本 Skill 的 `brand-assets/` 目录（路径：`{skill-root}/brand-assets/`）
-2. 在 PPT 输出目录下创建 `ppt_brand_assets/` 子目录
-3. 将 `brand-assets/` 下的文件复制到该子目录
-4. 如目标目录已存在且文件齐全，跳过复制
+**标签 pill**：5 种颜色变体（green/amber/purple/red/blue），圆角 99px。
 
-```python
-# 自动注入示例（在生成脚本开头执行）
-import shutil
-from pathlib import Path
+**页脚**：左 "SoftwareOne | 微钉科技"，右页码（圆角胶囊式，白底紫文字）。
 
-skill_root = Path(__file__).parent  # 或通过 Skill 路径定位
-brand_src = skill_root / "brand-assets"
-# 也可以直接用已知的 Skill 安装路径：
-# brand_src = Path.home() / ".claude/skills/doa-ppt/brand-assets"
-
-output_dir = Path("output/{产出名称}")
-brand_dst = output_dir / "ppt_brand_assets"
-
-if brand_src.exists() and not brand_dst.exists():
-    shutil.copytree(brand_src, brand_dst)
-```
-
-> **无需手动复制**：团队成员只要安装了 doa-ppt skill，选择自定义品牌模板时品牌素材会自动出现在输出目录中。
-
----
-
-### 每个主题包含完整配色方案
-
-选定主题后，生成完整的 CSS 变量体系：
+**目录条目（毛玻璃卡片式）**：每个目录项为一张全宽毛玻璃卡片，左侧标题+描述，右侧编号圆球。必须还原毛玻璃效果。
 
 ```css
-:root {
-  --primary: #主色;
-  --primary-light: #浅色变体;
-  --primary-dark: #深色变体;
-  --accent: #点缀色;
-  --bg-slide: #幻灯片背景;
-  --bg-card: #卡片背景;
-  --text-primary: #主文字;
-  --text-secondary: #次要文字;
-  --text-muted: #辅助文字;
-  --border: #边框色;
-  --banner: #横幅/按钮色;
-  --divider: #分隔线色;
+.toc-item {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 16px 24px;
+  background: linear-gradient(155deg, rgba(255,255,255,.46), rgba(210,200,240,.12));
+  border: 1px solid rgba(255,255,255,.50);
+  backdrop-filter: blur(6px);
+  border-radius: 16px;
+  transition: all .3s;
 }
+.toc-item:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+.toc-num {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--purple));
+  color: white; font-size: 16px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(76,120,255,.25);
+}
+.toc-text { font-size: 18px; font-weight: 700; color: var(--primary-dark); }
+.toc-desc { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
 ```
+
+**目录页推荐结构**（根据条目数量自动选择布局）：
+
+> **布局规则（强制）**：
+> - ≤ 5 个条目：单列堆叠布局，`display:flex;flex-direction:column;gap:12px`
+> - 6-8 个条目：双列网格布局，`grid-2`，每列 3-4 个条目，每个条目加 `flex:1` 使同列条目等高
+> - 超过 8 个：拆分为多个目录页，或精简章节结构
+> 
+> 禁止在单列布局中塞入超过 5 个条目——必定导致溢出或压缩到无法阅读的尺寸。
+
+```html
+<div class="slide" data-index="1">
+  <div class="header">
+    <div class="header-left"><div class="header-dot"></div><div class="page-title">目录</div></div>
+    <div class="header-brand"><span class="logo-text">品牌名</span></div>
+  </div>
+  <div class="content" style="display:flex;flex-direction:column;gap:12px;padding-top:16px;">
+    <div class="toc-item">
+      <div><div class="toc-text">章节标题</div><div class="toc-desc">简要描述</div></div>
+      <div class="toc-num">1</div>
+    </div>
+    <!-- 更多条目... -->
+  </div>
+  <div class="page-footer"><span>品牌名</span><span class="page-no">02 / N</span></div>
+</div>
+```
+
+> **关键**：`.toc-item` 必须使用 `backdrop-filter: blur(6px)` + 半透明白色渐变背景实现毛玻璃效果，不要用纯白卡片。编号圆球放在右侧（`justify-content: space-between`），而非左侧。
+
+#### 动画规范
+
+- **fadeUp**：从下方 24px 淡入
+- **fadeScale**：从下方 12px + 缩放 0.97 淡入
+- 封面标题依次入场（delay 0.1s → 0.2s）
+- 卡片、终端、照片、提示框统一用 fadeScale 0.5s
+- 目录条目依次入场（delay 0.02s 递增 0.06s）
+- 章节页球体 fadeScale 0.6s → 数字 fadeUp 0.6s → 玻璃面板 fadeScale 0.6s
+
+#### 实战踩坑要点
+
+1. **玻璃面板宽度用 `fit-content`**：不要固定宽度，自适应标题文字长度，`padding-right:50px` 控制右侧留白
+2. **Before/After 列不要用 `<br>` 堆行**：改为 `<div>` + `flex-direction:column; justify-content:space-evenly`，避免底部大片空白
+3. **照片与下方提示框之间要留 `margin-top:12px`**：避免紧贴重叠
+4. **左右分栏的短列元素加 `flex:1`**：卡片、表格、终端都要 `flex:1` 撑满，避免左右不等高
+5. **表格容器要 `display:flex;flex-direction:column`**：让 `<table style="flex:1">` 生效
+6. **球体 z-index 层级**：轨道环 z1 → 球体 z3 → 玻璃矩形 z4 → 装饰点/内容 z5
+7. **所有页面统一底色**：不分页面类型做深浅差异，只靠装饰元素密度区分
 
 ### 各规模推荐页面结构
 
@@ -584,14 +582,9 @@ if brand_src.exists() and not brand_dst.exists():
 16. 总结与展望
 17. Q&A / 附录
 
-如果用户提供了参考图，分析其：
-- 主色调和辅助色
-- 视觉风格（深色/浅色、扁平/立体）
-- 布局偏好
-
 ## Step 2: 生成可翻页 HTML 预览
 
-基于收集的需求、确认的规模和选定的主题，生成**一个可左右翻页的 HTML 文件**，模拟幻灯片放映效果。
+基于收集的需求和确认的规模，使用公司模板生成**一个可左右翻页的 HTML 文件**，模拟幻灯片放映效果。
 
 ### 翻页 HTML 结构
 
@@ -609,7 +602,7 @@ if brand_src.exists() and not brand_dst.exists():
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: #1a1a2e;
+      background: linear-gradient(135deg, #EDE5F8 0%, #DDD8F0 30%, #D5D6EE 60%, #CDD3EC 100%);
       display: flex; justify-content: center; align-items: center;
       min-height: 100vh; font-family: 'Noto Sans SC', sans-serif;
       overflow: hidden;
@@ -641,13 +634,13 @@ if brand_src.exists() and not brand_dst.exists():
     .nav-btn {
       position: fixed; top: 50%; transform: translateY(-50%);
       width: 50px; height: 50px; border-radius: 50%;
-      background: rgba(255,255,255,0.15); border: none;
-      color: white; font-size: 24px; cursor: pointer;
+      background: rgba(255,255,255,0.5); border: none;
+      color: #4A4567; font-size: 24px; cursor: pointer;
       backdrop-filter: blur(10px);
       transition: background 0.3s;
       z-index: 100;
     }
-    .nav-btn:hover { background: rgba(255,255,255,0.3); }
+    .nav-btn:hover { background: rgba(255,255,255,0.7); }
     .nav-btn.prev { left: 30px; }
     .nav-btn.next { right: 30px; }
     .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
@@ -660,18 +653,36 @@ if brand_src.exists() and not brand_dst.exists():
     }
     .page-dot {
       width: 10px; height: 10px; border-radius: 50%;
-      background: rgba(255,255,255,0.3);
+      background: rgba(76,120,255,0.25);
       cursor: pointer; transition: all 0.3s;
     }
     .page-dot.active {
-      background: white; transform: scale(1.3);
+      background: #4C78FF; transform: scale(1.3);
     }
 
     /* 键盘提示 */
     .keyboard-hint {
       position: fixed; bottom: 60px; left: 50%;
       transform: translateX(-50%);
-      color: rgba(255,255,255,0.4); font-size: 12px;
+      color: rgba(74,69,103,0.4); font-size: 13px;
+    }
+      transform: translateX(-50%);
+      display: flex; gap: 8px; z-index: 100;
+    }
+    .page-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: rgba(76,120,255,0.25);
+      cursor: pointer; transition: all 0.3s;
+    }
+    .page-dot.active {
+      background: #4C78FF; transform: scale(1.3);
+    }
+
+    /* 键盘提示 */
+    .keyboard-hint {
+      position: fixed; bottom: 60px; left: 50%;
+      transform: translateX(-50%);
+      color: rgba(74,69,103,0.4); font-size: 13px;
     }
   </style>
 </head>
@@ -766,6 +777,161 @@ if brand_src.exists() and not brand_dst.exists():
 - **数据可视化**：关键指标用数字高亮卡片、进度条、对比图表呈现，而非纯文字罗列
 - **案例 + 截图**：技术方案页配架构图，功能页配界面截图或交互示意
 
+#### 图文结合的反 AI 味准则（强制）
+
+> **核心原则：从第一稿开始，每个内容页都必须图文结合，使用真实图片（联网搜索或用户提供），严禁 Emoji 图标，严禁纯文字页面。不要先用 Emoji 占位再让用户修改——第一版就必须到位。**
+
+- **第一稿就必须配图，不允许后期修补**：生成 HTML 的同时就要完成图片搜索/下载/引用，不能先出纯文字版让用户反复要求加图。这是硬性门禁，没有配图的内容页不得交付。
+- **每个内容页必须包含至少一张真实图片**：不是装饰，而是承载信息的视觉元素。产品类用界面截图，技术类用架构图/截图，书籍类用封面照，历史类用文物/遗址/古画照片。纯文字卡片堆叠的页面观感极差。
+- **数据/表格页也必须有图**：即使是规则表格、对比矩阵等数据密集页面，也要做图文分栏——左侧缩窄表格/数据区，右侧配主题相关的背景图。不允许全宽纯文字表格独占整页。
+- **严禁使用 Emoji 作为图标或装饰（从第一稿起）**：不要用 🔥📊🚀💡🛡️ 等 Emoji 充当视觉元素。如需图标效果，使用纯色圆角方块 + 中文单字的 `.icon-bar` 组件：
+  ```html
+  <div class="icon-bar">
+    <span class="ib" style="background:var(--primary);">审</span>
+    <span class="ib" style="background:var(--purple);">核</span>
+    <span class="ib" style="background:var(--green);">验</span>
+  </div>
+  ```
+  `.ib` 样式：`display:inline-flex; width:28px; height:28px; border-radius:7px; color:#fff; font-size:13px; font-weight:700; align-items:center; justify-content:center;`
+- **不要只堆卡片和 bullet**：如果一页全是等宽小卡片 + 抽象文案，AI 味会非常重。至少给关键页加入一张真实截图、业务场景图或结构图。
+- **图片要承担信息功能**：图片不是装饰填空。界面优化页用真实界面截图，实施页用流程图/时间轴，问题页用现状截图，对比页用前后对照。
+- **单页至少一个视觉主角**：每页应有一个主视觉元素，通常是大图、表格、时间轴、架构图、数据横幅中的一个，而不是所有元素平均铺开。
+- **同一张图不要反复滥用**：若素材不足，可复用同类风格图，但不要整套稿件只靠一张图裁来裁去。至少在封面、现状、方案、交付几个阶段使用不同视觉来源。
+- **咨询稿结构优先**：推荐采用 `左文右图`、`上图下结论`、`大图 + 侧栏摘要`、`主图 + 底部指标条` 这类结构，避免平均分配成四宫格信息墙。
+- **图片与文字的视觉重量要互补**：大图页应减少正文密度；文字多时图片只保留一张主图或局部截图，避免图和字同时抢焦点。
+
+#### 图片素材获取与回退策略（强制）
+
+> **图片是内容页质量的决定性因素，必须主动获取，不能跳过。**
+
+##### 有联网能力时（默认流程）
+
+1. **主动利用联网能力搜索高质量图片**：使用 Tavily/Unsplash/Pexels 等可商用图源，根据 PPT 主题关键词批量搜索相关图片。每个内容页至少配一张，整套 PPT 至少准备 8-15 张不同图片。
+2. **图片下载到本地 `images/` 目录**：所有网络图片必须下载到 `output/<项目名>/images/` 目录，HTML 中使用相对路径 `images/xxx.jpg` 引用，不依赖外部 URL。
+3. **图片语义匹配**：不要随便拿风景图填技术页。书籍类用封面/作者/场景照，历史类用文物/遗址/古画，技术类用架构截图/产品界面，商务类用办公/团队/数据可视化照片。
+4. **下载失败立即换源**：Wikimedia 缩略图限制较多（400 错误常见），优先使用 Unsplash（`https://images.unsplash.com/photo-xxx?w=800`），备选 Pexels。某张图 404 时立即换另一张同主题图，不要阻塞流程。
+5. **图片尺寸建议**：宽度 600-1200px 即可，不需要超高清。JPG 格式优先，单张控制在 50-250KB。
+
+##### 无联网能力时（回退流程）
+
+1. **立即告知用户**：明确提示"当前环境无法联网下载图片，请您手动收集相关图片放入 `output/<项目名>/images/` 文件夹"。
+2. **提供图片清单**：列出每页需要的图片主题和建议文件名，如：
+   ```
+   images/cover.jpg      — 书籍封面或主题封面照
+   images/scene_01.jpg   — 第一章节主题配图
+   images/scene_02.jpg   — 第二章节主题配图
+   ...
+   ```
+3. **先生成 HTML 框架**：即使图片暂缺，也先生成完整 HTML，图片位置用 placeholder 占位（灰色背景 + 文字提示），等用户补图后自动显示。
+4. **用户补图后再做最终检查**：图片到位后重新在浏览器中检查每页渲染效果。
+
+##### 通用规则
+
+- **优先级顺序**：本地截图 / 项目现状图 / 品牌资产 / 用户提供图片 / 可商用网络图片。
+- **本地素材也要讲语义**：即便只能使用本地截图，也要按"现状页、方案页、交付页"分别选图，不能随便拿一张图填所有页面。
+- **禁止为补图而破坏版权边界**：仅使用用户提供、本地已有、品牌资产或可明确商用的图片来源（Unsplash/Pexels 均为免费商用授权）。
+
+#### 图文分栏布局标准模式（强制）
+
+> **所有内容页必须使用图文分栏布局。不允许任何内容页只有纯文字/纯表格而没有图片。**
+
+内容页标准结构为 **左文右图** flex 分栏：
+
+```html
+<div class="content" style="display:flex;gap:20px;align-items:stretch;">
+  <!-- 左侧：文字/卡片/表格 -->
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;">
+    <!-- 内容区 -->
+    <div class="highlight-box" style="margin-top:auto;padding:8px 14px;">
+      <p style="font-size:12px;margin:0;"><strong>总结文字</strong></p>
+    </div>
+  </div>
+  <!-- 右侧：图片面板 -->
+  <div class="screenshot-panel" style="flex:0 0 340px;overflow:hidden;min-height:0;padding:0;">
+    <img src="images/xxx.jpg" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" alt="描述">
+  </div>
+</div>
+```
+
+##### 关键规则
+
+| 项目 | 规则 | 原因 |
+|------|------|------|
+| **flex 容器** | `display:flex;gap:20px;align-items:stretch` | stretch 让左右等高 |
+| **左侧内容区** | `flex:1;display:flex;flex-direction:column;min-width:0;min-height:0` | min-height:0 防止内容撑破容器 |
+| **右侧图片面板** | `flex:0 0 300~400px;overflow:hidden;min-height:0;padding:0` | 固定宽度，padding:0 覆盖默认值 |
+| **图片样式** | `width:100%;height:100%;object-fit:cover;border-radius:14px` | cover 填满面板，不留白边 |
+| **底部摘要** | `margin-top:auto` 推到底部 | 消除中间空白 |
+
+##### 不同页面类型的图片面板宽度建议
+
+| 页面类型 | 图片面板 `flex-basis` | 说明 |
+|----------|----------------------|------|
+| 常规文字+卡片 | `flex:0 0 400px` | 文字少图片大 |
+| 数据表格（单表） | `flex:0 0 340px` | 表格需要更多宽度 |
+| 数据表格（双表/密集） | `flex:0 0 300px` | 给表格让出更多空间 |
+| 产品截图（精确展示） | `flex:1`（与文字等宽） | 截图需要大面积 |
+
+##### 产品截图 vs 背景配图
+
+| 类型 | 来源 | 用途 | 样式差异 |
+|------|------|------|----------|
+| **产品截图** | Playwright 截图 + 裁剪 | 精确展示界面功能 | `object-fit:contain`，保留白底，加 `box-shadow` 和 `border` |
+| **背景配图** | Unsplash/Pexels 联网下载 | 视觉氛围、主题烘托 | `object-fit:cover`，铺满面板，`padding:0` |
+
+##### 表格页图文分栏示例
+
+数据密集的表格页也必须有图片，做法是缩窄表格列宽 + 减小字号：
+
+```html
+<div class="content" style="display:flex;gap:20px;align-items:stretch;">
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0;">
+    <table class="cmp-table" style="flex:1;font-size:13px;">
+      <thead><tr><th style="width:50px;">编号</th><th style="width:120px;">名称</th><th>描述</th><th style="width:70px;">等级</th></tr></thead>
+      <tbody><!-- 数据行 --></tbody>
+    </table>
+    <div class="highlight-box" style="margin-top:auto;padding:8px 14px;">
+      <p style="font-size:12px;margin:0;"><strong>总结</strong></p>
+    </div>
+  </div>
+  <div class="screenshot-panel" style="flex:0 0 340px;overflow:hidden;min-height:0;padding:0;">
+    <img src="images/bg_theme.jpg" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" alt="主题图">
+  </div>
+</div>
+```
+
+#### 内容间距规范（强制）
+
+> **不同内容块之间必须有可见间距，禁止紧贴在一起。**
+
+| 元素 | 间距规则 | CSS |
+|------|----------|-----|
+| **表格行间距** | 每行之间留 8px 间距 | `border-spacing: 0 8px;` |
+| **卡片之间** | 卡片之间留 12-16px 间距 | `gap: 12px` 或 `gap: 16px` |
+| **标题与内容** | 标题下方留 10-12px | `margin-bottom: 10px` |
+| **内容与底部摘要** | 自动推到底部 | `margin-top: auto` |
+| **左右分栏间隔** | 左侧内容与右侧图片之间 | `gap: 20px` |
+| **图文分栏内部** | 左列内部元素之间 | `gap: 10px` |
+| **全宽表格 td** | 单元格内边距 | `padding: 14px 16px` |
+
+##### 表格行间距实现
+
+```css
+.cmp-table {
+  border-spacing: 0 8px;   /* 行间距 8px */
+  border-collapse: separate; /* 必须用 separate 才能生效 */
+}
+.cmp-table td {
+  padding: 14px 16px;      /* 单元格内边距 */
+}
+```
+
+##### 禁止的紧凑写法
+
+- **禁止** `border-spacing: 0` 或 `border-collapse: collapse` 导致行间无间距
+- **禁止** 卡片之间 `gap: 0` 或无 gap 导致卡片紧贴
+- **禁止** 多个 `highlight-box` 或提示框之间无 margin 导致视觉糊在一起
+
 #### 多元素对称与布局规范
 
 - **网格对齐**：多卡片/多模块布局必须基于网格系统，保证等宽、等高、等间距
@@ -790,7 +956,7 @@ if brand_src.exists() and not brand_dst.exists():
 #### 封面页布局
 ```
 ┌─────────────────────────────────────────────┐
-│  [品牌 Logo]              ← 左上角        │
+│  [SWO Logo] | [微钉Logo]    ← 左上角        │
 │                         [装饰图] ← 右上角    │
 │           主标题（大号加粗渐变）              │
 │           副标题                             │
@@ -802,24 +968,24 @@ if brand_src.exists() and not brand_dst.exists():
 #### 内容页布局（左右分栏）
 ```
 ┌─────────────────────────────────────────────┐
-│ ● 页面标题               [品牌 Logo]      │
+│ ● 页面标题           [SWO Logo]|[微钉Logo]  │
 │ ────                                        │
 │  左侧（文字描述 + 卡片）  │  右侧（图/预览）  │
 │  ← flex:1 等高拉伸 →     │ ← flex:1 等高 →  │
 │─────────────────────────────────────────────│
-│  {brand_name}                      02 / 20  │
+│  SoftwareOne | 微钉科技            02 / 20  │
 └─────────────────────────────────────────────┘
 ```
 
 #### 内容页布局（全宽）
 ```
 ┌─────────────────────────────────────────────┐
-│ ● 页面标题               [品牌 Logo]      │
+│ ● 页面标题           [SWO Logo]|[微钉Logo]  │
 │ ────                                        │
 │  3-4 列并排卡片 / 流程图 / 架构图            │
 │                                             │
 │─────────────────────────────────────────────│
-│  {brand_name}                      03 / 20  │
+│  SoftwareOne | 微钉科技            03 / 20  │
 └─────────────────────────────────────────────┘
 ```
 
@@ -827,7 +993,7 @@ if brand_src.exists() and not brand_dst.exists():
 ```
 ┌─────────────────────────────────────────────┐
 │                [装饰图] ← 右上角             │
-│     [品牌 Logo]                              │
+│     [SWO Logo] | [微钉Logo]                 │
 │           产品名称                           │
 │           副标题描述                          │
 │      [数据统计卡片] (可选)                   │
@@ -840,8 +1006,10 @@ if brand_src.exists() and not brand_dst.exists():
 - 所有页面共享同一套 CSS 变量（配色体系）
 - Header 区域（Logo + 页标题）位置保持一致
 - 页脚区域风格统一（可加页码）
-- 每页使用相同的字体大小层级（标题 22-28px，正文 12-14px，辅助 11-12px）
-- 卡片正文 `.card-text` 使用 `font-size: 12px; line-height: 1.7`，避免过小导致阅读困难
+- 每页使用相同的字体大小层级（页面主标题 34px，卡片标题 18-20px，正文 17px，辅助/标签 15px）
+- **最小字体硬性下限 15px**：整个 PPT 中任何可见文字（含页脚、标签、图片说明）不得小于 15px。禁止使用 10-14px 等小字号——在投影仪上完全无法阅读
+- 卡片正文使用 `font-size: 17px; line-height: 1.7`，确保在 1280×720 画布和投影场景下清晰可读
+- 优先通过精简文案来适配版面，而不是缩小字号塞更多内容
 
 ### HTML 技术要点
 
@@ -912,6 +1080,12 @@ if brand_src.exists() and not brand_dst.exists():
 |------|------|------|------|
 | **截图高保真模式** | 将每页 HTML 截图为图片插入 PPT | 还原度 100%，与 HTML 完全一致，最适合作为默认推荐 | 内容不可编辑，文件体积较大 |
 | **可编辑模式** | python-pptx 逐元素重建 | 文字/形状均可编辑，灵活修改 | 还原度约 85-90%，复杂布局可能有偏差 |
+
+#### 导出模式切换规则（新增）
+
+1. 同一轮会话内，用户若改口“还是要不可编辑高清 PPT”，应立即从可编辑链路切回截图高保真链路。
+2. 切换模式后不复用对方输出文件名，必须生成新的目标文件并保留历史版本。
+3. 对外反馈时必须明确告知本次产物属于哪种模式（可编辑 / 高保真），避免用户误判可改性。
 
 ### 模式 A: 截图高保真 PPT（默认推荐，HTML → 截图 → 插入）
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `elastic/elasticsearch` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `elastic/elasticsearch` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `elastic/elasticsearch` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,6 +63,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`benchmarks/AGENTS.md`](benchmarks/AGENTS.md) |
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 4 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 5 | ✓ | [`x-pack/plugin/esql/compute/AGENTS.md`](x-pack/plugin/esql/compute/AGENTS.md) |
 
 ---
 

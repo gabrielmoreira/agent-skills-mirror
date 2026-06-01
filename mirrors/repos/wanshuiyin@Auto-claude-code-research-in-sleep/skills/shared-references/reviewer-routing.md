@@ -92,6 +92,47 @@ If Oracle is not installed, `— reviewer: oracle-pro` gracefully falls back to 
 
 Oracle MCP is maintained at [`steipete/oracle`](https://github.com/steipete/oracle). When you invoke `— reviewer: oracle-pro` (and especially the `o3-deep-research` / `gpt-5.5-pro` paths), it's worth checking the **[open PRs](https://github.com/steipete/oracle/pulls)** for in-flight fixes that may affect your run — e.g., model routing changes, browser-mode auth fixes, rate-limit handling, or new model alias support. ARIS does not vendor Oracle MCP; you're running the published version from `npm install -g @steipete/oracle`. If a behavior surprises you, the upstream PR queue is the first place to check before opening an issue here.
 
+## Optional: Gemini via Antigravity CLI (`— reviewer: agy`)
+
+When the user explicitly passes `— reviewer: agy`, route the review through the **gemini-review MCP** with the Antigravity (`agy`) backend — a native cross-model reviewer for Antigravity users who don't run Codex MCP / Oracle. Added in [#267](https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep/pull/267).
+
+### Routing Logic (add to any reviewer-invoking skill)
+
+```
+Parse $ARGUMENTS for `— reviewer:` directive.
+
+If `— reviewer: agy`:
+    → Check if the gemini-review MCP tool is available (mcp__gemini_review__review).
+    → If available (server configured with GEMINI_REVIEW_BACKEND=agy):
+        Use mcp__gemini_review__review with:
+          prompt: [same prompt you would send to Codex]
+        For round 2+: mcp__gemini_review__review_reply with the saved threadId.
+        For long paper/project reviews (avoid the ~120s MCP tool timeout):
+          mcp__gemini_review__review_start + mcp__gemini_review__review_status (async).
+    → If NOT available:
+        Print: "⚠️ gemini-review (agy) MCP not configured. Falling back to Codex xhigh."
+        Use mcp__codex__codex as normal.
+```
+
+### Invariants
+
+- `— reviewer: agy` ONLY takes effect when explicitly passed.
+- **Cross-model family holds by construction.** The `agy` backend is fail-closed on ARIS's invariant: it recovers the *actual* Gemini-family model id from the current invocation's Antigravity transcript, **refuses** to return a verdict if the routed model is non-Gemini (no `"agy-cli"` placeholder), and binds the recovered transcript to *this* call via a **user-event nonce** (a model echo can't spoof the binding). So when the executor is Claude, `— reviewer: agy` (Gemini) satisfies the cross-model gate.
+- Reviewer independence still applies — pass prompt context only (the `tools` arg is accepted for compatibility but ignored).
+- `effort` and `difficulty` are orthogonal — they don't change the reviewer backend.
+
+### Install
+
+```bash
+# Install + authenticate the Antigravity CLI (`agy`), then add the MCP with the agy backend:
+claude mcp add gemini-review --env GEMINI_REVIEW_BACKEND=agy -- python3 <path>/mcp-servers/gemini-review/server.py
+# (codex mcp add gemini-review ... for Codex CLI). Without the env var the server defaults to the direct Gemini API.
+```
+
+### NOT installed = ZERO impact
+
+If the gemini-review (agy) MCP isn't configured, `— reviewer: agy` gracefully falls back to Codex xhigh. No error, no breakage, just a warning.
+
 ## Optional: Manual Review (any model, zero API cost)
 
 When the user explicitly passes `— reviewer: manual`, route the review through the manual-review MCP server. Instead of calling an API, it opens a browser page (or writes a file on headless Linux) where the user copies the prompt to any model and pastes the response back.

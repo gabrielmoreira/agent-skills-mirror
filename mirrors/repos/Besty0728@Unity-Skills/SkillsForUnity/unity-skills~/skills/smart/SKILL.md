@@ -7,7 +7,7 @@ description: "AI-powered scene operations: SQL-like object queries, spatial quer
 
 ## Operating Mode
 
-- **Approval**（默认）：本模块 Mixed —— 只读查询 skill `smart_scene_query` / `smart_scene_query_spatial`（标 `ReadOnly = true`, `Mode = SkillMode.SemiAuto`）可直接执行；其余布局/绑定/变换类 skill (`smart_scene_layout` / `smart_reference_bind` / `smart_align_to_ground` / `smart_distribute` / `smart_snap_to_grid` / `smart_randomize_transform` / `smart_select_by_component`) 为 `SkillMode.FullAuto`，需用户 grant 单次执行返结果。
+- **Approval**：本模块 Mixed —— 只读查询 skill `smart_scene_query` / `smart_scene_query_spatial`（标 `ReadOnly = true`, `Mode = SkillMode.SemiAuto`）可直接执行；其余布局/绑定/变换类 skill (`smart_scene_layout` / `smart_reference_bind` / `smart_align_to_ground` / `smart_distribute` / `smart_snap_to_grid` / `smart_randomize_transform` / `smart_select_by_component`) 为 `SkillMode.FullAuto`，需用户 grant 单次执行返结果。
 - **Auto / Bypass**：直接执行。
 - **含 NeverInSemi 高危 skill**：`smart_replace_objects`（Operation.Modify|Delete，会替换并删除原对象）。该 skill 在 Approval/Auto 下返 `MODE_FORBIDDEN`，仅 Bypass 或 Allowlist 命中可调。
 

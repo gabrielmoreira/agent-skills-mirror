@@ -1,6 +1,6 @@
 ---
 description: "Show full metadata + trust signal breakdown for a single Plugin Mall entry"
-lastReviewed: 2026-05-29
+lastReviewed: 2026-05-31
 ---
 
 # /mall-show
@@ -13,11 +13,14 @@ Per [PLAN-mall-automation v3 / ADR-008](https://github.com/fabioc-aloha/Alex_ACT
 
 1. **Get the plugin name** from the user. If the name appears in multiple stores (Mall-curated + third-party alternatives), use the same name and disambiguate via the store. The user may have used `--from-store <store>` from `/mall-search` results.
 
-2. **Fetch the catalog** (try in order):
-   - **Local clone (fast)**: read `C:/Development/Alex_ACT_Plugin_Mall/catalog/index.json` and the specific `catalog/stores/<store>.json`
+2. **Fetch the catalog.** The Mall is a sibling repo (canonical clone name `Alex_Skill_Mall`). Try in order, first hit wins:
+   - **Sibling clone**: `../Alex_Skill_Mall/catalog/index.json` and `../Alex_Skill_Mall/catalog/stores/<store>.json`
+   - **User-home clone**: `~/Alex_Skill_Mall/catalog/...` (resolves `~` for the current OS)
+   - **Windows default**: `C:/Development/Alex_Skill_Mall/catalog/...`
    - **GitHub raw (fallback)**:
      - `https://raw.githubusercontent.com/fabioc-aloha/Alex_Skill_Mall/main/catalog/index.json` (to find which stores carry the name)
      - `https://raw.githubusercontent.com/fabioc-aloha/Alex_Skill_Mall/main/catalog/stores/<store>.json` (for full metadata)
+   - If none work: link the user to <https://github.com/fabioc-aloha/Alex_Skill_Mall/blob/main/README.md>, suggest `git clone https://github.com/fabioc-aloha/Alex_Skill_Mall.git ../Alex_Skill_Mall`, and stop.
 
 3. **Disambiguate** if the name appears in multiple stores:
    - If exactly one match: proceed

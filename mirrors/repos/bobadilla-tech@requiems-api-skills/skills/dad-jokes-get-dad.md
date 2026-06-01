@@ -31,10 +31,10 @@ Returns a randomly selected dad joke from the collection.
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `id` | string | Stable identifier for the joke (e.g. "joke_7") |
-| `joke` | string | The full text of the dad joke |
+| Field  | Type   | Description                                    |
+| ------ | ------ | ---------------------------------------------- |
+| `id`   | string | Stable identifier for the joke (e.g. "joke_7") |
+| `joke` | string | The full text of the dad joke                  |
 
 ## Errors
 

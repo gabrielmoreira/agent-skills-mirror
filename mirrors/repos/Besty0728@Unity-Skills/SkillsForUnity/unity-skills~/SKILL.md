@@ -7,12 +7,12 @@ description: "Unity Editor automation via REST API — create scripts, analyze s
 
 Use this skill when the user wants to automate the Unity Editor through the local UnitySkills REST server.
 
-## Canonical Schema First
+## Schema: query only when unsure
 
-For exact skill names, parameters, defaults, and returns, query schema first:
-- `unity_skills.get_skill_schema()`
-- `GET /skills/schema`
-- `GET /skills?category=<Category>`
+The schema is the canonical source for exact skill names, parameters, defaults, and returns — **but you do not need it for every call**. For common read-only or simple write calls whose parameters you already know, call directly; query schema only when a skill name or signature is uncertain.
+
+- `unity_skills.get_skill_schema()` / `GET /skills/schema` — full schema (large: ~`578 KB` for all skills). Fetch at most **once per session** and reuse it; do not re-pull before every call.
+- `GET /skills?category=<Category>` — returns a **manifest** (lightweight: `mode` / `approvalBehavior` / parameters per skill), **not** the full schema. Use it to scope by category. Note: `/skills/schema` itself does **not** currently filter by category.
 
 Use module `SKILL.md` files for routing guidance, guardrails, and minimal examples, not as the canonical source of exact signatures.
 
@@ -34,11 +34,13 @@ On session start (or before the first skill call), call `GET /health` and read:
 
 ### Three Modes (aligned with Claude Code permission modes)
 
-| Mode | Claude Code 类比 | FullAuto skill | Auto-detected NeverInSemi skill |
+> **Factory default:** a fresh install starts in **Auto**; an upgraded install (any pre-existing `UnitySkills_*` pref) starts in **Bypass**. It **never** defaults to Approval. The "Claude Code 类比" column below is only a mental model, **not** the factory default — always read `/health.currentMode` before acting.
+
+| Mode | Claude Code 类比（心智对照，非默认） | FullAuto skill | Auto-detected NeverInSemi skill |
 |---|---|---|---|
-| **Approval** | `default` / `plan` | First call returns `MODE_RESTRICTED`; run the grant protocol below | `MODE_FORBIDDEN` |
-| **Auto** | `acceptEdits` | Executes directly (audit written); **you must self-assess** sensitive cases | `MODE_FORBIDDEN` |
-| **Bypass** | `bypassPermissions` | Executes directly | Executes directly (only `ConfirmationToken` still gates high-risk) |
+| **Approval** | ≈ `default` / `plan` | First call returns `MODE_RESTRICTED`; run the grant protocol below | `MODE_FORBIDDEN` |
+| **Auto** | ≈ `acceptEdits` | Executes directly (audit written); **you must self-assess** sensitive cases | `MODE_FORBIDDEN` |
+| **Bypass** | ≈ `bypassPermissions` | Executes directly | Executes directly (only `ConfirmationToken` still gates high-risk) |
 
 `NeverInSemi` is derived automatically by `IsForbiddenInSemi()` — there is no manual marker. See "Skill Mode Annotation" below.
 
@@ -63,7 +65,7 @@ On `MODE_RESTRICTED`, branch on `details.approvalChannel`:
 
 > Note: panel approval no longer auto-routes the result back to the AI. The Approve click only flips the request into the Granted state; AI must follow up with one `/permission/grant` call to fetch the execution result.
 
-On `MODE_FORBIDDEN`: the skill is auto-classified as NeverInSemi (Delete / Domain Reload / Play Mode / high-risk / fallback list). It is callable only under Bypass, **or** if the user has explicitly added it to the Allowlist (see below). **Do not attempt the grant flow** — tell the user the action requires Bypass mode, an Allowlist entry, or offer an alternative skill.
+On `MODE_FORBIDDEN`: the skill is auto-classified as NeverInSemi (Delete / Domain Reload / Play Mode / high-risk). It is callable only under Bypass, **or** if the user has explicitly added it to the Allowlist (see below). **Do not attempt the grant flow** — tell the user the action requires Bypass mode, an Allowlist entry, or offer an alternative skill.
 
 ### Allowlist (user-managed permanent bypass)
 
@@ -103,29 +105,58 @@ The REST surface (~`750` skills) is partitioned by `[UnitySkill]` `Mode` and run
 | Annotation | Count | Source |
 |---|---|---|
 | `SkillMode.SemiAuto` | ~`270` | Manually annotated. Covers read-only / query / analyze skills across `script` / `perception` / `scene` / `editor` / `asset` / `workflow` / `debug` / `console` and most modules' info / list / get / find skills |
-| Auto-detected NeverInSemi | ~`40+` | `IsForbiddenInSemi()` derives from `Operation.Delete`, `MayEnterPlayMode`, `MayTriggerReload`, `RiskLevel="high"`, plus an explicit fallback list (`scene_clear`, `scene_new`, `batch_apply`) |
+| Auto-detected NeverInSemi | ~`75-79` | `IsForbiddenInSemi()` derives purely from `Operation.Delete`, `MayEnterPlayMode`, `MayTriggerReload`, `RiskLevel="high"` (no fallback list) |
 | `SkillMode.FullAuto` (default) | remainder | Unannotated skills (write / mutate by default). Approval requires grant; Auto / Bypass execute directly |
 
-SemiAuto category overview (use `GET /skills?category=<Category>` for the exact callable list; only SemiAuto skills are listed below — write skills in the same modules remain FullAuto):
+SemiAuto (read/query/analyze) skills are directly callable in every mode and span the modules below; use `GET /skills?category=<Category>` for the exact list (write skills in the same modules stay FullAuto):
 
-| Category | Modules | Representative SemiAuto Skills |
-|----------|---------|--------------------------------|
-| Script | script | script_read, script_list, script_get_info, script_find_in_file, script_get_compile_feedback |
-| Perception | perception | scene_analyze, scene_context, scene_health_check, scene_find_hotspots, project_stack_detect |
-| Scene Mgmt | scene | scene_get_info, scene_get_hierarchy, scene_get_loaded, scene_find_objects |
-| Editor | editor | editor_get_context, editor_get_state, editor_get_selection, editor_get_tags, editor_get_layers |
-| Asset Basic | asset | asset_find, asset_get_info |
-| Workflow | workflow | workflow_list, workflow_session_list, workflow_session_status, workflow_plan; use workflow/batch helpers for planning, preview, jobs, and rollback, not free-form scene construction |
-| Debug | debug, console | debug_check_compilation, debug_get_errors, debug_get_system_info, debug_get_memory_info, console_get_logs |
-| Advisory | 19 modules | Design-only guidance modules (no REST skills) |
+- **script** (read/list/get_info/find_in_file/get_compile_feedback) · **perception** (scene_analyze/context/health_check/find_hotspots, project_stack_detect) · **scene** (get_info/get_hierarchy/get_loaded/find_objects) · **editor** (get_context/state/selection/tags/layers) · **asset** (find/get_info) · **workflow** (list/session_*/plan — prefer workflow & batch helpers for planning/preview/jobs/rollback) · **debug + console** (check_compilation/get_errors/get_system_info/get_memory_info/get_logs)
+- plus most modules' own info / list / get / find skills. **Advisory**: `19` design-only modules (no REST skills) — see Coding Reference Index below.
 
 ## Core Rules
 
 1. If the user specifies a Unity version or editor line, set instance/version routing first with `unity_skills.set_unity_version(...)`.
-2. Under Auto / Bypass modes (or after grant under Approval), prefer `*_batch` skills whenever the task touches `2+` objects.
+2. **BATCH-FIRST** — whenever the task touches `2+` objects, use the `*_batch` variant. Calling the single-object skill in a loop is N round-trips (and `2N` under Approval, since each call needs its own grant). Always look for a `*_batch` form before looping.
 3. For multi-step editor mutations, prefer workflow wrappers instead of free-form mutation sequences.
 4. Script edits, define changes, package changes, some imports, and test template creation can trigger compilation or Domain Reload. Wait and retry on transient unavailability.
 5. `test_*` skills are async. They return a `jobId` and must be polled with `test_get_result(jobId)`.
+
+## Coding Reference Index
+
+Before writing or refactoring Unity code, **load the relevant advisory module first**. These are the `19` `Documentation only` design modules (no REST skills — loadable under any mode) that pin rules to engine source and prevent hallucinated / removed APIs. Load on demand by topic, not all at once.
+
+**General coding & architecture** — before writing gameplay code or making structural decisions:
+
+| Module | Load when |
+|---|---|
+| `project-scout` | Before proposing changes in an existing project — first check Unity version, packages, asmdef, folders, coding patterns |
+| `architecture` | Module boundaries, scene design, SOLID structure, decoupling, refactor direction |
+| `script-roles` | Whether a class should be a MonoBehaviour, ScriptableObject, plain C# service, or installer |
+| `scriptdesign` | Code review, reducing coupling, improving maintainability, refactoring scripts |
+| `patterns` | Choosing among ScriptableObject / event / state-machine / object-pool / observer designs |
+| `testability` | Improving testability, isolating logic out of MonoBehaviour, planning EditMode/PlayMode tests |
+| `asmdef` | Module boundaries, faster compiles, clearer dependencies, editor/runtime/test split |
+| `async` | Choosing among Update / coroutine / UniTask / timers, or cleanup & cancellation |
+| `inspector` | SerializeField usage, Tooltip/Header organization, validation, Inspector UX |
+| `scene-contracts` | Required scene objects, component dependencies, bootstrap logic, reference wiring |
+| `adr` | Comparing options, choosing among approaches, locking in a design decision |
+| `performance` | Performance review, frame drops, Update/allocation/pooling/physics optimization |
+| `blueprints` | Starter structure for a small game (platformer, shooter, runner, puzzle, tower-defense, clicker, card) |
+
+**Library-specific** — before writing code against that library (guards against removed / hallucinated APIs):
+
+| Module | Load before writing |
+|---|---|
+| `addressables-design` | `InitializeAsync` / `LoadAssetAsync` / `LoadSceneAsync` / `UpdateCatalogs` / `AssetReference` |
+| `dotween-design` | `DOTween.Init` / `DOMove` / `Sequence` / `SetLoops` / `SetLink` / `ToUniTask` |
+| `netcode-design` | `NetworkBehaviour` / RPC / `NetworkVariable` / Spawn |
+| `shadergraph-design` | Graph structure, node chains, SubGraph boundaries, keyword / blackboard layout |
+| `unitask-design` | `async UniTask` / `UniTaskVoid` / `PlayerLoopTiming` / `CancellationToken` / `WhenAll` |
+| `yooasset-design` | `ResourcePackage` / `AssetHandle` / `Downloader` / `FileSystem` / `AssetBundleBuilder` |
+
+**Unity API reference**: `references/*.md` — official API grouped by topic (`2d`, `3d`, `animation`, `assets`, `audio`, `editor`, `networking`, `physics`, `rendering`, `scripting`, `shaders`, `ui`, `xr`, …). Read the relevant file to ground exact signatures instead of guessing.
+
+Load any module via the index: `unity-skills/skills/<module>/SKILL.md`.
 
 ## Route
 

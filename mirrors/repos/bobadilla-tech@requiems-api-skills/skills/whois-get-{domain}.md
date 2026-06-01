@@ -17,9 +17,9 @@ Returns WHOIS registration information for a domain name.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `domain` | string | yes | path | The domain name to look up (e.g. example.com) |
+| Name     | Type   | Required | Location | Description                                   |
+| -------- | ------ | -------- | -------- | --------------------------------------------- |
+| `domain` | string | yes      | path     | The domain name to look up (e.g. example.com) |
 
 ## Response Example
 
@@ -50,19 +50,20 @@ Returns WHOIS registration information for a domain name.
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `domain` | string | The domain name that was looked up |
-| `registrar` | string | The name of the registrar holding the domain registration |
-| `name_servers` | array of strings | List of authoritative name servers for the domain |
-| `status` | array of strings | EPP status codes for the domain (e.g. clientTransferProhibited) |
-| `created_date` | string | Date the domain was first registered (ISO 8601) |
-| `updated_date` | string | Date the domain record was last updated (ISO 8601) |
-| `expiry_date` | string | Date the domain registration expires (ISO 8601) |
-| `dnssec` | boolean | True when DNSSEC is enabled for the domain |
+| Field          | Type             | Description                                                     |
+| -------------- | ---------------- | --------------------------------------------------------------- |
+| `domain`       | string           | The domain name that was looked up                              |
+| `registrar`    | string           | The name of the registrar holding the domain registration       |
+| `name_servers` | array of strings | List of authoritative name servers for the domain               |
+| `status`       | array of strings | EPP status codes for the domain (e.g. clientTransferProhibited) |
+| `created_date` | string           | Date the domain was first registered (ISO 8601)                 |
+| `updated_date` | string           | Date the domain record was last updated (ISO 8601)              |
+| `expiry_date`  | string           | Date the domain registration expires (ISO 8601)                 |
+| `dnssec`       | boolean          | True when DNSSEC is enabled for the domain                      |
 
 ## Errors
 
 - `400` **bad_request** — The domain name format is invalid.
 - `404` **not_found** — No WHOIS record was found for the domain.
-- `500` **internal_error** — Unexpected server error or upstream WHOIS query failure.
+- `500` **internal_error** — Unexpected server error or upstream WHOIS query
+  failure.

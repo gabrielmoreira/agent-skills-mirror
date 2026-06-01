@@ -9,6 +9,7 @@ Token Tracker is a local-first AI token usage tracker.
 - **CLI** (`src/`, CommonJS, Node ≥20) — entry `bin/tracker.js` → `src/cli.js`. `serve` runs a local HTTP server on `:7680`, `sync` parses logs into `~/.tokentracker/queue.jsonl`.
 - **Dashboard** (`dashboard/`, React 18 + Vite 7 + TS strict + Tailwind) — built to `dashboard/dist/`, served by the CLI locally and by Vercel at `www.tokentracker.cc`.
 - **macOS app** (`TokenTrackerBar/`, Swift 5.9, XcodeGen) — menu bar + WidgetKit. `EmbeddedServer/` bundles the CLI runtime + built dashboard so the `.app` is self-contained.
+- **Windows app** (`TokenTrackerWin/`, .NET 8 WinForms + WPF + WebView2) — system-tray counterpart of the macOS app. Launches the bundled CLI `serve` on a dynamic loopback port (avoids the DoSvc-held `:7680`), hosts the dashboard in WebView2, registers the `tokentracker://` deep-link for OAuth. Built `EmbeddedServer/` (Node + CLI + dashboard) is bundled by `scripts/bundle-node.ps1` so the `.exe` is self-contained. Dashboard adaptations are gated behind `isNativeWindowsApp()` (`dashboard/src/lib/native-bridge.js`) so macOS/web paths are untouched.
 
 Data flow: AI CLI runs → hook fires → `rollout.js` parses → `queue.jsonl` → local API → dashboard.
 
@@ -87,21 +88,26 @@ UTC, half-hour buckets, append-only — readers take the latest entry per `(sour
 
 ## Release workflow
 
-**Any change under `src/` or `dashboard/` ships both npm + DMG**, because `TokenTrackerBar/EmbeddedServer/` bundles the CLI runtime and built dashboard. Bumping only `package.json` leaves menu-bar-app users on the stale embedded copy.
+**Any change under `src/` or `dashboard/` ships npm + DMG + Windows**, because both `TokenTrackerBar/EmbeddedServer/` (macOS) and `TokenTrackerWin/EmbeddedServer/` (Windows) bundle the CLI runtime and built dashboard. Bumping only `package.json` leaves desktop-app users on the stale embedded copy.
 
-| Change scope | Bump `package.json` | Bump `project.yml` `MARKETING_VERSION` | Trigger DMG workflow |
-|---|---|---|---|
-| `src/` or `dashboard/` | ✅ | ✅ | ✅ |
-| `TokenTrackerBar/` Swift only | ✅ | ✅ | ✅ |
-| `dashboard/edge-patches/`, scripts, docs, CI | — | — | — |
+The macOS + Windows release is **one workflow**: `release-dmg.yml` (display name **`release (macOS + Windows)`**). A `create-release` job makes the `vX.Y.Z` release as a **draft**, then a macOS `build` job and a `windows` job (which calls the reusable `release-windows.yml` via `workflow_call`) both `needs: create-release` and run **in parallel**, each uploading its assets to the draft with `--clobber`. A final `publish` job (`needs: [build, windows]`) flips the draft live (`gh release edit --draft=false`) and notifies the Homebrew tap. The draft stays invisible until then, so `releases/latest` never serves a half-published release (and a failed platform leaves it unpublished rather than half-public). A **single** `gh workflow run "release (macOS + Windows)" -f version=X.Y.Z` ships **both** platforms. `release-windows.yml` can still be dispatched standalone for a Windows-only build.
+
+| Change scope | Bump `package.json` | Bump `project.yml` `MARKETING_VERSION` | Bump `TokenTrackerWin.csproj` `<Version>` | Trigger DMG workflow (→ also builds Windows) |
+|---|---|---|---|---|
+| `src/` or `dashboard/` | ✅ | ✅ | ✅ | ✅ |
+| `TokenTrackerBar/` Swift only | ✅ | ✅ | ✅ | ✅ |
+| `TokenTrackerWin/` only | ✅ | ✅ | ✅ | ✅ |
+| `dashboard/edge-patches/`, scripts, docs, CI | — | — | — | — |
+
+All four version locations must match or the workflows' "Verify version" steps fail (DMG checks `package.json` + `project.yml`; Windows checks `package.json` + `csproj`).
 
 When the user says "release" or "发 release", that is explicit approval for the release commit(s) + push — do not ask again for commit/push permission within that scope.
 
 ### Steps
 
-1. Bump `package.json` (and `project.yml`'s two `MARKETING_VERSION` entries — App target + Widget target).
+1. Bump `package.json`, `project.yml`'s two `MARKETING_VERSION` entries (App + Widget targets), and `TokenTrackerWin/TokenTrackerWin.csproj`'s `<Version>` — keep all four in lockstep.
 2. `git commit && git push origin main` → `npm-publish.yml` auto-publishes when version is new.
-3. For DMG-eligible changes: `gh workflow run "release DMG" -f version=X.Y.Z` → cloud builds DMG + creates GitHub Release.
+3. For DMG-eligible changes: `gh workflow run "release (macOS + Windows)" -f version=X.Y.Z` → cloud builds DMG **and** the Windows zip + installer (in parallel), attaching all to the GitHub Release.
 4. Homebrew tap `mm7894215/homebrew-tokentracker` self-updates via dispatch (~40s if `HOMEBREW_DISPATCH_TOKEN` set) or hourly cron (≤1h fallback). **Never edit the tap repo manually for routine releases.**
 
 Release notes: one English line, no markdown sections (`Fix token stats inflation caused by duplicate queue entries`).

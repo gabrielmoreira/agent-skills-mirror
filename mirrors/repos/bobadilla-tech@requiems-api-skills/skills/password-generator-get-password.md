@@ -13,16 +13,17 @@ description: Generate a cryptographically secure random password with customizab
 
 ## Generate Password
 
-Generate a cryptographically secure random password with customizable character sets and length
+Generate a cryptographically secure random password with customizable character
+sets and length
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `length` | integer | no | query | Password length (8-128 characters) |
-| `uppercase` | boolean | no | query | Include uppercase letters (A-Z) |
-| `numbers` | boolean | no | query | Include numbers (0-9) |
-| `symbols` | boolean | no | query | Include special characters (!@#$%^&*()-_=+[]{}|;:,.<>?) |
+| Name        | Type    | Required | Location | Description                                    |
+| ----------- | ------- | -------- | -------- | ---------------------------------------------- |
+| `length`    | integer | no       | query    | Password length (8-128 characters)             |
+| `uppercase` | boolean | no       | query    | Include uppercase letters (A-Z)                |
+| `numbers`   | boolean | no       | query    | Include numbers (0-9)                          |
+| `symbols`   | boolean | no       | query    | Include special characters (!@#$%^&*()-_=+[]{} |
 
 ## Response Example
 
@@ -41,11 +42,11 @@ Generate a cryptographically secure random password with customizable character 
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `password` | string | The generated password |
-| `length` | integer | Length of the generated password |
-| `strength` | string | Password strength assessment (weak, medium, or strong) |
+| Field      | Type    | Description                                            |
+| ---------- | ------- | ------------------------------------------------------ |
+| `password` | string  | The generated password                                 |
+| `length`   | integer | Length of the generated password                       |
+| `strength` | string  | Password strength assessment (weak, medium, or strong) |
 
 ## Errors
 

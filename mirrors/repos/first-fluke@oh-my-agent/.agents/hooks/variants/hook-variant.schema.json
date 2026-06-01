@@ -21,6 +21,7 @@
         "cursor",
         "gemini",
         "grok",
+        "kiro",
         "qwen"
       ]
     },

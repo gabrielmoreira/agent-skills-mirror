@@ -35,9 +35,9 @@ My cognitive machinery lives in `.github/` across four artifact types: instructi
 | Discipline | Lint hygiene, no deferred debt, severity-tagged commits, terminal safety | lint-discipline, no-deferred-debt, severity-tagged-commits, terminal-command-safety |
 | Rituals | Session start, upgrades, meditation, feedback, initialization | greeting-checkin, meditation, /initialize, /upgrade, /feedback, /welcome, /checkin |
 | Brain Curation | Self-authoring + auditing for skills, instructions, prompts, agents | skill-creator, skill-review, instruction-creator, instruction-review, prompt-creator, prompt-review, agent-creator, agent-review, doc-hygiene, brain-audit |
-| Authoring and Conversion | Document conversion (6 formats), markdown authoring, diagrams, banners | converter, markdown-mermaid, lint-clean-markdown, 4 worker agents (brain-auditor, document-assembler, illustrator, markdown-author), 6 format skills (docx-to-md, html-to-md, md-to-eml, md-to-html, md-to-txt, md-to-word) |
+| Authoring and Conversion | Document conversion (6 formats), markdown authoring, diagrams, banners | markdown-mermaid, lint-clean-markdown, alex-banner-generation, /convert prompt, 4 worker agents (brain-auditor, document-assembler, illustrator, markdown-author), 6 format skills (docx-to-md, html-to-md, md-to-eml, md-to-html, md-to-txt, md-to-word) |
 | Tool Awareness | VS Code tool system, deferred-tool loading, agent delegation | tool-awareness, tool-awareness-categories, agent-delegation |
-| Infrastructure and Fleet | Mall plugin management, AI-Memory setup, brain auditing, status reporting | mall-installation, ai-memory-setup, /audit-brain, /mall-search, /mall-install, /mall-refresh, /mall-contribute, /status |
+| Infrastructure and Fleet | Mall plugin management, AI-Memory setup, brain auditing, status reporting | ai-memory-setup, /audit-brain, /mall-search, /mall-install, /mall-refresh, /mall-contribute, /status |
 
 Memory formation happens in `/memories/` (user, session, repo) and `.github/episodic/`.
 

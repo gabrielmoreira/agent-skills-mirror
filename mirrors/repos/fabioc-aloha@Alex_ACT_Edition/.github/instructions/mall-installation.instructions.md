@@ -1,39 +1,38 @@
 ---
 description: "How heirs install plugins from the Alex ACT Plugin Mall into local/ paths so Edition upgrades don't clobber them"
 applyTo: "**/.github/skills/local/**,**/.github/instructions/local/**,**/.github/scripts/local/**,**/.github/prompts/local/**,**/.mcp.json,**/mcp.json"
-lastReviewed: 2026-05-27
+lastReviewed: 2026-05-31
 ---
 
 # Mall Installation
 
-The [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) is a curated catalog of optional plugins. Heirs pull what they need on demand.
+The [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) (canonical repo name `Alex_Skill_Mall`) is a curated catalog of optional plugins. Heirs pull what they need on demand.
 
 ## Plugin Structure
 
-Each plugin in the Mall is a self-contained folder under `plugins/<category>/<name>/`:
+Each plugin in the Mall is a folder under `plugins/<category>/<name>/`:
 
 | File | Purpose |
 | --- | --- |
 | `README.md` | Human-readable: what the plugin does, when to use it |
-| `plugin.json` | Machine manifest: shape, artifacts, dependencies, token cost |
-| `SKILL.md` | Brain artifact (the rules or knowledge) |
-| `*.instructions.md` | Optional instruction artifact |
-| `*.prompt.md` | Optional prompt artifact |
-| `*.cjs` | Optional muscle (executable code) |
+| `SKILL.md` | The skill artefact (if present per `shape`) |
+| `*.instructions.md` | Optional instruction artefact (if present per `shape`) |
+| `*.prompt.md` | Optional prompt artefact (if present per `shape`) |
+| `*.agent.md` | Optional agent artefact (if present per `shape`) |
+| `scripts/*.cjs` | Optional muscle / helper scripts |
 
-Read `plugin.json` to understand what you're installing:
+Per-plugin `plugin.json` manifests were the source of truth pre-ADR-008. Today the catalog (`catalog/index.json` at the Mall root) is authoritative — read it via `/mall-show <name>` rather than fetching the per-plugin file. The catalog entry tells you everything the install needs.
 
-- `shape` tells you the complexity (`.S..` = 1 file, `ISP.` = 3 files)
-- `engines` tells you which AI hosts support the plugin (`["copilot"]`, `["copilot", "claude"]`)
-- `token_cost` tells you the approximate context-window impact
-- `requires_edition` tells you the minimum Edition version
+The `shape` field is a 4-character code `ISPA` where each position indicates presence of an artefact kind:
 
-| Shape | What it includes |
-| --- | --- |
-| `.S..` | Skill only (1 file) |
-| `.S.M` | Skill + muscle (2 files) |
-| `ISP.` | Instruction + skill + prompt (3 files) |
-| `ISPM` | Full stack (4+ files) |
+| Position | Character | Meaning |
+| --- | --- | --- |
+| 1 (`I`) | `I` if present, `.` if absent | `.github/instructions/<name>.instructions.md` |
+| 2 (`S`) | `S` if present, `.` if absent | `.github/skills/<name>/SKILL.md` |
+| 3 (`P`) | `P` if present, `.` if absent | `.github/prompts/<name>.prompt.md` |
+| 4 (`A`) | `A` if present, `.` if absent | `.github/agents/<name>.agent.md` |
+
+Examples: `.S..` = skill-only, `ISP.` = instruction + skill + prompt, `ISPA` = full trifecta + agent, `..A.` = agent-only.
 
 ## Plugin Selection Protocol
 
@@ -48,20 +47,23 @@ Read `copilot-instructions.local.md`, `README.md`, `package.json`, and directory
 
 ### Step 3: Search the catalog
 
-Fetch `CATALOG.json` from GitHub or local clone:
+Use `/mall-search <query>` for ranked discovery (Mall-curated entries first, third-party alternatives below with their trust signals). For direct access, fetch `catalog/index.json` (schema 3.0) from:
+
+- **Sibling clone (preferred)**: `../Alex_Skill_Mall/catalog/index.json`
+- **GitHub raw (fallback)**: `https://raw.githubusercontent.com/fabioc-aloha/Alex_Skill_Mall/main/catalog/index.json` (~1.4 MB; cache for the session)
+
+If you want a local clone, use the canonical name so the helper scripts find it:
 
 ```bash
-gh api repos/fabioc-aloha/Alex_Skill_Mall/contents/CATALOG.json --jq .content | base64 -d
+git clone https://github.com/fabioc-aloha/Alex_Skill_Mall.git ../Alex_Skill_Mall
 ```
 
-Or read from local clone at `~/Alex_ACT_Plugin_Mall/CATALOG.json`.
+The catalog ships ~3,200 plugins across 46 source stores. Each entry carries `{ name, store, shape, trust_score, version, description_short, source_url, provenance, adapted_from }`. Filter by:
 
-The catalog has 282 plugins across 16 categories. Filter by:
-
-- `category`: security-privacy, devops-process, documentation, cloud-infrastructure, code-quality, ai-agents, media-graphics, data-analytics, reasoning-metacognition, platform-tooling, architecture-patterns, supervisor-fleet, domain-expertise, converters, communication-people, academic-research
-- `shape`: plugin complexity
-- `tier`: core, standard, extended
-- `token_cost`: approximate context window cost
+- `store`: `plugin-mall` (first-party, 🏆), `awesome-copilot`, plus 44 other third-party stores
+- `shape`: plugin complexity (see table below)
+- `trust_score`: numeric 0-100 (Mall-curated entries earn a +50 provenance bonus, so they naturally sort to the top)
+- `provenance`: `true` for Mall-curated, `false` for third-party
 
 ### Step 4: Apply the selection filter
 
@@ -74,7 +76,7 @@ The catalog has 282 plugins across 16 categories. Filter by:
 
 ### Step 5: Read the plugin's README
 
-Every plugin has a README that explains what it does, what Edition version it needs, and what artifacts it installs. Read it before installing.
+Every plugin's `source_url` points at a GitHub tree URL pinned to a specific SHA. Read the README there before installing. It explains what the plugin does, what artifacts it ships, and any setup steps.
 
 ## Installation
 
@@ -109,48 +111,64 @@ Installing outside `local/` means `upgrade-self.cjs --apply` will **delete it**.
 
 ### Install a Plugin
 
-1. **Read `plugin.json`** to see what artifacts ship and where they go:
+1. **Resolve the source URL** from `/mall-search <name>` then `/mall-show <name>`. The `source_url` field is a GitHub tree URL pinned to the upstream SHA at the current `version`. Example:
 
-   ```bash
-   gh api repos/fabioc-aloha/Alex_Skill_Mall/contents/plugins/<category>/<name>/plugin.json \
-     --jq .content | base64 -d
+   ```text
+   https://github.com/fabioc-aloha/Alex_Skill_Mall/tree/<sha>/plugins/architecture-patterns/context-architect
    ```
 
-2. **Copy each artifact to its `local/` path**:
+2. **Copy each artifact to its `local/` path.** From a sibling Mall clone (preferred for bulk):
 
    ```bash
-   # Skill
+   # Clone Mall once with the canonical name (helper scripts expect this path).
+   git clone https://github.com/fabioc-aloha/Alex_Skill_Mall.git ../Alex_Skill_Mall
+
+   # Skill (one-file or multi-file plugins both ship a SKILL.md at the plugin root).
    mkdir -p .github/skills/local/<name>
-   gh api repos/fabioc-aloha/Alex_Skill_Mall/contents/plugins/<category>/<name>/SKILL.md \
-     --jq .content | base64 -d > .github/skills/local/<name>/SKILL.md
+   cp ../Alex_Skill_Mall/plugins/<category>/<name>/SKILL.md .github/skills/local/<name>/
 
-   # Instruction (if plugin.json lists one)
-   mkdir -p .github/instructions/local
-   gh api repos/fabioc-aloha/Alex_Skill_Mall/contents/plugins/<category>/<name>/<instruction-file> \
-     --jq .content | base64 -d > .github/instructions/local/<instruction-file>
+   # Instruction / prompt / agent (only present if the plugin ships them; check the
+   # plugin's source tree for *.instructions.md, *.prompt.md, *.agent.md siblings).
+   mkdir -p .github/instructions/local .github/prompts/local .github/agents/local
+   cp ../Alex_Skill_Mall/plugins/<category>/<name>/*.instructions.md .github/instructions/local/ 2>/dev/null || true
+   cp ../Alex_Skill_Mall/plugins/<category>/<name>/*.prompt.md .github/prompts/local/ 2>/dev/null || true
+   cp ../Alex_Skill_Mall/plugins/<category>/<name>/*.agent.md .github/agents/local/ 2>/dev/null || true
 
-   # Script (if plugin.json lists one)
+   # Optional muscle scripts.
    mkdir -p .github/scripts/local
-   gh api repos/fabioc-aloha/Alex_Skill_Mall/contents/plugins/<category>/<name>/<script-file> \
-     --jq .content | base64 -d > .github/scripts/local/<script-file>
+   cp ../Alex_Skill_Mall/plugins/<category>/<name>/scripts/*.cjs .github/scripts/local/ 2>/dev/null || true
    ```
 
-3. **Alternative: local clone** (for bulk installs):
+   Or fetch single files directly without cloning the whole Mall:
 
    ```bash
-   git clone https://github.com/fabioc-aloha/Alex_Skill_Mall.git ~/Alex_ACT_Plugin_Mall
+   # GitHub raw at a pinned SHA (substitute <sha> from the source_url).
    mkdir -p .github/skills/local/<name>
-   cp ~/Alex_ACT_Plugin_Mall/plugins/<category>/<name>/SKILL.md .github/skills/local/<name>/
-   # Copy other artifacts per plugin.json install_paths
+   curl -L "https://raw.githubusercontent.com/fabioc-aloha/Alex_Skill_Mall/<sha>/plugins/<category>/<name>/SKILL.md" \
+     -o .github/skills/local/<name>/SKILL.md
    ```
 
-4. **Check dependencies**: read `requires_edition` in plugin.json. If your Edition version is older, upgrade first.
+3. **Record the install** in `.github/skills/local/<name>/.install.json` so `/mall-refresh` can detect upstream drift:
 
-5. **Commit**:
+   ```jsonc
+   {
+     "plugin": "<name>",
+     "store": "<store>",            // e.g. "plugin-mall" or "awesome-copilot"
+     "source_url": "<full GitHub tree URL at resolved SHA>",
+     "version_at_install": "<version from the catalog at install time>",
+     "installed_at": "<ISO 8601 timestamp>",
+     "trust_score_at_install": <integer 0-100 from catalog>,
+     "frontmatter_at_install": { "description": "...", "lastReviewed": "..." }
+   }
+   ```
+
+   The `store` field is required when the same plugin name appears in multiple stores (common — `code-review` ships from `plugin-mall`, `awesome-copilot`, and others). `/mall-refresh` uses `(store, name)` as the drift identity.
+
+4. **Commit**:
 
    ```bash
-   git add .github/skills/local .github/instructions/local .github/scripts/local .github/prompts/local
-   git commit -m "Install plugin: <name> from ACT Plugin Mall"
+   git add .github/skills/local .github/instructions/local .github/prompts/local .github/agents/local .github/scripts/local
+   git commit -m "Install plugin: <name>@<version> from Mall store <store>"
    ```
 
 ## MCP Server Configs

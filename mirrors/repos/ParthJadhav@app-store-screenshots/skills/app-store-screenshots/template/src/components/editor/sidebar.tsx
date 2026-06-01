@@ -30,6 +30,7 @@ type Props = {
   locale: string;
   appName?: string;
   appIcon?: string;
+  connectedCanvas: boolean;
   disabled?: boolean;
   onReorder: (next: Slide[]) => void;
   onSelect: (id: string) => void;
@@ -47,6 +48,7 @@ export function Sidebar({
   locale,
   appName,
   appIcon,
+  connectedCanvas,
   disabled,
   onReorder,
   onSelect,
@@ -71,9 +73,9 @@ export function Sidebar({
   return (
     <div className="flex h-full flex-col">
       <div className="border-b p-3">
-        <h2 className="text-sm font-semibold">Slides</h2>
+        <h2 className="text-sm font-semibold">Screens</h2>
         <p className="text-xs text-muted-foreground">
-          {slides.length} slide{slides.length === 1 ? "" : "s"} · drag to reorder
+          {slides.length} screen{slides.length === 1 ? "" : "s"} · drag to reorder
         </p>
       </div>
 
@@ -85,6 +87,7 @@ export function Sidebar({
                 <SlideThumb
                   key={slide.id}
                   slide={slide}
+                  slides={slides}
                   index={i}
                   active={slide.id === activeId}
                   device={device}
@@ -93,6 +96,7 @@ export function Sidebar({
                   locale={locale}
                   appName={appName}
                   appIcon={appIcon}
+                  connectedCanvas={connectedCanvas}
                   onSelect={() => onSelect(slide.id)}
                   onDelete={() => onDelete(slide.id)}
                   onDuplicate={() => onDuplicate(slide.id)}
@@ -100,9 +104,9 @@ export function Sidebar({
               ))}
               {slides.length === 0 && (
                 <div className="rounded-lg border border-dashed p-6 text-center">
-                  <p className="text-xs font-medium text-foreground">No slides yet</p>
+                  <p className="text-xs font-medium text-foreground">No screens yet</p>
                   <p className="mt-1 text-[11px] text-muted-foreground">
-                    Click <span className="font-semibold">Add slide</span> to get started.
+                    Click <span className="font-semibold">Add screen</span> to get started.
                   </p>
                 </div>
               )}
@@ -116,10 +120,10 @@ export function Sidebar({
           type="button"
           className="w-full"
           variant="default"
-          onClick={() => onAdd(newSlide("device-bottom"))}
+          onClick={() => onAdd(newSlide(device === "feature-graphic" ? "feature-graphic" : "device-bottom"))}
           disabled={disabled}
         >
-          <Plus className="h-4 w-4" /> Add slide
+          <Plus className="h-4 w-4" /> Add screen
         </Button>
       </div>
     </div>

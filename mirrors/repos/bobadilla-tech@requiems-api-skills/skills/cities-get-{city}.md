@@ -17,9 +17,9 @@ Returns metadata for a city by name. Lookup is case-insensitive.
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `city` | string | yes | path | City name to look up (e.g. london, tokyo, new york city) |
+| Name   | Type   | Required | Location | Description                                              |
+| ------ | ------ | -------- | -------- | -------------------------------------------------------- |
+| `city` | string | yes      | path     | City name to look up (e.g. london, tokyo, new york city) |
 
 ## Response Example
 
@@ -41,14 +41,14 @@ Returns metadata for a city by name. Lookup is case-insensitive.
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `name` | string | Official city name as listed in the GeoNames dataset |
-| `country` | string | ISO 3166-1 alpha-2 country code (uppercase) |
-| `population` | integer | City population from the GeoNames dataset |
-| `timezone` | string | IANA timezone identifier for the city (e.g. "America/New_York") |
-| `lat` | number | Latitude of the city centre |
-| `lon` | number | Longitude of the city centre |
+| Field        | Type    | Description                                                     |
+| ------------ | ------- | --------------------------------------------------------------- |
+| `name`       | string  | Official city name as listed in the GeoNames dataset            |
+| `country`    | string  | ISO 3166-1 alpha-2 country code (uppercase)                     |
+| `population` | integer | City population from the GeoNames dataset                       |
+| `timezone`   | string  | IANA timezone identifier for the city (e.g. "America/New_York") |
+| `lat`        | number  | Latitude of the city centre                                     |
+| `lon`        | number  | Longitude of the city centre                                    |
 
 ## Errors
 

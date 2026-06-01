@@ -1,4 +1,4 @@
 interface:
   display_name: "女性人像提示词导演"
-  short_description: "完整扩写人像细节并融合为摄影导演式 AI 生图提示词"
-  default_prompt: "Use $female-portrait-director to fully expand my portrait parameters and fuse the detailed modules into a photography-directed AI image prompt."
+  short_description: "按需路由不同人像风格，思考并扩写为完整摄影导演式提示词"
+  default_prompt: "Use $female-portrait-director to preserve every explicit user parameter, complete the internal director-design phase first, route the portrait style, and then fuse the visual modules into a coherent photography-directed AI image prompt. Unless the user explicitly requests concise output, return the standard detailed structure with a complete field-by-field parameter lock result, readable public-facing director module expansion, an exactly five-paragraph final fused prompt, and negative constraints. Put the aspect ratio and any user-provided pixel dimensions or resolution in the first sentence. Render the final prompt and negative constraints as separate Markdown text code blocks for direct copying."

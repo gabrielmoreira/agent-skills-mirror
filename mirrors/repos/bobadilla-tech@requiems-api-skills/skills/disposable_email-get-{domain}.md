@@ -17,9 +17,9 @@ Check if a specific domain is in the disposable blocklist
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `domain` | string | yes | path | The domain to check |
+| Name     | Type   | Required | Location | Description         |
+| -------- | ------ | -------- | -------- | ------------------- |
+| `domain` | string | yes      | path     | The domain to check |
 
 ## Response Example
 
@@ -37,9 +37,9 @@ Check if a specific domain is in the disposable blocklist
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `domain` | string | The domain that was checked |
+| Field           | Type    | Description                                       |
+| --------------- | ------- | ------------------------------------------------- |
+| `domain`        | string  | The domain that was checked                       |
 | `is_disposable` | boolean | Whether the domain is in the disposable blocklist |
 
 ## Errors

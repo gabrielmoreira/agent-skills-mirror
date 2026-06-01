@@ -81,7 +81,9 @@ export function ipadW(cW: number, cH: number, clamp = 0.75) {
 }
 
 // ---------- Themes ----------
-export const THEMES: Record<ThemeId, Theme> = {
+export const DEFAULT_THEME_ID: ThemeId = "clean-light";
+
+export const THEMES: Record<string, Theme> = {
   "clean-light": {
     id: "clean-light",
     name: "Clean Light",
@@ -122,9 +124,28 @@ export const THEMES: Record<ThemeId, Theme> = {
     accent: "#0284C7",
     muted: "#475569",
   },
+  "bloom-roast": {
+    id: "bloom-roast",
+    name: "Bloom Roast",
+    bg: "#F2ECE2",
+    bgAlt: "#24352F",
+    fg: "#1D2420",
+    fgAlt: "#FFF7EA",
+    accent: "#B8794A",
+    muted: "#65736B",
+  },
 };
 
+export function themeById(themeId: string | undefined): Theme {
+  return THEMES[themeId || ""] || THEMES[DEFAULT_THEME_ID];
+}
+
+export function hasTheme(themeId: string | undefined): boolean {
+  return !!themeId && !!THEMES[themeId];
+}
+
 export const STORAGE_KEY = "app-store-screenshots:project:v1";
+export const PROJECT_SCHEMA_VERSION = 2;
 
 export const DEVICE_LABEL: Record<Device, string> = {
   iphone: "iPhone",

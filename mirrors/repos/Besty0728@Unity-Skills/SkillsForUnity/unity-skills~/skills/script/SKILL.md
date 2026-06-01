@@ -10,7 +10,7 @@ description: "C# script CRUD and analysis — create, read, replace, append, sea
 
 ## Operating Mode
 
-- **Approval**(默认): 只读类 skill（`script_read` / `script_list` / `script_find_in_file` / `script_get_info` / `script_get_compile_feedback`，标 `SkillMode.SemiAuto`）直接执行；写型 skill（`script_create` / `script_create_batch` / `script_replace` / `script_append` / `script_rename` / `script_move` / `script_delete`，默认 `SkillMode.FullAuto`）需用户 grant，grant 后服务端一步执行返结果。
+- **Approval**: 只读类 skill（`script_read` / `script_list` / `script_find_in_file` / `script_get_info` / `script_get_compile_feedback`，标 `SkillMode.SemiAuto`）直接执行；写型 skill（`script_create` / `script_create_batch` / `script_replace` / `script_append` / `script_rename` / `script_move` / `script_delete`，默认 `SkillMode.FullAuto`）需用户 grant，grant 后服务端一步执行返结果。
 - **Auto / Bypass**: 直接执行。
 - **本模块含 Delete / Reload 类高危 skill**：`script_create` / `script_create_batch` / `script_replace` / `script_append` / `script_delete` 会触发 Domain Reload（且多标 `RiskLevel=high`），`script_delete` 同时是 Delete 操作 —— 这些 skill 在 Approval / Auto 下被 `IsForbiddenInSemi` 自动拦截，**仅 Bypass 或 Allowlist 命中可执行**。
 

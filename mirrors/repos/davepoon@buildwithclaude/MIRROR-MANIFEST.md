@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `davepoon/buildwithclaude` — 26 default patterns, 0 followed patterns, 322 file(s) materialized.
+Mirror of `davepoon/buildwithclaude` — 26 default patterns, 0 followed patterns, 323 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `davepoon/buildwithclaude` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 322 |
+| Files         | 323 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -334,53 +334,54 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 273 | ✓ | [`plugins/gsd/skills/validate-phase/SKILL.md`](plugins/gsd/skills/validate-phase/SKILL.md) |
 | 274 | ✓ | [`plugins/gsd/skills/verify-work/SKILL.md`](plugins/gsd/skills/verify-work/SKILL.md) |
 | 275 | ✓ | [`plugins/gsd/skills/workstreams/SKILL.md`](plugins/gsd/skills/workstreams/SKILL.md) |
-| 276 | ✓ | [`plugins/meeting-bots/skills/meeting/SKILL.md`](plugins/meeting-bots/skills/meeting/SKILL.md) |
-| 277 | ✓ | [`plugins/memstack/skills/memstack/SKILL.md`](plugins/memstack/skills/memstack/SKILL.md) |
-| 278 | ✓ | [`plugins/mortgage/skills/about-atlantic-home-mortgage/SKILL.md`](plugins/mortgage/skills/about-atlantic-home-mortgage/SKILL.md) |
-| 279 | ✓ | [`plugins/mortgage/skills/closing-costs/SKILL.md`](plugins/mortgage/skills/closing-costs/SKILL.md) |
-| 280 | ✓ | [`plugins/mortgage/skills/mortgage-compliance/SKILL.md`](plugins/mortgage/skills/mortgage-compliance/SKILL.md) |
-| 281 | ✓ | [`plugins/mortgage/skills/mortgage-loan-officer/SKILL.md`](plugins/mortgage/skills/mortgage-loan-officer/SKILL.md) |
-| 282 | ✓ | [`plugins/mortgage/skills/security-guardrails/SKILL.md`](plugins/mortgage/skills/security-guardrails/SKILL.md) |
-| 283 | ✓ | [`plugins/nextjs-expert/skills/app-router/SKILL.md`](plugins/nextjs-expert/skills/app-router/SKILL.md) |
-| 284 | ✓ | [`plugins/nextjs-expert/skills/auth-patterns/SKILL.md`](plugins/nextjs-expert/skills/auth-patterns/SKILL.md) |
-| 285 | ✓ | [`plugins/nextjs-expert/skills/route-handlers/SKILL.md`](plugins/nextjs-expert/skills/route-handlers/SKILL.md) |
-| 286 | ✓ | [`plugins/nextjs-expert/skills/server-actions/SKILL.md`](plugins/nextjs-expert/skills/server-actions/SKILL.md) |
-| 287 | ✓ | [`plugins/nextjs-expert/skills/server-components/SKILL.md`](plugins/nextjs-expert/skills/server-components/SKILL.md) |
-| 288 | ✓ | [`plugins/obsidian-skills/skills/json-canvas/SKILL.md`](plugins/obsidian-skills/skills/json-canvas/SKILL.md) |
-| 289 | ✓ | [`plugins/obsidian-skills/skills/obsidian-bases/SKILL.md`](plugins/obsidian-skills/skills/obsidian-bases/SKILL.md) |
-| 290 | ✓ | [`plugins/obsidian-skills/skills/obsidian-markdown/SKILL.md`](plugins/obsidian-skills/skills/obsidian-markdown/SKILL.md) |
-| 291 | ✓ | [`plugins/origin/skills/brief/SKILL.md`](plugins/origin/skills/brief/SKILL.md) |
-| 292 | ✓ | [`plugins/origin/skills/capture/SKILL.md`](plugins/origin/skills/capture/SKILL.md) |
-| 293 | ✓ | [`plugins/origin/skills/debrief/SKILL.md`](plugins/origin/skills/debrief/SKILL.md) |
-| 294 | ✓ | [`plugins/origin/skills/distill/SKILL.md`](plugins/origin/skills/distill/SKILL.md) |
-| 295 | ✓ | [`plugins/origin/skills/forget/SKILL.md`](plugins/origin/skills/forget/SKILL.md) |
-| 296 | ✓ | [`plugins/origin/skills/handoff/SKILL.md`](plugins/origin/skills/handoff/SKILL.md) |
-| 297 | ✓ | [`plugins/origin/skills/help/SKILL.md`](plugins/origin/skills/help/SKILL.md) |
-| 298 | ✓ | [`plugins/origin/skills/init/SKILL.md`](plugins/origin/skills/init/SKILL.md) |
-| 299 | ✓ | [`plugins/origin/skills/read/SKILL.md`](plugins/origin/skills/read/SKILL.md) |
-| 300 | ✓ | [`plugins/origin/skills/recall/SKILL.md`](plugins/origin/skills/recall/SKILL.md) |
-| 301 | ✓ | [`plugins/origin/skills/review/SKILL.md`](plugins/origin/skills/review/SKILL.md) |
-| 302 | ✓ | [`plugins/public-plugin-builder/skills/public-plugin-builder/SKILL.md`](plugins/public-plugin-builder/skills/public-plugin-builder/SKILL.md) |
-| 303 | ✓ | [`plugins/ralph-review-trio/skills/ralph-review-trio/SKILL.md`](plugins/ralph-review-trio/skills/ralph-review-trio/SKILL.md) |
-| 304 | ✓ | [`plugins/shipwright/skills/build/SKILL.md`](plugins/shipwright/skills/build/SKILL.md) |
-| 305 | ✓ | [`plugins/slopmop/skills/slopmop/SKILL.md`](plugins/slopmop/skills/slopmop/SKILL.md) |
-| 306 | ✓ | [`plugins/thumbgate/skills/thumbgate/SKILL.md`](plugins/thumbgate/skills/thumbgate/SKILL.md) |
-| 307 | ✓ | [`plugins/venture-capital-intelligence/skills/analyze-pitch-deck/SKILL.md`](plugins/venture-capital-intelligence/skills/analyze-pitch-deck/SKILL.md) |
-| 308 | ✓ | [`plugins/venture-capital-intelligence/skills/cap-table-waterfall/SKILL.md`](plugins/venture-capital-intelligence/skills/cap-table-waterfall/SKILL.md) |
-| 309 | ✓ | [`plugins/venture-capital-intelligence/skills/deal-sourcing-signals/SKILL.md`](plugins/venture-capital-intelligence/skills/deal-sourcing-signals/SKILL.md) |
-| 310 | ✓ | [`plugins/venture-capital-intelligence/skills/explain-equity-terms/SKILL.md`](plugins/venture-capital-intelligence/skills/explain-equity-terms/SKILL.md) |
-| 311 | ✓ | [`plugins/venture-capital-intelligence/skills/financial-model/SKILL.md`](plugins/venture-capital-intelligence/skills/financial-model/SKILL.md) |
-| 312 | ✓ | [`plugins/venture-capital-intelligence/skills/fund-operations/SKILL.md`](plugins/venture-capital-intelligence/skills/fund-operations/SKILL.md) |
-| 313 | ✓ | [`plugins/venture-capital-intelligence/skills/hard-screening-startup/SKILL.md`](plugins/venture-capital-intelligence/skills/hard-screening-startup/SKILL.md) |
-| 314 | ✓ | [`plugins/venture-capital-intelligence/skills/market-size/SKILL.md`](plugins/venture-capital-intelligence/skills/market-size/SKILL.md) |
-| 315 | ✓ | [`plugins/venture-capital-intelligence/skills/soft-screening-startup/SKILL.md`](plugins/venture-capital-intelligence/skills/soft-screening-startup/SKILL.md) |
-| 316 | ✓ | [`plugins/vulnetix/skills/dashboard/SKILL.md`](plugins/vulnetix/skills/dashboard/SKILL.md) |
-| 317 | ✓ | [`plugins/vulnetix/skills/exploits-search/SKILL.md`](plugins/vulnetix/skills/exploits-search/SKILL.md) |
-| 318 | ✓ | [`plugins/vulnetix/skills/exploits/SKILL.md`](plugins/vulnetix/skills/exploits/SKILL.md) |
-| 319 | ✓ | [`plugins/vulnetix/skills/fix/SKILL.md`](plugins/vulnetix/skills/fix/SKILL.md) |
-| 320 | ✓ | [`plugins/vulnetix/skills/package-search/SKILL.md`](plugins/vulnetix/skills/package-search/SKILL.md) |
-| 321 | ✓ | [`plugins/vulnetix/skills/remediation/SKILL.md`](plugins/vulnetix/skills/remediation/SKILL.md) |
-| 322 | ✓ | [`plugins/vulnetix/skills/vuln/SKILL.md`](plugins/vulnetix/skills/vuln/SKILL.md) |
+| 276 | ✓ | [`plugins/kegg-mcp-server/skills/kegg-analysis/SKILL.md`](plugins/kegg-mcp-server/skills/kegg-analysis/SKILL.md) |
+| 277 | ✓ | [`plugins/meeting-bots/skills/meeting/SKILL.md`](plugins/meeting-bots/skills/meeting/SKILL.md) |
+| 278 | ✓ | [`plugins/memstack/skills/memstack/SKILL.md`](plugins/memstack/skills/memstack/SKILL.md) |
+| 279 | ✓ | [`plugins/mortgage/skills/about-atlantic-home-mortgage/SKILL.md`](plugins/mortgage/skills/about-atlantic-home-mortgage/SKILL.md) |
+| 280 | ✓ | [`plugins/mortgage/skills/closing-costs/SKILL.md`](plugins/mortgage/skills/closing-costs/SKILL.md) |
+| 281 | ✓ | [`plugins/mortgage/skills/mortgage-compliance/SKILL.md`](plugins/mortgage/skills/mortgage-compliance/SKILL.md) |
+| 282 | ✓ | [`plugins/mortgage/skills/mortgage-loan-officer/SKILL.md`](plugins/mortgage/skills/mortgage-loan-officer/SKILL.md) |
+| 283 | ✓ | [`plugins/mortgage/skills/security-guardrails/SKILL.md`](plugins/mortgage/skills/security-guardrails/SKILL.md) |
+| 284 | ✓ | [`plugins/nextjs-expert/skills/app-router/SKILL.md`](plugins/nextjs-expert/skills/app-router/SKILL.md) |
+| 285 | ✓ | [`plugins/nextjs-expert/skills/auth-patterns/SKILL.md`](plugins/nextjs-expert/skills/auth-patterns/SKILL.md) |
+| 286 | ✓ | [`plugins/nextjs-expert/skills/route-handlers/SKILL.md`](plugins/nextjs-expert/skills/route-handlers/SKILL.md) |
+| 287 | ✓ | [`plugins/nextjs-expert/skills/server-actions/SKILL.md`](plugins/nextjs-expert/skills/server-actions/SKILL.md) |
+| 288 | ✓ | [`plugins/nextjs-expert/skills/server-components/SKILL.md`](plugins/nextjs-expert/skills/server-components/SKILL.md) |
+| 289 | ✓ | [`plugins/obsidian-skills/skills/json-canvas/SKILL.md`](plugins/obsidian-skills/skills/json-canvas/SKILL.md) |
+| 290 | ✓ | [`plugins/obsidian-skills/skills/obsidian-bases/SKILL.md`](plugins/obsidian-skills/skills/obsidian-bases/SKILL.md) |
+| 291 | ✓ | [`plugins/obsidian-skills/skills/obsidian-markdown/SKILL.md`](plugins/obsidian-skills/skills/obsidian-markdown/SKILL.md) |
+| 292 | ✓ | [`plugins/origin/skills/brief/SKILL.md`](plugins/origin/skills/brief/SKILL.md) |
+| 293 | ✓ | [`plugins/origin/skills/capture/SKILL.md`](plugins/origin/skills/capture/SKILL.md) |
+| 294 | ✓ | [`plugins/origin/skills/debrief/SKILL.md`](plugins/origin/skills/debrief/SKILL.md) |
+| 295 | ✓ | [`plugins/origin/skills/distill/SKILL.md`](plugins/origin/skills/distill/SKILL.md) |
+| 296 | ✓ | [`plugins/origin/skills/forget/SKILL.md`](plugins/origin/skills/forget/SKILL.md) |
+| 297 | ✓ | [`plugins/origin/skills/handoff/SKILL.md`](plugins/origin/skills/handoff/SKILL.md) |
+| 298 | ✓ | [`plugins/origin/skills/help/SKILL.md`](plugins/origin/skills/help/SKILL.md) |
+| 299 | ✓ | [`plugins/origin/skills/init/SKILL.md`](plugins/origin/skills/init/SKILL.md) |
+| 300 | ✓ | [`plugins/origin/skills/read/SKILL.md`](plugins/origin/skills/read/SKILL.md) |
+| 301 | ✓ | [`plugins/origin/skills/recall/SKILL.md`](plugins/origin/skills/recall/SKILL.md) |
+| 302 | ✓ | [`plugins/origin/skills/review/SKILL.md`](plugins/origin/skills/review/SKILL.md) |
+| 303 | ✓ | [`plugins/public-plugin-builder/skills/public-plugin-builder/SKILL.md`](plugins/public-plugin-builder/skills/public-plugin-builder/SKILL.md) |
+| 304 | ✓ | [`plugins/ralph-review-trio/skills/ralph-review-trio/SKILL.md`](plugins/ralph-review-trio/skills/ralph-review-trio/SKILL.md) |
+| 305 | ✓ | [`plugins/shipwright/skills/build/SKILL.md`](plugins/shipwright/skills/build/SKILL.md) |
+| 306 | ✓ | [`plugins/slopmop/skills/slopmop/SKILL.md`](plugins/slopmop/skills/slopmop/SKILL.md) |
+| 307 | ✓ | [`plugins/thumbgate/skills/thumbgate/SKILL.md`](plugins/thumbgate/skills/thumbgate/SKILL.md) |
+| 308 | ✓ | [`plugins/venture-capital-intelligence/skills/analyze-pitch-deck/SKILL.md`](plugins/venture-capital-intelligence/skills/analyze-pitch-deck/SKILL.md) |
+| 309 | ✓ | [`plugins/venture-capital-intelligence/skills/cap-table-waterfall/SKILL.md`](plugins/venture-capital-intelligence/skills/cap-table-waterfall/SKILL.md) |
+| 310 | ✓ | [`plugins/venture-capital-intelligence/skills/deal-sourcing-signals/SKILL.md`](plugins/venture-capital-intelligence/skills/deal-sourcing-signals/SKILL.md) |
+| 311 | ✓ | [`plugins/venture-capital-intelligence/skills/explain-equity-terms/SKILL.md`](plugins/venture-capital-intelligence/skills/explain-equity-terms/SKILL.md) |
+| 312 | ✓ | [`plugins/venture-capital-intelligence/skills/financial-model/SKILL.md`](plugins/venture-capital-intelligence/skills/financial-model/SKILL.md) |
+| 313 | ✓ | [`plugins/venture-capital-intelligence/skills/fund-operations/SKILL.md`](plugins/venture-capital-intelligence/skills/fund-operations/SKILL.md) |
+| 314 | ✓ | [`plugins/venture-capital-intelligence/skills/hard-screening-startup/SKILL.md`](plugins/venture-capital-intelligence/skills/hard-screening-startup/SKILL.md) |
+| 315 | ✓ | [`plugins/venture-capital-intelligence/skills/market-size/SKILL.md`](plugins/venture-capital-intelligence/skills/market-size/SKILL.md) |
+| 316 | ✓ | [`plugins/venture-capital-intelligence/skills/soft-screening-startup/SKILL.md`](plugins/venture-capital-intelligence/skills/soft-screening-startup/SKILL.md) |
+| 317 | ✓ | [`plugins/vulnetix/skills/dashboard/SKILL.md`](plugins/vulnetix/skills/dashboard/SKILL.md) |
+| 318 | ✓ | [`plugins/vulnetix/skills/exploits-search/SKILL.md`](plugins/vulnetix/skills/exploits-search/SKILL.md) |
+| 319 | ✓ | [`plugins/vulnetix/skills/exploits/SKILL.md`](plugins/vulnetix/skills/exploits/SKILL.md) |
+| 320 | ✓ | [`plugins/vulnetix/skills/fix/SKILL.md`](plugins/vulnetix/skills/fix/SKILL.md) |
+| 321 | ✓ | [`plugins/vulnetix/skills/package-search/SKILL.md`](plugins/vulnetix/skills/package-search/SKILL.md) |
+| 322 | ✓ | [`plugins/vulnetix/skills/remediation/SKILL.md`](plugins/vulnetix/skills/remediation/SKILL.md) |
+| 323 | ✓ | [`plugins/vulnetix/skills/vuln/SKILL.md`](plugins/vulnetix/skills/vuln/SKILL.md) |
 
 ---
 

@@ -9,7 +9,7 @@ Work with the Unity console - capture logs, write messages, and debug your proje
 
 ## Operating Mode
 
-- **Approval**(默认): 只读 skill（`console_get_logs` / `console_get_stats`，标 `SkillMode.SemiAuto`）直接执行；其余 skill（`console_start_capture` / `console_stop_capture` / `console_clear` / `console_log` / `console_export` / `console_set_pause_on_error` / `console_set_collapse` / `console_set_clear_on_play`，默认 `SkillMode.FullAuto`）需用户 grant，grant 后一步执行返结果。
+- **Approval**: 只读 skill（`console_get_logs` / `console_get_stats`，标 `SkillMode.SemiAuto`）直接执行；其余 skill（`console_start_capture` / `console_stop_capture` / `console_clear` / `console_log` / `console_export` / `console_set_pause_on_error` / `console_set_collapse` / `console_set_clear_on_play`，默认 `SkillMode.FullAuto`）需用户 grant，grant 后一步执行返结果。
 - **Auto / Bypass**: 直接执行。
 - **本模块不含 Delete / PlayMode / Reload / RiskLevel=high 类 skill** —— 没有 `IsForbiddenInSemi` 拦截，不需要 Bypass 才能跑的高危操作。
 

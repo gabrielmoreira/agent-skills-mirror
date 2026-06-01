@@ -17,10 +17,10 @@ Generate Lorem Ipsum placeholder text with customizable length and format
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `paragraphs` | integer | no | query | Number of paragraphs to generate (1-20) |
-| `sentences` | integer | no | query | Number of sentences per paragraph (1-20) |
+| Name         | Type    | Required | Location | Description                              |
+| ------------ | ------- | -------- | -------- | ---------------------------------------- |
+| `paragraphs` | integer | no       | query    | Number of paragraphs to generate (1-20)  |
+| `sentences`  | integer | no       | query    | Number of sentences per paragraph (1-20) |
 
 ## Response Example
 
@@ -39,11 +39,11 @@ Generate Lorem Ipsum placeholder text with customizable length and format
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `text` | string | Generated Lorem Ipsum text |
-| `paragraphs` | integer | Number of paragraphs generated |
-| `wordCount` | integer | Total number of words in generated text |
+| Field        | Type    | Description                             |
+| ------------ | ------- | --------------------------------------- |
+| `text`       | string  | Generated Lorem Ipsum text              |
+| `paragraphs` | integer | Number of paragraphs generated          |
+| `wordCount`  | integer | Total number of words in generated text |
 
 ## Errors
 

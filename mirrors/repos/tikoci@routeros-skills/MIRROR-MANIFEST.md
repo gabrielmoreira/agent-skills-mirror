@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tikoci/routeros-skills` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `tikoci/routeros-skills` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tikoci/routeros-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,11 +65,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`routeros-firewall/SKILL.md`](routeros-firewall/SKILL.md) |
 | 5 | ✓ | [`routeros-fundamentals/SKILL.md`](routeros-fundamentals/SKILL.md) |
 | 6 | ✓ | [`routeros-hotspot/SKILL.md`](routeros-hotspot/SKILL.md) |
-| 7 | ✓ | [`routeros-mndp/SKILL.md`](routeros-mndp/SKILL.md) |
-| 8 | ✓ | [`routeros-netinstall/SKILL.md`](routeros-netinstall/SKILL.md) |
-| 9 | ✓ | [`routeros-qemu-chr/SKILL.md`](routeros-qemu-chr/SKILL.md) |
-| 10 | ✓ | [`routeros-scripting/SKILL.md`](routeros-scripting/SKILL.md) |
-| 11 | ✓ | [`routeros-sniffer/SKILL.md`](routeros-sniffer/SKILL.md) |
+| 7 | ✓ | [`routeros-mac-telnet/SKILL.md`](routeros-mac-telnet/SKILL.md) |
+| 8 | ✓ | [`routeros-mndp/SKILL.md`](routeros-mndp/SKILL.md) |
+| 9 | ✓ | [`routeros-netinstall/SKILL.md`](routeros-netinstall/SKILL.md) |
+| 10 | ✓ | [`routeros-qemu-chr/SKILL.md`](routeros-qemu-chr/SKILL.md) |
+| 11 | ✓ | [`routeros-scripting/SKILL.md`](routeros-scripting/SKILL.md) |
+| 12 | ✓ | [`routeros-sniffer/SKILL.md`](routeros-sniffer/SKILL.md) |
 
 ---
 

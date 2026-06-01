@@ -34,8 +34,9 @@ When a user invokes a style by name (e.g. "use the Hand-Drawn Editorial style"):
 3. Set the font family for headline + body to the listed stack.
 4. Match the listed headline emphasis behavior.
 5. Apply the listed layout rhythm (which slide types and in what order).
-6. Add the listed decorative accents on at least 60% of slides.
-7. Rewrite the copy tone to match the listed voice rules.
+6. Decide whether the deck should include a cross-screen/cross-canvas moment. For 5+ slide decks, include one tasteful adjacent-screen bridge when the style supports it; keep minimal or photo-led styles subtle.
+7. Add the listed decorative accents on at least 60% of slides.
+8. Rewrite the copy tone to match the listed voice rules.
 
 If the style and a user-supplied brand color clash, keep the brand color and adjust adjacent palette entries to be analogous.
 
@@ -46,6 +47,7 @@ If the style and a user-supplied brand color clash, keep the brand color and adj
 - If the user names a style **and** gives custom brand colors, swap the palette colors closest in lightness to the brand colors but keep the typography and accent rules intact.
 - If the user names a style **and** a layout (e.g. "style 05 but with style 04's layout rhythm"), keep the named style's typography + accents, swap only the layout rhythm.
 - If two styles are named, pick the first as primary and pull at most one element (typography OR decoration) from the second.
+- Cross-screen moments inherit the primary style's rules. In a moody/photo style, continue a photograph, vignette, or notification across the seam; in an editorial style, use a tilted phone, doodle, or sticker trail; in a maximalist style, let chips, mascots, or 3D objects bridge the pair. Never use the cross-screen device as an excuse to break type contrast, phone sizing, or standalone readability.
 
 ## Adding new styles
 

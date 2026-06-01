@@ -13,13 +13,14 @@ description: Retrieve all MX records for a domain. Results are sorted by priorit
 
 ## MX Lookup
 
-Retrieve all MX records for a domain. Results are sorted by priority ascending (lowest numeric value has highest mail delivery priority per RFC 5321).
+Retrieve all MX records for a domain. Results are sorted by priority ascending
+(lowest numeric value has highest mail delivery priority per RFC 5321).
 
 ## Parameters
 
-| Name | Type | Required | Location | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| `domain` | string | yes | path | The domain name to look up MX records for (e.g. gmail.com) |
+| Name     | Type   | Required | Location | Description                                                |
+| -------- | ------ | -------- | -------- | ---------------------------------------------------------- |
+| `domain` | string | yes      | path     | The domain name to look up MX records for (e.g. gmail.com) |
 
 ## Response Example
 
@@ -43,15 +44,17 @@ Retrieve all MX records for a domain. Results are sorted by priority ascending (
 
 ## Response Fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `domain` | string | The domain that was queried |
-| `records` | array | List of MX records, sorted by priority ascending (lowest number = highest priority) |
-| `records[].host` | string | Fully-qualified hostname of the mail server (typically ends with a trailing dot) |
-| `records[].priority` | integer | MX priority value. Lower values have higher delivery priority per RFC 5321. |
+| Field                | Type    | Description                                                                         |
+| -------------------- | ------- | ----------------------------------------------------------------------------------- |
+| `domain`             | string  | The domain that was queried                                                         |
+| `records`            | array   | List of MX records, sorted by priority ascending (lowest number = highest priority) |
+| `records[].host`     | string  | Fully-qualified hostname of the mail server (typically ends with a trailing dot)    |
+| `records[].priority` | integer | MX priority value. Lower values have higher delivery priority per RFC 5321.         |
 
 ## Errors
 
 - `400` **bad_request** — The domain parameter is not a valid domain name.
-- `404` **not_found** — No MX records were found for the domain (domain may not accept email).
-- `500` **internal_error** — DNS lookup failed due to an unexpected server error.
+- `404` **not_found** — No MX records were found for the domain (domain may not
+  accept email).
+- `500` **internal_error** — DNS lookup failed due to an unexpected server
+  error.

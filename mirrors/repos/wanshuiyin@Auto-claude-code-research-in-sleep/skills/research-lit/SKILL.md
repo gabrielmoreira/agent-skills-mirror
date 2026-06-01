@@ -645,6 +645,17 @@ If Zotero BibTeX was exported, include a `references.bib` snippet for direct use
 - Update related work notes in project memory
 - If Obsidian is available, optionally create a literature review note in the vault
 
+> **Composed mode** — if invoked with `— composed: <canonical-report-path>` (an
+> orchestrator like `/idea-discovery` passes this), do **not** write a standalone
+> landscape `.md`. Return the structured table + narrative summary for the orchestrator
+> to fold into its canonical report as a "Literature Landscape" section; the report
+> links any saved PDFs/`references.bib`, it does not get a duplicate landscape file.
+> Step 6 (research-wiki ingest) still runs — the wiki is a separate persistent store,
+> not a duplicate of the report. **Default (no `— composed:` directive): behave exactly
+> as above — standalone, write files as documented.** Never infer composed mode from a
+> report file merely existing on disk. Full rules:
+> [`shared-references/output-composition.md`](../shared-references/output-composition.md).
+
 ### Step 6: Update Research Wiki
 
 **Required when `research-wiki/` exists.** Skip entirely (no action, no

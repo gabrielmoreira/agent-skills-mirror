@@ -9,7 +9,7 @@ Optimize project assets (Textures, Models).
 
 ## Operating Mode
 
-- **Approval**(默认): 只读分析类 skill（`optimize_analyze_scene` / `optimize_find_large_assets` / `optimize_get_static_flags` / `optimize_find_duplicate_materials` / `optimize_analyze_overdraw`，标 `SkillMode.SemiAuto`）直接执行；写型 skill（`optimize_textures` / `optimize_mesh_compression` / `optimize_audio_compression` / `optimize_set_static_flags` / `optimize_set_lod_group`，默认 `SkillMode.FullAuto`）需用户 grant，grant 后一步执行返结果。
+- **Approval**: 只读分析类 skill（`optimize_analyze_scene` / `optimize_find_large_assets` / `optimize_get_static_flags` / `optimize_find_duplicate_materials` / `optimize_analyze_overdraw`，标 `SkillMode.SemiAuto`）直接执行；写型 skill（`optimize_textures` / `optimize_mesh_compression` / `optimize_audio_compression` / `optimize_set_static_flags` / `optimize_set_lod_group`，默认 `SkillMode.FullAuto`）需用户 grant，grant 后一步执行返结果。
 - **Auto / Bypass**: 直接执行。
 - **本模块不含 Delete / PlayMode / Reload / RiskLevel=high 类 skill** —— 写型 skill 改的是 Importer / 组件设置，会重新导入资源，但不会触发 Domain Reload，也不会被 `IsForbiddenInSemi` 拦截。批量操作前务必检查筛选范围（`filter` / `assetType`），改完无 dry-run 回滚。
 
