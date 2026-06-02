@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `galyarderlabs/galyarder-framework` — 26 default patterns, 6 followed patterns, 2311 file(s) materialized.
+Mirror of `galyarderlabs/galyarder-framework` — 26 default patterns, 5 followed patterns, 2310 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `galyarderlabs/galyarder-framework` — 26 default patterns, 6 followe
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 2311 |
+| Followed pats | 5 |
+| Files         | 2310 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,6 @@ Mirror of `galyarderlabs/galyarder-framework` — 26 default patterns, 6 followe
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `.lore.md`
 - `README.md`
 - `BRAND.md`
 - `DESIGN.md`
@@ -2369,12 +2368,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2303 | ✓ | [`skills/writing-skills/SKILL.md`](skills/writing-skills/SKILL.md) |
 | 2304 | ✓ | [`skills/writing-skills/testing-skills-with-subagents.md`](skills/writing-skills/testing-skills-with-subagents.md) |
 | 2305 | ✓ | [`tests/claude-code/README.md`](tests/claude-code/README.md) |
-| 2306 | → | [`.lore.md`](.lore.md) |
-| 2307 | → | [`BRAND.md`](BRAND.md) |
-| 2308 | → | [`DESIGN.md`](DESIGN.md) |
-| 2309 | → | [`docs/galyarder-labs/BRAND.md`](docs/galyarder-labs/BRAND.md) |
-| 2310 | → | [`docs/galyarder-labs/DESIGN.md`](docs/galyarder-labs/DESIGN.md) |
-| 2311 | → | [`README.md`](README.md) |
+| 2306 | → | [`BRAND.md`](BRAND.md) |
+| 2307 | → | [`DESIGN.md`](DESIGN.md) |
+| 2308 | → | [`docs/galyarder-labs/BRAND.md`](docs/galyarder-labs/BRAND.md) |
+| 2309 | → | [`docs/galyarder-labs/DESIGN.md`](docs/galyarder-labs/DESIGN.md) |
+| 2310 | → | [`README.md`](README.md) |
 
 ---
 

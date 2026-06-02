@@ -417,6 +417,102 @@ Kill the old Electron process before restarting:
 daytona exec "$SANDBOX" -- "bash -lc 'pkill -f electron || true; pkill -f electron-dev || true'"
 ```
 
+## Recording before/after comparisons
+
+Use this workflow to capture a BEFORE recording on the current branch, switch
+to a feature branch on the same sandbox, and capture an AFTER recording. Both
+recordings are saved to the persistent `openwork-eval-artifacts` volume and
+survive sandbox deletion.
+
+### Step 1: Start the sandbox with BEFORE recording
+
+```bash
+bash .devcontainer/test-on-daytona.sh dev --record-video --recording-name my-feature-before
+```
+
+Save the sandbox name from the output (e.g. `SANDBOX=openwork-test-20260601-165424`).
+
+### Step 2: Drive the BEFORE flow
+
+Use browser tools to navigate the app and demonstrate the current behavior.
+The display is being recorded the entire time.
+
+### Step 3: Stop the BEFORE recording
+
+```bash
+daytona exec "$SANDBOX" -- 'bash .devcontainer/stop-daytona-recording.sh'
+```
+
+### Step 4: Switch to the feature branch
+
+```bash
+daytona exec "$SANDBOX" -- "bash -lc 'cd /workspace && git fetch origin feat/my-branch:feat/my-branch && git checkout feat/my-branch'"
+```
+
+Vite HMR picks up the changes automatically. Wait a few seconds, then reset
+any app state needed (e.g. onboarding flag):
+
+```js
+// In browser_eval:
+const raw = localStorage.getItem("openwork.preferences");
+const prefs = raw ? JSON.parse(raw) : {};
+prefs.hasCompletedOnboarding = false;
+localStorage.setItem("openwork.preferences", JSON.stringify(prefs));
+location.reload();
+```
+
+### Step 5: Start the AFTER recording
+
+```bash
+daytona exec "$SANDBOX" -- "bash -lc 'cd /workspace && DISPLAY=:99 .devcontainer/start-daytona-recording.sh --detach --output /daytona-artifacts/recordings/my-feature-after.mp4'"
+```
+
+### Step 6: Drive the AFTER flow
+
+Use browser tools to demonstrate the new behavior. Same steps as BEFORE
+but the UI should reflect the changes.
+
+### Step 7: Stop the AFTER recording
+
+```bash
+daytona exec "$SANDBOX" -- 'bash .devcontainer/stop-daytona-recording.sh'
+```
+
+### Step 8: Get recording URLs
+
+Both recordings are on the persistent artifacts volume, served via the
+Python HTTP server on port 8090:
+
+```bash
+ARTIFACTS_URL=$(daytona preview-url "$SANDBOX" -p 8090 2>/dev/null | grep -v "^time=")
+echo "BEFORE: ${ARTIFACTS_URL}/recordings/my-feature-before.mp4"
+echo "AFTER:  ${ARTIFACTS_URL}/recordings/my-feature-after.mp4"
+```
+
+Include these URLs in your PR description.
+
+### Key recording commands reference
+
+| Action | Command |
+|--------|---------|
+| Start recording (from test-on-daytona.sh) | `--record-video --recording-name NAME` |
+| Start recording (mid-sandbox) | `daytona exec $SANDBOX -- "bash -lc 'cd /workspace && DISPLAY=:99 .devcontainer/start-daytona-recording.sh --detach --output /daytona-artifacts/recordings/NAME.mp4'"` |
+| Stop recording | `daytona exec $SANDBOX -- 'bash .devcontainer/stop-daytona-recording.sh'` |
+| List recordings | `daytona exec $SANDBOX -- 'ls -lah /daytona-artifacts/recordings/'` |
+| Get download URL | `daytona preview-url $SANDBOX -p 8090` then append `/recordings/NAME.mp4` |
+
+### Notes
+
+- Recordings are stored on the `openwork-eval-artifacts` Daytona volume (5 GB,
+  reusable across sandboxes). They persist after `daytona delete`.
+- The `start-daytona-recording.sh` script records to a temp file first, then
+  copies to the artifacts volume on stop — this avoids NFS write issues.
+- Always use `stop-daytona-recording.sh` (or `pkill -INT -f "ffmpeg.*x11grab"`)
+  to stop. SIGINT lets ffmpeg finalize the mp4 container properly. SIGKILL
+  produces a corrupt file.
+- Default resolution is 1920x1080 at 15fps. Override with `--size 1280x800
+  --fps 10` for smaller files.
+
 ## Teardown
 
 ```bash

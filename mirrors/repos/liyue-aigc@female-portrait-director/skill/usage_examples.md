@@ -1,6 +1,6 @@
 # 调用示例
 
-下面是部分内置风格的简短调用入口。V1.4 会通过风格注册表按需加载单一路由，锁定参数，完整扩写年龄、五官、身形、服装、姿态、场景、镜头、光线和滤镜，再将这些模块融合为摄影导演式提示词。当前已实现 14 条 Route，完整列表见 [style-registry.md](style-registry.md)，详细示例位于 `examples/`。
+下面是部分内置风格的简短调用入口。V1.4.1 会通过风格注册表按需加载单一路由，锁定参数或授权参考图主体，完整扩写年龄、五官、身形、服装、姿态、场景、镜头、光线和滤镜，再将这些模块融合为摄影导演式提示词或直接生成图片。当前已实现 14 条 Route，完整列表见 [style-registry.md](style-registry.md)，详细示例位于 `examples/`。
 
 ## 清纯生活照
 
@@ -62,3 +62,14 @@
 ```
 
 完整示例：[ecommerce_tryon_examples.md](../examples/ecommerce_tryon_examples.md)
+
+## 参考图保留直接生成
+
+```text
+图片 1：我的成年自拍，作为 identity_reference
+图片 2：需要试穿的服装，作为 product_reference
+风格：都市时尚写真
+要求：保留我的五官，穿上第二张图里的衣服，不要提示词，直接出图
+```
+
+人物图片仅支持本人或已授权成年人物。产品默认锁定核心视觉；Logo 与小字尽量保留，但不承诺逐字准确。规则见 [reference-image-lock.md](core/reference-image-lock.md)。

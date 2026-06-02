@@ -39,15 +39,24 @@
   3. 自动顺延和调整大纲后续章节的中文数字序号（如 `第三节` 改为 `第四节`），确保全文目录层级一致，无编号断裂。
   4. 如果将某部分升级为大章节，注意更新其下属子标题的 Markdown 层级（如由 `####` 升为 `###`）。
 
-### 步骤 5: 文档转移与同步优化
+### 步骤 5: 登记 SourceRef（机器可读引用契约）
+- **触发**: 当本次摄取的是第三方厂商（OpenAI / Anthropic / Google / Qwen / GLM / …）官方 cookbook 中的具体 notebook / md 文档时（不仅仅是阅读笔记）。
 - **行动**:
-  1. 将已完成阅读的文献从大纲前面的 `待阅读参考文档` 列表中清除，并编入 `已经完成阅读的参考文档` 列表中。
-  2. 对修改后的大纲文件执行 `git add` 和 `git commit`。
-  3. **iCloud 备份优化**: 在前台执行 `git gc`，强制打包 loose objects，以防同步冲突并优化 iCloud 传输速度。
+  1. **物理镜像核对**：确认源仓库已镜像到 `<workspace>/llm-cookbooks/<vendor>/<repo>/` 约定目录；记录其当前 HEAD commit hash（即 `snapshot_commit`）。
+  2. **识别落点**：判断本次引用应挂载到哪些 chapter（`cookbook-chapters/**/{content,benchmarks,examples}.md`）或 bench（`benches/*/README.md`）的 frontmatter `sources:` 数组中。
+  3. **批量回填**：参考 `scripts/backfill_openai_sources.py`（首次引入）或 `scripts/backfill_claude_sources.py`（已有引用上追加）的范式，新增 SOURCES 条目 + TARGETS/CHAPTER_MAP/BENCH_MAP 映射，一次性脚本注入。**禁止逐文件手改 frontmatter**。
+  4. **Schema 合规**：每条 source 必须含 vendor / repo / path / upstream_url / snapshot_commit / relation 六个必填字段；relation 取值 ∈ {borrows-from, benchmarks-against, counter-example, extends}。详见 SKILL.md §4。
+  5. **Obsidian 大纲同步**：把对应条目从大纲「待阅读参考文档」迁移到「已经完成阅读的参考文档」，确保两库一致。
+
+### 步骤 6: Commit 与同步优化
+- **行动**:
+  1. 对修改后的大纲文件、frontmatter 批量回填脚本、被注入的 chapter/bench 文件执行 `git add` 和 `git commit`（commit message 中明确标注本次 SourceRef 变更涉及的 vendor 与条目数）。
+  2. **iCloud 备份优化**: 在前台执行 `git gc`，强制打包 loose objects，以防同步冲突并优化 iCloud 传输速度。
 
 ---
 
 ## 2. 约束规范
 
 - **主动性**: Agent 应主动列出待读文献、主动识别冲突和重构机会，但禁止未经确认擅自更改。
-- **引用规范**: 任何新合入的内容必须在句尾显式按 `[1]`, `[2]`, `[3]` 格式标注引用来源。
+- **引用规范**: 任何新合入的内容必须在句尾显式按 `[1]`, `[2]`, `[3]` 格式标注引用来源；**第三方 cookbook 的引用必须同时落到 SourceRef frontmatter（参见步骤 5）**。
+- **SourceRef 完整性**: 严禁出现引用了第三方 cookbook 内容但 frontmatter 缺 `sources:` 字段的情况；如属于原创推导，应显式写 `sources: []` 并在 note 中注明。

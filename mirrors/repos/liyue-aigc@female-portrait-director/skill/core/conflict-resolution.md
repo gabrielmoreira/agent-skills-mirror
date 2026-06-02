@@ -2,7 +2,7 @@
 
 # 女性人像提示词导演 Skill｜参数冲突处理规则
 
-版本编号：`FEMALE-PORTRAIT-DIRECTOR-V1.4`
+版本编号：`FEMALE-PORTRAIT-DIRECTOR-V1.4.1`
 文档类型：核心规则文档
 适用范围：所有女性人像提示词生成、风格路由、提示词优化、失败诊断、审查友好改写、图片反推提示词、参数组合推荐任务
 核心职责：当用户输入的风格、场景、服装、气质、身形、光线、滤镜、平台用途之间出现冲突时，确保系统不擅自替换用户参数，而是通过优先级、降冲突策略和导演式扩写让画面稳定成立
@@ -38,6 +38,7 @@ skill/core/parameter-lock.md
 skill/core/safety-boundary.md
 skill/core/output-format.md
 skill/core/fallback-rules.md
+skill/core/reference-image-lock.md
 skill/references/director-expansion.md
 skill/references/visual-libraries.md
 skill/routes/
@@ -93,6 +94,7 @@ skill/tools/
 
 ```text
 P0：安全边界与成年边界
+P0.5：参考图人物身份或产品核心视觉锁定
 P1：用户明确填写的核心参数
 P2：用户补充要求
 P3：任务主目标
@@ -117,6 +119,7 @@ P14：overlay 气质增强
 补充要求通常是用户修正失败问题的关键，优先级很高；
 平台用途只做构图和传播目标调整，不覆盖主风格；
 overlay 只增强气质，不替代主 route。
+参考图主体锁定高于 Route、Overlay 和默认补全。
 ```
 
 ---

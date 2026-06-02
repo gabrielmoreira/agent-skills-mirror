@@ -1,10 +1,44 @@
 # 工作流 C: TOC 驱动编译与多格式预览 (TOC-Driven Compilation & Previews)
 
-本工作流规范了如何通过 `scripts/compile_cookbook.py` 脚本，将散落的 Markdown 章节及微评测指针，一键拼装并转换为适合不同环境阅读与实操的交付物格式。
+本工作流规范了如何将散落的 Markdown 章节及微评测指针，一键拼装并转换为适合不同环境阅读与实操的交付物格式。包含两个编译入口：
+
+| 脚本 | 用途 | 输出 |
+|------|------|------|
+| `scripts/compile_preview.py` | 全局章节仓库浏览器（推荐日常审阅） | `build/preview.html` |
+| `scripts/compile_cookbook.py` | 单个 cookbook 交付件拼装 | `build/<cookbook>/preview.html` + `.ipynb` + `contents.md` |
 
 ---
 
-## 1. 执行步骤
+## 0. 全局预览编译 (compile_preview.py)
+
+### 执行命令
+```bash
+python3 scripts/compile_preview.py
+```
+
+### 产出
+- `build/preview.html` — 单文件浅色 minimal 风格网页，左右布局。
+
+### 页面结构
+- **左侧顶部 Tab 切换栏**，按优先级排列：
+  1. **Prompting Guide**（最高优先）— 扫描 `cookbook-chapters/02-prompting-guide/` 递归树
+  2. **主题 Cookbook**（第二优先）— 合并 `04-methodology-cookbooks/` + `06-multimodal/`
+  3. **特定任务**（第三优先）— 扫描 `cookbook-chapters/05-task-recipes/`
+  4. **各 cookbook 交付件** — 扫描 `cookbooks/*/toc.md` 自动生成 Tab
+- **左侧下方**：选中 Tab 后展示对应的树形目录或 TOC 列表
+  - 蓝圆点 = 有内容，黄圆点 = 🟥 占位/待完成
+  - 叶子节点显示 `B`(benchmarks.md) / `E`(examples.md) 徽标
+- **右侧**：选中章节后渲染对应 content.md 正文（持续迭代中）
+
+### 设计约束
+- 全静态单文件 HTML，无外部依赖，目录数据以 JSON 内联注入
+- 自动从 `content.md` 首行 `#` 标题提取显示名，剥离 `✏️🟥` 前缀
+- 占位状态判定：目录名含 `🟥` 或 content.md 前 200 字符含 `🟥`
+- `cookbooks/EXAMPLE` 目录自动排除
+
+---
+
+## 1. 单 Cookbook 编译 (compile_cookbook.py)
 
 ### 步骤 1: 运行编译指令
 - **命令**:
@@ -18,6 +52,20 @@
   1. 脚本深度解析 `toc.md`，提取所有被引用的物理文件。
   2. 剥离每个 Markdown 文件头部的 YAML Frontmatter，并在章节交界处动态插入带有唯一 HTML ID 的锚点标签（如 `<a id="sec-1-1"></a>`）。
   3. 按大纲顺序无损拼接，并将整合后的 Markdown 正文写入 `build/YYYY-MM-DD_{model-name}_{cookbook-name}/contents.md`。
+
+### 步骤 2.5: Merge Sources Pass （SourceRef 编译期处理，🟥 待实现）
+- **触发**: 凡 chapter / bench 含 frontmatter `sources:` 字段（参见 SKILL.md §4）。
+- **机制（设计目标，当前尚未在 `compile_cookbook.py` 中落地）**:
+  1. **收集**：在步骤 2 剥离 frontmatter 时，缓存每个文件 `sources` 数组（路径、relation、binding、upstream_url、snapshot_commit）。
+  2. **章节末注入引用块**：拼接到 `contents.md` 时，在每个叶子章节文本末尾追加 Markdown 引用块，形如：
+     ```markdown
+     > **Sources**:
+     > - [memory_cookbook.ipynb](https://github.com/anthropics/anthropic-cookbook/...) — Anthropic, claude-sonnet-4.6, relation: borrows-from
+     ```
+  3. **根目录 sources_index.md**：在 `build/<cookbook>/` 下输出一份按 `vendor / repo` 二级分组的反向索引，列出本 cookbook 引用了哪些第三方文档（含 snapshot_commit）。
+  4. **Notebook Acknowledgements 节**：在 `preview.ipynb` 第一节正文之前注入「Acknowledgements & Sources」markdown cell，承载总索引；同时为每个章节的 markdown cell 末尾追加同款引用块。
+  5. **引用有效性体检**（可选）：按 snapshot_commit 调用 `git -C <mirror> cat-file -e <hash>:<path>` 验证镜像中文件仍存在；缺失时打 warning 但不阻断编译。
+- **现状**: 上述 pass 在宿主仓库 TODO 中挂账，未实现；实现前 `contents.md` 仅做 frontmatter 剥离，不做 source 拼接。
 
 ### 步骤 3: 磨砂玻璃 ScrollSpy HTML 编译 (preview.html)
 - **机制**:

@@ -253,13 +253,11 @@ Pass `--hide-scrollbars false` when launching to keep native scrollbars visible.
 ```bash
 agent-browser tab                      # list open tabs (with stable tabId)
 agent-browser tab new https://docs...  # open a new tab (and switch to it)
-agent-browser tab 2                    # switch to tab 2
-agent-browser tab close 2              # close tab 2
+agent-browser tab t2                   # switch to tab t2
+agent-browser tab close t2             # close tab t2
 ```
 
-Stable `tabId`s mean `tab 2` points at the same tab across commands even
-when other tabs open or close. After switching, refs from a prior snapshot
-on a different tab no longer apply — re-snapshot.
+Stable `tabId`s mean `t2` points at the same tab across commands even when other tabs open or close. After switching, refs from a prior snapshot on a different tab no longer apply — re-snapshot.
 
 ### Run multiple browsers in parallel
 
@@ -290,8 +288,8 @@ agent-browser network har stop /tmp/trace.har
 ### Record a video of the workflow
 
 ```bash
-agent-browser record start demo.webm
 agent-browser open https://example.com
+agent-browser record start demo.webm
 agent-browser snapshot -i
 agent-browser click @e3
 agent-browser record stop
@@ -447,7 +445,8 @@ agent-browser pushstate <url>                    # SPA navigation (auto-detects 
 ```
 
 Without `--enable react-devtools`, the `react …` commands error. `vitals`
-and `pushstate` work on any site regardless of framework.
+and `pushstate` work on any site regardless of framework. `vitals` prints a
+summary by default; use `--json` for the full structured payload.
 
 ## Working safely
 

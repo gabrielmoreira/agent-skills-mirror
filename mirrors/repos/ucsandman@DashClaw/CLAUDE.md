@@ -1,163 +1,69 @@
 ---
 source-of-truth: false
 owner: maintainers
-last-verified: 2026-04-11
+last-verified: 2026-06-01
 doc-type: handoff
 ---
 
 # DashClaw (v2 Governance Runtime)
 
-DashClaw is AI agent decision infrastructure. It provides a focused control plane for policy enforcement, decision recording, assumption tracking, and risk signals.
+DashClaw is AI agent decision infrastructure: a focused control plane for policy enforcement, decision recording, assumption tracking, and risk signals.
 
-## Governance Boundary
+## Governance boundary
 
-DashClaw is a **minimal governance runtime**, not an agent platform. We do not provide tools for agents to achieve goals (Calendar, Messaging, CRM). We provide the infrastructure to **govern** those goals.
+DashClaw is a **minimal governance runtime, not an agent platform**. We do not give agents tools to achieve goals (Calendar, Messaging, CRM); we provide the infrastructure to **govern** those goals.
 
-- **Core Runtime**: `app/api/` (Governance routes).
-- **Extensions**: `app/(extensions)/` (Modular operational intelligence).
-- **Archived**: `app/api/_archive/` (Legacy platform features).
+- **Core runtime**: `app/api/` (governance routes).
+- **Archived**: `app/api/_archive/` (legacy platform features; do not extend).
 
-## Essential Surfaces
+## Where to look first
 
-- `/mission-control` - Strategic posture, interventions, and live decision stream.
-- `/decisions` - Visual causal chain ledger of all governed actions.
-- `/setup` - Readiness verification and instance health.
-- `/connect` - The 8-minute path to first governed action.
+Read these for depth instead of duplicating them here:
 
-## Tech Stack
+- `PROJECT_DETAILS.md` - canonical system map and boundary rules.
+- `QUICK-START.md` - the 8-minute "first governed action" path.
+- `docs/architecture/runtime-api.md` - the 4-step governance loop.
+- `sdk/README.md` - Node SDK surface and error handling.
 
-- Runtime: Node.js 20+
-- Framework: Next.js 16 (App Router)
-- Database: Postgres (Neon recommended)
-- SDK: Versions are owned by their manifests (`package.json`, `sdk/package.json`,
-  `sdk-python/pyproject.toml`, `plugins/dashclaw/.claude-plugin/plugin.json`)
-  and injected into UI strings via `next.config.js`. Never hardcode version
-  numbers in this file — `npm run version:check` will fail. See
-  `sdk/README.md` for the full Node SDK surface (Core Governance, Scoring,
-  Execution Studio, Messaging, Sessions, Capability Runtime). A separate
-  `dashclaw/legacy` subpath export exists for older integrations — see
-  `docs/sdk-parity.md`.
+## Essential surfaces
 
-## Essential Commands
+- `/mission-control` - fleet posture, interventions, live decision stream.
+- `/decisions` - causal-chain ledger of every governed action.
+- `/setup` - readiness verification and instance health.
+- `/connect` - onboarding to the first governed action.
+
+## Tech stack
+
+- Node 20+, Next.js 16 (App Router), Postgres (Neon recommended).
+- Versions live in their manifests (`package.json`, `sdk/package.json`, `sdk-python/pyproject.toml`, `plugins/dashclaw/.claude-plugin/plugin.json`) and are injected into UI strings via `next.config.js`. **Never hardcode a version number in this file** - `npm run version:check` fails the build if you do. A `dashclaw/legacy` SDK subpath exists for older integrations (`docs/sdk-parity.md`).
+
+## Commands
 
 ```bash
-npm run dev
-npm run lint
-npm run openapi:check              # Detect API contract drift
-npm run db:migrate                 # Apply pending schema changes to local DB (run after pulls that touch schema/)
-python -m livingcode start         # One-shot: sense + snapshot + refresh + open /livingcode/ dashboard
+npm run dev          # local dev server (port 3000)
+npm run lint         # eslint
+npm run db:migrate   # apply pending schema to local DB (auto-loads .env.local; idempotent)
 ```
 
-**After pulling changes that touch `schema/schema.js` or `drizzle/*.sql`:** run `npm run db:migrate` against your local DB. It auto-loads `.env.local` and is idempotent. Skipping this leaves the local DB at the old schema while middleware/routes expect new columns — every authenticated request then 401s with "Invalid or missing API key" (the SQL fails silently and `resolveApiKey` returns null).
+## Verify before you commit
 
-## Where To Look First
+CLAUDE.md is advisory; CI is not. A push is its own step - run these and READ the output first:
 
-- `PROJECT_DETAILS.md` - Canonical system map and boundary rules.
-- `QUICK-START.md` - The 8-minute "Aha! Moment" path.
-- `docs/architecture/runtime-api.md` - The 4-step Governance Loop.
-- `sdk/README.md` - v2 SDK implementation and error handling.
+- `npm run lint`
+- `npx vitest run` - the **full** suite (targeted runs miss regressions in unrelated files)
+- `npx next build` - required for any change under `app/**`
 
-## Generated Artifacts
+CI also gates `openapi:check`, `api:inventory:check`, `route-sql:check`, and `version:check`. The pre-commit hook regenerates the doc/contract/livingcode artifacts for you (see "Generated artifacts").
 
-`app/lib/doctor/generated/`, `public/livingcode/index.html`,
-`public/downloads/dashclaw-platform-intelligence/`,
-`public/downloads/dashclaw-platform-intelligence.zip(.manifest)?`, and the
-installed global platform-intelligence skill are all regenerated by
-`npm run livingcode:refresh`. The pre-commit hook runs this automatically when
-staged changes touch `app/api/`, `app/lib/`, `schema/schema.js`, `middleware.js`,
-or `livingcode/`. **Never edit those files by hand** — the next refresh will
-overwrite your changes. Regenerate instead.
+## Gotchas (what you can't infer from the code)
 
-## Design Context
+- **After pulling changes that touch `schema/schema.js` or `drizzle/*.sql`, run `npm run db:migrate`.** Otherwise your local DB stays on the old schema while middleware/routes expect new columns; the SQL fails silently, `resolveApiKey` returns null, and **every authenticated request 401s with "Invalid or missing API key."** Confusing symptom, one-command fix.
+- **No direct SQL in route files.** `app/api/**/route.js` must go through repositories (`app/lib/repositories/*.repository.js`); `npm run route-sql:check` blocks any increase in per-file direct SQL. Repositories are exempt.
 
-Before any UI, design, copy, or marketing/visual change, **read `.impeccable.md` at the repo root first**. It is the canonical design context: users, brand personality, aesthetic direction, 4 anti-references, and the 7 tiebreaker principles (evidence over decoration; brand orange as signal not noise; calm under pressure; token-first; developer-reader first; WCAG 2.1 AA floor; four anti-references guardrail). Never hardcode hex values — use the CSS tokens in `app/globals.css` and the Tailwind theme extension.
+## Generated artifacts - never edit by hand
 
-A `UserPromptSubmit` hook (`.claude/hooks/impeccable-reminder.py`) will inject a reminder when design keywords are detected, but the rule applies whether or not the hook fires.
+`app/lib/doctor/generated/`, `public/livingcode/index.html`, and `public/downloads/dashclaw-platform-intelligence/` (plus its `.zip`/`.manifest`) are produced by `npm run livingcode:refresh`. The pre-commit hook runs it automatically when staged changes touch `app/api/`, `app/lib/`, `schema/schema.js`, `middleware.js`, or `livingcode/`, and stages the result. **Editing these by hand is pointless - the next refresh overwrites it.** Regenerate instead. (`python -m livingcode start` does a one-shot refresh and opens the `/livingcode/` dashboard.)
 
-<!-- gitnexus:start -->
-# GitNexus — Code Intelligence
+## Design changes
 
-This project is indexed by GitNexus as **DashClaw** (4346 symbols, 12924 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
-
-> If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
-
-## Always Do
-
-- **MUST run impact analysis before editing any symbol.** Before modifying a function, class, or method, run `gitnexus_impact({target: "symbolName", direction: "upstream"})` and report the blast radius (direct callers, affected processes, risk level) to the user.
-- **MUST run `gitnexus_detect_changes()` before committing** to verify your changes only affect expected symbols and execution flows.
-- **MUST warn the user** if impact analysis returns HIGH or CRITICAL risk before proceeding with edits.
-- When exploring unfamiliar code, use `gitnexus_query({query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
-- When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `gitnexus_context({name: "symbolName"})`.
-
-## When Debugging
-
-1. `gitnexus_query({query: "<error or symptom>"})` — find execution flows related to the issue
-2. `gitnexus_context({name: "<suspect function>"})` — see all callers, callees, and process participation
-3. `READ gitnexus://repo/DashClaw/process/{processName}` — trace the full execution flow step by step
-4. For regressions: `gitnexus_detect_changes({scope: "compare", base_ref: "main"})` — see what your branch changed
-
-## When Refactoring
-
-- **Renaming**: MUST use `gitnexus_rename({symbol_name: "old", new_name: "new", dry_run: true})` first. Review the preview — graph edits are safe, text_search edits need manual review. Then run with `dry_run: false`.
-- **Extracting/Splitting**: MUST run `gitnexus_context({name: "target"})` to see all incoming/outgoing refs, then `gitnexus_impact({target: "target", direction: "upstream"})` to find all external callers before moving code.
-- After any refactor: run `gitnexus_detect_changes({scope: "all"})` to verify only expected files changed.
-
-## Never Do
-
-- NEVER edit a function, class, or method without first running `gitnexus_impact` on it.
-- NEVER ignore HIGH or CRITICAL risk warnings from impact analysis.
-- NEVER rename symbols with find-and-replace — use `gitnexus_rename` which understands the call graph.
-- NEVER commit changes without running `gitnexus_detect_changes()` to check affected scope.
-
-## Tools Quick Reference
-
-| Tool | When to use | Command |
-|------|-------------|---------|
-| `query` | Find code by concept | `gitnexus_query({query: "auth validation"})` |
-| `context` | 360-degree view of one symbol | `gitnexus_context({name: "validateUser"})` |
-| `impact` | Blast radius before editing | `gitnexus_impact({target: "X", direction: "upstream"})` |
-| `detect_changes` | Pre-commit scope check | `gitnexus_detect_changes({scope: "staged"})` |
-| `rename` | Safe multi-file rename | `gitnexus_rename({symbol_name: "old", new_name: "new", dry_run: true})` |
-| `cypher` | Custom graph queries | `gitnexus_cypher({query: "MATCH ..."})` |
-
-## Impact Risk Levels
-
-| Depth | Meaning | Action |
-|-------|---------|--------|
-| d=1 | WILL BREAK — direct callers/importers | MUST update these |
-| d=2 | LIKELY AFFECTED — indirect deps | Should test |
-| d=3 | MAY NEED TESTING — transitive | Test if critical path |
-
-## Resources
-
-| Resource | Use for |
-|----------|---------|
-| `gitnexus://repo/DashClaw/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/DashClaw/clusters` | All functional areas |
-| `gitnexus://repo/DashClaw/processes` | All execution flows |
-| `gitnexus://repo/DashClaw/process/{name}` | Step-by-step execution trace |
-
-## Self-Check Before Finishing
-
-Before completing any code modification task, verify:
-1. `gitnexus_impact` was run for all modified symbols
-2. No HIGH/CRITICAL risk warnings were ignored
-3. `gitnexus_detect_changes()` confirms changes match expected scope
-4. All d=1 (WILL BREAK) dependents were updated
-
-## CLI
-
-- Re-index: `npx gitnexus analyze`
-- Check freshness: `npx gitnexus status`
-- Generate docs: `npx gitnexus wiki`
-
-<!-- gitnexus:end -->
-
-## graphify
-
-This project has a graphify knowledge graph at graphify-out/.
-
-Rules:
-- Before answering architecture or codebase questions, read graphify-out/GRAPH_REPORT.md for god nodes and community structure
-- If graphify-out/wiki/index.md exists, navigate it instead of reading raw files
-- After modifying code files in this session, run `python3 -c "from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code(Path('.'))"` to keep the graph current
+Before any UI, copy, or visual change, **read `.impeccable.md` at the repo root** - the canonical design context (users, brand, aesthetic, 4 anti-references, 7 tiebreaker principles). **Never hardcode hex values**; use the CSS tokens in `app/globals.css` and the Tailwind theme. A `UserPromptSubmit` hook (`.claude/hooks/impeccable-reminder.py`) nudges you when design keywords appear, but the rule holds either way.

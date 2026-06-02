@@ -15,7 +15,7 @@ Adapted from `/research-review`. The reviewer persona is a patent examiner, not 
 
 - `REVIEWER_MODEL = gpt-5.5` — Model used via Codex MCP
 - `REVIEW_ROUNDS = 2` — Number of review rounds
-- `EXAMINER_PERSONA = "patent-examiner"` — GPT-5.4 persona
+- `EXAMINER_PERSONA = "patent-examiner"` — GPT-5.5 persona
 
 ## Prerequisites
 

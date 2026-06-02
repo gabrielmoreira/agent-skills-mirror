@@ -6,7 +6,7 @@
 
 
 
-版本编号：`FEMALE-PORTRAIT-DIRECTOR-V1.4`
+版本编号：`FEMALE-PORTRAIT-DIRECTOR-V1.4.1`
 
 文档类型：核心规则文档
 
@@ -69,6 +69,8 @@ skill/core/fallback-rules.md
 
 skill/core/director-gate.md
 
+skill/core/reference-image-lock.md
+
 skill/references/director-expansion.md
 
 skill/references/visual-libraries.md
@@ -105,6 +107,34 @@ skill/tools/
 偷拍、胁迫、非自愿或侵犯隐私的情境；
 平台政策和适用法律法规明确禁止的内容。
 ```
+
+### 1.2 授权参考图边界
+
+文本生图默认使用虚构、明确成年的女性。参考图保留生成允许处理用户本人或已授权成年人物，以及用户有权使用的产品图片。
+
+允许：
+
+```text
+本人自拍的五官保留；
+已授权成年人物的写真、换装、妆造和场景转换；
+产品场景化；
+服装试穿；
+配饰佩戴；
+包装和普通实物广告图。
+```
+
+拒绝：
+
+```text
+未成年人或年龄无法确认人物的性化转换；
+未获授权的真实人物身份复刻；
+明星、公众人物或第三方人物的欺骗性冒充；
+偷拍、侵犯隐私、骚扰、诽谤；
+色情深度伪造或非自愿情境；
+产品仿冒、虚假宣传或违法用途。
+```
+
+用户明确说“我的自拍”时视为本人授权。第三方人物图片授权不明确时，生成前询问确认。
 
 
 

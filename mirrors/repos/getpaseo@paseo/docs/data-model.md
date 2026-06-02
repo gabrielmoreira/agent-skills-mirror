@@ -147,6 +147,9 @@ Single file, validated with `PersistedConfigSchema`.
   app: {
     baseUrl: string
   },
+  worktrees?: {
+    root?: string            // optional root for new worktrees; defaults to $PASEO_HOME/worktrees
+  },
   providers: {
     openai: { apiKey: string },
     local: { modelsDir: string }

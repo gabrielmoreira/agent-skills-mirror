@@ -1,0 +1,18 @@
+---
+description: "ControlFlow orchestration: state machine, tier routing, Task delegation to controlflow subagents."
+globs:
+  - "plans/**/*.md"
+---
+# ControlFlow Orchestration (Cursor)
+
+When executing or reviewing plans under `plans/`:
+
+1. Follow skill `controlflow-orchestration` or entry skill `controlflow-strict-workflow`.
+2. **Tier routing:** TRIVIAL optional review; SMALL plan-audit; MEDIUM + assumption-verifier; LARGE + executability-verifier; HIGH semantic risk → assumption-verifier.
+3. **Delegation:** Prefer `Task(subagent_type="controlflow-<role>", ...)` for review and implementer phases. Match `subagent_type` to `.cursor/agents/` filenames.
+4. **Fallback:** If Task unavailable, use matching skill (`controlflow-plan-audit`, etc.) in parent session; note fallback in plan `## Decision Log`.
+5. Parent must not implement when phase `executor_agent` maps to an implementer subagent.
+6. Save artifacts under `plans/artifacts/<task-slug>/`. Update lifecycle sections in the plan.
+7. Do not use `agent/runSubagent` or claim VS Code-only runtime.
+
+Canonical policy: `plans/project-context.md`, `docs/agent-engineering/CURSOR-SUPPORT.md`.

@@ -119,6 +119,39 @@ browser_evaluate({ browser_url: URL, expression: "document.body.innerText.substr
 browser_screenshot({ browser_url: URL })
 ```
 
+### Recording eval runs
+
+Always record eval runs so they can be attached to PRs. Use the built-in
+Daytona recording mechanism:
+
+**Start with recording from the beginning:**
+```bash
+bash .devcontainer/test-on-daytona.sh <branch> --record-video --recording-name <eval-name>
+```
+
+**Start a new recording mid-sandbox** (e.g. after switching branches):
+```bash
+daytona exec "$SANDBOX" -- "bash -lc 'cd /workspace && DISPLAY=:99 .devcontainer/start-daytona-recording.sh --detach --output /daytona-artifacts/recordings/<name>.mp4'"
+```
+
+**Stop recording:**
+```bash
+daytona exec "$SANDBOX" -- 'bash .devcontainer/stop-daytona-recording.sh'
+```
+
+**Get the download URL:**
+```bash
+ARTIFACTS_URL=$(daytona preview-url "$SANDBOX" -p 8090 2>/dev/null | grep -v "^time=")
+echo "${ARTIFACTS_URL}/recordings/<name>.mp4"
+```
+
+Recordings are saved to the persistent `openwork-eval-artifacts` volume and
+survive sandbox deletion. Always use `stop-daytona-recording.sh` (not
+`kill -9`) so ffmpeg finalizes the mp4 properly.
+
+For before/after comparison recordings, see the "Recording before/after
+comparisons" section in the `daytona-electron-test` skill.
+
 ### Local fallback
 
 Always include a local fallback in the result. Use it when Daytona is down, quota-limited, or the sandbox cannot expose CDP. At minimum, run the closest local verification commands and report that the Daytona path was unavailable.

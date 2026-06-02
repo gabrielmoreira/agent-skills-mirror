@@ -273,7 +273,7 @@ model family). Fan out freely.
 
 - **`reviewer-routing.md`** — jury backend selection. The cross-model
   jury step routes through Codex MCP (`gpt-5.5`, `xhigh`) by default, or
-  Oracle MCP (`gpt-5.4-pro`) under `— reviewer: oracle-pro`. Fan-out
+  Oracle MCP (`gpt-5.5-pro`) under `— reviewer: oracle-pro`. Fan-out
   tier never changes the jury backend.
 - **`reviewer-independence.md`** — the jury call receives **file paths
   only**, in a **fresh thread**, with no executor summary/interpretation.

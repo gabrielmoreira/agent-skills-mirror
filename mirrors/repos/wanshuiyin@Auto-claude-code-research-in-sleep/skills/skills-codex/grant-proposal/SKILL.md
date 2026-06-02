@@ -288,7 +288,7 @@ Timeline: [timeline]
 ```
 
 **What this does:**
-- GPT-5.4 xhigh acts as a grant review panelist (not a paper reviewer)
+- GPT-5.5 xhigh acts as a grant review panelist (not a paper reviewer)
 - Evaluates aims independence, narrative arc, risk identification, timeline realism
 - Identifies the single biggest reviewer concern
 - Provides actionable fixes ranked by severity
@@ -304,7 +304,7 @@ Apply structural feedback before proceeding to drafting.
 - Aim 2: [title] — Risk: MEDIUM
 - Aim 3: [title] — Risk: LOW
 - Timeline: [summary]
-- Reviewer feedback: [key points from GPT-5.4]
+- Reviewer feedback: [key points from GPT-5.5]
 
 Proceed to section drafting? Or adjust the structure?
 ```
@@ -417,7 +417,7 @@ Invoke `/research-review` on the complete draft for grant-type-specific evaluati
 ```
 
 **What this does:**
-- GPT-5.4 xhigh acts as a grant review panelist
+- GPT-5.5 xhigh acts as a grant review panelist
 - Scores each section 1-5 using agency-specific criteria
 - Identifies fatal flaws and recommends funding/revisions/rejection
 - Provides ranked action items for improvement
@@ -539,7 +539,7 @@ Before declaring done:
 - Language: [language]
 - Aims: [N] aims covering [summary]
 - Timeline: [N] years
-- Review score: [summary from GPT-5.4]
+- Review score: [summary from GPT-5.5]
 - Output: grant-proposal/GRANT_PROPOSAL.md
 
 Files saved to grant-proposal/. Please review and customize:

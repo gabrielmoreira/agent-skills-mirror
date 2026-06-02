@@ -147,9 +147,9 @@ quality/novelty narrowing.
 
 For each surviving idea, run a deeper evaluation:
 
-1. **Novelty check**: Use the `/novelty-check` workflow (multi-source search + GPT-5.4 cross-verification) for each idea
+1. **Novelty check**: Use the `/novelty-check` workflow (multi-source search + GPT-5.5 cross-verification) for each idea
 
-2. **Critical review**: Use GPT-5.4 via `send_input` (same agent):
+2. **Critical review**: Use GPT-5.5 via `send_input` (same agent):
    ```text
    send_input:
      target: [saved reviewer id from the earlier idea review]
@@ -164,7 +164,7 @@ For each surviving idea, run a deeper evaluation:
        - Which 2-3 would you actually work on?
    ```
 
-3. **Combine rankings**: Merge your assessment with GPT-5.4's ranking. Select top 2-3 ideas for pilot experiments.
+3. **Combine rankings**: Merge your assessment with GPT-5.5's ranking. Select top 2-3 ideas for pilot experiments.
 
 ### Phase 5: Parallel Pilot Experiments (for top 2-3 ideas)
 
@@ -198,6 +198,8 @@ Note: Skip this phase if the ideas are purely theoretical or if no GPU is availa
 
 Write a structured report to `idea-stage/IDEA_REPORT.md`:
 
+**Lead every recommended idea with its method, in plain language.** Before any hypothesis, novelty score, or claim, state in 2–4 concrete steps what we actually build / train / run — no jargon, no claim-IDs. The reader must understand *what we do* before *what we claim*; claims (hypothesis, validation, expected outcome) come after and read as the method's acceptance criteria.
+
 ```markdown
 # Research Idea Report
 
@@ -211,6 +213,7 @@ Write a structured report to `idea-stage/IDEA_REPORT.md`:
 ## Recommended Ideas (ranked)
 
 ### Idea 1: [title]
+- **Method (what we actually do)**: [2–4 concrete steps in plain language — what we build / train / run. No jargon, no claim-IDs, no hypothesis yet. Lead with this so the reader grasps the approach first.]
 - **Hypothesis**: [one sentence]
 - **Minimum experiment**: [concrete description]
 - **Expected outcome**: [what success/failure looks like]

@@ -4,6 +4,18 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.160](https://github.com/Piebald-AI/claude-code-system-prompts/commit/e6eda87)
+
+_+10,510 tokens_
+
+- **NEW:** Skill: /design-sync slash command — Adds `/design-sync` behavior for syncing React design systems to claude.ai/design, including project selection, deterministic converter configuration, Storybook or package builds, validation/self-healing, preview checks, and incremental uploads.
+- **NEW:** Tool Description: DesignSync — Adds claude.ai/design design-system project operations for listing and creating projects, finalizing reviewed write/delete plans, uploading files, deleting or unregistering files, registering preview assets, and treating remote file contents as untrusted data.
+- **REMOVED:** Agent Prompt: /code-review part 4 three-state verification phase — Removes the older one-vote three-state verification prompt that separately defined CONFIRMED, PLAUSIBLE, and REFUTED review outcomes.
+- Agent Prompt: /code-review part 1 base finder angles — Narrows the base finder-angle prompt to line-by-line diff scanning, removing the removed-behavior auditor and cross-file tracer angles from this prompt.
+- Agent Prompt: /code-review part 5 recall-biased verification phase — Removes the explicit instruction to run one verifier agent and keep CONFIRMED or PLAUSIBLE candidates, leaving the recall-biased PLAUSIBLE-by-default and REFUTED-only-when-proven guidance.
+- Tool Description: Bash (Git commit and PR creation instructions) — Adds a configurable prefix before pull-request creation instructions while preserving the existing guidance for using `gh` and reviewing branch state before creating a PR.
+- Tool Description: Workflow — Updates workflow opt-in guidance to treat `ultracode` as the explicit keyword, clarifies that direct user wording such as "use a workflow" qualifies, and changes the fallback suggestion to tell users they can ask for one with "use a workflow".
+
 #### [2.1.159](https://github.com/Piebald-AI/claude-code-system-prompts/commit/9659c79)
 
 <sub>_No changes to the system prompts in v2.1.159._</sub>

@@ -28,6 +28,11 @@ nist_csf:
 - PR.AA-05
 - ID.RA-01
 - DE.CM-09
+mitre_attack:
+- T1635
+- T1414
+- T1417.001
+- T1409
 ---
 # Analyzing iOS App Security with Objection
 

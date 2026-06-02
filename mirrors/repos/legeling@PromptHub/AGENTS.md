@@ -1,12 +1,136 @@
 # PromptHub — Project Context & Development Rules
 
+## 0. Agent Operating Contract
+
+These rules exist because agents do not retain memory across sessions. Do not rely on prior chat context when the repository already contains a boundary record.
+
+### 0.1 Source-of-Truth Lookup Order
+
+Before non-trivial code changes, read in this order:
+
+1. `AGENTS.md` for global project rules.
+2. The relevant stable docs under `spec/knowledge/*` and `spec/rules/*`.
+3. Any active change under `spec/changes/active/<change-key>/` that matches the same user problem.
+4. The current implementation and tests for the touched module.
+
+If an existing boundary exists, update it. Do not create a competing rule, schema, storage layout, or workflow because it is easier than finding the current one.
+
+### 0.2 Mandatory Change Gate
+
+Create or update an active change folder before implementation when the work touches any of these:
+
+- database schema, migrations, adapters, indexes, or persistence semantics
+- filesystem data layout, backup/restore, sync, or recovery
+- IPC/API contracts, preload exposure, route contracts, or shared types
+- cross-package behavior in `packages/*`
+- multi-file feature work, refactors, or user-visible workflow changes
+
+Small local fixes can skip a new change folder only when they do not alter behavior boundaries, storage, public contracts, or user workflows.
+
+### 0.3 Existing-Feature Modification Rule
+
+When modifying existing behavior, first identify:
+
+- the owning app/package (`apps/desktop`, `apps/web`, `apps/cli`, `apps/web-cloudflare`, `packages/core`, `packages/db`, or `packages/shared`)
+- the current source of truth for data (SQLite, filesystem workspace, SKILL.md, settings, remote sync, or UI state)
+- the existing tests or missing regression gap
+- the stable doc or active change that defines the boundary
+
+If the implementation and docs disagree, do not silently pick one. Record the discrepancy in the active change and make the intended source of truth explicit.
+
+### 0.4 New-Feature Addition Rule
+
+For new features, define the boundary before writing code:
+
+- Data: new table/column/index, JSON field, file, directory, or remote payload?
+- Contract: new shared type, IPC channel, route, CLI command, or preload method?
+- Ownership: should logic live in `packages/core`, `packages/db`, app-specific services, or renderer UI?
+- Compatibility: migration path for existing users and rollback behavior.
+- Verification: lowest effective test layer plus release harness impact.
+
+Do not put durable business rules only in React components or one-off IPC handlers. Shared behavior belongs in `packages/core`; storage primitives belong in `packages/db`; shared contracts belong in `packages/shared`.
+
+### 0.5 Test-First Rule
+
+For bug fixes and non-trivial features, write or update the failing test before implementation unless the change is documentation-only or pure mechanical cleanup.
+
+The test must prove the real risk:
+
+- For a bug, reproduce the user-visible failure or the broken invariant first.
+- For a feature, encode acceptance behavior and at least one relevant failure or boundary path.
+- For persistence, assert stored data, migration behavior, and reload/rescan behavior where relevant.
+- For UI state, assert the visible state users depend on, not only internal callbacks.
+- For filesystem/sync/platform behavior, assert durable side effects, not only function calls.
+
+Coverage is a gate, not decoration:
+
+- New or changed production code must target 100% line, function, branch, and condition coverage in its touched module.
+- Critical boundary modules, including database, filesystem persistence, sync, IPC/preload contracts, installer/import/export logic, security, and release harness code, require 100% branch and condition coverage for the changed behavior before merging.
+- If the whole legacy file cannot reach 100% immediately, the active change must record the uncovered legacy branches and the PR must still provide 100% coverage for every new branch and changed condition.
+- Coverage numbers do not replace adversarial tests. A change can have 100% coverage and still be rejected if it lacks boundary, error, rollback, fuzz, or performance tests for the risk it introduces.
+
+Coverage is not the test plan. For each non-trivial change, choose and record the required test methods:
+
+- Black-box behavior: assert user-visible behavior and durable outputs without relying on implementation details.
+- White-box branch/condition: exercise each changed decision branch, guard, fallback, and error path.
+- Boundary and fuzz: test malformed inputs, empty values, path traversal, Unicode/special characters, oversized payloads, duplicate identities, and adversarial fixtures relevant to the module.
+- Security: test permission boundaries, injection/traversal/SSRF-like inputs, unsafe source handling, symlink behavior, secret handling, and tamper detection where relevant.
+- Performance/stress: test large inventories, bulk operations, repeated mutations, concurrency-like calls, and acceptable time/memory bounds for changed critical paths.
+- Integration/contract: test DB, filesystem, IPC/preload, CLI/API, sync, and platform boundaries with real adapters or faithful fixtures when mocks would hide the bug.
+- Failure/rollback: test partial failure at each external boundary and assert no half-written DB rows, repos, files, status, or UI state remain.
+
+If a test cannot be written before the fix, record why in the active change and identify the verification substitute. "Too hard" is not a sufficient reason.
+
+### 0.6 Design Conflict Stop Rule
+
+Before changing design, compare the proposed approach with existing docs and implementation. Stop and ask the user for confirmation when any of these are true:
+
+- current code and stable docs disagree about the intended behavior
+- the requested change conflicts with an existing active change or accepted design boundary
+- the fix requires changing the source of truth for data or state
+- the feature can be implemented in two materially different ways with different user/data consequences
+- preserving backward compatibility would require a migration, fallback, or breaking behavior change
+
+Do not resolve these conflicts by silently choosing the smallest code change. Record the conflict, present the options, and wait for direction.
+
+### 0.7 Code Quality and Architecture Rule
+
+Code quality is part of the product contract. A change is not done merely because it works locally.
+
+Core engineering principles:
+
+- High cohesion: a module should own one clear responsibility and keep related behavior together.
+- Low coupling: modules should depend on stable contracts, not each other's internal state, private helpers, or UI details.
+- Single source of truth: data ownership must be explicit; do not duplicate durable state across DB, filesystem, settings, and UI state without a sync contract.
+- Clear dependency direction: shared packages must not import app-specific code; main/preload/renderer boundaries must remain explicit; UI must not own durable business rules.
+- Small surface area: expose the minimum API needed, with typed inputs/outputs and validation at process, filesystem, network, and persistence boundaries.
+- Change locality: adding a feature should mostly touch its owning module plus contract/test/docs. If it requires scattered edits, first check whether the design boundary is wrong.
+- Refactor before pile-on: if the correct change would make an oversized or mixed-responsibility file worse, split the module or create an active refactor task before adding more behavior.
+
+Size and complexity limits:
+
+- A single source or test file must not exceed 2,000 lines. Existing files above this limit are legacy debt: do not expand them except to extract code or tests into smaller files.
+- New files should stay below 1,000 lines by default. Crossing 1,000 lines requires a clear reason in the active change.
+- Functions should stay under 50 lines unless the active change records why a longer function is clearer and what tests cover it.
+- Avoid "god" services, stores, components, and test files. Split by domain responsibility, not by arbitrary helper buckets.
+- Prefer small pure helpers for parsing, normalization, identity, and policy decisions; keep side effects in orchestration functions.
+
+Design quality gates:
+
+- Before adding a new abstraction, identify the repeated complexity it removes. Do not add abstractions for a single call site unless it defines a real boundary.
+- Before adding a dependency between modules, verify the dependency direction matches the architecture section in this file.
+- Before adding state, define who owns it, how it is derived, how it is invalidated, and how reload/rescan/reopen behaves.
+- Before adding filesystem or DB behavior, define atomicity, rollback, migration, and recovery behavior.
+- Before adding UI behavior, define the source selector/state that list, detail, badge, count, and action surfaces must share.
+- If a change violates these rules, stop and either refactor first or record a design conflict for user confirmation.
+
 ## 1. Project Overview
 
-**PromptHub** is a local-first, cross-platform desktop application for managing AI prompts. It allows users to organize, version control, and test prompts across multiple AI models. It also includes a **Skill system** for managing reusable AI skill definitions (SKILL.md files with frontmatter metadata).
+**PromptHub** is a local-first prompt and AI-skill management monorepo. It includes a cross-platform Electron desktop app, a standalone CLI, a self-hosted web app, and a Cloudflare Worker backend. It allows users to organize, version-control, sync, recover, and test prompts and reusable AI skill definitions.
 
-- **Type:** Desktop Application (Electron)
+- **Type:** Local-first monorepo with desktop, CLI, web, and worker distributions
 - **License:** AGPL-3.0
-- **Version:** 0.5.5
+- **Version:** 0.5.7
 
 ### Tech Stack
 
@@ -17,7 +141,7 @@
 | **Styling**         | Tailwind CSS 3 (design tokens: `bg-card`, `text-muted-foreground`) |
 | **Icons**           | Lucide React                                                       |
 | **State**           | Zustand 5                                                          |
-| **Database**        | SQLite (via `better-sqlite3` in main process)                      |
+| **Database**        | SQLite via `node-sqlite3-wasm` adapter in `packages/db`            |
 | **Testing**         | Vitest 2 (unit), Playwright 1.57+ (E2E)                            |
 | **I18n**            | i18next 24 / react-i18next 15 (7 locales)                          |
 | **Package Manager** | pnpm                                                               |
@@ -26,29 +150,37 @@
 
 The application follows the standard Electron process model:
 
-### Main Process (`src/main`)
+### Desktop App (`apps/desktop`)
 
-- Handles native OS interactions, file system access, database operations, and security (encryption).
-- **Entry:** `src/main/index.ts`
-- **Database:** Direct SQLite access via `better-sqlite3`. Schema defined in `src/main/database/schema.ts`. Adapter in `src/main/database/sqlite.ts`.
-- **IPC:** Exposes functionality to the renderer via `ipcMain.handle()` handlers registered in `src/main/ipc/`.
-- **Security:** Master password, encryption/decryption in `src/main/security.ts`.
-- **Services:** Business logic for skills (installer, validator, repo sync, sanitizer) in `src/main/services/`.
+- Electron main process: `apps/desktop/src/main`
+- Renderer React app: `apps/desktop/src/renderer`
+- Preload bridge: `apps/desktop/src/preload`
+- Desktop-only IPC, native dialogs, updater, local media handling, and Electron shell integration live here.
 
-### Renderer Process (`src/renderer`)
+### Shared Packages (`packages/*`)
 
-- A React SPA responsible for the UI/UX.
-- **Entry:** `src/renderer/main.tsx`
-- **Communication:** Uses `window.api` (exposed via `contextBridge` in `src/preload/index.ts`) to call Main process methods.
-- **State:** Zustand stores in `src/renderer/stores/` (prompt, folder, skill, settings, ui).
-- **Services:** Frontend services in `src/renderer/services/` (AI client, WebDAV, skill platform sync, etc.).
+- `packages/db`: SQLite schema, adapter, migrations, and DB classes. This is the storage primitive layer.
+- `packages/core`: shared business workflows, runtime paths, CLI orchestration, rules workspace, and reusable feature logic.
+- `packages/shared`: shared types, constants, platform matrices, IPC channel names, and pure utilities.
+
+Shared logic must not import Electron renderer/main modules. App-specific UI and platform glue can import shared packages, not the reverse.
+
+### Web and CLI Apps
+
+- `apps/cli`: standalone command-line product backed by `packages/core`, `packages/db`, and `packages/shared`.
+- `apps/web`: self-hosted Hono/React web app with server routes under `apps/web/src/routes` and client UI under `apps/web/src/client`.
+- `apps/web-cloudflare`: Cloudflare Worker sync/backend implementation.
 
 ### Data Layer
 
-- **Local Storage:** SQLite database stores prompts, versions, folders, skills, skill versions, and settings.
+- **SQLite:** `packages/db/src/schema.ts`, `packages/db/src/init.ts`, and DB classes in `packages/db/src/*.ts`.
+- **Runtime paths:** `packages/core/src/runtime-paths.ts` defines the user data layout.
+- **Desktop DB entry:** `packages/core/src/database.ts` resolves `prompthub.db` under `getUserDataPath()`.
+- **Local Storage:** SQLite stores prompts, versions, folders, skills, skill versions, rules, users, settings, and sync/auth data.
 - **Search:** Uses SQLite FTS5 for full-text search (`prompts_fts` virtual table).
 - **Sync:** WebDAV support for backup and sync.
-- **Skill Files:** Skills stored as SKILL.md files with YAML frontmatter metadata, synced between DB and local repo via `skill-repo-sync.ts`.
+- **Skill Files:** Skills stored as SKILL.md files with YAML frontmatter metadata. DB metadata and local repo content must stay synchronized through the relevant sync services.
+- **Filesystem Layout:** durable user data lives under `data/`, `config/`, and `logs/` beneath the resolved user data path; legacy paths are resolved only through runtime-path helpers.
 
 ## 3. Key Commands
 
@@ -58,8 +190,10 @@ The application follows the standard Electron process model:
 | `pnpm electron:dev`         | Start dev server (Vite + Electron)     |
 | `pnpm build`                | Build for production (Main + Renderer) |
 | `pnpm electron:build`       | Build and package the application      |
-| `pnpm test -- --run`        | Run full unit test suite (Vitest)      |
-| `pnpm test -- <path> --run` | Run single test file                   |
+| `pnpm verify:release`       | Run root release harness               |
+| `pnpm verify:release:quick` | Run faster root harness profile        |
+| `pnpm test:run`             | Run desktop Vitest suite               |
+| `pnpm test -- <path> --run` | Run single desktop test file           |
 | `pnpm test:e2e`             | Run end-to-end tests (Playwright)      |
 | `pnpm lint`                 | Run ESLint                             |
 | `pnpm format`               | Format code with Prettier              |
@@ -68,108 +202,62 @@ The application follows the standard Electron process model:
 
 ```text
 PromptHub/
-├── src/
-│   ├── main/                       # Electron Main Process
-│   │   ├── database/               # SQLite schema, adapters, DB classes
-│   │   │   ├── schema.ts           # DDL definitions (tables + indexes)
-│   │   │   ├── sqlite.ts           # DatabaseAdapter (better-sqlite3 wrapper)
-│   │   │   ├── index.ts            # DB initialization + schema migrations
-│   │   │   ├── prompt.ts           # PromptDB (CRUD, versioning, FTS)
-│   │   │   ├── folder.ts           # FolderDB (CRUD, reorder, hierarchy)
-│   │   │   └── skill.ts            # SkillDB (CRUD, versioning)
-│   │   ├── ipc/                    # IPC handler implementations
-│   │   │   ├── index.ts            # Handler registration
-│   │   │   ├── prompt.ipc.ts       # Prompt IPC handlers
-│   │   │   ├── folder.ipc.ts       # Folder IPC handlers
-│   │   │   ├── skill.ipc.ts        # Skill IPC entry (delegates to skill/)
-│   │   │   ├── skill/              # Skill IPC sub-handlers
-│   │   │   │   ├── crud-handlers.ts
-│   │   │   │   ├── local-repo-handlers.ts
-│   │   │   │   ├── platform-handlers.ts
-│   │   │   │   ├── version-handlers.ts
-│   │   │   │   └── shared.ts
-│   │   │   ├── ai.ipc.ts           # AI model IPC handlers
-│   │   │   ├── image.ipc.ts        # Image IPC + SSRF protection
-│   │   │   ├── security.ipc.ts     # Encryption/master password handlers
-│   │   │   └── settings.ipc.ts     # Settings IPC handlers
-│   │   ├── services/               # Business logic services
-│   │   │   ├── skill-installer.ts  # Skill install/export (largest service)
-│   │   │   ├── skill-validator.ts  # SKILL.md parsing + validation
-│   │   │   ├── skill-repo-sync.ts  # DB ↔ local repo frontmatter sync
-│   │   │   ├── skill-import-sanitize.ts
-│   │   │   └── skill-installer-utils.ts
-│   │   ├── security.ts             # Master password, AES-256-GCM encrypt/decrypt
-│   │   ├── webdav.ts               # WebDAV sync
-│   │   ├── updater.ts              # Auto-updater
-│   │   └── index.ts                # Entry point
-│   ├── renderer/                   # React Frontend
-│   │   ├── components/             # UI Components
-│   │   │   ├── ui/                 # Reusable UI primitives (Modal, etc.)
-│   │   │   ├── settings/           # Settings pages (AI settings, etc.)
-│   │   │   ├── skill/              # Skill management UI
-│   │   │   ├── prompt/             # Prompt editor UI
-│   │   │   ├── folder/             # Folder tree UI
-│   │   │   ├── layout/             # App layout components
-│   │   │   └── resources/          # Resource components
-│   │   ├── hooks/                  # Custom React Hooks
-│   │   ├── services/               # Frontend services
-│   │   │   ├── ai.ts               # AI client (multi-provider routing)
-│   │   │   ├── webdav.ts           # WebDAV client
-│   │   │   ├── skill-*.ts          # Skill-related frontend services
-│   │   │   └── database-backup.ts  # Backup/restore
-│   │   ├── stores/                 # Zustand stores
-│   │   │   ├── prompt.store.ts
-│   │   │   ├── folder.store.ts
-│   │   │   ├── skill.store.ts
-│   │   │   ├── settings.store.ts
-│   │   │   └── ui.store.ts
-│   │   ├── i18n/                   # Localization
-│   │   │   └── locales/            # 7 locales: en, zh, zh-TW, ja, fr, de, es
-│   │   └── styles/                 # Global styles
-│   ├── preload/                    # Electron Preload Scripts
-│   └── shared/                     # Shared Types and Constants
-│       ├── constants/              # IPC channel names, skill registry, etc.
-│       │   └── ipc-channels.ts     # All IPC channel string constants
-│       └── types/                  # TypeScript interfaces
-│           ├── prompt.ts           # Prompt, Variable, PromptVersion, DTOs
-│           ├── folder.ts           # Folder, DTOs
-│           ├── skill.ts            # Skill, UpdateSkillParams, DTOs
-│           ├── ai.ts               # AI model/endpoint types
-│           └── settings.ts         # Settings types
-├── tests/                          # Test suites
-│   ├── unit/                       # Vitest unit tests
-│   │   ├── main/                   # Main process tests (DB, services, security)
-│   │   ├── components/             # React component tests
-│   │   ├── services/               # Frontend service tests
-│   │   ├── stores/                 # Zustand store tests
-│   │   ├── hooks/                  # Hook tests
-│   │   └── cli/                    # CLI tests
-│   ├── integration/                # Integration tests
-│   ├── e2e/                        # Playwright E2E tests
-│   ├── fixtures/                   # Test fixtures
-│   ├── helpers/                    # Test helpers
-│   └── setup.ts                    # Global test setup
-├── resources/                      # Static assets (icons)
-├── electron-builder.json           # Packaging config
-├── vitest.config.ts                # Vitest config (jsdom, aliases)
-└── package.json
+├── apps/
+│   ├── desktop/                    # Electron desktop application
+│   │   ├── src/main/               # Electron main process, IPC, updater, native services
+│   │   ├── src/preload/            # contextBridge API exposed to renderer
+│   │   ├── src/renderer/           # React desktop renderer
+│   │   ├── tests/unit/             # Desktop unit/component/service tests
+│   │   ├── tests/integration/      # Desktop integration tests
+│   │   ├── tests/e2e/              # Playwright desktop E2E tests
+│   │   └── scripts/                # Desktop packaging, screenshot, budget scripts
+│   ├── cli/                        # Standalone `prompthub` CLI
+│   │   ├── src/
+│   │   ├── tests/
+│   │   └── bin/
+│   ├── web/                        # Self-hosted Hono + React web app
+│   │   ├── src/client/             # Web client UI
+│   │   ├── src/routes/             # Server routes
+│   │   ├── src/services/           # Web server/client services
+│   │   └── tests/
+│   └── web-cloudflare/             # Cloudflare Worker backend
+│       ├── src/
+│       ├── migrations/
+│       └── tests/
+├── packages/
+│   ├── core/                       # Shared workflows, runtime paths, CLI orchestration
+│   ├── db/                         # SQLite schema, adapter, migrations, DB classes
+│   └── shared/                     # Shared types, constants, pure utilities
+├── spec/                           # Internal SSD docs, stable knowledge, active changes
+│   ├── changes/active/
+│   ├── knowledge/
+│   ├── rules/
+│   └── workflow/
+├── docs/                           # Repository-facing docs
+├── scripts/                        # Root project automation
+├── .github/                        # CI/release workflows
+├── pnpm-workspace.yaml             # Workspace package layout
+└── package.json                    # Root scripts and harness entry points
 ```
+
+Historical single-app paths such as `src/main`, `src/renderer`, and `src/shared` must not be used for new work unless a file actually exists there. Use the monorepo paths above.
 
 ## 5. Key Conventions
 
 ### IPC Communication
 
-- **Channel Definitions:** All IPC channel strings are defined in `src/shared/constants/ipc-channels.ts`.
+- **Channel Definitions:** Desktop IPC channel strings are defined in `packages/shared/constants/ipc-channels.ts`.
 - **Pattern:** Renderer invokes `window.api.method()` → `ipcRenderer.invoke(channel, ...args)` → Main process handles with `ipcMain.handle(channel, handler)`.
 - **Naming:** Channels follow `domain:action` format (e.g., `prompt:create`, `skill:update`, `folder:delete`).
 
 ### Database Schema
 
+- **Owner:** `packages/db` owns schema, migrations, adapter, and DB classes.
 - **Prompts:** Stores title, content, variables (JSON), tags (JSON), and folder association. Supports versioning via `prompt_versions` table.
 - **Folders:** Hierarchical structure with `parent_id` and `sort_order` for ordering. Supports CASCADE delete.
 - **Skills:** Stores skill metadata, instructions, versioning. Syncs with local SKILL.md files.
 - **FTS:** `prompts_fts` virtual table (FTS5) for full-text search on title + content + tags.
-- **Migrations:** Schema versioning handled in `src/main/database/index.ts`.
+- **Migrations:** Existing-user schema changes are handled in `packages/db/src/init.ts`; fresh-install schema is in `packages/db/src/schema.ts`.
 
 ### Component Styling
 
@@ -269,13 +357,34 @@ Use one or more domain spec files under `specs/` when the change spans multiple 
 
 ### 6.2 Engineering Flow
 
-1. **Plan:** For non-trivial work, create or update a change folder in `spec/changes/active/` using the templates.
-2. **Modify:** Edit React components in `renderer` or backend logic in `main`.
-3. **IPC:** If adding new features requiring backend access, update `ipc-channels.ts`, implement handler in `main/ipc`, and expose via `preload`.
-4. **Test:** Run `pnpm test -- --run` to verify logic. Run `pnpm lint` to verify code quality.
-5. **Record:** Update `implementation.md` with the actual execution path, verification, and follow-up notes.
-6. **Sync Docs:** Update `spec/workflow/*` when project-level goals or requirements changed, update `spec/knowledge/behavior/` or `spec/knowledge/reference/` when stable behavior/assets changed, update `spec/knowledge/structure/` when the shipped internal architecture contract changed, update `spec/releases/` or `spec/adr/` when release or decision records changed, and update user-facing docs in `docs/` or `README.md` when the contributor/user contract changed.
-7. **Commit:** Use Conventional Commits (e.g., `feat: ...`, `fix: ...`, `refactor: ...`, `test: ...`).
+1. **Locate boundary:** Identify the owning app/package, source-of-truth docs, existing tests, and active change record.
+2. **Plan:** For non-trivial work, create or update a change folder in `spec/changes/active/` using the templates.
+3. **Design data/contract impact:** Before code, write whether the change touches SQLite, filesystem layout, sync payloads, IPC/API, CLI commands, routes, shared types, or i18n.
+4. **Modify:** Put shared business logic in `packages/core`, storage primitives in `packages/db`, shared contracts in `packages/shared`, and app-specific UI/platform glue in the relevant `apps/*` package.
+5. **IPC/API:** If adding backend access, update shared constants/types, implement the handler/route, expose the bridge/client, and add validation tests.
+6. **Test:** Run the lowest effective test layer first, then the relevant harness (`pnpm verify:release:quick` or `pnpm verify:release`) when release risk exists.
+7. **Record:** Update `implementation.md` with actual execution, verification, skipped checks, and follow-up notes.
+8. **Sync Docs:** Update `spec/workflow/*` when project-level goals or requirements changed, `spec/knowledge/behavior/` or `spec/knowledge/reference/` when stable behavior/assets changed, `spec/knowledge/structure/` when architecture contracts changed, and `docs/` / `README.md` when contributor/user contracts changed.
+9. **Commit:** Use Conventional Commits (e.g., `feat: ...`, `fix: ...`, `refactor: ...`, `test: ...`).
+
+### 6.3 Data and Storage Change Gate
+
+Before changing persistence or storage, document the following in the active change:
+
+- current source of truth: SQLite table, filesystem directory, SKILL.md frontmatter, settings key, remote payload, or derived UI state
+- schema/layout delta: table/column/index/trigger, JSON shape, directory/file path, or sync contract
+- migration and compatibility: how existing users are upgraded, how old data is read, and what happens on partial failure
+- rollback/recovery: whether backups, recovery candidates, or data layout migration need updates
+- verification: real SQLite tests, path traversal/null-byte tests, backup/restore tests, sync tests, and any release harness impact
+
+Rules for storage ownership:
+
+- SQLite schema, indexes, migrations, and DB classes live in `packages/db`.
+- Runtime path decisions live in `packages/core/src/runtime-paths.ts`.
+- Shared data contracts live in `packages/shared/types` or `packages/shared/constants`.
+- Desktop-only native storage glue lives in `apps/desktop/src/main`.
+- Web-specific route/service storage glue lives in `apps/web/src`.
+- Never bypass runtime path helpers by hardcoding user data, legacy, or platform paths.
 
 ## 7. Testing Standards
 
@@ -309,7 +418,7 @@ Use one or more domain spec files under `specs/` when the change spans multiple 
 | **SQL injection**         | All user-facing string inputs (title, description, tags, search keywords) must be tested with SQL injection payloads: `'; DROP TABLE x; --`, `" OR 1=1 --`, `UNION SELECT`. Verify the table is intact after each attempt. |
 | **XSS-like content**      | Store and retrieve `<script>alert(1)</script>`, HTML entities, and JS event handlers in all text fields.                                                                                                                   |
 | **Unicode / CJK / Emoji** | Full round-trip (write → read) with CJK characters, emoji (including multi-codepoint like 🏳️‍🌈), RTL text (Arabic/Hebrew), zero-width characters.                                                                            |
-| **Null bytes**            | Test `\x00` in string fields — SQLite truncates at null bytes via `better-sqlite3`, causing silent data loss. Document this behavior in tests.                                                                             |
+| **Null bytes**            | Test `\x00` in string fields because SQLite adapter behavior can cause silent data loss. Document the observed behavior in tests.                                                                                          |
 | **Extreme sizes**         | 10KB+ strings, 100+ element arrays, 1MB payloads for encryption. Verify no crashes and data integrity.                                                                                                                     |
 | **Special characters**    | Backslashes, quotes (single/double), newlines, tabs, CRLF, Unicode BOM, control characters (0x01–0x1F).                                                                                                                    |
 
@@ -402,15 +511,19 @@ describe("ModuleName", () => {
 
 ### 7.6 Coverage Targets
 
-| Layer                      | Minimum | Priority                              |
-| -------------------------- | ------- | ------------------------------------- |
-| `src/main/database/`       | 80%+    | **Critical** — data integrity         |
-| `src/main/security.ts`     | 90%+    | **Critical** — encryption correctness |
-| `src/main/services/`       | 70%+    | High — business logic                 |
-| `src/main/ipc/`            | 60%+    | High — input validation               |
-| `src/renderer/stores/`     | 60%+    | Medium — state management             |
-| `src/renderer/services/`   | 80%+    | High — AI client correctness          |
-| `src/renderer/components/` | 40%+    | Lower — UI interactions               |
+| Layer                                                                                                                              | Minimum                                                 | Priority                                |
+| ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | --------------------------------------- |
+| New/changed production code                                                                                                        | 100% lines, functions, branches, and conditions         | **Required** — no untested new behavior |
+| Critical boundary modules: database, filesystem persistence, sync, IPC/preload, installer/import/export, security, release harness | 100% branch and condition coverage for touched behavior | **Required** — data/user trust boundary |
+| `packages/db/src/`                                                                                                                 | 100% for changed files; legacy gaps must be recorded    | **Critical** — data integrity           |
+| `apps/desktop/src/main/security.ts`                                                                                                | 100% for changed files; legacy gaps must be recorded    | **Critical** — encryption correctness   |
+| `packages/core/src/` and app services                                                                                              | 100% for changed files; legacy gaps must be recorded    | High — business logic                   |
+| `apps/desktop/src/main/ipc/`                                                                                                       | 100% for changed handlers and validation branches       | High — input validation                 |
+| `apps/desktop/src/renderer/stores/`                                                                                                | 100% for changed actions and state branches             | High — state management                 |
+| `apps/desktop/src/renderer/services/`                                                                                              | 100% for changed services and error paths               | High — client correctness               |
+| `apps/desktop/src/renderer/components/`                                                                                            | 100% for changed user-visible states and interactions   | Medium — UI behavior                    |
+
+Coverage acceptance must include branch and condition review, not only line coverage. Any uncovered branch in touched code must be either tested or explicitly documented in the active change with a reason and a follow-up task.
 
 ### 7.7 What Makes a Test "Good"
 
@@ -465,14 +578,25 @@ A bad test:
 
 ### 8.4 Database Rules
 
-| Rule                                       | Description                                                                                                                                          |
-| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Parameterized queries only**             | All SQL queries must use parameterized placeholders (`?`). String concatenation for SQL values is absolutely prohibited.                             |
-| **Foreign keys enforced**                  | `PRAGMA foreign_keys = ON` must be set. All FK constraints must use explicit `ON DELETE` behavior (CASCADE or SET NULL).                             |
-| **Transactions for multi-step operations** | Any operation that involves multiple SQL statements must be wrapped in `db.transaction()`.                                                           |
-| **FTS sync**                               | When updating prompts, the FTS index must be kept in sync. Use triggers or explicit FTS update statements.                                           |
-| **Schema migrations**                      | All schema changes must go through the migration system in `src/main/database/index.ts`. Never modify `schema.ts` without a corresponding migration. |
-| **Null byte awareness**                    | `better-sqlite3` truncates strings at `\x00`. Input validation should strip null bytes from user input before database writes.                       |
+| Rule                                       | Description                                                                                                                                         |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Parameterized queries only**             | All SQL queries must use parameterized placeholders (`?`). String concatenation for SQL values is absolutely prohibited.                            |
+| **Foreign keys enforced**                  | `PRAGMA foreign_keys = ON` must be set. All FK constraints must use explicit `ON DELETE` behavior (CASCADE or SET NULL).                            |
+| **Transactions for multi-step operations** | Any operation that involves multiple SQL statements must be wrapped in `db.transaction()`.                                                          |
+| **FTS sync**                               | When updating prompts, the FTS index must be kept in sync. Use triggers or explicit FTS update statements.                                          |
+| **Schema migrations**                      | All schema changes must go through `packages/db/src/init.ts`. Never modify `packages/db/src/schema.ts` without a corresponding migration and test.  |
+| **Adapter boundary**                       | Database code must use the `packages/db/src/adapter.ts` API. Do not bypass it with direct driver calls in app code.                                 |
+| **Shared package boundary**                | App code should consume DB classes through `@prompthub/db` / `@prompthub/core`; do not duplicate schema knowledge in renderer components.           |
+| **Null byte awareness**                    | SQLite string inputs can lose data around `\x00`. Input validation should strip or reject null bytes before database writes and test this behavior. |
+
+Additional database workflow:
+
+1. Update `packages/db/src/schema.ts` for fresh installs.
+2. Add an idempotent migration in `packages/db/src/init.ts` for existing installs.
+3. Update the relevant DB class in `packages/db/src/*.ts`.
+4. Update shared types in `packages/shared/types` if the field crosses app/package boundaries.
+5. Add real SQLite tests using `DatabaseAdapter(":memory:")` plus migration/compatibility tests when existing data is affected.
+6. Record migration, rollback, and verification in the active change `implementation.md`.
 
 ### 8.5 Security Rules
 
@@ -489,7 +613,7 @@ A bad test:
 
 | Rule                          | Description                                                                                                                            |
 | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| **Reuse existing components** | Check `src/renderer/components/ui/` before creating new UI primitives. Use the existing `Modal`, `Button`, etc.                        |
+| **Reuse existing components** | Check `apps/desktop/src/renderer/components/ui/` or the relevant app UI folder before creating new primitives.                         |
 | **No inline styles**          | Use Tailwind classes exclusively. No `style={{ }}` props.                                                                              |
 | **Lucide icons only**         | Use `lucide-react` for all icons. Do not import other icon libraries.                                                                  |
 | **Accessible**                | All interactive elements must have appropriate ARIA labels. Modals must trap focus.                                                    |
@@ -497,29 +621,58 @@ A bad test:
 
 ### 8.7 Import & Module Rules
 
-| Rule                               | Description                                                                                                             |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| **Path aliases**                   | Use `@/` for `src/main/`, `@renderer/` for `src/renderer/`, `@shared/` for `src/shared/`.                               |
-| **No circular imports**            | Modules must not have circular dependencies. Main → Shared is OK. Renderer → Shared is OK. Main ↔ Renderer is NEVER OK. |
-| **Shared types only in `shared/`** | Types used by both main and renderer must be in `src/shared/types/`.                                                    |
-| **IPC channels in constants**      | All IPC channel strings must be defined in `src/shared/constants/ipc-channels.ts`, never hardcoded in handlers.         |
+| Rule                            | Description                                                                                                              |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Package imports**             | Prefer workspace package imports (`@prompthub/core`, `@prompthub/db`, `@prompthub/shared`) for shared behavior.          |
+| **App boundary**                | `packages/*` must not import from `apps/*`. App packages may import from `packages/*`.                                   |
+| **No circular imports**         | Modules must not have circular dependencies. Main → Shared is OK. Renderer → Shared is OK. Main ↔ Renderer is NEVER OK.  |
+| **Shared types only in shared** | Types used by more than one app/package belong in `packages/shared/types`. App-local types stay near the app module.     |
+| **IPC channels in constants**   | Desktop IPC channel strings must be defined in `packages/shared/constants/ipc-channels.ts`, never hardcoded in handlers. |
 
 ## 9. IPC Development Checklist
 
 When adding a new IPC endpoint:
 
-1. **Define channel** in `src/shared/constants/ipc-channels.ts`.
-2. **Define types** for request/response in `src/shared/types/`.
-3. **Implement handler** in `src/main/ipc/` with input validation.
-4. **Expose in preload** via `src/preload/index.ts` (`contextBridge.exposeInMainWorld`).
-5. **Call from renderer** via `window.api.newMethod()`.
+1. **Define channel** in `packages/shared/constants/ipc-channels.ts`.
+2. **Define types** for request/response in `packages/shared/types/` when the contract crosses package boundaries.
+3. **Implement handler** in `apps/desktop/src/main/ipc/` with input validation.
+4. **Expose in preload** via `apps/desktop/src/preload/` (`contextBridge.exposeInMainWorld`).
+5. **Call from renderer** via the typed `window.api` method.
 6. **Add tests** for the handler (valid inputs, invalid inputs, error paths).
+7. **Record contract impact** in the active change when the endpoint changes user-visible behavior or persistent data.
 
 ## 10. Skill System Conventions
 
+### Package Boundary
+
+A Skill is a directory-level package. `SKILL.md` is the required entrypoint inside the package, not the whole Skill.
+
+Valid examples:
+
+```text
+writer/
+├── SKILL.md
+├── scripts/
+├── docs/
+└── assets/
+```
+
+```text
+simple-skill/
+└── SKILL.md
+```
+
+Rules:
+
+- Import/install/sync/export/distribute/deploy paths must preserve the whole Skill directory tree, except explicit ignored entries such as `.git` and `.prompthub`.
+- A Skill with only `SKILL.md` is valid, but it is still represented as a directory containing `SKILL.md`.
+- Content-only writes (`writeLocalFile("SKILL.md")`, `saveContentToLocalRepo`, or equivalent) are allowed for new UI-authored Skills and editing the entrypoint file. They must not be used as the final persistence path for a store/Git/Gitea/local-directory import that represents a package.
+- When source metadata includes `source_url`, branch/directory fields, `canonical_skill_path`, `local_repo_path`, or `directory_fingerprint`, treat the source as a package unless explicitly documented as single-file.
+- Tests for Skill import/install must assert managed repo file inventory, not only DB rows or mocked API calls.
+
 ### File Format
 
-Skills are stored as SKILL.md files with YAML frontmatter:
+Every Skill package contains a `SKILL.md` file with YAML frontmatter:
 
 ```markdown
 ---
@@ -563,11 +716,11 @@ Markdown content here...
 
 ## 12. Known Caveats & Gotchas
 
-| Issue                           | Details                                                                                                                                                                                                                                            |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ------------------------------------------------------------------- |
-| **SQLite null byte truncation** | `better-sqlite3` silently truncates strings at `\x00`. Always strip null bytes from user input.                                                                                                                                                    |
-| **FTS5 special operators**      | Search queries containing `AND`, `OR`, `NOT`, `NEAR`, `*`, `^`, `"`, or `column:` are interpreted as FTS5 operators and may cause syntax errors if not properly escaped.                                                                           |
-| **Electron process boundary**   | Objects passed via IPC are serialized (structured clone). Functions, class instances, and circular references cannot cross the IPC boundary.                                                                                                       |
-| **Skill sync race condition**   | `useEffect` in `SkillFullDetailPage` triggers `syncSkillFromRepo()` on `updated_at` change, which can overwrite metadata edits if the SKILL.md file hasn't been updated yet. This is mitigated by `syncFrontmatterToRepo()` in the update handler. |
-| **Empty string vs null**        | Some DB methods convert `""` to `null` via `value                                                                                                                                                                                                  |     | null`. Be explicit about whether empty strings should be preserved. |
-| **Flaky time-based tests**      | Avoid relying on `Date.now()` for ordering. Use explicit timestamps or deterministic sequencing in tests.                                                                                                                                          |
+| Issue                         | Details                                                                                                                                                                                                                                            |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ------------------------------------------------------------------- |
+| **SQLite null byte handling** | Null bytes in text fields can cause silent data loss depending on adapter/runtime behavior. Strip or reject `\x00` before database writes.                                                                                                         |
+| **FTS5 special operators**    | Search queries containing `AND`, `OR`, `NOT`, `NEAR`, `*`, `^`, `"`, or `column:` are interpreted as FTS5 operators and may cause syntax errors if not properly escaped.                                                                           |
+| **Electron process boundary** | Objects passed via IPC are serialized (structured clone). Functions, class instances, and circular references cannot cross the IPC boundary.                                                                                                       |
+| **Skill sync race condition** | `useEffect` in `SkillFullDetailPage` triggers `syncSkillFromRepo()` on `updated_at` change, which can overwrite metadata edits if the SKILL.md file hasn't been updated yet. This is mitigated by `syncFrontmatterToRepo()` in the update handler. |
+| **Empty string vs null**      | Some DB methods convert `""` to `null` via `value                                                                                                                                                                                                  |     | null`. Be explicit about whether empty strings should be preserved. |
+| **Flaky time-based tests**    | Avoid relying on `Date.now()` for ordering. Use explicit timestamps or deterministic sequencing in tests.                                                                                                                                          |

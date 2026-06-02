@@ -1,6 +1,6 @@
 # 女性人像提示词导演 Skill｜轻量 Overlay 注册表
 
-版本编号：`FEMALE-PORTRAIT-DIRECTOR-V1.4`
+版本编号：`FEMALE-PORTRAIT-DIRECTOR-V1.4.1`
 
 Overlay 只增强人物气质，不替代主 Route。仅在用户明确表达气质倾向，或主 Route 需要稳定化补充时，读取一个最匹配的 Overlay 文件。没有明确需要时不加载。
 

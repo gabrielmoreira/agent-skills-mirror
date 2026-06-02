@@ -2,7 +2,7 @@
 
 # 女性人像提示词导演 Skill｜电商服装模特图 / 试衣镜 Route
 
-版本编号：`FEMALE-PORTRAIT-DIRECTOR-V1.4`
+版本编号：`FEMALE-PORTRAIT-DIRECTOR-V1.4.1`
 文档类型：风格路由母版
 所属分类：`routes/commercial/`
 route_id：`ecommerce-tryon`
@@ -70,6 +70,7 @@ skill/core/safety-boundary.md
 skill/core/output-format.md
 skill/core/conflict-resolution.md
 skill/core/fallback-rules.md
+skill/core/reference-image-lock.md
 skill/references/director-expansion.md
 skill/references/visual-libraries.md
 skill/style-registry.md
@@ -93,6 +94,8 @@ skill/style-registry.md
 不得添加遮挡服装主体的外套、包袋、手臂或复杂道具；
 不得把电商服装图生成成普通写真。
 ```
+
+人物自拍与服装图同时上传时，由 `tools/reference-image-generate.md` 负责多图编排，本 Route 负责服装商品还原，`core/reference-image-lock.md` 负责人物五官身份锁定。不得为了服装展示替换用户已锁定的人物身份。
 
 ---
 

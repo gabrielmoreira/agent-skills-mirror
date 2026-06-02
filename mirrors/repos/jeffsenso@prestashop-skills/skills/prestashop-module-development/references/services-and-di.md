@@ -75,22 +75,22 @@ $message = $this->translator->trans('key.translation', [], 'Modules.Mymodule.Adm
 
 ```yaml
 services:
-  _defaults:
-    public: true
-
   mymodule.service.my_service:
     class: 'Vendor\MyModule\Service\MyService'
+    public: true                             # ← only if accessed via $this->get() from module class
     arguments:
       - '@doctrine.orm.entity_manager'
       - '@prestashop.core.admin.lang.repository'
       $context: "@=service('prestashop.adapter.legacy.context').getContext()"
       $translator: '@translator'
 
-  mymodule.service.another_service:
+  mymodule.service.another_service:          # private by default — injected via constructor only
     class: 'Vendor\MyModule\Service\AnotherService'
     arguments:
       - '@mymodule.service.my_service'
 ```
+
+> **Why selective `public: true`?** Symfony best practices require services to be private unless accessed directly via `$container->get()`. A blanket `_defaults: public: true` is valid Symfony syntax but against best practices, and causes a fatal error in PrestaShop's Symfony version when combined with `parent:` services.
 
 ## Accessing services in module controllers
 
@@ -142,19 +142,21 @@ arguments:
 
 ## PITFALL: `public` cannot be inherited from `_defaults` when `parent` is set
 
-Symfony throws a fatal error if a service uses `parent:` and relies on `public: true` from `_defaults`:
+PrestaShop's Symfony version throws a fatal error if a service uses `parent:` and tries to inherit `public: true` from `_defaults`:
 
 ```
 Attribute "public" on service "mymodule.form.type.foo" cannot be inherited from "_defaults"
 when a "parent" is set.
 ```
 
-This affects any form type that extends `form.type.translatable.aware` (or any other parent service).
+This is one reason to avoid `_defaults: public: true` as a blanket default.
 
-**Fix**: declare `public: true` explicitly on every service that has a `parent:`.
+Form types registered via `parent: form.type.translatable.aware` do **not** need to be public — they are never fetched via `$this->get()`, only via the form factory. Leave them private (no `public:` at all).
+
+If you have a rare case where a `parent:` service genuinely needs to be public, declare it explicitly on the service itself:
 
 ```yaml
-# ❌ WRONG — public inherited from _defaults, but parent is set
+# ❌ WRONG — public: true cannot be inherited from _defaults when parent is set
 services:
   _defaults:
     public: true
@@ -165,20 +167,18 @@ services:
     tags:
       - { name: form.type }
 
-# ✅ CORRECT — public declared explicitly on the child service
+# ✅ CORRECT — don't use _defaults: public: true; only mark public if truly needed via $this->get()
 services:
-  _defaults:
-    public: true
-
   mymodule.form.type.foo:
     class: Vendor\MyModule\Form\FooType
-    public: true                             # ← explicit, not inherited
-    parent: "form.type.translatable.aware"
+    parent: "form.type.translatable.aware"   # private by default — form types don't need public
     tags:
       - { name: form.type }
-```
 
-This applies to **every service** that has a `parent:` key, regardless of whether the parent is a PS core service or a custom one.
+  mymodule.some.other.service:
+    class: Vendor\MyModule\Service\SomeService
+    public: true                             # ← only if accessed via $this->get() in module class
+```
 
 
 ## PITFALL: `FrameworkBundleAdminController::trans()` has a non-standard argument order

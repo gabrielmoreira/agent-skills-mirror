@@ -1,3 +1,16 @@
+---
+sources:
+  - vendor: openai
+    repo: openai-cookbook
+    path: examples/gpt5/gpt-5_prompting_guide.ipynb
+    registry_title: "GPT-5 prompting guide"
+    upstream_url: https://github.com/openai/openai-cookbook/blob/main/examples/gpt5/gpt-5_prompting_guide.ipynb
+    snapshot_commit: 9b4e6279edd4dceb6b4b7da582482a7c882f7544
+    relation: benchmarks-against
+    outline_ref: "[1]"
+    note: "本 bench 作为对照评估 GPT-5 推荐分隔符在目标模型上的命中差异。"
+---
+
 # Micro-benchmark: 不同文件分隔符表现对比
 
 ## 1. 评测目的

@@ -6,7 +6,14 @@
 
 ## Stable Requirements
 
-### 1. Skill File Contract
+### 1. Skill Package Contract
+
+- Skill 是目录级 package；`SKILL.md` 是 package 内的必需入口文件，不是 Skill 的完整边界。
+- 只有一个 `SKILL.md` 的 Skill 仍然合法，但它仍然必须被视为 `<skill-root>/SKILL.md` 形式的目录包。
+- 导入、商店安装、Git/Gitea 安装、本地目录安装、同步、导出、项目分发和平台分发必须保留整个 Skill 目录树，除非命中显式忽略规则（例如 `.git` 与 `.prompthub`）。
+- 仅写入 `SKILL.md` 内容的 API 只适用于新建 UI 原生 Skill 或编辑入口文件；不得作为已有包来源导入/安装的最终持久化路径。
+
+### 1.1 Skill File Contract
 
 - Skill 采用 `SKILL.md` 文件与 YAML frontmatter。
 - `name` 为必填字段，且必须符合小写短横线命名规则。
@@ -32,7 +39,7 @@
 
 - PromptHub 必须支持将项目级 Skill 直接分发到当前项目内的本地目录，而不强制要求先纳入 `My Skills`。
 - 项目级分发默认目标为当前项目的 `.agents/skills`，并允许用户额外选择多个目标目录。
-- 项目级分发必须复制整个 Skill 目录到 `<target>/<skill-name>/`，而不是只写单个 `SKILL.md` 文件。
+- 项目级分发必须复制整个 Skill 目录到 `<target>/<skill-name>/`，而不是只写单个 `SKILL.md` 文件；这是全局 Skill package contract 在项目分发场景下的具体要求。
 
 ### 4. Translation Contract
 

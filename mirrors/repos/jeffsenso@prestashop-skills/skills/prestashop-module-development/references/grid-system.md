@@ -263,13 +263,11 @@ class MyEntityFilters extends Filters
   mymodule.grid.definition.factory.myentity:
     class: 'Vs\MyModule\Grid\Definition\Factory\MyEntityGridDefinitionFactory'
     parent: 'prestashop.core.grid.definition.factory.abstract_grid_definition'
-    public: true
 
   # Query builder
   mymodule.grid.query.myentity:
     class: 'Vs\MyModule\Grid\Query\MyEntityQueryBuilder'
     parent: 'prestashop.core.grid.abstract_query_builder'
-    public: true
     arguments:
       - '@prestashop.core.query.doctrine_search_criteria_applicator'
       - "@=service('prestashop.adapter.shop.context').getContextListShopID()[0]"

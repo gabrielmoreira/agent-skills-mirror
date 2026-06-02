@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kellyvv/PhoneClaw` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `kellyvv/PhoneClaw` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kellyvv/PhoneClaw` — 26 default patterns, 0 followed patterns, 8 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,6 +67,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`Skills/Library/health/SKILL.md`](Skills/Library/health/SKILL.md) |
 | 7 | ✓ | [`Skills/Library/reminders/SKILL.md`](Skills/Library/reminders/SKILL.md) |
 | 8 | ✓ | [`Skills/Library/translate/SKILL.md`](Skills/Library/translate/SKILL.md) |
+| 9 | ✓ | [`Skills/Library/web-search/SKILL.md`](Skills/Library/web-search/SKILL.md) |
 
 ---
 

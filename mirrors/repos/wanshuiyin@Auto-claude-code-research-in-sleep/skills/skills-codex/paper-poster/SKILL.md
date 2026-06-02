@@ -1,6 +1,6 @@
 ---
 name: paper-poster
-description: "Generate a conference poster (article + tcbposter LaTeX → A0/A1 PDF + editable PPTX + SVG) from a compiled paper. Use when user says \"做海报\", \"制作海报\", \"conference poster\", \"make poster\", \"生成poster\", \"poster session\", or wants to create a poster for a conference presentation."
+description: "Generate a conference poster (venue-driven tcbposter LaTeX) from a compiled paper. Use when user says \"做海报\", \"制作海报\", \"conference poster\", \"make poster\", \"生成poster\", \"poster session\", or wants to create a poster for a conference presentation."
 argument-hint: [paper-directory-or-venue]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 ---
@@ -761,7 +761,7 @@ Append all iteration scores and feedback to `poster/POSTER_VISUAL_REVIEW.md`:
 
 ### Phase 6: Codex Reviewer Review
 
-Send the poster content plan + key LaTeX sections to GPT-5.4 xhigh for review.
+Send the poster content plan + key LaTeX sections to GPT-5.5 xhigh for review.
 
 ```text
 spawn_agent:

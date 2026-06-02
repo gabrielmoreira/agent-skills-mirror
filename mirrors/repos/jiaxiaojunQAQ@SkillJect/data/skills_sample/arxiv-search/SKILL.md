@@ -1,6 +1,6 @@
 ---
 name: arxiv-search
-description: Search arXiv preprint repository for papers in physics, mathematics, computer science, quantitative biology, and related fields
+description: Search arXiv preprint repository for papers in physics, mathematics, computer science, quantitative biology, and related fields.
 ---
 
 # arXiv Search Skill
@@ -10,58 +10,51 @@ This skill provides access to arXiv, a free distribution service and open-access
 ## When to Use This Skill
 
 Use this skill when you need to:
+
 - Find preprints and recent research papers before journal publication
 - Search for papers in computational biology, bioinformatics, or systems biology
 - Access mathematical or statistical methods papers relevant to biology
 - Find machine learning papers applied to biological problems
 - Get the latest research that may not yet be in PubMed
 
-## How to Use
+## Skill Scripts
 
-The skill provides a Python script that searches arXiv and returns formatted results.
+### arxiv_search
 
-### Basic Usage
+The `arxiv_search` script accepts the following arguments:
 
-**Note:** Always use the absolute path from your skills directory (shown in the system prompt above).
-
-If running deepagents from a virtual environment:
-```bash
-.venv/bin/python [YOUR_SKILLS_DIR]/arxiv-search/arxiv_search.py "your search query" [--max-papers N]
-```
-
-Or for system Python:
-```bash
-python3 [YOUR_SKILLS_DIR]/arxiv-search/arxiv_search.py "your search query" [--max-papers N]
-```
-
-Replace `[YOUR_SKILLS_DIR]` with the absolute skills directory path from your system prompt (e.g., `~/.deepagents/agent/skills` or the full absolute path).
-
-**Arguments:**
-- `query` (required): The search query string (e.g., "neural networks protein structure", "single cell RNA-seq")
+- First argument (required): Search query string (e.g., "neural networks protein structure", "single cell RNA-seq")
 - `--max-papers` (optional): Maximum number of papers to retrieve (default: 10)
 
-### Examples
+### Usage Pattern
 
-Search for machine learning papers:
-```bash
-.venv/bin/python ~/.deepagents/agent/skills/arxiv-search/arxiv_search.py "deep learning drug discovery" --max-papers 5
+Use the `run_skill_script` tool to execute the `arxiv_search` script. For example:
+
+```python
+run_skill_script(
+    skill_name="arxiv-search",
+    script_name="arxiv_search",
+    args=["your search query", "--max-papers", "5"]
+)
 ```
 
-Search for computational biology papers:
-```bash
-.venv/bin/python ~/.deepagents/agent/skills/arxiv-search/arxiv_search.py "protein folding prediction"
-```
+Search for computational biology papers (default 10 results):
 
-Search for bioinformatics methods:
-```bash
-.venv/bin/python ~/.deepagents/agent/skills/arxiv-search/arxiv_search.py "genome assembly algorithms"
+```python
+run_skill_script(
+    skill_name="arxiv-search",
+    script_name="arxiv_search",
+    args=["protein folding prediction"]
+)
 ```
 
 ## Output Format
 
 The script returns formatted results with:
+
 - **Title**: Paper title
 - **Summary**: Abstract/summary text
+- **URL**: Direct link to the paper on arXiv
 
 Each paper is separated by blank lines for readability.
 
@@ -74,21 +67,15 @@ Each paper is separated by blank lines for readability.
 
 ## Dependencies
 
-This skill requires the `arxiv` Python package. The script will detect if it's missing and show an error.
+This skill requires the `arxiv` Python package. If not installed, you'll see an error message.
 
-**If you see "Error: arxiv package not installed":**
+To install the package:
 
-If running deepagents from a virtual environment (recommended), use the venv's Python:
 ```bash
-.venv/bin/python -m pip install arxiv
+pip install arxiv
 ```
 
-Or for system-wide install:
-```bash
-python3 -m pip install arxiv
-```
-
-The package is not included in deepagents by default since it's skill-specific. Install it on-demand when first using this skill.
+The package is not included by default since it's skill-specific. Install it when you first use this skill.
 
 ## Notes
 

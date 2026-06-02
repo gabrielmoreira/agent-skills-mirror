@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `ogulcancelik/herdr` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `ogulcancelik/herdr` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ogulcancelik/herdr` — 26 default patterns, 0 followed patterns, 8 f
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,9 +64,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`SKILL.md`](SKILL.md) |
 | 4 | ✓ | [`vendor/libghostty-vt/.agents/skills/writing-commit-messages/SKILL.md`](vendor/libghostty-vt/.agents/skills/writing-commit-messages/SKILL.md) |
 | 5 | ✓ | [`vendor/libghostty-vt/AGENTS.md`](vendor/libghostty-vt/AGENTS.md) |
-| 6 | ✓ | [`vendor/libghostty-vt/src/benchmark/AGENTS.md`](vendor/libghostty-vt/src/benchmark/AGENTS.md) |
-| 7 | ✓ | [`vendor/libghostty-vt/src/inspector/AGENTS.md`](vendor/libghostty-vt/src/inspector/AGENTS.md) |
-| 8 | ✓ | [`vendor/libghostty-vt/src/terminal/c/AGENTS.md`](vendor/libghostty-vt/src/terminal/c/AGENTS.md) |
+| 6 | ✓ | [`vendor/libghostty-vt/CLAUDE.md`](vendor/libghostty-vt/CLAUDE.md) |
+| 7 | ✓ | [`vendor/libghostty-vt/src/benchmark/AGENTS.md`](vendor/libghostty-vt/src/benchmark/AGENTS.md) |
+| 8 | ✓ | [`vendor/libghostty-vt/src/inspector/AGENTS.md`](vendor/libghostty-vt/src/inspector/AGENTS.md) |
+| 9 | ✓ | [`vendor/libghostty-vt/src/terminal/c/AGENTS.md`](vendor/libghostty-vt/src/terminal/c/AGENTS.md) |
 
 ---
 

@@ -1,6 +1,6 @@
 # 女性人像提示词导演 Skill｜轻量风格注册表
 
-版本编号：`FEMALE-PORTRAIT-DIRECTOR-V1.4`
+版本编号：`FEMALE-PORTRAIT-DIRECTOR-V1.4.1`
 
 本文件是唯一运行时主风格分流入口。每次请求只选择一个已经实现的主 Route。平台用途、气质 Overlay 和扩展占位不得覆盖主 Route。气质增强按需读取 [overlay-registry.md](overlay-registry.md)。
 

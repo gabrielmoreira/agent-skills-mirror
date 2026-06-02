@@ -86,6 +86,21 @@ metadata:
 - 如果项目已存在，先读代码再写文档，不要反过来。
 - 如果信息不全，写 `[待确认]`，但不要把整份文档都留空。
 - spec 不是一次性文档；每轮需求变化、设计变化、实现变化后都要继续完善。
+- 项目内已有 `AGENTS.md`、`spec/README.md`、`spec/rules/*` 或自定义 topology 时，必须优先遵循项目内真实拓扑；不要把本 skill 的通用 `docs/` 示例路径强行套用到项目上。
+- 对已有项目，先确认当前代码结构是否与历史文档一致；若不一致，先记录“文档已过时”的风险，再更新边界文档。
+
+## 项目拓扑覆盖规则
+
+本 skill 的默认示例使用 `docs/`，但这不是硬编码要求。
+
+执行时必须按以下顺序确定实际写入位置：
+
+1. 用户明确指定的路径或仓库规则。
+2. 当前仓库 `AGENTS.md` / `spec/README.md` / `spec/rules/document-routing-rules.md` 中定义的路径。
+3. 已存在且内容完整的项目文档拓扑。
+4. 最后才使用本 skill 的通用 `docs/` 示例路径。
+
+例如 PromptHub 项目使用 `spec/workflow/*`、`spec/knowledge/*`、`spec/rules/*`、`spec/changes/active/*` 作为内部 SSD 真相源；在该项目中不得新建平行的 `docs/workflow/*` 来承载内部变更。
 
 ## 文档边界
 

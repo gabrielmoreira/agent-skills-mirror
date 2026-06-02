@@ -89,8 +89,8 @@ Key rules:
 - Repository services only in `config/common.yml` components (Doctrine-level, no `PrestaShopBundle` deps)
 - All `PrestaShopBundle`-dependent services go in `config/admin/services.yml`
 - Always split into component sub-folders under `config/components/` — never one flat `services.yml`
-- **All component yml files must declare `_defaults: public: true`** — required for `$this->get('service.id')` to work in both front and admin module class contexts
-- **Services that use `parent:` (e.g. `parent: form.type.translatable.aware`) do NOT inherit `_defaults: public: true` in PrestaShop — always add `public: true` explicitly on the service definition itself**
+- **Only services accessed via `$this->get('service.id')` need `public: true`** — declare it explicitly on each such service; all other services remain private (omit `public:`). Avoid `_defaults: public: true` as a blanket: it is against Symfony best practices and causes a fatal error in PrestaShop's Symfony version when combined with `parent:` services
+- **Services that use `parent:` and need to be public must declare `public: true` explicitly on the service definition** — `public` cannot be inherited from `_defaults` when `parent` is set (PrestaShop's Symfony version enforces this)
 - **Never point `config/services.yml` at `admin/services.yml`** — this loads admin-only services into the front kernel, breaking container compilation and making all `$this->get()` calls fail silently
 
 ### 4) Security (mandatory)

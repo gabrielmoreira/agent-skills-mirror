@@ -33,9 +33,6 @@ mymodule_configuration:
 
 ```yaml
 services:
-  _defaults:
-    public: true
-
   prestashop.module.mymodule.form.configuration_data_configuration:
     class: Vendor\MyModule\Form\ConfigurationDataConfiguration
     arguments:

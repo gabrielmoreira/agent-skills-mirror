@@ -134,7 +134,7 @@ Write `patent/NOVELTY_ASSESSMENT.md`:
 [combination analysis with motivation to combine]
 
 ### Cross-Model Examiner Review
-[summary of GPT-5.4 examiner feedback]
+[summary of GPT-5.5 examiner feedback]
 
 ### Recommended Claim Amendments
 [If claims need modification to overcome prior art, suggest specific amendments]

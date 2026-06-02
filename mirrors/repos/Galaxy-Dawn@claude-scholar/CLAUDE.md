@@ -4,7 +4,7 @@
 
 When available, first read:
 
-`~/.codex/skills/expression-skill/SKILL.md`
+`~/.claude/skills/expression-skill/SKILL.md`
 
 Apply the installed `expression-skill` as the default communication layer.
 

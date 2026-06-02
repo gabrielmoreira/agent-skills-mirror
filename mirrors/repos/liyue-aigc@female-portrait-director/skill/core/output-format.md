@@ -2,7 +2,7 @@
 
 # 女性人像提示词导演 Skill｜输出格式规则
 
-版本编号：`FEMALE-PORTRAIT-DIRECTOR-V1.4`
+版本编号：`FEMALE-PORTRAIT-DIRECTOR-V1.4.1`
 文档类型：核心规则文档
 适用范围：提示词生成、参数组合推荐、提示词优化、失败诊断、审查友好改写、图片反推提示词、Skill 文档输出
 核心职责：统一所有输出格式，确保输出内容可复制、可执行、结构稳定、不混乱
@@ -81,6 +81,7 @@ skill/tools/
 9. Skill 文档输出模式
 10. 简短说明模式
 11. 直接生成图片模式
+12. 参考图直接生成模式
 ```
 
 系统必须先识别用户任务类型，再选择对应输出格式。
@@ -1145,14 +1146,14 @@ GPT Image 2 审查友好
 ```text
 1. 一次只输出一个核心文档；
 2. 不得只写摘要；
-3. 不得和已经确定的 V1.4 规则冲突；
+3. 不得和已经确定的 V1.4.1 规则冲突；
 4. 不得擅自改变目录结构；
 5. 不得把 route 具体母版写进 style-registry；
 6. 不得把所有风格堆进 skill.md；
 7. 不得把安全边界写得比 safety-boundary.md 更弱；
 8. 不得删减参数锁定规则；
 9. 不得出现 V2.0 / V2.1 作为当前主线版本；
-10. 当前统一使用 FEMALE-PORTRAIT-DIRECTOR-V1.4。
+10. 当前统一使用 FEMALE-PORTRAIT-DIRECTOR-V1.4.1。
 ```
 
 ---
@@ -1212,6 +1213,23 @@ GPT Image 2 审查友好
 4. 内部完成最终提示词和负面约束，并确认最终提示词第一句包含画幅比例以及用户明确填写的尺寸参数；
 5. 调用可用的图片生成能力；
 6. 不因省略文字输出而跳过导演模式和安全检查。
+```
+
+## 14.1 参考图直接生成
+
+当用户上传人物或产品图片，并要求保留主体直接生成时：
+
+```text
+1. 调用 tools/reference-image-generate.md；
+2. 读取 core/reference-image-lock.md；
+3. 区分 identity_reference、product_reference、style_reference 和 edit_target；
+4. 人物图片必须属于用户本人或已授权成年人物；
+5. 内部建立主体锁定表；
+6. Route 和 Overlay 只能改变未锁定内容；
+7. 优先调用图片编辑、参考图生成或多图合成能力；
+8. 默认只返回图片和简短说明，不输出内部提示词；
+9. 用户明确要求时，才展示内部提示词和负面约束；
+10. 保真失败时说明限制，不静默退化为普通文本生图。
 ```
 
 ---
@@ -1329,6 +1347,7 @@ skill/core/safety-boundary.md
 skill/core/conflict-resolution.md
 skill/core/fallback-rules.md
 skill/core/director-gate.md
+skill/core/reference-image-lock.md
 skill/references/director-expansion.md
 skill/references/visual-libraries.md
 ```
@@ -1337,7 +1356,7 @@ skill/references/visual-libraries.md
 
 ```text
 1. 版本号写成 V2.0；
-2. 把 V1.4 拆成多个主线版本；
+2. 把 V1.4.1 拆成多个主线版本；
 3. 删除核心 5 个风格；
 4. 删除新增 9 个重点风格；
 5. 弱化成年边界；
@@ -1364,12 +1383,13 @@ skill/references/visual-libraries.md
 7. 是否正向提示词与负面约束分离？
 8. 是否输出了可直接复制内容？
 9. 是否避免了摘要化？
-10. 是否与 V1.4 已确定结构一致？
+10. 是否与 V1.4.1 已确定结构一致？
 11. 是否已通过 director-gate 的内部导演设计？
 12. 默认完整模式是否输出了逐段导演式模块解析，而不是字段回显或八行摘要？
 13. 用户填写的配色方向是否已经锁定，并贯穿服装、发饰、场景、光线和滤镜？
 14. 用户填写的华丽度是否已经转译为可见设计，而不是只重复等级标签？
 15. 如果准备调用图片生成能力，用户是否明确填写了 `输出模式：直接生成图片`，或明确表达了“直接出图”“生成图片”等同等意图？
+16. 参考图任务是否保留了人物身份或产品核心结构？
 ```
 
 如果任意一项不合格，必须修正后再输出。

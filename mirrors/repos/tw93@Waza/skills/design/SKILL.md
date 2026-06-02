@@ -46,6 +46,8 @@ Flow:
 
 **Completion screen layout.** Operation-complete surfaces show the single result the user came for: the actual reclaimed size / processed count / changed state. Long explanations belong in a details overlay opened from a summary row, not in the primary completion line. Do not add a separate "Review" button next to the summary row when one tap on the row already opens details; do not show an empty "0 skipped" entry point. If there is no skipped or failed item, hide the details affordance entirely.
 
+**Safety-bound action design.** For cleanup, deletion, uninstall, reset, or permission-changing surfaces, do not make the UI feel simpler by hiding recoverability. Bulk select, auto-select, one-tap delete, or "recommended" destructive defaults are only appropriate when each row is understandable to the target user and carries enough identity to verify safety (name, source, owner, path, preview, or recovery implication as relevant). If rows are opaque identifiers, inferred leftovers, or machine-only paths, prefer review-first UI, current-target scoping, disabled destructive affordances, or explanatory grouping over faster batch controls. A feature request for fewer clicks is not enough to remove the user's ability to verify what will change.
+
 ## Screenshot Iteration Mode
 
 Activate when the user sends a screenshot or image alongside a complaint ("这里很丑", "这个不对", "fix this", "looks wrong"). The existing product is the direction. Skip the five-question direction lock.

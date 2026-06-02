@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `google-labs-code/stitch-skills` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `google-labs-code/stitch-skills` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `google-labs-code/stitch-skills` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,6 +73,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`plugins/stitch-utilities/skills/enhance-prompt/SKILL.md`](plugins/stitch-utilities/skills/enhance-prompt/SKILL.md) |
 | 13 | ✓ | [`plugins/stitch-utilities/skills/stitch-loop/SKILL.md`](plugins/stitch-utilities/skills/stitch-loop/SKILL.md) |
 | 14 | ✓ | [`plugins/stitch-utilities/skills/taste-design/SKILL.md`](plugins/stitch-utilities/skills/taste-design/SKILL.md) |
+| 15 | ✓ | [`skills/react-native/examples/gold-standard-card.tsx`](skills/react-native/examples/gold-standard-card.tsx) |
+| 16 | ✓ | [`skills/react-native/package.json`](skills/react-native/package.json) |
+| 17 | ✓ | [`skills/react-native/README.md`](skills/react-native/README.md) |
+| 18 | ✓ | [`skills/react-native/resources/architecture-checklist.md`](skills/react-native/resources/architecture-checklist.md) |
+| 19 | ✓ | [`skills/react-native/resources/component-template.tsx`](skills/react-native/resources/component-template.tsx) |
+| 20 | ✓ | [`skills/react-native/scripts/fetch-stitch.sh`](skills/react-native/scripts/fetch-stitch.sh) |
+| 21 | ✓ | [`skills/react-native/scripts/validate.js`](skills/react-native/scripts/validate.js) |
+| 22 | ✓ | [`skills/react-native/SKILL.md`](skills/react-native/SKILL.md) |
 
 ---
 

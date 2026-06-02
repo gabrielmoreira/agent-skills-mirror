@@ -3,8 +3,16 @@
 当前公开版本：
 
 ```text
-FEMALE-PORTRAIT-DIRECTOR-V1.4
+FEMALE-PORTRAIT-DIRECTOR-V1.4.1
 ```
+
+## V1.4.1 变更摘要
+
+- 新增 `tools/reference-image-generate.md`，支持上传授权自拍或产品图后直接生成目标风格图片。
+- 新增 `core/reference-image-lock.md`，统一人物五官身份、产品核心视觉、多图角色和保真优先级。
+- 支持人物自拍 + 服装图、人物 + 产品图、人物 + 产品 + 风格参考图等多图组合。
+- 保持职责分离：`image-to-prompt` 负责反推提示词，`reference-image-generate` 负责主体保留直接生成，`ecommerce-tryon` 负责服装试穿还原。
+- 默认不输出内部提示词；保真失败时明确说明限制，不静默退化为普通文本生图。
 
 ## V1.4 输出契约修复
 
@@ -41,8 +49,9 @@ FEMALE-PORTRAIT-DIRECTOR-V1.4
 ## 版本格式
 
 ```text
-FEMALE-PORTRAIT-DIRECTOR-V主版本.次版本
+FEMALE-PORTRAIT-DIRECTOR-V主版本.次版本.补丁版本
 ```
 
 - 主版本：核心结构、路由规则或输出契约发生不兼容变化时递增。
 - 次版本：新增风格、补充示例、优化措辞或改进安全表达时递增。
+- 补丁版本：补充兼容能力、修复规则缺口或强化现有模块时递增。

@@ -12,6 +12,14 @@
   1. **结构探索**: 在操作前，必须先在终端执行 `memocli explore` 或相关查询，以理解目标实体的已有关系与属性。
   2. **非破坏性追加**: 使用 `memocli` 的更新命令，以非破坏性的缓冲更新块 (Buffer-Update 模式) 将新跑分结论、大纲变更、Cookbook 版本等数据追加至对应实体（如 `AntLing-Cookbook`）中。**禁止直接覆写或破坏该实体中已有的其他历史关联。**
 
+### 步骤 1.5: Obsidian 文档读取（memocli 读路径）
+- **触发**: 需要参考 Obsidian 端某份大纲源档、知识 note、历史开发日志（如 `Ring-2-6-1T-Cookbook`、`2026-05-30-...-Building-Evals 知识地图`）作为本次开发输入时。
+- **行动**:
+  1. **按名找文档**: `memocli find-doc-by-name <关键词或精确名>` 用于在 Obsidian vault 中按文件名模糊 / 精确定位 `.md` 文档，返回候选清单。
+  2. **读文档内容**: `memocli read-doc-by-name <精确文件名>` 拉取目标 markdown 文档全文内容，作为本次开发的上下文输入。
+  3. **可选实体细化**: 若需要更深层级的实体关系，调用 `memocli load-entities` 与 `memocli get-relations <entity>` 配合，将「文档级」与「图谱级」信息互补使用。
+- **规范**: 写路径（步骤 1）与读路径（本步）形成完整闭环；读取的文档若涉及版本变化（如大纲新增章节），应在写路径中同步反向更新。
+
 ### 步骤 2: Obsidian 状态文档创建 (cafe3310-obsidian-writer)
 - **触发**: 在 Obsidian 笔记库（根目录）中建立动态的工作追踪日志。
 - **命名规范**: `YYYY-MM-DD-HH-mm-工作状态-{项目简述}.md` (使用 `date` 命令获取精确时间)。

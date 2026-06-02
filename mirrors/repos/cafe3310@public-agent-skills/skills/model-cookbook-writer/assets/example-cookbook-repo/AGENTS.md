@@ -13,7 +13,12 @@
 ## 3. 两库联动契约
 *   与个人知识库双向联动。大纲源档放于 Obsidian；评测、源码和编译成果放于本仓库。
 
-## 4. 目录结构
+## 4. 第三方 Cookbook 引用契约 (SourceRef)
+*   所有 `cookbook-chapters/**/{content,benchmarks,examples}.md` 与 `benches/*/README.md` 必须含 YAML frontmatter `sources:` 字段，声明对御三家 / 国内厂商 cookbook 的引用关系。
+*   单条 source 至少包含：`vendor / repo / path / upstream_url / snapshot_commit / relation`；relation ∈ {borrows-from, benchmarks-against, counter-example, extends}。
+*   原创推导写 `sources: []` 并在 note 注明。详见 model-cookbook-writer SKILL.md §4。
+
+## 5. 目录结构
 ```
 ├── AGENTS.md                  # 本章程
 ├── TODO.md                    # 任务日志

@@ -195,7 +195,7 @@ For each section, list required citations:
 
 ### Step 6: Cross-Review with REVIEWER_MODEL
 
-Send the complete outline to GPT-5.4 xhigh for feedback:
+Send the complete outline to GPT-5.5 xhigh for feedback:
 
 ```
 spawn_agent:

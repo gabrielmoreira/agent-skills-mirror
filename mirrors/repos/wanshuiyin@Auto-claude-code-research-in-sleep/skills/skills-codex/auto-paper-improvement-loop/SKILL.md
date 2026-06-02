@@ -1,6 +1,6 @@
 ---
 name: auto-paper-improvement-loop
-description: "Autonomously improve a generated paper via GPT-5.4 xhigh review → implement fixes → recompile, for 2 rounds. Use when user says \"改论文\", \"improve paper\", \"论文润色循环\", \"auto improve\", or wants to iteratively polish a generated paper."
+description: "Autonomously improve a generated paper via GPT-5.5 xhigh review → implement fixes → recompile, for 2 rounds. Use when user says \"改论文\", \"improve paper\", \"论文润色循环\", \"auto improve\", or wants to iteratively polish a generated paper."
 argument-hint: "[paper-directory] [— edit-whitelist <path>]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 ---
@@ -191,7 +191,7 @@ done > /tmp/paper_full_text.txt
 
 ### Step 2: Round 1 Review
 
-Send the full paper text AND compiled PDF to GPT-5.4 xhigh:
+Send the full paper text AND compiled PDF to GPT-5.5 xhigh:
 
 ```text
 spawn_agent:
@@ -486,7 +486,7 @@ Create `PAPER_IMPROVEMENT_LOG.md` in the paper directory:
 ## Round 1 Review & Fixes
 
 <details>
-<summary>GPT-5.4 xhigh Review (Round 1)</summary>
+<summary>GPT-5.5 xhigh Review (Round 1)</summary>
 
 [Full raw review text, verbatim]
 
@@ -500,7 +500,7 @@ Create `PAPER_IMPROVEMENT_LOG.md` in the paper directory:
 ## Round 2 Review & Fixes
 
 <details>
-<summary>GPT-5.4 xhigh Review (Round 2)</summary>
+<summary>GPT-5.5 xhigh Review (Round 2)</summary>
 
 [Full raw review text, verbatim]
 
@@ -548,7 +548,7 @@ paper/
 - **Large file handling**: If the Write tool fails due to file size, immediately retry using Bash (`cat << 'EOF' > file`) to write in chunks. Do NOT ask the user for permission — just do it silently.
 
 - **Preserve all PDF versions** — user needs to compare progression
-- **Save FULL raw review text** — do not summarize or truncate GPT-5.4 responses
+- **Save FULL raw review text** — do not summarize or truncate GPT-5.5 responses
 - **Reviewer independence (Round 2+)**: when `REVIEWER_BIAS_GUARD = true` (default), use a **fresh** `spawn_agent` reviewer for every review round; never use stale reviewer continuation and never include "since last round" / fix summaries in the prompt. See the Reviewer Independence Protocol section above.
 - **Always recompile after fixes** — verify 0 errors before proceeding
 - **Do not fabricate experimental results** — synthetic validation must describe methodology, not invent numbers

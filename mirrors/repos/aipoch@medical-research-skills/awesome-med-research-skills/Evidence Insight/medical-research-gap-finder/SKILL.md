@@ -78,7 +78,6 @@ Required priority:
 2. **Google Scholar** for broader recall and citation chaining
 3. **Web of Science** when available for citation-network and indexed-coverage checking
 4. **Preprint sources** such as arXiv only as clearly labeled non-peer-reviewed evidence
-5. **PubMed.ai** may assist retrieval/synthesis but must not replace direct record verification
 
 Do not name any formal gap until retrieval has been completed.
 

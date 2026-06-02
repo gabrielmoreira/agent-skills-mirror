@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `browser-use/browser-use` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `browser-use/browser-use` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `browser-use/browser-use` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -86,6 +86,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`skills/open-source/references/tools.md`](skills/open-source/references/tools.md) |
 | 26 | ✓ | [`skills/open-source/SKILL.md`](skills/open-source/SKILL.md) |
 | 27 | ✓ | [`skills/remote-browser/SKILL.md`](skills/remote-browser/SKILL.md) |
+| 28 | ✓ | [`skills/x402/SKILL.md`](skills/x402/SKILL.md) |
 
 ---
 

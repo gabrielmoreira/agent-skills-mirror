@@ -1,6 +1,6 @@
 # 女性人像提示词导演 Skill｜SKILL.md
 
-版本编号：`FEMALE-PORTRAIT-DIRECTOR-V1.4`
+版本编号：`FEMALE-PORTRAIT-DIRECTOR-V1.4.1`
 作者标识：`李岳 `
 适用方向：女性人像 AI 生图提示词生成、优化、风格路由、参数组合推荐、提示词诊断、审查友好改写
 结构类型：主 Skill 总控 + 风格注册表 + 公共规则库 + 路由风格模块 + 扩展包 + 覆盖层 + 功能模块
@@ -154,7 +154,8 @@ skill/
 │   ├── safety-boundary.md           # 成年边界与安全规则
 │   ├── output-format.md             # 固定输出格式
 │   ├── conflict-resolution.md       # 参数冲突处理
-│   └── fallback-rules.md            # 参数缺失时的默认补全
+│   ├── fallback-rules.md            # 参数缺失时的默认补全
+│   └── reference-image-lock.md      # 参考图人物身份与产品主体锁定
 │
 ├── references/
 │   ├── visual-libraries.md          # 公共视觉扩写库
@@ -227,7 +228,8 @@ skill/
 │   ├── failure-diagnosis.md
 │   ├── parameter-recommend.md
 │   ├── safety-rewrite.md
-│   └── image-to-prompt.md
+│   ├── image-to-prompt.md
+│   └── reference-image-generate.md
 │
 ├── examples/
 │   ├── minimal-calls.md
@@ -796,9 +798,9 @@ OOTD 穿搭写真
 ---
 ## 15\. 版本规划
 
-当前 Skill 最新版本为：FEMALE-PORTRAIT-DIRECTOR-V1.4
+当前 Skill 最新版本为：FEMALE-PORTRAIT-DIRECTOR-V1.4.1
 
-中文名称：女性人像导演 Skill｜V1.4 模块化整合版
+中文名称：女性人像导演 Skill｜V1.4.1 参考图保留生成补全版
 
 
 
@@ -806,7 +808,7 @@ OOTD 穿搭写真
 
 版本定位：
 
-V1.4 是当前最新版，不再拆分为多个独立大版本。
+V1.4.1 是当前最新版，在 V1.4 模块化主线中补充参考图保留直接生成能力。
 
 本版本一次性整合核心风格、重点新增风格、扩展风格模块、气质增强模块和功能模块，形成一个统一的模块化女性人像提示词导演系统。
 
@@ -956,6 +958,8 @@ V1.4 内置以下功能模块：
 审查友好改写
 
 图片反推提示词
+
+参考图保留直接生成
 
 这些模块不属于风格路由，而属于工具能力。
 

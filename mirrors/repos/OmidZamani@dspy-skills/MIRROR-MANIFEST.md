@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `OmidZamani/dspy-skills` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
+Mirror of `OmidZamani/dspy-skills` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `OmidZamani/dspy-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 20 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,23 +62,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.claude/skills-skill-perfection/SKILL.md`](.claude/skills-skill-perfection/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/skill-perfection/SKILL.md`](.claude/skills/skill-perfection/SKILL.md) |
 | 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 4 | ✓ | [`skills/dspy-advanced-module-composition/SKILL.md`](skills/dspy-advanced-module-composition/SKILL.md) |
-| 5 | ✓ | [`skills/dspy-bootstrap-fewshot/SKILL.md`](skills/dspy-bootstrap-fewshot/SKILL.md) |
-| 6 | ✓ | [`skills/dspy-custom-module-design/SKILL.md`](skills/dspy-custom-module-design/SKILL.md) |
-| 7 | ✓ | [`skills/dspy-debugging-observability/SKILL.md`](skills/dspy-debugging-observability/SKILL.md) |
-| 8 | ✓ | [`skills/dspy-evaluation-suite/SKILL.md`](skills/dspy-evaluation-suite/SKILL.md) |
-| 9 | ✓ | [`skills/dspy-finetune-bootstrap/SKILL.md`](skills/dspy-finetune-bootstrap/SKILL.md) |
-| 10 | ✓ | [`skills/dspy-gepa-reflective/SKILL.md`](skills/dspy-gepa-reflective/SKILL.md) |
-| 11 | ✓ | [`skills/dspy-haystack-integration/examples/haystack-dspy-optimizer.py`](skills/dspy-haystack-integration/examples/haystack-dspy-optimizer.py) |
-| 12 | ✓ | [`skills/dspy-haystack-integration/references/prompt-extraction.md`](skills/dspy-haystack-integration/references/prompt-extraction.md) |
-| 13 | ✓ | [`skills/dspy-haystack-integration/SKILL.md`](skills/dspy-haystack-integration/SKILL.md) |
-| 14 | ✓ | [`skills/dspy-miprov2-optimizer/SKILL.md`](skills/dspy-miprov2-optimizer/SKILL.md) |
-| 15 | ✓ | [`skills/dspy-optimize-anything/SKILL.md`](skills/dspy-optimize-anything/SKILL.md) |
-| 16 | ✓ | [`skills/dspy-output-refinement-constraints/SKILL.md`](skills/dspy-output-refinement-constraints/SKILL.md) |
-| 17 | ✓ | [`skills/dspy-rag-pipeline/SKILL.md`](skills/dspy-rag-pipeline/SKILL.md) |
-| 18 | ✓ | [`skills/dspy-react-agent-builder/SKILL.md`](skills/dspy-react-agent-builder/SKILL.md) |
-| 19 | ✓ | [`skills/dspy-signature-designer/SKILL.md`](skills/dspy-signature-designer/SKILL.md) |
-| 20 | ✓ | [`skills/dspy-simba-optimizer/SKILL.md`](skills/dspy-simba-optimizer/SKILL.md) |
+| 4 | ✓ | [`skills/dspy-adapters-multimodal/SKILL.md`](skills/dspy-adapters-multimodal/SKILL.md) |
+| 5 | ✓ | [`skills/dspy-advanced-module-composition/SKILL.md`](skills/dspy-advanced-module-composition/SKILL.md) |
+| 6 | ✓ | [`skills/dspy-better-together/SKILL.md`](skills/dspy-better-together/SKILL.md) |
+| 7 | ✓ | [`skills/dspy-bootstrap-fewshot/SKILL.md`](skills/dspy-bootstrap-fewshot/SKILL.md) |
+| 8 | ✓ | [`skills/dspy-custom-module-design/SKILL.md`](skills/dspy-custom-module-design/SKILL.md) |
+| 9 | ✓ | [`skills/dspy-debugging-observability/SKILL.md`](skills/dspy-debugging-observability/SKILL.md) |
+| 10 | ✓ | [`skills/dspy-embedding-retrieval/SKILL.md`](skills/dspy-embedding-retrieval/SKILL.md) |
+| 11 | ✓ | [`skills/dspy-evaluation-suite/SKILL.md`](skills/dspy-evaluation-suite/SKILL.md) |
+| 12 | ✓ | [`skills/dspy-finetune-bootstrap/SKILL.md`](skills/dspy-finetune-bootstrap/SKILL.md) |
+| 13 | ✓ | [`skills/dspy-gepa-reflective/SKILL.md`](skills/dspy-gepa-reflective/SKILL.md) |
+| 14 | ✓ | [`skills/dspy-haystack-integration/examples/haystack-dspy-optimizer.py`](skills/dspy-haystack-integration/examples/haystack-dspy-optimizer.py) |
+| 15 | ✓ | [`skills/dspy-haystack-integration/references/prompt-extraction.md`](skills/dspy-haystack-integration/references/prompt-extraction.md) |
+| 16 | ✓ | [`skills/dspy-haystack-integration/SKILL.md`](skills/dspy-haystack-integration/SKILL.md) |
+| 17 | ✓ | [`skills/dspy-mcp-tool-integration/SKILL.md`](skills/dspy-mcp-tool-integration/SKILL.md) |
+| 18 | ✓ | [`skills/dspy-miprov2-optimizer/SKILL.md`](skills/dspy-miprov2-optimizer/SKILL.md) |
+| 19 | ✓ | [`skills/dspy-optimize-anything/SKILL.md`](skills/dspy-optimize-anything/SKILL.md) |
+| 20 | ✓ | [`skills/dspy-optimizer-selection/SKILL.md`](skills/dspy-optimizer-selection/SKILL.md) |
+| 21 | ✓ | [`skills/dspy-output-refinement-constraints/SKILL.md`](skills/dspy-output-refinement-constraints/SKILL.md) |
+| 22 | ✓ | [`skills/dspy-production-deployment/SKILL.md`](skills/dspy-production-deployment/SKILL.md) |
+| 23 | ✓ | [`skills/dspy-rag-pipeline/SKILL.md`](skills/dspy-rag-pipeline/SKILL.md) |
+| 24 | ✓ | [`skills/dspy-react-agent-builder/SKILL.md`](skills/dspy-react-agent-builder/SKILL.md) |
+| 25 | ✓ | [`skills/dspy-reasoning-modules/SKILL.md`](skills/dspy-reasoning-modules/SKILL.md) |
+| 26 | ✓ | [`skills/dspy-signature-designer/SKILL.md`](skills/dspy-signature-designer/SKILL.md) |
+| 27 | ✓ | [`skills/dspy-simba-optimizer/SKILL.md`](skills/dspy-simba-optimizer/SKILL.md) |
 
 ---
 

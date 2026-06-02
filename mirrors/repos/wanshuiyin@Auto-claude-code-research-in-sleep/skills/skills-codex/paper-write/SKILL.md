@@ -315,7 +315,7 @@ First apply the sentence-level clarity rules from `../shared-references/writing-
 
 ### Step 6: Cross-Review with REVIEWER_MODEL
 
-Send the complete draft to GPT-5.4 xhigh:
+Send the complete draft to GPT-5.5 xhigh:
 
 ```
 spawn_agent:

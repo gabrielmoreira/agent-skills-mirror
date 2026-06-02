@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dotnet/skills` — 26 default patterns, 0 followed patterns, 100 file(s) materialized.
+Mirror of `dotnet/skills` — 26 default patterns, 0 followed patterns, 101 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dotnet/skills` — 26 default patterns, 0 followed patterns, 100 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 100 |
+| Files         | 101 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -144,21 +144,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 83 | ✓ | [`plugins/dotnet-test/skills/mtp-hot-reload/SKILL.md`](plugins/dotnet-test/skills/mtp-hot-reload/SKILL.md) |
 | 84 | ✓ | [`plugins/dotnet-test/skills/platform-detection/SKILL.md`](plugins/dotnet-test/skills/platform-detection/SKILL.md) |
 | 85 | ✓ | [`plugins/dotnet-test/skills/run-tests/SKILL.md`](plugins/dotnet-test/skills/run-tests/SKILL.md) |
-| 86 | ✓ | [`plugins/dotnet-test/skills/test-anti-patterns/SKILL.md`](plugins/dotnet-test/skills/test-anti-patterns/SKILL.md) |
-| 87 | ✓ | [`plugins/dotnet-test/skills/test-gap-analysis/SKILL.md`](plugins/dotnet-test/skills/test-gap-analysis/SKILL.md) |
-| 88 | ✓ | [`plugins/dotnet-test/skills/test-smell-detection/SKILL.md`](plugins/dotnet-test/skills/test-smell-detection/SKILL.md) |
-| 89 | ✓ | [`plugins/dotnet-test/skills/test-tagging/SKILL.md`](plugins/dotnet-test/skills/test-tagging/SKILL.md) |
-| 90 | ✓ | [`plugins/dotnet-test/skills/writing-mstest-tests/SKILL.md`](plugins/dotnet-test/skills/writing-mstest-tests/SKILL.md) |
-| 91 | ✓ | [`plugins/dotnet-upgrade/skills/dotnet-aot-compat/SKILL.md`](plugins/dotnet-upgrade/skills/dotnet-aot-compat/SKILL.md) |
-| 92 | ✓ | [`plugins/dotnet-upgrade/skills/migrate-dotnet10-to-dotnet11/SKILL.md`](plugins/dotnet-upgrade/skills/migrate-dotnet10-to-dotnet11/SKILL.md) |
-| 93 | ✓ | [`plugins/dotnet-upgrade/skills/migrate-dotnet8-to-dotnet9/SKILL.md`](plugins/dotnet-upgrade/skills/migrate-dotnet8-to-dotnet9/SKILL.md) |
-| 94 | ✓ | [`plugins/dotnet-upgrade/skills/migrate-dotnet9-to-dotnet10/SKILL.md`](plugins/dotnet-upgrade/skills/migrate-dotnet9-to-dotnet10/SKILL.md) |
-| 95 | ✓ | [`plugins/dotnet-upgrade/skills/migrate-nullable-references/SKILL.md`](plugins/dotnet-upgrade/skills/migrate-nullable-references/SKILL.md) |
-| 96 | ✓ | [`plugins/dotnet-upgrade/skills/thread-abort-migration/SKILL.md`](plugins/dotnet-upgrade/skills/thread-abort-migration/SKILL.md) |
-| 97 | ✓ | [`plugins/dotnet/skills/csharp-scripts/SKILL.md`](plugins/dotnet/skills/csharp-scripts/SKILL.md) |
-| 98 | ✓ | [`plugins/dotnet/skills/dotnet-pinvoke/SKILL.md`](plugins/dotnet/skills/dotnet-pinvoke/SKILL.md) |
-| 99 | ✓ | [`plugins/dotnet/skills/nuget-trusted-publishing/SKILL.md`](plugins/dotnet/skills/nuget-trusted-publishing/SKILL.md) |
-| 100 | ✓ | [`plugins/dotnet11/skills/system-text-json-net11/SKILL.md`](plugins/dotnet11/skills/system-text-json-net11/SKILL.md) |
+| 86 | ✓ | [`plugins/dotnet-test/skills/test-analysis-extensions/SKILL.md`](plugins/dotnet-test/skills/test-analysis-extensions/SKILL.md) |
+| 87 | ✓ | [`plugins/dotnet-test/skills/test-anti-patterns/SKILL.md`](plugins/dotnet-test/skills/test-anti-patterns/SKILL.md) |
+| 88 | ✓ | [`plugins/dotnet-test/skills/test-gap-analysis/SKILL.md`](plugins/dotnet-test/skills/test-gap-analysis/SKILL.md) |
+| 89 | ✓ | [`plugins/dotnet-test/skills/test-smell-detection/SKILL.md`](plugins/dotnet-test/skills/test-smell-detection/SKILL.md) |
+| 90 | ✓ | [`plugins/dotnet-test/skills/test-tagging/SKILL.md`](plugins/dotnet-test/skills/test-tagging/SKILL.md) |
+| 91 | ✓ | [`plugins/dotnet-test/skills/writing-mstest-tests/SKILL.md`](plugins/dotnet-test/skills/writing-mstest-tests/SKILL.md) |
+| 92 | ✓ | [`plugins/dotnet-upgrade/skills/dotnet-aot-compat/SKILL.md`](plugins/dotnet-upgrade/skills/dotnet-aot-compat/SKILL.md) |
+| 93 | ✓ | [`plugins/dotnet-upgrade/skills/migrate-dotnet10-to-dotnet11/SKILL.md`](plugins/dotnet-upgrade/skills/migrate-dotnet10-to-dotnet11/SKILL.md) |
+| 94 | ✓ | [`plugins/dotnet-upgrade/skills/migrate-dotnet8-to-dotnet9/SKILL.md`](plugins/dotnet-upgrade/skills/migrate-dotnet8-to-dotnet9/SKILL.md) |
+| 95 | ✓ | [`plugins/dotnet-upgrade/skills/migrate-dotnet9-to-dotnet10/SKILL.md`](plugins/dotnet-upgrade/skills/migrate-dotnet9-to-dotnet10/SKILL.md) |
+| 96 | ✓ | [`plugins/dotnet-upgrade/skills/migrate-nullable-references/SKILL.md`](plugins/dotnet-upgrade/skills/migrate-nullable-references/SKILL.md) |
+| 97 | ✓ | [`plugins/dotnet-upgrade/skills/thread-abort-migration/SKILL.md`](plugins/dotnet-upgrade/skills/thread-abort-migration/SKILL.md) |
+| 98 | ✓ | [`plugins/dotnet/skills/csharp-scripts/SKILL.md`](plugins/dotnet/skills/csharp-scripts/SKILL.md) |
+| 99 | ✓ | [`plugins/dotnet/skills/dotnet-pinvoke/SKILL.md`](plugins/dotnet/skills/dotnet-pinvoke/SKILL.md) |
+| 100 | ✓ | [`plugins/dotnet/skills/nuget-trusted-publishing/SKILL.md`](plugins/dotnet/skills/nuget-trusted-publishing/SKILL.md) |
+| 101 | ✓ | [`plugins/dotnet11/skills/system-text-json-net11/SKILL.md`](plugins/dotnet11/skills/system-text-json-net11/SKILL.md) |
 
 ---
 

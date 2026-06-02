@@ -88,6 +88,34 @@ lab experiment list --tag fine-tuning --tag llama  # must have both tags
 lab --format json experiment list --tag llama    # JSON output includes `tags` field
 ```
 
+### `experiment tag add <experiment> <tags...>`
+
+Add one or more tags to an experiment. `<experiment>` is a name or id; `<tags...>` is one or more space-separated tags. Both arguments are required.
+
+```bash
+lab experiment tag add my-experiment fine-tuning           # add one tag
+lab experiment tag add my-experiment fine-tuning llama     # add multiple at once
+```
+
+### `experiment tag remove <experiment> <tags...>`
+
+Remove one or more tags from an experiment. Same argument shape as `tag add`.
+
+```bash
+lab experiment tag remove my-experiment llama
+lab experiment tag remove my-experiment fine-tuning llama
+```
+
+### `experiment tags`
+
+List every distinct tag across all experiments you can read. No arguments.
+
+```bash
+lab experiment tags
+```
+
+> **Note:** `experiment create` does **not** accept tags — there is no `--tag` flag on `create`. Create the experiment first, then apply tags with `experiment tag add`.
+
 ---
 
 ## Task Commands
@@ -369,8 +397,9 @@ The shape of `--config` depends on `--type`:
 | `aws` | `region`. | `{"aws_access_key_id": "...", "aws_secret_access_key": "..."}` — uploaded to `~/.aws/credentials` on the API host. |
 | `gcp` | `region`, optional `zone`. | The **raw service account JSON key file** (point `--credentials-file` directly at the file you'd pass to `gcloud auth activate-service-account --key-file=`). |
 | `azure` | `azure_subscription_id`, `azure_tenant_id`, `azure_client_id`, `azure_location` | `{"azure_client_secret": "..."}` |
+| `nebius` | optional `parent_id` (project id; required unless `subnet_id` set), `subnet_id`, `default_platform`, `default_preset`, `boot_image_family`, `disk_size_gib` | `{"service_account_id": "...", "public_key_id": "...", "private_key": "..."}` — uploaded to the dedicated `/nebius/credentials` endpoint. |
 
-You can put any combination of secret fields in `--credentials-file` — for non-AWS/GCP types they merge on top of `--config` and take precedence on conflict. AWS access keys and GCP service account JSON are routed to their dedicated upload endpoints.
+You can put any combination of secret fields in `--credentials-file` — for non-AWS/GCP/Nebius types they merge on top of `--config` and take precedence on conflict. AWS access keys, GCP service account JSON, and Nebius service-account key pairs are routed to their dedicated upload endpoints.
 
 ```bash
 lab provider add --no-interactive --name local --type local --config '{}'

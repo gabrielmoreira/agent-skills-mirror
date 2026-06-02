@@ -5,7 +5,7 @@ description: |
   触发关键词：公众号、推文、微信文章、微信推文、草稿箱、微信排版、选题、热搜、
   热点抓取、封面图、配图、写公众号、写一篇、主题画廊、排版主题、容器语法。
   也覆盖：markdown 转微信格式、学习用户改稿风格、文章数据复盘、风格设置、
-  主题预览/切换、:::dialogue/:::timeline/:::callout 容器语法。
+  主题预览/切换、:::dialogue/:::timeline/:::callout/:::highlight/:::summary 容器语法。
   不应被通用的"写文章"、blog、邮件、PPT、抖音/短视频、网站 SEO 触发——
   需要有公众号/微信等明确上下文。
 allowed-tools:
@@ -31,7 +31,7 @@ allowed-tools:
 
 **降级原则**：每一步都有降级方案。Step 1 检测到的降级标记（`skip_publish`、`skip_image_gen`）在后续 Step 自动生效，不重复报错。
 
-**进度追踪**：主管道启动时，用 TaskCreate 为 8 个 Step 创建任务。每开始一个 Step 标记 in_progress，完成后标记 completed。用户可随时看到当前进度。
+**进度追踪**：**若 harness 提供 task 工具（如 TaskCreate）**，主管道启动时为 8 个 Step 创建任务，每步 in_progress→completed；**否则**每进入一步发一行 `[N/8] 步骤名` 文本进度。无论哪种，都必须把 8 步走完——编号清单是排序骨架，不依赖特定工具。
 
 **完成协议**：
 - **DONE** — 全流程完成，文章已保存/推送
@@ -41,57 +41,26 @@ allowed-tools:
 
 **路径约定**：本文档中 `{skill_dir}` 指本 SKILL.md 所在的目录（即 WeWrite 的根目录）。
 
+**读取/检查约定**：本文档中 `读取: <路径>` / `检查: <路径>` = **用你环境的文件读取工具真实打开该文件、读完其全部内容，然后再继续本步**。这不是描述性注释——未读取前不得执行依赖该文件的步骤；不同 harness 的文件读取工具名不同，按你环境的对应工具执行。
+
+**Python 解释器约定**：本文档所有 `python3` 命令优先解析为 `{skill_dir}/.venv/bin/python3`（若该文件存在），否则回退系统 `python3`。venv 由 `install.sh` 创建，用于隔离依赖并绕过 macOS Homebrew Python 的 PEP 668 限制。
+
 **Onboard 例外**：Onboard 是交互式的（需要问用户问题），不受"全自动"约束。Onboard 完成后回到全自动管道。
 
-**辅助功能**（按需加载，不在主管道内）：
-- 用户说"重新设置风格" → `读取: {skill_dir}/references/onboard.md`
-- 用户说"学习我的修改" → `读取: {skill_dir}/references/learn-edits.md`。支持两种来源：
-  - **本地修改**（默认）：用户在 `output/` 的 markdown 文件中修改
-  - **微信草稿箱同步**：`python3 {skill_dir}/scripts/learn_edits.py --from-wechat`，自动从草稿箱拉回最新内容，与本地原文做纯文本 diff
-- 用户说"学习排版"/"学排版" → `python3 {skill_dir}/scripts/learn_theme.py <url> --name <name>`，用户需提供一个公众号文章 URL 和主题名称。提取完成后提示用户设置 `style.yaml` 的 `theme` 字段。
-- 用户说"学习这篇文章"/"导入范文" + URL → `python3 {skill_dir}/scripts/fetch_article.py <url> -o /tmp/article.md && python3 {skill_dir}/scripts/extract_exemplar.py /tmp/article.md -s <账号名>`，从公众号文章 URL 提取正文并导入范文库。支持三级降级（requests → Playwright → 手动 HTML）。
-- 用户说"看看文章数据" → `读取: {skill_dir}/references/effect-review.md`
-- 用户说"检查一下"/"自检"/"这篇文章怎么样" → 对最近一篇生成的文章（或用户指定的文章）执行自检，输出生成报告：
-
-  **第一部分：生成档案**（告诉用户这篇文章是怎么来的）
-  1. 读取 `history.yaml` 最近一条记录，提取：
-     - 使用的框架类型 + 写作人格
-     - 激活的维度随机化组合
-     - 素材采集来源（WebSearch 还是降级到 LLM）
-     - 内容增强策略（角度发现/密度强化/细节锚定/真实体感）
-     - 范文风格库是否命中（用了哪几篇 exemplar，还是 fallback 到种子）
-     - playbook 中生效的规则条数
-  2. 如果 history.yaml 无记录或用户指定了外部文章 → 跳过此部分，提示"这篇文章不是 WeWrite 生成的，只做质量检查"
-
-  **第二部分：质量检查**（告诉用户哪里还能改）
-  1. `python3 {skill_dir}/scripts/humanness_score.py {article_path} --json`
-  2. Agent 解读 JSON 中每项得分，翻译为用户可操作的建议，格式：
-     - 每条建议定位到具体段落或句子（"第 3 段连续 4 句长度接近"）
-     - 给出具体改法（"建议把第 3 句拆成两个短句"、"这里可以加一句你自己的感受"）
-     - 按影响度排序，最多 5 条
-  3. 如果所有项得分都不错 → "这篇文章质量不错，建议在编辑锚点处加入你的个人内容就可以发了。"
-
-  **输出格式**：自然语言报告，不输出 JSON 或分数（用户不需要看数字）
-- 用户说"更新"/"更新 WeWrite"/"升级" → 在 `{skill_dir}` 执行 `git pull origin main`，完成后告知版本变化
+**辅助功能 / 非管道命令**（按需加载）：用户发出"选题→发布"主流程之外的命令——重新设置风格 / 学习我的修改 / 学习排版 / 导入范文·学习这篇文章 / 查看范文库 / 看看文章数据 / 主题画廊 / 小绿书 / 更新 / 检查一下·自检——时 → `读取: {skill_dir}/references/commands.md`，按其中「触发词 → 动作」表执行。
 
 ---
 
 ## 主管道（Step 1-8）
 
-主管道启动时，创建以下 8 个任务用于进度追踪：
+主管道是固定的 8 个 Step（下面逐节展开）：
 
 ```
-TaskCreate: "Step 1: 环境 + 配置"
-TaskCreate: "Step 2: 选题"
-TaskCreate: "Step 3: 框架 + 素材"
-TaskCreate: "Step 4: 写作"
-TaskCreate: "Step 5: SEO + 验证"
-TaskCreate: "Step 6: 视觉 AI"
-TaskCreate: "Step 7: 排版 + 发布"
-TaskCreate: "Step 8: 收尾"
+[1/8] 环境 + 配置   [2/8] 选题   [3/8] 框架 + 素材   [4/8] 写作
+[5/8] SEO + 验证   [6/8] 视觉 AI   [7/8] 排版 + 发布   [8/8] 收尾
 ```
 
-每开始一个 Step → TaskUpdate status=in_progress。完成 → TaskUpdate status=completed。
+**进度追踪（按行为声明）**：若有 task 工具，为这 8 步建任务并逐步更新；否则每进入一步发一行 `[N/8] 步骤名`。两种方式都必须跑完 8 步。
 
 ---
 
@@ -100,13 +69,15 @@ TaskCreate: "Step 8: 收尾"
 **1.1 环境检查**（静默通过或引导修复）：
 
 ```bash
-python3 -c "import markdown, bs4, cssutils, requests, yaml, pygments, PIL" 2>&1
+# 优先用 venv 解释器（PEP 668 环境下依赖装在 .venv 里）；后续所有 python3 调用同此规则
+PY="{skill_dir}/.venv/bin/python3"; [ -x "$PY" ] || PY="python3"
+"$PY" -c "import markdown, bs4, cssutils, requests, yaml, pygments, PIL" 2>&1
 ```
 
 | 检查项 | 通过 | 不通过 |
 |--------|------|--------|
 | `config.yaml` 存在 | 静默 | 引导创建，或设 `skip_publish = true` |
-| Python 依赖 | 静默 | 提供 `pip install -r requirements.txt` |
+| Python 依赖 | 静默 | 引导执行 `bash {skill_dir}/install.sh`（自动建 .venv 装依赖，解决 macOS PEP 668 报错）；若环境无此限制也可 `pip install -r requirements.txt` |
 | `wechat.appid` + `secret` | 静默 | 设 `skip_publish = true` |
 | `image.api_key` 或 `image.providers` 至少一项有效 | 静默 | 设 `skip_image_gen = true` |
 | `references/exemplars/index.yaml` | 静默 | 提示："范文库为空。如果你有已发布的文章（markdown），可以说**'导入范文'**建立风格库，写出来的文章会更像你。没有也不影响使用。" |
@@ -223,6 +194,8 @@ python3 {skill_dir}/scripts/seo_keywords.py --json {关键词}
 读取: {skill_dir}/references/exemplars/index.yaml（如果存在）
 ```
 
+（writing-guide.md 是反 AI 写作底线规则，**未读取前不得开始写作**；它在 Step 4-5 期间保持驻留，Step 5.2 校验仍按其编号规则 1.1-3.2 检查，中途不要丢弃重读。）
+
 **4.1 维度随机化**：
 
 从以下维度池随机激活 2-3 个维度，让每篇文章的表达方式不同。如果 history.yaml 有最近 3 篇的 `dimensions` 字段，避免使用相同组合。
@@ -238,9 +211,13 @@ python3 {skill_dir}/scripts/seo_keywords.py --json {关键词}
 **4.2 加载写作人格**：
 
 ```
-读取: {skill_dir}/personas/{style.yaml 的 writing_persona 字段}.yaml
-如果 style.yaml 没有 writing_persona 字段 → 默认 midnight-friend
+读取: {skill_dir}/personas/{选定人格}.yaml
 ```
+
+人格的选定规则（参见 `{skill_dir}/references/persona-selection.md`）：
+
+- **style.yaml 有 `writing_persona`** → 直接加载该人格。用户已固定账号声音，尊重配置（persona-selection 的「用户明确指定」优先级最高）。
+- **没有 `writing_persona`**（或用户本轮明确要求换风格）→ 读取 `references/persona-selection.md`，按 Step 2.3 选定选题的特征匹配 top 2 人格；用 history.yaml 最近 3 篇的写作人格降权（保证风格多样化），向用户展示推荐理由让其二选一；匹配不明确时默认 midnight-friend。
 
 人格文件定义了：语气浓度、数据呈现方式、情绪弧线、段落节奏、不确定性表达模板等。作为写作的硬性约束执行。
 
@@ -298,8 +275,9 @@ Category 映射规则：
 - **写作人格**：按 4.2 加载的人格参数写作（数据呈现方式、个人声音浓度、不确定性表达等）
 - **收尾方式**：persona 的 `closing_tendency` 仅作为倾向参考。根据文章内容和情绪弧线自行判断最自然的收尾方式。如果 history.yaml 中最近 3 篇有 `closing_type` 字段，避免使用相同的收尾类型
 - **写作规范**：writing-guide.md 中的基础规则（禁用词、句长方差、词汇混用等）在初稿阶段生效
+- **分段实时自检**：读取 `{skill_dir}/references/realtime-check.md`，每写完约 500 字（或每个 H2）就地执行 5 项快速检查（句长交替 / 情绪锚定 / 词汇温度 / 素材锚定 / 句法变形），问题当场掐掉不累积到全文。按 500 字/H2 粒度查，不要写一句修一句；也不要为凑检查项刻意制造大量单句段落（会触发过度优化检测）
 - 2-3 个编辑锚点：`<!-- ✏️ 编辑建议：在这里加一句你自己的经历/看法 -->`
-- 可选容器语法：`:::dialogue`、`:::timeline`、`:::callout`、`:::quote`
+- 可选容器语法：`:::dialogue`、`:::timeline`、`:::callout`、`:::quote`、`:::highlight`（琥珀高亮框）、`:::summary`（青色总结框）
 
 保存到 `{skill_dir}/output/{date}-{slug}.md`
 
@@ -383,6 +361,11 @@ python3 {skill_dir}/scripts/humanness_score.py {article_path} --json --tier3 {ag
 
 **6.2 封面生成**：生成封面 3 组创意提示词（按 visual-prompts.md），选最佳 1 组调用 image_gen.py 生成。
 
+```bash
+python3 {skill_dir}/toolkit/image_gen.py --prompt "{选定的封面提示词}" --output {skill_dir}/output/{slug}-cover.png --size cover
+```
+（--size 取值：封面用 cover，内文配图用 article；多 provider 自动 fallback 已内置。）
+
 **6.3 封面验证**：
 - **交互模式**：展示封面，问用户"封面效果如何？"。用户 OK → 继续；不满意 → 调整提示词重新生成。
 - **全自动模式**：agent 自检——提示词中的实体是否在画面描述中可识别？如果提示词过于泛化（仅含"科技感""未来感"等抽象词，无具体实体），换一组提示词重试 1 次。
@@ -390,6 +373,14 @@ python3 {skill_dir}/scripts/humanness_score.py {article_path} --json --tier3 {ag
 **6.3b 风格锚定**：封面确认后，提取视觉锚点（色板 hex、风格关键词、画面调性），后续所有内文配图的提示词必须引用这组锚点，保证全文视觉一致。
 
 **6.4 内文配图**：分析文章结构，为每个需要配图的段落选择图片类型（infographic/scene/flowchart/comparison/framework/timeline），使用对应的结构化提示词模板生成 3-6 张配图提示词（按 visual-prompts.md）。批量调用 image_gen.py，替换 Markdown 占位符。
+
+对每张需要的配图，逐一调用：
+
+```bash
+python3 {skill_dir}/toolkit/image_gen.py --prompt "{该图的结构化提示词}" --output {skill_dir}/output/{slug}-fig{N}.png --size article
+```
+
+生成后把对应 Markdown 图片占位符替换为实际路径。
 
 **降级**：image_gen.py 支持多 provider 自动 fallback（按 config.yaml 中 providers 列表顺序尝试）。全部失败 → 输出提示词 + 备选图库关键词，继续。
 
@@ -409,15 +400,17 @@ python3 {skill_dir}/scripts/humanness_score.py {article_path} --json --tier3 {ag
 
 预检全部通过后才进入排版。
 
+**平台硬限**（converter 不强制，写作/发布时 agent 必须遵守）：
+- 单篇正文 ≤ 20000 字
+- 图片 ≤ 10 张（超出移除末尾多余）
+- 未认证公众号**不能用外部链接** → 转纯文本或放「阅读原文」
+- 表格 ≤ 4 列（手机端更宽会被截断）
+
 **7.2 排版 + 发布**：
 
 **如果 `skip_publish = true`** → 直接走 preview。
 
-```
-读取: {skill_dir}/references/wechat-constraints.md
-```
-
-Converter 自动处理：CJK 加空格、加粗标点外移、列表转 section、外链转脚注、暗黑模式、容器语法。
+Converter 自动处理：CJK 加空格、加粗标点外移、列表转 section、外链转脚注、暗黑模式、容器语法、AIGC 声明（impeccable 主题自动追加）、CSS 随机扰动（反低创检测指纹）。
 
 ```bash
 # 发布
@@ -471,18 +464,12 @@ python3 {skill_dir}/toolkit/cli.py preview {markdown} --theme {theme} --no-open 
 | 用户说 | 动作 |
 |--------|------|
 | 润色/缩写/扩写/换语气 | 编辑文章 |
-| 封面换暖色调 | 重新生图 |
+| 封面换暖色调等 | 重新生图 |
 | 用框架 B 重写 | 回到 Step 4 |
 | 换一个选题 | 回到 Step 2.3 |
-| 看看有什么主题 | `python3 {skill_dir}/toolkit/cli.py gallery` |
 | 换成 XX 主题 | 重新渲染 |
-| 看看文章数据 | `读取: {skill_dir}/references/effect-review.md` |
-| 学习我的修改 | `读取: {skill_dir}/references/learn-edits.md`。支持本地 markdown 修改和微信草稿箱同步（`--from-wechat`） |
-| 学习排版 / 学排版 | `python3 {skill_dir}/scripts/learn_theme.py <url> --name <name>` |
-| 做一个小绿书/图片帖 | `python3 {skill_dir}/toolkit/cli.py image-post img1.jpg img2.jpg -t "标题"` |
-| 检查一下 / 自检 / 这篇文章怎么样 | 生成报告（生成档案 + 质量检查，见辅助功能） |
-| 导入范文 / 建范文库 | `python3 {skill_dir}/scripts/extract_exemplar.py article.md` |
-| 查看范文库 | `python3 {skill_dir}/scripts/extract_exemplar.py --list` |
+
+其余非管道命令（学习我的修改 / 学习排版 / 导入范文 / 查看范文库 / 看看文章数据 / 主题画廊 / 小绿书 / 检查一下）→ `读取: {skill_dir}/references/commands.md`。
 
 ---
 

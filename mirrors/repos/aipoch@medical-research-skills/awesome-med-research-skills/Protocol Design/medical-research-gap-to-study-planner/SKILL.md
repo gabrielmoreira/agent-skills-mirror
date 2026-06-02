@@ -105,7 +105,7 @@ For the recommended plan, retrieve a **focused design-support reference set**. T
 
 Required rules:
 - Search for references that support **gap background, the selected study pattern, key design modules, and closely related precedent studies**
-- Prefer **PubMed** as the biomedical anchor; may additionally use **Google Scholar**, **Web of Science**, **arXiv**, and **PubMed.ai** as retrieval or expansion layers
+- Prefer **PubMed** as the biomedical anchor; may additionally use **Google Scholar**, **Web of Science**, and **arXiv** as retrieval or expansion layers
 - Explicitly distinguish **peer-reviewed literature** from **preprints**
 - **Never fabricate citations**. Do not invent PMID, DOI, title, journal, year, authors, or URLs
 - **Only output formal references that are directly verified** against a trustworthy source

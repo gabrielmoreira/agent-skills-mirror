@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 9 followed patterns, 45 file(s) materialized.
+Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 10 followed patterns, 46 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 9 followed pattern
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 9 |
-| Files         | 45 |
+| Followed pats | 10 |
+| Files         | 46 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,6 +59,7 @@ Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 9 followed pattern
 - `RUNBOOK.md`
 - `README.md`
 - `TESTING.md`
+- `.devcontainer/README.md`
 - `MIGRATION.md`
 
 ## File Index
@@ -103,15 +104,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 34 | ✓ | [`gitnexus/vendor/tree-sitter-dart/README.md`](gitnexus/vendor/tree-sitter-dart/README.md) |
 | 35 | ✓ | [`gitnexus/vendor/tree-sitter-swift/README.md`](gitnexus/vendor/tree-sitter-swift/README.md) |
 | 36 | ✓ | [`llms.txt`](llms.txt) |
-| 37 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 38 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 39 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
-| 40 | → | [`MIGRATION.md`](MIGRATION.md) |
-| 41 | → | [`pr-swarm-review/orchestration.md`](pr-swarm-review/orchestration.md) |
-| 42 | → | [`pr-swarm-review/README.md`](pr-swarm-review/README.md) |
-| 43 | → | [`README.md`](README.md) |
-| 44 | → | [`RUNBOOK.md`](RUNBOOK.md) |
-| 45 | → | [`TESTING.md`](TESTING.md) |
+| 37 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
+| 38 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 39 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 40 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
+| 41 | → | [`MIGRATION.md`](MIGRATION.md) |
+| 42 | → | [`pr-swarm-review/orchestration.md`](pr-swarm-review/orchestration.md) |
+| 43 | → | [`pr-swarm-review/README.md`](pr-swarm-review/README.md) |
+| 44 | → | [`README.md`](README.md) |
+| 45 | → | [`RUNBOOK.md`](RUNBOOK.md) |
+| 46 | → | [`TESTING.md`](TESTING.md) |
 
 ---
 

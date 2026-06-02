@@ -8,7 +8,7 @@
 
 **The OS for AI-first organizations — orchestrate any AI agent with persistent memory, agent-to-agent messaging, and multi-machine support.**
 
-[![Version](https://img.shields.io/badge/version-0.29.16-blue)](https://github.com/23blocks-OS/ai-maestro/releases)
+[![Version](https://img.shields.io/badge/version-0.35.48-blue)](https://github.com/23blocks-OS/ai-maestro/releases)
 [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows%20(WSL2)-lightgrey)](https://github.com/23blocks-OS/ai-maestro)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/23blocks-OS/ai-maestro?style=social)](https://github.com/23blocks-OS/ai-maestro)
@@ -165,20 +165,30 @@ git clone https://github.com/23blocks-OS/lolabot.git
 cd lolabot && ./setup.sh
 ```
 
+**The LolaBot Ecosystem:**
+- **[LolaBot Framework](https://github.com/23blocks-OS/lolabot)** — Open-source agent framework. Build your own Lola.
+- **[lolabots.com](https://lolabots.com)** — The LolaBot Factory. Pre-built agent templates, one-click deploy.
+
 [Learn more about Lola →](https://github.com/23blocks-OS/lolabot)
 
 ---
 
 ## The Agent Ecosystem
 
-Every agent is built from four dimensions:
+Every agent is built from five dimensions:
 
 | | Dimension | What | Where |
 |-|-----------|------|-------|
 | **WHO** | Personality | Domain expertise, workflows, deliverables | [Agent Library](https://github.com/msitarzewski/agency-agents) (150+) |
-| **HOW** | Capabilities | Skills, scripts, CLI tools | [Plugin Builder](https://github.com/23blocks-OS/ai-maestro-plugins) |
+| **HOW** | Capabilities | Skills, scripts, CLI tools, Canvas | [Plugin Builder](https://github.com/23blocks-OS/ai-maestro-plugins) |
 | **TRUST** | Identity | Cryptographic keys, OAuth tokens | [AID](https://agentids.org) |
 | **TALK** | Communication | Agent-to-agent messaging | [AMP](https://agentmessaging.org) |
+| **ACT** | Actions | Tool execution, API calls, workflows | [AAP](https://agentactions.org) |
+
+**Open Protocols** — AI Maestro is built on three open standards:
+- **[AMP](https://agentmessaging.org)** — Agent Messaging Protocol. Email-like communication between agents with cryptographic signatures.
+- **[AID](https://agentids.org)** — Agent Identity. Portable cryptographic identity for agents across platforms.
+- **[AAP](https://agentactions.org)** — Agent Actions Protocol. Standardized tool execution and workflow triggers.
 
 AI Maestro is the stage. Pick personalities, give them skills, and run them from one dashboard.
 
@@ -235,8 +245,11 @@ AI Maestro is the stage. Pick personalities, give them skills, and run them from
 **Troubleshooting:**
 - [Common Issues](./docs/TROUBLESHOOTING.md) · [Security](./SECURITY.md) · [Windows Installation](./docs/WINDOWS-INSTALLATION.md)
 
+**Open Protocols:**
+- [AMP](https://agentmessaging.org) · [AID](https://agentids.org) · [AAP](https://agentactions.org)
+
 **Extending:**
-- [Plugin Development](./plugin/README.md) · [API Reference](./docs/AGENT-COMMUNICATION-ARCHITECTURE.md)
+- [Plugin Development](./plugin/README.md) · [API Reference](./docs/AGENT-COMMUNICATION-ARCHITECTURE.md) · [Ecosystem Guide](./docs/ECOSYSTEM.md)
 
 ---
 
@@ -283,3 +296,32 @@ MIT — see [LICENSE](./LICENSE). Free for any purpose, including commercial.
 [Star us on GitHub](https://github.com/23blocks-OS/ai-maestro)
 
 </div>
+
+## FAQ
+
+**Do I need to use Claude Code?**
+No. AI Maestro works with any terminal-based AI agent — Claude Code, Codex, Aider, Cursor, OpenClaw, Hermes, Droid, or your own scripts. We're agent-agnostic.
+
+**Does it work on Linux / Windows?**
+Yes. macOS and Linux natively. Windows via WSL2 — see the [Windows guide](./docs/WINDOWS-INSTALLATION.md).
+
+**Can agents on different machines talk to each other?**
+Yes. The [Agent Messaging Protocol (AMP)](https://agentmessaging.org) handles cross-machine messaging with cryptographic signatures and push notifications. No central server required.
+
+**What are AID and AAP?**
+[AID](https://agentids.org) (Agent Identity) gives each agent a portable cryptographic identity. [AAP](https://agentactions.org) (Agent Actions Protocol) standardizes how agents execute tools and trigger workflows. Together with [AMP](https://agentmessaging.org), they form the open protocol stack that AI Maestro is built on.
+
+**What is the Canvas skill?**
+Canvas lets agents generate visual artifacts — diagrams, charts, and interactive documents — directly from conversations. It's part of the plugin system and available to any agent.
+
+**How is this different from just using tmux?**
+tmux gives you terminals. AI Maestro gives you an organization — persistent memory, agent-to-agent messaging, team coordination, Kanban boards, multi-machine mesh, cloud deployment, and gateway integrations. tmux is the foundation; AI Maestro is the building.
+
+**What is LolaBot?**
+[LolaBot](https://github.com/23blocks-OS/lolabot) is an open-source agent framework — a batteries-included Chief of Staff that handles email, memory, tasks, and security. The [LolaBot Factory](https://lolabots.com) offers pre-built agent templates for one-click deployment.
+
+**Is there a hosted / cloud version?**
+Not yet. AI Maestro runs on your machines. You own your data, your agents, and your infrastructure.
+
+**How do I add more agents?**
+Create them from the dashboard UI, the CLI (`aimaestro-agent.sh create`), or just start a new tmux session — AI Maestro auto-discovers it.

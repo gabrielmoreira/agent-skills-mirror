@@ -98,17 +98,15 @@ imports:
 **`config/components/repository/repository.yml`** pattern:
 ```yaml
 # Front+Admin — repository services (no PrestaShopBundle dependencies).
-# MANDATORY: _defaults public: true so $this->get('service.id') works in
-# both front-office hooks and admin module class without container lookup failures.
+# Only mark public: true on services accessed via $this->get() from the module class.
+# All other services remain private (omit public:).
 services:
-    _defaults:
-        public: true
-
     mymodule.repository.my_repository:
         class: Vendor\MyModule\Repository\MyRepository
+        public: true                             # ← accessed via $this->get() in module class
 ```
 
-> ⚠️ **`public: true` is mandatory** for any service accessed via `$this->get()` from the module class. PrestaShop compiles services as private by default; a private service will cause `$this->get()` to throw or silently return null via the front-office try/catch guard. Always declare `_defaults: public: true` in every component yml.
+> ⚠️ **`public: true` is required only for services accessed via `$this->get()`** from the module class or a controller. Declare it explicitly on each such service definition — avoid `_defaults: public: true` as a blanket default: it is against Symfony best practices (services should be private unless explicitly needed) and causes a fatal error in PrestaShop's Symfony version when combined with `parent:` services.
 
 Rules:
 - Each component `.yml` starts with a comment header naming the concern and kernel scope

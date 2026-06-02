@@ -391,7 +391,7 @@ Then user can check anytime or wait for summary report.
 
 ## Rationale / Source
 
-Identified via 2026-04-16 post-mortem analysis (Codex GPT-5.4 xhigh) of a 1.5-day
+Identified via 2026-04-16 post-mortem analysis (Codex GPT-5.5 xhigh) of a 1.5-day
 multi-seed paper experiment session:
 
 - Wall-clock sink: stale screens, OOM, wave transitions, manual parser

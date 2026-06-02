@@ -1,0 +1,21 @@
+# codebase-memory-mcp
+
+> An open-source Model Context Protocol (MCP) server that indexes a codebase into a persistent knowledge graph of functions, classes, call chains, HTTP routes, and cross-service links. AI coding agents query the graph instead of reading files one by one, answering structural questions with roughly 120x fewer tokens (~3,400 vs ~412,000 across five structural queries). Parses 158 languages via vendored tree-sitter grammars, with Hybrid LSP semantic type resolution for Python, TypeScript/JavaScript, PHP, C#, Go, and C/C++. Ships as a single static C binary (zero runtime dependencies) for macOS, Linux, and Windows. All processing is local — no embedded LLM, no API key.
+
+## Key facts
+
+- License: MIT, open source.
+- Languages: 158 (157 vendored tree-sitter grammars compiled into the binary).
+- Hybrid LSP type resolution: 6 language families (Python, TypeScript/JavaScript/JSX/TSX, PHP, C#, Go, C/C++) — clean-room re-implementation of tsserver, pyright, gopls, intelephense, and Roslyn algorithms.
+- MCP tools: 14 (search_graph, trace_call_path, query_graph (Cypher), detect_changes, get_architecture, get_code_snippet, manage_adr, and more).
+- Supported agents: 11 (Claude Code, Codex CLI, Gemini CLI, Zed, OpenCode, Antigravity, Aider, KiloCode, VS Code, OpenClaw, Kiro).
+- Performance: Linux kernel (28M LOC, 75K files) full index in 3 minutes → 2.1M nodes, 4.9M edges; Cypher queries in under 1ms.
+- Distribution: single static C binary; also npm, PyPI, Homebrew, Scoop, Winget, Chocolatey, AUR, and `go install`.
+
+## Links
+
+- Homepage: https://deusdata.github.io/codebase-memory-mcp/
+- Source code (GitHub): https://github.com/DeusData/codebase-memory-mcp
+- Latest release: https://github.com/DeusData/codebase-memory-mcp/releases/latest
+- Benchmark report: https://github.com/DeusData/codebase-memory-mcp/blob/main/docs/BENCHMARK.md
+- Research paper: https://arxiv.org/abs/2603.27277

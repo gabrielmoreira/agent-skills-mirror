@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bfly123/claude_codex_bridge` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `bfly123/claude_codex_bridge` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bfly123/claude_codex_bridge` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,8 +72,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`mcp/ccb-delegation/server_runtime_schema.py`](mcp/ccb-delegation/server_runtime_schema.py) |
 | 12 | ✓ | [`mcp/ccb-delegation/server_runtime_tools.py`](mcp/ccb-delegation/server_runtime_tools.py) |
 | 13 | ✓ | [`mcp/ccb-delegation/server.py`](mcp/ccb-delegation/server.py) |
-| 14 | ✓ | [`useful_tools/claude_skills/plan-tree/SKILL.md`](useful_tools/claude_skills/plan-tree/SKILL.md) |
-| 15 | ✓ | [`useful_tools/codex_skills/plan-tree/SKILL.md`](useful_tools/codex_skills/plan-tree/SKILL.md) |
+| 14 | ✓ | [`roles/ccb.archi/skills/claude/archi-advice/SKILL.md`](roles/ccb.archi/skills/claude/archi-advice/SKILL.md) |
+| 15 | ✓ | [`roles/ccb.archi/skills/claude/archi-diff/SKILL.md`](roles/ccb.archi/skills/claude/archi-diff/SKILL.md) |
+| 16 | ✓ | [`roles/ccb.archi/skills/claude/archi-full/SKILL.md`](roles/ccb.archi/skills/claude/archi-full/SKILL.md) |
+| 17 | ✓ | [`roles/ccb.archi/skills/claude/archi-goal/SKILL.md`](roles/ccb.archi/skills/claude/archi-goal/SKILL.md) |
+| 18 | ✓ | [`roles/ccb.archi/skills/claude/archi-tooling/SKILL.md`](roles/ccb.archi/skills/claude/archi-tooling/SKILL.md) |
+| 19 | ✓ | [`roles/ccb.archi/skills/codex/archi-advice/SKILL.md`](roles/ccb.archi/skills/codex/archi-advice/SKILL.md) |
+| 20 | ✓ | [`roles/ccb.archi/skills/codex/archi-diff/SKILL.md`](roles/ccb.archi/skills/codex/archi-diff/SKILL.md) |
+| 21 | ✓ | [`roles/ccb.archi/skills/codex/archi-full/SKILL.md`](roles/ccb.archi/skills/codex/archi-full/SKILL.md) |
+| 22 | ✓ | [`roles/ccb.archi/skills/codex/archi-goal/SKILL.md`](roles/ccb.archi/skills/codex/archi-goal/SKILL.md) |
+| 23 | ✓ | [`roles/ccb.archi/skills/codex/archi-tooling/SKILL.md`](roles/ccb.archi/skills/codex/archi-tooling/SKILL.md) |
+| 24 | ✓ | [`useful_tools/claude_skills/plan-tree/SKILL.md`](useful_tools/claude_skills/plan-tree/SKILL.md) |
+| 25 | ✓ | [`useful_tools/codex_skills/plan-tree/SKILL.md`](useful_tools/codex_skills/plan-tree/SKILL.md) |
 
 ---
 

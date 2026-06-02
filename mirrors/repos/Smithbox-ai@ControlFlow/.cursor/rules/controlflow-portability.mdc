@@ -6,7 +6,7 @@ globs:
 ---
 # ControlFlow Portability
 
-Adaptations like Codex and Claude Code runtimes are governed by `plugins/controlflow-codex/README.md` and `plugins/controlflow-claude-code/README.md`.
+Adaptations like Codex, Claude Code, and Cursor are governed by `plugins/controlflow-codex/README.md`, `plugins/controlflow-claude-code/README.md`, and `plugins/controlflow-cursor/README.md`.
 Asset generation for shared plugins follows `plugins/controlflow-shared-source/README.md`.
 For external tool usage, strictly follow `docs/agent-engineering/TOOL-ROUTING.md` (local-first, verified external docs mapping).
 Do not try to make external IDE environments replicate VS Code-specific features like `runSubagent`.

@@ -316,7 +316,7 @@ If page count differs significantly from outline (>2 slides off), investigate.
 
 ### Phase 5: Codex MCP Review
 
-Send the slide outline + selected LaTeX frames to GPT-5.4 xhigh:
+Send the slide outline + selected LaTeX frames to GPT-5.5 xhigh:
 
 ```text
 spawn_agent:
@@ -524,7 +524,7 @@ The paper and code are available at the QR code on screen. I'm happy to take que
   ├── main.pdf              # Compiled slides (primary output)
   ├── presentation.pptx     # Editable PowerPoint
   ├── SLIDE_OUTLINE.md      # Slide-by-slide outline
-  ├── SLIDES_REVIEW.md      # GPT-5.4 review feedback
+  ├── SLIDES_REVIEW.md      # GPT-5.5 review feedback
   ├── speaker_notes.md      # Per-slide speaker notes
   ├── TALK_SCRIPT.md        # Full word-for-word talk script + Q&A
   ├── SLIDES_STATE.json     # State persistence

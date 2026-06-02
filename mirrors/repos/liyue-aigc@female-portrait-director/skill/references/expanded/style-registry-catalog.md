@@ -2,7 +2,7 @@
 
 # 女性人像提示词导演 Skill｜风格注册表与路由分流规则
 
-版本编号：`FEMALE-PORTRAIT-DIRECTOR-V1.4`
+版本编号：`FEMALE-PORTRAIT-DIRECTOR-V1.4.1`
 文档类型：风格注册表 / 路由分流规则文档
 适用范围：所有女性人像提示词生成、参数组合推荐、提示词优化、图片反推提示词、失败诊断、审查友好改写、Skill 内部 route / overlay / tool 调用
 核心职责：根据用户输入识别任务类型、主风格、辅助气质、扩展包、工具模式，并将请求分流到正确文档；本文件只负责注册与分流，不负责具体风格母版扩写
@@ -54,6 +54,7 @@ skill/skill.md
 skill/core/parameter-lock.md
 skill/core/conflict-resolution.md
 skill/core/fallback-rules.md
+skill/core/reference-image-lock.md
 skill/core/output-format.md
 skill/references/director-expansion.md
 skill/routes/
@@ -117,6 +118,7 @@ P10：输出格式选择
 ```text
 如果用户明确说“优化这条提示词”，先进入工具模式；
 如果用户明确说“图片反推”，先进入图片反推模式；
+如果用户明确说“保留我的五官 / 保持产品不变 / 不要提示词直接出图”，先进入参考图保留直接生成模式；
 如果用户明确说“上传服装生成电商主图”，先进入电商服装试衣 route；
 如果用户明确填写写真风格，则该风格优先；
 如果用户没有写写真风格，再根据关键词推导 route。
@@ -379,6 +381,37 @@ routes/commercial/ecommerce-tryon.md
 不得改变服装颜色、品类、版型、材质和核心装饰；
 不得添加遮挡服装的外套、包袋或复杂动作；
 平台用途只影响构图和氛围，不改变服装主体。
+```
+
+---
+
+## 5.9 参考图保留直接生成
+
+触发表达：
+
+```text
+保留我的五官
+用我的自拍
+保持产品不变
+穿上第二张图里的衣服
+不要提示词，直接出图
+```
+
+调用：
+
+```text
+tools/reference-image-generate.md
+core/reference-image-lock.md
+output-format.md → 参考图直接生成模式
+```
+
+注意：
+
+```text
+人物图片必须属于用户本人或已授权成年人物；
+图片角色不明确时先询问；
+Route 和 Overlay 不得覆盖人物身份或产品核心视觉；
+默认直接返回图片，不输出内部提示词。
 ```
 
 ---
@@ -2302,6 +2335,36 @@ file: skill/tools/parameter-recommend.md
 根据用户指定风格或主题生成多组完整可调用参数；
 保证场景、服装、五官、光线、镜头有差异；
 不得只写摘要。
+```
+
+---
+
+## 10.6 参考图保留直接生成工具
+
+```yaml
+tool_id: reference-image-generate
+tool_name: 参考图保留直接生成
+file: skill/tools/reference-image-generate.md
+```
+
+触发词：
+
+```text
+保留我的五官
+用我的自拍
+保持产品不变
+穿上第二张图里的衣服
+不要提示词直接出图
+```
+
+职责：
+
+```text
+区分人物、产品、风格参考和待编辑图片；
+锁定授权人物五官身份或产品核心视觉；
+编排 Route、Overlay、导演模式和图片生成能力；
+默认直接返回图片；
+保真失败时明确说明限制。
 ```
 
 ---

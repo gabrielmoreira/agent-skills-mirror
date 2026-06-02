@@ -20,6 +20,10 @@
      - 创建 `readme.md`：记录此 Cookbook 的主题、适用模型、受众、以及所基于的最佳实践来源。
      - 创建 `toc.md`：核心驱动大纲（参见步骤 3 的 TOC 规范）。
      - 创建 `contents.md`：空文件，或仅包含基本大标题。该文件后续由编译脚本自动填充，严禁手动在此处写入正文。
+  3. **章节 / Bench 物理初始化的 SourceRef 要求**: 当本工作流的盘点过程中发现 `cookbook-chapters/**/{content,benchmarks,examples}.md` 或 `benches/*/README.md` 尚未存在而需要新建时，**新建文件必须包含 YAML frontmatter `sources:` 字段**（详见 SKILL.md §4 第三方 Cookbook 引用契约）：
+     - 若该章节/bench 借鉴自第三方 cookbook，须按 SourceRef Schema 列出至少一条 source 条目；
+     - 若属于原创推导，须显式写 `sources: []` 并在注释中说明「原创推导」；
+     - **派生章节批量铺设**：若一次需要创建多个 chapter + 配套 bench，参考 `scripts/scaffold_claude_derived_chapters.py` 的 dataclass `Spec` 范式编写一次性脚手架脚本，避免逐文件手写 frontmatter。
 
 ### 步骤 3: 编写 TOC 驱动大纲 (toc.md)
 - **行动**:
@@ -51,3 +55,4 @@
 
 - **TOC 唯一驱动**: 任何 Cookbook 的生成必须通过 `toc.md` 引导。不得在 `contents.md` 中直接进行手动拼装或硬编码。
 - **状态一致性**: 若 Cookbook 包含未完成的评测（`benches/` 带有 `🟥`），整个 Cookbook 目录名和 `toc.md` 中必须包含 `🟥` 标志，直至评测数据完全跑出并合入 `bench-results/`。
+- **SourceRef 完整性**: 新建的任意 chapter `content.md / benchmarks.md / examples.md` 与 bench `README.md`，frontmatter 必须含 `sources:` 字段。详见 SKILL.md §4。
