@@ -7,7 +7,7 @@ Tech Stack: Python 3.12+ | Flask | Alpine.js | LiteLLM | WebSocket (Socket.io)
 Dev Server: python run_ui.py (runs on http://localhost:50001 by default)
 Run Tests: pytest (standard) or pytest tests/test_name.py (file-scoped)
 Documentation: README.md | docs/
-Frontend Deep Dives: [Component System](docs/agents/AGENTS.components.md) | [Modal System](docs/agents/AGENTS.modals.md) | [Plugin Architecture](docs/agents/AGENTS.plugins.md) | [Banners & Discovery](docs/agents/AGENTS.banners.md)
+Frontend & Plugin DOX: [WebUI](webui/AGENTS.md) | [Components](webui/components/AGENTS.md) | [Frontend JS](webui/js/AGENTS.md) | [Plugins](plugins/AGENTS.md)
 
 ---
 
@@ -103,9 +103,9 @@ Key Files:
 - helpers/api.py: Base class for all API endpoints.
 - scripts/openrouter_release_notes_system_prompt.md: Editable system prompt used to generate GitHub release notes during Docker publishing.
 - knowledge/main/about/: Agent self-knowledge files, indexed into the vector DB for runtime recall. Not user-facing docs - written for the agent's internal reference.
-- docs/agents/AGENTS.components.md: Deep dive into the frontend component architecture.
-- docs/agents/AGENTS.modals.md: Guide to the stacked modal system.
-- docs/agents/AGENTS.plugins.md: Comprehensive guide to the full-stack plugin system.
+- webui/components/AGENTS.md: DOX contract for Alpine component architecture.
+- webui/js/AGENTS.md: DOX contract for frontend infrastructure, modal stack, API helpers, and extension loading.
+- plugins/AGENTS.md: DOX contract for bundled and custom plugin architecture; `usr/plugins/` remains ignored user state.
 
 ---
 
@@ -249,5 +249,124 @@ pip install -r requirements2.txt
 
 ---
 
-*Last updated: 2026-03-25*
+*Last updated: 2026-06-01*
 *Maintained by: Agent Zero Core Team*
+
+
+# DOX framework
+
+- DOX is highly performant AGENTS.md hierarchy installed here
+- Agent must follow DOX instructions across any edits
+
+## Core Contract
+
+- AGENTS.md files are binding work contracts for their subtrees
+- Work products, source materials, instructions, records, assets, and durable docs must stay understandable from the nearest applicable AGENTS.md plus every parent AGENTS.md above it
+
+## Read Before Editing
+
+1. Read the root AGENTS.md
+2. Identify every file or folder you expect to touch
+3. Walk from the repository root to each target path
+4. Read every AGENTS.md found along each route
+5. If a parent AGENTS.md lists a child AGENTS.md whose scope contains the path, read that child and continue from there
+6. Use the nearest AGENTS.md as the local contract and parent docs for repo-wide rules
+7. If docs conflict, the closer doc controls local work details, but no child doc may weaken DOX
+
+Do not rely on memory. Re-read the applicable DOX chain in the current session before editing.
+
+## Update After Editing
+
+Every meaningful change requires a DOX pass before the task is done.
+
+Update the closest owning AGENTS.md when a change affects:
+
+- purpose, scope, ownership, or responsibilities
+- durable structure, contracts, workflows, or operating rules
+- required inputs, outputs, permissions, constraints, side effects, or artifacts
+- user preferences about behavior, communication, process, organization, or quality
+- AGENTS.md creation, deletion, move, rename, or index contents
+
+Update parent docs when parent-level structure, ownership, workflow, or child index changes. Update child docs when parent changes alter local rules. Remove stale or contradictory text immediately. Small edits that do not change behavior or contracts may leave docs unchanged, but the DOX pass still must happen.
+
+Do not create or update DOX docs for changes confined to ignored runtime or user-state folders under `usr/` or `tmp/` unless the user explicitly asks for those folders to be documented.
+
+## Hierarchy
+
+- Root AGENTS.md is the DOX rail: project-wide instructions, global preferences, durable workflow rules, and the top-level Child DOX Index
+- Child AGENTS.md files own domain-specific instructions and their own Child DOX Index
+- Each parent explains what its direct children cover and what stays owned by the parent
+- The closer a doc is to the work, the more specific and practical it must be
+
+## Child Doc Shape
+
+- Create a child AGENTS.md when a folder becomes a durable boundary with its own purpose, rules, responsibilities, workflow, materials, or quality standards
+- Work Guidance must reflect the current standards of the project or user instructions; if there are no specific standards or instructions yet, leave it empty
+- Verification must reflect an existing check; if no verification framework exists yet, leave it empty and update it when one exists
+
+Default section order:
+- Purpose
+- Ownership
+- Local Contracts
+- Work Guidance
+- Verification
+- Child DOX Index
+
+## Style
+
+- Keep docs concise, current, and operational
+- Document stable contracts, not diary entries
+- Put broad rules in parent docs and concrete details in child docs
+- Prefer direct bullets with explicit names
+- Do not duplicate rules across many files unless each scope needs a local version
+- Delete stale notes instead of explaining history
+- Trim obvious statements, repeated rules, misplaced detail, and warnings for risks that no longer exist
+
+## Closeout
+
+1. Re-check changed paths against the DOX chain
+2. Update nearest owning docs and any affected parents or children
+3. Refresh every affected Child DOX Index
+4. Remove stale or contradictory text
+5. Run existing verification when relevant
+6. Report any docs intentionally left unchanged and why
+
+## User Preferences
+
+- Do not document changes in `usr/` or `tmp/`; treat both as ignored runtime/user-state folders unless explicitly requested otherwise.
+
+## Child DOX Index
+
+Direct child DOX files:
+
+| Child | Scope |
+| --- | --- |
+| [.github/AGENTS.md](.github/AGENTS.md) | GitHub Actions workflows and release automation scripts. |
+| [agents/AGENTS.md](agents/AGENTS.md) | Bundled agent profiles, profile-local prompts, and profile-local tools. |
+| [api/AGENTS.md](api/AGENTS.md) | HTTP API handlers and WebSocket handler entry points. |
+| [conf/AGENTS.md](conf/AGENTS.md) | Repository-shipped configuration defaults and templates. |
+| [docker/AGENTS.md](docker/AGENTS.md) | Docker build contexts, image definitions, and runtime compose files. |
+| [docs/AGENTS.md](docs/AGENTS.md) | Human-facing documentation, developer guides, screenshots, and agent deep dives. |
+| [extensions/AGENTS.md](extensions/AGENTS.md) | Core lifecycle extension hook implementations for backend and WebUI surfaces. |
+| [helpers/AGENTS.md](helpers/AGENTS.md) | Shared backend framework utilities and cross-cutting runtime services. |
+| [knowledge/AGENTS.md](knowledge/AGENTS.md) | Built-in agent self-knowledge and indexed reference material. |
+| [lib/AGENTS.md](lib/AGENTS.md) | Lightweight browser-side helper scripts outside the main WebUI bundle. |
+| [plugins/AGENTS.md](plugins/AGENTS.md) | Bundled system plugins shipped with the framework. |
+| [prompts/AGENTS.md](prompts/AGENTS.md) | Core prompt templates loaded by agents and framework workflows. |
+| [scripts/AGENTS.md](scripts/AGENTS.md) | Repository maintenance scripts invoked by automation or maintainers. |
+| [skills/AGENTS.md](skills/AGENTS.md) | Bundled Agent Zero skills and their agent-facing instructions. |
+| [tests/AGENTS.md](tests/AGENTS.md) | Pytest regression and contract tests. |
+| [tools/AGENTS.md](tools/AGENTS.md) | Core agent tool implementations. |
+| [webui/AGENTS.md](webui/AGENTS.md) | Flask-served Alpine.js WebUI shell, frontend modules, components, CSS, assets, and vendor libraries. |
+
+Intentionally unindexed local or generated roots:
+
+| Path | Reason |
+| --- | --- |
+| `.conda/`, `.venv/` | Local Python environments. |
+| `.pytest_cache/`, `__pycache__/` | Generated test and bytecode caches. |
+| `.vscode/`, `.windsurf/` | Editor-local configuration and assistant metadata. |
+| `logs/` | Runtime output. |
+| `tmp/` | Ignored runtime caches, uploads, and generated working files; do not document changes here unless explicitly requested. |
+| `usr/` | Ignored local user data, settings, plugins, uploads, chats, and workdirs; do not document changes here unless explicitly requested. |
+| `python/` | Generated or legacy runtime cache mirror; current source lives in root-level `api/`, `helpers/`, `tools/`, and `extensions/`. |

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dyad-sh/dyad` — 26 default patterns, 18 followed patterns, 48 file(s) materialized.
+Mirror of `dyad-sh/dyad` — 26 default patterns, 19 followed patterns, 49 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 18 followed patterns, 48 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 18 |
-| Files         | 48 |
+| Followed pats | 19 |
+| Files         | 49 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,6 +67,7 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 18 followed patterns, 48 file(
 - `rules/supabase-functions.md`
 - `rules/product-principles.md`
 - `rules/jotai-testing.md`
+- `rules/jotai-state.md`
 - `rules/claude-github-workflows.md`
 - `rules/ui-styling.md`
 
@@ -115,15 +116,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | → | [`rules/e2e-testing.md`](rules/e2e-testing.md) |
 | 38 | → | [`rules/electron-ipc.md`](rules/electron-ipc.md) |
 | 39 | → | [`rules/git-workflow.md`](rules/git-workflow.md) |
-| 40 | → | [`rules/jotai-testing.md`](rules/jotai-testing.md) |
-| 41 | → | [`rules/local-agent-tools.md`](rules/local-agent-tools.md) |
-| 42 | → | [`rules/native-modules.md`](rules/native-modules.md) |
-| 43 | → | [`rules/openai-reasoning-models.md`](rules/openai-reasoning-models.md) |
-| 44 | → | [`rules/product-principles.md`](rules/product-principles.md) |
-| 45 | → | [`rules/prompt-guides.md`](rules/prompt-guides.md) |
-| 46 | → | [`rules/supabase-functions.md`](rules/supabase-functions.md) |
-| 47 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
-| 48 | → | [`rules/ui-styling.md`](rules/ui-styling.md) |
+| 40 | → | [`rules/jotai-state.md`](rules/jotai-state.md) |
+| 41 | → | [`rules/jotai-testing.md`](rules/jotai-testing.md) |
+| 42 | → | [`rules/local-agent-tools.md`](rules/local-agent-tools.md) |
+| 43 | → | [`rules/native-modules.md`](rules/native-modules.md) |
+| 44 | → | [`rules/openai-reasoning-models.md`](rules/openai-reasoning-models.md) |
+| 45 | → | [`rules/product-principles.md`](rules/product-principles.md) |
+| 46 | → | [`rules/prompt-guides.md`](rules/prompt-guides.md) |
+| 47 | → | [`rules/supabase-functions.md`](rules/supabase-functions.md) |
+| 48 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
+| 49 | → | [`rules/ui-styling.md`](rules/ui-styling.md) |
 
 ---
 

@@ -7,8 +7,8 @@ description : >-
    when the task involves governance modes, test-signal review, evidence
    levels, or decision-memory boundaries; or when they ask whether work needs
    governance escalation. Do not use it for workflow planning, framework
-   implementation, or this repository's repo-maintenance catalog, path, and
-   skill-integrity checks.
+   implementation, or the host repository's own maintenance catalog, path,
+   and skill-integrity checks.
 context     : fork
 metadata    :
    desktop-portfolio-help-topics       : "overview,evidence,testing,repository,core,glossary,combos,invoke"
@@ -152,7 +152,8 @@ If a trigger is not active, do not read the reference just because it exists.
    Use `testing mode`, apply the test-signal model, and treat likely `TG002`
    findings as blocking only when the suite is asserting interaction without
    externally observable outcome.
-3. `Show me the repo-maintenance checks for README, AGENTS, and skill schema.`
+3. `Show me the host repository's maintenance checks for README, AGENTS,
+   and skill schema.`
    Do not route that through governance. Those checks belong to the
    host repository's own maintenance/check surface.
 

@@ -33,12 +33,12 @@ Scan the codebase FIRST (grep for secrets, auth patterns, input handling), then 
 find . -name "*.env*" -o -name "*secret*" -o -name "*credential*" -o -name "*.pem" -o -name "*.key" 2>/dev/null
 
 # Check for hardcoded secrets
-grep -rn "password\s*=" --include="*.{js,ts,py,java,go,rb}" .
-grep -rn "api_key\s*=" --include="*.{js,ts,py,java,go,rb}" .
-grep -rn "secret\s*=" --include="*.{js,ts,py,java,go,rb}" .
+grep -rn "password\s*=" --include=*.js --include=*.ts --include=*.py --include=*.java --include=*.go --include=*.rb .
+grep -rn "api_key\s*=" --include=*.js --include=*.ts --include=*.py --include=*.java --include=*.go --include=*.rb .
+grep -rn "secret\s*=" --include=*.js --include=*.ts --include=*.py --include=*.java --include=*.go --include=*.rb .
 
 # Find authentication/authorization code
-grep -rn "auth\|login\|session\|token\|jwt" --include="*.{js,ts,py}" .
+grep -rn "auth\|login\|session\|token\|jwt" --include=*.js --include=*.ts --include=*.py .
 ```
 
 ### Phase 2: OWASP Top 10 Check

@@ -1,131 +1,131 @@
 ---
 name: gsea
-description: 对按统计量排序的基因列表执行 GSEA 分析，输出富集结果表、运行分数表和绘图结果。
+description: Run GSEA on a ranked gene list and produce the enrichment table, running-score table, and enrichment plots.
 license: MIT
 author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
-## 何时读取外部文件
+## When to read external files
 
-| 情况 | 读取文件 | 目的 |
+| Situation | Read | Purpose |
 |---|---|---|
-| 需要了解算法细节 | `references/algorithm.md` | 统计方法与公式 |
-| 需要执行分析 | `scripts/main.R` | 获取完整命令 |
-| 遇到报错 | `references/troubleshooting.md` | 查找解决方案 |
-| 需要 CLI 示例 | `references/cli-guide.md` | 参数用法示例 |
+| Need algorithm details | `references/algorithm.md` | Statistical method and formulas |
+| Need to run an analysis | `scripts/main.R` | Full command reference |
+| Hit an error | `references/troubleshooting.md` | Look up error codes and fixes |
+| Need CLI examples | `references/cli-guide.md` | Worked argument examples |
 
-## 适用场景
+## Scope
 
-适用于：
-- 对按统计量排序的基因列表执行 GSEA 分析
-- 基于已有 `enrichGSEA.csv` 和 `gsea_running_scores.csv` 生成富集曲线图
-- 使用 `tests/data/sample_deg_results.csv` 做最小可运行验证
+Use this skill for:
+- Running GSEA on a gene list ranked by a statistic
+- Generating enrichment curve plots from existing `enrichGSEA.csv` and `gsea_running_scores.csv`
+- Smoke-testing the pipeline with `tests/data/sample_deg_results.csv`
 
-不适用于：
-- 原始表达矩阵的差异分析
-- 单样本 ssGSEA
-- 网络分析或多组学整合分析
+Do not use it for:
+- Differential expression on raw expression matrices
+- Single-sample ssGSEA
+- Network analysis or multi-omics integration
 
-## 使用方法
+## Usage
 
-分析模式：
+Analysis mode:
 `Rscript scripts/main.R --input tests/data/sample_deg_results.csv --outdir ./GSEA_analysis --type KEGG --species human --seed 42 --timeout 300`
 
-绘图模式：
+Plot mode:
 `Rscript scripts/main.R --running_file ./GSEA_analysis/Table/gsea_running_scores.csv --enrich_file ./GSEA_analysis/Table/enrichGSEA.csv --plot_output ./GSEA_analysis/plot/gsea_plot.pdf --top_n 5 --plot_format pdf --seed 42 --timeout 300`
 
-说明：详见 `references/cli-guide.md`。
+See `references/cli-guide.md` for more.
 
-模式选择说明：
-- 仅提供 `--input` 时进入分析模式
-- 同时提供 `--running_file` 和 `--enrich_file` 时进入绘图模式
-- 若同时提供分析参数与绘图参数，则绘图模式优先，分析模式会被跳过，并输出警告信息
+Mode selection:
+- Passing only `--input` runs analysis mode
+- Passing both `--running_file` and `--enrich_file` runs plot mode
+- If both sets of arguments are provided, plot mode takes precedence; analysis mode is skipped and a warning is logged
 
-## 参数说明
+## Arguments
 
-### 分析模式参数
+### Analysis-mode arguments
 
-| 短参数 | 长参数 | 类型 | 默认值 | 是否必填 | 说明 |
+| Short | Long | Type | Default | Required | Description |
 |---|---|---|---|---|---|
-| `-i` | `--input` | character | `NULL` | 是 | 输入 CSV 文件 |
-| `-o` | `--outdir` | character | `GSEA_analysis` | 否 | 输出目录 |
-| `-g` | `--gene_col` | character | `name` | 否 | 基因列名 |
-| `-f` | `--fc_col` | character | `logFC` | 否 | 排序统计量列名 |
-| `-t` | `--type` | character | `KEGG` | 否 | 基因集类型：`KEGG`、`HALLMARKS`、`GO_BP`、`GO_MF`、`GO_CC`；预载 RDS 中会自动将 `HALLMARKS` 映射到资产键 `Hallmarks` |
-| `-s` | `--species` | character | `human` | 否 | 物种：`human`、`mouse`、`rat` |
-| `-p` | `--pvalue_cutoff` | numeric | `0.05` | 否 | 显著性阈值 |
-| `-m` | `--method` | character | `fgsea` | 否 | GSEA 方法：`fgsea` 或 `DOSE` |
-| `-c` | `--chunk_size` | numeric | `1000` | 否 | 大基因集转换时的分块大小 |
-| `-r` | `--rds_path` | character | `NULL` | 否 | 预存基因集 RDS 路径 |
-| `-v` | `--verbose` | logical | `FALSE` | 否 | 输出详细日志 |
-|  | `--seed` | integer | `42` | 否 | 随机种子 |
-|  | `--timeout` | integer | `300` | 否 | 超时秒数，`<=0` 表示不限制 |
-| `-h` | `--help` | logical | `FALSE` | 否 | 显示帮助 |
+| `-i` | `--input` | character | `NULL` | yes | Input CSV file |
+| `-o` | `--outdir` | character | `GSEA_analysis` | no | Output directory |
+| `-g` | `--gene_col` | character | `name` | no | Gene column name |
+| `-f` | `--fc_col` | character | `logFC` | no | Ranking-statistic column name |
+| `-t` | `--type` | character | `KEGG` | no | Gene-set type: `KEGG`, `HALLMARKS`, `GO_BP`, `GO_MF`, `GO_CC`. With a preloaded RDS, `HALLMARKS` is automatically mapped to the asset key `Hallmarks` |
+| `-s` | `--species` | character | `human` | no | Species: `human`, `mouse`, `rat` |
+| `-p` | `--pvalue_cutoff` | numeric | `0.05` | no | Significance threshold |
+| `-m` | `--method` | character | `fgsea` | no | GSEA backend: `fgsea` or `DOSE` |
+| `-c` | `--chunk_size` | numeric | `1000` | no | Chunk size for large gene-set conversion |
+| `-r` | `--rds_path` | character | `NULL` | no | Path to a pre-stored gene-set RDS |
+| `-v` | `--verbose` | logical | `FALSE` | no | Verbose logging |
+|  | `--seed` | integer | `42` | no | Random seed |
+|  | `--timeout` | integer | `300` | no | Timeout in seconds; `<=0` disables it |
+| `-h` | `--help` | logical | `FALSE` | no | Show help |
 
-### 绘图模式参数
+### Plot-mode arguments
 
-| 短参数 | 长参数 | 类型 | 默认值 | 是否必填 | 说明 |
+| Short | Long | Type | Default | Required | Description |
 |---|---|---|---|---|---|
-|  | `--running_file` | character | `NULL` | 是 | `gsea_running_scores.csv` 路径 |
-|  | `--enrich_file` | character | `NULL` | 是 | `enrichGSEA.csv` 路径 |
-|  | `--plot_output` | character | `gsea_plot.pdf` | 否 | 输出图文件路径 |
-|  | `--plot_width` | numeric | `8` | 否 | 图宽 |
-|  | `--plot_height` | numeric | `6` | 否 | 图高 |
-|  | `--plot_format` | character | `pdf` | 否 | 输出格式：`pdf` 或 `png` |
-|  | `--top_n` | numeric | `1` | 否 | 未指定 `geneSetID` 时绘制前 N 条通路 |
-|  | `--rank_by` | character | `p.adjust` | 否 | 通路排序列 |
-|  | `--geneSetID` | character | `""` | 否 | 逗号分隔的通路 ID |
-|  | `--plot_title` | character | `""` | 否 | 图标题 |
-|  | `--colors` | character | `#4DBBD5,#E64B35,#00A087,#F39B7F,#3C5488,#8491B4` | 否 | 颜色列表 |
-|  | `--base_size` | numeric | `11` | 否 | 基础字号 |
-|  | `--subplots` | character | `1,2,3` | 否 | 显示子图编号 |
-|  | `--rel_heights` | character | `1.5,0.8,1` | 否 | 子图高度比例 |
-|  | `--NES_table` | logical | `TRUE` | 否 | 显示 NES 注释 |
-|  | `--no_NES_table` | logical | `FALSE` | 否 | 关闭 NES 注释 |
-|  | `--NES_label_size` | numeric | `4` | 否 | NES 注释字号 |
-|  | `--NES_label_x` | numeric | `0.75` | 否 | NES 注释横向位置 |
-|  | `--NES_label_y` | numeric | `0.75` | 否 | NES 注释纵向位置 |
-|  | `--NES_label_color` | character | `black` | 否 | NES 注释颜色 |
-|  | `--NES_label_hjust` | numeric | `0` | 否 | NES 注释水平对齐 |
-|  | `--NES_label_vjust` | numeric | `1` | 否 | NES 注释垂直对齐 |
-|  | `--line_width` | numeric | `1` | 否 | ES 线宽 |
-|  | `--dot_size` | numeric | `1.2` | 否 | ES 点大小 |
-|  | `--legend_position` | character | `auto` | 否 | 图例位置 |
-|  | `--legend_x` | numeric | `0.02` | 否 | 内嵌图例横坐标 |
-|  | `--legend_y` | numeric | `0.02` | 否 | 内嵌图例纵坐标 |
-|  | `--legend_just_x` | numeric | `0` | 否 | 图例横向对齐 |
-|  | `--legend_just_y` | numeric | `0` | 否 | 图例纵向对齐 |
-|  | `--legend_text_size` | numeric | `9` | 否 | 图例文字大小 |
-|  | `--legend_key_size` | numeric | `0.6` | 否 | 图例键大小 |
-|  | `--legend_bg_alpha` | numeric | `0` | 否 | 图例背景透明度 |
-|  | `--grid_major_color` | character | `grey92` | 否 | 主网格颜色 |
-|  | `--grid_minor_color` | character | `grey92` | 否 | 次网格颜色 |
-|  | `--ylab_es` | character | `Enrichment Score` | 否 | ES 面板纵轴标题 |
-|  | `--ylab_rank` | character | `Ranked List Metric` | 否 | 排名面板纵轴标题 |
-|  | `--xlab_rank` | character | `Rank in Ordered Dataset` | 否 | 排名面板横轴标题 |
-|  | `--hit_height` | numeric | `1` | 否 | 命中条高度 |
-|  | `--hit_gap` | numeric | `0` | 否 | 命中条间距 |
-|  | `--hit_linewidth` | numeric | `0.5` | 否 | 命中条线宽 |
-|  | `--rank_bar_alpha` | numeric | `0.9` | 否 | 排名条透明度 |
-|  | `--rank_bar_height_ratio` | numeric | `0.3` | 否 | 排名条高度比例 |
-|  | `--rank_metric_segment_color` | character | `grey` | 否 | 排名线颜色 |
-|  | `--rank_metric_segment_width` | numeric | `0.3` | 否 | 排名线宽 |
-|  | `--rank_metric_segment_alpha` | numeric | `1` | 否 | 排名线透明度 |
-|  | `--pvalue_table` | logical | `FALSE` | 否 | 显示 P 值表 |
-|  | `--ES_geom` | character | `line` | 否 | ES 绘制方式：`line` 或 `dot` |
-|  | `--verbose` | logical | `FALSE` | 否 | 输出详细日志 |
-|  | `--seed` | integer | `42` | 否 | 随机种子 |
-|  | `--timeout` | integer | `300` | 否 | 超时秒数，`<=0` 表示不限制 |
-| `-h` | `--help` | logical | `FALSE` | 否 | 显示帮助 |
+|  | `--running_file` | character | `NULL` | yes | Path to `gsea_running_scores.csv` |
+|  | `--enrich_file` | character | `NULL` | yes | Path to `enrichGSEA.csv` |
+|  | `--plot_output` | character | `gsea_plot.pdf` | no | Output plot path |
+|  | `--plot_width` | numeric | `8` | no | Plot width |
+|  | `--plot_height` | numeric | `6` | no | Plot height |
+|  | `--plot_format` | character | `pdf` | no | Output format: `pdf` or `png` |
+|  | `--top_n` | numeric | `1` | no | Number of top pathways to plot when `geneSetID` is not given |
+|  | `--rank_by` | character | `p.adjust` | no | Column used to rank pathways |
+|  | `--geneSetID` | character | `""` | no | Comma-separated pathway IDs |
+|  | `--plot_title` | character | `""` | no | Plot title |
+|  | `--colors` | character | `#4DBBD5,#E64B35,#00A087,#F39B7F,#3C5488,#8491B4` | no | Color list |
+|  | `--base_size` | numeric | `11` | no | Base font size |
+|  | `--subplots` | character | `1,2,3` | no | Sub-panel indices to display |
+|  | `--rel_heights` | character | `1.5,0.8,1` | no | Relative panel heights |
+|  | `--NES_table` | logical | `TRUE` | no | Show NES annotation |
+|  | `--no_NES_table` | logical | `FALSE` | no | Disable NES annotation |
+|  | `--NES_label_size` | numeric | `4` | no | NES label font size |
+|  | `--NES_label_x` | numeric | `0.75` | no | NES label x position |
+|  | `--NES_label_y` | numeric | `0.75` | no | NES label y position |
+|  | `--NES_label_color` | character | `black` | no | NES label color |
+|  | `--NES_label_hjust` | numeric | `0` | no | NES label horizontal justification |
+|  | `--NES_label_vjust` | numeric | `1` | no | NES label vertical justification |
+|  | `--line_width` | numeric | `1` | no | ES line width |
+|  | `--dot_size` | numeric | `1.2` | no | ES dot size |
+|  | `--legend_position` | character | `auto` | no | Legend position |
+|  | `--legend_x` | numeric | `0.02` | no | Inset legend x coordinate |
+|  | `--legend_y` | numeric | `0.02` | no | Inset legend y coordinate |
+|  | `--legend_just_x` | numeric | `0` | no | Legend horizontal justification |
+|  | `--legend_just_y` | numeric | `0` | no | Legend vertical justification |
+|  | `--legend_text_size` | numeric | `9` | no | Legend text size |
+|  | `--legend_key_size` | numeric | `0.6` | no | Legend key size |
+|  | `--legend_bg_alpha` | numeric | `0` | no | Legend background alpha |
+|  | `--grid_major_color` | character | `grey92` | no | Major grid color |
+|  | `--grid_minor_color` | character | `grey92` | no | Minor grid color |
+|  | `--ylab_es` | character | `Enrichment Score` | no | ES panel y-axis title |
+|  | `--ylab_rank` | character | `Ranked List Metric` | no | Rank panel y-axis title |
+|  | `--xlab_rank` | character | `Rank in Ordered Dataset` | no | Rank panel x-axis title |
+|  | `--hit_height` | numeric | `1` | no | Hit-bar height |
+|  | `--hit_gap` | numeric | `0` | no | Hit-bar gap |
+|  | `--hit_linewidth` | numeric | `0.5` | no | Hit-bar line width |
+|  | `--rank_bar_alpha` | numeric | `0.9` | no | Rank-bar alpha |
+|  | `--rank_bar_height_ratio` | numeric | `0.3` | no | Rank-bar height ratio |
+|  | `--rank_metric_segment_color` | character | `grey` | no | Rank-line color |
+|  | `--rank_metric_segment_width` | numeric | `0.3` | no | Rank-line width |
+|  | `--rank_metric_segment_alpha` | numeric | `1` | no | Rank-line alpha |
+|  | `--pvalue_table` | logical | `FALSE` | no | Show p-value table |
+|  | `--ES_geom` | character | `line` | no | ES geometry: `line` or `dot` |
+|  | `--verbose` | logical | `FALSE` | no | Verbose logging |
+|  | `--seed` | integer | `42` | no | Random seed |
+|  | `--timeout` | integer | `300` | no | Timeout in seconds; `<=0` disables it |
+| `-h` | `--help` | logical | `FALSE` | no | Show help |
 
-## 输入格式
+## Input format
 
-分析模式输入为 CSV 文件，至少包含两列：
-- 基因列，默认列名为 `name`
-- 排序统计量列，默认列名为 `logFC`
+Analysis-mode input is a CSV with at least:
+- a gene column (default name `name`)
+- a ranking-statistic column (default name `logFC`)
 
-示例：
+Example:
 ```csv
 name,logFC,pvalue,padj
 TP53,2.5,0.001,0.01
@@ -133,50 +133,50 @@ BRCA1,1.8,0.005,0.02
 EGFR,-1.2,0.01,0.05
 ```
 
-取值约束：
-- `type` 支持 `KEGG`、`HALLMARKS`、`GO_BP`、`GO_MF`、`GO_CC`
-- 当使用预载 RDS 时，`HALLMARKS` 会自动匹配资产中的 `Hallmarks` 键名
-- `species` 支持 `human`、`mouse`、`rat`
+Value constraints:
+- `type` accepts `KEGG`, `HALLMARKS`, `GO_BP`, `GO_MF`, `GO_CC`
+- When using a preloaded RDS, `HALLMARKS` is automatically matched to the asset key `Hallmarks`
+- `species` accepts `human`, `mouse`, `rat`
 
-## 输出文件
+## Output files
 
-| 文件名 | 格式 | 内容说明 |
+| File | Format | Description |
 |---|---|---|
-| `data/GSEA_list.rda` | RDA | 完整 GSEA 结果对象 |
-| `Table/enrichGSEA.csv` | CSV | 富集结果表 |
-| `Table/gsea_running_scores.csv` | CSV | 运行分数表；若无富集结果则输出空表头文件 |
-| `plot/` | directory | 绘图输出目录 |
-| `session_info.txt` | TXT | R 版本与包版本信息 |
+| `data/GSEA_list.rda` | RDA | Full GSEA result object |
+| `Table/enrichGSEA.csv` | CSV | Enrichment result table |
+| `Table/gsea_running_scores.csv` | CSV | Running-score table; if no enrichment passes, a header-only file is still written |
+| `plot/` | directory | Plot output directory |
+| `session_info.txt` | TXT | R version and package versions |
 
-`enrichGSEA.csv` 主要包含：`ID`、`Description`、`NES`、`pvalue`、`p.adjust`、`core_enrichment`。
+`enrichGSEA.csv` mainly contains: `ID`, `Description`, `NES`, `pvalue`, `p.adjust`, `core_enrichment`.
 
-## 错误处理
+## Error handling
 
-常见错误码：
-- `SKILL_FILE_NOT_FOUND`：输入文件不存在
-- `SKILL_MISSING_COLUMNS`：缺少必要列
-- `SKILL_EMPTY_DATA`：输入数据为空或过滤后为空
-- `SKILL_INVALID_PARAMETER`：参数值不合法
-- `SKILL_PACKAGE_NOT_FOUND`：依赖包未安装
-- `SKILL_ANALYSIS_FAILED`：分析重试后仍失败
+Common error codes:
+- `SKILL_FILE_NOT_FOUND`: input file does not exist
+- `SKILL_MISSING_COLUMNS`: required columns are missing
+- `SKILL_EMPTY_DATA`: input is empty, or empty after filtering
+- `SKILL_INVALID_PARAMETER`: an argument has an invalid value
+- `SKILL_PACKAGE_NOT_FOUND`: a required package is not installed
+- `SKILL_ANALYSIS_FAILED`: GSEA still failed after retries
 
-排查文档：`references/troubleshooting.md`
+Triage doc: `references/troubleshooting.md`
 
-退出状态码：
-- `0`：运行成功
-- `1`：运行失败
+Exit codes:
+- `0`: success
+- `1`: failure
 
-## 测试方法
+## Testing
 
-最小测试数据集：`tests/data/sample_deg_results.csv`
+Minimal test dataset: `tests/data/sample_deg_results.csv`
 
-最小运行命令：
+Minimal command:
 `Rscript scripts/main.R --input tests/data/sample_deg_results.csv --outdir ./test_output --type KEGG --species human --seed 42 --timeout 300 --verbose`
 
-预期输出：
+Expected output:
 - `./test_output/data/GSEA_list.rda`
 - `./test_output/Table/enrichGSEA.csv`
 - `./test_output/Table/gsea_running_scores.csv`
 - `./test_output/session_info.txt`
-- 若无显著富集结果，`gsea_running_scores.csv` 仍会生成，但只包含表头
-- 退出状态码为 `0`
+- If no significant enrichment is found, `gsea_running_scores.csv` is still written but contains only the header
+- Exit code `0`

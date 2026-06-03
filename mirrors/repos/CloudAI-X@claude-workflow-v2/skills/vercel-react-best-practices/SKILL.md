@@ -108,7 +108,7 @@ Reference these guidelines when:
 
 ## Full Compiled Document
 
-For the complete guide with all rules expanded and detailed code examples, see: `AGENTS.md`
+For the complete guide with all rules expanded and detailed code examples, see [AGENTS.md](AGENTS.md).
 
 Each rule contains:
 

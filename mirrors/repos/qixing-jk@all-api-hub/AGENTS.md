@@ -187,14 +187,16 @@ Treat telemetry and settings discoverability as related release-readiness checks
 - Add brief inline comments or short code-block comments when non-obvious intent, invariants, edge cases, or protocol/browser constraints need clarification; do not narrate obvious code.
 - For user-visible success/error feedback, do not rely solely on backend `message` fields; provide a local fallback when responses may be empty, unstable, or not suitable for direct display.
 
-### Validation Floor
+### Validation Strategy
 
-- The minimum validation bar is the repo's `pre-commit`-equivalent validation flow when available; if no such flow exists, fall back to `pnpm lint` plus the repo's affected-file or related-test validation command for the touched files.
-- In this repo, the default staged validation entrypoint is `pnpm run validate:staged`; do not treat bare `pnpm lint-staged` as the full pre-commit flow because it skips the separate staged i18n guard.
-- When using `pnpm run validate:staged` to validate current edits, stage only the task-scoped files you intentionally modified first. If staging cannot be done safely because the index contains unrelated or ambiguous user work, do not report a no-staged-files skip as a passing validation; run an appropriate unstaged-safe alternative and explain the limitation.
-- Do not treat standalone Prettier checks as correctness validation. For small scoped commits, run the focused behavioral/type validation needed for the change, stage only task-scoped files, and rely on the pre-commit `validate:staged` hook to apply staged Prettier/ESLint cleanup. Run standalone Prettier only when formatting itself is the task, no commit will be created, a hook failed because of formatting, or a large task-scoped diff needs pre-formatting to reduce review noise; in those cases prefer `prettier --write` over `prettier --check`.
-- Do not treat `pnpm knip` as the default minimum for every task. Add it when changes can affect the module/dependency graph, such as `package.json` or lockfile edits, `knip.ts` edits, file moves/renames/deletions, new or removed exports/barrels, or dynamic wiring changes that may leave dead files, exports, or dependencies behind.
-- When the repo defines a `pre-commit` validation flow, prefer running the equivalent `pre-commit` checks directly without creating a commit instead of assembling a hand-picked validation command set.
+Use validation as progressive gates:
+
+- **Focused checks**: Start with the repo-defined affected-file or `related` validation flow, then broaden only if the change is cross-cutting. For TS/TSX edits, prefer `vitest related --run` style checks over a manually assembled test file list.
+- **Commit gate**: Before committing or handing completed local work to the user, use the repo's pre-commit-equivalent flow when available. In this repo, that is `pnpm run validate:staged`; stage only task-scoped files, remember it validates only those files, and do not treat bare `pnpm lint-staged` or a no-staged-files result as equivalent.
+- **Formatting**: Do not treat standalone Prettier checks as correctness validation. Use Prettier directly only when formatting is the task, no commit will be created, a hook failed because of formatting, or pre-formatting is needed to reduce review noise; prefer `prettier --write` in those cases.
+- **Push gate**: Before pushing, opening a PR, updating a PR branch, or otherwise handing work to a remote flow, run `pnpm run validate:push` when task-scoped changes can affect TypeScript, exports, dependencies, generated type wiring, shared runtime contracts, or repo structure. This is the preferred pre-push-equivalent gate for changes that need both `compile` and `knip`; do not run `validate:push` or `pnpm knip` by default for every small change.
+- **Push failures**: If `pnpm run validate:push` or the actual pre-push hook fails, do not report the remote handoff as complete. Classify the failure as code, tooling, environment, auth, network, or permission related; fix code and tooling failures before retrying the push, and report environmental blockers with the exact remaining impact.
+- **Sub-agent handoffs**: Sub-agents may hand off partial implementation, investigation findings, or review notes without running `validate:staged`, pre-commit hooks, or `validate:push` unless their assigned scope explicitly requires it. They should report what they completed, files touched, validation run if any, known gaps, and risks; the coordinator is responsible for final task-scoped validation before committing, handing work to the user, pushing, or updating a PR branch.
 
 ## Testing Guidelines
 
@@ -212,14 +214,6 @@ Treat telemetry and settings discoverability as related release-readiness checks
 - Do not stop at `happy path` coverage. For added or changed executable logic, identify and cover the most relevant `edge cases`, especially empty or partial inputs, invalid values, boundary conditions, backend error or empty responses, browser API unavailability, permission or environment limits, site-type compatibility branches, cache or persistence failures, and repeated or concurrent triggers.
 - If an important `edge case` is not practical to automate in this change, call out the uncovered scenario, why it remains uncovered, and the residual risk before handoff.
 
-### Validation Strategy
-
-- Start with the repo-defined `pre-commit`, affected-file, or `related` validation flow for the touched files, then broaden only if the change is cross-cutting.
-- For TS/TSX edits in this repo, treat `pnpm run validate:staged` / the Husky `pre-commit` path as the default affected validation flow and prefer `vitest related --run` style checks over a manually assembled test file list.
-- A successful `validate:staged` run only validates the files that were staged for that run. If the command reports that no staged files were found, treat that as no coverage for the current diff rather than a successful validation of the edits.
-- When adding or reshaping shared exports, provider/context modules, public test utilities, runtime constant sets, or other structural wiring, prefer `pnpm run validate:push` before handoff instead of manually assembling `compile` + `knip`.
-- Do not default to `pnpm run validate:push` for every small change; use it when the change is structural, cross-cutting, or likely to affect type/dependency/export analysis beyond the touched file.
-
 ### E2E and Broad Validation
 
 - Do not add Playwright E2E coverage mechanically for every feature commit. Prefer Vitest or Testing Library for pure functions, protocol adapters, formatting/parsing logic, copy-only changes, style-only changes, and isolated component state.
@@ -232,8 +226,6 @@ Treat telemetry and settings discoverability as related release-readiness checks
 - For larger PRs that add a user-visible workflow, prefer one stable happy-path E2E scenario over many narrow UI assertions. If an existing E2E already boots the relevant entrypoint and exercises a representative path, extend Vitest coverage for additional states instead of adding another browser scenario.
 - Final handoffs for user-facing behavior changes should include the E2E decision and the validation actually run.
 - Temporary E2E tests created only for self-verification should be deleted before handoff by default. Keep them only when they are deterministic, reusable, and provide clear long-term regression value; if retention is genuinely ambiguous, explain the tradeoff and ask before keeping them.
-- If the change can invalidate unused-file, export, or dependency analysis, broaden validation to include `pnpm knip`; use `pnpm run validate:push` when you want the full local pre-push-equivalent gate instead of assembling `compile` + `knip` manually.
-
 ### Shared Surface Changes
 
 - If a change modifies shared component or hook props, validation must cover direct render/use sites and standalone harness tests that instantiate the changed API surface.

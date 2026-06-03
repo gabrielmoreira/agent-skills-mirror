@@ -43,6 +43,47 @@
 4. **VERIFY**: Run ci checks and relevant smoke tests. Confirm the fix via logs or output.
 5. **SPECIFICITY**: Do exactly as much as asked; nothing more, nothing less.
 6. **PROPAGATION**: Changes impact multiple files; propagate updates correctly.
+7. **VERSION**: If the commit touches production files on `main`, bump semver in the same commit (see [Versioning](#versioning-main)).
+
+## VERSIONING (MAIN)
+
+Every commit on `main` that changes a **production file** must include a semver bump in **`pyproject.toml`** in the **same commit**. Do not merge or push prod changes without updating the version.
+
+### Production files
+
+These paths count as production (runtime, packaging, or install surface):
+
+- `api/`, `cli/`, `config/`, `core/`, `messaging/`, `providers/`
+- `.env.example`
+- `pyproject.toml` (dependencies, scripts, packaging)
+- `scripts/install.sh`, `scripts/install.ps1`
+
+These do **not** require a version bump on their own:
+
+- `tests/`, `smoke/`
+- Docs and assets: `README.md`, `assets/`, `AGENTS.md`, `CLAUDE.md`
+- CI and repo config: `.github/`, `.gitignore`
+
+If a single commit mixes production and non-production edits, still bump the version.
+
+### Semver rules
+
+Use `[project].version` as `MAJOR.MINOR.PATCH`:
+
+- **PATCH** (`x.y.Z+1`): bug fixes, refactors with no user-visible behavior change, dependency updates, packaging/install fixes.
+- **MINOR** (`x.Y+1.0`): backward-compatible features—new providers, admin fields, CLI commands, config options, or behavior additions.
+- **MAJOR** (`X+1.0.0`): breaking changes—removed or renamed env vars, incompatible API/CLI/default changes, or migrations users must act on.
+
+When unsure between PATCH and MINOR, prefer PATCH for fixes and MINOR for new capability.
+
+### Required steps
+
+1. Classify the change and choose the bump level.
+2. Update `version` in `pyproject.toml`.
+3. Run `uv lock` so `uv.lock` reflects the new package version.
+4. Include the version and lockfile updates in the same commit as the production change.
+
+Example commit on `main` after a packaging fix: bump `1.2.38` → `1.2.39`, run `uv lock`, commit together with the fix.
 
 ## SUMMARY STANDARDS
 

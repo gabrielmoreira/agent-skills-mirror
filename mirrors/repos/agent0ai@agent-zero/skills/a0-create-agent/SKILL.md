@@ -22,7 +22,7 @@ Related skills: `/a0/skills/a0-development/SKILL.md` (broader framework guide) |
 Primary references:
 - `/a0/agents/_example/` — the canonical reference profile (tool + extension + prompt overrides)
 - `/a0/agents/default/` — the base profile every other profile inherits from
-- `/a0/docs/agents/AGENTS.plugins.md` — plugin-distributed profiles + per-profile config
+- `/a0/plugins/AGENTS.md` — plugin-distributed profiles + per-profile config
 
 ---
 

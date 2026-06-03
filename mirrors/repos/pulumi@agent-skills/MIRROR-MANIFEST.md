@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pulumi/agent-skills` — 26 default patterns, 2 followed patterns, 25 file(s) materialized.
+Mirror of `pulumi/agent-skills` — 26 default patterns, 2 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pulumi/agent-skills` — 26 default patterns, 2 followed patterns, 25
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 25 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,29 +62,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`authoring/skills/package-usage/SKILL.md`](authoring/skills/package-usage/SKILL.md) |
-| 4 | ✓ | [`authoring/skills/provider-upgrade/SKILL.md`](authoring/skills/provider-upgrade/SKILL.md) |
-| 5 | ✓ | [`authoring/skills/pulumi-automation-api/SKILL.md`](authoring/skills/pulumi-automation-api/SKILL.md) |
-| 6 | ✓ | [`authoring/skills/pulumi-best-practices/SKILL.md`](authoring/skills/pulumi-best-practices/SKILL.md) |
-| 7 | ✓ | [`authoring/skills/pulumi-component/SKILL.md`](authoring/skills/pulumi-component/SKILL.md) |
-| 8 | ✓ | [`authoring/skills/pulumi-esc/SKILL.md`](authoring/skills/pulumi-esc/SKILL.md) |
-| 9 | ✓ | [`authoring/skills/pulumi-upgrade-provider/SKILL.md`](authoring/skills/pulumi-upgrade-provider/SKILL.md) |
-| 10 | ✓ | [`authoring/skills/upstream-patches/SKILL.md`](authoring/skills/upstream-patches/SKILL.md) |
-| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 12 | ✓ | [`delegation/skills/pulumi-neo-handoff/SKILL.md`](delegation/skills/pulumi-neo-handoff/SKILL.md) |
-| 13 | ✓ | [`migration/skills/cloudformation-to-pulumi/cfn-importer.md`](migration/skills/cloudformation-to-pulumi/cfn-importer.md) |
-| 14 | ✓ | [`migration/skills/cloudformation-to-pulumi/cloudformation-id-lookup.md`](migration/skills/cloudformation-to-pulumi/cloudformation-id-lookup.md) |
-| 15 | ✓ | [`migration/skills/cloudformation-to-pulumi/SKILL.md`](migration/skills/cloudformation-to-pulumi/SKILL.md) |
-| 16 | ✓ | [`migration/skills/pulumi-arm-to-pulumi/arm-conversion-patterns.md`](migration/skills/pulumi-arm-to-pulumi/arm-conversion-patterns.md) |
-| 17 | ✓ | [`migration/skills/pulumi-arm-to-pulumi/arm-import.md`](migration/skills/pulumi-arm-to-pulumi/arm-import.md) |
-| 18 | ✓ | [`migration/skills/pulumi-arm-to-pulumi/SKILL.md`](migration/skills/pulumi-arm-to-pulumi/SKILL.md) |
-| 19 | ✓ | [`migration/skills/pulumi-cdk-to-pulumi/cdk-convert.md`](migration/skills/pulumi-cdk-to-pulumi/cdk-convert.md) |
-| 20 | ✓ | [`migration/skills/pulumi-cdk-to-pulumi/cdk-importer.md`](migration/skills/pulumi-cdk-to-pulumi/cdk-importer.md) |
-| 21 | ✓ | [`migration/skills/pulumi-cdk-to-pulumi/cloudformation-id-lookup.md`](migration/skills/pulumi-cdk-to-pulumi/cloudformation-id-lookup.md) |
-| 22 | ✓ | [`migration/skills/pulumi-cdk-to-pulumi/SKILL.md`](migration/skills/pulumi-cdk-to-pulumi/SKILL.md) |
-| 23 | ✓ | [`migration/skills/pulumi-terraform-to-pulumi/SKILL.md`](migration/skills/pulumi-terraform-to-pulumi/SKILL.md) |
-| 24 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 25 | → | [`README.md`](README.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`delegation/skills/pulumi-neo-handoff/SKILL.md`](delegation/skills/pulumi-neo-handoff/SKILL.md) |
+| 5 | ✓ | [`migration/skills/cloudformation-to-pulumi/cfn-importer.md`](migration/skills/cloudformation-to-pulumi/cfn-importer.md) |
+| 6 | ✓ | [`migration/skills/cloudformation-to-pulumi/cloudformation-id-lookup.md`](migration/skills/cloudformation-to-pulumi/cloudformation-id-lookup.md) |
+| 7 | ✓ | [`migration/skills/cloudformation-to-pulumi/SKILL.md`](migration/skills/cloudformation-to-pulumi/SKILL.md) |
+| 8 | ✓ | [`migration/skills/pulumi-arm-to-pulumi/arm-conversion-patterns.md`](migration/skills/pulumi-arm-to-pulumi/arm-conversion-patterns.md) |
+| 9 | ✓ | [`migration/skills/pulumi-arm-to-pulumi/arm-import.md`](migration/skills/pulumi-arm-to-pulumi/arm-import.md) |
+| 10 | ✓ | [`migration/skills/pulumi-arm-to-pulumi/SKILL.md`](migration/skills/pulumi-arm-to-pulumi/SKILL.md) |
+| 11 | ✓ | [`migration/skills/pulumi-cdk-to-pulumi/cdk-convert.md`](migration/skills/pulumi-cdk-to-pulumi/cdk-convert.md) |
+| 12 | ✓ | [`migration/skills/pulumi-cdk-to-pulumi/cdk-importer.md`](migration/skills/pulumi-cdk-to-pulumi/cdk-importer.md) |
+| 13 | ✓ | [`migration/skills/pulumi-cdk-to-pulumi/cloudformation-id-lookup.md`](migration/skills/pulumi-cdk-to-pulumi/cloudformation-id-lookup.md) |
+| 14 | ✓ | [`migration/skills/pulumi-cdk-to-pulumi/SKILL.md`](migration/skills/pulumi-cdk-to-pulumi/SKILL.md) |
+| 15 | ✓ | [`migration/skills/pulumi-terraform-to-pulumi/SKILL.md`](migration/skills/pulumi-terraform-to-pulumi/SKILL.md) |
+| 16 | ✓ | [`package-maintenance/skills/pulumi-upgrade-provider/SKILL.md`](package-maintenance/skills/pulumi-upgrade-provider/SKILL.md) |
+| 17 | ✓ | [`package-maintenance/skills/upstream-patches/SKILL.md`](package-maintenance/skills/upstream-patches/SKILL.md) |
+| 18 | ✓ | [`pulumi/skills/package-usage/SKILL.md`](pulumi/skills/package-usage/SKILL.md) |
+| 19 | ✓ | [`pulumi/skills/provider-upgrade/SKILL.md`](pulumi/skills/provider-upgrade/SKILL.md) |
+| 20 | ✓ | [`pulumi/skills/pulumi-automation-api/SKILL.md`](pulumi/skills/pulumi-automation-api/SKILL.md) |
+| 21 | ✓ | [`pulumi/skills/pulumi-best-practices/SKILL.md`](pulumi/skills/pulumi-best-practices/SKILL.md) |
+| 22 | ✓ | [`pulumi/skills/pulumi-component/SKILL.md`](pulumi/skills/pulumi-component/SKILL.md) |
+| 23 | ✓ | [`pulumi/skills/pulumi-esc/SKILL.md`](pulumi/skills/pulumi-esc/SKILL.md) |
+| 24 | ✓ | [`pulumi/skills/pulumi-overview/SKILL.md`](pulumi/skills/pulumi-overview/SKILL.md) |
+| 25 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 26 | → | [`README.md`](README.md) |
 
 ---
 

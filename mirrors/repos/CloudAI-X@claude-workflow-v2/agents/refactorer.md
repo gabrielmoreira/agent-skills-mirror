@@ -1,6 +1,6 @@
 ---
 name: refactorer
-description: Code refactoring specialist for improving code quality, reducing technical debt, eliminating code smells, reducing complexity, and applying design patterns. Use when code needs restructuring, simplification, tech debt reduction, or when applying DRY/SOLID principles.
+description: Code refactoring specialist for improving code quality, reducing technical debt, eliminating code smells, reducing complexity, and applying design patterns. Use PROACTIVELY when code needs restructuring, simplification, tech debt reduction, or when applying DRY/SOLID principles.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 permissionMode: acceptEdits
@@ -40,8 +40,8 @@ Read the code and run existing tests FIRST, then refactor. Never refactor code y
 npm test / pytest / go test
 
 # Understand current structure
-find . -name "*.{js,ts,py}" -type f | head -20
-wc -l **/*.{js,ts,py}  # Find large files
+find . \( -name "*.js" -o -name "*.ts" -o -name "*.py" \) -type f | head -20
+find . \( -name "*.js" -o -name "*.ts" -o -name "*.py" \) -exec wc -l {} +  # Find large files
 ```
 
 ### Phase 2: Identify Smells

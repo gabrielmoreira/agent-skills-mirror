@@ -372,6 +372,14 @@ For anti-hallucination policy, see .claude/rules/moai/core/moai-constitution.md
 - Never present information as fact when uncertain
 - Never omit "Sources:" section when WebSearch was used
 
+### Deep Research Workflow
+
+When a single-pass WebSearch is insufficient for a research-heavy question, use the bundled `/deep-research <question>` workflow: it fans out multiple web searches, cross-checks sources against each other, votes on contested claims, and returns a cited report. Three constraints apply:
+
+- `/deep-research` requires the WebSearch tool.
+- A workflow run spends meaningfully more tokens than a single-pass search — surface the cost trade-off before launching.
+- The AskUserQuestion boundary holds: the orchestrator collects and refines the research question before launch, never mid-run (workflow agents cannot prompt the user).
+
 ---
 
 ## 11. Error Handling
@@ -460,7 +468,7 @@ MoAI supports optional Agent Teams mode for parallel phase execution.
 
 ### Activation
 
-- Claude Code v2.1.50 or later
+- Claude Code v2.1.32 or later
 - Set `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in settings.json env
 - Set `workflow.team.enabled: true` in `.moai/config/sections/workflow.yaml`
 
@@ -530,7 +538,7 @@ For the full primitive-selection guide (sub-agents vs Agent Teams vs workflows),
 
 ## 16. Context Search Protocol
 
-> Canonical rule: see `.claude/rules/moai/workflow/context-window-management.md` for context window thresholds (1M = 75%, 200K = 90%) and `.claude/rules/moai/workflow/session-handoff.md` for paste-ready resume message format.
+> Canonical rule: see `.claude/rules/moai/workflow/context-window-management.md` for context window thresholds (1M = 50%, 200K = 90%) and `.claude/rules/moai/workflow/session-handoff.md` for paste-ready resume message format.
 
 MoAI searches previous Claude Code sessions when context is needed to continue work on existing tasks or discussions.
 
@@ -630,7 +638,7 @@ Changes in v14.2.0 (from v14.1.0):
 - Aligned with SPEC-V3R6-AGENT-TEAM-REBUILD-001 (17→8 catalog consolidation, M3 archive 2026-05-25)
 
 Changes in v14.1.0 (from v14.0.0):
-- §13 Progressive Disclosure System: canonical rule citation 추가 (`.claude/rules/moai/workflow/progressive-disclosure.md`)
+- §13 Progressive Disclosure System: canonical rule citation 추가 (`.claude/rules/moai/development/skill-authoring.md`)
 - §16 Context Search Protocol: canonical rule citation 추가 (`.claude/rules/moai/workflow/context-window-management.md`)
 - Note: §4 Agent Catalog의 `cycle` 제거는 별도 PR (Bundle C / PR #958)에서 처리됨
 

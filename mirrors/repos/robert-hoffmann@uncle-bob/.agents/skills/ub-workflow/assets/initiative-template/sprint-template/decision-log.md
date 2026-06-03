@@ -1,33 +1,30 @@
-# Sprint Decision Log
+---
+artifact_id          : REPLACE_DECISION_LOG_ARTIFACT_ID
+artifact_type        : sprint_decision_log
+status               : draft
+context_tier         : T3
+updated_at           : REPLACE_UPDATED_AT
+summary_budget_lines : 140
+---
 
-Status: not started
+# Sprint Decision Log
 
 ## Purpose
 
-Use this file as the running sprint-level decision-memory surface.
-
-Keep the execution contract in `./sprint.md`, keep raw proof in `./evidence/`,
-and use `./closeout.md` for end-of-sprint state. Use this file for the
-meaningful decisions, reversals, constraints, and deferrals that occur while
-the sprint is active.
+Record sprint-scoped decisions, reversals, deferrals, and evidence pointers.
 
 ## Decisions
 
-- Record important decisions as they happen.
-- Capture the rationale, tradeoff, or non-obvious constraint that made the
-  decision worth preserving.
+None yet.
 
 ## Reversals And Deferrals
 
-- Record rejected paths, reversals, and explicit deferrals that later slices or
-  later sprints may need to understand.
+None yet.
 
 ## Evidence Pointers
 
-- Link to the most relevant files under `./evidence/`, touched files, or other
-  workflow artifacts when those links improve traceability.
+Use `evidence/index.md` first when evidence exists.
 
 ## Carry Forward
 
-- Record what later slices or later sprints should preserve, revisit, or
-  verify.
+None yet.

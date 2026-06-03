@@ -19,6 +19,8 @@ macOS backends can advertise structural Accessibility features:
 
 When these features are present, prefer structural targeting over pixel clicks for named controls such as buttons, menu items, text fields, sheets, alerts, toolbar items, and sidebar rows.
 
+If the backend also advertises `native-window-list`, `window-state`, `element-index-targeting`, or `background-dispatch`, prefer the generic background loop from `host-computer-use`: `list_windows` -> `get_window_state` -> `element_action`. If those features are absent, use the AX snapshot/action flow below.
+
 Use `ax_snapshot` to inspect the frontmost app's bounded Accessibility tree:
 
 ```json
@@ -64,6 +66,8 @@ Targeting options:
 - If an action reports a missing target, take a fresh snapshot before trying coordinates.
 
 AX actions are attempts, not proof. They attach a fresh screenshot after state-changing actions; inspect that image before saying the requested outcome happened.
+
+Do not assume macOS work happened in the background unless the tool result explicitly says `actual_dispatch=background`. If the result says `background_unavailable`, use foreground dispatch only when foreground control is acceptable.
 
 ## macOS Window Actions
 

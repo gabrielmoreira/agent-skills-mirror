@@ -30,8 +30,19 @@ import html
 import random
 import shutil
 import tempfile
+import weakref
 from datetime import datetime, timezone
 from pathlib import Path
+
+
+def _cleanup_docx_temp(temp_dir: str) -> None:
+    """Clean up a Document's temporary directory via weak reference guarantee."""
+    try:
+        p = Path(temp_dir)
+        if p.exists():
+            shutil.rmtree(temp_dir)
+    except Exception:
+        pass
 
 from defusedxml import minidom
 from ooxml.scripts.pack import pack_document
@@ -638,6 +649,7 @@ class Document:
 
         # Create temporary directory with subdirectories for unpacked content and baseline
         self.temp_dir = tempfile.mkdtemp(prefix="docx_")
+        weakref.finalize(self, _cleanup_docx_temp, self.temp_dir)
         self.unpacked_path = Path(self.temp_dir) / "unpacked"
         shutil.copytree(self.original_path, self.unpacked_path)
 
@@ -830,10 +842,9 @@ class Document:
         self.next_comment_id += 1
         return comment_id
 
-    def __del__(self):
-        """Clean up temporary directory on deletion."""
-        if hasattr(self, "temp_dir") and Path(self.temp_dir).exists():
-            shutil.rmtree(self.temp_dir)
+    def close(self) -> None:
+        """Explicitly clean up temporary directory."""
+        _cleanup_docx_temp(self.temp_dir)
 
     def validate(self) -> None:
         """

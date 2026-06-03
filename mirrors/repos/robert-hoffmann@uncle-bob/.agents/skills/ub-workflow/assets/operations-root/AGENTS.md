@@ -1,53 +1,40 @@
-# Sprint Operations — AGENTS.md
+# Workflow Agent Orientation
 
-## Scope
+Use the portable `ub-workflow` skill as the workflow contract. This file is a
+thin operations-root reminder, not a duplicate rulebook.
 
-Applies to this operations root and its descendants.
+## Resume Order
+
+1. `status.md`
+2. `vision.md` only when product direction matters
+3. root `options.md` for transition, future-work lookup, or option promotion
+4. active `waves/wNN-*/wave.md`
+5. active initiative or discovery named by status
+6. initiative-local `options.md` for insertion, closeout, or transition checks
 
 ## Local Rules
 
-- `operation-guide.md` is the formal workflow contract for this operations root.
-- `roadmap.md` is the small live progress document for an initiative and should
-  be the first file read when resuming work.
-- `spec.md` is the first file to read when resuming a lightweight spec root.
-- Each sprint `sprint.md` must be a standalone sprint PRD that can be executed
-  without reopening the master `prd.md`.
-- After importing a master PRD, stop and produce a durable `roadmap.md` before
-  initializing sprint folders.
-- Initialize sprint folders only after `roadmap_ready: pass`.
-- After sprint initialization, stop and wait for an explicit user request
-  before executing the active sprint.
-- The roadmap must end with a final audit step before the initiative can close.
-- Validation and documentation are completion gates, not optional follow-up work.
-- Keep paths relative to the current operations root or initiative root when
-  practical.
-
-## Resume Order For Agents
-
-When resuming work inside one initiative root, read in this order:
-
-1. `./roadmap.md`
-2. the most recent sprint `closeout.md`
-3. the active or next sprint `sprint.md`
-4. `./README.md`
-5. `./prd.md` only if additional initiative-level context is still needed
-
-When resuming a lightweight spec root, read `./spec.md` first.
-
-## Update Discipline
-
-- Update `roadmap.md` whenever sprint status changes.
-- Update the initiative `README.md` whenever phase, blockers, or next action changes.
-- Keep `closeout.md` current before pausing or handing off.
-- Do not initialize sprint folders until `roadmap.md` is complete enough to
-  stand in for plan output without chat history.
-- Initialize sprint folders from the canonical `ub-workflow` sprint template
-  when building the roadmap-derived sprint set.
-- Execute only the user-requested active sprint in one invocation, then stop
-  after closeout and roadmap updates.
-- Do not treat a sprint as complete until its validation results, evidence, and
-  relevant documentation updates are recorded or explicitly marked unchanged.
-- Do not treat an initiative as complete until final validation, retained-note,
-  and documentation synchronization checks are recorded.
-- Before treating an initiative as complete, record whether the user wants any
-  follow-up audits or refactors.
+- Keep status compact and current.
+- Update status by replacing current facts, not by appending chronology.
+- Use root `options.md` for curated product-level, future-wave, and
+  unknown-owner options. It is pre-commitment memory, not a backlog ledger or
+  execution queue.
+- Use initiative-local `options.md` only for possible insertions before that
+  initiative closes.
+- Remove options after promotion, rejection, merge, or completion once the
+  receiving artifact owns the durable trace. Do not maintain a `Done` lane.
+- Run `scripts/check_workflow_options.py` from the shared `ub-workflow` skill
+  during wave activation, initiative closeout, terminal audit, option
+  promotion, and sprint preview from an option.
+- Store detail in the owner artifact.
+- Do not execute a sprint without accepted discovery or reviewed preview.
+- When forecast pressure appears, present options and tradeoffs, then wait for
+  explicit operator decision before cutting, deferring, rerouting, or buying
+  more scope.
+- Keep one active sprint and one active discovery per active initiative unless
+  status records an explicit exception.
+- Before activating a new wave or initiative, review root options and
+  unresolved local options from the closing initiative.
+- Structural workflow changes that affect artifact ownership, lifecycle gates,
+  scaffolding, transition policy, or recovery context need a compact accepted
+  workflow-improvement decision record.

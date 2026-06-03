@@ -20,6 +20,8 @@ Linux backends can advertise structural AT-SPI features:
 
 When these features are present, prefer structural targeting over pixel clicks for named buttons, menu items, text fields, dialogs, toolbar items, tab strips, and application windows.
 
+If the backend also advertises `native-window-list`, `window-state`, `element-index-targeting`, or `background-dispatch`, prefer the generic background loop from `host-computer-use`: `list_windows` -> `get_window_state` -> `element_action`. If those features are absent, use the AT-SPI snapshot/action flow below.
+
 Use `ax_snapshot` to inspect the Linux AT-SPI tree:
 
 ```json
@@ -67,6 +69,8 @@ Targeting options:
 ## Wayland Notes
 
 Use screenshots for proof after every state-changing action. AT-SPI actions and keyboard events are attempts, not proof, and Wayland focus can reject or redirect input when the active window changes.
+
+True background dispatch on Linux is compositor, toolkit, and app dependent. Do not claim a Linux action was background-safe unless the tool result explicitly says `actual_dispatch=background`.
 
 On GNOME/Wayland, useful shortcuts include:
 

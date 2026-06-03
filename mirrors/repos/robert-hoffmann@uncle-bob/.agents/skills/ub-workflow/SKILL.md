@@ -1,15 +1,13 @@
 ---
 name: ub-workflow
 description: >-
-  Use this skill when the user wants to turn a rough idea, product problem,
-  engineering thread, or research track into the right planning surface:
-  direct bounded work, a lightweight spec, or a full initiative with PRD,
-  roadmap, and standalone resumable sprints; when the task involves initiative
-  scaffolding, lightweight-spec shaping, sprint planning, stop-resume
-  handoffs, final audit flow, or retained notes for multi-session work; or
-  when the user needs phased planning and context preservation for larger work.
-  Do not use it for governance-only questions that belong to ub-governance.
-argument-hint: "overview | scaffold | spec | resume | prd | roadmap | sprint | audit | archive | what-next"
+  Use this skill when work needs durable planning, adaptive product slicing,
+  discovery before delivery, resumable sprint execution, wave or initiative
+  scaffolding, source-pack routing, closeout evidence, final audits, or
+  repeatable product-agile workflow structure. Do not use it for small direct
+  fixes that do not need a durable artifact, or for governance-only questions
+  that belong to ub-governance.
+argument-hint: "overview | scaffold | source-atlas | wave | initiative | discovery | sprint | audit | archive | what-next"
 user-invocable: true
 disable-model-invocation: false
 ---
@@ -18,314 +16,310 @@ disable-model-invocation: false
 
 ## Overview
 
-Use this skill as the canonical workflow intake, initiative-planning, and
-sprint-orchestration layer for work that is too large, risky, or stateful to
-run safely from chat history alone.
+Use this skill as the portable workflow layer for work that is too large,
+risky, cross-cutting, or stateful to run from chat history alone.
 
-The default operating surface is `./.ub-workflows/` unless the host
-intentionally chooses a different operations root.
+The default operations root is `./.ub-workflows/` unless the host deliberately
+chooses another root.
 
-This skill owns three lanes only:
+The normalized model is product-agile hybrid:
 
-1. direct bounded work when the work is a truly small fix or bounded task that
-   can be executed safely without a durable planning artifact
-2. lightweight specs under `./.ub-workflows/specs/` when the work is still
-   bounded but now needs a durable contract for assumptions, scope, options,
-   validation, or a concrete execution plan
-3. initiatives under `./.ub-workflows/initiatives/` when the work needs a
-   PRD, roadmap, and resumable sprint execution because it is multi-session,
-   staged, risky, or clearly cross-cutting
+```text
+Product Vision -> Product Options -> Outcome Waves -> Initiatives -> Discoveries -> Sprints
+```
 
-If the work is a bounded one-off, prefer a lightweight spec.
-If the work is multi-session, cross-cutting, risky, or needs staged delivery,
-use an initiative.
+The model combines:
+
+1. dual-track agile: discovery validates options before delivery pulls work;
+2. goal-oriented roadmapping: product vision stays broad while waves and
+   initiatives carry current outcomes;
+3. Scrum-like sprint execution: one sprint goal, inspect/adapt, and explicit
+   start approval when reviewed mode is active;
+4. Kanban-style flow controls: explicit policies, WIP limits, pre-commitment
+   options, feedback loops, and stale-candidate revalidation;
+5. Shape Up influence: lightweight bet framing, appetite, circuit breakers,
+   and no backlog sludge;
+6. appetite-boxed forecast calibration: candidate counts are forecasts, and
+   expansion requires operator choice after scoped options and tradeoffs.
+
+## Canonical Layout
+
+```text
+PROJECT_ROOT/
+  AGENTS.md
+  SOURCE_ATLAS.md
+  .ub-workflows/
+    AGENTS.md
+    vision.md
+    options.md
+    status.md
+    WORKFLOW_ATLAS.md
+    SOURCE_PACK_ATLAS.md
+    source-packs/
+      .gitkeep
+      YYYY-MM-DD-slug/
+    waves/
+      .gitkeep
+      wNN-wave-slug/
+        wave.md
+        discoveries/
+          .gitkeep
+          wNN-dNN-slug.md
+        source-packs/
+          .gitkeep
+          YYYY-MM-DD-slug/
+        initiatives/
+          .gitkeep
+          iNN-initiative-slug/
+            initiative.md
+            options.md
+            roadmap.md
+            index.md
+            discoveries/
+              .gitkeep
+              wNN-iNN-dNN-slug.md
+            sprints/
+              .gitkeep
+              wNN-iNN-sNN-sprint-slug/
+                sprint.md
+                decision-log.md
+                closeout.md
+                evidence/
+                  .gitignore
+                  index.md
+```
+
+Naming rules:
+
+1. wave IDs are project-sequenced: `w01`, `w02`, etc.;
+2. initiative IDs reset per wave: `i01`, `i02`, etc.;
+3. wave-level discoveries use `wNN-dNN-slug.md` and reset per wave;
+4. initiative discoveries use `wNN-iNN-dNN-slug.md` and reset per initiative;
+5. sprints use `wNN-iNN-sNN-sprint-slug/` and reset per initiative;
+6. source packs use `YYYY-MM-DD-slug/` using creation, original research,
+   earliest known history, or migration date with a note.
+
+## Lanes
+
+Choose the lane that lets the accepted objective be completed, validated, and
+recovered without unrelated expansion:
+
+1. direct bounded work: a small single-session change with no durable planning
+   surface needed;
+2. wave/initiative workflow: multi-session, staged, risky, product-shaping,
+   or cross-cutting work that needs options boards, discovery, roadmaps,
+   sprints, closeouts, and resumable evidence.
+
+Promote lanes when the current lane no longer provides enough durable surface
+to finish and prove the accepted objective.
+Record the promotion reason in the artifact that now owns the work.
 
 ## Embedded Contract
 
-These rules are the base contract of this skill and must not depend on a
-secondary document to be applied correctly.
-
-1. Make the lane choice explicit before opening durable artifacts: direct
-   bounded work, lightweight spec, or initiative.
-2. Keep direct bounded work narrow: do not stay direct once the conversation
-   becomes planning-heavy, medium-sized, execution-shaped, or useful enough
-   that another operator would benefit from a durable mini-contract.
-3. Promote to a lightweight spec when brainstorming becomes real planning,
-   even before implementation starts, if the work now needs durable
-   assumptions, scope, options, validation, or an execution shape.
-4. Promote to an initiative once the work clearly needs PRD-level
-   decomposition, sequencing, stop-resume safety, or staged delivery rather
-   than a bounded spec alone.
-5. Surface a short promotion note when the lane changes so the user can see
-   why direct bounded work or a lightweight spec is no longer the smallest safe
-   surface.
-6. For initiatives, make `prd.md` self-contained before generating
-   `roadmap.md`.
-7. Treat `roadmap.md` as the durable post-plan artifact.
-8. Do not prepare sprint content, initialize sprint folders, or begin sprint
-   execution until `roadmap_ready: pass`.
-9. Prepare each sprint as a standalone `sprint.md` before the sprint begins.
-10. Sprint execution never starts from placeholder-only sprint shells.
-11. In `reviewed` mode, after sprint closeout, a request like `ok lets move on`
-   or `Start the next sprint.` opens the next sprint preview only.
-12. In `reviewed` mode, that preview analyzes the next sprint, surfaces any
-   path-changing questions, and asks for one explicit start approval.
-13. In `reviewed` mode, a later approval message starts execution and, when
-   used, records `sprint_start_ready: pass`; it does not trigger a second start
-   prompt.
-14. End every initiative with a final audit and a retained note, then stop for
-    human review before archive.
-
-## Initiative Lifecycle
-
-Drive initiative work through this ordered flow:
-
-1. intake classification
-2. lane choice
-3. research and discovery when durable planning is needed
-4. execution-ready PRD
-5. initiative scaffold and planning baseline
-6. roadmap generation and approval
-7. sprint-content preparation
-8. sprint materialization and start readiness
-9. ordered sprint execution
-10. sprint closeout with explicit handoff and review pause
-11. final audit and review pause
-12. retained note and archive decision
-
-## Initiative-Level Gates
-
-Use these lifecycle gates for initiatives:
-
-1. `research_ready`
-2. `prd_ready`
-3. `roadmap_ready`
-4. `sprint_content_ready`
-5. `sprint_start_ready`
-6. `sprint_closeout`
-7. `archive_ready`
-8. `initiative_complete`
-
-Allowed states:
-
-1. `pass`
-2. `fail`
-3. `blocked`
-
-These are workflow gates, not repository governance gates.
+1. Keep reusable workflow rules in this skill, not in one repository overlay.
+2. Keep repository overlays thin: project facts, current pointers, local
+   validation commands, domain boundaries, and repository-specific constraints.
+3. `vision.md` owns the adaptable product north star.
+4. Root `options.md` owns curated product-level, future-wave, and
+   unknown-owner options before commitment. It is not a backlog ledger,
+   completion history, or execution authorization surface.
+5. `status.md` owns current product posture, wave sequencing, active pointers,
+   blockers, WIP state, candidate tracks, retained-context routes, and next
+   allowed action.
+6. `SOURCE_ATLAS.md` owns project-root source routing. Bootstrap seeds it with
+   a one-time scan; later updates are event-based when source boundaries move.
+7. Root `AGENTS.md` owns the local agent overlay. Bootstrap creates or patches
+   only a small managed workflow-routing section.
+8. A workflow-root guide, split product/live-state startup files, and a root
+   specs lane are not canonical workflow surfaces.
+9. Outcome waves are adaptive product slices; they may split, merge, grow, or
+   shrink through reviewed discovery.
+10. Initiatives are thematic wave-local bets; they may pause and resume.
+11. Initiative-local `options.md` owns possible insertions before that
+    initiative closes. Product-level or later-wave options move to root
+    `options.md`.
+12. Discoveries are normal upstream steering work, not exceptional ceremony.
+13. Discoveries and sprint previews record user or operator evidence status as
+    `used`, `not triggered`, or `deferred` so technical work still states
+    whether real-user or operator feedback shaped the decision.
+14. Sprints are delivery slices pulled from accepted discovery or a reviewed
+    sprint preview.
+15. Default WIP is constrained dual-track: one active delivery sprint and one
+    active discovery per active initiative; wave discovery is active only for
+    activation, transition, or reroute.
+16. Future work may live in root or initiative-local options boards before
+    commitment. Options are ordered by document order within horizon lanes, but
+    are not delivery commitments, status ledgers, or execution queues.
+17. Remove an option after it is promoted, rejected, merged, or completed and
+    the receiving artifact owns the durable trace. Do not maintain a `Done`
+    lane in options boards.
+18. Before activating a new wave or initiative, review root options and
+    unresolved local options from the closing initiative.
+19. Before closing an initiative, promote, move, reject, or remove every local
+    option. Do not archive completed cards in the options board itself.
+20. Run options validation at wave or initiative transition, option promotion,
+    initiative closeout, terminal audit, and when a sprint preview is pulled
+    from an option.
+21. Reusable workflow-system changes that affect artifact ownership,
+    lifecycle gates, scaffold output, transition policy, or recovery context
+    require a compact workflow-improvement discovery or equivalent accepted
+    decision record.
+22. Revalidate candidates on touch: any candidate not prepared from current
+    evidence must pass fresh discovery or preview before execution. Use
+    discovery when route-changing uncertainty exists; use reviewed preview
+    only when a registered candidate is being freshly revalidated for start.
+23. Discovery Triage is a fail-closed Routing Preflight, not a preview
+    appendix. Before choosing a reviewed preview, record trigger categories and
+    one outcome: `preview_ok`, `discovery_required`,
+    `operator_decision_needed`, or `not_triggered`. Trigger categories include
+    autonomy, authority, runtime-boundary, policy, evidence,
+    interoperability, agent-behavior changes, agent loops, harnesses, loop
+    continuation, goal judgment, budgets, and checkpoints. If triggered
+    evidence may change route, contract, scope, validation, runtime boundary,
+    or implementation path, record `discovery_required`; `preview_ok` is valid
+    only when the route is already decided and trigger evidence cannot change
+    those decisions. Use `not_triggered` only with a concrete reason.
+24. Discovery-driven sequence changes must be promoted into the owning
+    `roadmap.md` before acceptance; closeout-driven next-route changes must be
+    promoted before sprint closeout.
+25. Sprint previews identify repo-owned operational surfaces when triggered:
+    owner, lifecycle, visibility, safety policy, validation path, and
+    inventory/topology/registry/route-map impact. If uncertainty about those
+    facts may change scope, architecture, risk, or acceptance criteria,
+    promote discovery before execution.
+26. Each wave and initiative records qualitative Outcome Signals for product
+    or user value, delivery flow, quality or stability, and context or evidence
+    cost. These are routing signals, not a metrics ledger.
+27. Each initiative and sprint records lightweight bet framing: appetite,
+    success evidence, circuit breaker, non-goals, and deferral path.
+28. Waves and initiatives use Appetite-Boxed forecasting by default: forecast
+    counts are not commitments, sequence expansion is not automatic
+    adaptation, and adding work requires the agent to present options,
+    tradeoffs, and a recommended path for explicit operator decision.
+29. Wave and initiative charters record Forecast And Appetite; roadmaps record
+    Forecast Control; discoveries and reviewed previews record Forecast Impact
+    when they change sequence.
+30. Sprint previews record Product Increment Contribution as `direct`,
+    `enabling`, or `audit`; enabling sprints must name the visible increment
+    they unblock and why a direct slice is not viable.
+31. Two consecutive enabling or prerequisite sprints trigger a route review:
+    propose shipping a vertical proof, cutting/deferring scope, rerouting, or
+    explicitly buying more enabling work.
+32. Major capability candidates decompose prerequisite risks and the first
+    usable product increment before acceptance.
+33. In reviewed mode, a request to move on opens a preview only; execution
+    starts only after a later explicit approval.
+34. New sprint packs include `decision-log.md`, `closeout.md`, and
+    `evidence/index.md`.
+35. `evidence/index.md` is the T4 claim-to-proof router. It records validated
+    claims, evidence files, required objective gates, optional or
+    not-triggered gates, redaction posture, promotion targets, and read policy
+    without becoming a narrative closeout.
+36. Generated runtime state under sprint evidence (any
+    project-specific scratch directory) is local scratch by default.
+    Commit only reviewed no-secret evidence files or an explicitly
+    approved export.
+37. Sprint closeout includes a required outcome and learning review with four
+    prompts: what did this sprint achieve, how did it make the project better,
+    what could have been done better, and whether the learning changes the
+    next route, stays local, or suggests a workflow improvement.
+38. Sprint closeout records Forecast Delta: planned versus actual, hidden
+    prerequisite discovered, remaining forecast impact, and whether roadmap,
+    index, or status were updated.
+39. Material closeout claims must be backed by `evidence/index.md`. Required
+    objective proof cannot be deferred while closing the original objective as
+    passed; missing or failing required proof keeps the sprint active or
+    blocked until the operator explicitly changes scope or the proof passes.
+40. Sprint closeout includes a focused mini-retro: process friction, evidence
+    cost, context cost, decision latency, workflow adjustment if needed, and a
+    retro evidence check covering objective signal, controllability, and
+    repeated friction.
+41. Repeated or structural workflow friction is promoted into this skill;
+    one-off repo friction stays local.
+42. Project evolution mode defaults to `forward-only` unless a host records a
+    reviewed compatibility-preserving decision.
+43. When the active evolution mode requires forward migration, broad boundary
+    changes must include an impact inventory and must update, remove, or
+    explicitly defer each affected owned surface before closeout.
+44. Source packs are retained context, not execution authorization, live state,
+    or backlog.
+45. Trace tokens are owner-only lookup anchors. Use triggered T3 initiative
+    `index.md` trace routes before broad workflow search, and do not add trace
+    tokens to discoveries, sprint packs, closeouts, decision logs, or evidence
+    indexes.
 
 ## Interaction Modes
 
-Interaction mode changes visibility, pause behavior, and interruption behavior.
-It does not weaken readiness rules.
+1. `reviewed` is the default: preview before execution, explicit later start
+   approval, post-execution report, and pause after closeout.
+2. `flow`: short pre-execution note, post-execution report, manual advancement.
+3. `auto`: internal pre-execution analysis and automatic advancement unless a
+   blocker, conflict, or path-shaping decision requires interruption.
+4. `continuous` / `yolo`: no routine pauses, but all gates, artifacts, and
+   interruption rules still apply.
 
-1. `reviewed`
-   - default mode
-   - user-facing pre-sprint preview as a distinct checkpoint
-   - explicit human approval before execution
-   - user-facing post-execution reporting with considerations and watchouts
-   - the post-execution report is the pause boundary after a sprint
-   - a later move-on request opens the next pre-sprint preview and start
-     approval prompt
-2. `flow`
-   - short pre-execution note
-   - richer post-execution reporting
-   - manual advancement after each sprint or bounded execution chunk
-3. `auto`
-   - internal pre-execution analysis by default
-   - concise post-execution reporting
-   - automatic advancement unless interruption conditions are met
-4. `continuous`
-   - user-facing alias: `yolo`
-   - internal analysis and artifact updates still required
-   - no routine pause between sprints or bounded execution chunks
-   - interrupt only when a major blocker or conflict requires user resolution
+Mode changes visibility and pause behavior. It does not weaken readiness,
+evidence, or writeback requirements.
 
-Mode precedence:
+## Objective-Complete Rule
 
-1. explicit user turn override
-2. persisted artifact mode
-3. default fallback = `reviewed`
+Choose an objective-complete action: implement and validate all work required
+for the accepted sprint objective and exit criteria. Avoid unrelated expansion,
+but do not cut, defer, or split required proof just to preserve scope or
+budget.
 
-Persistence by lane:
-
-1. initiative lane: persist in initiative artifacts
-2. lightweight-spec lane: persist in `spec.md`
-3. direct bounded lane: runtime only unless promoted into a durable artifact
-
-Question handling:
-
-1. for multiple-choice user prompts, follow the shared choice-question
-   contract in `../ub-authoring/references/authoring-conventions.md`
-2. in `reviewed` mode, keep the same decision structure as the canonical
-   reviewed-mode pre-sprint preview pattern
-3. resolve the questions that change the sprint path before the single explicit
-   start-approval question
-
-For non-trivial `reviewed`-mode sprints, the preview should lead with:
-
-1. `What Repo Truth Says`
-2. `Inference`
-3. `Implementation Paths`
-4. `Recommendation`
-
-Artifact or validation bookkeeping is secondary unless it is itself the repo
-truth that materially shapes the sprint.
+When a sprint, preview, or closeout uses words like `smallest`, `narrow`, or
+`only as needed`, interpret them as the smallest objective-complete vertical
+slice, not the smallest patch that makes the first focused test pass. Every
+repo-owned affected surface named by the sprint scope, every required evidence
+gate, and every exit criterion remains in scope unless the operator explicitly
+changes the objective.
 
 ## Load References By Trigger
 
-Use these load tiers literally.
-If a trigger is not active, do not read the reference just because it exists.
-
-- `[phase:lifecycle-detail]` Read `references/workflow-contract.md` for the
-  detailed lifecycle, reviewed-mode preview pattern, and stop-resume rules.
+- `[phase:lifecycle-detail]` Read `references/workflow-contract.md` for
+  detailed operating rules, WIP policy, reviewed-mode previews, and recovery.
 - `[phase:artifact-create|artifact-validate]` Read
-  `references/artifact-contracts.md` when creating or validating initiative or
-  lightweight-spec artifacts.
+  `references/artifact-contracts.md` when creating or validating workflow
+  artifacts.
+- `[edge:context-management|frontmatter|context-budget]` Read
+  `references/context-management.md` when interpreting `context_tier`,
+  `summary_budget_lines`, phase read budgets, atlas routes, context receipts,
+  retained-context reads, or evidence/writeback receipt shapes.
+- `[edge:trace-token|trace-lookup|workflow-search]` Read
+  `references/trace-tokens.md` when searching workflow history, interpreting
+  trace IDs or tags, adding trace metadata, or deciding where trace anchors
+  belong.
 - `[phase:gate-eval|closeout|readiness]` Read
-  `references/validation-and-completion.md` when evaluating readiness, gate
-  transitions, closeout, or completion.
-- `[edge:helper-use]` Read `references/scaffold-helper.md` only when using or
+  `references/validation-and-completion.md` when evaluating readiness,
+  closeout, archive, or completion.
+- `[edge:helper-use]` Read `references/scaffold-helper.md` before using or
   explaining the deterministic helper.
+- `[edge:strict-placeholder-validation|options-validation]` Read
+  `references/placeholder-contract.md` when strict placeholder validation is
+  relevant. Read `references/validation-and-completion.md` when options-board
+  validation, transition checks, or closeout checks are relevant.
 - `[edge:governance-escalation]` Read `references/governance-bridge.md` only
-  when explicit governance alignment, evidence depth, or audit mapping is in
-  play.
-- `[edge:strict-placeholder-validation]` Read
-  `references/placeholder-contract.md` only when strict placeholder validation
-  or the placeholder checker is relevant.
-- `[edge:authoring-conventions]` Read `../ub-authoring/references/authoring-conventions.md`
-  only when adjusting shared routing or cross-skill authoring structure.
-
-Do not treat human help docs as operational dependencies.
+  when explicit governance mapping is active.
+- `[edge:authoring-conventions]` Read
+  `../ub-authoring/references/authoring-conventions.md` when shared routing,
+  naming, or choice-question authoring is being changed.
 
 ## Bundled Assets
 
-Use the assets under `assets/operations-root/`,
-`assets/initiative-template/`, and `assets/lightweight-spec-template/` as the
-canonical internal templates for this skill.
-
-Use `scripts/scaffold_initiative.py` when deterministic scaffold creation is
-preferred over manual copying.
-
-Rules:
-
-1. Bootstrap `./.ub-workflows/` when it is missing instead of asking the user
-   to create it by hand.
-2. Do not require a copied local `initiative-template/` inside the generated
-   operations root.
-3. Do not edit the canonical asset templates for one specific initiative.
-4. Replace placeholders explicitly; do not leave repository-specific facts
-   implied.
-5. Do not set human-owned approval gates on behalf of the user.
-
-## When Not To Use
-
-- Do not use this skill for governance-only questions or deterministic gate
-  execution; defer those to `ub-governance`.
-- Do not use this skill when the work is already a small direct code change
-  that does not need durable planning artifacts.
-- Do not use this skill as a substitute for language or framework
-  implementation guidance once the execution surface is already clear.
-
-## Coordination With Sibling Skills
-
-- Load and apply `ub-quality` whenever creating or editing workflow documents.
-- Workflow artifacts explicitly required by this skill are allowed outputs
-  under ub-quality's document-generation policy, but they still must satisfy
-  ub-quality formatting and structure rules.
-- Load `ub-governance` only when the repository wants explicit governance
-  alignment, evidence depth, or audit mapping.
-- Do not require ub-governance for basic scaffolding, PRD generation, or
-  ordinary lightweight-spec work.
-
-## Core Workflow
-
-1. Detect whether the user needs direct bounded work, lightweight-spec shaping,
-   initiative PRD shaping, roadmap generation, sprint preparation, sprint
-   initialization, sprint execution support, or final audit.
-2. Inspect repository truth before writing repository-specific validation or
-   adaptation details.
-3. Make the scale decision explicit and promote out of direct bounded work as
-   soon as the conversation needs a durable planning surface.
-4. If `./.ub-workflows/` does not exist, bootstrap it through
-   `scripts/scaffold_initiative.py`.
-5. Create or refine a lightweight spec when the work is still bounded but now
-   needs assumptions, scope, options, validation, or an execution plan written
-   down.
-6. Bias medium planning work toward a lightweight spec first, but scaffold a
-   new initiative as soon as the work clearly needs a PRD, roadmap, or staged
-   execution model.
-7. Copy a source PRD into `./prd.md` without rewriting it.
-8. Generate the full roadmap in one pass before sprint execution starts.
-9. Surface a review checklist before `roadmap_ready: pass` can be set.
-10. Prepare each planned sprint as a standalone execution-ready `sprint.md`.
-11. Initialize sprint folders only after roadmap approval and in a way that
-    preserves prepared sprint content.
-12. Execute only the active sprint according to the active interaction mode,
-    updating `roadmap.md`, `README.md`, `rollup.md`, `decision-log.md`, and
-    `closeout.md` as state changes.
-13. Treat validation, documentation synchronization, and completion evidence
-    as gating conditions for both sprint closeout and initiative completion.
-14. Archive only when the user explicitly asks for it and the completion
-    controls pass.
-
-## Repository Defaults
-
-1. Treat `./.ub-workflows/specs/` as the default home for lightweight specs.
-2. Treat `roadmap.md` as the smallest live progress document for an
-   initiative.
-3. Keep roadmap sprint entries rich enough to prevent omissions: path, goal,
-   dependencies, validation focus, subtasks, and evidence folder.
-4. Treat sprint preparation as a distinct lifecycle phase; do not treat
-   initialized directories or placeholder sprint shells as execution-ready.
-5. Treat sprint `decision-log.md` as the default sprint-memory surface and
-   `rollup.md` as the initiative-level carry-forward surface.
-6. Keep `research/` and `exceptions/` visibly secondary to the main workflow
-   artifacts.
-7. Treat roadmap approval and archive readiness as human-owned checkpoints.
-8. Default new initiatives and lightweight specs to interaction mode
-   `reviewed` until the user explicitly changes it.
-9. In user-facing execution notes, include a concise mode reference so the
-   user can see the available modes without opening extra docs.
-10. Surface lane choice routinely only when promotion happens or when the user
-    explicitly asks, so very small direct work stays lightweight.
-11. Bias planning-heavy bounded work toward lightweight specs, and bias
-    clearly multi-phase or cross-cutting work toward initiatives earlier than a
-    purely minimal reading would.
+Use `assets/operations-root/` and `assets/initiative-template/` as canonical
+templates. Use `scripts/scaffold_workflow.py` for deterministic bootstrap,
+wave, initiative, discovery, source-pack, sprint, and archive operations. Use
+`scripts/check_workflow_options.py` for options-board transition, closeout,
+terminal-audit, and stale-card validation.
 
 ## Output Requirements
 
-When using this skill for non-trivial workflow work, include:
+For non-trivial workflow work, report:
 
-1. `phase_note`
-2. `mode_note`
-3. `scope_note`
-4. `decision_note`
-5. `promotion_note` when lane escalation happens
-6. `artifact_note`
-7. `gate_note`
-8. `validation_note`
-9. `next_action_note`
-
-## Completion Checklist
-
-- The lane choice is explicit.
-- Lane promotion is explicit when work moves from direct bounded work to a
-  lightweight spec or from a lightweight spec to an initiative.
-- The lifecycle phase is explicit.
-- The current initiative-level gate is explicit.
-- Discovery and PRD readiness are explicit before roadmap generation.
-- The PRD is self-contained before roadmap generation.
-- The roadmap is the durable approved planning artifact before sprint
-  initialization begins.
-- `roadmap_ready: pass` is set only after explicit human approval.
-- Sprint content is prepared before sprint execution begins.
-- Sprint execution never starts without an explicit user request.
-- Sprint execution never starts from a placeholder-only sprint shell.
-- `reviewed` and `flow` pause after sprint execution; `auto` and
-  `continuous` only continue when their interruption rules allow it.
-- The workflow still stops after final audit for human review before archive.
-- Each sprint document is standalone and resumable.
-- Archive readiness is surfaced explicitly before any archive action.
-- Touched workflow documents satisfy ub-quality formatting and structure rules.
-- The retained note captures durable outcomes after completion.
+1. lane and scale decision;
+2. active artifact owner;
+3. WIP and gate state;
+4. chosen path and rejected alternative when path choice matters;
+5. validation and evidence expectation;
+6. next allowed action.

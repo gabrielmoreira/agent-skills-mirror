@@ -128,6 +128,11 @@ Python lint config of its own.
 - Use `Protocol`, `Self`, `override`, `TypeGuard`, `TypeIs`, `Required`, `NotRequired`, `ReadOnly`, `TypeAliasType`, and `assert_never` when they improve correctness and refactor safety.
 - Do not invent custom typing compatibility shims when `typing_extensions` already provides the migration path.
 - Keep `Any` contained to boundaries and document why when unavoidable.
+- In strict public or SDK-facing code, avoid ambiguous constructor overloads
+  such as `dict(mapping)` when the source type is a recursive alias or broad
+  `Mapping[str, JsonValue]`; prefer typed copy helpers, `{**mapping}`, or
+  explicit payload builders so Pyright/Pylance can prove the exact return
+  shape.
 
 ### Data Modeling and Validation
 

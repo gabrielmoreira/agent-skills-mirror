@@ -17,10 +17,37 @@ Windows backends can advertise structural UI Automation features:
 - `uia-structural-targeting`
 - `uia-element-action`
 - `uia-window-management`
+- `native-window-list`
+- `window-state`
+- `element-index-targeting`
+- `background-dispatch`
+- `foreground-dispatch-fallback`
 
-When these features are present, prefer structural targeting over pixel clicks for named controls such as buttons, menu items, text fields, dialogs, toolbar items, browser address bars, composer fields, and list rows.
+When these features are present, prefer background structural targeting over pixel clicks for named controls such as buttons, menu items, text fields, dialogs, toolbar items, browser address bars, composer fields, and list rows.
 
-Use `uia_snapshot` to inspect the bounded Windows UI Automation tree:
+Preferred loop:
+
+1. Use `list_windows` to find the target native window.
+2. Use `get_window_state` with the target `pid` and/or `window_id`.
+3. Use `element_action` with the returned `element_index` and `dispatch: "background"`.
+4. If the backend reports `background_unavailable`, switch to `dispatch: "auto"` or `dispatch: "foreground"` only when foreground control is acceptable.
+
+Example:
+
+```json
+{
+  "tool_name": "computer_use_remote",
+  "tool_args": {
+    "action": "element_action",
+    "window_id": "uia-hwnd:123456",
+    "element_index": 7,
+    "operation": "invoke",
+    "dispatch": "background"
+  }
+}
+```
+
+Use `uia_snapshot` to inspect the bounded Windows UI Automation tree when the newer window-state loop is not available:
 
 ```json
 {
@@ -72,6 +99,7 @@ Targeting options:
 Action selection:
 
 - Prefer the actions listed on the target node. If a node offers `invoke`, use `invoke`, not `click`.
+- Prefer `element_action` over `uia_action` when the backend advertises `element-index-targeting`; it preserves the background-first dispatch contract.
 - For window focus, hiding, restoring, or maximizing, use `focus_window`, `minimize`, `restore`, or `maximize`; do not click titlebar buttons.
 - For typing into an app, first structurally focus the app/window if needed, then `set_value` on the target field. A global `type` result only proves keys were sent, not that they landed in the intended control.
 - After a window operation, navigation, menu open/close, dialog transition, or other layout change, take a fresh `uia_snapshot` before reusing a path.

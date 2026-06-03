@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `robert-hoffmann/uncle-bob` — 26 default patterns, 0 followed patterns, 128 file(s) materialized.
+Mirror of `robert-hoffmann/uncle-bob` — 26 default patterns, 0 followed patterns, 119 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `robert-hoffmann/uncle-bob` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 128 |
+| Files         | 119 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -138,55 +138,46 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 77 | ✓ | [`.agents/skills/ub-vuejs/references/vue-modern-patterns.md`](.agents/skills/ub-vuejs/references/vue-modern-patterns.md) |
 | 78 | ✓ | [`.agents/skills/ub-vuejs/SKILL.md`](.agents/skills/ub-vuejs/SKILL.md) |
 | 79 | ✓ | [`.agents/skills/ub-workflow/assets/.gitkeep`](.agents/skills/ub-workflow/assets/.gitkeep) |
-| 80 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/AGENTS.md`](.agents/skills/ub-workflow/assets/initiative-template/AGENTS.md) |
-| 81 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/exceptions/.gitkeep`](.agents/skills/ub-workflow/assets/initiative-template/exceptions/.gitkeep) |
-| 82 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/exceptions/AGENTS.md`](.agents/skills/ub-workflow/assets/initiative-template/exceptions/AGENTS.md) |
-| 83 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/exceptions/exception-template.yaml`](.agents/skills/ub-workflow/assets/initiative-template/exceptions/exception-template.yaml) |
-| 84 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/prd.md`](.agents/skills/ub-workflow/assets/initiative-template/prd.md) |
-| 85 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/README.md`](.agents/skills/ub-workflow/assets/initiative-template/README.md) |
-| 86 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/research/.gitkeep`](.agents/skills/ub-workflow/assets/initiative-template/research/.gitkeep) |
-| 87 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/research/AGENTS.md`](.agents/skills/ub-workflow/assets/initiative-template/research/AGENTS.md) |
-| 88 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/retained-note.md`](.agents/skills/ub-workflow/assets/initiative-template/retained-note.md) |
-| 89 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/roadmap.md`](.agents/skills/ub-workflow/assets/initiative-template/roadmap.md) |
-| 90 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/rollup.md`](.agents/skills/ub-workflow/assets/initiative-template/rollup.md) |
-| 91 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/sprint-template/closeout.md`](.agents/skills/ub-workflow/assets/initiative-template/sprint-template/closeout.md) |
-| 92 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/sprint-template/decision-log.md`](.agents/skills/ub-workflow/assets/initiative-template/sprint-template/decision-log.md) |
-| 93 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/sprint-template/evidence/.gitkeep`](.agents/skills/ub-workflow/assets/initiative-template/sprint-template/evidence/.gitkeep) |
-| 94 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/sprint-template/sprint.md`](.agents/skills/ub-workflow/assets/initiative-template/sprint-template/sprint.md) |
-| 95 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/sprints/.gitkeep`](.agents/skills/ub-workflow/assets/initiative-template/sprints/.gitkeep) |
-| 96 | ✓ | [`.agents/skills/ub-workflow/assets/lightweight-spec-template/spec.md`](.agents/skills/ub-workflow/assets/lightweight-spec-template/spec.md) |
-| 97 | ✓ | [`.agents/skills/ub-workflow/assets/operations-root/AGENTS.md`](.agents/skills/ub-workflow/assets/operations-root/AGENTS.md) |
-| 98 | ✓ | [`.agents/skills/ub-workflow/assets/operations-root/operation-guide.md`](.agents/skills/ub-workflow/assets/operations-root/operation-guide.md) |
-| 99 | ✓ | [`.agents/skills/ub-workflow/assets/operations-root/README.md`](.agents/skills/ub-workflow/assets/operations-root/README.md) |
-| 100 | ✓ | [`.agents/skills/ub-workflow/references/artifact-contracts.md`](.agents/skills/ub-workflow/references/artifact-contracts.md) |
-| 101 | ✓ | [`.agents/skills/ub-workflow/references/governance-bridge.md`](.agents/skills/ub-workflow/references/governance-bridge.md) |
-| 102 | ✓ | [`.agents/skills/ub-workflow/references/placeholder-contract.md`](.agents/skills/ub-workflow/references/placeholder-contract.md) |
-| 103 | ✓ | [`.agents/skills/ub-workflow/references/scaffold-helper.md`](.agents/skills/ub-workflow/references/scaffold-helper.md) |
-| 104 | ✓ | [`.agents/skills/ub-workflow/references/validation-and-completion.md`](.agents/skills/ub-workflow/references/validation-and-completion.md) |
-| 105 | ✓ | [`.agents/skills/ub-workflow/references/workflow-contract.md`](.agents/skills/ub-workflow/references/workflow-contract.md) |
-| 106 | ✓ | [`.agents/skills/ub-workflow/scripts/check_scaffold_placeholders.py`](.agents/skills/ub-workflow/scripts/check_scaffold_placeholders.py) |
-| 107 | ✓ | [`.agents/skills/ub-workflow/scripts/scaffold_initiative.py`](.agents/skills/ub-workflow/scripts/scaffold_initiative.py) |
-| 108 | ✓ | [`.agents/skills/ub-workflow/SKILL.md`](.agents/skills/ub-workflow/SKILL.md) |
-| 109 | ✓ | [`.ub-workflows/archive/2026-04-16-repository-self-governance-hardening/AGENTS.md`](.ub-workflows/archive/2026-04-16-repository-self-governance-hardening/AGENTS.md) |
-| 110 | ✓ | [`.ub-workflows/archive/2026-04-16-repository-self-governance-hardening/exceptions/AGENTS.md`](.ub-workflows/archive/2026-04-16-repository-self-governance-hardening/exceptions/AGENTS.md) |
-| 111 | ✓ | [`.ub-workflows/archive/2026-04-16-repository-self-governance-hardening/research/AGENTS.md`](.ub-workflows/archive/2026-04-16-repository-self-governance-hardening/research/AGENTS.md) |
-| 112 | ✓ | [`.ub-workflows/initiatives/AGENTS.md`](.ub-workflows/initiatives/AGENTS.md) |
-| 113 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 114 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 115 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-legacy-root-registry/.agents/skills/alpha-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-legacy-root-registry/.agents/skills/alpha-skill/SKILL.md) |
-| 116 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-legacy-root-registry/.agents/skills/beta-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-legacy-root-registry/.agents/skills/beta-skill/SKILL.md) |
-| 117 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-package-metadata-drift/.agents/skills/alpha-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-package-metadata-drift/.agents/skills/alpha-skill/SKILL.md) |
-| 118 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-package-metadata-drift/.agents/skills/beta-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-package-metadata-drift/.agents/skills/beta-skill/SKILL.md) |
-| 119 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-package-metadata-drift/AGENTS.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-package-metadata-drift/AGENTS.md) |
-| 120 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-readme-agent-drift/.agents/skills/alpha-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-readme-agent-drift/.agents/skills/alpha-skill/SKILL.md) |
-| 121 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-readme-agent-drift/.agents/skills/beta-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-readme-agent-drift/.agents/skills/beta-skill/SKILL.md) |
-| 122 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-readme-agent-drift/AGENTS.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-readme-agent-drift/AGENTS.md) |
-| 123 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-skill-schema/.agents/skills/alpha-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-skill-schema/.agents/skills/alpha-skill/SKILL.md) |
-| 124 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-skill-schema/.agents/skills/beta-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-skill-schema/.agents/skills/beta-skill/SKILL.md) |
-| 125 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-skill-schema/AGENTS.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-skill-schema/AGENTS.md) |
-| 126 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/pass/.agents/skills/alpha-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/pass/.agents/skills/alpha-skill/SKILL.md) |
-| 127 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/pass/.agents/skills/beta-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/pass/.agents/skills/beta-skill/SKILL.md) |
-| 128 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/pass/AGENTS.md`](tests/skills/ub-governance/fixtures/repo_integrity/pass/AGENTS.md) |
+| 80 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/index.md`](.agents/skills/ub-workflow/assets/initiative-template/index.md) |
+| 81 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/initiative.md`](.agents/skills/ub-workflow/assets/initiative-template/initiative.md) |
+| 82 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/options.md`](.agents/skills/ub-workflow/assets/initiative-template/options.md) |
+| 83 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/retained-note.md`](.agents/skills/ub-workflow/assets/initiative-template/retained-note.md) |
+| 84 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/roadmap.md`](.agents/skills/ub-workflow/assets/initiative-template/roadmap.md) |
+| 85 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/sprint-template/closeout.md`](.agents/skills/ub-workflow/assets/initiative-template/sprint-template/closeout.md) |
+| 86 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/sprint-template/decision-log.md`](.agents/skills/ub-workflow/assets/initiative-template/sprint-template/decision-log.md) |
+| 87 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/sprint-template/evidence/.gitignore`](.agents/skills/ub-workflow/assets/initiative-template/sprint-template/evidence/.gitignore) |
+| 88 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/sprint-template/evidence/index.md`](.agents/skills/ub-workflow/assets/initiative-template/sprint-template/evidence/index.md) |
+| 89 | ✓ | [`.agents/skills/ub-workflow/assets/initiative-template/sprint-template/sprint.md`](.agents/skills/ub-workflow/assets/initiative-template/sprint-template/sprint.md) |
+| 90 | ✓ | [`.agents/skills/ub-workflow/assets/operations-root/AGENTS.md`](.agents/skills/ub-workflow/assets/operations-root/AGENTS.md) |
+| 91 | ✓ | [`.agents/skills/ub-workflow/assets/operations-root/operation-guide.md`](.agents/skills/ub-workflow/assets/operations-root/operation-guide.md) |
+| 92 | ✓ | [`.agents/skills/ub-workflow/references/artifact-contracts.md`](.agents/skills/ub-workflow/references/artifact-contracts.md) |
+| 93 | ✓ | [`.agents/skills/ub-workflow/references/context-management.md`](.agents/skills/ub-workflow/references/context-management.md) |
+| 94 | ✓ | [`.agents/skills/ub-workflow/references/governance-bridge.md`](.agents/skills/ub-workflow/references/governance-bridge.md) |
+| 95 | ✓ | [`.agents/skills/ub-workflow/references/placeholder-contract.md`](.agents/skills/ub-workflow/references/placeholder-contract.md) |
+| 96 | ✓ | [`.agents/skills/ub-workflow/references/scaffold-helper.md`](.agents/skills/ub-workflow/references/scaffold-helper.md) |
+| 97 | ✓ | [`.agents/skills/ub-workflow/references/trace-tokens.md`](.agents/skills/ub-workflow/references/trace-tokens.md) |
+| 98 | ✓ | [`.agents/skills/ub-workflow/references/validation-and-completion.md`](.agents/skills/ub-workflow/references/validation-and-completion.md) |
+| 99 | ✓ | [`.agents/skills/ub-workflow/references/workflow-contract.md`](.agents/skills/ub-workflow/references/workflow-contract.md) |
+| 100 | ✓ | [`.agents/skills/ub-workflow/scripts/check_scaffold_placeholders.py`](.agents/skills/ub-workflow/scripts/check_scaffold_placeholders.py) |
+| 101 | ✓ | [`.agents/skills/ub-workflow/scripts/check_workflow_options.py`](.agents/skills/ub-workflow/scripts/check_workflow_options.py) |
+| 102 | ✓ | [`.agents/skills/ub-workflow/scripts/scaffold_workflow.py`](.agents/skills/ub-workflow/scripts/scaffold_workflow.py) |
+| 103 | ✓ | [`.agents/skills/ub-workflow/SKILL.md`](.agents/skills/ub-workflow/SKILL.md) |
+| 104 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 105 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 106 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-legacy-root-registry/.agents/skills/alpha-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-legacy-root-registry/.agents/skills/alpha-skill/SKILL.md) |
+| 107 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-legacy-root-registry/.agents/skills/beta-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-legacy-root-registry/.agents/skills/beta-skill/SKILL.md) |
+| 108 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-package-metadata-drift/.agents/skills/alpha-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-package-metadata-drift/.agents/skills/alpha-skill/SKILL.md) |
+| 109 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-package-metadata-drift/.agents/skills/beta-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-package-metadata-drift/.agents/skills/beta-skill/SKILL.md) |
+| 110 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-package-metadata-drift/AGENTS.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-package-metadata-drift/AGENTS.md) |
+| 111 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-readme-agent-drift/.agents/skills/alpha-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-readme-agent-drift/.agents/skills/alpha-skill/SKILL.md) |
+| 112 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-readme-agent-drift/.agents/skills/beta-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-readme-agent-drift/.agents/skills/beta-skill/SKILL.md) |
+| 113 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-readme-agent-drift/AGENTS.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-readme-agent-drift/AGENTS.md) |
+| 114 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-skill-schema/.agents/skills/alpha-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-skill-schema/.agents/skills/alpha-skill/SKILL.md) |
+| 115 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-skill-schema/.agents/skills/beta-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-skill-schema/.agents/skills/beta-skill/SKILL.md) |
+| 116 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/fail-skill-schema/AGENTS.md`](tests/skills/ub-governance/fixtures/repo_integrity/fail-skill-schema/AGENTS.md) |
+| 117 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/pass/.agents/skills/alpha-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/pass/.agents/skills/alpha-skill/SKILL.md) |
+| 118 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/pass/.agents/skills/beta-skill/SKILL.md`](tests/skills/ub-governance/fixtures/repo_integrity/pass/.agents/skills/beta-skill/SKILL.md) |
+| 119 | ✓ | [`tests/skills/ub-governance/fixtures/repo_integrity/pass/AGENTS.md`](tests/skills/ub-governance/fixtures/repo_integrity/pass/AGENTS.md) |
 
 ---
 

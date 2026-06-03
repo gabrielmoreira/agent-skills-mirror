@@ -183,5 +183,5 @@ Plugins are re-scanned when:
 
 ## References
 
-- Plugin architecture: `/a0/docs/agents/AGENTS.plugins.md`
+- Plugin architecture: `/a0/plugins/AGENTS.md`
 - Manage (install/update/uninstall): read `/a0/skills/a0-manage-plugin/SKILL.md`

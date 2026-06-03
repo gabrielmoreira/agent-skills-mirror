@@ -3,10 +3,11 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { resolveGitRoot } from "./fs-utils.ts";
 import { makePromptOutput } from "./hook-output.ts";
+import { writeInjectLog } from "./inject-log.ts";
 import { emitEvent, readEvents } from "./state-emit.ts";
 import { getActiveSid, readIndex, setLastSession } from "./state-marker.ts";
 import type { Vendor } from "./types.ts";
-import { renderStateSnapshot } from "./vendor-renderer.ts";
+import { type MemoryFact, renderStateSnapshot } from "./vendor-renderer.ts";
 
 function inferVendorFromScriptPath(): Vendor | null {
   const path = import.meta.filename;
@@ -120,13 +121,29 @@ export async function onBoundary(
   });
   setLastSession(projectDir, vendor, vendorSid);
 
-  return renderStateSnapshot({
+  const recentEvents = readEvents(projectDir, sid).slice(-10);
+  const facts: MemoryFact[] = [];
+  const rendered = renderStateSnapshot({
     vendor,
     sid,
     reason: "vendor/session boundary",
-    recentEvents: readEvents(projectDir, sid).slice(-10),
-    facts: [],
+    recentEvents,
+    facts,
   });
+
+  // D52: forensic inject audit trail (best-effort, redacted, user-only perms).
+  writeInjectLog(projectDir, sid, {
+    boundaryAt: new Date().toISOString(),
+    fromVendor: previous?.vendor ?? null,
+    fromVendorSid: previous?.vendorSid ?? null,
+    toVendor: vendor,
+    toVendorSid: vendorSid,
+    recallQuery: null,
+    facts,
+    rendered,
+  });
+
+  return rendered;
 }
 
 async function main() {

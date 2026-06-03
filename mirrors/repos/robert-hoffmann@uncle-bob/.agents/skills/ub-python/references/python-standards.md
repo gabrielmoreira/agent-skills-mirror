@@ -56,6 +56,27 @@ specific host repository.
 - Prefer forward-compatible helpers and backports where they preserve the
   current repo floor while reducing future migration work, but do not emit
   syntax that the active runtime cannot parse.
+- Avoid ambiguous overloaded constructors in strict public API code when the
+  source type is a recursive alias, broad mapping, or JSON-like boundary type.
+  `dict(mapping)` is valid Python, but type checkers may choose an overload
+  that widens or rejects recursive shapes such as `Mapping[str, JsonValue]`.
+  Prefer an explicit typed helper, `{**mapping}`, or a purpose-built payload
+  builder when exact `dict[str, T]` output matters.
+
+Example:
+
+```python
+type JsonValue = None | bool | int | float | str | list["JsonValue"] | dict[str, "JsonValue"]
+type JsonObject = Mapping[str, JsonValue]
+
+
+def json_object_copy(value: JsonObject) -> dict[str, JsonValue]:
+    return {**value}
+```
+
+This is a strict-typing practice, not a Python runtime-version requirement:
+`dict(mapping)` remains legal, but explicit copy helpers reduce Pyright,
+Pylance, and basedpyright overload drift in SDK-facing code.
 
 ## 4. Data Modeling and Boundary Validation
 

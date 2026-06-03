@@ -1,139 +1,56 @@
 # Scaffold Helper
 
-Use the helper script when you want deterministic initiative operations instead
-of a manual copy workflow.
+Use `scripts/scaffold_workflow.py` for deterministic workflow scaffolding.
 
-Prefer `uv run python ...` when `uv` is available or the host repository uses
-`uv`. If `uv` is unavailable or the host has a different configured runner,
-replace `uv run python` with that local Python runner, such as `python`.
+Prefer `uv run python` when a host uses uv. Otherwise use the host's local
+Python runner.
 
 ## Commands
 
-1. `uv run python .agents/skills/ub-workflow/scripts/scaffold_initiative.py create --prd-source <path-to-prd>`
-2. `uv run python .agents/skills/ub-workflow/scripts/scaffold_initiative.py prepare-sprints <initiative-root>`
-3. `uv run python .agents/skills/ub-workflow/scripts/scaffold_initiative.py init-sprints <initiative-root>`
-4. `uv run python .agents/skills/ub-workflow/scripts/scaffold_initiative.py archive <initiative-root>`
-5. `uv run python .agents/skills/ub-workflow/scripts/check_scaffold_placeholders.py <initiative-root-or-scan-root>`
-
-## What It Does
-
-1. bootstraps `./.ub-workflows/` from the operations-root assets when needed
-2. creates dated initiative roots under `./.ub-workflows/initiatives/`
-3. copies a provided source PRD into the initiative root as `./prd.md` without rewriting it
-4. renders the core placeholders into the initiative control files
-5. backfills `rollup.md` into existing initiative roots when that workflow
-   memory surface is missing
-6. prepares sprint PRDs from roadmap metadata when explicit sprint-pack
-   preparation is requested
-7. initializes the full sprint set from roadmap path entries on demand
-8. backfills additive sprint files such as `decision-log.md` from the
-   canonical template into existing sprint directories without overwriting
-   prepared sprint content
-9. archives completed initiatives on explicit request only
-10. synchronizes the initiative-index `README.md` after create and archive
-    actions
-
-The current helper does not, by itself, guarantee execution-ready sprint PRDs.
-Sprint content preparation remains a separate workflow step that must be
-completed before Sprint 01 or any later sprint begins.
-
-When `prepare-sprints` is used, the helper renders roadmap-derived sprint PRDs
-with richer execution-slice prompts and leaves only named pending handoff
-markers where prior closeout truth may still need to flow forward.
-
-The helper now also prints generated-output placeholder summaries after
-`create`, `prepare-sprints`, and `init-sprints`.
-
-Those summaries do not mean the scaffold is broken.
-For `create` and `create-spec`, treat the output first as phase-status guidance:
-the scaffold can be valid for PRD authoring, PRD review, roadmap planning, or
-spec authoring even while later-phase placeholders still exist.
-Likewise, `prepare-sprints` and `init-sprints` only prepare the sprint set:
-they do not start Sprint 01 or any later sprint by themselves.
-Actual sprint execution begins only when the active sprint is explicitly
-started.
-
-Use `--strict-placeholders` on `create`, `prepare-sprints`, or `init-sprints`
-when required unresolved generated-output placeholders should fail the command.
-
-## Safe Rerun Behavior
-
-The helper is intentionally conservative.
-
-Rules:
-
-1. if the operations root does not exist, `create` bootstraps it automatically
-2. if the initiative root already contains files, `create` exits with an error
-3. if a sprint directory already exists but is missing core files such as
-   `sprint.md`, `closeout.md`, or `evidence/`, `init-sprints` exits with an
-   error
-4. if a sprint directory already exists and only lacks additive sprint files
-   such as `decision-log.md`, the helper backfills those files from the
-   canonical template without overwriting existing prepared content
-5. if an initiative root predates `rollup.md`, `prepare-sprints` and
-   `init-sprints` backfill it from the canonical template
-6. `archive` refuses to move incomplete initiatives
-7. use `--dry-run` when you want to inspect the resolved action before writing files
-
-## Recommended Usage
-
 ```bash
-uv run python .agents/skills/ub-workflow/scripts/scaffold_initiative.py create --prd-source ./tmp/todo/parser-performance-prd.md --owner "Platform Team"
-uv run python .agents/skills/ub-workflow/scripts/scaffold_initiative.py prepare-sprints ./.ub-workflows/initiatives/2026-04-02-parser-performance
-uv run python .agents/skills/ub-workflow/scripts/scaffold_initiative.py init-sprints ./.ub-workflows/initiatives/2026-04-02-parser-performance
-uv run python .agents/skills/ub-workflow/scripts/scaffold_initiative.py archive ./.ub-workflows/initiatives/2026-04-02-parser-performance
+uv run python .agents/skills/ub-workflow/scripts/scaffold_workflow.py bootstrap
+uv run python .agents/skills/ub-workflow/scripts/scaffold_workflow.py create-wave w12 agent-loop-hardening
+uv run python .agents/skills/ub-workflow/scripts/scaffold_workflow.py create-initiative .ub-workflows/waves/w12-agent-loop-hardening review-controls
+uv run python .agents/skills/ub-workflow/scripts/scaffold_workflow.py create-discovery .ub-workflows/waves/w12-agent-loop-hardening/initiatives/i01-review-controls approval-path
+uv run python .agents/skills/ub-workflow/scripts/scaffold_workflow.py create-source-pack .ub-workflows/waves/w12-agent-loop-hardening action-review-research
+uv run python .agents/skills/ub-workflow/scripts/scaffold_workflow.py prepare-sprint .ub-workflows/waves/w12-agent-loop-hardening/initiatives/i01-review-controls approval-runtime
+uv run python .agents/skills/ub-workflow/scripts/check_scaffold_placeholders.py .ub-workflows --strict
 ```
 
-Optional arguments:
+## Behavior
 
-- `create --ops-root`: override the default operations root
-- `create --initiative-name`: set a display name that differs from the slug
-- `create --owner`: record the initial initiative owner
-- `create --date`: override the date stamp used in generated paths
-- `create --phase`: override the initial initiative phase text
-- `create --gate-state`: override the initial workflow gate state
-- `create --roadmap-status`: override the initial roadmap status string
-- `create --next-action`: override the initial next-action value in
-  `README.md`
-- `create --prd-source`: copy the source PRD into the initiative root as
-  `./prd.md`
-- `create --prd-imported`: mark the PRD as already execution-ready after
-  copy/import
-- `create --strict-placeholders`: fail if generated output still has required
-  unresolved placeholders after scaffold creation
-- `prepare-sprints --strict-placeholders`: fail if required generated-output
-  placeholders remain after sprint preparation
-- `init-sprints --strict-placeholders`: fail if required generated-output
-  placeholders remain after sprint initialization
-- `--dry-run`: report the resolved action without writing files
+1. `bootstrap` creates the normalized operations root, creates
+   `SOURCE_ATLAS.md` with a one-time source-root scan when absent, and creates
+   or patches root `AGENTS.md` with a managed workflow-routing section.
+2. `create-wave` creates `waves/wNN-slug/` with `wave.md`, `discoveries/`,
+   `initiatives/`, `source-packs/`, Outcome Signals, Forecast And Appetite,
+   and `.gitkeep` markers for empty canonical folders.
+3. `create-initiative` creates `initiatives/iNN-slug/` under a wave with
+   `roadmap.md`, triggered T3 `index.md`, Outcome Signals, Forecast And
+   Appetite, Forecast Control, `discoveries/`, and `sprints/`.
+4. `create-discovery` detects whether the owner is a wave or initiative and
+   creates the correct `wNN-dNN` or `wNN-iNN-dNN` file with explicit user or
+   operator evidence status plus Forecast Impact for sequence-changing work.
+5. `create-source-pack` creates a dated source pack under the operations root
+   or a wave root.
+6. `prepare-sprint` creates only the next sprint by default and includes the
+   required closeout `Outcome And Learning Review` section plus a fail-closed
+   Routing Preflight, Discovery Triage prompt, Product Increment Contribution
+   prompt, explicit user or operator evidence status, closeout Forecast Delta,
+   claim-to-proof `evidence/index.md` scaffold, decision-latency mini-retro
+   prompt, retro evidence check, and evidence `.gitignore` for generated
+   runtime scratch state.
+7. `prepare-sprint --all` is the explicit bulk materialization path.
+8. `archive-initiative` moves a completed initiative to wave-local `archive/`.
+9. Helpers remove `.gitkeep` when a canonical folder receives real content and
+   restore it when a canonical folder becomes empty.
+10. Bootstrap source scanning is intentionally one-time. Use explicit
+    source-atlas maintenance when package boundaries or test topology change.
 
-Placeholder validation:
+## Safety
 
-1. default scope is generated initiative output, not canonical internal
-   templates
-2. `check_scaffold_placeholders.py --strict` fails only on required findings
-3. `PENDING_HANDOFF:` markers and generated closeout prompts remain advisory
-4. see `references/placeholder-contract.md` for the exact required-versus-advisory rules
-
-## Follow-On Adaptation
-
-After scaffolding:
-
-1. replace `./prd.md` with the real initiative PRD when it is not already copied yet
-2. review or refine `./prd.md` until `prd_ready: pass`
-3. generate the full `roadmap.md` in one pass from the PRD
-4. approve the roadmap and record `roadmap_ready: pass` in the initiative `README.md`
-5. ensure the roadmap lists every implementation sprint plus the final audit item
-6. run `prepare-sprints` to render roadmap-derived sprint PRDs before any sprint begins
-7. review the rendered execution slices so acceptance, verification, and
-   dependencies are explicit before implementation begins
-8. treat a prepared or initialized sprint set as pre-execution state until the
-   active sprint is explicitly started
-9. keep sprint-time decisions in each sprint `decision-log.md` and summarize
-   cross-sprint carry-forward in `rollup.md`
-10. treat `research/` as supportive discovery and `exceptions/` as bounded
-   exception records instead of default note buckets
-11. run `init-sprints` when you need directory-only materialization or
-    validation of the sprint set
-12. use `archive` only after the roadmap checklist, retained note, rollup,
-    and initiative status are actually complete
+- Existing non-empty targets are not overwritten.
+- Human-owned gates are not set automatically.
+- The helper creates scaffold structure; it does not start sprint execution.
+- Placeholder checks apply to generated workflow output, not internal
+  templates.

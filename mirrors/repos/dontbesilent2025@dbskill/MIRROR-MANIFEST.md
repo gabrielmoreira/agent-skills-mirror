@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
+Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 20 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,20 +65,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`skills/dbs-benchmark/SKILL.md`](skills/dbs-benchmark/SKILL.md) |
 | 5 | ✓ | [`skills/dbs-chatroom-austrian/SKILL.md`](skills/dbs-chatroom-austrian/SKILL.md) |
 | 6 | ✓ | [`skills/dbs-chatroom/SKILL.md`](skills/dbs-chatroom/SKILL.md) |
-| 7 | ✓ | [`skills/dbs-content/SKILL.md`](skills/dbs-content/SKILL.md) |
-| 8 | ✓ | [`skills/dbs-decision/SKILL.md`](skills/dbs-decision/SKILL.md) |
-| 9 | ✓ | [`skills/dbs-deconstruct/SKILL.md`](skills/dbs-deconstruct/SKILL.md) |
-| 10 | ✓ | [`skills/dbs-diagnosis/SKILL.md`](skills/dbs-diagnosis/SKILL.md) |
-| 11 | ✓ | [`skills/dbs-goal/SKILL.md`](skills/dbs-goal/SKILL.md) |
-| 12 | ✓ | [`skills/dbs-good-question/SKILL.md`](skills/dbs-good-question/SKILL.md) |
-| 13 | ✓ | [`skills/dbs-hook/SKILL.md`](skills/dbs-hook/SKILL.md) |
-| 14 | ✓ | [`skills/dbs-learning/SKILL.md`](skills/dbs-learning/SKILL.md) |
-| 15 | ✓ | [`skills/dbs-report/SKILL.md`](skills/dbs-report/SKILL.md) |
-| 16 | ✓ | [`skills/dbs-restore/SKILL.md`](skills/dbs-restore/SKILL.md) |
-| 17 | ✓ | [`skills/dbs-save/SKILL.md`](skills/dbs-save/SKILL.md) |
-| 18 | ✓ | [`skills/dbs-slowisfast/SKILL.md`](skills/dbs-slowisfast/SKILL.md) |
-| 19 | ✓ | [`skills/dbs-xhs-title/SKILL.md`](skills/dbs-xhs-title/SKILL.md) |
-| 20 | ✓ | [`skills/dbs/SKILL.md`](skills/dbs/SKILL.md) |
+| 7 | ✓ | [`skills/dbs-content-system/docs/acceptance.md`](skills/dbs-content-system/docs/acceptance.md) |
+| 8 | ✓ | [`skills/dbs-content-system/docs/quickstart.md`](skills/dbs-content-system/docs/quickstart.md) |
+| 9 | ✓ | [`skills/dbs-content-system/scaffold/root/AGENTS.md`](skills/dbs-content-system/scaffold/root/AGENTS.md) |
+| 10 | ✓ | [`skills/dbs-content-system/scaffold/root/CLAUDE.md`](skills/dbs-content-system/scaffold/root/CLAUDE.md) |
+| 11 | ✓ | [`skills/dbs-content-system/scaffold/root/README.md`](skills/dbs-content-system/scaffold/root/README.md) |
+| 12 | ✓ | [`skills/dbs-content-system/scaffold/root/SOURCE_OF_TRUTH.md`](skills/dbs-content-system/scaffold/root/SOURCE_OF_TRUTH.md) |
+| 13 | ✓ | [`skills/dbs-content-system/SKILL.md`](skills/dbs-content-system/SKILL.md) |
+| 14 | ✓ | [`skills/dbs-content-system/tools/assemble-topic-from-units.js`](skills/dbs-content-system/tools/assemble-topic-from-units.js) |
+| 15 | ✓ | [`skills/dbs-content-system/tools/extract-sample-units.js`](skills/dbs-content-system/tools/extract-sample-units.js) |
+| 16 | ✓ | [`skills/dbs-content-system/tools/fill-obsidian-links.js`](skills/dbs-content-system/tools/fill-obsidian-links.js) |
+| 17 | ✓ | [`skills/dbs-content-system/tools/generate-duplicate-candidates.js`](skills/dbs-content-system/tools/generate-duplicate-candidates.js) |
+| 18 | ✓ | [`skills/dbs-content-system/tools/generate-link-map.js`](skills/dbs-content-system/tools/generate-link-map.js) |
+| 19 | ✓ | [`skills/dbs-content-system/tools/generate-source-registry.js`](skills/dbs-content-system/tools/generate-source-registry.js) |
+| 20 | ✓ | [`skills/dbs-content-system/tools/generate-unit-draft.js`](skills/dbs-content-system/tools/generate-unit-draft.js) |
+| 21 | ✓ | [`skills/dbs-content-system/tools/init-content-system.js`](skills/dbs-content-system/tools/init-content-system.js) |
+| 22 | ✓ | [`skills/dbs-content-system/tools/rebuild-processing-ledger.js`](skills/dbs-content-system/tools/rebuild-processing-ledger.js) |
+| 23 | ✓ | [`skills/dbs-content-system/tools/summarize-system.js`](skills/dbs-content-system/tools/summarize-system.js) |
+| 24 | ✓ | [`skills/dbs-content/SKILL.md`](skills/dbs-content/SKILL.md) |
+| 25 | ✓ | [`skills/dbs-decision/SKILL.md`](skills/dbs-decision/SKILL.md) |
+| 26 | ✓ | [`skills/dbs-deconstruct/SKILL.md`](skills/dbs-deconstruct/SKILL.md) |
+| 27 | ✓ | [`skills/dbs-diagnosis/SKILL.md`](skills/dbs-diagnosis/SKILL.md) |
+| 28 | ✓ | [`skills/dbs-goal/SKILL.md`](skills/dbs-goal/SKILL.md) |
+| 29 | ✓ | [`skills/dbs-good-question/SKILL.md`](skills/dbs-good-question/SKILL.md) |
+| 30 | ✓ | [`skills/dbs-hook/SKILL.md`](skills/dbs-hook/SKILL.md) |
+| 31 | ✓ | [`skills/dbs-learning/SKILL.md`](skills/dbs-learning/SKILL.md) |
+| 32 | ✓ | [`skills/dbs-report/SKILL.md`](skills/dbs-report/SKILL.md) |
+| 33 | ✓ | [`skills/dbs-restore/SKILL.md`](skills/dbs-restore/SKILL.md) |
+| 34 | ✓ | [`skills/dbs-save/SKILL.md`](skills/dbs-save/SKILL.md) |
+| 35 | ✓ | [`skills/dbs-slowisfast/SKILL.md`](skills/dbs-slowisfast/SKILL.md) |
+| 36 | ✓ | [`skills/dbs-xhs-title/SKILL.md`](skills/dbs-xhs-title/SKILL.md) |
+| 37 | ✓ | [`skills/dbs/SKILL.md`](skills/dbs/SKILL.md) |
 
 ---
 

@@ -14,6 +14,13 @@ The SDK core (5 primitives below) is identical for both shapes. The dashboard sh
 
 All supplemental files named in this skill are bundled beside this `SKILL.md`. Treat those paths as skill-local references that are safe to use in packaged runtimes; do not guess at repo-root paths.
 
+## Tooling discipline for this skill
+
+- In the normal build turn, use surfaced workspace file tools for file work: `read` / `search` / `find` / `list` for inspection, `edit` for targeted changes, and `write` for new files or full rewrites.
+- Do **not** use `bash` heredocs for ordinary app file creation or mutation in the build turn. That includes `package.json`, `app.ts`, `server.ts`, `app.runtime.yaml`, `workspace.yaml`, and non-`src/client/` assets such as `game.html`.
+- Use `bash` only for shell-native work such as `bun install`, starting or probing processes, checking logs, or other commands the surfaced file/runtime tools cannot express directly.
+- The only heredoc exception in this skill is the auto-queued polish pass rule below, and it applies **only** to `apps/<app_id>/src/client/*.tsx` and `.css` files in that separate polish turn.
+
 ## When NOT to use this skill
 
 - The user already has a working hola-boss-apps module and wants to extend it → modify it in place; don't rewrite as SDK. (The legacy app-builder skill that used to live alongside this one has been removed; all new app work goes through this SDK.)

@@ -1,193 +1,149 @@
-# Validation and Completion
+# Validation And Completion
 
-Use this reference to decide when each initiative phase is complete enough to
-move forward.
+Use this reference for readiness, closeout, and completion checks.
 
-## PRD Readiness
+## Wave Readiness
 
-`prd_ready` is `pass` only when:
+A wave is ready when:
 
-1. the problem is clearly defined
-2. goals and non-goals are explicit
-3. assumptions, constraints, and unknowns that shape the PRD are explicit
-4. the chosen path is justified
-5. at least one alternative was evaluated and rejected
-6. success criteria are verifiable
-7. dependencies and risks are explicit
-8. validation expectations name concrete commands or checks where known
-9. documentation touch points are explicit
-10. governance bridge level is explicit when governance coordination is needed
-11. another operator could continue without chat history
+1. `wave.md` states outcome, why now, scope boundaries, success evidence,
+   outcome signals, Forecast And Appetite, initiative map, and transition or
+   reroute rules;
+2. any activation discovery is accepted;
+3. at least one initiative can be created without relying on chat history;
+4. root options were reviewed for activation candidates;
+5. source-pack routes are explicit when retained research is needed.
 
-## Lightweight Spec Readiness
+## Initiative Readiness
 
-A lightweight spec is ready only when:
+An initiative is ready for sprint planning when:
 
-1. the work is explicitly bounded and does not need a full roadmap and sprint
-   pack yet
-2. the problem, goals, and non-goals are explicit
-3. assumptions, constraints, and unknowns are explicit
-4. the chosen path is justified
-5. at least one alternative was evaluated and rejected
-6. validation expectations are concrete instead of implied
-7. documentation touch points are explicit when they matter
-8. the boundary to direct bounded work and the promotion trigger to a full
-   initiative are explicit
-9. if the spec was created by promotion, the reason direct bounded work was no
-   longer the smallest safe surface is explicit
-10. the next action is explicit
-11. another operator could continue without chat history
-12. the active interaction mode is explicit when the spec will drive
-    user-facing or resumable execution behavior
+1. `initiative.md` has outcome bet, appetite, success evidence, circuit
+   breaker, outcome signals, Forecast And Appetite, goals, non-goals, and
+   constraints;
+2. `roadmap.md` has Forecast Control, an adaptive plan, active or next route,
+   and revalidation rules;
+3. `index.md` exists as a triggered T3 durable lookup and history surface;
+4. `options.md` exists for possible local insertions before closeout;
+5. the active or next discovery is accepted or explicitly pending;
+6. WIP state is compatible with the constrained dual-track policy.
 
-## Research Readiness
+## Discovery Readiness
 
-`research_ready` is `pass` only when:
+A discovery is ready for decision when:
 
-1. the current problem or initiative context is grounded enough to support a
-   durable PRD
-2. open questions that would block PRD authorship are either answered or
-   explicitly recorded
-3. repository truth checks needed for PRD scope have been completed where known
-4. another operator could understand why the initiative exists without relying
-   on chat history
-
-## Roadmap Readiness
-
-`roadmap_ready` is `pass` only when:
-
-1. the roadmap exists and is derived from the current `prd.md`
-2. sprint ordering and dependencies are explicit
-3. every planned sprint declares path, goal, validation focus, subtasks, and evidence folder
-4. the final roadmap item is a final audit
-5. the roadmap is rich enough to initialize sprint folders without relying on chat history
-6. the agent has surfaced a review checklist covering sprint breakdown completeness, ordering and dependencies, scope boundaries and non-goals, and validation/docs expectations
-7. the human explicitly approved the roadmap
-8. `README.md` points to sprint initialization as the correct next step
-9. repository-specific validation and documentation expectations are explicit where known
-10. the initiative interaction mode is explicit in the initiative status
-    surfaces when the initiative will drive sprint execution
+1. repo truth is current enough for the question;
+2. user or operator evidence status is `used`, `not triggered`, or `deferred`
+   with a reason and decision impact;
+3. relevant source packs, standards, donor notes, or outside research are cited
+   or explicitly skipped;
+4. options and recommendation are clear;
+5. risks and stop conditions are explicit;
+6. validation expectations are named;
+7. roadmap-changing insertions, splits, reroutes, or deferrals have Forecast
+   Impact and have been promoted into the owning `roadmap.md`;
+8. option promotions, demotions, or removals are reflected in root or
+   initiative-local `options.md` when relevant;
+9. the decision slot is ready for operator acceptance, rejection, or redirect.
 
 ## Sprint Content Readiness
 
 `sprint_content_ready` is `pass` only when:
 
-1. every planned sprint has a standalone `sprint.md`
-2. every planned sprint has a `decision-log.md` available for running
-   sprint-level memory
-3. the active or next sprint is execution-ready rather than a placeholder shell
-4. the active or next sprint breaks work into reviewable execution slices
-5. the active or next sprint makes acceptance and verification explicit for
-   those slices instead of leaving success implied
-6. later sprints contain only named pending handoff markers that legitimately
-   depend on prior closeout truth
-7. each sprint names concrete validation expectations and handoff guidance
-8. the sprint pack is rich enough to survive a session reset without relying on
-   chat history
-
-## Sprint Initialization
-
-Do not start sprint execution until:
-
-1. the roadmap exists
-2. `roadmap_ready` is `pass`
-3. all planned sprint folders are initialized
-4. `sprint_content_ready` is `pass`
-5. each planned sprint has a standalone `sprint.md`
-6. each planned sprint has a `decision-log.md`
-7. each planned sprint includes a concrete validation plan
-8. when needed, `sprint_start_ready` is explicit after context refresh
-9. the final roadmap item is a final audit
-10. the workflow stops after initialization and waits for an explicit user
-   request before the active sprint checkpoint begins
+1. the sprint is pulled from accepted discovery or reviewed preview;
+2. `sprint.md`, `decision-log.md`, `closeout.md`, and `evidence/index.md`
+   exist;
+3. the sprint has one objective and execution-ready slices;
+4. bet framing is present;
+5. Product Increment Contribution is recorded as `direct`, `enabling`, or
+   `audit`;
+6. enabling sprints name the visible increment they unblock and why a direct
+   slice is not viable;
+7. two consecutive enabling or prerequisite sprints trigger a route review
+   with options, pros/cons, and an operator decision to ship a vertical proof,
+   cut/defer scope, reroute, or buy more enabling work;
+8. validation and live gates are concrete, including which gates are required
+   objective proof versus optional, not-triggered, or out-of-scope checks;
+9. user or operator evidence status is `used`, `not triggered`, or `deferred`;
+10. Project Evolution Gate inventory exists when triggered;
+11. operational surface preflight exists when the sprint introduces or changes
+    a repo-owned operational surface, including owner, lifecycle, visibility,
+    safety policy, validation path, and inventory or topology impact;
+12. unclear operational-surface ownership, lifecycle, safety policy,
+    validation, or inventory impact that may change scope, architecture, risk,
+    or acceptance criteria has been promoted to discovery before execution;
+13. options-board validation has passed when the sprint is pulled from an
+    option or changes the options route;
+14. placeholders that block execution are resolved.
 
 ## Sprint Start Readiness
 
 `sprint_start_ready` is `pass` only when:
 
-1. the active or next sprint is execution-ready
-2. the smallest required resume file set has been read after any session reset
-3. blockers or pending handoff markers have been resolved or explicitly carried
-   forward
-4. the next action is explicit before implementation begins
-5. the execution slices are reviewable enough that another operator could pick
-   a slice and start work without re-planning the sprint
-6. the sprint `decision-log.md` exists and is ready to absorb running
-   decisions as execution proceeds
-7. the active interaction mode is explicit and does not conflict with the
-   current initiative status artifacts
-8. in `reviewed` mode, the pre-sprint preview is written down and explicitly
-   states that the sprint has not started yet
-9. in `reviewed` mode, non-trivial sprint previews preserve the richer
-   counterfactual structure:
-   `What Repo Truth Says`, `Inference`, `Implementation Paths`,
-   `Recommendation`, then the questions that change the sprint path
-10. in `reviewed` mode, any questions that change the sprint path are resolved,
-   and the later explicit human approval starts the sprint directly while being
-   recorded as `sprint_start_ready: pass` when that gate is used
-
-## Archive Readiness
-
-`archive_ready` is `pass` only when:
-
-1. `initiative_complete` is effectively satisfied pending explicit human review
-2. the final audit output is ready for review
-3. `retained-note.md`, `README.md`, and `roadmap.md` reflect the final state
-4. archive is being considered explicitly rather than as an automatic side
-   effect
+1. current repo truth has been refreshed;
+2. stale candidates have been revalidated;
+3. WIP policy allows the sprint;
+4. blockers are resolved or explicitly carried;
+5. reviewed mode approval was given in a later message after preview when
+   reviewed mode is active.
 
 ## Sprint Closeout
 
 `sprint_closeout` is `pass` only when:
 
-1. planned in-scope work is complete or explicitly blocked
-2. known in-scope defects are documented
-3. validation results are recorded
-4. relevant documentation and synchronized artifacts are updated or explicitly marked unchanged
-5. evidence pointers exist when evidence was generated
-6. touched workflow documents satisfy ub-quality formatting and structure rules
-7. the active sprint `decision-log.md` reflects the material sprint decisions,
-   reversals, or deferrals
-8. `rollup.md` is updated or explicitly left unchanged when the sprint did not
-   materially affect cross-sprint understanding
-9. the next sprint can resume from `closeout.md`, `decision-log.md`, and
-   `roadmap.md`
-10. the workflow's next-step behavior matches the active interaction mode
-11. when the active interaction mode surfaces user-facing post-execution
-    reporting, considerations moving forward and things to watch are explicit
-12. when the active interaction mode surfaces post-execution reporting, a
-    recoverable post-execution summary is recorded in `closeout.md`
-13. in `reviewed` mode, the post-execution report itself is the pause boundary
-    before any later move-on request opens the next pre-sprint preview
+1. every accepted exit criterion has fresh named passing evidence, or the
+   sprint remains active or blocked;
+2. required validation and live gates pass after the final relevant change;
+3. evidence is saved and routed through `evidence/index.md`, with required
+   objective proof separated from optional, not-triggered, blocked,
+   out-of-scope, or operator-deferred checks;
+4. decision log is current;
+5. outcome and learning review is recorded;
+6. material closeout result, validation, and route-changing claims are backed
+   by `evidence/index.md`; required objective proof cannot be deferred while
+   the original objective closes as passed;
+7. broader writeback decisions are recorded in the owning artifacts;
+8. route-changing learning is promoted into `roadmap.md`;
+9. durable lookup learning is compactly promoted into the triggered T3 `index.md`;
+10. Forecast Delta is recorded, including planned versus actual, hidden
+   prerequisite discovered, remaining forecast impact, and owner updates;
+11. sequence expansion beyond appetite records the operator decision after
+    scoped cut/defer, reroute, and buy-more tradeoffs were presented;
+12. triggered Project Evolution Gate items are converted, removed, or explicitly
+   operator-deferred;
+13. the mini-retro is recorded, including decision latency and retro evidence
+    check;
+14. local options are promoted, moved, rejected, or removed when the sprint
+    changes initiative closeout posture;
+15. next action is explicit.
 
-## Initiative Completion
+If required objective proof is missing, stale, failing, or only shows that a
+non-objective smoke path ran, the sprint does not pass. Continue iterating
+while the accepted objective remains reachable; otherwise mark the sprint
+blocked or ask the operator to change scope, reroute, or buy more work.
 
-`initiative_complete` is `pass` only when:
+## Final Audit
 
-1. all implementation sprints have closeout records
-2. the final audit ran as the last roadmap item
-3. initiative-level validation is recorded and traceable
-4. relevant documentation and synchronized artifacts reflect the shipped behavior
-5. follow-up audit or refactor decisions were captured
-6. `retained-note.md` was written
-7. `rollup.md`, `README.md`, and `roadmap.md` reflect the final state
-8. touched workflow documents satisfy ub-quality formatting and structure rules
-9. the final audit output is ready for human review before any archive action
-10. the recorded interaction mode history does not contradict the final
-    initiative state
+A final audit checks:
 
-## Review Questions
+1. roadmap scope was executed, parked, or explicitly deferred;
+2. no material work was silently skipped;
+3. bought, parked, cut, and deferred scope is explicit;
+4. evidence and closeouts support claimed outcomes;
+5. broad docs and route maps are current;
+6. roadmaps and options boards do not hide required unfinished work;
+7. initiative `index.md` supports lookup of meaningful discoveries, closeouts,
+   evidence, and supersession notes;
+8. retained note is ready;
+9. terminal-audit-mode options validation has no required findings;
+10. archive readiness is surfaced for human review.
 
-When validating an initiative or sprint, ask:
+## Archive Readiness
 
-1. could another developer, PM, or agent resume this without prior chat
-   history?
-2. is the next action explicit?
-3. is the current blocker or gate state explicit?
-4. was the scale decision intentional: direct bounded task, lightweight spec,
-   or initiative?
-5. if lane promotion happened, is the reason for that promotion explicit?
-6. are validation expectations concrete instead of implied?
-7. are documentation and synchronized artifacts accounted for instead of assumed?
-8. do the touched workflow documents satisfy ub-quality formatting and structure rules?
-9. is the final audit still present as the terminal roadmap step?
+Archive only after explicit request and when:
+
+1. final audit passed;
+2. retained note exists;
+3. initiative roadmap, index, and status reflect completion;
+4. initiative-local options are resolved;
+5. `status.md` no longer points at the initiative as active.

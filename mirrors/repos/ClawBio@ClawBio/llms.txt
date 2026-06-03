@@ -24,8 +24,8 @@
 ## Project State
 
 - Current public release: `v0.5.0`
-- Public framing in `README.md`: `55 skills + 8,000 Galaxy tools + 1,401 tests + benchmark validation`
-- Public README skill table: `37` MVP skills and `6` planned / legacy skills
+- Public framing in `README.md`: `78 skills + 8,000 Galaxy tools + 2,318 tests + benchmark validation`
+- Public README skill table: `28` MVP skills and `50` planned / legacy skills
 - Source precedence for this file:
   - `README.md` for active vs planned public skill framing
   - `clawbio.py` and `skills/catalog.json` for registered CLI aliases

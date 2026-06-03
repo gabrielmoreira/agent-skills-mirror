@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Check generated workflow artifacts for unresolved scaffold placeholders."""
 
-from __future__ import annotations
-
 import argparse
 import importlib.util
 import json
@@ -10,11 +8,11 @@ from pathlib import Path
 import sys
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-SCAFFOLD_SCRIPT = SCRIPT_DIR / "scaffold_initiative.py"
+SCAFFOLD_SCRIPT = SCRIPT_DIR / "scaffold_workflow.py"
 
 
 def load_scaffold_module():
-    spec = importlib.util.spec_from_file_location("ub_workflow_scaffold_initiative", SCAFFOLD_SCRIPT)
+    spec = importlib.util.spec_from_file_location("ub_workflow_scaffold", SCAFFOLD_SCRIPT)
     if spec is None or spec.loader is None:
         raise ImportError(f"Unable to load scaffold helper from {SCAFFOLD_SCRIPT.as_posix()}")
     module = importlib.util.module_from_spec(spec)
@@ -31,7 +29,6 @@ def build_payload(scan_root: Path) -> dict[str, object]:
     payload_roots: list[dict[str, object]] = []
     required_count = 0
     advisory_count = 0
-
     for workflow_root in workflow_roots:
         findings = SCAFFOLD_MODULE.collect_placeholder_findings(workflow_root)
         root_required = sum(1 for finding in findings if finding.severity == "required")
@@ -46,7 +43,9 @@ def build_payload(scan_root: Path) -> dict[str, object]:
                 "summary": SCAFFOLD_MODULE.format_placeholder_summary(workflow_root, findings),
                 "findings": [
                     {
-                        "file": finding.file_path.resolve().relative_to(workflow_root.resolve()).as_posix(),
+                        "file": finding.file_path.resolve()
+                        .relative_to(workflow_root.resolve())
+                        .as_posix(),
                         "line": finding.line_number,
                         "category": finding.category,
                         "severity": finding.severity,
@@ -57,10 +56,8 @@ def build_payload(scan_root: Path) -> dict[str, object]:
                 ],
             }
         )
-
-    status = "fail" if required_count else "pass"
     return {
-        "status": status,
+        "status": "fail" if required_count else "pass",
         "scanRoot": scan_root.resolve().as_posix(),
         "rootCount": len(workflow_roots),
         "requiredCount": required_count,
@@ -69,51 +66,23 @@ def build_payload(scan_root: Path) -> dict[str, object]:
     }
 
 
-def print_text_report(payload: dict[str, object]) -> None:
-    roots = payload.get("roots")
-    if not isinstance(roots, list):
-        raise ValueError("Payload roots must be a list")
-    if not roots:
-        print("placeholder summary: no workflow roots were found in scope")
-        return
-    for index, root_payload in enumerate(roots):
-        if index:
-            print()
-        print(root_payload["summary"])
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "scan_root",
-        nargs="?",
-        default=str(Path(".ub-workflows")),
-        help="Workflow root, initiatives directory, specs directory, .ub-workflows root, or repo root to scan",
-    )
-    parser.add_argument(
-        "--strict",
-        action="store_true",
-        help="Exit non-zero when required unresolved placeholders are present",
-    )
-    parser.add_argument(
-        "--format",
-        choices=("text", "json"),
-        default="text",
-        help="Output format",
-    )
+    parser.add_argument("scan_root", nargs="?", default=str(Path(".ub-workflows")))
+    parser.add_argument("--strict", action="store_true")
+    parser.add_argument("--format", choices=("text", "json"), default="text")
     args = parser.parse_args()
-
-    scan_root = Path(args.scan_root).resolve()
-    payload = build_payload(scan_root)
-
+    payload = build_payload(Path(args.scan_root).resolve())
     if args.format == "json":
         print(json.dumps(payload, indent=2))
     else:
-        print_text_report(payload)
-
-    if args.strict and payload["requiredCount"]:
-        return 1
-    return 0
+        roots = payload.get("roots")
+        if isinstance(roots, list):
+            for index, root_payload in enumerate(roots):
+                if index:
+                    print()
+                print(root_payload["summary"])
+    return 1 if args.strict and payload["requiredCount"] else 0
 
 
 if __name__ == "__main__":

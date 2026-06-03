@@ -1,6 +1,6 @@
 ---
 name: test-architect
-description: Testing strategy specialist for designing test suites, writing tests, and ensuring comprehensive coverage. Use when adding new features, fixing bugs, improving test coverage, creating test plans, mocking strategies, handling flaky tests, or writing integration/E2E tests.
+description: Testing strategy specialist for designing test suites, writing tests, and ensuring comprehensive coverage. Use PROACTIVELY when adding new features, fixing bugs, improving test coverage, creating test plans, mocking strategies, handling flaky tests, or writing integration/E2E tests.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 permissionMode: acceptEdits
@@ -43,7 +43,7 @@ find . -name "*.test.*" -o -name "*.spec.*" -o -name "test_*"
 npm run coverage / pytest --cov
 
 # Identify untested code
-grep -rn "export\|public" --include="*.{js,ts,py}" | head -20
+grep -rn "export\|public" --include=*.js --include=*.ts --include=*.py . | head -20
 ```
 
 ### Phase 2: Determine Test Types

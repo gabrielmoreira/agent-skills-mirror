@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `backnotprop/plannotator` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `backnotprop/plannotator` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `backnotprop/plannotator` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,13 +67,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`.agents/skills/review-renovate/SKILL.md`](.agents/skills/review-renovate/SKILL.md) |
 | 7 | ✓ | [`.agents/skills/update-deps/SKILL.md`](.agents/skills/update-deps/SKILL.md) |
 | 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 9 | ✓ | [`apps/skills/plannotator-annotate/SKILL.md`](apps/skills/plannotator-annotate/SKILL.md) |
-| 10 | ✓ | [`apps/skills/plannotator-compound/SKILL.md`](apps/skills/plannotator-compound/SKILL.md) |
-| 11 | ✓ | [`apps/skills/plannotator-last/SKILL.md`](apps/skills/plannotator-last/SKILL.md) |
-| 12 | ✓ | [`apps/skills/plannotator-review/SKILL.md`](apps/skills/plannotator-review/SKILL.md) |
-| 13 | ✓ | [`apps/skills/plannotator-setup-goal/SKILL.md`](apps/skills/plannotator-setup-goal/SKILL.md) |
-| 14 | ✓ | [`apps/skills/plannotator-visual-explainer/SKILL.md`](apps/skills/plannotator-visual-explainer/SKILL.md) |
-| 15 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 9 | ✓ | [`apps/kiro-cli/skills/plannotator-annotate/SKILL.md`](apps/kiro-cli/skills/plannotator-annotate/SKILL.md) |
+| 10 | ✓ | [`apps/kiro-cli/skills/plannotator-archive/SKILL.md`](apps/kiro-cli/skills/plannotator-archive/SKILL.md) |
+| 11 | ✓ | [`apps/kiro-cli/skills/plannotator-review/SKILL.md`](apps/kiro-cli/skills/plannotator-review/SKILL.md) |
+| 12 | ✓ | [`apps/skills/plannotator-annotate/SKILL.md`](apps/skills/plannotator-annotate/SKILL.md) |
+| 13 | ✓ | [`apps/skills/plannotator-compound/SKILL.md`](apps/skills/plannotator-compound/SKILL.md) |
+| 14 | ✓ | [`apps/skills/plannotator-last/SKILL.md`](apps/skills/plannotator-last/SKILL.md) |
+| 15 | ✓ | [`apps/skills/plannotator-review/SKILL.md`](apps/skills/plannotator-review/SKILL.md) |
+| 16 | ✓ | [`apps/skills/plannotator-setup-goal/SKILL.md`](apps/skills/plannotator-setup-goal/SKILL.md) |
+| 17 | ✓ | [`apps/skills/plannotator-visual-explainer/SKILL.md`](apps/skills/plannotator-visual-explainer/SKILL.md) |
+| 18 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

@@ -116,4 +116,4 @@ await ctx.db
 
 ## Full Compiled Document
 
-For the complete guide with all rules and detailed code examples, see: `AGENTS.md`
+For the complete guide with all rules and detailed code examples, see [AGENTS.md](AGENTS.md).

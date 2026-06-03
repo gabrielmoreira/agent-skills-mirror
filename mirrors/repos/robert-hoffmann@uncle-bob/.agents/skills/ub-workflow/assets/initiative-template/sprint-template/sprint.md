@@ -1,149 +1,140 @@
-# Sprint PRD
+---
+artifact_id          : REPLACE_SPRINT_ARTIFACT_ID
+artifact_type        : sprint_plan
+status               : draft
+context_tier         : T3
+updated_at           : REPLACE_UPDATED_AT
+summary_budget_lines : 480
+---
 
-## Machine-Derived Context
+# Sprint: REPLACE_SPRINT_TITLE
 
-- Sprint: `REPLACE_SPRINT_TITLE`
-- Goal: REPLACE_SPRINT_GOAL
-- Depends on: `REPLACE_SPRINT_DEPENDS_ON`
-- Validation focus: REPLACE_SPRINT_VALIDATION_FOCUS
-- Evidence folder: `REPLACE_SPRINT_EVIDENCE_FOLDER`
-- Planned subtasks:
-REPLACE_SPRINT_SUBTASKS
+## Objective
 
-## Summary
+REPLACE_SPRINT_OBJECTIVE
 
-This sprint advances `REPLACE_SPRINT_TITLE` by pursuing the roadmap goal
-`REPLACE_SPRINT_GOAL`.
+## Source
 
-Use the machine-derived context above as the fixed starting point for the
-sprint-specific plan below.
+- Accepted discovery or reviewed preview: REPLACE_SPRINT_SOURCE
+
+## Routing Preflight
+
+- Trigger categories considered: Replace with autonomy, authority,
+  runtime-boundary, policy, evidence, interoperability, agent-behavior changes,
+  agent loops, harnesses, loop continuation, goal judgment, budgets,
+  checkpoints, or `none`.
+- Triggered categories: Replace with the triggered categories, or `none`.
+- Fail-closed result: Replace with `discovery_required` when triggered
+  evidence may change route, contract, scope, validation, runtime boundary, or
+  implementation path; use `preview_ok` only when the route is already decided
+  and trigger evidence cannot change those decisions.
+
+## Discovery Triage
+
+- Outcome: Replace with `preview_ok`, `discovery_required`,
+  `operator_decision_needed`, or `not_triggered`.
+- Outside evidence trigger: Replace with relevant standards, best practices,
+  official docs, current primary research, analogous systems, source packs,
+  user evidence, or operator evidence; use `not triggered` only with a
+  concrete reason.
+- Trigger-presumed check: Replace with whether autonomy, authority,
+  runtime-boundary, policy, evidence, interoperability, or agent-behavior
+  changes are in scope.
+- Promotion rule: If triage outcome is `discovery_required` or
+  `operator_decision_needed`, do not start implementation; create discovery or
+  get the operator decision first.
+
+## Why Preview Instead Of Discovery
+
+- Routing trigger: Replace with why the triage outcome permits preview, or
+  promote this candidate to discovery before implementation.
+- Discovery trigger check: Replace with remaining route-changing
+  uncertainties, or `none`.
+- Promotion rule: If preview work finds sequence, scope, appetite, product
+  direction, contract, runtime-boundary, or path-selection uncertainty, stop
+  and create discovery before start.
+
+## Product Increment Contribution
+
+- Contribution type: Replace with `direct`, `enabling`, or `audit`.
+- Visible increment unblocked: Replace with the product increment this sprint ships or unblocks.
+- Why not direct: Replace with reason if enabling or audit, otherwise `n/a`.
+- Enabling-chain check: Replace with whether this is the second consecutive enabling or prerequisite sprint.
+
+## Bet Framing
+
+- Appetite: REPLACE_APPETITE
+- Success evidence: REPLACE_SUCCESS_EVIDENCE
+- Circuit breaker: REPLACE_CIRCUIT_BREAKER
+- Non-goals: REPLACE_NON_GOALS
+- Deferral path: REPLACE_DEFERRAL_PATH
 
 ## Scope
 
-REPLACE_SPRINT_SCOPE_ITEMS
+1. Replace with exact scope.
+
+## Scope Completion Rule
+
+When this sprint uses words like `smallest`, `narrow`, or `only as needed`,
+they mean the smallest objective-complete vertical slice. Every named owned
+surface, required evidence gate, and exit criterion remains in scope unless
+the operator explicitly changes the objective.
+
+## Operational Surface Preflight
+
+- Triggered: Replace with `yes` or `no`.
+- Surfaces: Replace with repo-owned operational surfaces introduced or changed,
+  or `none`.
+- Owner and lifecycle: Replace with owner module/artifact and lifecycle, or
+  `not triggered`.
+- Visibility and safety: Replace with user/operator/API visibility plus safety,
+  secrecy, policy, or authority rules, or `not triggered`.
+- Inventory impact: Replace with inventory, topology, registry, route map, or
+  analogous owner document to update, or `none`.
+- Validation path: Replace with tests, checks, live gates, or evidence proving
+  the surface, or `not triggered`.
+- Promotion rule: If ownership, lifecycle, safety policy, validation, or
+  inventory impact may change scope, architecture, risk, or acceptance
+  criteria, promote discovery before execution.
 
 ## Execution Slices
 
-REPLACE_SPRINT_EXECUTION_SLICES
-
-## Dependencies
-
-1. Roadmap dependency: `REPLACE_SPRINT_DEPENDS_ON`
-2. Confirm any repository facts, prior sprint outputs, or external constraints
- that materially affect execution before the sprint begins.
-3. REPLACE_PREVIOUS_HANDOFF_NOTE
-
-## Repository Truth At Sprint Start
-
-1. Record the concrete repository truth this sprint depends on before
- execution begins.
-2. Capture the code, docs, tests, or metadata state that matters most.
-3. Use pending handoff notes only when the previous sprint closeout can still
- change what this sprint should assume.
-
-## Chosen Path
-
-Write the sprint-specific implementation path here before execution begins.
-Anchor it in the roadmap goal, validation focus, and current repository truth.
-
-## Rejected Alternative
-
-Record one rejected alternative with concise pros and cons before execution
-begins.
-
-## Affected Areas
-
-1. Record the likely affected files, modules, systems, or docs.
-2. Add another affected area if needed.
-3. Save sprint evidence under `REPLACE_SPRINT_EVIDENCE_FOLDER`.
-4. Keep sprint-scoped execution decisions in `./decision-log.md`.
+1. Replace with slice objective, acceptance, verification, dependencies, and likely touched areas.
 
 ## Validation Plan
 
-1. Roadmap validation focus: REPLACE_SPRINT_VALIDATION_FOCUS.
-2. Save sprint evidence under `REPLACE_SPRINT_EVIDENCE_FOLDER`.
-3. Add concrete commands or checks for this sprint.
-4. Add the documentation or synchronized-artifact checks required before this
- sprint can close.
-5. Add TG001-TG005 or equivalent deterministic test-signal checks when tests
- will change.
+1. Replace with concrete validation commands or checks.
 
-## Mode-Specific Start Checkpoint
+## Live Validation Matrix
 
-1. Record the active interaction mode for this sprint before execution begins.
-2. Write the exact pre-sprint preview that should be surfaced to the user
-   before work starts, including an explicit statement that the sprint has not
-   started yet and what the sprint would do if started now.
-3. If the active mode is `reviewed`, follow the canonical reviewed-mode
-   pre-sprint preview pattern defined in the `ub-workflow`
-   `workflow-contract.md` reference.
-4. If the active mode is `reviewed`, record any question that changes the
-   sprint path before the explicit approval checkpoint.
-5. If the active mode is `reviewed`, record the later explicit approval as the
-   event that starts execution and, when used, sets `sprint_start_ready: pass`;
-   do not create a second start prompt.
-6. If the active mode is `reviewed` and the sprint is non-trivial, record at
-   least two plausible implementation paths with concise pros and cons plus a
-   recommended path marked `(*)`.
-7. If the active mode is `reviewed` and the sprint is non-trivial, structure
-   the user-facing preview in this order:
-   `What Repo Truth Says`, `Inference`, `Implementation Paths`,
-   `Recommendation`, `Questions That Change The Sprint Path`,
-   then the explicit approval boundary.
-8. If the active mode is `reviewed` and the sprint is non-trivial, do not
-   lead the preview with artifact-update or validation bookkeeping unless that
-   bookkeeping is itself the repo truth that materially changes the sprint.
-9. If the active mode is `reviewed`, follow the shared `ub-authoring`
-   choice-question contract when questions are needed and preserve the same
-   decision structure inside the sprint preview.
-10. If the active mode is not `reviewed`, record why a pre-execution stop is
-   not required for this sprint.
-11. Record the expected post-execution reporting shape so the closeout can
-   recover it without relying on chat history.
+| Gate | Status | Command | Credentials / env | Evidence path | Pass criteria | Redaction |
+| --- | --- | --- | --- | --- | --- | --- |
+| `provider_live_smoke` | out of scope | `n/a` | `n/a` | `n/a` | Not touched by this sprint. | No raw prompts, responses, secrets, or raw tool arguments. |
+| `external_agent_live_probe` | out of scope | `n/a` | `n/a` | `n/a` | Not touched by this sprint. | No credentials, transcripts, prompts, or raw command arguments. |
 
-## Reviewability Check
+## User Or Operator Evidence
 
-1. Confirm each execution slice is independently understandable.
-2. Confirm each execution slice names acceptance and verification rather than
-   leaving success implicit.
-3. Confirm dependencies and likely touched areas are explicit where they
-   materially affect planning or review.
-4. Confirm the sprint plan is richer than the roadmap without simply copying
-   roadmap content verbatim.
+- Status: Replace with `used`, `not triggered`, or `deferred`.
+- Evidence: Replace with user/operator input, operator decision, or `n/a`.
+- Decision impact: Replace with how the evidence changes the sprint path, or why it does not.
+
+## Reviewed-Mode Start Checkpoint
+
+This sprint has not started yet. In reviewed mode, preview the path and wait
+for later explicit approval before implementation.
+
+## Context Receipt
+
+Replace with loaded artifacts, skipped surfaces, source-pack fanout, and budget exceptions.
 
 ## Exit Criteria
 
-1. The sprint-specific plan is concrete enough to execute without chat history.
-2. The final validation requirements are explicit.
-3. The documentation or synchronized-artifact completion requirement is
- explicit.
-
-## Final Audit Checklist
-
-Use this checklist only when this sprint is the final audit sprint.
-
-- [ ] roadmap scope was actually executed or explicitly deferred
-- [ ] no material work was silently skipped
-- [ ] initiative-level validation is recorded and traceable
-- [ ] relevant documentation and synchronized artifacts reflect the shipped behavior
-- [ ] follow-up audit or refactor decisions were captured
-- [ ] `retained-note.md` is ready to record the final state
-
-## Handoff Expectation
-
-1. Record what the next sprint should read first.
-2. Record what the next sprint should do first.
-3. REPLACE_NEXT_HANDOFF_NOTE
-
-## Definition Of Done
-
-This sprint is done only when all of the following are true:
-
-1. planned functionality is complete or explicitly blocked
-2. known in-scope issues are documented
-3. required validation is run or explicitly deferred
-4. relevant documentation and synchronized artifacts are updated or explicitly marked unchanged
-5. validation evidence is recorded and traceable
-6. governance bridge requirements are satisfied or explicitly marked not applicable
-7. closeout is current and resumable
-8. decision-log is current enough for the next sprint or final audit to trust it
+1. Every accepted objective claim has fresh named passing proof.
+2. Required validation and live gates pass after the final relevant change.
+3. Evidence is routed through `evidence/index.md`, with required objective
+   gates separated from optional, not-triggered, blocked, out-of-scope, or
+   operator-deferred checks.
+4. Required objective proof is not deferred while closing the original
+   objective as passed.
+5. Decision log and closeout are current, including the closeout outcome and
+   learning review.

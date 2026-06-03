@@ -97,6 +97,8 @@ npm run verify:local:full
 npm run verify:gui-smoke
 npm run bridge:health -- --timeout-ms 120000
 npm run test:contracts
+npm run test:rust:unit
+npm run test:rust:layers:stats
 npm run governance:legacy-report
 npm run tauri:dev:headless
 cargo test --manifest-path "src-tauri/Cargo.toml"

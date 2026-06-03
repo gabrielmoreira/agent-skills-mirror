@@ -1,6 +1,6 @@
 ---
 name: model-cookbook-writer
-description: 编写、丰富与编译 model cookbook 的专用人机协作开发工作流。包含 Prompting Guide 大纲扩展、第三方 cookbook SourceRef 契约管理（OpenAI / Anthropic / Google / 国内厂商）、交付物大纲拆解与初始化、TOC 驱动编译为 HTML/Jupyter Notebook 预览及两库联动沉淀。
+description: 编写、丰富与编译 model cookbook 的专用人机协作开发工作流。包含 Prompting Guide 大纲扩展、行业参考 cookbook SourceRef 契约管理、交付物大纲拆解与初始化、TOC 驱动编译为 HTML/Jupyter Notebook 预览及知识库联动沉淀。
 license: Apache-2.0
 author: github/cafe3310
 depends_on_skill: [cafe3310-obsidian-writer, memories-off]
@@ -9,16 +9,16 @@ depends_on_binary: [python3]
 
 # Skill: model-cookbook-writer
 
-本 Skill 定义了一套大模型应用 Cookbook 在工程与文档开发中的全生命周期开发规范和人机协作工作流。它为将策略调优、评测跑分、代码用例与最终发布版拼装预览建立了完整的规范契约。
+本 Skill 定义了一套大模型应用 Cookbook 的全生命周期开发规范和人机协作工作流，覆盖策略调优、评测跑分、代码用例与最终交付物编译预览。
 
 ---
 
 ## 1. 仓库结构规范 (Repository Architecture)
 
-大模型 Cookbook 仓库必须严格遵守以下目录结构和文件格式定义，以确保编译脚本能够自动解析、拼接，并支持与知识图谱的联动。
+大模型 Cookbook 仓库必须严格遵守以下目录结构和文件格式定义，以确保编译脚本能够自动解析和拼接。
 
 ```
-ling-model-cookbook/
+<cookbook-repo>/
 ├── AGENTS.md                  # 项目章程与规范文件 (明确规则与协作流程)
 ├── TODO.md                    # 动态的任务积压与指派清单 (Log-driven Task Stream)
 ├── cookbook-chapters/         # 章节内容树 (存放理论、最佳实践及代码示例)
@@ -27,7 +27,7 @@ ling-model-cookbook/
 │       ├── benchmarks.md      # 评估该章节提示词机制的 micro-benchmarks 建议 (叶子节点专有)
 │       └── examples.md        # 该章节的具体任务代码样例 (叶子节点专有)
 │                              #   ↑ 三类文件均须含 YAML frontmatter 的 `sources:` 字段，
-│                              #     声明对第三方 cookbook 的引用关系，详见 §4「SourceRef 契约」。
+│                              #     声明对行业参考 cookbook 的引用关系，详见 §4「SourceRef 契约」。
 ├── benches/                   # 所有的微评测任务物理源码 (平铺命名)
 │   └── YYYY-MM-DD_{bench-name}/
 │       ├── README.md          # 评测目的、方式、对比分支及 Rubrics 四要素说明
@@ -42,7 +42,8 @@ ling-model-cookbook/
 └── cookbooks/                 # 具体的 Cookbook 交付发布项目 (平铺命名)
     └── YYYY-MM-DD_{model-name}_{cookbook-name}/
         ├── readme.md          # 项目说明，介绍本次交付的背景、模型及受众
-        ├── toc.md             # 编译主驱动大纲，通过树形列表挂载 Chapters、Benches 与 Results
+        ├── toc.md             # 编译主驱动大纲，扁平化列表 + H2/H3/H4 层级标记 + 描述文本
+        ├── reference/         # 背景输入文档（只读，不参与编译）
         └── contents.md        # 编译产物：拼接合并后的正文大合集 (严禁手动在此处编辑内容)
 ```
 
@@ -52,7 +53,7 @@ ling-model-cookbook/
     *   **叶子章节**: 真正的落地实现节点，必须同时包含 `content.md`、`benchmarks.md` 与 `examples.md`。
     *   *未开始编写的章节，其 Markdown 首行必须以 `🟥` 起头做待办标记。*
 2.  **微评测任务 (`benches/`)**:
-    *   平铺命名。未完工的评测任务在日期后缀加上 `_🟥_`。
+    *   平铺命名。未完工的评测任务在 `README.md` 中标注状态（如 `🟥 暂未执行该评测`），不在目录名中使用 emoji。
     *   `README.md` 中**必须**包含四要素：**评测目的、评测方式、对比方案、判定标准 (Rubrics)**。
 3.  **跑分数据 (`bench-results/`)**:
     *   若评测尚未执行或正在执行，其 `README.md` 的状态需配置为 `Pending`，且 results.json 的 state 置为 `pending`。
@@ -74,6 +75,8 @@ ling-model-cookbook/
     *   *场景*: 运行脚本将大纲编译拼装为 `contents.md`、ScrollSpy 滚动高亮 `preview.html` 网页及状态机拆分的 `preview.ipynb` 笔记本。
 *   **[工作流 D: 知识图谱与文档同步 (Knowledge Base & Vault Synchronization)](file://./workflows/workflow_d_sync_knowledge_base.md)**
     *   *场景*: 开发完结后，通过 `memocli` 非破坏性追加图谱并生成 Obsidian 📅 状态报告，执行 iCloud Git 同步优化。
+*   **[工作流 E: 端到端 Cookbook 创建 (End-to-End Cookbook Creation)](file://./workflows/workflow_e_end_to_end_cookbook.md)**
+    *   *场景*: 从收集背景 reference 文档开始，筛选章节组建 TOC，逐章节推进评测闭环，最终编译为完整交付物。串联 A/B/C 的核心能力，适用于为特定模型从零创建完整 Cookbook。
 
 ---
 
@@ -114,13 +117,12 @@ ling-model-cookbook/
 
 ## 4. 第三方 Cookbook 引用契约 (Third-Party SourceRef Contract)
 
-本 Skill 管理的 cookbook 仓库大量借鉴自御三家（OpenAI / Anthropic / Google）与国内厂商（Qwen / GLM / Yi / InternLM / DeepSeek）的官方 cookbook。**所有借鉴关系统一以 frontmatter `sources:` 字段声明，作为机器可读的单一事实源。**
+本 Skill 管理的 cookbook 仓库大量借鉴自主流大模型厂商的官方 cookbook。**所有借鉴关系统一以 frontmatter `sources:` 字段声明，作为机器可读的单一事实源。**
 
 ### 4.1 物理镜像约定 (Local Mirror)
 
-- 所有第三方 cookbook 仓库应克隆到统一约定目录：`<workspace>/llm-cookbooks/<vendor>/`
-  - 典型布局：`openai-cookbook/`、`claude-cookbooks/`、`gemini-cookbook/`、`Qwen-Cookbook/`、`glm-cookbook/`、`Yi/`、`internlm-tutorial/`、`awesome-deepseek-integration/` 等。
-- **引用必须使用「仓库根相对路径」**，例如 `claude-cookbooks/tool_use/memory_cookbook.ipynb`，而**不写绝对路径**，避免镜像目录迁移导致大规模引用失效。
+- 所有行业参考 cookbook 仓库应克隆到统一约定目录：`<workspace>/llm-cookbooks/<vendor>/`
+- **引用必须使用「仓库根相对路径」**，而**不写绝对路径**，避免镜像目录迁移导致大规模引用失效。
 
 ### 4.2 SourceRef Schema
 
@@ -128,16 +130,16 @@ ling-model-cookbook/
 
 ```yaml
 sources:
-  - vendor: anthropic              # openai | anthropic | google | qwen | glm | yi | internlm | deepseek …
-    repo: claude-cookbooks         # 镜像根下的仓库名
-    path: tool_use/memory_cookbook.ipynb         # 相对仓库根
-    registry_title: "Memory & context management with Claude Sonnet 4.6"   # 可选，上游 registry/title 原文
-    registry_categories: [Tools, Agent Patterns]                            # 可选
-    binding_version: "claude-sonnet-4.6"                                    # 可选，强绑定某发版时填写
-    upstream_url: https://github.com/anthropics/anthropic-cookbook/blob/main/tool_use/memory_cookbook.ipynb
-    snapshot_commit: <镜像仓库 HEAD 的 commit hash>     # 锁版本，防上游漂移
+  - vendor: <vendor-id>            # 厂商标识，如 openai, anthropic, google, qwen 等
+    repo: <repo-name>              # 镜像根下的仓库名
+    path: <relative/path/to/file>  # 相对仓库根
+    registry_title: "..."          # 可选，上游 registry/title 原文
+    registry_categories: [...]     # 可选
+    binding_version: "..."         # 可选，强绑定某发版时填写
+    upstream_url: https://...      # 上游文件的永久链接
+    snapshot_commit: <commit-hash> # 锁版本，防上游漂移
     relation: borrows-from         # borrows-from | benchmarks-against | counter-example | extends
-    outline_ref: "[5]"             # 可选，对应 Obsidian 大纲源档中的引用编号
+    outline_ref: "[5]"             # 可选，对应知识库大纲中的引用编号
     note: "..."                    # 可选，一句话说明为何引用 / 引用了哪一段
 ```
 
@@ -155,23 +157,23 @@ sources:
 
 ### 4.4 批量回填脚本范式
 
-当第三方 cookbook 大规模新增 / 章节大量铺设时，**禁止逐文件手改 frontmatter**，必须以一次性脚本批量注入。本 Skill 的 `scripts/` 提供两个范式脚本可直接借鉴：
+当行业参考 cookbook 大规模新增 / 章节大量铺设时，**禁止逐文件手改 frontmatter**，必须以一次性脚本批量注入。`scripts/` 下提供两种范式脚本：
 
-- **`backfill_openai_sources.py`**（仅插入模式）：对**无 frontmatter** 的文件前置注入；幂等：已有 `sources:` 字段则跳过。适用于「首次引入某 vendor 的引用」。
-- **`backfill_claude_sources.py`**（追加模式）：对**已有 frontmatter** 的文件，向 `sources:` 数组**追加**新条目，按 (vendor, path) 去重，保留原有引用。适用于「在 OpenAI 引用之上叠加 Anthropic / Google 引用」。
+- **插入模式脚本**：对**无 frontmatter** 的文件前置注入；幂等：已有 `sources:` 字段则跳过。适用于首次引入某 vendor 的引用。
+- **追加模式脚本**：对**已有 frontmatter** 的文件，向 `sources:` 数组**追加**新条目，按 (vendor, path) 去重，保留原有引用。适用于在已有引用上叠加新 vendor 引用。
 
-两脚本共享核心结构：`SOURCES` 字典声明引用元数据 + `TARGETS` / `CHAPTER_MAP` / `BENCH_MAP` 字典声明文件→引用映射 + `render_*` 函数渲染 YAML。**新增 vendor 时**复用同一范式，不要重新设计脚本。
+两类脚本共享核心结构：`SOURCES` 字典声明引用元数据 + `TARGETS` 字典声明文件→引用映射 + `render_*` 函数渲染 YAML。**新增 vendor 时**复用同一范式。
 
 ### 4.5 派生章节脚手架范式
 
-当从第三方 cookbook 整合出 Ring 大纲尚未覆盖的方向（如「Memory Tool」「Prompt Caching」「Skills 方法论」），**必须同时创建 chapter 与配套占位 bench**，且全部带正确的 SourceRef frontmatter。范式脚本：`scripts/scaffold_claude_derived_chapters.py` — 以 `dataclass Spec` 声明（章节路径、标题、简介、bench slug、bench 目的、rubrics、SourceRef 列表）批量生成 3+3 文件结构（chapter 三件套 + bench README/runner/cases）。
+当从行业参考 cookbook 整合出大纲尚未覆盖的方向，**必须同时创建 chapter 与配套占位 bench**，且全部带正确的 SourceRef frontmatter。范式脚本以 `dataclass Spec` 声明（章节路径、标题、简介、bench slug、bench 目的、rubrics、SourceRef 列表）批量生成 3+3 文件结构（chapter 三件套 + bench README/runner/cases）。
 
 ### 4.6 编译期处理 (compile_cookbook.py 待扩展)
 
 `scripts/compile_cookbook.py` 在编译 `contents.md` / `preview.html` / `preview.ipynb` 时，应增加 `merge_sources` pass（**当前未实现**，挂账于宿主仓库 TODO）：
 
 1. 扫描所有被 `toc.md` 引用的 chapter / bench frontmatter 的 `sources` 数组。
-2. 在每个章节末尾自动注入引用块（Markdown 形式），格式如 `> **Sources**: [memory_cookbook.ipynb](upstream_url) — Anthropic, Sonnet 4.6 首发, relation: borrows-from`。
+2. 在每个章节末尾自动注入引用块（Markdown 形式），格式如 `> **Sources**: [<filename>](upstream_url) — <vendor>, relation: borrows-from`。
 3. 在交付件根输出一份 `sources_index.md`，按 `vendor / repo` 二级分组反向索引「我们引用了谁的哪些文档」，便于版权与合规审计。
 4. 在 `preview.ipynb` 中向对应 markdown cell 注入同样引用块，并在第一节正文之前加一节「**Acknowledgements & Sources**」放总索引。
 
@@ -244,7 +246,7 @@ sources:
 
 ### 本小节在说什么
 
-（从读者角度描述本章节要传达的信息点。不复述参考来源，而是提炼出 Ring cookbook 要教给读者的内容。）
+（从读者角度描述本章节要传达的信息点。不复述参考来源，而是提炼出目标模型 cookbook 要教给读者的内容。）
 
 ### 为了完成本小节需要的结果，需要做什么 micro benchmark
 
@@ -259,7 +261,7 @@ sources:
 
 此段由人工撰写（或人机协作后由人工确认），遵循以下原则：
 
-1. **站在 Ring 读者角度**，而非复述参考来源。从参考来源的核心主张中提取「差异维度」，归纳为统一主题下的几个子方面。
+1. **站在目标模型读者角度**，而非复述参考来源。从参考来源的核心主张中提取「差异维度」，归纳为统一主题下的几个子方面。
 2. **过滤厂商特有内容**：只保留通用 prompting 方法论，排除厂商特有的产品工具或 API 细节。
 3. **承诺评测验证**：结尾应指向「经过我们评测更加有效的做法」，而不是止步于介绍。
 
@@ -269,7 +271,7 @@ sources:
 
 1. **每条 benchmark 都是对比设计**：明确写出变量（要改变什么）和指标（观察什么效果）。对比的选项直接从参考来源的不同做法中提取。
 2. **补充参考来源未覆盖的维度**：如果有逻辑上需要验证但三家都未提及的假设，也应加入。
-3. **产出推荐示例**：最后一条通常是「给出 Ring 建议的格式例子」，意味着 benchmark 的产出不仅是数据，还要形成可纳入正文的推荐模板。
+3. **产出推荐示例**：最后一条通常是「给出目标模型建议的格式例子」，意味着 benchmark 的产出不仅是数据，还要形成可纳入正文的推荐模板。
 
 ### 6.4 「引用来源文本」的提取规范
 
@@ -283,7 +285,7 @@ sources:
 ### 6.5 整理工作流
 
 1. Agent 读取目标 content.md 的 SourceRef frontmatter，确认引用来源列表。
-2. Agent 从 `/Users/sipan/workspace/_working/llm-cookbooks/` 下的源 notebook 中提取与本章节主题相关的 text cell，填入「引用来源文本」段。
+2. Agent 从 `<workspace>/llm-cookbooks/` 下的源 notebook 中提取与本章节主题相关的 text cell，填入「引用来源文本」段。
 3. 「本小节在说什么」和「micro benchmark」两段留空（标注「待填写」），等待用户填写或确认。
 4. 用户填写 / 修改前两段后，Agent 可根据用户确认的范式批量铺开其余章节。
 
@@ -292,6 +294,6 @@ sources:
 ## 7. 技能包待办事项 (TODO & Roadmap)
 
 本 Skill 目前专注于 Cookbook 的大纲提炼、用例组织、SourceRef 契约维护、TOC 驱动编译和两库联动记录，**尚未包含**以下核心开发环节的工作流与规范：
-*   🟥 **开发评测 Framework**：即 `bench-framework/` 基座项目（包括与模型 API 交互的 client 封装、判定逻辑 judge 以及执行度量 runner 引擎）的开发与维护规范。Anthropic `building_evals.ipynb` / `tool_evaluation.ipynb` / `generate_test_cases.ipynb` / `building_moderation_filter.ipynb` 四份核心 evals 资产是最直接的设计输入，可参考宿主仓库的「Building Evals 知识地图」backlog。
+*   🟥 **开发评测 Framework**：即 `bench-framework/` 基座项目（模型 API client、判定逻辑 judge、执行度量 runner）的开发与维护规范。
 *   🟥 **开发评测任务**：即 `benches/` 目录下具体测试用例集设计、`test_runner.py` 逻辑实现及本地联调的开发工作流。
 *   🟥 **`compile_cookbook.py` 的 `merge_sources` pass 实现**：参见 §4.6。

@@ -1,11 +1,11 @@
 ---
 name: dashclaw-platform-intelligence
-description: DashClaw platform expert for integration, troubleshooting, and governance. Snapshot-based — always prefer live queries via `python -m livingcode query`.
+description: DashClaw platform expert for integration, troubleshooting, and governance. Snapshot-based — prefer live queries via `python -m livingcode query`, or `GET {baseUrl}/api/doctor` when Python/livingcode/the repo are unavailable.
 ---
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:89d206a4c82e3856714fd9f6d4d4d3d5f201c1aa`
+**Shape snapshot:** `sha1:5e65b89a2a6387282f387448b7a18aeeda909aa6`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -27,10 +27,26 @@ python -m livingcode query all --json  # Full machine-readable shape
 
 If the snapshot below disagrees with a live query, **trust the live query**.
 
+### Fallback: no Python, livingcode, or repo checkout
+
+`python -m livingcode` only works where the livingcode package and the repo
+checkout are present (e.g. a developer machine). In OpenClaw / the Claude app
+neither exists. When you cannot run the queries above, fall back **in this order**:
+
+1. **`GET {baseUrl}/api/doctor`** — live route/shape health straight from the running
+   instance. Requires the workspace API key (`x-api-key: <key>`); returns 401/403
+   without it. This is the authoritative live source when the CLI is unavailable.
+2. **Read the committed static shape** if a repo checkout is reachable:
+   `app/lib/doctor/generated/shape.json` (full machine-readable shape) and
+   `docs/api-inventory.json` (route inventory). These are regenerated on every
+   `npm run livingcode:refresh`, so they track the same facts the queries return.
+3. **Otherwise, treat the snapshot in this SKILL.md as authoritative** — it is the
+   best available source when neither the API nor the repo can be reached.
+
 ## At a Glance
 
-- **219** active API routes across **54** categories
-- **4** required + **132** optional environment variables
+- **223** active API routes across **55** categories
+- **4** required + **137** optional environment variables
 - **89** database tables
 
 ## API Surface
@@ -85,6 +101,12 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 - `-` `/api/auth/[...nextauth]`
 - `GET` `/api/auth/config`
 - `DELETE, POST` `/api/auth/local`
+
+### `behavior`
+
+- `GET` `/api/behavior/samples`
+- `POST` `/api/behavior/simulate`
+- `GET, POST` `/api/behavior/suggestions`
 
 ### `billing`
 
@@ -180,6 +202,7 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 - `GET, PATCH` `/api/evaluations/runs/[runId]`
 - `GET, POST` `/api/evaluations/scorers`
 - `DELETE, PATCH` `/api/evaluations/scorers/[scorerId]`
+- `POST` `/api/evaluations/scorers/preview`
 - `GET` `/api/evaluations/stats`
 
 ### `guard`
@@ -189,7 +212,7 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 
 ### `handoffs`
 
-- `POST` `/api/handoffs`
+- `GET, POST` `/api/handoffs`
 - `GET` `/api/handoffs/[id]`
 - `POST` `/api/handoffs/[id]/consume`
 - `GET` `/api/handoffs/latest`
@@ -420,7 +443,7 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 
 These must be set — DashClaw will fail to start without them.
 
-- **`DASHCLAW_API_KEY`** - referenced in 56 file(s)
+- **`DASHCLAW_API_KEY`** - referenced in 59 file(s)
 - **`DATABASE_URL`** - referenced in 87 file(s)
 - **`ENCRYPTION_KEY`** - referenced in 4 file(s)
 - **`NEXTAUTH_SECRET`** - referenced in 5 file(s)
@@ -435,6 +458,7 @@ These have fallbacks or only activate specific features.
 - `ALERT_FROM_EMAIL` *(undocumented)*
 - `ALLOWED_ORIGIN` *(undocumented)*
 - `ANTHROPIC_API_KEY` *(undocumented)*
+- `ANTHROPIC_MODEL` *(undocumented)*
 - `API_INVENTORY_VERIFIED_DATE` *(undocumented)*
 - `API_SECRET` *(undocumented)*
 - `BASE_URL` *(undocumented)*
@@ -455,11 +479,14 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_ALLOWED_ISSUER` *(undocumented)*
 - `DASHCLAW_API_KEY_ORG` *(undocumented)*
 - `DASHCLAW_BASE_URL` *(undocumented)*
+- `DASHCLAW_BEHAVIOR_SAMPLES_DIR` *(undocumented)*
+- `DASHCLAW_BEHAVIOR_SAMPLES_ENABLED` *(undocumented)*
 - `DASHCLAW_CLOSED_ENROLLMENT` *(undocumented)*
 - `DASHCLAW_DB_DRIVER` *(undocumented)*
 - `DASHCLAW_DB_POOL_MAX` *(undocumented)*
 - `DASHCLAW_DISABLE_RATE_LIMIT` *(undocumented)*
 - `DASHCLAW_GUARD_FALLBACK` *(undocumented)*
+- `DASHCLAW_GUARD_UNAVAILABLE_POLICY` *(undocumented)*
 - `DASHCLAW_HOSTED` *(undocumented)*
 - `DASHCLAW_JTI_MAX_TTL_SECONDS` *(undocumented)*
 - `DASHCLAW_JTI_REPLAY_PROTECTION` *(undocumented)*
@@ -558,6 +585,7 @@ These have fallbacks or only activate specific features.
 - `UPSTASH_REDIS_REST_TOKEN` *(undocumented)*
 - `UPSTASH_REDIS_REST_URL` *(undocumented)*
 - `VERCEL` *(undocumented)*
+- `VERCEL_PROJECT_PRODUCTION_URL` *(undocumented)*
 - `VERCEL_URL` *(undocumented)*
 - `WEBHOOK_ALLOWED_DOMAINS` *(undocumented)*
 - `X` *(undocumented)*

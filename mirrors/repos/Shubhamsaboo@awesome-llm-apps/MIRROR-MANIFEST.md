@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Shubhamsaboo/awesome-llm-apps` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `Shubhamsaboo/awesome-llm-apps` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Shubhamsaboo/awesome-llm-apps` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,6 +83,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`awesome_agent_skills/ux-designer/AGENTS.md`](awesome_agent_skills/ux-designer/AGENTS.md) |
 | 23 | ✓ | [`awesome_agent_skills/ux-designer/SKILL.md`](awesome_agent_skills/ux-designer/SKILL.md) |
 | 24 | ✓ | [`awesome_agent_skills/visualization-expert/SKILL.md`](awesome_agent_skills/visualization-expert/SKILL.md) |
+| 25 | ✓ | [`generative_ui_agents/ai-dashboard-canvas-agent/AGENTS.md`](generative_ui_agents/ai-dashboard-canvas-agent/AGENTS.md) |
+| 26 | ✓ | [`generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/chatgpt-app-builder/SKILL.md`](generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/chatgpt-app-builder/SKILL.md) |
+| 27 | ✓ | [`generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-apps-builder/SKILL.md`](generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-apps-builder/SKILL.md) |
+| 28 | ✓ | [`generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-builder/SKILL.md`](generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-builder/SKILL.md) |
+| 29 | ✓ | [`generative_ui_agents/generative-ui-starter-project/CLAUDE.md`](generative_ui_agents/generative-ui-starter-project/CLAUDE.md) |
 
 ---
 

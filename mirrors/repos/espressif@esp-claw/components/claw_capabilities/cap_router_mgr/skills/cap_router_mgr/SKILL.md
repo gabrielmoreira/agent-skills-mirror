@@ -146,7 +146,7 @@ Use this skill to inspect and modify event router rules through the direct calla
 
 ```json
 {
-  "rule_json": "{\"id\":\"startup_run_lua_script\",\"description\":\"Run a Lua script once the device finishes booting.\",\"enabled\":true,\"consume_on_match\":false,\"ack\":\"startup Lua script executed\",\"match\":{\"source_cap\":\"app_claw\",\"event_type\":\"startup\",\"event_key\":\"boot_completed\",\"content_type\":\"trigger\"},\"actions\":[{\"type\":\"run_script\",\"input\":{\"path\":\"/fatfs/skills/example_skill/scripts/startup.lua\",\"args\":{}}}]}"
+  "rule_json": "{\"id\":\"startup_run_lua_script\",\"description\":\"Run a Lua script once the device finishes booting.\",\"enabled\":true,\"consume_on_match\":false,\"ack\":\"startup Lua script executed\",\"match\":{\"source_cap\":\"app_claw\",\"event_type\":\"startup\",\"event_key\":\"boot_completed\",\"content_type\":\"trigger\"},\"actions\":[{\"type\":\"run_script\",\"input\":{\"path\":\"/absolute/path/to/your_script.lua\",\"args\":{}}}]}"
 }
 ```
 
@@ -162,7 +162,7 @@ Use this skill to inspect and modify event router rules through the direct calla
 
 ```json
 {
-  "rule_json": "{\"id\":\"im_run_script_command\",\"enabled\":true,\"consume_on_match\":true,\"match\":{\"event_type\":\"message\",\"event_key\":\"text\",\"content_type\":\"text\",\"text\":\"/run\",\"text_match_rule\":\"prefix\"},\"actions\":[{\"type\":\"run_script\",\"input\":{\"path\":\"/fatfs/skills/runner/scripts/run.lua\",\"args\":{\"command\":\"{{match.remainder}}\"}}}]}"
+  "rule_json": "{\"id\":\"im_run_script_command\",\"enabled\":true,\"consume_on_match\":true,\"match\":{\"event_type\":\"message\",\"event_key\":\"text\",\"content_type\":\"text\",\"text\":\"/run\",\"text_match_rule\":\"prefix\"},\"actions\":[{\"type\":\"run_script\",\"input\":{\"path\":\"/absolute/path/to/your_script.lua\",\"args\":{\"command\":\"{{match.remainder}}\"}}}]}"
 }
 ```
 

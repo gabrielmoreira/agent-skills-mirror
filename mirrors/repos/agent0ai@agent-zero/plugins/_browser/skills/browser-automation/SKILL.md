@@ -32,7 +32,7 @@ Screenshots are explicit only; the browser does not automatically load images in
 2. Call `vision_load` with the returned `vision_load.tool_args.paths` value.
 3. Reason from the latest loaded screenshot.
 
-Screenshot args include `quality`, `full_page`, and optional `path`. Without `path`, the screenshot is an ephemeral ref consumed by `vision_load`; with `path`, PNG is used when `path` ends with `.png`, otherwise JPEG is used.
+Screenshot args include `quality`, `full_page`, and optional `path`. Without `path`, the screenshot is saved as a chat-scoped artifact and returned through `vision_load.tool_args.paths`; with `path`, PNG is used when `path` ends with `.png`, otherwise JPEG is used.
 
 ## Forms And Files
 

@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "generated_by": "scripts/generate_catalog.py",
-  "skill_count": 77,
+  "skill_count": 84,
   "galaxy_tool_count": 8182,
   "skills": [
     {
@@ -92,7 +92,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/archaic-introgression/archaic_introgression.py --demo",
+      "demo_command": "python skills/archaic-introgression/pipeline.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [
@@ -511,7 +511,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/clinical-trial-finder/opentargets.py --demo",
+      "demo_command": "python skills/clinical-trial-finder/euctr.py --demo",
       "dependencies": [
         "python>=3.11"
       ],
@@ -545,7 +545,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/clinical-variant-reporter/clinical_variant_reporter.py --demo",
+      "demo_command": "python skills/clinical-variant-reporter/acmg_engine.py --demo",
       "dependencies": [],
       "tags": [
         "acmg",
@@ -1075,6 +1075,239 @@
       "chaining_partners": []
     },
     {
+      "name": "gi-annotation",
+      "cli_alias": null,
+      "description": "Predict gene and transcript structure (intervals, exons, strand) from a DNA sequence using the Genomic Intelligence DNA Annotation model, via the hosted /v1/tasks/annotation/predict API. Async-only — the pipeline takes ~20 s for ~20 kbp.",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/gi-annotation/gi_annotation.py --demo",
+      "dependencies": [
+        "python>=3.10",
+        "requests>=2.31"
+      ],
+      "tags": [
+        "genomics",
+        "annotation",
+        "gene-prediction",
+        "transcript-prediction",
+        "gene-structure",
+        "dna-lm",
+        "gi-api"
+      ],
+      "trigger_keywords": [
+        "gene annotation",
+        "transcript annotation",
+        "annotate sequence",
+        "gene structure prediction",
+        "predict transcripts",
+        "de novo gene prediction",
+        "DNA annotation",
+        "gene boundaries",
+        "exon prediction",
+        "gi annotation",
+        "genomic intelligence annotation"
+      ],
+      "chaining_partners": []
+    },
+    {
+      "name": "gi-chromatin",
+      "cli_alias": null,
+      "description": "Predict chromatin state — histone marks, DNase, TF binding — across 919 tracks (DeepSEA-style) for DNA sequences, via the hosted Genomic Intelligence /v1/tasks/chromatin/predict API.",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/gi-chromatin/gi_chromatin.py --demo",
+      "dependencies": [
+        "python>=3.10",
+        "requests>=2.31"
+      ],
+      "tags": [
+        "genomics",
+        "chromatin",
+        "histone",
+        "DNase",
+        "ATAC",
+        "TF-binding",
+        "deepsea",
+        "dna-lm",
+        "gi-api"
+      ],
+      "trigger_keywords": [
+        "chromatin",
+        "chromatin state",
+        "chromatin annotation",
+        "histone mark",
+        "histone modification",
+        "DNase",
+        "ATAC",
+        "TF binding",
+        "transcription factor binding",
+        "DeepSEA",
+        "epigenome",
+        "gi chromatin",
+        "genomic intelligence chromatin"
+      ],
+      "chaining_partners": []
+    },
+    {
+      "name": "gi-enhancer",
+      "cli_alias": null,
+      "description": "Predict enhancer activity in DNA sequences using the Genomic Intelligence G0 DeepSTARR model, via the hosted /v1/tasks/enhancer/predict API. Returns per-window activity scores.",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/gi-enhancer/gi_enhancer.py --demo",
+      "dependencies": [
+        "python>=3.10",
+        "requests>=2.31"
+      ],
+      "tags": [
+        "genomics",
+        "enhancer",
+        "regulatory",
+        "cis-regulatory",
+        "deepstarr",
+        "dna-lm",
+        "gi-api"
+      ],
+      "trigger_keywords": [
+        "enhancer",
+        "enhancer activity",
+        "predict enhancer",
+        "regulatory element",
+        "cis-regulatory",
+        "CRE",
+        "DeepSTARR",
+        "STARR-seq",
+        "massively parallel reporter assay",
+        "MPRA",
+        "gi enhancer",
+        "genomic intelligence enhancer"
+      ],
+      "chaining_partners": []
+    },
+    {
+      "name": "gi-expression",
+      "cli_alias": null,
+      "description": "Predict tissue / cell-type expression (log TPM + TPM) from a 9,198 bp TSS-centered DNA sequence using the Genomic Intelligence G0 Expression model, via the hosted /v1/tasks/expression/predict API. The model is conditioned on a free-text cell-type / assay description.",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/gi-expression/gi_expression.py --demo",
+      "dependencies": [
+        "python>=3.10",
+        "requests>=2.31"
+      ],
+      "tags": [
+        "genomics",
+        "expression",
+        "RNA-seq",
+        "TPM",
+        "sequence-to-expression",
+        "dna-lm",
+        "gi-api"
+      ],
+      "trigger_keywords": [
+        "expression prediction",
+        "predict expression",
+        "sequence to expression",
+        "TPM prediction",
+        "cell type expression",
+        "tissue expression",
+        "RNA-seq prediction",
+        "gi expression",
+        "G0 expression",
+        "genomic intelligence expression"
+      ],
+      "chaining_partners": []
+    },
+    {
+      "name": "gi-promoter",
+      "cli_alias": null,
+      "description": "Detect promoter regions in DNA sequences using the Genomic Intelligence G0 transformer (GENA-LM BERT Large), via the hosted /v1/tasks/promoter/predict API. Returns per-window promoter probabilities and called regions.",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/gi-promoter/gi_promoter.py --demo",
+      "dependencies": [
+        "python>=3.10",
+        "requests>=2.31"
+      ],
+      "tags": [
+        "genomics",
+        "promoter",
+        "transcription",
+        "regulatory",
+        "dna-lm",
+        "transformer",
+        "gi-api"
+      ],
+      "trigger_keywords": [
+        "promoter",
+        "promoter prediction",
+        "predict promoter",
+        "find promoter",
+        "promoter region",
+        "TSS prediction",
+        "transcription start site",
+        "gi promoter",
+        "genomic intelligence promoter",
+        "G0 promoter",
+        "GENA-LM promoter"
+      ],
+      "chaining_partners": []
+    },
+    {
+      "name": "gi-splice",
+      "cli_alias": null,
+      "description": "Detect splice donor and acceptor sites in DNA sequences using the Genomic Intelligence G0 BigBird transformer, via the hosted /v1/tasks/splice/predict API. Returns per-position site probabilities and called sites.",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/gi-splice/gi_splice.py --demo",
+      "dependencies": [
+        "python>=3.10",
+        "requests>=2.31"
+      ],
+      "tags": [
+        "genomics",
+        "splice",
+        "splice-site",
+        "splicing",
+        "intron-exon",
+        "dna-lm",
+        "transformer",
+        "gi-api"
+      ],
+      "trigger_keywords": [
+        "splice",
+        "splice site",
+        "splice donor",
+        "splice acceptor",
+        "splicing prediction",
+        "intron exon boundary",
+        "cryptic splice site",
+        "GT-AG site",
+        "gi splice",
+        "G0 splice",
+        "genomic intelligence splice"
+      ],
+      "chaining_partners": []
+    },
+    {
       "name": "gwas-catalog-region-fetch",
       "cli_alias": null,
       "description": "Fetch a region of GWAS summary statistics from the NHGRI-EBI GWAS Catalog\nharmonised collection via tabix-on-FTP. Use when an agent needs GWAS beta /\nSE / p-value for every variant in a window for one specific study (GCST\naccession). Input: accession, chromosome, start, end. Output: harmonised\nTSV slice in canonical format.\n",
@@ -1223,7 +1456,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/illumina-bridge/illumina_providers.py --demo",
+      "demo_command": "python skills/illumina-bridge/illumina_bridge.py --demo",
       "dependencies": [],
       "tags": [
         "illumina",
@@ -1353,7 +1586,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/locuscompare-region-render/cli.py --demo",
+      "demo_command": "python skills/locuscompare-region-render/_wald_ratio_types.py --demo",
       "dependencies": [
         "python>=3.10",
         "numpy>=1.24",
@@ -1608,6 +1841,53 @@
       ]
     },
     {
+      "name": "nfcore-sarek-wrapper",
+      "cli_alias": "sarek-pipeline",
+      "description": "ClawBio wrapper around nf-core/sarek 3.8.1 covering mapping through annotation for germline, tumor-only, and somatic paired analyses.",
+      "version": "0.1.0",
+      "status": "mvp",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python clawbio.py run sarek-pipeline --demo",
+      "dependencies": [
+        "python>=3.11"
+      ],
+      "tags": [
+        "sarek",
+        "variant-calling",
+        "germline",
+        "somatic",
+        "tumor-only",
+        "wes",
+        "wgs",
+        "nextflow",
+        "nf-core"
+      ],
+      "trigger_keywords": [
+        "sarek",
+        "germline variant calling",
+        "somatic variant calling",
+        "tumor-normal pair",
+        "mutect2",
+        "strelka",
+        "haplotypecaller",
+        "ascat",
+        "WES variant calling",
+        "WGS variant calling",
+        "VEP annotation",
+        "SnpEff",
+        "GATK pipeline",
+        "nf-core",
+        "Nextflow"
+      ],
+      "chaining_partners": [
+        "variant-annotation",
+        "clinical-variant-reporter",
+        "bio-orchestrator"
+      ]
+    },
+    {
       "name": "nfcore-scrnaseq-wrapper",
       "cli_alias": "scrnaseq-pipeline",
       "description": "Wrapper skill for running nf-core/scrnaseq upstream single-cell RNA-seq preprocessing from FASTQ with strict preflight, reproducibility outputs, and downstream handoff to ClawBio scRNA skills.",
@@ -1652,7 +1932,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/nutrigx-advisor/parse_input.py --demo",
+      "demo_command": "python skills/nutrigx-advisor/score_variants.py --demo",
       "dependencies": [],
       "tags": [
         "nutrigenomics",
@@ -1905,7 +2185,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/pubmed-summariser/pubmed_summariser.py --demo",
+      "demo_command": "python skills/pubmed-summariser/pubmed_api.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [

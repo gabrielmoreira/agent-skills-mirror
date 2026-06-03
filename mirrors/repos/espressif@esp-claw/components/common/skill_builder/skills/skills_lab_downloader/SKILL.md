@@ -86,10 +86,6 @@ Use this skill when the user wants to install a skill from the ESP-Claw's Skill 
 
 9. Report completion to the user. If registration was skipped, mention that the skill may require the next registry reload or device restart before `activate_skill` can use it.
 
-## Install paths
-- Hub `https://skills-lab.esp-claw.com/file/<skill_name>/SKILL.md` is saved to `/fatfs/skills/<skill_name>/SKILL.md`.
-- Hub `https://skills-lab.esp-claw.com/file/<skill_name>/<group>/<file>` is saved to `/fatfs/skills/<skill_name>/<group>/<file>`.
-
 ## Notes
 - During installation, files are streamed directly from `http_request` into their target paths with `save_path`; the script does not load downloaded skill files into Lua memory before writing them.
 - If any streamed file exceeds the downloader's file-size limit, installation fails and the partial file is removed.

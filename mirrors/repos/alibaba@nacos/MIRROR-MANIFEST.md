@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `alibaba/nacos` — 26 default patterns, 138 followed patterns, 167 file(s) materialized.
+Mirror of `alibaba/nacos` — 26 default patterns, 142 followed patterns, 171 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `alibaba/nacos` — 26 default patterns, 138 followed patterns, 167 fi
 | Ref Type      | `branch` |
 | Ref           | `develop` |
 | Default pats  | 26 |
-| Followed pats | 138 |
-| Files         | 167 |
+| Followed pats | 142 |
+| Files         | 171 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -119,6 +119,8 @@ Mirror of `alibaba/nacos` — 26 default patterns, 138 followed patterns, 167 fi
 - `specs/en/auth/oidc-auth-plugin-spec.md`
 - `specs/en/auth/visibility-plugin-spec.md`
 - `specs/en/auth/default-auth-plugin-spec.md`
+- `specs/en/testing/api-integration-test-spec.md`
+- `specs/en/testing/java-sdk-integration-test-spec.md`
 - `specs/zh-cn/design/nacos-design-spec.md`
 - `specs/zh-cn/design/resource-model-spec.md`
 - `specs/zh-cn/design/compatibility-deprecation-spec.md`
@@ -185,6 +187,8 @@ Mirror of `alibaba/nacos` — 26 default patterns, 138 followed patterns, 167 fi
 - `specs/zh-cn/auth/oidc-auth-plugin-spec.md`
 - `specs/zh-cn/auth/visibility-plugin-spec.md`
 - `specs/zh-cn/auth/default-auth-plugin-spec.md`
+- `specs/zh-cn/testing/api-integration-test-spec.md`
+- `specs/zh-cn/testing/java-sdk-integration-test-spec.md`
 - `.github/PULL_REQUEST_TEMPLATE.md`
 - `CONTRIBUTING_zh.md`
 - `CODE_OF_CONDUCT.md`
@@ -295,74 +299,78 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 97 | → | [`specs/en/plugin/README.md`](specs/en/plugin/README.md) |
 | 98 | → | [`specs/en/sdk/sdk-java-impl-spec.md`](specs/en/sdk/sdk-java-impl-spec.md) |
 | 99 | → | [`specs/en/sdk/sdk-spec.md`](specs/en/sdk/sdk-spec.md) |
-| 100 | → | [`specs/README.md`](specs/README.md) |
-| 101 | → | [`specs/zh-cn/ai/a2a-agent-spec.md`](specs/zh-cn/ai/a2a-agent-spec.md) |
-| 102 | → | [`specs/zh-cn/ai/agentspec-spec.md`](specs/zh-cn/ai/agentspec-spec.md) |
-| 103 | → | [`specs/zh-cn/ai/ai-registry-adaptor-spec.md`](specs/zh-cn/ai/ai-registry-adaptor-spec.md) |
-| 104 | → | [`specs/zh-cn/ai/ai-registry-spec.md`](specs/zh-cn/ai/ai-registry-spec.md) |
-| 105 | → | [`specs/zh-cn/ai/ai-resource-lifecycle-spec.md`](specs/zh-cn/ai/ai-resource-lifecycle-spec.md) |
-| 106 | → | [`specs/zh-cn/ai/ai-resource-model-spec.md`](specs/zh-cn/ai/ai-resource-model-spec.md) |
-| 107 | → | [`specs/zh-cn/ai/mcp-server-spec.md`](specs/zh-cn/ai/mcp-server-spec.md) |
-| 108 | → | [`specs/zh-cn/ai/prompt-spec.md`](specs/zh-cn/ai/prompt-spec.md) |
-| 109 | → | [`specs/zh-cn/ai/skill-spec.md`](specs/zh-cn/ai/skill-spec.md) |
-| 110 | → | [`specs/zh-cn/auth/auth-permission-spec.md`](specs/zh-cn/auth/auth-permission-spec.md) |
-| 111 | → | [`specs/zh-cn/auth/auth-plugin-spec.md`](specs/zh-cn/auth/auth-plugin-spec.md) |
-| 112 | → | [`specs/zh-cn/auth/default-auth-plugin-spec.md`](specs/zh-cn/auth/default-auth-plugin-spec.md) |
-| 113 | → | [`specs/zh-cn/auth/oidc-auth-plugin-spec.md`](specs/zh-cn/auth/oidc-auth-plugin-spec.md) |
-| 114 | → | [`specs/zh-cn/auth/ram-auth-plugin-spec.md`](specs/zh-cn/auth/ram-auth-plugin-spec.md) |
-| 115 | → | [`specs/zh-cn/auth/visibility-plugin-spec.md`](specs/zh-cn/auth/visibility-plugin-spec.md) |
-| 116 | → | [`specs/zh-cn/client/client-ability-negotiation-spec.md`](specs/zh-cn/client/client-ability-negotiation-spec.md) |
-| 117 | → | [`specs/zh-cn/client/client-connection-failover-spec.md`](specs/zh-cn/client/client-connection-failover-spec.md) |
-| 118 | → | [`specs/zh-cn/client/client-local-cache-redo-spec.md`](specs/zh-cn/client/client-local-cache-redo-spec.md) |
-| 119 | → | [`specs/zh-cn/client/client-runtime-spec.md`](specs/zh-cn/client/client-runtime-spec.md) |
-| 120 | → | [`specs/zh-cn/client/runtime-push-reconnect-spec.md`](specs/zh-cn/client/runtime-push-reconnect-spec.md) |
-| 121 | → | [`specs/zh-cn/config/config-capacity-ops-spec.md`](specs/zh-cn/config/config-capacity-ops-spec.md) |
-| 122 | → | [`specs/zh-cn/config/config-consistency-dump-visibility-spec.md`](specs/zh-cn/config/config-consistency-dump-visibility-spec.md) |
-| 123 | → | [`specs/zh-cn/config/config-gray-release-spec.md`](specs/zh-cn/config/config-gray-release-spec.md) |
-| 124 | → | [`specs/zh-cn/config/config-listener-watch-spec.md`](specs/zh-cn/config/config-listener-watch-spec.md) |
-| 125 | → | [`specs/zh-cn/config/config-persistence-history-spec.md`](specs/zh-cn/config/config-persistence-history-spec.md) |
-| 126 | → | [`specs/zh-cn/config/config-publish-query-spec.md`](specs/zh-cn/config/config-publish-query-spec.md) |
-| 127 | → | [`specs/zh-cn/config/config-resource-spec.md`](specs/zh-cn/config/config-resource-spec.md) |
-| 128 | → | [`specs/zh-cn/config/config-spec.md`](specs/zh-cn/config/config-spec.md) |
-| 129 | → | [`specs/zh-cn/console/console-spec.md`](specs/zh-cn/console/console-spec.md) |
-| 130 | → | [`specs/zh-cn/core/core-operations-spec.md`](specs/zh-cn/core/core-operations-spec.md) |
-| 131 | → | [`specs/zh-cn/design/compatibility-deprecation-spec.md`](specs/zh-cn/design/compatibility-deprecation-spec.md) |
-| 132 | → | [`specs/zh-cn/design/core-capabilities-spec.md`](specs/zh-cn/design/core-capabilities-spec.md) |
-| 133 | → | [`specs/zh-cn/design/foundation-ap-consistency-spec.md`](specs/zh-cn/design/foundation-ap-consistency-spec.md) |
-| 134 | → | [`specs/zh-cn/design/foundation-capabilities-spec.md`](specs/zh-cn/design/foundation-capabilities-spec.md) |
-| 135 | → | [`specs/zh-cn/design/foundation-cluster-membership-spec.md`](specs/zh-cn/design/foundation-cluster-membership-spec.md) |
-| 136 | → | [`specs/zh-cn/design/foundation-cp-consistency-spec.md`](specs/zh-cn/design/foundation-cp-consistency-spec.md) |
-| 137 | → | [`specs/zh-cn/design/foundation-event-dispatch-spec.md`](specs/zh-cn/design/foundation-event-dispatch-spec.md) |
-| 138 | → | [`specs/zh-cn/design/foundation-internal-rpc-spec.md`](specs/zh-cn/design/foundation-internal-rpc-spec.md) |
-| 139 | → | [`specs/zh-cn/design/foundation-observability-hooks-spec.md`](specs/zh-cn/design/foundation-observability-hooks-spec.md) |
-| 140 | → | [`specs/zh-cn/design/foundation-persistence-dump-spec.md`](specs/zh-cn/design/foundation-persistence-dump-spec.md) |
-| 141 | → | [`specs/zh-cn/design/foundation-remote-connection-spec.md`](specs/zh-cn/design/foundation-remote-connection-spec.md) |
-| 142 | → | [`specs/zh-cn/design/foundation-request-context-spec.md`](specs/zh-cn/design/foundation-request-context-spec.md) |
-| 143 | → | [`specs/zh-cn/design/foundation-server-lifecycle-env-spec.md`](specs/zh-cn/design/foundation-server-lifecycle-env-spec.md) |
-| 144 | → | [`specs/zh-cn/design/foundation-task-execution-spec.md`](specs/zh-cn/design/foundation-task-execution-spec.md) |
-| 145 | → | [`specs/zh-cn/design/nacos-design-spec.md`](specs/zh-cn/design/nacos-design-spec.md) |
-| 146 | → | [`specs/zh-cn/design/resource-model-spec.md`](specs/zh-cn/design/resource-model-spec.md) |
-| 147 | → | [`specs/zh-cn/grpc-api/api-spec.md`](specs/zh-cn/grpc-api/api-spec.md) |
-| 148 | → | [`specs/zh-cn/http-api/api-spec.md`](specs/zh-cn/http-api/api-spec.md) |
-| 149 | → | [`specs/zh-cn/http-api/authorization-spec.md`](specs/zh-cn/http-api/authorization-spec.md) |
-| 150 | → | [`specs/zh-cn/http-api/response-error-spec.md`](specs/zh-cn/http-api/response-error-spec.md) |
-| 151 | → | [`specs/zh-cn/http-api/v3-api-surface.md`](specs/zh-cn/http-api/v3-api-surface.md) |
-| 152 | → | [`specs/zh-cn/integration/integration-adapter-spec.md`](specs/zh-cn/integration/integration-adapter-spec.md) |
-| 153 | → | [`specs/zh-cn/lock/lock-spec.md`](specs/zh-cn/lock/lock-spec.md) |
-| 154 | → | [`specs/zh-cn/naming/naming-consistency-client-spec.md`](specs/zh-cn/naming/naming-consistency-client-spec.md) |
-| 155 | → | [`specs/zh-cn/naming/naming-discovery-subscription-spec.md`](specs/zh-cn/naming/naming-discovery-subscription-spec.md) |
-| 156 | → | [`specs/zh-cn/naming/naming-ephemeral-distro-consistency-spec.md`](specs/zh-cn/naming/naming-ephemeral-distro-consistency-spec.md) |
-| 157 | → | [`specs/zh-cn/naming/naming-health-protection-spec.md`](specs/zh-cn/naming/naming-health-protection-spec.md) |
-| 158 | → | [`specs/zh-cn/naming/naming-instance-lifecycle-spec.md`](specs/zh-cn/naming/naming-instance-lifecycle-spec.md) |
-| 159 | → | [`specs/zh-cn/naming/naming-metadata-selector-spec.md`](specs/zh-cn/naming/naming-metadata-selector-spec.md) |
-| 160 | → | [`specs/zh-cn/naming/naming-ops-spec.md`](specs/zh-cn/naming/naming-ops-spec.md) |
-| 161 | → | [`specs/zh-cn/naming/naming-persistent-cp-consistency-spec.md`](specs/zh-cn/naming/naming-persistent-cp-consistency-spec.md) |
-| 162 | → | [`specs/zh-cn/naming/naming-resource-spec.md`](specs/zh-cn/naming/naming-resource-spec.md) |
-| 163 | → | [`specs/zh-cn/naming/naming-spec.md`](specs/zh-cn/naming/naming-spec.md) |
-| 164 | → | [`specs/zh-cn/plugin/README.md`](specs/zh-cn/plugin/README.md) |
-| 165 | → | [`specs/zh-cn/sdk/sdk-java-impl-spec.md`](specs/zh-cn/sdk/sdk-java-impl-spec.md) |
-| 166 | → | [`specs/zh-cn/sdk/sdk-spec.md`](specs/zh-cn/sdk/sdk-spec.md) |
-| 167 | → | [`style/codeStyle.md`](style/codeStyle.md) |
+| 100 | → | [`specs/en/testing/api-integration-test-spec.md`](specs/en/testing/api-integration-test-spec.md) |
+| 101 | → | [`specs/en/testing/java-sdk-integration-test-spec.md`](specs/en/testing/java-sdk-integration-test-spec.md) |
+| 102 | → | [`specs/README.md`](specs/README.md) |
+| 103 | → | [`specs/zh-cn/ai/a2a-agent-spec.md`](specs/zh-cn/ai/a2a-agent-spec.md) |
+| 104 | → | [`specs/zh-cn/ai/agentspec-spec.md`](specs/zh-cn/ai/agentspec-spec.md) |
+| 105 | → | [`specs/zh-cn/ai/ai-registry-adaptor-spec.md`](specs/zh-cn/ai/ai-registry-adaptor-spec.md) |
+| 106 | → | [`specs/zh-cn/ai/ai-registry-spec.md`](specs/zh-cn/ai/ai-registry-spec.md) |
+| 107 | → | [`specs/zh-cn/ai/ai-resource-lifecycle-spec.md`](specs/zh-cn/ai/ai-resource-lifecycle-spec.md) |
+| 108 | → | [`specs/zh-cn/ai/ai-resource-model-spec.md`](specs/zh-cn/ai/ai-resource-model-spec.md) |
+| 109 | → | [`specs/zh-cn/ai/mcp-server-spec.md`](specs/zh-cn/ai/mcp-server-spec.md) |
+| 110 | → | [`specs/zh-cn/ai/prompt-spec.md`](specs/zh-cn/ai/prompt-spec.md) |
+| 111 | → | [`specs/zh-cn/ai/skill-spec.md`](specs/zh-cn/ai/skill-spec.md) |
+| 112 | → | [`specs/zh-cn/auth/auth-permission-spec.md`](specs/zh-cn/auth/auth-permission-spec.md) |
+| 113 | → | [`specs/zh-cn/auth/auth-plugin-spec.md`](specs/zh-cn/auth/auth-plugin-spec.md) |
+| 114 | → | [`specs/zh-cn/auth/default-auth-plugin-spec.md`](specs/zh-cn/auth/default-auth-plugin-spec.md) |
+| 115 | → | [`specs/zh-cn/auth/oidc-auth-plugin-spec.md`](specs/zh-cn/auth/oidc-auth-plugin-spec.md) |
+| 116 | → | [`specs/zh-cn/auth/ram-auth-plugin-spec.md`](specs/zh-cn/auth/ram-auth-plugin-spec.md) |
+| 117 | → | [`specs/zh-cn/auth/visibility-plugin-spec.md`](specs/zh-cn/auth/visibility-plugin-spec.md) |
+| 118 | → | [`specs/zh-cn/client/client-ability-negotiation-spec.md`](specs/zh-cn/client/client-ability-negotiation-spec.md) |
+| 119 | → | [`specs/zh-cn/client/client-connection-failover-spec.md`](specs/zh-cn/client/client-connection-failover-spec.md) |
+| 120 | → | [`specs/zh-cn/client/client-local-cache-redo-spec.md`](specs/zh-cn/client/client-local-cache-redo-spec.md) |
+| 121 | → | [`specs/zh-cn/client/client-runtime-spec.md`](specs/zh-cn/client/client-runtime-spec.md) |
+| 122 | → | [`specs/zh-cn/client/runtime-push-reconnect-spec.md`](specs/zh-cn/client/runtime-push-reconnect-spec.md) |
+| 123 | → | [`specs/zh-cn/config/config-capacity-ops-spec.md`](specs/zh-cn/config/config-capacity-ops-spec.md) |
+| 124 | → | [`specs/zh-cn/config/config-consistency-dump-visibility-spec.md`](specs/zh-cn/config/config-consistency-dump-visibility-spec.md) |
+| 125 | → | [`specs/zh-cn/config/config-gray-release-spec.md`](specs/zh-cn/config/config-gray-release-spec.md) |
+| 126 | → | [`specs/zh-cn/config/config-listener-watch-spec.md`](specs/zh-cn/config/config-listener-watch-spec.md) |
+| 127 | → | [`specs/zh-cn/config/config-persistence-history-spec.md`](specs/zh-cn/config/config-persistence-history-spec.md) |
+| 128 | → | [`specs/zh-cn/config/config-publish-query-spec.md`](specs/zh-cn/config/config-publish-query-spec.md) |
+| 129 | → | [`specs/zh-cn/config/config-resource-spec.md`](specs/zh-cn/config/config-resource-spec.md) |
+| 130 | → | [`specs/zh-cn/config/config-spec.md`](specs/zh-cn/config/config-spec.md) |
+| 131 | → | [`specs/zh-cn/console/console-spec.md`](specs/zh-cn/console/console-spec.md) |
+| 132 | → | [`specs/zh-cn/core/core-operations-spec.md`](specs/zh-cn/core/core-operations-spec.md) |
+| 133 | → | [`specs/zh-cn/design/compatibility-deprecation-spec.md`](specs/zh-cn/design/compatibility-deprecation-spec.md) |
+| 134 | → | [`specs/zh-cn/design/core-capabilities-spec.md`](specs/zh-cn/design/core-capabilities-spec.md) |
+| 135 | → | [`specs/zh-cn/design/foundation-ap-consistency-spec.md`](specs/zh-cn/design/foundation-ap-consistency-spec.md) |
+| 136 | → | [`specs/zh-cn/design/foundation-capabilities-spec.md`](specs/zh-cn/design/foundation-capabilities-spec.md) |
+| 137 | → | [`specs/zh-cn/design/foundation-cluster-membership-spec.md`](specs/zh-cn/design/foundation-cluster-membership-spec.md) |
+| 138 | → | [`specs/zh-cn/design/foundation-cp-consistency-spec.md`](specs/zh-cn/design/foundation-cp-consistency-spec.md) |
+| 139 | → | [`specs/zh-cn/design/foundation-event-dispatch-spec.md`](specs/zh-cn/design/foundation-event-dispatch-spec.md) |
+| 140 | → | [`specs/zh-cn/design/foundation-internal-rpc-spec.md`](specs/zh-cn/design/foundation-internal-rpc-spec.md) |
+| 141 | → | [`specs/zh-cn/design/foundation-observability-hooks-spec.md`](specs/zh-cn/design/foundation-observability-hooks-spec.md) |
+| 142 | → | [`specs/zh-cn/design/foundation-persistence-dump-spec.md`](specs/zh-cn/design/foundation-persistence-dump-spec.md) |
+| 143 | → | [`specs/zh-cn/design/foundation-remote-connection-spec.md`](specs/zh-cn/design/foundation-remote-connection-spec.md) |
+| 144 | → | [`specs/zh-cn/design/foundation-request-context-spec.md`](specs/zh-cn/design/foundation-request-context-spec.md) |
+| 145 | → | [`specs/zh-cn/design/foundation-server-lifecycle-env-spec.md`](specs/zh-cn/design/foundation-server-lifecycle-env-spec.md) |
+| 146 | → | [`specs/zh-cn/design/foundation-task-execution-spec.md`](specs/zh-cn/design/foundation-task-execution-spec.md) |
+| 147 | → | [`specs/zh-cn/design/nacos-design-spec.md`](specs/zh-cn/design/nacos-design-spec.md) |
+| 148 | → | [`specs/zh-cn/design/resource-model-spec.md`](specs/zh-cn/design/resource-model-spec.md) |
+| 149 | → | [`specs/zh-cn/grpc-api/api-spec.md`](specs/zh-cn/grpc-api/api-spec.md) |
+| 150 | → | [`specs/zh-cn/http-api/api-spec.md`](specs/zh-cn/http-api/api-spec.md) |
+| 151 | → | [`specs/zh-cn/http-api/authorization-spec.md`](specs/zh-cn/http-api/authorization-spec.md) |
+| 152 | → | [`specs/zh-cn/http-api/response-error-spec.md`](specs/zh-cn/http-api/response-error-spec.md) |
+| 153 | → | [`specs/zh-cn/http-api/v3-api-surface.md`](specs/zh-cn/http-api/v3-api-surface.md) |
+| 154 | → | [`specs/zh-cn/integration/integration-adapter-spec.md`](specs/zh-cn/integration/integration-adapter-spec.md) |
+| 155 | → | [`specs/zh-cn/lock/lock-spec.md`](specs/zh-cn/lock/lock-spec.md) |
+| 156 | → | [`specs/zh-cn/naming/naming-consistency-client-spec.md`](specs/zh-cn/naming/naming-consistency-client-spec.md) |
+| 157 | → | [`specs/zh-cn/naming/naming-discovery-subscription-spec.md`](specs/zh-cn/naming/naming-discovery-subscription-spec.md) |
+| 158 | → | [`specs/zh-cn/naming/naming-ephemeral-distro-consistency-spec.md`](specs/zh-cn/naming/naming-ephemeral-distro-consistency-spec.md) |
+| 159 | → | [`specs/zh-cn/naming/naming-health-protection-spec.md`](specs/zh-cn/naming/naming-health-protection-spec.md) |
+| 160 | → | [`specs/zh-cn/naming/naming-instance-lifecycle-spec.md`](specs/zh-cn/naming/naming-instance-lifecycle-spec.md) |
+| 161 | → | [`specs/zh-cn/naming/naming-metadata-selector-spec.md`](specs/zh-cn/naming/naming-metadata-selector-spec.md) |
+| 162 | → | [`specs/zh-cn/naming/naming-ops-spec.md`](specs/zh-cn/naming/naming-ops-spec.md) |
+| 163 | → | [`specs/zh-cn/naming/naming-persistent-cp-consistency-spec.md`](specs/zh-cn/naming/naming-persistent-cp-consistency-spec.md) |
+| 164 | → | [`specs/zh-cn/naming/naming-resource-spec.md`](specs/zh-cn/naming/naming-resource-spec.md) |
+| 165 | → | [`specs/zh-cn/naming/naming-spec.md`](specs/zh-cn/naming/naming-spec.md) |
+| 166 | → | [`specs/zh-cn/plugin/README.md`](specs/zh-cn/plugin/README.md) |
+| 167 | → | [`specs/zh-cn/sdk/sdk-java-impl-spec.md`](specs/zh-cn/sdk/sdk-java-impl-spec.md) |
+| 168 | → | [`specs/zh-cn/sdk/sdk-spec.md`](specs/zh-cn/sdk/sdk-spec.md) |
+| 169 | → | [`specs/zh-cn/testing/api-integration-test-spec.md`](specs/zh-cn/testing/api-integration-test-spec.md) |
+| 170 | → | [`specs/zh-cn/testing/java-sdk-integration-test-spec.md`](specs/zh-cn/testing/java-sdk-integration-test-spec.md) |
+| 171 | → | [`style/codeStyle.md`](style/codeStyle.md) |
 
 ---
 

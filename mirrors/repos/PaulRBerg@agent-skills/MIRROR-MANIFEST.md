@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `PaulRBerg/agent-skills` — 26 default patterns, 0 followed patterns, 103 file(s) materialized.
+Mirror of `PaulRBerg/agent-skills` — 26 default patterns, 0 followed patterns, 108 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PaulRBerg/agent-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 103 |
+| Files         | 108 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -125,43 +125,48 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 64 | ✓ | [`skills/effect-ts/references/streams.md`](skills/effect-ts/references/streams.md) |
 | 65 | ✓ | [`skills/effect-ts/references/testing.md`](skills/effect-ts/references/testing.md) |
 | 66 | ✓ | [`skills/effect-ts/SKILL.md`](skills/effect-ts/SKILL.md) |
-| 67 | ✓ | [`skills/etherscan-api/references/chains.md`](skills/etherscan-api/references/chains.md) |
-| 68 | ✓ | [`skills/etherscan-api/scripts/detect-plan.sh`](skills/etherscan-api/scripts/detect-plan.sh) |
-| 69 | ✓ | [`skills/etherscan-api/SKILL.md`](skills/etherscan-api/SKILL.md) |
-| 70 | ✓ | [`skills/evm-chains/SKILL.md`](skills/evm-chains/SKILL.md) |
-| 71 | ✓ | [`skills/git-squash/SKILL.md`](skills/git-squash/SKILL.md) |
-| 72 | ✓ | [`skills/md-docs/references/common-patterns.md`](skills/md-docs/references/common-patterns.md) |
-| 73 | ✓ | [`skills/md-docs/references/init-agents.md`](skills/md-docs/references/init-agents.md) |
-| 74 | ✓ | [`skills/md-docs/references/init-readme.md`](skills/md-docs/references/init-readme.md) |
-| 75 | ✓ | [`skills/md-docs/references/update-agents.md`](skills/md-docs/references/update-agents.md) |
-| 76 | ✓ | [`skills/md-docs/references/update-readme.md`](skills/md-docs/references/update-readme.md) |
-| 77 | ✓ | [`skills/md-docs/SKILL.md`](skills/md-docs/SKILL.md) |
-| 78 | ✓ | [`skills/playground/SKILL.md`](skills/playground/SKILL.md) |
-| 79 | ✓ | [`skills/playground/templates/code-map.md`](skills/playground/templates/code-map.md) |
-| 80 | ✓ | [`skills/playground/templates/concept-map.md`](skills/playground/templates/concept-map.md) |
-| 81 | ✓ | [`skills/playground/templates/data-explorer.md`](skills/playground/templates/data-explorer.md) |
-| 82 | ✓ | [`skills/playground/templates/design-playground.md`](skills/playground/templates/design-playground.md) |
-| 83 | ✓ | [`skills/playground/templates/diff-review.md`](skills/playground/templates/diff-review.md) |
-| 84 | ✓ | [`skills/playground/templates/document-critique.md`](skills/playground/templates/document-critique.md) |
-| 85 | ✓ | [`skills/tailwind-css/references/coding-preferences.md`](skills/tailwind-css/references/coding-preferences.md) |
-| 86 | ✓ | [`skills/tailwind-css/references/tailwind-v4-rules.md`](skills/tailwind-css/references/tailwind-v4-rules.md) |
-| 87 | ✓ | [`skills/tailwind-css/references/tailwind-variants.md`](skills/tailwind-css/references/tailwind-variants.md) |
-| 88 | ✓ | [`skills/tailwind-css/references/tw-animate-css.md`](skills/tailwind-css/references/tw-animate-css.md) |
-| 89 | ✓ | [`skills/tailwind-css/SKILL.md`](skills/tailwind-css/SKILL.md) |
-| 90 | ✓ | [`skills/work/SKILL.md`](skills/work/SKILL.md) |
-| 91 | ✓ | [`skills/yeet/references/comment-issue.md`](skills/yeet/references/comment-issue.md) |
-| 92 | ✓ | [`skills/yeet/references/commons.md`](skills/yeet/references/commons.md) |
-| 93 | ✓ | [`skills/yeet/references/create-discussion.md`](skills/yeet/references/create-discussion.md) |
-| 94 | ✓ | [`skills/yeet/references/create-issue.md`](skills/yeet/references/create-issue.md) |
-| 95 | ✓ | [`skills/yeet/references/create-pr.md`](skills/yeet/references/create-pr.md) |
-| 96 | ✓ | [`skills/yeet/references/issue-biome.md`](skills/yeet/references/issue-biome.md) |
-| 97 | ✓ | [`skills/yeet/references/issue-claude-code.md`](skills/yeet/references/issue-claude-code.md) |
-| 98 | ✓ | [`skills/yeet/references/issue-codex-cli.md`](skills/yeet/references/issue-codex-cli.md) |
-| 99 | ✓ | [`skills/yeet/references/issue-sablier.md`](skills/yeet/references/issue-sablier.md) |
-| 100 | ✓ | [`skills/yeet/references/update-issue.md`](skills/yeet/references/update-issue.md) |
-| 101 | ✓ | [`skills/yeet/references/update-pr.md`](skills/yeet/references/update-pr.md) |
-| 102 | ✓ | [`skills/yeet/scripts/get-macos-version.sh`](skills/yeet/scripts/get-macos-version.sh) |
-| 103 | ✓ | [`skills/yeet/SKILL.md`](skills/yeet/SKILL.md) |
+| 67 | ✓ | [`skills/evm-chains/references/blockscout-api.md`](skills/evm-chains/references/blockscout-api.md) |
+| 68 | ✓ | [`skills/evm-chains/references/blockscout-chains.md`](skills/evm-chains/references/blockscout-chains.md) |
+| 69 | ✓ | [`skills/evm-chains/references/blockscout-endpoints.md`](skills/evm-chains/references/blockscout-endpoints.md) |
+| 70 | ✓ | [`skills/evm-chains/references/etherscan-api.md`](skills/evm-chains/references/etherscan-api.md) |
+| 71 | ✓ | [`skills/evm-chains/references/etherscan-chains.md`](skills/evm-chains/references/etherscan-chains.md) |
+| 72 | ✓ | [`skills/evm-chains/scripts/blockscout-detect-plan.sh`](skills/evm-chains/scripts/blockscout-detect-plan.sh) |
+| 73 | ✓ | [`skills/evm-chains/scripts/etherscan-detect-plan.sh`](skills/evm-chains/scripts/etherscan-detect-plan.sh) |
+| 74 | ✓ | [`skills/evm-chains/scripts/resolve-chain.sh`](skills/evm-chains/scripts/resolve-chain.sh) |
+| 75 | ✓ | [`skills/evm-chains/SKILL.md`](skills/evm-chains/SKILL.md) |
+| 76 | ✓ | [`skills/git-squash/SKILL.md`](skills/git-squash/SKILL.md) |
+| 77 | ✓ | [`skills/md-docs/references/common-patterns.md`](skills/md-docs/references/common-patterns.md) |
+| 78 | ✓ | [`skills/md-docs/references/init-agents.md`](skills/md-docs/references/init-agents.md) |
+| 79 | ✓ | [`skills/md-docs/references/init-readme.md`](skills/md-docs/references/init-readme.md) |
+| 80 | ✓ | [`skills/md-docs/references/update-agents.md`](skills/md-docs/references/update-agents.md) |
+| 81 | ✓ | [`skills/md-docs/references/update-readme.md`](skills/md-docs/references/update-readme.md) |
+| 82 | ✓ | [`skills/md-docs/SKILL.md`](skills/md-docs/SKILL.md) |
+| 83 | ✓ | [`skills/playground/SKILL.md`](skills/playground/SKILL.md) |
+| 84 | ✓ | [`skills/playground/templates/code-map.md`](skills/playground/templates/code-map.md) |
+| 85 | ✓ | [`skills/playground/templates/concept-map.md`](skills/playground/templates/concept-map.md) |
+| 86 | ✓ | [`skills/playground/templates/data-explorer.md`](skills/playground/templates/data-explorer.md) |
+| 87 | ✓ | [`skills/playground/templates/design-playground.md`](skills/playground/templates/design-playground.md) |
+| 88 | ✓ | [`skills/playground/templates/diff-review.md`](skills/playground/templates/diff-review.md) |
+| 89 | ✓ | [`skills/playground/templates/document-critique.md`](skills/playground/templates/document-critique.md) |
+| 90 | ✓ | [`skills/tailwind-css/references/coding-preferences.md`](skills/tailwind-css/references/coding-preferences.md) |
+| 91 | ✓ | [`skills/tailwind-css/references/tailwind-v4-rules.md`](skills/tailwind-css/references/tailwind-v4-rules.md) |
+| 92 | ✓ | [`skills/tailwind-css/references/tailwind-variants.md`](skills/tailwind-css/references/tailwind-variants.md) |
+| 93 | ✓ | [`skills/tailwind-css/references/tw-animate-css.md`](skills/tailwind-css/references/tw-animate-css.md) |
+| 94 | ✓ | [`skills/tailwind-css/SKILL.md`](skills/tailwind-css/SKILL.md) |
+| 95 | ✓ | [`skills/work/SKILL.md`](skills/work/SKILL.md) |
+| 96 | ✓ | [`skills/yeet/references/comment-issue.md`](skills/yeet/references/comment-issue.md) |
+| 97 | ✓ | [`skills/yeet/references/commons.md`](skills/yeet/references/commons.md) |
+| 98 | ✓ | [`skills/yeet/references/create-discussion.md`](skills/yeet/references/create-discussion.md) |
+| 99 | ✓ | [`skills/yeet/references/create-issue.md`](skills/yeet/references/create-issue.md) |
+| 100 | ✓ | [`skills/yeet/references/create-pr.md`](skills/yeet/references/create-pr.md) |
+| 101 | ✓ | [`skills/yeet/references/issue-biome.md`](skills/yeet/references/issue-biome.md) |
+| 102 | ✓ | [`skills/yeet/references/issue-claude-code.md`](skills/yeet/references/issue-claude-code.md) |
+| 103 | ✓ | [`skills/yeet/references/issue-codex-cli.md`](skills/yeet/references/issue-codex-cli.md) |
+| 104 | ✓ | [`skills/yeet/references/issue-sablier.md`](skills/yeet/references/issue-sablier.md) |
+| 105 | ✓ | [`skills/yeet/references/update-issue.md`](skills/yeet/references/update-issue.md) |
+| 106 | ✓ | [`skills/yeet/references/update-pr.md`](skills/yeet/references/update-pr.md) |
+| 107 | ✓ | [`skills/yeet/scripts/get-macos-version.sh`](skills/yeet/scripts/get-macos-version.sh) |
+| 108 | ✓ | [`skills/yeet/SKILL.md`](skills/yeet/SKILL.md) |
 
 ---
 

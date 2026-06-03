@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `supabase/agent-skills` — 26 default patterns, 0 followed patterns, 40 file(s) materialized.
+Mirror of `supabase/agent-skills` — 26 default patterns, 0 followed patterns, 42 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `supabase/agent-skills` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 40 |
+| Files         | 42 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -96,9 +96,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 35 | ✓ | [`skills/supabase-postgres-best-practices/references/security-rls-basics.md`](skills/supabase-postgres-best-practices/references/security-rls-basics.md) |
 | 36 | ✓ | [`skills/supabase-postgres-best-practices/references/security-rls-performance.md`](skills/supabase-postgres-best-practices/references/security-rls-performance.md) |
 | 37 | ✓ | [`skills/supabase-postgres-best-practices/SKILL.md`](skills/supabase-postgres-best-practices/SKILL.md) |
-| 38 | ✓ | [`skills/supabase/assets/feedback-issue-template.md`](skills/supabase/assets/feedback-issue-template.md) |
-| 39 | ✓ | [`skills/supabase/references/skill-feedback.md`](skills/supabase/references/skill-feedback.md) |
-| 40 | ✓ | [`skills/supabase/SKILL.md`](skills/supabase/SKILL.md) |
+| 38 | ✓ | [`skills/supabase-postgres-best-practices/skills/supabase-postgres-best-practices/CHANGELOG.md`](skills/supabase-postgres-best-practices/skills/supabase-postgres-best-practices/CHANGELOG.md) |
+| 39 | ✓ | [`skills/supabase/assets/feedback-issue-template.md`](skills/supabase/assets/feedback-issue-template.md) |
+| 40 | ✓ | [`skills/supabase/references/skill-feedback.md`](skills/supabase/references/skill-feedback.md) |
+| 41 | ✓ | [`skills/supabase/SKILL.md`](skills/supabase/SKILL.md) |
+| 42 | ✓ | [`skills/supabase/skills/supabase/CHANGELOG.md`](skills/supabase/skills/supabase/CHANGELOG.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JimLiu/Illustrated-Agent-Skills` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `JimLiu/Illustrated-Agent-Skills` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JimLiu/Illustrated-Agent-Skills` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,26 +62,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`examples/chapter-07/data-analysis-v1/SKILL.md`](examples/chapter-07/data-analysis-v1/SKILL.md) |
 | 2 | ✓ | [`examples/chapter-07/data-analysis-v2/SKILL.md`](examples/chapter-07/data-analysis-v2/SKILL.md) |
 | 3 | ✓ | [`examples/chapter-07/data-analysis-v3/SKILL.md`](examples/chapter-07/data-analysis-v3/SKILL.md) |
-| 4 | ✓ | [`skills/book-illustrator/prompts/system.md`](skills/book-illustrator/prompts/system.md) |
-| 5 | ✓ | [`skills/book-illustrator/references/design-system.md`](skills/book-illustrator/references/design-system.md) |
-| 6 | ✓ | [`skills/book-illustrator/references/illustration-template.md`](skills/book-illustrator/references/illustration-template.md) |
-| 7 | ✓ | [`skills/book-illustrator/references/layouts/binary-comparison.md`](skills/book-illustrator/references/layouts/binary-comparison.md) |
-| 8 | ✓ | [`skills/book-illustrator/references/layouts/cheat-sheet-card.md`](skills/book-illustrator/references/layouts/cheat-sheet-card.md) |
-| 9 | ✓ | [`skills/book-illustrator/references/layouts/funnel.md`](skills/book-illustrator/references/layouts/funnel.md) |
-| 10 | ✓ | [`skills/book-illustrator/references/layouts/hierarchical-layers.md`](skills/book-illustrator/references/layouts/hierarchical-layers.md) |
-| 11 | ✓ | [`skills/book-illustrator/references/layouts/hub-spoke.md`](skills/book-illustrator/references/layouts/hub-spoke.md) |
-| 12 | ✓ | [`skills/book-illustrator/references/layouts/iceberg.md`](skills/book-illustrator/references/layouts/iceberg.md) |
-| 13 | ✓ | [`skills/book-illustrator/references/layouts/linear-progression.md`](skills/book-illustrator/references/layouts/linear-progression.md) |
-| 14 | ✓ | [`skills/book-illustrator/references/layouts/structural-breakdown.md`](skills/book-illustrator/references/layouts/structural-breakdown.md) |
-| 15 | ✓ | [`skills/book-illustrator/references/layouts/tree-branching.md`](skills/book-illustrator/references/layouts/tree-branching.md) |
-| 16 | ✓ | [`skills/book-illustrator/references/layouts/winding-roadmap.md`](skills/book-illustrator/references/layouts/winding-roadmap.md) |
-| 17 | ✓ | [`skills/book-illustrator/SKILL.md`](skills/book-illustrator/SKILL.md) |
-| 18 | ✓ | [`skills/content-analyzer/SKILL.md`](skills/content-analyzer/SKILL.md) |
-| 19 | ✓ | [`skills/interview-analysis/SKILL.md`](skills/interview-analysis/SKILL.md) |
-| 20 | ✓ | [`skills/interview-writing/SKILL.md`](skills/interview-writing/SKILL.md) |
-| 21 | ✓ | [`skills/outliner/SKILL.md`](skills/outliner/SKILL.md) |
-| 22 | ✓ | [`skills/weekly-report/evals/evals.json`](skills/weekly-report/evals/evals.json) |
-| 23 | ✓ | [`skills/weekly-report/SKILL.md`](skills/weekly-report/SKILL.md) |
+| 4 | ✓ | [`skills/adversarial-polish/SKILL.md`](skills/adversarial-polish/SKILL.md) |
+| 5 | ✓ | [`skills/book-illustrator/prompts/system.md`](skills/book-illustrator/prompts/system.md) |
+| 6 | ✓ | [`skills/book-illustrator/references/design-system.md`](skills/book-illustrator/references/design-system.md) |
+| 7 | ✓ | [`skills/book-illustrator/references/illustration-template.md`](skills/book-illustrator/references/illustration-template.md) |
+| 8 | ✓ | [`skills/book-illustrator/references/layouts/binary-comparison.md`](skills/book-illustrator/references/layouts/binary-comparison.md) |
+| 9 | ✓ | [`skills/book-illustrator/references/layouts/cheat-sheet-card.md`](skills/book-illustrator/references/layouts/cheat-sheet-card.md) |
+| 10 | ✓ | [`skills/book-illustrator/references/layouts/funnel.md`](skills/book-illustrator/references/layouts/funnel.md) |
+| 11 | ✓ | [`skills/book-illustrator/references/layouts/hierarchical-layers.md`](skills/book-illustrator/references/layouts/hierarchical-layers.md) |
+| 12 | ✓ | [`skills/book-illustrator/references/layouts/hub-spoke.md`](skills/book-illustrator/references/layouts/hub-spoke.md) |
+| 13 | ✓ | [`skills/book-illustrator/references/layouts/iceberg.md`](skills/book-illustrator/references/layouts/iceberg.md) |
+| 14 | ✓ | [`skills/book-illustrator/references/layouts/linear-progression.md`](skills/book-illustrator/references/layouts/linear-progression.md) |
+| 15 | ✓ | [`skills/book-illustrator/references/layouts/structural-breakdown.md`](skills/book-illustrator/references/layouts/structural-breakdown.md) |
+| 16 | ✓ | [`skills/book-illustrator/references/layouts/tree-branching.md`](skills/book-illustrator/references/layouts/tree-branching.md) |
+| 17 | ✓ | [`skills/book-illustrator/references/layouts/winding-roadmap.md`](skills/book-illustrator/references/layouts/winding-roadmap.md) |
+| 18 | ✓ | [`skills/book-illustrator/SKILL.md`](skills/book-illustrator/SKILL.md) |
+| 19 | ✓ | [`skills/content-analyzer/SKILL.md`](skills/content-analyzer/SKILL.md) |
+| 20 | ✓ | [`skills/interview-analysis/SKILL.md`](skills/interview-analysis/SKILL.md) |
+| 21 | ✓ | [`skills/interview-writing/SKILL.md`](skills/interview-writing/SKILL.md) |
+| 22 | ✓ | [`skills/outliner/SKILL.md`](skills/outliner/SKILL.md) |
+| 23 | ✓ | [`skills/weekly-report/evals/evals.json`](skills/weekly-report/evals/evals.json) |
+| 24 | ✓ | [`skills/weekly-report/SKILL.md`](skills/weekly-report/SKILL.md) |
 
 ---
 

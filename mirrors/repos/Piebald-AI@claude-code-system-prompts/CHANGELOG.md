@@ -4,6 +4,14 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.161](https://github.com/Piebald-AI/claude-code-system-prompts/commit/ba274bd)
+
+_+64 tokens_
+
+- System Prompt: Action safety and truthful reporting — Allows hard-to-reverse or outward-facing action approvals to persist across contexts when durable approval context is enabled, while preserving the stricter one-context approval rule otherwise.
+- Tool Description: Agent (usage notes) — Updates agent usage guidance to key subagent-type instructions off subagent-type availability rather than message-continuation support, and scopes subagent-context restrictions to the actual subagent context check.
+- Tool Description: Background monitor (streaming events) — Strengthens streaming-pipeline guidance so every pipe stage flushes per line, explicitly warns that `head` buffers until enough matches accumulate, and simplifies output-volume guidance around filtering to actionable success and failure signals.
+
 # [2.1.160](https://github.com/Piebald-AI/claude-code-system-prompts/commit/e6eda87)
 
 _+10,510 tokens_

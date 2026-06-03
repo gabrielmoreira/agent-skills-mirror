@@ -119,6 +119,7 @@ Forks may change product branding for their own distribution, but they must pres
 - **Body explains why; the diff explains what.** State the motivation, the alternative considered, the trade-off accepted, the regression risk addressed, or the bug class being prevented. Skip narration of which lines moved.
 - **One logical change per commit.** A rename, a behaviour change, and a new test are three commits unless they are genuinely inseparable. If a subject needs the word `and` to describe its scope, consider splitting.
 - **No subject length limit.** Prefer a long, precise subject over a short, cryptic one. A reader scanning `git log` should be able to tell what shipped without opening the diff.
+- **No AI co-author trailers.** Do NOT append `Co-authored-by: Cursor <cursoragent@cursor.com>` or any similar AI co-author line to commit messages. The commit author (from git config) is the sole attribution.
 
 Examples:
 
@@ -127,9 +128,56 @@ Examples:
 - Bad: `feat(S5-A): TaskState.ensure_ready_for_reasoning + IllegalReasoningEntry contract` (plan codename, mixed scope)
 - Bad: `S4-A 完成` (Chinese, plan codename, no description)
 
+## Release Notes Conventions
+
+User-facing release notes (GitHub Releases, in-app changelog, blog posts, social
+announcements) are read by end users who do not see our git history, planning
+docs, or internal Linear / Jira tickets. They must be written from the user's
+point of view, not the implementer's. Hold them to a stricter standard than
+commit messages.
+
+- **No internal plan codenames.** Never mention stage / phase / wave / fix
+  identifiers such as `S1`, `S1+`, `S3`, `S4`, `S5-A`, `S5-B`, `FIX-S4-1`,
+  `FIX-S5A-1`, `P10`, `P11`, `v1.28.3-pre`, `wave 2-4`, etc. These are
+  meaningful only to the team that wrote the plan. Describe the behaviour
+  change the user will observe instead.
+- **No future or unreleased version numbers.** A release of `vX.Y.Z` must not
+  reference work that is tracked under a future major / minor line (for
+  example, do not mention `v1.28` or `v1.29` in `v1.27.13` notes), even if
+  some of that work was backported. Describe the capability without naming
+  the future series. The only version number that should appear is the one
+  being released and, when relevant, the previous stable line being upgraded
+  from.
+- **No internal artifact references.** Do not link to private design docs,
+  internal dashboards, plan trackers, audit checklists, or telemetry analyzer
+  filenames the user cannot open. If a public doc exists in `docs/`, link to
+  the public doc by topic, not by plan name.
+- **Describe outcomes, not implementations.** "Conversation can be safely
+  cancelled mid-reply" is good; "added `TaskState.ensure_ready_for_reasoning`
+  contract" is not. Symbol names belong in commits and code, not in release
+  notes.
+- **Group by what the user sees.** Organize sections around product surfaces
+  (Desktop, IM channels, Plugins, Security, Memory, …) rather than around
+  internal subsystems or sprint structure.
+- **Bilingual when the project ships bilingual notes.** Keep both languages
+  in lockstep — same section structure, same item count, same level of
+  detail. Translate, do not summarize one side.
+- **Honour the requested envelope.** Respect explicit author instructions
+  about title suffix (e.g. `[稳定版]`), draft / prerelease status, and
+  whether to append a `Full Changelog` link. Default to NOT adding a
+  `Full Changelog` line unless asked.
+
+Examples:
+
+- Good: `Fresh installs now start in a low-interrupt confirmation mode while still requiring explicit approval for destructive or unknown tools.`
+- Good: `Conversations can now be safely interrupted while the assistant is replying; the in-flight tool call is cancelled cleanly instead of leaving an orphaned task.`
+- Bad: `Conversation Concurrency v1.28 stage-5 (S5-A) lands TaskState.ensure_ready_for_reasoning and IllegalReasoningEntry contract.` (plan codename, future version, implementation symbol)
+- Bad: `Backported S4 INTERRUPT downgrade fix (FIX-S4-1) and S5-B prerequisite force-write pin from v1.28.3-pre.` (every kind of forbidden tag, in one line)
+
 ## Known Gotchas
 
 - Windows shell: use `write_file` + `run_powershell` to execute `python script.py` for complex text processing; use `run_shell` only when bash/Git Bash/POSIX shell semantics are explicitly required.
+- Windows / PowerShell `gh issue comment`: backticks are PowerShell's escape character, so `` `SkillLoader` `` in `--body "..."` gets mangled into `\SkillLoader\`. Always write the comment body to a temp file and use `gh issue comment <number> --body-file <file>` instead of `--body`.
 - `identity/AGENT.md` is OpenAkita's own behavior spec, NOT the industry-standard `AGENTS.md` file — don't confuse them.
 - The `prompt/compiler.py` must be re-run when identity files change; `builder.py` auto-detects staleness via `check_compiled_outdated()`.
 - Skill loading order: `__builtin__` → workspace → `.cursor/skills` → `.claude/skills` → `skills/` → global home dirs.

@@ -1,6 +1,6 @@
 # Complete Plugin Reference
 
-Browse all **83 marketplace plugins** organized by category: 81 local plugins plus 2 externally hosted `git-subdir` entries (`pensyve`, `qa-orchestra`).
+Browse all **84 marketplace plugins** organized by category: 82 local plugins plus 2 externally hosted `git-subdir` entries (`pensyve`, `qa-orchestra`).
 
 ## Quick Start - Essential Plugins
 
@@ -251,7 +251,7 @@ Next.js, React + Vite, and Node.js project setup with pnpm and TypeScript best p
 | **api-scaffolding**           | REST/GraphQL API generation | `/plugin install api-scaffolding`           |
 | **api-testing-observability** | API testing and monitoring  | `/plugin install api-testing-observability` |
 
-### 📢 Marketing (4 plugins)
+### 📢 Marketing (5 plugins)
 
 | Plugin                         | Description                             | Install                                      |
 | ------------------------------ | --------------------------------------- | -------------------------------------------- |
@@ -259,6 +259,7 @@ Next.js, React + Vite, and Node.js project setup with pnpm and TypeScript best p
 | **seo-technical-optimization** | Meta tags, keywords, and schema markup  | `/plugin install seo-technical-optimization` |
 | **seo-analysis-monitoring**    | Content analysis and authority building | `/plugin install seo-analysis-monitoring`    |
 | **content-marketing**          | Content strategy and web research       | `/plugin install content-marketing`          |
+| **social-publishing**          | Multi-platform social media publishing  | `/plugin install social-publishing`          |
 
 ### 💼 Business (4 plugins)
 
@@ -355,7 +356,7 @@ plugins/python-development/
 /plugin marketplace add wshobson/agents
 ```
 
-This makes all 83 marketplace plugins available for installation, but **does not load any agents or tools** into your context.
+This makes all 84 marketplace plugins available for installation, but **does not load any agents or tools** into your context.
 
 ### Step 2: Install Specific Plugins
 
@@ -398,7 +399,7 @@ Each installed plugin loads **only its specific agents and commands** into Claud
 
 ## See Also
 
-- [Agent Skills](./agent-skills.md) - 155 specialized skills across plugins
+- [Agent Skills](./agent-skills.md) - 156 specialized skills across plugins
 - [Agent Reference](./agents.md) - Complete agent catalog
 - [Usage Guide](./usage.md) - Commands and workflows
 - [Architecture](./architecture.md) - Design principles

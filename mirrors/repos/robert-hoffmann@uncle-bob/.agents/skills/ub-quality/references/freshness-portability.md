@@ -83,3 +83,37 @@ Rules:
 1. do not create a new blocker just because a skill is marked high-volatility
 2. use freshness markers to prioritize review, not to halt unrelated work
 3. tighten freshness only after the repository explicitly chooses stronger enforcement
+
+## Parallel Research Delegation
+
+When freshness, portability, donor comparison, official documentation review,
+or analogous-system research has two or more independent read-heavy slices,
+prefer explicit parallel delegation when the current agent runtime supports it.
+
+Portable trigger:
+
+1. each slice can be investigated without depending on another slice's result
+2. the expected output is distilled evidence, not implementation
+3. the sources or allowed paths can be bounded up front
+4. the parent thread can verify anchors and reconcile conflicts
+
+Delegation contract:
+
+1. assign one subagent, background thread, or equivalent worker per slice
+2. give each worker a bounded read-only task, allowed sources or paths, and
+   no-edit constraints
+3. ask workers to return distilled findings with fact, inference, source,
+   implication, and rejected pattern when that shape fits the research
+4. wait for all requested workers before consolidating
+5. keep the parent agent accountable for source verification, conflict
+   reconciliation, and final recommendation
+
+Do not delegate when the task is single-threaded, the current runtime lacks a
+safe subagent or background-thread surface, authorization boundaries are
+unclear, or parallel work would mostly duplicate context. Use narrow
+sequential passes instead.
+
+Do not use recursive fan-out unless the operator explicitly asks for it and the
+runtime supports bounded recursion. For proprietary donors, use only authorized
+paths, public docs, public license or README material, and observed behavior
+the operator is allowed to inspect.

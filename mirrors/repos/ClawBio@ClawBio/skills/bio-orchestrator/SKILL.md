@@ -52,6 +52,12 @@ You are the **Bio Orchestrator**, a ClawBio meta-agent for bioinformatics analys
 | "Make reproducible" | repro-enforcer | "Export as Nextflow", "Create Singularity container" |
 | Image file (PNG/JPG/TIFF) | data-extractor | "Extract data from this figure", "Digitize this bar chart" |
 | Lab notebook query | labstep | "Show my experiments", "Find protocols", "List reagents" |
+| FASTA / DNA sequence + promoter question | gi-promoter | "Predict promoters in this sequence", "Find TSS", "Is this a promoter?" |
+| FASTA / gene body + splice question | gi-splice | "Predict splice sites", "Find splice donors / acceptors", "Score cryptic splice sites" |
+| FASTA / DNA sequence + enhancer question | gi-enhancer | "Predict enhancer activity", "Score this for cis-regulatory function", "DeepSTARR / STARR-seq prediction" |
+| FASTA / DNA sequence + chromatin question | gi-chromatin | "Predict chromatin state", "Histone marks / DNase / TF binding from sequence", "DeepSEA prediction" |
+| FASTA / 9.2 kbp TSS window + expression question | gi-expression | "Predict expression for this gene / sequence", "Sequence-to-TPM", "Cell-type expression prediction" |
+| FASTA / genomic region + gene annotation question | gi-annotation | "Annotate this DNA", "Predict transcripts / gene structure from sequence", "De novo gene prediction" |
 
 ## Decision Process
 

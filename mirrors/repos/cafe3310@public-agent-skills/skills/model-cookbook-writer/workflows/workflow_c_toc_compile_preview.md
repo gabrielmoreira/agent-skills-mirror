@@ -60,7 +60,7 @@ python3 scripts/compile_preview.py
   2. **章节末注入引用块**：拼接到 `contents.md` 时，在每个叶子章节文本末尾追加 Markdown 引用块，形如：
      ```markdown
      > **Sources**:
-     > - [memory_cookbook.ipynb](https://github.com/anthropics/anthropic-cookbook/...) — Anthropic, claude-sonnet-4.6, relation: borrows-from
+     > - [<filename>](<upstream_url>) — <vendor>, relation: borrows-from
      ```
   3. **根目录 sources_index.md**：在 `build/<cookbook>/` 下输出一份按 `vendor / repo` 二级分组的反向索引，列出本 cookbook 引用了哪些第三方文档（含 snapshot_commit）。
   4. **Notebook Acknowledgements 节**：在 `preview.ipynb` 第一节正文之前注入「Acknowledgements & Sources」markdown cell，承载总索引；同时为每个章节的 markdown cell 末尾追加同款引用块。

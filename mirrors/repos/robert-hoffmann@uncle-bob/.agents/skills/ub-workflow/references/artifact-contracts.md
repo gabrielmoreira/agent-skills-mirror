@@ -1,274 +1,322 @@
 # Artifact Contracts
 
-Use these files as the minimum contract for reusable initiative and
-lightweight-spec workflow surfaces.
+Use these contracts when creating or validating portable `ub-workflow`
+artifacts.
 
-## Required Initiative Files
+## Project Root Companions
 
-- `README.md`: root resume surface and current status
-- `AGENTS.md`: local resume order and update discipline
-- `prd.md`: self-contained initiative definition
-- `roadmap.md`: small live tracker with full sprint order
-- `rollup.md`: readable cross-sprint summary and carry-forward surface
-- `retained-note.md`: durable completion summary
-- `research/`: optional supportive discovery notes, kept secondary to the main
-  workflow artifacts
-- `exceptions/`: optional bounded exception records, not a catch-all note
-  store
-- `sprints/`: execution directories and the default home for sprint-local
-  evidence and sprint-local decision memory
+Required project-root files:
 
-## `README.md`
+1. `AGENTS.md`
+2. `SOURCE_ATLAS.md`
+
+`AGENTS.md` owns the repo-local agent overlay. `SOURCE_ATLAS.md` owns source
+routing and is seeded once during bootstrap from visible project roots. Later
+updates are event-based when source boundaries, package lanes, or test
+topology change.
+
+## Operations Root
+
+Required root files:
+
+1. `vision.md`
+2. `options.md`
+3. `status.md`
+4. `WORKFLOW_ATLAS.md`
+5. `SOURCE_PACK_ATLAS.md`
+6. `AGENTS.md`
+
+Operations-root files should be compact. Detailed workflow rules belong in
+this skill; repo overlays should point here instead of copying the whole
+contract.
+
+Artifact frontmatter, `context_tier`, `summary_budget_lines`, context receipts,
+retained-context reads, evidence index shape, and broader writeback receipts are
+defined in `references/context-management.md`. Trace IDs, tags, trace routes,
+and owner-only trace-token policy are defined in `references/trace-tokens.md`.
+
+## `vision.md`
 
 Minimum sections:
 
-1. initiative name and owner
-2. active interaction mode
-3. current phase
-4. current gate state
-5. roadmap status
-6. active sprint or `none`
-7. last completed sprint
-8. next step
-9. blockers
-10. governance bridge level and profile when applicable
-11. validation pointers
-12. smallest file set needed to resume
+1. product promise;
+2. audiences;
+3. durable principles;
+4. capability pillars;
+5. evidence questions;
+6. change rule.
 
-## `prd.md`
+## Root `options.md`
 
 Minimum sections:
 
-1. summary
-2. background or problem statement
-3. goals
-4. non-goals
-5. scope
-6. principles
-7. current-state diagnosis
-8. option analysis with chosen path and one rejected alternative
-9. success criteria
-10. validation expectations
-11. documentation touch points
-12. governance bridge selection when applicable
-13. dependencies and constraints
-14. execution risks
-15. readiness checklist
+1. board rules;
+2. next-wave candidate lane;
+3. probable-later-wave lane;
+4. unassigned product option lane;
+5. update rules.
+
+Every active option card must include:
+
+1. suggested home;
+2. assignment confidence;
+3. evidence links;
+4. why it matters;
+5. promotion trigger;
+6. revalidation rule;
+7. last reviewed date.
+
+Options boards are not ledgers. Do not add `Done`, `Completed`, `Closed`, or
+archive-style lanes. Remove option cards after promotion, rejection, merge, or
+completion once the receiving artifact owns the durable trace.
+
+## `status.md`
+
+Minimum sections:
+
+1. current product posture;
+2. current operating state;
+3. WIP state;
+4. active pointers;
+5. blockers;
+6. wave sequence;
+7. conditional candidate tracks;
+8. retained-context routes;
+9. next allowed action.
+
+Avoid chronological ledgers, broad reading queues, and sprint history. Update
+owned facts by replacement.
+
+## `wave.md`
+
+Minimum sections:
+
+1. outcome;
+2. status;
+3. why now;
+4. scope boundaries;
+5. bet framing at wave scale;
+6. forecast and appetite;
+7. non-goals;
+8. success evidence;
+9. outcome signals;
+10. initiative map;
+11. retained inputs;
+12. transition and reroute rules.
+
+## `initiative.md`
+
+Minimum sections:
+
+1. summary;
+2. outcome bet;
+3. appetite;
+4. success evidence;
+5. circuit breaker;
+6. forecast and appetite;
+7. outcome signals;
+8. goals and non-goals;
+9. constraints;
+10. durable decisions;
+11. current status;
+12. index pointers.
+
+## Initiative `options.md`
+
+Minimum sections:
+
+1. board rules;
+2. possible initiative insertion lane;
+3. deferred-to-product-options lane;
+4. update rules.
+
+Every active local option card uses the same fields as root option cards.
+Before initiative closeout, every local option must be promoted, moved to root
+options, rejected, or removed as obsolete.
 
 ## `roadmap.md`
 
 Minimum sections:
 
-1. roadmap objective
-2. PRD scope summary
-3. overall initiative checklist
-4. sprint sequence with one entry per sprint, where every sprint entry declares path, goal, dependencies, validation focus, subtasks, and evidence folder
-5. dependency chain across sprints
-6. validation focus per sprint
-7. current position and next action
-8. stop-resume handoff expectation
-9. completion condition
-10. final audit as the last item
+1. objective;
+2. current position;
+3. forecast control;
+4. active or next sprint route;
+5. adaptive plan, candidate route, or options pointer;
+6. sequence changes;
+7. revalidation rules;
+8. pre-audit continuation window;
+9. final audit candidate;
+10. update rules.
 
-Current-position rule:
+The roadmap is an adaptive strategy map, not a token ledger. Discovery-driven
+insertions, splits, reroutes, and deferrals must be promoted here before the
+discovery is accepted. Closeout-driven next-route changes must be promoted
+here before sprint closeout passes.
 
-1. record the persisted interaction mode alongside current sprint state
+Registered candidate briefs belong in the roadmap because they are live route
+and forecast intent. Keep evidence routes and trace lookup in `index.md`.
 
-Roadmap shape rules:
+Forecast And Appetite records appetite, forecast range/count, confidence,
+throughput basis, known unknowns, operator-choice scope hammers, and expansion
+trigger. Forecast Control records completed count, registered remaining,
+forecast delta, appetite state, and next scope tradeoff. Expansion beyond
+appetite must show the operator decision to cut/defer, reroute, or buy more.
 
-1. Use as many implementation sprints as the PRD actually requires; do not imply a two-sprint cap.
-2. Number implementation sprints sequentially as `Sprint 01` through `Sprint NN`.
-3. Keep the final audit as the terminal roadmap item after all implementation sprints.
-4. Use `roadmap.md` as the durable post-plan artifact that unlocks sprint initialization.
-5. Keep roadmap status explicit enough to distinguish `not started`, `planned`, `generated`, and `complete` when those states matter.
+## `index.md`
+
+Minimum sections:
+
+1. current snapshot;
+2. forecast snapshot;
+3. durable direction;
+4. artifact routes;
+5. meaningful accepted discoveries;
+6. completed sprints and evidence indexes;
+7. trace routes;
+8. supersession notes;
+9. update rules.
+
+The index is the triggered T3 compact lookup and durable-history surface. It
+replaces separate initiative rollups and artifact indexes. It should not own
+live candidate briefs, active route decisions, or current forecast control.
+
+## Discovery Briefs
+
+Wave discovery path: `waves/wNN-*/discoveries/wNN-dNN-slug.md`.
+Initiative discovery path:
+`waves/wNN-*/initiatives/iNN-*/discoveries/wNN-iNN-dNN-slug.md`.
+
+Minimum sections:
+
+1. question;
+2. context receipt;
+3. repo truth;
+4. user or operator evidence status;
+5. outside research, standards, official docs, current primary research, or
+   best-practice comparison when relevant;
+6. source-pack or analogous-system comparison when relevant;
+7. options;
+8. recommendation;
+9. forecast impact when sequence changes;
+10. risk and stop conditions;
+11. validation expectations;
+12. decision slot.
+
+Forecast Impact is required when a discovery or reviewed preview changes
+sequence. It must state one of `fits appetite`, `cuts/defers scope`,
+`requires operator buy-more`, or `reroutes/stops`.
 
 ## `sprint.md`
 
-Each sprint document must stand alone.
-
-Treat each `sprint.md` as an execution-ready sprint PRD, not as a starter
-shell.
-
 Minimum sections:
 
-1. sprint objective
-2. exact scope
-3. execution slices
-4. dependencies
-5. verified repository truth at sprint start
-6. chosen implementation path
-7. one rejected alternative with concise pros and cons
-8. affected files, modules, systems, or docs
-9. validation plan
-10. mode-specific start checkpoint
-11. reviewability check
-12. exit criteria
-13. final-audit checklist for the final audit sprint
-14. handoff expectation
-15. definition of done
+1. objective;
+2. accepted discovery or reviewed preview source;
+3. fail-closed Routing Preflight before choosing preview;
+4. discovery triage before claiming discovery is unnecessary;
+5. why preview instead of discovery when the source is a reviewed preview;
+6. product increment contribution;
+7. bet framing;
+8. exact scope;
+9. execution slices;
+10. affected areas;
+11. operational surface preflight when triggered;
+12. Project Evolution Gate when triggered;
+13. validation plan;
+14. Live Validation Matrix;
+15. user or operator evidence status;
+16. reviewed-mode start checkpoint when active;
+17. context receipt;
+18. exit criteria.
 
-Sprint document rules:
+Operational surface preflight is triggered when a sprint introduces or changes
+a repo-owned surface that future operators, users, code, tools, agents, or
+integrations may rely on. Operational surfaces include, when present:
+persisted files, caches, logs, queues, databases, generated artifacts,
+configuration, secrets-adjacent state, network endpoints, background jobs,
+scheduled tasks, public API facets, CLI commands, UI routes, plugin extension
+points, telemetry streams, and external integrations. The sprint preview must
+identify the surface owner, lifecycle, visibility, safety policy, validation
+path, and whether an existing inventory, topology, registry, route map, or
+analogous owner document must be updated. If ownership, lifecycle, safety
+policy, validation, or inventory impact is unclear enough to change scope,
+architecture, risk, or acceptance criteria, promote discovery before
+execution.
 
-1. The active or next sprint must be readable and actionable without reopening
- the full initiative chat history.
-2. Placeholder-only sprint shells are incomplete planning state, not
- execution-ready artifacts.
-3. Execution slices should be the main place where planned work is broken into
- independently reviewable chunks.
-4. Each execution slice should name acceptance, verification, dependencies,
-   and likely touched areas when those details materially affect execution or
-   review.
-5. Later sprints may contain named pending handoff markers only in fields that
- legitimately depend on prior closeout truth.
-6. The validation plan must be concrete enough for another operator to execute
- it without improvising missing checks.
-7. The handoff expectation must name what the next sprint should read first.
-8. Use `decision-log.md` for evolving sprint-time decisions, reversals, and
-   deferrals instead of forcing all running memory into `closeout.md`.
-9. When the active interaction mode is `reviewed`, the sprint document must
-   make the pre-sprint preview, option questions when needed, approval
-   boundary, and expected post-execution reporting shape easy to recover.
-10. For non-trivial reviewed-mode sprints, the mode-specific start checkpoint
-   should preserve the richer counterfactual analysis in recoverable order:
-   `What Repo Truth Says`, `Inference`, `Implementation Paths`,
-   `Recommendation`, then any structured fallback questions needed before
-   sprint start approval.
-11. For non-trivial reviewed-mode sprints, artifact-update or validation
-   bookkeeping may appear in the checkpoint, but it should not be the lead
-   user-facing content unless it is itself the repo truth that materially
-   shapes the sprint.
+When `sprint.md` uses words like `smallest`, `narrow`, or `only as needed`,
+the artifact must make clear that they mean the smallest objective-complete
+vertical slice. Every named owned surface, required evidence gate, and exit
+criterion remains in scope unless the operator explicitly changes the
+objective.
 
 ## `decision-log.md`
 
-Use this file as the running sprint-level decision-memory surface.
-
 Minimum sections:
 
-1. purpose
-2. decisions
-3. reversals and deferrals
-4. evidence pointers
-5. carry forward
-
-Decision-log rules:
-
-1. Keep the log sprint-scoped; repository-level durable decisions still belong
-   in `docs/adr/` only when ADR escalation is actually warranted.
-2. Record rationale, changed direction, or non-obvious constraints here while
-   the sprint is active instead of relying on post-hoc reconstruction in
-   `closeout.md`.
-3. Link to sprint `evidence/`, touched files, or synchronized artifacts when
-   those links materially improve resumability.
-4. Keep the file readable; it is a high-signal running log, not a raw command
-   dump.
+1. purpose;
+2. decisions;
+3. reversals and deferrals;
+4. evidence pointers;
+5. carry forward.
 
 ## `closeout.md`
 
 Minimum sections:
 
-1. `environment_note`
-2. `scope_note`
-3. `decision_note`
-4. `gate_note`
-5. `exception_note`
-6. `validation_note`
-7. `done_verification_note`
-8. `handoff_note`
-9. `follow_up_note`
-10. `post_execution_summary_note`
+1. outcome summary;
+2. outcome and learning review;
+3. forecast delta;
+4. evidence pointer;
+5. validation result;
+6. broader writeback decisions;
+7. Project Evolution Gate result when triggered;
+8. mini-retro;
+9. handoff;
+10. next recommendation.
 
-Closeout structure rules:
-
-1. `gate_note` must record the initiative workflow gate state.
-2. When governance is active, `gate_note` must also record the governance gate type and result.
-3. `validation_note` must capture commands, outcomes, evidence pointers, and documentation-sync status.
-4. When governance is active, `exception_note` must reference canonical governance exception metadata.
-5. When a sprint used `decision-log.md`, the closeout should leave it current
-   enough for the next sprint or final audit to trust it.
-6. When the active interaction mode exposes user-facing post-execution
-   reporting, the closeout should make considerations moving forward,
-   assumptions made, and things to watch easy to recover for later reporting.
-7. When the active interaction mode exposes user-facing post-execution
-   reporting, `post_execution_summary_note` should be readable enough to reuse
-   directly as the user-facing post-sprint summary.
-
-## `rollup.md`
-
-Use this file as the readable initiative-level summary across sprints.
+## `evidence/index.md`
 
 Minimum sections:
 
-1. purpose
-2. current snapshot
-3. major decisions
-4. sprint highlights
-5. cross-sprint risks and deferrals
-6. validation and evidence rollup
-7. research and exceptions pointers
+1. state;
+2. validated claims;
+3. evidence files;
+4. required objective gates and optional or deferred evidence;
+5. redaction and retention;
+6. promotion;
+7. read policy.
 
-Rollup rules:
+The evidence index is a claim-to-proof router. It should let a future reader
+verify every material closeout result, validation claim, and route-changing
+learning without loading raw evidence by default. It does not own the sprint
+narrative, outcome review, mini-retro, or trace tokens.
 
-1. Keep `rollup.md` shorter and easier to scan than walking every sprint
-   directory one by one.
-2. Summarize cross-sprint decisions, reversals, and major validation signals
-   here, then point to the owning sprint `decision-log.md`, `closeout.md`, or
-   `evidence/` when more detail is needed.
-3. Do not duplicate every sprint detail verbatim; the rollup is a readable
-   index, not a second full archive.
-4. Keep `research/` and `exceptions/` visibly secondary by pointing to them
-   only when they truly contain cross-sprint discovery or bounded exception
-   records.
+Required objective gates must be labeled separately from optional,
+not-triggered, blocked, out-of-scope, or operator-deferred checks. A required
+objective gate cannot be operator-deferred while the original sprint objective
+closes as passed.
 
-## `retained-note.md`
+Outcome Signals, Forecast And Appetite, Forecast Control, Forecast Impact,
+Product Increment Contribution, Forecast Delta, user/operator evidence status,
+decision latency, and retro evidence checks belong in the owning wave,
+initiative, roadmap, discovery, sprint, or closeout surfaces.
+They must not create a separate metrics, forecast, trace, or retro atlas.
 
-Minimum sections:
+Sprint evidence folders include a `.gitignore` for generated runtime scratch
+state. Treat any project-specific scratch directories listed there as local
+scratch unless a reviewed export policy explicitly promotes a redacted
+subset to committed evidence.
 
-1. outcome
-2. what shipped
-3. preserve these decisions
-4. useful future notes
-5. deferred items
-6. follow-up decisions
-7. validation baseline
+## Source Packs
 
-Retained-note rules:
+Source-pack roots use `YYYY-MM-DD-slug/` and include `00-readme.md`.
 
-1. When governance is active, record governance bridge level, profile, exception refs, and ADR refs.
-2. Validation baseline must be traceable enough for a later operator to reconstruct the final audit posture.
-3. Do not pre-fill initiative-specific decisions during scaffold creation; keep the retained note minimal until final audit work begins.
+The readme states:
 
-## Lightweight Spec Root
-
-Use lightweight specs for work that sits between direct bounded execution and a
-full initiative.
-
-Path contract:
-
-- `./specs/YYYY-MM-DD-slug/spec.md`
-
-Minimum `spec.md` sections:
-
-1. snapshot
-2. summary
-3. problem or opportunity
-4. goals
-5. non-goals
-6. assumptions and unknowns
-7. scale decision
-8. chosen path
-9. one rejected alternative with concise pros and cons
-10. validation plan
-11. documentation touch points
-12. next action
-
-Lightweight spec rules:
-
-1. The spec must be self-contained enough for another operator to continue
-   without chat history.
-2. The spec must explain why the work is not merely a direct bounded task and
-   why it does not yet require a full initiative.
-3. The spec must record what would trigger promotion into a full initiative.
-4. The active interaction mode must be explicit in the lightweight spec
-   snapshot.
-5. Lightweight specs do not require `roadmap.md`, sprint scaffolding, or
-   retained-note flow by default.
+1. status;
+2. creation or migration date basis;
+3. read triggers;
+4. do-not-read triggers;
+5. default section limit;
+6. promotion rule.

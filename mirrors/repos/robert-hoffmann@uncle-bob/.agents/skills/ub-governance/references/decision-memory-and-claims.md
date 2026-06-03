@@ -58,7 +58,11 @@ For Level 1 workflow-backed work:
    alternative was rejected, and what was explicitly deferred
 3. sprint `evidence/` is the default evidence location for sprint-scoped proof
    and should stay closer to the work than initiative-root summaries
-4. initiative-root `research/` and `exceptions/` are supporting surfaces, not
+4. workflow research claim registries, when used by a host overlay, are
+   Level 1 workflow-native context records unless the decision is escalated to
+   repository-level governance or a blocking governance result depends on claim
+   confidence
+5. initiative-root `research/` and `exceptions/` are supporting surfaces, not
    generic dumping grounds
 
 Ordinary initiative example:
@@ -110,11 +114,13 @@ Typical triggers:
 3. an exception or waiver remains acceptable only because supporting claims
    stay verified or explicitly bounded
 
-Do not require claim-register work by default for:
+Do not require governance claim-register work by default for:
 
 1. ordinary Level 1 workflow-backed initiative records
-2. descriptive examples or non-blocking explanatory prose
-3. decisions that can be justified directly from deterministic artifacts
+2. workflow-native research claim registries that only route discovery context
+   and do not support a blocking governance result
+3. descriptive examples or non-blocking explanatory prose
+4. decisions that can be justified directly from deterministic artifacts
    without claim confidence
 
 High-risk-governance example:

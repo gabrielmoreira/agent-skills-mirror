@@ -33,7 +33,7 @@ Operator intent:
    and bounded initiative `exceptions/` instead of invoking ADR machinery by
    default.
 4. Repository-catalog, package-metadata, and skill-surface integrity scripts
-   are repo-maintenance tooling, not default governance commands.
+   are host-repository maintenance tooling, not default governance commands.
 
 Host-repository wrappers:
 
@@ -42,10 +42,10 @@ Host-repository wrappers:
 2. A host repository may expose a governance-regression wrapper through its own
    task runner.
 
-Repo-local maintenance note:
+Host-repository maintenance note:
 
-1. Repo-maintenance wrappers belong to the host repository's own documented
-   maintenance/check surface.
+1. Host-repository maintenance wrappers belong to the host repository's own
+   documented maintenance/check surface.
 2. That surface is intentionally separate from the distributable governance
    command set carried by this skill.
 

@@ -1,0 +1,5 @@
+# Local scratch directories generated during sprint execution.
+# Add project-specific scratch dirs here (e.g. /state/, /cache/, /runs/).
+# Commit only reviewed, no-secret evidence files.
+/state/
+/telegram-state/

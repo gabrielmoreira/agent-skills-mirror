@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `block/goose` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `block/goose` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `block/goose` — 26 default patterns, 0 followed patterns, 8 file(s) 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,8 +65,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`documentation/AGENTS.md`](documentation/AGENTS.md) |
 | 5 | ✓ | [`documentation/CLAUDE.md`](documentation/CLAUDE.md) |
 | 6 | ✓ | [`documentation/static/llms.txt`](documentation/static/llms.txt) |
-| 7 | ✓ | [`ui/text/AGENTS.md`](ui/text/AGENTS.md) |
-| 8 | ✓ | [`ui/text/CLAUDE.md`](ui/text/CLAUDE.md) |
+| 7 | ✓ | [`evals/harbor/.agents/skills/compare_tasks/SKILL.md`](evals/harbor/.agents/skills/compare_tasks/SKILL.md) |
+| 8 | ✓ | [`ui/text/AGENTS.md`](ui/text/AGENTS.md) |
+| 9 | ✓ | [`ui/text/CLAUDE.md`](ui/text/CLAUDE.md) |
 
 ---
 

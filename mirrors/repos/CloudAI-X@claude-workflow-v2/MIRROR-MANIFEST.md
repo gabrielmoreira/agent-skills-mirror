@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `CloudAI-X/claude-workflow-v2` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `CloudAI-X/claude-workflow-v2` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `CloudAI-X/claude-workflow-v2` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,20 +68,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`agents/test-architect.md`](agents/test-architect.md) |
 | 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 9 | ✓ | [`skills/analyzing-projects/SKILL.md`](skills/analyzing-projects/SKILL.md) |
-| 10 | ✓ | [`skills/convex-backend/SKILL.md`](skills/convex-backend/SKILL.md) |
-| 11 | ✓ | [`skills/database-design/SKILL.md`](skills/database-design/SKILL.md) |
-| 12 | ✓ | [`skills/designing-apis/OPENAPI-TEMPLATE.md`](skills/designing-apis/OPENAPI-TEMPLATE.md) |
-| 13 | ✓ | [`skills/designing-apis/SKILL.md`](skills/designing-apis/SKILL.md) |
-| 14 | ✓ | [`skills/designing-architecture/SKILL.md`](skills/designing-architecture/SKILL.md) |
-| 15 | ✓ | [`skills/designing-tests/SKILL.md`](skills/designing-tests/SKILL.md) |
-| 16 | ✓ | [`skills/devops-infrastructure/SKILL.md`](skills/devops-infrastructure/SKILL.md) |
-| 17 | ✓ | [`skills/error-handling/SKILL.md`](skills/error-handling/SKILL.md) |
-| 18 | ✓ | [`skills/managing-git/SKILL.md`](skills/managing-git/SKILL.md) |
-| 19 | ✓ | [`skills/optimizing-performance/SKILL.md`](skills/optimizing-performance/SKILL.md) |
-| 20 | ✓ | [`skills/parallel-execution/SKILL.md`](skills/parallel-execution/SKILL.md) |
-| 21 | ✓ | [`skills/security-patterns/SKILL.md`](skills/security-patterns/SKILL.md) |
-| 22 | ✓ | [`skills/vercel-react-best-practices/SKILL.md`](skills/vercel-react-best-practices/SKILL.md) |
-| 23 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
+| 10 | ✓ | [`skills/convex-backend/AGENTS.md`](skills/convex-backend/AGENTS.md) |
+| 11 | ✓ | [`skills/convex-backend/SKILL.md`](skills/convex-backend/SKILL.md) |
+| 12 | ✓ | [`skills/database-design/SKILL.md`](skills/database-design/SKILL.md) |
+| 13 | ✓ | [`skills/designing-apis/OPENAPI-TEMPLATE.md`](skills/designing-apis/OPENAPI-TEMPLATE.md) |
+| 14 | ✓ | [`skills/designing-apis/SKILL.md`](skills/designing-apis/SKILL.md) |
+| 15 | ✓ | [`skills/designing-architecture/SKILL.md`](skills/designing-architecture/SKILL.md) |
+| 16 | ✓ | [`skills/designing-tests/SKILL.md`](skills/designing-tests/SKILL.md) |
+| 17 | ✓ | [`skills/devops-infrastructure/SKILL.md`](skills/devops-infrastructure/SKILL.md) |
+| 18 | ✓ | [`skills/error-handling/SKILL.md`](skills/error-handling/SKILL.md) |
+| 19 | ✓ | [`skills/managing-git/SKILL.md`](skills/managing-git/SKILL.md) |
+| 20 | ✓ | [`skills/optimizing-performance/SKILL.md`](skills/optimizing-performance/SKILL.md) |
+| 21 | ✓ | [`skills/parallel-execution/SKILL.md`](skills/parallel-execution/SKILL.md) |
+| 22 | ✓ | [`skills/security-patterns/SKILL.md`](skills/security-patterns/SKILL.md) |
+| 23 | ✓ | [`skills/vercel-react-best-practices/AGENTS.md`](skills/vercel-react-best-practices/AGENTS.md) |
+| 24 | ✓ | [`skills/vercel-react-best-practices/SKILL.md`](skills/vercel-react-best-practices/SKILL.md) |
+| 25 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
 
 ---
 

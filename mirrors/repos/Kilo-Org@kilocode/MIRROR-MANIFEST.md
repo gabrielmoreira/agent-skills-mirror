@@ -70,8 +70,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`packages/kilo-docs/pages/customize/skills.md`](packages/kilo-docs/pages/customize/skills.md) |
 | 9 | ✓ | [`packages/kilo-jetbrains/AGENTS.md`](packages/kilo-jetbrains/AGENTS.md) |
 | 10 | ✓ | [`packages/kilo-vscode/AGENTS.md`](packages/kilo-vscode/AGENTS.md) |
-| 11 | ✓ | [`packages/opencode/AGENTS.md`](packages/opencode/AGENTS.md) |
-| 12 | ✓ | [`packages/opencode/src/server/routes/instance/AGENTS.md`](packages/opencode/src/server/routes/instance/AGENTS.md) |
+| 11 | ✓ | [`packages/llm/AGENTS.md`](packages/llm/AGENTS.md) |
+| 12 | ✓ | [`packages/opencode/AGENTS.md`](packages/opencode/AGENTS.md) |
 | 13 | ✓ | [`packages/opencode/src/server/routes/instance/httpapi/AGENTS.md`](packages/opencode/src/server/routes/instance/httpapi/AGENTS.md) |
 | 14 | ✓ | [`packages/opencode/test/AGENTS.md`](packages/opencode/test/AGENTS.md) |
 | 15 | ✓ | [`packages/opencode/test/fixture/skills/agents-sdk/SKILL.md`](packages/opencode/test/fixture/skills/agents-sdk/SKILL.md) |
