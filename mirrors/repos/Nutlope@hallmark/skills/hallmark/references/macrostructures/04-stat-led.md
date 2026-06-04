@@ -2,7 +2,7 @@
 
 The hero is a giant number — a metric, a count, a percentage. Everything that follows supports or qualifies it. Data is the narrative.
 
-- **Heading:** numeric display (8–12 rem), tabular figures, small qualifier line below.
+- **Heading:** a large numeric display (8–12 rem, tabular figures) **paired with a worded headline** — the figure is the biggest element, but it is *never the hero's only words*. State what the number means right beside or beneath it as a real headline, not a tiny label. Read the figure and its words together (*"4 seconds. From the alert link to the slow span."*).
 - **Body:** sections each anchored by a supporting stat or chart.
 - **Divider:** hairline rules between stat blocks; tabular-nums everywhere.
 - **Button:** outlined chip aligned beneath the qualifier.
@@ -12,6 +12,8 @@ The hero is a giant number — a metric, a count, a percentage. Everything that 
 Reach for it when the brief is "we have proof in numbers" — enterprise/B2B, fundraising platforms, climate or impact pages.
 
 Avoid for products without a defensible single metric. A fake big number is worse than no number.
+
+**The hero header always contains words.** The lead figure never stands alone as the headline — pair it with a worded line that completes it. A bare number as the dominant hero text fails slop-test gate 46.
 
 Reference: Ahrefs, Stripe Sessions stat blocks, climate-impact dashboards, venture firm portfolio pages.
 

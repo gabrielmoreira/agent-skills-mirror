@@ -256,8 +256,6 @@ After the schema is filled, map the source to one of Hallmark's named themes —
 | `paper_band: light`, `display: heavy black sans`, `accent: red flood` | **Brutal** |
 | `paper_band: dark`, `display: heavy uppercase`, `accent: red flood` | **Manifesto** |
 | `paper_hue: cool`, `density: dense`, `body: 2-3 column justified` | **Newsprint** |
-| `paper_hue: warm`, `density: generous`, `display: ornamental serif`, `dividers: fleuron` | **Salon** |
-| `paper_hue: warm`, `density: medium`, `display: roman serif`, `body: italic serif` | **Linen** |
 | `paper_band: light cool`, `font: mono labels`, `density: dense`, `tabular numbers` | **Almanac** |
 | `display: italic display`, `accent: red`, `tabular numbers`, `motion: horizontal sweep` | **Sport** |
 | `display: ornamental script`, `paper: cream`, `density: medium-generous` | **Garden** |

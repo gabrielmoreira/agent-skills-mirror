@@ -4,8 +4,8 @@ description: "Use when the user is unsure which Higgsfield workspace fits their 
 user-invocable: true
 metadata:
   tags: [higgsfield, workspaces, routing, decision, cinema-studio, lipsync, draw-to-video, sora-trends, click-to-ad, higgsfield-audio]
-  version: 1.1.0
-  updated: 2026-04-24
+  version: 1.2.0
+  updated: 2026-06-03
   parent: higgsfield
 ---
 
@@ -232,6 +232,51 @@ blocking, ambient sound design, BGM direction), see `higgsfield-audio`. For
 AI actor voices that pair with avatars and Soul Cast characters, see
 `higgsfield-soul`. For when the voice asset produced here gets dropped onto a
 generated face, see Lipsync Studio above.
+
+---
+
+### Higgsfield Collab
+
+Collab is Higgsfield's built-in collaboration space — the team-and-community
+layer that sits across the workspaces above. It is where a campaign or scene
+stops being a solo job and becomes a shared one. Use it when more than one
+person needs to generate, review, or talk through work together.
+
+**Shared projects.** A project is a shared space where members generate
+together, chat, share assets, and hop on calls. Projects have three access
+levels:
+
+- **Private** — invited members only.
+- **Public** — discoverable, view-only for non-members.
+- **Open** — anyone can join with owner approval.
+
+**Real-time communication.** Chat is built into every project. Any project
+with two or more members supports audio and video calls — join, leave, and
+mute from inside the project, with a persistent call bar that stays visible as
+you navigate so you never lose the call.
+
+**Share to Collab.** Send any generation straight into the project chat with
+one tap using the **Share to Collab** toggle. Teammates see the output along
+with its prompt, model, and progress, so they can react, give feedback, or
+build on it immediately.
+
+**Community feed.** A recommended-and-trending feed of published work across
+the platform, for discovery and inspiration.
+
+**Orgs & Team Plans.** Free Orgs enable collaborative identity sharing; paid
+Team Plans unlock shared credits, shared elements, admin controls, and SSO.
+Users also earn karma by liking, commenting, generating, and inviting friends,
+and can exchange karma for credits.
+
+> **Collab vs Shared Canvas.** Collab is project-level collaboration —
+> shared spaces, chat, calls, and a community feed. **Shared Canvas** (see
+> `../higgsfield-canvas/SKILL.md` § Shared Canvas) is board-level live
+> co-editing of a single node graph. Reach for Collab to organize a team and
+> a campaign; reach for Shared Canvas to build one pipeline together in real
+> time.
+
+This sub-skill documents only the collaboration features Higgsfield publishes;
+it does not assert limits beyond those.
 
 ---
 

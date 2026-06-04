@@ -5,7 +5,7 @@ description: DashClaw platform expert for integration, troubleshooting, and gove
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:5e65b89a2a6387282f387448b7a18aeeda909aa6`
+**Shape snapshot:** `sha1:4ce059d481529bec3476bdeb0fe372cf9743376d`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -45,7 +45,7 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 ## At a Glance
 
-- **223** active API routes across **55** categories
+- **224** active API routes across **56** categories
 - **4** required + **137** optional environment variables
 - **89** database tables
 
@@ -68,6 +68,10 @@ neither exists. When you cannot run the queries above, fall back **in this order
 ### `activity`
 
 - `GET` `/api/activity`
+
+### `admin`
+
+- `POST` `/api/admin/trigger-outcome-sweep`
 
 ### `agents`
 
@@ -443,7 +447,7 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 These must be set — DashClaw will fail to start without them.
 
-- **`DASHCLAW_API_KEY`** - referenced in 59 file(s)
+- **`DASHCLAW_API_KEY`** - referenced in 57 file(s)
 - **`DATABASE_URL`** - referenced in 87 file(s)
 - **`ENCRYPTION_KEY`** - referenced in 4 file(s)
 - **`NEXTAUTH_SECRET`** - referenced in 5 file(s)
@@ -716,7 +720,8 @@ Per-org settings stored in the `settings` table. Set via `PUT /api/settings/:key
 ### Communication
 
 - `TELEGRAM_BOT_TOKEN`
-- `TELEGRAM_CHAT_ID`
+- `TELEGRAM_ADMIN_CHAT_ID`
+- `DASHCLAW_ALERTS_TELEGRAM`
 - `DISCORD_BOT_TOKEN`
 - `DISCORD_CLIENT_ID`
 - `DISCORD_GUILD_ID`

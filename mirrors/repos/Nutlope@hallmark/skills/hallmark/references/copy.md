@@ -105,7 +105,7 @@ Three voice patterns: *poetic restraint*, *passion via enumeration*, *vulnerabil
 - *"Design engineer creating software that makes people feel something."* — rauno.me — emotional outcome over feature list; "feel something" avoids genre cliché
 - *"All I want to do is build websites. Typography, motion design, copywriting, performance — the web is an endless medium of opportunity."* — paco.me — passion via enumeration; vulnerability ("scratched the surface")
 - *"I craft UI demos that explore the power of the web and help others sharpen their skills."* — jhey.dev — names the verb (*craft*), names the audience (*others*)
-- *"Soft, but exact."* — Hallmark Plume — two short adjectives, one comma, full stop
+- *"Soft, but exact."* — Hallmark Hum — two short adjectives, one comma, full stop
 - *"This page is soft because the surface should be soft. The rules underneath are not."* — pairs claim with refusal
 
 ### Technical
@@ -127,9 +127,9 @@ Three voice patterns: *heritage with specifics*, *refusal as sophistication*, *n
 
 - *"The world's most acclaimed creative collective, where 23 partners work independently and collaboratively to shape the future of design."* — pentagram.com — heritage (implied longevity), named scale (23 partners)
 - *"By appointment."* — atelier-style — refusal as gatekeeping
-- *"A salon for the senses."* — Hallmark Salon — single nominal phrase, comma-free
-- *"A page should arrive like a person — composed, deliberate, in good clothes."* — Hallmark Salon — analogy treats the page as social
-- *"With pleasure, you are most welcome."* — Hallmark Salon salutation — formal address
+- *"A study in the senses."* — Hallmark Atelier — single nominal phrase, comma-free
+- *"A page should arrive like a person — composed, deliberate, in good clothes."* — Hallmark Atelier — analogy treats the page as social
+- *"With pleasure, you are most welcome."* — Hallmark Editorial salutation — formal address
 - *"Restraint, repeated, becomes a signature."* — Hallmark Atelier — three commas, four words, philosophical
 - *"A studied hand."* — three words; the determiner does the work
 - *"A small, opinionated craftsmanship engine that argues with your AI assistant on your behalf — and wins."* — Hallmark Atelier — names the role precisely, embraces the conflict
@@ -151,12 +151,12 @@ Three voice patterns: *analogy via pop-culture*, *food/sensory metaphor*, *antic
 
 Three voice patterns: *extreme abbreviation*, *principle as opening*, *refusal of marketing language*.
 
-- *"Hello."* — Hallmark Quiet salutation — one word; the period is the design
-- *"This is a page that doesn't try."* — Quiet — declares the position openly
+- *"Hello."* — Hallmark Coral salutation — one word; the period is the design
+- *"This is a page that doesn't try."* — Coral — declares the position openly
 - *"Things Become Other Things."* — craigmod.com — three words; treats brand as essay title
 - *"Lightness above weightiness, elevate everyone you encounter."* — craigmod.com — principle-first positioning
-- *"A quiet skill."* — Hallmark Quiet — three words; the article is doing work
-- *"Software can be soft and exact at once. That's the trick."* — Hallmark Plume — names the contradiction, names the resolution
+- *"A quiet skill."* — Hallmark Coral — three words; the article is doing work
+- *"Software can be soft and exact at once. That's the trick."* — Hallmark Hum — names the contradiction, names the resolution
 - *"One HTML file."* — Anya (test 06) footer — three words; the count is the boast
 - *"This page doesn't move."* — names the design decision openly
 

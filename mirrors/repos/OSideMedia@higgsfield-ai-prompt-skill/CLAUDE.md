@@ -23,7 +23,7 @@ photodump-presets.md      ← 29 Photodump style presets
 validate.py               ← Pre-release health checks
 higgsfield_memory.py      ← DB operations for learning memory
 seedance_lint.py          ← Seedance preflight linter
-skills/                   ← 21 sub-skill directories + shared/
+skills/                   ← 25 sub-skill directories + shared/
 templates/                ← 10 genre templates
 db/                       ← Filter + quality memory JSON databases
 docs/                     ← Extended reference documents
@@ -42,8 +42,9 @@ docs/                     ← Extended reference documents
 
 ## Rules
 
-- Every SKILL.md must have frontmatter: `name`, `description`, `metadata.version`, `metadata.updated`, `metadata.parent`
-- The root SKILL.md is the dispatcher. Sub-skills live in skills/. Never nest the dispatcher under mnt/ — that path is a Claude runtime artifact location, not a skill install path.
+- Every SKILL.md must have frontmatter: `name`, `description`, `metadata.version`, `metadata.updated`. Sub-skills additionally require `metadata.parent: higgsfield`; the root dispatcher has no parent. (`validate.py` enforces this.)
+- Sub-skill `metadata.version` values are **independent** and intentionally out of sync with the root release version (newer surfaces sit at 1.x, legacy ones at 3.x). Do not "fix" them to match the root version — the root SKILL.md frontmatter is the single source of truth for the release version.
+- The root SKILL.md is the dispatcher. Sub-skills live in skills/. Never nest the dispatcher under mnt/ — that path is a Claude runtime artifact location, not a skill install path. Every buildable `skills/higgsfield-*/` must be routed from root SKILL.md (`validate.py` reconciles disk ↔ dispatcher).
 - Update `CHANGELOG.md` for every user-facing change
 - Run `python3 validate.py` before any release
 - Version bumps require a git tag + GitHub release, not just a commit

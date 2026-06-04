@@ -28,7 +28,7 @@ plugins/plugin-native-appblocker/
     index.ts               JS entry — registerPlugin("ElizaAppBlocker") + lazy web fallback
     definitions.ts         All TypeScript types: AppBlockerPlugin, AppBlockerStatus,
                            BlockAppsOptions, InstalledApp, SelectAppsResult, etc.
-    web.ts                 Web stub — all methods return not-applicable/unavailable
+    web.ts                 Web fallback — all methods return not-applicable/unavailable
   android/src/main/
     AndroidManifest.xml    Declares permissions (PACKAGE_USAGE_STATS, SYSTEM_ALERT_WINDOW,
                            FOREGROUND_SERVICE, POST_NOTIFICATIONS) and ForegroundService
@@ -51,10 +51,11 @@ Only scripts that exist in `package.json`:
 
 ```bash
 bun run --cwd plugins/plugin-native-appblocker build         # tsc + rollup → dist/
+bun run --cwd plugins/plugin-native-appblocker test          # vitest web fallback contract
 bun run --cwd plugins/plugin-native-appblocker clean         # rm dist/
 ```
 
-There are no test or lint scripts in this package.
+There is no lint script in this package.
 
 ## Config / env vars
 
@@ -68,7 +69,7 @@ This plugin reads no environment variables. It requires OS-level permissions gra
 **Add a new method (JS → native):**
 
 1. Add the method signature to `AppBlockerPlugin` interface in `src/definitions.ts`.
-2. Add a no-op/error implementation in `src/web.ts` (`AppBlockerWeb`).
+2. Add an unavailable/error implementation in `src/web.ts` (`AppBlockerWeb`).
 3. Add `@PluginMethod fun myMethod(call: PluginCall)` to `android/.../AppBlockerPlugin.kt`.
 4. Add `@objc func myMethod(_ call: CAPPluginCall)` to `ios/.../AppBlockerPlugin.swift` and register it in `pluginMethods`.
 5. Run `bun run --cwd plugins/plugin-native-appblocker build` to rebuild `dist/`.

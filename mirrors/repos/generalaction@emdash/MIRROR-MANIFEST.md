@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `generalaction/emdash` — 26 default patterns, 2 followed patterns, 25 file(s) materialized.
+Mirror of `generalaction/emdash` — 26 default patterns, 3 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `generalaction/emdash` — 26 default patterns, 2 followed patterns, 2
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 25 |
+| Followed pats | 3 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `generalaction/emdash` — 26 default patterns, 2 followed patterns, 2
 
 - `CONTRIBUTING.md`
 - `README.md`
+- `LICENSE.md`
 
 ## File Index
 
@@ -84,7 +85,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 23 | ✓ | [`tooling/byoi/README.md`](tooling/byoi/README.md) |
 | 24 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 25 | → | [`README.md`](README.md) |
+| 25 | → | [`LICENSE.md`](LICENSE.md) |
+| 26 | → | [`README.md`](README.md) |
 
 ---
 

@@ -130,6 +130,7 @@ The outline starts transparent at 2 px so when the focus ring appears, the box g
 ## Modals and overlays
 
 - Use the native `<dialog>` element. It handles focus trap, escape to close, and `::backdrop` styling for free.
+- **Centre it explicitly.** A `<dialog>` opened with `showModal()` centres on its own — but the moment you add custom positioning (a `margin-top`, a `top`, a stray `transform`) it can snap to the viewport's top-left corner. Pin it: `position: fixed; inset: 0; margin: auto; height: fit-content; max-height: min(80vh, 40rem);`. A non-`<dialog>` overlay centres via its container instead: `position: fixed; inset: 0; display: grid; place-items: center;`. Never ship a modal or command palette stuck in the corner.
 - Set `inert` on the page content behind a modal so tab order doesn't leak.
 - Close on: escape key, backdrop click, explicit close button.
 - First focus goes to the first interactive element, not the close button.
@@ -169,7 +170,7 @@ The outline starts transparent at 2 px so when the focus ring appears, the box g
 
 ## Contrast discipline
 
-Hallmark output must pass slop-test gates 46–50 before shipping. Compute contrast for every `(color, background-color)` pair on the page. The common failures Hallmark output trips on:
+Hallmark output must pass slop-test gates 40–41 before shipping. Compute contrast for every `(color, background-color)` pair on the page. The common failures Hallmark output trips on:
 
 1. **Text on a flipped surface.** `.section--ink { background: var(--color-ink); }` flips the surface dark; nested text still inherits `color: var(--color-ink)` → ink-on-ink. Fix: any rule that sets a dark `background` must *also* set `color: var(--color-paper)` in the same rule.
 2. **Button text on accent fill.** `background: var(--color-accent); color: white;` — but white is 4.5:1 against this accent only if `--color-accent` is dark enough. Use `var(--color-accent-ink)` instead, which the theme guarantees passes ≥ APCA Lc 60.

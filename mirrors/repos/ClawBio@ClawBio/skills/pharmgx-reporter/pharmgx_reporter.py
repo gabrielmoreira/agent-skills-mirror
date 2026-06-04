@@ -1569,7 +1569,7 @@ def _evidence_cell_html(enrichment_entry, classification=""):
 # 7. Report generator
 # ---------------------------------------------------------------------------
 
-ICON = {"standard": "OK", "caution": "CAUTION", "avoid": "AVOID", "indeterminate": "INDETERMINATE — INSUFFICIENT DATA"}
+ICON = {"standard": "STANDARD", "caution": "CAUTION", "avoid": "AVOID", "indeterminate": "INDETERMINATE - INSUFFICIENT DATA"}
 
 
 def generate_report(input_path, fmt, total_snps, pgx_snps, profiles, drug_results):
@@ -2036,6 +2036,33 @@ def generate_html_report(input_path, fmt, total_snps, pgx_snps, profiles, drug_r
 # 8. Main
 # ---------------------------------------------------------------------------
 
+def write_commands_sh(output_dir, input_path):
+    """Write reproducibility/commands.sh with the exact command to regenerate the report.
+
+    The SKILL.md output contract documents output_dir/reproducibility/commands.sh,
+    so the script must always produce it (not rely on the calling agent to create it).
+    Returns the path to the written file.
+    """
+    repro_dir = Path(output_dir) / "reproducibility"
+    repro_dir.mkdir(parents=True, exist_ok=True)
+    fname = Path(input_path).name
+    checksum = sha256_file(str(input_path))
+    script = "\n".join([
+        "#!/usr/bin/env bash",
+        "# Reproduce this ClawBio PharmGx report.",
+        f"# Input file: {fname}",
+        f"# Input SHA-256: {checksum}",
+        "set -euo pipefail",
+        "",
+        f"python pharmgx_reporter.py --input {fname} --output report",
+        "",
+    ])
+    path = repro_dir / "commands.sh"
+    path.write_text(script)
+    path.chmod(0o755)
+    return path
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="ClawBio PharmGx Reporter: pharmacogenomic report from DTC genetic data")
@@ -2234,9 +2261,13 @@ def main():
         input_checksum=input_checksum,
     )
 
+    # Write reproducibility/commands.sh (documented in the SKILL.md output contract)
+    commands_path = write_commands_sh(outdir, args.input)
+
     print(f"Report saved: {report_path}")
     print(f"HTML report:  {html_path}")
     print(f"Result JSON:  {result_json_path}")
+    print(f"Reproducibility: {commands_path}")
     print("Done.")
 
 

@@ -4,6 +4,19 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.162](https://github.com/Piebald-AI/claude-code-system-prompts/commit/4cd566a)
+
+_+9,871 tokens_
+
+- **NEW:** Skill: /design-sync package source shape — Adds package-based `/design-sync` instructions for React design systems without Storybook, covering `.d.ts` export discovery, deterministic config, build and validation commands, preview verification, upload, and troubleshooting.
+- **NEW:** Skill: /design-sync Storybook source shape — Adds Storybook-based `/design-sync` instructions that build or use Storybook output, derive components and args from stories, preserve Storybook config paths, and share the validation, upload, and troubleshooting flow.
+- Skill: /design-sync slash command — Refactors the main command around explicit source-shape detection, records `shape` and `storybookConfigDir` in `design-sync.config.json`, and delegates the detailed workflow to the new Storybook or package shape skill.
+- Skill: /init CLAUDE.md and skill setup (new version) — Expands AI coding tool config discovery to include `.devin/rules/` and `.windsurf/rules/` alongside existing AGENTS, Cursor, Copilot, Windsurf, and Cline files.
+- Tool Description: Bash (Git commit and PR creation instructions) — Adds a configurable note slot after common GitHub PR operations, allowing extra PR workflow guidance to be injected when available.
+- Tool Description: DesignSync — Marks explicit asset registration and unregistration as legacy for `/design-sync`, explaining that preview cards are now indexed from `@dsCard` comments and that normal uploads only need finalize, write, and delete operations.
+- Tool Description: LSP — Clarifies that `workspaceSymbol` searches symbols by query and instructs agents to always provide a query because many language servers return no results for an empty one.
+- Tool Description: NotebookEdit — Reworks notebook editing guidance around cell IDs from prior `Read` output, requiring the notebook to be read before editing and changing insert behavior to add cells after a target cell or at the notebook start.
+
 # [2.1.161](https://github.com/Piebald-AI/claude-code-system-prompts/commit/ba274bd)
 
 _+64 tokens_

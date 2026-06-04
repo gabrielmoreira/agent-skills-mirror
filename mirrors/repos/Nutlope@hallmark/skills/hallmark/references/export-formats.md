@@ -116,7 +116,7 @@ Or, if the project uses a CSS bundler / framework that doesn't honour bare `@imp
 }
 ```
 
-**Worked example — modern-minimal theme (Quiet-like):**
+**Worked example — modern-minimal theme (austere, pure-white):**
 
 ```css
 :root {

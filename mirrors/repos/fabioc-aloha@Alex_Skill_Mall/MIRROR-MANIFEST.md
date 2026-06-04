@@ -54,6 +54,7 @@ Mirror of `fabioc-aloha/Alex_Skill_Mall` — 26 default patterns, 14 followed pa
 - `README.md`
 - `catalog/stores/plugin-mall.md`
 - `catalog/stores/addyosmani-agent-skills.md`
+- `catalog/stores/agency-agents.md`
 - `catalog/stores/agent-skills-context-engineering.md`
 - `catalog/stores/alirezarezvani-claude-skills.md`
 - `catalog/stores/antigravity-awesome-skills.md`
@@ -61,7 +62,6 @@ Mirror of `fabioc-aloha/Alex_Skill_Mall` — 26 default patterns, 14 followed pa
 - `catalog/stores/awesome-copilot.md`
 - `catalog/stores/awesome-mcp-servers.md`
 - `catalog/stores/buildwithclaude.md`
-- `catalog/stores/claude-code-best-practice.md`
 - `catalog/INDEX.md`
 - `scoring/TRUST-AUDIT.md`
 - `sources/SOURCES.md`
@@ -775,14 +775,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 701 | ✓ | [`plugins/supervisor-fleet/version-management/SKILL.md`](plugins/supervisor-fleet/version-management/SKILL.md) |
 | 702 | → | [`catalog/INDEX.md`](catalog/INDEX.md) |
 | 703 | → | [`catalog/stores/addyosmani-agent-skills.md`](catalog/stores/addyosmani-agent-skills.md) |
-| 704 | → | [`catalog/stores/agent-skills-context-engineering.md`](catalog/stores/agent-skills-context-engineering.md) |
-| 705 | → | [`catalog/stores/alirezarezvani-claude-skills.md`](catalog/stores/alirezarezvani-claude-skills.md) |
-| 706 | → | [`catalog/stores/antigravity-awesome-skills.md`](catalog/stores/antigravity-awesome-skills.md) |
-| 707 | → | [`catalog/stores/awesome-claude-code-toolkit.md`](catalog/stores/awesome-claude-code-toolkit.md) |
-| 708 | → | [`catalog/stores/awesome-copilot.md`](catalog/stores/awesome-copilot.md) |
-| 709 | → | [`catalog/stores/awesome-mcp-servers.md`](catalog/stores/awesome-mcp-servers.md) |
-| 710 | → | [`catalog/stores/buildwithclaude.md`](catalog/stores/buildwithclaude.md) |
-| 711 | → | [`catalog/stores/claude-code-best-practice.md`](catalog/stores/claude-code-best-practice.md) |
+| 704 | → | [`catalog/stores/agency-agents.md`](catalog/stores/agency-agents.md) |
+| 705 | → | [`catalog/stores/agent-skills-context-engineering.md`](catalog/stores/agent-skills-context-engineering.md) |
+| 706 | → | [`catalog/stores/alirezarezvani-claude-skills.md`](catalog/stores/alirezarezvani-claude-skills.md) |
+| 707 | → | [`catalog/stores/antigravity-awesome-skills.md`](catalog/stores/antigravity-awesome-skills.md) |
+| 708 | → | [`catalog/stores/awesome-claude-code-toolkit.md`](catalog/stores/awesome-claude-code-toolkit.md) |
+| 709 | → | [`catalog/stores/awesome-copilot.md`](catalog/stores/awesome-copilot.md) |
+| 710 | → | [`catalog/stores/awesome-mcp-servers.md`](catalog/stores/awesome-mcp-servers.md) |
+| 711 | → | [`catalog/stores/buildwithclaude.md`](catalog/stores/buildwithclaude.md) |
 | 712 | → | [`catalog/stores/plugin-mall.md`](catalog/stores/plugin-mall.md) |
 | 713 | → | [`README.md`](README.md) |
 | 714 | → | [`scoring/TRUST-AUDIT.md`](scoring/TRUST-AUDIT.md) |

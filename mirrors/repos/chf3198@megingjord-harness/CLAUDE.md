@@ -29,6 +29,7 @@ and AI agent governance. All instructions below are binding for Claude Code sess
 @instructions/owasp-agentic-mapping.instructions.md
 @instructions/cross-team-artifact-write.instructions.md
 @instructions/cross-team-communication-tiers.instructions.md
+@instructions/resource-tier-portability.instructions.md
 
 ## Runtime Context
 

@@ -46,6 +46,7 @@ env_files = ["~/.agent-deck.env", ".env"]   # .env files to source for ALL sessi
 init_script = "~/.agent-deck/init.sh"       # Script or command to run before each session
 ignore_missing_env_files = true             # Silently skip missing .env files (default: true)
 exit_to_shell = false                       # Drop to an interactive shell when an agent exits (default: false)
+launch_shell = false                        # Wrap commands with interactive shell startup to inherit env vars (default: false)
 ```
 
 | Key | Type | Default | Description |
@@ -54,6 +55,7 @@ exit_to_shell = false                       # Drop to an interactive shell when 
 | `init_script` | string | `""` | Shell script or inline command to run before each session. Useful for direnv, nvm, pyenv, etc. File paths (starting with `/`, `~/`, `./`, `../`) are sourced; anything else is treated as an inline command. |
 | `ignore_missing_env_files` | bool | `true` | When `true`, missing .env files are silently skipped using `[ -f file ] && source file`. When `false`, sessions will error if an env file doesn't exist. |
 | `exit_to_shell` | bool | `false` | When `true`, exiting a built-in agent (e.g. `/exit` from Claude Code) drops the pane back to an interactive shell at the same cwd instead of dying / auto-restarting. Lets you do shell-only work (`aws-vault exec`, `direnv`) then `claude --resume` the same session. Opt-in; the session id is preserved so resume targets the same conversation. Per-session override via the session record. Excludes sandboxed sessions. Issue #1161. |
+| `launch_shell` | bool | `false` | When `true`, wraps agent spawn commands with an interactive shell startup (`$SHELL -il -c '<command>'`; bash also sources `~/.bashrc`) so that environment variables from `~/.zshrc`, `~/.bashrc`, etc. are available to the agent process. This helps when agents launched from the TUI do not inherit the interactive shell's environment. For the most reliable cross-platform behavior, prefer putting shared variables in `~/.agent-deck.env` via `env_files`. Opt-in; the default OFF preserves direct spawn behavior. Per-session override via the session record. Excludes sandboxed and SSH sessions. Issue #1218. |
 
 ### Sourcing order
 
@@ -76,6 +78,7 @@ auto_mode = false                  # Enable --permission-mode auto (classifier-b
 allow_dangerous_mode = false       # Enable --allow-dangerously-skip-permissions
 use_chrome = false                 # Enable --chrome
 use_teammate_mode = false          # Enable --teammate-mode tmux
+vim_mode = false                   # Force insert mode before each send (Claude Code "editorMode": "vim")
 extra_args = ["--agent", "reviewer"] # Extra Claude CLI flags
 env_file = "~/.claude.env"         # .env file specific to Claude sessions
 
@@ -92,6 +95,7 @@ config_dir = "~/.claude-work"      # Optional override for profile "work"
 | `allow_dangerous_mode` | bool | `false` | Adds `--allow-dangerously-skip-permissions`. Unlocks bypass as an option without activating it. Ignored when `dangerous_mode` or `auto_mode` is true. |
 | `use_chrome` | bool | `false` | Adds `--chrome` to Claude sessions and is remembered from the New Session dialog. |
 | `use_teammate_mode` | bool | `false` | Adds `--teammate-mode tmux` to Claude sessions and is remembered from the New Session dialog. |
+| `vim_mode` | bool | `false` | Set when the inner Claude Code prompt uses vim keybindings (`"editorMode": "vim"`). Each `session send` then prepends an Escape + `i` insert-mode guarantee so a message sent while the prompt is in vim NORMAL mode actually submits instead of being typed-but-unsent (issue #1264). Only affects Claude-compatible tools. |
 | `extra_args` | array of strings | `[]` | Extra Claude CLI flags remembered from the New Session dialog and appended to new/restarted Claude sessions. Do not store secrets here. |
 | `env_file` | string | `""` | A .env file sourced for Claude sessions only. Sourced after global `[shell].env_files`. See [Path Resolution](#path-resolution). |
 | `command` | string | `"claude"` | Override the binary/invocation (e.g., `"cdw"` for a wrapper that sets `CLAUDE_CONFIG_DIR`). |

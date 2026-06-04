@@ -152,6 +152,47 @@ Key points:
 - `agent:provider(worktree)` maps to `workspace_mode = "git-worktree"`.
 - `git-worktree` requires the project root to be a git repository; CCB must not silently fall back to copying.
 
+## Role Pack Agents
+
+Use this flow when the user asks to add or configure a packaged role agent, for
+example an architecture reviewer:
+
+1. Use canonical Role Pack ids in new config. For Archi, write
+   `agentroles.archi`, not `ccb.archi`.
+2. Treat `ccb.archi` only as legacy migration input. If an existing config uses
+   `ccb.archi`, propose or apply migration to `agentroles.archi`.
+3. Keep the visible project agent name natural. For Archi the visible agent is
+   `archi`; sidebar, pane labels, and primary asks should use `archi`.
+4. Preferred shorthand in `[windows]` is:
+
+```toml
+[windows]
+main = "main:codex, agentroles.archi:codex"
+```
+
+5. Equivalent explicit binding is:
+
+```toml
+[windows]
+main = "main:codex, archi:codex"
+
+[agents.archi]
+role = "agentroles.archi"
+provider = "codex"
+```
+
+6. The role must be installed before shorthand validation can resolve the
+   default agent name. If validation reports the role is missing, tell the user
+   to run `ccb roles install agentroles.archi` and then rerun validation.
+7. When explaining usage, say:
+   - install/check role: `ccb roles install agentroles.archi` and
+     `ccb roles doctor agentroles.archi`
+   - bind role to project: `ccb roles add agentroles.archi:codex`
+   - ask the mounted role agent: `ccb ask archi "..."`
+8. Do not copy Role Pack memory or skills into `.ccb` manually. CCB projects
+   role memory and skills from the installed role store into the bound provider
+   home.
+
 ## Skill Injection Requests
 
 Use this flow when the user asks to add, inject, install, or inherit a skill for an agent, for example "inject plan-tree into agent2".

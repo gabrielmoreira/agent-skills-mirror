@@ -56,7 +56,35 @@ export class SkillIndex {
     }
     this.metadata = await this.loadMetadata();
     this.skills = await this.scanSkills();
+    // When metadata.json is absent (no sync step run), derive file_routing
+    // directly from the triggers.files globs already parsed from SKILL.md files.
+    // This makes load_skills_for_files work out-of-the-box without requiring
+    // any offline sync or metadata generation step.
+    if (Object.keys(this.metadata.file_routing).length === 0 && this.skills.length > 0) {
+      this.metadata = { ...this.metadata, file_routing: this.deriveFileRouting() };
+    }
     this.loaded = true;
+  }
+
+  /**
+   * Derive a file_routing map from scanned SKILL.md triggers.files globs.
+   * Used as a fallback when metadata.json is not present on disk.
+   * Extracts the file extension from each glob (e.g. `**\/*.dart` → `dart`)
+   * and maps it to the skill's category.
+   */
+  private deriveFileRouting(): Record<string, string[]> {
+    const routing: Record<string, string[]> = {};
+    for (const skill of this.skills) {
+      for (const glob of skill.triggers.files) {
+        const ext = path.extname(glob).replace(/^\./, "");
+        if (!ext) continue;
+        if (!routing[ext]) routing[ext] = [];
+        if (!routing[ext].includes(skill.category)) {
+          routing[ext].push(skill.category);
+        }
+      }
+    }
+    return routing;
   }
 
   /** True when no skills directory was found at startup. */

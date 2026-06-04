@@ -350,7 +350,7 @@ The Lottie Tell, version 2026: a generic LottieFiles pull where pure CSS would h
 **Brief:** "Build a landing page for a small bakery in Lisbon."
 
 **Step 2 (macrostructure):** Long Document — the bakery is a story-led brand, not a SaaS product.
-**Step 3 (theme):** Linen — warm-paper, prose-led, intimate.
+**Step 3 (theme):** Atelier — warm-paper, prose-led, intimate.
 **Step 4 (enrichment):** E5 Custom Illustration Centerpiece. Tier B (hand-built SVG).
 
 **The output:**
@@ -362,7 +362,7 @@ A 60-line SVG of a single loaf, three paths (crust + crumb + scoring marks), pos
  * H5 hero: Letter (intimate salutation + 2-paragraph body)
  * enrichment: E5 Custom Illustration · craft: tier-B SVG (60 lines)
  * animation: @property --rise (6s, alternate) + stroke-dasharray draw-on
- * theme: Linen · accent: warm-amber ~3% · studied: no
+ * theme: Atelier · accent: warm-amber ~3% · studied: no
  */
 ```
 

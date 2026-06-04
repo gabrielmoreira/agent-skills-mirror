@@ -5,12 +5,12 @@
 [![简体中文](https://img.shields.io/badge/README-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-1677ff)](./README.md)
 [![English](https://img.shields.io/badge/README-English-111111)](./README.en.md)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-Compatible-00b894)](./openclaw-skills/README.md)
-[![Skills](https://img.shields.io/badge/Skills-296-7c3aed)](./skills/)
+[![Skills](https://img.shields.io/badge/Skills-301-7c3aed)](./skills/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 A high-value skills repository for AI developers, organized by real work scenarios such as developer engineering, DevOps, automation, finance, design, knowledge workflows, and reliability.
 
-This repository currently contains **16 categories / 296 skills**.
+This repository currently contains **16 categories / 301 skills**.
 
 ## Who This Is For
 
@@ -27,16 +27,18 @@ This repository currently contains **16 categories / 296 skills**.
 - It is suitable both for daily usage and long-term team knowledge accumulation
 - The repo now supports automated discovery, upstream sync, candidate ranking, quality checks, and generated view refreshes, so it can be maintained as a living skill system rather than a static dump
 - Curation is policy-driven: trusted sources can be preferred, noisy sources can be denied, and minimum quality thresholds can be enforced in one place
-- `scripts/sync_codex_skills.py` lets you sync the latest repository skills into a local Codex skill directory without manual copying
+- `scripts/sync_codex_skills.py` lets you sync the latest repository skills into local Codex, Claude Code, or similar skills directories without manual copying
 - The repository also emphasizes trust and safety through provenance tracking, curated source controls, and built-in security-review skills such as `skill-vetter`, `skill-security-auditor`, `input-guard`, and `link-checker`
 - The repository now also includes license auditing and scheduled dead-link checks: `repo-validation` blocks external skills that are missing license metadata, while the monthly `dead-links` workflow produces a link health report instead of silently drifting.
 - `Hermes Agent` is also treated as a first-class supported client: it uses the same categorized `skills/` tree and already has dedicated Hermes runtime, MCP, and Hermes + graphify + GSD workflow skills in the repository.
 
 ## Which Directory Should You Use
 
-| Client | Directory |
-|--------|-----------|
-| `Codex` / `Claude Code` / `Hermes Agent` / source-browsing AI coding assistants | `skills/` |
+| Usage | Directory |
+|-------|-----------|
+| Let `Codex` / `Claude Code` / `Hermes Agent` / `Cursor` browse this repository directly | `skills/` |
+| Install into a local `Codex` skills directory | Sync `skills/` into `~/.codex/skills` |
+| Install into a local `Claude Code` skills directory | Sync `skills/` into `~/.claude/skills` or project `.claude/skills` |
 | `OpenClaw` | `openclaw-skills/` |
 
 ## Quick Start
@@ -59,18 +61,54 @@ This works because the repository already includes AI-readable installation rule
 
 ### Option 2: Manual Setup
 
-1. Clone the repository.
-2. Choose the correct directory for your client:
-   - `Codex` / `Claude Code` / `Hermes Agent` / `Cursor` / other source-browsing assistants: use `skills/`
-   - `OpenClaw`: use `openclaw-skills/`
-3. If you use OpenClaw, generate the flat export first:
+1. Clone the repository and enter it:
+
+```bash
+git clone https://github.com/seaworld008/Commonly-used-high-value-skills.git
+cd Commonly-used-high-value-skills
+```
+
+2. If you use `Codex`, sync the skills into your local Codex skills directory:
+
+```bash
+python3 scripts/sync_codex_skills.py --source-root ./skills --codex-root ~/.codex/skills
+```
+
+Windows PowerShell example:
+
+```powershell
+python scripts/sync_codex_skills.py --source-root ".\skills" --codex-root "$env:USERPROFILE\.codex\skills"
+```
+
+3. If you use `Claude Code`, sync the skills into your personal or project skills directory:
+
+```bash
+# Personal: available across projects
+python3 scripts/sync_codex_skills.py --source-root ./skills --codex-root ~/.claude/skills
+
+# Project: available only in the current project
+python3 scripts/sync_codex_skills.py --source-root ./skills --codex-root ./.claude/skills
+```
+
+Windows PowerShell example:
+
+```powershell
+python scripts/sync_codex_skills.py --source-root ".\skills" --codex-root "$env:USERPROFILE\.claude\skills"
+```
+
+The `--codex-root` option is the existing sync script's destination parameter. It can point to a Claude Code skills directory too.
+
+4. If you use `Hermes Agent`, `Cursor`, or another source-browsing AI coding assistant, point the tool at this repository's `skills/` directory. If the tool requires a flat one-level skill directory, reuse the sync command above and set `--codex-root` to that tool's skills directory.
+
+5. If you use `OpenClaw`, generate the flat export first:
 
 ```bash
 python3 scripts/export_openclaw_skills.py
 ```
 
-4. Point your AI tool to the correct directory.
-5. Verify by opening a few known skills, for example:
+Then point OpenClaw at `openclaw-skills/`. Do not point OpenClaw at the repository root or `skills/`.
+
+6. Verify by opening a few known skills, for example:
    - `skills/developer-engineering/codebase-onboarding`
    - `skills/security-and-reliability/skill-vetter`
    - `openclaw-skills/codebase-onboarding`
@@ -142,7 +180,7 @@ python3 scripts/sync_codex_skills.py --source-root ./skills --codex-root ~/.code
 
 This repository does not just happen to include a few Hermes-related skills. It explicitly supports `Hermes Agent` as one of the maintained consumption targets:
 
-- installation layout matches `Codex` / `Claude Code`, using the categorized `skills/` tree
+- source-browsing usage reads the categorized `skills/` tree; local `Codex` / `Claude Code` installs sync into their own skills directories
 - it includes the dedicated [`hermes-agent`](./skills/ai-agent-platform/hermes-agent/) skill covering CLI usage, gateway setup, profiles, memory, skills, MCP, and contributor guidance
 - it includes [`native-mcp`](./skills/ai-agent-platform/native-mcp/) for Hermes MCP usage
 - it includes the `hermes-graphify-gsd-*` workflow skills for graph-aware and autonomous development loops
@@ -175,7 +213,8 @@ This repository exposes two consumption surfaces for different AI clients:
 
 | Client | Directory | Why |
 |--------|-----------|-----|
-| `Codex` / `Claude Code` / `Hermes Agent` / source-browsing coding assistants | `skills/` | Keeps category structure for browsing, maintenance, and editing |
+| `Codex` / `Claude Code` local skills directories | `~/.codex/skills` / `~/.claude/skills` / `.claude/skills` | Installed as a flat skill directory so clients can discover skills |
+| `Hermes Agent` / `Cursor` / source-browsing coding assistants | `skills/` | Keeps category structure for browsing, maintenance, and editing |
 | `OpenClaw` | `openclaw-skills/` | OpenClaw expects a flat one-level skill directory |
 
 ### AI-Readable Rules
@@ -183,7 +222,7 @@ This repository exposes two consumption surfaces for different AI clients:
 The repository-level [AGENTS.md](./AGENTS.md) defines these rules for future agents:
 
 - `OpenClaw` installations must use `openclaw-skills/`.
-- `Codex`, `Claude Code`, `Hermes Agent`, and similar clients should use `skills/`.
+- `Codex` and `Claude Code` local installs should sync into their own skills directories; source-browsing clients can use `skills/` directly.
 - Do not point OpenClaw at the repository root or the categorized `skills/` tree.
 - Do not manually edit `openclaw-skills/`; regenerate it from source scripts.
 - When updating `README.md`, update `README.en.md` in the same change.
@@ -234,7 +273,7 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 2. Open the relevant `SKILL.md` and read its triggers, workflow, boundaries, and scripts.
 3. If a skill includes `scripts/`, `references/`, or `assets/`, reuse those files before recreating similar content.
 
-## Skill Overview (by category, 16 categories / 258 skills)
+## Skill Overview (by category, 16 categories / 301 skills)
 
 <a id="cat-developer-engineering"></a>
 ### 1. Developer Engineering (developer-engineering, 49)
@@ -290,9 +329,10 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`webapp-testing`](./skills/developer-engineering/webapp-testing/)
 
 <a id="cat-ai-workflow"></a>
-### 2. AI Workflow (ai-workflow, 43)
+### 2. AI Workflow (ai-workflow, 44)
 
 - [`agent-workflow-designer`](./skills/ai-workflow/agent-workflow-designer/)
+- [`andrej-karpathy-skills`](./skills/ai-workflow/andrej-karpathy-skills/)
 - [`api-and-interface-design`](./skills/ai-workflow/api-and-interface-design/)
 - [`brainstorming`](./skills/ai-workflow/brainstorming/)
 - [`browser-testing-with-devtools`](./skills/ai-workflow/browser-testing-with-devtools/)
@@ -357,7 +397,7 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`sigil`](./skills/ai-agent-platform/sigil/)
 
 <a id="cat-workflow-automation"></a>
-### 4. Engineering Workflow Automation (engineering-workflow-automation, 15)
+### 4. Engineering Workflow Automation (engineering-workflow-automation, 16)
 
 - [`agent-browser`](./skills/engineering-workflow-automation/agent-browser/)
 - [`billing-automation`](./skills/engineering-workflow-automation/billing-automation/)
@@ -372,14 +412,16 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`jupyter-notebook`](./skills/engineering-workflow-automation/jupyter-notebook/)
 - [`latch`](./skills/engineering-workflow-automation/latch/)
 - [`playwright`](./skills/engineering-workflow-automation/playwright/)
+- [`playwright-pro`](./skills/engineering-workflow-automation/playwright-pro/)
 - [`web-scraper`](./skills/engineering-workflow-automation/web-scraper/)
 - [`yeet`](./skills/engineering-workflow-automation/yeet/)
 
 <a id="cat-devops-sre"></a>
-### 5. DevOps / SRE (devops-sre, 14)
+### 5. DevOps / SRE (devops-sre, 15)
 
 - [`azure-kubernetes`](./skills/devops-sre/azure-kubernetes/)
 - [`beacon`](./skills/devops-sre/beacon/)
+- [`cc-devops-skills`](./skills/devops-sre/cc-devops-skills/)
 - [`changelog-generator`](./skills/devops-sre/changelog-generator/)
 - [`ci-cd-pipeline-builder`](./skills/devops-sre/ci-cd-pipeline-builder/)
 - [`cloudflare-troubleshooting`](./skills/devops-sre/cloudflare-troubleshooting/)
@@ -514,7 +556,7 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`weather`](./skills/operations-general/weather/)
 
 <a id="cat-product-design"></a>
-### 11. Product and Design (product-design, 13)
+### 11. Product and Design (product-design, 14)
 
 - [`agile-product-owner`](./skills/product-design/agile-product-owner/)
 - [`canvas-design`](./skills/product-design/canvas-design/)
@@ -527,11 +569,12 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`saas-scaffolder`](./skills/product-design/saas-scaffolder/)
 - [`trace`](./skills/product-design/trace/)
 - [`ui-design-system`](./skills/product-design/ui-design-system/)
+- [`ui-ux-pro-max`](./skills/product-design/ui-ux-pro-max/)
 - [`ux-researcher-designer`](./skills/product-design/ux-researcher-designer/)
 - [`voice`](./skills/product-design/voice/)
 
 <a id="cat-security-reliability"></a>
-### 12. Security and Reliability (security-and-reliability, 18)
+### 12. Security and Reliability (security-and-reliability, 19)
 
 - [`breach`](./skills/security-and-reliability/breach/)
 - [`cloak`](./skills/security-and-reliability/cloak/)
@@ -541,6 +584,7 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`information-security-manager-iso27001`](./skills/security-and-reliability/information-security-manager-iso27001/)
 - [`link-checker`](./skills/security-and-reliability/link-checker/)
 - [`osv-scanner`](./skills/security-and-reliability/osv-scanner/)
+- [`security-auditor`](./skills/security-and-reliability/security-auditor/)
 - [`security-best-practices`](./skills/security-and-reliability/security-best-practices/)
 - [`security-ownership-map`](./skills/security-and-reliability/security-ownership-map/)
 - [`security-pen-testing`](./skills/security-and-reliability/security-pen-testing/)

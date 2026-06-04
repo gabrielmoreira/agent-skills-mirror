@@ -4,6 +4,22 @@
 
 ---
 
+## v0.3.100: 外站补池预算与 B 站统一（2026-06-03）
+
+- 后端源码版本提升到 `v0.3.100`，准备发布 `backend-v0.3.100`；浏览器插件版本沿用 `extension-v0.3.66`。
+- 修复自动更新版本状态在 runtime 链路中被丢弃的问题：`/api/runtime-status` 的响应模型现在保留 `AutoUpdateService.get_runtime_status()` 合入的 `current_version`、`latest_remote_version`、`last_update_check_at`、`last_update_error`、`backend_update_state` 和 `backend_update_reason`；插件 `normalizeRuntimeStatus()` 同步保留这些字段，避免前端状态归一化浪费后端版本数据。设置页仍使用后端专用 `/api/update-status` 做“版本与更新”展示和手动检查 / 应用。
+- 小红书 / 抖音 / YouTube 的 `daily_*_budget` 默认改为 `0`，语义统一为“不设每日上限”；持续补池改为像 B 站一样主要受平台缺口、单轮 `scheduler.discovery_limit` 和 producer 节流控制，避免外站内容被刷完后因当天预算耗尽而长期不补。
+- 队列层统一支持 `daily_budget <= 0` 跳过每日上限：`XhsTaskQueue`、`DyTaskQueue` 和 YouTube bootstrap `YtTaskQueue` 都保留正数预算限流能力，但默认不再按天卡死。抖音 hot runtime 预算在配置为 `0` 时不再被缺口动态放大成正数。
+- YouTube steady-state producer 在 `daily_*_budget = 0` 时以本轮 `limit` 作为策略执行预算；显式正数仍按 SQLite ledger 做每日剩余额度，便于需要严格限流的用户手动恢复上限。插件设置页、API 配置模型、CLI fallback、`config.example.toml` 和配置参考同步更新。
+
+## extension v0.3.66: 推荐「聊一聊」输入框失焦自动收起（三端）（2026-06-03）
+
+- 浏览器插件版本提升到 `0.3.66`，准备发布 `extension-v0.3.66`；Chrome / Edge / Brave 走 `openbiliclaw-extension-v0.3.66.zip`，Firefox 140+ 走 `openbiliclaw-extension-v0.3.66-firefox.zip`。
+- 修复「推荐内容点开聊一聊后没法收起」的体验问题：三端内联 composer（桌面 Web `/web` 推荐卡 + 惊喜卡、移动 Web `/m` 惊喜卡、插件 popup 惊喜卡）现在在输入框失焦（焦点离开 composer）后自动收起回原来的操作按钮。根因是桌面 Web 宽屏下 `‹` 返回按钮被 CSS 限定为仅 `@media (max-width:430px)` 可见，展开后唯一退路是 `Esc`（不可见、无人知道）；移动 Web / 插件虽有「再点一次聊一聊」切换但缺少失焦收起。
+- 收起是无损的：已输入的草稿在桌面保留于输入框 DOM、在移动 Web / 插件保留于 state `draft` / `chat_draft`，下次展开自动还原。点「发送 / 发出去」时输入框会先失焦，统一用 `relatedTarget` 判断 +120ms 延迟 + 移动 Web / 插件额外的 `sendInitiated` 标志守卫，确保发送照常完成、不被收起抢先；桌面 `autoCollapseComposer` 同时复用于推荐卡和惊喜卡。
+- 用真实数据浏览器端到端验证三端：真后端（3331 条真实推荐 + 真实惊喜推荐队列）+ 真 Chrome（插件以 unpacked 加载），逐一验证「展开 → 失焦 → 收起」「带草稿失焦 → 重新展开还原」「输入框聚焦时点发送（先触发失焦）→ 发送照常」三组行为；桌面推荐卡确认 `POST /api/feedback 200`、移动 Web 与插件确认 `POST /api/chat/turns 200` 真实落到后端，未被失焦收起吞掉。
+- 同步 `docs/modules/extension.md` 惊喜推荐 composer 行为说明。
+
 ## v0.3.99: 桌面 Web 推荐列表不再被池更新冲掉（2026-06-03）
 
 - 修复桌面 Web `/web` 在下滑浏览时推荐卡片会突然整批替换的 bug：根因是桌面前端把「后端推荐池更新」当成了「整页推荐需重新同步」。`web/desktop/assets/js/app.js` 的 runtime-stream 处理器收到 `refresh.pool_updated`（以及后端实际从不下发的 `recommendation.reshuffled`）时会调用 `scheduleBackendHydration()` → `hydrateFromBackend()`，后者无条件执行 `state.videos = normalizeRecommendationList(...)`，用 `/api/recommendations` 的「最新 top 窗口」（`created_at DESC, id DESC`）替换当前列表——把用户「加载更多」追加的历史卡片一并冲掉。此问题在 2026-05-27（`79042ce`）已对插件 popup 和移动 Web `recommend.js` 修过，但桌面 Web（早 5 天于 05-22 创建）当时被漏掉。现在 `refresh.pool_updated` / `recommendation.reshuffled` 不再触发 hydrate，只保留 `config_reloaded` / `init_completed` 这类真·重新水合流程；池子数量 / header 仍由处理器开头无条件的 `applyRuntimeStatus(...)` 更新，用户主动「换一批」/「加载更多」/反馈删除继续各自直接改 `state.videos`，行为与移动 Web、插件对齐。

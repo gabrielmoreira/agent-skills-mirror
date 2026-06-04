@@ -334,6 +334,7 @@ src/notebooklm/
     ├── notebook_cmd.py          # list, create, delete, rename
     ├── note_cmd.py              # note commands
     ├── options.py               # Shared CLI option decorators
+    ├── playwright_login_io.py   # Command-side LoginIO sink + wrappers for the Playwright login service (#1391)
     ├── polling_ui.py            # Command-layer UI helpers for long-running polling
     ├── profile_cmd.py           # Profile management CLI commands
     ├── rendering.py             # CLI rendering helpers
@@ -363,6 +364,7 @@ src/notebooklm/
         │   ├── cookie_writes.py
         │   ├── exceptions.py
         │   ├── firefox_accounts.py
+        │   ├── io_seam.py        # Caller-injected LoginIO Protocol + resolver (#1393)
         │   ├── outcomes.py
         │   ├── profile_targets.py
         │   ├── refresh.py

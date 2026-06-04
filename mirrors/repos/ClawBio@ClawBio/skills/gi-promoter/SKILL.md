@@ -37,7 +37,7 @@ dependencies:
 
 demo_data:
   - path: example_data/promoter_tp53.fa
-    description: TP53 locus (chr17:7668402-7687550, GRCh38, 19 kbp) — bundled real reference sequence.
+    description: TP53 locus, gene-sense (chr17:7661779-7687546, GRCh38, 25.8 kbp; TP53 is minus-strand, so this is the reverse complement) — bundled real reference sequence.
 
 endpoints:
   cli: python skills/gi-promoter/gi_promoter.py --input {input_file} --output {output_dir}
@@ -145,7 +145,7 @@ python skills/gi-promoter/gi_promoter.py --demo
 ## Gotchas
 
 - **Don't pre-window the sequence yourself.** Submit the full region — the API stride/window. Pre-windowing inflates rate-limit usage and gives identical results.
-- **Strand matters for short windows.** The 2000 bp model is roughly strand-invariant; the 300 bp models are not. For minus-strand genes, reverse-complement before submission if using a 300-bp model.
+- **Strand matters — submit gene-sense.** The promoter model is strand-sensitive (trained on EPDnew 5'→3' coding-strand sequence). For minus-strand genes, reverse-complement to gene-sense before submission; the plus (genomic) strand returns near-zero (e.g. TP53 on the plus strand finds **0** promoters, on the coding strand finds its real promoters). The bundled TP53 fixture is already gene-sense.
 - **The hackathon key is shared.** If you hit `429`, you're sharing 50 concurrent / 120 rpm with everyone else. Set `GI_API_KEY` to your own key for serious work.
 - **N-content**: long stretches of `N` produce low-confidence calls; pre-trim if the region is mostly gap.
 

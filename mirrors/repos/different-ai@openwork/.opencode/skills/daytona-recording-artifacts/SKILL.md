@@ -55,6 +55,11 @@ daytona exec "$SANDBOX" -- 'bash .devcontainer/capture-daytona-screenshot.sh'
 Use this after important states: welcome screen, workspace created, settings
 connected, task response visible, error state reproduced, or final success.
 
+Before sharing any screenshot URL, follow `daytona-flow-validator` and inspect
+the saved PNG itself. Confirm the visible image shows the claimed state and is
+not covered by a native picker, modal, toast, desktop window, or unrelated
+overlay. If the screenshot does not match, recapture and inspect a replacement.
+
 ## Stop Recording
 
 Always stop with the helper so ffmpeg finalizes the MP4 cleanly:

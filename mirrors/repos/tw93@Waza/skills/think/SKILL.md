@@ -50,6 +50,22 @@ Do not use a build-plan template here. Do not list options. Give one verdict.
 
 Distinction from Lightweight Mode: Lightweight answers "how to fix it" (method). Evaluation answers "should it exist" (value judgment).
 
+## Triage Mode
+
+Activate when the user forwards a bundle of asks: an issue with multiple requests, a batch of screenshots, a user saying "看看这几个需求", or any input containing 3+ distinct items that could each be accepted or rejected independently.
+
+Do not treat the bundle as a to-do list. Classify each item first:
+
+| Bucket | Meaning | Action |
+|--------|---------|--------|
+| **Bug** | Broken behavior with evidence | Fix |
+| **Already works** | The feature exists but the reporter missed it | Point to the existing affordance |
+| **Accepted improvement** | Genuine gap, low-risk, aligns with product direction | Implement |
+| **Cosmetic / preference** | Subjective, no functional impact | Note it, do not implement unless the maintainer agrees |
+| **Out of scope** | Conflicts with product boundary or adds unjustified complexity | Decline with one sentence |
+
+Output the classification table first. Wait for the user to confirm the accepted subset before implementing anything. "Already works" misidentified as missing is the most common waste; grep for the existing affordance before classifying an item as a gap.
+
 **Negative-user feedback is not automatic scope.** When a user evaluation is triggered by a refund customer, a churn report, or a "competitor X is more intuitive" comparison, do not convert the complaint into a rework plan by default. First check whether the current behavior is intentional product differentiation, not an oversight: read the project's own AGENTS.md / CLAUDE.md / product notes for phrases like "review-first", "verifiability over speed", "evidence-driven", "explicit confirmation". If the behavior the user criticized is named there as a deliberate choice, the verdict is **Keep**, with one sentence on why the differentiation matters, and a note that the maintainer can override. Do not write a "fix the friction" plan that quietly removes the differentiator. The signal-to-respect ratio for refund / competitor-comparison feedback on a deliberately-designed surface is low.
 
 ## Before Reading Any Code

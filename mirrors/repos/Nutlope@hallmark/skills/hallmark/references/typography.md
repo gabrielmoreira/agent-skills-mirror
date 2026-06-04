@@ -55,7 +55,7 @@ Three sources, in priority order:
 
 | Family | Source | Voice | Best for |
 | --- | --- | --- | --- |
-| **Fraunces** | Google | Variable serif, deeply expressive italic, optical-size axis | Editorial, Salon, Atelier, brand-heavy |
+| **Fraunces** | Google | Variable serif, deeply expressive italic, optical-size axis | Editorial, Atelier, brand-heavy |
 | **Newsreader** | Google | Roman serif with optical-size + italic | Editorial, magazine, long-form |
 | **Instrument Serif** | Google | Tight contrast, italic available, smart for short heads | Brand, atelier, intimate editorial |
 | **Cormorant Garamond** | Google | Classical, high contrast, luxury register | Luxury, fashion, fine arts |
@@ -137,7 +137,7 @@ Each tone gets two rows: a **free baseline** (Google Fonts / Fontshare; works ou
 
 ## Wordmark / logo typography
 
-The wordmark in the navbar and footer **may use a different display face than the body**. On tone-rich themes (Editorial, Salon, Atelier, Linen, Quiet) it **should** — collapsing the wordmark into the body family flattens the visual hierarchy and the page reads as un-branded.
+The wordmark in the navbar and footer **may use a different display face than the body**. On tone-rich themes (Editorial, Atelier, Specimen) it **should** — collapsing the wordmark into the body family flattens the visual hierarchy and the page reads as un-branded.
 
 ```css
 :root {
@@ -221,7 +221,7 @@ Use no more than five sizes on a single page. If you need more hierarchy, use we
 ## Body text rules
 
 - Minimum 16px. Below 14px is accessibility-hostile.
-- Line-height 1.5–1.65 on body copy, tighter (1.1–1.3) on display. **Floor for all-caps display heads (`text-transform: uppercase` on `.hero__display` / `.section__title` / `h1` / `h2`) is `1.0` — recommended `1.02–1.08`.** Below 1.0 the cap-tops of line N+1 collide with the baseline of line N (no descenders to cushion the gap); the comma + cap-D on a wrapped "PROMPT, / DIFFERENT" fuse into a single glyph blob. Condensed display faces (Anton, Inter Tight 900, Bebas Neue) make this worse. Gate 67 auto-fails the pattern.
+- Line-height 1.5–1.65 on body copy, tighter (1.1–1.3) on display. **Floor for all-caps display heads (`text-transform: uppercase` on `.hero__display` / `.section__title` / `h1` / `h2`) is `1.0` — recommended `1.02–1.08`.** Below 1.0 the cap-tops of line N+1 collide with the baseline of line N (no descenders to cushion the gap); the comma + cap-D on a wrapped "PROMPT, / DIFFERENT" fuse into a single glyph blob. Condensed display faces (Anton, Inter Tight 900, Bebas Neue) make this worse. Gate 55 auto-fails the pattern.
 - Measure 45–75 characters (`max-width: 65ch`).
 - Never all-caps body copy. Never justified text without hyphenation. Never letter-spacing above 0.05em on body.
 

@@ -1,0 +1,1 @@
+cache/repos/github.com/credyt@ai-tools/claude-plugins/credyt/skills/billing-integration/../../../../skills/billing-integration/SKILL.md

@@ -10,11 +10,13 @@ Default. Pick editorial when the brief does not name a specialised aesthetic —
 
 ## Themes that belong
 
-`Specimen`, `Newsprint`, `Atelier`, `Garden`, `Salon`, `Linen`, `Almanac`, `Studio`, `Riso`, `Sport`, `Brutal`, `Manifesto`. Twelve themes — plenty of variety inside the genre.
+`Specimen`, `Newsprint`, `Atelier`, `Garden`, `Almanac`, `Studio`, `Riso`, `Sport`, `Brutal`, `Manifesto`, `Editorial`, `Carnival`. Twelve themes — plenty of variety inside the genre.
+
+`Carnival` is the loud-maximalist editorial register — Dropout TV / Fly.io / Stones Throw / Third Man Records. Duo-tone accent system (mustard + oxblood), chunky variable display, decorative ornaments, hard-offset shadows. The loud sibling to Riso / Manifesto / Brutal.
 
 ## Voice
 
-- **Display** — italic serif, condensed sans, or display-heavy. Not Inter. Not Geist. The weight commits to an extreme (300 or 700+).
+- **Display** — roman serif, condensed sans, or display-heavy. Not Inter. Not Geist. The weight commits to an extreme (300 or 700+). Italic is body-emphasis only — never the header face (global rule).
 - **Body** — workhorse serif (Newsreader, Cormorant) or a plain non-default sans (The Future, Söhne). Readable at 45–75 ch.
 - **Accent** — single warm or cool hue, used at < 5 % of any viewport.
 - **Layout** — asymmetric. Hairlines, not card borders. Generous whitespace.
@@ -35,11 +37,11 @@ Default. Pick editorial when the brief does not name a specialised aesthetic —
 The universal slop-test gates apply, plus these editorial-specific bans:
 
 - **Pill-rounded buttons** with gradient fill — pill is fine, gradient on a pill is not.
-- **Centred-everything heroes** (gate 7 universal). Editorial heroes are left-biased or asymmetric.
+- **Centred-everything heroes** (gate 6 universal). Editorial heroes are left-biased or asymmetric.
 - **Card-in-card** layouts (gate 4 universal).
 - **Three-column equal-icon-tile feature grid** (gate 3 universal).
 - **Glassmorphism** — never; the medium is paper, not glass.
-- **Pure black or pure white** as paper or ink (gate 8). Tint everything toward the anchor.
+- **Pure black or pure white** as paper or ink (gate 7). Tint everything toward the anchor.
 
 ## Voice fixtures
 

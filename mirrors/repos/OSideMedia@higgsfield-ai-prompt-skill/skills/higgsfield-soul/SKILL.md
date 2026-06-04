@@ -4,8 +4,8 @@ description: "Creates and manages reusable character profiles (Soul IDs) for con
 user-invocable: true
 metadata:
   tags: [higgsfield, soul, character, consistency, Soul ID, identity]
-  version: 3.4.0
-  updated: 2026-05-18
+  version: 3.5.0
+  updated: 2026-06-03
   parent: higgsfield
 ---
 
@@ -542,6 +542,19 @@ Camera: slow push-in on Character B's face.
 ## Soul Cinema as the CS 3.0/3.5 Default Image Model
 
 **Soul Cinema** is the default Cinematic model in the Cinema Studio 3.0 and 3.5 image-mode picker — the model that runs when you toggle Cinema Studio into image mode and do not change the model selection. It is shared across both Cinema Studio versions and is distinct from the older standalone "Soul Cinema Preview" model and from the separately-named Featured-list "Higgsfield Soul Cinema" (see `../higgsfield-cinema/SKILL.md` § Image Mode for the disambiguation).
+
+**It is a single-step generator.** Soul Cinema takes a scene idea
+("Describe the scene you imagine") and renders it directly with a cinematic-
+grade film aesthetic — one prompt → one batch of images, no compositing or
+multi-pass flow required. The standalone Image-tab controls are: aspect ratio
+(e.g. 16:9), resolution (e.g. 2k), the enhancer toggle (On/Off), batch size
+(e.g. 1/4), an optional **Color Transfer** control (pull a reference image's
+color/grade onto the generation), and an optional **+ Character** reference
+(a Soul ID or character image). Cost is roughly 0.125 credits per single image
+(~0.5 per 4-image batch). The Two-Tool Refinement Pipeline above is an
+*optional* second pass through GPT Image 2 when a shot needs a specific edit —
+not a requirement of Soul Cinema itself, which stands alone as a single-step
+cinematic scene generator.
 
 ### Soul ID identity prompting in Soul Cinema
 

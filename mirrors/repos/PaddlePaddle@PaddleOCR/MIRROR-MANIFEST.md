@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `PaddlePaddle/PaddleOCR` — 26 default patterns, 11 followed patterns, 61 file(s) materialized.
+Mirror of `PaddlePaddle/PaddleOCR` — 26 default patterns, 11 followed patterns, 51 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PaddlePaddle/PaddleOCR` — 26 default patterns, 11 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 11 |
-| Files         | 61 |
+| Files         | 51 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -105,31 +105,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 34 | ✓ | [`ppstructure/README.md`](ppstructure/README.md) |
 | 35 | ✓ | [`ppstructure/recovery/README.md`](ppstructure/recovery/README.md) |
 | 36 | ✓ | [`ppstructure/table/README.md`](ppstructure/table/README.md) |
-| 37 | ✓ | [`skills/paddleocr-doc-parsing/references/output_schema.md`](skills/paddleocr-doc-parsing/references/output_schema.md) |
-| 38 | ✓ | [`skills/paddleocr-doc-parsing/scripts/layout_caller.py`](skills/paddleocr-doc-parsing/scripts/layout_caller.py) |
-| 39 | ✓ | [`skills/paddleocr-doc-parsing/scripts/lib.py`](skills/paddleocr-doc-parsing/scripts/lib.py) |
-| 40 | ✓ | [`skills/paddleocr-doc-parsing/scripts/optimize_file.py`](skills/paddleocr-doc-parsing/scripts/optimize_file.py) |
-| 41 | ✓ | [`skills/paddleocr-doc-parsing/scripts/smoke_test.py`](skills/paddleocr-doc-parsing/scripts/smoke_test.py) |
-| 42 | ✓ | [`skills/paddleocr-doc-parsing/scripts/split_pdf.py`](skills/paddleocr-doc-parsing/scripts/split_pdf.py) |
-| 43 | ✓ | [`skills/paddleocr-doc-parsing/SKILL.md`](skills/paddleocr-doc-parsing/SKILL.md) |
-| 44 | ✓ | [`skills/paddleocr-text-recognition/references/output_schema.md`](skills/paddleocr-text-recognition/references/output_schema.md) |
-| 45 | ✓ | [`skills/paddleocr-text-recognition/scripts/lib.py`](skills/paddleocr-text-recognition/scripts/lib.py) |
-| 46 | ✓ | [`skills/paddleocr-text-recognition/scripts/ocr_caller.py`](skills/paddleocr-text-recognition/scripts/ocr_caller.py) |
-| 47 | ✓ | [`skills/paddleocr-text-recognition/scripts/smoke_test.py`](skills/paddleocr-text-recognition/scripts/smoke_test.py) |
-| 48 | ✓ | [`skills/paddleocr-text-recognition/SKILL.md`](skills/paddleocr-text-recognition/SKILL.md) |
-| 49 | ✓ | [`skills/README_cn.md`](skills/README_cn.md) |
-| 50 | ✓ | [`skills/README.md`](skills/README.md) |
-| 51 | → | [`awesome_projects.md`](awesome_projects.md) |
-| 52 | → | [`docs/version3.x/installation.en.md`](docs/version3.x/installation.en.md) |
-| 53 | → | [`README.md`](README.md) |
-| 54 | → | [`readme/README_ar.md`](readme/README_ar.md) |
-| 55 | → | [`readme/README_cn.md`](readme/README_cn.md) |
-| 56 | → | [`readme/README_es.md`](readme/README_es.md) |
-| 57 | → | [`readme/README_fr.md`](readme/README_fr.md) |
-| 58 | → | [`readme/README_ja.md`](readme/README_ja.md) |
-| 59 | → | [`readme/README_ko.md`](readme/README_ko.md) |
-| 60 | → | [`readme/README_ru.md`](readme/README_ru.md) |
-| 61 | → | [`readme/README_tcn.md`](readme/README_tcn.md) |
+| 37 | ✓ | [`skills/paddleocr-doc-parsing/SKILL.md`](skills/paddleocr-doc-parsing/SKILL.md) |
+| 38 | ✓ | [`skills/paddleocr-text-recognition/SKILL.md`](skills/paddleocr-text-recognition/SKILL.md) |
+| 39 | ✓ | [`skills/README_cn.md`](skills/README_cn.md) |
+| 40 | ✓ | [`skills/README.md`](skills/README.md) |
+| 41 | → | [`awesome_projects.md`](awesome_projects.md) |
+| 42 | → | [`docs/version3.x/installation.en.md`](docs/version3.x/installation.en.md) |
+| 43 | → | [`README.md`](README.md) |
+| 44 | → | [`readme/README_ar.md`](readme/README_ar.md) |
+| 45 | → | [`readme/README_cn.md`](readme/README_cn.md) |
+| 46 | → | [`readme/README_es.md`](readme/README_es.md) |
+| 47 | → | [`readme/README_fr.md`](readme/README_fr.md) |
+| 48 | → | [`readme/README_ja.md`](readme/README_ja.md) |
+| 49 | → | [`readme/README_ko.md`](readme/README_ko.md) |
+| 50 | → | [`readme/README_ru.md`](readme/README_ru.md) |
+| 51 | → | [`readme/README_tcn.md`](readme/README_tcn.md) |
 
 ---
 

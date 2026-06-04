@@ -1,6 +1,6 @@
 ---
 name: prestashop-module-development
-description: "Complete PrestaShop module development workflow using modern architecture and best practices. Use when: creating new PrestaShop modules, updating legacy modules to modern code, implementing hooks and actions, setting up module configuration pages, adding front office features, handling database operations, implementing security measures, managing translations, or modernizing existing PrestaShop modules from legacy patterns to current standards."
+description: "Complete PrestaShop module development workflow using modern architecture and best practices. Use when: creating new PrestaShop modules, updating legacy modules to modern code, implementing hooks and actions, setting up module configuration pages, adding front office features, handling database operations, implementing security measures, managing translations, creating cart rules and vouchers, building Symfony console commands, or modernizing existing PrestaShop modules from legacy patterns to current standards."
 ---
 
 # PrestaShop Module Development
@@ -19,6 +19,8 @@ Use this skill for PrestaShop module development tasks such as:
 - Adding multilingual support and translations
 - Converting legacy code patterns (HelperForm, jQuery UI sortable, ObjectModel) to modern equivalents
 - Building list pages with the PrestaShop Grid system (filters, pagination, toggle, drag-and-drop position)
+- Creating and managing PrestaShop cart rules (vouchers, discount codes, promotional codes)
+- Implementing Symfony console commands for background tasks and batch operations
 
 ## Inputs required
 
@@ -147,7 +149,52 @@ Key rules:
 - Use Expression Language (`@=`) for computed constructor arguments (context, language ID, shop ID)
 - Always inject dependencies via constructor, never use static accessors
 
-### 9) Grid system (list pages with drag-and-drop position)
+#### Symfony Console Commands
+
+Read: `references/services-and-di.md` → *Symfony Console Commands* section
+
+**CRITICAL**: Commands must be registered in `config/admin/services.yml` (NOT `common.yml` or `front/services.yml`):
+
+```yaml
+# config/admin/services.yml
+mymodule.command.my_command:
+  class: Vendor\MyModule\Command\MyCommand
+  arguments: ["@mymodule.service.my_service"]
+  tags:
+    - { name: console.command, command: modulename:action }
+```
+
+Key rules:
+- Command naming: `modulename:action` format (e.g., `wsautocartrules:create`, `ws_keepdblight:cleandb`)
+- Return codes: `0` for success, `1` for failure (NOT `Command::SUCCESS`/`FAILURE` constants)
+- Use `SymfonyStyle` for rich console output (tables, progress bars, styled messages)
+- Add `--limit` options for batch operations to enable testing with small datasets
+- Always inject services via constructor, never use static calls or `$this->get()`
+
+### 9) Cart Rules & Vouchers
+
+Read: `references/cart-rules.md`
+
+Complete guide for creating and managing PrestaShop cart rules (discount vouchers) programmatically:
+
+Key patterns:
+- **Code generation**: Use character set `123456789ABCDEFGHIJKLMNPQRSTUVWXYZ` (no O/0 to avoid confusion, same as PrestaShop admin.js)
+- **Uniqueness check**: Validate with `CartRule::getIdByCode($code)` before creation
+- **Multilingual names**: Set `name` for all active languages via `Language::getLanguages(true)`
+- **Customer restriction**: Use `$cartRule->id_customer` for customer-specific vouchers
+- **Date range**: Both `date_from` and `date_to` required (format: `Y-m-d H:i:s`)
+- **Reduction types**: `reduction_percent`, `reduction_amount`, `free_shipping`, or `gift_product`
+- **Essential fields**: `quantity`, `quantity_per_user`, `priority`, `highlight`, `partial_use`, `active`
+- **Restrictions**: All default to `false` (no restriction); set specific restrictions as needed
+
+Common use cases documented:
+- Customer-specific vouchers with percentage discount
+- Auto-apply cart rules (no code required)
+- Limited-time flash sales with highlight
+- Free shipping vouchers
+- Gift product vouchers
+
+### 10) Grid system (list pages with drag-and-drop position)
 
 Read: `references/grid-system.md`
 
@@ -197,8 +244,7 @@ Common failure areas:
 
 ## PrestaShop 9 Core Documentation
 
-The following files are downloaded from the official PrestaShop repository by
-`lotr --install` and placed in `ps9-core-ai/` next to this SKILL.md.
+The following files are bundled with this skill in the `ps9-core-ai/` directory.
 Read them for deep understanding of PS9 core architecture, conventions, and patterns.
 
 - **`ps9-core-ai/CONTEXT.md`** — Root AI context for the PS9 codebase: project-wide coding
@@ -207,7 +253,7 @@ Read them for deep understanding of PS9 core architecture, conventions, and patt
 - **`ps9-core-ai/STRUCTURE.md`** — Architecture of the `.ai/` folder itself: how contexts,
   skills, and pointer files are organized and how AI tools discover them.
 
-> These files are static and bundled with this skill. They may be refreshed locally via `lotr --install`.
+> **Note for skill maintainers**: These files are static snapshots from the official PrestaShop repository. To update them, skill maintainers can run `lotr --install` from a module directory. This is not a runtime operation — the files are pre-bundled and version-controlled with the skill.
 
 ## Steering
 

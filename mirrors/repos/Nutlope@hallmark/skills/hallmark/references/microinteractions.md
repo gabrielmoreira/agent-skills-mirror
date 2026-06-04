@@ -193,7 +193,7 @@ Trigger: ⌘K or `/`. Open: instant, no animation. Arrow-keys move selection —
 
 ### Page-load reveals
 
-One orchestrated entrance. Stagger by DOM index, capped at ~500ms total. Use `IntersectionObserver`, never scroll listeners. After first reveal, no more on-scroll animations — let the page just *be there*. Theme-specific themes (Atelier, Salon, Newsprint) skip reveals entirely; that is correct, not a bug.
+One orchestrated entrance. Stagger by DOM index, capped at ~500ms total. Use `IntersectionObserver`, never scroll listeners. After first reveal, no more on-scroll animations — let the page just *be there*. Theme-specific themes (Atelier, Newsprint) skip reveals entirely; that is correct, not a bug.
 
 ## The named tells (what AI defaults produce)
 
@@ -234,8 +234,6 @@ Microinteractions adapt to the theme. The same button press is louder in Brutal 
 | Newsprint | 0× | none | Static. Print metaphor. |
 | Terminal | 0× | none, except caret blink *inside* a typed command (N8 nav, install code) | Print + monospace metaphor. **No standalone blinking cursor** — see the Caret blink row above. The caret only blinks where the user would type. |
 | Manifesto | 0.7× | `--ease-out` (sharp) | Snap into place. |
-| Salon | 1.4× | `--ease-out` (very gentle) | Softest. |
-| Linen | 1.2× | `--ease-out` | Calm. |
 | Almanac | 0.85× | `--ease-out` | Functional, like a reference book. |
 | Sport | 0.7× | `--ease-out` (sharp) | Quick, italic-energy. |
 

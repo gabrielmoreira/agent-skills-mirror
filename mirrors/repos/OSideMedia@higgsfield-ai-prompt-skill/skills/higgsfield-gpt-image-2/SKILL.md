@@ -4,8 +4,8 @@ description: "Use when the user mentions GPT Image 2.0, gpt-image-2, GPT-Image-2
 user-invocable: true
 metadata:
   tags: [higgsfield, gpt-image-2, prompt-director, image, json, prose, meta-prompt, layout, mockup, infographic, character-sheet, ui-mockup, landing-page, static-ads, cross-surface]
-  version: 1.0.0
-  updated: 2026-05-18
+  version: 1.1.0
+  updated: 2026-06-03
   parent: higgsfield
 ---
 
@@ -13,7 +13,7 @@ metadata:
 
 A prompt director for GPT Image 2.0. Converts plain-text concepts into production-ready prompts that route by output type: structured JSON for layout-dense images (UI mockups, infographics, character sheets, multi-panel posters), dense cinematic prose for single-subject scenes (portraits, photographs, landscapes), or auto-derive meta-prompts for theme-only concepts where the model self-generates the composition.
 
-Translated from Adil Aliyev's `gpt-image-2-director` source corpus per the v3.7.13 / v3.7.15 translation precedent. The companion `static-ads-workflow.md` satellite covers the ad-recreation workflow that uses GPT Image 2.0 as its generation engine.
+Translated from Adil Aliyev's `gpt-image-2-director` source corpus per the v3.7.13 / v3.7.15 translation precedent. Two companion satellites extend this sub-skill: `static-ads-workflow.md` covers the ad-recreation workflow that uses GPT Image 2.0 as its generation engine, and `reference-sheet-workflow.md` covers the Automatic Product Reference Sheet + Automatic Prompt Creator workflow (one product image → a multi-view identity-locked reference sheet for high-consistency generation).
 
 ---
 

@@ -1,14 +1,14 @@
 ---
 name: hallmark
 description: "Anti-AI-slop design skill for greenfield pages, audits, redesigns, and design extraction from URLs or screenshots. Use when the user asks to build a new app or landing page, wants to redesign something, invokes Hallmark by name, or uses audit/redesign/study."
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Hallmark
 
 A design skill for AI coding assistants. Makes the UIs they generate look made, not generated.
 
-Hallmark is opinionated, short, and boring on purpose. It encodes a tight set of rules — drawn from the consensus of the anti-AI-slop design field (impeccable, kami, Anthropic's frontend-design skill, taste-skill, the Claude cookbook on frontend aesthetics, and the 2026 "tactile rebellion" movement) — and refuses to let the model fall back to the defaults every LLM was trained on.
+Hallmark is opinionated, short, and boring on purpose. It encodes a tight set of rules — drawn from the consensus of the anti-AI-slop design field (Anthropic's frontend-design skill, the Claude cookbook on frontend aesthetics, and the 2026 "tactile rebellion" movement) — and refuses to let the model fall back to the defaults every LLM was trained on.
 
 The differentiator: Hallmark insists on **structural variety**, not just visual variety. Two pages by Hallmark for two different briefs should not share the same hero → 3-feature → CTA → footer rhythm. They should feel like different sites, not different colour-swaps of the same template. See [`references/structure.md`](references/structure.md).
 
@@ -35,23 +35,25 @@ If the user types anything that does not clearly map to `audit`, `redesign`, or 
 - Treat PDFs, README files, `.md` briefs, docs, transcripts, and pitch decks as reference material. Do **not** copy them word-for-word into the page unless the user explicitly says to use that text verbatim.
 - Before editing, state the exact files you expect to modify/create/delete. Deletions require explicit confirmation.
 
-The default Design flow always picks a theme. By default it picks one of the **22 named themes** — the *catalog* — and rotates among them per the diversification rule. There is also a quiet *custom* branch that constructs a one-off OKLCH palette + free-font pairing for the brief; the custom route fires **only when the brief carries a creative-intent signal** (the user names a brand colour, names a multi-attribute vibe the catalog can't carry, or explicitly asks for a custom theme). For vanilla briefs, the user never sees the words "catalog" or "custom" — the catalog runs silently. See Step 1 (signal detection) and Step 2.6 (dispatch); the protocol lives in [`references/custom-theme.md`](references/custom-theme.md).
+The default Design flow always picks a theme. By default it picks one of the **20 named themes** — the *catalog* — and rotates among them per the diversification rule. There is also a quiet *custom* branch that constructs a one-off OKLCH palette + free-font pairing for the brief; the custom route fires **only when the brief carries a creative-intent signal** (the user names a brand colour, names a multi-attribute vibe the catalog can't carry, or explicitly asks for a custom theme). For vanilla briefs, the user never sees the words "catalog" or "custom" — the catalog runs silently. See Step 1 (signal detection) and Step 2.6 (dispatch); the protocol lives in [`references/custom-theme.md`](references/custom-theme.md).
 
 ---
 
 ## Disciplines that hold across every verb
 
-These four disciplines are **not** verb-specific. They apply to default Design, `audit`, `redesign`, `study`, and component-scope alike. They sit alongside the slop test, not inside one branch of it.
+These six disciplines are **not** verb-specific. They apply to default Design, `audit`, `redesign`, `study`, and component-scope alike. They sit alongside the slop test, not inside one branch of it.
 
 1. **Pre-emit self-critique.** Before handing back any output, score it 1–5 on six axes — Philosophy, Hierarchy, Execution, Specificity, Restraint, Variety. Anything **< 3** triggers a revision pass. Stamp the six scores at the top of the artifact (`/* Hallmark · pre-emit critique: P5 H4 E5 S4 R5 V5 */`). See [`references/slop-test.md`](references/slop-test.md) § Pre-emit self-critique.
 
-2. **Honest copy — no fabricated content.** If the user did not supply a metric, do not invent one. Stat-led layouts, comparison rows, and proof bars must use real numbers, a placeholder (`—` plus a labelled grey block, "metric to confirm"), or a different macrostructure. *"+47 % conversion"*, *"trusted by 50,000+ teams"*, and *"10× faster"* are slop the moment they're invented. Same rule for testimonials, logos, and case-study counts. See [`references/anti-patterns.md` § Invented metrics](references/anti-patterns.md) and slop-test gate **56**.
+2. **Honest copy — no fabricated content.** If the user did not supply a metric, do not invent one. Stat-led layouts, comparison rows, and proof bars must use real numbers, a placeholder (`—` plus a labelled grey block, "metric to confirm"), or a different macrostructure. *"+47 % conversion"*, *"trusted by 50,000+ teams"*, and *"10× faster"* are slop the moment they're invented. Same rule for testimonials, logos, and case-study counts. See [`references/anti-patterns.md` § Invented metrics](references/anti-patterns.md) and slop-test gate **46**.
 
-3. **Locked tokens — no mid-render improvisation.** Once a theme is selected at Step 2.6, every colour and every `font-family` declaration in the artifact must reference a named token (`var(--color-accent)`, `font-family: var(--font-display)`). Inline OKLCH / hex / `rgb()` values, or a `font-family: "Some Font"` declaration that bypasses the token block, are not allowed. If a value is needed that doesn't exist as a token, lift it into the token block as a new named variable, then reference it. See [`references/anti-patterns.md` § Mid-render token improvisation](references/anti-patterns.md) and slop-test gate **58**.
+3. **Locked tokens — no mid-render improvisation.** Once a theme is selected at Step 2.6, every colour and every `font-family` declaration in the artifact must reference a named token (`var(--color-accent)`, `font-family: var(--font-display)`). Inline OKLCH / hex / `rgb()` values, or a `font-family: "Some Font"` declaration that bypasses the token block, are not allowed. If a value is needed that doesn't exist as a token, lift it into the token block as a new named variable, then reference it. See [`references/anti-patterns.md` § Mid-render token improvisation](references/anti-patterns.md) and slop-test gate **48**.
 
-4. **Re-drawn chrome forbidden.** Hallmark must not hand-build fake browser bars (URL pill + traffic-light dots), fake phone frames, fake code-block windows (mock title bar + dots wrapping a `<pre>`), or fake IDE chrome — the user's environment already supplies real chrome. Use real screenshots wrapped in a `<figure>` (with at most a hairline border), or omit the chrome and let the content stand on its own. See [`references/anti-patterns.md` § Re-drawn UI chrome](references/anti-patterns.md) and slop-test gate **57**.
+4. **Re-drawn chrome forbidden.** Hallmark must not hand-build fake browser bars (URL pill + traffic-light dots), fake phone frames, fake code-block windows (mock title bar + dots wrapping a `<pre>`), or fake IDE chrome — the user's environment already supplies real chrome. Use real screenshots wrapped in a `<figure>` (with at most a hairline border), or omit the chrome and let the content stand on its own. See [`references/anti-patterns.md` § Re-drawn UI chrome](references/anti-patterns.md) and slop-test gate **47**.
 
-5. **Mobile responsiveness — every emit verified at 320 / 375 / 414 / 768 px.** Hallmark's output must render flawlessly at all four widths. The non-negotiables: no horizontal scroll (gate 36), no two-line clickable text — buttons, primary nav links, footer links, breadcrumbs, CTAs (gate 59); image-bearing grid tracks use `minmax(0, 1fr)`, never bare `1fr` (gate 61); root has `overflow-x: clip` on both `html` and `body` — never `hidden` (gate 62); display headers wrap inside long words via `overflow-wrap: anywhere; min-width: 0` (gate 63); section heads collapse to one column on mobile across every theme variant (gate 64); radio-tab patterns don't scroll-jump (gate 65). See [`references/responsive.md` § Mobile — non-negotiable](references/responsive.md). This is a hard floor, not a wish list.
+5. **Mobile responsiveness — every emit verified at 320 / 375 / 414 / 768 px.** Hallmark's output must render flawlessly at all four widths. The non-negotiables: no horizontal scroll + root `overflow-x: clip` on both `html` and `body`, never `hidden` (gate 34); no two-line clickable text — buttons, primary nav links, footer links, breadcrumbs, CTAs (gate 49); image-bearing grid tracks use `minmax(0, 1fr)`, never bare `1fr` (gate 50); display headers wrap inside long words via `overflow-wrap: anywhere; min-width: 0` (gate 51); section heads collapse to one column on mobile across every theme variant (gate 52); radio-tab patterns don't scroll-jump (gate 53). See [`references/responsive.md` § Mobile — non-negotiable](references/responsive.md). This is a hard floor, not a wish list.
+
+6. **Typography purity — no italic headers.** Headings and display type are always roman (`font-style: normal`). An italicised emphasis word inside an otherwise-upright heading (`Built to <em>think</em>`) is one of the most reliable AI tells; so is an all-italic display face on headings. Carry emphasis with weight, accent colour, or a drawn underline. Italic survives only as *body-copy* emphasis inside running paragraphs. See [`references/anti-patterns.md` § Italic headers](references/anti-patterns.md) and slop-test gate **38a**.
 
 ---
 
@@ -75,7 +77,7 @@ If two signals fire, route component. If only the page flow fires (multi-section
 - **Step 2.6 · Theme route** — same. If a `tokens.css` or `design.md` exists, the component uses those tokens. Otherwise it asks "is there a system to follow, or should I pick one?" — defaulting to *catalog* if the user is silent.
 - **2+1 font discipline** — same.
 - **State discipline — STRICTER.** Every interactive component MUST ship code for **all 8 states**: default · hover · `:focus-visible` · `:active` · disabled · loading · error · success. The 8-state checklist in [`interaction-and-states.md`](references/interaction-and-states.md) is mandatory, not advisory.
-- **Slop test — universal-only subset.** Run the visual / microinteraction / contrast (gates 46–50) / a11y / typography gates. Skip the diversification gates (no `.hallmark/log.json` entry — components don't rotate) and skip the layout-safety gates that assume a full page.
+- **Slop test — universal-only subset.** Run the visual / microinteraction / contrast (gates 40–41) / a11y / typography gates. Skip the diversification gates (no `.hallmark/log.json` entry — components don't rotate) and skip the layout-safety gates that assume a full page.
 
 ### What Component-scope skips
 
@@ -235,7 +237,7 @@ If two non-default signals fire (rare), ask one short follow-up: *"This brief fi
 
 State the genre out loud at Step 2.5 alongside the macrostructure and theme picks: *"Genre: atmospheric. Macrostructure: Marquee Hero. Theme: Bloom (atmospheric cluster)."*
 
-**Theme route — only surface when the brief signals it.** Hallmark has two theme routes: **catalog** (the 22 named themes — Specimen, Atelier, Brutal, Salon, Newsprint, Linen, Studio, Manifesto, Terminal, Midnight, Almanac, Garden, Quiet, Riso, Sport, Bloom, Coral, Violet, Aurora, Halo, Plume, Editorial) and **custom** (an OKLCH palette + free-font pairing tuned to this one brief). **Catalog is the default.** The catalog rotation is *scoped to the genre's theme cluster* — atmospheric rotates Bloom/Midnight/Terminal, modern-minimal stays on Quiet, playful stays on Plume, editorial walks the remaining twelve. Do **not** offer the user a choice on every prompt — that's friction, not discipline. Surface the catalog/custom fork only when the brief carries one of these signals:
+**Theme route — only surface when the brief signals it.** Hallmark has two theme routes: **catalog** (the 20 named themes — Specimen, Atelier, Brutal, Newsprint, Studio, Manifesto, Terminal, Midnight, Almanac, Garden, Riso, Sport, Bloom, Coral, Cobalt, Aurora, Editorial, Carnival, Lumen, Hum) and **custom** (made-to-measure for one brief — a *tuned* OKLCH palette + free-font pairing on Hallmark's structures, or, when the brief's structure itself is the ask, a fully *bespoke* page designed from first principles; bound by every slop-test gate either way; see [`references/custom-theme.md`](references/custom-theme.md)). **Catalog is the default.** The catalog rotation is *scoped to the genre's theme cluster* — atmospheric rotates Bloom/Midnight/Terminal/Aurora/Lumen, modern-minimal rotates Coral/Cobalt, playful stays on Hum, editorial walks the remaining twelve (Specimen, Atelier, Brutal, Newsprint, Studio, Manifesto, Almanac, Garden, Riso, Sport, Editorial, Carnival). Do **not** offer the user a choice on every prompt — that's friction, not discipline. Surface the catalog/custom fork only when the brief carries one of these signals:
 
 - The user explicitly says **custom theme** / **tailored to our brand** / **make it ours** / **something unique** / **play with the colors and fonts**.
 - The user names a **specific brand colour** as the anchor (e.g., "use our terracotta", "the brand red is hex #c0392b", "anchor on sea-blue").
@@ -244,7 +246,9 @@ State the genre out loud at Step 2.5 alongside the macrostructure and theme pick
 
 If any of those fires, ask one short follow-up before picking: *"This brief reads like a custom palette would fit better than the catalog. Want me to construct a custom OKLCH palette + free-font pairing tuned to <one-line summary of the vibe>, or stay on the catalog for variety + speed?"* Wait for the user to say custom (or catalog). Default is still catalog — silence routes to catalog, not custom.
 
-If none of the signals fires, **proceed with catalog silently. Do not mention the fork.** Most briefs don't need a custom theme — the catalog's 22 themes plus the rotation rule already deliver structural variety. See Step 2.6 for the dispatch.
+**Custom has two depths** — *tuned* (a palette + fonts on Hallmark's structures) and *bespoke* (a page designed from first principles, own structure too) for when the brief's **structure itself** is the ask: "no theme / from scratch / fully bespoke", or a page-shape no catalog macrostructure fits. Both fire the one fork above, default to catalog on silence, and **pass every slop-test gate** — the depth simply follows the brief. See [`references/custom-theme.md`](references/custom-theme.md) § Bespoke depth.
+
+If none of the signals fires, **proceed with catalog silently. Do not mention the fork.** Most briefs don't need a custom theme — the catalog's 20 themes plus the rotation rule already deliver structural variety. See Step 2.6 for the dispatch.
 
 **If the user opts out or skips fields** (says "go ahead", "you pick", "skip", "just build it", "don't ask", answers some fields and leaves others blank, or simply doesn't engage with the question after one prompt):
 
@@ -270,10 +274,10 @@ Before loading any visual ruleset, **read the slim index at [`references/macrost
 **Theme-diversification rule (mandatory).** Picking a different macrostructure isn't enough on its own — two consecutive Hallmark outputs can share a theme even if their structures differ, and the result reads as repetition. Two consecutive themes must differ on **at least one** of three axes:
 
 - **Paper band** — dark (L < 30 %) / mid (30–85 %) / light (> 85 %), per the theme's `--color-paper` lightness
-- **Display style** — italic-serif (Specimen, Studio, Atelier) / roman-serif (Newsprint, Salon, Linen) / geometric-sans (Plume, Manifesto) / mono (Terminal) / display-condensed-italic (Sport) / display-heavy (Brutal) / system-native (Quiet) / risograph-bold (Riso)
-- **Accent hue** — warm (red / orange / amber: 10–60°) / cool (blue / indigo / cyan: 200–300°) / neutral (no chromatic accent: Quiet) / chromatic-other (green: Studio · sage: Garden · phosphor: Terminal)
+- **Display style** — high-contrast-serif (Specimen, Studio, Atelier) / roman-serif (Newsprint) / classical-serif (Lumen — Instrument Serif, upright; verb landmark via accent + underline) / geometric-sans (Manifesto) / grotesk-sans (Cobalt — Space Grotesk, mono-paired) / rounded-sans (Hum — Plus Jakarta Sans, warm humanist) / mono (Terminal) / display-condensed (Sport — roman) / display-heavy (Brutal, Carnival) / risograph-bold (Riso). All display is roman — italic headers are banned globally.
+- **Accent hue** — warm (red / orange / amber: 10–60°) / cool (blue / indigo / cyan: 200–300°) / neutral (no chromatic accent) / chromatic-other (green: Studio · leaf-green: Garden · phosphor: Terminal)
 
-If the previous output was Specimen (light · italic-serif · warm), the next can be Studio (light · italic-serif · chromatic-green) — the *accent hue* differs. But the next can't be Salon (light · roman-serif · warm) which only differs on display style and shares both paper band and accent — pick a more distant theme.
+If the previous output was Specimen (light · high-contrast-serif · warm), the next can be Studio (light · high-contrast-serif · chromatic-green) — the *accent hue* differs. But the next can't be Newsprint (light · roman-serif · warm) which only differs on display style and shares both paper band and accent — pick a more distant theme.
 
 The per-theme axis values live as comments at the top of each theme's tokens block in [`site/css/tokens.css`](../../site/css/tokens.css). When in doubt, name your candidate theme out loud and identify its three axis values; if two of three match the previous output, redirect.
 
@@ -283,11 +287,11 @@ If the brief is genuinely vague (no theme, no tone), do **not** default. Offer t
 
 The macrostructure picks five of the six structural axes for you; you only need to pick the reveal yourself. The deeper axis catalogue is still in [`references/structure.md`](references/structure.md) when you need to deviate from the macrostructure's defaults.
 
-**Pick a nav archetype (N1–N10) and a footer archetype (Ft1–Ft8) at this step.** They are not optional chrome; they are part of the page's structural fingerprint. Read the slim index at [`references/component-cookbook.md`](references/component-cookbook.md) and the routing tables at its bottom — the genre's default plus the acceptable alternates. Then **load ONLY the picked archetype files** from `references/components/` (e.g. `components/n5-floating-pill.md` + `components/ft5-statement.md`). A typical build loads 5–7 archetype files total (1 hero + 1 section head + 1–2 features + 1 CTA + 1 footer + 1 nav). Do not load the cookbook end-to-end — that's ~55 KB of archetypes you won't use. State both picks alongside the macrostructure: *"Macrostructure: Marquee Hero. Nav: N5 Floating pill. Footer: Ft5 Statement. Theme: Bloom."*
+**Pick a nav archetype (N1a–N13) and a footer archetype (Ft1–Ft8) at this step.** They are not optional chrome; they are part of the page's structural fingerprint. Read the slim index at [`references/component-cookbook.md`](references/component-cookbook.md) and the routing tables at its bottom — the genre's default plus the acceptable alternates. The nav catalogue is **fourteen archetypes**: N1a (minimal 2-link), N1b (canonical SaaS three-section), N2 (floating chip), N3 (side-rail), N4 (hidden ⌘K), N5 (floating pill), N6 (masthead), N7 (brutal slab), N8 (terminal), N9 (edge-aligned), N10 (scroll-morph), N11 (mega-menu), N12 (banner + retract), N13 (inline ⌘K-pill). Then **load ONLY the picked archetype files** from `references/components/`. A typical build loads 5–7 archetype files total. State both picks alongside the macrostructure: *"Macrostructure: Marquee Hero. Nav: N5 Floating pill. Footer: Ft5 Statement. Theme: Bloom."*
 
-**Default away from N1 and Ft3.** N1 (wordmark + 4–5 inline links + button-right at full width) and Ft3 (4 columns of links + social row + tiny copyright) are the most-recognised AI fingerprints. Reach for N5–N9 and Ft1/Ft2/Ft4/Ft5/Ft6/Ft7/Ft8 by default; reach for N1 only when the page genuinely has 2 destinations and the genre allows it; reach for Ft3 only on a genuine docs root or hub.
+**Default away from N1a and Ft3.** N1a (wordmark + a couple inline links + button-right) and Ft3 (4 columns of links + social row + tiny copyright) are the most-recognised AI fingerprints. For a real product nav reach for N1b / N5 / N11 / N13 by default; reach for N1a only when the page genuinely has 2 destinations. Reach for Ft3 only on a genuine docs root or hub.
 
-**Diversification extends to nav + footer.** Across consecutive Hallmark runs in the same project session (per `.hallmark/log.json`), no two outputs should share the same nav archetype OR the same footer archetype. If the previous run used N5 + Ft5, the next picks N6/N7/N8/N9 + Ft1/Ft2/Ft4/Ft6/Ft7/Ft8 from the routing tables. The nav and footer picks are recorded in the macrostructure stamp at Step 6.
+**Diversification extends to nav + footer — and is the single most-violated rule in practice.** Across consecutive Hallmark runs in the same project session (per `.hallmark/log.json`) **and across multiple test builds of the same theme**, no two outputs may share the same nav archetype OR the same footer archetype. **Before writing any nav markup, state one line out loud:** *"Previous nav: <X>. This build: <Y>, because <reason>."* The failure mode this prevents: reaching for the genre *default* on every build, so eight builds ship two navs. A theme with four test builds must show four different navs (e.g. Hum across Curio/Sprout/Tally/Mixtape: N5 → N1b → N12 → N13). Rotate deliberately through the routing table's "Acceptable also" column. The nav and footer picks are recorded in the macrostructure stamp at Step 6.
 
 ### 2.5. Check project memory
 
@@ -295,8 +299,8 @@ If the project has a `.hallmark/log.json` file (created by previous Hallmark run
 
 ```json
 [
-  { "date": "2026-04-30", "macrostructure": "Bento Grid",   "theme": "Linen",   "enrichment": "E1 clipped-edge",  "brief": "Tracejam · SaaS observability" },
-  { "date": "2026-04-28", "macrostructure": "Long Document","theme": "Linen",   "enrichment": "E5 hand-built SVG", "brief": "Maple Street Bread · bakery" },
+  { "date": "2026-04-30", "macrostructure": "Bento Grid",   "theme": "Coral",   "enrichment": "E1 clipped-edge",  "brief": "Tracejam · SaaS observability" },
+  { "date": "2026-04-28", "macrostructure": "Long Document","theme": "Garden",  "enrichment": "E5 hand-built SVG", "brief": "Maple Street Bread · bakery" },
   { "date": "2026-04-25", "macrostructure": "Manifesto",    "theme": "Manifesto","enrichment": "none",            "brief": "Meridian · studio manifesto" }
 ]
 ```
@@ -316,7 +320,7 @@ If the project has a CSS stamp but no `log.json`, infer one entry from the stamp
 
 Then the theme rotation, on the next line:
 
-> *"Last 3 themes: Linen · Plain · Salon. Picking from {Newsprint, Atelier, Studio, Garden} — Newsprint differs on display style and accent hue."*
+> *"Last 3 themes: Coral · Bloom · Riso. Picking from {Newsprint, Atelier, Studio, Garden} — Newsprint differs on display style and accent hue."*
 
 **Three sample shapes** to imitate:
 
@@ -330,14 +334,14 @@ The rotation block keeps the user inside the discipline without making them read
 
 By the time you reach this step, one of four things is true:
 
-0. **A `study` diagnosis was emitted earlier in this conversation and the user is asking to build from it** (phrases: *"build it"*, *"make it"*, *"use this DNA"*, *"build with this"* — immediately following the diagnosis) → theme route is **studied-DNA**. **Skip catalog/custom dispatch entirely.** The studied paper OKLCH, accent OKLCH, type roles (with named candidates), macrostructure, and nav/footer archetypes from the diagnosis become the locked system for this build. Diversification is suspended — you're following an external DNA, not rotating the catalog. The Step 6 stamp records `theme: studied-DNA (source: <URL or image>)` plus the actual OKLCH/font values inline. **If the user later pivots with phrases like *"use Linen instead"* / *"ignore the DNA"* / *"rotate to a different theme"*,** route back to the normal dispatch below and resume diversification. Continue to Step 3.
-1. **The user named custom** (because they said so, or because Step 1's signal detection fired and they confirmed) → load [`references/custom-theme.md`](references/custom-theme.md), ask the **one** follow-up (vibe in 4–8 words + optional anchor colour), construct the OKLCH palette + free-font pairing, compute the three axis values (paper-band / display-style / accent-hue), then continue to Step 3.
-2. **The user named catalog** (or implicitly accepted it by not naming custom) → pick one of the 22 named themes per the diversification rule above. Existing flow — continue to Step 3.
+0. **A `study` diagnosis was emitted earlier in this conversation and the user is asking to build from it** (phrases: *"build it"*, *"make it"*, *"use this DNA"*, *"build with this"* — immediately following the diagnosis) → theme route is **studied-DNA**. **Skip catalog/custom dispatch entirely.** The studied paper OKLCH, accent OKLCH, type roles (with named candidates), macrostructure, and nav/footer archetypes from the diagnosis become the locked system for this build. Diversification is suspended — you're following an external DNA, not rotating the catalog. The Step 6 stamp records `theme: studied-DNA (source: <URL or image>)` plus the actual OKLCH/font values inline. **If the user later pivots with phrases like *"use Newsprint instead"* / *"ignore the DNA"* / *"rotate to a different theme"*,** route back to the normal dispatch below and resume diversification. Continue to Step 3.
+1. **The user named custom** (because they said so, or because Step 1's signal detection fired and they confirmed) → load [`references/custom-theme.md`](references/custom-theme.md). For a **tuned** custom: ask the **one** follow-up (vibe in 4–8 words + optional anchor colour), construct the OKLCH palette + free-font pairing, compute the three axis values (paper-band / display-style / accent-hue). If the brief's **structure itself** is the ask (signal 5 — "from scratch / no theme", or a page-shape no catalog macrostructure fits), take the **bespoke** depth instead: design the palette, type, **and** structure from first principles (custom-theme.md § Bespoke depth). **Every slop-test gate still fires either way.** Then continue to Step 3.
+2. **The user named catalog** (or implicitly accepted it by not naming custom) → pick one of the 20 named themes per the diversification rule above. Existing flow — continue to Step 3.
 3. **Neither was discussed** (Step 1's signals didn't fire — vanilla brief) → default to **catalog**. Do not pause. Do not ask. Continue to Step 3.
 
-**Custom is a quiet branch, not a default question.** Most briefs route to catalog and the user never sees the words "catalog" or "custom." The 22 named themes plus the rotation rule already deliver structural variety; the fork is reserved for when the brief specifically asks for a tuned look the catalog can't carry.
+**Custom is a quiet branch, not a default question.** Most briefs route to catalog and the user never sees the words "catalog" or "custom." The 20 named themes plus the rotation rule already deliver structural variety; the fork is reserved for when the brief specifically asks for a tuned look the catalog can't carry.
 
-A custom theme is a **complete** OKLCH palette + font pairing tuned to the brief — not a one-off colour swap, not an excuse to bypass the rules. Every constraint in [`color.md`](references/color.md), [`typography.md`](references/typography.md), and [`anti-patterns.md`](references/anti-patterns.md) still applies. The 65 slop-test gates fire unchanged. The Step 5 preview block surfaces the palette + pairing in plain text **before** any code is emitted, so the user can redirect.
+A custom theme is a **complete** OKLCH palette + font pairing tuned to the brief — not a one-off colour swap, not an excuse to bypass the rules. Every constraint in [`color.md`](references/color.md), [`typography.md`](references/typography.md), and [`anti-patterns.md`](references/anti-patterns.md) still applies. The 57 slop-test gates fire unchanged. The Step 5 preview block surfaces the palette + pairing in plain text **before** any code is emitted, so the user can redirect.
 
 The diversification rule is theme-route-blind: a custom run that follows another custom (or a catalog) must differ on at least one of the three axes from the previous entry, same as catalog-vs-catalog. Custom entries record their three axes explicitly into `.hallmark/log.json` (see [`custom-theme.md`](references/custom-theme.md) § F).
 
@@ -345,12 +349,13 @@ The diversification rule is theme-route-blind: a custom run that follows another
 
 The non-negotiables live in [`references/`](references/). **Be precise about what to load when. Discipline matters — over-eager loading is the largest avoidable cost of running Hallmark.**
 
-**Always-load (eager — 1 file):**
+**Always-load (eager — 1–2 files):**
 - The genre file picked in Step 1 — [`genres/editorial.md`](references/genres/editorial.md), [`genres/modern-minimal.md`](references/genres/modern-minimal.md), [`genres/atmospheric.md`](references/genres/atmospheric.md), or [`genres/playful.md`](references/genres/playful.md). Scopes everything downstream.
+- **If `references/themes/<theme>.md` exists for the catalog theme picked in Step 2.6, load it eagerly.** Opt-in per-theme spec — carries signature moves, macrostructure affinity / rejection, voice fixtures, and anti-patterns that the tokens block cannot encode. Most themes have no spec file; the load is a silent no-op when absent. Studied-DNA and custom routes skip this load.
 
 **Index-then-pick (read the slim index, then load only the picks):**
 - [`macrostructures.md`](references/macrostructures.md) — slim index of the 21 macros. Pick one name from the index, then load ONLY `references/macrostructures/<NN-slug>.md` for that pick. **Never load the whole index plus more than one per-macro file in a single build.** ~30 lines per per-macro file vs. 660 lines for the old monolith.
-- [`component-cookbook.md`](references/component-cookbook.md) — slim index of 46 component archetypes (9 heroes, 5 section heads, 6 features, 4 CTAs, 4 testimonials, 8 footers, 10 navs) + the nav + footer routing tables at the bottom. Pick your archetype codes (H#, S#, F#, C#, T#, Ft#, N#) from the index, then load ONLY the matching `references/components/<code>-<slug>.md` files. A typical build loads 5–7 archetype files. **Loading the cookbook end-to-end or pre-loading more than one archetype per category is the single biggest token waste in the skill — don't.**
+- [`component-cookbook.md`](references/component-cookbook.md) — slim index of 50 component archetypes (9 heroes, 5 section heads, 6 features, 4 CTAs, 4 testimonials, 8 footers, 14 navs) + the nav + footer routing tables at the bottom. Pick your archetype codes (H#, S#, F#, C#, T#, Ft#, N#) from the index, then load ONLY the matching `references/components/<code>-<slug>.md` files. A typical build loads 5–7 archetype files. **Loading the cookbook end-to-end or pre-loading more than one archetype per category is the single biggest token waste in the skill — don't.**
 
 **Load-per-build (universal rules — load every build):**
 - [`typography.md`](references/typography.md) — fonts, scale, pairing, weights, measure, hero headline sizing
@@ -373,7 +378,7 @@ The non-negotiables live in [`references/`](references/). **Be precise about wha
 - [`preview-examples.md`](references/preview-examples.md) — load only if you need a worked example of the Step 5 preview block format. The bullet list in Step 5 itself is normally enough; reach for the file only when picking unusual macrostructures / custom themes.
 
 **Load-at-the-end (Step 7 only):**
-- [`slop-test.md`](references/slop-test.md) — **strictly Step 7, after Build.** The 66 gates are a post-emit check, not a pre-emit reference. Pre-loading slop-test.md costs ~7K tokens for nothing — the gates inform fixes, not generation. If a gate fails at Step 7, fix and re-test; do not consult the file earlier "to know what to avoid" — that's what `anti-patterns.md` is for.
+- [`slop-test.md`](references/slop-test.md) — **strictly Step 7, after Build.** The 57 gates are a post-emit check, not a pre-emit reference. Pre-loading slop-test.md costs ~7K tokens for nothing — the gates inform fixes, not generation. If a gate fails at Step 7, fix and re-test; do not consult the file earlier "to know what to avoid" — that's what `anti-patterns.md` is for.
 - [`contract.md`](references/contract.md) — load at handoff time for output-contract + scope rules.
 - [`export-formats.md`](references/export-formats.md) — load at Step 6 only when the project warrants multi-format exports (i.e. has a `design.md`). Single-page builds emit `tokens.css` from the in-memory token state and don't need this file.
 
@@ -404,15 +409,15 @@ Before emitting any code, output a tight summary of what you're about to ship. T
 **Format** (Markdown bullets, not ASCII boxes — they render reliably across every chat client and terminal):
 
 ```markdown
-**Hallmark · v1.0.0**
+**Hallmark · v1.1.0**
 
 - **Macrostructure** · Stat-Led
 - **Theme** · Plain (#fff paper · cool greys · ink-blue accent)
 - **Enrichment** · none (typography only)
 - **Sections** · Hero · Logos · Stats · Features · Testimonials · Pricing · FAQ · CTA · Footer
 - **Motion** · counter · pricing-lift · pulse-once
-- **Slop test** · 69 / 69 ✓ (run after Build)
-- **Diversification** · differs from Linen on display style + accent hue
+- **Slop test** · 57 / 57 ✓ (run after Build)
+- **Diversification** · differs from Newsprint on display style + accent hue
 ```
 
 **Six required bullets, one optional, plus a CTA line:**
@@ -422,7 +427,7 @@ Before emitting any code, output a tight summary of what you're about to ship. T
 3. **Enrichment** — the chosen archetype + tier, or *none (typography only)*.
 4. **Sections** — section names separated by ` · `, in DOM order.
 5. **Motion** — microinteraction primitives separated by ` · `, or *none — typography only*. Always under three primitives per the [`microinteractions.md`](references/microinteractions.md) hard rules.
-6. **Slop test** — `69 / 69 ✓` if all gates pass, or `N / 69 — fails: <gate numbers>` if any are open. Run the slop test BEFORE writing this row; the slop test is Step 7.
+6. **Slop test** — `57 / 57 ✓` if all gates pass, or `N / 57 — fails: <gate numbers>` if any are open. Run the slop test BEFORE writing this row; the slop test is Step 7.
 7. **Diversification** *(optional, only when `.hallmark/log.json` has prior entries)* — what axes differ vs the previous run.
 
 **Then one quiet CTA line, italicised, after the bullets:**
@@ -442,7 +447,7 @@ Emit code that satisfies the tone and structural fingerprint. Match the complexi
 Always:
 
 - **Hero headline — match font-size to copy length.** When you write the headline yourself (no user-supplied copy), aim for **≤ 7 words and ≤ 50 chars** from the start. For longer headlines, apply the size-by-length brackets in [`typography.md § Hero headline sizing`](references/typography.md): 21–50 chars use `--text-display`; 51–90 chars cap at `--text-display-s`; > 90 chars rewrite shorter or cap at `--text-4xl`. Aggressive-display themes (Brutal, Riso, Manifesto) auto-step down one rung past 50 chars — their 6.5–9rem ceiling is for short statements only.
-- **Section tags / eyebrows — default OFF.** Do NOT emit `01 · THE TOUR`, `02 / FEATURES`, `Chapter Three`, or any uppercase mono-cap section number / kicker / label unless either (a) the user explicitly asked for chapter / step / section numbering, OR (b) the macrostructure is Long Document, Manifesto, or Catalogue numbered AND the content is genuinely ordinal. Cap at 1–2 per page even then. **When a tag IS used, always stack vertical — tag above, heading directly underneath in the same column.** The tag-left / heading-right two-column pattern (a.k.a. hanging header, left-margin label) is banned outright — it is the single most reliable templated-editorial tell, and slop-test gate **66** auto-fails it.
+- **Section tags / eyebrows — default OFF.** Do NOT emit `01 · THE TOUR`, `02 / FEATURES`, `Chapter Three`, or any uppercase mono-cap section number / kicker / label unless either (a) the user explicitly asked for chapter / step / section numbering, OR (b) the macrostructure is Long Document, Manifesto, or Catalogue numbered AND the content is genuinely ordinal. Cap at 1–2 per page even then. **When a tag IS used, always stack vertical — tag above, heading directly underneath in the same column.** The tag-left / heading-right two-column pattern (a.k.a. hanging header, left-margin label) is banned outright — it is the single most reliable templated-editorial tell, and slop-test gate **54** auto-fails it.
 - Use OKLCH for every colour. Declare tokens as CSS custom properties at `:root`.
 - Use a 4pt spacing scale with semantic names (`--space-sm`, `--space-md`, …).
 - Pick a distinctive display face and a refined body face. Pairings, not single-font pages — *unless* the single-font choice IS the design (a true terminal-aesthetic page is monospace-only on purpose; that's allowed).
@@ -461,7 +466,7 @@ Always:
 
 ### 7. The slop test
 
-Before handing back, run the output through the 69-gate slop test in [`references/slop-test.md`](references/slop-test.md). Every answer must be **no**. Load that file at this step (not earlier — it isn't needed until handoff). The active genre matters: some gates are universal, some are genre-scoped (atmospheric loosens the radial-bloom gate; modern-minimal loosens the zero-chroma neutral gate; etc.). The full per-genre overrides are listed inline in `slop-test.md`.
+Before handing back, run the output through the 57-gate slop test in [`references/slop-test.md`](references/slop-test.md). Every answer must be **no**. Load that file at this step (not earlier — it isn't needed until handoff). The active genre matters: some gates are universal, some are genre-scoped (atmospheric loosens the radial-bloom gate; modern-minimal loosens the zero-chroma neutral gate; etc.). The full per-genre overrides are listed inline in `slop-test.md`.
 
 Run the slop test BEFORE writing the Slop test row in the Step 5 preview block — that row reflects the actual outcome of this step.
 

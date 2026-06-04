@@ -202,3 +202,386 @@ $this->trans('My label', 'Modules.Mymodule.Admin', []);
 ```
 
 This applies to **all** `$this->trans()` calls inside controllers that extend `FrameworkBundleAdminController`.
+
+---
+
+## Symfony Console Commands
+
+### **CRITICAL: Commands must be registered in `config/admin/services.yml`**
+
+Console commands run in the **admin kernel context**. They must be registered in `config/admin/services.yml`, **NOT** in `config/common.yml` or `config/front/services.yml`.
+
+```yaml
+# config/admin/services.yml
+services:
+  mymodule.command.my_command:
+    class: Vendor\MyModule\Command\MyCommand
+    arguments:
+      - "@mymodule.service.my_service"
+    tags:
+      - { name: console.command, command: modulename:action }
+```
+
+**Why admin only?**
+- Console commands are executed via `php bin/console`, which uses the admin kernel
+- Commands registered in `common.yml` or `front/services.yml` will not be discovered by the console application
+- Services needed by commands should be in `common.yml` (if shared) or `admin/services.yml` (if admin-specific)
+
+### Command Naming Convention
+
+Format: `modulename:action`
+
+Examples:
+- `wsautocartrules:create`
+- `ws_keepdblight:cleandb`
+- `mymodule:import`
+- `mymodule:export-products`
+
+**Rules:**
+- Use module name as namespace (underscores allowed)
+- Use colon `:` to separate namespace from action
+- Action should be a descriptive verb or verb phrase
+- Use hyphens for multi-word actions: `export-products`, not `exportProducts`
+
+### Command Class Structure
+
+```php
+namespace Vendor\MyModule\Command;
+
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+class MyCommand extends Command
+{
+    private MyService $myService;
+
+    public function __construct(MyService $myService)
+    {
+        parent::__construct(); // CRITICAL: call parent constructor
+        $this->myService = $myService;
+    }
+
+    protected function configure(): void
+    {
+        $this
+            ->setDescription('Brief description of what the command does')
+            ->addOption(
+                'limit',
+                'l',
+                InputOption::VALUE_OPTIONAL,
+                'Limit processing to N items (0 = unlimited)',
+                10
+            )
+            ->addArgument(
+                'type',
+                InputArgument::OPTIONAL,
+                'Type of items to process'
+            );
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $io = new SymfonyStyle($input, $output);
+        
+        $limit = (int) $input->getOption('limit');
+        $type = $input->getArgument('type');
+        
+        $io->title('Processing Items');
+        $io->text(sprintf('Limit: %d', $limit));
+        
+        try {
+            $result = $this->myService->process($limit, $type);
+            $io->success(sprintf('Processed %d items', $result));
+            return 0; // Success
+        } catch (\Exception $e) {
+            $io->error($e->getMessage());
+            return 1; // Failure
+        }
+    }
+}
+```
+
+### Return Codes
+
+**CRITICAL**: Return integer codes, **NOT** `Command::SUCCESS` or `Command::FAILURE` constants (not available in PrestaShop's Symfony version).
+
+```php
+// ✅ CORRECT
+return 0; // Success
+return 1; // Failure
+
+// ❌ WRONG — constants not available
+return Command::SUCCESS;  // Fatal error
+return Command::FAILURE;  // Fatal error
+```
+
+### SymfonyStyle Output
+
+Use `SymfonyStyle` for rich, formatted console output:
+
+```php
+$io = new SymfonyStyle($input, $output);
+
+// Titles and sections
+$io->title('Main Title');
+$io->section('Section Title');
+
+// Messages
+$io->text('Simple text message');
+$io->text(['Line 1', 'Line 2', 'Line 3']);
+
+// Styled messages
+$io->success('Operation completed successfully');
+$io->error('An error occurred');
+$io->warning('This is a warning');
+$io->note('This is a note');
+
+// Lists
+$io->listing(['Item 1', 'Item 2', 'Item 3']);
+
+// Tables
+$io->table(
+    ['ID', 'Name', 'Email'],
+    [
+        [1, 'John', 'john@example.com'],
+        [2, 'Jane', 'jane@example.com'],
+    ]
+);
+
+// Progress bar
+$io->progressStart(100);
+for ($i = 0; $i < 100; $i++) {
+    // Process item
+    $io->progressAdvance();
+}
+$io->progressFinish();
+
+// Ask questions
+$answer = $io->ask('What is your name?');
+$confirmed = $io->confirm('Continue?', false);
+$choice = $io->choice('Select option', ['A', 'B', 'C']);
+```
+
+### Input Options vs Arguments
+
+**Options**: Named parameters with `--` prefix
+```php
+// Define
+->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Limit', 10)
+
+// Use
+php bin/console mymodule:process --limit=50
+php bin/console mymodule:process -l 50
+
+// Access
+$limit = (int) $input->getOption('limit');
+```
+
+**Arguments**: Positional parameters (no `--` prefix)
+```php
+// Define
+->addArgument('filename', InputArgument::REQUIRED, 'Filename')
+
+// Use
+php bin/console mymodule:import products.csv
+
+// Access
+$filename = $input->getArgument('filename');
+```
+
+**Argument modes**:
+- `InputArgument::REQUIRED` - Must be provided
+- `InputArgument::OPTIONAL` - Optional (provide default in constructor)
+- `InputArgument::IS_ARRAY` - Accept multiple values
+
+**Option modes**:
+- `InputOption::VALUE_NONE` - Boolean flag (presence = true)
+- `InputOption::VALUE_REQUIRED` - Must have a value
+- `InputOption::VALUE_OPTIONAL` - Optional value (provide default in constructor)
+- `InputOption::VALUE_IS_ARRAY` - Accept multiple values
+
+### Service Injection
+
+Commands receive services via constructor injection:
+
+```php
+class MyCommand extends Command
+{
+    public function __construct(
+        private MyService $myService,
+        private AnotherService $anotherService
+    ) {
+        parent::__construct(); // CRITICAL: always call parent
+    }
+}
+```
+
+Service definition:
+```yaml
+mymodule.command.my_command:
+  class: Vendor\MyModule\Command\MyCommand
+  arguments:
+    - "@mymodule.service.my_service"
+    - "@mymodule.service.another_service"
+  tags:
+    - { name: console.command, command: mymodule:process }
+```
+
+### Best Practices
+
+1. **Always inject services** - Never use static calls or `$this->get()`
+2. **Use SymfonyStyle** - Provides consistent, rich output
+3. **Add --limit option** - For commands processing many items
+4. **Provide progress feedback** - Use progress bars or status messages
+5. **Return proper exit codes** - 0 for success, 1 for failure
+6. **Catch exceptions** - Wrap main logic in try/catch
+7. **Validate input early** - Check arguments/options before processing
+8. **Use descriptive names** - Both command name and option/argument names
+9. **Add help text** - Use `setDescription()` and option/argument descriptions
+10. **Test with --help** - Verify help output: `php bin/console mymodule:command --help`
+
+### Common Patterns
+
+**Processing with limit:**
+```php
+$limit = (int) $input->getOption('limit');
+$items = $this->myService->getItems();
+
+$itemsToProcess = $limit > 0 ? array_slice($items, 0, $limit) : $items;
+
+$io->text(sprintf('Found %d items. Processing %d...', count($items), count($itemsToProcess)));
+
+foreach ($itemsToProcess as $item) {
+    // Process item
+}
+```
+
+**Dry-run mode:**
+```php
+->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulate without making changes')
+
+if ($input->getOption('dry-run')) {
+    $io->note('DRY RUN MODE - No changes will be made');
+}
+```
+
+**Verbose output:**
+```php
+if ($output->isVerbose()) {
+    $io->text('Detailed debug information...');
+}
+```
+
+### Example: Complete Command
+
+```php
+namespace Ws\AutoCartRules\Command;
+
+use CartRule;
+use Configuration;
+use DateTime;
+use Language;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Ws\AutoCartRules\Service\EligibleCustomerService;
+
+class CreateAutoCartRulesCommand extends Command
+{
+    private EligibleCustomerService $eligibleCustomerService;
+
+    public function __construct(EligibleCustomerService $eligibleCustomerService)
+    {
+        parent::__construct();
+        $this->eligibleCustomerService = $eligibleCustomerService;
+    }
+
+    protected function configure(): void
+    {
+        $this
+            ->setDescription('Create cart rules for eligible customers')
+            ->addOption(
+                'limit',
+                'l',
+                InputOption::VALUE_OPTIONAL,
+                'Limit customers to process (0 = all)',
+                5
+            );
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $io = new SymfonyStyle($input, $output);
+
+        $reductionPercent = (float) Configuration::get('WSAUTOCARTRULES_REDUCTION_PERCENTAGE');
+        $pricingLevel = (float) Configuration::get('WSAUTOCARTRULES_PRICING_LEVEL');
+        $durationDays = (int) Configuration::get('WSAUTOCARTRULES_DURATION_DAYS');
+
+        if ($reductionPercent <= 0 || $pricingLevel <= 0 || $durationDays <= 0) {
+            $io->error('Invalid configuration');
+            return 1;
+        }
+
+        $limit = (int) $input->getOption('limit');
+
+        $io->title('Creating Auto Cart Rules');
+        $io->text([
+            sprintf('Reduction: %s%%', $reductionPercent),
+            sprintf('Pricing Level: €%s', $pricingLevel),
+            sprintf('Duration: %d days', $durationDays),
+            sprintf('Limit: %s', $limit > 0 ? $limit : 'No limit'),
+        ]);
+
+        $customers = $this->eligibleCustomerService->getEligibleCustomers($pricingLevel);
+
+        if (empty($customers)) {
+            $io->warning('No eligible customers found');
+            return 0;
+        }
+
+        $customersToProcess = $limit > 0 ? array_slice($customers, 0, $limit) : $customers;
+
+        $created = 0;
+        $failed = 0;
+
+        foreach ($customersToProcess as $customer) {
+            try {
+                // Create cart rule logic here
+                ++$created;
+                $io->success(sprintf(
+                    '[%d/%d] Created for %s %s',
+                    $created + $failed,
+                    count($customersToProcess),
+                    $customer['firstname'],
+                    $customer['lastname']
+                ));
+            } catch (\Exception $e) {
+                ++$failed;
+                $io->error($e->getMessage());
+            }
+        }
+
+        $io->section('Summary');
+        $io->text([
+            sprintf('Total eligible: %d', count($customers)),
+            sprintf('Processed: %d', count($customersToProcess)),
+            sprintf('Created: %d', $created),
+            sprintf('Failed: %d', $failed),
+        ]);
+
+        return $created > 0 ? 0 : 1;
+    }
+}
+```
+
+### References
+
+- [Symfony Console Commands](https://symfony.com/doc/current/console.html)
+- [SymfonyStyle](https://symfony.com/doc/current/console/style.html)
+- PrestaShop core commands: `/src/PrestaShopBundle/Command/`

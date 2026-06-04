@@ -37,7 +37,7 @@ dependencies:
 
 demo_data:
   - path: example_data/enhancer_eve.fa
-    description: Drosophila eve (even-skipped) locus — canonical developmental enhancer benchmark.
+    description: Drosophila eve (even-skipped) developmental-enhancer region (chr2R:9972000-9982000, BDGP6, gene-sense, incl. upstream stripe enhancers) — canonical DeepSTARR benchmark.
 
 endpoints:
   cli: python skills/gi-enhancer/gi_enhancer.py --input {input_file} --output {output_dir}
@@ -122,7 +122,7 @@ python clawbio.py run gi-enhancer --demo
 python clawbio.py run gi-enhancer --demo
 ```
 
-Bundled fixture is the Drosophila *eve* (even-skipped) locus — the canonical DeepSTARR benchmark for developmental enhancer activity. Expect high activity across multiple windows.
+Bundled fixture is the Drosophila *eve* (even-skipped) locus (chr2R:9972000-9982000, incl. the upstream stripe enhancers) — the canonical DeepSTARR benchmark for developmental enhancer activity. Expect a positive developmental signal (max dev ~2.1).
 
 ## Gotchas
 

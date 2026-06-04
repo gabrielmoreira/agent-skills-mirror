@@ -128,6 +128,8 @@ The following agent names are **archived** and MUST NOT be spawned: `manager-str
 
 When a paste-ready resume message or `Agent()` invocation references one of these archived agents, the orchestrator MUST reject the spawn and consult the migration table at `.claude/rules/moai/workflow/archived-agent-rejection.md`. The retained-agent replacement pattern (per-spawn `Agent(general-purpose)` with domain-specific instructions, or routing to one of the 8 retained agents above) is documented there.
 
+Note on `claude-code-guide`: the archived entry refers to the former MoAI-custom agent file of that name. It is distinct from the official Claude Code built-in helper agent that is also named `claude-code-guide` and ships with the runtime — that built-in is a separate, valid agent and invoking it does NOT trigger archived-agent rejection. The rejection binds only the MoAI-custom file.
+
 ### Dynamic Team Generation (Experimental)
 
 Agent Teams teammates are spawned dynamically using `Agent(subagent_type: "general-purpose")` with runtime parameter overrides from `workflow.yaml` role profiles. No static team agent definitions are used.
@@ -372,6 +374,8 @@ For anti-hallucination policy, see .claude/rules/moai/core/moai-constitution.md
 - Never present information as fact when uncertain
 - Never omit "Sources:" section when WebSearch was used
 
+> **GLM-backend routing**: under `moai glm` or the GLM panes of `moai cg`, WebSearch and WebFetch route to the z.ai MCP tools instead of the built-in tools — see `.claude/rules/moai/core/glm-web-tooling.md` for the HARD routing table.
+
 ### Deep Research Workflow
 
 When a single-pass WebSearch is insufficient for a research-heavy question, use the bundled `/deep-research <question>` workflow: it fans out multiple web searches, cross-checks sources against each other, votes on contested claims, and returns a cited report. Three constraints apply:
@@ -422,8 +426,8 @@ For MCP configuration and usage patterns, see .claude/rules/moai/core/settings-m
 
 MoAI-ADK implements a 3-level Progressive Disclosure system:
 
-**Level 1** (Metadata): ~100 tokens per skill, always loaded
-**Level 2** (Body): ~5K tokens, loaded when triggers match
+**Level 1** (Metadata): ~100 tokens per skill — the description is always listed so Claude knows the skill exists (the skill-listing step)
+**Level 2** (Body): ~5K tokens, loaded on invocation (description being listed does not by itself load the body) and retained in context until compaction
 **Level 3** (Bundled): On-demand, Claude decides when to access
 
 The Claude Code runtime additionally applies a skill-listing budget (~1% of context, tunable via `skillListingBudgetFraction`) and a ~25K-token post-compaction budget (~5K per skill). See .claude/rules/moai/development/skill-authoring.md § Skill Listing Budget and Compaction.

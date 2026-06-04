@@ -119,7 +119,6 @@ Forks may change product branding for their own distribution, but they must pres
 - **Body explains why; the diff explains what.** State the motivation, the alternative considered, the trade-off accepted, the regression risk addressed, or the bug class being prevented. Skip narration of which lines moved.
 - **One logical change per commit.** A rename, a behaviour change, and a new test are three commits unless they are genuinely inseparable. If a subject needs the word `and` to describe its scope, consider splitting.
 - **No subject length limit.** Prefer a long, precise subject over a short, cryptic one. A reader scanning `git log` should be able to tell what shipped without opening the diff.
-- **No AI co-author trailers.** Do NOT append `Co-authored-by: Cursor <cursoragent@cursor.com>` or any similar AI co-author line to commit messages. The commit author (from git config) is the sole attribution.
 
 Examples:
 
@@ -182,3 +181,4 @@ Examples:
 - The `prompt/compiler.py` must be re-run when identity files change; `builder.py` auto-detects staleness via `check_compiled_outdated()`.
 - Skill loading order: `__builtin__` → workspace → `.cursor/skills` → `.claude/skills` → `skills/` → global home dirs.
 - `multi_agent_enabled` defaults to `True` and is always on; the toggle has been removed.
+- Temporary files (diffs, crash dumps, scripts, downloads) go in `tools-tmp/` — never the repo root. The directory is git-ignored. Never use `git add -A`; always stage files by explicit path.

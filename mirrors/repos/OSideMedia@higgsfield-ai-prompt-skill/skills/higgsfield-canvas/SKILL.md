@@ -1,0 +1,176 @@
+---
+name: higgsfield-canvas
+description: "Use when the user mentions Higgsfield Canvas, a node-based or node graph workspace, an infinite board/canvas, chaining generations into a pipeline, or wants to wire prompts → images → videos across models on one surface. Covers what Canvas is, the node categories, the seven models that run inside Canvas, the named canvas patterns (Simple Seedance, Extend Video, Image Edit, StoryBoard With Elements, Long Video fan-out), the build-free / generate-paid cost model, reusable templates, assets-as-nodes, and Shared Canvas live collaboration. Also trigger on 'Higgsfield ComfyUI alternative', 'node workflow', or 'connect nodes to build a scene/campaign'."
+user-invocable: true
+metadata:
+  tags: [higgsfield, canvas, node-based, node-graph, infinite-board, pipeline, workflow, shared-canvas, collaboration, storyboard, fan-out]
+  version: 1.0.0
+  updated: 2026-06-03
+  parent: higgsfield
+---
+
+# Higgsfield Canvas — Node-Based Production Workspace
+
+Canvas is a node-based editor where prompts, references, and generations from
+any Higgsfield model live on a single infinite board. Instead of running each
+generation in isolation, you connect nodes — a prompt feeds an image, an
+image feeds a video, a style branches into variations — so a whole scene or
+campaign becomes one continuous, re-runnable pipeline.
+
+Canvas is its own top-level surface in the Higgsfield nav bar (alongside
+Image, Video, Cinema Studio, Marketing Studio). It is model-agnostic: it
+*hosts* the other models rather than being a mode inside any one of them, so
+this sub-skill routes model-specific craft back to the relevant sibling
+sub-skill.
+
+**Why Canvas matters for this skill.** Canvas is another place to *deploy the
+prompts this skill builds* inside the Higgsfield workflow — instead of taking
+a finished prompt straight to the Image/Video generator or Cinema Studio, you
+drop it into a **Prompt node** on the board and wire it into a generator. The
+prompt-craft is identical (MCSLA scene prompts, Seedance prompt modes, GPT
+Image 2.0 formats — all still apply); Canvas just changes *where* the prompt
+is executed and lets one prompt feed a multi-step pipeline. Think of the
+Prompt node as the on-canvas home for everything the rest of this skill
+teaches.
+
+Translated from Higgsfield's official Canvas guide (`higgsfield.ai/canvas-intro`)
+plus the in-product Canvas screenshots and a canvas-workflow walkthrough.
+
+---
+
+## 1. When to use Canvas
+
+Reach for Canvas when the work is a *pipeline*, not a single shot:
+
+- A multi-shot scene or episode where one reference set drives several shot
+  prompts.
+- An ad campaign that fans one product/brand reference into many variants.
+- A storyboard that flows assets → story beats → prompts → image/video
+  generation in columns.
+- Any repeatable pipeline you want to save as a template and re-run with
+  swapped inputs.
+
+For a single prompt-and-generate, the standard Image/Video tabs are simpler.
+Canvas earns its keep when steps connect.
+
+## 2. Node categories
+
+A node is one step in the pipeline with typed input sockets (left) and a
+typed output socket (right); curved edges carry data from one node's output
+into the next node's input. The board exposes these node categories:
+
+- **Prompt** — text starting points.
+- **Image generator** — produces or edits images.
+- **Video generator** — produces video.
+- **Voice / audio generator** — produces voice or audio.
+- **LLM assistant** — a wired-in language model you can task with prompt
+  drafting or shaping (e.g. a "cinematographer-prompter" role inside a
+  storyboard). It is a general LLM node you author, not a fixed named
+  assistant. (Separate from **Higgsie**, the in-Canvas chatbot — that's a
+  conversational helper, not part of the prompt-to-generator pipeline this
+  sub-skill covers.)
+- **Style / motion** — style-transfer and motion-control steps that branch a
+  look or movement across downstream nodes.
+- **Render output** — final deliverables.
+- **References** — **Upload** (drop in your own files) and **Assets** (pull
+  from your library).
+
+Connections are type-aware: an image output feeds an image input, a prompt
+feeds a generator, and so on. Fan-out (one node feeding many) is free-form;
+fan-in is more structured.
+
+## 3. Models that run inside Canvas
+
+All seven Higgsfield models run as nodes on the same board:
+
+| Model | What it's for | Detail |
+|---|---|---|
+| **Soul 2.0** | photoreal images, fashion/editorial, consistent characters | `../higgsfield-soul/SKILL.md` |
+| **Seedance 2.0** | flagship video, 1080p | `../higgsfield-seedance/SKILL.md` |
+| **Kling 3.0** | cinematic video, multi-shot continuity, native audio | `../higgsfield-motion/SKILL.md` |
+| **Wan 2.7** | high-action / dynamic motion | `../../model-guide.md` |
+| **Veo 3.1** | Google flagship video, native audio | `../../model-guide.md` |
+| **GPT Image 2.0** | 4K image gen, near-perfect text rendering | `../higgsfield-gpt-image-2/SKILL.md` |
+| **Nano Banana Pro** | precision image editing and placement | `../../image-models.md` |
+
+Mixing models on one board is the point — generate a character in Soul,
+edit a product in Nano Banana Pro, animate the result in Seedance, all in one
+graph.
+
+## 4. Named canvas patterns
+
+The in-product canvases ship as recognizable layouts. Use them as starting
+shapes:
+
+- **Simple Seedance 2.0** — one image + one prompt → one video. The minimal
+  pipeline.
+- **Extend Video** — a sequential chain where the last frame of one
+  generation feeds the next, for longer continuous sequences.
+- **Image Edit** — multi-reference compositing into one image generator node.
+- **StoryBoard With Elements** — a three-column flow (Assets → Story →
+  Prompts) feeding image/video generators, often with an LLM node shaping the
+  shot prompts.
+- **Long Video (fan-out)** — one reference set fanned into several shot
+  prompts that each generate independently, for multi-shot assembly.
+
+Any board can be saved and reused (see § 6).
+
+## 5. Cost model
+
+Building the graph is free. You pay only for the models you actually run:
+
+- Connecting nodes, editing prompts, staging a board, and arranging a
+  50-node storyboard cost **no credits**.
+- Credits are deducted only when a node **generates** an image or video, at
+  the same rate that model charges elsewhere on Higgsfield.
+
+So you can stage an entire campaign pipeline and pay only for the renders you
+choose to execute. (Per-node credit badges shown in the UI reflect the
+underlying model's rate; this sub-skill does not restate specific credit
+numbers — confirm live in-product.)
+
+## 6. Templates and assets-as-nodes
+
+- **Save any canvas as a reusable template** — for ad variants, character
+  sheets, storyboards, or any pipeline you run repeatedly. Duplicate it and
+  swap the inputs.
+- **Your assets drop in as nodes** — Soul ID characters, uploaded products,
+  brand references, and any of your previous generations can be added
+  directly to a board as reference nodes.
+
+## 7. Shared Canvas — live collaboration
+
+Canvas supports real-time team collaboration over a shared link, the way a
+team works in Figma:
+
+- **Multiple people on one board at once** — teammates can drop nodes, chain
+  pipelines, and generate simultaneously on the same canvas.
+- **Automatic versioning** — versions save as you work.
+- **Node-attached comments** — comments stay attached to the specific node
+  they reference, so feedback lands on the exact step it's about.
+
+For project-level collaboration beyond a single board — shared projects,
+real-time chat, voice/video calls, and pushing a generation into a team
+feed — see `../higgsfield-workspaces/SKILL.md` § Higgsfield Collab.
+
+## 8. Cross-surface context
+
+- Model-specific prompt craft lives in the sibling sub-skills (§ 3 table).
+- For programmatic ad-campaign orchestration (research → plan → generate →
+  publish → report) outside the visual board, see
+  `../higgsfield-content-factory/SKILL.md`.
+- For the static-image asset prep that often seeds a Canvas pipeline
+  (product reference sheets), see
+  `../higgsfield-gpt-image-2/reference-sheet-workflow.md`.
+
+## 9. Source acknowledgment
+
+Translated from Higgsfield's official Canvas guide
+(`higgsfield.ai/canvas-intro`) plus in-product Canvas screenshots and a
+canvas-workflow walkthrough. Node categories, the seven supported models, the
+named patterns, the cost model, and Shared Canvas collaboration are stated
+per those sources. This sub-skill deliberately does **not** assert hard node
+or fan-in limits, fixed per-node credit numbers, or plan-gating — none of
+those are documented in the source material. The in-Canvas chatbot **Higgsie**
+is a conversational helper, out of scope for a prompting tool and not
+documented here.

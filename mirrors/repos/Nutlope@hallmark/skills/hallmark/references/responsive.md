@@ -6,13 +6,13 @@ Mobile-first. Content-driven breakpoints. No desktop-only interactions.
 
 Every Hallmark output must render flawlessly at **320 px, 375 px, 414 px, and 768 px** CSS-pixel widths. Eyeball each viewport before marking the output complete:
 
-- No horizontal scroll (slop-test gate 36)
-- No clickable text wrapping to two lines (gate 59)
-- No image-bearing grid pushing the layout past viewport — use `minmax(0, 1fr)`, never bare `1fr`, on tracks containing images (gate 61)
-- Root carries `overflow-x: clip` on both `html` and `body` — never `hidden` (gate 62)
-- Display headers wrap inside long words via `overflow-wrap: anywhere; min-width: 0` (gate 63)
-- Section heads collapse to one column on mobile across every theme variant — per-theme overrides need a matching mobile rule (gate 64)
-- No scroll-jump on radio-tab clicks — radios in normal flow OR JS guard with `focus({ preventScroll: true })` (gate 65)
+- No horizontal scroll (slop-test gate 34)
+- No clickable text wrapping to two lines (gate 49)
+- No image-bearing grid pushing the layout past viewport — use `minmax(0, 1fr)`, never bare `1fr`, on tracks containing images (gate 50)
+- Root carries `overflow-x: clip` on both `html` and `body` — never `hidden` (gate 34)
+- Display headers wrap inside long words via `overflow-wrap: anywhere; min-width: 0` (gate 51)
+- Section heads collapse to one column on mobile across every theme variant — per-theme overrides need a matching mobile rule (gate 52)
+- No scroll-jump on radio-tab clicks — radios in normal flow OR JS guard with `focus({ preventScroll: true })` (gate 53)
 
 This is a hard floor, not a wish list. A page that fails any of these on any of those four widths is not done. The slop-test gates listed run automatically — keep this checklist near the screen while building.
 
@@ -87,7 +87,7 @@ Buttons, primary nav links, footer links, tab labels, breadcrumbs, and CTAs must
 
 **Never:** let a primary CTA or top-level nav link wrap. Long footer-link labels can wrap *only* in a footer column where wrapping is part of the column's rhythm — not in the inline footer link strip (Ft2).
 
-This is gate **59** in [`slop-test.md`](slop-test.md). Audit any output that ships interactive affordances and confirm none wrap at the breakpoints listed above.
+This is gate **49** in [`slop-test.md`](slop-test.md). Audit any output that ships interactive affordances and confirm none wrap at the breakpoints listed above.
 
 ## Viewport units
 

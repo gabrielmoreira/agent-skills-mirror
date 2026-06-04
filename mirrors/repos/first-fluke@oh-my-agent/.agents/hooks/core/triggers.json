@@ -2044,7 +2044,7 @@
     },
     "oma-mobile": {
       "keywords": {
-        "*": ["riverpod", "cupertino"],
+        "*": ["riverpod", "cupertino", "swiftui", "swift-openapi-generator"],
         "en": [
           "flutter screen",
           "react native view",
@@ -2055,7 +2055,11 @@
           "dart code",
           "riverpod state",
           "mobile app",
-          "android ios"
+          "android ios",
+          "swift native",
+          "swift ios",
+          "swiftui view",
+          "ios native app"
         ],
         "ko": [
           "플러터 화면",

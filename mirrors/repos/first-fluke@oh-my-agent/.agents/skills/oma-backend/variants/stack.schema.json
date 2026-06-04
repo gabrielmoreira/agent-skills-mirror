@@ -33,10 +33,10 @@
           "description": "Relative path whose existence in the workspace selects this variant (e.g., package.json)."
         },
         "syntax": {
-          "$ref": "#/definitions/commandCheck"
+          "$ref": "../../_shared/core/stack-verify.schema.json#/definitions/commandCheck"
         },
         "tests": {
-          "$ref": "#/definitions/commandCheck"
+          "$ref": "../../_shared/core/stack-verify.schema.json#/definitions/commandCheck"
         },
         "raw_sql": {
           "type": "object",
@@ -68,23 +68,7 @@
   "additionalProperties": true,
   "definitions": {
     "commandCheck": {
-      "type": "object",
-      "required": ["cmd"],
-      "properties": {
-        "cmd": {
-          "type": "string",
-          "description": "Shell command executed via child_process."
-        },
-        "pass_signal": {
-          "type": "string",
-          "description": "Optional substring expected in stdout on pass (e.g., 'All tests passed')."
-        },
-        "skip_if_missing": {
-          "type": "string",
-          "description": "Binary that, if absent from PATH, causes the check to skip (e.g., uv, cargo)."
-        }
-      },
-      "additionalProperties": false
+      "$ref": "../../_shared/core/stack-verify.schema.json#/definitions/commandCheck"
     }
   }
 }

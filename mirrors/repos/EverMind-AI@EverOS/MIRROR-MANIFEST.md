@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `EverMind-AI/EverOS` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `EverMind-AI/EverOS` — 26 default patterns, 2 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `EverMind-AI/EverOS` — 26 default patterns, 0 followed patterns, 3 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 3 |
+| Followed pats | 2 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,8 @@ Mirror of `EverMind-AI/EverOS` — 26 default patterns, 0 followed patterns, 3 f
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/architecture.md`
+- `docs/engineering.md`
 
 ## File Index
 
@@ -59,9 +60,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`methods/EverCore/examples/openclaw-plugin/SKILL.md`](methods/EverCore/examples/openclaw-plugin/SKILL.md) |
+| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`docs/how-memory-works.md`](docs/how-memory-works.md) |
+| 3 | ✓ | [`docs/overview.md`](docs/overview.md) |
+| 4 | ✓ | [`docs/storage_layout.md`](docs/storage_layout.md) |
+| 5 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 6 | → | [`docs/engineering.md`](docs/engineering.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rohitg00/pro-workflow` — 26 default patterns, 0 followed patterns, 70 file(s) materialized.
+Mirror of `rohitg00/pro-workflow` — 26 default patterns, 0 followed patterns, 71 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rohitg00/pro-workflow` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 70 |
+| Files         | 71 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -92,43 +92,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 31 | ✓ | [`skills/replay-learnings/SKILL.md`](skills/replay-learnings/SKILL.md) |
 | 32 | ✓ | [`skills/safe-mode/SKILL.md`](skills/safe-mode/SKILL.md) |
 | 33 | ✓ | [`skills/session-handoff/SKILL.md`](skills/session-handoff/SKILL.md) |
-| 34 | ✓ | [`skills/smart-commit/SKILL.md`](skills/smart-commit/SKILL.md) |
-| 35 | ✓ | [`skills/sprint-status/SKILL.md`](skills/sprint-status/SKILL.md) |
-| 36 | ✓ | [`skills/survey-generator/scripts/build-survey.js`](skills/survey-generator/scripts/build-survey.js) |
-| 37 | ✓ | [`skills/survey-generator/SKILL.md`](skills/survey-generator/SKILL.md) |
-| 38 | ✓ | [`skills/survey-generator/templates/research_bundle.template.json`](skills/survey-generator/templates/research_bundle.template.json) |
-| 39 | ✓ | [`skills/thoroughness-scoring/SKILL.md`](skills/thoroughness-scoring/SKILL.md) |
-| 40 | ✓ | [`skills/token-efficiency/SKILL.md`](skills/token-efficiency/SKILL.md) |
-| 41 | ✓ | [`skills/wiki-builder/agents/openai.yaml`](skills/wiki-builder/agents/openai.yaml) |
-| 42 | ✓ | [`skills/wiki-builder/references/wiki-flavors.md`](skills/wiki-builder/references/wiki-flavors.md) |
-| 43 | ✓ | [`skills/wiki-builder/scripts/init_wiki.sh`](skills/wiki-builder/scripts/init_wiki.sh) |
-| 44 | ✓ | [`skills/wiki-builder/scripts/wiki-cli.js`](skills/wiki-builder/scripts/wiki-cli.js) |
-| 45 | ✓ | [`skills/wiki-builder/SKILL.md`](skills/wiki-builder/SKILL.md) |
-| 46 | ✓ | [`skills/wiki-builder/templates/index.md`](skills/wiki-builder/templates/index.md) |
-| 47 | ✓ | [`skills/wiki-builder/templates/maintenance-log.md`](skills/wiki-builder/templates/maintenance-log.md) |
-| 48 | ✓ | [`skills/wiki-builder/templates/prompts/compile-concept-page.md`](skills/wiki-builder/templates/prompts/compile-concept-page.md) |
-| 49 | ✓ | [`skills/wiki-builder/templates/prompts/compile-index.md`](skills/wiki-builder/templates/prompts/compile-index.md) |
-| 50 | ✓ | [`skills/wiki-builder/templates/prompts/compile-source-page.md`](skills/wiki-builder/templates/prompts/compile-source-page.md) |
-| 51 | ✓ | [`skills/wiki-builder/templates/prompts/lint-wiki.md`](skills/wiki-builder/templates/prompts/lint-wiki.md) |
-| 52 | ✓ | [`skills/wiki-builder/templates/prompts/query-and-file.md`](skills/wiki-builder/templates/prompts/query-and-file.md) |
-| 53 | ✓ | [`skills/wiki-builder/templates/sources.md`](skills/wiki-builder/templates/sources.md) |
-| 54 | ✓ | [`skills/wiki-builder/templates/wiki.config.md`](skills/wiki-builder/templates/wiki.config.md) |
-| 55 | ✓ | [`skills/wiki-query/scripts/query.js`](skills/wiki-query/scripts/query.js) |
-| 56 | ✓ | [`skills/wiki-query/SKILL.md`](skills/wiki-query/SKILL.md) |
-| 57 | ✓ | [`skills/wiki-research-loop/scripts/research-loop.js`](skills/wiki-research-loop/scripts/research-loop.js) |
-| 58 | ✓ | [`skills/wiki-research-loop/scripts/source-fetchers/arxiv.js`](skills/wiki-research-loop/scripts/source-fetchers/arxiv.js) |
-| 59 | ✓ | [`skills/wiki-research-loop/scripts/source-fetchers/github.js`](skills/wiki-research-loop/scripts/source-fetchers/github.js) |
-| 60 | ✓ | [`skills/wiki-research-loop/scripts/source-fetchers/web.js`](skills/wiki-research-loop/scripts/source-fetchers/web.js) |
-| 61 | ✓ | [`skills/wiki-research-loop/SKILL.md`](skills/wiki-research-loop/SKILL.md) |
-| 62 | ✓ | [`skills/wiki-viewer/scripts/render.js`](skills/wiki-viewer/scripts/render.js) |
-| 63 | ✓ | [`skills/wiki-viewer/SKILL.md`](skills/wiki-viewer/SKILL.md) |
-| 64 | ✓ | [`skills/wrap-up/SKILL.md`](skills/wrap-up/SKILL.md) |
-| 65 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
-| 66 | ✓ | [`templates/split-claude-md/AGENTS.md`](templates/split-claude-md/AGENTS.md) |
-| 67 | ✓ | [`templates/split-claude-md/CLAUDE.md`](templates/split-claude-md/CLAUDE.md) |
-| 68 | ✓ | [`templates/split-claude-md/COMMANDS.md`](templates/split-claude-md/COMMANDS.md) |
-| 69 | ✓ | [`templates/split-claude-md/LEARNED.md`](templates/split-claude-md/LEARNED.md) |
-| 70 | ✓ | [`templates/split-claude-md/SOUL.md`](templates/split-claude-md/SOUL.md) |
+| 34 | ✓ | [`skills/skill-optimizer/SKILL.md`](skills/skill-optimizer/SKILL.md) |
+| 35 | ✓ | [`skills/smart-commit/SKILL.md`](skills/smart-commit/SKILL.md) |
+| 36 | ✓ | [`skills/sprint-status/SKILL.md`](skills/sprint-status/SKILL.md) |
+| 37 | ✓ | [`skills/survey-generator/scripts/build-survey.js`](skills/survey-generator/scripts/build-survey.js) |
+| 38 | ✓ | [`skills/survey-generator/SKILL.md`](skills/survey-generator/SKILL.md) |
+| 39 | ✓ | [`skills/survey-generator/templates/research_bundle.template.json`](skills/survey-generator/templates/research_bundle.template.json) |
+| 40 | ✓ | [`skills/thoroughness-scoring/SKILL.md`](skills/thoroughness-scoring/SKILL.md) |
+| 41 | ✓ | [`skills/token-efficiency/SKILL.md`](skills/token-efficiency/SKILL.md) |
+| 42 | ✓ | [`skills/wiki-builder/agents/openai.yaml`](skills/wiki-builder/agents/openai.yaml) |
+| 43 | ✓ | [`skills/wiki-builder/references/wiki-flavors.md`](skills/wiki-builder/references/wiki-flavors.md) |
+| 44 | ✓ | [`skills/wiki-builder/scripts/init_wiki.sh`](skills/wiki-builder/scripts/init_wiki.sh) |
+| 45 | ✓ | [`skills/wiki-builder/scripts/wiki-cli.js`](skills/wiki-builder/scripts/wiki-cli.js) |
+| 46 | ✓ | [`skills/wiki-builder/SKILL.md`](skills/wiki-builder/SKILL.md) |
+| 47 | ✓ | [`skills/wiki-builder/templates/index.md`](skills/wiki-builder/templates/index.md) |
+| 48 | ✓ | [`skills/wiki-builder/templates/maintenance-log.md`](skills/wiki-builder/templates/maintenance-log.md) |
+| 49 | ✓ | [`skills/wiki-builder/templates/prompts/compile-concept-page.md`](skills/wiki-builder/templates/prompts/compile-concept-page.md) |
+| 50 | ✓ | [`skills/wiki-builder/templates/prompts/compile-index.md`](skills/wiki-builder/templates/prompts/compile-index.md) |
+| 51 | ✓ | [`skills/wiki-builder/templates/prompts/compile-source-page.md`](skills/wiki-builder/templates/prompts/compile-source-page.md) |
+| 52 | ✓ | [`skills/wiki-builder/templates/prompts/lint-wiki.md`](skills/wiki-builder/templates/prompts/lint-wiki.md) |
+| 53 | ✓ | [`skills/wiki-builder/templates/prompts/query-and-file.md`](skills/wiki-builder/templates/prompts/query-and-file.md) |
+| 54 | ✓ | [`skills/wiki-builder/templates/sources.md`](skills/wiki-builder/templates/sources.md) |
+| 55 | ✓ | [`skills/wiki-builder/templates/wiki.config.md`](skills/wiki-builder/templates/wiki.config.md) |
+| 56 | ✓ | [`skills/wiki-query/scripts/query.js`](skills/wiki-query/scripts/query.js) |
+| 57 | ✓ | [`skills/wiki-query/SKILL.md`](skills/wiki-query/SKILL.md) |
+| 58 | ✓ | [`skills/wiki-research-loop/scripts/research-loop.js`](skills/wiki-research-loop/scripts/research-loop.js) |
+| 59 | ✓ | [`skills/wiki-research-loop/scripts/source-fetchers/arxiv.js`](skills/wiki-research-loop/scripts/source-fetchers/arxiv.js) |
+| 60 | ✓ | [`skills/wiki-research-loop/scripts/source-fetchers/github.js`](skills/wiki-research-loop/scripts/source-fetchers/github.js) |
+| 61 | ✓ | [`skills/wiki-research-loop/scripts/source-fetchers/web.js`](skills/wiki-research-loop/scripts/source-fetchers/web.js) |
+| 62 | ✓ | [`skills/wiki-research-loop/SKILL.md`](skills/wiki-research-loop/SKILL.md) |
+| 63 | ✓ | [`skills/wiki-viewer/scripts/render.js`](skills/wiki-viewer/scripts/render.js) |
+| 64 | ✓ | [`skills/wiki-viewer/SKILL.md`](skills/wiki-viewer/SKILL.md) |
+| 65 | ✓ | [`skills/wrap-up/SKILL.md`](skills/wrap-up/SKILL.md) |
+| 66 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
+| 67 | ✓ | [`templates/split-claude-md/AGENTS.md`](templates/split-claude-md/AGENTS.md) |
+| 68 | ✓ | [`templates/split-claude-md/CLAUDE.md`](templates/split-claude-md/CLAUDE.md) |
+| 69 | ✓ | [`templates/split-claude-md/COMMANDS.md`](templates/split-claude-md/COMMANDS.md) |
+| 70 | ✓ | [`templates/split-claude-md/LEARNED.md`](templates/split-claude-md/LEARNED.md) |
+| 71 | ✓ | [`templates/split-claude-md/SOUL.md`](templates/split-claude-md/SOUL.md) |
 
 ---
 

@@ -7,8 +7,8 @@ description: >
 user-invocable: true
 metadata:
   tags: [higgsfield, motion, presets, VFX, transformation, transitions, effects]
-  version: 3.0.0
-  updated: 2026-05-11
+  version: 3.1.0
+  updated: 2026-06-03
   parent: higgsfield
 ---
 
@@ -336,3 +336,30 @@ checklist:
 **Rule of thumb:** if you'd struggle to describe what's happening frame-by-frame
 in the reference clip, the model will too. Trim, re-shoot, or re-select the
 reference before burning credits on a generation that was always going to fail.
+
+### Binding modes, motion source, and the shortfall diagnostic
+
+A few controls and one diagnostic round out the Motion Control workflow:
+
+- **Motion source — uploaded clip OR motion library.** The motion can come
+  from your own uploaded reference clip *or* from Higgsfield's built-in motion
+  library. The library is the faster path when you want a known-good
+  performance (a dance, a sports beat) without sourcing your own footage.
+- **Matches Video vs Matches Image.** The transfer binds the result either to
+  the motion video or to the character image. *Matches Video* tracks the
+  reference clip's full-body movement and timing; *Matches Image* keeps the
+  result anchored to the character image (better for camera-driven shots where
+  the body stays mostly static). This is the same axis as the
+  Image-Orientation / Video-Orientation choice in step 7 of the workflow —
+  pick the one that matches whether the body or the camera is doing the moving.
+- **Element binding (Matches Video only).** Binding individual elements of the
+  performance is available only in *Matches Video* mode. If you need element-
+  level binding, you must be in Matches Video.
+- **Close-up face input + emotional transitions.** A close-up face input
+  carries emotional transitions well — reach for it when the beat is an acting
+  or reaction moment rather than full-body motion.
+- **The shortfall diagnostic.** If the **output is suddenly shorter than the
+  source clip**, the motion is usually **too fast or too complex** for a clean
+  continuous transfer. Slow the reference, simplify the action, or re-trim
+  before regenerating — a shorter-than-source output is the model telling you
+  the input exceeded what it can transfer cleanly.

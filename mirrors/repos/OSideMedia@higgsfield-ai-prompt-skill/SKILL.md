@@ -12,8 +12,8 @@ description: >
 user-invocable: true
 metadata:
   tags: [higgsfield, video, image, prompt, cinematic, AI, filmmaking, motion, camera]
-  version: 3.7.16
-  updated: 2026-05-18
+  version: 3.8.2
+  updated: 2026-06-03
   author: O-Side Media
   license: MIT
 ---
@@ -56,7 +56,7 @@ Higgsfield is a cinematic AI video and image generation platform built for filmm
 creators. Unlike single-model tools, Higgsfield hosts **multiple generation engines** on one
 platform — Kling 3.0/3.0 Omni/3.0 Motion Control, Sora 2, Google Veo 3.1/3.1 Lite, Wan 2.7/2.6/2.5,
 Seedance 2.0/Pro, Minimax Hailuo 2.3/02, Higgsfield DoP (Lite/Standard/Turbo) for video; Soul 2.0, Soul Cinema Preview,
-Soul Cast, Nano Banana Pro/2, Kling Image 3.0/Omni, Seedream 4.0, GPT Image 1.5,
+Soul Cast, Nano Banana Pro/2, Kling Image 3.0/Omni, Seedream 4.0, GPT Image 2.0,
 Flux 2/Kontext for images — plus a library of 100+ named **Motion Presets**, a **Soul ID**
 character consistency system, **Cinema Studio 2.5**, **Cinema Studio 3.0** (Business/Team plan), and **Cinema Studio 3.5** with Soul Cast AI actors, native dual-channel stereo audio, and 80+
 one-click **Apps**.
@@ -113,6 +113,7 @@ budget constraints, client work), **confirm before generating:**
 | User unsure which workspace/tool fits, or asks "what should I use for X" | `higgsfield-workspaces` |
 | Write or improve a prompt | `higgsfield-prompt` + relevant sub-skills |
 | Cinematic still image prompt (shot framing, angles) | `higgsfield-image-shots` |
+| GPT Image 2.0 / gpt-image-2 prompt, UI mockup, infographic, character/reference sheet, layout-dense image, or static-ad recreation | `higgsfield-gpt-image-2` |
 | Choose the right model | `higgsfield-models` |
 | Camera movement guidance (video) | `higgsfield-camera` |
 | Named motion preset (Explosion, Werewolf, etc.) | `higgsfield-motion` |
@@ -125,6 +126,7 @@ budget constraints, client work), **confirm before generating:**
 | Moodboard, style direction, Soul Hex color | `higgsfield-moodboard` |
 | Visual consistency across a project | `higgsfield-moodboard` |
 | Mixed Media presets (Noir, Sketch, Particles, etc.) | `higgsfield-mixed-media` |
+| Photodump style preset / social-feed photo-dump aesthetic | `photodump-presets.md` (root reference) |
 | Artistic style transformation, preset stacking | `higgsfield-mixed-media` |
 | Higgsfield Assist (GPT-5 copilot) | `higgsfield-assist` |
 | Credit optimization, plan selection, budget strategy | `higgsfield-assist` |
@@ -137,6 +139,8 @@ budget constraints, client work), **confirm before generating:**
 | User mentions Marketing Studio, DTC Ads, `ms_image`, or `marketing_studio_video` model | `higgsfield-marketing-studio` |
 | User wants UGC / Tutorial / Unboxing / Hyper Motion / Product Review / TV Spot / Wild Card / UGC Virtual Try On / Pro Virtual Try On ad video | `higgsfield-marketing-studio` |
 | User mentions hook+setting picklists, preset / custom / text-generated avatars in MS context, or 4–15s ad video constraints | `higgsfield-marketing-studio` |
+| User wants to run a full campaign pipeline — research → plan → generate → publish → report, "create a campaign", "100 UGC videos", content plan, batch ads, cost-savings report | `higgsfield-content-factory` |
+| User mentions Higgsfield Canvas, a node-based / node-graph workspace, an infinite board, chaining prompts→images→videos into a pipeline, Shared Canvas, or a ComfyUI-style node workflow | `higgsfield-canvas` |
 | Multi-shot workflow, chaining tools, full production pipeline | `higgsfield-pipeline` |
 | Short film, branded content, Popcorn → video → assembly | `higgsfield-pipeline` |
 | Vibe Motion, motion graphics, kinetic typography, brand animation | `higgsfield-vibe-motion` |
@@ -182,6 +186,7 @@ prompts where the user request is technique-shaped rather than genre-shaped:
 | Multi-character shot with cross-character relationships | `templates/seedance/multi-character-anchor.md` |
 | Single-character shot with position + pose + contact-point locks | `templates/seedance/single-character-position.md` |
 | Worked example: two-character anchoring end-to-end | `templates/seedance/worked-example-two-character.md` |
+| Anime / stylized-2D animation — layered formula + style block + character turnaround | `templates/seedance/anime-animation.md` |
 
 **Text-overlay templates** (`templates/text-overlays/`) — paste-ready text-rendering
 prompts for slogan / subtitle / speech-bubble overlays:
@@ -256,7 +261,7 @@ Quick summary — five layers, every prompt:
 |----------|-----------------|-------------|
 | `skills/shared/negative-constraints.md` | All generation artifacts + prevention phrases, by category | Check before every prompt — append relevant constraints |
 | `templates/` | 10 annotated genre templates with examples, models, annotations, variations | When user request matches a common genre — use as starting point |
-| `templates/seedance/` | 4 Seedance technique templates: top-down-map, multi-character-anchor, single-character-position, worked-example-two-character | When Seedance request is technique-shaped (spatial blocking, multi-character anchoring) |
+| `templates/seedance/` | 5 Seedance technique templates: top-down-map, multi-character-anchor, single-character-position, worked-example-two-character, anime-animation | When Seedance request is technique-shaped (spatial blocking, multi-character anchoring, anime/stylized-2D) |
 | `templates/text-overlays/` | 3 text-rendering templates: slogan, subtitle, speech-bubble | When user request includes on-screen text rendering |
 
 ---
@@ -268,6 +273,7 @@ Quick summary — five layers, every prompt:
 | `higgsfield-workspaces` | User is choosing a workspace / asking "what should I use for X" / hasn't picked a tool yet |
 | `higgsfield-prompt` | Any prompt writing or refinement request |
 | `higgsfield-image-shots` | Cinematic image prompts — shot framing, angles, composition |
+| `higgsfield-gpt-image-2` | GPT Image 2.0 prompts — three-format taxonomy (JSON / prose / meta-prompt), UI mockups, infographics, reference sheets, static-ad recreation |
 | `higgsfield-models` | "Which model should I use?" / model comparison |
 | `higgsfield-camera` | Camera movement questions (video) |
 | `higgsfield-motion` | Named preset requests (Explosion, Werewolf, VFX, etc.) |
@@ -281,6 +287,8 @@ Quick summary — five layers, every prompt:
 | `higgsfield-assist` | Higgsfield Assist copilot / credit optimization / plan selection |
 | `higgsfield-cinema` | Cinema Studio 2.5 + 3.0 + 3.5 / Soul Cast / color grading / optical physics / multi-shot / Elements / Smart mode / @ references / Style Settings / Camera Settings / Manual Style |
 | `higgsfield-marketing-studio` | Marketing Studio / DTC Ads / ad video / UGC video / Hyper Motion / TV Spot / Wild Card / Pro Virtual Try On / hook + setting picklists / 4–15s ad video / `marketing_studio_video` MCP / cross-surface workflow |
+| `higgsfield-content-factory` | Campaign pipeline (research → plan → generate → publish → report) / UGC-first 5-format mix / batch generation gate / Meta Ads scheduling / cost-savings report |
+| `higgsfield-canvas` | Node-based Canvas workspace / infinite board / chain prompts→images→videos / named canvas patterns / build-free generate-paid cost model / Shared Canvas live collaboration |
 | `higgsfield-pipeline` | Multi-shot workflow / tool chaining / full production pipeline |
 | `higgsfield-vibe-motion` | Vibe Motion / motion graphics / kinetic typography / brand animation |
 | `higgsfield-recall` | Pre-generation memory check / apply past failure fixes |

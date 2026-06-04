@@ -204,6 +204,23 @@ For tighter loops, you can rebuild a single workspace:
 - Changed `packages/server/src/*`, `packages/cli/src/*`, `packages/relay/src/*`, or `packages/highlight/src/*`: `npm run build:server`.
 - Changed app build dependencies: `npm run build:app-deps`.
 
+## ACP provider catalog versions
+
+The in-app ACP provider catalog pins package-runner entries (`npx`, `npm exec`,
+and `uvx`) to exact package versions. Run the drift checker regularly — and
+before releases — so catalog installs do not sit on stale agent versions:
+
+```bash
+npm run acp:version-drift        # report stale/non-exact package pins
+npm run acp:version-drift:check  # same, exits non-zero on drift
+npm run acp:version-drift:update # rewrite catalog pins to latest exact versions
+```
+
+The checker updates only package-runner catalog entries. Providers that use a
+preinstalled binary such as `opencode acp`, `cursor-agent acp`, or `goose acp`
+are reported as skipped because their versions are owned by the user's local
+install.
+
 ## CLI reference
 
 Use `npm run cli` to run the in-repo CLI from source (`npx tsx packages/cli/src/index.ts`). The globally installed `paseo` binary on macOS is a symlink into the installed Paseo desktop app, not this checkout — use it to drive the desktop's built-in daemon, but use `npm run cli` when you want to talk to the CLI you are editing.

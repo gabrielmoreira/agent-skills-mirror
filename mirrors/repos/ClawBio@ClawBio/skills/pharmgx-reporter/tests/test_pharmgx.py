@@ -29,6 +29,7 @@ from pharmgx_reporter import (
     generate_report,
     generate_html_report,
     enrich_with_clinpgx,
+    write_commands_sh,
     _evidence_cell_html,
     _evidence_level_html,
 )
@@ -367,6 +368,38 @@ def test_report_contains_disclaimer():
     results = lookup_drugs(p)
     report = generate_report(str(DEMO), "23andme", 31, pgx, p, results)
     assert "NOT a diagnostic device" in report
+
+
+def test_report_renders_standard_classification_token():
+    """Standard-classified drugs must render the literal STANDARD token, not 'OK'.
+
+    Regression for Tessl eval 019e83b8 scenario 1: the STANDARD bucket scored
+    0/8 because standard drugs displayed as 'OK', so no STANDARD token appeared
+    anywhere in the report (avoid/caution/indeterminate all rendered correctly).
+    """
+    _, _, pgx, _ = parse_file(str(DEMO))
+    p = _profiles()
+    results = lookup_drugs(p)
+    assert len(results["standard"]) > 0, "demo patient should have >=1 standard drug"
+    report = generate_report(str(DEMO), "23andme", 31, pgx, p, results)
+    assert "STANDARD" in report, "report must label standard-dosing drugs as STANDARD"
+
+
+# ── Reproducibility commands.sh ───────────────────────────────────────────────
+
+def test_write_commands_sh_creates_file(tmp_path):
+    """write_commands_sh must create reproducibility/commands.sh with the rerun command.
+
+    Regression for Tessl eval 019e83b8 scenario 6: reproducibility/commands.sh
+    scored 0/10 because the script never wrote the file the SKILL.md promises.
+    """
+    path = write_commands_sh(str(tmp_path), str(DEMO))
+    assert path.exists(), "commands.sh should be written to disk"
+    assert path.name == "commands.sh"
+    assert path.parent.name == "reproducibility"
+    content = path.read_text()
+    assert "pharmgx_reporter.py" in content
+    assert DEMO.name in content, "commands.sh should reference the input filename"
 
 
 # ── Data Integrity ─────────────────────────────────────────────────────────────

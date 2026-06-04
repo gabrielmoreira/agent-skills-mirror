@@ -1,0 +1,13 @@
+{
+  "// note": "Cursor MCP pointer for the PDS AI-INSTRUCT server. See .ai/mcp/README.md.",
+  "// install": "cd .ai/mcp/python && pip install -e .   (or use the Node twin)",
+  "mcpServers": {
+    "pds-ai-instruct": {
+      "command": "python",
+      "args": ["-m", "pds_mcp"],
+      "env": {
+        "PDS_WORKSPACE": "${workspaceFolder}"
+      }
+    }
+  }
+}

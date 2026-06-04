@@ -8,7 +8,7 @@ allowed-tools:
   - Write
   - Glob
   - Grep
-argument-hint: <path-to-document> [skill-name-slug]
+argument-hint: <path-to-document-folder-or-glob>... [skill-name-slug]
 ---
 
 # Book-to-Skill Converter
@@ -34,10 +34,10 @@ Books contain crystallized expertise: frameworks, principles, and techniques tha
 
 ## Modes of Operation
 
-Three paths available. Route based on what the user asks:
+Four paths available. Route based on what the user asks:
 
 ### 1. Full Conversion (Default)
-**Trigger:** User provides a supported document path without special instructions
+**Trigger:** User provides one or more document/directory/glob paths without special instructions
 **Action:** Run all steps below (Steps 0–9)
 **Output:** Complete skill with SKILL.md, chapters/, glossary, patterns, cheatsheet
 
@@ -50,6 +50,11 @@ Three paths available. Route based on what the user asks:
 **Trigger:** User has existing analysis notes or previously ran analyze-only
 **Action:** Skip Steps 0–3, use the provided analysis as input, run Steps 4–9
 **Output:** Skill files from the provided analysis
+
+### 4. Update / Fold-in (Existing Skill)
+**Trigger:** User provides one or more new source paths and indicates they want to update an existing skill (either by pointing to the existing skill folder, providing a skill slug that already exists in `SKILLS_HOME`, or explicitly requesting an update).
+**Action:** Run Step 0 (out-of-scope check), Step 1 (validate inputs), Step 1.5 (identify book type), and Step 2 (extract new files). Then skip to Step 5 (identify/detect existing skill path) and run the **Update / Fold-in Workflow** to merge the new content into the existing skill files.
+**Output:** Updated existing skill with new/revised chapter summaries and merged indexes/glossaries.
 
 ---
 
@@ -68,34 +73,31 @@ Generated skills should default to `~/.config/agents/skills/` for Amp unless the
 
 ## Step 0 — Out-of-scope check
 
-If the argument is NOT a path to a supported document file, stop and respond:
-> "book-to-skill requires a supported document path. Usage: `book-to-skill /path/to/book.pdf [skill-name]`, `book-to-skill /path/to/book.epub [skill-name]`, or another supported format such as `.docx`, `.md`, `.txt`, `.html`, `.rtf`, `.mobi`, or `.azw3`."
+If no arguments are provided, stop and respond:
+> "book-to-skill requires a supported document path, folder, or glob pattern. Usage: `book-to-skill <path-to-document-folder-or-glob>... [skill-name-slug]`"
 
-Throughout the workflow, treat the first argument as `BOOK_PATH` and the optional second argument as `SKILL_NAME`.
+Throughout the workflow:
+- Identify the input paths and the optional skill slug.
+- If the last argument is not a file, folder, or glob that exists or matches any files, and it looks like a skill slug (e.g. lowercase hyphens, alphanumeric), treat it as `SKILL_NAME`.
+- Treat all other arguments as the list of `INPUT_PATHS`.
+- If any input path is an existing skill directory (contains `SKILL.md` and a `chapters/` sub-folder), or if `SKILL_NAME` matches an existing skill slug in `SKILLS_HOME`, flag this run as an **Update/Fold-in** operation (Mode 4).
 
 ---
 
 ## Step 1 — Validate input
 
-```bash
-test -f "$BOOK_PATH" && echo "FILE_OK" || echo "FILE_NOT_FOUND: $BOOK_PATH"
-case "${BOOK_PATH##*.}" in
-  pdf|PDF|epub|EPUB|docx|DOCX|txt|TXT|md|MD|markdown|MARKDOWN|rst|RST|adoc|ADOC|asciidoc|ASCIIDOC|html|HTML|htm|HTM|rtf|RTF|mobi|MOBI|azw|AZW|azw3|AZW3) echo "FORMAT_OK" ;;
-  *) echo "FORMAT_UNKNOWN" ;;
-esac
-```
+Verify that there is at least one supported file, directory, or glob pattern among the `INPUT_PATHS`.
+For directories and globs, expand them to find matching supported files (`.pdf`, `.epub`, `.docx`, `.txt`, `.md`, `.markdown`, `.rst`, `.adoc`, `.html`, `.htm`, `.rtf`, `.mobi`, `.azw`, `.azw3`).
 
-Check the file extension (`.pdf`, `.epub`, `.docx`, `.txt`, `.md`, `.markdown`, `.rst`, `.adoc`, `.html`, `.htm`, `.rtf`, `.mobi`, `.azw`, `.azw3`) or magic bytes (`%PDF` or `PK` zip header for EPUB/DOCX).
-
-If the file is not found or the format is not supported, stop with a clear error message listing supported formats.
+If no supported files are found, stop with a clear error message.
 
 ---
 
-## Step 1.5 — Identify book type
+## Step 1.5 — Identify content type
 
 Before extracting, ask the user:
 
-> "What kind of content does this book have? This helps me choose the best extraction method.
+> "What kind of content do these sources have? This helps me choose the best extraction method.
 >
 > 1. **Technical** — has code blocks, tables, formulas, diagrams (e.g. programming books, academic papers, architecture guides)
 > 2. **Text-heavy** — mostly prose, few or no tables/code (e.g. management, productivity, narrative non-fiction)
@@ -107,16 +109,16 @@ Store the answer as `BOOK_TYPE`:
 - Option 3 → `BOOK_TYPE=text`
 
 **If `BOOK_TYPE=technical`**, inform the user before proceeding:
-> "📐 Technical mode selected — using Docling for structure-aware extraction (tables, code blocks, formulas preserved as markdown). This takes ~1.5s per page, so expect a few minutes for longer books. Starting now…"
+> "📐 Technical mode selected — using Docling for structure-aware extraction (tables, code blocks, formulas preserved as markdown). This takes ~1.5s per page, so expect a few minutes for longer sources. Starting now…"
 
 **If `BOOK_TYPE=text`**, inform:
-> "📄 Text mode selected — using the fastest suitable extractor for this file type. Plain text/Markdown/HTML are usually ready in seconds; PDFs use pdftotext when available."
+> "📄 Text mode selected — using the fastest suitable extractor for each file type. Plain text/Markdown/HTML are usually ready in seconds; PDFs use pdftotext when available."
 
 ---
 
-## Step 2 — Extract text from the source document
+## Step 2 — Extract text from the source documents
 
-Run the extraction script, passing the book type:
+Run the extraction script, passing the input paths:
 
 ```bash
 SCRIPT_PATH=""
@@ -142,29 +144,16 @@ if ! command -v "$PYTHON_BIN" >/dev/null 2>&1; then
   PYTHON_BIN="python"
 fi
 
-"$PYTHON_BIN" "$SCRIPT_PATH" "$BOOK_PATH" --mode <BOOK_TYPE> --install-missing ask
+"$PYTHON_BIN" "$SCRIPT_PATH" $INPUT_PATHS --mode <BOOK_TYPE> --install-missing ask
 ```
 
-Before extraction, the script checks optional Python packages needed for the detected format. If a better extractor is missing, it prompts the user with the available fallback, for example:
-
-> "DOCX extraction uses python-docx if installed, otherwise a stdlib ZIP/XML parser. Missing package(s) detected. Do you want to install? y=install, n=fallback"
-
-Use `--install-missing yes` to install missing Python packages without prompting, `--install-missing no` or `--no-install-missing` to always use fallbacks, or `BOOK_SKILL_INSTALL_MISSING=yes|no|ask` to set the behavior by environment variable. Non-interactive sessions default to fallback unless install mode is explicitly `yes`.
-
-- PDF `--mode technical` → uses Docling (layout-aware, preserves tables and code blocks as markdown)
-- PDF `--mode text` → uses pdftotext → PyPDF2 → pdfminer fallback chain (fast, plain text)
-- EPUB → uses ebooklib + BeautifulSoup4, then stdlib ZIP/HTML fallback
-- DOCX → uses python-docx, then stdlib ZIP/XML fallback
-- TXT/Markdown/reStructuredText/AsciiDoc → reads directly as text
-- HTML → uses BeautifulSoup4, then stdlib HTML fallback
-- RTF → uses striprtf, then a basic regex fallback
-- MOBI/AZW/AZW3 → uses Calibre `ebook-convert` when installed. Calibre is an external app, not a pip package, so the script reports how to install it if missing.
+Before extraction, the script checks optional Python packages needed for the detected format. If a better extractor is missing, it prompts the user with the available fallback. Non-interactive sessions default to fallback unless install mode is explicitly `yes`.
 
 This creates:
-- `<tempdir>/book_skill_work/full_text.txt` — full extracted text
-- `<tempdir>/book_skill_work/metadata.json` — title, estimated pages, token count, size, extraction_mode
+- `<tempdir>/book_skill_work/full_text.txt` — combined extracted text of all sources with clear visually demarcated boundaries.
+- `<tempdir>/book_skill_work/metadata.json` — overall combined size, words, pages, token counts, and a detailed list of individual processed `sources`.
 
-Read the `output_text` path in `<tempdir>/book_skill_work/metadata.json` to understand what was extracted. The extractor uses the platform temp directory by default and supports `BOOK_SKILL_WORKDIR` if an explicit work directory is needed.
+Read `<tempdir>/book_skill_work/metadata.json` to inspect the results.
 
 ---
 
@@ -173,12 +162,13 @@ Read the `output_text` path in `<tempdir>/book_skill_work/metadata.json` to unde
 Read `<tempdir>/book_skill_work/metadata.json` and present the user with an estimate **before doing any generation**:
 
 ```
-📖 Source detected: <filename> (<format>)
-📄 Pages/Spine items/Sections: ~<N> | Words: ~<N> | Source tokens: ~<N>K
+📖 Sources detected: <total_sources> source(s)
+<list each source filename and format from the sources metadata list>
+📄 Combined Pages/Sections: ~<N> | Words: ~<N> | Total tokens: ~<N>K
 
-💰 Estimated token cost (Full Conversion):
-   Input  (book reading + prompts): ~<N>K tokens
-   Output (skill files generated):  ~<N>K tokens
+💰 Estimated token cost (Full Conversion / Update):
+   Input  (reading + prompts): ~<N>K tokens
+   Output (skill files generated/updated):  ~<N>K tokens
    Total:                           ~<N>K tokens
 
    Reference prices (as of 2025):
@@ -187,10 +177,10 @@ Read `<tempdir>/book_skill_work/metadata.json` and present the user with an esti
 
    ⏱  Estimated time: ~<N> minutes
 
-📁 Files to be generated:
-   SKILL.md + <N> chapter files + glossary + patterns + cheatsheet
+📁 Files to be generated/updated:
+   SKILL.md + chapter files + glossary + patterns + cheatsheet
 
-➡  Proceed with Full Conversion? (or type "analyze only" to preview first)
+➡  Proceed with Full Conversion / Update? (or type "analyze only" to preview first)
 ```
 
 **How to estimate:**
@@ -295,8 +285,13 @@ Choose the destination skill root:
 - **Amp legacy**: `~/.config/amp/skills` if that is the user's existing global skill location
 - **Claude Code**: `~/.claude/skills` if the user explicitly asks for Claude Code output
 
-Set `SKILLS_HOME` to the selected root and check that `$SKILLS_HOME/<skill_name>/` does NOT already exist.
-If it does, append `-2` or ask the user before overwriting.
+Set `SKILLS_HOME` to the selected root and check if `$SKILLS_HOME/<skill_name>/` already exists.
+If it does, prompt the user to choose:
+1. **Update / Fold-in** (Mode 4) — integrate new files/content into the existing skill components.
+2. **Overwrite** — delete and regenerate the skill from scratch.
+3. **Rename** — append `-2` or use a different custom slug.
+
+If the user selects **Update / Fold-in**, proceed immediately to the **Update / Fold-in Workflow** section after Step 2.5 (skipping Steps 3, 4, 6, 7, 8, 9).
 
 ---
 
@@ -506,6 +501,55 @@ Usage:
   Ask <skill_name> about <topic>        → find and explain a topic
   Ask <skill_name> for ch<N>            → dive into a specific chapter
 ```
+
+---
+
+## Update / Fold-in Workflow
+
+When performing an Update/Fold-in operation on an existing skill at `$SKILLS_HOME/<skill_name>/`:
+
+### 1. Read Existing Skill Structure
+Read and parse the existing skill's files:
+- Read `$SKILLS_HOME/<skill_name>/SKILL.md` to parse the existing **Chapter Index**, **Topic Index**, metadata (author, total chapters), and **Core Frameworks**.
+- List all files in `$SKILLS_HOME/<skill_name>/chapters/` to find the highest chapter number (e.g. `ch12`).
+- Read `$SKILLS_HOME/<skill_name>/glossary.md`, `$SKILLS_HOME/<skill_name>/patterns.md`, and `$SKILLS_HOME/<skill_name>/cheatsheet.md` to see what terms and frameworks are already indexed.
+
+### 2. Match Content & Identify Revisions vs. Additions
+Analyze the new extracted text in `<tempdir>/book_skill_work/full_text.txt` to identify if the new content represents:
+- **Updates/Revisions to existing chapters**: If a section of the new content directly updates or expands an existing chapter's topic, read the existing chapter file, merge the new details into it, and rewrite the file.
+- **New additions**: If the content introduces new chapters, papers, or separate sections, create **new chapter summary files** under `chapters/`. Start numbering these files after the highest existing chapter number (e.g. if the existing chapters stop at `ch12`, create `ch13-*.md`, `ch14-*.md`, etc.).
+
+### 3. Generate or Update Chapter Summary Files
+For each new or revised chapter:
+- Read the corresponding section of the extracted new text.
+- Follow the formatting guidelines in **Step 7** to build the summary.
+- Write/update the file in `$SKILLS_HOME/<skill_name>/chapters/`.
+
+### 4. Merge Supporting Files
+- **Merge glossary.md**:
+  - Read the existing `$SKILLS_HOME/<skill_name>/glossary.md`.
+  - Extract all new terms and definitions from the new content (Step 8 glossary guidelines).
+  - Combine and alphabetize the list of existing and new terms.
+  - If a term already exists, append the new chapter/source references to it (e.g. `**Term** — definition (Ch 4, Ch 13)`).
+  - Rewrite `$SKILLS_HOME/<skill_name>/glossary.md` with the fully merged, alphabetized list.
+- **Merge patterns.md**:
+  - Read existing `$SKILLS_HOME/<skill_name>/patterns.md`.
+  - Extract any new techniques, algorithms, or patterns from the new content.
+  - Append the new patterns, ensuring consistent formatting, and keeping the total length concise (under 2,500 tokens).
+- **Merge cheatsheet.md**:
+  - Read existing `$SKILLS_HOME/<skill_name>/cheatsheet.md`.
+  - Extract new comparison rules, decision tables, or parameter guides.
+  - Integrate them cleanly into the cheatsheet structure.
+
+### 5. Re-generate the Master SKILL.md
+Update the master skill file `$SKILLS_HOME/<skill_name>/SKILL.md`:
+- **Metadata**: Increment the chapter count, update the estimated page count, and add the new source names if appropriate. Update the `Generated` date to the current date.
+- **Core Frameworks**: Fold in the most high-impact mental models or principles from the new content (ensuring the overall file remains under 4,000 tokens).
+- **Chapter Index**: Append the new chapters to the index table, linking to the newly created files.
+- **Topic Index**: Merge the new topics alphabetically. If an existing topic is also covered in the new chapters, append the new chapter links to its line (e.g. `- **Topic** → ch05, ch13`).
+
+### 6. Cleanup and Proceed to Step 10
+Once the files are successfully written and merged, skip to **Step 10** to perform cleanup and print a custom update report summarizing the newly added chapters, merged glossary terms, and updated indices.
 
 ---
 

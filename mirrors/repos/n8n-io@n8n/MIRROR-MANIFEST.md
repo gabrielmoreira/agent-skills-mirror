@@ -59,7 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/plugins/n8n/skills/community-pr-review/SKILL.md`](.claude/plugins/n8n/skills/community-pr-review/SKILL.md) |
+| 1 | ✓ | [`.claude/plugins/n8n/skills/community-pr-readiness-check/SKILL.md`](.claude/plugins/n8n/skills/community-pr-readiness-check/SKILL.md) |
 | 2 | ✓ | [`.claude/plugins/n8n/skills/content-design/SKILL.md`](.claude/plugins/n8n/skills/content-design/SKILL.md) |
 | 3 | ✓ | [`.claude/plugins/n8n/skills/conventions/SKILL.md`](.claude/plugins/n8n/skills/conventions/SKILL.md) |
 | 4 | ✓ | [`.claude/plugins/n8n/skills/create-community-node-lint-rule/reference.md`](.claude/plugins/n8n/skills/create-community-node-lint-rule/reference.md) |

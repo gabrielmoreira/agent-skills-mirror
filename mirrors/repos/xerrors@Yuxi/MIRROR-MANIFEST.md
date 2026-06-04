@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xerrors/Yuxi` — 26 default patterns, 7 followed patterns, 12 file(s) materialized.
+Mirror of `xerrors/Yuxi` — 26 default patterns, 7 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `xerrors/Yuxi` — 26 default patterns, 7 followed patterns, 12 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 7 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,16 +67,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`backend/package/yuxi/agents/skills/buildin/deep-reporter/SKILL.md`](backend/package/yuxi/agents/skills/buildin/deep-reporter/SKILL.md) |
-| 3 | ✓ | [`backend/package/yuxi/agents/skills/buildin/reporter/SKILL.md`](backend/package/yuxi/agents/skills/buildin/reporter/SKILL.md) |
-| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 5 | ✓ | [`docs/develop-guides/changelog.md`](docs/develop-guides/changelog.md) |
-| 6 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 7 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 8 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 9 | → | [`docs/develop-guides/contributing.md`](docs/develop-guides/contributing.md) |
-| 10 | → | [`docs/develop-guides/design.md`](docs/develop-guides/design.md) |
-| 11 | → | [`docs/develop-guides/roadmap.md`](docs/develop-guides/roadmap.md) |
-| 12 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
+| 3 | ✓ | [`backend/package/yuxi/agents/skills/buildin/image-gen/SKILL.md`](backend/package/yuxi/agents/skills/buildin/image-gen/SKILL.md) |
+| 4 | ✓ | [`backend/package/yuxi/agents/skills/buildin/reporter/SKILL.md`](backend/package/yuxi/agents/skills/buildin/reporter/SKILL.md) |
+| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 6 | ✓ | [`docs/develop-guides/changelog.md`](docs/develop-guides/changelog.md) |
+| 7 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 8 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 10 | → | [`docs/develop-guides/contributing.md`](docs/develop-guides/contributing.md) |
+| 11 | → | [`docs/develop-guides/design.md`](docs/develop-guides/design.md) |
+| 12 | → | [`docs/develop-guides/roadmap.md`](docs/develop-guides/roadmap.md) |
+| 13 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
 
 ---
 

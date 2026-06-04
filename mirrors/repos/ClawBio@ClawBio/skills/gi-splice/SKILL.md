@@ -127,7 +127,7 @@ python clawbio.py run gi-splice --demo
 python clawbio.py run gi-splice --demo
 ```
 
-Bundled fixture is HBB (β-globin) gene body, reverse-complemented to gene-sense. HBB has 3 exons / 2 introns, so expect ~4-6 called splice sites (2 donor + 2 acceptor pairs ± some lower-confidence alternates).
+Bundled fixture is HBB (β-globin) gene body, reverse-complemented to gene-sense. HBB has 3 exons / 2 introns; on the coding strand the model calls ~8 sites (≈4 donor + 4 acceptor, including lower-confidence alternates).
 
 ## Authentication
 
@@ -135,7 +135,7 @@ Same as other gi-* skills: `GI_API_KEY` env overrides the bundled hackathon key.
 
 ## Gotchas
 
-- **Submit gene-sense, not genomic-sense.** Minus-strand genes need RC'd input. The bundled HBB fixture demonstrates this — its FASTA header notes `RC(gene-sense)`.
+- **Submit gene-sense, not genomic-sense.** Minus-strand genes need RC'd input. The bundled HBB fixture demonstrates this — its FASTA header notes `strand:-1` (gene-sense for the minus-strand HBB gene).
 - **Full gene body, not just an exon.** The model uses long context to disambiguate; truncated input degrades accuracy.
 - **Donor/acceptor pairs.** The model emits independent site calls. Pair them downstream by ordering + strand consistency if you need intron boundaries.
 - **Hackathon key is shared** — `GI_API_KEY` for serious work.

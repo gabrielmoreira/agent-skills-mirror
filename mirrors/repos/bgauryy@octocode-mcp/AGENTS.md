@@ -51,7 +51,7 @@ All links in documentation files (`docs/`, package READMEs) **MUST** use absolut
 ```
 octocode-mcp/
 ├── packages/
-│   ├── octocode-mcp/             # MCP server: GitHub/GitLab/Bitbucket, local tools, LSP
+│   ├── octocode-mcp/             # MCP server: GitHub, local tools, LSP
 │   ├── octocode-cli/             # CLI installer, tool runner, skills marketplace
 │   ├── octocode-vscode/          # VS Code extension (OAuth, multi-editor MCP install)
 │   ├── octocode-shared/          # Shared utilities (credentials, platform, session)
@@ -86,10 +86,10 @@ Canonical command list lives in the [Development Guide](https://github.com/bgaur
 - **Troubleshooting**: [docs/configuration/TROUBLESHOOTING.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/configuration/TROUBLESHOOTING.md)
 
 ### Octocode MCP
-- **GitHub/GitLab/Bitbucket Tools**: [docs/dev/reference/GITHUB_GITLAB_TOOLS_REFERENCE.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/dev/reference/GITHUB_GITLAB_TOOLS_REFERENCE.md)
+- **GitHub Tools**: [docs/dev/reference/GITHUB_TOOLS_REFERENCE.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/dev/reference/GITHUB_TOOLS_REFERENCE.md)
 - **Local + LSP Tools**: [docs/dev/reference/LOCAL_TOOLS_REFERENCE.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/dev/reference/LOCAL_TOOLS_REFERENCE.md)
 - **Clone & Local Workflow**: [docs/dev/workflows/CLONE_AND_LOCAL_TOOLS_WORKFLOW.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/dev/workflows/CLONE_AND_LOCAL_TOOLS_WORKFLOW.md)
-- **Authentication**: [docs/configuration/providers/AUTHENTICATION_SETUP.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/configuration/providers/AUTHENTICATION_SETUP.md) · [GitHub](https://github.com/bgauryy/octocode-mcp/blob/main/docs/configuration/providers/GITHUB_SETUP_GUIDE.md) · [GitLab](https://github.com/bgauryy/octocode-mcp/blob/main/docs/configuration/providers/GITLAB_SETUP_GUIDE.md) · [Bitbucket](https://github.com/bgauryy/octocode-mcp/blob/main/docs/configuration/providers/BITBUCKET_SETUP_GUIDE.md)
+- **Authentication**: [docs/configuration/providers/AUTHENTICATION_SETUP.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/configuration/providers/AUTHENTICATION_SETUP.md) · [GitHub](https://github.com/bgauryy/octocode-mcp/blob/main/docs/configuration/providers/GITHUB_SETUP_GUIDE.md)
 - **Using with Pi**: [docs/configuration/clients/PI_SETUP_GUIDE.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/configuration/clients/PI_SETUP_GUIDE.md)
 
 ### Octocode CLI
@@ -110,7 +110,7 @@ Canonical command list lives in the [Development Guide](https://github.com/bgaur
 
 # Package: `octocode-mcp`
 
-MCP server for GitHub/GitLab/Bitbucket research, local code exploration, and LSP semantic navigation.
+MCP server for GitHub research, local code exploration, and LSP semantic navigation.
 
 Run commands from `packages/octocode-mcp/`.
 
@@ -122,7 +122,7 @@ Run commands from `packages/octocode-mcp/`.
 | Build (dev) | `yarn build:dev` |
 | Build (watch) | `yarn build:watch` |
 | Clean | `yarn clean` |
-| Test | `yarn test` (coverage) · `yarn test:full` · `yarn test:quiet` · `yarn test:watch` · `yarn test:ui` |
+| Test | `yarn test` (coverage) · `yarn test:quiet` · `yarn test:watch` · `yarn test:ui` |
 | Typecheck | `yarn typecheck` |
 | Lint | `yarn lint` / `yarn lint:fix` |
 | Format | `yarn format` / `yarn format:check` |
@@ -139,15 +139,13 @@ src/
 ├── tools/        # 14 tool modules, each: execution.ts, scheme.ts, types.ts, register.ts, index.ts
 │                 # toolsManager.ts, toolRegistry.ts, toolConfig.ts, toolMetadata.ts, toolNames.ts
 ├── github/       # Octokit client, code/repo/PR/file search, query builders, errors
-├── gitlab/       # GitLab API + provider implementation
-├── providers/    # Multi-provider abstraction (github/gitlab/bitbucket) via factory
+├── providers/    # Provider abstraction (github) via factory
 ├── lsp/          # LSP client pool, server lifecycle, symbol resolution
 ├── security/     # withSecurityValidation, contentSanitizer, pathValidator, commandValidator,
 │                 # 200+ secret regexes (ai-providers, cloud-infrastructure, auth-crypto, etc.)
 ├── commands/     # Builders: Ripgrep / Find / Ls (whitelist only)
 ├── utils/        # core/, credentials/, environment/, exec/, file/, http/, minifier/,
 │                 # package/, pagination/, parsers/, response/
-└── prompts/      # MCP prompt registration
 ```
 
 ```
@@ -160,12 +158,12 @@ tests/  ←  index.*, serverConfig.*, session.*, errorCodes,
 
 | Tool | Type | Local | Description |
 |------|------|-------|-------------|
-| `githubSearchCode` | search | ❌ | Search code across GitHub/GitLab |
+| `githubSearchCode` | search | ❌ | Search code across GitHub |
 | `githubGetFileContent` | content | ❌ | Fetch file or directory (`type:"directory"` needs `ENABLE_CLONE`) |
 | `githubViewRepoStructure` | content | ❌ | Browse repo tree |
 | `githubCloneRepo` | content | ✅ | Clone GitHub repos/subtrees for local + LSP analysis (`ENABLE_CLONE`) |
 | `githubSearchRepositories` | search | ❌ | Search repositories |
-| `githubSearchPullRequests` | history | ❌ | Search PRs/MRs and view diffs |
+| `githubSearchPullRequests` | history | ❌ | Search PRs and view diffs |
 | `packageSearch` | search | ❌ | NPM/PyPI package + repo URL lookup |
 | `localSearchCode` | search | ✅ | ripgrep search |
 | `localViewStructure` | content | ✅ | Browse local directories |
@@ -201,17 +199,18 @@ Tools return `structuredContent` validated against `outputSchema`. Handles track
 |----------|-------------|---------|
 | `GITHUB_TOKEN` / `OCTOCODE_TOKEN` / `GH_TOKEN` | GitHub auth (priority: OCTOCODE > GH > GITHUB) | – |
 | `GITHUB_API_URL` | GitHub API base URL | `https://api.github.com` |
-| `GITLAB_TOKEN` / `GL_TOKEN` | GitLab auth | – |
-| `GITLAB_HOST` | GitLab instance URL | `https://gitlab.com` |
 | `ENABLE_LOCAL` | Enable local FS tools | `true` |
 | `ENABLE_CLONE` | Enable `githubCloneRepo` + directory mode (requires `ENABLE_LOCAL`) | `false` |
+| `WORKSPACE_ROOT` | Root directory for local tool operations | `process.cwd()` |
+| `ALLOWED_PATHS` | Restrict local tools to these paths (comma-separated; empty = all) | `[]` |
 | `OCTOCODE_CACHE_TTL_MS` | Clone cache TTL (ms) | `86400000` |
-| `DISABLE_PROMPTS` | Disable prompts/slash commands | `false` |
 | `LOG` | Enable session logging | `true` |
 | `REQUEST_TIMEOUT` | API timeout (ms) | `30000` |
 | `MAX_RETRIES` | Max retry attempts | `3` |
 | `TOOLS_TO_RUN` / `ENABLE_TOOLS` / `DISABLE_TOOLS` | Comma-separated tool filters | – |
+| `OCTOCODE_LSP_CONFIG` | Custom LSP config file path | auto-detect |
 | `OCTOCODE_OUTPUT_FORMAT` | `yaml` (default) or `json` | `yaml` |
+| `OCTOCODE_OUTPUT_DEFAULT_CHAR_LENGTH` | Default output page budget (chars) | `8000` |
 
 ### Key files
 
@@ -225,7 +224,7 @@ Tools return `structuredContent` validated against `outputSchema`. Handles track
 | Security wrapper | `src/security/withSecurityValidation.ts` |
 | Secret detection | `src/security/contentSanitizer.ts`, `src/security/regexes/` |
 | Path validation | `src/security/pathValidator.ts` |
-| GitHub / GitLab clients | `src/github/client.ts`, `src/gitlab/client.ts` |
+| GitHub client | `src/github/client.ts` |
 | Provider factory | `src/providers/factory.ts` |
 | LSP client + config | `src/lsp/client.ts`, `src/lsp/config.ts`, `src/lsp/manager.ts` |
 | Bulk operations | `src/utils/response/bulk.ts` |
@@ -425,7 +424,7 @@ In-memory cache ↔ Deferred writes → ~/.octocode/session.json
 Flush triggers: timer, explicit flush, SIGINT/SIGTERM, beforeExit
 ```
 
-Tracks: `sessionId`, `createdAt`, `lastActiveAt`, `stats.{toolCalls, promptCalls, errors, rateLimits}`.
+Tracks: `sessionId`, `createdAt`, `lastActiveAt`, `stats.{toolCalls, errors, rateLimits}`.
 
 ### Package guidelines
 

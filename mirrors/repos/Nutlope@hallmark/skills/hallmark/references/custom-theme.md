@@ -1,13 +1,17 @@
 # Custom theme — protocol
 
-Loaded only when the user has opted into the **custom** theme route in Step 1 of the Design flow. Custom produces a **complete OKLCH palette + free-font pairing tuned to this brief** — a one-off theme written inline into the page's `:root`, not a permanent catalog entry.
+Loaded only when the user has opted into the **custom** theme route in Step 1 of the Design flow. Custom is **made-to-measure for one brief**, written inline into the page's `:root`, never a permanent catalog entry. It spans a **spectrum of depth**: at its lightest, a complete OKLCH palette + free-font pairing tuned to the brief while keeping Hallmark's structures (the *combination* is per-brief); at its fullest — **bespoke** — the page's *structure and composition* are designed from first principles too, bound to no catalog theme, genre, or macrostructure. One route, chosen depth.
 
-**The freedom is the combination, not the rules.** Every constraint in [`color.md`](color.md), [`typography.md`](typography.md), and [`anti-patterns.md`](anti-patterns.md) still applies. The 65 slop-test gates fire unchanged. The Step 5 preview block surfaces the palette + pairing in plain text *before* any code is emitted, so the user can redirect.
+**The freedom is the combination — and, at the bespoke depth, the whole structure — but never the floor.** Every constraint in [`color.md`](color.md), [`typography.md`](typography.md), and [`anti-patterns.md`](anti-patterns.md) still applies, and **every slop-test gate fires unchanged at every depth** — the gates are the floor that never moves. The Step 5 preview surfaces the palette + pairing (plus the bespoke structure, when there is one) in plain text *before* any code is emitted, so the user can redirect.
 
-## Two words, plain English
+## Two routes, plain English
 
-- **catalog** — the named-theme catalogue. Hallmark's 22 themes (Specimen, Atelier, Brutal, Salon, Newsprint, Linen, Studio, Manifesto, Terminal, Midnight, Almanac, Garden, Quiet, Riso, Sport, Bloom, Coral, Violet, Aurora, Halo, Plume, Editorial). Each one is a fixed combination of paper-band, display-style, and accent-hue. The rotation rule cycles through them so two consecutive runs don't read alike. **This is the default.** Most briefs use it.
-- **custom** — made-to-measure. A one-off palette + font pairing constructed specifically for one brief. The skill builds the OKLCH values, picks fonts, and stamps the page — but does **not** extend the catalog with a new theme. The rules behind the catalog (paper L bands, accent chroma caps, font ban list, slop-test gates) all still apply; only the *combination* is per-brief.
+- **catalog** — the named-theme catalogue. Hallmark's 20 themes (Specimen, Midnight, Brutal, Garden, Atelier, Newsprint, Terminal, Manifesto, Almanac, Sport, Studio, Riso, Bloom, Coral, Cobalt, Aurora, Editorial, Carnival, Lumen, Hum). Each one is a fixed combination of paper-band, display-style, and accent-hue. The rotation rule cycles through them so two consecutive runs don't read alike. **This is the default.** Most briefs use it.
+- **custom** — made-to-measure, at the depth the brief needs:
+  - **Tuned** — a one-off OKLCH palette + font pairing built for one brief, *keeping* Hallmark's structures, archetypes, and macrostructures. The rules (paper L bands, accent chroma caps, font ban list, all slop-test gates) still apply; only the *combination* is per-brief.
+  - **Bespoke** — when the brief's *structure itself* is the ask, custom goes further and designs the whole page from first principles — its own palette, type, **and** composition — dropping the catalog's structures too, floored only by the universal slop-test gates. Same route, deeper end. See **§ Bespoke depth** below.
+
+  Either way, custom does **not** extend the catalog with a permanent theme.
 
 ## When to surface this fork — Step 1 trigger signals
 
@@ -15,12 +19,13 @@ Hallmark must **not** offer catalog-vs-custom on every prompt. That's friction, 
 
 1. **Explicit ask** — the user types `custom`, "custom theme", "tailored to our brand", "make it ours", "something unique", "play around with the colors and fonts", "I want my own palette".
 2. **Named brand colour** — the user gives a specific anchor colour as a hex / OKLCH / brand name. Example: "use our terracotta", "the brand red is hex #c0392b", "anchor on sea-blue".
-3. **Multi-attribute aesthetic the catalog can't carry** — three or more vibe words pointing at a specific, off-catalog feel. Examples: "moss, lichen, soft pink, herbal" / "sun-drenched, market-day, carbon-black" / "late-night, neon, brutalist deli". Compare against the 22 catalog themes; if no single catalog theme is within one axis-step of the vibe, fire the fork. **One adjective ("warm", "technical", "playful") is not a signal — that's a tone, the catalog already carries it.**
+3. **Multi-attribute aesthetic the catalog can't carry** — three or more vibe words pointing at a specific, off-catalog feel. Examples: "moss, lichen, soft pink, herbal" / "sun-drenched, market-day, carbon-black" / "late-night, neon, brutalist deli". Compare against the 20 catalog themes; if no single catalog theme is within one axis-step of the vibe, fire the fork. **One adjective ("warm", "technical", "playful") is not a signal — that's a tone, the catalog already carries it.**
 4. **Brand-mood reference attached** — the user attaches a colour swatch, a moodboard, a Pantone chip. (If they attach a *page* screenshot, route to `study` instead; custom is for brand colour / mood, study is for design DNA.)
+5. **A singular structural vision** (→ the *bespoke* depth) — the brief names a *structure or composition*, not just a palette/mood: "no theme / from scratch / fully bespoke / ignore the catalog / art-direct it", or a one-of-a-kind page-shape the macrostructure catalog has no entry for (a scroll-assembling poem, a ticket-shaped page, an interactive periodic table). Routes to custom's **bespoke depth** (§ Bespoke depth below). A palette or mood that's merely off-catalog is *tuned* custom, not bespoke.
 
 If any signal fires, ask one short follow-up before picking a theme:
 
-> *"This brief reads like a custom palette would fit better than the 22 named themes. Want me to construct a custom OKLCH palette + free-font pairing tuned to <one-line summary of the vibe>, or stay on the catalog for variety + speed?"*
+> *"This brief reads like a custom palette would fit better than the 20 named themes. Want me to construct a custom OKLCH palette + free-font pairing tuned to <one-line summary of the vibe>, or stay on the catalog for variety + speed?"*
 
 Wait for the user to answer. If they say custom (or yes / go) → continue this protocol from § A. If they say catalog (or no / stay catalog) → drop the fork and proceed with the catalog route. **Default to catalog** — silence routes to catalog, not custom.
 
@@ -39,6 +44,39 @@ Once the user names `custom` as the theme route, ask **one** thing in **one** me
 **Do not ask anything else.** Audience / use / tone (Step 1) plus the brand vibe is already enough signal. The model has no business asking the user to nominate paper lightness or font weights — that's the model's job.
 
 If the user gives just two or three words ("sun-drenched"), proceed; the recipe below extracts enough. If the user gives a paragraph, accept it but compress to 4–8 words for the stamp.
+
+---
+
+## § Bespoke depth — custom that designs the whole page
+
+Most custom runs are *tuned* (a palette + pairing on Hallmark's existing structures). **Bespoke** is the deep end, fired by signal 5: the brief's *structure itself* is the ask and no catalog shape fits. At this depth custom designs the page from first principles — palette, type, **and** composition — and the only thing it inherits is the floor.
+
+Confirm the route once (same discipline as any custom — default to catalog on silence), then take **one** input: *"the direction in a sentence or two — what should this page feel like and do that an off-the-shelf theme wouldn't?"*
+
+**It drops** (only at this depth):
+- the named-theme tokens — write the palette inline for this page only (§ B still governs *how*);
+- the genre cluster routing — no editorial / atmospheric / modern-minimal / playful archetype defaults;
+- the fixed macrostructure + archetype catalog — compose the page's structure for the brief; a novel hero, nav, or section is *encouraged* when it serves the idea;
+- the diversification rotation — bespoke is a one-off (like studied-DNA), though it shouldn't clone a recent bespoke run.
+
+**It keeps** — the non-negotiable floor, identical to tuned custom:
+- **every universal slop-test gate** ([`slop-test.md`](slop-test.md)) — the guarantee that survives the freedom;
+- accessibility & contrast (APCA / WCAG), a visible `:focus-visible`, `prefers-reduced-motion`, semantic landmarks, alt text;
+- the **font ban-list** (Gate 1) and free-baseline-only discipline (§ C);
+- **OKLCH palette discipline** (§ B) — tinted neutrals, no pure `#000`/`#fff`, accent kept to a signal unless the concept earns more;
+- one orchestrated motion; the Step 5 preview before code; the Step 6 stamp + log.
+
+**Process:** read the brief + the one-line direction → design the *system and the one central move* (the idea that makes it not-a-template) → run the gates *as you compose* → surface the preview (palette, type, structure, central idea) → build, stamp, log. Bespoke is **more** design judgment, not less — a bespoke page that reads generic, or trips a gate, has failed; re-design.
+
+**Stamp (bespoke runs):**
+```css
+/* Hallmark · route: custom (bespoke) · structure: <one-line shape> · idea: "<central move>"
+ * paper: oklch(...) · accent: oklch(...) · display: <font> · body: <font>
+ * axes: <paper-band> / <display-style> / <accent-hue> · gates: all-pass · studied: no
+ */
+```
+
+**Bespoke is rare.** Most briefs are catalog; some are tuned custom; few are bespoke. Reaching for bespoke on a vanilla brief is over-reach — route to catalog.
 
 ---
 
@@ -95,9 +133,9 @@ These are not arbitrary. The L-step gives the palette **typographic depth** with
 
 ### B.7 · Verification
 
-- **Gate 8** (no pure #000 / #fff base): paper and ink both have chroma > 0. Pass.
-- **Gate 24** (no zero-chroma neutrals): every grey has chroma ≥ 0.005. Pass.
-- **Gate 25** (accent ≤ 5 % footprint): plan the accent's role on the page (active state, one wordmark dot, one CTA fill). Don't carpet a section in accent.
+- **Gate 7** (no pure #000 / #fff base): paper and ink both have chroma > 0. Pass.
+- **Gate 22** (no zero-chroma neutrals): every grey has chroma ≥ 0.005. Pass.
+- **Gate 23** (accent ≤ 5 % footprint): plan the accent's role on the page (active state, one wordmark dot, one CTA fill). Don't carpet a section in accent.
 
 ---
 

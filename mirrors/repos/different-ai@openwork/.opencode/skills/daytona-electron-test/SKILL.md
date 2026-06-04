@@ -64,6 +64,10 @@ Validation standard: use `daytona-flow-validator`. Prove behavior with CDP
 assertions first, capture a PNG screenshot at important states for quick
 AI/human review, and record MP4 video for end-to-end PR evidence.
 
+Before sharing screenshot URLs, inspect the saved PNG itself per
+`daytona-flow-validator`. Do not post screenshots that are covered by native
+pickers, dialogs, toasts, desktop windows, or unrelated overlays.
+
 When the user asks specifically about server, secrets, recordings, screenshots,
 or evidence, use the focused skill above instead of relying only on this runbook.
 
@@ -169,6 +173,14 @@ The reducer uses `{ key, value }` actions. NOT direct state replacement.
    - URL contains `#/workspace/ws_`
    - Status bar shows "OpenWork Ready"
    - opencode process running: `daytona exec "$SANDBOX" -- "bash -lc 'ps aux | grep opencode | grep -v grep'"`
+
+### Native Linux dialogs
+
+If the current app path opens a native Linux dialog instead of the React modal,
+use `daytona-flow-validator`'s Linux desktop automation guidance. Drive GTK file
+pickers and OS dialogs with `xdotool`/`wmctrl`, then verify the dialog closed
+with `wmctrl -l`, assert app state with CDP, and inspect the captured screenshot
+before sharing evidence.
 
 ## UI automation selector map
 

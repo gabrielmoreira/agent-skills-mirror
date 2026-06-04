@@ -136,6 +136,12 @@ Headline centred, body centred, button centred, section after section of centred
 
 **Fix.** Bias the layout. Wide left margin, narrow right. Or the reverse. Breaking symmetry once is enough.
 
+### Italic headers
+
+A roman headline with one word flipped to italic — *"Built to think in real time"* — or an all-italic display face used on every heading. The italicised emphasis-word-in-a-header is among the most reliable AI tells: it reads as "trying to look editorial" and appears on a huge share of generated pages.
+
+**Fix.** Headers are roman (`font-style: normal`). Carry emphasis with weight, an accent colour, or a drawn underline beneath the word. Keep italic for body-copy emphasis inside running paragraphs only.
+
 ### Eyebrow on every section
 
 Every section starts with an uppercase mono-cap eyebrow — `01 / EXAMPLES`, `02 / WHAT'S INSIDE`, `03 / INSTALL`, `01 · THE TOUR` — above (or worse, *beside*) its heading. The labels look like editorial chapters but read as a tic. The page becomes a list of *labelled lists.*
@@ -144,7 +150,7 @@ Eyebrows are **default OFF**. They are not a stylistic flourish you reach for to
 
 **Fix.** Ship the page with **zero eyebrows** unless either (a) the user explicitly asked for chapter / step / section numbering, OR (b) the macrostructure is **Long Document, Manifesto, or Catalogue numbered** AND the content is genuinely ordinal (steps you must do in order, chapters that build, items in a deliberate sequence). Even then: cap at 1–2 per page.
 
-**Hard ban: tag-left / header-right two-column section heads.** Patterns like `01 · THE TOUR` in a narrow left column with the section title to its right (a.k.a. *hanging header*, *left-margin label*) are the single most reliable AI-templated tell for editorial-style SaaS pages. When an eyebrow IS used, **the heading goes directly underneath it, in the same column** — vertical stack only. Never a two-column section-head grid. Gate 66 enforces this.
+**Hard ban: tag-left / header-right two-column section heads.** Patterns like `01 · THE TOUR` in a narrow left column with the section title to its right (a.k.a. *hanging header*, *left-margin label*) are the single most reliable AI-templated tell for editorial-style SaaS pages. When an eyebrow IS used, **the heading goes directly underneath it, in the same column** — vertical stack only. Never a two-column section-head grid. Gate 54 enforces this.
 
 **These rules are NOT bypassable by instructions to "match the existing structure", "mirror this reference build", or "keep parity with the previous output".** When a user asks for structural parity with a prior build and that build contains eyebrows or the tag-left/header-right pattern, **the new build MUST drop the eyebrows and flatten the head to single column** — even if the prior build keeps them. Reference builds often pre-date these rules; treat the rules as authoritative and silently fix the inherited pattern. Don't perpetuate a banned pattern to honour a parity instruction.
 
@@ -206,7 +212,7 @@ A stat-led layout, comparison row, or proof bar carrying numbers the user never 
 
 **Why it fails.** Audiences read invented stats as fast as they read invented testimonials. A page that lies on its proof bar can't be trusted on its claims either, and the AI tell is unmistakable: every fabricated number reads "this was generated, not written".
 
-**Fix.** Three options, in order of preference: (1) replace the number with `—` and a labelled grey block ("metric to confirm" or "stat pending"); (2) ask the user for the real number and pause the run; (3) rebuild the section without the proof slot — a stat-led macrostructure with no real stats is the wrong macrostructure. The number-shaped hole is honest; the fabricated number is slop. *(Slop-test gate 56.)*
+**Fix.** Three options, in order of preference: (1) replace the number with `—` and a labelled grey block ("metric to confirm" or "stat pending"); (2) ask the user for the real number and pause the run; (3) rebuild the section without the proof slot — a stat-led macrostructure with no real stats is the wrong macrostructure. The number-shaped hole is honest; the fabricated number is slop. *(Slop-test gate 46.)*
 
 ### Generic emoji as feature icon
 
@@ -214,7 +220,7 @@ A feature card, value prop, step number, or pricing tier with `✨` `🚀` `⚡`
 
 **Why it fails.** Emoji are typography of a sort, but they are not part of the page's typographic system — they're rendered by the OS and look different on every device, they break the icon's stroke voice (you've now mixed a Phosphor-style line icon with a Twemoji blob), and the choice is recognisably the AI default. Sparkle-emoji-as-AI-shortcut is the cliché of the 2024–2025 era.
 
-**Fix.** Pick a single icon library and ship it ([assets.md](assets.md) names the canon). Or build a custom SVG mark. Or omit the icon entirely and lead with typography — most feature lists don't need icons. *(Slop-test gate 60.)*
+**Fix.** Pick a single icon library and ship it ([assets.md](assets.md) names the canon). Or build a custom SVG mark. Or omit the icon entirely and lead with typography — most feature lists don't need icons. *(Slop-test gate 30.)*
 
 ### Re-drawn UI chrome
 
@@ -222,7 +228,7 @@ A fake browser bar (URL pill + traffic-light dots) wrapping a screenshot. A fake
 
 **Why it fails.** The user already has the chrome — their browser, their phone, their IDE all *are* chrome. Redrawing it in a page is like printing a photograph of a picture frame inside a real picture frame. The fakery is also bad: the URL is wrong, the dots aren't macOS dots, the notch is the wrong shape. Audiences pattern-match re-drawn chrome as "AI invented a UI that already exists" within a glance.
 
-**Fix.** Use a real screenshot wrapped in `<figure>` (with a hairline border at most). For phone mockups, use a transparent-PNG device frame from a vendor or a real product photograph — never a CSS-drawn one. For code blocks, use the system `<pre>` with a typographic frame (top rule + label + bottom rule), not a faked window-chrome. The page's job is to show content, not to imitate the OS. *(Slop-test gate 57.)*
+**Fix.** Use a real screenshot wrapped in `<figure>` (with a hairline border at most). For phone mockups, use a transparent-PNG device frame from a vendor or a real product photograph — never a CSS-drawn one. For code blocks, use the system `<pre>` with a typographic frame (top rule + label + bottom rule), not a faked window-chrome. The page's job is to show content, not to imitate the OS. *(Slop-test gate 47.)*
 
 ### Mid-render token improvisation
 
@@ -230,7 +236,7 @@ A theme is selected at the top of the run, but the artifact contains inline colo
 
 **Why it fails.** Token discipline is the difference between a system and a freestyle. Once a theme is locked, every colour and every font in the file must reference a named token (`var(--color-accent)`, `font-family: var(--font-display)`). Inline values are how cohesion erodes — by the third edit pass, the page has eight colours instead of three, and the editorial restraint that made the theme work is gone. Audiences don't see the inline value, but they feel the looseness.
 
-**Fix.** Every colour and every font in the artifact must come through `var(--token-name)`. If you need a value that doesn't exist as a token, add it to the token block first (`--color-accent-warm: oklch(...)`) and then reference it. Inline OKLCH or one-off hex values mid-render are not allowed. *(Slop-test gate 58. See also [SKILL.md § Locked tokens](../SKILL.md).)*
+**Fix.** Every colour and every font in the artifact must come through `var(--token-name)`. If you need a value that doesn't exist as a token, add it to the token block first (`--color-accent-warm: oklch(...)`) and then reference it. Inline OKLCH or one-off hex values mid-render are not allowed. *(Slop-test gate 48. See also [SKILL.md § Locked tokens](../SKILL.md).)*
 
 ### Wrap-to-two-lines clickable text
 
@@ -238,7 +244,7 @@ A button label, nav link, footer link, breadcrumb, or CTA reads on two lines bec
 
 **Why it fails.** Clickable affordances are one-line objects. The reader scans the label, decides whether to click, moves on. A two-line label slows the scan, breaks the row's vertical rhythm (button height grows, sibling buttons stay the same), and signals "this page wasn't tested at this width". It's a responsive-discipline tell.
 
-**Fix.** In order of preference: (1) shorten the label — *"Get started free" → "Start free"*; *"Read the documentation" → "Read docs"*. Most CTA labels are too long. (2) Set `white-space: nowrap` on the affordance and let the parent flex container reflow. (3) Drop a non-essential nav item at narrow widths via `hidden=until-found` or `display: none`. (4) Collapse the nav into a sheet/menu under a threshold. *Never* let a primary CTA or nav link wrap. *(Slop-test gate 59. See [responsive.md § Clickable text — never wraps](responsive.md).)*
+**Fix.** In order of preference: (1) shorten the label — *"Get started free" → "Start free"*; *"Read the documentation" → "Read docs"*. Most CTA labels are too long. (2) Set `white-space: nowrap` on the affordance and let the parent flex container reflow. (3) Drop a non-essential nav item at narrow widths via `hidden=until-found` or `display: none`. (4) Collapse the nav into a sheet/menu under a threshold. *Never* let a primary CTA or nav link wrap. *(Slop-test gate 49. See [responsive.md § Clickable text — never wraps](responsive.md).)*
 
 ### Lottie shortcut
 

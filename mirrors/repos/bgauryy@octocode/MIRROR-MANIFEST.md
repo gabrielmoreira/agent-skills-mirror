@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bgauryy/octocode` — 26 default patterns, 0 followed patterns, 335 file(s) materialized.
+Mirror of `bgauryy/octocode` — 26 default patterns, 0 followed patterns, 336 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bgauryy/octocode` — 26 default patterns, 0 followed patterns, 335 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 335 |
+| Files         | 336 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -338,62 +338,63 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 277 | ✓ | [`skills/octocode-research/src/utils/circuitBreaker.ts`](skills/octocode-research/src/utils/circuitBreaker.ts) |
 | 278 | ✓ | [`skills/octocode-research/src/utils/colors.ts`](skills/octocode-research/src/utils/colors.ts) |
 | 279 | ✓ | [`skills/octocode-research/src/utils/errorQueue.ts`](skills/octocode-research/src/utils/errorQueue.ts) |
-| 280 | ✓ | [`skills/octocode-research/src/utils/logger.ts`](skills/octocode-research/src/utils/logger.ts) |
-| 281 | ✓ | [`skills/octocode-research/src/utils/resilience.ts`](skills/octocode-research/src/utils/resilience.ts) |
-| 282 | ✓ | [`skills/octocode-research/src/utils/responseBuilder.ts`](skills/octocode-research/src/utils/responseBuilder.ts) |
-| 283 | ✓ | [`skills/octocode-research/src/utils/responseFactory.ts`](skills/octocode-research/src/utils/responseFactory.ts) |
-| 284 | ✓ | [`skills/octocode-research/src/utils/responseParser.ts`](skills/octocode-research/src/utils/responseParser.ts) |
-| 285 | ✓ | [`skills/octocode-research/src/utils/retry.ts`](skills/octocode-research/src/utils/retry.ts) |
-| 286 | ✓ | [`skills/octocode-research/src/utils/routeFactory.ts`](skills/octocode-research/src/utils/routeFactory.ts) |
-| 287 | ✓ | [`skills/octocode-research/src/utils/url.ts`](skills/octocode-research/src/utils/url.ts) |
-| 288 | ✓ | [`skills/octocode-research/src/validation/httpPreprocess.ts`](skills/octocode-research/src/validation/httpPreprocess.ts) |
-| 289 | ✓ | [`skills/octocode-research/src/validation/index.ts`](skills/octocode-research/src/validation/index.ts) |
-| 290 | ✓ | [`skills/octocode-research/src/validation/schemas.ts`](skills/octocode-research/src/validation/schemas.ts) |
-| 291 | ✓ | [`skills/octocode-research/src/validation/toolCallSchema.ts`](skills/octocode-research/src/validation/toolCallSchema.ts) |
-| 292 | ✓ | [`skills/octocode-research/tsconfig.json`](skills/octocode-research/tsconfig.json) |
-| 293 | ✓ | [`skills/octocode-research/tsdown.config.ts`](skills/octocode-research/tsdown.config.ts) |
-| 294 | ✓ | [`skills/octocode-research/vitest.config.ts`](skills/octocode-research/vitest.config.ts) |
-| 295 | ✓ | [`skills/octocode-researcher/references/fallbacks.md`](skills/octocode-researcher/references/fallbacks.md) |
-| 296 | ✓ | [`skills/octocode-researcher/references/tool-reference.md`](skills/octocode-researcher/references/tool-reference.md) |
-| 297 | ✓ | [`skills/octocode-researcher/references/workflow-patterns.md`](skills/octocode-researcher/references/workflow-patterns.md) |
-| 298 | ✓ | [`skills/octocode-researcher/SKILL.md`](skills/octocode-researcher/SKILL.md) |
-| 299 | ✓ | [`skills/octocode-rfc-generator/references/rfc-template.md`](skills/octocode-rfc-generator/references/rfc-template.md) |
-| 300 | ✓ | [`skills/octocode-rfc-generator/SKILL.md`](skills/octocode-rfc-generator/SKILL.md) |
-| 301 | ✓ | [`skills/octocode-roast/references/sin-registry.md`](skills/octocode-roast/references/sin-registry.md) |
-| 302 | ✓ | [`skills/octocode-roast/SKILL.md`](skills/octocode-roast/SKILL.md) |
-| 303 | ✓ | [`skills/octocode-search-skill/references/agent-skills-guide.md`](skills/octocode-search-skill/references/agent-skills-guide.md) |
-| 304 | ✓ | [`skills/octocode-search-skill/references/discovery-surfaces.md`](skills/octocode-search-skill/references/discovery-surfaces.md) |
-| 305 | ✓ | [`skills/octocode-search-skill/references/fetch-and-create-locally.md`](skills/octocode-search-skill/references/fetch-and-create-locally.md) |
-| 306 | ✓ | [`skills/octocode-search-skill/references/install-reference.md`](skills/octocode-search-skill/references/install-reference.md) |
-| 307 | ✓ | [`skills/octocode-search-skill/references/references-template.md`](skills/octocode-search-skill/references/references-template.md) |
-| 308 | ✓ | [`skills/octocode-search-skill/references/references.md`](skills/octocode-search-skill/references/references.md) |
-| 309 | ✓ | [`skills/octocode-search-skill/SKILL.md`](skills/octocode-search-skill/SKILL.md) |
-| 310 | ✓ | [`skills/octocode-slides/README.md`](skills/octocode-slides/README.md) |
-| 311 | ✓ | [`skills/octocode-slides/references/01-brief.md`](skills/octocode-slides/references/01-brief.md) |
-| 312 | ✓ | [`skills/octocode-slides/references/02-research.md`](skills/octocode-slides/references/02-research.md) |
-| 313 | ✓ | [`skills/octocode-slides/references/03-outline.md`](skills/octocode-slides/references/03-outline.md) |
-| 314 | ✓ | [`skills/octocode-slides/references/04-design.md`](skills/octocode-slides/references/04-design.md) |
-| 315 | ✓ | [`skills/octocode-slides/references/05-implementation.md`](skills/octocode-slides/references/05-implementation.md) |
-| 316 | ✓ | [`skills/octocode-slides/references/06-review.md`](skills/octocode-slides/references/06-review.md) |
-| 317 | ✓ | [`skills/octocode-slides/references/animation.md`](skills/octocode-slides/references/animation.md) |
-| 318 | ✓ | [`skills/octocode-slides/references/design-system.md`](skills/octocode-slides/references/design-system.md) |
-| 319 | ✓ | [`skills/octocode-slides/references/html-templates.md`](skills/octocode-slides/references/html-templates.md) |
-| 320 | ✓ | [`skills/octocode-slides/references/image-generation.md`](skills/octocode-slides/references/image-generation.md) |
-| 321 | ✓ | [`skills/octocode-slides/references/resources.md`](skills/octocode-slides/references/resources.md) |
-| 322 | ✓ | [`skills/octocode-slides/references/slide-rules.md`](skills/octocode-slides/references/slide-rules.md) |
-| 323 | ✓ | [`skills/octocode-slides/references/wireframes.md`](skills/octocode-slides/references/wireframes.md) |
-| 324 | ✓ | [`skills/octocode-slides/scripts/animation.js`](skills/octocode-slides/scripts/animation.js) |
-| 325 | ✓ | [`skills/octocode-slides/scripts/base.css`](skills/octocode-slides/scripts/base.css) |
-| 326 | ✓ | [`skills/octocode-slides/scripts/base.html`](skills/octocode-slides/scripts/base.html) |
-| 327 | ✓ | [`skills/octocode-slides/scripts/generate_image.py`](skills/octocode-slides/scripts/generate_image.py) |
-| 328 | ✓ | [`skills/octocode-slides/scripts/navbridge.js`](skills/octocode-slides/scripts/navbridge.js) |
-| 329 | ✓ | [`skills/octocode-slides/scripts/presenter.js`](skills/octocode-slides/scripts/presenter.js) |
-| 330 | ✓ | [`skills/octocode-slides/scripts/slide.html`](skills/octocode-slides/scripts/slide.html) |
-| 331 | ✓ | [`skills/octocode-slides/SKILL.md`](skills/octocode-slides/SKILL.md) |
-| 332 | ✓ | [`skills/octocode-stats/assets/template.html`](skills/octocode-stats/assets/template.html) |
-| 333 | ✓ | [`skills/octocode-stats/scripts/build_dashboard.mjs`](skills/octocode-stats/scripts/build_dashboard.mjs) |
-| 334 | ✓ | [`skills/octocode-stats/SKILL.md`](skills/octocode-stats/SKILL.md) |
-| 335 | ✓ | [`skills/README.md`](skills/README.md) |
+| 280 | ✓ | [`skills/octocode-research/src/utils/fileContentTransform.ts`](skills/octocode-research/src/utils/fileContentTransform.ts) |
+| 281 | ✓ | [`skills/octocode-research/src/utils/logger.ts`](skills/octocode-research/src/utils/logger.ts) |
+| 282 | ✓ | [`skills/octocode-research/src/utils/resilience.ts`](skills/octocode-research/src/utils/resilience.ts) |
+| 283 | ✓ | [`skills/octocode-research/src/utils/responseBuilder.ts`](skills/octocode-research/src/utils/responseBuilder.ts) |
+| 284 | ✓ | [`skills/octocode-research/src/utils/responseFactory.ts`](skills/octocode-research/src/utils/responseFactory.ts) |
+| 285 | ✓ | [`skills/octocode-research/src/utils/responseParser.ts`](skills/octocode-research/src/utils/responseParser.ts) |
+| 286 | ✓ | [`skills/octocode-research/src/utils/retry.ts`](skills/octocode-research/src/utils/retry.ts) |
+| 287 | ✓ | [`skills/octocode-research/src/utils/routeFactory.ts`](skills/octocode-research/src/utils/routeFactory.ts) |
+| 288 | ✓ | [`skills/octocode-research/src/utils/url.ts`](skills/octocode-research/src/utils/url.ts) |
+| 289 | ✓ | [`skills/octocode-research/src/validation/httpPreprocess.ts`](skills/octocode-research/src/validation/httpPreprocess.ts) |
+| 290 | ✓ | [`skills/octocode-research/src/validation/index.ts`](skills/octocode-research/src/validation/index.ts) |
+| 291 | ✓ | [`skills/octocode-research/src/validation/schemas.ts`](skills/octocode-research/src/validation/schemas.ts) |
+| 292 | ✓ | [`skills/octocode-research/src/validation/toolCallSchema.ts`](skills/octocode-research/src/validation/toolCallSchema.ts) |
+| 293 | ✓ | [`skills/octocode-research/tsconfig.json`](skills/octocode-research/tsconfig.json) |
+| 294 | ✓ | [`skills/octocode-research/tsdown.config.ts`](skills/octocode-research/tsdown.config.ts) |
+| 295 | ✓ | [`skills/octocode-research/vitest.config.ts`](skills/octocode-research/vitest.config.ts) |
+| 296 | ✓ | [`skills/octocode-researcher/references/fallbacks.md`](skills/octocode-researcher/references/fallbacks.md) |
+| 297 | ✓ | [`skills/octocode-researcher/references/tool-reference.md`](skills/octocode-researcher/references/tool-reference.md) |
+| 298 | ✓ | [`skills/octocode-researcher/references/workflow-patterns.md`](skills/octocode-researcher/references/workflow-patterns.md) |
+| 299 | ✓ | [`skills/octocode-researcher/SKILL.md`](skills/octocode-researcher/SKILL.md) |
+| 300 | ✓ | [`skills/octocode-rfc-generator/references/rfc-template.md`](skills/octocode-rfc-generator/references/rfc-template.md) |
+| 301 | ✓ | [`skills/octocode-rfc-generator/SKILL.md`](skills/octocode-rfc-generator/SKILL.md) |
+| 302 | ✓ | [`skills/octocode-roast/references/sin-registry.md`](skills/octocode-roast/references/sin-registry.md) |
+| 303 | ✓ | [`skills/octocode-roast/SKILL.md`](skills/octocode-roast/SKILL.md) |
+| 304 | ✓ | [`skills/octocode-search-skill/references/agent-skills-guide.md`](skills/octocode-search-skill/references/agent-skills-guide.md) |
+| 305 | ✓ | [`skills/octocode-search-skill/references/discovery-surfaces.md`](skills/octocode-search-skill/references/discovery-surfaces.md) |
+| 306 | ✓ | [`skills/octocode-search-skill/references/fetch-and-create-locally.md`](skills/octocode-search-skill/references/fetch-and-create-locally.md) |
+| 307 | ✓ | [`skills/octocode-search-skill/references/install-reference.md`](skills/octocode-search-skill/references/install-reference.md) |
+| 308 | ✓ | [`skills/octocode-search-skill/references/references-template.md`](skills/octocode-search-skill/references/references-template.md) |
+| 309 | ✓ | [`skills/octocode-search-skill/references/references.md`](skills/octocode-search-skill/references/references.md) |
+| 310 | ✓ | [`skills/octocode-search-skill/SKILL.md`](skills/octocode-search-skill/SKILL.md) |
+| 311 | ✓ | [`skills/octocode-slides/README.md`](skills/octocode-slides/README.md) |
+| 312 | ✓ | [`skills/octocode-slides/references/01-brief.md`](skills/octocode-slides/references/01-brief.md) |
+| 313 | ✓ | [`skills/octocode-slides/references/02-research.md`](skills/octocode-slides/references/02-research.md) |
+| 314 | ✓ | [`skills/octocode-slides/references/03-outline.md`](skills/octocode-slides/references/03-outline.md) |
+| 315 | ✓ | [`skills/octocode-slides/references/04-design.md`](skills/octocode-slides/references/04-design.md) |
+| 316 | ✓ | [`skills/octocode-slides/references/05-implementation.md`](skills/octocode-slides/references/05-implementation.md) |
+| 317 | ✓ | [`skills/octocode-slides/references/06-review.md`](skills/octocode-slides/references/06-review.md) |
+| 318 | ✓ | [`skills/octocode-slides/references/animation.md`](skills/octocode-slides/references/animation.md) |
+| 319 | ✓ | [`skills/octocode-slides/references/design-system.md`](skills/octocode-slides/references/design-system.md) |
+| 320 | ✓ | [`skills/octocode-slides/references/html-templates.md`](skills/octocode-slides/references/html-templates.md) |
+| 321 | ✓ | [`skills/octocode-slides/references/image-generation.md`](skills/octocode-slides/references/image-generation.md) |
+| 322 | ✓ | [`skills/octocode-slides/references/resources.md`](skills/octocode-slides/references/resources.md) |
+| 323 | ✓ | [`skills/octocode-slides/references/slide-rules.md`](skills/octocode-slides/references/slide-rules.md) |
+| 324 | ✓ | [`skills/octocode-slides/references/wireframes.md`](skills/octocode-slides/references/wireframes.md) |
+| 325 | ✓ | [`skills/octocode-slides/scripts/animation.js`](skills/octocode-slides/scripts/animation.js) |
+| 326 | ✓ | [`skills/octocode-slides/scripts/base.css`](skills/octocode-slides/scripts/base.css) |
+| 327 | ✓ | [`skills/octocode-slides/scripts/base.html`](skills/octocode-slides/scripts/base.html) |
+| 328 | ✓ | [`skills/octocode-slides/scripts/generate_image.py`](skills/octocode-slides/scripts/generate_image.py) |
+| 329 | ✓ | [`skills/octocode-slides/scripts/navbridge.js`](skills/octocode-slides/scripts/navbridge.js) |
+| 330 | ✓ | [`skills/octocode-slides/scripts/presenter.js`](skills/octocode-slides/scripts/presenter.js) |
+| 331 | ✓ | [`skills/octocode-slides/scripts/slide.html`](skills/octocode-slides/scripts/slide.html) |
+| 332 | ✓ | [`skills/octocode-slides/SKILL.md`](skills/octocode-slides/SKILL.md) |
+| 333 | ✓ | [`skills/octocode-stats/assets/template.html`](skills/octocode-stats/assets/template.html) |
+| 334 | ✓ | [`skills/octocode-stats/scripts/build_dashboard.mjs`](skills/octocode-stats/scripts/build_dashboard.mjs) |
+| 335 | ✓ | [`skills/octocode-stats/SKILL.md`](skills/octocode-stats/SKILL.md) |
+| 336 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

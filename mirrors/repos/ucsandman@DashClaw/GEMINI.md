@@ -10,7 +10,7 @@ DashClaw is infrastructure software. Avoid introducing complexity unless it clea
 
 # Project Overview
 
-DashClaw is a policy firewall and governance runtime for AI agent decisions.
+DashClaw is a governance runtime for AI agent decisions.
 
 It governs AI agents before they execute real world actions by introducing a policy evaluation and approval layer.
 
@@ -183,16 +183,15 @@ Developers should understand the product within seconds.
 
 Frontend
 
-Next.js
+Next.js (App Router)
 React
-TypeScript
+JavaScript (JSX — the repo does not use TypeScript)
 TailwindCSS
 
 Backend
 
-Node.js services
-Python tooling
-FastAPI components
+Node.js services (Next.js App Router API routes)
+Python tooling (zero-dependency SDK + scripts; no FastAPI or web framework)
 
 SDK
 
@@ -221,7 +220,7 @@ Agents must follow these rules when modifying code.
 
 ## Frontend Rules
 
-Use TypeScript.
+Use JavaScript (JSX). The repo does not use TypeScript.
 
 Prefer functional React components.
 

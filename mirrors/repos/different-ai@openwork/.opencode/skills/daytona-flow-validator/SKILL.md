@@ -73,6 +73,41 @@ Prefer synthetic paste for the OpenWork composer:
 
 Then assert the Run button is enabled before clicking it.
 
+## Linux Desktop Automation
+
+Use CDP for renderer UI first. When the flow opens native Linux UI that CDP
+cannot control, such as GTK file pickers, OS permission dialogs, XFCE windows,
+or Electron-native dialogs, switch to desktop automation inside the sandbox.
+
+Check/install the tools:
+
+```bash
+daytona exec "$SANDBOX" -- "bash -lc 'if ! command -v xdotool >/dev/null 2>&1; then sudo apt-get update && sudo apt-get install -y xdotool wmctrl; fi'"
+```
+
+Inspect the real desktop window state before acting:
+
+```bash
+daytona exec "$SANDBOX" -- "bash -lc 'DISPLAY=:99 wmctrl -l; DISPLAY=:99 xdotool getactivewindow getwindowname 2>/dev/null || true'"
+```
+
+Native file picker pattern:
+
+```bash
+daytona exec "$SANDBOX" -- "bash -lc 'DISPLAY=:99 xdotool search --name \"Authorize folder\" windowactivate; DISPLAY=:99 xdotool mousemove 760 151 click 1 key ctrl+a type --delay 1 -- \"/workspace/hello\" key Return; sleep 1; DISPLAY=:99 xdotool mousemove 1465 927 click 1'"
+```
+
+Rules for native desktop automation:
+
+- Use `wmctrl -l` before and after to prove the expected native window opened or
+  closed.
+- Prefer window titles such as `Authorize folder` over coordinates when possible.
+- Use coordinates only after inspecting a screenshot/noVNC state; coordinate
+  clicks are display-size dependent.
+- Close stale dialogs with `Escape` before capturing evidence.
+- After native automation, reassert app state with CDP and inspect a fresh
+  screenshot. Native dialogs commonly remain on top and invalidate evidence.
+
 ## Screenshots
 
 Use browser screenshots for renderer state:
@@ -88,6 +123,26 @@ daytona exec "$SANDBOX" -- 'bash .devcontainer/capture-daytona-screenshot.sh'
 ```
 
 Do not treat screenshots as the only assertion. Inspect text/state with CDP too.
+
+Before publishing, commenting, or reporting a screenshot URL, open the saved
+image and visually verify it matches the claim. Use `webfetch` on the artifact
+URL, `Read` on the local PNG path, or another image-capable viewer. A screenshot
+is not valid evidence until the image itself has been inspected.
+
+For every screenshot, assert these visual checks:
+
+- The target OpenWork/Chrome window is visible and not covered by a native file
+  picker, modal, toast, desktop window, or unrelated overlay.
+- The exact claimed state is visible in the image, not just present in DOM or
+  command output.
+- Important labels, selected rows, dropdown options, status indicators, artifact
+  cards, or output panes are legible enough for a reviewer.
+- The screenshot URL belongs to the sandbox and flow being reported.
+
+If any check fails, mark the evidence as failed, fix the visible state, capture a
+new screenshot, inspect the new image, and only then share it. If bad evidence
+was already posted, post a superseding correction that clearly says the earlier
+screenshot was invalid.
 
 ## Failure Handling
 

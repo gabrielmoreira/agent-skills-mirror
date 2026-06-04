@@ -153,6 +153,39 @@ describe("SkillIndex", () => {
     expect(missingIndex.isEmpty()).toBe(false);
   });
 
+  it("derives file_routing from SKILL.md globs when metadata.json is absent", async () => {
+    // Build a fresh skills dir with NO metadata.json to simulate a user who never ran sync.
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "ags-mcp-no-meta-"));
+    const skills = path.join(root, "skills");
+    await writeSkill(skills, "flutter", "flutter-language", {
+      triggers: { files: ["**/*.dart"], keywords: [] },
+    });
+    await writeSkill(skills, "flutter", "flutter-bloc", {
+      triggers: { files: ["**/blocs/**/*.dart"], keywords: ["bloc"] },
+    });
+    await writeSkill(skills, "golang", "golang-language", {
+      triggers: { files: ["**/*.go"], keywords: [] },
+    });
+
+    const noMetaIndex = new SkillIndex(skills /* metadataPath omitted */);
+    await noMetaIndex.load();
+
+    // Dart files should match flutter skills derived from **/*.dart and **/blocs/**/*.dart
+    const dartMatches = noMetaIndex.matchFiles(["lib/blocs/cart_bloc.dart"]);
+    const dartIds = dartMatches.map((m) => m.skill.id).sort();
+    expect(dartIds).toContain("flutter-language");
+    expect(dartIds).toContain("flutter-bloc");
+
+    // Go files should match golang skill
+    const goMatches = noMetaIndex.matchFiles(["internal/service/order.go"]);
+    expect(goMatches.map((m) => m.skill.id)).toContain("golang-language");
+
+    // Unrelated extension returns nothing
+    expect(noMetaIndex.matchFiles(["readme.txt"])).toEqual([]);
+
+    await fs.remove(root);
+  });
+
   it("throws if query called before load", () => {
     const freshIndex = new SkillIndex(path.join(fixture.root, "skills"));
     expect(() => freshIndex.listCategories()).toThrow(

@@ -32,6 +32,21 @@ description: Use when the user asks to run Codex CLI (codex exec, codex resume) 
 | Resume recent session | Inherited from original | `echo "prompt" \| codex exec --skip-git-repo-check resume --last 2>/dev/null` (no flags allowed) |
 | Run from another directory | Match task needs | `-C <DIR>` plus other flags `2>/dev/null` |
 
+## Execution timeouts
+
+Codex produces **no intermediate output** — it writes the result only at completion. If the process is killed before finishing, the output file is silently empty (no error).
+
+**Preferred approach:** run synchronously — eliminates timeout risk entirely and the conversation waits for the result anyway.
+
+**If running in background**, set the execution timeout based on reasoning effort:
+
+| Reasoning effort | Timeout |
+|---|---|
+| `low` | 150s |
+| `medium` | 300s |
+| `high` | 600s |
+| `xhigh` | 1200s |
+
 ## Following Up
 - After every `codex` command, immediately use `AskUserQuestion` to confirm next steps, collect clarifications, or decide whether to resume with `codex exec resume --last`.
 - When resuming, pipe the new prompt via stdin: `echo "new prompt" | codex exec resume --last 2>/dev/null`. The resumed session automatically uses the same model, reasoning effort, and sandbox mode from the original session.
