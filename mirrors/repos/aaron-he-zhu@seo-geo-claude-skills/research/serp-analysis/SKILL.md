@@ -1,16 +1,16 @@
 ---
 name: serp-analysis
-description: 'Use when the user asks to "analyze SERPs"; reviews ranking factors, features, intent, AI Overviews, and snippets. SERP分析/搜索结果'
-version: "9.9.9"
+description: 'Use when the user asks to "analyze the SERP" or "SERP分析"; maps SERP features, layout, ranking factors, search intent, AI Overviews, and snippet opportunities for a query. Not for keyword demand discovery — use keyword-research. SERP分析/搜索结果'
+version: "9.9.10"
 license: Apache-2.0
-compatibility: "Claude Code, skills.sh, ClawHub, Vercel Labs, Cursor, Windsurf, Codex CLI, Amp, Gemini CLI, Kimi Code, Qwen Code, CodeBuddy"
-allowed-tools: WebFetch
+compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/seo-geo-claude-skills"
 when_to_use: "Use when analyzing search engine results pages, SERP features, featured snippets, People Also Ask, or understanding ranking patterns for a query."
 argument-hint: "<keyword or query>"
+allowed-tools: WebFetch
 metadata:
   author: aaron-he-zhu
-  version: "9.9.9"
+  version: "9.9.10"
   geo-relevance: "high"
   tags:
     - seo
@@ -26,32 +26,16 @@ metadata:
     - 검색결과
     - analisis-serp
   triggers:
-    - "analyze search results"
-    - "SERP analysis"
     - "what ranks for"
-    - "SERP features"
+    - "what SERP features appear for"
     - "featured snippets"
     - "AI overviews"
     - "what's on page one for this query"
-    - "who ranks for this keyword"
-    - "what does Google show for"
     - "why does this page rank first"
-    - "what SERP features appear for"
-    - "SERP分析"
     - "搜索结果分析"
     - "精选摘要"
     - "AI概览"
     - "谁排第一"
-    - "搜索结果长什么样"
-    - "谁排在前面"
-    - "検索結果ページ分析"
-    - "検索結果分析"
-    - "強調スニペット"
-    - "검색 결과 분석"
-    - "SERP 분석"
-    - "análisis SERP"
-    - "análisis de resultados de búsqueda"
-    - "análise de SERP"
 ---
 
 # SERP Analysis
@@ -72,9 +56,10 @@ What does it take to rank for [keyword]?
 
 **Expected output**: a prioritized SERP brief plus the standard handoff summary for `memory/research/`.
 
-- **Reads**: goals, market inputs, tool data, and prior strategy from [CLAUDE.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/CLAUDE.md) and the shared [State Model](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/state-model.md) when available.
+- **Reads**: target keyword(s), location/language, device, any SERP screenshots or top-10 URLs, and search context.
 - **Writes**: a user-facing analysis and reusable summary.
 - **Promotes**: durable keyword priorities, competitor facts, and pending strategy decisions to `memory/hot-cache.md`, `memory/open-loops.md`, and `memory/research/`.
+- **Done when**: the SERP composition and top-result ranking factors are documented from a verified live/provided SERP; dominant intent is named with evidence; and a True Difficulty score (0-100, weighted inputs per the template) plus per-site-stage fit is stated.
 - **Primary next skill**: [seo-content-writer](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/build/seo-content-writer/SKILL.md) when the user is ready to build against the observed SERP.
 
 ### Handoff Summary
@@ -97,10 +82,14 @@ When a user requests SERP analysis:
 4. **Identify Ranking Patterns** — compare common traits across the top results.
 5. **Analyze SERP Features** — review current holders and winning formats for snippets, PAA, AI Overviews, and other visible modules.
 6. **Determine Search Intent** — confirm dominant intent with evidence from the live SERP.
-7. **Calculate True Difficulty** — score overall difficulty and separate advice for new, growing, and established sites.
+7. **Calculate True Difficulty** — score overall difficulty 0-100 using the weighted inputs defined in [Analysis Templates §3](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/research/serp-analysis/references/analysis-templates.md) (Top-10 authority 25%, page authority/links 20%, content-quality bar 20%, backlinks required 20%, SERP stability 15%); give separate advice for new, growing, and established sites.
 8. **Generate Recommendations** — summarize Key Findings, minimum Content Requirements to Rank, SERP Feature Strategy, a Recommended Content Outline, and Next Steps.
 
-> **Reference**: See [references/analysis-templates.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/research/serp-analysis/references/analysis-templates.md) for the compact templates used in each step.
+Label every metric **Measured** (tool/export), **User-provided**, or **Estimated** (model inference); never present an estimate as measured; if a required metric is unavailable, mark it N/A — do not invent it.
+
+**Quality bar**: every difficulty and intent claim cites evidence from the live or provided SERP (which features, which top results) — never assert a score without the inputs behind it.
+
+> **Reference**: See [Analysis Templates](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/research/serp-analysis/references/analysis-templates.md) for the compact templates used in each step.
 
 ## Example
 
@@ -138,7 +127,7 @@ Always verify the live SERP, match the winning format, and look for feature oppo
 
 ### Save Results
 
-After delivering, offer to save `memory/research/serp-analysis/YYYY-MM-DD-<topic>.md` and promote durable conclusions to `memory/hot-cache.md`.
+Write path: `memory/research/serp-analysis/YYYY-MM-DD-<topic>.md`; promote durable difficulty/intent verdicts to `memory/hot-cache.md`. See [Skill Contract](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/skill-contract.md) §Save Results Template.
 
 ## Reference Materials
 

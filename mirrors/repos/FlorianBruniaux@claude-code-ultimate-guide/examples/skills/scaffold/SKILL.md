@@ -1,6 +1,6 @@
 ---
 name: scaffold
-description: "Interactive coach that asks 4-5 questions to determine whether you need an agent, command, skill, hook, or rule — then generates a ready-to-use template. Usage: /scaffold (no arguments — starts the coaching session)"
+description: "Interactive coach that asks 4-5 questions to determine whether you need an agent, command, skill, hook, or rule, then generates a ready-to-use template. Usage: /scaffold (no arguments needed, starts the coaching session)"
 effort: medium
 disable-model-invocation: true
 ---
@@ -9,11 +9,11 @@ disable-model-invocation: true
 
 Interactive wizard that identifies the right Claude Code component for your use case and generates a ready-to-use template.
 
-**Usage**: `/scaffold` — no arguments needed. Start the conversation.
+**Usage**: `/scaffold` (no arguments needed). Start the conversation.
 
 ---
 
-## Phase 1 — Discovery
+## Phase 1: Discovery
 
 Open with this prompt, then wait for the user's answer before asking anything else:
 
@@ -21,7 +21,7 @@ Open with this prompt, then wait for the user's answer before asking anything el
 
 Once you have a rough idea, ask the following questions in order. Skip a question if a previous answer already answers it.
 
-### Q1 — Trigger
+### Q1: Trigger
 
 > How is this triggered?
 >
@@ -29,29 +29,29 @@ Once you have a rough idea, ask the following questions in order. Skip a questio
 > b) It should fire automatically when Claude takes an action (writes a file, runs bash, finishes a session...)
 > c) It should apply all the time, every session, without me doing anything
 
-- If **b** → likely a **Hook** — jump to Q_hook
-- If **c** → likely a **Rule** — jump to Q_rule
+- If **b** → likely a **Hook** (jump to Q_hook)
+- If **c** → likely a **Rule** (jump to Q_rule)
 - If **a** → continue with Q2
 
-### Q2 — Domain expertise
+### Q2: Domain expertise
 
 > Does this require deep, project-specific expertise?
 > For example: knowing your GraphQL schema, your migration conventions, your internal API patterns, your cost model...
 
-- If **yes, deep expertise** → likely an **Agent** — jump to Q_agent
+- If **yes, deep expertise** → likely an **Agent** (jump to Q_agent)
 - If **no, more of a checklist or procedure** → continue with Q3
 
-### Q3 — Complexity
+### Q3: Complexity
 
 > How much context and logic does this involve?
 >
-> a) A lot — multiple rules, domain-specific examples, nuanced judgment
-> b) Straightforward — a few steps, a template, some bash
+> a) A lot: multiple rules, domain-specific examples, nuanced judgment
+> b) Straightforward: a few steps, a template, some bash
 
 - If **a** → likely a **Skill**
 - If **b** → likely a **Command**
 
-### Q4 — Reuse scope
+### Q4: Reuse scope
 
 > Who needs this?
 >
@@ -63,11 +63,11 @@ Once you have a rough idea, ask the following questions in order. Skip a questio
 - **b** → strengthens **Command** or **Skill** (shared config)
 - **a** → can stay a simple personal **Command**
 
-### Q5 — Output type
+### Q5: Output type
 
 > What should happen at the end?
 >
-> a) A report or analysis — Claude reads and explains, no files touched
+> a) A report or analysis: Claude reads and explains, no files touched
 > b) Code or files generated
 > c) An action taken (commit, push, API call...)
 > d) Claude's behavior changes permanently (always does X, never does Y)
@@ -78,30 +78,30 @@ Once you have a rough idea, ask the following questions in order. Skip a questio
 
 ---
 
-## Internal decision tree (do not display — use to reason)
+## Internal decision tree (do not display, use to reason)
 
 ```
 Triggered automatically?
-  ├─ On Claude action (Write, Bash, SessionEnd...) → Hook
-  └─ Always active, no trigger → Rule
+  ├─ On Claude action (Write, Bash, SessionEnd...) -> Hook
+  └─ Always active, no trigger -> Rule
 
 Triggered manually?
   ├─ Deep domain expertise required?
-  │   ├─ Yes + invokable by other agents → Agent
-  │   └─ Yes + manual use only → Agent or Skill
+  │   ├─ Yes + invokable by other agents -> Agent
+  │   └─ Yes + manual use only -> Agent or Skill
   └─ Procedure / checklist, no special expertise?
-      ├─ Complex, lots of project-specific context → Skill
-      └─ Simple, a few steps → Command
+      ├─ Complex, lots of project-specific context -> Skill
+      └─ Simple, a few steps -> Command
 
 Common hybrid cases:
-  - Agent + Command → specialist agent + a shortcut command to invoke it
-  - Rule + Hook → permanent behavior + blocking on a specific action
-  - Skill + Agent → skill that delegates analysis to an agent
+  - Agent + Command: specialist agent + a shortcut command to invoke it
+  - Rule + Hook: permanent behavior + blocking on a specific action
+  - Skill + Agent: skill that delegates analysis to an agent
 ```
 
 ---
 
-## Phase 2 — Recommendation
+## Phase 2: Recommendation
 
 After the questions, display this structure:
 
@@ -126,7 +126,7 @@ You want to: [one-line summary of the use case]
 
 ---
 
-## Phase 3 — Scaffold
+## Phase 3: Scaffold
 
 Ask: "Generate the scaffold file?"
 
@@ -141,7 +141,7 @@ If yes, produce the template below based on the detected type.
 name: [kebab-case-name]
 description: "[What this agent does in one sentence. When to invoke it. Example triggers for other agents.]"
 model: sonnet
-tools: Read, Grep, Glob[, Write, Bash — add only if this agent must modify files or run commands]
+tools: Read, Grep, Glob[, Write, Bash (add only if this agent must modify files or run commands)]
 ---
 
 # [Agent Name]
@@ -160,20 +160,20 @@ tools: Read, Grep, Glob[, Write, Bash — add only if this agent must modify fil
 
 ## Protocol
 
-### Step 1 — Read context
+### Step 1: Read context
 
 ```bash
 # What to read before reasoning
 cat CLAUDE.md 2>/dev/null
 ```
 
-### Step 2 — Analyze
+### Step 2: Analyze
 
 [What to look for. Patterns to detect. Red flags to surface.]
 
-### Step 3 — Output
+### Step 3: Output
 
-[Exact output format — use a markdown code block to show the structure.]
+[Exact output format: use a markdown code block to show the structure.]
 
 ## Red flags
 
@@ -184,7 +184,7 @@ cat CLAUDE.md 2>/dev/null
 ## What this agent does NOT do
 
 - [Scope boundary 1]
-- [Scope boundary 2 — point to another agent if relevant]
+- [Scope boundary 2: point to another agent if relevant]
 ```
 
 **File**: `.claude/agents/[name].md`
@@ -206,8 +206,8 @@ argument-hint: "[arg] [--flag]"
 
 ## Arguments
 
-- `[arg]` — [description] (default: [value])
-- `--flag` — [description]
+- `[arg]`: [description] (default: [value])
+- `--flag`: [description]
 
 ## Usage
 
@@ -218,7 +218,7 @@ argument-hint: "[arg] [--flag]"
 
 ---
 
-## Phase 1 — [First phase name]
+## Phase 1: [First phase name]
 
 [What Claude does in this phase.]
 
@@ -226,11 +226,11 @@ argument-hint: "[arg] [--flag]"
 # Example commands if applicable
 ```
 
-## Phase 2 — [Second phase name]
+## Phase 2: [Second phase name]
 
 [What Claude does.]
 
-## Phase 3 — Output
+## Phase 3: Output
 
 [Output format. Use a markdown block to show the structure.]
 
@@ -265,11 +265,11 @@ description: "[What this skill does. Trigger phrases that activate it. Usage: /[
 
 ## Workflow
 
-### 1. [First action] — [brief description]
+### 1. [First action]: [brief description]
 
 [Details]
 
-### 2. [Second action] — [brief description]
+### 2. [Second action]: [brief description]
 
 [Details]
 
@@ -298,7 +298,7 @@ $ARGUMENTS
 ```bash
 #!/usr/bin/env bash
 # =============================================================================
-# [name].sh — [PreToolUse | PostToolUse | UserPromptSubmit | Stop] Hook
+# [name].sh: [PreToolUse | PostToolUse | UserPromptSubmit | Stop] Hook
 # =============================================================================
 # [What this hook does in one line]
 # Fires on: [event] matching [tool or pattern]
@@ -360,14 +360,14 @@ Also add to `.claude/settings.json`:
 
 ## Required behavior
 
-[What Claude must do concretely — be specific.]
+[What Claude must do concretely, be specific.]
 
 ## Anti-patterns
 
-❌ Do NOT:
+Do NOT:
 - [Forbidden example]
 
-✅ Do:
+Do:
 - [Correct behavior]
 
 ---
@@ -390,8 +390,8 @@ If the user is unsure, show this table:
 | **Agent** | Manual or automatic | High, domain-specific | Multi-step analysis | `migration-reviewer`, `dbt-specialist` |
 | **Command** | Manual `/name` | Low to medium | Simple, a few steps | `/commit`, `/pr`, `/release` |
 | **Skill** | Manual `/name` | Medium to high | Rich workflow, lots of context | `tdd-workflow`, `api-review` |
-| **Hook** | Automatic on event | None — bash logic | Script | `security-gate.sh`, `format-on-save.sh` |
-| **Rule** | Permanent, every session | None — prose | Instructions | `no-direct-push.md`, `english-only.md` |
+| **Hook** | Automatic on event | None (bash logic) | Script | `security-gate.sh`, `format-on-save.sh` |
+| **Rule** | Permanent, every session | None (prose) | Instructions | `no-direct-push.md`, `english-only.md` |
 
 ---
 

@@ -2,6 +2,7 @@
 name: git-worktree-status
 description: Check status of background verification tasks running in a git worktree
 effort: low
+when_to_use: "Use to see all active worktrees and their current branch status."
 disable-model-invocation: true
 ---
 

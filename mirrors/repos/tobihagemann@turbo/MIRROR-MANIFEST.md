@@ -55,12 +55,12 @@ Mirror of `tobihagemann/turbo` — 26 default patterns, 17 followed patterns, 17
 - `codex/SKILL-CONVENTIONS.md`
 - `codex/skills/create-skill/references/best-practices.md`
 - `SKILL-CONVENTIONS.md`
-- `claude/ADDITIONS.md`
-- `claude/docs/skill-loading-reasoning.md`
-- `codex/ADDITIONS.md`
 - `claude/SETUP.md`
 - `codex/SETUP.md`
 - `SETUP.md`
+- `claude/ADDITIONS.md`
+- `claude/docs/skill-loading-reasoning.md`
+- `codex/ADDITIONS.md`
 - `claude/SKILL-INDEX.md`
 - `codex/SKILL-INDEX.md`
 - `claude/SKILL-CONVENTIONS.md`

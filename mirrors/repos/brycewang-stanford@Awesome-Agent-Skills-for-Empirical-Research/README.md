@@ -39,7 +39,7 @@
 [![Security audit: 52/52 CLEAN](https://img.shields.io/badge/security%20audit-52%2F52%20CLEAN-brightgreen)](SECURITY-SCAN-REPORT.md)
 [![Powered by StatsPAI](https://img.shields.io/badge/powered%20by-StatsPAI-orange)](https://github.com/brycewang-stanford/StatsPAI)
 
-**面向实证研究的专业级 Agent Skills 发行版。** 不是一份营销清单 —— 本仓库**自有并已编目 1,052 个 skill**，外加一套**数值基准 + 评测套件 + 安全审计 + CI** 把质量焊死，再叠加一张覆盖**生态 23,000+ skill / 119 个仓库**的精选地图。
+**面向实证研究的专业级 Agent Skills 发行版。** 不是一份营销清单 —— 本仓库**自有并已编目 1,072 个 skill**，外加一套**数值基准 + 评测套件 + 安全审计 + CI** 把质量焊死，再叠加一张覆盖**生态 23,000+ skill / 119 个仓库**的精选地图。
 
 AERS 同时是两样东西：(1) 一小撮**自研旗舰 skill**，能跑通完整实证流水线 —— 数据清洗 → 识别 → 估计 → 稳健性 → 表格图形 → 可投稿初稿；(2) 一份**精选、安全可控的目录**，按研究流程阶段组织整个实证研究 skill 生态。我们的差异化不在数量，而在于：旗舰 skill 的行为是**对着已知答案验证过的**，而不是嘴上声称的。
 
@@ -60,6 +60,7 @@ AERS 同时是两样东西：(1) 一小撮**自研旗舰 skill**，能跑通完�
 - [从这里开始 —— 30 秒选一个 skill](#从这里开始--30-秒选一个-skill)
 - [凭什么不只是 23K skill 的堆砌](#凭什么不只是-23k-skill-的堆砌)
 - [浏览全景](#浏览全景)
+  - [工具目录（tools/）](#工具目录tools自动化实证与因果推断工具)
   - [按研究流程](#按研究流程)
   - [综合型 skill 套件](#综合型-skill-套件)
   - [降 AIGC 检测率 & 学术去 AI 味](#降-aigc-检测率--学术去-ai-味)
@@ -76,13 +77,14 @@ AERS 同时是两样东西：(1) 一小撮**自研旗舰 skill**，能跑通完�
 
 | 它是什么 | 数量 | 事实来源 |
 |---|---:|---|
-| **本仓库自有**并已编目的 skill | **1,052** | [`catalog/skills.json`](catalog/skills.json) |
-| 自有 **合集（collections）** | **63** | [`catalog/skills.json`](catalog/skills.json) |
+| **本仓库自有**并已编目的 skill | **1,072** | [`catalog/skills.json`](catalog/skills.json) |
+| 自有 **合集（collections）** | **64** | [`catalog/skills.json`](catalog/skills.json) |
 | **自研旗舰**全流程 skill（StatsPAI DSL + 显式 Python/Stata/R） | **4** | [`skills/00*`](skills/) |
 | 每次运行从数据**重算 gold 值**的数值基准任务 | **5** | [`benchmark/`](benchmark/) |
 | 行为级**评测场景 / rubric 条目** | **17 / 95** | [`eval-harness/`](eval-harness/) |
 | **原始基线**安全审计（合集 / 文件） | **52 / 2,940+**，52/52 CLEAN | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
 | 覆盖**更广生态**的精选地图 | **23,000+ skill / 119 仓库** | 本 README · [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
+| **工具目录**（`tools/`）：因果/计量库、自动化研究 Agent、MCP 服务、因果发现、基准数据集 | **251 工具 / 6 类** | [`tools/tools.json`](tools/tools.json) · [`tools/CATALOG.md`](tools/CATALOG.md) |
 
 > 安全审计覆盖的是**原始 52 合集 / 2,940 文件的基线（52/52 CLEAN）**。在该基线之后新增的 vendor skill 由 [`catalog/provenance.json`](catalog/provenance.json)、[`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md)、[`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) 跟踪；高信任场景使用前请先 `make audit` 复核。
 
@@ -167,7 +169,7 @@ make check        # 仓库校验 + 单元测试 + eval lint + 数值基准
 | **数值基准** | 报告数字与真实数据重算真值不符 —— 朴素 DID 符号陷阱、缺第一阶段 F 的弱 IV、交错时点下的 TWFE 偏误、RDD 趋势混淆、后处理坏控制 | [`benchmark/`](benchmark/) · 5 任务 |
 | **评测套件** | 散文级失误：弱 IV 假性安心、交错 DID 误用 TWFE、编造引用、不安全的 `curl \| bash` 安装、多重检验滥用、AER 合规缺口 | [`eval-harness/`](eval-harness/) · 17 场景 / 95 rubric |
 | **安全审计** | pipe-to-shell、反向 shell、凭据外泄、prompt 注入等 13 类风险 —— 六阶段，40+ hook 脚本人工核查 | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
-| **来源与许可** | 未声明来源、许可风险、1,052 个编目 skill 的卫生度漂移 | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) · [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
+| **来源与许可** | 未声明来源、许可风险、1,072 个编目 skill 的卫生度漂移 | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) · [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
 | **CI 与兼容性** | catalog 新鲜度、本地死链、GitHub Actions 策略、Python 3.9 **与** 3.12 语法基线 | [`.github/workflows/`](.github/workflows/) · 6 条 workflow |
 
 ```bash
@@ -234,6 +236,11 @@ make check       # 完整 gate：validate + Python 编译 + 单元测试 + eval 
 | [fuhaoda/stats-paper-writing-agent-skills](https://github.com/fuhaoda/stats-paper-writing-agent-skills) | LaTeX 统计论文写作，前端草稿生成 | 统计学、计量经济学论文 |
 | [dylantmoore/stata-skill](https://github.com/dylantmoore/stata-skill) | Stata 全覆盖：语法、数据管理、计量、因果推断、Mata、20+ 社区包 | Stata 用户 |
 | [SepineTam/stata-mcp](https://github.com/SepineTam/stata-mcp) | LLM 通过 MCP 直接驱动 Stata 回归 | Stata 计量分析 |
+| [hanlulong/stata-mcp](https://github.com/hanlulong/stata-mcp) | Stata-MCP 编辑器扩展（VS Code/Cursor/Antigravity）：直接跑 `.do`、实时输出、数据/图查看；MIT · 414★（与上方 SepineTam 同名不同项目） | 编辑器内 AI 协作跑 Stata |
+| [tmonk/mcp-stata](https://github.com/tmonk/mcp-stata) · 已收录 [`skills/64`](skills/64-tmonk-mcp-stata/) | Stata MCP server 的 **20 个 SKILL.md**：复现 / 数据审计 / 发表 QA / 旧码现代化 / referee 回应 / power / 因果推断；**AGPL-3.0**（聚合保留原许可，未 vendor 服务端代码） | Stata 复现与稳健性审计 |
+| [PovertyAction/ipa-stata-template](https://github.com/PovertyAction/ipa-stata-template) | IPA 可复现 Stata 研究模板 + `.claude/skills`：编号流水线、断言式防御编程、LaTeX 表格；MIT | 发展经济学 / 田野实证复现 |
+| [lcrawfurd/claude-skills](https://github.com/lcrawfurd/claude-skills) | 学术 skill：paper / code review、referee、预审；code-review 内置 Stata/R/Python 编码规范（DIME / Reif / AEA Data Editor） | 投稿前审稿与代码复核 |
+| [AEADataEditor/replication-template](https://github.com/AEADataEditor/replication-template) | AEA 数据主编官方复现包模板（Stata 为主，`REPLICATION.md`）—— 经济学复现"黄金标准" | AEA / 顶刊复现包打包 |
 
 </details>
 
@@ -268,6 +275,21 @@ make check       # 完整 gate：validate + Python 编译 + 单元测试 + eval 
 | [conorbronsdon/avoid-ai-writing](https://github.com/conorbronsdon/avoid-ai-writing) | 结构化审计 + 重写 + 二次审计；可审计、可追溯 | 需要留痕的修改流程 | [`47`](skills/47-conorbronsdon-avoid-ai-writing/) |
 
 > **组合建议：** 🇨🇳 中文（知网/万方/维普）→ chinese-de-aigc · 🇬🇧 英文 → humanizer_academic · 需要审计留痕 → avoid-ai-writing · 通用散文 → stop-slop。
+
+### 工具目录（tools/）：自动化实证与因果推断工具
+
+> 与上面的 skill 不同，[`tools/`](tools/) 收录的是 agent / 研究者**实际调用的软件与服务**——已结构化编目、核实过 license 与维护状态，并接入 `make validate`。事实源 [`tools/tools.json`](tools/tools.json)，可浏览清单 [`tools/CATALOG.md`](tools/CATALOG.md)。
+
+**251 个工具 / 6 类**（2026-06 收录）：
+
+- **因果推断 / 处理效应库（32）** — DoWhy · EconML · CausalML · DoubleML · CausalPy · causallib · grf · CATENets · TMLE 系列 · 孟德尔随机化 …
+- **计量 / 准实验库（86）** — R/Python/Stata/Julia 的 面板FE · DiD（含现代/staggered）· 事件研究 · RDD · IV · 合成控制/SDID · 匹配加权 · 敏感性分析（fixest · did · HonestDiD · rdrobust · synthdid · reghdfe · csdid · sdid · pyfixest · linearmodels · FixedEffectModels.jl …）。
+- **自动化研究 / 数据科学 Agent（51）** — 端到端自动做科研/数据分析：AI-Scientist · data-to-paper · Agent Laboratory · RD-Agent · AI-Researcher · STORM · PaperQA2 · gpt-researcher · DeepAnalyze · MetaGPT(DI) · Biomni …（⚠️ 含非 OSI/无 LICENSE 仓库，用前确认授权）。
+- **MCP 服务（48）** — 统计执行（StatsPAI · stata-mcp · R / Jupyter MCP）+ 数据获取（FRED · World Bank · IMF · OECD · Eurostat · Census · BEA · BLS · SEC EDGAR · OpenAlex · Semantic Scholar · PubMed · Zotero · arXiv …）。
+- **因果发现 / 结构学习（25）** — causal-learn · Tetrad / py-tetrad · gCastle · CDT · tigramite(PCMCI) · LiNGAM · NOTEARS / DAGMA · pcalg · bnlearn · pgmpy …
+- **基准与数据集（9）** — causaldata · IHDP / Twins · ACIC 竞赛数据 · RealCause · JustCause · Tübingen cause-effect pairs · bnlearn 网络库 …
+
+完整说明见 [`tools/README.md`](tools/README.md)。
 
 ### 多代理系统 · MCP 服务器 · 平台 · 学习资源
 

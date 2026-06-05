@@ -4,7 +4,7 @@ description: "Simulate SimBiology models — ODE, stochastic (SSA), scenarios, a
 license: MathWorks BSD-3-Clause
 metadata:
   author: MathWorks
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Simulate SimBiology Models
@@ -29,6 +29,13 @@ scenario exploration, and sensitivity analysis.
 - NCA / AUC / Cmax from data (use `matlab-fit-simbiology-model`)
 
 ## Must-Follow Rules
+
+### 0. Add helper scripts to the MATLAB path first
+
+Run at the start of every session:
+```matlab
+addpath(fullfile('<WORKSPACE_ROOT>', '.claude', 'skills', 'matlab-simulate-simbiology-model', 'scripts'));
+```
 
 ### 1. Element-wise operators in observables
 
@@ -86,6 +93,12 @@ cs.CompileOptions.UnitConversion = true;
 cs.TimeUnits = 'hour';
 cs.StopTime = 24;  % now correctly 24 hours
 ```
+
+### 8. Scenario results are interleaved, not blocked
+
+Factorial scenario results come back interleaved by the first dimension.
+Always use `generate(sc)` to map result indices to conditions — never
+assume all entries of one factor appear consecutively.
 
 ## Decision Table
 
@@ -167,6 +180,7 @@ r2 = simfun([0.1, 0.5; 0.3, 1.0], 24); % multiple parameter sets (rows)
 ```
 
 - Compiles once, runs many — much faster than `sbiosimulate` in a loop
+- **Exception:** SSA (stochastic) requires `sbiosimulate` in a loop because each run needs fresh random state; `createSimFunction` does not support stochastic solvers
 - Compatible with `parfor` (Parallel Computing Toolbox)
 - Returns `SimData` objects; use `.getdata()` to extract arrays
 
@@ -359,7 +373,7 @@ sobolResults = sbiosobol(m, {'ke','ka'}, {'Drug'}, ...
     'OutputTimes', 0:1:24, 'NumberSamples', 500, 'Bounds', bounds);
 plot(sobolResults);
 
-% Extract indices from struct array (R2025b+)
+% Extract indices from struct array
 for i = 1:numel(sobolResults.SobolIndices)
     Si  = mean(sobolResults.SobolIndices(i).FirstOrder, 'omitnan');
     STi = mean(sobolResults.SobolIndices(i).TotalOrder, 'omitnan');
@@ -413,7 +427,7 @@ cs.SensitivityAnalysisOptions.Outputs = [];
   model = proj.(fn{1});
   ```
 - Pass **model objects** (not UUID strings) to simulation functions
-- Use `getModelByUUID(uuid)` to recover handles
+- Use `getModelByUUID(uuid)` to recover handles (provided by this skill's `scripts/` directory — add to path at session start)
 - `createSimFunction` returns `SimData`; extract with `.getdata()`
 - Pass model directly to `sbiosobol`/`sbioelementaryeffects` (not a SimFunction)
 - Bounds matrix: one row per parameter, columns `[low high]`

@@ -1,8 +1,7 @@
 ---
 name: talk-stage3-concepts
 description: "Builds a numbered, categorized concept catalogue from the talk summary and timeline, scoring each concept HIGH / MEDIUM / LOW for talk potential with optional repo enrichment. Use when you need a structured inventory of concepts before choosing a talk angle, or when assessing which ideas have the strongest presentation potential."
-tags: [talk, pipeline, presentation, stage-3]
-allowed-tools: "Write, Read"
+allowed-tools: Write Read
 effort: high
 ---
 
@@ -18,19 +17,19 @@ Builds an exhaustive catalogue of all identifiable concepts in the source materi
 
 ## What This Skill Does
 
-1. **Reads the summary** — loads `{slug}-summary.md`
-2. **Reads the timeline** (if available) — enriches scoring with verified dates
-3. **Extracts concepts** — full scan of the source material
-4. **Categorizes** — assigns each concept to a domain category
-5. **Scores** — HIGH / MEDIUM / LOW for talk potential
-6. **Optional repo enrichment** — if repo_path is provided, analyzes AI config concepts
+1. **Reads the summary**: loads `{slug}-summary.md`
+2. **Reads the timeline** (if available): enriches scoring with verified dates
+3. **Extracts concepts**: full scan of the source material
+4. **Categorizes**: assigns each concept to a domain category
+5. **Scores**: HIGH / MEDIUM / LOW for talk potential
+6. **Optional repo enrichment**: if repo_path is provided, analyzes AI config concepts
 7. **Writes output files**
 
 ## Input
 
 - `talks/{YYYY}-{slug}-summary.md` (required)
-- `talks/{YYYY}-{slug}-timeline.md` (optional — enriches REX concepts)
-- `repo_path` (optional — for config/infrastructure concept extraction)
+- `talks/{YYYY}-{slug}-timeline.md` (optional, enriches REX concepts)
+- `repo_path` (optional, for config/infrastructure concept extraction)
 
 ## Output
 
@@ -39,20 +38,20 @@ Builds an exhaustive catalogue of all identifiable concepts in the source materi
 
 ## Scoring Criteria
 
-### HIGH — Strong potential
+### HIGH: Strong potential
 - Demonstrable live or with a screenshot
 - Counter-intuitive or surprising (triggers a reaction)
 - Associated with verifiable numbers
 - Concrete and actionable (explainable in 30 seconds)
 - Differentiator vs other talks on the same topic
 
-### MEDIUM — Moderate potential
+### MEDIUM: Moderate potential
 - Useful but expected (not surprising)
 - Missing concrete proof or numbers
 - Too specific to one particular context
 - Needs too much explanation for a 30-min talk
 
-### LOW — Weak potential
+### LOW: Weak potential
 - Too abstract or philosophical without concrete grounding
 - Already heavily covered by other speakers
 - Requires specific technical background
@@ -84,10 +83,10 @@ Adapt or create categories if the talk has domain-specific areas.
 ### concepts.md
 
 ```markdown
-# Key Concepts — {provisional title}
+# Key Concepts: {provisional title}
 
 **Date**: {date}
-**Source**: {source path} × Summary × Timeline (if available)
+**Source**: {source path} x Summary x Timeline (if available)
 
 ---
 
@@ -132,7 +131,7 @@ For each enriched concept, include:
 ## Anti-patterns
 
 - Creating overly granular concepts (one feature = one concept max)
-- Scoring HIGH by default — be selective
+- Scoring HIGH by default (be selective)
 - Omitting LOW concepts (they're useful in positioning as "angles to avoid")
 - Duplicating very similar concepts (merge them instead)
 - Analyzing repo code if the repo isn't accessible
@@ -148,13 +147,13 @@ For each enriched concept, include:
 
 ## Tips
 
-- The concept catalogue is what Stage 4 (Position) draws from — the richer it is, the better the angle choices
+- The concept catalogue is what Stage 4 (Position) draws from; the richer it is, the better the angle choices
 - LOW concepts are valuable: they define the boundaries of what NOT to put in the talk
-- If two concepts feel very similar, merge them — a smaller, sharper list beats a long diluted one
+- If two concepts feel very similar, merge them (a smaller, sharper list beats a long diluted one)
 
 ## Related
 
-- [Stage 1: Extract](../stage-1-extract/SKILL.md) — prerequisite
-- [Stage 2: Research](../stage-2-research/SKILL.md) — provides timeline (REX)
-- [Stage 4: Position](../stage-4-position/SKILL.md) — reads this catalogue
+- [Stage 1: Extract](../stage-1-extract/SKILL.md): prerequisite
+- [Stage 2: Research](../stage-2-research/SKILL.md): provides timeline (REX)
+- [Stage 4: Position](../stage-4-position/SKILL.md): reads this catalogue
 - [Orchestrator](../orchestrator/SKILL.md)

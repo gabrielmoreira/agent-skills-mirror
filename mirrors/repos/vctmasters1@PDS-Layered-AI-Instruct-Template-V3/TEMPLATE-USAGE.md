@@ -51,7 +51,7 @@ This guide walks you through customizing the **Depth-Priority Hierarchical AI-IN
 | `.vscode/settings.json` | Search exclusions for archive dirs |
 | `AGENTS.md` | Discovery anchor for non-Copilot AI agents (Codex, Claude Code, Aider, etc.) |
 | `CHANGELOG.md` | Template changelog — replace with your project changelog after adoption |
-| `LICENSE` | MIT placeholder — edit before publishing |
+| `LICENSE` | Proprietary license — PipeDreamSystemsLLC, all rights reserved. Commercial use requires a signed agreement. |
 
 ---
 

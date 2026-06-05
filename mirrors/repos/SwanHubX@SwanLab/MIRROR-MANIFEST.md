@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `SwanHubX/SwanLab` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `SwanHubX/SwanLab` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `SwanHubX/SwanLab` — 26 default patterns, 0 followed patterns, 2 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/swanlab-skill/references/SWANLAB_CONCEPTS.md`](skills/swanlab-skill/references/SWANLAB_CONCEPTS.md) |
-| 2 | ✓ | [`skills/swanlab-skill/SKILL.md`](skills/swanlab-skill/SKILL.md) |
+| 1 | ✓ | [`skills/swanlab-skill/references/CLI_REFERENCE.md`](skills/swanlab-skill/references/CLI_REFERENCE.md) |
+| 2 | ✓ | [`skills/swanlab-skill/references/SDK_QUICKSTART.md`](skills/swanlab-skill/references/SDK_QUICKSTART.md) |
+| 3 | ✓ | [`skills/swanlab-skill/references/SWANLAB_CONCEPTS.md`](skills/swanlab-skill/references/SWANLAB_CONCEPTS.md) |
+| 4 | ✓ | [`skills/swanlab-skill/scripts/plot_metrics.py`](skills/swanlab-skill/scripts/plot_metrics.py) |
+| 5 | ✓ | [`skills/swanlab-skill/scripts/runs_benchmark.py`](skills/swanlab-skill/scripts/runs_benchmark.py) |
+| 6 | ✓ | [`skills/swanlab-skill/SKILL.md`](skills/swanlab-skill/SKILL.md) |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: ci-tests
-description: Run the test suite for the current repo — auto-detects Python (pytest/uv), Node (vitest/pnpm), or Rust (cargo test)
+description: Run the test suite for the current repo, auto-detecting Python (pytest/uv), Node (vitest/pnpm), or Rust (cargo test)
 argument-hint: "[file or folder target]"
 allowed-tools: [Bash]
 model: haiku
@@ -8,7 +8,7 @@ effort: low
 disable-model-invocation: true
 ---
 
-# /ci:tests — Run tests
+# /ci:tests: Run tests
 
 Detects the stack and runs tests with the right command.
 
@@ -69,7 +69,7 @@ cargo test --quiet $ARGUMENTS 2>&1
 ## Expected output
 
 ```
-Tests — my-api (Python/pytest)
+Tests: my-api (Python/pytest)
 ───────────────────────────────
 
 uv run pytest --tb=short -q

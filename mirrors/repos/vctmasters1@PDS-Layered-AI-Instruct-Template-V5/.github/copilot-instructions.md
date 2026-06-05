@@ -16,6 +16,8 @@
 | [Global Shared Instructions (`.ai/`)](#global-shared-instructions-ai) | Cross-cutting canonical files |
 | [Agentic Runtime (`.ai/`)](#agentic-runtime-ai) | Governed tools, foresight, self-improvement, heartbeat |
 | [AI Prompt Files (`.github/prompts/`)](#ai-prompt-files-githubprompts) | Slash commands |
+| [Workflow Invocation Pattern](#workflow-invocation-pattern) | Workflows are repeatable; workflows vs. utilities; do not treat them as one-time setup |
+| [Governed Workflows — Import/Merge Pattern Guard](#governed-workflows--importmerge-pattern-guard) | **CRITICAL:** Imports are orchestrated workflows, not ad-hoc copy operations |
 | [Custom Agents (`.github/agents/`)](#custom-agents-githubagents) | Specialized personas |
 | [Skills (`.github/skills/`)](#skills-githubskills) | Domain knowledge packs |
 | [Git Hooks (`.github/hooks/`)](#git-hooks-githubhooks) | Commit-time safety checks |
@@ -30,11 +32,55 @@
 
 ## Read Project Specs First
 
-Before suggesting commands, file paths, line endings, or tooling, **read [`.github/dev-specs.md`](dev-specs.md)** to determine the developer OS, shell, target platform, language versions, and frameworks for this project.
+Before suggesting commands, file paths, line endings, or tooling, **read [`.github/dev-specs.md`](dev-specs.md)** to determine:
 
-Do not assume the platform from the user's prompt or your environment. The contents of `dev-specs.md` are authoritative for these facts.
+1. **Project Mode** (MOST IMPORTANT): Are we in **Template Development** mode (building the framework) or **Production/Adoption** mode (using the framework for a real project)?
+   - Template mode: Framework files in `.ai/`, `.github/` are authoritative and can be modified
+   - Production mode: Never commit adopter-specific configs; only commit project source and templates
+2. Developer OS, shell, target platform, language versions, and frameworks
+
+Do not assume the platform or mode from the user's prompt or your environment. The contents of `dev-specs.md` are authoritative for these facts.
 
 For template-first repositories, `dev-specs.md` may still be partially unfilled during onboarding. In that case, ask to run `/ai-onboard` (or ask focused follow-up questions) so inferred values are confirmed and written before giving platform-specific guidance.
+
+---
+
+## The Routing Gateway — Core Orchestration Layer
+
+**This is the magic.** The `/ai-route` gateway is the central nervous system that powers every major workflow in this project. It is **not optional** — it is the defining feature that makes depth-priority hierarchy practical at scale.
+
+### What Routing Does
+
+Before any workflow (import, validation, module creation, etc.) executes, the router:
+
+1. **Resolves scope** — finds the deepest `.ai/instruct.md` that governs the affected paths
+2. **Checks governance** — applies any external rules or constraints
+3. **Routes to authority** — delegates to the domain manager/supervisor that owns that scope
+4. **Enables escalation** — halts on conflicts and explains why
+
+### Why This Matters
+
+Without routing, each workflow would need to implement scope resolution independently → **duplicate logic, brittleness, easy to bypass.**
+
+With routing, all workflows speak the same language → **consistent, auditable, scope-aware.**
+
+### Routed Workflows (Today)
+
+| Workflow | Routed to |
+|----------|-----------|
+| `/ai-import-execute` | `pds-man-imports` (Phase 0-7 orchestration) |
+| `/ai-adapt-infrastructure` | `pds-man-infrastructure` (infrastructure compliance & adaptation) |
+| `/ai-validate` | `pds-pipe-validator` (scope-aware validation) |
+| `/ai-reflect` | `pds-meta-learner` (gap analysis) |
+| `/ai-update-index` | `pds-man-curator` (index rebuild) |
+| `/ai-new-module` | `pds-pipe-scaffolder` (module scaffolding) |
+
+Each workflow does **not** know how to resolve scope or apply governance—it delegates that to the router and lets the router decide who should execute.
+
+### The Router Itself
+
+→ **[/ai-route prompt](prompts/ai-route.prompt.md)** — invoke when you need scope resolution before delegating  
+→ **[pds-meta-router agent](agents/pds-meta-router.agent.md)** — technical details and governance resolution logic
 
 ---
 
@@ -127,7 +173,7 @@ AI-invocable slash commands live as `.prompt.md` files in `.github/prompts/`.
 
 ```
 .github/prompts/
-├── ai-onboard.prompt.md        ← /ai-onboard: Interactive wizard to ask/infer/confirm template fields
+├── ai-onboard.prompt.md        ← /ai-onboard: Interactive wizard (also absorbs existing-project import)
 ├── ai-update-index.prompt.md   ← /ai-update-index: Rebuild .ai/index.md after changes
 ├── ai-archive.prompt.md        ← /ai-archive: Archive a file following the convention
 ├── ai-new-module.prompt.md     ← /ai-new-module: Scaffold a new module and register it
@@ -135,12 +181,113 @@ AI-invocable slash commands live as `.prompt.md` files in `.github/prompts/`.
 ├── ai-validate.prompt.md       ← /ai-validate: Run the AI-INSTRUCT drift validator
 ├── ai-foresight.prompt.md      ← /ai-foresight: Run foresight gap/risk analysis on current task before acting
 ├── ai-reflect.prompt.md        ← /ai-reflect: Post-task reflection; identify instruction gaps and propose .ai/ improvements
-└── ai-commit.prompt.md         ← /ai-commit: Refresh dates, validate, draft a Conventional Commits message, optionally push
+├── ai-plugin-discover.prompt.md ← /ai-plugin-discover: Enumerate optional plugins under .ai/plugins/; read-only
+└── ai-git.prompt.md            ← /ai-git: Version control (subcommands: branch | commit | pr | status)
 ```
 
 Type the slash command in Copilot Chat to invoke. All project-specific commands use the `/ai-` prefix to distinguish them from built-in Copilot commands.
 
 **Create when**: a multi-step workflow is executed more than twice in a session, or a workflow is complex enough that the AI needs explicit sequencing to do it correctly.
+
+---
+
+## Workflow Invocation Pattern
+
+**Workflows** are repeatable, idempotent operations that can be invoked at any time — not one-time setup tasks.
+
+### Workflows (Repeatable)
+
+Invoke these whenever the operation is needed, not just during initial setup:
+
+| Workflow | Purpose | Repeatable? |
+|----------|---------|------------|
+| `/ai-onboard` | Initialize or update project metadata (identity, dev-specs, module list) | Yes — re-run to refresh identity or add modules |
+| `/ai-import-execute` | Import/merge external projects with full Phase 0-6 orchestration | Yes — use each time you merge a new project |
+| `/ai-new-module` | Scaffold a new module (instruct.md, dev-docs, registration) | Yes — invoke per module |
+| `/ai-update-index` | Rebuild `.ai/index.md` from current state | Yes — run after editing any `.ai/instruct.md` |
+| `/ai-archive` | Archive (never delete) a file or directory | Yes — use per archival task |
+
+### Utilities (Informational, No State Change)
+
+Run these to inspect or analyze; they do not modify the project:
+
+| Utility | Purpose |
+|---------|---------|
+| `/ai-validate` | Audit instruction drift; report findings |
+| `/ai-env-check` | Audit host-vs-container isolation |
+| `/ai-foresight` | Analyze gaps/risks before acting |
+| `/ai-reflect` | Post-task reflection; propose improvements |
+| `/ai-observe` | Display runtime observability and metrics |
+| `/ai-git` | Query version control state (no auto-commits) |
+
+### Key Principle
+
+**Do not treat workflows as one-time setup.** They are on-demand operations:
+
+- **First time:** `/ai-onboard` fills template placeholders → project becomes usable
+- **Later:** `/ai-onboard` again to update project name, add/remove modules, refresh dev-specs
+- **Each import:** `/ai-import-execute` with a new source project → orchestrated Phase 0-6 pipeline
+- **Each module:** `/ai-new-module` to scaffold a new capability
+
+---
+
+## Governed Workflows — Import/Merge Pattern Guard
+
+**CRITICAL SAFETY RULE:** Importing, cloning, or merging external projects is a **governed workflow**, not a vanilla file-copy operation. This section explains why and enforces the guardrail.
+
+### Pattern Recognition
+
+If the user **mentions any of these**, you **MUST** recognize it as an import workflow trigger:
+
+- "clone" + project/repo reference
+- "import" + external project name or path
+- "merge" + another project / workspace
+- "adopt" + external codebase
+- "migrate" + project / code
+- "consolidate" + multiple projects
+- "integrate" + external repo
+
+### The Non-Negotiable Rule
+
+**DO NOT:**
+- Run ad-hoc `git clone` or `Move-Item` / `cp -r` commands
+- Manually copy directories from one project to another without orchestration
+- Decide module structure, naming, or registration on the fly
+- Bypass Phase 0 validation (LLM dispatch, environment, credentials, naming conventions)
+
+**DO:**
+1. **Stop** and acknowledge the import request
+2. **Read** `.ai/instruct.md` to understand the authoritative import strategy for this project
+3. **Invoke `/ai-import-execute`** (or the project's equivalent import orchestration prompt)
+4. **Let the agent orchestration layer** (pds-meta-migrator → pds-pipe-importer) handle:
+   - Phase 0: Operational validation (LLM dispatch, env, credentials, naming)
+   - Phase 1-6: Artifact preservation, analysis, integration, modernization, and registry updates
+5. **Wait for completion** before suggesting next steps
+
+### Why This Matters
+
+- **Naming conflicts** — Projects have different conventions; ad-hoc copies violate the registry
+- **Module authority drift** — Each module's `.ai/instruct.md` is authoritative; manual moves break the hierarchy
+- **Credential leakage** — Phase 0 validation catches `.env` files; ad-hoc copies miss them
+- **Registry corruption** — Module lists, naming conventions, error codes, API endpoints all need updates; manual copies bypass the updater
+- **Audit trail loss** — Proper import logs every decision; ad-hoc commands leave no trace
+
+### Example (What NOT to Do)
+
+```
+User: "Clone https://github.com/user/project.git and move it into src/"
+
+❌ WRONG:
+  git clone https://github.com/user/project.git
+  Move-Item project/* -Destination src/
+  (no validation, no registry updates, no module supervision)
+
+✅ RIGHT:
+  Recognize: This is an import workflow
+  → Invoke /ai-import-execute with the source URL
+  → Let orchestration handle Phase 0 + Phases 1-6
+  → Confirm completion before offering next steps
+```
 
 ---
 

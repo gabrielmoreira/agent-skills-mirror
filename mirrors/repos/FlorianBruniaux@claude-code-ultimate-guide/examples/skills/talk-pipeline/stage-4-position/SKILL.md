@@ -1,8 +1,7 @@
 ---
 name: talk-stage4-position
 description: "Generates 3-4 strategic talk angles with strength/weakness analysis, title options, CFP descriptions, and a peer feedback draft, then enforces a mandatory CHECKPOINT for user confirmation before scripting. Use when deciding how to frame a talk, preparing a CFP submission, or choosing between multiple narrative angles."
-tags: [talk, pipeline, presentation, stage-4, checkpoint]
-allowed-tools: "Write, Read, AskUserQuestion"
+allowed-tools: Write Read AskUserQuestion
 effort: high
 ---
 
@@ -12,19 +11,19 @@ Generates strategic angles, titles, descriptions, and a peer-feedback draft. The
 
 ## When to Use This Skill
 
-- After Stage 3 (Concepts) — needs the concept catalogue
+- After Stage 3 (Concepts), which provides the concept catalogue
 - When deciding how to frame the talk
 - Before sending the CFP (uses the generated descriptions directly)
 
 ## What This Skill Does
 
-1. **Reads inputs** — summary + concepts + event constraints
-2. **Generates angles** — 3-4 distinct angles with force/weakness analysis
-3. **Recommends** — one clear choice with structured justification
-4. **Generates titles** — 3-5 options per angle
-5. **Generates descriptions** — short abstract + long CFP description
-6. **Generates feedback draft** — ready-to-send message (3 formats)
-7. **CHECKPOINT** — displays choice request and waits for user response
+1. **Reads inputs**: summary + concepts + event constraints
+2. **Generates angles**: 3-4 distinct angles with strength/weakness analysis
+3. **Recommends**: one clear choice with structured justification
+4. **Generates titles**: 3-5 options per angle
+5. **Generates descriptions**: short abstract + long CFP description
+6. **Generates feedback draft**: ready-to-send message (3 formats)
+7. **CHECKPOINT**: displays choice request and waits for user response
 8. **Saves 4 files**
 
 ## Input
@@ -43,7 +42,7 @@ Generates strategic angles, titles, descriptions, and a peer-feedback draft. The
 ## angles.md Format
 
 ```markdown
-# Talk Angles — {provisional title}
+# Talk Angles: {provisional title}
 
 **Goal**: Choose the angle that maximizes impact for {audience}.
 **Audience**: {audience description}
@@ -62,13 +61,13 @@ Generates strategic angles, titles, descriptions, and a peer-feedback draft. The
 - {weakness 1}
 - {weakness 2}
 
-**Audience fit**: Strong / Medium / Weak — {short justification}
+**Audience fit**: Strong / Medium / Weak ({short justification})
 
-**Verdict**: ⭐⭐⭐⭐⭐ (out of 5)
+**Verdict**: (out of 5 stars)
 
 ---
 
-[Angle 2, Angle 3, (optional Angle 4) — same structure]
+[Angle 2, Angle 3, (optional Angle 4): same structure]
 
 ---
 
@@ -101,9 +100,9 @@ Generates strategic angles, titles, descriptions, and a peer-feedback draft. The
 ## titre.md Format
 
 ```markdown
-# Titles — Talk {slug}
+# Titles: Talk {slug}
 
-**Selected angle**: Angle {X} — {name}
+**Selected angle**: Angle {X} ({name})
 **Constraints**: {duration} min | {audience}
 
 ---
@@ -131,33 +130,33 @@ Strengths: {strengths}
 - **{title}**
 - **{title}**
 
-[If Angle 3 chosen — same]
+[If Angle 3 chosen: same structure]
 
 ---
 
 ## Verdict
 
-**Recommendation**: Option 1 — "{title}"
+**Recommendation**: Option 1 ("{title}")
 **Why**: {short justification}
 ```
 
 ## descriptions.md Format
 
 ```markdown
-# Descriptions — Talk {slug}
+# Descriptions: Talk {slug}
 
 ---
 
 ## Short description (abstract, ~100 words)
 
-{Full text — direct, engaging, starts with the impact or concrete promise.
+{Full text: direct, engaging, starts with the impact or concrete promise.
 Not "In this talk, we will..."}
 
 ---
 
 ## Long description (CFP, ~250 words)
 
-{Full text — context, what the audience will learn, who it's for.
+{Full text: context, what the audience will learn, who it's for.
 Includes key metrics if available.
 Direct and factual tone.}
 
@@ -174,7 +173,7 @@ Direct and factual tone.}
 {5-10 relevant tags for CFP or search}
 ```
 
-## CHECKPOINT (mandatory — Step 7)
+## CHECKPOINT (mandatory, Step 7)
 
 After generating and saving the 4 files, display:
 
@@ -183,14 +182,14 @@ After generating and saving the 4 files, display:
 CHECKPOINT: Angle + Title choice
 
 I've generated 4 files:
-- talks/{YYYY}-{slug}-angles.md    → {n} angles analyzed
-- talks/{YYYY}-{slug}-titre.md     → {n} title options
+- talks/{YYYY}-{slug}-angles.md    -> {n} angles analyzed
+- talks/{YYYY}-{slug}-titre.md     -> {n} title options
 - talks/{YYYY}-{slug}-descriptions.md
 - talks/{YYYY}-{slug}-feedback-draft.md
 
 Before starting the script (Stage 5), I need your choice:
 
-1. Which angle do you choose? (recommended: Angle {X} — {name})
+1. Which angle do you choose? (recommended: Angle {X}, {name})
 2. Which title do you prefer? (recommended: "{title}")
 
 You can also modify, combine, or propose something different.
@@ -204,7 +203,7 @@ Reply to start the script.
 
 - Minimum 3 angles, maximum 4 (beyond that it's noise)
 - Each angle must be genuinely distinct (not variations of the same)
-- The recommendation must be clear and argued — not "your choice"
+- The recommendation must be clear and argued, not "your choice"
 - Always test: "can this angle sustain the full duration without repeating?"
 
 ## Anti-patterns
@@ -212,12 +211,12 @@ Reply to start the script.
 - Click-bait titles ("What nobody tells you about AI")
 - Recommending the last angle listed by default (recency bias)
 - Descriptions that read like slide summaries
-- Skipping the CHECKPOINT — it's the pipeline's most important control point
-- Marketing language in descriptions (revolutionary, game-changer)
+- Skipping the CHECKPOINT (it's the pipeline's most important control point)
+- Marketing language in descriptions (revolutionary, etc.)
 
 ## Validation Checklist
 
-- [ ] 3-4 angles with force/weakness/audience-fit analysis
+- [ ] 3-4 angles with strength/weakness/audience-fit analysis
 - [ ] Clear recommendation with structured justification
 - [ ] 3-5 titles for the recommended angle
 - [ ] Short description (~100 words) and long description (~250 words)
@@ -227,8 +226,8 @@ Reply to start the script.
 
 ## Tips
 
-- Send `feedback-draft.md` to a peer before the checkpoint — 10 minutes of external feedback can save hours of rework on the script
-- The recommendation is a starting point, not an order — your audience knowledge overrides any algorithmic suggestion
+- Send `feedback-draft.md` to a peer before the checkpoint; 10 minutes of external feedback can save hours of rework on the script
+- The recommendation is a starting point, not an order (your audience knowledge overrides any algorithmic suggestion)
 - Weak titles are usually too abstract: test each title by asking "would someone in the hallway stop walking to read this?"
 
 ## Templates
@@ -237,6 +236,6 @@ Reply to start the script.
 
 ## Related
 
-- [Stage 3: Concepts](../stage-3-concepts/SKILL.md) — prerequisite
-- [Stage 5: Script](../stage-5-script/SKILL.md) — starts after this CHECKPOINT
+- [Stage 3: Concepts](../stage-3-concepts/SKILL.md): prerequisite
+- [Stage 5: Script](../stage-5-script/SKILL.md): starts after this CHECKPOINT
 - [Orchestrator](../orchestrator/SKILL.md)

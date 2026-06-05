@@ -8,8 +8,8 @@ This project uses the **Depth-Priority Hierarchical AI-INSTRUCT V5** system. **T
 
 Before suggesting any change, read in this order:
 
-1. [.github/copilot-instructions.md](.github/copilot-instructions.md) — meta: how the layering works.
-2. [.github/dev-specs.md](.github/dev-specs.md) — developer OS, shell, language versions, frameworks. Read at session start before suggesting commands or paths.
+1. [.github/dev-specs.md](.github/dev-specs.md) — **CRITICAL**: Are we in Template Development or Production mode? Then: developer OS, shell, language versions, frameworks.
+2. [.github/copilot-instructions.md](.github/copilot-instructions.md) — meta: how the layering works.
 3. [.ai/index.md](.ai/index.md) — master index of every instruction section.
 4. [.ai/instruct.md](.ai/instruct.md) — workspace-root authority.
 5. `[current-directory]/.ai/instruct.md` and every ancestor — **the deepest is authoritative**, shallower files are background context only.

@@ -190,43 +190,16 @@ When using `WebFetch`, `WebSearch`, MCP web tools (`mcp__claude-in-chrome__*`), 
 
 ## Image Handling
 
-When an agent references an image (screenshot, Figma frame, photograph, diagram, UI mockup, generated asset, etc.) as input to any decision, design, implementation, or response, treat unclear or under-determined visual content the same way Web Fetch Safety treats untrusted text: **do not let speculation fill the gap**.
+When an agent references an image (screenshot, Figma frame, photograph, diagram, chart, UI mockup, log capture, generated asset, etc.) as input to any decision, design, implementation, or response, run the five-stage image pipeline — `RECOGNIZE → PARSE → ANALYZE → HYPOTHESIZE → PROPOSE` — and treat under-determined visual content the way Web Fetch Safety treats untrusted text: **do not let speculation fill the gap**.
 
 **Rules:**
-- Distinguish two zones in any image-derived statement: (a) what is **observed** in the image, and (b) what is **inferred / assumed**. Surface (b) explicitly to the user before acting on it.
-- If any of the following hold, stop and ask the user via `AskUserQuestion` (or the equivalent confirmation channel) before proceeding:
-  - Text in the image is unreadable (resolution, occlusion, glare, truncation).
-  - Symbols, arrows, lines, or connections admit more than one plausible interpretation.
-  - Multiple UI elements / screens / variants are present and the target one is not stated.
-  - Numbers, units, or scale are ambiguous (e.g., "12" without unit, axis labels missing).
-  - The image references off-screen context the agent cannot see.
-  - The user's request and the visible content disagree, and the resolution is unclear.
-- This rule applies in AUTORUN and AUTORUN_FULL modes — image ambiguity is an `Ask First` trigger that overrides the default no-confirmation policy.
-- Skip confirmation only when the image is fully self-evident for the task (e.g., a single legible error-message screenshot whose text is the entire input).
-- When asking, quote the specific region or element ("the icon at the top-right of frame 2", "the value next to the orange arrow") rather than asking generic "could you clarify the image?" questions.
-- Log image-derived decisions and the resolution of any ambiguity in the agent journal so downstream agents inherit the verified reading, not the raw image.
+- Separate every image-derived statement into (a) **observed** (literally present) and (b) **inferred** (reasonably implied); surface (b) explicitly before acting on it.
+- Stop and ask via `AskUserQuestion` before proceeding when text is unreadable, symbols/connections admit multiple readings, the target element among several is unstated, numbers/units/scale are ambiguous, the image references off-screen context, or the request and visible content disagree. Quote the specific region, not a generic "clarify the image?".
+- This Ask-First gate applies in **AUTORUN and AUTORUN_FULL** — image ambiguity overrides the default no-confirmation policy. Skip confirmation only when the image is fully self-evident for the task.
+- For **bug-report / "this is broken"** images, the mandatory five-section analysis (Observations / Inferred context / Problem points / Improvement proposals / Open questions) is required; a one-line description is `PARTIAL`, not `SUCCESS`.
+- When delegating downstream, pass the **structured reading**, not the raw image. Log image-derived decisions and ambiguity resolutions in the agent journal so the verified reading propagates.
 
-**Rationale:** Image interpretation has wider semantic latitude than text. A speculative reading propagates undetected through downstream agents, and the cost of one confirmation question is vastly lower than the cost of building on a misread visual.
-
-### Bug Report Images (mandatory deep analysis)
-
-When the user attaches an image to a bug report, defect report, or "this is broken" request, **a one-line description of the image is not sufficient**. The image is the primary evidence; treat it as a first-class artifact and produce a structured analysis before proposing any fix or routing the request downstream.
-
-**Required analysis output (all sections, in order):**
-
-1. **Observations** — enumerate verbatim what is visible: error message text, status codes, stack traces, UI state, highlighted regions, cursor position, timestamps, environment indicators (OS chrome, browser frame, device frame, viewport size), and any annotations the reporter added (red boxes, arrows, circles, callouts).
-2. **Inferred context** — derived facts that are not literally in the image but are reasonably implied (e.g., "this is the checkout step 2 based on the breadcrumb", "the input lost focus before the error appeared based on the cursor outline"). Mark each as inferred, not observed.
-3. **Problem points** — list each distinct problem the image evidences. Separate primary defect from incidental issues visible in the same frame (e.g., main bug = 500 error toast; incidental = misaligned button, low-contrast helper text). Do not collapse them into a single "the screen is broken" entry.
-4. **Improvement proposals** — for each problem point, propose a concrete remediation direction (code area to investigate, UX fix, copy change, validation rule, etc.). Distinguish "fix the reported defect" from "incidental improvements the image surfaced".
-5. **Open questions** — anything the image alone cannot resolve (reproduction steps, the exact API response, prior user actions, account state). Route these through the Image Handling ambiguity rules above.
-
-**Rules:**
-- This applies regardless of execution mode (AUTORUN / AUTORUN_FULL included). Skipping the structured analysis on a bug-report image is a `PARTIAL` outcome, not a `SUCCESS`.
-- When delegating to Scout, Sherpa, Builder, or any downstream agent, pass the **structured analysis**, not the raw image alone — downstream agents inherit a verified reading rather than re-interpreting pixels.
-- If the image is genuinely under-determined (per Image Handling rules above), produce the partial analysis from what *is* observable and surface the remaining gaps as `Open questions` for the reporter, instead of skipping the analysis.
-- Incidental improvements found in the image must not silently expand the fix scope — surface them as a separate recommendation list, and let the user decide whether to bundle them.
-
-**Rationale:** Bug-report images encode evidence the reporter could not (or did not) articulate in text. A shallow read ("looks like a UI bug") loses the high-signal details and forces downstream agents to either re-analyze the image or guess. A one-pass structured analysis converts the image into durable, machine-and-human-readable findings that the entire bug chain (Scout → Sherpa → Builder → Radar) can act on without re-deriving.
+**Full pipeline, image-type taxonomy, hypothesis framework, bug-report sections:** → `_common/IMAGE_INPUT.md`
 
 ---
 

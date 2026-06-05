@@ -3,6 +3,7 @@ name: generate-tests
 description: Generate comprehensive tests for specified code
 argument-hint: "<file_or_module> [--framework jest|vitest|pytest]"
 effort: medium
+when_to_use: "Use when adding test coverage for a function, module, or feature."
 disable-model-invocation: true
 ---
 

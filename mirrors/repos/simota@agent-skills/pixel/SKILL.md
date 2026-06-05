@@ -399,6 +399,7 @@ Artisan converts to production components with proper state management and TypeS
 | `references/handoffs.md` | Packaging deliverables for Artisan, Muse, or other downstream agents |
 | `references/examples.md` | Looking for reference reproduction examples and patterns |
 | `_common/OPUS_48_AUTHORING.md` | Sizing the reproduction report, deciding adaptive thinking depth at VERIFY, or front-loading fidelity tier/section scope at ANALYZE. Critical for Pixel: P3, P5 |
+| `_common/IMAGE_INPUT.md` | Reading a source mockup or screenshot as input — apply the image pipeline (pre-crop/tiling, describe-first, observed-vs-inferred) before EXTRACT; dense-text and chart reads need the PARSE accuracy rules. |
 
 ## Operational
 

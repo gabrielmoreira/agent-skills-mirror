@@ -1,15 +1,15 @@
 ---
 name: seo-content-writer
-description: 'Use when the user asks to "write SEO content"; drafts posts, articles, and landing pages with keywords, headers, snippets, and evidence boundaries. SEO文章写作/内容优化'
-version: "9.9.9"
+description: 'Use when the user asks to "write SEO content"; drafts new posts, articles, and landing pages with keywords, headers, snippets, and evidence boundaries. Not for AI-citation/GEO readiness scoring — use geo-content-optimizer; not for updating decaying existing content — use content-refresher. SEO文章写作/内容优化'
+version: "9.9.10"
 license: Apache-2.0
-compatibility: "Claude Code, skills.sh, ClawHub, Vercel Labs, Cursor, Windsurf, Codex CLI, Amp, Gemini CLI, Kimi Code, Qwen Code, CodeBuddy"
+compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/seo-geo-claude-skills"
 when_to_use: "Use when writing SEO-optimized articles, blog posts, landing pages, or product descriptions. Also when the user asks to create content targeting a specific keyword."
 argument-hint: "<topic> <target keyword>"
 metadata:
   author: aaron-he-zhu
-  version: "9.9.9"
+  version: "9.9.10"
   geo-relevance: "medium"
   tags:
     - seo
@@ -25,7 +25,6 @@ metadata:
     - SEO글쓰기
     - redaccion-seo
   triggers:
-    - "write SEO content"
     - "create blog post"
     - "SEO copywriting"
     - "write me a blog post"
@@ -33,17 +32,7 @@ metadata:
     - "how to write SEO friendly content"
     - "SurferSEO alternative"
     - "SEO文章写作"
-    - "博客写作"
     - "帮我写文章"
-    - "写一篇SEO文章"
-    - "SEOライティング"
-    - "ブログ記事作成"
-    - "SEO 글쓰기"
-    - "블로그 작성"
-    - "redacción SEO"
-    - "escribir artículo SEO"
-    - "redação SEO"
-    - "escrever artigo SEO"
 ---
 
 # SEO Content Writer
@@ -64,9 +53,10 @@ Here's my content brief: [brief]. Write SEO-optimized content following this out
 
 **Expected output**: a ready-to-use draft plus the standard handoff summary for `memory/content/`.
 
-- **Reads**: the brief, target keywords, entity inputs, quality constraints, and prior decisions from [CLAUDE.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/CLAUDE.md) and the shared [State Model](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/state-model.md) when available.
+- **Reads**: the brief, target keywords, entity inputs, and quality constraints.
 - **Writes**: a user-facing content deliverable and reusable summary.
 - **Promotes**: approved angles, messaging choices, missing evidence, and publish blockers to `memory/hot-cache.md` and `memory/open-loops.md`; propose durable decisions as pending-decision items.
+- **Done when**: the draft satisfies the target intent with the primary keyword placed naturally; H1/H2 structure, meta description, and at least one snippet-targetable block are present; and every claim needing a source is either cited or flagged.
 - **Primary next skill**: [content-quality-auditor](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/cross-cutting/content-quality-auditor/SKILL.md) when the draft is ready for gating.
 
 ### Handoff Summary
@@ -91,7 +81,11 @@ When a user requests SEO content, run these nine steps:
 8. **Add Internal / External Links** — include relevant internal and authoritative external links.
 9. **Run Final SEO + CORE-EEAT Review** — score the draft, auto-fix small issues, and surface any decisions that still need the user.
 
-> **Reference**: See [references/instructions-detail.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/build/seo-content-writer/references/instructions-detail.md) for the compact workflow, pre-write checklist, issue-classification rules, and self-check format.
+Any factual claim, statistic, or quote that requires a source must be cited or explicitly flagged `[needs source]`; never invent figures, studies, dates, or attributions to fill a gap.
+
+**Quality bar**: before handing off, confirm the draft passes — (1) intent match: a reader with the target query gets their answer above the fold; (2) keyword placement reads naturally (no stuffing) in title, H1, first 100 words, and one H2; (3) structure is scannable (H2/H3, lists, one snippet-ready block); (4) zero fabricated facts — every source-needing claim is cited or `[needs source]`. If any item fails, fix it or report it in the handoff, do not ship silently.
+
+> **Reference**: See [Instructions Detail](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/build/seo-content-writer/references/instructions-detail.md) for the compact workflow, pre-write checklist, issue-classification rules, and self-check format.
 
 ## Example
 
@@ -107,7 +101,7 @@ Match intent, front-load value, support claims with evidence, and write for huma
 
 ### Save Results
 
-On user confirmation, save `memory/content/YYYY-MM-DD-<topic>.md` and promote key conclusions to `memory/hot-cache.md`.
+On user confirmation, save to `memory/content/YYYY-MM-DD-<topic>.md` — see [Skill Contract](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/skill-contract.md) §Save Results Template.
 
 ## Reference Materials
 

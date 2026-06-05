@@ -1,15 +1,15 @@
 ---
 name: keyword-research
-description: 'Use when the user asks to "find keywords"; prioritizes volume, difficulty, intent, and clusters from provided or connected data. 关键词研究/内容选题'
-version: "9.9.9"
+description: 'Use when the user asks to "find keywords", "挖词", or "搜什么词"; prioritizes search volume, keyword difficulty, intent, and topic clusters from provided or connected data. Not for competitor-relative coverage gaps — use content-gap-analysis. 关键词研究/内容选题'
+version: "9.9.10"
 license: Apache-2.0
-compatibility: "Claude Code, skills.sh, ClawHub, Vercel Labs, Cursor, Windsurf, Codex CLI, Amp, Gemini CLI, Kimi Code, Qwen Code, CodeBuddy"
+compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/seo-geo-claude-skills"
 when_to_use: "Use when starting keyword research for a new page, topic, or campaign. Also when the user asks about search volume, keyword difficulty, topic clusters, long-tail keywords, what to write about, 关键词研究, 挖词, 内容选题, or 搜什么词."
 argument-hint: "<topic or seed keyword> [market/language]"
 metadata:
   author: aaron-he-zhu
-  version: "9.9.9"
+  version: "9.9.10"
   geo-relevance: "medium"
   tags:
     - seo
@@ -27,34 +27,15 @@ metadata:
     - palabras-clave
   triggers:
     - "keyword research"
-    - "find keywords"
     - "search volume analysis"
-    - "keyword difficulty"
     - "what should I write about"
     - "give me keyword ideas"
-    - "how do I find good keywords"
     - "how competitive is this keyword"
-    - "Ahrefs alternative"
     - "Ahrefs keyword explorer alternative"
-    - "Semrush keyword magic tool"
     - "Google Keyword Planner alternative"
-    - "Ubersuggest alternative"
-    - "关键词研究"
     - "关键词分析"
     - "长尾关键词"
-    - "写什么内容好"
     - "帮我挖词"
-    - "内容机会"
-    - "搜什么词"
-    - "选题规划"
-    - "キーワード調査"
-    - "検索ボリューム"
-    - "키워드 리서치"
-    - "검색량 분석"
-    - "investigación de palabras clave"
-    - "volumen de búsqueda"
-    - "pesquisa de palavras-chave"
-    - "volume de busca"
 ---
 
 # Keyword Research
@@ -75,9 +56,10 @@ What keywords is [competitor URL] ranking for that I should target?
 
 **Expected output**: a prioritized keyword brief plus the standard handoff summary for `memory/research/`.
 
-- **Reads**: goals, market inputs, tool data, and prior strategy from [CLAUDE.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/CLAUDE.md) and the shared [State Model](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/state-model.md) when available.
+- **Reads**: topic or seed keyword, target market/language, business goal, site DR, and any user-provided or tool metrics.
 - **Writes**: a user-facing research deliverable and reusable summary.
 - **Promotes**: durable keyword priorities, competitor facts, and pending strategy decisions to `memory/hot-cache.md`, `memory/open-loops.md`, and `memory/research/`.
+- **Done when**: every shortlisted keyword carries volume + difficulty + intent (or a labeled N/A); keywords are grouped into pillar + cluster hubs; and the deliverable names at least 3 prioritized Quick Win / Growth / GEO opportunities.
 - **Primary next skill**: [competitor-analysis](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/research/competitor-analysis/SKILL.md) when the keyword set is ready for market comparison.
 
 ### Handoff Summary
@@ -87,6 +69,8 @@ What keywords is [competitor URL] ranking for that I should target?
 ## Data Sources
 
 Optional integrations: ~~SEO tool, ~~search console. Without tools, ask for seed keywords, audience, goals, and any known metrics. See [CONNECTORS.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/CONNECTORS.md).
+
+**Zero-dependency local helper** (no tool needed): `python3 scripts/connectors/suggest.py "<seed>" --expand` harvests free keyword ideas from Google Autocomplete (⚠️ unofficial endpoint). Search *volume / difficulty* still needs `~~SEO tool` or own Search Console data. See [scripts/connectors/README.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/scripts/connectors/README.md).
 
 ## Instructions
 
@@ -100,6 +84,8 @@ When a user requests keyword research, run eight phases and announce each as `[P
 6. **GEO-Check** — flag AI-answer-friendly queries such as questions, definitions, comparisons, lists, and how-tos.
 7. **Cluster** — group keywords into pillar + cluster topic hubs.
 8. **Deliver** — output an Executive Summary, Quick Wins / Growth / GEO opportunities, Topic Clusters, Content Calendar, and Next Steps.
+
+Label every metric **Measured** (tool/export), **User-provided**, or **Estimated** (model inference); never present an estimate as measured; if a required metric is unavailable, mark it N/A — do not invent it.
 
 **Quality bar**: every recommendation includes at least one specific number. Rewrite generic advice into a concrete keyword + volume + difficulty + reason.
 
@@ -119,7 +105,7 @@ Start with seeds, respect intent, cluster tightly, prioritize quick wins, and re
 
 ### Save Results
 
-After delivering, offer to save `memory/research/keyword-research/YYYY-MM-DD-<topic>.md` and promote durable conclusions to `memory/hot-cache.md`.
+Write path: `memory/research/keyword-research/YYYY-MM-DD-<topic>.md`; promote durable keyword priorities to `memory/hot-cache.md`. See [Skill Contract](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/skill-contract.md) §Save Results Template.
 
 ## Reference Materials
 

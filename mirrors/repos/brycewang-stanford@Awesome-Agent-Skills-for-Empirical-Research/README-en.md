@@ -39,7 +39,7 @@
 [![Security audit: 52/52 CLEAN](https://img.shields.io/badge/security%20audit-52%2F52%20CLEAN-brightgreen)](SECURITY-SCAN-REPORT.md)
 [![Powered by StatsPAI](https://img.shields.io/badge/powered%20by-StatsPAI-orange)](https://github.com/brycewang-stanford/StatsPAI)
 
-**The empirical-research specialist's agent-skills distribution.** Not a marketing list — **1,052 skills vendored and cataloged** in this repo, wrapped in a **numeric benchmark, an eval harness, a security audit, and CI**, plus a curated map of **23,000+ skills across 119 repositories** in the wider ecosystem.
+**The empirical-research specialist's agent-skills distribution.** Not a marketing list — **1,072 skills vendored and cataloged** in this repo, wrapped in a **numeric benchmark, an eval harness, a security audit, and CI**, plus a curated map of **23,000+ skills across 119 repositories** in the wider ecosystem.
 
 AERS is two things at once: (1) a small set of **first-party flagship skills** that run the full empirical pipeline — data cleaning → identification → estimation → robustness → tables/figures → submission-ready draft — and (2) a **curated, security-aware catalog** of the empirical-research skill ecosystem, organized by research-workflow stage. The differentiator is not the count; it is that the flagship behavior is **verified against known answers**, not asserted.
 
@@ -63,6 +63,7 @@ AERS is two things at once: (1) a small set of **first-party flagship skills** t
   - [By research stage](#by-research-stage)
   - [Comprehensive skill suites](#comprehensive-skill-suites)
   - [Anti-AIGC detection & de-AI academic writing](#anti-aigc-detection--de-ai-academic-writing)
+  - [Tools catalog (tools/)](#tools-catalog-tools--automated-empirical--causal-inference-tools)
   - [Multi-agent systems · MCP servers · platforms · learning](#multi-agent-systems--mcp-servers--platforms--learning)
 - [Security](#security)
 - [Changelog](#changelog)
@@ -76,13 +77,14 @@ Numbers in this README are kept honest and disambiguated. "Vendored" means the f
 
 | What it is | Count | Source of truth |
 |---|---:|---|
-| Skills **vendored into this repo** and cataloged | **1,052** | [`catalog/skills.json`](catalog/skills.json) |
-| Vendored **collections** | **63** | [`catalog/skills.json`](catalog/skills.json) |
+| Skills **vendored into this repo** and cataloged | **1,072** | [`catalog/skills.json`](catalog/skills.json) |
+| Vendored **collections** | **64** | [`catalog/skills.json`](catalog/skills.json) |
 | **First-party flagship** full-pipeline skills (StatsPAI DSL + explicit Python/Stata/R) | **4** | [`skills/00*`](skills/) |
 | Numeric **benchmark tasks** with gold values recomputed from data each run | **5** | [`benchmark/`](benchmark/) |
 | Behavioral **eval scenarios / rubric items** | **17 / 95** | [`eval-harness/`](eval-harness/) |
 | Security audit of the **original baseline** (collections / files) | **52 / 2,940+**, 52/52 CLEAN | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
 | Curated **map of the wider ecosystem** | **23,000+ skills / 119 repos** | this README · [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
+| **Tools catalog** (`tools/`): causal/econometrics libraries, autonomous research agents, MCP servers, causal discovery, benchmark datasets | **251 tools / 6 categories** | [`tools/tools.json`](tools/tools.json) · [`tools/CATALOG.md`](tools/CATALOG.md) |
 
 > The security audit covered the original **52-collection / 2,940-file baseline (52/52 CLEAN)**. Skills vendored after that baseline are tracked in [`catalog/provenance.json`](catalog/provenance.json), [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md), and [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md); run `make audit` before relying on them in high-trust contexts.
 
@@ -167,7 +169,7 @@ Public-skill counts are easy to inflate, and recent studies show large skill ind
 | **Numeric benchmark** | Reported numbers that don't match truth recomputed from real data — the naive-DID sign trap, weak-IV without first-stage F, TWFE bias under staggered timing, RDD trend confound, post-treatment bad controls | [`benchmark/`](benchmark/) · 5 tasks |
 | **Eval harness** | Prose-level failures: weak-IV false reassurance, staggered-DID TWFE misuse, fabricated citations, unsafe `curl \| bash` setup, multiple-testing abuse, AER compliance gaps | [`eval-harness/`](eval-harness/) · 17 scenarios / 95 rubric items |
 | **Security audit** | Pipe-to-shell, reverse shells, credential exfiltration, prompt injection across 13 risk categories — 6-phase, 40+ hook scripts reviewed by hand | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
-| **Provenance & license** | Unvendored sources, license risk, hygiene drift across all 1,052 cataloged skills | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) · [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
+| **Provenance & license** | Unvendored sources, license risk, hygiene drift across all 1,072 cataloged skills | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) · [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
 | **CI & compatibility** | Catalog freshness, broken local links, GitHub Actions policy, Python 3.9 **and** 3.12 syntax floor | [`.github/workflows/`](.github/workflows/) · 6 workflows |
 
 ```bash
@@ -234,6 +236,11 @@ The first-party flagships ([StatsPAI](skills/00-Full-empirical-analysis-skill_St
 | [fuhaoda/stats-paper-writing-agent-skills](https://github.com/fuhaoda/stats-paper-writing-agent-skills) | LaTeX statistical-paper writing, front-end draft generation | Statistics & econometrics papers |
 | [dylantmoore/stata-skill](https://github.com/dylantmoore/stata-skill) | Full Stata coverage: syntax, data management, econometrics, causal inference, Mata, 20+ packages | Stata users |
 | [SepineTam/stata-mcp](https://github.com/SepineTam/stata-mcp) | LLM drives Stata regressions directly via MCP | Stata econometrics |
+| [hanlulong/stata-mcp](https://github.com/hanlulong/stata-mcp) | Stata-MCP editor extension (VS Code/Cursor/Antigravity): run `.do` directly, live output, data/graph viewer; MIT · 414★ (same name as SepineTam above, different project) | In-editor AI pairing with Stata |
+| [tmonk/mcp-stata](https://github.com/tmonk/mcp-stata) · vendored at [`skills/64`](skills/64-tmonk-mcp-stata/) | **20 SKILL.md skills** from the Stata MCP server: replication / data audit / publication QA / legacy modernization / referee response / power / causal inference; **AGPL-3.0** (kept as a separately-licensed aggregate; server code not vendored) | Stata replication & robustness audits |
+| [PovertyAction/ipa-stata-template](https://github.com/PovertyAction/ipa-stata-template) | IPA reproducible Stata research template + `.claude/skills`: numbered pipeline, assertion-based defensive programming, LaTeX tables; MIT | Development economics / field-RCT replication |
+| [lcrawfurd/claude-skills](https://github.com/lcrawfurd/claude-skills) | Academic skills: paper / code review, referee, pre-submission; code-review encodes Stata/R/Python coding standards (DIME / Reif / AEA Data Editor) | Pre-submission review & code audit |
+| [AEADataEditor/replication-template](https://github.com/AEADataEditor/replication-template) | AEA Data Editor's official replication-package template (Stata-centric, `REPLICATION.md`) — the reproducibility "gold standard" | AEA / top-journal replication packaging |
 
 </details>
 
@@ -267,6 +274,21 @@ The first-party flagships ([StatsPAI](skills/00-Full-empirical-analysis-skill_St
 | [conorbronsdon/avoid-ai-writing](https://github.com/conorbronsdon/avoid-ai-writing) | Structured audit + rewrite + second-pass audit; auditable, traceable | Workflows needing a paper trail | [`47`](skills/47-conorbronsdon-avoid-ai-writing/) |
 
 > **Combos:** 🇨🇳 Chinese (CNKI/Wanfang/VIP) → chinese-de-aigc · 🇬🇧 English → humanizer_academic · need an audit trail → avoid-ai-writing · general prose → stop-slop.
+
+### Tools catalog (`tools/`) — automated empirical & causal-inference tools
+
+> Unlike the skills above, [`tools/`](tools/) catalogs the **software and services an agent (or researcher) actually invokes** — structured, license- and maintenance-aware, and wired into `make validate`. Source of truth: [`tools/tools.json`](tools/tools.json); browsable list: [`tools/CATALOG.md`](tools/CATALOG.md).
+
+**251 tools across 6 categories** (curated 2026-06):
+
+- **Causal-inference / treatment-effect libraries (32)** — DoWhy · EconML · CausalML · DoubleML · CausalPy · causallib · grf · CATENets · TMLE family · Mendelian randomization …
+- **Econometrics / quasi-experimental libraries (86)** — panel FE · DiD (incl. modern/staggered) · event study · RDD · IV · synthetic control/SDID · matching & weighting · sensitivity, across R/Python/Stata/Julia (fixest · did · HonestDiD · rdrobust · synthdid · reghdfe · csdid · sdid · pyfixest · linearmodels · FixedEffectModels.jl …).
+- **Autonomous research / data-science agents (51)** — end-to-end research & data analysis: AI-Scientist · data-to-paper · Agent Laboratory · RD-Agent · AI-Researcher · STORM · PaperQA2 · gpt-researcher · DeepAnalyze · MetaGPT (DI) · Biomni …  (⚠️ includes non-OSI / no-LICENSE repos — confirm terms before use).
+- **MCP servers (48)** — stats execution (StatsPAI · stata-mcp · R/Jupyter MCP) + data access (FRED · World Bank · IMF · OECD · Eurostat · Census · BEA · BLS · SEC EDGAR · OpenAlex · Semantic Scholar · PubMed · Zotero · arXiv …).
+- **Causal discovery / structure learning (25)** — causal-learn · Tetrad/py-tetrad · gCastle · CDT · tigramite (PCMCI) · LiNGAM · NOTEARS/DAGMA · pcalg · bnlearn · pgmpy …
+- **Benchmarks & datasets (9)** — causaldata · IHDP/Twins · ACIC competition data · RealCause · JustCause · Tübingen cause-effect pairs · bnlearn network repository …
+
+Full write-up: [`tools/README.md`](tools/README.md).
 
 ### Multi-agent systems · MCP servers · platforms · learning
 

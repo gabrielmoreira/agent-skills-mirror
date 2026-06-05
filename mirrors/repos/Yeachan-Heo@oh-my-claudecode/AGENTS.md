@@ -42,6 +42,7 @@ Keep runtime marker contracts stable and non-destructive when overlays are appli
 - Keep diffs small and reversible.
 - Run lint, typecheck, tests, and static analysis after changes.
 - Final reports must include changed files, simplifications made, and remaining risks.
+- For session-scoped state paths, resolve via `resolveSessionStatePaths()` only — branded `ReadPath`/`WritePath` are produced exclusively by that helper; ESLint `no-restricted-syntax` blocks `as ReadPath` / `as WritePath` casts outside `src/lib/worktree-paths.ts`.
 </working_agreements>
 
 ---
@@ -348,6 +349,9 @@ oh-my-claudecode uses the `.omc/` directory for persistent state:
 - `.omc/project-memory.json` -- Cross-session project knowledge
 - `.omc/plans/` -- Planning documents
 - `.omc/logs/` -- Audit logs
+- `.omc/ultragoal/plans/{planId}/` -- Multi-plan ultragoal artifacts when `--plan-id` / `--auto-plan-id` is used.
+
+Multi-repo workspaces: drop a `.omc-workspace` marker file (JSON, can be `{}` or `{"id":"name"}`) in the parent directory when it is not itself a git repo. OMC will anchor `.omc/` at the marker from any sub-directory. This lets parallel Claude sessions in sibling repos share one `.omc/`. The session-start hook uses PID-aware liveness — a dead owner no longer blocks state restore. See `docs/REFERENCE.md#multi-repo-workspaces-with-omc-workspace` for full details.
 
 Tools are available via MCP when configured (`omc setup` registers all servers):
 

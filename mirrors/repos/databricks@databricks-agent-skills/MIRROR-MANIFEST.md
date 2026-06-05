@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `databricks/databricks-agent-skills` — 26 default patterns, 0 followed patterns, 139 file(s) materialized.
+Mirror of `databricks/databricks-agent-skills` — 26 default patterns, 0 followed patterns, 143 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `databricks/databricks-agent-skills` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 139 |
+| Files         | 143 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -187,17 +187,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 126 | ✓ | [`skills/databricks-serverless-migration/references/code-patterns.md`](skills/databricks-serverless-migration/references/code-patterns.md) |
 | 127 | ✓ | [`skills/databricks-serverless-migration/references/compatibility-checks.md`](skills/databricks-serverless-migration/references/compatibility-checks.md) |
 | 128 | ✓ | [`skills/databricks-serverless-migration/references/configuration-guide.md`](skills/databricks-serverless-migration/references/configuration-guide.md) |
-| 129 | ✓ | [`skills/databricks-serverless-migration/references/networking-and-security.md`](skills/databricks-serverless-migration/references/networking-and-security.md) |
-| 130 | ✓ | [`skills/databricks-serverless-migration/references/streaming-migration.md`](skills/databricks-serverless-migration/references/streaming-migration.md) |
-| 131 | ✓ | [`skills/databricks-serverless-migration/SKILL.md`](skills/databricks-serverless-migration/SKILL.md) |
-| 132 | ✓ | [`skills/databricks-vector-search/agents/openai.yaml`](skills/databricks-vector-search/agents/openai.yaml) |
-| 133 | ✓ | [`skills/databricks-vector-search/assets/databricks.png`](skills/databricks-vector-search/assets/databricks.png) |
-| 134 | ✓ | [`skills/databricks-vector-search/assets/databricks.svg`](skills/databricks-vector-search/assets/databricks.svg) |
-| 135 | ✓ | [`skills/databricks-vector-search/references/end-to-end-rag.md`](skills/databricks-vector-search/references/end-to-end-rag.md) |
-| 136 | ✓ | [`skills/databricks-vector-search/references/index-types.md`](skills/databricks-vector-search/references/index-types.md) |
-| 137 | ✓ | [`skills/databricks-vector-search/references/search-modes.md`](skills/databricks-vector-search/references/search-modes.md) |
-| 138 | ✓ | [`skills/databricks-vector-search/references/troubleshooting-and-operations.md`](skills/databricks-vector-search/references/troubleshooting-and-operations.md) |
-| 139 | ✓ | [`skills/databricks-vector-search/SKILL.md`](skills/databricks-vector-search/SKILL.md) |
+| 129 | ✓ | [`skills/databricks-serverless-migration/references/failure-reporting.md`](skills/databricks-serverless-migration/references/failure-reporting.md) |
+| 130 | ✓ | [`skills/databricks-serverless-migration/references/install-in-databricks-genie-code.md`](skills/databricks-serverless-migration/references/install-in-databricks-genie-code.md) |
+| 131 | ✓ | [`skills/databricks-serverless-migration/references/mlflow-uc-patterns.md`](skills/databricks-serverless-migration/references/mlflow-uc-patterns.md) |
+| 132 | ✓ | [`skills/databricks-serverless-migration/references/multi-source-enumeration.md`](skills/databricks-serverless-migration/references/multi-source-enumeration.md) |
+| 133 | ✓ | [`skills/databricks-serverless-migration/references/networking-and-security.md`](skills/databricks-serverless-migration/references/networking-and-security.md) |
+| 134 | ✓ | [`skills/databricks-serverless-migration/references/streaming-migration.md`](skills/databricks-serverless-migration/references/streaming-migration.md) |
+| 135 | ✓ | [`skills/databricks-serverless-migration/SKILL.md`](skills/databricks-serverless-migration/SKILL.md) |
+| 136 | ✓ | [`skills/databricks-vector-search/agents/openai.yaml`](skills/databricks-vector-search/agents/openai.yaml) |
+| 137 | ✓ | [`skills/databricks-vector-search/assets/databricks.png`](skills/databricks-vector-search/assets/databricks.png) |
+| 138 | ✓ | [`skills/databricks-vector-search/assets/databricks.svg`](skills/databricks-vector-search/assets/databricks.svg) |
+| 139 | ✓ | [`skills/databricks-vector-search/references/end-to-end-rag.md`](skills/databricks-vector-search/references/end-to-end-rag.md) |
+| 140 | ✓ | [`skills/databricks-vector-search/references/index-types.md`](skills/databricks-vector-search/references/index-types.md) |
+| 141 | ✓ | [`skills/databricks-vector-search/references/search-modes.md`](skills/databricks-vector-search/references/search-modes.md) |
+| 142 | ✓ | [`skills/databricks-vector-search/references/troubleshooting-and-operations.md`](skills/databricks-vector-search/references/troubleshooting-and-operations.md) |
+| 143 | ✓ | [`skills/databricks-vector-search/SKILL.md`](skills/databricks-vector-search/SKILL.md) |
 
 ---
 

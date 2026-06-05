@@ -2,6 +2,7 @@
 name: methodology-advisor
 description: Analyzes your codebase and asks 3 targeted questions to recommend the right AI-assisted development methodology stack
 effort: medium
+allowed-tools: Read Grep Glob
 ---
 
 # Methodology Advisor
@@ -12,9 +13,9 @@ Analyze this project and recommend the best AI-assisted development methodology 
 
 ---
 
-## Phase 1 — Silent codebase analysis
+## Phase 1: Silent codebase analysis
 
-Run these reads silently. Do not output results yet — build an internal picture only.
+Run these reads silently. Do not output results yet, build an internal picture only.
 
 ### 1.1 Project identity
 
@@ -90,7 +91,7 @@ find . -name "evals*" -o -name "*eval*" -type d 2>/dev/null | grep -v node_modul
 
 ---
 
-## Phase 2 — Score the 8 stacks
+## Phase 2: Score the 8 stacks
 
 Using what you found, score each stack 0-10 based on fit signals:
 
@@ -107,7 +108,7 @@ Using what you found, score each stack 0-10 based on fit signals:
 
 ---
 
-## Phase 3 — Ask only what you cannot infer
+## Phase 3: Ask only what you cannot infer
 
 After the silent analysis, present your preliminary picture to the user in 2-3 lines, then ask exactly 3 questions. No more.
 
@@ -117,25 +118,25 @@ Format:
 From your codebase I can see: [2-3 concrete observations].
 Before recommending, 3 quick questions:
 
-1. [Pain point question — pick the most relevant from below]
-2. [Deploy frequency — if not inferable from CI/CD signals]
-3. [Setup appetite — how much ceremony are you willing to invest?]
+1. [Pain point question, pick the most relevant from below]
+2. [Deploy frequency, if not inferable from CI/CD signals]
+3. [Setup appetite: how much ceremony are you willing to invest?]
 ```
 
-**Question bank — pick the 3 most relevant given what you found:**
+**Question bank: pick the 3 most relevant given what you found:**
 
-- Pain: "What slows you down most right now — regressions, unclear requirements, context rot between sessions, or no traceability?"
-- Pain: "When Claude generates a large chunk of code, what is your biggest worry — quality, drift from spec, or losing track of what was built?"
-- Deploy: "How often do you ship to production — multiple times a day, weekly, or on longer release cycles?"
+- Pain: "What slows you down most right now: regressions, unclear requirements, context rot between sessions, or no traceability?"
+- Pain: "When Claude generates a large chunk of code, what is your biggest worry: quality, drift from spec, or losing track of what was built?"
+- Deploy: "How often do you ship to production: multiple times a day, weekly, or on longer release cycles?"
 - Deploy: "Is this a product with real users today, a prototype, or an internal tool?"
-- Governance: "How much initial setup are you willing to invest — none (just start), 30 minutes, or half a day?"
+- Governance: "How much initial setup are you willing to invest: none (just start), 30 minutes, or half a day?"
 - Governance: "Does anyone outside your dev team (PM, QA, compliance) need to validate what gets built?"
 - AI product: "Does your product expose AI-generated outputs directly to end users?"
 - Scale: "Do multiple services or teams need to agree on API contracts before implementing?"
 
 ---
 
-## Phase 4 — Recommendation
+## Phase 4: Recommendation
 
 Output the recommendation in this structure:
 
@@ -144,9 +145,9 @@ Output the recommendation in this structure:
 ### Your Stack: [Stack Name] [icon]
 
 **Why this fits your project:**
-- [Finding from Phase 1] → [explains this stack choice]
-- [Finding from Phase 1] → [explains this stack choice]
-- [Answer to question N] → [explains this stack choice]
+- [Finding from Phase 1] -> [explains this stack choice]
+- [Finding from Phase 1] -> [explains this stack choice]
+- [Answer to question N] -> [explains this stack choice]
 
 **Methodologies included:** `[Method A]` + `[Method B]` (+ `[Method C]` if applicable)
 
@@ -162,7 +163,7 @@ Output the recommendation in this structure:
 - [One honest trade-off or limitation of this stack]
 - [One thing to watch out for given what you found]
 
-**Go deeper:** https://cc.bruniaux.com/methodologies/ — interactive quiz and full stack comparison
+**Go deeper:** https://cc.bruniaux.com/methodologies/ (interactive quiz and full stack comparison)
 **Full methodology guide:** https://cc.bruniaux.com/guide/methodologies/
 
 ---
@@ -171,18 +172,18 @@ Output the recommendation in this structure:
 
 Use this to map your scoring to quick-start language:
 
-**solo-mvp** (SDD + TDD): Write feature spec in CLAUDE.md → `"Write failing tests for this spec, then implement until green."`
+**solo-mvp** (SDD + TDD): Write feature spec in CLAUDE.md -> `"Write failing tests for this spec, then implement until green."`
 
-**team-greenfield** (Spec Kit + TDD + BDD): `/speckit.constitution` → Given/When/Then scenarios with PM → TDD each scenario.
+**team-greenfield** (Spec Kit + TDD + BDD): `/speckit.constitution` -> Given/When/Then scenarios with PM -> TDD each scenario.
 
-**microservices** (CDD + Specmatic + TDD): Write OpenAPI spec first → Specmatic for contract tests → TDD implementation.
+**microservices** (CDD + Specmatic + TDD): Write OpenAPI spec first -> Specmatic for contract tests -> TDD implementation.
 
-**brownfield-saas** (OpenSpec + BDD + JiTTesting): OpenSpec captures current state → BDD for changed behavior → pre-merge: `"Generate tests that catch regressions in this diff."`
+**brownfield-saas** (OpenSpec + BDD + JiTTesting): OpenSpec captures current state -> BDD for changed behavior -> pre-merge: `"Generate tests that catch regressions in this diff."`
 
-**enterprise-gov** (BMAD + Spec Kit + Specmatic): `constitution.md` → agent role definitions → Spec Kit requirements → Specmatic contract enforcement.
+**enterprise-gov** (BMAD + Spec Kit + Specmatic): `constitution.md` -> agent role definitions -> Spec Kit requirements -> Specmatic contract enforcement.
 
-**llm-native** (Eval-Driven + Multi-Agent): Define eval criteria (accuracy, safety, format) → build eval harness → iterate until evals pass.
+**llm-native** (Eval-Driven + Multi-Agent): Define eval criteria (accuracy, safety, format) -> build eval harness -> iterate until evals pass.
 
-**power-solo** (TDD + Ralph Loop + Iterative): Tight test loop → fresh context per task via git stash + progress files → `"Keep iterating until all tests pass and lint is clean."`
+**power-solo** (TDD + Ralph Loop + Iterative): Tight test loop -> fresh context per task via git stash + progress files -> `"Keep iterating until all tests pass and lint is clean."`
 
-**plan-moderate** (Plan-First + SDD + Context Engineering): Every complex task starts in Plan Mode (Shift+Tab) → validate → write spec in CLAUDE.md → execute with progressive context loading.
+**plan-moderate** (Plan-First + SDD + Context Engineering): Every complex task starts in Plan Mode (Shift+Tab) -> validate -> write spec in CLAUDE.md -> execute with progressive context loading.

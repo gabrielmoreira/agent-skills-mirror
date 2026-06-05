@@ -11,15 +11,36 @@ works. Launching the sandbox is separate. This skill owns the feedback loop.
 ## Core Rule
 
 Never report success from a click, script return value, or recording alone.
-Every meaningful action must follow this loop:
+Validate the same path a human would take, using CDP to drive Chrome or Electron
+instead of replacing the journey with hidden state changes. Every meaningful
+action must follow this loop:
 
-1. Observe with `browser_snapshot` or `browser_eval`.
-2. Act with `browser_click`, `browser_fill`, or `browser_eval`.
-3. Observe again with `browser_snapshot` or `browser_eval`.
+1. Observe with `browser_snapshot` first.
+2. Act with `browser_click` or `browser_fill` against snapshot UIDs whenever possible.
+3. Observe again with `browser_snapshot`.
 4. Assert the expected URL, text, state, process, network, or file result.
 5. Capture a screenshot checkpoint when the visible state matters.
 
 If any assertion is missing, the flow is not validated yet.
+
+Use `browser_eval`, direct API calls, localStorage writes, filesystem edits, or
+database changes only when a human-visible path is impossible, unavailable in the
+current product, or needed as setup for data that the UI cannot create yet. When
+you use one of these shortcuts, say so in the report and do not let it replace the
+visible click-by-click demo claim.
+
+## Human-Visible Demo Standard
+
+For founder, designer, PR, or eval evidence, record the journey as a reviewer
+would experience it:
+
+- Start recording before the first user-visible action.
+- Use Chrome CDP for Den Web and Electron CDP for desktop.
+- Prefer accessible snapshot items and visible clicks/fills over synthetic DOM mutation.
+- Keep every major transition visible: sign-up, org creation, onboarding, handoff, desktop sign-in, Marketplace, install, and chat response.
+- Do not skip screens by setting tokens, editing localStorage, calling APIs, or navigating directly unless the report labels that segment as setup or a known product gap.
+- If test data must be created through an API, show the result in the UI immediately after and state that the data creation was invisible setup.
+- A recording that cannot be understood without terminal logs, API responses, or explanation is not a full demo pass.
 
 ## Minimum Pass Evidence
 
@@ -29,8 +50,12 @@ For a UI flow, collect all of these when feasible:
 - App proof: `navigator.userAgent` contains `Electron/` for desktop flows, or does not for standalone Chrome flows.
 - State proof: URL, visible text, selected model/provider, status, or route matches the expected outcome.
 - Backend proof: relevant `daytona exec` process/log/health check for sidecars, Den, worker proxy, or mock servers.
-- Visual proof: `browser_screenshot` or `.devcontainer/capture-daytona-screenshot.sh` at important checkpoints.
-- Human proof: recording URL only when requested or useful for PR evidence.
+- Frame-by-frame HTML proof: the default deliverable. Named PNGs for each step served as a browseable HTML index on port 8090. See `daytona-recording-artifacts` for how to produce the index.
+- Video clips: only when a step involves motion (streaming text, loading spinners, animations). Embed clips in the same HTML index alongside the static frames.
+
+Frame proof is the default. Video is the exception for interactions that need
+motion. When the user says "test this on Daytona" and UI is involved, always
+produce frame-by-frame HTML proof unless the user explicitly asks for video.
 
 ## Validation Loop Template
 
@@ -48,12 +73,17 @@ Evidence: <screenshot path or artifact URL if captured>
 ## Prefer Accessible Snapshots
 
 Start with `browser_snapshot` for normal UI controls because it gives stable
-UIDs for `browser_click` and `browser_fill`. Use `browser_eval` when:
+UIDs for `browser_click` and `browser_fill`. Treat `browser_eval` as an escape
+hatch, not the default interaction mechanism. Use `browser_eval` when:
 
 - React dynamic UI makes snapshot UIDs stale.
 - Native file pickers must be bypassed.
 - Lexical editor input needs a synthetic paste event.
 - You need to inspect app state, localStorage, URL, or text quickly.
+
+Even when `browser_eval` is necessary, keep the user-visible state coherent:
+observe before, perform the minimal hidden action, then observe the visible result
+with `browser_snapshot` or a screenshot.
 
 ## Lexical Composer
 
@@ -108,6 +138,12 @@ Rules for native desktop automation:
 - After native automation, reassert app state with CDP and inspect a fresh
   screenshot. Native dialogs commonly remain on top and invalidate evidence.
 
+Close stale native dialogs before recording or screenshots:
+
+```bash
+daytona exec "$SANDBOX" -- 'bash -lc '\''DISPLAY=:99 xdotool search --name "Authorize folder" windowclose %@ 2>/dev/null || true; sleep 1; DISPLAY=:99 wmctrl -l'\'''
+```
+
 ## Screenshots
 
 Use browser screenshots for renderer state:
@@ -144,6 +180,18 @@ new screenshot, inspect the new image, and only then share it. If bad evidence
 was already posted, post a superseding correction that clearly says the earlier
 screenshot was invalid.
 
+Before every Daytona display screenshot, run a native-window check and fail fast
+if a picker is present:
+
+```bash
+daytona exec "$SANDBOX" -- 'bash -lc '\''DISPLAY=:99 wmctrl -l | tee /tmp/windows-before-shot.txt; ! grep -q "Authorize folder" /tmp/windows-before-shot.txt; DISPLAY=:99 .devcontainer/capture-daytona-screenshot.sh --output /daytona-artifacts/screenshots/<flow>/<step>.png'\'''
+```
+
+If a Chromium or Electron window is intentionally part of the shot, activate the
+right window first with `wmctrl -a "OpenWork - Dev"` or
+`wmctrl -a "OpenWork Cloud - Chromium"` so the screenshot shows the intended
+journey step.
+
 ## Failure Handling
 
 When a step fails:
@@ -161,10 +209,22 @@ daytona exec "$SANDBOX" -- 'tail -120 /tmp/vite.log'
 daytona exec "$SERVER_SANDBOX" -- 'tail -120 /tmp/den-api.log'
 ```
 
+For Den Web flows specifically:
+
+- If the page remains on `Checking account`, `Loading your workspace`, or
+  `Checking workspace access`, verify whether the client hydrated by trying a
+  real `browser_click`/`browser_fill`, not only `browser_eval`.
+- If Next dev is behind a Daytona proxy, switch Den Web to `next build` +
+  `next start` before declaring the app broken.
+- Validate direct Den API auth independently. A direct API pass plus Den Web
+  proxy failure is an incomplete handoff, not a full pass.
+- If you bridge auth by writing localStorage in Electron, state that explicitly
+  in the final report and limit the pass claim to the downstream desktop flow.
+
 ## Final Verdict
 
 Use one of these verdicts:
 
-- `Passed`: every expected outcome has an observable assertion.
+- `Passed`: every expected outcome has an observable assertion and frame-by-frame proof is published.
 - `Failed`: at least one assertion disproves the expected outcome.
-- `Incomplete`: the sandbox/tooling failed, evidence is missing, or only a recording/screenshot was collected.
+- `Incomplete`: the sandbox/tooling failed, evidence is missing, or only a recording/screenshot was collected without frame proof.

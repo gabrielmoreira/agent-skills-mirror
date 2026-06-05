@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 17 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,23 +59,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`Anthropic/claude-code/bundled-skills/batch/SKILL.md`](Anthropic/claude-code/bundled-skills/batch/SKILL.md) |
-| 2 | ✓ | [`Anthropic/claude-code/bundled-skills/claude-api/SKILL.md`](Anthropic/claude-code/bundled-skills/claude-api/SKILL.md) |
-| 3 | ✓ | [`Anthropic/claude-code/bundled-skills/code-review/SKILL.md`](Anthropic/claude-code/bundled-skills/code-review/SKILL.md) |
-| 4 | ✓ | [`Anthropic/claude-code/bundled-skills/debug/SKILL.md`](Anthropic/claude-code/bundled-skills/debug/SKILL.md) |
-| 5 | ✓ | [`Anthropic/claude-code/bundled-skills/deep-research/SKILL.md`](Anthropic/claude-code/bundled-skills/deep-research/SKILL.md) |
-| 6 | ✓ | [`Anthropic/claude-code/bundled-skills/fewer-permission-prompts/SKILL.md`](Anthropic/claude-code/bundled-skills/fewer-permission-prompts/SKILL.md) |
-| 7 | ✓ | [`Anthropic/claude-code/bundled-skills/init/SKILL.md`](Anthropic/claude-code/bundled-skills/init/SKILL.md) |
-| 8 | ✓ | [`Anthropic/claude-code/bundled-skills/keybindings-help/SKILL.md`](Anthropic/claude-code/bundled-skills/keybindings-help/SKILL.md) |
-| 9 | ✓ | [`Anthropic/claude-code/bundled-skills/loop/SKILL.md`](Anthropic/claude-code/bundled-skills/loop/SKILL.md) |
-| 10 | ✓ | [`Anthropic/claude-code/bundled-skills/review/SKILL.md`](Anthropic/claude-code/bundled-skills/review/SKILL.md) |
-| 11 | ✓ | [`Anthropic/claude-code/bundled-skills/run-skill-generator/SKILL.md`](Anthropic/claude-code/bundled-skills/run-skill-generator/SKILL.md) |
-| 12 | ✓ | [`Anthropic/claude-code/bundled-skills/run-skill-generator/template.md`](Anthropic/claude-code/bundled-skills/run-skill-generator/template.md) |
-| 13 | ✓ | [`Anthropic/claude-code/bundled-skills/run/SKILL.md`](Anthropic/claude-code/bundled-skills/run/SKILL.md) |
-| 14 | ✓ | [`Anthropic/claude-code/bundled-skills/schedule/SKILL.md`](Anthropic/claude-code/bundled-skills/schedule/SKILL.md) |
-| 15 | ✓ | [`Anthropic/claude-code/bundled-skills/security-review/SKILL.md`](Anthropic/claude-code/bundled-skills/security-review/SKILL.md) |
-| 16 | ✓ | [`Anthropic/claude-code/bundled-skills/simplify/SKILL.md`](Anthropic/claude-code/bundled-skills/simplify/SKILL.md) |
-| 17 | ✓ | [`Anthropic/claude-code/bundled-skills/verify/SKILL.md`](Anthropic/claude-code/bundled-skills/verify/SKILL.md) |
+| 1 | ✓ | [`Anthropic/Claude Code/bundled-skills/deep-research/SKILL.md`](Anthropic/Claude%20Code/bundled-skills/deep-research/SKILL.md) |
+| 2 | ✓ | [`Anthropic/Claude Code/bundled-skills/run-skill-generator/SKILL.md`](Anthropic/Claude%20Code/bundled-skills/run-skill-generator/SKILL.md) |
+| 3 | ✓ | [`Anthropic/Claude Code/bundled-skills/run-skill-generator/template.md`](Anthropic/Claude%20Code/bundled-skills/run-skill-generator/template.md) |
 
 ---
 

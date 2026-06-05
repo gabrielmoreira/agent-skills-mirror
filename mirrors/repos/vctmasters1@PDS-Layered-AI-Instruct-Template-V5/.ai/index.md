@@ -1,7 +1,7 @@
 # Index — Master Section Index
 
 **Scope**: Project-wide
-**Last Updated**: 2026-06-03
+**Last Updated**: 2026-06-04
 
 > This file is the **master index** of all instruction sections across all `.ai/instruct.md` files in the project.
 > It enables fast lookup: find the authoritative source for any topic without reading every file.
@@ -33,18 +33,36 @@
 |---------|------|-------------|
 | The Depth-Priority Hierarchical Paradigm | [`.github/copilot-instructions.md`](../.github/copilot-instructions.md) | How the `.ai/` hierarchy works; deeper = more authoritative |
 | Global Shared Instructions | [`.github/copilot-instructions.md`](../.github/copilot-instructions.md) | Purpose of the `.ai/` directory |
+| Governed Workflows — Import/Merge | [`.github/copilot-instructions.md`](../.github/copilot-instructions.md) | **MANDATORY** pattern guard for project imports; prevents ad-hoc cloning/copying |
+| Workflow Invocation Pattern | [`.github/copilot-instructions.md`](../.github/copilot-instructions.md) | Workflows are repeatable, on-demand operations (not one-time setup); when to use them |
 | AI Prompt Files | [`.github/copilot-instructions.md`](../.github/copilot-instructions.md) | Slash-command prompt files in `.github/prompts/`; `/ai-` prefix convention |
-| `/ai-onboard` | [`.github/prompts/ai-onboard.prompt.md`](../.github/prompts/ai-onboard.prompt.md) | Interactive wizard that asks, infers, and confirms edits to template fields (identity, license, dev-specs, modules) and rebuilds the index |
-| `/ai-update-index` | [`.github/prompts/ai-update-index.prompt.md`](../.github/prompts/ai-update-index.prompt.md) | Rebuilds `.ai/index.md` from every instruction file |
-| `/ai-archive` | [`.github/prompts/ai-archive.prompt.md`](../.github/prompts/ai-archive.prompt.md) | Safely archive a file or directory using the convention |
-| `/ai-new-module` | [`.github/prompts/ai-new-module.prompt.md`](../.github/prompts/ai-new-module.prompt.md) | Scaffold a new module: `.ai/instruct.md` + `.dev-docs/index.md`, register it, rebuild index |
-| `/ai-validate` | [`.github/prompts/ai-validate.prompt.md`](../.github/prompts/ai-validate.prompt.md) | Run the AI-INSTRUCT drift validator and report findings (no edits) |
-| `/ai-env-check` | [`.github/prompts/ai-env-check.prompt.md`](../.github/prompts/ai-env-check.prompt.md) | Audit host-vs-container isolation state and recommend containment (no edits) |
-| `/ai-commit` | [`.github/prompts/ai-commit.prompt.md`](../.github/prompts/ai-commit.prompt.md) | Refresh `Last Updated` dates, validate, draft a Conventional Commits message, optionally push |
-| `/ai-foresight` | [`.github/prompts/ai-foresight.prompt.md`](../.github/prompts/ai-foresight.prompt.md) | Run foresight gap/risk analysis on current task before acting |
-| `/ai-reflect` | [`.github/prompts/ai-reflect.prompt.md`](../.github/prompts/ai-reflect.prompt.md) | Post-task reflection; identify instruction gaps and propose `.ai/` improvements |
+| `/ai-onboard` | [`.github/prompts/ai-onboard.prompt.md`](../.github/prompts/ai-onboard.prompt.md) | **Workflow:** Initialize or update project metadata. Run first to fill template placeholders, re-run to add modules or refresh identity. |
+| `/ai-import-execute` | [`.github/prompts/ai-import-execute.prompt.md`](../.github/prompts/ai-import-execute.prompt.md) | **Workflow:** Import/merge external projects with complete Phase 0-6 orchestration. Mandatory for any import, clone, or merge operation. Prevents ad-hoc file copying. |
+| `/ai-update-index` | [`.github/prompts/ai-update-index.prompt.md`](../.github/prompts/ai-update-index.prompt.md) | **Workflow:** Rebuilds `.ai/index.md` from every instruction file after edits. |
+| `/ai-archive` | [`.github/prompts/ai-archive.prompt.md`](../.github/prompts/ai-archive.prompt.md) | **Workflow:** Safely archive a file or directory following the convention. |
+| `/ai-new-module` | [`.github/prompts/ai-new-module.prompt.md`](../.github/prompts/ai-new-module.prompt.md) | **Workflow:** Scaffold a new module and register it. |
+| `/ai-validate` | [`.github/prompts/ai-validate.prompt.md`](../.github/prompts/ai-validate.prompt.md) | **Utility:** Run the AI-INSTRUCT drift validator and report findings (no edits) |
+| `/ai-env-check` | [`.github/prompts/ai-env-check.prompt.md`](../.github/prompts/ai-env-check.prompt.md) | **Utility:** Audit host-vs-container isolation state and recommend containment (no edits) |
+| `/ai-git` | [`.github/prompts/ai-git.prompt.md`](../.github/prompts/ai-git.prompt.md) | **Utility:** Query git state (subcommands: `branch | commit | pr | status`). Read-only unless user explicitly asks for commits. |
+| `/ai-foresight` | [`.github/prompts/ai-foresight.prompt.md`](../.github/prompts/ai-foresight.prompt.md) | **Utility:** Run foresight gap/risk analysis on current task before acting (read-only) |
+| `/ai-reflect` | [`.github/prompts/ai-reflect.prompt.md`](../.github/prompts/ai-reflect.prompt.md) | **Utility:** Post-task reflection; identify instruction gaps and propose improvements (read-only) |
+| `/ai-observe` | [`.github/prompts/ai-observe.prompt.md`](../.github/prompts/ai-observe.prompt.md) | **Utility:** Display runtime observability: metrics, logs, cheat sheets (read-only) |
 | `/ai-route` | [`.github/prompts/ai-route.prompt.md`](../.github/prompts/ai-route.prompt.md) | Route a task through the generic agent triad: Router → Supervisor → workers |
 | `/ai-audit-registries` | [`.github/prompts/ai-audit-registries.prompt.md`](../.github/prompts/ai-audit-registries.prompt.md) | Reconcile the five naming registries with the codebase via naming Mode 4, then hand off to curator/cleanup |
+| `/ai-plugin-discover` | [`.github/prompts/ai-plugin-discover.prompt.md`](../.github/prompts/ai-plugin-discover.prompt.md) | Enumerate plugins under `.ai/plugins/`, summarise manifests, optionally run discovery scripts (read-only) |
+| `/ai-ports-check` | [`.github/prompts/ai-ports-check.prompt.md`](../.github/prompts/ai-ports-check.prompt.md) | Validate port registry against project code; detect collisions, drift, range violations, unregistered services |
+| `/ai-check-yourself` | [`.github/prompts/ai-check-yourself.prompt.md`](../.github/prompts/ai-check-yourself.prompt.md) | Audit AI instruction alignment; re-read rules, conventions, scope; reset to baseline if AI has drifted |
+| `/ai-observe` | [`.github/prompts/ai-observe.prompt.md`](../.github/prompts/ai-observe.prompt.md) | Display runtime observability: metrics, logs, cheat sheets; understand what the framework learned |
+| `/ai-autonomous-start` | [`.github/prompts/ai-autonomous-start.prompt.md`](../.github/prompts/ai-autonomous-start.prompt.md) | **Opt-in** — start a bounded autonomous run via the orchestrator. Refuses unless `.ai/autonomous/autonomy-config.yaml` is enabled. |
+| Autonomous Layer | [`.ai/autonomous/orchestrator.md`](autonomous/orchestrator.md) | Lightweight, opt-in orchestration layer composing existing agents under hard limits and HITL gates. Disabled by default. |
+| Autonomous Safety Guardrails | [`.ai/autonomous/safety-guardrails.md`](autonomous/safety-guardrails.md) | Stop conditions, forbidden actions, sanitisation rules, heartbeat behaviour for autonomous runs |
+| Autonomous Task Queue | [`.ai/autonomous/task-queue.md`](autonomous/task-queue.md) | JSONL goal queue schema, status lifecycle, and write rules |
+| Autonomous Config | [`.ai/autonomous/autonomy-config.yaml`](autonomous/autonomy-config.yaml) | Master switch, limits, allowed-agent palette, approval mode |
+| Adoption Tiers | [`.ai/levels.md`](levels.md) | Graduated adoption path (T1 scoped instructions → T2 pipeline → T3 observable → T4 autonomous). Pick the lowest tier that solves a concrete pain. |
+| Behavioral Evals | [`.ai/evals/README.md`](evals/README.md) | Declarative YAML evals + stdlib runner for forward-looking checks on agent behavior |
+| Eval Schema | [`.ai/evals/schema.md`](evals/schema.md) | Field reference for `*.eval.yaml` files |
+| Agent Runtime Convention | [`.ai/agents/runtime.md`](agents/runtime.md) | `runtime: chat-only \| subagent-safe` field; routes around the `runSubagent` tool-passthrough gap |
+| MCP Server | [`.ai/mcp/README.md`](mcp/README.md) | Tool-neutral MCP server (Python + Node) exposing the depth-priority resolver and governed tools |
 | Custom Agents | [`.github/copilot-instructions.md`](../.github/copilot-instructions.md) | Custom agent definitions in `.github/agents/` |
 | Skills | [`.github/copilot-instructions.md`](../.github/copilot-instructions.md) | Domain knowledge skill packs in `.github/skills/` |
 | Git Hooks | [`.github/copilot-instructions.md`](../.github/copilot-instructions.md) | Hook scripts in `.github/hooks/` and how to install them |
@@ -75,6 +93,7 @@
 | Tool: pause-check | [`.ai/agents/tools/pause-check.json`](agents/tools/pause-check.json) | Kill-switch sentinel detector; runs first at every invocation and heartbeat; halts the agent if `.ai/PAUSE` exists |
 | Tool: record-metric | [`.ai/agents/tools/record-metric.json`](agents/tools/record-metric.json) | Append-only structured metrics writer; every agent emits one line per invocation to `.ai/logs/metrics-*.jsonl`; feeds the observer |
 | Tool: retrieve-knowledge | [`.ai/agents/tools/retrieve-knowledge.json`](agents/tools/retrieve-knowledge.json) | Pluggable retrieval over `.ai/knowledge/`, `.ai/instruct.md`, and registries; lexical now, embedding-ready |
+| Engine: alignment auditor | [`.ai/engine/audit_alignment.py`](engine/audit_alignment.py) | Audit AI instruction alignment; loads effective scope, reads key files, generates rules refresh summary (used by /ai-check-yourself) |
 | Tool: Schema (governed-tool) | [`.ai/agents/tools/_schema.json`](agents/tools/_schema.json) | JSON Schema every governed-tool file must satisfy; enforced by [`validate_tools.py`](engine/validate_tools.py) and CI |
 | Engine: tool-schema validator | [`.ai/engine/validate_tools.py`](engine/validate_tools.py) | Validates every `.ai/**/tools/*.json` against `_schema.json` |
 | Engine: self-tests | [`.ai/engine/tests/`](engine/tests/) | pytest suite for the resolver and tool-schema validator |
@@ -119,6 +138,7 @@
 | Deployment Mode: prod-self-serve | [`.deployment/prod-self-serve/.ai/instruct.md`](../.deployment/prod-self-serve/.ai/instruct.md) | Self-hosted public, DDNS + Let's Encrypt |
 | Prompt: /ai-deploy-mode | [`.github/prompts/ai-deploy-mode.prompt.md`](../.github/prompts/ai-deploy-mode.prompt.md) | Inspect or switch the active `DEPLOY_MODE` scope (never mutates the shell) |
 | Agent: naming | [`.github/agents/pds-man-naming.agent.md`](../.github/agents/pds-man-naming.agent.md) | Authoritative naming service: must be consulted before any artifact is created or renamed; owns the five naming registries (coding-prefixes / api-conventions / database-schema / error-codes / config-vars) |
+| Agent: ports-manager | [`.github/agents/pds-man-ports.agent.md`](../.github/agents/pds-man-ports.agent.md) | Authoritative port registry curator: detects collisions, range violations, drift between `.ai/ports.md` and code; proposes registry updates |
 | Governance Facility | [`.ai/governance/README.md`](governance/README.md) | Pluggable external-rule overlay; separate from depth-priority `.ai/instruct.md` |
 | Governed Tool Definitions | [`.ai/agents/tools/`](agents/tools/) | Built-in governed tool checklists (not MCP wire-protocol tools) |
 | Project Tool Definitions | [`.ai/mcp/tools/`](mcp/tools/) | Add project-specific governed tool checklists here |
@@ -127,6 +147,14 @@
 | MCP Server: Node | [`.ai/mcp/node/`](mcp/node/) | Twin implementation (`@modelcontextprotocol/sdk`); install with `npm install` |
 | MCP Pointer (VS Code) | [`.vscode/mcp.json`](../.vscode/mcp.json) | Registers `pds-ai-instruct` with VS Code Copilot |
 | MCP Pointer (Cursor) | [`.cursor/mcp.json`](../.cursor/mcp.json) | Registers `pds-ai-instruct` with Cursor |
+| Foresight Outputs | `.ai/foresight/` | Runtime output; gitignored |
+| Knowledge Base | [`.ai/knowledge/README.md`](knowledge/README.md) | Module-organized empirical learning (cheat sheets, patterns, antipatterns, risks) |
+| Knowledge Cleanup Policy | [`.ai/knowledge/.cleanup-policy.md`](knowledge/.cleanup-policy.md) | Aging, deduplication, and archival rules for knowledge entries |
+| Cheat Sheet Template | [`.ai/knowledge/cheat-sheets/.template.md`](knowledge/cheat-sheets/.template.md) | Template for module-specific quick reference guides |
+| Foresight Observable Logs | [`.ai/engine/foresight_engine_observable.py`](engine/foresight_engine_observable.py) | Detect gaps and risks before acting; log to `.ai/logs/foresight-*.jsonl` |
+| Memory Hygiene Tool | [`.ai/engine/memory_hygiene.py`](engine/memory_hygiene.py) | Deduplicate, age, and archive knowledge base entries |
+| Metrics Dashboard | [`.ai/engine/show_metrics.py`](engine/show_metrics.py) | Aggregate observable logs; show patterns, risks, task breakdown |
+| Knowledge Audit Logs | `.ai/logs/foresight-*.jsonl` | Structured foresight findings per task (gitignored runtime) |
 | Foresight Outputs | `.ai/foresight/` | Runtime output; gitignored |
 | Knowledge Base | `.ai/knowledge/` | Accumulated runtime knowledge; gitignored |
 | Audit Logs | `.ai/logs/` | All agent change logs; gitignored |
@@ -153,8 +181,9 @@
 | File Naming | [`.ai/conventions.md`](conventions.md) | Language-specific file naming; no spaces |
 | Documentation Naming | [`.ai/conventions.md`](conventions.md) | Numbered kebab-case for user-facing guides |
 | AI Instruction File Naming | [`.ai/conventions.md`](conventions.md) | Standard name for instruction files; one type: `instruct.md` |
-| .dev-docs Convention | [`.ai/conventions.md`](conventions.md) | Dev documentation subdirectory structure and rules |
-| TOC Requirement | [`.ai/conventions.md`](conventions.md) | Files with 5+ sections must have a Contents table |
+| .dev-docs Convention | [`.ai/conventions.md`](conventions.md) | Dev documentation subdirectory structure and rules || Plugins Convention | [`.ai/conventions.md`](conventions.md) | Optional capability modules under `.ai/plugins/`; pointer to plugin contract |
+| Plugin Contract | [`.ai/plugins/README.md`](plugins/README.md) | Manifest schema, lifecycle, discovery, depth-priority interaction |
+| Reference Plugin: model-dispatch | [`.ai/plugins/model-dispatch/README.md`](plugins/model-dispatch/README.md) | Optional per-task model-tier routing; ships disabled || TOC Requirement | [`.ai/conventions.md`](conventions.md) | Files with 5+ sections must have a Contents table |
 | Cross-Reference Convention | [`.ai/conventions.md`](conventions.md) | Exact format for referencing source-of-truth sections |
 | No-Duplication Rule | [`.ai/conventions.md`](conventions.md) | Instructions live in exactly one place |
 | Versioning | [`.ai/conventions.md`](conventions.md) | Semver, instruction file dating, Last Updated auto-update rule |
@@ -221,6 +250,30 @@
 | Database Schema Conventions | [`.ai/database-schema.md`](database-schema.md) | Master table of database naming: tables (tbl_), columns (col_), indices (idx_), migrations |
 | Error Code Conventions | [`.ai/error-codes.md`](error-codes.md) | Master table of error codes (ERR_{DOMAIN}_{REASON}) with HTTP status mapping |
 | Configuration Variables Registry | [`.ai/config-vars.md`](config-vars.md) | Master table of typed config variables ({MODULE}_{RESOURCE}_{PROPERTY}) with validation |
+| Team Version Control & Merge Governance | [`.ai/version-control.md`](version-control.md) | Branch strategies (GitHub Flow, Git Flow, Trunk-Based), scope locking, merge validation gates, registry merge strategy, conflict resolution |
+
+### Port Configuration
+
+| Section | File | Description |
+|---------|------|-------------|
+| Port Registry | [`.ai/ports.md`](ports.md) | Master list of all service ports; single source of truth for dev, test, and prod |
+| Port Allocation Guidelines | [`.ai/ports.md`](ports.md) | Reserved port ranges to prevent collisions (APIs: 3000–3099, cache: 5100–5199, etc.) |
+| Port Validator Engine | [`.ai/engine/port_validator.py`](engine/port_validator.py) | Scans project for hardcoded ports; compares against registry; detects collisions, drift, range violations |
+| Port Manager Agent | [`.github/agents/pds-man-ports.agent.md`](../.github/agents/pds-man-ports.agent.md) | Automated drift detection and registry update proposals; never modifies source code |
+| Slash Command: /ai-ports-check | [`.github/prompts/ai-ports-check.prompt.md`](../.github/prompts/ai-ports-check.prompt.md) | On-demand validation; shows findings in human-readable format; exports JSON |
+
+### Knowledge Base & Observable Runtime
+
+| Section | File | Description |
+|---------|------|-------------|
+| Knowledge Base Overview | [`.ai/knowledge/README.md`](knowledge/README.md) | Module-organized empirical learning system (cheat sheets, patterns, antipatterns, risks; separate from normative rules) |
+| Phase 2 Learning Capture | [`.ai/knowledge/phase2-learnings.md`](knowledge/phase2-learnings.md) | Phase 2 execution metrics, hybrid LLM routing validation, optimization opportunities |
+| Knowledge Cleanup Policy | [`.ai/knowledge/.cleanup-policy.md`](knowledge/.cleanup-policy.md) | Aging (180d), deduplication, and archival rules for knowledge entries |
+| Cheat Sheet Template | [`.ai/knowledge/cheat-sheets/.template.md`](knowledge/cheat-sheets/.template.md) | Template for module-specific quick reference guides (not instructions; rather shortcuts + experience) |
+| Observable Foresight Engine | [`.ai/engine/foresight_engine_observable.py`](engine/foresight_engine_observable.py) | Detect anticipated gaps and risks before acting; log findings to `.ai/logs/foresight-*.jsonl` |
+| Memory Hygiene Tool | [`.ai/engine/memory_hygiene.py`](engine/memory_hygiene.py) | Deduplicate, age, and suggest archival of knowledge entries; maintains KB hygiene |
+| Metrics Dashboard | [`.ai/engine/show_metrics.py`](engine/show_metrics.py) | Aggregate and visualize observable logs; show patterns, anomalies, task breakdown |
+| Knowledge Logs | `.ai/logs/foresight-*.jsonl` | Structured foresight findings per task (runtime; gitignored) |
 
 ### Module: gui
 

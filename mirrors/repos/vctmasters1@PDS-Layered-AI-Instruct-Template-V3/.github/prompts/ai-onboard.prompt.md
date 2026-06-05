@@ -1,6 +1,6 @@
 ---
 mode: agent
-description: Interactive onboarding wizard — walks the user through filling in every [PLACEHOLDER] in this freshly-cloned template (project identity, dev specs, license, dates, modules) and finishes by rebuilding the master index.
+description: Interactive onboarding wizard — walks the user through filling in every [PLACEHOLDER] in the template (project identity, dev specs, license, dates, modules). Also offers import path via `/ai-import-execute` for existing projects.
 ---
 
 # Onboard a New Project
@@ -23,6 +23,30 @@ Convert this template from a generic scaffold into a live project. Walk the user
 ---
 
 ## Steps
+
+### 0. Choose your starting point
+
+**Ask the user up front:**
+> Do you want to:
+> 1. Start fresh from this template (answer onboarding questions to configure a new project), OR
+> 2. Import an existing project into the template framework?
+
+**Path A: Start Fresh**
+- User chooses "fresh" → proceed to Step 1 below
+
+**Path B: Import Existing Project**
+- User chooses "import" → invoke `/ai-import-execute` 
+- `/ai-import-execute` runs Phases 0-6 orchestration (validation, analysis, transformation, consolidation, validation)
+- On completion, return here and continue with **Step 2** (project identity) to fill in final onboarding details
+- You can skip Step 1 (state detection) — `/ai-import-execute` already analyzed the project
+- Skip Step 6 (modules) if `/ai-import-execute` already enumerated them
+
+**Path C: Re-Onboarding (Partially Filled)**
+- Some placeholders already filled, some not → diff and present unfilled set
+- Ask whether to do a **targeted pass** (only unfilled sections) or a **full re-walk** (all steps)
+- Never overwrite filled values without asking
+
+---
 
 ### 1. Detect onboarding state and auto-fillable values
 

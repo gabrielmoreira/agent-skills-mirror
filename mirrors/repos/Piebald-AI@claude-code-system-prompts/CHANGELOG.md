@@ -4,6 +4,26 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.163](https://github.com/Piebald-AI/claude-code-system-prompts/commit/25272bf)
+
+_+5,630 tokens_
+
+- **NEW:** Data: Cowork plugin component schemas — Adds detailed Cowork plugin component format references for skills, agents, hooks, MCP servers, legacy commands, CONNECTORS.md, README.md, and plugin packaging metadata.
+- **NEW:** Data: Cowork plugin examples — Adds minimal, standard, and complex Cowork plugin templates covering plugin manifests, skills, agents, hooks, MCP configuration, README content, and connector placeholders.
+- **NEW:** Data: Cowork plugin MCP discovery and connection — Adds guidance for finding MCP connectors during plugin customization, mapping integration categories to search keywords, prompting users to connect MCPs, and writing `.mcp.json` entries.
+- **NEW:** Data: Knowledge MCP search strategies — Adds organizational-discovery query patterns for using knowledge MCPs to identify project tools, team conventions, workspace IDs, channels, and workflow details during plugin customization.
+- **NEW:** Data: Token counting reference — Adds Claude token-counting guidance that uses the Messages `count_tokens` endpoint and Anthropic SDK or CLI examples, with explicit warnings against OpenAI tokenizers such as `tiktoken`.
+- **NEW:** Skill: Cowork plugin authoring — Adds instructions for creating or customizing Cowork plugins, including mode selection, research, nontechnical user questions, component implementation, connector replacement, packaging, and delivery as a `.plugin` file.
+- **NEW:** System Prompt: Outcome-first communication style — Adds communication guidance to lead with outcomes, write readable teammate-facing updates, match response shape to task complexity, and keep code comments limited to non-obvious constraints.
+- **NEW:** Tool Description: Browser file upload — Adds a browser file upload tool that uploads shared session files directly to page file inputs by element ref and enforces a 10 MB combined upload limit.
+- Skill: Build with Claude API (reference guide) — Adds token-counting task routing to `shared/token-counting.md`, instructing agents to use `messages.count_tokens` rather than `tiktoken`.
+- Skill: Building LLM-powered applications with Claude — Expands supporting-endpoint and task-routing guidance for token counting, pointing to `POST /v1/messages/count_tokens` and the new shared token-counting reference.
+- Skill: /design-sync package source shape — Clarifies that `buildCmd` is the re-sync build command, that notes are read by Claude and uploaded into the README, and adds troubleshooting entries for remote fonts, `.d.ts` parsing, style-system prop filtering, invalid providers, and undeclared or missing lib overrides.
+- Skill: /design-sync slash command — Updates the source-shape handoff to describe shared converter scripts under `lib/`, Storybook entry points under `storybook/`, and the package-shape entry at `package-build.mjs`.
+- Skill: /design-sync Storybook source shape — Reworks Storybook syncing around using the repo's own Storybook output as iframe-backed preview cards, building directly into `ds-bundle/_sb/`, requiring React 18+, simplifying configuration, and validating uploaded Storybook artifacts.
+- Tool Description: Bash (sandbox — tmpdir) — Clarifies that `$TMPDIR` is automatically set to the correct sandbox-writable directory in sandbox mode while preserving the instruction not to use `/tmp` directly.
+- Tool Description: Workflow — Adds that each `parallel()` or `pipeline()` call accepts at most 4096 items and errors explicitly when the limit is exceeded.
+
 # [2.1.162](https://github.com/Piebald-AI/claude-code-system-prompts/commit/4cd566a)
 
 _+9,871 tokens_

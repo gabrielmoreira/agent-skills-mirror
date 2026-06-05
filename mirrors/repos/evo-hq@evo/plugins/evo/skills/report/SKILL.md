@@ -1,7 +1,7 @@
 ---
 name: report
 description: Print the dashboard's dot chart (score over experiment order, status colors, best-path stair) inline in the terminal for every run in the workspace. Use when the user invokes /evo:report, asks for a quick score chart without opening the dashboard, or wants the scatter plot in chat output.
-evo_version: 0.4.4
+evo_version: 0.4.5
 ---
 
 # Report

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `op7418/CodePilot` — 26 default patterns, 1 followed patterns, 5 file(s) materialized.
+Mirror of `op7418/CodePilot` — 26 default patterns, 2 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `op7418/CodePilot` — 26 default patterns, 1 followed patterns, 5 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 5 |
+| Followed pats | 2 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `op7418/CodePilot` — 26 default patterns, 1 followed patterns, 5 fil
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `ARCHITECTURE.md`
+- `docs/design.md`
 
 ## File Index
 
@@ -64,6 +65,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
 | 4 | ✓ | [`src/lib/bridge/CLAUDE.md`](src/lib/bridge/CLAUDE.md) |
 | 5 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 6 | → | [`docs/design.md`](docs/design.md) |
 
 ---
 

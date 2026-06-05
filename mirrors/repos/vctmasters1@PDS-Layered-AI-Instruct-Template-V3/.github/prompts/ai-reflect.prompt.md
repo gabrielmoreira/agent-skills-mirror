@@ -1,53 +1,82 @@
 ---
 mode: agent
-description: Post-task reflection — examine what changed this session, identify instruction gaps, and propose improvements to .ai/ files.
+description: Route reflection through /ai-route, then examine changes, identify instruction gaps, and propose improvements to .ai/ files
 ---
 
 # /ai-reflect
 
-Reflect on the current session and propose targeted improvements to the AI-INSTRUCT system. This command is the interactive entry point for the `reflect-and-improve` governed tool.
+Route the reflection workflow through `/ai-route` to resolve scope and governance, then examine session changes, identify instruction gaps, and propose targeted improvements to `.ai/` files.
 
-> **→ [reflect-and-improve tool](../../.ai/agents/tools/reflect-and-improve.json)** — full checklist for this procedure.
-> **→ [AI-INSTRUCT Maintenance Rule](../copilot-instructions.md#ai-instruct-maintenance-rule)** — update instruction files as part of every architectural change.
+## Quick Start
+
+In Copilot Chat:
+```
+/ai-reflect
+```
 
 ---
 
-## Steps
+## Workflow: Route → Reflect → Propose
 
-### 1. Review session changes
+### Step 1: Route Through `/ai-route`
 
-Run:
-```
-git diff HEAD --stat
-git status --short
-```
-
-Read the changed files to understand what was added, modified, or removed this session.
-
-### 2. Load the active instruction scope
-
-For each path that was changed, load the effective instruction scope using `.ai/engine/get_effective_instructions.py`. Identify which `.ai/instruct.md` file governs each change.
-
-### 3. Identify instruction gaps
-
-Look for any of the following:
-
-| Signal | Means |
-|---|---|
-| Agent had to guess at a convention | Rule is absent or underspecified |
-| Agent interpreted a rule inconsistently across files | Rule is ambiguous |
-| Two rules pointed in opposite directions | Rule conflict |
-| Same pattern appeared 3+ times with no canonical source | Canonicalization opportunity |
-| A module was added/changed with no `.ai/instruct.md` update | Maintenance rule violation |
-
-### 4. Propose improvements
-
-For each gap, identify the **target file** (use the deepest scope that covers the gap) and write an explicit before/after proposal:
+**Invoke the Router:**
 
 ```
-### Proposal: [short title]
-**Target**: .ai/instruct.md (or [module]/.ai/instruct.md)
-**Gap**: [what is missing or wrong]
+/ai-route
+
+Task: Post-task reflection and instruction gap analysis
+Scope: root (or narrower if working within a specific module)
+Context: This is a reflection workflow.
+  Route to pds-meta-learner for gap identification and proposal.
+  Apply scope-level instruction authority.
+  Ensure proposed improvements stay within the deepest .ai/instruct.md scope.
+```
+
+The Router will:
+1. Resolve the target scope(s) affected by this session's changes
+2. Check for reflection governance rules
+3. Route to `pds-meta-learner` with scope context
+4. `pds-meta-learner` executes reflection within resolved scope(s)
+
+### Step 2: Reflection Execution (via pds-meta-learner)
+
+Once routed, the learner agent will:
+
+1. Review session changes:
+   - `git diff HEAD --stat` and `git status --short`
+   - Read all changed files to understand adds/modifications/removals
+
+2. Load the effective instruction scope:
+   - For each changed path, resolve the governing `.ai/instruct.md` (deepest wins)
+   - Ensure proposed improvements target the right authority file
+
+3. Identify instruction gaps:
+   - Agent guessed at conventions (rule absent or underspecified)
+   - Rules interpreted inconsistently across files (rule ambiguous)
+   - Conflicting rules (two rules point opposite directions)
+   - Repeated patterns 3+ times with no canonical source (canonicalization needed)
+   - Module added/changed with no `.ai/instruct.md` update (maintenance rule violation)
+
+4. Propose improvements:
+   - For each gap, identify target file (use deepest scope)
+   - Write explicit before/after proposals
+   - Suggest which scope (root `.ai/instruct.md`, module `.ai/instruct.md`, or new file) owns the rule
+
+5. Ask user approval:
+   - Show proposed changes
+   - Ask if they want to apply (yes/no)
+   - If yes, apply edits and commit with message "docs: Update .ai/ instruction files per reflection"
+   - If no, archive the proposals for later consideration
+
+---
+
+## See Also
+
+- [/ai-route](ai-route.prompt.md) — the routing gateway (invoked from this prompt)
+- [pds-meta-learner](../agents/pds-meta-learner.agent.md) — learner worker (routed to)
+- [AI-INSTRUCT Maintenance Rule](../copilot-instructions.md#ai-instruct-maintenance-rule) — update instruction files as part of every architectural change
+- [reflect-and-improve tool](../../.ai/agents/tools/reflect-and-improve.json) — full checklist for this procedure
 **Proposed addition**:
 > [exact text to add]
 ```

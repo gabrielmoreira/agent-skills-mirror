@@ -5,7 +5,7 @@ effort: high
 disable-model-invocation: true
 ---
 
-# /plan-pipeline:execute — Execution to Merged PR
+# /plan-pipeline:execute: Execution to Merged PR
 
 Execute the validated plan in an isolated worktree. Spawn per-task agents, verify quality, create and merge the PR. Handles everything through to cleanup.
 
@@ -70,7 +70,7 @@ Relevant ADRs: {adr list}
 First principles:
 - Build state-of-the-art. No workarounds, no legacy patterns.
 - Fix at the correct architectural level, never with component-level hacks.
-- If you discover that the plan is wrong or missing context, stop and report — do not improvise architecture.
+- If you discover that the plan is wrong or missing context, stop and report. Do not improvise architecture.
 
 Commit your changes when complete with message: "feat: {task-description}"
 ```
@@ -229,7 +229,7 @@ Metrics committed. Worktree cleaned.
 
 ## When to Use
 
-After `/plan-pipeline:validate` confirms all issues are resolved. Never skip validation — executing an unvalidated plan skips the independent review that catches ~18 issues on average.
+After `/plan-pipeline:validate` confirms all issues are resolved. Never skip validation: executing an unvalidated plan skips the independent review that catches ~18 issues on average.
 
 ## Pipeline Position
 

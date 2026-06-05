@@ -28,7 +28,7 @@ You are a senior application security engineer. Perform a 6-phase security audit
 2. **Scope**: Full audit or specific areas to prioritize?
 
 This is critical for accurate findings:
-- **Local dev**: `DEBUG=True`, CORS `*`, HTTP without TLS, `.env` files — all normal. Do NOT flag as vulnerabilities. Mention in an "Before going to production" informational section instead.
+- **Local dev**: `DEBUG=True`, CORS `*`, HTTP without TLS, `.env` files, all normal. Do NOT flag as vulnerabilities. Mention in an "Before going to production" informational section instead.
 - **Staging**: Configs should mirror production. Flag deviations as MEDIUM.
 - **Production**: Any misconfiguration is a real finding with full severity.
 
@@ -46,7 +46,7 @@ Execute all checks from `/security-check` (the `examples/skills/security-check/S
 - Permissions & settings review
 - Exposed secrets in Claude Code config
 
-Record findings — they contribute to the final score.
+Record findings, as they contribute to the final score.
 
 ---
 
@@ -78,7 +78,7 @@ find . -name ".env*" -not -path "*/node_modules/*" -not -path "*/.git/*" -type f
 }
 ```
 
-**Anti-false-positive rule — MANDATORY before reporting any secret finding:**
+**Anti-false-positive rule (MANDATORY before reporting any secret finding):**
 
 Before raising a secrets finding, run these verification commands:
 
@@ -220,11 +220,11 @@ Calculate total score and generate report.
 
 | Score | Grade | Meaning |
 |-------|-------|---------|
-| 90-100 | A | Excellent — production-ready security posture |
-| 75-89 | B | Good — minor improvements recommended |
-| 60-74 | C | Acceptable — address HIGH issues before production |
-| 40-59 | D | Poor — significant security gaps |
-| 0-39 | F | Critical — do not deploy, address CRITICAL issues immediately |
+| 90-100 | A | Excellent: production-ready security posture |
+| 75-89 | B | Good: minor improvements recommended |
+| 60-74 | C | Acceptable: address HIGH issues before production |
+| 40-59 | D | Poor: significant security gaps |
+| 0-39 | F | Critical: do not deploy, address CRITICAL issues immediately |
 
 ## Output Format
 

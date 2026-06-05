@@ -1,14 +1,13 @@
 ---
 name: talk-pipeline
 description: "Orchestrates the complete talk preparation pipeline from raw material to revision sheets, running 6 stages in sequence with human-in-the-loop checkpoints for REX or Concept mode talks. Use when starting a new talk pipeline, resuming a pipeline from a specific stage, or running the full end-to-end preparation workflow."
-tags: [talk, pipeline, presentation, orchestrator]
-allowed-tools: "Write, Read, AskUserQuestion, Task"
-effort: medium
+allowed-tools: Write Read AskUserQuestion Task
+effort: high
 ---
 
 # Talk Pipeline Orchestrator
 
-Orchestrates the complete talk preparation pipeline — from raw material to revision sheets. Can run the full pipeline or a single isolated stage.
+Orchestrates the complete talk preparation pipeline from raw material to revision sheets. Can run the full pipeline or a single isolated stage.
 
 ## Modes
 
@@ -42,29 +41,29 @@ Ask with AskUserQuestion if not provided:
 
 ## Workflow
 
-1. **Collect context** — AskUserQuestion for required metadata
-2. **Route by mode** — `--rex` vs `--concept` (skip Stage 2 if concept)
-3. **Run Stage 1** — `/talk-stage1-extract` — always first
+1. **Collect context** using AskUserQuestion for required metadata
+2. **Route by mode** (`--rex` vs `--concept`, skip Stage 2 if concept)
+3. **Run Stage 1** (`/talk-stage1-extract`, always first)
 4. **Run Stages 2-4 in parallel** (after Stage 1 confirmed)
-   - REX: extract → research + concepts + position (in parallel)
-   - Concept: extract → concepts + position (in parallel, skip research)
-5. **CHECKPOINT** — wait for angle + title choice (Stage 4 output)
-6. **Run Stage 5** — `/talk-stage5-script` with validated choice
-7. **Run Stage 6** — `/talk-stage6-revision`
-8. **Final summary** — list all generated files with their paths
+   - REX: extract -> research + concepts + position (in parallel)
+   - Concept: extract -> concepts + position (in parallel, skip research)
+5. **CHECKPOINT**: wait for angle + title choice (Stage 4 output)
+6. **Run Stage 5** (`/talk-stage5-script` with validated choice)
+7. **Run Stage 6** (`/talk-stage6-revision`)
+8. **Final summary**: list all generated files with their paths
 
 ## Dependency Graph
 
 ```
          extract (Stage 1)
                |
-    ┌──────────┼──────────┐
-    v          v          v
+    +----------+-----------+
+    v          v           v
 research    concepts   position
 (Stage 2)   (Stage 3)  (Stage 4)
 [--rex only]            [CHECKPOINT]
-    |          |          |
-    └──────────┼──────────┘
+    |          |           |
+    +----------+-----------+
                v
           script (Stage 5)
                |
@@ -111,31 +110,31 @@ After Stage 6 completes, display:
 ```
 Pipeline complete. Files generated:
 
-Stage 1 — Extract:
-  ✓ talks/{YYYY}-{slug}-summary.md
+Stage 1: Extract
+  v talks/{YYYY}-{slug}-summary.md
 
-Stage 2 — Research (REX only):
-  ✓ talks/{YYYY}-{slug}-git-archaeology.md
-  ✓ talks/{YYYY}-{slug}-changelog-analysis.md
-  ✓ talks/{YYYY}-{slug}-timeline.md
+Stage 2: Research (REX only)
+  v talks/{YYYY}-{slug}-git-archaeology.md
+  v talks/{YYYY}-{slug}-changelog-analysis.md
+  v talks/{YYYY}-{slug}-timeline.md
 
-Stage 3 — Concepts:
-  ✓ talks/{YYYY}-{slug}-concepts.md
-  ✓ talks/{YYYY}-{slug}-concepts-enriched.md (if repo available)
+Stage 3: Concepts
+  v talks/{YYYY}-{slug}-concepts.md
+  v talks/{YYYY}-{slug}-concepts-enriched.md (if repo available)
 
-Stage 4 — Position:
-  ✓ talks/{YYYY}-{slug}-angles.md
-  ✓ talks/{YYYY}-{slug}-titre.md
-  ✓ talks/{YYYY}-{slug}-descriptions.md
-  ✓ talks/{YYYY}-{slug}-feedback-draft.md
+Stage 4: Position
+  v talks/{YYYY}-{slug}-angles.md
+  v talks/{YYYY}-{slug}-titre.md
+  v talks/{YYYY}-{slug}-descriptions.md
+  v talks/{YYYY}-{slug}-feedback-draft.md
 
-Stage 5 — Script:
-  ✓ talks/{YYYY}-{slug}-pitch.md
-  ✓ talks/{YYYY}-{slug}-slides.md
-  ✓ talks/{YYYY}-{slug}-kimi-prompt.md   ← copy-paste into kimi.com
+Stage 5: Script
+  v talks/{YYYY}-{slug}-pitch.md
+  v talks/{YYYY}-{slug}-slides.md
+  v talks/{YYYY}-{slug}-kimi-prompt.md   <- copy-paste into kimi.com
 
-Stage 6 — Revision:
-  ✓ talks/{YYYY}-{slug}-revision-sheets.md
+Stage 6: Revision
+  v talks/{YYYY}-{slug}-revision-sheets.md
 
 Next step: open kimi-prompt.md, verify no {PLACEHOLDER} remains, paste into kimi.com.
 ```

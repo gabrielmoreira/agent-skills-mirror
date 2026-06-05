@@ -5,7 +5,7 @@ effort: high
 disable-model-invocation: true
 ---
 
-# /plan-pipeline:start — 5-Phase Planning
+# /plan-pipeline:start: 5-Phase Planning
 
 Analyze the request and produce a complete implementation plan through structured phases. No code is written. Every significant decision is recorded. Run `/clear` after this command before running `/plan-pipeline:validate`.
 
@@ -13,7 +13,7 @@ Analyze the request and produce a complete implementation plan through structure
 
 ## Phase 1: PRD & Design Analysis
 
-### Step 1.1 — PRD Analysis
+### Step 1.1: PRD Analysis
 
 *Skip if no PRD exists (refactor, infra change, bug fix).*
 
@@ -21,13 +21,13 @@ Read all PRD files and `docs/INFORMATION_ARCHITECTURE.md` if present. Scan the c
 
 Surface findings in 3 buckets:
 
-**Missing requirements** — acceptance criteria that are absent or incomplete
-**Ambiguous requirements** — items with multiple valid interpretations
-**Compliance concerns** — security, data privacy, API contract implications
+**Missing requirements**: acceptance criteria that are absent or incomplete
+**Ambiguous requirements**: items with multiple valid interpretations
+**Compliance concerns**: security, data privacy, API contract implications
 
 For each finding: present options with concrete pros/cons. Discuss with user. Record every decision in the plan file under a `## Decisions` section before moving on. Do not proceed past unresolved ambiguities.
 
-### Step 1.2 — Design Analysis
+### Step 1.2: Design Analysis
 
 *Skip if no UI changes are in scope.*
 
@@ -50,8 +50,8 @@ Create Design ADRs for significant UX decisions (choice of interaction pattern, 
 Spawn 1-2 Explore agents for targeted codebase research. Run them in the background via Task tool.
 
 While agents run, check:
-- Existing ADRs in `docs/adr/` — if 3+ ADRs confirm a decision → auto-resolve without asking
-- PATTERNS.md — apply confirmed patterns directly
+- Existing ADRs in `docs/adr/`: if 3+ ADRs confirm a decision → auto-resolve without asking
+- PATTERNS.md: apply confirmed patterns directly
 
 When agents return: present architecture decisions with 2-3 options each, concrete pros/cons, and a recommendation. Ask for user input on each unresolved decision.
 
@@ -83,7 +83,7 @@ Apply trigger rules to determine which research agents are needed. Present the p
 | `planning-coordinator` | Always, when 2+ agents selected | Opus |
 
 **Tier labels** (descriptive, not prescriptive):
-- Tier 0 (0 agents): Solo — inline research, no spawning
+- Tier 0 (0 agents): Solo (inline research, no spawning)
 - Tier 1 (1-3 agents): Focused
 - Tier 2 (4-6 agents): Standard
 - Tier 3 (7-9 agents): Comprehensive
@@ -104,7 +104,7 @@ Wait for approval before Phase 4.
 - The relevant files/areas to investigate
 - The questions it needs to answer
 
-Monitor agents by reading their output files directly (TaskOutput is deprecated since v2.1.83 — use `Read` on `.claude/tasks/<id>/output.log` instead). Report progress: "3/6 agents complete..."
+Monitor agents by reading their output files directly (TaskOutput is deprecated since v2.1.83; use `Read` on `.claude/tasks/<id>/output.log` instead). Report progress: "3/6 agents complete..."
 
 When all agents return: if `planning-coordinator` was spawned, send it all agent reports and have it synthesize the final plan. Otherwise, synthesize directly.
 
@@ -127,11 +127,11 @@ ADRs created, patterns applied, architectural choices made.
 Ordered task list with layers (1 = foundation, 2 = depends on 1, etc.)
 
 ### Layer 1
-- [ ] Task A — description, files affected, acceptance criteria
-- [ ] Task B — description, files affected, acceptance criteria
+- [ ] Task A: description, files affected, acceptance criteria
+- [ ] Task B: description, files affected, acceptance criteria
 
 ### Layer 2
-- [ ] Task C — depends on A — description, files affected, acceptance criteria
+- [ ] Task C (depends on A): description, files affected, acceptance criteria
 
 ## Test Plan
 How each task will be verified. TDD tasks marked explicitly.

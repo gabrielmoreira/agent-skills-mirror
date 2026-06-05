@@ -2,6 +2,7 @@
 name: sandbox-status
 description: Display native sandbox status, configuration, and recent violations
 effort: low
+when_to_use: "Use to check whether Claude Code sandbox mode is active and what restrictions apply."
 disable-model-invocation: true
 ---
 

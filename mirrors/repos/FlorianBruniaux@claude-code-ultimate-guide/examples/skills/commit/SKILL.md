@@ -3,6 +3,7 @@ name: commit
 description: Generate a conventional commit message for staged changes
 argument-hint: "[--amend] [message]"
 effort: low
+when_to_use: "Use when ready to commit staged changes and need a conventional commit message."
 disable-model-invocation: true
 ---
 

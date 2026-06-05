@@ -198,6 +198,17 @@ The lead writes handoffs to `.omc/handoffs/<stage-name>.md`.
 - **Cancel:** `/oh-my-claudecode:cancel` requests teammate shutdown, waits for responses (best effort), marks phase `cancelled` with `active=false`, captures cancellation metadata, then deletes team resources and clears/preserves Team state per policy. Handoff files in `.omc/handoffs/` are preserved for potential resume.
 - Terminal states are `complete`, `failed`, and `cancelled`.
 
+## Windows psmux tmux-compatible gate
+
+On native Windows, do **not** tell users that `/team` requires WSL or that tmux is unavailable until the actual tmux-compatible binary has been checked. Native [psmux](https://github.com/psmux/psmux) installs a `tmux`-compatible command (often `tmux` / `tmux.cmd`) and is a supported Team multiplexer.
+
+Before blocking or falling back on Windows:
+
+1. Check `tmux -V` (or the platform equivalent such as `where tmux` followed by `tmux -V`).
+2. Treat a successful psmux-backed `tmux -V` as tmux available.
+3. If psmux/tmux is available, continue the normal Team flow; do not emit WSL-required guidance.
+4. Only when no tmux-compatible binary is available, tell the user to install psmux for native Windows support or use WSL2 as an alternative.
+
 ## Workflow
 
 ### Phase 1: Parse Input
@@ -1062,3 +1073,10 @@ MCP workers can operate in isolated git worktrees to prevent file conflicts betw
 10. **Broadcast is expensive** -- Each broadcast sends a separate message to every teammate. Use `message` (DM) by default. Only broadcast for truly team-wide critical alerts.
 
 11. **CLI workers are one-shot, not persistent** -- Tmux CLI workers have full filesystem access and CAN make code changes. However, they run as autonomous one-shot jobs -- they cannot use TaskList/TaskUpdate/SendMessage. The lead must manage their lifecycle: write prompt_file, spawn CLI worker, read output_file, mark task complete. They don't participate in team communication like Claude teammates do.
+
+## Parallel session caveats
+
+- **Multi-repo workspace anchor:** drop a `.omc-workspace` marker at the parent directory so multiple sessions across sub-repos share one `.omc/`. Resolution order: `OMC_STATE_DIR > .omc-workspace > git > cwd`. See `docs/REFERENCE.md`.
+- **Session id source:** OMC_SESSION_ID env var wins in CLI contexts; hook payload data.session_id wins in hook contexts.
+- **Plan id (when applicable):** Team state is session-scoped. Team handoffs at `.omc/handoffs/` are shared by design (see Wave G in the workspace plan).
+- **Parallel verdict:** supported (session-scoped + shared handoffs by design)

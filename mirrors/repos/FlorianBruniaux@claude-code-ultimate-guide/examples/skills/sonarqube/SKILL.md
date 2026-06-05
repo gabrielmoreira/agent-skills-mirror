@@ -3,6 +3,7 @@ name: sonarqube
 description: Analyze SonarCloud quality issues for a specific PR
 argument-hint: "[project_key]"
 effort: medium
+when_to_use: "Use when running SonarQube analysis or interpreting SonarQube findings."
 disable-model-invocation: true
 ---
 

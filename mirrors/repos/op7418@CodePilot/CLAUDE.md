@@ -12,11 +12,13 @@ CodePilot — 多模型 AI Agent 桌面客户端，基于 Electron + Next.js。
 - 涉及构建/打包的改动需要完整执行一次打包流程验证产物可用
 - 涉及多平台的改动需要考虑各平台的差异性
 
-**UI 改动必须用 CDP 验证（chrome-devtools MCP）：**
-- 修改组件、样式、布局后，必须通过 chrome-devtools MCP 实际验证效果
-- 验证流程：`npm run dev` 启动应用 → 用 CDP 打开 `http://localhost:3000` 对应页面 → 截图确认渲染正确 → 检查 console 无报错
-- 涉及交互的改动（按钮、表单、导航）需通过 CDP 模拟点击/输入并截图验证
-- 修改响应式布局时，用 CDP 的 device emulation 分别验证桌面和移动端视口
+**UI 改动必须验证，但默认不要强制 CDP：**
+- 修改组件、样式、布局后，必须实际验证效果；优先选择最小、最稳定的验证方式，避免长时间占用浏览器自动化进程
+- 默认顺序：代码审查 / targeted test → `npm run test` → `npm run test:smoke` 或 Playwright E2E → Browser Use 轻量截图与 console 检查 → Chrome 插件 → CDP
+- Browser Use 适合本地页面短程走查（如 `localhost:3001` 的渲染、点击、输入、截图、console）；每次只验证一个明确目标，避免长时间连续操作、full-page DOM dump 或大截图循环
+- Chrome 插件只用于需要用户真实 Chrome 环境的场景：登录态、cookies、已有标签页、Chrome 扩展、远程受保护页面
+- chrome-devtools/CDP 仅作为深度诊断备用：Network/Performance/Issues、精确 CDP 能力或响应式 device emulation；如果出现 profile lock、stale process、超时或内存异常苗头，立即停止并改用更安全的验证方式
+- 涉及交互的改动（按钮、表单、导航）优先补 smoke/e2e；需要人工视觉确认时再补 Browser Use 截图
 
 **新增功能前必须详尽调研：**
 - 新增功能前必须充分调研相关技术方案、API 兼容性、社区最佳实践
@@ -40,15 +42,48 @@ CodePilot — 多模型 AI Agent 桌面客户端，基于 Electron + Next.js。
 - body 中按文件或功能分组，说明改了什么、为什么改、影响范围
 - 修复 bug 需说明根因；架构决策需简要说明理由
 
+## 语义验收与反假数据
+
+涉及用户可见的统计、状态、能力支持、权限提示、模型/Runtime 兼容性、上下文用量、进度条、badge、warning、设置页能力清单等功能时，必须先过这一节。目标是防止"管道通了，但 UI 数字/状态不是用户以为的意思"。
+
+**先定义语义契约：**
+- 每个用户可见字段必须写清楚它代表什么，不允许只用内部变量名代替语义。例如 `Skills` 必须区分"可用 Skill 描述"、"本轮加载的 Skill 正文"、"实际调用的 Skill 结果"。
+- 每个字段必须有 source breadcrumb，能追到真实来源，如 `sdk-init.availableSkills`、`skill-loader.loadedSkillPrompt`、`mcp.schemaJson`、`workspace-rules-fs`、`db.token_usage`。
+- 没有真实来源的字段必须隐藏、标记 unsupported，或明确写"估算"。不得显示假 0、placeholder、固定估算值，除非 UI 文案明确说明它不是实测。
+
+**必须做反例 smoke：**
+- 不只验证 UI 出现；要验证普通路径和触发路径的差异。例如普通消息 vs 使用 Skill 的消息、无 MCP vs MCP-heavy 会话、无附件 vs 带文件、ClaudeCode vs Native vs Codex。
+- 如果用户会自然期待数字变化，测试就必须断言它变化；如果不应该变化，测试要说明原因。
+- 对统计/状态类改动，提交说明或 Smoke Ledger 必须写明至少一个反例验证结果，而不是只写"popover 能打开 / console clean"。
+
+**Review 时必须回答：**
+1. 用户看到这个词会怎么理解？
+2. 这个值来自哪里，是实测、估算、推导，还是 unsupported？
+3. 普通路径和触发路径是否会产生不同结果？
+4. 如果真实来源缺失，UI 是隐藏、降级说明，还是误导性显示？
+5. 这个语义是否跨 Runtime / Provider 一致；不一致时是否显式告诉用户？
+
+若上述问题无法回答，先写执行计划或技术债，不要把字段接进 UI。
+
 ## 自检命令
 
-**自检命令（pre-commit hook 会自动执行前三项）：**
-- `npm run test` — typecheck + 单元测试（~4s，无需 dev server）
-- `npm run test:smoke` — 冒烟测试（~15s，需要 dev server）
-- `npm run test:e2e` — 完整 E2E（~60s+，需要 dev server）
+**自检命令：**
+- `npm run test` — typecheck + 单元测试（无需 dev server）
+- `npm run test:smoke` — 冒烟测试（需要 dev server）
+- `npm run test:e2e` — 完整 E2E（需要 dev server）
 
-修改代码后，commit 前至少确保 `npm run test` 通过。
-涉及 UI 改动时额外运行 `npm run test:smoke`。
+**pre-commit hook 实际执行：**
+- `node scripts/lint-hooks.mjs`
+- `npx lint-staged`
+- `npx tsc --noEmit`
+- `CODEX_DISABLED=1 npx tsx --test src/__tests__/unit/*.test.ts`
+
+提交前至少确保 `npm run test` 通过；`test:smoke` / `test:e2e` 按风险触发，不是每次提交的默认门禁。
+
+**验证分层：**
+- Tier 0：纯视觉 / 间距 / className 调整。迭代时做代码审查 + 浏览器视觉检查 + console 检查即可；不要把 commit 当作 spacing 调整的迭代循环，攒成一批后再跑提交门禁。
+- Tier 1：UI 行为 / 数据接线 / i18n 文案 / 组件状态变化。需要 targeted test 或 smoke，并在提交前跑 `npm run test`。
+- Tier 2：Runtime / Provider / DB / 权限 / Stream / MCP / Electron / 发版链路。必须读对应 guardrail，跑 targeted + full tests，必要时追加真实凭据 smoke 或 E2E，并把结果写入相关执行计划的 Smoke Ledger。
 
 ## 改动自查
 
@@ -143,9 +178,12 @@ CodePilot — 多模型 AI Agent 桌面客户端，基于 Electron + Next.js。
 - 发现技术债务时记录到 `docs/exec-plans/tech-debt-tracker.md`
 - 模板和规范见 `docs/exec-plans/README.md`
 
+**修复闭环：** 接手 P1/P2 review finding、用户反馈、CDP 失败或测试失败时，按 `Signal → Triage → Fix → Verify → Guardrail` 处理；修复说明必须包含根因、改动、验证和防回归。不要只在聊天里关闭问题；需要沉淀的同类问题写入执行计划、tech-debt tracker 或 guardrail。
+
 ## 文档
 
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — 项目架构、目录结构、数据流、新功能触及点
+- [docs/design.md](./docs/design.md) — UI 设计规范（卡片 / 分割线 / 徽章 / preview 流程等模式；新做 Settings / 同类页面前先读）
 - `docs/exec-plans/` — 执行计划（进度状态 + 决策日志 + 技术债务）
 - `docs/handover/` — 技术交接文档（架构、数据流、设计决策）
 - `docs/insights/` — 产品思考文档（用户问题、设计理由、趋势洞察）

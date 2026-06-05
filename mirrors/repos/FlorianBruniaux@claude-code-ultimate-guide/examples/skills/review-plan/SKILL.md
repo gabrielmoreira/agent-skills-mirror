@@ -3,6 +3,7 @@ name: review-plan
 description: Structured plan review across 4 axes before writing any code (inspired by Garry Tan's workflow)
 argument-hint: "[plan_file]"
 effort: medium
+when_to_use: "Use when a plan or spec needs adversarial review before implementation starts."
 disable-model-invocation: true
 ---
 

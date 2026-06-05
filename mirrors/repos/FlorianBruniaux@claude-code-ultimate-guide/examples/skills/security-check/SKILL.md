@@ -2,7 +2,7 @@
 name: security-check
 description: Quick configuration security check against known threats database
 argument-hint: "[path]"
-effort: low
+effort: medium
 disable-model-invocation: true
 ---
 
@@ -150,7 +150,7 @@ grep -rn "BEGIN.*PRIVATE KEY" .claude/ ~/.claude/ 2>/dev/null
 [List each medium finding with location and fix]
 
 ### ✅ Passed Checks
-[List what passed — important for confidence]
+[List what passed, important for confidence]
 
 ### 🔧 Recommended Actions (Priority Order)
 1. [Most urgent fix with exact command]
@@ -166,7 +166,7 @@ grep -rn "BEGIN.*PRIVATE KEY" .claude/ ~/.claude/ 2>/dev/null
 If ALL checks pass, output:
 
 ```
-## 🛡️ Security Check Report — ALL CLEAR ✅
+## 🛡️ Security Check Report: ALL CLEAR ✅
 
 **Date**: [timestamp]
 No known threats detected in your Claude Code configuration.

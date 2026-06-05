@@ -39,7 +39,7 @@ src/
 │   ├── provider-doctor.ts  # Provider 诊断引擎（5 探针 + 修复动作）
 │   ├── runtime-log.ts      # console 环形缓冲（200 条，自动脱敏）
 │   └── bridge/             # IM Bridge 子系统（见下方）
-├── hooks/          # React Hooks (useSSEStream, useImageGen, useTranslation …)
+├── hooks/          # React Hooks (useSSEStream, useTranslation, usePanel …)
 ├── types/          # TypeScript 类型
 │   ├── index.ts            # 所有业务类型 (ChatSession, Message, MCPServerConfig …)
 │   └── electron.d.ts       # Electron contextBridge API 类型

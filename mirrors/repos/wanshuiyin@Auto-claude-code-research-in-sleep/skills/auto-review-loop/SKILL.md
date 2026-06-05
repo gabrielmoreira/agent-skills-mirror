@@ -128,8 +128,12 @@ mcp__codex__codex:
   prompt: |
     [Round N/MAX_ROUNDS of autonomous review loop]
 
-    [Full research context: claims, methods, results, known weaknesses]
-    [Changes since last round, if any]
+    Review the work directly from its artifacts — executor notes are not
+    evidence, so read the files yourself rather than trusting my framing:
+    - Claims / paper draft: <path>
+    - Methods / code under review: <path(s)>
+    - Raw results (verbatim files, not a summary): <path(s)>
+    - Changed since last round: <changed-file paths> — read the diff, not my description
 
     Please act as a senior ML reviewer (NeurIPS/ICML level).
 
@@ -165,7 +169,10 @@ mcp__codex__codex:
     The author (Claude) controls what context you see — be skeptical
     of convenient omissions.
 
-    [Full research context, changes since last round...]
+    Review directly from the artifacts (paths below) — read the files yourself:
+    - Claims / methods / code: <path(s)>
+    - Raw results: <path(s)>
+    - Changed since last round: <changed-file paths> (read the raw diff)
 
     Please act as a senior ML reviewer (NeurIPS/ICML level).
     1. Score this work 1-10 for a top venue
@@ -501,13 +508,11 @@ Use the selected backend. *For codex:* `mcp__codex__codex-reply` with the saved 
   prompt: |
     [Round N update]
 
-    Since your last review, we have:
-    1. [Action 1]: [result]
-    2. [Action 2]: [result]
-    3. [Action 3]: [result]
-
-    Updated results table:
-    [paste metrics]
+    Since your last review these files changed — read them yourself; do not
+    take my word for what changed or whether it worked:
+    - Changed files: <paths>
+    - Raw diff: <path, or the `git diff` range>
+    - Updated raw results: <result-file paths> (verbatim files, not a pasted table)
 
     Please re-score and re-assess. Are the remaining concerns addressed?
     Same format: Score, Verdict, Remaining Weaknesses, Minimum Fixes.

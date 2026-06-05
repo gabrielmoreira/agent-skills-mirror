@@ -1,14 +1,14 @@
 ---
 name: autoresearch
-description: Autonomous improvement loop — scan codebase metrics, scaffold experiment files, run agent-driven iterations until metric improves
+description: Autonomous improvement loop: scan codebase metrics, scaffold experiment files, run agent-driven iterations until metric improves
 argument-hint: "[--scaffold <loop-name>] [--run <loop-name>] [--status]"
 effort: high
 disable-model-invocation: true
 ---
 
-# Autoresearch — Autonomous Improvement Loop
+# Autoresearch: Autonomous Improvement Loop
 
-Scan codebase quality metrics, propose improvement loops, and run autonomous agent iterations. Inspired by [karpathy/autoresearch](https://github.com/karpathy/autoresearch) — adapted from ML research to code quality.
+Scan codebase quality metrics, propose improvement loops, and run autonomous agent iterations. Inspired by [karpathy/autoresearch](https://github.com/karpathy/autoresearch), adapted from ML research to code quality.
 
 **Concept**: The agent proposes a code change, runs the measurement, keeps the change if the metric improved, reverts via `git reset` if not, and repeats until manually stopped.
 
@@ -26,7 +26,7 @@ Run the following metrics and display a prioritized proposal table.
 
 **Step 1: Measure codebase metrics**
 
-Adapt grep patterns to your project's conventions. These are TypeScript defaults — adjust for your stack.
+Adapt grep patterns to your project's conventions. These are TypeScript defaults, adjust for your stack.
 
 ```bash
 # M1: Function declarations (prefer arrow functions)
@@ -65,7 +65,7 @@ done
 **Step 3: Display**
 
 ```
-Autoresearch Scan — {date}
+Autoresearch Scan: {date}
 
 Codebase metrics:
 
@@ -88,23 +88,23 @@ Recommended next step (P1, LOW risk):
 
 ## Mode 2: `--scaffold <loop-name>`
 
-Generate the 3 mechanical files for a loop. **Does not generate `program.md`** — write that yourself to encode project-specific constraints.
+Generate the 3 mechanical files for a loop. **Does not generate `program.md`**: write that yourself to encode project-specific constraints.
 
 ### Instructions
 
 Create the following files under `scripts/autoresearch/{loop-name}/`:
 
-**`measure.sh`** — the evaluation harness (single metric, returns an integer):
+**`measure.sh`**: the evaluation harness (single metric, returns an integer):
 
 ```bash
 #!/usr/bin/env bash
-# measure.sh — {loop-name}
+# measure.sh: {loop-name}
 # Returns an integer. Direction: lower = better (unless loop targets coverage/score).
 set -euo pipefail
 grep -r "PATTERN" src/ --include="*.ts" --include="*.tsx" 2>/dev/null | wc -l | tr -d ' '
 ```
 
-**`direction.txt`** — improvement direction:
+**`direction.txt`**: improvement direction:
 
 ```
 lower
@@ -112,7 +112,7 @@ lower
 
 (Use `higher` for metrics like test coverage or quality score.)
 
-**`files.txt`** — scope the agent should operate on:
+**`files.txt`**: scope the agent should operate on:
 
 ```
 src/
@@ -123,14 +123,14 @@ After creating the files, display:
 ```
 Loop scaffolded: scripts/autoresearch/{loop-name}/
 
-  measure.sh  : {pattern} in {scope} → {N} occurrences today
+  measure.sh  : {pattern} in {scope} -> {N} occurrences today
   direction   : lower (fewer = better)
   files.txt   : src/
 
 Current metric: {N} (target: 0)
 
 Next steps:
-  1. Write program.md — agent behavior, constraints, what it can/cannot touch
+  1. Write program.md -- agent behavior, constraints, what it can/cannot touch
      Reference: scripts/autoresearch/loop-remove-as-any/program.md
   2. Create a worktree: /worktree feature/autoresearch-{loop-name}
   3. cd into the worktree
@@ -141,7 +141,7 @@ Next steps:
 
 ## Mode 3: `--run <loop-name>`
 
-Execute the autonomous loop. The agent runs indefinitely — stop it manually when satisfied.
+Execute the autonomous loop. The agent runs indefinitely: stop it manually when satisfied.
 
 ### Instructions
 
@@ -149,12 +149,12 @@ Execute the autonomous loop. The agent runs indefinitely — stop it manually wh
 
 ```bash
 [ -f "scripts/autoresearch/{loop-name}/measure.sh" ] || { echo "ERROR: measure.sh missing. Run --scaffold first."; exit 1; }
-[ -f "scripts/autoresearch/{loop-name}/program.md" ] || { echo "ERROR: program.md missing. Write it first — this encodes your constraints."; exit 1; }
+[ -f "scripts/autoresearch/{loop-name}/program.md" ] || { echo "ERROR: program.md missing. Write it first, this encodes your constraints."; exit 1; }
 ```
 
 **Run the loop:**
 
-Read `scripts/autoresearch/{loop-name}/program.md` fully before starting. Then enter the following cycle — repeat until stopped:
+Read `scripts/autoresearch/{loop-name}/program.md` fully before starting. Then enter the following cycle, repeat until stopped:
 
 ```
 LOOP ITERATION #{N}
@@ -165,8 +165,8 @@ LOOP ITERATION #{N}
 4. Apply the change
 5. Re-measure: bash scripts/autoresearch/{loop-name}/measure.sh
 6. Evaluate:
-   - direction=lower AND new < previous → KEEP (git add -p && git commit -m "autoresearch: {description}")
-   - otherwise → REVERT (git checkout -- .)
+   - direction=lower AND new < previous -> KEEP (git add -p && git commit -m "autoresearch: {description}")
+   - otherwise -> REVERT (git checkout -- .)
 7. Log to results.tsv: {timestamp}\t{metric}\t{status}\t{description}
 8. Continue to iteration #{N+1}
 ```
@@ -179,7 +179,7 @@ LOOP ITERATION #{N}
 **Display each iteration:**
 
 ```
-[iter #{N}] metric: {before} → {after} | {KEPT/REVERTED} | {change description}
+[iter #{N}] metric: {before} -> {after} | {KEPT/REVERTED} | {change description}
 ```
 
 ---
@@ -214,9 +214,9 @@ Autoresearch Status
 
 ---
 
-## Writing `program.md` — The Most Important File
+## Writing `program.md`: The Most Important File
 
-`program.md` is the agent's behavior contract. Write it yourself — never auto-generate it. It must encode what the agent can/cannot touch for your specific codebase.
+`program.md` is the agent's behavior contract. Write it yourself, never auto-generate it. It must encode what the agent can/cannot touch for your specific codebase.
 
 **Minimal structure:**
 

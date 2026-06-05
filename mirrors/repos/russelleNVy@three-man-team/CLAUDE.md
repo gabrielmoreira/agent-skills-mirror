@@ -36,15 +36,3 @@ Do not re-read files already in context this session.
 | REVIEW-REQUEST.md | Reviewer loads at review start |
 | REVIEW-FEEDBACK.md | Builder loads after Reviewer signals done |
 
----
-
-## Handoff Files
-
-All team communication flows through files in `handoff/`:
-- `ARCHITECT-BRIEF.md` — Architect writes, Builder reads
-- `REVIEW-REQUEST.md` — Builder writes, Reviewer reads
-- `REVIEW-FEEDBACK.md` — Reviewer writes, Builder reads
-- `BUILD-LOG.md` — shared record, Architect owns
-- `SESSION-CHECKPOINT.md` — Architect writes at session end
-
-Run `./setup` to copy agent files into your project.

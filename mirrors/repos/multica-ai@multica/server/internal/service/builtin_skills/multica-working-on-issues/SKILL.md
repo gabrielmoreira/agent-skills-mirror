@@ -48,6 +48,28 @@ close the issue on merge. A closing keyword immediately adjacent to the issue ke
 records close intent; on merge, that close intent can move the linked issue to
 `done`.
 
+### Default for code-changing issue work
+
+When an issue run changes code in a checked-out GitHub repo, the default handoff
+is to open or update a PR before posting the final Multica issue comment, unless
+the user explicitly asked for a local-only change or no PR. This is a default, not
+an unconditional command: if no code changed, say no PR is needed; if PR creation
+is blocked by auth, failing tests, or missing remote state, report that blocker
+instead of pretending the run is complete.
+
+Use a routable issue key in the PR title, body, or branch so the webhook can link
+the PR back to the issue. If the PR should close the issue on merge, put the key
+immediately after a closing keyword in the title or body, for example:
+
+```text
+MUL-2759: fix login redirect        # links only
+Closes MUL-2759                     # links and records close intent
+```
+
+In the final issue comment, include the PR URL when a PR exists. If the task did
+not produce a PR because no code changed or the user asked not to create one, say
+that explicitly.
+
 ## Reading a linked PR's real state
 
 When a step depends on PR state, query Multica's link table — do not infer it

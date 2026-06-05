@@ -1,8 +1,7 @@
 ---
 name: talk-stage5-script
 description: "Produces a complete 5-act pitch with speaker notes, a slide-by-slide specification, and a ready-to-paste Kimi prompt for AI slide generation. Requires validated angle and title from Stage 4. Use when you have a confirmed talk angle and need the full script, slide spec, and AI-generated presentation prompt."
-tags: [talk, pipeline, presentation, stage-5, kimi]
-allowed-tools: "Write, Read"
+allowed-tools: Write Read
 effort: high
 ---
 
@@ -20,11 +19,11 @@ Produces the complete talk in 3 deliverables: the 5-act narrative with speaker n
 
 ## What This Skill Does
 
-1. **Verifies inputs** — all upstream files + angle/title confirmation
-2. **Loads the Kimi template** — from `templates/kimi-prompt-template.md`
-3. **Builds the pitch** — 5-act structure with speaker notes and timing
-4. **Builds the slide spec** — slide by slide with visual, text, notes
-5. **Generates the Kimi prompt** — fills the template with talk content
+1. **Verifies inputs**: all upstream files + angle/title confirmation
+2. **Loads the Kimi template**: from `templates/kimi-prompt-template.md`
+3. **Builds the pitch**: 5-act structure with speaker notes and timing
+4. **Builds the slide spec**: slide by slide with visual, text, notes
+5. **Generates the Kimi prompt**: fills the template with talk content
 6. **Saves 3 files**
 
 ## Input
@@ -33,7 +32,7 @@ Produces the complete talk in 3 deliverables: the 5-act narrative with speaker n
 - `talks/{YYYY}-{slug}-concepts.md`
 - `talks/{YYYY}-{slug}-angles.md`
 - `talks/{YYYY}-{slug}-titre.md`
-- `talks/{YYYY}-{slug}-timeline.md` (optional — enriches speaker notes)
+- `talks/{YYYY}-{slug}-timeline.md` (optional, enriches speaker notes)
 - **Chosen angle + chosen title** (explicit user confirmation from Stage 4)
 
 ## Output
@@ -45,7 +44,7 @@ Produces the complete talk in 3 deliverables: the 5-act narrative with speaker n
 ## pitch.md Format
 
 ```markdown
-# Pitch — {title}
+# Pitch: {title}
 
 **Event**: {event} | **Duration**: {duration} min | **Slides**: ~{n} slides
 **Angle**: {selected angle}
@@ -64,14 +63,14 @@ Produces the complete talk in 3 deliverables: the 5-act narrative with speaker n
 
 ## ACT 1: {TITLE} (Slides 1-{n}, ~{n} min)
 
-{Narrative description of the act in 2-3 sentences — what happens, the emotion targeted}
+{Narrative description of the act in 2-3 sentences: what happens, the emotion targeted}
 
 ---
 
-**Slide {n} — {Slide title}**
-- Visual: {visual description — simple, precise}
-- Key text: {what appears on screen — max 10 words}
-- Speaker notes: "{exact text to say — conversational, natural}"
+**Slide {n}: {Slide title}**
+- Visual: {visual description, simple and precise}
+- Key text: {what appears on screen, max 10 words}
+- Speaker notes: "{exact text to say, conversational and natural}"
 - Duration: {n} min
 - Pause: yes/no | {if yes: why, intended effect}
 
@@ -81,7 +80,7 @@ Produces the complete talk in 3 deliverables: the 5-act narrative with speaker n
 
 ---
 
-[Acts 2, 3, 4, 5 — same structure]
+[Acts 2, 3, 4, 5: same structure]
 
 ---
 
@@ -109,31 +108,31 @@ Q&A planned: {n} min
 Slide-by-slide spec, ready to hand to a designer or pass to Kimi.
 
 ```markdown
-# Slides Spec — {title}
+# Slides Spec: {title}
 
 **Total**: {n} slides | **Event**: {event} | **Date**: {date}
 
 ---
 
-### SLIDE 1 — Title Slide
+### SLIDE 1: Title Slide
 
 - **Main title**: {title}
 - **Subtitle**: {subtitle or tagline}
 - **Speaker**: {name}
-- **Event**: {event} — {date}
-- **Visual**: {background description — texture, image, mood}
+- **Event**: {event} ({date})
+- **Visual**: {background description, texture, image, mood}
 - **Speaker notes**: "{text}"
 - **Duration**: {n} sec
 
 ---
 
-### SLIDE {n} — {Slide title}
+### SLIDE {n}: {Slide title}
 
 - **Title**: {title}
 - **Visual**: {precise visual description}
   - Type: {bar chart / timeline / diagram / big number / comparison table / screenshot placeholder}
   - Data: {specific values if chart}
-- **Key text**: {what appears — max 30 words total}
+- **Key text**: {what appears, max 30 words total}
 - **Metrics displayed**: {numbers if metrics slide}
 - **Speaker notes**: "{exact text}"
 - **Duration**: {n} min
@@ -168,24 +167,24 @@ Required sections to complete:
 
 ## Script Construction Rules
 
-- **1 idea per slide** — never more, never less
-- **Speaker notes = what you say, not what you read** — minimal slides, conversational notes
-- **Numbers are heroes** — metrics appear large and alone on their slide
-- **Anecdotes > explanations** — "one Tuesday morning, 3 bugs..." > "git worktrees enable parallelism"
-- **Explicit transitions** — note the link between each act in the notes
-- **Realistic timing** — add 10% buffer total (slides always run long)
+- **1 idea per slide**: never more, never less
+- **Speaker notes = what you say, not what you read**: minimal slides, conversational notes
+- **Numbers are heroes**: metrics appear large and alone on their slide
+- **Anecdotes > explanations**: "one Tuesday morning, 3 bugs..." > "git worktrees enable parallelism"
+- **Explicit transitions**: note the link between each act in the notes
+- **Realistic timing**: add 10% buffer total (slides always run long)
 
 ## Anti-patterns
 
 - Slides loaded with bullets (never more than 5 words per line)
 - Speaker notes in technical jargon (read them aloud to validate)
-- Vague Kimi prompt ("make it look nice") — each slide must be precise
+- Vague Kimi prompt ("make it look nice"): each slide must be precise
 - Omitting screenshot placeholders from the Kimi prompt
 - Generating more slides than the duration allows (2-3 min/slide for REX)
 
 ## Validation Checklist
 
-- [ ] Pitch covers 5 acts with coherent timing (±10% of target duration)
+- [ ] Pitch covers 5 acts with coherent timing (within 10% of target duration)
 - [ ] Each slide has visual + text + speaker notes
 - [ ] Key moments identified (pauses, punchlines, transitions)
 - [ ] Slides spec ready to hand to a designer
@@ -198,7 +197,7 @@ Required sections to complete:
 
 1. Open `{slug}-kimi-prompt.md`
 2. Verify no `{PLACEHOLDER}` remains (search the file)
-3. Go to [kimi.com](https://kimi.com) — free account, no API needed
+3. Go to [kimi.com](https://kimi.com) (free account, no API needed)
 4. Start a new conversation
 5. Copy-paste the entire prompt
 6. Kimi generates the presentation
@@ -207,9 +206,9 @@ For iterative refinement: add follow-up messages targeting specific slides. "Sli
 
 ## Tips
 
-- Speaker notes are the heart of this stage — they're what distinguishes a good talk from a good slide deck
+- Speaker notes are the heart of this stage; they're what distinguishes a good talk from a good slide deck
 - The Kimi template includes a dark design system with orange accent colors. Adapt `Color Palette` in the template if your brand has different colors
-- Generate more slides than needed in the first pass, then cut — easier than writing from scratch
+- Generate more slides than needed in the first pass, then cut (easier than writing from scratch)
 
 ## Templates
 
@@ -217,6 +216,6 @@ For iterative refinement: add follow-up messages targeting specific slides. "Sli
 
 ## Related
 
-- [Stage 4: Position](../stage-4-position/SKILL.md) — prerequisite (CHECKPOINT required)
-- [Stage 6: Revision](../stage-6-revision/SKILL.md) — reads pitch + slides
+- [Stage 4: Position](../stage-4-position/SKILL.md): prerequisite (CHECKPOINT required)
+- [Stage 6: Revision](../stage-6-revision/SKILL.md): reads pitch + slides
 - [Orchestrator](../orchestrator/SKILL.md)

@@ -3,6 +3,7 @@ name: pr
 description: Analyze changes, detect scope issues, and create a well-structured PR
 argument-hint: "[--base <branch>] [--draft]"
 effort: medium
+when_to_use: "Use when ready to open a PR: analyzes changes and drafts the PR description."
 disable-model-invocation: true
 ---
 

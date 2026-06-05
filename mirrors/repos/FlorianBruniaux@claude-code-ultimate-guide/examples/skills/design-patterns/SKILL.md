@@ -1,7 +1,7 @@
 ---
 name: design-patterns
 description: "Detect, suggest, and evaluate GoF design patterns in TypeScript/JavaScript codebases. Use when refactoring code, applying singleton/factory/observer/strategy patterns, reviewing pattern quality, or finding stack-native alternatives for React, Angular, NestJS, and Vue."
-allowed-tools: Read, Grep, Glob, mcp__grepai__grepai_search
+allowed-tools: Read Grep Glob mcp__grepai__grepai_search
 context: fork
 agent: specialist
 effort: high
@@ -28,7 +28,7 @@ effort: high
 **Workflow**:
 ```
 1. Stack Detection (package.json, tsconfig.json, framework files)
-2. Pattern Search (Glob for candidates → Grep for signatures → Read for validation)
+2. Pattern Search (Glob for candidates -> Grep for signatures -> Read for validation)
 3. Classification (native to stack vs custom implementations)
 4. Confidence Scoring (0.0-1.0 based on detection rules)
 5. JSON Report Generation
@@ -48,9 +48,9 @@ effort: high
 **Workflow**:
 ```
 1. Code Smell Detection (switch statements, long parameter lists, global state, etc.)
-2. Pattern Matching (map smell → applicable patterns)
+2. Pattern Matching (map smell -> applicable patterns)
 3. Stack Adaptation (prefer native framework patterns over custom implementations)
-4. Priority Ranking (impact × feasibility)
+4. Priority Ranking (impact x feasibility)
 5. Markdown Report with Code Examples
 ```
 
@@ -85,10 +85,10 @@ effort: high
 ### Phase 1: Stack Detection
 
 **Sources** (in priority order):
-1. `package.json` → Check dependencies and devDependencies
-2. Framework-specific files → `angular.json`, `next.config.*`, `nest-cli.json`, `vite.config.*`
-3. `tsconfig.json` → Check compilerOptions, paths, lib
-4. File extensions → `*.jsx`, `*.tsx`, `*.vue` presence
+1. `package.json` -> Check dependencies and devDependencies
+2. Framework-specific files -> `angular.json`, `next.config.*`, `nest-cli.json`, `vite.config.*`
+3. `tsconfig.json` -> Check compilerOptions, paths, lib
+4. File extensions -> `*.jsx`, `*.tsx`, `*.vue` presence
 
 **Detection Rules** (from `signatures/stack-patterns.yaml`):
 - React: `react` in deps + `*.jsx/*.tsx` files
@@ -144,16 +144,16 @@ effort: high
 ### Phase 3: Code Smell Detection
 
 **Target Smells** (from `signatures/code-smells.yaml`):
-1. **Switch on Type** → Strategy/Factory pattern
-2. **Long Parameter List (>4)** → Builder pattern
-3. **Global State Access** → Singleton (or preferably DI)
-4. **Duplicated Conditionals on State** → State pattern
-5. **Scattered Notification Logic** → Observer pattern
-6. **Complex Object Creation** → Factory/Abstract Factory
-7. **Tight Coupling to Concrete Classes** → Adapter/Bridge
-8. **Repetitive Interface Conversions** → Adapter pattern
-9. **Deep Nesting for Feature Addition** → Decorator pattern
-10. **Large Class with Many Responsibilities** → Facade pattern
+1. **Switch on Type** -> Strategy/Factory pattern
+2. **Long Parameter List (>4)** -> Builder pattern
+3. **Global State Access** -> Singleton (or preferably DI)
+4. **Duplicated Conditionals on State** -> State pattern
+5. **Scattered Notification Logic** -> Observer pattern
+6. **Complex Object Creation** -> Factory/Abstract Factory
+7. **Tight Coupling to Concrete Classes** -> Adapter/Bridge
+8. **Repetitive Interface Conversions** -> Adapter pattern
+9. **Deep Nesting for Feature Addition** -> Decorator pattern
+10. **Large Class with Many Responsibilities** -> Facade pattern
 
 **Detection Heuristics**:
 - Grep for `switch (.*type)`, `switch (.*kind)`, `switch (.*mode)`
@@ -300,7 +300,7 @@ ELSE IF pattern_implemented_incorrectly:
 
 ## High Priority
 
-### 1. Strategy Pattern → `src/payment/processor.ts:45-89`
+### 1. Strategy Pattern: `src/payment/processor.ts:45-89`
 
 **Code Smell**: Switch statement on payment type (4 cases, 78 lines)
 
@@ -367,7 +367,7 @@ const PaymentForm = ({ type }: Props) => {
 
 ## Medium Priority
 
-### 2. Observer Pattern → `src/cart/CartManager.ts:23-156`
+### 2. Observer Pattern: `src/cart/CartManager.ts:23-156`
 
 **Code Smell**: Manual notification logic scattered across 8 methods
 
@@ -543,20 +543,20 @@ const CartDisplay = () => {
 ## Integration with Other Skills
 
 This skill can be inherited by:
-- `refactoring-specialist.md` → Provides pattern knowledge for refactoring
-- `code-reviewer.md` → Adds pattern detection to review process
-- `architecture-advisor.md` → Informs architectural decisions with pattern usage
+- `refactoring-specialist.md`: Provides pattern knowledge for refactoring
+- `code-reviewer.md`: Adds pattern detection to review process
+- `architecture-advisor.md`: Informs architectural decisions with pattern usage
 
 ## Reference Files
 
-- `reference/patterns-index.yaml` → Machine-readable index of 23 patterns with metadata
-- `reference/creational.md` → Creational patterns documentation
-- `reference/structural.md` → Structural patterns documentation
-- `reference/behavioral.md` → Behavioral patterns documentation
-- `signatures/detection-rules.yaml` → Regex patterns and heuristics for detection
-- `signatures/code-smells.yaml` → Mapping from code smells to applicable patterns
-- `signatures/stack-patterns.yaml` → Stack detection rules and native pattern equivalents
-- `checklists/pattern-evaluation.md` → Quality evaluation criteria and scoring guidelines
+- `reference/patterns-index.yaml`: Machine-readable index of 23 patterns with metadata
+- `reference/creational.md`: Creational patterns documentation
+- `reference/structural.md`: Structural patterns documentation
+- `reference/behavioral.md`: Behavioral patterns documentation
+- `signatures/detection-rules.yaml`: Regex patterns and heuristics for detection
+- `signatures/code-smells.yaml`: Mapping from code smells to applicable patterns
+- `signatures/stack-patterns.yaml`: Stack detection rules and native pattern equivalents
+- `checklists/pattern-evaluation.md`: Quality evaluation criteria and scoring guidelines
 
 ## Version
 

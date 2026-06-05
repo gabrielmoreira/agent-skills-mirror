@@ -63,6 +63,7 @@ Broad requests: explore first, then plan. 2+ independent tasks in parallel. `run
 Keep authoring and review as separate passes: writer pass creates or revises content, reviewer/verifier pass evaluates it later in a separate lane.
 Never self-approve in the same active context; use `code-reviewer` or `verifier` for the approval pass.
 Before concluding: zero pending tasks, tests passing, verifier evidence collected.
+Local OMC fork: edits to `src/**/*.ts` require `npm run build` before they show up in the running Claude Code plugin (it loads `dist/`, not `src/`). After editing TS, surface a one-line reminder per editing round — see `skills/local-build-reminder/SKILL.md`. `.mjs`/`.cjs`/`.md` files load from disk; no build needed.
 </execution_protocols>
 
 <commit_protocol>
@@ -107,6 +108,7 @@ Kill switches: `DISABLE_OMC`, `OMC_SKIP_HOOKS` (comma-separated).
 
 <worktree_paths>
 State: `.omc/state/`, `.omc/state/sessions/{sessionId}/`, `.omc/notepad.md`, `.omc/project-memory.json`, `.omc/plans/`, `.omc/research/`, `.omc/logs/`
+Multi-repo: drop a `.omc-workspace` marker at a non-git parent dir to anchor `.omc/` there. Resolution: `OMC_STATE_DIR > .omc-workspace > git > cwd`. The session-start hook uses PID-aware liveness — a dead owner session no longer suppresses state restore. State paths use the canonical `resolveSessionStatePaths()` (branded `ReadPath`/`WritePath`) — see `docs/REFERENCE.md`.
 </worktree_paths>
 
 ## Setup

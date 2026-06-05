@@ -51,6 +51,7 @@ Replace deprecated MATLAB functions and anti-patterns with modern equivalents. T
 | `optimset` | `optimoptions` | R2013a | Optimization |
 | `strmatch` | `startsWith`, `matches` | R2019b | Strings |
 | `clear all` | `clearvars` | — | Performance |
+| `webmap` | `geoaxes` + `geobasemap` | R2025a | Mapping |
 
 ## Critical Anti-Patterns
 
@@ -171,6 +172,7 @@ Load these when working in a specific domain:
 | Simulink configuration and blocks | [reference/simulink-guidance.md](reference/simulink-guidance.md) |
 | Functions completely removed (guide, optimtool, fints, wavread) | [reference/removed-functions-guidance.md](reference/removed-functions-guidance.md) |
 | Communications System objects | [reference/communications-guidance.md](reference/communications-guidance.md) |
+| Mapping Toolbox (webmap, wmmarker, wmline, geotiffread, mfwdtran, makerefmat) | [reference/mapping-guidance.md](reference/mapping-guidance.md) |
 
 ## Conventions
 

@@ -5,7 +5,7 @@ effort: medium
 disable-model-invocation: true
 ---
 
-# /plan-pipeline:validate — 2-Layer Validation
+# /plan-pipeline:validate: 2-Layer Validation
 
 Independently validate the plan produced by `/plan-pipeline:start`. No code is written. Run `/clear` after this command before running `/plan-pipeline:execute`.
 
@@ -54,7 +54,7 @@ Record all Layer 1 issues with severity (BLOCKER / WARNING / INFO) before procee
 
 ## Layer 2: Specialist Review
 
-Select agents by applying trigger rules to the plan content. No user input needed — triggers are objective.
+Select agents by applying trigger rules to the plan content. No user input needed; triggers are objective.
 
 **Validation agent pool:**
 
@@ -90,12 +90,12 @@ Merge Layer 1 structural issues + Layer 2 specialist findings into a single issu
 
 **Triage each issue:**
 
-**Bucket A — Auto-resolve:**
+**Bucket A: Auto-resolve**
 - Issue matches an existing ADR decision → cite ADR, mark resolved
 - Issue matches a confirmed pattern in PATTERNS.md → cite pattern, mark resolved
 - Issue resolvable from first principles in CLAUDE.md → apply rule, mark resolved
 
-**Bucket B — Needs human input:**
+**Bucket B: Needs human input**
 - Novel architectural question not covered by existing decisions
 - Conflicting ADRs with no clear precedent
 - Blocker with no obvious resolution
@@ -178,7 +178,7 @@ All 3 issues resolved. Plan updated.
 
 ## When to Use
 
-Always — before any `/plan-pipeline:execute` call. The cost of validation ($0.20-3.00) is negligible against the cost of discovering issues mid-execution.
+Always run before any `/plan-pipeline:execute` call. The cost of validation ($0.20-3.00) is negligible against the cost of discovering issues mid-execution.
 
 ## Pipeline Position
 

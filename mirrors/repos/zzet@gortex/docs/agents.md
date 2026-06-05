@@ -50,6 +50,37 @@ user-level instructions surface — the guidance lives once per user
 descriptions carry the teaching. Only codebase-derived community
 routing lands in per-repo instructions files.
 
+## Subagent tool propagation
+
+A *subagent* runs in a fresh context window with its own scoped tool
+allowlist. Whether a subagent can use Gortex's MCP tools depends
+entirely on whether that allowlist names them — a subagent does **not**
+automatically inherit every tool the parent has.
+
+- **Claude Code** has a first-class subagent concept with per-subagent
+  tool allowlists, and Gortex propagates explicitly. `gortex install`
+  writes two subagent definitions to `~/.claude/agents/` —
+  `gortex-search` (locate / trace / explore) and `gortex-impact`
+  (blast-radius / verification) — each with an explicit
+  `tools: mcp__gortex__…` frontmatter listing exactly the graph tools it
+  needs. The allowlist is **graph-only by construction**: it contains no
+  `Bash`/`Grep`/`Glob`, so a spawned subagent cannot escape the graph.
+  A `PreToolUse` Task hook additionally briefs spawned subagents. The
+  allowlists are validated in CI (`subagents_test.go`) so a tool rename
+  can't silently drop a subagent's access. Programmatic access:
+  `claudecode.SubAgentTools(def)` parses an allowlist out of a definition.
+- **Session-inheriting hosts** (e.g. `opencode`): subagents inherit the
+  *parent's* MCP session at the client level, so they see Gortex tools
+  transparently **only if the host propagates the session to the child**.
+  This is a client-side behaviour — Gortex configures the MCP server for
+  the host but cannot force a client to share its session with a subagent.
+- **Hosts with no subagent concept**: the question does not arise; the
+  single agent already holds the configured Gortex tools.
+
+If a subagent reports it cannot see `mcp__gortex__*` tools, check the
+subagent's own tool allowlist first — that is where propagation is
+decided, not the server.
+
 ## Common CLI flags
 
 ```

@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 Analyzes this codebase and surfaces actionable Routine candidates across the three trigger types.
 
-**Usage**: `/routines-discover` — no arguments needed. Run it in the root of any project.
+**Usage**: `/routines-discover` - no arguments needed. Run it in the root of any project.
 
 ---
 
@@ -31,7 +31,7 @@ Each run clones a fresh copy of the GitHub repository, runs a full Claude Code s
 
 ## Instructions
 
-### Step 1 — Read the codebase
+### Step 1: Read the codebase
 
 Before generating any output, silently read:
 - `README.md` or `CLAUDE.md` to understand the project purpose and stack
@@ -41,7 +41,7 @@ Before generating any output, silently read:
 
 If MCP connectors are configured in `.claude/settings.json`, note which external services are connected.
 
-### Step 2 — Analyze against five dimensions
+### Step 2: Analyze against five dimensions
 
 For each dimension, think concretely about this specific project before writing anything.
 
@@ -50,7 +50,7 @@ What recurring work currently requires a human to run manually or remember to do
 Think: dependency audits, stale issue/PR triage, test flakiness reports, coverage drift, TODO comment tracking, dead code detection, daily or weekly summaries.
 
 **2. Event-driven reactions**
-What should happen automatically when a PR is opened, merged, or closed — but doesn't today because no one gets to it?
+What should happen automatically when a PR is opened, merged, or closed, but doesn't today because no one gets to it?
 Think: review checklists, changelog updates, cross-repo sync, Slack notifications with context, label enforcement, docs updates on API changes.
 
 **3. Alert and incident response**
@@ -65,7 +65,7 @@ Think: keeping two SDKs in sync, updating a doc site when an API changes, syncin
 What steps happen before or after a deploy that a human runs by hand?
 Think: smoke tests, release notes, version bumps, stakeholder notifications, go/no-go summaries.
 
-### Step 3 — Output
+### Step 3: Output
 
 For each use case identified, produce a card in this format:
 
@@ -73,31 +73,31 @@ For each use case identified, produce a card in this format:
 
 **[Name]** · `schedule` / `api` / `github`
 
-*Trigger*: [what fires it — cron expression, which event, which external system]
+*Trigger*: [what fires it: cron expression, which event, which external system]
 
-*Input*: [what Claude receives — repo state, event payload, alert body]
+*Input*: [what Claude receives: repo state, event payload, alert body]
 
-*Output*: [what Claude produces — PR opened, message posted, file updated, issue created]
+*Output*: [what Claude produces: PR opened, message posted, file updated, issue created]
 
-*Value*: [time saved or risk reduced — be specific]
+*Value*: [time saved or risk reduced, be specific]
 
-*Blockers*: [missing connector, secrets needed, GitHub App required, etc. — or "none"]
+*Blockers*: [missing connector, secrets needed, GitHub App required, etc., or "none"]
 
 ---
 
-Sort cards by **value-to-effort ratio** — highest first.
+Sort cards by **value-to-effort ratio**, highest first.
 
 After all cards, add a **Quick Wins** section: the two or three use cases that could be set up in under 15 minutes with the current repo and connector configuration.
 
 ---
 
-## Example Output (for reference only — do not copy, analyze the actual project)
+## Example Output (for reference only, do not copy, analyze the actual project)
 
 **Nightly stale PR report** · `schedule`
 
 *Trigger*: Every weekday at 8am
 
-*Input*: Repo state — all open PRs older than 5 days
+*Input*: Repo state: all open PRs older than 5 days
 
 *Output*: Slack message to #engineering with list of stale PRs, assignee, and last activity
 

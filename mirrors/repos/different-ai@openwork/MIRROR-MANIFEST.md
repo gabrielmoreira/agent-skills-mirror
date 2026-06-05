@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,21 +62,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.opencode/skills/browser-automation/SKILL.md`](.opencode/skills/browser-automation/SKILL.md) |
 | 2 | ✓ | [`.opencode/skills/create-plugin/SKILL.md`](.opencode/skills/create-plugin/SKILL.md) |
 | 3 | ✓ | [`.opencode/skills/daytona-chrome-cdp/SKILL.md`](.opencode/skills/daytona-chrome-cdp/SKILL.md) |
-| 4 | ✓ | [`.opencode/skills/daytona-cloud-server/SKILL.md`](.opencode/skills/daytona-cloud-server/SKILL.md) |
-| 5 | ✓ | [`.opencode/skills/daytona-dev/SKILL.md`](.opencode/skills/daytona-dev/SKILL.md) |
-| 6 | ✓ | [`.opencode/skills/daytona-electron-den/SKILL.md`](.opencode/skills/daytona-electron-den/SKILL.md) |
-| 7 | ✓ | [`.opencode/skills/daytona-electron-test/SKILL.md`](.opencode/skills/daytona-electron-test/SKILL.md) |
-| 8 | ✓ | [`.opencode/skills/daytona-flow-validator/SKILL.md`](.opencode/skills/daytona-flow-validator/SKILL.md) |
-| 9 | ✓ | [`.opencode/skills/daytona-recording-artifacts/SKILL.md`](.opencode/skills/daytona-recording-artifacts/SKILL.md) |
-| 10 | ✓ | [`.opencode/skills/daytona-secrets-volume/SKILL.md`](.opencode/skills/daytona-secrets-volume/SKILL.md) |
-| 11 | ✓ | [`.opencode/skills/release/SKILL.md`](.opencode/skills/release/SKILL.md) |
-| 12 | ✓ | [`.opencode/skills/run-evals/SKILL.md`](.opencode/skills/run-evals/SKILL.md) |
-| 13 | ✓ | [`.opencode/skills/shadcn/cli.md`](.opencode/skills/shadcn/cli.md) |
-| 14 | ✓ | [`.opencode/skills/shadcn/customization.md`](.opencode/skills/shadcn/customization.md) |
-| 15 | ✓ | [`.opencode/skills/shadcn/SKILL.md`](.opencode/skills/shadcn/SKILL.md) |
-| 16 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 17 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
-| 18 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
+| 4 | ✓ | [`.opencode/skills/daytona-cloud-instance/SKILL.md`](.opencode/skills/daytona-cloud-instance/SKILL.md) |
+| 5 | ✓ | [`.opencode/skills/daytona-cloud-server/SKILL.md`](.opencode/skills/daytona-cloud-server/SKILL.md) |
+| 6 | ✓ | [`.opencode/skills/daytona-dev/SKILL.md`](.opencode/skills/daytona-dev/SKILL.md) |
+| 7 | ✓ | [`.opencode/skills/daytona-electron-den/SKILL.md`](.opencode/skills/daytona-electron-den/SKILL.md) |
+| 8 | ✓ | [`.opencode/skills/daytona-electron-test/SKILL.md`](.opencode/skills/daytona-electron-test/SKILL.md) |
+| 9 | ✓ | [`.opencode/skills/daytona-flow-validator/SKILL.md`](.opencode/skills/daytona-flow-validator/SKILL.md) |
+| 10 | ✓ | [`.opencode/skills/daytona-recording-artifacts/SKILL.md`](.opencode/skills/daytona-recording-artifacts/SKILL.md) |
+| 11 | ✓ | [`.opencode/skills/daytona-secrets-volume/SKILL.md`](.opencode/skills/daytona-secrets-volume/SKILL.md) |
+| 12 | ✓ | [`.opencode/skills/daytona-seeded-cloud-demo/SKILL.md`](.opencode/skills/daytona-seeded-cloud-demo/SKILL.md) |
+| 13 | ✓ | [`.opencode/skills/release/SKILL.md`](.opencode/skills/release/SKILL.md) |
+| 14 | ✓ | [`.opencode/skills/run-evals/SKILL.md`](.opencode/skills/run-evals/SKILL.md) |
+| 15 | ✓ | [`.opencode/skills/shadcn/cli.md`](.opencode/skills/shadcn/cli.md) |
+| 16 | ✓ | [`.opencode/skills/shadcn/customization.md`](.opencode/skills/shadcn/customization.md) |
+| 17 | ✓ | [`.opencode/skills/shadcn/SKILL.md`](.opencode/skills/shadcn/SKILL.md) |
+| 18 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 19 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
+| 20 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
 
 ---
 

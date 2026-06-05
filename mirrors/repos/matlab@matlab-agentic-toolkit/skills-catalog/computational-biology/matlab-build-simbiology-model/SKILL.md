@@ -4,7 +4,7 @@ description: "Build, modify, and diagram SimBiology models — API reference, he
 license: MathWorks BSD-3-Clause
 metadata:
   author: MathWorks
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Build SimBiology Models
@@ -149,6 +149,11 @@ pause(1); sbioreset;
 The following rules apply ONLY when the user asks for a diagram or layout.
 Skip all of these for pure model construction.
 
+**Model size limit (precondition):** Layout helpers bail out above
+**400 total blocks** (species + reactions). For large models, skip
+automated layout — use simple grid positioning instead (reactions at
+midpoints of connected species).
+
 **a. Use `addAndPositionCompartment` for diagram layout**
 
 When building a diagram, use `addAndPositionCompartment` instead of raw
@@ -171,8 +176,9 @@ speciesInfo = {
    will fail without this step.
 2. Plan `[x y w h]` positions for ALL compartments up front (leave 80 px gaps minimum)
 3. Build ONE compartment at a time with `addAndPositionCompartment`
-4. Add reactions, parameters, rules, doses after all compartments exist
+4. Add ALL parameters (including rule LHS targets), reactions, rules, doses, events
 5. `repositionAllReactions(model)` then `checkDiagramLayout(model)` — fix until zero violations
+6. `positionAncillaryBlocks(model)` — positions rule/parameter blocks in a grid to the right
 
 **c. Leave 80 px gaps between connected compartments**
 
@@ -194,16 +200,9 @@ if results.nTotal > 0
     end
     results = checkDiagramLayout(model);
 end
+positionAncillaryBlocks(model);  % must run LAST, after all objects exist
 ```
 
-**Model size limit for layout helpers:** The layout scripts
-(`checkDiagramLayout`, `computeSafeReactionPosition`,
-`repositionAllReactions`) have O(n²) to O(n⁴) complexity and bail out
-with a warning if the model exceeds **400 total blocks** (species +
-reactions). For models with more than ~200 species or ~200 reactions,
-skip automated layout validation — use simple grid-based positioning
-instead (place reactions at midpoints of their connected species without
-the crossing-avoidance search).
 
 **e. Always use the safe-open pattern for the Builder**
 
@@ -220,6 +219,9 @@ if isAppOpen('builder')
     catch, end
     pause(2);
 end
+% If Analyzer is open, it already has a model loaded — open Builder
+% without an argument so it picks up the Analyzer's active model.
+% Passing a model argument when Analyzer is open can cause conflicts.
 if isAppOpen('analyzer')
     simBiologyModelBuilder();
 else
@@ -248,6 +250,7 @@ updates the diagram in real time. Only close when the user explicitly asks.
 | `checkDiagramLayout` | `results = checkDiagramLayout(model)` | Containment + line-through-block + overlap checks |
 | `computeSafeReactionPosition` | `pos = computeSafeReactionPosition(model,rxn)` | Crossing-free reaction node position |
 | `repositionAllReactions` | `nFixed = repositionAllReactions(model)` | Batch-reposition all reactions (up to 3 passes) |
+| `positionAncillaryBlocks` | `n = positionAncillaryBlocks(model)` | Grid-position rule/parameter blocks to the right of compartments |
 | `openLiveBuilder` | `openLiveBuilder(model)` | Open Builder with safe-open pattern |
 | `isAppOpen` | `tf = isAppOpen(appName)` | Check if Builder/Analyzer is open |
 | `loadViaBuilder` | `model = loadViaBuilder(filePath)` | Load .sbproj preserving diagram |
@@ -298,7 +301,21 @@ results.nOverlap      % blocks <10px apart
 
 ### Rules, Events, Doses
 - `addrule(model, 'x = expr', ruleType)` — `'initialAssignment'`, `'repeatedAssignment'`, `'rate'`
-- `addevent(model, 'time >= 10', {'Drug = 50'})`
+- **Rule LHS requirement:** The LHS must be an existing species, parameter,
+  or compartment with `Constant = false`. Create the parameter *before* the
+  rule (not after as a fix — this ensures diagram blocks exist for layout):
+  ```matlab
+  p = addparameter(model, 'RO', 0); p.Constant = false;
+  addrule(model, 'RO = Complex / (Target + Complex)', 'repeatedAssignment');
+  ```
+- `addevent(model, 'trigger', {'action1', 'action2'})`
+- **Event action requirement:** Any parameter modified in an event action
+  must have `Constant = false` (parameters default to `true`):
+  ```matlab
+  p = sbioselect(model, 'Type', 'parameter', 'Name', 'kgrow');
+  p.Constant = false;
+  addevent(model, 'Tumor.Cancer < 1e6', {'kgrow = kgrow * 0.5'});
+  ```
 - `sbiodose(name, 'schedule')` / `sbiodose(name, 'repeat')`
 - Schedule: `.TargetName`, `.Amount`, `.Time`, `.Rate`
 - Repeat: `.TargetName`, `.Amount`, `.StartTime`, `.Interval`, `.RepeatCount`
@@ -376,45 +393,25 @@ adddose(model, d);
 ### Events, variants, observables
 
 ```matlab
+% Event modifying a parameter — mark non-constant first
+p = sbioselect(model, 'Type', 'parameter', 'Name', 'ke');
+p.Constant = false;
+ev = addevent(model, 'time >= 10', {'ke = ke * 2'}); ev.Name = 'EnzymeInduction';
+
+% Event modifying a species (species default Constant=false — no extra step)
 ev = addevent(model, 'time >= 10', {'Drug = 50'}); ev.Name = 'RescueDose';
+
 v = addvariant(model, 'HighDose'); addcontent(v, {'parameter','ke','Value',0.5});
 obs = addobservable(model, 'DrugConc', 'Drug ./ Central');
 ```
 
 ## Saving Models
 
-### Standard save (no diagram required)
-
-Save models to `.mat` files using standard MATLAB `save`/`load`. Do NOT
-use `sbiosaveproject` — it requires base workspace hacks and is deprecated
-in favor of `.mat`:
-
-```matlab
-save('mymodel.mat', 'model');          % save model
-save('session.mat', 'model', 'dose');  % save model + dose together
-```
-
-To reload:
-```matlab
-loaded = load('mymodel.mat');
-model = loaded.model;
-```
-
-### Save/Load with diagram preservation (requires Builder)
-
-| Method | Preserves Diagram? | Requires Builder? |
-|--------|:--:|:--:|
-| `saveViaBuilder(path)` | Yes | Yes |
-| `loadViaBuilder(path)` | Yes | Yes |
-| `save(path, 'model')` (.mat) | No | No |
-| `sbioloadproject` -> `simBiologyModelBuilder(model)` | No | No |
-
-### Switching models in the Builder
-
-1. Ask user if they want to save first
-2. If yes: `saveViaBuilder('name.sbproj')`
-3. Close: `mb.webWindow.close(); pause(2);`
-4. Reopen: `simBiologyModelBuilder(newModel);`
+- **Standard:** `save('mymodel.mat', 'model')` / `loaded = load('mymodel.mat'); model = loaded.model;`
+  Do NOT use `sbiosaveproject` (deprecated, requires base workspace hacks).
+- **With diagram (`.sbproj`):** `saveViaBuilder('name.sbproj')` / `loadViaBuilder(path)` (requires Builder open)
+- **Switching models:** ask user to save first → close Builder → `pause(2)` → `simBiologyModelBuilder(newModel)`
+- See `references/app-lifecycle-guidance.md` for full switching/coordination patterns.
 
 ## Diagram Basics (only when user requests diagram/layout)
 
@@ -444,18 +441,23 @@ Internal padding: 30 px minimum on all sides.
 
 ### Row-based species placement (3+ species)
 
-```matlab
-species = comp.Species;
-n = numel(species);
-spWidth = 50;  % scale per name length: <=5→50, 6-12→100, 13+→130
-margin = 40;   % intra-compartment margin from edges
-spacing = (width - 2*margin - spWidth) / max(n-1, 1);
-for i = 1:n
-    sx = x + margin + (i-1)*spacing;
-    sy = y + height/2 - 8;
-    simbio.diagram.setBlock(species(i), 'Position', [round(sx) round(sy) spWidth 16]);
-end
-```
+Distribute species evenly in a horizontal row at `y + height/2 - 8`, with
+40 px margin from compartment edges. Scale species width by name length:
+`<=5 chars → 50`, `6-12 → 100`, `13+ → 130`.
+
+### Species ordering by connection direction
+
+When a compartment has 2+ species that connect to *different* external
+compartments, order them so each species faces its connections. This
+prevents connection lines from crossing through sibling species.
+
+- **Horizontal neighbors:** place the species connecting LEFT on the left
+  edge, species connecting RIGHT on the right edge.
+- **Vertical stacking:** place the species connecting UP/LEFT on top, the
+  species connecting DOWN/RIGHT on bottom.
+- **Example:** Blood has Neutrophil (connects left to Transit3) and
+  Lymphocyte (connects upper-left to Spleen). Put Lymphocyte on top and
+  Neutrophil on bottom so lines don't cross.
 
 ### Layout rules
 
@@ -490,7 +492,6 @@ Load on demand for detailed guidance:
 - `references/app-lifecycle-guidance.md` — switching models, Analyzer coordination
 - `references/diagram-styling-guidance.md` — colors, fonts, cloning mechanics
 - `references/pk-library-guidance.md` — PKModelDesign for standard PK models
-
 
 ----
 

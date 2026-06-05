@@ -3,6 +3,7 @@ name: explain
 description: Explain code, concepts, or system behavior with adjustable depth levels
 argument-hint: <file_or_concept>
 effort: low
+when_to_use: "Use when asking Claude to explain code, a function, an algorithm, or a concept."
 ---
 
 # Code Explainer

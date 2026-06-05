@@ -42,6 +42,15 @@ Claude Code `/goal` is a session-scoped Stop hook: it blocks the session from st
    The default mode is `aggregate` (one Claude `/goal` covers the run).
    Pass `--claude-goal-mode per-story` if you want each story to have its own `/goal`.
 
+   **Multi-repo workspaces / parallel sessions:** when several Claude sessions
+   in the same workspace need to run `/ultragoal` concurrently, pass either
+   `--plan-id <stable-id>` or `--auto-plan-id` so the plan is written to
+   `.omc/ultragoal/plans/{planId}/` instead of the shared single-plan path.
+   Without that flag, two sessions creating goals would clobber each other.
+   `--auto-plan-id` derives `{epochMs}-{slug}` from the brief title. Then thread
+   the same `--plan-id <id>` through every subsequent subcommand in that session.
+   Use `omc ultragoal list-plans` to enumerate available planIds when needed.
+
 2. Start (or resume) the next story:
    ```
    omc ultragoal complete-goals

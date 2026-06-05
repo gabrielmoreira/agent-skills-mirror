@@ -1,15 +1,15 @@
 ---
 name: performance-reporter
-description: 'Use when generating SEO/GEO reports, traffic summaries, ranking reports, KPI dashboards, stakeholder updates, or monthly reports. SEO报告/绩效仪表盘'
-version: "9.9.9"
+description: 'Use when the user asks to "generate an SEO report" or "出月报"; builds multi-metric stakeholder reports and dashboards spanning traffic, rankings, authority, and content progress. Not for raw ranking deltas — use rank-tracker. SEO报告/绩效仪表盘'
+version: "9.9.10"
 license: Apache-2.0
-compatibility: "Claude Code, skills.sh, ClawHub, Vercel Labs, Cursor, Windsurf, Codex CLI, Amp, Gemini CLI, Kimi Code, Qwen Code, CodeBuddy"
+compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/seo-geo-claude-skills"
-when_to_use: "Use when generating SEO/GEO performance reports, traffic summaries, ranking reports, stakeholder dashboards, SEO报告, 流量报告, 月报, 周报, or 汇报给老板."
+when_to_use: "Use when generating multi-metric SEO/GEO performance reports, traffic summaries, stakeholder dashboards, SEO报告, 流量报告, 月报, 周报, or 汇报给老板. Not for raw ranking deltas — use rank-tracker."
 argument-hint: "<domain> [date range]"
 metadata:
   author: aaron-he-zhu
-  version: "9.9.9"
+  version: "9.9.10"
   geo-relevance: "medium"
   tags:
     - seo
@@ -25,40 +25,16 @@ metadata:
     - SEO리포트
     - informe-seo
   triggers:
-    # EN-formal
-    - "generate SEO report"
     - "performance report"
     - "traffic report"
     - "SEO dashboard"
-    # EN-casual
     - "monthly SEO report"
     - "show me my SEO results"
     - "report to my boss"
-    # EN-question
     - "how is my SEO performing"
-    # ZH-pro
-    - "SEO报告"
-    - "绩效仪表盘"
-    - "流量报告"
-    - "数据看板"
-    # ZH-casual
-    - "出SEO报告"
     - "汇报给老板"
-    - "看看SEO数据"
-    - "月报"
     - "出月报"
     - "周报"
-    # JA
-    - "SEOレポート"
-    - "パフォーマンスレポート"
-    # KO
-    - "SEO 리포트"
-    - "성과 보고서"
-    # ES
-    - "informe SEO"
-    - "reporte de rendimiento"
-    # PT
-    - "relatório SEO"
 ---
 
 # Performance Reporter
@@ -78,9 +54,10 @@ Generate a content performance report
 
 **Expected output**: a delta summary, alert/report output, and a short handoff summary ready for `memory/monitoring/`.
 
-- **Reads**: current metrics, previous baselines, alert thresholds, and reporting context from [CLAUDE.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/CLAUDE.md) and the shared [State Model](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/state-model.md) when available.
+- **Reads**: current and prior-period metrics across traffic/rankings/authority/content, report audience, date range, and any user-provided or tool data.
 - **Writes**: a user-facing monitoring deliverable plus a reusable summary that can be stored under `memory/monitoring/`.
 - **Promotes**: significant changes, confirmed anomalies, follow-up actions, and pending decisions to `memory/open-loops.md`.
+- **Done when**: each in-scope section (traffic, rankings, GEO, authority, backlinks, content) is present or marked "Not yet evaluated"; every metric is source-tagged and compared to the prior period; and recommendations carry owner, priority, and expected impact.
 - **Primary next skill**: use the `Next Best Skill` below when a change needs action.
 
 ### Handoff Summary
@@ -91,21 +68,32 @@ Generate a content performance report
 
 All integrations optional (see [CONNECTORS.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/CONNECTORS.md)). With tools connected, aggregates traffic from ~~analytics, search data from ~~search console, rankings/backlinks from ~~SEO tool, and AI visibility from ~~AI monitor. Without tools, ask user for analytics exports, Search Console data, ranking data, and KPIs.
 
+## Decision Gates
+
+**Stop and ask the user when:**
+- No reporting period or comparison period can be determined and none is in context — offer: (1) last 30 days vs prior 30, (2) last calendar month vs prior month, (3) a custom range. A period comparison is required, not optional.
+
+**Continue silently (never stop for):**
+- A section's source data is missing — mark that section "Not yet evaluated" and proceed; do not fabricate the metric.
+- Audience not stated — default to the executive template and note the assumption.
+
 ## Instructions
 
-When a user requests a performance report, use [references/report-output-templates.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/performance-reporter/references/report-output-templates.md) and cover:
+When a user requests a performance report, use [Report Output Templates](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/performance-reporter/references/report-output-templates.md) and cover:
 
-1. **Define Report Parameters** -- Domain, period, comparison period, report type, audience, focus areas, and data freshness.
-2. **Create Executive Summary** -- Overall rating, wins, watch areas, required actions, metrics at a glance (traffic, rankings, conversions, DA/authority, AI citations), and SEO ROI.
-3. **Report Organic Traffic** -- Sessions, users, pageviews, engagement/bounce, trend visualization, source/device split, top pages.
-4. **Report Keyword Rankings** -- Position ranges, distribution change, top improvements/declines, SERP features.
-5. **Report GEO/AI Performance** -- AI citation overview, citations by topic, GEO wins, and optimization opportunities.
-6. **Report Domain Authority (CITE)** -- Include CITE dimension scores and veto status when available; otherwise mark "Not yet evaluated."
-7. **Report Content Quality (CORE-EEAT)** -- Include average scores and trends when available; otherwise mark "Not yet evaluated."
-8. **Report Backlinks** -- Link profile summary, acquisition trend, notable links, competitive position.
-9. **Report Content Performance** -- Publishing summary, top content, content needing attention, and content ROI.
-10. **Generate Recommendations** -- Immediate, short-term, and long-term actions with priority, owner, expected impact, and next-period goals.
-11. **Compile Full Report** -- Add table of contents, appendix, data sources, methodology, and glossary.
+1. **Define Report Parameters** — Domain, period, comparison period, report type, audience, focus areas, and data freshness.
+2. **Create Executive Summary** — Overall rating, wins, watch areas, required actions, metrics at a glance (traffic, rankings, conversions, DA/authority, AI citations), and SEO ROI; tag each metric Measured / User-provided / Estimated.
+3. **Report Organic Traffic** — Sessions, users, pageviews, engagement/bounce, trend visualization, source/device split, top pages, each figure source-tagged.
+4. **Report Keyword Rankings** — Position ranges, distribution change, top improvements/declines, SERP features. For raw position-by-position deltas, defer to rank-tracker rather than recomputing here.
+5. **Report GEO/AI Performance** — AI citation overview, citations by topic, GEO wins, and optimization opportunities.
+6. **Report Domain Authority (CITE)** — Include CITE dimension scores and veto status when available; otherwise mark "Not yet evaluated."
+7. **Report Content Quality (CORE-EEAT)** — Include average scores and trends when available; otherwise mark "Not yet evaluated."
+8. **Report Backlinks** — Link profile summary, acquisition trend, notable links, competitive position.
+9. **Report Content Performance** — Publishing summary, top content, content needing attention, and content ROI.
+10. **Generate Recommendations** — Immediate, short-term, and long-term actions with priority, owner, expected impact, and next-period goals.
+11. **Compile Full Report** — Add table of contents, appendix, data sources, methodology, and glossary.
+
+Label every metric **Measured** (tool/export), **User-provided**, or **Estimated** (model inference); never present an estimate as measured; if a required metric is unavailable, mark it N/A — do not invent it. Likewise separate an **observed change** from a **plausible explanation** (corroborate before stating it as the cause), an **optimization opportunity**, and **follow-up** needing crawl/SERP/rank/audit — never report an unverified explanation as a confirmed cause.
 
 ## Example
 
@@ -117,14 +105,14 @@ Lead with insights, compare periods, state data freshness, include owner/deadlin
 
 ### Save Results
 
-Ask "Save these results?" If yes, write `memory/monitoring/YYYY-MM-DD-<topic>.md` with the headline finding, actionable items, and open loops.
+Ask "Save these results?" If yes, write to `memory/monitoring/` — see [Skill Contract](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/skill-contract.md) §Save Results Template.
 
 ## Reference Materials
 
-- [Report Output Templates](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/performance-reporter/references/report-output-templates.md) -- Compact starter blocks for all 11 report sections
-- [KPI Definitions](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/performance-reporter/references/kpi-definitions.md) -- SEO/GEO metric definitions with benchmarks, thresholds, trend analysis, and attribution guidance
-- [Report Templates by Audience](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/performance-reporter/references/report-templates.md) -- Copy-ready templates for executive, marketing, technical, and client audiences
+- [Report Output Templates](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/performance-reporter/references/report-output-templates.md) — Compact starter blocks for all 11 report sections
+- [KPI Definitions](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/performance-reporter/references/kpi-definitions.md) — SEO/GEO metric definitions with benchmarks, thresholds, trend analysis, and attribution guidance
+- [Report Templates by Audience](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/performance-reporter/references/report-templates.md) — Copy-ready templates for executive, marketing, technical, and client audiences
 
 ## Next Best Skill
 
-Primary: [alert-manager](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/alert-manager/SKILL.md) -- turn reporting insights into ongoing monitoring rules.
+Recurring monitoring needed → [alert-manager](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/alert-manager/SKILL.md) — turn reporting insights into ongoing monitoring rules. One-off report → Terminal. Visited-set rule applies per [Skill Contract](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/skill-contract.md).

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `kubesphere/kubesphere` — 26 default patterns, 0 followed patterns, 71 file(s) materialized.
+Mirror of `kubesphere/kubesphere` — 26 default patterns, 0 followed patterns, 73 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kubesphere/kubesphere` — 26 default patterns, 0 followed patterns, 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 71 |
+| Files         | 73 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -120,16 +120,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 59 | ✓ | [`skills/kubesphere-volcano/SKILL.md`](skills/kubesphere-volcano/SKILL.md) |
 | 60 | ✓ | [`skills/nodegroup/scripts/nodegroup_api.py`](skills/nodegroup/scripts/nodegroup_api.py) |
 | 61 | ✓ | [`skills/nodegroup/SKILL.md`](skills/nodegroup/SKILL.md) |
-| 62 | ✓ | [`skills/opensearch/SKILL.md`](skills/opensearch/SKILL.md) |
-| 63 | ✓ | [`skills/vector/SKILL.md`](skills/vector/SKILL.md) |
-| 64 | ✓ | [`skills/whizard-auditing/SKILL.md`](skills/whizard-auditing/SKILL.md) |
-| 65 | ✓ | [`skills/whizard-events/SKILL.md`](skills/whizard-events/SKILL.md) |
-| 66 | ✓ | [`skills/whizard-logging/SKILL.md`](skills/whizard-logging/SKILL.md) |
-| 67 | ✓ | [`skills/whizard-notification/SKILL.md`](skills/whizard-notification/SKILL.md) |
-| 68 | ✓ | [`skills/whizard-telemetry-ruler/SKILL.md`](skills/whizard-telemetry-ruler/SKILL.md) |
-| 69 | ✓ | [`skills/whizard-telemetry/scripts/generate-config.sh`](skills/whizard-telemetry/scripts/generate-config.sh) |
-| 70 | ✓ | [`skills/whizard-telemetry/SKILL.md`](skills/whizard-telemetry/SKILL.md) |
-| 71 | ✓ | [`skills/wiztelemetry-tracing/SKILL.md`](skills/wiztelemetry-tracing/SKILL.md) |
+| 62 | ✓ | [`skills/openpitrix/evals/evals.json`](skills/openpitrix/evals/evals.json) |
+| 63 | ✓ | [`skills/openpitrix/SKILL.md`](skills/openpitrix/SKILL.md) |
+| 64 | ✓ | [`skills/opensearch/SKILL.md`](skills/opensearch/SKILL.md) |
+| 65 | ✓ | [`skills/vector/SKILL.md`](skills/vector/SKILL.md) |
+| 66 | ✓ | [`skills/whizard-auditing/SKILL.md`](skills/whizard-auditing/SKILL.md) |
+| 67 | ✓ | [`skills/whizard-events/SKILL.md`](skills/whizard-events/SKILL.md) |
+| 68 | ✓ | [`skills/whizard-logging/SKILL.md`](skills/whizard-logging/SKILL.md) |
+| 69 | ✓ | [`skills/whizard-notification/SKILL.md`](skills/whizard-notification/SKILL.md) |
+| 70 | ✓ | [`skills/whizard-telemetry-ruler/SKILL.md`](skills/whizard-telemetry-ruler/SKILL.md) |
+| 71 | ✓ | [`skills/whizard-telemetry/scripts/generate-config.sh`](skills/whizard-telemetry/scripts/generate-config.sh) |
+| 72 | ✓ | [`skills/whizard-telemetry/SKILL.md`](skills/whizard-telemetry/SKILL.md) |
+| 73 | ✓ | [`skills/wiztelemetry-tracing/SKILL.md`](skills/wiztelemetry-tracing/SKILL.md) |
 
 ---
 

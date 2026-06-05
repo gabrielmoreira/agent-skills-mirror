@@ -1,29 +1,24 @@
 # SEO & GEO 技能库
 
-**20 个技能。20 个命令。规划、审计、监控 SEO/GEO 工作。**
+**20 个技能。5 个命令。规划、审计、监控 SEO/GEO 工作。**
 
 [![GitHub Stars](https://img.shields.io/github/stars/aaron-he-zhu/seo-geo-claude-skills?style=flat)](https://github.com/aaron-he-zhu/seo-geo-claude-skills)
-[![Version](https://img.shields.io/badge/version-9.9.9-orange)](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/VERSIONS.md)
+[![Version](https://img.shields.io/badge/version-9.9.10-orange)](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/VERSIONS.md)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/LICENSE)
 
 [English](../README.md) | **中文**
 
-面向搜索引擎优化（SEO）和生成式引擎优化（GEO）的 Claude 技能与命令集。本仓库是 slash-aaron 的候选 SEO/GEO anchor 能力包。技能内容为零依赖 Markdown；Claude Code hooks 使用轻量 Bash runner。安装入口、发布面和支持证据统一维护在 [Marketplace 模块](../marketplaces/README.md) 与 [平台注册表](../distribution/platforms.json)。内容质量使用 CORE-EEAT（80 项），域名权威使用 CITE（40 项）。
+面向搜索引擎优化（SEO）和生成式引擎优化（GEO）的 Claude 技能与命令集。技能内容为零依赖 Markdown；Claude Code hooks 使用轻量 Bash runner。安装入口见下方“快速开始”。内容质量使用 CORE-EEAT（80 项），域名权威使用 CITE（40 项）。
 
 ## 快速开始
 
-常用安装方式如下。支持级别、证据、manifest 归属与发布规则见 [marketplaces/README.md](../marketplaces/README.md) 和 [distribution/platforms.json](../distribution/platforms.json)。
+常用安装方式如下。
 
 | 工具 | 安装 |
 |------|------|
 | Claude Code | `/plugin marketplace add aaron-he-zhu/seo-geo-claude-skills` |
-| ClawHub.ai / OpenClaw | 整包：`clawhub install aaron-he-zhu/aaron-seo-geo`；单技能：`clawhub install aaron-he-zhu/<skill>` |
-| Gemini CLI | `gemini extensions install https://github.com/aaron-he-zhu/seo-geo-claude-skills` |
-| Qwen Code | `qwen extensions install https://github.com/aaron-he-zhu/seo-geo-claude-skills` |
-| Amp | `amp skill add aaron-he-zhu/seo-geo-claude-skills` |
-| Kimi Code CLI | `kimi plugin install https://github.com/aaron-he-zhu/seo-geo-claude-skills.git` |
-| CodeBuddy | `/plugin marketplace add aaron-he-zhu/seo-geo-claude-skills` 后 `/plugin install aaron-seo-geo` |
 | skills.sh / 通用 Agent Skills 宿主 | `npx skills add aaron-he-zhu/seo-geo-claude-skills` |
+| 任意宿主 | `git clone https://github.com/aaron-he-zhu/seo-geo-claude-skills` |
 
 单技能安装：`npx skills add aaron-he-zhu/seo-geo-claude-skills -s keyword-research`。
 
@@ -50,12 +45,13 @@ Slash 命令宿主的稳定入口：
 | 协议层 | `content-quality-auditor` 发布质量门；`domain-authority-auditor` CITE 域名可信度；`entity-optimizer` 实体与知识图谱；`memory-management` 项目记忆 |
 
 ## 命令
-SEO/GEO pack-local 入口：`/aaron:auto`；例外最大深度模式：`/aaron:max`（二者也包含在用户命令中）。
-用户命令：`/aaron:auto`, `/aaron:max`, `/aaron:discover`, `/aaron:compete`, `/aaron:map`, `/aaron:brief`, `/aaron:write`, `/aaron:series`, `/aaron:refresh`, `/aaron:publish`, `/aaron:audit`, `/aaron:visibility`, `/aaron:tech`, `/aaron:authority`, `/aaron:watch`, `/aaron:report`, `/aaron:remember`。
+5 个命令，按 SEO/GEO 意图组织。日常工作从 `/aaron:auto` 开始；其余四个是显式的模式入口：
 
-维护命令：`/aaron:skillify`, `/aaron:evolve`, `/aaron:guard`。
-
-日常 SEO/GEO 工作通常从 `/aaron:auto` 开始；它会按用户目标执行 SEO/GEO pack-local 工作流，并只在阻塞决策点暂停。只有明确需要当前 pack 内最大深度、穷尽式分析或压力测试时才使用 `/aaron:max`。其余命令是重复任务的专家快捷入口。检查拟新增技能或路由时使用 `/aaron:skillify`；改进技能库本身时使用 `/aaron:evolve`；维护验收时使用 `/aaron:guard`。
+- `/aaron:auto` — 推断意图并执行最小够用的工作流（加 `--deep` 进行穷尽/压测）
+- `/aaron:research` — 关键词需求、SERP 意图、竞品、内容缺口、站点/主题/实体地图
+- `/aaron:create` — brief、写作、系列、刷新、CMS 中立发布包（`--brief`/`--series`/`--refresh`/`--publish`/`--meta`/`--schema`）
+- `/aaron:audit` — on-page + CORE-EEAT 质量、技术 SEO、AI 可见性、域权威（`--full`/`--tech`/`--visibility`/`--authority`）
+- `/aaron:track` — 排名、告警、绩效报告、项目记忆（`--alert`/`--report`/`--remember`）
 
 破坏性改名说明：当前命令使用 `/aaron:`。旧 `/seo:*` 命令可粘贴给 `/aaron:auto` 来恢复新路由；例如 `/aaron:auto /seo:audit-page https://example.com/blog/post` 会返回 `/aaron:audit https://example.com/blog/post`。
 
@@ -77,7 +73,7 @@ SEO/GEO pack-local 入口：`/aaron:auto`；例外最大深度模式：`/aaron:m
 
 贡献规则见 [CONTRIBUTING.md](../CONTRIBUTING.md)。版本见 [VERSIONS.md](../VERSIONS.md)。许可证：Apache License 2.0。
 
-*最后同步英文 README：v9.9.9*
+*最后同步英文 README：v9.9.10*
 
 ## Star History
 

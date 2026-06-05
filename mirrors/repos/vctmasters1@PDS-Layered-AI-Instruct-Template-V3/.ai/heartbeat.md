@@ -14,6 +14,7 @@
 |---------|-------------|
 | [What Is a Step](#what-is-a-step) | How "step" is counted for heartbeat triggering |
 | [Heartbeat Procedure](#heartbeat-procedure) | What to do at each heartbeat interval |
+| [Post-Execution Learning Triggers](#post-execution-learning-triggers) | Automatic learning and curation after phase completion |
 | [Misalignment Response](#misalignment-response) | What to do when a rule violation is detected |
 | [Logging](#logging) | How heartbeat checks are recorded |
 
@@ -46,6 +47,25 @@ At every 6th step, before taking the next action:
 8. **Log the check** — emit a brief entry to `.ai/logs/` using the [`run-heartbeat`](agents/tools/run-heartbeat.json) governed tool format (see below).
 
 If all checks pass: continue with the next action. Report nothing to the user — a passing heartbeat is silent.
+
+---
+
+## Post-Execution Learning Triggers
+
+**After major phases complete** (Phase 2, Phase 3, etc.), automatic learning and curation runs:
+
+1. **Phase completion detected** (exit code 0 from executor)
+2. **Invoke `/ai-phase-X-post-learner`** (or auto-trigger if `autonomy-config.yaml.post_execution_hooks.enabled = true`)
+3. **Learning pipeline**:
+   - **pds-meta-learner**: Capture metrics, patterns, and insights → `.ai/knowledge/phase-X-learnings.md`
+   - **pds-man-curator**: Review findings, propose `.ai/instruct.md` improvements (human approval required)
+   - **pds-pipe-reviewer**: Validate proposed instruction updates for governance compliance
+4. **Human approval gate**: Review curator briefing, approve or request changes
+5. **Audit logged** to `.ai/logs/`
+
+**Purpose**: Ensure the instruction system evolves with project discoveries; prevent operational knowledge from being lost.
+
+**See also**: [Phase 2 Post-Learner Prompt](../.github/prompts/ai-phase-2-post-learner.prompt.md), [Phase 2 Learning Capture](knowledge/phase2-learnings.md)
 
 ---
 

@@ -1,4 +1,4 @@
-# Slop test — 57 gates + pre-emit self-critique
+# Slop test — 58 gates + pre-emit self-critique
 
 Run this list before handing back any output. Every answer must be **no**. Update the Step 5 preview block's `Slop test` row to reflect the actual outcome of this run.
 
@@ -8,7 +8,7 @@ Some gates are **universal** (apply to every genre); some are **genre-scoped** (
 
 ## Pre-emit self-critique (six axes)
 
-Run this **before** the gate list, not after. Score the planned output 1–5 on each axis. Anything **< 3 on any axis triggers a revision pass** before the gate sweep — don't bring known weakness into a fifty-seven-gate review.
+Run this **before** the gate list, not after. Score the planned output 1–5 on each axis. Anything **< 3 on any axis triggers a revision pass** before the gate sweep — don't bring known weakness into a fifty-eight-gate review.
 
 Two passes is normal. Three is a sign the brief is wrong, not the design — re-read the brief.
 
@@ -129,7 +129,7 @@ The CSS stamp at Step 6 should record the result: `· contrast: pass (40–41)` 
 
 Universal — apply to every genre. These gates catch the most-recognised AI fingerprints in nav, footer, and hero shape. They sit alongside the structural-fingerprint gate (gate 8): gate 8 catches the *page* fingerprint; 42–45 catch the *chrome* fingerprints that sit on top of it.
 
-42. **Nav fingerprint.** Is the page's `<nav>` (or top-of-page `<header>` with role="banner") the AI default — wordmark-left + 4–5 inline text links centred-or-right + button-right at full viewport width + 1 px hairline border-bottom + white background? If yes, fail unless the brief explicitly justifies N1 (the page has only 2 destinations *and* the routing table for the genre allows N1). Hallmark output should rotate among N1, N3, N4, N5, N6, N7, N8, N9 from [`component-cookbook.md`](component-cookbook.md) § Navigation.
+42. **Nav fingerprint.** Is the page's `<nav>` (or top-of-page `<header>` with role="banner") the AI default — wordmark-left + 4–5 inline text links centred-or-right + button-right at full viewport width + 1 px hairline border-bottom + white background? If yes, fail unless the brief explicitly justifies N1a (the page has only 2 destinations *and* the routing table for the genre allows N1a). Hallmark output should rotate among N1b, N2, N3, N4, N5, N6, N7, N8, N9, N10, N11, N12, N13 from [`component-cookbook.md`](component-cookbook.md) § Navigation.
 
 43. **Footer fingerprint.** Is the `<footer>` the AI default — 4 columns of links (Product / Company / Resources / Legal) + social-icon row + tiny copyright at the very bottom + 1 px hairline top-border + neutral grey background? If yes, fail unless the page is a genuine docs root or hub. Default to Ft1, Ft2, Ft4, Ft5, Ft6, Ft7, or Ft8 from [`component-cookbook.md`](component-cookbook.md) § Footers.
 

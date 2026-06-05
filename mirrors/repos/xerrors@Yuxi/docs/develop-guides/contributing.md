@@ -141,7 +141,7 @@ make lint
 
 - 通用开发文档位于 `docs/`
 - 文档导航定义在 `docs/.vitepress/config.mts`
-- 若本次改动值得记录，请更新 [roadmap.md](./roadmap.md)
+- 未完成规划、未来里程碑或已知问题更新 [roadmap.md](./roadmap.md)；已完成的用户可见变更或发布说明更新 [changelog.md](./changelog.md)
 - 若确需新增仅开发者可见的说明文档，放在 `docs/vibe/`
 
 ## 提交信息规范

@@ -5,9 +5,68 @@ description: Daytona recording volume, screenshots, artifacts, and validation ev
 
 # Daytona Recording Artifacts
 
-Use this skill to collect proof that a Daytona UI flow works. Recordings are for
-humans. CDP assertions and screenshots are for AI validation and fast review.
+Use this skill to collect proof that a Daytona UI flow works.
 Use `daytona-flow-validator` before declaring the flow passed.
+
+## Default: Frame-by-Frame HTML Proof
+
+The default proof format is a browseable HTML page with named PNG screenshots
+for each step of the flow. This is faster to produce, easier to review, and
+works on any device.
+
+Use video (MP4) only when the proof requires motion: streaming text, loading
+spinners, animations, drag-and-drop, or real-time interactions that a static
+frame cannot capture. When video is used, embed it inside the frame-by-frame
+HTML page alongside the static frames.
+
+### How to produce frame proof
+
+1. Serve a directory from the sandbox on port 8090:
+
+```bash
+daytona exec "$SANDBOX" -- 'bash -lc "mkdir -p /workspace/proof-frames; nohup python3 -m http.server 8090 --directory /workspace/proof-frames >/dev/null 2>&1 &"'
+```
+
+2. At each important state, capture a `browser_screenshot` locally and upload
+   it to the sandbox with a numbered name like `01-auth-landing.png`,
+   `02-org-filled.png`, etc.
+
+3. Generate a browseable `index.html` with all frames as labeled images in a
+   responsive grid. Include the branch, commit, and sandbox name.
+
+4. Get the public URL:
+
+```bash
+FRAMES_URL=$(daytona preview-url "$SANDBOX" -p 8090 2>/dev/null | grep -v "^time=")
+echo "${FRAMES_URL}/index.html"
+```
+
+5. Post the index URL in the PR body. Individual frame PNGs are also directly
+   linkable: `${FRAMES_URL}/01-auth-landing.png`.
+
+### When to include video clips
+
+Embed short MP4 clips in the same proof directory when the step involves:
+
+- Streaming text appearing in real-time (chat responses).
+- Loading/progress indicators that resolve.
+- Animations or transitions between states.
+- Drag-and-drop or multi-step interactions.
+
+Reference them from the HTML index alongside the static frames.
+
+## Recording Standard (video, when needed)
+
+A useful Daytona recording should look like a person using the product, even
+though CDP is driving the browser or Electron window.
+
+- Record the entire relevant journey, not only the final state.
+- Start before the first visible click and stop after the final visible success state.
+- Drive Chrome/Electron through visible controls with `browser_snapshot`, `browser_click`, and `browser_fill` wherever possible.
+- Keep API calls, localStorage writes, direct navigation, and filesystem checks out of the recorded path unless they are unavoidable setup.
+- If invisible setup is unavoidable, label it in the PR/eval and resume the recording at the next visible user step.
+- Prefer slower, understandable click-by-click recordings over faster scripts that jump between states.
+- The recording should be understandable without terminal output; logs and API checks are supporting evidence only.
 
 ## The Volume
 
@@ -95,6 +154,21 @@ echo "${ARTIFACTS_URL}/recordings/<name>.mp4"
 echo "${ARTIFACTS_URL}/screenshots/<name>.png"
 ```
 
+Artifact proxy URLs are not permanent. If the sandbox stops, the old
+`daytonaproxy` URL will fail even when files still exist in
+`/daytona-artifacts`. Restart the sandbox and artifact server, then generate a
+fresh URL:
+
+```bash
+daytona sandbox start "$SANDBOX"
+daytona exec "$SANDBOX" -- 'bash -lc '\''cd /daytona-artifacts && nohup python3 -m http.server 8090 --bind 0.0.0.0 > /tmp/daytona-artifacts-http.log 2>&1 &'\'''
+daytona exec "$SANDBOX" -- 'curl -s -I http://127.0.0.1:8090/recordings/<name>.mp4 | sed -n "1,8p"'
+daytona preview-url "$SANDBOX" -p 8090
+```
+
+Only share the refreshed URL after the local `curl -I` returns `200 OK` with a
+non-zero `Content-Length`.
+
 ## Before And After Flow
 
 Use before/after recordings for UI regressions or design changes:
@@ -109,15 +183,23 @@ daytona exec "$SANDBOX" -- 'bash .devcontainer/stop-daytona-recording.sh'
 
 ## Validation Standard
 
-Use all three layers when possible:
+Use these layers in order of priority:
 
-- CDP/browser assertions: prove URL, text, state, accessibility tree, and process state.
-- Screenshots: provide fast visual checkpoints for AI and reviewers.
-- Recording: prove the full flow to humans for PR review.
+1. **Frame-by-frame HTML proof** (default): named PNGs in a browseable index.
+   This is the primary evidence format for UI flows.
+2. **CDP/browser assertions**: prove URL, text, state, accessibility tree, and
+   process state alongside each frame capture.
+3. **Video clips** (when needed): short MP4s embedded in the frame index for
+   steps that require motion proof (streaming, animations, loading states).
 
 Do not report success from a recording alone. The AI should inspect state with
 browser tools and use screenshots to validate visible behavior before declaring
 the flow passed.
 
-When a recording is required, start it before the first user-visible action in
-the flow and stop it only after the final asserted state is visible.
+Do not use a video as the primary demo if most of the flow happened through
+hidden automation. In that case, mark the run as technical validation only and
+produce a new frame-by-frame proof for human review.
+
+If you discover invalid evidence after the fact, do not reuse the same URL as
+if it were valid. Produce new frames with new names and explain in the
+PR/comment that the earlier artifact was superseded.

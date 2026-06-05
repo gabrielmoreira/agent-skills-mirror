@@ -65,7 +65,7 @@ Windows PowerShell syntax reminders:
 - Bad: `if not exist C:\Users\name\Downloads mkdir C:\Users\name\Downloads` (CMD syntax)
 - Good: `if (-not (Test-Path -LiteralPath 'C:\Users\name\Downloads')) { New-Item -ItemType Directory -Path 'C:\Users\name\Downloads' | Out-Null }`
 
-Do not ask the user for the exact product name or identifier. Look it up using the appropriate mpm input file from https://github.com/mathworks-ref-arch/matlab-dockerfile/tree/main/mpm-input-files
+Do not ask the user for the exact product name or identifier. Look it up using the appropriate mpm input file from https://www.mathworks.com/products/mpm.html
 Do not ask the user whether to install dependencies or not. mpm will take care of it. Just install whatever the user asked for, and let mpm do the rest.
 If a user types the shortname of MATLAB releases, automatically use the correct expanded full name. e.g. 25a is R2025a, 25b is R2025b
 
@@ -101,7 +101,7 @@ Step 1 — Download mpm
   Script: <working folder>\mpm_download.ps1
 
 Step 2 — Prepare input file
-  Download release template for <release> from GitHub
+  Download release template for <release> from mathworks.com
   Set destination folder: <destination>
   Enable products: <comma-separated list>
   Input file: <working folder>\mpm_input_<releaselower>.txt
@@ -197,7 +197,7 @@ See `reference/linux-macos-steps.md` for full shell scripts. Summary: create wor
 ### Step 2 - Download and edit the release input file
 
 Always use a release template input file from:
-https://github.com/mathworks-ref-arch/matlab-dockerfile/tree/main/mpm-input-files
+https://www.mathworks.com/products/mpm.html
 
 Download the template input file for the requested release, then edit it:
 - Uncomment and set `destinationFolder` to the requested installation path.
@@ -246,7 +246,7 @@ $ErrorActionPreference = "Stop"
 $ProductList = $Products -split ',' | ForEach-Object { $_.Trim() }
 
 $releaseLower = $Release.ToLower()
-$inputUrl  = "https://raw.githubusercontent.com/mathworks-ref-arch/matlab-dockerfile/refs/heads/main/mpm-input-files/$Release/mpm_input_${releaseLower}.txt"
+$inputUrl  = "https://www.mathworks.com/content/dam/mathworks/mathworks-dot-com/products/mpm/mpm-input-${releaseLower}.txt"
 $inputFile = Join-Path $WorkingFolder "mpm_input_${releaseLower}.txt"
 
 Write-Host "Downloading input file from $inputUrl..."
@@ -398,6 +398,22 @@ After all items are verified, delete the entire working folder and its contents 
 rm -rf "C:/Users/<username>/AppData/Local/Temp/mpm-YYYYMMDD-HHMMSS"
 ```
 
+#### Release Notes Link
+
+Only if MATLAB (the base product) was included in the installation, provide a link to the release notes after successful verification and cleanup:
+
+```
+https://www.mathworks.com/help/matlab/release-notes.html?startrelease=<RELEASE>&endrelease=<RELEASE>&rntext=&groupby=release&sortby=descending&searchHighlight=
+```
+
+Replace `<RELEASE>` with the installed release (e.g., `R2025b`). Display the link on its own line for readability:
+
+> View the MATLAB R2025b Release Notes by visiting this link:
+> https://www.mathworks.com/help/matlab/release-notes.html?startrelease=R2025b&endrelease=R2025b&rntext=&groupby=release&sortby=descending&searchHighlight=
+
+Do not show this link if the user only installed toolboxes or support packages without MATLAB.
+
+
 ## Common Errors
 
 - **`ErrorCode::IncompatibleProduct`** ("Selected products are incompatible"): The destination folder most likely contains an existing MATLAB installation. Inform the user and ask them to choose an empty destination folder.
@@ -407,7 +423,7 @@ rm -rf "C:/Users/<username>/AppData/Local/Temp/mpm-YYYYMMDD-HHMMSS"
 | Command / Pattern | Purpose |
 |---|---|
 | `mpm install --inputfile=<file>` | Install products defined in an input file |
-| `mpm_input_<release>.txt` | Release-specific input file template from GitHub |
+| `mpm_input_<release>.txt` | Release-specific input file template from mathworks.com |
 | `product.<Name>` | Input file entry format for products and support packages |
 | `destinationFolder=<path>` | Input file directive setting the install location |
 | `Start-Process -Verb RunAs -Wait` | Elevated execution on Windows (UAC) |
@@ -418,7 +434,7 @@ rm -rf "C:/Users/<username>/AppData/Local/Temp/mpm-YYYYMMDD-HHMMSS"
 - mpm installs required dependencies automatically.
 - Licensing and activation are separate workflows. Do not ask the user about licensing or activation at the end of the install.
 - Always use a release input file from:
-  https://github.com/mathworks-ref-arch/matlab-dockerfile/tree/main/mpm-input-files
+  https://www.mathworks.com/products/mpm.html
 
 ----
 

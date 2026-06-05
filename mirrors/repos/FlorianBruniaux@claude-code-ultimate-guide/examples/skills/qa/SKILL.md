@@ -1,16 +1,16 @@
 ---
 name: qa
-description: Systematic QA testing of a web application — diff-aware, tiered, with fix-and-verify loop
+description: Systematic QA testing of a web application: diff-aware, tiered, with fix-and-verify loop
 argument-hint: "[path] [--thorough]"
 effort: high
 disable-model-invocation: true
 ---
 
-# QA — Web Application Testing
+# QA: Web Application Testing
 
 Systematically test a web application for bugs, then fix and verify each issue found.
 
-Three tiers of thoroughness. Diff-aware scoping — tests what actually changed.
+Three tiers of thoroughness. Diff-aware scoping tests what actually changed.
 
 ## Instructions
 
@@ -64,19 +64,19 @@ For each page in scope, systematically check all categories relevant to the sele
 #### How to test
 
 Use whatever browser tooling is available:
-- **MCP browser tools** (if configured) — automated navigation and screenshots
-- **Playwright/Puppeteer** (if in the project) — scripted test runs
-- **Manual testing** — navigate to the URL, document findings systematically
+- **MCP browser tools** (if configured): automated navigation and screenshots
+- **Playwright/Puppeteer** (if in the project): scripted test runs
+- **Manual testing**: navigate to the URL, document findings systematically
 
 For each page, cover:
 
 ```
-1. Load the page — does it render without errors?
-2. Check console — any uncaught errors, failed requests, warnings?
-3. Test primary user action — the core thing this page is for
-4. Test empty state — what shows when there's no data?
-5. Test error state — what happens when an action fails?
-6. Test on narrow viewport — does it break below 375px?
+1. Load the page: does it render without errors?
+2. Check console: any uncaught errors, failed requests, warnings?
+3. Test primary user action: the core thing this page is for
+4. Test empty state: what shows when there's no data?
+5. Test error state: what happens when an action fails?
+6. Test on narrow viewport: does it break below 375px?
 ```
 
 #### Issue taxonomy
@@ -113,7 +113,7 @@ ISSUE-001
   Severity:  [Critical / High / Medium / Low]
   Category:  [Visual / Functional / UX / Content / Performance / Console / Accessibility]
   Page:      [URL or route]
-  Finding:   [What is wrong — specific, not vague]
+  Finding:   [What is wrong, specific not vague]
   Steps:     [How to reproduce]
   Expected:  [What should happen]
   Evidence:  [Screenshot path or console output]
@@ -126,14 +126,14 @@ ISSUE-001
 For each Critical and High issue (and Medium/Low in Standard/Exhaustive tiers):
 
 1. **Fix the issue** in source code
-2. **Commit atomically** — one commit per fix
+2. **Commit atomically**: one commit per fix
 
 ```bash
 git add <changed-files>
 git commit -m "fix: <brief description of what was fixed>"
 ```
 
-3. **Re-verify** — navigate to the same page and confirm the issue is resolved
+3. **Re-verify**: navigate to the same page and confirm the issue is resolved
 4. **Update the issue status** to FIXED with the commit hash
 
 Do not batch multiple fixes in one commit. Each fix must be individually revertable.
@@ -169,7 +169,7 @@ ISSUE-001 [FIXED | OPEN]
   Severity:  High
   Category:  Functional
   Page:      /dashboard
-  Finding:   Save button does nothing when form has validation errors — no feedback shown
+  Finding:   Save button does nothing when form has validation errors, no feedback shown
   Fix:       Added error toast notification (commit abc1234)
 
 ISSUE-002 [OPEN]
@@ -181,10 +181,10 @@ ISSUE-002 [OPEN]
 
 ─────────────────────────────────────────
 SHIP READINESS
-  Critical issues:  [0 remaining / N remaining — BLOCKER]
-  High issues:      [0 remaining / N remaining — CONCERN]
+  Critical issues:  [0 remaining / N remaining (BLOCKER)]
+  High issues:      [0 remaining / N remaining (CONCERN)]
 
-VERDICT: [READY TO SHIP / NOT READY — address critical and high issues first]
+VERDICT: [READY TO SHIP / NOT READY: address critical and high issues first]
 ════════════════════════════════════════
 ```
 
@@ -201,16 +201,16 @@ VERDICT: [READY TO SHIP / NOT READY — address critical and high issues first]
 
 ## Tips
 
-1. **Run after every significant feature** — not just before shipping
-2. **Diff-aware first** — test what changed before expanding scope
-3. **Fix critical and high before continuing** — don't pile up unfixed issues
-4. **Screenshot evidence** — always capture before/after for critical fixes
-5. **Check mobile** — most visual bugs appear at 375px width
+1. **Run after every significant feature**, not just before shipping
+2. **Diff-aware first**: test what changed before expanding scope
+3. **Fix critical and high before continuing**: don't pile up unfixed issues
+4. **Screenshot evidence**: always capture before/after for critical fixes
+5. **Check mobile**: most visual bugs appear at 375px width
 
 ## Related Commands
 
-- `/investigate` — root-cause analysis when QA finds a complex bug
-- `/ship` — pre-deploy checklist (run after QA passes)
-- `/canary` — post-deploy monitoring (run after shipping)
+- `/investigate`: root-cause analysis when QA finds a complex bug
+- `/ship`: pre-deploy checklist (run after QA passes)
+- `/canary`: post-deploy monitoring (run after shipping)
 
 $ARGUMENTS

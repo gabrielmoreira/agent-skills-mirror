@@ -1,0 +1,52 @@
+# Credentials — Credential Warehousing & Security Rules
+
+**Scope**: `pds-build-tools/` module reference
+**Last Updated**: 2026-05-27
+
+> **→ Root [`.ai/credentials.md`](../../.ai/credentials.md)** — This file is authoritative for all directories in this project.
+
+## Never Commit Credentials
+
+**Never commit credentials, secrets, API keys, passwords, tokens, or connection strings to git.**
+
+This includes:
+- Database passwords and full connection strings
+- API keys (third-party services, internal services)
+- JWT secrets and signing keys
+
+## .env File Convention
+
+```
+pds-build-tools/
+├── .env                  ← GITIGNORED — actual values
+└── .env.example          ← COMMITTED — template only
+```
+
+### `.env.example` Format
+
+```bash
+# ── Build Configuration ───────────────────────────────────
+IDF_TARGET=esp32
+BUILD_TYPE=release
+
+# ── External Services ─────────────────────────────────────
+OTA_SERVER_URL=https://ota.pipedreamsystems.com/firmware
+```
+
+## .gitignore Requirements
+
+```gitignore
+# Credentials & secrets — NEVER COMMIT
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+credentials/
+secrets/
+
+# Build artifacts
+dist/
+*.bin
+*.elf
+*.map

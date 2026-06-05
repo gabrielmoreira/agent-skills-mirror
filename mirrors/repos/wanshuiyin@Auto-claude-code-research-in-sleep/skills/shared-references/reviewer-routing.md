@@ -212,6 +212,16 @@ Manual review supports medium/hard MCP-style review. Codex-exec nightmare mode i
 
 If manual-review MCP is not installed, `— reviewer: manual` prints install instructions and stops. It does NOT fall back to Codex — the target user likely has no Codex subscription, so a silent fallback would fail anyway.
 
+### `codex exec` CLI is NOT an equivalent Codex backend
+
+The mainline reviewer contract is `mcp__codex__codex` + `mcp__codex__codex-reply`: skills rely on **thread continuity** (e.g. `/idea-creator` Phase 4 runs its devil's-advocate triage as a same-thread `codex-reply`), structured returns, and saved `threadId` traces. `codex exec --ephemeral` is a stateless one-shot — fine for a single self-contained review, but NOT a drop-in replacement: hand-rewriting every MCP call to `codex exec` silently loses reply continuity and tends to mangle SKILL.md instructions (observed in the wild as "the executor skips phases and improvises" — issue #284).
+
+If Codex MCP is broken in your setup, prefer in order:
+
+1. Fix the MCP registration: `claude mcp add codex -s user -- codex mcp-server`, then `/mcp` in-session to (re)connect.
+2. Codex-CLI-as-executor: use the native mirror pack [`skills/skills-codex/`](../skills-codex/) — designed to run inside Codex CLI without Claude-side MCP.
+3. One-shot `codex exec` only for skills whose review is a single call with no follow-up reply.
+
 ### Future work
 
 - `mcp__manual_review__generate_image`: manual alternative to `codex-image2` for paper illustrations

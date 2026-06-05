@@ -1,31 +1,26 @@
 # SEO & GEO Skills Library
 
-**20 skills. 20 commands. Plan, audit, and monitor SEO/GEO work.**
+**20 skills. 5 commands. Plan, audit, and monitor SEO/GEO work.**
 
 [![GitHub Stars](https://img.shields.io/github/stars/aaron-he-zhu/seo-geo-claude-skills?style=flat)](https://github.com/aaron-he-zhu/seo-geo-claude-skills)
-[![Version](https://img.shields.io/badge/version-9.9.9-orange)](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/VERSIONS.md)
+[![Version](https://img.shields.io/badge/version-9.9.10-orange)](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/VERSIONS.md)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/LICENSE)
 [![Last Commit](https://img.shields.io/github/last-commit/aaron-he-zhu/seo-geo-claude-skills)](https://github.com/aaron-he-zhu/seo-geo-claude-skills/commits/main)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-compatible-purple)](https://claude.ai/download)
 
 [English](README.md) | [中文](docs/README.zh.md)
 
-Claude Skills and Commands for Search Engine Optimization (SEO) and Generative Engine Optimization (GEO). This repository is the candidate SEO/GEO anchor capability pack for slash-aaron. Skill content is zero-dependency Markdown; Claude Code hooks use a small Bash runner. Install targets and support claims are maintained in the [Marketplace Module](marketplaces/README.md) and [platform registry](distribution/platforms.json). Content quality uses [CORE-EEAT](https://github.com/aaron-he-zhu/core-eeat-content-benchmark) (80 items); domain trust uses [CITE](https://github.com/aaron-he-zhu/cite-domain-rating) (40 items).
+Claude Skills and Commands for Search Engine Optimization (SEO) and Generative Engine Optimization (GEO). Skill content is zero-dependency Markdown; Claude Code hooks use a small Bash runner. Content quality uses [CORE-EEAT](https://github.com/aaron-he-zhu/core-eeat-content-benchmark) (80 items); domain trust uses [CITE](https://github.com/aaron-he-zhu/cite-domain-rating) (40 items).
 
 ## Quick Start
 
-Common install paths are below. Support level, evidence, manifest ownership, and release rules live in [marketplaces/README.md](marketplaces/README.md) and [distribution/platforms.json](distribution/platforms.json).
+Install with Claude Code, any Agent Skills-compatible host, or a plain `git clone`:
 
 | Tool | Install |
 |------|---------|
 | Claude Code | `/plugin marketplace add aaron-he-zhu/seo-geo-claude-skills` |
-| ClawHub.ai / OpenClaw | `clawhub install aaron-he-zhu/<skill>` or [bundle](https://clawhub.ai/plugins/aaron-seo-geo) |
-| Gemini CLI | `gemini extensions install https://github.com/aaron-he-zhu/seo-geo-claude-skills` |
-| Qwen Code | `qwen extensions install https://github.com/aaron-he-zhu/seo-geo-claude-skills` |
-| Amp | `amp skill add aaron-he-zhu/seo-geo-claude-skills` |
-| Kimi Code CLI | `kimi plugin install https://github.com/aaron-he-zhu/seo-geo-claude-skills.git` |
-| CodeBuddy | `/plugin marketplace add aaron-he-zhu/seo-geo-claude-skills` then `/plugin install aaron-seo-geo` |
 | skills.sh / generic Agent Skills hosts | `npx skills add aaron-he-zhu/seo-geo-claude-skills` |
+| Any host | `git clone https://github.com/aaron-he-zhu/seo-geo-claude-skills` |
 
 Single skill: `npx skills add aaron-he-zhu/seo-geo-claude-skills -s keyword-research`.
 
@@ -52,18 +47,9 @@ Every skill follows the same activation contract: Quick Start, Skill Contract, H
 | `content-quality-auditor` | 80-item CORE-EEAT publish gate |
 | `domain-authority-auditor` | 40-item CITE trust gate |
 | `entity-optimizer` | Canonical entity profile |
-| `memory-management` | HOT/WARM/COLD project memory + wiki layer (compile · query · contradiction-resolution · retire · restore; v9.9.9+) |
+| `memory-management` | HOT/WARM/COLD project memory (capture · promote · demote · archive · query) |
 
 Shared refs: [skill-contract.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/skill-contract.md), [state-model.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/state-model.md), [auditor-runbook.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/auditor-runbook.md).
-
-### Wiki Layer (v9.9.9+)
-
-Project memory matures from raw WARM files → derived wiki pages → optional retirement of covered WARM into COLD. Three phases:
-- **Phase 1** — auto-refreshed `memory/wiki/index.md` (Phase 1 is automatic; no user action needed)
-- **Phase 2** — compiled wiki pages: type `"compile a wiki page on X"` / `"synthesize what we know about X"` / `"整理一下X的资料"` once you have ≥3 WARM files referencing entity X. Contradictions surface at next session as `(a)/(b)/(s)/(i)` prompt.
-- **Phase 3** — user-initiated retirement: `/aaron:guard --wiki --retire-preview` lists candidates; explicit confirmation moves WARM to `memory/archive/`. Recover any time by saying `/aaron:remember recover wiki` (memory-management runs the recovery for you). Power users can also `bash scripts/recover-retired-warm.sh` directly.
-
-`rm -rf memory/wiki/` always reverts cleanly. Retirement history (Phase 3) survives in COLD frontmatter — not destroyed by wiki deletion. See [wiki-runbook.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/cross-cutting/memory-management/references/wiki-runbook.md) for full execution detail.
 
 ## Skills
 
@@ -78,12 +64,18 @@ Project memory matures from raw WARM files → derived wiki pages → optional r
 <!-- SKILLS:END -->
 
 ## Commands
-SEO/GEO pack-local entries: `/aaron:auto`; exceptional maximum-depth mode: `/aaron:max` (both included in user-facing commands below).
-User commands: `/aaron:auto`, `/aaron:max`, `/aaron:discover`, `/aaron:compete`, `/aaron:map`, `/aaron:brief`, `/aaron:write`, `/aaron:series`, `/aaron:refresh`, `/aaron:publish`, `/aaron:audit`, `/aaron:visibility`, `/aaron:tech`, `/aaron:authority`, `/aaron:watch`, `/aaron:report`, `/aaron:remember`.
 
-Maintenance commands: `/aaron:skillify`, `/aaron:evolve`, `/aaron:guard`.
+Five commands, organized by SEO/GEO intent:
 
-Daily SEO/GEO work normally starts with `/aaron:auto`, which runs the SEO/GEO pack-local workflow implied by your goal and stops only at blocking decisions. Use `/aaron:max` only when you explicitly want maximum-depth, exhaustive, or stress-test analysis inside this pack. The remaining commands are expert shortcuts for repeatable jobs. Use `/aaron:skillify` to review proposed skills or routes, `/aaron:evolve` for controlled library changes from evidence, and `/aaron:guard` for maintainer validation.
+| Command | Use it for |
+|---------|-----------|
+| `/aaron:auto` | Describe any goal — infers intent and runs the smallest useful workflow (`--deep` for exhaustive/stress-test) |
+| `/aaron:research` | Keyword demand, SERP intent, competitors, content gaps, site/topic/entity maps |
+| `/aaron:create` | Brief, write, series, refresh, CMS-neutral publish package (`--brief`/`--series`/`--refresh`/`--publish`/`--meta`/`--schema`) |
+| `/aaron:audit` | On-page + CORE-EEAT quality, technical SEO, AI visibility, domain authority (`--full`/`--tech`/`--visibility`/`--authority`) |
+| `/aaron:track` | Rankings, alerts, performance reports, project memory (`--alert`/`--report`/`--remember`) |
+
+Daily work normally starts with `/aaron:auto`, which runs the workflow implied by your goal and stops only at blocking decisions. The other four are explicit mode entrypoints.
 
 Breaking rename note: current commands use `/aaron:`. Paste any old `/seo:*` command into `/aaron:auto` to recover the new route; for example, `/aaron:auto /seo:audit-page https://example.com/blog/post` returns `/aaron:audit https://example.com/blog/post`.
 
@@ -106,7 +98,6 @@ For a full trust review, pair `content-quality-auditor` with `domain-authority-a
 | [cite-domain-rating.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/cite-domain-rating.md) | 40-item domain authority benchmark |
 | [auditor-runbook.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/auditor-runbook.md) | Auditor handoff schema, cap arithmetic, artifact gate |
 | [CONNECTORS.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/CONNECTORS.md) | Optional MCP/tool connector tiers |
-| [marketplaces/README.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/marketplaces/README.md) | Marketplace install matrix and release-surface ownership |
 
 ## Contributing
 

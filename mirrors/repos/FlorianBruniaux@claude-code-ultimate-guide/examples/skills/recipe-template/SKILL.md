@@ -1,6 +1,6 @@
 ---
 name: recipe-template
-description: "Template for commands that implement a structured recipe: validate preconditions, then execute numbered steps. Fork this and replace the placeholder content. The 'Context Validation Checkpoints' section is the key pattern — it forces Claude to verify preconditions before starting."
+description: "Template for commands that implement a structured recipe: validate preconditions, then execute numbered steps. Fork this and replace the placeholder content. The 'Context Validation Checkpoints' section is the key pattern, forcing Claude to verify preconditions before starting."
 argument-hint: "[optional-arg]"
 effort: low
 disable-model-invocation: true
@@ -13,7 +13,7 @@ disable-model-invocation: true
 ## When to Use
 
 - [Describe the exact situation where this command applies]
-- [Describe when NOT to use it — common misuse case]
+- [Describe when NOT to use it, with a common misuse case]
 
 ## Context Validation Checkpoints
 

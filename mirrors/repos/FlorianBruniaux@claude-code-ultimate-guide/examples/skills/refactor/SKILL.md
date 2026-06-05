@@ -3,6 +3,7 @@ name: refactor
 description: Analyze code for SOLID violations and suggest targeted improvements
 argument-hint: "<file_or_module> [--pattern <name>]"
 effort: medium
+when_to_use: "Use when a module has SOLID violations, code smells, or duplication to address."
 disable-model-invocation: true
 ---
 

@@ -56,7 +56,7 @@ If either fails, stop and explain what is missing.
 
 ---
 
-## Phase 1 — Audit (always executed)
+## Phase 1: Audit (always executed)
 
 ### Data Gathering (parallel commands)
 
@@ -111,38 +111,38 @@ If body is empty → category is always `Unclear` (never assume).
 
 Scan each open PR body for references to the issue number:
 - Patterns: `fixes #N`, `closes #N`, `resolves #N`, `fix #N`, `close #N` (case-insensitive, `N` = issue number)
-- Use regex locally on the `body` fields already fetched — do NOT make N additional API calls
+- Use regex locally on the `body` fields already fetched; do NOT make N additional API calls
 - If found: flag issue as "PR-linked" with PR number
 
 #### 3. Duplicate Detection via Jaccard Similarity
 
-**Algorithm (self-contained — no external library)**:
+**Algorithm (self-contained, no external library)**:
 
 For each open issue, compute Jaccard similarity against all other open issues AND the 20 most recent closed issues.
 
 ```
-Step 1 — Normalize title + first 300 chars of body:
+Step 1: Normalize title + first 300 chars of body:
   - Lowercase the full text
   - Strip category prefixes: "feat:", "fix:", "bug:", "chore:", "docs:", "test:", "refactor:"
   - Remove punctuation: .,!?;:'"()[]{}-_/\@#
 
-Step 2 — Tokenize:
+Step 2: Tokenize:
   - Split on whitespace
   - Remove stop words: the a an is in on to for of and or with this that it can not no be
   - Remove tokens shorter than 3 characters
 
-Step 3 — Compute Jaccard:
+Step 3: Compute Jaccard:
   tokens_A = set of tokens from issue A
   tokens_B = set of tokens from issue B
   jaccard = |tokens_A ∩ tokens_B| / |tokens_A ∪ tokens_B|
 
-Step 4 — Flag:
+Step 4: Flag:
   - If jaccard >= 0.60: mark as potential duplicate
   - Report: "Similar to #N (Jaccard: 0.72)"
   - Keep the OLDER issue as canonical; newer = duplicate candidate
 ```
 
-Jaccard is computed at runtime using the fetched data — no API calls beyond Phase 1 gather.
+Jaccard is computed at runtime using the fetched data; no API calls beyond Phase 1 gather.
 
 #### 4. Risk Classification
 
@@ -162,7 +162,7 @@ Assign Red / Yellow / Green based on signals in title + body:
 | Stale | No activity 30–90 days |
 | Very Stale | No activity >90 days |
 
-Use `updatedAt` field. Staleness does NOT depend on comments count — a commented-on issue with old `updatedAt` is still stale.
+Use `updatedAt` field. Staleness does NOT depend on comments count; a commented-on issue with old `updatedAt` is still stale.
 
 #### 6. Recommendations
 
@@ -178,12 +178,12 @@ One recommended action per issue:
 | PR-linked | No action needed (tracked via PR) |
 | Normal + labeled | No action needed |
 
-### Output — Triage Tables
+### Output: Triage Tables
 
 ```
 ## Open Issues ({count})
 
-### Critical — Immediate Attention (Risk: Red)
+### Critical: Immediate Attention (Risk: Red)
 | # | Title | Category | Reporter | Days Open | Action |
 |---|-------|----------|----------|-----------|--------|
 
@@ -245,7 +245,7 @@ Confirm: `Triage tables copied to clipboard.` (EN) / `Tableaux copiés dans le p
 
 ---
 
-## Phase 2 — Deep Analysis (opt-in)
+## Phase 2: Deep Analysis (opt-in)
 
 ### Issue Selection
 
@@ -270,7 +270,7 @@ options:
   - label: "Stale only ({J} stale issues)"
     description: "Decide which stale issues to close vs. revive"
   - label: "Skip"
-    description: "Stop here — audit only"
+    description: "Stop here, audit only"
 ```
 
 If "Skip" → end workflow.
@@ -293,7 +293,7 @@ prompt: |
   {body}
 
   **Comments** (fetch via: gh issue view {num} --json comments):
-  {comments[].body — truncate at 5000 chars total}
+  {comments[].body, truncate at 5000 chars total}
 
   **Duplicate candidates**: {jaccard_results or "none found"}
   **Linked PRs**: {pr_refs or "none"}
@@ -324,7 +324,7 @@ Aggregate all reports. Display a summary after all analyses complete.
 
 ---
 
-## Phase 3 — Actions (mandatory validation)
+## Phase 3: Actions (mandatory validation)
 
 ### Draft Generation
 
@@ -351,7 +351,7 @@ For each analyzed issue, generate the appropriate action using the template `tem
 
 ```
 ---
-### Draft — Issue #{num}: {title}
+### Draft: Issue #{num}: {title}
 
 **Action**: {Comment / Label / Close + Comment}
 **Reason**: {1 sentence}
@@ -370,10 +370,10 @@ multiSelect: true
 options:
   - label: "All ({N} actions)"
     description: "Execute all drafted triage actions"
-  - label: "Issue #{x} — {title_truncated} ({action_type})"
+  - label: "Issue #{x}: {title_truncated} ({action_type})"
     description: "Execute only this action"
   - label: "None"
-    description: "Cancel — execute nothing"
+    description: "Cancel, execute nothing"
 ```
 
 (Generate one option per issue + "All" + "None")
@@ -411,7 +411,7 @@ If "None" → `No actions executed. Workflow complete.`
 | 0 open issues | Display `No open issues.` + stop |
 | Body empty | Category = Unclear, action = request details, never assume |
 | Collaborator as reporter | Protect from auto-close, flag explicitly in table |
-| Jaccard inconclusive (0.55–0.65) | Flag as "possible duplicate — verify manually" |
+| Jaccard inconclusive (0.55–0.65) | Flag as "possible duplicate, verify manually" |
 | Label not in repo | Skip label action, notify user to create the label first |
 | Issue already closed during workflow | Skip silently, note in summary |
 | `gh api .../collaborators` 403/404 | Fallback to last 10 merged PR authors |
@@ -428,7 +428,7 @@ If "None" → `No actions executed. Workflow complete.`
 - `comments` in `gh issue list --json comments` = count only; full content requires `gh issue view {num} --json comments`
 - Never execute any action without explicit user validation in chat
 - Drafted actions must be visible BEFORE any `gh issue comment` or `gh issue close`
-- Jaccard is computed locally — no external API, no library, pure set operations on fetched data
+- Jaccard is computed locally: no external API, no library, pure set operations on fetched data
 - Signature on all comments: `*Triaged via Claude Code /issue-triage*`
 
 ---

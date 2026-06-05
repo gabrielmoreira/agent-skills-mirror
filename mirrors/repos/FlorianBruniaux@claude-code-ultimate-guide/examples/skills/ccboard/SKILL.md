@@ -1,7 +1,7 @@
 ---
 name: ccboard
 description: "Launch and navigate the ccboard TUI/Web dashboard for Claude Code. Use when monitoring token usage, tracking costs, browsing sessions, or checking MCP server status across projects."
-allowed-tools: Bash
+allowed-tools: Bash(ccboard*)
 effort: low
 metadata:
   version: 0.1.0

@@ -235,6 +235,13 @@ Why bad: Did not refine scaffold criteria into task-specific ones. This is PRD t
 - [ ] `/oh-my-claudecode:cancel` run for clean state cleanup
 </Final_Checklist>
 
+## Parallel session caveats
+
+- **Multi-repo workspace anchor:** drop a `.omc-workspace` marker at the parent directory so multiple sessions across sub-repos share one `.omc/`. Resolution order: `OMC_STATE_DIR > .omc-workspace > git > cwd`. See `docs/REFERENCE.md`.
+- **Session id source:** OMC_SESSION_ID env var wins in CLI contexts; hook payload data.session_id wins in hook contexts.
+- **Plan id (when applicable):** Two ralph runs in the same workspace will conflict on `prd.json`. Use distinct session IDs (the hook payload session_id is already isolated per Claude Code session). For parallel ultragoal-backed ralph runs, use `--plan-id`.
+- **Parallel verdict:** supported (each session writes its own session-scoped state)
+
 <Advanced>
 ## Background Execution Rules
 

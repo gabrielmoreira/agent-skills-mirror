@@ -3,6 +3,7 @@ name: security
 description: Rapid security assessment focused on OWASP Top 10 vulnerabilities
 argument-hint: "[path] [--depth quick|full]"
 effort: medium
+when_to_use: "Use when reviewing code for security vulnerabilities or before merging sensitive changes."
 disable-model-invocation: true
 ---
 

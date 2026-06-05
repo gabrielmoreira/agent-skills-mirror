@@ -143,9 +143,9 @@ Ready for Question 2?
 
 ## Tips for Users
 
-1. **Be honest** — Wrong answers are learning opportunities
-2. **Explain your reasoning** — Helps identify gaps even in correct answers
-3. **Ask follow-ups** — If feedback is unclear, dig deeper
-4. **Track weak areas** — Note topics that need more practice
+1. **Be honest**: Wrong answers are learning opportunities
+2. **Explain your reasoning**: Helps identify gaps even in correct answers
+3. **Ask follow-ups**: If feedback is unclear, dig deeper
+4. **Track weak areas**: Note topics that need more practice
 
 $ARGUMENTS

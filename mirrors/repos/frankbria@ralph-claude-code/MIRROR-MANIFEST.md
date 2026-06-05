@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `frankbria/ralph-claude-code` — 26 default patterns, 5 followed patterns, 10 file(s) materialized.
+Mirror of `frankbria/ralph-claude-code` — 26 default patterns, 6 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `frankbria/ralph-claude-code` — 26 default patterns, 5 followed patt
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 10 |
+| Followed pats | 6 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,6 +55,7 @@ Mirror of `frankbria/ralph-claude-code` — 26 default patterns, 5 followed patt
 - `IMPLEMENTATION_PLAN.md`
 - `TESTING.md`
 - `CONTRIBUTING.md`
+- `docs/CLI_OPTIONS.md`
 - `IMPLEMENTATION_STATUS.md`
 
 ## File Index
@@ -69,10 +70,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`examples/rest-api/README.md`](examples/rest-api/README.md) |
 | 5 | ✓ | [`examples/simple-cli-tool/README.md`](examples/simple-cli-tool/README.md) |
 | 6 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 7 | → | [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md) |
-| 8 | → | [`IMPLEMENTATION_STATUS.md`](IMPLEMENTATION_STATUS.md) |
-| 9 | → | [`README.md`](README.md) |
-| 10 | → | [`TESTING.md`](TESTING.md) |
+| 7 | → | [`docs/CLI_OPTIONS.md`](docs/CLI_OPTIONS.md) |
+| 8 | → | [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md) |
+| 9 | → | [`IMPLEMENTATION_STATUS.md`](IMPLEMENTATION_STATUS.md) |
+| 10 | → | [`README.md`](README.md) |
+| 11 | → | [`TESTING.md`](TESTING.md) |
 
 ---
 

@@ -52,14 +52,14 @@ Mirror of `ggml-org/llama.cpp` — 26 default patterns, 27 followed patterns, 75
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `CONTRIBUTING.md`
+- `docs/development/HOWTO-add-model.md`
+- `.github/pull_request_template.md`
 - `docs/build.md`
 - `tools/server/README.md`
 - `tools/server/README-dev.md`
 - `docs/development/parsing.md`
 - `docs/autoparser.md`
 - `common/jinja/README.md`
-- `docs/development/HOWTO-add-model.md`
-- `.github/pull_request_template.md`
 - `ci/README.md`
 - `README.md`
 - `docs/multimodal.md`

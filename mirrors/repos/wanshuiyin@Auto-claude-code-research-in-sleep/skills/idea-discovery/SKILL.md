@@ -54,7 +54,7 @@ Before starting any other phase, check for a detailed research brief in the proj
 
 If no brief exists, proceed normally with `$ARGUMENTS` as the research direction.
 
-> 💡 Create a brief from the template: `cp templates/RESEARCH_BRIEF_TEMPLATE.md RESEARCH_BRIEF.md`
+> 💡 Create a brief from the template: `cp templates/RESEARCH_BRIEF_TEMPLATE.md RESEARCH_BRIEF.md` — keep it to ~1-2 pages (4-8k chars); long material goes in separate files referenced by path.
 
 ### Phase 0.5: Reference Paper Summary (when REF_PAPER is set)
 

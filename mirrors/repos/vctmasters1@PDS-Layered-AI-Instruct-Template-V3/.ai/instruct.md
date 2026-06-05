@@ -16,10 +16,13 @@
 |---|-------------|
 | [Project Overview](#project-overview) | What this project is and does |
 | [Architecture Overview](#architecture-overview) | High-level structure and tech stack |
+| [Routing & Orchestration Gateway](#routing--orchestration-gateway) | **Core feature**: How `/ai-route` powers all major workflows |
 | [Key Directories](#key-directories) | Directory map with links to module .ai/ instructions |
 | [Global Rules Reference](#global-rules-reference) | Links to canonical cross-cutting rules |
+| [Governed Workflows — Import/Merge](#governed-workflows--importmerge) | **MANDATORY**: Import patterns and guardrails |
 | [Coding Conventions & Validation](#coding-conventions--validation) | Element prefixes for test discovery |
 | [API Endpoint Conventions](#api-endpoint-conventions) | Semantic endpoint naming for discovery |
+| [Hybrid LLM Routing Strategy](#hybrid-llm-routing-strategy) | Local vs. frontier model tier selection for file generation |
 | [AI-INSTRUCT Maintenance Rule](#ai-instruct-maintenance-rule) | When and how to update this system |
 
 ---
@@ -67,7 +70,74 @@
 
 ---
 
-## Key Directories
+## Routing & Orchestration Gateway
+
+**This is the core feature that powers all AI-assisted workflows in this project.**
+
+Every major operation in this project — imports, validation, reflection, module creation, index updates — flows through the **routing gateway** (`/ai-route`). This ensures:
+
+✅ **Scope awareness**: The deepest `.ai/instruct.md` for the affected path(s) is always authoritative  
+✅ **Governance integration**: External rules and constraints are applied consistently  
+✅ **Stage gating**: Pass/fail/block review points between phases  
+✅ **Escalation**: Failures halt gracefully with guidance rather than proceeding blindly  
+✅ **Audit trail**: Every routing decision is logged for transparency  
+
+### How It Works
+
+```
+User invokes a major workflow (e.g., /ai-import-execute)
+    ↓
+Workflow recognizes the task and extracts parameters
+    ↓
+/ai-route (gateway) is called with task context
+    ↓
+Router resolves:
+  • Which .ai/instruct.md is authoritative for the affected paths?
+  • Are there governance rules (external constraints) to apply?
+    ↓
+Router delegates to the appropriate domain manager/supervisor
+    ↓
+Domain manager executes the full workflow with routing context
+    ↓
+Results passed back through the router for final validation
+```
+
+### Routed Workflows
+
+All of these major workflows are **routed through `/ai-route`**:
+
+| Workflow | Purpose | Domain Manager |
+|----------|---------|-----------------|
+| [`/ai-import-execute`](../.github/prompts/ai-import-execute.prompt.md) | Import/merge external projects (Phase 0-7 orchestration) | `pds-man-imports` |
+| [`/ai-adapt-infrastructure`](../.github/prompts/ai-adapt-infrastructure.prompt.md) | Adapt imported prompts/agents/skills to routing paradigm | `pds-man-infrastructure` |
+| [`/ai-validate`](../.github/prompts/ai-validate.prompt.md) | Scope-aware instruction & port validation | `pds-pipe-validator` |
+| [`/ai-reflect`](../.github/prompts/ai-reflect.prompt.md) | Post-task reflection & instruction gap analysis | `pds-meta-learner` |
+| [`/ai-update-index`](../.github/prompts/ai-update-index.prompt.md) | Rebuild `.ai/index.md` at scope level | `pds-man-curator` |
+| [`/ai-new-module`](../.github/prompts/ai-new-module.prompt.md) | Create new module with hierarchy integration | `pds-pipe-scaffolder` |
+
+### Using the Router
+
+Invoke directly when you need to analyze a request before delegating:
+
+```
+/ai-route
+
+Task: [description of what you're trying to do]
+Scope: [affected paths, or "root"]
+Context: [any governance or scope hints]
+```
+
+The router will:
+1. Analyze the task
+2. Resolve the target scope(s)
+3. Check for applicable governance rules
+4. Suggest the appropriate agent/manager
+5. Either route the task or explain why it can't be routed
+
+**→ [/ai-route prompt](../.github/prompts/ai-route.prompt.md)** — full router documentation  
+**→ [pds-meta-router agent](../.github/agents/pds-meta-router.agent.md)** — technical details
+
+---
 
 | Directory | AI Instructions | Covers |
 |-----------|-----------------|--------|
@@ -79,6 +149,7 @@
 | `.ai/foresight/` | (runtime output, gitignored) | Foresight analysis results |
 | `.ai/knowledge/` | (runtime output, gitignored) | Accumulated knowledge base |
 | `.ai/logs/` | (runtime output, gitignored) | Agent audit logs |
+| `.ai/autonomous/` | [`.ai/autonomous/orchestrator.md`](autonomous/orchestrator.md) | **Opt-in autonomous layer — disabled by default.** See `autonomy-config.yaml`. |
 | `[module-a]/` | `[module-a]/.ai/instruct.md` | [description] |
 | `[module-b]/` | `[module-b]/.ai/instruct.md` | [description] |
 | `.example-module/` | `.example-module/.ai/instruct.md` | Bare scaffold for a new module (reference) |
@@ -108,6 +179,20 @@ These rules are canonical and live in `.ai/`. **Do not restate them here — onl
 | Master index of all instruction sections | [`.ai/index.md`](index.md) |
 | Element naming prefixes for test discovery (GUI + code) | [`.ai/coding-prefixes.md`](coding-prefixes.md) |
 | API endpoint naming conventions | [`.ai/api-conventions.md`](api-conventions.md) |
+
+---
+
+## Governed Workflows — Import/Merge
+
+**MANDATORY**: All project imports, clones, and merges are governed workflows. See [`copilot-instructions.md#governed-workflows--importmerge-pattern-guard`](../.github/copilot-instructions.md#governed-workflows--importmerge-pattern-guard) for the complete pattern-match guard.
+
+**Recognition keywords** (any mention triggers the guard):
+- "clone" + repo
+- "import" + project
+- "merge" / "consolidate" / "integrate" + projects
+- "adopt" / "migrate" + codebase
+
+**Do not** run ad-hoc `git clone`, `Move-Item`, or `cp` commands without `/ai-import-execute` orchestration.
 
 ---
 
@@ -234,6 +319,58 @@ python api/endpoint_generator.py --list-actions
 - **Module level** (`[module]/.ai/api-conventions.md`): Optional; extends or overrides workspace conventions
   - Example: A payments module might add `payment_refund` action
   - Example: A reporting module might add custom `report_generate` action
+
+---
+
+## Hybrid LLM Routing Strategy
+
+**When**: Batch-generating governance files (README.md, .gitignore, .ai/instruct.md) across multiple modules
+
+**Tier Selection**:
+
+### Local LLM Tier
+OpenAI-compatible models (e.g., coder-0 via LM Studio at localhost:1234/v1)
+
+**Use for**:
+- README.md templating (module overviews, architecture sections)
+- .gitignore generation (credential patterns, build artifacts)
+- .ai/instruct.md boilerplate (module scopes, governance links)
+- Bulk file generation (parallel or serial)
+
+**Config**:
+- Temperature: 0.3 (deterministic output)
+- Timeout: 180 seconds
+- Tokens: 1024 per batch
+- Fallback: Template generation if unavailable
+
+**Validation** (Phase 2): 22 files generated, 100% success, zero timeouts
+
+### Frontier Model Tier
+GPT-4 / Claude (reserved for complex reasoning)
+
+**Use for**:
+- Security review (credential patterns compliance, sensitive data detection)
+- Conflict resolution (naming collisions, schema conflicts across modules)
+- Architecture validation (dependency analysis, coupling assessment)
+- Policy exceptions (when local tier output violates governance)
+
+**Implementation**: Phase 3+ enhancement
+
+**Cost**: ~5-10s per task (frontier is slower but handles hard problems)
+
+### Routing Logic
+
+```python
+if task_type in ["readme_md", "gitignore", "instruct_md"]:
+    if complexity_estimate < 5:  # templating is low-complexity
+        route_to = "local_llm"   # 1.5-2s, deterministic
+    else:
+        route_to = "frontier_llm" # 5-10s, reasoning-intensive
+else:
+    route_to = "manual_or_escalate"
+```
+
+→ **[Phase 2 Learnings](knowledge/phase2-learnings.md)** — metrics, patterns, optimization opportunities from hybrid routing validation
 
 ---
 

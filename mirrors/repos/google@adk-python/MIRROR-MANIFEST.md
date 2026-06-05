@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `google/adk-python` — 26 default patterns, 0 followed patterns, 58 file(s) materialized.
+Mirror of `google/adk-python` — 26 default patterns, 0 followed patterns, 59 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `google/adk-python` — 26 default patterns, 0 followed patterns, 58 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 58 |
+| Files         | 59 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -96,27 +96,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 35 | ✓ | [`.agents/skills/adk-issue-analyze/SKILL.md`](.agents/skills/adk-issue-analyze/SKILL.md) |
 | 36 | ✓ | [`.agents/skills/adk-issue-fix/SKILL.md`](.agents/skills/adk-issue-fix/SKILL.md) |
 | 37 | ✓ | [`.agents/skills/adk-issue/SKILL.md`](.agents/skills/adk-issue/SKILL.md) |
-| 38 | ✓ | [`.agents/skills/adk-pr-triage/scripts/triage_pr.py`](.agents/skills/adk-pr-triage/scripts/triage_pr.py) |
-| 39 | ✓ | [`.agents/skills/adk-pr-triage/SKILL.md`](.agents/skills/adk-pr-triage/SKILL.md) |
-| 40 | ✓ | [`.agents/skills/adk-review/SKILL.md`](.agents/skills/adk-review/SKILL.md) |
-| 41 | ✓ | [`.agents/skills/adk-sample-creator/SKILL.md`](.agents/skills/adk-sample-creator/SKILL.md) |
-| 42 | ✓ | [`.agents/skills/adk-setup/SKILL.md`](.agents/skills/adk-setup/SKILL.md) |
-| 43 | ✓ | [`.agents/skills/adk-style/references/documentation.md`](.agents/skills/adk-style/references/documentation.md) |
-| 44 | ✓ | [`.agents/skills/adk-style/references/file-organization.md`](.agents/skills/adk-style/references/file-organization.md) |
-| 45 | ✓ | [`.agents/skills/adk-style/references/formatting.md`](.agents/skills/adk-style/references/formatting.md) |
-| 46 | ✓ | [`.agents/skills/adk-style/references/imports.md`](.agents/skills/adk-style/references/imports.md) |
-| 47 | ✓ | [`.agents/skills/adk-style/references/logging.md`](.agents/skills/adk-style/references/logging.md) |
-| 48 | ✓ | [`.agents/skills/adk-style/references/pydantic.md`](.agents/skills/adk-style/references/pydantic.md) |
-| 49 | ✓ | [`.agents/skills/adk-style/references/testing.md`](.agents/skills/adk-style/references/testing.md) |
-| 50 | ✓ | [`.agents/skills/adk-style/references/typing.md`](.agents/skills/adk-style/references/typing.md) |
-| 51 | ✓ | [`.agents/skills/adk-style/references/visibility.md`](.agents/skills/adk-style/references/visibility.md) |
-| 52 | ✓ | [`.agents/skills/adk-style/SKILL.md`](.agents/skills/adk-style/SKILL.md) |
-| 53 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 54 | ✓ | [`contributing/samples/environment_and_skills/local_environment_skill/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/local_environment_skill/skills/weather-skill/SKILL.md) |
-| 55 | ✓ | [`contributing/samples/environment_and_skills/skills_agent/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/skills_agent/skills/weather-skill/SKILL.md) |
-| 56 | ✓ | [`contributing/samples/environment_and_skills/skills/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/skills/skills/weather-skill/SKILL.md) |
-| 57 | ✓ | [`llms.txt`](llms.txt) |
-| 58 | ✓ | [`src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md`](src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md) |
+| 38 | ✓ | [`.agents/skills/adk-pr-analyze/scripts/triage_pr.py`](.agents/skills/adk-pr-analyze/scripts/triage_pr.py) |
+| 39 | ✓ | [`.agents/skills/adk-pr-analyze/SKILL.md`](.agents/skills/adk-pr-analyze/SKILL.md) |
+| 40 | ✓ | [`.agents/skills/adk-pr-triage/SKILL.md`](.agents/skills/adk-pr-triage/SKILL.md) |
+| 41 | ✓ | [`.agents/skills/adk-review/SKILL.md`](.agents/skills/adk-review/SKILL.md) |
+| 42 | ✓ | [`.agents/skills/adk-sample-creator/SKILL.md`](.agents/skills/adk-sample-creator/SKILL.md) |
+| 43 | ✓ | [`.agents/skills/adk-setup/SKILL.md`](.agents/skills/adk-setup/SKILL.md) |
+| 44 | ✓ | [`.agents/skills/adk-style/references/documentation.md`](.agents/skills/adk-style/references/documentation.md) |
+| 45 | ✓ | [`.agents/skills/adk-style/references/file-organization.md`](.agents/skills/adk-style/references/file-organization.md) |
+| 46 | ✓ | [`.agents/skills/adk-style/references/formatting.md`](.agents/skills/adk-style/references/formatting.md) |
+| 47 | ✓ | [`.agents/skills/adk-style/references/imports.md`](.agents/skills/adk-style/references/imports.md) |
+| 48 | ✓ | [`.agents/skills/adk-style/references/logging.md`](.agents/skills/adk-style/references/logging.md) |
+| 49 | ✓ | [`.agents/skills/adk-style/references/pydantic.md`](.agents/skills/adk-style/references/pydantic.md) |
+| 50 | ✓ | [`.agents/skills/adk-style/references/testing.md`](.agents/skills/adk-style/references/testing.md) |
+| 51 | ✓ | [`.agents/skills/adk-style/references/typing.md`](.agents/skills/adk-style/references/typing.md) |
+| 52 | ✓ | [`.agents/skills/adk-style/references/visibility.md`](.agents/skills/adk-style/references/visibility.md) |
+| 53 | ✓ | [`.agents/skills/adk-style/SKILL.md`](.agents/skills/adk-style/SKILL.md) |
+| 54 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 55 | ✓ | [`contributing/samples/environment_and_skills/local_environment_skill/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/local_environment_skill/skills/weather-skill/SKILL.md) |
+| 56 | ✓ | [`contributing/samples/environment_and_skills/skills_agent/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/skills_agent/skills/weather-skill/SKILL.md) |
+| 57 | ✓ | [`contributing/samples/environment_and_skills/skills/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/skills/skills/weather-skill/SKILL.md) |
+| 58 | ✓ | [`llms.txt`](llms.txt) |
+| 59 | ✓ | [`src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md`](src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md) |
 
 ---
 

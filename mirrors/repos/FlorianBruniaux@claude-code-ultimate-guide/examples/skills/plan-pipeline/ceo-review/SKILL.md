@@ -1,11 +1,11 @@
 ---
 name: plan-pipeline-ceo-review
-description: Strategic product gate — challenge the brief, find the 10-star product hiding inside the request, before writing any code
+description: Strategic product gate: challenge the brief, find the 10-star product hiding inside the request, before writing any code
 effort: medium
 disable-model-invocation: true
 ---
 
-# /plan-pipeline:ceo-review — Strategic Product Gate
+# /plan-pipeline:ceo-review: Strategic Product Gate
 
 Pre-implementation command. Inserts an explicit gate between "I have a request" and "I start coding". Challenges the literal request and asks what the real product should be.
 
@@ -22,7 +22,7 @@ Claude Code is optimized to build what you ask. If you say "add X", it builds X.
 ## When to Use
 
 - Before implementing any significant feature request
-- Especially when the request is specific ("add photo upload") — specificity often signals the requester has already collapsed the solution space
+- Especially when the request is specific ("add photo upload"), since specificity often signals the requester has already collapsed the solution space
 - When you want to pressure-test a direction before committing engineering time
 
 ---
@@ -64,7 +64,7 @@ Once the user selects, commit to that mode for the entire review.
 
 ## Step 1: Restate the Request
 
-Summarize the literal request in 1-2 sentences. Be precise — not editorialized.
+Summarize the literal request in 1-2 sentences. Be precise, not editorialized.
 
 ## Step 2: Challenge the Premise
 
@@ -98,9 +98,9 @@ Ask the more important question: what is this product actually FOR?
 ## Step 4: Recommendation
 
 Return one of:
-- **Proceed as stated** — the original request is the right product
-- **Reframe** — here is the better brief (with specifics)
-- **Reject** — here is why this is the wrong direction, and what to build instead
+- **Proceed as stated**: the original request is the right product
+- **Reframe**: here is the better brief (with specifics)
+- **Reject**: here is why this is the wrong direction, and what to build instead
 
 Do NOT make any code changes. This is a review, not an implementation.
 ```
@@ -123,9 +123,9 @@ Do NOT make any code changes. This is a review, not an implementation.
 ## Pipeline Position
 
 ```
-/plan-pipeline:ceo-review    → lock product direction   ← you are here
-/plan-pipeline:eng-review    → lock technical architecture
-/plan-pipeline:start         → produce implementation plan
-/plan-pipeline:validate      → validate before execution
-/plan-pipeline:execute       → execute to merged PR
+/plan-pipeline:ceo-review    -> lock product direction   <- you are here
+/plan-pipeline:eng-review    -> lock technical architecture
+/plan-pipeline:start         -> produce implementation plan
+/plan-pipeline:validate      -> validate before execution
+/plan-pipeline:execute       -> execute to merged PR
 ```

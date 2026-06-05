@@ -1,15 +1,15 @@
 ---
 name: alert-manager
-description: 'Use when the user asks to "set SEO alerts"; configures ranking, traffic, technical, competitor, and notification thresholds. SEO预警/排名监控'
-version: "9.9.9"
+description: 'Use when the user asks to "set SEO alerts" or "排名掉了提醒我"; configures threshold notifications for FUTURE ranking, traffic, technical, and competitor changes. Not for one-time measurement or reporting — use rank-tracker or performance-reporter. SEO预警/排名监控'
+version: "9.9.10"
 license: Apache-2.0
-compatibility: "Claude Code, skills.sh, ClawHub, Vercel Labs, Cursor, Windsurf, Codex CLI, Amp, Gemini CLI, Kimi Code, Qwen Code, CodeBuddy"
+compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/seo-geo-claude-skills"
 when_to_use: "Use when setting up monitoring alerts for rankings, traffic, backlinks, technical issues, or AI visibility changes."
 argument-hint: "<domain> [metric]"
 metadata:
   author: aaron-he-zhu
-  version: "9.9.9"
+  version: "9.9.10"
   geo-relevance: "low"
   tags:
     - seo
@@ -26,28 +26,15 @@ metadata:
     - alertas-seo
   triggers:
     - "set up SEO alerts"
-    - "monitor rankings"
     - "traffic alerts"
     - "competitor alerts"
     - "alert me if rankings drop"
     - "notify me of traffic changes"
     - "watch my keywords for changes"
-    - "how to monitor my rankings"
-    - "how to set up SEO alerts"
-    - "SEO预警"
-    - "排名监控"
-    - "流量报警"
-    - "竞品变动提醒"
-    - "排名掉了提醒我"
+    - "anomaly detection"
     - "流量异常"
     - "有变化通知我"
-    - "SEOアラート"
-    - "ランキング監視"
-    - "SEO 알림"
-    - "순위 모니터링"
-    - "alertas SEO"
-    - "monitoreo de rankings"
-    - "alertas de SEO"
+    - "竞品变动提醒"
 ---
 
 # Alert Manager
@@ -68,9 +55,10 @@ Create ranking drop alerts for my top 20 keywords
 
 **Expected output**: an alert configuration summary plus the standard handoff summary for `memory/monitoring/`.
 
-- **Reads**: current metrics, baselines, alert thresholds, and reporting context from [CLAUDE.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/CLAUDE.md) and the shared [State Model](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/state-model.md) when available.
+- **Reads**: baselines, critical keywords/metrics to watch, normal volatility, delivery preferences, and any user-provided or tool data.
 - **Writes**: a user-facing monitoring deliverable and reusable summary.
 - **Promotes**: significant anomalies, durable thresholds, follow-up actions, and pending decisions to `memory/open-loops.md`.
+- **Done when**: each chosen alert category has a named trigger condition, threshold, and priority; a Critical/High/Medium/Low response plan and delivery routing are defined; and thresholds are tuned to the metric's stated normal volatility.
 - **Primary next skill**: [performance-reporter](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/performance-reporter/SKILL.md) when alert output needs a reporting cadence.
 
 ### Handoff Summary
@@ -81,17 +69,28 @@ Create ranking drop alerts for my top 20 keywords
 
 All integrations optional (see [CONNECTORS.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/CONNECTORS.md)). With tools, monitor real-time feeds from ~~SEO tool, ~~search console, and ~~web crawler. Without tools, ask for baselines, critical keywords, preferences, and historical data.
 
+## Decision Gates
+
+**Stop and ask the user when:**
+- No baseline or normal-volatility reference exists for the metrics to be watched — thresholds would be arbitrary. Offer: (1) supply recent baseline data, (2) use the Quick Reference defaults below and label them Estimated, (3) cancel.
+
+**Continue silently (never stop for):**
+- Which delivery channel to use — default to the channel already in context (or email) and note it.
+- A category the user did not mention — leave it unconfigured; do not add alerts they did not request.
+
 ## Instructions
 
 When a user requests alert setup:
 
 1. **Define Alert Categories** — choose from rankings, traffic, technical, backlinks, competitors, GEO / AI, and brand alerts.
-2. **Configure Alert Rules by Category** — define trigger condition, threshold, alert name, and priority for each relevant rule.
+2. **Configure Alert Rules by Category** — define trigger condition, threshold, alert name, and priority for each relevant rule; tie each threshold to a stated baseline and label that baseline Measured / User-provided / Estimated.
 3. **Define Alert Response Plans** — map Critical / High / Medium / Low to response time and next actions.
 4. **Set Up Alert Delivery** — configure channels, routing, cooldowns, maintenance windows, and escalation paths.
-5. **Create Alert Summary** — deliver category counts, critical playbook, and weekly review checklist.
+5. **Create Alert Summary** — output category counts, the critical playbook, and a weekly review checklist as the deliverable.
 
-> **Reference**: See [references/alert-configuration-templates.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/alert-manager/references/alert-configuration-templates.md) for the full category tables, thresholds, and response-plan templates.
+Label every metric **Measured** (tool/export), **User-provided**, or **Estimated** (model inference); never present an estimate as measured; if a required metric is unavailable, mark it N/A — do not invent it.
+
+> **Reference**: See [Alert Configuration Templates](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/alert-manager/references/alert-configuration-templates.md) for the full category tables, thresholds, and response-plan templates.
 
 ## Example
 
@@ -114,11 +113,11 @@ Start simple, tune thresholds to normal volatility, avoid alert fatigue, and rev
 | AI citation loss | Any key query | >20% queries | Weekly |
 | Security issues | Any detected | Any detected | Daily |
 
-> **Reference**: See [references/alert-threshold-guide.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/alert-manager/references/alert-threshold-guide.md) for threshold setting, fatigue prevention, escalation paths, and response playbooks.
+> **Reference**: See [Alert Threshold Guide](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/alert-manager/references/alert-threshold-guide.md) for threshold setting, fatigue prevention, escalation paths, and response playbooks.
 
 ### Save Results
 
-Ask "Save these results?" If yes, write `memory/monitoring/YYYY-MM-DD-<topic>.md` with headline finding, actions, and open loops.
+Ask "Save these results?" If yes, write to `memory/monitoring/` — see [Skill Contract](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/skill-contract.md) §Save Results Template.
 
 ## Reference Materials
 

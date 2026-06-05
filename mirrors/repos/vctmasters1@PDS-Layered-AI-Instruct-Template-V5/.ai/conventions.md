@@ -1,7 +1,7 @@
 # Conventions — Naming & File Organization
 
 **Scope**: Project-wide canonical reference
-**Last Updated**: 2026-05-25
+**Last Updated**: 2026-06-04
 
 > This file is the **single source of truth** for naming conventions and file organization rules.
 > Reference it from other `.ai/instruct.md` files; never duplicate its content elsewhere.
@@ -17,6 +17,7 @@
 | [Documentation Naming](#documentation-naming) | Numbered kebab-case user-facing guides |
 | [AI Instruction File Naming](#ai-instruction-file-naming) | Rules for instruction files |
 | [.dev-docs Convention](#dev-docs-convention) | Dev documentation subdirectory structure |
+| [Plugins Convention](#plugins-convention) | Optional capability modules under `.ai/plugins/` |
 | [TOC Requirement](#toc-requirement) | When a table of contents is required |
 | [Cross-Reference Convention](#cross-reference-convention) | How to point to source-of-truth sections |
 | [No-Duplication Rule](#no-duplication-rule) | Instructions live in exactly one place |
@@ -128,6 +129,20 @@ any-directory/
 | File | Why Archived | Date |
 |------|-------------|------|
 ```
+
+---
+
+## Plugins Convention
+
+Optional capability modules live under `.ai/plugins/<name>/` and follow the contract defined in [`.ai/plugins/README.md`](plugins/README.md).
+
+- Plugins are **opt-in**. The framework runs fine with `.ai/plugins/` empty or absent.
+- Every plugin MUST contain `plugin.yaml`, `instruct.md`, and `README.md`.
+- A plugin's `instruct.md` is authoritative **only inside its own directory**; it cannot relax rules from shallower `.ai/*.md`.
+- A plugin's runtime state lives under `state/` and is gitignored (`.ai/plugins/*/state/`).
+- Discover and inspect plugins via `/ai-plugin-discover` or by running the central validator.
+
+Do not restate plugin rules outside [`.ai/plugins/README.md`](plugins/README.md). This section is the pointer.
 
 ---
 

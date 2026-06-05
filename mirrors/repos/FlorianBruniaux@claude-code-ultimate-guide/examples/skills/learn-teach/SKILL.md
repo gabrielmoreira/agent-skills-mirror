@@ -71,8 +71,8 @@ Step-by-step explanation of a concept with progressive depth.
 
 ### Learn Next
 
-- [Related concept 1] — [why it connects]
-- [Related concept 2] — [why it connects]
+- [Related concept 1]: [why it connects]
+- [Related concept 2]: [why it connects]
 
 ---
 
@@ -131,7 +131,7 @@ Claude: ## useEffect
 
 ### Why It Matters
 
-React components are pure functions that render UI. But real apps need to interact with the outside world—APIs, browser events, timers. useEffect is the bridge between React's declarative world and imperative side effects.
+React components are pure functions that render UI. But real apps need to interact with the outside world: APIs, browser events, timers. useEffect is the bridge between React's declarative world and imperative side effects.
 
 ### Minimal Example
 

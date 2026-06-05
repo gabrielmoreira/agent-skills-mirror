@@ -3,6 +3,7 @@ name: git-worktree
 description: Create isolated git worktrees for feature development without switching branches
 argument-hint: "<branch_name> [--from <base>]"
 effort: medium
+when_to_use: "Use when starting feature work that needs isolation from main workspace."
 disable-model-invocation: true
 ---
 

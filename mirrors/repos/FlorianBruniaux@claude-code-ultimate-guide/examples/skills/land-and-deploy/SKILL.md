@@ -1,6 +1,6 @@
 ---
 name: land-and-deploy
-description: Merge PR, wait for CI, verify deploy, run canary — the complete landing pipeline
+description: Merge PR, wait for CI, verify deploy, run canary. The complete landing pipeline.
 argument-hint: "[--skip-checks] [--env staging|production]"
 effort: high
 disable-model-invocation: true
@@ -12,7 +12,7 @@ Complete landing pipeline: merge the PR, wait for CI, verify the deployment, run
 
 Picks up where `/ship` left off. `/ship` creates the PR. This command merges it and verifies production.
 
-**Non-interactive by default.** The user said "land it" — so land it. Stop only for the critical readiness gate and hard blockers.
+**Non-interactive by default.** The user said "land it", so land it. Stop only for the critical readiness gate and hard blockers.
 
 ## Instructions
 
@@ -83,13 +83,13 @@ git log --oneline -10
 
 Staleness thresholds:
 - 0–3 commits since review → CURRENT (green)
-- 4+ commits, touching code → STALE (yellow — review may not reflect current code)
+- 4+ commits, touching code → STALE (yellow, review may not reflect current code)
 - No review found → NOT RUN (yellow)
 
 #### Test results
 
 ```bash
-# Run tests now — fast tests only
+# Run tests now (fast tests only)
 npm test 2>/dev/null || pnpm test 2>/dev/null || \
   pytest --tb=short -q 2>/dev/null || \
   go test ./... 2>/dev/null
@@ -118,7 +118,7 @@ Present a summary and ask for explicit confirmation:
 ╔══════════════════════════════════════════════════════════╗
 ║              PRE-MERGE READINESS REPORT                  ║
 ╠══════════════════════════════════════════════════════════╣
-║  PR: #NNN — [title]                                      ║
+║  PR: #NNN: [title]                                       ║
 ║  Branch: feature-branch → main                           ║
 ║                                                          ║
 ║  REVIEWS                                                 ║
@@ -135,9 +135,9 @@ Present a summary and ask for explicit confirmation:
 ╚══════════════════════════════════════════════════════════╝
 
 Options:
-  A) Merge — all checks green
-  B) Don't merge yet — address warnings first
-  C) Merge anyway — I understand the risks
+  A) Merge (all checks green)
+  B) Don't merge yet, address warnings first
+  C) Merge anyway (I understand the risks)
 ```
 
 If the user chooses B, list exactly what needs to be done and stop.
@@ -224,7 +224,7 @@ gh run view <run-id> --json status,conclusion
 | Platform | Detection | Wait strategy |
 |----------|-----------|---------------|
 | Vercel / Netlify | Auto-deploy on push | Wait 60s for propagation, then check |
-| Fly.io | `fly.toml` present | `fly status --app <app>` — check `started` status |
+| Fly.io | `fly.toml` present | `fly status --app <app>`, check `started` status |
 | Render | `render.yaml` present | Poll production URL until it responds with 200 |
 | Heroku | `Procfile` present | `heroku releases --app <app> -n 1` |
 | Railway | `railway.toml` present | Poll production URL |
@@ -261,7 +261,7 @@ curl -sf -o /dev/null -w "%{time_total}" "${PROD_URL}" 2>/dev/null
 curl -sf "${PROD_URL}/health" 2>/dev/null || \
 curl -sf "${PROD_URL}/api/health" 2>/dev/null
 
-# 4. Content check — page is not blank
+# 4. Content check: page is not blank
 curl -sf "${PROD_URL}" 2>/dev/null | wc -c
 ```
 
@@ -275,12 +275,12 @@ If any check fails → offer to revert:
 
 ```
 Post-deploy health check detected issues:
-  [finding — specific]
+  [finding, specific]
 
 Options:
-  A) Investigate — this may be normal (cache warming, eventual consistency)
-  B) Rollback — revert the merge commit
-  C) Continue — I'll monitor manually
+  A) Investigate (this may be normal: cache warming, eventual consistency)
+  B) Rollback (revert the merge commit)
+  C) Continue (I'll monitor manually)
 ```
 
 ---
@@ -307,7 +307,7 @@ If branch protections → "Create a revert PR: `gh pr create --title 'revert: <t
 ```
 LAND & DEPLOY REPORT
 ═════════════════════════════════════════
-PR:           #NNN — [title]
+PR:           #NNN: [title]
 Branch:       feature-branch → main
 Merged:       [timestamp] (squash / merge)
 Merge SHA:    [short SHA]
@@ -341,7 +341,7 @@ After the deploy report, suggest relevant next steps:
 
 ## Important Rules
 
-- **Never force push.** Use `gh pr merge` — it's safe.
+- **Never force push.** Use `gh pr merge` (it's safe).
 - **Never skip CI.** Failing checks = stop.
 - **Single-pass production check.** For extended monitoring, use `/canary`.
 - **Revert is always an option.** At every failure point, offer revert as an escape hatch.
@@ -359,8 +359,8 @@ After the deploy report, suggest relevant next steps:
 
 ## Related Commands
 
-- `/ship` — run this first to create the PR
-- `/canary` — extended post-deploy monitoring loop
-- `/review-pr` — review the PR before landing
+- `/ship`: run this first to create the PR
+- `/canary`: extended post-deploy monitoring loop
+- `/review-pr`: review the PR before landing
 
 $ARGUMENTS

@@ -7,7 +7,7 @@ ref: github-main
 
 # Mirror Manifest
 
-Mirror of `okx/agent-skills` — 26 default patterns, 4 followed patterns, 56 file(s) materialized.
+Mirror of `okx/agent-skills` — 26 default patterns, 4 followed patterns, 57 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `okx/agent-skills` — 26 default patterns, 4 followed patterns, 56 fi
 | Ref           | `github-main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 56 |
+| Files         | 57 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,47 +77,48 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`skills/earn-hunter/templates/error-alert.md`](skills/earn-hunter/templates/error-alert.md) |
 | 14 | ✓ | [`skills/earn-hunter/templates/fixed-earn.md`](skills/earn-hunter/templates/fixed-earn.md) |
 | 15 | ✓ | [`skills/earn-hunter/templates/flash-earn.md`](skills/earn-hunter/templates/flash-earn.md) |
-| 16 | ✓ | [`skills/earn-hunter/templates/mixed-notify.md`](skills/earn-hunter/templates/mixed-notify.md) |
-| 17 | ✓ | [`skills/okx-cex-auth/SKILL.md`](skills/okx-cex-auth/SKILL.md) |
-| 18 | ✓ | [`skills/okx-cex-bot/SKILL.md`](skills/okx-cex-bot/SKILL.md) |
-| 19 | ✓ | [`skills/okx-cex-earn/references/autoearn-commands.md`](skills/okx-cex-earn/references/autoearn-commands.md) |
-| 20 | ✓ | [`skills/okx-cex-earn/references/dcd-commands.md`](skills/okx-cex-earn/references/dcd-commands.md) |
-| 21 | ✓ | [`skills/okx-cex-earn/references/flash-earn-commands.md`](skills/okx-cex-earn/references/flash-earn-commands.md) |
-| 22 | ✓ | [`skills/okx-cex-earn/references/onchain-commands.md`](skills/okx-cex-earn/references/onchain-commands.md) |
-| 23 | ✓ | [`skills/okx-cex-earn/references/savings-commands.md`](skills/okx-cex-earn/references/savings-commands.md) |
-| 24 | ✓ | [`skills/okx-cex-earn/references/templates.md`](skills/okx-cex-earn/references/templates.md) |
-| 25 | ✓ | [`skills/okx-cex-earn/references/workflows.md`](skills/okx-cex-earn/references/workflows.md) |
-| 26 | ✓ | [`skills/okx-cex-earn/SKILL.md`](skills/okx-cex-earn/SKILL.md) |
-| 27 | ✓ | [`skills/okx-cex-market/references/derivatives-commands.md`](skills/okx-cex-market/references/derivatives-commands.md) |
-| 28 | ✓ | [`skills/okx-cex-market/references/indicator-commands.md`](skills/okx-cex-market/references/indicator-commands.md) |
-| 29 | ✓ | [`skills/okx-cex-market/references/instrument-commands.md`](skills/okx-cex-market/references/instrument-commands.md) |
-| 30 | ✓ | [`skills/okx-cex-market/references/price-data-commands.md`](skills/okx-cex-market/references/price-data-commands.md) |
-| 31 | ✓ | [`skills/okx-cex-market/references/workflows.md`](skills/okx-cex-market/references/workflows.md) |
-| 32 | ✓ | [`skills/okx-cex-market/SKILL.md`](skills/okx-cex-market/SKILL.md) |
-| 33 | ✓ | [`skills/okx-cex-portfolio/SKILL.md`](skills/okx-cex-portfolio/SKILL.md) |
-| 34 | ✓ | [`skills/okx-cex-skill-mp/SKILL.md`](skills/okx-cex-skill-mp/SKILL.md) |
-| 35 | ✓ | [`skills/okx-cex-smartmoney/references/signal-commands.md`](skills/okx-cex-smartmoney/references/signal-commands.md) |
-| 36 | ✓ | [`skills/okx-cex-smartmoney/references/templates.md`](skills/okx-cex-smartmoney/references/templates.md) |
-| 37 | ✓ | [`skills/okx-cex-smartmoney/references/trader-commands.md`](skills/okx-cex-smartmoney/references/trader-commands.md) |
-| 38 | ✓ | [`skills/okx-cex-smartmoney/references/workflows.md`](skills/okx-cex-smartmoney/references/workflows.md) |
-| 39 | ✓ | [`skills/okx-cex-smartmoney/SKILL.md`](skills/okx-cex-smartmoney/SKILL.md) |
-| 40 | ✓ | [`skills/okx-cex-trade/references/event-commands.md`](skills/okx-cex-trade/references/event-commands.md) |
-| 41 | ✓ | [`skills/okx-cex-trade/references/event-workflows.md`](skills/okx-cex-trade/references/event-workflows.md) |
-| 42 | ✓ | [`skills/okx-cex-trade/references/futures-commands.md`](skills/okx-cex-trade/references/futures-commands.md) |
-| 43 | ✓ | [`skills/okx-cex-trade/references/options-commands.md`](skills/okx-cex-trade/references/options-commands.md) |
-| 44 | ✓ | [`skills/okx-cex-trade/references/spot-commands.md`](skills/okx-cex-trade/references/spot-commands.md) |
-| 45 | ✓ | [`skills/okx-cex-trade/references/swap-commands.md`](skills/okx-cex-trade/references/swap-commands.md) |
-| 46 | ✓ | [`skills/okx-cex-trade/references/templates.md`](skills/okx-cex-trade/references/templates.md) |
-| 47 | ✓ | [`skills/okx-cex-trade/references/workflows.md`](skills/okx-cex-trade/references/workflows.md) |
-| 48 | ✓ | [`skills/okx-cex-trade/SKILL.md`](skills/okx-cex-trade/SKILL.md) |
-| 49 | ✓ | [`skills/okx-sentiment-tracker/references/workflows.md`](skills/okx-sentiment-tracker/references/workflows.md) |
-| 50 | ✓ | [`skills/okx-sentiment-tracker/SKILL.md`](skills/okx-sentiment-tracker/SKILL.md) |
-| 51 | ✓ | [`skills/README.md`](skills/README.md) |
-| 52 | ✓ | [`skills/README.zh-CN.md`](skills/README.zh-CN.md) |
-| 53 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 54 | → | [`README.md`](README.md) |
-| 55 | → | [`REVIEWING.md`](REVIEWING.md) |
-| 56 | → | [`SECURITY.md`](SECURITY.md) |
+| 16 | ✓ | [`skills/earn-hunter/templates/flexible-earn.md`](skills/earn-hunter/templates/flexible-earn.md) |
+| 17 | ✓ | [`skills/earn-hunter/templates/mixed-notify.md`](skills/earn-hunter/templates/mixed-notify.md) |
+| 18 | ✓ | [`skills/okx-cex-auth/SKILL.md`](skills/okx-cex-auth/SKILL.md) |
+| 19 | ✓ | [`skills/okx-cex-bot/SKILL.md`](skills/okx-cex-bot/SKILL.md) |
+| 20 | ✓ | [`skills/okx-cex-earn/references/autoearn-commands.md`](skills/okx-cex-earn/references/autoearn-commands.md) |
+| 21 | ✓ | [`skills/okx-cex-earn/references/dcd-commands.md`](skills/okx-cex-earn/references/dcd-commands.md) |
+| 22 | ✓ | [`skills/okx-cex-earn/references/flash-earn-commands.md`](skills/okx-cex-earn/references/flash-earn-commands.md) |
+| 23 | ✓ | [`skills/okx-cex-earn/references/onchain-commands.md`](skills/okx-cex-earn/references/onchain-commands.md) |
+| 24 | ✓ | [`skills/okx-cex-earn/references/savings-commands.md`](skills/okx-cex-earn/references/savings-commands.md) |
+| 25 | ✓ | [`skills/okx-cex-earn/references/templates.md`](skills/okx-cex-earn/references/templates.md) |
+| 26 | ✓ | [`skills/okx-cex-earn/references/workflows.md`](skills/okx-cex-earn/references/workflows.md) |
+| 27 | ✓ | [`skills/okx-cex-earn/SKILL.md`](skills/okx-cex-earn/SKILL.md) |
+| 28 | ✓ | [`skills/okx-cex-market/references/derivatives-commands.md`](skills/okx-cex-market/references/derivatives-commands.md) |
+| 29 | ✓ | [`skills/okx-cex-market/references/indicator-commands.md`](skills/okx-cex-market/references/indicator-commands.md) |
+| 30 | ✓ | [`skills/okx-cex-market/references/instrument-commands.md`](skills/okx-cex-market/references/instrument-commands.md) |
+| 31 | ✓ | [`skills/okx-cex-market/references/price-data-commands.md`](skills/okx-cex-market/references/price-data-commands.md) |
+| 32 | ✓ | [`skills/okx-cex-market/references/workflows.md`](skills/okx-cex-market/references/workflows.md) |
+| 33 | ✓ | [`skills/okx-cex-market/SKILL.md`](skills/okx-cex-market/SKILL.md) |
+| 34 | ✓ | [`skills/okx-cex-portfolio/SKILL.md`](skills/okx-cex-portfolio/SKILL.md) |
+| 35 | ✓ | [`skills/okx-cex-skill-mp/SKILL.md`](skills/okx-cex-skill-mp/SKILL.md) |
+| 36 | ✓ | [`skills/okx-cex-smartmoney/references/signal-commands.md`](skills/okx-cex-smartmoney/references/signal-commands.md) |
+| 37 | ✓ | [`skills/okx-cex-smartmoney/references/templates.md`](skills/okx-cex-smartmoney/references/templates.md) |
+| 38 | ✓ | [`skills/okx-cex-smartmoney/references/trader-commands.md`](skills/okx-cex-smartmoney/references/trader-commands.md) |
+| 39 | ✓ | [`skills/okx-cex-smartmoney/references/workflows.md`](skills/okx-cex-smartmoney/references/workflows.md) |
+| 40 | ✓ | [`skills/okx-cex-smartmoney/SKILL.md`](skills/okx-cex-smartmoney/SKILL.md) |
+| 41 | ✓ | [`skills/okx-cex-trade/references/event-commands.md`](skills/okx-cex-trade/references/event-commands.md) |
+| 42 | ✓ | [`skills/okx-cex-trade/references/event-workflows.md`](skills/okx-cex-trade/references/event-workflows.md) |
+| 43 | ✓ | [`skills/okx-cex-trade/references/futures-commands.md`](skills/okx-cex-trade/references/futures-commands.md) |
+| 44 | ✓ | [`skills/okx-cex-trade/references/options-commands.md`](skills/okx-cex-trade/references/options-commands.md) |
+| 45 | ✓ | [`skills/okx-cex-trade/references/spot-commands.md`](skills/okx-cex-trade/references/spot-commands.md) |
+| 46 | ✓ | [`skills/okx-cex-trade/references/swap-commands.md`](skills/okx-cex-trade/references/swap-commands.md) |
+| 47 | ✓ | [`skills/okx-cex-trade/references/templates.md`](skills/okx-cex-trade/references/templates.md) |
+| 48 | ✓ | [`skills/okx-cex-trade/references/workflows.md`](skills/okx-cex-trade/references/workflows.md) |
+| 49 | ✓ | [`skills/okx-cex-trade/SKILL.md`](skills/okx-cex-trade/SKILL.md) |
+| 50 | ✓ | [`skills/okx-sentiment-tracker/references/workflows.md`](skills/okx-sentiment-tracker/references/workflows.md) |
+| 51 | ✓ | [`skills/okx-sentiment-tracker/SKILL.md`](skills/okx-sentiment-tracker/SKILL.md) |
+| 52 | ✓ | [`skills/README.md`](skills/README.md) |
+| 53 | ✓ | [`skills/README.zh-CN.md`](skills/README.zh-CN.md) |
+| 54 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 55 | → | [`README.md`](README.md) |
+| 56 | → | [`REVIEWING.md`](REVIEWING.md) |
+| 57 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

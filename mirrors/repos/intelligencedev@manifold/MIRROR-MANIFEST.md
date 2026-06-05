@@ -2,12 +2,12 @@
 repo: intelligencedev/manifold
 repoUrl: https://github.com/intelligencedev/manifold.git
 refType: branch
-ref: master
+ref: develop
 ---
 
 # Mirror Manifest
 
-Mirror of `intelligencedev/manifold` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `intelligencedev/manifold` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -15,10 +15,10 @@ Mirror of `intelligencedev/manifold` — 26 default patterns, 0 followed pattern
 |---------------|-------|
 | Repo          | `intelligencedev/manifold` |
 | Ref Type      | `branch` |
-| Ref           | `master` |
+| Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,7 +60,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`web/agentd-ui/AGENTS.md`](web/agentd-ui/AGENTS.md) |
+| 2 | ✓ | [`assets/skills/manifold-api/SKILL.md`](assets/skills/manifold-api/SKILL.md) |
+| 3 | ✓ | [`web/agentd-ui/AGENTS.md`](web/agentd-ui/AGENTS.md) |
 
 ---
 

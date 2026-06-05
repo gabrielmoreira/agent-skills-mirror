@@ -7,6 +7,8 @@ Uses the FIXED demo patient (demo_patient.txt) with known genotypes
 so that all assertions are deterministic and reproducible.
 """
 
+import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -400,6 +402,68 @@ def test_write_commands_sh_creates_file(tmp_path):
     content = path.read_text()
     assert "pharmgx_reporter.py" in content
     assert DEMO.name in content, "commands.sh should reference the input filename"
+
+
+# ── Output contract (SKILL.md must match what the skill actually produces) ─────
+
+def _parse_output_contract(skill_md):
+    """Extract files promised in the SKILL.md '## Output Structure' tree.
+
+    Directory lines, and any entry whose inline comment contains 'optional', are
+    skipped. Returns [] when there is no parseable section.
+    """
+    if not skill_md.exists():
+        return []
+    m = re.search(r"##\s*Output Structure\s*\n+```[^\n]*\n(.*?)\n```",
+                  skill_md.read_text(), re.S)
+    if not m:
+        return []
+    files, parents = [], {}
+    for raw in m.group(1).splitlines():
+        if not raw.strip():
+            continue
+        parts = re.split(r"\s+#", raw, maxsplit=1)
+        entry, comment = parts[0], (parts[1] if len(parts) > 1 else "")
+        mm = re.match(r"^([\s│├└─]*)(.*)$", entry)
+        prefix, name = mm.group(1), mm.group(2).strip()
+        if not name:
+            continue
+        depth = len(prefix) // 4
+        if depth == 0:
+            continue
+        if name.endswith("/"):
+            parents[depth] = name.rstrip("/")
+            for d in [k for k in parents if k > depth]:
+                del parents[d]
+            continue
+        if "optional" in comment.lower():
+            continue
+        rel = "/".join(parents[d] for d in sorted(parents) if d < depth)
+        files.append(rel + "/" + name if rel else name)
+    return files
+
+
+def test_documented_outputs_are_produced(tmp_path):
+    """Every artifact in the SKILL.md Output Structure must be produced by a demo run.
+
+    Deterministic, local capture of the doc/code drift the Tessl eval surfaced:
+    reproducibility/commands.sh was documented but never written. This test would
+    have failed before that fix.
+    """
+    skill_dir = Path(__file__).resolve().parent.parent
+    promised = _parse_output_contract(skill_dir / "SKILL.md")
+    assert promised, "expected a parseable '## Output Structure' section in SKILL.md"
+    result = subprocess.run(
+        [sys.executable, str(skill_dir / "pharmgx_reporter.py"),
+         "--demo", "--output", str(tmp_path), "--no-enrich"],
+        capture_output=True, text=True,
+    )
+    assert result.returncode == 0, f"demo run failed: {result.stderr}"
+    missing = [p for p in promised if not (tmp_path / p).exists()]
+    assert not missing, (
+        "SKILL.md Output Structure promises artifacts the skill did not produce: "
+        f"{missing}"
+    )
 
 
 # ── Data Integrity ─────────────────────────────────────────────────────────────

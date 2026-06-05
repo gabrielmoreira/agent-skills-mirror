@@ -3,6 +3,7 @@ name: catchup
 description: Restore context after /clear by summarizing recent work and project state
 argument-hint: "[branch] [--since <date>]"
 effort: low
+when_to_use: "Use after /clear or at session start to restore context."
 disable-model-invocation: true
 ---
 

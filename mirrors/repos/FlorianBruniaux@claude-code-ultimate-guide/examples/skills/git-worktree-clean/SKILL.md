@@ -3,6 +3,7 @@ name: git-worktree-clean
 description: Clean up stale git worktrees with merged branch detection and disk usage report
 argument-hint: "[--dry-run]"
 effort: low
+when_to_use: "Use when cleaning up merged or stale worktrees."
 disable-model-invocation: true
 ---
 

@@ -3,6 +3,7 @@ name: ship
 description: Comprehensive pre-deployment verification to ensure release readiness
 argument-hint: "[--no-push] [--changelog-only] [--dry-run]"
 effort: medium
+when_to_use: "Use when ready to stage, commit, and push the current work."
 disable-model-invocation: true
 ---
 

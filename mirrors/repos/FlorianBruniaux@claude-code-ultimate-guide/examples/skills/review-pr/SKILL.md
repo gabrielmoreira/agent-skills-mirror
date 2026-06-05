@@ -2,7 +2,7 @@
 name: review-pr
 description: Perform a comprehensive code review of a pull request
 argument-hint: "[PR_number|URL]"
-effort: medium
+effort: high
 disable-model-invocation: true
 ---
 
@@ -117,7 +117,7 @@ git diff --stat origin/main...HEAD | head -30
 ```
 
 If a plan file exists for this branch:
-1. Read the plan file — what was the stated scope?
+1. Read the plan file: what was the stated scope?
 2. Compare stated scope vs actual `git diff --stat`
 3. Flag files changed that were NOT mentioned in the plan
 
@@ -131,7 +131,7 @@ Drift:         [files changed outside plan scope, if any]
 Verdict:       IN SCOPE / DRIFT DETECTED
 ```
 
-If no plan file exists: note "No plan file found for this branch — skipping scope drift check."
+If no plan file exists: note "No plan file found for this branch, skipping scope drift check."
 
 ### Multi-Agent Specialization
 
@@ -167,7 +167,7 @@ Check for:
 
 LLM Output Trust Boundary (especially relevant in AI-assisted codebases):
 - LLM-generated values (emails, URLs, names, IDs) written to DB or passed to
-  downstream functions without format validation — add lightweight guards
+  downstream functions without format validation; add lightweight guards
   (email regex, URL parsing, .trim()) before persisting
 - Structured tool output (arrays, objects from AI tools) accepted without
   type/shape checks before database writes or rendering

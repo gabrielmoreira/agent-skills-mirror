@@ -8,7 +8,7 @@ effort: low
 disable-model-invocation: true
 ---
 
-# /ci:pipeline — Push and trigger pipeline
+# /ci:pipeline: Push and trigger pipeline
 
 Pushes the current branch and returns the pipeline tracking link.
 

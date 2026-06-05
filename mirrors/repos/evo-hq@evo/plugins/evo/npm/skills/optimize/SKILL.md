@@ -2,7 +2,7 @@
 name: optimize
 description: Run the evo optimization loop with parallel subagents until interrupted.
 argument-hint: "[subagents=N] [budget=N] [stall=N]"
-evo_version: 0.4.4
+evo_version: 0.4.5
 ---
 
 Run the `evo` optimization loop. Each round, the orchestrator writes structured briefs and spawns parallel subagents that execute within them. Each subagent is semi-autonomous: it reads the pointer traces, forms the concrete edit, runs experiments, and can iterate within its branch. Runs until interrupted or the stall limit is reached.

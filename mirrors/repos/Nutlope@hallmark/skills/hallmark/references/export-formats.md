@@ -53,7 +53,7 @@ The source. Plain CSS custom properties at `:root`. Every Hallmark page CSS impo
 /* page CSS continues — uses var(--color-paper), never raw values */
 ```
 
-Or, if the project uses a CSS bundler / framework that doesn't honour bare `@import`, the project's existing entry-point includes `tokens.css` first. The page CSS still references tokens by name, never by raw value.
+Or, if the project uses a CSS bundler / framework that doesn't honour bare `@import`, the project's existing entry-point imports `tokens.css` before the page CSS that consumes it (keep it among the other top-of-file `@import`s, never above or in place of `@import "tailwindcss"`). The page CSS still references tokens by name, never by raw value.
 
 **Worked example — editorial theme (Specimen-like):**
 
@@ -324,5 +324,6 @@ When SKILL.md Step 6 emits exports:
 1. **Always** write `tokens.css` next to the page CSS (or in the project root for multi-file projects). Format 1.
 2. **On `design.md`-managed projects** (multi-page), embed all four formats inline in `design.md`'s Exports section. The user copies whichever they need.
 3. **On Tailwind projects** (detected at pre-flight), additionally surface the Tailwind `@theme` block in the build output so the user knows where to paste it (typically into `app/globals.css` or the equivalent).
+4. **Merge into an existing entry stylesheet; never overwrite it.** When the target project already has `app/globals.css` (or `src/index.css`, `src/styles/global.css`): keep its existing `@import "tailwindcss"` / `@tailwind base|components|utilities` directives exactly as they are, append Hallmark's `:root` tokens and base rules *after* them, and keep any `@import "tokens.css"` at the very top of the file (CSS parses `@import` only before other rules, so a misplaced one is silently dropped and your tokens vanish). If the project already defines brand tokens (`--background`, `--foreground`, a Tailwind `@theme`), map Hallmark's roles onto those names rather than adding a parallel set, or scope Hallmark's tokens under a wrapper class. Replace the file outright only when the user has asked for a full takeover.
 
 Don't blanket-emit tokens.json or shadcn variables on single-page projects — the user can copy them out of `design.md` if they upgrade to a multi-page system.

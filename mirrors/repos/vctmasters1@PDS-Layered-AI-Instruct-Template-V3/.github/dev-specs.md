@@ -11,8 +11,8 @@
 
 > Keep this example as guidance. Fill the checklist template in the sections that follow with your own project values.
 
-**Project Name:** Example SaaS API + Dashboard  
-**Repo Shape:** Monorepo (API + web app + shared package)  
+**Project Name:** Example SaaS API + Dashboard
+**Repo Shape:** Monorepo (API + web app + shared package)
 **Team Size:** 4 developers
 
 | Category | Example Value |
@@ -35,6 +35,7 @@
 
 | Section | What's here |
 |---|-------------|
+| [Project Mode](#project-mode) | **IMPORTANT**: Is this template development or production deployment? |
 | [Development Platform](#development-platform) | Where you write code |
 | [Target Platform](#target-platform) | Where the code runs |
 | [Language & Runtime](#language--runtime) | Primary languages and versions |
@@ -47,18 +48,34 @@
 
 ---
 
+## Project Mode
+
+**This determines how the AI treats this repository:**
+
+- [ ] **Template Development** — We are building/improving the AI-INSTRUCT framework itself. Framework files in `.ai/`, `.github/`, and core system files are authoritative. Commits include framework improvements + template examples.
+- [x] **Production / Adoption** — A team is using the framework to run a real project. Adopter-specific configs (`.ai/plugins/*/tiers.yaml`, `load_strategy.yaml`, etc.) are gitignored. Commits include project source only, never machine configs.
+
+**Why this matters:**
+- **Template mode**: We modify `.ai/instruct.md` files, create example plugins, update framework rules
+- **Production mode**: We never commit machine-specific configs; validators only check adopter code, not framework internals
+
+**Set exactly one:**
+- ✓ **This repository is in PRODUCTION / ADOPTION mode.** A team is using the framework to run a real project.
+
+---
+
 ## Development Platform
 
 ### Developer OS
 
-- [ ] Windows (version: _______)
+- [x] Windows (version: Windows 11)
 - [ ] macOS (version: _______)
 - [ ] Linux (distro/version: _______)
 - [ ] WSL2 on Windows (Linux distro inside Windows — paths behave like Linux, but host is Windows)
 
 ### Shell / Terminal
 
-- [ ] PowerShell (Windows native)
+- [x] PowerShell (Windows native)
 - [ ] Command Prompt (`cmd.exe`)
 - [ ] Bash
 - [ ] Zsh
@@ -67,7 +84,7 @@
 
 ### Editor / IDE
 
-- [ ] VS Code
+- [x] VS Code
 - [ ] Cursor
 - [ ] JetBrains (specify: _______)
 - [ ] Neovim / Vim
@@ -79,7 +96,7 @@
 
 ### Deployment / Runtime Target
 
-- [ ] Windows desktop application
+- [x] Template / Framework (this is the AI-INSTRUCT system itself)
 - [ ] Windows service / background process
 - [ ] macOS desktop application
 - [ ] Linux server / cloud VM
@@ -91,13 +108,12 @@
 - [ ] RTOS (specify: _______)
 - [ ] Docker container
 - [ ] Serverless / edge function (platform: _______)
-- [ ] Cross-platform (check all that apply above)
 
 ### Path & Line Ending Convention
 
 > The AI uses this to write correct paths and avoid cross-platform pitfalls.
 
-- [ ] Windows paths (`C:\Users\...`, backslash separators)
+- [x] Windows paths (`C:\Users\...`, backslash separators)
 - [ ] POSIX paths (`/home/...`, forward-slash separators)
 - [ ] Mixed (dev is Windows; target is Linux/container)
 

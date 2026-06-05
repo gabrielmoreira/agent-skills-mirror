@@ -3,6 +3,7 @@ name: diagnose
 description: Interactive troubleshooting assistant for Claude Code issues
 argument-hint: <error_or_symptom>
 effort: medium
+when_to_use: "Use when hitting Claude Code issues, configuration errors, or unexpected behavior."
 disable-model-invocation: true
 ---
 

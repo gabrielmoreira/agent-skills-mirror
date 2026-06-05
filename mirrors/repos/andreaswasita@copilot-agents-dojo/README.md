@@ -13,11 +13,11 @@
 ![license](https://img.shields.io/badge/license-MIT-1f6feb?style=flat-square)
 ![version](https://img.shields.io/badge/version-1.1-3fb950?style=flat-square)
 ![spec](https://img.shields.io/badge/spec-v1-1f6feb?style=flat-square)
-![skills](https://img.shields.io/badge/skills-29-d2691e?style=flat-square)
+![skills](https://img.shields.io/badge/skills-29-1f6feb?style=flat-square)
 ![tiers](https://img.shields.io/badge/tiers-core%20%2F%20practical%20%2F%20optional-8b5cf6?style=flat-square)
 ![agents](https://img.shields.io/badge/personas-8-14b8a6?style=flat-square)
 ![curator](https://img.shields.io/badge/curator-self--improving-f59e0b?style=flat-square)
-![gate](https://img.shields.io/badge/enforcement-verify.sh-ec4899?style=flat-square)
+![gate](https://img.shields.io/badge/enforcement-verify.sh-3fb950?style=flat-square)
 
 ---
 
@@ -330,6 +330,43 @@ Trained agents operate like **seasoned black belts** — plan the approach, exec
 
 ## Enter the Dojo
 
+### One command (recommended)
+
+Drop the whole framework into the current repo — no clone, no Python:
+
+```bash
+# macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/andreaswasita/copilot-agents-dojo/main/install.sh | bash
+```
+
+```powershell
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/andreaswasita/copilot-agents-dojo/main/install.ps1 | iex
+```
+
+The installer is **re-runnable and idempotent**: it refreshes the bundled
+skills, agents, scripts, and spec while preserving your own additions —
+`tasks/`, `memory/`, custom skills, and an edited
+`.github/copilot-instructions.md` (a differing dojo version is written to
+`.github/copilot-instructions.dojo.md` for you to merge). It finishes by
+running `scripts/verify.sh spec` as a health gate.
+
+Pin a release for reproducible installs, and pass options as needed:
+
+```bash
+# bash: --ref <branch|tag>  --dir <path>  --force  --no-verify
+curl -fsSL https://raw.githubusercontent.com/andreaswasita/copilot-agents-dojo/main/install.sh | bash -s -- --ref v1.1
+```
+
+```powershell
+# PowerShell flags: -Ref <branch|tag>  -Dir <path>  -Force  -NoVerify
+# When piping (irm | iex) set env vars instead: $env:DOJO_REF='v1.1'; irm .../install.ps1 | iex
+```
+
+### Manual setup
+
+Prefer to wire it up by hand? The steps the installer automates are:
+
 1. **Copy** [`skills/`](./skills) and [`optional-skills/`](./optional-skills) into your repo — or pick the individual tiers you need.
 2. **Copy** [`memory/`](./memory) — the persistent knowledge graph.
 3. **Place** [`skills.md`](./skills.md) at your repo root — Copilot agents auto-discover this index.
@@ -449,7 +486,7 @@ The Copilot Agents Dojo distills field-tested patterns from shipping production 
 
 ## Contributing
 
-See [AGENTS.md](./AGENTS.md) for the contributor guide and [CONTRIBUTING.md](./CONTRIBUTING.md) for the high-level checklist. Changelog: [CHANGELOG.md](./CHANGELOG.md).
+See [AGENTS.md](./AGENTS.md) for the contributor guide and [CONTRIBUTING.md](./CONTRIBUTING.md) for the high-level checklist. Keep contributions on-brand with the [brand & style guide](./docs/brand.md) — palette, wordmark, voice/tone. Changelog: [CHANGELOG.md](./CHANGELOG.md).
 
 ## License
 

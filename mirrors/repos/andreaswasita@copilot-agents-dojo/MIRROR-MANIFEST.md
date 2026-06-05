@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `andreaswasita/copilot-agents-dojo` — 26 default patterns, 7 followed patterns, 73 file(s) materialized.
+Mirror of `andreaswasita/copilot-agents-dojo` — 26 default patterns, 8 followed patterns, 74 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `andreaswasita/copilot-agents-dojo` — 26 default patterns, 7 followe
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 73 |
+| Followed pats | 8 |
+| Files         | 74 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -57,6 +57,7 @@ Mirror of `andreaswasita/copilot-agents-dojo` — 26 default patterns, 7 followe
 - `CONTRIBUTING.md`
 - `memory/README.md`
 - `docs/memory-mcp.md`
+- `docs/brand.md`
 - `CHANGELOG.md`
 
 ## File Index
@@ -134,10 +135,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 67 | → | [`.github/known-pitfalls.md`](.github/known-pitfalls.md) |
 | 68 | → | [`CHANGELOG.md`](CHANGELOG.md) |
 | 69 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 70 | → | [`docs/memory-mcp.md`](docs/memory-mcp.md) |
-| 71 | → | [`memory/README.md`](memory/README.md) |
-| 72 | → | [`README.md`](README.md) |
-| 73 | → | [`spec/copilot-skills-spec.md`](spec/copilot-skills-spec.md) |
+| 70 | → | [`docs/brand.md`](docs/brand.md) |
+| 71 | → | [`docs/memory-mcp.md`](docs/memory-mcp.md) |
+| 72 | → | [`memory/README.md`](memory/README.md) |
+| 73 | → | [`README.md`](README.md) |
+| 74 | → | [`spec/copilot-skills-spec.md`](spec/copilot-skills-spec.md) |
 
 ---
 

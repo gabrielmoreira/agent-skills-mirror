@@ -1,6 +1,6 @@
 ---
 name: session-save
-description: Save the current session state — decisions, modified files, current status, and next steps — to a handoff file for later resume.
+description: Save the current session state (decisions, modified files, current status, and next steps) to a handoff file for later resume.
 effort: low
 disable-model-invocation: true
 ---
@@ -23,17 +23,17 @@ Produce a handoff document with the following structure:
 
 ---
 
-## Session Handoff — [TIMESTAMP]
+## Session Handoff: [TIMESTAMP]
 
 ### What Was Being Done
 [One paragraph: the goal, the approach, where things stand right now]
 
 ### Files Modified This Session
-[List every file that was created, edited, or deleted — with the nature of the change]
+[List every file that was created, edited, or deleted, with the nature of the change]
 
 ```
-path/to/file.ts      — [what changed and why]
-path/to/other.ts     — [what changed and why]
+path/to/file.ts      - [what changed and why]
+path/to/other.ts     - [what changed and why]
 ```
 
 ### Key Decisions Made
@@ -44,29 +44,29 @@ path/to/other.ts     — [what changed and why]
   - **Alternatives rejected**: [What else was considered]
 
 ### Current Status
-[Where things are right now — what's working, what's broken, what's in-progress]
+[Where things are right now: what's working, what's broken, what's in-progress]
 
 - Working: [...]
 - In-progress: [...]
 - Known issues: [...]
 
 ### Next Steps (Ordered)
-[The exact next actions to take to continue — specific enough that a fresh context can pick up without re-reading everything]
+[The exact next actions to take to continue, specific enough that a fresh context can pick up without re-reading everything]
 
-1. [First action] — `path/to/file.ts` — [what to do]
-2. [Second action] — [...]
+1. [First action]: `path/to/file.ts` - [what to do]
+2. [Second action]: [...]
 3. [...]
 
 ### Context to Reload
-[Files that must be read to resume with full understanding — keep this list short]
+[Files that must be read to resume with full understanding, keep this list short]
 
-- `path/to/key-file.ts` — [why it matters]
-- `CLAUDE.md` — project rules
+- `path/to/key-file.ts`: [why it matters]
+- `CLAUDE.md`: project rules
 
 ### Blockers / Open Questions
 [Anything unresolved that needs a decision or external input before proceeding]
 
-- [ ] [Question or blocker] — [who/what can resolve it]
+- [ ] [Question or blocker]: [who/what can resolve it]
 
 ---
 
@@ -104,12 +104,12 @@ When context hits 70%, run `/session-save` before `/compact` to preserve decisio
 
 ## Notes
 
-- Keep "Context to Reload" to 5 files max — the goal is a fast resume, not a full re-read
+- Keep "Context to Reload" to 5 files max. The goal is a fast resume, not a full re-read.
 - "Next Steps" should be specific enough that a cold-start Claude can execute step 1 without asking questions
-- Don't save tool output or code snippets in the handoff — reference file paths instead
+- Don't save tool output or code snippets in the handoff; reference file paths instead.
 
 ---
 
 **See also**:
-- [Session Teleportation](../../guide/ultimate-guide.md#916-session-teleportation) — broader session management patterns
-- [Instinct-Based Learning](../../guide/ultimate-guide.md#924-instinct-based-continuous-learning) — what to extract from sessions before closing
+- [Session Teleportation](../../guide/ultimate-guide.md#916-session-teleportation): broader session management patterns
+- [Instinct-Based Learning](../../guide/ultimate-guide.md#924-instinct-based-continuous-learning): what to extract from sessions before closing

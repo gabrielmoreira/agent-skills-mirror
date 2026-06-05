@@ -30,6 +30,7 @@
 - `hooks.py` runs in the framework runtime. Explicitly target another runtime if a plugin must prepare the agent execution environment.
 - `execute.py` is manual user-triggered setup, maintenance, repair, migration, or refresh work; automatic framework behavior belongs in hooks or lifecycle extensions.
 - Plugin routes are `GET /plugins/<name>/<path>`, `POST /api/plugins/<name>/<handler>`, and `POST /api/plugins` for management actions.
+- `_a0_connector` WebSocket history replay must stay bounded: emit large chat history as paged `connector_context_snapshot` payloads, keep `last_sequence` as the Agent Zero log-output cursor, and avoid sending an entire long transcript in one frame.
 - Frontend plugin HTML extensions live under `extensions/webui/<point>/`, include a root Alpine scope, and use `x-move-*` directives when targeting static breakpoints.
 - Frontend plugin JS extensions live under `extensions/webui/<point>/` and export a default function.
 - Plugin UI must use the A0 notification system for errors, warnings, success, and info instead of inline success/error boxes.
@@ -48,6 +49,7 @@
 - Keep plugin README and docs current when user-visible plugin behavior changes.
 - Check configuration before injecting setup or discovery banners so configured plugins do not keep advertising setup.
 - Use highly unique banner IDs prefixed by plugin name.
+- Browser tool prompts must preserve the existing-tab workflow: when a user refers to an already-open URL, tab, or page title, guide agents to `list` and then `set_active` or `navigate` by `browser_id` instead of blindly opening a new tab.
 - When preparing community plugins, keep plugin contents at the standalone repository root with `plugin.yaml`, `README.md`, and a root `LICENSE`.
 - Plugin Index submissions use a separate `index.yaml` under `a0-plugins/plugins/<name>/`; do not confuse it with runtime `plugin.yaml`.
 

@@ -1,15 +1,16 @@
 ---
 name: backlink-analyzer
-description: 'Use when analyzing backlink profiles, link authority, toxic links, link-building opportunities, or competitor link gaps. 外链分析/反向链接'
-version: "9.9.9"
+description: 'Use when the user asks to "analyze backlinks" or "外链分析"; profiles external referring domains, anchor-text distribution, toxic links, and competitor link gaps. Not for internal links — use internal-linking-optimizer. 外链分析/反向链接'
+version: "9.9.10"
 license: Apache-2.0
-compatibility: "Claude Code, skills.sh, ClawHub, Vercel Labs, Cursor, Windsurf, Codex CLI, Amp, Gemini CLI, Kimi Code, Qwen Code, CodeBuddy"
+compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/seo-geo-claude-skills"
 when_to_use: "Use when analyzing backlink profiles, link quality, toxic links, referring domains, or anchor text distribution."
 argument-hint: "<domain or URL>"
+allowed-tools: WebFetch
 metadata:
   author: aaron-he-zhu
-  version: "9.9.9"
+  version: "9.9.10"
   geo-relevance: "low"
   tags:
     - seo
@@ -27,36 +28,16 @@ metadata:
     - 백링크
     - backlinks-seo
   triggers:
-    - "analyze backlinks"
     - "check link profile"
     - "find toxic links"
     - "link building opportunities"
-    - "backlink audit"
+    - "referring domains"
     - "who links to me"
     - "I have spammy links"
-    - "how do I get more backlinks"
+    - "competitor link gap"
     - "disavow links"
-    - "how to build backlinks"
-    - "外链分析"
-    - "反向链接"
-    - "有毒链接"
-    - "链接建设"
-    - "外链怎么做"
-    - "有垃圾外链"
     - "谁链接到我"
-    - "友链"
-    - "互换友链"
-    - "外链建设"
-    - "被リンク分析"
-    - "バックリンク"
-    - "リンク構築"
-    - "백링크 분석"
-    - "링크 빌딩"
-    - "누가 내 사이트 링크해?"
-    - "백링크 어떻게 늘려?"
-    - "análisis de backlinks"
-    - "enlaces entrantes"
-    - "análise de backlinks"
+    - "有垃圾外链"
 ---
 
 # Backlink Analyzer
@@ -77,9 +58,10 @@ Find link building opportunities by analyzing [competitor domains]
 
 **Expected output**: a backlink report or delta summary plus the standard handoff summary for `memory/monitoring/`.
 
-- **Reads**: current metrics, baselines, alert thresholds, and reporting context from [CLAUDE.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/CLAUDE.md) and the shared [State Model](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/state-model.md) when available.
+- **Reads**: target domain, backlink/referring-domain exports, competitor domains, anchor data, and any user-provided or tool metrics.
 - **Writes**: a user-facing monitoring deliverable and reusable summary.
 - **Promotes**: significant changes, confirmed anomalies, follow-up actions, and pending decisions to `memory/open-loops.md`.
+- **Done when**: referring domains, anchor mix, and toxic-link share are reported with each metric source-tagged (or N/A); toxic ratio is computed; and at least 3 link-building or disavow actions are named.
 - **Primary next skill**: [domain-authority-auditor](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/cross-cutting/domain-authority-auditor/SKILL.md) when toxicity or authority concerns need formal scoring.
 
 ### Handoff Summary
@@ -90,19 +72,30 @@ Find link building opportunities by analyzing [competitor domains]
 
 All integrations optional (see [CONNECTORS.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/CONNECTORS.md)). With tools, pull backlink profiles from ~~link database and competitor data from ~~SEO tool. Without tools, ask for backlink CSVs, referring domains, competitor domains, and link changes. Respect `robots.txt` and TOS per [SECURITY.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/SECURITY.md).
 
+## Decision Gates
+
+**Stop and ask the user when:**
+- No backlink data is provided and no ~~link database is connected — link counts cannot be measured. Offer: (1) paste a backlink/referring-domain export, (2) connect a tool, (3) cancel. Do not estimate referring-domain volume from the domain alone.
+
+**Continue silently (never stop for):**
+- Which of several competitors to deep-dive — analyze the top 3 by overlap and note the rest.
+- Missing optional fields (geography, link velocity) — mark N/A and proceed.
+
 ## Instructions
 
 When a user requests backlink analysis:
 
-1. **Generate Profile Overview** — key metrics, link velocity, authority distribution, and profile health score.
+1. **Generate Profile Overview** — output key metrics, link velocity, authority distribution, and profile health score, with each metric carrying its source tag (tool export / user-provided / estimated).
 2. **Analyze Link Quality** — top backlinks, link type mix, anchor text distribution, and geography.
-3. **Identify Toxic Links** — risk indicators, links to review, and disavow recommendations.
+3. **Identify Toxic Links** — risk indicators, links to review, and disavow recommendations; report the toxic ratio as a labeled figure.
 4. **Compare Against Competitors** — profile comparison, link intersection, and top linked competitor content.
 5. **Find Link Building Opportunities** — intersection prospects, broken links, unlinked mentions, resource pages, guest posts, and effort-vs-impact priorities.
-6. **Track Link Changes** — new and lost links, net change, and recovery priorities.
-7. **Generate Backlink Report** — executive summary, strengths, concerns, opportunities, competitive position, recommended actions, and KPIs.
+6. **Track Link Changes** — new and lost links, net change, and recovery priorities, each delta labeled against its baseline.
+7. **Generate Backlink Report** — executive summary, strengths, concerns, opportunities, competitive position, recommended actions, and KPIs, with every figure source-tagged.
 
-> **Reference**: See [references/analysis-templates.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/backlink-analyzer/references/analysis-templates.md) for the compact output templates used in all seven steps.
+Label every metric **Measured** (tool/export), **User-provided**, or **Estimated** (model inference); never present an estimate as measured; if a required metric is unavailable, mark it N/A — do not invent it.
+
+> **Reference**: See [Analysis Templates](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/backlink-analyzer/references/analysis-templates.md) for the compact output templates used in all seven steps.
 
 ### CITE Item Mapping
 
@@ -120,7 +113,7 @@ When running `domain-authority-auditor` after this analysis, the following data 
 
 ## Example
 
-Sample outcome: a link-intersection table, top immediate opportunities, and an estimated impact model. Keep the full structure in [references/analysis-templates.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/backlink-analyzer/references/analysis-templates.md).
+Sample outcome: a link-intersection table, top immediate opportunities, and an estimated impact model. Keep the full structure in [Analysis Templates](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/backlink-analyzer/references/analysis-templates.md).
 
 ## Tips for Success
 
@@ -128,13 +121,13 @@ Prioritize quality, monitor regularly, diversify anchors and link types, and dis
 
 ## Link Quality and Strategy Reference
 
-> **Reference**: See [references/link-quality-rubric.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/backlink-analyzer/references/link-quality-rubric.md) for the scoring matrix, toxic-link criteria, benchmarks, and disavow guidance.
+> **Reference**: See [Link Quality Rubric](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/backlink-analyzer/references/link-quality-rubric.md) for the scoring matrix, toxic-link criteria, benchmarks, and disavow guidance.
 
-> **Reference**: See [references/outreach-templates.md](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/backlink-analyzer/references/outreach-templates.md) for outreach frameworks, subject lines, response benchmarks, follow-up sequences, and templates.
+> **Reference**: See [Outreach Templates](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/monitor/backlink-analyzer/references/outreach-templates.md) for outreach frameworks, subject lines, response benchmarks, follow-up sequences, and templates.
 
 ### Save Results
 
-Ask "Save these results?" If yes, write `memory/monitoring/YYYY-MM-DD-<topic>.md` with headline finding, actions, and open loops. If toxic ratio exceeds 15%, recommend `domain-authority-auditor`.
+Ask "Save these results?" If yes, write to `memory/monitoring/` — see [Skill Contract](https://github.com/aaron-he-zhu/seo-geo-claude-skills/blob/main/references/skill-contract.md) §Save Results Template. If toxic ratio exceeds 15%, recommend `domain-authority-auditor`.
 
 ## Reference Materials
 

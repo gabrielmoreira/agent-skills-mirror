@@ -74,7 +74,7 @@ metadata:
 
 You are **gi-promoter**, a ClawBio agent that calls the **Genomic Intelligence** promoter-prediction model. Given a DNA sequence (any length), it returns per-window promoter probabilities and called regions, all in a few hundred milliseconds via the hosted API.
 
-> ⚠️ **Remote inference — opt-in required.** Unlike most ClawBio skills, this skill uploads your FASTA sequence to the hosted Genomic Intelligence API at `https://api.genomicintelligence.ai`. The skill refuses to run unless `GI_API_KEY` is set — `cp .env.example .env && set -a && source .env && set +a` to use the shared ClawBio hackathon key (50 concurrent / 120 rpm), or request an individual key at contact@genomicintelligence.ai. Prefer a browser? The same models run interactively at <https://genomicintelligence.ai>. **Do not submit identifiable patient data** without an appropriate data-use agreement.
+> ⚠️ **Remote inference — opt-in required.** Unlike most ClawBio skills, this skill uploads your FASTA sequence to the hosted Genomic Intelligence API at `https://api.genomicintelligence.ai`. Prefer a browser? The same models run interactively at <https://genomicintelligence.ai>. **Do not submit identifiable patient data** without an appropriate data-use agreement. Key setup: see [Authentication](#authentication) below.
 
 ## Trigger
 
@@ -95,7 +95,7 @@ You are **gi-promoter**, a ClawBio agent that calls the **Genomic Intelligence**
 ## Why This Exists
 
 - **Without it**: A user with a multi-kbp sequence has to spin up a GPU, download the GENA-LM weights, tokenize, window, and run inference themselves.
-- **With it**: One CLI call → annotated report in <1 s for typical sequences. The model is hosted; the partner key is bundled for the ClawBio hackathon (`GI_API_KEY` env overrides).
+- **With it**: One CLI call → annotated report in <1 s for typical sequences. The model is hosted; see [Authentication](#authentication) for key setup.
 - **Why ClawBio**: Hosted G0 inference plus ClawBio's reproducibility bundle and orchestration chaining (`gi-promoter` → `gi-expression` → `variant-annotation`).
 
 ## API Backed
@@ -105,9 +105,8 @@ You are **gi-promoter**, a ClawBio agent that calls the **Genomic Intelligence**
 ## Workflow
 
 1. **Parse**: read single-record FASTA via the shared `clawbio.gi.gi_client.read_fasta` helper (uppercase, strip non-ACGTN).
-2. **Authenticate**: resolve key — `--api-key` → `GI_API_KEY` env → bundled hackathon key (concurrent=50, rpm=120).
-3. **POST** the full sequence to `/v1/tasks/promoter/predict`; the API windows internally.
-4. **Render**: write `report.md` (summary + region table), `result.json` (full `{data, meta}` envelope), `reproducibility/`.
+2. **POST** the full sequence to `/v1/tasks/promoter/predict`; the API windows internally.
+3. **Render**: write `report.md` (summary + region table), `result.json` (full `{data, meta}` envelope), `reproducibility/`.
 
 ## CLI Reference
 
@@ -135,11 +134,28 @@ Bundled fixture is the TP53 locus (19 kbp, GRCh38). Expect ~20 windows, near-zer
 
 ## Authentication
 
-The skill ships with a hackathon partner key. For production / heavier use, request your own key (contact@genomicintelligence.ai) and:
+The skill requires a Genomic Intelligence partner key in `GI_API_KEY`. Resolution order:
+
+1. `--api-key <value>` CLI flag (explicit override).
+2. `GI_API_KEY` environment variable.
+3. Otherwise: the skill raises a `RuntimeError` pointing here.
+
+### Quick start — ClawBio hackathon key
+
+A shared hackathon-tier key ships in `.env.example` at the repo root (50 concurrent / 120 rpm, opt-in only). From wherever the ClawBio files live on your machine:
+
+```bash
+# Repo root (git clone) — or ~/.claude/plugins/cache/clawbio/clawbio/<version>/ for plugin installs
+cp .env.example .env
+set -a && source .env && set +a
+```
+
+### Production / heavier use
+
+Request an individual key at **contact@genomicintelligence.ai**, then:
 
 ```bash
 export GI_API_KEY=gi_yourkeyhere
-python skills/gi-promoter/gi_promoter.py --demo
 ```
 
 ## Gotchas

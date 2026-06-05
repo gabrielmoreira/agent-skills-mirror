@@ -3,6 +3,7 @@ name: optimize
 description: Analyze and suggest performance improvements for code, queries, or systems
 argument-hint: "<file_or_module> [--focus speed|memory|bundle]"
 effort: medium
+when_to_use: "Use when a function or module needs performance analysis or improvements."
 disable-model-invocation: true
 ---
 

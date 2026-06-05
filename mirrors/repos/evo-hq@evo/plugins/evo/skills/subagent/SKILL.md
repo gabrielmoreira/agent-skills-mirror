@@ -1,7 +1,7 @@
 ---
 name: subagent
 description: Internal protocol for evo optimization subagents. Loaded by subagents spawned from /optimize via their host's skill loader. Not for orchestrator use.
-evo_version: 0.4.4
+evo_version: 0.4.5
 ---
 
 # Evo Subagent Protocol

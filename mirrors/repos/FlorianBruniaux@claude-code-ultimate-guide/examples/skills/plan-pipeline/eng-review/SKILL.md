@@ -1,11 +1,11 @@
 ---
 name: plan-pipeline-eng-review
-description: Engineering architecture gate — lock architecture, diagrams, edge cases, and test matrix before writing implementation code
+description: Engineering architecture gate: lock architecture, diagrams, edge cases, and test matrix before writing implementation code
 effort: medium
 disable-model-invocation: true
 ---
 
-# /plan-pipeline:eng-review — Engineering Architecture Gate
+# /plan-pipeline:eng-review: Engineering Architecture Gate
 
 Post-direction, pre-implementation command. Takes validated product direction and returns a buildable technical spec with diagrams. Forces the system to think through architecture before a single line of implementation code is written.
 
@@ -50,7 +50,7 @@ The key unlock: **forcing diagram generation**. Diagrams surface hidden assumpti
 # /plan-pipeline:eng-review
 
 You are in engineering manager / tech lead mode. Direction is locked.
-Your job is to make it buildable — turn the product direction into a
+Your job is to make it buildable: turn the product direction into a
 technical spec that an engineer can implement without making architecture
 decisions on the fly.
 
@@ -74,7 +74,7 @@ graph LR
     ...
 ```
 
-## Step 3: Core Flow — Sequence Diagram
+## Step 3: Core Flow (Sequence Diagram)
 
 Draw the happy path as a sequence diagram:
 - Which components call which, in what order
@@ -135,7 +135,7 @@ Identify any failure mode from Step 6 that does not have a corresponding test.
 ## Step 9: Open Questions
 
 List any architectural decision that is genuinely unclear and needs a human
-decision before implementation can start. Not a comprehensive list — only
+decision before implementation can start. Not a comprehensive list, only
 blockers.
 ```
 
@@ -171,19 +171,19 @@ stateDiagram-v2
 ```
 
 Failure modes:
-- Classification fails → degrade to manual listing (not silent failure)
-- Enrichment partially fails → use what succeeded, flag missing fields
-- Upload succeeds, classification job never starts → orphaned file, cleanup job required
-- Web data in draft generation → prompt injection vector, sanitize before passing to LLM
+- Classification fails -> degrade to manual listing (not silent failure)
+- Enrichment partially fails -> use what succeeded, flag missing fields
+- Upload succeeds, classification job never starts -> orphaned file, cleanup job required
+- Web data in draft generation -> prompt injection vector, sanitize before passing to LLM
 
 ---
 
 ## Pipeline Position
 
 ```
-/plan-pipeline:ceo-review    → product direction locked
-/plan-pipeline:eng-review    → architecture locked        ← you are here
-/plan-pipeline:start         → produce implementation plan
-/plan-pipeline:validate      → validate before execution
-/plan-pipeline:execute       → execute to merged PR
+/plan-pipeline:ceo-review    -> product direction locked
+/plan-pipeline:eng-review    -> architecture locked        <- you are here
+/plan-pipeline:start         -> produce implementation plan
+/plan-pipeline:validate      -> validate before execution
+/plan-pipeline:execute       -> execute to merged PR
 ```

@@ -6,7 +6,9 @@ Conventions for working in this repo. Read before editing.
 
 A bilingual (EN/中文) methodology + prompt library + Claude Code Skill for
 writing cinematic AI-video prompts, built from Mx-Shell's *Zombie Scavenger*
-method. Pure docs + one Skill — no build, no tests to run.
+method. Pure docs + one Skill, no build step. Two CI checks: a dead-link
+scan (`.github/workflows/links.yml`) and LLM-judge skill evals
+(`.github/workflows/evals.yml` + `evals/`, needs the `ANTHROPIC_API_KEY` secret).
 
 ## Hard conventions
 
@@ -22,6 +24,10 @@ method. Pure docs + one Skill — no build, no tests to run.
 3. **The Skill: `SKILL.md` (English) is what Claude Code loads and executes.**
    `SKILL.zh.md` is a human reference translation — keep it at parity when you
    change the rules, but the English file is canonical.
+   **The skill lives at `skills/shortfilm-prompt/` (plugin root), NOT
+   `.claude/skills/`.** A Claude Code plugin only discovers skills under
+   `<plugin-root>/skills/`; the old `.claude/skills/` path made the marketplace
+   install ship an empty plugin (fixed in v0.3.1). Don't move it back.
 
 4. **After editing any internal link, run a dead-link check** across all
    `*.md` before committing. This has bitten us repeatedly.
@@ -50,4 +56,4 @@ ships only structured, original documentation.
 ## Releasing
 
 Bump `version` in both `.claude-plugin/plugin.json` and
-`.claude-plugin/marketplace.json`, then tag + `gh release create`. Current: v0.2.0.
+`.claude-plugin/marketplace.json`, then tag + `gh release create`. Current: v0.3.1.

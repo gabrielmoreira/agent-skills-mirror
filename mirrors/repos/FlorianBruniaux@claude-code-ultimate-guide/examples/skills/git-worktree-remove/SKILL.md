@@ -3,6 +3,7 @@ name: git-worktree-remove
 description: Safely remove a git worktree with branch cleanup and safety checks
 argument-hint: <worktree_name>
 effort: low
+when_to_use: "Use when removing a specific worktree by name."
 disable-model-invocation: true
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: validate-changes
 description: Evaluate staged changes using LLM-as-a-Judge before committing
-effort: low
+effort: medium
 disable-model-invocation: true
 ---
 

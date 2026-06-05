@@ -8,7 +8,7 @@ effort: medium
 disable-model-invocation: true
 ---
 
-# /ci:all — Full CI before PR
+# /ci:all: Full CI before PR
 
 Runs everything in order: local tests → type check → push → pipeline URL.
 
@@ -24,7 +24,7 @@ elif [ -f "Cargo.toml" ]; then STACK="rust"
 fi
 ```
 
-## Step 1 — Local tests (blocking)
+## Step 1: Local tests (blocking)
 
 **Python (uv/pytest):**
 ```bash
@@ -46,7 +46,7 @@ cargo test --quiet 2>&1
 
 If `--skip-tests` is passed → skip to step 2.
 
-## Step 2 — Push + pipeline
+## Step 2: Push + pipeline
 
 ```bash
 BRANCH=$(git branch --show-current)
@@ -60,7 +60,7 @@ else
 fi
 ```
 
-## Step 3 — Pipeline URL
+## Step 3: Pipeline URL
 
 ### GitLab CI
 
@@ -93,7 +93,7 @@ fi
 ## Expected output
 
 ```
-CI — my-app (Node/Vitest)
+CI: my-app (Node/Vitest)
 ──────────────────────────
 
 ① Local tests
@@ -113,7 +113,7 @@ Next step: open a PR with /pr or directly on GitLab/GitHub.
 
 If tests fail:
 ```
-CI — my-api (Python/pytest)
+CI: my-api (Python/pytest)
 ────────────────────────────
 
 ① Local tests

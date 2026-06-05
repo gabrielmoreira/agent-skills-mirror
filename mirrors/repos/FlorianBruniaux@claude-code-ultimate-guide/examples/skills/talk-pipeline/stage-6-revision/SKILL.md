@@ -1,8 +1,7 @@
 ---
 name: talk-stage6-revision
 description: "Produces revision sheets with quick navigation by act, a master concept-to-URL table, Q&A cheat-sheet with 6-10 anticipated questions, glossary, and external resources list. Use when preparing for a talk with Q&A, creating shareable reference material for attendees, or building a safety-net glossary for live delivery."
-tags: [talk, pipeline, presentation, stage-6]
-allowed-tools: "Write, Read"
+allowed-tools: Write Read
 effort: medium
 ---
 
@@ -12,18 +11,18 @@ Produces revision sheets usable during and after the talk. Quick navigation by a
 
 ## When to Use This Skill
 
-- After Stage 5 (Script) — needs pitch + slides
+- After Stage 5 (Script), which provides pitch + slides
 - Before a talk where Q&A is expected
 - To create a shareable resource for attendees
 
 ## What This Skill Does
 
-1. **Reads all inputs** — pitch + slides + concepts (+ timeline if available)
-2. **Extracts navigation** — table of contents with anchors per act
-3. **Rebuilds by act** — key concepts + metrics + anecdotes + probable Q&A
-4. **Builds master table** — all concepts + definitions + URLs
-5. **Builds Q&A cheat-sheet** — 6-10 questions + short answers + links
-6. **Builds glossary** — technical terms from the talk
+1. **Reads all inputs**: pitch + slides + concepts (+ timeline if available)
+2. **Extracts navigation**: table of contents with anchors per act
+3. **Rebuilds by act**: key concepts + metrics + anecdotes + probable Q&A
+4. **Builds master table**: all concepts + definitions + URLs
+5. **Builds Q&A cheat-sheet**: 6-10 questions + short answers + links
+6. **Builds glossary**: technical terms from the talk
 7. **Lists external resources**
 8. **Assembles and saves**
 
@@ -32,7 +31,7 @@ Produces revision sheets usable during and after the talk. Quick navigation by a
 - `talks/{YYYY}-{slug}-pitch.md` (required)
 - `talks/{YYYY}-{slug}-slides.md` (required)
 - `talks/{YYYY}-{slug}-concepts.md` (required)
-- `talks/{YYYY}-{slug}-timeline.md` (optional — for metrics accuracy)
+- `talks/{YYYY}-{slug}-timeline.md` (optional, for metrics accuracy)
 
 ## Output
 
@@ -41,10 +40,10 @@ Produces revision sheets usable during and after the talk. Quick navigation by a
 ## Output Format
 
 ```markdown
-# Revision Sheets — {title}
+# Revision Sheets: {title}
 
 **Date**: {date} · **Talk duration**: {n} min + {n} min Q&A
-**Purpose**: Someone asks a question → find the section → share the URL in 5 seconds
+**Purpose**: Someone asks a question -> find the section -> share the URL in 5 seconds
 
 ---
 
@@ -78,7 +77,7 @@ Produces revision sheets usable during and after the talk. Quick navigation by a
 ### Metrics to know
 
 ```
-{Metrics as code block — one per line, format: value → context}
+{Metrics as code block, one per line, format: value -> context}
 ```
 
 ### Storytelling / Anecdotes
@@ -104,7 +103,7 @@ Produces revision sheets usable during and after the talk. Quick navigation by a
 ### Summary metrics (the big numbers)
 
 ```
-{All summary metrics — one per line}
+{All summary metrics, one per line}
 ```
 
 ### {N} actions for Monday (if applicable)
@@ -115,7 +114,7 @@ Produces revision sheets usable during and after the talk. Quick navigation by a
 
 ---
 
-## Master Table: Concept → Definition → URL to share
+## Master Table: Concept -> Definition -> URL to share
 
 **The core deliverable. Every technical concept from the talk.**
 
@@ -132,7 +131,7 @@ Produces revision sheets usable during and after the talk. Quick navigation by a
 
 ---
 
-### Q1 — "{Question}"
+### Q1: "{Question}"
 
 **Short answer**:
 {Answer in 3-5 bullets}
@@ -143,7 +142,7 @@ Produces revision sheets usable during and after the talk. Quick navigation by a
 
 ---
 
-[Q2 through Q{n} — same structure]
+[Q2 through Q{n}: same structure]
 
 ---
 
@@ -180,7 +179,7 @@ Produces revision sheets usable during and after the talk. Quick navigation by a
 
 ### Master Table
 - Include ALL technical concepts mentioned in pitch and slides
-- URL = link to a public resource (GitHub, docs, guide) — no dead links
+- URL = link to a public resource (GitHub, docs, guide), no dead links
 - If no link: note "pure storytelling, no guide section" or "concept specific to the project"
 - Definition = what you'd say if someone in the room asked "what's that?"
 
@@ -192,7 +191,7 @@ Produces revision sheets usable during and after the talk. Quick navigation by a
 
 ### Metrics
 - Code block format for metrics (faster to scan)
-- One metric per line: `{value}` — {context}
+- One metric per line: `{value}` ({context})
 - Always with units (%, ms, K, days...)
 
 ### Anecdotes
@@ -219,11 +218,11 @@ Produces revision sheets usable during and after the talk. Quick navigation by a
 
 ## Tips
 
-- The revision sheets are the most re-used output — attendees ask for links, you pull up the master table in 5 seconds
-- Build the Q&A from the audience profile: what are the 3 most skeptical questions a senior dev in that room would ask?
+- The revision sheets are the most re-used output: attendees ask for links, you pull up the master table in 5 seconds
+- Build the Q&A from the audience profile (what are the 3 most skeptical questions a senior dev in that room would ask?)
 - The glossary is your safety net: you blank on a term mid-talk, glance at the glossary, recover in 2 seconds
 
 ## Related
 
-- [Stage 5: Script](../stage-5-script/SKILL.md) — prerequisite
+- [Stage 5: Script](../stage-5-script/SKILL.md): prerequisite
 - [Orchestrator](../orchestrator/SKILL.md)

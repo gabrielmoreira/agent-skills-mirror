@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tw93/Waza` — 26 default patterns, 0 followed patterns, 49 file(s) materialized.
+Mirror of `tw93/Waza` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tw93/Waza` — 26 default patterns, 0 followed patterns, 49 file(s) m
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 49 |
+| Files         | 50 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -103,11 +103,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | ✓ | [`skills/RESOLVER.md`](skills/RESOLVER.md) |
 | 43 | ✓ | [`skills/think/SKILL.md`](skills/think/SKILL.md) |
 | 44 | ✓ | [`skills/write/references/write-en.md`](skills/write/references/write-en.md) |
-| 45 | ✓ | [`skills/write/references/write-zh-bilingual.md`](skills/write/references/write-zh-bilingual.md) |
-| 46 | ✓ | [`skills/write/references/write-zh-prose.md`](skills/write/references/write-zh-prose.md) |
-| 47 | ✓ | [`skills/write/references/write-zh-release-notes.md`](skills/write/references/write-zh-release-notes.md) |
-| 48 | ✓ | [`skills/write/references/write-zh.md`](skills/write/references/write-zh.md) |
-| 49 | ✓ | [`skills/write/SKILL.md`](skills/write/SKILL.md) |
+| 45 | ✓ | [`skills/write/references/write-product-localization.md`](skills/write/references/write-product-localization.md) |
+| 46 | ✓ | [`skills/write/references/write-zh-bilingual.md`](skills/write/references/write-zh-bilingual.md) |
+| 47 | ✓ | [`skills/write/references/write-zh-prose.md`](skills/write/references/write-zh-prose.md) |
+| 48 | ✓ | [`skills/write/references/write-zh-release-notes.md`](skills/write/references/write-zh-release-notes.md) |
+| 49 | ✓ | [`skills/write/references/write-zh.md`](skills/write/references/write-zh.md) |
+| 50 | ✓ | [`skills/write/SKILL.md`](skills/write/SKILL.md) |
 
 ---
 

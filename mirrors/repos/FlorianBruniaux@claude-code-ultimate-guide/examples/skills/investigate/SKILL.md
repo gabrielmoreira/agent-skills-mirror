@@ -1,12 +1,12 @@
 ---
 name: investigate
-description: Systematic root-cause debugging — find the cause before writing any fix
+description: Systematic root-cause debugging: find the cause before writing any fix
 argument-hint: <issue_description>
 effort: medium
 disable-model-invocation: true
 ---
 
-# Investigate — Root-Cause Debugging
+# Investigate: Root-Cause Debugging
 
 Systematic debugging with mandatory root cause investigation before any code changes.
 
@@ -27,7 +27,7 @@ Gather all available context before forming any hypothesis.
    - "When did this start happening?"
 3. Identify the affected component and its boundaries
 
-**Output**: A precise symptom statement — what fails, when, with what error.
+**Output**: A precise symptom statement: what fails, when, with what error.
 
 ---
 
@@ -105,10 +105,10 @@ Match the symptom against known bug patterns:
 
 Also check:
 - `TODOS.md` or issue tracker for known issues in the same area
-- `git log` for prior fixes in the same files — recurring bugs in the same location are an architectural smell
+- `git log` for prior fixes in the same files; recurring bugs in the same location are an architectural smell
 
 **External search:** If the pattern doesn't match, search for:
-`{framework} {sanitized-error-type}` — strip hostnames, file paths, internal data. Search the error category, not the raw message.
+`{framework} {sanitized-error-type}` (strip hostnames, file paths, internal data). Search the error category, not the raw message.
 
 **Form a hypothesis**: "Root cause hypothesis: [specific, testable claim about what is wrong and why]"
 
@@ -139,15 +139,15 @@ import sys; print(f'[DEBUG investigate] value={value!r} type={type(value)}', fil
    3 hypotheses tested, none confirmed. This likely requires deeper investigation.
 
    Options:
-   A) I have a new hypothesis: [describe] — continue investigating
-   B) Add instrumentation and wait — capture the bug in the act next time
-   C) Escalate — this needs someone with deeper system knowledge
+   A) I have a new hypothesis: [describe], continue investigating
+   B) Add instrumentation and wait: capture the bug in the act next time
+   C) Escalate: this needs someone with deeper system knowledge
    ```
 
-**Red flags — slow down immediately:**
-- "Quick fix for now" — there is no "for now"
-- Proposing a fix before tracing data flow — that's guessing
-- Each fix reveals a new problem elsewhere — wrong layer, not wrong code
+**Red flags, slow down immediately:**
+- "Quick fix for now": there is no "for now"
+- Proposing a fix before tracing data flow: that's guessing
+- Each fix reveals a new problem elsewhere: wrong layer, not wrong code
 
 ---
 
@@ -170,9 +170,9 @@ Once root cause is confirmed:
    ```
    This fix touches N files. That's a large blast radius for a bug fix.
 
-   A) Proceed — the root cause genuinely spans these files
-   B) Split — fix the critical path now, defer the broader cleanup
-   C) Rethink — there may be a more targeted approach
+   A) Proceed: the root cause genuinely spans these files
+   B) Split: fix the critical path now, defer the broader cleanup
+   C) Rethink: there may be a more targeted approach
    ```
 
 ---
@@ -183,7 +183,7 @@ Once root cause is confirmed:
 DEBUG REPORT
 ════════════════════════════════════════════════════
 Symptom:          [what the user observed]
-Root cause:       [what was actually wrong — specific, not vague]
+Root cause:       [what was actually wrong, specific not vague]
 Fix:              [what was changed, with file:line references]
 Evidence:         [test output or reproduction showing fix works]
 Regression test:  [file:line of the new test]
@@ -193,16 +193,16 @@ Status:           DONE | DONE_WITH_CONCERNS | BLOCKED
 ```
 
 **Status definitions:**
-- **DONE** — root cause found, fix applied, regression test written, all tests pass
-- **DONE_WITH_CONCERNS** — fixed but cannot fully verify (intermittent, requires staging)
-- **BLOCKED** — root cause unclear after full investigation
+- **DONE**: root cause found, fix applied, regression test written, all tests pass
+- **DONE_WITH_CONCERNS**: fixed but cannot fully verify (intermittent, requires staging)
+- **BLOCKED**: root cause unclear after full investigation
 
 **Escalation format (when BLOCKED):**
 ```
 STATUS: BLOCKED
 REASON: [1-2 sentences explaining what was tried and why it failed]
 ATTEMPTED: [list of hypotheses tested]
-RECOMMENDATION: [what the user should do next — add logging, escalate, architectural review]
+RECOMMENDATION: [what the user should do next: add logging, escalate, or request an architectural review]
 ```
 
 ## Important Rules
@@ -223,8 +223,8 @@ RECOMMENDATION: [what the user should do next — add logging, escalate, archite
 
 ## Related Commands
 
-- `/review-pr` — review the fix before merging
-- `/qa` — run browser QA on the affected feature after fixing
-- `/ship` — pre-deploy checklist after investigation is complete
+- `/review-pr`: review the fix before merging
+- `/qa`: run browser QA on the affected feature after fixing
+- `/ship`: pre-deploy checklist after investigation is complete
 
 $ARGUMENTS

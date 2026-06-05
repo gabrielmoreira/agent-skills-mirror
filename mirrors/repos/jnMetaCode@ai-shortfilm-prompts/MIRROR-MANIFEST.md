@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jnMetaCode/ai-shortfilm-prompts` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `jnMetaCode/ai-shortfilm-prompts` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jnMetaCode/ai-shortfilm-prompts` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,15 +59,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/shortfilm-prompt/SKILL.md`](.claude/skills/shortfilm-prompt/SKILL.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`prompts/cyber-wuxia.md`](prompts/cyber-wuxia.md) |
+| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`prompts/cyber-wuxia.md`](prompts/cyber-wuxia.md) |
+| 3 | ✓ | [`prompts/index.json`](prompts/index.json) |
 | 4 | ✓ | [`prompts/kaisa-transformation.md`](prompts/kaisa-transformation.md) |
 | 5 | ✓ | [`prompts/kamen-rider-transformations.md`](prompts/kamen-rider-transformations.md) |
 | 6 | ✓ | [`prompts/metal-gear-charge-combat.md`](prompts/metal-gear-charge-combat.md) |
 | 7 | ✓ | [`prompts/pacific-rim-gundam.md`](prompts/pacific-rim-gundam.md) |
 | 8 | ✓ | [`prompts/README.md`](prompts/README.md) |
 | 9 | ✓ | [`prompts/zombie-scavenger.md`](prompts/zombie-scavenger.md) |
+| 10 | ✓ | [`skills/shortfilm-prompt/examples/01-mecha-energy-shield.md`](skills/shortfilm-prompt/examples/01-mecha-energy-shield.md) |
+| 11 | ✓ | [`skills/shortfilm-prompt/examples/02-skill-output-sample.md`](skills/shortfilm-prompt/examples/02-skill-output-sample.md) |
+| 12 | ✓ | [`skills/shortfilm-prompt/examples/03-multi-shot-cat-encounter.md`](skills/shortfilm-prompt/examples/03-multi-shot-cat-encounter.md) |
+| 13 | ✓ | [`skills/shortfilm-prompt/examples/04-weapon-charge-combat.md`](skills/shortfilm-prompt/examples/04-weapon-charge-combat.md) |
+| 14 | ✓ | [`skills/shortfilm-prompt/examples/05-ip-name-forced.md`](skills/shortfilm-prompt/examples/05-ip-name-forced.md) |
+| 15 | ✓ | [`skills/shortfilm-prompt/examples/README.md`](skills/shortfilm-prompt/examples/README.md) |
+| 16 | ✓ | [`skills/shortfilm-prompt/SKILL.md`](skills/shortfilm-prompt/SKILL.md) |
+| 17 | ✓ | [`skills/shortfilm-prompt/SKILL.zh.md`](skills/shortfilm-prompt/SKILL.zh.md) |
+| 18 | ✓ | [`skills/shortfilm-prompt/TESTING.md`](skills/shortfilm-prompt/TESTING.md) |
 
 ---
 

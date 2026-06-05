@@ -1,6 +1,6 @@
 ---
 mode: agent
-description: Reconcile the five naming registries (`coding-prefixes.md`, `api-conventions.md`, `database-schema.md`, `error-codes.md`, `config-vars.md`) with what actually exists in the codebase. Runs the naming agent in Mode 4 (Audit Registry), then hands index updates to the curator.
+description: Reconcile the five naming registries (`coding-prefixes.md`, `api-conventions.md`, `database-schema.md`, `error-codes.md`, `config-vars.md`) plus the port registry (`ports.md`) with what actually exists in the codebase. Runs the naming agent in Mode 4 (Audit Registry) and port validator, then hands index updates to the curator.
 ---
 
 # /ai-audit-registries
@@ -13,45 +13,59 @@ Run a full registry audit. Use this:
 
 ## Procedure
 
-1. **Invoke the [`naming`](../agents/pds-man-naming.agent.md) agent in Mode 4 (Audit Registry).** Pass `scope_path: project-root` so the audit covers every module. Use [`load-context`](../../.ai/agents/tools/load-context.json) per the agent contract.
+1. **Run naming agent Mode 4 (Audit Registry)**:
+   - Invoke [`naming`](../agents/pds-man-naming.agent.md) agent with `scope_path: project-root` and `mode: audit-registries`.
+   - Pass `load-context` per agent contract.
 
-2. **Naming agent runs the sweep**:
-   - Walks the codebase for each registry kind:
-     - **coding-prefixes**: every UI element id, component name, and code-side identifier (ap_/ev_/mt_/wk_/fl_/st_) that should match the 2-letter-prefix rule.
-     - **api-conventions**: every route declaration in code (HTTP verbs, paths).
-     - **database-schema**: every table / column / index / migration filename.
-     - **error-codes**: every `ERR_*` literal raised, returned, or asserted.
-     - **config-vars**: every env-var or config-key access in code.
-   - Diffs the in-code population against the registry rows.
-   - Categorizes findings: `additions` (in code, missing from registry), `removals` (in registry, no longer used), `renames` (likely pair: one removed + one added with similar root), `collisions` (two distinct concepts sharing a name).
+2. **Naming agent sweeps five registries**:
+   - **coding-prefixes**: UI element ids, component names, identifiers (ap_/ev_/mt_/wk_/fl_/st_ prefixes)
+   - **api-conventions**: HTTP routes, endpoints, methods
+   - **database-schema**: tables, columns, indices, migrations
+   - **error-codes**: all `ERR_*` literals raised/returned/asserted
+   - **config-vars**: env-vars and config-key accesses
+   - Diffs in-code population vs registry rows
+   - Categorizes: `additions`, `removals`, `renames`, `collisions`
 
-3. **Naming applies safe diffs in-place** to the five registry files:
-   - `additions` — write new rows directly, including the `naming_source` of the originating consultation when known.
-   - `collisions` — never auto-resolve; report to user.
-   - `removals` and `renames` — propose to user; do not execute. These often represent intentional deprecation that needs human review.
+3. **Naming applies safe diffs**:
+   - `additions` → write new rows directly (with `naming_source` when known)
+   - `collisions` → report to user; do not auto-resolve
+   - `removals`/`renames` → propose; await approval
 
-4. **Hand off to [`curator`](../agents/pds-man-curator.agent.md)** via [`delegate-task`](../../.ai/agents/tools/delegate-task.json) with stage `curate` and the audit summary. Curator updates:
-   - [`.ai/index.md`](../../.ai/index.md) entries for any newly registered or removed identifiers,
-   - cross-references in `.ai/instruct.md` files that pointed at the old/new entries.
+4. **Run port registry audit**:
+   - Call `python .ai/engine/port_validator.py . --scope . --audit`
+   - Report: collisions, range_violations, unregistered services, drift (hardcoded vs registry), orphaned (in registry but unused)
+   - Categorize findings same as naming: additions (new services), removals (stale registry entries), drift (config mismatch)
 
-5. **Hand any rename approvals to [`cleanup`](../agents/pds-pipe-cleanup.agent.md)** via `delegate-task` with stage `cleanup`. Cleanup performs the file moves under archive-first, never silently.
+5. **Hand off to [`curator`](../agents/pds-man-curator.agent.md)**:
+   - Pass audit summary: naming findings + port findings
+   - Curator updates [`.ai/index.md`](../../.ai/index.md) for new/removed identifiers and services
+   - Curator updates `.ai/instruct.md` cross-references
 
-6. **File a TODO** for any unresolved item via [`append-todo`](../../.ai/agents/tools/append-todo.json) with severity `minor` and tag `registry-audit`.
+6. **Hand removals/renames to [`cleanup`](../agents/pds-pipe-cleanup.agent.md)**:
+   - Via `delegate-task` with stage `cleanup`
+   - Cleanup archives files under archive-first protocol
+
+7. **File TODOs** for unresolved items via `append-todo` with severity `minor` and tag `registry-audit`.
 
 ## Output
 
 A structured report:
 
 ```
-Registry      Additions  Removals  Renames  Collisions
-prefixes      <n>        <n>       <n>      <n>
-api           <n>        <n>       <n>      <n>
-schema        <n>        <n>       <n>      <n>
-errors        <n>        <n>       <n>      <n>
-config        <n>        <n>       <n>      <n>
+NAMING REGISTRIES:
+  Registry      Additions  Removals  Renames  Collisions
+  prefixes      <n>        <n>       <n>      <n>
+  api           <n>        <n>       <n>      <n>
+  schema        <n>        <n>       <n>      <n>
+  errors        <n>        <n>       <n>      <n>
+  config        <n>        <n>       <n>      <n>
+
+PORT REGISTRY:
+  Status        Additions  Removals  Drift    Collisions
+  ports.md      <n>        <n>       <n>      <n>
 
 Auto-applied: <list of additions written>
-Awaiting approval: <list of removals/renames/collisions>
+Awaiting approval: <list of removals/renames/collisions + port findings>
 TODOs filed: <count>
 Curator handoff: complete | pending
 ```

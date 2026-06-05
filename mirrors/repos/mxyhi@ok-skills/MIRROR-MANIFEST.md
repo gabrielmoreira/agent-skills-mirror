@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 60 file(s) materialized.
+Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 61 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 60 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 60 |
+| Files         | 61 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -106,19 +106,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 45 | ✓ | [`opencli/opencli-browser/SKILL.md`](opencli/opencli-browser/SKILL.md) |
 | 46 | ✓ | [`opencli/opencli-sitemap-author/SKILL.md`](opencli/opencli-sitemap-author/SKILL.md) |
 | 47 | ✓ | [`opencli/opencli-usage/SKILL.md`](opencli/opencli-usage/SKILL.md) |
-| 48 | ✓ | [`opensrc/SKILL.md`](opensrc/SKILL.md) |
-| 49 | ✓ | [`planning-with-files/examples.md`](planning-with-files/examples.md) |
-| 50 | ✓ | [`planning-with-files/reference.md`](planning-with-files/reference.md) |
-| 51 | ✓ | [`planning-with-files/SKILL.md`](planning-with-files/SKILL.md) |
-| 52 | ✓ | [`pptx-generator/SKILL.md`](pptx-generator/SKILL.md) |
-| 53 | ✓ | [`shader-dev/SKILL.md`](shader-dev/SKILL.md) |
-| 54 | ✓ | [`systematic-debugging/SKILL.md`](systematic-debugging/SKILL.md) |
-| 55 | ✓ | [`tdd/deep-modules.md`](tdd/deep-modules.md) |
-| 56 | ✓ | [`tdd/interface-design.md`](tdd/interface-design.md) |
-| 57 | ✓ | [`tdd/mocking.md`](tdd/mocking.md) |
-| 58 | ✓ | [`tdd/refactoring.md`](tdd/refactoring.md) |
-| 59 | ✓ | [`tdd/SKILL.md`](tdd/SKILL.md) |
-| 60 | ✓ | [`tdd/tests.md`](tdd/tests.md) |
+| 48 | ✓ | [`opencli/smart-search/SKILL.md`](opencli/smart-search/SKILL.md) |
+| 49 | ✓ | [`opensrc/SKILL.md`](opensrc/SKILL.md) |
+| 50 | ✓ | [`planning-with-files/examples.md`](planning-with-files/examples.md) |
+| 51 | ✓ | [`planning-with-files/reference.md`](planning-with-files/reference.md) |
+| 52 | ✓ | [`planning-with-files/SKILL.md`](planning-with-files/SKILL.md) |
+| 53 | ✓ | [`pptx-generator/SKILL.md`](pptx-generator/SKILL.md) |
+| 54 | ✓ | [`shader-dev/SKILL.md`](shader-dev/SKILL.md) |
+| 55 | ✓ | [`systematic-debugging/SKILL.md`](systematic-debugging/SKILL.md) |
+| 56 | ✓ | [`tdd/deep-modules.md`](tdd/deep-modules.md) |
+| 57 | ✓ | [`tdd/interface-design.md`](tdd/interface-design.md) |
+| 58 | ✓ | [`tdd/mocking.md`](tdd/mocking.md) |
+| 59 | ✓ | [`tdd/refactoring.md`](tdd/refactoring.md) |
+| 60 | ✓ | [`tdd/SKILL.md`](tdd/SKILL.md) |
+| 61 | ✓ | [`tdd/tests.md`](tdd/tests.md) |
 
 ---
 

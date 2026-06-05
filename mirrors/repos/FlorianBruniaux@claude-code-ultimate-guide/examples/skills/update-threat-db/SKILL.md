@@ -71,25 +71,25 @@ If Perplexity MCP is unavailable, use WebSearch for each query.
 
 For each finding from Phase 2:
 
-1. **Check if already in threat-db.yaml** — skip duplicates
-2. **Verify source credibility** — prefer: CVE databases, security vendor blogs, peer-reviewed research
-3. **Categorize** — which section does it belong to?
-   - `malicious_authors` — new confirmed malicious publishers
-   - `malicious_skills` — new confirmed malicious skill/package names
-   - `malicious_skill_patterns` — new prefix patterns for wildcard matching
-   - `cve_database` — new CVEs with component, severity, fixed_in
-   - `minimum_safe_versions` — update if new patches available
-   - `iocs` — new C2 IPs, exfil URLs, malware hashes
-   - `campaigns` — new coordinated campaigns
-   - `attack_techniques` — new documented attack vectors
-   - `scanning_tools` — new tools or major updates
-   - `defensive_resources` — new frameworks, blocklists
+1. **Check if already in threat-db.yaml**: skip duplicates
+2. **Verify source credibility**: prefer CVE databases, security vendor blogs, peer-reviewed research
+3. **Categorize**: which section does it belong to?
+   - `malicious_authors`: new confirmed malicious publishers
+   - `malicious_skills`: new confirmed malicious skill/package names
+   - `malicious_skill_patterns`: new prefix patterns for wildcard matching
+   - `cve_database`: new CVEs with component, severity, fixed_in
+   - `minimum_safe_versions`: update if new patches available
+   - `iocs`: new C2 IPs, exfil URLs, malware hashes
+   - `campaigns`: new coordinated campaigns
+   - `attack_techniques`: new documented attack vectors
+   - `scanning_tools`: new tools or major updates
+   - `defensive_resources`: new frameworks, blocklists
 
 4. **Assess risk level**:
-   - `critical` — confirmed malicious, active exploitation
-   - `high` — confirmed vulnerable, exploit available
-   - `medium` — theoretical risk, no known exploitation
-   - `low` — informational
+   - `critical`: confirmed malicious, active exploitation
+   - `high`: confirmed vulnerable, exploit available
+   - `medium`: theoretical risk, no known exploitation
+   - `low`: informational
 
 ---
 
@@ -97,12 +97,12 @@ For each finding from Phase 2:
 
 Apply changes following these rules:
 
-1. **Bump version** — increment minor (e.g. 2.0.0 → 2.1.0) for new entries, major for schema changes
-2. **Update `updated` date** — set to today
-3. **Add new sources** — add any new research sources to the `sources` list
-4. **Maintain YAML validity** — use single quotes for patterns containing backslashes
-5. **Preserve existing entries** — never remove entries unless confirmed false positive
-6. **Follow existing format** — match the structure of existing entries exactly
+1. **Bump version**: increment minor (e.g. 2.0.0 → 2.1.0) for new entries, major for schema changes
+2. **Update `updated` date**: set to today
+3. **Add new sources**: add any new research sources to the `sources` list
+4. **Maintain YAML validity**: use single quotes for patterns containing backslashes
+5. **Preserve existing entries**: never remove entries unless confirmed false positive
+6. **Follow existing format**: match the structure of existing entries exactly
 
 **Important**: After editing, validate YAML:
 ```bash
@@ -166,7 +166,7 @@ If major new CVEs found (severity critical/high):
 
 - [ ] Run `/security-check` to test against updated database
 - [ ] Update `guide/security-hardening.md` if new critical CVEs
-- [ ] Commit: `docs(security): update threat-db vX.Y.Z — [summary]`
+- [ ] Commit: `docs(security): update threat-db vX.Y.Z - [summary]`
 ```
 
 $ARGUMENTS

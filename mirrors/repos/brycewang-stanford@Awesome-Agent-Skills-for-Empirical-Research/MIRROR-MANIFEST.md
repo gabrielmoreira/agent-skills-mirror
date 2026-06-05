@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 26 default patterns, 20 followed patterns, 3142 file(s) materialized.
+Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 26 default patterns, 23 followed patterns, 3225 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 2
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 20 |
-| Files         | 3142 |
+| Followed pats | 23 |
+| Files         | 3225 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -58,6 +58,8 @@ Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 2
 - `docs/SKILL_CATALOG.md`
 - `docs/EVALS.md`
 - `docs/QUALITY_GATE.md`
+- `tools/CATALOG.md`
+- `docs/EMPIRICAL_TOOLS_2026-06.md`
 - `SECURITY-SCAN-REPORT.md`
 - `README-en.md`
 - `docs/LICENSE_AUDIT.md`
@@ -70,6 +72,7 @@ Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 2
 - `docs/TAXONOMY.md`
 - `docs/FAQ.md`
 - `docs/SKILL_QUALITY.md`
+- `tools/README.md`
 - `docs/SKILL_SUBMISSION_GUIDE.md`
 
 ## File Index
@@ -3200,26 +3203,109 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3120 | ✓ | [`skills/63-tondevrel-scientific-agent-skills/LICENSE`](skills/63-tondevrel-scientific-agent-skills/LICENSE) |
 | 3121 | ✓ | [`skills/63-tondevrel-scientific-agent-skills/lifelines/SKILL.md`](skills/63-tondevrel-scientific-agent-skills/lifelines/SKILL.md) |
 | 3122 | ✓ | [`skills/63-tondevrel-scientific-agent-skills/README-original.md`](skills/63-tondevrel-scientific-agent-skills/README-original.md) |
-| 3123 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 3124 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 3125 | → | [`docs/CHOOSING_A_SKILL.md`](docs/CHOOSING_A_SKILL.md) |
-| 3126 | → | [`docs/EVALS.md`](docs/EVALS.md) |
-| 3127 | → | [`docs/FAQ.md`](docs/FAQ.md) |
-| 3128 | → | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) |
-| 3129 | → | [`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md) |
-| 3130 | → | [`docs/INSTALL.md`](docs/INSTALL.md) |
-| 3131 | → | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) |
-| 3132 | → | [`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md) |
-| 3133 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
-| 3134 | → | [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) |
-| 3135 | → | [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
-| 3136 | → | [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
-| 3137 | → | [`docs/SKILL_SUBMISSION_GUIDE.md`](docs/SKILL_SUBMISSION_GUIDE.md) |
-| 3138 | → | [`docs/TAXONOMY.md`](docs/TAXONOMY.md) |
-| 3139 | → | [`docs/TRUST.md`](docs/TRUST.md) |
-| 3140 | → | [`README-en.md`](README-en.md) |
-| 3141 | → | [`README.md`](README.md) |
-| 3142 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
+| 3123 | ✓ | [`skills/64-tmonk-mcp-stata/LICENSE`](skills/64-tmonk-mcp-stata/LICENSE) |
+| 3124 | ✓ | [`skills/64-tmonk-mcp-stata/README-original.md`](skills/64-tmonk-mcp-stata/README-original.md) |
+| 3125 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-causal-inference/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-causal-inference/agents/openai.yaml) |
+| 3126 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-causal-inference/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-causal-inference/manifest.json) |
+| 3127 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-causal-inference/references/designs.md`](skills/64-tmonk-mcp-stata/skills/stata-causal-inference/references/designs.md) |
+| 3128 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-causal-inference/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-causal-inference/SKILL.md) |
+| 3129 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-data-audit/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-data-audit/agents/openai.yaml) |
+| 3130 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-data-audit/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-data-audit/manifest.json) |
+| 3131 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-data-audit/references/checklist.md`](skills/64-tmonk-mcp-stata/skills/stata-data-audit/references/checklist.md) |
+| 3132 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-data-audit/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-data-audit/SKILL.md) |
+| 3133 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-data-provenance/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-data-provenance/agents/openai.yaml) |
+| 3134 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-data-provenance/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-data-provenance/manifest.json) |
+| 3135 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-data-provenance/references/lineage.md`](skills/64-tmonk-mcp-stata/skills/stata-data-provenance/references/lineage.md) |
+| 3136 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-data-provenance/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-data-provenance/SKILL.md) |
+| 3137 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-environment-diagnose/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-environment-diagnose/agents/openai.yaml) |
+| 3138 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-environment-diagnose/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-environment-diagnose/manifest.json) |
+| 3139 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-environment-diagnose/references/troubleshooting.md`](skills/64-tmonk-mcp-stata/skills/stata-environment-diagnose/references/troubleshooting.md) |
+| 3140 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-environment-diagnose/scripts/report_environment.py`](skills/64-tmonk-mcp-stata/skills/stata-environment-diagnose/scripts/report_environment.py) |
+| 3141 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-environment-diagnose/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-environment-diagnose/SKILL.md) |
+| 3142 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-graph/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-graph/agents/openai.yaml) |
+| 3143 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-graph/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-graph/manifest.json) |
+| 3144 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-graph/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-graph/SKILL.md) |
+| 3145 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-help/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-help/agents/openai.yaml) |
+| 3146 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-help/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-help/manifest.json) |
+| 3147 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-help/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-help/SKILL.md) |
+| 3148 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-inspect/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-inspect/agents/openai.yaml) |
+| 3149 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-inspect/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-inspect/manifest.json) |
+| 3150 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-inspect/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-inspect/SKILL.md) |
+| 3151 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-lint/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-lint/agents/openai.yaml) |
+| 3152 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-lint/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-lint/manifest.json) |
+| 3153 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-lint/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-lint/SKILL.md) |
+| 3154 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-log/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-log/agents/openai.yaml) |
+| 3155 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-log/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-log/manifest.json) |
+| 3156 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-log/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-log/SKILL.md) |
+| 3157 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-modernize/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-modernize/agents/openai.yaml) |
+| 3158 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-modernize/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-modernize/manifest.json) |
+| 3159 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-modernize/references/patterns.md`](skills/64-tmonk-mcp-stata/skills/stata-modernize/references/patterns.md) |
+| 3160 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-modernize/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-modernize/SKILL.md) |
+| 3161 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-power-analysis/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-power-analysis/agents/openai.yaml) |
+| 3162 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-power-analysis/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-power-analysis/manifest.json) |
+| 3163 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-power-analysis/references/power-checklist.md`](skills/64-tmonk-mcp-stata/skills/stata-power-analysis/references/power-checklist.md) |
+| 3164 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-power-analysis/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-power-analysis/SKILL.md) |
+| 3165 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-publication-qa/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-publication-qa/agents/openai.yaml) |
+| 3166 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-publication-qa/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-publication-qa/manifest.json) |
+| 3167 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-publication-qa/references/checklist.md`](skills/64-tmonk-mcp-stata/skills/stata-publication-qa/references/checklist.md) |
+| 3168 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-publication-qa/scripts/graph_qa_checklist.py`](skills/64-tmonk-mcp-stata/skills/stata-publication-qa/scripts/graph_qa_checklist.py) |
+| 3169 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-publication-qa/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-publication-qa/SKILL.md) |
+| 3170 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-referee-response/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-referee-response/agents/openai.yaml) |
+| 3171 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-referee-response/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-referee-response/manifest.json) |
+| 3172 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-referee-response/references/response-patterns.md`](skills/64-tmonk-mcp-stata/skills/stata-referee-response/references/response-patterns.md) |
+| 3173 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-referee-response/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-referee-response/SKILL.md) |
+| 3174 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-replication/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-replication/agents/openai.yaml) |
+| 3175 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-replication/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-replication/manifest.json) |
+| 3176 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-replication/references/workflow.md`](skills/64-tmonk-mcp-stata/skills/stata-replication/references/workflow.md) |
+| 3177 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-replication/scripts/compare_specs.py`](skills/64-tmonk-mcp-stata/skills/stata-replication/scripts/compare_specs.py) |
+| 3178 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-replication/scripts/summarize_log.py`](skills/64-tmonk-mcp-stata/skills/stata-replication/scripts/summarize_log.py) |
+| 3179 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-replication/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-replication/SKILL.md) |
+| 3180 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-results/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-results/agents/openai.yaml) |
+| 3181 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-results/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-results/manifest.json) |
+| 3182 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-results/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-results/SKILL.md) |
+| 3183 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-run/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-run/agents/openai.yaml) |
+| 3184 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-run/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-run/manifest.json) |
+| 3185 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-run/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-run/SKILL.md) |
+| 3186 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-setup/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-setup/agents/openai.yaml) |
+| 3187 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-setup/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-setup/manifest.json) |
+| 3188 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-setup/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-setup/SKILL.md) |
+| 3189 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-table-builder/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-table-builder/agents/openai.yaml) |
+| 3190 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-table-builder/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-table-builder/manifest.json) |
+| 3191 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-table-builder/references/table-patterns.md`](skills/64-tmonk-mcp-stata/skills/stata-table-builder/references/table-patterns.md) |
+| 3192 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-table-builder/scripts/check_table_ready.py`](skills/64-tmonk-mcp-stata/skills/stata-table-builder/scripts/check_table_ready.py) |
+| 3193 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-table-builder/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-table-builder/SKILL.md) |
+| 3194 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-toolkit/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata-toolkit/agents/openai.yaml) |
+| 3195 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-toolkit/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata-toolkit/manifest.json) |
+| 3196 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-toolkit/references/error-handling.md`](skills/64-tmonk-mcp-stata/skills/stata-toolkit/references/error-handling.md) |
+| 3197 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-toolkit/references/research-workflows.md`](skills/64-tmonk-mcp-stata/skills/stata-toolkit/references/research-workflows.md) |
+| 3198 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-toolkit/references/tool-reference.md`](skills/64-tmonk-mcp-stata/skills/stata-toolkit/references/tool-reference.md) |
+| 3199 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata-toolkit/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata-toolkit/SKILL.md) |
+| 3200 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata/agents/openai.yaml) |
+| 3201 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata/manifest.json) |
+| 3202 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata/SKILL.md) |
+| 3203 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 3204 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 3205 | → | [`docs/CHOOSING_A_SKILL.md`](docs/CHOOSING_A_SKILL.md) |
+| 3206 | → | [`docs/EMPIRICAL_TOOLS_2026-06.md`](docs/EMPIRICAL_TOOLS_2026-06.md) |
+| 3207 | → | [`docs/EVALS.md`](docs/EVALS.md) |
+| 3208 | → | [`docs/FAQ.md`](docs/FAQ.md) |
+| 3209 | → | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) |
+| 3210 | → | [`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md) |
+| 3211 | → | [`docs/INSTALL.md`](docs/INSTALL.md) |
+| 3212 | → | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) |
+| 3213 | → | [`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md) |
+| 3214 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
+| 3215 | → | [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) |
+| 3216 | → | [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
+| 3217 | → | [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
+| 3218 | → | [`docs/SKILL_SUBMISSION_GUIDE.md`](docs/SKILL_SUBMISSION_GUIDE.md) |
+| 3219 | → | [`docs/TAXONOMY.md`](docs/TAXONOMY.md) |
+| 3220 | → | [`docs/TRUST.md`](docs/TRUST.md) |
+| 3221 | → | [`README-en.md`](README-en.md) |
+| 3222 | → | [`README.md`](README.md) |
+| 3223 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
+| 3224 | → | [`tools/CATALOG.md`](tools/CATALOG.md) |
+| 3225 | → | [`tools/README.md`](tools/README.md) |
 
 ---
 

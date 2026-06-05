@@ -12,11 +12,13 @@ CodePilot — Codex 的桌面 GUI 客户端，基于 Electron + Next.js。
 - 涉及构建/打包的改动需要完整执行一次打包流程验证产物可用
 - 涉及多平台的改动需要考虑各平台的差异性
 
-**UI 改动必须用 CDP 验证（chrome-devtools MCP）：**
-- 修改组件、样式、布局后，必须通过 chrome-devtools MCP 实际验证效果
-- 验证流程：`npm run dev` 启动应用 → 用 CDP 打开 `http://localhost:3000` 对应页面 → 截图确认渲染正确 → 检查 console 无报错
-- 涉及交互的改动（按钮、表单、导航）需通过 CDP 模拟点击/输入并截图验证
-- 修改响应式布局时，用 CDP 的 device emulation 分别验证桌面和移动端视口
+**UI 改动必须验证，但默认不要强制 CDP：**
+- 修改组件、样式、布局后，必须实际验证效果；优先选择最小、最稳定的验证方式，避免长时间占用浏览器自动化进程
+- 默认顺序：`npm run test` / `npx next build` / 代码审查 → `npm run test:smoke` 或 Playwright E2E → Browser Use 轻量截图与 console 检查 → Chrome 插件 → CDP
+- Browser Use 适合本地页面短程走查（如 `localhost:3001` 的渲染、点击、输入、截图、console）；每次只验证一个明确目标，避免长时间连续操作、full-page DOM dump 或大截图循环
+- Chrome 插件只用于需要用户真实 Chrome 环境的场景：登录态、cookies、已有标签页、Chrome 扩展、远程受保护页面
+- chrome-devtools/CDP 仅作为深度诊断备用：Network/Performance/Issues、精确 CDP 能力或响应式 device emulation；如果出现 profile lock、stale process、超时或内存异常苗头，立即停止并改用更安全的验证方式
+- 涉及交互的改动（按钮、表单、导航）优先补 smoke/e2e；需要人工视觉确认时再补 Browser Use 截图
 
 **新增功能前必须详尽调研：**
 - 新增功能前必须充分调研相关技术方案、API 兼容性、社区最佳实践
@@ -40,6 +42,10 @@ CodePilot — Codex 的桌面 GUI 客户端，基于 Electron + Next.js。
 - body 中按文件或功能分组，说明改了什么、为什么改、影响范围
 - 修复 bug 需说明根因；架构决策需简要说明理由
 
+## 语义验收与反假数据
+
+涉及用户可见的统计、状态、能力支持、权限提示、模型/Runtime 兼容性、上下文用量、进度条、badge、warning、设置页能力清单等功能时，必须先验证"这个数字/状态是不是用户以为的意思"。每个字段要有真实 source breadcrumb；没有真实来源时隐藏、标记 unsupported，或明确写"估算"，不得显示假 0、placeholder 或固定估值。详细 checklist 以 [CLAUDE.md](./CLAUDE.md) 的"语义验收与反假数据"为准。
+
 ## 自检命令
 
 **自检命令（pre-commit hook 会自动执行前三项）：**
@@ -57,6 +63,27 @@ CodePilot — Codex 的桌面 GUI 客户端，基于 Electron + Next.js。
 2. 改动是否涉及数据库 — 是否需要在 `src/lib/db.ts` 更新 schema 迁移
 3. 改动是否涉及类型 — 是否需要更新 `src/types/index.ts`
 4. 改动是否涉及已有文档 — 是否需要更新 `docs/handover/` 中的交接文档
+5. 改动是否构成新功能或大迭代 — 是否需要写文档（见下方"功能文档"）
+
+## 功能文档
+
+**新功能或大迭代完成后必须同时输出两份文档：**
+
+1. **技术交接文档** — 放 `docs/handover/`
+   - 目录结构、数据流、DB schema、API 路由、关键设计决策
+   - 涉及 MCP 工具的需列出工具名、参数、自动批准策略
+   - 目标读者：接手的开发者，需要能仅靠文档理解模块全貌
+2. **产品思考文档** — 放 `docs/insights/`
+   - 功能解决了什么用户问题、为什么这样设计而不是其他方案
+   - 用户反馈驱动的决策、参考的外部文章/竞品/趋势
+   - 未来可能的方向和已知的局限性
+   - 目标读者：产品决策者，需要能理解设计背后的"为什么"
+
+**两份文档必须互相反向链接：**
+- 交接文档开头：`> 产品思考见 [docs/insights/xxx.md](../insights/xxx.md)`
+- 产品文档开头：`> 技术实现见 [docs/handover/xxx.md](../handover/xxx.md)`
+
+**文件命名保持一致**（如 `cli-tools.md`），方便对照查找。
 
 ## 发版
 
@@ -76,11 +103,15 @@ CodePilot — Codex 的桌面 GUI 客户端，基于 Electron + Next.js。
 - 发现技术债务时记录到 `docs/exec-plans/tech-debt-tracker.md`
 - 模板和规范见 `docs/exec-plans/README.md`
 
+**修复闭环：** 接手 P1/P2 review finding、用户反馈、Browser/CDP 失败或测试失败时，按 `Signal → Triage → Fix → Verify → Guardrail` 处理；修复说明必须包含根因、改动、验证和防回归。不要只在聊天里关闭问题；需要沉淀的同类问题写入执行计划、tech-debt tracker 或 guardrail。
+
 ## 文档
 
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — 项目架构、目录结构、数据流、新功能触及点
+- [docs/design.md](./docs/design.md) — UI 设计规范（卡片 / 分割线 / 徽章 / preview 流程等模式；新做 Settings / 同类页面前先读）
 - `docs/exec-plans/` — 执行计划（进度状态 + 决策日志 + 技术债务）
-- `docs/handover/` — 交接文档（架构、数据流、设计决策）
+- `docs/handover/` — 技术交接文档（架构、数据流、设计决策）
+- `docs/insights/` — 产品思考文档（用户问题、设计理由、趋势洞察）
 - `docs/research/` — 调研文档（技术方案、可行性分析）
 
 **检索前先读对应目录的 README.md；增删文件后更新索引。**

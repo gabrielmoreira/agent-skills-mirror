@@ -1,6 +1,6 @@
 ---
 name: ci-status
-description: Show current pipeline status for the active branch — GitLab CI or GitHub Actions
+description: Show current pipeline status for the active branch (GitLab CI or GitHub Actions)
 argument-hint: "[pr_number optional]"
 allowed-tools: [Bash]
 model: haiku
@@ -8,7 +8,7 @@ effort: low
 disable-model-invocation: true
 ---
 
-# /ci:status — Pipeline status
+# /ci:status: Pipeline status
 
 Quick snapshot of the CI pipeline on the current branch.
 

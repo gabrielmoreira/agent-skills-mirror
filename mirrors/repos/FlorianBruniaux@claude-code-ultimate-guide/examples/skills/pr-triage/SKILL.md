@@ -56,7 +56,7 @@ If either fails, stop and explain what is missing.
 
 ---
 
-## Phase 1 — Audit (always executed)
+## Phase 1: Audit (always executed)
 
 ### Data Gathering (parallel commands)
 
@@ -81,7 +81,7 @@ gh api "repos/{owner}/{repo}/pulls/{num}/reviews" \
 gh pr view {num} --json files --jq '[.files[].path] | join(",")'
 ```
 
-**Notes**: Fetching files requires 1 API call per PR — for 20+ PRs, prioritize overlap candidates. The `author` field is an object; always extract `.author.login`.
+**Notes**: Fetching files requires 1 API call per PR; for 20+ PRs, prioritize overlap candidates. The `author` field is an object; always extract `.author.login`.
 
 ### Analysis
 
@@ -97,7 +97,7 @@ gh pr view {num} --json files --jq '[.files[].path] | join(",")'
 Size format: `+{additions}/-{deletions}, {files} files ({label})`
 
 **Detections**:
-- **Overlaps**: compare file lists across PRs — if >50% files in common → cross-reference
+- **Overlaps**: compare file lists across PRs; if >50% files in common → cross-reference
 - **Clusters**: author with 3+ open PRs → suggest review order (smallest first)
 - **Staleness**: no activity for >14 days → flag "stale"
 - **CI status**: via `statusCheckRollup` → `clean` / `unstable` / `dirty`
@@ -111,15 +111,15 @@ Size format: `+{additions}/-{deletions}, {files} files ({label})`
 
 _Internal PRs_: author in collaborators list
 
-_External — Ready_: additions ≤ 1000 AND files ≤ 10 AND `mergeable` ≠ `CONFLICTING` AND CI clean/unstable
+_External, Ready_: additions ≤ 1000 AND files ≤ 10 AND `mergeable` ≠ `CONFLICTING` AND CI clean/unstable
 
-_External — Problematic_: any of:
+_External, Problematic_: any of:
 - additions > 1000 OR files > 10
 - OR `mergeable` == `CONFLICTING` (merge conflict)
 - OR CI dirty (statusCheckRollup contains failures)
 - OR overlap with another open PR (>50% shared files)
 
-### Output — Triage Table
+### Output: Triage Table
 
 ```
 ## Open PRs ({count})
@@ -128,11 +128,11 @@ _External — Problematic_: any of:
 | PR | Title | Size | CI | Status |
 | -- | ----- | ---- | -- | ------ |
 
-### External — Ready for Review
+### External: Ready for Review
 | PR | Author | Title | Size | CI | Reviews | Action |
 | -- | ------ | ----- | ---- | -- | ------- | ------ |
 
-### External — Problematic
+### External: Problematic
 | PR | Author | Title | Size | Problem | Recommended Action |
 | -- | ------ | ----- | ---- | ------- | ------------------ |
 
@@ -154,15 +154,15 @@ After displaying the triage table, ask via `AskUserQuestion`:
 question: "What would you like to do next?"
 header: "Next Step"
 options:
-  - label: "Phase 2 — Deep review"
+  - label: "Phase 2: Deep review"
     description: "Analyze selected PRs with code-reviewer agents and generate comment drafts"
-  - label: "Phase 4 — Create worktrees"
+  - label: "Phase 4: Create worktrees"
     description: "Set up local worktrees for hands-on review (skips comment generation)"
   - label: "Done"
     description: "End the workflow here"
 ```
 
-Note: Phase 3 (posting comments) is NOT offered here — it requires the drafts generated in Phase 2. If the user picks "Phase 4", Phase 2 → Phase 3 remains accessible afterward.
+Note: Phase 3 (posting comments) is NOT offered here, as it requires the drafts generated in Phase 2. If the user picks "Phase 4", Phase 2 → Phase 3 remains accessible afterward.
 
 ### Automatic Copy
 
@@ -187,7 +187,7 @@ Confirm: `Triage table copied to clipboard.` (EN) / `Tableau copié dans le pres
 
 ---
 
-## Phase 2 — Deep Review (opt-in)
+## Phase 2: Deep Review (opt-in)
 
 ### PR Selection
 
@@ -210,7 +210,7 @@ options:
   - label: "Ready only"
     description: "Review {K} PRs ready to merge"
   - label: "Skip"
-    description: "Stop here — audit only"
+    description: "Stop here, audit only"
 ```
 
 **Draft PR behavior**:
@@ -263,7 +263,7 @@ Aggregate all reports. Display a summary after all reviews complete.
 
 ---
 
-## Phase 3 — Comments (mandatory validation)
+## Phase 3: Comments (mandatory validation)
 
 ### Draft Generation
 
@@ -281,7 +281,7 @@ For each reviewed PR, generate a GitHub comment using the template `templates/re
 
 ```
 ---
-### Draft — PR #{num}: {title}
+### Draft: PR #{num}: {title}
 
 {full comment}
 
@@ -297,10 +297,10 @@ multiSelect: true
 options:
   - label: "All ({N} comments)"
     description: "Post on all reviewed PRs"
-  - label: "PR #{x} — {title_truncated}"
+  - label: "PR #{x}: {title_truncated}"
     description: "Post only on this PR"
   - label: "None"
-    description: "Cancel — post nothing"
+    description: "Cancel, post nothing"
 ```
 
 (Generate one option per PR + "All" + "None")
@@ -359,13 +359,13 @@ Add your stack's checklist to the agent prompt in Phase 2. Examples by stack:
 
 ---
 
-## Phase 4 — Worktree Setup (opt-in)
+## Phase 4: Worktree Setup (opt-in)
 
 Creates local git worktrees for each selected PR so you can run, test, or review code without switching branches.
 
-**Never triggered automatically** — only via Phase 1 navigation or explicit user request.
+**Never triggered automatically.** Only via Phase 1 navigation or explicit user request.
 
-### Step 4.1 — Cache check + PR list
+### Step 4.1: Cache check + PR list
 
 **Cache check**: before using data from Phase 1, verify it is less than 30 minutes old:
 
@@ -402,15 +402,15 @@ If 0 PRs after filtering → display `No reviewable PRs available for worktree (
 ## PRs available for worktree (non-draft)
 
 ### Alice Martin (@alice)
-  [1] #123 — feat(auth): add OAuth2 support
+  [1] #123: feat(auth): add OAuth2 support
       Branch: feat/oauth2  |  Size: M  |  CI: clean
 
 ### Bob Chen (@bob)
-  [2] #456 — fix(api): handle empty response
+  [2] #456: fix(api): handle empty response
       Branch: fix/empty-response  |  Size: S  |  CI: dirty ⚠️
 ```
 
-### Step 4.2 — Selection
+### Step 4.2: Selection
 
 Ask via `AskUserQuestion` (multiSelect):
 
@@ -421,15 +421,15 @@ multiSelect: true
 options:
   - label: "All"
     description: "Create worktrees for all {N} listed PRs"
-  - label: "[1] #{num} — {title} ({author})"
+  - label: "[1] #{num}: {title} ({author})"
     description: "Branch: {branch} | Size: {size} | CI: {ci}"
   - label: "None"
-    description: "Cancel — return to menu"
+    description: "Cancel, return to menu"
 ```
 
 If "None" → end Phase 4.
 
-### Step 4.3 — Sequential creation
+### Step 4.3: Sequential creation
 
 **Execution model**: Claude runs **one bash command per PR**, reads its output, updates its internal state (created / existing / failed), then moves to the next. Never a bash loop wrapping all PRs.
 
@@ -480,7 +480,7 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# Optional: symlink node_modules (Node.js projects — avoids reinstall)
+# Optional: symlink node_modules (Node.js projects, avoids reinstall)
 [ -d "$REPO_ROOT/node_modules" ] && ln -sf "$REPO_ROOT/node_modules" "$WORKTREE_DIR/node_modules"
 
 # Copy project-specific files listed in .worktreeinclude (if present)
@@ -516,14 +516,14 @@ echo "STATUS:CREATED:$PR_NUM:$WORKTREE_DIR"
 Then re-run Phase 4.
 ```
 
-### Step 4.4 — Update existing worktrees
+### Step 4.4: Update existing worktrees
 
 If any `STATUS:EXISTING` collected, offer a single prompt:
 
 ```
 Existing worktrees detected:
-  PR #123 — .worktrees/feat-oauth2
-  PR #789 — .worktrees/fix-session-leak
+  PR #123: .worktrees/feat-oauth2
+  PR #789: .worktrees/fix-session-leak
 
 - [Pull all] git pull --ff-only in all existing worktrees
 - [#123] Pull PR #123 only
@@ -543,11 +543,11 @@ echo "PULL_STATUS:$?:$PR_NUM"
 
 If `PULL_STATUS` ≠ 0:
 ```
-⚠️ PR #123 — --ff-only failed (branches have diverged)
+⚠️ PR #123: --ff-only failed (branches have diverged)
    Manual fix: cd .worktrees/feat-oauth2 && git pull --rebase
 ```
 
-### Step 4.5 — Summary
+### Step 4.5: Summary
 
 ```
 ## Worktrees ready

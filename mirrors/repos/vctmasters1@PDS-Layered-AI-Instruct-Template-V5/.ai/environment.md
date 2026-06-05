@@ -158,6 +158,44 @@ When the AI is about to run any command or suggest a setup step, it must:
 
 ---
 
+## Stage 2b (Environment Gate) Triggers
+
+The Supervisor pipeline's Stage 2b invokes the environment-manager to gate host-mutating operations. Stage 2b is **mandatory** if any of the following operations are present in the change set:
+
+### Host-Mutating Operations (Trigger Stage 2b)
+
+- **Package manager installs**: `npm install -g`, `pip install` (host-level), `pip install --user`, `pipx install`, `brew install`, `apt install`, `choco install`, `dnf install`, `pacman -S`, `winget install`
+- **Global tool installs**: `cargo install` (global), `go install` (writes to `$GOPATH/bin`), `dotnet tool install -g`, `gem install` (global)
+- **Shell or path modifications**: Adding to `$PATH`, modifying shell rc files (`.bashrc`, `.zshrc`, `.profile`, `$PROFILE`)
+- **System-level configuration**: Modifying `/etc/`, Windows registry, or other OS-level config
+- **Setup scripts that install globally**: Any setup.sh, setup.ps1, install.sh that runs host-level installs
+- **Container image builds**: Modifying a Dockerfile that installs system packages (not the code in the project; the **Dockerfile itself** triggers Stage 2b to decide on containment strategy)
+- **Virtual environment creation suggestions**: Proposing `python -m venv`, `poetry install`, `npm ci` if the project has no evidence of the environment existing yet (the gate asks the user to confirm isolation strategy before scaffolding)
+
+### Non-Triggering Operations (Skip Stage 2b)
+
+- Editing files inside the project's existing containment (venv, `node_modules`, `build/`, etc.)
+- Running `npm install` / `pip install` inside an **already-activated venv** or project-local context
+- Building with `cmake --build`, `npm run build`, `python setup.py`, etc. inside existing containment
+- Creating new files or editing source code
+- Running tests or linters (even if they require pre-installed packages — assume the project's venv/containers have them)
+
+### Stage 2b Actions
+
+When triggered, environment-manager:
+
+1. **Detects** the current environment (host vs. container, per [Environment Detection](#environment-detection)).
+2. **Advises**: If on host and the operation is marked ⚠️ in the matrix, asks for confirmation.
+3. **Blocks** if the operation is marked ⛔ and the user has not explicitly overridden.
+4. **Scaffolds** if the user requests: creates `.venv/`, `docker-compose.yml`, `.devcontainer/`, or `.nvmrc` as appropriate before the operation proceeds.
+5. **Returns** to Supervisor with verdict: `green-light` (proceed), `ask` (awaiting user confirmation), or `refuse` (operation cannot proceed in current environment).
+
+---
+
+## AI Behavior Rules
+
+---
+
 ## `/ai-env-check`
 
 The [`/ai-env-check`](../.github/prompts/ai-env-check.prompt.md) slash command:

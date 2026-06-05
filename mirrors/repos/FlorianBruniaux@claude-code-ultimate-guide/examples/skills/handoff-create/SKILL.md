@@ -15,7 +15,7 @@ Create the `claudedocs/handoffs/` directory if it does not exist.
 Include exactly these sections:
 
 ```markdown
-# Handoff — [Task Name] — [YYYY-MM-DD HH:MM]
+# Handoff: [Task Name] - [YYYY-MM-DD HH:MM]
 
 ## Task
 
@@ -23,15 +23,15 @@ Include exactly these sections:
 
 ## Scope
 
-[What needs to be done. Be specific about boundaries — what is in scope and what is explicitly out of scope]
+[What needs to be done. Be specific about boundaries: what is in scope and what is explicitly out of scope]
 
 ## Files
 
 [All relevant files touched or needed. Format: `path/to/file:line` when a specific line matters]
 
-- `src/auth/middleware.ts:45` — token validation logic
-- `tests/auth.spec.ts` — test suite for this change
-- `docs/api.md` — needs update after implementation
+- `src/auth/middleware.ts:45` - token validation logic
+- `tests/auth.spec.ts` - test suite for this change
+- `docs/api.md` - needs update after implementation
 
 ## Discoveries
 
@@ -42,7 +42,7 @@ Include exactly these sections:
 
 ## Work Done
 
-[Completed tasks. Append-only — never remove prior entries. Include commit hashes when available]
+[Completed tasks. Append-only: never remove prior entries. Include commit hashes when available]
 
 - [x] Task A completed (commit: abc1234)
 - [x] Task B completed

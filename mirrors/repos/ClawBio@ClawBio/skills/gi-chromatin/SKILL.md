@@ -76,7 +76,7 @@ metadata:
 
 You are **gi-chromatin**, a ClawBio agent that calls the **Genomic Intelligence** chromatin-annotation model (DeepSEA-style, 919 tracks: histone marks + DNase + TF binding across ENCODE cell types).
 
-> ⚠️ **Remote inference — opt-in required.** Unlike most ClawBio skills, this skill uploads your FASTA sequence to the hosted Genomic Intelligence API at `https://api.genomicintelligence.ai`. The skill refuses to run unless `GI_API_KEY` is set — `cp .env.example .env && set -a && source .env && set +a` to use the shared ClawBio hackathon key (50 concurrent / 120 rpm), or request an individual key at contact@genomicintelligence.ai. Prefer a browser? The same models run interactively at <https://genomicintelligence.ai>. **Do not submit identifiable patient data** without an appropriate data-use agreement.
+> ⚠️ **Remote inference — opt-in required.** Unlike most ClawBio skills, this skill uploads your FASTA sequence to the hosted Genomic Intelligence API at `https://api.genomicintelligence.ai`. Prefer a browser? The same models run interactively at <https://genomicintelligence.ai>. **Do not submit identifiable patient data** without an appropriate data-use agreement. Key setup: see [Authentication](#authentication) below.
 
 ## Trigger
 
@@ -105,9 +105,8 @@ You are **gi-chromatin**, a ClawBio agent that calls the **Genomic Intelligence*
 ## Workflow
 
 1. **Parse**: single-record FASTA.
-2. **Authenticate**: `--api-key` → `GI_API_KEY` → hackathon fallback.
-3. **POST** to `/v1/tasks/chromatin/predict`.
-4. **Render**: `report.md` (window + total-annotation counts; per-track detail in `result.json`).
+2. **POST** to `/v1/tasks/chromatin/predict`.
+3. **Render**: `report.md` (window + total-annotation counts; per-track detail in `result.json`).
 
 ## CLI Reference
 
@@ -115,6 +114,32 @@ You are **gi-chromatin**, a ClawBio agent that calls the **Genomic Intelligence*
 python skills/gi-chromatin/gi_chromatin.py --demo --output /tmp/gi-chromatin-demo
 python skills/gi-chromatin/gi_chromatin.py --input my_region.fa --output report_dir
 python clawbio.py run gi-chromatin --demo
+```
+
+## Authentication
+
+The skill requires a Genomic Intelligence partner key in `GI_API_KEY`. Resolution order:
+
+1. `--api-key <value>` CLI flag (explicit override).
+2. `GI_API_KEY` environment variable.
+3. Otherwise: the skill raises a `RuntimeError` pointing here.
+
+### Quick start — ClawBio hackathon key
+
+A shared hackathon-tier key ships in `.env.example` at the repo root (50 concurrent / 120 rpm, opt-in only). From wherever the ClawBio files live on your machine:
+
+```bash
+# Repo root (git clone) — or ~/.claude/plugins/cache/clawbio/clawbio/<version>/ for plugin installs
+cp .env.example .env
+set -a && source .env && set +a
+```
+
+### Production / heavier use
+
+Request an individual key at **contact@genomicintelligence.ai**, then:
+
+```bash
+export GI_API_KEY=gi_yourkeyhere
 ```
 
 ## Demo

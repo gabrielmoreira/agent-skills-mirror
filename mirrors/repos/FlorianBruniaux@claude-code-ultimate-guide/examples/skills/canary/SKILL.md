@@ -1,18 +1,18 @@
 ---
 name: canary
-description: Post-deploy monitoring — watch production after a deploy and alert on regressions
+description: Post-deploy monitoring: watch production after a deploy and alert on regressions
 argument-hint: "[--baseline]"
 effort: medium
 disable-model-invocation: true
 ---
 
-# Canary — Post-Deploy Monitoring
+# Canary: Post-Deploy Monitoring
 
 Watch a live application after deployment. Alert on errors and regressions. Compare against a pre-deploy baseline.
 
 **Two modes:**
-- `--baseline` — capture the current state BEFORE deploying
-- *(default)* — monitor AFTER deploying and compare against baseline
+- `--baseline`: capture the current state BEFORE deploying
+- *(default)*: monitor AFTER deploying and compare against baseline
 
 ## Instructions
 
@@ -52,9 +52,9 @@ Run this BEFORE deploying to capture the current healthy state.
 
 For each page to monitor, record:
 
-1. **HTTP status** — is the page returning 200?
-2. **Response time** — how long does it take to load?
-3. **Content snapshot** — key text content to detect blank pages later
+1. **HTTP status**: is the page returning 200?
+2. **Response time**: how long does it take to load?
+3. **Content snapshot**: key text content to detect blank pages later
 
 ```bash
 # For each page URL
@@ -150,19 +150,19 @@ done
 
 ```
 CANARY ALERT
-════════════════════════════════════════
+=====================================
 Time:     [check #N at Xs elapsed]
 Page:     [URL]
 Level:    [CRITICAL / HIGH / MEDIUM / LOW]
-Finding:  [what changed — be specific]
+Finding:  [what changed, be specific]
 Baseline: [baseline value]
 Current:  [current value]
-════════════════════════════════════════
+=====================================
 Options:
-  A) Investigate now — stop monitoring, focus on this issue
-  B) Continue monitoring — wait for next check to confirm
-  C) Rollback — revert the deploy
-  D) Dismiss — known issue, continue monitoring
+  A) Investigate now: stop monitoring, focus on this issue
+  B) Continue monitoring: wait for next check to confirm
+  C) Rollback: revert the deploy
+  D) Dismiss: known issue, continue monitoring
 ```
 
 ---
@@ -172,8 +172,8 @@ Options:
 After monitoring completes (or user stops), produce a summary.
 
 ```
-CANARY REPORT — [url]
-═══════════════════════════════════════════════════
+CANARY REPORT: [url]
+=========================================
 Duration:    [X minutes]
 Checks:      [N total per page]
 Pages:       [N pages monitored]
@@ -181,7 +181,7 @@ Commit:      [deployed SHA]
 Status:      [HEALTHY / DEGRADED / BROKEN]
 
 Per-Page Results:
-─────────────────────────────────────────
+-----------------------------------------
   Page           Status      Avg Time   Alerts
   /              HEALTHY     450ms      0
   /dashboard     DEGRADED    1100ms     1 medium (was 450ms)
@@ -190,8 +190,8 @@ Per-Page Results:
 
 Alerts Fired: [N] (X critical, Y high, Z medium, W low)
 
-VERDICT: [DEPLOY HEALTHY / DEPLOY HAS ISSUES — see alerts above]
-═══════════════════════════════════════════════════
+VERDICT: [DEPLOY HEALTHY / DEPLOY HAS ISSUES (see alerts above)]
+=========================================
 ```
 
 Save report to `.canary/reports/<date>-canary.md`.
@@ -215,9 +215,9 @@ See Phase 5 above for the full CANARY REPORT template.
 
 Inline alert format (during monitoring):
 ```
-[08:42:15] Check #3 — /dashboard: ALERT HIGH — response time 1250ms (baseline: 420ms)
-[08:43:15] Check #4 — /dashboard: ALERT HIGH — response time 1180ms (baseline: 420ms)
-→ Consistent across 2 checks. Firing alert.
+[08:42:15] Check #3: /dashboard: ALERT HIGH, response time 1250ms (baseline: 420ms)
+[08:43:15] Check #4: /dashboard: ALERT HIGH, response time 1180ms (baseline: 420ms)
+-> Consistent across 2 checks. Firing alert.
 ```
 
 ## Usage
@@ -232,16 +232,16 @@ Inline alert format (during monitoring):
 
 ## Tips
 
-1. **Always capture a baseline** before deploying to production — run `/canary <url> --baseline`
-2. **Start monitoring immediately** after deploy — the first 5 minutes catch 90% of regressions
-3. **CRITICAL alerts = investigate immediately** — don't wait for the monitoring to finish
-4. **MEDIUM alerts (performance)** — may be cache warming, give it 2-3 more checks before acting
-5. **Keep `.canary/baselines/` in git** — so any team member can run canary against the same baseline
+1. **Always capture a baseline** before deploying to production: run `/canary <url> --baseline`
+2. **Start monitoring immediately** after deploy; the first 5 minutes catch 90% of regressions
+3. **CRITICAL alerts** require immediate investigation; don't wait for the monitoring to finish
+4. **MEDIUM alerts (performance)** may be cache warming; give it 2-3 more checks before acting
+5. **Keep `.canary/baselines/` in git** so any team member can run canary against the same baseline
 
 ## Related Commands
 
-- `/ship` — pre-deploy checklist (run before deploying)
-- `/land-and-deploy` — full merge-to-verify pipeline (runs canary automatically)
-- `/qa` — interactive QA testing before shipping
+- `/ship`: pre-deploy checklist (run before deploying)
+- `/land-and-deploy`: full merge-to-verify pipeline (runs canary automatically)
+- `/qa`: interactive QA testing before shipping
 
 $ARGUMENTS

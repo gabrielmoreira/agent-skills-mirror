@@ -375,6 +375,13 @@ When the loop exits:
 
 ---
 
+## Parallel session caveats
+
+- **Multi-repo workspace anchor:** drop a `.omc-workspace` marker at the parent directory so multiple sessions across sub-repos share one `.omc/`. Resolution order: `OMC_STATE_DIR > .omc-workspace > git > cwd`. See `docs/REFERENCE.md`.
+- **Session id source:** OMC_SESSION_ID env var wins in CLI contexts; hook payload data.session_id wins in hook contexts.
+- **Plan id (when applicable):** Self-improve artifact dirs are topic-slug-scoped; for parallel runs with the same topic in the same workspace, expect Wave B2's session-id suffix to land.
+- **Parallel verdict:** supported-with-caveats (topic-slug collision possible; see Wave B2)
+
 ## Approach Family Taxonomy
 
 Every plan must be tagged with exactly one:

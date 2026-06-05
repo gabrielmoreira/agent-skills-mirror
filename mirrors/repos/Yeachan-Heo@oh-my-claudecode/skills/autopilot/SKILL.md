@@ -119,6 +119,13 @@ Why bad: This is an exploration/brainstorming request. Respond conversationally 
 - [ ] User informed of completion with summary of what was built
 </Final_Checklist>
 
+## Parallel session caveats
+
+- **Multi-repo workspace anchor:** drop a `.omc-workspace` marker at the parent directory so multiple sessions across sub-repos share one `.omc/`. Resolution order: `OMC_STATE_DIR > .omc-workspace > git > cwd`. See `docs/REFERENCE.md`.
+- **Session id source:** OMC_SESSION_ID env var wins in CLI contexts; hook payload data.session_id wins in hook contexts.
+- **Plan id (when applicable):** Autopilot state is session-scoped. Two autopilots in the same workspace require distinct session IDs.
+- **Parallel verdict:** supported (session-scoped state)
+
 <Advanced>
 ## Configuration
 

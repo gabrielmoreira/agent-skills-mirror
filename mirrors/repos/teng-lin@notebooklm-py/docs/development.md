@@ -1,7 +1,7 @@
 # Contributing Guide
 
 **Status:** Active
-**Last Updated:** 2026-05-23
+**Last Updated:** 2026-06-04
 
 This guide covers everything you need to contribute to `notebooklm-py`: architecture overview, testing, and releasing.
 
@@ -31,10 +31,10 @@ src/notebooklm/
 ├── _notebooks.py        # NotebooksAPI implementation
 ├── _notebook_metadata.py # Private notebook metadata composition service
 ├── _sources.py          # SourcesAPI implementation
-├── _source_*.py         # Private source services
+├── _source/             # Private source services
 ├── _artifacts.py        # ArtifactsAPI implementation
-├── _artifact_*.py       # Private artifact services
-├── _chat.py             # ChatAPI implementation
+├── _artifact/           # Private artifact services
+├── _chat/               # ChatAPI implementation (facade + chat helpers)
 ├── _research.py         # ResearchAPI implementation
 ├── _notes.py            # NotesAPI implementation
 ├── _mind_map.py         # Private note-backed mind-map service
@@ -90,13 +90,13 @@ src/notebooklm/
 |-------|-------|----------------|
 | **CLI** | `cli/*.py` | User commands, input validation, Rich output |
 | **Client** | `client.py`, `_*.py` | High-level Python API, returns typed dataclasses |
-| **Runtime** | `client.py`, `_client_composed.py`, `_runtime_init.py`, `_kernel.py`, runtime collaborators | `NotebookLMClient` composition root plus seam-module helpers (HTTP client lifecycle, RPC dispatch, metrics, drain bookkeeping, request-id counter, auth refresh, conversation cache, polling registry, cookie persistence) |
+| **Runtime** | `client.py`, `_client_composed.py`, `_runtime/init.py`, `_kernel.py`, runtime collaborators | `NotebookLMClient` composition root plus seam-module helpers (HTTP client lifecycle, RPC dispatch, metrics, drain bookkeeping, request-id counter, auth refresh, conversation cache, polling registry, cookie persistence) |
 | **RPC** | `rpc/*.py` | Protocol encoding/decoding, method IDs |
 
 #### Runtime seam modules
 
 The client runtime is split across `NotebookLMClient` (composition root),
-`ClientComposed` (holder), `_runtime_init.py` (construction helpers),
+`ClientComposed` (holder), `_runtime/init.py` (construction helpers),
 `_kernel.py` (HTTP client owner), and single-responsibility collaborator
 modules. (The legacy `_core.py` compatibility shim was deleted in v0.5.0;
 callers import directly from the canonical modules.) Each helper exposes
@@ -105,12 +105,12 @@ a narrow Protocol surface so it can be unit-tested against a stub:
 | Module | Class | Responsibility |
 |---|---|---|
 | `_client_composed.py` | `ClientComposed` | Client-owned holder for transport, executor, chain host, middleware metadata, and session collaborator bundle. |
-| `_runtime_init.py` | `ClientInternals` helpers | Validates constructor args, builds collaborators, wires middleware, and binds `ClientComposed`. |
+| `_runtime/init.py` | `ClientInternals` helpers | Validates constructor args, builds collaborators, wires middleware, and binds `ClientComposed`. |
 | `_client_metrics.py` | `ClientMetrics` | `ClientMetricsSnapshot` counters, queue-wait recorders, `on_rpc_event` async callback. |
 | `_transport_drain.py` | `TransportDrainTracker` | In-flight transport counters, `_TransportOperationToken`, lazy `asyncio.Condition` powering `client.drain(...)`. |
 | `_reqid_counter.py` | `ReqidCounter` | Monotonic `_reqid` counter for chat backend (baseline 100000, step 100000). |
-| `_runtime_auth.py` | `AuthRefreshCoordinator` | Refresh-task lifecycle, refresh lock, `AuthSnapshot` rotation. |
-| `_runtime_lifecycle.py` | `ClientLifecycle` | Loop-affinity guard, `aclose` plumbing, keepalive task wiring. |
+| `_runtime/auth.py` | `AuthRefreshCoordinator` | Refresh-task lifecycle, refresh lock, `AuthSnapshot` rotation. |
+| `_runtime/lifecycle.py` | `ClientLifecycle` | Loop-affinity guard, `aclose` plumbing, keepalive task wiring. |
 | `_rpc_executor.py` | `RpcExecutor` | RPC dispatch executor with direct collaborator dependencies. |
 | `_request_types.py` | `AuthSnapshot`, `BuildRequest`, request materialization | Shared request construction Interface. |
 | `_transport_errors.py` | transport exceptions, `parse_retry_after`, `raise_mapped_post_error` | Terminal `Kernel.post` error mapping for middleware retry/auth behavior. |
@@ -125,14 +125,14 @@ The feature-facing surface is the set of **capability Protocols** in
 `AuthMetadata` and `Kernel` consumed by the upload pipeline. The
 broad `Session` Protocol that previously bundled these together was
 deleted in the final phase of the capability refactor (see
-[`docs/refactor-history.md`](refactor-history.md) and ADR-013); each
+[`docs/refactor-history.md`](refactor-history.md) and ADR-0013); each
 feature now depends on the narrowest slice it needs and takes those
 collaborators by keyword-only constructor argument. The feature-local
 composite-runtime Protocols (`ChatRuntime`, `ArtifactsRuntime`,
 `UploadRuntime`) and their adapter dataclasses that previously bundled
 three capability Protocols apiece were retired once it was clear they
 only hid three stable collaborators with one production satisfier; see
-ADR-013 for the promotion criterion (≥2 consumers) that still gates
+ADR-0013 for the promotion criterion (≥2 consumers) that still gates
 adding any new shared Protocol.
 
 Private service modules sit inside the client layer but below the public
@@ -145,28 +145,42 @@ services.
 
 ### Boundary Guardrails
 
+These are the same family as the *Architecture & invariant gates* (`tests/_guardrails/`)
+described below. The **pure** ones (e.g. `test_cli_boundary.py`) have been
+consolidated into `tests/_guardrails/`; the **hybrids** that pair a gate with
+behavioral tests (e.g. `test_public_shims.py`) keep their behavioral half in
+`tests/unit/` and split the gate half into a dedicated `tests/_guardrails/`
+file.
+
 The architecture tests encode the current layer contract:
 
-- `tests/unit/test_public_shims.py` has a documented public import manifest.
-  When a docs change adds or removes a supported import path, update the
-  manifest in the same PR so public API drift is intentional and reviewable.
-- `tests/unit/test_cli_boundary.py` parses `src/notebooklm/cli/**/*.py` and
-  rejects CLI imports from `notebooklm._*`, `notebooklm.rpc.*`, or `_private`
-  names exposed by public modules. Promote needed symbols through a public
-  facade (`notebooklm.types`, `notebooklm.auth`, `notebooklm.research`, etc.)
-  before using them from the CLI.
+- `tests/_guardrails/test_public_surface_manifest.py` has a documented public
+  import manifest. When a docs change adds or removes a supported import path,
+  update the manifest in the same PR so public API drift is intentional and
+  reviewable. The behavioral half of the public-shim suite (the
+  `select_cited_sources` / `ResearchAPI` back-compat delegations, the
+  `UnknownTypeWarning` filter behaviour, and `NotebookLMClient.rpc_call`
+  forwarding) stays in `tests/unit/test_public_shims.py`.
+- `tests/_guardrails/test_cli_boundary.py` parses `src/notebooklm/cli/**/*.py`
+  and rejects CLI imports from `notebooklm._*`, `notebooklm.rpc.*`, or
+  `_private` names exposed by public modules. Promote needed symbols through a
+  public facade (`notebooklm.types`, `notebooklm.auth`, `notebooklm.research`,
+  etc.) before using them from the CLI.
 - Auth internals may move under `notebooklm._auth` during architecture work,
   but first-party callers continue to import through `notebooklm.auth`. The
-  compatibility manifest in `tests/unit/test_public_shims.py` enforces the
-  current first-party surface for that move; it is not a broader public API
-  decision, and removing a listed name needs a separate deprecation plan.
-- `tests/unit/test_init_order.py` guards the notebook-composition
-  boundaries: `NotebookLMClient` constructs `SourcesAPI` before `NotebooksAPI`
-  and passes it through the legacy `sources_api=` slot; notebook metadata
-  services must not import or construct `SourcesAPI`; artifact/source/notebook
-  composition services must not runtime-import facade APIs.
-  Add new private services to those guard lists when they take ownership of
-  cross-facade behavior.
+  compatibility manifest in `tests/_guardrails/test_public_surface_manifest.py`
+  enforces the current first-party surface for that move; it is not a broader
+  public API decision, and removing a listed name needs a separate deprecation
+  plan.
+- `tests/_guardrails/test_no_facade_reach_in.py` holds the AST reach-in /
+  runtime-import boundary gates: notebook metadata services must not import or
+  construct `SourcesAPI`; artifact/source/notebook composition services must
+  not runtime-import facade APIs. Add new private services to those guard
+  lists when they take ownership of cross-facade behavior. The construction /
+  init-order behaviour tests — `NotebookLMClient` constructs `SourcesAPI`
+  before `NotebooksAPI` and passes it through the legacy `sources_api=` slot,
+  plus the mind-map decoupling flows — stay in
+  `tests/unit/test_init_order.py`.
 
 ### Key Design Decisions
 
@@ -202,7 +216,7 @@ from those catalogues rather than introducing parallel patterns.
    bundle them into a feature-local composite-runtime Protocol unless a
    second consumer materialises. **Do NOT depend on a broad runtime
    facade for type annotations** — there is no concrete `Session` class
-   (the broad `Session` Protocol was deleted; see ADR-013). Depend on the
+   (the broad `Session` Protocol was deleted; see ADR-0013). Depend on the
    narrow capability Protocols in `_runtime_contracts` instead.
 3. Add to `client.py`: wire each collaborator explicitly from the
    composition root (e.g. `self.newfeature = NewFeatureAPI(rpc=internals.executor,
@@ -354,6 +368,7 @@ NOTEBOOKLM_READ_ONLY_NOTEBOOK_ID=<work-nb-id> \
 ```
 tests/
 ├── unit/                            # No network, fast, mock everything
+├── _guardrails/                     # Architecture/invariant gates (custom AST + filesystem lint)
 ├── integration/                     # Mocked HTTP responses + VCR cassettes
 │   ├── test_artifacts_integration.py # ArtifactsAPI integration
 │   ├── test_artifacts_drift.py      # CREATE_ARTIFACT payload drift guard
@@ -392,6 +407,75 @@ The `*_drift.py` tests are payload-shape canaries: they decode a recorded
 RPC response (or assemble a synthetic one) and assert the live decoder still
 produces the expected dataclass. They fail loudly when Google changes a
 payload field, so the failure shows up here before users hit it.
+
+### Architecture & invariant gates (`tests/_guardrails/`)
+
+`tests/_guardrails/` holds the project's **custom lint gates** — pytest tests that
+enforce architectural decisions a general-purpose linter can't express. They are
+not style checks; each file encodes one project-specific invariant, usually the
+executable half of an ADR ("enforce, don't document" — un-enforced consistency
+is the failure mode this directory exists to prevent).
+
+**What belongs here vs `tests/unit/`.** This directory is the home for a *pure*
+gate — a file whose whole purpose is enforcing a repo-wide invariant, with no
+module-under-test. A unit test that only *embeds* a boundary assertion among
+behavioral checks stays in `tests/unit/` (see *Boundary Guardrails* above). Pure
+architecture gates — e.g. `test_cli_boundary.py`, `test_cassette_shapes.py`,
+`test_public_surface.py` — have been consolidated into this directory; the gate
+halves of former hybrids live alongside them (e.g.
+`test_public_surface_manifest.py`, `test_no_facade_reach_in.py`).
+
+**How they differ from ruff / mypy.** Ruff and mypy run in the `quality` job and
+enforce *generic* rules (style, unused imports, types) from a fixed catalogue.
+The `tests/_guardrails/` gates are collected by the normal `uv run pytest` run and
+enforce *bespoke* rules by doing their own analysis: most parse the source with
+`ast.parse` (or scan files with regex / `rglob`), and some **import the module and reflect on
+the live object** — something a purely-static linter cannot do.
+
+A representative slice (run `ls tests/_guardrails/` for the full set):
+
+| Gate | Enforces |
+|---|---|
+| `test_no_raw_positional_rpc_indexing.py` | No chained positional indexing (`x[0][9][3]`) of `batchexecute` payloads outside the sanctioned `_row_adapters/` — the project's #1 fragility class |
+| `test_rpc_method_ids_only_in_types.py` | Obfuscated RPC IDs live only in `rpc/types.py` (the source of truth) |
+| `test_no_forbidden_monkeypatches.py` | The forbidden monkeypatch shapes under `tests/` (ADR-0007) |
+| `test_no_inline_deprecation_warnings.py` | No inline `warnings.warn(..., DeprecationWarning)` outside `_deprecation.py` (ADR-0018) |
+| `test_cli_rpc_envelope.py` | Every *RPC-touching* Click leaf command (call graph reaches `NotebookLMClient`) routes its errors into the JSON envelope |
+| `test_module_size_ratchet.py` | No module grows past the size budget (ADR-0008) — a burn-down ratchet |
+| `test_v080_release_gate.py` | The v0.8.0 breaking-change set flips in lockstep at the version bump |
+| `test_adr_reference_format.py` | ADR references are 4-digit and resolve to a real `docs/adr/NNNN-*.md` |
+| `test_cli_boundary.py` | CLI modules import only public `notebooklm` surface — no `notebooklm._*` / `notebooklm.rpc.*` / `_private` reach-in |
+| `test_no_facade_reach_in.py` | Feature APIs and service modules don't reach into Session internals or runtime-import facade APIs |
+| `test_public_surface_manifest.py` | The documented public-import manifest + re-export identity pins for `notebooklm` / `auth` / `types` / shims stay intact |
+
+**Conventions when adding a gate:**
+
+- **One invariant per file**, with a module docstring that states the rule, *why*
+  it matters (cite the ADR), and how a violation is fixed. The assertion message
+  is the contributor's first — and often only — explanation, so make it
+  actionable.
+- **Make the detector a pure function and self-test it** against known good/bad
+  inputs in the same file, so the gate can't silently become vacuous (a regex
+  that matches nothing must fail its own self-test, not pass everything).
+- **Shrink-only allowlists.** A gate that would fail on pre-existing violations
+  may grandfather them in an allowlist — but it must be a *one-way ratchet* that
+  only shrinks (e.g. `test_module_size_ratchet.py`,
+  `tests/scripts/check_method_coverage.py`). The rule lands without a giant
+  cleanup PR, and the gate fails when an allowlisted entry becomes clean so it
+  gets removed.
+- **Scan yourself too.** A gate that shows the *wrong* form in its examples
+  should use placeholders (or build them at runtime) rather than excluding its
+  own file, so it still polices its own references
+  (`test_adr_reference_format.py`).
+
+Most gates are fast and run in the normal loop; the slow repo-wide cassette scan
+(`test_cassettes_clean.py`) carries the `repo_lint` marker (see
+[Quick Reference](#quick-reference)).
+
+**Trade-off.** Because some gates import internals and reflect on them, they
+couple more tightly to implementation than a static linter — a
+behavior-preserving refactor can still trip one. That coupling is deliberate: it
+catches architecture drift that ruff and mypy structurally cannot see.
 
 ### VCR Testing (Recorded HTTP)
 
