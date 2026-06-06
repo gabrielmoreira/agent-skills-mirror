@@ -15,7 +15,7 @@ import urllib.request
 logger = logging.getLogger(__name__)
 
 _FMP_HIST_ENDPOINTS = [
-    ("https://financialmodelingprep.com/stable/historical-price-full", True),
+    ("https://financialmodelingprep.com/stable/historical-price-eod/full", True),
     ("https://financialmodelingprep.com/api/v3/historical-price-full", False),
 ]
 
@@ -63,11 +63,13 @@ class FMPPriceAdapter:
             if not historical:
                 continue
 
-            # FMP returns newest first; reverse to oldest first
+            # FMP returns newest first; reverse to oldest first.
+            # Stable EOD endpoint no longer exposes `adjClose`; fall back to `close`.
+            # Patched 2026-05-22 (stable shape).
             result = [
-                {"date": item["date"], "close": item["adjClose"]}
+                {"date": item["date"], "close": item.get("adjClose") or item["close"]}
                 for item in reversed(historical)
-                if "date" in item and "adjClose" in item
+                if "date" in item and ("adjClose" in item or "close" in item)
             ]
             return result
 
@@ -79,8 +81,17 @@ class FMPPriceAdapter:
         return []
 
     @staticmethod
-    def _extract_historical(data: dict, ticker: str) -> list[dict]:
-        """Extract historical array from FMP response (stable or v3 format)."""
+    def _extract_historical(data, ticker: str) -> list[dict]:
+        """Extract historical array from FMP response (stable list / v3 dict)."""
+        # New stable EOD endpoint returns a flat list of dicts directly.
+        # Patched 2026-05-22 (stable shape).
+        if isinstance(data, list):
+            norm = ticker.replace("-", ".")
+            return [
+                row
+                for row in data
+                if isinstance(row, dict) and row.get("symbol", ticker).replace("-", ".") == norm
+            ]
         if not isinstance(data, dict):
             return []
         if "historical" in data:

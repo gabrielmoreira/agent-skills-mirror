@@ -1,6 +1,6 @@
 ---
 name: unity-physics
-description: "Unity physics queries and editor-time configuration: raycasts/spherecast/boxcast, overlap checks, gravity, PhysicMaterial assets, layer collision matrix. Triggers: physics, raycast, spherecast, boxcast, overlap, sphere overlap, box overlap, gravity, collision, rigidbody, collider, physics material, PhysicMaterial, PhysicsMaterial, layer mask, layer collision matrix, 物理, 射线检测, 球形射线, 盒形射线, 重叠检测, 重力, 碰撞, 刚体, 碰撞器, 物理材质, 图层碰撞."
+description: "Unity physics queries and editor-time configuration — raycast/spherecast/boxcast, overlap checks, gravity, PhysicMaterial assets, layer collision matrix. Exact signatures via GET /skills/schema."
 ---
 
 # Physics Skills

@@ -1,6 +1,6 @@
 ---
 name: unity-timeline
-description: "Unity Timeline editing: create Timeline assets, add typed tracks (animation/audio/activation/control/signal), add clips, set bindings, play/pause/stop via PlayableDirector. Triggers: timeline, cutscene, sequence, PlayableDirector, Director, track, animation track, audio track, activation track, control track, signal track, clip, playable, binding, wrap mode, editor preview, 时间轴, 过场动画, 序列, 轨道, 动画轨道, 音频轨道, 信号轨道, 剪辑, 绑定."
+description: "Unity Timeline editing — create Timeline assets, add typed tracks (animation/audio/activation/control/signal), add clips, set bindings, play/pause/stop via PlayableDirector. Exact signatures via GET /skills/schema."
 ---
 
 # Timeline Skills

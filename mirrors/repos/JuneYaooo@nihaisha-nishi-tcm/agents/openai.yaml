@@ -1,0 +1,7 @@
+interface:
+  display_name: "Nihaisha 中医课程"
+  short_description: "把倪海厦中医课程整理成白话入口、课程模块、六经方证、针灸本草、逐课复习和板书证据索引。"
+  default_prompt: "Use $nihaisha to 按倪海厦课程资料回答：先判断用户入口和课程模块，再做白话分水岭、六经/方证/穴位/药性梳理、逐课复习、截图证据检索和高风险安全提醒。"
+
+policy:
+  allow_implicit_invocation: true

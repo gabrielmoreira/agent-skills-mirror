@@ -143,6 +143,7 @@ Give at least 3 variations across genuinely different dimensions (density, typog
 | Fixed visual polish by redesigning the whole surface | Locate the concrete visual delta first, then make the smallest material, opacity, geometry, or typography change that addresses it. |
 | Added a setting or louder control to solve UI noise | Remove the misleading affordance or choose a quiet default first |
 | English looked fine, localized text overflowed | Test long words and localized strings before handoff, especially inside buttons, tabs, nav, and compact cards. |
+| Relied on `…` truncation to fit text in a fixed-width slot | Guarantee fit instead: compact the format, cap to whole segments, or hard-trim with no glyph. Metric and label footers must never tail-truncate into an ellipsis. |
 
 ## Aesthetic Review
 

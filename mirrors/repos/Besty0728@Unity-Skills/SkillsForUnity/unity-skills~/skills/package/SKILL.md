@@ -1,6 +1,6 @@
 ---
 name: unity-package
-description: "Unity Package Manager (UPM) operations and bundled helpers for Cinemachine / Splines. Use when users want to install, remove, refresh, search, or inspect packages, list dependencies, query versions, or run a one-call Cinemachine/Splines bootstrap. Triggers: package, packages, UPM, Package Manager, manifest, install, add, remove, uninstall, refresh, dependency, dependencies, version, versions, Cinemachine, Splines, TextMeshPro, 包, 包管理, Package Manager, UPM, 安装包, 移除包, 卸载, 依赖, 版本, 包依赖, 包清单."
+description: "Unity Package Manager (UPM) operations — install, remove, refresh, search, inspect packages, list dependencies, query versions, plus Cinemachine/Splines bootstrap. Exact signatures via GET /skills/schema."
 ---
 
 # Package Skills

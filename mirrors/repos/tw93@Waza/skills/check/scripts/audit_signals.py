@@ -158,23 +158,18 @@ def status(label: str) -> None:
 
 def block_hotspots(files: list[Path], root: Path) -> None:
     header("FILE SIZE HOTSPOTS")
+    sized = ((p, line_count(p)) for p in files if p.suffix in SOURCE_EXTS)
     big = sorted(
-        ((p, line_count(p)) for p in files
-         if p.suffix in SOURCE_EXTS and line_count(p) >= HOTSPOT_LINES),
+        (item for item in sized if item[1] >= HOTSPOT_LINES),
         key=lambda x: -x[1],
     )[:10]
     if not big:
-        print("(no source files >= 800 lines)")
+        print(f"(no source files >= {HOTSPOT_LINES} lines)")
         status("PASS")
         return
     for path, n in big:
         print(f"  {n:>5}  {rel(path, root)}")
-    if any(n >= HOTSPOT_FAIL for _, n in big):
-        status("FAIL")
-    elif len(big) > 3:
-        status("WARN")
-    else:
-        status("WARN")
+    status("FAIL" if any(n >= HOTSPOT_FAIL for _, n in big) else "WARN")
 
 
 def block_heredoc(files: list[Path], root: Path) -> None:

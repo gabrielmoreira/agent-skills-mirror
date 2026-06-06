@@ -43,14 +43,13 @@ smart-data-analysis（顶层意图 + LLM 决策：选 KN、生成 SQL）
 ontology --user-id <accountId> <command> [options]
 ```
 
-具体 5 个步骤对应到 native 子命令（详见各 reference）：
+具体 4 个步骤对应到 native 子命令（详见各 reference）：
 
 | 步骤 | native 子命令 | 用途 |
 |------|---------------|------|
-| 1. 选 KN（条件） | `bkn list` / `bkn get <kn-id>` | 列候选 / 取详情供 LLM 选择 |
-| 2. 找候选对象类 | `bkn search <kn-id> <query>` | KN 内语义检索，定位相关 object-type |
-| 3. 取字段与 dataview-id | `bkn object-type list <kn-id>` / `bkn object-type get <kn-id> <ot-id>` | 拿字段 + 后端 `dataview-id` |
-| 4. 执行 SQL | `dataview query <dataview-id> --sql "..."` | LLM 生成的 SELECT/WITH SQL（mdl-uniquery） |
+| 1. 找 KN |  `bkn get <kn-id>` |  取详情供 LLM 选择 |
+| 2. 取字段与 dataview-id | `bkn object-type list <kn-id>` / `bkn object-type get <kn-id> <ot-id>` | 拿字段 + 后端 `dataview-id` |
+| 3. 执行 SQL | `dataview query <dataview-id> --sql "..."` | LLM 生成的 SELECT/WITH SQL（mdl-uniquery） |
 | —（简单单表） | `bkn object-type query <kn-id> <ot-id> '<filter-json>'` | 不需要 SQL 时的实例过滤 + 分页 |
 
 - **`--user-id <accountId>`**：**必传**（顶层选项，写在子命令之前；发送为 `x-account-id`；详见 ontology-core SKILL）。
@@ -74,7 +73,7 @@ ontology --user-id <accountId> <command> [options]
 ```text
 问数进度：
 - [ ] 1. 解析 kn_id：若已指定或仅 1 个候选 KN 则直用；多候选时由编排层 LLM 用 bkn list/get 选定（见 kn-resolve）
-- [ ] 2. Schema 发现：bkn search + bkn object-type list/get → 候选对象类、字段、dataview-id
+- [ ] 2. Schema 发现：bkn object-type list/get → 候选对象类、字段、dataview-id
 - [ ] 3. 生成 SQL：编排层 LLM 基于第 2 步信息生成 SELECT SQL（不在 smart-ask-data 内部生成）
 - [ ] 4. 执行 SQL：ontology dataview query <dataview-id> --sql "..." 取数
 - [ ] 5. 总结：结论 + 口径 + 依据（KN/对象类/SQL）
@@ -90,7 +89,7 @@ ontology --user-id <accountId> <command> [options]
    - 已传入 `kn_id`：直接使用。
    - 仅 1 个候选 KN：直接使用。
    - 候选 > 1：由 **smart-data-analysis** 的 LLM 决策（基于 `bkn list` / `bkn get` 拿到的候选元数据）。
-2. **Schema 发现先于 SQL**：先用 `bkn search` / `bkn object-type list/get` 锁定对象类与字段，再让 LLM 生成 SQL；防止 SQL 幻觉。
+2. **Schema 发现先于 SQL**：先用 `bkn object-type list/get` 锁定对象类与字段，再让 LLM 生成 SQL；防止 SQL 幻觉。
 3. **SQL 生成在编排层**：本 skill 不内置 LLM；SQL 由 smart-data-analysis 生成后传入。
 4. **只允许 SELECT/WITH**：`dataview query --sql` 默认拒绝写操作；不得使用 `--raw-sql` 绕过。
 5. **结果展示硬约束**：若执行返回非空结果，最终回复中 **必须同时展示**：

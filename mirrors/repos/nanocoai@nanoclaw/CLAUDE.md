@@ -153,31 +153,17 @@ Key files: `src/container-restart.ts`, `src/container-runner.ts` (`killContainer
 
 API keys, OAuth tokens, and auth credentials are managed by the OneCLI gateway. Secrets are injected into per-agent containers at request time — none are passed in env vars or through chat context. The container agent sees this via the `onecli-gateway` container skill (`container/skills/onecli-gateway/SKILL.md`), which teaches it how the proxy works, how to handle auth errors, and to never ask for raw credentials. Host-side wiring: `src/onecli-approvals.ts`, `ensureAgent()` in `container-runner.ts`. Run `onecli --help`.
 
-### Gotcha: auto-created agents start in `selective` secret mode
+### Secret modes
 
-When the host first spawns a session for a new agent group, `container-runner.ts:385` calls `onecli.ensureAgent({ name, identifier })`. The OneCLI `POST /api/agents` endpoint creates the agent in **`selective`** secret mode — meaning **no secrets are assigned to it by default**, even if the secrets exist in the vault and have host patterns that would otherwise match.
-
-Symptom: container starts, the proxy + CA cert are wired correctly, but the agent gets `401 Unauthorized` (or similar) from APIs whose credentials *are* in the vault. The credential just isn't in this agent's allow-list.
-
-The SDK does not expose `setSecretMode` — the only fix is the CLI (or the web UI at `http://127.0.0.1:10254`).
+Auto-created agents default to `all` secret mode — every vault secret whose host pattern matches is injected automatically, so the common case needs no per-agent setup. If an agent is in `selective` mode it gets no secrets until you assign them, which shows up as a `401` from an API whose credential *is* in the vault. The SDK can't change this; use the CLI (or the web UI at `http://127.0.0.1:10254`):
 
 ```bash
-# Find the agent (identifier is the agent group id)
-onecli agents list
-
-# Flip to "all" so every vault secret with a matching host pattern gets injected
-onecli agents set-secret-mode --id <agent-id> --mode all
-
-# Or, stay selective and assign specific secrets
-onecli secrets list                                    # find secret ids
-onecli agents set-secrets --id <agent-id> --secret-ids <id1>,<id2>
-
-# Inspect what an agent currently has
-onecli agents secrets --id <agent-id>                  # secrets assigned to this agent
-onecli secrets list                                    # all vault secrets (with host patterns)
+onecli agents list                                          # check secretMode
+onecli agents set-secret-mode --id <agent-id> --mode all    # inject all matching secrets
+onecli agents set-secrets --id <agent-id> --secret-ids ...  # or stay selective, assign specific ones
 ```
 
-If you've just enabled `mode all`, no container restart is needed — the gateway looks up secrets per request, so the next API call from the running container will see the new credentials.
+No container restart needed — the gateway looks up secrets per request.
 
 ### Requiring approval for credential use
 

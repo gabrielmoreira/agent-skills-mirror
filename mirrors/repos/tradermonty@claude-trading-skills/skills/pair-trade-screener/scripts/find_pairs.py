@@ -67,51 +67,63 @@ def fetch_sector_stocks(sector, api_key, min_market_cap=2_000_000_000):
     """Fetch stocks in a sector from FMP API"""
     print(f"\n[1/5] Fetching {sector} sector stocks from FMP API...")
 
-    # Use stock screener to get sector stocks
-    url = "https://financialmodelingprep.com/api/v3/stock-screener"
+    # Stock screener: stable /company-screener, with a v3 /stock-screener
+    # fallback for legacy keys. Both accept the same query params and return
+    # the same fields (symbol, companyName, marketCap, sector,
+    # exchangeShortName, isActivelyTrading).
     params = {
         "sector": sector,
         "marketCapMoreThan": min_market_cap,
         "limit": 1000,
     }
+    endpoints = [
+        "https://financialmodelingprep.com/stable/company-screener",
+        "https://financialmodelingprep.com/api/v3/stock-screener",
+    ]
 
-    try:
-        response = requests.get(url, params=params, headers={"apikey": api_key}, timeout=30)
-        response.raise_for_status()
-        data = response.json()
+    data = None
+    for url in endpoints:
+        try:
+            response = requests.get(url, params=params, headers={"apikey": api_key}, timeout=30)
+        except requests.exceptions.RequestException as e:
+            print(f"  WARNING: screener request failed ({url}): {e}")
+            continue
+        if response.status_code != 200:
+            continue
+        try:
+            payload = response.json()
+        except ValueError:
+            continue
+        if payload:
+            data = payload
+            break
 
-        if not data:
-            print(
-                f"ERROR: No stocks found in {sector} sector with market cap > ${min_market_cap:,}"
-            )
-            sys.exit(1)
-
-        # Extract symbols and basic info
-        stocks = []
-        for item in data:
-            if item.get("isActivelyTrading", True):
-                stocks.append(
-                    {
-                        "symbol": item["symbol"],
-                        "name": item.get("companyName", ""),
-                        "marketCap": item.get("marketCap", 0),
-                        "sector": item.get("sector", sector),
-                        "exchange": item.get("exchangeShortName", ""),
-                    }
-                )
-
-        print(f"  → Found {len(stocks)} stocks in {sector} sector")
-        return stocks
-
-    except requests.exceptions.RequestException as e:
-        print(f"ERROR: Failed to fetch sector stocks: {e}")
+    if not data:
+        print(f"ERROR: No stocks found in {sector} sector with market cap > ${min_market_cap:,}")
         sys.exit(1)
+
+    # Extract symbols and basic info
+    stocks = []
+    for item in data:
+        if item.get("isActivelyTrading", True):
+            stocks.append(
+                {
+                    "symbol": item["symbol"],
+                    "name": item.get("companyName", ""),
+                    "marketCap": item.get("marketCap", 0),
+                    "sector": item.get("sector", sector),
+                    "exchange": item.get("exchangeShortName", ""),
+                }
+            )
+
+    print(f"  → Found {len(stocks)} stocks in {sector} sector")
+    return stocks
 
 
 # --- FMP endpoint fallback: stable (new users) -> v3 (legacy users) ---
 _FMP_HIST_ENDPOINTS = [
     (
-        "https://financialmodelingprep.com/stable/historical-price-full",
+        "https://financialmodelingprep.com/stable/historical-price-eod/full",
         True,
     ),  # stable: symbol in query
     ("https://financialmodelingprep.com/api/v3/historical-price-full", False),  # v3: symbol in path
@@ -167,7 +179,7 @@ def fetch_historical_prices(symbol, api_key, lookback_days=730):
 
     # Convert to pandas Series
     prices = pd.Series(
-        [item["adjClose"] for item in historical],
+        [item.get("adjClose") or item["close"] for item in historical],  # stable shape compat
         index=[pd.to_datetime(item["date"]) for item in historical],
         name=symbol,
     )

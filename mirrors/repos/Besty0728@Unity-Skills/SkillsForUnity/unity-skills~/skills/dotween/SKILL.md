@@ -1,6 +1,6 @@
 ---
 name: unity-dotween
-description: "DOTween Free/Pro automation. Free skills probe install status, read/validate/configure DOTweenSettings, list modules and shortcut extension methods, and generate runtime tween / Sequence / lifetime-safe MonoBehaviour scripts. Pro skills (`dotween_pro_*`) add/configure/inspect `DG.Tweening.DOTweenAnimation` components on scene objects, including stagger/cascade entrance. Triggers: DOTween, DOTweenFree, DOTweenPro, DOTweenAnimation, DOTweenSettings, DG.Tweening, tween, Sequence, ease, easing, OutQuad, OutBack, loops, Yoyo, stagger, cascade, DOMove, DOLocalMove, DORotate, DOScale, DOAnchorPos, DOFade, DOColor, DOPunchPosition, DOShakePosition, SetLink, autoKill, SafeMode, UI animation, UI 动画, 补间动画, 补间, 缓动, 缓动函数, 动画配置, 循环, 序列, 动效, 脚本生成, 错峰动画."
+description: "DOTween Free/Pro automation — probe/validate/configure settings, list modules/shortcuts, generate tween/Sequence scripts, and add/configure DOTweenAnimation (Pro) on objects. Exact signatures via GET /skills/schema."
 ---
 
 # DOTween Skills

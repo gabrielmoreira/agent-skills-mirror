@@ -1,6 +1,6 @@
 ---
 name: unity-uitoolkit
-description: "UI Toolkit (UITK) for Unity — create/edit USS stylesheets and UXML layouts, configure UIDocument + PanelSettings in scenes, generate EditorWindow / runtime UI scaffolds. This is the UXML/USS/VisualElement system; for Canvas-based UGUI use the `ui` module. Triggers: UI Toolkit, UITK, UXML, USS, UIDocument, PanelSettings, VisualElement, stylesheet, design token, CSS variable, flex, flexbox, flex-direction, runtime UI, EditorWindow UI, ScaleWithScreenSize, ConstantPixelSize, scaleMode, 界面工具包, UI样式, 样式表, 可视化元素, 弹性布局, 编辑器窗口, 设计令牌."
+description: "UI Toolkit (UITK) — create/edit USS stylesheets and UXML layouts, configure UIDocument + PanelSettings, generate EditorWindow/runtime UI scaffolds. For Canvas UGUI use ui. Exact signatures via GET /skills/schema."
 ---
 
 # Unity UI Toolkit Skills

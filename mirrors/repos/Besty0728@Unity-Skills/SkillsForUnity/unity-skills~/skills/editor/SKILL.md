@@ -1,6 +1,6 @@
 ---
 name: unity-editor
-description: "Unity Editor control. Use when users want to enter or exit play mode, pause, select GameObjects in Hierarchy, undo/redo, execute menu commands, get editor state/context (selection, focused window, isCompiling), or list tags/layers. Triggers: editor, play mode, enter play, exit play, stop play, pause play, select object, get selection, undo, redo, execute menu, menu path, editor state, editor context, focused window, tags list, layers list, 编辑器, 进入播放, 退出播放, 暂停播放, 选择对象, 当前选择, 撤销, 重做, 执行菜单, 菜单路径, 编辑器状态, 编辑器上下文, 焦点窗口, 标签列表, 图层列表."
+description: "Unity Editor control — enter/exit/pause play mode, select objects, undo/redo, execute menu commands, read editor state/context, list tags/layers. Exact signatures via GET /skills/schema."
 ---
 
 # Unity Editor Skills

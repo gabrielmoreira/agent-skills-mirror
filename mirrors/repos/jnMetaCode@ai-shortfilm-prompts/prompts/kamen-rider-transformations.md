@@ -2,8 +2,8 @@
 
 > **Source**: Excerpted from Mx-Shell's publicly shared prompt
 > collection (March 15, 2026 document distributed in his fan group).
-> Five "combat-damaged transformation" variants that went viral on
-> Mx-Shell's earlier work. All five share the same 5-stage template
+> Six "combat-damaged transformation" variants that went viral on
+> Mx-Shell's earlier work. All six share the same 5-stage template
 > — only color / props / trigger word change. **The clearest study
 > sample for understanding how variable-substitution works in the
 > methodology.**
@@ -217,7 +217,7 @@
 
 ## 学习这套模板的关键观察
 
-1. **模板可复用度极高**：5 个变体共用 80% 的骨架，仅替换 [颜色 / 道具材质 / 触发词 / 头盔造型] 这几个变量。**你想做自己的特摄变身，只需要替换这几个变量。**
+1. **模板可复用度极高**：6 个变体（5 骑士 + 飞行版）共用 80% 的骨架，仅替换 [颜色 / 道具材质 / 触发词 / 头盔造型] 这几个变量。**你想做自己的特摄变身，只需要替换这几个变量。**
 2. **触发词都是带感情的"短音节"**：低语 HENSHIN、怒喊 AMAZONS、御姐音韩语「변신」。**给个具体的情绪 + 一个具体的发音方式**，比写一句话台词更稳。
 3. **每段都有"镜头反应"**：0-3 秒"极缓向前推进"；3-6 秒"0.1 秒微颤"；6-9 秒"剧烈晃动、失焦、猛拉回正"。镜头本身参与表演。
 4. **战损细节是质感来源**：每个版本最后都有"未愈合的腰侧裂隙、被重新撕开的左胸旧伤、各处战损痕迹触目惊心"。**完美的盔甲反而显假**。

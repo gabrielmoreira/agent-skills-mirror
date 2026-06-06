@@ -1,6 +1,6 @@
 ---
 name: unity-material
-description: "Unity material asset & shader property editing (Built-in / URP / HDRP). Use when users want to create / duplicate / assign materials, set color or emission, set textures (and tiling/offset), change shader, set float/int/vector properties, toggle shader keywords, set render queue, or change GI flags. Triggers (EN): material, .mat, shader, set color, set texture, emission, albedo, base color, metallic, smoothness, glossiness, normal map, render queue, shader keyword, tiling, offset, HDR color, bloom emission, PBR. Triggers (ZH): 材质, 材质球, 材质属性, Shader, 着色器, 颜色, 纹理, 贴图, 法线贴图, 发光, 自发光, 金属度, 光滑度, Render Queue, 渲染队列, 关键字, 平铺, 偏移."
+description: "Unity material and shader property editing (Built-in/URP/HDRP) — create/duplicate/assign materials, set color/emission/textures, change shader, set properties, toggle keywords, render queue. Exact signatures via GET /skills/schema."
 ---
 
 # Unity Material Skills

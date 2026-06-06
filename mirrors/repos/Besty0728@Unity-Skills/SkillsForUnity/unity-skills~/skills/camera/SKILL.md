@@ -1,6 +1,6 @@
 ---
 name: unity-camera
-description: "Unity Scene View + Game Camera control. Use when users want to move/rotate the editor view, create or configure scene cameras, change FOV / clip planes / culling mask, switch orthographic vs perspective, or capture a screenshot. Triggers (EN): Unity camera, scene camera, Game Camera, Scene View, viewport, FOV, field of view, near/far clip, culling mask, orthographic, perspective, look at, align view, screenshot, render to file. Triggers (ZH): 相机, 摄像机, 视角, 视野, 场景视图, 游戏相机, 截图, 渲染截图, 正交, 透视, 裁剪面, 剔除遮罩."
+description: "Unity Scene View and Game Camera control — move/rotate the view, create/configure cameras, FOV/clip planes/culling mask, ortho vs perspective, screenshot. Exact signatures via GET /skills/schema."
 ---
 
 # Camera Skills

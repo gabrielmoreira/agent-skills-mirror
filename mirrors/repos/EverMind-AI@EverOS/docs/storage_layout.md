@@ -89,8 +89,11 @@ business-aware writers live in
 [`infra/persistence/markdown/writers/`](../src/everos/infra/persistence/markdown/writers/)
 and pick the right strategy via a base class.
 
-For a step-by-step recipe to add a new memory kind, see the
-[`/add-memory-kind`](../.claude/skills/add-memory-kind/SKILL.md) skill.
+To add a new memory kind, define its per-kind frontmatter schema under
+[`infra/persistence/markdown/mds/`](../src/everos/infra/persistence/markdown/mds/)
+and add a matching writer/reader pair under
+[`writers/`](../src/everos/infra/persistence/markdown/writers/) and
+[`readers/`](../src/everos/infra/persistence/markdown/readers/).
 
 ## 3. Frontmatter chassis (YAML)
 
@@ -118,7 +121,7 @@ carried by the `<app>/<project>` path segments and recovered by the
 cascade path parser. The frontmatter only holds the file-level owner
 (`user_id` / `agent_id`) and `track`.
 
-The chassis lives in [`core/persistence/markdown/base.py`](../src/everos/core/persistence/markdown/base.py)
+The chassis lives in [`core/persistence/markdown/frontmatter.py`](../src/everos/core/persistence/markdown/frontmatter.py)
 (Pydantic v2):
 
 ```
@@ -162,7 +165,7 @@ e.g. `ep_20260601_00000001`:
 | `<YYYYMMDD>` | The daily-log file's date bucket |
 | `NNNNNNNN` | Per-file sequence, 8-digit zero-padded, restarts at `00000001` each day per scope |
 
-Implementation: [`core/persistence/markdown/entry_id.py`](../src/everos/core/persistence/markdown/entry_id.py)
+Implementation: [`core/persistence/markdown/entries.py`](../src/everos/core/persistence/markdown/entries.py)
 (`EntryId.parse / format / next_for`).
 
 > **File-level seq, not global**: the same `ep_20260601_00000001` may
@@ -212,9 +215,8 @@ this primitive is **schema-agnostic** — field-level semantics
 
 ## 7. References
 
-- Skill: [`/add-memory-kind`](../.claude/skills/add-memory-kind/SKILL.md)
 - Code:
-  - [`core/persistence/memory_root.py`](../src/everos/core/persistence/memory_root.py)
-  - [`core/persistence/markdown/`](../src/everos/core/persistence/markdown/)
-  - [`infra/persistence/{markdown,sqlite,lancedb}/`](../src/everos/infra/persistence/)
-  - [`memory/layout.py`](../src/everos/memory/layout.py)
+  - [`core/persistence/memory_root.py`](../src/everos/core/persistence/memory_root.py) — memory-root resolution
+  - [`core/persistence/markdown/`](../src/everos/core/persistence/markdown/) — schema-agnostic read/write chassis
+  - [`infra/persistence/markdown/mds/`](../src/everos/infra/persistence/markdown/mds/) — per-kind frontmatter schemas
+  - [`infra/persistence/{markdown,sqlite,lancedb}/`](../src/everos/infra/persistence/) — business-aware adapters

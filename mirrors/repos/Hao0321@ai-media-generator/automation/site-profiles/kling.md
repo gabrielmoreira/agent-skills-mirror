@@ -1,10 +1,10 @@
 # Site Profile: Kling AI
 
 **URL:** `https://kling.ai/app/` (新版)，舊 URL `https://app.klingai.com/global/` 會 redirect
-**驗證狀態:** ✅ 2026-04-20 完整驗證 Phase 1-7 (免費帳號 96 credits 實測，跑 Kling 3.0 720p 5s 扣 45 credits)
+**驗證狀態:** ✅ 2026-04-20 完整驗證 Phase 1-7 (免費帳號 96 credits 實測，跑 Kling 3.0 720p 5s 扣 45 credits)。✅ 2026-06-05 recon 確認**仍登入可用**，首頁功能列：**Omni / Image Generation / Video Generation / Motion Control / Kling Canvas / Agent / Avatar 2.0**（Agent + Avatar 2.0 為新增，待深測）
 **平台類型:** AI 影片/圖像生成 (Kuaishou 快手出品)
-**Stack:** React，ref 穩定度待驗證
-**版本：** **Kling 3.0 / 3.0 Omni / Motion Control 3.0** (2026-04 首頁 banner 顯示，**比 skill references/kling.md 的 2.6 Pro 更新**，待補)
+**Stack:** React，ref 穩定度待驗證；feature label 多為 icon 非文字 → DOM 文字掃描抓不到，需 screenshot 對座標
+**版本：** **Kling 3.0 / 3.0 Omni / Motion Control 3.0 + Agent + Avatar 2.0** (2026-06 首頁。references/kling.md 已於 v1.5.0 升級至 3.0/O-series 完整功能地圖)
 
 ---
 

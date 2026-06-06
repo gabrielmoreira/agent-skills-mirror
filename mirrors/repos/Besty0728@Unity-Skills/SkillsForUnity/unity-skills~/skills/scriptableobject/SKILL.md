@@ -1,6 +1,6 @@
 ---
 name: unity-scriptableobject
-description: "ScriptableObject management. Use when users want to create, read, modify, delete, duplicate, find ScriptableObject assets, list available types, or import/export JSON. Triggers: scriptableobject, SO, data asset, config asset, settings asset, create SO, read SO, set field, delete SO, duplicate SO, find SO, list SO types, export SO to JSON, import JSON to SO, 数据资产, 数据资源, 配置文件, 配置资产, 创建 SO, 读取 SO, 设置字段, 删除 SO, 复制 SO, 查找 SO, SO 类型, JSON 导出, JSON 导入."
+description: "ScriptableObject management — create, read, modify, delete, duplicate, find SO assets, list available types, import/export JSON. Exact signatures via GET /skills/schema."
 ---
 
 # ScriptableObject Skills

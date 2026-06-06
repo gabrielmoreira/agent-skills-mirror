@@ -1,6 +1,6 @@
 ---
 name: unity-smart
-description: "AI-powered scene operations: SQL-like object queries, spatial queries, automatic spatial layout, alignment, distribution, snap to grid, randomize, replace prefabs, and reference auto-binding. Use when users want to find objects by property/region, arrange objects in grid/circle/line, align to ground, distribute evenly, snap, randomize, replace by prefab, or auto-wire serialized references. Triggers: smart, smart query, spatial query, scene query, layout, grid, circle, arc, linear, align to ground, distribute, snap to grid, randomize transform, replace objects, auto-bind, reference bind, select by component, 智能查询, 场景查询, 空间查询, 自动布局, 网格布局, 圆形布局, 对齐地面, 均匀分布, 网格吸附, 随机变换, 替换对象, 自动绑定, 按组件选择."
+description: "AI-powered scene operations — SQL-like and spatial object queries, automatic layout (grid/circle/line), align/distribute/snap/randomize, replace prefabs, reference auto-binding. Exact signatures via GET /skills/schema."
 ---
 
 # Unity Smart Skills

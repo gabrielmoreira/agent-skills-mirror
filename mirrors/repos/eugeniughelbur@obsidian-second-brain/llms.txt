@@ -59,7 +59,7 @@ Plus 4 scheduled agents (morning, nightly, weekly, health-check) and 2 hook scri
 
 The repo is structured around a build-time adapter pattern:
 
-- `commands/` - 44 platform-neutral source files with frontmatter declaring `description`, `category` (vault/thinking/research/meta), `triggers_en` (natural-language trigger phrases), and an optional `exclude` (per-platform opt-out; the 3 Google Calendar commands set it to ship Claude Code only). The schema is extensible to other languages via `triggers_es`, `triggers_it`, `triggers_fr`, `triggers_de`, `triggers_pt`, `triggers_ru`, `triggers_ja`.
+- `commands/` - 44 platform-neutral source files with frontmatter declaring `description`, `category` (vault/thinking/research/meta), `triggers_en` (natural-language trigger phrases), and an optional `exclude` (per-platform opt-out; the 4 Google Calendar commands set it to ship Claude Code only). The schema is extensible to other languages via `triggers_es`, `triggers_it`, `triggers_fr`, `triggers_de`, `triggers_pt`, `triggers_ru`, `triggers_ja`.
 - `adapters/lib.sh` — shared parsing, path rewriting, tool-name neutralization, grouped routing-table emission, multilingual trigger emission.
 - `adapters/claude-code/adapter.sh` — identity copy (Claude Code's slash-command format matches the source).
 - `adapters/codex-cli/adapter.sh` — emits `AGENTS.md` with auto-generated routing table grouped by category and trigger phrase reference grouped by language. Commands go under `.codex/commands/`.
@@ -143,7 +143,7 @@ Yes. Run `bash scripts/build.sh --platform <name>` to compile the source for tha
 Yes. The skill writes to your vault as standard markdown files. Obsidian Sync, iCloud, Syncthing, and Git-based sync all work without modification.
 
 ### Do I need API keys to use this?
-Mostly no. The 35 non-research commands work without any API keys, and `/research` + `/research-deep` fall back to free, key-less sources when no Perplexity key is set. The other research commands (x-read, x-pulse, notebooklm, youtube, podcast) need keys for xAI Grok, Perplexity, Google Gemini, and optionally YouTube Data API v3 / OpenAI Whisper, and degrade gracefully when a key is missing. The 3 Google Calendar commands need the Google Calendar MCP connector rather than an API key.
+Mostly no. The 35 non-research commands work without any API keys, and `/research` + `/research-deep` fall back to free, key-less sources when no Perplexity key is set. The other research commands (x-read, x-pulse, notebooklm, youtube, podcast) need keys for xAI Grok, Perplexity, Google Gemini, and optionally YouTube Data API v3 / OpenAI Whisper, and degrade gracefully when a key is missing. The 4 Google Calendar commands need the Google Calendar MCP connector rather than an API key.
 
 ### How is this different from Notion AI or Mem?
 Notion AI and Mem are closed-source SaaS products that own your data. This skill stores everything as plain markdown in your local Obsidian vault, with no vendor lock-in. The AI is on top of your data, not behind it.

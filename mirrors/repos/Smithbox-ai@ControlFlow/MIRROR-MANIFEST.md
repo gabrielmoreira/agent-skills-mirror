@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `Smithbox-ai/ControlFlow` — 26 default patterns, 0 followed patterns, 123 file(s) materialized.
+Mirror of `Smithbox-ai/ControlFlow` — 26 default patterns, 0 followed patterns, 125 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Smithbox-ai/ControlFlow` — 26 default patterns, 0 followed patterns
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 123 |
+| Files         | 125 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -167,21 +167,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 106 | ✓ | [`skills/patterns/code-simplification.md`](skills/patterns/code-simplification.md) |
 | 107 | ✓ | [`skills/patterns/completeness-traceability.md`](skills/patterns/completeness-traceability.md) |
 | 108 | ✓ | [`skills/patterns/debugging-discipline.md`](skills/patterns/debugging-discipline.md) |
-| 109 | ✓ | [`skills/patterns/error-handling-patterns.md`](skills/patterns/error-handling-patterns.md) |
-| 110 | ✓ | [`skills/patterns/idea-to-prompt.md`](skills/patterns/idea-to-prompt.md) |
-| 111 | ✓ | [`skills/patterns/integration-validator.md`](skills/patterns/integration-validator.md) |
-| 112 | ✓ | [`skills/patterns/llm-behavior-guidelines.md`](skills/patterns/llm-behavior-guidelines.md) |
-| 113 | ✓ | [`skills/patterns/memory-promotion-candidates.md`](skills/patterns/memory-promotion-candidates.md) |
-| 114 | ✓ | [`skills/patterns/orchestration-audit-playbook.md`](skills/patterns/orchestration-audit-playbook.md) |
-| 115 | ✓ | [`skills/patterns/performance-patterns.md`](skills/patterns/performance-patterns.md) |
-| 116 | ✓ | [`skills/patterns/preflect-core.md`](skills/patterns/preflect-core.md) |
-| 117 | ✓ | [`skills/patterns/reflection-loop.md`](skills/patterns/reflection-loop.md) |
-| 118 | ✓ | [`skills/patterns/repo-memory-hygiene.md`](skills/patterns/repo-memory-hygiene.md) |
-| 119 | ✓ | [`skills/patterns/security-patterns.md`](skills/patterns/security-patterns.md) |
-| 120 | ✓ | [`skills/patterns/security-review-discipline.md`](skills/patterns/security-review-discipline.md) |
-| 121 | ✓ | [`skills/patterns/spec-driven-development.md`](skills/patterns/spec-driven-development.md) |
-| 122 | ✓ | [`skills/patterns/tdd-patterns.md`](skills/patterns/tdd-patterns.md) |
-| 123 | ✓ | [`skills/README.md`](skills/README.md) |
+| 109 | ✓ | [`skills/patterns/decision-challenge.md`](skills/patterns/decision-challenge.md) |
+| 110 | ✓ | [`skills/patterns/error-handling-patterns.md`](skills/patterns/error-handling-patterns.md) |
+| 111 | ✓ | [`skills/patterns/idea-to-prompt.md`](skills/patterns/idea-to-prompt.md) |
+| 112 | ✓ | [`skills/patterns/integration-validator.md`](skills/patterns/integration-validator.md) |
+| 113 | ✓ | [`skills/patterns/llm-behavior-guidelines.md`](skills/patterns/llm-behavior-guidelines.md) |
+| 114 | ✓ | [`skills/patterns/memory-promotion-candidates.md`](skills/patterns/memory-promotion-candidates.md) |
+| 115 | ✓ | [`skills/patterns/orchestration-audit-playbook.md`](skills/patterns/orchestration-audit-playbook.md) |
+| 116 | ✓ | [`skills/patterns/performance-patterns.md`](skills/patterns/performance-patterns.md) |
+| 117 | ✓ | [`skills/patterns/preflect-core.md`](skills/patterns/preflect-core.md) |
+| 118 | ✓ | [`skills/patterns/reflection-loop.md`](skills/patterns/reflection-loop.md) |
+| 119 | ✓ | [`skills/patterns/repo-memory-hygiene.md`](skills/patterns/repo-memory-hygiene.md) |
+| 120 | ✓ | [`skills/patterns/security-patterns.md`](skills/patterns/security-patterns.md) |
+| 121 | ✓ | [`skills/patterns/security-review-discipline.md`](skills/patterns/security-review-discipline.md) |
+| 122 | ✓ | [`skills/patterns/source-grounding.md`](skills/patterns/source-grounding.md) |
+| 123 | ✓ | [`skills/patterns/spec-driven-development.md`](skills/patterns/spec-driven-development.md) |
+| 124 | ✓ | [`skills/patterns/tdd-patterns.md`](skills/patterns/tdd-patterns.md) |
+| 125 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

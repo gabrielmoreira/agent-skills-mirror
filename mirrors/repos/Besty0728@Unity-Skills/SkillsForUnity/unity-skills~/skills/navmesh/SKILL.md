@@ -1,6 +1,6 @@
 ---
 name: unity-navmesh
-description: "Unity NavMesh baking and pathfinding for AI navigation. Triggers: navmesh, nav mesh, navigation, pathfinding, path, bake, rebake, NavMeshAgent, NavMeshObstacle, agent, obstacle, avoidance, carving, area cost, area mask, sample position, 导航网格, 寻路, 烘焙, 重新烘焙, 代理, 障碍物, 避障, 区域权重, 路径."
+description: "Unity NavMesh baking and pathfinding — bake/rebake, query paths, configure NavMeshAgent/NavMeshObstacle, areas, avoidance, carving, sample positions. Exact signatures via GET /skills/schema."
 ---
 
 # NavMesh Skills

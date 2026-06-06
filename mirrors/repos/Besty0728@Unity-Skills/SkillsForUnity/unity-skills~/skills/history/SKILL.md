@@ -1,6 +1,6 @@
 ---
 name: unity-history
-description: "Undo/redo history management (Unity Editor native undo stack). Use when users want to undo or redo one or many steps, or get current undo group name. Triggers: history, undo, redo, undo steps, redo steps, undo history, revert, previous state, current undo group, 历史, 撤销, 重做, 多步撤销, 多步重做, 撤销历史, 上一步, 当前撤销组."
+description: "Undo/redo history management over the Unity Editor native undo stack — undo/redo one or many steps, get current undo group name. Exact signatures via GET /skills/schema."
 ---
 
 # History Skills

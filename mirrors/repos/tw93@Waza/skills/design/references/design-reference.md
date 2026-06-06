@@ -123,6 +123,13 @@ When extending an existing interface, first spend time understanding its visual 
 
 If swapping in different content would make the new component look out of place, the vocabulary was not matched closely enough.
 
+### Responsive & Screen Verification
+- Verify the rendered surface, not a type check or CSS-balance read. Several regressions (early wraps, orphaned separator dots, table overflow) are invisible in source and only show in the render. Screenshot at phone (375px, plus 320px for buttons) and desktop (1280px), in every shipped locale.
+- Line widows: eliminate 1-2 word last lines by trimming the copy so the block rebalances, not by adding a `max-width` cap (a cap narrower than its container wraps early and leaves empty space on the right, which reads as a premature break). Detect objectively: flag any text block whose last line is under ~13% of its widest line; eyeballing misses them, and nested `<code>` hides them from greps.
+- Mobile CTA resting state: natural width, left-aligned to the surrounding text edge, height unchanged. Centering reads as floating; full-width `flex: 1` reads heavy; dropping button height to relieve a "too full" feel treats a width problem as a height one.
+- Spacing is a system, not a per-gap value. Run section spacing as one responsive ladder; when a page reads too airy or too tight, scale the whole set by a single factor across all breakpoints rather than tuning one gap. Asymmetry that survives tuning is structural.
+- Long-form and documentation surfaces stay light: a borderless prev/next text pager (not bordered cards), a sidebar active state as a thin rail rather than a filled block, and build-time zero-runtime-JS code highlighting (bake static spans, plain code stays the source) over a shipped highlighter.
+
 ## Data Visualization Surfaces
 
 For dashboards, analytics views, chart-heavy interfaces, or number-dense displays, load `references/design-data-viz.md`. It owns dashboard defaults, chart selection, number alignment, and product-benchmark extraction.

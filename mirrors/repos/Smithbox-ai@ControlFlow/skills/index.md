@@ -15,7 +15,7 @@ Reusable domain-specific patterns for agent consumption. Planner selects relevan
 ## Domain Mapping
 
 > **Binding legend — read before using the "Applicable Agents" column.** This column is a routing hint, not a guarantee. Two binding modes apply:
-> - **HARD-REFERENCED** — the skill is statically loaded by the named agent because it is cited directly in that agent's `## Resources` / prompt body. Currently only: `preflect-core` (all agents), `repo-memory-hygiene` (Orchestrator, CodeReviewer-subagent, PlanAuditor-subagent), `memory-promotion-candidates` (Orchestrator), `security-review-discipline` (CodeReviewer-subagent), `idea-to-prompt` (Planner), `spec-driven-development` (Planner, as a "consider" reference), and `llm-behavior-guidelines` (CoreImplementer-subagent, UIImplementer-subagent, CodeReviewer-subagent, Planner).
+> - **HARD-REFERENCED** — the skill is statically loaded by the named agent because it is cited directly in that agent's `## Resources` / prompt body. Currently only: `preflect-core` (all agents), `repo-memory-hygiene` (Orchestrator, CodeReviewer-subagent, PlanAuditor-subagent), `memory-promotion-candidates` (Orchestrator), `security-review-discipline` (CodeReviewer-subagent), `idea-to-prompt` (Planner), `spec-driven-development` (Planner, as a "consider" reference), `source-grounding` (Researcher-subagent; Planner considers it), `decision-challenge` (Planner, as a "consider" reference), and `llm-behavior-guidelines` (CoreImplementer-subagent, UIImplementer-subagent, CodeReviewer-subagent, Planner).
 > - **PLANNER-INJECTED** — all other skills are not statically bound to any agent. Planner selects them dynamically at planning time (≤3 per phase) and injects them via `skill_references`. The agents listed for these rows indicate *likely consumers when injected*, not agents that load the skill unconditionally.
 
 | Domain | Skill File | Applicable Agents (binding; routing hint) | Keywords |
@@ -38,6 +38,8 @@ Reusable domain-specific patterns for agent consumption. Planner selects relevan
 | Memory Hygiene | `skills/patterns/repo-memory-hygiene.md` | HARD-REFERENCED: Orchestrator, CodeReviewer-subagent, PlanAuditor-subagent. PLANNER-INJECTED: Planner | memory, pollution, dedup, NOTES.md, archive, repo-memory |
 | Memory Promotion | `skills/patterns/memory-promotion-candidates.md` | HARD-REFERENCED: Orchestrator. PLANNER-INJECTED: Planner | memory, candidate, promotion, transcript, classification |
 | Security Review Discipline | `skills/patterns/security-review-discipline.md` | HARD-REFERENCED: CodeReviewer-subagent | security, vulnerability, confidence, exclusion, false-positive |
+| Source Grounding | `skills/patterns/source-grounding.md` | HARD-REFERENCED: Researcher-subagent; Planner (consider) | official, source, provenance, external, framework, API, unverified, license |
+| Decision Challenge | `skills/patterns/decision-challenge.md` | HARD-REFERENCED: Planner (consider). PLANNER-INJECTED: PlanAuditor-subagent, CodeReviewer-subagent | high-risk, architecture, irreversible, counterargument, alternative, decision |
 
 ## Loading Protocol
 

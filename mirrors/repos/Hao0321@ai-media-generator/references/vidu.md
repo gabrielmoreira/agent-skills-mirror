@@ -1,132 +1,91 @@
 # Vidu — 生數科技 (ShengShu Tech) AI 影片
 
-官網 `https://www.vidu.com/` / `https://www.vidu.studio/`。主力版本 **Vidu Q2** (2025-10 發表) / **Q2 Reference Pro** (2026-01-27 全球發布) / **Q3** (16s 原生音視訊)。**殺手鐧是 Reference-to-Video**：一次可餵 2 段參考影片 + 4 張參考圖 (共 7 個 references)，模型保持多實體一致。
+官網 `https://www.vidu.com/` (國際) / `https://www.vidu.studio/` (中國)。生數科技主打 **Reference-to-Video (多主體參考一致性)** 與 **動漫 / 二次元**，是這兩條賽道目前最強的開放模型之一。
 
-## 核心模式
+**2026 時點版本地圖：**
+- **Vidu Q3** (2026-01-30 發布) — 主力。業界首個「16s 單次原生音視訊同步」(對話 / 旁白 / 音效 / 配樂 / 多人對白 + lip-sync)。Artificial Analysis Video Arena ELO ~1220–1244，全球**第 2** (僅次 Sora 2)。
+- **Vidu Q2** (2025-10-21 發布) / **Q2 Reference Pro** — 多主體一致性主力，最多 7 張參考、最長 10s，Turbo / Pro / Pro Fast 三檔。
+- **Vidu Q1** — **動漫 / 2D 專家**（訓練資料含大量 anime+manga），角色情緒表情最自然。
 
-| 模式 | 說明 |
-|---|---|
-| **T2V** | 純文字生影片 |
-| **I2V** | 單張首幀 + prompt |
-| **Reference-to-Video (Ref2V)** | 1–7 張參考 (Q2 起擴到 2 videos + 4 images)，6 類參考 |
-| **Start-End Frame** | 首尾幀之間生成過渡 (Vidu 在此項特別穩) |
-| **T2V + Audio** | Q3 起原生同步音效/環境音 |
+> ⚠️ **校正紀錄**：舊版本檔曾寫「Q3 = 2026-04 發布、Artificial Analysis 全球第 1」。實際 Q3 約 **2026-01-30** 上線，排名**全球第 2（次於 Sora 2）**。本檔已修正。
 
-### 6 類參考 (Q2)
-1. 角色 (characters)
-2. 物件 / 道具 (props / textures)
-3. 場景 (scenes)
-4. 動作 (actions)
-5. 表情 (expressions)
-6. 特效 (special effects)
+---
 
-## Prompt 公式
+## 1. 模型能力矩陣
 
-把自己想成導演，四段式：
+| 版本 | 定位 | 最長時長 | 原生音訊 | 參考圖 | 解析度 | 特別強 |
+|---|---|---|---|---|---|---|
+| **Q3** | 旗艦 · 一鏡到底敘事 | **16s** | ✅ 對話/旁白/SFX/音樂/多人 + lip-sync | 多張 (待驗證上限) | 1080p | 帶聲音的完整故事段、多語對白 |
+| **Q2 / Q2 Ref Pro** | 多主體一致性 | 10s | ❌ (Q2 純畫面) | **最多 7 張** | 1080p | 多角色同框、商品 360° 展示、短劇 |
+| **Q1** | 動漫 / 2D 專家 | 4–8s | ❌ | 最多 7 張 | 1080p | 二次元、角色情緒表情、cel-style |
+| Vidu 2.0 | 上一代通用 | 8s | ❌ | 多張 | 1080p | 流暢度 |
+| Vidu 1.5 | 首代 Ref2V | 4s | ❌ | 多張 | 上一代 | 首個 reference-to-video |
+
+**選版速查：**
+- 要**聲音 / 對白 / 完整故事段** → **Q3**
+- 要**多角色 / 多主體一致 / 商品展示 / 純畫面** → **Q2 (Pro 檔)**
+- 要**動漫 / 二次元 / 卡通角色動起來** → **Q1**
+
+> ⚠️ Q3 的參考圖上限官網未明列數字（待驗證）。Q1 / Q2 確認為「**最多 7 張**」（臉 / 手勢 / 場景 / 道具任意組合）。舊檔曾寫「Q3 縮到 1–4 張更穩」屬未證實，已降級為待驗證。
+
+---
+
+## 2. 五大模式
+
+| 模式 | 說明 | 最佳場景 |
+|---|---|---|
+| **T2V** | 純文字生影片 | 概念快速試 |
+| **I2V** | 單張首幀 + prompt | 已有定裝圖要它動 |
+| **Reference-to-Video (Ref2V)** | 多張參考 (Q1/Q2 最多 7)，6 類參考 | **Vidu 的招牌** — 多主體一致 |
+| **Start-End Frame (首尾幀)** | 給首幀 + 尾幀，模型補中間過渡 | 變身 / 轉場 / 史詩揭示 |
+| **T2V + Audio** | Q3 原生同步音訊 | 帶聲音的成片 |
+
+### Ref2V 的 6 類參考 (Q2)
+1. 角色 (characters) — 臉 / 全身定裝
+2. 物件 / 道具 (props / textures) — 商品、配件、材質
+3. 場景 (scenes) — 背景、地點
+4. 動作 (actions) — 把某段動作 transfer 到主體
+5. 表情 (expressions) — 指定情緒
+6. 特效 (special effects) — 風格化視覺
+
+---
+
+## 3. Prompt 公式
+
+把自己想成導演，分層描述：
 
 ```
-Subject + Action + Environment + Camera Angle + (Lighting + Style)
+Subject + Action + Environment + Camera + (Lighting + Style)
 ```
 
-**範例 (官方示範)：**
+**官方示範：**
 ```
 Cinematic low-angle shot of a fantasy warrior leaping over a chasm,
 high-fidelity motion, sunset lighting, 1080p.
 ```
 
-## Reference-to-Video 的關鍵規則
+**長度甜蜜點：** T2V/I2V 約 40–80 字；Ref2V/Q3 多主體 80–150 字（要描述每個 entity 在做什麼 + 怎麼組合）。
 
-**1. 明確指涉每個 ref**
-用 "the character from reference 1"、"the object in image 2"、"the scene in video 1"、"the red car"、"the boy in ref 1"。
+---
 
-**2. 不要重複描述參考圖已有的外觀**
-如果 ref1 已經是金髮女孩穿紅洋裝，prompt 就不要再寫 "a blond girl in a red dress"，會跟 ref 打架。
+## 4. 進階技巧 A — Reference-to-Video 多主體一致性 (Vidu 最強招)
 
-**3. 重點放「動作」與「組合」**
-模型看得到外型，你要告訴它「要做什麼」+「怎麼組合」。
+這是 Vidu 區別於 Veo / Sora 的核心。Veo 沒有 multi-reference 系統，Runway Gen-4 Refs 上限更少。用好它，「同一角色跨鏡一致」幾乎免費。
 
-**範例 1 — 角色 + 場景組合：**
-```
-The character from reference 1 walks into the cafe from reference 2,
-sits at the window seat, warm afternoon light, slow dolly in, cinematic.
-```
+**規則 1 — 明確指涉每個 ref，別讓模型猜**
+用 `the character from reference 1` / `the object in image 2` / `the scene in video 1`。
+Vidu UI 內以 **`[@image 1]` `[@image 2]`** 標籤對應上傳順序；多角色同框時依序放標籤：`[@image 1][@image 2]`。
 
-**範例 2 — 角色 + 物件 + 另一角色：**
-```
-The girl (ref 1) picks up the vintage camera (ref 2) and smiles at the dog
-(ref 3), shallow depth of field, handheld, golden hour.
-```
+**規則 2 — 不要重述參考圖已有的外觀**
+ref1 已是金髮紅洋裝女孩，prompt 就**別**再寫 `a blond girl in a red dress`——會與 ref 打架、稀釋一致性。模型看得到長相，你只需給「**做什麼 + 怎麼組合**」。
 
-**範例 3 — 以動作 ref 指引：**
-```
-The subject (ref 1) performs the dance from reference video 1, in the setting
-of ref 2, dynamic tracking shot, stage lighting.
-```
+**規則 3 — 重點放動作與組合關係**
+模型理解每張 ref 之間的關係，能在「不把它們塞進同一張圖」的前提下合成有層次的場景。
 
-## 音效 Prompt (Q2 後期 / Q3)
+**規則 4 — 多角度提升穩定度**
+要角色超穩（轉頭 / 大動作不崩），餵 **3–7 張**良好打光、不同姿勢/角度的 ref。單張只夠簡單設計。
 
-Vidu 支援環境音 + 物件音效 (**不做音樂**)。結構：`聲源 + 音質 + 環境音`。
-
-```
-Audio: heavy rain, rolling thunder, waves crashing against rocks,
-distant foghorn, wind howling.
-```
-
-**避免：**
-- 音樂性描述 (「悲傷的旋律」) — Vidu 不是 music model
-- 人聲/對話 — 目前還不穩，要對話去 Veo 3.1
-
-## 運鏡詞
-
-支援全套標準：
-- `zoom in / out`
-- `pan left / right`
-- `tilt up / down`
-- `tracking shot / dolly / follow`
-- `orbit / arc`
-- `static`
-- `handheld`
-- `aerial / drone`
-
-## 參數
-
-- **時長**：Q2 約 4–8s；**Q3 原生 16s**
-- **解析度**：1080p
-- **Aspect**：16:9 / 9:16 / 1:1
-- **中英文 prompt** 皆原生支援
-
-## 版本差異
-
-| 版本 | 亮點 |
-|---|---|
-| Vidu 1.5 | 首個 reference-to-video |
-| Vidu 2.0 | 流暢度↑、1080p、8s |
-| Vidu Q1 | 高品質輸出，物理合理性↑ |
-| **Vidu Q2** | 2 videos + 4 images refs、6 類 |
-| Vidu Q2 Reference Pro | 2026-01 全球，提升一致性 |
-| **Vidu Q3** | 原生 16s 音視訊同步 |
-
-## 中英混寫
-
-- 中國文化元素 → 中文
-- 電影術語 / 運鏡 / 風格 → 英文
-
-```
-一位漢服少女在竹林中舞劍，cinematic low-angle tracking shot,
-Wong Kar-wai style, slow motion moments, golden hour lighting.
-```
-
-## 範例
-
-**1. T2V — 電影感奇幻**
-```
-A hooded wanderer trudges through knee-deep snow toward a distant glowing
-doorway in the mountainside. Low-angle tracking shot from behind. Cold blue
-palette, volumetric light spilling from the door, cinematic, Lord of the Rings
-inspired.
-```
-
-**2. Ref2V — 角色旅程 (給 Vidu 3 張圖)**
+**範例 — 角色 + 場景 + 物件三 ref 組合：**
 ```
 (Ref 1: 主角臉部, Ref 2: 中世紀市集, Ref 3: 紅色絲巾)
 The character from reference 1 walks through the market from reference 2,
@@ -134,114 +93,215 @@ wraps the red scarf from reference 3 around her neck as she passes a flower
 stall. Medium tracking shot, natural morning light.
 ```
 
-**3. Start-End Frame — 變身/過場**
+**範例 — 動作 transfer：**
 ```
-(Start Frame: 花苞, End Frame: 盛開紅玫瑰)
+The subject (ref 1) performs the dance from reference video 1, in the setting
+of ref 2, dynamic tracking shot, stage lighting.
+```
+
+---
+
+## 5. 進階技巧 B — 動漫 / 二次元最佳化 (Q1 專長)
+
+Q1 訓練資料含大量 anime + manga，會依該風格詮釋「這角色會怎麼笑 / 怎麼生氣」，情緒表情自然且不破壞角色辨識度。這是寫實模型做不到的。
+
+**官方 Q1 動漫 prompt 模組（依序組）：**
+```
+Camera work + Location + Emotion + Action + [@character ref]
+```
+
+**關鍵字策略：**
+- 用 **`flat, cel-style coloring`**（平塗賽璐珞上色）。Vidu 對細膩漸層 / 微妙陰影較難精準複製，**純色 / 平塗反而穩**。
+- 情緒用**強度形容詞**：`burning competitive spirit`、`maximum curiosity`。
+- 運鏡用**比喻 + 強度**：`F1-style whip pan`、`lightspeed zoom`、`slow pan → sudden stop zoom`。
+
+**參考圖準備（動漫專用）：**
+- 背景盡量**單純 / 純色**，讓模型專注角色。
+- 高解析、平塗無漸層。
+- 簡單設計**單張即可**；複雜角色再補正/側/背三視圖。
+
+**範例 — 熱血戰鬥動漫：**
+```
+[@image 1] A spiky-haired shonen protagonist, flat cel-style coloring,
+burning competitive spirit in his eyes. Rooftop at dusk, orange sky.
+He clenches his fist and lunges forward. Camera: slow pan then sudden
+whip-pan zoom-in on his face, F1-style speed lines.
+```
+
+---
+
+## 6. 進階技巧 C — 首尾幀 (Start-End Frame)
+
+Vidu 在首尾幀過渡特別穩，適合**變身 / 時光流逝 / 史詩揭示 / 商品變形**。上傳起始幀 + 結束幀，模型補中間連續動作。
+
+**重點：** prompt 寫**過程描述**（怎麼變），不要重述兩端外觀。
+
+**範例 — 花開縮時：**
+```
+(Start: 花苞, End: 盛開紅玫瑰)
 Time-lapse of the flower bud slowly opening into full bloom, macro shot,
 soft natural light, seamless transition.
 ```
 
-**4. Q3 原生音訊**
-```
-A lighthouse during a thunderstorm, waves crashing against the rocks below,
-lightning illuminating the clifftop. Wide establishing shot, slow push in.
-Audio: heavy rain, rolling thunder, crashing waves, distant foghorn.
-```
+---
 
-## 連結
+## 7. 進階技巧 D — Q3 原生音訊（對話 / 音效 / 配樂）
 
-- 官網：https://www.vidu.com/
-- Q2 發布新聞 (PRNewswire)：https://www.prnewswire.com/news-releases/vidu-launches-q2-reference-to-video-pioneering-a-new-era-of-high-consistency-and-creative-control-302590002.html
-- Q2 總覽 (SuperMaker)：https://supermaker.ai/blog/vidu-q2-overview-next-gen-video-ai-that-brings-details-and-camera-moves-to-life/
-- Q3 解析 (promeai)：https://www.promeai.pro/blog/what-is-vidu-q3/
-- WaveSpeedAI Vidu 集合：https://wavespeed.ai/collections/vidu
-- 302.AI 實測：https://medium.com/@302.AI/vidu-q2-test-actors-leading-the-new-direction-in-ai-video-innovation-bcea34de7e4c
-- Scenario 指南：https://help.scenario.com/en/articles/vidu-models-the-essentials/
-- SCMP 報導：https://www.scmp.com/tech/tech-trends/article/3329800/chinese-ai-start-shengshu-unveils-vidu-q2-challenge-openais-sora
+Q3 是 Vidu 唯一會出聲音的版本，且**一個 model 同時出音訊 + 影像**，免後期對齊。支援**對話 / 旁白 / 音效 / 配樂 / 多人對白 + 自動 lip-sync**，多國語言（英 / 日 / 中）。
+
+> 重要差異：**Q3 已支援音樂 (music)**。舊檔「Vidu 不做音樂」只適用 Q2 及更早版本。Q3 描述配樂風格即可（避免具體曲名 / 侵權）。
+
+**音訊分層建議（挑 2–3 層，不要全疊）：**
+- 環境音 / SFX：`Audio: heavy rain, rolling thunder, waves crashing against rocks, distant foghorn.`
+- 對白：角色名 + 引號（接近 Veo 寫法）。
+- 配樂：寫**風格 + BPM + 情緒走向**，不要寫具體曲名。
+
+**避免：**
+- 具體版權曲名（侵權風險，會降級處理）→ 改寫風格 `melancholic synth pad, 60 BPM`。
+- 同時疊 對白 + SFX + 配樂 + 環境 + 旁白 → 混亂。
 
 ---
 
-## 🆕 Vidu Q3 (2026-04-13 全球發布) — 完整更新
+## 8. 運鏡詞
 
-**Vidu Q3 Reference-to-Video** 是 2026-04 最大升級，ShengShu Tech 官方。
+支援全套標準（Q3 為 frame-level 精準執行）：
+- `zoom in / out`、`pan left / right`、`tilt up / down`
+- `tracking shot / dolly / follow`、`orbit / arc`
+- `static`、`handheld`、`aerial / drone`
+- `whip pan`、`slow push in`、`crash zoom`
 
-### 業界第一: 16 秒 single-pass synchronized audio+video
+---
 
-- **16 秒 一次生成** audio + video 同步
-- 包含 ambient sound / dialogue lip-sync / atmospheric audio
-- **比 Veo 3.1 (8s) + Kling 3.0 (15s) 更長**
-- **同一 model 出音訊 + 影像**，不需後期對齊
+## 9. 參數
 
-### Multi-Entity Consistency (Vidu Q3 核心)
+- **時長**：Q1 4–8s · Q2 最長 10s · **Q3 最長 16s**
+- **解析度**：1080p（部分代理可選 540p / 720p 省 credits）
+- **Aspect**：16:9 / 9:16 / 1:1
+- **語言**：中英原生；Q3 音訊支援 英 / 日 / 中
+- **Q2 品質檔**：Turbo（快、簡單短片）/ Pro（電影級細節）/ Pro Fast（折衷）
 
-- **1-4 張 reference images** (比 Q2 減少但更穩)
-- 結合多個不同來源 (不同角色 / 角度 / 風格) 進單一場景
-- 每個 entity 維持 distinct identity
-- **比 Runway Gen-4 Refs (最多 3 張) 更靈活**
-
-### 6 類原生電影級 VFX
-
-Vidu Q3 內建：
-1. **Particle systems** (雨 / 雪 / 沙 / 魔法粒子)
-2. **Fluid simulation** (水 / 液體 / 煙霧)
-3. **Dynamic motion** (真實物理)
-4. **Camera movement** (精準運鏡)
-5. **Transitions** (自然場景切換)
-6. **Lighting** (動態光影)
-
-**意義：** 不需後期 VFX，原生包含。
-
-### 多鏡 Composition + Camera Control
-
-- 單次 prompt 內多鏡
-- 每鏡獨立 camera control
-
-### 多語言 Dialogue + Lip Sync
-
-- 支援多國語言對白
-- 自動 lip sync
-- 品質接近 Veo 3.1 (評測中 Vidu 在多國語言上有優勢)
-
-### Benchmark 成績
-
-- **Artificial Analysis benchmark 全球第 1** (發布時)
-- 綜合分數勝過 Veo 3.1 / Kling 3.0 / Sora 2 (在某些類別)
-
-### 進階 Prompt (Q3 格式)
+### 中英混寫策略
+- 中國文化元素（漢服、竹林、水墨）→ 中文
+- 電影術語 / 運鏡 / 風格 → 英文
 
 ```
-Multi-entity scene at a Tokyo rooftop at sunset:
-- Character A (from ref 1): young woman in red jacket, 
-  walks onto rooftop from left
-- Character B (from ref 2): man in black suit, 
-  already standing at edge looking out
-- Setting (from ref 3): cyberpunk Tokyo skyline
-
-Shots (16s total):
-Shot 1 (0-5s): Wide establishing of rooftop, both characters 
-  visible, dynamic motion of her walking.
-Shot 2 (5-10s): Medium two-shot from side, he turns 
-  toward her, her expression shows recognition.
-Shot 3 (10-16s): Close-up on her face, she smiles, 
-  tear rolls down. Bokeh neon background.
-
-VFX: particle system for distant neon glow drift, 
-fluid simulation on scattered rain, dynamic wind on 
-her hair/jacket.
-
-Dialogue:
-Character A: "I wasn't sure you'd come."
-Character B: "I almost didn't."
-
-Soundtrack: melancholic synth pad with subtle piano, 
-60 BPM, building to emotional swell on close-up.
-
-Style: Makoto Shinkai cinematic anime meets Blade Runner 
-2049 neon atmosphere, 2.39:1 anamorphic, 16-bit HDR.
+一位漢服少女在竹林中舞劍，cinematic low-angle tracking shot,
+slow motion moments, golden hour lighting, ink-wash aesthetic.
 ```
 
-### 新連結
+---
 
-- [Vidu Q3 Launch (PR Newswire)](https://www.prnewswire.com/news-releases/shengshu-launches-vidu-q3-reference-to-video-with-expanded-visual-and-audio-capabilities-302740489.html)
-- [Vidu Q3 on WaveSpeedAI](https://wavespeed.ai/blog/posts/introducing-vidu-q3-reference-to-video-on-wavespeedai/)
-- [What Is Vidu Q3? (promeai)](https://www.promeai.pro/blog/2026/02/05/what-is-vidu-q3/)
+## 10. 價格速查 (待驗證 — 官網 vidu.com/pricing 為準)
+
+訂閱分 **Free / Standard / Premium / Ultimate** 四檔（年付約）：
+
+| 方案 | 月費 (年付) | Credits/月 |
+|---|---|---|
+| Standard | ~$8 | 800 |
+| Premium | ~$28 | 4,000 |
+| Ultimate | ~$79 | 8,000 |
+
+> 部分頁面列月付為 $10 / $35 / $99（與年付不同）。以官網即時為準。
+
+**Ref2V credit 消耗（依代理 API 公開值，官 UI 可能不同）：**
+
+| 解析度 | 5s | 10s |
+|---|---|---|
+| 540p | 12 credits (~$0.06) | 20 credits (~$0.1) |
+| 720p | 24 credits (~$0.12) | 42 credits (~$0.21) |
+| 1080p | 42 credits (~$0.21) | 76 credits (~$0.38) |
+
+消耗三因子：**時長**（越長越貴）×**品質檔**（高檔 1.5–2.5×）×**功能**（physics / style lock 加成）。Pro 方案有 **50% credit rollover**。
+
+---
+
+## 11. 進階 Recipe
+
+### Recipe A — 多主體短劇一鏡（Q2 Ref Pro，招牌用法）
+不用 chain，一次出多角色同框。
+```
+(Ref 1: 女主臉, Ref 2: 男主臉, Ref 3: 雨夜街道場景)
+The woman from reference 1 stands under a streetlight in the scene from
+reference 3, the man from reference 2 walks toward her from the shadows.
+She turns, recognition on her face. Slow dolly-in, rain-soaked neon
+reflections, shallow depth of field, cinematic.
+```
+要點：兩張臉 ref 各自指涉，**不重述長相**，只寫互動 + 運鏡。
+
+### Recipe B — 帶對白的完整情緒段（Q3 16s 一鏡到底）
+取代 Veo 多次 8s extend。
+```
+(Ref 1: 角色A, Ref 2: 角色B, Ref 3: 黃昏天台)
+Rooftop at sunset (ref 3). Character A (ref 1) walks in from the left;
+Character B (ref 2) already stands at the edge. Medium two-shot, he turns
+toward her. Camera slow push-in to her face as her expression shifts to
+recognition.
+Dialogue —
+A: "I wasn't sure you'd come."
+B: "I almost didn't."
+Soundtrack: melancholic synth pad, ~60 BPM, building on the close-up.
+Style: cinematic anime warmth, anamorphic, soft neon bokeh.
+```
+要點：對白用角色名 + 引號；配樂寫風格 + BPM；16s 內**自帶起承轉**。
+
+### Recipe C — 動漫角色情緒爆發（Q1，二次元最佳化）
+```
+[@image 1] Flat cel-style coloring. A young swordswoman, calm face cracking
+into a fierce grin, eyes burning with resolve. Dojo at night, paper lanterns.
+She draws her blade in one swift motion. Camera: static hold then crash-zoom
+on her eyes, dramatic speed lines.
+```
+要點：`flat cel-style coloring` 鎖風格 + 情緒強度詞 + 比喻運鏡。
+
+---
+
+## 12. 常見失敗 + 修法
+
+| 症狀 | 原因 | 修法 |
+|---|---|---|
+| 多角色長相互相污染 / 變第三人 | prompt 重述了 ref 已有外觀，與 ref 打架 | 刪掉外觀描述，只寫「ref N 做什麼」+ 用 `[@image N]` 標籤 |
+| 角色轉頭 / 大動作就崩 | 只給單張 ref | 補到 3–7 張多角度、良好打光的 ref |
+| 動漫漸層 / 陰影髒掉 | Vidu 對細膩 shading 較弱 | 改 `flat, cel-style coloring`，背景純色 |
+| Q3 出不來聲音 | 用到 Q2/Q1（無音訊） | 確認模型選 **Q3** |
+| 對白沒被唸出來 | 寫成敘述 `she says she has to leave` | 改 `A: "..."` 角色名 + 引號 |
+| 配樂走鐘 / 被降級 | 寫了具體版權曲名 | 改寫風格 `dramatic orchestral, building` |
+| 音訊一團亂 | 同時疊 5 種音層 | 挑 2–3 層（環境 + 對白 或 配樂） |
+| 中國區生成被擋 | content moderation（vidu.studio） | 改 prompt，避免敏感題材 |
+| 想要 >16s | 單次上限 16s (Q3) | 分段生再剪，或 Ref2V 保角色一致接續 |
+
+---
+
+## 13. 與其他模型分工
+
+- **要多角色跨鏡一致 / 商品 360°** → Vidu **Q2 Ref2V**（Veo 沒有 multi-ref，這是 Vidu 主場）
+- **要二次元 / 動漫角色動畫** → Vidu **Q1**（寫實模型做不出 anime 情緒）
+- **要帶聲音的完整故事段（16s）** → Vidu **Q3**
+- **要超精準運鏡 / 物理** → Kling 2.6 Pro（Vidu 運鏡略遜）
+- **要最自然英文對白 / lip-sync** → Veo 3.1（Vidu Q3 多語對白接近但英文略遜）
+
+---
+
+## 連結
+
+**官方：**
+- 官網：https://www.vidu.com/
+- Vidu Q3 介紹頁：https://www.vidu.com/vidu-q3
+- Q1 動漫官方指南：https://www.vidu.com/blog/vidu-q1-ai-2d-anime-guide
+- GPT-4o + Vidu 角色動畫教學：https://www.vidu.com/blog/create-and-animate-ai-character-with-gpt4o-and-vidu
+- 定價頁：https://www.vidu.com/pricing
+- API 定價：https://platform.vidu.com/docs/pricing
+
+**發布新聞：**
+- Q2 Ref2V 發布 (PRNewswire)：https://www.prnewswire.com/news-releases/vidu-launches-q2-reference-to-video-pioneering-a-new-era-of-high-consistency-and-creative-control-302590002.html
+- Q2 全面升級 / 5 分鐘故事 (aibase)：https://news.aibase.com/news/22138
+- SCMP 報導 (challenge Sora)：https://www.scmp.com/tech/tech-trends/article/3329800/chinese-ai-start-shengshu-unveils-vidu-q2-challenge-openais-sora
+
+**第三方解析 / 評測：**
+- Q3 是什麼 + 1/30 發布 (Cutout.pro)：https://www.cutout.pro/learn/blog-what-is-vidu-q3/
+- Q3 深度 (CometAPI)：https://www.cometapi.com/what-is-vidu-q3/
+- Q3 pricing & credits (promeai)：https://www.promeai.pro/blog/vidu-q3-pricing-credits/
+- Vidu pricing 2026 拆解 (Flowith)：https://flowith.io/blog/vidu-pricing-2026-free-vs-pro-vs-enterprise-cost/
+- Q1 動漫評測 (ReelMind)：https://reelmind.ai/blog/vidu-q1-dynamic-anime-multi-reference-video
+- Scenario 模型總覽：https://help.scenario.com/en/articles/vidu-models-the-essentials/
+- WaveSpeedAI Vidu 集合：https://wavespeed.ai/collections/vidu
+- Z.AI Q1 開發文件：https://docs.z.ai/guides/video/vidu-q1

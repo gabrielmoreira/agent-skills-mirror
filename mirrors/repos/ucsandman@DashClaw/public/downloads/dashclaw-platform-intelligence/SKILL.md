@@ -5,7 +5,7 @@ description: DashClaw platform expert for integration, troubleshooting, and gove
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:6469797479b89a55091842d988ea1941755d2f99`
+**Shape snapshot:** `sha1:9dbea6b71c4a6fea21a90fa3aed09e179c9f5386`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -45,7 +45,7 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 ## At a Glance
 
-- **237** active API routes across **58** categories
+- **242** active API routes across **60** categories
 - **4** required + **137** optional environment variables
 - **89** database tables
 
@@ -213,6 +213,10 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `DELETE, PATCH` `/api/evaluations/scorers/[scorerId]`
 - `POST` `/api/evaluations/scorers/preview`
 - `GET` `/api/evaluations/stats`
+
+### `finops`
+
+- `GET` `/api/finops/spend`
 
 ### `guard`
 
@@ -462,12 +466,19 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `POST` `/api/workflows/templates/[templateId]/runs/[runActionId]/cancel`
 - `POST` `/api/workflows/templates/[templateId]/runs/[runActionId]/resume`
 
+### `x402`
+
+- `GET, POST` `/api/x402/providers`
+- `GET, PATCH` `/api/x402/providers/[id]`
+- `GET, POST` `/api/x402/providers/[id]/endpoints`
+- `GET, POST` `/api/x402/purchases`
+
 ## Required Environment Variables
 
 These must be set — DashClaw will fail to start without them.
 
 - **`DASHCLAW_API_KEY`** - referenced in 56 file(s)
-- **`DATABASE_URL`** - referenced in 90 file(s)
+- **`DATABASE_URL`** - referenced in 91 file(s)
 - **`ENCRYPTION_KEY`** - referenced in 4 file(s)
 - **`NEXTAUTH_SECRET`** - referenced in 5 file(s)
 

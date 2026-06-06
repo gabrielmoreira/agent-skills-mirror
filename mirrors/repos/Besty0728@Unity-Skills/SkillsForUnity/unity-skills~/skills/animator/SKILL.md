@@ -1,6 +1,6 @@
 ---
 name: unity-animator
-description: "Unity Animator Controller editing and runtime parameter control: create controllers, add states/transitions/parameters, play animation states, drive triggers/floats/bools. Triggers: animation, animator, Animator Controller, controller, state, state machine, transition, layer, parameter, trigger, float, int, bool, blend tree, animation clip, exit time, has exit time, 动画, 动画控制器, 状态机, 状态, 状态转移, 转移, 图层, 参数, 触发器, 混合树, 动画片段."
+description: "Unity Animator Controller editing and runtime parameter control — create controllers, add states/transitions/parameters, play states, drive triggers/floats/bools. Exact signatures via GET /skills/schema."
 ---
 
 # Unity Animator Skills

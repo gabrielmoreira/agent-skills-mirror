@@ -286,6 +286,20 @@ Why it matters:
 - keep this off unless you want transcript GC to mutate the live session file during maintenance
 - the default is `false`
 
+### `enableSummaryThinking`
+
+Controls whether the summarization model receives a low reasoning budget.
+
+Why it matters:
+
+- when `true` (default), summarization calls request `reasoningIfSupported: "low"`, allowing the model to think before producing summaries — this is the current default behavior
+- when `false`, no explicit reasoning budget is requested, which can reduce cost and keep summarization output more concise when reasoning is not needed for faithful summaries
+- set to `false` when you want to minimize token spend on reasoning during compaction, especially with reasoning-capable models
+
+Env override:
+
+- `LCM_ENABLE_SUMMARY_THINKING`
+
 ### `proactiveThresholdCompactionMode`
 
 Controls whether proactive threshold compaction is deferred into maintenance debt or kept inline for legacy behavior.
@@ -516,6 +530,29 @@ Why it matters:
 
 - useful when the runtime model window is smaller than the surrounding system assumes
 - can prevent oversized assembly on smaller-context models
+
+## Anti-replay flood guard
+
+The ingest path runs `assertNoReplayTimestampFlood` to refuse batches that look like webhook-style replay attacks (many replay-like user messages or many identical internal messages at the same `created_at`). Because SQLite `datetime('now')` is second-granularity, legitimate idempotent bursts from sub-agents can also trip the guard if it is single-threshold. The role-aware thresholds below split the budget by message origin.
+
+### `replayFloodThresholdExternal`
+
+Max replay-like messages allowed in a single SQLite-second for `role=user` before the guard refuses the batch. Defaults to `3`.
+
+Why it matters:
+
+- preserves replay defense for third-partyly-rebroadcastable input
+- lower values are stricter but risk rejecting legitimate dedup retries from upstream channels
+
+### `replayFloodThresholdInternal`
+
+Max identical messages allowed in a single SQLite-second for `role=tool/assistant/system` before the guard refuses the batch. Defaults to `32`.
+
+Why it matters:
+
+- absorbs legitimate same-second idempotent tool returns (for example, sub-agents emitting many `{"status":"ok"}` results)
+- still bounded so a pathological loop cannot ingest unboundedly under the same timestamp
+- raise it if you operate cron sub-agents that emit very tight bursts; lower it if you want stricter sanity protection
 
 ## Nested objects
 

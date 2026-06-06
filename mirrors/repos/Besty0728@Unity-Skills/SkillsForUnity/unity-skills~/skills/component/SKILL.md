@@ -1,6 +1,6 @@
 ---
 name: unity-component
-description: "GameObject component management. Use when users want to add, remove, list, copy, enable/disable components, or read/set component properties (Rigidbody, Collider, AudioSource, custom scripts). Triggers: component, add component, remove component, list components, set property, get properties, copy component, enable, disable, rigidbody, collider, audio source, script, MeshRenderer, propertyName, componentType, 组件, 添加组件, 移除组件, 列出组件, 设置属性, 读取属性, 复制组件, 启用, 禁用, 刚体, 碰撞体, 音源, 脚本组件."
+description: "GameObject component management — add, remove, list, copy, enable/disable components, read/set component properties. Exact signatures via GET /skills/schema."
 ---
 
 # Unity Component Skills

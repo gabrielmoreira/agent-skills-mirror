@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `danny-avila/LibreChat` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `danny-avila/LibreChat` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `danny-avila/LibreChat` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,6 +61,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`e2e/fixtures/deployment-skills/e2e-deployment-skill/SKILL.md`](e2e/fixtures/deployment-skills/e2e-deployment-skill/SKILL.md) |
+| 4 | ✓ | [`skill/README.md`](skill/README.md) |
 
 ---
 

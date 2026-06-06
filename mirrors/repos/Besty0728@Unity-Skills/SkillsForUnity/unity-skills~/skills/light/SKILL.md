@@ -1,6 +1,6 @@
 ---
 name: unity-light
-description: "Unity lighting / scene lights / reflection probes / light probe groups. Use when users want to create or configure Unity Directional / Point / Spot / Area lights, batch-toggle scene lights, place reflection probes, place light probe grids, or inspect Lightmap baking settings. Triggers (EN): Unity light, scene light, directional light, point light, spot light, area light, intensity, shadows, light range, light color, reflection probe, light probe group, lightmap, baked GI. Triggers (ZH): 灯光, 光源, 光照, 阴影, 方向光, 点光源, 聚光灯, 面光源, 反射探针, 光照探针, 烘焙, 全局光照, 实时光, GI."
+description: "Unity lighting — create/configure Directional/Point/Spot/Area lights, batch-toggle scene lights, place reflection probes and light probe groups, inspect lightmap baking. Exact signatures via GET /skills/schema."
 ---
 
 # Unity Light Skills

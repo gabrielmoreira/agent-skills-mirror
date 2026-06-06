@@ -1,6 +1,6 @@
 ---
 name: unity-sample
-description: "Sample/demo skills for API connectivity testing and beginner examples — create primitive cubes/spheres, move/rotate/scale by name, delete by name, simple scene info. Use for smoke tests, health checks, and demo flows; not for production work. Triggers: sample, demo, example, hello, ping, smoke test, connectivity, create cube, create sphere, primitive, 示例, 演示, 测试, 烟雾测试, 入门, 连通性, 健康检查, demo skill."
+description: "Sample/demo skills for API connectivity testing — create primitives, move/rotate/scale/delete by name, simple scene info. For smoke tests and demos, not production. Exact signatures via GET /skills/schema."
 ---
 
 # Sample Skills

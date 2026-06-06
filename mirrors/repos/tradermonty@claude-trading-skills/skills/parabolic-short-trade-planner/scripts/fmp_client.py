@@ -25,6 +25,7 @@ except ImportError:
     print("ERROR: requests library not found. Install with: pip install requests", file=sys.stderr)
     sys.exit(1)
 
+from _fmp_compat import v3_to_stable
 
 # --- FMP endpoint fallback: stable (new users) -> v3 (legacy users) ---
 
@@ -279,8 +280,9 @@ class FMPClient:
         if cache_key in self.cache:
             return self.cache[cache_key]
 
-        url = f"{self.BASE_URL}/sp500_constituent"
-        data = self._rate_limited_get(url)
+        # Hardcoded v3 URL bypasses the stable→v3 fallback list; rewrite here.
+        url, params = v3_to_stable(f"{self.BASE_URL}/sp500_constituent")
+        data = self._rate_limited_get(url, params)
         if data:
             self.cache[cache_key] = data
         return data
@@ -340,13 +342,15 @@ class FMPClient:
     def get_company_profile(self, symbol: str) -> Optional[dict]:
         """Fetch company profile (market cap, IPO date, sector, etc.).
 
-        Uses ``/api/v3/profile/{symbol}``. Returns ``None`` on failure.
+        Uses ``/stable/profile?symbol={symbol}`` (single symbol). Returns
+        ``None`` on failure.
         """
         cache_key = f"profile_{symbol}"
         if cache_key in self.cache:
             return self.cache[cache_key]
-        url = f"{self.BASE_URL}/profile/{symbol}"
-        data = self._rate_limited_get(url)
+        # Hardcoded v3 URL bypasses the stable→v3 fallback list; rewrite here.
+        url, params = v3_to_stable(f"{self.BASE_URL}/profile/{symbol}")
+        data = self._rate_limited_get(url, params)
         if isinstance(data, list) and data:
             profile = data[0]
             self.cache[cache_key] = profile
@@ -373,8 +377,11 @@ class FMPClient:
         cache_key = f"earnings_{from_date}_{to_date}"
         if cache_key in self.cache:
             return self.cache[cache_key]
-        url = f"{self.BASE_URL}/earning_calendar"
-        data = self._rate_limited_get(url, params={"from": from_date, "to": to_date})
+        # Hardcoded v3 URL bypasses the stable→v3 fallback list; rewrite here.
+        url, params = v3_to_stable(
+            f"{self.BASE_URL}/earning_calendar", {"from": from_date, "to": to_date}
+        )
+        data = self._rate_limited_get(url, params=params)
         if isinstance(data, list):
             self.cache[cache_key] = data
         return data

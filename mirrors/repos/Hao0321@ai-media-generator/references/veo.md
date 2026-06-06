@@ -4,6 +4,33 @@
 
 在 Google Flow UI、Gemini App、Vertex AI 上可用；Replicate、fal.ai 有第三方代理。
 
+---
+
+## 🆕🆕 2026-06 重大：Google 影片變「雙旗艦」— Veo 3.1 + Gemini Omni
+
+**Google I/O 2026（2026-05-19）發表 Gemini Omni** —— any-to-any 多模態影片模型，官方定位「**影片版 Nano Banana**」。**不是取代 Veo，是並存分工**：
+
+| | **Veo 3.1** | **Gemini Omni** 🆕 |
+|---|---|---|
+| 定位 | 4K 畫質線、長片主力 | 對話編輯線、多模態輸入 |
+| 強項 | 最高畫質、48kHz 同步對白、Scene Extension 長片、Ingredients(4 圖鎖形) | 吃任意組合輸入（圖/音/影/文）、**對話式逐輪編輯**、物理感知、世界知識 |
+| 何時選 | 要 4K 成品 / 對白配音 / 直式 / 拼長片 | 要多輪改 / 餵語音圖影生影片 / 聊天式換背景換物件改鏡位 |
+
+**Gemini Omni 關鍵（驗證 2026-06-05）：**
+- 單一架構融合圖/音/影生成於 one forward pass（消除模型交接的品質損失）
+- **對話式編輯殺手鐧**：每個編輯指令都在「之前所有步驟脈絡」下理解 —— 第 3 步改機位，模型記得第 1-2 步的角色/光線/場景
+- **Gemini Omni Flash 已上線**：Flow PRO / Gemini app / YouTube Shorts/Create，發布期 **10s 上限**（Google 明說是部署選擇非模型限制）
+- 給所有 Google AI Plus/Pro/Ultra 訂閱者
+- 官方 prompt guide：六維框架（鏡頭框取/風格/光線/地點/動作/文字渲染）；**心法克制 —— 一回合只改一件事**；別逐像素描述（它會推理世界）；運鏡語彙都吃（`push in`/`dolly zoom`/`locked off`/`oner`）；丟角色圖當 reference 逐輪鎖造型
+
+**⚠️ 同名地雷：Gemini Omni（Google）≠ Kling 3.0 Omni（快手）。** 兩個不同公司同名模型，別搞混。
+
+**對 Hao 的意義：** Flow PRO 同時有 Veo 3.1 + Omni Flash。Omni 的「reference 鎖造型 + 對話改場景」**原生**解掉 OiiOii「加入對話≠i2v」的坑 —— 要乾淨的 i2v 鎖形狀工作流，Flow Omni 比 OiiOii Slate 注入乾淨。
+
+**Google 視覺全家桶現況：** 影片雙旗艦 Veo 3.1 + Gemini Omni；圖像 Nano Banana Pro（4K 旗艦/文字）+ Imagen 4（量產）；世界模型 Genie 3（可走動 3D，非影片）。完整選模型見 [model-picker.md](model-picker.md)。
+
+官方來源：[Introducing Gemini Omni (blog.google)](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-omni/) · [Gemini Omni (DeepMind)](https://deepmind.google/models/gemini-omni/) · [Omni prompt guide](https://deepmind.google/models/gemini-omni/prompt-guide/)
+
 ## 核心特色
 
 - **原生音訊** — prompt 裡描述什麼聲音，會同步出現

@@ -1,6 +1,6 @@
 ---
 name: unity-event
-description: "UnityEvent persistent-listener wiring at editor time: inspect, add, remove, batch-add, copy, clear, set call-state, list events on a component (e.g. Button.onClick, Slider.onValueChanged). For runtime invocation only. Triggers: UnityEvent, event, persistent listener, persistent call, onClick, onValueChanged, listener, callback, wire, hook up, EditorAndRuntime, RuntimeOnly, button click, 事件, 持久监听器, 监听器, 接线, 回调, 按钮点击, 持久化."
+description: "UnityEvent persistent-listener wiring at editor time — inspect, add, remove, batch-add, copy, clear, set call-state, list events on a component. Exact signatures via GET /skills/schema."
 ---
 
 # Event Skills

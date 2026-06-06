@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.1.3] - 2026-06-01
+
+### 🐛 Fixes
+
+- **Uninstall left hooks and settings behind** — `uninstallWorkflows` predated the v3.0 hook engine and never removed `~/.claude/hooks/ccg/` (5 scripts) or the CCG hook registrations in `~/.claude/settings.json` (`UserPromptSubmit`/`SessionStart`/`PreToolUse`). Uninstall now removes the `hooks/ccg/` directory and deregisters only CCG hook entries (identified by a `hooks/ccg/` command path), preserving the user's own hooks. Added `removedHooks` to the uninstall result. Verified with an install→uninstall round-trip test.
+
+---
+
 ## [3.1.2] - 2026-05-30
 
 ### 🐛 Fixes

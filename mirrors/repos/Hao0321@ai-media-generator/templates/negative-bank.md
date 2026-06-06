@@ -6,20 +6,20 @@
 
 | 模型 | Negative Prompt 支援 | 備註 |
 |---|---|---|
-| Kling | ✓ 原生欄位 | 效果明顯 |
-| Seedance | ✓ | 效果中等 |
-| Seedream 4.5 | ✓ | 明顯 |
-| Vidu | ✓ | 中等 |
-| Runway | ✗ 官方無 | 用 "avoid..." 寫進 prompt 尾 |
-| Sora | ✗ | Remix 改變負向 |
+| Kling 3.0 | ✓ 原生獨立欄位 | 效果明顯；別塞 >15 詞 |
+| Seedance 2.0 | ✓ | 效果中等 |
+| Seedream 5.0 / 4.0 | ✓ | 明顯 |
+| Vidu Q3 | ✓ | 中等 |
+| Runway Gen-4.5 | ✗ 官方無 | 用 "avoid..." 寫進 prompt 尾，或正向改寫 |
+| ~~Sora 2~~ | 🔴 平台已停運 (2026-04) | 勿用 |
 | Veo 3.1 | 輕 | 寫進 prompt 尾 |
-| Midjourney | `--no X, Y` | 官方方式 |
+| Midjourney V8.1 | `--no X, Y` | 官方方式 |
 | Flux 1.1 Pro | 輕支援 | 重寫 prompt 更有效 |
 | Flux Kontext | 不需要 | 直接講保留什麼 |
 | Ideogram 3 | ✓ 輕量 | |
 | SDXL | ✓ **核心機制** | 長 list 有效 |
 | SD 3.5 | ✓ | 仍有用但短即可 |
-| Suno | ✓ Style 欄尾 | `no auto-tune, no rap` |
+| Suno v5.5 | ✓ Style 欄尾 / Exclude styles slider | `no auto-tune, no rap` |
 
 ## 人物類 (影片 + 圖像通用)
 
@@ -83,11 +83,23 @@ symmetrical face (人臉本來微不對稱), oversharpened, beauty filter look,
 unrealistic eye shine, glossy lips (若不要)
 ```
 
-### 產品攝影
+### 產品攝影（圖像）
 ```
 blurry, low quality, watermark, background clutter, distracting reflections,
-fingerprints, dust, shadows on label, warped text, bad reflection
+fingerprints, dust, shadows on label, warped text, bad reflection,
+plastic look, oversaturated, harsh flat lighting, distorted product shape
 ```
+
+### 產品廣告（影片）⭐ 最致命：主體變形
+
+產品在動畫中變形是廣告級 killer。**先看 [quality-control.md §1 主體完整性](../references/quality-control.md)**，這裡是配套 negative：
+```
+deformed product, morphing shape, warping geometry, melting object,
+inconsistent label, distorted logo, shape-shifting, structural collapse,
+garbled text, flickering, texture boiling, plastic look, CGI render,
+jittery camera, warped reflection
+```
+**根治法不是堆 negative，是切 i2v**：先用 Ideogram/Seedream/MJ 定死 hero 圖 → i2v 只動畫化，形狀被圖鎖死。
 
 ### 藝術插畫
 ```

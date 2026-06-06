@@ -1,6 +1,6 @@
 # AGENTS.md — Guidance for coding agents working on this repo
 
-This repo is a library of 131 evidence-based education skills across 17 domains, packaged for use in Claude Code, Claude.ai (via MCP), OpenAI Codex, and any Agent Skills-compatible tool.
+This repo is a library of 165 evidence-based education skills across 20 domains, packaged for use in Claude Code, Claude.ai (via MCP), OpenAI Codex, Hermes Agent, and any Agent Skills-compatible tool.
 
 ## Skill structure
 

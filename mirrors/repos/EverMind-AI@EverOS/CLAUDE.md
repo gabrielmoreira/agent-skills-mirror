@@ -37,10 +37,11 @@ Detailed: [docs/architecture.md](docs/architecture.md).
 
 ## Engineering practices
 
-- **Coding rules** auto-loaded from [.claude/rules/](.claude/rules/) (10 rules; path-scoped for performance)
+- **Coding rules** auto-loaded from [.claude/rules/](.claude/rules/) (10 rules; the three always-loaded ones cover architecture / code-style / language-policy, the rest are path-scoped and load when Claude Code opens a matching file)
 - **Workflows** as slash commands in [.claude/skills/](.claude/skills/) — `/commit`, `/new-branch`, `/pr`
 - **Project-level decisions** in [docs/](docs/) (low-frequency, human-judgment-required)
-- **Language policy**: project targets a global audience — docs and code are English; CJK only in test fixtures and locale-suffixed mirrors. See [.claude/rules/language-policy.md](.claude/rules/language-policy.md).
+- **Language policy**: the project targets a global audience — docs and code are English; CJK appears only in test fixtures and locale-suffixed mirrors. Scanned by `make check-cjk`.
+- **Datetime discipline**: never call `datetime.now()` / `time.time()` directly — use `everos.component.utils.datetime`. Enforced by `make check-datetime`.
 
 Engineering infrastructure overview: [docs/engineering.md](docs/engineering.md).
 
@@ -48,7 +49,7 @@ Engineering infrastructure overview: [docs/engineering.md](docs/engineering.md).
 
 `master` = released stable (hidden); `dev` = integration; `feat/* fix/*` → dev; `hotfix/*` → master + dev (sync).
 
-Full GitFlow Lite rationale: [.claude/skills/new-branch/SKILL.md](.claude/skills/new-branch/SKILL.md).
+See [docs/engineering.md](docs/engineering.md) for the full GitFlow Lite rationale.
 
 ## Storage three-piece set
 
@@ -66,7 +67,7 @@ Selection rationale: [docs/architecture.md](docs/architecture.md).
 
 **src layout** (`src/everos/<...>`): standard PyPA project structure — code lives under `src/` so the working tree is not on the import path until installed, preventing accidental imports of in-development modules.
 
-Algorithm assets (prompts, extractors) are being extracted into a separate `evercore` library.
+Algorithm assets (prompts, extractors) live in the separate [`everalgo`](https://github.com/EverMind-AI/EverAlgo) library, consumed here as the `everalgo-*` PyPI packages.
 
 ## Where things go
 
@@ -78,3 +79,4 @@ Algorithm assets (prompts, extractors) are being extracted into a separate `ever
 | Add a new module | [.claude/rules/init-py-and-reexport.md](.claude/rules/init-py-and-reexport.md) |
 | Make a commit | use `/commit` |
 | Open a branch / PR | use `/new-branch` / `/pr` |
+| Run checks before pushing | `make ci` |

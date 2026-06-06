@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getpaseo/paseo` — 26 default patterns, 22 followed patterns, 39 file(s) materialized.
+Mirror of `getpaseo/paseo` — 26 default patterns, 22 followed patterns, 36 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 22 followed patterns, 39 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 22 |
-| Files         | 39 |
+| Files         | 36 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -91,34 +91,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`public-docs/skills.md`](public-docs/skills.md) |
 | 10 | ✓ | [`skills/paseo-advisor/SKILL.md`](skills/paseo-advisor/SKILL.md) |
 | 11 | ✓ | [`skills/paseo-committee/SKILL.md`](skills/paseo-committee/SKILL.md) |
-| 12 | ✓ | [`skills/paseo-epic/references/roles.md`](skills/paseo-epic/references/roles.md) |
-| 13 | ✓ | [`skills/paseo-epic/SKILL.md`](skills/paseo-epic/SKILL.md) |
-| 14 | ✓ | [`skills/paseo-handoff/SKILL.md`](skills/paseo-handoff/SKILL.md) |
-| 15 | ✓ | [`skills/paseo-loop/SKILL.md`](skills/paseo-loop/SKILL.md) |
-| 16 | ✓ | [`skills/paseo-orchestrate/SKILL.md`](skills/paseo-orchestrate/SKILL.md) |
-| 17 | ✓ | [`skills/paseo/SKILL.md`](skills/paseo/SKILL.md) |
-| 18 | → | [`docs/ad-hoc-daemon-testing.md`](docs/ad-hoc-daemon-testing.md) |
-| 19 | → | [`docs/agent-lifecycle.md`](docs/agent-lifecycle.md) |
-| 20 | → | [`docs/android.md`](docs/android.md) |
-| 21 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 22 | → | [`docs/coding-standards.md`](docs/coding-standards.md) |
-| 23 | → | [`docs/custom-providers.md`](docs/custom-providers.md) |
-| 24 | → | [`docs/data-model.md`](docs/data-model.md) |
-| 25 | → | [`docs/design.md`](docs/design.md) |
-| 26 | → | [`docs/development.md`](docs/development.md) |
-| 27 | → | [`docs/file-icons.md`](docs/file-icons.md) |
-| 28 | → | [`docs/floating-panels.md`](docs/floating-panels.md) |
-| 29 | → | [`docs/glossary.md`](docs/glossary.md) |
-| 30 | → | [`docs/hover.md`](docs/hover.md) |
-| 31 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
-| 32 | → | [`docs/product.md`](docs/product.md) |
-| 33 | → | [`docs/providers.md`](docs/providers.md) |
-| 34 | → | [`docs/release.md`](docs/release.md) |
-| 35 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
-| 36 | → | [`docs/service-proxy.md`](docs/service-proxy.md) |
-| 37 | → | [`docs/testing.md`](docs/testing.md) |
-| 38 | → | [`docs/unistyles.md`](docs/unistyles.md) |
-| 39 | → | [`SECURITY.md`](SECURITY.md) |
+| 12 | ✓ | [`skills/paseo-handoff/SKILL.md`](skills/paseo-handoff/SKILL.md) |
+| 13 | ✓ | [`skills/paseo-loop/SKILL.md`](skills/paseo-loop/SKILL.md) |
+| 14 | ✓ | [`skills/paseo/SKILL.md`](skills/paseo/SKILL.md) |
+| 15 | → | [`docs/ad-hoc-daemon-testing.md`](docs/ad-hoc-daemon-testing.md) |
+| 16 | → | [`docs/agent-lifecycle.md`](docs/agent-lifecycle.md) |
+| 17 | → | [`docs/android.md`](docs/android.md) |
+| 18 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 19 | → | [`docs/coding-standards.md`](docs/coding-standards.md) |
+| 20 | → | [`docs/custom-providers.md`](docs/custom-providers.md) |
+| 21 | → | [`docs/data-model.md`](docs/data-model.md) |
+| 22 | → | [`docs/design.md`](docs/design.md) |
+| 23 | → | [`docs/development.md`](docs/development.md) |
+| 24 | → | [`docs/file-icons.md`](docs/file-icons.md) |
+| 25 | → | [`docs/floating-panels.md`](docs/floating-panels.md) |
+| 26 | → | [`docs/glossary.md`](docs/glossary.md) |
+| 27 | → | [`docs/hover.md`](docs/hover.md) |
+| 28 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
+| 29 | → | [`docs/product.md`](docs/product.md) |
+| 30 | → | [`docs/providers.md`](docs/providers.md) |
+| 31 | → | [`docs/release.md`](docs/release.md) |
+| 32 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
+| 33 | → | [`docs/service-proxy.md`](docs/service-proxy.md) |
+| 34 | → | [`docs/testing.md`](docs/testing.md) |
+| 35 | → | [`docs/unistyles.md`](docs/unistyles.md) |
+| 36 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

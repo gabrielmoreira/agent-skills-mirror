@@ -97,9 +97,9 @@ RPC Layer (rpc/)
 | `_env.py`, `config.py` | Runtime environment defaults and the public config re-export surface |
 | `_logging.py`, `log.py` | Redaction/correlation logging internals and the public logging helper surface |
 | `_callbacks.py` | Sync-or-async callback invocation helper used by telemetry/retry hooks |
-| `_lookup.py` | `unwrap_or_raise(obj, exc)` — the shared single-row-lookup helper backing the public `get`/`get_or_none` pair across all five namespaces (ADR-0019 Enforcement tier-2; the `get()`-raises wiring lands with the v0.8.0 flip, issue #1247). |
+| `_lookup.py` | `unwrap_or_raise(obj, exc)` — the shared single-row-lookup helper backing the public `get`/`get_or_none` pair (ADR-0019 Enforcement tier-2). The four `sources`/`artifacts`/`notes`/`mind_maps` `get()` methods call it directly to raise their `*NotFoundError` on a miss (the v0.8.0 flip, issue #1247); `notebooks.get()` already raised on its own path and does not route through it. |
 | `_loop_bound.py` | `LoopBoundPrimitive` — template-method base for the loop-affinity `set_bound_loop` protocol. Owns the `_bound_loop` field + a `set_bound_loop` that always stores the binding and fires the `_on_loop_rebind(old, new)` hook only on a real loop change (hook before store). Trivial owners (`TransportDrainTracker`/`ReqidCounter`/`AuthRefreshCoordinator`) use the default no-op hook; clear-on-rebind owners (`ClientComposed`/`SourceUploadPipeline`/`ChatAPI`) override it to discard their cached loop-bound primitive/locks. Owns only the binding + rebind hook — the cross-loop *assert* stays in `_loop_affinity`, and each owner keeps its own `reset_after_open`. |
-| `_deprecation.py` | Deprecation helpers, all gated by `NOTEBOOKLM_QUIET_DEPRECATIONS`: `warn_deprecated` — generic gated primitive for one-off deprecations that don't fit the three specific families (awaiting `from_storage(...)`, ambiguous `research.poll(task_id=None)`, `NotebooksAPI.share()`); pass `removal=None` when no removal version is pinned yet. ADR-0018 forbids inline `warnings.warn(..., DeprecationWarning)` outside this module — `tests/_guardrails/test_no_inline_deprecation_warnings.py` enforces it (governs the `DeprecationWarning` category only; an inline `RuntimeWarning`/`UserWarning` is allowed). Note `save_cookies_to_storage(original_snapshot=None)` is NOT a deprecation — it's a permanent back-compat shim emitting an inline `RuntimeWarning` race advisory, outside ADR-0018 scope and ungated (issue #1369). `warn_get_returns_none` — single place for the `get()`-returns-`None` `DeprecationWarning` (public `sources/artifacts/notes/mind_maps.get()` warn on a miss; the public `get_or_none()` — and its zero-churn private `_get_or_none` alias — never warns; flip to raising `*NotFoundError` in v0.8.0, issue #1247); `deprecated_kwarg` / `deprecations_quiet` — keyword-alias helper that names the v0.8.0 removal and errors when both the old and new keyword are passed (used by `ResearchAPI.wait_for_completion` `interval` → `initial_interval`); and `MappingCompatMixin` — dict-subscript backward-compat bridge for dataclasses that replaced `dict[str, Any]` returns (issue #1209: `ResearchTask`/`ResearchStart`/`MindMapResult`/`SourceGuide`); `result["key"]` warns and returns the value from the dataclass's `to_public_dict()`; `get`/`keys`/`in`/`iter` stay silent off the flag but — like the subscript — raise the exact bare-dataclass error under `NOTEBOOKLM_FUTURE_ERRORS` (full #1251 preview, not just subscript; #1405 follow-up); dropped in v0.8.0. See `docs/deprecations.md`. |
+| `_deprecation.py` | Deprecation helper, gated by `NOTEBOOKLM_QUIET_DEPRECATIONS`: `warn_deprecated` — generic gated primitive for one-off deprecations (e.g. awaiting `from_storage(...)`); pass `removal=None` when no removal version is pinned yet. `deprecations_quiet` / `_deprecations_quiet` / `_QUIET_ENV_VAR` back the suppression gate. ADR-0018 forbids inline `warnings.warn(..., DeprecationWarning)` outside this module — `tests/_guardrails/test_no_inline_deprecation_warnings.py` enforces it (governs the `DeprecationWarning` category only; an inline `RuntimeWarning`/`UserWarning` is allowed). Note `save_cookies_to_storage(original_snapshot=None)` is NOT a deprecation — it's a permanent back-compat shim emitting an inline `RuntimeWarning` race advisory, outside ADR-0018 scope and ungated (issue #1369). The v0.7.0 error-contract machinery (`NOTEBOOKLM_FUTURE_ERRORS`/`future_errors_enabled`, `warn_get_returns_none`, `deprecated_kwarg`, `MappingCompatMixin`) was **removed in v0.8.0** once every break it staged became the default (issue #1365). See `docs/deprecations.md`. |
 | `_runtime/helpers.py` | `is_auth_error`, `AUTH_ERROR_PATTERNS`, `_resolve_keepalive_interval` |
 | `_error_injection.py` | Synthetic-error env-var resolver + startup guard |
 | `_client_metrics.py` | `ClientMetrics` — `ClientMetricsSnapshot` counters + `on_rpc_event` callback |
@@ -123,6 +123,7 @@ RPC Layer (rpc/)
 | `_cookie_persistence.py` | Cookie-jar persistence + `__Secure-1PSIDTS` rotation |
 | `_runtime/contracts.py` | Shared runtime Protocols consumed by sub-clients |
 | `_idempotency.py` | Mutating-RPC idempotency policy registry and probe-then-retry wrapper; ADR-0005 is the taxonomy source |
+| `_idempotency_policy.py` | Declarative per-RPC idempotency classification data, applied to `IDEMPOTENCY_REGISTRY` via `register_default_policies` at `_idempotency` import time (#1331). Holds the load-bearing two-pass seeding order (pre-seed `register()` → `_seed_defaults()` → post-seed `register()` + the read/set-op loop). |
 | `_atomic_io.py`, `io.py` | Atomic JSON write/update internals and public I/O re-export surface for CLI boundary compliance |
 | `exceptions.py` | Public exception hierarchy plus safe diagnostic preview/redaction helpers |
 | `paths.py`, `migration.py` | Profile-aware path resolution and locked migration from the legacy flat layout |
@@ -197,9 +198,10 @@ src/notebooklm/
 ├── _client_composed.py          # Client-owned composition holder
 ├── _client_seams.py             # Constructor-only injectable seams
 ├── _deadline.py                 # RuntimeDeadline helper for aggregate timeouts
-├── _deprecation.py              # Deprecation helpers (warn_get_returns_none + deprecated_kwarg keyword-alias + MappingCompatMixin dict-subscript bridge) gated by NOTEBOOKLM_QUIET_DEPRECATIONS
+├── _deprecation.py              # Deprecation helper (warn_deprecated) gated by NOTEBOOKLM_QUIET_DEPRECATIONS
 ├── _env.py                      # Runtime environment/default endpoint helpers
 ├── _idempotency.py              # Mutating-RPC idempotency registry + wrappers
+├── _idempotency_policy.py       # Declarative per-RPC idempotency classification data (register_default_policies)
 ├── _kernel.py                   # Concrete Kernel transport core
 ├── _logging.py                  # Redaction + correlation logging internals
 ├── _lookup.py                   # unwrap_or_raise — shared single-row-lookup helper for get/get_or_none
@@ -317,6 +319,8 @@ src/notebooklm/
     ├── _download_specs.py       # Registry data for `download <type>` leaf commands
     ├── _encoding.py             # Encoding-safe CLI output helpers
     ├── _firefox_containers.py   # Container-aware Firefox cookie extraction
+    ├── _session_render.py       # Session-command render helpers (status/auth tables)
+    ├── _source_render.py        # Source CLI render/validation helpers (extracted from source_cmd.py)
     ├── agent_cmd.py             # agent show commands
     ├── agent_templates.py       # agent prompts and configurations
     ├── artifact_cmd.py          # artifact commands
@@ -355,7 +359,8 @@ src/notebooklm/
         ├── auth_source.py       # Single source of truth for the active CLI auth source
         ├── confirming_mutation.py # Shared confirmed-mutation pipeline for CLI resources
         ├── download.py          # Pure-logic download plan + executor
-        ├── generate.py          # Service layer for `notebooklm generate` commands
+        ├── generate.py          # Service layer for `notebooklm generate` commands (executor + re-exports)
+        ├── generate_plans.py    # Plan-building half of `generate`: maps, GenerationPlan, build_generation_plan
         ├── listing.py           # Shared list-command pipeline for CLI resources
         ├── login/               # Browser-cookie login helper package
         │   ├── __init__.py      # re-export-only patch surface
@@ -372,6 +377,7 @@ src/notebooklm/
         │   ├── refresh.py
         │   └── rookiepy_errors.py
         ├── playwright_login.py  # Playwright-driven Google login service
+        ├── playwright_redaction.py # Subprocess-output redaction helpers for the Playwright login service
         ├── polling.py           # Shared polling helpers for CLI wait commands
         ├── research.py          # Service layer for `research wait`
         ├── session_context.py   # Notebook-context services for `use`/`status`/`auth logout`

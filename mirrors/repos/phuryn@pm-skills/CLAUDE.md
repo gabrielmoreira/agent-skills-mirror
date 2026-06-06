@@ -4,7 +4,7 @@ Guidance for AI agents (Claude Code, Cowork, and others) working in this reposit
 
 ## Project Overview
 
-**PM Skills** (`phuryn/pm-skills`) — a marketplace of **8 independent plugins** (65 skills, 36 commands) that bring structured product-management workflows to AI coding assistants. Built for Claude Code and Claude Cowork; the skills are also compatible with other agents (Gemini CLI, Cursor, Codex CLI).
+**PM Skills** (`phuryn/pm-skills`) — a marketplace of **9 independent plugins** (68 skills, 42 commands) that bring structured product-management workflows to AI coding assistants. Built for Claude Code and Claude Cowork; the skills are also compatible with other agents (Gemini CLI, Cursor, Codex CLI).
 
 Owner: Paweł Huryn — pawel@productcompass.pm — https://www.productcompass.pm
 
@@ -12,7 +12,7 @@ Owner: Paweł Huryn — pawel@productcompass.pm — https://www.productcompass.p
 
 ```
 pm-skills/                           <- repo root
-├── .claude-plugin/marketplace.json  <- root marketplace manifest (lists all 8 plugins)
+├── .claude-plugin/marketplace.json  <- root marketplace manifest (lists all 9 plugins)
 ├── .docs/images/                    <- images used by README (webp, gif)
 ├── .gitattributes
 ├── .gitignore
@@ -22,25 +22,26 @@ pm-skills/                           <- repo root
 ├── README.md                        <- public documentation (GitHub)
 ├── LICENSE                          <- MIT
 ├── validate_plugins.py              <- plugin validator
-└── pm-{name}/                       <- 8 plugin directories
+└── pm-{name}/                       <- 9 plugin directories
     ├── .claude-plugin/plugin.json   <- per-plugin manifest
     ├── skills/{skill}/SKILL.md      <- one folder per skill
     ├── commands/{command}.md        <- one file per command
     └── README.md                    <- per-plugin documentation
 ```
 
-### The 8 plugins
+### The 9 plugins
 
 | Plugin | Focus |
 |--------|-------|
 | `pm-product-discovery` | Ideation, experiments, assumption testing, prioritization, interview synthesis |
 | `pm-product-strategy` | Vision, strategy/lean/business-model canvas, SWOT, PESTLE, Ansoff, Porter, monetization |
-| `pm-execution` | PRDs, OKRs, roadmaps, sprints, pre-mortems, stakeholder maps, user stories |
+| `pm-execution` | PRDs, OKRs, roadmaps, sprints, pre-mortems, stakeholder maps, user stories, red-teaming |
 | `pm-market-research` | Personas, segmentation, sentiment analysis, competitive analysis, market sizing |
 | `pm-data-analytics` | SQL query generation, cohort/retention analysis |
 | `pm-go-to-market` | GTM strategy, growth loops, motions, beachhead segments, ICPs |
 | `pm-marketing-growth` | Marketing ideas, value-prop statements, North Star metrics, naming, positioning |
 | `pm-toolkit` | Resume review, NDA drafting, privacy policy, grammar/flow checking |
+| `pm-ai-shipping` | AI Shipping Kit: document a vibe-coded app, map test coverage, audit security/performance against intended behavior, compile a shipping packet |
 
 ## Key Design Rules
 
@@ -68,9 +69,9 @@ Descriptions in `plugin.json` and the repo `README.md` should stay aligned (iden
 
 ## Versioning
 
-- All versions are currently **1.0.1** — `marketplace.json` and all 8 `plugin.json` files.
+- All versions are currently **2.0.0** — `marketplace.json` and all 9 `plugin.json` files.
 - **Keep every version in sync.** There is no independent per-plugin versioning.
-- Bump any `plugin.json` → also bump `marketplace.json`, and vice-versa (bump all 8 to match).
+- Bump any `plugin.json` → also bump `marketplace.json`, and vice-versa (bump all 9 to match).
 
 ## Article Links in Skills (Further Reading)
 

@@ -153,6 +153,7 @@ Before writing or refactoring Unity code, **load the relevant advisory module fi
 | `shadergraph-design` | Graph structure, node chains, SubGraph boundaries, keyword / blackboard layout |
 | `unitask-design` | `async UniTask` / `UniTaskVoid` / `PlayerLoopTiming` / `CancellationToken` / `WhenAll` |
 | `yooasset-design` | `ResourcePackage` / `AssetHandle` / `Downloader` / `FileSystem` / `AssetBundleBuilder` |
+| `yaml-editing` | Hand-editing `.unity` / `.prefab` / `.asset` / `.meta` / ProjectSettings YAML when REST cannot reach (compile failure, `.meta`, hidden ProjectSettings fields, merge conflict) |
 
 **Unity API reference**: `references/*.md` — official API grouped by topic (`2d`, `3d`, `animation`, `assets`, `audio`, `editor`, `networking`, `physics`, `rendering`, `scripting`, `shaders`, `ui`, `xr`, …). Read the relevant file to ground exact signatures instead of guessing.
 

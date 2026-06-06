@@ -1,6 +1,6 @@
 ---
 name: unity-yooasset
-description: "YooAsset hot-update / asset bundle automation. Build bundles via ScriptableBuildPipeline or RawFileBuildPipeline, run Editor simulate builds, manage AssetBundleCollector package/group/collector settings, analyze BuildReport .report files at bundle/asset/dependency-graph level, run PlayMode runtime validation jobs, and open/use YooAsset Reporter/Debugger/AssetArtScanner tools. Triggers: yooasset, YooAsset, AssetBundleBuilder, AssetBundleCollector, BuildReport, ResourcePackage, ScriptableBuildPipeline, RawFileBuildPipeline, EditorSimulateBuildPipeline, CollectorPackage, CollectorGroup, AddressRule, PackRule, FilterRule, IgnoreRule, BuildReport assets, dependency graph, AssetArtScanner, Reporter, Debugger, runtime validation, 资源打包, 资源收集, 资源收集器, 资源规则, 构建报告, 构建管线, 模拟构建, 热更新打包, 资源分组, 资产分析, 依赖图, 孤立资源, 运行时验证, asset bundle build, asset bundle collector, build report, hot update build, bundle dependency, orphan asset, asset pipeline. Requires com.tuyoogame.yooasset (2.3.15+)."
+description: "YooAsset hot-update/asset bundle automation — build bundles, Editor simulate builds, AssetBundleCollector settings, analyze BuildReport, PlayMode validation, Reporter/Debugger tools. Requires com.tuyoogame.yooasset 2.3.15+. Exact signatures via GET /skills/schema."
 ---
 
 # Unity YooAsset Skills

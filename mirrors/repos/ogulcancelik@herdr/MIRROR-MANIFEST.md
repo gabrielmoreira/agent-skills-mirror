@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `ogulcancelik/herdr` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `ogulcancelik/herdr` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ogulcancelik/herdr` — 26 default patterns, 0 followed patterns, 9 f
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,14 +60,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.codex/skills/herdr-pre-release-audit/SKILL.md`](.codex/skills/herdr-pre-release-audit/SKILL.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`SKILL.md`](SKILL.md) |
-| 4 | ✓ | [`vendor/libghostty-vt/.agents/skills/writing-commit-messages/SKILL.md`](vendor/libghostty-vt/.agents/skills/writing-commit-messages/SKILL.md) |
-| 5 | ✓ | [`vendor/libghostty-vt/AGENTS.md`](vendor/libghostty-vt/AGENTS.md) |
-| 6 | ✓ | [`vendor/libghostty-vt/CLAUDE.md`](vendor/libghostty-vt/CLAUDE.md) |
-| 7 | ✓ | [`vendor/libghostty-vt/src/benchmark/AGENTS.md`](vendor/libghostty-vt/src/benchmark/AGENTS.md) |
-| 8 | ✓ | [`vendor/libghostty-vt/src/inspector/AGENTS.md`](vendor/libghostty-vt/src/inspector/AGENTS.md) |
-| 9 | ✓ | [`vendor/libghostty-vt/src/terminal/c/AGENTS.md`](vendor/libghostty-vt/src/terminal/c/AGENTS.md) |
+| 2 | ✓ | [`.codex/skills/triage/SKILL.md`](.codex/skills/triage/SKILL.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`SKILL.md`](SKILL.md) |
+| 5 | ✓ | [`vendor/libghostty-vt/.agents/skills/writing-commit-messages/SKILL.md`](vendor/libghostty-vt/.agents/skills/writing-commit-messages/SKILL.md) |
+| 6 | ✓ | [`vendor/libghostty-vt/AGENTS.md`](vendor/libghostty-vt/AGENTS.md) |
+| 7 | ✓ | [`vendor/libghostty-vt/CLAUDE.md`](vendor/libghostty-vt/CLAUDE.md) |
+| 8 | ✓ | [`vendor/libghostty-vt/src/benchmark/AGENTS.md`](vendor/libghostty-vt/src/benchmark/AGENTS.md) |
+| 9 | ✓ | [`vendor/libghostty-vt/src/inspector/AGENTS.md`](vendor/libghostty-vt/src/inspector/AGENTS.md) |
+| 10 | ✓ | [`vendor/libghostty-vt/src/terminal/c/AGENTS.md`](vendor/libghostty-vt/src/terminal/c/AGENTS.md) |
 
 ---
 

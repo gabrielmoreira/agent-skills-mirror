@@ -1,6 +1,6 @@
 ---
 name: unity-urp
-description: "Universal Render Pipeline (URP) asset & renderer feature management. Use when users want to inspect or modify the active URP asset (HDR, MSAA, render scale, shadows, camera depth/opaque texture), list renderer data assets, list / add / remove / toggle built-in renderer features such as SSAO, RenderObjects, Decal, FullScreenPass, ScreenSpaceReflection, SurfaceCacheGI. Triggers (EN): URP, Universal Render Pipeline, URP asset, URPAsset, UniversalRenderPipelineAsset, renderer data, ScriptableRendererData, renderer feature, ScriptableRendererFeature, SSAO, ScreenSpaceAmbientOcclusion, RenderObjects, FullScreenPassRendererFeature, ScreenSpaceReflection, render scale, MSAA, HDR. Triggers (ZH): URP, 通用渲染管线, URP 资源, URP 设置, 渲染器, 渲染器数据, 渲染器特性, 屏幕空间环境光遮蔽, 屏幕空间反射, 全屏 Pass, 渲染缩放."
+description: "Universal Render Pipeline (URP) asset and renderer feature management — inspect/modify the active URP asset, list renderer data, add/remove/toggle renderer features (SSAO, RenderObjects, Decal...). Exact signatures via GET /skills/schema."
 ---
 
 # URP Skills

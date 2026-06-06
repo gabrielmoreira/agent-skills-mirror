@@ -1,6 +1,6 @@
 ---
 name: unity-decal
-description: "URP Decal Projector creation and configuration plus DecalRendererFeature setup. Use when users want to create, inspect, configure, batch-edit, delete or validate URP DecalProjectors in the scene, or ensure the active URP renderer has DecalRendererFeature attached. HDRP decal APIs are out of scope. Triggers (EN): decal, Decal Projector, DecalProjector, URP decal, DecalRendererFeature, decal renderer feature, decal material, projector. Triggers (ZH): 贴花, 贴花投射器, 投影贴花, URP 贴花, DecalProjector, 贴花渲染器特性."
+description: "URP Decal Projector creation and configuration plus DecalRendererFeature setup — create/inspect/configure/batch-edit/delete/validate projectors. HDRP decals out of scope. Exact signatures via GET /skills/schema."
 ---
 
 # Decal Skills

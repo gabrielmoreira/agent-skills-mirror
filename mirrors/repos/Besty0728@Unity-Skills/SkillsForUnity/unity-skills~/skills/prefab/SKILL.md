@@ -1,6 +1,6 @@
 ---
 name: unity-prefab
-description: "Prefab management. Use when users want to create, instantiate, apply, unpack, find instances, edit prefab assets, or create variants. Triggers: prefab, instantiate prefab, spawn, create prefab, apply prefab, unpack prefab, variant, prefab override, revert override, prefab asset, find instances, set prefab property, 预制体, 实例化, 生成预制体, 创建预制体, 应用预制体, 解包, 变体, 预制体覆盖, 还原覆盖, 查找实例, 修改预制体."
+description: "Prefab management — create, instantiate, apply, unpack, find instances, edit prefab assets, create variants. Exact signatures via GET /skills/schema."
 ---
 
 # Unity Prefab Skills

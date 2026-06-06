@@ -1,6 +1,6 @@
 ---
 name: huashu-design
-description: 花叔Design——用HTML做高保真原型、交互Demo、幻灯片、动画、设计变体探索+设计方向顾问+专家评审。根据任务embody对应专家（UX/动画师/幻灯片设计师/原型师），避免web design tropes。触发词：做原型、设计Demo、交互原型、HTML演示、动画Demo、设计变体、hi-fi设计、UI mockup、prototype、设计探索、做个HTML页面、做个可视化、app原型、iOS原型、移动应用mockup、导出MP4、导出GIF、60fps视频、设计风格、设计方向、设计哲学、配色方案、视觉风格、推荐风格、选个风格、做个好看的、评审、好不好看、review this design、带解说的动画、解说视频、概念解释视频、长视频科普、配音动画、voiceover、narration、TTS+动画、5分钟讲清楚什么是XX。**主干能力**：Junior Designer工作流（先假设+reasoning+placeholder再迭代）、反AI slop清单、React+Babel最佳实践、Tweaks变体切换、Speaker Notes、Starter Components（幻灯片/变体/动画/设备边框/解说Stage）、App原型守则（Wikimedia/Met/Unsplash取真图+AppPhone可交互+Playwright点击测试）、HTML动画→MP4/GIF导出（25fps基础+60fps插帧+palette优化+场景化BGM+自动fade）、**带解说长动画pipeline**（豆包TTS+实测时长生timeline+NarrationStage+ducking混音；铁律：连续运动叙事，禁PowerPoint切换）。**需求模糊Fallback**：设计方向顾问——5流派×20哲学（Pentagram信息建筑/Field.io运动诗学/Kenya Hara东方极简/Sagmeister实验先锋等）推3方向+24预制showcase+并行3 Demo选。**可选**：5维度评审（哲学一致/视觉层级/细节/功能/创新各10分+修复清单）。
+description: 花叔Design——用HTML做高保真原型、交互Demo、幻灯片、动画、设计变体探索+设计方向顾问+专家评审。根据任务embody对应专家（UX/动画师/幻灯片设计师/原型师），避免web design tropes。触发词：做原型、交互原型、HTML演示、动画Demo、设计变体、hi-fi设计、UI mockup、prototype、做个HTML页面、做个可视化、app原型、iOS原型、导出MP4/GIF、60fps视频、设计风格、设计方向、配色方案、推荐风格、选个风格、做个好看的、评审、好不好看、review this design、带解说的动画、解说视频、长视频科普、voiceover、narration、5分钟讲清楚什么是XX。需求模糊时进设计方向顾问（三套逻辑并行出3版真实视觉，HTML原生40种风格库网页20+PPT20为弹药）；另含品牌资产协议、反AI slop、Junior工作流、Tweaks变体、动画→MP4/GIF导出、带解说长视频pipeline、5维评审。
 ---
 
 # 花叔Design · Huashu-Design
@@ -64,236 +64,22 @@ description: 花叔Design——用HTML做高保真原型、交互Demo、幻灯�
 
 好的hi-fi设计**一定**是从已有上下文长出来的。先问用户是否有design system/UI kit/codebase/Figma/截图。**凭空做hi-fi是last resort，一定会产出generic的作品**。如果用户说没有，先帮他去找（看项目里有没有，看有没有参考品牌）。
 
-**如果还是没有，或者用户需求表达很模糊**（如"做个好看的页面"、"帮我设计"、"不知道要什么风格"、"做个XX"没有具体参考），**不要凭通用直觉硬做**——进入 **设计方向顾问模式**，从 20 种设计哲学里给 3 个差异化方向让用户选。完整流程见下方「设计方向顾问（Fallback 模式）」大节。
+**如果还是没有，或者用户需求表达很模糊**（如"做个好看的页面"、"帮我设计"、"不知道要什么风格"、"做个XX"没有具体参考），**不要凭通用直觉硬做**——进入 **设计方向顾问模式**，从 HTML 原生 40 种风格库（网页 20+PPT 20）里给 3 个差异化方向让用户选。完整流程见下方「设计方向顾问（Fallback 模式）」大节。
 
 #### 1.a 核心资产协议（涉及具体品牌时强制执行）
 
-> **这是 v1 最核心的约束，也是稳定性的生命线。** Agent 是否走通这个协议，直接决定输出质量是 40 分还是 90 分。不要跳过任何一步。
->
-> **v1.1 重构（2026-04-20）**：从「品牌资产协议」升级为「核心资产协议」。之前的版本过度聚焦色值和字体，漏掉了设计中最基础的 logo / 产品图 / UI 截图。花叔的原话：「除了所谓的品牌色，显然我们应该找到并且用上大疆的 logo，用上 pocket4 的产品图。如果是网站或者 app 等非实体产品的话，logo 至少该是必须的。这可能是比所谓的品牌设计的 spec 更重要的基本逻辑。否则，我们在表达什么呢？」
+**触发**：任务涉及具体品牌/产品（DJI、Stripe、某 App…）。**核心理念：资产 > 规范**——logo / 产品图 / UI 截图比品牌色值更重要（花叔：「除了品牌色，显然该用上 logo 和产品图，否则我们在表达什么呢？」）。
 
-**触发条件**：任务涉及具体品牌——用户提了产品名/公司名/明确客户（Stripe、Linear、Anthropic、Notion、Lovart、DJI、自家公司等），不论用户是否主动提供了品牌资料。
+**5 步硬流程**（每步有 fallback，绝不静默跳过；完整操作见 reference）：
+1. **问**：一次问全资产清单（logo / 产品图 / UI 截图 / 色板 / 字体 / 禁区）
+2. **搜官方渠道**：按资产类型去官网 / press kit / 官方社媒 / Wikimedia
+3. **下载资产**：按类型三条兜底路径下载 logo / 产品图 / UI
+4. **验证 + 提取**：不只 grep 色值，要核对 logo / 产品图真实性
+5. **固化为 `brand-spec.md`**：模板覆盖所有资产路径（logo / 产品图 / UI / 色板 / 字型 / 禁区 / 气质）
 
-**前置硬条件**：走协议前必须已通过「#0 事实验证先于假设」确认品牌/产品存在且状态已知。如果你还不确定产品是否已发布/规格/版本，先回去搜。
+🛑 **检查点 · 资产自检**：实体产品要有产品图（不是 CSS 剪影）、数字产品要有 logo+UI 截图、色值从真实 HTML/SVG 抽取。缺了就停下补，不硬做。
 
-##### 核心理念：资产 > 规范
-
-**品牌的本质是「它被认出来」**。认出来靠什么？按识别度排序：
-
-| 资产类型 | 识别度贡献 | 必需性 |
-|---|---|---|
-| **Logo** | 最高 · 任何品牌出现 logo 就一眼识别 | **任何品牌都必须有** |
-| **产品图/产品渲染图** | 极高 · 实体产品的"主角"就是产品本身 | **实体产品（硬件/包装/消费品）必须有** |
-| **UI 截图/界面素材** | 极高 · 数字产品的"主角"是它的界面 | **数字产品（App/网站/SaaS）必须有** |
-| **色值** | 中 · 辅助识别，脱离前三项时经常撞衫 | 辅助 |
-| **字体** | 低 · 需配合前述才能建立识别 | 辅助 |
-| **气质关键词** | 低 · agent 自检用 | 辅助 |
-
-**翻译成执行规则**：
-- 只抽色值 + 字体、不找 logo / 产品图 / UI → **违反本协议**
-- 用 CSS 剪影/SVG 手画替代真实产品图 → **违反本协议**（生成的就是「通用科技动画」，任何品牌都长一样）
-- 找不到资产不告诉用户、也不 AI 生成，硬做 → **违反本协议**
-- 宁可停下问用户要素材，也不要用 generic 填充
-
-##### 5 步硬流程（每步有 fallback，绝不静默跳过）
-
-##### Step 1 · 问（资产清单一次问全）
-
-不要只问「有 brand guidelines 吗？」——太宽泛，用户不知道该给什么。按清单逐项问：
-
-```
-关于 <brand/product>，你手上有以下哪些资料？我按优先级列：
-1. Logo（SVG / 高清 PNG）—— 任何品牌必备
-2. 产品图 / 官方渲染图 —— 实体产品必备（如 DJI Pocket 4 的产品照）
-3. UI 截图 / 界面素材 —— 数字产品必备（如 App 主要页面截图）
-4. 色值清单（HEX / RGB / 品牌色盘）
-5. 字体清单（Display / Body）
-6. Brand guidelines PDF / Figma design system / 品牌官网链接
-
-有的直接发我，没有的我去搜/抓/生成。
-```
-
-##### Step 2 · 搜官方渠道（按资产类型）
-
-| 资产 | 搜索路径 |
-|---|---|
-| **Logo** | `<brand>.com/brand` · `<brand>.com/press` · `<brand>.com/press-kit` · `brand.<brand>.com` · 官网 header 的 inline SVG |
-| **产品图/渲染图** | `<brand>.com/<product>` 产品详情页 hero image + gallery · 官方 YouTube launch film 截帧 · 官方新闻稿附图 |
-| **UI 截图** | App Store / Google Play 产品页截图 · 官网 screenshots section · 产品官方演示视频截帧 |
-| **色值** | 官网 inline CSS / Tailwind config / brand guidelines PDF |
-| **字体** | 官网 `<link rel="stylesheet">` 引用 · Google Fonts 追踪 · brand guidelines |
-
-`WebSearch` 兜底关键词：
-- Logo 找不到 → `<brand> logo download SVG`、`<brand> press kit`
-- 产品图找不到 → `<brand> <product> official renders`、`<brand> <product> product photography`
-- UI 找不到 → `<brand> app screenshots`、`<brand> dashboard UI`
-
-##### Step 3 · 下载资产 · 按类型三条兜底路径
-
-**3.1 Logo（任何品牌必需）**
-
-三条路径按成功率递减：
-1. 独立 SVG/PNG 文件（最理想）：
-   ```bash
-   curl -o assets/<brand>-brand/logo.svg https://<brand>.com/logo.svg
-   curl -o assets/<brand>-brand/logo-white.svg https://<brand>.com/logo-white.svg
-   ```
-2. 官网 HTML 全文提取 inline SVG（80% 场景必用）：
-   ```bash
-   curl -A "Mozilla/5.0" -L https://<brand>.com -o assets/<brand>-brand/homepage.html
-   # 然后 grep <svg>...</svg> 提取 logo 节点
-   ```
-3. 官方社交媒体 avatar（最后手段）：GitHub/Twitter/LinkedIn 的公司头像通常是 400×400 或 800×800 透明底 PNG
-
-**3.2 产品图/渲染图（实体产品必需）**
-
-按优先级：
-1. **官方产品页 hero image**（最高优先级）：右键查看图片地址 / curl 获取。分辨率通常 2000px+
-2. **官方 press kit**：`<brand>.com/press` 常有高清产品图下载
-3. **官方 launch video 截帧**：用 `yt-dlp` 下载 YouTube 视频，ffmpeg 抽几帧高清图
-4. **Wikimedia Commons**：公共领域常有
-5. **AI 生成兜底**（nano-banana-pro）：把真实产品图作为参考发给 AI，让它生成符合动画场景的变体。**不要用 CSS/SVG 手画代替**
-
-```bash
-# 示例：下载 DJI 官网产品 hero image
-curl -A "Mozilla/5.0" -L "<hero-image-url>" -o assets/<brand>-brand/product-hero.png
-```
-
-**3.3 UI 截图（数字产品必需）**
-
-- App Store / Google Play 的产品截图（注意：可能是 mockup 而非真实 UI，要对比）
-- 官网 screenshots section
-- 产品演示视频截帧
-- 产品官方 Twitter/X 的发布截图（常是最新版本）
-- 用户有账号时，直接截屏真实产品界面
-
-**3.4 · 素材质量门槛「5-10-2-8」原则（铁律）**
-
-> **Logo 的规则不同于其他素材**。Logo 有就必须用（没有就停下问用户）；其他素材（产品图/UI/参考图/配图）遵循「5-10-2-8」质量门槛。
->
-> 2026-04-20 花叔原话：「我们的原则是搜索 5 轮，找到 10 个素材，选择 2 个好的。每个需要评分 8/10 以上，宁可少一些，也不为了完成任务滥竽充数。」
-
-| 维度 | 标准 | 反模式 |
-|---|---|---|
-| **5 轮搜索** | 多渠道交叉搜（官网 / press kit / 官方社媒 / YouTube 截帧 / Wikimedia / 用户账号截屏），不是一轮抓前 2 个就停 | 第一页结果直接用 |
-| **10 个候选** | 至少凑 10 个备选才开始筛 | 只抓 2 个，没得选 |
-| **选 2 个好的** | 从 10 个里精选 2 个作为最终素材 | 全都用 = 视觉过载 + 品位稀释 |
-| **每个 8/10 分以上** | 不够 8 分**宁可不用**，用诚实 placeholder（灰块+文字标签）或 AI 生成（nano-banana-pro 以官方参考为基底）| 凑数 7 分素材进 brand-spec.md |
-
-**8/10 评分维度**（打分时记录在 `brand-spec.md`）：
-
-1. **分辨率** · ≥2000px（印刷/大屏场景 ≥3000px）
-2. **版权清晰度** · 官方来源 > 公共领域 > 免费素材 > 疑似盗图（疑似盗图直接 0 分）
-3. **与品牌气质契合度** · 和 brand-spec.md 里的「气质关键词」一致
-4. **光线/构图/风格一致性** · 2 个素材放一起不打架
-5. **独立叙事能力** · 能单独表达一个叙事角色（不是装饰）
-
-**为什么这个门槛是铁律**：
-- 花叔的哲学：**宁缺毋滥**。滥竽充数的素材比没有更糟——污染视觉品味、传递「不专业」信号
-- **「一个细节做到 120%，其他做到 80%」的量化版**：8 分是"其他 80%" 的底线，真正 hero 素材要 9-10 分
-- 消费者看作品时，每一个视觉元素都在**积分或扣分**。7 分素材 = 扣分项，不如留空
-
-**Logo 例外**（重申）：有就必须用，不适用「5-10-2-8」。因为 logo 不是「多选一」问题，而是「识别度根基」问题——就算 logo 本身只有 6 分，也比没有 logo 强 10 倍。
-
-##### Step 4 · 验证 + 提取（不只是 grep 色值）
-
-| 资产 | 验证动作 |
-|---|---|
-| **Logo** | 文件存在 + SVG/PNG 可打开 + 至少两个版本（深底/浅底用）+ 透明背景 |
-| **产品图** | 至少一张 2000px+ 分辨率 + 去背或干净背景 + 多个角度（主视角、细节、场景） |
-| **UI 截图** | 分辨率真实（1x / 2x）+ 是最新版本（不是旧版）+ 无用户数据污染 |
-| **色值** | `grep -hoE '#[0-9A-Fa-f]{6}' assets/<brand>-brand/*.{svg,html,css} \| sort \| uniq -c \| sort -rn \| head -20`，过滤黑白灰 |
-
-**警惕示范品牌污染**：产品截图里常有用户 demo 的品牌色（如某工具截图演示喜茶红），那不是该工具的色。**同时出现两种强色时必须区分**。
-
-**品牌多切面**：同一品牌的官网营销色和产品 UI 色经常不同（Lovart 官网暖米+橙，产品 UI 是 Charcoal + Lime）。**两套都是真的**——根据交付场景选合适的切面。
-
-##### Step 5 · 固化为 `brand-spec.md` 文件（模板必须覆盖所有资产）
-
-```markdown
-# <Brand> · Brand Spec
-> 采集日期：YYYY-MM-DD
-> 资产来源：<列出下载来源>
-> 资产完整度：<完整 / 部分 / 推断>
-
-## 🎯 核心资产（一等公民）
-
-### Logo
-- 主版本：`assets/<brand>-brand/logo.svg`
-- 浅底反色版：`assets/<brand>-brand/logo-white.svg`
-- 使用场景：<片头/片尾/角落水印/全局>
-- 禁用变形：<不能拉伸/改色/加描边>
-
-### 产品图（实体产品必填）
-- 主视角：`assets/<brand>-brand/product-hero.png`（2000×1500）
-- 细节图：`assets/<brand>-brand/product-detail-1.png` / `product-detail-2.png`
-- 场景图：`assets/<brand>-brand/product-scene.png`
-- 使用场景：<特写/旋转/对比>
-
-### UI 截图（数字产品必填）
-- 主页：`assets/<brand>-brand/ui-home.png`
-- 核心功能：`assets/<brand>-brand/ui-feature-<name>.png`
-- 使用场景：<产品展示/Dashboard 渐现/对比演示>
-
-## 🎨 辅助资产
-
-### 色板
-- Primary: #XXXXXX  <来源标注>
-- Background: #XXXXXX
-- Ink: #XXXXXX
-- Accent: #XXXXXX
-- 禁用色: <品牌明确不用的色系>
-
-### 字型
-- Display: <font stack>
-- Body: <font stack>
-- Mono（数据 HUD 用）: <font stack>
-
-### 签名细节
-- <哪些细节是「120% 做到」的>
-
-### 禁区
-- <明确不能做的：比如 Lovart 不用蓝色、Stripe 不用低饱和暖色>
-
-### 气质关键词
-- <3-5 个形容词>
-```
-
-**写完 spec 后的执行纪律（硬要求）**：
-- 所有 HTML 必须**引用** `brand-spec.md` 里的资产文件路径，不允许用 CSS 剪影/SVG 手画代替
-- Logo 作为 `<img>` 引用真实文件，不重画
-- 产品图作为 `<img>` 引用真实文件，不用 CSS 剪影代替
-- CSS 变量从 spec 注入：`:root { --brand-primary: ...; }`，HTML 只用 `var(--brand-*)`
-- 这让品牌一致性从「靠自觉」变成「靠结构」——想临时加色要先改 spec
-
-##### 全流程失败的兜底
-
-按资产类型分别处理：
-
-| 缺失 | 处理 |
-|---|---|
-| **Logo 完全找不到** | **停下问用户**，不要硬做（logo 是品牌识别度的根基） |
-| **产品图（实体产品）找不到** | 优先 nano-banana-pro AI 生成（以官方参考图为基底）→ 次选向用户索取 → 最后才是诚实 placeholder（灰块+文字标签，明确标注"产品图待补"） |
-| **UI 截图（数字产品）找不到** | 向用户索取自己账号的截屏 → 官方演示视频截帧。不用 mockup 生成器凑 |
-| **色值完全找不到** | 按「设计方向顾问模式」走，向用户推荐 3 个方向并标注 assumption |
-
-**禁止**：找不到资产就静默用 CSS 剪影/通用渐变硬做——这是协议最大的反 pattern。**宁可停下问，也不要凑**。
-
-##### 反例（真实踩过的坑）
-
-- **Kimi 动画**：凭记忆猜「应该是橙色」，实际 Kimi 是 `#1783FF` 蓝色——返工一遍
-- **Lovart 设计**：把产品截图里演示品牌的喜茶红当成 Lovart 自己的色——差点毁整个设计
-- **DJI Pocket 4 发布动画（2026-04-20，触发本协议升级的真实案例）**：走了旧版只抽色值的协议，没下载 DJI logo、没找 Pocket 4 产品图，用 CSS 剪影代替产品——做出来是「通用黑底+橙 accent 的科技动画」，没有大疆识别度。花叔原话：「否则，我们在表达什么呢？」→ 协议升级。
-- 抽完色没写进 brand-spec.md，第三页就忘了主色数值，临场加了个「接近但不是」的 hex——品牌一致性崩溃
-
-##### 协议代价 vs 不做代价
-
-| 场景 | 时间 |
-|---|---|
-| 正确走完协议 | 下载 logo 5 min + 下载 3-5 张产品图/UI 10 min + grep 色值 5 min + 写 spec 10 min = **30 分钟** |
-| 不做协议的代价 | 做出没识别度的通用动画 → 用户返工 1-2 小时，甚至重做 |
-
-**这是稳定性最便宜的投资**。尤其对商单/发布会/重要客户项目，30 分钟的资产协议是保命钱。
+> **完整协议**（5 步详细操作 + 下载命令 + brand-spec 模板 + 全流程失败兜底 + 反例 + 代价对比）→ `references/brand-asset-protocol.md`
 
 ### 2. Junior Designer模式：先展示假设，再执行
 
@@ -348,9 +134,11 @@ curl -A "Mozilla/5.0" -L "<hero-image-url>" -o assets/<brand>-brand/product-hero
 | SVG 画 imagery（人脸/场景/物品）| AI 画的 SVG 人物永远五官错位，比例诡异 | **几乎没有**——有图就用真图（Wikimedia/Unsplash/AI 生成），没图就留诚实 placeholder |
 | **CSS 剪影/SVG 手画代替真实产品图** | 生成的就是「通用科技动画」——黑底+橙 accent+圆角长条，任何实体产品都长一样，品牌识别度归零（DJI Pocket 4 实测 2026-04-20）| **几乎没有**——先走核心资产协议找真实产品图；真没有时用 nano-banana-pro 以官方参考图为基底生成；实在不行标诚实 placeholder 告诉用户"产品图待补" |
 | Inter/Roboto/Arial/system fonts 作 display | 太常见，读者看不出这是"有设计的产品"还是"demo 页" | 品牌 spec 明确用这些字体（Stripe 用 Sohne/Inter 变体，但是经过微调的） |
-| 赛博霓虹 / 深蓝底 `#0D1117` | GitHub dark mode 美学的烂大街复制 | 开发者工具产品且品牌本身走这方向 |
+| **GitHub-dark 偷懒解**：均匀深蓝底 `#0D1117` + 通用青/紫霓虹 glow | 这**一种特定组合**是 SaaS/AI 落地页的烂大街复制——注意不是「所有暗色都禁」 | 开发者工具产品且品牌本身走这方向 |
 
 **判断边界**：「品牌本身用」是唯一能合法破例的理由。品牌 spec 里明写了用紫渐变，那就用——此时它不再是 slop，是品牌签名。
+
+⚠️ **别把整片暗色大胆派一起误杀**：要禁的只是「均匀深蓝底+通用霓虹 glow」这一种偷懒解。电影级戏剧光影、暖色赛博（Ash Thorp 的橙/青而非冷蓝）、运动诗学的暗场叙事（Locomotive）都是**有作者意图的暗色**，不在禁区内——它们携带强烈风格信息，恰恰是对抗「千篇一律极简」的解药。
 
 #### 6.3 正向做什么（带"为什么"）
 
@@ -370,6 +158,11 @@ curl -A "Mozilla/5.0" -L "<hero-image-url>" -o assets/<brand>-brand/product-hero
 
 ## 设计方向顾问（Fallback 模式）
 
+> ⚖️ **根本立场（先读，统领本节）**：skill 的职责是**帮用户规避最差的设计**——守住反 slop 下限，**不是规定「好设计长什么样」**。真正的好设计**从用户的需求和提供的内容里长出来**，不在内置风格库里。所以：
+> - 用户给了内容/品牌/参考 → 设计就从那里展开，**别套库**。
+> - 用户什么都没有 → 下面三套逻辑只是帮他**起步、打破惯性**的脚手架，不是终点。
+> - `design-styles.md` 的 40 种是「没思路时翻的弹药」，**不是必须从这里选的清单**。过多的硬性风格要求是负担、是无聊——别被风格库绑架，内容永远优先。
+
 **什么时候触发**：
 - 用户需求模糊（"做个好看的"、"帮我设计"、"这个怎么样"、"做个XX"没有具体参考）
 - 用户明确要"推荐风格"、"给几个方向"、"选个哲学"、"想看不同风格"
@@ -383,80 +176,91 @@ curl -A "Mozilla/5.0" -L "<hero-image-url>" -o assets/<brand>-brand/product-hero
 
 不确定就用最轻量版：**列出 3 个差异化方向让用户二选一，不展开不生成**——尊重用户节奏。
 
-### 完整流程（8 个 Phase，顺序执行）
+### 完整流程（7 个 Phase，顺序执行；Phase 3.5 是图片前置半步）
 
-**Phase 1 · 深度理解需求**
-提问（一次最多 3 个）：目标受众 / 核心信息 / 情感基调 / 输出格式。需求已清晰则跳过。
+**Phase 1 · 对话澄清需求 + 主动索要参考（不要跳过、不要直接开做）**
+先用**对话**了解（一次最多 3 个问题）：目标受众 / 核心信息 / 情感基调 / 输出格式。
+**同时必须主动索要参考材料**——这是最容易被跳过、却最该问的一步，一次问全：
+- 这个项目/产品**叫什么名字**？
+- 有没有 **logo、品牌色、VI、字体规范**？有就发我。
+- 有没有**你喜欢的参考**——某个网站 URL、一张截图、某个产品「就要那种感觉」？
+- 都没有也没关系，说一句「你看着办」，我直接做几版给你挑。
 
-**Phase 2 · 顾问式重述**（100-200 字）
-用自己的话重述本质需求、受众、场景、情感基调。以「基于这个理解，我为你准备了 3 个设计方向」结尾。
+⏱️ **无应答策略**：问题发出后，若用户**没回应任何信息**（只丢了最初那句模糊需求就没下文）→ 不要枯等。按 best judgment 补齐假设（标 assumption），直接往下跑完 Phase 2-4 把三版真实视觉摆出来——**用「看得见的东西」代替继续追问**（正好呼应选择无效铁律）。
 
-**Phase 3 · 推荐 3 套设计哲学**（必须差异化）
+> 用户给了**具体品牌/产品名（能去官网找到 logo 的那种，如 Stripe / DJI / 某 App）**或品牌资产/参考站 → **跳出 Fallback**，走「核心哲学 #1」+「§1.a 核心资产协议」主干。
+> ⚠️ **但普通主题名不算品牌名**：「咖啡 / 鹦鹉 / 历史 / 健身」这类是**内容主题**，不是可找 logo 的品牌——**继续走 Fallback，不要跑去找「咖啡的 logo」空转**。Fallback 正是服务「给了主题、但没给品牌/风格参考」这种最常见的情况。
 
-每个方向必须：
-- **含设计师/机构名**（如「Kenya Hara 式东方极简」，不是只说「极简主义」）
-- 50-100 字解释「为什么这个设计师适合你」
-- 3-4 条标志性视觉特征 + 3-5 个气质关键词 + 可选代表作
+**Phase 2 · 顾问式重述**（**≥200 字**，把需求真正嚼透，不是敷衍一句）
+用自己的话深入重述本质需求、受众、场景、情感基调、用户没说出口的潜在期待。以「基于这个理解，我**直接做 3 个不同方向的真实版本给你看**」结尾——❌ 不要以「你想选哪个方向？」结尾（见 Phase 3 铁律）。
 
-**差异化规则**（必守）：3 个方向**必须来自 3 个不同流派**，形成明显视觉反差：
+**Phase 3 · 固化设计 spec（三套逻辑的共同输入）**
 
-| 流派 | 视觉气质 | 适合作为 |
-|------|---------|---------|
-| 信息建筑派（01-04） | 理性、数据驱动、克制 | 安全/专业选择 |
-| 运动诗学派（05-08） | 动感、沉浸、技术美学 | 大胆/前卫选择 |
-| 极简主义派（09-12） | 秩序、留白、精致 | 安全/高端选择 |
-| 实验先锋派（13-16） | 先锋、生成艺术、视觉冲击 | 大胆/创新选择 |
-| 东方哲学派（17-20） | 温润、诗意、思辨 | 差异化/独特选择 |
+把 Phase 1-2 澄清到的东西写成一份 **≥500 字的详尽设计 spec**——这是三个 subagent 的**唯一共同输入**，写薄了三版都会飘。必须覆盖：产品/项目是什么、目标受众与使用场景、核心信息与内容要点(分点列出主要板块)、情感基调与气质关键词、**输出格式与尺寸（必填——网页还是 PPT？具体像素？三个 subagent 必须统一用这个尺寸，否则三版尺寸不一无法横向对比）**、已知约束（品牌色/禁忌/必含元素）、图片需求（Phase 3.5 判断的结果）。它们各自独立工作、只看 spec、互不参考——所以 spec 越具体，三版越不会跑偏。
 
-❌ **禁止从同一流派推荐 2 个以上** — 差异化不够用户看不出区别。
+**Phase 3.5 · 🔴 CHECKPOINT 图片素材前置（spawn 三套逻辑前必做，硬要求）**
 
-详细 20 种风格库 + AI 提示词模板 → `references/design-styles.md`。
+开工前先答一个问题：**这个设计，图片是不是内容必需的？**
+- 内容型（介绍鹦鹉 / 咖啡 / 历史 / 人物 / 产品 / 地点…）→ 图片几乎必需
+- 工具 / 数据 / 文档 / 纯观点型 → 可能不需要，判断后跳过取图
+- 拿不准是「内容必需」还是「装饰」→ **按内容必需处理**（宁可取真图）。⚠️「default 无生图」只指**装饰图默认不调生图模型**，不等于「内容图也不许有图」——内容必需的真图该取就取
 
-**Phase 4 · 展示预制 Showcase 画廊**
+**图片必需 → 先制定获取策略、取齐真图，再 spawn 三套逻辑**（三个 subagent 共用同一批真图，只换设计），绝不边设计边用色块糊弄：
 
-推荐 3 方向后，**立即检查** `assets/showcases/INDEX.md` 是否有匹配的预制样例（8 场景 × 3 风格 = 24 个样例）：
+| 内容类型 | 首选真图来源（公共领域 / 免版权优先） |
+|---|---|
+| 博物 / 历史 / 艺术 / 动植物 / 古典 | Wikimedia Commons、Met / Art Institute Open Access、Biodiversity Heritage Library（古典博物插画，如 Edward Lear / John Gould 鹦鹉图录） |
+| 通用生活 / 场景 / 产品摄影 | Unsplash、Pexels（免版权） |
+| 用户自己的产品 / 品牌 | 走 §1.a 核心资产协议取官方图 |
 
-| 场景 | 目录 |
-|------|------|
-| 公众号封面 | `assets/showcases/cover/` |
-| PPT 数据页 | `assets/showcases/ppt/` |
-| 竖版信息图 | `assets/showcases/infographic/` |
-| 个人主页 / AI 导航 / AI 写作 / SaaS / 开发文档 | `assets/showcases/website-*/` |
+🛠️ **取图用现成脚本（别每次现写）**：`python3 scripts/fetch_images.py --query "英文关键词1" "英文关键词2" --out 项目/assets/img --count 2 --width 1600`——已内置清代理 + 合规 UA + 许可输出 + 失败兜底，下次只改关键词。
 
-匹配话术：「在启动实时 Demo 之前，先看看这 3 个风格在类似场景的效果 →」然后 Read 对应 .png。
+- 取图后做**真图诚实性测试**：「去掉这张图，信息是否有损？」有损才用，别配 stock「灵感图」（那是 slop）
+- 取到的真图用 base64 内嵌或本地路径，传给三个 subagent 复用
+- ❌ **内容必需的图绝不用 CSS 色块 / SVG 几何糊弄**——鹦鹉网站没有鹦鹉图 = 失败
+- **取图失败三级兜底（不许卡死）**：① 公共领域库找不到 → 换 Unsplash/Pexels；② 全网取不到合适真图 → 用户确认有生图能力则走 `huashu-gpt-image` 以参考图为基底生成；③ 仍不行 → 标注「图待补」诚实 placeholder **继续 spawn 三套逻辑，不卡流程**，交付时一句话告诉用户「这版图是占位，真图待补」。⚠️ **取图失败是「降级继续」，不是 🛑 STOP**——别让取图卡死整个设计。
 
-场景模板按输出类型组织 → `references/scene-templates.md`。
+> 来自花叔实测：鹦鹉案例里「先判断图片必需 → 选对获取策略（Edward Lear 公共领域博物插画）」是出彩的关键。**素材齐了再设计，不是边设计边占位。**
 
-**Phase 5 · 生成 3 个视觉 Demo**
+**Phase 4 · 三套逻辑并行 subagent，各生成一版真实视觉（核心）**
 
-> 核心理念：**看到比说到更有效。** 别让用户凭文字想象，直接看。
+> ✅ **这是 Fallback 的 default 动作**：用户**无需主动要求**「用三套逻辑」「帮我找最佳设计师」——只要触发了顾问模式（用户没给明确风格参考），就**自动**并行跑这三套。目标是让什么都不懂的普通用户，零额外要求也能拿到顶级设计。
 
-为 3 个方向各生成一个 Demo——**如果当前 agent 支持 subagent 并行**，启动 3 个并行子任务（后台执行）；**不支持就串行生成**（先后做 3 次，同样能用）。两种路径都能工作：
-- 使用**用户真实内容/主题**（不是 Lorem ipsum）
-- HTML 存 `_temp/design-demos/demo-[风格].html`
-- 截图：`npx playwright screenshot file:///path.html out.png --viewport-size=1200,900`
-- 全部完成后一起展示 3 张截图
+> 🔴 **选择无效铁律**（花叔 2026-06 实测确认）：绝不让用户在「只有文字、没看到视觉」时选风格——用户没依据。所以不抛文字单选题，而是**并行启动 3 个 subagent 同时跑三套互补逻辑**，各产出一版真实视觉，一次性摆出来让用户选「看得见的东西」。三个 subagent **独立 context、互不参考**（避免趋同），并行是为了更快 deliver。
 
-风格类型路径：
-| 风格最佳路径 | Demo 生成方式 |
-|-------------|--------------|
-| HTML 型 | 生成完整 HTML → 截图 |
-| AI 生成型 | `nano-banana-pro` 用风格 DNA + 内容描述 |
-| 混合型 | HTML 布局 + AI 插画 |
+> ⚙️ **不支持 spawn subagent 的 runtime（Codex / Cursor / 纯对话）**：改**串行**跑三套——每套开跑前只读 spec、清空对上一套的记忆、不许参考已生成的版本，并用三个不同 anchor（轮盘号 / 参照案例 / 设计师名）物理隔离趋同。串行也**必须出三版**，不许偷懒并成一版。spawn prompt 里只喂 spec，别把另两套的逻辑一起写进去。
 
-**Phase 6 · 用户选择**：选一个深化 / 混合（"A 的配色 + C 的布局"）/ 微调 / 重来 → 回 Phase 3 重新推荐。
+每个 subagent 拿同一份 spec + 同一份用户真实内容，各按一套逻辑产出一版**纯 HTML/CSS**（default 无生图）真实视觉：
 
-**Phase 7 · 生成 AI 提示词**
-结构：`[设计哲学约束] + [内容描述] + [技术参数]`
-- ✅ 用具体特征而非风格名（写「Kenya Hara 的留白感+赤土橙 #C04A1A」，不写「极简」）
-- ✅ 包含颜色 HEX、比例、空间分配、输出规格
-- ❌ 避开审美禁区（见反 AI slop）
+**逻辑一 · 🎲 秒数轮盘（随机 · 20 选 1）**
+跑 `date +%S` 取秒数，算 `秒数 % 20 + 1` 得 1-20，从 `design-styles.md` **对应半区**（做网页用网页 20 种 / 做 PPT 用 PPT 20 种）取那一号风格，subagent 严格按其视觉 DNA + HTML 实现做。作用：用时间掷骰子，强制打破模型「每次都偷选安全极简」的确定性偏好。抽到还原度<70% 的（如 Memphis 做旧纹理）须标注「该部分用纯色块降级，不假装做出原版质感」。
 
-**Phase 8 · 选定方向后进入主干**
-方向确认 → 回到「核心哲学」+「工作流程」的 Junior Designer pass。这时已经有明确的 design context，不再是凭空做。
+**逻辑二 · 🏆 现实参照（标杆迁移）**
+选 1 个**世界上和该用户需求最相关、且你明确知道设计极出色（最好获奖：Awwwards / CSS Design Awards / FWA / Apple Design Award）**的真实网站 / PPT 模板 / iOS 原型作为参照标准。subagent 先用 WebSearch 核实该案例真实存在与其设计语言，拆解配色/字体/布局/标志元素，再迁移到用户内容上。作用：用真实世界的最高标准锚定，不靠凭空想象。
+
+**逻辑三 · 🧠 最佳设计师（深呼吸 · 顶级定制）**
+深呼吸一口，认真想：**假如预算没有上限，世界上最适合为「这个用户、这个产品」做设计的工作室 / 设计师是谁？**（如 Pentagram / Collins / IDEO / Jony Ive / 原研哉 / Stripe 设计团队…按产品调性选）subagent 启用该设计师/工作室的**设计思维与设计哲学**，从头为用户设计。作用：用顶级设计智慧做最契合的定制。
+
+并行执行规范（三个 subagent 共用）：
+- 用**用户真实内容**（非 Lorem），三版同内容只换设计逻辑，方便横向对比
+- 纯 HTML/CSS 单文件；**内容必需的图用 Phase 3.5 取的真图**（三版共用），仅装饰/抽象图才用 CSS 几何/SVG/纯色块，绝不留空占位
+- 🎞️ **PPT / deck 场景必走 deck 模板（绝不写竖向平铺长页！）**：每页做成独立 `<section>`（1920×1080），套 `assets/deck_index.html` 的翻页缩放外壳——**左右键 / 点击翻页 + 自适应 `fit()` 缩放**（整页缩进浏览器窗口，绝不按真实像素放大到只看见一角）。三版只换视觉风格，deck 骨架统一用这个模板，演示体验一致。详见 `references/slide-decks.md`。截图按**单页** 1920×1080 截，不是截整条长页。**单页内容绝不自带页码 / 页数 / 进度标记**——页码由 deck 外壳（`deck_index.html` 计数器）统一承载，单页自己画会和 deck 重复打架（实测出现「02/03」和「6/16」双页码）。`deck_index.html` 现**默认进 3D 概览墙**（所有页斜铺延展悬浮，点「▶ 开始演示」或点任意卡片进全屏单页，ESC 回概览）——交付 deck 时跟用户提一句这个功能
+- 存当前**项目目录**（`项目名/design-demos/[逻辑名].html`）——❌ 禁 `_temp/`（花叔铁律）
+- 截图：`npx playwright screenshot file:///path.html out.png --viewport-size=1440,900`（PPT 用 1920,1080）
+- ✅ **产出自检（防偷懒，进 Phase 5 前必查）**：确认 `design-demos/` 下真有 **3 个 .html**——少于 3 个 = 没走完三套逻辑，补齐再往下，不许只做一版交差
+- 三版全部完成后**一起展示三张截图**，每版标明：用了哪套逻辑、具体哪个风格/参照案例/设计师，一句话说为什么
+
+> 仅当用户**已确认有生图能力**时，AI 生成型风格才走 `huashu-gpt-image`（见 `design-styles.md` 尾部「AI 生图专用风格」）；否则一律 HTML。
+> 完整 40 种风格库（网页 20+PPT 20，含还原度/温度/HTML 实现/开源字体）→ `references/design-styles.md`。
+
+**Phase 5 · 用户基于「看到的真实视觉」选择**（第一次有效选择）：看完三版真实截图，选一版深化 / 混合（"轮盘版的配色 + 设计师版的布局"）/ 微调 / 全部重来 → 重跑三套逻辑。
+
+**Phase 6 · 进入主干执行**
+用户选定（或混合）后 → 回到「核心哲学」+「工作流程」的 Junior Designer pass，把那一版做扎实。这时已有明确 design context，不再凭空。
+> 仅当走 AI 生图：提示词用「具体视觉特征 + 内容 + 技术参数」（写「赤陶橙 #C04A1A + 留白」不写「极简」），避开审美禁区 → 见 `huashu-gpt-image`。
 
 **真实素材优先原则**（涉及用户本人/产品时）：
-1. 先查用户配置的**私有 memory 路径**下的 `personal-asset-index.json`（Claude Code 默认在 `~/.claude/memory/`；其他 agent 按其自身约定）
+1. 先查用户配置的**私有 memory / config 路径**下的 `personal-asset-index.json`（各 runtime 按自身约定的 memory 目录；找不到就问用户）
 2. 首次使用：复制 `assets/personal-asset-index.example.json` 到上述私有路径，填入真实数据
 3. 找不到就直接问用户要，不要编造——真实数据文件不要放在 skill 目录内避免随分发泄露隐私
 
@@ -608,11 +412,12 @@ Screen 组件接 callback props（`onEnter`、`onClose`、`onTabChange`、`onOpe
    - 🛑 **检查点1：问题清单一次性发给用户，等用户批量答完再往下走**。不要边问边做。
    - 🛑 **幻灯片/PPT 任务：HTML 聚合演示版永远是默认基础产物**（不管用户最终要什么格式）：
      - **必做**：每页独立 HTML + `assets/deck_index.html` 聚合（重命名为 `index.html`，编辑 MANIFEST 列所有页），浏览器里键盘翻页、全屏演讲——这是幻灯片作品的"源"
-     - **可选导出**：额外询问是否需要 PDF（`export_deck_pdf.mjs`）或可编辑 PPTX（`export_deck_pptx.mjs`）作为衍生物
-     - **只有要可编辑 PPTX 时**，HTML 必须从第一行就按 4 条硬约束写（见 `references/editable-pptx.md`）；事后补救会 2-3 小时返工
+     - **交付流程铁律（不问格式，HTML deck 是强推的唯一基础路径）**：开工**绝不询问**用户要 PDF / PPTX——直接做 HTML deck（带 3D 概览墙 + 全屏演示，效果最好，这是我们想强推的方向）。
+     - **HTML deck 完成后**：① **自动**用 `scripts/export_deck_pdf.mjs` 生成 PDF 版交付（不问，直接给）；② 再**询问是否需要可编辑 PPTX**，要的话用 `scripts/export_deck_pptx.mjs` 尽量加工导出。
+     - 🔴 **绝不为了能转 PPTX 而牺牲 HTML 的设计质量**：PPTX 是事后 best-effort 衍生物，**不要**为了迁就 html2pptx 的 4 条硬约束就从第一行约束/降级 HTML 设计。HTML deck 的视觉自由度永远优先；PPTX 转不出某些效果就如实告诉用户「这版 PPTX 损失了 X，完整效果看 HTML / PDF」。
      - **≥ 5 页 deck 必须先做 2 页 showcase 定 grammar 再批量推**（见 `references/slide-decks.md` 的「批量制作前先做 showcase」章节）——跳过这步 = 方向错返工 N 次而非 2 次
      - 详见 `references/slide-decks.md` 开头「HTML 优先架构 + 交付格式决策树」
-   - ⚡ **如果用户需求严重模糊（没参考、没明确风格、"做个好看的"类）→ 走「设计方向顾问（Fallback 模式）」大节，完成 Phase 1-4 选定方向后，再回到这里 Step 2**。
+   - ⚡ **只要用户没给明确风格参考（没 design system、没截图/Figma、没指定某某具体风格）→ 走「设计方向顾问（Fallback 模式）」大节，完成 Phase 1-5（用户从三版里选定方向）后，再回到这里 Step 2**。门槛要低：「做个XX」只要不带风格词就触发——宁可多推 3 个方向让用户选，也不要模型自己闷头选一个极简就开做。
 2. **探索资源 + 抽核心资产**（不只是抽色值）：读 design system、linked files、上传的截图/代码。**涉及具体品牌时必走 §1.a「核心资产协议」五步**（问→按类型搜→按类型下载 logo/产品图/UI→验证+提取→写 `brand-spec.md` 含所有资产路径）。
    - 🛑 **检查点2·资产自检**：开工前确认核心资产到位——实体产品要有产品图（不是 CSS 剪影）、数字产品要有 logo+UI 截图、色值从真实 HTML/SVG 抽取。缺了就停下补，不硬做。
    - 如果用户没给 context 且挖不出资产，先走设计方向顾问 Fallback，再按 `references/design-context.md` 的品位锚点兜底。
@@ -704,8 +509,9 @@ Screen 组件接 callback props（`onEnter`、`onClose`、`onTabChange`、`onOpe
 **固定尺寸内容**（幻灯片/视频）必须自己实现JS缩放，用auto-scale + letterboxing。
 
 **幻灯片架构选型（必先决定）**：
-- **多文件**（默认，≥10页 / 学术/课件 / 多agent并行）→ 每页独立HTML + `assets/deck_index.html`拼接器
-- **单文件**（≤10页 / pitch deck / 需跨页共享状态）→ `assets/deck_stage.js` web component
+- 🔴 **默认且强烈推荐：多文件 + 概览墙**（几乎所有 PPT——培训/路演/科普/课件/汇报）→ 每页独立 HTML + `assets/deck_index.html` 拼接器。**这是 PPT 的默认交付形态**：自带 **3D 概览墙**（打开先看全局再逐页讲）+ 自适应缩放 + 统一页码。
+- **单文件**（仅 ≤5 页极简 pitch、且明确不需要概览墙、或需跨页共享 JS 状态）→ `assets/deck_stage.js`。
+- 🛑 **不要默认选单文件而绕过概览墙**——北大 13 页 deck 实测踩坑：选了单文件 = 丢了概览墙，违背 PPT 默认交付形态。选单文件前先确认「这真的是 ≤5 页、且不需要概览墙」。
 
 先读 `references/slide-decks.md` 的「🛑 先定架构」一节，错了会反复踩 CSS 特异性/作用域的坑。
 
@@ -745,8 +551,8 @@ Screen 组件接 callback props（`onEnter`、`onClose`、`onTabChange`、`onOpe
 | **动画的正向设计语法**（Anthropic 级叙事/运动/节奏/表达风格）| `references/animation-best-practices.md`（5 段叙事+Expo easing+运动语言 8 条+3 种场景配方）|
 | **带解说的长动画 / 长概念视频**（5-20 分钟带配音、解说驱动画面、TTS 实测时长生成 timeline）| `references/voiceover-pipeline.md`（铁律：连续运动叙事、禁 PowerPoint 切换）+ `assets/narration_stage.jsx` + `scripts/{tts-doubao,narrate-pipeline}.mjs` + `scripts/{mix-voiceover,render-narration}.sh` |
 | 做Tweaks实时调参 | `references/tweaks-system.md` |
-| 没有design context怎么办 | `references/design-context.md`（薄 fallback） 或 `references/design-styles.md`（厚 fallback：20 种设计哲学详细库） |
-| **需求模糊要推荐风格方向** | `references/design-styles.md`（20 种风格+AI prompt 模板）+ `assets/showcases/INDEX.md`（24 个预制样例） |
+| 没有design context怎么办 | `references/design-context.md`（薄 fallback） 或 `references/design-styles.md`（厚 fallback：HTML 原生 40 种风格库，网页 20+PPT 20，按温度分级） |
+| **需求模糊要推荐风格方向** | `references/design-styles.md`（40 种 HTML 原生风格库，含还原度/温度/开源字体）+ `assets/showcases/INDEX.md`（预制截图画廊） |
 | **按输出类型查场景模板**（封面/PPT/信息图） | `references/scene-templates.md` |
 | 输出完后验证 | `references/verification.md` + `scripts/verify.py` |
 | **设计评审/打分**（设计完成后可选） | `references/critique-guide.md`（5 维度评分+常见问题清单） |
@@ -804,11 +610,7 @@ Skill 路径引用均采用**相对本 skill 根目录**的形式（`references/
 
 - **事实验证先于假设**（核心原则 #0）：涉及具体产品/技术/事件（DJI Pocket 4、Gemini 3 Pro 等）必须先 `WebSearch` 验证存在性和状态，不凭训练语料断言。
 - **Embody专家**：做幻灯片时是幻灯片设计师，做动画时是动画师。不是写Web UI。
-- **Junior先show，再做**：先展示思路，再执行。
-- **Variations不给答案**：3+个变体，让用户选。
-- **Placeholder优于烂实现**：诚实留白，不编造。
-- **反AI slop时时警醒**：每个渐变/emoji/圆角border accent之前先问——这真的必要吗？
-- **涉及具体品牌**：走「核心资产协议」（§1.a）——Logo（必需）+ 产品图（实体产品必需）+ UI 截图（数字产品必需），色值只是辅助。**不要用 CSS 剪影代替真实产品图**。
+- **正文哲学速记**：Junior 先 show → 3+ variations → 诚实 placeholder → 时时反 slop → 涉品牌走资产协议（§1.a，不用 CSS 剪影代替产品图）。展开见上文「核心哲学」各节。
 - **做动画之前**：必读 `references/animation-pitfalls.md`——里面 14 条规则每条都来自真实踩过的坑，跳过会让你重做 1-3 轮。
 - **手写 Stage / Sprite**（不用 `assets/animations.jsx`）：必须实现两件事——(a) tick 第一帧同步设 `window.__ready = true` (b) 检测 `window.__recording === true` 时强制 loop=false。否则录视频必出问题。
 - **做带解说的动画**（≥1 分钟，长概念视频）：**整片是一个连续的运动叙事，不是一组独立场景**。选 1-2 个 hero element 跨 scene 持续存在，scene 之间 morph 不切。每个 Scene 各自独立 layout + cue 用 fade-up + 整页 opacity 切换 = 带配音的 PowerPoint = 质感归零。完整规则见 `references/voiceover-pipeline.md` 「铁律」章节。这条规则**强调多少遍都不为过**。

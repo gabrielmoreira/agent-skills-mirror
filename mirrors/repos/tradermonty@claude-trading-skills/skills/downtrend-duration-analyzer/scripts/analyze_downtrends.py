@@ -73,24 +73,43 @@ def get_market_cap_tier(market_cap: float | None) -> str:
 
 
 def fetch_stock_list(api_key: str, sector: str | None = None) -> list[dict]:
-    """Fetch list of stocks, optionally filtered by sector."""
-    url = f"https://financialmodelingprep.com/api/v3/stock-screener?apikey={api_key}"
-    if sector:
-        url += f"&sector={sector.replace(' ', '%20')}"
-    url += "&isActivelyTrading=true&limit=500"
+    """Fetch list of stocks, optionally filtered by sector.
 
-    try:
-        response = requests.get(url, timeout=30)
-        response.raise_for_status()
-        return response.json()
-    except requests.RequestException as e:
-        print(f"Error fetching stock list: {e}", file=sys.stderr)
-        return []
+    Uses the /stable/company-screener endpoint (the v3 /stock-screener it
+    replaced 403s for keys issued after 2025-08-31), with a v3 fallback for
+    legacy keys. Both take the same params and return the same fields
+    (symbol, sector, marketCap, ...).
+    """
+    params: dict[str, Any] = {
+        "apikey": api_key,
+        "isActivelyTrading": "true",
+        "limit": 500,
+    }
+    if sector:
+        params["sector"] = sector
+    endpoints = [
+        "https://financialmodelingprep.com/stable/company-screener",
+        "https://financialmodelingprep.com/api/v3/stock-screener",
+    ]
+    for url in endpoints:
+        try:
+            response = requests.get(url, params=params, timeout=30)
+        except requests.RequestException as e:
+            print(f"Error fetching stock list ({url}): {e}", file=sys.stderr)
+            continue
+        if response.status_code != 200:
+            continue
+        try:
+            return response.json()
+        except ValueError:
+            continue
+    print("Error fetching stock list: all screener endpoints failed", file=sys.stderr)
+    return []
 
 
 # --- FMP endpoint fallback: stable (new users) -> v3 (legacy users) ---
 _FMP_HIST_ENDPOINTS = [
-    ("https://financialmodelingprep.com/stable/historical-price-full", True),
+    ("https://financialmodelingprep.com/stable/historical-price-eod/full", True),
     ("https://financialmodelingprep.com/api/v3/historical-price-full", False),
 ]
 _endpoint_failures: dict[str, int] = {}

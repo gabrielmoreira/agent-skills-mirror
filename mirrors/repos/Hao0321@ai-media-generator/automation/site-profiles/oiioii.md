@@ -1061,7 +1061,7 @@ submit → Bash sleep 400 (run_in_background:true) → 等通知 → screenshot 
 
 **本次修正範例：**
 ```
-Ancient Chinese general Aria charging on galloping black warhorse 
+Ancient Chinese general Hao0321 charging on galloping black warhorse 
 through golden dawn battlefield, crimson cloak streaming, lamellar 
 bronze armor glinting, jian sword slashing forward in sweeping arc, 
 low-angle tracking shot, thick dust plumes kicked up by thundering 
@@ -1105,10 +1105,10 @@ Shot 3 (close-up, 3s): 衝擊 / 呼吸 / 腳步特寫
 
 上傳 ≤15s 動作參考影片，prompt 寫 `imitate the movements of @video1` — 中國創作者公認武打最大 quality jump。
 
-#### ✅ 針對 Aria 古代將軍的證據版 prompt（中文）
+#### ✅ 針對 Hao0321 古代將軍的證據版 prompt（中文）
 
 ```
-古代中國將軍 Aria 主角，身披金色鱗甲、紅披風在風中翻飛，
+古代中國將軍 Hao0321 主角，身披金色鱗甲、紅披風在風中翻飛，
 騎一匹黑色戰馬在黎明戰場上緩慢前行。
 戰場中央地帶，遠處千軍列陣、紅色戰旗獵獵。
 金色逆光、塵霧漂浮、熒光晨霧。
@@ -1435,7 +1435,7 @@ submit 後 STAR 餘額不變。agent 等用戶 confirm 才 commit（之後才扣
 
 ---
 
-### 12.10.4 ⛔ i2v 仍未找到正解（2026-05-19 第二次打臉）
+### 12.10.4 ✅ i2v 正解已找到（2026-06-05 驗證，原為 2026-05-19 兩次打臉）— 詳見 §12.10.10
 
 **v1.4.1 寫的「右鍵 → 加入對話 = i2v 正解」實測也 broken**。用戶 2026-05-19 報告：「他生成好了，但鞋子完全不同」— 模型走了 t2v 又生了另一隻鞋。
 
@@ -1486,7 +1486,7 @@ submit 後 STAR 餘額不變。agent 等用戶 confirm 才 commit（之後才扣
 - ❌「對 prompt 還原度 9/10 — 完美！」
 - ✅「i2v 已生成。STAR 扣 210。請評判品質。」
 
-詳見 memory/[feedback_no_self_rating.md](file:///C:/Users/Aria/.claude/projects/D--skills/memory/feedback_no_self_rating.md)
+詳見 memory/[feedback_no_self_rating.md](file:///C:/Users/Hao0321/.claude/projects/D--skills/memory/feedback_no_self_rating.md)
 
 
 ---
@@ -1523,16 +1523,16 @@ submit 後 STAR 餘額不變。agent 等用戶 confirm 才 commit（之後才扣
 | 多 [bracketed labels] 標籤 | 簡潔時間區塊 |
 | 模型 attention 分散 | 模型專注 motion |
 
-#### 完整 i2v SOP（用戶明示版整合）
+#### 完整 i2v SOP（✅ 2026-06-05 終於完整驗證 — 見 §12.10.10）
 
 ```
 1. 點「+ 新建專案」開新 workspace（feedback_no_reuse_workspace.md）
 2. 切自由畫布 chip（feedback_oiioii_mode_lock.md）
-3. 切 GPT-Image2，type hero shot prompt，send，等 60-180s
-4. 切 Seedance 2.0 pro，設定 15s / 16:9 / 720p
-5. 🚧 右鍵圖 → 「生成影片」（i2v 真正觸發，待驗證）
-6. type 黃金公式 prompt（prefix「根據圖片中的物體、畫面、風格來生成影片」+ 運鏡 + Constraints）
-7. send，等 8-15 min
+3. 模型 dropdown → 圖片 tab → 選 Seedream 5.0 / Nano Pro（⚠️ GPT-Image2 已下架，改名 Gpt 4o）
+4. inject hero shot 圖 prompt（含「形狀完整無變形」鎖），send，等 30-90s（圖快）
+5. ✅ 右鍵 canvas 上的圖 → 「生成影片」→ 彈出 canvas i2v 框（圖自動附 + Seedance 2.0 pro 自動選）
+6. inject 黃金公式運鏡 prompt 到「canvas i2v 框」（不是左 panel！）+ click `_send-section_` 送出
+7. send，等 4-8 min（i2v 預估 ~287s）
 8. 中性報告，不自評（feedback_no_self_rating.md）
 ```
 
@@ -1604,6 +1604,25 @@ findSendBtn()?.click();
 ```
 
 **2026-05-28 實證：** 第 1 個 workspace `_send-button_*` 有效；第 2 個 workspace 卻沒有此 class，只能用 `_credit-cost_*`。同帳號連續兩個 workspace UI 不同 → **必須兩個都 fallback 嘗試**。
+
+**完整自由畫布 t2v 自動化片段：**
+
+```js
+// Phase 0: 開新 workspace
+btns.find(b => b.textContent.includes('新建專案')).click();
+
+// Phase 1: 切自由畫布
+btns.find(b => b.textContent.includes('自由畫布')).click();
+
+// Phase 2: 選 Seedance 2.0 pro
+btns.find(b => b.textContent.includes('智能模型')).click();
+[...document.querySelectorAll('*')].find(el => el.textContent.trim() === 'Seedance2.0 pro' && el.children.length === 0).click();
+
+// Phase 3: Slate beforeinput 注入 prompt（見上）
+
+// Phase 4: 驗證 + click send
+document.querySelector('[class*="_send-button_"]').click();
+```
 
 **反偵測：判斷送出是否成功**
 
@@ -1915,4 +1934,85 @@ javascript_tool 回傳 `Failed to execute JavaScript: Promise was collected` 時
 - `feedback_contenteditable_react_dispatch.md` — Phase B 注入方法（Slate beforeinput）
 - `feedback_no_self_rating.md` — Phase C 報告中性事實
 - `feedback_decision_autonomy.md` — 整流程 auto-pilot，不停問
+
+### 12.10.10 ✅✅✅ 真正的 i2v 觸發法 — 終於驗證（2026-06-05 v1.5.1）
+
+**懸案落幕。** 經過 2026-05-19 兩次打臉（「資產 N」引用 ❌、「加入對話」❌ 都走 t2v 生出不同產品），2026-06-05 終於用 Seedream 5.0 hero + 精華液實測**驗證真正的 i2v 流程**。
+
+#### 🎯 正解：右鍵 canvas 圖 → 「生成影片」→ canvas-side i2v 框
+
+**關鍵發現：「生成影片」不是把 prompt 送左 panel，而是在 canvas 上開一個獨立的 i2v 輸入框，圖已經自動 attach 成參考，且 Seedance 2.0 pro 自動選好。**
+
+完整 DOM 操作序列（全 JS，無需 computer.type）：
+
+```js
+// === Step 1: 生 hero 圖（Seedream 5.0，鎖形狀）===
+// 新建專案 → 自由畫布 → 模型dropdown → 圖片 tab → Seedream 5.0
+// 圖片 tab + 模型選法：
+const imgTab = [...document.querySelectorAll('*')].find(el => el.children.length===0 && el.textContent.trim()==='圖片');
+imgTab?.click();
+// 等 500ms → 點 'Seedream 5.0'（同 t2v 選法：textContent.trim()===目標 && children.length===0）
+// → Slate beforeinput 注入 hero prompt（含「形狀完整無變形」）→ send → 等 30-90s
+
+// === Step 2: 右鍵圖開 context menu ===
+const img = document.querySelector('.hogi-canvas img, [class*="_canvas_"] img'); // naturalWidth>150
+const r = img.getBoundingClientRect();
+const cx = r.left + r.width/2, cy = r.top + r.height/2;
+const target = document.elementFromPoint(cx, cy) || img;
+const o = {bubbles:true, cancelable:true, clientX:cx, clientY:cy, pointerId:1, pointerType:'mouse'};
+// 先選中（pointerdown/up + click），等 300ms
+target.dispatchEvent(new PointerEvent('pointerdown', o));
+target.dispatchEvent(new MouseEvent('mousedown', o));
+target.dispatchEvent(new PointerEvent('pointerup', o));
+target.dispatchEvent(new MouseEvent('mouseup', o));
+target.dispatchEvent(new MouseEvent('click', o));
+// 再右鍵
+const ro = {...o, button:2};
+target.dispatchEvent(new MouseEvent('mousedown', ro));
+target.dispatchEvent(new MouseEvent('contextmenu', ro));
+target.dispatchEvent(new MouseEvent('mouseup', ro));
+// 等 400ms → menu 出現
+
+// === Step 3: 點「生成影片」===
+const item = [...document.querySelectorAll('*')].find(el => el.children.length===0 && el.textContent.trim()==='生成影片');
+(item.closest('[role="menuitem"]') || item.closest('[class*="menu-item"]') || item).click();
+// 等 800ms → canvas 右側彈出 i2v 框（圖已 attach + Seedance 2.0 pro 自動選 + 16:9·10s·720p）
+
+// === Step 4: 注入運鏡 prompt 到「canvas i2v 框」（不是左 panel！）===
+// 有兩個 contenteditable：左 panel (x~120) = agent chat；canvas i2v 框 (x>700) = i2v 輸入
+const div = [...document.querySelectorAll('[contenteditable="true"]')].find(d => d.getBoundingClientRect().left > 700);
+// → Slate beforeinput 注入「根據圖片中的物體、畫面、風格來生成影片，[運鏡]...」(i2v 黃金公式)
+
+// === Step 5: 點 canvas 框的 send button ===
+const sendBtn = [...document.querySelectorAll('[class*="_send-section_"], [class*="_credit-cost_"]')]
+  .find(b => { const r=b.getBoundingClientRect(); return r.left>1180 && r.top>560 && !b.disabled && !b.className.includes('_disabled_'); });
+sendBtn.click();
+// → canvas i2v 框消失 + 「影片生成中... 處理中 · 預估 ~287s」= 成功，圖已當參考
+```
+
+#### 右鍵 context menu 完整選項（2026-06-05 實測，比舊紀錄多）
+
+`替換` / **`生成影片`**(✅ 真 i2v) / `生成圖片` / `标记识别` / `存為角色` / `存為場景` / `存為風格` / `加入對話`(❌ 只進 agent chat) / `複製` / `下載` / `刪除`
+
+新發現：`替換`、`标记识别`、`存為角色/場景/風格`（可把圖存進資產庫複用）。
+
+#### 關鍵區分（為什麼之前兩次打臉）
+
+| 操作 | 實際行為 | i2v? |
+|---|---|---|
+| prompt 內提「資產 N」 | 文字提及，圖沒注入 | ❌ t2v |
+| 右鍵 → **加入對話** | 圖進左 panel agent chat，agent 看圖寫文字 prompt | ❌ t2v |
+| 右鍵 → **生成影片** | canvas 開 i2v 框，圖 attach 成真參考 + 影片模型自動選 | ✅ **真 i2v** |
+
+**核心教訓：i2v 框是 canvas-side 獨立框（contenteditable x>700），不是左 panel agent chat（x~120）。注入要選對框。**
+
+#### 為什麼這條值錢
+
+兩次打臉 + 多次「鞋子/產品完全不同」的根因，就是一直注入左 panel（t2v 路徑）。真正 i2v 要走 canvas 框。這條配合 [quality-control.md §1 主體完整性] = 產品廣告鎖形狀的完整可靠路徑。
+
+#### 連動
+
+- 配合 §12.10.5 i2v 黃金公式（運鏡 only）
+- 配合 §12.10.6 Slate beforeinput 注入法
+- 配合 `feedback_verify_before_documenting.md`：這次是「窮舉候選操作 + 實測」的正面案例
 

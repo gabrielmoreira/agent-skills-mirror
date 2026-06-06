@@ -1,6 +1,6 @@
 ---
 name: unity-asset
-description: "Unity asset management. Use when users want to import (external file), delete, move/rename, duplicate, find/search, get info, create folders, refresh AssetDatabase, reimport (single or batch), or read/set asset labels. Triggers: asset, import asset, delete asset, move asset, rename asset, duplicate asset, find asset, search asset, asset info, create folder, refresh assets, reimport, asset labels, AssetDatabase filter, t:Texture2D, l:Label, 资源, 资产, 导入资源, 删除资源, 移动资源, 重命名资源, 复制资源, 查找资源, 资源信息, 创建文件夹, 刷新资源, 重新导入, 资源标签."
+description: "Unity AssetDatabase management — import, delete, move/rename, duplicate, find, get info, create folders, refresh, reimport (single/batch), read/set labels. Exact signatures via GET /skills/schema."
 ---
 
 # Unity Asset Skills

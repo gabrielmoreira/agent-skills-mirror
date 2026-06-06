@@ -1,6 +1,6 @@
 ---
 name: unity-gameobject
-description: "GameObject creation and manipulation. Use when users want to create, delete, move, rotate, scale, parent, find, or rename GameObjects. Triggers: gameobject, create gameobject, delete gameobject, duplicate, rename, transform, position, rotation, scale, parent, child, hierarchy, layer, tag, active, find, primitive, cube, sphere, instanceId, 游戏对象, 创建游戏对象, 删除游戏对象, 复制, 重命名, 变换, 位置, 旋转, 缩放, 父子, 层级, 查找游戏对象, 标签, 图层, 激活, 立方体, 球体."
+description: "GameObject creation and manipulation — create, delete, move, rotate, scale, parent, find, rename GameObjects. Exact signatures via GET /skills/schema."
 ---
 
 # Unity GameObject Skills

@@ -26,6 +26,11 @@ except ImportError:
     print("ERROR: requests library not found. Install with: pip install requests", file=sys.stderr)
     sys.exit(1)
 
+try:
+    from _fmp_compat import v3_to_stable
+except ModuleNotFoundError:  # loaded by file path (e.g. repo-level contract tests)
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from _fmp_compat import v3_to_stable
 
 # --- FMP endpoint fallback: stable (new users) -> v3 (legacy users) ---
 
@@ -276,15 +281,20 @@ class FMPClient:
         if cache_key in self.cache:
             return self.cache[cache_key]
 
-        url = f"{self.BASE_URL}/earning_calendar"
-        params = {"from": from_date, "to": to_date}
+        # Hardcoded v3 URL bypasses the stable→v3 fallback list; rewrite here.
+        url, params = v3_to_stable(
+            f"{self.BASE_URL}/earning_calendar", {"from": from_date, "to": to_date}
+        )
         data = self._rate_limited_get(url, params)
         if data:
             self.cache[cache_key] = data
         return data
 
     def get_company_profiles(self, symbols: list[str]) -> dict[str, dict]:
-        """Fetch company profiles for multiple symbols in batches of 100.
+        """Fetch company profiles for multiple symbols.
+
+        The /stable profile endpoint does not support comma-batched symbols
+        (a multi-symbol request returns ``[]``), so fetch one symbol at a time.
 
         Args:
             symbols: List of ticker symbols
@@ -293,26 +303,23 @@ class FMPClient:
             Dictionary mapping symbol to profile data.
         """
         profiles = {}
-        batch_size = 100
 
-        for i in range(0, len(symbols), batch_size):
-            batch = symbols[i : i + batch_size]
-            symbols_str = ",".join(batch)
-
-            cache_key = f"profiles_{symbols_str}"
+        for symbol in symbols:
+            cache_key = f"profile_{symbol}"
             if cache_key in self.cache:
-                for profile in self.cache[cache_key]:
-                    if isinstance(profile, dict):
-                        profiles[profile.get("symbol")] = profile
+                cached = self.cache[cache_key]
+                if isinstance(cached, dict):
+                    profiles[symbol] = cached
                 continue
 
-            url = f"{self.BASE_URL}/profile/{symbols_str}"
-            data = self._rate_limited_get(url)
-            if data:
-                self.cache[cache_key] = data
-                for profile in data:
-                    if isinstance(profile, dict):
-                        profiles[profile.get("symbol")] = profile
+            # Hardcoded v3 URL bypasses the stable→v3 fallback list; rewrite here.
+            url, params = v3_to_stable(f"{self.BASE_URL}/profile/{symbol}")
+            data = self._rate_limited_get(url, params)
+            if data and isinstance(data, list) and data:
+                profile = data[0]
+                if isinstance(profile, dict):
+                    self.cache[cache_key] = profile
+                    profiles[profile.get("symbol", symbol)] = profile
 
         return profiles
 

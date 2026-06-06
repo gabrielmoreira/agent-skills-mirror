@@ -51,7 +51,7 @@ def get_api_key(args_api_key):
 
 # --- FMP endpoint fallback: stable (new users) -> v3 (legacy users) ---
 _FMP_HIST_ENDPOINTS = [
-    ("https://financialmodelingprep.com/stable/historical-price-full", True),
+    ("https://financialmodelingprep.com/stable/historical-price-eod/full", True),
     ("https://financialmodelingprep.com/api/v3/historical-price-full", False),
 ]
 _endpoint_failures: dict[str, int] = {}
@@ -106,7 +106,7 @@ def fetch_historical_prices(symbol, api_key, lookback_days=365):
 
     # Convert to pandas Series
     prices = pd.Series(
-        [item["adjClose"] for item in historical],
+        [item.get("adjClose") or item["close"] for item in historical],  # stable shape compat
         index=[pd.to_datetime(item["date"]) for item in historical],
         name=symbol,
     )

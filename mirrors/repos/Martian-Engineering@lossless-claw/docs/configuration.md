@@ -64,11 +64,14 @@ Most installations only need to override a handful of keys. If you want a comple
   "timezone": "America/Los_Angeles",
   "pruneHeartbeatOk": false,
   "transcriptGcEnabled": false,
+  "enableSummaryThinking": true,
   "maxAssemblyTokenBudget": 30000,
   "summaryMaxOverageFactor": 3,
   "customInstructions": "",
   "circuitBreakerThreshold": 5,
   "circuitBreakerCooldownMs": 1800000,
+  "replayFloodThresholdExternal": 3,
+  "replayFloodThresholdInternal": 32,
   "fallbackProviders": [],
   "proactiveThresholdCompactionMode": "deferred",
   "autoRotateSessionFiles": {
@@ -148,6 +151,7 @@ openclaw plugins install --link /path/to/lossless-claw
 | `timezone` | `string` | `TZ` or system timezone | `TZ` | IANA timezone used for timestamp rendering in summaries. |
 | `pruneHeartbeatOk` | `boolean` | `false` | `LCM_PRUNE_HEARTBEAT_OK` | Retroactively removes `HEARTBEAT_OK` turn cycles from persisted storage. |
 | `transcriptGcEnabled` | `boolean` | `false` | `LCM_TRANSCRIPT_GC_ENABLED` | Enables transcript rewrite GC during `maintain()`; disabled by default so transcript rewrites stay opt-in. |
+| `enableSummaryThinking` | `boolean` | `true` | `LCM_ENABLE_SUMMARY_THINKING` | When true, requests low reasoning budget from the model during summarization calls. Set to false to disable reasoning and keep summarization output concise. |
 | `proactiveThresholdCompactionMode` | `"deferred" \| "inline"` | `"deferred"` | `LCM_PROACTIVE_THRESHOLD_COMPACTION_MODE` | Controls whether proactive threshold compaction is deferred into maintenance debt by default or run inline for legacy behavior. |
 | `autoRotateSessionFiles.enabled` | `boolean` | `true` | `LCM_AUTO_ROTATE_SESSION_FILES_ENABLED` | Enables automatic rotation for oversized LCM-managed session JSONL files. |
 | `autoRotateSessionFiles.createBackups` | `boolean` | `false` | `LCM_AUTO_ROTATE_SESSION_FILES_CREATE_BACKUPS` | Creates or replaces the rolling `rotate-latest` SQLite backup before automatic session-file rotation. Manual `/lcm rotate` backups are always created. |
@@ -223,6 +227,8 @@ Summary calls are executed through OpenClaw's `api.runtime.llm.complete` capabil
 | `circuitBreakerThreshold` | `integer` | `5` | `LCM_CIRCUIT_BREAKER_THRESHOLD` | Consecutive auth failures before the summarization circuit breaker trips. |
 | `circuitBreakerCooldownMs` | `integer` | `1800000` | `LCM_CIRCUIT_BREAKER_COOLDOWN_MS` | Cooldown before the summarization circuit breaker resets automatically. |
 | `stripInjectedContextTags` | `string[]` | `["active_memory_plugin", "relevant-memories", "relevant_memories", "hindsight_memories"]` | `LCM_STRIP_INJECTED_CONTEXT_TAGS` | XML tag names whose blocks are stripped from message content before compaction summarization. Memory/context plugins inject these via `prependContext`; stripping prevents ephemeral retrieval context from polluting compacted summaries. Env var format is comma-separated tag names. Set to `[]` (or empty env string) to disable. |
+| `replayFloodThresholdExternal` | `integer` | `3` | `LCM_REPLAY_FLOOD_THRESHOLD_EXTERNAL` | Max replay-like messages allowed in a single SQLite-second for `role=user` before `assertNoReplayTimestampFlood` refuses the batch. Defaults to `3` to preserve replay defense for third-partyly-rebroadcastable input. |
+| `replayFloodThresholdInternal` | `integer` | `32` | `LCM_REPLAY_FLOOD_THRESHOLD_INTERNAL` | Max identical messages allowed in a single SQLite-second for `role=tool/assistant/system` before the anti-replay guard refuses the batch. Defaults to `32` to absorb legitimate idempotent sub-agent bursts (same-second tool returns like `{"status":"ok"}`). |
 
 ### Nested objects
 

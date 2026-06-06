@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `brycewang-stanford/Auto-Empirical-Research-Skills` — 26 default patterns, 23 followed patterns, 3225 file(s) materialized.
+Mirror of `brycewang-stanford/Auto-Empirical-Research-Skills` — 26 default patterns, 26 followed patterns, 3228 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `brycewang-stanford/Auto-Empirical-Research-Skills` — 26 default pat
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 23 |
-| Files         | 3225 |
+| Followed pats | 26 |
+| Files         | 3228 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,7 +61,10 @@ Mirror of `brycewang-stanford/Auto-Empirical-Research-Skills` — 26 default pat
 - `tools/CATALOG.md`
 - `docs/EMPIRICAL_TOOLS_2026-06.md`
 - `SECURITY-SCAN-REPORT.md`
-- `README-en.md`
+- `README-zh-CN.md`
+- `README-zh-TW.md`
+- `README-ja.md`
+- `README-ko.md`
 - `docs/LICENSE_AUDIT.md`
 - `docs/SKILL_AUDIT.md`
 - `docs/TRUST.md`
@@ -3301,11 +3304,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3218 | → | [`docs/SKILL_SUBMISSION_GUIDE.md`](docs/SKILL_SUBMISSION_GUIDE.md) |
 | 3219 | → | [`docs/TAXONOMY.md`](docs/TAXONOMY.md) |
 | 3220 | → | [`docs/TRUST.md`](docs/TRUST.md) |
-| 3221 | → | [`README-en.md`](README-en.md) |
-| 3222 | → | [`README.md`](README.md) |
-| 3223 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
-| 3224 | → | [`tools/CATALOG.md`](tools/CATALOG.md) |
-| 3225 | → | [`tools/README.md`](tools/README.md) |
+| 3221 | → | [`README-ja.md`](README-ja.md) |
+| 3222 | → | [`README-ko.md`](README-ko.md) |
+| 3223 | → | [`README-zh-CN.md`](README-zh-CN.md) |
+| 3224 | → | [`README-zh-TW.md`](README-zh-TW.md) |
+| 3225 | → | [`README.md`](README.md) |
+| 3226 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
+| 3227 | → | [`tools/CATALOG.md`](tools/CATALOG.md) |
+| 3228 | → | [`tools/README.md`](tools/README.md) |
 
 ---
 

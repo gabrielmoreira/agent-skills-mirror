@@ -21,12 +21,20 @@ Execute an approved plan with explicit state, disciplined gates, bounded retries
 1. Confirm plan path, current phase, target files, validation command, and approval needs.
 2. For non-trivial work, run or verify review routing first: `SMALL` -> `controlflow-plan-audit`; `MEDIUM`/`LARGE` -> add `controlflow-assumption-verifier`; `LARGE` -> add `controlflow-executability-verifier`; unresolved `HIGH` risk -> include `controlflow-assumption-verifier`.
 3. If review blocks, revise the plan before implementation.
-4. Use wave execution only when write ownership is clearly disjoint; otherwise serialize phases.
-5. Keep immediate blocking work local. Use subagents only when delegation is available and the user explicitly wants it.
-6. Use [references/failure-taxonomy.md](references/failure-taxonomy.md) and [references/runtime-policy.json](references/runtime-policy.json) for retry and replan decisions.
-7. Gate destructive or high-blast-radius actions behind explicit approval.
-8. After each phase, run [references/phase-checklist.md](references/phase-checklist.md) checks and update user-visible state before moving on.
-9. Save plan-review artifacts under `plans/artifacts/<task-slug>/` and keep them concise Markdown.
+4. Run the **Pre-Wave Cache Guard** before each wave: inspect recent task artifacts for similar scope, surface a recommendation when useful, and never auto-complete work or skip approval.
+5. Use wave execution only when write ownership is clearly disjoint; otherwise serialize phases. Present one approval request per ordinary wave; keep destructive, high-risk, failed, or blocked phases separately gated.
+6. Keep immediate blocking work local. Use subagents only when delegation is available and the user explicitly wants it.
+7. Use [references/failure-taxonomy.md](references/failure-taxonomy.md) and [references/runtime-policy.json](references/runtime-policy.json) for retry and replan decisions. Reduce later-wave parallelism when transient failures in the same wave reach the configured threshold.
+8. Gate destructive or high-blast-radius actions behind explicit approval.
+9. After each phase, run [references/phase-checklist.md](references/phase-checklist.md) checks and update user-visible state before moving on.
+10. Refresh the context packet after each completed wave with verified facts, invalidated assumptions, changed paths, and next-wave reuse notes.
+11. Save plan-review artifacts under `plans/artifacts/<task-slug>/` and keep them concise Markdown.
+
+## Portable Evidence And Challenge
+
+- Before changing a shared prompt, schema, validator, template, or public interface, run a shared-component usage impact scan and record likely consumers.
+- Use [references/source-grounding.md](references/source-grounding.md) when execution depends on external framework or API claims.
+- Use [references/decision-challenge.md](references/decision-challenge.md) once for a high-risk or non-trivial decision whose failure would materially change the plan.
 
 ## Stop-the-Line Guidance
 
@@ -49,4 +57,6 @@ Use roughly 100 changed lines per phase as a soft reviewability target. Split un
 - `references/failure-taxonomy.md`
 - `references/phase-checklist.md`
 - `references/tdd-patterns.md`
+- `references/source-grounding.md`
+- `references/decision-challenge.md`
 - `../controlflow-planning/references/llm-behavior-guidelines.md`

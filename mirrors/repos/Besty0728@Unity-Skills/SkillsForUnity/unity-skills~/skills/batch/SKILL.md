@@ -1,6 +1,6 @@
 ---
 name: unity-batch
-description: "Batch query, preview-confirm-execute, async job orchestration, and bulk scene cleanup for UnitySkills. Use when users want a unified batch query (gameobjects/components/assets), preview before mutation (rename/set property/replace material/missing scripts/standardize naming/render layer/cleanup temp), execute with confirmToken, manage async jobs (status/progress/wait/logs/list/cancel), inspect or list reports, retry failed items, or validate scene objects. Triggers: batch, preview, dry-run, confirmToken, execute batch, batch report, batch retry, job, jobId, async job, job status, job progress, job wait, job logs, job cancel, query gameobjects, query components, query assets, batch rename, batch set property, batch replace material, batch fix missing scripts, batch standardize naming, batch set render layer, batch cleanup temp, batch validate scene, 批处理, 批量, 预览执行, 确认令牌, 异步作业, 作业状态, 作业进度, 作业等待, 作业日志, 作业取消, 批量查询, 批量重命名, 批量改属性, 批量换材质, 修复缺失脚本, 规范命名, 清理临时对象, 场景校验."
+description: "Unified batch query, preview-confirm-execute mutation, async job orchestration, and bulk scene cleanup. Use confirmToken to commit and poll jobs by jobId. Exact signatures via GET /skills/schema."
 ---
 
 # Unity Batch Skills

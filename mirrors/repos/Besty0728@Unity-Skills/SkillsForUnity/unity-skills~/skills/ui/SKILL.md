@@ -1,6 +1,6 @@
 ---
 name: unity-ui
-description: "Unity UGUI (Canvas-based UI) creation and layout: Canvas, Panel, Button, Text (TMP auto-detect), Image, RawImage, InputField, Slider, Toggle, Dropdown, ScrollView, Scrollbar, RectTransform anchors and layout groups. This is the GameObject + Canvas system; for UXML/USS use the `uitoolkit` module. Triggers: UGUI, UI, Canvas, ScreenSpaceOverlay, Button, Text, TextMeshPro, TMP, Image, RawImage, Panel, Slider, Toggle, Dropdown, ScrollView, ScrollRect, Scrollbar, InputField, RectTransform, anchor, pivot, layout group, vertical layout, horizontal layout, grid layout, LayoutElement, CanvasGroup, mask, RectMask2D, outline, shadow, 界面, 按钮, 文本, 文字, 图片, 面板, 滑块, 开关, 下拉, 滚动视图, 滚动条, 输入框, 锚点, 布局, 画布, 蒙版."
+description: "Unity UGUI (Canvas-based) creation and layout — Canvas/Panel/Button/Text(TMP)/Image/InputField/Slider/Toggle/Dropdown/ScrollView, RectTransform anchors, layout groups. For UXML/USS use uitoolkit. Exact signatures via GET /skills/schema."
 ---
 
 # Unity UI Skills

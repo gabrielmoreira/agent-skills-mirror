@@ -1,6 +1,6 @@
 ---
 name: unity-volume
-description: "SRP Volume framework (VolumeProfile + Volume GameObject + VolumeComponent overrides) for URP / HDRP projects. Use when users want to create / load VolumeProfile assets, create global or local Volume GameObjects, add / remove / inspect VolumeComponent overrides, or set their parameters. For high-level effect helpers (Bloom, DOF, Vignette, Color Adjustments…) prefer the `postprocess` module. Triggers (EN): Volume, VolumeProfile, post-processing profile, VolumeComponent, override, parameter override, global volume, local volume, blend distance. Triggers (ZH): Volume, 后处理配置, 后处理 Profile, 体积, 全局 Volume, 局部 Volume, 覆盖参数, 覆盖, VolumeProfile, VolumeComponent."
+description: "SRP Volume framework — create/load VolumeProfile assets, create global/local Volume GameObjects, add/remove/inspect VolumeComponent overrides, set parameters. For effect helpers use postprocess. Exact signatures via GET /skills/schema."
 ---
 
 # Volume Skills

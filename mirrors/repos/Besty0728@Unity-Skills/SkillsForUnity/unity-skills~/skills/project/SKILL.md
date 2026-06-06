@@ -1,6 +1,6 @@
 ---
 name: unity-project
-description: "Project information. Use when users want to read project metadata (Unity version, render pipeline), list shaders/UPM packages, read Layer/Tag definitions, add a custom Tag, read build settings, or read Player Settings. Triggers: project info, project settings, Unity version, render pipeline, list shaders, UPM packages, package manifest, layers, tags, add tag, build settings, player settings, scripting backend, api compatibility, 项目信息, 项目设置, Unity 版本, 渲染管线, 着色器列表, UPM 包列表, 包清单, 图层列表, 标签列表, 添加标签, 构建设置, 玩家设置, 脚本后端."
+description: "Project information — read metadata (Unity version, render pipeline), list shaders/UPM packages, read layers/tags, add a tag, read build and player settings. Exact signatures via GET /skills/schema."
 ---
 
 # Project Skills

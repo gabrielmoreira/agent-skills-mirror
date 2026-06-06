@@ -29,9 +29,11 @@
 5. **禁止硬编码平台路径** - 用户数据、日志、缓存、凭证等目录必须走系统 API 或统一封装
 6. **优先平台无关入口** - 优先复用 `npm`、`cargo`、Tauri 命令和仓库脚本，不新增只适用于 Bash/zsh 的流程
 7. **未验证的平台假设要显式说明** - 涉及文件系统、进程、终端、快捷键、窗口、托盘、权限时尤其如此
-8. **不要继续扩展 compat / deprecated 路径** - 新 API、新命令、新前端入口默认落在当前 `current` 主路径
-9. **规划改了且明确无需兼容时，优先删旧实现** - 如果用户已明确“上一版无人使用 / 不用兼容 / 旧实现阻碍主线”，旧实现默认按 `dead` 或带退出条件的 `deprecated` 处理，不要继续修补、包裹或平移
-10. **`legacy current reference` 不是续命许可** - 旧路线图、旧实现锚点只用于理解现状与迁移，不等于允许继续往旧页面、旧命令、旧协议上加功能
+8. **新增命名禁止品牌前缀** - 新程序、目录、crate/package、Tauri 命令、API 网关、类型、模块和脚本默认不得添加 `Lime` / `lime_` / `lime-` 品牌前缀；直接使用领域名，如 `app_server_*`、`app-server`。只有对外发布品牌标识、历史兼容或第三方生态已固定命名时才允许保留，并在执行计划说明原因
+9. **新增 Agent 逻辑默认走 App Server** - 新 AI Agent、runtime、host integration、跨 App 复用能力默认落到 `app-server` crates、JSON-RPC 协议和 App Server adapter；`agent_runtime_*` / Aster Tauri command 只作为 Lime Desktop 兼容适配层，不再直接承接新业务逻辑，除非执行计划明确说明过渡原因和退出条件
+10. **不要继续扩展 compat / deprecated 路径** - 新 API、新命令、新前端入口默认落在当前 `current` 主路径
+11. **规划改了且明确无需兼容时，优先删旧实现** - 如果用户已明确“上一版无人使用 / 不用兼容 / 旧实现阻碍主线”，旧实现默认按 `dead` 或带退出条件的 `deprecated` 处理，不要继续修补、包裹或平移
+12. **`legacy current reference` 不是续命许可** - 旧路线图、旧实现锚点只用于理解现状与迁移，不等于允许继续往旧页面、旧命令、旧协议上加功能
 
 ## 工程硬规则
 

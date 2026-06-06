@@ -16,7 +16,7 @@ argument-hint: [自然语言指令或带 kn 上下文的任务描述]
 
 本 skill 是 **数据分析员工角色的总入口**：在本体数据技能栈中，**所有数据相关问题必须先经过本 skill**，完成 **KN 与上下文对齐、意图路由** 后，再委派至 **找表** 或 **问数**（或其它数据子 skill），**禁止**在未做编排判断时直接跳到 `smart-search-tables`、`smart-ask-data` 或零散工具调用。
 
-**Never** 由本 skill 直接执行 `ontology` CLI；所有 CLI 调用（包括为选 KN 取候选元数据的 `bkn list/get`，与问数分支的 `bkn search / bkn object-type get / dataview query --sql` 等）均委托 [ontology-core](../ontology-core/SKILL.md) 执行。
+**Never** 由本 skill 直接执行 `ontology` CLI；所有 CLI 调用（包括为选 KN 取候选元数据的 `bkn list/get`，与问数分支的 `bkn object-type get / dataview query --sql` 等）均委托 [ontology-core](../ontology-core/SKILL.md) 执行。
 
 调用链：
 
@@ -77,8 +77,8 @@ KN id 在下表中直接声明，**由本 skill 路由时透传到下游**（sma
 | 角色/技能 | 负责（Do） | 不负责（Don't） | 典型输出 |
 |-----------|------------|-----------------|----------|
 | `smart-data-analysis`（总编排） | 识别主意图；**从「知识网络声明」表读取 KN id 并透传给下游**；组织 `date` / `accountId` 等上下文；问数分支基于 schema 摘要生成 SELECT SQL | 不直接执行 ontology CLI；不在运行时用 `bkn list` 决策 KN；不直接做对象检索细节；不替代子 skill 结果 | 路由决策、KN 透传、生成 SQL、交接约束 |
-| `smart-search-tables`（找表执行） | 接收 smart-data-analysis 透传的 `kn_id` / `duty_kn_id` / `<ot-id>` / `accountId`；按 2 步顺序触发 `bkn object-type query`（必要时 `bkn search` / `bkn object-type list`）等 native 命令的委托；产出候选表/视图清单 + 职责要点 | 不承担跨流程总路由；不在 skill 内自行选 KN；不直接执行 ontology CLI | 候选表清单、归属、职责说明 |
-| `smart-ask-data`（问数执行） | 接收 smart-data-analysis 透传的 `kn_id` 与 SQL；按 5 步顺序触发 `bkn search` / `bkn object-type get` / `dataview query --sql` 等 native 命令的委托；产出取数结果与口径展示 | 不承担跨流程总路由；不在 skill 内自行选 KN 或生成 SQL；不直接执行 ontology CLI | 数值结果、口径说明、SQL 与依据 |
+| `smart-search-tables`（找表执行） | 接收 smart-data-analysis 透传的 `kn_id` / `duty_kn_id` / `<ot-id>` / `accountId`；按 2 步顺序触发 `bkn object-type query`（必要时 `bkn object-type list`）等 native 命令的委托；产出候选表/视图清单 + 职责要点 | 不承担跨流程总路由；不在 skill 内自行选 KN；不直接执行 ontology CLI | 候选表清单、归属、职责说明 |
+| `smart-ask-data`（问数执行） | 接收 smart-data-analysis 透传的 `kn_id` 与 SQL；按 5 步顺序触发 `bkn object-type get` / `dataview query --sql` 等 native 命令的委托；产出取数结果与口径展示 | 不承担跨流程总路由；不在 skill 内自行选 KN 或生成 SQL；不直接执行 ontology CLI | 数值结果、口径说明、SQL 与依据 |
 | `ontology-core`（CLI 委托执行） | 实际承载所有 `ontology` 命令的执行（`bkn / ds / dataview / vega / call`）；统一处理 `--user-id / --base-url / -bd` 等横向约束 | 不替代业务编排判断；不直接定义问数口径 | 命令执行结果与回执 |
 
 若仅有顶层编排而无子 skill 正文：**仍须按下方路由规则执行**；找表/问数细节分别以 [smart-search-tables](../smart-search-tables/SKILL.md)、[smart-ask-data](../smart-ask-data/SKILL.md) 为准；CLI 与 BKN 以 `ontology-core` 的 `references/*.md` 为准（尤其 `bkn.md`）。
@@ -126,7 +126,7 @@ KN id 在下表中直接声明，**由本 skill 路由时透传到下游**（sma
 
 触发词或场景示例：表在哪、哪个视图、字段在哪个模型、主题域/部门职责、资产目录、「有没有叫…的表」、**仅**定位不做指标计算。
 
-找表分支通过 ontology-core 委托 `bkn object-type query`（必要时 `bkn search` / `bkn object-type list`）：第 1 步在元数据型 KN 下做实例检索拿候选表/视图，第 2 步在职责型 KN 下做实例检索拿相关部门职责。详见 [smart-search-tables/SKILL.md](../smart-search-tables/SKILL.md)。
+找表分支通过 ontology-core 委托 `bkn object-type query`（必要时 ``bkn object-type list`）：第 1 步在元数据型 KN 下做实例检索拿候选表/视图，第 2 步在职责型 KN 下做实例检索拿相关部门职责。详见 [smart-search-tables/SKILL.md](../smart-search-tables/SKILL.md)。
 
 **分支清单**
 
@@ -154,9 +154,47 @@ KN id 在下表中直接声明，**由本 skill 路由时透传到下游**（sma
 
 ### 走「问数」分支（最终目标是拿到数据结果）
 
-触发词或场景：**多少、占比、趋势、TopN、指标、统计、分析结论、查询…信息（需要结果）**；已识别具体视图/表并需要 **聚合或 SQL 级取数**。
+触发词或场景：
 
-问数分支通过 ontology-core 委托 `bkn search` + `bkn object-type list/get` 做 Schema 发现，本 skill 在编排层基于 schema 摘要 **生成 SELECT SQL**，再由 [smart-ask-data](../smart-ask-data/SKILL.md) 委托 `dataview query --sql` 执行。绘图与二次代码加工能力不内置；如需绘图，明确告知用户由前端自渲染或独立处理。
+- **聚合/统计类**：多少、占比、趋势、TopN、指标、统计、分析结论、查询…信息（需要结果）
+- **关系/关联类**：与…关联 / 与…有关、由…组成 / 包含哪些、经过哪些 / 流向哪里、哪些 X 与 Y…、X 的下游 / 上游是什么
+- 已识别具体视图/表并需要 **聚合或 SQL 级取数**
+
+关系类问题的最终交付是"相关实体集合"，需要跨对象类 JOIN，**必须走 SQL 问数**，不能用单 ot 的 `bkn object-type query` 拼凑代替（参见下方判别表）。
+
+问数分支通过 ontology-core 委托 ``bkn object-type list/get` 做 Schema 发现，本 skill 在编排层基于 schema 摘要 **生成 SELECT SQL**，再由 [smart-ask-data](../smart-ask-data/SKILL.md) 委托 `dataview query --sql` 执行。绘图与二次代码加工能力不内置；如需绘图，明确告知用户由前端自渲染或独立处理。
+
+**关键区分：SQL 问数 vs 对象类实例检索（bkn object-type query）**
+
+两者都能返回数据，但能力差很大。**默认偏好**：涉及"关系"或"聚合" → SQL 问数；单实体精确/范围过滤 → object-type query。
+
+| 任务形态 | 走 SQL 问数（dataview query --sql） | 走 object-type query |
+|----------|:----:|:----:|
+| 跨对象类 JOIN | ✅ | ❌（只能单 ot，需手工拼接） |
+| 聚合统计（COUNT/SUM/AVG/GROUP BY） | ✅ | ❌ |
+| 单实体 ID 精确查找 | 任选 | ✅（更轻） |
+| 单实体多条件过滤 | 任选 | ✅ |
+| 全文检索 | ❌（SQL 视图不支持 match） | ✅ |
+
+凡问题中出现"X 与哪些 Y 关联 / 由哪些 Y 组成"这类需要**跨对象类关系**的措辞，或出现"多少 / 占比 / 趋势 / TopN / 平均"这类**聚合**措辞，**必须**进入 SQL 问数；不要用单 ot 的 `bkn object-type query` 拼接代替。
+
+**`bkn object-type query` 的 JSON body 必须用 `condition` 外层包裹**（编排层常错点）：
+
+```json
+// 单条件
+{"limit": 30, "condition": {"field": "<字段名>", "operation": "==", "value": "<值>"}}
+
+// 多条件 AND
+{"limit": 30, "condition": {
+  "operation": "and",
+  "sub_conditions": [
+    {"field": "<f1>", "operation": "==", "value": "<v1>"},
+    {"field": "<f2>", "operation": "in", "value": ["<a>","<b>"]}
+  ]
+}}
+```
+
+错例（缺 `condition` 外层，报 InvalidParameter "Filter conditions must be wrapped in a 'condition' structure"）：`{"field":"x","operation":"==","value":"y"}`
 
 **分支清单**
 
@@ -167,7 +205,7 @@ KN id 在下表中直接声明，**由本 skill 路由时透传到下游**（sma
 - [ ] 候选 > 1：本 skill 委托 ontology-core 调 `bkn list` / `bkn get` 取候选元数据，LLM 决策选定
 - [ ] 若表未就绪：先在问数流程内短循环找表/找视图（调用 smart-search-tables 或追问）后再继续
 - [ ] 明确指标口径、时间粒度、维度与过滤条件
-- [ ] 委托 smart-ask-data：触发 schema 发现（`bkn search` / `bkn object-type get`）拿候选对象类、字段、dataview_id
+- [ ] 委托 smart-ask-data：触发 schema 发现（`bkn object-type get`）拿候选对象类、字段、dataview-id（取自 `data_source.id`，要求 `data_source.type == "data_view"`）
 - [ ] **本 skill 在编排层基于 schema 摘要 + 用户口径生成 SELECT/WITH SQL**（必带 LIMIT；字段表名必须来自摘要）
 - [ ] 把 `accountId / kn_id / 生成的 SQL` 三件套透传给 smart-ask-data，它再委托 ontology-core 执行 `dataview query --sql`
 - [ ] 输出：SQL（脱敏可，不可省）+ 关键数据 + 口径说明 + 可复核步骤
@@ -190,9 +228,9 @@ KN id 在下表中直接声明，**由本 skill 路由时透传到下游**（sma
 
 ### 分支走不通时的处理（禁止交叉兜底）
 
-- **问数走不通**：例如未指定且 `bkn list` 无可用业务 KN、`bkn search` 无相关概念、`bkn object-type get` 无 `dataview_id`、`dataview query --sql` 报错或返回空等 → **只向用户说明具体原因与补齐条件**，**不得**为给出「类似答案」而切换到 **找表** 分支；找表结果不能替代用户要的指标或明细取数。
+- **问数走不通**：例如未指定且 `bkn list` 无可用业务 KN、`bkn object-type get` 的 `data_source` 缺失或 `data_source.type` 不是 `data_view`、`dataview query --sql` 报错或返回空等 → **只向用户说明具体原因与补齐条件**，**不得**为给出「类似答案」而切换到 **找表** 分支；找表结果不能替代用户要的指标或明细取数。
 - **找表走不通**：例如「知识网络声明」表中找表行未填、`bkn object-type query` 命中为空、职责 KN 未提供或检索无果等 → **只向用户说明具体原因**，**不得**切换到 **问数** 分支用 SQL 猜测表名、编造资产位置或虚构明细。
-- **与「问数内前置找表」的区分**：在 **问数分支** 内，按 [smart-ask-data](../smart-ask-data/SKILL.md) 在生成 SQL 前做的 Schema/表发现（`bkn search` / `bkn object-type list/get`，必要时短循环找表）属于 **同一问数任务的固定子步骤**，**不属于**「问数失败后的交叉兜底」。
+- **与「问数内前置找表」的区分**：在 **问数分支** 内，按 [smart-ask-data](../smart-ask-data/SKILL.md) 在生成 SQL 前做的 Schema/表发现（`bkn object-type list/get`，必要时短循环找表）属于 **同一问数任务的固定子步骤**，**不属于**「问数失败后的交叉兜底」。
 - **绘图 / 二次代码加工请求**：本架构不内置 `json2plot` / `execute_code_sync` 能力。若用户要求绘图或代码二次加工，直接向用户说明当前架构不支持，可用 SQL 表达的口径继续问数。
 
 ## 输出格式建议

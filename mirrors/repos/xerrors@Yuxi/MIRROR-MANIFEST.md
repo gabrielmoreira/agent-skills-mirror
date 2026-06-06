@@ -66,9 +66,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`backend/package/yuxi/agents/skills/buildin/deep-reporter/SKILL.md`](backend/package/yuxi/agents/skills/buildin/deep-reporter/SKILL.md) |
+| 2 | ✓ | [`backend/package/yuxi/agents/skills/buildin/deep-research/SKILL.md`](backend/package/yuxi/agents/skills/buildin/deep-research/SKILL.md) |
 | 3 | ✓ | [`backend/package/yuxi/agents/skills/buildin/image-gen/SKILL.md`](backend/package/yuxi/agents/skills/buildin/image-gen/SKILL.md) |
-| 4 | ✓ | [`backend/package/yuxi/agents/skills/buildin/reporter/SKILL.md`](backend/package/yuxi/agents/skills/buildin/reporter/SKILL.md) |
+| 4 | ✓ | [`backend/package/yuxi/agents/skills/buildin/mysql-reporter/SKILL.md`](backend/package/yuxi/agents/skills/buildin/mysql-reporter/SKILL.md) |
 | 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 6 | ✓ | [`docs/develop-guides/changelog.md`](docs/develop-guides/changelog.md) |
 | 7 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |

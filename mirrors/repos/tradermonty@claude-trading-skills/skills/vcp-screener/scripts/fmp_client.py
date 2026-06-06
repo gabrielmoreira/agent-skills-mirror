@@ -25,6 +25,11 @@ except ImportError:
     print("ERROR: requests library not found. Install with: pip install requests", file=sys.stderr)
     sys.exit(1)
 
+try:
+    from _fmp_compat import v3_to_stable
+except ModuleNotFoundError:  # loaded by file path (e.g. repo-level contract tests)
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from _fmp_compat import v3_to_stable
 
 # --- FMP endpoint fallback: stable (new users) -> v3 (legacy users) ---
 
@@ -279,8 +284,10 @@ class FMPClient:
         if cache_key in self.cache:
             return self.cache[cache_key]
 
-        url = f"{self.BASE_URL}/sp500_constituent"
-        data = self._rate_limited_get(url)
+        # Migrate hardcoded v3 URL to /stable (this method bypasses the
+        # _FMP_ENDPOINTS stable→v3 fallback list, so rewrite at the call site).
+        url, params = v3_to_stable(f"{self.BASE_URL}/sp500_constituent")
+        data = self._rate_limited_get(url, params)
         if data:
             self.cache[cache_key] = data
         return data

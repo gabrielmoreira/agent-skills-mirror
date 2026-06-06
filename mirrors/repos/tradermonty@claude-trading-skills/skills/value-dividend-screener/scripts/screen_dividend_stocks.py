@@ -25,7 +25,7 @@ import json
 import os
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 try:
@@ -107,7 +107,7 @@ class FINVIZClient:
 
 # --- FMP endpoint fallback: stable (new users) -> v3 (legacy users) ---
 _FMP_HIST_ENDPOINTS = [
-    ("https://financialmodelingprep.com/stable/historical-price-full", True),
+    ("https://financialmodelingprep.com/stable/historical-price-eod/full", True),
     ("https://financialmodelingprep.com/api/v3/historical-price-full", False),
 ]
 
@@ -116,8 +116,20 @@ class FMPClient:
     """Client for Financial Modeling Prep API"""
 
     BASE_URL = "https://financialmodelingprep.com/api/v3"
+    STABLE_URL = "https://financialmodelingprep.com/stable"
 
     _ENDPOINT_FAILURE_THRESHOLD = 3
+    # v3 path-style endpoints whose trailing symbol moves to a ?symbol= query
+    # on /stable (e.g. v3 income-statement/AAPL -> stable income-statement?symbol=AAPL)
+    _SYMBOL_QUERY_ENDPOINTS = (
+        "income-statement",
+        "balance-sheet-statement",
+        "cash-flow-statement",
+        "key-metrics",
+        "ratios",
+        "profile",
+        "quote",
+    )
 
     def __init__(self, api_key: str):
         self.api_key = api_key
@@ -128,44 +140,105 @@ class FMPClient:
         self._endpoint_failures: dict[str, int] = {}
         self._disabled_endpoints: set[str] = set()
 
-    def _get(self, endpoint: str, params: Optional[dict] = None) -> Optional[dict]:
-        """Make GET request with rate limiting and error handling"""
+    def _request(self, url: str, params: dict, quiet: bool = False) -> Optional[dict]:
+        """Single rate-limited GET. Returns parsed JSON, or None on failure.
+
+        Non-final endpoints pass quiet=True to suppress the expected 403 a new
+        key gets on the v3 fallback.
+        """
         if self.rate_limit_reached:
             return None
-
-        if params is None:
-            params = {}
-
-        url = f"{self.BASE_URL}/{endpoint}"
-
         try:
-            response = self.session.get(url, params=params, timeout=30)
+            response = self.session.get(url, params=params or {}, timeout=30)
             time.sleep(0.3)  # Rate limiting: ~3 requests/second
-
             if response.status_code == 200:
-                self.retry_count = 0  # Reset retry count on success
+                self.retry_count = 0
                 return response.json()
             elif response.status_code == 429:
                 self.retry_count += 1
                 if self.retry_count <= 1:  # Only retry once
                     print("WARNING: Rate limit exceeded. Waiting 60 seconds...", file=sys.stderr)
                     time.sleep(60)
-                    return self._get(endpoint, params)
-                else:
-                    print(
-                        "ERROR: Daily API rate limit reached. Stopping analysis.", file=sys.stderr
-                    )
-                    self.rate_limit_reached = True
-                    return None
+                    return self._request(url, params, quiet=quiet)
+                print("ERROR: Daily API rate limit reached. Stopping analysis.", file=sys.stderr)
+                self.rate_limit_reached = True
+                return None
             else:
-                print(
-                    f"ERROR: API request failed: {response.status_code} - {response.text}",
-                    file=sys.stderr,
-                )
+                if not quiet:
+                    print(
+                        f"ERROR: API request failed: {response.status_code} - {response.text}",
+                        file=sys.stderr,
+                    )
                 return None
         except requests.exceptions.RequestException as e:
-            print(f"ERROR: Request exception: {e}", file=sys.stderr)
+            if not quiet:
+                print(f"ERROR: Request exception: {e}", file=sys.stderr)
             return None
+
+    def _stable_spec(self, endpoint: str, params: dict) -> Optional[tuple]:
+        """Map a v3 path-style endpoint to its (stable_url, stable_params).
+
+        Returns None when there is no known /stable equivalent.
+        """
+        p = dict(params or {})
+        if endpoint == "stock-screener":
+            return f"{self.STABLE_URL}/company-screener", p
+        if endpoint.startswith("historical-price-full/stock_dividend/"):
+            p["symbol"] = endpoint.rsplit("/", 1)[-1]
+            return f"{self.STABLE_URL}/dividends", p
+        head, _, sym = endpoint.partition("/")
+        if sym and head in self._SYMBOL_QUERY_ENDPOINTS:
+            p["symbol"] = sym
+            return f"{self.STABLE_URL}/{head}", p
+        return None
+
+    @staticmethod
+    def _normalize(endpoint: str, data):
+        """Reshape /stable responses to match the v3 shapes callers expect."""
+        if data is None:
+            return None
+        # Dividends: /stable returns a flat list; v3 returned {"historical": [...]}.
+        if endpoint.startswith("historical-price-full/stock_dividend/"):
+            return {"historical": data} if isinstance(data, list) else data
+        # key-metrics: /stable renamed roe -> returnOnEquity (same ratio scale).
+        if endpoint.startswith("key-metrics/") and isinstance(data, list):
+            for rec in data:
+                if isinstance(rec, dict) and "roe" not in rec and "returnOnEquity" in rec:
+                    rec["roe"] = rec["returnOnEquity"]
+        # cash-flow: /stable renamed dividendsPaid -> netDividendsPaid (same
+        # negative-outflow value; callers take abs()).
+        if endpoint.startswith("cash-flow-statement/") and isinstance(data, list):
+            for rec in data:
+                if (
+                    isinstance(rec, dict)
+                    and "dividendsPaid" not in rec
+                    and "netDividendsPaid" in rec
+                ):
+                    rec["dividendsPaid"] = rec["netDividendsPaid"]
+        return data
+
+    def _get(self, endpoint: str, params: Optional[dict] = None) -> Optional[dict]:
+        """GET an FMP endpoint, preferring /stable with a v3 path-style fallback.
+
+        Callers still pass the legacy v3 path-style `endpoint` strings (e.g.
+        "income-statement/AAPL"); this routes them to the /stable query-style
+        equivalents and normalizes the response back to the v3 shape. Keys
+        issued after 2025-08-31 only work on /stable; legacy keys fall back to v3.
+        """
+        if self.rate_limit_reached:
+            return None
+        params = params or {}
+        attempts = []
+        spec = self._stable_spec(endpoint, params)
+        if spec:
+            attempts.append(spec)  # /stable first
+        attempts.append((f"{self.BASE_URL}/{endpoint}", dict(params)))  # v3 fallback
+        for i, (url, req_params) in enumerate(attempts):
+            quiet = i < len(attempts) - 1
+            data = self._request(url, req_params, quiet=quiet)
+            if data is not None:
+                return self._normalize(endpoint, data)
+        return None
 
     def screen_stocks(
         self,
@@ -173,19 +246,82 @@ class FMPClient:
         pe_max: float,
         pb_max: float,
         market_cap_min: float = 2_000_000_000,
+        max_candidates: int = 300,
     ) -> list[dict]:
-        """Screen stocks using Stock Screener API"""
-        params = {
-            "dividendYieldMoreThan": dividend_yield_min,
-            "priceEarningRatioLowerThan": pe_max,
-            "priceToBookRatioLowerThan": pb_max,
-            "marketCapMoreThan": market_cap_min,
-            "exchange": "NASDAQ,NYSE",
-            "limit": 1000,
-        }
+        """Screen value-dividend candidates (dividend yield, P/E, P/B).
 
-        data = self._get("stock-screener", params)
-        return data if data else []
+        The retired v3 stock-screener filtered by dividend yield / P/E / P/B
+        server-side. /stable/company-screener cannot (it has no such params and
+        returns no yield/P/E/P/B fields), so the same three gates are applied
+        client-side, preserving the original criteria:
+
+        1. company-screener returns the market-cap + exchange universe.
+        2. A dividend-yield estimate (lastAnnualDividend / price) from the
+           screener payload pre-filters to >= dividend_yield_min — free, no
+           extra calls. ETFs / funds are dropped (no income statement to
+           analyze downstream).
+        3. The largest ``max_candidates`` (by market cap) are checked against
+           /stable/ratios for priceToEarningsRatio <= pe_max and
+           priceToBookRatio <= pb_max. The cap bounds API usage (one ratios
+           call per candidate); raise it for broader coverage.
+
+        Note: candidates are prioritized by market cap, not yield. Sorting by
+        the estimated yield surfaces distorted values (special distributions /
+        stale data on illiquid or delisted names produce absurd "yields"),
+        whereas market cap surfaces the liquid quality payers the screen targets.
+        """
+        universe = (
+            self._get(
+                "stock-screener",
+                {
+                    "marketCapMoreThan": market_cap_min,
+                    "exchange": "NASDAQ,NYSE",
+                    "limit": 10000,
+                },
+            )
+            or []
+        )
+
+        # Gate 1: dividend yield, estimated from screener fields (no extra calls).
+        yield_candidates = []
+        for item in universe:
+            if item.get("isEtf") or item.get("isFund"):
+                continue  # not an operating company; no statements to analyze
+            price = item.get("price") or 0
+            last_div = item.get("lastAnnualDividend") or 0
+            if price <= 0:
+                continue
+            est_yield = (last_div / price) * 100
+            if est_yield >= dividend_yield_min:
+                item = dict(item)
+                item["_est_yield"] = est_yield
+                yield_candidates.append(item)
+
+        # Prioritize the largest dividend payers (liquid, with price history)
+        # and cap to bound the per-candidate ratios calls.
+        yield_candidates.sort(key=lambda s: s.get("marketCap") or 0, reverse=True)
+        yield_candidates = yield_candidates[:max_candidates]
+
+        # Gate 2 + 3: P/E and P/B via /stable/ratios (one call per candidate).
+        survivors = []
+        for item in yield_candidates:
+            if self.rate_limit_reached:
+                break
+            symbol = item.get("symbol")
+            if not symbol:
+                continue
+            ratios = self._get(f"ratios/{symbol}", {"limit": 1})
+            if not (isinstance(ratios, list) and ratios):
+                continue
+            pe = ratios[0].get("priceToEarningsRatio")
+            pb = ratios[0].get("priceToBookRatio")
+            if pe is None or pb is None:
+                continue
+            if 0 < pe <= pe_max and 0 < pb <= pb_max:
+                item["pe"] = pe
+                item["priceToBook"] = pb
+                survivors.append(item)
+        return survivors
 
     def get_income_statement(self, symbol: str, limit: int = 5) -> list[dict]:
         """Get income statement"""
@@ -215,13 +351,23 @@ class FMPClient:
         return None
 
     def get_historical_prices(self, symbol: str, days: int = 30) -> list[dict]:
-        """Get historical daily prices (stable endpoint with v3 fallback)."""
+        """Get historical daily prices, most-recent-first (/stable, v3 fallback).
+
+        /stable/historical-price-eod/full returns a flat list of OHLCV bars and
+        is bounded with from/to; the v3 fallback returns {"historical": [...]}.
+        """
         for base_url, is_stable in _FMP_HIST_ENDPOINTS:
             if base_url in self._disabled_endpoints:
                 continue
             if is_stable:
                 url = base_url
-                params = {"symbol": symbol, "serietype": "line"}
+                today = datetime.now().date()
+                params = {
+                    "symbol": symbol,
+                    # ~days trading days needs ~2x calendar days; +10 for slack.
+                    "from": (today - timedelta(days=days * 2 + 10)).isoformat(),
+                    "to": today.isoformat(),
+                }
             else:
                 url = f"{base_url}/{symbol}"
                 params = {"serietype": "line"}
@@ -232,6 +378,14 @@ class FMPClient:
                     self._record_endpoint_failure(base_url)
                     continue
                 data = response.json()
+                # /stable: flat list of bars (most-recent-first).
+                if isinstance(data, list):
+                    if data:
+                        self._endpoint_failures[base_url] = 0
+                        return data[:days]
+                    self._record_endpoint_failure(base_url)
+                    continue
+                # v3: {"symbol": ..., "historical": [...]}.
                 if isinstance(data, dict) and "historical" in data:
                     self._endpoint_failures[base_url] = 0
                     return data["historical"][:days]
@@ -401,40 +555,61 @@ class StockAnalyzer:
     @staticmethod
     def analyze_dividend_growth(
         dividend_history: list[dict],
+        years_back: int = 3,
+        as_of=None,
     ) -> tuple[Optional[float], bool, Optional[float]]:
-        """Analyze dividend growth rate (3-year CAGR and consistency) and return latest annual dividend"""
+        """Dividend growth (CAGR + consistency) on a trailing-twelve-month basis.
+
+        Summing calendar years distorts the result mid-year (the current year is
+        incomplete) and lags a recent raise until year-end. Per standard
+        practice (e.g. Stockopedia / Simply Wall St measure DPS growth on a TTM
+        basis), dividends are summed over rolling 12-month windows: the current
+        TTM vs the TTM ending ``years_back`` years earlier. Future-dated
+        declarations (announced but not yet paid) are ignored. Returns
+        ``(cagr_pct, consistent, latest_ttm_dividend)``.
+        """
         if not dividend_history or "historical" not in dividend_history:
             return None, False, None
 
-        dividends = dividend_history["historical"]
-        if len(dividends) < 4:  # Need at least 4 years
+        from datetime import date as _date
+
+        today = as_of or _date.today()
+
+        # Parse (date, amount); drop undated, non-positive, and future-dated.
+        parsed = []
+        for div in dividend_history["historical"]:
+            ds = div.get("date")
+            amt = div.get("dividend") or 0
+            if not ds or amt <= 0:
+                continue
+            try:
+                d = _date.fromisoformat(str(ds)[:10])
+            except ValueError:
+                continue
+            if d <= today:
+                parsed.append((d, amt))
+        if not parsed:
             return None, False, None
 
-        # Sort by date
-        dividends = sorted(dividends, key=lambda x: x["date"])
-
-        # Get annual dividends for last 4 years
-        annual_dividends = {}
-        for div in dividends:
-            year = div["date"][:4]
-            annual_dividends[year] = annual_dividends.get(year, 0) + div.get("dividend", 0)
-
-        if len(annual_dividends) < 4:
+        # Need ~years_back+1 years of history for the oldest TTM window.
+        oldest = min(d for d, _ in parsed)
+        if (today - oldest).days < 365 * years_back:
             return None, False, None
 
-        years = sorted(annual_dividends.keys())[-4:]
-        div_values = [annual_dividends[y] for y in years]
+        def ttm(end):
+            """Sum of dividends in the 365 days ending at ``end``."""
+            start = end - timedelta(days=365)
+            return sum(a for d, a in parsed if start < d <= end)
 
-        # Calculate 3-year CAGR
-        cagr = StockAnalyzer.calculate_cagr(div_values[0], div_values[-1], 3)
+        # Rolling-12m windows from years_back ago (oldest) to today (newest).
+        windows = [ttm(today - timedelta(days=365 * k)) for k in range(years_back, -1, -1)]
+        if windows[0] <= 0 or windows[-1] <= 0:
+            return None, False, None
 
-        # Check for consistency (no dividend cuts)
-        consistent = all(
-            div_values[i] >= div_values[i - 1] * 0.95 for i in range(1, len(div_values))
-        )
-
-        # Get latest annual dividend (most recent year)
-        latest_annual_dividend = div_values[-1]
+        cagr = StockAnalyzer.calculate_cagr(windows[0], windows[-1], years_back)
+        # Consistency: each year's TTM >= 95% of the prior year's (no cuts).
+        consistent = all(windows[i] >= windows[i - 1] * 0.95 for i in range(1, len(windows)))
+        latest_annual_dividend = windows[-1]
 
         return cagr, consistent, latest_annual_dividend
 
@@ -559,7 +734,7 @@ class StockAnalyzer:
         return result
 
     @staticmethod
-    def analyze_dividend_stability(dividend_history: dict) -> dict:
+    def analyze_dividend_stability(dividend_history: dict, as_of=None) -> dict:
         """
         Analyze dividend stability and growth consistency.
 
@@ -589,12 +764,19 @@ class StockAnalyzer:
         if len(dividends) < 4:
             return result
 
-        # Calculate annual dividends
+        from datetime import date as _date
+
+        current_year = (as_of or _date.today()).year
+
+        # Calculate annual dividends over COMPLETE calendar years only. The
+        # current year is still in progress (and /stable also lists future-dated
+        # declarations), so including it understates the latest year and
+        # manufactures volatility / fake "cut" signals.
         annual_dividends = {}
         for div in dividends:
             year = div.get("date", "")[:4]
-            if year:
-                annual_dividends[year] = annual_dividends.get(year, 0) + div.get("dividend", 0)
+            if year and year.isdigit() and int(year) < current_year:
+                annual_dividends[year] = annual_dividends.get(year, 0) + (div.get("dividend") or 0)
 
         if len(annual_dividends) < 3:
             return result
@@ -799,7 +981,10 @@ class StockAnalyzer:
 
 
 def screen_value_dividend_stocks(
-    fmp_api_key: str, top_n: int = 20, finviz_symbols: Optional[set[str]] = None
+    fmp_api_key: str,
+    top_n: int = 20,
+    finviz_symbols: Optional[set[str]] = None,
+    max_candidates: int = 300,
 ) -> list[dict]:
     """
     Main screening function
@@ -838,6 +1023,13 @@ def screen_value_dividend_stocks(
                     stock_data["companyName"] = profile.get(
                         "companyName", stock_data.get("name", "")
                     )
+                # /stable quote omits P/E and P/B (v3 quote carried them); pull
+                # them from /stable/ratios so the report's pe_ratio / pb_ratio
+                # stay populated for FINVIZ-sourced candidates too.
+                ratios = client._get(f"ratios/{symbol}", {"limit": 1})
+                if isinstance(ratios, list) and ratios:
+                    stock_data["pe"] = ratios[0].get("priceToEarningsRatio")
+                    stock_data["priceToBook"] = ratios[0].get("priceToBookRatio")
                 candidates.append(stock_data)
 
             if client.rate_limit_reached:
@@ -857,7 +1049,9 @@ def screen_value_dividend_stocks(
             file=sys.stderr,
         )
         print("Criteria: Div Yield >= 3.0%, Div Growth >= 4.0% CAGR", file=sys.stderr)
-        candidates = client.screen_stocks(dividend_yield_min=3.0, pe_max=20, pb_max=2)
+        candidates = client.screen_stocks(
+            dividend_yield_min=3.0, pe_max=20, pb_max=2, max_candidates=max_candidates
+        )
         print(f"Found {len(candidates)} initial candidates", file=sys.stderr)
 
     if not candidates:
@@ -1147,6 +1341,16 @@ Environment Variables:
     parser.add_argument(
         "--top", type=int, default=20, help="Number of top stocks to return (default: 20)"
     )
+    parser.add_argument(
+        "--max-candidates",
+        type=int,
+        default=300,
+        help=(
+            "FMP-only mode: max candidates (largest dividend payers by market cap) to "
+            "value-check via /stable/ratios for P/E and P/B (default: 300). Bounds API usage "
+            "since /stable cannot filter P/E or P/B server-side. Ignored with --use-finviz."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -1187,7 +1391,10 @@ Environment Variables:
 
     # Run detailed screening
     results = screen_value_dividend_stocks(
-        fmp_api_key, top_n=args.top, finviz_symbols=finviz_symbols
+        fmp_api_key,
+        top_n=args.top,
+        finviz_symbols=finviz_symbols,
+        max_candidates=args.max_candidates,
     )
 
     if not results:

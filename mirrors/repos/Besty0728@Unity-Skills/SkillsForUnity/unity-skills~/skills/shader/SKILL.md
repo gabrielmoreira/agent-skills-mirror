@@ -1,6 +1,6 @@
 ---
 name: unity-shader
-description: "HLSL / ShaderLab shader file management. Use when users want to create / read / list / find / delete `.shader` files, inspect shader properties or keywords, check compilation errors, count variants, toggle global shader keywords, or create a URP shader from template. Triggers (EN): Unity shader, .shader file, ShaderLab, HLSL, Unlit shader, Standard shader, Transparent shader, URP shader, shader template, shader properties, shader keywords, global shader keyword, shader variants, shader compilation errors. Triggers (ZH): 着色器, Shader 文件, 自定义 Shader, 创建 Shader, Shader 模板, 关键字, 全局关键字, Shader 变体, 编译错误, URP Shader."
+description: "HLSL/ShaderLab .shader file management — create/read/list/find/delete, inspect properties/keywords, check compile errors, count variants, toggle global keywords, URP template. Exact signatures via GET /skills/schema."
 ---
 
 # Unity Shader Skills

@@ -59,21 +59,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`.github/instructions/Compiler.instructions.md`](.github/instructions/Compiler.instructions.md) |
-| 3 | ✓ | [`.github/instructions/IDE.instructions.md`](.github/instructions/IDE.instructions.md) |
-| 4 | ✓ | [`.github/instructions/Razor.instructions.md`](.github/instructions/Razor.instructions.md) |
-| 5 | ✓ | [`.github/skills/analyzer-codefix/SKILL.md`](.github/skills/analyzer-codefix/SKILL.md) |
-| 6 | ✓ | [`.github/skills/ci-analysis/SKILL.md`](.github/skills/ci-analysis/SKILL.md) |
-| 7 | ✓ | [`.github/skills/code-review/SKILL.md`](.github/skills/code-review/SKILL.md) |
-| 8 | ✓ | [`.github/skills/formatting-log/SKILL.md`](.github/skills/formatting-log/SKILL.md) |
-| 9 | ✓ | [`.github/skills/integration-test-analysis/SKILL.md`](.github/skills/integration-test-analysis/SKILL.md) |
-| 10 | ✓ | [`.github/skills/merge-into-branch/SKILL.md`](.github/skills/merge-into-branch/SKILL.md) |
-| 11 | ✓ | [`.github/skills/new-compiler-feature/SKILL.md`](.github/skills/new-compiler-feature/SKILL.md) |
-| 12 | ✓ | [`.github/skills/run-toolset-tests/SKILL.md`](.github/skills/run-toolset-tests/SKILL.md) |
-| 13 | ✓ | [`.github/skills/snap/SKILL.md`](.github/skills/snap/SKILL.md) |
-| 14 | ✓ | [`.github/skills/validate-sdk/SKILL.md`](.github/skills/validate-sdk/SKILL.md) |
-| 15 | ✓ | [`.github/skills/vmr-codeflow-status/SKILL.md`](.github/skills/vmr-codeflow-status/SKILL.md) |
+| 1 | ✓ | [`.github/instructions/Compiler.instructions.md`](.github/instructions/Compiler.instructions.md) |
+| 2 | ✓ | [`.github/instructions/IDE.instructions.md`](.github/instructions/IDE.instructions.md) |
+| 3 | ✓ | [`.github/instructions/Razor.instructions.md`](.github/instructions/Razor.instructions.md) |
+| 4 | ✓ | [`.github/skills/analyzer-codefix/SKILL.md`](.github/skills/analyzer-codefix/SKILL.md) |
+| 5 | ✓ | [`.github/skills/ci-analysis/SKILL.md`](.github/skills/ci-analysis/SKILL.md) |
+| 6 | ✓ | [`.github/skills/code-review/SKILL.md`](.github/skills/code-review/SKILL.md) |
+| 7 | ✓ | [`.github/skills/formatting-log/SKILL.md`](.github/skills/formatting-log/SKILL.md) |
+| 8 | ✓ | [`.github/skills/integration-test-analysis/SKILL.md`](.github/skills/integration-test-analysis/SKILL.md) |
+| 9 | ✓ | [`.github/skills/merge-into-branch/SKILL.md`](.github/skills/merge-into-branch/SKILL.md) |
+| 10 | ✓ | [`.github/skills/new-compiler-feature/SKILL.md`](.github/skills/new-compiler-feature/SKILL.md) |
+| 11 | ✓ | [`.github/skills/run-toolset-tests/SKILL.md`](.github/skills/run-toolset-tests/SKILL.md) |
+| 12 | ✓ | [`.github/skills/snap/SKILL.md`](.github/skills/snap/SKILL.md) |
+| 13 | ✓ | [`.github/skills/validate-sdk/SKILL.md`](.github/skills/validate-sdk/SKILL.md) |
+| 14 | ✓ | [`.github/skills/vmr-codeflow-status/SKILL.md`](.github/skills/vmr-codeflow-status/SKILL.md) |
+| 15 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

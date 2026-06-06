@@ -1,6 +1,6 @@
 ---
 name: unity-bookmark
-description: "Scene View bookmarks — save the current selection plus Scene View camera pivot/rotation/size under a name, jump back to it later, list, delete. Use when users want to save, recall, or manage scene viewpoints + selections in the editor. Triggers: bookmark, bookmarks, save view, goto view, jump to view, scene view, camera position, viewpoint, viewpoints, named view, selection snapshot, 书签, 视角, 保存视角, 视图书签, 跳转视角, 选中快照, 命名视角."
+description: "Scene View bookmarks — save the current selection plus camera pivot/rotation/size under a name, jump back, list, delete. Exact signatures via GET /skills/schema."
 ---
 
 # Bookmark Skills

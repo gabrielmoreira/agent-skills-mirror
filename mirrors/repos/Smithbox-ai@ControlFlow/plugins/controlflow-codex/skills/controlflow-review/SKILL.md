@@ -21,8 +21,9 @@ Review changes by prioritizing correctness, regression risk, and evidence over s
 1. Check correctness, regressions, security, data integrity, performance, and contract drift before style.
 2. Validate feasible suspicions with commands, file reads, or schema checks.
 3. Label each finding with severity, confidence, file, line, and user impact.
-4. Present findings first; if there are none, say so and name residual risks or test gaps.
-5. Use structured text, not raw JSON.
+4. For final review, compare the aggregate diff to the approved plan, reconcile out-of-scope changes, and distinguish novel findings from prior phase findings.
+5. Present findings first; if there are none, say so and name residual risks or test gaps.
+6. Use structured text, not raw JSON.
 
 ## Review Axes
 

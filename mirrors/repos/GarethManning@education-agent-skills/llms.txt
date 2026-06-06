@@ -1,6 +1,6 @@
-# Claude Education Skills Library
+# Education Agent Skills Library
 
-> An open-source library of 152 evidence-based agent skills for curriculum design, lesson planning, and assessment. Designed for direct educator use and programmatic AI agent access.
+> An open-source library of 165 evidence-based agent skills for curriculum design, lesson planning, assessment, and student-facing AI learning support. Designed for direct educator use and programmatic AI agent access.
 
 Each skill encodes a specific, evidence-grounded instructional or curriculum design decision. Skills include YAML frontmatter with typed input/output schemas, evidence strength ratings, and chaining metadata. This is Layer 1 of a planned three-layer education AI system (skill library → context engine → orchestrator).
 
@@ -12,7 +12,7 @@ Each skill encodes a specific, evidence-grounded instructional or curriculum des
 - [EVIDENCE.md](https://github.com/GarethManning/education-agent-skills/blob/main/docs/EVIDENCE.md): Evidence standards, rating methodology, and source references
 - [IMPLEMENTATIONS.md](https://github.com/GarethManning/education-agent-skills/blob/main/docs/IMPLEMENTATIONS.md): Known implementations and use cases
 
-## Skill Domains (152 skills across 19 domains)
+## Skill Domains (165 skills across 20 domains)
 
 - [memory-learning-science/](https://github.com/GarethManning/education-agent-skills/tree/main/skills/memory-learning-science): 8 skills — retrieval practice, spaced practice, interleaving, cognitive load, dual coding, elaborative interrogation, feedback
 - [self-regulated-learning/](https://github.com/GarethManning/education-agent-skills/tree/main/skills/self-regulated-learning): 5 skills — metacognition, self-regulation scaffolds, goal-setting, study strategy selection, error analysis
@@ -33,6 +33,7 @@ Each skill encodes a specific, evidence-grounded instructional or curriculum des
 - [inclusive-design/](https://github.com/GarethManning/education-agent-skills/tree/main/skills/inclusive-design): 3 skills — UDL lesson auditing, options design across engagement/representation/action, proactive barrier anticipation
 - [systems-thinking/](https://github.com/GarethManning/education-agent-skills/tree/main/skills/systems-thinking): 8 skills — systems awareness iceberg, aspirational iceberg, hexagon complexity mapper, leverage and response design, mental model mapper, agency circles, ladder of inference, systems wellbeing impact
 - [original-frameworks/](https://github.com/GarethManning/education-agent-skills/tree/main/skills/original-frameworks): 17 practitioner frameworks — clearly labelled as original, not research-backed; includes H3Uni systems methods (scoping, Three Horizons, dilemma navigation, multi-perspective decision wheel), SEEDS regenerative inquiry, developmental band systems, and composite orchestrators
+- [student-learning/](https://github.com/GarethManning/education-agent-skills/tree/main/skills/student-learning): 13 student-facing skills — retrieve-first gates, progressive hints, stuck/error diagnosis, teach-back, transfer, confidence calibration, and agency review
 
 ## For AI Agents
 

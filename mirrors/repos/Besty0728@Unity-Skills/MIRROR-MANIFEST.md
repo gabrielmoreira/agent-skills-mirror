@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Besty0728/Unity-Skills` — 26 default patterns, 0 followed patterns, 115 file(s) materialized.
+Mirror of `Besty0728/Unity-Skills` — 26 default patterns, 0 followed patterns, 116 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Besty0728/Unity-Skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 115 |
+| Files         | 116 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -164,16 +164,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 103 | ✓ | [`SkillsForUnity/unity-skills~/skills/volume/SKILL.md`](SkillsForUnity/unity-skills~/skills/volume/SKILL.md) |
 | 104 | ✓ | [`SkillsForUnity/unity-skills~/skills/workflow/SKILL.md`](SkillsForUnity/unity-skills~/skills/workflow/SKILL.md) |
 | 105 | ✓ | [`SkillsForUnity/unity-skills~/skills/xr/SKILL.md`](SkillsForUnity/unity-skills~/skills/xr/SKILL.md) |
-| 106 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/BUILD.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/BUILD.md) |
-| 107 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/FILESYSTEM.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/FILESYSTEM.md) |
-| 108 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/HANDLES.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/HANDLES.md) |
-| 109 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/INIT.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/INIT.md) |
-| 110 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/LOADING.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/LOADING.md) |
-| 111 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/PITFALLS.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/PITFALLS.md) |
-| 112 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/PLAYMODE.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/PLAYMODE.md) |
-| 113 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/SKILL.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/SKILL.md) |
-| 114 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/UPDATE.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/UPDATE.md) |
-| 115 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset/SKILL.md`](SkillsForUnity/unity-skills~/skills/yooasset/SKILL.md) |
+| 106 | ✓ | [`SkillsForUnity/unity-skills~/skills/yaml-editing/SKILL.md`](SkillsForUnity/unity-skills~/skills/yaml-editing/SKILL.md) |
+| 107 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/BUILD.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/BUILD.md) |
+| 108 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/FILESYSTEM.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/FILESYSTEM.md) |
+| 109 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/HANDLES.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/HANDLES.md) |
+| 110 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/INIT.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/INIT.md) |
+| 111 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/LOADING.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/LOADING.md) |
+| 112 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/PITFALLS.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/PITFALLS.md) |
+| 113 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/PLAYMODE.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/PLAYMODE.md) |
+| 114 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/SKILL.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/SKILL.md) |
+| 115 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/UPDATE.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/UPDATE.md) |
+| 116 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset/SKILL.md`](SkillsForUnity/unity-skills~/skills/yooasset/SKILL.md) |
 
 ---
 

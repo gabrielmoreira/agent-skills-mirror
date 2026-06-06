@@ -90,7 +90,7 @@ External message
 1. service.memorize           (entrypoint of write path)
        │
        ▼
-2. memory.extract.pipeline    (calls evercore)
+2. memory.extract.pipeline    (calls everalgo)
        │
        ▼
 3. infra.persistence.markdown.write       (atomic: tmp + fsync + rename)
@@ -131,7 +131,7 @@ User query
 ```
 extract/
 ├── ingest/      Standardized message intake + multi-modal parser dispatch
-├── pipeline/    Main extraction pipeline (calls evercore + dual-track split + writes store)
+├── pipeline/    Main extraction pipeline (calls everalgo + dual-track split + writes store)
 └── evolution/   Async memory evolution (event/counter/cron triggers)
 ```
 
@@ -157,7 +157,7 @@ config/prompt_slots/*.yaml          (Layer 1: defaults, ships with package)
 runtime override                    (Layer 3: per-call override)
 ```
 
-evercore receives PromptSlot as parameter — no hardcoded prompts in algorithm code.
+everalgo receives PromptSlot as parameter — no hardcoded prompts in algorithm code.
 
 ### `core/observability/`
 
@@ -189,22 +189,22 @@ Full tree + frontmatter chassis: [storage_layout.md](storage_layout.md) and
 [how-memory-works.md](how-memory-works.md). Frontmatter has 4-tier field
 protection (L1 read-only / L2 system / L3 business / L4 user).
 
-## evercore boundary
+## everalgo boundary
 
-`evercore` is a separate Python library (future PyPI package) holding **only memory extraction algorithms**:
+[`everalgo`](https://github.com/EverMind-AI/EverAlgo) is a separate Python library (published as the `everalgo-*` PyPI packages) holding **only memory extraction algorithms**:
 
-- `evercore.parser` — multi-modal parsing
-- `evercore.user_memory` — ConvMemCell / Episode / Foresight / AtomicFact / Profile extractors
-- `evercore.agent_memory` — AgentMemCell / Case / Skill extractors
-- `evercore.knowledge` — file-to-knowledge
+- `everalgo.parser` — multi-modal parsing
+- `everalgo.user_memory` — ConvMemCell / Episode / Foresight / AtomicFact / Profile extractors
+- `everalgo.agent_memory` — AgentMemCell / Case / Skill extractors
+- `everalgo.knowledge` — file-to-knowledge
 
-evercore is:
+everalgo is:
 
 - **Stateless** — pure functions, no class hierarchy
 - **No I/O** — does not touch md files / LanceDB / SQLite
 - **No prompts inline** — receives `PromptSlot` parameter, project supplies defaults
 
-This boundary lets evercore be reused across product forms (this open-source build, EverOS Cloud, OpenClaw plugins, etc.).
+This boundary lets everalgo be reused across product forms (this open-source build, EverOS Cloud, OpenClaw plugins, etc.).
 
 ## Further reading
 

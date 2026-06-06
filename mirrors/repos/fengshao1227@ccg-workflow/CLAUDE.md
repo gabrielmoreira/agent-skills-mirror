@@ -2,7 +2,7 @@
 
 > [根目录](../CLAUDE.md) > **skills-v2**
 
-**Last Updated**: 2026-05-30 (v3.1.2)
+**Last Updated**: 2026-06-01 (v3.1.3)
 
 > ⚠ 本文档主体仍停留在 v2.1.16 架构描述（v3.0 引擎重构后未全量同步）。下方变更记录保留 v3.x 修复轨迹，完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
@@ -11,6 +11,9 @@
 ## 变更记录 (Changelog)
 
 > 完整变更历史请查看 [CHANGELOG.md](./CHANGELOG.md)
+
+### 2026-06-01 (v3.1.3)
+- 🐛 **卸载残留 hooks 与 settings**：`uninstallWorkflows` 是 v3.0 引擎重构前写的，从未删除 `~/.claude/hooks/ccg/`（5 个脚本）和 `settings.json` 的 CCG hook 注册（`UserPromptSubmit`/`SessionStart`/`PreToolUse`）。现补删 hooks/ccg 目录 + 精确清理 CCG hook 注册（按 `hooks/ccg/` 命令路径识别，保留用户自有 hooks），新增 `removedHooks` 字段，装→卸载闭环测试验证。impeccable skip 经实测正常（v3 模式 `impeccable found: []`），用户本机残留 impeccable 系历次卸载不净累积。
 
 ### 2026-05-30 (v3.1.2)
 - 🐛 **Codex 模式 hook 加载错目录**：`hooks.json` 用相对路径 `python3 .codex/hooks/ccg-workflow.py`，Codex 从项目目录而非用户 home 找脚本。`installCodexMode` 安装时将 `~/` 替换为绝对 home 路径写入。

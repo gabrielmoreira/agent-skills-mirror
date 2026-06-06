@@ -10,7 +10,7 @@
 1. **鏡頭詞彙是通用貨幣** — `35mm / 85mm / dolly / handheld / low-angle / rack focus / teal-orange` 幾乎所有模型都吃（MJ/Flux/Nano/Sora/Veo/Seedance/Kling/Runway）。想要寫實感就一定用。
 2. **Subject 放最前 10-15 token** — 所有模型都 early-weight 開頭。"ancient Chinese general" 一定 BEFORE "in battlefield fog"。
 3. **導演名分裂** — 不是所有模型都吃：
-   - ✅ 吃：MJ v7、SDXL、Sora 2、Veo 3.1
+   - ✅ 吃：MJ V8.1、SDXL、Sora 2、Veo 3.1
    - ❌ 刷掉：Flux（BFL 訓練時 scrubbed）、Nano Banana Pro
    - ⚠️ 不穩：Ideogram、Seedance（弱證據）、Kling（可能 over-weight 出現 "in the style of" artifact）
    - **對策**：中文模型（Seedance / Wan / Hailuo）改用具體視覺詞（墨色、留白、金色逆光、大遠景、慢鏡頭）
@@ -75,6 +75,7 @@
 - **禁忌：** >4-5 distinct nouns break it；"slow motion" 放負面 prompt 沒用；stacking 相機運動
 
 ### Sora 2（OpenAI）
+> 🔴 2026-04-26 app/web 已停運，API 撐到 2026-09-24；以下知識僅供 API 用戶或歷史參考，新任務改用 Runway/Veo/Kling
 - **結構：** Shot-list briefing a cinematographer
 - **長度：** 40-100 字
 - **簽名 token：**
@@ -114,7 +115,7 @@
   - **JSON 模式**：`film_stock` 可填 `Kodak 35mm Eastman 100T 5247` / `Fuji Eterna` / `Cinestill 800T`
 - **禁忌：** 負面 `no buildings` → 反寫 `desolate landscape`；under-specified camera；5+ SFX lines
 
-### Runway Gen-4 / Aleph
+### Runway Gen-4.5 / Aleph
 - **結構：** 主角-動作-相機 子句
 - **長度：** **25-60 字（最短）**
 - **簽名 token：** `camera tracks from behind`, `trailing position`, **Novel View verbs**（`reverse shot`, `low angle`, `medium full shot`）
@@ -139,7 +140,7 @@
 
 ## 🖼 圖片模型 per-model 簽名
 
-### Midjourney v7
+### Midjourney V8.1
 - **結構：** `[subject], [5-8 details], [lighting], [camera/lens], --ar X:Y --stylize N --style raw --sref/--oref`
 - **長度：** 30-60 comma chips
 - **🆕 V7 sweet spot params（2026-05-19 確認 from [`Pixmind-io/awesome-midjourney-v7-example-prompts`](https://github.com/Pixmind-io/awesome-midjourney-v7-example-prompts)）：**
@@ -159,7 +160,7 @@
   - `--style raw` 給寫實用，消 MJ house style
   - `--chaos 0-25`、`--exp 5-25`（v7 新）
   - `--sref` 風格 ref + `--sw 50-500`
-  - `--oref` 角色 ref + `--ow 100`
+  - `--oref` 角色 ref + `--ow 100`（⚠️ Omni Reference 為 V7-only，V8.1 未沿用；如需角色一致改用 `--sref` 或 V8 對應功能）
 - **範例（古代戰士）：**
 ```
 cowboy shot, realistic, male warrior, ancient chinese, beard, long black hair, han_armor, chinese_armor, battleground, volume fog, cinematic pose --ar 97:128 --style raw --stylize 750
@@ -188,7 +189,7 @@ cowboy shot, realistic, male warrior, ancient chinese, beard, long black hair, h
 - **簽名：** `"text"` 字面渲染（早放）、style preset (Auto/Realistic/Design/3D/Anime)
 - **禁忌：** >5 字文字會 degrade、quoted text 放 prompt 尾
 
-### Seedream 5.0 / 4.5（字節跳動）
+### Seedream 5.0（字節跳動）
 - **結構：** 重要詞在前（early-weight）
 - **長度：** 30-100 字
 - **反直覺：** **英文 > 中文 for photoreal**；但中文 prompt 做中文字渲染更準
@@ -217,7 +218,7 @@ Corporate headshot of a middle-aged Asian businessman, navy suit, neutral gray b
 
 ## 🎵 音樂模型 per-model 簽名
 
-### Suno v5（2026-05-19 大更新 — 1000+ prompts 證據）
+### Suno v5.5（2026-05-19 大更新 — 1000+ prompts 證據）
 
 > **Source：** [`naqashmunir21/awesome-suno-prompts`](https://github.com/naqashmunir21/awesome-suno-prompts) 37⭐ (CC0)，1000+ genre-organized prompts
 
@@ -252,10 +253,10 @@ Corporate headshot of a middle-aged Asian businessman, navy suit, neutral gray b
 ## 🎯 跨模型 workflow 組合（實戰）
 
 ### 寫實戰鬥短片（當前 use case）
-1. **Nano Pro / Midjourney v7 + Aria ref** → 生 key frame 圖（含武打氛圍）
-2. **Kling 3.0 / Sora 2 / Veo 3.1** 用該圖做 i2v
+1. **Nano Pro / Midjourney V8.1 + Aria ref** → 生 key frame 圖（含武打氛圍）
+2. **Kling 3.0 / Runway Gen-4.5 / Veo 3.1** 用該圖做 i2v（Sora 2 🔴 已停運，不再列為活平台）
    - Kling：40-80 字、handheld + whip pans
-   - Sora 2：format anchor (`bodycam footage of ancient battle`)
+   - Runway Gen-4.5：25-60 字、`camera tracks from behind` + low-angle（接替 Sora 2 bodycam 寫實感）
    - Veo 3.1：加 `SFX: horse hooves, steel clash` + `Ambient: battle drums`
 3. 需要更長敘事 → Wan 2.6 multi-shot `Shot 1/2/3` 結構（中文寫）
 
@@ -280,13 +281,13 @@ Corporate headshot of a middle-aged Asian businessman, navy suit, neutral gray b
 
 ## 🔗 Sources（研究時的權威站）
 
-- OpenAI Sora 2 Prompting Guide Cookbook
+- OpenAI Sora 2 Prompting Guide Cookbook（🔴 平台已停運，僅存歷史參考）
 - Google Cloud - Ultimate Veo 3.1 Guide
-- Runway Gen-4 / Aleph Prompting Guides
-- fal.ai Kling 3.0 / Wan 2.6 / Seedream 4.5 prompt guides
+- Runway Gen-4.5 / Aleph Prompting Guides
+- fal.ai Kling 3.0 / Wan 2.6 / Seedream 5.0 prompt guides
 - BFL Flux Kontext docs
 - Ideogram prompting docs
-- Midjourney v7 official docs (docs.midjourney.com)
+- Midjourney V8.1 official docs (docs.midjourney.com)
 - Google Cloud Nano Banana Ultimate Prompting Guide
 - Atlas Cloud Seedance Library
 - awesome-seedance-2-prompts (GitHub)

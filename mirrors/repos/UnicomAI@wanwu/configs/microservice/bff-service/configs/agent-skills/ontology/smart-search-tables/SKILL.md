@@ -48,8 +48,8 @@ ontology --user-id <accountId> <command> [options]
 | 步骤 | native 子命令 | 用途 |
 |------|---------------|------|
 | 1. 元数据 KN 检索 | `bkn object-type query <kn_id> <ot-id> '<condition-json>' [--limit n]` | 在元数据型 KN 下用语义/精确条件检索表/视图等实例 |
-| 2. 职责 KN 检索 | `bkn object-type query <duty_kn_id> <ot-id> '<condition-json>' [--limit n]` 或 `bkn search <duty_kn_id> <query>` | 在职责型 KN 下检索相关部门职责实例或概念 |
-| —（辅助） | `bkn object-type list <kn-id>` / `bkn search <kn-id> <query>` | 在不确定 `ot-id` 时先列出对象类或语义定位 |
+| 2. 职责 KN 检索 | `bkn object-type query <duty_kn_id> <ot-id> '<condition-json>' [--limit n]` | 在职责型 KN 下检索相关部门职责实例或概念 |
+| —（辅助） | `bkn object-type list <kn-id>` | 在不确定 `ot-id` 时先列出对象类或语义定位 |
 
 - **`--user-id <accountId>`**：**必传**（顶层选项，写在子命令之前；详见 ontology-core SKILL）。
 - 网关（`--base-url` / `ONTOLOGY_BASE_URL`）由 ontology-core 侧承担，本 skill **不出现**该参数。
@@ -71,7 +71,7 @@ ontology --user-id <accountId> <command> [options]
 ```text
 找表进度：
 - [ ] 1. 元数据 KN 检索：bkn object-type query <kn_id> <ot-id> '<condition-json>'，得到表/视图候选与部门/主题线索
-- [ ] 2. 职责 KN 检索：基于第 1 步线索构造 query 或 condition，调 bkn object-type query <duty_kn_id> <ot-id> 或 bkn search <duty_kn_id> <query>
+- [ ] 2. 职责 KN 检索：基于第 1 步线索构造 query 或 condition，调 bkn object-type query <duty_kn_id> <ot-id>
 - [ ] 3. 总结：候选表（business_name 全称 + technical_name）+ 职责要点 + 下一步建议；不暴露完整调试 URL
 ```
 

@@ -1,6 +1,6 @@
 ---
 name: unity-graphics
-description: "Project-wide GraphicsSettings / QualitySettings / Always Included Shaders / shader stripping for SRP-era Unity projects. Use when users want to inspect graphics & quality overview, switch quality level, assign or clear the default / per-quality SRP asset, manage Always Included Shaders, or configure lightmap / fog / instancing shader stripping. Triggers (EN): Unity graphics settings, GraphicsSettings, QualitySettings, quality level, default render pipeline, SRP asset, Always Included Shaders, shader stripping, lightmap stripping, fog stripping, instancing stripping. Triggers (ZH): 图形设置, 渲染管线设置, 质量设置, 质量等级, 默认渲染管线, SRP 资源, 始终包含的着色器, Shader 剥离, 总在包含的着色器."
+description: "Project-wide GraphicsSettings/QualitySettings for SRP — quality overview/level, default and per-quality SRP asset, Always Included Shaders, shader stripping. Exact signatures via GET /skills/schema."
 ---
 
 # Graphics Skills

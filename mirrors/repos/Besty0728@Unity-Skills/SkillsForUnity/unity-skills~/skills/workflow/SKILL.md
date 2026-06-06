@@ -1,6 +1,6 @@
 ---
 name: unity-workflow
-description: "Persistent operation history, snapshots, task/session undo, bookmarks, and batch planning/retry. Use when users want to record a task, snapshot before modification, undo/redo by task or session (conversation-level), list/delete tasks, manage scene-view bookmarks, generate combined execution plans, query assets pre-batch, or retry failed batch items. Triggers: workflow, task, task start, task end, session, session undo, session-level undo, conversation undo, snapshot, snapshot object, rollback, revert, persistent history, undo task, redo task, bookmark, save bookmark, goto bookmark, list bookmarks, plan skills, batch retry, retry failed, batch query assets, 工作流, 任务, 任务快照, 会话, 会话撤销, 对话级撤销, 快照, 回滚, 还原, 持久历史, 撤销任务, 重做任务, 书签, 保存书签, 跳转书签, 列出书签, 技能计划, 批量重试."
+description: "Persistent operation history, snapshots, task/session undo, bookmarks, and batch planning/retry — record tasks, snapshot before changes, undo/redo by task or conversation session. Exact signatures via GET /skills/schema."
 ---
 
 # Workflow Skills

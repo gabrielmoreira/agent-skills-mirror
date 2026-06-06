@@ -907,6 +907,62 @@ saturated, dry not glistening, dusty
 
 ---
 
+## 🏆 產品廣告 / 物理材質 Presets（反瑕疵實戰）
+
+> 搭配 [quality-control.md](../references/quality-control.md)。產品廣告兩大殺手：**主體變形** + **物理動得很假**。這兩個 preset 直接內建鎖形狀 + 分材質物理 token。
+
+### 31. 產品 Hero i2v（鎖形狀，廣告最可靠路徑）⭐
+
+**Use case:** 任何實體產品（瓶/罐/鞋/錶/3C/包）要動畫化但**絕不能變形**。
+**Target:** 先用 Seedream 5.0 / Nano Pro / Ideogram（含字）定死 hero 圖 → i2v（OiiOii Seedance 2.0 pro / Kling 3.0 Start Frame）
+
+**Step 1 — Hero 圖（鎖形狀的關鍵，t2v 產品永遠輸這步）：**
+```
+奢華精品產品攝影 hero shot：{PRODUCT 具體材質+輪廓，如「磨砂玻璃精華液瓶，金屬滴管蓋」}，
+形狀完整剛硬無變形，立於 {SURFACE 如濕潤黑岩板} 中央。單一柔光左上斜射，淺景深 f/1.4，
+背景純黑漸層柔焦。Phase One IQ4 中畫幅，物理級光線追蹤，AAA 廣告攝影，{COLOR 暖金高光}。
+無文字 logo、無品牌名、無人物。8K 超精細。
+```
+
+**Step 2 — i2v 動畫化（黃金公式，只寫運鏡不重述視覺）：**
+```
+根據圖片中的物體、畫面、風格來生成影片，
+[00:00-00:05] 極慢 ultra-macro dolly-in 推近產品，產品形狀完全不變，背景 caustics 光紋微動
+[00:05-00:10] 緩慢 180° orbit 環繞，pull-back 定格 hero。Final beat: 金色 lens flare 綻放
+[Constraints] 產品 rigid 形狀不變、ONE camera motion per shot、無變形漂移、無文字、平滑轉場
+```
+
+**Why 鎖形狀有效：** 圖把「產品類型 + 質感 + 構圖 + 打光」鎖得很牢，i2v 主要負責「動」→ 變形機率比 t2v 驟降。**t2v 產品三次還變形 → 必切此流程。**
+**⚠️ 實測校準（2026-06-05）：** Seedance i2v 不是像素級凍結，瓶身比例仍可能中度漂移。要更硬的凍結 → hero 圖背景極簡 + 運鏡越小越好 + 或改 **Kling 3.0 Start Frame + Motion Brush**（產品本體不刷 = 幾乎不動）。
+
+**Swap：** `{PRODUCT}` / `{SURFACE}` / `{COLOR}` / orbit 角度（產品鏡頭最多 180°，別 360°）
+
+---
+
+### 32. 物理材質速查 Inject（水/玻璃/金屬/布/煙/食物）
+
+**Use case:** 結果「動得很假、像果凍」。按材質抽對應 token 補進 prompt。
+**Target:** 影片通用；複雜流體優先 Runway Gen-4.5 / Veo 3.1（弱物理模型硬做必爛）
+
+| 材質 | 補進 prompt 的 token | 配套 |
+|---|---|---|
+| 水/液體 | `crown splash, surface tension, caustics, ray-traced refraction` | + `extreme slow motion` |
+| 玻璃 | `subsurface scattering, refraction, specular highlights` | 簡化背景 + 固定光源 |
+| 金屬 | `brushed metal, anisotropic reflection, metallic specular` | + `stable reflections` 慢運鏡 |
+| 布料/絲 | `flowing fabric, natural drape, cloth inertia` | + `gentle motion, natural weight` |
+| 煙/霧 | `volumetric, turbulent flow, natural dissipation, god rays` | `wispy, fine particulate` |
+| 食物 | `fresh, glistening, steam rising, subsurface scattering` | + `soft key light` 反塑膠感 |
+
+**通用物理強化句（任何材質可加）：**
+```
+physically accurate, realistic weight and momentum, natural gravity,
+extreme slow motion high-speed camera capture
+```
+
+**Why：** 慢動作讓物理更可信（模型有更多幀描繪細節）；「physically accurate」「realistic weight」是新模型理解的物理先驗 token。
+
+---
+
 ## 如何使用這些 Preset
 
 ### Quick Start

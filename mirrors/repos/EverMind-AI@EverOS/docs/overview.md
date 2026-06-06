@@ -43,7 +43,7 @@ User trust comes from physical visibility — the user can `cat` / `vim` / `grep
 
 ### 3. Algorithm-orchestration separation
 
-`evercore` (separate library, future PyPI) holds the extraction algorithms (MemCell extraction, Episode generation, Profile evolution). EverOS calls evercore via PromptSlot interface; evercore knows nothing about storage.
+[`everalgo`](https://github.com/EverMind-AI/EverAlgo) (a separate library, published as the `everalgo-*` PyPI packages) holds the extraction algorithms (MemCell extraction, Episode generation, Profile evolution). EverOS calls everalgo via the PromptSlot interface; everalgo knows nothing about storage.
 
 This boundary lets the same algorithm power both this open-source lightweight version and other product forms.
 

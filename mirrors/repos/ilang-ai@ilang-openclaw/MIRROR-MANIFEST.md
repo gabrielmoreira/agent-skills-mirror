@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ilang-ai/ilang-openclaw` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `ilang-ai/ilang-openclaw` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ilang-ai/ilang-openclaw` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`everything-is-ok/SKILL.md`](everything-is-ok/SKILL.md) |
-| 2 | ✓ | [`freemoney/SKILL.md`](freemoney/SKILL.md) |
-| 3 | ✓ | [`ilang-compress/SKILL.md`](ilang-compress/SKILL.md) |
-| 4 | ✓ | [`less-token/SKILL.md`](less-token/SKILL.md) |
-| 5 | ✓ | [`no-prompt/SKILL.md`](no-prompt/SKILL.md) |
+| 1 | ✓ | [`skills/DeAI/prompt.md`](skills/DeAI/prompt.md) |
+| 2 | ✓ | [`skills/DeAI/SKILL.md`](skills/DeAI/SKILL.md) |
+| 3 | ✓ | [`skills/everything-is-ok/prompt.md`](skills/everything-is-ok/prompt.md) |
+| 4 | ✓ | [`skills/everything-is-ok/SKILL.md`](skills/everything-is-ok/SKILL.md) |
+| 5 | ✓ | [`skills/freemoney/prompt.md`](skills/freemoney/prompt.md) |
+| 6 | ✓ | [`skills/freemoney/SKILL.md`](skills/freemoney/SKILL.md) |
+| 7 | ✓ | [`skills/ilang-compress/examples/example1.json`](skills/ilang-compress/examples/example1.json) |
+| 8 | ✓ | [`skills/ilang-compress/examples/example2.json`](skills/ilang-compress/examples/example2.json) |
+| 9 | ✓ | [`skills/ilang-compress/examples/example3.json`](skills/ilang-compress/examples/example3.json) |
+| 10 | ✓ | [`skills/ilang-compress/prompt.md`](skills/ilang-compress/prompt.md) |
+| 11 | ✓ | [`skills/ilang-compress/skill.json`](skills/ilang-compress/skill.json) |
+| 12 | ✓ | [`skills/ilang-compress/SKILL.md`](skills/ilang-compress/SKILL.md) |
+| 13 | ✓ | [`skills/lazarus/prompt.md`](skills/lazarus/prompt.md) |
+| 14 | ✓ | [`skills/lazarus/SKILL.md`](skills/lazarus/SKILL.md) |
+| 15 | ✓ | [`skills/less-token/prompt.md`](skills/less-token/prompt.md) |
+| 16 | ✓ | [`skills/less-token/SKILL.md`](skills/less-token/SKILL.md) |
+| 17 | ✓ | [`skills/no-prompt/prompt.md`](skills/no-prompt/prompt.md) |
+| 18 | ✓ | [`skills/no-prompt/SKILL.md`](skills/no-prompt/SKILL.md) |
 
 ---
 

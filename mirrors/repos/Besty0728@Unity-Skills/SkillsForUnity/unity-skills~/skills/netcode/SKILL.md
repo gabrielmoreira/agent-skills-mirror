@@ -1,6 +1,6 @@
 ---
 name: unity-netcode
-description: "Netcode for GameObjects (NGO 2.x) multiplayer automation. Create NetworkManager + UnityTransport, edit NetworkConfig (TickRate / ConnectionApproval / EnableSceneManagement / NetworkTopology / ClientSynchronizationMode), configure direct/Relay transport, attach NetworkObject / NetworkTransform / NetworkRigidbody(2D) / NetworkAnimator, manage NetworkPrefabsList + PlayerPrefab, generate NetworkBehaviour script templates, run Host/Server/Client lifecycle in PlayMode. Triggers: Unity netcode, com.unity.netcode.gameobjects, NGO, NetworkManager, NetworkObject, NetworkBehaviour, NetworkTransform, NetworkRigidbody, NetworkAnimator, NetworkVariable, ServerRpc, ClientRpc, NetworkPrefabsList, PlayerPrefab, UnityTransport, Relay, Spawn, Despawn, host, client, server, ConnectionApproval, NetworkTopology, ClientSynchronizationMode, tick rate, 多人, 联机, 联机同步, 多人游戏, 主机, 客户端, 服务器, 网络同步, 网络对象, 网络组件, 中继, 大厅."
+description: "Netcode for GameObjects (NGO 2.x) multiplayer — NetworkManager/UnityTransport, NetworkConfig, NetworkObject/Transform/Rigidbody/Animator, prefab list, Host/Server/Client lifecycle. Exact signatures via GET /skills/schema."
 ---
 
 # Unity Netcode for GameObjects Skills

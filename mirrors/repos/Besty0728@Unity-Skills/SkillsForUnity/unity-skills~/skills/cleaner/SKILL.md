@@ -1,6 +1,6 @@
 ---
 name: unity-cleaner
-description: "Project cleanup and audit utilities — find unused assets, content-hash duplicates, missing script/asset references, empty folders, large assets, and dependency trees; delete via a two-step confirm-token flow; fix missing-script components in-place. Use when users want to clean up, audit, or shrink the project. Triggers: cleaner, cleanup, clean up, unused asset, unused assets, duplicate, duplicates, dead code, orphan, missing script, missing reference, empty folder, large asset, dependency tree, asset usage, fix missing, 清理, 项目清理, 冗余, 未使用, 重复文件, 丢失脚本, 缺失引用, 空文件夹, 大文件, 依赖, 依赖树, 资产清理, 减包."
+description: "Project cleanup and audit — find unused assets, content-hash duplicates, missing references, empty folders, large assets, dependency trees; two-step confirm-token delete. Exact signatures via GET /skills/schema."
 ---
 
 # Unity Cleaner Skills

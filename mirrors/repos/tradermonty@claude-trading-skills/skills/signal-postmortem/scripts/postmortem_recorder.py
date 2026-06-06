@@ -38,7 +38,7 @@ def fetch_price_data(ticker: str, start_date: str, end_date: str, api_key: str) 
         return {}
 
     endpoints = [
-        ("https://financialmodelingprep.com/stable/historical-price-full", True),
+        ("https://financialmodelingprep.com/stable/historical-price-eod/full", True),
         ("https://financialmodelingprep.com/api/v3/historical-price-full", False),
     ]
     for base_url, is_stable in endpoints:

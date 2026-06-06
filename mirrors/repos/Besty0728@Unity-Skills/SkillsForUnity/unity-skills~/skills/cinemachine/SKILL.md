@@ -1,6 +1,6 @@
 ---
 name: unity-cinemachine
-description: "Cinemachine Virtual Camera setup and configuration for cinematic / gameplay cameras: VCam, FreeLook, ClearShot, StateDriven, Sequencer, MixingCamera, Body/Aim/Noise pipeline, Impulse system, target groups, splines, blends, CinemachineBrain. Triggers: cinemachine, virtual camera, vcam, CinemachineBrain, brain, FreeLook, ClearShot, StateDriven, Sequencer, MixingCamera, follow, look at, dolly, spline, target group, Body, Aim, Noise, OrbitalFollow, ThirdPersonFollow, PositionComposer, FramingTransposer, RotationComposer, Composer, PanTilt, POV, blend, impulse, shake, confiner, deoccluder, 虚拟相机, 跟随, 轨道, 镜头, 混合, 抖动, 相机模糊."
+description: "Cinemachine Virtual Camera setup — VCam/FreeLook/ClearShot/StateDriven, Body/Aim/Noise pipeline, Impulse, target groups, splines, blends, CinemachineBrain. Exact signatures via GET /skills/schema."
 ---
 
 # Cinemachine Skills

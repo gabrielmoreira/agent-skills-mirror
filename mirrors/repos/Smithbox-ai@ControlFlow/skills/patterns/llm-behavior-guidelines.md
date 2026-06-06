@@ -45,6 +45,7 @@ Behavioral guardrails to prevent systematic agent anti-patterns in multi-agent w
 
 - Don't "improve" adjacent code/comments/formatting; don't refactor things that aren't broken.
 - Match existing style even if you'd do it differently.
+- Before changing a shared prompt, schema, validator, template, or public interface, run a shared-component usage impact scan: inspect usages/symbols and suspected edit locations.
 - Unrelated dead code → **mention it in the execution report**, do not delete.
 - Remove only orphans (unused imports/vars/functions) that YOUR changes made dead; never pre-existing dead code unless explicitly asked.
 

@@ -40,7 +40,7 @@ Only create the artifacts required for the current tier and risk profile.
 
 ## Completion Gate
 
-Before calling the workflow complete, run the repository verification command, confirm required review artifacts exist, compare execution results to the approved plan, run `controlflow-review`, and update the lifecycle sections. The exact lifecycle headings are `## Progress`, `## Discoveries`, `## Decision Log`, `## Outcomes`, and `## Idempotence & Recovery`; keep them current at each phase boundary and final review.
+Before calling the workflow complete, run the repository verification command, confirm required review artifacts exist, compare the aggregate changed scope to the approved plan, run `controlflow-review`, and update the lifecycle sections. The final review must reconcile out-of-scope changes, apply a novelty filter against prior phase findings, and re-check affected verified items. The exact lifecycle headings are `## Progress`, `## Discoveries`, `## Decision Log`, `## Outcomes`, and `## Idempotence & Recovery`; keep them current at each phase boundary and final review.
 
 ## References
 

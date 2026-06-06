@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `astral-sh/ruff` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `astral-sh/ruff` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `astral-sh/ruff` — 26 default patterns, 0 followed patterns, 8 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,11 +62,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.agents/.claude-plugin/marketplace.json`](.agents/.claude-plugin/marketplace.json) |
 | 2 | ✓ | [`.agents/.claude-plugin/plugin.json`](.agents/.claude-plugin/plugin.json) |
 | 3 | ✓ | [`.agents/skills/adding-ty-diagnostics/SKILL.md`](.agents/skills/adding-ty-diagnostics/SKILL.md) |
-| 4 | ✓ | [`.agents/skills/minimizing-ty-ecosystem-changes/SKILL.md`](.agents/skills/minimizing-ty-ecosystem-changes/SKILL.md) |
-| 5 | ✓ | [`.agents/skills/summarise-ecosystem-results/SKILL.md`](.agents/skills/summarise-ecosystem-results/SKILL.md) |
-| 6 | ✓ | [`.agents/skills/working-on-ty/SKILL.md`](.agents/skills/working-on-ty/SKILL.md) |
-| 7 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`.agents/skills/minimizing-ty-ecosystem-changes/references/advanced-minimization.md`](.agents/skills/minimizing-ty-ecosystem-changes/references/advanced-minimization.md) |
+| 5 | ✓ | [`.agents/skills/minimizing-ty-ecosystem-changes/SKILL.md`](.agents/skills/minimizing-ty-ecosystem-changes/SKILL.md) |
+| 6 | ✓ | [`.agents/skills/summarise-ecosystem-results/assets/report-template.md`](.agents/skills/summarise-ecosystem-results/assets/report-template.md) |
+| 7 | ✓ | [`.agents/skills/summarise-ecosystem-results/references/subagent-handoff.md`](.agents/skills/summarise-ecosystem-results/references/subagent-handoff.md) |
+| 8 | ✓ | [`.agents/skills/summarise-ecosystem-results/SKILL.md`](.agents/skills/summarise-ecosystem-results/SKILL.md) |
+| 9 | ✓ | [`.agents/skills/working-on-ty/SKILL.md`](.agents/skills/working-on-ty/SKILL.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

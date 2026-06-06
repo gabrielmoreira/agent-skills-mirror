@@ -290,17 +290,22 @@ class FMPClient:
         return data
 
     def get_batch_quotes(self, symbols: list[str]) -> dict[str, dict]:
-        """Fetch quotes for a list of symbols, batching up to 5 per request"""
+        """Fetch quotes for a list of symbols.
+
+        Note: The FMP `/stable/quote` endpoint only accepts a single symbol per
+        call. Passing comma-separated symbols silently returns []. The
+        deprecated `/api/v3/quote/A,B,C` batch syntax now returns 403 for
+        non-legacy keys (retired Aug 31, 2025). So we iterate one symbol at a
+        time. Rate limiting in `_rate_limited_get` keeps this within plan
+        limits.
+        """
         results = {}
-        # FMP supports comma-separated symbols in quote endpoint
-        batch_size = 5
-        for i in range(0, len(symbols), batch_size):
-            batch = symbols[i : i + batch_size]
-            batch_str = ",".join(batch)
-            quotes = self.get_quote(batch_str)
+        for symbol in symbols:
+            quotes = self.get_quote(symbol)
             if quotes:
                 for q in quotes:
-                    results[q["symbol"]] = q
+                    if q.get("symbol"):
+                        results[q["symbol"]] = q
         return results
 
     def get_batch_historical(self, symbols: list[str], days: int = 50) -> dict[str, list[dict]]:

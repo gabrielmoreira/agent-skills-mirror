@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `strands-agents/harness-sdk` — 26 default patterns, 5 followed patterns, 19 file(s) materialized.
+Mirror of `strands-agents/harness-sdk` — 26 default patterns, 5 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `strands-agents/harness-sdk` — 26 default patterns, 5 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 19 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,11 +77,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`site/SITE-ARCHITECTURE.md`](site/SITE-ARCHITECTURE.md) |
 | 13 | ✓ | [`strands-py/AGENTS.md`](strands-py/AGENTS.md) |
 | 14 | ✓ | [`strands-ts/AGENTS.md`](strands-ts/AGENTS.md) |
-| 15 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 16 | → | [`dev-docs/PR.md`](dev-docs/PR.md) |
-| 17 | → | [`site/CONTRIBUTING.md`](site/CONTRIBUTING.md) |
-| 18 | → | [`strands-py/docs/PR.md`](strands-py/docs/PR.md) |
-| 19 | → | [`strands-py/docs/STYLE_GUIDE.md`](strands-py/docs/STYLE_GUIDE.md) |
+| 15 | ✓ | [`test-infra/AGENTS.md`](test-infra/AGENTS.md) |
+| 16 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 17 | → | [`dev-docs/PR.md`](dev-docs/PR.md) |
+| 18 | → | [`site/CONTRIBUTING.md`](site/CONTRIBUTING.md) |
+| 19 | → | [`strands-py/docs/PR.md`](strands-py/docs/PR.md) |
+| 20 | → | [`strands-py/docs/STYLE_GUIDE.md`](strands-py/docs/STYLE_GUIDE.md) |
 
 ---
 

@@ -13,7 +13,7 @@
 
 ---
 
-## Archived (`.old/`)
+## Archived (`.archive/`)
 
 Files moved here are stale or superseded. Preserved for reference only.
 Copilot ignores this section unless explicitly asked.

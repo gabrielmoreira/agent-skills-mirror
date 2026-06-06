@@ -24,10 +24,15 @@ scan (`.github/workflows/links.yml`) and LLM-judge skill evals
 3. **The Skill: `SKILL.md` (English) is what Claude Code loads and executes.**
    `SKILL.zh.md` is a human reference translation — keep it at parity when you
    change the rules, but the English file is canonical.
-   **The skill lives at `skills/shortfilm-prompt/` (plugin root), NOT
-   `.claude/skills/`.** A Claude Code plugin only discovers skills under
+   **Real skill files live at `skills/shortfilm-prompt/` (plugin root), NOT
+   `.claude/skills/`.** A plugin only discovers skills under
    `<plugin-root>/skills/`; the old `.claude/skills/` path made the marketplace
-   install ship an empty plugin (fixed in v0.3.1). Don't move it back.
+   install ship an empty plugin (fixed in v0.3.1). `.claude/skills/shortfilm-prompt`
+   is a **symlink → `../../skills/shortfilm-prompt`** so a bare in-repo `claude`
+   still auto-discovers it as a project skill — single source of truth, two entry
+   points. Don't move the real files back, don't delete the symlink, don't
+   duplicate. (links.yml does NOT glob `.claude/**` so it won't double-scan the
+   symlink with a wrong relative base.)
 
 4. **After editing any internal link, run a dead-link check** across all
    `*.md` before committing. This has bitten us repeatedly.

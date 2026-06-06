@@ -1,6 +1,6 @@
 ---
 name: unity-console
-description: "Unity Editor console log capture, query, write and settings. Read existing console history, start/stop capture buffer, log custom messages, clear console, configure error-pause / collapse / clear-on-play, export to file, count by type. Triggers: console, console window, log, logs, warning, error, exception, assert, print, debug message, capture logs, start capture, stop capture, export logs, log file, error pause, pause on error, collapse logs, clear on play, log statistics, console_start_capture, console_stop_capture, console_get_logs, console_clear, console_log, console_export, console_get_stats, console_set_pause_on_error, console_set_collapse, console_set_clear_on_play, 控制台, Unity 控制台, 日志, 警告, 错误, 异常, 输出, 打印日志, 捕获日志, 开始捕获, 停止捕获, 导出日志, 清空控制台, 写日志, 自定义日志, 暂停于错误, 错误暂停, 折叠日志, 进入运行时清空."
+description: "Unity Editor console log capture, query, write, and settings — read history, start/stop capture, log/clear, error-pause/collapse/clear-on-play, export, count by type. Exact signatures via GET /skills/schema."
 ---
 
 # Unity Console Skills

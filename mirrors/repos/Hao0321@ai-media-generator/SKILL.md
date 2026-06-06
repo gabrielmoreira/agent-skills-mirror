@@ -1,6 +1,6 @@
 ---
 name: ai-media-generator
-description: 為使用者產生高品質的 AI 生圖、生影片、生音樂提示詞，並在需要時透過瀏覽器自動化實際送到目標平台。涵蓋 OiiOii、Kling 2.1/2.6/3.0、Seedance 1.0 / 2.0 pro、Suno v5、Seedream 4.0/4.5/5、Vidu Q2/Q3、Midjourney v7、Flux 1.1 Pro / Kontext、Runway Gen-4 / Aleph、Google Veo 3.1、OpenAI Sora 2、Ideogram 3、Nano Banana Pro、Stable Diffusion 3.5。只要使用者提到「AI 生圖」「AI 影片」「AI 音樂」「做 MV」「做 storyboard」「寫 prompt 給 XXX」「我想用 Kling/Suno/Midjourney/Runway/Veo/Sora...」「幫我操作 OiiOii / 即夢 / 可靈」「txt2img / img2video / 文生圖 / 文生影片 / 圖生影片」「角色一致性」「多鏡頭分鏡」「運鏡」，或任何跟上述平台或影像/影片/音樂生成工作流相關的任務，都要用這個 skill。即使他們沒講明平台，只要任務是要餵給某個生成模型的 prompt，就用這個 skill 幫他們選對的平台、寫對的格式。
+description: 為使用者產生高品質的 AI 生圖、生影片、生音樂提示詞，並在需要時透過瀏覽器自動化實際送到目標平台。涵蓋 OiiOii、Kling 3.0/O-series、Seedance 2.0 pro、Suno v5.5、Seedream 5.0/4.0、Vidu Q3、Midjourney V8.1、Flux 1.1 Pro / Kontext、Runway Gen-4.5 / Aleph、Google Veo 3.1、Ideogram 3、Nano Banana Pro、Stable Diffusion 3.5（⚠️ OpenAI Sora 2 已於 2026-04-26 停運，API 撐到 2026-09-24，預設改推 Runway/Veo/Kling）。只要使用者提到「AI 生圖」「AI 影片」「AI 音樂」「做 MV」「做 storyboard」「寫 prompt 給 XXX」「我想用 Kling/Suno/Midjourney/Runway/Veo...」「幫我操作 OiiOii / 即夢 / 可靈」「txt2img / img2video / 文生圖 / 文生影片 / 圖生影片」「角色一致性」「多鏡頭分鏡」「運鏡」「結果有瑕疵 / 不夠精緻 / 怎麼修」，或任何跟上述平台或影像/影片/音樂生成工作流相關的任務，都要用這個 skill。即使他們沒講明平台，只要任務是要餵給某個生成模型的 prompt，就用這個 skill 幫他們選對的平台、寫對的格式。
 ---
 
 # AI Media Generator
@@ -134,23 +134,26 @@ Prompt 寫完問自己：
 
 根據選定平台，**一定要** 讀對應檔案，不要憑記憶寫 prompt：
 
+> **🧭 不確定選哪個模型？先讀 [references/model-picker.md](references/model-picker.md)** — OiiOii 全模型 + 各平台「選誰 / 招牌 prompt 技巧」總表 + 30 秒決策樹。**使用者嫌「不熟模型」「該用哪個」時必讀。**
+
 **影片 (Video)**
-- Kling → [references/kling.md](references/kling.md)
-- Seedance 2.0 pro / 1.0 Pro / Lite → [references/seedance.md](references/seedance.md)
-- Vidu Q2 / Q3 → [references/vidu.md](references/vidu.md)
-- Runway Gen-4 / Aleph / Act-Two → [references/runway.md](references/runway.md)
-- Google Veo 3 / 3.1 → [references/veo.md](references/veo.md)
-- OpenAI Sora 2 → [references/sora.md](references/sora.md)
+- Kling 3.0 / O-series（V3 畫質 / Omni 參考驅動 / O1 首尾幀，三者不同）→ [references/kling.md](references/kling.md)
+- Seedance 2.0 pro / 1.0 Pro / Lite（OiiOii 影片旗艦，`@AssetName` 標記）→ [references/seedance.md](references/seedance.md)
+- Vidu Q3 Mix/Ref/Pro（動漫 + 多角色一致，`@tag` 多參 + HEX 鎖色）→ [references/vidu.md](references/vidu.md)
+- Runway Gen-4.5 / Aleph / Act-Two → [references/runway.md](references/runway.md)
+- Google **Veo 3.1 + 🆕 Gemini Omni**（Google 雙旗艦：4K 畫質線 + 對話編輯線，I/O 2026 發表）→ [references/veo.md](references/veo.md)
+- Hailuo 2.3（角色表演）/ Wan 2.7·2.6（複雜場景/對白）/ HappyHorse（敘事音畫）→ 見 [references/model-picker.md](references/model-picker.md)
+- ⚠️ OpenAI Sora 2 → [references/sora.md](references/sora.md)（**已停運** — app 2026-04-26 關，API 2026-09-24 關。讀此檔只為了解替代方案；新任務改用 Veo/Gemini Omni/Runway/Kling）
 
 **圖片 (Image)**
-- Seedream 4.0 / 4.5 / 5 → [references/seedream.md](references/seedream.md)
-- Midjourney v7 → [references/midjourney.md](references/midjourney.md)
+- Seedream 5.0 / 4.0 → [references/seedream.md](references/seedream.md)
+- Midjourney V8.1 / niji 7（⚠️ `--oref` 為 V7-only） → [references/midjourney.md](references/midjourney.md)
 - Flux 1.1 Pro / Kontext → [references/flux.md](references/flux.md)
 - Ideogram 3 → [references/ideogram.md](references/ideogram.md)
 - Stable Diffusion 3.5 / SDXL → [references/stable-diffusion.md](references/stable-diffusion.md)
 
 **音樂 (Music)**
-- Suno v5 → [references/suno.md](references/suno.md)
+- Suno v5.5（Personas 已改名 Voices） → [references/suno.md](references/suno.md)
 
 **複合 / 多智能體**
 - OiiOii.ai → [references/oiioii.md](references/oiioii.md)
@@ -162,8 +165,11 @@ Prompt 寫完問自己：
 - 電影導演 / 攝影指導 / 底片 / 燈光 / 構圖 / meta tokens → [references/cinematic-direction.md](references/cinematic-direction.md)
 - 廣告 / 時尚 / MV 導演 / 品牌調性 / 社群短影音 → [references/commercial-direction.md](references/commercial-direction.md)
 - VFX 總監 / 大氣 / 物理 / 特效 recipes → [references/vfx-effects.md](references/vfx-effects.md)
-- **音效設計** (對白 / SFX / Foley / 配樂) → [references/sound-design.md](references/sound-design.md) — Veo 3.1 / Sora 2 / Vidu Q3 原生音訊必讀
+- **音效設計** (對白 / SFX / Foley / 配樂) → [references/sound-design.md](references/sound-design.md) — Veo 3.1 / Vidu Q3 原生音訊必讀
 - **剪接 / 轉場 / 節奏** (match cut / whip pan / J-L cut / ASL 律動) → [references/editing-transitions.md](references/editing-transitions.md) — 多鏡故事、storyboard、MV 必讀
+- **🎬 概念先行 Prompting** (prompt 沒主題/畫面很空/效果差/不知道在拍什麼) → [references/concept-first-prompting.md](references/concept-first-prompting.md) — **使用者嫌「prompt 沒主題」「有些畫面不知道在幹嘛」「影片效果差」時必讀**。治「技術詞堆疊但空洞」：先定一句話 concept → 3-beat 敘事弧 → 每個鏡頭做存在性測試 → 才加技術詞。含 6 個產品廣告概念框架
+- **🔧 反瑕疵品質控制** (結果爛了/有瑕疵/不夠精緻怎麼修) → [references/quality-control.md](references/quality-control.md) — **使用者嫌結果有瑕疵、產品變形、塑膠感、閃爍、文字鬼影、動得很假時必讀**。系統化分類 7 類瑕疵 + 對症修法（鎖時間/鎖物理/鎖主體）+ 平台物理強弱速查
+- **🧭 模型選擇大全** (該用哪個模型 / 不熟各家模型) → [references/model-picker.md](references/model-picker.md) — OiiOii 全模型 + Gemini Omni / Kling O-series / Vidu / Hailuo / Wan / Seedance 各家「最強情境 + 招牌 prompt 技巧 + 何時選」+ 命名混淆對照（Gemini Omni vs Kling Omni）
 
 這三個進階檔是 **語彙庫**，不是流程手冊。使用方式：
 1. 先照平台的 reference (kling.md / flux.md 等) 確定該平台的 prompt 結構
@@ -243,6 +249,8 @@ Prompt 寫完問自己：
 - [ ] 長度適當 — 檢查目標平台的 sweet spot
 - [ ] 沒有自相矛盾 — 不要同時寫 "close-up" 和 "wide establishing shot"
 - [ ] 負面提示詞 (如該模型支援) 有列常見缺陷
+- [ ] **產品/品牌類** — 有沒有「主體完整性鎖」(rigid form / no morphing / 形狀不變)？產品優先走 i2v 鎖死 hero 圖。見 [quality-control.md §1](references/quality-control.md)
+- [ ] **複雜物理** (液體/布料/煙/碰撞) — 有沒有挑對強物理平台 (Runway Gen-4.5 / Veo 3.1)？弱物理模型硬做必爛
 
 ## 常見反模式
 
@@ -259,4 +267,15 @@ Prompt 寫完問自己：
 
 ## 版本資訊
 
-知識整理於 2026-04，各模型版本皆以當時最新為準。各 reference 檔末尾有官方文件連結 — **若要執行會花錢/產生後果的操作前，優先拿 reference 連結當最終依據**，因為版本/定價變動快。
+**平台知識最後校準：2026-06（v1.5.0 全平台 reference 升級 + WebSearch 驗證）。** 各 reference 檔末尾有官方文件連結 — **若要執行會花錢/產生後果的操作前，優先拿 reference 連結當最終依據**，因為版本/定價變動快。
+
+**2026-06 重大變動（已驗證）：**
+- 🔴 **OpenAI Sora 2 停運** — app/web 2026-04-26 已關，API 2026-09-24 關，資料永久刪除。新任務勿用，改 Runway Gen-4.5 / Veo 3.1 / Kling 3.0。
+- 🆕 **Runway Gen-4.5**（2025-12-01）— Video Arena 榜首 1247 Elo，勝 Veo 3 / Sora 2 Pro，物理最強。
+- 🆕 **Midjourney V8.1**（2026-04-30）— 原生 2K HD、快 3-5×；⚠️ `--oref` Omni Reference 為 **V7-only**，V8 不支援。
+- 🆕 **Suno v5.5**（2026-03）— Personas 改名 **Voices** + Custom Models + Suno Studio DAW。
+- 🆕 **Kling 3.0 / O-series**、**Seedream 5.0 Lite**、**Vidu Q3**、**Ideogram 3.0** 為各家當前主力。
+- 🆕 **Google Gemini Omni**（I/O 2026, 2026-05-19）— any-to-any 多模態影片「影片版 Nano Banana」，對話式編輯，Flash 版已上 Flow PRO。Google 影片變雙旗艦（Veo 3.1 + Gemini Omni）。⚠️ ≠ Kling 3.0 Omni（同名不同家）。
+- 各模型「最強情境 + 招牌 prompt 技巧」見 [references/model-picker.md](references/model-picker.md)；「prompt 沒主題/畫面空/效果差」見 [references/concept-first-prompting.md](references/concept-first-prompting.md)。
+
+各模型「禁忌 / 版本推翻歷史」見 [references/community-prompt-patterns.md](references/community-prompt-patterns.md)；結果有瑕疵的修法見 [references/quality-control.md](references/quality-control.md)。
