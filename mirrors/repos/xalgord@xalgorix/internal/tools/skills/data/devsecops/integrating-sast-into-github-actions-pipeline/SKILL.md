@@ -37,6 +37,15 @@ nist_csf:
 
 **Do not use** for runtime vulnerability detection (use DAST instead), for scanning third-party dependencies (use SCA tools like Snyk), or for infrastructure-as-code scanning (use Checkov or tfsec).
 
+## Common Misconfigurations & Verification
+
+- **SARIF upload mistaken for a gate:** `upload-sarif` only populates the Security tab — it never fails the job. Make the gate real with `semgrep ci --error` (or `--severity ERROR`) and branch protection `required_status_checks` listing each scan job by name.
+- **CodeQL autobuild skipping code:** for compiled languages `github/codeql-action/autobuild` can build a subset and silently under-scan. Confirm the analyzed line count, or supply manual build steps; watch for "No source code was seen."
+- **`permissions: security-events: write` missing:** without it the SARIF upload fails and the PR still merges green. Set explicit job-level `permissions` and verify the upload step succeeded.
+- **Over-suppression blind spots:** broad `paths-ignore` globs or blanket `nosemgrep` lines can hide real sinks. Keep `paths-ignore` to tests/vendor only and audit suppressions against OWASP Top 10 / CWE Top 25.
+- **PR-only scanning:** running solely on `pull_request` never re-scans `main` against newly published rules. Add a `schedule:` cron full scan.
+- **Verify by introducing a finding:** open a draft PR adding a known sink (e.g. `pickle.loads(user_input)` or SQL string-format), confirm both CodeQL/Semgrep flag it at high severity and the required check goes red and blocks merge.
+
 ## Prerequisites
 
 - GitHub repository with GitHub Actions enabled

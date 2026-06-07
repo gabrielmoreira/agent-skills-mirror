@@ -43,6 +43,15 @@ malware families, suspicious patterns, and IOC matches.
 
 **Do not use** for real-time endpoint protection (use EDR agents instead); YARA scanning is best suited for batch hunting, triage, and post-collection analysis where scan latency is acceptable.
 
+## Detection Gaps & Validation
+
+- **Condition pitfalls cause silent false-negatives:** omitting a `filesize` bound makes large files hit `yara.TimeoutError` (skipped, not matched); `$mz at 0` fails on packed/prepended or memory-carved samples; hardcoded offsets break after repacking.
+- **Packers defeat string rules:** UPX/Themida and .NET obfuscators mangle the exact strings yarGen extracted, so the rule never fires on the live variant — pair string sets with `pe`/`math.entropy` heuristics and scan the unpacked process in memory.
+- **Memory-scan timing:** sleep-mask/encryption re-hides beacon config between callbacks — scan during active C2 or from an unhooked full dump, not a quiesced one.
+- **Community rule hazards:** one syntax error fails the whole compile (use per-file fallback loading), and over-broad rules flood false positives.
+- **Validate:** run each rule against a known-positive sample AND a goodware corpus; confirm it fires on the former and stays silent on the latter.
+- **FP tuning:** raise yarGen `--score`, use `--excludegood`, and require multiple string hits (`2 of ($s*)`) in `condition`.
+
 ## Prerequisites
 
 - YARA 4.x installed (`apt install yara` on Debian/Ubuntu, `brew install yara` on macOS)

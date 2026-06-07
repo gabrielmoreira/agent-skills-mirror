@@ -36,6 +36,20 @@ nist_csf:
 
 **Do not use** for real-time threat detection (use GuardDuty), for vulnerability scanning (use Inspector), or for data classification (use Macie). Security Hub aggregates findings from these services but does not replace them.
 
+## Common Misconfigurations & Verification
+
+- **AWS Config not recording in every account/region:** Security Hub controls evaluate Config items. If Config is off, controls show `No data` (not PASS/FAIL) and the compliance score is silently incomplete. Confirm a running recorder per region: `aws configservice describe-configuration-recorder-status --query 'ConfigurationRecordersStatus[?recording!=`true`]'`.
+- **`auto-enable` disabled on the org config:** existing accounts may be enrolled but new accounts are not. Verify `aws securityhub describe-organization-configuration` returns `AutoEnable: true` (and `AutoEnableStandards: DEFAULT`).
+- **No cross-region finding aggregator:** without one, findings stay siloed per region and the admin view is partial. Check `aws securityhub list-finding-aggregators` returns an ARN.
+- **Control finding generator mismatch:** mixing `STANDARD_CONTROL` and `SECURITY_CONTROL` (consolidated) generators across accounts double-counts or hides controls. Keep it consistent org-wide.
+- **Auto-remediation that never closes findings:** the Lambda must call `batch_update_findings` with `Workflow.Status` or findings reappear as `NEW` forever.
+
+```bash
+aws securityhub get-enabled-standards --query 'StandardsSubscriptions[].StandardsStatus'   # READY
+aws securityhub describe-organization-configuration
+aws configservice describe-configuration-recorder-status
+```
+
 ## Prerequisites
 
 - AWS Organizations with delegated administrator for Security Hub

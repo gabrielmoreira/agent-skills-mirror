@@ -40,6 +40,15 @@ nist_csf:
 
 **Do not use** for one-time ad hoc investigations; playbooks are reusable procedure documents, not case-specific reports.
 
+## Common Misconfigurations & Verification
+
+- **Containment steps that destroy evidence:** a playbook that says "reimage" or "power off the host" before volatile capture wipes RAM, network connections, and `/tmp` artifacts. Order it correctly — isolate (network-contain, keep powered) → capture memory/volatile state → then eradicate. Power-off is a last resort for active destruction (ransomware encrypting).
+- **Containment that tips off the attacker:** blocking the C2 domain at DNS or disabling the account can trigger dead-man switches or push the actor to backup persistence. Stage simultaneous actions (block all C2 + rotate all creds + kill persistence at once) rather than piecemeal, and verify with the team before pulling triggers.
+- **Eradication that misses persistence:** removing the malware binary but leaving the cron job, systemd unit, scheduled task, or rogue SSH key guarantees reinfection. The playbook must enumerate persistence locations and require a clean-rebuild decision.
+- **Stale automation:** SOAR steps referencing decommissioned tools or expired API tokens fail silently mid-incident.
+
+**Verify the playbook actually holds:** run a tabletop *and* a live-fire test in a lab — confirm C2 is truly blocked (`dig` resolves to sinkhole, EDR shows no outbound), confirm rotated creds reject the old password, confirm persistence is gone after reboot, and confirm contact lists/escalation paths are current. Track MTTC/MTTR from the exercise, not assumptions.
+
 ## Prerequisites
 
 - Organizational risk assessment identifying top incident scenarios by likelihood and impact

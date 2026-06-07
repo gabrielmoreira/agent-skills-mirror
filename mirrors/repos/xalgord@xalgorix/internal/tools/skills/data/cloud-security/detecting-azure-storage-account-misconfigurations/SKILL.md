@@ -46,6 +46,17 @@ Azure Storage accounts are a frequent target for attackers due to misconfigured 
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+Where `azure-mgmt-storage` audits give false assurance:
+- **Container ACLs override the account flag.** `allow_blob_public_access=False` on the account still leaves containers whose `public_access` is `Blob`/`Container` exposed — you must enumerate `blob_containers.list()` and check each container's `public_access`, not just `StorageAccount.allow_blob_public_access`.
+- **`minimum_tls_version == None`** on older API versions means the default `TLS1_0`, i.e. **non-compliant**, not "unknown" — treat null as a finding.
+- **SAS issuance is invisible to this SDK.** `StorageManagementClient` cannot see account-SAS / user-delegation SAS tokens or their scope/lifetime — that requires Storage Analytics logs or Defender for Storage.
+- **`network_rule_set.default_action == 'Deny'` with `bypass` including `AzureServices`** still exposes data to trusted Microsoft services across tenants.
+- `require_infrastructure_encryption` defaults to `None`/`False` — absence is not "double-encrypted."
+
+Validate: assert the service principal holds Reader on **every** target subscription (a mis-scoped SP makes `storage_accounts.list()` return empty silently, faking a clean result); cross-check one supposedly private container with an anonymous `GET .../container?restype=container&comp=list` (200 + XML listing = real exposure).
+
 ## Prerequisites
 
 - Python 3.9+ with `azure-mgmt-storage`, `azure-identity`

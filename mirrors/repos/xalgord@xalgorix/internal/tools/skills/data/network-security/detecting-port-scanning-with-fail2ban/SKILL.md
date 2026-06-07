@@ -34,6 +34,17 @@ nist_csf:
 
 **Do not use** as the sole network security control, for protecting against distributed attacks from many source IPs, or as a replacement for proper firewall rules and network segmentation.
 
+## Detection Gaps & Validation
+
+Fail2ban is per-source and log-driven, so it misses exactly the scans attackers use to stay quiet:
+
+- **Slow scans evade `findtime`:** the `recent --hitcount 20 --seconds 10` iptables rule and a `findtime = 60` jail never trigger on `nmap -T1` (≈1 probe/15s). Widen `findtime` or add a long-window jail; "no bans" does not mean "no scan."
+- **Distributed scans:** Fail2ban bans one IP at a time and cannot correlate a scan spread across a /24 of source hosts. Pair it with a network IDS for distributed recon.
+- **SYN scans may never log:** `-sS` to a closed port only matches if your `PORTSCAN` chain actually logs it; an `ACCEPT` earlier in INPUT means the probe is never written and Fail2ban sees nothing.
+- **Backend mismatch:** `backend = systemd` reads the journal, not `/var/log/kern.log`; if iptables logs go only to the file, the jail silently parses zero lines.
+
+**How to confirm detection works:** run `fail2ban-regex /var/log/kern.log /etc/fail2ban/filter.d/portscan.conf` and verify a non-zero match count, then `nmap -sS -p1-1000` from an authorized host and confirm the IP appears in `fail2ban-client status portscan`. A jail that loads with 0 matched lines is a coverage gap, not a clean network.
+
 ## Prerequisites
 
 - Fail2ban 0.11+ installed (`fail2ban-client --version`)

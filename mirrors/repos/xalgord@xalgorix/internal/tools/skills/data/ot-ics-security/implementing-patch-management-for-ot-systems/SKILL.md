@@ -38,6 +38,16 @@ nist_csf:
 
 **Do not use** for IT-only patch management without OT considerations, for emergency patching during active cyber incidents (see performing-ot-incident-response), or for firmware upgrades that change PLC functionality (requires separate change management).
 
+## Common Misconfigurations & Verification
+
+Patch programs fail quietly in OT. Check these before declaring a system "managed":
+
+- **"Patched" really means "downloaded":** WSUS/SCCM reports show approval, not installation. Confirm on the box (`Get-HotFix` / `wmic qfe list`) and verify the PLC/HMI actually rebooted into the patched build, not a pending-reboot limbo.
+- **Skipping vendor compatibility gates:** a generic Microsoft cumulative update can break WinCC, FactoryTalk View, or PI buffering. Confirm the patch is on the vendor's approved list (Siemens ProductCERT, Rockwell PCDC) before staging.
+- **No real staging mirror:** a "test environment" that lacks the production firmware revision proves nothing. Confirm scan-time delta (<50ms) and SIS trip tests on a lab twin, not just a generic VM.
+- **Deferred patches with no compensating control:** a 35-day CIP-007 evaluation ending in "deferred" must point to a concrete control (firewall rule, IPS signature, isolation). Confirm the rule actually exists in the device/firewall config, not just the spreadsheet.
+- **Don't conclude a CVE is "remediated"** until you've re-queried the asset version after the maintenance window and confirmed rollback was tested — an untested rollback is an unpatched system.
+
 ## Prerequisites
 
 - OT asset inventory with firmware/OS versions for all patchable systems

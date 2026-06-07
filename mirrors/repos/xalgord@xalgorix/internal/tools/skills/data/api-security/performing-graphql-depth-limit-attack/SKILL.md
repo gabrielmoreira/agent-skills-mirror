@@ -37,6 +37,15 @@ GraphQL depth limit attacks exploit the recursive nature of GraphQL schemas to c
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Beyond raw depth:** combine alias amplification, field duplication, and fragment cycles - a server with a depth limit may still fall to width/alias blowup.
+- **Cyclic fragment spreads:** self-referential fragments can recurse even when query nesting is capped.
+- **Batching multipliers:** array-batched operations and aliased root fields multiply cost in a single HTTP request.
+- **Expensive resolvers:** shallow but list-heavy queries (pagination with a huge `first:`) can exhaust the DB without deep nesting.
+
+**How to confirm a hit (avoid false negatives):** response time/CPU must rise monotonically with depth/width, and a payload must execute without a "query too deep/complex" error - baseline a trivial query first. Distinguish a real DoS (timeout, 502, connection refused) from a benign validation rejection. **Don't conclude negative until you've tried:** alias amplification, field duplication, cyclic fragments, batching, and large pagination args - depth limiting alone does not cover complexity.
+
 ## Prerequisites
 
 - Target GraphQL API endpoint with introspection enabled or known schema

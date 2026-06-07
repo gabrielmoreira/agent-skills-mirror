@@ -38,6 +38,15 @@ Wireless penetration testing evaluates the security of an organization's WiFi in
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **PMKID capture before deauthing clients** — `hcxdumptool` often pulls a crackable PMKID from the AP with no client present, avoiding disruptive deauth floods. Try it before forcing handshakes.
+- **WPA2-Enterprise EAP attacks** — a rogue RADIUS (hostapd-mana/EAPHammer) harvests MSCHAPv2 challenge-responses from clients that don't validate the server certificate; the missing cert validation is the real flaw. Don't skip Enterprise SSIDs as "safe".
+- **WPS where still enabled** — `wash` to find it, then Pixie-Dust (`reaver -K`) for offline PIN recovery; a fast, frequently overlooked win on consumer/printer APs.
+- **Client isolation and segmentation after access** — the high-impact finding is usually that the guest/IoT SSID reaches corporate hosts. Connect, then `nmap` toward the corporate range and test VLAN hopping.
+- **Rogue/misconfigured APs and the whole facility** — personal hotspots bridging to corp, default-config IoT, and rogue APs broadcasting the corporate SSID; survey from multiple physical vantage points, not one.
+- **How to confirm**: prove findings with the captured `.cap`/`.pcapng` plus the cracked PSK or EAP credential (hashcat -m 22000 / -m 5500), a `wash`/reaver WPS recovery, or a post-association `nmap` showing reachable corporate hosts from the wireless subnet. Don't conclude a network is uncrackable until you've tried both PMKID and 4-way handshake (and rogue RADIUS for Enterprise); don't conclude WiFi is contained until you've tested client isolation and wireless-to-wired segmentation.
+
 ## Prerequisites
 
 - Written authorization specifying wireless scope (SSIDs, BSSIDs, physical locations)

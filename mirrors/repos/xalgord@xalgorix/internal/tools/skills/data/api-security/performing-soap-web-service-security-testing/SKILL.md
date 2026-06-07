@@ -38,6 +38,16 @@ SOAP (Simple Object Access Protocol) web services remain widely deployed in ente
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **XXE in every parameter and headers:** test classic file-read, blind OOB (external DTD calling back to your host), and parameter entities - not just the first operation.
+- **SOAPAction spoofing:** send operation A's body with operation B's SOAPAction; mismatched routing can bypass per-action authorization.
+- **WS-Security bypass:** strip the entire Security header, send an empty UsernameToken, and replay expired/forged timestamps - many stacks fail open.
+- **XPath/SQLi in element values:** inject into XML text nodes, not query strings.
+- **XML bomb / billion laughs:** entity-expansion DoS is often unguarded.
+
+**How to confirm a hit (avoid false negatives):** XXE is confirmed by file contents (`root:`/`/bin/`) in the response or an OOB callback to your host; injection by DB/XPath error strings or boolean/timing differences; a real WS-Security bypass returns a successful SOAP body (no Fault) without valid credentials. **Don't conclude negative until you've tried:** blind/OOB XXE when output is suppressed, every operation (not just one), SOAPAction mismatch, and timestamp/credential stripping.
+
 ## Prerequisites
 
 - Target SOAP web service endpoint URL

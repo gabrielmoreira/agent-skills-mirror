@@ -35,6 +35,17 @@ Grype is an open-source vulnerability scanner from Anchore that inspects contain
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Coverage Gaps & Validation
+
+Grype matches packages it can discover against a DB it has cached - both are sources of false negatives:
+
+- **Catalogers see what's installed, not what's vendored:** Grype finds OS packages and language deps that leave a manifest/lockfile, but statically linked Go/Rust binaries, vendored libs, and `FROM scratch`/distroless images often expose little - a near-empty result is "couldn't enumerate", not "no CVEs".
+- **`--scope squashed` skips intermediate layers:** a secret or vulnerable package deleted in a later layer still ships in the image; use `--scope all-layers`.
+- **Severity cutoff hides findings:** `--fail-on high` / `severity-cutoff` only gates the build - lower-rated but exploitable CVEs and `--only-fixed` filtering drop items from view.
+- **`.grype.yaml` ignore drift:** stale `ignore:` entries (especially `fix-state: unknown` blanket rules) silently suppress real CVEs over time.
+
+**Validate completeness:** check the DB is fresh (`grype db status` - watch `max-allowed-built-age`) and update it (`grype db update`) before trusting a clean run. Drive the scan from an explicit SBOM (`syft <img> -o spdx-json | grype sbom:-`) so you can see exactly which components were catalogued; if the SBOM is thin, the scan is thin. Pin to the image **digest** not `latest`, scan `all-layers`, and diff vulnerability counts against the previously deployed digest to catch regressions.
+
 ## Prerequisites
 
 - Docker or Podman installed

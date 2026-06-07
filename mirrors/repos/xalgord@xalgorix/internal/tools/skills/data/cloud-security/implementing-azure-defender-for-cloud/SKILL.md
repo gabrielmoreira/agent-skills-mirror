@@ -44,6 +44,20 @@ nist_csf:
 
 **Do not use** for non-Azure workload protection exclusively (use AWS Security Hub or GCP SCC), for application-level security testing (use Azure DevOps DAST/SAST), or for identity-specific protection (use Microsoft Defender for Identity).
 
+## Common Misconfigurations & Verification
+
+- **Plans left on the Free tier:** the Free tier only delivers CSPM recommendations — no workload threat alerts. Each plan (`VirtualMachines`, `Containers`, `StorageAccounts`, `SqlServers`, `KeyVaults`) must be `Standard`. Check: `az security pricing list --query "[?pricingTier!='Standard'].name"` (should be empty for protected workloads).
+- **Auto-provisioning off:** without the Log Analytics / Defender agents, VMs generate no recommendations or alerts. Confirm `az security auto-provisioning-setting show --name default` returns `autoProvision: On` and `az security workspace-setting list` points at the intended workspace.
+- **Defender for Servers P1 vs P2 confusion:** P1 lacks JIT, FIM, and adaptive application controls. If those features are required, the subplan must be `P2` (`--subplan P2`).
+- **Workflow automation never fires:** the automation `ruleSets` propertyJPath/expectedValue must match the alert schema (e.g. `Severity == "High"`) and the target Logic App must be enabled, or High alerts are silently dropped.
+- **No continuous export:** findings won't reach Sentinel/SIEM unless an export rule exists (`az security setting list`).
+
+```bash
+az security pricing list --query "[].{Plan:name,Tier:pricingTier,Sub:subPlan}" -o table
+az security auto-provisioning-setting show --name default
+az security contact list   # confirm alert notifications are routed
+```
+
 ## Prerequisites
 
 - Azure subscription with Contributor or Security Admin role

@@ -89,3 +89,15 @@ Before completing any code modification task, verify:
 - Generate docs: `npx gitnexus wiki`
 
 <!-- gitnexus:end -->
+
+## DashClaw essentials + agent-log lessons (2026-06-05, for Codex)
+
+The global `~/.codex/AGENTS.md` covers core behavior; these are DashClaw-specific and not otherwise in this file:
+
+- **Before "done", run and READ:** `npm run lint && npm run typecheck && npx vitest run && npx next build` (full vitest — targeted runs miss cross-file regressions). CI also gates `contracts:check`, `openapi:check`, `api:inventory:check`, `route-sql:check`, `version:check`, `version:sync:check`.
+- **One shared version** across `package.json`, `sdk/package.json`, `sdk-python/pyproject.toml` — bump with `npm run version:set <x.y.z>`; never hardcode a version (`version:check` fails the build). Don't skip the SDK bump + republish tail.
+- **No direct SQL in `app/api/**/route.js`** — go through `app/lib/repositories/*.repository.js` (`route-sql:check` blocks regressions).
+- **Model/provider drift:** update `app/lib/providers/providerRegistry.js` and run `npm run pricing:refresh`; verify current model ids before wiring (`gpt-5.x-codex` ids drift and crash the bot).
+- **DashClaw MCP env:** only `DASHCLAW_URL` + `DASHCLAW_API_KEY` (+ optional `DASHCLAW_AGENT_ID`); `org_id` is not needed for MCP.
+- **Plugin parity:** mirror new capabilities across claude-code / codex / Hermes plugins. Don't cosmetically rename `.jsx`↔`.js`.
+- Design changes: read `.impeccable.md` first (see Design Context above).

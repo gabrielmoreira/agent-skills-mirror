@@ -40,6 +40,14 @@ nist_csf:
 
 **Do not use** for runtime threat detection (see detecting-cloud-threats-with-guardduty), for application-level security testing (see conducting-cloud-penetration-testing), or for compliance frameworks not based on CIS (refer to specific regulatory skill files).
 
+## Detection Gaps & Validation
+
+- **Scope gaps silently pass:** a single-region Prowler/ScoutSuite run misses resources in other regions — global resources aside, scan all regions (don't pin `--region`). In AWS Organizations, member accounts need a working assumed role; a role lacking permissions yields `ERROR`/`MANUAL`, **not** `FAIL`, so failures hide as "not checked."
+- **MANUAL/INFO ≠ PASS:** many CIS items (e.g., AWS 1.1 contact details, support role, several monitoring controls) are manual-attestation and tools mark them `MANUAL`. Counting those as passing inflates the score. Tally `FAIL`/`MANUAL`/`ERROR`/`INFO` separately.
+- **Profile and version drift:** confirm you ran the right benchmark (AWS v5.0 / Azure v4.0 / GCP v4.0) and the right Level (L1 vs L2). A v3 ruleset will miss newer controls and mis-map IDs.
+- **Security Hub "enabled" vs working:** `batch-enable-standards` only subscribes — controls can still be disabled or lack the AWS Config recorder they depend on, producing no results.
+- **Validate before reporting:** re-run with `--status FAIL` and reconcile failed-resource counts against ground truth (e.g., compare reported unencrypted buckets to `aws s3api list-buckets` + per-bucket `get-bucket-encryption`); confirm AWS Config recorder is on in every region the benchmark assumes.
+
 ## Prerequisites
 
 - Read-only access to target cloud accounts (AWS SecurityAudit policy, Azure Reader role, GCP Viewer role)

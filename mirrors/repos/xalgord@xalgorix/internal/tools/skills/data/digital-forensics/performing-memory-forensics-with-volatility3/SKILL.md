@@ -30,6 +30,16 @@ nist_csf:
 - For detecting process hollowing, DLL injection, or hidden processes
 - When disk-based forensics alone is insufficient and volatile data is critical
 
+## Detection Gaps & Validation
+
+Volatility output is only as good as the symbols and the plugins you remember to run. Avoid these failure modes:
+
+- **Wrong symbols/profile = empty or misleading output.** If `windows.info`/`banners` can't match a kernel or plugins return zero rows, you have the wrong ISF/symbol pack, not a clean image. Confirm the exact build (e.g., 19041) and fetch matching symbols before concluding "no processes/connections found." A Linux dump needs a banner-matched ISF built from the target kernel's `System.map`/DWARF.
+- **Acquisition smear and partial dumps.** RAM captured from a live, running system is inconsistent across the acquisition window (page smear); pointers may be stale and structures torn. Note acquisition method/time, and treat single-plugin results as candidates to corroborate.
+- **Hidden artifacts need cross-view, not one list.** `pslist` (EPROCESS list) misses unlinked/DKOM-hidden processes — diff against `psscan` (pool scan). Same for `modules` vs `modscan`, and `netstat` vs `netscan`. A process in `psscan` but not `pslist`, or `malfind` hits with RWX private memory, are the real leads.
+- **Validate before reporting.** Confirm injection by dumping the region (`windows.vadinfo`/`memmap --dump`) and checking for PE headers/shellcode, then YARA-scan it; correlate `netscan` C2 IPs with `cmdline`, loaded DLLs, and disk/network logs. Extract suspected malware and detonate or hash-match — don't call a `malfind` hit "Cobalt Strike" on permissions alone.
+- **Interpretation false positives.** `malfind` flags legitimate JIT engines (.NET, browsers, Java) with RWX memory; many `svcscan`/`netscan` entries are benign. `LISTENING` sockets and residual `CLOSED`/stale connections are not active C2. hashdump/lsadump can return blanks on modern Credential-Guard systems — absence isn't proof creds weren't stolen.
+
 ## Prerequisites
 - Python 3.7+ installed
 - Volatility 3 framework installed (`pip install volatility3`)

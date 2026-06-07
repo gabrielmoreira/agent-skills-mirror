@@ -37,6 +37,18 @@ GitLab provides an integrated DevSecOps platform that embeds security testing di
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+These mistakes make the pipeline look green while the security gate is a no-op:
+
+- **`allow_failure: true` on scanners.** GitLab's managed templates default `sast`/`dependency_scanning`/`secret_detection`/`container_scanning` to `allow_failure: true`, so findings never fail the pipeline. Set `allow_failure: false` on every scanner job you intend to gate on.
+- **Findings reported but never gated.** A vulnerability report artifact in the MR widget is not a gate — without a Merge Request Approval Policy that blocks on Critical/High, the MR still merges.
+- **Scanners not running on the branch you think.** `rules:` that restrict jobs to `$CI_DEFAULT_BRANCH` mean feature branches and MRs are never scanned. Confirm jobs actually appear in the pipeline for MR events.
+- **Container scan threshold too loose / scans wrong image.** Verify `CS_IMAGE`/`CS_SEVERITY_THRESHOLD` point at the freshly built `$DOCKER_IMAGE`, not `:latest`.
+- **DAST against an empty/unreachable staging URL** silently passes — confirm `DAST_WEBSITE` returns the real app.
+
+**Concrete verification:** Open an MR that adds a known secret (`AKIAIOSFODNN7EXAMPLE` plus a fake `aws_secret_access_key`) and a deliberately vulnerable dependency (e.g. `lodash@4.17.4`). Confirm the pipeline **fails** (red, non-zero exit) on `secret_detection` and `dependency_scanning` and that the MR is blocked from merging — not merely annotated. Then remove the test commit.
+
 ## Prerequisites
 
 - GitLab Ultimate license (required for full security scanner suite)

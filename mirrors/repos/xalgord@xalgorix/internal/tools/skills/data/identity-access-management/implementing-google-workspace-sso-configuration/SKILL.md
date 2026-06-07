@@ -35,6 +35,17 @@ Single Sign-On (SSO) for Google Workspace allows organizations to authenticate u
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+SSO can appear to "work" (users log in) while the security guarantees are hollow:
+
+- **MFA not actually enforced at the IdP:** SSO redirects correctly but the IdP sign-on policy allows password-only, so federation adds zero MFA. Confirm the IdP's app-specific policy mandates MFA for the Google Workspace app, then test by signing in with a user excluded from MFA — it must fail.
+- **Password sync left on / Google passwords still valid:** users can bypass SSO at `accounts.google.com` with a cached Google password. Verify SSO profile is assigned to the OU/group and that `https://mail.google.com/a/{domain}` redirects to the IdP in an incognito window; confirm directory-synced users have no usable Google password.
+- **No `RelayState`/session timeout or sign-out URL:** the IdP session lingers after logout. Confirm the Sign-out page URL terminates the IdP session and test that re-access forces re-auth.
+- **SAML assertion not signature-validated** because the wrong/expired X.509 cert was uploaded — Google may still accept it loosely. Re-upload the current IdP signing cert and test with an assertion signed by a different key (must be rejected); set a calendar reminder for cert expiry.
+- **Network mask too broad:** a mask covering external ranges lets users skip the IdP entirely. Audit the mask and confirm off-network access is redirected to the IdP, not Google login.
+- **Break-glass super admins NOT excluded from SSO:** if the IdP is down and no account bypasses SSO, you are locked out. Verify at least one super admin authenticates via Google directly and is exempt from the SSO profile.
+
 ## Prerequisites
 
 - Google Workspace Business, Enterprise, or Education edition

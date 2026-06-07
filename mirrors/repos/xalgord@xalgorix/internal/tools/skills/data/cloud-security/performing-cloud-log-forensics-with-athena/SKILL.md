@@ -37,6 +37,16 @@ nist_csf:
 - When hunting for indicators of compromise across multiple AWS log sources simultaneously
 - When creating evidence-grade SQL queries for compliance audits or legal proceedings
 
+## Detection Gaps & Validation
+
+- **Partition projection silently hides out-of-range data:** if the incident predates `projection.timestamp.range` start (`2023/01/01,NOW`) or sits outside the projected regions, queries return zero rows with no error. Confirm the range and `projection.*.values` cover the incident window and all relevant accounts/regions before trusting an empty result.
+- **Filter on the partition, not just `eventtime`:** the `timestamp`/`date`/`day` keys are `yyyy/MM/dd` strings. Omitting them forces a full-bucket scan (cost + timeout); filtering only on `eventtime` without the partition does the same - always constrain the partition column.
+- **Data events vs management events:** the CloudTrail table only contains what was logged - S3 `GetObject` exfil is invisible unless object-level data events were enabled. Cross-check the `s3_access_logs` table, which is best-effort and delayed, so absence there is not proof of no access.
+- **VPC Flow Log nuances:** rows with `log_status` of `NODATA`/`SKIPDATA` mean gaps, not safety, and default flow logs sample and omit fields. Account for both `ACCEPT` and `REJECT` and don't infer "no traffic" from missing rows.
+- **`LIKE`-based ALB detection is bypassable:** the injection query matches literal substrings - URL-encoded (`%2e%2e`), case-varied, or chunked payloads slip past. Decode `request_url` and broaden patterns before clearing a host.
+- **How to confirm a finding:** corroborate across tables (the Phase 6 CTE joining CloudTrail `AccessDenied` IPs to VPC Flow Logs is the model) and re-run with a tightened window to verify the counts are stable.
+- **Don't conclude "nothing happened" until** the projection range/regions cover the incident, data-event coverage is confirmed (or shown disabled), and flow-log `NODATA` gaps are accounted for.
+
 ## Prerequisites
 
 - AWS account with Athena, S3, and Glue permissions

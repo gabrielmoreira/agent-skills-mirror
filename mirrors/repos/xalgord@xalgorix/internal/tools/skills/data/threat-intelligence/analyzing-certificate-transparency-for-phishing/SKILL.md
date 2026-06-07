@@ -38,6 +38,15 @@ Certificate Transparency (CT) is an Internet security standard that creates a pu
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **CT log latency:** certificates can appear up to the 24h Maximum Merge Delay after issuance, and crt.sh ingestion adds more lag -- a Certstream miss does not mean the cert is absent. Backfill with a scheduled crt.sh `exclude=expired` sweep.
+- **Coverage gaps:** the public `wss://certstream.calidog.io` endpoint drops connections silently and skips entries during reconnects; crt.sh omits logs it does not poll. Cross-check both sources and reconcile counts.
+- **Homoglyph/IDN blind spot:** `Levenshtein.ratio` over ASCII misses punycode (`xn--`) lookalikes like `аpple.com` (Cyrillic а). Decode punycode and compare against a confusables table before scoring.
+- **FP drivers:** legitimate marketing subdomains, CDNs, and SAN-packed shared certs trip the keyword/similarity rules; a 0.75 threshold floods alerts.
+
+To validate: register a known test permutation you control and confirm it surfaces in both crt.sh and Certstream within the expected window; tune `similarity_threshold` against a labeled set and measure precision, not raw hit count. Confirm a flagged domain by resolving DNS, fetching the page, and comparing pHash/ssdeep to the real site -- a logged certificate alone is not a live phishing site.
+
 ## Prerequisites
 
 - Python 3.9+ with `requests`, `certstream`, `tldextract`, `Levenshtein` libraries

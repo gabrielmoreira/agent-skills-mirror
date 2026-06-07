@@ -46,6 +46,15 @@ Timesketch is an open-source collaborative forensic timeline analysis tool devel
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Timezone and timestamp-desc chaos:** the most common timeline error. Plaso emits events in UTC but CSV/JSONL imports often carry local-time strings with no offset, so events land hours off and the attack sequence reorders. Force every source to UTC on ingest, confirm the `datetime` field is ISO-8601 with a `Z`/offset, and watch `timestamp_desc` (Creation vs Modification vs Access) — sorting on the wrong one fabricates a false sequence.
+- **MACB interpretation:** `$MFT` timestamp manipulation (timestomping, T1070.006) means file Creation times can be attacker-forged. Corroborate against `$LogFile`/`$UsnJrnl`, prefetch, and Amcache rather than trusting MFT alone.
+- **Silent ingest loss:** OpenSearch field-mapping conflicts or oversized events drop rows without erroring in the UI. Verify the imported event count matches the source (`wc -l` on CSV/JSONL vs sketch event count) before analyzing.
+- **Parser coverage gaps:** running `log2timeline` with default parsers can skip evtx/shimcache/userassist — specify parsers explicitly or persistence and execution artifacts never enter the timeline.
+
+**Verification:** re-run the import count check, spot-check 3-5 known events against the raw artifact, confirm UTC alignment across two independent sources for one pivotal event, and validate that built-in analyzers (Sigma, Chain of Events) actually tagged the seeded test events.
+
 ## Prerequisites
 
 - Familiarity with incident response concepts and tools

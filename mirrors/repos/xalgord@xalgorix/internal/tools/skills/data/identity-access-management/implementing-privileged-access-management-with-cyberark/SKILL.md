@@ -33,6 +33,17 @@ Deploy CyberArk Privileged Access Management to discover, vault, rotate, and mon
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+CyberArk gives strong audit only if every privileged path goes through the vault and PSM — these silently undermine it:
+
+- **PSM bypass via direct connection:** accounts are vaulted but admins still RDP/SSH straight to targets using the same credentials, so no session recording occurs. Verify targets accept connections only from PSM server IPs (host firewall / jump-host enforcement), then attempt a direct connect — it must fail. Cross-check that every `Retrieve` audit event correlates to a PSM session; retrievals with no session indicate copy-paste of the password.
+- **CPM rotation not actually running:** a platform is assigned but rotation/verification is failing silently (no reconciliation account, network block). Confirm via PVWA/REST that each account shows recent `Last Successful Change` and `Last Successful Verification`, not just "managed = true," and triage the CPM `Failed` queue.
+- **Reconciliation account missing:** after a rotation drift the account locks out and admins fall back to a known break-glass password. Confirm a reconcile account is set per platform.
+- **Dual control / exclusive / one-time password set only on some Safes:** audit Master Policy exceptions and confirm Tier-0 Safes enforce dual control and one-time passwords, not just the defaults.
+- **Break-glass / vault-unavailable procedure unmonitored:** confirm the emergency credential is itself vaulted or sealed, and that any use raises a PTA/SIEM alert.
+- **Audit events not in SIEM:** verify CyberArk forwards CEF/Syslog and that PTA alerts (credential theft, unmanaged privileged account use) are firing, not just enabled.
+
 ## Prerequisites
 
 - Familiarity with identity access management concepts and tools

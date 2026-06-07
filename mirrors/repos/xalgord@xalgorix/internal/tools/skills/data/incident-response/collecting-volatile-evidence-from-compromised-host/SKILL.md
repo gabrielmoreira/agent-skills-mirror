@@ -36,6 +36,15 @@ nist_csf:
 - Legal proceedings may require forensic evidence preservation
 - Incident requires root cause analysis with volatile data
 
+## Detection Gaps & Validation
+
+- **Order of volatility is non-negotiable (RFC 3227):** registers/cache → RAM → network state → running processes → disk → archival. Capturing `netstat`/`tasklist` *before* the memory image is the classic mistake — every command you run allocates memory and overwrites freed pages, smearing the very RAM you need for fileless malware. Image memory FIRST, then collect live state.
+- **RAM smear / page inconsistency:** acquisition is not atomic, so the kernel keeps running and structures shift mid-dump (process lists vs. actual). Acquire as fast as possible, record start/end timestamps, and treat single-pass dumps of a live host as inherently slightly inconsistent — corroborate findings (a netscan connection) against a second source (Zeek/firewall).
+- **Don't trust the host's own binaries:** a rootkit hooks `ps`, `netstat`, `ls`, and `lsof` to hide itself. Run only the trusted toolkit from external media, and compare host-reported processes/ports against the memory image — a connection in RAM that `netstat` omits is a strong rootkit signal.
+- **Encryption/anti-forensics:** BitLocker/LUKS volumes are readable while mounted but lost on power-off; memory holds the keys. This is why isolate-and-image beats pull-the-plug unless the host is actively destroying data.
+
+**Validation:** hash every artifact immediately (`sha256sum`) and re-verify against the manifest before transfer; confirm the memory image is parseable (load it in Volatility and list processes) *before* leaving the scene; and reconcile volatile findings across at least two independent sources to rule out tool-level deception.
+
 ## Prerequisites
 - Forensic collection toolkit on USB or network share (trusted tools)
 - WinPmem/LiME for memory acquisition

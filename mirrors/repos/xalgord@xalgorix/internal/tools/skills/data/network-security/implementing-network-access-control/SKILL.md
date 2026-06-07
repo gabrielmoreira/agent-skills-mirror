@@ -34,6 +34,15 @@ nist_csf:
 
 **Do not use** as a standalone security solution without complementary controls, for networks with devices that do not support 802.1X supplicants, or without proper fallback mechanisms for critical infrastructure.
 
+## Common Misconfigurations & Verification
+
+- **No critical-VLAN fallback = outage or open:** without `authentication event server dead action authorize vlan <x>`, a FreeRADIUS outage drops every new device off the network (or, with open auth, lets them all on). Configure and test the dead-server path explicitly.
+- **MAB MAC spoofing & stale entries:** MAB authorizes on MAC alone, so a cloned printer MAC reaches the printer VLAN, and stale entries leave decommissioned devices authorized. Scope MAB to specific ports and reconcile the MAC list regularly.
+- **Supplicant skips server-cert validation:** PEAP clients configured without "Validate server certificate"/trusted root will auth to a rogue RADIUS, enabling credential theft. Push the corporate CA and enforce validation via GPO.
+- **Host-mode too permissive:** `multi-host` authorizes the whole port after one auth; use `multi-auth` on data ports and `single-host` where a single device is expected.
+
+**Verification:** `show authentication sessions interface Gi1/0/x` should report `Authorized` with the role-correct `Vlan Policy`. Run the matrix: valid 802.1X → corporate VLAN, no supplicant → guest VLAN (40), bad creds → quarantine (999), RADIUS stopped → critical VLAN. Confirm with `radtest user pass <radius> 0 <secret>` returning `Access-Accept` plus the expected `Tunnel-Private-Group-ID`. A device that authorizes while FreeRADIUS is down — with no critical-VLAN rule — is failing open.
+
 ## Prerequisites
 
 - RADIUS server (FreeRADIUS, Microsoft NPS, or Cisco ISE) configured with user/device authentication

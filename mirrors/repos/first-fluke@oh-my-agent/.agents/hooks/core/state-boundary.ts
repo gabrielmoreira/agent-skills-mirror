@@ -8,7 +8,7 @@ import { makePromptOutput } from "./hook-output.ts";
 import { writeInjectLog } from "./inject-log.ts";
 import { emitEvent, readEvents } from "./state-emit.ts";
 import { getActiveSid, readIndex, setLastSession } from "./state-marker.ts";
-import type { Vendor } from "./types.ts";
+import type { HandlerCtx, HandlerResult, HookInput, Vendor } from "./types.ts";
 import { type MemoryFact, renderStateSnapshot } from "./vendor-renderer.ts";
 
 function inferVendorFromScriptPath(): Vendor | null {
@@ -179,6 +179,30 @@ export async function onBoundary(
   return rendered;
 }
 
+// ── Pure handler (canonical ABI) ─────────────────────────────
+
+/**
+ * Pure decision function — the single logic source for state-boundary injection.
+ *
+ * Returns a `context` HandlerResult when a boundary snapshot should be injected,
+ * or `null` when no boundary is detected (same session, no active L1 sid).
+ * `ctx.cwd` must be the resolved git-root project directory; `ctx.sid` is the
+ * vendor session id (NOT the L1 oma sid — the L1 sid is read from disk).
+ */
+export async function run(
+  input: HookInput,
+  ctx: HandlerCtx,
+): Promise<HandlerResult | null> {
+  if (input.kind !== "prompt") return null;
+
+  const { vendor, cwd: projectDir, sid: vendorSid = "unknown" } = ctx;
+  const rendered = await onBoundary(projectDir, vendor, vendorSid);
+  if (!rendered) return null;
+  return { type: "context", additionalContext: rendered };
+}
+
+// ── Standalone entry (direct bun invocation / vendor hook subprocess) ──
+
 async function main() {
   const raw = readFileSync(0, "utf-8");
   let input: Record<string, unknown>;
@@ -191,8 +215,19 @@ async function main() {
   const vendor = detectVendor(input);
   const projectDir = getProjectDir(vendor, input);
   const vendorSid = getVendorSid(input);
-  const rendered = await onBoundary(projectDir, vendor, vendorSid);
-  if (rendered) process.stdout.write(makePromptOutput(vendor, rendered));
+
+  // Delegate to run() — single logic source.
+  const hookInput: HookInput = {
+    kind: "prompt",
+    prompt: (input.prompt as string) ?? "",
+    cwd: projectDir,
+  };
+  const ctxVal: HandlerCtx = { vendor, cwd: projectDir, sid: vendorSid };
+
+  const result = await run(hookInput, ctxVal);
+  if (result && result.type === "context") {
+    process.stdout.write(makePromptOutput(vendor, result.additionalContext));
+  }
 }
 
 if (import.meta.main) {

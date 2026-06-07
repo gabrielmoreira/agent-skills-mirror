@@ -36,6 +36,15 @@ Use this skill when:
 
 **Do not use** this skill for day-to-day IOC triage or incident-specific intelligence tasks — those use operational intelligence workflows, not lifecycle management.
 
+## Detection Gaps & Validation
+
+- **Collection without direction:** subscribing to every feed without PIRs yields volume, not answers. Validate that each collection source traces to a documented PIR before counting it as coverage.
+- **Unanswered-PIR blind spots:** a PIR with no matching collection source is a coverage gap that produces low-confidence guesswork. Document and escalate the gap rather than fabricating an estimate.
+- **Tactical-only drift:** overweighting IOC bulletins starves strategic and operational products that inform investment and risk decisions. Confirm all three intelligence levels are produced on cadence.
+- **Stale processing rules:** dedup and confidence-scoring logic that is never retuned silently drops or over-merges indicators. Re-baseline against known test IOCs each quarter.
+- **No feedback = unmeasured value:** without structured feedback within 5 business days, products drift from stakeholder needs. Track PIR coverage rate, IOC true-positive rate, and time-to-disseminate.
+- **How to validate:** run a quarterly review confirming every PIR is either answered with cited confidence or flagged as a gap, and verify metrics (TP rate, satisfaction) trend over time rather than relying on output volume.
+
 ## Prerequisites
 
 - Executive sponsorship and defined CTI team structure (1+ dedicated analysts)

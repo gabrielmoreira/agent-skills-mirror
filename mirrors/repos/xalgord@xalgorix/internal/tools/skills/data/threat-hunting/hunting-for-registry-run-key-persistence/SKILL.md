@@ -41,6 +41,15 @@ Registry Run keys (T1547.001) are one of the most commonly used persistence mech
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Filter completeness is everything:** EID 13 fires only for paths in your Sysmon RegistryEvent rules. Confirm coverage of HKLM and HKCU `...\CurrentVersion\Run`, `RunOnce`, `RunOnceEx`, `\Policies\Explorer\Run`, AND `Wow6432Node` variants — partial configs are the dominant false-negative.
+- **Value-only persistence:** encoded PowerShell, `mshta http`, or `rundll32` written straight into the value leaves no EID 11 FileCreate, and chaining to EID 1 fails when the LOLBin itself is the registered command.
+- **Self-erasing evidence:** RunOnce auto-deletes its value at execution; a same-day EID 13 with empty `Details` may be the only trace.
+- **Offline hives:** logged-off users' Run keys live in unmounted NTUSER.DAT, invisible to live `reg query`.
+- **Validate:** run Atomic T1547.001 writing a Run value via both reg.exe and PowerShell; confirm `TargetObject`, `Details`, and `Image` populate.
+- **FP tuning:** baseline OneDrive, Teams, Spotify, and vendor updaters by signed image + expected value string.
+
 ## Prerequisites
 
 - Windows systems with Sysmon installed and configured to log Event ID 13

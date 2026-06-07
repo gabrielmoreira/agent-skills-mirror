@@ -28,6 +28,14 @@ nist_csf:
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Mail never lands (the silent campaign killer):** a campaign that "launched" with 0 opens usually means delivery failed, not that users were vigilant. Before blaming awareness, confirm deliverability — SPF/DKIM/DMARC alignment on the sending domain, no Spamhaus/Barracuda listing, and that the gateway didn't quarantine. Send one seed email to a controlled inbox and inspect headers (`Authentication-Results: spf=pass dkim=pass`).
+- **Sending Profile misconfig:** wrong SMTP host/port/auth, or a "From" that fails DMARC, gets silently junked. Use GoPhish's "Send Test Email" on the sending profile and confirm receipt before importing the target group.
+- **Tracking pixel / landing page unreachable from the victim network:** opens and clicks only register if the phish server URL resolves and is reachable externally (valid TLS cert, not blocked by web proxy). Confirm by clicking the link yourself from off-network and watching the event appear in the campaign timeline.
+- **Captured creds not recorded:** the landing page needs `Capture Submitted Data` (and `Capture Passwords`) enabled plus a valid redirect, or submissions show as clicks only. Submit a test credential and verify it appears under campaign results.
+- **Don't conclude "low click rate = secure":** a 0% result with unverified delivery, DNS, and capture settings is an instrumentation failure, not a clean bill of health. Confirm the full open→click→submit chain works end to end with a seed target first.
+
 ## Prerequisites
 
 - Familiarity with security operations concepts and tools

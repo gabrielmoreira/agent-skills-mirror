@@ -45,6 +45,15 @@ nist_csf:
 
 **Do not use** for applications requiring persistent UDP connections not supported by Cloudflare Tunnel, for environments requiring air-gapped or fully on-premises access control, or when regulatory requirements prohibit routing traffic through third-party cloud infrastructure.
 
+## Common Misconfigurations & Verification
+
+- **Origin reachable bypassing Access:** Access only enforces on the hostname proxied through Cloudflare. If the origin has a public IP, or the tunnel-backed service can be hit at its raw server IP, an attacker skips the policy. Use Cloudflare Tunnel (no inbound ports), lock the origin firewall to Cloudflare IP ranges, and enable Authenticated Origin Pulls.
+- **No default-deny / Bypass policy too broad:** a leftover `bypass` policy or an `include` of `everyone` makes the app public. Every Access app must end with an explicit deny and scope `include` to specific groups/emails.
+- **`require` block omitted:** a policy that only sets `include` for an IdP group verifies identity but never checks the device. Add a `require` with the `device_posture` integration (CrowdStrike, `disk_encryption`, `os_version`) so an unmanaged device fails.
+- **Service tokens over-scoped:** an Any-Access-Service-Token policy bypasses human auth, scope tokens to one app and rotate them.
+
+Verify: from an un-enrolled network `curl https://wiki.company.com` and confirm you are redirected to the IdP, never straight to the app; then `curl` the origin server IP directly and confirm it refuses. Sign in from a device failing the posture rule and confirm `Action: deny` / `Allowed: false` in the `access_requests` Logpush dataset.
+
 ## Prerequisites
 
 - Cloudflare account with Zero Trust subscription (Free for up to 50 users, paid plans for larger teams)

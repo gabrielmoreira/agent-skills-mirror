@@ -3,7 +3,7 @@
 **Scope**: Authoritative for all work when `DEPLOY_MODE=prod-railway`
 **Last Updated**: 2026-06-03
 
-> **Authority**: DEEP — when this mode is active, this file is authoritative over the parent `.hi/instruct.md`. See [`.github/copilot-instructions.md`](../../../../.github/copilot-instructions.md) for the depth-priority hierarchy and [`../README.md`](../../README.md) for the deployment-mode convention.
+> **Authority**: DEEP — when this mode is active, this file is authoritative over the parent `.ai/instruct.md`. See [`.github/copilot-instructions.md`](../../../.github/copilot-instructions.md) for the depth-priority hierarchy and [`../README.md`](../../README.md) for the deployment-mode convention.
 
 ---
 
@@ -53,7 +53,7 @@
 - [ ] [Railway CLI](https://docs.railway.app/develop/cli) installed (`railway --version`)
 - [ ] GitHub connected to the Railway account
 - [ ] `Dockerfile` (or compatible buildpack) at the deployable module's root
-- [ ] All required env vars known — see [`.hi/config-vars.md`](../../../config-vars.md)
+- [ ] All required env vars known — see [`.ai/config-vars.md`](../../../.ai/config-vars.md)
 
 ---
 
@@ -135,7 +135,7 @@ railway variables --set NAME=value
 railway variables --remove NAME
 ```
 
-The same variables documented in [`.hi/config-vars.md`](../../../config-vars.md) apply — only the storage location changes.
+The same variables documented in [`.ai/config-vars.md`](../../../.ai/config-vars.md) apply — only the storage location changes.
 
 ---
 
@@ -225,7 +225,7 @@ railway logs -f --tail 100
 - All secrets live in Railway variables, **not** in `.env` and **not** in source.
 - Railway-managed TLS is automatic and uses Let's Encrypt; do not attempt to override.
 - Minimize the public attack surface: only the API/frontend services should be public; DB and internal services stay private.
-- Rotate `JWT_SECRET` and DB credentials periodically — see [`.hi/credentials.md`](../../../credentials.md).
+- Rotate `JWT_SECRET` and DB credentials periodically — see [`.ai/credentials.md`](../../../.ai/credentials.md).
 
 ---
 
@@ -243,7 +243,7 @@ railway logs -f --tail 100
 
 ```bash
 railway logs
-# Look for: missing env var, Dockerfile error, runtime mismatch with .hi/dev-specs.md
+# Look for: missing env var, Dockerfile error, runtime mismatch with .github/dev-specs.md
 ```
 
 **App crashes after deploy**
@@ -271,7 +271,7 @@ railway variables | grep DATABASE_URL
 
 - [ ] `railway status` shows the service running
 - [ ] `https://[PROJECT_NAME].railway.app` returns 200
-- [ ] All variables from [`.hi/config-vars.md`](../../../config-vars.md) are set in Railway
+- [ ] All variables from [`.ai/config-vars.md`](../../../.ai/config-vars.md) are set in Railway
 - [ ] `railway logs` is clean
 - [ ] DB backups are enabled (default) and last backup is recent
 
@@ -279,8 +279,8 @@ railway variables | grep DATABASE_URL
 
 ## Next Steps
 
-- Back to LAN dev → [`dev-lan`](../../dev-lan/.hi/instruct.md)
-- Public internet self-hosted → [`prod-self-serve`](../../prod-self-serve/.hi/instruct.md)
+- Back to LAN dev → [`dev-lan`](../../dev-lan/.ai/instruct.md)
+- Public internet self-hosted → [`prod-self-serve`](../../prod-self-serve/.ai/instruct.md)
 
 ---
 

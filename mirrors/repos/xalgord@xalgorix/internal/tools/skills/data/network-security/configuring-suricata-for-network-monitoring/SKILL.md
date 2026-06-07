@@ -33,6 +33,15 @@ nist_csf:
 
 **Do not use** as a standalone security solution without complementary controls, for encrypted traffic inspection without TLS decryption capabilities, or on systems with insufficient CPU/memory for the expected traffic volume.
 
+## Common Misconfigurations & Verification
+
+- **HOME_NET misdefined:** leaving the default broad RFC1918 list when your assets are a single /24 makes `$EXTERNAL_NET` rules fire on internal traffic (or never). Confirm with `suricata --dump-config | grep HOME_NET` and validate `suricata -T -c suricata.yaml`.
+- **Packet drops = silent blind spot:** under-threaded AF_PACKET or small `ring-size` drops packets, so alerts simply never fire. Check `jq 'select(.event_type=="stats") | .stats.capture.kernel_drops' eve.json | tail -1` — it MUST be 0; raise `threads`/`ring-size` if not.
+- **NIC offloading on:** GRO/LRO corrupt checksums and reassembly. Verify `ethtool -k eth1 | grep -E 'gro|lro|tso|gso'` all `off`.
+- **IPS mode without the NFQUEUE iptables rule (fail-open):** running `-q 0` but never adding `iptables -I FORWARD -j NFQUEUE --queue-num 0` means traffic bypasses Suricata entirely and nothing is blocked. Confirm the rule exists and `default-rule-path`/rules actually loaded (`wc -l suricata.rules`).
+- **Rules enabled but not reloaded:** `suricata-update` writes rules but the engine keeps the old set until `kill -USR2 $MAINPID`. Verify the new SID count after reload.
+- **Validate end-to-end:** `curl http://testmynids.org/uid/index.html` then `tail -f eve.json | jq 'select(.event_type=="alert")'` — the ET GPL uid rule must appear. For custom rules (e.g., JA3 `9000003`), replay a matching pcap and confirm the SID fires before trusting coverage.
+
 ## Prerequisites
 
 - Suricata 7.0+ installed from PPA or source (`suricata --build-info`)

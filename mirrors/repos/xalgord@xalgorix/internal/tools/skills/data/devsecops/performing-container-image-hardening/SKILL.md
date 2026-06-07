@@ -36,6 +36,15 @@ nist_csf:
 
 **Do not use** for runtime container security monitoring (use Falco), for host-level Docker daemon hardening (use CIS Docker Benchmark host checks), or for container orchestration security (use Kubernetes security scanning).
 
+## Common Misconfigurations & Verification
+
+- **Still running as root:** a `USER appuser` line placed *before* the process actually starts, or overridden by a later `USER root`/entrypoint that re-escalates, leaves the container effectively root. Confirm with `docker run --rm img whoami` and inspect the image with `docker inspect -f '{{.Config.User}}' img` — an empty value means root.
+- **Distroless image with a shell smuggled in:** copying busybox or leaving `/bin/sh` defeats the point. Verify `docker run --rm img /bin/sh` fails, and prefer `gcr.io/distroless/static-debian12:nonroot` with `USER nonroot:nonroot`.
+- **Multi-stage leak:** secrets or build tools `COPY`'d from the builder stage end up in the final layer. Check `docker history --no-trunc img` and scan the build context with `trivy fs`, not just the final image.
+- **Hardening not enforced at runtime:** a non-root image can still run privileged if the orchestrator allows it. Pair it with `readOnlyRootFilesystem: true`, `allowPrivilegeEscalation: false`, and `capabilities.drop: ["ALL"]`.
+- **Mutable base tag:** `FROM python:3.12-slim` drifts; pin by `@sha256:` digest for reproducibility.
+- **Verify by introducing a finding:** add a step that touches `/` and confirm "Read-only file system", then run `trivy image --severity HIGH,CRITICAL img` and confirm root/`:latest` misconfigurations are flagged. A hardened image that still passes `touch /test` as root is not hardened.
+
 ## Prerequisites
 
 - Docker or BuildKit for multi-stage builds

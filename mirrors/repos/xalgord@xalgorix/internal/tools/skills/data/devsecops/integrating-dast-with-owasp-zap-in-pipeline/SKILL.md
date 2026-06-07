@@ -36,6 +36,15 @@ nist_csf:
 
 **Do not use** for scanning source code (use SAST), for scanning dependencies (use SCA), or for infrastructure configuration scanning (use IaC scanning tools).
 
+## Common Misconfigurations & Verification
+
+- **Baseline mistaken for full coverage:** `zaproxy/action-baseline` (and `zap-baseline.py -I`) only spiders and passive-scans — it never fires XSS/SQLi payloads. Use `action-full-scan`/`zap-full-scan.py` (active scan) for injection classes, and accept the 30+ minute runtime.
+- **Scanning behind auth as anonymous:** without a context/auth script ZAP only sees the login page and reports "clean." Supply a context file, replay an authenticated session token, and confirm the spider count covers post-login URLs.
+- **Gate that can't fail:** `-I` (`allow_issue_writing: false` / informational-only) plus `cmd_options` without `-w`/exit handling means the job stays green on a HIGH finding. Drive the gate off the JSON report (FAIL rows in `report_json.json`) or a non-zero ZAP exit.
+- **API scan with no spec:** pointing `action-api-scan` at a base URL instead of the OpenAPI/GraphQL definition leaves most endpoints untested. Pass `target: .../openapi.json` with `format: openapi`.
+- **rules.tsv silently over-suppressing:** an `IGNORE` line (e.g. `40012 IGNORE`) hides reflected XSS forever. Review the tsv each release and keep injection rules at `FAIL`.
+- **Verify by introducing a finding:** deploy a build with a reflected `?q=<script>` sink to staging, run the full scan, and confirm alert 40012 appears and the pipeline blocks. A scan that stays green on a planted XSS is misconfigured.
+
 ## Prerequisites
 
 - OWASP ZAP Docker image or installed locally (zaproxy/zap-stable or zaproxy/action-*)

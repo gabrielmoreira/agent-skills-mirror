@@ -32,6 +32,16 @@ A cryptographic audit systematically reviews an application's use of cryptograph
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+Automated crypto audits routinely under-report because scanners only grep for obvious names. The items below are the ones most often skipped — check every one before concluding a codebase is clean.
+
+- **Hardcoded keys/secrets beyond `password=`:** base64/hex byte-string literals passed straight into `AESGCM(key)` or `Fernet(key)`, IVs/nonces defined as constants, and `.pem`/`.env` files committed to the repo. Grep for `Cipher(`, `os.urandom` results assigned at module scope, and high-entropy string literals — not just the word "secret".
+- **Weak PRNG for crypto:** `random.random()`, `random.randint`, `numpy.random`, or `time`-seeded values used for keys/IVs/tokens/salts. Flag any non-`secrets`/`os.urandom` source feeding a crypto API.
+- **Deprecated TLS / cipher config:** `ssl.PROTOCOL_TLSv1`, `ssl_version=TLSv1_1`, `CERT_NONE`/`check_hostname=False`, and server configs allowing SSLv3/TLS1.0/1.1 or RC4/3DES/EXPORT suites. Audit config files and live endpoints, not just code.
+- **Insecure modes / weak KDF hiding in wrappers:** `modes.ECB()`, static IVs, `PBKDF2` with low iterations, MD5/SHA-1 used as a "KDF", and `hashlib.md5(password)` for storage.
+- **Positive signal (how to confirm a real finding vs. noise):** a true positive is reachable application code where attacker-influenced data meets the weak primitive — confirm the call is live (not test/vendored/dead code), trace the key/IV to its actual source, and show the concrete impact (e.g., ECB on PII, MD5 for password storage). Report severity, file:line, and remediation; keep false positives <10% by excluding `tests/`, fixtures, and non-security hash uses (e.g., MD5 for a cache key).
+
 ## Prerequisites
 
 - Familiarity with cryptography concepts and tools

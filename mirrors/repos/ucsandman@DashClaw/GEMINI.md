@@ -309,4 +309,17 @@ simple to adopt
 powerful to operate
 transparent in its governance model
 
+---
+
+# Agent-log lessons + operational gates (2026-06-05)
+
+Behavioral rules (explain before acting, don't confirm the story I want, verify current model ids) live in the global `~/.gemini/GEMINI.md`. DashClaw-specific operational gates:
+
+- **Before reporting done, run and read:** `npm run lint`, `npm run typecheck`, `npx vitest run` (full suite), `npx next build`. CI also gates `contracts:check`, `openapi:check`, `api:inventory:check`, `route-sql:check`, `version:check`.
+- **Versions:** one shared version across `package.json`, `sdk/package.json`, `sdk-python/pyproject.toml`; bump with `npm run version:set <x.y.z>` — never hardcode (`version:check` fails the build).
+- **No direct SQL in `app/api/**/route.js`** — use `app/lib/repositories/*.repository.js`.
+- **Model/provider drift:** update `app/lib/providers/providerRegistry.js` and run `npm run pricing:refresh`; never hardcode model ids/prices; verify current ids.
+- **Design:** read `.impeccable.md` before any UI/copy change; never hardcode hex — use the tokens in `app/globals.css` and the Tailwind theme.
+- **DashClaw MCP env:** only `DASHCLAW_URL` + `DASHCLAW_API_KEY` (+ optional `DASHCLAW_AGENT_ID`); `org_id` not needed. Maintain plugin parity (claude-code/codex/Hermes); don't cosmetically rename `.jsx`↔`.js`.
+
 The system exists to enable safe and accountable AI agent autonomy.

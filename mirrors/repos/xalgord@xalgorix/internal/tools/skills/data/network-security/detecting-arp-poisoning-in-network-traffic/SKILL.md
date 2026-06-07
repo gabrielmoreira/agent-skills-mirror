@@ -37,6 +37,14 @@ ARP poisoning (ARP spoofing) is a Layer 2 attack where an adversary sends falsif
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Unidirectional/half-duplex spoofing slips MAC-change checks:** attackers poison only the victim (not the gateway), so a naive `arp.opcode==2` watcher on one host misses it. Correlate both directions; flag any IP whose `arp.src.hw_mac` differs from the DHCP-snooping binding regardless of who was poisoned.
+- **Gratuitous-ARP-only detectors miss request-based poisoning:** some tools spoof via ARP *requests* (opcode 1) with a forged sender MAC. Watch both opcodes — `arp.opcode==1 or arp.opcode==2` with sender IP/MAC mismatch — not just gratuitous replies.
+- **Static-ARP and proxy-ARP hosts cause false positives:** load balancers, VRRP/HSRP (virtual MAC `0000.0c07.acXX`), and clustered NICs legitimately move an IP between MACs. Whitelist VRRP/HSRP virtual MACs and known failover pairs before alerting on "MAC flip-flop."
+- **Rate thresholds miss low-and-slow poisoning:** one forged reply every few seconds stays under a 50-pkt/10s flood threshold but still sustains MitM. Alert on *any* binding change against the snooping table, independent of volume.
+- **Validate the detector fires:** in an authorized lab, run `arpspoof -i eth0 -t <victim> <gw>` (or bettercap `arp.spoof`) and confirm ARPWatch logs `changed ethernet address`/`flip flop`, the Python monitor emits a CRITICAL gateway-spoof alert, and the switch increments `show ip arp inspection statistics` drops. No alert = capture isn't on the right broadcast domain or DAI trust is misconfigured.
+
 ## Prerequisites
 
 - Access to the target network segment (broadcast domain)

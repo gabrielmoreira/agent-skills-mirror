@@ -39,6 +39,14 @@ The NTFS Master File Table ($MFT) is the central metadata repository for every f
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Most-missed artifacts:** a single `$MFT` parse misses where evidence actually survives - check MFT record slack (remnants of a prior file in the 1024-byte entry), resident `$DATA` of small deleted files (fully recoverable from the record itself), non-base records reachable via `$ATTRIBUTE_LIST`, and `$MFTMirr`. Always also pull `$LogFile` and `$UsnJrnl:$J`, which record deletes the MFT alone no longer reflects.
+- **USN journal wrap:** `$UsnJrnl:$J` is a sparse, size-capped circular log - older deletions are silently dropped when it wraps, so "not in the USN journal" is not "did not happen." Corroborate with `$LogFile` transactions (DeallocateFileRecordSegment) and Volume Shadow Copies of `$MFT` for the pre-deletion state.
+- **Timestomping detection ($SI vs $FN):** `$STANDARD_INFORMATION` times are settable from user mode (SetFileTime), but `$FILE_NAME` times are kernel-only. An $SI earlier than the $FN, zeroed sub-second (`.000000000`) precision, or $SI inconsistent with the MFT entry-number ordering implies timestomping - confirm against `$LogFile`/USN and the record's sequence number.
+- **Validate recoverability before claiming it:** a non-InUse record with intact cluster runs is recoverable only if those clusters were not reallocated - verify against `$Bitmap` and carve the runs with `icat`, rather than trusting the recorded `FileSize` as proof of content.
+- **Interpretation pitfalls (false positives):** archived/copied files and installers legitimately carry old $SI dates; NTFS file tunneling re-applies prior timestamps on recreate; reformat/defrag reorders MFT entries. Confirm volume timezone and clock skew, and cross-check a second artifact (Prefetch, Recycle Bin `$I`, Event Logs) before attributing a deletion to a user.
+
 ## Prerequisites
 
 - Forensic disk image (E01, raw/dd, VMDK, or VHDX format)

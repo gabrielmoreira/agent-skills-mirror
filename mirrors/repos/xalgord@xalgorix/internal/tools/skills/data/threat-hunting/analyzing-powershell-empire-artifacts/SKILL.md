@@ -48,6 +48,15 @@ PowerShell Empire is a post-exploitation framework consisting of listeners, stag
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Logging downgrade is the #1 evasion.** Empire can run under PowerShell v2 (`powershell -version 2`), which never emits Script Block Logging (4104). Hunt EID 400/600 engine-start events showing `EngineVersion=2.0` and the v2 downgrade itself, not just 4104.
+- **Reassemble before you match.** Large payloads are split across multiple 4104 events (`MessageNumber`/`MessageTotal`); regexing each fragment independently misses the Base64 blob and `FromBase64String`. Stitch fragments by ScriptBlockId first.
+- **Don't pin on default strings.** The literal launcher `-noP -sta -w 1 -enc`, the default URIs (`/login/process.php`, `/admin/get.php`), and stock user agents are all configurable in Empire 4.x / malleable profiles. Match on behavior (`System.Net.WebClient` + `DownloadData` + `IEX`) and AMSI-bypass patterns, not one fixed string.
+- **Coverage check:** confirm 4104 (and ideally 4103 Module Logging) are enabled via GPO and that AMSI hasn't been patched in-process (`amsiInitFailed` writes).
+- **Validate the rule fires:** run a benign `powershell -enc <base64 of Write-Host hi>` and confirm your pipeline captures the 4104 event and your decoder reconstructs the cleartext.
+- **Tune false positives:** SCCM, Intune, and admin tooling legitimately use `-enc`/`-EncodedCommand`. Allowlist by signing cert and known ScriptBlock hashes rather than suppressing `-enc` wholesale.
+
 ## Prerequisites
 
 - Python 3.9+ with access to Windows Event Log or exported EVTX files

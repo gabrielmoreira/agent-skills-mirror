@@ -36,6 +36,14 @@ Shodan is the world's first search engine for internet-connected devices, contin
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+- **Banner staleness:** Shodan results reflect the *last scan*, not now - a host may be remediated, reassigned, or the banner spoofed. Always check `last_update`/`timestamp`; a CVE list from a scan weeks old is a lead, not proof the service is still vulnerable. Re-run `host(ip)` for fresh data before a triage decision.
+- **Honeypots and decoys:** mass open ports, conflicting service banners, and tags like `honeypot`/`ics-honeypot` mark a deception host - do not score it "critical" just for "20 open ports." Use the `tags` field and look for implausible service combinations.
+- **Shared/ephemeral attribution:** cloud, CDN, VPN, and NAT IPs serve thousands of tenants, so reputation on a shared `org` (AWS, Cloudflare) says little about a specific actor. Pivot via `ssl.cert.subject.CN`, `ssl.cert.serial`, `http.favicon.hash`, and JARM facets rather than the IP alone, and avoid blocking shared infrastructure outright.
+- **Free InternetDB caveat:** `internetdb.shodan.io` returns a reduced dataset (no banners, no timestamps) - fine for bulk triage but never the sole basis for a verdict.
+- **How to confirm:** corroborate a "malicious" verdict with a second source - VirusTotal IP relations, GreyNoise to separate targeted activity from internet-wide background noise, and passive DNS - before escalating or blocking.
+
 ## Prerequisites
 
 - Python 3.9+ with `shodan` library (`pip install shodan`)

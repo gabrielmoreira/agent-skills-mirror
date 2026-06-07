@@ -34,6 +34,16 @@ nist_csf:
 
 **Do not use** against networks without explicit written authorization, on production systems during peak hours without approval, or to perform denial-of-service through aggressive scan timing.
 
+## Most Often Missed & How to Confirm
+
+- **UDP is the silent gap:** a TCP-only scan misses SNMP (161), DNS (53), TFTP (69), IKE (500), NTP (123). Run `nmap -sU --top-ports 200` (slow, but those services are often the foothold); skipping UDP is the most common under-report.
+- **Full port range, not top-1000:** services hide on high ports — use `-p-` before declaring a host "has only 3 ports." Default scans cover 1000 of 65535.
+- **Probes blocked ≠ host down:** if ICMP is filtered, `-sn` marks live hosts as down. Add TCP/UDP discovery probes (`-PS21,22,80,443,445 -PU53,161`) or scan with `-Pn`; never conclude "no hosts" from ICMP alone.
+- **Firewall/IDS evasion variants:** when a straight `-sS` is filtered, try fragmentation (`-f`/`--mtu`), decoys (`-D RND:10`), source-port spoofing (`--source-port 53`), and slow timing (`-T1 --scan-delay`) to evade rate-based IDS — a filtered result may be the IDS, not a closed port.
+- **NSE depth:** `-sV -sC` gives version + safe scripts, but vuln confirmation needs `--script vuln` and targeted scripts (`smb-vuln-ms17-010`, `ssl-heartbleed`). A clean default scan is not a clean vuln assessment.
+- **How to confirm a hit:** a real open port returns SYN-ACK (`-sS`) or a service banner under `-sV`; `open|filtered` (common on UDP) is unconfirmed — re-probe with `--version-intensity` or an app-specific NSE script before reporting it open or closed.
+- **Don't conclude "host clean"** until you've covered TCP `-p-`, top UDP, version+NSE vuln scripts, and retried filtered ports through an evasion technique.
+
 ## Prerequisites
 
 - Nmap 7.90+ installed (`nmap --version` to verify)

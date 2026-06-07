@@ -41,6 +41,14 @@ nist_csf:
 
 **Do not use** for behavioral TTP analysis without accompanying technical indicators; use MITRE ATT&CK mapping for behavioral characterization.
 
+## Detection Gaps & Validation
+
+- **Atomic IOCs decay fast, behavioral ones don't:** IPs and domains rotate hourly and hashes change with every recompile, so a clean hash match does not mean "not infected." Prioritize durable indicators — registry Run keys, scheduled-task/service names, mutexes, named pipes (e.g. Cobalt Strike `\\.\pipe\MSSE-*`), and file paths — and pair atomic IOCs with the TTP that produced them.
+- **Pyramid-of-Pain trap:** blocking only hashes/IPs lets the actor return in minutes. Treat low-cost indicators as detections, not containment.
+- **Enrichment false-positives:** flagging a shared CDN, cloud egress IP, or sinkhole as malicious poisons every consumer of the feed. Validate against passive DNS/WHOIS age and provider ranges before scoring; recently registered + privacy-protected + low VT detections is a stronger signal than VT count alone.
+- **Collection coverage gaps:** an IOC absent from one source isn't absent from the host — memory-only artifacts (netscan connections, injected strings) never touch disk, and DNS-log gaps hide tunneling. Pull from memory, EDR, network, and email, not just one.
+- **Validate before distributing:** confirm each indicator was directly observed in *this* incident (not inherited from a report), defang in human-readable output, strip internal IPs/hostnames, and set the correct TLP. Cross-check a sample of IOCs by hunting them across the estate — a true IOC should light up on the known-compromised hosts.
+
 ## Prerequisites
 
 - Access to incident evidence sources: SIEM logs, EDR telemetry, memory dumps, disk images, network captures

@@ -39,6 +39,15 @@ nist_csf:
 - During incident response to determine scope of credential compromise
 - When auditing LSASS protection controls (Credential Guard, RunAsPPL)
 
+## Detection Gaps & Validation
+
+- **GrantedAccess masking:** rules pinned to `0x1FFFFF`/`0x1010` miss tools that open LSASS with minimal rights — modern dumpers request `0x1438`/`0x1410` or clone the handle via `PROCESS_DUP_HANDLE (0x0040)`. Match the EID 10 CallTrace (into `dbgcore.dll`/`dbghelp.dll`/`ntdll!NtReadVirtualMemory`) rather than a single mask.
+- **PPL/Credential Guard gaps:** if RunAsPPL or Credential Guard is not enabled, plaintext is recoverable and some EDRs suppress the alert — confirm protection state; conversely handle-clone and `MiniDumpWriteDump` evade many EID 10 rules.
+- **Disk-based paths bypass LSASS rules entirely:** NTDS.dit via `vssadmin create shadow` + `ntdsutil ifm`, and `reg save HKLM\SAM`, are 4688/EID 1 command-line hunts — invisible if command-line auditing is off.
+- **DCSync (T1003.006):** detect via DC Security EID **4662** with replication GUIDs (`DS-Replication-Get-Changes`) from a non-DC account; requires directory-service access auditing.
+- **Validate:** run Atomic Red Team **T1003.001** (comsvcs `MiniDump`, `procdump -ma lsass`) and **T1003.003** to confirm the EID 10, EID 1, and 4662 searches fire.
+- **Tune FPs:** MsMpEng, WerFault, and EDR agents legitimately read LSASS — allowlist by signed SourceImage, not by access mask alone.
+
 ## Prerequisites
 
 - EDR agent deployed with LSASS access monitoring (CrowdStrike, Defender for Endpoint, SentinelOne)

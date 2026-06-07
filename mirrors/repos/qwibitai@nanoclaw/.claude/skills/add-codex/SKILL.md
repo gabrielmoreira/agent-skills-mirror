@@ -18,9 +18,12 @@ The Codex provider runs `codex app-server` as a child process and speaks JSON-RP
 If all of the following are already present, skip to **Configuration**:
 
 - `src/providers/codex.ts`
+- `src/providers/codex-registration.test.ts`
 - `container/agent-runner/src/providers/codex.ts`
 - `container/agent-runner/src/providers/codex-app-server.ts`
 - `container/agent-runner/src/providers/codex.factory.test.ts`
+- `container/agent-runner/src/providers/codex-registration.test.ts`
+- `container/agent-runner/src/providers/codex-dockerfile.test.ts`
 - `import './codex.js';` line in `src/providers/index.ts`
 - `import './codex.js';` line in `container/agent-runner/src/providers/index.ts`
 - `ARG CODEX_VERSION` and `"@openai/codex@${CODEX_VERSION}"` in the pnpm global-install block in `container/Dockerfile`
@@ -33,16 +36,30 @@ Missing pieces — continue below. All steps are idempotent; re-running is safe.
 git fetch origin providers
 ```
 
-### 2. Copy the Codex source files
+### 2. Copy the Codex source files and tests
 
 Wholesale copies (owned entirely by this skill — user edits to these files won't survive a re-run, as designed):
 
 ```bash
-git show origin/providers:src/providers/codex.ts                                      > src/providers/codex.ts
-git show origin/providers:container/agent-runner/src/providers/codex.ts               > container/agent-runner/src/providers/codex.ts
-git show origin/providers:container/agent-runner/src/providers/codex-app-server.ts    > container/agent-runner/src/providers/codex-app-server.ts
-git show origin/providers:container/agent-runner/src/providers/codex.factory.test.ts  > container/agent-runner/src/providers/codex.factory.test.ts
+git show origin/providers:src/providers/codex.ts                                         > src/providers/codex.ts
+git show origin/providers:src/providers/codex-registration.test.ts                       > src/providers/codex-registration.test.ts
+git show origin/providers:container/agent-runner/src/providers/codex.ts                  > container/agent-runner/src/providers/codex.ts
+git show origin/providers:container/agent-runner/src/providers/codex-app-server.ts       > container/agent-runner/src/providers/codex-app-server.ts
+git show origin/providers:container/agent-runner/src/providers/codex.factory.test.ts     > container/agent-runner/src/providers/codex.factory.test.ts
+git show origin/providers:container/agent-runner/src/providers/codex-registration.test.ts > container/agent-runner/src/providers/codex-registration.test.ts
 ```
+
+The two `codex-registration.test.ts` files are the **registration guards**. Each imports only the real barrel — the host one calls `listProviderContainerConfigNames()` from `src/providers/index.ts`, the container one calls `listProviderNames()` from `container/agent-runner/src/providers/index.ts` — and asserts `codex` is present. They go red the instant a barrel import line is deleted or drifts. (`codex.factory.test.ts` imports `./codex.js` directly and self-registers, so it stays green even if the barrel line is gone — keep it as a unit test of provider behavior, but it is **not** the registration guard.)
+
+If `git show origin/providers:.../codex-registration.test.ts` errors with `path ... does not exist`, the registration tests have not landed on `origin/providers` yet. Run `git fetch origin providers` again; once the branch carries them, the copies above succeed. The rest of the install proceeds regardless — the Dockerfile and factory tests still run.
+
+Copy the Dockerfile structural test that ships with this skill into the container provider tree:
+
+```bash
+cp .claude/skills/add-codex/codex-dockerfile.test.ts container/agent-runner/src/providers/codex-dockerfile.test.ts
+```
+
+`codex-dockerfile.test.ts` reads the real `container/Dockerfile` and asserts the `ARG CODEX_VERSION=` line and the `pnpm install -g "@openai/codex@${CODEX_VERSION}"` line are both present. The Codex CLI is a binary, not an importable package, so the registration tests cannot see it — this structural test is what guards the Dockerfile edits in step 4.
 
 ### 3. Append the self-registration imports
 
@@ -79,13 +96,26 @@ RUN --mount=type=cache,target=/root/.cache/pnpm \
 
 Note: **no agent-runner package dependency** — Codex is a CLI binary, not a library. Unlike OpenCode, there's nothing to add to `container/agent-runner/package.json`.
 
-### 5. Build
+### 5. Build and validate
 
 ```bash
-pnpm run build                                         # host
-pnpm exec tsc -p container/agent-runner/tsconfig.json --noEmit   # container typecheck
-./container/build.sh                                   # agent image
+pnpm run build                                                          # host
+pnpm exec vitest run src/providers/codex-registration.test.ts          # host registration guard
+pnpm exec tsc -p container/agent-runner/tsconfig.json --noEmit         # container typecheck
+cd container/agent-runner && bun test src/providers/codex-registration.test.ts && cd -   # container registration guard
+cd container/agent-runner && bun test src/providers/codex-dockerfile.test.ts && cd -      # Dockerfile structural guard
+./container/build.sh                                                    # agent image
 ```
+
+All must be clean before proceeding.
+
+- The **host** `codex-registration.test.ts` imports the real host barrel (`src/providers/index.ts`) and asserts `listProviderContainerConfigNames()` contains `codex`. It goes red if the `import './codex.js';` line is deleted or drifts, or if the barrel fails to evaluate.
+- The **container** `codex-registration.test.ts` imports the real container barrel (`container/agent-runner/src/providers/index.ts`) and asserts `listProviderNames()` contains `codex`. Same failure surface for the container-side import line.
+- The **Dockerfile** `codex-dockerfile.test.ts` reads `container/Dockerfile` and asserts the `ARG CODEX_VERSION=` and `@openai/codex@${CODEX_VERSION}` install lines are present — red if either edit is dropped.
+
+The `@openai/codex` CLI binary is guarded by the Dockerfile structural test plus the container build (`./container/build.sh` fails if the install line is bad), **not** by the registration test — Codex is a CLI binary, not an importable package, so nothing imports it for the registration guard to trip on. To confirm the binary is actually present after the image rebuild, probe it inside a running container with `docker exec <container> codex --version`.
+
+The host-side provider also consumes core APIs (per-session `~/.codex` mount, env passthrough); that typed core-API consumption is guarded by `pnpm run build`.
 
 ## Configuration
 
@@ -143,19 +173,14 @@ Extra MCP servers still come from **`NANOCLAW_MCP_SERVERS`** / `container_config
 - **Mid-turn input:** Codex turns don't accept mid-turn messages. Follow-up `push()` calls queue and drain between turns, matching the OpenCode pattern. The poll-loop only pushes between turns anyway, so no messages are dropped.
 - **Stale thread recovery:** `isSessionInvalid` matches on stale-thread-ID errors (`thread not found`, `unknown thread`, etc.) so a cold-started app-server can recover cleanly when it sees a stored continuation it no longer has.
 
-## Verify
+## Next Steps
 
-```bash
-grep -q "./codex.js" container/agent-runner/src/providers/index.ts && echo "container barrel: OK"
-grep -q "./codex.js" src/providers/index.ts && echo "host barrel: OK"
-grep -q "@openai/codex@" container/Dockerfile && echo "Dockerfile install: OK"
-cd container/agent-runner && bun test src/providers/codex.factory.test.ts && cd -
-```
-
-After the image rebuild, set `agent_provider = 'codex'` on a test group and send a message. Successful round-trip looks like:
+The registration and Dockerfile guards in **Build and validate** confirm the wiring. For a live end-to-end check, set `agent_provider = 'codex'` on a test group and send a message after the image rebuild. A successful round-trip looks like:
 
 - `init` event with a stable thread ID as continuation
 - One or more `activity` / `progress` events during the turn
 - `result` event with the model's reply
 
-If the agent hangs or errors, check `~/.codex/auth.json` exists on the host (Option A) or that `OPENAI_API_KEY` is forwarding correctly (Option B) — `docker exec` into a running container and `env | grep -i openai` to confirm.
+If the agent hangs or errors, check `~/.codex/auth.json` exists on the host (Option A) or that `OPENAI_API_KEY` is forwarding correctly (Option B) — `docker exec` into a running container and `env | grep -i openai` to confirm. To confirm the CLI binary itself landed in the image, `docker exec <container> codex --version`.
+
+To back this provider out, follow [REMOVE.md](REMOVE.md).

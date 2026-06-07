@@ -36,6 +36,18 @@ Google BeyondCorp Enterprise implements the zero trust security model by elimina
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+BeyondCorp fails open when IAP is configured but not actually in the request path, or when access levels are too loose. Check for these:
+
+- **Backend reachable around IAP.** If the Compute Engine VM / GKE service has a public IP or a load-balancer path that skips IAP, the proxy is bypassed - lock the firewall so only IAP source ranges reach the backend.
+- **Access levels too permissive.** A level keyed only on a broad corporate IP range (`ipSubnetworks`) grants access to anyone on the VPN, ignoring device trust.
+- **Device-trust signals not required.** Access Context Manager allows the request without checking Endpoint Verification attributes (OS version, disk encryption, screen lock).
+- **IAP IAM binding left as `allUsers` / `allAuthenticatedUsers`.**
+- **Access level bound to the policy but left in dry-run only.**
+
+**How to confirm:** from outside the trusted context (untrusted IP, unmanaged device), hit the protected URL and confirm IAP returns a deny, not the app. Probe the backend's direct IP and verify the firewall refuses anything that is not an IAP source range. Check IAP audit logs show the deny with the failed access-level reason, and confirm a compliant device from a trusted context succeeds.
+
 ## Prerequisites
 
 - Google Cloud project with BeyondCorp Enterprise license

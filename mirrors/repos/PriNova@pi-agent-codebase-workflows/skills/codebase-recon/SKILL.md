@@ -59,18 +59,18 @@ Ownership rules:
 - `scopes`: scope routing, ownership, cross-scope discovery only.
 - `repo-inventory`: file tree, commands index, entry points, external boundaries, configs.
 - `validation-baseline`: command status, blockers, recommended validation order.
-- `project-intent`: goals, users, journeys, non-goals, constraints, assumptions.
-- `architecture`: components, architecture style, side-effect boundaries, high-level flow refs.
-- `data-flow`: typed flow graph/steps, inputs, outputs, error states.
-- `data-model`: entities, IDs, schemas, relationships, lifecycles, serialized formats.
+- `project-intent`: product goal, users, journeys, must-have features, non-goals, constraints, assumptions, open questions, success metrics, prioritized quality attributes, operating constraints, risk areas.
+- `architecture`: components, architecture style, style rationale, alternatives/tradeoffs, side-effect boundaries, deployment/operating shape, reliability expectations, observability expectations, security assumptions, high-level flow refs.
+- `data-flow`: typed flow graph/steps, trust boundaries, sensitive-data handling steps, inputs, outputs, error states, degradation/recovery notes.
+- `data-model`: entities, IDs, schemas, relationships, lifecycles, serialized formats, retention/compliance notes.
 - `invariants`: rules, forbidden states, enforcement locations, invariant-test refs.
 - `dependency-rules`: layers, allowed/forbidden dependencies, violations, coupling hotspots.
 - `design-issues`: structural drift, deferred decisions, ambiguity, ownership gaps.
-- `risk-register`: failure modes, severity/confidence, affected refs, suggested tests/fixes.
-- `contracts`: cross-scope APIs, schemas, events, generated clients, DB/file/deployment/env contracts.
-- `testing-strategy`: test topology, coverage gaps, risk-to-test priorities.
+- `risk-register`: failure modes, severity/confidence, affected refs, mitigations/recommended actions, suggested tests/fixes.
+- `contracts`: cross-scope APIs, schemas, events, generated clients, DB/file/deployment/env/auth/telemetry contracts.
+- `testing-strategy`: test topology, quality-attribute coverage, coverage gaps, risk-to-test priorities, operability checks.
 - `change-guide`: workflow routing and checklists; references owner artifacts, duplicates no facts.
-- `adr`: structured decision records with bounded prose fields.
+- `adr`: structured decision records with bounded prose fields, including alternatives and consequences for major design choices.
 - `agent-operating-guide`: structured source for agent operating rules. Root `AGENTS.md` may mirror this in compact harness-readable Markdown when produced by safe-start or codebase-recon Pass 6.
 
 Redundancy rule: define each fact in its owner artifact exactly once. Other artifacts reference IDs.
@@ -109,9 +109,11 @@ Use this protocol whenever creating or updating YAML artifacts.
 ### 3. Stable ID generation
 
 1. Reuse existing IDs whenever the semantic object is the same, even if name/path changed.
-2. New IDs use deterministic slugs from owner scope + semantic name: `risk:<slug>`, `entity:<slug>`, `component:<slug>`, etc.
-3. If two objects slug-collide, append shortest stable discriminator from path/component/contract, not a random suffix.
-4. Never renumber IDs because order changed.
+2. New record IDs use deterministic slugs from owner scope + semantic name: `risk:<slug>`, `entity:<slug>`, `component:<slug>`, etc.
+3. Envelope `artifact_id` values use `repo:<artifact-slug>` for repo-level artifacts and `<scope.id>/<artifact-slug>` for scoped artifacts, e.g. `repo:architecture` and `scope:packages/ai/architecture`.
+4. Never append an artifact slug to a scope ID with a second colon; `scope:packages/ai:architecture` is invalid.
+5. If two objects slug-collide, append shortest stable discriminator from path/component/contract, not a random suffix.
+6. Never renumber IDs because order changed.
 
 ### 4. Upsert semantics
 
@@ -177,22 +179,24 @@ Perform best-effort validation after writing:
 - Later passes read prior YAML artifacts instead of re-reading whole repo.
 - Evidence is mandatory for observed claims.
 - Unknowns are explicit records, not vague prose.
+- When newer schemas require fields that are not inferable from the codebase, still create those fields with evidence-backed low-confidence placeholders, empty arrays, null-capable subfields, and explicit unknowns rather than omitting them.
+- Reconstruct decision-driving quality attributes, trust boundaries, reliability/observability/security expectations, and tradeoffs when the repo provides enough evidence; otherwise record the ambiguity explicitly.
 - Use stable IDs and cross-references to mirror codebase ownership and relationships.
 
 ## Passes
 
 Users may invoke this skill directly for any pass, or use the matching prompt template as a pass shortcut.
 
-1. Inventory (`/recon-01-inventory`): write `repo-inventory.yaml` and `validation-baseline.yaml`; update `scopes.yaml` for focus.
-2. Architecture (`/recon-02-architecture`): write `architecture.yaml` with components, style, boundaries, execution flow refs.
-3. Data/invariants (`/recon-03-data-invariants`): write `data-model.yaml` and `invariants.yaml`.
-4. Dependencies/drift (`/recon-04-dependency-rules`): write `dependency-rules.yaml` and `design-issues.yaml`.
-5. Risks (`/recon-05-risk-register`): write `risk-register.yaml`.
+1. Inventory (`/recon-01-inventory`): write `repo-inventory.yaml`, `validation-baseline.yaml`, and initial `project-intent.yaml`; update `scopes.yaml` for focus. Infer product goal, users, journeys, quality attributes, operating constraints, and risk areas from repo evidence when possible; otherwise record explicit unknowns.
+2. Architecture (`/recon-02-architecture`): write `architecture.yaml` with components, style, style rationale, alternatives/tradeoffs when inferable, boundaries, execution flow refs, and reliability/observability/security expectations.
+3. Data/invariants (`/recon-03-data-invariants`): write `data-model.yaml` and `invariants.yaml`; surface trust boundaries, sensitive data, retention/compliance implications, and correctness/safety rules.
+4. Dependencies/drift (`/recon-04-dependency-rules`): write `dependency-rules.yaml` and `design-issues.yaml`; record structural gaps where quality/security/operability evidence is weak.
+5. Risks (`/recon-05-risk-register`): write `risk-register.yaml` with affected refs, recommended actions, and quality/security/reliability risks.
 6. Agent operating guide (`/recon-06-agents`): write `agent-operating-guide.yaml` and root `AGENTS.md`.
 7. Change guide (`/recon-07-change-guide`): write `change-guide.yaml`.
-8. Consolidation (`/recon-08-consolidate`): reconcile YAML artifacts, resolve contradictions with evidence, preserve owner-only facts.
-9. ADR (`/recon-09-adr`): write `adr.yaml` with structured ADR records.
-10. Risk-to-tests (`/recon-10-risk-tests`): write/update `testing-strategy.yaml`.
+8. Consolidation (`/recon-08-consolidate`): reconcile YAML artifacts, resolve contradictions with evidence, preserve owner-only facts, and backfill required schema fields when older artifacts are incomplete.
+9. ADR (`/recon-09-adr`): write `adr.yaml` with structured ADR records, alternatives, and consequences where architectural decisions are inferable from history/docs/code.
+10. Risk-to-tests (`/recon-10-risk-tests`): write/update `testing-strategy.yaml` with quality-attribute coverage, risk-to-test priorities, and operability checks.
 
 All-in-one shortcut: `/recon-all` runs the pass sequence until the requested focus is complete or the repo size requires stopping at a pass boundary.
 

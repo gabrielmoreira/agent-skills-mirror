@@ -31,6 +31,15 @@ nist_csf:
 - When investigating impossible logon patterns (users logging in from multiple locations simultaneously)
 - During post-breach assessment to determine if Golden Tickets are in use
 
+## Detection Gaps & Validation
+
+- **Modern forgeries beat the classic heuristics.** Diamond and sapphire tickets forge realistic 10-hour lifetimes with AES (0x12/0x11), so the "RC4 (0x17) + impossible lifetime" rule misses them. A diamond ticket modifies a *real* TGT, so a matching 4768 **does** exist — the "4769 without prior 4768" heuristic fails there too.
+- **PAC validation must be enforced.** Forged PACs are only rejected with KB5008380/KB5037754 enforcement enabled. Verify the patch level and the `PacRequestorEnforcement` registry state; otherwise forged tickets sail through.
+- **Collection gaps create false negatives.** The "TGS without preceding TGT" logic only works if 4768/4769 are forwarded from *every* DC. Missing one DC's logs makes legitimate tickets look forged and forged ones look legitimate.
+- **Hunt the identity, not just crypto:** alert on 4769 `TargetUserName` that does not exist in AD, on injected well-known SIDs (e.g., 519 Enterprise Admins) in the PAC, and on odd/empty RIDs.
+- **Validate the rule fires:** in a lab, forge with `mimikatz kerberos::golden` using RC4 and confirm the 0x17 anomaly query triggers; for remediation, reset KRBTGT twice (both current and prior hashes are valid until the second reset).
+- **Tune false positives:** RC4 is legitimate in legacy trusts and old apps. Scope the RC4 rule to domains you know are AES-only, and allowlist known legacy SPNs.
+
 ## Prerequisites
 
 - Windows Security Event IDs 4768, 4769, 4771 on domain controllers

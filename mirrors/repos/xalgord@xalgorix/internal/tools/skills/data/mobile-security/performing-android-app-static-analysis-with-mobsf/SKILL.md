@@ -37,6 +37,15 @@ Use this skill when:
 
 **Do not use** this skill as a replacement for manual code review or dynamic analysis -- MobSF static analysis catches pattern-based vulnerabilities but misses runtime logic flaws.
 
+## Most Often Missed & How to Confirm
+
+- **Obfuscated code drops detection** — MobSF accuracy falls against DexGuard/packers. Confirm gaps by checking the decompiled output is readable; if not, supplement with dynamic Frida analysis before trusting a "clean" result.
+- **Native `.so` libraries** — a Java/Kotlin-only scan misses C/C++ flaws. Confirm by running `checksec` on the libs and manually reviewing JNI entry points.
+- **`exported` default by SDK level** — a component without `android:exported` is exported below API 31. Confirm the effective state against `targetSdkVersion`, not just the manifest line.
+- **Hardcoded secret false positives** — confirm a flagged key is live by using it against the real endpoint before reporting.
+- **Network security config** — confirm cleartext/trust-anchor settings in `res/xml/network_security_config.xml` rather than assuming defaults.
+- **Runtime-only logic** — static analysis misses logic flaws; confirm by pairing with the dynamic-analysis skill on a device.
+
 ## Prerequisites
 
 - MobSF v4.x installed via Docker (`docker pull opensecurity/mobile-security-framework-mobsf`) or local setup

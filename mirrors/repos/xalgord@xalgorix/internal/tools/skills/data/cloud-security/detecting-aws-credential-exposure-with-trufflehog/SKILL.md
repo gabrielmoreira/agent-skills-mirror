@@ -35,6 +35,14 @@ nist_csf:
 
 **Do not use** for real-time credential monitoring (use AWS GuardDuty or Amazon Macie), for managing secrets (use AWS Secrets Manager or HashiCorp Vault), or for detecting non-credential sensitive data like PII (use Amazon Macie or DLP tools).
 
+## Detection Gaps & Validation
+
+- **`--only-verified` suppresses real leaks:** verification calls `sts:GetCallerIdentity`, so a key that is valid-but-disabled, in an account you can't reach, or rate-limited gets dropped as "unverified." Run once **without** `--only-verified` and triage the UNVERIFIED count too — a leaked-then-deactivated key still proves a process failure.
+- **Default scan is shallow:** `trufflehog git` without full depth scans only reachable history of the current ref. Force-pushed/rewritten commits, `git stash`, dangling blobs, other branches, and **forks** can retain secrets. Scan all branches and consider `--max-depth`/repo mirror clones.
+- **Secrets live outside git:** CI/CD logs, container image layers, S3 buckets, Terraform state, and `.env` artifacts — use the `filesystem`, `s3`, and CI integrations, not just `git`.
+- **`git-secrets` only catches `AKIA…` long-term keys:** temporary `ASIA…` STS tokens and non-AWS/custom formats slip past the default `--register-aws` patterns; add explicit regexes.
+- **Validate findings against AWS:** for every `AKIA`/`ASIA` hit, run `aws iam get-access-key-last-used --access-key-id …` and `aws iam list-access-keys` to confirm Active status and whether it was used (CloudTrail by `AccessKeyId`) before declaring it benign or expired.
+
 ## Prerequisites
 
 - TruffleHog v3 installed (`brew install trufflehog` or `pip install trufflehog`)

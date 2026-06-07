@@ -35,6 +35,15 @@ Configure secure OAuth 2.0 authorization flows including Authorization Code with
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Implicit/hybrid grant still enabled:** `response_type=token` or `id_token token` returns tokens in the URL fragment where they leak via history/referrer. Verify the authorization server rejects implicit and hybrid responses and that only `response_type=code` is allowed (OAuth 2.1 removes implicit).
+- **redirect_uri wildcards / loose matching:** `https://app.example.com/*` or scheme-relative entries enable token theft via open redirect. Confirm exact-string registration only — test `redirect_uri=https://app.example.com.evil.com` and an open-redirect on a whitelisted host; both must be rejected.
+- **PKCE missing or downgradeable:** public clients without PKCE, or servers that accept `code_challenge_method=plain`, are open to code interception. Verify `S256` is required and that a token request omitting `code_verifier` fails.
+- **State/nonce not validated:** missing `state` enables CSRF; missing `nonce` enables ID-token replay. Confirm both are bound to the session and single-use.
+- **Refresh-token handling:** non-rotating or non-revoked-on-reuse refresh tokens give attackers persistence; confirm rotation and reuse-detection revoke the whole chain.
+- **Verification:** decode the access token at the resource server and assert `aud`, `iss`, `exp`, and scope are checked (not just signature); replay a one-time refresh token and confirm the family is revoked; attempt a `plain` PKCE downgrade and confirm rejection.
+
 ## Prerequisites
 
 - Familiarity with identity access management concepts and tools

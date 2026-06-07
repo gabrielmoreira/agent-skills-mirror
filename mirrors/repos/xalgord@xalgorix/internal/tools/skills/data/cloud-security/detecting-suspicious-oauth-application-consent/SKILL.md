@@ -36,6 +36,17 @@ Illicit consent grant attacks trick users into granting excessive permissions to
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+The most dangerous grants this Graph workflow can miss:
+- **`/oauth2PermissionGrants` returns only DELEGATED consent.** Application permissions (app roles) live under `servicePrincipals/{id}/appRoleAssignments` — querying only `oauth2PermissionGrants` misses app-only `Mail.Read`/`Files.ReadWrite.All`/`Directory.ReadWrite.All`, which run with no signed-in user and are the worst case.
+- **`ConsentType == "AllPrincipals"` (tenant-wide admin consent)** is far higher risk than `"Principal"` (single user) — flag `AllPrincipals` explicitly rather than treating all grants equally.
+- **Programmatic grants** show as `Add app role assignment to service principal` / `Add delegated permission grant` in `directoryAudits`, not just `Consent to application` — watching only the latter misses them.
+- **`offline_access` scope = refresh-token persistence** — treat as high-signal even when other scopes look benign.
+- Null `verifiedPublisher` isn't malicious by itself (many legit internal apps) — combine with risky scope + recent creation to cut FP.
+
+Validate: confirm the app token actually carries `Application.Read.All` (with only `Directory.Read.All` the enumeration returns partial data and looks clean); cross-check a flagged app against the `directoryAudits` consent event to recover the granting user and IP; maintain an allowlist of approved `appId`s to suppress known-good apps.
+
 ## Prerequisites
 
 - Azure AD / Entra ID tenant with Global Reader or Security Reader role

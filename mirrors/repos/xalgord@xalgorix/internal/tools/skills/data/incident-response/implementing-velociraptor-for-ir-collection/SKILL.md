@@ -48,6 +48,14 @@ Velociraptor is an advanced open-source endpoint monitoring, digital forensics, 
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Artifact scoping silently drops evidence:** running `Windows.KapeFiles.Targets` without the right target groups (`_EventLogs`, `_Prefetch`, `_RegistryHives`, `_WebBrowsers`) collects an incomplete triage and you won't know until analysis. Confirm the collection's row count and file manifest per host instead of assuming success.
+- **Hunt resource limits truncate results:** the default per-client CPU/IOPS/timeout and `max_rows`/`max_upload_bytes` caps cause VQL to return partial data on busy or large-disk hosts. Verify hunts completed with `flow_state = "FINISHED"` (not errored/timed-out) and re-scope or raise limits for endpoints that hit the cap.
+- **Offline endpoints aren't "clean", just absent:** a hunt only covers clients that checked in. Reconcile hunt participation against your asset inventory and confirm laggards collect on reconnect — a 60% participation rate is a coverage gap, not a negative result.
+- **Over-broad VQL/`glob` regex misses or floods:** an MFT `FileRegex` or EvtxHunter `IDRegex` that's too narrow skips the IDs you need (4624/4648/4672/4688/4698/4769/5145); too broad and the upload buries the signal. Validate the regex against a known-positive host first.
+- **Concrete verification the deployment worked:** confirm clients show `Online`/last-seen current in the GUI, test an end-to-end collection on a canary host and check the artifact lands in the filestore with a non-zero hash, validate client config enrollment (correct server URL/CA), and confirm SIEM/Elastic output is actually indexing rows before relying on monitoring artifacts.
+
 ## Prerequisites
 
 - Familiarity with incident response concepts and tools

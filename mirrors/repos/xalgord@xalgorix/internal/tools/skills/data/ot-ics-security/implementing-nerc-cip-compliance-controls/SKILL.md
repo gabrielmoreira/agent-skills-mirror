@@ -40,6 +40,14 @@ nist_csf:
 
 **Do not use** for non-BES industrial systems (see implementing-iec-62443-security-zones), for general IT compliance frameworks (see auditing-cloud-with-cis-benchmarks), or for physical security of substations without cyber components.
 
+## Common Misconfigurations & Verification
+
+- **CIP-002 scoping gaps drive every other gap.** Mis-categorizing a BES Cyber System (missing a 1500 MW aggregate, a cranking path, or an SPS/RAS) silently drops it out of CIP-005/007/010 scope. Re-run categorization against CIP-002 Attachment 1 criteria whenever assets change, and document the basis for each rating.
+- **ESP with an undocumented Electronic Access Point.** Every inbound/outbound path must cross a documented EAP; the common finding is a forgotten dial-up, vendor, or NTP/DNS path. Reconcile firewall rules against the ESP diagram.
+- **Remote access without the Intermediate System or MFA.** The 2025 update (CIP-005-7 R2.4) requires MFA; verify no path reaches a BES Cyber Asset without transiting the jump server.
+- **Logging and retention not meeting CIP-007 R4.** Confirm 90-day online retention and the 15-day review are actually occurring, not merely configured.
+- **Verify without disrupting the BES.** Validate via configuration and log review plus a maintenance-window connectivity test from outside the ESP (must be denied). Never run intrusive scans against in-service BES Cyber Assets — collect evidence passively.
+
 ## Prerequisites
 
 - Understanding of NERC CIP standards (CIP-002 through CIP-014)

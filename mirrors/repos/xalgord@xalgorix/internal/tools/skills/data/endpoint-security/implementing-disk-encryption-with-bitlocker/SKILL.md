@@ -36,6 +36,14 @@ Use this skill when:
 
 **Do not use** this skill for Linux disk encryption (use LUKS/dm-crypt) or macOS (use FileVault).
 
+## Common Misconfigurations & Verification
+
+- **TPM-only (no PIN):** `Enable-BitLocker -TpmProtector` unlocks transparently and is exposed to cold-boot and DMA/"evil maid" attacks. Confirm laptops use `TpmAndPin` — `(Get-BitLockerVolume C:).KeyProtector` should list `TpmPin`, not just `Tpm` and `RecoveryPassword`.
+- **DMA / open ports:** Thunderbolt/FireWire/M.2 DMA can read keys from RAM. Verify Kernel DMA Protection (`msinfo32` → "Kernel DMA Protection: On") or the "Disable new DMA devices when this computer is locked" policy is set.
+- **Used Space Only on repurposed drives:** leaves prior deleted data unencrypted in free space. Check `manage-bde -status C:` for `Conversion Status: Used Space Only Encrypted` on reused disks.
+- **Recovery key not escrowed:** if a key was never backed up to AD/Azure AD, TPM failure means permanent data loss. Confirm escrow exists before relying on it.
+- **Verification:** `manage-bde -status C:` must show `Protection Status: Protection On`, `Percentage Encrypted: 100.0%`, `Encryption Method: XTS-AES 256`. `Protection On` only appears after protectors are active — a drive can be 100% encrypted with protection **suspended** (`manage-bde -protectors -get C:` to confirm), which leaves the key in the clear.
+
 ## Prerequisites
 
 - Windows 10/11 Pro, Enterprise, or Education edition

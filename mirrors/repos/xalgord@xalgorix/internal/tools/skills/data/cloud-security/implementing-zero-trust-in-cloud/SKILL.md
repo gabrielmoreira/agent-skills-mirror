@@ -36,6 +36,16 @@ nist_csf:
 
 **Do not use** for simple VPN replacement without broader architectural changes, for network firewall rule management alone (see implementing-cloud-network-segmentation), or for identity provider initial setup (see managing-cloud-identity-with-okta).
 
+## Common Misconfigurations & Verification
+
+- **IAP/Verified Access bypass via direct backend reach:** enabling IAP does nothing if the VM/ALB still accepts `0.0.0.0/0`. For GCP confirm firewall ingress to the backend only allows the IAP range `35.235.240.0/20`; for AWS confirm the target security group only allows the Verified Access ENI. Hit the backend IP directly - it must refuse.
+- **Conditional Access excludes `AllTrusted` locations:** a "trusted" corporate IP becomes an MFA-free hole. Verify `excludeLocations` does not carve out whole network ranges and that `signInRiskLevels` includes `low`, not just `medium`/`high`.
+- **Break-glass accounts with no compensating control:** policies that `ExcludeUsers`/`ExcludeGroups` for emergency accounts must still require FIDO2 and alert the SOC - confirm those exclusions are logged and monitored.
+- **Access levels without an OS/version floor:** a device policy that sets `requireScreenlock` but omits `osConstraints` minimumVersion admits unpatched endpoints. Check `gcloud access-context-manager levels describe` for `allowedEncryptionStatuses: ["ENCRYPTED"]` plus an OS floor.
+- **Verified Access trust provider is OIDC-only:** identity without a device trust provider is not zero trust. Confirm a device-type trust provider is attached and referenced in the group policy.
+- **Access logging disabled:** without `modify-verified-access-instance-logging-configuration` or an IAP log sink, denials are invisible. Confirm logs land in CloudWatch/BigQuery and contain `decision`/`deny` records.
+- **Don't call it zero trust until** the backend rejects non-proxy traffic, every app enforces MFA + compliant device, and a denied access attempt actually appears in the access logs.
+
 ## Prerequisites
 
 - Identity provider capable of OIDC/SAML integration (Okta, Azure AD, Google Workspace)

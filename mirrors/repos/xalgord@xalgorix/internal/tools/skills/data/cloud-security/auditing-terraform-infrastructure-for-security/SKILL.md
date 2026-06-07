@@ -36,6 +36,14 @@ nist_csf:
 
 **Do not use** for runtime security monitoring (use CSPM tools), for application security testing (use SAST/DAST tools), or for cloud configuration drift detection (use AWS Config or Azure Policy after deployment).
 
+## Detection Gaps & Validation
+
+- **Scanning HCL source misses what's resolved at apply time:** values from `variables`, `locals`, `data` sources, registry/remote modules, and `count`/`for_each` are unknown to a static `checkov -d`/`tfsec` pass. Scan the **plan JSON** (`terraform show -json tfplan > tfplan.json`; `checkov -f tfplan.json --framework terraform_plan`) to catch them.
+- **Remote modules are skipped by default:** `tfsec --exclude-downloaded-modules` and un-`init`'d modules mean a misconfig inside `terraform-aws-modules/...` is never seen. Run `terraform init` first and do not exclude downloaded modules.
+- **Inline policies and heredocs slip through:** IAM JSON in `aws_iam_role_policy`/`aws_iam_policy.policy` heredocs is often not parsed as policy; wildcard `Action`/`Resource` there can pass silently. Back stop with custom OPA/Conftest on the plan.
+- **Suppressions and soft-fail hide failures:** `#checkov:skip=`, `tfsec:ignore:`, and `--soft-fail`/`soft_fail: true` make CI green while findings exist. Grep for skip comments and require non-zero exit to block.
+- **Verify the gate actually blocks:** introduce a known-bad resource (unencrypted `aws_s3_bucket`, `0.0.0.0/0` ingress on 22) and confirm the pipeline **fails**; reconcile `checkov`/`tfsec` resource counts against `terraform state list` so state-only (drift / console-created) resources aren't assumed covered.
+
 ## Prerequisites
 
 - Checkov installed (`pip install checkov`)

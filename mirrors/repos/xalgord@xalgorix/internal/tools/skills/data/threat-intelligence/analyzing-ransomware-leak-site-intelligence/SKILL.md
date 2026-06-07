@@ -36,6 +36,15 @@ Ransomware groups operating under double-extortion models maintain data leak sit
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Feed lag & gaps:** Ransomwatch/RansomLook scrape Tor DLS sites that go offline, rotate mirrors, or get taken down -- `posts.json` can lag days and silently drop groups. Treat a missing group as "not observed," not "inactive," and cross-check a second feed (RansomLook, DarkFeed).
+- **Duplicate & recycled victims:** groups re-post old victims, list the same org under affiliate programs, and reuse data across rebrands. Dedup on normalized victim name + group, not raw `post_title`, or counts inflate.
+- **Rebrand attribution:** `track_new_groups` flags a "new" group that is often a rebrand (Conti->Black Basta, etc.); first-seen date is not a new operator. Corroborate via TTP or leak-site code overlap before reporting a genuinely new actor.
+- **Sparse metadata:** many feeds lack `sector`/`country`, so `assess_sector_risk` silently buckets victims as "unknown" and skews percentages.
+
+To validate: reconcile your victim count for a given month against a published industry tracker (within ~10%) before trusting trend lines; confirm timezone-correct parsing of `discovered` (the `Z`->`+00:00` handling) so monthly buckets are not off-by-one. Verify all collection runs through authorized public feeds or a Tor-isolated research VM -- never fetch live `.onion` DLS from a production environment.
+
 ## Prerequisites
 
 - Python 3.9+ with `requests`, `beautifulsoup4`, `pandas`, `matplotlib` libraries

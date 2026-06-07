@@ -44,6 +44,19 @@ AFL++ (American Fuzzy Lop Plus Plus) is a community-maintained fork of AFL that 
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+A fuzzer that runs but explores nothing gives false confidence:
+
+- **Empty or trivial corpus.** Running `afl-fuzz -i corpus/` with one tiny/empty seed means AFL++ spends the whole budget rediscovering basic structure. Seed with real, diverse valid inputs and minimize with `afl-cmin`/`afl-tmin`.
+- **No dictionary for structured formats.** Without `-x dict.txt` (tokens/magic bytes), AFL++ rarely gets past format/magic checks. Provide a dictionary or build a CmpLog/RedQueen binary so comparisons are solved automatically.
+- **60-second runs.** A `timeout 60` job barely finishes calibration. Give CI runs tens of minutes and nightly runs hours; cache and feed the corpus back between runs or coverage never accumulates.
+- **Crashes found but the job still passes.** The "check for crashes" step must `exit 1` when `findings/*/crashes/*` (excluding `README.txt`) is non-empty — an `|| true` on `afl-fuzz` is fine, but the crash check must not be swallowed.
+- **No sanitizer.** Built without `AFL_USE_ASAN=1`, memory bugs trigger no crash and go undetected.
+- **Harness with no instrumentation** (compiled with plain `gcc`, not `afl-clang-fast`) → near-zero coverage and `stability` warnings.
+
+**Concrete verification:** Add a harness with a deliberate out-of-bounds write on a known input (e.g. `if (len>3 && buf[0]=='F') buf[len+100]='x';`), build with ASAN, and run. Confirm AFL++ produces a file under `crashes/` and the CI crash-check step **fails the build**.
+
 ## Prerequisites
 
 - Linux-based CI runners (AFL++ does not support Windows natively)

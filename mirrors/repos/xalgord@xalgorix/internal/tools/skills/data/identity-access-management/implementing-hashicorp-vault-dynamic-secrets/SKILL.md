@@ -38,6 +38,17 @@ nist_csf:
 
 **Do not use** for storing static secrets that cannot be dynamically generated (use Vault's KV secrets engine instead); dynamic secrets are for credentials that can be programmatically created and revoked on target systems.
 
+## Common Misconfigurations & Verification
+
+Dynamic secrets only reduce risk if leases are short and actually revoked — these defeat the point:
+
+- **TTL/max_ttl too long:** a role with `default_ttl=720h` is functionally a static secret. Audit with `vault read database/roles/app-readonly` and confirm `default_ttl` is minutes-to-hours, not days. Check live lease ages: `vault list sys/leases/lookup/database/creds/app-readonly`.
+- **Leases never revoked on shutdown:** apps that exit without calling revoke leave credentials valid until max_ttl, accumulating orphaned DB users. Count them on the target (`SELECT rolname FROM pg_roles WHERE rolname LIKE 'v-%'`) and compare to active leases — a large delta means revocation is broken. Confirm the client calls `sys.revoke_lease` on teardown.
+- **Missing/incorrect `revocation_statements`:** the lease expires in Vault but the DB role/user is never dropped. Verify every role has `DROP ROLE/USER` in its revocation block and test by reading a cred, force-revoking (`vault lease revoke -prefix database/creds/...`), then confirming the DB user is gone.
+- **Root credential not rotated:** the bootstrap admin password is still known to humans. Confirm `vault write -force database/rotate-root/...` was run; the original password must no longer authenticate.
+- **AWS `iam_user` where `assumed_role`/STS would do:** long-lived-ish keys with slow IAM propagation. Prefer `credential_type=assumed_role` and verify `default_sts_ttl`/`max_sts_ttl` are short.
+- **No audit device / no alerting on lease spikes:** confirm `vault audit list` shows an enabled device and that a sudden surge in `database/creds` reads triggers a SIEM alert (credential exfiltration signal).
+
 ## Prerequisites
 
 - HashiCorp Vault 1.15+ (Community or Enterprise edition)

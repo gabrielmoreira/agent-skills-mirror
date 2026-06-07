@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "generated_by": "scripts/generate_catalog.py",
-  "skill_count": 85,
+  "skill_count": 86,
   "galaxy_tool_count": 8182,
   "skills": [
     {
@@ -92,7 +92,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/archaic-introgression/pipeline.py --demo",
+      "demo_command": "python skills/archaic-introgression/archaic_introgression.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [
@@ -544,7 +544,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/clinical-trial-finder/euctr.py --demo",
+      "demo_command": "python skills/clinical-trial-finder/opentargets.py --demo",
       "dependencies": [
         "python>=3.11"
       ],
@@ -578,7 +578,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/clinical-variant-reporter/acmg_engine.py --demo",
+      "demo_command": "python skills/clinical-variant-reporter/clinical_variant_reporter.py --demo",
       "dependencies": [],
       "tags": [
         "acmg",
@@ -1489,7 +1489,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/illumina-bridge/illumina_bridge.py --demo",
+      "demo_command": "python skills/illumina-bridge/illumina_providers.py --demo",
       "dependencies": [],
       "tags": [
         "illumina",
@@ -1619,7 +1619,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/locuscompare-region-render/_wald_ratio_types.py --demo",
+      "demo_command": "python skills/locuscompare-region-render/cli.py --demo",
       "dependencies": [
         "python>=3.10",
         "numpy>=1.24",
@@ -1965,7 +1965,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/nutrigx-advisor/score_variants.py --demo",
+      "demo_command": "python skills/nutrigx-advisor/parse_input.py --demo",
       "dependencies": [],
       "tags": [
         "nutrigenomics",
@@ -2063,6 +2063,21 @@
       "chaining_partners": []
     },
     {
+      "name": "pathway-enricher",
+      "cli_alias": null,
+      "description": "Gene-set pathway enrichment analysis using Enrichr — queries KEGG, GO (BP/MF/CC), Reactome, WikiPathways, MSigDB, and Disease Ontology. Produces ranked pathway tables, interactive bubble charts, and a reproducible Markdown report.",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/pathway-enricher/pathway_enricher.py --demo",
+      "dependencies": [],
+      "tags": [],
+      "trigger_keywords": [],
+      "chaining_partners": []
+    },
+    {
       "name": "pharmgx-reporter",
       "cli_alias": "pharmgx",
       "description": "Pharmacogenomic report from DTC genetic data (23andMe/AncestryDNA) — 12 genes, 31 SNPs, 51 drugs",
@@ -2092,6 +2107,35 @@
         "drug-photo",
         "profile-report",
         "clinpgx"
+      ]
+    },
+    {
+      "name": "phylogenetics-builder",
+      "cli_alias": "phylo",
+      "description": "Build maximum-likelihood phylogenetic trees from aligned FASTA data using IQ-TREE 2.",
+      "version": "0.1.0",
+      "status": "mvp",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python clawbio.py run phylo --demo",
+      "dependencies": [
+        "python>=3.10",
+        "pandas>=2.0",
+        "biopython>=1.80",
+        "matplotlib>=3.5"
+      ],
+      "tags": [],
+      "trigger_keywords": [
+        "phylogeny",
+        "phylogenetic tree",
+        "iqtree",
+        "maximum likelihood tree",
+        "fasta alignment",
+        "build tree"
+      ],
+      "chaining_partners": [
+        "profile-report"
       ]
     },
     {
@@ -2218,7 +2262,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/pubmed-summariser/pubmed_api.py --demo",
+      "demo_command": "python skills/pubmed-summariser/pubmed_summariser.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [

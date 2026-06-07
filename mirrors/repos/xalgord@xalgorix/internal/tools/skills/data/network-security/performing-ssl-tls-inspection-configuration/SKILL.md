@@ -37,6 +37,16 @@ SSL/TLS inspection (also called SSL decryption, HTTPS inspection, or TLS break-a
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Common Misconfigurations & Verification
+
+- **CA not trusted on every store:** if the inspection CA isn't in each device/browser/OS store — including app-specific stores like Firefox NSS, Java `cacerts`, and Python `certifi` — users hit cert errors or apps fail. Verify per-platform, not just Windows.
+- **Certificate pinning breaks silently:** pinned apps (apple-update, microsoft-update, Dropbox, most mobile apps) fail under decryption, so teams add over-broad no-decrypt rules that become blind spots. Keep a tight, app-specific exemption list and review it.
+- **QUIC/HTTP3 bypass:** browsers tunnel over UDP/443 (QUIC) and skip the TLS proxy entirely. Block UDP/443 to force HTTP/2 through inspection, then confirm no `quic` in traffic logs.
+- **TLS 1.3 0-RTT and ECH:** 0-RTT early data and Encrypted Client Hello defeat SNI-based policy. Enforce min TLS 1.2, decide policy on 0-RTT, and confirm ECH handling.
+- **Privacy/legal exemptions:** financial and health categories must bypass inspection for compliance — verify the No-Decrypt rule actually matches before any cleartext is logged.
+- **Fail-open vs fail-closed:** know what happens when decryption resources exhaust (`show system setting ssl-decrypt memory`); a fail-open device silently passes uninspected traffic under load.
+- **Verification:** `openssl s_client -connect www.google.com:443 -servername www.google.com | openssl x509 -noout -issuer` must show the internal inspection CA as issuer; check decryption logs for errors and confirm pinned-app exemptions haven't broadened to whole categories.
+
 ## Prerequisites
 
 - Next-generation firewall or secure web gateway with TLS inspection capability

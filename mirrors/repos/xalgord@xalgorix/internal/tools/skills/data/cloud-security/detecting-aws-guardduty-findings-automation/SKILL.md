@@ -37,6 +37,14 @@ Amazon GuardDuty is a threat detection service that continuously monitors AWS ac
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **EventBridge fires on the finding, but repeats update it:** GuardDuty aggregates recurring activity into the **same finding ID** and re-publishes on the detector's `findingPublishingFrequency` (default `FIFTEEN_MINUTES`, up to 6h). Your Lambda may not re-trigger for ongoing attacks, and there's a delay before the first event. Lower the frequency for faster response and key idempotency on `id` + `updatedAt`.
+- **A `severity >= 7.0` filter drops Medium findings:** recon and many `Persistence`/`Policy` findings sit at 4.0–6.9 and never reach the rule. Decide explicitly whether to handle the 4–7 band.
+- **It's regional and per-account:** you need a detector **and** an EventBridge rule + target **in every region**; org member-account findings only centralize to the admin account within the same region.
+- **Data-source coverage gaps:** if S3 Protection, EKS Audit Logs, Runtime Monitoring, or Malware Protection aren't enabled, the matching finding types are never produced — absence of findings isn't absence of threat.
+- **Validate end-to-end:** generate `aws guardduty create-sample-findings --detector-id <id> --finding-types <type>` and confirm the Lambda actually ran via its CloudWatch Logs / `Invocations` metric and that the SNS notification arrived. (Sample findings carry `GeneratedFinding*` IDs — the handler already guards `accessKeyId == 'GeneratedFindingAccessKeyId'` so test runs don't disable a real key.)
+
 ## Prerequisites
 
 - AWS account with GuardDuty enabled

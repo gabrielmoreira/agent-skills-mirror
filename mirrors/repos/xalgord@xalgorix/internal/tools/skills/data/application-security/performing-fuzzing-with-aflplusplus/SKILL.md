@@ -51,6 +51,18 @@ and persistent mode for high-throughput fuzzing.
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Common Misconfigurations & Verification
+
+A campaign that runs for hours with zero crashes is usually a setup problem, not a secure target.
+
+- **No sanitizer, so bugs go silent:** instrument with `AFL_USE_ASAN=1 afl-cc` (or `afl-clang-fast`). Without ASAN/UBSAN a heap overflow corrupts memory without crashing and AFL++ never flags it.
+- **Empty or trivial seed corpus:** starting `-i` with one tiny file leaves the fuzzer unable to reach parser logic. Provide diverse valid inputs, then prune with `afl-cmin`, and shrink each with `afl-tmin`.
+- **No dictionary for structured formats:** without `-x dict/` (magic bytes, keywords, tokens) AFL++ wastes cycles guessing format headers. Supply a format dictionary.
+- **Single-core run wastes the box:** use `-M main` + several `-S sec1 sec2 ...` secondaries to fuzz in parallel and share finds via the sync dir.
+- **Coverage stall ignored:** `map density` flat and `pending` near zero for hours means saturation — add CMPLOG (`-c`), MOpt, or new seeds rather than letting it spin.
+
+**Verify the harness can actually find bugs:** compile a build with a planted bug (e.g. an unchecked `strcpy` on input) and confirm AFL++ surfaces it in `crashes/` within minutes and that `afl-tmin` + CASR/GDB reproduce it. If the planted bug is never found, fix instrumentation/seeds before trusting a clean run.
+
 ## Prerequisites
 
 - AFL++ installed (`apt install afl++` or build from source)

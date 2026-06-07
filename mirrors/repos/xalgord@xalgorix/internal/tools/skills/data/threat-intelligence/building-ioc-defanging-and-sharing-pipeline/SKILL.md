@@ -36,6 +36,15 @@ IOC defanging modifies potentially malicious indicators (URLs, IP addresses, dom
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Incomplete defanging:** `defang_url` must neutralize the scheme *and* every dot -- leaving `hxxp://evil.com` (un-bracketed dots) still auto-links in many clients. Also defang ports (`[:]`) and brackets in IPv6, or shared IOCs stay clickable.
+- **Refang/normalization order:** extraction must refang first (`hxxp`->`http`, `[.]`->`.`) before regex, or defanged inputs are silently missed; normalize case and strip trailing slashes before dedup, or `evil.com/` and `evil.com` survive as duplicates.
+- **TLP handling:** mismatched markings leak data -- confirm the STIX `object_marking_refs` matches the MISP event `distribution`, and that TLP:RED/AMBER is never pushed to a wider TAXII collection.
+- **Over-broad whitelist & STIX escaping:** a `WHITELIST_DOMAINS` entry like `example.com` drops legitimate IOCs; unescaped quotes in URL patterns break `[url:value = '...']`.
+
+To verify: round-trip a sample set (extract -> defang -> refang) and confirm you recover the original IOCs with no loss or duplicates; validate the STIX bundle parses with `stix2` and that hashes use `hashes.'SHA-256'` casing. Push to a MISP staging event and confirm attribute `type` mapping (ip-dst, domain, url, sha256) and `to_ids` flags are correct, and that the TLP marking on the bundle equals the event distribution before any real distribution.
+
 ## Prerequisites
 
 - Python 3.9+ with `defang`, `ioc-fanger`, `stix2`, `requests`, `validators` libraries

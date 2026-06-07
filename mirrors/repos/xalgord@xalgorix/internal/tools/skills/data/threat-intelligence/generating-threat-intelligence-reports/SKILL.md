@@ -37,6 +37,15 @@ Use this skill when:
 
 **Do not use** this skill for raw IOC distribution — use TIP/MISP for automated IOC sharing and reserve report generation for analyzed, finished intelligence.
 
+## Detection Gaps & Validation
+
+- **Audience mismatch (the #1 miss):** strategic readers drown in IOC tables; SOC analysts get vague "monitor closely" guidance. Confirm every section drives a decision for its specific audience before release.
+- **Missing confidence qualifiers:** a low-confidence assessment written as flat fact misleads decision-makers. Apply ICD 203 language ("assess with high confidence" vs "suggests") to every analytic claim and state the evidence basis.
+- **Over-attribution:** naming a threat actor when evidence supports only an intrusion set propagates error downstream. Use the weakest defensible label and cite sources by reference number.
+- **Stale intelligence:** reporting a campaign resolved weeks ago creates alarm without utility. Date every claim and flag anything older than 48 hours for a freshness check.
+- **TLP errors:** over-classifying (TLP:RED on shareable data) kills community value; under-classifying leaks sources. Verify TLP against sharing agreements and strip source identifiers from AMBER/RED products.
+- **How to validate:** before dissemination, run the accuracy/clarity/actionability/classification/timeliness checklist and have a second analyst confirm each Key Judgment is sourced.
+
 ## Prerequisites
 
 - Completed analysis from collection and processing phase (PIRs partially or fully answered)

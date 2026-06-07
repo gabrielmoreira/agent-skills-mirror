@@ -37,6 +37,17 @@ nist_csf:
 
 **Do not use** for runtime container security (use Falco or Sysdig), for Kubernetes admission control (use OPA Gatekeeper or Kyverno after establishing registry controls), or for host-level vulnerability scanning (use Amazon Inspector or Qualys).
 
+## Common Misconfigurations & Verification
+
+- **Build-time scan only:** vuln databases update daily, so an image that passes today gains new CRITICALs later. Enable registry continuous scanning (`aws ecr put-image-scanning-configuration --image-scanning-configuration scanOnPush=true`, plus enhanced/Inspector) and rescan deployed digests.
+- **Trivy without a failing exit code:** `trivy image` returns 0 even with CRITICALs, so the CI gate passes silently. Use `trivy image --exit-code 1 --severity CRITICAL` and confirm the pipeline actually fails.
+- **Under-reporting:** Trivy skips packages it can't detect (some distroless / custom base images). Cross-check with `grype` and reconcile package counts against the Syft SBOM.
+- **Signing without enforcement is decorative:** `cosign sign` does nothing unless the cluster verifies. Confirm Kyverno/OPA `verifyImages` (or `cosign verify --key cosign.pub`) actually rejects an unsigned image by deploying one.
+- **Mutable tags break provenance:** set `--image-tag-mutability IMMUTABLE` and confirm a re-push of the same tag is rejected.
+- **Keyless verify without pinning:** `cosign verify` must set `--certificate-identity` and `--certificate-oidc-issuer`, or any Fulcio-signed image "verifies."
+
+**Verify it actually works:** push an image with a known CVE and a wrong/absent signature, then confirm (1) the CI gate blocks the promotion and (2) the admission controller denies the pod. Check `aws ecr describe-image-scan-findings --query 'imageScanFindings.findingSeverityCounts'` reflects the finding.
+
 ## Prerequisites
 
 - Trivy installed (`brew install trivy` or `apt install trivy`)

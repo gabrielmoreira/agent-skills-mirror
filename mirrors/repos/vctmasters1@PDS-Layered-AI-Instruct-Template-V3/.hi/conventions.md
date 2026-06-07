@@ -4,7 +4,7 @@
 **Last Updated**: 2026-06-04
 
 > This file is the **single source of truth** for naming conventions and file organization rules.
-> Reference it from other `.hi/instruct.md` files; never duplicate its content elsewhere.
+> Reference it from other `.ai/instruct.md` files; never duplicate its content elsewhere.
 
 ---
 
@@ -17,7 +17,7 @@
 | [Documentation Naming](#documentation-naming) | Numbered kebab-case user-facing guides |
 | [AI Instruction File Naming](#ai-instruction-file-naming) | Rules for instruction files |
 | [.dev-docs Convention](#dev-docs-convention) | Dev documentation subdirectory structure |
-| [Plugins Convention](#plugins-convention) | Optional capability modules under `.hi/plugins/` |
+| [Plugins Convention](#plugins-convention) | Optional capability modules under `.ai/plugins/` |
 | [TOC Requirement](#toc-requirement) | When a table of contents is required |
 | [Cross-Reference Convention](#cross-reference-convention) | How to point to source-of-truth sections |
 | [No-Duplication Rule](#no-duplication-rule) | Instructions live in exactly one place |
@@ -30,10 +30,10 @@
 ## Directory Naming
 
 - Use `kebab-case` for all directories: `my-module`, `api-server`, `data-pipeline`
-- All archived content lives in the `.archive/` directory inside the item's own parent folder, optionally under a `YYYYMMDD/` date-stamped subdirectory (see [Archive Patterns](maintenance.md#archive-patterns))
+- All archived content lives under `.archive/` using path-mirroring or `YYYYMMDD/` date-stamped subdirectories (see [Archive Patterns](maintenance.md#archive-patterns))
 - Dev documentation subdirectory is always `.dev-docs/` (dot-prefixed, never renamed)
-- AI instruction subdirectory is always `.hi/` (dot-prefixed, never renamed)
-- The dot-prefix convention applies to **four** categories of directories: tooling (`.github/`, `.vscode/`, `.cursor/`, `.continue/`, `.clinerules/`), hidden state (`.hi/`, `.dev-docs/`), and archives (`.archive/`). Reference scaffolds shipped with the template live inside `.hi/` (`.hi/example-module/`, `.hi/examples/`, `.hi/stack-examples/`). Do **not** dot-prefix real source modules.
+- AI instruction subdirectory is always `.ai/` (dot-prefixed, never renamed)
+- The dot-prefix convention applies to **four** categories of directories: tooling (`.github/`, `.vscode/`, `.cursor/`, `.continue/`, `.clinerules/`), hidden state (`.ai/`, `.dev-docs/`), archives (`.archive/`), and reference scaffolds shipped with the template (`.example-module/`, `.examples/`). Do **not** dot-prefix real source modules.
 - Avoid spaces in all directory names
 
 ---
@@ -46,11 +46,11 @@
   - C/C++: `snake_case.c`, `snake_case.h`
 - **Config files**: lowercase with dots or hyphens (`tsconfig.json`, `docker-compose.yml`)
 - **Markdown docs**: `kebab-case.md` for general docs; zero-padded numbered kebab-case for user-facing guides (see below)
-- **Root-level project meta-files** (`README.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, `LICENSE`, `TEMPLATE-USAGE.md`, `AGENTS.md`, `*.code-workspace`) use `UPPER-KEBAB-CASE.md` or the upstream-mandated form — this is the GitHub/industry standard for repository root meta-documents and is exempt from the general `kebab-case` rule. `.code-workspace` files conventionally carry the project name verbatim (e.g. `PDS-Hierarchical-Instruct-Template-V1.code-workspace`).
+- **Root-level project meta-files** (`README.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, `LICENSE`, `TEMPLATE-USAGE.md`, `AGENTS.md`, `*.code-workspace`) use `UPPER-KEBAB-CASE.md` or the upstream-mandated form — this is the GitHub/industry standard for repository root meta-documents and is exempt from the general `kebab-case` rule. `.code-workspace` files conventionally carry the project name verbatim (e.g. `PDS-Layered-AI-Instruct-Template-V5.code-workspace`).
 - **Tool-mandated names** (filenames whose casing is dictated by an external tool's discovery mechanism) are exempt from the rules above. Currently:
   - `.github/copilot-instructions.md` — fixed name required by GitHub Copilot
-  - `.hi/skills/<skill>/SKILL.md` — fixed `SKILL.md` casing required by the VS Code Copilot skill discovery system
-- **Slash-command prompt files** (`.hi/prompts/*.prompt.md`) project-specific to this template must use the `ai-` prefix (e.g. `hip-update-index.prompt.md`) to distinguish them from built-in Copilot commands
+  - `.github/skills/<skill>/SKILL.md` — fixed `SKILL.md` casing required by the VS Code Copilot skill discovery system
+- **Slash-command prompt files** (`.github/prompts/*.prompt.md`) project-specific to this template must use the `ai-` prefix (e.g. `ai-update-index.prompt.md`) to distinguish them from built-in Copilot commands
 - **Never** use spaces in filenames
 
 ---
@@ -78,11 +78,11 @@ User-facing how-to guides and numbered documentation use **zero-padded numbered 
 
 | File | Purpose |
 |------|---------|
-| `.hi/instruct.md` | Standard per-directory instruction file (authoritative for its directory) |
-| `.hi/conventions.md` | This file — global naming conventions |
-| `.hi/maintenance.md` | Global archive and safety rules |
-| `.hi/credentials.md` | Global credential warehousing rules |
-| `.hi/index.md` | Master section index for the whole project |
+| `.ai/instruct.md` | Standard per-directory instruction file (authoritative for its directory) |
+| `.ai/conventions.md` | This file — global naming conventions |
+| `.ai/maintenance.md` | Global archive and safety rules |
+| `.ai/credentials.md` | Global credential warehousing rules |
+| `.ai/index.md` | Master section index for the whole project |
 | `.github/copilot-instructions.md` | Meta-instruction file (special case — fixed name required by GitHub Copilot) |
 
 Use `instruct.md` in every directory that contains source code, configuration, or documentation the AI reasons about. One file type, one purpose — no variants.
@@ -97,22 +97,22 @@ Every directory that accumulates development notes uses a `.dev-docs/` subdirect
 
 ```
 any-directory/
-├── .hi/                         ← AI instruction files for this directory
+├── .ai/                         ← AI instruction files for this directory
 │   └── instruct.md
 ├── README.md                    ← Primary docs (KEEP at root)
 ├── [source code / config]       ← KEEP at root
 └── .dev-docs/
     ├── index.md                 ← Navigation — lists all files in this .dev-docs/
     ├── [active dev notes]       ← Current session notes, status, guides
-    └── .archive/                ← Stale/superseded docs (IGNORE by default)
+    └── .old/                    ← Stale/superseded docs (IGNORE by default)
         └── [archived docs]      ← Moved here when outdated
 ```
 
 ### Rules
 
 1. `.dev-docs/` holds dev notes, session reports, status tracking, architecture reviews — **not** primary deliverables
-2. `.dev-docs/.archive/` holds stale or superseded docs — move here instead of deleting
-3. **Copilot should ignore `.archive/`** contents unless explicitly asked
+2. `.dev-docs/.old/` holds stale or superseded docs — move here instead of deleting
+3. **Copilot should ignore `.old/`** contents unless explicitly asked
 4. Keep at directory root (never move into `.dev-docs/`): `README.md`, source code, essential config, execution scripts
 5. When creating a new `.dev-docs/`, also create `index.md` inside it
 
@@ -125,7 +125,7 @@ any-directory/
 | File | Description | Last Updated |
 |------|-------------|--------------|
 
-## Archived (`.archive/`)
+## Archived (`.old/`)
 | File | Why Archived | Date |
 |------|-------------|------|
 ```
@@ -134,21 +134,21 @@ any-directory/
 
 ## Plugins Convention
 
-Optional capability modules live under `.hi/plugins/<name>/` and follow the contract defined in [`.hi/plugins/README.md`](plugins/README.md).
+Optional capability modules live under `.ai/plugins/<name>/` and follow the contract defined in [`.ai/plugins/README.md`](plugins/README.md).
 
-- Plugins are **opt-in**. The framework runs fine with `.hi/plugins/` empty or absent.
+- Plugins are **opt-in**. The framework runs fine with `.ai/plugins/` empty or absent.
 - Every plugin MUST contain `plugin.yaml`, `instruct.md`, and `README.md`.
-- A plugin's `instruct.md` is authoritative **only inside its own directory**; it cannot relax rules from shallower `.hi/*.md`.
-- A plugin's runtime state lives under `state/` and is gitignored (`.hi/plugins/*/state/`).
-- Discover and inspect plugins via `/hip-plugin-discover` or by running the central validator.
+- A plugin's `instruct.md` is authoritative **only inside its own directory**; it cannot relax rules from shallower `.ai/*.md`.
+- A plugin's runtime state lives under `state/` and is gitignored (`.ai/plugins/*/state/`).
+- Discover and inspect plugins via `/ai-plugin-discover` or by running the central validator.
 
-Do not restate plugin rules outside [`.hi/plugins/README.md`](plugins/README.md). This section is the pointer.
+Do not restate plugin rules outside [`.ai/plugins/README.md`](plugins/README.md). This section is the pointer.
 
 ---
 
 ## TOC Requirement
 
-Any `.hi/instruct.md` with **5 or more sections** must have a **Contents table** immediately after its file header (before the first `##` section). Format:
+Any `.ai/instruct.md` with **5 or more sections** must have a **Contents table** immediately after its file header (before the first `##` section). Format:
 
 ```markdown
 ## Contents
@@ -175,19 +175,19 @@ When a file needs to point to content defined elsewhere, use a **standard clicka
 > **→ [Section Heading](relative/path/to/file.md#section-heading)** — one-line description.
 ```
 
-**Examples** (paths shown as they appear from a `.hi/instruct.md` at the workspace root):
+**Examples** (paths shown as they appear from a `.ai/instruct.md` at the workspace root):
 
 > **→ [Never Delete Rule](maintenance.md#never-delete-rule)** — archive instead of delete.
 > **→ [Never Commit Credentials](credentials.md#never-commit-credentials)** — the hard rule on secrets.
-> **→ [Data Schema](../some-module/.hi/instruct.md#data-schema)** — canonical field definitions for that module.
+> **→ [Data Schema](../some-module/.ai/instruct.md#data-schema)** — canonical field definitions for that module.
 
 **Rules**:
-- Paths are **relative to the file containing the link**. From `.hi/maintenance.md`, link to a sibling as `credentials.md#…`; from `.hi/example-module/.hi/instruct.md`, link to a root global as `../../credentials.md#…`; from `.github/copilot-instructions.md`, use `../.hi/…`.
+- Paths are **relative to the file containing the link**. From `.ai/maintenance.md`, link to a sibling as `credentials.md#…`; from `.example-module/.ai/instruct.md`, link to a root global as `../../.ai/credentials.md#…`; from `.github/copilot-instructions.md`, use `../.ai/…`.
 - The link **text** must exactly match the target heading (drop punctuation/backticks in the visible label only if it improves readability — the anchor must still match the GitHub auto-anchor).
 - The **anchor** is the GitHub auto-anchor of the target heading (see TOC Requirement rules above).
 - Place the reference at the point where the topic first becomes relevant.
 - **Never copy the content** — only link to it.
-- Cross-references in non-markdown source comments use the same path-with-anchor form without the markdown link syntax: `// See .hi/credentials.md#never-commit-credentials — secrets via env vars`. VS Code auto-detects these as clickable in many contexts; if not, they remain grep-able.
+- Cross-references in non-markdown source comments use the same path-with-anchor form without the markdown link syntax: `// See .ai/credentials.md#never-commit-credentials — secrets via env vars`. VS Code auto-detects these as clickable in many contexts; if not, they remain grep-able.
 
 ---
 
@@ -197,13 +197,13 @@ When a file needs to point to content defined elsewhere, use a **standard clicka
 
 | Scope | Canonical home |
 |-------|----------------|
-| Applies project-wide | Root `.hi/instruct.md` or `.hi/` global files |
-| Applies to multiple subdirectories | Shallowest common parent `.hi/instruct.md` |
-| Applies to one directory only | That directory's `.hi/instruct.md` |
+| Applies project-wide | Root `.ai/instruct.md` or `.ai/` global files |
+| Applies to multiple subdirectories | Shallowest common parent `.ai/instruct.md` |
+| Applies to one directory only | That directory's `.ai/instruct.md` |
 
 - **Never copy** content from a shallower file into a deeper one — use a cross-reference
 - Exception: a one-line summary reminder is acceptable, but full content must live in one place only
-- When you find duplicated content across `.hi/instruct.md` files: consolidate to the appropriate level and replace all copies with cross-references
+- When you find duplicated content across `.ai/instruct.md` files: consolidate to the appropriate level and replace all copies with cross-references
 
 ---
 
@@ -220,13 +220,13 @@ When a file needs to point to content defined elsewhere, use a **standard clicka
 
 ### Instruction File Dating
 
-Every `.hi/instruct.md` contains a `**Last Updated**: [DATE]` field.
+Every `.ai/instruct.md` contains a `**Last Updated**: [DATE]` field.
 
 **Rules**:
 - Update `Last Updated` to today’s date (`YYYY-MM-DD`) whenever the file’s content changes
-- AI **must** update this field automatically when modifying any `.hi/instruct.md` file — this is a pre-approved auto-action (no confirmation needed)
+- AI **must** update this field automatically when modifying any `.ai/instruct.md` file — this is a pre-approved auto-action (no confirmation needed)
 - Never leave `[DATE]` as a literal placeholder in a **live** instruction file. Fill it immediately when context makes the date unambiguous (session date is known, the user said "today", etc.)
-- **Template scaffold exception**: prompt-file templates and inline code-block templates (e.g., the template snippet inside `/hip-new-module`) may keep `YYYY-MM-DD` or `[DATE]` as a literal placeholder because the *user* of the template substitutes the value at instantiation time. As soon as the template is instantiated into a real file, the placeholder must be filled.
+- **Template scaffold exception**: prompt-file templates and inline code-block templates (e.g., the template snippet inside `/ai-new-module`) may keep `YYYY-MM-DD` or `[DATE]` as a literal placeholder because the *user* of the template substitutes the value at instantiation time. As soon as the template is instantiated into a real file, the placeholder must be filled.
 - The root `.github/copilot-instructions.md` has a `Template Version` field — increment it only when the template structure itself changes, not on every edit
 
 This principle extends to all `[PLACEHOLDER]` values in any instruction file: if the correct value is self-evident from context, fill it in without waiting for the user to ask.
@@ -258,7 +258,7 @@ When adding a new file or config to the project, apply this rule:
 
 | File type | Action | Notes |
 |-----------|--------|-------|
-| Secrets, credentials, API keys, tokens | **Always gitignore** | See `.hi/credentials.md` |
+| Secrets, credentials, API keys, tokens | **Always gitignore** | See `.ai/credentials.md` |
 | Build output, generated files, dependencies | **Always gitignore** | Not source; regeneratable |
 | Team-shared config (`.vscode/settings.json`, `tsconfig.json`) | **Commit** | All contributors benefit from the same baseline |
 | Environment templates (`.env.example`) | **Commit** | Safe; contains no real values |

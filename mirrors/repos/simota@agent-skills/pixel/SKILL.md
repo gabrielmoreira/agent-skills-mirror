@@ -1,6 +1,6 @@
 ---
 name: pixel
-description: Faithful reproduction agent that generates pixel-accurate HTML/CSS code from image mockups (PNG/JPG/screenshots) and performs visual verification. Use when mockup-to-code generation is needed.
+description: Generating pixel-accurate HTML/CSS code from image mockups (PNG/JPG/screenshots) and performing visual verification for faithful reproduction. Use when mockup-to-code generation is needed.
 ---
 
 <!--
@@ -45,16 +45,13 @@ Mockup-to-code faithful reproducer — reads a mockup image, extracts design val
 ## Trigger Guidance
 
 Use Pixel when the task needs:
-- HTML/CSS code generated from a mockup image (PNG/JPG/screenshot)
-- pixel-faithful reproduction of a design without Figma source
-- visual comparison between a mockup and implemented code
-- LP (landing page) section identification and code generation from screenshots
+- HTML/CSS generated from a mockup image (PNG/JPG/screenshot) without Figma source
+- visual comparison between mockup and implemented code; fidelity verification (Playwright + visual diff)
+- LP section identification and code generation from screenshots
 - design value extraction (colors, fonts, spacing) from images
-- responsive conversion of a static mockup
-- fidelity verification of existing implementation against design mockup (Playwright + Visual AI comparison)
-- hand-drawn wireframe or sketch to structured HTML/CSS scaffold
-- design-to-code fidelity benchmarking (Playwright visual diff, Applitools Eyes, or academic metrics like CW-SSIM/SSIM for design-vs-production comparison)
-- detailed gap analysis report between mockup and implementation (8 dimensions × 5 severity levels × 9 root-cause categories, quantified deltas via ΔE / px-delta / contrast ratio, Raw/Confidence-Adjusted/Post-Fix Fidelity scoring, Markdown+JSON dual output, auditable report for PR/CI artifacts and design review)
+- responsive conversion of a static mockup; hand-drawn wireframe to HTML/CSS scaffold
+- design-to-code fidelity benchmarking (visual diff, Applitools, CW-SSIM/SSIM metrics)
+- detailed gap analysis report (8-dim × 5-severity × 9-RC, Raw/Adjusted/Post-Fix scoring, MD+JSON) for PR/CI/design review
 
 Route elsewhere when the task is primarily:
 - Figma file extraction with MCP: `Frame`
@@ -74,13 +71,13 @@ Route elsewhere when the task is primarily:
 - Stay within Pixel's domain; route unrelated requests to the correct agent.
 - Generate semantic HTML5 that passes W3C validation; prefer CSS Grid for page layout, Flexbox for inline/nav, `gap` over margin hacks.
 - Use `rem` units for scalable spacing; snap to 4px/8px grid. Zero magic numbers — all values via CSS custom properties.
-- For responsive components that appear in multiple layout contexts (cards, widgets, sidebars), prefer CSS container queries (`@container`) over media queries — container queries respond to parent size, not viewport. Use `container-type: inline-size` on wrapper; keep `@media` for page-level layout and user preferences. **Container queries are Baseline Widely Available as of August 2025** (Chrome 105+, Firefox 110+, Safari 16+; >95% global coverage; safe to use without fallback on modern projects — [web.dev, Aug 2025](https://web.dev/blog/baseline-digest-aug-2025)). Always assign `container-name` when nesting containers — unnamed queries match the nearest ancestor, causing subtle bugs in multi-level layouts. Avoid deeply nested containment contexts (>3 levels) as each creates browser evaluation overhead.
-- Structure-first reproduction order: semantic HTML structure → CSS variables & layout → asset polish & micro-details.
-- Target fidelity score ≥90% overall; flag any section below 80% for manual review. Note: AI design-to-code tools typically achieve 75-80% fidelity and require 40-60% manual refinement before shipping ([Banani, Jan 2026](https://www.banani.co/blog/ai-design-to-code-tools)); ≥90% requires iterative refinement.
-- Require high-resolution source images (≥2x) when available; warn when input is lossy-compressed or sub-720p as fidelity ceiling drops to ~70-80%.
-- VERIFY phase prerequisites: use Playwright's built-in `animations: 'disabled'` option in `toHaveScreenshot()` instead of manual CSS injection; mask dynamic content (timestamps, ads, live data) with `mask: [locator]`; for elements that cannot be masked by locator (e.g., randomized backgrounds, third-party widgets), use `stylePath` to inject a custom CSS file that hides or normalizes them during capture; run in a consistent environment (same OS, browser version, viewport) to avoid false diffs. Two key tolerance parameters: `maxDiffPixelRatio` (0.01-0.02 recommended; ratio of differing pixels) and `threshold` (0-1, default 0.2; perceived color difference per pixel in YIQ color space — lower is stricter). For component-level fidelity checks, prefer element-level screenshots (`locator.screenshot()`) over full-page captures — they are more stable and isolate the comparison scope. **Cross-browser snapshot pitfall:** cross-browser visual snapshots will nearly never match due to font rendering, sub-pixel anti-aliasing, and scrollbar style differences — run visual regression exclusively in Chromium, and use separate OS-normalized Docker images in CI to prevent environment-driven false positives ([Playwright visual regression best practices 2026](https://bug0.com/knowledge-base/playwright-visual-regression-testing)).
-- Author for Opus 4.8 defaults. Apply _common/OPUS_48_AUTHORING.md principles **P3 (eagerly Read source mockup with confidence levels, existing tokens, and section structure at ANALYZE — fidelity ceiling depends on grounding accuracy), P5 (think step-by-step at VERIFY — fidelity refinement decisions drive iteration cost)** as critical for Pixel. P2 recommended: calibrated reproduction reports preserving fidelity scores per section. P1 recommended: front-load target fidelity tier and section scope at ANALYZE.
-- When a gap analysis report is requested (gap analysis / fidelity audit / PR artifact / design review), follow `references/gap-analysis-report.md`: classify every gap across 8 dimensions × 5 severity levels × 9 root-cause categories, quantify deltas (ΔE, px, contrast ratio), and emit both Markdown and JSON. The REFINE loop keeps using the lightweight `visual-verification.md` diff report; the detailed report is additive and produced on demand or at delivery.
+- Prefer `@container` over `@media` for reusable components (Container queries are Baseline Widely Available since 2025-08); use `container-type: inline-size`, assign `container-name` when nesting, and keep `@media` for page-level layout. Full feature matrix: `reference/modern-css-baseline.md`.
+- Structure-first reproduction order: semantic HTML → CSS variables & layout → asset polish & micro-details.
+- Target fidelity ≥90% overall; flag sections below 80%. AI design-to-code tools typically ship at 75-80% before manual refinement — ≥90% requires iteration.
+- Require high-resolution source images (≥2x); warn when input is lossy-compressed or sub-720p (fidelity ceiling drops to ~70-80%).
+- VERIFY phase essentials: use `animations: 'disabled'` in `toHaveScreenshot()`; `mask: [locator]` for dynamic content, `stylePath` for unmaskable elements; `maxDiffPixelRatio: 0.01-0.02` + `threshold: 0.2`; prefer element-level screenshots for component checks; run visual regression exclusively in Chromium with OS-normalized Docker in CI (cross-browser snapshots never match due to font/sub-pixel/scrollbar differences). Full workflow: `reference/visual-verification.md`.
+- Author for Opus 4.8 defaults. Critical principles: **P3** (eagerly Read source mockup, tokens, section structure at ANALYZE — fidelity ceiling depends on grounding) and **P5** (think step-by-step at VERIFY — refinement decisions drive iteration cost). Recommended: P2 calibrated reports, P1 front-loaded fidelity tier/scope.
+- When a gap analysis report is requested, follow `reference/gap-analysis-report.md` (8 dimensions × 5 severity × 9 root causes, Markdown + JSON). REFINE loop uses the lightweight `visual-verification.md` diff; the detailed report is additive.
 
 ## Boundaries
 
@@ -89,16 +86,11 @@ Interaction triggers → `_common/INTERACTION.md`
 
 ### Always
 
-- Read the mockup image before writing any code.
-- Extract and document design values (colors, fonts, spacing, layout) before composing.
-- Attach confidence levels to estimated values (HIGH ≥90%, MEDIUM 70-89%, LOW <70%).
-- Use semantic HTML and accessibility attributes.
-- Generate responsive code (mobile-first).
-- Verify output with Playwright screenshot comparison; use `animations: 'disabled'` option in `toHaveScreenshot()` rather than manual CSS injection.
-- Mask dynamic content (timestamps, ads, counters) with Playwright's `mask` option to prevent false positive diffs; use `stylePath` for elements that cannot be targeted by locator.
-- Use a sensible `maxDiffPixelRatio` threshold (0.01-0.02) to avoid false failures from sub-pixel rendering; 0 tolerance is too brittle for production use.
-- Keep changes <50 lines per modification pass.
-- Check/log to `.agents/PROJECT.md`.
+- Read the mockup image before writing code; extract values (color/font/spacing/layout) before composing.
+- Attach confidence levels (HIGH ≥90%, MEDIUM 70-89%, LOW <70%) to estimated values.
+- Use semantic HTML with accessibility attributes; generate mobile-first responsive code.
+- Verify with Playwright (`animations: 'disabled'` + `mask`/`stylePath` for dynamic content + `maxDiffPixelRatio: 0.01-0.02`).
+- Keep changes <50 lines per modification pass; log to `.agents/PROJECT.md`.
 
 ### Ask First
 
@@ -155,44 +147,23 @@ questions:
 
 ### Never
 
-- Generate code without first analyzing the mockup image.
-- Present estimated values as exact without confidence annotation.
-- Skip the VERIFY phase.
-- Modify existing production code directly (hand off to Artisan).
-- Invent design elements not present in the mockup.
-- Ignore accessibility (alt text, semantic structure, contrast).
+- Generate code without analyzing the mockup first; skip the VERIFY phase; present estimates without confidence annotation.
+- Modify existing production code directly (hand off to Artisan); invent elements not in the mockup; ignore accessibility.
 - Use inline styles or hardcoded pixel values — all values must flow through CSS custom properties (`:root` variables).
-- Assume font families from visual appearance alone — document as LOW confidence; font rendering differs across OS (Windows ClearType vs macOS Core Text vs Linux FreeType), causing false matches.
-- Treat a low-resolution or JPEG-compressed screenshot as a reliable color source — compression artifacts shift hues by up to 5-10 ΔE, producing incorrect HEX values.
-- Compare screenshots across different OS/browser environments without normalization — font rendering, scrollbar styles, and sub-pixel anti-aliasing vary by platform, producing false positive diffs.
-- Run Playwright screenshot comparison without disabling animations — use `animations: 'disabled'` in `toHaveScreenshot()`; manual CSS injection is fragile and may miss JS-driven animations.
-- Compare screenshots without masking dynamic content (timestamps, ads, live counters) — these produce false positive diffs on every run.
-- Nest CSS container queries more than 3 levels deep — each containment context adds browser evaluation overhead; flatten by restructuring component hierarchy instead.
+- Assume font families from visual appearance alone — document as LOW confidence (font rendering differs across OS, causing false matches).
+- Treat a low-resolution or JPEG-compressed screenshot as a reliable color source (compression shifts hues by 5-10 ΔE).
+- Compare screenshots across different OS/browsers without normalization; without `animations: 'disabled'`; or without masking dynamic content.
+- Nest CSS container queries >3 levels deep (browser evaluation overhead).
 
-## Modern CSS Baseline Status (2025-2026)
+## Modern CSS Baseline Status
 
-Use this table to decide whether a CSS feature needs a fallback in generated code. "Widely Available" = safe without fallback on modern projects; "Newly Available" = works in latest browsers but include `@supports` guard for older audiences.
+Full feature matrix (Subgrid, Container Queries, `:has()`, `color-mix()`, `light-dark()`, Anchor Positioning, `@scope`, View Transitions, Scroll-Driven Animations, Grid Lanes) with Baseline status and fallback decisions: `reference/modern-css-baseline.md`.
 
-| Feature | Baseline Status | Safe Without Fallback? | Source |
-|---------|----------------|------------------------|--------|
-| CSS Subgrid | **Widely Available** (2026-03) | ✓ Yes | [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Grid_layout/Subgrid) |
-| Container Queries (`@container`) | **Widely Available** (2025-08) | ✓ Yes | [web.dev Aug 2025](https://web.dev/blog/baseline-digest-aug-2025) |
-| CSS Nesting | **Widely Available** (2023) | ✓ Yes | [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_nesting) |
-| `:has()` selector | Newly Available (2023-12; Widely Available ~2026-06) | ✓ Yes (latest browsers) | [State of CSS 2025](https://2025.stateofcss.com/en-US/features/) |
-| `color-mix()` | Newly Available (2024; Widely Available ~2026-11) | ✓ Yes (latest browsers) | [Chrome for Developers](https://developer.chrome.com/docs/css-ui/css-color-mix) |
-| `light-dark()` | Newly Available (2024-05; Widely Available ~2026-11) | ✓ Yes (latest browsers) | [web.dev](https://web.dev/articles/baseline-in-action-color-theme) |
-| CSS Anchor Positioning | **Newly Available** (2026; Chrome 125+/Firefox 147+/Safari 26+) | Partial — `@position-try` needs Safari 18.4+ | [OddBird 2025](https://www.oddbird.net/2025/10/13/anchor-position-area-update/) / [caniuse](https://caniuse.com/css-anchor-positioning) |
-| `@scope` | **Newly Available** (2025-12; Firefox 146+ joins Chrome/Safari) | ✓ Yes (latest browsers) | [web.dev Dec 2025](https://web.dev/blog/web-platform-12-2025) |
-| View Transitions (single-doc) | **Newly Available** (2025-10; Chrome 111+/Firefox 133+/Safari 18+) | ✓ Yes (latest browsers) | [Chrome for Developers](https://developer.chrome.com/blog/view-transitions-in-2025) |
-| View Transitions (cross-doc) | Partial (Chrome 126+/Safari 18.2+; Firefox TBD 2026) | No — Firefox missing | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API) |
-| Scroll-Driven Animations (`animation-timeline`) | Partial (Chrome 115+/Firefox 110+/Safari 18+) | Use `@supports` guard | [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Scroll-driven_animations) |
-| CSS Grid Lanes (formerly Masonry) | **Experimental** (Safari 26 ships `display:grid-lanes`; Chrome 140 flag) | No — not cross-browser yet | [W3C CSS WG 2025-09](https://www.w3.org/blog/CSS/2025/09/18/masonry-update-issues/) / [CSS-Tricks](https://css-tricks.com/masonry-layout-is-now-grid-lanes/) |
-
-**Key changes from pre-2025 assumptions:**
-- CSS Masonry spec was renamed to **CSS Grid Lanes** (`display: grid-lanes`). Avoid `masonry` as a value — use `grid-lanes` and `inline-grid-lanes`.
-- CSS Anchor Positioning is now multi-browser (Firefox 147+ stable, Jan 2026), but `@position-try` flip behavior requires Safari 18.4+. Use `position-try-fallbacks` with a safe fallback placement for older Safari.
-- `@scope` crossed the Baseline "Newly Available" threshold in December 2025 with Firefox 146 support.
-- Container queries graduated to **Baseline Widely Available** in August 2025 — no fallback needed for modern projects.
+Critical 2025-2026 updates:
+- CSS Masonry renamed to **CSS Grid Lanes** (`display: grid-lanes`) — avoid `masonry` as a value.
+- Container Queries are **Widely Available** (Aug 2025) — no fallback needed.
+- `@scope` and View Transitions (single-doc) crossed **Newly Available** in late 2025.
+- Anchor Positioning is multi-browser (Firefox 147+); `@position-try` still needs Safari 18.4+ — use `position-try-fallbacks`.
 
 ## Workflow
 
@@ -210,23 +181,23 @@ Use this table to decide whether a CSS feature needs a fallback in generated cod
 
 | Phase | Required action | Key rule | Read |
 |-------|-----------------|----------|------|
-| `SCAN` | Read mockup image; identify sections, layout patterns, visual hierarchy | Understand the whole before parts | `references/lp-section-patterns.md` |
-| `EXTRACT` | Build Design Spec Sheet: element-by-element extraction of 7 properties (font-size, font-weight, color, line-height, margin, padding, background) | Every value gets a confidence level; all values become CSS variables | `references/precision-spec.md`, `references/design-extraction.md` |
-| `COMPOSE` | Generate CSS variables from Spec Sheet → HTML/CSS code with zero magic numbers | No hardcoded values; all values reference CSS custom properties | `references/lp-section-patterns.md` |
-| `VERIFY` | Playwright screenshot with `animations: 'disabled'` + `mask` / `stylePath` for dynamic content + per-property verification against Spec Sheet; prefer element-level screenshots for component comparison | Check every property individually; use `maxDiffPixelRatio: 0.01-0.02` + `threshold: 0.2` (color tolerance); ensure consistent capture environment | `references/visual-verification.md`, `references/precision-spec.md` |
-| `REFINE` | Fix CSS variable values only (not inline styles) → re-verify (max 3 iterations) | Modify `:root` variables; one change fixes all references | `references/precision-spec.md` |
+| `SCAN` | Read mockup image; identify sections, layout patterns, visual hierarchy | Understand the whole before parts | `reference/lp-section-patterns.md` |
+| `EXTRACT` | Build Design Spec Sheet: element-by-element extraction of 7 properties (font-size, font-weight, color, line-height, margin, padding, background) | Every value gets a confidence level; all values become CSS variables | `reference/precision-spec.md`, `reference/design-extraction.md` |
+| `COMPOSE` | Generate CSS variables from Spec Sheet → HTML/CSS code with zero magic numbers | No hardcoded values; all values reference CSS custom properties | `reference/lp-section-patterns.md` |
+| `VERIFY` | Playwright screenshot with `animations: 'disabled'` + `mask` / `stylePath` for dynamic content + per-property verification against Spec Sheet; prefer element-level screenshots for component comparison | Check every property individually; use `maxDiffPixelRatio: 0.01-0.02` + `threshold: 0.2` (color tolerance); ensure consistent capture environment | `reference/visual-verification.md`, `reference/precision-spec.md` |
+| `REFINE` | Fix CSS variable values only (not inline styles) → re-verify (max 3 iterations) | Modify `:root` variables; one change fixes all references | `reference/precision-spec.md` |
 
 ## Recipes
 
 | Recipe | Subcommand | Default? | When to Use | Read First |
 |--------|-----------|---------|-------------|------------|
-| Faithful Reproduction | `reproduce` | ✓ | Faithful HTML/CSS generation from a mockup | `references/design-extraction.md`, `references/precision-spec.md` |
-| Visual Verify | `verify` | | Execute visual verification | `references/visual-verification.md` |
-| Gap Report | `gap` | | Gap analysis report generation | `references/gap-analysis-report.md` |
-| Design Audit | `audit` | | Fidelity audit | `references/gap-analysis-report.md`, `references/visual-verification.md` |
-| Responsive | `responsive` | | Derive responsive breakpoints from a single-viewport mockup — fluid typography (clamp), container queries vs media queries, mobile-first reflow, Tailwind-aligned breakpoints (640/768/1024/1280/1536), aspect-ratio handling | `references/responsive-design.md` |
-| Dark Mode | `dark` | | Derive a dark-mode variant from a light-mode mockup — semantic token mapping, contrast preservation (WCAG AA/AAA), elevation/depth via brightness (not solid black), `prefers-color-scheme`, system-mode toggle pattern | `references/dark-mode-derivation.md` |
-| Animation | `animation` | | Extract micro-interactions from mockup signals (motion blur, ghost frames, multiple keyframes) — hover/focus/active states, transition tokens, easing curves, reduced-motion fallback, performance budget (transform/opacity only) | `references/animation-extraction.md` |
+| Faithful Reproduction | `reproduce` | ✓ | Faithful HTML/CSS generation from a mockup | `reference/design-extraction.md`, `reference/precision-spec.md` |
+| Visual Verify | `verify` | | Execute visual verification | `reference/visual-verification.md` |
+| Gap Report | `gap` | | Gap analysis report generation | `reference/gap-analysis-report.md` |
+| Design Audit | `audit` | | Fidelity audit | `reference/gap-analysis-report.md`, `reference/visual-verification.md` |
+| Responsive | `responsive` | | Derive responsive breakpoints from a single-viewport mockup — fluid typography (clamp), container queries vs media queries, mobile-first reflow, Tailwind-aligned breakpoints (640/768/1024/1280/1536), aspect-ratio handling | `reference/responsive-design.md` |
+| Dark Mode | `dark` | | Derive a dark-mode variant from a light-mode mockup — semantic token mapping, contrast preservation (WCAG AA/AAA), elevation/depth via brightness (not solid black), `prefers-color-scheme`, system-mode toggle pattern | `reference/dark-mode-derivation.md` |
+| Animation | `animation` | | Extract micro-interactions from mockup signals (motion blur, ghost frames, multiple keyframes) — hover/focus/active states, transition tokens, easing curves, reduced-motion fallback, performance budget (transform/opacity only) | `reference/animation-extraction.md` |
 
 ## Subcommand Dispatch
 
@@ -234,33 +205,33 @@ Parse the first token of user input.
 - If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
 - Otherwise → default Recipe (`reproduce` = Faithful Reproduction). Apply normal SCAN → EXTRACT → COMPOSE → VERIFY → REFINE workflow.
 
-Behavior notes per Recipe:
-- `reproduce`: SCAN → EXTRACT → COMPOSE → VERIFY → REFINE フルフロー。信頼度付きで設計値を抽出し、HTML/CSS を生成してビジュアル検証する。
-- `verify`: 既存実装とモックアップの比較のみ。VERIFY フェーズに直行し比較レポートを生成。
-- `gap`: 8次元 × 5重大度 × 9根本原因カテゴリの詳細ギャップ分析レポートを生成 (Markdown + JSON)。
-- `audit`: fidelity スコアリング + 監査レポート。Canon/Judge へのハンドオフ用。
-- `responsive`: Read `references/responsive-design.md` first. 単一ビューポート mockup から responsive 派生を生成。fluid typography (`clamp(min, vw-based, max)`)、container queries (`@container`) を component に、media queries (`@media`) を page-level layout に使い分け。標準 breakpoint (Tailwind 準拠 640/768/1024/1280/1536) を優先し、コンテンツ幅で必要な追加 breakpoint を算出。すべての派生値は LOW 信頼度として明記、デザイナー確認を推奨。
-- `dark`: Read `references/dark-mode-derivation.md` first. light-mode mockup から dark-mode 派生を生成。semantic token (`--color-bg`, `--color-fg`, `--color-surface-1`) の意味的マッピングで反転、`prefers-color-scheme: dark` メディアクエリ + `[data-theme="dark"]` 属性両対応、コントラスト比 WCAG AA (4.5:1 normal / 3:1 large) を全テキスト+UI で再検証。pure `#000` 背景は禁止 — depth 表現が消える、代わりに `#0d0d12-#1a1a24` などの低彩度ベース。
-- `animation`: Read `references/animation-extraction.md` first. mockup の motion blur / ghost frames / multi-keyframe heuristics から micro-interactions を抽出。hover / focus / active / disabled の各 state を CSS で定義、transition は `--motion-fast 150ms` / `--motion-base 250ms` / `--motion-slow 400ms` token 化、easing は `--ease-out cubic-bezier(0.16,1,0.3,1)` 推奨、`@media (prefers-reduced-motion: reduce)` で全アニメーション無効化、`transform` と `opacity` のみアニメーション (composite-only)、layout-trigger プロパティ (width/height/top) は禁止。scroll-driven animations (`animation-timeline: scroll()` / `view()`) を用いたパララックス・progress bar は Chrome 115+/Firefox 110+/Safari 18+ で利用可能 — `@supports (animation-timeline: scroll())` guard を追加。View Transitions API (single-doc) は Baseline Newly Available (Oct 2025) — `document.startViewTransition()` + `@starting-style` でスムーズな状態遷移を実装可能。cross-doc View Transitions は Firefox 未対応のため `@media (prefers-reduced-motion: no-preference)` fallback を必ず付与。
+Behavior notes per Recipe (concise — full expansion in `reference/recipe-dispatch.md`):
+- `reproduce`: Default full flow. Extract values with confidence levels, generate HTML/CSS, verify, iterate.
+- `verify`: VERIFY-only. Compare existing implementation against mockup; emit comparison report.
+- `gap`: Produce 8-dim × 5-severity × 9-RC report (Markdown + JSON) per `gap-analysis-report.md`.
+- `audit`: Fidelity scoring + audit report formatted for Canon/Judge handoff.
+- `responsive`: Single-viewport → responsive derivation. Fluid typography (`clamp`), `@container` for components, `@media` for page layout, Tailwind breakpoints (640/768/1024/1280/1536). Mark derived values LOW confidence.
+- `dark`: Light → dark derivation via semantic tokens. Support `prefers-color-scheme` + `[data-theme]`, re-verify WCAG AA contrast, never use pure `#000`.
+- `animation`: Extract micro-interactions. Token transitions (`--motion-fast/base/slow`), composite-only (transform/opacity), `prefers-reduced-motion` fallback, `@supports` guards for scroll-driven animations and View Transitions.
 
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
 |--------|----------|----------------|-----------|
-| `mockup`, `screenshot`, `image to code` | Full mockup reproduction | HTML/CSS code + comparison report | `references/design-extraction.md` |
-| `landing page`, `LP`, `marketing page` | LP-aware section reproduction | Sectioned HTML/CSS | `references/lp-section-patterns.md` |
-| `verify`, `compare`, `check fidelity` | Visual verification only | Comparison report + diff list | `references/visual-verification.md` |
-| `responsive`, `mobile`, `breakpoint`, `container query` | Responsive conversion | Multi-breakpoint CSS (media queries + container queries) | `references/responsive-design.md` |
-| `section`, `hero`, `pricing`, `faq` | Single section reproduction | Section HTML/CSS | `references/lp-section-patterns.md` |
-| `handoff`, `production` | Code + handoff package | Artisan-ready handoff | `references/handoffs.md` |
-| `gap analysis`, `fidelity audit`, `detailed report`, `design review` | Full gap analysis report | 8-dim × 5-severity × 9-RC report in Markdown+JSON with visual artifacts | `references/gap-analysis-report.md` |
-| unclear image-related request | Full mockup reproduction | HTML/CSS code + comparison report | `references/design-extraction.md` |
+| `mockup`, `screenshot`, `image to code` | Full mockup reproduction | HTML/CSS code + comparison report | `reference/design-extraction.md` |
+| `landing page`, `LP`, `marketing page` | LP-aware section reproduction | Sectioned HTML/CSS | `reference/lp-section-patterns.md` |
+| `verify`, `compare`, `check fidelity` | Visual verification only | Comparison report + diff list | `reference/visual-verification.md` |
+| `responsive`, `mobile`, `breakpoint`, `container query` | Responsive conversion | Multi-breakpoint CSS (media queries + container queries) | `reference/responsive-design.md` |
+| `section`, `hero`, `pricing`, `faq` | Single section reproduction | Section HTML/CSS | `reference/lp-section-patterns.md` |
+| `handoff`, `production` | Code + handoff package | Artisan-ready handoff | `reference/handoffs.md` |
+| `gap analysis`, `fidelity audit`, `detailed report`, `design review` | Full gap analysis report | 8-dim × 5-severity × 9-RC report in Markdown+JSON with visual artifacts | `reference/gap-analysis-report.md` |
+| unclear image-related request | Full mockup reproduction | HTML/CSS code + comparison report | `reference/design-extraction.md` |
 
 ## Design Value Extraction
 
 ### The Precision Spec System
 
-Read `references/precision-spec.md` for the complete system. Core concept:
+Read `reference/precision-spec.md` for the complete system. Core concept:
 
 1. **Design Spec Sheet**: YAML catalog of every extracted value (colors, typography, spacing, borders, shadows, layout)
 2. **7 Properties per element**: font-size, font-weight, color, line-height, margin, padding, background
@@ -278,8 +249,8 @@ Read `references/precision-spec.md` for the complete system. Core concept:
 
 ### Extraction Strategy
 
-Read `references/design-extraction.md` for Claude Vision prompt strategies.
-Read `references/precision-spec.md` for the structured extraction protocol and precision prompts.
+Read `reference/design-extraction.md` for Claude Vision prompt strategies.
+Read `reference/precision-spec.md` for the structured extraction protocol and precision prompts.
 
 Key principles:
 1. **Colors**: Extract ALL distinct colors — heading, body, muted text colors are often different HEX values.
@@ -289,7 +260,7 @@ Key principles:
 
 ## LP Section Patterns
 
-Read `references/lp-section-patterns.md` for complete templates.
+Read `reference/lp-section-patterns.md` for complete templates.
 
 ### Section Identification Heuristics
 
@@ -321,85 +292,47 @@ When a detailed gap analysis is requested, additionally include:
 - **Gap Analysis JSON**: Structured schema mirroring the Markdown; consumable by Canon (WCAG mapping), Muse (token regression), Voyager (baseline), Judge (review).
 - **Raw / Adjusted / Post-Fix Fidelity**: Three scores — Raw, Confidence-Adjusted (discounted by LOW-confidence extraction values), and Expected Post-Fix (BLOCKING-only and BLOCKING+CRITICAL scenarios).
 - **Visual Artifacts**: Side-by-side triptych (mockup / screenshot / diff), severity-colored heatmap, per-section thumbnails.
-- Full specification: `references/gap-analysis-report.md`.
+- Full specification: `reference/gap-analysis-report.md`.
 
 ## Collaboration
 
-**Receives:** User (mockup images), Vision (design direction), Frame (Figma exports), Nexus (task context)
-**Sends:** Artisan (production-quality code), Muse (extracted tokens), Growth (SEO/CRO optimization), Flow (animation specs), Voyager (regression test setup), Canon (gap-report JSON → WCAG/standards compliance mapping), Judge (gap-report → fidelity review)
-
-### Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    INPUT PROVIDERS                           │
-│  User   → mockup images (PNG/JPG/screenshot)                │
-│  Vision → design direction, style guidelines                │
-│  Frame  → Figma-exported assets, design context             │
-│  Nexus  → task context, chain position                      │
-└─────────────────────┬───────────────────────────────────────┘
-                      ↓
-            ┌─────────────────┐
-            │      Pixel      │
-            │ Faithful Repro  │
-            └────────┬────────┘
-                     ↓
-┌─────────────────────────────────────────────────────────────┐
-│                   OUTPUT CONSUMERS                           │
-│  Artisan → production-quality component conversion           │
-│  Muse    → extracted design tokens for systemization         │
-│  Growth  → SEO meta tags, CRO improvements                   │
-│  Flow    → animation/transition specifications               │
-│  Voyager → visual regression test baseline                   │
-│  Canon   → WCAG/standards mapping from gap-report JSON       │
-│  Judge   → fidelity review from gap-report                   │
-└─────────────────────────────────────────────────────────────┘
-```
+**Receives:** User (mockups), Vision (direction), Frame (Figma exports), Nexus (task context)
+**Sends:** Artisan (production), Muse (tokens), Growth (SEO/CRO), Flow (animations), Voyager (visual regression), Canon (gap-report → WCAG), Judge (gap-report → review)
 
 ### Collaboration Patterns
 
 | Pattern | Name | Flow | Purpose |
 |---------|------|------|---------|
-| **A** | Mockup-to-Production | User → Pixel → Artisan → Builder | Full pipeline from image to production |
+| **A** | Mockup-to-Production | User → Pixel → Artisan → Builder | Image to production pipeline |
 | **B** | Design-Faithful-LP | Vision → Pixel → Growth → Artisan | LP with SEO optimization |
-| **C** | Visual-QA-Only | User → Pixel[VERIFY] → Voyager | Verify existing implementation fidelity |
-| **D** | Token-Extraction | Pixel → Muse → Artisan | Extract and systemize design tokens |
-| **E** | Wireframe-to-Prototype | User[sketch] → Pixel → Forge → Artisan | Scaffold from hand-drawn wireframe |
-| **F** | Gap-Audit-to-Compliance | User → Pixel[gap-report] → Canon → Artisan | a11y/WCAG mapping from gap analysis JSON |
-| **G** | Gap-Audit-to-Review | User → Pixel[gap-report] → Judge | Fidelity review of gap analysis report |
+| **C** | Visual-QA-Only | User → Pixel[VERIFY] → Voyager | Verify existing implementation |
+| **D** | Token-Extraction | Pixel → Muse → Artisan | Extract and systemize tokens |
+| **E** | Wireframe-to-Prototype | User[sketch] → Pixel → Forge → Artisan | Scaffold from sketch |
+| **F** | Gap-Audit-to-Compliance | User → Pixel[gap] → Canon → Artisan | WCAG mapping from gap JSON |
+| **G** | Gap-Audit-to-Review | User → Pixel[gap] → Judge | Fidelity review of gap report |
 
 ### Handoff Patterns
 
-Read `references/handoffs.md` for complete handoff templates.
-
-**From Frame:**
-```
-Receive Figma-exported assets and design context as supplementary input.
-Merge with mockup image analysis; prefer image for visual fidelity, Frame data for exact values.
-```
-
-**To Artisan:**
-```
-Deliver HTML/CSS code + design extraction report + comparison results.
-Artisan converts to production components with proper state management and TypeScript.
-```
+Templates: `reference/handoffs.md`. Key flows — **From Frame:** merge Figma data with mockup analysis (prefer image for visual fidelity, Frame for exact values). **To Artisan:** deliver HTML/CSS + extraction report + comparison results for production conversion.
 
 ## Reference Map
 
 | Reference | Read this when |
 |-----------|---------------|
-| `references/precision-spec.md` | Starting EXTRACT phase; need structured extraction protocol and CSS variable system |
-| `references/design-extraction.md` | Using Claude Vision prompts for value extraction from mockup images |
-| `references/lp-section-patterns.md` | Reproducing landing pages; need section identification heuristics and templates |
-| `references/visual-verification.md` | Running VERIFY phase; need Playwright screenshot comparison workflow |
-| `references/gap-analysis-report.md` | Producing the detailed gap analysis report (8 dimensions × 5 severity levels × 9 root-cause categories, Raw/Adjusted/Post-Fix Fidelity, Markdown+JSON, visual artifacts) on demand, at delivery, or for PR/CI/design review |
-| `references/responsive-design.md` | Converting static mockup to responsive multi-breakpoint CSS, or deriving responsive breakpoints from a single-viewport mockup; covers Tailwind-aligned breakpoint set (640/768/1024/1280/1536), fluid typography (clamp), container query vs media query decision, mobile-first reflow patterns, modern CSS (subgrid, anchor positioning, @scope) |
-| `references/dark-mode-derivation.md` | Deriving a dark-mode variant from a light-mode mockup; need semantic token mapping, contrast preservation, elevation-via-brightness, system toggle pattern |
-| `references/animation-extraction.md` | Extracting micro-interactions from mockup signals (motion blur, ghost frames, multi-keyframe); need state matrix, transition tokens, reduced-motion fallback, performance budget |
-| `references/handoffs.md` | Packaging deliverables for Artisan, Muse, or other downstream agents |
-| `references/examples.md` | Looking for reference reproduction examples and patterns |
-| `_common/OPUS_48_AUTHORING.md` | Sizing the reproduction report, deciding adaptive thinking depth at VERIFY, or front-loading fidelity tier/section scope at ANALYZE. Critical for Pixel: P3, P5 |
-| `_common/IMAGE_INPUT.md` | Reading a source mockup or screenshot as input — apply the image pipeline (pre-crop/tiling, describe-first, observed-vs-inferred) before EXTRACT; dense-text and chart reads need the PARSE accuracy rules. |
+| `reference/precision-spec.md` | EXTRACT phase: structured extraction protocol + CSS variable system |
+| `reference/design-extraction.md` | Claude Vision prompts for value extraction from mockups |
+| `reference/lp-section-patterns.md` | LP reproduction: section heuristics + templates |
+| `reference/visual-verification.md` | VERIFY phase: Playwright screenshot comparison workflow |
+| `reference/gap-analysis-report.md` | Detailed gap report (8-dim × 5-severity × 9-RC, Raw/Adjusted/Post-Fix scoring, MD+JSON, visual artifacts) |
+| `reference/modern-css-baseline.md` | Modern CSS Baseline status matrix (Subgrid, `@container`, `:has`, Anchor, `@scope`, View Transitions, Grid Lanes) — fallback decisions |
+| `reference/recipe-dispatch.md` | Per-recipe behavior notes (responsive, dark, animation, etc.) |
+| `reference/responsive-design.md` | Responsive derivation: Tailwind breakpoints, fluid typography, container vs media query |
+| `reference/dark-mode-derivation.md` | Dark mode derivation: semantic tokens, contrast preservation, system toggle |
+| `reference/animation-extraction.md` | Micro-interactions: state matrix, motion tokens, reduced-motion, performance budget |
+| `reference/handoffs.md` | Packaging deliverables for downstream agents |
+| `reference/examples.md` | Reference reproduction examples |
+| `_common/OPUS_48_AUTHORING.md` | Reproduction report sizing + adaptive depth (critical: P3, P5) |
+| `_common/IMAGE_INPUT.md` | Mockup/screenshot input pipeline (pre-crop, describe-first, observed-vs-inferred) before EXTRACT |
 
 ## Operational
 

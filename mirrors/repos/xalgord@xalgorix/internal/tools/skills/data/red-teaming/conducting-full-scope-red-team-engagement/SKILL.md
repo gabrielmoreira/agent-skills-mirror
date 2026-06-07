@@ -41,6 +41,15 @@ A full-scope red team engagement simulates real-world adversary behavior across 
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **No deconfliction / emergency-stop line agreed before kickoff.** Capture SOC deconfliction contacts and the abort procedure in the RoE before any action, or a real incident gets confused with the test.
+- **Treating phishing failure as engagement failure.** When initial access stalls, pivot to the agreed assumed-breach grant instead of burning the window on more lures.
+- **Not timestamping actions as you go.** MTTD/MTTR and dwell-time metrics can't be reconstructed after the fact — log each TTP with a timestamp live.
+- **Skipping artifact/persistence cleanup and kill dates**, leaving implants and scheduled tasks behind.
+- **Pursuing "crown jewels" that aren't actually in scope** — re-verify objectives against the RoE.
+- **How to confirm:** every phase produces an evidence artifact (screenshot + timestamp + host). An objective counts as *achieved* only when the concrete success signal is observed — e.g. membership in Domain Admins confirmed via `whoami /groups`, or the crown-jewel file hash received at the C2 after exfil. Don't conclude an objective is unmet until the assumed-breach path has been tried; an initial-access miss is not an engagement miss.
+
 ## Prerequisites
 
 - Written authorization (Rules of Engagement document) signed by executive leadership

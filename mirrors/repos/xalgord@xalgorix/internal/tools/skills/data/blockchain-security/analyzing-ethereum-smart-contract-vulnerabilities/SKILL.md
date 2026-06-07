@@ -36,6 +36,14 @@ Smart contract vulnerabilities have led to billions of dollars in losses across 
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Vulnerability classes to cover deliberately:** reentrancy (cross-function and read-only), integer overflow/underflow in pre-0.8.0 or `unchecked` blocks, access-control gaps (missing `onlyOwner`, unprotected `initialize`), and `delegatecall` / storage-collision bugs in proxies.
+- **Tool false negatives:** Slither and Mythril routinely miss bugs behind proxy patterns (EIP-1967/UUPS/Diamond) because the implementation is reached only through `delegatecall`. Run Slither with `--compile-force-framework` against the full project and point Mythril at the implementation contract directly, not the proxy.
+- **Economic and oracle logic is invisible to static tools:** price manipulation, flash-loan attack paths, slippage, and rounding abuse will not appear in detector output. These require manual review of the protocol's invariants.
+- **How to confirm a hit (avoid false positives/negatives):** turn each candidate finding into a PoC exploit on a mainnet fork using Foundry (`forge test --fork-url`), and assert the attacker balance actually increases or the invariant breaks. A detector flag with no working PoC stays "suspected," not "confirmed."
+- **Don't conclude "safe" until** you've run both tools, manually reviewed access control and external-call ordering, modeled economic/oracle assumptions, and fuzzed key invariants (`forge test` with invariant/fuzz harnesses).
+
 ## Prerequisites
 
 - Python 3.10+ with pip

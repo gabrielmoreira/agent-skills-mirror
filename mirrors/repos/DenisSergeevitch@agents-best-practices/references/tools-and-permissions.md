@@ -159,6 +159,12 @@ stage_workflow_change -> commit_workflow_change
 
 Draft tools can often run automatically. Commit tools require approval unless the action is low-risk and explicitly allowlisted.
 
+## Coding-agent baseline tools
+
+For repository-facing agents, use [coding-agents.md](coding-agents.md) for the concrete tool registry, permission defaults, command policy, path safety, and diff-accounting rules.
+
+The short rule is: make repo inspection, patching, validation, review handoff, and safety tools explicit. If shell is necessary, wrap it with command normalization, fixed cwd, approval policy, path extraction, timeouts, output caps, secret isolation, and structured results.
+
 ## Tool result format
 
 Return structured observations:

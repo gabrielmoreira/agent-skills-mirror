@@ -38,6 +38,14 @@ nist_csf:
 - When EDR or SIEM alerts trigger on related indicators
 - During periodic security assessments and purple team exercises
 
+## Detection Gaps & Validation
+
+- **Key coverage blind spots:** Run vs RunOnce vs RunOnceEx vs `Winlogon\Shell`/`Userinit` vs IFEO (`Image File Execution Options\<exe>\Debugger`, `GlobalFlag`+`SilentProcessExit`) vs COM hijack (`HKCU\Software\Classes\CLSID\{...}\InprocServer32`). Sysmon EID 13 fires only for paths in your RegistryEvent filter — default configs routinely miss IFEO and per-user `Classes`, the #1 false-negative.
+- **Hive scope:** logged-off users' HKCU lives in unmounted NTUSER.DAT, so live `reg query` misses it — hunt offline hives too.
+- **Fileless values:** encoded PowerShell/mshta written directly into value data leaves no EID 11 FileCreate, so chaining EID 13→EID 11 silently fails.
+- **Validate:** run Atomic T1547.001 (Run key), T1546.012 (IFEO Debugger), and T1546.015 (COM hijack); confirm EID 13 `TargetObject`, `Details`, and `Image` are all populated.
+- **FP tuning:** msiexec installers, GPO, and software-update agents legitimately write Run keys — baseline by signer + value path, not by key alone.
+
 ## Prerequisites
 
 - EDR platform with process and network telemetry (CrowdStrike, MDE, SentinelOne)

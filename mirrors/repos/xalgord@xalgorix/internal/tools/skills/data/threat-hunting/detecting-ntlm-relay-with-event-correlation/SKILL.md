@@ -65,6 +65,16 @@ NTLM relay attacks intercept NTLM authentication messages and forward them to a 
 
 **Do not use** without centralized Windows Security Event Log collection, as a substitute for enforcing SMB signing and Extended Protection for Authentication (EPA) which prevent relay attacks at the protocol level, or without an IP-to-hostname inventory for correlation.
 
+## Detection Gaps & Validation
+
+- **Inventory quality bounds the core rule.** The IP-to-hostname mismatch on 4624 Type 3 is only as good as the DHCP/DNS/CMDB lookup feeding it — a stale inventory produces false negatives. Refresh the mapping and confirm 4624 is collected from *all* relay targets (member servers and DCs), not just a subset.
+- **LDAP/HTTP relay leaves a different trail.** Relay to LDAP or AD CS (ESC8) does not produce an SMB-style 4624; it shows up as certificate enrollment or 4768 with a cert. A pure SMB-4624 focus misses these high-impact paths.
+- **Coercion goes beyond PetitPotam:** PrinterBug (MS-RPRN), DFSCoerce (MS-DFSNM), and ShadowCoerce all force machine-account auth. The common signal is a computer (`$`) account authenticating via NTLM Type 3 from an IP that isn't its own.
+- **Poisoning over mDNS:** Responder also answers mDNS (UDP 5353), not just LLMNR (5355) and NBT-NS (137) — rules limited to 5355/137 miss mDNS poisoning.
+- **8004 needs enabling:** the NTLM Operational log (Event 8004) requires `AuditReceivingNTLMTraffic=2`; it is off by default.
+- **Validate the rule fires:** in a lab, run `ntlmrelayx` and coerce auth with PetitPotam toward a test relay, then confirm the IP-hostname mismatch / machine-account-from-wrong-IP query triggers.
+- **Tune false positives:** legitimate machine-account NTLM during cluster failover, and NAT/proxies that collapse many sources to one IP, mimic relay. Allowlist NAT egress IPs and cluster nodes.
+
 ## Prerequisites
 
 - Windows Advanced Audit Policy configured to capture Event IDs 4624, 4625, 4648, 4776, and 8004

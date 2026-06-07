@@ -34,6 +34,15 @@ Pod Security Admission (PSA) is a built-in Kubernetes admission controller (stab
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **`enforce` mode never set:** a namespace (or the cluster `AdmissionConfiguration` default) configured with only `audit`/`warn` logs violations but admits everything. Only `enforce` blocks. Verify: `kubectl get ns -L pod-security.kubernetes.io/enforce`.
+- **Cluster-default exemptions too broad:** the `PodSecurityConfiguration` `exemptions.namespaces` list (kube-system, monitoring, falco...) is a hard bypass - anything scheduled there skips PSA entirely. Keep it minimal and review it.
+- **AdmissionConfiguration not wired in:** the `--admission-control-config-file` flag and hostPath mount must be present in `kube-apiserver.yaml`, or the cluster default silently doesn't apply. Confirm the apiserver came up with the flag.
+- **Label typos / unpinned version:** `pod-security.kubernetes.io/enforce` with a misspelled key is ignored, and `enforce-version: latest` can shift checks on upgrade - pin a version (e.g. `v1.28`).
+- **PSA evaluates spec only:** it can't see a root `USER` baked into the image or verify image provenance; combine with Gatekeeper/Kyverno for those.
+- **Verify before and after:** `kubectl label --dry-run=server --overwrite ns <ns> pod-security.kubernetes.io/enforce=restricted` lists violators; after enabling enforce, `kubectl run test --image=nginx -n <ns>` should be **rejected** (nginx runs as root under restricted).
+
 ## Prerequisites
 
 - Kubernetes v1.25+ (PSA is stable/GA)

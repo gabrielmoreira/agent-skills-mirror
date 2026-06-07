@@ -40,6 +40,15 @@ MITRE ATT&CK T1098 (Account Manipulation) covers adversary actions to maintain o
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Event coverage must be complete:** 4720 (created), 4722/4724 (enabled/pw reset), 4728/4732/4756 (added to global/local/universal privileged groups), 4738 (changed), 5136 (DS object modified), 4767 (unlocked). Missing any subcategory ("Audit User Account Management", "Audit Security Group Management", or DS-access SACL for 5136 — off by default) creates blind spots.
+- **Stealth variants raise no group-add event:** AdminSDHolder ACL backdoor → hunt EID 4780 (AdminSDHolder applied); SID-History injection (mimikatz `sid::add`, DCShadow) → hunt 4765/4766.
+- **Shadow credentials:** writing `msDS-KeyCredentialLink` (Whisker-style) leaves only a 5136 attribute change, no password/group event.
+- **DC vs member server:** group/credential events log on the domain controller that processed them — hunting only member servers misses domain-level changes.
+- **Validate:** run Atomic T1098 (add user to Administrators, reset password); confirm 4728/4724 fire on the DC.
+- **FP tuning:** baseline IDM/JIT provisioning and helpdesk service accounts that legitimately modify groups.
+
 ## Prerequisites
 
 - Windows Security Event Logs (EVTX format) or SIEM access

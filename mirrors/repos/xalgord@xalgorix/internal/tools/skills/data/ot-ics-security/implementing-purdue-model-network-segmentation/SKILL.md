@@ -38,6 +38,16 @@ nist_csf:
 
 **Do not use** for micro-segmentation within a single Purdue level (see implementing-zone-conduit-model-for-ics), for cloud-native environments without traditional ICS networks, or for network segmentation in purely IT environments.
 
+## Common Misconfigurations & Verification
+
+Segmentation looks done on the diagram but leaks in practice. Verify each boundary:
+
+- **DMZ that doesn't break connections:** a Level 3.5 rule allows a flow but the historian/IT client still reaches Level 3 end-to-end. Confirm the DMZ terminates the session (replica pushes OUT, IT pulls from the replica) — a capture from L4 should show zero packets reaching L2/L1 IPs.
+- **"Any" in industrial conduits:** rules permitting Modbus/502, EtherNet/IP/44818, or S7comm/102 with source `any` instead of named HMI/SCADA hosts. Confirm by exporting the firewall ruleset and grepping for any/any allows.
+- **Backdoor paths bypassing the model:** vendor laptops, cellular modems, or a flat management VLAN touching every level. Confirm with passive discovery (Nozomi/Claroty) — any L4 IP talking to an L1 PLC is a finding.
+- **Default-deny missing or below specific allows:** verify the final rule is deny-all-and-log and that no shadow rule above it re-opens the path.
+- **Don't declare segmentation complete** until a test host on the enterprise VLAN cannot reach a Level 1 controller (confirmed by capture) and the cutover happened in a maintenance window with rollback — never flipped during live production.
+
 ## Prerequisites
 
 - Complete OT asset inventory with Purdue level classification for each device

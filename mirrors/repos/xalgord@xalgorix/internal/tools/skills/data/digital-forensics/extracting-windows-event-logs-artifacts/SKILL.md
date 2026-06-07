@@ -31,6 +31,14 @@ nist_csf:
 - During compliance audits requiring review of authentication and access events
 - When building forensic timelines from Windows system activity
 
+## Detection Gaps & Validation
+- **Cleared and rolled logs are the primary gap.** Look for Security EID **1102** (audit log cleared) and System EID **104** (log cleared); but a careful attacker stops the EventLog service or selectively removes records, leaving *no* 1102. Detect this by scanning for **gaps in the EventRecordID sequence**, not just a missing-clear assumption.
+- **Audit policy controls what exists.** Command-line in 4688 requires `ProcessCreationIncludeCmdLine_Enabled`; object access (4663) and many 4769/4662 events are off by default. Empty results often mean "not audited," not "did not happen."
+- **Rollover/overwrite:** the default `Security.evtx` is small and wraps by size, so older events during a long dwell time may be gone. Note the earliest record date to bound your visibility window.
+- **Sysmon is not guaranteed:** rich process/network/EID 1,3,11 evidence only exists if Sysmon was deployed; do not assume it.
+- **Timezone:** EVTX `SystemTime` is UTC; convert per the source system, and watch for clock tampering.
+- **Validate / cross-corroborate:** confirm logon/execution claims against Prefetch, Amcache, SRUM, `$MFT`/USN, and centrally **forwarded logs (WEF/SIEM)** which survive local clearing. Carve deleted EVTX (`ElfFile` header) from unallocated space to recover wiped records.
+
 ## Prerequisites
 - Windows Event Log files (EVTX format) from forensic image or live system
 - Chainsaw, Hayabusa, or EvtxECmd for parsing and detection

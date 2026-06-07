@@ -1,10 +1,58 @@
 ---
 name: subagent
-description: Internal protocol for evo optimization subagents. Loaded by subagents spawned from /optimize via their host's skill loader. Not for orchestrator use.
-evo_version: 0.4.5
+description: Protocol that evo optimization subagents follow when dispatched from /optimize. Auto-loaded by spawned subagents via their host's skill loader. The orchestrator may also invoke this skill to understand the brief shape its dispatched subagents expect + what they're required to emit -- useful when writing briefs or debugging a subagent's behavior.
+evo_version: 0.5.0
 ---
 
 # Evo Subagent Protocol
+
+**Orchestrators reading for context**: this is the protocol your dispatched subagents follow. You don't act on it yourself -- write briefs that satisfy the four required fields described below, and rely on each spawned subagent to drive the loop on its end. Stop reading at "Host conventions" if you only need the brief shape; the rest is for the subagent.
+
+## Evo surface -- subagent perspective
+
+What you can pull/dispatch/read as a subagent. Each line is a triggering condition.
+
+```
+skills you may pull (Skill tool)
+└── evo:finetuning     before writing or changing any train.py -- technique
+                       choice, training recipe, observability, retry discipline.
+
+subagents you dispatch (Task tool, subagent_type=...)
+├── evo:verifier              MANDATORY pre AND post every `evo run`.
+│                             Pre: static analysis before the experiment runs
+│                                  (block on failure -- fix and retry).
+│                             Post: result-validity audit after it commits.
+└── evo:benchmark-reviewer    POST-COMMIT only, mode=review-experiment --
+                              per-task failure classification + annotations.
+                              Skip on evaluated/discarded/failed outcomes.
+
+references (Read tool, on demand)
+├── discover/references/
+│   ├── sdk_python.py / sdk_node.js     wiring per-task instrumentation -- preferred
+│   ├── inline_instrumentation.py       inline fallback. Copy as-is; do not reimplement
+│   └── instrumentation-contract.md     the format evo reads (result + traces shapes)
+│
+├── references/evo-wait.md              any time you need to wait -- training, eval,
+│                                       any long-running condition. Use this instead
+│                                       of `sleep N`; doesn't burn context.
+│
+└── finetuning/references/
+    ├── glue.md                          train.py I/O contract evo expects
+    ├── observability.md                 wandb/trackio/mlflow wiring -- env-driven
+    │                                    detection, TRL report_to options, custom-loop
+    │                                    patterns. Read when writing a training script.
+    ├── diagnostics.md                   per-failure-mode diagnostics
+    ├── false-progress.md                what doesn't count as improvement
+    ├── trace-schema.md                  per-task trace JSON schema
+    ├── rl/art.md                        ART (Algorithm-Refined Training)
+    ├── sft/tinker.md                    Tinker SFT
+    └── serving/vllm.md                  vLLM serving config + LoRA-multi
+```
+
+Orchestrator entry-point view (benchmark-reviewer, ideator, infra-setup, full
+references catalogue) lives in `evo:discover`'s "Evo surface" section.
+
+---
 
 You are an evo optimization subagent. The orchestrator has given you a **brief** with four fields:
 
@@ -76,8 +124,10 @@ evo gate add <id> --name <name> --command "<command>"  # add a gate
 
 # Write paths used during iteration
 evo new --parent <id> -m "<hypothesis>"   # allocate sibling experiment
+evo new --parent <id> -m "<h>" --from-artifact <exp[:label]>  # seed from a preserved artifact (EVO_SEED_ARTIFACT)
 evo run <id> [--check]                    # run (or --check to validate without consuming attempts)
-evo discard <id> --reason "<text>"        # reject + park (keeps anchor ref)
+evo abort <id>                            # stop a mid-run experiment (driver + its subprocess tree)
+evo discard <id> --reason "<text>" [--failure-class build|eval|hypothesis]  # reject + park (keeps anchor ref)
 evo restore <id>                          # un-discard or un-prune
 evo annotate <id> [<task_id>] "<text>"    # per-attempt analysis
 evo set <id> --note "<text>" [--tag <t>]  # per-node note from orchestrator
@@ -90,6 +140,7 @@ see `references/cli-quick-reference.md` "Reading workspace state".
 ## First Steps
 
 1. Read `.evo/project.md` to understand the target, what can be changed, and how to interpret results.
+1a. **Load this task's category skill(s).** Run `evo config get task-skills`; for each name returned (e.g. `finetuning`), load that evo skill IN FULL via your host's skill loader before you form an edit — it carries this category's method priors, recipes, and pre-run checks. If it returns blank, infer the category from `.evo/project.md` and load the matching skill if one applies (the subagent protocol alone covers prompt/code/config tasks). Skipping this is how a builder reverts to base-model defaults and reintroduces known mistakes (wrong device placement, stale trainer APIs, eval-before-build).
 2. Read the scratchpad for current state: `evo scratchpad`
    It surfaces: best path (★-marked in the tree), frontier (strategy-ranked branchable nodes), evaluated nodes awaiting decision, gates, annotations, what not to try, infra events, and notes. The Drill-downs section at the bottom lists the read-only commands for going deeper on any section.
 3. Study the pointer traces from your brief:
@@ -160,7 +211,22 @@ For multi-line edits, `evo edit --json-stdin` reads `{"old":...,"new":...,"repla
 
 You may edit anything within the target scope. Do NOT modify benchmark, gate, or framework code.
 
-### 4. Run the experiment
+### 4. Verify the experiment design (pre-`evo run`)
+
+Before `evo run` burns compute, invoke the **evo verifier subagent** via your host's Task tool. Static analysis, ~30s.
+
+```
+Task(subagent_type="evo:verifier",
+     prompt="workspace=<workspace abs path>\nexperiment_id=<your exp_id>\nphase=pre")
+```
+
+The verifier checks for test-set leakage in your training data, subsetted eval commands, missing gates for new artifacts, generic hypotheses, and concurrent-resource conflicts. It returns a JSON report (`{passed, verdict, findings}`) and writes the same verdict as an `evo annotation` on the experiment. See `plugins/evo/agents/verifier.md` for the full check list.
+
+If the verifier returns `passed: false` (verdict `fail`), address every flagged `block` finding and re-invoke until it returns `passed: true`. Skipping or fudging a `fail` verdict is a stop-the-line bug -- the verdict is the precondition for compute spend.
+
+If the verifier returns verdict `warn`, you may proceed but address the warnings in your annotation (step 7).
+
+### 5. Run the experiment
 
 ```bash
 evo run <exp_id>
@@ -183,6 +249,20 @@ portable progress files there. evo mirrors that directory back into
 restart from benchmark-owned checkpoint files, but it does not freeze/restore an
 arbitrary Linux process.
 
+**Declare reusable outputs as artifacts (any category).** If your experiment
+produces an expensive, reusable output — a checkpoint, an adapter, a built
+index, a compiled prompt, anything — write it to `EVO_CHECKPOINT_DIR` (durable:
+it survives between-attempt cleanup and discard) and name it in the benchmark
+result's `artifacts` field: `{"score": ..., "artifacts": {"<label>": "<path>"}}`.
+Declared artifacts are preserved when the node is discarded, so a later
+experiment can reuse them via `evo new --from-artifact <exp[:label]>` (the path
+arrives as `EVO_SEED_ARTIFACT`). Never hardcode a name like `final_model/` — the
+label is whatever your recipe declares. If a run is clearly heading toward
+failure mid-flight (divergent loss, projected budget blow-out, a known-failure
+signature), it can be stopped with `evo abort <id>` — that kills the driver and
+its subprocess tree, and a partial artifact already written to
+`EVO_CHECKPOINT_DIR` survives for reuse.
+
 **If the workspace was initialized with `commit_strategy=tracked-only` (the default for `--backend pool`):** `evo run` only commits modifications to *tracked* files. New files require an explicit `git add` from inside the worktree, then a shisa-kanko ack on the run command:
 
 ```bash
@@ -195,7 +275,7 @@ evo run <exp_id> --i-staged-new-files yes
 
 The ack flag is required when the worktree has any untracked, non-gitignored file. Without it, `evo run` errors closed and lists the files. For each file, decide: source (then `git add`) or warm state (leave untracked -- it persists in the slot for future experiments). Then re-run with `--i-staged-new-files yes`. The flag value must be exactly `yes`. In `commit_strategy=all` workspaces (default for `--backend worktree`) the flag is a silent no-op; safe to always pass.
 
-### 5. Analyze the result
+### 6. Analyze the result
 
 `evo run` prints one of three outcomes:
 
@@ -207,7 +287,10 @@ The ack flag is required when the worktree has any untracked, non-gitignored fil
 
   Then either:
   - Fixable edit-bug (off-by-one, wrong signature): edit the worktree and `evo run <id>` again. Bounded by `max_attempts` (default 3). Before retrying, compare your planned edit against the previous attempts' `outcome.json` on this same node -- if two earlier attempts hit the same gate, a small tweak won't fix it. When the cap is hit, run is refused -- you must discard.
-  - Hypothesis is wrong, no fix: `evo discard <id> --reason "..."` and branch a new experiment from the **original parent**.
+  - Otherwise discard, and **classify why** with `--failure-class` so the orchestrator can route reuse vs branch:
+    - **`eval`** — the produced artifact is good but the scoring / serving / decode config is wrong. Make sure the artifact was declared + preserved; a sibling can **retest it in seconds** via `evo new --from-artifact <id>` (arrives as `EVO_SEED_ARTIFACT`) instead of rebuilding. `evo discard <id> --reason "..." --failure-class eval`.
+    - **`build`** — the artifact-production step itself broke. Fix it, then retry/resume *from the last checkpoint in `EVO_CHECKPOINT_DIR`* rather than rebuilding from scratch. `evo discard <id> --reason "..." --failure-class build` only if you're abandoning this node.
+    - **`hypothesis`** — it ran clean but didn't help. `evo discard <id> --reason "..." --failure-class hypothesis` and branch a new experiment from the **original parent** (a different direction, not a retry of the same idea).
 
 - **`FAILED`** (infra error, non-zero exit, timeout): couldn't evaluate. Doesn't consume the retry budget.
   - Transient / fixable locally: retry.
@@ -215,7 +298,20 @@ The ack flag is required when the worktree has any untracked, non-gitignored fil
   - Structural (benchmark broken, evo misconfigured): report to orchestrator and stop.
   - Not worth fixing: `evo discard <id> --reason "..."`.
 
-### 6. Annotate
+### 6b. Review your own failures (committed experiments only)
+
+After a `COMMITTED` outcome, before annotating yourself, spawn `evo:benchmark-reviewer` in review-experiment mode. It reads the per-task traces and the eval-runner log you just produced, classifies failures into a small taxonomy, and writes per-task annotations via `evo annotate <exp> --task K`. This is the data the next experiment's hypothesis is built on -- skip it and the orchestrator picks a frontier from `passed/failed` booleans with no diagnosis.
+
+```
+Task(subagent_type="evo:benchmark-reviewer",
+     prompt="mode=review-experiment\nworkspace=<workspace path>\nexperiment_id=<your exp_id>")
+```
+
+The returned JSON includes `failure_breakdown`, `top_failure_pattern`, and `next_step_signal`. Read it, include the breakdown + top pattern in your final handoff message, but **do not act on `next_step_signal` yourself** -- it's a hint for the next experiment, which isn't yours to design.
+
+Skip this step for `EVALUATED` (regressed, will be discarded), `FAILED` (infra error), or `DISCARDED` outcomes -- there's no meaningful per-task data worth classifying.
+
+### 7. Annotate
 
 ```bash
 evo annotate <exp_id> "<what you changed, what happened, and why>"
@@ -223,7 +319,7 @@ evo annotate <exp_id> "<what you changed, what happened, and why>"
 
 Always annotate so other agents can learn from your experiments.
 
-### 6b. Add gates for fixed behaviors
+### 7b. Add gates for fixed behaviors
 
 When you fix a critical, easy-to-regress behavior, lock it in as a gate so future experiments on this branch can't break it:
 
@@ -233,7 +329,7 @@ evo gate add <exp_id> --name "social_eng_resistance" --command "python3 {worktre
 
 Good candidates: a specific benchmark task that was hard to fix, a test for a critical policy rule, a smoke test for a fragile behavior. The gate command must exit non-zero when the protected behavior regresses; a bare benchmark invocation that prints a low score but exits 0 is decorative and should not be registered. Do NOT gate every passing task -- that over-constrains the search.
 
-### 7. Decide: continue or stop
+### 8. Decide: continue or stop
 
 Continue if budget remains AND (last outcome was committed, OR you have a meaningfully different idea after an evaluated/discarded outcome). When continuing after a committed experiment, update your parent to the newly committed ID.
 
@@ -250,6 +346,12 @@ Trace quality is part of the benchmark contract. After a failed baseline or fail
 - **LLM / agent benchmarks**: log the task input, observation/frame summary, prompt or message summary, model/tool response, selected action, retries/errors, and final task outcome. If the project already has a separate recorder, decide whether evo traces mirror the important fields or whether the recorder artifact is explicitly linked from the evo trace.
 
 The trace format is forward-compatible -- extra fields are preserved. Do NOT change the score computation or gate logic -- only add observability.
+
+## Reuse expensive intermediates
+
+If your experiment needs an artifact that is slow to produce and stable across sibling/descendant experiments -- curated/tokenized datasets, fine-tuned weights or adapters, embeddings, retrieval indexes, precomputed eval generations, large compiled assets -- check `.evo/cache/` (workspace-level, sibling to `run_<NNNN>/`) before recomputing. Write back what you compute, keyed by every input that changes the artifact (recipe version, source, parameters). The next experiment that asks for the same artifact reads from disk instead of rebuilding from scratch.
+
+`.evo/cache/` is already gitignored via the workspace's `.evo/` exclude and is not touched by `evo new` / `evo run` / `evo reset`. Anti-pattern: writing the artifact inside your experiment's worktree -- it's worktree-local, doesn't propagate to descendants, and disappears on cleanup. The full read-or-compute pattern (workspace-root lookup, cache-key construction, deferring to the per-user HF cache where relevant) is in the **finetuning skill** under "Cache expensive intermediates." Apply it in any domain where the artifact shape fits.
 
 ## Rules
 

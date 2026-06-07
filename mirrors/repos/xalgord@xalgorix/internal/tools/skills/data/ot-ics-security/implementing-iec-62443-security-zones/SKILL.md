@@ -38,6 +38,14 @@ nist_csf:
 
 **Do not use** for IT-only network segmentation (see implementing-network-microsegmentation), for cloud-native workload segmentation (see securing-kubernetes-on-cloud), or for physical security zone design without a cyber component.
 
+## Common Misconfigurations & Verification
+
+- **Zones defined on paper but not enforced.** A zone/conduit document and SL-T assignments mean nothing if the firewall still permits any-any or VLANs share a broadcast domain. Verify each conduit's allow list matches the design and that a default-deny terminates every inter-zone ACL.
+- **SIS not isolated.** Placing safety controllers (SL 3) in the same zone as the BPCS violates 62443 isolation; confirm the SIS zone is air-gapped or has no network conduit, exactly as the zone definition states.
+- **Purdue bypass via dual-homed hosts.** Engineering workstations or historians with a NIC in two zones collapse the boundary; enumerate multi-homed assets and remove or firewall them.
+- **Data diode running backward or bypassed.** Confirm unidirectional flow is hardware-enforced (OT->DMZ) and that no parallel TCP path provides a reverse channel.
+- **Verify without disrupting the process.** Deploy firewalls in monitor mode first, then test from each zone during a maintenance window: prohibited cross-zone connections (e.g., Enterprise->PLC on 502/44818/102) must be filtered, and permitted read-only flows must still work. Use connectivity checks, not write commands against live controllers.
+
 ## Prerequisites
 
 - Completed OT network security assessment with asset inventory and traffic flow analysis

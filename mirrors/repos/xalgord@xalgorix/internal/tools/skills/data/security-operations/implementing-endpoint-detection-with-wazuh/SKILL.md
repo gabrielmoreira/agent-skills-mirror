@@ -40,6 +40,14 @@ Wazuh is an open-source SIEM and XDR platform for endpoint monitoring, threat de
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Agent registered but not enrolled/connected:** `agent_control -l` or `GET /agents?status=disconnected` shows `Never connected`/`disconnected`. Usually a `1514/udp` (enrollment `1515/tcp`) block or a stale key. Re-key with `manage_agents` and confirm `Agent ... is now active` in `/var/ossec/logs/ossec.log`.
+- **Custom rule/decoder silently not firing:** rules in `/var/ossec/etc/rules/local_rules.xml` need a matching decoder first. Validate with `/var/ossec/bin/wazuh-logtest` (or the `/logtest` API) — "Phase 2: completed decoding" with no extracted fields means your decoder `regex`/`prematch` missed, so the rule never evaluates.
+- **Rule ID collision / level 0:** custom `rule id` must be 100000–120000 and `level` > 0, or the alert is dropped before reaching the indexer.
+- **Confirm a hit end to end:** feed a known-bad line through logtest, then `GET /alerts` (or query the `wazuh-alerts-*` index) for that rule ID. No index document means the analysisd→filebeat→indexer path (template/ingest) is broken, not your rule.
+- **Active response never runs:** check `<command>`/`<active-response>` `location` and `ossec-execd` logs; a missing `executable` on the agent OS fails silently.
+
 ## Prerequisites
 
 - Wazuh Manager 4.x deployed with API enabled

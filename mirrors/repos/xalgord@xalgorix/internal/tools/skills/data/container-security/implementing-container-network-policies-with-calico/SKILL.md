@@ -34,6 +34,16 @@ Calico provides Kubernetes-native and extended network policy enforcement throug
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **No default-deny baseline:** without a deny-all `NetworkPolicy`/`GlobalNetworkPolicy`, Kubernetes defaults to allow-all and your targeted allow rules add nothing. Apply a default-deny per namespace (or a cluster-wide `GlobalNetworkPolicy` with high `order`) first.
+- **CNI not actually enforcing:** policies apply cleanly but a non-enforcing dataplane (or Calico not the active CNI) silently no-ops them. Verify: `kubectl exec -n calico-system calicoctl -- calicoctl node status` and confirm pods route through Calico.
+- **Calico `order` precedence inverted:** lower `order` numbers win. A permissive Allow at `order: 10` can shadow a Deny at `order: 100`; list with `calicoctl get globalnetworkpolicy -o wide` and check ordering.
+- **Egress left open to metadata:** an allow-egress rule that doesn't exclude `169.254.169.254/32` (and Azure `169.254.169.254`) leaves the cloud metadata endpoint reachable for SSRF/credential theft.
+- **DNS not allowed before egress deny:** apply the UDP/TCP 53 egress allow or all name resolution breaks, prompting admins to remove the deny entirely.
+- **Selector/label typos:** a `selector: app == 'databse'` matches nothing and the policy appears active but protects nothing.
+- **Verify enforcement:** `kubectl exec <src> -- wget -qO- --timeout=2 http://<blocked-svc>` must time out, while an allowed path succeeds.
+
 ## Prerequisites
 
 - Kubernetes cluster with Calico CNI installed

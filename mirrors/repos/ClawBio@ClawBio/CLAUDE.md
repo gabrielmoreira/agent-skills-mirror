@@ -87,10 +87,11 @@ When the user asks a question, match it to a skill and act:
 | Genome completeness, BUSCO score, assembly quality, BUSCO assessment, completeness metrics, check my assembly, assembly QC, transcriptome completeness, protein set completeness | `skills/busco-assessor/` | Run `busco_assessor.py` |
 | Single FASTA analysis, GC content, ORF finding, protein properties, isoelectric point, GRAVY index, molecular weight, sequence summary, fasta metrics | `skills/analyze-fasta/` | Run `analyze_fasta.py` |
 | Phylogenetic tree from VCF, distance matrix from variants, VCF2TREE, VCF2DIST, DIST2TREE, FASTA2DIST, fastreer, fastreeR, genomic distance, k-mer distance, population tree, cosine distance, sample phylogeny, hierarchical clustering of samples | `skills/fastreer/` | Run `fastreer.py` |
+| Phylogenetic tree from FASTA, maximum-likelihood tree, IQ-TREE 2, model selection, evolutionary distance, branch support, proportional phylogram | `skills/phylogenetics-builder/` | Run `phylogenetics_builder.py` |
 
 ## How to Use a Skill
 
-### Skills with Python scripts (pharmgx-reporter, equity-scorer, nutrigx_advisor, claw-metagenomics, genome-compare, bio-orchestrator, variant-annotation, bioconductor-bridge, clinical-trial-finder, data-extractor, illumina-bridge, pubmed-summariser, omics-target-evidence-mapper, target-validation-scorer, scrna-orchestrator, scrna-embedding, diff-visualizer, proteomics-de, struct-predictor, clinical-variant-reporter, multiqc-reporter, labstep, clinpgx, gwas-prs, gwas-lookup, methylation-clock, profile-report, ukb-navigator, galaxy-bridge, flow-bio, rnaseq-de, protocols-io, soul2dna, genome-match, recombinator, fine-mapping, cell-detection, wes-clinical-report-en, wes-clinical-report-es, proteomics-clock, sample-qc-triage, crispr-screen-triage, marker-dominance-mapper, busco-assessor, fastreer, nfcore-sarek-wrapper)
+### Skills with Python scripts (pharmgx-reporter, equity-scorer, nutrigx_advisor, claw-metagenomics, genome-compare, bio-orchestrator, variant-annotation, bioconductor-bridge, clinical-trial-finder, data-extractor, illumina-bridge, pubmed-summariser, omics-target-evidence-mapper, target-validation-scorer, scrna-orchestrator, scrna-embedding, diff-visualizer, proteomics-de, struct-predictor, clinical-variant-reporter, multiqc-reporter, labstep, clinpgx, gwas-prs, gwas-lookup, methylation-clock, profile-report, ukb-navigator, galaxy-bridge, flow-bio, rnaseq-de, protocols-io, soul2dna, genome-match, recombinator, fine-mapping, cell-detection, wes-clinical-report-en, wes-clinical-report-es, proteomics-clock, sample-qc-triage, crispr-screen-triage, marker-dominance-mapper, busco-assessor, fastreer, nfcore-sarek-wrapper, phylogenetics-builder)
 1. Read the skill's `SKILL.md` for domain context
 2. Run the Python script with correct CLI arguments (see below)
 3. Show the user the output — open any generated figures and explain results
@@ -372,6 +373,7 @@ For instant demos when the user has no data:
 | Marker dominance demo counts (6 synthetic spots) | `skills/marker-dominance-mapper/demo_marker_counts.csv` | marker-dominance-mapper |
 | Flow.bio demo (live API + offline cache) | `--demo` flag / `skills/flow-bio/data/demo_cache.json` | flow-bio |
 | Sarek demo (upstream nf-core/sarek `-profile test` dataset, no local files) | `--demo` flag | nfcore-sarek-wrapper |
+| Phylogenetics Builder demo FASTA (5 synthetic sequences, 50 bp) | `skills/phylogenetics-builder/demo_alignment.fasta` | phylogenetics-builder |
 
 ### Demo Commands
 
@@ -492,6 +494,9 @@ python skills/fastreer/fastreer.py --demo --output /tmp/fastreer_demo
 # fastreeR VCF2TREE
 python skills/fastreer/fastreer.py --command VCF2TREE \
   --input skills/fastreer/examples/demo_samples.vcf --output /tmp/fastreer_vcf2tree
+
+# Phylogenetics Builder demo
+python skills/phylogenetics-builder/phylogenetics_builder.py --demo --output /tmp/phylo_demo
 ```
 
 ## Development Rules (STRICT)

@@ -36,6 +36,18 @@ nist_csf:
 
 **Do not use** for encrypting artifacts (signing provides integrity, not confidentiality), for container image signing specifically (use cosign), or for source code authentication (use commit signing).
 
+## Common Misconfigurations & Verification
+
+Signing that is never verified at deploy is decoration, not a control:
+
+- **Signatures produced but never verified.** The pipeline runs `cosign sign-blob`/`gpg --detach-sign` but the deploy step pulls and runs the artifact without `cosign verify-blob` / `gpg --verify`. The gate only exists if deployment **refuses unsigned or mis-signed artifacts**.
+- **`cosign verify` without identity pinning.** Verifying a signature without `--certificate-identity` and `--certificate-oidc-issuer` accepts *any* valid Sigstore signature, including an attacker's. Always pin both (e.g. `--certificate-identity ci-signing@company.com --certificate-oidc-issuer https://token.actions.githubusercontent.com`).
+- **Verifying the checksum file but not the artifacts**, or verifying the artifact but skipping `sha256sum --check`.
+- **GPG `--verify` exit code ignored** in a shell step (`|| true`, or not checking `$?`) so a bad signature passes.
+- **Long-lived private key in CI secrets** that is never rotated — prefer keyless/OIDC.
+
+**Concrete verification:** Tamper with a signed artifact after signing (append a byte) and run the deploy-time verification. Confirm `cosign verify-blob` / `gpg --verify` **exits non-zero and aborts the deploy**. Then swap in a signature from a *different* identity and confirm `--certificate-identity` rejects it.
+
 ## Prerequisites
 
 - GPG key pair for traditional signing or Sigstore account for keyless signing

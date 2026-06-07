@@ -35,6 +35,14 @@ Use this skill when:
 
 **Do not use** for network-based DLP or cloud storage restrictions.
 
+## Common Misconfigurations & Verification
+
+- **Over-broad allow exceptions:** an exception keyed only on `VID_xxxx` (vendor) or a USB *class* permits every device from that vendor/class, not the specific approved unit. Pin allow rules to the full Device Instance ID (`USB\VID_0781&PID_5583\<serial>`) and verify the serial component is present, not a wildcard.
+- **Device Installation vs. Removable Storage Access confusion:** "Prevent installation of devices not described by other policy settings" blocks *new* installs but does nothing to already-installed drivers; existing devices keep working until removed. Pair it with `Removable Storage Access → All Removable Storage classes: Deny all access` for live blocking.
+- **Blocking all USB breaks HID:** denying the whole USB bus kills keyboards/mice and USB-C docks. Scope deny rules to mass storage / WPD, and confirm Thunderbolt and MTP phones are covered too — they often slip past a storage-only rule.
+- **Read-only assumed = safe:** "Deny write access" still allows malware to autorun from the device. Confirm whether read should also be denied for untrusted media.
+- **Verification:** with the policy applied, insert an unapproved USB stick — it must be blocked (Event ID 6416 absent or access-denied, MDE `DeviceEvents` shows the deny) — then insert an approved device by full instance ID and confirm it mounts. Test a USB keyboard still works to prove HID wasn't caught.
+
 ## Prerequisites
 
 - Active Directory GPO or Microsoft Intune for policy deployment

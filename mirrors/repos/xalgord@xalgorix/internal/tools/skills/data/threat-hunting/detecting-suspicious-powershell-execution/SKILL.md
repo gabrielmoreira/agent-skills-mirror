@@ -38,6 +38,15 @@ nist_csf:
 - When EDR or SIEM alerts trigger on related indicators
 - During periodic security assessments and purple team exercises
 
+## Detection Gaps & Validation
+
+- **Script Block Logging (4104) is the ground truth:** EID 4104 captures the deobfuscated script. With the GPO off you only have 4688/Sysmon EID 1 command lines, which obfuscation defeats — confirm 4104 and 4103 (Module Logging) are enabled and forwarded.
+- **`-EncodedCommand` and aliases:** rules keyed on the literal `powershell.exe -enc` miss `-e`, `-ec`, `pwsh`, and renamed/copied binaries — match on EID 1 `OriginalFileName = PowerShell.EXE` plus base64 entropy, not the image name.
+- **AMSI bypass + downgrade:** `[Ref].Assembly...amsiInitFailed` and `-Version 2` downgrade attacks evade AMSI/4104; the `Microsoft-Windows-PowerShell` ETW provider can be patched out in-process — treat a host that suddenly *stops* emitting 4104 as suspicious, not clean.
+- **LOLBin proxies:** `IEX (New-Object Net.WebClient).DownloadString` and execution via `msbuild`/`installutil` sidestep powershell.exe.
+- **Validate:** run Atomic Red Team **T1059.001** (encoded command + download cradle) and confirm the 4104 keyword and encoded-command searches fire.
+- **Tune FPs:** SCCM, Intune, and admin automation generate encoded/long PowerShell — baseline by signing cert and parent (allow `WmiPrvSE`/`ccmexec` parents) before alerting.
+
 ## Prerequisites
 
 - EDR platform with process and network telemetry (CrowdStrike, MDE, SentinelOne)

@@ -37,6 +37,15 @@ nist_csf:
 - When EDR or SIEM alerts trigger on related indicators
 - During periodic security assessments and purple team exercises
 
+## Detection Gaps & Validation
+
+- **Beaconing blends in:** low-and-slow C2 with jitter, domain-fronting (SNI/Host mismatch), and HTTPS-on-443 evade port-based rules — JA3/JA3S hashing and rare-destination scoring beat them; non-standard port (T1571) is only the loudest variant.
+- **DNS tunneling (T1071.004):** needs query-length/entropy analysis and high TXT/NXDOMAIN volume — connection logs alone won't show it.
+- **Telemetry sampling:** Sysmon EID 3 (NetworkConnect) is often throttled or disabled for performance, so short-lived connections are missed — pair with firewall/Zeek `conn` logs for ground truth.
+- **Lost attribution:** when C2 runs inside an injected/legit process (svchost.exe), EID 3 names the wrong owner — correlate with EID 1/EID 8 to find the real source.
+- **Validate:** simulate beaconing (benign curl loop or a C2 emulator) to a rare host; confirm EID 3 + proxy logs both capture it.
+- **FP tuning:** baseline cloud/CDN/telemetry and software-update destinations per process, not per host.
+
 ## Prerequisites
 
 - EDR platform with process and network telemetry (CrowdStrike, MDE, SentinelOne)

@@ -41,6 +41,18 @@ nist_csf:
 
 **Do not use** for vulnerability scanning (use Trivy/Checkov), for runtime threat detection (use Falco), or for network policy enforcement (use Kubernetes NetworkPolicy or Calico).
 
+## Common Misconfigurations & Verification
+
+A policy engine left in advisory mode enforces nothing:
+
+- **Constraints stuck in `enforcementAction: warn` (or `dryrun`).** Warn/dryrun only annotate the audit log; non-compliant resources are still admitted. Flip to `enforcementAction: deny` once the remediation window closes, and verify with a test apply.
+- **conftest exit code ignored in CI.** `conftest test` returns non-zero on a `deny[...]` rule, but a trailing `|| true`, `continue-on-error: true`, or using only `warn[...]` rules means the pipeline passes regardless. Use `deny` rules for hard gates and let the non-zero exit fail the job.
+- **Constraint `match:` too narrow.** If `match.kinds` omits `Deployment`/`StatefulSet`/`DaemonSet` (only `Pod`), workloads bypass the policy entirely. Over-broad `excludedNamespaces` (beyond `kube-system`/`gatekeeper-system`) also creates blind spots.
+- **Gatekeeper webhook not actually intercepting** (failurePolicy `Ignore`, or template/constraint not applied) so admission silently allows everything.
+- **conftest pointed at the wrong `--policy` dir or `--parser`** (e.g. HCL not parsed) → zero rules evaluated, green by accident.
+
+**Concrete verification:** `kubectl apply` a Pod that clearly violates a deny constraint (a `privileged: true` container, or a container with no CPU/memory limit) and confirm the API server **rejects it** with the policy's violation message. In CI, run `conftest test` on a manifest using `:latest` and confirm the job **exits non-zero and fails**.
+
 ## Prerequisites
 
 - Kubernetes cluster with admin access for Gatekeeper installation

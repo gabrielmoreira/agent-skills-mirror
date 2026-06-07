@@ -41,6 +41,14 @@ Physical intrusion assessment evaluates an organization's physical security cont
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Tailgating + pretext is the highest-yield, most-skipped vector:** follow staff through badge doors during smoke breaks/deliveries with a plausible pretext (vendor, new hire, courier).
+- **Badge cloning:** capture HID/iCLASS with a Proxmark3 or long-range reader from a few feet, then replay; many sites never rotate card formats.
+- **Door/lock bypass:** under-door tools, latch slipping (loiding), REX motion-sensor triggering, and elevator/stairwell access.
+- **Network footholds inside:** exposed jacks in lobbies/conference rooms, unattended kiosks, and perimeter Wi-Fi.
+- **Confirm with evidence:** reach a live network jack (obtain a DHCP lease/internal IP), photograph a sensitive area, or plant a benign drop box that calls back. Don't conclude "secure" until tailgating, badge clone, lock bypass, and at least one social pretext have been attempted at each entrance and after-hours.
+
 ## Prerequisites
 
 - Signed authorization letter (carry at all times during assessment)

@@ -34,6 +34,16 @@ Google Workspace provides advanced phishing and malware protection through the A
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Safety toggles left default-off:** "similar domain" spoofing, "employee name" spoofing, and inbound-domain-spoofing protections are not all on by default - enable each and set the action to quarantine/spam, not just a banner.
+- **Enhanced Safe Browsing not enabled:** it is OFF by default org-wide - turn it on for real-time URL protection, rolling out per OU to gauge false positives.
+- **Action set to "warning banner" only:** banners are ignored under time pressure - quarantine high-confidence spoofing rather than relying on user judgement.
+- **SPF/DKIM/DMARC half-configured:** `~all` SPF and DKIM enabled in console but never published in DNS, or DMARC parked at `p=none` - publish DKIM, verify SPF, and progress DMARC to enforcement.
+- **APP not enrolled for high-risk users:** super admins/execs without the Advanced Protection Program remain phishable - enroll them with FIDO2 keys.
+- **Attachment protections scoped to "trusted" too broadly:** encrypted/script/anomalous-attachment protection bypassed for internal senders misses lateral phishing.
+- **Verification:** send a lookalike-domain spoof and a delayed-weaponization test from outside; confirm quarantine fires, Enhanced Safe Browsing blocks a test phishing URL at click, and outbound mail shows SPF/DKIM/DMARC pass.
+
 ## Prerequisites
 - Google Workspace Business Standard or higher license
 - Gmail Settings administrator privilege

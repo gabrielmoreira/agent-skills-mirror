@@ -37,6 +37,16 @@ Cartography is a CNCF sandbox project (originally created at Lyft) that consolid
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+- **A partial sync looks like a complete graph:** Cartography only ingests the modules and accounts you configure, and silently drops resources it lacks permission to read. Validate completeness by comparing node counts to ground truth, e.g. `MATCH (b:S3Bucket) RETURN count(b)` against `aws s3api list-buckets`, and `MATCH (a:AWSAccount) RETURN a.id` against your org account list.
+- **Stale nodes survive failed cleanups:** nodes and relationships from a prior run linger if a sync errors mid-cleanup, producing phantom attack paths. Filter on freshness - `WHERE n.lastupdated >= <run_epoch>` - and discard results older than the latest sync.
+- **Attack-path queries miss long or unmodeled edges:** a `*1..5` variable-length match won't find a 6-hop path, and Cartography doesn't model every relationship (resource-based S3/KMS policies, SCPs, session policies). Widen hop limits cautiously and corroborate IAM escalation paths with PMapper.
+- **`anonymous_access` reflects sync-time ACL/policy only:** it does not account for account-level S3 Block Public Access. Before reporting a public bucket, confirm with `aws s3api get-public-access-block`.
+- **Region/global confusion:** IAM and S3 are global, but EC2/security-group data is per-region - a graph synced for one region under-reports network exposure.
+- **How to validate a finding:** treat each Cypher hit as a lead, then independently reproduce it with the AWS CLI (or ScoutSuite) before it goes in a report.
+- **Don't treat the inventory as authoritative until** node counts reconcile with the cloud APIs, every result is filtered to the latest `lastupdated`, and all in-scope accounts/regions are present in the graph.
+
 ## Prerequisites
 
 - Python 3.8+

@@ -41,6 +41,14 @@ Cortex XSOAR (formerly Demisto) is Palo Alto Networks' Security Orchestration, A
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Playbook task never triggers:** the incident type's playbook field is unset, or a pre-processing/classification rule drops the event before assignment. Confirm with the War Room — if there is no playbook entry at all, the trigger never fired. Check `Settings > Incident Types` maps to the right playbook and that the classifier maps incoming fields.
+- **Integration command 401/timeout:** instance credentials expired, wrong API base URL, or the engine has no network egress to the tool. Run the command standalone (e.g. `!url url=8.8.8.8`, `!core-api-test`) from the playground and check `Settings > Integrations > Instances > Test`; a green test but a failing task usually means a missing API permission scope, not bad creds.
+- **Conditional branch always takes "no":** `DBotScore.Score` is compared as a string but the context holds an int, or enrichment sub-playbook output landed under a different context path. Inspect `${DBotScore}` in the context data and use `isEqualString` vs numeric operators consistently.
+- **Containment fires on false positives:** auto-isolate/auto-block tasks placed before a manual approval task, so clean emails get senders blocked. Gate destructive tasks (`o365-mail-block-sender`, `cortex-xdr-isolate-endpoint`) behind a manual analyst-approval task.
+- **Verify** with a known-bad and a known-good test incident end to end: confirm the malicious path enriches, branches "yes", and reaches containment, while the benign path closes as FP without blocking. Re-run after every integration version bump — instance schema changes silently break `scriptarguments` mappings.
+
 ## Prerequisites
 
 - Cortex XSOAR deployed (version 8.x or later, or XSOAR hosted)

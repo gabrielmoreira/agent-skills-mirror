@@ -39,6 +39,15 @@ Use this skill when:
 
 **Do not use** this skill for fully automated blocking decisions without human review — enrichment automation should inform decisions, not execute blocks autonomously for high-impact actions.
 
+## Detection Gaps & Validation
+
+- **Silent API failures:** a 429 or timeout that returns empty stats reads downstream as a clean IOC. Failed calls must raise/log and trigger fallback, never default `vt_malicious=0`. The `retry_on_429` decorator returns `None` after max retries -- callers must handle that, not treat it as benign.
+- **Missing caching:** re-querying the same IOC burns rate budget (VT free = 4/min) and stalls the pipeline; cache results ~24h keyed by value+type.
+- **Composite-score blind spots:** the weighted formula (VT 60% / AbuseIPDB 40%) over-trusts AV consensus and under-weights shared-infra context -- a CDN IP can score high. Never auto-block on score alone.
+- **Latency cliff:** if enrichment exceeds ~5 min, analysts work unenriched alerts; enforce timeouts and emit partial results.
+
+To validate: run a known-malicious and a known-benign IOC through the pipeline and confirm scores land in the expected High/Medium/Low routing tier; force (or mock) a 429 and confirm the IOC is flagged "enrichment incomplete," not "clean." Track analyst overrides of the composite score weekly as ground truth and re-tune weights; confirm the cache returns identical results for repeat lookups and that rate-limit decorators actually space VT calls to <=4/min.
+
 ## Prerequisites
 
 - SOAR platform (Cortex XSOAR, Splunk SOAR, Tines, or n8n) or Python 3.9+ environment

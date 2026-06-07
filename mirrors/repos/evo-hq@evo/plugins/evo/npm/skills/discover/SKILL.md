@@ -2,12 +2,88 @@
 name: discover
 description: Initialize evo for the current repository by exploring the codebase, proposing unexplored optimization dimensions, constructing the benchmark inside a baseline worktree, and running the first experiment. Use when the user invokes /evo:discover, mentions setting up evo, wants to instrument a codebase for autonomous optimization, or asks to start a new evo run on a project.
 argument-hint: <optional context about what to optimize>
-evo_version: 0.4.5
+evo_version: 0.5.0
 ---
 
 # Discover
 
 Internal procedure for `evo:discover`. The user only sees the user-facing prompts, the dashboard URL, and the baseline score -- everything else is the agent's choreography.
+
+## Evo surface
+
+General guidance on the skills and tools available in evo. Each line is a triggering condition: if you're about to do X, pull/dispatch/read this. Don't preload -- act when the trigger fires.
+
+**Always have a sense of the skill before jumping into its references.** A skill body carries the decision-making; references are concrete contracts that assume a decision has been made.
+
+```
+evo plugin
+│
+├── Main thread  (the orchestrator -- you, inside /evo:discover or /evo:optimize)
+│   │
+│   ├── Skills (Skill tool)
+│   │   ├── evo:discover       starting a new evo workspace / instrumenting a project
+│   │   ├── evo:optimize       after discover commits the baseline -- drives the loop.
+│   │   │                      Args: subagents=N (read sizing-the-round FIRST),
+│   │   │                            autonomous, subagents-only, budget=N, stall=N
+│   │   ├── evo:finetuning     task is finetuning / post-training / training a model
+│   │   └── evo:infra-setup    need a remote backend, pooled workspaces, lease/slot
+│   │                          management, or specific provider auth/setup
+│   │
+│   └── Subagents to dispatch (Task tool, subagent_type=...)
+│       ├── evo:benchmark-reviewer  before the baseline run, or whenever the
+│       │                           benchmark command / harness changes
+│       └── evo:ideator             stalled, or every ~5 committed experiments.
+│                                   One subagent per brief:
+│                                   failure_analysis, literature, frontier_extrapolation
+│
+├── Subagent thread  (each subagent spawned by /optimize step 5)
+│   │
+│   ├── Skills  (the subagent loads this on first turn -- the brief's first
+│   │            sentence mandates it; not auto-loaded by the host)
+│   │   └── evo:subagent     load FIRST -- defines the iteration protocol
+│   │                        + brief field shape the subagent operates under
+│   │
+│   └── Subagents to dispatch (Task tool, subagent_type=...)
+│       └── evo:verifier      ALWAYS dispatch pre AND post every evo run.
+│                             Pre: ~30s static analysis before the experiment runs.
+│                             Post: result-validity audit after it commits.
+│                             Not optional. Not ad-hoc.
+│
+└── Key references (Read tool, on demand)
+    ├── discover/references/
+    │   ├── constructing-benchmark.md      designing + assembling a benchmark from scratch
+    │   ├── sdk_python.py / sdk_node.js    wiring per-task instrumentation -- preferred path
+    │   ├── inline_instrumentation.py      inline fallback when SDK can't be used.
+    │   │                                  Copy as-is; do not reimplement (file header
+    │   │                                  explains why)
+    │   ├── sizing-the-round.md            BEFORE invoking /evo:optimize with any
+    │   │                                  specific subagents=N. Single-GPU /
+    │   │                                  single-exclusive-resource -> subagents=1
+    │   ├── proposing-dimensions.md        choosing what to optimize when not obvious
+    │   └── instrumentation-contract.md    the format evo reads (result + traces shapes)
+    │
+    ├── finetuning/references/
+    │   ├── glue.md                         writing train.py -- I/O contract evo expects
+    │   ├── diagnostics.md                  per-failure-mode diagnostics
+    │   ├── false-progress.md               what doesn't count as improvement
+    │   ├── trace-schema.md                 per-task trace JSON schema for training runs
+    │   ├── rl/                             RL framework references
+    │   │   └── art.md                       ART (Algorithm-Refined Training)
+    │   ├── sft/                            SFT framework references
+    │   │   └── tinker.md                    Tinker SFT
+    │   └── serving/                        eval-time inference references
+    │       └── vllm.md                      vLLM serving config + LoRA-multi
+    │
+    ├── infra-setup/references/
+    │   └── provider-matrix.md              provider/backend summary (auth, setup, costs)
+    │
+    └── references/                          (shared across skills)
+        ├── evo-wait.md                      any time you need to wait without burning
+        │                                    context (subagent completion, training,
+        │                                    ideators, GPU activity, any long-running)
+        ├── agent-sdk-reference.md           SDK API surface
+        └── cli-quick-reference.md           CLI subcommand cheat sheet
+```
 
 ## Host conventions
 
@@ -40,20 +116,20 @@ evo --version
 The output must be exactly:
 
 ```
-evo-hq-cli 0.4.5
+evo-hq-cli 0.5.0
 ```
 
 Three outcomes:
 
 1. **Matches exactly** — continue to step 1.
 2. **Reports a different version** (`evo-hq-cli 0.4.2`, etc.) — the host refetched a newer/older skill bundle than the CLI on PATH. Drift breaks skills silently. Stop and tell the user:
-   > Your installed evo CLI is on a different version than this skill (`0.4.5`). Run:
+   > Your installed evo CLI is on a different version than this skill (`0.5.0`). Run:
    > ```
-   > uv tool install --force evo-hq-cli==0.4.5
+   > uv tool install --force evo-hq-cli==0.5.0
    > ```
    > Then re-invoke this skill.
 3. **`command not found`, or reports a different package** (commonly `evo 1.x` — the unrelated SLAM tool) — the CLI isn't installed. Tell the user:
-   > `evo-hq-cli` isn't on your PATH. Install it: `uv tool install evo-hq-cli==0.4.5` (or `pipx install evo-hq-cli==0.4.5`). Then re-invoke this skill.
+   > `evo-hq-cli` isn't on your PATH. Install it: `uv tool install evo-hq-cli==0.5.0` (or `pipx install evo-hq-cli==0.5.0`). Then re-invoke this skill.
 
 Do not try to auto-install. Host sandbox + network policy may block it; leaving the install as a user action keeps failure modes clear.
 
@@ -180,13 +256,16 @@ build/
 evo init --name "<short project name>" \
   --target <file> --benchmark "<command using {worktree} and {target}>" --metric <max|min> \
   --host <claude-code|codex|opencode|openclaw|hermes|pi|generic> \
-  --instrumentation-mode <sdk|inline> [--gate "<gate command>"] \
+  --instrumentation-mode <sdk|inline> \
+  --per-exp-timeout <seconds> [--gate "<gate command>"] \
   [--commit-strategy <all|tracked-only>]
 ```
 
 **`--host` is required.** Pass the host runtime you (the orchestrator) are running under. Allowed values: `claude-code`, `codex`, `opencode`, `openclaw`, `hermes`, `pi`, `generic`. This is recorded in `.evo/meta.json` so other commands can adapt to host-specific conventions. Pick the value matching the runtime you invoked `discover` from. Use `evo host set <value>` later if you change runtimes.
 
 **`--name` should be a short human-readable project label** for dashboard display, chosen from the repository/product context. Existing workspaces without a name fall back to the repo directory name; do not hand-edit config just to migrate them.
+
+**`--per-exp-timeout` is required.** Wall-clock seconds for each `evo run` invocation. Becomes the workspace default; override per-call with `evo run --timeout N`. Pick based on what the benchmark actually costs end-to-end on this hardware -- if you don't know yet, time the benchmark once locally and use ~2x that. Typical ranges: a unit-test-style benchmark is 300-900s; a small-model SFT + eval cycle is 1800-3600s; a large-model train run is several hours. Set conservatively -- a too-tight value kills experiments mid-flight; a too-loose value wastes budget only when something actually hangs. Update later with `evo config set per-exp-timeout <seconds>`.
 
 **`--commit-strategy` is optional.** Default is `all`. Override with `--commit-strategy tracked-only` only when you want the stricter shisa-kanko flow where new files must be staged explicitly and acknowledged at `evo run` time.
 
@@ -205,7 +284,8 @@ evo init \
   --target agent/solve.py \
   --benchmark "python3 {worktree}/benchmark.py --target {target}" \
   --metric max \
-  --host claude-code
+  --host claude-code \
+  --per-exp-timeout 1800
 ```
 
 Use the same runtime entry point the project already uses, but make sure the command does not assume uncommitted runtime state exists inside the worktree. Worktrees are git checkouts; untracked directories such as local virtualenvs, build caches, and downloaded models are usually not present there. If the benchmark needs setup or a package-manager runner, configure evo's runtime recipe instead of baking local paths into the benchmark command:
@@ -225,6 +305,14 @@ Dashboard live: http://127.0.0.1:8080 (pid 12345)
 
 **Relay that line back to the user verbatim.** If port 8080 is busy, evo auto-increments -- show whatever port prints. The URL is how the user watches the run.
 
+**Benchmark commands must be eval-only.** Do NOT wrap training and evaluation into a single benchmark command. If your benchmark command runs training before scoring, every gate revalidation and every `evo run --check` retrains from scratch, and the experiment budget burns on duplicated training instead of new experiments. Training is a separate step the agent invokes BEFORE `evo run`:
+
+1. The agent makes changes (data curation, hyperparameter selection, technique choice, training code edits).
+2. The agent runs the build/training step to produce its artifact — a checkpoint, adapter, index, whatever the recipe makes. Write it to `EVO_CHECKPOINT_DIR` (durable: survives between-attempt cleanup and discard) and declare it in the benchmark result's `artifacts` field so it's preserved + reusable; the per-technique I/O contract is in `evo:finetuning/references/glue.md`. Never hardcode a fixed name like `final_model/`.
+3. THEN `evo run <exp_id>` invokes the registered benchmark command, which loads the produced artifact and emits a score.
+
+The registered benchmark command should call `evaluate.py`, `run_eval.py`, or equivalent -- NOT `train.py`. If the project's only existing evaluation tool runs build+eval together with no eval-only mode, wrap it: add a `--skip-build` flag, or have the wrapper detect an existing artifact (under `EVO_CHECKPOINT_DIR`) and short-circuit the build step. Without this, evo's gate-recheck and re-score mechanics rebuild repeatedly and the budget evaporates.
+
 **Runtime environment.** If the benchmark needs keys or other runtime variables, configure them through evo rather than copying `.env` into worktrees or hand-editing `config.json`:
 
 ```bash
@@ -234,6 +322,16 @@ evo env show
 ```
 
 Values are resolved fresh by the orchestrator on each `evo run`. Config stores dotenv source metadata and key names, not secret values. The benchmark and gates receive the resolved env; gates do not receive `EVO_*` artifact variables.
+
+### 7a. Record the task category (`task-skills`)
+
+You already decided what's being optimized (steps 2–4). Record the evo category skill(s) a builder should load for it, so every executing agent — prose subagent or workflow lane — loads the right method knowledge instead of rediscovering it each round:
+
+```bash
+evo config set task-skills finetuning   # any weight-update / training task
+```
+
+Rule of thumb: if the optimization updates model weights (SFT / LoRA / DPO / RL / continued-pretraining), set `task-skills finetuning`. **Leave it unset** for prompt / code / config / harness optimization — the subagent protocol already covers those; only set it when a dedicated category skill applies. Use a comma-separated list if more than one applies. Mirror the choice in `.evo/project.md` (step 12) so it's human-readable and survives as the fallback if config is ever cleared.
 
 ## 8. Set up gates
 
@@ -318,7 +416,31 @@ Paths below are relative to this `SKILL.md` file (resolve them against the skill
   - Benchmark is Python or Node: paste `references/inline_instrumentation.py` (or `.js`) and call `log_task` / `logTask` per task, `write_result` / `writeResult` once at the end.
   - Benchmark is any other language: port the contract from `references/instrumentation-contract.md` directly into that language (~10-15 lines: read the env vars, write each task trace, atomically publish the result). Do not add a Python/JS wrapper around it.
 
-### 10d. Cheap validation run
+**Per-task emission is load-bearing.** If your benchmark evaluates N independent items (per-question math, per-test-case unit tests, per-document QA, per-sample reasoning trace), emit ONE `log_task` / `report` / trace file PER ITEM -- not one aggregate. Include the item's input, expected output, model output, and any per-item metadata as extras; that detail is what the dashboard's per-task panel + the verifier's reproducibility spot-check + the ideator's failure-clustering all rely on. Wrappers that compute the average score themselves and emit a single aggregate task entry look like they work but lose every diagnostic capability evo provides. The reference files have explicit USAGE EXAMPLES showing the per-item loop AND an ANTI-PATTERN block showing what NOT to do (see `references/inline_instrumentation.{py,js}` and `references/sdk_{python,node}.{py,js}`). Follow them. Single-aggregate emission is only valid when the benchmark really is one indivisible measurement (one e2e workflow, one perf number) -- and even then, attach every observable as extras.
+
+**Runner-library wrappers are the common failure mode.** When the selected benchmark wraps a runner library (e.g. `inspect_evals`, `lm-eval-harness`, `evals`), the per-item loop is hidden inside the runner. The wrapper script's natural shape is to call the runner, read its aggregate output, and write a single `{"score": X}` to `result.json`. This is the anti-pattern. **Even when the runner library handles the per-sample loop internally, the wrapper script MUST parse the runner's per-sample output JSON and emit one `log_task(item_id, score=..., extras={...})` per item.** The runner typically already writes per-sample data to disk (most of these libraries do — `inspect_evals` writes per-sample logs, `lm-eval-harness` writes per-doc records); the wrapper just hasn't been forwarding it to evo. Without per-item forwarding, the dashboard's Tasks tab is empty, the verifier can't spot-check, and the agent has no way to diagnose WHICH items the model fails on — which is required for any RL-on-failures or curriculum strategy.
+
+**Write traces for the future reader.** The only consumers of a committed experiment's traces look BACK at them -- a future orchestrator picking the next move, a verifier auditing for false progress, an ideator clustering failure modes. A trace that records `{score: 0}` and nothing else is unrecoverable: the future reader cannot tell whether the model produced wrong reasoning, unparseable format, or no output at all. Two rules of thumb:
+
+- **`log_task` extras carry context** -- the item's input, expected output, the model's actual output (or first ~500 chars of it), parse outcome, any error. Cost: a few KB per task. Payoff: diagnosis is possible later without re-running the eval.
+- **`evo annotate <exp_id>` is the human-readable summary** -- one or two factual lines after a run commits: which data sources were used, what the score actually represented, the failure mode if any. Annotations get loaded into future orchestrator decisions and ideator briefs, so write them as facts ("model emitted `\boxed{}`, eval prompt requested `ANSWER:`, format mismatch suspected"), not as plans or feelings.
+
+### 10d. Audit with benchmark-reviewer (mandatory before baseline)
+
+Before `evo run` is invoked for the first time, audit the harness via the bundled subagent:
+
+```
+Task(subagent_type="evo:benchmark-reviewer",
+     prompt="workspace=<absolute path to dir containing .evo/>\nbenchmark_command=<the literal --benchmark string from evo init>\nunit=<one-line description of an item, e.g. 'AIME problem', 'HumanEval task', 'BFCL turn'>")
+```
+
+The subagent returns a JSON report with `passed`, `findings[]`. Each finding has `severity: block|warn|note`.
+
+**Gate the baseline on this.** If `passed: false`, address every `block` finding before re-invoking the reviewer. Do **not** proceed to `evo run` until the report comes back clean. Typical `block` findings: aggregate-only emission (most common -- see step 10c), training source that overlaps the held-out set, no real gate registered for a constructed benchmark, harness silently writes `{"score": 0.0}` on error instead of crashing.
+
+`warn` and `note` findings are informational -- record them in `.evo/project.md` and proceed.
+
+### 10e. Cheap validation run
 
 Before the full baseline, validate the toolchain with the cheapest possible end-to-end run (single task, smallest split, dry-run flag -- whatever is fastest). Run the check from the main repo root:
 
@@ -339,7 +461,7 @@ This is the authoritative wiring check, and it is language-agnostic -- it runs t
 
 Fix any issues and re-validate before proceeding.
 
-### 10e. Commit inside the worktree
+### 10f. Commit inside the worktree
 
 Logical commits are ideal but not required. Minimal acceptable:
 
@@ -405,8 +527,32 @@ End the skill by reporting in chat:
 - The baseline experiment ID and score
 - The chosen optimization dimension and why
 - A one-liner on next steps: "Run `/evo:optimize` to start the optimization loop."
+
+**Do not run experiments outside `/evo:optimize`.** Even if the workspace's resource profile forces serial execution (e.g. exclusive-GPU, width 1), you still go through `/evo:optimize` with `subagents=1`. The optimize loop's value isn't just parallelism -- it's the structured loop around every experiment (scan-subagent cross-cutting analysis, brief writing, verifier pre/post hooks, ideator spawning on stall, frontier reconciliation). Bypassing optimize to "drive experiments directly" loses all of that and reverts to ad-hoc iteration. If you are tempted to skip optimize because the workload is serial, read `plugins/evo/skills/optimize/SKILL.md` for how to configure it for serial work -- the answer is `subagents=1`, NOT "don't run optimize."
+
 - **Resume after crash:** if the host, the shell, or the machine restarts mid-flow, re-invoke `evo:optimize`. Evo reads `.evo/` and resumes from the last committed experiment -- no special restore procedure.
 - **State is local to this machine:** experiment commits on branches like `evo/run_0000/exp_*` survive `git push --all`, but orchestration state (graph, annotations, project notes) lives only in `.evo/`. If that history matters to you, back up `.evo/` separately (e.g., `tar -czf evo-state-$(date +%F).tar.gz .evo/`).
+
+## Polling discipline
+
+When waiting on a long-running background process (training, evaluation, batch generation, any externally-spawned long task), do NOT use `while true; do sleep N; tail file; done`. That loop never exits when the underlying process crashes -- the tail keeps reading the same dead file, the agent interprets "no growth" as "still working," and the agent blocks indefinitely.
+
+Use `evo wait`. The CLI is the bounded, structured replacement:
+
+```bash
+# wait for a training subprocess to exit, OR its log to stall, OR the GPU to go idle,
+# whichever first; 60-minute ceiling; structured JSON on stdout
+evo wait --for process=$TRAIN_PID \
+         --for log-growth=$TRAIN_LOG \
+         --for gpu-idle \
+         --timeout 60m --stall-threshold 5m --json
+```
+
+Multiple `--for` flags combine; the wait returns on the first matching condition. The JSON output's `exit_reason` and `triggered_by` identify which condition fired (process-exited / log-stalled / gpu-idle / timed-out). Process / log-growth / gpu-* watches do not require an evo workspace; the workspace-anchored watches (`--for experiments`, `--for ideators`) still work for ideator-proposal and commit waits.
+
+Full surface, exit codes, JSON shape, and examples in `references/evo-wait.md`.
+
+If `evo wait` is not available for some reason (older CLI on PATH), fall back to a bounded poll loop that checks all three signals -- process liveness via `kill -0 $PID`, log growth via `wc -c` delta, GPU via `nvidia-smi --query-gpu=utilization.gpu` -- and exits on any one going negative. NEVER unbounded `while true`.
 
 ## Inspection commands (for debugging, reference only)
 

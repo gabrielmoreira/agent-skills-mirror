@@ -35,6 +35,14 @@ Use this skill when:
 
 **Do not use** for detecting file-based malware or for malware reverse engineering.
 
+## Detection Gaps & Validation
+
+- **PowerShell logging declared but not capturing:** Script Block (4104) and Module Logging must be set machine-wide (HKLM, not HKCU) and apply to PowerShell v5+; a v2 downgrade (`powershell -version 2`) evades 4104 entirely. Confirm 4104 text is present for a known script before trusting a clean result.
+- **AMSI/ETW bypass blinds content inspection:** in-memory `amsi.dll` patches and ETW patching suppress AMSI and 4104 events. Detect the bypass itself — 4104 containing `AmsiUtils`/`amsiInitFailed`/`[Ref].Assembly.GetType` — and treat an abrupt halt in script-block events as suspicious.
+- **Reflective/in-memory loads leave no disk artifact:** rely on Sysmon EID 7 (ImageLoaded from non-standard paths), EID 8 (CreateRemoteThread), and EID 10 (ProcessAccess to lsass `0x1010`); direct-syscall loaders may bypass EID 8, so back them with MDE `CreateRemoteThreadApiCall`/`NtAllocateVirtualMemoryApiCall`.
+- **WMI persistence missed when 19/20/21 are off:** many Sysmon configs omit WmiEvent logging. Confirm EID 19-21 are enabled and that `__FilterToConsumerBinding` enumeration runs.
+- **Validate each detection:** run Atomic Red Team T1059.001 (encoded PowerShell / download cradle), T1620 (reflective load), and T1546.003 (WMI event subscription) and confirm 4104, Sysmon 7/8, and 19-21 events reach the SIEM. Tune encoded-command false positives against known admin tooling instead of dropping the rule.
+
 ## Prerequisites
 
 - Sysmon with process creation and WMI event logging enabled

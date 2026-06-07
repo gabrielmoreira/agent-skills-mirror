@@ -36,6 +36,19 @@ GitHub Advanced Security (GHAS) integrates CodeQL-powered static application sec
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+CodeQL can be enabled and still gate nothing:
+
+- **Scanning PRs only, never the default branch.** A `codeql.yml` with only `on: pull_request` (no `push` to `main`/`develop` and no `schedule:`) leaves already-merged code and newly disclosed CVEs unscanned. Include `push` to the default branch and a weekly `schedule:` cron.
+- **Results uploaded but not required.** SARIF in the Security tab is not a gate. Enable branch protection "Require code scanning results" with a severity threshold (block on High/Critical); otherwise PRs merge with open alerts.
+- **`security-events: write` permission missing** so `upload-sarif`/`analyze` silently fails to record results.
+- **Compiled languages with a broken `autobuild`.** If C/C++, Java, C#, Go, or Swift don't actually compile, CodeQL analyzes little or nothing while still reporting success — verify the build step succeeds and the DB is populated.
+- **Default suite only.** Using just `default` (not `security-extended`) plus a narrow language matrix misses categories — confirm every language in the repo is listed in the matrix.
+- **Push protection / secret scanning left off**, so secrets aren't blocked at commit time.
+
+**Concrete verification:** Open a PR introducing an obvious sink (e.g. a SQL string built from `request` input, or `eval(userInput)`) on a protected branch. Confirm CodeQL raises a High alert **and** branch protection blocks the merge until it's resolved — not just shows an annotation.
+
 ## Prerequisites
 
 - GitHub Enterprise Cloud or GitHub Enterprise Server 3.0+ with GHAS license

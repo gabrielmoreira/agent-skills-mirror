@@ -40,6 +40,17 @@ nist_csf:
 
 **Do not use** for IT-only corporate network assessments of oil and gas companies, for physical security assessments without a cyber component, or for environmental compliance assessments.
 
+## Most Often Missed & How to Confirm
+
+Oil & gas assessments miss findings when assessors avoid the field sites or fear touching live SCADA. Cover these safely:
+
+- **Remote/unmanned sites skipped:** wellhead RTUs and pump stations on radio/VSAT are where DNP3 rides unauthenticated, but they're hard to reach. Don't conclude links are secure from the control center — confirm passively by capturing the WAN/serial gateway traffic and checking for DNP3 Secure Authentication (or its absence).
+- **Custody-transfer flow computers untested:** these accept Modbus writes that change meter factors (financial fraud). Confirm read-only behavior by passively observing whether any host issues FC 06/16 to the flow computer — never inject test writes on a live custody meter.
+- **SIS/ESD probed actively:** Triconex/FSC safety systems must be observed passively only. Confirm their isolation by mapping which IPs can reach them, not by querying them.
+- **IEC 60870-5-104 and ICCP assumed encrypted:** confirm via capture, not documentation; cleartext 104 on port 2404 between sites is common.
+- **Positive signal:** a finding is real when passive capture shows the unauthenticated command/protocol actually traversing the link, cross-checked against the architecture diagram.
+- **Don't conclude a segment is safe** from interviews alone — confirm with passive traffic, and schedule any active L3+ checks (jump-host scans) inside a maintenance window with operations present.
+
 ## Prerequisites
 
 - Written authorization from facility management and operations team

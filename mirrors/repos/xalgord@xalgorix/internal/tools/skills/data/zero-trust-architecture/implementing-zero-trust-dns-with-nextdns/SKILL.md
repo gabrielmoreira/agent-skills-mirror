@@ -38,6 +38,18 @@ NextDNS is a cloud-based DNS resolver that provides encrypted DNS resolution (DN
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+DNS filtering is trivially bypassed, so a "deployed" NextDNS profile often protects nothing. Check for these:
+
+- **Plaintext DNS still allowed.** If UDP/TCP 53 egress is not blocked at the firewall, endpoints silently fall back to 8.8.8.8 / 1.1.1.1 and skip NextDNS entirely.
+- **Browser built-in DoH overrides system DNS.** Chrome/Firefox/Edge ship their own DoH (often hardcoded Cloudflare/Google) that ignores the NextDNS profile - disable it via policy.
+- **Wrong or missing config ID**, so queries hit NextDNS's default resolver with none of your security or blocklist settings applied.
+- **No per-device identification** (NextDNS CLI not installed), so logs cannot attribute a malicious lookup to a host.
+- **Logging disabled or retention set to "off,"** leaving no forensic trail.
+
+**How to confirm:** from an endpoint run `resolvectl query` / `nslookup` for a known test domain and confirm it resolves *through* your config (the device and query appear in the NextDNS analytics dashboard). Then attempt a hardcoded `8.8.8.8` lookup and a DoH request to `https://cloudflare-dns.com` - both must fail or be redirected. Verify a known-malicious test domain is blocked and the block is logged.
+
 ## Prerequisites
 
 - NextDNS account (free tier: 300,000 queries/month; Pro: unlimited)

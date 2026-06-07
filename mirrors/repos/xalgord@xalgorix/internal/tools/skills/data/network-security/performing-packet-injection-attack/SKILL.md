@@ -33,6 +33,15 @@ nist_csf:
 
 **Do not use** for denial-of-service attacks against production systems, for spoofing traffic to frame third parties, or without explicit authorization for the target network.
 
+## Most Often Missed & How to Confirm
+
+- **Checksums and stateful drops:** Scapy auto-fills checksums only if you leave them unset — manually-built frames with wrong IP/TCP checksums are dropped before the IDS ever sees them, looking like "not detected." Verify with a local `tcpdump` that the packet egresses correctly.
+- **Stateful firewall eats out-of-state packets:** lone RST/ACK or XMAS/NULL probes get dropped by a stateful firewall before reaching the IDS sensor. Test from a position inside the inspection path, or confirm where the sensor taps.
+- **Evasion variants skipped:** don't stop at one technique — try fragmentation (`fragment()`, tiny-fragment TCP-header split), low-TTL expiry past the sensor (`ttl=3`), overlapping fragments, and IP-options padding. An IDS may catch the plain scan but miss the fragmented one.
+- **TTL/MTU evasion needs the right hop count:** low-TTL evasion only works if the sensor is fewer hops away than the target. Measure with `traceroute` first or the packet either dies early or reaches the target intact.
+- **How to confirm a hit:** grep Suricata `eve.json` for the expected `signature_id` with matching `src_ip`/`flow`, not just any alert; for RST injection confirm the target connection actually reset in a `tcpdump` capture.
+- **Don't conclude "rule didn't fire"** until you've verified the packet reached the sensor (mirror/tap capture), the checksum was valid, and the flow wasn't dropped upstream by a stateful device.
+
 ## Prerequisites
 
 - Written authorization specifying in-scope targets and approved packet injection techniques

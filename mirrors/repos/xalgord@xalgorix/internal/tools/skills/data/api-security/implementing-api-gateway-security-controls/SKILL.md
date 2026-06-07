@@ -37,6 +37,17 @@ nist_csf:
 
 **Do not use** as the sole security layer. API gateways provide defense in depth but backend services must also validate authorization and input.
 
+## Common Misconfigurations & Verification
+
+- **Gateway-only authorization:** treating the gateway as the sole control lets anyone who reaches the backend directly bypass it - backends must re-verify and be protected with mTLS/network policy.
+- **Per-IP rate limiting:** use `limit_by: credential`, not IP, or attackers rotate IPs to bypass.
+- **Lax OAS validation:** without `additionalProperties: false` and strict body/param validation, mass assignment and injection pass straight through.
+- **Verbose errors:** gateway error responses leaking upstream/stack/version info aid recon - set `verbose_response` false and strip Server/X-Powered-By.
+- **JWT alg/issuer not pinned:** failing to pin algorithms, issuer, audience, and max TTL enables token confusion.
+- **CORS wildcard with credentials:** `Access-Control-Allow-Origin: *` plus credentials is a cross-origin data leak.
+
+**How to verify it works:** send expired/invalid/`none`-alg tokens and confirm rejection; exceed the limit and confirm 429; submit schema-violating and extra-field payloads and confirm 400; hit a backend directly (bypassing the gateway) to confirm it independently enforces auth; `curl -I` to confirm security headers are present and Server/X-Powered-By are removed.
+
 ## Prerequisites
 
 - API gateway platform selected and deployed (Kong, AWS API Gateway, Azure APIM, or Apigee)

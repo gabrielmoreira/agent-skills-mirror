@@ -30,6 +30,15 @@ nist_csf:
 - During insider threat investigations to reconstruct user actions
 - For correlating registry timestamps with other forensic artifacts
 
+## Detection Gaps & Validation
+- **ShimCache (AppCompatCache) proves presence, not execution, and lags.** Entries are written to the SYSTEM hive only at **shutdown**, so recent activity is missing until the next reboot, and an entry only means the binary was *seen* by the system. Pair it with Amcache/Prefetch for execution.
+- **Dirty hives need transaction-log replay.** If you parse `SYSTEM`/`NTUSER.DAT` without applying `.LOG1/.LOG2`, RegRipper/python-registry may return stale or truncated data. Always collect and replay the logs (RECmd/EZ tools do this).
+- **Last Write Time is per-key, not per-value.** A key timestamp tells you the most recent value change, not which value changed. Do not attribute a single value's age to the key timestamp.
+- **UserAssist is ROT13-encoded** and counts focus/run from Explorer only; CLI-launched programs are absent. BAM/DAM (`bam\State\UserSettings\<SID>`) gives Win10+ last-run times worth checking separately.
+- **Timezone:** apply `SYSTEM\...\TimeZoneInformation` (bias) before placing registry timestamps on a UTC timeline.
+- **Anti-forensics:** Run-key/value deletion, key timestamp manipulation, and RegDelNull-style hidden keys. Carve deleted keys from hive slack / unallocated and check VSS copies.
+- **Validate / cross-corroborate:** confirm execution and persistence against Amcache, Prefetch, Security.evtx (4688/4697/4698), and Scheduled Tasks XML. USBSTOR serials should reconcile with MountedDevices and NTUSER MountPoints2.
+
 ## Prerequisites
 - Forensic image or extracted registry hive files
 - RegRipper, Registry Explorer (Eric Zimmerman), or python-registry

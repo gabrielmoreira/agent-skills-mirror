@@ -35,6 +35,14 @@ Service accounts are non-human identities used by applications, daemons, CI/CD p
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Common Misconfigurations & Verification
+
+- **Incomplete consumer propagation:** rotation breaks services when the new secret is updated at the source (AD/IAM/DB) but not in every consumer — app config, CI/CD pipeline secrets, Kubernetes secrets, scheduled tasks, connection pools. Map dependencies first; an unmapped consumer is an outage waiting to happen.
+- **Old credential never revoked:** deactivating is not deleting. After the grace period, confirm the prior AWS access key is deleted (not merely set `Inactive`), the old AD password no longer authenticates, and superseded GCP/Azure keys are removed — a stale-but-valid key defeats the rotation.
+- **gMSA eligibility assumed:** gMSA only fits Windows services that support it; SQL linked servers, DCOM identities, and some third-party agents do not. Verify with `Test-ADServiceAccount` before cutover.
+- **No post-rotation verification:** rotating without a health check hides breakage until the next business cycle. Run authentication and functional smoke tests against each dependent service after rotation.
+- **Verify:** confirm rotation events are logged and auditable, alerting fires on rotation failure, the rollback procedure is tested, and credential age now sits within the 30–90 day policy window.
+
 ## Prerequisites
 
 - Inventory of all service accounts across AD, cloud, and applications

@@ -43,6 +43,13 @@ Linux privilege escalation involves elevating from a low-privilege user account 
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Run the full enumerator, then verify by hand:** `linpeas.sh`/`LinEnum.sh` and `pspy` (for cron/processes) — the high-signal vectors are easy to skip in the noise.
+- **Check every vector:** SUID/SGID (`find / -perm -4000 2>/dev/null`), `sudo -l` + GTFOBins, Linux capabilities (`getcap -r / 2>/dev/null`), writable cron/systemd units, writable `$PATH`/service binaries, NFS `no_root_squash`, and kernel exploits (match `uname -r` to known CVEs as a last resort).
+- **Credentials lying around:** `.bash_history`, config/`.env` files, SSH keys, world-readable backups, DB creds.
+- **Confirm a hit:** `id` returns `uid=0(root)` (or you can read `/etc/shadow`). Don't conclude "no privesc" until SUID, sudo, capabilities, cron, services, and writable paths are all checked — and re-run enumeration after every new credential found.
+
 ## Prerequisites
 
 - Familiarity with red teaming concepts and tools

@@ -38,6 +38,30 @@ nist_csf:
 - When building continuous compliance monitoring to maintain SOC 2 posture between audits
 - When remediating control gaps identified during readiness assessment
 
+## Coverage Gaps & Validation
+
+SOC 2 Type II readiness most often breaks on operating effectiveness over the
+period - not control design - and on evidence sampling that does not hold up:
+
+- **Design tested, operation not:** a control is documented and looks sound,
+  but Type II requires evidence it operated consistently across the entire
+  3-12 month period. Validate by sampling multiple dates across the window
+  (e.g., access reviews for each quarter), not a single point-in-time snapshot.
+- **Sampling gaps:** evidence is pulled only from the final weeks before the
+  audit. Confirm population completeness first (all PRs, all users, all
+  changes) and draw samples spread across the full period; a control gap that
+  existed in month two is still an exception even if month eleven is clean.
+- **TSC scoping mismatch:** Availability/Confidentiality/Privacy criteria are
+  claimed in the description but have no controls or evidence. Reconcile the
+  selected TSC against actual control coverage; Security (CC1-CC9) is mandatory.
+- **Control drift between checks:** continuous monitoring shows a control
+  passing today but exceptions occurred mid-period (MFA disabled, public S3
+  bucket, PR merged without approval). Treat each as a documented exception
+  with remediation evidence, not a silent pass.
+- **Evidence not reconciled to population:** confirm the sample ties back to a
+  complete system-generated population (IAM credential report, full PR list),
+  so auditors can re-derive it.
+
 ## Prerequisites
 
 - Familiarity with AICPA Trust Services Criteria (CC1-CC9)

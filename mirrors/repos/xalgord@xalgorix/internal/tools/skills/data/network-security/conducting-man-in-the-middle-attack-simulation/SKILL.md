@@ -33,6 +33,15 @@ nist_csf:
 
 **Do not use** on production networks without explicit written authorization and a rollback plan, against systems you do not own or have permission to test, or for intercepting communications of uninvolved third parties.
 
+## Most Often Missed & How to Confirm
+
+- **IPv6 and DHCPv6 paths:** teams ARP-spoof IPv4 and miss that hosts prefer IPv6. Run `bettercap`'s `dhcp6.spoof`/SLAAC RA spoofing too; positive signal is the victim sending traffic to your link-local address. Don't conclude "MITM blocked" until you've tried the IPv6 default route.
+- **SSL strip vs HSTS preload:** stripping silently fails on preloaded domains. Confirm interception only when you see the victim's plaintext request arrive at your proxy (`mitmproxy` flow list populates) AND the response was served — a 307 upgrade or connection reset means HSTS won.
+- **Cert pinning ≠ TLS failure everywhere:** a browser may reject the MITM CA while a thick client or mobile app accepts it. Test each client separately; positive signal is decrypted app traffic in `mitmproxy` for that specific client, not just one.
+- **Detection-side confirmation:** verify the blue team's sensors actually saw it — `cat /opt/zeek/logs/current/notice.log | zeek-cut note` should show `ARP::Cache_Inconsistency`, and Suricata should log `ET ARP` / spoofing alerts. No notice means the SPAN/tap missed L2 and the test of detection is inconclusive.
+- **Full-duplex matters:** spoofing only the victim (not the gateway) yields half-visibility and dropped replies. Set `arp.spoof.fullduplex true`; confirm bidirectional capture in your pcap before declaring no sensitive data was exposed.
+- **Don't conclude negative** until you've tested IPv6, every client type, cleartext fallback (HTTP/FTP/SMTP), and confirmed IP forwarding was on (else you caused a DoS, not a MITM).
+
 ## Prerequisites
 
 - Written authorization specifying in-scope targets and approved MITM techniques

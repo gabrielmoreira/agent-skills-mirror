@@ -44,6 +44,15 @@ Use this skill when:
 
 **Do not use** this skill on production devices without explicit authorization -- Objection modifies app runtime behavior and may trigger security monitoring.
 
+## Most Often Missed & How to Confirm
+
+- **Keychain accessibility class** — testers run `ios keychain dump` but ignore the protection attribute. Confirm a finding by checking for items with `kSecAttrAccessibleAlways` or `AfterFirstUnlock`; those are readable while the device is locked.
+- **SSL pinning bypass not validated** — `ios sslpinning disable` reports success even when a secondary pin still blocks traffic. Confirm by navigating an authenticated flow and seeing the requests land in Burp HTTP history.
+- **NSUserDefaults / plist secrets** — skipped in favor of the keychain. Confirm with `ios nsuserdefaults get` and `ios plist cat Library/Preferences/<bundle>.plist`, then grep for token/secret/password.
+- **Jailbreak detection only disabled, not proven** — run `ios jailbreak simulate`, then confirm the app continues past the check instead of exiting.
+- **Pasteboard leakage** — run `ios pasteboard monitor` while copying a password field and confirm sensitive data is captured.
+- **Anti-Frida suppression** — an app that detects Frida silently hides behavior; confirm by spawning with `--startup-command` to hook the check before it fires.
+
 ## Prerequisites
 
 - Python 3.10+ with pip

@@ -39,6 +39,18 @@ nist_csf:
 
 **Do not use** for securing IT-only remote access without OT components, for configuring VPN for corporate workers (see general VPN guides), or for physical access control to OT facilities.
 
+## Common Misconfigurations & Verification
+
+Remote-access designs look compliant but leak through these gaps; verify each:
+
+- **Pass-through instead of brokered sessions:** the jump server should terminate the external connection and open a separate internal one. Confirm there's no end-to-end route — a capture from the external client should never show OT IPs, only the jump host.
+- **MFA at the VPN but not into OT:** confirm MFA is enforced on the hop into the OT zone (CIP-005-7 R2.4), not just at the perimeter, and that it can't be bypassed by an already-open RDP session.
+- **Standing vendor accounts and persistent credentials:** confirm vendor access is disabled by default, enabled per time-boxed window, uses one-time tokens, and requires operator co-attendance.
+- **Firewall allows more than the jump host:** confirm only the jump server IP can reach OT on RDP/3389, SSH/22, VNC/5900 — grep the ruleset for any other sources.
+- **Session recording assumed on:** confirm recordings are actually being written and stored where the accessing user can't delete them; spot-check by reviewing a recent session.
+- **Split tunneling / dual-homed jump host:** a bastion with a second NIC to the internet breaks the boundary — verify interfaces and routes.
+- **Don't conclude remote access is secure** until a test connection proves no direct external-to-OT path, MFA fires on the OT hop, and the session was recorded.
+
 ## Prerequisites
 
 - DMZ infrastructure (Level 3.5) between corporate IT and OT networks

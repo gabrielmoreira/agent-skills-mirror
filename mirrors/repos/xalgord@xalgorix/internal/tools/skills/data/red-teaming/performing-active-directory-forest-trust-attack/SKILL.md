@@ -35,6 +35,15 @@ Active Directory forest trusts enable authentication across organizational bound
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- SID history injection is the classic missed win: after compromising a child domain, forge an inter-realm TGT with the parent's Enterprise Admins SID (519) in ExtraSids — `mimikatz "kerberos::golden /user:Administrator /domain:child.corp.local /sid:<child-SID> /sids:<parent-SID>-519 /krbtgt:<hash> /ptt"` or Rubeus `golden`. SID filtering being disabled (TRUST_ATTRIBUTE_TREAT_AS_EXTERNAL / quarantine off on intra-forest trusts) is what makes this land.
+- Disable SID filtering check is skipped constantly — confirm with `netdom trust child.corp.local /domain:parent.corp.local /quarantine` and trustAttributes flags; intra-forest trusts do NOT filter SIDs 519/518/512 by default.
+- Unconstrained delegation + printer bug across the trust: coerce a foreign DC (`SpoolSample`/`PetitPotam`) to a server you control with unconstrained delegation in the other forest, then capture its TGT.
+- Don't forget the foreign-account angle: enumerate FSPs and accounts with sIDHistory pointing across the trust (`Get-ADUser -Filter {sIDHistory -like '*'}`).
+- Positive signal: a forged/cross-realm ticket grants access to a parent/foreign-forest resource — `dir \\dc.parent.corp.local\C$` succeeds, or `klist` shows an inter-realm TGT (krbtgt/PARENT) accepted.
+- Don't conclude the trust is non-exploitable until: (1) trust direction AND transitivity checked (inbound/bidirectional + transitive enables more), (2) SID filtering/quarantine state confirmed per-trust, (3) ExtraSids golden ticket tested, (4) unconstrained-delegation hosts on both sides enumerated, and (5) ADCS in the foreign forest checked for cross-trust enrollment.
+
 ## Prerequisites
 
 - Python 3.9+ with `impacket`, `ldap3`

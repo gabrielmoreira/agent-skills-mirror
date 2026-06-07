@@ -37,6 +37,15 @@ nist_csf:
 
 **Do not use** for non-HTTP applications that cannot be placed behind an HTTPS load balancer, for public-facing applications that need unauthenticated access, or when applications handle their own authentication and IAP would conflict with existing auth flows.
 
+## Common Misconfigurations & Verification
+
+- **Backend reachable bypassing IAP:** IAP only protects traffic arriving through the HTTPS load balancer. If the GCE/GKE instance has a public IP, or its VPC firewall allows the app port from `0.0.0.0/0`, anyone hits the origin directly. Restrict ingress firewall rules to the IAP source range `35.235.240.0/20` ONLY and remove public IPs.
+- **`allUsers`/`allAuthenticatedUsers` on the backend:** a stray `roles/run.invoker` or `roles/iap.httpsResourceAccessor` binding to `allUsers` neuters every policy. Audit IAM bindings on each backend/Cloud Run service.
+- **Access level attached but not enforced:** granting `iap.httpsResourceAccessor` WITHOUT the `--condition` access-level expression authenticates identity but skips device posture/IP checks. Confirm finance/admin bindings carry `request.auth.access_levels.exists(...)`.
+- **App ignores the IAP JWT:** if the app doesn't validate the `x-goog-iap-jwt-assertion` header, anyone reaching the origin directly is treated as authenticated.
+
+Verify: from off-VPN run `curl http://<instance-ip>:<port>/` against both public and private IPs; both must be unreachable (only `35.235.240.0/20` permitted). Sign in from a device that fails the access level and confirm `protoPayload.status.code=16` / a denied entry via the `iap-denied-access` log metric. Confirm no IAM binding resolves to `allUsers`.
+
 ## Prerequisites
 
 - Google Cloud project with billing enabled

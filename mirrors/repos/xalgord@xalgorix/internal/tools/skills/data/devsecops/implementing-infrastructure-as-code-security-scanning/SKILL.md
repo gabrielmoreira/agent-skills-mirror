@@ -38,6 +38,18 @@ nist_csf:
 
 **Do not use** for scanning application source code (use SAST), for monitoring already-deployed infrastructure drift (use cloud security posture management tools), or for container image vulnerability scanning (use Trivy).
 
+## Common Misconfigurations & Verification
+
+An IaC scan that never fails the build provisions insecure infrastructure anyway:
+
+- **`soft_fail: true` / `--soft-fail`.** Checkov and tfsec exit 0 in soft-fail mode, so the PR merges with HIGH findings. Set `soft_fail: false` on the gating job.
+- **Scanning `.tf` source instead of the plan.** Static `.tf` scanning misses computed values and `module` expansions; downloaded/registry modules under `.terraform/modules/` are skipped unless you `terraform init` and scan the `terraform_plan` JSON (`terraform show -json tfplan > tfplan.json; checkov -f tfplan.json --framework terraform_plan`).
+- **Over-broad suppressions.** A long `skip-check:` list or blanket `# checkov:skip=` comments quietly disable real controls (e.g. skipping `CKV_AWS_18`/`CKV_AWS_20`) — audit them.
+- **Graph checks not running.** Relationship checks (the `CKV2_` prefix) require graph mode; resource-level-only scans miss "bucket exists but no `public_access_block`" cases.
+- **SARIF uploaded but no gate.** Uploading to the Security tab with `if: always()` while the job is allowed to pass is reporting, not gating.
+
+**Concrete verification:** Add a Terraform resource that is plainly insecure (a public-read `aws_s3_bucket` ACL with no `aws_s3_bucket_public_access_block`, or an `aws_security_group` allowing `0.0.0.0/0` on port 22) and open a PR. Confirm Checkov/tfsec **exit non-zero and block the merge** (CKV_AWS_18/CKV_AWS_24 fire), then confirm a hardened version passes.
+
 ## Prerequisites
 
 - Checkov v3.x installed (`pip install checkov`) or tfsec installed

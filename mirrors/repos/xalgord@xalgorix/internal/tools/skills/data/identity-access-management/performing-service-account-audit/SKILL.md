@@ -33,6 +33,14 @@ Audit service accounts across enterprise infrastructure to identify orphaned, ov
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Coverage Gaps & Validation
+
+- **AD-only discovery:** auditing service accounts only in Active Directory misses the majority. Enumerate Azure service principals/managed identities, AWS IAM users with access keys and roles, GCP service accounts and keys, database app-login accounts, and SaaS API keys/bot accounts.
+- **Identification by convention fails:** filtering on a `svc-` naming convention or a single OU misses service accounts that look like user accounts. Identify by behavior — SPN set, never used for interactive logon, non-expiring password, headless auth — not by name.
+- **Missing owners / orphans:** accounts whose owning application was decommissioned keep working and keep their privilege. Reconcile each account to the CMDB/asset inventory; anything with no mapped application or owner is orphaned.
+- **Over-privilege and stale secrets:** flag membership in Domain/cloud admin groups, `PasswordNeverExpires`, and credentials older than the rotation policy (90 days).
+- **Validate completeness:** reconcile the audited inventory against authoritative sources per platform (AD export, each cloud IAM, each database's login list) and against the application/CMDB inventory — accounts present in the platform but absent from your list are the audit gap. Verify dependencies are mapped before any disable action.
+
 ## Prerequisites
 
 - Familiarity with identity access management concepts and tools

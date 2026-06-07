@@ -30,6 +30,16 @@ nist_csf:
 - When standard log analysis is insufficient to establish the sequence of events
 - For presenting investigation findings in a visual, chronological format
 
+## Detection Gaps & Validation
+
+A super-timeline's greatest weakness is that it makes noise and forged timestamps look identical to ground truth. Guard against these:
+
+- **Timezone and clock errors corrupt the whole timeline.** Plaso stores events in UTC, but parsers infer source timezones; run `log2timeline.py` with the correct `--timezone` and confirm the image's `TimeZoneInformation` registry value. A wrong offset or a host whose clock was manually changed silently shifts events, fabricating false sequences. State the timezone basis in every report.
+- **Super-timeline noise buries the signal.** A full-image run emits millions of events; `$MFT`/`$UsnJrnl` alone can dominate. Without a `--filter-file` or `psort` date-range/source filter you will drown. Pivot from known anchors (malware execution, login) and expand outward rather than reading top-to-bottom.
+- **MACB timestamps are stompable and parser-dependent.** Anti-forensic tooling backdates `$STANDARD_INFORMATION` times that Plaso surfaces; the harder-to-forge `$FILE_NAME` ($FN) times come from a separate MFT parse. Compare $SI vs $FN to spot timestomping, and corroborate a file's "creation" against USN Journal, Prefetch/Amcache execution, and event logs before trusting it.
+- **Coverage gaps = missing parsers/artifacts, not absence of activity.** If you ran a targeted `--parsers` list, anything outside it is invisible; deleted/rotated logs and VSS snapshots won't appear unless included. "No evidence in the timeline" must be qualified by which parsers and sources were actually processed.
+- **Interpretation false positives.** A single artifact's timestamp ≠ user action: `$MFT` access times are unreliable on modern Windows, antivirus/indexing/backup touch files en masse, and Prefetch reflects execution by any caller. Confirm a pivotal event with at least two independent artifact types (e.g., Prefetch + 4688 + LNK) before placing it in the narrative.
+
 ## Prerequisites
 - Plaso (log2timeline/psort) installed on forensic workstation
 - Forensic disk image(s) in raw (dd), E01, or VMDK format

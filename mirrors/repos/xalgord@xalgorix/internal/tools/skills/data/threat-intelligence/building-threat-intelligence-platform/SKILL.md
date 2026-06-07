@@ -36,6 +36,14 @@ Building a Threat Intelligence Platform (TIP) involves deploying and integrating
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **MISP↔OpenCTI connector duplication:** running both a push sync and the OpenCTI MISP connector without a stable STIX `id`/UUID mapping re-imports the same events as new indicators on every poll. Pin one direction of authority and let the connector dedup on STIX `id`.
+- **STIX version drift:** MISP exports STIX 2.0 or 2.1 depending on version; OpenCTI 6.x expects 2.1. A 2.0 bundle using `labels` instead of `indicator_types` imports with empty typing. Confirm both ends negotiate `application/stix+json;version=2.1`.
+- **Cortex TLP gating:** analyzers silently skip observables whose TLP exceeds the analyzer's `max_tlp` (e.g., submitting `tlp:amber` to a `max_tlp:green` analyzer), so enrichment looks "done" but ran nothing.
+- **Elasticsearch single-node in prod:** the sample compose ships `discovery.type=single-node` with `xpack.security.enabled=false` — fine for a lab, but unauthenticated and unsharded for real CTI data.
+- **Verify:** create one indicator in MISP, confirm it appears once (not duplicated) in OpenCTI, confirm a Cortex analyzer returns a report, and round-trip the TAXII export through `stix2.parse` to confirm SDOs/SROs survive.
+
 ## Prerequisites
 
 - Docker and Docker Compose for deploying platform components

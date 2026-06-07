@@ -37,6 +37,14 @@ nist_csf:
 
 **Do not use** entropy analysis alone as the only detection signal. Compressed files (ZIP, JPEG, MP4) naturally have high entropy and will cause false positives. Always combine entropy with behavioral signals like I/O rate and file rename patterns.
 
+## Detection Gaps & Validation
+
+- **Intermittent / partial encryption evades entropy thresholds:** LockBit, BlackCat/ALPHV, and Royal encrypt only the first N KB or every Nth block, so a whole-file Shannon score stays near the plaintext baseline (e.g. 5.0 instead of 7.9). Sample the file *header* and multiple offsets, not just an average, and flag a high-entropy leading block on an otherwise low-entropy file.
+- **Base64/encoding evasion:** some families Base64 or XOR the output, capping entropy at ~6.0. Don't treat sub-7.5 as automatically benign — weight the I/O-rate and rename signals higher.
+- **Encryption from a network share (no local file events):** if ransomware runs on host A but encrypts `\\fileserver\share`, the watchdog/inotify watcher on the *endpoint* sees nothing. Monitor at the file server (FSRM/auditd), not only on endpoints.
+- **Compressed-file false positives:** `.zip/.jpg/.mp4` sit at 7.5-8.0 natively — never alert on entropy without a same-extension baseline and a rename-to-new-extension or mass-modification co-signal.
+- **How to validate the rule fires + FP tuning:** detonate real samples (LockBit, BlackCat, Conti) in an isolated sandbox and confirm the composite score crosses CRITICAL and the kill/isolate action runs in under 5s; then replay a normal workday (archive extraction, software installs, bulk media import) and confirm the false-positive rate stays acceptable before enabling automated process-kill.
+
 ## Prerequisites
 
 - Python 3.8+ with `watchdog` and `psutil` libraries

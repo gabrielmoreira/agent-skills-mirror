@@ -38,6 +38,14 @@ Linux kernel rootkits operate at ring 0, modifying kernel data structures to hid
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Most-missed artifacts:** beyond `linux.check_syscall`/`lsmod`, run `linux.hidden_modules`, `linux.check_afinfo`/`tty_check`, `linux.kmsg`, and `linux.malfind`, and look for `ftrace`/kprobes hooks and modified `/sys/kernel/`. Modern LKM rootkits (Diamorphine, Reptile) hook via ftrace or function-pointer overwrite rather than the syscall table, so a clean syscall table is not a clean kernel.
+- **Cross-view is the core validation:** never trust one source. Compare module lists from `/proc/modules`, `lsmod`, `/sys/module/`, and the kernel kobject list; compare processes from the `task_struct` list vs `/proc` vs `pid_hash`. A delta between any two views is the rootkit's hiding signature - corroborate each hidden PID/connection across memory, `ss`, and `/proc/net/tcp`.
+- **Anti-forensics that defeats this analysis:** rootkits hook `read`/`getdents64`, so live `rkhunter`/`chkrootkit`/`ls` lie. Always work from a memory image acquired with LiME/AVML, and verify modified `ps`/`netstat`/`ss` binaries by SHA-256 against the distro package - do not run the suspect binaries.
+- **Profile/ISF must match exactly:** a Volatility3 symbol table for the wrong kernel build silently yields empty or bogus output that looks like "no rootkit." Confirm the `uname -r`/banner from the dump matches the ISF before trusting any plugin.
+- **Interpretation pitfalls (false positives):** legitimate out-of-tree modules (NVIDIA, VirtualBox, eBPF/EDR agents like Falco/CrowdStrike) hook syscalls and appear as "unknown" modules; live patching (kpatch/ksplice) and hypervisor introspection also alter pointers. Baseline against a known-good kernel of the same version before declaring a hook malicious.
+
 ## Prerequisites
 
 - Volatility3 installed (pip install volatility3)

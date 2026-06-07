@@ -41,6 +41,14 @@ Use this skill when:
 
 **Do not use** for spam or marketing emails without malicious intent — route those to email administration for filter tuning.
 
+## Detection Gaps & Validation
+
+- **Clean attachment, weaponized link:** triagers detonate the attachment, get a benign verdict, and close — missing that the body's credential-harvest URL is the real payload. Always extract and analyze every URL (including those inside PDFs, QR codes, and HTML attachments) even when the file sandboxes clean.
+- **Delayed/cloaked payloads:** the URL serves a benign page to sandboxes and the harvester only after a redirect, on a second visit, or when the geo/User-Agent matches the target. Re-scan from a realistic egress and follow the full redirect chain rather than trusting a single URLScan result.
+- **SPF/DKIM "pass" ≠ legitimate:** a `dmarc=pass` from a lookalike or freshly registered domain, or a compromised-but-authenticated internal mailbox (thread hijacking), still phishes. Check domain age, display-name spoofing, and `Reply-To`/`Return-Path` mismatch, not just auth results.
+- **Scope undercounted:** searching only the reported subject misses recipients who got the same campaign with a rotated subject/sender. Pivot on sending IP, URL domain, and message-body hash, and confirm "who clicked" with proxy POSTs (credentials submitted) — not just GETs.
+- **Validate the verdict:** confirm a true positive by matching submitted-credential POSTs or sandbox C2 callbacks to the IOC, then audit each impacted mailbox for attacker-created inbox forwarding rules before declaring "no lateral movement". Tune FPs by routing confirmed marketing/bulk senders to gateway filtering instead of incident queues.
+
 ## Prerequisites
 
 - Access to email gateway logs (Proofpoint, Mimecast, or Microsoft Defender for Office 365)

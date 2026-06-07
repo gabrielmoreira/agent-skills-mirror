@@ -37,6 +37,15 @@ nist_csf:
 
 **Do not use** for runtime container security monitoring (use Falco), for scanning running containers in production (use runtime agents), or when only scanning application source code without containerization (use SAST tools).
 
+## Coverage Gaps & Validation
+
+- **`--ignore-unfixed` hides real risk:** it drops every CVE without a patch from both report and gate. Exploitable unfixed vulns then ship silently. Run one scan without it for inventory, and gate separately.
+- **Severity filter narrows the whole scan:** `--severity CRITICAL,HIGH` suppresses MEDIUM/LOW from output entirely, not just the exit code. Use the filter for the gate but scan at full severity for the SBOM/record.
+- **App deps vs OS packages:** image scanning covers both, but only if language manifests are inside the image. Vendored or build-stage-only deps are missed — run `trivy fs .` on the build context too, since scanning only the final stage skips packages present during build.
+- **Config scan is a separate scanner:** `trivy image` does not check Dockerfile/K8s misconfigurations. Add `trivy config .` (or `scan-type: config`) or DS002 "running as root" goes unreported.
+- **Gate that can't fail:** the action only blocks when `exit-code: '1'` is set; SARIF upload alone never fails the job. Confirm the step's exit code, and don't cache the DB so aggressively (`--skip-db-update`) that new CVEs take days to appear.
+- **Validate completeness:** build an image on a knowingly vulnerable base (e.g. an old `python:3.9` tag) and confirm `trivy image --exit-code 1 --severity CRITICAL,HIGH` reports the CVEs and fails the pipeline. A green scan on a stale base means the DB or filters are wrong.
+
 ## Prerequisites
 
 - Trivy CLI installed (v0.50+) or access to aquasecurity/trivy-action GitHub Action

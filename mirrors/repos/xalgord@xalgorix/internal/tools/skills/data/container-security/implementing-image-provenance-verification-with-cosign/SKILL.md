@@ -36,6 +36,15 @@ Cosign is a Sigstore tool for signing, verifying, and attaching metadata to cont
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **`cosign verify` in CI but not gated at admission:** signing in the pipeline proves nothing at runtime if the cluster will still pull unsigned images. Enforce with the Sigstore `policy-controller` `ClusterImagePolicy` or a Kyverno `verifyImages` rule, and confirm it is active (not just installed).
+- **Kyverno/policy in audit mode:** `validationFailureAction: Audit` (Kyverno) or a permissive `ClusterImagePolicy` only logs. Set Kyverno to `Enforce`; verify an unsigned pod is **rejected**: `kubectl run bad --image=ghcr.io/myorg/unsigned:latest` should fail admission.
+- **Verifying by tag, not digest:** `cosign verify ...:v1.0.0` is subject to tag re-push (TOCTOU). Verify and admit by `@sha256:` digest.
+- **Over-broad identity match:** `--certificate-identity-regexp=".*"` or omitting `--certificate-oidc-issuer` accepts signatures from any Fulcio identity. Pin `--certificate-identity=<exact>` (or a tight regex) **and** `--certificate-oidc-issuer=https://token.actions.githubusercontent.com`.
+- **Glob doesn't match the registry:** a `ClusterImagePolicy` `images.glob: "ghcr.io/myorg/**"` silently skips images pulled from a mirror/proxy or a different registry path - they admit unverified.
+- **Verify the chain end-to-end:** `cosign verify` should confirm signature **+** Fulcio certificate **+** Rekor inclusion; check `rekor-cli search --email <id>` returns the entry.
+
 ## Prerequisites
 
 - Cosign CLI installed

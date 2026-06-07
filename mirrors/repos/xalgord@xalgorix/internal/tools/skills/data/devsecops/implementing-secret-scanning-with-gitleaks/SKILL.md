@@ -36,6 +36,18 @@ nist_csf:
 
 **Do not use** for detecting secrets in running applications or memory (use runtime secret detection), for managing secrets after detection (use Vault or AWS Secrets Manager), or for scanning container images (use Trivy or Grype).
 
+## Common Misconfigurations & Verification
+
+Gitleaks frequently "passes" because it only looked at the current tip of the tree:
+
+- **Only scanning HEAD, not full history.** `gitleaks detect` without `--log-opts` scans all commits, but a `--log-opts="HEAD~1..HEAD"` (or a shallow CI checkout) only sees the latest commit — a secret added then "removed" in an earlier commit stays in history undetected. For full history use `gitleaks detect --source .` with no narrowing log-opts.
+- **Shallow clone in CI.** GitHub Actions defaults to `fetch-depth: 1`; without `fetch-depth: 0` the PR range scan misses most commits. Set `fetch-depth: 0`.
+- **`--exit-code 0` / missing exit code.** Without `--exit-code 1` the job reports findings but passes. The pre-commit hook must use `gitleaks protect --staged` (not a no-op report).
+- **Baseline hides live secrets.** A `.gitleaks-baseline.json` generated without triage suppresses real, unrotated credentials forever.
+- **Over-broad allowlist.** Wide `paths`/`regexes` in `.gitleaks.toml` (or a stray `.gitleaksignore` entry) can mask whole directories.
+
+**Concrete verification:** Commit a known fake AWS key (`AKIAIOSFODNN7EXAMPLE` with `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY`), then `git commit --amend`/rebase it out of the tip so it survives only in history. Run `gitleaks detect --source .` and confirm it **finds the secret and exits non-zero**, proving history (not just HEAD) is scanned and the gate fails the build.
+
 ## Prerequisites
 
 - Gitleaks v8.18+ installed via binary, Go install, or Docker

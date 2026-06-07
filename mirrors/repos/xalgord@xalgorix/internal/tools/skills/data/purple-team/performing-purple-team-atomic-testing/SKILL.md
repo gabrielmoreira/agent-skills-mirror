@@ -54,6 +54,15 @@ nist_csf:
 
 **DISCLAIMER**: Atomic Red Team tests execute real attack techniques. Run only on systems you own or have explicit written authorization to test. Many tests modify system state, create artifacts, or trigger security alerts. Always execute cleanup commands after testing. Never run atomic tests in production without risk acceptance from stakeholders.
 
+## Most Often Missed & How to Confirm
+
+- **"Executed" is not "detected":** `Invoke-AtomicTest T1059.001` returning success only proves the technique ran. The metric that matters is whether the SIEM/EDR raised an alert. Treat any test that executes without a corresponding detection as a blind spot, not a pass.
+- **Map to ATT&CK before testing:** drive selection from the matrix (e.g. T1059.001 PowerShell, T1003.001 LSASS, T1547.001 Run keys, T1053.005 Scheduled Task, T1218.011 Rundll32) so coverage is measured against techniques, not ad-hoc scripts.
+- **Logging vs alerting gap:** an event landing in the index (Sysmon EventCode 1/13, 4104, 4663) is telemetry, not detection. Confirm a rule fired and an alert/case was created — not just that the raw log exists.
+- **Cleanup and prereqs skew results:** missing prerequisites cause silent no-ops, and skipped `-Cleanup` leaves artifacts that taint later runs. Use `-CheckPrereqs`/`-GetPrereqs` and always run `-Cleanup`.
+- **How to confirm a detection end-to-end:** after execution, query the SIEM (Splunk SPL on the relevant index/EventCode, or Elastic KQL on `event.code`) and verify the matching Sigma/EDR rule produced an alert within the ingestion window. Allow for log-ingestion delay (`Start-Sleep` between test and query) before declaring a gap.
+- **Don't conclude a technique is "covered" until** the test executed, the telemetry arrived, the rule fired, and the alert is visible to the analyst — verified per ATT&CK technique, ideally rendered as an ATT&CK Navigator heatmap layer.
+
 ## Prerequisites
 
 - Windows host with PowerShell 5.1+ or PowerShell Core 7+ (Linux/macOS supported for cross-platform atomics)

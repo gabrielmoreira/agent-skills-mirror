@@ -38,6 +38,15 @@ Palo Alto Networks Next-Generation Firewalls (NGFWs) move beyond traditional por
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Service `application-default` vs `any`:** rules with `service any` let an app ride a non-standard port that App-ID hasn't classified on the first packets, so it "fails open" to a broad port-based rule below. Pin App-ID rules to `application-default` and place a tight `Deny-All` last.
+- **Decryption bypass via pinned apps:** apple-update, microsoft-update, dropbox, and most mobile apps break under `ssl-forward-proxy`, so teams add over-broad no-decrypt rules that become blind spots. Keep exemptions app-specific, not whole URL categories; review the No-Decrypt rulebase.
+- **QUIC/HTTP3 escape:** if UDP/443 is allowed, browsers tunnel over QUIC and skip TLS inspection entirely. Confirm a `Block-QUIC` rule (deny `application quic`) and check Traffic logs for `quic`/`http3`.
+- **Shadowed rules:** a permissive early rule silently overrides stricter ones below it. Run Policy Optimizer and `show running security-policy` to find shadowed/unused rules.
+- **Silent denies:** confirm the explicit `Deny-All` has `log-end yes`, or dropped traffic is invisible to the SIEM.
+- **Verification:** push the EICAR file and a known-bad URL and confirm matching Threat/URL log entries; verify the browser cert chain resolves to the Forward Trust CA; run a controlled SYN flood to confirm SYN-cookie activation; check `show system setting ssl-decrypt memory` for fail-open under load.
+
 ## Prerequisites
 
 - Palo Alto Networks PA-series appliance or VM-Series virtual firewall

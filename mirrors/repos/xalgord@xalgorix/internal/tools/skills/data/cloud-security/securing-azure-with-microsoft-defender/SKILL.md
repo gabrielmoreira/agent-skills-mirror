@@ -44,6 +44,17 @@ nist_csf:
 
 **Do not use** for AWS-only environments (see implementing-aws-security-hub), for identity provider configuration (see managing-cloud-identity-with-okta), or for network-level firewall rule management (see implementing-cloud-waf-rules).
 
+## Common Misconfigurations & Verification
+
+- **Plan enabled on one subscription only:** Defender plans don't auto-cover sibling or newly created subscriptions. Enable at the management-group level via Azure Policy, then verify each with `az security pricing list --query "[?pricingTier=='Standard']"`.
+- **Wrong subplan:** `az security pricing create --name VirtualMachines --tier Standard` without `--subplan P2` leaves out vulnerability assessment/EDR. Confirm `subPlan` in the pricing list, not just the tier.
+- **Storage malware scanning needs the extension:** the plan alone doesn't scan - `OnUploadMalwareScanning` must be `isEnabled: True` (with a per-account cap). Verify in the pricing config.
+- **Connector "connected" but ingesting nothing:** AWS/GCP connectors require the remote IAM role (`cloudRoleArn`) actually deployed. Check connector health, not just existence.
+- **Unmonitored assets inflate Secure Score:** if AMA/Log Analytics auto-provisioning is off, servers report no findings and the score looks better than reality. Confirm agent coverage.
+- **JIT only protects listed ports** and only when Defender manages the NSG; an unlisted port stays open.
+
+**Verify it actually works:** trigger a benign Defender sample alert and confirm it reaches the configured `az security contact` email / Logic App; confirm attack-path queries return data (requires the Defender CSPM plan + agentless scanning on); and after a JIT policy, confirm the port is denied by default and only opens after `az security jit-policy initiate`.
+
 ## Prerequisites
 
 - Azure subscription with Security Admin or Contributor role

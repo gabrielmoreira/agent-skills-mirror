@@ -35,6 +35,16 @@ SPF, DKIM, and DMARC form the three pillars of email authentication. Together th
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **DMARC stuck at p=none forever:** monitoring without progressing to quarantine/reject yields reports but ZERO spoofing protection - set a timeline to advance once legitimate sources align.
+- **SPF too permissive or over-limit:** `+all`/`?all` authorize the world, and more than 10 DNS lookups causes `permerror` and silent SPF failure - flatten includes and end with `-all` (hard fail) once sources are inventoried.
+- **DKIM weak/short key:** 1024-bit or shorter keys are deprecated - publish 2048-bit RSA, use a unique selector per sender, and rotate keys annually.
+- **Alignment overlooked:** SPF/DKIM can "pass" yet fail DMARC because the authenticated domain doesn't align with the From header - verify `adkim`/`aspf` alignment, not just pass/fail.
+- **No subdomain policy:** omitting `sp=` lets attackers spoof `noreply.example.com` even when the org domain is locked - set `sp=reject`.
+- **rua not monitored:** publishing a `rua` mailbox nobody reads means failures go unnoticed - feed aggregate XML into an analyzer.
+- **Verification:** send a controlled spoof of your own domain from an unauthorized IP and confirm the receiver rejects/quarantines it; confirm legitimate mail shows `dmarc=pass` with alignment in the Authentication-Results header and that DKIM verifies a 2048-bit signature.
+
 ## Prerequisites
 - DNS management access for your domain
 - Access to email server/MTA configuration (Postfix, Exchange, Google Workspace, Microsoft 365)

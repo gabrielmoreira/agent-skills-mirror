@@ -38,6 +38,14 @@ Use this skill when:
 
 **Do not use** this skill for real-time incident attribution — attribution during active incidents should be deprioritized in favor of containment. Profile refinement occurs post-incident.
 
+## Detection Gaps & Validation
+
+- **Over-attribution is the cardinal error:** shared tooling (Cobalt Strike, public RATs), shared bulletproof hosting, and reused code do not prove a single actor - multiple groups buy from the same access brokers and use the same commodity malware. Require multiple independent corroborating data points (TTP overlap + infrastructure + victimology + timing) and state a confidence band (Low/Med/High), never a binary verdict.
+- **False flags:** sophisticated actors deliberately plant another group's tooling, language artifacts, or compile-time zones to misdirect. Weight durable behavioral TTPs over easily spoofed artifacts (strings, PDB paths, timestamps) when attributing.
+- **Alias conflation:** APT29 = Cozy Bear = Midnight Blizzard, but vendors also split/merge clusters differently; mapping the wrong alias imports the wrong campaign history. Reconcile aliases across MITRE/Mandiant/CrowdStrike before merging profiles, and use an Intrusion Set / cluster label when identity is uncertain.
+- **Coverage gaps:** ATT&CK lists only documented techniques, so a profile reflects what was *reported*, not full capability; under-documented criminal/ransomware groups are often the higher-probability threat.
+- **How to confirm before briefing:** cite at least two independent sources per attribution claim, qualify confidence explicitly, and date the profile - TTPs drift, so re-validate quarterly rather than presenting a stale profile as current.
+
 ## Prerequisites
 
 - Access to MITRE ATT&CK Groups database (https://attack.mitre.org/groups/)

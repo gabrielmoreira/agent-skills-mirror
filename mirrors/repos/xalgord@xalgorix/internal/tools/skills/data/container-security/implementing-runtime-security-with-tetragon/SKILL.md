@@ -46,6 +46,17 @@ Tetragon is a CNCF project under Cilium that provides flexible Kubernetes-aware 
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+A TracingPolicy that loads cleanly can still be observe-only or never fire. Validate enforcement, not just installation:
+
+- **Observe-only when you meant to block:** a selector with only `matchActions: [{action: Post}]` emits an event but lets the syscall through. Enforcement requires `Sigkill`, `Signal`, or `Override` - and `Override` needs a kernel that supports `bpf_override_return` (CONFIG_BPF_KPROBE_OVERRIDE / fexit/fmod_ret).
+- **Selectors too narrow:** `matchBinaries` keyed on absolute paths (`/usr/bin/xmrig`) is trivially bypassed by copying the binary; prefer matching on the operation (`security_bprm_check`, `setns`, `security_file_open`) plus namespace context.
+- **Namespace scoping inverted:** `matchNamespaces` with `In/NotIn host_ns` is the usual escape-detection logic - get the operator backwards and you alert on the host instead of containers.
+- **Silent drops:** `tetragon_missed_events_total > 0` means the ring buffer overflowed and events were lost - your detection has gaps.
+
+**Verify:** trigger the exact behavior in a throwaway pod (e.g. `cat /etc/shadow`, `nsenter`, run a renamed miner) and confirm the event in `tetra getevents -o compact` and that a `Sigkill` policy actually killed the process (`echo $?` / pod restart). Check `kubectl get tracingpolicy` shows the policy loaded on every node, not just the one you tested.
+
 ## Prerequisites
 
 - Kubernetes cluster v1.24+ with Helm 3.x installed

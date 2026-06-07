@@ -40,6 +40,17 @@ nist_csf:
 
 **Do not use** as the sole determination of malicious intent; name similarity alone does not prove a package is malicious. Do not use for bulk automated takedown requests without manual review of flagged packages. Do not use against private registries without authorization.
 
+## Detection Gaps & Validation
+
+Pure Levenshtein matching catches the obvious misspellings and misses the attack classes that look nothing like a typo at the byte level.
+
+- **Homoglyph / Unicode confusables:** Cyrillic `а` (U+0430) vs Latin `a`, or `rn` vs `m`, have Levenshtein distance 0 after a naive lowercase compare yet are visually identical. Normalize via Unicode confusable mapping (`unicodedata` / `confusable_homoglyphs`) before scoring.
+- **Combosquatting:** prefix/suffix additions (`python-requests`, `requests-aws`, `requests2`) can sit at edit distance 5+ from the target and slip past a distance-2 threshold. Match on token containment, not just edit distance.
+- **Scope / namespace confusion (npm):** `@myorg/utils` vs an unscoped public `utils`, or a look-alike scope `@my-org/utils`, is a different attack than character mutation. Normalize and compare scope separately.
+- **PEP 503 normalization gaps:** failing to fold `-`, `_`, `.` (`my-pkg` ↔ `my_pkg` ↔ `my.pkg`) before comparison causes missed matches on PyPI.
+
+**How to validate:** seed your watchlist with a few *known* historical typosquats (e.g. `python3-dateutil`, `jeIlyfish`/`jellyfish`, `crossenv`) and confirm the detector flags them HIGH; then confirm a legitimate similar pair (`urllib3` vs `urllib`) is *not* auto-blocked but routed to manual review. Pair every name-distance hit with a metadata signal — different author, first upload < 90 days, download ratio < 0.001 — before classifying. Name similarity alone is a lead, not a verdict.
+
 ## Prerequisites
 
 - Python 3.9+ with `requests` and `python-Levenshtein` (or `rapidfuzz`) packages installed

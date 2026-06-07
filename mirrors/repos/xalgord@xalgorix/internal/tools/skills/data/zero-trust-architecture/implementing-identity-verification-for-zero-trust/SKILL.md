@@ -49,6 +49,18 @@ This skill covers implementing phishing-resistant MFA, continuous identity verif
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+Identity zero trust silently degrades when verification happens once at login and never again. Look for these:
+
+- **Authenticated once, never re-evaluated.** No Continuous Access Evaluation (CAE) means a disabled or risky user keeps a valid token for the full session lifetime - revocation should land within minutes of a critical event, not hours.
+- **Legacy auth still open.** IMAP/POP3/SMTP basic-auth endpoints bypass Conditional Access and MFA entirely; one open legacy protocol neuters phishing-resistant FIDO2 everywhere else.
+- **Phishable MFA still allowed as fallback.** SMS/voice/push left enabled lets attackers downgrade from WebAuthn.
+- **Break-glass accounts excluded from all policies** and never monitored.
+- **Risk policies in report-only**, so high-risk sign-ins are logged but allowed.
+
+**How to confirm:** disable a test user (or change their password) mid-session and verify their active token is revoked via CAE. Attempt a legacy-auth login (IMAP with an app password) and confirm it is blocked. Trigger a high-risk sign-in and confirm step-up or block actually fires in the sign-in logs - do not trust the policy until you have seen it deny.
+
 ## Prerequisites
 
 - Familiarity with zero trust architecture concepts and tools

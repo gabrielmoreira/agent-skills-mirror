@@ -47,6 +47,14 @@ Cloud storage forensic acquisition involves collecting digital evidence from ser
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+- **API acquisition captures current state, not history.** Items purged past retention are gone — Google Drive Trash and OneDrive recycle bin typically hold ~30 days (OneDrive site/second-stage up to 93), Dropbox version history varies by tier. A clean `recyclebin`/Trash listing does not mean nothing was deleted; note the retention window as a coverage limit.
+- **Cloud-only files are absent on the endpoint.** On-demand/"Files On-Demand" placeholders (OneDrive `.cloud`, DriveFS) are not stored locally, so disk imaging alone misses them — you need the API or the sync metadata DB.
+- **Encrypted/opaque local stores:** Dropbox `filecache.dbx`/`config.dbx` are obfuscated SQLite and need decryption; parsing them raw yields nothing. OneDrive `SyncEngineDatabase`/`<account>.dat` schemas change across client versions.
+- **Anti-forensics seen in the wild:** deleting individual file **revisions** (the worked example shows a malicious macro added then reverted) and unsharing links to hide exfil recipients.
+- **Timezone:** API metadata (`createdTime`, `modifiedTime`) and revision times are UTC ISO-8601 — convert before merging with endpoint local times.
+- **Validate / cross-corroborate:** verify each acquired file's API `md5Checksum` against the downloaded/hashed copy for chain of custody, and reconcile API metadata with endpoint sync logs, browser history (web uploads), and `$MFT`. Confirm external-sharing events against the provider **admin/audit log**, not just the file's permission list.
+
 ## Prerequisites
 
 - Legal authorization (warrant, consent, or corporate policy) for cloud data access

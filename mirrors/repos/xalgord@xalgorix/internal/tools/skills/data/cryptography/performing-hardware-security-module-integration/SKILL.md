@@ -43,6 +43,15 @@ Hardware Security Modules (HSMs) provide tamper-resistant cryptographic key stor
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Common Misconfigurations & Verification
+
+- **Keys created as extractable:** generating PKCS#11 keys without `CKA_EXTRACTABLE=False`/`CKA_SENSITIVE=True` lets the "HSM-protected" private key be exported. After `generate_keypair`, read the private key attributes and confirm `extractable=False`, `sensitive=True`, `local=True`; an export/wrap attempt MUST be rejected by the token.
+- **Operations silently falling back to software:** verify the key handle actually lives on the token (correct slot/label) and that `C_Sign`/`C_Decrypt` run on-device — for AWS CloudHSM/YubiHSM2 confirm the right `cloudhsm-pkcs11` / connector module is loaded, not the default software provider.
+- **Unverified mechanism support:** query `slot.get_mechanisms()` before relying on an algorithm; assuming RSA-PSS or EC P-256 is present can cause runtime `CKR_MECHANISM_INVALID`.
+- **PIN handling:** SO PIN reused as user PIN, PINs in source/CI logs, or no login-failure lockout. Use distinct PINs and load from a secret store.
+- **FIPS posture not validated:** confirm the token reports the expected FIPS 140-2/3 level and that only approved mechanisms are enabled.
+- **Verification:** run an on-device sign→verify round-trip and an encrypt→decrypt round-trip; confirm `C_GetAttributeValue` on the private key cannot return its value, list objects to inventory keys/certs, and assert the compliance report flags any extractable or non-FIPS keys.
+
 ## Prerequisites
 
 - HSM device or software HSM (SoftHSM2 for testing)

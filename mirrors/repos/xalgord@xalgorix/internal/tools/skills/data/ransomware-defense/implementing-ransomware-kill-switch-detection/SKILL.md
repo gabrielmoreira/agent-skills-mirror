@@ -37,6 +37,14 @@ nist_csf:
 
 **Do not use** kill switch vaccination as a primary defense. Not all ransomware families implement kill switches, and those that do may remove them in newer versions. This is a supplementary detection and prevention layer.
 
+## Common Misconfigurations & Verification
+
+- **Vaccination doesn't survive reboot:** named mutexes are per-session kernel objects that vanish on restart, so a one-time `CreateMutexW` leaves endpoints unprotected after the next boot. Re-apply at startup via a scheduled task / service running before user logon, and confirm the mutex exists after a reboot (re-create it and check for `ERROR_ALREADY_EXISTS` = 183).
+- **Wrong namespace or scope:** creating `Local\Name` when the sample uses `Global\Name` (or vice versa) provides zero protection. Match the exact namespace, name, and case from the sample, and create it in a context (SYSTEM/Global) the ransomware process will actually collide with.
+- **Kill-switch detection too slow to matter:** by the time a DNS lookup for the kill-switch domain or a mutex-create event reaches the SIEM and a human reacts, encryption is done (minutes). Treat these as auto-block/auto-isolate triggers, not ticket-queue alerts — wire the Sysmon Event 17/18 and DNS signals to immediate host isolation.
+- **Over-broad vaccination breaks apps:** generic mutex names can collide with legitimate software. Validate each vaccinated name against an inventory before fleet-wide rollout.
+- **Verification:** confirm Sysmon actually emits Event ID 17/18 for a test mutex creation; detonate a known kill-switched sample (e.g. WannaCry) in an isolated sandbox and confirm the pre-created mutex / sinkholed domain stops encryption; and confirm DNS monitoring fires on a controlled query to a known kill-switch domain.
+
 ## Prerequisites
 
 - Python 3.8+ with `ctypes` (Windows) for mutex creation and enumeration

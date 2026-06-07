@@ -41,6 +41,16 @@ Privilege escalation in Kubernetes occurs when a pod or container gains elevated
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **PSA in `audit`/`warn` mode does not block:** only `pod-security.kubernetes.io/enforce` rejects pods. A namespace labelled `audit=restricted`/`warn=restricted` without `enforce` lets a `privileged: true` pod schedule - the violation is merely logged.
+- **Gatekeeper constraint in `dryrun`:** the `K8sDangerousPriv` template enforces nothing while `enforcementAction: dryrun`; check `kubectl get constraints -o json | jq '.items[].spec.enforcementAction'`.
+- **`runAsUser: 0` via the image, not the spec:** a container whose Dockerfile `USER root` runs as root even when `securityContext.runAsUser` is unset, so spec-only `jq` checks for `runAsUser == 0` miss it - verify at runtime with `kubectl exec -- id`.
+- **`allowPrivilegeEscalation` defaults to true** when omitted; absence of the field is itself a finding.
+- **Falco `capset` rule is noisy and easy to mute**; the *dangerous capabilities* runtime rule depends on `container.cap_effective`, which can be empty under some runtimes.
+- **`automountServiceAccountToken`** left enabled allows token theft → API escalation that no securityContext rule catches.
+- **How to validate:** `kubectl apply` a pod with `privileged: true` and `SYS_ADMIN` into the target namespace and confirm it is **rejected** at admission (PSA/Gatekeeper) *and* that Falco emits the privilege-escalation alert if it does run.
+
 ## Prerequisites
 
 - Kubernetes cluster v1.25+ (Pod Security Admission support)

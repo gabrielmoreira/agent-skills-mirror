@@ -38,6 +38,16 @@ nist_csf:
 - When EDR or SIEM alerts trigger on related indicators
 - During periodic security assessments and purple team exercises
 
+## Detection Gaps & Validation
+
+- **AES roasting evades RC4-only rules.** The classic signal is 4769 with `TicketEncryptionType=0x17` (RC4) and `TicketOptions=0x40810000`, but modern Rubeus supports `/aes` to request AES (0x12/0x11) tickets that bypass any RC4-only detection. Also alert when an account that normally authenticates with AES suddenly requests RC4.
+- **Audit subcategory must be on.** No 4769 is produced unless "Audit Kerberos Service Ticket Operations" is enabled on DCs — verify with `auditpol /get /subcategory:"Kerberos Service Ticket Operations"`.
+- **Volume drowns the signal.** 4769 fires on every service access. Filter `ServiceName != krbtgt`, drop machine (`$`) accounts and known SPNs, then threshold on many *distinct* SPNs requested by one account in a short window.
+- **Targeted roasting hides under thresholds.** A single high-value SPN roast won't trip a count rule — keep a separate low-volume rule for RC4 requests against sensitive service accounts.
+- **AS-REP roasting is a different path:** hunt 4768 with `PreAuthType=0` (0x17) for accounts flagged DONT_REQ_PREAUTH.
+- **Validate the rule fires:** run `Rubeus.exe kerberoast` or Impacket `GetUserSPNs.py` against a lab SPN and confirm the 0x17 burst query returns it.
+- **Tune false positives:** legacy apps and older SQL Server SPNs legitimately use RC4. Allowlist those specific SPNs rather than ignoring RC4 entirely.
+
 ## Prerequisites
 
 - EDR platform with process and network telemetry (CrowdStrike, MDE, SentinelOne)

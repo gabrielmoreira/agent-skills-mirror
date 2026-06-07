@@ -45,6 +45,15 @@ OWASP Threat Dragon is an open-source threat modeling tool that enables security
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Common Misconfigurations & Verification
+
+- **Trust boundaries omitted:** a DFD with no dashed boundaries produces no meaningful threats — STRIDE per-element only fires where data crosses a trust level. Confirm every internet→app, app→DB, and user→admin transition has a boundary drawn, or the rule engine under-generates.
+- **Rule-engine output accepted verbatim:** Threat Dragon auto-suggests threats by element type but cannot see your auth or business logic. Triage every suggestion to Mitigated / Not Applicable / Open with a documented reason — mass "Not Applicable" is the most common way real threats are buried.
+- **Data flows unlabeled:** an arrow with no data description hides Information Disclosure/Tampering threats. Label each flow with what crosses it (PII, tokens, payment data).
+- **Privacy threats skipped:** STRIDE-only models miss Linkability/Identifiability — use the LINDDUN view for any system handling personal data under GDPR/HIPAA.
+- **Stale model:** a threat model not updated when architecture changes is worse than none. Store the JSON in version control beside the code and diff it on design changes.
+- **Verify coverage:** cross-check that every Process has all six STRIDE categories considered and every Open threat has an owner, priority, and mitigation. Re-open the generated PDF and confirm no element shows zero threats — an element with none usually means it was added after threat generation ran.
+
 ## Prerequisites
 
 - OWASP Threat Dragon desktop application or web instance

@@ -37,6 +37,15 @@ nist_csf:
 
 **Do not use** when applications require raw network-level access (e.g., UDP-based protocols not supported by IAP), for consumer-facing public applications, or when the organization lacks an identity provider with MFA capabilities.
 
+## Common Misconfigurations & Verification
+
+- **Origin reachable bypassing IAP:** BeyondCorp protects only traffic via the HTTPS load balancer / BeyondCorp connector. A backend with a public IP, or a VPC firewall allowing the app port from anywhere, lets clients skip IAP. Restrict ingress to the IAP source range `35.235.240.0/20` and strip public IPs from GCE/GKE nodes.
+- **IAM binding without an access-level condition:** granting `roles/iap.httpsResourceAccessor` to a group but omitting `--condition=...accessLevels/corporate-managed` verifies identity yet never checks device posture, so an unenrolled device passes. Confirm every binding carries the access-level expression.
+- **`allUsers`/`allAuthenticatedUsers` left on a backend:** instantly makes the app public; audit each service's IAM policy.
+- **Endpoint Verification collected but not enforced:** gathering posture without an access level that requires `ENCRYPTED`/`requireScreenlock` leaves the signals decorative.
+
+Verify: from off-network `curl http://<backend-ip>:<port>/` directly, it must be unreachable (only `35.235.240.0/20` permitted). Sign in from a device that fails the `corporate-managed` level and confirm `jsonPayload.decision="DENY"` / `status.code=16` in the `iap_tunnel` logs. Audit IAM for any `allUsers` binding.
+
 ## Prerequisites
 
 - Google Cloud organization with Cloud Identity or Google Workspace

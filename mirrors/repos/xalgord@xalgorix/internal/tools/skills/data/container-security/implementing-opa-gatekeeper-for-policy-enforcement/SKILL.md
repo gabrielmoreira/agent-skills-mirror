@@ -35,6 +35,15 @@ OPA Gatekeeper is a Kubernetes admission controller that enforces policies writt
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Constraint in `dryrun`/`warn`, not `deny`:** a `ConstraintTemplate` plus Constraint left at `enforcementAction: dryrun` audits but never blocks. Verify: `kubectl get constraints -o json | jq '.items[] | {name:.metadata.name, action:.spec.enforcementAction}'`.
+- **Template without a Constraint:** applying the `ConstraintTemplate` alone does nothing - you must also create the Constraint CR that instantiates it. Confirm both exist (`kubectl get constrainttemplates` and `kubectl get <kind>`).
+- **Webhook `failurePolicy: Ignore`:** when Gatekeeper pods are down, requests are admitted unchecked (fail-open). For security-critical constraints prefer `Fail`, but scope `namespaceSelector` to avoid locking out the control plane.
+- **Over-broad exemptions:** `excludedNamespaces` covering more than `kube-system`/`gatekeeper-system` quietly creates enforcement holes - review the `Config` CR.
+- **Audit lag / wrong Rego path:** `.status.violations` populates on the audit interval, so pre-existing violators aren't instant; and a Rego rule reading `input.review.object.spec.containers` misses `initContainers`/`ephemeralContainers`.
+- **Verify enforcement:** `kubectl get <constraintKind> <name> -o jsonpath='{.status.violations}'` for existing breaches, then `kubectl apply` a violating pod (e.g. `privileged: true`) and confirm it is **denied** with the constraint's message.
+
 ## Prerequisites
 
 - Kubernetes cluster v1.24+

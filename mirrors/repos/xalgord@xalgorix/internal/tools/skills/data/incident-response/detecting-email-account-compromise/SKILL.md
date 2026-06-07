@@ -40,6 +40,14 @@ Email account compromise (EAC) is a prevalent attack vector where adversaries ga
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **OAuth persistence outlives the password reset:** the most-missed BEC foothold is an illicit app consent grant, not an inbox rule. Resetting the password and revoking sessions does nothing to a refresh token. Pull `Consent to application` / `Add app role assignment` from the UAL and audit `/servicePrincipals` for apps with `Mail.ReadWrite` or `Mail.Send`.
+- **Forwarding rules hide in three places:** mailbox inbox rules (`New-InboxRule`/`Set-InboxRule`), transport rules, and the mailbox-level `ForwardingSMTPAddress`/`ForwardingAddress`. Attackers also set `DeleteMessage` rules that match "invoice"/"payment"/"wire" to hide replies. Enumerate all three, not just inbox rules.
+- **Cross-corroborate, don't trust one signal:** an "impossible travel" alert alone is noisy (VPNs, mobile roaming). Confirm a hit by tying the suspect sign-in to a non-interactive token, a legacy-auth protocol (IMAP/POP/SMTP AUTH, `python-requests`/`curl` UA), AND a follow-on action (rule creation, mass read, send). One without the others is a candidate, not a confirmation.
+- **FP tuning:** baseline each user's normal ASNs, clients, and forwarding to a corporate archive before flagging. Treat admin-set org-wide journaling and known marketing connectors as allowlist entries so they don't drown real external auto-forwards.
+- **Don't conclude clean until you've checked:** UAL retention may be shorter than dwell time — corroborate against Azure AD sign-in logs and message trace, and verify MFA method registration (`Update user`/`Register security info`) since attackers add their own authenticator to keep access after a reset.
+
 ## Prerequisites
 
 - Microsoft 365 with Unified Audit Logging enabled

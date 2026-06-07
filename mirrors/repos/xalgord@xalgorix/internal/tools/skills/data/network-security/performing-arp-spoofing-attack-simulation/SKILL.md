@@ -33,6 +33,15 @@ nist_csf:
 
 **Do not use** on production networks without explicit written authorization and a rollback plan, against networks carrying critical or life-safety traffic, or as a denial-of-service attack vector.
 
+## Most Often Missed & How to Confirm
+
+- **Bidirectional poisoning:** spoofing only the victim (not the gateway) yields half-duplex MITM and silent failure. Poison both directions (`arpspoof -t victim gw` AND `-t gw victim`) or use `ettercap -M arp:remote`.
+- **IP forwarding off = DoS, not MITM:** the #1 cause of a "failed" test is forgetting `sysctl -w net.ipv4.ip_forward=1`; without it you blackhole the victim instead of intercepting.
+- **DAI bypass attempts:** before concluding a switch is protected, test from a port with no DHCP-snooping binding, and try gratuitous-ARP vs ARP-reply (`op=2`) vs ARP-request poisoning — some DAI configs only validate replies.
+- **IPv6 neighbors:** an IPv4-only ARP test misses dual-stack hosts; pair with NDP spoofing (`parasite6`/`mitm6`) before declaring the segment safe.
+- **How to confirm a hit:** on the victim, `arp -a` must show the *attacker's* MAC bound to the gateway IP, AND you must see the victim's bidirectional traffic in `tcpdump -i eth0 host <victim>` (not just ARP replies leaving). A poisoned cache with no forwarded data means forwarding is broken, not that interception succeeded.
+- **Don't conclude "DAI blocks it"** until you've checked `show ip arp inspection statistics vlan X` for drops AND tried request-based poisoning, not only reply-based.
+
 ## Prerequisites
 
 - Written authorization specifying in-scope network segments for ARP spoofing simulation

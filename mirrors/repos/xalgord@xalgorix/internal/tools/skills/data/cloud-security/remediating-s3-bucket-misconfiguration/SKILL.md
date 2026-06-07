@@ -36,6 +36,16 @@ nist_csf:
 
 **Do not use** for Azure Blob Storage or GCP Cloud Storage misconfigurations, for S3 data classification (see implementing-cloud-dlp-policy), or for S3 access pattern analysis unrelated to security.
 
+## Common Misconfigurations & Verification
+
+- **Bucket-level Block Public Access without account-level:** a newly created bucket can still be made public. Verify both: `aws s3control get-public-access-block --account-id 123456789012` and `aws s3api get-public-access-block --bucket NAME`.
+- **`BucketOwnerEnforced` silently breaks ACL-dependent workflows** (S3 server-access-log delivery, CloudFront OAI, cross-account ACL grants). Confirm with `aws s3api get-bucket-ownership-controls` and test the downstream consumer before declaring success.
+- **`aws:kms` default encryption without KMS key-policy grants:** principals lacking `kms:Decrypt`/`kms:GenerateDataKey` on the CMK get `AccessDenied` on GetObject/PutObject. Verify the key policy and run a test `get-object`.
+- **`DenyUnencryptedUploads` keyed on `s3:x-amz-server-side-encryption`** blocks uploads that rely on bucket default encryption (the header isn't sent). Test `aws s3api put-object` without the SSE header.
+- **SCP exception ARN drift:** a `Deny` on `s3:PutBucketPublicAccessBlock` with a `PrincipalArn` exception locks out admins if the ARN (path, wildcards) doesn't match the real role.
+
+**Verify it actually works:** `aws s3api get-bucket-policy-status --bucket NAME` returns `IsPublic: false`; IAM Access Analyzer shows no external-access findings after a rescan; an anonymous `curl` of a known object returns `403`; and `aws cloudtrail` data events / server access logs confirm access is being captured. Don't trust "remediated" until all four hold.
+
 ## Prerequisites
 
 - AWS account with S3 administrative permissions (s3:*, s3-outposts:*)

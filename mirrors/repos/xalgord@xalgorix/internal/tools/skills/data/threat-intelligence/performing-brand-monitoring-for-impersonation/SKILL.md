@@ -35,6 +35,13 @@ Brand impersonation attacks exploit consumer trust through lookalike domains, fa
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+- **Permutation coverage gaps:** `dnstwist` default fuzzers catch typos and bitsquatting but miss IDN/homoglyph domains (Cyrillic `а`/`е`, punycode `xn--`) and the long tail of new gTLDs (`.app`, `.shop`, `.online`, `.zip`). Add `--tld` dictionaries and run a separate homoglyph/IDN pass; query CT logs (crt.sh, Certstream) directly since freshly registered lookalikes appear in CT hours before DNS resolves.
+- **Channels scanners skip:** brand abuse on social media, Telegram, and third-party app stores rarely shows in domain scans. A "registered but parked" lookalike is not benign - check for MX records (email-capable), a live login page, and favicon/`ssdeep` similarity to your real site.
+- **How to confirm a hit:** before opening a takedown, corroborate with a second source - resolve the domain, screenshot the live page, check the Google Safe Browsing / VirusTotal verdict, and compare the WHOIS registration date. A high `ssdeep_score` plus an active credential-harvesting form plus a recent registration is a confirmed impersonation; visual similarity alone is not.
+- **Avoid false positives:** allowlist your own marketing/partner domains, defensive registrations, and legitimate resellers before alerting, or analysts drown in noise on assets you own.
+
 ## Prerequisites
 
 - Python 3.9+ with `dnstwist`, `requests`, `beautifulsoup4`, `Levenshtein`, `tweepy` libraries

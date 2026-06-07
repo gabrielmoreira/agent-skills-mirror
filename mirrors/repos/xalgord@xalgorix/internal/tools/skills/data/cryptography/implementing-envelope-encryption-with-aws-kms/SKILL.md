@@ -33,6 +33,15 @@ Envelope encryption is a strategy where data is encrypted with a data encryption
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **KMS key policy / IAM too broad:** granting `kms:Decrypt` on `Resource: *` or to a wide principal lets any compromised role decrypt every DEK. Scope policies to specific key ARNs and principals, and prefer time-bound, constrained **grants** (`CreateGrant` with `Constraints`) over standing permissions.
+- **No encryption context:** without an `EncryptionContext`, a ciphertext+encrypted-DEK can be replayed against another object. Bind a context (e.g. `{"table":"users","id":"123"}`) on `GenerateDataKey`/`Decrypt` and verify decryption **fails** when the context does not match.
+- **Plaintext DEK persisted or logged:** store ONLY the encrypted DEK; wipe the plaintext DEK from memory right after local AES-256-GCM encryption. Never log it.
+- **DEK encrypting data without authentication:** use AES-256-GCM for the local payload, not ECB/CBC-without-MAC.
+- **No CloudTrail / no key rotation:** enable CloudTrail on all KMS calls and enable automatic CMK rotation; re-wrap DEKs on rotation.
+- **Verification:** confirm `GenerateDataKey` returns both `Plaintext` and `CiphertextBlob`; round-trip decrypt recovers data; a **wrong/altered encryption context is REJECTED**; a tampered local ciphertext fails the GCM tag; and a principal lacking the key grant gets `AccessDenied`.
+
 ## Prerequisites
 
 - Familiarity with cryptography concepts and tools

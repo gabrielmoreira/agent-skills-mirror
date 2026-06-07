@@ -44,6 +44,15 @@ Pass-the-Ticket (PtT) is a lateral movement technique that uses stolen Kerberos 
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Confusing ticket formats.** Mimikatz exports `.kirbi`; Impacket/Linux tools want `.ccache`. Convert with `ticketConverter.py` before injecting, or the ptt silently does nothing.
+- **Not purging existing tickets first.** Stale TGTs in the session cause auth to use the wrong identity. Run `klist purge` / Rubeus `purge` before injecting.
+- **Grabbing a TGS when you need a TGT.** A service ticket only opens one service; for broad lateral movement extract the TGT (Rubeus `tgtdeleg` or `sekurlsa::tickets /export`).
+- **Ignoring ticket lifetime.** Injecting an expired or near-expired ticket fails; check the End/Renew time.
+- **Reusing one ticket across many hosts**, which lights up Event 4769 from anomalous source IPs.
+- **How to confirm:** after injection, `klist` (or Rubeus `klist`) shows the stolen ticket loaded with a valid endtime, and an action as the impersonated user succeeds — e.g. `dir \\dc01\c$` returns, or `psexec.py -k -no-pass` with `KRB5CCNAME` set lands a shell. Don't conclude PtT failed until you've verified the format conversion, purged the old cache, and confirmed the ticket isn't expired.
+
 ## Prerequisites
 
 - Familiarity with red teaming concepts and tools

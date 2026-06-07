@@ -37,6 +37,14 @@ Use this skill when:
 
 **Do not use** this skill for proprietary vendor feed formats (Recorded Future JSON, CrowdStrike IOC lists) that require vendor-specific parsers rather than STIX processing.
 
+## Detection Gaps & Validation
+
+- **Confidence is optional and unscaled:** STIX 2.1 `confidence` (0-100) is frequently absent, and producers map it differently (some use Admiralty/None-Low-Med-High bands, some omit it). Do not treat missing/low confidence as "ignore" or a high value as "block" - normalize each feed's scale on ingest and default missing values conservatively rather than to 100.
+- **Dedup and correlation gaps:** the same indicator arrives from CISA AIS, an ISAC, and a commercial feed with different IDs and markings; without dedup by pattern value you inflate counts and may block on a single low-quality source. Key on the observable, not the STIX `id`.
+- **Silent data loss:** missing pagination (`next`/`as_pages`) and clock skew on `added_after` drop objects at interval boundaries - use UTC with a 5-minute overlap and reconcile object counts per poll to detect gaps.
+- **Expired/revoked indicators:** honor `valid_until` and `revoked: true` - pipelines that ingest the pattern but ignore these fields keep blocking on retired infrastructure. Filter both before routing to SIEM/firewall.
+- **How to confirm a bundle is usable:** check `spec_version` (2.0 vs 2.1 schemas differ), confirm required indicator fields and pattern syntax parse, and resolve relationship refs (`source_ref`/`target_ref`) actually exist in the bundle before reconstructing campaign context.
+
 ## Prerequisites
 
 - Python 3.9+ with `stix2` library (pip install stix2) and `taxii2-client` library

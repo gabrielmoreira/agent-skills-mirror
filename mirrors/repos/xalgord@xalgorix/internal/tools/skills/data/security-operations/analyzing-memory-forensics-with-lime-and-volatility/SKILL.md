@@ -34,6 +34,14 @@ nist_csf:
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Acquisition smear is the #1 false negative:** LiME captures memory live, so page tables and process lists shift mid-dump on a busy host. A torn capture makes `linux.pslist` walk a broken `task_struct` list and silently drop processes. Prefer `format=lime` (timestamped, structured) over `format=raw`, capture with the box as quiet as possible, and hash the image immediately.
+- **Profile/symbol mismatch yields empty output:** Volatility 3 needs an ISF symbol table matching the exact kernel (`uname -r` + build). A wrong banner makes every Linux plugin return nothing — that is a tooling failure, not a clean host. Verify with `vol3 -f mem.lime banners.Banners` before concluding negative.
+- **`pslist` vs `psscan`:** rootkits unlink `task_struct` from the active list. Always diff `linux.pslist` against `linux.psscan` (pool/scan-based) — a process in psscan but not pslist is a hidden-process indicator.
+- **LKM rootkits hook syscalls:** `linux.lsmod` only shows registered modules; a module that unregisters itself won't appear. Corroborate with `linux.check_syscall`/`linux.check_afinfo` for hooked syscall and netfilter pointers, and `linux.malfind` for injected/anonymous executable VMAs.
+- **Validate the workflow fires:** run a benign test (e.g., a `nc` listener + a deleted-but-running binary) on the lab host, capture, and confirm `linux.sockstat` shows the socket and `linux.bash` recovers the command history before trusting results on evidence.
+
 ## Prerequisites
 
 - Familiarity with security operations concepts and tools

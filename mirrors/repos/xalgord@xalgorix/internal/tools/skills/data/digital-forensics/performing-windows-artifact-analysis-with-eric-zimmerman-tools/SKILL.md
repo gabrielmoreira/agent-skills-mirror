@@ -42,6 +42,16 @@ Eric Zimmerman's EZ Tools suite is a collection of open-source forensic utilitie
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+EZ Tools parse what is present in the artifact; they do not tell you what was rolled, disabled, or never recorded. Account for these:
+
+- **Artifacts are finite and get pruned.** Prefetch holds only the last ~1024 executions (and is off by default on Servers/SSDs in some configs), so PECmd showing no entry for a binary is not proof it never ran. Amcache/`SOFTWARE`, ShimCache (AppCompatCache), and BAM/DAM give independent execution evidence — correlate all of them rather than trusting one. EVTX channels roll by size; the incident may predate the oldest `.evtx`.
+- **Timestomping defeats the easy timestamps.** MFTECmd surfaces `$STANDARD_INFORMATION` times that malware backdates; always compare `Created0x10` vs `Created0x30` ($SI vs $FN) — when $SI predates $FN, suspect manipulation. $FN times resist user-mode stomping but aren't immutable. Corroborate file creation with the USN Journal ($J), which records the rename/create operations themselves.
+- **Deleted and overwritten records.** A deleted EVTX, a cleared log (Event ID 1102/104), or an `InUse=false` MFT record means EvtxECmd/MFTECmd will show gaps, not activity. Recover from Volume Shadow Copies and carve unallocated space before scoping; flag clears explicitly as anti-forensics.
+- **Validate by cross-referencing tools.** A real execution should line up across PECmd (Prefetch), Amcache (hash + path via RECmd), MFT ($MFT creation), and Security 4688/Sysmon 1. A claim supported by only one artifact is a lead, not a conclusion. Hash-match suspect binaries before labeling them malicious.
+- **Interpretation false positives.** Prefetch/ShimCache prove a program existed/was referenced — ShimCache entries in particular do NOT prove execution, only presence. LNK and JumpList entries can be created by automated/recent-docs activity, not deliberate opens. Shellbags show a folder was browsed at some point, not when or by whom. Confirm operator intent with surrounding artifacts and timezone-normalized timelines.
+
 ## Prerequisites
 
 - Windows 10/11 or Windows Server 2016+ analysis workstation

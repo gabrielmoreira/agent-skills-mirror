@@ -21,6 +21,9 @@
 - [ ] Traces and evals are defined before launch.
 - [ ] First rollout is limited, monitored, or shadow-mode.
 
+## Coding-agent MVP checklist
+
+Use the checklist in [coding-agents.md](coding-agents.md) for repository-facing coding agents. Keep this file as the general harness checklist index.
 
 ## Design checklist
 

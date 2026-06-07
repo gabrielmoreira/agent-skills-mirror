@@ -47,6 +47,15 @@ A pretext call (vishing) is a social engineering technique where an attacker imp
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Calling without a verifiable callback story.** When the target offers to call back, you need a real-sounding internal number/ticket ID prepared or the pretext collapses. Stage this before dialing.
+- **Mismatched caller ID and pretext.** Spoofing an external number while claiming to be internal IT is an instant tell. Align the spoofed CLID with the claimed department.
+- **Skipping OSINT-grounded specifics.** Real dept names, the actual VPN vendor, and a current event (migration, merger) are what make the pretext land — generic scripts fail.
+- **No graceful exit.** Operators fail to disengage cleanly when pushed, leaving suspicion that gets the whole campaign reported.
+- **Not recording verification behavior**, which is the most valuable awareness metric.
+- **How to confirm a hit:** the concrete success signal is the target disclosing the requested item (credential, MFA code, employee ID) or performing the requested action (installing remote-access tooling) on the recorded line. Log per call: info obtained, whether verification was attempted, and whether it was reported to security. Don't score a call as a "pass" for the defender until you've confirmed the target actually verified your identity or reported the call — silence is not a pass.
+
 ## Prerequisites
 
 - Written authorization specifying social engineering scope and boundaries

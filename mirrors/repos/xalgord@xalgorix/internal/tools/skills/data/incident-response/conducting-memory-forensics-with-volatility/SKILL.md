@@ -41,6 +41,15 @@ nist_csf:
 
 **Do not use** for analyzing disk images or file system artifacts; use disk forensics tools (Autopsy, FTK) for those tasks.
 
+## Detection Gaps & Validation
+
+- **Profile / symbol-table mismatch is the #1 failure:** Volatility 3 auto-resolves symbols, but a missing or wrong PDB for the exact build (e.g. Windows 10 22H2 19045.xxxx) makes `windows.info` fail or `pslist` return garbage/empty. Confirm `windows.info` reports the correct build and DTB *before* trusting any plugin output — empty results often mean bad symbols, not a clean host.
+- **`pslist` vs `psscan` blind spot:** `pslist` walks the linked list a rootkit can unlink from. Always diff `psscan` (pool-tag scan for `EPROCESS`) against `pslist` — a process in `psscan` only is hidden. Likewise `netscan` may show connections the live host's `netstat` hid.
+- **malfind false negatives/positives:** legitimate JIT engines (.NET, browsers) allocate `PAGE_EXECUTE_READWRITE`, and modern injection (module stomping, thread-stack spoofing) won't always trip malfind. Corroborate with `windows.dlllist`/`ldrmodules` (unlinked DLLs), `windows.malfind` hexdump (MZ header), and a YARA scan.
+- **Acquisition smearing:** a dump taken on a live host is non-atomic; structures shift mid-capture, so a single missing artifact isn't proof of absence.
+
+**Validate every finding:** hash the image and confirm it parses (`windows.info`) before analysis; cross-check an injected-process hit against `netscan` (its C2 connection) and `cmdline` (how it launched); dump the suspect region (`windows.memmap --dump`) and re-scan with YARA/CobaltStrikeParser to confirm the family rather than inferring from the VAD protection flag alone.
+
 ## Prerequisites
 
 - Memory acquisition tool deployed or available: WinPmem, Magnet RAM Capture, DumpIt, or AVML (Linux)

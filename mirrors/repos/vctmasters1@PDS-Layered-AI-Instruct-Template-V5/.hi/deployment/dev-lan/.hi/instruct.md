@@ -3,7 +3,7 @@
 **Scope**: Authoritative for all work when `DEPLOY_MODE=dev-lan`
 **Last Updated**: 2026-06-03
 
-> **Authority**: DEEP — when this mode is active, this file is authoritative over the parent `.hi/instruct.md`. See [`.github/copilot-instructions.md`](../../../../.github/copilot-instructions.md) for the depth-priority hierarchy and [`../README.md`](../../README.md) for the deployment-mode convention.
+> **Authority**: DEEP — when this mode is active, this file is authoritative over the parent `.ai/instruct.md`. See [`.github/copilot-instructions.md`](../../../.github/copilot-instructions.md) for the depth-priority hierarchy and [`../README.md`](../../README.md) for the deployment-mode convention.
 
 ---
 
@@ -48,7 +48,7 @@
 - [ ] Docker Desktop running
 - [ ] Workstation reachable on the LAN at `[LAN_IP_OR_HOSTNAME]`
 - [ ] Ports 80 and 443 free on the workstation
-- [ ] `.env` file present per [`.hi/credentials.md`](../../../credentials.md)
+- [ ] `.env` file present per [`.ai/credentials.md`](../../../.ai/credentials.md)
 - [ ] Firewall allows inbound TCP 80 and 443
 
 ---
@@ -121,7 +121,7 @@ For limited external access without setting up DDNS:
 1. Forward router external 443 → workstation `[LAN_IP]:443`
 2. Share `https://<your-public-ip>` (the cert warning still appears).
 
-For proper public deployment, switch to [`prod-self-serve`](../../prod-self-serve/.hi/instruct.md) (DDNS + Let's Encrypt) or [`prod-railway`](../../prod-railway/.hi/instruct.md) (managed cloud).
+For proper public deployment, switch to [`prod-self-serve`](../../prod-self-serve/.ai/instruct.md) (DDNS + Let's Encrypt) or [`prod-railway`](../../prod-railway/.ai/instruct.md) (managed cloud).
 
 ---
 
@@ -151,7 +151,7 @@ docker compose exec db [DB_CLIENT_COMMAND]
 
 ```bash
 docker compose down              # data persists
-docker compose down -v           # ⚠️ removes volumes (database wiped) — see .hi/maintenance.md
+docker compose down -v           # ⚠️ removes volumes (database wiped) — see .ai/maintenance.md
 ```
 
 ---
@@ -202,9 +202,9 @@ netstat -ano | findstr :443
 
 ## Next Steps
 
-- Back to local-only → [`dev-local`](../../dev-local/.hi/instruct.md)
-- Public internet (managed) → [`prod-railway`](../../prod-railway/.hi/instruct.md)
-- Public internet (self-hosted, real cert) → [`prod-self-serve`](../../prod-self-serve/.hi/instruct.md)
+- Back to local-only → [`dev-local`](../../dev-local/.ai/instruct.md)
+- Public internet (managed) → [`prod-railway`](../../prod-railway/.ai/instruct.md)
+- Public internet (self-hosted, real cert) → [`prod-self-serve`](../../prod-self-serve/.ai/instruct.md)
 
 ---
 

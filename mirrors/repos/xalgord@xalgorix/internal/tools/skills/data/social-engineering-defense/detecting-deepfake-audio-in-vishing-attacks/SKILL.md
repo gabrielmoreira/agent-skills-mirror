@@ -54,6 +54,14 @@ nist_csf:
 
 **Do not use** for text-based phishing (email/SMS); use email header analysis or URL detonation tools instead.
 
+## Detection Gaps & Validation
+
+- **Liveness and voiceprint spoofing:** speaker-verification/voiceprint systems can be fooled by high-quality clones, and a passing voiceprint match is not proof of authenticity. Never treat "the voice matches" as identity confirmation for high-risk actions like wire transfers.
+- **Codec masking:** phone-network compression (G.711, AMR, Opus over VoIP) attenuates the high-frequency artifacts the detector relies on. A clean-sounding low-bitrate call can hide vocoder banding — analyze at the highest available fidelity and account for the codec when scoring.
+- **Spectrogram artifacts to look for:** an energy cutoff at the vocoder ceiling (~7-8 kHz), periodic banding at fixed intervals in the mel spectrogram, abnormally low pitch jitter/shimmer, and missing formant transitions at consonant-vowel boundaries.
+- **False negatives on strong clones:** fine-tuned models (VALL-E, ElevenLabs) trained on 30+ minutes of target audio can evade basic MFCC/spectral features; short clips (<3s) produce unreliable statistics.
+- **How to confirm:** the authoritative check is out-of-band verification — call the purported speaker back on a known-good number, or use a pre-agreed challenge phrase/code word, before acting on the request. Corroborate the ML verdict with spectrogram review and, where available, a genuine reference corpus for the individual. A confidence score alone is not sufficient grounds to authorize a transaction.
+
 ## Prerequisites
 
 - Python 3.9+ with librosa, numpy, scikit-learn, and scipy installed

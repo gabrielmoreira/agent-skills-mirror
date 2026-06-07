@@ -36,6 +36,15 @@ nist_csf:
 
 **Do not use** against IoT devices without written authorization, for modifying firmware on devices you do not own, or against medical devices or safety-critical systems without specific medical device testing authorization and safety protocols.
 
+## Most Often Missed & How to Confirm
+
+- **Hardware debug interfaces before the web UI** — UART (often a no-auth root console at 115200) and JTAG/SWD frequently give root immediately. Testers who only fuzz the web interface miss the easiest full compromise. Probe headers/test points with a multimeter or JTAGulator.
+- **Firmware secrets shared across the whole fleet** — extract from SPI/eMMC (`flashrom`) or the vendor update, then `binwalk -e` and grep for hardcoded creds, private keys, API tokens, and `/etc/shadow` hashes. One model-wide key compromises every deployed unit.
+- **The full ecosystem, not just the device** — the cloud API (IDOR/auth-bypass on device-to-cloud calls) and the companion mobile app (hardcoded endpoints/keys) are often weaker than the device itself.
+- **All radios and protocols** — BLE (static pairing, plaintext characteristics), Zigbee/Z-Wave (replay, weak key exchange), and unauthenticated MQTT/CoAP/ONVIF/RTSP, plus unencrypted device traffic.
+- **Network blast radius** — prove a compromised device can pivot to the corporate/OT network; segmentation failure is usually the real enterprise risk.
+- **How to confirm**: capture concrete proof — a serial-console root prompt photo + `id` output, the extracted firmware path with the cracked credential, a Burp capture of a cloud-API IDOR returning another user's data, or a sniffed BLE/Zigbee packet. Don't conclude the device is hardened until you have checked UART/JTAG and dumped+analyzed the firmware, not just the running web UI; don't conclude it's safe to deploy until you've tested whether it can reach the corporate network.
+
 ## Prerequisites
 
 - Physical access to the target IoT device(s) for hardware analysis and testing

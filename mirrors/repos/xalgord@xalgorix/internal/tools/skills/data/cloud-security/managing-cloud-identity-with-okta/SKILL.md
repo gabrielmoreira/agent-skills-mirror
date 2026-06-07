@@ -35,6 +35,16 @@ nist_csf:
 
 **Do not use** for cloud-native identity management without external IdP requirements (use AWS IAM Identity Center or Azure AD natively), for application-level authorization logic, or for secrets management (see implementing-secrets-management-with-vault).
 
+## Common Misconfigurations & Verification
+
+- **Phishable factors left enabled alongside FastPass:** if SMS, Voice, or push without number challenge remain active, an attacker downgrades to them. In Security > Authenticators confirm SMS/Voice are disabled, and that the authentication policy rule uses the "Phishing resistant" possession constraint - not "Any 1 factor type".
+- **SAML role attribute mismapping:** the `https://aws.amazon.com/SAML/Attributes/Role` claim driven by `appuser.awsRoles` can hand users more IAM roles than intended. Decode the SAML assertion (SAML-tracer) and confirm the Role values match only the roles that user should assume.
+- **SCIM deprovisioning leaves backdoors:** Okta deactivation terminates SSO sessions but does not remove direct IAM users, access keys, or service accounts created outside federation. After offboarding, pull the AWS IAM credential report and check for any principal still active for that person.
+- **ThreatInsight in audit-only mode:** detection without enforcement still lets credential stuffing through. Verify ThreatInsight is set to "Log and enforce" and that a block actually appears in the System Log (`security.threat.detected`).
+- **Missing default-deny in authentication policies:** a policy with no catch-all rule falls back to allowing access. Confirm each app's policy ends with an explicit deny/last rule and test with a user who matches no earlier rule.
+- **Session and re-auth limits not enforced:** confirm admin-role policies set short session lifetimes and re-auth windows, and validate by leaving a session idle past the window - it should re-challenge.
+- **Don't sign off until** phishable factors are gone, the AWS credential report shows zero Okta-unmanaged active principals for departed users, and a simulated credential-stuffing burst is blocked, not just logged.
+
 ## Prerequisites
 
 - Okta organization with admin console access and appropriate license tier (Workforce Identity)

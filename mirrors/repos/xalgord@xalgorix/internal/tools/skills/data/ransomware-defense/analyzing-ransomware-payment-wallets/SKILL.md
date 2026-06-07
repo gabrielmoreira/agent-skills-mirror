@@ -37,6 +37,14 @@ nist_csf:
 
 **Do not use** this skill for live payment interception or to interact directly with ransomware operators. All analysis should be passive and read-only against public blockchain data.
 
+## Detection Gaps & Validation
+
+- **Mixers and CoinJoin break the trail:** funds routed through Wasabi/Samourai/ChipMixer-style CoinJoin or a tumbler defeat the common-input-ownership heuristic. A clean "dead end" at a mixer deposit is not proof of an endpoint, it is a tracing gap. Flag it explicitly rather than concluding the funds vanished.
+- **Chain-hopping / cross-chain swaps:** BTC swapped to Monero (untraceable) or bridged via a cross-chain DEX (THORChain, atomic swaps) will not show up in a single-chain explorer. Always check for outputs to known bridge/swap deposit addresses, not just exchange wallets.
+- **Peel chains evade naive tracing:** a 12+ hop peel chain with diminishing outputs looks like noise; follow the largest output at each hop, not the first.
+- **Change-address misattribution:** the common-input-ownership heuristic over-clusters when CoinJoin is involved, producing false "related wallet" links. Validate each cluster against a second source (OXT, WalletExplorer, Chainalysis) before asserting attribution.
+- **How to validate:** confirm the address format/checksum before querying; reconcile total_received against the ransom-note demand and known victim payment timestamps; cross-check every flagged endpoint against the OFAC SDN list. Treat a single-source exchange attribution as a lead, not a finding.
+
 ## Prerequisites
 
 - Python 3.8+ with `requests`, `json`, and `hashlib` libraries

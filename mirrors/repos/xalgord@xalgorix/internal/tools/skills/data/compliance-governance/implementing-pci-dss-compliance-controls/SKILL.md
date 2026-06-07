@@ -22,6 +22,26 @@ PCI DSS 4.0.1 establishes 12 requirements across 6 control objectives for organi
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+PCI assessments most often break on scope and segmentation, where a control is
+"documented" but not technically enforced across the real CDE:
+
+- **Segmentation assumed, not proven (Req 1):** the network diagram shows the
+  CDE isolated, but flat VLANs or permissive firewall rules let out-of-scope
+  hosts reach it. Verify with an actual segmentation penetration test (Req
+  11.4.5) firing packets from the corporate LAN into the CDE, not by reading
+  the diagram.
+- **Prohibited data stored after authorization (Req 3):** CVV/full track data
+  lingers in logs, debug dumps, or DB columns. Run data-discovery scans across
+  the CDE and adjacent stores to confirm.
+- **MFA gap (Req 8.4.2):** MFA enforced for admins but not for all CDE access;
+  test a non-admin account logging into a CDE system.
+- **Cardholder data transmission (Req 4):** TLS policy set but weak ciphers or
+  TLS 1.0/1.1 still negotiable; verify with an actual handshake scan.
+- **Scope creep into cloud/containers:** ASV scans and the CDE inventory omit
+  ephemeral container hosts. Reconcile the inventory against running workloads.
+
 ## Prerequisites
 - Understanding of payment card processing flows and cardholder data environment (CDE)
 - Knowledge of network segmentation and security architecture

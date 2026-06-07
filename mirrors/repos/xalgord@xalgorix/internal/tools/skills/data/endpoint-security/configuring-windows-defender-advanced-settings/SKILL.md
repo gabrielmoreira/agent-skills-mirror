@@ -38,6 +38,14 @@ Use this skill when:
 
 **Do not use** this skill for third-party EDR deployment (CrowdStrike, SentinelOne) or for Microsoft Defender for Cloud (Azure workload protection).
 
+## Common Misconfigurations & Verification
+
+- **ASR rules left in Audit (2) instead of Block (1):** `Get-MpPreference | Select AttackSurfaceReductionRules_Ids, AttackSurfaceReductionRules_Actions` — an action of `2` (audit) or `6` (warn) logs Event ID 1122 but never blocks. The LSASS-theft rule `9E6C4E1F-7D60-472F-BA1A-A39EF669E4B2` and the Office child-process rule `D4F940AB-401B-4EFC-AADC-AD5F3C50688A` are the ones most often stuck in audit.
+- **Exclusions that gut coverage:** broad `Get-MpPreference | Select Exclusion*` entries (e.g. `C:\`, `*.exe`, or whole user profiles) silently exempt malware paths. Scope exclusions to specific signed binaries.
+- **Tamper Protection off:** without it, `Set-MpPreference -DisableRealtimeMonitoring $true` succeeds and quietly disables protection. Confirm `Get-MpComputerStatus | Select IsTamperProtected` returns `True`.
+- **Controlled Folder Access / Network Protection stuck in AuditMode:** verify `EnableControlledFolderAccess` and `EnableNetworkProtection` equal `1` (Enabled), not `2` (Audit).
+- **Verify with an atomic test:** run Atomic Red Team T1003.001 (LSASS dump via comsvcs/procdump) or T1566 (Office spawns cmd) and confirm Event ID 1121 (block) — not just 1122 (audit) — appears in `Microsoft-Windows-Windows Defender/Operational`, and an `AsrLsassCredentialTheftBlocked` DeviceEvents row lands in Advanced Hunting.
+
 ## Prerequisites
 
 - Windows 10/11 Enterprise with Microsoft Defender Antivirus enabled

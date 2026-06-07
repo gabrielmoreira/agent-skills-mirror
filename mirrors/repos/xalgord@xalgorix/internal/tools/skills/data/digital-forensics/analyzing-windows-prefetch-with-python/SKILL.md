@@ -38,6 +38,15 @@ Windows Prefetch files (.pf) record application execution data including executa
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Prefetch can be disabled or absent.** It is off by default on Windows Server, and `EnablePrefetcher` (HKLM\SYSTEM\...\Memory Management\PrefetchParameters) may be set to 0 by hardening or by an attacker. No `.pf` does not mean no execution — confirm the setting before concluding.
+- **Run-time history is shallow.** Windows 8.1/10/11 store only the **last 8** execution timestamps; Windows 7 stores **one**. Earlier runs are lost. The "first executed" estimate is the `.pf` creation time minus ~10 seconds, not an exact start.
+- **Renamed/masquerading binaries:** the hash in `EXECUTABLE-HASH.pf` is derived from the full path, so the *same* binary run from two paths yields two different `.pf` files — and a renamed malware keeps its real loaded-DLL fingerprint. Compare referenced DLLs/directories, not just the name.
+- **Anti-forensics that defeat this analysis:** deletion of `C:\Windows\Prefetch\*.pf`, disabling the Prefetcher, and `.pf` timestomping. Carve deleted `.pf` (header `MAM\x04` / `SCCA`) from unallocated space and VSS.
+- **Validate / cross-corroborate:** confirm execution against Amcache, ShimCache/AppCompatCache, SRUM `SRUDB.dat` (app usage + bytes), and Security.evtx EID 4688. The volume serial in the `.pf` should match the system under analysis.
+- **Interpretation false positives:** a high run count on `svchost.exe`/`explorer.exe` is normal; flag on *path*, *first-seen during incident window*, and *loaded-resource anomalies*, never run count alone.
+
 ## Prerequisites
 
 - Python 3.9+ with `windowsprefetch` library (pip install windowsprefetch)

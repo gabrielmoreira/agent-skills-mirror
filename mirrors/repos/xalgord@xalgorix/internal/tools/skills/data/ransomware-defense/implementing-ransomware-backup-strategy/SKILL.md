@@ -47,6 +47,14 @@ nist_csf:
 
 **Do not use** as a substitute for endpoint protection, network segmentation, or incident response planning. Backups are a last line of defense, not a primary prevention control.
 
+## Common Misconfigurations & Verification
+
+- **"Immutable" copy that isn't:** the most common failure is a copy labeled immutable that an admin can still delete — S3 Object Lock left in `GOVERNANCE` mode, a Veeam Hardened Repo where the OS account retains delete rights, or `chattr +i` on a filesystem the backup service can `chattr -i`. Verify by attempting a delete with the backup service account and confirming it is denied for the full retention window.
+- **Immutability window shorter than dwell time:** attackers sit in the network ~21 days on average; a 7- or 14-day lock lets them wait it out, then encrypt. Set immutable retention to at least 30 days, longer for Tier 1.
+- **Backup infra joined to the production domain:** if backup admin accounts live in production AD, DCSync/Kerberoasting hands the attacker the keys to delete every backup. Confirm backup servers are domain-isolated with separate local accounts + hardware MFA, RDP disabled, and no SMB path from production to the repo.
+- **3-2-1 unverified / single media:** "offsite" that is actually the same cloud account/region, or no second media type, breaks the rule. Confirm 3 copies, 2 media, 1 offsite, 1 immutable explicitly.
+- **Verification:** run automated restore tests (SureBackup or equivalent) that boot the VM and check app health, not just file restore; test a FULL dependency-ordered stack recovery (AD→DB→app) against the documented RTO; and confirm the backup server's own config/encryption keys are backed up separately so the repo is recoverable.
+
 ## Prerequisites
 
 - Inventory of critical systems, applications, and data classified by business impact (Tier 1/2/3)

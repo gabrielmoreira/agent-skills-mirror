@@ -40,6 +40,15 @@ nist_csf:
 - When preparing migration roadmaps aligned with NIST IR 8547 deprecation timelines
 - When configuring oqs-provider with OpenSSL 3.x for post-quantum algorithm support
 
+## Common Misconfigurations & Verification
+
+- **PQC-only instead of hybrid:** deploying ML-KEM alone (not `X25519MLKEM768`) during the transition removes the classical safety net if the lattice scheme is later broken. Always negotiate a hybrid group; verify with `openssl s_client -groups X25519MLKEM768 -connect host:443` that the negotiated group is the hybrid, not a fallback to `x25519`.
+- **Silent downgrade to classical:** a server that advertises hybrid but selects ECDH for most clients still leaves traffic quantum-vulnerable. Confirm the `ServerHello` `selected_group` is the hybrid and that classical-only fallback is intentional, not accidental.
+- **Inventory blind spots:** scans that cover TLS but miss code-signing keys, SSH, S/MIME, VPN/IPsec, embedded firmware, and HSM/KMS-held keys. "Harvest now, decrypt later" makes long-lived data the top migration priority — confirm those channels are in the inventory.
+- **Wrong security level / non-FIPS params:** using ML-KEM-512 where Level 3 (ML-KEM-768) is required, or a pre-standard "Kyber" build instead of FIPS-203 ML-KEM. Pin standardized parameter sets.
+- **Capacity not planned:** larger ML-KEM/ML-DSA keys and signatures can exceed MTU/record/cert-store limits; benchmark handshake cost under load.
+- **Verification:** assert all quantum-vulnerable algos (RSA, ECDH, ECDSA, DH, DSA) are enumerated; ML-KEM encapsulate→decapsulate yields matching 32-byte secrets; an **ML-DSA signature over a tampered message is REJECTED**; CA/HSM/KMS PQC support is confirmed before declaring readiness.
+
 ## Prerequisites
 
 - Python 3.8+ with `cryptography`, `requests`, `pyOpenSSL` libraries

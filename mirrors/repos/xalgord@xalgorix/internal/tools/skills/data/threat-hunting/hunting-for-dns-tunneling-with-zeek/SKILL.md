@@ -38,6 +38,14 @@ nist_csf:
 - During investigation of suspected data theft where no HTTP/S exfiltration is found
 - When monitoring for tools like iodine, dnscat2, DNSExfiltrator, or DNS-over-HTTPS tunneling
 
+## Detection Gaps & Validation
+
+- **Low-and-slow tunnels evade volume/length thresholds.** Padding and jitter keep queries under the 50-char length and 100/hr volume thresholds; rate-based rules miss them. Lean on per-domain unique-subdomain cardinality and qtype skew over long windows instead.
+- **DoH/DoT bypasses `dns.log` entirely.** Encrypted DNS to 8.8.8.8/1.1.1.1 over 443 never appears in Zeek `dns.log` — pivot to `ssl.log` JA3 fingerprints and proxy logs for these resolvers.
+- **Dictionary/word-encoded A-record tunnels** stay below the Shannon-entropy >3.5 bits/char threshold; entropy alone is not sufficient.
+- **Validate the hunt fires:** run `iodine`, `dnscat2`, or `DNSExfiltrator` against a lab domain and confirm Zeek `dns.log` (`query`, `qtype`, `query` length) plus `rita show-dns-tunneling` flag it.
+- **FP tuning:** legitimate high-entropy/long subdomains from CDNs, AV/EDR telemetry, and DGA-lookalike SaaS. Whitelist known parents and inspect `qtype` distribution (excessive TXT/NULL/CNAME is the stronger signal than A).
+
 ## Prerequisites
 
 - Zeek deployed on network tap or SPAN port capturing DNS traffic

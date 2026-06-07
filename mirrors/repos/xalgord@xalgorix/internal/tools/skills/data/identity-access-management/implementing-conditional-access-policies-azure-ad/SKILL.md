@@ -34,6 +34,15 @@ Configure Microsoft Entra ID (Azure AD) Conditional Access policies for zero tru
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Policy left in report-only:** the policy is authored and looks active but `state=enabledForReportingButNotEnforced`, so it logs would-be blocks and enforces nothing. Verify `Get-MgIdentityConditionalAccessPolicy` shows `state=enabled` and check the sign-in log "Conditional Access" tab reads *Success/Failure*, not *Report-only*.
+- **Excluded accounts that swallow the org:** broad break-glass/service-account exclusion groups accumulate members, silently exempting them from MFA/device requirements. Confirm exclusion groups contain only monitored break-glass accounts and that those accounts are alerted on every sign-in.
+- **Grant-control gaps:** a policy requires controls with the "Require one of the selected controls" (OR) toggle when it should be AND, so "require MFA *or* compliant device" lets a non-compliant device through with just MFA. Verify the control combination and that "Require MFA" is not satisfiable by legacy/weaker factors.
+- **Legacy auth not blocked:** without a policy targeting `clientAppTypes=other` (legacy/basic auth), CA is bypassed entirely by IMAP/POP/SMTP. Confirm an explicit block-legacy-auth policy exists and is enforced.
+- **No "all apps / all users" baseline:** policies scoped to single apps leave new apps uncovered. Verify a baseline require-MFA policy targets All cloud apps with only break-glass excluded.
+- **Verification:** use the Conditional Access What-If tool for a test user from a non-compliant device on a legacy client and confirm the expected policies *apply and block*; reconcile report-only vs enabled counts and confirm no high-privilege role sits in an exclusion group.
+
 ## Prerequisites
 
 - Familiarity with identity access management concepts and tools

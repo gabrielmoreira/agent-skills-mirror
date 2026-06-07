@@ -32,6 +32,14 @@ nist_csf:
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Genesis not anchored:** if the first `prev_hash` is a hardcoded zero with no external witness, an attacker who rewrites the whole chain (including index 0) produces a valid-looking ledger. Anchor periodic checkpoint hashes to an external timestamping authority (RFC 3161 TSA / OpenTimestamps) so a full rewrite is detectable.
+- **Hashing fields that omit ordering/index:** if `chain_hash` covers only `prev_hash + content` but not the index and timestamp, entries can be reordered or replayed without breaking the chain. Include the index and a monotonic timestamp in the hashed material.
+- **Ledger stored writable next to the logs:** if `log_chain.json` has the same write perms on the same host as the source logs, tamper-then-rechain is trivial. Append-only storage (WORM / S3 Object Lock) or off-host replication is required for the integrity claim to hold.
+- **Verification only checks the tail:** recompute and compare EVERY hash from index 0, not just the latest — a break at entry 42 must flag 42..N. Confirm by mutating one byte of a middle entry and re-running `--verify`; the report must pinpoint the first broken index.
+- **Confirm anchoring round-trips:** after a checkpoint, independently re-verify the checkpoint hash against the external service's response, not just your local record of it.
+
 ## Prerequisites
 
 - Familiarity with security operations concepts and tools

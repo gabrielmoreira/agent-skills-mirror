@@ -39,6 +39,15 @@ Cobalt Strike is the most prevalent command-and-control framework used by both r
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Default IOCs are trivially changed:** the `8BB00EE` cert serial, default JARM, and stock JA3S only catch lazy operators — mature actors load custom certs and malleable C2 profiles that mimic jQuery/CDN traffic. Absence of the default cert is not "clean"; pivot to timing + JA3/JA4 + HTTP profile anomalies.
+- **Malleable profile mimicry:** `http-get`/`http-post` blocks can spoof legitimate User-Agents, URIs, and headers — match on the *combination* (fixed URI + beacon timing + bytes-out regularity), not any single header.
+- **DNS / SMB pipe beacons evade TLS rules:** DNS beacons (TXT/A) and peer-to-peer SMB named pipes (`\\.\pipe\msagent_*`, `\\.\pipe\status_*`) never touch ssl.log — add Zeek `dns.log` entropy hunts and Sysmon EID 17/18 named-pipe detection.
+- **Encrypted payloads:** beacon config is AES/XOR-encrypted in memory, so PCAP content rules fail — use a beacon-config extractor on memory/payloads, not packet bytes.
+- **Validate:** detonate a CS/Sliver test beacon with a non-default profile and confirm the timing-CV, JA3, and named-pipe detections all fire; verify Suricata ET rules match.
+- **Tune FPs:** CDNs and SaaS reuse common JA3s — corroborate with beacon regularity and process context before escalating.
+
 ## Prerequisites
 
 - Zeek 6.0+ with JA3 and HASSH packages installed

@@ -43,6 +43,15 @@ BloodHound Community Edition (CE) is a modern, web-based Active Directory reconn
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Collecting with `-c All` when stealth matters.** Full collection touches every host (SMB/session enumeration) and is noisy. Start with `-c DCOnly` (LDAP-only) for a quiet first pass.
+- **Skipping Session/loop collection.** Without `-c Session --loop`, HasSession edges are stale and the best token-theft paths to DA stay invisible.
+- **Forgetting to mark owned principals.** Shortest-path-to-DA queries are meaningless until compromised accounts are flagged **Owned** in the UI.
+- **Stopping at built-in queries.** ACL chains (GenericAll/WriteDACL/ForceChangePassword), ReadLAPSPassword, and DCSync edges need custom Cypher to surface.
+- **Not re-collecting per child domain / forest.** A single-domain collection misses cross-domain and trust-based paths.
+- **How to confirm:** ingest succeeds (node/edge counts jump in the DB view) and a `shortestPath` Cypher from an Owned node to `DOMAIN ADMINS@...` returns at least one path `p`. A path is only *actionable* once you've confirmed you hold the entry node and the first edge's primitive is exploitable. Don't conclude "no path to DA exists" until you've run Session-loop collection and custom ACL/DCSync Cypher — built-in queries alone routinely miss the edge.
+
 ## Prerequisites
 
 - Familiarity with red teaming concepts and tools

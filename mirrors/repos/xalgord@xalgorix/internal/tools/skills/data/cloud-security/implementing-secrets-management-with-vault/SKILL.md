@@ -36,6 +36,17 @@ nist_csf:
 
 **Do not use** for AWS-only environments where AWS Secrets Manager suffices without multi-cloud requirements, for application-level encryption logic (though Vault Transit can help), or for identity federation (see managing-cloud-identity-with-okta).
 
+## Common Misconfigurations & Verification
+
+- **Root token not revoked after init:** the initial root token from `vault operator init` stays valid forever if left around. Confirm `vault token lookup <root-token>` errors out; revoke with `vault token revoke -self` and rely on OIDC/AppRole for ongoing access.
+- **Root DB credentials never rotated:** if you skip `vault write -force database/rotate-root/<db>`, the bootstrap password in `connection_url` still works outside Vault. Verify by attempting a direct login with the original password - it must fail.
+- **`secret_id_num_uses=0` / `secret_id_ttl=0`:** unlimited, non-expiring AppRole SecretIDs defeat short-lived auth. Audit with `vault read auth/approle/role/<name>` and flag any `0` values.
+- **Audit device disabled or single sink:** if `vault audit list` is empty, secret access is unlogged. Enable at least one `file` plus one `syslog`/socket device so a single sink outage doesn't silence the trail.
+- **Overbroad policies:** a policy missing the `path "sys/*" { capabilities = ["deny"] }` rule or granting `sudo` leaks admin paths. Run `vault policy read <name>`, then `vault token create -policy=<name>` and probe the paths that should be denied.
+- **TTLs longer than the workload:** dynamic DB creds with `default_ttl=24h` outlive most jobs. Keep TTLs near actual usage and confirm a test lease auto-revokes with `vault lease lookup`/`vault lease revoke`.
+- **Kubernetes auth pinned to a long-lived reviewer JWT:** prefer the short-lived projected SA token; verify `auth/kubernetes/config` does not hardcode a non-expiring `token_reviewer_jwt`.
+- **Don't declare it secured until** the root token is revoked, every root/static credential Vault now manages is rotated, audit logging survives a sink failure, and a test lease is shown to auto-revoke at TTL.
+
 ## Prerequisites
 
 - HashiCorp Vault server deployed in HA mode (Consul or Raft storage backend)

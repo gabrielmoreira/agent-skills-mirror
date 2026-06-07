@@ -45,6 +45,15 @@ Use this skill when:
 
 **Do not use** this skill without proper operational security measures — dark web browsing without isolation exposes analyst infrastructure to adversary counter-intelligence.
 
+## Detection Gaps & Validation
+
+- **Clearnet sources missed (the #1 gap):** most programs over-focus on .onion and skip Telegram channels, Discord servers, and paste sites (Pastebin, psbdmp) where much criminal activity actually lives. Cover clearnet explicitly.
+- **Keyword brittleness:** monitoring only `company.com` misses obfuscated variants (`company[.]com`, `@company.com`, typosquats, internal codenames). Validate the watchlist catches deliberate evasions.
+- **Unverified leak claims:** ransomware groups fabricate or recycle old breach data for extortion. Confirm a claim by matching sample data to known internal systems and checking timestamps before escalating - do not over-react.
+- **Language and access coverage:** Russian- and Chinese-language forums (XSS, Exploit.in) require native-language and vetted-access collection that most tools lack. Confirm your commercial source actually reaches them.
+- **Stealer-log blind spot:** credential monitoring keyed to breach dumps misses infostealer logs (cookies, session tokens) sold separately. Cover both.
+- **How to validate:** corroborate each finding across two sources, capture timestamped evidence immediately (content disappears fast), classify P1/P2/P3, and confirm exposed credentials actually grant access via auth-log review before declaring impact.
+
 ## Prerequisites
 
 - Commercial dark web monitoring service (Recorded Future, Flashpoint, Intel 471, or Cybersixgill)

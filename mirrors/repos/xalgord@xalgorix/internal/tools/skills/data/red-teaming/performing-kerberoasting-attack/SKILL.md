@@ -44,6 +44,15 @@ Kerberoasting is a post-exploitation technique that targets service accounts in 
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- Force RC4 (etype 23, 0x17) when possible — `Rubeus.exe kerberoast /tgtdeleg` or `GetUserSPNs.py -request` yields `$krb5tgs$23$` hashes (hashcat 13100) that crack far faster than AES. If accounts are AES-only you'll see `$krb5tgs$18$`/`$17$` (modes 19800/19700); don't skip those, just expect slower cracking.
+- Targeted/high-value roasting is missed when operators bulk-roast everything: prioritize `adminCount=1` SPN accounts and known high-priv SPNs (MSSQLSvc, HTTP, CIFS) — `Rubeus.exe kerberoast /user:svc_sql /nowrap` or GetUserSPNs `-request-user`.
+- AS-REP roasting is the companion technique constantly forgotten: enumerate `DONT_REQ_PREAUTH` accounts and roast them — `Rubeus.exe asreproast /format:hashcat` (`$krb5asrep$23$`, hashcat 18200). A "no kerberoastable accounts" result doesn't mean no offline-crackable hashes exist.
+- `/tgtdeleg` avoids requesting RC4 downgrade noise on hardened domains; default roasts can trip Event 4769 RC4 alerts.
+- Positive signal: a `$krb5tgs$` (or `$krb5asrep$`) hash extracted AND hashcat returns a plaintext (`Status: Cracked`), which then authenticates — `crackmapexec smb <dc> -u <svc> -p '<cracked>'`.
+- Don't conclude "not kerberoastable" until: (1) SPN enumeration ran authenticated (any domain user can, but a failed bind returns empty), (2) both RC4 and AES tickets were requested, (3) AS-REP roast was also attempted, (4) honeypot/decoy SPNs were filtered out, and (5) extracted hashes ran against a real wordlist+rules (rockyou + best64) before calling it uncrackable.
+
 ## Prerequisites
 
 - Familiarity with red teaming concepts and tools

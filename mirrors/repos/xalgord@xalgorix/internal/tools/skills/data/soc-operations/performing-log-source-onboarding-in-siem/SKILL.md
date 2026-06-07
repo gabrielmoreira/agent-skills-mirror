@@ -36,6 +36,14 @@ Log source onboarding is the systematic process of integrating new data sources 
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Common Misconfigurations & Verification
+
+- **Events arrive but fields are unparsed:** the source ingests into the index yet `props.conf` `TRANSFORMS`/`REGEX` doesn't match the real log lines, so `src_ip`, `dest_ip`, `user`, `action` are empty and every correlation search and CIM data model silently misses this source. Verify field-extraction coverage (the `count(src_ip)/count` query) is near 100%, not just that `count by sourcetype` is non-zero.
+- **Timestamp parsing wrong:** missing/incorrect `TIME_FORMAT`, no timezone (`%z`), or `MAX_TIMESTAMP_LOOKAHEAD` too short makes Splunk use index time or shift events hours off — alerts fire late, dashboards show gaps, and `_time` vs `_indextime` lag balloons. Confirm `avg(time_diff) < 300s` and that a known event lands at its real wall-clock time.
+- **CIM tags missing:** fields extracted but the sourcetype isn't tagged into the data model (`eventtype`/`tags.conf`), so `tstats`/`datamodel` searches return nothing. Validate with `| datamodel Network_Traffic search | search sourcetype=<new>` returning rows.
+- **Wrong sourcetype/index or duplicate ingest:** a default `sourcetype` (e.g. generic `syslog`) bypasses your parser, and a forwarder + syslog both shipping the same source double-counts volume and license.
+- **Verify** end to end before closing the ticket: confirm events present, field coverage high, timestamps accurate (`_time≈_indextime`), CIM compliance via `datamodel`/`tstats`, volume within license budget, and that at least one detection rule actually fires on a replayed/known event from the new source.
+
 ## Prerequisites
 
 - SIEM platform deployed (Splunk, Elastic, Sentinel, QRadar, or similar)

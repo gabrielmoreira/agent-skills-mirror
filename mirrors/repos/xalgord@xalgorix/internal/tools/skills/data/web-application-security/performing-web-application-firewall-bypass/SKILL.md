@@ -31,6 +31,17 @@ nist_csf:
 - During red team engagements requiring bypass of perimeter security controls
 - When testing custom WAF rules for completeness and bypass resistance
 
+### How to CONFIRM a Hit (avoid false negatives)
+
+- **Positive signal**: a payload the WAF previously **blocked** now reaches the application AND the **underlying vulnerability actually fires** (SQLi extracts data, XSS executes, etc.) — confirm the real vuln, not just that the request returned `200`.
+- A `200 OK` to an encoded/benign payload means "not blocked," which is meaningless if the payload no longer triggers the bug. The bypass is only confirmed when both the WAF is evaded and the vuln is demonstrated.
+- Do NOT conclude "no bypass possible" until you have:
+  - Established a **baseline**: confirm the raw payload is genuinely blocked (`403`/block page/CAPTCHA) and that an equivalent benign request is allowed.
+  - Confirmed the **underlying vulnerability exists** at all — if the app isn't vulnerable, a "bypass" proves nothing.
+  - Tried multiple evasion classes: **encoding chains** (URL/double/Unicode/HTML-entity), **case + inline comments**, **alternate content-types** (JSON/XML/multipart), **HTTP method switch / chunked transfer / HPP**, and **SQLMap tamper scripts**.
+  - Verified the obfuscated payload **still parses and executes** server-side (e.g. data actually returned, alert actually fires) — keep the payload semantically intact.
+  - Distinguished a WAF block (`403`/scrubbed) from an **application** error (`500`/`400`) so you don't mistake an app-layer rejection for WAF filtering.
+
 ## Prerequisites
 - Burp Suite Professional with SQLMap integration
 - wafw00f for WAF fingerprinting and identification

@@ -38,6 +38,14 @@ Use this skill when:
 
 **Do not use** this skill for active scanning against targets without explicit written authorization — OSINT collection must remain passive (no packets sent to target systems) unless scope permits active recon.
 
+## Detection Gaps & Validation
+
+- **Coverage gaps from a single source:** Shodan, crt.sh, and passive DNS each see only a slice. A C2 behind Cloudflare shows the CDN IP, not origin; cert transparency misses some wildcard certs. Cross-check at least three independent sources before concluding infrastructure is mapped.
+- **False attribution from shared infrastructure:** co-hosted domains on a bulletproof/shared host, or a reused Cobalt Strike watermark, do not establish a single actor. Treat each Maltego pivot as a hypothesis and verify the link independently.
+- **Stale data treated as live:** 6-month-old passive DNS or expired WHOIS still resolves in the graph. Stamp every indicator with collection date and source, and discard pivots whose timestamps predate the campaign window.
+- **OPSEC leakage is also a coverage problem:** directly visiting a target's site or actively probing its IP can tip off the adversary and crosses into active recon. Keep collection passive (cached/third-party data) unless scope authorizes active probing.
+- **Validate before reporting:** confirm a candidate IOC against an independent enrichment (VirusTotal/OTX/PassiveTotal), record a confidence score, and explicitly note remaining collection gaps rather than presenting partial coverage as complete.
+
 ## Prerequisites
 
 - Maltego CE or commercial license for graph-based link analysis

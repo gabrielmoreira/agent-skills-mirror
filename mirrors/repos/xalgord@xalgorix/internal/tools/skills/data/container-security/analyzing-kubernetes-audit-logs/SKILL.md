@@ -32,6 +32,15 @@ nist_csf:
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **`level: Metadata` hides the payload:** at Metadata level the `requestObject` is dropped, so privileged-pod detection (`securityContext.privileged`, `hostPID`, capability adds) and secret *values* are invisible. Use `level: RequestResponse` for `pods` create/update and for `clusterrolebindings` to see the escalation body.
+- **Subresources are separate:** `pods/exec` and `pods/attach` are distinct from `pods` - a rule matching only `resource == "pods"` misses every shell-in. Match the subresource explicitly.
+- **`omitStages: ["RequestReceived"]`** combined with a low default level can silently discard events; confirm your policy emits the `ResponseComplete` stage for sensitive verbs.
+- **Anonymous access:** match `user.username == "system:anonymous"` or group `system:unauthenticated`, not just missing users.
+- **Secret enumeration at Metadata** shows the verb/name but not which keys were read - escalate to Request level for the secrets you care about.
+- **How to validate the rule fires:** run `kubectl exec -it <pod> -- sh` and `kubectl get secret <name> -o yaml` against a test namespace, then grep the audit log for `pods/exec` and `secrets` events with your username. If nothing appears, the audit policy level is too low or the stage is omitted.
+
 ## Prerequisites
 
 - Familiarity with container security concepts and tools

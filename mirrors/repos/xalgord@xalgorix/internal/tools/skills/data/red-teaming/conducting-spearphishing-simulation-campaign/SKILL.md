@@ -43,6 +43,15 @@ Spearphishing simulation is a targeted social engineering attack vector used by 
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Sending before domain authentication is correct.** Missing/incorrect SPF, DKIM, and DMARC alignment lands mail in spam or gets it rejected. Verify all three pass before the first wave.
+- **No warming/aging of the look-alike domain.** Freshly registered domains get category-blocked; age and build reputation (2+ weeks) and submit for categorization.
+- **Payload never tested against the target's stack.** HTML smuggling, ISO/LNK, and OneNote lures must be detonated against the known email gateway + EDR before launch, not on the target.
+- **Mass-sending instead of waves**, which trips volume-based gateway throttling and tips off the SOC.
+- **Tracking only opens.** Opens are noisy (security scanners pre-click); the real signal is credential submission or payload execution.
+- **How to confirm a hit:** the success signal is a tracked credential submission landing in GoPhish/Evilginx (for Evilginx, a captured *session cookie* that replays past MFA), or a beacon checking in from a target after payload execution. Verify delivery first by sending a seeded test address and confirming inbox placement + DKIM/DMARC pass. Don't conclude a recipient is "safe" on opens alone — confirm whether they submitted creds, executed the payload, or reported the mail to the SOC.
+
 ## Prerequisites
 
 - Familiarity with red teaming concepts and tools

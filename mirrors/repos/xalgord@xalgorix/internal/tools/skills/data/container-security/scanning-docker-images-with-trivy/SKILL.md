@@ -33,6 +33,17 @@ Trivy is a comprehensive open-source vulnerability scanner by Aqua Security that
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Coverage Gaps & Validation
+
+A passing Trivy scan reflects what was enabled and reachable, not a guarantee the image is safe:
+
+- **Default scanner set:** `trivy image` runs vulnerability detection by default - misconfigurations, secrets, and licenses are only checked with `--scanners vuln,misconfig,secret,license`. A clean run without those flags never looked for hardcoded keys or Dockerfile misconfigs.
+- **`--severity` and `--ignore-unfixed` mask risk:** gating on `CRITICAL,HIGH` drops exploitable MEDIUM CVEs, and `--ignore-unfixed` hides unpatched-but-exploitable ones. State the filter when reporting results.
+- **OS packages vs app libraries:** Trivy enumerates language deps only when the lockfile is present in the image; vendored, statically compiled, or distroless/`scratch` images can return few or zero findings - looks clean, isn't verified.
+- **Tag vs running container drift:** scanning `myapp:latest` in CI may not match the digest actually deployed.
+
+**Validate:** refresh the DB (`trivy image --download-db-only`) so a clean result isn't just a stale database, then re-run with all scanners and no severity filter to see true counts. For distroless/minimal images, generate an SBOM (`--format cyclonedx`) to confirm which packages were actually catalogued, and use `--exit-code 1` gates plus a diff against the deployed digest to verify scan completeness rather than assuming zero output means zero risk.
+
 ## Prerequisites
 
 - Docker Engine 20.10+

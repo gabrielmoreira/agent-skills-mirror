@@ -57,6 +57,15 @@ for source in "location.hash" "location.search" "document.referrer" "window.name
 done
 ```
 
+## Coverage Gaps & Validation
+
+- A single `grep` pass misses most assets: enumerate every script source first — inline `<script>`, dynamically loaded chunks, `import()` splits, service workers, and Webpack `*.chunk.js`/`runtime.js` referenced only inside other bundles. Use `getJS`, `subjs`, or `katana -jc` to walk them recursively.
+- Run layered regex, not one pattern: endpoints (`(?:"|')(/[a-zA-Z0-9_?&=/.-]+)(?:"|')`), absolute URLs (`https?://`), and secrets per provider — AWS `AKIA[0-9A-Z]{16}`, Google `AIza[0-9A-Za-z_\-]{35}`, Slack `xox[baprs]-`, JWTs `eyJ[A-Za-z0-9_-]+\.`, Stripe `sk_live_`, plus generic `api[_-]?key|secret|token`.
+- Most-missed sources: `.js.map` source maps (reconstruct full app source with `sourcemapper`), `process.env`/`window.__CONFIG__`/`__NEXT_DATA__` config blobs, and framework route tables (React Router, Vue Router, Angular `routes`) that expose unlinked admin paths.
+- Beautify before grepping — minified one-liners hide string concatenation (`"/api/"+"v2/"+"users"`); run `js-beautify` and also reconstruct split URLs manually.
+- Validate before reporting: confirm extracted endpoints actually resolve (`httpx` the candidates), and verify secrets are LIVE and in-scope — test a key against its own provider's read-only API, never against third-party prod, and confirm the secret belongs to the target org, not a bundled SDK default.
+- Diff bundles across deploys; new hashes in CI builds frequently leak fresh staging/internal endpoints before they are firewalled.
+
 ## Pro Tips
 
 1. Source maps (`.js.map`) expose original unminified source code — always check

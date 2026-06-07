@@ -38,6 +38,14 @@ nist_csf:
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **The events may not exist at all:** S3 `GetObject`/`PutObject` are *data events*, off by default. Confirm with `aws cloudtrail get-event-selectors --trail-name X` showing a `DataResources` entry for `AWS::S3::Object`. GCS object reads need Data Access audit logs (`DATA_READ`) explicitly enabled per-service; Azure needs Storage Analytics / diagnostic settings on the storage account.
+- **Exfil paths that dodge per-IP baselines:** presigned URLs log the *signer's* identity/IP, not the downloader; `CopyObject` / S3 replication to an attacker-owned bucket never hits `GetObject` from their IP; access via VPC gateway endpoint shows an internal `vpce-` source; CloudFront/OAC fronting masks the real client IP.
+- **Volume framed as "normal":** slow-drip exfil under your `>100 GetObject/hr` threshold, or `ListBucket` recon spread across days, evades count-based rules. Watch bytes-out and distinct-key fan-out, not just call counts.
+- **Baseline poisoning:** an attacker active during the 30-day learning window becomes part of "normal." Seed baselines from a known-clean period.
+- **Validate the rule fires:** replay a known-bad pattern (e.g., 150 `GetObject` from a new IP in <1h against a canary key) and confirm a finding is generated; tune FPs by excluding backup/replication service principals and known batch jobs by `userIdentity.arn`.
+
 ## Prerequisites
 
 - Familiarity with cloud security concepts and tools

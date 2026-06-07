@@ -38,6 +38,15 @@ nist_csf:
 - When EDR or SIEM alerts trigger on related indicators
 - During periodic security assessments and purple team exercises
 
+## Detection Gaps & Validation
+
+- **Forwarding hides in three places.** Querying only inbox rules (`New-InboxRule`) misses mailbox-level forwarding (`Set-Mailbox -ForwardingSmtpAddress` / `-ForwardingAddress`) and Exchange transport rules. Hunt all three operations or you cover only a third of the attack surface.
+- **Log source must be on.** M365 detection depends on the Unified Audit Log and mailbox auditing. Verify with `Get-AdminAuditLogConfig` / `Get-Mailbox | fl AuditEnabled`; if UAL is off, `New-InboxRule`/`Set-Mailbox`/`UpdateInboxRules` events never land.
+- **Evasion patterns:** unnamed rules, rules that forward then mark-as-read and move mail to RSS/Deleted Items/Archive (hiding it from the user), client-only OWA rules, and forwarding to a look-alike internal domain.
+- **No interactive logon:** Graph API and malicious OAuth app consent can create rules without a sign-in event — correlate rule creation with AzureAD audit logs and risky/new app consents.
+- **Validate the rule fires:** create a benign inbox rule forwarding to an internal test mailbox and confirm a `New-InboxRule` (or `Set-Mailbox`) entry appears in the Unified Audit Log (allow ~30-60 min for ingestion).
+- **Tune false positives:** delegates, helpdesk/shared mailboxes, and vacation auto-forwards are legitimate. Allowlist those and alert specifically on forwarding to *external* or newly-seen recipient domains.
+
 ## Prerequisites
 
 - EDR platform with process and network telemetry (CrowdStrike, MDE, SentinelOne)

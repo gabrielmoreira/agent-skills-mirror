@@ -35,6 +35,16 @@ The Docker daemon (`dockerd`) runs with root privileges and controls all contain
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Remote API exposed without mTLS:** `"hosts": ["tcp://0.0.0.0:2376"]` with `"tlsverify"` absent (or any listener on `2375`) is unauthenticated root over the network. Verify: `ss -tlnp | grep -E '2375|2376'` and `docker info` should report TLS; client must use `--tlsverify`.
+- **`userns-remap` defeated per-container:** even with `"userns-remap": "default"`, a container started with `--userns=host` (or `--privileged`, which implies it) maps back to real root. Confirm `cat /etc/subuid` shows `dockremap:` and that workloads do not pass `--userns=host`.
+- **`icc: false` gives false comfort:** it only blocks the *default* bridge; user-defined bridges still allow container-to-container traffic. Verify with `docker network inspect bridge --format '{{.Options}}'`.
+- **Rootless claimed but daemon still root:** check `docker info | grep -i rootless` returns `Rootless: true` and the socket is under `$XDG_RUNTIME_DIR`, not `/var/run/docker.sock` owned by root.
+- **Socket permissions too broad:** confirm `/var/run/docker.sock` is `root:docker 660`, not world-accessible, and is never bind-mounted into containers.
+- **`no-new-privileges` / seccomp not applied:** `docker info --format '{{.SecurityOptions}}'` should list `seccomp` and `no-new-privileges`; an empty/`unconfined` seccomp is a finding.
+- **Verify the full config:** run `docker/docker-bench-security` and resolve section 2 (daemon) `[WARN]`s.
+
 ## Prerequisites
 
 - Docker Engine 24.0+ installed

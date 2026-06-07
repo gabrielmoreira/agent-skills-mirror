@@ -32,6 +32,15 @@ Ed25519 is a high-performance digital signature algorithm using the Edwards curv
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Verifying a hash instead of the message:** Ed25519 hashes internally (SHA-512). Pass the full message to `verify()`, not a pre-computed SHA-256 digest — pre-hashing yields a different (Ed25519ph) scheme and breaks interop or weakens binding.
+- **Not validating the public key / accepting low-order points:** reject malformed or low-order public keys; a small-subgroup point can make distinct signatures verify. Use a library that performs canonical point validation.
+- **Trusting an attacker-supplied public key:** a signature verifies against *whatever* key you hand it, so verifying with the wrong/untrusted key proves nothing. Pin or authenticate the signer's public key out-of-band.
+- **Non-canonical / malleable signatures:** enforce that `S < L` (canonical encoding) so a signature cannot be tweaked into another valid one.
+- **Key confusion (signing vs verifying key) or reusing one keypair across contexts:** separate keys per purpose; store private keys encrypted at rest.
+- **The mandatory tests:** (1) a valid signature verifies; (2) a signature over a **tampered message is REJECTED**; (3) a valid signature checked against the **wrong public key is REJECTED**; (4) a flipped byte in the 64-byte signature is REJECTED. Determinism: signing the same message twice yields identical bytes.
+
 ## Prerequisites
 
 - Familiarity with cryptography concepts and tools

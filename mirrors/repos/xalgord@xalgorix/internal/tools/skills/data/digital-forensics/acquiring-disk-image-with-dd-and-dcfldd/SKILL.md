@@ -30,6 +30,14 @@ nist_csf:
 - Before performing any destructive analysis on a storage device
 - When acquiring images from physical drives, USB devices, or memory cards
 
+## Detection Gaps & Validation
+
+- **Hidden areas a naive `dd` silently drops:** an HPA or DCO makes the disk report fewer sectors than it physically has, so `dd if=/dev/sdb` captures less than the full media. Check `hdparm -N /dev/sdb` (HPA) and `hdparm --dco-identify /dev/sdb` (DCO) and compare against the label / `smartctl -i` native capacity before imaging; document or remove the HPA per policy.
+- **`conv=noerror,sync` masks bad sectors:** zero-padding keeps offsets aligned but the gaps then look like real null data. Always read `dcfldd`'s `errlog` (or a `ddrescue` mapfile) and record every unreadable LBA - never present a padded region as recovered content.
+- **Hash mismatch is not automatically tampering:** a source-vs-image mismatch most often means a missing write-blocker, a failing disk remapping sectors, or a volume that auto-mounted/fsck'd during read. Compare `source_hash_before` vs `source_hash_after`; if the source changed, the imaging chain is at fault, not the suspect.
+- **Validate independently:** confirm with a second tool and a second algorithm (compute SHA-256 *and* MD5, or re-image with `ewfacquire`) and verify `dcfldd`'s per-window `hashwindow` hashes match a fresh `sha256sum` pass over the image.
+- **Interpretation pitfalls (false positives):** USB bridge/adapter capacity clipping, `.gz` compression hiding read errors, and live-system imaging where mounted-volume timestamps mutate mid-read. Record block size, write-blocker model, and tool version so a reviewer can reproduce the exact hash.
+
 ## Prerequisites
 - Linux-based forensic workstation (SIFT, Kali, or any Linux distro)
 - `dd` (pre-installed on all Linux systems) or `dcfldd` (enhanced forensic version)

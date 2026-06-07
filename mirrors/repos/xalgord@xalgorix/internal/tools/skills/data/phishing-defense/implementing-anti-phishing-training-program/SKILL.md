@@ -34,6 +34,16 @@ Security awareness training is the human layer of phishing defense. An effective
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Training without measurement:** annual checkbox modules with no baseline or simulation data prove nothing - establish a pre-training baseline click/report rate and track the same cohort over time.
+- **Click rate as the only metric:** a low click rate with a near-zero REPORT rate means users stay silent, not safe - measure report rate and time-to-report as primary outcomes.
+- **Simulations too easy or too uniform:** repeating one low-difficulty template inflates results; vary lures (link, attachment, QR, BEC) and ramp difficulty per the SANS maturity model.
+- **Simulation mail allowlisted into invisibility:** if the SEG bypass also strips the lure, users "pass" without ever seeing it - verify simulations land in inboxes but are excluded from real incident queues.
+- **Punitive culture suppresses reporting:** blame-based remediation teaches users to hide mistakes - pair just-in-time training with positive reinforcement for reporters.
+- **No role-based content:** finance needs BEC/wire-fraud, execs need whaling, IT needs credential phishing - generic content misses high-risk roles.
+- **Verification:** run a baseline sim, deliver training, re-test the same group 30-60 days later, and confirm a measurable drop in click rate AND rise in report rate; spot-check that failed-sim users were auto-enrolled in follow-up training.
+
 ## Prerequisites
 - Management buy-in and budget approval
 - Security awareness training platform (KnowBe4, Proofpoint SAT, Cofense)

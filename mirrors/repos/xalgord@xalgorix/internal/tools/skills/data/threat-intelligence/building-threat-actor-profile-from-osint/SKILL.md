@@ -36,6 +36,14 @@ Threat actor profiling using OSINT systematically gathers and analyzes publicly 
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Conflating Threat Actor and Intrusion Set SDOs:** OSINT describes activity (Intrusion Set) but analysts often create only a `threat-actor` SDO with a guessed human identity. Model observed activity as `intrusion-set`, link it to a `threat-actor` via an `attributed-to` SRO, and keep `confidence` on that relationship low until corroborated.
+- **Alias sprawl without dedup:** the same group appears as Cozy Bear / Midnight Blizzard / NOBELIUM / UNC2452 across vendors. Normalize aliases into one `aliases[]` field and reconcile against the MITRE ATT&CK Groups galaxy (e.g., G0016) instead of spawning duplicate objects.
+- **Attribution overconfidence:** shared infrastructure (bulletproof hosts, recycled VPS) or reused tooling does not prove a single actor. Apply ACH and set `confidence` numerically (0–100) per STIX; never hardcode "high" from one source.
+- **Stale OSINT:** WHOIS privacy and fast-flux rotate; check passive-DNS and cert-transparency timestamps and stamp `valid_from`/`first_seen` rather than the collection date.
+- **Verify:** round-trip the bundle through `stix2.parse(allow_custom=False)`, confirm every `created_by_ref`/`source_ref`/`target_ref` resolves within the bundle, and confirm each mapped TTP carries a real ATT&CK technique ID before publishing.
+
 ## Prerequisites
 
 - Python 3.9+ with `shodan`, `requests`, `beautifulsoup4`, `maltego-trx`, `stix2` libraries

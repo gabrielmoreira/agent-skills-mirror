@@ -33,6 +33,15 @@ Pod Security Standards (PSS) define three levels of security policies -- Privile
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **`enforce` label missing:** namespaces labelled only `pod-security.kubernetes.io/audit=restricted` and `/warn=restricted` log and warn but never block - a `privileged: true` pod still schedules. Confirm `enforce` is set: `kubectl get ns -L pod-security.kubernetes.io/enforce`.
+- **Label key typos:** `pod-security.kubernetes.io/enforced` or a missing mode value is silently ignored by the admission controller; PSA does not error on unknown labels.
+- **`enforce-version: latest` drift:** pinning to `latest` means an apiserver upgrade can tighten or change checks unexpectedly. Pin a concrete version (e.g. `v1.28`) for predictable behavior.
+- **PSA can't inspect image contents:** it evaluates the pod spec only, so it won't catch a root `USER` baked into the image or an unsigned image - layer Gatekeeper/Kyverno for those.
+- **Workload lives in an exempt namespace:** restricted on `production` is moot if the deployment actually runs in `default`/a system namespace; verify the target namespace's labels, not the cluster default.
+- **Verify before enforcing:** `kubectl label --dry-run=server --overwrite ns <ns> pod-security.kubernetes.io/enforce=restricted` lists existing violators; then `kubectl run test --image=nginx -n <ns> --dry-run=server` should be **rejected** under restricted (nginx runs as root).
+
 ## Prerequisites
 
 - Kubernetes cluster 1.25+ (PSA GA)

@@ -41,6 +41,14 @@ nist_csf:
 
 **Do not use** for volatile evidence (running processes, network connections); use memory forensics with Volatility instead.
 
+## Detection Gaps & Validation
+
+- **Anti-forensics defeats a naive timeline:** `$STANDARD_INFO` (`$SI`) timestamps are trivially backdated by timestomping. Always compare `$SI` against `$FILE_NAME` (`$FN`) timestamps in the MFT (parse with MFTECmd) — a file whose `$SI` predates its `$FN` or sits outside the surrounding MFT record sequence is a timestomp tell. Corroborate with the USN Journal (`$J`) and `$LogFile`, which attackers rarely scrub.
+- **"Deleted" rarely means gone:** check Volume Shadow Copies (`vssadmin list shadows`, mount with `vshadow`/Arsenal) for earlier file versions, recover from unallocated space via carving, and inspect NTFS alternate data streams (`dir /r`) for hidden payloads a file-name scan misses.
+- **Execution evidence is corroborative, not singular:** Prefetch can be disabled (especially on SSDs/servers), so cross-validate program execution across Amcache, ShimCache/AppCompatCache, SRUM, UserAssist, and BAM/DAM. One artifact showing (or not showing) execution is a candidate; agreement across several is a confirmation.
+- **Validate the image first:** a forensic conclusion is only as good as a verified acquisition — confirm source and image SHA-256 match and a write blocker was used before trusting any finding.
+- **FP tuning / don't conclude clean until:** legitimate updaters and installers churn temp files and look malicious; baseline known-good software. Don't call a system clean until you've reconciled the MFT, USN Journal, shadow copies, and registry hives — log clearing (`1102`/`Windows.EventLogs.Cleared`) itself is a finding, not an absence of evidence.
+
 ## Prerequisites
 
 - Forensic workstation with write-blocking hardware or software (Tableau T35u, Arsenal Image Mounter)

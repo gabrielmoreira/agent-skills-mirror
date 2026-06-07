@@ -38,6 +38,17 @@ in-toto is a CNCF graduated project that ensures the integrity of software suppl
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+The most common in-toto failure is a supply chain that *generates* attestations nobody actually *verifies* at the gate:
+
+- **Layout never verified at deploy:** link metadata is collected in CI but `in-toto-verify` is not run before `kubectl apply`, or the admission webhook has `failurePolicy: Ignore` - so tampering is recorded, not blocked.
+- **Wrong trust root:** verifying with the layout's own embedded keys instead of an out-of-band `owner.pub`, or skipping signature verification of the layout itself - lets an attacker swap both the layout and its links.
+- **Loose artifact rules:** `expected_materials`/`expected_products` using broad globs (`src/*`) without `MATCH ... WITH PRODUCTS FROM <step>` break the hash chain, so a modified artifact between build and scan goes undetected.
+- **Expired or threshold-1 layouts:** an expired layout (`set_relative_expiration`) or `threshold: 1` on every step removes the multi-party guarantee.
+
+**Verify:** run `in-toto-verify --layout root.layout --layout-key keys/owner.pub --link-dir ./link-metadata/` and confirm a *non-zero* exit fails the pipeline; then prove it catches tampering by mutating one byte of `image-digest.txt` and re-running - verification must fail. Confirm the inspection (`verify-no-critical-vulns`) actually executes and that the admission webhook is `failurePolicy: Fail`.
+
 ## Prerequisites
 
 - Python 3.8+ or Go runtime for in-toto client libraries

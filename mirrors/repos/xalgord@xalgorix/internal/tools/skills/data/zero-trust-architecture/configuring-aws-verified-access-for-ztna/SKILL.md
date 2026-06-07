@@ -38,6 +38,15 @@ AWS Verified Access is a Zero Trust Network Access (ZTNA) service that provides 
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Origin still reachable directly:** the internal ALB/ENI keeps its own security group and private DNS. If the ALB SG allows `0.0.0.0/0` or a broad VPC range on 443, users skip the Verified Access endpoint entirely. Lock the ALB security group to ONLY the Verified Access security group, never to the world.
+- **Policy permits without a device signal:** a Cedar policy like `permit(principal, action, resource) when { context.okta.groups.contains("employees") };` verifies identity but ignores `context.crowdstrike.assessment.overall`, so an unmanaged laptop passes. Always AND a device-trust clause into group- and endpoint-level policies.
+- **Device trust provider attached but never referenced:** attaching a CrowdStrike/Jamf provider does nothing unless its `policy_reference_name` appears as a `context.<ref>` namespace in the Cedar policy. Confirm it is actually evaluated.
+- **Logging disabled:** with no CloudWatch/S3 access logs you cannot prove enforcement. Enable `aws_verifiedaccess_instance_logging_configuration` before go-live.
+
+Verify: from an off-corp host, resolve and `curl -k https://<alb-dns>` and the ENI private IP directly; both must refuse/time out, and only the `*.edge.vpce-...amazonaws.com` endpoint should answer. Then connect from a non-compliant device (stop the CrowdStrike sensor) and confirm a denial in the logs via `--filter-pattern '{ $.status_code = "403" }'`.
+
 ## Prerequisites
 
 - AWS account with appropriate IAM permissions

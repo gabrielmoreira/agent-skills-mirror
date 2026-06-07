@@ -40,6 +40,16 @@ EvilGinx3 is a man-in-the-middle attack framework used for phishing login creden
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- Phishlet tuning is the #1 miss: stock phishlets break when the target updates JS/login domains. Confirm every `auth_urls`, `sub_filter`, and `js_inject` host resolves through the proxy — a blank or styling-broken login page means the phishlet needs `proxy_hosts`/`sub_filter` fixes, not a "tool doesn't work" conclusion.
+- Domain reputation and TLS are routinely skipped — age the domain, set categorization, and verify Let's Encrypt issued (`phishlets` shows cert OK). A fresh look-alike domain gets blocked by SmartScreen/Safe Browsing before the victim ever submits.
+- The real prize is the captured session cookie, not the password: MFA bypass only works if you import the full token set (e.g., o365 `ESTSAUTH`/`ESTSAUTHPERSISTENT`, Okta `sid`/`idx`) and reach the app without re-prompt.
+- Use `lures edit 0 redirect_url` to bounce victims to the real site post-capture so the AiTM stays unnoticed; missing this often tips off the target.
+- Blacklist scanners (`blacklist unauth`) so bots/sandboxes don't burn the domain before delivery.
+- Positive signal: `sessions <id>` shows non-empty captured cookies/tokens AND those cookies imported via Cookie-Editor load the authenticated app (mailbox/SharePoint) without an MFA prompt.
+- Don't conclude the AiTM failed until: (1) the proxied login page renders and accepts creds, (2) `tokens`/cookies were actually captured (not just username/password), (3) the cookie set imported and bypassed MFA in a clean browser profile, and (4) the domain wasn't blocked at delivery (check it loads from an external network).
+
 ## Prerequisites
 
 - Familiarity with red teaming concepts and tools

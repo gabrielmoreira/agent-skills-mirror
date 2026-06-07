@@ -35,6 +35,13 @@ Indicator lifecycle management tracks IOCs from initial discovery through valida
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+- **Quality gaps before deployment:** IOCs ingested from feeds without validation poison detection - a domain on a CDN, a shared-hosting IP, or a sinkholed C2 generates endless false positives. Validate every indicator against enrichment (VirusTotal detection ratio, Shodan/passive DNS, WHOIS age) and tag shared-infrastructure indicators as low-confidence or context-only, never block.
+- **Decay is an assumption, not truth:** the half-life model (IP 30d, domain 90d, hash 365d) is a heuristic; a long-lived bulletproof-hosted C2 or a still-circulating malware hash can outlive its window. Override decay with observed `last_seen` and hit data rather than trusting the curve blindly.
+- **Hit-rate blind spots:** an IOC with zero hits may be stale *or* the data source feeding the detection may have no visibility (no DNS logs, no TLS inspection). Distinguish "no hits because retired threat" from "no hits because no telemetry" before retiring.
+- **How to confirm before retiring:** cross-reference a retirement candidate against current feeds and passive DNS; if the infrastructure still resolves/responds, extend rather than expire. Track false-positive provenance so one noisy analyst report does not retire a valid indicator.
+
 ## Prerequisites
 
 - Python 3.9+ with `pymisp`, `requests`, `stix2` libraries

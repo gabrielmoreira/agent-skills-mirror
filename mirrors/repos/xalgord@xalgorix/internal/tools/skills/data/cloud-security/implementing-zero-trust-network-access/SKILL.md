@@ -36,6 +36,15 @@ nist_csf:
 
 **Do not use** as a complete replacement for network security controls (ZTNA complements but does not replace firewalls and network ACLs), for protecting internet-facing public applications (use WAF), or for IoT device access where identity-based authentication is not feasible.
 
+## Common Misconfigurations & Verification
+
+- **Private Endpoint created but public access left on:** an Azure Private Link endpoint doesn't isolate the service unless `publicNetworkAccess` is `Disabled` on the PaaS resource. Verify with `az webapp show --query publicNetworkAccess`; resolve the privatelink DNS name from inside the VNet and confirm the public hostname no longer maps to a routable IP.
+- **NetworkPolicy the CNI never enforces:** `kind: NetworkPolicy` is silently ignored on clusters using a non-enforcing CNI (plain kubenet). Confirm Calico/Cilium is installed, then prove enforcement by `kubectl exec` from a non-`web-frontend` pod against `api-server:8080` and watch it time out.
+- **Ingress-only segmentation:** a policy with `policyTypes: [Ingress]` and no egress rule still lets a compromised pod exfiltrate outbound. Add an explicit egress allowlist and test that arbitrary outbound connections are dropped.
+- **Verified Access endpoint with no real group policy:** an endpoint attached to a group whose `policy-document` is missing or `Allow *` grants everyone access. Verify the policy gates on `verified-access:user/groups` and test with a user outside that group (expect deny).
+- **Continuous verification that never re-prompts:** a `SignInFrequency` of 4h only matters if persistent browser sessions are off. Confirm `persistentBrowser`/token lifetime actually forces re-auth, and check `/verified-access/access-logs` for `decision = "deny"` entries.
+- **Don't decommission the VPN until** every app refuses traffic that bypasses the proxy, micro-segmentation drops a tested lateral connection, and break-glass access still works while the IdP is simulated down.
+
 ## Prerequisites
 
 - Identity provider (Entra ID, Okta, Google Workspace) with MFA enforcement

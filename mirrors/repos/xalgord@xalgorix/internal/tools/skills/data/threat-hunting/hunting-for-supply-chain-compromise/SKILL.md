@@ -37,6 +37,15 @@ nist_csf:
 - When EDR or SIEM alerts trigger on related indicators
 - During periodic security assessments and purple team exercises
 
+## Detection Gaps & Validation
+
+- **Signed-but-trojanized updates evade signature checks:** SolarWinds-style backdoors pass Authenticode validation — hunt behavioral deviation (a signed app suddenly opening new C2 connections, Sysmon EID 3; spawning script interpreters, EID 1) rather than signature status.
+- **Wrong scope:** dependency compromise (npm/PyPI `postinstall`, typosquats) executes at build/install time on developer and CI hosts, not prod endpoints — extend the hunt to build agents.
+- **Trusting attacker-controlled hashes:** verifying against the vendor's published hash fails when the vendor is the compromise — compare against an independently captured prior known-good.
+- **DLL side-loading:** a legit signed EXE + malicious DLL in the same directory is a common delivery — watch EID 7 ImageLoad of unsigned/unexpected modules from app dirs.
+- **Validate:** stage a benign "updated" binary that makes a new outbound connection; confirm EID 7 (image load) / EID 3 anomaly fires.
+- **FP tuning:** baseline normal updater network destinations and expected signed-module load paths.
+
 ## Prerequisites
 
 - EDR platform with process and network telemetry (CrowdStrike, MDE, SentinelOne)

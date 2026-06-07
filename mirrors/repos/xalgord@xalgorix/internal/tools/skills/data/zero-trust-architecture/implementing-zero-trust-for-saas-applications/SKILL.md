@@ -37,6 +37,18 @@ nist_csf:
 
 **Do not use** as a replacement for SaaS-native security controls (configure those first), for applications with no SAML/OIDC support, or when SaaS vendor does not support API integration for CASB/SSPM.
 
+## Common Misconfigurations & Verification
+
+SaaS zero trust commonly looks complete because SSO works, while several side doors stay wide open. Check for these:
+
+- **SSO enforced but legacy auth open.** IMAP/POP3/SMTP basic auth and app passwords bypass Conditional Access and MFA - the single most common SaaS bypass.
+- **Token / OAuth bypass.** A previously issued refresh token or a high-privilege OAuth consent (`Mail.ReadWrite`, `Files.ReadWrite.All`) keeps access even after CA tightens; revoking those grants is skipped.
+- **Local SaaS accounts** not federated to the IdP, so they skip Conditional Access entirely.
+- **Session controls (download block, DLP) only on the browser path**, while desktop/mobile sync clients exfiltrate freely.
+- **Unsanctioned apps "discovered" but never blocked** at the SWG/proxy.
+
+**How to confirm:** attempt a legacy-protocol login (IMAP with an app password) against M365/Workspace and confirm it is blocked. Replay an existing OAuth/refresh token and verify it is rejected after consent revocation. From an unmanaged device, confirm downloads are actually blocked (not just on browser), and verify a non-federated local admin account cannot bypass Conditional Access.
+
 ## Prerequisites
 
 - Identity provider with conditional access: Microsoft Entra ID P1/P2, Okta

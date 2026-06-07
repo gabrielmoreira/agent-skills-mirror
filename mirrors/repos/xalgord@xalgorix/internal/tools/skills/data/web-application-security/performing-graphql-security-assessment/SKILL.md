@@ -31,6 +31,18 @@ nist_csf:
 - When testing microservice architectures with a GraphQL gateway or federation
 - During bug bounty programs targeting GraphQL-based APIs
 
+### How to CONFIRM a Hit (avoid false negatives)
+
+- **Positive signal**: a query/mutation **actually returns sensitive data** (or causes a measurable effect) under the access level being tested — confirm the data in the response body, not just a `200` or the existence of a field.
+- Schema knowledge alone is not impact; tie every finding to a query that demonstrably succeeds.
+- Do NOT conclude "not vulnerable" until you have:
+  - Attempted **introspection** AND, if disabled, run schema enumeration (`clairvoyance`) — a field that exists but isn't introspectable can still be queried.
+  - Tested **unauth and low-priv** queries/mutations for sensitive types/fields (`passwordHash`, `ssn`, admin mutations) and confirmed they return data or take effect.
+  - Tried **batching / aliasing** to defeat rate limits (e.g. many `login`/`verifyOTP` aliases in one request) and confirmed more attempts processed than the HTTP-level limit allows.
+  - Tested **deep nesting / circular fragments / huge pagination** and confirmed measurable resource impact (latency, errors), not just acceptance.
+  - Checked injection (SQL/NoSQL/SSRF) in arguments and confirmed via returned data or out-of-band callback.
+- Distinguish an **enforced** error (`"not authorized"`) from a partial/null response that still leaks data in adjacent fields.
+
 ## Prerequisites
 
 - **Authorization**: Written penetration testing agreement for the target

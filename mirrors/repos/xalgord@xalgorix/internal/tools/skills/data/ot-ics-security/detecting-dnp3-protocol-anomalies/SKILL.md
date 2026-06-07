@@ -45,6 +45,13 @@ nist_csf:
 
 **Do not use** for non-DNP3 protocol monitoring (see detecting-modbus-command-injection-attacks for Modbus), for DNP3 Secure Authentication configuration (separate implementation), or for protocol-agnostic network anomaly detection.
 
+## Detection Gaps & Validation
+
+- **Serial DNP3 is invisible to a TCP-only sensor.** Many substations run DNP3 over serial/radio to the RTU; a sensor watching only TCP/20000 misses outstation traffic entirely. Tap the serial-to-IP gateway or document the coverage gap explicitly.
+- **No auth means valid-looking control commands evade rules.** Without DNP3 Secure Authentication (SAv5), a spoofed master can issue Select/Operate (FC 0x03/0x04), Cold/Warm Restart (0x0D/0x0E), or file-transfer/firmware objects (0x19-0x1E) that pass signature checks. Baseline allowed function codes and object groups per master->outstation pair.
+- **Unsolicited responses are easy to overlook.** Manipulated unsolicited responses (0x82) can spoof event/class data to the master; baseline which outstations send unsolicited traffic and on which classes (0,1,2,3).
+- **Validate safely.** Replay captured DNP3 pcaps with injected restart/file-transfer frames into the detector offline. Never send a live Operate or Cold Restart to a production outstation to "test" a rule — a cold restart is a real DoS. Confirm alerts distinguish attacks from scheduled integrity polls and authorized firmware updates in the change log.
+
 ## Prerequisites
 
 - Network TAP/SPAN on DNP3 communication segments (TCP port 20000 or serial)

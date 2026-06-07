@@ -3,7 +3,7 @@
 **Scope**: Authoritative for all work when `DEPLOY_MODE=prod-self-serve`
 **Last Updated**: 2026-06-03
 
-> **Authority**: DEEP — when this mode is active, this file is authoritative over the parent `.hi/instruct.md`. See [`.github/copilot-instructions.md`](../../../../.github/copilot-instructions.md) for the depth-priority hierarchy and [`../README.md`](../../README.md) for the deployment-mode convention.
+> **Authority**: DEEP — when this mode is active, this file is authoritative over the parent `.ai/instruct.md`. See [`.github/copilot-instructions.md`](../../../.github/copilot-instructions.md) for the depth-priority hierarchy and [`../README.md`](../../README.md) for the deployment-mode convention.
 
 ---
 
@@ -208,7 +208,7 @@ docker volume ls | grep [PROJECT_NAME]
 
 ```bash
 docker compose down                # data persists
-docker compose down -v             # ⚠️ destroys volumes — see .hi/maintenance.md
+docker compose down -v             # ⚠️ destroys volumes — see .ai/maintenance.md
 docker compose restart app
 ```
 
@@ -218,7 +218,7 @@ docker compose restart app
 
 - The API and database are reachable only from inside the Docker network. Caddy is the only public listener.
 - All secrets live in `.env`; treat the file like a private key. `DDNS_TOKEN` is sensitive — leakage allows IP hijack.
-- Rotate JWT and DB credentials per [`.hi/credentials.md`](../../../credentials.md).
+- Rotate JWT and DB credentials per [`.ai/credentials.md`](../../../.ai/credentials.md).
 - Keep the host OS patched and the Docker daemon updated.
 
 ---
@@ -271,8 +271,8 @@ curl -sSf https://[DDNS_DOMAIN]/health   # if you have a health endpoint
 
 ## Next Steps
 
-- LAN-only dev → [`dev-lan`](../../dev-lan/.hi/instruct.md)
-- Managed cloud (no router setup) → [`prod-railway`](../../prod-railway/.hi/instruct.md)
+- LAN-only dev → [`dev-lan`](../../dev-lan/.ai/instruct.md)
+- Managed cloud (no router setup) → [`prod-railway`](../../prod-railway/.ai/instruct.md)
 
 ---
 

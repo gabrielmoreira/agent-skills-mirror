@@ -28,7 +28,9 @@ An AuthOS service represents an application owned by an organization. Source fie
 - `device_activation_uri`
 - SAML IdP fields such as entity ID, ACS URL, SLO URL, NameID format, attribute mapping, and signing flags
 
-Service types used in the codebase include `web`, `api`, `mobile`, and `desktop`. Treat `mobile` and `desktop` as public clients that require PKCE in OAuth callback paths.
+Core API service types used in the codebase include `web`, `api`, `mobile`, and `desktop`. Treat `mobile` and `desktop` as public clients that require PKCE in OAuth callback paths.
+
+The standalone lite Platform Setup workspace currently presents simpler application labels: `web`, `native`, `spa`, and `machine`. Use those labels only when editing the managed standalone config through the lite setup flow; for direct organization service API calls, use the core API service type values unless the source has changed.
 
 ## Service APIs
 

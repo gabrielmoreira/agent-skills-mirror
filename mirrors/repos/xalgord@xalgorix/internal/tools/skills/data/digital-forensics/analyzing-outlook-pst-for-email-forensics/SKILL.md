@@ -44,6 +44,14 @@ Microsoft Outlook PST (Personal Storage Table) and OST (Offline Storage Table) f
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Most-missed artifacts:** `pffexport -m all` defaults skip a lot. Explicitly run `-m recovered` for soft/hard-deleted items, parse the Recoverable Items / "Dumpster" folder, prefer the OST (often richer than an archived PST), and look for orphaned message nodes in unallocated PST pages. Permanently-deleted emails frequently survive as unreferenced nodes long after the user "emptied" Deleted Items.
+- **Headers vs MAPI properties:** `transport_headers` may be stripped or absent on internally-generated mail - fall back to MAPI props (PR_SENDER_SMTP_ADDRESS, PR_SENT_REPRESENTING_*, PR_CLIENT_SUBMIT_TIME, PR_MESSAGE_DELIVERY_TIME). A missing header is not a missing sender. Beware PR_SENDER vs PR_SENT_REPRESENTING (send-on-behalf/delegate), which masks the true author.
+- **Anti-forensics that defeats this analysis:** auto-delete rules, "permanent delete" (Shift+Del), and PST compaction reclaim free pages and overwrite recoverable nodes. Image and hash the PST/OST, then work on a copy - opening it in Outlook itself mutates the file and can trigger compaction.
+- **Validate with a second source:** corroborate a suspect message against the Exchange/M365 message trace and journal, the recipient's mailbox copy, and attachment SHA-256 on VirusTotal. PR_CLIENT_SUBMIT_TIME is client-clock based and forgeable - prefer server delivery times.
+- **Interpretation pitfalls (false positives):** PST item times display in local timezone over a UTC store, so confirm timezone and clock skew before timelining; "(no subject)" mail to a personal address is not automatically exfiltration; and valid DKIM/SPF on a stored phish only proves the sending infra, not legitimacy.
+
 ## Prerequisites
 
 - libpff/pffexport (open-source PST parser)

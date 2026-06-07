@@ -36,6 +36,15 @@ This skill automates packet capture analysis using tshark (Wireshark CLI) and py
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+- **Snaplen truncation:** capturing with a small `-s` (snaplen) cuts payloads and breaks reassembly. Capture full frames (`-s 0`) or you'll miss DNS answers, HTTP bodies, and IOC strings.
+- **Capture vs display filter confusion:** a BPF capture filter (`-f "port 53"`) drops packets permanently; a display filter (`-Y "dns"`) only hides them. Using `-f` when you meant `-Y` silently discards evidence — capture broadly, filter with `-Y`.
+- **Encrypted traffic blind spot:** TLS hides URLs and payloads. Pivot to metadata — SNI (`-Y "tls.handshake.extensions_server_name"`), JA3, cert CN, and conn duration/bytes — instead of assuming "nothing malicious."
+- **Drops and sampling:** check tshark's end-of-capture "packets dropped" and the kernel `if_drop`; a saturated link or ring buffer (`-b`) silently loses the beacon you're hunting. Sampled NetFlow (1:1000) misses low-volume C2 entirely.
+- **Display-filter mistakes:** `ip.addr != x` and `!(ip.addr == x)` are not equivalent, and `http.request` misses HTTP/2-over-TLS. Validate the filter returns the expected baseline count before trusting a zero result.
+- **How to validate:** re-run the logic in the Wireshark GUI, cross-check counts with `-z io,stat,0` and `-z conv,ip`, and confirm against a known-good PCAP that your detection actually fires before reporting "clean."
+
 ## Prerequisites
 
 - tshark (Wireshark CLI) installed and in PATH

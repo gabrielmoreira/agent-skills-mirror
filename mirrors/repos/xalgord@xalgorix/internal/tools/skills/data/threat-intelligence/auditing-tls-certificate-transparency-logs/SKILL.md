@@ -37,6 +37,15 @@ nist_csf:
 
 **Do not use** for attacking or disrupting Certificate Authorities, for scraping CT logs in violation of rate limits or terms of service, or as the sole method of subdomain enumeration without corroborating results through DNS verification.
 
+## Detection Gaps & Validation
+
+- **MMD / crt.sh latency:** an SCT only promises inclusion within the 24h Maximum Merge Delay, and crt.sh polls logs on its own schedule -- a 15-minute poll can miss a freshly issued cert. Do not treat "not in crt.sh yet" as "not issued."
+- **Coverage gaps:** crt.sh omits logs it does not ingest, and querying only `%.example.com` misses certs that list your domain in a SAN of an unrelated CN. Query by `name_value`/SAN, include subsidiary brands, and corroborate with certspotter or a direct RFC 6962 `get-entries` pull.
+- **Precertificate vs leaf:** ignoring precerts (poison OID 1.3.6.1.4.1.11129.2.4.3) forfeits the early-warning window -- track both.
+- **Baseline drift:** an un-updated baseline DB re-alerts on every legitimate renewal (alert fatigue) while a too-broad authorized-CA set hides a rogue issuance.
+
+To validate: confirm a known recent cert for your domain appears via the API before trusting the monitor, and rate-limit-test with backoff so HTTP 429s do not create silent gaps. Verify unauthorized-CA logic by injecting a test issuer not in the allowlist and confirming the alert fires; confirm STH signatures and `get-sth-consistency` proofs actually validate (append-only) rather than being skipped. After any authorized change, update the baseline so renewals do not generate false positives.
+
 ## Prerequisites
 
 - Python 3.10+ with `requests`, `cryptography`, and `pyOpenSSL` libraries installed

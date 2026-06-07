@@ -1,5 +1,5 @@
 ---
-name: PDS Depth-Priority Hierarchical-Instruct pointer
+name: PDS Depth-Priority AI-INSTRUCT pointer
 alwaysApply: true
 globs:
   - "**/*"
@@ -11,17 +11,32 @@ globs:
 
 ## Project rules location
 
-> ⛔ **STOP. This file holds no rules.** It is a thin pointer to the single master reference. Do not duplicate rules here.
+This project uses the **Depth-Priority Hierarchical AI-INSTRUCT V6** system. The rule files are **not** stored in `.continue/rules/` — they are stored under `.hi/` and in per-directory `.hi/instruct.md` files. **The deepest `.hi/instruct.md` always wins.**
 
-**→ [`.hi/instruct.md`](../../.hi/instruct.md) is the single authoritative master.**
+Before suggesting any change, read in this order:
 
-Before suggesting any change, read and obey its **[⛔ Mandatory Reading Contract](../../.hi/instruct.md#-stop--mandatory-reading-contract-non-negotiable)**. That contract is the *only* place that defines the mandatory reading order, the cross-cutting canonical map, the depth-priority rule (**the deepest `.hi/instruct.md` always wins**), and the governed import/merge guard.
+1. [`.github/copilot-instructions.md`](../../.github/copilot-instructions.md) — meta: how the layering works.
+2. [`.github/dev-specs.md`](../../.github/dev-specs.md) — developer OS, shell, language versions, frameworks. Read at session start before suggesting commands or paths.
+3. [`.hi/index.md`](../../.hi/index.md) — master index of every instruction section.
+4. [`.hi/instruct.md`](../../.hi/instruct.md) — workspace-root authority.
+5. `[current-directory]/.hi/instruct.md` and every ancestor — **the deepest is authoritative**, shallower files are background context only.
 
-Do not invent a new `.continue/rules/*.md` file with project rules in it — those rules belong in the appropriate `.hi/` file.
+## Cross-cutting rules
+
+| Topic | Canonical file |
+|-------|---------------|
+| Naming, file organization | [`.hi/conventions.md`](../../.hi/conventions.md) |
+| Archive / never-delete / never-reset-db | [`.hi/maintenance.md`](../../.hi/maintenance.md) |
+| Credentials, `.env`, `.gitignore` | [`.hi/credentials.md`](../../.hi/credentials.md) |
+
+## Do not
+
+- Do not invent a new `.continue/rules/*.md` file with project rules in it — those rules belong in the appropriate `.hi/` file. The `.continue/rules/` directory is a pointer layer only.
+- Do not duplicate content from `.hi/` into Continue rules. If Continue needs context, add a one-line pointer here that links to the canonical file.
 
 ## MCP server
 
-Continue does not auto-discover MCP servers from a workspace file. To enable the project's [`hia-instruct`](../../.hi/mcp/README.md) server, add this block to your `~/.continue/config.json` once:
+Continue does not auto-discover MCP servers from a workspace file. To enable the project's [`pds-ai-instruct`](../../.ai/mcp/README.md) server, add this block to your `~/.continue/config.json` once:
 
 ```jsonc
 {
@@ -31,7 +46,7 @@ Continue does not auto-discover MCP servers from a workspace file. To enable the
         "transport": {
           "type": "stdio",
           "command": "python",
-          "args": ["-m", "hia_mcp"],
+          "args": ["-m", "pds_mcp"],
           "env": { "PDS_WORKSPACE": "<absolute path to this workspace>" }
         }
       }
@@ -40,4 +55,4 @@ Continue does not auto-discover MCP servers from a workspace file. To enable the
 }
 ```
 
-Install once per clone: `cd .hi/mcp/python && pip install -e .` (or use the Node twin).
+Install once per clone: `cd .ai/mcp/python && pip install -e .` (or use the Node twin).

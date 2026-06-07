@@ -38,6 +38,15 @@ Network segmentation divides a flat network into isolated security zones with fi
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Intra-zone lateral movement left open:** zone firewalls only police traffic *between* zones; hosts in the same VLAN/zone talk freely unless you add an intra-zone deny (or private VLANs). Most projects block east-west between zones but forget within them.
+- **Implicit allow above default-deny:** a broad permit ordered before `Deny-All`, or a missing `Deny-Intrazone`, silently opens paths. The deny-all rule must be last and logged.
+- **ACL direction/placement errors:** `ip access-group ... out` vs `in` filters the wrong direction, and an ACL on the wrong SVI lets traffic in via an unfiltered path. Trace the actual flow direction per interface.
+- **VLAN hopping:** trunks left on default native VLAN 1 or with DTP auto-negotiation allow double-tagging into protected VLANs. Set an unused native VLAN, `switchport nonegotiate`, and prune allowed VLANs.
+
+**Verification:** test from both sides, not just config review. From a Corporate host, a connection to the PCI CDE (`nc -z -w3 10.0.40.10 443`) must be **blocked** and generate a firewall deny log, while an allowed flow (Corporate→Servers 443) must succeed. Run the validation matrix and confirm denied inter-zone attempts appear in the firewall log — a silent block with no log entry can mean the traffic took an unfiltered route rather than being denied.
+
 ## Prerequisites
 
 - Network topology documentation with asset inventory

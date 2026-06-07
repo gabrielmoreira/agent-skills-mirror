@@ -41,6 +41,18 @@ nist_csf:
 
 **Do not use** as a replacement for manual penetration testing. Automated scanning catches common vulnerability patterns but cannot replace human-driven security assessments for business logic flaws and complex attack chains.
 
+## Common Misconfigurations & Verification
+
+The most common failure is a scan that runs but never blocks: findings are reported yet the build stays green.
+
+- **Gate reports but does not fail:** Semgrep without `--error` (or with `continue-on-error: true`), or Trivy without `exit-code: '1'`, prints findings and exits 0. The `security-gate` job must inspect `needs.*.result` and `exit 1`.
+- **Severity floor hides real bugs:** `--severity ERROR` / `severity: 'CRITICAL,HIGH'` silently drops MEDIUM secrets and SCA hits. Confirm the threshold matches policy.
+- **DAST against the wrong target:** `action-baseline` pointed at an unauthenticated landing page or a stale build crawls almost nothing. Verify ZAP authenticated and the spidered URL count is non-trivial.
+- **Shallow checkout blinds Gitleaks:** without `fetch-depth: 0` only the tip commit is scanned, so secrets in history pass.
+- **Branch protection not wired:** the gate job exists but is not a *required* status check, so PRs merge around it.
+
+**Verify the gate actually bites:** plant a dummy `AWS_SECRET_ACCESS_KEY`, a `cursor.execute(f"...")` SQLi pattern, and a pinned known-vulnerable dependency (e.g. `lodash@4.17.20`), open a PR, and confirm the merge is **blocked** — not merely annotated. A gate you have never seen fail is not a gate.
+
 ## Prerequisites
 
 - CI/CD platform: GitHub Actions, GitLab CI, Jenkins, or Azure DevOps

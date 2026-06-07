@@ -31,6 +31,17 @@ nist_csf:
 - When assessing access control on API endpoints that should require authentication
 - During security audits to validate that all sensitive resources enforce session validation
 
+### How to CONFIRM a Hit (avoid false negatives)
+
+- **Positive signal**: an unauthenticated (or lower-priv) request returns the actual protected resource/action — the real admin panel, real user data, or a real config/backup file — not a login redirect or empty shell.
+- Confirm with a **second account/context**: compare the unauth response against the authenticated owner's response (body content and length). Matching sensitive content proves missing access control; a same-sized generic page does not.
+- A 200 alone is NOT a hit (could be a login page or SPA shell); a 403/302 alone is NOT a clean negative (the endpoint may be reachable via another method or path form).
+- Do NOT conclude "not vulnerable" until you have tried:
+  - **HTTP method swap** (GET/POST/PUT/DELETE/PATCH/OPTIONS/HEAD) and override headers — auth is often enforced per-method only.
+  - **Path/normalization tricks**: case changes, trailing `/`, `;`, `..;/`, `%2f`, `%2561`, `%00`, `/.;/`, and `../` traversal to slip past path-based rules.
+  - **Forced/hidden endpoints** from fuzzing (admin, actuator, swagger, debug) and **backup/VCS files** (`.bak`, `.old`, `.env`, `.git/HEAD`) — confirm real content, e.g. `.git/HEAD` returns `ref: refs/heads/...`.
+  - Stripping vs. supplying auth to prove the resource is genuinely reachable without a valid session.
+
 ## Prerequisites
 
 - **Authorization**: Written penetration testing agreement covering directory enumeration

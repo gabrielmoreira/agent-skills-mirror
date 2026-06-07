@@ -37,6 +37,15 @@ Use this skill when:
 
 **Do not use** this skill for unauthorized reverse engineering that violates terms of service or intellectual property law.
 
+## Most Often Missed & How to Confirm
+
+- **FairPlay encryption** — static analysis of an App Store binary is meaningless until decrypted. Confirm `cryptid=1` via `otool -l`, then dump with frida-ios-dump.
+- **Pure Swift classes** — not visible through `ObjC.classes`. Confirm presence via `Module.enumerateExports()` / `frida-trace` on mangled symbols.
+- **CommonCrypto key extraction** — confirm by hooking `CCCrypt` and dumping the key/IV/operation during an encryption call.
+- **Keychain/NSUserDefaults reads** — confirm secret usage by hooking `SecItemCopyMatching` and `objectForKey:` and logging keys/values.
+- **Stripped release symbols** — confirm a function's identity by combining `frida-trace` output with class-dump headers before claiming its purpose.
+- **Anti-Frida artifacts** — confirm detection (dyld image names, agent strings) is why the app crashed, then switch to Gadget/stealth builds.
+
 ## Prerequisites
 
 - Jailbroken iOS device with Frida server installed via Cydia/Sileo, or non-jailbroken device with Frida Gadget-injected IPA

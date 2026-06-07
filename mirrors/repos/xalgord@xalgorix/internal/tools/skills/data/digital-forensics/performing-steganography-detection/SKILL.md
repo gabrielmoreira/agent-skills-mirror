@@ -30,6 +30,16 @@ nist_csf:
 - When standard file analysis reveals anomalies in media file properties
 - For detecting communication channels using steganographic techniques
 
+## Detection Gaps & Validation
+
+Steganalysis is asymmetric: a null result rarely means "clean," and a statistical spike rarely means "stego." Treat both with discipline:
+
+- **A null result is NOT proof of a clean file.** `zsteg`/`steghide`/`stegoveritas` finding nothing only rules out the schemes and passwords you tried. steghide on a JPEG needs the correct passphrase (run `stegseek` against a wordlist before concluding "empty"); DCT, palette, and bit-plane methods evade LSB-only checks; and modern adaptive embedding (e.g., F5, matrix encoding) leaves minimal statistical trace. Report "no stego detected with tools X using wordlist Y," not "no hidden data."
+- **Match the tool to the carrier.** `zsteg` is for lossless PNG/BMP LSB; running it on a JPEG is meaningless (use steghide/stegseek/JPEG DCT analysis there). Lossy recompression destroys LSB payloads, so a JPEG that passed through a messaging app may have lost its cargo — absence then proves nothing.
+- **Confirm a hit by extracting and parsing, not by statistics alone.** A chi-square anomaly or skewed LSB ratio is a *lead*. Validate it by carving the bitstream and finding real structure: a file magic (`PK`, `\x89PNG`, `%PDF`), decompressible/decryptable content, or readable text. `binwalk`/trailing-bytes after `FF D9` (JPEG) or `IEND` (PNG) is high-confidence; a lone entropy bump is not.
+- **Cross-corroborate with metadata and context.** Compare file size against expected size for the resolution/bitrate, check EXIF for editing-tool signatures (`OpenStego`, `steghide`), and look for the *sending/receiving* tool on the endpoint. Stego with no embedding tool, key, or counterpart file present is weak on its own.
+- **Interpretation false positives.** Natural images legitimately have near-50/50 LSB distributions; JPEG re-saves, app thumbnails, color-profile/ICC blocks, and benign appended metadata trip "anomaly" and "trailing data" flags. High entropy alone = compressed or encrypted, not necessarily hidden-by-intent. Always have a known-clean reference from the same camera/app to baseline against.
+
 ## Prerequisites
 - StegDetect, zsteg, stegsolve, binwalk for analysis
 - steghide, OpenStego for extraction attempts

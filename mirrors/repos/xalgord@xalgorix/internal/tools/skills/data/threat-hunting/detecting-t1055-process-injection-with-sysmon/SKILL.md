@@ -38,6 +38,15 @@ nist_csf:
 - During purple team exercises testing detection of process injection variants
 - When validating Sysmon configuration coverage for injection detection
 
+## Detection Gaps & Validation
+
+- **EID 8 only catches `CreateRemoteThread`:** thread-hijacking (T1055.003, `SetThreadContext`), APC/early-bird injection (T1055.004, `QueueUserAPC`), and ListPlanting (T1055.015) never call CreateRemoteThread — lean on EID 10 ProcessAccess (`0x0008|0x0020|0x0002`) and memory scanners for these.
+- **Reflective / module-stomping loads** write code without an EID 7 ImageLoaded from disk, so DLL-path rules miss them — pe-sieve/Moneta memory scans are the fallback.
+- **EID 25 ProcessTampering needs Sysmon 13+** and only covers hollowing-style image divergence; doppelgänging (T1055.013) via NTFS transactions evades it.
+- **StartAddress in unbacked memory:** EID 8 with a `StartFunction`/StartAddress not mapping to a named module is high-signal — but only if your Sysmon config does not filter EID 8 (many shipped configs do).
+- **Validate:** run Atomic Red Team **T1055.001** (CreateRemoteThread DLL inject) and **T1055.002** and confirm EID 8/10 plus the `SourceImage!=TargetImage` searches fire against a target like notepad.exe.
+- **Tune FPs:** AV/EDR, debuggers, RMM agents, and accessibility tools perform legitimate cross-process writes — exclude by signed SourceImage; never exclude by target (attackers pick common targets).
+
 ## Prerequisites
 
 - Sysmon deployed with comprehensive configuration capturing Events 1, 7, 8, 10, 25

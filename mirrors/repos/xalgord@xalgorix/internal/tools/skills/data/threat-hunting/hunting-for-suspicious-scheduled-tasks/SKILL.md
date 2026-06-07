@@ -31,6 +31,15 @@ nist_csf:
 - During incident response to enumerate all persistence on compromised systems
 - When Windows Security Event ID 4698 (Scheduled Task Created) fires for unusual tasks
 
+## Detection Gaps & Validation
+
+- **Audit gap, not "no activity":** Security EID 4698/4702 only log when "Object Access > Other Object Access Events" auditing is enabled (default OFF) — absence of 4698 does NOT mean no tasks. Corroborate with Microsoft-Windows-TaskScheduler/Operational (EID 106/140/200) and the registry `HKLM\...\Schedule\TaskCache\Tree`.
+- **Action-type evasion:** tasks whose action is a `ComHandler` CLSID, and tasks created by writing directly to `TaskCache`, bypass schtasks.exe EID 1 command-line hunting.
+- **SD-deletion hiding:** removing the task's SD makes it vanish from `schtasks /query` and the GUI while it still executes — diff `TaskCache\Tree` GUIDs against `\Tasks` to surface orphans.
+- **Renamed binary:** match EID 1 `OriginalFileName` + CommandLine, since a renamed schtasks.exe defeats Image-name rules.
+- **Validate:** run Atomic T1053.005 schtasks and `Register-ScheduledTask`; confirm 4698 + a new TaskCache registry entry both appear.
+- **FP tuning:** baseline `\Microsoft\Windows\` built-ins and vendor updater tasks by author/signer.
+
 ## Prerequisites
 
 - Windows Security Event ID 4698/4699/4702 (Task Created/Deleted/Updated)

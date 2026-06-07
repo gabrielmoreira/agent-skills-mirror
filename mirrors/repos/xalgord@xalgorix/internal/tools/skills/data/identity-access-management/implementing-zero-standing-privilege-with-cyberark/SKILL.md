@@ -35,6 +35,14 @@ Zero Standing Privileges (ZSP) is a security model where no user or identity ret
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Leftover standing roles:** ZSP fails if pre-migration standing principals survive cutover. Query each cloud for human-assignable privileged access: AWS IAM users/roles with `AdministratorAccess` or `iam:*`, Azure `Global Administrator`/`Owner` assignments, GCP `roles/owner` and `roles/editor` bindings. Anything that is not an ephemeral SCA-created role is residual standing privilege.
+- **Break-glass quietly becomes standing:** emergency accounts are often excluded from ZSP and drift into permanent admin. Confirm they are monitored, alarm on use, and are credential-rotated after every use.
+- **Over-scoped JIT:** an ephemeral role granting `*:*` is just-in-time in time only. Verify entitlement policies scope to minimum actions/resources and that `deny_actions` blocks escalation (`iam:*`, `sts:*`, `organizations:*`).
+- **Approval bypass:** check that auto-approve rules (e.g., 7-day repeat-approval) cannot be abused on high-risk policies.
+- **Verify:** reconcile actual usage from CloudTrail / Azure Activity / GCP Audit Logs against granted entitlements, confirm ephemeral roles are deleted at session TTL expiry (no leftover roles), and that the SIEM receives session and access logs.
+
 ## Prerequisites
 
 - CyberArk Identity Security Platform (Privilege Cloud or self-hosted)

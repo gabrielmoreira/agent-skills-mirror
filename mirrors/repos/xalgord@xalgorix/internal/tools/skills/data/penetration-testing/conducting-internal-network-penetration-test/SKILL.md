@@ -42,6 +42,15 @@ An internal network penetration test simulates an attacker who has already gaine
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Name-resolution poisoning beyond LLMNR** — testers run Responder for LLMNR/NBT-NS but skip mDNS and, critically, IPv6/DHCPv6 takeover with mitm6 (modern networks are dual-stack and WPAD/IPv6 is often wide open). Run both, on every VLAN.
+- **NTLM relay instead of just cracking** — capturing a hash and only trying to crack it misses the easy win: relay to SMB (signing disabled), LDAP/LDAPS (for ADCS ESC8 / RBCD), or HTTP. Coerce auth with PetitPotam/PrinterBug/Coercer to force a DC or server to authenticate.
+- **AD attack paths people skip** — AS-REP roasting (not just Kerberoasting), unconstrained/constrained/RBCD delegation, ADCS templates (ESC1-ESC8 via certipy), and GPP cpassword in SYSVOL. Always run BloodHound and follow the shortest-path-to-DA graph, not ad-hoc guessing.
+- **Local admin password reuse / LAPS gaps** — pass-the-hash the local admin across the subnet; one shared local admin = mass lateral movement.
+- **Segmentation and "boring" services** — verify VLAN isolation actually holds (can the user VLAN reach the server/OT/management VLAN?), and check SNMP `public`, NFS exports, and unauthenticated MSSQL/Redis.
+- **How to confirm**: prove each finding with concrete evidence — a captured NTLMv2 hash file, a cracked credential, a BloodHound path screenshot, a successful relay session, or a `certipy` request yielding a TGT/cert for a higher-priv user. Don't conclude SMB signing or relay is not exploitable until you have checked signing status (`netexec smb --gen-relay-list`) and attempted coercion; don't conclude "no Kerberoast" is the whole AD story until you have also tested AS-REP, delegation, and ADCS.
+
 ## Prerequisites
 
 - Signed Rules of Engagement with internal network scope

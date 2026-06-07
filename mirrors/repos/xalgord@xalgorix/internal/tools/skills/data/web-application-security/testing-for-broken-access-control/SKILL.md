@@ -31,6 +31,19 @@ nist_csf:
 - When assessing API endpoints for missing or inconsistent authorization checks
 - During security audits where privilege escalation and unauthorized access are primary concerns
 
+### How to CONFIRM a Hit (avoid false negatives)
+
+- **Positive signal**: a lower-privilege (or fully unauthenticated) principal receives the higher-privilege resource or successfully performs the privileged action — not just a 200, but the actual restricted data/state.
+- Always confirm with a **second account**: verify the returned data genuinely belongs to the OTHER principal (matching IDs, names, emails), proving cross-account access rather than a benign echo.
+- A 200 alone is NOT a hit; a 403/401/302 alone is NOT a clean negative. Compare response body and length against the legitimate owner's response.
+- Do NOT conclude "not vulnerable" until you have tried:
+  - **HTTP method swap** (GET/POST/PUT/PATCH/DELETE) and override headers (`X-HTTP-Method-Override`, `X-Original-Method`).
+  - **Path tricks**: trailing `/`, `;`, `..;/`, `%2f`, `%00`, double-encoding, and case changes (`/ADMIN/`).
+  - **Hidden/forced endpoints** discovered via fuzzing that the UI never links.
+  - **Unauthenticated** access (strip all auth headers/cookies) in addition to low-priv access.
+  - **Mass-assignment / parameter** role escalation (`role`, `is_admin`, `tenant_id`) in body, query, and headers.
+- For multi-tenant: confirm by reading another tenant's record and matching it to that tenant, not by a generic success code.
+
 ## Prerequisites
 
 - **Authorization**: Written penetration testing agreement for the target

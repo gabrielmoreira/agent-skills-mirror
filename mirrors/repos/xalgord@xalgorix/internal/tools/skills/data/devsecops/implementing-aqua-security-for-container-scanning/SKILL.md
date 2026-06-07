@@ -36,6 +36,19 @@ Aqua Security provides Trivy, the world's most popular open-source universal sec
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+These mistakes let vulnerable images ship while Trivy appears to "pass":
+
+- **`--exit-code 0` everywhere.** A scan run with `trivy image --exit-code 0` only reports; it never fails the build. Use a gating invocation `trivy image --exit-code 1 --severity CRITICAL,HIGH` (the GitLab template pattern of a report pass followed by a real `--exit-code 1` pass is correct — keep both).
+- **`continue-on-error: true` / `soft_fail`.** In GitHub Actions the `trivy-action` `exit-code: '1'` is undone by a job-level `continue-on-error: true`; remove it on the gating step.
+- **Scanning the wrong tag.** `image-ref`/`CS_IMAGE` pinned to `:latest` instead of `${{ github.sha }}` scans a stale image. Scan the exact digest you just built.
+- **Stale vuln DB or `--skip-db-update`** misses recent CVEs; let Trivy refresh its DB in CI.
+- **Over-broad `.trivyignore`** (or unexpired `exp:` dates) silently suppresses real CRITICALs — review it.
+- **`--ignore-unfixed` hides fixable CVEs** if you actually want to gate on them.
+
+**Concrete verification:** Build an image `FROM` a known-vulnerable base (e.g. `debian:10` or an old `python:3.6`) and run your gating step. Confirm the job **exits non-zero and fails the pipeline**, then confirm a clean patched image passes. This proves the exit code is honored, not swallowed.
+
 ## Prerequisites
 
 - Docker installed for local image scanning

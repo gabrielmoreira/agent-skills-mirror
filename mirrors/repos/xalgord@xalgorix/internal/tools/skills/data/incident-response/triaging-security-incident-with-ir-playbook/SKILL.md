@@ -33,6 +33,14 @@ nist_csf:
 - Multiple concurrent incidents require prioritization
 - Automated triage rules need validation or tuning
 
+## Detection Gaps & Validation
+
+- **Enrichment context, not just reputation, drives severity:** a "clean" VirusTotal/AbuseIPDB result does not downgrade an alert — newly registered C2 and fast-flux infrastructure often have zero detections. Validate against asset criticality (CMDB), data classification, and whether the threat is *active* vs historical before assigning P1-P4.
+- **The most-missed triage error is closing the alert in isolation:** before calling true/false positive, pivot — same src/dest IP, same user, same hash across the last 30 days. A single brute-force or "quarantined malware" alert is frequently one node of a broader intrusion (lateral movement, persistence) that single-alert triage buries.
+- **Confirm the alert maps to the right playbook:** signature names lie. Decode the payload, resolve the MITRE technique, and verify the trigger conditions actually match before launching a playbook — a mis-categorized incident routes to the wrong team and burns SLA.
+- **Cross-corroborate the severity inputs:** verify asset criticality from CMDB (not the analyst's guess), confirm the account is actually privileged, and validate "active threat" with EDR process state rather than the alert timestamp alone.
+- **FP tuning:** track each detection rule's historical true-positive rate and suppress/auto-close chronic noisemakers (scanner traffic, known admin tooling, sanctioned data flows) so analysts don't fatigue and miss the real P1. Don't auto-close on a low score until enrichment and historical correlation agree.
+
 ## Prerequisites
 - SIEM platform with alert correlation (Splunk, Elastic, QRadar, Sentinel)
 - Incident response playbook library (by incident type)

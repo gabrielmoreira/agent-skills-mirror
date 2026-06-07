@@ -37,6 +37,15 @@ nist_csf:
 - When EDR or SIEM alerts trigger on related indicators
 - During periodic security assessments and purple team exercises
 
+## Detection Gaps & Validation
+
+- **NTLM logging is the blind spot:** PtH surfaces as Security EID 4624 Type 3 with `Authentication Package = NTLM` and `Logon Process = NtLmSsp` on a host/account that normally uses Kerberos. If NTLM auditing (`Restrict NTLM: Audit NTLM authentication`) and DC EID 4776 are not enabled, the hash use is invisible — confirm both are on.
+- **Local-account hashes (RID 500) skip DC logs:** lateral movement with a local admin hash only logs on the destination, not the DC. Hunt 4624 Type 3 where `TargetUserName` is a local account and `LogonGuid` is all-zero (no Kerberos TGT was ever requested).
+- **LogonGuid = {00000000-0000-...}** reliably separates NTLM 4624s from Kerberos; attackers cannot fake a TGT they never obtained.
+- **Evasions:** over-pass-the-hash converts the hash to a Kerberos ticket so activity shows as 4768/4769 and defeats NTLM-only rules; Impacket sets `Logon Process = User32`/`seclogo` only on legacy paths.
+- **Validate the rule fires:** run Atomic Red Team **T1550.002** (Mimikatz `sekurlsa::pth` or Impacket `psexec.py -hashes`) from a test host and confirm the 4624 Type 3 / 4776 events land in the SIEM within the search window.
+- **Tune FPs:** scheduled tasks, vuln scanners (Nessus/Qualys), and clustered apps generate legitimate NTLM Type 3 logons — baseline service accounts and exclude known source IPs, not account names.
+
 ## Prerequisites
 
 - EDR platform with process and network telemetry (CrowdStrike, MDE, SentinelOne)

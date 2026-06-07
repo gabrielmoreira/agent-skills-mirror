@@ -33,6 +33,14 @@ nist_csf:
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **If 4104 is disabled, you have nothing:** Script Block Logging must be enabled via GPO (`Administrative Templates > Windows PowerShell > Turn on PowerShell Script Block Logging`) or registry `HKLM\...\PowerShell\ScriptBlockLogging\EnableScriptBlockLogging=1`. Attackers running `powershell -version 2` downgrade to an engine with no 4104/AMSI at all. Hunt for 400/600 engine-start events showing v2 and for the absence of expected 4104 volume on a host.
+- **AMSI bypass precedes the malicious block:** `amsiInitFailed`, `[Ref].Assembly.GetType('...AmsiUtils')`, and reflection/obfuscated variants neutralize scanning. Detect the *bypass string itself* in 4104, since the subsequent payload may log as benign or not at all.
+- **Obfuscation defeats naive regex:** tick marks (`I`+`EX`), string `-join`/`-f` format ops, `[char]` arrays, gzip+base64, and `SecureString` hide `IEX`/`DownloadString`. Score on Shannon entropy and decoded content, not literal keywords. Reconstruct multi-part scripts by `ScriptBlockId` ordered by `MessageNumber` before scoring — a split payload evades per-event matching.
+- **Watch 4103 too:** Module/pipeline logging (EID 4103) captures invocation detail 4104 misses; correlate both.
+- **Validate the rule fires:** in a lab, run an `-EncodedCommand` download cradle and an AMSI bypass, then confirm your parser flags both EID 4104 entries and that base64 decodes as UTF-16LE. **FP tuning:** legitimate admin tooling, Chocolatey, SCCM, and installers emit large/encoded blocks — baseline by signing cert and parent process before alerting.
+
 ## Prerequisites
 
 - Familiarity with security operations concepts and tools

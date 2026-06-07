@@ -45,7 +45,7 @@ git push origin feature/your-change
 - 保持实现简单直接，避免过度设计
 - 只修改当前任务所需内容，不顺手做额外重构
 - 更新相关文档
-- 如有必要，同步更新 [docs/develop-guides/roadmap.md](docs/develop-guides/roadmap.md)
+- 如有必要，同步更新 [docs/develop-guides/changelog.md](docs/develop-guides/changelog.md)
 - 设计部分请参考 [docs/develop-guides/design.md](docs/develop-guides/design.md)
 
 ### 后端

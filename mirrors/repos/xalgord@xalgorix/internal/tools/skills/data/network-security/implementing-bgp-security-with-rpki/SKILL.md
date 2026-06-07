@@ -38,6 +38,15 @@ Resource Public Key Infrastructure (RPKI) provides cryptographic validation of B
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Invalid vs NotFound confusion:** dropping `Invalid` does nothing for prefixes that are `NotFound` (no ROA at all). Forget to create a ROA and your own prefix is accepted everywhere with zero protection. Check with `routinator vrps | grep <prefix>` — no VRP means NotFound, not safe.
+- **Max-length too loose:** a ROA with max-length `/24` on a `/24` is correct; a wide max-length (e.g. `/23-/24`) lets an attacker announce a more-specific that still validates `Valid`. Set max-length equal to the announced length.
+- **Policy attached but not enforced:** on IOS-XE the `route-map RPKI-FILTER` must be applied `in` on every eBGP neighbor and you must `clear bgp ... soft in`; a configured-but-unapplied map silently accepts Invalids.
+- **Validator down = fail-open:** if the RTR session to Routinator drops, the router treats all routes as NotFound and accepts them. Run two independent caches.
+
+**Verification:** `show bgp ipv4 unicast rpki table` should list non-zero VRPs and per-neighbor `show bgp ... rpki state` should read `valid/invalid/not-found`, not `disabled`. Announce a deliberately-invalid test route and confirm rejection (`show route validation-state invalid` on Junos). A converged table with no Invalids *and* no VRPs loaded means validation isn't actually running.
+
 ## Prerequisites
 
 - IP address space allocated from an RIR (ARIN, RIPE, APNIC, AFRINIC, LACNIC)

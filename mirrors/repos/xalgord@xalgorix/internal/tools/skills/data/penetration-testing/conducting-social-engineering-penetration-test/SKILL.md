@@ -44,6 +44,15 @@ Social engineering penetration testing assesses an organization's human attack s
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Measuring the report/resist rate, not just the click rate** — the security outcome that matters is whether anyone reported the attempt and how fast the SOC responded. Campaigns that only track clicks/credentials miss the defensive signal. Time the first report and the SOC's containment action.
+- **MFA-bypass / session-token phishing** — credential-only landing pages overstate safety where MFA exists. Use a reverse proxy (Evilginx/Modlishka) when authorized to prove session-cookie theft defeats MFA, or explicitly note MFA blocked access.
+- **Vishing and smishing channels** — email-only testing ignores the phone/SMS vectors that frequently yield help-desk credential resets and MFA-fatigue approvals. Script a help-desk pretext and track info disclosed.
+- **Email-auth and gateway reality check** — confirm whether the spoof actually bypassed the secure email gateway and what the target's SPF/DKIM/DMARC posture is (weak/missing DMARC = trivial spoofing); this turns a "people problem" into a fixable technical control.
+- **Physical/tailgating and USB-drop** where scoped — badge cloning, tailgating, and dropped-payload pickup expose controls email never touches.
+- **How to confirm**: capture artifacts proving impact — GoPhish event logs (sent/opened/clicked/submitted with timestamps), a captured session cookie replayed into a live session (MFA bypass), a recording/notes of disclosed info on a vishing call, or photos of accessed restricted areas. Don't conclude the workforce is resilient until you have also measured the report rate and tested at least one non-email channel; don't conclude MFA is effective until you have attempted a real-time relay against it.
+
 ## Prerequisites
 
 - Written authorization from senior management (CISO/CTO)

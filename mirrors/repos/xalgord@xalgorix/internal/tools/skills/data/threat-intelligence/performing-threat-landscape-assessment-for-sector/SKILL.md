@@ -41,6 +41,14 @@ A sector-specific threat landscape assessment analyzes the cyber threat environm
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+- **Hardcoded actor lists go stale:** the `SECTOR_GROUPS` mapping is a snapshot - groups emerge, rebrand, and shift targeting quarterly, and ATT&CK documents only *publicly reported* groups, undercounting fresh ransomware affiliates and access brokers. Refresh against current ATT&CK, vendor annual reports (M-Trends, CrowdStrike GTR), and your sector ISAC rather than trusting a static list.
+- **ATT&CK TTP coverage is incomplete:** `get_techniques_used_by_group` reflects only techniques analysts documented from observed intrusions; absence of a technique is not evidence the group cannot use it. Treat the technique list as a floor, not a ceiling.
+- **Vendor-naming overlap:** the same activity is named differently per vendor, and clusters are sometimes merged or split, so aggregating across sources double-counts or conflates groups. Normalize aliases before ranking "most common techniques."
+- **Reporting bias:** well-funded nation-state APTs are over-documented while higher-probability criminal/ransomware threats are under-represented in ATT&CK - weight the assessment by likelihood and recent sector incidents, not just available documentation.
+- **How to confirm:** corroborate sector targeting with at least two independent sources (ISAC advisories plus a vendor report) and recent incident data before driving security investment from the profile.
+
 ## Prerequisites
 
 - Python 3.9+ with `attackcti`, `requests`, `pandas`, `matplotlib` libraries

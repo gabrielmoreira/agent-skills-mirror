@@ -32,6 +32,16 @@ Hash cracking is an essential skill for penetration testers and security auditor
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+Cracking engagements under-report weak passwords mostly because of coverage gaps, not GPU limits. Confirm you have closed each gap below before declaring a hash "uncrackable."
+
+- **Wrong hash mode (`-m`):** misidentifying the hash wastes the whole run. Verify with `hashid`/`hashcat --identify`; watch for look-alikes — raw MD5 (`-m 0`) vs. md5crypt (`-m 500`), NTLM (`-m 1000`) vs. NetNTLMv2 (`-m 5600`), bcrypt (`-m 3200`), sha512crypt (`-m 1800`), Kerberos AS-REP/TGS-REP (`-m 18200`/`-m 13100`).
+- **Mask/attack-mode coverage gaps (`-a`):** running only `-a 0` dictionary and stopping. Add rules (`-a 0 -r rules/best64.rule`, `dive.rule`), hybrid (`-a 6`/`-a 7` for appended/prepended digits like `Password2024!`), and targeted masks (`-a 3 ?u?l?l?l?l?d?d?s`). Cover full keyspace for short passwords (`?a` up to 8 for fast hashes).
+- **Wordlist gaps:** not using rockyou + org-specific terms, leaked/breach lists, or `--increment` on masks; ignoring keyboard walks and language-specific lists.
+- **Slow-hash strategy:** for bcrypt/sha512crypt/Argon2 don't brute-force — prioritize curated wordlists + best64 rules and accept partial coverage; report what was *not* attempted.
+- **Positive signal (confirming a meaningful result):** a "hit" is a recovered plaintext in the potfile (`hashcat --show -m <mode> hashes.txt`) — verify it actually re-hashes to the target. Report the **distribution** (cracked %, length/complexity, reused/policy-violating passwords), not raw passwords, and note remaining keyspace so an uncracked hash is reported as "not cracked within scope," never "strong."
+
 ## Prerequisites
 
 - Familiarity with cryptography concepts and tools

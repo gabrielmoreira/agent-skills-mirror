@@ -35,6 +35,28 @@ nist_csf:
 - When auditing existing DSAR handling for regulatory compliance gaps
 - When scaling DSAR processing from manual to automated workflows
 
+## Common Misconfigurations & Verification
+
+DSAR workflows most often fail not on the response template but on the
+discovery and identity steps that decide what goes into the Article 15 copy:
+
+- **Incomplete data-source coverage:** the scanner hits the primary app DB but
+  misses log stores, analytics warehouses, backups, CRM, support tickets, and
+  third-party processors. Verify by reconciling the scanned source list against
+  the Art. 30 RoPA - any processing activity not represented in the scan is a
+  gap, not a clean result.
+- **Identity verification too weak or too strict:** accepting an unverified
+  email lets an attacker exfiltrate someone else's data; demanding a passport
+  for a low-risk request breaches the proportionality rule. Confirm the
+  verification step is risk-proportionate and logged.
+- **Clock mismanagement:** the one-month deadline (Art. 12) is not paused
+  correctly during verification, or the complex-case extension is taken without
+  notifying the subject in the first month. Test with a dated lifecycle log.
+- **Exemptions over-applied:** third-party/legal-privilege redactions hide the
+  subject's own data. Sample redactions to confirm only lawful exemptions.
+- **No completeness proof:** run a live test DSAR for a seeded identity and
+  confirm every known record is returned across all mapped sources.
+
 ## Prerequisites
 
 - Python 3.8+ with required dependencies (spacy, presidio-analyzer, jinja2)

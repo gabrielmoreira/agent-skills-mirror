@@ -44,6 +44,14 @@ Use this skill when:
 
 **Do not use** for real-time streaming detection (Sigma is for batch/scheduled searches) or when the target SIEM has native detection features that Sigma cannot express (e.g., Splunk RBA risk scoring).
 
+## Common Misconfigurations & Verification
+
+- **Logsource/field-mapping mismatch:** the rule's `logsource` (`category: process_access`, `product: windows`) only maps to real fields when the matching pipeline runs. Converting with `SplunkBackend()` and no `splunk_windows_pipeline()` emits raw Sigma field names (`TargetImage`, `GrantedAccess`) that don't exist in your Sysmon sourcetype, so the search runs but never matches. Always pair the backend with the pipeline and diff the output fields against your actual data.
+- **Category vs index gap:** `category: process_creation` assumes Sysmon EventCode 1 (or 4688 with command-line auditing enabled). If the host only ships Security 4688 without `Audit Process Creation` + command-line capture, `CommandLine`-based selections silently fail — verify the source data has the fields the rule keys on.
+- **Backend conversion drift:** the same rule yields different operators per backend (`|contains` → `*0x1010*` wildcards in SPL but a `match` in EQL). A rule that tests clean in Splunk can over/under-match in Elastic. Convert and unit-test against each target, don't assume portability.
+- **Filter logic inversion:** `condition: selection and not 1 of filter_*` makes broad `|endswith: '\svchost.exe'` filters swallow true positives (malware named svchost.exe in a non-system path). Anchor filters on full path/signature, not basename.
+- **Verification:** run `sigma check` for syntax, fire a known-true event (e.g., `mimikatz` LSASS access) to confirm 4/4 test cases match, then run a 7-day non-alerting backtest to measure the FP rate before promoting to a correlation/analytics rule.
+
 ## Prerequisites
 
 - Python 3.8+ with `pySigma` and appropriate backend (`pySigma-backend-splunk`, `pySigma-backend-elasticsearch`, `pySigma-backend-microsoft365defender`)

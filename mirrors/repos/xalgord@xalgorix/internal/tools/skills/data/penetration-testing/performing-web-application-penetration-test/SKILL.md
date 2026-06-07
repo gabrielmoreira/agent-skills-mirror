@@ -36,6 +36,15 @@ nist_csf:
 
 **Do not use** against web applications without written authorization, against production systems during peak traffic hours without explicit approval, or for denial-of-service testing of web infrastructure.
 
+## Most Often Missed & How to Confirm
+
+- **Authorization beyond the scanner** — IDOR/BOLA and vertical privilege escalation are the most impactful and least scanner-detectable. Replay every object-bearing and state-changing request with a second account and a lower-privilege token (Burp Autorize), including write/delete methods and nested resources.
+- **Business-logic flaws** — workflow/step-skipping, negative or zero quantities/prices, coupon/voucher reuse, and race conditions (Turbo Intruder concurrent requests). No automated tool models intended business rules.
+- **The API layer behind the SPA** — the frontend may be hardened while the API lacks independent authz. Test endpoints directly, and mine JS bundles for hidden endpoints, debug routes, and hardcoded keys.
+- **Session and auth edge cases** — session fixation (token unchanged after login), missing `HttpOnly`/`Secure`/`SameSite`, password-reset token predictability/host-header injection, and MFA bypass by hitting post-auth endpoints directly.
+- **Context-correct injection and SSRF** — XSS per output context (HTML/attr/JS/URL), SSTI (`{{7*7}}`), and SSRF to `169.254.169.254`; blind cases need an out-of-band collaborator.
+- **How to confirm**: prove each finding with the full HTTP request/response pair — attacker token returning victim data (IDOR), a 200 on a privileged action with a low-priv token, the resulting state change for logic flaws (negative total, duplicate redemption), an executed payload for XSS, or a collaborator callback for blind SSRF. Don't conclude an endpoint is safe until you've replayed it at every privilege level and tried every HTTP method; don't rely on the scanner for authorization or business logic.
+
 ## Prerequisites
 
 - Signed statement of work (SoW) defining the target application URLs, environments (staging/production), and testing boundaries

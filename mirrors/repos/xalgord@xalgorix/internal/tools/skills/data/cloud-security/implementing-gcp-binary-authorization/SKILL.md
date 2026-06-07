@@ -37,6 +37,23 @@ Binary Authorization is a Google Cloud deploy-time security control that ensures
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Policy in dry-run / audit-only:** an `enforcementMode: DRYRUN_AUDIT_LOG_ONLY` logs violations but deploys unattested images anyway. For real enforcement it must be `ENFORCED_BLOCK_AND_AUDIT_LOG`. Grep the exported policy for both `enforcementMode` and `evaluationMode`.
+- **`evaluationMode: ALWAYS_ALLOW`:** this admits every image regardless of attestation, defeating the control. Production rules need `REQUIRE_ATTESTATION` (or `ALWAYS_DENY` as default).
+- **Overly broad whitelist patterns:** `admissionWhitelistPatterns` like `gcr.io/**` or `*` bypass attestation entirely — keep them scoped to Google system images only.
+- **Binauthz not enabled on the cluster:** the policy is org-wide but the cluster admits anything unless created/updated with `--enable-binauthz`.
+- **Break-glass without alerting:** the `break-glass: "true"` label skips enforcement; without a log-based alert on it, it becomes a silent bypass.
+
+```bash
+gcloud container binauthz policy export | grep -E 'enforcementMode|evaluationMode|namePattern'
+gcloud container clusters describe CLUSTER --zone ZONE \
+  --format='value(binaryAuthorization.evaluationMode)'        # not DISABLED
+# Negative test: an unattested image must be denied
+kubectl run binauthz-test --image=docker.io/library/nginx:latest
+kubectl get events --field-selector reason=FailedCreate
+```
+
 ## Prerequisites
 
 - GCP project with Binary Authorization API enabled

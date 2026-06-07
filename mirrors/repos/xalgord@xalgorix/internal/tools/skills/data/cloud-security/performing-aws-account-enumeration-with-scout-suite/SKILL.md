@@ -37,6 +37,16 @@ ScoutSuite is an open-source multi-cloud security auditing tool developed by NCC
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Silent permission gaps look like a clean account:** when the running principal lacks an action, ScoutSuite skips that check rather than failing loudly. Grep the run log/console for `AccessDenied`/`UnauthorizedOperation` before trusting a "good" result - missing `iam:GenerateCredentialReport` or `s3:GetBucketPolicy` produces false greens.
+- **Region scoping hides resources:** passing `--regions us-east-1` misses opt-in regions and resources elsewhere. Run a full `scout aws` (all regions) at least once; remember IAM/S3 are global and surface under any region.
+- **Services not deeply covered:** ScoutSuite won't surface secrets in Lambda env vars, SSM Parameter Store, ECR image exposure, or Secrets Manager resource policies - pair it with `cloudfox env-vars` or manual `aws ssm describe-parameters`.
+- **S3 public-access nuance:** a bucket can be flagged or cleared by ACL, bucket policy, or account-level Block Public Access independently. Corroborate any S3 finding with `aws s3api get-public-access-block` (account and bucket) before concluding.
+- **Single-account tunnel vision:** in an Organization, scan each member account with an assumed role (`--profile`); one clean account says nothing about the others.
+- **How to confirm a real hit:** open `scoutsuite-results/scoutsuite_results.json` and look for `flagged_items > 0` with `level: "danger"` (e.g., `iam-root-no-mfa`, `s3-bucket-world-listable`), then reproduce it with the matching `aws` CLI call.
+- **Don't conclude the account is secure until** you've run all regions and services with no `AccessDenied` in the log, validated danger findings via direct API calls, and scanned every account in the org.
+
 ## Prerequisites
 
 - Python 3.6+ installed

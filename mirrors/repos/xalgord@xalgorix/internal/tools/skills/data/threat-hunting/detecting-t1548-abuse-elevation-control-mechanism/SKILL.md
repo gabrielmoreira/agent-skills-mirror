@@ -37,6 +37,15 @@ nist_csf:
 - During security assessments to validate UAC bypass detection coverage
 - When monitoring for setuid/setgid abuse on Linux systems
 
+## Detection Gaps & Validation
+
+- **No UAC consent event for fileless bypasses:** fodhelper/computerdefaults/sdclt/eventvwr produce no 4673/4674 — detection hinges on Sysmon EID 12/13 registry-set to `HKCU\Software\Classes\{ms-settings|mscfile|exefile}\shell\open\command` followed by EID 1 where the auto-elevate binary spawns cmd/powershell at High integrity. If registry auditing (EID 12/13) is missing from the Sysmon config, the bypass is silent.
+- **Fileless / curver variants:** some bypasses use an empty `DelegateExecute` value or `CurVer` redirection that string-match rules on `ms-settings` miss; CMSTP (`/s /ni` + malicious INF) leaves an INF on disk, not a registry write.
+- **Integrity-level jump:** correlate 4688 `TokenElevationType = %%1937` (full token) appearing without a `consent.exe` parent.
+- **Linux T1548.001/.003:** setuid abuse and `sudo`/GTFOBins need auditd `execve` and `/etc/sudoers` watch rules — absent if auditd is not shipping.
+- **Validate:** run Atomic Red Team **T1548.002** (fodhelper, sdclt, CMSTP) and confirm the EID 12/13 registry searches and the child-process search fire.
+- **Tune FPs:** legitimate app installs and UAC-prompted elevation are expected — baseline on the presence/absence of `consent.exe` and signed payloads, not binary name.
+
 ## Prerequisites
 
 - Sysmon Event ID 1 with command-line and parent process logging

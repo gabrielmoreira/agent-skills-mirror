@@ -36,6 +36,15 @@ nist_csf:
 
 **Do not use** against APIs without written authorization, for load testing or denial-of-service testing unless explicitly scoped, or for testing production APIs that process real financial transactions without safeguards.
 
+## Most Often Missed & How to Confirm
+
+- **BOLA on every object-bearing endpoint, not just the obvious ones** — testers check `/users/{id}` but skip nested resources (`/orders/{id}/items`, `/accounts/{id}/statements`), UUIDs assumed "unguessable", and write/delete methods. Enumerate IDs from a second low-priv account.
+- **Mass assignment and BFLA** — scanners almost never find these. Send undocumented fields (`role`, `isAdmin`, `verified`, `balance`) and replay each request with a lower-privilege token via Burp Autorize/two-session diffing.
+- **Business-logic and workflow abuse** — negative quantities, repeated coupon redemption, race conditions on balance/transfer (send N concurrent requests), and skipping multi-step flow states. No scanner models intended workflow.
+- **Auth/token edge cases** — JWT `alg:none` and RS256→HS256 confusion, expired/refresh tokens still accepted, tokens accepted across tenants, and rate-limit absence on auth/OTP/reset endpoints.
+- **Hidden surface** — undocumented versions (`/api/v1` still live after v2), GraphQL introspection, batched/aliased GraphQL queries for brute force, and verbose responses returning more fields than the UI.
+- **How to confirm**: capture two HTTP responses side by side — attacker token receiving victim data (BOLA), or a 200 on a privileged action with a low-priv token (BFLA), with full request/response headers. For business logic, show the resulting state change (negative balance, duplicate redemption). Don't conclude an endpoint is secure until you have replayed it with every privilege level (unauth, user, admin) and tried every HTTP method, not just the documented one.
+
 ## Prerequisites
 
 - API documentation (OpenAPI/Swagger, GraphQL schema, Postman collection) or application access to reverse-engineer the API

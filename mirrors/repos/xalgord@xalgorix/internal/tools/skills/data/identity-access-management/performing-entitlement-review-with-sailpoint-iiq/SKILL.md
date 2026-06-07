@@ -38,6 +38,15 @@ nist_csf:
 
 **Do not use** for real-time access control decisions; IdentityIQ certifications are periodic review processes designed for governance and compliance validation.
 
+## Coverage Gaps & Validation
+
+- **Rubber-stamping under default-revoke:** certifiers bulk-approve to avoid auto-revocation at campaign close. Query IdentityIQ `CertificationItem` decision times and flag reviewers averaging a few seconds per item or certifying 100% with zero revokes.
+- **Accounts outside aggregated cubes:** IIQ only certifies what its connectors aggregated. Apps with no connector, accounts that failed correlation, and local server accounts never appear — run the Uncorrelated Accounts and Orphan reports before trusting coverage.
+- **Service / non-human accounts excluded:** the `Filter.ne("type","service")` exclusion that keeps service accounts out of manager certs means they need a dedicated application-owner campaign; confirm one exists.
+- **Indirect entitlements via roles/nested groups:** entitlements inherited through business/IT roles or nested AD groups stay hidden unless `setIncludeAdditionalEntitlements(true)` and role-detail expansion are enabled.
+- **Shadow admin:** privilege held via API keys, app-local admin, or SPNs may not map to any IIQ managed entitlement.
+- **Validate completeness:** reconcile certification line-item counts against authoritative sources (HR for population, native AD/app exports for entitlements). Confirm revocations actually provisioned — verify the remediation workflow committed and did not silently create unworked manual work items.
+
 ## Prerequisites
 
 - SailPoint IdentityIQ 8.2+ deployed with database backend (Oracle, MySQL, or SQL Server)

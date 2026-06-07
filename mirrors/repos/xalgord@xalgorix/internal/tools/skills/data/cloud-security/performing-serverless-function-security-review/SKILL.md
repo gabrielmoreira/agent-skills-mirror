@@ -36,6 +36,16 @@ nist_csf:
 
 **Do not use** for container or VM security assessments (use container scanning tools), for API security testing (use DAST tools on the API Gateway layer), or for real-time serverless threat detection (use AWS Lambda Extensions with security agents).
 
+## Most Often Missed & How to Confirm
+
+- **Resolve effective permissions, not just attached policies:** combine the execution role's inline policies, AWS managed policies, and any `iam:PassRole`. A "scoped" managed policy like `AWSLambdaBasicExecutionRole` plus one wildcard inline statement is the classic silent over-privilege.
+- **Secrets hide beyond env vars:** scan the deployment package and layers for committed `.env`, `config.json`, and hardcoded keys. Env-var scanning alone misses code-embedded credentials.
+- **Two doors to public exposure:** Function URL `AuthType: NONE` AND a resource-based policy with `Principal: *` on `lambda:InvokeFunction`. Check both, plus API Gateway authorizers set to NONE.
+- **Deprecated runtimes** (`python3.7`, `nodejs14.x`, `dotnetcore3.1`) no longer receive security patches - flag them even when the code looks clean.
+- **Event injection:** untrusted fields from S3/SQS/SNS/EventBridge events used in shell/SQL/eval. Grep for `os.system`, `subprocess`, `eval(`, string-built queries, `pickle.loads`, `yaml.load`.
+
+**How to confirm a hit (avoid false negatives):** for public access, invoke the Function URL unauthenticated and confirm it actually executes (200 + function output), not merely that `AuthType: NONE`. For an over-broad role, use `aws iam simulate-principal-policy` to prove the action is allowed. **Don't conclude negative until:** the execution role's effective permissions are resolved, the package and layers are scanned for secrets, all invocation paths (Function URL + resource policy + API Gateway) are checked, and CloudWatch logs are reviewed for leaked secrets.
+
 ## Prerequisites
 
 - AWS CLI, Azure CLI, and gcloud CLI configured with appropriate permissions

@@ -36,6 +36,15 @@ nist_csf:
 
 **Do not use** for testing networks without explicit written authorization from the asset owner, against production systems without a pre-approved change window and rollback plan, or for denial-of-service testing unless explicitly scoped and authorized.
 
+## Most Often Missed & How to Confirm
+
+- **UDP and full port range** — testers scan top TCP ports and stop. Scan all 65535 TCP ports and the top UDP ports (SNMP/161, TFTP/69, IKE/500, NTP, NetBIOS); juicy services (SNMP write community, exposed DBs, IPMI/623) live on UDP and high ports.
+- **Default and reused credentials on management surfaces** — Tomcat/Jenkins/phpMyAdmin/iDRAC/iLO/printers/ESXi consoles, plus SNMP `public`/`private`. These outscore most CVEs for impact and are routinely skipped.
+- **NTLM capture/relay on internal scope** — Responder + ntlmrelayx when SMB signing is disabled beats waiting on a patch-level CVE. Always check signing status before declaring relay impossible.
+- **Validating segmentation, not just finding hosts** — prove (or disprove) that the tester VLAN can reach server/management/OT VLANs and the internet; a segmentation failure is often the highest-severity finding and easy to miss if you only enumerate.
+- **Manual verification of scanner output** — a Nessus/Nmap "vuln" line is a lead, not a finding. Reproduce with `searchsploit`/a PoC, and document failed attempts to show which controls held.
+- **How to confirm**: every finding needs reproducible evidence — the exact nmap/`-sV` banner, a screenshot of the authenticated management panel, a captured/relayed session, or exploit output showing the obtained shell/user/privilege. Don't conclude a service is not exploitable until you have version-matched it against Exploit-DB/NVD and tried default creds; don't conclude segmentation holds until you have actually attempted cross-VLAN connections.
+
 ## Prerequisites
 
 - Signed Rules of Engagement (RoE) document specifying target IP ranges, excluded hosts, testing hours, and emergency contacts

@@ -37,6 +37,15 @@ nist_csf:
 - When EDR or SIEM alerts trigger on related indicators
 - During periodic security assessments and purple team exercises
 
+## Detection Gaps & Validation
+
+- **Audit subcategory off by default:** Security EID 4698 (task created) / 4702 (updated) only log when "Object Access > Other Object Access Events" auditing is enabled — absence of 4698 does NOT mean no tasks. Corroborate with Microsoft-Windows-TaskScheduler/Operational (EID 106/140/200), itself frequently disabled.
+- **Action-type evasion:** tasks using a `ComHandler` CLSID instead of an exec path, and tasks written directly to the registry `...\Schedule\TaskCache\Tree`, bypass schtasks.exe EID 1 command-line hunting.
+- **Hidden tasks:** deleting the SD (SDDL) value removes a task from `schtasks /query` and the GUI while it still runs — diff TaskCache GUIDs to surface them.
+- **Cross-platform:** Linux cron (T1053.003) / at (T1053.002) need auditd watches on `/etc/cron*` and crontab, not Windows logs.
+- **Validate:** run Atomic T1053.005 (`schtasks /create`) and `Register-ScheduledTask`; confirm 4698 + TaskScheduler/Operational fire.
+- **FP tuning:** baseline GoogleUpdate, Adobe, OneDrive, and SCCM tasks under `\Microsoft\`.
+
 ## Prerequisites
 
 - EDR platform with process and network telemetry (CrowdStrike, MDE, SentinelOne)

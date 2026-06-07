@@ -43,6 +43,15 @@ and fileless attack techniques even when the attacker uses obfuscation layers.
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **4104 must be on before the incident:** Script Block Logging (EID 4104) only captures what was logged at execution time — if the GPO (`Turn on PowerShell Script Block Logging`) was off, no amount of EVTX parsing recovers the script. Module Logging (4103) and transcription complement but do not replace it.
+- **Multi-part script blocks:** large/obfuscated scripts split across many 4104 records (`MessageNumber`/`MessageTotal`) — reassemble by `ScriptBlock ID` or you key on truncated fragments and miss the malicious section.
+- **ETW blinding & downgrade:** `amsiInitFailed`, `[Ref].Assembly` ETW patching, and `-Version 2` downgrade stop 4104 from being written at all — treat a host that *stops* emitting 4104 as suspicious, not clean.
+- **Non-powershell.exe hosts:** runspaces hosted in `System.Management.Automation.dll` (C# loaders, `InstallUtil`, custom binaries) bypass powershell.exe — hunt the DLL load, not just the EXE.
+- **Validate:** run Atomic Red Team **T1059.001** (encoded command, IEX download cradle, AMSI bypass) on an instrumented host and confirm the parser flags 4104 records for `amsi`, `FromBase64String`, and `DownloadString`.
+- **Tune FPs:** Intune/SCCM and admin automation produce long encoded scripts — baseline by initiating parent and signing, not script length alone.
+
 ## Prerequisites
 
 - Windows Event Log exports (.evtx) from Microsoft-Windows-PowerShell/Operational

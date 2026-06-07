@@ -34,6 +34,14 @@ Windows Management Instrumentation (WMI) is commonly abused for lateral movement
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **`WmiPrvSE.exe → cmd/powershell` is only one path.** Script-based consumers execute under `scrcons.exe`, and consumers that only write files/registry fire no child process at all. Rules keyed solely on WmiPrvSE child processes miss these.
+- **Subscription persistence needs Sysmon EID 19/20/21**, not 4688: EID 19 = `__EventFilter`, 20 = `__EventConsumer`, 21 = `__FilterToConsumerBinding`. If those aren't enabled, WMI persistence (T1546.003) is invisible even though execution (T1047) may be logged.
+- **Remote WMI rides DCOM:** expect inbound TCP 135 then an ephemeral 49152-65535 port preceding the WmiPrvSE process creation.
+- **Validate the hunt fires:** run Atomic Red Team T1047 (`wmic /node:<host> process call create "cmd /c ..."`) and create a test `__EventFilter`/`CommandLineEventConsumer` binding; confirm Sysmon EID 1 (WmiPrvSE parent) and EID 19/20/21 all fire.
+- **FP tuning:** SCCM, vulnerability scanners, and monitoring agents legitimately use WMI remoting and subscriptions — baseline by source host, account, and binding name.
+
 ## Prerequisites
 
 - Windows Security Event Logs with Process Creation auditing enabled (Event 4688 with command line)

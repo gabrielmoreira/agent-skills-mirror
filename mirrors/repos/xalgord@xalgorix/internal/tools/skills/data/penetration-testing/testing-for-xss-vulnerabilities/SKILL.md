@@ -36,6 +36,15 @@ nist_csf:
 
 **Do not use** against applications without written authorization, for deploying persistent XSS payloads that affect real users, or for exfiltrating actual user session tokens from production environments.
 
+## Most Often Missed & How to Confirm
+
+- **Output context, not just `<script>alert(1)`** — payloads must match where input lands (HTML body vs attribute vs JS string vs URL/`href` vs CSS). Testers who fire one body-context payload miss attribute breakouts (`" onfocus=alert(1) autofocus`), `javascript:` URIs, and JS-string escapes (`';alert(1)//`).
+- **Blind/stored XSS that fires elsewhere** — payloads in support tickets, profiles, filenames, and User-Agent/Referer headers often execute in an admin panel you can't see. Use XSS Hunter / collaborator callbacks to catch them.
+- **DOM XSS in SPAs** — server-side encoding can be perfect while client JS pipes `location.hash`/`postMessage` into `innerHTML`/`eval`/`dangerouslySetInnerHTML`/`v-html`. Trace source→sink in the JS, don't just test server responses.
+- **Encoding vs reflection (false-positive trap)** — `&lt;script&gt;` in the response means it's encoded and NOT vulnerable; confirm the payload appears raw and in an executable position.
+- **CSP and WAF bypass** — check for `unsafe-inline`/`unsafe-eval`/wildcard/JSONP gaps, and try case/event-handler/SVG/encoded variants before declaring a sink safe.
+- **How to confirm**: prove execution, not just reflection — a fired `alert(document.domain)`, a screenshot, or an out-of-band callback containing the cookie/DOM (for blind/stored). Show the payload unencoded in the response source and the context it broke out of. Don't conclude a field is safe until tested across HTML/attribute/JS/URL contexts with filter-bypass variants; don't conclude an SPA is safe until you've traced client-side sources to DOM sinks.
+
 ## Prerequisites
 
 - Authorized scope defining the target web application and acceptable testing activities

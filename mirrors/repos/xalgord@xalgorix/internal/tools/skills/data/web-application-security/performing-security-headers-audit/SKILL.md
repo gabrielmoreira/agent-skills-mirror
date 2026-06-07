@@ -32,6 +32,17 @@ nist_csf:
 - When performing initial reconnaissance to identify easy-win security improvements
 - During CI/CD pipeline security gate checks for new deployments
 
+## Common Misconfigurations & Verification
+
+- **CSP in `Report-Only` mode**: a rich-looking policy that enforces nothing. If only `Content-Security-Policy-Report-Only` is present, XSS is unmitigated. Verify the enforcing `Content-Security-Policy` header exists, not just the report-only twin.
+- **`unsafe-inline`/`unsafe-eval` or wildcard `*` in `script-src`**: neuters the policy against XSS. Also flag a CSP with **no `object-src 'none'` and no `base-uri 'self'`** — both are common bypass gaps even in otherwise-strict policies.
+- **HSTS without enforcement chain**: `Strict-Transport-Security` with `max-age` too short (< 31536000), missing `includeSubDomains`/`preload`, OR present on HTTPS while plain HTTP does not 301-redirect to HTTPS — SSL stripping still works on first contact. Verify both the header value AND the HTTP→HTTPS redirect.
+- **Headers only on the homepage**: `/` is hardened but `/login`, `/api/*`, error pages (404/500), and redirect targets lack the headers. Audit multiple paths, not just root.
+- **Edge vs origin mismatch**: a CDN/reverse proxy may add, strip, or override headers, so app-level config lies. Always test the **public edge** the browser actually hits.
+- **Cookies missing flags**: session cookies without `Secure`, `HttpOnly`, and `SameSite`; `__Host-`/`__Secure-` prefixes used without their required attributes (silently honored as plain cookies).
+- **Frame protection half-set**: `X-Frame-Options` present but no CSP `frame-ancestors` (modern browsers prefer the latter), or `ALLOW-FROM` used (ignored by current browsers) — leaving a real clickjacking gap.
+- **VERIFY with concrete tests**: `curl -sI https://target/` and repeat across `/login`, `/api/health`, a 404 path, and follow redirects with `curl -sIL http://target/` to confirm the 301 + HSTS. Inspect exact values (don't accept "present" — a wrong value is a finding). Check `Set-Cookie` for all three cookie flags, and paste the live CSP into Google CSP Evaluator. Treat a missing header as confirmed only after checking it isn't being added downstream by the proxy/browser.
+
 ## Prerequisites
 
 - **Authorization**: Written scope for the target application (header review is low-risk)

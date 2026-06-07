@@ -22,6 +22,26 @@ ISO/IEC 27001:2022 is the international standard for establishing, implementing,
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+ISMS audits most often fail where the Statement of Applicability claims a
+control is implemented but the operating evidence does not exist:
+
+- **SoA vs. reality gap:** the SoA marks an Annex A control "implemented" with
+  no artifact behind it (e.g., A.8.16 Monitoring Activities ticked but no log
+  source list or alert rules). Verify by sampling each "applicable" control for
+  a dated record of operation, not just a policy reference.
+- **Scope gerrymandering (Clause 4):** the ISMS scope excludes the systems that
+  actually process the data, so the certificate is meaningless. Confirm the
+  scope statement covers the in-scope assets in the risk register.
+- **Risk treatment plan not closed:** risks accepted on paper but no owner or
+  due date; cross-check the RTP against the risk register for orphaned items.
+- **2022 transition controls missed:** A.5.7 (Threat Intelligence), A.5.23
+  (Cloud), A.8.28 (Secure Coding) silently left at "not applicable" without
+  justification. Verify each exclusion has a documented rationale.
+- **Internal audit / management review (Clause 9) are stale:** confirm dated
+  audit reports and review minutes exist within the certification cycle.
+
 ## Prerequisites
 - Understanding of information security principles and risk management concepts
 - Familiarity with organizational governance structures and business processes

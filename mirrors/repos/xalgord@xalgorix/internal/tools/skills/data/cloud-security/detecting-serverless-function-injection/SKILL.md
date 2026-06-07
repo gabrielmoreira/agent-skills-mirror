@@ -39,6 +39,17 @@ nist_csf:
 
 **Do not use** for load testing or denial-of-service simulation against serverless functions, for testing against production functions processing live customer data without explicit authorization, or for modifying IAM policies in shared accounts without change management approval.
 
+## Detection Gaps & Validation
+
+Injection paths these checks commonly miss:
+- **Lambda `Invoke` is a CloudTrail DATA event (off by default).** Without it you'll see `UpdateFunctionCode` but never the malicious *invocations* that carry the payload — enable data events for `AWS::Lambda::Function`.
+- **API names are versioned.** Filtering on `UpdateFunctionConfiguration` misses the real events, which are `UpdateFunctionConfiguration20150331v2` and `UpdateFunctionCode20150331v2`. Use the versioned strings.
+- **Layer changes hide inside `UpdateFunctionConfiguration` request params (`Layers`)** — a code-only revert leaves a malicious layer (`/opt/python`, `/opt/nodejs/node_modules`) attached and still intercepting `boto3`.
+- **Static analysis of `Code.Location` misses runtime-fetched payloads** (function downloads code at cold start) and injection via env vars / Lambda extensions.
+- **Escalation needs `iam:PassRole`, not just `lambda:UpdateFunctionCode`** — detect the `PassRole` to a higher-privilege role, not only the code update.
+
+Validate: confirm `get-event-selectors` shows `AWS::Lambda::Function` data events; deploy a benign test handler with `eval(event['x'])` and confirm Semgrep / Bandit `B307` flags it and the EventBridge rule fires on the deploy; scope FP tuning to functions reachable from API Gateway/S3/SQS/DynamoDB-Stream triggers.
+
 ## Prerequisites
 
 - AWS account access with read permissions for Lambda, CloudTrail, IAM, CloudWatch Logs, and EventBridge

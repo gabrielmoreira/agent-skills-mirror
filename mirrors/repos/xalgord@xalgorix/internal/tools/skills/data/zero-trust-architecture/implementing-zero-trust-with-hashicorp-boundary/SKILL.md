@@ -37,6 +37,18 @@ HashiCorp Boundary is an identity-aware proxy that provides secure, zero trust a
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+Boundary only enforces zero trust if the target host cannot be reached except through a worker. Check for these:
+
+- **Target reachable directly.** If users can SSH/RDP/connect to the host's real IP (10.0.x.x) over the network, Boundary's credential brokering and session recording are optional - lock host firewalls/security groups so only Boundary workers reach the target port.
+- **Wildcard grants.** A role with `ids=*;type=target;actions=authorize-session` hands every user every target, defeating default-deny least privilege.
+- **Static long-lived credentials instead of Vault brokering**, so secrets persist after the session and never rotate.
+- **Session recording enabled on the target but `storage_bucket_id` missing or unwritable**, so nothing is actually captured.
+- **Static AEAD keys in the controller HCL** rather than Vault Transit KMS.
+
+**How to confirm:** from a user host, attempt to connect to the target's real IP/port directly (bypassing `boundary connect`) and confirm it is refused. Authorize a session as a low-privilege managed group and verify it can reach only its scoped target, not others. Start a session, then confirm a recording actually lands in the storage bucket and that brokered Vault credentials are revoked when the session ends.
+
 ## Prerequisites
 
 - HashiCorp Boundary server (self-hosted or HCP Boundary)

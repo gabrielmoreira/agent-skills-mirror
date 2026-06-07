@@ -36,6 +36,14 @@ nist_csf:
 
 **Do not use** as a substitute for technical controls testing. Tabletop exercises validate procedures and decision-making, not technical detection or prevention capabilities.
 
+## Common Misconfigurations & Verification
+
+- **Scenario doesn't stress the recovery assumptions:** the most common gap is an inject set that never tests what happens when backups are also hit. Build at least one branch where primary backups are encrypted and only the immutable/air-gapped copy survives — that forces the team to confront real RTO and whether `vssadmin delete shadows`-style backup destruction was anticipated.
+- **No OFAC / payment-legality decision point:** teams often discover mid-incident they have no framework for whether paying is even legal. Include an inject requiring an OFAC sanctions check against the threat actor's wallet and a documented payment-authorization chain.
+- **Out-of-band comms untested:** if the scenario assumes email/AD is up, you never learn that the contact list lives on the encrypted file server. Add an inject that takes down primary comms and verify the team has a real out-of-band channel and a current call tree.
+- **Tech team dominates, legal/PR/exec stay passive:** assign a facilitator independent of IR and use probing questions per role so notification timelines (GDPR 72h, HIPAA, SEC) are actually exercised.
+- **Verification:** confirm the exercise produces a dated AAR within ~5 business days with gaps rated and owners/deadlines assigned, then verify at the NEXT exercise that prior remediation items were actually closed — an AAR with no follow-up is the failure mode that negates the whole exercise. Where possible, validate one claim for real (e.g. trigger a test restore of a Tier 1 system) rather than assuming the documented RTO holds.
+
 ## Prerequisites
 
 - Documented incident response plan (IRP) that participants should have read before the exercise

@@ -39,6 +39,15 @@ nist_csf:
 - When Sysmon alerts trigger on Event IDs 19, 20, or 21
 - During purple team exercises testing WMI-based persistence
 
+## Detection Gaps & Validation
+
+- **Sysmon 19/20/21 fire only on local `root\subscription`:** subscriptions in a different namespace, or `__EventConsumer` objects written remotely before Sysmon was deployed, generate no 19/20/21 — sweep WMI directly (`Get-WmiObject -Namespace root\subscription -Class __FilterToConsumerBinding`) to catch pre-existing ones.
+- **MOF-based and remote creation:** `mofcomp.exe` compiling a malicious `.mof`, or remote `wmic /node:` subscription creation, may surface only as EID 1 (`mofcomp.exe`/`wmic.exe`) — confirm command-line auditing is on.
+- **Timer evasion:** `__IntervalTimerInstruction`/`__AbsoluteTimerInstruction` consumers fire on a clock rather than a process-start `__InstanceModificationEvent` WQL, sidestepping rules that only look for `Win32_ProcessStartTrace`.
+- **Consumer types:** beyond CommandLineEventConsumer, watch `ActiveScriptEventConsumer` (VBScript/JScript) and `LogFileEventConsumer`.
+- **Validate:** run Atomic Red Team **T1546.003** (PowerShell or `mofcomp` subscription) and confirm Sysmon EID 19/20/21 land in the SIEM.
+- **Tune FPs:** SCCM/ConfigMgr, SCOM, and some AV products create legitimate bindings (e.g., `SCM Event Log Consumer`) — allowlist those exact filter/consumer names, not the event type.
+
 ## Prerequisites
 
 - Sysmon v6.1+ deployed with WMI event logging enabled (Event IDs 19, 20, 21)

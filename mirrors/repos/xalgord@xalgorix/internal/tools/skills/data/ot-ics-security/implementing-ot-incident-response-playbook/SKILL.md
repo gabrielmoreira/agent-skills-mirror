@@ -38,6 +38,14 @@ nist_csf:
 
 **Do not use** for IT-only incident response without OT components (use standard NIST 800-61 playbooks), for day-to-day OT security monitoring (see implementing-dragos-platform-for-ot-monitoring), or for tabletop exercise design (see performing-ics-tabletop-exercise).
 
+## Common Misconfigurations & Verification
+
+- **Treating PLCs like Windows hosts.** The most damaging IR mistake is powering off or "isolating" running PLCs to contain ransomware — PLCs run firmware, not Windows, and shutting them down disrupts the physical process. Containment isolates the IT/OT conduits at the DMZ, not field controllers; verify the playbook says so explicitly.
+- **No out-of-band comms or offline backups.** If the IR plan depends on the same IT network the incident compromised, coordination fails. Confirm out-of-band channels exist and that verified offline PLC/HMI/historian backups exist and restore-test them.
+- **SIS branch missing from the playbook.** A separate SAFETY/SIS path (engage process safety, verify physical barriers, never assume false positive) must exist, per TRITON/TRISIS lessons.
+- **Reporting clocks not wired in.** CIRCIA 72-hour, NERC 1-hour BES, and sector ISAC timelines are easy to miss under pressure.
+- **Verify without disrupting the process.** Validate the playbook through a tabletop and a non-production restore drill — exercise conduit isolation and backup restoration in a lab, never by severing live IT/OT links or shutting controllers on a running plant.
+
 ## Prerequisites
 
 - OT asset inventory with criticality ratings and safety system identification

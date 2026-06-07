@@ -31,6 +31,17 @@ nist_csf:
 - During bug bounty hunting on applications with aggressive caching policies
 - When testing for sensitive data exposure through cache layer misconfiguration
 
+### How to CONFIRM a Hit (avoid false negatives)
+
+- **Positive signal**: an authenticated response gets stored under a static-looking path and is then **readable by a completely anonymous client** — confirm with the second, unauthenticated request returning the victim's data and `X-Cache: HIT` / `CF-Cache-Status: HIT` / `Age > 0`.
+- The whole vulnerability lives in the **second read**: a single authenticated request that returns profile data proves nothing on its own.
+- Do NOT conclude "not vulnerable" until you have:
+  - Performed the **anonymous follow-up** (no cookies/no auth header) to the exact crafted URL and confirmed it returns the victim's private content.
+  - Confirmed the response was actually **cached** (HIT / positive `Age`), not just that the origin echoed the page.
+  - Tried multiple **static extensions** (`.css .js .png .jpg .svg .ico .woff2`) and multiple **delimiter/normalization tricks** (`;`, `%2f`, `%3b`, `%00`, `..%2f`, `/.`, case changes) — caching rules vary by extension and by path-parsing discrepancy.
+  - Tested **several authenticated endpoints** (profile, settings, billing) since caching rules are path-specific.
+  - Ruled out per-user `Vary: Cookie` keying that would make the "hit" actually serve a non-victim copy.
+
 ## Prerequisites
 - Understanding of HTTP caching mechanisms (Cache-Control, Vary, Age headers)
 - Knowledge of CDN path normalization and cache key construction

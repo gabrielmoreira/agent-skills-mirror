@@ -36,6 +36,15 @@ nist_csf:
 
 **Do not use** for securing other CI/CD platforms (see platform-specific hardening guides), for application vulnerability scanning (use SAST/DAST), or for secret detection in code (use Gitleaks).
 
+## Common Misconfigurations & Verification
+
+- **Pinned by tag, not SHA:** `actions/checkout@v4` is mutable — a compromised tag pulls attacker code on the next run. Pin to the full 40-char commit SHA (`@b4ffde6...`) and let Dependabot bump it. Audit with `grep -rE 'uses:.*@v[0-9]'` across `.github/workflows/`.
+- **`permissions` left at default / write-all:** with no explicit `permissions:` block the `GITHUB_TOKEN` inherits broad write scope. Set `permissions: {}` at the top and grant `contents: read` (plus `id-token: write` only where OIDC is used) per job. Flag any workflow requesting `write-all`.
+- **`pull_request_target` + checking out PR head:** this runs untrusted fork code with secrets and base-repo permissions — the classic exfiltration path. Never `actions/checkout` with `ref: github.event.pull_request.head.sha` under `pull_request_target`; gate on a label and check out the base only.
+- **Script injection via expressions:** `run: echo "${{ github.event.pull_request.title }}"` lets a crafted title execute commands. Pass untrusted input through `env:` vars and reference `"${PR_TITLE}"` in the script.
+- **Secrets echoed or passed on argv:** avoid `echo "$SECRET"` and command-line flags; use process substitution or files. Masking only catches exact matches.
+- **Verify by introducing a finding:** open a PR titled `"; echo pwned #` (or one that reverts a SHA pin) and confirm `actionlint` / your gate flags it and the step does not execute the injected command. A workflow that runs clean on a malicious title is still vulnerable.
+
 ## Prerequisites
 
 - GitHub repository with GitHub Actions enabled

@@ -42,6 +42,15 @@ nist_csf:
 
 **Do not use** without explicit written authorization from the domain owner, against production domain controllers during business hours unless approved, or for testing that could cause account lockouts affecting real users without prior coordination.
 
+## Most Often Missed & How to Confirm
+
+- **AS-REP roasting and delegation, not just Kerberoasting** — accounts with pre-auth disabled (AS-REP), and unconstrained/constrained/RBCD delegation, are frequently skipped. Unconstrained delegation + coercion (PetitPotam/PrinterBug) captures a DC TGT directly.
+- **AD CS (ESC1-ESC8)** — certificate-template misconfigs are often the fastest path to DA and the most overlooked. Always run `certipy find -vulnerable`; ESC8 pairs with NTLM relay to the CA web enrollment.
+- **ACL-based paths in BloodHound** — GenericAll/GenericWrite/WriteDACL/WriteOwner/ForceChangePassword on users, groups, GPOs, and computers. Mark owned principals and follow shortest-path-to-DA rather than ad-hoc attacks.
+- **Credential-material leftovers** — GPP cpassword in SYSVOL, LAPS read rights, DPAPI, and cached creds/sessions on stale computer objects.
+- **Lockout-safe spraying and noise control** — read the lockout policy before spraying, and use stealthy SharpHound collection; a locked-out domain or tripped SOC alert ends the engagement early.
+- **How to confirm**: prove each step with concrete artifacts — a cracked TGS/AS-REP hash, a BloodHound shortest-path screenshot, a `certipy` request yielding a cert/TGT for a higher-priv user, a successful relay/coercion session, or a DCSync dump of `krbtgt`. Don't conclude the domain is secure on "no Kerberoastable SPNs" alone until you have also checked AS-REP, delegation, AD CS, GPP, LAPS, and ACL paths; validate domain compromise with a controlled DCSync rather than assuming the chain works.
+
 ## Prerequisites
 
 - Written authorization specifying the target AD domain, testing constraints, and any off-limits accounts or systems

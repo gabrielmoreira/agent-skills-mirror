@@ -38,6 +38,15 @@ nist_csf:
 - When EDR or SIEM alerts trigger on related indicators
 - During periodic security assessments and purple team exercises
 
+## Detection Gaps & Validation
+
+- **Delivery variants gateways miss:** HTML smuggling (JS-built blob, nothing inbound to scan), ISO/IMG/VHD containers that strip MOTW, password-protected ZIPs (uninspectable), QR-code phish in PDFs, and OneNote `.one` attachments.
+- **Endpoint pivot is the reliable signal:** hunt Office/Outlook spawning children — EID 1 where `ParentImage` is winword/excel/outlook.exe and child is powershell/wscript/mshta/cmd — plus EID 11 writes of `.iso`/`.lnk`/`.hta` to `%TEMP%`/Downloads.
+- **MOTW check:** absence of a `Zone.Identifier` ADS on a freshly downloaded payload is itself suspicious (container-bypass indicator).
+- **Pure-link blind spot:** credential-harvest links leave no endpoint artifact — you need proxy/URL logs, not EDR, to see them.
+- **Validate:** run Atomic T1566.001 (macro spawns child process); confirm the parent→child EID 1 chain fires.
+- **FP tuning:** baseline legitimate Office automation/add-ins and known mail-merge senders.
+
 ## Prerequisites
 
 - EDR platform with process and network telemetry (CrowdStrike, MDE, SentinelOne)

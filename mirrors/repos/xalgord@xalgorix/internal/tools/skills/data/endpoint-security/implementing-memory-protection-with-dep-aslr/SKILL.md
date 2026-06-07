@@ -30,6 +30,14 @@ nist_csf:
 
 Use this skill when hardening endpoints against memory-based exploits by configuring DEP, ASLR, CFG, and Windows Exploit Protection system-wide and per-application mitigations.
 
+## Common Misconfigurations & Verification
+
+- **DEP left at OptIn:** the default `nx OptIn` only protects Windows components, leaving most apps unprotected. Confirm `bcdedit /enum {current}` shows `nx AlwaysOn` (or `OptOut` with a justified, documented exclusion list) — not `OptIn`.
+- **Per-process ASLR opt-out:** an app shipping its own `.exe.config` or a registry `MitigationOptions` value under `Image File Execution Options` can disable ForceRelocateImages/BottomUp just for itself, silently reopening fixed-address ROP. Run `Get-ProcessMitigation -Name <app>.exe` and verify `ASLR.ForceRelocateImages` and `BottomUp` are `ON`, not `NOTSET`/`OFF`.
+- **Mandatory ASLR needs both flags:** system-wide mandatory ASLR is only effective with BottomUp randomization enabled too; ForceRelocateImages alone leaves predictable layouts.
+- **CFG assumed universal:** CFG only applies to binaries compiled with `/guard:cf`. `Get-ProcessMitigation -Name <app>.exe` may show CFG `ON` while the loaded module has no CFG metadata — it cannot be retrofitted, so legacy DLLs remain exploitable.
+- **Verification:** `Get-ProcessMitigation -System` should report DEP, BottomUpASLR, HighEntropyASLR, SEHOP as ON; spot-check each hardened app with `Get-ProcessMitigation -Name <app>.exe` to confirm the deployed XML actually applied and wasn't overridden locally.
+
 ## Prerequisites
 
 - Windows 10/11 or Windows Server 2016+ with administrative privileges

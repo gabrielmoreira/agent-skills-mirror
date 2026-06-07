@@ -44,6 +44,15 @@ nist_csf:
 
 **Do not use** against mobile applications without written authorization from the application owner, for distributing modified or repackaged applications, or for testing apps on the public app stores without a separate test build.
 
+## Most Often Missed & How to Confirm
+
+- **Backend API testing through the app** — the mobile client is often just a thin shell; the real BOLA/BFLA/mass-assignment bugs live in the API. Bypass pinning, then test every endpoint the app calls with another user's IDs and a lower-privilege token. Don't treat "the API was tested separately" as coverage.
+- **Certificate pinning bypass before declaring network analysis done** — if traffic won't proxy, that is pinning, not a secure app. Hook with Frida/Objection (and test second-layer pinning, e.g. Flutter/OkHttp custom trust managers) before concluding TLS is fine.
+- **Local artifact storage** — SharedPreferences/NSUserDefaults plists, unencrypted SQLite/Realm/Core Data, Keychain/Keystore misuse, logcat output, clipboard, and screenshot caching on backgrounding. Pull the app data dir after exercising sensitive flows.
+- **Client-side control bypass via runtime hooking** — root/jailbreak detection, biometric callbacks, and feature flags hooked to return success; these are not real security boundaries and should be demonstrated as bypassable.
+- **Exported components and deep links (Android)** — exported activities/services/providers/receivers and custom URL schemes reached via `adb am start` or crafted intents can skip auth or leak data.
+- **How to confirm**: capture the artifact directly — a decrypted DB row containing a token, a plist with credentials, a Burp request/response showing pinning bypassed and victim data returned, or the Frida script + screenshot proving the biometric/root check was defeated. Don't conclude data-at-rest is safe until you have dumped the app sandbox after login; don't conclude pinning is enforced until you have tried both a system-CA bypass and a Frida hook.
+
 ## Prerequisites
 
 - Target application IPA (iOS) and APK (Android) files or access to download from a private distribution channel

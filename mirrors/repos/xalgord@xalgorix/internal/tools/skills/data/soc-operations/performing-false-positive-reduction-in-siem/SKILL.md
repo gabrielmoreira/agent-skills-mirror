@@ -42,6 +42,14 @@ False positive alerts are non-malicious events that trigger security rules, over
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Common Misconfigurations & Verification
+
+- **Tuning suppresses true positives:** broadening a threshold (`count > 5` → `count > 20 AND unique_accounts > 3`) or adding an allowlist entry can silence the real attack, not just noise. A low-and-slow brute force at 6 failures/account now slips under the floor. After every tuning change, replay a known-malicious sample (Atomic Red Team `T1110.001`) and confirm the rule still fires.
+- **Over-broad allowlists:** allowlisting a whole `src_ip` range or a `process_name` with no scoping means an attacker operating from that range/binary is invisible. Scope exclusions to the narrowest tuple (host + account + process), require `approved_by`, and enforce an `expiry_date` — verify expired entries actually fall out of `fp_allowlist.csv`.
+- **Suppression vs deletion:** suppressing at the notable layer while the underlying events still index is recoverable; dropping events at ingest is not. Confirm you're tuning the correlation search, not silently discarding source data needed for later hunts.
+- **Baseline built on dirty data:** `eventstats avg/stdev` baselines computed over a window that already contained the attacker normalize the bad behavior away. Validate the baseline window is clean and that `stdev` isn't zero (which makes the `3*stdev` gate fire on everything).
+- **Verify** each change two ways: (1) FP rate for the rule drops on the next review cycle, and (2) detection coverage is unchanged — run the atomic test, confirm the notable appears within the search window, and document the before/after `fp_rate` and precision so a tuning that quietly broke detection is caught.
+
 ## Prerequisites
 
 - Familiarity with soc operations concepts and tools

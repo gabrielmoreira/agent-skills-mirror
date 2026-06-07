@@ -39,6 +39,15 @@ Use this skill when:
 
 **Do not use** this skill for raw packet capture analysis or live incident triage without first establishing a CTI baseline.
 
+## Detection Gaps & Validation
+
+- **Feed staleness & churn:** IPs/domains rotate fast; ingesting without TTLs (IP 30d, domain 90d, hash 1y) turns yesterday's true positives into today's false positives. Enforce expiry at ingest, not at block time.
+- **Dedup failures:** the same IOC from five feeds must collapse on a normalized `value+type` composite key -- without it, SIEM rule counts and confidence aggregation inflate. Normalize case, strip ports/paths, and refang before hashing the key.
+- **STIX 2.1 mapping errors:** malformed patterns (`[ipv4-addr:value = '...']` vs `network-traffic`), wrong `hashes.SHA-256` casing, and missing `confidence`/`valid_from` cause silent drops on TAXII push. Validate objects against the OASIS schema.
+- **Confidence flattening:** mapping every source to confidence 100 destroys triage; calibrate per feed fidelity from true-positive history.
+
+To validate: push a sample bundle through TAXII 2.1 to a staging collection and confirm the consumer (Splunk/Sentinel) ingests the indicators with correct types and TTLs; run a known-overlapping IOC through two feeds and confirm dedup yields one object. Spot-check that confidence <50 routes to detection-only (not blocking) and that TLP:RED content is never exported past authorized collections.
+
 ## Prerequisites
 
 - Access to a Threat Intelligence Platform (TIP) such as ThreatConnect, MISP, or OpenCTI

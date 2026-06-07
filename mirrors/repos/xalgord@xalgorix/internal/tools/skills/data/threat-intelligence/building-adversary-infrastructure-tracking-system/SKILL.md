@@ -36,6 +36,15 @@ Adversary infrastructure tracking uses passive DNS records, certificate transpar
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Over-pivoting on shared hosting:** reverse-IP and `pivot_from_seed` expansion explodes when a seed resolves to a CDN, parking IP, or shared host -- you ingest thousands of unrelated co-tenants. Cap `reverse_ip_lookup` results (the `[:20]` slice) and exclude known CDN/cloud ASNs before adding edges, or the graph clusters around hosting hubs, not the actor.
+- **Passive-DNS time blindness:** treating `first_seen`/`last_seen` as current state links domains that never co-existed. Pivot only on temporally overlapping resolutions.
+- **WHOIS privacy noise:** registrant-email pivots match privacy-proxy addresses (WhoisGuard, REDACTED) shared by millions -- filter these before clustering.
+- **API/dedup errors:** SecurityTrails 429s and quota exhaustion silently truncate results; normalize hostnames (lowercase, strip trailing dot) before adding nodes or the same domain appears twice.
+
+To verify: confirm the pipeline handles non-200/429 responses (do not treat an empty `records` as "no infrastructure"); validate `find_hub_nodes()` against a known seed and check that high-centrality nodes are real shared infra, not artifacts of the `[:20]` cap. Run a seed with known related infrastructure and confirm the expected domains land in one cluster while CDN/sinkhole IPs are excluded. Re-resolve discovered subdomains via DNS before acting -- CT/passive-DNS hits can be stale.
+
 ## Prerequisites
 
 - Python 3.9+ with `requests`, `dnspython`, `python-whois`, `shodan`, `networkx` libraries

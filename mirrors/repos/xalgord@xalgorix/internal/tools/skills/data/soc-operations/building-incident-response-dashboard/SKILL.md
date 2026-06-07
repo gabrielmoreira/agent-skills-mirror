@@ -36,6 +36,14 @@ Use this skill when:
 
 **Do not use** for day-to-day SOC monitoring dashboards (use Incident Review instead) — IR dashboards are designed for active incident coordination and management reporting.
 
+## Common Misconfigurations & Verification
+
+- **Panel querying the wrong index/field:** the MTTD/MTTR panels read `index=notable` with `orig_time`, `status_end`, `time_of_first_event` — if your ES version stores these under `incident_review` or the field is null, the `single`/`timechart` renders `0` or "No results" rather than erroring. Run each panel's base search standalone and confirm non-null values before trusting the tile.
+- **Stale `inputlookup` data:** panels backed by `ir_affected_systems.csv`/`ir_ioc_list.csv` show whatever was last written; if the Step 7 scheduled search isn't enabled (or writes to `ir_affected_systems_auto.csv` while the panel reads `ir_affected_systems.csv`), the dashboard silently displays frozen counts during a live incident. Verify the outputlookup target matches the panel's inputlookup name and the schedule is actually running.
+- **Hardcoded incident scope:** the IOC panels pin literal IPs/hashes and `earliest="2024-03-14"`. Reused for a new incident they show the old incident's data. Parameterize with dashboard tokens (`$incident_id$`, `$earliest$`) and confirm the tokens propagate.
+- **Time-range/timezone mismatch:** epoch math (`now()-strptime(...)`) assumes the dashboard TZ matches event TZ; a user in another TZ sees skewed "hours elapsed". 
+- **Verification:** load the dashboard against a known closed incident and reconcile every panel (affected hosts, IOC counts, timeline rows) against the case record; confirm a permission-scoped analyst account can actually read the notable index and lookups, not just the dashboard author.
+
 ## Prerequisites
 
 - SIEM platform (Splunk with Dashboard Studio, Elastic Kibana, or Grafana)

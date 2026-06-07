@@ -32,6 +32,17 @@ nist_csf:
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+A pod-spec audit that only reads `securityContext.privileged` misses most real escape paths. The fields below are the ones detection scripts routinely skip:
+
+- **Beyond `privileged`:** check `allowPrivilegeEscalation`, `procMount: Unmasked`, `seccompProfile: Unconfined`/absent, and added capabilities individually - `SYS_ADMIN`, `SYS_PTRACE`, `DAC_READ_SEARCH` (CVE-2022-0492 via cgroup release_agent), `NET_RAW`, `SYS_MODULE`, `BPF`. A non-privileged pod with `SYS_ADMIN` still escapes.
+- **All container types:** iterate `spec.containers` **and** `spec.initContainers` and `spec.ephemeralContainers` - debug/ephemeral containers are a common blind spot.
+- **Host exposure:** `hostPID`/`hostIPC`/`hostNetwork`, and hostPath mounts beyond `/` and `/etc` (`/var/run/docker.sock`, `/var/run/containerd`, `/proc`, `/sys`, kubelet dirs). Check the mount is writable, not just present.
+- **Pod-level vs container-level securityContext:** a setting on one does not imply the other; read both.
+
+**Validate, don't conclude-safe from one field:** a single clean field is not a clean pod - enumerate the full matrix above. Where authorized, confirm a finding by actually attempting the escape in a throwaway namespace (e.g. mount host root from a `SYS_ADMIN` pod, or read `/host/etc/shadow` via a hostPath mount). Cross-check the live audit against runtime detection (Tetragon/Falco) - a static "no privileged pods" result does not mean no escape occurred.
+
 ## Prerequisites
 
 - Familiarity with container security concepts and tools

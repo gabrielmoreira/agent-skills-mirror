@@ -39,6 +39,16 @@ nist_csf:
 
 **Do not use** as sole proof of program execution. Amcache proves file existence and metadata registration, but ShimCache (AppCompatCache) and Prefetch provide stronger execution evidence. Use all three artifacts together for conclusive analysis.
 
+## Detection Gaps & Validation
+
+- **Amcache proves existence, not execution.** A populated `AssociatedFileEntries` row means the binary was registered/inventoried (often by a scheduled scan or installer), not that it ran. Never report execution from Amcache alone.
+- **SHA-1 field pitfall:** AmcacheParser exposes the hash with a leading `0000` prefix on some schemas. Strip the leading zeros before VirusTotal/CIRCL lookups or you will get false "unknown" results.
+- **`FileKeyLastWriteTimestamp` is the Amcache entry write time, not the execution time** and not the file's `$STANDARD_INFORMATION` time. Treat it as "registered around" and corroborate.
+- **Schema drift:** Windows 7/8 use Unassociated entries; Windows 10/11 use ProgramId-linked Associated entries and DriverBinaries. Parsing the wrong section silently drops evidence.
+- **Anti-forensics that defeat this analysis:** deletion of `Amcache.hve` plus `.LOG1/.LOG2` (recover from VSS/unallocated), `LinkDate` timestomping in the PE header, and renaming binaries (hash still betrays identity).
+- **How to validate / cross-corroborate:** confirm execution with a *second* source — Prefetch (`*.pf` run count/timestamps), ShimCache/AppCompatCache, SRUM `SRUDB.dat`, and Security.evtx EID 4688. Agreement across two artifacts is the standard.
+- **Interpretation false positives:** unsigned binaries in `\Temp\` may be legitimate updaters; a hash absent from NSRL is "unknown," not "malicious." Escalate on hash reputation + path + timeline, never one signal.
+
 ## Prerequisites
 
 - A forensic image or live triage copy of `C:\Windows\appcompat\Programs\Amcache.hve` (and associated `.LOG1`, `.LOG2` transaction logs)

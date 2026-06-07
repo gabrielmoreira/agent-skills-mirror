@@ -38,6 +38,14 @@ Use this skill when:
 
 **Do not use** for manual IOC lookup — use dedicated enrichment tools (VirusTotal, AbuseIPDB) for ad-hoc queries.
 
+## Common Misconfigurations & Verification
+
+- **STIX pattern parsing breaks on `split("'")[1]`:** the push-to-SIEM code extracts the IOC with `indicator.pattern.split("'")[1]`, which silently grabs the wrong token for hash patterns (`[file:hashes.'SHA-256' = '...']` has an extra quoted segment) or any pattern with quoting variation. Verify each `pattern_type=stix` indicator round-trips to the value you expect before bulk-pushing, or you poison the feed with `SHA-256` literals instead of hashes.
+- **`type` field forces wrong attribute:** the MISP push hardcodes `ip-dst if "ipv4" in pattern else domain`, so URLs and hashes get mislabeled as domains and never match. Map each STIX object type explicitly.
+- **No expiration = false positives forever:** without enforcing the IOC TTL policy (IP 30d, domain 90d, hash 1y), expired/sinkholed IPs and CDN ranges keep matching. The Output Format note "CDN IPs removed from feed" is the tell — pre-filter known-good ranges (cloud egress, CDN, your own infra) before ingest, not after analysts chase the FP.
+- **Dedup hash hides multi-source confidence:** `sha256("{type}:{value}")` dedup drops the second source, so you lose corroboration scoring — keep multi-source attribution rather than first-wins.
+- **Verification:** push a controlled canary IOC end-to-end and confirm it lands in Splunk `ip_intel`/MISP with correct type and weight; check the feed-health match-rate search (Step 6) actually joins — a feed showing 0 matches over weeks usually means a field/format mismatch, not a quiet network.
+
 ## Prerequisites
 
 - MISP instance or Threat Intelligence Platform (TIP) for feed aggregation

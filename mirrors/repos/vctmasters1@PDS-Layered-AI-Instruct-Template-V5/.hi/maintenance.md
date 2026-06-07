@@ -4,7 +4,7 @@
 **Last Updated**: 2026-05-25
 
 > This file is the **single source of truth** for file preservation, archiving, and database safety rules.
-> Never duplicate these rules — link here from any `.hi/instruct.md` that needs them.
+> Never duplicate these rules — link here from any `.ai/instruct.md` that needs them.
 
 ---
 
@@ -28,8 +28,8 @@
 
 | Instead of deleting... | Do this |
 |------------------------|---------|
-| Any retired source file or subsystem | Move it into the `.archive/` directory inside its own parent folder |
-| Superseded dev docs | Move to `.dev-docs/.archive/` |
+| Any retired source file or subsystem | Move to `.archive/` mirroring the original path |
+| Superseded dev docs | Move to `.dev-docs/.old/` |
 
 **AI Rule**: Never use `rm`, `Remove-Item`, `git rm`, `del`, or any destructive file operation without **explicit user confirmation**. When in doubt — move, don't delete.
 
@@ -37,45 +37,53 @@
 
 ## Archive Patterns
 
-**Canonical rule: archive into the `.archive/` directory inside the *parent folder* of the item being archived.** Never archive into a single project-wide container — keeping archives local to each subtree means a project built from this template can be layered inside another project and still carry its own archives with it.
+All archived content lives under a single `.archive/` directory at the appropriate level.
 
-### The `.archive/` Rule
+### Path Mirroring Rule
 
-When archiving `some/dir/thing`, move it to `some/dir/.archive/thing` — the `.archive/` directory is created inside the item's **parent** folder.
-
-> **Use the tool, don't hand-compute the path.** Run `python .hi/engine/archive.py <path>` (add `--dated` for a snapshot). The script computes the destination, refuses unsafe targets, uses `git mv` when the file is tracked, and records a pointer in the archive's `README.md`. See the **archiving** skill.
+When moving a file or directory into `.archive/`, **preserve its path relative to the project root**. This makes the original location self-evident without modifying the archived file.
 
 **Example**: archiving `src/components/button.tsx`:
 
 ```
-src/components/button.tsx  →  src/components/.archive/button.tsx
+.archive/src/components/button.tsx
 ```
 
-Restoring is trivial — move the file back up one level out of `.archive/`.
+Restoring is trivial — copy the file back to the path shown in `.archive/`.
 
 ### Dated Snapshot
 
-When archiving a whole subsystem or capturing a point-in-time state, add a date-stamped subdirectory inside the `.archive/`:
+When archiving a whole subsystem or capturing a point-in-time state, use a date-prefixed subdirectory:
 
 ```
-some/dir/thing  ->  some/dir/.archive/YYYYMMDD/thing
+.archive/YYYYMMDD/[original-path]
 ```
+
+This preserves the original path under the date stamp and makes ordering unambiguous.
+
+### Single-File In-Place Archives
+
+For a single file that doesn't warrant moving, rename it in place:
+
+| Pattern | When to use |
+|---------|-------------|
+| `filename.old.ext` | No longer active; kept for quick in-place reference |
 
 ### Other Archive Locations
 
 | Location | Purpose |
 |----------|---------|
-| `.dev-docs/.archive/` | Stale **development documentation** (the `.archive/` inside the `.dev-docs/` folder) |
+| `.dev-docs/.old/` | Stale **development documentation** only |
 
 **AI behavior for archived locations**:
-- Treat all contents of any `.archive/` as **read-only reference only**
+- Treat all contents of `.archive/` as **read-only reference only**
 - Do not modify files in `.archive/`
 - Do not suggest patterns from `.archive/` as current practice
 - Ignore `.archive/` in searches unless the user explicitly asks to look there
 
 ---
 
-> **→ [`.dev-docs` Convention](conventions.md#dev-docs-convention)** — dev documentation subdirectory structure, `index.md` format, and AI ignore rules for `.archive/`.
+> **→ [`.dev-docs` Convention](conventions.md#dev-docs-convention)** — dev documentation subdirectory structure, `index.md` format, and AI ignore rules for `.old/`.
 
 ---
 
@@ -109,16 +117,16 @@ Never assume. Never proceed without answers.
 
 ## Stale Instruction Files
 
-When a `.hi/instruct.md` becomes outdated due to a refactor or module removal:
+When a `.ai/instruct.md` becomes outdated due to a refactor or module removal:
 
 1. Do **not** delete it
 2. Add a deprecation banner at the very top:
    ```markdown
-   > ⚠️ **DEPRECATED** — This file is superseded by [`new/path/.hi/instruct.md`](new/path/.hi/instruct.md).
+   > ⚠️ **DEPRECATED** — This file is superseded by [`new/path/.ai/instruct.md`](new/path/.ai/instruct.md).
    > Preserved for reference. Do not apply these rules to new work.
    ```
-3. If the directory the file lived in still exists, leave the deprecated `instruct.md` in place. If that directory no longer exists, move the file to the **nearest surviving ancestor**'s `.dev-docs/.archive/` (or to the root `.dev-docs/.archive/` as a last resort)
-4. Update `.hi/index.md` to remove it or mark it deprecated
+3. If the directory the file lived in still exists, leave the deprecated `instruct.md` in place. If that directory no longer exists, move the file to the **nearest surviving ancestor**'s `.dev-docs/.old/` (or to the root `.dev-docs/.old/` as a last resort)
+4. Update `.ai/index.md` to remove it or mark it deprecated
 
 ---
 
@@ -131,8 +139,8 @@ These are pre-approved local, reversible actions — no confirmation needed:
 | Read any file | Always safe |
 | Create new files | Safe; creation is reversible by deletion |
 | Edit existing files | Safe for source/config; always show diff |
-| Move files to `.archive/` or `.dev-docs/.archive/` | Safe; reversible |
-| Update `Last Updated` date in `.hi/instruct.md` files | Pre-approved; part of every instruction file edit |
+| Move files to `.archive/` or `.dev-docs/.old/` | Safe; reversible |
+| Update `Last Updated` date in `.ai/instruct.md` files | Pre-approved; part of every instruction file edit |
 | Run read-only terminal commands (`ls`, `cat`, `grep`) | Safe |
 | Run builds and tests | Safe if they don't modify external state |
 

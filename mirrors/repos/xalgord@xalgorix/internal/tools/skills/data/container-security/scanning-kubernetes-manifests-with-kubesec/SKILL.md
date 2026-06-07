@@ -37,6 +37,17 @@ Kubesec is an open-source security risk analysis tool developed by ControlPlane 
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Coverage Gaps & Validation
+
+Kubesec scores a manifest's security context - a positive score is necessary but far from a full assessment:
+
+- **It scores what you feed it:** Kubesec analyzes the static YAML only. It does not resolve Helm/Kustomize templating, so scan the **rendered** output (`helm template ... | kubesec scan -`), not the chart - unrendered `{{ }}` values evaluate as missing.
+- **Score is additive, gaps read as silence:** a high score from `+1` items (readOnlyRootFilesystem, runAsNonRoot, limits) can still sit alongside an unflagged risk; the `advise` list (ServiceAccountName, AppArmor +3, Seccomp +4) shows controls you *don't* have. A `score: 0` is not a pass.
+- **Limited resource kinds:** Kubesec checks Pod-spec-bearing kinds (Deployment, Pod, DaemonSet, StatefulSet). RBAC, NetworkPolicy, Ingress, CronJob wrappers, and image CVEs are out of scope entirely.
+- **No image/runtime view:** it can't see what's inside the image or what's actually running - only the declared securityContext.
+
+**Validate:** parse `.[0].score` and the `scoring.advise`/`critical` arrays (`-o json | jq`), not just the headline message, and gate CI on `score < 0` *and* required advise items being addressed. Scan every document in multi-resource files, run against the rendered manifest, and pair Kubesec with an image scanner (Trivy/Grype) and RBAC review for the risks it structurally cannot see.
+
 ## Prerequisites
 
 - Kubernetes manifest files (YAML/JSON) for Deployments, Pods, DaemonSets, StatefulSets

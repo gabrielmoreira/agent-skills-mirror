@@ -32,6 +32,13 @@ nist_csf:
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+- **Encrypted DNS bypasses pcap entirely:** DoH (443) and DoT (853) hide query names from packet inspection, so entropy/length analysis sees nothing. Detect the *channel* instead — monitor/block known DoH resolver IPs and flag clients talking 443 to them — and pull names from the resolver's own logs, not the wire.
+- **Low-and-slow evades volume thresholds:** tunnels sending a few queries per minute stay under "high volume TXT" and subdomain-cardinality rules. Track per-client cumulative subdomain count and bytes-over-DNS across hours/days, not just per-minute rates.
+- **Dictionary/Base32 encoding lowers entropy:** tools using word-list or Base32 encoding produce labels whose Shannon entropy looks legitimate (~3.0–3.5). Don't rely on entropy alone — combine query rate, label length, record-type mix (TXT/NULL/CNAME), and parent-domain NXDOMAIN ratio.
+- **Validate in a lab before trusting thresholds:** stand up `iodine`, `dnscat2`, and `dns2tcp` against a controlled domain, capture, and confirm your detector flags each. Then replay a day of production DNS to measure false positives (CDNs, AV/telemetry, and DGA-like SaaS domains are common FP sources) and tune to that baseline. Don't conclude "no tunneling" until you've checked encrypted-DNS egress and multi-hour aggregates.
+
 ## Prerequisites
 
 - Familiarity with security operations concepts and tools

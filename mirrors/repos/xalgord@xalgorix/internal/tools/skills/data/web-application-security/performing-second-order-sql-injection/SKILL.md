@@ -31,6 +31,17 @@ nist_csf:
 - During assessment of admin panels that display or process user-submitted data
 - When evaluating stored procedure execution paths that use previously stored data
 
+### How to CONFIRM a Hit (avoid false negatives)
+- The positive signal fires at the **second context, not at storage**: the payload is accepted/stored cleanly (often no error at insert), then triggers when a LATER query reads it back. Confirm by observing the effect at the trigger endpoint — a DB error, altered result set, time delay, or OOB callback when the stored value is reused.
+- Because storage is sanitized, a clean response at the storage step is EXPECTED and is not evidence of safety. Do not stop testing there.
+- Establish the trigger: store a benign marker, then exercise every place that data resurfaces (admin user list, profile render, password change using stored username, report/CSV/PDF export, search using saved prefs) until you find where it is concatenated into SQL.
+- Prove it with payloads that only manifest later:
+  - Time-based: store `'; WAITFOR DELAY '0:0:5'--` (or `||(SELECT sleep(5))`) and confirm the *trigger* request is delayed ~5s.
+  - OOB: store `'; EXEC master..xp_dirtree '\\OOB\share'--` (or DB-specific DNS/HTTP) and confirm the callback fires on trigger.
+  - Boolean: store payloads that flip the trigger page between two observable states.
+- Do NOT conclude negative until you have: mapped storage→trigger pairs across DIFFERENT users/roles (cross-context — admin viewing your data); tried multiple storage fields (username, display name, address, comment, file metadata); allowed for deferred execution (the trigger may run minutes/hours later, e.g. a cron report); and run sqlmap with `--second-url`/`--second-req` to automate the store-then-fire loop.
+- The proof is the second query breaking — never report on the storage response alone.
+
 ## Prerequisites
 - Burp Suite Professional for request tracking across application flows
 - SQLMap with second-order injection support (--second-url flag)

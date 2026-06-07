@@ -1,10 +1,12 @@
+> **How to use this file**: it is a catalog of smells, not a checklist to run top to bottom. The principles in `SKILL.md` Core Stance apply here too: over-editing is failure, the author's voice and genre win, and these lists are examples, not find-and-replace. A sentence that already reads natural stays. Match the smell, not the word.
+
 ## English Scenario
 
 Eliminate predictable AI writing patterns. Write like a human: varied, imperfect, specific.
 
 ### Core Rules
 
-1. **Cut filler phrases.** Remove throat-clearing openers, emphasis crutches, and all adverbs.
+1. **Cut filler phrases.** Remove throat-clearing openers, emphasis crutches, and adverbs that only signal emphasis. Keep adverbs that carry real meaning.
 2. **Break formulaic structures.** Avoid binary contrasts, negative listings, dramatic fragmentation, rhetorical setups, false agency.
 3. **Use active voice.** Every sentence needs a human subject doing something. No inanimate objects performing human actions ("the complaint becomes a fix").
 4. **Be specific.** No vague declaratives ("The reasons are structural"). Name the specific thing. No lazy extremes ("every," "always," "never") doing vague work.
@@ -19,7 +21,7 @@ Eliminate predictable AI writing patterns. Write like a human: varied, imperfect
 
 Examples, not exhaustive -- any word used to signal importance rather than to say something is suspect.
 
-**Overused adverbs: kill them all:**
+**Overused emphasis adverbs (cut these when they only signal importance, not every adverb):**
 "quietly", "deeply", "fundamentally", "remarkably", "arguably", "certainly", "really", "just", "literally", "genuinely", "honestly", "simply", "actually"
 
 > NO: "quietly orchestrating workflows" / "fundamentally reshape how we think"
@@ -164,7 +166,7 @@ Examples, not exhaustive -- any construction that performs insight rather than d
 
 ### Quick Checks Before Delivering Prose
 
-- Any adverbs? Kill them.
+- Any adverb only adding emphasis? Cut it. (Meaning-bearing adverbs stay.)
 - Any passive voice? Find the actor, make them the subject.
 - Inanimate thing doing a human verb? Name the person.
 - Sentence starts with "Here's"? Cut to the point.

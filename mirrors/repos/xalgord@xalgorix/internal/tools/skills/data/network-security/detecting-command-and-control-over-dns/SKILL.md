@@ -42,6 +42,15 @@ nist_csf:
 
 **DISCLAIMER**: DNS tunneling tools referenced in this skill (Iodine, dnscat2, dns2tcp) are dual-use. They have legitimate uses (bypassing captive portals, security research) and malicious uses (C2 channels, exfiltration). Only deploy detection in networks you are authorized to monitor. Testing tunneling tools requires explicit authorization.
 
+## Detection Gaps & Validation
+
+- **DoH/DoT bypasses port-53 sensors entirely:** C2 over `https://` (443) or DoT (853) never appears in Zeek `dns.log`. Block/monitor known DoH resolver IPs, alert on `ssl.log` SNI to `dns.google`/`cloudflare-dns.com` from non-browser hosts, and treat unexplained 443/853 to public resolvers as the tunnel.
+- **Low-and-slow beaconing beats entropy thresholds:** a beacon sending a few bytes every 30–300s with jittered intervals keeps subdomain entropy and volume below the 3.5-entropy / 50-query thresholds. Score on inter-query interval regularity (low CV) per `(id.orig_h, base_domain)` over hours, not single-query features.
+- **Dictionary-DGA and CNAME chaining evade char-level models:** word-list DGAs (e.g., suppobox) have English-like bigrams; CNAME/MX answers carry data instead of the QNAME. Inspect `dns.log` `answers`/`qtype_name` for CNAME/TXT/NULL/MX abuse, not just `query`.
+- **Sampling/log gaps hide it:** resolver logs that only record cache misses, or Zeek dropping under load, undercount query volume. Verify capture completeness via `capture_loss.log` before trusting "no anomaly."
+- **Validate the rule fires:** in an authorized lab run `iodine`/`dnscat2`/`dns2tcp` against a controlled domain, then confirm your entropy script flags it (`flags: high_entropy`), the Suricata `dns.query` rule alerts, and `cat dns.log | zeek-cut query qtype_name` shows the long NULL/TXT labels. A zero result means the QNAME field path or threshold is wrong.
+- **FP tuning:** baseline antivirus/CDN/telemetry domains (e.g., `*.avts.mcafee.com`, `*.akamaiedge.net`) that emit long high-entropy labels legitimately and whitelist before alerting.
+
 ## Prerequisites
 
 - DNS query logs from recursive resolver, Zeek/Bro, Suricata, or passive DNS tap

@@ -36,6 +36,14 @@ Use this skill when:
 
 **Do not use** for Windows hardening (use hardening-windows-endpoint-with-cis-benchmark).
 
+## Common Misconfigurations & Verification
+
+- **auditd rules edited but never loaded:** writing `/etc/audit/rules.d/cis.rules` does nothing until `augenrules --load` runs and `auditctl -l` lists them; an earlier `-e 2` (immutable) line blocks later additions until reboot. Confirm the identity/scope/perm_mod watches are live, not just on disk.
+- **sysctl applied at runtime but not persisted:** values set with `sysctl -w` revert on reboot. Verify the `/etc/sysctl.d/99-cis.conf` keys actually take effect — e.g. `sysctl net.ipv4.conf.all.rp_filter` after `sysctl --system` (some are overridden by cloud-init or a higher-numbered file).
+- **/tmp and /dev/shm options silently inactive:** `mount | grep -E '/tmp|/dev/shm'` must show `noexec,nosuid,nodev`; an fstab typo leaves the partition mounted with defaults. A line in fstab is not proof it is applied.
+- **Config drift after baseline:** re-run OpenSCAP on a schedule — a one-time pass does not catch package updates or an admin re-enabling `PasswordAuthentication`. Match the profile to the OS (`ssg-ubuntu2204-ds.xml`, `cis_level1_server`); a mismatched data stream reports false passes.
+- **Verify enforcement, not just config:** after hardening, test from a second SSH session (so a bad `sshd_config` won't lock you out), then touch `/etc/passwd` and confirm an auditd `identity` key event is generated and shipped to the remote rsyslog/SIEM.
+
 ## Prerequisites
 
 - Root or sudo access on target Linux endpoints

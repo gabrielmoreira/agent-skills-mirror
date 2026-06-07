@@ -34,6 +34,17 @@ Implement Just-In-Time (JIT) access provisioning to eliminate standing privilege
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+JIT only removes standing privilege if the grant truly expires and approval is real:
+
+- **Auto-approve scoped too wide:** "low-risk auto-grant" quietly covers privileged or production resources, so JIT becomes self-service standing access. Audit the auto-approval rule set and confirm no admin/prod/sensitive-data entitlement is in the auto-approve tier; every privileged grant must require a human approver.
+- **Access not actually revoked at expiration:** the timer ends but the group membership / role / DB grant lingers. Test end-to-end — request access, let it expire, then confirm the entitlement is gone (e.g., the AD group no longer lists the user, the privileged session is killed). Reconcile "active grants in JIT tool" against "actual entitlements on target" and the delta should be zero.
+- **Active sessions survive expiry:** revocation removes future access but leaves the current RDP/SSH/DB session open. Confirm expiry forces session termination, not just token non-renewal.
+- **Extension requests become de-facto standing access:** check that repeated extensions are capped and logged, not silently auto-renewed.
+- **Break-glass not monitored / no post-review:** emergency bypass with no after-the-fact review is an unaudited backdoor. Confirm every emergency grant raises a high-priority SIEM alert and has a mandatory review ticket.
+- **Approved-but-unused grants ignored:** track requests that were granted but never connected — a high ratio signals over-broad eligibility or automated abuse.
+
 ## Prerequisites
 
 - Familiarity with identity access management concepts and tools

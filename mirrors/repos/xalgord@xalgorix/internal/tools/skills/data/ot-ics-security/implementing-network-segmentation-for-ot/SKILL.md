@@ -38,6 +38,14 @@ nist_csf:
 
 **Do not use** for IT-only microsegmentation without OT components (see implementing-zero-trust-in-cloud), or for initial zone design without prior traffic analysis (see performing-ot-network-security-assessment first).
 
+## Common Misconfigurations & Verification
+
+- **Cutover without a complete traffic baseline.** Enforcing firewall rules built from an incomplete or too-short baseline breaks legitimate but infrequent flows — quarterly batch reports, backup jobs, vendor polls. Capture 2-4 weeks spanning all operating modes and start firewalls in monitor mode before enforcing.
+- **Purdue bypass via dual-homed assets.** An engineering workstation, historian, or wireless AP with interfaces in two zones collapses the segmentation; enumerate multi-homed hosts and unmanaged switch paths before trusting the boundary.
+- **DPI rules that allow writes from Level 3.** A Modbus allow rule without function-code filtering passes FC5/FC6/FC15/FC16; confirm read-only zones block write function codes and that SIS sits on an isolated VLAN with no conduit to the BPCS.
+- **Data diode bypassed by a parallel path.** Verify the OT->DMZ replication is the only route and that no reverse TCP path exists.
+- **Verify without disrupting the process.** Validate during a maintenance window with connectivity tests: Enterprise->PLC on 502/44818/102 must be blocked, Operations read polls must succeed, and SIS must be unreachable from the BPCS. Use TCP connect tests, not write or restart commands against live controllers.
+
 ## Prerequisites
 
 - Complete traffic baseline from passive monitoring (minimum 2-4 weeks of capture data)

@@ -37,6 +37,17 @@ nist_csf:
 
 **Do not use** for preventing data exfiltration (use S3 bucket policies, VPC endpoints, and SCPs), for data classification (use Amazon Macie discovery jobs), or for network-level exfiltration detection (use VPC Flow Logs with network analysis tools).
 
+## Detection Gaps & Validation
+
+Why bulk-download exfil slips past CloudTrail/GuardDuty:
+- **S3 data events are OFF by default and per-bucket/prefix.** `put-event-selectors` only covers the ARNs you listed — exfil from any unlisted bucket is invisible. Prefer advanced event selectors or CloudTrail Lake for full coverage.
+- **`bytesTransferredOut` is not in standard CloudTrail S3 data events for `GetObject`** (it lives in S3 *server access logs*), so volume-based Athena queries on that field return null. Count `GetObject` events or enable server access / S3 access logs for true byte volume.
+- **`CopyObject`/`ReplicateObject` to an attacker bucket is server-side** — `sourceIPAddress` is AWS-internal, so IP-based detection fails. Key on the destination/recipient account and bucket instead.
+- **GuardDuty S3 Protection baseline learning is 7–14 days** — new buckets miss day-0 and noise as false positives.
+- Presigned-URL downloads log the *signer's* identity, not the downloader.
+
+Validate: `aws cloudtrail get-event-selectors --trail-name <t>` to confirm `AWS::S3::Object` data events are **enabled** for the sensitive bucket; generate a test multi-object `GetObject` burst and confirm the `S3GetObjectCount` metric filter increments and the alarm fires; FP-tune by excluding backup/replication/Macie scan roles.
+
 ## Prerequisites
 
 - CloudTrail configured with S3 data event logging (`GetObject`, `PutObject`, `CopyObject`)

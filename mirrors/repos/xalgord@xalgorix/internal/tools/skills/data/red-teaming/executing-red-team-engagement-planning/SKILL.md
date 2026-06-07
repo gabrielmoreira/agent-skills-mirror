@@ -34,6 +34,15 @@ Red team engagement planning is the foundational phase that defines scope, objec
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Out-of-scope assumptions left implicit.** Planners list in-scope targets but forget to enumerate hard exclusions (production DBs, medical/OT devices, third-party SaaS). Name them explicitly or the team risks touching forbidden systems mid-op.
+- **No tested emergency-stop.** A code word and abort contact written down but never dry-run fails when it matters. Walk through the cessation procedure with the client before go-live.
+- **Deconfliction line not established with the SOC.** Without it, red team traffic gets escalated as a real incident and the engagement is compromised.
+- **Threat profile mismatched to the org.** Emulating Lazarus against a regional retailer wastes effort; map TTPs to the actual threat landscape.
+- **Missing/unsigned authorization and get-out-of-jail letters** for physical or social vectors.
+- **How to confirm the plan is sound:** the success signal is a *signed* RoE on file, an explicit in/out-of-scope asset list, a SOC deconfliction matrix with named contacts, and an emergency-stop that was actually exercised end to end (not just documented). Don't treat planning as complete until the executive sponsor signature is collected and every operator has acknowledged the ROE and restrictions in writing.
+
 ## Prerequisites
 
 - Familiarity with red teaming concepts and tools

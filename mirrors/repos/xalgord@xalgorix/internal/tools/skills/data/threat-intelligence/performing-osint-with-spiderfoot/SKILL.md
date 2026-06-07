@@ -35,6 +35,14 @@ SpiderFoot is an open-source OSINT automation tool with 200+ modules that integr
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+- **Coverage = enabled modules + API keys:** SpiderFoot's 200+ modules are mostly inert without keys - lacking VirusTotal, Shodan, and HaveIBeenPwned keys, the `investigate`/`footprint` use cases silently skip the richest sources and return a thin profile that looks "clean." Audit which modules actually ran (and which errored on a missing key) before concluding a target has no exposure.
+- **Passive vs active tradeoff:** the `passive` use case avoids touching the target but misses live ports/banners; `footprint`/`investigate` actively probe and can tip off the target or trip a WAF. Choose the scan type deliberately - a passive-only scan is not evidence the attack surface is small.
+- **Stale and recycled data:** OSINT sources lag reality - dead subdomains, expired breach credentials, and recycled combolists produce findings that no longer apply. Check first/last-seen dates.
+- **Name-collision false positives:** email/name/username pivots match unrelated people and orgs; a "leaked credential" hit may belong to a different entity sharing the keyword. Confirm the identifier truly maps to the target (matching domain, corroborating record) before reporting.
+- **How to confirm:** treat SpiderFoot output as leads - validate high-impact findings (an exposed service, a leaked credential) directly against the authoritative source before acting.
+
 ## Prerequisites
 
 - SpiderFoot 4.0+ installed or SpiderFoot HX cloud account

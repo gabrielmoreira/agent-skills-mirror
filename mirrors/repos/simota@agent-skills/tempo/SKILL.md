@@ -1,6 +1,6 @@
 ---
 name: tempo
-description: Scheduling and time-aware logic architect for cron, timezone/DST, retry/backoff, and business-calendar design. Use when schedule design is needed.
+description: Designing scheduling and time-aware logic for cron, timezone/DST, retry/backoff, and business-calendar systems. Use when schedule design is needed.
 ---
 
 <!--
@@ -79,7 +79,7 @@ Route elsewhere when the task is primarily:
 - Retry policies declare: max attempts, max total duration, backoff formula, jitter flavor, retryable error classes (4xx is NOT retryable unless 408/429), and DLQ destination.
 - Overlap behavior is explicit: a long-running job declares `skip` (drop the new tick), `queue` (run after previous), or `concurrent` (with a lock / semaphore). Cron does NOT guarantee non-overlap.
 - Backfill strategy declares catchup bound (how far back), idempotency contract, watermark location, and late-arriving-data tolerance.
-- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eager reads of existing cron/timezone/scheduler code at ANALYZE — grounding cost is low vs silent DST bug cost), P5 (think step-by-step at DST boundary and retry-budget decisions — these drive downstream bug exposure)** as critical for Tempo. P1 recommended: front-load platform choice, timezone stance, and DST policy at ANALYZE. P2 recommended: calibrated SPECIFY output in the documented deliverable envelope. P4 recommended: parallel next-fire simulation across multiple timezones and DST-boundary days may be spawned as parallel subagents per `_common/SUBAGENT.md` when VERIFYing complex multi-region schedules.
+- Author for Opus 4.8 defaults (`_common/OPUS_48_AUTHORING.md`). Critical: **P3** (eager reads of cron/TZ/scheduler code at ANALYZE) and **P5** (step-by-step on DST boundaries and retry budgets). Recommended: P1 (front-load platform/TZ/DST at ANALYZE), P2 (calibrated SPECIFY output), P4 (parallel next-fire simulation across multi-region schedules per `_common/SUBAGENT.md`).
 - Deliverable must include: cron expression (with timezone annotation), DST policy statement, retry policy, idempotency key contract, overlap behavior, observability targets, and platform-specific config snippet.
 
 ## Boundaries
@@ -107,61 +107,7 @@ Interaction triggers → `_common/INTERACTION.md`
 
 ### INTERACTION_TRIGGERS
 
-| Trigger | Timing | When to Ask |
-|---------|--------|-------------|
-| DST_POLICY_CHOICE | BEFORE_START | Schedule runs at local wall-clock time crossing DST |
-| CATCHUP_DEPTH | BEFORE_START | Backfill scope is unbounded or unspecified |
-| OVERLAP_POLICY | ON_DECISION | Average runtime approaches interval length |
-| SEMANTICS_CHOICE | ON_DECISION | At-least-once (cheap) vs exactly-once (Temporal) is unresolved |
-| PLATFORM_FIT | ON_RISK | Current platform's guarantees do not match requirement (e.g., GitHub Actions best-effort vs strict SLA) |
-
-```yaml
-questions:
-  - question: "How should the schedule behave across a DST transition?"
-    header: "DST Policy"
-    options:
-      - label: "Defer to next valid time (Recommended)"
-        description: "Skip non-existent times (spring-forward 02:30); use first occurrence at fall-back 01:30"
-      - label: "Skip the ambiguous day"
-        description: "Miss the run entirely when the wall-clock time is invalid/ambiguous"
-      - label: "Run both occurrences at fall-back"
-        description: "Accept double-run at 01:30 twice; requires strong idempotency"
-      - label: "Switch schedule to UTC"
-        description: "Evaluate in UTC; wall-clock drifts by ±1h across DST — acceptable for non-user-facing jobs"
-    multiSelect: false
-  - question: "How far back should backfill / catchup reach?"
-    header: "Catchup"
-    options:
-      - label: "Since last successful watermark (Recommended)"
-        description: "Replay from recorded watermark; bounded by data retention"
-      - label: "Fixed window (e.g., last 24h)"
-        description: "Cheap and predictable; may miss older gaps"
-      - label: "No catchup — skip forward"
-        description: "Run at the next scheduled tick only; accept missed runs"
-      - label: "Hard cap (e.g., max 7 days, then alert)"
-        description: "Bounded catchup with ops alert on overflow"
-    multiSelect: false
-  - question: "What is the overlap policy when a run exceeds its interval?"
-    header: "Overlap"
-    options:
-      - label: "Skip concurrent (Recommended)"
-        description: "Drop the new tick if the previous run is still active; requires distributed lock"
-      - label: "Queue sequentially"
-        description: "Enqueue new ticks; may fall behind unbounded if runtime > interval"
-      - label: "Allow concurrent"
-        description: "Runs overlap; requires idempotent, stateless workload"
-    multiSelect: false
-  - question: "Which delivery semantics does the workload require?"
-    header: "Semantics"
-    options:
-      - label: "At-least-once with idempotency (Recommended)"
-        description: "Cheap on any platform; idempotency key protects against duplicates"
-      - label: "Exactly-once via Temporal or similar"
-        description: "Platform-native guarantee; higher infra cost, stricter model"
-      - label: "At-most-once"
-        description: "Acceptable data loss; simplest, use only for non-critical metrics"
-    multiSelect: false
-```
+Trigger table + question schemas → `reference/interaction-schemas.md`. Triggers: `DST_POLICY_CHOICE` / `CATCHUP_DEPTH` (BEFORE_START), `OVERLAP_POLICY` / `SEMANTICS_CHOICE` (ON_DECISION), `PLATFORM_FIT` (ON_RISK).
 
 ### Never
 
@@ -182,21 +128,15 @@ questions:
 
 `ANALYZE → MODEL → SPECIFY → VERIFY → HARDEN`
 
-```
-┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
-│ ANALYZE  │───▶│  MODEL   │───▶│ SPECIFY  │───▶│  VERIFY  │───▶│  HARDEN  │
-│ Read req │    │ Timeline │    │ Contract │    │ Simulate │    │ Retry+   │
-│ + code   │    │ & DST    │    │ & cron   │    │ DST,EoM  │    │ DLQ+idem │
-└──────────┘    └──────────┘    └──────────┘    └──────────┘    └──────────┘
-```
+| Phase | Required action | Key rule |
+|-------|-----------------|----------|
+| `ANALYZE` | Read existing cron configs, TZ usage, retry code; gather SLA/frequency/idempotency requirements | Ground in real code; never design in the abstract |
+| `MODEL` | Draw the timeline: ticks, DST boundaries, month-end edge cases, business-calendar overlays | Every edge case is an explicit marker on the timeline |
+| `SPECIFY` | Write cron + TZ + DST policy + idempotency key + overlap + observability targets | Every schedule row ships all six fields populated |
+| `VERIFY` | Simulate next N fires across DST, end-of-month, Feb-29 (croniter / cron-parser) | Numerical sanity check before handoff |
+| `HARDEN` | Attach retry policy, DLQ, backfill strategy, rate-limit; document failure modes | The unhappy path is half the design |
 
-| Phase | Required action | Key rule | Read |
-|-------|-----------------|----------|------|
-| `ANALYZE` | Read existing cron configs, TZ usage, retry code; gather SLA/frequency/idempotency requirements | Ground in real code; never design in the abstract | `references/timezone-safety.md`, existing platform config |
-| `MODEL` | Draw the timeline: ticks, DST boundaries, month-end edge cases, business-calendar overlays | Every edge case is an explicit marker on the timeline | `references/business-calendar.md`, `references/cron-patterns.md` |
-| `SPECIFY` | Write the cron expression + timezone + DST policy + idempotency key + overlap behavior + observability targets | Every schedule row ships with all six fields populated | `references/cron-patterns.md`, `references/handoffs.md` |
-| `VERIFY` | Simulate next N fires across a DST boundary, across end-of-month, across Feb-29 if relevant; use croniter / cron-parser | Numerical sanity check before handoff | `references/cron-patterns.md` |
-| `HARDEN` | Attach retry policy, DLQ target, backfill strategy, rate-limit if applicable; document failure modes | The unhappy path is half the design | `references/retry-strategies.md` |
+Per-phase Read targets are listed in the Recipes "Read First" column.
 
 ## Recipes
 
@@ -204,14 +144,14 @@ Single source of truth for Recipe definitions. Recipe selection drives Read Firs
 
 | Recipe | Subcommand | Default? | When to Use | Cross-links | Read First |
 |--------|-----------|---------|-------------|-------------|------------|
-| Cron Design | `cron` | ✓ | Cron expression design, timezone annotation, platform configuration. Output: cron expression + TZ + DST policy + platform config | — | `references/cron-patterns.md` |
-| Timezone Safety | `timezone` | | Timezone/DST safety audit, library migration. Output: audit report + fix list + library migration notes | — | `references/timezone-safety.md` |
-| Retry Policy | `retry` | | Retry/backoff policy design, DLQ configuration, rate-limiting (token/leaky/GCRA). Output: retry spec (attempts, duration, backoff formula, jitter, DLQ) | — | `references/retry-strategies.md` |
-| Backfill Plan | `backfill` | | Backfill/replay planning, watermark design. Output: replay runbook + idempotency key contract | — | `references/retry-strategies.md` |
-| Business Calendar | `calendar` | | Japanese holiday, bank business day, and fiscal year logic design. Output: calendar spec + library recommendation + data refresh policy | — | `references/business-calendar.md` |
-| Deadline Propagation | `deadline` | | Context deadline propagation across async boundaries (context.Context, AbortSignal, gRPC deadline), budget chain math, partial-progress return. Output: budget chain table + propagation mechanism + partial-progress policy + observability targets | HTTP/RPC wire timeout → Gateway; time-budget SLO → Beacon | `references/async-boundaries.md` § Deadline Propagation |
-| Time Window | `window` | | Tumbling/sliding/session window semantics, watermark design, late-arrival handling, window-join math. Output: window shape + watermark strategy + allowed-lateness policy + join semantics | Stream-pipeline implementation → Stream; watermark-lag observability → Beacon | `references/async-boundaries.md` § Time Window Semantics |
-| Idempotency Key | `idempotent` | | Idempotency-key design (formula, dedup window, storage TTL vs request TTL, in-flight guard, distributed propagation). Output: key formula + dedup window + storage mechanism + in-flight policy | Pipeline-level exactly-once → Stream; HTTP `Idempotency-Key` header → Gateway | `references/idempotent-keys.md` |
+| Cron Design | `cron` | ✓ | Cron expression design, timezone annotation, platform configuration. Output: cron expression + TZ + DST policy + platform config | — | `reference/cron-patterns.md` |
+| Timezone Safety | `timezone` | | Timezone/DST safety audit, library migration. Output: audit report + fix list + library migration notes | — | `reference/timezone-safety.md` |
+| Retry Policy | `retry` | | Retry/backoff policy design, DLQ configuration, rate-limiting (token/leaky/GCRA). Output: retry spec (attempts, duration, backoff formula, jitter, DLQ) | — | `reference/retry-strategies.md` |
+| Backfill Plan | `backfill` | | Backfill/replay planning, watermark design. Output: replay runbook + idempotency key contract | — | `reference/retry-strategies.md` |
+| Business Calendar | `calendar` | | Japanese holiday, bank business day, and fiscal year logic design. Output: calendar spec + library recommendation + data refresh policy | — | `reference/business-calendar.md` |
+| Deadline Propagation | `deadline` | | Context deadline propagation across async boundaries (context.Context, AbortSignal, gRPC deadline), budget chain math, partial-progress return. Output: budget chain table + propagation mechanism + partial-progress policy + observability targets | HTTP/RPC wire timeout → Gateway; time-budget SLO → Beacon | `reference/async-boundaries.md` § Deadline Propagation |
+| Time Window | `window` | | Tumbling/sliding/session window semantics, watermark design, late-arrival handling, window-join math. Output: window shape + watermark strategy + allowed-lateness policy + join semantics | Stream-pipeline implementation → Stream; watermark-lag observability → Beacon | `reference/async-boundaries.md` § Time Window Semantics |
+| Idempotency Key | `idempotent` | | Idempotency-key design (formula, dedup window, storage TTL vs request TTL, in-flight guard, distributed propagation). Output: key formula + dedup window + storage mechanism + in-flight policy | Pipeline-level exactly-once → Stream; HTTP `Idempotency-Key` header → Gateway | `reference/idempotent-keys.md` |
 
 ### Signal Keywords → Recipe
 
@@ -241,7 +181,7 @@ For natural-language input without an explicit subcommand. Subcommand match wins
 
 ## Cron Patterns
 
-Read `references/cron-patterns.md` for the complete reference. Core concepts:
+Read `reference/cron-patterns.md` for the complete reference. Core concepts:
 
 ### 5-field Unix vs 6-field Quartz/Spring
 
@@ -263,7 +203,7 @@ Read `references/cron-patterns.md` for the complete reference. Core concepts:
 
 ## Timezone & DST
 
-Read `references/timezone-safety.md` for the full discipline.
+Read `reference/timezone-safety.md` for the full discipline.
 
 ### The UTC discipline
 
@@ -275,13 +215,15 @@ Read `references/timezone-safety.md` for the full discipline.
 
 | Library | State | Recommendation |
 |---------|-------|----------------|
-| **Temporal API** (`ZonedDateTime`, `Instant`) | ECMAScript **Stage 4** (TC39 advanced 2026-01-20, in ES2026 spec); shipping natively in Firefox 139+ / Chrome 144+ / Node.js 26 (unflagged); polyfill `@js-temporal/polyfill` for older runtimes. Source: [TC39 Advances Temporal to Stage 4](https://socket.dev/blog/tc39-advances-temporal-to-stage-4), [Node.js 26 Release](https://nodejs.org/en/blog/release/v26.0.0) | New TS/JS code — preferred; native in Node 26+ |
-| **Luxon** (`DateTime.setZone`, `.toUTC`) | Mature, IANA-aware | Excellent for current production JS/TS |
-| **date-fns v4 + `@date-fns/tz`** | v4.0 (Sep 2024): first-class TZ support via `@date-fns/tz` and `@date-fns/utc` packages; replaces `date-fns-tz` companion. Source: [date-fns v4.0 announcement](https://blog.date-fns.org/v40-with-time-zone-support/) | Preferred for date-fns codebases; upgrade from `date-fns-tz` |
-| **date-fns-tz** (`formatInTimeZone`, `zonedTimeToUtc`) | Pre-v4 companion; still functional but `@date-fns/tz` is the successor | Legacy — migrate to `@date-fns/tz` on date-fns v4+ |
-| **Moment.js** | Maintenance mode since 2020 | Do NOT use in new code; migrate to Luxon or Temporal |
-| **Python `zoneinfo`** (stdlib, 3.9+) | IANA-backed | Preferred over `pytz` for new Python code |
-| **pytz** | Works but has footguns (use `.localize()` not constructor) | Replace with `zoneinfo` when possible |
+| **Temporal API** | ECMAScript Stage 4 (ES2026); native in Node 26+, Firefox 139+, Chrome 144+; polyfill `@js-temporal/polyfill` | New TS/JS code — preferred |
+| **Luxon** | Mature, IANA-aware | Excellent for current production JS/TS |
+| **date-fns v4 + `@date-fns/tz`** | v4.0 (Sep 2024) first-class TZ via `@date-fns/tz` / `@date-fns/utc` packages | Preferred for date-fns codebases |
+| **date-fns-tz** | Pre-v4 companion; `@date-fns/tz` is the successor | Legacy — migrate on v4+ |
+| **Moment.js** | Maintenance mode since 2020 | Do NOT use in new code |
+| **Python `zoneinfo`** | Stdlib 3.9+, IANA-backed | Preferred over `pytz` |
+| **pytz** | Footguns (use `.localize()`, not constructor) | Replace with `zoneinfo` |
+
+Citations and migration notes → `reference/timezone-safety.md`.
 
 ### DST pitfalls
 
@@ -291,7 +233,7 @@ Read `references/timezone-safety.md` for the full discipline.
 
 ## Business Calendar
 
-Read `references/business-calendar.md` for the full spec.
+Read `reference/business-calendar.md` for the full spec.
 
 ### Japan essentials
 
@@ -305,7 +247,7 @@ Read `references/business-calendar.md` for the full spec.
 
 ## Retry / Backoff / Dead Letter
 
-Read `references/retry-strategies.md` for complete formulas and platform mappings.
+Read `reference/retry-strategies.md` for complete formulas and platform mappings.
 
 ### Backoff formulas
 
@@ -336,7 +278,7 @@ For streaming/backfill: persist the latest successfully-processed timestamp (the
 
 ## Platform Implementation
 
-Brief matrix; details in `references/cron-patterns.md` and `references/retry-strategies.md`.
+Brief matrix; details in `reference/cron-patterns.md` and `reference/retry-strategies.md`.
 
 | Platform | Cron format | Timezone | Retry | DLQ | Idempotency |
 |----------|------------|----------|-------|-----|-------------|
@@ -366,90 +308,38 @@ Every Tempo deliverable must include:
 
 ## Collaboration
 
-**Receives:** User (schedule requirements, SLA), Scribe (spec excerpts on recurrence), Triage (incident context for replay), Scout (bug context around missed runs), Nexus (task context)
-**Sends:** Builder (implementation spec), Gear (CI/CD cron config), Weave (retry state-machine definition), Beacon (schedule SLO/alert targets), Voyager (temporal test scenarios), Judge (schedule correctness review), Pipe (GHA advanced cron)
-
-### Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    INPUT PROVIDERS                           │
-│  User    → schedule requirements, SLA, frequency            │
-│  Scribe  → spec excerpts mentioning recurrence              │
-│  Triage  → incident context, missed-run window              │
-│  Scout   → bug context around schedule failures             │
-│  Nexus   → task context, chain position                     │
-└─────────────────────┬───────────────────────────────────────┘
-                      ↓
-            ┌─────────────────┐
-            │      Tempo      │
-            │ Time Architect  │
-            └────────┬────────┘
-                     ↓
-┌─────────────────────────────────────────────────────────────┐
-│                   OUTPUT CONSUMERS                           │
-│  Builder  → implementation spec (cron + retry + idem)       │
-│  Gear     → CI/CD cron config maintenance                   │
-│  Pipe     → new GHA workflow with advanced cron             │
-│  Weave    → retry state machine definition                  │
-│  Beacon   → schedule SLO, missed-run alerts                 │
-│  Voyager  → temporal test scenarios (DST, EoM, Feb-29)      │
-│  Judge    → schedule correctness review                     │
-└─────────────────────────────────────────────────────────────┘
-```
+Receives/Sends are enumerated in CAPABILITIES_SUMMARY (`BIDIRECTIONAL_PARTNERS`). Handoff packet templates → `reference/handoffs.md`.
 
 ### Collaboration Patterns
 
-| Pattern | Name | Flow | Purpose |
-|---------|------|------|---------|
-| **A** | Schedule-Design-to-Impl | User → Tempo → Builder → Gear | End-to-end schedule rollout |
-| **B** | Retry-Hardening | User → Tempo → Weave → Builder | Retry policy + state machine co-design |
-| **C** | Timezone-Audit | User → Tempo[audit] → Judge → Builder | Audit existing TZ handling, review, fix |
-| **D** | Backfill-Recovery | Triage → Tempo[replay plan] → Builder → Beacon | Incident recovery with watermark + observability |
-| **E** | Schedule-Observability | Tempo → Beacon → Builder | Missed-run alert + execution SLO design |
-| **F** | CI-Cron-Optimization | Tempo → Gear/Pipe | Optimize GHA `schedule.cron` across repos |
+| Pattern | Flow | Purpose |
+|---------|------|---------|
+| **A** Schedule-Design-to-Impl | User → Tempo → Builder → Gear | End-to-end schedule rollout |
+| **B** Retry-Hardening | User → Tempo → Weave → Builder | Retry policy + state machine co-design |
+| **C** Timezone-Audit | User → Tempo[audit] → Judge → Builder | Audit existing TZ handling, review, fix |
+| **D** Backfill-Recovery | Triage → Tempo[replay] → Builder → Beacon | Incident recovery with watermark + observability |
+| **E** Schedule-Observability | Tempo → Beacon → Builder | Missed-run alert + execution SLO design |
+| **F** CI-Cron-Optimization | Tempo → Gear/Pipe | Optimize GHA `schedule.cron` across repos |
 
-### Handoff Patterns
+### Handoff Shape (one-liners)
 
-Read `references/handoffs.md` for complete templates.
-
-**From Triage (incident replay):**
-```
-Receive incident window, data lag, and affected dataset. Produce replay plan with
-watermark, idempotency contract, catchup depth cap, and Beacon observability.
-```
-
-**To Builder (implementation spec):**
-```
-Deliver cron + TZ + DST policy + retry policy + idempotency key contract + overlap
-policy + platform snippet. Builder implements against the spec with no inference
-on retry/idempotency details.
-```
-
-**To Beacon (observability spec):**
-```
-Deliver missed-run threshold (e.g., no fire > 2× interval = page), execution-duration
-p99 SLO, drift/skew detection (actual vs expected fire time > X), and DLQ depth alert.
-```
-
-**To Voyager (test scenarios):**
-```
-Deliver enumerated edge-case matrix: DST spring-forward day, DST fall-back day,
-end-of-month (28/29/30/31), Feb-29 in leap year, year-rollover, daylight clock drift.
-Each scenario: input time, expected fire(s), assertion.
-```
+- **From Triage:** incident window + data lag + dataset → replay plan with watermark, idempotency, catchup cap, Beacon observability.
+- **To Builder:** cron + TZ + DST policy + retry + idempotency + overlap + platform snippet (no inference left).
+- **To Beacon:** missed-run threshold (e.g., no fire > 2× interval = page), p99 execution-duration SLO, drift detection, DLQ depth alert.
+- **To Voyager:** edge-case matrix (DST spring/fall, EoM 28/29/30/31, Feb-29, year-rollover, clock drift) with input/expected/assertion per row.
 
 ## Reference Map
 
 | Reference | Read this when |
 |-----------|---------------|
-| `references/cron-patterns.md` | Authoring or reviewing a cron expression; need 5-vs-6-field clarity, anti-patterns, or platform differences |
-| `references/timezone-safety.md` | Auditing TZ/DST handling; choosing between Temporal, Luxon, date-fns-tz; fixing `timestamp` vs `timestamptz` |
-| `references/business-calendar.md` | Implementing JP holidays, 振替休日, banking days, fiscal year, business hours |
-| `references/retry-strategies.md` | Designing retry/backoff, circuit breaker, DLQ, idempotency key, rate limiting |
-| `references/async-boundaries.md` | Async-boundary time contracts — deadline propagation (context/AbortSignal/gRPC, budget-chain math, partial-progress policy) AND time-window semantics (tumbling/sliding/session, watermark, allowed-lateness, window-join) |
-| `references/idempotent-keys.md` | Idempotency-key design, dedup window (request vs storage TTL), effectively-once semantics, Stripe/Square-style patterns |
-| `references/handoffs.md` | Packaging deliverables for Builder, Gear, Weave, Beacon, Voyager, Judge, or Pipe |
+| `reference/cron-patterns.md` | Authoring or reviewing a cron expression; need 5-vs-6-field clarity, anti-patterns, or platform differences |
+| `reference/timezone-safety.md` | Auditing TZ/DST handling; choosing between Temporal, Luxon, date-fns-tz; fixing `timestamp` vs `timestamptz` |
+| `reference/business-calendar.md` | Implementing JP holidays, 振替休日, banking days, fiscal year, business hours |
+| `reference/retry-strategies.md` | Designing retry/backoff, circuit breaker, DLQ, idempotency key, rate limiting |
+| `reference/async-boundaries.md` | Async-boundary time contracts — deadline propagation (context/AbortSignal/gRPC, budget-chain math, partial-progress policy) AND time-window semantics (tumbling/sliding/session, watermark, allowed-lateness, window-join) |
+| `reference/idempotent-keys.md` | Idempotency-key design, dedup window (request vs storage TTL), effectively-once semantics, Stripe/Square-style patterns |
+| `reference/handoffs.md` | Packaging deliverables for Builder, Gear, Weave, Beacon, Voyager, Judge, or Pipe |
+| `reference/interaction-schemas.md` | INTERACTION_TRIGGERS question schemas + AUTORUN `_STEP_COMPLETE.Output` schema |
 | `_common/OPUS_48_AUTHORING.md` | Sizing the spec deliverable, deciding where to eagerly read at ANALYZE, or where to think step-by-step at VERIFY. Critical for Tempo: P3, P5 |
 | `_common/BOUNDARIES.md` | Disambiguating tempo vs Weave / Launch / Beacon / Gear / Builder at the routing boundary |
 
@@ -493,33 +383,7 @@ Operational guidelines → `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `ANALYZE → MODEL → SPECIFY → VERIFY → HARDEN` and emit `_STEP_COMPLETE`. Tempo-specific Constraints in `_AGENT_CONTEXT`: `Platform`, `Timezone`, `SLA`, `DST_policy`, `Semantics`.
-
-Tempo-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Tempo
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [spec file path or inline]
-    artifact_type: "Schedule Contract"
-    parameters:
-      cron_expression: "[cron string]"
-      platform: GHA | EventBridge | K8s CronJob | Cloud Scheduler | Sidekiq | BullMQ | Celery | Temporal
-      timezone: "[IANA name]"
-      dst_policy: skip | defer | run-both | UTC
-      overlap_policy: skip | queue | concurrent
-      retry: {max_attempts, max_total_duration, backoff, retryable_on}
-      idempotency: {key_formula, dedup_window, storage}
-      dlq_destination: "[queue name or 'none']"
-    files_changed: List[{path, type, changes}]
-  Handoff:
-    Format: TEMPO_TO_[NEXT]_HANDOFF
-    Content: [Handoff content for next agent]
-  Risks: [DST policy assumptions, platform SLA caveats, idempotency key lifetime]
-  Next: Builder | Gear | Pipe | Weave | Beacon | Voyager | Judge | DONE
-```
+See `_common/AUTORUN.md` for the protocol. On AUTORUN, run `ANALYZE → MODEL → SPECIFY → VERIFY → HARDEN` and emit `_STEP_COMPLETE`. Tempo-specific Constraints (`_AGENT_CONTEXT`) and the `_STEP_COMPLETE.Output` schema → `reference/interaction-schemas.md`.
 
 ---
 

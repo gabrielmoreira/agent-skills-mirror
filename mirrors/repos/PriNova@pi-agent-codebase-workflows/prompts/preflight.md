@@ -2,4 +2,17 @@
 description: "Structured safe-change preflight"
 argument-hint: "[task/focus]"
 ---
-Before writing/updating structured artifacts, after loading the selected skill, load shared refs relative to that skill: `../_shared/references/artifact-api.md`, `../_shared/references/schemas/common.schema.json`, and only the matching artifact schema(s). Follow the skill Structured Artifact Write/Update Protocol for scope resolution, stable IDs, upserts, evidence, reference integrity, status transitions, deterministic YAML formatting, and validation. Resolve `<docs-root>` exactly per the selected skill: canonicalize `workspace_root`, use repo-local `<workspace_root>/docs/agent/api` only when that skill says repo-local applies and the directory exists, otherwise strip one leading slash/backslash from `workspace_root`, replace every slash, backslash, and colon with `-`, wrap with `--`, and use `~/.pi/agent/workspaces/<workspace-fingerprint>/docs/agent/api`. Use `/skill:safe-change` structured preflight. Read only canonical YAML artifacts under the resolved structured docs root; do not read legacy prose docs. Focus/task: $ARGUMENTS. Output classification, artifacts read, matched scope, affected files, invariant/contract/risk refs, validation command refs, and approval status.
+Before writing/updating structured artifacts, after loading the selected skill, load shared refs relative to that skill: `../_shared/references/artifact-api.md`, `../_shared/references/schemas/common.schema.json`, and only the matching artifact schema(s). Follow the skill Structured Artifact Write/Update Protocol for scope resolution, stable IDs, upserts, evidence, reference integrity, status transitions, deterministic YAML formatting, and validation. Resolve `<docs-root>` exactly per the selected skill: canonicalize `workspace_root`, use repo-local `<workspace_root>/docs/agent/api` only when that skill says repo-local applies and the directory exists, otherwise strip one leading slash/backslash from `workspace_root`, replace every slash, backslash, and colon with `-`, wrap with `--`, and use `~/.pi/agent/workspaces/<workspace-fingerprint>/docs/agent/api`. Use `/skill:safe-change` structured preflight. Read only canonical YAML artifacts under the resolved structured docs root; do not read legacy prose docs.
+
+Output:
+- classification
+- artifacts read
+- matched scope
+- affected slice/module/user flow
+- affected quality attributes / operating constraints when documented
+- expected files
+- invariant/contract/risk refs
+- validation command refs
+- approval or docs/schema-blocker status
+
+If current docs omit now-required schema fields, treat that as a blocker or repair prerequisite rather than silently proceeding on partial truth. Focus/task: $ARGUMENTS.

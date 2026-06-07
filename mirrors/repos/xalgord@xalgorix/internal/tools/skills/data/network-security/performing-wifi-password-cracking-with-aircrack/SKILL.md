@@ -33,6 +33,15 @@ nist_csf:
 
 **Do not use** against wireless networks without explicit written authorization, for disrupting wireless communications, or for capturing handshakes of networks you do not have permission to test.
 
+## Most Often Missed & How to Confirm
+
+- **PMKID before deauth:** you don't always need a client or the full 4-way handshake — grab the PMKID from the AP's first EAPOL with `hcxdumptool -i wlan0mon` then `hcxpcapngtool -o hash.hc22000`. Clientless networks that "fail" handshake capture still fall to PMKID.
+- **Verify the handshake is complete:** airodump showing "WPA handshake" can still be a partial capture. Confirm with `aircrack-ng cap-01.cap` (or `cowpatty -c`) that all four EAPOL messages are present before spending GPU time, or hashcat will never crack a broken capture.
+- **Band and channel coverage:** a 2.4 GHz-only adapter misses 5 GHz APs. Lock the right channel (`airodump-ng --channel`) and band; a "no networks" result is often an adapter/band limitation, not a secure environment.
+- **WPA3-SAE and PMF resist this:** SAE defeats offline dictionary cracking and 802.11w (PMF) blocks deauth. If deauth does nothing, check for PMF before assuming the AP is robust, and don't expect handshake cracking to work against SAE.
+- **Cracking depth, not just rockyou:** a passphrase absent from rockyou.txt isn't "uncrackable." Apply rules (`-r best64.rule`), masks (`-a 3 ?d?d?d?d?d?d?d?d`), and combinator attacks before concluding the key is strong.
+- **How to confirm a hit:** hashcat `--show` / aircrack `KEY FOUND!` returns the actual passphrase — validate it associates to the SSID. A capture that won't crack with a 14M-word list plus rules is "not cracked in scope," not proven strong.
+
 ## Prerequisites
 
 - Written authorization specifying in-scope SSIDs and wireless networks

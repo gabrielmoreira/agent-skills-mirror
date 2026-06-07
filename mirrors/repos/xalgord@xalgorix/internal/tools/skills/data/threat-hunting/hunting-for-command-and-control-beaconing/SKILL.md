@@ -37,6 +37,15 @@ nist_csf:
 - During incident response to identify active C2 channels
 - When DNS query logs show unusual patterns to specific domains
 
+## Detection Gaps & Validation
+
+- **Jitter and long sleep break naive frequency rules:** interval + 0–50% jitter (Cobalt Strike) and multi-hour sleeps drop the connection count and inflate CV — score on bytes-out consistency and use autocorrelation over a 7–14 day window, not a single-day `CV < 0.2`.
+- **Encrypted/allowlisted channels:** TLS (T1573), domain fronting, and C2 over Slack/Discord/Telegram/Graph API ride trusted FQDNs — destination reputation alone misses them; pivot to JA3/JA4 (use Zeek `ssl.log`/Suricata, since Sysmon EID 3 lacks it) and timing.
+- **DNS C2 (T1071.004):** TXT/CNAME tunneling needs DNS query logs (Sysmon EID 22 or resolver logs) plus entropy/volume analysis — invisible if DNS logging is off or only NXDOMAIN is retained.
+- **Log fidelity:** sampled NetFlow or aggregated proxy logs destroy inter-arrival timing — confirm per-connection records.
+- **Validate:** run Atomic Red Team **T1071.001**/**T1071.004** (or a Sliver test profile) with a known interval and confirm the beacon search and DNS-entropy search fire, then map source IP to host via Sysmon EID 1/3.
+- **Tune FPs:** Windows Update, AV, NTP, telemetry, and CDN health checks are periodic by design — allowlist by destination + process, never by interval alone.
+
 ## Prerequisites
 
 - Network proxy/firewall logs with full URL and timing data

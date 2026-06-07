@@ -35,6 +35,16 @@ Domain-based Message Authentication, Reporting and Conformance (DMARC) is the co
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Common Misconfigurations & Verification
+
+- **Stuck at p=none:** monitoring indefinitely yields reports but no anti-spoofing protection - commit to advancing through quarantine to reject on a 3-6 month timeline.
+- **Jumping straight to p=reject:** skipping the `pct` ramp blocks legitimate sources that aren't yet aligned - step pct 10->25->50->100 at each policy level with 1-2 weeks of report review between increases.
+- **SPF over the 10-lookup limit:** too many `include:` entries cause `permerror` and silent failure - flatten and consolidate before enforcing.
+- **DKIM signing missing on a sending source:** marketing/CRM/ticketing platforms (Mailchimp, SendGrid, Zendesk) often go unsigned and get rejected at p=reject - inventory and sign every source first.
+- **Alignment vs. pass confusion:** a source can pass SPF/DKIM yet fail DMARC because the domain doesn't align - check alignment in aggregate reports, not just auth pass.
+- **No subdomain policy / no rollback plan:** omit `sp=reject` and subdomains stay spoofable; keep an emergency revert (reject->quarantine) ready.
+- **Verification:** confirm aggregate reports show >99% legitimate mail passing with alignment before each step; send a self-domain spoof from an unauthorized IP and confirm it is rejected; verify no legitimate source is blocked after full p=reject and sp=reject.
+
 ## Prerequisites
 - Administrative access to DNS management for the domain
 - Understanding of SPF, DKIM, and DMARC protocols (RFC 7208, 6376, 7489)

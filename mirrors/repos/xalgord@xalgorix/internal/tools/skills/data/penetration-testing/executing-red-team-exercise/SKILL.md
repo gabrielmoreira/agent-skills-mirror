@@ -43,6 +43,15 @@ nist_csf:
 
 **Do not use** without executive-level authorization and a detailed Rules of Engagement document, against systems where disruption could affect safety or critical operations, or as a replacement for basic vulnerability management (fix known vulnerabilities first).
 
+## Most Often Missed & How to Confirm
+
+- **Measuring detection, not just achieving the objective** — the deliverable is the MTTD/MTTR per technique and the gap map, not "we got DA". Timestamp every action so it can be diffed against the SOC's alert timeline; a flag with no timestamps is worthless for purple-team.
+- **OPSEC and telemetry evasion that real actors use** — AMSI/ETW bypass, sleep masking, signed-binary proxy execution (LOLBins), and C2 over redirectors/domain fronting. Test payloads against the target's actual EDR before going live; getting burned on stage-0 wastes the engagement.
+- **Persistence and resilience** — multiple persistence mechanisms and backup C2 channels so a single detection doesn't end access. Teams routinely deploy one beacon and lose everything to one block.
+- **Living-off-the-land over custom tooling** — emulate the named threat actor's TTPs (map to ATT&CK) rather than throwing your favorite exploits; an inaccurate emulation tests the wrong defenses.
+- **Full kill-chain coverage incl. exfil** — staging and exfiltration over the C2/DNS channel and the data-loss controls, not stopping at access.
+- **How to confirm**: prove each objective with artifacts (screenshots of accessed crown-jewel data, staged/exfil file with hash, C2 beacon logs with timestamps) AND record which techniques the Blue Team detected/missed. Don't conclude a technique was "undetected" until you have confirmed against the SOC log during the purple-team debrief — silence in your view is not proof of a detection gap, and an alert you didn't see is not proof of success.
+
 ## Prerequisites
 
 - Executive-level written authorization with clearly defined objectives, scope, and off-limits systems

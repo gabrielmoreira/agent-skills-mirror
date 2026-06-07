@@ -39,6 +39,13 @@ nist_csf:
 
 **Do not use** for monitoring standard user sessions or endpoint activity; use EDR/UBA solutions for general user behavior monitoring. Privileged session monitoring focuses specifically on elevated-access sessions.
 
+## Common Misconfigurations & Verification
+
+- **Direct path bypass:** recording proves nothing unless every privileged route goes through PSM/PSMP. Native SSH (22) or RDP (3389) to targets, hypervisor consoles, IPMI/iDRAC, and `kubectl exec` commonly bypass the proxy. Verify by scanning targets for inbound 22/3389 from non-PSM source IPs and checking for local accounts that were never vaulted.
+- **Shell escapes defeat command logging:** SSH transcripts miss commands run from inside `vim` (`:!`), `tmux`/`screen`, nested `su`/`sudo -i`, or interactive `python`/SQL shells. Confirm Teleport `enhanced_recording` (BPF-level) or PSM Unix command capture is enabled, then test by running a command from inside `vi` and checking the transcript captured it.
+- **Recordings not tamper-proof or under-retained:** confirm recordings land in the Vault (not a local PSM disk an admin can delete) and that retention matches the regime (PCI-DSS 1yr, SOX 7yr, HIPAA 6yr).
+- **Verify:** PTA high-risk rules fire (trigger a benign `useradd`), a terminated session still yields a complete recording up to the cutoff point, and the SIEM receives session start/stop CEF events with correct user/target metadata.
+
 ## Prerequisites
 
 - CyberArk PAM Self-Hosted or Privilege Cloud deployment with Digital Vault configured

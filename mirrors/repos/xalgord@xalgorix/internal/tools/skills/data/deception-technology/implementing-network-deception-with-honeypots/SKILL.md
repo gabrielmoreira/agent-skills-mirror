@@ -32,6 +32,31 @@ nist_csf:
 - When monitoring for unauthorized internal scanning or credential theft
 - To gather threat intelligence on attacker techniques and tools
 
+## Common Misconfigurations & Verification
+
+Honeypots most often provide false comfort because they are deployed in
+monitor-only mode, are trivially fingerprintable, or sit where no attacker will
+ever reach them:
+
+- **Monitor-only / no alerting:** Cowrie or OpenCanary capture sessions to a
+  local log that nobody reads. Confirm log forwarding to the SIEM (syslog/
+  webhook) actually delivers and a detection rule fires, not just that the file
+  grows.
+- **Fingerprintable deployment:** default Cowrie hostname `svr04`, the canonical
+  T-Pot banner set, or an SSH server that responds too perfectly tips off
+  attackers who then avoid it. Customize banners, hostnames, and filesystem
+  contents away from known defaults.
+- **Placed off the attack path:** a honeypot on an isolated VLAN with no
+  reachable services sees only internet background noise. Place decoys inside
+  segments where lateral movement and internal scanning actually occur, with
+  realistic SSH/SMB/RDP services exposed.
+- **No baseline for noise:** mass scanner traffic drowns real signal; tune out
+  known scanner ranges so a credentialed login attempt stands out.
+- **How to confirm it works:** from a separate host, run an SSH login against
+  Cowrie, an SMB connection and an `nmap` sweep against OpenCanary/T-Pot, and
+  verify each interaction produces a forwarded alert with correct source IP,
+  service, and credentials captured.
+
 ## Prerequisites
 
 - Linux server or VM for honeypot deployment (Ubuntu 22.04+ recommended)

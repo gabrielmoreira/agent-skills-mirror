@@ -37,6 +37,17 @@ API schema validation enforces that all data exchanged through APIs conforms to 
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **`additionalProperties` missing or true:** the single most common gap - without `additionalProperties: false`, mass-assignment fields pass validation; set it on every object schema.
+- **Request-only validation:** validating input but not responses lets excessive-data-exposure through; validate/serialize responses with explicit DTOs.
+- **Loose constraints:** strings without `maxLength`/`pattern` and fields without `enum` permit injection and DoS payloads.
+- **`readOnly` not enforced server-side:** clients can still write readOnly fields if the server only documents them rather than rejecting them.
+- **Permissive/verbose errors:** leaking schema detail in 400 responses aids attackers.
+- **Spec drift:** the deployed schema lagging the live API leaves new endpoints unvalidated.
+
+**How to verify it works:** send a request with an extra/unknown field and confirm 400 (not silent acceptance); submit over-long and pattern-violating values and confirm rejection; attempt to set a `readOnly` field and confirm it is ignored; force a sensitive field into a response and confirm response validation strips it or fails safely; diff the enforced spec against the live route list.
+
 ## Prerequisites
 
 - OpenAPI Specification v3.0 or v3.1 for all API endpoints

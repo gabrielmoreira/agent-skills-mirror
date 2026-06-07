@@ -46,6 +46,17 @@ nist_csf:
 
 **Do not use** without HTTPS in production (WebAuthn requires a secure origin), for systems where users cannot physically access a USB/NFC port, or as the sole authentication factor without a recovery mechanism for lost keys.
 
+## Common Misconfigurations & Verification
+
+A registered FIDO2 key proves nothing if these gaps remain — each silently downgrades phishing resistance:
+
+- **Password fallback left enabled:** users enroll a key but the login form still accepts password-only or TOTP, so an attacker phishes the weaker path. Confirm high-privilege accounts have password/TOTP disabled after the grace period and test that password login is rejected (HTTP 401, not a passkey prompt).
+- **`user_verification: discouraged`:** anyone holding the key authenticates with no PIN/biometric — it becomes single-factor. Verify the server sends `user_verification: required` and that `authenticate_complete()` enforces the UV flag in `AuthenticatorData`, not just presence.
+- **Sign-count regression not handled:** clone detection is silently skipped. Confirm the code rejects (or alarms) when the new `sign_count` is ≤ the stored value, and that the event is logged.
+- **RP ID / origin too broad or mismatched:** a wrong `rpId` makes credentials usable across unintended subdomains. Verify `rpId` is the registrable suffix and that `clientDataJSON.origin` is validated server-side.
+- **No backup key / no enforced second authenticator:** a lost key = lockout, pushing users back to email/SMS recovery that defeats phishing resistance. Confirm ≥2 credentials per account and that recovery never uses email/SMS alone.
+- **Attestation accepted blindly in "enterprise" deployments:** verify the AAGUID against Yubico's published list and validate the attestation chain, otherwise a rogue/virtual authenticator passes as a genuine YubiKey.
+
 ## Prerequisites
 
 - Python 3.10+ with `fido2` (python-fido2 >= 2.0.0), `flask`, and `cryptography` libraries installed

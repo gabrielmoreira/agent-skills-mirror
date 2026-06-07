@@ -42,6 +42,14 @@ Use this skill when:
 
 **Do not use** for real-time alerting (osquery is periodic/on-demand; use EDR for real-time).
 
+## Common Misconfigurations & Verification
+
+- **Packs declared but never scheduled:** a `"packs"` entry pointing to a missing/unreadable path is silently skipped — check `SELECT name, interval FROM osquery_schedule;` and `SELECT * FROM osquery_packs;` on the endpoint to confirm queries are actually loaded and running.
+- **Event tables empty because events are off:** `process_events`, `socket_events`, and `file_events` return nothing unless `--disable_events=false` AND the audit publisher is on (`--disable_audit=false`, `--audit_allow_config=true`). On Linux confirm osquery owns auditd (it conflicts with a running `auditd`/`auditbeat`).
+- **Scope too narrow / WHERE filters out hits:** the fileless query `WHERE on_disk = 0` and the `uid >= 1000` user query miss kernel-spawned or service-account activity. Validate WHERE clauses against a known-positive before trusting a clean result.
+- **Fleet enrollment or result logging broken:** confirm hosts appear in FleetDM and that `/var/log/osquery/osqueryd.results.log` is filling; an enrolled host with no results log forwards nothing. Differential mode logs only a baseline on first run.
+- **Verify end-to-end:** trigger a watched condition (open a listening port, add a crontab/Run-key per Atomic Red Team T1547/T1053) and confirm the scheduled query emits a row to the results log and into the SIEM at the next interval.
+
 ## Prerequisites
 
 - Osquery package for target OS (https://osquery.io/downloads)

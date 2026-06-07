@@ -39,6 +39,17 @@ nist_csf:
 
 **Do not use** for IT-only database security without OT data (see general database hardening), for real-time SCADA data transmission security (see detecting-attacks-on-scada-systems), or for historian selection and sizing decisions.
 
+## Common Misconfigurations & Verification
+
+Historian hardening commonly leaves these gaps; verify each before sign-off:
+
+- **PI Trust left enabled:** IP/hostname-based auth with no credentials is the classic backdoor. Confirm zero Trust entries in PI SMT and that connections use Windows Integrated Security.
+- **Default piadmin active:** confirm the account is disabled and replaced by named Windows identities with PI mappings.
+- **Cleartext and management ports exposed:** HTTP/80, SMB/445, RPC/135, and open RDP/3389 on a Level 3 historian. Confirm with a host port check that only required ports (PI Data Archive 5450, AF 5457, HTTPS 443) are reachable, scoped to OT subnets.
+- **DMZ replication that's actually bidirectional:** enterprise users reaching the OT historian directly defeats the design. Confirm data flows OT->DMZ only (data diode or PI-to-PI push) and that PI Vision/IT clients hit the DMZ replica IP — verified by capture, not the L3 server.
+- **Audit trail off:** confirm PI data-edit auditing logs before/after values and that edit permissions are restricted; an unlogged historian can't prove data integrity for safety or regulatory use.
+- **Don't declare the historian secured** until PI Trust is gone, exposure is scoped to OT, replication is verified unidirectional, and a backup restore has actually been tested.
+
 ## Prerequisites
 
 - Historian platform (OSIsoft PI, Honeywell PHD, GE Proficy, AVEVA Historian) installed and operational

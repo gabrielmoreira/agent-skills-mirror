@@ -37,6 +37,14 @@ Use this skill when:
 
 **Do not use** as a replacement for fundamental security controls (patching, EDR, network segmentation) — deception is a detection layer, not a prevention mechanism.
 
+## Common Misconfigurations & Verification
+
+- **Decoy too obvious:** hostnames like `HONEYPOT01`, sequential MACs, default Canary banners, or a "server" with zero historical traffic scream fake to any attacker doing recon. Name decoys to match your real scheme (`FILESERVER-BK04`), register them in DNS/AD, and seed light background traffic so they appear in scans as legitimate hosts.
+- **Decoy never touched (no breadcrumbs):** a honeypot nobody can find never fires. Without planted breadcrumbs — cached creds via `cmdkey`, `.aws/credentials` keys, bookmarks, mapped-drive entries — attackers never pivot to it. Verify each decoy has at least one breadcrumb on a real reachable host pointing to it.
+- **Honeytoken collides with real use:** a honeytoken account included in real logon scripts, GPO, or backup jobs, or one that password-expires, generates constant "critical" false alerts and destroys the zero-FP premise. Confirm `4624/4625/4768/4769` for `TargetUserName` shows zero events during a baseline window before going live.
+- **Alert path broken:** Canary `alert_webhook` unreachable, SIEM not ingesting `index=canary`, or auto-isolate SOAR action wired to the wrong asset means a trip produces no response. Verify the full chain works.
+- **Verify** by running a controlled trip: from an authorized test host, touch each decoy (SMB read of the canary file, login attempt to the honeytoken, use the AWS token) and confirm a high-fidelity alert reaches the SIEM and the SOAR isolate/block fires on the correct source — then re-baseline so the test itself isn't mistaken for an intrusion.
+
 ## Prerequisites
 
 - Network segments identified for honeypot/decoy deployment (server VLANs, DMZ, OT networks)

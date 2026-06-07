@@ -58,6 +58,15 @@ for ep in graphql graphiql gql query api/graphql api/gql; do
 done
 ```
 
+## Coverage Gaps & Validation
+
+- Combine passive spec sources before active probing: crawl HTML/JS for `fetch`/`axios`/`XMLHttpRequest` URLs, pull historical paths from Wayback (`waybackurls`, `gau`), and search public Postman/SwaggerHub/GitHub for leaked collections — a single `swagger.json` hit is not full coverage.
+- Most-missed surfaces: GraphQL introspection (`{__schema{types{name}}}`), gRPC-Web and `/*.proto` reflection, WebSocket (`wss://`) endpoints, batch/RPC routes (`/api/batch`, `_bulk`), and mobile-only hosts (`api.`, `mobile.`, `gateway.`) absent from the web app.
+- Don't trust the prefix: enumerate version skew (`v1` vs `v2-internal`, date-pinned `2023-01-01`) and content negotiation (`Accept: application/json` vs `xml` vs `+protobuf`) — deprecated versions often skip authz.
+- Decode `OPTIONS` responses and `Allow`/CORS headers; an endpoint returning 401/403 still confirms existence, so map auth-required routes, not just 200s.
+- Validate every candidate is live AND in scope: re-request 2-3x to rule out flapping/WAF rate-limits, diff response size/timing against a known-404 baseline, and resolve the host to confirm it sits inside authorized IP ranges before logging it.
+- Treat soft-404s as noise: many APIs return 200 with `{"error":"not found"}` — gate findings on body content and schema, not status code alone.
+
 ## Pro Tips
 
 1. Swagger/OpenAPI files reveal ALL API endpoints, parameters, and data models — always check

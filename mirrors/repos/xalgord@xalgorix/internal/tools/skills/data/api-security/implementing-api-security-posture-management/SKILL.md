@@ -37,6 +37,16 @@ API Security Posture Management (API-SPM) provides continuous visibility into an
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Discovery gaps create a false "0 shadow":** if the inventory only ingests gateway logs, APIs outside the gateway are invisible and risk looks artificially clean - feed traffic, code/CI, and cloud sources too.
+- **Stale inventory:** point-in-time scans miss drift; run continuously and age out `last_seen`.
+- **Auth detection by header presence:** assuming "Authorization header seen = authenticated" misses unauthenticated paths on the same endpoint.
+- **Risk scoring that ignores data sensitivity:** an endpoint handling PII/PCI must outrank a static one regardless of control count.
+- **Policy scope errors:** policies scoped to "external" silently skip mislabeled shadow/internal APIs.
+
+**How to verify it works:** register a known undocumented endpoint and confirm it appears as shadow with elevated risk; seed a response with PII and confirm sensitive-data classification fires; deploy an endpoint missing auth/TLS and confirm the policy flags it; compare inventory counts against an independent discovery scan to measure coverage; re-run after a config change to confirm drift is detected.
+
 ## Prerequisites
 
 - API gateway with traffic logging (Kong, AWS API Gateway, Apigee, Envoy)

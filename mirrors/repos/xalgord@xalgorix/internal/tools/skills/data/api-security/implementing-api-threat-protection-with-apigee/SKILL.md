@@ -38,6 +38,17 @@ Google Apigee is an enterprise API management platform that provides native secu
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Policy attached but not in the flow:** a JSONThreatProtection/SpikeArrest that isn't wired into the PreFlow (or sits behind a Condition that never matches) silently does nothing - verify proxy step placement.
+- **SpikeArrest vs Quota confusion:** SpikeArrest smooths bursts; it is not a usage quota - use Quota for per-app limits and choose the right `Identifier`.
+- **Regex protection false sense of safety:** signature regex misses encoded/obfuscated injection; pair it with schema validation and backend parameterization.
+- **OAuth without alg/scope checks:** `VerifyAccessToken` without scope enforcement or with a weak token store allows over-broad access.
+- **Threat limits too loose:** `ContainerDepth`/`StringValueLength` set high enough to still allow XML-bomb/DoS payloads.
+- **Conditions on Content-Type:** a threat policy gated on `Content-Type` lets attackers skip it by changing the header.
+
+**How to verify it works:** send a deeply nested/oversized JSON and an XML bomb and confirm a Fault before the backend; exceed the SpikeArrest rate and confirm a spike-arrest fault/429; replay injection payloads and confirm the RegEx policy blocks them; present expired/insufficient-scope tokens and confirm rejection; flip the Content-Type header to confirm threat policies still apply.
+
 ## Prerequisites
 
 - Google Cloud Platform account with Apigee organization provisioned

@@ -42,6 +42,13 @@ Credential dumping (MITRE ATT&CK T1003) is a post-exploitation technique where a
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Variants most often missed:** rules keyed only on a direct `lsass.exe` handle open (Sysmon EID 10, GrantedAccess `0x1010`/`0x1410`) miss `rundll32 comsvcs.dll, MiniDump <PID> dump.bin full`, MiniDumpWriteDump via signed tools (procdump `-ma`, Task Manager, Process Explorer), direct syscalls / unhooked `NtReadVirtualMemory` (Dumpert, nanodump) that bypass userland EDR hooks, and **handle duplication** where a sacrificial process opens LSASS and the dumper calls `NtDuplicateObject` (TargetProcess = lsass but SourceProcess != dumper, so the 4656/EID 10 source looks benign).
+- **False negatives:** SAM/SYSTEM theft via `esentutl /y` or VSS `\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy*\Windows\System32\config\SAM` instead of `reg save`; NTDS.dit via DCSync (no on-host dump at all — watch EID 4662 with replication GUIDs `1131f6aa`/`1131f6ad`). PPL/RunAsPPL and Credential Guard change but do not eliminate access paths.
+- **Validate the rule fires:** Atomic Red Team T1003.001 (`#1` procdump LSASS, `#3` comsvcs MiniDump, `#7` direct syscall nanodump), T1003.002 (reg save SAM), T1003.003 (ntdsutil/vssadmin). Confirm EID 10 GrantedAccess masks `0x1010`/`0x1438`/`0x143a` and the MiniDump command line all alert.
+- **FP tuning:** baseline legitimate LSASS readers — AV/EDR agents (MsMpEng.exe), `wininit.exe`, backup agents, and crash/WER (`werfault.exe`). Allowlist by signed SourceImage + expected GrantedAccess rather than muting lsass access wholesale.
+
 ## Prerequisites
 
 - Sysmon v14+ deployed with ProcessAccess logging (Event ID 10) for lsass.exe

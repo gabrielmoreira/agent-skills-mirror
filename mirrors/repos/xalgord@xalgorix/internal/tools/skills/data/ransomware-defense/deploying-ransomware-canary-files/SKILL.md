@@ -38,6 +38,14 @@ nist_csf:
 
 **Do not use** as a replacement for endpoint protection, backup strategy, or network segmentation. Canary files are a detection layer, not a prevention mechanism.
 
+## Common Misconfigurations & Verification
+
+- **Decoy names that sort late:** `Financial_Report_2026.docx` sorts mid-alphabet, so a Z-A or A-Z enumerator may encrypt real data before reaching it. Pair each realistic name with a `_AAAA_`-prefixed and `~zzzz_`-suffixed twin so a canary is always the first AND last file touched in each directory.
+- **Canaries clustered in one path:** placing them only on user Desktops misses share roots and backup volumes. Seed every network-share root, Documents folder, and backup staging dir ransomware enumerates first.
+- **Only watching `on_modified`:** encrypt-and-rename ransomware writes `Passwords.xlsx.locked` and unlinks the original, firing `on_moved`/`on_deleted`. Confirm the handler covers created/modified/moved/deleted, not just modify.
+- **No process attribution / too slow:** without `psutil` capturing the offending PID, the alert can't drive isolation. Verify time-to-alert and that the process info is populated.
+- **Verification:** programmatically modify, rename, and delete each canary and confirm alerts land on every channel (email, Slack, syslog) with correct before/after SHA-256 hashes; exclude backup/AV processes so they don't generate false hits.
+
 ## Prerequisites
 
 - Python 3.8+ with pip

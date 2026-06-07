@@ -42,6 +42,14 @@ Use this skill when:
 
 **Do not use** as a replacement for technical purple team exercises — tabletop exercises test processes and decision-making, not technical detection capabilities.
 
+## Common Misconfigurations & Verification
+
+- **Objectives not measurable:** vague goals like "test our response" give no pass/fail. Each objective must map to an observable decision in an inject and a scorecard criterion (detection, containment, communication, recovery) — otherwise the after-action report is opinion, not evidence.
+- **Injects too scripted / no decision pressure:** injects that state the answer ("this is ransomware, isolate the host") test reading comprehension, not judgment. Withhold the diagnosis, add competing priorities (the CFO/quarter-end call, media inquiry, stale backup), and let the gap surface — "if participants are unsure, that IS the finding."
+- **Wrong room:** only SOC analysts attend, so cross-functional gaps (after-hours CISO contact, ransom-payment authority, breach-notification timeline, PR holding statement) never get exercised. Confirm Legal, Comms, IT, and an exec/delegate are actually present and respond in-character.
+- **No follow-through:** the most common failure — findings are logged but action items have no owner, due date, or tracking, so the same gap recurs next year. Verify every gap has an owner and date and is loaded into a tracker (`ttx_action_items.csv`) with overdue flagging.
+- **Verify** the exercise worked: a hot wash captured one strength + one gap per participant, the AAR scores each objective, action items are assigned with dates, and a re-test (or the next quarterly TTX) confirms prior gaps were closed — not just re-discussed.
+
 ## Prerequisites
 
 - Exercise facilitator with incident response experience

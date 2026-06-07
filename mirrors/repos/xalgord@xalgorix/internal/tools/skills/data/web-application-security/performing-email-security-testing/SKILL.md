@@ -26,6 +26,17 @@ license: Apache-2.0
 - When the application handles email input (forms, notifications, password resets)
 - When testing email-based authentication flows (magic links, OTP via email)
 
+### How to CONFIRM a Hit (avoid false negatives)
+
+- **Positive signal**: a spoofed message actually **passes/bypasses SPF, DKIM, and DMARC and is delivered** to the inbox; an open relay actually **delivers** a third-party message; or CRLF header injection actually **adds a recipient/header** in the received mail.
+- Confirm by delivery to your controlled test inbox (agentmail) and by reading the **received `Authentication-Results` headers** (spf=pass/none, dmarc=pass/none) — a DNS record showing `~all`/`p=none` is suggestive but delivery is the proof.
+- An SMTP `250 OK` alone is NOT a hit (it may be quarantined or silently dropped); one rejection is NOT a clean negative until policy and relay paths are exercised.
+- Do NOT conclude "not vulnerable" until you have:
+  - Checked SPF (`~all`/`?all`/`+all`/absent), DMARC (`p=none`/absent, weak `sp=`/`pct=`), and DKIM selectors — then **sent a real spoof** to confirm inbox delivery.
+  - Tried **open-relay** with an external `MAIL FROM` and confirmed delivery, on ports 25/465/587.
+  - Tried **header injection** via web forms (all CRLF encodings/fields) and confirmed an injected `Bcc`/`Cc` arrived.
+  - Tested **Host-header poisoning** of reset links (verify the link in the delivered email uses the attacker host) and token predictability/reuse.
+
 ## Prerequisites
 
 - **Authorization**: Written scope covering email infrastructure testing

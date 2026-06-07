@@ -35,6 +35,16 @@ nist_csf:
 - When scoring and prioritizing external attack surface risks for remediation
 - When integrating multiple discovery tools into an automated ASM pipeline
 
+## Most Often Missed & How to Confirm
+
+- Acquisition/sibling assets: teams scan the apex domain but miss subsidiaries, fresh ASNs, and recently registered domains. Confirm ownership via `amass intel -asn`/`-org`, WHOIS registrant correlation, and matching TLS cert organization fields before adding to scope.
+- Cert-transparency-only hosts with no DNS: a name in a CT log isn't live. Confirm with `dnsx` resolution then `httpx -sc -title` — only record assets that actually answer.
+- Shodan/Censys staleness: banners can be days/weeks old. Confirm an exposure is current by directly re-probing the `ip:port` (`httpx`, `nmap -sV`) before scoring it; flag closed/changed services as historical.
+- Non-HTTP exposure: databases (3306/5432/27017/6379), RDP/SMB, Kubernetes API (6443/10250), and message brokers get skipped by HTTP-only pipelines. Confirm with a targeted `nmap -sV` and an unauthenticated connection test.
+- Nuclei false positives: a single template hit is a lead, not a finding. Confirm by manually reproducing the request/response, checking the matched string is genuinely the vuln (not an error page), and re-running to rule out flapping.
+- CVE inference from version banners: a version string suggests, it doesn't prove. Confirm exploitability against the live service or note it explicitly as "version-implied, unverified."
+- Scope drift: shared CDN/SaaS IPs (Cloudflare, AWS, GitHub Pages) frequently fall outside authorization even when the hostname matches — confirm the underlying IP/org sits in the signed scope before any active scan.
+
 ## Prerequisites
 
 - Python 3.8+ with requests, shodan, censys libraries installed

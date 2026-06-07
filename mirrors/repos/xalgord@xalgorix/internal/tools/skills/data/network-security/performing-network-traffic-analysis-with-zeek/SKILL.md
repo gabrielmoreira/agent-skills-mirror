@@ -38,6 +38,15 @@ Zeek (formerly Bro) is an open-source network analysis framework that operates a
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+- **capture_loss.log first:** before trusting any negative result, check `capture_loss.log` and `stats.log`. Dropped packets from an undersized SPAN or too few workers (rule of thumb: ~1 worker per Gbps) silently lose connections.
+- **SPAN vs TAP oversubscription:** a SPAN port mirroring two full-duplex 1G links into one 1G port drops packets under load; a TAP avoids it. Asymmetric routing also gives Zeek one direction only, breaking TCP reassembly and `conn` state.
+- **Encrypted traffic:** TLS payloads aren't visible. Lean on `ssl.log` (JA3/JA3S, `validation_status`, `server_name`), `x509.log`, and `conn.log` byte/duration ratios for beaconing rather than expecting `http.log` content.
+- **Checksum offload false `weird`:** NIC checksum offload makes Zeek log bad checksums and skip analysis. Set `ignore_checksums=T` for offline PCAP or hardware-offloaded captures.
+- **Script thresholds hide hits:** custom detections (DNS-tunnel `query_len_threshold`, beacon `jitter_threshold`) only fire above their constants — a slow/low-and-slow beacon under the threshold won't trigger. Tune and document the values.
+- **How to validate:** replay a known-malicious PCAP (`zeek -r sample.pcap local.zeek`) and confirm the expected `notice.log` entry appears; cross-check Intel hits in `intel.log`; verify log volume matches expected traffic before declaring an environment clean.
+
 ## Prerequisites
 
 - Linux server (Ubuntu 22.04+ or CentOS 8+) with 4+ CPU cores and 8GB+ RAM

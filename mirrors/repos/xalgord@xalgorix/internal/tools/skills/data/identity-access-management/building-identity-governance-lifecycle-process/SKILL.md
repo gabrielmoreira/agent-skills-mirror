@@ -42,6 +42,14 @@ nist_csf:
 
 **Do not use** for single-application user management; identity governance addresses cross-system lifecycle management requiring correlation of authoritative HR sources with downstream application provisioning.
 
+## Common Misconfigurations & Verification
+
+- **Leaver disablement that lags:** the JML "leaver" job fires on HR `terminationDate` but downstream OAuth refresh tokens, app-specific passwords, and active Kerberos/SAML sessions survive. Verify termination also runs `Revoke-MgUserSignInSession` and revokes app refresh tokens, not just `Disable AD account`. Test by holding a token issued pre-termination and confirming it 401s within minutes.
+- **Birthright over-grant:** mining at `min_assignment_pct=0.5` bakes existing over-provisioning into "birthright" roles, so role mining launders privilege creep. Confirm SoD rules run before a role is published and that mined roles are diffed against least-privilege, not the messy status quo.
+- **Recertification rubber-stamping:** reviewers bulk-approve; "auto-apply on no response" defaults to *retain* instead of *revoke*. Verify the campaign config revokes on non-response and that approvers cannot approve their own access.
+- **Orphan correlation gaps:** accounts with no `employee_id` (contractors, service accounts, shared mailboxes) are skipped entirely rather than flagged HIGH. Confirm uncorrelated accounts surface in the report.
+- **Verification:** reconcile IGA active-identity count against each connected app's account list and assert the delta equals known service accounts; pull the last termination event and confirm AD disable + token revocation + group removal timestamps are all within SLA.
+
 ## Prerequisites
 
 - Authoritative HR system (Workday, SAP SuccessFactors, BambooHR) as identity source of truth

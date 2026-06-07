@@ -38,6 +38,16 @@ nist_csf:
 - During incident response to identify trojanized applications
 - When threat intel indicates DLL sideloading campaigns targeting specific software
 
+## Detection Gaps & Validation
+
+- **EID 7 is often filtered off.** Sysmon Image Load logging is high-volume and many configs (even SwiftOnSecurity) exclude common signers or whole processes. Confirm ImageLoaded is enabled and your target host process is not in an exclude rule, or you'll never see the sideload.
+- **"Signed" is not "trusted."** Attackers sign DLLs or abuse signed-then-appended code, so `SignatureStatus=Valid` alone is meaningless. Check that the signer is the expected vendor and compare the cert thumbprint and module hash to a known-good baseline.
+- **Path is the real signal:** alert on EID 7 where the loaded DLL path is outside the app's install directory, especially user-writable dirs (`%APPDATA%`, `%TEMP%`, `C:\ProgramData`, `C:\Users\Public`), and on the legit EXE itself running from those locations (decoy wrapper).
+- **Known LOLBAS targets:** OneDriveStandaloneUpdater.exe, dllhost.exe, and WinSxS binaries are frequent sideload hosts — diff their loaded-module set against a clean baseline.
+- **Phantom DLLs** (app searches for a non-existent DLL) won't show a known-bad hash — hunt the search-order miss + a new file appearing on the search path.
+- **Validate the rule fires:** copy a signed binary plus a benign unsigned DLL named after one of its real dependencies into `%TEMP%`, run it, and confirm EID 7 logs the unsigned DLL loading from the temp path.
+- **Tune false positives:** browsers and Electron apps legitimately load unsigned modules from AppData. Baseline each app's expected module set and alert only on new/unexpected module hashes.
+
 ## Prerequisites
 
 - EDR with DLL load monitoring (CrowdStrike, MDE, SentinelOne)

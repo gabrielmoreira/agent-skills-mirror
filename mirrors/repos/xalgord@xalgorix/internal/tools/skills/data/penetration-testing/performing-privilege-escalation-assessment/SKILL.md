@@ -42,6 +42,15 @@ nist_csf:
 
 **Do not use** without written authorization, against production systems where exploitation could cause downtime, or for deploying kernel exploits on systems without prior approval and rollback capability.
 
+## Most Often Missed & How to Confirm
+
+- **Run the automated enumeration AND read it** — linPEAS/winPEAS output is long; testers skim and miss the one writable service path or sudo entry. Pair it with manual checks (`sudo -l`, `getcap -r /`, `whoami /priv`).
+- **Token privileges on Windows** — `SeImpersonatePrivilege`/`SeDebugPrivilege` (common on service/IIS accounts) give SYSTEM via PrintSpoofer/GodPotato and are routinely overlooked in favor of hunting kernel CVEs.
+- **Non-kernel Linux vectors first** — sudo/GTFOBins, SUID/SGID, Linux capabilities (cap_setuid), writable cron scripts, and PATH hijacking are safer and more reliable than kernel exploits (which risk panics). Save kernel exploits for last.
+- **Stored credentials everywhere** — `cmdkey`/AutoLogon/unattend.xml/web.config/PowerShell history on Windows; `.env`, config files, history, and SSH keys on Linux. Credentials beat exploits.
+- **Container/cloud escape** — check for `/var/run/docker.sock`, `--privileged`, `SYS_ADMIN`, K8s service-account tokens, and the cloud metadata endpoint (169.254.169.254) for IAM creds. Apparent "root" may just be inside a container.
+- **How to confirm**: prove escalation with a post-exploitation artifact — `id` showing uid=0 / `whoami` showing `NT AUTHORITY\SYSTEM`, plus reading a root-only file (`/etc/shadow`) or SYSTEM-only resource. Don't conclude a host is hardened until you've checked sudo, SUID, capabilities, cron, token privileges, stored creds, and container/metadata; don't fire a kernel exploit to "prove" privesc when a safer misconfig path exists and is already demonstrable.
+
 ## Prerequisites
 
 - Low-privilege shell access (reverse shell, SSH, RDP) to the target system obtained through authorized means

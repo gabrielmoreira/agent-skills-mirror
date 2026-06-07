@@ -36,6 +36,14 @@ Microsoft Entra Privileged Identity Management (PIM) provides time-based and app
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Eligible vs active confusion:** assignments are labeled "eligible" in the portal but a parallel *active* (standing) assignment for the same role still exists, so activation/MFA is never actually required. Verify each principal has no active assignment outside break-glass — `Get-MgRoleManagementDirectoryRoleAssignmentSchedule` should show `assignmentType=Activated`, not `Assigned`, for day-to-day admins.
+- **Approval/MFA bypass:** activation settings require approval and MFA, but the role was assigned *directly* in Azure AD (not through PIM), or a group nested into the role grants standing access that skips PIM entirely. Confirm the PIM alert "roles being assigned outside of PIM" is clean and audit role-assignable group membership.
+- **Duration and re-cert gaps:** "allow permanent eligible assignment = Yes" or no expiry means eligibility never lapses; max activation set to 24-72h widens the window. Verify eligible assignments expire (e.g. 6 months) and activation ≤8h for critical roles.
+- **Break-glass blind spots:** active break-glass accounts with no alerting defeat the model. Confirm sign-in alerts fire on break-glass use and that they are excluded from Conditional Access that could lock them out.
+- **Verification:** attempt `selfActivate` without MFA/justification and confirm it is rejected; pull the PIM audit log and confirm every privileged action maps to an activation with approval; run the "too many global admins" and "outside PIM" alerts and confirm zero standing admins beyond break-glass.
+
 ## Prerequisites
 
 - Microsoft Entra ID P2 or Microsoft Entra ID Governance license

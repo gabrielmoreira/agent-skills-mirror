@@ -37,6 +37,16 @@ nist_csf:
 
 **Do not use** without written authorization. Authentication testing involves attempting to bypass security controls.
 
+## Most Often Missed & How to Confirm
+
+- **Beyond login:** test password-reset, MFA-verify, and token-refresh flows - bypasses hide there, not just at `/auth/login`.
+- **JWT secret brute-force:** for HS256, run hashcat mode 16500 with a targeted wordlist (company name, year, "secret") before declaring tokens safe.
+- **alg:none and claim tamper:** test `none` variants and unsigned claim edits (`role`/`is_admin`) for libraries that skip verification.
+- **Token lifecycle:** check token validity after logout/password-change (no server-side revocation) and refresh-token reuse (no rotation).
+- **Unauth endpoints and token-in-URL:** sweep `/health`,`/metrics`,`/actuator`,`/debug` and test whether a token is accepted as a query param (log leakage).
+
+**How to confirm a hit (avoid false negatives):** an auth bypass is confirmed when a forged/altered/expired token returns protected data (200 with the resource) - compare to an unauthenticated baseline, and for forged admin tokens verify access to an admin-only endpoint. **Don't conclude negative until you've** brute-forced the HMAC secret, tested every auth-adjacent flow, checked post-logout/post-password-change token validity, and probed unauthenticated endpoint exposure.
+
 ## Prerequisites
 
 - Written authorization specifying target API and authentication mechanisms in scope

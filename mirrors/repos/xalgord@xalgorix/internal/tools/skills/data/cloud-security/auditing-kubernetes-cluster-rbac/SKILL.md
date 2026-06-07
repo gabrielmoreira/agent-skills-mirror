@@ -36,6 +36,14 @@ nist_csf:
 
 **Do not use** for network policy auditing (use Cilium or Calico network policy tools), for container image scanning (use Trivy or Grype), or for runtime security monitoring (use Falco or Sysdig Secure).
 
+## Detection Gaps & Validation
+
+- **`escalate` and `bind` are the privesc verbs people forget:** a Role with `bind`/`escalate` on `clusterroles`/`roles` lets a subject grant themselves cluster-admin. Also flag `impersonate` (users/groups/serviceaccounts) and `create` on `serviceaccounts/token` (TokenRequest API → mint tokens for any SA).
+- **Aggregated ClusterRoles hide rules:** roles labeled `rbac.authorization.k8s.io/aggregate-to-edit/admin` silently absorb rules from other ClusterRoles, so a role's printed `rules:` may understate effective access. Resolve the aggregated result, not the source object.
+- **RBAC isn't the whole authz story:** the `system:masters` group (mapped via client-cert CN or EKS `aws-auth`) bypasses RBAC entirely and appears in **no** binding; cloud IAM→RBAC mappings (EKS `aws-auth` ConfigMap, GKE IAM roles) grant access `kubectl get clusterrolebindings` won't show. `rbac-tool who-can` only evaluates the RBAC authorizer, not webhook/node authorizers.
+- **Workload-path escalation:** `create pods` + `hostPath`/`privileged`/`hostPID` is effectively node/root access even without secret verbs; SA token automounting lets a compromised pod inherit those rights.
+- **Validate effective access:** confirm with `kubectl auth can-i --list --as=system:serviceaccount:<ns>:<sa>` (and `--as-group`); on EKS reconcile against the `aws-auth` ConfigMap. Note legacy SA token Secrets vs short-lived bound tokens (default in 1.24+) when assessing exposure.
+
 ## Prerequisites
 
 - kubectl configured with cluster-admin or equivalent read permissions to the target cluster

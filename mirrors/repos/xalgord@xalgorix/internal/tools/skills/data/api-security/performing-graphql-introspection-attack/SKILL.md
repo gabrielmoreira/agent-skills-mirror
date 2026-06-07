@@ -36,6 +36,16 @@ nist_csf:
 
 **Do not use** without written authorization. Schema extraction and query abuse testing can impact service availability.
 
+## Most Often Missed & How to Confirm
+
+- **Schema without introspection:** when `__schema` is blocked, reconstruct it via field-suggestion errors ("did you mean") using Clairvoyance, and try GET/POST and `?query=` variants.
+- **Mutations over queries:** mutations often have weaker authorization - enumerate `deleteUser`/`updateRole`/`export*` and test them, not just read queries.
+- **Subscriptions:** GraphQL-over-WebSocket may expose data with different (or no) authentication.
+- **Batching/alias abuse:** alias-batched login mutations bypass per-request rate limits.
+- **Sensitive fields:** probe `passwordHash`/`mfaSecret`/`apiKey`/`internalConfig` directly even if they are not in the docs.
+
+**How to confirm a hit (avoid false negatives):** introspection is confirmed when `__schema` returns types without an auth error; a sensitive-field exposure is confirmed when the field returns actual data (not null/error) for an account that should not see it. **Don't conclude negative until you've tried:** error-based reconstruction, GET-method introspection, mutations and subscriptions, and field-suggestion harvesting.
+
 ## Prerequisites
 
 - Written authorization specifying the GraphQL endpoint and testing scope

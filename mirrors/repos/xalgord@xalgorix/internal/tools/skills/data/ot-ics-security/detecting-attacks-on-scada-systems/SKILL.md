@@ -47,6 +47,13 @@ nist_csf:
 
 **Do not use** for detecting attacks on IT-only networks without SCADA/ICS components, for building generic network IDS rules (see building-detection-rules-with-sigma), or for incident response procedures after an attack is confirmed (see performing-ot-incident-response).
 
+## Detection Gaps & Validation
+
+- **PLC logic changes are invisible at the network layer.** A Stuxnet-style modification to OB1/OB35 or injected FC/FB blocks only crosses the wire during the S7comm/CIP download; once resident, the manipulation shows only in physics, not packets. Pair network IDS with PLC logic integrity comparison against a known-good baseline.
+- **Signature rules miss authenticated-looking commands.** Modbus/DNP3/S7comm have no native authentication, so a spoofed master IP issuing a permitted function code (Modbus FC16 write, DNP3 Operate) bypasses signature rules. Add per-pair function-code allowlists and register/object value bounds.
+- **MITM hides on the response path.** An attacker modifying responses (spoofed sensor values) while leaving requests intact evades request-only monitoring; baseline both directions and cross-validate against historian/physics data.
+- **Validate rules fire safely.** Test every new Suricata/Sigma rule by replaying a labeled pcap offline, never by injecting commands onto live controllers. Confirm the rule separates a real attack from an authorized engineering download recorded in change management.
+
 ## Prerequisites
 
 - Passive network monitoring sensors deployed on SPAN/TAP ports at OT network boundaries

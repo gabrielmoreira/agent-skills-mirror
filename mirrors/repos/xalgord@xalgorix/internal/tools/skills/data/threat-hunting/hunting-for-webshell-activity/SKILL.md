@@ -38,6 +38,14 @@ nist_csf:
 - When EDR or SIEM alerts trigger on related indicators
 - During periodic security assessments and purple team exercises
 
+## Detection Gaps & Validation
+
+- **File-create hunting misses a lot:** shells appended to existing legit `.aspx`/`.php`, stored in a database, loaded as an in-memory IIS module (T1505.004), or served via handler mapping under a benign extension. Hash/signature scans miss obfuscated one-liners like `<?php @eval($_POST['x']);?>`.
+- **Process lineage is the durable signal:** w3wp.exe / httpd / tomcat / php-cgi spawning cmd.exe/powershell/whoami (EID 1, ParentImage = web server) catches even unknown shells; EID 11 FileCreate in webroot by the web-server process (not a deploy pipeline) is high-signal.
+- **Low-and-slow operators:** China Chopper uses tiny intermittent POSTs that hide in netflow — needs web/proxy log content inspection, not volume thresholds.
+- **Validate:** drop a benign test `.aspx` that runs `whoami`; confirm the w3wp→cmd EID 1 chain and the EID 11 write both fire.
+- **FP tuning:** baseline legitimate CI/CD deploys and admin maintenance scripts that legitimately write to webroot.
+
 ## Prerequisites
 
 - EDR platform with process and network telemetry (CrowdStrike, MDE, SentinelOne)

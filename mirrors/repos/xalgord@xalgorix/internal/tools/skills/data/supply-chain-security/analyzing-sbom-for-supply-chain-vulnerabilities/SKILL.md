@@ -50,6 +50,18 @@ nist_csf:
 
 **Do not use** for runtime vulnerability scanning of live systems; use container scanning tools (Trivy, Grype CLI) or host-based vulnerability scanners (Nessus, Qualys) instead.
 
+## Detection Gaps & Validation
+
+An SBOM analysis is only as complete as the SBOM itself — the dangerous components are usually the ones that never made it into the inventory.
+
+- **Transitive depth truncation:** generators that stop at direct dependencies miss CVEs 3-5 levels deep. Confirm the `dependencies`/`relationships` graph actually resolves to leaf nodes, not just top-level `components`.
+- **Vendored / bundled / shaded code:** statically-linked libraries, vendored Go modules, and shaded JARs (log4j inside an uber-jar) carry no PURL and are invisible to NVD correlation. Cross-check with `grype` and binary inspection.
+- **Dynamically-loaded deps:** plugins, `dlopen`, JNI, and runtime-downloaded packages never appear at build time.
+- **Version ranges vs. pinned:** a component declared as `^4.17` or `>=1.0,<2.0` may not map cleanly to a single CPE, causing missed or phantom CVE matches. PEP 440 / semver range resolution must be flattened to the *installed* version.
+- **CPE↔PURL mismatch:** NVD indexes by CPE; SBOMs often carry only PURL, so fuzzy/lookup mapping gaps cause silent false negatives.
+
+**How to validate:** regenerate the SBOM with `syft` from the *built artifact/image* (not source) and diff component counts against the supplied SBOM; cross-scan the same SBOM with `grype` and `osv-scanner` and reconcile deltas; seed a known-vulnerable pin (e.g. `log4j-core@2.14.1`) and confirm CVE-2021-44228 surfaces. Treat a CVE-clean report from an SBOM with no transitive or vendored entries as *unvalidated*, not *safe*.
+
 ## Prerequisites
 
 - SBOM file in CycloneDX JSON (v1.4+) or SPDX JSON (v2.3+) format

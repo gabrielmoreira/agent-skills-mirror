@@ -85,6 +85,19 @@ Level 4: Long-running autonomous objective
 
 Default to Level 1 or Level 2 for most MVPs.
 
+## Coding-agent MVP profile
+
+Use [coding-agents.md](coding-agents.md) when the requested agent reads, edits, tests, reviews, migrates, or opens changes against a software repository.
+
+A coding-agent MVP remains a specialization of this generic blueprint:
+
+```text
+MVP coding agent = draft + verify + explain.
+Not merge + deploy + own production.
+```
+
+That reference contains the concrete loop, task profiles, baseline tools, permission defaults, command policy, implementation invariants, evals, checklist, and anti-patterns for repository-facing agents.
+
 ## MVP output structure
 
 Use this structure when generating a domain-specific MVP agent.

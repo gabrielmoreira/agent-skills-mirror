@@ -40,6 +40,14 @@ nist_csf:
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **No rollback / no blast-radius guard:** running an experiment without a guaranteed `finally: rollback_fn()` and a tight timeout can leave a security group open or CloudTrail disabled. Always wrap setup→verify→rollback and assert post-conditions (rule removed, trail logging) before declaring done.
+- **"No alert" misread as resilience:** a quiet console can mean detection works OR that the log pipeline you just broke is what feeds it. Distinguish *control failed silently* from *detection failed* by checking the detection source directly (GuardDuty findings, Config evaluation, SIEM ingestion lag).
+- **Verifying the trigger fired, not the response:** an alert in the console is not containment. Measure end to end — detection time AND that the response action (isolate, page, ticket) actually executed within SLA.
+- **Running against prod without scoping:** experiments belong in a tagged, isolated account/segment with abort conditions. Confirm the abort path works before the real run.
+- **Confirm the experiment was observable at all:** leave the control broken briefly and verify the alert appears; if nothing fires you have a detection gap, not a passed experiment.
+
 ## Prerequisites
 
 - Familiarity with security operations concepts and tools

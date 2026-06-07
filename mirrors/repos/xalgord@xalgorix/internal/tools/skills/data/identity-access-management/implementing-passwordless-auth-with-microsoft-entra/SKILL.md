@@ -38,6 +38,17 @@ nist_csf:
 
 **Do not use** for environments that cannot support modern authentication protocols; legacy applications using NTLM or basic authentication must be migrated first.
 
+## Common Misconfigurations & Verification
+
+Entra "passwordless" frequently coexists with phishable fallbacks that attackers simply pivot to:
+
+- **Conditional Access stuck in report-only:** the phishing-resistant policy is built but `state = enabledForReportingButNotEnforced`, so passwords still work. Confirm `state = enabled` for the auth-strength policy and that admin roles map to the **Phishing-resistant MFA** built-in strength (FIDO2/WHfB/x509), not just "MFA."
+- **SMS/voice/TOTP still enabled as fallback:** registering a passkey does nothing if a phished SMS code grants the same access. Verify with Graph: `GET /policies/authenticationMethodsPolicy/authenticationMethodConfigurations/sms` (and `voice`) return `state = disabled`, and that no legacy per-user MFA leaves SMS registered.
+- **FIDO2 attestation/key restrictions off:** `isAttestationEnforced = false` or empty `aaGuids` lets any (including virtual) authenticator register. Confirm attestation is enforced and the AAGUID allow-list matches approved YubiKey/Titan models.
+- **Legacy auth not blocked:** verify a Conditional Access policy blocks `exchangeActiveSync`/`other` client app types, then check sign-in logs (`clientAppUsed`) show zero successful legacy-protocol logins.
+- **Single key, no backup, TAP left long-lived:** confirm ≥2 FIDO2 methods per privileged user and that Temporary Access Pass is `isUsableOnce` / short lifetime, not a standing password substitute.
+- **Break-glass accounts wrongly forced into passwordless:** confirm excluded emergency accounts exist, are monitored, and have an alert on every sign-in.
+
 ## Prerequisites
 
 - Microsoft Entra ID P1 or P2 license (Azure AD Premium)

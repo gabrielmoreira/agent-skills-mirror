@@ -36,6 +36,15 @@ Privileged Account Access Review is a critical identity governance process that 
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Coverage Gaps & Validation
+
+- **Accounts outside the PAM vault:** the review only covers what PAM/IGA already knows. Local admin accounts on servers, `sa`/`SYS` database logins, cloud root and access keys never onboarded, and SPN service accounts are routinely missed. Discover them directly from each platform, not from the vault list.
+- **Rubber-stamp certification:** owners certify their own privilege without scrutiny. Cross-check certify decisions against last-activity dates — anything certified but unused 90+ days is a revoke candidate regardless of the approval.
+- **Service / non-human accounts:** these often have no human owner and slip out of manager-driven reviews; ensure each has a named owner and a defined review path.
+- **Shadow admin and indirect privilege:** effective admin via nested AD groups, `AdminCount=1`/AdminSDHolder, delegation rights, cloud role-assumption chains, or API tokens with admin scope is easy to miss when reading only direct group membership.
+- **Break-glass accounts:** confirm last use was authorized and credentials were rotated afterward.
+- **Validate completeness:** reconcile the reviewed set against authoritative enumeration — AD privileged groups plus `AdminCount=1`, AWS `iam:*`/`AdministratorAccess`, Azure Global/Privileged Role Admin, GCP Owner/Editor, and DB fixed admin roles. Accounts present in those sources but absent from the review are the gap.
+
 ## Prerequisites
 
 - PAM solution deployed (CyberArk, BeyondTrust, Delinea, or equivalent)

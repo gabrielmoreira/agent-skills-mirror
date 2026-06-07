@@ -35,6 +35,16 @@ Proofpoint Email Protection is a cloud-native secure email gateway (SEG) that ac
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **MX cutover without IP lock-down:** routing MX to Proofpoint while the backend (M365/Workspace) still accepts mail from any IP lets attackers bypass the gateway by delivering directly - restrict inbound connectors to Proofpoint egress IPs.
+- **SPF not updated for the gateway:** forgetting `include:spf-a.proofpoint.com` (or exceeding the 10-lookup limit) breaks alignment - flatten the SPF record and end with `-all`.
+- **URL Defense / Attachment Defense not on all mail:** rewriting/sandboxing scoped to a subset leaves gaps - enable URL Defense rewriting and time-of-click sandbox for ALL inbound.
+- **Impostor Classifier left at default:** no-payload BEC needs the Impostor Classifier tuned for VIPs and Reply-To mismatch - it is the only layer that catches pure social engineering.
+- **TRAP not enabled:** post-delivery weaponized URLs are not retracted without Threat Response Auto-Pull - turn it on and test retraction.
+- **DMARC parked at p=none:** inbound enforcement off lets spoofed mail through - enable inbound DMARC reject and progress your own domain to enforcement.
+- **Verification:** confirm all inbound mail shows Proofpoint hops in headers; send EICAR + a phishing URL and confirm sandbox/click-block; verify TRAP retracts a post-delivery test phish; and confirm a self-domain spoof from an unauthorized IP is rejected. Keep FP rate <0.1% after tuning.
+
 ## Prerequisites
 - Proofpoint Email Protection license (PPS on-premises or Proofpoint on Demand cloud)
 - Administrative access to DNS management for MX record changes

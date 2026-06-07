@@ -37,6 +37,16 @@ nist_csf:
 
 **Do not use** without written authorization. OAuth testing may result in token theft or unauthorized access.
 
+## Most Often Missed & How to Confirm
+
+- **redirect_uri matching:** test prefix/substring matches, path traversal, `@`/`#` authority confusion, `.evil.com` suffixes, userinfo tricks, and `localhost` - exact-match validation is rare.
+- **PKCE enforcement:** drop `code_verifier` entirely, send a wrong one, and downgrade S256→plain at the token endpoint, not just the auth request.
+- **State = CSRF:** confirm the client (not just the server) validates `state` on the callback; missing/echo-only state is exploitable.
+- **Code single-use and TTL:** replay the auth code 2-3 times; reuse acceptance is a finding.
+- **Token audience/binding:** use a token issued to client A against client B's API, and a refresh token with a different `client_id`.
+
+**How to confirm a hit (avoid false negatives):** a redirect bypass is confirmed when the auth code/token is actually delivered to the off-domain redirect (you receive `code=`); PKCE is broken when a token is issued without/with a wrong verifier; account takeover when the stolen code yields a working access token for the victim. **Don't conclude negative until you've tested:** redirect mutations, PKCE downgrade at token exchange, client-side state validation, code replay, and cross-client token/audience reuse.
+
 ## Prerequisites
 
 - Written authorization specifying the OAuth provider and client applications in scope

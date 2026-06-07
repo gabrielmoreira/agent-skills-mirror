@@ -34,6 +34,16 @@ Email sandboxing detonates suspicious attachments and URLs in isolated environme
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Detonation timeout too short:** time-bomb malware delays execution past the analysis window - set the sandbox timeout high enough (60s+) and rely on TAP predictive analysis for known-evasive families.
+- **URL-only lures slip through:** credential-phishing pages with no attachment aren't caught by Attachment Defense - confirm URL Defense rewriting + time-of-click sandbox is enabled on ALL inbound mail, not just attachments.
+- **No dynamic delivery:** holding the whole message until verdict frustrates users and invites bypass requests - enable dynamic delivery (release body, hold attachment until verdict).
+- **Password-protected archives skipped:** encrypted `.zip`/`.7z` bypass detonation unless the engine harvests the password from the body - enable password attempt, then quarantine on failure.
+- **Allowlists too broad:** blanket domain/sender bypass lists become a hole attackers abuse - scope bypasses narrowly and review them.
+- **TAP not wired to SIEM/TRAP:** verdicts arriving after delivery do nothing without auto-pull - confirm Threat Response Auto-Pull retracts post-delivery and TAP events export to SIEM.
+- **Verification:** submit the EICAR test file, a macro-enabled doc, and a known-phishing URL; confirm the attachment is detonated and quarantined, the URL is rewritten and blocked at click, and a post-delivery weaponized URL is auto-retracted.
+
 ## Prerequisites
 - Proofpoint Email Protection license with TAP add-on
 - Admin access to Proofpoint admin console

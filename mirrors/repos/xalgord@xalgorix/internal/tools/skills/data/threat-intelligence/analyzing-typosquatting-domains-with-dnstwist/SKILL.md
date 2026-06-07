@@ -39,6 +39,15 @@ DNSTwist is a domain name permutation engine that generates similar-looking doma
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Permutation gaps:** default dnstwist fuzzers miss target-specific tricks -- add `--dictionary` (brand words like "login", "secure", "support"), widen TLDs with `--tld`, and confirm `--homoglyph`/IDN coverage, since combosquats (`mycompany-support.com`) and new gTLDs fall outside the base algorithm.
+- **`--registered` blind spot:** filtering to registered-only hides parked and pre-registration domains; a domain with no A record today can be weaponized tomorrow. Periodically scan without the filter.
+- **Resolver/rate issues:** a single nameserver throttles or returns NXDOMAIN inconsistently -- use `--nameservers 8.8.8.8,1.1.1.1` and re-run, or you record false "unregistered."
+- **FP drivers:** legitimate regional sites, partners, and CDNs match permutations; `ssdeep_score` is null when the page is JS-rendered or behind Cloudflare, so absence of similarity is not absence of phishing.
+
+To validate: seed a known lookalike you control and confirm it surfaces with the expected `fuzzer` label and risk tier; verify `legitimate_ips` is populated so your own infrastructure is not flagged. Confirm a high-risk hit out-of-band -- resolve MX (email-capable), fetch and visually compare the page, and check WHOIS creation date -- before issuing a takedown, since risk score alone over-reports.
+
 ## Prerequisites
 
 - Python 3.9+ with `dnstwist` installed (`pip install dnstwist[full]`)

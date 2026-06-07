@@ -27,6 +27,28 @@ The NIST Cybersecurity Framework (CSF) 2.0, released in February 2024, provides 
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Coverage Gaps & Validation
+
+CSF maturity assessments most often inflate scores because tiers are
+self-attested in interviews with no artifact behind them:
+
+- **Self-reported tiers without evidence:** a stakeholder claims Tier 3
+  (Repeatable) for DE.CM but there is no documented monitoring policy, no
+  consistent log coverage, and no review cadence. Validate every tier rating
+  against a dated artifact - policy document, ticket history, SIEM dashboard,
+  or control test output - before recording it.
+- **Govern function under-assessed:** GV.SC (supply chain) and GV.OV
+  (oversight) are new in CSF 2.0 and often skipped; confirm board-level
+  reporting and third-party risk records actually exist.
+- **Telemetry vs. policy mismatch:** Protect/Detect subcategories rated high on
+  policy maturity but with no measurement evidence. Validate Tier 3+ claims
+  with automation/metrics output, not intent.
+- **Profile not anchored to risk:** target tiers set uniformly to 4 without
+  tying to risk appetite. Confirm the Target Profile maps to specific risk
+  register entries.
+- **One-time snapshot:** reassessment cadence undefined; verify a scheduled
+  reassessment and roadmap ownership are in place.
+
 ## Prerequisites
 - Understanding of cybersecurity risk management principles
 - Access to NIST CSF 2.0 documentation and reference tool

@@ -30,6 +30,16 @@ nist_csf:
 
 AWS Detective automatically collects and analyzes log data from AWS CloudTrail, VPC Flow Logs, GuardDuty findings, and EKS audit logs to build interactive behavior graphs. These graphs enable security analysts to investigate entities (IAM users, roles, IP addresses, EC2 instances) across time, identify anomalous API calls, detect lateral movement between accounts, and correlate GuardDuty findings into coherent attack narratives — all without manual log parsing.
 
+## Detection Gaps & Validation
+
+- **No retroactive visibility:** Detective only analyzes data from when it (and GuardDuty, 48h+) was enabled, with a rolling ~1-year retention. Activity before enablement never appears - confirm the behavior graph's data range covers the incident before concluding nothing happened earlier.
+- **Per-account / per-region graphs:** an attacker operating in a region or member account where Detective isn't enabled is invisible. Verify coverage with `aws detective list-graphs` in each region and confirm member accounts are enrolled under the admin account.
+- **Source coverage excludes S3 data events:** Detective ingests CloudTrail management events, VPC Flow Logs, GuardDuty findings, and EKS audit logs - not S3 object-level data events. Pivot to S3 access logs / Athena to confirm or rule out data exfiltration.
+- **Scope Time hides slow attacks:** the default 24h window misses low-and-slow campaigns. Widen Scope Time toward the 1-year max and re-profile the entity before clearing it.
+- **Indicators are heuristics, not verdicts:** `IMPOSSIBLE_TRAVEL`, `NEW_GEOLOCATION`, `NEW_ASO`, and `NEW_USER_AGENT` produce false positives (VPNs, travel, new tooling). Validate each against raw CloudTrail (`sourceIPAddress`, `userAgent`, `sessionContext`) before escalating.
+- **No GuardDuty finding = nothing to correlate:** Detective enriches GuardDuty; if the relevant detector or finding type is disabled, the campaign won't surface as a finding group. Confirm GuardDuty coverage for the IAM/EC2/EKS finding types in scope.
+- **How to confirm a hit:** cross-reference the Detective entity timeline against raw CloudTrail for the same `EntityArn`/IP, and verify finding-group correlations match a manual log review before reporting.
+
 ## Prerequisites
 
 - AWS account with Detective enabled (requires GuardDuty active for 48+ hours)

@@ -1,6 +1,6 @@
 ---
 name: crypt
-description: "Cryptographic architecture design: algorithm selection, key management, E2EE, KMS integration, signature verification, and TLS configuration."
+description: "Designing cryptographic architecture: algorithm selection, key management, E2EE, KMS integration, signature verification, and TLS configuration. Use when designing cryptographic protocols, key rotation flows, or end-to-end encryption architectures."
 ---
 
 <!--
@@ -20,7 +20,7 @@ CAPABILITIES_SUMMARY:
 
 COLLABORATION_PATTERNS:
 - Sentinel -> Crypt: Vulnerability reports trigger crypto design review (incl. Sentinel `mobile` MASVS-CRYPTO + MASVS-AUTH findings handed off for design fix)
-- Comply -> Crypt: Regulatory requirements inform algorithm selection
+- Oath -> Crypt: Regulatory requirements inform algorithm selection
 - Gateway -> Crypt: API auth design feeds signature/token scheme
 - Native -> Crypt: Mobile keystore / Passkey / JWT lifetime / certificate-pinning design request
 - Crypt -> Builder: Crypto implementation specifications
@@ -30,7 +30,7 @@ COLLABORATION_PATTERNS:
 - Crypt -> Scaffold: KMS and TLS infrastructure configuration
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Sentinel (vulnerabilities), Comply (regulations), Gateway (API auth), Native (mobile keystore / Passkey / JWT / pinning design request), User (requirements)
+- INPUT: Sentinel (vulnerabilities), Oath (regulations), Gateway (API auth), Native (mobile keystore / Passkey / JWT / pinning design request), User (requirements)
 - OUTPUT: Builder (implementation), Sentinel (verification), Cloak (privacy), Native (mobile keystore + Passkey + JWT + pinning design spec), Scaffold (infra)
 
 PROJECT_AFFINITY: Game(L) SaaS(H) E-commerce(H) Mobile(H) Dashboard(M) Marketing(L)
@@ -63,7 +63,7 @@ Route elsewhere when the task is primarily:
 - dynamic security testing: `Probe`
 - privacy engineering or PII handling: `Cloak`
 - attack scenario modeling: `Breach`
-- regulatory compliance mapping: `Comply`
+- regulatory compliance mapping: `Oath`
 - API endpoint design: `Gateway`
 - infrastructure provisioning: `Scaffold`
 - mobile feature implementation (Swift / SwiftUI Keychain calls, Kotlin / Compose Keystore calls): `Native`
@@ -117,15 +117,15 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 | Recipe | Subcommand | Default? | When to Use | Read First |
 |--------|-----------|---------|-------------|------------|
-| Algorithm Selection | `algorithm` | ✓ | Crypto algorithm selection, parameter spec, anti-pattern detection | `references/patterns.md` |
-| Key Management | `key` | | General key-management strategy (hierarchy, rotation policy, ceremony, derivation, revocation, destruction) | `references/patterns.md` |
-| E2EE Design | `e2ee` | | End-to-end encryption architecture design | `references/patterns.md` |
-| TLS Configuration | `tls` | | TLS/mTLS configuration, cipher suite selection, certificate management | `references/patterns.md` |
-| Signature Scheme | `signature` | | Digital signature, JWT/JWE/JWS scheme design | `references/patterns.md` |
-| Password Hashing | `password` | | Password-hashing scheme design (Argon2id / bcrypt / scrypt selection, OWASP 2024 parameters, pepper, bcrypt→Argon2id migration) | `references/password-hashing.md` |
-| KMS Integration | `kms` | | KMS-service integration pattern (AWS KMS / GCP KMS / Azure Key Vault / Vault Transit), envelope encryption, data-key caching, HSM-backed CMK | `references/kms-integration.md` |
-| PQC Migration | `pqc` | | Classical-to-post-quantum migration plan, hybrid schemes (X25519+ML-KEM), FIPS 203/204/205 target selection, harvest-now-decrypt-later response | `references/post-quantum-migration.md` |
-| Mobile Keys | `mobile` | | iOS Keychain + Secure Enclave / Android Keystore + StrongBox design; Passkey / WebAuthn server-side validation; mobile JWT lifetime + refresh-token rotation defaults; first-party-only certificate-pinning design | `references/patterns.md` |
+| Algorithm Selection | `algorithm` | ✓ | Crypto algorithm selection, parameter spec, anti-pattern detection | `reference/patterns.md` |
+| Key Management | `key` | | General key-management strategy (hierarchy, rotation policy, ceremony, derivation, revocation, destruction) | `reference/patterns.md` |
+| E2EE Design | `e2ee` | | End-to-end encryption architecture design | `reference/patterns.md` |
+| TLS Configuration | `tls` | | TLS/mTLS configuration, cipher suite selection, certificate management | `reference/patterns.md` |
+| Signature Scheme | `signature` | | Digital signature, JWT/JWE/JWS scheme design | `reference/patterns.md` |
+| Password Hashing | `password` | | Password-hashing scheme design (Argon2id / bcrypt / scrypt selection, OWASP 2024 parameters, pepper, bcrypt→Argon2id migration) | `reference/password-hashing.md` |
+| KMS Integration | `kms` | | KMS-service integration pattern (AWS KMS / GCP KMS / Azure Key Vault / Vault Transit), envelope encryption, data-key caching, HSM-backed CMK | `reference/kms-integration.md` |
+| PQC Migration | `pqc` | | Classical-to-post-quantum migration plan, hybrid schemes (X25519+ML-KEM), FIPS 203/204/205 target selection, harvest-now-decrypt-later response | `reference/post-quantum-migration.md` |
+| Mobile Keys | `mobile` | | iOS Keychain + Secure Enclave / Android Keystore + StrongBox design; Passkey / WebAuthn server-side validation; mobile JWT lifetime + refresh-token rotation defaults; first-party-only certificate-pinning design | `reference/patterns.md` |
 
 ## Subcommand Dispatch
 
@@ -139,29 +139,29 @@ Behavior notes per Recipe:
 - `e2ee`: Signal Protocol / MLS / custom E2EE architecture design. Includes key exchange flow, forward secrecy, and PFS design.
 - `tls`: TLS 1.3 configuration, cipher suite priority, mTLS mutual authentication. Applies PQC hybrid KEX (X25519MLKEM768) selected by `pqc` — does not own the transition decision itself.
 - `signature`: Ed25519 / ECDSA / ML-DSA signature scheme design. Includes JWT verification flow, algorithm pinning, and timing-safe comparison.
-- `password`: Password-hashing scheme design. Default Argon2id with OWASP 2024 parameters (m=19 MiB, t=2, p=1 minimum; preferred m=64–128 MiB, t=3, p=1); bcrypt cost ≥ 12 for legacy compatibility; scrypt or PBKDF2-HMAC-SHA-256 (≥ 600k iterations) where Argon2id unavailable. Require per-password salt (≥ 16 bytes, CSPRNG) plus server-wide pepper held in KMS. Specify bcrypt → Argon2id migration via rehash-on-next-login and Argon2id `needs_rehash` on parameter bump. Align with NIST SP 800-63B memorized-secret verifier. Sentinel `authn` reviews the implementing code against this design; Crypt does not audit code. Cross-link: Sentinel `authn` (implementation audit), Comply (NIST SP 800-63B / PCI-DSS 4.0 §8.3.6).
+- `password`: Password-hashing scheme design. Default Argon2id with OWASP 2024 parameters (m=19 MiB, t=2, p=1 minimum; preferred m=64–128 MiB, t=3, p=1); bcrypt cost ≥ 12 for legacy compatibility; scrypt or PBKDF2-HMAC-SHA-256 (≥ 600k iterations) where Argon2id unavailable. Require per-password salt (≥ 16 bytes, CSPRNG) plus server-wide pepper held in KMS. Specify bcrypt → Argon2id migration via rehash-on-next-login and Argon2id `needs_rehash` on parameter bump. Align with NIST SP 800-63B memorized-secret verifier. Sentinel `authn` reviews the implementing code against this design; Crypt does not audit code. Cross-link: Sentinel `authn` (implementation audit), Oath (NIST SP 800-63B / PCI-DSS 4.0 §8.3.6).
 - `kms`: KMS-service integration pattern. Provider selection (AWS KMS / GCP KMS / Azure Key Vault / HashiCorp Vault Transit), envelope encryption (CMK wraps DEK, DEK encrypts payload with AES-256-GCM + random 96-bit IV), encryption-context / AAD binding, data-key cache policy (max 10 GB or 2^32 messages per DEK, ≤ 10-minute TTL), KMS-managed automatic CMK rotation, alias-based lookup. HSM-backed CMK (CloudHSM / Cloud HSM / Managed HSM) only where FIPS 140-3 Level 3, CNSA 2.0, or tenant-isolated HSM is mandated. IAM split (encrypt-only, decrypt-only, admin break-glass) and CloudTrail `Decrypt` audit alerting. Cross-link: `key` (policy layer; runs first), Gear `secret` (application-level secrets store — e.g., Vault KV for DB passwords vs Vault Transit for crypto operations; overlap is intentional), Scaffold (provisions the CMK via IaC).
-- `pqc`: Post-quantum migration plan against the harvest-now-decrypt-later threat. Inventory every RSA / DH / ECDH / ECDSA / Ed25519 use; classify by HNDL sensitivity and deadline regime (NIST IR 8547 draft: deprecate by 2030, disallow by 2035; NSA CNSA 2.0: new NSS quantum-safe by Jan 2027, applications by 2030, infrastructure by 2035). Target NIST standards: FIPS 203 ML-KEM for key encapsulation, FIPS 204 ML-DSA for general signatures, FIPS 205 SLH-DSA for conservative hash-based signatures (non-CNSA). Use hybrid schemes during transition — X25519MLKEM768 (IANA `0x11EC`) for TLS 1.3 KEX, composite-sig for X.509. Chrome shipped X25519MLKEM768 as the default TLS 1.3 KEX in v131 (Nov 2024); since v138 users can no longer disable it, and the `PostQuantumKeyAgreementEnabled` enterprise policy is slated for removal in v147 — treat hybrid PQ KEX as a baseline expectation in browser fleets. [Source: The SSL Store — Google Chrome Adds Hybrid PQC](https://www.thesslstore.com/blog/google-chrome-adds-support-for-a-hybrid-post-quantum-cryptographic-algorithm/) Stage rollout KEX → signatures → at-rest wrap keys. Symmetric AES-256 does not migrate (Grover-safe at 128-bit effective). Cross-link: `algo` (picks current algorithms; flags but does not own migration), `tls` (applies the hybrid KEX once selected here), Comply (CNSA 2.0 / BSI / ANSSI mandates drive the timeline).
+- `pqc`: Post-quantum migration plan against the harvest-now-decrypt-later threat. Inventory every RSA / DH / ECDH / ECDSA / Ed25519 use; classify by HNDL sensitivity and deadline regime (NIST IR 8547 draft: deprecate by 2030, disallow by 2035; NSA CNSA 2.0: new NSS quantum-safe by Jan 2027, applications by 2030, infrastructure by 2035). Target NIST standards: FIPS 203 ML-KEM for key encapsulation, FIPS 204 ML-DSA for general signatures, FIPS 205 SLH-DSA for conservative hash-based signatures (non-CNSA). Use hybrid schemes during transition — X25519MLKEM768 (IANA `0x11EC`) for TLS 1.3 KEX, composite-sig for X.509. Chrome shipped X25519MLKEM768 as the default TLS 1.3 KEX in v131 (Nov 2024); since v138 users can no longer disable it, and the `PostQuantumKeyAgreementEnabled` enterprise policy is slated for removal in v147 — treat hybrid PQ KEX as a baseline expectation in browser fleets. [Source: The SSL Store — Google Chrome Adds Hybrid PQC](https://www.thesslstore.com/blog/google-chrome-adds-support-for-a-hybrid-post-quantum-cryptographic-algorithm/) Stage rollout KEX → signatures → at-rest wrap keys. Symmetric AES-256 does not migrate (Grover-safe at 128-bit effective). Cross-link: `algo` (picks current algorithms; flags but does not own migration), `tls` (applies the hybrid KEX once selected here), Oath (CNSA 2.0 / BSI / ANSSI mandates drive the timeline).
 - `mobile`: Mobile-specific key custody + auth design. **iOS Keychain**: `kSecAttrAccessControl` with `.biometryCurrentSet` (auto-invalidates on Face ID / Touch ID re-enrollment) + `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` (excludes iCloud backup) for secret storage; **Secure Enclave**: generate signing keys with `kSecAttrTokenIDSecureEnclave` so private keys never leave the chip. **Android Keystore**: `setIsStrongBoxBacked(true)` for hardware-isolated keys on supported devices (Pixel / flagship), graceful fall back to TEE; use `setUserAuthenticationRequired(true)` with `setUserAuthenticationParameters(timeoutSec, AUTH_BIOMETRIC_STRONG)` for biometry-gated keys. **Passkey / WebAuthn / FIDO2 server-side**: verify attestation, store credential ID + public key + signature counter; reject sign-ins where counter does not advance (cloned authenticator). **Mobile JWT defaults (2025 standard)**: access-token lifetime 15-60 min; refresh-token lifetime 30-90 days WITH rotation (each use issues a new refresh, old is revoked); replay of an invalidated refresh triggers full session revocation. Algorithm: ES256 (P-256 + ECDSA) for signing — never `HS256` shared secret on mobile, never `alg: none`. **Certificate pinning**: pin public keys (not certificates), ≥ 2 backup pins, restrict to first-party endpoints — OWASP 2025 toned down general recommendation; reserve for high-risk apps (finance / health). **Anti-pattern**: hardcoded API keys in the binary (MASWE-0005, ~50% of mobile apps fail per Zimperium 2025) — proxy through a BFF. `Native` implements the spec; `Sentinel` `mobile` audits the result; `Probe` confirms runtime exploitability.
 
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
 |--------|----------|----------------|-----------|
-| `encrypt`, `encryption`, `AES`, `ChaCha` | Symmetric encryption design | Algorithm spec + key management | `references/patterns.md` |
-| `sign`, `signature`, `JWT`, `JWS` | Signature scheme design | Signing spec + verification flow | `references/patterns.md` |
-| `password`, `hash`, `bcrypt`, `Argon2` | Password storage design | Hashing spec + tuning parameters | `references/patterns.md` |
-| `key`, `KMS`, `rotation`, `HSM` | Key management design | Key lifecycle spec + KMS integration | `references/patterns.md` |
-| `E2EE`, `end-to-end`, `Signal` | E2EE architecture design | Protocol spec + key exchange design | `references/patterns.md` |
-| `TLS`, `mTLS`, `certificate` | TLS configuration design | Cipher suite spec + cert management | `references/patterns.md` |
-| `audit`, `review`, `anti-pattern` | Crypto anti-pattern detection | Audit report + fix recommendations | `references/patterns.md` |
-| `quantum`, `PQC`, `post-quantum`, `CNSA` | PQC migration plan | Migration roadmap + hybrid schemes + CNSA 2.0 compliance | `references/patterns.md` |
-| `Keychain`, `Secure Enclave`, `iOS key storage` | iOS Keychain + Secure Enclave design | `kSecAttrAccessControl` + biometry + Secure Enclave spec | `references/patterns.md` |
-| `Android Keystore`, `StrongBox`, `Keymaster` | Android Keystore + StrongBox design | StrongBox + biometric-gated key spec | `references/patterns.md` |
-| `Passkey server`, `WebAuthn validation`, `FIDO2 server` | Passkey server-side validation design | Attestation verify + signature counter + cloned-authenticator detection | `references/patterns.md` |
-| `mobile JWT`, `refresh token rotation`, `mobile auth lifetime` | Mobile JWT + refresh rotation design | Access 15-60min / refresh 30-90d rotation spec + algorithm pinning | `references/patterns.md` |
-| `certificate pinning`, `SSL pinning`, `public key pinning` | Certificate pinning design (first-party only) | Public-key pin + backup ≥ 2 + rotation plan | `references/patterns.md` |
-| unclear request | Algorithm selection (default) | Use-case-based recommendation | `references/patterns.md` |
+| `encrypt`, `encryption`, `AES`, `ChaCha` | Symmetric encryption design | Algorithm spec + key management | `reference/patterns.md` |
+| `sign`, `signature`, `JWT`, `JWS` | Signature scheme design | Signing spec + verification flow | `reference/patterns.md` |
+| `password`, `hash`, `bcrypt`, `Argon2` | Password storage design | Hashing spec + tuning parameters | `reference/patterns.md` |
+| `key`, `KMS`, `rotation`, `HSM` | Key management design | Key lifecycle spec + KMS integration | `reference/patterns.md` |
+| `E2EE`, `end-to-end`, `Signal` | E2EE architecture design | Protocol spec + key exchange design | `reference/patterns.md` |
+| `TLS`, `mTLS`, `certificate` | TLS configuration design | Cipher suite spec + cert management | `reference/patterns.md` |
+| `audit`, `review`, `anti-pattern` | Crypto anti-pattern detection | Audit report + fix recommendations | `reference/patterns.md` |
+| `quantum`, `PQC`, `post-quantum`, `CNSA` | PQC migration plan | Migration roadmap + hybrid schemes + CNSA 2.0 compliance | `reference/patterns.md` |
+| `Keychain`, `Secure Enclave`, `iOS key storage` | iOS Keychain + Secure Enclave design | `kSecAttrAccessControl` + biometry + Secure Enclave spec | `reference/patterns.md` |
+| `Android Keystore`, `StrongBox`, `Keymaster` | Android Keystore + StrongBox design | StrongBox + biometric-gated key spec | `reference/patterns.md` |
+| `Passkey server`, `WebAuthn validation`, `FIDO2 server` | Passkey server-side validation design | Attestation verify + signature counter + cloned-authenticator detection | `reference/patterns.md` |
+| `mobile JWT`, `refresh token rotation`, `mobile auth lifetime` | Mobile JWT + refresh rotation design | Access 15-60min / refresh 30-90d rotation spec + algorithm pinning | `reference/patterns.md` |
+| `certificate pinning`, `SSL pinning`, `public key pinning` | Certificate pinning design (first-party only) | Public-key pin + backup ≥ 2 + rotation plan | `reference/patterns.md` |
+| unclear request | Algorithm selection (default) | Use-case-based recommendation | `reference/patterns.md` |
 
 ## Workflow
 
@@ -170,9 +170,9 @@ Behavior notes per Recipe:
 | Phase | Required action | Key rule | Read |
 |-------|-----------------|----------|------|
 | `THREAT` | Identify threat model and compliance requirements | Know what you're defending against before choosing tools | — |
-| `SELECT` | Choose algorithms based on use case and current standards | NIST/IETF current recommendations only; no deprecated defaults | `references/patterns.md` |
-| `DESIGN` | Design key lifecycle, protocol flow, and parameter specs | Key rotation built in; exact parameters specified | `references/patterns.md` |
-| `VERIFY` | Check for anti-patterns and quantum vulnerability | Every design gets anti-pattern checklist | `references/patterns.md` |
+| `SELECT` | Choose algorithms based on use case and current standards | NIST/IETF current recommendations only; no deprecated defaults | `reference/patterns.md` |
+| `DESIGN` | Design key lifecycle, protocol flow, and parameter specs | Key rotation built in; exact parameters specified | `reference/patterns.md` |
+| `VERIFY` | Check for anti-patterns and quantum vulnerability | Every design gets anti-pattern checklist | `reference/patterns.md` |
 | `DOCUMENT` | Produce specification with implementation guidance | Include library recommendations and code examples | — |
 
 ## Algorithm Quick Reference
@@ -263,13 +263,13 @@ Behavior notes per Recipe:
 
 ## Collaboration
 
-**Receives:** Sentinel (vulnerabilities), Comply (regulations), Gateway (API auth), User (requirements)
+**Receives:** Sentinel (vulnerabilities), Oath (regulations), Gateway (API auth), User (requirements)
 **Sends:** Builder (implementation), Sentinel (verification), Cloak (privacy integration), Scaffold (infra config)
 
 | Direction | Handoff | Purpose |
 |-----------|---------|---------|
 | Sentinel → Crypt | `SENTINEL_TO_CRYPT_HANDOFF` | Crypto vulnerability for design fix |
-| Comply → Crypt | `COMPLY_TO_CRYPT_HANDOFF` | Regulatory algorithm requirements |
+| Oath → Crypt | `COMPLY_TO_CRYPT_HANDOFF` | Regulatory algorithm requirements |
 | Crypt → Builder | `CRYPT_TO_BUILDER_HANDOFF` | Crypto implementation spec |
 | Crypt → Sentinel | `CRYPT_TO_SENTINEL_HANDOFF` | Design for security verification |
 
@@ -277,12 +277,12 @@ Behavior notes per Recipe:
 
 | Reference | Read this when |
 |-----------|----------------|
-| `references/patterns.md` | You need crypto design patterns, protocol templates, or anti-pattern details. |
-| `references/examples.md` | You need complete crypto architecture examples. |
-| `references/handoffs.md` | You need handoff templates for collaboration with other agents. |
-| `references/password-hashing.md` | You are designing the `password` recipe — Argon2id parameters, pepper strategy, bcrypt → Argon2id migration. |
-| `references/kms-integration.md` | You are designing the `kms` recipe — envelope encryption, data-key caching, HSM-backed CMK, provider selection. |
-| `references/post-quantum-migration.md` | You are planning the `pqc` recipe — HNDL threat model, NIST FIPS 203/204/205, hybrid schemes, timeline per regime. |
+| `reference/patterns.md` | You need crypto design patterns, protocol templates, or anti-pattern details. |
+| `reference/examples.md` | You need complete crypto architecture examples. |
+| `reference/handoffs.md` | You need handoff templates for collaboration with other agents. |
+| `reference/password-hashing.md` | You are designing the `password` recipe — Argon2id parameters, pepper strategy, bcrypt → Argon2id migration. |
+| `reference/kms-integration.md` | You are designing the `kms` recipe — envelope encryption, data-key caching, HSM-backed CMK, provider selection. |
+| `reference/post-quantum-migration.md` | You are planning the `pqc` recipe — HNDL threat model, NIST FIPS 203/204/205, hybrid schemes, timeline per regime. |
 | `_common/OPUS_48_AUTHORING.md` | You are sizing the crypto spec, deciding adaptive thinking depth at DESIGN, or front-loading compliance scope/security-strength target at SCAN. Critical for Crypt: P3, P5. |
 
 ## Operational

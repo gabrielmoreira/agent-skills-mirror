@@ -37,6 +37,15 @@ Use this skill when:
 
 **Do not use** this skill against production APIs without explicit authorization and rate-limiting awareness.
 
+## Most Often Missed & How to Confirm
+
+- **JWT `alg:none` / algorithm confusion** — confirm by submitting a `none` token or an RS256→HS256 token signed with the public key and seeing it accepted.
+- **Token not invalidated on logout/password change** — confirm by reusing a captured token after both events; continued access is the finding.
+- **BOLA/IDOR** — confirm by swapping object/user IDs with user A's token and retrieving user B's data.
+- **Token in URL** — confirm by checking query strings for tokens (logged/cached) even when auth otherwise works.
+- **OAuth PKCE not enforced** — confirm by replaying the authorization code without `code_verifier` and still getting a token.
+- **Custom-scheme redirect hijack** — confirm a second app registering the same `myapp://callback` can receive the auth code.
+
 ## Prerequisites
 
 - Burp Suite or mitmproxy configured as mobile device proxy

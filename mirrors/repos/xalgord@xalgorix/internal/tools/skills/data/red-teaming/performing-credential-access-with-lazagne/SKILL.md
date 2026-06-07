@@ -40,6 +40,16 @@ LaZagne is an open-source post-exploitation tool designed to retrieve credential
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- Run `lazagne.exe all` (every module), not just `browsers` — operators routinely skip `windows` (Credential Manager/Vault/LSA secrets/autologon), `wifi`, `mails`, `databases`, and `sysadmin` (PuTTY/WinSCP/FileZilla/OpenSSH), which is where the lateral-movement creds usually live.
+- DPAPI master keys, LSA secrets, and autologon need SYSTEM/admin — run once as the user, then re-run elevated (`lazagne.exe all` under a SYSTEM token). A standard-user run that returns "nothing" is a false negative for system stores.
+- Memory/LSASS-resident secrets aren't covered by LaZagne — pair with mimikatz `sekurlsa::logonpasswords` / `lsadump::secrets`; concluding "no creds" from LaZagne alone misses cached logons.
+- Browser cookies/session tokens (T1539) are missed when only password fields are checked — grab them for session hijack even when no plaintext password exists.
+- Always export with `-oJ -output <path>` so nothing scrolls off; a truncated console is a common reason hits get missed.
+- Positive signal: JSON `results` arrays are non-empty with populated `Login`/`Password` fields, and a recovered cred authenticates — `crackmapexec smb <range> -u <user> -p '<pass>'` returns `Pwn3d!` or `[+]`.
+- Don't conclude "no credentials present" until: (1) `all` ran both as the user and elevated/SYSTEM, (2) every browser profile path was reachable (no locked profiles), (3) wifi/sysadmin/databases modules ran, and (4) at least one recovered cred was validated against AD/SMB.
+
 ## Prerequisites
 
 - Familiarity with red teaming concepts and tools

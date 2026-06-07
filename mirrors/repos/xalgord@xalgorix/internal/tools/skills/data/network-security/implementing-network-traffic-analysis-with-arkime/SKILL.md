@@ -31,6 +31,15 @@ nist_csf:
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Capture drops = blind spots, not clean traffic:** if `capture` can't keep up (NIC offload on, no PF_RING/AF_PACKET tuning) Arkime silently misses sessions. Check the stats page for non-zero `dropped`/`overload` before trusting that "no beaconing was found."
+- **Snaplen truncation:** a low `snapLen`/`maxPacketsInQueue` stores headers but cuts payload, so HTTP/DNS/TLS field extraction is incomplete and content queries return empty. Verify full-payload capture on a known session.
+- **Beaconing threshold tuned wrong:** flagging only `jitter < 5%` misses jittered C2, while too-loose intervals flag NTP/AV update polls. Validate against a known-good periodic host before alerting.
+- **Time skew across sensors:** un-synced clocks scatter interval math and break session correlation — enforce NTP on every capture node.
+
+**Verification:** confirm the API returns data (`GET /api/sessions?expression=...` → HTTP 200, non-zero `recordsTotal`), then validate a known flow end-to-end: search a test connection, download its PCAP, and confirm payload bytes are present. A true beaconing positive shows a tight inter-session interval *and* a consistent destination (e.g. 288 sessions ~300s apart to one IP:443); a regular interval alone to a CDN/keepalive is a false positive. Empty results plus capture drops means missing visibility, not a clean network.
+
 ## Prerequisites
 
 - Familiarity with network security concepts and tools

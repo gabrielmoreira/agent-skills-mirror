@@ -38,6 +38,16 @@ A phishing reporting button empowers users to flag suspicious emails directly fr
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Button reports nowhere actionable:** messages land in a mailbox no SOAR playbook monitors, so no ticket/case is created. Verify an end-to-end test report generates a tracked incident, not just an email.
+- **Reporting to Microsoft only, not the SOC:** the built-in Report button can notify Microsoft but not route a copy to your reporting mailbox - confirm "user reported settings" sends to both.
+- **Original message lost:** reported mail forwarded as plain text strips headers/attachments needed for IOC extraction. Configure submission as an `.eml`/`.msg` attachment so headers, URLs, and Reply-To survive.
+- **No auto-retraction wired up:** confirmed-phishing verdicts don't trigger ZAP/Threat Response Auto-Pull across all mailboxes - test that remediation actually purges the message for every recipient.
+- **Broken feedback loop:** reporters get no acknowledgement, so report rates decay - verify the thank-you and classification reply fire within minutes.
+- **Simulation emails mishandled:** GoPhish/KnowBe4 sims reported via the button create noisy real incidents - allowlist simulation headers so they credit the user instead.
+- **Verification:** send a controlled test phish to a seed mailbox, click Report, and confirm: mailbox receipt as `.eml`, SOAR case created, IOCs extracted, retraction executed, and reporter notified.
+
 ## Prerequisites
 - Microsoft 365 or Google Workspace with administrative access
 - SOAR platform or automation capability (Microsoft Sentinel, Splunk SOAR, Cortex XSOAR)

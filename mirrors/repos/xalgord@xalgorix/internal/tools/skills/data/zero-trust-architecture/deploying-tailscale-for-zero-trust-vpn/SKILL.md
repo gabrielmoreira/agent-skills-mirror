@@ -38,6 +38,15 @@ Tailscale is a zero trust mesh VPN built on WireGuard that creates encrypted pee
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Default-allow ACL left in place:** a new tailnet ships with `{"action":"accept","src":["*"],"dst":["*:*"]}`. If that wildcard rule remains, every node reaches every other node on every port, zero trust in name only. Replace it with scoped tag-based `src`/`dst` rules and confirm the policy no longer contains `"*:*"`.
+- **Subnet router exposes more than intended:** `--advertise-routes=10.0.0.0/8` plus `--accept-routes` can hand clients the entire datacenter. Advertise the narrowest CIDR and gate it behind `autoApprovers`/ACL `dst` tags.
+- **Key expiry disabled on nodes:** `--authkey` servers with key expiry off never force re-auth; pair with Tailnet Lock so unauthorized nodes cannot join.
+- **Tailscale SSH using `accept` not `check`:** `accept` grants a shell with no re-auth or session recording; use `check` for production tags, and confirm exit nodes aren't unintentionally in `autoApprovers`.
+
+Verify: from a node that should be denied, run `tailscale ping <peer>` and attempt the service port, it must fail, and `tailscale status` should show no route. Review the admin console audit/network-flow logs to confirm blocked attempts are recorded, and run `tailscale up` from an unsigned node to confirm Tailnet Lock rejects it.
+
 ## Prerequisites
 
 - Identity provider (Okta, Azure AD, Google Workspace, GitHub, or OIDC-compatible)

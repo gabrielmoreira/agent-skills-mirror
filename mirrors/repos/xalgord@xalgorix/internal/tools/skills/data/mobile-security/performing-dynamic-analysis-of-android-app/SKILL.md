@@ -37,6 +37,15 @@ Use this skill when:
 
 **Do not use** this skill on production environments without authorization -- dynamic instrumentation can alter app behavior and trigger security alerts.
 
+## Most Often Missed & How to Confirm
+
+- **Frida/host version mismatch** — silent connection failures look like a "clean" app. Confirm `frida-ps -U` lists processes and the device server matches the `frida-tools` version.
+- **Anti-Frida detection** — the app suppresses behavior or exits. Confirm via `/proc/self/maps` scans or port checks, then use Gadget injection / a renamed server.
+- **Obfuscated class names** — hooking `a.b.c` fails. Confirm real names via `android hooking search classes` after the app fully initializes.
+- **Multi-DEX late loading** — target classes aren't loaded at startup. Confirm with `Java.enumerateLoadedClasses()` post-login before concluding absence.
+- **Crypto keys in memory** — confirm by hooking `javax.crypto.Cipher`/`MessageDigest` and dumping the key/IV during an operation.
+- **Root-check bypass not verified** — after the RootBeer/file-check hook, confirm the app proceeds rather than just logging the bypass.
+
 ## Prerequisites
 
 - Rooted Android device or emulator (Genymotion, Android Studio AVD with writable system)

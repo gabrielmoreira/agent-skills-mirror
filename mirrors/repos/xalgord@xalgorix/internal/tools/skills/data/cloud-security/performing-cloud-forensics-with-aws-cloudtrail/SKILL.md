@@ -33,6 +33,16 @@ nist_csf:
 - When analyzing S3 data exfiltration or IAM privilege escalation
 - For post-incident forensic timeline reconstruction
 
+## Detection Gaps & Validation
+
+- **LookupEvents won't show data-plane activity:** `cloudtrail:LookupEvents` returns only management events for the last 90 days. S3 `GetObject`, `PutObject`, and Lambda `Invoke` are *data events*, absent unless data event logging was enabled before the incident - pivot to S3 server access logs / Athena to prove exfiltration.
+- **Single-region or non-org trails leave blind spots:** an attacker operating in an unmonitored region produces no events in a region-scoped trail. Confirm the trail is multi-region and org-wide via `aws cloudtrail describe-trails` (`IsMultiRegionTrail`, `IsOrganizationTrail`).
+- **Check for anti-forensics first:** hunt `StopLogging`, `UpdateTrail`, `DeleteTrail`, and `PutEventSelectors` events - an attacker may have blinded logging. Then run `aws cloudtrail validate-logs` against the digest files to detect deletion/tampering.
+- **Attribute actions correctly:** track both `userIdentity.accessKeyId` and `sessionContext.sessionIssuer` - an `AssumeRole` issues temporary keys (`ASIA...`), so following only the original key loses the attacker after the pivot.
+- **`AccessDenied` is signal, not noise:** denied calls are still logged and reveal recon and failed escalation; don't filter them out of the timeline.
+- **How to confirm a finding:** corroborate the CloudTrail timeline against VPC Flow Logs (same source IP) and the resource's own logs, and remember every `eventTime` is UTC when sequencing events.
+- **Don't conclude "no compromise" until** data events are accounted for (or shown to have been disabled), the trail covered all regions, and logging-tamper events plus digest validation have been checked.
+
 ## Prerequisites
 
 - AWS account with CloudTrail enabled (management and data events)

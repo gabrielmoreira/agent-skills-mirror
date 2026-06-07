@@ -39,6 +39,15 @@ nist_csf:
 - During purple team exercises validating C2 detection capabilities
 - When investigating a potential breach and need to identify active C2 channels
 
+## Detection Gaps & Validation
+
+- **High jitter defeats CV thresholds:** a `CV < 0.20` rule misses beacons configured with large jitter (Cobalt Strike `jitter 50`, or Sunburst's minutes-scale randomization) — widen the window, score on data-size consistency, and use FFT/autocorrelation rather than CV alone for jittered beacons.
+- **Long sleep / dormancy:** beacons sleeping hours-to-days produce too few connections in a 24h window to be significant — extend the lookback to 7–14 days and lower the `min connections` floor for rare destinations.
+- **Destination filtering breaks on domain fronting / cloud abuse:** C2 over `*.cloudfront.net`, Slack, Discord, Telegram, or Graph API rides allowlisted FQDNs — do not exclude major CDNs/SaaS wholesale; pivot on JA3/JA4 and bytes-out regularity instead.
+- **Log gaps:** proxy logs that aggregate or sample connections destroy the inter-arrival timing the math depends on — confirm per-connection Zeek `conn.log`/firewall records, not summarized flows.
+- **Validate:** run Atomic Red Team **T1071.001** or a Cobalt Strike/Sliver test profile with a known interval+jitter and confirm the SPL/KQL streamstats query surfaces it.
+- **Tune FPs:** Windows Update, AV definition pulls, NTP, telemetry, and SaaS heartbeats are textbook periodic — allowlist by destination + process (Sysmon EID 1/3 correlation), not by interval alone.
+
 ## Prerequisites
 
 - Network proxy/firewall logs with timestamps and destination data (minimum 24 hours)

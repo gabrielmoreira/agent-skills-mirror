@@ -32,6 +32,14 @@ nist_csf:
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Low-and-slow defeats velocity thresholds:** the `ip_per_account > 50` rule misses attackers who throttle to a few attempts per account per hour spread over days. Add a long-window cumulative count and a low global success-rate signal (<1% across many accounts) rather than only burst velocity.
+- **Residential/mobile proxies collapse ASN signals:** botnets routing through residential proxy networks (e.g., rotating ISP IPs) defeat "cloud/proxy ASN concentration" and geo-impossibility heuristics, since each request looks like an ordinary home user. Lean on request-fingerprint uniformity (identical `user_agent`, header order, JA3/TLS fingerprint, missing browser telemetry) across otherwise-diverse IPs.
+- **"Failed-only" analysis hides the win:** grouping just on `status == "failed"` misses the successful takeover at the end of a spray. Correlate a success immediately following many failures from the same fingerprint/IP cluster, and watch for first-time-seen device + success.
+- **MFA/credential events:** stuffing often shows as password-correct-but-MFA-challenged spikes — include MFA-prompt and `ResultType` partial-success events, not just hard auth failures.
+- **Validate the rule fires:** replay a labeled credential-stuffing dataset (many IPs × many accounts, ~0.5% success) and confirm `accounts_under_attack` and the password-spray frame populate; verify timestamps parse so velocity windows aren't skewed. **FP tuning:** corporate NAT/VPN egress, password managers retrying, and load tests look like distributed failures — allowlist known egress IPs and service accounts.
+
 ## Prerequisites
 
 - Familiarity with security operations concepts and tools

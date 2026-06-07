@@ -37,6 +37,16 @@ nist_csf:
 
 **Do not use** without written authorization. Rate limit testing involves sending high volumes of requests that may impact service availability.
 
+## Most Often Missed & How to Confirm
+
+- **IP-spoof header spray:** rotate `X-Forwarded-For`, `X-Real-IP`, `True-Client-IP`, `CF-Connecting-IP`, and `Forwarded` - many gateways trust the first/last value blindly.
+- **Counter-key drift:** a trailing slash, case change, %-encoding, an extra query param (cache-buster), or an alternate API version often resets the counter.
+- **Race conditions:** fire N concurrent requests so the check-then-increment window lets a burst through before the counter updates.
+- **Method/content-type switch:** a limit on `POST`+json may not cover `PUT`/`PATCH` or form/multipart bodies.
+- **Identity rotation:** per-account limits fall to username casing, `+tag`, and whitespace variants.
+
+**How to confirm a hit (avoid false negatives):** the bypass is real only when you exceed the baseline threshold and keep getting 200/401 instead of 429 (compare to the limit you measured first). **Don't conclude negative until you've tried:** every spoof header, path/case/encoding mutations, alternate versions, concurrency races, and both authenticated and unauthenticated limits separately.
+
 ## Prerequisites
 
 - Written authorization specifying target endpoints and acceptable request volumes

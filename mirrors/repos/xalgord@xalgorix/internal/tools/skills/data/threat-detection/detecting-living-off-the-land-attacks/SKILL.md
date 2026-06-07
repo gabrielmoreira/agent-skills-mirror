@@ -44,6 +44,13 @@ fileless and living-off-the-land attack techniques.
 
 **Do not use** for blocking all LOLBin execution outright; these are legitimate system tools with valid administrative uses. Detection must focus on anomalous context (parent process, command-line arguments, network activity) rather than binary presence alone.
 
+## Detection Gaps & Validation
+
+- **Variants most often missed:** rules matching on `Image|endswith: '\rundll32.exe'` miss **renamed** binaries (`svchost1.exe` copied from rundll32) — pivot to Sysmon `OriginalFileName` (EID 1) / `Description`, because Windows Security EID 4688 carries **no OriginalFileName field** and is trivially defeated by renaming. Also missed: signed-proxy execution variants — `rundll32 javascript:"\..\mshtml..."`, `regsvr32 /s /n /u /i:http://...scrobj.dll` (Squiblydoo), `mshta vbscript:Execute(...)`, and `certutil -urlcache`/`-decode` for staging.
+- **False negatives:** LOLBin via COM/WMI (`wmic ... /format:http://...xsl`), DLL execution by ordinal (`rundll32 evil.dll,#1`), and proxy execution where the malicious child is launched by a benign-looking signed parent. Argument obfuscation (caret/quote insertion, env-var expansion `%comspec%`) defeats literal command-line substring matches.
+- **Validate the rule fires:** Atomic Red Team T1218.010 (regsvr32 Squiblydoo), T1218.011 (rundll32), T1218.005 (mshta), T1105 (certutil download). Run the renamed-binary case and confirm detection survives on `OriginalFileName`, not `Image`.
+- **FP tuning:** baseline legitimate callers — software installers, SCCM/Intune, and admin scripts legitimately invoke rundll32/regsvr32/msiexec; scope by parent process (alert on Office/`wscript`/`explorer` parents) and outbound network from the LOLBin rather than execution alone.
+
 ## Prerequisites
 
 - Sysmon v15+ installed on Windows endpoints with a tuned configuration (SwiftOnSecurity or Olaf Hartong baseline)

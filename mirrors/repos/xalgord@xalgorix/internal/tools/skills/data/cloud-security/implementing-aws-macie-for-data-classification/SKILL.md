@@ -46,6 +46,21 @@ Amazon Macie is a fully managed data security and privacy service that uses mach
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Automated discovery never enabled:** enabling Macie (`enable-macie`) does NOT start scanning. Run `update-automated-discovery-configuration --status ENABLED` and confirm with `get-automated-discovery-configuration` (must return `status: ENABLED`).
+- **Customer-managed CMK objects silently skipped:** Macie cannot read objects encrypted with a customer-managed KMS key unless its service-linked role is granted `kms:Decrypt`. Such objects appear under `unclassifiableObjectCount`, not as findings. Check: `aws macie2 describe-buckets --query 'buckets[?unclassifiableObjectCount.total>`0`].[bucketName,unclassifiableObjectCount.total]'`.
+- **Job scoping excludes real data:** an `OBJECT_EXTENSION`/`OBJECT_KEY` scope term that omits the actual prefixes/extensions means the job runs but classifies nothing. Verify the job actually processed objects via `list-classification-jobs --query 'items[].statistics'`.
+- **Findings lost after 90 days:** sensitive-data findings auto-expire and are not retained unless you set an S3 export. Confirm `aws macie2 get-classification-export-configuration` returns a destination bucket + KMS key.
+- **Security Hub integration assumed:** findings only flow to Security Hub if both services are enabled in the same region; check `findingPublishingFrequency` and that Security Hub shows the Macie product.
+- **Multi-account gaps:** new org accounts are not auto-covered. After `enable-organization-admin-account`, set auto-enable and confirm members with `list-members --query 'members[?relationshipStatus!=`Enabled`]'`.
+
+```bash
+aws macie2 get-macie-session --query 'status'                 # ENABLED
+aws macie2 get-automated-discovery-configuration              # status ENABLED
+aws macie2 get-classification-export-configuration            # s3Destination set
+```
+
 ## Prerequisites
 
 - AWS account with S3 buckets containing data to classify

@@ -50,6 +50,15 @@ nist_csf:
 - Traditional manual correlation is too slow or error-prone for the volume of data collected.
 - You want confidence-scored assessments of identity linkage across platforms rather than simple keyword matching.
 
+## Detection Gaps & Validation
+
+- **LLM hallucination and over-correlation:** the model may invent linkages or assert connections the raw findings do not support. Never accept a correlation > 0.8 without independent verification against >=2 sources, and manually spot-check 10–20% of all linkages.
+- **Common-username false positives:** generic handles (`admin`, `test`, `info`) and high-collision names inflate Sherlock matches into bogus entity profiles. Filter these before correlation, not after.
+- **Confidence-score inflation:** treat the AI's 0.0–1.0 score as a hypothesis weighted by evidence type (exact username match high, temporal proximity low) - not ground truth. Require corroborating metadata for "medium" links.
+- **Stale/retracted OSINT:** breach datasets and cached profiles persist after takedown. Verify timestamps are current and from reputable aggregators before including a finding.
+- **Source-bias gaps:** Sherlock covers usernames, theHarvester emails/hosts, SpiderFoot infrastructure - a target active only on unmonitored platforms looks "clean." State coverage limits in the report.
+- **How to validate:** confirm each linked account resolves independently, ensure no `admin`/`test`-type handle drove an entity merge, and verify the final profile excludes stale or contradicted data before assigning a risk level.
+
 ## Prerequisites
 
 - Python 3.10+ with `requests`, `json`, and `csv` libraries

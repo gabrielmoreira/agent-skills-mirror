@@ -38,6 +38,16 @@ nist_csf:
 
 **Do not use** without written authorization from the API owner. BOLA testing involves accessing or attempting to access other users' data, which requires explicit permission.
 
+## Most Often Missed & How to Confirm
+
+- **Write verbs, not just GET:** an object that 403s on GET may allow `PUT`/`PATCH`/`DELETE` - test every method.
+- **ID locations:** swap IDs in the path, query, JSON body, nested paths (`/users/{a}/orders/{b}`), batch arrays, and GraphQL relay global IDs (base64 `Order:ID`).
+- **UUIDs aren't safe:** harvest victim UUIDs from list endpoints/logs/responses, then access them - "unpredictable" does not mean "authorized."
+- **Parameter pollution and body override:** send both your ID and the victim's, or override the owner via a body field.
+- **Version drift:** `/api/v2` may lack the authorization middleware that v1 enforces.
+
+**How to confirm a hit (avoid false negatives):** the gold standard is the two-account test - access User B's object with User A's token and confirm User B's actual data is returned (match a value you know belongs to B), not an empty/200 shell. **Don't conclude negative until you've tried:** all methods, every ID location, harvested UUIDs, batch/nested endpoints, and alternate API versions.
+
 ## Prerequisites
 
 - Written authorization specifying the target API endpoints and scope of testing

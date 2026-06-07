@@ -38,6 +38,15 @@ Cisco Identity Services Engine (ISE) provides centralized network access control
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Left in Monitor Mode / open auth:** `authentication open` with a pre-auth dACL is for rollout only; shipped to production it grants access regardless of the RADIUS result. Confirm ports are in closed mode before claiming enforcement.
+- **MAB bypass:** MAB trusts a spoofable MAC, so cloning a printer's MAC lands an attacker in the printer VLAN. Pair MAB with ISE profiling (DHCP/CDP/LLDP) and alert on profile changes; don't rely on the endpoint identity group alone.
+- **`multi-auth` vs `multi-host`:** `multi-host` authorizes the whole port after the *first* successful auth, so a VM/hub behind an authenticated phone rides on unauthenticated. Use `multi-auth` on data ports.
+- **Missing CoA / dead-server fallback:** without `aaa server radius dynamic-author`, posture remediation can't re-authorize; without an `authentication event server dead` critical VLAN, a RADIUS outage fails open or black-holes endpoints.
+
+**Verification:** `show authentication sessions interface Gi1/0/x details` should show `Status: Authorized`, the expected `Vlan Policy`, and `Method: dot1x` (not just `mab`). Test failure paths explicitly: wrong creds → quarantine VLAN, no supplicant → guest/MAB VLAN, RADIUS stopped → critical VLAN. Cross-check ISE **Live Logs** for the matching auth and reason code (e.g. 22056, 24408). A port that authorizes with RADIUS down but no critical-VLAN config is failing open.
+
 ## Prerequisites
 
 - Cisco ISE 3.1+ appliance or virtual machine (16 CPU cores, 64GB RAM minimum for production)

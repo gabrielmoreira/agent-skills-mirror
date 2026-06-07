@@ -98,7 +98,7 @@ for i in $(seq 1 15); do
 done
 ```
 
-If it never becomes healthy, check the gateway containers. The gateway is a Docker Compose stack (project `onecli`, compose file at `~/.onecli/docker-compose.yml`), **not** a host process — `ps aux | grep onecli` will not find it, and there is no `onecli start` command (removed in OneCLI 1.4.x).
+If it never becomes healthy, check the gateway containers. The gateway is a Docker Compose stack (project `onecli`, compose file at `~/.onecli/docker-compose.yml`). Inspect it through Docker rather than the host process list:
 
 ```bash
 docker ps -a --filter "label=com.docker.compose.project=onecli" --format '{{.Names}}\t{{.Status}}'

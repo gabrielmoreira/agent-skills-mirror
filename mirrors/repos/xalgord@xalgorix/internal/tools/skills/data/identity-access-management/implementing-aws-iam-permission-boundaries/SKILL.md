@@ -35,6 +35,14 @@ IAM permission boundaries are an advanced AWS feature that sets the maximum perm
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Boundary created but not attached:** the maximum-permission policy exists but `iam:CreateRole` delegation does not enforce `iam:PermissionsBoundary`, so developers mint roles with no boundary and full identity-policy power. Verify the delegation policy's `Condition` requires the exact boundary ARN and test `aws iam create-role` *without* `--permissions-boundary` — it must be denied.
+- **Privilege-escalation gaps in the boundary:** if the boundary allows `iam:CreatePolicyVersion`, `iam:AttachRolePolicy` on `*`, or `iam:DeleteRolePermissionsBoundary`, a delegated role can edit its own boundary or escape it. Confirm explicit `Deny` on boundary self-modification and on `iam:PassRole` to unscoped roles.
+- **Boundary ≠ Deny:** a permission boundary only caps the *maximum*; it grants nothing and does not stop actions an attached identity policy already denies-by-omission, nor does it filter resource-based policy access. Remember effective access = identity policy ∩ boundary ∩ SCP, and explicit Deny anywhere wins.
+- **SCP/boundary confusion:** SCPs bound the whole account/OU and do not grant; relying on a boundary where an SCP is needed (or vice-versa) leaves gaps. Verify both layers for cross-account `sts:AssumeRole`.
+- **Verification:** run `aws iam simulate-principal-policy` against the boundaried role for a denied action (e.g. `iam:DeleteRolePermissionsBoundary`) and confirm `denied`; attempt to create a role without the boundary and an escalation via `CreatePolicyVersion` and confirm both fail in CloudTrail.
+
 ## Prerequisites
 
 - AWS account with IAM administrative access

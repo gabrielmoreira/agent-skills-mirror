@@ -36,6 +36,13 @@ This skill uses boto3 and Cloudsplaining-style analysis to identify IAM privileg
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **`GetAccountAuthorizationDetails` doesn't show the whole picture:** it returns attached/inline/group policies but **not** permission boundaries, SCPs, session policies, or resource-based policies. A flagged path may actually be blocked by a boundary/SCP (false positive), or a real escalation may be *enabled* by a resource policy (e.g., a role's trust policy or an S3/KMS policy) you never parsed (false negative). Reconcile against the boundary and trust policy before reporting.
+- **Non-default policy versions and inheritance:** check the policy's **default** version (attackers stage admin in a non-default version via `iam:CreatePolicyVersion`/`SetDefaultPolicyVersion`), and expand group-inherited permissions. `NotAction`/`Deny` statements and `Condition` keys (`aws:PrincipalTag`, MFA) are ignored by naive substring matching.
+- **Privesc combos beyond the well-known ones:** `iam:PutUserPolicy`, `iam:AttachGroupPolicy`, `iam:UpdateAssumeRolePolicy`, and `iam:PassRole` paired with `glue`/`cloudformation`/`datapipeline`/`sagemaker`/`codebuild` create functions, plus `ssm:SendCommand` on instances bearing admin instance profiles.
+- **Validate the path is real:** confirm with `aws iam simulate-principal-policy --policy-source-arn … --action-names iam:AttachUserPolicy …` (it honors boundaries/SCPs), or actually exercise the chain in an isolated test account — don't report an escalation that a boundary silently denies.
+
 ## Prerequisites
 
 - Python 3.8+ with boto3 library

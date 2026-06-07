@@ -43,6 +43,18 @@ This skill covers end-to-end deployment of ZPA including connector setup, applic
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+ZPA reduces the VPN attack surface only if the private app is unreachable except through the broker. Check for these:
+
+- **Target reachable directly.** If the application's real IP/FQDN still answers over the corporate network or VPN, ZPA is an optional front door, not a control - the app must accept connections only from the App Connector.
+- **Over-broad application segments.** A segment defined as `10.0.0.0/8` or `*.internal` collapses microsegmentation back into flat network access.
+- **Access policy with no posture or identity condition**, so any authenticated user reaches any segment (default-allow rule ordering).
+- **Browser Access left open** to unmanaged devices for sensitive apps.
+- **App Connector with inbound ports exposed**, defeating the outbound-only design.
+
+**How to confirm:** from a host *without* the Client Connector, try to reach the protected app by IP and by FQDN - it must time out. Disable the Client Connector and confirm access drops. Present a non-compliant device and verify the posture profile blocks the session in the ZPA logs, and confirm each segment is scoped to specific FQDNs/ports rather than broad CIDRs.
+
 ## Prerequisites
 
 - Familiarity with zero trust architecture concepts and tools

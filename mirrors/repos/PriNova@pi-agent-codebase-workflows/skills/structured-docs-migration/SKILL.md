@@ -109,9 +109,11 @@ Use this protocol whenever creating or updating YAML artifacts.
 ### 3. Stable ID generation
 
 1. Reuse existing IDs whenever the semantic object is the same, even if name/path changed.
-2. New IDs use deterministic slugs from owner scope + semantic name: `risk:<slug>`, `entity:<slug>`, `component:<slug>`, etc.
-3. If two objects slug-collide, append shortest stable discriminator from path/component/contract, not a random suffix.
-4. Never renumber IDs because order changed.
+2. New record IDs use deterministic slugs from owner scope + semantic name: `risk:<slug>`, `entity:<slug>`, `component:<slug>`, etc.
+3. Envelope `artifact_id` values use `repo:<artifact-slug>` for repo-level artifacts and `<scope.id>/<artifact-slug>` for scoped artifacts, e.g. `repo:architecture` and `scope:packages/ai/architecture`.
+4. Never append an artifact slug to a scope ID with a second colon; `scope:packages/ai:architecture` is invalid.
+5. If two objects slug-collide, append shortest stable discriminator from path/component/contract, not a random suffix.
+6. Never renumber IDs because order changed.
 
 ### 4. Upsert semantics
 

@@ -44,6 +44,14 @@ discrepancies between $STANDARD_INFORMATION and $FILE_NAME attributes.
 
 **Do not use** as the sole detection method; advanced adversaries can manipulate both $STANDARD_INFORMATION and $FILE_NAME timestamps (though the latter requires raw disk access and is much harder). Combine with USN Journal, $LogFile, and ShimCache/Amcache analysis for corroboration.
 
+## Detection Gaps & Validation
+
+- **The SI-vs-FN comparison fails against full forgery.** SetMACE and raw-disk tools (or `$FILE_NAME` manipulation via directory rename tricks) can align both `$STANDARD_INFORMATION` (0x10) and `$FILE_NAME` (0x30), so SI<FN never triggers. Always corroborate with the USN Journal (`BASIC_INFO_CHANGE`), `$LogFile`, and ShimCache/Amcache.
+- **Nanosecond-zeroed heuristic is FP-prone:** installers, `robocopy /COPY:DAT`, and 7-Zip extraction legitimately copy source timestamps and look "stomped."
+- **`$FN` legitimately differs** after rename/move operations — a delta alone is not proof.
+- **Validate the hunt fires:** in a lab run Metasploit `timestomp file.exe -z "01/01/2010 12:00:00"`, NTimeStomp, or Atomic Red Team T1070.006, then confirm your MFT pipeline flags SI<FN and that the USN Journal shows a corresponding `BASIC_INFO_CHANGE`.
+- **FP tuning:** backup/imaging software and deployment tooling that reset timestamps; establish a known-clean baseline image before alerting.
+
 ## Prerequisites
 
 - Raw $MFT file extracted from a Windows system (via FTK Imager, KAPE, or live extraction)

@@ -50,6 +50,14 @@ nist_csf:
 
 **Do not use** for unauthorized testing against cloud accounts, for testing cloud provider infrastructure itself (covered by the shared responsibility model), or for DDoS simulation without explicit cloud provider approval.
 
+## Most Often Missed & How to Confirm
+
+- **IMDSv2 is not "safe" by itself:** if the instance's `HttpPutResponseHopLimit` > 1, a containerized/SSRF context can still mint a token and pull role creds. Test both v1 (`curl .../meta-data/iam/security-credentials/`) **and** v2 (PUT token then GET) before calling metadata access closed.
+- **Credentials live beyond IMDS:** check EC2 `/latest/user-data`, SSM Parameter Store (`ssm:GetParameters`), Secrets Manager, Lambda env vars, and ECS task metadata at `169.254.170.2/v2/credentials/$AWS_CONTAINER_CREDENTIALS_RELATIVE_URI`.
+- **Cross-account/data-at-rest sharing routinely skipped:** public/shared EBS snapshots, RDS snapshots, and AMIs (`describe-snapshots --restorable-by-user-ids all`), plus resource policies with `Principal:"*"` on S3, SNS, SQS, KMS, ECR, Lambda.
+- **Privesc beyond the famous combos:** run all of Pacu `iam__privesc_scan` — `iam:PutUserPolicy`, `iam:AttachGroupPolicy`, `glue`/`cloudformation`/`datapipeline` + `iam:PassRole`, `ssm:SendCommand` on admin-role instances.
+- **Positive signal / don't conclude negative:** confirm stolen creds with `aws sts get-caller-identity` (it returns the assumed-role/user ARN and account). Do **not** report "no access" until you've tested IMDSv1 *and* IMDSv2, user-data, the full `iam__privesc_scan` set, and snapshot/AMI sharing — and remember IAM is eventually consistent, so retry a denied action before ruling it out.
+
 ## Prerequisites
 
 - Written authorization from the cloud account owner and scope definition document

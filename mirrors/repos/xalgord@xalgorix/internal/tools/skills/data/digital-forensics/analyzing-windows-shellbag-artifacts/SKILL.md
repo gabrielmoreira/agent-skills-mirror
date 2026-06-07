@@ -40,6 +40,15 @@ Shellbags are Windows registry artifacts that track how users interact with fold
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Shellbags prove Explorer-shell navigation only.** Folders reached via `cmd`, PowerShell, or programmatic APIs leave **no** Shellbag entry. Absence of a Shellbag is not absence of access — corroborate before clearing a path.
+- **Most-missed source: `UsrClass.dat`.** On Windows 10/11 the bulk of folder activity lives in `UsrClass.dat` (`Local Settings\...\Shell\BagMRU`), not `NTUSER.DAT`. Parsing only NTUSER drops the majority of evidence; run SBECmd against both hives.
+- **Timestamp/timezone pitfall:** the embedded shell-item dates are **local-time DOS dates** with 2-second granularity, while `CreatedOn/ModifiedOn/AccessedOn` reflect *view-setting changes*, not necessarily a visit. Do not treat them as UTC and do not equate them with first/last access without correlation.
+- **Batch updates:** Explorer can rewrite many Shellbag entries at shutdown, collapsing distinct visits into one timestamp.
+- **Anti-forensics:** deletion of `BagMRU` subtrees or whole-hive replacement. Recover from VSS and replay `.LOG` transaction files for dirty hives.
+- **Validate / cross-corroborate:** tie removable/network paths to USBSTOR + MountPoints2 (volume serials), LNK/Jump List targets, RecentDocs, and `$MFT`/USN entries for the same folder. A folder that "no longer exists" should still reconcile with at least one second artifact before it anchors a finding.
+
 ## Prerequisites
 
 - Familiarity with digital forensics concepts and tools

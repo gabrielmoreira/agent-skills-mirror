@@ -37,6 +37,14 @@ Use this skill when:
 
 **Do not use** without proper legal authorization — insider threat investigations must be coordinated with HR, Legal, and Privacy teams before monitoring begins.
 
+## Detection Gaps & Validation
+
+- **Low-and-slow exfiltration:** investigators anchor on a single bulk-download spike and miss the subject who pulls 50–100 files/day for weeks, each under the DLP threshold. Aggregate over 60–90 days and compare cumulative volume to the role/peer baseline, not per-day counts.
+- **Channel blind spots:** email + SharePoint get watched while the actual path is a personal cloud sync client, screenshots/printing, AirDrop, paste into a personal webmail draft, or copy to a phone over MTP. Confirm proxy `cloud-storage` category, Sysmon USB/`device_connect`, and print logs are all in scope before concluding "no exfil".
+- **Baseline poisoning / wrong peer group:** if the subject was already exfiltrating during the period used to build their "normal," anomalies vanish; comparing a Financial Analyst against an all-company baseline also hides role-abnormal access. Validate against a clean historical window and a true same-role peer cohort.
+- **Identity fragmentation:** activity split across `user`, `src_user`, `sender`, `SubjectUserName`, SamAccountName vs UPN vs email means the timeline is incomplete. Normalize all identifiers to one identity before judging volume.
+- **Validate the verdict:** correlate the data movement to a legitimate business justification (open ticket, project, manager confirmation) before escalating — bulk downloads during a sanctioned migration are not a threat. Tune out service/automation accounts and known backup jobs to cut DLP false positives, and confirm an alleged "after-hours" spike is not just a timezone/`_time` artifact.
+
 ## Prerequisites
 
 - Legal authorization and HR referral documenting investigation justification

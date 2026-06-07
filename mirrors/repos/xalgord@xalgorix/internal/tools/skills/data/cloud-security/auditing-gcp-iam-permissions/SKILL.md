@@ -35,6 +35,14 @@ nist_csf:
 
 **Do not use** for VPC firewall rule auditing (use network security tools), for GKE RBAC auditing (use Kubernetes-specific RBAC tools), or for real-time threat detection on IAM actions (use SCC Event Threat Detection).
 
+## Detection Gaps & Validation
+
+- **`search-all-iam-policies` only sees allow bindings:** it does not return IAM Conditions, deny policies, or the *effective* result of inheritance. A binding listed at the project may be overridden (or a privilege granted) by an org/folder-level binding you didn't enumerate. Always resolve effective access with `gcloud asset analyze-iam-policy`.
+- **Impersonation = invisible privesc:** `roles/iam.serviceAccountTokenCreator`, `roles/iam.serviceAccountUser`, and `iam.serviceAccounts.getAccessToken`/`actAs` let a low-priv principal act as a high-priv SA. Chains (A→B→C) won't show in any single binding — walk the graph.
+- **Domain-wide delegation is set in the Workspace Admin console, not GCP IAM** — `gcloud` cannot see it, so a DWD-enabled SA looks benign. Cross-check the Admin SDK / `clientId` OAuth grants separately.
+- **Recommender blind spots:** IAM Recommender needs ~90 days of usage data; new or rarely-used SAs produce no recommendation (not "least privilege confirmed"). Basic roles (Owner/Editor/Viewer) hide hundreds of service permissions a wildcard grep won't expand.
+- **Validate effective access:** confirm a who-can claim with `gcloud asset analyze-iam-policy --identity=... --full-resource-name=...` using `--expand-groups`/`--analyze-service-account-impersonation`; before removing a binding, verify in Cloud Audit Logs that the principal hasn't used it recently.
+
 ## Prerequisites
 
 - GCP organization or project with `roles/iam.securityReviewer` and `roles/cloudAsset.viewer`

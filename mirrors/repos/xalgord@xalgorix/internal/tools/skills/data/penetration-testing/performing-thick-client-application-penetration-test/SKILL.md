@@ -45,6 +45,16 @@ Thick client (fat client) penetration testing assesses the security of desktop a
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Local storage of secrets** — config files, registry (`HKCU\Software\...`), local SQLite/SQL Express DBs, Windows Credential Manager, and `%APPDATA%` files routinely hold cleartext passwords, connection strings, and tokens. Procmon shows exactly where the app writes.
+- **Decompile and read the binary, don't just run it** — .NET via dnSpy / Java via JD-GUI / native via Ghidra exposes hardcoded creds, weak crypto (DES/MD5/base64-as-"encryption"), embedded API keys, and disabled cert validation. This is the step most often skipped.
+- **DLL hijacking / sideloading** — Procmon filtered on `NAME NOT FOUND` + `.dll` in writable paths reveals load-order hijacks; a planted DLL = code execution and a real privesc/persistence finding.
+- **Intercepting non-HTTP and pinned traffic** — Burp catches HTTP, but raw TCP/UDP needs Echo Mirage/Frida, and cert pinning must be bypassed (patch in dnSpy or Frida hook) before declaring the channel secure.
+- **Memory and client-side trust** — dump process memory for plaintext secrets/session tokens, and test client-side authorization/license checks that can be patched (set-next-statement, Cheat Engine) since the server may trust the client.
+- **Backend API auth** — the thick client often calls APIs with no server-side authz; test IDOR/BFLA/mass-assignment against captured API calls.
+- **How to confirm**: prove findings with artifacts — the decompiled method showing the hardcoded credential, a Procmon trace of the secret written to disk, a SQLite dump with cleartext passwords, a planted-DLL executing your payload, or a memory string showing the token. Don't conclude the app is secure until you've decompiled it and traced where it stores data; don't conclude the channel is protected until you've defeated pinning and intercepted non-HTTP traffic.
+
 ## Prerequisites
 
 - Application installer and valid credentials

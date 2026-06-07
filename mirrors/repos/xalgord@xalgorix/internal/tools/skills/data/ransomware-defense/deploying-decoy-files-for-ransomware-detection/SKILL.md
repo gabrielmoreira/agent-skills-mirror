@@ -37,6 +37,14 @@ nist_csf:
 
 **Do not use** decoy files as the sole ransomware defense. They are a detection mechanism, not a prevention mechanism, and should complement backups, EDR, and access controls.
 
+## Common Misconfigurations & Verification
+
+- **Canaries placed where ransomware reaches them last:** if a decoy sorts in the middle of a directory, encryption may trip your backups before it touches the canary. Place files that sort BOTH first and last (`_AAAA_*.docx` and `~zzzz_*.xlsx`) in every monitored directory so you catch A-Z and Z-A enumerators early.
+- **Canaries only in a few "high-value" shares:** ransomware often hits the first writable share it finds. Seed the root of every share, every endpoint Desktop/Documents, and backup staging dirs, not just Finance/HR/Legal.
+- **Watcher misses rename-to-new-extension:** many ransomware families encrypt by writing `file.locked` and deleting the original, which fires `on_moved`/`on_deleted`, not `on_modified`. Confirm the handler watches all four event types, not just modification.
+- **Backup agents and AV cause false positives:** if those processes touch decoys you will desensitize the SOC. Exclude known-good PIDs/paths and confirm canaries survive a backup+restore cycle unmodified.
+- **Verification:** trigger each canary for real — `echo ENCRYPTED > _AAAA_budget.docx` and `mv report.xlsx report.xlsx.locked` — and confirm an alert reaches the SOC in under 30 seconds and any automated process-kill/NIC-disable action actually executes.
+
 ## Prerequisites
 
 - Python 3.8+ with `watchdog` library for cross-platform file system monitoring

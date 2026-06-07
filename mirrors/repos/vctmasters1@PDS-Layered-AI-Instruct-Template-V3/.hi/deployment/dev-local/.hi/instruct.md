@@ -3,7 +3,7 @@
 **Scope**: Authoritative for all work when `DEPLOY_MODE=dev-local`
 **Last Updated**: 2026-06-03
 
-> **Authority**: DEEP — when this mode is active, this file is authoritative over the parent `.hi/instruct.md`. See [`.github/copilot-instructions.md`](../../../../.github/copilot-instructions.md) for the depth-priority hierarchy and [`../README.md`](../../README.md) for the deployment-mode convention.
+> **Authority**: DEEP — when this mode is active, this file is authoritative over the parent `.ai/instruct.md`. See [`.github/copilot-instructions.md`](../../../.github/copilot-instructions.md) for the depth-priority hierarchy and [`../README.md`](../../README.md) for the deployment-mode convention.
 
 ---
 
@@ -43,10 +43,10 @@
 
 ## Prerequisites
 
-- [ ] `[RUNTIME]` installed (version per [`.hi/dev-specs.md`](../../../dev-specs.md))
+- [ ] `[RUNTIME]` installed (version per [`.github/dev-specs.md`](../../../.github/dev-specs.md))
 - [ ] Docker Desktop running (only if a containerized DB is used)
 - [ ] Repository cloned and dependencies installed (`[INSTALL_COMMAND]`)
-- [ ] `.env` file present per [`.hi/credentials.md`](../../../credentials.md)
+- [ ] `.env` file present per [`.ai/credentials.md`](../../../.ai/credentials.md)
 
 ---
 
@@ -88,7 +88,7 @@ Terminate with `Ctrl+C` for the app, `docker compose -f [DEV_COMPOSE_FILE] down`
 
 ## Environment Configuration
 
-`.env` template (commit `.env.example`, never `.env` per [`.hi/credentials.md`](../../../credentials.md)):
+`.env` template (commit `.env.example`, never `.env` per [`.ai/credentials.md`](../../../.ai/credentials.md)):
 
 ```env
 DEPLOY_MODE=dev-local
@@ -96,7 +96,7 @@ NODE_ENV=development          # if Node.js
 PORT=[BACKEND_PORT]
 DATABASE_URL=[DB_PROTOCOL]://[DB_USER]:[DB_PASSWORD]@localhost:[DB_PORT]/[DB_NAME]
 JWT_SECRET=[GENERATE_LOCALLY]
-# Add other vars from .hi/config-vars.md as needed
+# Add other vars from .ai/config-vars.md as needed
 ```
 
 Secrets in this file stay local. Generate `JWT_SECRET` with `[SECRET_GEN_COMMAND]`.
@@ -119,7 +119,7 @@ docker compose -f [DEV_COMPOSE_FILE] logs -f db
 docker compose -f [DEV_COMPOSE_FILE] exec db [DB_CLIENT_COMMAND]
 ```
 
-### Reset the database (⚠️ data loss — see [`.hi/maintenance.md`](../../../maintenance.md))
+### Reset the database (⚠️ data loss — see [`.ai/maintenance.md`](../../../.ai/maintenance.md))
 
 ```bash
 docker compose -f [DEV_COMPOSE_FILE] down -v
@@ -174,9 +174,9 @@ kill <pid>
 
 ## Next Steps
 
-- LAN sharing with self-signed HTTPS → [`dev-lan`](../../dev-lan/.hi/instruct.md)
-- Managed cloud → [`prod-railway`](../../prod-railway/.hi/instruct.md)
-- Public internet, self-hosted → [`prod-self-serve`](../../prod-self-serve/.hi/instruct.md)
+- LAN sharing with self-signed HTTPS → [`dev-lan`](../../dev-lan/.ai/instruct.md)
+- Managed cloud → [`prod-railway`](../../prod-railway/.ai/instruct.md)
+- Public internet, self-hosted → [`prod-self-serve`](../../prod-self-serve/.ai/instruct.md)
 
 ---
 

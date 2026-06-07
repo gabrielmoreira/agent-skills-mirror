@@ -37,6 +37,15 @@ Google distroless images contain only your application and its runtime dependenc
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Distroless image still runs as root:** the plain `gcr.io/distroless/static-debian12` tag defaults to UID 0; only the `:nonroot` tag (UID 65534) drops root, and even then an explicit `USER nonroot:nonroot` is needed if you override the entrypoint. Verify: `docker run --rm <img> id` should not report `uid=0`.
+- **No `readOnlyRootFilesystem` at runtime:** distroless shrinks the image but a writable rootfs still lets an attacker drop files - pair it with `securityContext.readOnlyRootFilesystem: true` and `allowPrivilegeEscalation: false`.
+- **Setuid binaries copied in:** `COPY --from=builder` can pull in setuid helpers from the build stage. Verify with `dive <img>` or `docker run --rm <img>` + a find for mode `4000` in the build stage.
+- **Wrong base for linkage:** a CGO/dynamically linked binary on `static-debian12` fails at runtime ("no such file"); use `base-` or `cc-debian12`. A `glibc` binary needs `base`, not `static`.
+- **Debug variant in production:** `:debug` ships a busybox shell at `/busybox/sh`, reintroducing exec - confirm prod manifests pin the non-debug, `:nonroot` tag by digest.
+- **Verify the result:** `trivy image <img>` should drop to 0-5 findings vs the previous base, and `crane export <img> - | tar -tf - | grep -E 'sh$|apt|apk'` should return nothing.
+
 ## Prerequisites
 
 - Docker 20.10+ or compatible container build tool (Buildah, Kaniko)

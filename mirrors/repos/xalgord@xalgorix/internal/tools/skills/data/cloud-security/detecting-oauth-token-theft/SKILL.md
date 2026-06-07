@@ -40,6 +40,20 @@ nist_csf:
 
 **Do not use** for on-premises Kerberos ticket attacks (pass-the-ticket, golden ticket); use Active Directory-specific investigation techniques for those scenarios.
 
+## Detection Gaps & Validation
+
+Token theft that looks like a clean login:
+- **AitM (Evilginx2) sessions pass MFA.** They show `ResultType == 0` and `AuthenticationRequirement == multiFactorAuthentication` — "MFA satisfied" is not exoneration; the device/session-binding anomaly is the tell.
+- **Refresh-token and cookie replay live in `AADNonInteractiveUserSignInLogs`, not `SigninLogs`.** Watching only interactive sign-ins misses replay entirely — this is the single most common gap.
+- **PRT theft inherits a satisfied MFA claim from the device**, so the replayed token sails through MFA-required conditional access; detect on device/`SessionId` mismatch instead.
+- **`anomalousToken` / `tokenIssuerAnomaly` risk events need Entra ID P2** — without it the KQL returns nothing and the rule is silently dead.
+- **Device-code phishing**: `AuthenticationProtocol == "deviceCode"` where the redeeming IP/Location differs from where the code was issued.
+
+Validate:
+- Confirm `AADNonInteractiveUserSignInLogs` is actually ingested (replay detection is dead without it).
+- Test Token Protection by replaying a captured session cookie from an unregistered device and confirming it's blocked (PoP key mismatch).
+- FP-tune impossible-travel by excluding corporate VPN egress and CAE-aware clients.
+
 ## Prerequisites
 
 - Microsoft Entra ID P2 license (required for Identity Protection risk detections and conditional access)

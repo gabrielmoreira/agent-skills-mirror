@@ -38,6 +38,14 @@ Use this skill when:
 
 **Do not use** this skill to force correlation based on weak signals — false campaign attribution misleads defenders and wastes resources on incorrect threat models.
 
+## Detection Gaps & Validation
+
+- **Shared-infrastructure false attribution:** a common Cloudflare/AWS CloudFront IP or a recycled bulletproof host links unrelated actors. Require a second independent pivot (TLS cert serial, JARM hash, malware config) before merging events into one campaign.
+- **Capability conflation:** Cobalt Strike, Sliver, and Metasploit are shared across many actors. A default beacon watermark or stock profile is weak evidence - confirm with a unique malleable C2 profile field or staging key.
+- **Temporal blind spots:** events spanning multiple years may share infrastructure reassigned to a different operator. Check WHOIS/passive-DNS first-seen ranges, not just that the value matches.
+- **Confidence scoring discipline:** treat the weighted score (infra 40 / capability 35 / temporal 15 / victim 10) as a hypothesis, not proof. Anything below HIGH should ship as a STIX `Intrusion Set`, not a named `Threat Actor` attribution.
+- **How to validate (avoid over-attribution):** before publishing, re-run the correlation with the single strongest pivot removed - if the campaign collapses, the linkage rested on one weak signal. Label every STIX `Relationship` with its evidence reference and confidence.
+
 ## Prerequisites
 
 - TIP or SIEM with historical indicator and event data (90+ days recommended)

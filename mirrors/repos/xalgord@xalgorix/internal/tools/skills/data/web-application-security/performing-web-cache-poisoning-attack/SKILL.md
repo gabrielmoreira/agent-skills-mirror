@@ -31,6 +31,18 @@ nist_csf:
 - When evaluating cache key behavior and cache deception vulnerabilities
 - During security assessments of applications with aggressive caching policies
 
+### How to CONFIRM a Hit (avoid false negatives)
+
+- **Positive signal**: an **unkeyed input** (header or parameter) is reflected into a response that is then **CACHED and served to a different client** — confirm with a clean follow-up request (no injected input) that still returns your payload, plus `X-Cache: HIT` / `CF-Cache-Status: HIT` / a growing `Age`.
+- Reflection alone is not poisoning. The payload must persist in the cache and reach a second visitor.
+- Do NOT conclude "not vulnerable" until you have:
+  - Confirmed the input is **unkeyed** (changing it does not change the cache key) AND reflected — both are required.
+  - Done the **clean follow-up request** without the malicious header/param and verified the poisoned content is still returned from cache.
+  - Enumerated unkeyed headers broadly (`X-Forwarded-Host/Scheme/Proto`, `X-Original-URL`, `X-Host`, port tricks) with **Param Miner**, not just a couple by hand.
+  - Used a **cache buster** during discovery, then removed it to prove real (shared) cache impact.
+  - Checked the `Vary` header and cache TTL (`max-age`/`s-maxage`) so you know the poison actually has a serving window for other users.
+- Distinguish a `DYNAMIC`/`MISS`/`BYPASS` response (not cached — no finding) from a genuine cached `HIT`.
+
 ## Prerequisites
 
 - **Authorization**: Written penetration testing agreement explicitly covering cache poisoning testing

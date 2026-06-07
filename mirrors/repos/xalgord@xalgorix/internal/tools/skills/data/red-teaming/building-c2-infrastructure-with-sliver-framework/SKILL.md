@@ -40,6 +40,15 @@ Sliver is an open-source, cross-platform adversary emulation framework developed
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Most Often Missed & How to Confirm
+
+- **Default C2 profile left intact.** Operators ship implants on Sliver's stock HTTP C2 config (default URIs, headers, and poll paths) — fingerprintable. Customize the C2 profile (`profiles` / `c2profiles`) and randomize URIs before generating.
+- **Unmodified TLS/JARM fingerprint.** Sliver's default mTLS and HTTPS listeners have a known JARM hash. Front with a real cert + redirector and validate JARM differs from the published default.
+- **No kill date or canary.** Implants without `--kill` dates and DNS/file canaries linger and burn infra. Set them at generate time.
+- **Skipping egress-representative testing.** Listener "works" from the operator box but dies behind proxy/TLS-inspection on the target egress.
+- **Redirector not dropping non-matching paths.** Unmatched requests should 302 to a decoy, not proxy through.
+- **How to confirm:** beacon actually checks in — `beacons` shows the Last Check-in timestamp advancing, `use <id>` opens an interactive session, and `ps`/`netstat` return live data. OPSEC check: run `jarm` against your own listener and `curl` an unmatched path on the redirector to confirm the decoy response. Don't conclude the infrastructure is dead until you have detonated a test implant from a host on a representative egress network, not just the team server LAN.
+
 ## Prerequisites
 
 - Familiarity with red teaming concepts and tools

@@ -41,6 +41,15 @@ QR code phishing (quishing) is a rapidly growing attack vector where malicious U
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Link scanners are blind to images:** the malicious URL lives inside a QR PNG/JPG/SVG, so text-based URL reputation and Safe Links never see it - the gateway must OCR/decode the image and submit the extracted URL to the same URL pipeline.
+- **Split and nested QR codes:** Gabagool-style kits divide the code across two benign-looking images, or nest a QR-in-QR; single-image decoders miss these - require reassembly/multi-image analysis.
+- **ASCII / text-rendered QR:** codes drawn with text characters bypass image analysis entirely (~12% of attacks) - add detection for QR-shaped character blocks.
+- **QR inside PDF/attachment:** the code sits in a PDF or document, not the body - enable attachment QR scanning, not just inline image scanning.
+- **Detection shifts to the phone:** even when decoded, the scan happens on an unmanaged personal device with no corporate proxy - pair gateway decoding with MTD/MDM warning on the destination.
+- **Validate detection:** send test quishing (inline PNG, SVG, split-image, PDF-embedded, and ASCII variants), confirm each URL is decoded and sandboxed, and tune FPs - legitimate marketing/event QR codes and MFA-setup codes are the main false positives, so allowlist known-good senders rather than blocking all QR mail.
+
 ## Prerequisites
 - Email security gateway with image analysis capabilities
 - Understanding of QR code structure and encoding

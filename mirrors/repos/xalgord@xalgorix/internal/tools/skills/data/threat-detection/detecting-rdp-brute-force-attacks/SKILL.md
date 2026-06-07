@@ -34,6 +34,13 @@ RDP brute force attacks target Windows Remote Desktop Protocol services by attem
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Variants most often missed:** counting only Event ID 4625 with **Logon Type 10** (RemoteInteractive) misses NLA-fronted attempts that surface as **Type 3** (network) and credential-validation failures on the DC (4776) rather than the RDP host — correlate 4625 Type 3/10 plus 4776 across both. When **NLA is enforced**, failures may be rejected at the CredSSP/TLS layer and never write a 4625 at all; supplement with `Microsoft-Windows-RemoteDesktopServices-RdpCoreTS`/TerminalServices-RemoteConnectionManager EID 1149 and 4625 Sub Status codes (`0xC000006A` bad password, `0xC0000064` no such user, `0xC0000234` locked out).
+- **False negatives:** **slow/distributed (low-and-slow)** spraying — one attempt per account per hour from rotating source IPs — defeats per-IP-per-window thresholds; pivot to per-target-account failure aggregation and global failed-logon rate. A single 4624 Type 10 success following a burst of 4625s from the same IP is the key compromise signal that count-only rules drop.
+- **Validate the rule fires:** Atomic Red Team T1110.001/T1110.003 (password guess/spray) against RDP, and T1021.001 (RDP lateral movement) to confirm the 4625→4624 Type 10 correlation alerts. Verify both Type 3 and Type 10 paths trigger.
+- **FP tuning:** exclude vulnerability scanners, expired-password storms after policy changes, and service accounts with stale cached creds; baseline normal source IPs/geos and alert on first-seen external IP rather than raw failure counts alone.
+
 ## Prerequisites
 
 - Python 3.9+ with `python-evtx`, `lxml` libraries

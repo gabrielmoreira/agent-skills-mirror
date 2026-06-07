@@ -37,6 +37,17 @@ etcd is the distributed key-value store that serves as Kubernetes' backing store
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Coverage Gaps & Validation
+
+An etcd assessment that only reads API-server flags misses the cases that actually leak secrets:
+
+- **Encryption config present ≠ secrets encrypted:** an `EncryptionConfiguration` with `identity` listed *first*, or applied after secrets were written, leaves existing secrets in plaintext. Don't trust the YAML - read a key straight from etcd and confirm the `k8s:enc:aescbc:v1:` prefix; plaintext key/value output means it's exposed.
+- **Listen address and client-cert auth:** check `--listen-client-urls`/`--advertise-client-urls` aren't bound to `0.0.0.0`, and that `--client-cert-auth=true` / `--peer-client-cert-auth=true` and `--auto-tls=false` are set - TLS being "on" without client-cert-auth still allows anonymous reads on 2379.
+- **Backups and peer port:** snapshot files (`snapshot save`) are full plaintext-or-encrypted copies of every secret; an unencrypted backup defeats at-rest encryption. The peer port 2380 and member-to-member TLS are often forgotten.
+- **Network reachability:** firewall rules for 2379/2380 must actually block worker nodes, not just be declared.
+
+**Validate by probing, not reading:** dump a known Secret via `etcdctl get /registry/secrets/...` and inspect the bytes; from a worker node attempt `curl -k https://<cp>:2379/health` and confirm it's refused; verify cert expiry with `openssl x509 -enddate`; and snapshot-status a backup to prove integrity. Map findings to CIS 2.1-2.7 and re-check after key rotation that old keys were removed and secrets re-encrypted.
+
 ## Prerequisites
 
 - Access to Kubernetes control plane nodes

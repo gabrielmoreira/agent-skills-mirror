@@ -44,6 +44,14 @@ Use this skill when:
 
 **Do not use** this skill as a substitute for incident response when a confirmed breach is in progress — escalate to IR procedures (NIST SP 800-61).
 
+## Detection Gaps & Validation
+
+- **Data-coverage gaps masquerading as clean hunts:** a hunt that "finds nothing" against missing telemetry is a false negative, not a validated control. Map each ATT&CK technique to its required data source (Sysmon EID 1 for T1059, EID 13 for T1547) and confirm logs exist before concluding.
+- **Retention too short for low-and-slow:** APT dwell time often exceeds default 30-day retention. Slow C2 beaconing (T1071) and scheduled-task persistence need 90+ days of history - document the gap when retention is insufficient.
+- **No baseline = no anomaly:** living-off-the-land binaries (mshta, rundll32, certutil) only stand out against a known-good baseline. Hunting without one produces noise, not findings.
+- **Confirmation bias:** interpreting benign LotL activity as malicious. Pivot across host/user/temporal/network dimensions and structure findings with the Diamond Model before escalating.
+- **How to confirm a hit:** corroborate across at least two data sources (process creation + network connection), confirm parent-child lineage (e.g. `winword.exe` → `powershell.exe -enc`), and check the associated account type. Convert only confirmed, low-FP queries (<80% FP) into Sigma detections.
+
 ## Prerequisites
 
 - EDR platform with telemetry retention (CrowdStrike Falcon, Microsoft Defender for Endpoint, or SentinelOne) covering 30+ days

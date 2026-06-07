@@ -51,6 +51,14 @@ nist_csf:
 
 **Do not use** for endpoint-only monitoring without cloud infrastructure; use a dedicated EDR solution for purely on-premises endpoint detection.
 
+## Common Misconfigurations & Verification
+
+- **Logs ingested but not in the SIEM index:** Cloud SIEM only evaluates logs flagged for security analytics. If `logs_enabled: true` works but no signals fire, confirm the source is in a Content Pack / has the security pipeline applied — raw ingestion is not detection.
+- **Workload Protection set in only one file:** `runtime_security_config.enabled` must be true in BOTH `datadog.yaml` and `system-probe.yaml`. Verify with `sudo datadog-agent status | grep -A5 "Security Agent"` showing runtime rules loaded, not just "Agent running".
+- **Detection rule never matches due to attribute mapping:** a `@evt.outcome:failure` query fails if the source isn't parsed into that standard attribute. Confirm in Log Explorer that the facet actually exists before trusting the rule.
+- **Suppression queries over-suppress real alerts:** a broad `@usr.id:service-account-*` suppression also hides an attacker abusing that service account. Scope suppressions narrowly and review the signal-suppressed count.
+- **Confirm end to end, not just config:** generate the real event (e.g. a failed-login burst), then verify a Security Signal is created (UI or `search_security_monitoring_signals`) AND the notification reached Slack/PagerDuty. A green Agent status is not proof a signal would fire.
+
 ## Prerequisites
 
 - Datadog account with Security Monitoring (Cloud SIEM) and/or Cloud Security Management enabled

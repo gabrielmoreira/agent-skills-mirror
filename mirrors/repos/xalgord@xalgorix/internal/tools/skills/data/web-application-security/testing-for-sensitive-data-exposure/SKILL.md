@@ -40,6 +40,18 @@ nist_csf:
 - When testing whether sensitive data is properly encrypted in transit and at rest
 - During security assessments of APIs that handle PII, financial data, or health records
 
+### How to CONFIRM a Hit (avoid false negatives)
+
+- **Positive signal**: the secret/PII is actually returned or retrievable AND is real — a live API key, a real password hash, an unmasked SSN/card, or source in a `.map`/`.git` — present in a response body, JS bundle, header, or error message.
+- Confirm the secret is **genuine and usable**, not a placeholder/example: validate the key against its service (read-only), or match leaked PII to a real account.
+- Where exposure is claimed "without auth", confirm **reachability with no session** (strip cookies/tokens) — a value only visible to the owner is not unauthenticated exposure.
+- A field merely named `token`/`secret` is NOT a hit until you confirm a real value; absence in one place is NOT a clean negative until other channels are checked.
+- Do NOT conclude "not vulnerable" until you have checked:
+  - **Response body** over-exposure (compare public vs authenticated `keys`), **JS bundles** and **source maps** (`.js.map`).
+  - **Error messages / stack traces**, response/headers (`Set-Cookie`, debug headers), and cached responses (missing `Cache-Control: no-store`).
+  - **Exposed files/VCS**: `.env`, `config.json`, `.git/` (then git-dump + trufflehog/gitleaks the history).
+  - **Masking gaps** in exports (CSV/PDF) and search/autocomplete responses, plus secrets in browser local/session storage.
+
 ## Prerequisites
 
 - **Authorization**: Written penetration testing agreement with data handling scope

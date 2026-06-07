@@ -35,6 +35,14 @@ This skill uses the ldap3 Python library to connect to a Domain Controller, quer
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Edges BloodHound under-collects:** default `SharpHound` collection misses ACEs on ADCS objects (`Enroll`/`WriteProperty` on certificate templates → ESC1-ESC7), GPO-linked OUs, and `gMSA`/`msDS-ManagedPassword` read rights. Run `Get-DomainObjectAcl -ResolveGUIDs` (PowerView) and compare ACE counts against the BloodHound graph.
+- **Extended-rights blind spots:** access masks like `ADS_RIGHT_DS_CONTROL_ACCESS` (0x100) gate `User-Force-Change-Password` and `DS-Replication-Get-Changes-All` (DCSync). A `GenericAll` filter that only checks 0x10000000 misses these GUID-scoped ACEs — match the ObjectType GUID, not just the mask.
+- **Inherited vs explicit:** abusable ACEs are often inherited from a parent OU; tooling that only reads `IsInherited=False` ACEs misses them. Walk the inheritance chain and flag `INHERITED_ACE` entries too.
+- **Deny ACE ordering:** a permissive Allow after a Deny still loses, but canonicalization bugs and shadow-credentials (`msDS-KeyCredentialLink` WriteProperty) bypass intent — validate with `Test-ADCanonicalAcl`.
+- **How to confirm a hit:** prove the path, don't just report the ACE. For `GenericAll` on a user, confirm a password reset or shadow-credential add in a lab; for `WriteDacl` on a group, add an ACE then self to the group and verify token group membership with `whoami /groups`. Cross-check the SID is not a tier-0 principal before flagging.
+
 ## Prerequisites
 
 - Python 3.9 or later with ldap3 library (`pip install ldap3`)

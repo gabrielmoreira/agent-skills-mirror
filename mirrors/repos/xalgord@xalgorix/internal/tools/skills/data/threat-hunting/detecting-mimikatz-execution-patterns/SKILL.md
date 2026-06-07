@@ -38,6 +38,15 @@ nist_csf:
 - When EDR or SIEM alerts trigger on related indicators
 - During periodic security assessments and purple team exercises
 
+## Detection Gaps & Validation
+
+- **String/hash signatures are trivially evaded.** Renamed binaries, in-memory execution (Invoke-Mimikatz, reflective PE load, Cobalt Strike BOFs), and renamed module strings (`sekurlsa::logonpasswords`) defeat command-line and file-hash detection. Don't anchor on `mimikatz` keywords.
+- **The durable signal is LSASS access.** Hunt Sysmon **EID 10** ProcessAccess targeting `lsass.exe` with `GrantedAccess` of `0x1010`, `0x1410`, `0x143a`, or `0x1fffff` from a non-system process. Verify EID 10 is enabled and lsass is not excluded in the Sysmon config — a common gap.
+- **LOLBin dumping bypasses mimikatz entirely:** `rundll32 comsvcs.dll MiniDump <pid> ...`, Task Manager "Create dump file", and `procdump -ma lsass.exe` produce a dump with no mimikatz artifacts. Hunt these command lines plus EID 11 writes of `*.dmp`.
+- **Protection changes the picture:** RunAsPPL and Credential Guard block classic reads (attackers may avoid lsass). The Microsoft-Windows-Threat-Intelligence ETW provider catches suspicious lsass handle opens that user-mode logging misses.
+- **Validate the rule fires:** run `procdump -ma lsass.exe` (or lab mimikatz `sekurlsa::logonpasswords`) and confirm both the EID 10 GrantedAccess query and the comsvcs/dmp query trigger.
+- **Tune false positives:** AV/EDR (e.g., MsMpEng), backup, and DLP agents legitimately open lsass. Allowlist signed security tools by image path rather than suppressing all lsass access.
+
 ## Prerequisites
 
 - EDR platform with process and network telemetry (CrowdStrike, MDE, SentinelOne)

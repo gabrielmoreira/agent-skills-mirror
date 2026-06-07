@@ -32,6 +32,14 @@ nist_csf:
 - When conducting red team exercises or penetration testing engagements
 - When building detection capabilities based on offensive technique understanding
 
+## Detection Gaps & Validation
+
+- **Profile mismatch returns empty output, not "clean":** Rekall's `autodetect=["rsds"]` and remote profile fetch fail closed — a wrong/missing profile makes `pslist`, `malfind`, and `netscan` yield nothing. Note that Rekall is archived/unmaintained and struggles with recent Windows 10/11 builds; if results look empty, suspect profile/version, not absence of compromise, and cross-check with Volatility 3.
+- **Acquisition smear and page-file gaps:** a live dump captured on a busy host can tear `EPROCESS` lists so `pslist` (active-list walk) drops processes; injected pages may be paged out and absent from the raw image. Diff `pslist` against `psscan` (pool scan) to surface unlinked/hidden PIDs, and document the acquisition method.
+- **`malfind` misses fileless/reflective loads with normal protections:** process hollowing that restores legitimate `PAGE_EXECUTE_READ` and matching VAD names evades the RWX/private-memory heuristic. Corroborate with `vadinfo` mismatches (mapped image vs. on-disk), `ldrmodules` for unlinked DLLs, and `dlllist` vs. `ldrmodules` gaps.
+- **Rootkit hooks need explicit checks:** hidden network sockets and SSDT/IRP hooks won't show in `netscan`/`pslist` alone — run the hook/callback plugins too.
+- **Validate the workflow fires:** in a lab, inject shellcode (e.g., a benign hollowed notepad) and confirm `malfind` flags the RWX VAD and the `psscan-pslist` diff reveals a hidden test PID before trusting findings on real evidence.
+
 ## Prerequisites
 
 - Familiarity with security operations concepts and tools

@@ -36,6 +36,17 @@ nist_csf:
 
 **Do not use** for non-Kubernetes container deployments like ECS Fargate or Azure Container Instances, for application-level security within containers (see securing-serverless-functions), or for CI/CD pipeline security (see implementing-cloud-devsecops).
 
+## Common Misconfigurations & Verification
+
+- **PSA labels only protect labeled namespaces:** new namespaces and `kube-system`/`default` are unprotected, and `warn`/`audit` labels don't block. Verify with `kubectl get ns -L pod-security.kubernetes.io/enforce` and confirm `enforce: restricted` is set where required.
+- **NetworkPolicies are no-ops without an enforcing CNI:** on EKS the VPC CNI needs the network-policy controller enabled (or use Calico/Cilium). Test a `default-deny` by `kubectl exec`-ing into a pod and curling a blocked peer - it must time out.
+- **Default-deny egress that omits DNS** (kube-dns UDP/TCP 53) silently breaks name resolution. After applying, confirm pods still resolve a service name.
+- **Workload identity fallback:** IRSA / GKE WI / AKS federated credential needs the SA annotation AND the trust `subject` to match `system:serviceaccount:NS:SA` exactly; a mismatch falls back to the (broader) node role. Verify by exec-ing and running `aws sts get-caller-identity` or hitting the metadata endpoint.
+- **`automountServiceAccountToken: false`** must be set on the pod or SA, or the default token is still mounted - confirm `/var/run/secrets/kubernetes.io/serviceaccount` is absent.
+- **Kyverno in Audit mode** doesn't block; require `validationFailureAction: Enforce` and a registry pattern that matches the real path.
+
+**Verify it actually works:** run `kube-bench` after changes; attempt to schedule a privileged/root pod in a restricted namespace (expect rejection); and deploy a disallowed-registry or mutable-tag image to confirm the admission policy denies it.
+
 ## Prerequisites
 
 - Managed Kubernetes cluster provisioned on EKS, AKS, or GKE with admin access

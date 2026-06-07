@@ -35,6 +35,14 @@ nist_csf:
 - When integrating canary token alerts with SOC workflows via Slack, Microsoft Teams, or SIEM webhooks
 - When complementing traditional IDS/IPS with zero-false-positive deception technology
 
+## Common Misconfigurations & Verification
+
+- **The token never triggers because nobody finds it:** a canary planted in a path no attacker traverses is dead weight. Place tokens where recon actually lands — `~/.aws/credentials`, `.env`, config files with enticing memos, files named `passwords.docx` — and make them discoverable, not buried.
+- **Egress/whitelisting silently swallows alerts:** DNS tokens require outbound DNS to reach `canarytokens.com`; HTTP/AWS tokens need egress to the token server. In segmented or proxy-forced networks the resolution/callback is dropped and the trip is never recorded. AWS-key tokens also fail if the org's allowlist or SCP blocks calls to the canary's account/region — confirm the path end-to-end.
+- **Tokens that leak as real-looking credentials get auto-quarantined:** secret scanners (GitHub push protection, GitGuardian) and EDR may delete or block a planted AWS key before an attacker uses it — exclude canary paths from scanners.
+- **Memo/source-IP context missing:** an alert with no memo or NAT'd source IP can't be triaged; ensure each token's `memo` encodes its location and that the webhook payload carries `src_ip`.
+- **Verification:** trigger every token type before relying on it — resolve the DNS FQDN (`dig`), `curl` the HTTP URL, and run `aws sts get-caller-identity` with the fake key — and confirm the Slack/Teams/SIEM alert arrives within ~60s (the Validation Checklist below). Re-test after any firewall/egress change, since that is what most often silently breaks tokens.
+
 ## Prerequisites
 
 - Python 3.8+ with `requests` library installed

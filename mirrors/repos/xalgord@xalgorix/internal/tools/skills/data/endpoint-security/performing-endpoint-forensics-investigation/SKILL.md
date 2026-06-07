@@ -36,6 +36,14 @@ Use this skill when:
 
 **Do not use** this skill for live threat hunting (use EDR/SIEM) or network forensics.
 
+## Detection Gaps & Validation
+
+- **Anti-forensics erases the obvious artifacts:** attackers run `wevtutil cl`, clear `$UsnJrnl` (`fsutil usn deletejournal`), timestomp via `SetFileTime`, or delete Prefetch. Don't conclude "no activity" from an empty log — corroborate with sources they rarely clean: `$MFT` `$SI` vs `$FN` timestamp mismatches (timestomping tell), `$LogFile`, SRUM, AmCache/ShimCache (survive file deletion), and memory.
+- **Memory-only / fileless misses:** PowerShell `-enc`, reflective DLL injection, and process hollowing leave little on disk. Always acquire RAM first and run `windows.malfind`, `windows.cmdline`, and `windows.netscan`; absence of a binary on disk is not absence of compromise.
+- **Single-artifact conclusions:** Prefetch proves execution but a missing Prefetch entry doesn't prove non-execution (disabled on SSDs/servers, or deleted). Cross-corroborate execution across Prefetch + AmCache + ShimCache + Security 4688 + Sysmon 1 before ruling in or out.
+- **Timestamp/timezone drift:** mixing UTC and local-time artifacts builds a false timeline. Normalize everything to UTC in plaso and confirm system timezone (SYSTEM hive) before sequencing events.
+- **Validation:** verify image integrity (acquisition hash == verification hash) before analysis, and confirm a known event you can ground-truth (e.g., the responder's own logon) appears correctly in the super timeline before trusting attacker-event placement.
+
 ## Prerequisites
 
 - Forensic workstation with analysis tools (Volatility 3, KAPE, Autopsy, Eric Zimmerman tools)

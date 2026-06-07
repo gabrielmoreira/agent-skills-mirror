@@ -46,6 +46,17 @@ The CISA Zero Trust Maturity Model (ZTMM) Version 2.0, released in April 2023, p
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+ZTMM programs fail most often when maturity is self-attested on a spreadsheet rather than proven with telemetry. Watch for these:
+
+- **Self-reported stage with no evidence.** A pillar marked "Advanced" must be backed by data (CrowdStrike ZTA scores for Devices, Conditional Access logs for Identity, microsegmentation policy-deny counts for Networks). If you cannot pull the metric, the stage is aspirational, not real.
+- **Pillars advanced in isolation.** Identity at Optimal while Networks stays Traditional (flat, implicitly trusted) leaves lateral movement wide open - score the weakest pillar, not the average.
+- **Cross-cutting capabilities ignored.** Visibility/Analytics and Automation are treated as afterthoughts; without centralized telemetry you cannot prove any pillar's maturity.
+- **MFA counted as phishing-resistant when it is SMS/push.** Initial-stage MFA is not the Advanced FIDO2/WebAuthn the Identity pillar requires.
+
+**How to confirm:** for each "Advanced/Optimal" claim, pull the supporting log or query (`% devices with real-time posture`, CAE token-revocation events, segment policy-deny counts) and reconcile against OMB M-22-09 requirements. Treat any pillar without queryable telemetry as Traditional until proven otherwise.
+
 ## Prerequisites
 
 - Familiarity with NIST SP 800-207 Zero Trust Architecture

@@ -39,6 +39,15 @@ nist_csf:
 
 **Do not use** without appropriate Microsoft 365 E5, E5 Compliance, or E5 Information Protection licensing. Do not deploy DLP policies directly to production enforcement mode without a simulation period. Do not configure endpoint DLP without coordinating with the endpoint management team responsible for device onboarding.
 
+## Common Misconfigurations & Verification
+
+- **Policy stuck in test mode:** a DLP policy created with `-Mode TestWithNotifications` (or `TestWithoutNotifications`) audits but never blocks. Confirm enforcement with `Get-DlpCompliancePolicy | Select Name,Mode` and only `Enable` after simulation review.
+- **SIT confidence/count tuning:** built-in SITs at low confidence (65) or `MinCount=1` flood Activity Explorer with false positives; too-high thresholds miss real leaks. Validate each SIT against a seeded test corpus with `Test-DataClassification` before relying on it.
+- **Channel coverage gaps:** a policy scoped only to Exchange leaves SharePoint, OneDrive, Teams, and endpoints uncovered. Confirm every location is bound (`-ExchangeLocation/-SharePointLocation/-OneDriveLocation/-TeamsLocation/-EndpointDlpLocation`) and that target devices are actually onboarded (registry `OnboardingState=1`).
+- **Exact Data Match (EDM) not refreshed:** EDM-based SITs silently stop matching if the hashed datastore is stale; verify the schema upload and recent `Get-DlpEdmSchema` / index refresh.
+- **Custom SIT regex pitfalls:** `^`/`$` anchors do not behave as expected in Purview; verify the pattern matches and does not over-match in simulation.
+- **How to verify it actually works:** run a controlled exfiltration test of seeded sensitive data (email an external address, copy to USB, upload to a blocked cloud domain) and confirm the block/alert appears in Activity Explorer (`DLPRuleMatch`) and the DLP alerts dashboard. Do not consider a policy effective until a real exfil attempt is blocked end-to-end.
+
 ## Prerequisites
 
 - Microsoft 365 E5 or E5 Compliance / E5 Information Protection add-on license assigned to target users

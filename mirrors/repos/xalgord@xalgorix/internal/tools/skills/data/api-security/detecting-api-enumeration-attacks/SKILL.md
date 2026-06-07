@@ -37,6 +37,15 @@ API enumeration attacks occur when attackers systematically probe API endpoints 
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Slow-and-low evasion:** attackers pace requests under your RPS thresholds (e.g., 1 req/30s) or spread the scan across many IPs, sessions, or rotating tokens so per-source counters never trip. Correlate by object-ID sequence across sources, not just per-IP volume.
+- **All-200 enumeration looks benign:** when IDs are harvested from a list endpoint first, every follow-up `GET /users/{uuid}` returns 200 with no 401/403 mix, so rules keyed on auth-failure ratio miss it entirely. Alert on unique-object-ID cardinality per session regardless of status code.
+- **Query/body params, not paths:** `?user_id=`, `filter[customer]=`, and GraphQL `node(id:)` global IDs bypass regexes that only parse `/api/v\d+/\w+/\d+` path segments.
+- **Non-numeric sequences:** base64/hashids/ULIDs increment too, but `_check_sequential` only handles digits - decode them or measure response-size similarity instead.
+
+**How to validate the detection fires:** replay a captured sequential scan (or run the included script against a sample log) and confirm the SPL/Elastic rule alerts at the expected cardinality. **Tune false positives** by allowlisting known pagination crawlers, mobile prefetch, sitemap/SEO bots, and internal monitoring before promoting to high severity.
+
 ## Prerequisites
 
 - API gateway or reverse proxy with logging enabled (Kong, AWS API Gateway, Apigee)

@@ -34,6 +34,14 @@ Use this skill when:
 
 **Do not use** for active incident response during a live ransomware attack. Use dedicated IR playbooks instead.
 
+## Common Misconfigurations & Verification
+
+- **The backup that's never restored is an untested assumption:** a successful backup job and a green dashboard do not prove recoverability — corruption, broken incremental chains, and missing application dependencies only surface on restore. Run an actual restore at least quarterly and treat "job succeeded" as unverified until a restore passes.
+- **Measuring RTO without WRT understates reality:** restore *completion* is not service *restoration*. Include validation and security-hardening time (Work Recovery Time) in the measured RTO, or the number you report to the business is fiction. Measure RPO as `incident_time − backup_timestamp`, not the schedule interval.
+- **Recovery sequencing breaks silently:** restoring an app before its database/AD/DNS dependency causes cascading failures that look like restore corruption. Validate the runbook restores Tier-1 dependencies (AD, DNS, DHCP) first and document the interdependency order.
+- **Testing on the production network is dangerous and invalidates the test:** a recovery drill must run in an air-gapped/segmented lab — confirm no routes to production exist (`ip route show`) before restoring, or you risk spreading the very infection you're rehearsing against.
+- **Concrete verification the test passed:** diff file counts and SHA-256 manifests of source vs restored data, run DB consistency checks (`pg_isready`, row counts), confirm the restore point predates the simulated infection and is from immutable/air-gapped storage, rotate credentials on restored systems, and record actual RTO/RPO against target with an explicit MEETS/FAILS verdict — not just "restore completed".
+
 ## Prerequisites
 
 - Isolated recovery test environment (air-gapped or network-segmented lab)

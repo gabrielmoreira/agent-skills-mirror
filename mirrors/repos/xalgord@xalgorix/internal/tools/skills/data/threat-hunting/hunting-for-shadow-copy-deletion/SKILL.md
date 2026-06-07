@@ -38,6 +38,14 @@ nist_csf:
 - When EDR or SIEM alerts trigger on related indicators
 - During periodic security assessments and purple team exercises
 
+## Detection Gaps & Validation
+
+- **Cover every deletion vector:** `vssadmin delete shadows /all /quiet` is the loud case, but also hunt `wmic shadowcopy delete`, PowerShell `Get-WmiObject/Get-CimInstance Win32_ShadowCopy | Remove-*`, `bcdedit /set {default} recoveryenabled no`, `wbadmin delete catalog`, and direct VSS COM API calls that spawn NO child process.
+- **Match on args, not image name:** renaming vssadmin.exe → svc.exe defeats Image-based rules — key on EID 1/4688 CommandLine (`delete shadows`, `resize shadowstorage`) and `OriginalFileName`.
+- **No-process deletions:** `Win32_ShadowCopy.Delete()` via a loaded DLL or WMI leaves no 4688/EID 1 — need WMI-Activity EID 5857/5861.
+- **Validate:** run Atomic T1490 vssadmin and wmic variants; confirm EID 1/4688 command lines are captured end to end.
+- **FP tuning:** legit backup suites (Veeam, Acronis, Windows Backup) resize/delete shadows — baseline by signed parent process and expected schedule.
+
 ## Prerequisites
 
 - EDR platform with process and network telemetry (CrowdStrike, MDE, SentinelOne)

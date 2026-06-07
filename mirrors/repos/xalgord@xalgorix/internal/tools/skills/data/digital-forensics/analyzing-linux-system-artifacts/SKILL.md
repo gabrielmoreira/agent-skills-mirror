@@ -30,6 +30,14 @@ nist_csf:
 - During incident response to determine the scope of a Linux-based breach
 - For detecting rootkits, backdoors, and unauthorized modifications
 
+## Detection Gaps & Validation
+
+- **Most-missed artifacts:** beyond `auth.log`/`.bash_history`, collect `/var/log/journal/` (binary systemd logs that survive when text logs are rotated/deleted), `wtmp`+`btmp`+`lastlog`, `/etc/systemd/system/*` and user `~/.config/systemd/user/` timers, `/etc/cron.*` and `at` jobs, every `~/.ssh/authorized_keys`, `/etc/ld.so.preload`, and `/var/log/audit/audit.log`. Persistence increasingly hides in systemd timers and `.service` units, not crontab.
+- **Anti-forensics that defeats this analysis:** `.bash_history` is trivially cleared (`history -c`, `unset HISTFILE`, `ln -s /dev/null ~/.bash_history`) - a missing or gapped history is itself an indicator, not "no activity." Cross-check against `auditd` execve records, journald, and `last`/wtmp. Timestamps can be `touch`-stomped; compare against inode change time (`stat` ctime), which user tools cannot set directly.
+- **Cleared/rotated logs:** a truncated or missing `auth.log`/`secure` is suspicious - recover prior entries from journald, rotated `.gz` archives, or unallocated space, and look for the `logrotate`/`wtmp` gap that brackets the intrusion.
+- **Validate with a second source:** corroborate a suspect SSH login (auth.log) with the matching `wtmp` session, the source IP in `lastlog`, the `authorized_keys` mtime, and any sudo/execve in auditd before attributing activity to an account.
+- **Interpretation pitfalls (false positives):** legitimate admin/automation (Ansible, cron, package updates) produces wget/curl/chmod/useradd activity, and sanctioned UID-0 secondary accounts or NOPASSWD sudoers exist. Confirm `/etc/timezone` and check clock skew/NTP before timelining.
+
 ## Prerequisites
 - Forensic image or live access to the Linux system (read-only)
 - Understanding of Linux file system hierarchy (FHS)

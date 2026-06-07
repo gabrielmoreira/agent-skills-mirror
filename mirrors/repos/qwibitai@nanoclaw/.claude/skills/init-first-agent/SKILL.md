@@ -103,9 +103,9 @@ Wait for the user's reply. If they confirm receipt, the skill is done.
 
 If they say it didn't arrive, then diagnose using the DB directly (no waiting loops required — the message either delivered or it didn't):
 
-- `pnpm exec tsx scripts/q.ts data/v2-sessions/<agent-group-id>/sessions/<session-id>/outbound.db "SELECT id, status, created_at FROM messages_out ORDER BY created_at DESC LIMIT 5"` — check for stuck `pending` rows. Replace `<agent-group-id>` and `<session-id>` with the values from the script's output.
+- `pnpm exec tsx scripts/q.ts data/v2-sessions/<agent-group-id>/<session-id>/outbound.db "SELECT id, status, created_at FROM messages_out ORDER BY created_at DESC LIMIT 5"` — check for stuck `pending` rows. Replace `<agent-group-id>` and `<session-id>` with the values from the script's output.
 - `grep -E 'Unauthorized channel destination|container.*exited|error' logs/nanoclaw.log | tail -20` — look for ACL rejections or container crashes.
-- `ls data/v2-sessions/<agent-group-id>/sessions/*/outbound.db` — confirm the session exists.
+- `ls data/v2-sessions/<agent-group-id>/*/outbound.db` — confirm the session exists.
 
 ## Troubleshooting
 

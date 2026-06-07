@@ -43,6 +43,16 @@ This skill covers Google Cloud Platform security testing using GCPBucketBrute fo
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Run both unauthenticated AND authenticated:** GCPBucketBrute tests anonymous access by default, but a bucket that 403s anonymously may grant `storage.objects.list` to `allAuthenticatedUsers` (any Google account). Run it again with a logged-in account (omit `-u`) or you'll miss this entire class.
+- **Custom keywords matter:** the default permutation set misses real buckets that use project/app prefixes. Feed company-specific terms via `-k`/`--keyword` plus a custom wordlist.
+- **Check write, not just read:** `TestIamPermissions` reports the caller's perms - look for `storage.buckets.setIamPolicy` and `storage.objects.create`, not only `storage.objects.get`. Write/ACL access is the higher-impact, commonly-skipped finding.
+- **IAM privesc beyond project roles:** check `iam.serviceAccounts.actAs`, `iam.serviceAccounts.getAccessToken`, `iam.serviceAccountKeys.create`, and `setIamPolicy` at project/folder/org level via `gcloud projects get-iam-policy` and `gcloud iam service-accounts get-iam-policy`. `roles/iam.serviceAccountTokenCreator` over a higher-priv SA = full impersonation.
+- **Default Compute/AppEngine SAs** frequently retain `roles/editor` - check them explicitly.
+
+**How to confirm a hit (avoid false negatives):** a permission returned by `TestIamPermissions` is a claim - prove it. Actually `gsutil ls gs://bucket` and `gsutil cp` a test object for read/write; for impersonation run `gcloud auth print-access-token --impersonate-service-account=SA` and use the token. **Don't conclude negative until:** you tested both unauth and authenticated, enumerated with custom keywords, walked `actAs`/token-creator chains, and inspected the default service accounts.
+
 ## Prerequisites
 
 - Python 3.8+ with google-cloud-storage library

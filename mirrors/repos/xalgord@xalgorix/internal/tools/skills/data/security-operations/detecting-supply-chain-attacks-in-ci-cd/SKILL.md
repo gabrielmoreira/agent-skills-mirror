@@ -39,6 +39,14 @@ nist_csf:
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **SHA-pinning checks miss tag-pinning illusions:** flagging `@main`/`@v3` is right, but a `@v3` *tag* (or even a short SHA) is mutable/forgeable — only a full 40-char commit SHA is immutable. Also a pinned action can still pull unpinned transitive actions or `docker://image:latest` inside itself; recurse into reusable workflows (`uses: org/repo/.github/workflows/x.yml@ref`) and Dockerfile `FROM` lines.
+- **Script-injection detection is broader than `github.event`:** untrusted input also flows through `github.head_ref`, `github.event.pull_request.title/body`, `github.event.issue.*`, and `env:` derived from them. Match the whole untrusted-context set in `run:` blocks, not just `github.event`.
+- **`pull_request_target` + checkout of PR head is the classic poisoned-pipeline RCE** that YAML linting alone misses — flag workflows that combine `pull_request_target` with `actions/checkout` of the PR ref and any secret access.
+- **Dependency confusion isn't in the YAML:** it lives in registry scope/`.npmrc`/`pip.conf` config — name-collision risk needs the package manifests, not just `.github/workflows`.
+- **Validate the scan fires:** add a deliberately vulnerable test workflow (unpinned `@main`, `run: echo ${{ github.event.issue.title }}`, `permissions: write-all`) and confirm each rule flags it. **FP tuning:** first-party/org-owned actions and internal reusable workflows are lower risk — allowlist trusted orgs rather than alerting on every `@`-ref.
+
 ## Prerequisites
 
 - Familiarity with security operations concepts and tools

@@ -43,6 +43,17 @@ Azure service principals are identity objects used by applications, services, an
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+What silently slips past these `AuditLogs` queries:
+- **Hard-coded `modifiedProperties[1]` index.** The position of `Role.DisplayName` / `AppRole.Value` drifts per event — filter by the property `displayName` instead of an index, or you misread (or miss) Global Administrator grants.
+- **Certificate credentials, not just secrets.** `Add service principal credentials` with `KeyType=AsymmetricX509Cert` is cert-based persistence that secret-only filters skip.
+- **App-role grants bypass user consent entirely.** `Add app role assignment to service principal` granting `Application.ReadWrite.All` / `RoleManagement.ReadWrite.Directory` is application permission — it never appears in delegated-consent logs.
+- **Enumeration detection depends on `MicrosoftGraphActivityLogs`.** If that table isn't licensed/ingested, the `/servicePrincipals` enumeration query returns nothing and looks "clean."
+- Managed identities are service principals too (`servicePrincipalType == ManagedIdentity`) — baseline them or drown in FP.
+
+Validate: confirm `AuditLogs`, `AADServicePrincipalSignInLogs`, and `MicrosoftGraphActivityLogs` all have rows in the last 24h; test by adding a throwaway secret to a test SP and confirming the rule fires; tune FP by excluding CI/CD app object IDs.
+
 ## Prerequisites
 
 - Azure subscription with Microsoft Entra ID P2 license

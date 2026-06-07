@@ -37,6 +37,15 @@ nist_csf:
 
 **Do not use** for applications requiring raw UDP access (ZPA primarily supports TCP), for providing full network-level access equivalent to site-to-site VPN (use ZPA AppProtection or branch connector instead), or when the organization requires on-premises-only access control without cloud dependency.
 
+## Common Misconfigurations & Verification
+
+- **App segment Bypass Type not "Never":** if a segment is set to Bypass, or its domain overlaps a ZIA/forwarding-profile bypass, the Client Connector sends traffic straight to the internet/origin instead of through ZPA. Confirm `Bypass Type: Never` with no conflicting bypass.
+- **Internal app still routable off-ZPA:** ZPA only hides apps from clients using the connector. If the app server keeps a public IP, or the corporate LAN/legacy VPN can still reach `hr-portal.internal.corp` directly, the dark-cloud guarantee is void. Firewall the origin to accept only App Connector source IPs.
+- **Access policy without device posture:** an ALLOW rule keyed only on user group ignores the Device Posture Profile, so a personal device passes. Bind each rule to a posture profile (e.g., CrowdStrike ZTA score >= 60) and ensure a final **default-deny** rule exists and logs.
+- **Overly broad wildcard segments:** `*.internal.corp` exposes far more than intended; scope segments tightly.
+
+Verify: off the connector, `nslookup`/`curl` the app FQDN and its IP directly, neither must resolve or connect. In the Admin Portal check LSS/User Activity logs for `action="denied"` when a non-compliant device or unauthorized group attempts access, and confirm the default-deny rule is recording hits.
+
 ## Prerequisites
 
 - Zscaler Private Access subscription (Business or Transformation edition)

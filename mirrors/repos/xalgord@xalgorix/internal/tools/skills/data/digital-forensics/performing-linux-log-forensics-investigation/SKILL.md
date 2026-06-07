@@ -40,6 +40,16 @@ Linux systems maintain extensive logs that serve as primary evidence sources in 
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+What this analysis misses most often, and how to avoid wrong conclusions:
+
+- **Cleared/truncated logs read as "quiet," not tampered.** A near-empty `/var/log/auth.log`, a gap in sequential syslog timestamps, or a log that restarts mid-day is evidence of tampering, not absence of activity. Cross-check file `mtime`/`ctime` vs. the last log line, and confirm logrotate timing in `/etc/logrotate.d/`.
+- **journald gaps the text logs hide.** If `journalctl --verify` reports `FAIL`, or `journalctl --list-boots` is missing boots present in `wtmp`, the binary journal was edited or rotated. Always pull both text logs AND `/var/log/journal/*` — an attacker who `truncate`s auth.log may forget the journal (or vice versa).
+- **wtmp/btmp/lastlog are trivially wiped.** `last`/`lastb` showing no entries does not mean no logins. Carve the raw binary for `utmp` records, and corroborate logins against `sshd` `Accepted` lines, `~/.bash_history`, and SUDO entries — these rarely all get cleaned consistently.
+- **Validate by cross-corroboration, not a single source.** A real SSH session should appear in auth.log (`Accepted`), journald (`-u sshd`), wtmp (`last`), and process/file timestamps. A login present in one but absent from the others flags either tampering or a forged entry.
+- **Interpretation false positives.** High `Failed password` counts are usually internet background brute-force, not the actual intrusion — find the matching `Accepted` line. `sudo` COMMAND entries reflect intent, not success; confirm with the command's side effects. Timezone drift between syslog (local, no year) and journald (UTC) corrupts timelines — normalize before correlating.
+
 ## Prerequisites
 
 - Familiarity with digital forensics concepts and tools

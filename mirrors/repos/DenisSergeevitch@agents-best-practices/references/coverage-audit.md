@@ -7,6 +7,7 @@ This file maps the required agent-harness knowledge areas to the Markdown files 
 | Topic | Covered in | Notes |
 |---|---|---|
 | General-purpose agent harness | `SKILL.md`, `architecture.md` | Treats coding as one domain among many. |
+| Coding-agent harness overlay | `coding-agents.md`, `mvp-agent-blueprint.md`, `tools-and-permissions.md`, `security-evals-observability.md`, `checklists.md` | Optional domain overlay for repository-reading, patching, validating, reviewing, migration, dependency, test, and docs-sync agents. |
 | Agent-legible environment and feedback loops | `agent-legibility-feedback-loops.md`, `architecture.md` | Covers source-of-truth knowledge bases, validation signals, mechanical invariants, throughput, and entropy cleanup. |
 | Agentic loop | `agentic-loop.md` | Includes canonical loop, invariants, budgets, retries, provider-neutral variants, and termination. |
 | Goal-like loop | `agentic-loop.md`, `planning-and-goals.md` | Includes objective, done condition, budget, checkpoints, progress log, validation, and stop rules. |
@@ -29,7 +30,7 @@ This file maps the required agent-harness knowledge areas to the Markdown files 
 
 - The skill is provider-neutral.
 - The skill refers to OpenAI, Anthropic, and OpenAI-compatible APIs only where provider-specific API patterns matter.
-- The skill does not depend on coding-agent-specific assumptions.
+- The skill does not depend on coding-agent-specific assumptions; the coding-agent MVP profile is an optional domain overlay.
 - The skill contains only Markdown files.
 - The skill includes prompt-cache architecture and cache-hit monitoring.
 - The skill includes agent-legibility, knowledge-base, feedback-loop, and entropy-management practices.
@@ -44,6 +45,7 @@ agents-best-practices/
   references/
     architecture.md
     agent-legibility-feedback-loops.md
+    coding-agents.md
     agentic-loop.md
     tools-and-permissions.md
     workflow-orchestration.md

@@ -36,6 +36,15 @@ Use this skill when:
 
 **Do not use** this skill as a standalone framework — combine with MITRE ATT&CK for technique-level granularity beyond what the 7-phase kill chain provides.
 
+## Detection Gaps & Validation
+
+- **Phases 1-2 are invisible:** recon and weaponization happen off your network, so a "no detection" verdict there reflects missing external telemetry (passive DNS, OSINT), not adversary inactivity. Do not score these as defensive failures.
+- **Single-phase tunnel vision:** mapping one EDR alert to Installation while ignoring un-logged Delivery/Exploitation creates a false "stopped at Phase 5" narrative. Mark phases "unknown" (not "not reached") where telemetry is absent, and back each verdict with a named log source.
+- **Beaconing false negatives:** jittered or long-interval C2 evades frequency analysis; absence of beaconing evidence is not absence of C2.
+- **Non-linear paths:** insiders and reused implants skip phases -- a missing earlier phase does not disprove a later one.
+
+To validate the analysis: walk a known incident (or a purple-team exercise) through the phase matrix and confirm each detection point matches where the control actually fired; for every phase marked "completed undetected," cite the specific data source that should have caught it and confirm whether the gap is missing logging vs. a missing rule. Map each phase to its ATT&CK tactic (TA0001, TA0002, TA0003, TA0011, ...) and check Navigator coverage so "detected" reflects a real, tested detection.
+
 ## Prerequisites
 
 - Complete incident timeline with forensic artifacts mapped to specific adversary actions

@@ -38,6 +38,15 @@ nist_csf:
 - After threat intelligence reports indicate LOLBin abuse in active campaigns
 - During red team/purple team exercises validating detection coverage for T1218
 
+## Detection Gaps & Validation
+
+- **Renamed/copied LOLBins defeat Image-name rules.** `certutil.exe` copied to `cu.exe` evades `Image=*\certutil.exe`. Match Sysmon EID 1 `OriginalFileName` and `Hashes`, not the on-disk filename — this is the single biggest false-negative source.
+- **Signed-binary proxy execution is the whole point (T1218):** the binary is Microsoft-signed, so AV/signature trust passes. Detection must be behavioral (args + parent + network), not reputation.
+- **Long-tail LOLBins are missed:** watchlists stop at the top ~10, omitting `desktopimgdownldr.exe`, `finger.exe`, `msdt.exe` (Follina), `forfiles.exe`, `mavinject.exe`.
+- **Obfuscated command lines** (`-enc`, caret/quote insertion, env-var expansion) evade keyword regex.
+- **Validate the hunt fires:** run Atomic Red Team T1218.010 (regsvr32 Squiblydoo), T1218.011 (rundll32), and T1140 (`certutil -urlcache -split -f http://...`); confirm Sysmon EID 1 command line + EID 3 outbound connection fire and your rule matches.
+- **FP tuning:** certutil for legitimate cert ops, rundll32 spawned by installers, msbuild on developer hosts — baseline by parent process, path, and signer.
+
 ## Prerequisites
 
 - Access to EDR telemetry (CrowdStrike, Microsoft Defender for Endpoint, SentinelOne)

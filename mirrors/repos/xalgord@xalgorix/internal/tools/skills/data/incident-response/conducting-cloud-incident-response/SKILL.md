@@ -41,6 +41,16 @@ nist_csf:
 
 **Do not use** for on-premises-only incidents with no cloud component; use standard enterprise IR procedures.
 
+## Common Misconfigurations & Verification
+
+- **Logging not enabled before the incident:** the fatal gap. CloudTrail data events (S3 object-level, Lambda), VPC/NSG Flow Logs, and Azure Sign-in Logs are off or short-retention by default — if they weren't on, the evidence simply does not exist. Confirm coverage first; absence of events is not absence of activity.
+- **Containment that tips off the attacker or breaks evidence:** terminating the EC2 instance or deleting the IAM user destroys volatile state and memory before you snapshot. Isolate via security group / NSG deny-all and snapshot EBS/managed disks *first*, then eradicate.
+- **STS/refresh tokens survive key disablement:** disabling an access key or `AccountEnabled=$false` does NOT kill already-issued temporary credentials. You must add a `aws:TokenIssueTime` deny condition (AWS) or `Revoke-AzureADUserAllRefreshToken` (Azure) or the attacker keeps acting with assumed-role sessions until expiry.
+- **Single-region tunnel vision:** crypto-mining `RunInstances` and backdoor IAM users get deployed across every region/all regions — checking only the home region misses them.
+- **Persistence missed:** attacker-created access keys, additional IAM users, service-principal secrets, Lambda functions, and login profiles outlive the original compromised identity.
+
+**Verify containment actually held:** re-query CloudTrail/Activity Logs and confirm zero successful API calls from the attacker IP/identity *after* the containment timestamp; confirm disabled keys and rotated creds are rejected; enumerate IAM/SP credentials across all regions to prove no backdoor remains; and confirm disabled security controls (CloudTrail, GuardDuty, Defender) are re-enabled and logging.
+
 ## Prerequisites
 
 - Cloud-native logging enabled and centralized: AWS CloudTrail (all regions), Azure Activity/Sign-in Logs, GCP Cloud Audit Logs

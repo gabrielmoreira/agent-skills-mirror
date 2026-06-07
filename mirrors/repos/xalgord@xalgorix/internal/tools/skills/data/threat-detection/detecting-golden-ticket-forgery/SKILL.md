@@ -42,6 +42,13 @@ A Golden Ticket attack (MITRE ATT&CK T1558.001) involves forging a Kerberos Tick
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Variants most often missed:** detection keyed on RC4 (`0x17`) downgrade misses **Diamond** and **Sapphire** tickets, which request a real TGT (genuine 4768 exists) then decrypt/modify the PAC and re-encrypt with AES (`0x12`) — so "RC4 in an AES domain" and "orphaned 4769 with no 4768" both fail. Modern Mimikatz/Rubeus forge AES tickets by default when the AES key is known.
+- **False negatives:** a forged TGT means **no 4768 is ever generated** on the DC for the initial grant — only 4769 (TGS) and downstream 4624 appear, so TGT-centric rules see nothing. Watch for 4769 where the account name does not match a real principal, lifetimes exceeding `MaxTicketAge`/`MaxRenewAge` (default 10h/7d), or krbtgt-signed tickets after a single krbtgt reset (KB5008380 PAC validation flags tickets failing the new signature once DCs are in Enforcement mode).
+- **Validate the rule fires:** Atomic Red Team T1558.001 (Rubeus/mimikatz `golden` ticket creation and `ptt`). Confirm alerts on 4769 with abnormal lifetime, krbtgt password-age anomaly, and PAC validation failure events (Microsoft-Windows-Kerberos `Event 4` / KDC errors) post-KB5008380.
+- **FP tuning:** long-lived service tickets from scheduled tasks and clustered services produce benign long lifetimes; baseline per-service. Reset krbtgt **twice** so historical legitimate tickets are not mistaken for forgeries during rotation windows.
+
 ## Prerequisites
 
 - Windows Domain Controller with Kerberos audit logging enabled

@@ -43,6 +43,15 @@ This skill covers designing microsegmentation policies using workload identity, 
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Policies left in monitor/observe mode:** Illumio "Visibility Only", NSX DFW sections set to monitor, or Calico policies with no default-deny only LOG traffic, they block nothing. Confirm each in-scope workload shows "Enforced"/"Full Enforcement", not draft/test/observe.
+- **Missing default-deny:** an allow-list is meaningless if unlisted flows fall through to implicit-allow. Calico needs a `GlobalNetworkPolicy` default-deny; NSX needs the section default action set to Drop; verify the zone actually denies unmatched traffic.
+- **IP-based rules that drift:** rules pinned to IP addresses instead of role/app/env labels silently fail open after re-IP or migration. Use label-based policy and confirm new workloads auto-inherit labels from CI/CD.
+- **Management-plane gap:** enforcing app-tier rules while leaving SSH/WinRM/jump-host paths open lets attackers pivot anyway.
+
+Verify: from a workload in one segment run `nc -zv <db-ip> 5432` to a peer the policy should block, it must fail AND surface as a blocked flow/alert in the console. Re-run lateral-movement tests (web tier to another app's database) after every enforcement flip, and confirm the agent reports "Enforced", not "Test".
+
 ## Prerequisites
 
 - Familiarity with zero trust architecture concepts and tools

@@ -39,6 +39,20 @@ nist_csf:
 
 **Do not use** when the workload does not handle sensitive data that requires hardware-level isolation, when the instance type does not support Nitro Enclaves (requires Nitro-based instances with at least 4 vCPUs), or when latency constraints make the vsock communication overhead unacceptable.
 
+## Common Misconfigurations & Verification
+
+- **KMS policy without an attestation condition:** if the key policy grants the parent's IAM role `kms:Decrypt` but omits `kms:RecipientAttestation:ImageSha384` (or `PCR0`/`PCR8`), the parent instance can decrypt directly and the enclave boundary is pointless. Grep the policy for `RecipientAttestation` and prove a parent-side `kms:Decrypt` without a `Recipient` attestation document returns `AccessDenied`.
+- **`--debug-mode` left in production:** debug mode makes the enclave console readable and zeros out PCR0/PCR1/PCR2, so attestation conditions can never match a real measurement. Confirm `nitro-cli describe-enclaves` shows `"Flags": "NONE"` (not `DEBUG_MODE`).
+- **Allocator under-provisioned:** if `/etc/nitro_enclaves/allocator.yaml` `memory_mib`/`cpu_count` is below what `run-enclave` requests, launch fails with an opaque "resource not available". Verify the file and that `nitro-enclaves-allocator.service` is active after edits.
+- **PCR0 pinned but rebuilt:** PCR0 changes on every image rebuild, breaking the policy. For rotating builds, bind to PCR8 (signing cert) instead.
+- **Incomplete attestation validation:** failing to walk the `cabundle` to the `aws.nitro-enclaves` root CA, or skipping nonce checks, allows forged/replayed documents.
+
+```bash
+nitro-cli describe-enclaves --query '[].Flags'                 # NONE in prod
+grep -E 'memory_mib|cpu_count' /etc/nitro_enclaves/allocator.yaml
+aws kms get-key-policy --key-id <id> --policy-name default | grep RecipientAttestation
+```
+
 ## Prerequisites
 
 - An AWS account with permissions to launch Nitro-capable EC2 instances (m5.xlarge or larger, C5, R5, M6i families)

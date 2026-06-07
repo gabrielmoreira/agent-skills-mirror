@@ -42,6 +42,15 @@ of staging or exfiltration between hosts.
 
 **Do not use** as a standalone detection mechanism. Zeek sees network traffic only; combine with endpoint telemetry (Sysmon, EDR) for full visibility. Encrypted SMB3 traffic may limit Zeek's visibility into file-level details.
 
+## Detection Gaps & Validation
+
+- **SMB3 encryption blinds file-level logs:** with SMB3 encryption negotiated, `smb_files.log`/`smb_mapping.log` lose path and filename detail, so admin-share write rules silently miss. Fall back to `conn.log` 445 volume/asymmetry between internal hosts and flag the encrypted SMB sessions themselves rather than concluding "no lateral movement."
+- **WMI/DCOM and WinRM evade the svcctl signature:** PsExec hits `svcctl`, but WMIExec uses `IWbemServices` over `135`+ephemeral DCOM and WinRM rides `5985/5986` (often as HTTP/SOAP). Grep `dce_rpc.log` for `IWbemServices`/`IRemUnknown2` and watch WinRM ports, not just `svcctl`/`atsvc`.
+- **Kerberos (Pass-the-Ticket/overpass) leaves no NTLM trail:** the NTLM-spray script won't fire when attackers use Kerberos. Add `kerberos.log` checks for anomalous TGS requests, encryption downgrade (`etype` RC4/0x17), and one account requesting tickets for many SPNs/hosts.
+- **Spray threshold is evasion-prone:** `spray_threshold=3` over 5min misses slow spraying across hours. Widen the `&create_expire` window and track distinct `id.resp_h` per username over a longer epoch; tune up to cut FPs from vuln scanners/SCCM.
+- **Validate detections fire:** in a lab run PsExec and confirm the chain — `smb_files.log` `SMB::FILE_WRITE` of the service binary, then `dce_rpc.log` `svcctl` `CreateServiceW`, then a `notice.log` `Admin_Share_Access`/`NTLM_Account_Spray`. Cross-check with Sysmon EID 1 on the target. No notice means the analyzer isn't loaded or the SPAN misses the internal VLAN.
+- **FP tuning:** exclude legitimate admin jump hosts, SCCM/patch servers, and backup agents that touch admin shares and many hosts by design before alerting.
+
 ## Prerequisites
 
 - Zeek 6.0+ deployed on a network tap or SPAN port monitoring internal VLAN traffic

@@ -24,19 +24,23 @@ Ask which directories the user wants agents to access. For each path:
 Build the JSON config and write it:
 
 ```bash
-npx tsx setup/index.ts --step mounts --force -- --json '{"allowedRoots":[{"path":"/path/to/dir","readOnly":false}],"blockedPatterns":[],"nonMainReadOnly":true}'
+pnpm exec tsx setup/index.ts --step mounts --force -- --json '{"allowedRoots":[{"path":"/path/to/dir","readOnly":false}],"blockedPatterns":[],"nonMainReadOnly":true}'
 ```
 
 Use `--force` to overwrite the existing config.
 
 ## Remove Directories
 
-Read the current config, show it, ask which entry to remove, write the updated config.
+Read the current config, show it, ask which entry to remove, then write the updated config through the same write path (build the trimmed JSON and pass it to `--step mounts --force -- --json`):
+
+```bash
+pnpm exec tsx setup/index.ts --step mounts --force -- --json '{"allowedRoots":[],"blockedPatterns":[],"nonMainReadOnly":true}'
+```
 
 ## Reset to Empty
 
 ```bash
-npx tsx setup/index.ts --step mounts --force -- --empty
+pnpm exec tsx setup/index.ts --step mounts --force -- --empty
 ```
 
 ## After Changes

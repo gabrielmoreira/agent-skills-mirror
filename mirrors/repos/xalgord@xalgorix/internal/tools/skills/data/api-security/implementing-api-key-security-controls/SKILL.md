@@ -44,6 +44,17 @@ nist_csf:
 
 **Do not use** API keys as the sole authentication mechanism for user-facing applications. API keys are best suited for server-to-server communication and developer access.
 
+## Common Misconfigurations & Verification
+
+- **Plaintext/at-rest storage:** keys stored unhashed (or reversibly) leak wholesale on DB compromise - store SHA-256 hashes only.
+- **No identifiable prefix:** without a `sk_live_`-style prefix, secret scanners and gitleaks cannot catch leaked keys.
+- **Keys in URLs:** accepting keys in query params leaks them to logs, browser history, and Referer headers - require a header instead.
+- **No scoping/expiry:** unscoped, non-expiring keys give a single leak full, permanent blast radius; enforce per-key scopes, IP allowlists, and TTL.
+- **No per-key rate limit:** one compromised key can abuse the entire API.
+- **Rotation without grace period:** hard-cutover rotation breaks consumers, which discourages rotation entirely.
+
+**How to verify it works:** confirm the DB column holds only hashes (no recoverable key); submit a revoked key and confirm immediate rejection (cache invalidated); plant a prefixed test key in a repo and confirm the scanner/auto-revoke fires; call an out-of-scope endpoint or non-allowlisted IP with a scoped key and confirm 403; exceed the per-key limit and confirm throttling.
+
 ## Prerequisites
 
 - Secure random number generator (os.urandom, secrets module) for key generation

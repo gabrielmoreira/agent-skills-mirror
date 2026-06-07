@@ -36,6 +36,14 @@ SIEM use case tuning reduces alert fatigue by systematically analyzing detection
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Tuning that suppresses true positives:** raising a threshold or whitelisting an entity to kill noise can also blind you to the real attack (e.g. excluding a service account an attacker then abuses). Tune on fields the attacker can't trivially control, and track precision AND recall, not just alert-volume reduction.
+- **Thresholds from a poisoned baseline:** computing `mean + N*stddev` over a window that already contains attacker activity bakes the attack into "normal". Baseline from a known-clean period and re-check after.
+- **Whitelist by mutable attribute:** allowlisting on hostname/username/User-Agent is bypassable; prefer asset IDs, signed identities, or source+rule pairs. Confirm the exclusion can't be spoofed.
+- **Silent rule disablement:** "tuning" that disables a Splunk correlation search or stretches an Elastic rule to a 24h interval effectively removes coverage. Diff the enabled-rule inventory before/after.
+- **Confirm efficacy with replay, not vibes:** after tuning, replay a known-malicious sample (must still alert) and 30 days of benign data (FP rate must drop). Measure alert-to-incident ratio before/after; "fewer alerts" alone is not success.
+
 ## Prerequisites
 
 - Splunk Enterprise/Cloud with ES or Elastic SIEM with detection rules enabled

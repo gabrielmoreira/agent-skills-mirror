@@ -46,6 +46,14 @@ nist_csf:
 
 **Do not use** for IT-only network monitoring without ICS components, for endpoint detection and response (EDR) on OT workstations, or for environments standardized on Claroty or Nozomi (see respective skills).
 
+## Common Misconfigurations & Verification
+
+- **SPAN/TAP coverage gaps leave zones dark.** A sensor only sees what the mirror port forwards; truncated SPAN, oversubscribed mirrors that drop packets under load, and serial/fieldbus segments below the switch produce silent blind spots. Verify per-segment coverage against the asset inventory, not just a green sensor status.
+- **Passive-only means no visibility into quiet assets.** Devices that rarely talk may never be discovered passively; use collection/active queries carefully and only with native protocols, never active port scans against fragile PLCs.
+- **Stale Knowledge Packs miss current threat groups.** Detection for VOLTZITE/CHERNOVITE and newer groups depends on current Knowledge Packs; confirm auto-update is working and the sensor reports a recent version.
+- **Baseline learning period set too short.** Cutting the ~30-day learning window yields a baseline that alarms on normal batch and shift variation; verify the window spanned representative operating modes.
+- **Verify without disruption.** Confirm sensor health via packets/sec and asset counts, replay a known IOC sample into a test sensor, and validate SIEM forwarding with a synthetic notification — all passively, never by generating attack traffic on the live OT network.
+
 ## Prerequisites
 
 - Dragos Platform license and deployment package

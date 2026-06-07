@@ -39,6 +39,18 @@
           "id": {
             "type": "string",
             "pattern": "^entity:[a-z0-9][a-z0-9._/-]*$"
+          },
+          "data_classification": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "retention_class": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
         },
         "additionalProperties": true
@@ -48,6 +60,12 @@
       "type": "array"
     },
     "serialized_formats": {
+      "type": "array"
+    },
+    "retention_notes": {
+      "type": "array"
+    },
+    "compliance_notes": {
       "type": "array"
     }
   }

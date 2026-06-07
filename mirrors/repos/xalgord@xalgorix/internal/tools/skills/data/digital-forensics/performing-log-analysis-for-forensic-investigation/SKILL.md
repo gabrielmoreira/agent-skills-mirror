@@ -30,6 +30,16 @@ nist_csf:
 - For establishing evidence of unauthorized access or policy violations
 - When preparing forensic reports requiring detailed event chronology
 
+## Detection Gaps & Validation
+
+The events you never see are usually the important ones. Account for these before concluding a timeline is complete:
+
+- **Cleared/disabled logging looks like an alibi.** Windows Event ID 1102 (Security log cleared) and 104 (System log cleared) mark tampering; a sudden stop in 4624/4688 events often means auditing was turned off (4719) or the channel was cleared, not that the host was idle. On Linux, watch for truncated auth.log/journald gaps. Always note the earliest and latest event per channel and flag unexplained gaps.
+- **Missing-by-design coverage.** Process command lines (4688) require command-line auditing to be enabled; PowerShell content needs Script Block Logging (4104). Their absence is a visibility gap, not proof nothing ran — say so explicitly rather than reporting "no malicious execution found."
+- **Log rotation/retention silently drops evidence.** The incident may predate the oldest surviving log. Check rotation config and archived `.gz`/`.evtx.bak` before scoping initial access, and recover rotated/deleted EVTX from VSS or unallocated space when the window is missing.
+- **Cross-corroborate, never trust one source.** A logon (4624 Type 3/10) should match a network connection, a Prefetch/Amcache execution entry, and a file artifact. An authentication event with no corresponding process or network activity may be forged or replayed. Verify clock sync (NTP) across hosts — unsynced timestamps fabricate false sequences.
+- **Interpretation false positives.** 4625 failures are dominated by background brute-force and mistyped passwords; the pivotal event is the 4624 that follows. Logon Type 3 to a file server is routine SMB, not always lateral movement. Service installs (4697) and scheduled tasks (4698) are mostly legitimate — triage by image path and signer, not the event ID alone.
+
 ## Prerequisites
 - Access to collected log files (Windows Event Logs, syslog, application logs)
 - Log parsing tools (LogParser, jq, awk, or ELK stack)

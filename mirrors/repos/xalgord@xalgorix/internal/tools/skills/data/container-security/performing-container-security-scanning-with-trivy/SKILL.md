@@ -37,6 +37,17 @@ Trivy is an open-source security scanner by Aqua Security that detects vulnerabi
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Coverage Gaps & Validation
+
+A green Trivy run often means "found nothing where it looked", not "image is clean". Know what the defaults skip:
+
+- **Single scanner enabled:** plain `trivy image` runs `vuln` only - misconfigs, hardcoded secrets, and license issues are silently uncovered. Use `--scanners vuln,misconfig,secret,license` when you mean a full audit.
+- **`--severity` / `--ignore-unfixed` hide real risk:** filtering to `CRITICAL,HIGH` drops exploitable MEDIUMs, and `--ignore-unfixed` hides CVEs with no patch yet (still exploitable). Report what was filtered.
+- **App dependencies vs OS packages:** Trivy finds language libs only if the lockfile/manifest is in the image; vendored or statically linked deps and binaries built `FROM scratch`/distroless can yield few or zero results - a false sense of safety.
+- **Layer scope and image drift:** default `--scope squashed` misses secrets in intermediate layers (use `all-layers`); and the scanned image tag can differ from what's actually *running* in the cluster.
+
+**Validate completeness:** confirm the DB is current (`trivy image --download-db-only` / check `--cache-dir` age) - a stale DB misses new CVEs. Re-run with all scanners and no severity filter to gauge true counts, diff against the previously deployed digest, and for distroless images cross-check with an SBOM (`--format cyclonedx`) so you know which components were actually enumerated rather than skipped.
+
 ## Prerequisites
 
 - Trivy v0.50+ installed (binary, Docker, or Homebrew)

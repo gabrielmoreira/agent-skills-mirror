@@ -54,7 +54,7 @@ Mirror of `xerrors/Yuxi` — 26 default patterns, 7 followed patterns, 13 file(s
 - `ARCHITECTURE.md`
 - `docs/develop-guides/testing-guidelines.md`
 - `docs/develop-guides/design.md`
-- `docs/develop-guides/roadmap.md`
+- `docs/develop-guides/changelog.md`
 - `CONTRIBUTING.md`
 - `.github/PULL_REQUEST_TEMPLATE.md`
 - `docs/develop-guides/contributing.md`
@@ -70,13 +70,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`backend/package/yuxi/agents/skills/buildin/image-gen/SKILL.md`](backend/package/yuxi/agents/skills/buildin/image-gen/SKILL.md) |
 | 4 | ✓ | [`backend/package/yuxi/agents/skills/buildin/mysql-reporter/SKILL.md`](backend/package/yuxi/agents/skills/buildin/mysql-reporter/SKILL.md) |
 | 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`docs/develop-guides/changelog.md`](docs/develop-guides/changelog.md) |
+| 6 | ✓ | [`docs/develop-guides/roadmap.md`](docs/develop-guides/roadmap.md) |
 | 7 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
 | 8 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 10 | → | [`docs/develop-guides/contributing.md`](docs/develop-guides/contributing.md) |
-| 11 | → | [`docs/develop-guides/design.md`](docs/develop-guides/design.md) |
-| 12 | → | [`docs/develop-guides/roadmap.md`](docs/develop-guides/roadmap.md) |
+| 10 | → | [`docs/develop-guides/changelog.md`](docs/develop-guides/changelog.md) |
+| 11 | → | [`docs/develop-guides/contributing.md`](docs/develop-guides/contributing.md) |
+| 12 | → | [`docs/develop-guides/design.md`](docs/develop-guides/design.md) |
 | 13 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
 
 ---

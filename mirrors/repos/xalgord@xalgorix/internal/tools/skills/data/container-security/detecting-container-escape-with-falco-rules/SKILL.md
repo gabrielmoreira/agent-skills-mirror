@@ -41,6 +41,15 @@ Falco is a CNCF-graduated runtime security tool that monitors Linux syscalls to 
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Syscall variations bypass name matching:** the `escape_binaries` list and `proc.name = nsenter/mount` conditions are defeated by renaming the binary, statically linking it, or invoking the raw `setns`/`unshare`/`mount` syscalls directly. Prefer `evt.type` syscall conditions over `proc.name` for the escape path.
+- **`fd.name endswith release_agent`** catches the classic CVE-2022-0492 write, but a variant that first `unshare`s a new cgroup namespace and mounts a fresh cgroupfs uses a different path - add a rule on `mount` of `cgroup`/`cgroup2` from a container.
+- **`container.privileged=true` is unreliable** under some containerd versions, so *Launch Privileged Container* can silently miss; corroborate with `container.cap_effective` for SYS_ADMIN.
+- **Default rules at `maturity_stable`** may not include these escape rules until you load the custom `rules.d` file - confirm it is listed under `rules_files` in `falco.yaml`.
+- **Docker-socket rule** only matches the canonical `/var/run/docker.sock`; a bind mount at another path is missed.
+- **How to validate the rules fire:** run the two test pods from the Testing Rules section (`cat /etc/shadow`, `hostPID` + `nsenter`) and `falcosecurity/event-generator`; then `kubectl logs -n falco ... | grep -i escape` and confirm CRITICAL alerts for each rule.
+
 ## Prerequisites
 
 - Linux host with kernel 5.8+ (for eBPF driver) or kernel module support

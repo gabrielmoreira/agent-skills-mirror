@@ -32,6 +32,15 @@ AES (Advanced Encryption Standard) is a symmetric block cipher standardized by N
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **AES-ECB mode:** identical plaintext blocks produce identical ciphertext blocks (the "ECB penguin"). Never use `modes.ECB()` for data at rest — use AES-256-GCM (AEAD). Detect by encrypting a buffer of repeated 16-byte blocks and checking the ciphertext for repeated blocks.
+- **Static or reused GCM nonce:** reusing a 96-bit nonce with the same key is catastrophic — it leaks the XOR of plaintexts and allows authentication-key recovery. Generate the nonce with `os.urandom(12)` per message; never hardcode it. Verify nonces differ across two encryptions of the same plaintext.
+- **CBC/CTR without a MAC (no auth tag):** unauthenticated ciphertext is malleable and enables padding-oracle attacks. Use GCM/CCM, or encrypt-then-HMAC.
+- **Dropping/ignoring the GCM tag on decrypt:** decryption MUST fail if the tag is wrong.
+- **Raw password as key, or weak KDF:** derive with PBKDF2 (≥600k iters) or Argon2id; use a random per-file salt.
+- **The critical test — tamper rejection:** flip one byte of the ciphertext (or the tag) and confirm decryption raises `InvalidTag` and returns NO plaintext. A scheme that returns data after tampering is broken. Also confirm decrypt with the wrong key fails rather than yielding garbage.
+
 ## Prerequisites
 
 - Familiarity with cryptography concepts and tools

@@ -39,6 +39,15 @@ nist_csf:
 - When integrating browser isolation with existing SWG and ZTNA infrastructure
 - When protecting against phishing and credential theft via isolated rendering
 
+## Common Misconfigurations & Verification
+
+- **Policy order beats intent:** a broad `Allow Trusted SaaS Direct` rule placed above `Block Uncategorized Sites` short-circuits isolation for any domain that also matches a wildcard like `*.microsoft.com`. Verify effective order with `engine.list_policies()` and place the most permissive rules last.
+- **CDR allowed-types gap:** an `allowed_file_types` list that omits a format lets those downloads pass **un-sanitized** instead of being blocked. Confirm macros are stripped by downloading a known macro-laden `.docx` and checking `threats_found > 0` plus a smaller reconstructed size.
+- **DLP fail-open:** if `disable_download`/`disable_copy_paste` default to `False`, an unmatched session inherits no restrictions. Set a deny-by-default `default_isolation_mode` and confirm an uncategorized URL returns `full_isolation`.
+- **Conditional-access rule never evaluated:** posture rules only fire if the IdP actually delivers `managed`/`edr_running`; missing attributes silently skip the rule.
+
+**Verification:** run `engine.evaluate_access_request()` for (1) an uncategorized high-risk URL → expect `full_isolation`, (2) an unmanaged device → expect download/upload disabled, and (3) a webmail domain → expect `read_only_isolation`. A request that returns `allow_direct` for an unknown domain is a misconfiguration, not a pass.
+
 ## Prerequisites
 
 - Familiarity with Zero Trust architecture principles and network security

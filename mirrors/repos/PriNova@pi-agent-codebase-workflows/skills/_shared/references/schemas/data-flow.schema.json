@@ -31,12 +31,63 @@
       "items": {
         "type": "object",
         "required": [
-          "id"
+          "id",
+          "trigger",
+          "inputs",
+          "steps",
+          "outputs",
+          "error_states",
+          "trust_boundaries",
+          "sensitive_data",
+          "risk_refs"
         ],
         "properties": {
           "id": {
             "type": "string",
             "pattern": "^flow:[a-z0-9][a-z0-9._/-]*$"
+          },
+          "trigger": {
+            "type": [
+              "string",
+              "object"
+            ]
+          },
+          "inputs": {
+            "type": "array"
+          },
+          "steps": {
+            "type": "array"
+          },
+          "outputs": {
+            "type": "array"
+          },
+          "error_states": {
+            "type": "array"
+          },
+          "trust_boundaries": {
+            "type": "array"
+          },
+          "sensitive_data": {
+            "type": "array"
+          },
+          "risk_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^risk:[a-z0-9][a-z0-9._/-]*$"
+            }
+          },
+          "degradation_notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "recovery_notes": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
         },
         "additionalProperties": true

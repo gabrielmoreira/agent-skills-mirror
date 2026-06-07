@@ -32,6 +32,16 @@ nist_csf:
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+- **Rule exceptions are an evasion surface:** the `not proc.pname in (docker-entrypo, supervisord)` exclusion in the shell rule means an attacker who renames or reparents under those names evades it. Audit every `not ...` clause and anchor conditions on `proc.exepath`/`container.image` rather than `proc.pname`.
+- **No driver = no events:** Falco needs a working kernel module or eBPF probe. If the driver fails to load, Falco runs but sees zero syscalls. Verify the driver loaded with `falco --version` and confirm events flow by triggering a known action.
+- **Syscall drops silently lose alerts:** under load the ring buffer overflows. Monitor `falco_n_drops`/`n_evts` (Prometheus metrics or the periodic stats line) - nonzero drops mean missed detections, not a quiet host.
+- **Detection is not prevention, and alerts must leave the node first:** an attacker can kill `falco` or wipe `/var/log/falco/alerts.json`. Ship alerts off-host immediately via the gRPC output / Falcosidekick so evidence survives node compromise.
+- **K8s context needs the audit feed:** `container.*`/`k8s.*` fields and the k8s audit rules require the API audit log / metadata plugin wired in; without it, pod/namespace attribution is blank.
+- **How to confirm coverage:** `kubectl exec -it <pod> -- sh` into a workload and confirm the "Shell Spawned in Container" alert appears in `alerts.json` with the right `container.name`/`image`; read a sensitive file and confirm the file-access rule fires.
+- **Don't conclude the cluster is clean until** the driver is confirmed loaded, `falco_n_drops` is zero over the window, alerts are shown arriving at the off-node sink, and a synthetic shell/file-read actually triggers.
+
 ## Prerequisites
 
 - Familiarity with cloud security concepts and tools

@@ -36,6 +36,17 @@ nist_csf:
 
 **Do not use** for legitimate cryptocurrency mining operations, for non-cloud mining detection on physical hardware, or for general malware analysis unrelated to mining activity.
 
+## Detection Gaps & Validation
+
+How miners evade these signals:
+- **TLS / pool-proxy mining defeats port matching.** `xmrig --tls`, Nicehash, and pool front-ends ride TCP 443, so the `DestPort in (3333,4444,5555,...)` flow query misses them — correlate DNS/SNI to known pool domains and runtime process names, not ports alone.
+- **DNS-over-HTTPS** hides pool lookups from DNS query logs entirely; lean on GuardDuty `CryptoCurrency:Runtime/*` and Falco rather than network metadata.
+- **GPU mining evades `CPUUtilization`** (no GPU metric by default), and throttled miners deliberately stay under the 90% alarm threshold.
+- **Cost Anomaly Detection has ~24h latency** — useless against burst-and-burn; for fast detection rely on `CryptoCurrency:EC2/BitcoinTool.B`, `Impact:Runtime/CryptoMinerExecuted`, and Runtime Monitoring.
+- Attackers run `Stealth:IAMUser/CloudTrailLoggingDisabled` and mine in unused regions — enumerate detectors in all regions.
+
+Validate: `aws guardduty create-sample-findings --finding-types CryptoCurrency:EC2/BitcoinTool.B` and confirm the EventBridge `{"prefix":"CryptoCurrency:"}` rule fires into the remediation Lambda; FP-tune by tagging legitimate HPC/batch/render instances and excluding them, not by raising thresholds blindly.
+
 ## Prerequisites
 
 - Amazon GuardDuty enabled with Runtime Monitoring for EC2, ECS, and EKS

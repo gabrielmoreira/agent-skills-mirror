@@ -35,6 +35,17 @@ A Privileged Access Workstation (PAW) is a hardened device dedicated to performi
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+A PAW that can reach the internet or run arbitrary code is no longer a PAW — these gaps quietly void the control:
+
+- **Internet/email/browsing left enabled:** the #1 failure. A PAW must be denied general web and email so it cannot be phished or download payloads. Verify with a proxy/firewall test from the PAW — arbitrary outbound HTTPS and mail must be blocked, allowing only approved management endpoints (Intune, PAM, specific admin URLs).
+- **Tier mixing:** admins use the PAW to manage Tier-0 *and* browse Tier-2 / read email, collapsing the tier boundary. Confirm the clean-source / tiered model: Tier-0 credentials are never entered on a non-PAW device and vice versa. Audit sign-in logs for Tier-0 accounts authenticating from non-PAW devices.
+- **Credential Guard / VBS not actually on:** hardening is documented but not enforced. Verify on-device: `Get-CimInstance -ClassName Win32_DeviceGuard -Namespace root\Microsoft\Windows\DeviceGuard` shows `SecurityServicesRunning` includes Credential Guard, and confirm AppLocker is in *enforce* (not audit) mode.
+- **JIT elevation degenerates into standing admin:** verify time-bound group membership actually expires (re-check the privileged group after the window) rather than leaving the account permanently in Domain Admins.
+- **Device compliance not gating access:** confirm Conditional Access requires a compliant/PAW device for admin portals, so a non-compliant machine cannot use vaulted creds.
+- **PAM checkout bypass:** confirm admins check credentials out through CyberArk/BeyondTrust (with recording) rather than using locally cached or memorized privileged passwords.
+
 ## Prerequisites
 
 - Windows 10/11 Enterprise with Virtualization Based Security (VBS)

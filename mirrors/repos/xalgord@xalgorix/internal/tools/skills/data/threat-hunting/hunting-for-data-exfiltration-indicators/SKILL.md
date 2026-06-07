@@ -44,6 +44,15 @@ nist_csf:
 - During incident response to determine what data was stolen
 - When threat intel indicates data exfiltration campaigns targeting your sector
 
+## Detection Gaps & Validation
+
+- **"Low and slow" defeats volume thresholds:** T1030 size-limited transfers and T1029 scheduled exfil stay under daily-byte baselines — sum bytes-out per destination over 7–30 days and alert on cumulative volume, not single sessions.
+- **DNS tunneling (T1048.003):** encoded data in long/high-entropy subdomains and high TXT query rates needs DNS logs (Sysmon EID 22 or resolver logs) plus entropy/length scoring — invisible if only NXDOMAIN or aggregated DNS is retained.
+- **Encrypted upload blind spots:** HTTPS POSTs to personal cloud (T1567.002 — Drive/Dropbox/OneDrive) look like normal TLS; without CASB/DLP body inspection you only have bytes-out + destination — pivot on a high out:in byte ratio and newly-seen destinations.
+- **Direction matters:** flag asymmetric flows where `bytes_out >> bytes_in` to non-corporate ASNs; many rules only watch inbound.
+- **Validate:** run Atomic Red Team **T1048** (DNS/ICMP exfil) and **T1567.002** (cloud upload) and confirm the volume-anomaly and DNS-entropy searches fire with the test host/destination.
+- **Tune FPs:** backups, cloud sync (OneDrive/Box), software updates, and video uploads create large legitimate egress — baseline per-user/per-host to sanctioned destinations and exclude known backup targets.
+
 ## Prerequisites
 
 - Network proxy/firewall logs with byte-level data transfer metrics

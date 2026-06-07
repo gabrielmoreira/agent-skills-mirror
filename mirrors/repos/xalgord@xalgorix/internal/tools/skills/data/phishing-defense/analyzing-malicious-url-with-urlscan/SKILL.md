@@ -36,6 +36,15 @@ URLScan.io is a free service for scanning and analyzing suspicious URLs. It capt
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Cloaking and geofencing:** phishing kits serve a benign page to datacenter/scanner IPs (urlscan's egress) and reveal the real credential form only to victim geos/User-Agents. A clean verdict over a generic landing page is NOT proof of safety - re-scan with `country=` set to the target region and a mobile UA.
+- **Cached vs. live result:** verify you are not viewing a stale scan; submit a fresh `visibility: private` scan because attackers rotate payloads and tear down infrastructure within hours.
+- **MFA/AiTM proxies:** an AiTM page (Evilginx/Tycoon 2FA) mirrors the real login and often shows a legitimate-looking Microsoft/Okta screenshot - judge on the domain, cert, and redirect chain, not the screenshot.
+- **CAPTCHA / Cloudflare Turnstile gates** and multi-hop redirects can stop the crawler before the phishing page loads; follow the redirect chain manually and look for the gate.
+- **Confirm a hit:** correlate the urlscan verdict (malicious) with a credential `<form action>` posting off-domain, a newly registered domain (<30 days), brand logos served from a non-brand ASN, and a second source (VirusTotal/PhishTank). Do not conclude benign from a single clean scan.
+- **FP tuning:** legitimate SSO and link-wrappers (Proofpoint urldefense, Microsoft Safe Links) also chain redirects - allowlist known wrapper domains before alerting.
+
 ## Prerequisites
 - URLScan.io account (free tier available, API key for automation)
 - Python 3.8+ with requests library

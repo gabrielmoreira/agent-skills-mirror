@@ -34,6 +34,17 @@ Deploy SailPoint IdentityNow or IdentityIQ for identity governance and administr
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+Governance theater is common — campaigns run and reports look clean while access keeps drifting:
+
+- **Rubber-stamp certifications:** reviewers bulk-approve everything. Pull the campaign decision stats from IdentityNow (`GET /v3/certifications/{id}/decision-summary`) and flag any reviewer with ~100% approve rate and near-zero dwell time; those certifications are not real attestations.
+- **Aggregation/account correlation gaps:** orphan and uncorrelated accounts never enter a campaign, so they are never reviewed. Run the source aggregation and confirm uncorrelated-account count is ~0; entitlements on un-aggregated sources are invisible to SOD and certs.
+- **SOD policies defined but in "simulate"/not enforced:** verify each Separation-of-Duties policy is `active`/enforcing (not preview) and check the violation report has named owners and remediation, not just a count.
+- **Joiner/Mover/Leaver de-provisioning not closing the loop:** test a mover — change a user's department and confirm old entitlements are *removed*, not just new ones added (accumulation is the #1 silent failure). For leavers, confirm the leaver event actually disables/deletes downstream accounts, not only the authoritative source record.
+- **Role explosion / birthright over-grant:** confirm mined roles map to least privilege and that birthright access does not silently include privileged entitlements.
+- **Audit events not reaching SIEM:** verify access-grant, cert-decision, and SOD-violation events are forwarded and alertable, not just stored in SailPoint.
+
 ## Prerequisites
 
 - Familiarity with identity access management concepts and tools

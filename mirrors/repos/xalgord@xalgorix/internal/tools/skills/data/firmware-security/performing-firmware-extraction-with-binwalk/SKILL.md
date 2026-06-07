@@ -38,6 +38,14 @@ nist_csf:
 
 **Do not use** for analyzing standard desktop application binaries or malware samples that are not firmware images; use dedicated malware analysis tools instead.
 
+## Most Often Missed & How to Confirm
+
+- **Encrypted regions read as "nothing found":** if `binwalk -E firmware.bin` shows a flat high-entropy plateau (~7.99-8.0) with no signatures, the image (or a partition) is encrypted or compressed, not empty. Don't conclude "no filesystem" — locate the boundary where entropy drops and treat the high-entropy block as a carve target.
+- **Custom/unknown filesystems binwalk skips:** vendor-modified SquashFS (TP-Link, D-Link, Netgear) fails standard `unsquashfs`; retry with `sasquatch`. Unrecognized magic means manual offset carving with `dd if=firmware.bin of=fs.bin bs=1 skip=<offset> count=<size>` based on the signature/entropy map.
+- **Headers hide the payload:** a proprietary update header before the real image blocks signature detection — strip the leading bytes (`dd ... skip=<header_len>`) and re-scan.
+- **Keys before brute force:** check the bootloader, previous unencrypted firmware versions, and `strings` output for embedded AES keys/IVs before attempting to brute-force known vendor keys.
+- **How to confirm extraction succeeded:** the win condition is a mountable root filesystem — run `binwalk -Me` for recursive (matryoshka) extraction, then verify by mounting/extracting the rootfs (`unsquashfs -d root fs.bin`) and confirming a real Linux tree exists (`/etc/passwd`, `/bin/busybox`, init scripts). A pile of carved blobs with no mountable rootfs is not a successful extraction.
+
 ## Prerequisites
 
 - binwalk v3.x installed (`pip install binwalk3` or from system package manager)

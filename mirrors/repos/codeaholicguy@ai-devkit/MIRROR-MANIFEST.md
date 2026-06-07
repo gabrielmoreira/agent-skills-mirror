@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `codeaholicguy/ai-devkit` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `codeaholicguy/ai-devkit` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `codeaholicguy/ai-devkit` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 35 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,41 +59,43 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/agent-orchestration/agents/openai.yaml`](skills/agent-orchestration/agents/openai.yaml) |
-| 2 | ✓ | [`skills/agent-orchestration/SKILL.md`](skills/agent-orchestration/SKILL.md) |
-| 3 | ✓ | [`skills/dev-lifecycle/agents/openai.yaml`](skills/dev-lifecycle/agents/openai.yaml) |
-| 4 | ✓ | [`skills/dev-lifecycle/references/check-implementation.md`](skills/dev-lifecycle/references/check-implementation.md) |
-| 5 | ✓ | [`skills/dev-lifecycle/references/code-review.md`](skills/dev-lifecycle/references/code-review.md) |
-| 6 | ✓ | [`skills/dev-lifecycle/references/execute-plan.md`](skills/dev-lifecycle/references/execute-plan.md) |
-| 7 | ✓ | [`skills/dev-lifecycle/references/new-requirement.md`](skills/dev-lifecycle/references/new-requirement.md) |
-| 8 | ✓ | [`skills/dev-lifecycle/references/review-design.md`](skills/dev-lifecycle/references/review-design.md) |
-| 9 | ✓ | [`skills/dev-lifecycle/references/review-requirements.md`](skills/dev-lifecycle/references/review-requirements.md) |
-| 10 | ✓ | [`skills/dev-lifecycle/references/update-planning.md`](skills/dev-lifecycle/references/update-planning.md) |
-| 11 | ✓ | [`skills/dev-lifecycle/references/worktree-setup.md`](skills/dev-lifecycle/references/worktree-setup.md) |
-| 12 | ✓ | [`skills/dev-lifecycle/references/writing-test.md`](skills/dev-lifecycle/references/writing-test.md) |
-| 13 | ✓ | [`skills/dev-lifecycle/scripts/check-status.sh`](skills/dev-lifecycle/scripts/check-status.sh) |
-| 14 | ✓ | [`skills/dev-lifecycle/SKILL.md`](skills/dev-lifecycle/SKILL.md) |
-| 15 | ✓ | [`skills/document-code/agents/openai.yaml`](skills/document-code/agents/openai.yaml) |
-| 16 | ✓ | [`skills/document-code/SKILL.md`](skills/document-code/SKILL.md) |
-| 17 | ✓ | [`skills/index.json`](skills/index.json) |
-| 18 | ✓ | [`skills/memory/agents/openai.yaml`](skills/memory/agents/openai.yaml) |
-| 19 | ✓ | [`skills/memory/SKILL.md`](skills/memory/SKILL.md) |
-| 20 | ✓ | [`skills/registry.json`](skills/registry.json) |
-| 21 | ✓ | [`skills/security-review/agents/openai.yaml`](skills/security-review/agents/openai.yaml) |
-| 22 | ✓ | [`skills/security-review/references/checklist.md`](skills/security-review/references/checklist.md) |
-| 23 | ✓ | [`skills/security-review/SKILL.md`](skills/security-review/SKILL.md) |
-| 24 | ✓ | [`skills/simplify-implementation/agents/openai.yaml`](skills/simplify-implementation/agents/openai.yaml) |
-| 25 | ✓ | [`skills/simplify-implementation/references/readability-guide.md`](skills/simplify-implementation/references/readability-guide.md) |
-| 26 | ✓ | [`skills/simplify-implementation/SKILL.md`](skills/simplify-implementation/SKILL.md) |
-| 27 | ✓ | [`skills/structured-debug/agents/openai.yaml`](skills/structured-debug/agents/openai.yaml) |
-| 28 | ✓ | [`skills/structured-debug/SKILL.md`](skills/structured-debug/SKILL.md) |
-| 29 | ✓ | [`skills/tdd/agents/openai.yaml`](skills/tdd/agents/openai.yaml) |
-| 30 | ✓ | [`skills/tdd/SKILL.md`](skills/tdd/SKILL.md) |
-| 31 | ✓ | [`skills/technical-writer/agents/openai.yaml`](skills/technical-writer/agents/openai.yaml) |
-| 32 | ✓ | [`skills/technical-writer/SKILL.md`](skills/technical-writer/SKILL.md) |
-| 33 | ✓ | [`skills/verify/agents/openai.yaml`](skills/verify/agents/openai.yaml) |
-| 34 | ✓ | [`skills/verify/SKILL.md`](skills/verify/SKILL.md) |
-| 35 | ✓ | [`web/public/llms.txt`](web/public/llms.txt) |
+| 1 | ✓ | [`skills/agent-communication/agents/openai.yaml`](skills/agent-communication/agents/openai.yaml) |
+| 2 | ✓ | [`skills/agent-communication/SKILL.md`](skills/agent-communication/SKILL.md) |
+| 3 | ✓ | [`skills/agent-orchestration/agents/openai.yaml`](skills/agent-orchestration/agents/openai.yaml) |
+| 4 | ✓ | [`skills/agent-orchestration/SKILL.md`](skills/agent-orchestration/SKILL.md) |
+| 5 | ✓ | [`skills/dev-lifecycle/agents/openai.yaml`](skills/dev-lifecycle/agents/openai.yaml) |
+| 6 | ✓ | [`skills/dev-lifecycle/references/check-implementation.md`](skills/dev-lifecycle/references/check-implementation.md) |
+| 7 | ✓ | [`skills/dev-lifecycle/references/code-review.md`](skills/dev-lifecycle/references/code-review.md) |
+| 8 | ✓ | [`skills/dev-lifecycle/references/execute-plan.md`](skills/dev-lifecycle/references/execute-plan.md) |
+| 9 | ✓ | [`skills/dev-lifecycle/references/new-requirement.md`](skills/dev-lifecycle/references/new-requirement.md) |
+| 10 | ✓ | [`skills/dev-lifecycle/references/review-design.md`](skills/dev-lifecycle/references/review-design.md) |
+| 11 | ✓ | [`skills/dev-lifecycle/references/review-requirements.md`](skills/dev-lifecycle/references/review-requirements.md) |
+| 12 | ✓ | [`skills/dev-lifecycle/references/update-planning.md`](skills/dev-lifecycle/references/update-planning.md) |
+| 13 | ✓ | [`skills/dev-lifecycle/references/worktree-setup.md`](skills/dev-lifecycle/references/worktree-setup.md) |
+| 14 | ✓ | [`skills/dev-lifecycle/references/writing-test.md`](skills/dev-lifecycle/references/writing-test.md) |
+| 15 | ✓ | [`skills/dev-lifecycle/scripts/check-status.sh`](skills/dev-lifecycle/scripts/check-status.sh) |
+| 16 | ✓ | [`skills/dev-lifecycle/SKILL.md`](skills/dev-lifecycle/SKILL.md) |
+| 17 | ✓ | [`skills/document-code/agents/openai.yaml`](skills/document-code/agents/openai.yaml) |
+| 18 | ✓ | [`skills/document-code/SKILL.md`](skills/document-code/SKILL.md) |
+| 19 | ✓ | [`skills/index.json`](skills/index.json) |
+| 20 | ✓ | [`skills/memory/agents/openai.yaml`](skills/memory/agents/openai.yaml) |
+| 21 | ✓ | [`skills/memory/SKILL.md`](skills/memory/SKILL.md) |
+| 22 | ✓ | [`skills/registry.json`](skills/registry.json) |
+| 23 | ✓ | [`skills/security-review/agents/openai.yaml`](skills/security-review/agents/openai.yaml) |
+| 24 | ✓ | [`skills/security-review/references/checklist.md`](skills/security-review/references/checklist.md) |
+| 25 | ✓ | [`skills/security-review/SKILL.md`](skills/security-review/SKILL.md) |
+| 26 | ✓ | [`skills/simplify-implementation/agents/openai.yaml`](skills/simplify-implementation/agents/openai.yaml) |
+| 27 | ✓ | [`skills/simplify-implementation/references/readability-guide.md`](skills/simplify-implementation/references/readability-guide.md) |
+| 28 | ✓ | [`skills/simplify-implementation/SKILL.md`](skills/simplify-implementation/SKILL.md) |
+| 29 | ✓ | [`skills/structured-debug/agents/openai.yaml`](skills/structured-debug/agents/openai.yaml) |
+| 30 | ✓ | [`skills/structured-debug/SKILL.md`](skills/structured-debug/SKILL.md) |
+| 31 | ✓ | [`skills/tdd/agents/openai.yaml`](skills/tdd/agents/openai.yaml) |
+| 32 | ✓ | [`skills/tdd/SKILL.md`](skills/tdd/SKILL.md) |
+| 33 | ✓ | [`skills/technical-writer/agents/openai.yaml`](skills/technical-writer/agents/openai.yaml) |
+| 34 | ✓ | [`skills/technical-writer/SKILL.md`](skills/technical-writer/SKILL.md) |
+| 35 | ✓ | [`skills/verify/agents/openai.yaml`](skills/verify/agents/openai.yaml) |
+| 36 | ✓ | [`skills/verify/SKILL.md`](skills/verify/SKILL.md) |
+| 37 | ✓ | [`web/public/llms.txt`](web/public/llms.txt) |
 
 ---
 

@@ -35,6 +35,14 @@ Semgrep is an open-source static analysis tool that uses pattern-matching to fin
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Pattern too narrow:** a rule keyed on `cursor.execute(f"..." % ...)` misses `db.exec`, aliased imports, and method chains. Use `pattern-either`, `metavariable-regex`, and `mode: taint` (sources/sinks/sanitizers) so refactors don't slip past the rule.
+- **Rule never runs:** custom rules under `./custom-rules/` are silently skipped unless passed via `--config ./custom-rules/`. Confirm with `semgrep --config ./custom-rules/ --validate` and check the "Rules run" count in output.
+- **No autofix test:** a `fix:` block can produce broken code. Always add `# ruleid:` and `# ok:` annotations and run `semgrep --test rules/` so true/false positives are pinned before merge.
+- **Gate doesn't fail the build:** `semgrep --config auto .` exits 0 by default. In CI use `semgrep ci --error` (or `--severity ERROR` with a non-zero exit) — a SARIF upload alone never blocks a PR.
+- **Verify by introducing a finding:** drop a known-bad snippet matching your rule (e.g. `jwt.decode(t, algorithms=["none"])`) into a scratch file, confirm the rule fires at ERROR and the job exits non-zero, then delete it. A rule that never fired on a planted bug is not protecting anything.
+
 ## Prerequisites
 
 - Python 3.8+ or Docker

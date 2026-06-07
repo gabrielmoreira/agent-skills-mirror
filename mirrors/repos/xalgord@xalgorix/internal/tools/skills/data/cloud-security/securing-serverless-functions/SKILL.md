@@ -36,6 +36,17 @@ nist_csf:
 
 **Do not use** for container-based compute security (see securing-kubernetes-on-cloud), for API Gateway configuration (see implementing-cloud-waf-rules), or for serverless architecture design decisions.
 
+## Common Misconfigurations & Verification
+
+- **Shared execution roles:** one role across many functions means scoping one doesn't shrink the others' blast radius. Confirm distinct `Role` ARNs via `aws lambda list-functions --query 'Functions[*].[FunctionName,Role]'`.
+- **Secrets half-migrated:** plaintext copies left in `Environment.Variables`, or `--kms-key-arn` never set so env vars use only the default key. Confirm no sensitive keys remain in the env and a CMK is attached.
+- **Secret ARN mismatch:** caching in a module global is correct, but the `secretsmanager:GetSecretValue` resource ARN must include the random 6-char suffix (`-??????` or a wildcard) or runtime lookups fail with AccessDenied.
+- **Two exposure doors:** Function URL `AuthType: NONE` AND resource policies with `Principal: *`; also API Gateway authorizers set to NONE. Check all three.
+- **Weak input validation:** jsonschema must set `additionalProperties: false` and validate before any DB/shell use - WAF rules alone are bypassable via encoding.
+- **Dependency scan that doesn't gate:** `snyk monitor` reports but never fails the build. Use `npm audit --audit-level=high`, `pip-audit`, or `snyk test --severity-threshold=high` with a non-zero exit.
+
+**Verify it actually works:** invoke the Function URL unauthenticated (expect `403`); send a malformed event (expect `400` from schema validation); run `aws iam simulate-principal-policy` to confirm least privilege; and confirm GuardDuty Lambda protection shows the `LAMBDA_NETWORK_ACTIVITY_LOGS` feature `ENABLED`.
+
 ## Prerequisites
 
 - AWS Lambda, Azure Functions, or GCP Cloud Functions with deployment access

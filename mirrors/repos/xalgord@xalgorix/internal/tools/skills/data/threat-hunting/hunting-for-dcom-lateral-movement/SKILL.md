@@ -54,6 +54,14 @@ Distributed Component Object Model (DCOM) enables remote execution of COM object
 
 **Do not use** as a replacement for EDR-based lateral movement detection, without Sysmon or equivalent process telemetry deployed on endpoints, or in isolation without correlating network-level and host-level indicators.
 
+## Detection Gaps & Validation
+
+- **ShellWindows/ShellBrowserWindow create NO new COM server process.** Commands run as children of an existing `explorer.exe`, so rules watching only `mmc.exe`/`dllhost.exe` parents miss them entirely (T1021.003). Hunt `explorer.exe` → `cmd.exe`/`powershell.exe` on hosts with no interactive (Type 2/10) logon.
+- **Objects beyond the big three have no signatures:** `Excel.Application`, `Visio.Application`, `Outlook.Application` DDE/`ShellExecute` paths are abused but rarely rule-covered.
+- **Filtering `LogonId 0x3e7` hides SYSTEM-context relays** — don't blanket-exclude it.
+- **Validate the hunt fires:** run Impacket `dcomexec.py -object MMC20 ...` (and `-object ShellWindows`) or Atomic Red Team T1021.003. Confirm Sysmon EID 1 parent-child chain plus EID 3 inbound TCP 135 followed by an ephemeral 49152-65535 connection within ~60s.
+- **FP tuning:** SCCM/management tooling and admins launching `cmd` from Explorer context menus; baseline by source subnet, account, and presence of a preceding Type 3 NTLM/Kerberos logon (4624).
+
 ## Prerequisites
 
 - Sysmon deployed on endpoints with configuration capturing Event ID 1 (Process Create), Event ID 3 (Network Connection), Event ID 7 (Image Loaded), and Event ID 10 (Process Access)

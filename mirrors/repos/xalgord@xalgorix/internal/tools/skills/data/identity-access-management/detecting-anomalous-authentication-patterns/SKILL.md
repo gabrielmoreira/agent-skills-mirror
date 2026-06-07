@@ -45,6 +45,14 @@ nist_csf:
 
 **Do not use** for static rule-based alerting on single failed logins; anomaly detection requires statistical baselines across time and entity dimensions to reduce false positives.
 
+## Detection Gaps & Validation
+
+- **Sign-in log blind spots:** Azure AD only logs token *issuance*, not token *use*. Refresh-token replay, OAuth illicit-consent grants, and primary-refresh-token (PRT) theft produce few or no interactive sign-in events — pull `AADNonInteractiveUserSignInLogs` and audit/consent logs, not just the interactive table, or compromise is invisible.
+- **Legacy auth masks geography:** basic-auth (IMAP/POP/SMTP, error code `50126`/`53003`) and pass-through clients often report no/wrong location, so impossible-travel logic silently skips them. Treat legacy-protocol success as its own high-severity signal rather than feeding it to the geo model.
+- **Error-code semantics:** `50140` (interrupted), `50074` (MFA required), `50158` (external CA satisfied), `530032` (blocked by CA) change what "success" means. A model keying only on `errorCode==0` misclassifies MFA-failed and CA-blocked events — confirm `mfa_result` succeeded *and* `riskLevelDuringSignIn` before calling a login clean.
+- **Impossible-travel false negatives:** corporate VPN/egress NAT and cloud-VPS hops collapse distance to ~0 and hide real travel; missing geo-coordinates cause the 100 km / 900 km/h check to skip the pair entirely. Validate against known VPN ranges and alert when coordinates are null rather than dropping the event.
+- **How to validate:** replay a labeled incident (password spray → successful login) through the pipeline and confirm it scores CRITICAL; reconcile detected counts against raw `SigninLogs` to catch dropped events, and confirm anomalies correlate across IdPs for users with Okta + Entra accounts.
+
 ## Prerequisites
 
 - Authentication log sources (Azure AD/Entra ID sign-in logs, Okta system logs, Active Directory event logs 4624/4625/4648/4768/4771)

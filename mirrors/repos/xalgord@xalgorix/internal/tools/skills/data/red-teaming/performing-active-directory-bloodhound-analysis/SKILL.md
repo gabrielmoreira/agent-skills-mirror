@@ -41,6 +41,15 @@ BloodHound is an open-source Active Directory reconnaissance tool that uses grap
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- Run `SharpHound.exe -c All`, not the default set: ACLs, ADCS/CertServices, LocalGroup/RDP/DCOM, Sessions, and GPOLocalGroup are the edges that build paths. A "-c Default" or "-c DCOnly" run silently drops AdminTo, HasSession, and ESC1-ESC8 cert edges and makes a vulnerable domain look clean.
+- Session data is the most commonly missed: run `-c Session --loop --loopduration 02:00:00` over time, since a single snapshot misses the DA logon that completes the path.
+- ADCS is frequently skipped — without the CE certificate edges you never see ESC1 (`Enroll` + `EnrollmentAgent`) or ESC8 (NTLM relay to web enrollment) paths.
+- Mark owned/high-value nodes (right-click > Mark as Owned) before running shortestPath; unmarked graphs return "no path" even when one exists.
+- Positive signal: a non-empty `shortestPath` to `DOMAIN ADMINS@<DOMAIN>` returned in the GUI, or a Cypher count > 0 for Kerberoastable/DCSync/Unconstrained nodes.
+- Don't conclude "no attack path" until: (1) collection used `-c All` with no LDAP/collection errors in the SharpHound log, (2) at least one looped Session collection completed, (3) ADCS/cert data imported, (4) your foothold user is marked Owned, and (5) you checked cross-domain/forest edges (TrustedBy) — a path may only exist through a trusted domain.
+
 ## Prerequisites
 
 - Initial foothold on a domain-joined Windows system (or valid domain credentials)

@@ -46,6 +46,17 @@ nist_csf:
 
 **Do not use** as a replacement for GCP Security Command Center Premium for real-time threat detection, for application-level vulnerability scanning (use Web Security Scanner), or for GKE-specific security (use GKE Security Posture).
 
+## Most Often Missed & How to Confirm
+
+- **IAM inheritance is the #1 miss:** bindings flow org → folder → project, so auditing only project policies misses org/folder-level `roles/owner` and `allUsers` grants. Use `gcloud asset search-all-iam-policies --scope=organizations/ORG_ID`, not per-project `get-iam-policy`.
+- **Partial results look clean:** `search-all-iam-policies` only returns what your caller can see. Without `roles/cloudasset.viewer` at org scope it returns a subset, not an error - verify your scope coverage before trusting "no findings."
+- **Empty SCC ≠ secure:** findings only exist for enabled detectors. Confirm Security Health Analytics / Event Threat Detection are enabled (`gcloud scc settings services`) before treating an empty result as a pass.
+- **Conditional bindings and deny policies:** a binding can look permissive but be gated by `bindings[].condition`, or shadowed by an org deny policy - inspect both, don't read the role alone.
+- **Default service accounts** (`*-compute@developer.gserviceaccount.com`, AppEngine) often retain `roles/editor` and rarely surface as "users" - check them explicitly.
+- **Storage:** legacy ACLs grant access even when IAM looks clean. Check `gsutil iam get` AND `gsutil acl get`, plus uniform bucket-level access status.
+
+**How to confirm a hit (avoid false negatives):** for a suspected public bucket, actually `gsutil ls`/`curl` it anonymously; for an over-broad binding use `gcloud asset analyze-iam-policy` to prove the member can reach the resource. **Don't conclude negative until:** org + folder + project IAM are all audited, SCC detectors are confirmed enabled, default SAs are checked, and both ACLs and IAM are evaluated for storage.
+
 ## Prerequisites
 
 - GCP Organization with Organization Admin or Security Admin IAM role

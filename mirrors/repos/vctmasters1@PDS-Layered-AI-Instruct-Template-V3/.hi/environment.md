@@ -20,7 +20,7 @@
 | [Per-Stack Containment](#per-stack-containment) | TypeScript/Node, Python, C/C++ — preferred isolation per stack |
 | [Devcontainers & Docker](#devcontainers--docker) | When to recommend, what to scaffold |
 | [AI Behavior Rules](#ai-behavior-rules) | What the AI must do, ask, or refuse |
-| [`/hip-env-check`](#ai-env-check) | Audit prompt that reports the workspace's isolation state |
+| [`/ai-env-check`](#ai-env-check) | Audit prompt that reports the workspace's isolation state |
 
 ---
 
@@ -69,7 +69,7 @@ Run these checks before any host-mutating command. The first positive match mean
 
 If none match, the shell is **on the host**.
 
-The [`/hip-env-check`](#ai-env-check) prompt automates this audit and reports findings.
+The [`/ai-env-check`](#ai-env-check) prompt automates this audit and reports findings.
 
 ---
 
@@ -97,7 +97,7 @@ The [`/hip-env-check`](#ai-env-check) prompt automates this audit and reports fi
 
 ## Per-Stack Containment
 
-For each stack the project uses, prefer the listed containment. The [`/hip-env-check`](#ai-env-check) prompt can scaffold these on request.
+For each stack the project uses, prefer the listed containment. The [`/ai-env-check`](#ai-env-check) prompt can scaffold these on request.
 
 ### TypeScript / Node
 
@@ -147,7 +147,7 @@ A **devcontainer** ([`.devcontainer/devcontainer.json`](https://containers.dev/)
 
 When the AI is about to run any command or suggest a setup step, it must:
 
-1. **Detect first.** Run the [Environment Detection](#environment-detection) checks. If detection is ambiguous, run [`/hip-env-check`](#ai-env-check) or ask the user.
+1. **Detect first.** Run the [Environment Detection](#environment-detection) checks. If detection is ambiguous, run [`/ai-env-check`](#ai-env-check) or ask the user.
 2. **Match the matrix.** Cross-reference the operation with [Allowed vs. Restricted Operations](#allowed-vs-restricted-operations). Treat ⚠️ as a hard stop until the user confirms.
 3. **Prefer project-local.** When multiple containment options exist, default to the one closest to the project (project-local > venv/node_modules > devcontainer > host).
 4. **Never silently bootstrap.** Do not "helpfully" install a tool the user didn't ask for — even if the user's request implies needing it. Surface the dependency and ask.
@@ -196,9 +196,9 @@ When triggered, environment-manager:
 
 ---
 
-## `/hip-env-check`
+## `/ai-env-check`
 
-The [`/hip-env-check`](prompts/tier-1/hip-env-check.prompt.md) slash command:
+The [`/ai-env-check`](../.github/prompts/ai-env-check.prompt.md) slash command:
 
 - Runs all [Environment Detection](#environment-detection) checks against the current shell.
 - Inspects the workspace for present containment markers (`.venv/`, `node_modules/`, `package.json`, `pyproject.toml`, `CMakeLists.txt`, `.devcontainer/`, `docker-compose.yml`, `Dockerfile`, `.nvmrc`).
@@ -209,4 +209,4 @@ Run it:
 
 - After cloning, before any other setup work.
 - Any time the AI is unsure whether a command will land on the host or in a container.
-- During [`/hip-onboard`](prompts/tier-1/hip-onboard.prompt.md), which invokes it to pick the isolation strategy for the project.
+- During [`/ai-onboard`](../.github/prompts/ai-onboard.prompt.md), which invokes it to pick the isolation strategy for the project.

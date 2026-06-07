@@ -36,6 +36,24 @@ nist_csf:
 
 **Do not use** for real-time threat detection (use GuardDuty), for application vulnerability scanning (use Inspector), or for one-time compliance assessments (use Prowler for faster ad-hoc audits).
 
+## Common Misconfigurations & Verification
+
+Mistakes that silently neuter Config rules so they report "compliant" while drift goes undetected:
+- **Scoped recording group.** `put-configuration-recorder` with `allSupported=false` skips the resource types your rules target, so rules evaluate 0 resources and show green. Verify the recorder records what your rules need.
+- **Recorder created but never started.** `put-configuration-recorder` without `start-configuration-recorder` produces no evaluations at all.
+- **Delivery channel S3 bucket policy missing the `config.amazonaws.com` principal** → snapshots silently fail to deliver; check `describe-delivery-channel-status`.
+- **Wrong trigger scope** (periodic vs `ConfigurationItemChangeNotification`) leaves change-driven drift undetected between scheduled snapshots.
+- **Remediation `AutomationAssumeRole` lacking permissions or an `ssm.amazonaws.com` trust policy** → the action shows as configured but never executes; `MaximumAutomaticAttempts` exhausts silently.
+- **Global resources (IAM) only recorded where `includeGlobalResourceTypes=true`** — set in exactly one region or they're missed/duplicated.
+
+Verify it actually works:
+```bash
+aws configservice describe-configuration-recorder-status --query 'ConfigurationRecordersStatus[0].recording'   # must be true
+aws configservice describe-config-rule-evaluation-status --config-rule-names s3-bucket-public-read-prohibited
+aws configservice get-compliance-details-by-config-rule --config-rule-name encrypted-volumes --compliance-types NON_COMPLIANT
+```
+Then create a deliberately non-compliant resource (a public S3 bucket) and confirm the rule flips to `NON_COMPLIANT` within minutes **and** the SSM remediation runs to completion.
+
 ## Prerequisites
 
 - AWS Config recording enabled in all target accounts and regions

@@ -34,6 +34,17 @@ Deploy privileged access management for database systems including Oracle, SQL S
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+Database PAM is routinely bypassed because the direct network path to the DB stays open:
+
+- **Proxy vaulting but direct port still reachable:** credentials are vaulted and a session proxy exists, yet DBAs connect straight to 1521/1433/5432/3306 with their own logins, bypassing audit entirely. Verify the DB host firewall/listener only accepts connections from the PAM proxy IP, then attempt a direct connect from a workstation — it must be refused. Cross-check DB-native audit (`pg_stat_activity` / SQL Server `sys.dm_exec_sessions` / Oracle `V$SESSION`) and confirm every `client_addr` is the proxy.
+- **Shared DBA accounts not vaulted / no per-user attribution:** confirm `sa`, `SYS`, `postgres`, `root@%` are checked out through PAM and that proxy logs map each session to a named human, not a shared login.
+- **No automatic rotation after checkout:** if the vaulted password is not rotated on check-in, a DBA who memorized it retains direct access. Confirm one-time-use / rotate-on-checkin is enabled and test that the previous password fails.
+- **Query auditing captures connect but not statements:** verify the proxy logs actual SQL (not just session start/stop) and that privileged statements (`GRANT`, `DROP`, bulk `SELECT` on PII) trigger alerts.
+- **Least-privilege roles bypassed via direct superuser grant:** confirm vaulted accounts use scoped roles, not blanket `DBA`/`sysadmin`/`SUPERUSER`.
+- **Dynamic credential users left orphaned:** if using dynamic DB creds, confirm expired users are dropped (no accumulating `v-*` roles) and SIEM receives all PAM session events.
+
 ## Prerequisites
 
 - Familiarity with identity access management concepts and tools

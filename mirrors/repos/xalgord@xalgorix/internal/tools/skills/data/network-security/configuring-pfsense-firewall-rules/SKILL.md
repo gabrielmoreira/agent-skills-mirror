@@ -33,6 +33,15 @@ nist_csf:
 
 **Do not use** as a substitute for host-based firewalls on individual systems, for SSL/TLS deep packet inspection without dedicated hardware acceleration, or as the sole security control without complementary IDS/IPS.
 
+## Common Misconfigurations & Verification
+
+- **Rule order — first match wins:** a broad `pass` above a specific `block` silently neuters the block. pfSense evaluates top-to-bottom per interface; reorder so specific deny rules sit above general allows and confirm via Status > System Logs > Firewall which rule ID matched.
+- **Rules are applied on the wrong interface/direction:** pfSense filters on the **ingress** interface. A "block GUEST→internal" rule placed on LAN never fires; it belongs inbound on the GUEST tab. Verify the source net matches the interface the traffic enters.
+- **Default-allow LAN rule left in place:** the stock "Default allow LAN to any" rule defeats segmentation. Replace it with explicit allows, then prove inter-VLAN traffic is denied: `curl -I https://10.10.40.5` from LAN must fail.
+- **Inter-VLAN leak via missing RFC1918 block:** "allow LAN to any" reaches other internal subnets. Use destination `! RFC1918_Networks` for internet rules, or an explicit block to internal nets above the internet allow.
+- **NAT port-forward without a matching firewall rule (or fail-open reflection):** the forward exists but traffic is dropped, or NAT reflection exposes services internally. Check Firewall > NAT auto-rules and test from WAN.
+- **Logging off on block rules:** enable logging on every block + WAN pass rule, or you can't verify enforcement. Confirm syslog reaches the SIEM (`10.10.20.15:514`) and that blocked test traffic appears.
+
 ## Prerequisites
 
 - pfSense 2.7+ installed on dedicated hardware or virtual machine with at least two network interfaces

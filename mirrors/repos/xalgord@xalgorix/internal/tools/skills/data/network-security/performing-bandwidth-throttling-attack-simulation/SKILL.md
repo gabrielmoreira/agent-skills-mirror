@@ -33,6 +33,16 @@ nist_csf:
 
 **Do not use** on production networks without authorization and a maintenance window, for causing denial-of-service conditions, or against critical infrastructure without safety controls.
 
+## Most Often Missed & How to Confirm
+
+- **Direction of the qdisc:** `tc` shapes egress only on the interface it's attached to. Throttling traffic toward a victim requires the rule on the attacker's *forwarding* interface, or an `ifb`/ingress redirect for inbound. A rule on the wrong interface looks like "no effect."
+- **Baseline before and after:** without a pre-throttle `iperf3 -c <t> -u -b 100M` baseline (bandwidth, jitter, loss) you cannot prove degradation. Re-measure during each phase, not just at the end.
+- **Per-flow filters skipped:** a blanket `tbf` hits all traffic including your own SSH/management session. Use `htb` classes with a `u32 match ip dst` filter to target only the victim and avoid self-DoS.
+- **TCP vs UDP and codec floors:** TCP backs off and hides loss; test UDP for VoIP/video. G.711 needs ~87 Kbps, so throttling to 1 Mbps may show "no impact" on a TCP test yet destroy a call.
+- **How to confirm it worked:** `tc -s qdisc show dev eth0` must show a rising `dropped`/`overlimits` counter, and `iperf3` throughput must fall toward the configured `rate`. A Zeek `conn.log` bytes/duration collapse confirms it on the wire.
+- **Don't conclude "QoS mitigated it"** until you verify the priority queue actually prioritized DSCP EF traffic, not just that bandwidth recovered after you removed the rule.
+- **Cleanup is part of the test:** `tc qdisc del dev eth0 root` — a left-over qdisc silently throttles the next tester.
+
 ## Prerequisites
 
 - Written authorization for bandwidth manipulation testing

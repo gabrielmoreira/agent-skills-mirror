@@ -36,7 +36,9 @@
           "severity",
           "confidence",
           "status",
-          "evidence_refs"
+          "evidence_refs",
+          "affected_refs",
+          "recommended_action"
         ],
         "properties": {
           "id": {
@@ -69,6 +71,27 @@
             "items": {
               "type": "string",
               "pattern": "^ev:[a-z0-9][a-z0-9._/-]*$"
+            }
+          },
+          "affected_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "recommended_action": {
+            "type": "string"
+          },
+          "mitigation_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "test_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
             }
           }
         },

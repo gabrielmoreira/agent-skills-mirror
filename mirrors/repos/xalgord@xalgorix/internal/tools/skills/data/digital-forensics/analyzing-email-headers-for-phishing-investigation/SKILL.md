@@ -33,6 +33,14 @@ nist_csf:
 - When tracing the delivery path and relay servers of a suspicious email
 - For validating SPF, DKIM, and DMARC alignment to identify forgery
 
+## Detection Gaps & Validation
+
+- **Most-missed header evidence:** analysts read `From`/`Received` and stop. Also parse `Authentication-Results`/`ARC-Authentication-Results` (the receiver's own verdict, harder to forge than `Received-SPF`), `Return-Path` vs `From` (envelope mismatch), the `Message-ID` domain vs the sender domain, and `X-Originating-IP`. Everything below your own perimeter MTA in the `Received` chain is attacker-controlled and forgeable - trust only hops you operate.
+- **SPF/DKIM "pass" is not "legitimate":** a pass only proves the message left authorized infrastructure - fully consistent with a compromised mailbox, a shared ESP (SendGrid/Mailchimp) abused by another tenant, or a lookalike domain with its own valid records. Verify DKIM with the `d=`/`s=` selector via `dig TXT s._domainkey.d` and check alignment, not just the pass flag.
+- **Cross-corroborate the finding:** validate the sending IP against the SPF record AND reverse DNS AND reputation (AbuseIPDB/VirusTotal); confirm a phishing URL against URLhaus/PhishTank; hash attachments and check VT - do not call "spoofed" on a header mismatch alone.
+- **Anti-forensics / evasion:** punycode/homoglyph display names, `Reply-To` differing from `From`, HTML hyperlink text masking the real `href`, and forwarded copies that strip the original `Received` chain. Always work from the original `.eml`/`.msg`, never a forwarded screenshot.
+- **Interpretation pitfalls (false positives):** mailing lists and forwarders legitimately break SPF (rely on ARC); `Date` timezone and MTA clock skew misorder the hop timeline; and a `p=none` DMARC failure means "not enforced," not "confirmed forgery."
+
 ## Prerequisites
 - Raw email headers from the suspicious message (EML or MSG format)
 - Understanding of SMTP protocol and email header fields

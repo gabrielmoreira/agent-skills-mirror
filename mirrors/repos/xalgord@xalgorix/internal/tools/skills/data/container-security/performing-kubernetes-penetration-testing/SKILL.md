@@ -33,6 +33,18 @@ Kubernetes penetration testing systematically evaluates cluster security by simu
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+Automated scanners (kube-hunter/kubescape) report what they can reach unauthenticated and stop there. The highest-impact paths usually need a few manual probes:
+
+- **In-pod service account token:** from any compromised pod, read `/var/run/secrets/kubernetes.io/serviceaccount/token` and `ca.crt`, then hit `https://kubernetes.default.svc` with it. Most testers stop at "got a shell" and never test what that SA can do (`kubectl auth can-i --list`).
+- **Cloud metadata / IMDS:** `curl http://169.254.169.254/latest/meta-data/iam/security-credentials/` (IMDSv1) or the GCP/Azure equivalents from inside a pod - node IAM creds are a common cluster-to-cloud pivot that NetworkPolicy often fails to block.
+- **Privileged/hostPath pod escape:** if RBAC allows `create pods`, deploy a `privileged`/`hostPID`/hostPath-`/` pod and `chroot /host` - escape is possible even without node SSH.
+- **Kubelet 10250 and read-only 10255:** `curl -k https://<node>:10250/pods` and `/run/<ns>/<pod>/<container>` for unauth exec; check 10255 for info disclosure.
+- **etcd 2379 unauthenticated:** try `etcdctl get /registry/secrets --prefix --keys-only` - direct secret extraction bypassing the API server and RBAC.
+
+**Confirm a hit with a positive signal:** a real finding returns attacker-usable data - an actual secret value, a `200` listing pods/namespaces, working cloud creds, or a shell on the host - not just a non-403. **Do not conclude negative** until you've tried the in-pod token, IMDS, kubelet 10250/10255, etcd 2379, and an authenticated `kubectl auth can-i` enumeration; an anonymous `403` on the API server does not mean the pod's own SA is unprivileged.
+
 ## Prerequisites
 
 - Authorized penetration testing engagement

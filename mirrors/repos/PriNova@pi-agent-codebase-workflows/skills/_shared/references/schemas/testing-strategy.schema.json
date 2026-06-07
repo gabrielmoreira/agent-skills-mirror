@@ -21,6 +21,7 @@
     "evidence",
     "unknowns",
     "test_structure",
+    "quality_attribute_coverage",
     "coverage_gaps",
     "risk_to_test_priorities",
     "known_blockers"
@@ -32,6 +33,9 @@
     "test_structure": {
       "type": "array"
     },
+    "quality_attribute_coverage": {
+      "type": "array"
+    },
     "coverage_gaps": {
       "type": "array"
     },
@@ -39,6 +43,9 @@
       "type": "array"
     },
     "known_blockers": {
+      "type": "array"
+    },
+    "operability_checks": {
       "type": "array"
     },
     "test_plans": {
@@ -52,6 +59,21 @@
           "id": {
             "type": "string",
             "pattern": "^testplan:[a-z0-9][a-z0-9._/-]*$"
+          },
+          "objective": {
+            "type": "string"
+          },
+          "layer": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "related_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "additionalProperties": true

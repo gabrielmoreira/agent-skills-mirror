@@ -31,6 +31,17 @@ nist_csf:
 - During penetration testing of applications that send emails based on user input
 - When auditing email-related API endpoints for header injection
 
+### How to CONFIRM a Hit (avoid false negatives)
+
+- **Positive signal**: an injected CRLF actually adds a header or recipient that takes effect — a copy of the email lands in your attacker-controlled (e.g. agentmail) inbox via injected `Cc`/`Bcc`, or `From`/`Reply-To` is overridden in the delivered message.
+- Confirm by inspecting the **raw source / "Show Original"** of a RECEIVED email for your injected `Cc:`, `Bcc:`, `From:`, `Reply-To:`, or overridden body — do not rely on the form returning success.
+- An HTTP 200 from the form is NOT a hit (the app may strip newlines); a single failed payload is NOT a clean negative until encodings and fields are varied.
+- Do NOT conclude "not vulnerable" until you have tried:
+  - **Every newline encoding**: `%0A` (LF), `%0D%0A` (CRLF), `%0D` (CR), raw `\r\n` in JSON, and **double-encoding** (`%250A`).
+  - **Every injection point**: `email`, `name`, `subject`, `reply-to` and any field reflected into headers.
+  - **Recipient injection** (`Bcc`/`Cc`/extra `To`) to prove spam-relay, plus **MIME/body override** (`Content-Type`, boundaries) to prove content control.
+  - Confirming **actual delivery** to your test inbox (wait for the email), not merely that the server accepted the payload.
+
 ## Prerequisites
 - Burp Suite for intercepting and modifying HTTP requests
 - Understanding of SMTP protocol and email header structure

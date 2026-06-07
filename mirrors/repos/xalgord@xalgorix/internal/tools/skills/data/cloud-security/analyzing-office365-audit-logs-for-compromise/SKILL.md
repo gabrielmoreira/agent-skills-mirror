@@ -36,6 +36,14 @@ Business Email Compromise (BEC) attacks often leave traces in Office 365 audit l
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Forwarding hides in more than inbox rules:** check `New-InboxRule`/`Set-InboxRule`/`UpdateInboxRules` *and* mailbox-level `Set-Mailbox -ForwardingSmtpAddress`/`-ForwardingAddress`, plus transport rules (`New-TransportRule`). A clean inbox-rule list does not mean no forwarding.
+- **Operations attackers use:** `Add-MailboxPermission`/`Add-RecipientPermission` (delegation), `Consent to application` / `Add app role assignment grant to user` (illicit OAuth consent), `Add delegated permission grant`, and `Set-MailboxAuditBypassAssociation` (silences mailbox auditing for an identity — a strong tamper signal).
+- **MailItemsAccessed** (access-scoping for BEC blast radius) only logs with E5/Advanced Audit; on E3 you cannot prove which messages were read.
+- **UAL realities:** ingestion latency (minutes to hours) means `ago(1h)` windows miss late events — pivot on the event's own timestamp; default retention is 90/180 days; verify auditing is even on with `Get-AdminAuditLogConfig`/`Get-Mailbox | fl AuditEnabled` before trusting an empty result.
+- **Validate the query fires:** create a benign external-forwarding inbox rule on a test mailbox, then confirm it surfaces via `Search-UnifiedAuditLog -Operations New-InboxRule` / the Graph `auditLogs` query; tune FPs by allow-listing approved enterprise apps (AppId) and known delegation service accounts.
+
 ## Prerequisites
 
 - Azure AD app registration with `AuditLog.Read.All`, `MailboxSettings.Read`, `Mail.Read` (application permissions)

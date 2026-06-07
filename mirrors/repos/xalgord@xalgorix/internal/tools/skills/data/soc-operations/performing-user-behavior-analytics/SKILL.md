@@ -37,6 +37,14 @@ Use this skill when:
 
 **Do not use** as the sole basis for disciplinary action — UEBA findings are indicators requiring investigation, not proof of malicious intent.
 
+## Detection Gaps & Validation
+
+- **Baseline poisoning:** if the 30–90 day window used to build `avg`/`stdev` already contains the attacker's activity (a slow-burn insider, a long-dwell compromised account), their behavior becomes "normal" and the z-score never trips. Validate the baseline window is clean, and rebuild baselines from a known-good period when investigating a confirmed incident.
+- **Wrong / too-broad peer group:** comparing a user only against their own history misses someone who was abnormal from day one — peer-group analysis (same department/role/manager) catches the outlier the self-baseline hides. Conversely, a peer group that lumps admins with standard users flags every admin as anomalous. Confirm `identity_lookup_expanded` department/role is accurate before trusting peer comparisons.
+- **Zero or tiny stdev:** users with very regular patterns get `stdev≈0`, so `avg + 3*stdev` fires on trivial deviation (FP storm); new/low-activity accounts have too few samples for a stable baseline. Require a minimum event count and floor the stdev.
+- **Impossible-travel artifacts:** corporate VPN egress, cloud/CDN IPs, and mobile carrier CGNAT make GeoIP jump continents legitimately; a single mis-geolocated `src_ip` fabricates a 900 km/h "trip." Exclude known VPN/proxy ranges and verify against MaxMind accuracy before escalating.
+- **Validate the verdict:** UEBA produces leads, not conclusions — correlate the anomaly with corroborating signals (auth success after the travel, actual data movement, HR/notice-period context) and rule out service accounts, automation, and shared accounts before raising the risk score. Stitch identifiers (UPN vs SamAccountName vs email) so one human isn't scored as several low-signal entities.
+
 ## Prerequisites
 
 - SIEM with 30+ days of authentication and access log history for baseline creation

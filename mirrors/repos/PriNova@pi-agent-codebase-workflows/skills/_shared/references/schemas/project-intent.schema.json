@@ -27,7 +27,156 @@
       "const": "project_intent"
     },
     "intent": {
-      "type": "object"
+      "type": "object",
+      "required": [
+        "product_goal",
+        "target_users",
+        "primary_journeys",
+        "must_have_features",
+        "non_goals",
+        "constraints",
+        "assumptions",
+        "open_questions",
+        "quality_attributes",
+        "operating_constraints",
+        "success_metrics",
+        "risk_areas"
+      ],
+      "properties": {
+        "product_goal": {
+          "type": "string"
+        },
+        "target_users": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "object"
+            ]
+          }
+        },
+        "primary_journeys": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "object"
+            ]
+          }
+        },
+        "must_have_features": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "object"
+            ]
+          }
+        },
+        "non_goals": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "object"
+            ]
+          }
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "object"
+            ]
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "object"
+            ]
+          }
+        },
+        "open_questions": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "object"
+            ]
+          }
+        },
+        "quality_attributes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "priority",
+              "scenario"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "priority": {
+                "enum": [
+                  "high",
+                  "medium",
+                  "low"
+                ]
+              },
+              "scenario": {
+                "type": "string"
+              },
+              "target": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "tradeoff_notes": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "operating_constraints": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "object"
+            ]
+          }
+        },
+        "success_metrics": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "object"
+            ]
+          }
+        },
+        "risk_areas": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "object"
+            ]
+          }
+        }
+      },
+      "additionalProperties": true
     },
     "goals": {
       "type": "array",

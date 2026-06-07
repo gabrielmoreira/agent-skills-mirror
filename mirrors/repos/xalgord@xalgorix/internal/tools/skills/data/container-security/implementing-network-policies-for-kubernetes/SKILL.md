@@ -33,6 +33,15 @@ Kubernetes NetworkPolicies provide pod-level network segmentation by defining in
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **No default-deny:** NetworkPolicy is default-allow and additive. Without a `podSelector: {}` deny-all for `Ingress` and `Egress` per namespace, the allow rules below don't actually segment anything.
+- **CNI doesn't implement NetworkPolicy:** plain flannel ignores NetworkPolicy objects, so `kubectl apply` succeeds but nothing is enforced. Confirm the CNI supports it (Calico, Cilium, Antrea) and that policies take effect.
+- **Egress deny without DNS allow:** dropping egress without the kube-system UDP/TCP 53 rule breaks name resolution; operators then strip the egress policy, losing all egress control.
+- **Cloud metadata not blocked:** an egress policy that doesn't `except` `169.254.169.254/32` (AWS/GCP) and `169.254.169.254`/`100.100.100.200` (Azure) leaves the SSRF→IMDS credential path open.
+- **Selector scope mistakes:** `podSelector: {}` applies to the whole namespace (often intended for deny-all); a labelled selector with a typo silently matches no pods.
+- **Verify enforcement, not just creation:** `kubectl get netpol -n production`, then a blocked test: `kubectl run t --image=busybox --restart=Never -n production -- wget -qO- --timeout=2 http://db-svc:5432` must time out, while a correctly-labelled `app=frontend` pod reaches the backend.
+
 ## Prerequisites
 
 - Kubernetes cluster with NetworkPolicy-supporting CNI (Calico, Cilium, Antrea)

@@ -35,6 +35,24 @@ nist_csf:
 
 **Do not use** for Azure or GCP threat detection (see securing-azure-with-microsoft-defender or auditing-gcp-security-posture), for static code analysis, or for compliance posture monitoring (see implementing-aws-security-hub).
 
+## Detection Gaps & Validation
+
+Coverage gaps attackers exploit and how to prove the pipeline works:
+- **GuardDuty is regional + per-detector.** A detector in `us-east-1` is blind to activity in `eu-west-1`; adversaries deliberately operate in unused regions. Enumerate `list-detectors` in **every** region.
+- **Base detector "enabled" ≠ protection plans on.** S3 Protection, Runtime Monitoring, EKS Audit Logs, RDS Login, and Malware Protection are independent features — confirm each via `get-detector` / `list-detector-features`.
+- **Runtime Monitoring needs the agent actually deployed.** `EC2_AGENT_MANAGEMENT` enabled doesn't mean the agent runs on every instance — check `get-coverage-statistics` / `list-coverage` for `UNHEALTHY`/missing hosts.
+- **Suppression rules and archived findings hide real hits** (`service.archived == true`) — review suppression filters before trusting a quiet console.
+
+Validate end-to-end:
+```bash
+aws guardduty create-sample-findings --detector-id <id> \
+  --finding-types CryptoCurrency:EC2/BitcoinTool.B UnauthorizedAccess:EC2/SSHBruteForce
+# then confirm it traversed EventBridge -> Lambda -> SNS (severity numeric >= 7 rule)
+aws guardduty get-coverage-statistics --detector-id <id> \
+  --statistics-type COUNT_BY_COVERAGE_STATUS
+```
+- Tune FP with suppression rules on known scanners/benign automation rather than disabling whole finding types.
+
 ## Prerequisites
 
 - AWS account with GuardDuty administrative permissions (guardduty:*)

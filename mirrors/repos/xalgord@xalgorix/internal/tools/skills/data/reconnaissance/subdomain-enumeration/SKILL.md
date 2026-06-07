@@ -46,6 +46,15 @@ done
 subjack -w all_subs.txt -t 100 -timeout 30 -ssl -o takeovers.txt
 ```
 
+## Coverage Gaps & Validation
+
+- No single source is complete — union four classes before resolving: passive APIs (crt.sh, subfinder/amass with all keys, SecurityTrails, VirusTotal, Shodan/Censys), historical (Wayback CDX, `gau`, GitHub code search), active (`shuffledns` brute-force + `dnsx` resolution), and permutation (`altdns`, `dnsgen`, `gotator` on discovered names to find `dev-`, `staging-`, `api-internal-` siblings).
+- Most-missed assets: certificate SANs (parse every cert for extra hostnames), wildcard-hidden hosts that need brute-forcing, internal-naming permutations, ASN-based discovery (`amass intel -asn`) for sibling IP ranges, and reverse-DNS/PTR sweeps that reveal hosts with no public DNS record.
+- Defeat wildcard DNS first: resolve a random `$(openssl rand -hex 8).TARGET`; if it answers, capture the wildcard IP/response and filter it out so brute-force results aren't all false positives.
+- Validate live and in-scope: resolve with multiple trusted resolvers from different networks (avoid stale/poisoned answers), then `httpx` to confirm a real service responds — a DNS record alone is not a live asset.
+- Confirm scope ownership before reporting: map each resolved IP to its ASN/org and cross-check against the engagement's authorized ranges; shared CDN/SaaS IPs (Cloudflare, AWS, GitHub Pages) are often out of scope even when the hostname matches.
+- Re-check CNAMEs for takeover, but verify the dangling claim by actually inspecting the provider's "no such bucket/app" fingerprint, not just an `NXDOMAIN` on the target.
+
 ## Pro Tips
 
 1. Merge ALL sources before resolving — passive + active + brute-force

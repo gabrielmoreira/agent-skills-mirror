@@ -47,6 +47,15 @@ Adversaries establish persistence on Linux systems through crontab jobs, systemd
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Watch rules not loaded = no events.** auditd is the whole detection here; confirm with `auditctl -l` and that `-w /etc/crontab -p wa`, `-w /etc/ld.so.preload`, and the `~/.ssh/authorized_keys` paths are actually armed. A FIM-only setup will miss in-memory and transient artifacts.
+- **Vectors commonly skipped:** per-user crontabs in `/var/spool/cron/crontabs/`, `systemd-run` transient units (never touch disk), user units in `~/.config/systemd/user/`, `at` jobs in `/var/spool/cron/atjobs`, `/etc/update-motd.d/`, udev rules, `~/.config/autostart`, and PAM/`/etc/ld.so.conf.d` modules.
+- **Don't trust mtime.** Attackers `touch -r` to backdate files; pivot to inode `ctime` and auditd `SYSCALL`/`PROCTITLE` records for the real write time.
+- **LD_PRELOAD evasion:** injection via a per-process env var (not `/etc/ld.so.preload`) leaves no file to scan — catch it in auditd `execve` environment or `/proc/<pid>/environ`.
+- **Validate the rule fires:** add `auditctl -w /etc/crontab -p wa -k cron_persist`, append a benign line to `/etc/crontab`, then `ausearch -k cron_persist` — you should see the write with the acting UID.
+- **Tune false positives:** package managers legitimately install systemd units and cron jobs. Baseline each finding against the package DB (`dpkg -S <path>` / `rpm -qf <path>`) and alert only on files not owned by any package.
+
 ## Prerequisites
 
 - Root or sudo access on target Linux system (or forensic image)

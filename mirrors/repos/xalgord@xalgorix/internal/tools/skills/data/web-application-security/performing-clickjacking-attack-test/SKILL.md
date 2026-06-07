@@ -37,6 +37,17 @@ nist_csf:
 - When assessing applications that process one-click actions without additional confirmation
 - During security audits of applications handling financial transactions or account management
 
+### How to CONFIRM a Hit (avoid false negatives)
+
+- **Positive signal**: the target page actually renders inside your `<iframe>` PoC (no `X-Frame-Options`, no CSP `frame-ancestors`) AND a sensitive action (delete, transfer, change email/password, disable 2FA) is reachable and clickable through the framed UI.
+- A missing header alone is NOT a confirmed clickjacking finding — you must demonstrate a working frame overlay where a decoy click lands on the real sensitive control.
+- Do NOT conclude "not vulnerable" until you have:
+  - Tested the **specific sensitive pages**, not just `/` (settings, delete, transfer, OAuth consent often differ from the homepage).
+  - Checked **both** `X-Frame-Options` and CSP `frame-ancestors` — `frame-ancestors` supersedes XFO, and legacy XFO (`ALLOW-FROM`) may be ignored by modern browsers, leaving a real gap.
+  - Confirmed any **frame-busting JavaScript** can't be defeated (sandbox without `allow-top-navigation`, double framing, `onbeforeunload`).
+  - Verified the action **completes without re-authentication or a confirmation dialog** that breaks the single/multi-click flow.
+  - Loaded the PoC in a real browser while authenticated and observed the action actually execute (not just the frame rendering).
+
 ## Prerequisites
 
 - **Authorization**: Written penetration testing agreement for the target

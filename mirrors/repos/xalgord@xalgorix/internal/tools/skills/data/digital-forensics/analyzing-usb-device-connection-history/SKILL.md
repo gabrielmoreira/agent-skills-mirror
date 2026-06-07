@@ -30,6 +30,14 @@ nist_csf:
 - When correlating USB connections with file access and copy events
 - For establishing a timeline of device connections during an incident
 
+## Detection Gaps & Validation
+
+- **Most-missed artifacts:** USBSTOR alone is incomplete. Also parse the `USB\` key (VID/PID for non-mass-storage and MTP/PTP phones that USBSTOR omits), `MountedDevices`, per-user `MountPoints2`, `SYSTEM\...\DeviceClasses\{GUID}`, the SOFTWARE-hive `...\Windows Portable Devices\Devices` and `EMDMgmt` (volume serial + first/last timestamps), `setupapi.dev.log` (first insert), and `Microsoft-Windows-Partition%4Diagnostic.evtx` (capacity/serial, useful for sizing exfil).
+- **First vs last connect, and per-user attribution:** the USBSTOR key LastWrite is only the *last* event for that device - get the *first* connection from `setupapi.dev.log` and per-session connects from DriverFrameworks-UserMode / Partition-Diagnostic event logs. A device in USBSTOR proves it touched the machine, not which user used it - tie it to a user via that user's `MountPoints2` volume GUID.
+- **Anti-forensics that defeats this analysis:** registry keys and `setupapi.dev.log` can be deleted or the log rotated/truncated. Recover prior state from Volume Shadow Copies, `SYSTEM.LOG1/2` transaction logs, and RegBack. A wiped USBSTOR with surviving MountPoints2/EMDMgmt entries is itself an indicator.
+- **Validate exfiltration with a second source:** a connection alone is not data theft - corroborate with `$UsnJrnl`/`$LogFile` writes to the drive's volume, LNK/Jump List targets carrying the device's volume serial, Prefetch for archiving tools (7z/rclone), and Shellbags for folders browsed on the removable volume.
+- **Interpretation pitfalls (false positives):** sanctioned devices (corporate encrypted drives, keyboards/mice, charging phones) appear identically; some cheap devices share or fake serials (a serial second character of `&` indicates a bus-assigned, non-unique ID); registry timestamps are UTC while event logs may render local - confirm timezone and clock skew before timelining.
+
 ## Prerequisites
 - Forensic image or extracted registry hives and event logs
 - Access to SYSTEM, SOFTWARE, and NTUSER.DAT registry hives

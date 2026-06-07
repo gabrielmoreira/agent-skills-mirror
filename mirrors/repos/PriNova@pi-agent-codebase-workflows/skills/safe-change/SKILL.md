@@ -59,18 +59,18 @@ Ownership rules:
 - `scopes`: scope routing, ownership, cross-scope discovery only.
 - `repo-inventory`: file tree, commands index, entry points, external boundaries, configs.
 - `validation-baseline`: command status, blockers, recommended validation order.
-- `project-intent`: goals, users, journeys, non-goals, constraints, assumptions.
-- `architecture`: components, architecture style, side-effect boundaries, high-level flow refs.
-- `data-flow`: typed flow graph/steps, inputs, outputs, error states.
-- `data-model`: entities, IDs, schemas, relationships, lifecycles, serialized formats.
+- `project-intent`: product goal, users, journeys, must-have features, non-goals, constraints, assumptions, open questions, success metrics, prioritized quality attributes, operating constraints, risk areas.
+- `architecture`: components, architecture style, style rationale, alternatives/tradeoffs, side-effect boundaries, deployment/operating shape, reliability expectations, observability expectations, security assumptions, high-level flow refs.
+- `data-flow`: typed flow graph/steps, trust boundaries, sensitive-data handling steps, inputs, outputs, error states, degradation/recovery notes.
+- `data-model`: entities, IDs, schemas, relationships, lifecycles, serialized formats, retention/compliance notes.
 - `invariants`: rules, forbidden states, enforcement locations, invariant-test refs.
 - `dependency-rules`: layers, allowed/forbidden dependencies, violations, coupling hotspots.
 - `design-issues`: structural drift, deferred decisions, ambiguity, ownership gaps.
-- `risk-register`: failure modes, severity/confidence, affected refs, suggested tests/fixes.
-- `contracts`: cross-scope APIs, schemas, events, generated clients, DB/file/deployment/env contracts.
-- `testing-strategy`: test topology, coverage gaps, risk-to-test priorities.
+- `risk-register`: failure modes, severity/confidence, affected refs, mitigations/recommended actions, suggested tests/fixes.
+- `contracts`: cross-scope APIs, schemas, events, generated clients, DB/file/deployment/env/auth/telemetry contracts.
+- `testing-strategy`: test topology, quality-attribute coverage, coverage gaps, risk-to-test priorities, operability checks.
 - `change-guide`: workflow routing and checklists; references owner artifacts, duplicates no facts.
-- `adr`: structured decision records with bounded prose fields.
+- `adr`: structured decision records with bounded prose fields, including alternatives and consequences for major design choices.
 - `agent-operating-guide`: structured source for agent operating rules. Root `AGENTS.md` may mirror this in compact harness-readable Markdown when produced by safe-start or codebase-recon Pass 6.
 
 Redundancy rule: define each fact in its owner artifact exactly once. Other artifacts reference IDs.
@@ -109,9 +109,11 @@ Use this protocol whenever creating or updating YAML artifacts.
 ### 3. Stable ID generation
 
 1. Reuse existing IDs whenever the semantic object is the same, even if name/path changed.
-2. New IDs use deterministic slugs from owner scope + semantic name: `risk:<slug>`, `entity:<slug>`, `component:<slug>`, etc.
-3. If two objects slug-collide, append shortest stable discriminator from path/component/contract, not a random suffix.
-4. Never renumber IDs because order changed.
+2. New record IDs use deterministic slugs from owner scope + semantic name: `risk:<slug>`, `entity:<slug>`, `component:<slug>`, etc.
+3. Envelope `artifact_id` values use `repo:<artifact-slug>` for repo-level artifacts and `<scope.id>/<artifact-slug>` for scoped artifacts, e.g. `repo:architecture` and `scope:packages/ai/architecture`.
+4. Never append an artifact slug to a scope ID with a second colon; `scope:packages/ai:architecture` is invalid.
+5. If two objects slug-collide, append shortest stable discriminator from path/component/contract, not a random suffix.
+6. Never renumber IDs because order changed.
 
 ### 4. Upsert semantics
 
@@ -177,6 +179,8 @@ Perform best-effort validation after writing:
 - Do not edit code during preflight/design/diagnosis unless explicitly asked.
 - Separate bug fixing, features, refactoring, risk fixes, tests, docs-only structured updates.
 - Add tests for risky or uncovered behavior.
+- Treat prioritized quality attributes, operating constraints, trust boundaries, reliability expectations, observability expectations, and security assumptions as first-class change constraints when those owner artifacts contain them.
+- If current structured artifacts predate newer schemas and omit now-required fields, surface that as a docs/schema blocker and route through structured-docs repair when needed instead of silently proceeding on incomplete truth.
 - Update structured artifacts only when durable semantics changed.
 
 ## Reference Files
@@ -200,39 +204,40 @@ Before edits, produce:
 2. YAML artifacts read
 3. matched scope from `repo/scopes.yaml`
 4. affected slice/module/user flow
-5. expected files to inspect
-6. invariant/contract/risk refs at stake
-7. validation command refs
-8. proceed or wait for approval
+5. affected quality attributes / operating constraints when documented
+6. expected files to inspect
+7. invariant/contract/risk refs at stake
+8. validation command refs
+9. proceed, wait for approval, or repair docs/schema blockers first
 
 ## Workflow Selection
 
 Users may invoke this skill directly for any workflow, or use the matching prompt template as a shortcut.
 
 - Preflight (`/preflight`): classify task, match scope, identify owner artifacts/refs, and decide proceed vs approval.
-- Bug diagnosis (`/bug-diagnose`): diagnose expected behavior, violated invariant/contract, root cause, minimal fix, regression test.
+- Bug diagnosis (`/bug-diagnose`): diagnose expected behavior, violated invariant/contract/risk, impacted quality attributes or operating constraints, root cause, minimal fix, regression test.
 - Bug implementation (`/bug-implement`): implement approved minimal fix, add regression test, validate, update durable YAML facts only when semantics changed.
-- Feature design (`/feature-design`): design flow/data/invariant/contract impacts, side effects, risks, tests, docs updates.
+- Feature design (`/feature-design`): design flow/data/invariant/contract/component impacts, side effects, quality/security/reliability implications, tests, docs updates.
 - Feature implementation (`/feature-implement`): implement approved design minimally, test, validate, update owner YAML artifacts when durable semantics changed.
-- Refactor design (`/refactor-design`): preserve behavior, identify design issue/dependency rule, characterization tests, staged plan.
+- Refactor design (`/refactor-design`): preserve behavior and documented quality expectations, identify design issue/dependency rule, characterization tests, staged plan.
 - Refactor implementation (`/refactor-implement`): execute approved refactor stage, keep behavior stable, validate.
-- Risk fix (`/risk-fix`): select one risk or failing risk-derived test, fix minimally, update risk status.
+- Risk fix (`/risk-fix`): select one risk or failing risk-derived test, fix minimally, update risk status and related verification refs.
 - Test-only: preserve behavior; update testing strategy only if durable coverage/risk facts changed.
 - Structured-docs-only: update owner YAML artifacts only.
 
 ## Structured Docs Update Rules
 
 Update owners only:
-- intent/scope/non-goals -> `project-intent.yaml`
+- intent/scope/non-goals/quality attributes/operating constraints -> `project-intent.yaml`
 - file tree/entry points/command index -> `repo-inventory.yaml`
 - command status/blockers -> `validation-baseline.yaml`
-- architecture/components/boundaries -> `architecture.yaml`
-- flows/error states -> `data-flow.yaml`
-- schemas/entities/lifecycles -> `data-model.yaml`
+- architecture/components/boundaries/style rationale/reliability-observability-security expectations -> `architecture.yaml`
+- flows/error states/trust boundaries/sensitive-data handling -> `data-flow.yaml`
+- schemas/entities/lifecycles/retention-compliance notes -> `data-model.yaml`
 - rules/enforcement -> `invariants.yaml`
 - imports/layers -> `dependency-rules.yaml`
-- cross-scope APIs/schemas/events -> `contracts.yaml`
-- risks/failure modes -> `risk-register.yaml`
+- cross-scope APIs/schemas/events/persistence-deployment-auth-telemetry boundaries -> `contracts.yaml`
+- risks/failure modes/affected refs/recommended actions -> `risk-register.yaml`
 - design drift/deferred decisions -> `design-issues.yaml`
-- tests/gaps/priorities -> `testing-strategy.yaml`
+- tests/quality-attribute coverage/gaps/priorities/operability checks -> `testing-strategy.yaml`
 - workflow/checklists -> `change-guide.yaml`

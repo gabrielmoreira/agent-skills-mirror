@@ -34,6 +34,15 @@ nist_csf:
 
 **Do not use** VLANs as the sole security control without Layer 3 filtering, for isolating networks that require air-gapping, or without proper switch hardening against VLAN hopping attacks.
 
+## Common Misconfigurations & Verification
+
+- **Native VLAN = VLAN 1 (or a used VLAN):** enables double-tagging hops. Set `switchport trunk native vlan 998` (an unused VLAN) on every trunk and verify with `show interfaces trunk` — the "Native vlan" column must show 998 on all trunks.
+- **DTP left on (dynamic auto/desirable):** an attacker negotiates a trunk and reaches all VLANs. Force `switchport mode access` + `switchport nonegotiate` on edge ports; confirm with `show interfaces switchport | include Negotiation` (should read "Off").
+- **Trunk allows all VLANs:** `switchport trunk allowed vlan all` carries CDE/MGMT everywhere. Pin explicit lists (`...allowed vlan 10,20`) and verify with `show interfaces trunk` allowed-vlan column.
+- **DAI/DHCP snooping enabled but trust misconfigured:** if the uplink/gateway port isn't `ip arp inspection trust` / `ip dhcp snooping trust`, legit DHCP breaks or spoofing slips through. Check `show ip arp inspection statistics` and `show ip dhcp snooping binding`.
+- **Inter-VLAN ACL applied wrong direction or missing `deny ... log`:** without a terminating logged deny you can't prove isolation. Verify hit counts with `show ip access-lists` after running the negative test.
+- **Verify segmentation actively:** from a corporate host `ping`/`curl` an IoT and guest host — both MUST fail; from guest, internal pings MUST fail while `8.8.8.8` succeeds. A successful cross-VLAN ping means routing/ACL leaks.
+
 ## Prerequisites
 
 - Managed switches supporting 802.1Q VLAN trunking (Cisco Catalyst, HP Aruba, Juniper EX, etc.)

@@ -39,6 +39,14 @@ nist_csf:
 - When monitoring for unauthorized domain replication requests
 - During purple team exercises testing AD attack detection
 
+## Detection Gaps & Validation
+
+- **No SACL = no telemetry.** Event 4662 is only generated if "Audit Directory Service Access" is enabled AND the domain object's SACL audits the replication extended rights. Without both, DCSync is completely invisible — verify the SACL before trusting a "clean" result.
+- **Both GUIDs matter:** flag `DS-Replication-Get-Changes` (1131f6aa-9c07-11d1-f79f-00c04fc2dcd2) AND `DS-Replication-Get-Changes-All` (1131f6ad-...). Get-Changes-All is the strong signal; Get-Changes alone can be benign.
+- **Source-based detection blind spots:** an attacker running from a real DC or relaying a DC machine account won't trip the "non-DC source" filter.
+- **Validate the hunt fires:** run `mimikatz lsadump::dcsync /user:krbtgt` or Impacket `secretsdump.py -just-dc` from a non-DC host; confirm 4662 with AccessMask 0x100 and the replication GUID appears and your rule alerts.
+- **FP tuning:** legitimate DCs replicating, Azure AD Connect / Entra Connect (`MSOL_` / `AAD_` accounts), some backup/migration tools. Whitelist by exact account **and** source IP, never by name substring alone.
+
 ## Prerequisites
 
 - Windows Security Event Log forwarding enabled (Event ID 4662)

@@ -39,6 +39,14 @@ Hindsight is an open-source browser forensics tool designed to parse artifacts f
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Most-missed artifacts:** investigators stop at `History` and skip `Sessions/`, `Current Tabs`/`Last Session` (tabs open at shutdown), `Network Action Predictor` (typed URLs that never completed a visit), `Media History`, `Top Sites`, and the Local Storage/IndexedDB LevelDB stores where webmail and SaaS apps cache content. Hindsight parses these only if you point it at the full profile, not just `Default\History`.
+- **Deleted history persists:** rows removed from the `urls`/`visits` tables survive in the SQLite WAL (`History-wal`/`-shm`) and freelist pages. Run Hindsight with the `-wal`/`-shm` files present and carve freed pages before concluding "no activity."
+- **Encrypted values are not empty:** `cookies.value` and `Login Data` are DPAPI/AES-GCM encrypted - a blank field is not "no cookie." Decrypt with the profile's `Local State` key plus the DPAPI masterkey, otherwise report "present but encrypted."
+- **Cross-corroborate every finding:** confirm a visit against a second source - `visits.visit_time` vs the `downloads` table, vs `$MFT`/`$UsnJrnl` for the downloaded file, vs Prefetch for the browser launch, vs proxy/DNS logs. Check the `transition` type before claiming the user manually navigated (autocomplete, redirects, and prerender all create visit rows).
+- **Interpretation pitfalls (false positives):** Chrome/WebKit timestamps are microseconds since 1601-01-01 UTC - confirm workstation timezone and clock skew before timelining; URLs synced from another device or preloaded/prefetched appear as visits the user never actually saw.
+
 ## Prerequisites
 
 - Python 3.8+ with Hindsight installed (`pip install pyhindsight`)

@@ -40,6 +40,18 @@ nist_csf:
 
 **Do not use** for non-BES systems below NERC registration thresholds, for general OT assessment without power grid specifics (see performing-ot-network-security-assessment), or for physical security assessment of generation facilities without cyber scope.
 
+## Most Often Missed & How to Confirm
+
+Power-grid assessments miss station-bus and inter-control-center exposure, and risk tripping protection if probed actively. Confirm passively:
+
+- **GOOSE/SV assumed authenticated:** IEC 61850 GOOSE on the station bus carries trip/close signals and usually has no IEC 62351 signature. Don't conclude it's protected — confirm by capturing station-bus multicast and checking for unauthenticated GOOSE; never inject test GOOSE frames on a live bus (false trips).
+- **MMS access control untested:** confirm whether MMS (TCP 102) connections to IEDs require TLS by passively observing the handshake, not by attempting writes to a breaker IED.
+- **ICCP/TASE.2 inter-control-center links overlooked:** these reach peer utilities; confirm encryption/authentication via capture, not the design doc.
+- **Synchrophasor net flat with the rest:** PMU C37.118 traffic sharing a VLAN with protection is a finding — confirm by mapping the comms.
+- **Active scanning near protection relays:** an unexpected query can mis-operate an IED. Keep checks passive; any active L3 EMS check goes in a maintenance window with the grid operator informed.
+- **Positive signal:** a finding holds when captured station-bus/WAN traffic actually shows the unauthenticated protocol, cross-checked to the IED inventory.
+- **Don't conclude a substation is secure** until GOOSE, MMS, and remote-access paths are each verified by capture.
+
 ## Prerequisites
 
 - Understanding of electric power grid architecture (generation, transmission, distribution)

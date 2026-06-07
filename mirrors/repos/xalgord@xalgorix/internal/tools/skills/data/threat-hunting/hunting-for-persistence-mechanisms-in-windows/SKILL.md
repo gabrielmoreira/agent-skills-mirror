@@ -38,6 +38,14 @@ nist_csf:
 - When threat intel reports describe new persistence techniques in the wild
 - During security posture assessments to identify unauthorized persistent software
 
+## Detection Gaps & Validation
+
+- **Run-key-centric hunts miss the stealthy spots.** WMI event subscriptions (Sysmon EID 19/20/21), COM hijacks (`HKCU\...\CLSID\{..}\InprocServer32`), IFEO/GlobalFlag debuggers, and services created by direct registry edits (which generate no 4697) all evade Run-key/startup-folder sweeps.
+- **Signed-but-malicious passes signature checks:** DLL sideloading into a legitimately signed application looks clean to "Signed=Yes" filters.
+- **Scheduled tasks written via registry** (`...\Schedule\TaskCache\Tree`) rather than the API generate no 4698 — hunt the registry path, not just the event.
+- **Validate the hunt fires:** run Atomic Red Team T1547.001 (Run key), T1546.003 (WMI consumer), and T1543.003 (service); confirm Sysmon EID 12/13 (registry), EID 19/20/21 (WMI), and Security 4697/4698 all fire and your detection flags the new entries.
+- **FP tuning:** GPO/SCCM-deployed entries and legitimate vendor services dominate the noise — diff against an Autoruns baseline and triage by signer/hash/creation time.
+
 ## Prerequisites
 
 - Sysmon deployed with Event IDs 12/13/14 (Registry), 19/20/21 (WMI), 1 (Process Creation)

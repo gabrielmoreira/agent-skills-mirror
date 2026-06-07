@@ -34,6 +34,15 @@ Mimecast Targeted Threat Protection (TTP) is a suite of advanced email security 
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **URL Protect in rewrite-only mode:** without Pre-Delivery Action set to "Hold", a URL weaponized between delivery and click can still reach the user - enable pre-delivery hold (default since Nov 2025) and verify it on existing policies.
+- **Impersonation at Hit 3 for everyone:** the default 3-indicator threshold misses single-signal VIP attacks - create a separate Hit 1 VIP definition for CEO/CFO/finance and keep Hit 3 for the general population.
+- **Attachment Protect "Safe File" only:** static safe-file conversion alone misses behavior-based payloads - use Dynamic Configuration (full sandbox) for unknown senders and allow timeout for complex files (up to ~7 min).
+- **Internal Email Protect not enabled:** without journaling from M365/Workspace, lateral phishing from a compromised internal account is invisible - enable IEP URL and attachment scanning.
+- **Over-broad permitted senders / managed URLs:** blanket bypasses defeat URL and impersonation scanning - scope exceptions to specific automated systems and mailing lists.
+- **Verification:** pilot on 50-100 users first; send a test URL, an EICAR/test attachment, and a VIP-impersonation BEC; confirm the URL is rewritten and blocked at click, the attachment is sandboxed within SLA, the impersonation is quarantined, and pre-delivery hold catches a weaponized URL before inbox.
+
 ## Prerequisites
 - Mimecast Email Security license with TTP add-on
 - Administrative access to Mimecast Administration Console

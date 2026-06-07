@@ -37,6 +37,17 @@ nist_csf:
 
 **Do not use** rate limiting as the sole defense against attacks. Combine with authentication, authorization, and WAF rules.
 
+## Common Misconfigurations & Verification
+
+- **In-memory counters on multi-instance deployments:** per-process state lets clients bypass limits by landing on different servers - use shared Redis.
+- **Per-IP only / trusting XFF:** spoofable; key by user/API key plus a validated client IP.
+- **Fixed-window seam:** allows ~2x bursts at window boundaries; use sliding window or token bucket.
+- **Race conditions:** non-atomic check-then-increment overshoots under concurrency - use a Lua script/INCR.
+- **No auth-endpoint tier:** login/reset/MFA need stricter limits than general API traffic.
+- **Missing headers/Retry-After:** clients can't back off cleanly; always emit `X-RateLimit-*` and `Retry-After` on 429.
+
+**How to verify it works:** load-test past the limit and confirm 429 + Retry-After at the right count; run against all instances to prove shared enforcement; rotate X-Forwarded-For to confirm no reset; send concurrent bursts to confirm no race overshoot; kill Redis and confirm the chosen fail-open/closed behavior.
+
 ## Prerequisites
 
 - Redis 6.0+ for distributed rate limit counters (or in-memory for single-instance deployments)

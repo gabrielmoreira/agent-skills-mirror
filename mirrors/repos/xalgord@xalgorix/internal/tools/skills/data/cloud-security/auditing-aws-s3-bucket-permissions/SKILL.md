@@ -36,6 +36,14 @@ nist_csf:
 
 **Do not use** for auditing non-AWS object storage (use provider-specific tools), for real-time monitoring (use S3 Event Notifications with Lambda), or for auditing S3 access patterns (use S3 Access Analyzer or CloudTrail S3 data events).
 
+## Detection Gaps & Validation
+
+- **Public ≠ bucket ACL only:** exposure also comes from object-level ACLs (`bucket-owner-read`/`AllUsers` on individual keys), S3 Access Points / Multi-Region Access Points (separate policies), static website endpoints, CloudFront OAC/OAI, and presigned URLs. Auditing only `get-bucket-acl` misses these.
+- **"No config" is not "blocked":** `get-public-access-block` returning `NoSuchPublicAccessBlockConfiguration` means BPA is **not** set (open), not safe. Check both account-level (`s3control get-public-access-block`) and per-bucket; account-level BPA overrides bucket settings.
+- **Policy traps:** `Principal:"*"` with a weak `Condition` (`aws:SourceIp: 0.0.0.0/0`), `NotPrincipal` allows, or cross-account `Principal` combined with object ACL `bucket-owner-full-control` all grant access a wildcard-principal grep alone won't flag.
+- **Encryption check is shallow:** `get-bucket-encryption` PASS only proves *default* SSE; it does not prove uploads can't omit KMS — verify a `Deny` on `s3:PutObject` when `s3:x-amz-server-side-encryption` is absent.
+- **Validate authoritatively:** trust `aws s3api get-bucket-policy-status` (`IsPublic` boolean) and IAM Access Analyzer findings over manual policy reading; confirm by attempting an unauthenticated `curl https://bucket.s3.amazonaws.com/` and an anonymous `aws s3 ls --no-sign-request`.
+
 ## Prerequisites
 
 - AWS CLI v2 configured with credentials that have `s3:GetBucketPolicy`, `s3:GetBucketAcl`, `s3:GetBucketPublicAccessBlock`, `s3:GetEncryptionConfiguration`, and `s3:ListAllMyBuckets` permissions

@@ -49,6 +49,14 @@ Cloud incident containment requires cloud-native approaches that differ signific
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Common Misconfigurations & Verification
+
+- **Containment that destroys evidence:** terminating/stopping an instance before snapshotting wipes the instance-store volume and RAM. Always `create-snapshot`/`New-AzSnapshot`/`gcloud compute disks snapshot` and capture memory **before** isolation, and prefer quarantine SG/NSG over stop. Tag and Object-Lock the snapshot so cleanup automation can't delete it.
+- **Token revocation that isn't:** disabling an IAM user's access key or `AccountEnabled=$false` does **not** kill already-issued STS/refresh tokens — they remain valid until expiry. For AWS attach the `aws:TokenIssueTime` deny condition (and update the role trust policy) ; for Azure run `Revoke-AzureADUserAllRefreshToken`; for GCP the SA key delete leaves active OAuth tokens until TTL. Verify with CloudTrail/Activity/Audit logs showing the principal's calls now `AccessDenied`.
+- **Isolation gaps:** an EC2/VM SG/NSG change leaves *existing* established connections alive in some stacks, and removing one of several attached SGs/NICs leaves another path open. Confirm all NICs/SGs, NACLs, and public IPs are covered; for serverless, set Lambda reserved concurrency to 0 and delete event-source mappings.
+- **Cross-account / persistence missed:** attackers leave behind backdoor IAM roles, added trust relationships, new access keys, and Lambda/EventBridge triggers. Containing the obvious identity but not auditing `iam:CreateRole`/`CreateAccessKey`/`AttachRolePolicy` since the compromise window lets them walk back in.
+- **Concrete verification the action worked:** replay a known-bad API call and confirm it now fails; check the instance is unreachable on its prior listeners; confirm the snapshot exists with COMPLIANCE-mode lock; and verify CloudTrail/Activity logs are still flowing to write-protected storage (containment must not break logging).
+
 ## Prerequisites
 
 - Familiarity with incident response concepts and tools

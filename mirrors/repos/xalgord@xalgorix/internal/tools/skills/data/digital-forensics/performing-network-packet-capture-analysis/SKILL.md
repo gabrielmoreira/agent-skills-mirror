@@ -40,6 +40,16 @@ Network packet captures (PCAP/PCAPNG files) represent the ultimate source of tru
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+A capture is evidence of what the sensor recorded, not of everything that happened. Account for these gaps before drawing conclusions:
+
+- **Truncation and packet loss.** A small snaplen (`tcpdump -s 96`) records headers but strips payloads, so `tshark --export-objects` and Scapy `Raw` analysis come up empty. Confirm with `capinfos` (snaplen, drop counts, duration) that the file is full-payload and spans the incident window. Asymmetric/one-sided captures (SPAN misconfig) prevent TCP reassembly, producing false "no data transferred" results.
+- **Encrypted payloads.** TLS 1.3, QUIC, DoH/DoT, and SSH render bodies opaque without keys. Pivot to surviving metadata — SNI (unless ECH), JA3/JA3S, certificate issuer/validity, flow sizes, and beacon timing. Absence of readable content is not absence of malicious activity.
+- **Beaconing and tunneling need statistics, not a filter.** Jittered C2 evades fixed `frame.time_delta` windows. Compute inter-arrival mean/variance per dst:port over the whole capture (the Python `detect_beaconing` here), and treat long random DNS labels as *candidate* tunneling to verify, since CDNs/AV telemetry/analytics produce similar entropy.
+- **Validate every extracted artifact.** Carved/reassembled objects can be partial if retransmissions or segments are missing. Hash each file and check threat intel/VirusTotal before labeling malware, and confirm the transfer actually completed (HTTP 200 + matching content-length) rather than an aborted GET.
+- **Interpretation false positives.** Self-signed certs and odd ports are common on internal/IoT hosts; "top talker" volume is often backup/replication, not exfiltration. Verify the capture host's clock and timezone before building a timeline, and corroborate network findings with endpoint logs (process, DNS, auth) rather than relying on the PCAP alone.
+
 ## Prerequisites
 
 - Wireshark 4.x with protocol dissectors

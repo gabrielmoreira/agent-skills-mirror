@@ -38,6 +38,15 @@ nist_csf:
 - During incident response involving lateral movement with domain admin credentials
 - When auditing AD replication permissions as part of security hardening
 
+## Detection Gaps & Validation
+
+- **No SACL = no 4662.** The detection depends entirely on an audit SACL on the domain object covering "Replicating Directory Changes." Without it the DCSync generates zero 4662 events. Verify the SACL on the domain root and that `auditpol /get /subcategory:"Directory Service Access"` shows Success.
+- **Properties field gets dropped.** Many log pipelines truncate or omit the 4662 `Properties` field that carries the replication GUIDs (`1131f6aa-…`, `1131f6ad-…`). Confirm your parser preserves it or the query matches nothing.
+- **Network-only detection for the no-SACL case:** DCSync issues `DsGetNCChanges` over the DRSUAPI RPC interface (MS-DRSR) from the attacker host. Flag DRSUAPI/replication RPC sourced from any non-DC IP — this is what Defender for Identity keys on when 4662 is unavailable.
+- **Account evasion:** filtering only `*$` machine accounts misses a DCSync run from a renamed/compromised account that legitimately holds replication rights; also exclude Entra/Azure AD Connect (`MSOL_*`, `AADConnect`) explicitly rather than broadly.
+- **Validate the rule fires:** in a lab, run `mimikatz lsadump::dcsync /user:krbtgt` or DSInternals `Get-ADReplAccount` and confirm a 4662 with GUID `1131f6ad-9c07-11d1-f79f-00c04fc2dcd2` appears for your non-DC account.
+- **Tune false positives:** baseline the real DCs and known replication service accounts, then alert only on `SubjectUserName` that is non-`$` and not on the allowlist.
+
 ## Prerequisites
 
 - Windows Security Event Logs with Event ID 4662 (Object Access) enabled

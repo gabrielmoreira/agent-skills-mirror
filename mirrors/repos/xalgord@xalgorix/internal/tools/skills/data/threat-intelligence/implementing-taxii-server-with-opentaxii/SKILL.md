@@ -36,6 +36,15 @@ TAXII (Trusted Automated eXchange of Intelligence Information) is an OASIS stand
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Discovery/API-root URL mismatch:** the `discovery.default` and `api_roots` URLs in the config must match the externally reachable HTTPS base, or clients discover endpoints they cannot reach. Verify with a real `Server(...).api_roots` call from outside the host.
+- **Collection IDs not stable:** reusing or regenerating a collection `id` orphans published objects and breaks consumer poll state. Pin UUIDs in config and never recycle them.
+- **Permission flags wrong:** a collection with `can_write: false` silently rejects publishes; `can_read: false` returns empty polls. Confirm read/write per collection against the intended sharing model (hub-and-spoke vs peer-to-peer).
+- **Media-type negotiation:** medallion/OpenTAXII require `application/taxii+json;version=2.1` and `application/stix+json;version=2.1`; wrong headers yield 406/415.
+- **Default credentials and volatile backend:** the sample `*_change_me` passwords and `MemoryBackend` are not production-safe - data is lost on restart and auth is weak. Switch to a persistent backend and real TLS certs.
+- **Verification:** hit `/taxii2/` for discovery, list collections with the correct read/write flags, publish a bundle and confirm the Status response `success_count`, then poll it back and validate the IOCs forward into the SIEM.
+
 ## Prerequisites
 
 - Python 3.9+ with `medallion`, `stix2`, `taxii2-client`, `opentaxii`, `cabby` libraries

@@ -1,6 +1,6 @@
 ---
 name: trail
-description: Git history investigation, regression root cause analysis, and code archaeology specialist. Time-travels through commit history to uncover truth. Use when git history investigation or regression analysis is needed.
+description: Investigating git history, analyzing regression root causes, and performing code archaeology. Time-travels through commit history to uncover truth. Use when git history investigation or regression analysis is needed.
 ---
 
 <!--
@@ -17,6 +17,9 @@ CAPABILITIES_SUMMARY:
 - cross_cluster_escalation: Handoff to Specter for resource-related bisect findings via TRAIL_TO_SPECTER_HANDOFF
 - benchmark_driven_bisect: Custom bisect terms and automated scripts for non-binary pass/fail regression detection
 - fix_prompt_generation: Pair every confirmed regression with a paste-ready LLM Fix Prompt embedding breaking commit, bisect evidence, rollback safety, recommended action, acceptance criteria, ruled-out alternatives, and "what NOT to do" so a downstream coding LLM can act without manual reformulation
+- legacy_business_rule_extraction: Extract implicit business rules from undocumented legacy code without relying on commit history; surface hidden domain logic and tribal knowledge (absorbed from fossil)
+- migration_risk_scoring: Score modernization risk for legacy modules; produce rule inventory + dependency map to scope migration work (absorbed from fossil)
+- tribal_knowledge_documentation: Convert oral history and undocumented decisions into runbooks and decision logs (absorbed from fossil)
 
 COLLABORATION_PATTERNS:
 - Scout -> Trail: Bug location for history investigation
@@ -85,8 +88,8 @@ Route elsewhere when the task is primarily:
 - For merge-heavy repositories (feature-branch workflow without squash-merge), prefer `git bisect start --first-parent` (Git 2.29+) to restrict bisection to mainline commits, avoiding untestable feature-branch internals. When bisect still identifies a merge commit as first bad, test each parent independently to isolate the integration conflict.
 - Use `git bisect skip <commit>..<commit>` to pre-mark known-untestable ranges (e.g., build system rewrites, large refactors) before starting the run. This preserves binary search efficiency better than hitting exit 125 repeatedly during automated runs.
 - Use `git bisect visualize` (or `git bisect view`) mid-session to review the remaining suspect range before continuing. Pipe to `--oneline --graph` for quick triage of complex merge topologies.
-- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly run safe `git log`/`blame`/`show` before forming hypothesis — checking history is cheaper than re-bisecting), P5 (think step-by-step at SCOPE — wrong good/bad pair wastes log₂(n) iterations)** as critical for Trail. P2 recommended: keep timeline visualization within `references/output-formats.md` envelope.
-- Pair every confirmed regression with a paste-ready `## LLM Fix Prompt` block in the report. The prompt embeds breaking commit (SHA + diff hunk), bisect evidence, rollback safety, recommended action, acceptance criteria, ruled-out alternatives, and "what NOT to do" so a downstream coding LLM can act without manual reformulation. Suppress only when escalating to Specter/Sentinel/Atlas, when the task is archaeology-only, or when bisect identifies a merge commit and parents are not yet isolated. See `references/fix-prompt-generation.md` and universal rules in `_common/LLM_PROMPT_GENERATION.md`.
+- Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly run safe `git log`/`blame`/`show` before forming hypothesis — checking history is cheaper than re-bisecting), P5 (think step-by-step at SCOPE — wrong good/bad pair wastes log₂(n) iterations)** as critical for Trail. P2 recommended: keep timeline visualization within `reference/output-formats.md` envelope.
+- Pair every confirmed regression with a paste-ready `## LLM Fix Prompt` block in the report. The prompt embeds breaking commit (SHA + diff hunk), bisect evidence, rollback safety, recommended action, acceptance criteria, ruled-out alternatives, and "what NOT to do" so a downstream coding LLM can act without manual reformulation. Suppress only when escalating to Specter/Sentinel/Atlas, when the task is archaeology-only, or when bisect identifies a merge commit and parents are not yet isolated. See `reference/fix-prompt-generation.md` and universal rules in `_common/LLM_PROMPT_GENERATION.md`.
 - **Escalate to time-travel debugging via MCP when bisect bottoms out on a non-deterministic regression.** `rr` (Mozilla, Linux x86_64), `Pernosco` (cloud-indexed rr traces, instant jump to any point in execution), and `Replay.io Precog` (browser/Node.js, MCP server that hands a failing-test recording to a coding agent and returns a proposed fix) cover the gap that `git bisect` cannot reach: races, time-dependent bugs, mid-commit unbuildable states, and heisenbugs. Hand off the recording URL or trace artifact rather than re-running the failure. [Source: replay.io; blog.replay.io — Introducing Replay Precog]
 - **Strictly enforce `git bisect run` exit-code semantics.** A bisect script must `exit 0` for good, `exit 1`-`124` for bad, and `exit 125` for skip (unbuildable commit). Any other exit code aborts bisect. The skip code is the failure-mode escape hatch for the "broken intermediate commit" case that otherwise sinks an automated bisect run. [Source: git-scm.com/docs/git-bisect]
 - **Pair `git bisect run` with an agent-facing `AGENTS.md`** so the bisect script and its acceptance contract are discoverable by a downstream agent without a human prompt. Document the script path, the good/bad signal, the per-commit timeout, and the skip-criteria (build failure, unrelated infra issue) in the root `AGENTS.md` next to the codebase summary. [Source: staabm.github.io/2026/02/07/git-bisect-run]
@@ -137,7 +140,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | **REPORT** | Present findings | Timeline visualization + root cause + evidence + confidence level + recommendations |
 | **RECOMMEND** | Suggest next steps | Handoff: regression→Guardian/Builder, design flaw→Atlas, missing test→Radar, security→Sentinel |
 
-Templates (SCOPE YAML, LOCATE commands, CHANGE_STORY, REPORT markdown, bisect script, edge cases) → `references/framework-templates.md`
+Templates (SCOPE YAML, LOCATE commands, CHANGE_STORY, REPORT markdown, bisect script, edge cases) → `reference/framework-templates.md`
 
 ## Investigation Patterns
 
@@ -148,18 +151,18 @@ Templates (SCOPE YAML, LOCATE commands, CHANGE_STORY, REPORT markdown, bisect sc
 | **Impact Analysis** | Need to understand change ripple effects | `diff --stat` + `shortlog` + coverage check. Trace transitive dependencies |
 | **Blame Analysis** | Need accountability/context for changes | `git blame` aggregation with `.git-blame-ignore-revs` filtering (focus on commits, not individuals) |
 
-Full workflows, commands, gotchas → `references/patterns.md`
+Full workflows, commands, gotchas → `reference/patterns.md`
 
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
 |--------|----------|----------------|-----------|
-| `regression`, `broke`, `used to work` | Regression Hunt | Root cause commit + timeline | `references/patterns.md` |
-| `why`, `history`, `evolved`, `archaeology` | Archaeology | CHANGE_STORY with context | `references/patterns.md` |
-| `impact`, `ripple`, `change history` | Impact Analysis | Change timeline + affected areas | `references/patterns.md` |
-| `blame`, `who changed`, `accountability` | Blame Analysis | Commit-focused accountability report | `references/patterns.md` |
-| `bisect`, `find commit`, `pinpoint` | Regression Hunt with bisect | Breaking commit SHA + evidence | `references/framework-templates.md` |
-| unclear git history request | Archaeology (default) | Investigation summary | `references/patterns.md` |
+| `regression`, `broke`, `used to work` | Regression Hunt | Root cause commit + timeline | `reference/patterns.md` |
+| `why`, `history`, `evolved`, `archaeology` | Archaeology | CHANGE_STORY with context | `reference/patterns.md` |
+| `impact`, `ripple`, `change history` | Impact Analysis | Change timeline + affected areas | `reference/patterns.md` |
+| `blame`, `who changed`, `accountability` | Blame Analysis | Commit-focused accountability report | `reference/patterns.md` |
+| `bisect`, `find commit`, `pinpoint` | Regression Hunt with bisect | Breaking commit SHA + evidence | `reference/framework-templates.md` |
+| unclear git history request | Archaeology (default) | Investigation summary | `reference/patterns.md` |
 
 Routing rules:
 
@@ -173,13 +176,14 @@ Routing rules:
 
 | Recipe | Subcommand | Default? | When to Use | Read First |
 |--------|-----------|---------|-------------|------------|
-| Regression Investigation | `regression` | ✓ | Identify regression cause (investigate git-originated breaking commits) | `references/framework-templates.md` |
-| Git Bisect | `bisect` | | Identify regression commit via binary search | `references/framework-templates.md` |
-| Blame Walk | `blame` | | Trace change history for specific lines | `references/git-commands.md` |
-| History Mining | `history` | | Timeline analysis and archive archaeology | `references/patterns.md` |
-| Flamegraph Regression | `flame` | | Diagnose CPU/memory regressions via differential flamegraph + bisect narrowing | `references/flamegraph-regression.md` |
-| Delta Debugging | `delta` | | Minimize failing input/state via ddmin (flaky tests, large reproducers, config) | `references/delta-debugging.md` |
-| Revert Strategy | `revert` | | Choose revert vs reset, handle merge `-m`, partial revert, post-revert verification | `references/revert-strategies.md` |
+| Regression Investigation | `regression` | ✓ | Identify regression cause (investigate git-originated breaking commits) | `reference/framework-templates.md` |
+| Git Bisect | `bisect` | | Identify regression commit via binary search | `reference/framework-templates.md` |
+| Blame Walk | `blame` | | Trace change history for specific lines | `reference/git-commands.md` |
+| History Mining | `history` | | Timeline analysis and archive archaeology | `reference/patterns.md` |
+| Flamegraph Regression | `flame` | | Diagnose CPU/memory regressions via differential flamegraph + bisect narrowing | `reference/flamegraph-regression.md` |
+| Delta Debugging | `delta` | | Minimize failing input/state via ddmin (flaky tests, large reproducers, config) | `reference/delta-debugging.md` |
+| Revert Strategy | `revert` | | Choose revert vs reset, handle merge `-m`, partial revert, post-revert verification | `reference/revert-strategies.md` |
+| Static Rules | `static-rules` | | Extract implicit business rules from undocumented legacy code (no history needed); assess migration risk; generate rule inventory + runbook (absorbed from fossil) | `reference/patterns.md` |
 
 ## Subcommand Dispatch
 
@@ -195,6 +199,7 @@ Behavior notes per Recipe:
 - `flame`: Capture stack samples at good/bad revs under identical workload, generate differential flamegraph, threshold ≥5% absolute frame-share delta. Hand the offending frame to `bisect` with custom terms `fast`/`slow`. Use `--call-graph dwarf` for `perf`; warm up JIT runtimes before sampling.
 - `delta`: Apply `ddmin` to minimize failing input/state (test case, config, event sequence). Define a deterministic oracle returning PASS/FAIL/UNRESOLVED; for flaky tests rerun K=10× per oracle call. Compose with `bisect` (find commit) → `delta` (minimize input). Always verify the 1-minimal still reproduces.
 - `revert`: Choose strategy via the decision matrix — `git revert` for shared/pushed history, `reset --hard` only for local-only branches with reflog backup. Merge commits require `-m <parent>` (typically `-m 1`); document the choice. Plan the revert-of-revert when reintroducing fixed work. Always tag a `backup/pre-revert-<ts>` branch and post the comms template before merging.
+- `static-rules`: Read undocumented legacy code without relying on commit history. Identify implicit invariants, business rules, tribal knowledge. Output a rule inventory + migration-risk score (severity × dependency count × test coverage gap) + runbook. Use when commit history is missing/unreliable or when the question is "what does this code actually do" rather than "what changed". Composes with `blame` and `history` for source-of-decision traceability.
 
 ## Output Requirements
 
@@ -209,11 +214,11 @@ Every deliverable must include:
 - Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=timeline, style_pack=editorial-magazine) for a visual investigation timeline.
 
 Mandatory when a regression is confirmed (not for archaeology-only tasks):
-- `LLM Fix Prompt`: paste-ready instruction prompt for a downstream coding LLM. See `LLM Fix Prompt Generation` section below and `references/fix-prompt-generation.md` for verbs, schema, and suppression rules.
+- `LLM Fix Prompt`: paste-ready instruction prompt for a downstream coding LLM. See `LLM Fix Prompt Generation` section below and `reference/fix-prompt-generation.md` for verbs, schema, and suppression rules.
 
 ## LLM Fix Prompt Generation
 
-Every Trail report for a confirmed regression ends with a `## LLM Fix Prompt` block — a paste-ready, self-contained prompt that drives a downstream coding LLM (Builder, Claude, Codex) toward a precise forward fix or revert without manual reformulation. Universal authoring rules and prompt structure live in `_common/LLM_PROMPT_GENERATION.md`; Trail-specific verbs, suppression cases, template fields, and a worked example live in `references/fix-prompt-generation.md`.
+Every Trail report for a confirmed regression ends with a `## LLM Fix Prompt` block — a paste-ready, self-contained prompt that drives a downstream coding LLM (Builder, Claude, Codex) toward a precise forward fix or revert without manual reformulation. Universal authoring rules and prompt structure live in `_common/LLM_PROMPT_GENERATION.md`; Trail-specific verbs, suppression cases, template fields, and a worked example live in `reference/fix-prompt-generation.md`.
 
 | Verb | Use when | Receiving agent / LLM |
 |------|----------|----------------------|
@@ -246,11 +251,11 @@ In all suppression cases, write a one-line note in the report explaining why the
 
 **Safe (always):** log, show, diff, blame, grep, rev-parse, describe, merge-base, bisect log, bisect replay · **Confirm first:** bisect start, bisect run, checkout, stash · **Never:** reset --hard, clean -f, checkout ., rebase, push --force
 
-Full command reference → `references/git-commands.md`
+Full command reference → `reference/git-commands.md`
 
 ## Output Formats
 
-Timeline visualization + Investigation summary templates → `references/output-formats.md`
+Timeline visualization + Investigation summary templates → `reference/output-formats.md`
 
 ## Collaboration
 
@@ -298,17 +303,17 @@ Follow `_common/GIT_GUIDELINES.md`. Conventional Commits, no agent names, <50 ch
 
 | Reference | Read this when |
 |-----------|----------------|
-| `references/framework-templates.md` | You need SCOPE/LOCATE/TRACE/REPORT/RECOMMEND templates, bisect script, or edge case handling. |
-| `references/output-formats.md` | You need timeline visualization or investigation summary templates. |
-| `references/patterns.md` | You need investigation pattern workflows, commands, or gotchas. |
-| `references/git-commands.md` | You need the full git command reference with safety classification. |
-| `references/best-practices.md` | You need investigation best practices or anti-pattern avoidance. |
-| `references/examples.md` | You need complete investigation examples for pattern matching. |
-| `references/non-functional-regression.md` | Performance, memory, bundle size, or startup time regression bisect is needed. |
-| `references/flamegraph-regression.md` | You need flamegraph tool selection, differential flamegraph workflow, hotspot thresholds, or bisect-with-frame-share script for the `flame` subcommand. |
-| `references/delta-debugging.md` | You need ddmin pseudocode, granularity selection, flaky-test minimization tuning, or `git bisect run` integration for the `delta` subcommand. |
-| `references/revert-strategies.md` | You need the revert vs reset decision matrix, merge-commit `-m` parent selection, partial revert techniques, post-revert verification checklist, or comms template for the `revert` subcommand. |
-| `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing a Trail-specific action verb (FIX-REGRESSION / REVERT / REVERT-WITH-FORWARD-FIX / INVESTIGATE-FURTHER / REFACTOR-FIX), or deciding whether to suppress the prompt for a Specter/Sentinel/Atlas handoff or archaeology-only scope. |
+| `reference/framework-templates.md` | You need SCOPE/LOCATE/TRACE/REPORT/RECOMMEND templates, bisect script, or edge case handling. |
+| `reference/output-formats.md` | You need timeline visualization or investigation summary templates. |
+| `reference/patterns.md` | You need investigation pattern workflows, commands, or gotchas. |
+| `reference/git-commands.md` | You need the full git command reference with safety classification. |
+| `reference/best-practices.md` | You need investigation best practices or anti-pattern avoidance. |
+| `reference/examples.md` | You need complete investigation examples for pattern matching. |
+| `reference/non-functional-regression.md` | Performance, memory, bundle size, or startup time regression bisect is needed. |
+| `reference/flamegraph-regression.md` | You need flamegraph tool selection, differential flamegraph workflow, hotspot thresholds, or bisect-with-frame-share script for the `flame` subcommand. |
+| `reference/delta-debugging.md` | You need ddmin pseudocode, granularity selection, flaky-test minimization tuning, or `git bisect run` integration for the `delta` subcommand. |
+| `reference/revert-strategies.md` | You need the revert vs reset decision matrix, merge-commit `-m` parent selection, partial revert techniques, post-revert verification checklist, or comms template for the `revert` subcommand. |
+| `reference/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing a Trail-specific action verb (FIX-REGRESSION / REVERT / REVERT-WITH-FORWARD-FIX / INVESTIGATE-FURTHER / REFACTOR-FIX), or deciding whether to suppress the prompt for a Specter/Sentinel/Atlas handoff or archaeology-only scope. |
 | `_common/LLM_PROMPT_GENERATION.md` | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Scout/Sentinel/Plea. |
 | `_common/INVESTIGATION_ESCALATION.md` | Cross-cluster escalation to Specter, unified confidence scale, or stall protocol is needed. |
 | `_common/OPUS_48_AUTHORING.md` | You are scoping bisect iteration budget, deciding tool-use eagerness in LOCATE, or sizing CHANGE_STORY/REPORT outputs. Critical for Trail: P3, P5. |

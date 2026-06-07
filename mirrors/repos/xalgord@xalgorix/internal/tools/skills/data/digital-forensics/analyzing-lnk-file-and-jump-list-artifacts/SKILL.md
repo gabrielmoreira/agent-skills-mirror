@@ -39,6 +39,14 @@ Windows LNK (shortcut) files and Jump Lists are critical forensic artifacts that
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Most-missed artifacts:** don't stop at `Recent\*.lnk`. Parse both `AutomaticDestinations` (per-app MRU, OLE compound files keyed by AppID hash) and `CustomDestinations` (pinned/task items), plus Office MRU LNKs under `...\Office\Recent\`, and the embedded target IDList/shellbag that survives even when the path string is wiped. Feed LECmd/JLECmd the whole `Recent\` tree, AutomaticDestinations, and CustomDestinations - they only cover what you point them at.
+- **Persistence even after deletion:** LNK files and Jump List entries survive deletion of the target, recording the target's `$STANDARD_INFORMATION` times, volume serial, drive type, NetBIOS name, and TrackerDataBlock MAC - proving access to a file that no longer exists. A `Drive Type=Removable` + volume serial, or a MAC differing from the host, indicates a file opened from external/network media.
+- **Anti-forensics that defeats this analysis:** wiping `Recent\` or an AutomaticDestinations `.ms` file removes the live view - recover deleted LNKs from `$MFT`/unallocated and Volume Shadow Copies, and treat a near-empty Recent folder on an active account as itself suspicious.
+- **Validate with a second source:** corroborate LNK-claimed access against `$UsnJrnl`/`$MFT` entries for the target, Prefetch/Amcache for the launching program, Shellbags for the parent folder, and registry MountPoints2/USBSTOR when the LNK points at a removable volume serial.
+- **Interpretation pitfalls (false positives):** a LNK proves the target was *referenced* (Explorer preview, Open/Save dialog, recent-docs enumeration), not necessarily opened by the user; Windows 11/UWP apps generate fewer LNK/Jump List entries; and the LNK's own timestamps describe the shortcut, not the file. Confirm system timezone and clock skew before timelining.
+
 ## Prerequisites
 
 - LECmd (Eric Zimmerman) for LNK file parsing

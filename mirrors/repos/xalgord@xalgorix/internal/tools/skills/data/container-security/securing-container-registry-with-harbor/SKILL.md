@@ -34,6 +34,17 @@ Harbor is an open-source container registry that provides security features incl
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+Harbor's security features default to permissive - a project can scan images and still happily serve vulnerable, unsigned ones:
+
+- **`prevent_vul` off or threshold too loose:** auto-scan with `prevent_vul: "false"` records CVEs but never blocks pulls; a `severity: "high"` gate still serves anything rated medium/low. Both `auto_scan` and `prevent_vul` must be true per project.
+- **Content trust not enforced:** `enable_content_trust`/`enable_content_trust_cosign` set at system level but not on the project, so unsigned images deploy. Signing an image (`cosign sign`) is not the same as *requiring* signatures.
+- **Stale or partial scans:** images pushed before scanning was enabled, or scanned against an outdated Trivy DB, show "no vulnerabilities" falsely. Distroless/scratch images Harbor cannot parse report clean rather than unknown.
+- **Mutable release tags / public projects:** missing immutable-tag rules let `v1.0.0` be overwritten; a project left `public: "true"` exposes images unauthenticated.
+
+**Verify behavior, not config:** push a known-vulnerable image (e.g. `vulnerable-app`) and confirm `docker pull` is *rejected*; push with `DOCKER_CONTENT_TRUST=0` and confirm the unsigned push fails; check the artifact's actual scan via `/additions/vulnerabilities` and confirm the scan timestamp is recent and the DB current. Confirm the immutable-tag rule blocks re-pushing an existing release tag.
+
 ## Prerequisites
 
 - Harbor 2.10+ installed (Helm or Docker Compose)

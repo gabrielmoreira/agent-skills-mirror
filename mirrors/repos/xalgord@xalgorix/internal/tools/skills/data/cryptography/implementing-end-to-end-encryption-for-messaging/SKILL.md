@@ -32,6 +32,15 @@ End-to-end encryption (E2EE) ensures that only the communicating parties can rea
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **No forward secrecy:** encrypting every message under one long-term X25519 shared secret means a single key compromise decrypts the entire history. Implement the Double Ratchet so each message uses a fresh chain key, and **delete each message key immediately after use**.
+- **No post-compromise security (no DH ratchet):** without periodic DH ratchet steps, a key compromise also exposes all future messages. Verify a new DH ratchet rekeys the session.
+- **Unauthenticated encryption / no AEAD:** use AES-256-GCM (or ChaCha20-Poly1305) and bind associated data (sender/receiver identity, message number) into the tag to prevent reordering and reflection.
+- **No identity-key verification (MITM):** the server can swap keys unless users compare safety numbers / fingerprints out-of-band. Pin identity keys.
+- **No replay/ordering protection:** track message numbers; reject duplicates and out-of-window indices while still handling legitimate out-of-order delivery.
+- **The mandatory tests:** (1) two parties exchange and decrypt correctly; (2) the same plaintext yields **different ciphertexts** each time; (3) a captured old message key **cannot** decrypt a newer message (forward secrecy); (4) a **tampered ciphertext or AAD is REJECTED** by the GCM tag; (5) a replayed message is rejected.
+
 ## Prerequisites
 
 - Familiarity with cryptography concepts and tools

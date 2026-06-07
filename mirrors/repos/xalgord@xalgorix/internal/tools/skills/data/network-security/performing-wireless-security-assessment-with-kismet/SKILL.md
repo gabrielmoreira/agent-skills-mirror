@@ -38,6 +38,16 @@ Kismet is an open-source wireless network detector, packet sniffer, and wireless
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Channel/band coverage is the #1 miss:** default hopping may skip 5 GHz and DFS channels. Explicitly list 2.4 GHz plus all 5 GHz/DFS channels in `channel_list`, or rogue APs on uncovered channels go undetected and you wrongly report "clean."
+- **Dwell time too short:** fast hopping (5/sec) can miss APs that beacon infrequently and clients that probe rarely. Capture 30–60 min from each location and from multiple physical positions for full coverage.
+- **Hidden SSIDs need a trigger:** a cloaked SSID only reveals its name in a probe response or association. Kismet is passive, so the name appears only when a real client connects — absence of a name is not absence of a network.
+- **Rogue detection needs a baseline:** without an authorized-BSSID inventory you can't tell rogue from neighbor. Diff discovered BSSIDs against the allow-list and watch for evil-twin (same SSID, different/spoofed BSSID, stronger signal).
+- **Probe requests leak risk:** client probe lists reveal corporate devices seeking insecure home/known SSIDs (evil-twin bait) — review them, don't just inventory APs.
+- **How to confirm a finding:** corroborate encryption from the beacon's RSN/crypt field (Open/WEP/WPA-TKIP) in the device detail, confirm a "rogue" BSSID isn't a known vendor OUI on the authorized list, and verify hidden-SSID names against probe/association frames before reporting.
+- **Don't conclude "no rogues"** until you've covered both bands including DFS, dwelled long enough, and diffed against the authorized inventory.
+
 ## Prerequisites
 
 - Linux system (Kali Linux, Ubuntu 22.04+) with Kismet 2023+ installed

@@ -35,6 +35,19 @@ Gitleaks scans git repositories and directories for hardcoded secrets using rege
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+The most common failure is a scanner that runs but never fails the pipeline:
+
+- **No `--exit-code`, or exit code swallowed.** `gitleaks detect/dir` without `--exit-code 1` (or wrapped in `|| true`, or a job with `continue-on-error: true`) reports findings while the stage stays green. The CI gate verdict must translate to a non-zero process exit.
+- **Shallow clone / HEAD-only scan.** A default `fetch-depth: 1` checkout or scanning only the latest commit means secrets buried in history go undetected. Use `fetch-depth: 0` and scan full history (no narrowing `--log-opts`).
+- **TruffleHog without verification or scoped too narrow.** `trufflehog filesystem` over a partial path, or ignoring `--only-verified` semantics, changes what counts as a finding — be explicit about scope and severity mapping.
+- **Threshold set too high.** A gate that only fails on `critical` lets `high` secrets through; confirm the parse-and-filter step's threshold matches policy.
+- **Over-broad `.gitleaksignore` / allowlist** silently suppresses real leaks.
+- **Pre-commit hook in report-only mode** instead of `gitleaks protect --staged`, so secrets still reach the repo.
+
+**Concrete verification:** Add a known fake credential (e.g. `AKIAIOSFODNN7EXAMPLE` plus a fake secret key, or a `ghp_` token) to a tracked file and run the pipeline. Confirm gitleaks/trufflehog report it, the CI gate verdict is `FAIL`, and the **process exits non-zero so the deployment is blocked** — then remove the test secret.
+
 ## Prerequisites
 
 - Python 3.9 or later

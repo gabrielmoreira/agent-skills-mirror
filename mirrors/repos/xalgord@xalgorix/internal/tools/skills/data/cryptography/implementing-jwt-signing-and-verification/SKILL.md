@@ -32,6 +32,15 @@ JSON Web Tokens (JWT) defined in RFC 7519 are compact, URL-safe tokens used for 
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **`alg: none` accepted:** a token with header `{"alg":"none"}` and no signature must be **rejected**. Never call a decode that allows unsigned tokens; pass an explicit `algorithms=[...]` allowlist.
+- **Algorithm confusion (RS256 → HS256):** if the verifier picks the algorithm from the token header, an attacker re-signs with HS256 using the *public* key as the HMAC secret. Pin the expected algorithm server-side; never let the token choose. Verify a token signed with HS256-using-the-RSA-public-key is rejected.
+- **Missing claim validation:** always verify `exp` (and `nbf`), and enforce `aud` and `iss` against expected values — a valid signature on a token meant for another audience must still be rejected. Reject expired tokens (test with a past `exp`).
+- **Weak HMAC secret:** HS256 with a short/guessable secret is brute-forceable (e.g. with `hashcat -m 16500`); use ≥256-bit random secrets, or prefer RS256/ES256/EdDSA.
+- **`kid`/`jku`/`jwk` header injection:** do not fetch keys from attacker-controlled URLs or trust an embedded JWK; resolve `kid` against a pinned key set only.
+- **Mandatory tests:** a tampered payload (re-base64'd claims) is **REJECTED**; `alg:none` is REJECTED; algorithm-confusion forgery is REJECTED; expired and wrong-`aud` tokens are REJECTED; only a correctly signed, in-date, correct-audience token verifies.
+
 ## Prerequisites
 
 - Familiarity with cryptography concepts and tools

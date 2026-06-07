@@ -37,6 +37,15 @@ nist_csf:
 - When EDR or SIEM alerts trigger on related indicators
 - During periodic security assessments and purple team exercises
 
+## Detection Gaps & Validation
+
+- **Interactive logon is the signal:** service accounts should only show 4624 Type 5 (service) or Type 3 (network). Hunt 4624 **Type 2 (interactive)** and **Type 10 (RemoteInteractive/RDP)** for any `svc_*` account — but only if those logon types are collected (Type 10 needs RDP/TS auditing on the destination).
+- **Kerberoasting precursor:** T1558.003 shows as 4769 TGS requests with `Ticket Encryption Type 0x17 (RC4)` for the service account's SPN — if 4769 auditing is disabled on DCs, the roasting is invisible.
+- **Baseline host and time-of-day:** compare each service account's source-host set and hours against a 30-day baseline; a backup or SQL account suddenly touching a DC or a new subnet is the tell.
+- **Evasions:** attackers reuse the account's *expected* Type 3 logon from an already-allowed host, so volume/destination anomalies — not logon type alone — catch them; gMSA abuse can look fully legitimate.
+- **Validate:** force an interactive RDP logon with a test service account and run Atomic **T1558.003** Kerberoast to confirm the 4624 Type 10 and 4769 RC4 searches fire.
+- **Tune FPs:** patch windows, clustering, and admin troubleshooting create legitimate off-hours service-account activity — allowlist known maintenance windows and jump hosts.
+
 ## Prerequisites
 
 - EDR platform with process and network telemetry (CrowdStrike, MDE, SentinelOne)

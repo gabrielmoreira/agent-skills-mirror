@@ -34,6 +34,14 @@ AWS CloudTrail records API calls across AWS services. This skill covers querying
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **`lookup_events` is management-events only, last 90 days:** S3/Lambda **data events** are not returned and read-only `List`/`Describe`/`Get` calls are excluded. Bulk `GetObject` exfil or enumeration will be invisible unless you read the trail's S3/CloudWatch Logs destination instead.
+- **The log can be turned off or steered around:** attackers run `StopLogging`/`UpdateTrail`/`DeleteTrail`, disable the trail's KMS key, or simply operate in a region the trail doesn't cover. Alert on those control-plane events themselves and confirm the trail is multi-region.
+- **Identity attribution traps:** assumed-role activity shows the **role** ARN, not the human — correlate `sourceIdentity`/session name; `sourceIPAddress` is often an AWS service hostname (`*.amazonaws.com`) for service-initiated calls, which naive geo/IP-anomaly logic mislabels.
+- **Baseline & threshold evasion:** "first-time API" rules misfire after legitimate new deployments; high-error-rate recon can be paced under thresholds. Tune with per-principal baselines and exclude known automation ARNs.
+- **Validate the detection:** check `aws cloudtrail get-trail-status` shows `IsLogging: true` and the trail is `IsMultiRegionTrail`; then perform a benign sensitive call (e.g., `iam:CreateUser` then delete) and confirm it surfaces in your pipeline within the expected window.
+
 ## Prerequisites
 
 - Python 3.9+ with `boto3` library

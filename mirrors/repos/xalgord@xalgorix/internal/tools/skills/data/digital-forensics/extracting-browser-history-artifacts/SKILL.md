@@ -31,6 +31,14 @@ nist_csf:
 - For correlating browser activity with other forensic artifacts and timelines
 - When investigating phishing attacks to identify which links were clicked
 
+## Detection Gaps & Validation
+- **Incognito/private mode leaves no history row.** Chrome Incognito and Firefox Private Browsing do not write to `History`/`places.sqlite`. Absence of a URL is not proof it was not visited — pivot to network-side evidence.
+- **Most-missed source: the SQLite WAL.** `History-wal`/`places.sqlite-wal` (and `-shm`, rollback journals) hold recently committed *and* uncommitted records that the main DB lacks. Collect the WAL alongside the DB, or a checkpoint on open will silently merge/lose state. Deleted rows also survive in freelist/unallocated DB pages (recover with a SQLite record carver).
+- **Epoch pitfalls:** Chrome/Edge timestamps are microseconds since **1601-01-01** (`/1000000 - 11644473600`); Firefox is microseconds since **1970**. Mixing them produces wildly wrong times.
+- **Sync contamination:** a signed-in profile can pull history/bookmarks from *other* devices, so a URL in the DB was not necessarily visited on this machine.
+- **Anti-forensics:** "Clear browsing data," DB file deletion, and timestamp edits. DPAPI-encrypted passwords/cookies require the user's master key.
+- **Validate / cross-corroborate:** confirm a visit with a second source — DNS resolver cache, proxy/firewall/SWG logs, SRUM network usage, and `$MFT`/Downloads entries for fetched files. Match a known value (download filename, referrer chain) rather than relying on a bare 200/row.
+
 ## Prerequisites
 - Forensic image or access to user profile directories
 - SQLite3 for querying browser databases

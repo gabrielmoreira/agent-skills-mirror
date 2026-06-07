@@ -56,6 +56,29 @@ nist_csf:
 
 **Do not use** as the sole defense mechanism against prompt injection -- always combine with output validation, privilege separation, and least-privilege tool access. Not suitable for detecting jailbreaks that do not involve injection of adversarial instructions.
 
+## Detection Gaps & Validation
+
+Prompt-injection detectors built on regex + classifier most often miss attacks
+that never look like the canonical "ignore previous instructions":
+
+- **Obfuscated / encoded payloads:** base64, ROT13, hex, leetspeak, zero-width
+  characters, or homoglyphs carry the instruction past signature regexes.
+  Decode-then-rescan, and test with `"aWdub3JlIGFsbCBydWxlcw=="` style inputs.
+- **Indirect / cross-context injection:** the malicious instruction arrives via
+  RAG-retrieved documents, tool/API output, or webpage content the model
+  ingests - not the user field your filter watches. Validate by planting an
+  injected instruction inside a retrieved document and confirming the detector
+  sees it.
+- **Multilingual evasion:** an instruction in a low-resource language, or mixed
+  script, slips an English-trained classifier. Test non-English jailbreaks.
+- **Payload splitting / accretion:** the attack is assembled across turns or
+  concatenated fragments, each benign alone. Test multi-turn assembly.
+- **How to validate detection fires + tune FPs:** run a labeled red-team corpus
+  (deepset/prompt-injections plus encoded/indirect/multilingual variants),
+  confirm true positives trip at the configured threshold, and measure false
+  positives against benign code snippets and technical text - lower the
+  threshold or add layers until both error rates are acceptable.
+
 ## Prerequisites
 
 - Python 3.10+ with pip for installing detection dependencies

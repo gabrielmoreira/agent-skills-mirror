@@ -44,6 +44,15 @@ Havoc is a modern, open-source post-exploitation command and control (C2) framew
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Most Often Missed & How to Confirm
+
+- **Default Demon agent with no sleep obfuscation.** Stock Havoc Demon is heavily signatured by EDR. Enable a sleep-mask technique (Ekko/Foliage/Zilean), indirect syscalls, and stack spoofing in the payload build.
+- **Unmodified malleable profile.** Default `havoc.yaotl` URIs/headers/User-Agent are public IOCs. Customize Uris, Headers, and Response blocks per engagement.
+- **Teamserver port 40056 exposed.** Operators leave the teamserver reachable from the internet instead of firewalling it to the redirector IP only.
+- **Self-signed certs.** Use Let's Encrypt/purchased certs; self-signed TLS gets flagged.
+- **No detonation against target EDR before go-live.** AMSI/ETW patching and syscall behavior must be validated in a representative AV/EDR snapshot.
+- **How to confirm:** the Demon checks in — it appears in the session table with its sleep/jitter values, `proc list` returns processes, and `dotnet inline-execute` runs an assembly successfully. OPSEC check: detonate in a Defender/EDR lab snapshot first and confirm no alert. Don't conclude the listener is broken until you have `curl`'d a configured URI (e.g. `/api/v2/status`) through the redirector and confirmed it forwards to the teamserver while non-matching paths 301 to the decoy site.
+
 ## Prerequisites
 
 - Ubuntu 22.04 LTS or Debian 11+ (for Teamserver)

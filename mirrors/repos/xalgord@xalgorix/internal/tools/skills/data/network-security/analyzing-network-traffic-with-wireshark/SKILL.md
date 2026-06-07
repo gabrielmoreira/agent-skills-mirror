@@ -33,6 +33,15 @@ nist_csf:
 
 **Do not use** to capture traffic on networks without authorization, to intercept private communications without legal authority, or as a substitute for full-featured SIEM platforms in production monitoring.
 
+## Detection Gaps & Validation
+
+- **You only see what the tap delivers:** a SPAN port that mirrors one direction, or oversubscription dropping frames, makes beaconing look intermittent. Confirm with `tshark -r cap.pcapng -q -z io,phs` and check the capture's dropped-packet count before concluding traffic is absent.
+- **Encrypted exfil/C2 hides from display filters:** DoH/DoT (`tcp.port==443`/`853`) carries no `dns.qry.name` to grep — your `.xyz` TLD filter returns nothing. Pivot to `tls.handshake.extensions_server_name` (SNI), JA3/JA3S, and `tcp.len` periodicity instead of assuming the host is clean.
+- **Display filter != capture filter:** a capture BPF of `port 53` permanently discards the DoH/DoT and non-53 tunnels you later want; capture broad, filter narrow at analysis time.
+- **Low-and-slow beats the eye:** beacons with jitter won't stand out in a packet list. Use `-z io,stat,1` and `-z conv,tcp` sorted by duration to surface long, low-byte conversations to one destination.
+- **Validate your filter fires:** replay a known-bad sample with `tcpreplay -i eth0 known_c2.pcap` (or open it directly) and confirm your display filter (e.g., `dns.qry.name matches "[a-f0-9]{30,}"`) actually matches the malicious frames; a zero-row result means the field path or operator is wrong.
+- **FP tuning:** TLS SNI to CDNs, Windows update, and corporate DoH resolvers trigger naive TLD/long-label filters; baseline and whitelist before alerting.
+
 ## Prerequisites
 
 - Wireshark 4.0+ and tshark command-line utility installed

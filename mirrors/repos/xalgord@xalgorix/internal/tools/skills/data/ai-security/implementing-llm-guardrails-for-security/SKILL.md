@@ -57,6 +57,31 @@ nist_csf:
 
 **Do not use** as a replacement for proper authentication, authorization, and network security controls. Guardrails are a defense-in-depth layer, not a perimeter defense. Not suitable for real-time content moderation of user-to-user communication without LLM involvement.
 
+## Common Misconfigurations & Verification
+
+LLM guardrails create a false sense of safety when the deny-list is narrow, the
+input rail can be bypassed by encoding, or the output/RAG path is left
+unguarded:
+
+- **Bypassable input rail:** blocked_patterns like `"how to hack"` are defeated
+  by encoding (base64/leetspeak), translation, or roleplay framing ("you are
+  DAN..."). Confirm the rail decodes and normalizes input before matching, and
+  test known jailbreak templates against it.
+- **Allow/deny topic list too coarse:** an allow-list of `customer_support`
+  still passes an injected instruction phrased as a support question. Validate
+  with on-topic-but-malicious prompts.
+- **Output rail / hallucination check skipped:** input is filtered but the model
+  response leaks PII or system-prompt content unchecked. Verify the output rail
+  actually runs and `require_grounded_response` rejects ungrounded claims.
+- **Indirect injection via RAG ignored:** guardrails inspect the user turn but
+  not retrieved documents. Plant an injected instruction in a source document
+  and confirm it is caught.
+- **PII redaction gaps:** Presidio misses non-US formats or split tokens; test
+  with international phone numbers, IBANs, and SSNs broken across lines.
+- **How to confirm:** run a jailbreak/encoding/indirect-injection corpus through
+  the pipeline and verify each is blocked or redacted, then measure false
+  positives on benign on-topic traffic.
+
 ## Prerequisites
 
 - Python 3.10+ with pip for installing guardrail dependencies

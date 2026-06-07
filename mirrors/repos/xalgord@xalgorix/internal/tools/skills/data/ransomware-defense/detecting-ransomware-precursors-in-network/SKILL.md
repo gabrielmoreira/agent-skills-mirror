@@ -36,6 +36,14 @@ nist_csf:
 
 **Do not use** for post-encryption response (see recovering-from-ransomware-attack). This skill focuses on the pre-encryption detection window where containment can prevent data loss.
 
+## Detection Gaps & Validation
+
+- **Cobalt Strike hidden in TLS:** the `Major Cobalt Strike` cert string only catches default/un-customized profiles. Operators use Malleable C2 profiles that mimic legit CDNs, so signature rules miss them. Add JA3/JA4 fingerprinting and RITA-style beacon-timing analysis (regular interval + jitter) to catch beacons inside encrypted traffic.
+- **RDP brute force vs. password spray:** a `count 20, seconds 60` threshold misses low-and-slow spraying (a few attempts per account across hours). Add a per-destination distinct-account rule, and don't dismiss internal RDP as "admin activity" without verifying the source is an authorized jump host.
+- **AD recon / DCSync from non-DC:** Kerberoasting (bulk TGS-REQ for SPNs) and DCSync (DRS GetNCChanges from a host that isn't a domain controller) are high-signal precursors that get lost if you only watch SMB. Confirm `kerberos.log` and DRSUAPI rules are active.
+- **Internal scans dismissed as vuln scanners:** allowlist authorized scanner IPs explicitly so a real attacker fan-out (one host → 47 hosts on 445/135/3389) isn't auto-suppressed.
+- **How to validate the rules fire + FP tuning:** replay a labeled PCAP (Cobalt Strike beacon, PsExec, Kerberoasting) through Suricata/Zeek and confirm each SID/notice triggers and the SIEM correlation chains them into one HIGH alert; then baseline a week of normal admin/backup/scanner traffic and tune thresholds so the chained rule — not the noisy single events — drives escalation.
+
 ## Prerequisites
 
 - Network detection platform (Zeek/Bro, Suricata, or Arkime/Moloch) deployed on network TAP or SPAN ports

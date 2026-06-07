@@ -43,6 +43,15 @@ with the stix2 Python library and TAXII 2.1 transport protocol.
 
 **Do not use** for sharing simple IP blocklists or CSV-based IOC feeds that do not require relationship context; plain-text feeds with simpler formats like CSV or OpenIOC may be more efficient in those cases.
 
+## Common Misconfigurations & Verification
+
+- **Dangling relationship refs:** a `Relationship` whose `source_ref`/`target_ref` points to an object not in the bundle parses fine but breaks consumers. Verify every SRO endpoint resolves to an SDO/SCO `id` present in the bundle.
+- **Invalid STIX patterns:** patterns like `[file:hashes.'SHA-256' = '...']` require correct property paths and quoting; a malformed `MATCHES` regex or missing bracket fails silently in some loaders. Lint with `stix2-validator`.
+- **Missing required properties:** custom or hand-built objects dropping `type`/`id`/`created`/`modified` fail spec validation - always construct via the `stix2` library rather than raw dicts.
+- **TAXII media-type errors:** publishing without `Content-Type: application/taxii+json;version=2.1` (or the matching accept header) yields 406/415 or silent rejection. Confirm `success_count` equals the number of objects sent.
+- **TLP marking omitted:** objects without `object_marking_refs` default to unrestricted sharing - attach the correct TLP marking definition before publishing.
+- **Verification:** re-parse the serialized bundle with `allow_custom=False`, round-trip published objects back from the TAXII collection to confirm no data loss, and run `stix2_validator` on the export.
+
 ## Prerequisites
 
 - Python 3.8+ with `stix2` library (`pip install stix2`)

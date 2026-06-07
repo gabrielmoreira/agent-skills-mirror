@@ -30,6 +30,14 @@ nist_csf:
 - When tracing the attack chain from initial access to encryption
 - For documenting evidence to support law enforcement and insurance claims
 
+## Detection Gaps & Validation
+- **Variant ID by extension alone is unreliable.** Affiliates and copycats reuse extensions and note names, and many families append random or per-victim extensions. Confirm the family from **multiple signals** — ransom note layout + an encrypted sample submitted to ID Ransomware/No More Ransom + binary hash — never the extension by itself.
+- **Shadow-copy deletion: look for the act, not just the absence.** Search Prefetch/4688/Sysmon for `vssadmin delete shadows`, `wmic shadowcopy delete`, `wbadmin delete`, and `bcdedit /set recoveryenabled no`. Missing VSS plus the deletion command is the proof; missing VSS alone is ambiguous.
+- **Keys are volatile.** AES/RSA key material may only exist in RAM — if the host was rebooted before imaging, memory key recovery is off the table. This is why "do not power off" precedes triage.
+- **Intermittent/partial encryption** (LockBit, BlackCat, Play) leaves portions of files intact and recoverable; do not assume total loss without inspecting file structure.
+- **Anti-forensics:** Security log clearing (EID 1102), timestomping of the dropper, and self-deletion of the payload. Carve the deleted binary from unallocated and check VSS for pre-encryption copies.
+- **Validate / cross-corroborate the timeline:** reconcile earliest-encrypted-file timestamps with Prefetch run times, Security.evtx logons, and SRUM. Confirm **exfiltration (double extortion)** with proxy/firewall/NetFlow egress volume, not just the note's claim.
+
 ## Prerequisites
 - Forensic images of affected systems (preserve before remediation)
 - Memory dumps captured before system shutdown (if available)

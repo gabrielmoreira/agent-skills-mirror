@@ -38,6 +38,17 @@ nist_csf:
 
 **Do not use** for scanning production Siemens PLCs without authorization and a test plan (this can crash controllers), for non-Siemens protocol analysis (see detecting-modbus-command-injection-attacks for Modbus), or for modifying PLC programs in a production environment.
 
+## Most Often Missed & How to Confirm
+
+S7comm assessments miss critical operations and can halt a CPU if probed carelessly. Watch the protocol, don't poke the PLC:
+
+- **Watching only reads/writes:** the dangerous functions are Request Download (0x1A), Download Block (0x1B), PI Service start/stop (0x28), PLC Stop (0x29), and program upload (0x1D-0x1F). Confirm your analyzer decodes the function code from the S7 PDU (protocol id 0x32), not just TCP/102 presence.
+- **Authorized-station list missing:** without it, an unauthorized engineering source issuing 0x1A/0x29 looks normal. Confirm the TIA Portal workstation IPs are configured so deviations alert.
+- **Assuming passwords protect S7-300/400:** these have no cryptographic integrity and transmit passwords in cleartext — any host reaching port 102 can stop the CPU or download logic. Don't conclude "protected by password"; segmentation is the real control.
+- **S7CommPlus assumed unbreakable:** S7-1200 (<V4.5)/S7-1500 (<V2.9) integrity can be bypassed from one observed session. Confirm the firmware band against CVE-2019-13945 and the Biham et al. finding.
+- **Never test live:** confirm findings from captured pcap analysis; do not send 0x29/0x1A to a production PLC. Any active replay test belongs on a lab S7 inside a maintenance window.
+- **Don't conclude "no unauthorized programming"** until you've parsed a full capture and compared the running block against a known-good backup.
+
 ## Prerequisites
 
 - Network access to the S7comm communication segment (TCP port 102)

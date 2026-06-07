@@ -38,6 +38,17 @@ Network scanning is typically the first phase of an attack, where adversaries en
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+Threshold rules like `count 30, seconds 10` silently miss the scans that matter most:
+
+- **Slow/stealth scans:** `nmap -T0/-T1` spreads probes over minutes, staying under any `seconds`-based threshold. Add a long-window companion rule (e.g. `count 30, seconds 3600`) or correlate in the SIEM rather than relying on the per-10s sig alone.
+- **Decoy scans:** `nmap -D RND:10` floods alerts with spoofed sources, and `track by_src` then fragments the real scanner across many entries. Pivot on the destination-port spread per `dest_ip`, not source counts.
+- **IPv6 blind spot:** rules scoped to IPv4 `$EXTERNAL_NET` never fire on IPv6 SYN scans. Confirm `HOME_NET`/`EXTERNAL_NET` include IPv6 ranges and the tap actually carries v6.
+- **Evasion:** fragmented probes (`nmap -f`), source-port spoofing (`--source-port 53`), and idle/FTP-bounce scans bypass flag-based signatures.
+
+**How to confirm a real hit vs noise:** correlate the scan source with a follow-on exploitation `alert` or a completed `flow:established` to the same `dest_port`. A burst of SYNs with zero `SYN/ACK` replies in `eve.json` is a true scan; SYNs that complete the handshake are normal clients. Don't conclude "no scanning" until you've checked the long-window rule and IPv6.
+
 ## Prerequisites
 
 - Suricata 7.0+ or Snort 3.0+ deployed in IDS/IPS mode

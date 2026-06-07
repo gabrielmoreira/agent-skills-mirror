@@ -37,6 +37,15 @@ nist_csf:
 
 **Do not use** for scanning proprietary application code for logic vulnerabilities (use SAST), for runtime vulnerability detection (use DAST), or for container OS package scanning alone (use Trivy for a free alternative).
 
+## Coverage Gaps & Validation
+
+- **Transitive deps silently skipped:** Snyk only resolves the full tree when a lockfile is present. `snyk test` against a bare `requirements.txt` or `package.json` with no `package-lock.json`/`poetry.lock` scans direct deps only. Generate the lockfile first and confirm the "Dependencies" count includes transitives, not just `47 direct`.
+- **Vendored / monorepo deps missed:** committed `vendor/`, sub-projects, and non-default manifests aren't found unless you pass `--all-projects` (or `--file=`). Verify each manifest appears in the test output.
+- **`--severity-threshold=high` hides exploitable lows:** the threshold suppresses medium/low from the report entirely, not just the gate. Scan at `--severity-threshold=low` for inventory, gate separately.
+- **Gate not actually failing:** `snyk test` exits non-zero on findings, but `snyk monitor` always exits 0. Use `--fail-on=all` (not just `--fail-on=upgradable`, which passes when no upgrade exists) and confirm the CI step's exit code.
+- **OS vs app libs:** `snyk test` covers app dependencies; OS packages in an image need `snyk container test`. Run both.
+- **Reachability ≠ presence:** "we don't call that function" is not proof — Snyk's reachability is best-effort and misses dynamic dispatch. Validate completeness by adding a knowingly vulnerable pin (e.g. `lodash@4.17.4`) and confirming it surfaces at the expected severity and trips `--fail-on=all`.
+
 ## Prerequisites
 
 - Snyk account (free tier covers up to 200 tests per month for open source)

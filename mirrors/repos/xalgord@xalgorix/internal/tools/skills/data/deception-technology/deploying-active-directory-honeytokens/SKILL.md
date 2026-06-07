@@ -36,6 +36,27 @@ nist_csf:
 - When creating deceptive BloodHound paths to misdirect and detect attackers
 - When supplementing existing AD monitoring with high-fidelity detection signals
 
+## Common Misconfigurations & Verification
+
+AD honeytokens fail silently when they are either too obvious (attackers skip
+them) or never wired to an alert (they trip but nobody knows):
+
+- **Token too obvious / unrealistic:** a brand-new account named
+  `HONEYPOT_DONT_TOUCH` with creation date == last-logon date == password date
+  is an instant tell. Make creation/last-logon/password-set dates internally
+  consistent and aged, set `AdminCount=1`, and use naming that matches real
+  service accounts (`svc_sqlbackup_legacy`).
+- **SPN registered but no auditing:** honeyroasting only works if Event ID 4769
+  for that ServiceName reaches the SIEM. Confirm Kerberos audit logging is on
+  and the DC forwards it.
+- **Whitelisted into noise:** vuln scanners and discovery tools touch the token
+  daily, so analysts mute the rule. Exclude scanner source IPs so a real hit
+  stands out.
+- **How to confirm it actually alerts:** trip it yourself - request a TGS for
+  the honey SPN with `Rubeus kerberoast /user:svc_sqlbackup_legacy`, read the
+  decoy GPO cpassword with `Get-GPPPassword`, and read the DACL on the honey
+  user. Verify 4769 / 4663 / 4662 fire and the SIEM rule pages within minutes.
+
 ## Prerequisites
 
 - Domain Admin or delegated AD administration privileges

@@ -32,6 +32,15 @@ RSA (Rivest-Shamir-Adleman) is the most widely deployed asymmetric cryptographic
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **PKCS#1 v1.5 encryption (padding oracle):** `RSA/PKCS1v15` decryption that reveals padding-validity (via errors or timing) enables a Bleichenbacher attack to recover plaintext. Use **RSA-OAEP** (`padding.OAEP` with SHA-256) for encryption, never `PKCS1v15` for new systems.
+- **PKCS#1 v1.5 signatures:** prefer **RSA-PSS** for signing; if PKCS1v15 verification must stay for legacy, pin the exact hash and never mix.
+- **Key too small / weak:** reject keys `<2048` bits (use ≥3072 for new deployments). Validate the modulus bit length and run a weak-key check (small factors, low public exponent like e=3 with no OAEP, shared primes / ROCA).
+- **Unprotected private key:** encrypt private keys with a strong passphrase (`BestAvailableEncryption`, AES-256) in PKCS#8, and store with `0600` permissions — never commit unencrypted PEMs.
+- **No key rotation / versioning:** rotate at least annually and retain old public keys for verifying historical signatures only.
+- **Mandatory tests:** an RSA-PSS signature over a **tampered message is REJECTED**; verification with the wrong public key is REJECTED; OAEP decryption of a corrupted ciphertext fails cleanly without leaking padding state; loading the private key with a wrong passphrase fails; `key.key_size >= 3072` is asserted.
+
 ## Prerequisites
 
 - Familiarity with cryptography concepts and tools

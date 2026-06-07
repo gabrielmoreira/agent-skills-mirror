@@ -51,6 +51,15 @@ AI-powered BEC detection uses machine learning, NLP, and behavioral analytics to
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **No payload to catch:** BEC carries no link or attachment, so URL/attachment sandboxes never fire - detection must rest on identity, behavioral baselines, and language, not malware verdicts.
+- **Lookalike and cousin domains:** `rnicrosoft.com`, `paypaI.com` (capital I), or `company-invoices.com` pass SPF/DKIM/DMARC for the ATTACKER's domain - an authentication "pass" is not authentication of the brand. Add homoglyph/Levenshtein checks against your domain and VIP domains.
+- **Display-name spoofing:** `From: "CEO Jane Doe" <random@gmail.com>` passes all auth; the model must compare display name to known sender addresses.
+- **Compromised legitimate accounts:** a real vendor/internal mailbox sends the BEC, so reputation and auth all pass - rely on behavioral deviation (new payment instructions, unusual recipient/time) and the writing-style model.
+- **Cold-start false positives:** models trained on <30 days of mail, new hires, or M&A introductions flag legitimate first-contact mail - tune thresholds per role (finance/AP stricter).
+- **Validate detection:** replay a no-payload test impersonating an executive (lookalike domain + urgency + payment-change ask) and confirm the model flags it; track FP rate (<0.05% target) and confirm Reply-To mismatch and vendor-bank-change scenarios are caught.
+
 ## Prerequisites
 - AI-powered email security platform (Abnormal Security, Tessian, Microsoft Defender)
 - Historical email data for baseline training (minimum 30 days)

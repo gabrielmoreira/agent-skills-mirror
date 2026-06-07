@@ -33,6 +33,15 @@ nist_csf:
 
 **Do not use** as a replacement for inline IDS/IPS that can actively block traffic, for monitoring encrypted payloads without TLS inspection, or on endpoints where host-based agents are more appropriate.
 
+## Detection Gaps & Validation
+
+- **SPAN/tap drops create silent blind spots:** an oversubscribed mirror or NIC offload (GRO/LRO reassembly) makes Zeek miss frames, so beacons look intermittent. Confirm `ethtool -k eth1` shows offloads `off`, check `capture_loss.log` / `zeekctl netstats` for drops, and verify the `Site::local_nets` in `networks.cfg` actually match your subnets or every internal/external test breaks.
+- **Encrypted C2 evades content checks:** DoH/DoT and TLS beacons leave no `dns.log` query or HTTP `user_agent`. Pivot to `ssl.log` (JA3, `server_name`, `validation_status`) and `conn.log` timing/byte-asymmetry instead of relying on the DNS/HTTP long-query scripts.
+- **Beacon jitter beats fixed thresholds:** the SumStats `beacon_threshold=50`/1hr count misses low-and-slow or randomized intervals. Score on inter-connection interval regularity (low stddev) per `id.orig_h→id.resp_h:id.resp_p`, and consider RITA for connection-count + interval analysis.
+- **DNS-tunneling script gaps:** `max_query_length=50` and a per-source query count miss short-label tunnels and answer-side (TXT/NULL) exfil. Add `qtype_name`/`answers` inspection and unique-subdomain-per-parent counting.
+- **Validate scripts actually load and fire:** run `zeekctl deploy` then `zeekctl diag` (no script errors), replay a known-bad pcap (`zeek -r c2.pcap local`), and confirm `notice.log` shows `DNS_Tunneling_Detected`/`Possible_Beaconing`. A clean notice.log on known-bad traffic means the script isn't loaded in `local.zeek` or the threshold/`local_nets` is wrong.
+- **FP tuning:** exclude Windows Update, AV update, NTP, and CDN/cloud IP ranges from beacon detection before alerting, or legitimate periodic traffic floods notice.log.
+
 ## Prerequisites
 
 - Zeek 6.0+ installed from source or package manager (`zeek --version`)

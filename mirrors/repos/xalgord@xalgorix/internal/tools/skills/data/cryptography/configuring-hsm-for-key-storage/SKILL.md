@@ -40,6 +40,15 @@ Hardware Security Modules (HSMs) are tamper-resistant physical devices that safe
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Keys generated with `CKA_EXTRACTABLE=True` (or `CKA_SENSITIVE=False`):** this defeats the entire purpose of an HSM since the private key can be exported in the clear. Set `CKA_EXTRACTABLE=False`, `CKA_SENSITIVE=True`, `CKA_TOKEN=True` and verify by attempting `C_GetAttributeValue` / `pkcs11-tool --read-object` on the private key — it MUST fail.
+- **Key generated in software then imported (wrapped/unwrapped) into the HSM:** the plaintext key existed outside the boundary. Always use `C_GenerateKeyPair` on-device; confirm with `CKA_LOCAL=True`.
+- **Single SO/user PIN shared, no key ceremony, weak/default PIN:** use distinct SO and user PINs, enforce a quorum (M-of-N) for CA root keys, and enable login retry lockout.
+- **No per-application slot/partition isolation:** separate tokens per app so a compromise of one PIN cannot use another app's keys.
+- **Audit logging disabled:** every `C_Sign`/`C_Decrypt`/key-management op should be logged.
+- **Verify non-extractability concretely:** run `pkcs11-tool --list-objects --type privkey` and confirm `Access: sensitive, always sensitive, never extractable`. A sign/verify round-trip must succeed while a key-export attempt is **rejected** by the token.
+
 ## Prerequisites
 
 - Familiarity with cryptography concepts and tools

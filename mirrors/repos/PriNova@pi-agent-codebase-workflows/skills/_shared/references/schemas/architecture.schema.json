@@ -31,7 +31,124 @@
       "const": "architecture"
     },
     "architecture": {
-      "type": "object"
+      "type": "object",
+      "required": [
+        "style",
+        "style_rationale",
+        "alternatives_considered",
+        "boundaries",
+        "reliability_expectations",
+        "observability_expectations",
+        "security_assumptions"
+      ],
+      "properties": {
+        "style": {
+          "type": "string"
+        },
+        "style_rationale": {
+          "type": "string"
+        },
+        "alternatives_considered": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "object"
+            ]
+          }
+        },
+        "boundaries": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "object"
+            ]
+          }
+        },
+        "reliability_expectations": {
+          "type": "object",
+          "properties": {
+            "availability_target": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "degradation_strategy": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "recovery_strategy": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "backup_or_failover": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "observability_expectations": {
+          "type": "object",
+          "properties": {
+            "logs": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "metrics": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "traces": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "alerts": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "security_assumptions": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "object"
+            ]
+          }
+        },
+        "deployment_shape": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "operating_model": {
+          "type": [
+            "object",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": true
     },
     "components": {
       "type": "array",

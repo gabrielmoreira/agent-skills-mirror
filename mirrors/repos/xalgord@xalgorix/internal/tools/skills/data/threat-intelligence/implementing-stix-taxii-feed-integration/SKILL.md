@@ -36,6 +36,15 @@ STIX (Structured Threat Information eXpression) and TAXII (Trusted Automated eXc
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Pagination dropped:** calling `get_objects()` once instead of iterating `as_pages()` silently truncates large collections to the first page - always page until exhausted and log the running total.
+- **Broken incremental polling:** an `added_after` timestamp stored in local time or the wrong format re-fetches everything or skips objects. Persist the server-returned timestamp in UTC `%Y-%m-%dT%H:%M:%S.000Z` and track state per collection.
+- **SCO vs Indicator confusion:** extracting only `type == "indicator"` misses raw SCOs (`ipv4-addr`, `domain-name`, `file`) that carry the actual observables - handle both object families.
+- **Collection auth/permissions:** polling a collection where `can_read` is false, or pushing to one where `can_write` is false, returns empty results or 403. Check the capability flags during discovery.
+- **TAXII version skew:** pointing a 2.1 client at a 2.0 discovery endpoint mismatches media types and pagination semantics. Confirm the API root advertises `application/taxii+json;version=2.1`.
+- **Verification:** confirm discovery returns API roots and collections, validate that fetched indicator patterns parse via the `stix2` library, and re-poll with the saved timestamp to prove incremental updates return only new objects.
+
 ## Prerequisites
 
 - Python 3.9+ with `taxii2-client`, `stix2`, `cti-taxii-client` libraries

@@ -38,6 +38,16 @@ nist_csf:
 
 **Do not use** without written authorization. WebSocket testing may disrupt real-time services and affect other connected users.
 
+## Most Often Missed & How to Confirm
+
+- **CSWSH via Origin:** connect with `Origin: evil.com`, `null`, and `target.evil.com` - cookie-auth WebSockets that skip Origin validation leak data cross-site.
+- **Per-message authorization, not just handshake:** after connecting, send messages for channels/objects you don't own; auth checked only at upgrade is the common gap.
+- **Token lifecycle:** reuse expired/invalid tokens and test whether reconnect re-validates auth.
+- **Injection in frames:** SQLi/NoSQL/XSS/SSRF live in JSON message payloads, bypassing HTTP WAF and rate limits.
+- **DoS:** message flooding, oversized frames, and connection exhaustion are often unthrottled on the WS path.
+
+**How to confirm a hit (avoid false negatives):** CSWSH is confirmed when a connection bearing a foreign/absent Origin still receives the victim's real-time data; an authorization bypass when a message returns another user's/channel's data. **Don't conclude negative until you've tested:** all Origin values, post-handshake message-level authorization, expired-token reconnect, payload injection inside frames, and WS-path rate limiting separately from HTTP.
+
 ## Prerequisites
 
 - Written authorization specifying the WebSocket endpoint and testing scope

@@ -31,6 +31,14 @@ nist_csf:
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Regex misses encoded SQLi:** `UNION SELECT` and `OR 1=1` are easy, but URL-encoding (`%55NION`), inline comments (`UNI/**/ON SE/**/LECT`), case mixing, and double-encoding bypass naive signatures. Normalize (URL-decode twice, strip comments, lowercase) before matching, and prefer libinjection-style tokenization over literal strings.
+- **POST bodies and headers are invisible in access logs:** Apache/Nginx access logs record only the request line and query string — SQLi/XSS/LFI in POST bodies, cookies, or custom headers won't appear unless mod_security audit logging or body capture is enabled. State this coverage gap explicitly; an empty result over `access.log` is not proof of no attack.
+- **Scanner UA spoofing:** sophisticated actors set a Chrome User-Agent, so `nikto|sqlmap|gobuster` UA matching only catches lazy scans. Add request-rate, 404-ratio, and path-fuzzing-burst heuristics independent of UA.
+- **LFI/traversal evasion:** beyond `../etc/passwd`, test `..%2f`, `..%252f` (double-encode), `....//`, and absolute `/etc/passwd` with no traversal — match `root:.*:0:0:` in responses, not just the request.
+- **Validate the rules fire:** replay a labeled attack log (sqlmap run, dirbuster sweep, a brute-force burst >50 POSTs/5min to `/login`) through the parser and confirm each rule and the GeoIP enrichment populate. **FP tuning:** WAF health checks, search-engine bots, and legitimate apps passing SQL keywords in search fields cause false hits — baseline trusted IPs/paths.
+
 ## Prerequisites
 
 - Familiarity with security operations concepts and tools

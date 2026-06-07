@@ -37,6 +37,17 @@ API rate limiting is a critical security control that restricts the number of re
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Per-IP only:** limiting by raw IP lets attackers rotate IPs/X-Forwarded-For or use whole IPv6 /64 ranges; limit by authenticated credential/API key plus a validated client IP.
+- **Trusting client IP headers:** reading X-Forwarded-For without stripping/validating it at the load balancer lets clients forge the rate-limit key - pin to the trusted proxy hop.
+- **Fixed-window burst:** counters that reset on a wall-clock boundary allow ~2x the limit across the seam; prefer sliding window or token bucket.
+- **Non-atomic counters:** read-then-write without a Lua script/INCR races under concurrency, letting bursts slip through.
+- **No separate auth-endpoint limit:** login/reset/MFA need far stricter limits than general traffic.
+- **Fail-open silently:** when Redis is unreachable, decide explicitly between fail-open (availability) and fail-closed (security) rather than defaulting accidentally.
+
+**How to verify it works:** run a load test (k6/Locust) that exceeds the limit and confirm a 429 with Retry-After at the expected count; repeat across multiple instances to prove shared state; rotate X-Forwarded-For to confirm spoofing doesn't reset the counter; fire concurrent bursts to confirm no race-condition overshoot.
+
 ## Prerequisites
 
 - API gateway (Kong, AWS API Gateway, Apigee) or reverse proxy (NGINX, Envoy)

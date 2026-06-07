@@ -36,6 +36,15 @@ Use this skill when:
 
 **Do not use** on production devices without explicit authorization.
 
+## Most Often Missed & How to Confirm
+
+- **`exported` default by SDK level** — a component with no `android:exported` is exported below API 31, private at 31+. Confirm the effective state against `targetSdkVersion`, not the manifest alone.
+- **Permission-guarded exported components** — confirm by invoking with and without the required permission; only the unprotected case is a finding.
+- **Mutable PendingIntents** — confirm by hooking `PendingIntent.getActivity` and checking for `FLAG_MUTABLE` (0x02000000) without `FLAG_IMMUTABLE`.
+- **Content provider SQLi / traversal** — confirm with `scanner.provider.injection`/`traversal` and a `UNION SELECT` proving data extraction.
+- **Broadcast data leakage** — confirm by sniffing an exported action with `app.broadcast.sniff` and capturing sensitive extras.
+- **Implicit vs explicit intents** — confirm only implicit (action-based) components are reachable by other apps before reporting.
+
 ## Prerequisites
 
 - Rooted Android device or emulator with ADB

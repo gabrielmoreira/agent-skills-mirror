@@ -38,6 +38,13 @@ nist_csf:
 
 **Do not use** for general database security monitoring (see database security skills), for historian deployment and configuration, or for IT-only data warehouse security.
 
+## Detection Gaps & Validation
+
+- **The SQL/ODBC path and the OPC/PI path are different attack surfaces.** Queries arriving over the historian's SQL/ODBC interface (exfiltration, injection) look nothing like writes over OPC HDA/UA or the PI Web API. Monitoring only one interface misses the other; baseline both per client application and per tag set.
+- **Flatlined or replayed tags evade simple thresholds.** A Stuxnet-style replay feeds prior good values to the HMI while the process is manipulated. The tell is a constant value across hundreds of points (PI compression effectively off), not an out-of-range alarm.
+- **The historian is a pivot, not just a database.** Watch for the PI/OSIsoft or Ignition host *initiating* outbound connections to Level 1/2 (ports 502, 102, 44818, 20000) — it should receive data, never poll PLCs.
+- **How to confirm a hit safely.** Validate detections against a non-production PI/Ignition instance: replay recorded archive data, simulate an unauthorized client IP, and test CVE indicators offline. Cross-check every alert against the change/maintenance log before escalating — routine interface restarts and archive backfills mimic the deletion/flatline signatures.
+
 ## Prerequisites
 
 - Historian server inventory (OSIsoft PI, Ignition, GE Proficy, Wonderware InSQL)

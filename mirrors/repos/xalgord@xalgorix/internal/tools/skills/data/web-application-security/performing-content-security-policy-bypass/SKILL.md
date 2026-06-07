@@ -31,6 +31,18 @@ nist_csf:
 - During bug bounty hunting where CSP prevents direct XSS exploitation
 - When auditing CSP header configuration for security weaknesses
 
+### How to CONFIRM a Hit (avoid false negatives)
+
+- **Positive signal**: a script you control **actually executes** in the browser despite the policy (e.g. `alert(document.domain)` fires, or your callback runs) — not merely the presence of a weak directive.
+- A "weak-looking" CSP is a lead, not a finding. You confirm a bypass only when execution or data exfiltration happens under the enforced policy.
+- Do NOT conclude "CSP blocks us" until you have tried:
+  - **JSONP / AngularJS gadgets** on every allowed host in `script-src` (CDNs, Google, etc.) — an allowed host with a callable callback or `ng-app` gadget is full XSS.
+  - `'unsafe-inline'` / `'unsafe-eval'` (and remember `'unsafe-inline'` is **ignored** when a nonce/hash or `strict-dynamic` is present).
+  - Missing `object-src`, `base-uri` (base-tag hijack), and `form-action` directives.
+  - **Nonce reuse / nonce leakage** (CSS attribute brute-force, DOM clobbering) and reflected **policy injection** via user-controlled header input.
+- Always check whether the header is **`Content-Security-Policy-Report-Only`** — if so the policy is NOT enforced and plain XSS works directly; don't report it as "bypassed CSP".
+- Confirm in a real browser/DevTools console (watch for CSP violation reports), not just by reading the header string.
+
 ## Prerequisites
 - Burp Suite for intercepting responses and analyzing CSP headers
 - CSP Evaluator (Google) for automated policy analysis

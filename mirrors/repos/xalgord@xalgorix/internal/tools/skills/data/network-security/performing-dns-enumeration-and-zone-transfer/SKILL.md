@@ -33,6 +33,15 @@ nist_csf:
 
 **Do not use** against domains you do not have authorization to test, for DNS amplification or reflection attacks, or to overwhelm DNS servers with excessive query volumes.
 
+## Most Often Missed & How to Confirm
+
+- **Every nameserver, not just the first:** AXFR is often refused on ns1 but allowed on a forgotten secondary. Loop `dig AXFR example.com @<ns>` over *all* NS records before calling zone transfer "blocked."
+- **Wildcard DNS poisons brute force:** resolve a random `nonexistent-$RANDOM.example.com` first; if it answers, a wildcard exists and gobuster/dnsenum hits are false positives — filter on the wildcard IP.
+- **Passive + active + CT, not one source:** passive subfinder/amass misses internal-only names, brute force misses oddly-named hosts, and CT logs (`crt.sh`) reveal both. Combine and dedupe or you under-report attack surface.
+- **TXT/SRV gold often skipped:** enumerate `_dmarc`, `_domainkey` selectors, `_sip._tcp`, `_ldap._tcp`, `_kerberos._tcp` and read SPF `include:` chains — these leak SaaS providers, AD, and internal hostnames.
+- **How to confirm a real finding:** a successful AXFR returns SOA + the full record set (not `; Transfer failed`); an internal-IP leak is a name resolving to RFC1918 (`grep -E '^10\.|^192\.168\.'`); a misconfig is `?all`/`+all` in SPF or a missing `_dmarc` record.
+- **Don't conclude "no subdomains"** until you've tried a 20k+ wordlist, passive sources, CT logs, and reverse-PTR sweeps of the resolved IP ranges.
+
 ## Prerequisites
 
 - Written authorization to perform DNS enumeration against the target domain

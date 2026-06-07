@@ -36,6 +36,17 @@ nist_csf:
 
 **Do not use** for securing Lambda function invocation (use resource-based policies and API Gateway authorizers), for Lambda code security (use SAST tools), or for Lambda network security (use VPC configuration and security groups).
 
+## Common Misconfigurations & Verification
+
+- **CloudTrail-generated policies miss rare code paths:** monthly batch jobs and error handlers may not appear in a 30-day window, so the generated least-privilege policy omits needed actions. Cross-read the function code and test in staging before cutover.
+- **Scoped policy attached but broad one left behind:** `AWSLambdaBasicExecutionRole` or a wildcard inline policy still attached = still over-privileged. Enumerate both `list-attached-role-policies` and `list-role-policies`.
+- **Permission boundary Deny gaps:** with `Resource: "*"` on the Allow block, the Deny block must actually cover escalation (`iam:*`, `lambda:CreateFunction`, `sts:AssumeRole`, `iam:PassRole`). Prove the Deny wins with `aws iam simulate-principal-policy`.
+- **Confused-deputy trust policy:** missing `aws:SourceAccount`/`aws:SourceArn` in the `lambda.amazonaws.com` trust condition. Confirm the condition is present and matches the account.
+- **SCP name-pattern bypass:** the rule requiring `iam:PermissionsBoundary` only matches `role/lambda-*`; a role named otherwise skips the guardrail. Enforce the naming convention.
+- **Missing scoped `logs:*`** to the function's log group breaks logging silently - the function runs but emits nothing.
+
+**Verify it actually works:** `aws accessanalyzer validate-policy --policy-type IDENTITY_POLICY` returns no errors; `simulate-principal-policy` shows required actions Allow and escalation actions Deny; and the function still passes integration tests after the role swap (invoke it and confirm CloudWatch logs appear).
+
 ## Prerequisites
 
 - IAM permissions for policy creation, role modification, and Access Analyzer operations

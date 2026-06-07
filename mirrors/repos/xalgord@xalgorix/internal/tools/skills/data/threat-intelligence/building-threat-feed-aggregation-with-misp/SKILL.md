@@ -36,6 +36,15 @@ MISP is the leading open-source threat intelligence platform for collecting, sto
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Wrong `source_format` on a feed:** pointing a CSV feed (abuse.ch URLhaus, Feodo Tracker) at the `misp` parser silently ingests zero attributes. Match `source_format` (`csv`/`freetext`/`misp`) to the actual URL and set the CSV value-column mapping before enabling.
+- **Distribution/TLP leakage:** feeds added with `distribution=3` (all communities) plus an aggressive push sync can re-export third-party `tlp:amber` data outside your org. Set per-feed distribution and tag with the correct `tlp:` marking before the first publish.
+- **Correlation noise:** large CIDR feeds and CDN IPs blow up the correlation engine. Enable warninglists (`enforceWarninglist=True`) plus the known-CDN/RFC1918 lists so benign values do not auto-correlate across events.
+- **Dedup gaps:** the same IOC arrives from multiple feeds as separate attributes; rely on MISP correlation plus consistent `type` (`ip-dst` vs `ip-src`) rather than assuming uniqueness.
+- **`to_ids` blind spot:** feeds often import with `to_ids=False`, so a SIEM/Suricata export filtering on `to_ids=True` returns nothing.
+- **Verify:** after `fetch_feed`, confirm attribute counts increased, search a known-bad value end-to-end, and confirm the SIEM/blocklist export contains it with the expected TLP.
+
 ## Prerequisites
 
 - Docker and Docker Compose for deployment

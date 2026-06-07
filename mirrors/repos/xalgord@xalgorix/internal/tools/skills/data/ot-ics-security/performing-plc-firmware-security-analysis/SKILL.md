@@ -38,6 +38,17 @@ nist_csf:
 
 **Do not use** on live production PLCs without explicit authorization and safety controls in place. Firmware extraction and analysis should be performed on lab devices or offline backups. Never upload PLC firmware to public analysis services. See performing-ics-penetration-testing for authorized live testing procedures.
 
+## Most Often Missed & How to Confirm
+
+Firmware analysis misses findings by stopping at strings, and causes incidents by testing on live PLCs. Stay offline and thorough:
+
+- **Analysis on production hardware:** never extract or fuzz firmware on a running PLC. Confirm work is on a lab device, an offline backup, or a vendor image — and never upload firmware to public sandboxes (leaks proprietary/regulated code).
+- **Encrypted/compressed regions skipped:** `strings` on a packed image returns nothing useful. Confirm with `binwalk -E` entropy analysis and unpack before concluding "no hardcoded secrets."
+- **Hardcoded credentials missed by narrow greps:** search beyond `password` — keys, certs (`BEGIN RSA`/`BEGIN CERTIFICATE`), service/debug ports, and base64 blobs. A hit is confirmed only when you locate the consuming code path in Ghidra, not just the string.
+- **Protocol-stack flaws untested:** auth-bypass and malformed-packet DoS in the Modbus/S7 parser only surface on a target. Confirm against a lab PLC or emulator (OpenPLC), checking responsiveness after each malformed frame.
+- **Integrity baseline absent:** a SHA-256 mismatch vs known-good is the positive tamper signal; report the first differing offset and byte count.
+- **Don't conclude "clean"** until entropy analysis, strings, disassembly cross-referencing, and a baseline hash comparison all agree — and any dynamic test ran off production.
+
 ## Prerequisites
 
 - Isolated lab environment with the target PLC hardware or an emulated environment

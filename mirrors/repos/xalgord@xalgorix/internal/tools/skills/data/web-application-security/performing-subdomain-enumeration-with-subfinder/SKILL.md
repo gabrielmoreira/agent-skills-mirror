@@ -31,6 +31,17 @@ nist_csf:
 - When building an asset inventory for continuous security monitoring
 - During red team engagements requiring passive information gathering
 
+## Coverage Gaps & Validation
+
+- **Subfinder alone is passive-only** — combine it with active brute-force/permutation tooling or you will miss internal-only and never-logged names. Run `subfinder -all` AND `amass enum -active`, then add brute force: `puredns bruteforce wordlist.txt example.com -r resolvers.txt` and permutations: `gotator -sub subs.txt -perm permutations.txt | puredns resolve`.
+- **Wire up API keys** — without Shodan/Censys/VirusTotal/SecurityTrails/Chaos/GitHub keys, passive sources return a fraction of results. An empty `provider-config.yaml` is the #1 cause of false "no subdomains" conclusions.
+- **Mine certificate transparency directly** — `curl -s 'https://crt.sh/?q=%25.example.com&output=json' | jq -r '.[].name_value' | sort -u` and the `ctfr`/`tls.bufferover.run` sources catch names CDN-fronted tools miss.
+- **Don't forget acquired/sibling root domains** — pivot via ASN (`amass intel -asn <ASN>`), reverse-WHOIS, and favicon hashes; scope is rarely a single apex.
+- **Handle wildcard DNS** — a `*.example.com` wildcard makes everything "resolve." Filter with `puredns`/`dnsx` wildcard detection or you will report hundreds of phantom hosts.
+- **Resolve recursive + deeper levels** — run `subfinder -recursive` and feed discovered subs back as seeds for nested `dev.api.example.com`-style names.
+
+How to CONFIRM a live/takeover-prone result (avoid false negatives): a name in the wordlist is only a finding once you prove it resolves AND responds — pipe through `dnsx -a -resp` then `httpx -silent -status-code -title -tech-detect -cdn`. A 200/30x/40x all count as live (403/401 often hide the juiciest assets — do not discard non-200). For takeover, do not conclude "safe" until you have checked the CNAME target against fingerprints: `subzy run --targets live.txt` or `nuclei -t takeovers/`, and manually verified dangling CNAMEs pointing to unclaimed S3/GitHub Pages/Azure/Heroku resources return the provider's "no such bucket/app" page. Treat NXDOMAIN-on-CNAME and "NoSuchBucket" as positive takeover signals, not dead ends.
+
 ## Prerequisites
 - Go 1.21+ installed for building from source
 - Subfinder v2 installed (`go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest`)

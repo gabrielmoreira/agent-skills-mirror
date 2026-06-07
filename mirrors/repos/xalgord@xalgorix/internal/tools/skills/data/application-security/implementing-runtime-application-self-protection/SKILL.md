@@ -42,6 +42,17 @@ Runtime Application Self-Protection (RASP) instruments application code at runti
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+RASP that is installed but left in monitor mode gives a false sense of protection — it logs attacks it never stops.
+
+- **Stuck in monitor/detect-only:** OpenRASP policies left at `action: log` (or `inspect`) after the tuning phase never call `block`. Confirm each policy for SQLi, command injection, SSRF, path traversal, XXE, and deserialization is set to `block` in production.
+- **Excluded or un-instrumented routes:** the JVM `-javaagent` attaches but a separately-deployed service, async worker, or native/JNI path is not hooked, leaving a coverage hole. Verify every entry point loads the agent (check startup logs for the RASP banner).
+- **Over-broad allowlists:** tuning to kill false positives by whitelisting whole endpoints disables protection on exactly the routes that take user input.
+- **Telemetry not reaching SIEM:** block events fire but the Splunk HEC / syslog forwarder is misconfigured, so nobody sees them.
+
+**Verify with live payloads, not config review:** in staging, send a real SQLi (`' OR 1=1--`), an OS command-injection (`; id`), and a path-traversal (`../../etc/passwd`) against an instrumented endpoint and confirm the request is **blocked (HTTP 403/500)** with a matching stack-trace alert in the SIEM. A logged-but-served request means the agent is still monitor-only.
+
 ## Prerequisites
 
 - Java 8+ application server (Tomcat, Spring Boot, or JBoss) or Python Flask/Django application

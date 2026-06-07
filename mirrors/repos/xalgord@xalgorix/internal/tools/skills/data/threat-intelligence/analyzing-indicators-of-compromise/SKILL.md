@@ -39,6 +39,15 @@ Use this skill when:
 
 **Do not use** this skill in isolation for high-stakes blocking decisions — always combine automated enrichment with analyst judgment, especially for shared infrastructure (CDNs, cloud providers).
 
+## Detection Gaps & Validation
+
+- **Single-source blind spots:** VirusTotal aggregates AV opinions that lag zero-day and bespoke APT tooling -- a 0/70 score is not "benign." Require 3+ independent sources (VT + AbuseIPDB + MalwareBazaar/MISP + passive DNS) before a disposition.
+- **Shared-infra false positives:** Cloudflare/AWS/Fastly CDN IPs and URL shorteners host both benign and malicious content; blocking the IP breaks thousands of sites. Pivot to the domain/URL, not the fronting IP.
+- **Stale IOCs:** infrastructure is recycled -- apply TTLs (IP 30d, domain 90d) and re-validate before re-blocking, or you generate FPs as legitimate tenants reuse the address.
+- **Defang/normalization errors:** un-defanged IOCs in tickets trigger auto-scanners; mistyped hash lengths (MD5 32 vs SHA-256 64 chars) silently fail lookups.
+
+To validate enrichment works: run a known-malicious MalwareBazaar hash and a known-good IP through the pipeline and confirm the score lands in the expected Block/Monitor/Whitelist tier; confirm API errors raise exceptions rather than returning empty `last_analysis_stats` that read as "clean." For high-stakes blocks, confirm the hit with sandbox behavior or a second analyst, and record the rationale for any whitelist or over-block decision.
+
 ## Prerequisites
 
 - VirusTotal API key (free or Enterprise) for multi-AV and sandbox lookup

@@ -45,6 +45,15 @@ nist_csf:
 - When building detection pipelines that require in-kernel filtering before events reach userspace
 - When enforcing runtime security policies (kill process, send signal) at the kernel level
 
+## Common Misconfigurations & Verification
+
+- **No BTF = silent no-load:** Tetragon needs kernel BTF (`/sys/kernel/btf/vmlinux`) or a matching external BTF for kprobe arg typing. On older/stripped kernels (no `CONFIG_DEBUG_INFO_BTF`) probes fail to attach and you get zero kprobe events while `process_exec` still flows — masking the gap. Verify `ls /sys/kernel/btf/vmlinux` and check `kubectl logs -n kube-system -l app.kubernetes.io/name=tetragon` for attach errors.
+- **Ring-buffer/event drops under load:** high event volume overflows the perf/ring buffer and Tetragon drops events — a coverage hole that looks like "nothing happened." Watch `tetragon_*_events_total` and missed/`map_errors` metrics, scope policies with in-kernel `matchArgs`/`matchBinaries` selectors (filter in-kernel, not in userspace), and avoid an unfiltered `tcp_connect` Post on a busy host.
+- **Probe coverage gaps:** a syscall-name hook (`sys_execve`) can be bypassed by a different entry point or arch (compat/32-bit, `execveat`); matching on a fragile `Postfix`/`Prefix` string (e.g., `xmrig`) is trivially evaded by renaming the binary. Prefer hashes/paths and hook stable internal funcs (`commit_creds`, `fd_install`) over syscall names where possible.
+- **Namespaced policy scoping mistakes:** a `TracingPolicyNamespaced` only applies to its namespace — host-level or other-namespace activity goes unmonitored if you assumed cluster-wide.
+- **Enforcement risk:** a `Sigkill` action on a too-broad selector can kill legitimate processes — stage every enforcement policy in `Post` (observe) mode first and review events before switching to `Sigkill`.
+- **Verification:** apply a policy, then deliberately trip it (e.g., `cat /etc/shadow`, `curl` to an external IP, exec a renamed `xmrig`) and confirm the matching `process_kprobe` event appears in `tetra getevents -o json` and lands in your SIEM sink before trusting the control.
+
 ## Prerequisites
 
 - Linux kernel 5.3+ with BTF (BPF Type Format) support enabled

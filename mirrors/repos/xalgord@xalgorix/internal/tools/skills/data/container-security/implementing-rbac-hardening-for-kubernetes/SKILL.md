@@ -37,6 +37,17 @@ Kubernetes RBAC regulates access to cluster resources based on roles assigned to
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+These are the RBAC grants that look harmless but hand over the cluster. Grep every Role/ClusterRole before signing off:
+
+- **Wildcard verbs/resources:** `verbs: ["*"]` or `resources: ["*"]` on any apiGroup is effectively admin. Find them: `kubectl get clusterroles,roles -A -o json | jq '.items[]|select(.rules[]?|(.verbs[]?=="*") or (.resources[]?=="*"))|.metadata.name'`.
+- **Escalation verbs:** `escalate` and `bind` on roles/clusterroles let a subject grant themselves *any* permission - a namespace `escalate` is equivalent to cluster-admin. `impersonate` on users/groups/serviceaccounts bypasses their own RBAC entirely.
+- **Token/exec paths:** `create` on `pods/exec`, `pods/attach`, `serviceaccounts/token`, or `secrets get/list` are lateral-movement primitives even without admin.
+- **Aggregated ClusterRoles:** roles with `aggregationRule` silently inherit new permissions when matching-labeled roles are added.
+
+**Verify, don't assume:** confirm the *effective* access with `kubectl auth can-i <verb> <resource> --as=system:serviceaccount:<ns>:<sa>` rather than reading YAML, and cross-check with `rbac-lookup` / `access-matrix`. A binding that references a non-existent role is inert; a binding to `system:authenticated` or `system:anonymous` applies to everyone. Re-run after every change - RBAC is additive and never subtracts.
+
 ## Prerequisites
 
 - Kubernetes cluster v1.24+ with RBAC enabled (default since v1.6)

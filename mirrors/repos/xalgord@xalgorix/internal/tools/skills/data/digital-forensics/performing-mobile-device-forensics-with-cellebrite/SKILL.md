@@ -30,6 +30,16 @@ nist_csf:
 - When analyzing mobile application data for evidence of criminal activity
 - For corporate investigations involving employee mobile device misuse
 
+## Detection Gaps & Validation
+
+The extraction type and device lock state silently bound what you can recover. Don't mistake a shallow acquisition for a complete one:
+
+- **Logical extraction misses the deleted data.** UFED/iLEAPP logical pulls return only live app data; deleted messages, freelist/WAL rows, and unallocated content require File System or Physical (checkm8/GrayKey on supported iOS, rooted/EDL on Android). Report the extraction level explicitly — "no deleted messages found" on a logical pull is a coverage gap, not a finding.
+- **Encryption and locked bootloaders defeat acquisition.** Modern iOS (Secure Enclave) and FBE Android encrypt at rest; without the passcode/AFU state you may get only metadata. A locked bootloader, BFU (Before First Unlock) state, or unsupported chipset can block physical extraction entirely. Document lock type, BFU/AFU, and that gaps stem from encryption, not absence of evidence.
+- **App-layer deletion and Secure Enclave.** Signal/Telegram secret chats, disappearing messages, and Keychain/Keystore-protected blobs may be unrecoverable even from a physical image. Recover deleted SQLite rows from `-wal`/`-shm` and freelists before concluding a conversation never existed.
+- **Validate timestamps and provenance.** Reconcile the three time bases: Unix ms (Android/WhatsApp), Mac Absolute Time +978307200 (iOS `sms.db`), and Chrome/WebKit microseconds. Confirm device clock wasn't manually changed (check timezone/NITZ artifacts), and cross-corroborate a message against call logs, notifications (KnowledgeC/`biome`), and cloud backups before relying on it.
+- **Interpretation false positives.** A geotagged photo proves the *camera/file* was at a location, not the suspect; cached/forwarded media and synced multi-device content can appear "local." Hash all media against known sets, and verify hash-database hits before escalating. Always isolate in a Faraday bag first — a remote wipe or sync after seizure destroys or alters the very evidence you're collecting.
+
 ## Prerequisites
 - Cellebrite UFED Touch/4PC or UFED Physical Analyzer (licensed)
 - Alternative open-source tools: ALEAPP, iLEAPP, MEAT, libimobiledevice

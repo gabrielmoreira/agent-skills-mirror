@@ -38,6 +38,15 @@ An external network penetration test simulates a real-world attacker targeting a
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **The full external surface, not just the seed IPs** — subdomains via multiple sources, cert-transparency, ASN/netblock expansion, cloud assets (S3/Blob/GCS), and forgotten/staging hosts. Attackers find the host you never scanned.
+- **VPN/remote-access and email edge** — IKE aggressive mode (`ike-scan`), Citrix/Fortinet/Pulse known CVEs, OWA/O365 for password spraying, and SMTP user enumeration. These edge appliances are the real initial-access vectors and are easy to skip.
+- **Default creds and exposed admin/management panels** — Jenkins, Tomcat manager, phpMyAdmin, printers, iLO/iDRAC, and open dashboards beat most CVEs for impact.
+- **UDP and full TCP range** — SNMP `public`, DNS, and high-port services live outside the top-1000 TCP sweep.
+- **Lockout-safe spraying** — confirm lockout thresholds before spraying OWA/VPN; one careless spray locks the org out and ends the test.
+- **How to confirm**: prove each finding with reproducible evidence — the `-sV` banner/version, a screenshot of the authenticated panel, a captured/cracked credential, or exploit output showing the obtained shell/user. Don't conclude a service is not exploitable until you version-match it against searchsploit/NVD and try default creds; don't conclude the perimeter is mapped until you've merged multiple subdomain sources and checked cloud storage and the VPN/mail edge.
+
 ## Prerequisites
 
 - Written authorization (Rules of Engagement document signed by asset owner)

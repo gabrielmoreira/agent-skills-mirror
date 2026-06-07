@@ -46,6 +46,15 @@ Business Email Compromise (BEC) is a sophisticated fraud scheme where attackers 
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **SPF passes but the sender is spoofed:** a cousin domain or free-webmail account passes SPF/DKIM/DMARC for ITS OWN domain while the display name reads "CFO" - auth "pass" does not mean the brand is genuine. Alert on VIP display name + external/free domain.
+- **No malicious payload:** pure-text BEC has no URL/attachment to detonate, so sandboxes are blind - lean on Reply-To mismatch, first-contact-to-finance, and payment-change keyword + urgency rules.
+- **False-invoice / bank-change:** the highest-loss variant changes vendor banking details inside a real-looking thread - require out-of-band callback verification, not email confirmation.
+- **Account compromise is internal:** mail originates from a real mailbox, so all reputation/auth checks pass - detect via inbox-rule creation (T1114.003), impossible travel, and auto-forward rules hiding replies.
+- **Lookalike domains:** add homoglyph detection (`rn`->`m`, capital-I/lowercase-l) against your domain and top vendors.
+- **Validate + FP tuning:** run BEC test scenarios (CEO gift-card, vendor bank change, W-2 request) and confirm rules trigger; whitelist legitimate first-time senders (recruiters, new vendors) by role to keep finance/AP alerts low-noise.
+
 ## Prerequisites
 - Email security gateway with BEC detection capabilities
 - Understanding of organizational financial processes and approval chains

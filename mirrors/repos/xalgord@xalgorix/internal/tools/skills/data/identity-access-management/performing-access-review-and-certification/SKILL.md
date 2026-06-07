@@ -34,6 +34,15 @@ Conduct systematic access reviews and certifications to ensure users have approp
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Coverage Gaps & Validation
+
+- **Rubber-stamping:** reviewers approving every item without reading it is the top reason reviews miss bad access. Track per-item decision time and bulk-approve rates; near-100% certify with zero revokes is a red flag, not a clean environment.
+- **Incomplete application scope:** the campaign only covers apps feeding the IGA tool. Shadow SaaS, apps integrated for SSO but not provisioning, local/break-glass accounts, and direct database logins get silently excluded.
+- **Non-human identities missed:** service accounts, API tokens, and shared accounts frequently have no manager and fall out of manager-based campaigns entirely.
+- **Indirect entitlements:** access granted via nested groups, roles, or policy inheritance displays differently (or not at all) than direct grants, so reviewers under-see effective access.
+- **Shadow admin:** privilege held through API tokens, OAuth grants, or app-local admin roles rarely surfaces in a standard user-access review.
+- **Validate completeness:** reconcile reviewed entitlements against an authoritative source — HR feed for population, AD/IdP for accounts, each application's native privilege export — and confirm every revocation was actually removed in the target system, not just recorded on paper.
+
 ## Prerequisites
 
 - Familiarity with identity access management concepts and tools

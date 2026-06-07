@@ -41,6 +41,14 @@ Use this skill when:
 
 **Do not use** for standard DNS troubleshooting or availability monitoring — this skill focuses on security-relevant DNS abuse detection.
 
+## Detection Gaps & Validation
+
+- **DoH/DoT blind spot:** if the endpoint resolves over DNS-over-HTTPS (`1.1.1.1`, `8.8.8.8:443`) or DNS-over-TLS (port 853), the `stream:dns`/Zeek tap never sees the query and every entropy/length search above returns nothing. Confirm coverage by joining `index=proxy OR index=firewall dest_port IN (443,853)` against the known public-resolver IP list before declaring a host clean.
+- **Index/sourcetype mismatch:** `index=dns sourcetype="stream:dns"` silently returns zero results if logs land under `sourcetype=bro:dns:json`, `XmlWinEventLog:Microsoft-Windows-DNS-Server/Analytical`, or a different index. Run `| tstats count where index=* by sourcetype` and verify `query`, `query_type`, `src_ip` are actually populated, not null.
+- **CIM normalization gap:** if you pivot via the Network_Resolution data model, an unaccelerated or unmapped sourcetype makes `| tstats ... from datamodel=Network_Resolution` undercount — check `Network_Resolution.query` is mapped and acceleration is current.
+- **Validate the search fires:** replay a known tunnel (`iodine`, `dnscat2`) or `dig` a 60+ char base32 subdomain in a lab, confirm the long-subdomain and entropy searches alert, then time-box a 7-day backtest.
+- **FP tuning:** allowlist legitimate long-label/high-entropy domains — CDN/cloud hostnames (`*.cloudfront.net`, `*.akamaiedge.net`), AV/telemetry (`*.mcafee.com`, `*.windows.com`), and DKIM/SPF TXT lookups — via a lookup rather than raising the entropy threshold, which blinds you to slow-drip exfil.
+
 ## Prerequisites
 
 - DNS query logging enabled (Windows DNS Server, Bind, Infoblox, or Cisco Umbrella)

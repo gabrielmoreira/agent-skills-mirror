@@ -44,6 +44,14 @@ nist_csf:
 
 **Do not use** for AWS-only environments where Security Hub and GuardDuty suffice, for endpoint detection requiring EDR capabilities (use Defender for Endpoint), or for compliance posture monitoring (see building-cloud-security-posture-management).
 
+## Common Misconfigurations & Verification
+
+- **Lookback shorter than frequency + ingestion delay = missed events:** a scheduled rule running every 5 min but querying `ago(5m)` drops late-arriving logs. Set the query window to `frequency + lookup + expected ingestion latency`, or pivot on `ingestion_time()` rather than `TimeGenerated`.
+- **Wrong column names silently return nothing:** in `AWSCloudTrail`, `RequestParameters` is a dynamic string — `RequestParameters_bucketName` only exists if you `parse_json()`/`extend` it. A rule referencing a non-existent column yields zero rows and never alerts (not an error).
+- **Table doesn't exist until first log lands:** the analytics rule saves fine but never fires because the connector hasn't ingested yet, or RBAC is missing (you need *Microsoft Sentinel Contributor* + connector-specific perms, e.g., the CloudTrail role/SQS for AWS).
+- **Tier mismatch:** logs in the **Basic/Auxiliary** tier are not queryable by scheduled analytics rules — only Analytics-tier tables are. Sending high-volume logs to Basic to save cost silently disables detection on them.
+- **Verify before trusting:** run the rule's KQL in the **Logs** blade and confirm `| count` > 0 on real data; use the rule wizard's "Test with current data"; confirm ingestion via `Usage | where DataType == "AWSCloudTrail"` and `Heartbeat`; trigger a benign matching event (e.g., 100+ `DeleteObject`) and confirm an incident is created.
+
 ## Prerequisites
 
 - Azure subscription with Microsoft Sentinel enabled on a Log Analytics workspace

@@ -32,6 +32,14 @@ Covenant is a collaborative .NET C2 framework for red teamers that provides a Sw
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Launcher/Grunt staging choice matters:** pick the launcher (Binary/PowerShell/MSBuild/InstallUtil) that fits the delivery and the host's defenses — a missing check-in is usually a staging/evasion failure, not a dead C2.
+- **OPSEC on the profile:** tune jitter/delay and use a custom HTTP profile (realistic URIs, headers, Host); default Covenant profiles are heavily signatured.
+- **Evasion:** expect AMSI/ETW to block in-memory .NET — apply an AMSI bypass/obfuscation and confirm the launcher actually executed.
+- **Comms paths:** verify the listener bind/port, egress (proxy-aware HTTP, or an SMB named-pipe Grunt for internal pivots), and that any redirector forwards correctly.
+- **Confirm a hit:** an active Grunt appears in the Covenant dashboard with periodic check-ins and a `Task` (e.g. `whoami`) returns output. Don't conclude failure until listener/profile/egress reachability is verified and you've confirmed AV/AMSI did not kill the launcher.
+
 ## Prerequisites
 
 - Covenant C2 server deployed (Docker or .NET 6)

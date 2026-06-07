@@ -23,7 +23,7 @@
   <a href="#quickstart">Quickstart</a> &middot;
   <a href="#the-fallback-execution-layer">Why</a> &middot;
   <a href="#toolbox--6-compound-tools-recommended">Toolbox</a> &middot;
-  <a href="#two-pipelines">How it thinks</a> &middot;
+  <a href="#how-it-works">How it works</a> &middot;
   <a href="#platform-support">Platforms</a> &middot;
   <a href="CHANGELOG.md">Changelog</a>
 </p>
@@ -52,7 +52,7 @@ It's **model-agnostic** (Claude, GPT, Gemini, Llama, Kimi, Ollama, &hellip;), **
 
 ## Toolbox &mdash; 6 compound tools (recommended)
 
-Two catalogs ship side-by-side. The **toolbox** (this section) is 6 compound tools, each with an `action` enum that covers ~10-15 verbs. **Tools** (next section) is the 97 underlying granular primitives, one schema per verb.
+Two catalogs ship side-by-side. The **toolbox** (this section) is 6 compound tools, each with an `action` enum that covers ~10-15 verbs. **Tools** (next section) is the 94 underlying granular primitives, one schema per verb.
 
 Compound is the default surface. Catalog footprint is ~1,500 tokens (about 12&times; smaller than granular), which keeps small models focused on the action choice instead of drowning in primitives. Same `computer_20250124` shape Anthropic uses, so editor hosts already know how to drive it.
 
@@ -61,9 +61,10 @@ Compound is the default surface. Catalog footprint is ~1,500 tokens (about 12&ti
 | `computer` | `screenshot`, `click`, `double_click`, `right_click`, `triple_click`, `hover`, `scroll`, `scroll_horizontal`, `drag`, `drag_path`, `type`, `key`, `wait` |
 | `accessibility` | `read_tree`, `find`, `get_element`, `focused`, `invoke`, `focus`, `set_value`, `get_value`, `expand`, `collapse`, `toggle`, `select`, `state`, `list_children`, `wait_for` |
 | `window` | `list`, `active`, `focus`, `maximize`, `minimize`, `restore`, `close`, `resize`, `list_displays`, `screen_size`, `open_app`, `open_file`, `open_url`, `switch_tab`, `navigate` |
-| `system` | `clipboard_read`, `clipboard_write`, `system_time`, `ocr`, `undo`, `shortcuts_list`, `shortcuts_run`, `delegate`, `detect_webview`, `relaunch_with_cdp`, `app_guide`, `detect_app`, `classify_task`, `system_prompt` |
+| `system` | `clipboard_read`, `clipboard_write`, `system_time`, `ocr`, `undo`, `shortcuts_list`, `shortcuts_run`, `delegate`, `detect_webview`, `relaunch_with_cdp`, `system_prompt` |
 | `browser` | `connect`, `page_context`, `read_text`, `click`, `type`, `select_option`, `evaluate`, `wait_for`, `list_tabs`, `switch_tab`, `scroll` |
-| `task` | `{instruction: string}` &mdash; hand off the whole task to the built-in autonomous pipeline. No `action` enum. **Requires `clawdcursor agent` with an LLM configured (`clawdcursor doctor`) &mdash; unavailable under `--no-llm` or stdio `clawdcursor mcp`.** If your agent has its own brain, drive the other five toolboxes directly instead. |
+| `task` | `{instruction: string}` &mdash; delegate the whole task to the built-in thin agent loop (the configured model takes the wheel: perceive → act → iterate until done). No `action` enum. **Requires `clawdcursor agent` with an LLM configured (`clawdcursor doctor`) &mdash; unavailable under `--no-llm` or stdio `clawdcursor mcp`.** If your agent has its own brain, drive the other five toolboxes directly instead. |
+| `batch` | `{steps: [...]}` &mdash; collapse N tool calls into one round-trip. Each step is `{name, arguments, expect?}`. The executor re-perceives before each `expect` guard, routes every step through the same safety gate, and halts with a per-step trace on any guard miss, safety stop, or error. Use `dryRun:true` to pre-scan tiers. The efficiency lever for a driving agent: N calls → 1. |
 
 A typical turn:
 
@@ -72,7 +73,12 @@ computer({ action: "key", combo: "mod+s" })          // resolves to Cmd+S / Ctrl
 accessibility({ action: "invoke", name: "Send" })
 window({ action: "open_app", name: "Outlook" })
 system({ action: "ocr" })                            // OS-level OCR, no LLM vision
-task({ instruction: "open Notepad and type hello" }) // delegates to the pipeline
+task({ instruction: "open Notepad and type hello" }) // delegates to the thin agent loop
+batch({ steps: [                                     // collapse N calls into 1 round-trip
+  { name: "accessibility", arguments: { action: "set_value", name: "To", value: "amy@x.com" } },
+  { name: "accessibility", arguments: { action: "set_value", name: "Subject", value: "Hi" } },
+  { name: "computer",      arguments: { action: "type", text: "Body here." } }
+]})
 ```
 
 ---
@@ -87,7 +93,7 @@ Sixty seconds from zero to a tool-calling agent on your desktop.
 |---|---|---|
 | AI lives in your editor (Claude Code, Cursor, Windsurf, Zed) | **`clawdcursor mcp`** | stdio MCP server. **You never run this yourself** &mdash; the editor/MCP host spawns it on demand from its config (you just add the JSON below). No daemon, no port. |
 | You're building an agent that runs unattended | **`clawdcursor agent`** | HTTP MCP daemon on `127.0.0.1:3847`. Has its own LLM brain optionally configured via `doctor`. |
-| Your agent has its own brain &mdash; you just want the tools as an HTTP endpoint | **`clawdcursor agent --no-llm`** | Same daemon, no built-in pipeline, no scheduler startup, no credential validation. Pure tool surface. |
+| Your agent has its own brain &mdash; you just want the tools as an HTTP endpoint | **`clawdcursor agent --no-llm`** | Same daemon, no built-in agent loop, no scheduler startup, no credential validation. Pure tool surface. |
 
 **Simplest &mdash; any OS (now on npm):**
 
@@ -139,7 +145,9 @@ That's it. Ask your agent to *"open Outlook and reply to the latest email from S
 
 > **Don't run `clawdcursor mcp` in a terminal yourself** &mdash; your editor launches it automatically over stdio when it needs the server. The only commands you run by hand are the install, `consent`, and `doctor` steps above.
 
-> **macOS:** run `clawdcursor grant` to walk through Accessibility + Screen Recording permissions.
+> **Editor permission allowlist (Claude Code, Cursor, &hellip;).** If your editor maintains a per-tool permission allowlist (keys like `mcp__clawdcursor__window`), use the **server-level wildcard** `"mcp__clawdcursor"` instead. It covers every tool in one entry and is immune to tool renames across versions — per-tool entries silently break whenever a tool is added, removed, or renamed.
+
+> **macOS first run.** Run `clawdcursor grant` to walk through the permission dialogs, then open **System Settings &rarr; Privacy &amp; Security** and enable the entry named **ClawdCursor** under **both** Accessibility and Screen Recording. v1.0.0 consolidates all desktop control under this single native-app identity &mdash; both entries are required.
 > **Linux:** install `tesseract-ocr`, `python3-gi`, `gir1.2-atspi-2.0`, and (Wayland only) `ydotool` or `wtype`.
 
 ---
@@ -160,150 +168,89 @@ Most "let an agent use the computer" tools are browser-only, single-OS, or visio
 
 Two mechanisms the others don't have:
 
-- **Cheapest-tier-first by design.** Accessibility tree (free) → OCR (cheap) → screenshot (medium) → vision (expensive); the agent climbs only when it must, so token cost tracks task difficulty.
+- **Cheapest-tier-first by design.** Accessibility tree (free) → OCR (cheap) → screenshot (medium) → vision (expensive); the agent climbs only when it must, so token cost tracks task difficulty. The `batch` tool collapses deterministic stretches into one round-trip for additional efficiency.
 - **One protocol, two transports.** MCP over stdio for editor hosts, MCP over HTTP for daemons &mdash; same catalog, same JSON-RPC envelope.
 
 ---
 
-## Two Pipelines
+## How it works
 
-clawdcursor exposes **two pipelines** that share one tool surface, one safety chokepoint, and one ground-truth verifier. **Where the brain lives** decides which one your AI uses. Both can run side-by-side &mdash; the daemon and editor-spawned stdio child are independent processes.
+**Where the brain lives** decides how clawdcursor is used. Both modes can run side-by-side &mdash; the daemon and editor-spawned stdio child are independent processes.
 
-| Brain lives... | Pipeline | Command | What you call |
+| Brain lives... | Mode | Command | What you call |
 |---|---|---|---|
-| In your editor (Claude Code, Cursor, Windsurf, Codex, Zed) | **Pipeline 2** | `clawdcursor mcp` | Each tool individually, via stdio MCP |
-| In a headless agent with its own LLM (OpenClaw, Claude Agent SDK, your own loop) | **Pipeline 2** | `clawdcursor agent --no-llm` | Same, over HTTP MCP |
-| Inside clawdcursor itself (scheduled tasks, dashboard, "submit a task and walk away") | **Pipeline 1** | `clawdcursor agent` + `doctor`-configured LLM | `submit_task` (or `scheduled_task_create`) |
-| Hybrid &mdash; external brain that delegates when stuck | **Both** | `clawdcursor agent` + your client | Direct tools normally; call `task({instruction:...})` to hand off a subtask to Pipeline 1 |
+| In your editor (Claude Code, Cursor, Windsurf, Codex, Zed) | Direct tools | `clawdcursor mcp` | Each tool individually, via stdio MCP |
+| In a headless agent with its own LLM (OpenClaw, Claude Agent SDK, your own loop) | Direct tools | `clawdcursor agent --no-llm` | Same, over HTTP MCP |
+| Inside clawdcursor itself (scheduled tasks, "submit a task and walk away") | Thin agent loop | `clawdcursor agent` + `doctor`-configured LLM | `submit_task` (or `scheduled_task_create`) |
+| External brain that delegates sub-tasks to the built-in loop | Direct tools + delegation | `clawdcursor agent` + your client | Direct tools normally; call `task({instruction:...})` to hand off a sub-task to the built-in thin loop |
 
-### Pipeline 1 &mdash; Autonomous: clawdcursor decides
+### Direct tools &mdash; your agent drives
 
-You hand off a task in plain English (`submit_task`, the web dashboard at `:3847/`, or a `scheduled_task_create` cron tick). clawdcursor's preprocessor classifies it, loads any matching app guide from the marketplace, picks the cheapest rung that fits, and only escalates when the verifier disagrees with the planner's claim of success.
-
-```mermaid
-flowchart TB
-    user["Task source<br/>submit_task · dashboard · scheduled cron"] --> pre["Preprocessor<br/>strategy + subtasks + app guide"]
-    pre --> router["Router<br/>regex shortcuts, zero LLM"]
-    router --> pick{"Cheapest rung<br/>that can work"}
-
-    pick -- shortcut --> shortcut["Deterministic shortcut<br/>open app · navigate · hotkey"]
-    pick -- playbook --> playbook["Playbook<br/>compose-send · find-replace"]
-    pick -- text UI --> blind["Blind rung<br/>a11y tree only"]
-    pick -- sparse / stuck --> hybrid["Hybrid rung<br/>a11y + screenshot on demand"]
-    pick -- visual only --> vision["Vision rung<br/>screenshot every turn"]
-
-    shortcut --> safety
-    playbook --> safety
-    blind --> safety
-    hybrid --> safety
-    vision --> safety
-
-    safety["Shared safety gate<br/>allow / confirm / block"] --> tools["Tool registry<br/>compact or granular"]
-    tools --> adapter["PlatformAdapter<br/>Windows / macOS / Linux"]
-    adapter --> observed["Observed state<br/>window + a11y + OCR + pixels"]
-    observed --> verifier{"Ground-truth verifier"}
-    verifier -- pass --> done["done"]
-    verifier -- fail --> reflector["Reflector<br/>cause + next strategy"]
-    reflector --> retry["retry with<br/>better context"]
-    retry -- escalate to a higher rung --> pick
-
-    classDef input fill:#f8fafc,stroke:#64748b,color:#0f172a;
-    classDef agent fill:#dbeafe,stroke:#2563eb,color:#0f172a;
-    classDef gate fill:#ede9fe,stroke:#7c3aed,color:#0f172a;
-    classDef desktopNode fill:#dcfce7,stroke:#16a34a,color:#0f172a;
-    classDef refl fill:#fef3c7,stroke:#d97706,color:#0f172a;
-
-    class user,done,retry input;
-    class pre,router,pick,shortcut,playbook,blind,hybrid,vision agent;
-    class safety,tools,verifier gate;
-    class adapter,observed desktopNode;
-    class reflector refl;
-```
-
-**Single safety chokepoint.** Every tool call &mdash; direct or autonomous &mdash; routes through `safety.evaluate()`. The agent cannot bypass this path; it is the only way tools execute.
-
-**Guides wired into the planner.** When `detectApp(activeWindowTitle)` returns an app key, the preprocessor calls `loadGuide(app)` and folds the resulting `promptFragment` into the agent's system prompt **before** rung selection. That's why Pipeline 1 "knows" Mail.app's compose Tab-order or YouTube's keyboard shortcuts &mdash; the marketplace is wired into the planner, not into the tools.
-
-**Ground-truth verification.** When the agent claims a task is done, six independent signals are checked against the post-task screen: pixel diff, window-state change, focus change, OCR delta, task-type assertions (`send_email`, `navigate_url`, `open_app`, &hellip;), and anti-pattern detection (error dialogs, auth failures, "draft saved"). Weighted voting with hard-fail rules. No LLM self-report.
-
-**Reflector loop.** On a verifier fail, the Reflector emits a structured `Cause` (e.g. `wrong_window_focused`, `modal_intercept`, `a11y_target_missing`, `webview_blind`) plus a suggested next strategy. The pipeline ladder consumes that signal to override its default escalation, and a one-line hint is injected as a synthetic `tool_result` so the planner understands *why* it's escalating.
-
-**Runaway guard.** Three identical calls in six turns and the loop exits with a targeted diagnostic &mdash; usually pointing at `detect_webview` when the target is Electron or WebView2 with a sparse accessibility tree.
-
----
-
-### Pipeline 2 &mdash; Direct tools: your AI decides
-
-Every editor host (Claude Code, Cursor, Windsurf, Codex, Zed) and every headless agent with its own brain (OpenClaw, Claude Agent SDK, your own loop) uses this path. Your LLM picks the calls; clawdcursor supplies read-only context, safe actuation, and fresh observations from the real desktop. The same planning context Pipeline 1 gets for free is exposed to external brains through four read-only introspection tools (`system.classify_task`, `system.app_guide`, `system.detect_app`, `system.system_prompt`).
+Your LLM picks the calls; clawdcursor supplies safe actuation and fresh observations from the real desktop. This is the primary mode for any agent with its own reasoning loop.
 
 ```mermaid
 flowchart TB
     task["User task"] --> loop["External agent LLM loop<br/>plans, chooses tools, verifies"]
-    loop --> context["MCP read-only context<br/>system_prompt · detect_app<br/>classify_task · app_guide"]
-    context --> route{"Cheapest viable path"}
+    loop --> observe{"Cheapest observation<br/>that answers the question"}
 
-    route -- deterministic --> shortcut["Deterministic path<br/>window.open_*<br/>system.shortcuts_run"]
-    route -- a11y first --> a11y["A11y path<br/>read_tree<br/>invoke · set_value · focus"]
-    route -- webview / Electron --> webview["WebView bridge<br/>detect_webview<br/>relaunch_with_cdp<br/>browser.*"]
-    route -- canvas / visual only --> vision["Vision fallback<br/>screenshot + external vision LLM<br/>coords back to computer"]
-    route -- delegate subtask --> handoff["task({instruction:...})<br/>hand off to Pipeline 1"]
+    observe -- "obs·a11y — free<br/>accessibility.read_tree/find/get_element<br/>window.list/active" --> a11y["A11y observation<br/>(structured text + element handles)"]
+    observe -- "obs·ocr — cheap<br/>system.ocr<br/>a11y tree empty or sparse" --> ocr["OCR observation<br/>(OS-level text, no vision LLM)"]
+    observe -- "obs·dom — medium<br/>browser.read_text / page_context<br/>WebView / Electron / Chrome" --> dom["DOM observation<br/>(CDP, structured browser content)"]
+    observe -- "obs·vision — expensive<br/>computer.screenshot<br/>canvas-only or pixel reasoning" --> vision["Vision observation<br/>(image bytes into LLM context)"]
 
-    shortcut --> safety
-    a11y --> safety
-    webview --> safety
-    vision --> safety
-    handoff --> p1["Pipeline 1 autonomous loop<br/>(daemon LLM only)"]
-    p1 --> safety
+    a11y --> act
+    ocr --> act
+    dom --> act
+    vision --> act
 
-    safety["Shared safety gate<br/>allow / confirm / block"] -- allowed --> tools["clawdcursor tool router"]
+    loop -- "delegate subtask" --> handoff["task({instruction:...})<br/>hand off to thin loop"]
+    handoff --> thinloop["Thin agent loop<br/>(daemon LLM)"]
+    thinloop --> safety
+
+    act["Act on the desktop<br/>computer.click/type/key/drag<br/>accessibility.invoke/set_value<br/>window.open_app<br/>system.shortcuts_run<br/>browser.click/type<br/>batch — N steps in 1 call"] --> safety
+
+    safety["Single safety gate<br/>safety.evaluate()<br/>allow / confirm / block"] -- allowed --> tools["clawdcursor tool registry<br/>94 granular + 6 compound"]
     safety -- needs user --> confirm["Human confirmation"] --> tools
     safety -- denied --> blocked["blocked"]
 
     tools --> desktop["Real desktop<br/>native app · browser · canvas"]
-    desktop --> observe["Fresh observation<br/>a11y tree · OCR<br/>screenshot · CDP DOM"]
-    observe --> verify{"Does state match goal?"}
+    desktop --> freshobs["Fresh observation<br/>(obs·a11y → obs·ocr → obs·dom → obs·vision)"]
+    freshobs --> verify{"Does state match goal?"}
 
     verify -- pass --> done["done"]
     verify -- fail --> retry["retry with new state"]
+    retry --> loop
 
     classDef input fill:#f8fafc,stroke:#64748b,color:#0f172a;
     classDef agentNode fill:#dbeafe,stroke:#2563eb,color:#0f172a;
-    classDef contextNode fill:#fef3c7,stroke:#d97706,color:#0f172a;
     classDef gate fill:#ede9fe,stroke:#7c3aed,color:#0f172a;
     classDef desktopNode fill:#dcfce7,stroke:#16a34a,color:#0f172a;
-    classDef expensive fill:#ffedd5,stroke:#ea580c,color:#0f172a;
+    classDef obsNode fill:#fef9c3,stroke:#ca8a04,color:#0f172a;
+    classDef actNode fill:#ffedd5,stroke:#ea580c,color:#0f172a;
     classDef handoffNode fill:#d1fae5,stroke:#047857,color:#0f172a;
     classDef stop fill:#fee2e2,stroke:#dc2626,color:#0f172a;
 
-    class task,done,retry input;
-    class loop,verify agentNode;
-    class context,route contextNode;
+    class task,done input;
+    class loop,verify,retry agentNode;
     class safety,confirm,tools gate;
-    class desktop,observe desktopNode;
-    class shortcut,a11y,webview,vision expensive;
-    class handoff,p1 handoffNode;
+    class desktop,freshobs desktopNode;
+    class observe,a11y,ocr,dom,vision obsNode;
+    class act actNode;
+    class handoff,thinloop handoffNode;
     class blocked stop;
 ```
 
-**The four phases:**
+**The loop:** read the a11y tree (cheap) → act on named targets → verify from fresh observations → escalate perception only when needed (OCR → screenshot). Sparse a11y tree? Call `system.detect_webview` — Electron/WebView2 apps render inside Chromium, switch to `browser.*` via CDP. Canvas-only (Paint, Figma, games)? Screenshot + coord click.
 
-1. **Load context** &mdash; yellow. Call `system({"action":"system_prompt"})` once if you want clawdcursor's operating stance, then call `system({"action":"detect_app","urlOrTitle":"..."})` and `system({"action":"classify_task","task":"...","activeWindowTitle":"..."})` on turn 1. If an `appKey` comes back, follow with `system({"action":"app_guide","app":appKey})` and paste the returned `promptFragment` into your own LLM's system prompt. That's how you inherit clawdcursor's app expertise without running its autonomous loop.
+**`batch` for deterministic stretches.** When the next N steps are known (no mid-sequence branching), collapse them into one `batch` call. Each step still routes through the safety gate; on any guard miss, safety stop, or error the batch halts and returns a per-step trace.
 
-2. **Pick the cheapest viable path** &mdash; yellow to orange:
-   - `router` &rarr; deterministic shortcuts. `window.open_app`, `window.open_url`, `system.shortcuts_run`. No LLM call needed.
-   - `playbook` &rarr; canned keystroke sequence (compose-send, find-replace) via `computer.key` + `accessibility.invoke`.
-   - `blind` / `hybrid` &rarr; `accessibility.read_tree` first, then `accessibility.invoke` / `set_value` / `focus` on named targets.
+**Task delegation.** When the daemon has an LLM configured, your external agent can delegate at any point by calling `task({"instruction":"&hellip;"})`. The built-in thin loop takes the wheel, reasons and acts using the configured model, and reports back. Useful for delegating grunt work to a cheaper model — e.g. *"open Outlook and reply to Sarah's latest about budget"* — without burning your own LLM context on the step-level details.
 
-3. **Execute through the shared safety gate** &mdash; purple. Every action call goes through `safety.evaluate()` before it touches the desktop. Allowed calls run immediately, sensitive calls ask for human confirmation, and blocked calls stop there. This is true for external agents and the built-in autonomous loop.
+### Thin agent loop &mdash; clawdcursor drives
 
-4. **Escalate and verify from fresh observations** &mdash; green/orange:
-   - Sparse a11y tree &rarr; `system.detect_webview`. If Electron / WebView2, use `system.relaunch_with_cdp` when needed, then jump to `browser.*` for real DOM access via CDP.
-   - Canvas-only apps (Paint, Figma, games) or `detect_webview` returns nothing &rarr; `computer.screenshot` + YOUR vision LLM + `computer.click` at coords. T4 cost; last resort.
-   - After every action, re-read the active window title + a11y tree + OCR, and add screenshot/CDP DOM only when the cheaper signals are not enough. If the result doesn't match expectations, loop back with the new state. If it does, emit `done`.
+You hand off a task in plain English (`submit_task`, the web dashboard at `:3847/`, or a `scheduled_task_create` cron tick). The configured model perceives the desktop, selects tools, and iterates until the task is done or the turn budget is exhausted.
 
-**Hand-off to Pipeline 1** &mdash; the green node. When the daemon has an LLM configured, your external brain can delegate at any point by calling `task({"instruction":"&hellip;"})`. clawdcursor's preprocessor classifies the subtask, runs the autonomous rung ladder, verifies the result, and reports back. Useful for app-specific work you don't want to burn your own LLM context on (e.g. *"open Outlook and reply to Sarah's latest about budget"*). Pipeline 1's verifier still gates the success report &mdash; your brain receives `success: true` only after ground-truth checks pass.
-
-**Hard guarantee.** Every tool call &mdash; whether Pipeline 1's preprocessor picked it, your external brain picked it, or it came in through a `task({...})` hand-off &mdash; flows through the same `safety.evaluate()` chokepoint. Sensitive actions (sends, deletes, blocked keyboard combos) hit confirm/block exactly the same way on every path.
+**Single safety chokepoint.** Every tool call &mdash; direct or via the thin loop &mdash; routes through `safety.evaluate()`. The agent cannot bypass this path; it is the only way tools execute.
 
 ---
 
@@ -328,12 +275,12 @@ curl -s -X POST http://127.0.0.1:3847/mcp \
 
 ---
 
-## Tools &mdash; 97 granular primitives
+## Tools &mdash; 94 granular primitives
 
 The flat catalog. Each of the 6 compound toolboxes above dispatches to one of these under the hood. Use this surface directly when:
 
 - **Compatibility** &mdash; your agent runtime requires every action as a top-level MCP tool (no `action` enum). Run the daemon without `--compact` (granular is the default for `clawdcursor agent`) to expose them.
-- **Debugging** &mdash; you want to call a specific primitive directly (`key_press`, `mouse_move`, `get_accessibility_tree`) without going through the compound dispatcher.
+- **Debugging** &mdash; you want to call a specific primitive directly (`key_press`, `mouse_click`, `read_screen`) without going through the compound dispatcher.
 
 The full catalog &mdash; both compact toolboxes and granular tools &mdash; is always visible through MCP `tools/list` on either transport. Authoritative schema lives in [`schema.snapshot.json`](schema.snapshot.json).
 
@@ -343,8 +290,8 @@ A typical turn:
 key_press({ key: "mod+s" })
 invoke_element({ name: "Send" })
 open_app({ name: "Outlook" })
-ocr_screen()
-// ...97 tools total
+ocr_read_screen()
+// ...94 tools total
 ```
 
 Both forms produce identical effects through the same `safety.evaluate()` chokepoint.
@@ -353,7 +300,7 @@ Both forms produce identical effects through the same `safety.evaluate()` chokep
 
 ## Cost Tiers
 
-The pipeline picks the cheapest rung that works. Apply the same logic when you call compound tools by hand.
+Every perception source has a cost. Start at the cheapest rung that works and climb only when it fails &mdash; the same discipline whether your agent drives the tools directly or hands a sub-task to the built-in loop via `task`.
 
 | Tier | Label | Cost | Source | When to use |
 |---|---|---|---|---|
@@ -362,35 +309,27 @@ The pipeline picks the cheapest rung that works. Apply the same logic when you c
 | **T3** | screenshot | medium | `computer({"action":"screenshot"})` | OCR isn't enough and you need pixel context. Sends an image into LLM context. |
 | **T4** | vision | expensive | `smart_click`, `smart_read`, `smart_type` | Canvas-only apps (Paint, Figma, games) or spatial reasoning that text can't express. Last resort. |
 
-**Rule: start at T1. Escalate only when the current tier fails.** `task({...})` does this automatically; the Reflector tells the planner *which* tier to jump to.
+**Rule: start at T1. Escalate only when the current tier fails.** Apply the same discipline when calling compound tools directly; the built-in thin loop follows it too.
 
 ---
 
-## Guides Marketplace
+## Observe vs Act
 
-For unfamiliar apps, the agent reasons from screenshots and the a11y tree &mdash; slow but always works. For popular apps, **community-curated guides** ship the keyboard shortcuts, workflow patterns, layout cues, and failure modes the agent would otherwise have to discover by failing first. Loading a guide for an app it knows speeds operation 5&ndash;10&times;.
+Every tool call is one of two kinds: **observe** (read the current state of the desktop — zero side effects) or **act** (change it). The log badge on each tool-call line tells you which, and which observation channel was used. This makes the cheap-first ladder visible at a glance as a task runs.
 
-- **Public registry fallback: <https://github.com/AmrDab/clawdcursor-guides>**
-- **Source repo: <https://github.com/AmrDab/clawdcursor-guides>** &mdash; community PRs welcome
-- **Verified seed guides:** discord, excel, figma, gmail, mspaint, olk (new Outlook), outlook, slack, spotify, youtube
-- **Bundled core (offline fallback):** msedge, notepad
+| Kind | Log badge | What it does | Example tools |
+|---|---|---|---|
+| **Observe &mdash; a11y** | `obs·a11y` | Read the accessibility tree (structured text + bounds, free) | `accessibility.read_tree`, `accessibility.find`, `accessibility.get_element`, `accessibility.get_value`, `accessibility.focused`, `window.list`, `window.active`, `accessibility.list_children`, `accessibility.wait_for` |
+| **Observe &mdash; OCR** | `obs·ocr` | Read on-screen text via OS OCR engine (no LLM vision) | `system.ocr` (`ocr_read_screen`), `system.smart_read` |
+| **Observe &mdash; DOM** | `obs·dom` | Read the browser DOM via CDP (Electron / WebView2 / Chrome) | `browser.read_text` (`cdp_read_text`), `browser.page_context` (`cdp_page_context`) |
+| **Observe &mdash; vision** | `obs·vision` | Take a screenshot (image bytes enter LLM context — most expensive) | `computer.screenshot` (`desktop_screenshot`, `desktop_screenshot_region`, `screenshot_full`) |
+| **Act** | `act` | Change the screen: click, type, key, scroll, drag, open, invoke | `computer.click/type/key/drag/scroll`, `accessibility.invoke/set_value/focus`, `window.open_app/open_url/open_file`, `system.clipboard_write`, `browser.click/type`, `batch`, `task` |
 
-Guides are fetched on demand, cached locally for 7 days, LRU-evicted at 50 entries. The cache lives at `~/.clawdcursor/guide-cache/`. The agent never blocks on the network &mdash; if a guide isn't local and the registry is unreachable, it falls back to first-principles reasoning.
+**The discipline:** prefer `obs·a11y` first — it returns structured text and element handles for free. If the a11y tree is empty or sparse, try `obs·ocr`. If the target is inside a WebView or Electron shell, use `obs·dom` via CDP. Only escalate to `obs·vision` (screenshot) when pixel context is genuinely needed. Act once you have enough information, then observe again to verify.
 
-```bash
-clawdcursor guides available             # browse the public registry
-clawdcursor guides install youtube       # pre-warm cache for one app
-clawdcursor guides list                  # show cached + ratings
-clawdcursor guides info youtube          # details for one cached guide
-clawdcursor guides refresh youtube       # force re-fetch
-clawdcursor guides submit my-app.json    # lint + print PR instructions
-```
+The badge column in the live log (`CLAWD_LOG=pretty`, the default on a TTY) shows this ladder in real time: you can watch `obs·a11y` → `act` → `obs·a11y` on a normal turn, and see when the agent is forced to climb to `obs·ocr` or `obs·vision`.
 
-Every guide passes through a client-side linter on every load &mdash; schema check + prompt-injection patterns + dangerous-prose detection. A guide that fails lint is dropped and the agent falls back to no-knowledge, never poisoned-knowledge. Same linter runs as the registry's CI check on every PR.
-
-Voting: each guide has a `vote: <app>` issue on the source repo. React with 👍 or 👎. A nightly job aggregates reactions into `index.json` so `clawdcursor guides list` shows ratings.
-
-See [`docs/guide-marketplace.md`](docs/guide-marketplace.md) for the full architecture, trust model, and CI flow.
+Derived from `src/tools/cost-class.ts` (authoritative cost-class table) + `src/core/observability/logger.ts` (`observeActBadge`).
 
 ---
 
@@ -408,7 +347,7 @@ Platform-specific code lives in `src/platform/{windows,macos,linux}.ts` (plus `w
 Per-OS setup notes:
 
 - **Windows** &mdash; no setup. PowerShell bridge spawns on demand.
-- **macOS** &mdash; first run needs Accessibility + Screen Recording in `System Settings > Privacy & Security`. `clawdcursor grant` walks the dialogs. Retina / HiDPI handled in the adapter; **do not pre-scale coordinates**.
+- **macOS** &mdash; first run needs Accessibility + Screen Recording in `System Settings > Privacy & Security`. `clawdcursor grant` walks the dialogs; enable the entry named **ClawdCursor** under both categories. Retina / HiDPI handled in the adapter; **do not pre-scale coordinates**.
 - **Linux X11** &mdash; `apt install tesseract-ocr python3-gi gir1.2-atspi-2.0` (or your distro's equivalent).
 - **Linux Wayland** &mdash; same a11y packages, plus `ydotool` + a running `ydotoold` daemon (preferred) or `wtype` (keyboard only).
 
@@ -420,13 +359,13 @@ Five directories. Everything else is a leaf module.
 
 | Directory | What lives here |
 |---|---|
-| `src/core/` | Pipeline orchestrator, agent loop, router, preprocessor, sense (a11y/snapshot/fingerprint), classify, decompose, skills cache, safety gate, ground-truth verifier, Reflector. |
-| `src/tools/` | The 97 granular tools + 6 compound aggregators, playbooks (`compose-send`, `find-replace`), tool registry, dispatch. |
+| `src/core/` | Thin agent loop (`agent.ts`, `runAgent`), sense layer (a11y/snapshot/fingerprint), focus guard, safety gate. |
+| `src/tools/` | The 94 granular tools + 6 compound aggregators + `batch`, playbooks (`find-replace`, `extract-compose`), tool registry, dispatch. |
 | `src/platform/` | `PlatformAdapter` interface + Windows / macOS / Linux / Wayland implementations, OCR engine, CDP driver, URI handler. |
-| `src/llm/` | Provider clients (Claude, GPT, Gemini, Llama, Kimi, Ollama, &hellip;), credentials, model config, guide loader. |
+| `src/llm/` | Provider clients (Claude, GPT, Gemini, Llama, Kimi, Ollama, &hellip;), credentials, model config. |
 | `src/surface/` | CLI (`clawdcursor`), MCP server (stdio + HTTP), dashboard, doctor, onboarding, readiness probes. |
 
-The `PlatformAdapter` is the only thing platform code talks to. The `safety.evaluate()` chokepoint is the only way tools execute. Those two seams are the whole point of the v0.9 reorganization.
+The `PlatformAdapter` is the only thing platform code talks to. The `safety.evaluate()` chokepoint is the only way tools execute. Those two seams are the whole point of the architecture.
 
 ---
 
@@ -465,28 +404,17 @@ clawdcursor status          Readiness check (consent, permissions, AI config)
 
 # Run
 clawdcursor mcp             MCP stdio server — primary transport for editor hosts
-clawdcursor agent           Daemon: HTTP MCP at /mcp on :3847, optional built-in LLM
+clawdcursor agent           Daemon: HTTP MCP at /mcp on :3847, optional built-in thin loop
 clawdcursor agent --no-llm  Daemon, tool surface only (no built-in brain/scheduler)
 clawdcursor stop            Stop every running mode
 clawdcursor uninstall       Remove all clawdcursor config and data
-
-# Guides marketplace (see Guides Marketplace section above)
-clawdcursor guides list                What's cached + ratings
-clawdcursor guides info <app>          Cache metadata for one app
-clawdcursor guides available           Browse the public registry
-clawdcursor guides install <app>       Pre-warm one (or --all for offline prep)
-clawdcursor guides refresh <app>       Force re-fetch
-clawdcursor guides remove <app>        Evict from cache
-clawdcursor guides clean               Wipe cache
-clawdcursor guides lint <file>         Validate a local guide
-clawdcursor guides submit <file>       Lint + print PR instructions
 
 # Manual end-to-end testing only — agents should call submit_task via MCP.
 clawdcursor task <t>        Send a task to the running agent
 
 Options:
   --port <port>          Default: 3847
-  --compact              MCP only: expose 6 compound tools instead of 97 granular
+  --compact              MCP only: expose compact tools instead of 94 granular
   --provider <name>      `agent` only: anthropic | openai | gemini | ollama | ...
   --accept               `agent` and `consent` only: skip the consent prompt
 ```

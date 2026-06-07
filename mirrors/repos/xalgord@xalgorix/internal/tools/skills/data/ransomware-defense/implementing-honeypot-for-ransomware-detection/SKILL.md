@@ -43,6 +43,14 @@ nist_csf:
 
 **Do not use** as the sole ransomware detection mechanism. Honeypots are a high-confidence supplementary layer, not a replacement for EDR, network monitoring, and backup protection.
 
+## Common Misconfigurations & Verification
+
+- **Canaries in root only / sort late:** ransomware that traverses subdirectories depth-first may encrypt nested real data before touching a root canary, and a name like `AAAA_Quarterly_Report.docx` only wins on A-Z enumeration. Seed canaries in subdirectories too (this skill's recursive deploy does), and pair `!_`/`000_`-prefixed (first) with `~zzzz_`-suffixed (last) names so one is hit regardless of traversal order.
+- **FSRM file screen left blocking-only or not alerting:** a screen created `-Active:$false` (passive) without a notification action detects nothing useful. Confirm the screen has an email/event/command notification wired, and that the ransomware-extension file group is actually applied to every share path.
+- **FileSystemWatcher misses encrypt-then-rename:** register `Changed`, `Deleted`, AND `Renamed` — families that write `.locked` and delete the original fire rename/delete, not change.
+- **Obvious canary names get skipped; alert fatigue from AV/migrations:** sophisticated variants skip files named `canary`; use realistic names. Exclude backup agents and AV scan accounts from auditing so legitimate bulk access doesn't bury real alerts.
+- **Verification:** test end-to-end with a controlled tool — modify, rename, and delete each canary and confirm the alert reaches the SOC/SIEM and that NAC quarantine + EDR isolation actually execute within the SLA (e.g. under 30s). Confirm object-access auditing (`auditpol`) is enabled on honeypot shares so access is logged at all.
+
 ## Prerequisites
 
 - File server or NAS infrastructure where canary files can be deployed

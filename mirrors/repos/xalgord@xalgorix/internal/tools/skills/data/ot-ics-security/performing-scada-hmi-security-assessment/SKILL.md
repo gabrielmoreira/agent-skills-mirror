@@ -38,6 +38,18 @@ nist_csf:
 
 **Do not use** for testing HMIs in active production without a maintenance window and rollback plan, for PLC-level protocol analysis (see performing-s7comm-protocol-security-analysis), or for general web application testing on non-OT systems.
 
+## Most Often Missed & How to Confirm
+
+HMI assessments miss findings by treating the HMI as a normal web app, and risk process upset by testing live. Test a twin, confirm carefully:
+
+- **Active web testing on a live HMI:** XSS/CSRF/IDOR payloads against setpoint or alarm fields can write to the process. Don't test production — use a lab/test HMI mirror, or a maintenance window with rollback and an operator present.
+- **Default credentials assumed changed:** confirm by actually attempting documented vendor defaults (WinCC, Ignition, FactoryTalk) on the test instance, not by asking.
+- **HMI-PLC channel assumed encrypted:** capture the traffic and verify a TLS handshake (OPC UA) rather than cleartext OPC DA/Modbus; cleartext is the positive finding.
+- **Setpoint writes lacking confirmation/auth:** confirm whether an operator-role session can push a write without re-auth, and whether it's logged.
+- **Alarm-suppression and audit gaps:** verify operator actions, logins, and setpoint changes are actually written to an audit log an attacker can't trivially clear.
+- **CVE-specific checks skipped:** e.g., Ignition privileged file access (CVE-2025-0921) via project upload — confirm the version against the advisory.
+- **Don't conclude an HMI is hardened** until default creds, session/role separation, transport encryption (verified by capture), and audit logging are each confirmed on a non-production instance.
+
 ## Prerequisites
 
 - HMI system inventory with vendor, version, and network configuration details

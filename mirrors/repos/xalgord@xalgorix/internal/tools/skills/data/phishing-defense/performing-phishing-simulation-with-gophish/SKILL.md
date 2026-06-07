@@ -34,6 +34,15 @@ GoPhish is an open-source phishing simulation framework used by security teams t
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Deliverability kills the test silently:** if the SEG quarantines the sim, low click rates reflect filtering, not user behavior - allowlist the GoPhish sending IP/domain (or a custom header) in the gateway and confirm delivery to a seed mailbox first.
+- **Sending profile authentication:** a from-domain with `-all` SPF and DMARC reject will bounce or junk the sim unless the GoPhish relay is authorized - send through an authenticated relay and verify SPF/DKIM pass.
+- **Tracking pixel and link wiring:** omitting `{{.Tracker}}` or `{{.URL}}` means opens/clicks never register; link-wrappers (Safe Links) auto-detonate `{{.URL}}` and inflate click counts - confirm a wrapper isn't pre-fetching the landing page.
+- **Landing page must serve over HTTPS:** browsers/SEGs block mixed-content or invalid-cert pages, suppressing submits - install a valid TLS cert and test the full open->click->submit->redirect flow.
+- **Credential capture for authorized testing only:** confirm capture is scoped, data is handled per the written authorization, and users redirect to training after submit.
+- **Confirm before launch:** send a single test to a seed user and verify the email lands in inbox (not junk), the open registers, the click registers, the landing page renders over HTTPS, the submit is captured, and the API report reflects all four events. Stagger sends so volume doesn't trip rate-based filtering.
+
 ## Prerequisites
 - GoPhish binary or Docker image (https://github.com/gophish/gophish)
 - SMTP server or relay for sending test emails

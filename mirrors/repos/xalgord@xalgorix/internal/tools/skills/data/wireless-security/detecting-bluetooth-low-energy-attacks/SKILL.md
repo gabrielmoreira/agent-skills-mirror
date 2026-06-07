@@ -44,6 +44,14 @@ Use this skill when:
 
 **Do not use** for intercepting BLE communications without explicit authorization. Do not deploy BLE scanning tools in environments where wireless monitoring is prohibited.
 
+## Detection Gaps & Validation
+
+- **Channel-hopping coverage:** Ubertooth One follows one connection at a time across the 37 data channels, so passive monitoring of a busy environment will miss connections you aren't following. Target a specific device with `ubertooth-btle -f -t AA:BB:CC:DD:EE:FF`, or deploy multiple sniffers / an nRF52840 to widen coverage. A quiet capture does not mean no attack.
+- **BLE 5.0 extended advertising** on secondary channels evades older Ubertooth firmware entirely — update firmware before concluding a device is silent.
+- **Pairing/MITM gaps:** Legacy Pairing "Just Works" (TK=0) and 6-digit passkey are passively crackable with `crackle` (note: needs PCAP/PPI from the `-c` flag, not PcapNG); only LE Secure Connections (ECDH, 4.2+) resists eavesdropping. Inspect `btsmp.io_capability`/`auth_req` and watch for GATTacker/BTLEjuice signatures (cloned advertising data with a different BD_ADDR, rapid connect/disconnect, duplicate service UUIDs).
+- **GATT enumeration blind spots:** address randomization (RPA) rotates device addresses and breaks tracking/following; flag `write`/`write-without-response` without authentication and notification characteristics missing CCCD protection.
+- **How to validate detection:** confirm your monitoring actually fires by running a known BLE attack against a lab target — replay a captured GATT write with `bleak`, crack a Legacy pairing capture with `crackle`, or stand up a GATTacker MITM — and verify the alert triggers. An IDS that never alerts during a staged attack is unproven, not effective.
+
 ## Prerequisites
 
 - Ubertooth One hardware for passive BLE sniffing, or Nordic nRF52840 USB Dongle with nRF Sniffer firmware

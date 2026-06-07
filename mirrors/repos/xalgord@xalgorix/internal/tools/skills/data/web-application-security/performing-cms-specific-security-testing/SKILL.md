@@ -30,6 +30,17 @@ nist_csf:
 - For assessing CMS admin panel security, default credentials, and misconfigurations
 - When evaluating multi-site or headless CMS deployments
 
+### How to CONFIRM a Hit (avoid false negatives)
+
+- **Positive signal**: a **confirmed vulnerable plugin/theme/core version with a working PoC**, or a genuinely exposed/abusable endpoint that returns sensitive data or executes — not a bare version banner.
+- Version fingerprinting is a lead, not a finding. A reported "vulnerable version" must be validated against the actual code path (the fix may be backported, or the vulnerable component disabled).
+- Do NOT conclude "vulnerable" (or "safe") until you have:
+  - Cross-checked the detected version/plugin against the CVE **and** reproduced the issue (e.g. `wpscan` flag confirmed by an actual request that triggers the behavior).
+  - For **Drupalgeddon / unauth RCE**: confirmed the command output (e.g. `id`) actually appears in the response, not just a `200`.
+  - For **XML-RPC**: confirmed `system.multicall` is enabled AND a known-bad credential returns the success struct (`isAdmin`/blog list), proving the brute-force channel works.
+  - For exposed files (`wp-config` backups, `CHANGELOG.txt`, `.sql`, debug logs): confirmed the response **body contains the sensitive content**, not a soft-404 returning `200`.
+  - For **admin→RCE**: confirmed you can actually write/execute (theme/plugin editor reachable, upload accepted) rather than assuming from admin access.
+
 ## Prerequisites
 
 - **Authorization**: Written penetration testing agreement covering CMS testing

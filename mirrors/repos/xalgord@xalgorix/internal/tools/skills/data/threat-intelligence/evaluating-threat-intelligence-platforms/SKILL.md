@@ -38,6 +38,14 @@ Use this skill when:
 
 **Do not use** this skill for evaluating feed quality independently of the TIP — feed evaluation is a separate workflow focused on data quality rather than platform capabilities.
 
+## Detection Gaps & Validation
+
+- **PoC coverage gaps:** vendor demos use curated feeds. Validate against YOUR top 5 feeds and YOUR SIEM, not the vendor's sample data - STIX 2.1 import that works on clean bundles often fails on real-world malformed objects.
+- **STIX/TAXII version mismatch:** a TIP advertising "STIX support" may only do STIX 2.0 or partial 2.1 (missing `infrastructure`/`grouping` SDOs or `sighting` SROs). Test round-trip export/import of every SDO/SRO type you actually use.
+- **Dedup over-merge:** aggressive deduplication can collapse distinct indicators (same IP, different context/TLP) and hide detections. Verify TLP and source survive a merge before trusting indicator counts.
+- **Integration latency:** "real-time" SIEM push can lag minutes to hours. Measure actual enriched-IOC-to-SIEM time during the PoC with a planted test indicator, not the datasheet number.
+- **How to validate:** weight the scoring matrix by your real use cases, run the 30-day PoC at production-representative volume (10k+ queries/day), and confirm a known test IOC traverses ingest → dedup → ATT&CK tag → SIEM export intact.
+
 ## Prerequisites
 
 - Documented CTI program requirements: team size, feed sources, integration targets, use cases

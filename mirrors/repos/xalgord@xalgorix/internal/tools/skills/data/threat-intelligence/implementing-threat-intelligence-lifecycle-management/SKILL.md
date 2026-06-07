@@ -36,6 +36,15 @@ The threat intelligence lifecycle is a structured, iterative process for transfo
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Collection without PIRs:** wiring up CISA KEV, OTX, and MalwareBazaar feeds before defining Priority Intelligence Requirements produces data overload and no answers. Map every collection source to a PIR or drop it.
+- **Processing stage skipped:** feeding raw collection straight to analysis without the normalize → dedup → enrich → score pipeline floods analysts with duplicates. Confirm the dedup hash keys on `type:value:source` so distinct-context IOCs are not over-merged.
+- **Confidence/TLP defaults unset:** `_normalize()` defaulting confidence to 50 and TLP to green means unscored, freely-shareable indicators leak downstream. Set these explicitly per source.
+- **No feedback loop:** dissemination without the feedback stage means products are never validated against PIRs - wire `collect_feedback()` to a defined SLA.
+- **Indicator expiry ignored:** tagging with a collection date but no TTL/expiration lets stale IOCs persist in the SIEM. Add decay handling.
+- **Verification:** confirm each active PIR maps to >=1 collection source, the pipeline reports duplicates removed, analysis output references a specific `requirement_id`, and distribution metrics show products reaching each stakeholder channel.
+
 ## Prerequisites
 
 - Python 3.9+ with `pymisp`, `stix2`, `requests`, `pandas` libraries

@@ -37,6 +37,18 @@ nist_csf:
 
 **Do not use** for IoT or headless devices that cannot run posture agents, as a standalone security control without identity verification, or when real-time posture data is unavailable and stale compliance data would create false trust.
 
+## Common Misconfigurations & Verification
+
+The classic failure is posture collected but never enforced - the dashboard shows ZTA scores and Intune compliance, yet access is granted anyway. Check for these:
+
+- **Signals ingested but not gated.** CrowdStrike ZTA / Intune `complianceState` flow into the IdP, but no Conditional Access grant control requires `compliantDevice`, so non-compliant devices still authenticate.
+- **Report-only / grace-period policies left on.** A CA policy stuck in "report-only" or an open-ended grace period logs violations without blocking.
+- **Stale posture treated as current.** A device that last synced days ago is trusted; gate on `lastSyncDateTime` freshness or fail closed.
+- **BYOD / browser path bypass.** Unmanaged devices route through a path with no posture check and reach the same data.
+- **Thresholds set so low (ZTA >= 30) they never deny.**
+
+**How to confirm:** take a deliberately non-compliant device (disable BitLocker/FileVault, stop the Falcon sensor, or roll back the OS) and attempt to reach a protected app - it must be blocked, not warned. Confirm the denial appears in Entra sign-in logs / Okta System Log with the posture reason, and verify a compliant device on the same account succeeds.
+
 ## Prerequisites
 
 - Endpoint Detection and Response (EDR): CrowdStrike Falcon with ZTA module, or Microsoft Defender for Endpoint

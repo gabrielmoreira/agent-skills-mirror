@@ -36,6 +36,15 @@ nist_csf:
 
 **Do not use** for stalking, harassment, or unauthorized surveillance of individuals. OSINT gathering must be conducted within the scope of an authorized engagement and comply with applicable privacy laws (GDPR, CCPA).
 
+## Most Often Missed & How to Confirm
+
+- **Cross-correlating subdomain sources** — running one tool (subfinder OR amass) misses assets. Combine passive sources, crt.sh/Censys certificate transparency, and historical data (Wayback, VirusTotal passive DNS); the long tail (`dev-`, `uat-`, `old-`, acquired-company domains via reverse WHOIS) is where the soft targets live.
+- **Cloud and SaaS sprawl** — S3/Azure Blob/GCS buckets, exposed Elasticsearch/Kibana/MongoDB, and developer SaaS (Trello boards, public Jira, Confluence, Postman workspaces) are routinely skipped. Check `cloud_enum` and dork the SaaS domains directly.
+- **Secrets in code and CI** — public GitHub/GitLab repos of the org AND of individual employees often leak `.env`, API keys, and internal hostnames. Run trufflehog/gitleaks across forks and gists, not just the org page.
+- **Document and image metadata** — `exiftool` on public PDFs/DOCX reveals internal usernames, AD domain, software versions, and file paths that seed later phases.
+- **Breach/credential reuse data** — combolists and HIBP for the email format feed password spraying; skipping this leaves the highest-ROI vector untested.
+- **How to confirm**: every asset claim must trace to a reproducible source artifact (crt.sh JSON entry, Shodan/Censys host record with timestamp, archived URL, repo commit hash). For a leaked secret, capture the file path and commit but DO NOT validate the credential during a passive-only phase — note it for the active phase. Don't conclude the attack surface is mapped until you have merged at least three independent enumeration sources and checked cloud storage and code repositories.
+
 ## Prerequisites
 
 - Written authorization to perform reconnaissance against the target organization

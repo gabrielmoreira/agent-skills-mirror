@@ -36,6 +36,16 @@ nist_csf:
 
 **Do not use** for unauthorized testing of any AWS account, for testing AWS infrastructure itself (covered by shared responsibility), for DDoS or volumetric attacks without AWS approval, or for production account testing without explicit authorization and breakglass procedures.
 
+## Most Often Missed & How to Confirm
+
+- **Incomplete enumeration hides escalation paths:** `iam__privesc_scan` only reasons over permissions Pacu already collected. Run `iam__enum_permissions` first and watch for `AccessDenied` on `iam:GetAccountAuthorizationDetails` - a gap there makes the scanner report "no privesc" when paths exist.
+- **Region scoping:** Pacu enumerates only regions in `set_regions`. Run `set_regions all` or you'll silently miss EC2, Lambda, Secrets Manager, and SSM resources living in us-west-2 / eu-* etc.
+- **PassRole combos are the high-value misses:** `iam:PassRole` + `lambda:CreateFunction`, `ec2:RunInstances`, `glue:CreateDevEndpoint`, or `cloudformation:CreateStack`. These fail silently if `iam__enum_roles` didn't map the passable target roles first.
+- **Don't stop at IAM:** `lambda__enum` (env vars), `ssm__download_parameters`, and `secretsmanager__enum` routinely yield the next credential set. Also check unauth paths: `ebs__enum_snapshots_unauth` and public AMIs/RDS snapshots shared with your account.
+- **Resource-policy backdoors:** S3 bucket policies, KMS key policies, SQS, and Lambda resource policies can grant access the IAM scan never sees.
+
+**How to confirm a hit (avoid false negatives):** after `iam__privesc_scan --escalate`, prove the new access - run `aws sts get-caller-identity` with the escalated creds and actually perform the gated action (e.g. attach a policy then `list-attached-user-policies`, or invoke the created Lambda and read its output). A 200 from `CreateFunction` is not proof of admin. **Don't conclude "no escalation" until:** `iam__enum_permissions` completed with no AccessDenied gaps, all regions were scanned, PassRole targets were mapped, and resource-based policies were reviewed.
+
 ## Prerequisites
 
 - Written authorization from the AWS account owner with defined scope and rules of engagement

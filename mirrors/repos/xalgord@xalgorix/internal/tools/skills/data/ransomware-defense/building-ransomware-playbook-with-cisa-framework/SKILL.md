@@ -37,6 +37,14 @@ nist_csf:
 
 **Do not use** as a substitute for legal counsel regarding ransom payment decisions, breach notification timelines, or regulatory obligations specific to your jurisdiction.
 
+## Common Misconfigurations & Verification
+
+- **Backups not actually offline/immutable:** a playbook that lists "offline backups" but the backup server is domain-joined and reachable over SMB gets encrypted with everything else. Verify backups are air-gapped or immutable (S3 Object Lock, hardened repo) and that the 3-2-1 rule is met, not just claimed.
+- **Shadow-copy deletion not blocked:** the prevention checklist omits hardening against `vssadmin delete shadows`, `wbadmin delete catalog`, and `bcdedit /set recoveryenabled no`. Confirm a GPO/EDR rule blocks or alerts on these LOLBins before relying on local recovery points.
+- **Recovery restores a still-infected point:** restoring from a backup taken after initial access (but before encryption) reintroduces the dropper/persistence. Verify the restore point predates patient-zero compromise, and rebuild from clean images rather than decrypting in place.
+- **krbtgt reset skipped or done once:** the playbook must reset krbtgt twice ~12h apart; a single reset leaves forged golden tickets valid.
+- **Verification, not documentation:** run a tabletop against the playbook and an actual test restore to confirm RTO/RPO are real numbers. Confirm out-of-band comms work when AD/email is down, and that contact lists and IOC-blocking steps were exercised within the last year.
+
 ## Prerequisites
 
 - Familiarity with the CISA StopRansomware Guide (cisa.gov/stopransomware/ransomware-guide)

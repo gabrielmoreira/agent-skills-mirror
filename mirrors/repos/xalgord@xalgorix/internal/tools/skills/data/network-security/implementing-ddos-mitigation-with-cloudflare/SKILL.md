@@ -38,6 +38,15 @@ Cloudflare provides multi-layer DDoS protection across its global network of ove
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Rules left in Log/monitor mode:** an HTTP DDoS override or WAF custom rule set to log (or sensitivity `essentially_off`) detects but never blocks. Confirm the deployed `action` is `block`/`managed_challenge` via `GET .../rulesets/phases/ddos_l7/entrypoint`, not just that the rule exists.
+- **Origin IP exposed (grey-cloud):** any A/AAAA record with `proxied: false`, or a leaked mail/cPanel subdomain, lets attackers hit the origin directly and bypass Cloudflare. Verify every record is orange-clouded and lock the origin firewall to Cloudflare ranges + Authenticated Origin Pulls.
+- **Rate-limit keyed too coarsely:** `characteristics: ["cf.colo.id","ip.src"]` counts per-PoP, so a distributed flood never reaches the threshold. For credential stuffing key on `ip.src` (or a header) and size `requests_per_period` against real peak traffic.
+- **`security_level` automation flapping:** auto-toggling to `under_attack` on a benign spike challenges real users.
+
+**Verification:** replay a burst against the protected path (e.g. `hey -n 2000 -c 50 https://.../api/login`) and confirm 429/challenge responses plus matching Firewall Events; then `curl --resolve example.com:443:<origin-ip>` and confirm the origin **refuses** non-Cloudflare connections. Blocked events in analytics are the positive signal — an empty Firewall Events table during a test means the rule isn't enforcing.
+
 ## Prerequisites
 
 - Cloudflare account (Pro plan minimum for WAF, Enterprise for Advanced DDoS)

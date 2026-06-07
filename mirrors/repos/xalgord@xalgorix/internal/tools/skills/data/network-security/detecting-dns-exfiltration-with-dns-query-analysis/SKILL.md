@@ -38,6 +38,15 @@ DNS exfiltration exploits the Domain Name System as a covert channel to extract 
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **DoH/DoT renders query analysis blind:** exfil over `https://dns.google/dns-query` (443) or DoT (853) never reaches your port-53 capture, so entropy/length checks see nothing. Force internal resolvers, block outbound 53/853/DoH IPs, and alert on direct-to-public-resolver 443 from servers via TLS SNI inspection.
+- **Low-and-slow beats volume thresholds:** an attacker pacing a handful of queries per minute stays under `min_query_count=50` / `100s-1000s/min`. Lower volume gates for sensitive hosts and add a long-window (per-day) unique-subdomain count per base domain.
+- **Encoding/casing tricks evade entropy gates:** lowercase dictionary-word encoding or short per-query chunks keep `avg_entropy` under 3.8. Combine entropy with unique-subdomain ratio and total bytes-in-QNAME summed over time, not a single-query score.
+- **Response-channel exfil is missed by query-only rules:** data returned in oversized TXT/NULL/CNAME answers won't trip `dns.query` rules. Inspect Zeek `dns.log` `answers`/`TTLs` and Suricata `dns.answer` and alert on TXT responses >400 bytes (SID 3000003 pattern).
+- **Validate the rules fire:** replay a known iodine/dnscat2 pcap (`zeek -r tunnel.pcap`, or `tcpreplay` to the sensor) and confirm the Python detector reports the domain with score ≥50, the Suricata SIDs 3000001–3000005 alert, and the Splunk SPL returns the domain. A miss means `query`/`rrname` field mapping or the `pcre`/threshold is wrong.
+- **FP tuning:** whitelist legitimate high-volume/long-label domains — CDNs (`*.cloudfront.net`), AV/EDR telemetry, and DNS-based load balancers — and exclude SPF/DKIM/DMARC TXT before alerting.
+
 ## Prerequisites
 
 - Access to DNS query logs (passive DNS capture, DNS server logs, or PCAP)

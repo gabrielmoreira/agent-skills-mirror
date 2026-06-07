@@ -36,6 +36,20 @@ nist_csf:
 
 **Do not use** for application-layer filtering (use Cloud Armor WAF), for DNS-based filtering (use Cloud DNS response policies), or for VPN/interconnect traffic filtering without understanding that VPC firewall rules apply to traffic within the VPC.
 
+## Common Misconfigurations & Verification
+
+- **Restrictive rule outranked by a default-allow:** GCP evaluates lowest priority number first. A new `deny`/tight rule at priority 1000 is overridden by `default-allow-internal`/`default-allow-ssh` at lower numbers, or by an allow with a smaller priority value. List and sort by priority and delete the legacy `default-allow-*` rules after validation.
+- **Rule created but disabled:** a `--disabled` rule looks present but enforces nothing. Audit: `gcloud compute firewall-rules list --filter="disabled=true"`.
+- **Egress assumed denied:** GCP's implied rule *allows* all egress (priority 65535). Without an explicit `deny-all-egress` at 65534 plus scoped allows, exfiltration paths stay open.
+- **Mutable network tags for sensitive rules:** anyone with `compute.instances.setTags` can attach a tag and inherit an allow rule. Prefer `--source-service-accounts`/`--target-service-accounts` for critical paths.
+- **Flow logs off:** you cannot validate which rule is actually matching or whether deletes are safe without `--enable-flow-logs` and `disposition=DENIED/ALLOWED` queries.
+
+```bash
+gcloud compute firewall-rules list --filter="direction=INGRESS AND sourceRanges=0.0.0.0/0" --sort-by=priority
+gcloud compute firewall-rules describe default-allow-ssh --format='value(disabled,priority,sourceRanges.list())'
+gcloud logging read 'resource.type="gce_subnetwork" AND jsonPayload.disposition="DENIED"' --limit=20
+```
+
 ## Prerequisites
 
 - GCP project with Compute Engine API enabled

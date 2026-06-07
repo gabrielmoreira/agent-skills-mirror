@@ -31,6 +31,15 @@ nist_csf:
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Sampling loss blinds you:** sampled NetFlow (e.g., 1:1000 on the router) drops most low-volume flows — beaconing and slow exfil disappear. Check the IPFIX `samplingInterval`/`SAMPLING_INTERVAL` field; on sampled exporters, scale `IN_BYTES`/`IN_PKTS` and never trust raw flow counts for scan detection.
+- **Flow records are metadata only:** NetFlow sees the 5-tuple, bytes, and timing — not payload. DNS C2 over DoH/DoT (port 443/853) and TLS-encrypted exfil look like ordinary HTTPS; pivot on destination reputation, JA3 from a sidecar sensor, and per-flow byte asymmetry, not content.
+- **Low-and-slow beats fixed thresholds:** attackers pace beacons with jitter and keep flows under volumetric alarms. Compute inter-flow interval variance per (src,dst,dstport) over hours, not a single window; flag near-constant periods even at tiny byte counts.
+- **Active/inactive timeouts split sessions:** one long transfer becomes many flow records (default 30s active / 15s inactive timeout), inflating flow counts and hiding total volume. Aggregate by 5-tuple before scoring exfil.
+- **Validate the pipeline fires:** replay a known-bad pcap through `nfreplay`/softflowd to your collector (`python -m netflow.collector -p 9995`) and confirm the scan/beacon rule alerts on it; if no alert, the template (v9 template ID mismatch) or field mapping is broken.
+- **FP tuning:** baseline backup windows, CDN/cloud sync, and SaaS keepalives per-host before alerting, or legitimate periodic traffic floods the beaconing detector.
+
 ## Prerequisites
 
 - Familiarity with network security concepts and tools

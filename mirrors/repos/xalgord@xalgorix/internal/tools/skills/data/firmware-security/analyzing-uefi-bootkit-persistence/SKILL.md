@@ -45,6 +45,14 @@ nist_csf:
 
 **Do not use** for standard MBR-based bootkits on legacy BIOS systems without UEFI; use MBR/VBR bootkit analysis instead.
 
+## Detection Gaps & Validation
+
+- **OS-level view lies:** querying UEFI variables or the ESP from the live (compromised) OS can return attacker-faked results. The authoritative source is a raw SPI flash dump acquired offline (`chipsec_util.py spi dump` or `flashrom -p internal -r`), ideally booted from a trusted live USB.
+- **ESP-only inspection misses firmware implants:** BlackLotus/ESPecter live on the ESP, but LoJax, MoonBounce, and CosmicStrand modify SPI flash (e.g. CORE_DXE). Checking only `.efi` files on the ESP will miss firmware-resident implants entirely.
+- **Secure Boot is not proof of integrity:** known bypasses (CVE-2022-21894 "baton drop", unauthorized MOK enrollment, modified `db`/`dbx`) defeat it. Audit `SecureBoot`, `SetupMode`, `PK`, `KEK`, `db`, and MOK with `chipsec_main.py -m common.secureboot.variables` and check for `testsigning`/`nointegritychecks` and disabled HVCI.
+- **How to confirm a hit:** compare the SPI dump and extracted modules (UEFIExtract) against the authentic vendor firmware image module-by-module (GUID + hash), and corroborate with measured-boot evidence — TPM PCR values (PCR 0-7) and `MeasuredBoot` logs showing unexpected `EV_EFI_Boot_Services_Application` entries.
+- **Don't conclude clean until** you've dumped SPI offline, diffed against the vendor baseline, audited Secure Boot keys/MOK, verified write-protection/lock bits, and confirmed boot-chain measurements match a known-good PCR set.
+
 ## Prerequisites
 
 - chipsec framework for SPI flash dumping, UEFI variable inspection, and firmware security modules

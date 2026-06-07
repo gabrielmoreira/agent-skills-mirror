@@ -39,6 +39,13 @@ nist_csf:
 
 **Do not use** for basic OT intrusion detection (see detecting-attacks-on-scada-systems), for malware analysis of Stuxnet samples (see malware reverse engineering skills), or for PLC programming and logic development.
 
+## Detection Gaps & Validation
+
+- **The logic change is invisible at the network layer once resident.** Injected OB/FC/FB blocks only traverse the wire during the S7comm/CIP download; afterward only the physical process reveals manipulation. Network monitoring alone misses it — require periodic PLC logic integrity comparison against an offline known-good baseline (block count, size, per-block checksum).
+- **Spoofed sensors defeat single-source detection.** Stuxnet froze and replayed readings to the HMI. Cross-validate independent measurements (VFD frequency vs reported RPM, power vs speed, vibration vs speed) so a spoofed tag contradicts physics rather than passing a range check.
+- **The engineering workstation and removable media are the entry, not the network.** Air-gap bridging via USB and STEP 7/TIA Portal DLL hooking leave host artifacts (modified s7otbxdx.dll, unsigned binaries) that passive network sensors never see.
+- **Validate safely.** Exercise integrity and physics checks against a lab PLC and recorded process data, and replay an attack scenario offline. Never inject logic or spoofed values into a production controller. Confirm a flagged block change maps to an unauthorized download and not a logged engineering revision.
+
 ## Prerequisites
 
 - Detailed understanding of the Stuxnet attack chain and MITRE ATT&CK for ICS framework

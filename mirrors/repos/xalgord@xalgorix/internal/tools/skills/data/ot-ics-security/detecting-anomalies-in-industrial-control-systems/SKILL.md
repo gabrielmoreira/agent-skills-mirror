@@ -45,6 +45,13 @@ nist_csf:
 
 **Do not use** for signature-based detection of known exploits (see detecting-attacks-on-scada-systems), for IT network anomaly detection without OT protocols, or as a replacement for process safety systems (SIS).
 
+## Detection Gaps & Validation
+
+- **Legit-looking malicious writes evade ML baselines.** Modbus/DNP3 carry no authentication, so an attacker reusing the authorized master IP and a permitted function code (FC6/FC16 inside a learned register range) produces a flow that scores as normal. Timing- and topology-based anomaly models will not flag it; pair them with per-register value and setpoint bounds.
+- **Baselines must be per-process, not global.** A model trained across mixed batch and continuous units learns a smeared "normal" that hides real deviations. Train separate profiles per cell/loop and per operating mode, and exclude shift-change, startup, and maintenance windows or they become false-positive generators.
+- **Passive sensors are blind below the SPAN.** Serial Modbus RTU, HART, and fieldbus (Profibus, Foundation Fieldbus) under a gateway never reach the mirror port, so a Stuxnet-style PLC logic change and field-level manipulation stay invisible at the network layer.
+- **Validate the model fires safely.** Replay a captured pcap with injected anomalies (out-of-range FC16 write, new topology pair, off-interval poll) into the detector offline. Never inject test traffic onto a live OT segment. Confirm the alert distinguishes a true anomaly from a scheduled engineering change recorded in the change log.
+
 ## Prerequisites
 
 - Passive network monitoring sensors on OT network SPAN/TAP ports

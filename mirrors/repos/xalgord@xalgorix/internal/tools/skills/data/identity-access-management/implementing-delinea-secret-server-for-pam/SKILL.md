@@ -38,6 +38,17 @@ nist_csf:
 
 **Do not use** for standard end-user password management; Delinea Secret Server is designed for privileged and shared account credential management requiring enterprise-grade controls.
 
+## Common Misconfigurations & Verification
+
+These silently neuter the vault even when the dashboard shows "green":
+
+- **Checkout-bypass via still-valid direct creds:** secret is vaulted but the password was never rotated after import, so the original known value still authenticates directly to the target, bypassing checkout/approval entirely. Force a one-time RPC change on import, then confirm the old value fails: `Invoke-RestMethod "$baseUrl/api/v1/secrets/100/remote-password-changing" -Method GET -Headers $headers` and check `lastPasswordChangeAttempt` is recent and `autoChangeEnabled = true`.
+- **RPC configured but no Distributed Engine reachable** to the network segment: rotation queues and silently fails behind firewalls. Query `"$baseUrl/api/v1/distributed-engine/status"` and reconcile against `"$baseUrl/api/v1/secrets/{id}/rpc/status"` for `Failed`/`Pending` states.
+- **Heartbeat disabled** masks stale/out-of-band-changed creds. Verify `heartbeatStatus = Success` per secret, not just policy existence.
+- **Session launcher not enforced:** users still RDP/SSH directly with vaulted creds, so no recording occurs. Confirm "Proxy Enabled"/"Require launcher" on the secret policy and check `SecretView` events correlate with `SessionStart` events in the audit log; views with no matching session indicate direct credential use.
+- **Dual control / Require Approval applied to only some Tier-0 folders:** enumerate folder permissions (`"$baseUrl/api/v1/folders/{id}/permissions"`) and confirm every Domain Admin / root folder has `requireApproval = true`.
+- **Break-glass account not monitored:** confirm a Syslog/SIEM alert exists for any `SecretView` on the emergency secret and that it is excluded from auto-rotation lockout.
+
 ## Prerequisites
 
 - Delinea Secret Server license (On-Premises or Cloud)

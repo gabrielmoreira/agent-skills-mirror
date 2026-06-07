@@ -36,6 +36,14 @@ nist_csf:
 
 **Do not use** before completing containment and forensic scoping. Premature recovery without understanding the attacker's access and persistence mechanisms risks re-infection.
 
+## Common Misconfigurations & Verification
+
+- **Restoring a still-infected point:** the single most damaging mistake is restoring the most recent backup without confirming it predates patient-zero compromise. Attackers dwell ~21 days, so a "clean-looking" recent backup may already contain the dropper, web shell, or poisoned GPO. Verify the restore point's timestamp is earlier than the earliest known compromise (`wbadmin get versions`) and rebuild from golden images rather than decrypting in place.
+- **krbtgt reset done once or skipped:** a single krbtgt reset leaves forged Golden Tickets valid. Reset it TWICE with ~12h replication gap between resets, then reset all privileged accounts — confirm with `repadmin /showrepl` that replication completed between the two resets.
+- **Reconnecting before persistence is cleared:** bringing systems online without auditing scheduled tasks, services, run keys, and WMI event subscriptions reintroduces the attacker. Verify each recovered host is checked for these before it touches production, with EDR in aggressive/blocking mode.
+- **Recovering in the wrong dependency order:** restoring app/DB servers before AD/DNS, or members before DCs, breaks auth and wastes RTO. Confirm identity infrastructure is validated (`dcdiag`) before any domain-joined system reconnects.
+- **Verification:** scan mounted backups read-only with AV and grep for ransom-note/extension artifacts before restoring; confirm shadow-copy/backup-deletion LOLBins are blocked on rebuilt hosts; reconnect one system at a time with a monitoring soak (e.g. 1h) and deploy canary files on recovered systems to catch re-infection early.
+
 ## Prerequisites
 
 - Incident declared and containment phase completed (all attacker access severed)

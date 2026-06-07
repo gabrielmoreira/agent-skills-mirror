@@ -36,6 +36,21 @@ nist_csf:
 
 **Do not use** for real-time threat detection (use GuardDuty which already analyzes CloudTrail), for application-level logging (use CloudWatch Application Logs), or for network traffic analysis (use VPC Flow Logs).
 
+## Common Misconfigurations & Verification
+
+- **Single-region / non-org trail:** a trail without `--is-multi-region-trail` and `--is-organization-trail` leaves whole regions and member accounts unlogged, so attacker activity in an unmonitored region is invisible. Confirm both flags in `describe-trails`.
+- **Log file validation off:** without `--enable-log-file-validation` you cannot prove logs were not altered, undermining forensics. Verify `LogFileValidationEnabled: true`.
+- **No data events:** management events alone miss S3 `GetObject`/`PutObject` and Lambda `Invoke`. Add advanced event selectors with `eventCategory = Data` and confirm via `get-event-selectors`.
+- **Logging stopped or never started:** a trail can exist but be inactive. Check `get-trail-status` shows `IsLogging: true` and no recent `StopLogging`.
+- **Athena partitions missing:** queries against unpartitioned/un-added partitions return empty results — looks "clean" but scanned nothing. Add the partition or use partition projection.
+- **Expecting real-time:** delivery to S3/CloudWatch lags up to ~15 min; use CloudTrail Lake or Logs Insights for live incidents.
+
+```bash
+aws cloudtrail get-trail-status --name org-security-trail --query 'IsLogging'           # true
+aws cloudtrail describe-trails --query 'trailList[].[IsMultiRegionTrail,LogFileValidationEnabled]'
+aws cloudtrail get-event-selectors --trail-name org-security-trail
+```
+
 ## Prerequisites
 
 - CloudTrail enabled with management events and optionally data events across all accounts

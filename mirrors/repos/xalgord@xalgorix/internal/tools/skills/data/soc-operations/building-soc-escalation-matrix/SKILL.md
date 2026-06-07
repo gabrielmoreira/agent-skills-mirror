@@ -36,6 +36,14 @@ A SOC escalation matrix defines how security incidents move through the organiza
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Matrix with no coverage SLA:** the severity tables define response/resolution targets (P1 15-min response, 4-hr resolution) but a matrix is only real if a 24x7 roster guarantees someone is on the hook at 3am. The classic failure is a P1 auto-escalation routing to "Tier 3 + Management" with no defined on-call schedule, secondary, or hand-off — alerts land in an unwatched queue overnight. Verify every tier in the decision matrix maps to a named on-call rotation with a backup, and that the SLA clock accounts for shift gaps and holidays.
+- **SOAR rule that never fires:** the XSOAR trigger keys on `incident.asset_criticality == "high"`, but that field is only populated if an asset-criticality enrichment lookup runs upstream. If incidents arrive with `asset_criticality` null, the `severity == "critical" AND asset_criticality == "high"` condition is never true and P1s silently downgrade. Confirm the enrichment populates the field before the playbook evaluates it.
+- **Time-based escalation that double-pages or never pages:** rules like "P2 unresolved after 4h → Tier 3" need a reliable incident `age`/`status` source; if `status` isn't updated to `resolved` on closure, escalations fire on already-closed tickets (alert fatigue), and if the scheduler isn't running, breaches never escalate.
+- **Unreachable contacts:** notification templates reference stakeholders/bridge lines that drift as staff change.
+- **Verification:** run a tabletop injecting a synthetic P1 and a time-breaching P2, and confirm the right tier is paged, the SLA timer starts, management is notified at the defined interval, and acknowledgement is logged — don't assume the matrix works until a test page is acknowledged end-to-end.
+
 ## Prerequisites
 
 - Familiarity with soc operations concepts and tools

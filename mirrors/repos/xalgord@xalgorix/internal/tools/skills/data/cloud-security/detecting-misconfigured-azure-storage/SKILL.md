@@ -44,6 +44,17 @@ nist_csf:
 
 **Do not use** for Azure SQL or Cosmos DB security auditing (use dedicated database security tools), for real-time threat detection on storage operations (use Defender for Storage), or for Azure Files or Data Lake Gen2 specific auditing without adapting the checks.
 
+## Detection Gaps & Validation
+
+Where these `az`/PowerShell checks give false assurance:
+- **Account-level `allowBlobPublicAccess=false` does not retroactively close containers.** Containers already set to `blob`/`container` stay anonymous — the account flag only gates *new* anonymous access. You must run `az storage container list --query "[?properties.publicAccess!='off']"` per account.
+- **Data-plane auth silently fails open.** `az storage container list --auth-mode login` without the **Storage Blob Data Reader** role returns an error/empty set that scripts read as "no public containers." Use the account key path or grant the data-plane role.
+- **`networkRuleSet.defaultAction == Deny` with `bypass` containing `AzureServices`** still trusts Microsoft services; `Logging`/`Metrics`/`AzureServices` bypass is easy to overlook.
+- **`allowSharedKeyAccess=true`** means account-key and SAS still work even in "AAD-only" tenants — disabling public access does not stop key-based exfil.
+- Already-issued SAS tokens survive any config change until you `az storage account keys renew` (or revoke the stored access policy).
+
+Validate: anonymously `curl "https://<acct>.blob.core.windows.net/<container>?restype=container&comp=list"` — a 200 with an XML blob list is real exposure, the flag alone is not proof; verify the principal holds Reader **and** Storage Blob Data Reader across all subscriptions.
+
 ## Prerequisites
 
 - Azure CLI installed and authenticated (`az login`) with Reader and Storage Account Contributor roles

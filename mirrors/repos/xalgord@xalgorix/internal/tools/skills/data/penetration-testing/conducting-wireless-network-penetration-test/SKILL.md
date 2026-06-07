@@ -36,6 +36,15 @@ nist_csf:
 
 **Do not use** against wireless networks without written authorization from the network owner, for jamming or denial-of-service attacks against wireless infrastructure unless explicitly authorized, or in environments where wireless disruption could affect life-safety systems.
 
+## Most Often Missed & How to Confirm
+
+- **PMKID (clientless) capture before deauth** — testers wait for a client and a 4-way handshake; many APs leak a crackable PMKID with no client present (`hcxdumptool`). Try it first to avoid disruptive deauths.
+- **WPA2-Enterprise EAP weaknesses** — PEAP/EAP-TTLS with MSCHAPv2 falls to a rogue RADIUS (hostapd-mana/EAPHammer) capturing the challenge-response; clients that don't validate the server cert are the real flaw. Don't skip Enterprise SSIDs assuming "enterprise = safe".
+- **WPA3-Transition downgrade and SAE issues** — transition mode lets a WPA2-only evil twin harvest handshakes; also check for Dragonblood-style downgrade. Migration in progress is a common blind spot.
+- **Segmentation after access, not just the crack** — the high-severity finding is usually that the IoT/guest VLAN reaches corporate/management hosts. Always pivot and scan post-association.
+- **Evil-twin / captive-portal credential capture and PSK reuse** — and rogue-AP detection across the whole facility, not one vantage point.
+- **How to confirm**: prove findings with the captured `.cap`/`.pcapng` and the cracked PSK or EAP credential, the rogue-RADIUS challenge/response, or a post-association `nmap` showing reachable corporate hosts from the wireless subnet. Don't conclude a network is uncrackable until you have tried both PMKID and handshake capture (and rogue RADIUS for Enterprise); don't conclude WiFi is "just WiFi" until you have tested wireless-to-wired segmentation.
+
 ## Prerequisites
 
 - Written authorization specifying target SSIDs, BSSIDs, and physical testing locations

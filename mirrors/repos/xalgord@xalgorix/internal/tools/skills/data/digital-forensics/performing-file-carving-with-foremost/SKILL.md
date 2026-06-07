@@ -30,6 +30,14 @@ nist_csf:
 - During investigations requiring recovery of specific file types from raw images
 - As a complement to file system-based recovery for maximum evidence extraction
 
+## Detection Gaps & Validation
+- **Fragmentation is the #1 carving failure.** Header-footer carving assumes contiguous data; a file split across non-adjacent clusters is recovered truncated or stitched with unrelated sectors. Foremost/Scalpel do **not** reassemble fragments — corrupt output here is expected, not a tool error. Cross-check size/validity before trusting a carve.
+- **No footer = guesswork.** Types without a reliable footer (and `max_size` caps in `foremost.conf`/`scalpel.conf`) cause truncation or runaway over-reads. Tune `max_size` per type and verify the tail of large carves.
+- **Signature-only blind spots:** encrypted or compressed payloads have no plaintext magic bytes and will not carve; embedded files (e.g., a ZIP inside a `docx`, both `\x50\x4b\x03\x04`) get double-counted, inflating hit counts.
+- **False positives:** random data matching `\xff\xd8\xff`/`%PDF` produces files that pass the signature but fail to open. Validate with `file`, then actually parse/open (pdftotext, image render, `sqlite3 .schema`) before cataloging as evidence.
+- **Carving yields no filesystem context.** Carved files have **no original name, path, or `$STANDARD_INFORMATION` timestamps** — never assert when/where a carved artifact lived without a second source.
+- **Validate / cross-corroborate:** hash carved output (SHA-256) against NSRL (filter known-good) and known-bad sets, and reconcile against `$MFT`/file-system metadata, `bulk_extractor` features, and PhotoRec results to recover names/timestamps and confirm the recovery is genuine rather than a signature artifact.
+
 ## Prerequisites
 - Foremost installed on forensic workstation
 - Forensic disk image in raw (dd) format

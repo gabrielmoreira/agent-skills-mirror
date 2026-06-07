@@ -34,6 +34,14 @@ const authos = new SsoClient({
 
 The SDK stores tokens through its `SessionManager`, uses browser `localStorage` by default, falls back to in-memory storage in Node-like runtimes, and automatically retries a request after `401` by calling `/api/auth/refresh` when a refresh token is available.
 
+For quick app setup, `npx @drmhse/authos-cli init` detects React, Next.js, Vue, or Nuxt and writes the AuthOS origin to the framework-appropriate env file. Current defaults use `http://localhost:3001` as the starting AuthOS URL:
+
+- Next.js: `.env.local` gets `AUTHOS_BASE_URL` and `NEXT_PUBLIC_AUTHOS_URL`.
+- Nuxt: `.env.local` gets `AUTHOS_BASE_URL` and `NUXT_PUBLIC_AUTHOS_BASE_URL`.
+- Vite React/Vue: `.env` gets `AUTHOS_BASE_URL` and `VITE_AUTHOS_BASE_URL`.
+
+These public env vars contain the AuthOS origin only; do not put service API keys or provider secrets in browser-exposed env vars.
+
 ## OAuth Redirect Login
 
 Build the login URL and redirect the browser:

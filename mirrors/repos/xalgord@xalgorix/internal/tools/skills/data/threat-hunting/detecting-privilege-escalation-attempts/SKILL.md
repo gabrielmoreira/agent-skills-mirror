@@ -37,6 +37,15 @@ nist_csf:
 - When EDR or SIEM alerts trigger on related indicators
 - During periodic security assessments and purple team exercises
 
+## Detection Gaps & Validation
+
+- **Token manipulation barely logs:** T1134 SeDebugPrivilege/`DuplicateTokenEx` abuse rarely emits a clean Security EID — rely on Sysmon EID 10 (ProcessAccess to a higher-integrity PID with `0x1410`/`0x1FFFFF`) plus 4688 with `TokenElevationType = %%1937` (full token). If 4688 command-line auditing is off, the escalation is invisible.
+- **UAC-bypass blind spots:** fodhelper/computerdefaults/eventvwr leave no UAC consent event (4673/4674 are noisy and usually disabled) — hunt Sysmon EID 12/13 on `HKCU\...\ms-settings\shell\open\command` and EID 1 where these auto-elevate binaries spawn cmd/powershell.
+- **Unquoted service path (T1574.009)** fires at service start via EID 7045/4697 + 4688 with parent `services.exe` — easy to miss if service-install auditing is disabled.
+- **Evasions:** named-pipe impersonation (Potato variants) looks like normal RPC; kernel exploits (T1068) may only surface as an Application-log crash (EID 1000).
+- **Validate:** run Atomic Red Team **T1548.002** (fodhelper) and **T1134.001** to confirm the registry-set and token-elevation searches fire end-to-end.
+- **Tune FPs:** legitimate installers and `consent.exe`-driven elevations are expected — baseline by parent process and signing status, not binary name alone.
+
 ## Prerequisites
 
 - EDR platform with process and network telemetry (CrowdStrike, MDE, SentinelOne)

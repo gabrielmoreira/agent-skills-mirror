@@ -31,6 +31,18 @@ nist_csf:
 - When testing OAuth 2.0 or OpenID Connect flows that issue JWTs
 - During security audits of microservice architectures using JWT for inter-service authentication
 
+### How to CONFIRM a Hit (avoid false negatives)
+
+- **Positive signal**: a token YOU forged (alg=none, RS256→HS256 confusion, cracked HMAC secret, or kid/jku/x5u abuse) is **ACCEPTED by a protected endpoint** — returns 200 plus privileged data for the impersonated identity. Decoding or editing the token alone is not a finding.
+- Confirm by calling a real authz-gated route with the forged token and verifying the restricted resource comes back, not a login page, 401, or 403.
+- A 200 to an unauthenticated route is NOT a hit; one 401/403 is NOT a clean negative until you have exhausted the attack variants below.
+- Do NOT conclude "not vulnerable" until you have tried:
+  - **alg none** in all casings (`none`/`None`/`NONE`/`nOnE`) with an empty signature.
+  - **algorithm confusion**: HS256 signed with the server's RSA public key (obtain it from JWKS/`openid-configuration`/TLS cert and convert to PEM first).
+  - **weak secret cracking** (jwt_tool/hashcat mode 16500); on success, forge and confirm acceptance.
+  - **kid injection** (path traversal to empty key, SQLi) and **jku/x5u** pointing to attacker-hosted keys.
+  - **claim tampering** (role/sub/permissions) re-signed with the recovered key, plus **expired** and **post-logout/post-password-change** replay to check revocation.
+
 ## Prerequisites
 
 - **Authorization**: Written penetration testing agreement for the target

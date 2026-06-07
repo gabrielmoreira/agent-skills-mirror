@@ -31,6 +31,14 @@ nist_csf:
 - For detecting Alternate Data Streams (ADS) used to hide data or malware
 - During deep forensic analysis requiring examination beyond standard file recovery
 
+## Detection Gaps & Validation
+
+- **Most-missed artifacts:** beyond file slack, examine MFT record slack (prior-file remnants in the 1024-byte entry), resident `$DATA` of small deleted files, `$LogFile` transactions (which survive after the USN wraps), `$Bitmap` to test cluster reallocation, and non-Zone.Identifier ADS. `fls`/Explorer hide ADS - enumerate them explicitly and carve unallocated with `bulk_extractor`/`foremost`.
+- **USN wrap and slack overwrite:** `$UsnJrnl:$J` is sparse and circular, so older events vanish on wrap - absence is not proof. Slack/unallocated is volatile too: any new write can overwrite the residual data, so a clean slack region does not mean nothing was hidden. Corroborate with `$LogFile` and Volume Shadow Copies.
+- **Timestomping detection ($SI vs $FN):** `$STANDARD_INFORMATION` times are user-settable; `$FILE_NAME` times are kernel-only. Flag $SI predating $FN, identical/zeroed sub-second values, or $SI inconsistent with MFT entry-number ordering, then confirm against `$LogFile`/USN before calling it deliberate.
+- **Validate with a second source:** corroborate a recovered or hidden artifact across at least two of - MFT, USN, `$LogFile`, Volume Shadow Copies, Prefetch, Recycle Bin `$I` - rather than a single slack-string hit; a keyword in slack proves the bytes existed, not who wrote them or when.
+- **Interpretation pitfalls (false positives):** installers/copies legitimately carry old $SI dates and NTFS tunneling re-applies them on recreate; benign apps (browsers, AV) create ADS; defrag/TRIM on SSDs wipes slack and unallocated, destroying evidence. Confirm volume timezone and clock skew before timelining.
+
 ## Prerequisites
 - Forensic disk image with NTFS file system
 - The Sleuth Kit (TSK) tools: istat, icat, fls, blkls, blkstat

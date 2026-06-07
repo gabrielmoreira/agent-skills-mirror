@@ -35,6 +35,17 @@ kube-bench is an open-source Go tool by Aqua Security that runs the CIS Kubernet
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Coverage Gaps & Validation
+
+kube-bench only audits the node it runs on, so a "clean" run is usually an incomplete one:
+
+- **Node-only vs control-plane:** on managed clusters (EKS/GKE/AKS) the control plane and etcd are not on your nodes, so `--targets master,etcd` checks are skipped or N/A - you are seeing worker (`node`) results only. Run the matching managed benchmark (`--benchmark eks-1.2.0`, `gke-1.4.0`, `aks-1.0`) so the tool doesn't apply self-managed checks that can't pass.
+- **WARN = manual, not pass:** many 5.x policy checks (RBAC wildcards, Pod Security, NetworkPolicy per namespace) emit `[WARN]` requiring manual verification; counting only `[FAIL]` undercounts risk.
+- **Auto-detection misses:** the file-permission checks (1.1.x, 4.1.x) only fire if kube-bench finds the manifests/kubeconfig at expected paths - non-standard or kubeadm-vs-binary layouts silently skip them.
+- **Config-file, not runtime:** kube-bench reads flags/files; it does not confirm the API server is *actually* running with those flags if config and process diverge.
+
+**Validate:** run every relevant target (`--targets master,etcd,node,policies` on self-managed) and confirm the summary check count matches the benchmark's expected total - a low total means sections were skipped. Cross-check flag findings against the live process (`ps aux | grep kube-apiserver`) and re-run after remediation to confirm FAIL→PASS rather than FAIL→skipped.
+
 ## Prerequisites
 
 - Kubernetes cluster (v1.24+)

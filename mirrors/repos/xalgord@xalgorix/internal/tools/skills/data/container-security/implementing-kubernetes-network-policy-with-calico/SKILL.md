@@ -35,6 +35,15 @@ Calico is an open-source CNI plugin that provides fine-grained network policy en
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **No default-deny:** Kubernetes NetworkPolicy is additive and default-allow. Without a `podSelector: {}` deny-all for both `Ingress` and `Egress`, your allow rules don't restrict anything. Apply default-deny per namespace first.
+- **CNI not enforcing the policy:** a `GlobalNetworkPolicy`/`NetworkPolicy` applies cleanly even when the dataplane isn't enforcing. Verify Calico is the active CNI and healthy: `kubectl exec -n calico-system calicoctl -- calicoctl node status`.
+- **Calico `order` precedence:** lower `order` evaluates first and wins; a broad Allow at low order can shadow a specific Deny. Audit with `calicoctl get networkpolicy -A -o wide` and `calicoctl get globalnetworkpolicy -o wide`.
+- **Egress deny without DNS allow:** omitting the UDP/TCP 53 egress rule breaks service discovery, so operators disable egress policy entirely - add the kube-dns/53 allow before any egress deny.
+- **GlobalNetworkPolicy selector too wide/narrow:** `selector: "projectcalico.org/namespace != 'x'"` typos or host-endpoint rules with wrong `applyOnForward` either lock out system traffic or protect nothing.
+- **Verify enforcement, don't assume:** `kubectl exec -n production frontend-pod -- wget -qO- --timeout=2 http://backend-svc:8080/health` should succeed for allowed flows and **time out** for denied ones; enable Calico flow logs to confirm drops.
+
 ## Prerequisites
 
 - Kubernetes cluster (v1.24+)

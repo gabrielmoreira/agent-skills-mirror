@@ -31,6 +31,14 @@ nist_csf:
 - During incident response requiring preservation of cloud-based evidence
 - For analyzing compromised virtual machines, containers, or serverless functions
 
+## Detection Gaps & Validation
+- **CloudTrail may not capture what you need.** Management events are on by default, but **data events** (S3 object-level `GetObject`/`PutObject`, Lambda invokes) are **off** unless explicitly enabled — so silent bulk S3 exfil can leave no CloudTrail trace. Confirm which event categories and which regions were logging before scoping.
+- **Logging can be disabled or expired.** Watch for `StopLogging`/`DeleteTrail` (AWS), diagnostic-setting removal (Azure), or sink deletion (GCP). Default `lookup-events` only reaches back ~90 days; older activity needs the S3/bucket archive. A coverage gap is itself a finding.
+- **Global vs regional pitfalls:** IAM/STS and CloudFront log to **us-east-1**; multi-region attacks need per-region collection or you miss instance launches and key use elsewhere.
+- **VPC Flow Logs / GuardDuty may not be enabled**, so network-level exfil evidence can be absent unless preconfigured.
+- **Validate / cross-corroborate:** prove exfiltration by correlating CloudTrail `GetObject` counts with **VPC Flow Log byte volume** and S3 server access logs to the same destination IP/time. Verify trail integrity with CloudTrail **log-file validation digests** to detect tampering.
+- **Interpretation note:** `eventTime` is UTC and ordering can be eventually-consistent; do not over-read sub-second sequencing. A single anomalous API call from a foreign IP is a lead, not a conclusion — confirm with IAM key usage and a second log source.
+
 ## Prerequisites
 - Administrative access to the cloud account under investigation
 - AWS CLI, Azure CLI, or gcloud CLI configured with appropriate permissions

@@ -37,6 +37,15 @@ Active Directory (AD) penetration testing targets the central identity and acces
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **AS-REP roasting and delegation beyond Kerberoasting** — accounts with pre-auth disabled (AS-REP), and unconstrained/constrained/RBCD delegation. Unconstrained delegation + coercion (PrinterBug/PetitPotam) yields a DC TGT directly; RBCD via a created computer object is a common, missed path.
+- **AD CS (ESC1-ESC8)** — frequently the fastest route to DA and the most overlooked. Always `certipy find -vulnerable`; ESC8 pairs with NTLM relay to the CA web-enrollment endpoint.
+- **ACL/attack-path analysis in BloodHound** — GenericAll/GenericWrite/WriteDACL/WriteOwner/ForceChangePassword on users, groups, GPOs, computers. Mark owned principals and follow shortest-path-to-DA instead of guessing.
+- **Credential leftovers** — GPP cpassword in SYSVOL, readable LAPS attributes, DPAPI secrets, and cached creds/sessions on stale machines.
+- **Lockout-safe spraying and collection noise** — read `--pass-pol` before any spray, and prefer stealthy SharpHound options; a locked-out domain or tripped alert ends testing.
+- **How to confirm**: prove each step with artifacts — cracked TGS/AS-REP hashes, a BloodHound shortest-path screenshot, a `certipy` cert/TGT minted for a higher-priv user, a successful S4U/RBCD or relay session, or a DCSync dump of `krbtgt`. Don't conclude the domain is secure on "no Kerberoastable SPNs" alone until AS-REP, delegation, AD CS, GPP, LAPS, and ACL paths are all checked; validate domain compromise with a controlled DCSync rather than assuming the chain holds.
+
 ## Prerequisites
 
 - Standard domain user credentials (minimum starting point)

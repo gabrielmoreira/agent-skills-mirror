@@ -38,6 +38,17 @@ nist_csf:
 
 **Do not use** for IT-only network assessments without OT components, for application-layer vulnerability scanning of IT web applications (see performing-web-app-penetration-test), or for active exploitation of live OT systems without explicit authorization and safety controls in place.
 
+## Most Often Missed & How to Confirm
+
+Network assessments miss the highest-impact findings when active tooling is feared or misapplied. Work the safe path:
+
+- **Cross-zone flows hidden by short captures:** a 1-hour pcap misses nightly historian replication or weekly vendor polls. Don't conclude segmentation is intact — confirm with a 2-4 week passive baseline on the SPAN before judging conduits.
+- **Active nmap against Level 0-1:** a SYN scan can hang a legacy PLC's TCP stack. Restrict active scanning to Level 2+ in a maintenance window; for L0-L1 rely on passive fingerprinting and native protocol parsing only.
+- **Firewall ruleset read instead of tested:** "deny-all exists" on paper but a shadow allow above it opens L4->L1. Confirm the effective path by capturing from an enterprise host and checking whether packets actually reach a controller IP.
+- **Unauthenticated writes assumed blocked:** confirm by passively observing whether Modbus FC 05/06/15/16 or EtherNet/IP writes already cross a conduit — their presence in normal traffic is the positive signal.
+- **Wireless and dual-homed paths ignored:** survey for rogue APs and laptops bridging IT/OT.
+- **Don't conclude "properly segmented"** until passive capture shows no enterprise IP reaching L1/L2 and any active verification ran in-window with rollback ready.
+
 ## Prerequisites
 
 - Written authorization from the asset owner and operations management for all assessment activities

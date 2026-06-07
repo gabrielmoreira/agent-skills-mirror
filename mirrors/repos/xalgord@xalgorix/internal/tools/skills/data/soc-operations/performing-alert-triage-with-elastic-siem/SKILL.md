@@ -43,6 +43,14 @@ Alert triage in Elastic Security is the systematic process of reviewing, classif
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+- **ECS field gaps break the rule, not just the view:** if a source isn't normalized to ECS, fields like `user.name`, `process.parent.name`, `source.ip`, or `host.name` are null and the alert renders with empty context — or the detection rule never matches. Confirm the index has the ECS fields the rule keys on (run the ES|QL `KEEP`/`STATS` and check for nulls) before trusting a "no related activity" result.
+- **Benign true positive ≠ false positive:** an admin running PowerShell or a vuln scanner generating auth failures is expected behavior; closing it as FP creates a tuning task that blinds you to the real thing. Classify it benign-TP and exception the asset/user, don't broaden the rule.
+- **Single-alert tunnel vision:** triagers judge one alert and miss that Attack Discovery / `.alerts-security.alerts-default` shows it as one node in a chain (failed logins → success → lateral movement). Always pivot on `source.ip`/`user.name` over 24h before classifying.
+- **Risk score is not severity:** `kibana.alert.risk_score` is rule-authored and uncalibrated to your asset criticality — a 73 on a domain controller outranks a 90 on a test box. Cross-reference asset context, don't triage by score alone.
+- **Validate the verdict** before escalating: confirm the matched indicator is current (TI `logs-ti_*` not stale), check `event.outcome` is actually `success`, and confirm the process tree / parent process supports the malicious narrative rather than a clipped single event.
+
 ## Prerequisites
 
 - Elastic Security deployed (version 8.x or later)

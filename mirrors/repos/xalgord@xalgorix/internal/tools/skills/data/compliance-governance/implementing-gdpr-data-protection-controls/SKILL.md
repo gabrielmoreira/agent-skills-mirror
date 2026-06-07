@@ -44,6 +44,27 @@ The General Data Protection Regulation (EU) 2016/679 (GDPR) is the EU's comprehe
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+GDPR programs fail most often where the legal documentation exists but the
+technical control behind it was never wired up:
+
+- **ROPA (Art. 30) drifts from reality:** the register lists 40 processing
+  activities but data-flow mapping misses shadow SaaS, analytics SDKs, and
+  legacy replicas. Verify by reconciling ROPA entries against actual egress
+  logs and DPA inventories, not against last year's spreadsheet.
+- **DPIA (Art. 35) written but not enforced:** the assessment recommends
+  pseudonymization or retention limits that were never implemented. Confirm by
+  querying the live datastore for the field the DPIA said would be tokenized.
+- **Erasure (Art. 17) skips backups and downstream copies:** issue a real test
+  erasure request and confirm the subject is gone from primaries, replicas,
+  search indexes, and restored-backup samples.
+- **Access (Art. 15) SLA untested:** submit a live DSAR and time it against the
+  one-month deadline.
+- **Transfers (Art. 44-49):** SCCs are signed but traffic still lands in a
+  non-adequate region with no TIA. Trace the actual TLS endpoint/IP, not the
+  contract.
+
 ## Prerequisites
 - Understanding of EU data protection law and its territorial scope
 - Knowledge of personal data processing activities within the organization

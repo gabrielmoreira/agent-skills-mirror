@@ -32,6 +32,14 @@ nist_csf:
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **UUID/slug BOLA hides from `nunique` thresholds:** attackers who harvest IDs from list endpoints access objects one-by-one, so the `unique_ids > 50` rule misses them. Add a per-user ratio of `resource_id` accessed vs. `resource_id` the user owns, not just raw counts.
+- **Rate-limit bypass is invisible if you key only on `source_ip`:** rotated `X-Forwarded-For`, `X-Real-IP`, or per-request API keys spread one campaign across many apparent clients. Group on JA3/TLS fingerprint or `user_id` too, and watch for clients that always sit just under the 429 threshold.
+- **Encoded injection slips regex:** test `id=1%2527%2520OR` (double URL-encode), JSON-body params, and base64 blobs — the gateway log often stores the decoded form in one field and raw in another; scan both.
+- **Validate the query fires:** replay a known BOLA burst (one token, 200 sequential IDs) and a 401 spray into the log set and confirm both `suspicious` and `scanners` frames populate. If the gateway samples logs (AWS API Gateway access logging at <100%), low-and-slow abuse is dropped before analysis — confirm sampling rate first.
+- **FP tuning:** mobile clients pre-fetching catalogs and monitoring/synthetic probes legitimately touch many IDs and emit 401s on token expiry; allowlist their `user_agent`/service accounts before alerting.
+
 ## Prerequisites
 
 - Familiarity with security operations concepts and tools

@@ -33,6 +33,15 @@ nist_csf:
 
 **Do not use** as a replacement for endpoint detection, for monitoring encrypted traffic without TLS inspection, or as the sole security control without complementary defenses.
 
+## Common Misconfigurations & Verification
+
+- **HOME_NET wrong or too narrow:** if `HOME_NET` doesn't cover your real subnets (or is left at a sample like `10.10.0.0/16` when you're `192.168.x`), every `$HOME_NET`/`$EXTERNAL_NET` rule misfires and east-west traffic is unscored. Verify with `snort -c snort.lua -T` and grep the resolved value; test a rule that should fire on internal traffic.
+- **NIC offloading left on:** GRO/LRO/TSO hand Snort reassembled super-frames with bad checksums, so content matches silently miss. Run `ethtool -k eth1 | grep -E 'gro|lro|tso|gso'` — all must be `off`; re-disable on every boot via the `snort-iface.service`.
+- **Not in promiscuous mode / no SPAN or tap:** Snort only sees broadcast/its-own traffic. Confirm `ip link show eth1` shows `PROMISC` and that the switch SPAN session actually mirrors the monitored VLAN.
+- **Rules loaded = 0 or config silently degraded:** always validate with `snort -c .../snort.lua -T 2>&1 | grep -i "rules loaded"` and confirm a nonzero count after every PulledPork run.
+- **Detection never proven:** replay a known-bad pcap — `snort -c snort.lua -r malicious.pcap -A fast` — or `tcpreplay` it to the interface and confirm the expected SID appears in `alert_fast.txt`. No alert means the rule, port var, or flow direction is wrong.
+- **Over-suppression / over-thresholding:** broad `suppress` by subnet can mute real detections. Audit `suppress.rules` and confirm suppressed SIDs are genuinely noisy via `grep -oP 'sid:\d+' alert_fast.txt | sort | uniq -c`.
+
 ## Prerequisites
 
 - Snort 3.x installed from source or package manager (`snort --version` to verify)

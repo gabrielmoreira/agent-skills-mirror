@@ -35,6 +35,17 @@ Helm is the Kubernetes package manager. Securing Helm deployments requires valid
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+The trap with Helm is that hardened `values.yaml` defaults are silently dropped before they reach the cluster:
+
+- **Values that never render:** a `securityContext` block in `values.yaml` does nothing unless the template actually references it (`{{- toYaml .Values.securityContext | nindent 12 }}`). Many third-party charts ignore your values or nest them under a different key, so `runAsNonRoot`/`readOnlyRootFilesystem`/`drop: [ALL]` quietly vanish.
+- **Overrides win last:** a later `-f values-prod.yaml` or `--set` can re-enable `privileged`, `hostNetwork`, or `automountServiceAccountToken: true`; the *effective* manifest is what matters, not the chart default.
+- **Scanning the chart, not the release:** running kubesec/trivy on the chart source misses values-driven config - always scan the rendered output.
+- **Unverified provenance / mutable images:** `helm install` without `--verify`, or `image.tag` instead of a digest, breaks supply-chain assumptions.
+
+**Verify:** render with the exact prod values (`helm template <rel> ./chart -f values-prod.yaml > rendered.yaml`) and scan *that* file (`kubesec scan rendered.yaml`, `trivy config rendered.yaml`, `kube-linter lint rendered.yaml`); then confirm on the live release with `helm get manifest <rel>` and `kubectl get pod <p> -o jsonpath='{.spec.containers[*].securityContext}'` that the context survived. Confirm `helm verify`/`--verify` passes against a known-good keyring.
+
 ## Prerequisites
 
 - Helm 3.12+ installed

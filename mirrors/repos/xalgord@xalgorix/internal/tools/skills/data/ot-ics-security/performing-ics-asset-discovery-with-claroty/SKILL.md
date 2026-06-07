@@ -46,6 +46,17 @@ nist_csf:
 
 **Do not use** for IT-only asset discovery (use tools like Nessus or Qualys), for active scanning of sensitive PLC networks without vendor approval, or for environments where Claroty is not the deployed platform (see implementing-ot-network-traffic-analysis-with-nozomi).
 
+## Most Often Missed & How to Confirm
+
+Discovery gaps come from over-trusting passive-only data or rushing active queries. Use the passive-vs-active tradeoff deliberately:
+
+- **Passive misses quiet assets:** a standby PLC, a serial device behind a gateway, or an IED that only talks during a trip never appears on the SPAN. Don't conclude an inventory is complete from passive alone — confirm against P&ID drawings and switch MAC/CAM tables.
+- **Active discovery crashes legacy controllers:** never point Nessus/nmap at Level 0-1. Use Claroty Edge native queries only (S7 SZL read on TCP 102, CIP Identity on 44818, Modbus FC43 on 502, BACnet Who-Is on 47808), rate-limited (~10 pps) and scheduled in a maintenance window.
+- **SIS must be excluded:** confirm Safety Instrumented System subnets are in the Edge `excluded_subnets` list before any active run — a Triconex that faults on an unexpected query is a safety event, not a finding.
+- **Shadow and dual-homed hosts:** an engineering laptop bridging IT and OT can show as two assets. Confirm by correlating MAC/serial across the comms map, not IP alone.
+- **Positive signal that discovery worked:** the asset returns vendor/model/firmware via its native protocol AND appears in the communication map talking to expected peers. A passive-only "seen" with no firmware is incomplete.
+- **Don't conclude "no shadow OT"** until passive has run a full cycle (2-4 weeks), active queries completed safely in-window, and the result is diffed against the CMDB.
+
 ## Prerequisites
 
 - Claroty xDome SaaS subscription or on-premises deployment

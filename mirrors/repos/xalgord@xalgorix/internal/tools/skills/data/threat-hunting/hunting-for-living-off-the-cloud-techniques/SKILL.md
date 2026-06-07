@@ -38,6 +38,15 @@ nist_csf:
 - When EDR or SIEM alerts trigger on related indicators
 - During periodic security assessments and purple team exercises
 
+## Detection Gaps & Validation
+
+- **Reputation-based detection is useless here.** C2 over trusted SaaS — Discord/Slack/Telegram webhooks, Microsoft Graph API, Google Drive, Notion, Pastebin — terminates at high-reputation domains your allowlists already trust (T1102/T1567/T1537). Block volume/beacon-timing analysis and JA3/JARM, not domain reputation.
+- **OAuth/refresh-token abuse leaves no malware** on disk; the access looks like a normal API client.
+- **Cloud-native C2 (Azure Functions, AWS Lambda) originates from provider IP ranges** indistinguishable from legitimate cloud egress.
+- **TLS hides the payload** — without inspection you only have destination + timing; lean on periodicity/jitter analysis to surface beacons to SaaS endpoints.
+- **Validate the hunt fires:** simulate exfil to a Telegram bot (`api.telegram.org/bot.../sendDocument`) or a Graph API upload, then confirm EDR/proxy network telemetry and your beacon-detection logic flag the periodic SaaS traffic.
+- **FP tuning:** legitimate corporate use of the exact same SaaS. Baseline per-user/per-host normal destinations and data volume, and alert on deviation rather than the service itself.
+
 ## Prerequisites
 
 - EDR platform with process and network telemetry (CrowdStrike, MDE, SentinelOne)

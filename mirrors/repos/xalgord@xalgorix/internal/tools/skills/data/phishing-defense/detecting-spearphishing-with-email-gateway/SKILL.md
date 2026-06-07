@@ -34,6 +34,15 @@ Spearphishing targets specific individuals using personalized, researched conten
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **SPF pass but spoofed display name:** a message from `attacker@gmail.com` with display name "CEO Jane Doe" passes SPF/DKIM for gmail.com - the SEG must run user/domain impersonation detection, not rely on auth alone.
+- **Low-volume targeted mail evades reputation:** a handful of hand-crafted emails never trip volumetric spam scores - enable impersonation and anomaly/behavioral detection for VIPs.
+- **URL detonation gaps:** time-of-click is defeated by delayed weaponization (benign at delivery, malicious later), geofenced/cloaked pages, and CAPTCHA gates - enable time-of-click rewriting AND newly-registered-domain blocking, not just delivery-time scan.
+- **Attachment sandbox evasion:** password-protected archives, URL-only lures with no attachment, and VM/timing-aware payloads bypass detonation - set detonation timeout 60s+, attempt archive passwords from the body, and use dynamic delivery.
+- **Lookalike/cousin domains** (`rn`->`m`, IDN homoglyphs) pass authentication for the attacker's own domain - add similarity matching against your domain and partners.
+- **Validate + tune:** send test impersonation (VIP display-name spoof), a delayed-detonation URL, and a macro doc; confirm quarantine fires. Reduce FPs by allowlisting legitimate bulk senders and link-wrappers before tightening thresholds.
+
 ## Prerequisites
 - Access to email security gateway admin console
 - Understanding of email flow architecture (MX records, transport rules)

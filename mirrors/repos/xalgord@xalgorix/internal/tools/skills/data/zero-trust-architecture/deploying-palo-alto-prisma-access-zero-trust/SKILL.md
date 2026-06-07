@@ -40,6 +40,15 @@ nist_csf:
 
 **Do not use** for small organizations (< 200 users) where simpler ZTNA solutions suffice, for environments requiring only web application access without full network security, or when budget constraints preclude enterprise SASE licensing.
 
+## Common Misconfigurations & Verification
+
+- **Security policy "Allow" without a HIP match:** a rule mapping a user group to an application but leaving the HIP Profile blank authenticates identity while ignoring device posture, so an unmanaged laptop connects. Bind every private-app rule to a HIP profile (e.g., "Managed Device with CrowdStrike") and confirm a final **Default Deny Private Apps** rule exists and logs.
+- **ZTNA Connector origin still directly reachable:** Prisma hides apps only through the connector tunnel. If `erp.internal.corp` keeps a public IP, or the corporate LAN/old VPN reaches it directly, enforcement is bypassed. Firewall the origin to accept only ZTNA Connector source addresses.
+- **GlobalProtect split-tunnel exposing internal:** an include/exclude route list that sends internal subnets outside the tunnel, or pre-logon without machine certificates, drops traffic out of policy. Verify split-tunnel routes and that HIP re-checks run (>= 60s interval).
+- **SSL decryption/threat profile not applied:** rules without decryption can't inspect the session or enforce DLP.
+
+Verify: from a host with GlobalProtect disconnected, attempt to reach the app FQDN/IP directly, it must fail. Force a HIP failure (stop the EDR sensor or disable disk encryption) and confirm a HIP-match denial in Strata Cloud Manager / Cortex Data Lake, and that the Default Deny rule records the blocked attempt.
+
 ## Prerequisites
 
 - Prisma Access license (Business Premium or equivalent)

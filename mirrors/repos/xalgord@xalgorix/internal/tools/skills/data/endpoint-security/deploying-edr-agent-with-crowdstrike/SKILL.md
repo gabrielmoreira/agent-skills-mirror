@@ -46,6 +46,14 @@ Use this skill when:
 
 **Do not use** this skill for deploying other EDR solutions (Carbon Black, SentinelOne) or for Falcon cloud workload protection (use cloud-specific deployment guides).
 
+## Common Misconfigurations & Verification
+
+- **Prevention policy in detect-only:** a host can be Online yet have every Prevention toggle off (Falcon ships detection-only by default). In Host Management confirm the assigned Prevention policy has Behavioral Protection / Next-Gen AV / Malware Protection set to Block (not just Detect), or malware is alerted on but never stopped.
+- **Sensor in Reduced Functionality Mode:** `falconctl -g --rfm-state` must return `rfm-state=false`. RFM (kernel/cloud mismatch after an OS update) leaves the sensor present but blind.
+- **Host parked in the default policy group:** sensor grouping tags (`/install ... GROUPING_TAGS="..."` or `falconctl -s --tags=`) must match the assignment rules, or the endpoint silently inherits the permissive default policy instead of the workstation/server policy.
+- **Over-broad exclusions:** review Configuration → Exclusions; ML/sensor-visibility wildcards like `C:\*` or whole-drive paths disable IOAs in those paths.
+- **Verify with a real test:** run `CsTestDetect.exe` (or Atomic Red Team T1059) and confirm a detection appears in the console within ~60s AND streams to your SIEM via the Event Streams TA / FDR. No SIEM event means telemetry is deployed but not integrated.
+
 ## Prerequisites
 
 - CrowdStrike Falcon console access with Falcon Administrator role

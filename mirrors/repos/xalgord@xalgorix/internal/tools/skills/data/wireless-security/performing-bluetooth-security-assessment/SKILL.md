@@ -34,6 +34,14 @@ The agent uses bleak's asyncio API to discover nearby BLE devices, connect to ta
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Classic vs BLE scope:** `bleak` only covers Bluetooth Low Energy. Bluetooth Classic (BR/EDR) devices and profiles (SDP, RFCOMM) won't appear in a BLE scan — assess them separately with `hcitool`, `sdptool browse`, and `bettercap`'s `ble.recon`/Classic modules.
+- **Discoverable vs non-discoverable:** a device not advertising is not absent. Non-discoverable peripherals and randomized resolvable private addresses (RPA) hide from passive scans; don't conclude "nothing here" from a single `BleakScanner.discover()` pass.
+- **Pairing mode matters:** "Just Works" pairing provides no MITM/eavesdropping protection (TK=0) yet often presents as "paired/secure." Inspect the actual IO capabilities and auth requirements rather than trusting the connection state.
+- **Enumeration depth:** flag characteristics with `read`/`write`/`write-without-response` reachable without authentication, and sensitive GATT services (Heart Rate 0x2A37, Device Information, Battery) that should require encryption but allow unauthenticated reads.
+- **How to confirm a finding:** corroborate the bleak results with independent tools — `hcitool lescan` and `gatttool --primary`/`--characteristics` for service/characteristic enumeration, and `bettercap` (`ble.enum`) — then prove the weakness by actually performing an unauthenticated read/write of the flagged characteristic. A property listed as `write` in the GATT table is not confirmed exploitable until an unauthenticated write succeeds end-to-end.
+
 ## Prerequisites
 
 - Python 3.9 or later

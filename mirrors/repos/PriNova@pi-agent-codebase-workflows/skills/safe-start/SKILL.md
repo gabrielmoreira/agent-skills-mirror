@@ -59,18 +59,18 @@ Ownership rules:
 - `scopes`: scope routing, ownership, cross-scope discovery only.
 - `repo-inventory`: file tree, commands index, entry points, external boundaries, configs.
 - `validation-baseline`: command status, blockers, recommended validation order.
-- `project-intent`: goals, users, journeys, non-goals, constraints, assumptions.
-- `architecture`: components, architecture style, side-effect boundaries, high-level flow refs.
-- `data-flow`: typed flow graph/steps, inputs, outputs, error states.
-- `data-model`: entities, IDs, schemas, relationships, lifecycles, serialized formats.
+- `project-intent`: product goal, users, journeys, must-have features, non-goals, constraints, assumptions, open questions, success metrics, prioritized quality attributes, operating constraints, risk areas.
+- `architecture`: components, architecture style, style rationale, alternatives/tradeoffs, side-effect boundaries, deployment/operating shape, reliability expectations, observability expectations, security assumptions, high-level flow refs.
+- `data-flow`: typed flow graph/steps, trust boundaries, sensitive-data handling steps, inputs, outputs, error states, degradation/recovery notes.
+- `data-model`: entities, IDs, schemas, relationships, lifecycles, serialized formats, retention/compliance notes.
 - `invariants`: rules, forbidden states, enforcement locations, invariant-test refs.
 - `dependency-rules`: layers, allowed/forbidden dependencies, violations, coupling hotspots.
 - `design-issues`: structural drift, deferred decisions, ambiguity, ownership gaps.
-- `risk-register`: failure modes, severity/confidence, affected refs, suggested tests/fixes.
-- `contracts`: cross-scope APIs, schemas, events, generated clients, DB/file/deployment/env contracts.
-- `testing-strategy`: test topology, coverage gaps, risk-to-test priorities.
+- `risk-register`: failure modes, severity/confidence, affected refs, mitigations/recommended actions, suggested tests/fixes.
+- `contracts`: cross-scope APIs, schemas, events, generated clients, DB/file/deployment/env/auth/telemetry contracts.
+- `testing-strategy`: test topology, quality-attribute coverage, coverage gaps, risk-to-test priorities, operability checks.
 - `change-guide`: workflow routing and checklists; references owner artifacts, duplicates no facts.
-- `adr`: structured decision records with bounded prose fields.
+- `adr`: structured decision records with bounded prose fields, including alternatives and consequences for major design choices.
 - `agent-operating-guide`: structured source for agent operating rules. Root `AGENTS.md` may mirror this in compact harness-readable Markdown when produced by safe-start or codebase-recon Pass 6.
 
 Redundancy rule: define each fact in its owner artifact exactly once. Other artifacts reference IDs.
@@ -109,9 +109,11 @@ Use this protocol whenever creating or updating YAML artifacts.
 ### 3. Stable ID generation
 
 1. Reuse existing IDs whenever the semantic object is the same, even if name/path changed.
-2. New IDs use deterministic slugs from owner scope + semantic name: `risk:<slug>`, `entity:<slug>`, `component:<slug>`, etc.
-3. If two objects slug-collide, append shortest stable discriminator from path/component/contract, not a random suffix.
-4. Never renumber IDs because order changed.
+2. New record IDs use deterministic slugs from owner scope + semantic name: `risk:<slug>`, `entity:<slug>`, `component:<slug>`, etc.
+3. Envelope `artifact_id` values use `repo:<artifact-slug>` for repo-level artifacts and `<scope.id>/<artifact-slug>` for scoped artifacts, e.g. `repo:architecture` and `scope:packages/ai/architecture`.
+4. Never append an artifact slug to a scope ID with a second colon; `scope:packages/ai:architecture` is invalid.
+5. If two objects slug-collide, append shortest stable discriminator from path/component/contract, not a random suffix.
+6. Never renumber IDs because order changed.
 
 ### 4. Upsert semantics
 
@@ -173,6 +175,7 @@ Perform best-effort validation after writing:
 
 - Produce canonical YAML artifacts under the resolved structured docs root. Safe-start creates the initial repo-local root at `<workspace_root>/docs/agent/api`; root `AGENTS.md` is the only Markdown workflow output.
 - Do not write README or prose docs as workflow artifacts. Root `AGENTS.md` is allowed as compact harness interoperability output.
+- Make decision-driving quality attributes explicit early. Capture proportional depth, but do not skip the fields; use concise notes or empty arrays only when clearly not applicable and justified by context.
 - Design data flow first, then boundaries, then scaffold.
 - Stop for approval after intent, data flow, architecture/scaffold plan, and vertical-slice plan unless user explicitly requested implementation.
 - After baseline and first slice, future changes use `safe-change` with structured artifacts.
@@ -185,23 +188,26 @@ Ask once if unknown: `freshman`, `standard`, or `expert`. Guidance level affects
 
 Users may invoke this skill directly for any pass, or use the matching prompt template as a pass shortcut.
 
-1. Intent (`/safe-start-01-intent`): write `project-intent.yaml`, initial `repo-inventory.yaml`, optional `scopes.yaml`.
-2. Data flow (`/safe-start-02-data-flow`): write `data-flow.yaml`, `data-model.yaml`, `invariants.yaml`.
-3. Architecture (`/safe-start-03-architecture`): write `architecture.yaml`, `dependency-rules.yaml`, `design-issues.yaml`, `risk-register.yaml`, `adr.yaml`.
-4. Contract docs (`/safe-start-04-contract-docs`): write `change-guide.yaml`, `testing-strategy.yaml`, optional `contracts.yaml`, `security`/`deployment` as contract records if needed, `agent-operating-guide.yaml`, and root `AGENTS.md`.
-5. Scaffold plan (`/safe-start-05-scaffold-plan`): output plan in chat only; after approval create files.
-6. Validation baseline (`/safe-start-06-validation`): write `validation-baseline.yaml` from actual commands/status.
-7. Thin vertical slice (`/safe-start-07-vertical-slice`): implement one minimal slice; update structured artifacts only for durable semantic changes.
-8. Handoff (`/safe-start-08-handoff`): update `change-guide.yaml`, `risk-register.yaml`, `repo-inventory.yaml`, `design-issues.yaml`, `scopes.yaml`.
+1. Intent (`/safe-start-01-intent`): write `project-intent.yaml`, initial `repo-inventory.yaml`, optional `scopes.yaml`; explicitly capture prioritized quality attributes, operating constraints, success metrics, and risk areas.
+2. Data flow (`/safe-start-02-data-flow`): write `data-flow.yaml`, `data-model.yaml`, `invariants.yaml`; surface trust boundaries, sensitive data, failure/degradation states, and retention/compliance implications.
+3. Architecture (`/safe-start-03-architecture`): write `architecture.yaml`, `dependency-rules.yaml`, `design-issues.yaml`, `risk-register.yaml`, `adr.yaml`; require style rationale, alternatives/tradeoffs, reliability expectations, observability expectations, security assumptions, and ADR linkage for major decisions.
+4. Contract docs (`/safe-start-04-contract-docs`): write `change-guide.yaml`, `testing-strategy.yaml`, `contracts.yaml` whenever the project has inter-process, persistence, deployment, env, auth, or external integration boundaries, `agent-operating-guide.yaml`, and root `AGENTS.md`; include quality-attribute verification and operability expectations.
+5. Scaffold plan (`/safe-start-05-scaffold-plan`): output plan in chat only; after approval create files. Plan must preserve architecture constraints and first-slice validation path.
+6. Validation baseline (`/safe-start-06-validation`): write `validation-baseline.yaml` from actual commands/status; include schema/docs validation expectations and blockers, especially legacy artifacts missing now-required fields.
+7. Thin vertical slice (`/safe-start-07-vertical-slice`): implement one minimal slice that exercises a primary journey and at least one critical quality attribute or operating constraint; update structured artifacts only for durable semantic changes.
+8. Handoff (`/safe-start-08-handoff`): update `change-guide.yaml`, `risk-register.yaml`, `repo-inventory.yaml`, `design-issues.yaml`, `scopes.yaml`; ensure unresolved quality/security/reliability/operability gaps are captured for `safe-change`.
 
 All-in-one shortcut: `/safe-start-all` runs the pass sequence with approval gates unless implementation was explicitly requested.
 
 ## Required Artifact Content
 
-- `project-intent.yaml`: `intent.product_goal`, `target_users`, `primary_journeys`, `must_have_features`, `non_goals`, `constraints`, `assumptions`, `open_questions`.
-- `data-flow.yaml`: `flows` with triggers, inputs, ordered steps, outputs, error states, risk refs.
-- `data-model.yaml`: `entities`, `lifecycles`, `serialized_formats`.
+- `project-intent.yaml`: `intent.product_goal`, `intent.target_users`, `intent.primary_journeys`, `intent.must_have_features`, `intent.non_goals`, `intent.constraints`, `intent.assumptions`, `intent.open_questions`, `intent.quality_attributes`, `intent.operating_constraints`, `intent.success_metrics`, `intent.risk_areas`.
+- `data-flow.yaml`: `flows` with `trigger`, `inputs`, ordered `steps`, `outputs`, `error_states`, `trust_boundaries`, `sensitive_data`, and `risk_refs`.
+- `data-model.yaml`: `entities`, `lifecycles`, `serialized_formats`; include retention/compliance notes when they influence architecture or operations.
 - `invariants.yaml`: invariant records with enforcement status and locations.
-- `architecture.yaml`: style, components, boundaries, dependency direction, execution flow refs.
-- `contracts.yaml`: owner/consumer contract records for APIs, schemas, events, generated clients, persistence, deployment, env, CLI.
-- `validation-baseline.yaml`: command records with cwd, status, last_run, blockers, recommended order.
+- `architecture.yaml`: `architecture.style`, `architecture.style_rationale`, `architecture.alternatives_considered`, `architecture.boundaries`, `architecture.reliability_expectations`, `architecture.observability_expectations`, `architecture.security_assumptions`, plus `components`, `dependency_direction`, `execution_flows`, `side_effect_boundaries`.
+- `risk-register.yaml`: risk records with `affected_refs`, evidence-backed severity/confidence, and `recommended_action`; include quality/security/reliability risks when relevant.
+- `testing-strategy.yaml`: `test_structure`, `quality_attribute_coverage`, `coverage_gaps`, `risk_to_test_priorities`, `known_blockers`, optional `operability_checks`; connect important risks and quality attributes to verification.
+- `contracts.yaml`: owner/consumer contract records for APIs, schemas, events, generated clients, persistence, deployment, env, auth, telemetry, or CLI boundaries.
+- `adr.yaml`: ADR records for major architecture choices with context, decision, alternatives, and consequences.
+- `validation-baseline.yaml`: command records with cwd, status, last_run, blockers, recommended order; include docs/schema validation when the workflow introduces or changes structured artifacts.

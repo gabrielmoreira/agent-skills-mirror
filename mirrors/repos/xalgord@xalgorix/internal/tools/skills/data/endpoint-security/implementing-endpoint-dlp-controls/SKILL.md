@@ -44,6 +44,14 @@ Use this skill when:
 
 **Do not use** for network DLP (inline proxy-based) or cloud-only DLP (CASB).
 
+## Common Misconfigurations & Verification
+
+- **Egress channel gaps:** a policy that blocks USB and email but ignores other exits leaks data anyway. Confirm every endpoint activity is in scope — cloud upload, removable media, network share copy, print, clipboard, screen capture, paste to unallowed browser/app, and Remote Desktop copy. Unmanaged browsers (anything not in the allowed-browser list) commonly bypass web upload inspection.
+- **Stuck in audit:** "Test mode with notifications" never blocks. In Activity Explorer the action shows `Audit`, not `Block`/`BlockWithOverride` — verify the policy is actually turned on and enforced after tuning.
+- **Encrypted/archive blind spots:** content inspection can't read password-protected ZIPs, nested archives, or images without OCR. Define how those are handled (block-on-unscannable vs. allow) rather than letting them sail through.
+- **Over-broad overrides:** if BlockWithOverride is on with no justification logging, users self-approve every block. Check the override rate in Activity Explorer.
+- **Verification:** from a test endpoint, attempt each channel with a seeded file (e.g., a doc containing 5+ test credit-card numbers): copy to USB, upload to personal OneDrive/Dropbox, paste into webmail, and print. Each must produce a block/audit event in Activity Explorer with the matched SIT — silent success on any channel is a coverage gap.
+
 ## Prerequisites
 
 - Microsoft 365 E5 or standalone Microsoft Purview DLP license

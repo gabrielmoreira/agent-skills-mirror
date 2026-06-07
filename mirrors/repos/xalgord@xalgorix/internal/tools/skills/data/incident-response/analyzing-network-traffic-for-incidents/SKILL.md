@@ -41,6 +41,14 @@ nist_csf:
 
 **Do not use** for host-based forensic analysis (process execution, file system artifacts); use endpoint forensics tools instead.
 
+## Detection Gaps & Validation
+
+- **Encrypted traffic is the #1 blind spot:** without TLS inspection you cannot see C2 payloads. Pivot to metadata you *do* have — JA3/JA3S, SNI, certificate CN/issuer, packet timing, and request/response byte ratios. A self-signed cert plus fixed-interval beacons is enough to confirm without decryption.
+- **Beacon jitter defeats naive interval checks:** malware randomizes sleep (±30-50%) and long-haul beacons (1/hour or 1/day) fall outside a short capture. Use RITA/Zeek scoring over the full window, not a single PCAP slice, and account for jitter rather than requiring exact 60s spacing.
+- **Capture coverage gaps:** SPAN ports drop frames under load and a tap on one VLAN misses east-west lateral movement. Confirm capture completeness (`capinfos` drop counts, sequence gaps) before concluding "no exfil."
+- **DNS/ICMP tunneling hides in low per-query volume:** small TXT/A queries look benign individually — aggregate by parent domain and total bytes over time, and check entropy of subdomain labels.
+- **Cross-corroborate:** match the C2 IP/JA3 against threat intel, line up connection timestamps with host EDR process-start events (watch for timezone skew — normalize everything to UTC), and extract transferred files via Wireshark Export Objects / NetworkMiner to validate the exfil channel rather than inferring it from byte counts alone.
+
 ## Prerequisites
 
 - Full packet capture (PCAP) infrastructure or on-demand capture capability (network tap, SPAN port)

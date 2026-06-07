@@ -42,6 +42,14 @@ Use this skill when:
 
 **Do not use** this skill for network-level evasion (use network traffic analysis) or for malware reverse engineering.
 
+## Detection Gaps & Validation
+
+- **Direct syscalls / unhooking defeat API-based rules:** tools using direct or indirect syscalls (SysWhispers, Hell's Gate) or that unhook ntdll bypass userland EDR hooks, so CreateRemoteThread (Sysmon EID 8) may never fire. Backstop with Sysmon EID 10 (ProcessAccess to lsass, GrantedAccess `0x1010`/`0x1410`) and ETW-Ti / kernel telemetry, not just hook-based detections.
+- **Log source not actually enabled:** evasion hunting silently fails if 4688 has no command line (`ProcessCreationIncludeCmdLine_Enabled=1`) or the Sysmon config excludes EID 8/10. The SwiftOnSecurity / Olaf Hartong base configs comment these out in places — confirm the events are present before trusting a clean hunt.
+- **AMSI/ETW bypass blinds script logging:** `amsi.dll` patching and ETW patching (`ntdll!EtwEventWrite`) suppress 4104 script-block and AMSI events. Treat 4104 text containing `AmsiUtils`/`amsiInitFailed`, or a sudden stop in PowerShell Operational events, as the detection itself.
+- **Timestomping confirmed by correlation, not one event:** compare Sysmon EID 2 (file-create-time changed) against EID 11 create time and `$STANDARD_INFORMATION` vs `$FILE_NAME` MFT timestamps.
+- **Validate each rule fires:** run the matching Atomic Red Team test — T1070.001 (`wevtutil cl`), T1562.001 (`Set-MpPreference -DisableRealtimeMonitoring`), T1055 (process injection), T1218 LOLBins (mshta/regsvr32/certutil) — and confirm the alert reaches the SIEM. Tune false positives with an allowlist of legitimate injectors (AV, accessibility tools) and parent-process context rather than disabling the rule.
+
 ## Prerequisites
 
 - Sysmon installed and configured with comprehensive logging rules (SwiftOnSecurity or Olaf Hartong config)

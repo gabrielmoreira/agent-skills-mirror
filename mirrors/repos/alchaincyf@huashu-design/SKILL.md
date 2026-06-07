@@ -68,7 +68,11 @@ description: 花叔Design——用HTML做高保真原型、交互Demo、幻灯�
 
 #### 1.a 核心资产协议（涉及具体品牌时强制执行）
 
-**触发**：任务涉及具体品牌/产品（DJI、Stripe、某 App…）。**核心理念：资产 > 规范**——logo / 产品图 / UI 截图比品牌色值更重要（花叔：「除了品牌色，显然该用上 logo 和产品图，否则我们在表达什么呢？」）。
+**触发**（两类都算，**第二类最常被漏**）：① **为某个品牌做物料**（DJI 发布动画、Stripe 落地页…）；② **设计里要呈现一个或多个真实可识别的产品/品牌**——对比 / 榜单 / 评测 / 介绍 deck、把多个产品并列、信息图里点名某产品。
+🔴 **铁律：设计里只要出现一个能被认出的产品/品牌名，它的官方 logo 就是必需资产**（出现几个就取几个），不是「有就用、没有拉倒」。
+⚠️ **即使你在走 Fallback 设计方向顾问模式**（因为没拿到风格参考）——第二类触发**依然成立**。Fallback 决定的是「用什么视觉风格」，**不豁免「取齐具名产品的 logo」**。两件事并行，不是二选一。
+
+**核心理念：资产 > 规范**——logo / 产品图 / UI 截图比品牌色值更重要（花叔：「除了品牌色，显然该用上 logo 和产品图，否则我们在表达什么呢？」）。
 
 **5 步硬流程**（每步有 fallback，绝不静默跳过；完整操作见 reference）：
 1. **问**：一次问全资产清单（logo / 产品图 / UI 截图 / 色板 / 字体 / 禁区）
@@ -212,6 +216,9 @@ description: 花叔Design——用HTML做高保真原型、交互Demo、幻灯�
 | 博物 / 历史 / 艺术 / 动植物 / 古典 | Wikimedia Commons、Met / Art Institute Open Access、Biodiversity Heritage Library（古典博物插画，如 Edward Lear / John Gould 鹦鹉图录） |
 | 通用生活 / 场景 / 产品摄影 | Unsplash、Pexels（免版权） |
 | 用户自己的产品 / 品牌 | 走 §1.a 核心资产协议取官方图 |
+| **设计中要点名 / 并列展示的具体产品·品牌（含第三方对比对象）** | **走 §1.a 取每个产品的官方 logo**（svgl API → simpleicons → Google favicon，见 `references/brand-asset-protocol.md` Step 3.1）。对比 / 榜单 / 评测 deck 必走这行 |
+
+🔴 **具名产品 logo 子门（spawn 三套逻辑前必过，硬要求）**：把设计里会出现的产品 / 品牌名**逐个列成清单**，确认每个都已取到官方 logo 并内嵌（base64 / 本地路径），再 spawn。**清单里有一个没取到 logo = 🛑 STOP 补齐**（实在取不到才退诚实 placeholder 并明说「X 的 logo 待补」）。三个 subagent 共用这批 logo。⚠️ 这是对比 / 榜单 / 评测 deck 最常见的翻车点——「只抽了品牌色就开做」就是漏了这道门（2026-06-06 五大 Coding Agent PPT 实测翻车，见 brand-asset-protocol 反例）。
 
 🛠️ **取图用现成脚本（别每次现写）**：`python3 scripts/fetch_images.py --query "英文关键词1" "英文关键词2" --out 项目/assets/img --count 2 --width 1600`——已内置清代理 + 合规 UA + 许可输出 + 失败兜底，下次只改关键词。
 
@@ -316,46 +323,52 @@ api = 'https://commons.wikimedia.org/w/api.php'
 
 **反例**：给文字 Essay 配 Unsplash「灵感图」、给笔记 App 配 stock photo 模特——都是 AI slop。取真图的许可不等于滥用真图的通行证。
 
-### 2. 交付形态：overview 平铺 / flow demo 单机——先问用户要哪种
+### 2. 交付形态：默认「平铺 + 可操作」，不要问用户
 
-多屏 App 原型有两种标准交付形态，**先问用户要哪种**，不要默认挑一种闷头做：
+iOS App 原型的**默认交付形态就一种，不要再问用户「要平铺还是可操作」**：**平铺 4-6 个主界面，且每一台都能交互**。一眼看全貌（多台 iPhone 并排），又每台都能点 tab 切换、在界面上做基本操作（展开、切换、选中、打开弹层）。两个好处一次给齐，别让用户二选一。
 
-| 形态 | 何时用 | 做法 |
-|------|--------|------|
-| **Overview 平铺**（设计 review 默认）| 用户要看全貌 / 比较布局 / 走查设计一致性 / 多屏并排 | **所有屏并排静态展示**，每屏一台独立 iPhone，内容完整，不需要可点击 |
-| **Flow demo 单机** | 用户要演示一条特定用户流程（如 onboarding、购买链路）| 单台 iPhone，内嵌 `AppPhone` 状态管理器，tab bar / 按钮 / 标注点都能点 |
+| 维度 | 默认做法 |
+|------|---------|
+| **屏数** | 平铺 **4-6 个主界面**（覆盖 app 的核心功能面，不是随便摆几个）。多于 6 个抓最主要的 4-6 个，其余可在单台内通过 tab/导航到达 |
+| **布局** | 多台独立 iPhone 横向 `flexWrap` 并排，每台上方一行 italic 小字标签说明这是哪个界面 |
+| **每台交互** | 每台都是独立的迷你状态机：tab bar 可切、界面内按钮/卡片/开关可点、能弹 modal——不是静态摆拍 |
 
-**路由关键词**：
-- 任务里出现「平铺 / 展示所有页面 / overview / 看一眼 / 比较 / 所有屏」→ 走 **overview**
-- 任务里出现「演示流程 / 用户路径 / 走一遍 / clickable / 可交互 demo」→ 走 **flow demo**
-- 不确定就问。不要默认选 flow demo（它更费工，不是所有任务都需要）
+**只有两种特例才偏离默认**（用户明确说了才走，否则一律默认）：
+- 用户明确「只要静态截图 / 不用能点 / 就看 layout」→ 退回纯静态 overview（每台只渲染 `ScreenComponent`，不挂状态机）
+- 用户明确「只演示一条流程 / 走一遍 onboarding / 单机 demo」→ 单台 `AppPhone` 走完整 flow
 
-**Overview 平铺的骨架**（每屏独立一台 IosFrame 并排）：
+**默认骨架**（平铺多台，每台各自一个带 state 的 AppPhone）：
 
 ```jsx
+// 每台 = 一个独立状态机，初始落在自己负责的主界面
+function AppPhone({ initial }) {
+  const [screen, setScreen] = React.useState(initial);
+  const [modal, setModal] = React.useState(null);
+  // 按 screen 渲染对应 ScreenComponent，传入 onTabChange/onOpen/onClose/onToggle 等 callback
+  return (
+    <IosFrame>
+      <ScreenComponent
+        screen={screen}
+        onTabChange={setScreen}
+        onOpen={setModal}
+        onClose={() => setModal(null)}
+      />
+    </IosFrame>
+  );
+}
+
+// 平铺：4-6 台并排，每台 initial 落在不同主界面
 <div style={{display: 'flex', gap: 32, flexWrap: 'wrap', padding: 48, alignItems: 'flex-start'}}>
-  {screens.map(s => (
+  {mainScreens.map(s => (
     <div key={s.id}>
       <div style={{fontSize: 13, color: '#666', marginBottom: 8, fontStyle: 'italic'}}>{s.label}</div>
-      <IosFrame>
-        <ScreenComponent data={s} />
-      </IosFrame>
+      <AppPhone initial={s.id} />
     </div>
   ))}
 </div>
 ```
 
-**Flow demo 的骨架**（单台 clickable 状态机）：
-
-```jsx
-function AppPhone({ initial = 'today' }) {
-  const [screen, setScreen] = React.useState(initial);
-  const [modal, setModal] = React.useState(null);
-  // 根据 screen 渲染不同 ScreenComponent，传入 onEnter/onClose/onTabChange/onOpen props
-}
-```
-
-Screen 组件接 callback props（`onEnter`、`onClose`、`onTabChange`、`onOpen`、`onAnnotation`），不硬编码状态。TabBar、按钮、作品卡加 `cursor: pointer` + hover 反馈。
+Screen 组件接 callback props（`onTabChange`、`onOpen`、`onClose`、`onToggle`、`onAnnotation`），不硬编码状态。TabBar、按钮、作品卡、开关加 `cursor: pointer` + hover 反馈。每台落在不同主界面，但 tab 切换后能到达彼此——平铺给全貌，点击给纵深。
 
 ### 3. 交付前跑真实点击测试
 
@@ -509,7 +522,7 @@ Screen 组件接 callback props（`onEnter`、`onClose`、`onTabChange`、`onOpe
 **固定尺寸内容**（幻灯片/视频）必须自己实现JS缩放，用auto-scale + letterboxing。
 
 **幻灯片架构选型（必先决定）**：
-- 🔴 **默认且强烈推荐：多文件 + 概览墙**（几乎所有 PPT——培训/路演/科普/课件/汇报）→ 每页独立 HTML + `assets/deck_index.html` 拼接器。**这是 PPT 的默认交付形态**：自带 **3D 概览墙**（打开先看全局再逐页讲）+ 自适应缩放 + 统一页码。
+- 🔴 **默认且强烈推荐：多文件 + 概览墙**（几乎所有 PPT——培训/路演/科普/课件/汇报）→ 每页独立 HTML + `assets/deck_index.html` 拼接器。**这是 PPT 的默认交付形态**：自带**两种自适应 3D 概览**（网格 iframe / 无限画廊图片，按秒数 60/40 随机）+ 任意页数自适应（少页倾斜居中、多页舒适大卡滚动）+ 统一页码。**直接用，别重写概览**（倾斜/点击命中/裁切三个坑已内建解决，见 slide-decks.md）。
 - **单文件**（仅 ≤5 页极简 pitch、且明确不需要概览墙、或需跨页共享 JS 状态）→ `assets/deck_stage.js`。
 - 🛑 **不要默认选单文件而绕过概览墙**——北大 13 页 deck 实测踩坑：选了单文件 = 丢了概览墙，违背 PPT 默认交付形态。选单文件前先确认「这真的是 ≤5 页、且不需要概览墙」。
 
@@ -521,7 +534,8 @@ Screen 组件接 callback props（`onEnter`、`onClose`、`onTabChange`、`onOpe
 
 | 文件 | 何时用 | 提供 |
 |------|--------|------|
-| `deck_index.html` | **幻灯片的默认基础产物**（不管最终出 PDF 还是 PPTX，HTML 聚合版永远先做） | iframe拼接 + 键盘导航 + scale + 计数器 + 打印合并，每页独立HTML免CSS串扰。用法：复制为 `index.html`、编辑 MANIFEST 列出所有页、浏览器打开即成演示版 |
+| `deck_index.html` | **幻灯片的默认基础产物**（不管最终出 PDF 还是 PPTX，HTML 聚合版永远先做） | **直接复制、不要重写其概览逻辑**。自带**两种自适应概览**（打开按秒数随机：网格 iframe 60% / 无限画廊图片 40%）+ 键盘翻页 + scale + 计数器 + 打印合并，每页独立 HTML 免 CSS 串扰，点任意卡片进演示。用法：复制为 `index.html`、编辑 MANIFEST（每项 `{file,label}`；**要用画廊模式则加 `thumb` 字段并先跑 `scripts/gen_deck_thumbs.mjs` 生成缩略图**，否则画廊回退 iframe 会卡）。⚠️ 概览墙已内建解决「任意页数自适应 / 卡片点击命中 / 倾斜不裁切」三个坑——**别自己重写倾斜或网格逻辑**，要改先读 `references/slide-decks.md` 的三条硬约束 |
+| `scripts/gen_deck_thumbs.mjs` | **给无限画廊概览生成缩略图**（网格 iframe 模式不需要）| playwright 截每页 + sharp 降采样 1600px JPEG：`npm i playwright sharp && node gen_deck_thumbs.mjs --slides slides --out thumbs`，再给 MANIFEST 每项加 `thumb`。分辨率别 <1000px 否则 hover 发虚 |
 | `deck_stage.js` | 做幻灯片（单文件架构，≤10页） | web component：auto-scale + 键盘导航 + slide counter + localStorage + speaker notes ⚠️ **script 必须放在 `</deck-stage>` 之后，section 的 `display: flex` 必须写到 `.active` 上**，详见 `references/slide-decks.md` 的两个硬约束 |
 | `scripts/export_deck_pdf.mjs` | **HTML→PDF 导出（多文件架构）** · 每页独立 HTML 文件，playwright 逐个 `page.pdf()` → pdf-lib 合并。文字保留矢量可搜。依赖 `playwright pdf-lib` |
 | `scripts/export_deck_stage_pdf.mjs` | **HTML→PDF 导出（单文件 deck-stage 架构专用）** · 2026-04-20 新增。处理 shadow DOM slot 导致的「只出 1 页」、absolute 子元素溢出等坑。详见 `references/slide-decks.md` 末节。依赖 `playwright` |
@@ -545,7 +559,7 @@ Screen 组件接 callback props（`onEnter`、`onClose`、`onTabChange`、`onOpe
 | 开工前问问题、定方向 | `references/workflow.md` |
 | 反AI slop、内容规范、scale | `references/content-guidelines.md` |
 | React+Babel项目setup | `references/react-setup.md` |
-| 做幻灯片 | `references/slide-decks.md` + `assets/deck_stage.js` |
+| 做幻灯片 | `references/slide-decks.md` + `assets/deck_index.html`（默认多文件概览墙）+ `scripts/gen_deck_thumbs.mjs`（画廊缩略图）+ `assets/deck_stage.js`（仅 ≤5 页单文件） |
 | 导出可编辑 PPTX（html2pptx 4 条硬约束） | `references/editable-pptx.md` + `scripts/html2pptx.js` |
 | 做动画/motion（**先读 pitfalls**）| `references/animation-pitfalls.md` + `references/animations.md` + `assets/animations.jsx` |
 | **动画的正向设计语法**（Anthropic 级叙事/运动/节奏/表达风格）| `references/animation-best-practices.md`（5 段叙事+Expo easing+运动语言 8 条+3 种场景配方）|

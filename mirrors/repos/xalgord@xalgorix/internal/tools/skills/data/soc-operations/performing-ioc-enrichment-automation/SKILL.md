@@ -37,6 +37,14 @@ Use this skill when:
 
 **Do not use** for bulk blocking decisions without analyst review — enrichment provides context, not definitive malicious/benign determination.
 
+## Common Misconfigurations & Verification
+
+- **Rate-limit silently corrupts verdicts:** VT free is 4 req/min, AbuseIPDB 1000/day, Shodan 1 req/sec. When a batch blows the limit the API returns 429 and the `except` block stores `{"error": ...}` — but `_calculate_ip_risk` then sees no `malicious` key and scores it 0, so a real C2 IP comes back "CLEAN". Throttle (the `time.sleep(15)` between IOCs) and treat an errored source as **Unknown**, never as benign.
+- **None / missing-field handling:** `getattr(vt_obj, "country", "Unknown")` and `.get("malicious", 0)` mask the difference between "scored 0 malicious" and "field absent / not in dataset". A hash not in VT raises `APIError` and yields an empty result — don't let that collapse to a low risk score; surface "not found" distinctly.
+- **Disposition inversion from partial data:** the composite score sums sources, so if only one of four responds the score is artificially low; GreyNoise `riot` subtracting 20 can pull a flagged IP under threshold. Require a minimum number of successful sources before trusting the disposition, and never auto-block on a single source.
+- **Stale or wrong-key API:** an expired/region-wrong API key returns 401/403 that the broad `except` swallows; every IOC then looks clean. Confirm each client authenticates before a batch run.
+- **Verify** with a control set: enrich one known-bad IOC (e.g. an EICAR/Cobalt Strike sample hash or a documented malicious IP) and one known-good (a CDN/cloud IP, GreyNoise RIOT service) and confirm the bad scores MALICIOUS and the good scores CLEAN. Inject a forced 429 and confirm the affected source reports Unknown rather than dropping the risk score.
+
 ## Prerequisites
 
 - API keys: VirusTotal (free or premium), AbuseIPDB, Shodan, URLScan.io, GreyNoise

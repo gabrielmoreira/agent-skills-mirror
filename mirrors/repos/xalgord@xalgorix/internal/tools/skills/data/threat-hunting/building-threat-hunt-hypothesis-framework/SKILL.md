@@ -31,6 +31,15 @@ nist_csf:
 - When EDR or SIEM alerts trigger on related indicators
 - During periodic security assessments and purple team exercises
 
+## Common Misconfigurations & Verification
+
+- **Unfalsifiable hypotheses.** "Find evil" or "detect APTs" can't be tested. Scope every hypothesis to a specific ATT&CK technique + a named data source + an observable (e.g., "T1059.001: Empire stagers appear as 4104 events containing `FromBase64String` + `WebClient`").
+- **Assuming coverage that doesn't exist.** Hunting T1059.001 with Script Block Logging (4104) disabled, or relying on Sysmon EID 1/3 that was never deployed, yields false negatives that look like clean results. Verify ingestion first with `| tstats count where index=* by sourcetype` and check each source's last-seen timestamp.
+- **No baseline.** Without a frequency baseline every result looks anomalous. Build the normal-activity baseline before judging outliers.
+- **Timezone/clock skew across DCs** breaks multi-source correlation — normalize everything to UTC and confirm event time vs index time gaps.
+- **Verify the hunt can actually catch the thing:** emit a benign atomic test matching the hypothesis (e.g., request a Kerberos SPN ticket, or run an `-enc` command) and confirm the query returns your test event end-to-end.
+- **Document negatives correctly:** record what coverage existed at hunt time — absence of evidence is only meaningful where logging was confirmed present.
+
 ## Prerequisites
 
 - EDR platform with process and network telemetry (CrowdStrike, MDE, SentinelOne)

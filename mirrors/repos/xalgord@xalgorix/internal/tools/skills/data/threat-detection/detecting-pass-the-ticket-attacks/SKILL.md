@@ -42,6 +42,13 @@ Pass-the-Ticket (PtT) is a credential theft technique (MITRE ATT&CK T1550.003) w
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Variants most often missed:** rules that hunt only for RC4 (`TicketEncryptionType 0x17`) downgrades miss PtT with AES tickets (`0x12`) stolen from LSASS/`kirbi` files and replayed intact — encryption type looks normal. The strongest signal is **reuse from a non-origin host**: a TGT/TGS first seen on Host A appearing in 4769/4624 from Host B with no intervening 4768, or a 4769 whose source IP/workstation differs from where the TGT was issued.
+- **False negatives:** overpass-the-hash and ticket replay can occur with **no 4768 at all** (ticket imported via `Rubeus ptt`), so TGT-centric rules see nothing — correlate 4769 (service ticket) + 4624 Logon Type 3 across hosts and compare against the 4768 origin. NAT, VPN concentrators, and load-balanced egress collapse many users to one IP and hide cross-host reuse; pivot on workstation name / TargetUserName instead of IP alone.
+- **Validate the rule fires:** Atomic Red Team T1550.003 (Rubeus/mimikatz dump + `ptt`/`/ptt`). Confirm the correlation alerts when the same ticket is used from a second host and when a 4769 appears with no matching 4768 for that principal.
+- **FP tuning:** Kerberos clock skew, ticket renewal, RODC referrals, and roaming/Wi-Fi-to-VPN handoffs generate benign multi-host patterns — baseline per-user host counts and exclude known jump hosts/admin bastions before alerting.
+
 ## Prerequisites
 
 - Windows Domain Controller with advanced audit policy enabled (Audit Kerberos Authentication Service, Audit Kerberos Service Ticket Operations)

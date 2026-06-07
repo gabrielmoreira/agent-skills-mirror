@@ -31,12 +31,55 @@
       "items": {
         "type": "object",
         "required": [
-          "id"
+          "id",
+          "kind",
+          "summary",
+          "owner",
+          "consumers"
         ],
         "properties": {
           "id": {
             "type": "string",
             "pattern": "^contract:[a-z0-9][a-z0-9._/-]*$"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "owner": {
+            "type": [
+              "string",
+              "object"
+            ]
+          },
+          "consumers": {
+            "type": "array"
+          },
+          "compatibility": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "failure_semantics": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "security_notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "observability_notes": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
         },
         "additionalProperties": true

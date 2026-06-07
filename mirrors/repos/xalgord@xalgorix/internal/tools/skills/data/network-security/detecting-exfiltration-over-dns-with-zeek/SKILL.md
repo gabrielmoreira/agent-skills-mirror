@@ -36,6 +36,15 @@ This skill analyzes Zeek dns.log files (TSV format) to detect exfiltration indic
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **DoH/DoT never lands in dns.log:** if the host tunnels over `https://` (443) or DoT (853), Zeek's DNS analyzer produces no record to score. Pivot to `ssl.log` SNI of public resolvers from non-browser hosts and `conn.log` 853, and treat absence of dns.log for a chatty host as suspicious, not clean.
+- **Low-and-slow defeats per-window counts:** a tunnel pacing a few queries/min stays under "50 unique subdomains within the log window." Aggregate unique-subdomain counts per parent domain across hours/days, and add a sustained-rate-per-source signal, not just a single-window threshold.
+- **Word-list encoding lowers entropy:** dictionary-based encoders (and lowercase chunking) keep label entropy under 3.5/4.0. Combine entropy with label-length, label-count, and unique-subdomain ratio so a low-entropy-but-high-cardinality domain still scores.
+- **Answer-side data is missed:** exfil via large TXT/NULL/CNAME *answers* won't show in QNAME analysis. Parse `qtype_name` and `answers` for TXT/NULL/CNAME abuse and oversized responses.
+- **Validate the detector fires:** generate a known tunnel in a lab (`iodine`, `dnscat2 --dns`) to a controlled domain, run the parser over the resulting `dns.log`, and confirm the domain appears in `flagged_domains` with `high_entropy`/`long_labels`. Verify `#fields` header parsing by `zeek-cut query qtype_name answers` — a column-offset bug silently zeroes results.
+- **FP tuning:** baseline and whitelist CDN, AV/EDR telemetry, and cloud SaaS domains that legitimately produce long, high-cardinality subdomains before alerting.
+
 ## Prerequisites
 
 - Python 3.9 or later with math and collections modules (stdlib)

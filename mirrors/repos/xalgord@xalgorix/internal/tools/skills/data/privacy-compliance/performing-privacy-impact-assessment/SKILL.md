@@ -39,6 +39,28 @@ nist_csf:
 - When building automated privacy governance and assessment pipelines
 - When preparing for regulatory audits or demonstrating accountability obligations
 
+## Coverage Gaps & Validation
+
+PIAs/DPIAs most often understate risk because the data-flow map is incomplete
+or the risk ratings are self-attested with no evidence behind them:
+
+- **Missing data flows:** the assessment captures the happy-path collection and
+  storage but omits backups, replicas, analytics exports, log pipelines, and
+  the sharing leg to third-party/sub-processors. Validate the flow map against
+  actual egress logs and the Art. 30 RoPA, not just the system diagram.
+- **Third parties and sub-processor chains skipped:** a processor is listed but
+  its own sub-processors (and their transfer destinations) are not. Confirm DPAs
+  and a current sub-processor list exist for every external recipient.
+- **Cross-border transfers unsupported:** transfers to non-adequate regions are
+  noted but the safeguard (SCCs + transfer impact assessment) is absent or
+  stale. Trace the real storage/processing region, not the contract.
+- **Screening gaps (Art. 35 triggers):** large-scale, systematic-monitoring, or
+  special-category processing slips through as "no DPIA required." Re-run the
+  ICO screening checklist against the actual data categories.
+- **Self-attested risk scores:** likelihood/impact ratings recorded without
+  evidence. Validate high-maturity claims with control test output or metrics,
+  and confirm remediation items have owners and dates before sign-off.
+
 ## Prerequisites
 
 - Familiarity with GDPR, CCPA/CPRA, and NIST Privacy Framework concepts

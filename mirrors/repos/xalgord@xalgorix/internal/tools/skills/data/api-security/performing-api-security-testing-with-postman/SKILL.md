@@ -36,6 +36,16 @@ nist_csf:
 
 **Do not use** against production APIs without authorization. Postman security testing involves sending potentially malicious payloads.
 
+## Most Often Missed & How to Confirm
+
+- **Dynamic auth, not hardcoded tokens:** use a collection pre-request script to refresh tokens and run the suite once per role environment - static tokens expire and mask role gaps.
+- **Multi-role matrix:** test each endpoint as unauthenticated, regular user, and admin; the "401 vs 200" gap only surfaces with all three.
+- **Assert on body, not just status:** a 200 can still leak data - assert sensitive fields are absent and that BOLA responses don't echo the victim's object.
+- **Newman exit codes:** use `--bail`/check the exit status or failing security tests pass silently in CI.
+- **Coverage drift:** regenerate the collection from the latest OpenAPI so new endpoints aren't skipped.
+
+**How to confirm a hit (avoid false negatives):** a failed assertion is real only when reproduced with a fresh token and verified against a second account (the "other user" data actually returned). **Don't conclude negative until you've** run every role environment, asserted on response bodies/headers, tested write methods (PUT/PATCH/DELETE), and confirmed the collection covers all current endpoints.
+
 ## Prerequisites
 
 - Postman Desktop or web application with an active workspace

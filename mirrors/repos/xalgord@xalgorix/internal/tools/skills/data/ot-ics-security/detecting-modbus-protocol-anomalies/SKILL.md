@@ -46,6 +46,13 @@ nist_csf:
 
 **Do not use** for securing Modbus communications end-to-end (Modbus has no native security; see implementing-network-segmentation-for-ot for firewall-based controls), for non-Modbus protocol monitoring (see detecting-anomalies-in-industrial-control-systems for multi-protocol), or for active fuzzing of Modbus implementations (see performing-plc-firmware-security-analysis).
 
+## Detection Gaps & Validation
+
+- **Legit-looking writes slip past sequence models.** Modbus has no authentication; an attacker replaying the authorized client IP with permitted writes (FC5/FC6/FC15/FC16) inside the baseline register map produces transactions a Markov/sequence model rates as normal. Add register value and setpoint bounds, not just function-code allowlisting.
+- **Per-pair, per-mode baselines or you drown in false positives.** Polling intervals and function-code mixes differ by master->slave pair and operating mode; a global baseline flags every shift change and batch transition. Exclude maintenance windows explicitly.
+- **Coverage gaps.** TCP/502 SPAN monitoring misses Modbus RTU serial behind gateways; unit ID 0 broadcast writes affect all slaves simultaneously and deserve a dedicated rule.
+- **Validate safely.** Run the detector over a recorded pcap with injected anomalies (unauthorized FC, broadcast write, non-zero protocol-ID violation, off-interval poll) offline. Never fuzz or write to a live device. Confirm each alert separates an attack from an authorized engineering change recorded in the change log.
+
 ## Prerequisites
 
 - Network SPAN/TAP access to monitor Modbus/TCP traffic (port 502)

@@ -189,8 +189,11 @@ Place these directives at the very top of the body, before the first heading, in
 | **Persona** | Optional | `**Persona:** You are a <role>. <mindset or goal>.` | Analytical/generative/multi-mode skills |
 | **Thinking mode** | Optional | `**Thinking mode:** Use \`ultrathink\` for <task>. <Why deep reasoning matters>.` | Deep analysis: profiling, security auditing, root cause analysis |
 | **Modes** | Optional | `**Modes:**` section listing each invocation mode and its sub-agent strategy | Skills invoked in distinct contexts (audit, coding, review, code understanding...) |
+| **Dependencies** | Optional | `**Dependencies:**` list of required binaries with install commands | Skills that require external tools beyond `go` (e.g. `benchstat`, `dlv`, `golangci-lint`) |
 
-All three are optional. A short procedural skill may have none. A complex orchestrating skill may have all three.
+All four are optional. A short procedural skill may have none. A complex orchestrating skill may have all four.
+
+The **Dependencies** block lists only non-trivial developer tools — skip universal system utilities (e.g. `curl`, `git`). Prefer `go install` over `brew install` when the tool provides a Go install path; use `brew install` only for tools without one (e.g. `protoc`). Place this block last among the top-of-body directives, just before the first `#` heading.
 
 #### Persona (optional)
 

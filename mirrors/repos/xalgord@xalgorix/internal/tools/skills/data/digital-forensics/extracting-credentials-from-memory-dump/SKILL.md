@@ -35,6 +35,14 @@ nist_csf:
 - When investigating lateral movement and pass-the-hash/pass-the-ticket attacks
 - For recovering encryption keys or authentication tokens from process memory
 
+## Detection Gaps & Validation
+- **Credential Guard defeats LSASS scraping.** When VBS/Credential Guard is enabled, derived secrets (NTLM, Kerberos keys) live in the isolated LSAIso process and `pypykatz`/`mimikatz`/`windows.lsadump` return little or nothing. Confirm Credential Guard state before concluding "no credentials present."
+- **No plaintext by default.** WDigest plaintext requires `UseLogonCredential=1` (HKLM\SYSTEM\...\WDigest); on Windows 8.1+ it is off, so an empty WDigest field is expected, not a tool failure.
+- **RunAsPPL / LSA Protection** blocks process access to lsass.exe, so a memory image taken without it (or an offline dump) is required; live `windows.memmap --pid <lsass>` may yield smeared/partial data.
+- **Volatility symbol mismatch = false negatives.** A wrong build/symbol table makes `windows.hashdump`/`pslist` return empty. Verify with `windows.info` and confirm the lsass PID is actually present before trusting an empty result.
+- **Interpretation false positives:** logon sessions hold **stale** credentials from earlier users still resident in memory — a recovered hash does not prove that account logged in during the incident window.
+- **Validate / cross-corroborate:** reconcile recovered hashes offline against SAM+SYSTEM/SECURITY via `secretsdump.py` (RID 500 should match), and tie each session to Security.evtx 4624/4672 logon events. Crack or pass-the-hash confirmation proves the hash is live, not artifacted.
+
 ## Prerequisites
 - Memory dump in raw, ELF, or crash dump format
 - Volatility 3 with Windows symbol tables

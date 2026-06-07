@@ -38,6 +38,14 @@ nist_csf:
 
 **Do not use** for enterprise IT firewall deployment, for perimeter firewall between IT and OT (use Palo Alto/Fortinet at the DMZ), or for environments using only IP-based protocols without OT-specific DPI needs.
 
+## Common Misconfigurations & Verification
+
+- **Left in monitor/learning mode.** A Tofino deployed inline but configured to log-only (or with an overly broad allow rule) inspects nothing. Verify the default-deny rule is last and that DPI policies are in enforcement, not test, mode.
+- **Fail-open vs fail-closed mismatch.** Fail-open preserves process availability but means a failed appliance silently stops protecting; confirm the failsafe choice is deliberate and documented per zone, and that loss of the appliance raises an alert.
+- **DPI not actually filtering function codes.** A Modbus allow rule that omits function-code restrictions passes FC5/FC6/FC15/FC16 writes; confirm read-only zones block write FCs and that S7comm CPU-stop (0x29) and program download (0x1A) are blocked for HMI sources.
+- **Purdue bypass around the firewall.** A dual-homed engineering workstation or an unmanaged switch path lets traffic skip the Tofino entirely; enumerate multi-homed assets before trusting the boundary.
+- **Verify without disrupting the process.** Validate during a maintenance window: from an unauthorized source attempt a blocked write (must be denied and logged) and confirm legitimate read polling still succeeds. Review blocked-packet and DPI-violation counters rather than injecting commands at a running controller.
+
 ## Prerequisites
 
 - Tofino Xenon appliance or Tofino virtual appliance with appropriate license

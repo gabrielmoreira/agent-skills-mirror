@@ -41,6 +41,15 @@ nist_csf:
 
 **Do not use** for business email compromise (BEC) involving compromised internal accounts; use BEC response procedures which focus on account takeover investigation.
 
+## Common Misconfigurations & Verification
+
+- **Password reset without session/token revocation:** the classic miss. AiTM kits (Evilginx, EvilProxy) steal the *session cookie*, so the attacker stays logged in after a password change. Always `Revoke-AzureADUserAllRefreshToken` (or revoke sign-in sessions) AND reset the password — and re-verify MFA, since AiTM defeats it.
+- **Purge that tips off the campaign / misses copies:** a soft-delete or subject-only search leaves the mail in some mailboxes and in Sent/forwarded copies. Use a precise Content Search (sender + URL + message-ID) and hard-delete, then confirm zero remaining hits.
+- **Attacker persistence left behind:** after credential entry, check for inbox forwarding/redirect rules, mailbox delegation, and malicious OAuth app grants — resetting the password does not remove these. Removing them is required or the attacker keeps reading mail.
+- **Quishing/AiTM detection gaps:** URL scanners can't decode QR images and rewrap-only gateways miss the real landing page; detonate the decoded URL in a sandbox.
+
+**Verify containment held:** confirm the purge returned 0 remaining copies across all mailboxes; confirm old sessions are dead (no successful sign-ins post-revocation in the sign-in logs); confirm forwarding rules / OAuth grants are gone; and review the exposure-window sign-in and mail-access logs of each compromised account for exfiltration before closing.
+
 ## Prerequisites
 
 - Email security gateway with message trace and quarantine capabilities (Microsoft Defender for Office 365, Proofpoint, Mimecast)

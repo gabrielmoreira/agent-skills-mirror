@@ -34,6 +34,14 @@ Implement SAML 2.0 Single Sign-On (SSO) using Okta as the Identity Provider (IdP
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Unsigned or weakly signed assertions accepted:** the SP must reject responses where the `<ds:Signature>` is missing, uses SHA-1, or does not chain to Okta's IdP cert. Test by deleting the signature element in SAML Tracer and confirming the SP rejects the login rather than silently accepting it.
+- **Missing Audience/Recipient/Destination validation:** an assertion minted for another SP must be rejected. Confirm `AudienceRestriction` matches your SP Entity ID exactly, and that `InResponseTo` is validated to block assertion replay and unsolicited IdP-initiated injection where you expect SP-initiated.
+- **XML Signature Wrapping (XSW):** verify the SP binds the verified signature to the asserted `<Subject>` and ignores a second injected unsigned assertion.
+- **Attribute/role spoofing:** ensure roles and groups are read only from the signed `AttributeStatement`, not from a user-editable claim or NameID, and keep clock-skew tolerance to a few minutes.
+- **Verify:** confirm `NotBefore`/`NotOnOrAfter` rejection of stale assertions, that SLO terminates sessions on both IdP and SP, and that certificate rotation works by configuring both old and new Okta signing certs before cutover.
+
 ## Prerequisites
 
 - Familiarity with identity access management concepts and tools

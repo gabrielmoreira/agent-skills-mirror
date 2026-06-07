@@ -36,6 +36,15 @@ The Diamond Model of Intrusion Analysis provides a structured framework for anal
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Empty core features break pivots:** events missing one of the four vertices (Adversary/Capability/Infrastructure/Victim) silently drop out of `find_pivots()`, which only pivots on non-empty fields. Validate every `DiamondEvent` populates all four before adding it.
+- **Unnormalized infrastructure values:** `1.2.3.4`, `1.2.3.4:443`, and `hxxp://1.2.3.4` are treated as distinct infrastructure nodes, so shared-infra pivots are missed. Canonicalize values before graphing.
+- **Timestamp format drift:** `build_activity_thread()` sorts lexically on the `timestamp` string - mixed formats (epoch vs ISO-8601) corrupt thread ordering. Enforce UTC ISO-8601.
+- **Capability not mapped to ATT&CK:** leaving `mitre_techniques` empty prevents cross-event capability correlation and ATT&CK-based clustering of activity groups.
+- **Over-merging activity groups:** clustering threads on shared infrastructure alone (CDN, shared host) creates false activity groups - require a capability or adversary pivot as well.
+- **Verification:** confirm pivot output groups only events with >1 shared value, render the activity-attack graph and check edges are chronological, and verify each event resolves to valid ATT&CK technique IDs.
+
 ## Prerequisites
 
 - Python 3.9+ with `networkx`, `stix2`, `graphviz` libraries

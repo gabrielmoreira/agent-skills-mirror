@@ -40,6 +40,17 @@ nist_csf:
 
 **Do not use** for signing artifacts that require air-gapped or offline signing workflows where OIDC authentication is unavailable, for environments that cannot reach the public Sigstore infrastructure (Fulcio, Rekor) and have no private instance deployed, or as a replacement for traditional PGP/GPG signing where regulatory compliance mandates specific key management procedures.
 
+## Common Misconfigurations & Verification
+
+The classic Sigstore failure is signing everything correctly while verification is either absent or so loose it proves nothing.
+
+- **Signing without enforced verification:** images are signed in CI but no admission gate runs `cosign verify`, so unsigned images still deploy. Verification must be enforced at admission (Policy Controller / Kyverno), not left as a manual step.
+- **Unpinned issuer or wildcard identity:** `cosign verify` without `--certificate-oidc-issuer`, or with `--certificate-identity-regexp=.*`, accepts a signature from *any* OIDC provider or *any* identity — defeating the entire point of keyless signing. Pin both the issuer (`https://token.actions.githubusercontent.com`) and a tight identity regex (`https://github.com/myorg/myrepo/.*`).
+- **Signing the tag, not the digest:** `cosign sign myimage:latest` breaks verification the moment the tag is repointed; always sign `myimage@sha256:...`.
+- **Skipping Rekor / TUF trust:** disabling the transparency-log check (`--insecure-ignore-tlog`) or not running `cosign initialize` removes the tamper-evidence and root-of-trust guarantees.
+
+**Verify enforcement, not just signing:** after wiring the policy, attempt to deploy (1) an unsigned image and (2) an image signed by a *different* identity/issuer, and confirm both are **rejected** at admission; then confirm the legitimate CI-signed digest passes and its entry is retrievable from Rekor by hash. A pipeline where you have never watched an unsigned image get blocked has not actually enforced anything.
+
 ## Prerequisites
 
 - Cosign CLI v2.4+ installed (`go install github.com/sigstore/cosign/v2/cmd/cosign@latest` or binary release)

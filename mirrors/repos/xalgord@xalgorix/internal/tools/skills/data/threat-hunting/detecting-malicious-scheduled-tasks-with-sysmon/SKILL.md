@@ -51,6 +51,16 @@ targeting remote systems.
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **schtasks.exe isn't the only path.** Tasks created via the Schedule COM API (`ITaskService`), PowerShell `Register-ScheduledTask`, or a direct XML drop into `C:\Windows\System32\Tasks\` never spawn schtasks.exe, so Sysmon EID 1 misses them. Cover Security **4698** (task registered) and Sysmon **EID 11** (file create in `\Tasks\`) as well.
+- **4698 is off by default.** It requires "Audit Other Object Access Events" — verify with `auditpol /get /subcategory:"Other Object Access Events"` or you get zero registration events.
+- **LOLBin/legacy variants:** `at.exe` and COM-based creation bypass schtasks command-line rules entirely.
+- **Hidden/Tarrask tasks:** deleting the task's `SD` (security descriptor) value under `HKLM\...\Schedule\TaskCache\Tree\` hides it from `schtasks` and the Task Scheduler UI. Hunt Sysmon EID 12/13 registry events for a task `Tree` key created without a corresponding `SD` value.
+- **Payload red flags:** alert when the task Action contains `-enc`/`-e`/`FromBase64String`, or runs from `C:\Users\Public`, `C:\ProgramData`, `%APPDATA%`, or `%TEMP%`; and on remote creation (`schtasks /s`).
+- **Validate the rule fires:** run `schtasks /create /tn test /tr calc.exe /sc minute` and confirm EID 1 + 4698 + EID 11 all fire; repeat via `Register-ScheduledTask` to confirm the non-schtasks path is covered.
+- **Tune false positives:** Google, Edge, and Adobe updaters create tasks routinely. Baseline by task path + signed binary and alert only on new/unsigned authors.
+
 ## Prerequisites
 
 - Sysmon installed with a detection-focused configuration (e.g., SwiftOnSecurity or Olaf Hartong)

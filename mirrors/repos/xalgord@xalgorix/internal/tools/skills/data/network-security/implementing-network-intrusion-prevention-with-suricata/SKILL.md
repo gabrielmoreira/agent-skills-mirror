@@ -38,6 +38,15 @@ Suricata is a high-performance, open-source network threat detection engine deve
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **IDS tap can never block:** `drop` rules do nothing on an AF_PACKET SPAN/TAP interface — Suricata only sees a copy. Prevention requires inline placement (NFQUEUE in the `FORWARD` path, or AF_PACKET `copy-mode: ips` bridging two NICs). Confirm placement before trusting any `drop`.
+- **Rules still `alert`, not `drop`:** ET Open ships most signatures as `alert`; even inline they won't block until converted (`modify.conf` `re:...` then `suricata-update`). Grep `fast.log` for `[Drop]` vs `[wDrop]` to see what actually dropped.
+- **NFQUEUE rule missing or `fail-open` masking:** if the `-j NFQUEUE` rule isn't loaded (or `fail-open: yes` plus a crashed engine), traffic flows uninspected. Verify with `iptables -L FORWARD -v` and rising `nfq` counters.
+- **`HOME_NET` wrong:** an over-broad or default `HOME_NET` makes directional rules (`$EXTERNAL_NET -> $HOME_NET`) never match your real subnets.
+
+**Verification:** `suricata -T -c suricata.yaml` for config sanity, then trigger a known sig (`curl http://testmynids.org/uid/index.html`) and confirm an `alert` in `eve.json`; for IPS, confirm the request is actually **blocked** and `[Drop]` appears in `fast.log`. Check `suricatasc -c dump-counters | grep -E 'kernel_drops|nfq'` — high kernel_drops means you're missing packets, and `[wDrop]` (would-drop) means you're still effectively in IDS mode.
+
 ## Prerequisites
 
 - Linux server (Ubuntu 22.04+ or CentOS 8+) with 4+ CPU cores and 8GB+ RAM

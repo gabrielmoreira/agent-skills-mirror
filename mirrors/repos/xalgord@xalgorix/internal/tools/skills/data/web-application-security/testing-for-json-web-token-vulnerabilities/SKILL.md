@@ -31,6 +31,18 @@ nist_csf:
 - During penetration testing of single sign-on (SSO) systems
 - When auditing JWT library configurations for known vulnerabilities
 
+### How to CONFIRM a Hit (avoid false negatives)
+
+- **Positive signal**: a token YOU forged (alg=none, RS256→HS256 confusion, cracked HMAC secret, or kid/jku/x5u abuse) is **ACCEPTED by a protected endpoint** — returns 200 plus the privileged data/action for the impersonated user. Merely decoding or modifying the token proves nothing.
+- Confirm by hitting a real authz-gated route (e.g. `/api/admin/*`) with the forged token and verifying you receive the restricted resource, not a generic page or 401/403.
+- A 200 to a public route is NOT a hit; a single 401/403 is NOT a clean negative until you have varied the attack.
+- Do NOT conclude "not vulnerable" until you have tried:
+  - **alg none** in every case: `none`, `None`, `NONE`, `nOnE`, with empty signature.
+  - **algorithm confusion**: sign with the RSA public key (from JWKS/cert) as the HMAC secret — fetch the key correctly first.
+  - **weak secret**: run hashcat/jwt_tool wordlists; if cracked, forge and confirm acceptance.
+  - **kid/jku/x5u**: path traversal to an empty/known file, SQLi in `kid`, and pointing `jku`/`x5u` to your server.
+  - **claim tampering** (role/sub/admin) re-signed with the recovered key, plus expired-token and post-logout replay.
+
 ## Prerequisites
 - jwt_tool (Python JWT exploitation toolkit)
 - Burp Suite with JWT Editor extension

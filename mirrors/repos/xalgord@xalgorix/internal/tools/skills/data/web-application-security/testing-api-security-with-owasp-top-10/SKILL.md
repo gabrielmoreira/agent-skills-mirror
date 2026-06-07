@@ -32,6 +32,18 @@ nist_csf:
 - When reviewing API security posture against the OWASP API Security Top 10 (2023)
 - For validating API gateway security controls and rate limiting effectiveness
 
+### How to CONFIRM a Hit (avoid false negatives)
+
+- **Positive signal**: each OWASP-API risk needs its **own concrete proof** that the protected behavior actually occurred — confirm in the response body/effect, never from a status code alone.
+- Tie every finding to a specific confirmation step for that risk:
+  - **API1 BOLA**: use a **two-account diff** — account A's token retrieves account B's object and returns B's real data (not an empty/`403`). Iterate IDs to show scope.
+  - **API2 Broken Auth**: confirm `alg:none`/weak-secret JWT is **accepted** and grants access, or that brute-force has no lockout (many attempts, no `429`).
+  - **API3 BOPLA / mass assignment**: confirm the injected field (`role:admin`, `balance`) **persisted** by re-reading the object, plus confirm sensitive fields actually returned.
+  - **API4/6 rate limiting**: confirm requests are processed past the expected threshold with **no `429`/throttle**, and the side effect (OTP/email) actually fired.
+  - **API5 Function-level auth**: confirm a low-priv token **successfully executes** an admin action (state changed), not just reached the route.
+  - **API7 SSRF**: confirm via returned metadata content or an **out-of-band callback**, not a generic `200`.
+- Do NOT mark a risk "PASS" until you've tried method switching, alternate API versions (`/v1` vs `/v2`), and ID/format variations (numeric, UUID, base64).
+
 ## Prerequisites
 
 - **Authorization**: Written scope document covering all API endpoints to be tested

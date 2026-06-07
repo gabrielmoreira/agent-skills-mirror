@@ -45,6 +45,14 @@ NTLM relay attacks intercept and forward NTLM authentication messages to gain un
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Same-subnet relays defeat the IP-hostname mismatch.** When the relay source and victim share a subnet (or the attacker preserves `WorkstationName`), the 4624 WorkstationName-vs-IpAddress check produces no anomaly.
+- **SMB-signing audit covers only SMB.** LDAP and HTTP relay paths — notably AD CS web enrollment (ESC8) and PetitPotam/PrinterBug coercion — are missed. Watch 4624 Type 3 NTLMSSP targeting the CA enrollment host.
+- **Kerberos-only environments are still vulnerable** via authentication coercion (PetitPotam EFSRPC, PrinterBug Spoolss): hunt Event 5145 named-pipe access to `\pipe\efsrpc`, `\pipe\spoolss`, `\pipe\lsarpc`, `\pipe\netlogon`, `\pipe\samr`.
+- **Validate the hunt fires:** in a lab run `Responder` + `ntlmrelayx.py` (or a coercer like `PetitPotam.py`) and confirm 4624 LogonType 3 with `AuthenticationPackageName=NTLM`, a `WorkstationName`≠resolved-IP, and 5145 pipe access all appear and alert.
+- **FP tuning:** legacy apps and scanners that still use NTLM, plus NAT/load-balancers that legitimately cause IP-hostname mismatches — whitelist by known service accounts and source ranges.
+
 ## Prerequisites
 
 - Python 3.9+ with Windows Event Log access or exported logs

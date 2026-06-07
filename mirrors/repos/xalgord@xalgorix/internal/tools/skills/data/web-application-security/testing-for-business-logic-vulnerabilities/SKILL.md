@@ -31,6 +31,18 @@ nist_csf:
 - When evaluating rate-limited features like vouchers, coupons, referrals, and rewards systems
 - During security assessments of financial applications, voting systems, or any application with critical business rules
 
+### How to CONFIRM a Hit (avoid false negatives)
+
+- **Positive signal**: the abused flow produces an out-of-policy outcome with a REAL state change — negative/zero price accepted, quantity or total tampered, a required step skipped, a one-time action replayed, or a race that double-spends.
+- Confirm the **resulting state**, not just an HTTP 200: re-fetch the order/cart/balance/reward and verify the tampered value persisted (e.g., order total is $0.01, balance went negative, coupon counted twice).
+- A 200 alone is NOT a hit (the server may recompute/ignore your value); an error alone is NOT a clean negative (the limit may only be client-side or bypassable via another path).
+- Do NOT conclude "not vulnerable" until you have tried:
+  - **Value tampering**: negative, zero, decimal, and overflow values for price/quantity/total submitted server-side (not just in the UI).
+  - **Step-skipping**: jump straight to confirm/dashboard, skipping payment, email verification, MFA, or approval.
+  - **Replay/reuse**: apply the same coupon/token/referral multiple times and confirm the cap was exceeded.
+  - **Race conditions**: fire N parallel requests (Turbo Intruder / single-packet) and confirm a limit-once action happened more than once.
+  - **Reward/role abuse**: self-referral, coupon stacking, earn-then-cancel, or inviting a role higher than your own — then verify the credit/role actually stuck.
+
 ## Prerequisites
 
 - **Authorization**: Written penetration testing agreement covering business logic testing

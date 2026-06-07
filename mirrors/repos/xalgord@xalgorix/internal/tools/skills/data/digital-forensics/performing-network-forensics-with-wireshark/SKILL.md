@@ -30,6 +30,16 @@ nist_csf:
 - During malware analysis to identify network indicators of compromise
 - For extracting files, credentials, and artifacts transferred over the network
 
+## Detection Gaps & Validation
+
+A PCAP only contains what the sensor actually saw, decrypted to the depth your tooling supports. Account for these blind spots:
+
+- **Capture truncation and drops.** A snaplen below the MTU (`tcpdump -s` too small) gives you headers without payloads, so `--export-objects` silently produces nothing. Run `capinfos` and check for dropped packets, snaplen, and whether the duration covers the incident window — "no files extracted" is often truncation, not absence. Missing one direction (asymmetric routing/SPAN) breaks stream reassembly.
+- **Encrypted payloads hide the content, not the metadata.** TLS 1.3/QUIC, DoH/DoT, and SSH mean you can't read bodies without keys. Pivot to what stays visible: SNI (often, but ECH/encrypted ClientHello blocks it), JA3/JA3S fingerprints, certificate issuers/validity, connection sizes, and timing. Don't conclude traffic is benign just because you can't decrypt it.
+- **C2 hides in normal-looking flows.** Beaconing with jitter defeats fixed-interval filters; domain fronting and traffic over 443/53 blend in. Validate a suspected beacon by computing inter-arrival variance across the whole capture and correlating the destination with endpoint process/DNS logs, not a single `frame.time_delta` filter.
+- **Cross-corroborate and verify, don't trust one heuristic.** Reassembled TCP streams can be incomplete if SYN/retransmits are missing; carved files may be partial. Hash every extracted object and check it against threat intel/VirusTotal before calling it malware, and confirm the file actually transferred (response 200 + content-length) versus an aborted request.
+- **Interpretation false positives.** Long/random DNS labels are frequently CDNs, AV telemetry, and analytics — not always tunneling; self-signed certs are common on internal services. NetworkMiner OS/port guesses are heuristic. Verify clock/timezone of the capture host before building a timeline, and treat plaintext "credentials" as candidates until you confirm the service and account.
+
 ## Prerequisites
 - Wireshark or tshark installed for packet analysis
 - PCAP/PCAPNG files from network captures (tcpdump, Wireshark, network TAP)

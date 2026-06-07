@@ -37,6 +37,14 @@ Use this skill when:
 
 **Do not use** for deep forensic investigation — escalate to Tier 2/3 after initial triage confirms malicious activity.
 
+## Detection Gaps & Validation
+
+- **Triaging notables in isolation:** sorting the Incident Review queue by urgency and closing one event at a time misses the attack chain — the same `src`/`dest` may have a low brute-force notable plus a separate TI match plus a proxy block that together are a confirmed intrusion. Group by `src`/`dest` and pivot across `index=proxy OR index=firewall` before dispositioning.
+- **Brute force "no compromise" called too early:** counting 4625 failures without checking for a trailing 4624 success (or a 4648 explicit-credential logon to a new host) closes a real account-takeover as benign. Always confirm whether the failures were followed by success from the same `src`.
+- **Urgency ≠ truth:** ES urgency depends on asset/identity priority lookups — a stale or unpopulated `asset_lookup_by_cidr`/`identity_lookup_expanded` mislabels a domain controller as low priority, burying a critical event. Verify the asset/identity context resolved before trusting the queue order.
+- **CIM/TI gaps hide corroboration:** if a source isn't CIM-normalized, `tstats`/`datamodel` and TI-match searches return nothing and the alert looks uncorroborated when it isn't. Confirm the relevant data model is populated for the hosts in scope, and that TI `weight` reflects a current feed, not an expired one.
+- **Validate before disposition:** a true positive needs corroborating evidence across at least two sources (e.g. endpoint alert + proxy C2 callback); a false positive needs the benign root cause identified and a tuning/suppression note so it doesn't recur. Record sources examined and rationale in the notable comment so Tier 2 can act without re-triaging — an undocumented close is itself a gap.
+
 ## Prerequisites
 
 - Splunk Enterprise Security 7.x+ with Incident Review dashboard configured

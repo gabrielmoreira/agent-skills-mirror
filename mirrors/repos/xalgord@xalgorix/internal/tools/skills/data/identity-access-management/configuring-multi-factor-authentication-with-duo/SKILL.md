@@ -34,6 +34,14 @@ Deploy Cisco Duo multi-factor authentication across enterprise applications, VPN
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Legacy-auth bypass:** Duo protects the interactive logon but IMAP/POP/SMTP, basic-auth, and older RADIUS clients skip the second factor entirely. Verify there is no auth path that reaches the directory without traversing the Duo proxy, and block legacy protocols at the IdP — an MFA control that any protocol can sidestep is not enforced.
+- **Failmode set to "safe" (fail-open):** `failmode=safe` lets users in when Duo cloud is unreachable, so an attacker who blocks Duo connectivity defeats MFA. Confirm `failmode=secure` for privileged and internet-facing apps; grep the `authproxy.cfg` and test by blocking outbound 443 to Duo.
+- **MFA fatigue / push bombing:** plain Duo Push lets attackers spam approvals. Verify Verified Push (code entry) or FIDO2 is required for privileged groups and that SMS/phone fallback is disabled for app-capable users.
+- **Bypass and remembered-device sprawl:** `bypass` status accounts and long "remembered device" windows silently exempt users. Confirm bypass is limited to monitored break-glass accounts and remembered-device duration is short (or off) for privileged groups.
+- **Verification:** in the Duo Admin Panel pull the Authentication Log and confirm every privileged logon shows a second factor; list users with `status=bypass`; attempt an IMAP/basic-auth login and confirm it is blocked, not silently allowed.
+
 ## Prerequisites
 
 - Familiarity with identity access management concepts and tools

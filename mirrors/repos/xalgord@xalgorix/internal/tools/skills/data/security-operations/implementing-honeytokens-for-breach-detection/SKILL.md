@@ -32,6 +32,14 @@ nist_csf:
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Token never alerts because it was whitelisted:** vuln scanners, DLP crawlers, backup agents and EDR file-indexers trip canaries constantly, so teams add broad allowlists that also swallow real attacker triggers. Scope suppression to specific source IPs/process names, never to the token itself.
+- **AWS canary key with no trigger path:** a fake key in `~/.aws/credentials` only alerts when used against AWS — confirm by running `aws sts get-caller-identity` with the key and verifying the Canarytokens/CloudTrail alert fires. A key an attacker can never reach is decoration, not detection.
+- **DNS canary blocked by egress filtering:** internal resolvers that drop unknown external lookups mean the beacon never reaches `canarytokens.org`. Test with `nslookup <token-hostname>` from the segment where the token actually lives, not from your laptop.
+- **Document beacons defeated by offline/preview readers:** Office "Protected View" and many PDF viewers block the callback. Verify the beacon fires in the target's real software, and place tokens where attackers exfiltrate (file shares, password vaults), not just open.
+- **Confirm the alert pipeline, not just creation:** trigger each token once at deploy time and confirm it reaches the SOC channel (webhook/email). A created token with an unverified webhook is a silent failure.
+
 ## Prerequisites
 
 - Familiarity with security operations concepts and tools

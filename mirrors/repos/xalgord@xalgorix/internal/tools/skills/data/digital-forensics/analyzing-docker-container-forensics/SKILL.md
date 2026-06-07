@@ -30,6 +30,14 @@ nist_csf:
 - When examining container escape attempts or privilege escalation
 - For auditing container configurations and identifying misconfigurations
 
+## Detection Gaps & Validation
+
+- **Ephemeral evidence is lost first:** `docker stop`/`rm` destroys the writable layer and in-memory state. Before anything else, `docker pause` then `docker export`/`docker commit` the running container and dump host process memory (`/proc/<pid>/`), because a removed container's overlay2 `diff` dir under `/var/lib/docker/overlay2/<id>/diff` may already be reaped.
+- **Most-missed artifacts:** the json-file logs at `/var/lib/docker/containers/<id>/<id>-json.log`, `config.v2.json`/`hostconfig.json` (mounts, caps, env secrets), and the image `history` (`RUN` lines that added a backdoor). `docker logs` returns nothing if the container used a `syslog`/`none`/`journald` logging driver - pivot to host journald.
+- **Anti-forensics that defeats this analysis:** `docker diff` only reflects the writable layer, so files baked into a malicious image layer (or written to a `tmpfs`/anonymous volume) never appear as "changed." Compare layers with `container-diff`/`dive` against the pulled base image and inspect each `layer.tar` directly.
+- **Validate with a second source:** corroborate a suspect file's mtime in the container against host overlay2 inode times, the json-log timestamps, and registry/pull events; confirm a "container escape" via host `auditd`/syslog and the mounted `docker.sock` or `Privileged`/`CAP_SYS_ADMIN` config, not the container's own logs.
+- **Interpretation pitfalls (false positives):** container clock equals host clock, but image build times are UTC from the build host (skew); package managers legitimately write to `/tmp` and `/var`; and a non-root `User` does not prove the process stayed unprivileged if dangerous capabilities were added.
+
 ## Prerequisites
 - Docker CLI access on the forensic workstation
 - Access to the Docker host file system (forensic image or live)

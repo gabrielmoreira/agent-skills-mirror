@@ -36,6 +36,15 @@ OpenCTI is an open-source platform for managing cyber threat intelligence knowle
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Connector scope/TLP mismatches:** an enrichment connector only fires on observable types in its `CONNECTOR_SCOPE` -- Shodan scoped to `IPv4-Addr` silently ignores domains, and `VIRUSTOTAL_MAX_TLP=TLP:AMBER` skips TLP:RED observables with no error. Verify scope covers every type you ingest and that max-TLP matches your data classification.
+- **CONNECTOR_AUTO off:** with `CONNECTOR_AUTO=false`, enrichment never triggers on ingest and analysts assume IOCs are enriched when they are not.
+- **Token/ID collisions:** reused `CONNECTOR_ID` UUIDs or a wrong `OPENCTI_TOKEN` let connectors register but never consume the RabbitMQ queue -- work piles up invisibly.
+- **Confidence & dedup:** connectors that overwrite rather than merge clobber existing scores; STIX dedup keys on the observable value, so malformed `IPv4-Addr` values create duplicate nodes.
+
+To verify: submit a known observable and confirm the connector log shows it consumed the message and posted a `Note`/labels back (check the RabbitMQ queue is not backing up); confirm GreyNoise/SecurityTrails 404s and timeouts are caught (the `try/except` logs an error rather than leaving the observable silently un-enriched). Validate that confidence updates land on the indicator and that a TLP:RED observable is correctly skipped by an AMBER-capped connector. Run an IPv4-Addr and a Domain-Name end-to-end and confirm each routed to the right connectors.
+
 ## Prerequisites
 
 - Docker and Docker Compose for OpenCTI deployment

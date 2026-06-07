@@ -37,6 +37,15 @@ Shadow APIs are API endpoints operating within an organization's environment tha
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Spec-normalization blind spots:** path-templating mismatches (`/users/{id}` vs observed `/users/{uuid}`) make documented endpoints look undocumented (false positive) or hide real shadows; verify your PARAM_PATTERNS cover hashids, ULIDs, and multi-segment IDs.
+- **Non-/api prefixes missed:** the log filter `startswith('/api')`/`/v` drops shadow endpoints under `/internal`, `/graphql`, `/_next`, `/actuator`, host-based vhosts, and non-standard ports - widen capture before concluding "no shadows."
+- **Zombie/deprecated versions:** `v0`, `v1` left running after `v2` launch rarely appear in current traffic; enumerate from source/CI and cloud (Lambda URLs, ALB rules) too, not just logs.
+- **Low-traffic shadows stay invisible:** sampling or short capture windows miss endpoints hit a few times a day - correlate over a long window.
+
+**How to validate the detection fires:** stand up a deliberately undocumented test route, send traffic, and confirm it surfaces as shadow with correct risk scoring. **Tune false positives** by reconciling against every OpenAPI/Swagger source (not one file) and excluding health/metrics probes that are known-and-accepted but undocumented.
+
 ## Prerequisites
 
 - API gateway or reverse proxy with traffic logging (Kong, AWS API Gateway, Envoy)

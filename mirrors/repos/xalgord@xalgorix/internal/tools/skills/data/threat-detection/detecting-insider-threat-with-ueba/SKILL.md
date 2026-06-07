@@ -37,6 +37,14 @@ User and Entity Behavior Analytics (UEBA) moves beyond static rule-based detecti
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Variants most often missed:** **baseline poisoning** — a patient insider slowly ramps data-access volume over the 30-day rolling window so the mean/stddev shifts with them and the z-score never breaches threshold. Counter with longer fixed reference baselines, EWMA with capped adaptation, and absolute (not just relative) volume ceilings.
+- **Cold-start / sparse data:** new hires, role changes, and rarely-active service accounts have no stable baseline, so anomaly scores are meaningless or wildly noisy — fall back to peer-group medians until N days of data exist, and suppress scoring below a minimum event count.
+- **Peer-group errors:** mis-assigned or overly broad peer groups (e.g., "all of Engineering") hide deviations because a malicious user looks normal against a heterogeneous cohort; validate group homogeneity and re-derive groups when org/role attributes change.
+- **Validate the analytics fire:** replay a labeled scenario — off-hours logon (4624 outside baseline window) + large DLP/file-server egress + first-time access to a new share — and confirm the composite score crosses the SOC threshold. Inject a synthetic user whose volume is 5σ above peer median and verify ranking. Map exfil indicators to T1567/T1048 and privilege abuse to T1078.
+- **FP tuning:** suppress quarter-end/payroll/backup bursts, planned migrations, and admin maintenance windows via calendar-aware allowlists; require ≥2 independent indicators before alerting to cut single-signal noise.
+
 ## Prerequisites
 
 - Elasticsearch 8.x or OpenSearch 2.x cluster with security audit data

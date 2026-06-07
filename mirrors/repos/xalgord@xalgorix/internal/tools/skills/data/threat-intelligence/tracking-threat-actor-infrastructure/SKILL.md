@@ -37,6 +37,14 @@ Threat actor infrastructure tracking involves monitoring and mapping adversary-c
 - When establishing standardized procedures for security team workflows
 - When integrating threat intelligence or vulnerability data into operations
 
+## Detection Gaps & Validation
+
+- **Pivot false positives:** pivoting on shared attributes balloons into benign infrastructure - a shared CDN IP, a default `org`, a Let's Encrypt issuer, or a JARM/JA3S hash common to thousands of stock servers will "link" unrelated hosts. Pivot on high-specificity selectors (unique `ssl.cert.serial`, a self-signed CN like Sliver's `multiplayer`/`operators`, a distinctive `http.favicon.hash`, non-standard ports) and corroborate with a second pivot before claiming a cluster.
+- **Sinkholes and takedowns:** a "live" C2 IP/domain may be a sinkhole (researcher/registrar controlled) or already seized - check passive DNS for a sudden re-point into known sinkhole ranges and WHOIS for registrar holds before tracking it as active adversary infra.
+- **Source coverage gaps:** passive DNS providers see only what their sensors observed (regional/temporal blind spots), CT logs miss certs from non-logging or internal CAs, and Shodan/Censys scan windows lag - absence in one source is not absence. Query several (SecurityTrails + PassiveTotal + crt.sh + Censys).
+- **CT noise:** crt.sh returns every cert including wildcards and unrelated SANs; filter by issuance date and registration pattern, not raw count.
+- **How to confirm:** validate a discovered indicator before deploying - confirm it currently resolves/responds, that the fingerprint match is specific (not a generic default), and enrich via VirusTotal relations; set STIX `valid_from`/confidence to reflect that infrastructure rotates fast.
+
 ## Prerequisites
 
 - Python 3.9+ with `shodan`, `censys`, `requests`, `stix2` libraries

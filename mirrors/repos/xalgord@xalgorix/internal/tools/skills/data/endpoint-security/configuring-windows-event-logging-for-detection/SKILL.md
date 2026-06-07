@@ -35,6 +35,14 @@ Use this skill when:
 
 **Do not use** for Sysmon configuration (separate skill) or Linux audit logging.
 
+## Common Misconfigurations & Verification
+
+- **4688 logged without command line:** enabling the Process Creation subcategory is not enough — `ProcessCreationIncludeCmdLine_Enabled` (HKLM\...\Policies\System\Audit) must also be `1`, or every 4688 lands with a blank `CommandLine` and near-zero detection value. Verify the registry value AND a sample event.
+- **Advanced audit policy overridden by basic:** if "Force audit policy subcategory settings to override audit policy category settings" (SCENoApplyLegacyAuditPolicy) is not Enabled, legacy category settings win and your subcategories are ignored. Confirm with `auditpol /get /category:*`, not the GPO editor.
+- **Subcategory shows "No Auditing" on the host:** GPO can say Success/Failure while `auditpol` on the endpoint shows `No Auditing` due to merge/precedence. Validate on the target, not the GPMC.
+- **WEF subscription inactive:** `wecutil gr <subscription>` must list source computers as `Active`; a created-but-empty subscription forwards nothing. Check the collector's ForwardedEvents channel is actually filling.
+- **Verify end-to-end:** run Atomic Red Team T1059.001 (PowerShell) or spawn `cmd.exe /c whoami` and confirm a 4688 with the full command line reaches the SIEM, and 4104 script-block text appears in `Microsoft-Windows-PowerShell/Operational`. Also raise the Security log above the 20 MB default or events roll before forwarding.
+
 ## Prerequisites
 
 - Windows Server or Windows 10/11 systems with Group Policy management access

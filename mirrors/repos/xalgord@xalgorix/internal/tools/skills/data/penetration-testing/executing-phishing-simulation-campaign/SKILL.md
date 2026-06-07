@@ -36,6 +36,15 @@ nist_csf:
 
 **Do not use** without explicit written authorization from the organization's leadership, for actual credential theft beyond the authorized scope, for targeting individuals personally rather than professionally, or for sending phishing emails that could cause psychological harm or legal liability.
 
+## Most Often Missed & How to Confirm
+
+- **Report rate and SOC response time** — the metric that proves resilience is whether anyone reported the email and how fast detection/containment happened, not click counts. Track time-to-first-report and SOC action.
+- **MFA-bypass via session-token capture** — a credential-harvest page understates risk where MFA exists. When authorized, use Evilginx/Modlishka to demonstrate session-cookie theft defeats MFA, or explicitly record that MFA blocked access.
+- **Email-auth and gateway bypass evidence** — confirm whether the message actually reached the inbox past the secure email gateway and what the org's SPF/DKIM/DMARC posture is; "the email landed" plus weak DMARC is a concrete, fixable finding.
+- **Deliverability and pretext realism** — domain age/reputation, warm-up, and link-rewriting/sandbox detonation all shape results; a campaign blocked at the gateway tests the control, not the people, and that distinction must be reported.
+- **Departmental and high-value-target breakdown** — aggregate rates hide that finance/executives/help-desk are the real risk; segment results.
+- **How to confirm**: back every claim with GoPhish event logs (delivered/opened/clicked/submitted with timestamps), a captured session cookie replayed into a live authenticated session (MFA bypass), and gateway/DMARC headers showing pass/fail. Don't conclude the workforce is aware until you have measured the report rate alongside the click rate; don't conclude MFA protects the org until you have attempted a real-time relay (or documented why it was out of scope).
+
 ## Prerequisites
 
 - Written authorization from executive leadership specifying the campaign scope, target groups, and escalation procedures

@@ -35,6 +35,14 @@ Paste sites (Pastebin, GitHub Gists, Ghostbin, Dpaste, Hastebin) are frequently 
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+- **Ephemerality and coverage:** the Pastebin Scraping API streams only *recent public* pastes - private pastes, pastes removed within the polling interval, and content posted elsewhere (Ghostbin, Dpaste, Telegram) never appear. Poll frequently and fetch raw content immediately; a paste can be deleted minutes after posting, so cache it at detection time.
+- **API blind spots:** scraping requires a PRO/whitelisted IP, and GitHub code/Gist search is rate-limited and indexes only public, indexed content (not force-pushed-away commits). A "no results" run may mean throttling - log HTTP 403/429 and retry rather than treating an empty result as clean.
+- **Regex false positives:** credential patterns match test fixtures, docs examples, `AKIAIOSFODNN7EXAMPLE`-style placeholders, and expired keys. Require corroboration - an org keyword *plus* a credential pattern *plus* a plausible (non-example) value - before raising critical.
+- **Recycled combolists:** the same `email:password` pairs are reposted endlessly, so a hit is often an old breach, not a new one. Dedupe against prior findings and known breaches.
+- **How to confirm:** validate that a flagged credential/key is live and actually yours - match the email domain and test the key against the provider's metadata endpoint (non-destructively) to confirm currency before forcing resets.
+
 ## Prerequisites
 
 - Python 3.9+ with `requests`, `beautifulsoup4`, `regex`, `pymisp` libraries

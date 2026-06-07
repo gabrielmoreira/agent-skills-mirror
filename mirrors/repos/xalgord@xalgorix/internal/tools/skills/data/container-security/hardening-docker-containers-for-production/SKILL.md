@@ -33,6 +33,16 @@ Hardening Docker containers for production involves applying security best pract
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Exposed daemon socket without mTLS:** `"hosts": ["tcp://0.0.0.0:2376"]` with `tlsverify` missing/false is remote root. Verify: `ss -tlnp | grep -E '2375|2376'` and confirm `docker info` shows TLS enabled; `2375` (plaintext) should never listen.
+- **docker.sock mounted into a container:** `-v /var/run/docker.sock:/var/run/docker.sock` hands the container host control. Verify: `docker inspect <id> --format '{{.Mounts}}'`.
+- **Capabilities re-added after drop:** `--cap-drop ALL --cap-add SYS_ADMIN` (or NET_ADMIN) reintroduces escape primitives. Verify: `docker inspect --format '{{.HostConfig.CapAdd}}'`.
+- **`USER` overridden at runtime:** a non-root Dockerfile `USER 65534` is negated by `docker run --user 0`. Verify: `docker inspect --format '{{.Config.User}}'` and `docker exec <id> id`.
+- **Read-only rootfs with exec-able tmpfs:** `--read-only` but a `--tmpfs /tmp` lacking `noexec,nosuid` still allows dropped-binary execution.
+- **`no-new-privileges` absent:** confirm `--security-opt no-new-privileges:true` or daemon `"no-new-privileges": true`; check `docker inspect --format '{{.HostConfig.SecurityOpt}}'`.
+- **Verify the whole posture:** run `docker/docker-bench-security` and treat any `[WARN]` on sections 2 (daemon), 4 (images), and 5 (runtime) as actionable; `dockle` and `hadolint` for the image/Dockerfile.
+
 ## Prerequisites
 
 - Docker Engine 24.0+ installed

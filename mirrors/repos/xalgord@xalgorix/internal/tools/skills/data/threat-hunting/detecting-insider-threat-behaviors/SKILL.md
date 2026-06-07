@@ -37,6 +37,16 @@ nist_csf:
 - When EDR or SIEM alerts trigger on related indicators
 - During periodic security assessments and purple team exercises
 
+## Detection Gaps & Validation
+
+- **Network logs alone miss the highest-signal exfil.** SIEM-only hunting overlooks USB mass copy (Security 6416 PnP device, Microsoft-Windows-DriverFrameworks-UserMode 2003/2102), local printing, and photographing the screen. Add removable-media and DLP telemetry.
+- **Personal-cloud exfil blends with sanctioned use.** Uploads to personal OneDrive/Gmail/Dropbox look like normal SaaS traffic on raw byte volume. You need a CASB/proxy with per-user behavioral baselines, not a global threshold.
+- **Low-and-slow staging** under daily limits evades volume rules — aggregate reads per user over weeks and correlate with HR signals (resignation notice, PIP, role change).
+- **Off-hours must be per-user.** A single org-wide "after 6pm" rule drowns shift workers and global teams in false positives; use individual UEBA baselines instead.
+- **Privileged abuse looks authorized:** admins reading HR/finance shares are "in their rights." Monitor 4663 object-access on sensitive shares (with SACLs in place) and 4662 on AD objects to spot scope creep.
+- **Validate the rule fires:** as a test account, copy a large benign file set to USB and to a personal cloud account, and confirm 4663/6416 and the DLP/CASB event are generated and alert.
+- **Tune false positives:** backups, OneDrive/Box sync clients, and CI/dev builds generate bulk reads. Allowlist service accounts and known sync processes before alerting.
+
 ## Prerequisites
 
 - EDR platform with process and network telemetry (CrowdStrike, MDE, SentinelOne)

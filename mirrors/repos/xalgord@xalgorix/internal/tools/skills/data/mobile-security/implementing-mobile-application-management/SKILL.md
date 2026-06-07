@@ -37,6 +37,16 @@ Use this skill when:
 
 **Do not use** when full device management (MDM) is already deployed and sufficient -- MAM adds complexity when MDM already provides the needed controls.
 
+## Common Misconfigurations & Verification
+
+- **Policy assigned but not enforced (no Conditional Access)** — without a CA grant requiring app protection, users bypass MAM via unmanaged apps. Verify by attempting corporate sign-in from a non-policy app and confirming it is blocked.
+- **Outdated Intune App SDK** — newer policy controls silently no-op on old SDK builds. Verify the wrapped/SDK version matches the policy version and re-test the affected control.
+- **Cut/copy/paste DLP gaps** — paste from a managed app (Outlook) into an unmanaged app (Notes) must be blocked, while managed-to-managed (Teams) works. Verify both paths.
+- **Selective wipe untested** — trigger a wipe from the portal and confirm corporate data is removed while personal data remains.
+- **Offline grace period too long** — disconnect the device and confirm access is blocked after the configured interval, not indefinitely.
+- **Jailbreak/root conditional launch off** — verify a rooted test device is blocked from launching managed apps.
+- **Over-restrictive tier creep** — verify the policy tier matches data sensitivity so users don't route around it via shadow IT.
+
 ## Prerequisites
 
 - Microsoft Intune or equivalent MAM platform (VMware Workspace ONE, MobileIron)

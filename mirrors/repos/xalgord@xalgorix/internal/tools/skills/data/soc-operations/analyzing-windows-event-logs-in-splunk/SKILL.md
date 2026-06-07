@@ -43,6 +43,14 @@ Use this skill when:
 
 **Do not use** for Linux/macOS endpoint analysis or network-only investigations.
 
+## Detection Gaps & Validation
+
+- **Index/sourcetype drift:** these queries assume `index=wineventlog` and `index=sysmon`, but forwarders often land Security logs in a different index or under `sourcetype="WinEventLog:Security"` vs `XmlWinEventLog:Security`. The XML sourcetype exposes fields differently (`EventCode` may be `EventID`, `TargetUserName` nested in `EventData`). Run `| tstats count where index=* by index, sourcetype` and verify `EventCode`, `Logon_Type`, `src_ip`, `TargetUserName` are populated — null fields silently zero out the brute-force and spray searches.
+- **CIM mapping gaps:** the `tstats ... from datamodel=Authentication`/`Endpoint` pivots undercount if Sysmon isn't mapped (process_access EventCode 10 frequently unmapped) or acceleration is stale. Confirm `Authentication.action`, `Endpoint.Processes.process_name` resolve before trusting accelerated results.
+- **Sysmon config coverage:** EventCode 10 (LSASS access), 13 (registry), 22 (DNS) only exist if the deployed Sysmon config includes those rules — a SwiftOnSecurity vs Olaf Hartong config difference means token-manipulation and run-key searches return nothing on hosts with a stripped config. Verify event volume per EventCode per host.
+- **Validate the search fires:** generate the behavior in a lab (e.g., 25 `4625` failures then a `4624` success, or `mimikatz` LSASS access) and confirm the saved search alerts before relying on it.
+- **FP tuning:** scope out service accounts and scanners (vuln scanners trigger mass `4625` Logon_Type 3; backup agents trigger `SeBackupPrivilege` 4672; EDR sensors legitimately open LSASS) via lookup-based allowlists, not by raising count thresholds that hide low-and-slow password spray.
+
 ## Prerequisites
 
 - Splunk with Windows Event Log data ingested (sourcetype `WinEventLog:Security`, `WinEventLog:System`, `XmlWinEventLog:Microsoft-Windows-Sysmon/Operational`)

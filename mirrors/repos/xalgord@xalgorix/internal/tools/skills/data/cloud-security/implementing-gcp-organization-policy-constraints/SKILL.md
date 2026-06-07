@@ -36,6 +36,21 @@ The GCP Organization Policy Service provides centralized and programmatic contro
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Policy left as dry-run:** a policy set with `dryRunSpec: true` monitors and logs would-be violations but never blocks them. Confirm the live (enforced) spec exists, not just the dry-run, with `gcloud org-policies describe <constraint> --organization=ORG_ID --effective`.
+- **Child override silently weakens the org policy:** a project/folder policy with `inheritFromParent: false` or a `reset`/`allValues: ALLOW` rule negates the org guardrail. Audit effective policy at the leaf, not just the org node.
+- **List constraint inverted or too narrow:** `allowedValues` that omits a region your workloads use causes outages; `allValues: ALLOW` on a deny-intended constraint makes it a no-op. Validate against `gcp.resourceLocations` value groups (`in:us-locations`).
+- **Boolean constraint declared but `enforced: false`:** e.g. `iam.disableServiceAccountKeyCreation` present but disabled still allows key creation.
+- **Propagation lag:** changes take up to ~15 minutes; don't conclude enforcement failed before then.
+
+```bash
+gcloud org-policies describe constraints/compute.vmExternalIpAccess --organization=ORG_ID --effective
+gcloud org-policies list --project=PROJECT_ID            # spot child overrides
+gcloud asset search-all-resources --scope=organizations/ORG_ID \
+  --query="policy:constraints/compute.vmExternalIpAccess"   # find violating resources
+```
+
 ## Prerequisites
 
 - GCP Organization with Organization Administrator role

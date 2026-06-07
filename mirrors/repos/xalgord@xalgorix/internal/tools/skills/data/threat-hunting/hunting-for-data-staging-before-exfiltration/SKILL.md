@@ -42,6 +42,14 @@ Before exfiltrating data, adversaries typically stage collected files in a centr
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Archive-less staging is the #1 miss.** Adversaries consolidate with `robocopy`/`xcopy`/`Copy-Item` into one folder and exfil raw — no 7z.exe/rar.exe ever runs. Hunt Sysmon EID 11 (FileCreate) bursts into a single dir, not just archiver EID 1.
+- **Renamed archivers evade Image-name rules.** `7z.exe` copied to `svchost.exe` defeats `Image=*\7z.exe`. Match Sysmon EID 1 `OriginalFileName` and `Hashes`, not the on-disk name.
+- **Encrypted/split archives defeat DLP content inspection** (`7z a -pPASS -v50m`); the `.7z.001` split pattern and password flag (`-p`) are stronger signals than file content.
+- **Validate the hunt fires:** run Atomic Red Team T1074.001, or `7z a -p -v25m C:\Windows\Temp\s.7z C:\Users\*\Documents` — confirm Sysmon EID 1 (with archiver OriginalFileName) and EID 11 writes to a staging path both trigger your rule.
+- **FP tuning:** backup jobs (Veeam, nightly robocopy), user-driven WinRAR, and installer temp extraction. Baseline by parent process, signer, schedule, and whether the dir is later read by an upload process (T1567).
+
 ## Prerequisites
 
 - EDR or Sysmon telemetry with process creation and file system events

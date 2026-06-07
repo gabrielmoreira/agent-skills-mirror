@@ -38,6 +38,15 @@ nist_csf:
 - During incident response to scope the breadth of compromise
 - When proactively hunting for TA0008 (Lateral Movement) techniques
 
+## Detection Gaps & Validation
+
+- **Coverage is the biggest gap.** 4624 Type 3/10 analysis only works if WEF collects from *all* endpoints, not just DCs. Most missed lateral movement is on member servers and workstations whose Security logs were never forwarded — verify ingestion per host class with `| tstats count by host`.
+- **Pass-the-Hash uses cached creds, not 4648.** Over-relying on 4648 (explicit credential logon) misses PtH, which appears as 4624 Type 3 with `AuthenticationPackageName=NTLM` and `LogonProcessName=seclogo` against systems that should use Kerberos.
+- **Auth without execution context misses WMI/DCOM.** T1047 lands as a 4624 plus a `wmiprvse.exe` child (Sysmon EID 1); correlate the logon to subsequent process creation. WinRM shows `wsmprovhost.exe` (5985/5986); PsExec drops the `PSEXESVC` service (7045) and hits ADMIN$ (5145).
+- **Baseline maturity:** first-time source→destination pair detection throws false-positive storms right after deployment until enough history accrues.
+- **Validate the rule fires:** run `PsExec \\host cmd` and `Enter-PSSession host` from a test box and confirm the 4624 Type 3 + 7045/`wsmprovhost.exe` queries return your activity.
+- **Tune false positives:** vulnerability scanners, SCCM, and admin jump hosts authenticate broadly by design. Allowlist their source IPs and service accounts before alerting on fan-out.
+
 ## Prerequisites
 
 - Splunk Enterprise or Splunk Cloud with Windows event data ingested

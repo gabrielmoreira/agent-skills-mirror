@@ -32,6 +32,15 @@ Zero-Knowledge Proofs (ZKPs) allow a prover to demonstrate knowledge of a secret
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Predictable challenge / nonce reuse:** in Schnorr, reusing the commitment randomness `r` across two challenges leaks the secret `x` via `x = (s1 - s2)/(c1 - c2)`. Generate `r` from a CSPRNG per proof and never reuse it. Verify two runs produce different `t` values.
+- **Weak Fiat-Shamir transcript:** the non-interactive challenge must hash the *full* transcript including the public key and commitment (`c = H(g, y, t, msg)`), not just `t` — otherwise proofs are forgeable or transferable. Use a collision-resistant hash.
+- **Verifier-chosen challenge skipped / replay:** without binding to a fresh server nonce or message, a captured transcript can be replayed. Include a server-supplied challenge or message and reject duplicates.
+- **Insecure group parameters:** use a safe prime `p` and prime-order subgroup `q`; validate that `y` lies in the correct subgroup to avoid small-subgroup attacks.
+- **Secret transmitted or logged:** confirm the server never receives or stores `x`.
+- **Mandatory tests:** (1) honest prover always verifies (**completeness**); (2) a random/forged response without `x` **fails** verification (**soundness**); (3) the server transcript never contains the secret (**zero-knowledge**); (4) repeated authentications yield distinct transcripts; (5) a replayed transcript is rejected.
+
 ## Prerequisites
 
 - Familiarity with cryptography concepts and tools

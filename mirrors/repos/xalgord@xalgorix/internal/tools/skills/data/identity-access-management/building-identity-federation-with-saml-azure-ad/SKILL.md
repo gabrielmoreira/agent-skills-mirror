@@ -37,6 +37,14 @@ Identity federation enables users authenticated by one identity provider to acce
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Assertion signature not enforced:** the SP/relying party accepts an unsigned or SP-signed-only `<saml:Assertion>`, enabling signature stripping. Verify the IdP signs the assertion (not just the `<Response>`) and the SP rejects `SignatureMethod=rsa-sha1` and unsigned assertions. Test by replaying a captured assertion with the `<ds:Signature>` removed — it must fail.
+- **Golden SAML exposure:** anyone who can export the AD FS token-signing private key can mint assertions for any user. Confirm the key lives in an HSM/DKM-protected store, alert on `Set-AdfsCertificate` and event 307/510, and rotate after any DC/AD FS compromise.
+- **Audience/recipient not validated:** SP ignores `<AudienceRestriction>` or `Recipient`, so a token issued for app A is replayed at app B. Verify each SP pins its own `EntityID` as the required audience.
+- **NameID and `NotOnOrAfter`:** persistent NameID plus missing `NotOnOrAfter`/`NotBefore` checks allow indefinite replay. Confirm short assertion lifetimes and that `InResponseTo` is bound to a real `AuthnRequest`.
+- **Verification:** pull `Get-MgDomainFederationConfiguration -DomainId corp.example.com` and confirm `signingCertificate`, `issuerUri`, and `preferredAuthenticationProtocol=saml` match AD FS; decode an assertion with SAML-tracer and confirm signed assertion, correct Audience, and a fresh `NotOnOrAfter`.
+
 ## Prerequisites
 
 - On-premises Active Directory domain

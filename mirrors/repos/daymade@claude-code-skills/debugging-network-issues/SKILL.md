@@ -1,6 +1,6 @@
 ---
 name: debugging-network-issues
-description: Evidence-driven investigation for network, streaming, and protocol-layer bugs. Use when debugging connection resets (ECONNRESET, HTTP/2 RST_STREAM, INTERNAL_ERROR), SSE or long-polling stalls, fixed-time connection drops, CDN/proxy/CGNAT idle timeouts, or any incident where symptoms do not match the obvious cause. Applies falsification-first methodology — layered isolation experiments to pin down the responsible network layer, env-gated runtime instrumentation for non-invasive observation, and counter-review agent teams to challenge single-cause assumptions. Strongly trigger on "socket closed unexpectedly", "stream interrupted", "ECONNRESET", "HTTP/2 INTERNAL_ERROR", "fails after N seconds", "works sometimes but not always", "upstream silent for X seconds", or any scenario where the investigator might jump to conclusions before evidence. Generalizes to any multi-layer system investigation where assumption-first thinking is the failure mode.
+description: Evidence-driven investigation for network, streaming, and protocol-layer bugs where symptoms don't match the obvious cause. Use when debugging connection resets (ECONNRESET, HTTP/2 RST_STREAM, INTERNAL_ERROR), SSE or long-polling stalls, fixed-time connection drops, CDN/proxy/CGNAT idle timeouts, or symptoms like "socket closed unexpectedly", "stream interrupted", "fails after N seconds", "works sometimes but not always", "upstream silent for X seconds". Applies falsification-first layered isolation to pin down the responsible network layer instead of stacking assumptions.
 ---
 
 # Debugging Network Issues
@@ -189,6 +189,7 @@ Future investigators — including future self — will read this to avoid the s
 6. **Assumption-rescue cycle.** When evidence contradicts a hypothesis, the temptation is to add a modifier ("yes, but only in case X"). Resist. If the first falsifier fires, scrap the hypothesis.
 7. **Unverified premise.** Investigating a symptom that was never directly observed — inferred from user frustration, alert titles, or downstream effects. Verify first (Step 0.5). Do not investigate anecdotes.
 8. **Threat-model mismatch.** Proposing a fix that targets the wrong layer — writing bytes downstream to solve an upstream problem, tuning a timeout on a hop that never fires it. Naming the boundary each hypothesis targets (Step 2) surfaces this.
+9. **Reverse-path / directional asymmetry.** A→B healthy ≠ B→A healthy. An external probe to a node proves only that node's return/inbound direction; network paths and congestion are directional. Measure the same direction the user's traffic flows, from the user's side (TCP-mode `mtr`/`nexttrace` from the affected origin), before declaring a hop healthy.
 
 See [references/cognitive-traps.md](references/cognitive-traps.md) for extended examples including this case study.
 

@@ -46,6 +46,14 @@ Use this skill when:
 
 **Do not use** metrics as punitive measures against analysts — metrics should drive process improvement, not individual performance management.
 
+## Common Misconfigurations & Verification
+
+- **Metric reads the wrong timestamp field:** MTTD/MTTR depend on `orig_time`, `_time`, `status_end`, `status_transition_time` in `index=notable`. If your ES version doesn't populate `status_end` (or stores resolution in `incident_review` via `| from datamodel`), the search returns `0` or null and the scorecard shows a fake "GREEN". Validate each field is non-null on resolved notables before publishing.
+- **Silent filtering skews the average:** the guards `where mttd_seconds > 0 AND < 86400` and `< 604800` quietly drop long-dwell incidents — exactly the ones leadership cares about. A 30-day MTTR looks great because every breach over 7 days was excluded. Report the count dropped alongside the average, or the KPI lies by omission.
+- **Coverage lookup mismatch:** ATT&CK coverage joins `detection_rules_attack_mapping.csv` to `attack_techniques_total.csv` on `tactic`; a sub-technique vs technique ID mismatch (`T1003` vs `T1003.001`) or stale total-technique list inflates `coverage_pct` past 100% or undercounts. Verify the join key format matches on both sides.
+- **Disposition strings don't match:** `status_label="Resolved - True Positive"` is an exact-string match; if analysts close as "True Positive" or "Resolved-TP", TP/FP rates undercount and signal-to-noise is wrong. Normalize disposition values via a lookup.
+- **Verification:** hand-calculate MTTD/MTTR for 3-5 known incidents and reconcile against the dashboard; confirm `tstats` data-source coverage reflects sourcetypes actually ingesting (not just defined in `expected_data_sources.csv`) before reporting a posture score.
+
 ## Prerequisites
 
 - SIEM with 90+ days of incident and alert disposition data

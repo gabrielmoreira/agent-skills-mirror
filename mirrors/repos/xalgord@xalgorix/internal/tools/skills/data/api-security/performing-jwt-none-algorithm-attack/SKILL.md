@@ -37,6 +37,16 @@ The JWT none algorithm attack exploits a vulnerability in JSON Web Token librari
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **alg casing/omission:** test `none`, `None`, `NONE`, `nOnE`, and a header with no `alg` at all - allowlists that only block lowercase "none" still fall.
+- **Signature-segment variants:** try an empty sig, a trailing-dot-only sig, and a leftover original signature - some libraries accept each differently.
+- **Claim edits matter:** flip `role`/`is_admin`/`sub` while keeping `iss`/`aud`/`exp` valid so the token passes non-signature checks.
+- **Chain to confusion/weak secret:** if `none` is blocked, try RS256→HS256 confusion and HMAC secret brute-force before concluding safe.
+- **kid/jwk header injection:** CVE-2018-0114-style embedded `jwk` and `kid` path traversal can supply attacker keys.
+
+**How to confirm a hit (avoid false negatives):** the forged token must return authenticated/privileged data from a protected endpoint (e.g., an admin route returns 200 with admin data), not merely avoid a 401 - compare against an unauthenticated baseline. **Don't conclude negative until you've tried:** all `none` casings, every signature-segment form, claim manipulation, and the HS256-confusion and weak-secret fallbacks.
+
 ## Prerequisites
 
 - Target application using JWT for authentication or authorization

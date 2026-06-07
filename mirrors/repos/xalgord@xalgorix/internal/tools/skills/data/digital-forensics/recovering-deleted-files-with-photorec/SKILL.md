@@ -38,6 +38,16 @@ nist_csf:
 - When file system metadata is unavailable but raw data sectors remain intact
 - For recovering files from memory cards, USB drives, and hard drives
 
+## Detection Gaps & Validation
+
+Signature carving recovers bytes, not files-as-the-user-knew-them. Understand what PhotoRec structurally cannot do before reporting results:
+
+- **Fragmentation is the core limitation.** PhotoRec carves contiguously from a header until a footer or size cap; if a file was stored in non-contiguous clusters (common for large/edited files on a busy volume), you get a truncated or corrupt result and the tail is silently lost. A "recovered" 4 KB DOCX from a 2 MB original is a fragment — validate, don't assume completeness.
+- **No file names, paths, or original timestamps.** Carving bypasses the file system, so output is `recup_dir.N/fNNNNNNN.ext` with the recovery time as mtime, not the evidentiary timestamp. To restore names/MAC times you must correlate with `$MFT`/USN, ext inode/journal, or directory entries separately — never present the carve mtime as when the file was created or deleted.
+- **Overwritten/secure-wiped data is gone.** PhotoRec only recovers data still resident in unallocated sectors (data remanence). Reused clusters, TRIM'd SSD blocks (most deleted data on SSDs is unrecoverable after TRIM), and wiped media yield nothing — note this as a limitation, not a clean drive. Image to a file and carve the image, with a write-blocker on originals.
+- **Validate every carved artifact.** Run `file`/signature checks and format-specific validators (`jpeginfo -c`, open the PDF/SQLite) to separate genuine files from header-only false positives. Hash all output and filter known-good against NSRL/hashsets so review focuses on unique, intact, evidence-relevant files.
+- **Interpretation false positives.** Headerless or footerless formats over-carve, embedded thumbnails surface as standalone JPEGs, and one logical file can yield several partial carves — inflating counts. A recovered file's presence in unallocated space shows the data existed on the media, not who put it there or when; corroborate provenance with file-system and timeline artifacts.
+
 ## Prerequisites
 - PhotoRec installed (part of TestDisk suite)
 - Forensic disk image or direct device access (read-only)

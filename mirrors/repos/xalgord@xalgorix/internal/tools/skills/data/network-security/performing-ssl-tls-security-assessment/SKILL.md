@@ -35,6 +35,16 @@ Assess SSL/TLS server configurations using sslyze, a fast Python-based scanning 
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **SNI and vhosts:** scanning the IP without `-servername`/SNI returns the default vhost's cert and ciphers, not the target's. Always set SNI (`openssl s_client -connect host:443 -servername host`; sslyze uses the hostname) or you assess the wrong service.
+- **Beyond 443:** STARTTLS services (SMTP 25/587, IMAP 143, POP3 110, LDAP 389, FTPS, MySQL, PostgreSQL) need explicit STARTTLS probing — `testssl.sh --starttls smtp host:587`. A 443-only scan misses them entirely.
+- **Full protocol/cipher matrix:** don't stop at "TLS 1.2 supported" — enumerate SSLv2/SSLv3/TLS1.0/1.1 still enabled, weak ciphers (RC4, 3DES, EXPORT, NULL, CBC), and cipher order/forward secrecy. One accepted legacy protocol is the finding.
+- **Cert chain and trust:** check the *full* chain order, intermediate completeness, expiry, SAN coverage, and signature algorithm. A leaf that validates in a browser may still ship an incomplete chain that breaks non-browser clients.
+- **Vuln checks need the precondition:** Heartbleed needs the heartbeat extension; ROBOT needs RSA key exchange. Flag only after the specific check confirms it, never from version alone.
+- **How to confirm a hit:** corroborate sslyze with `testssl.sh` and a manual `openssl s_client -cipher 'RC4' -tls1` handshake that actually completes — a completed handshake on a weak protocol/cipher is the proof; a lone scanner line is a candidate.
+- **Don't conclude "secure"** until you've tested every TLS-bearing port, set SNI, and checked STARTTLS plus the legacy-protocol matrix.
+
 ## Prerequisites
 
 - Python 3.9+ with `sslyze` library (pip install sslyze)

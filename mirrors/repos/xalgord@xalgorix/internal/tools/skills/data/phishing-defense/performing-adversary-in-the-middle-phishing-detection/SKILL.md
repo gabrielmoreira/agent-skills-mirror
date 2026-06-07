@@ -35,6 +35,15 @@ Adversary-in-the-Middle (AiTM) phishing attacks use reverse-proxy infrastructure
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+- **MFA "success" is not safety:** AiTM kits (Evilginx, EvilProxy, Tycoon 2FA, Sneaky 2FA) relay the real login, so the sign-in shows MFA satisfied while the attacker steals the session cookie - a successful MFA event does NOT mean the session is the legitimate user.
+- **Push/OTP/SMS are all bypassable:** only origin-bound FIDO2/WebAuthn (or Windows Hello, CBA) resists AiTM because authentication is bound to the real domain - SMS/voice/push MFA are intercepted by the proxy.
+- **The signal is the cookie, not the password:** alert on a session used from a different IP/ASN/device than the authentication within minutes, on token replay, and on impossible travel between auth and session use.
+- **Post-compromise tells:** inbox-rule creation, new MFA-method registration, and OAuth app consent immediately after sign-in are high-fidelity AiTM follow-ups - monitor all three.
+- **Infrastructure evasion:** kits use Cloudflare Turnstile, CAPTCHA, random URLs, and IP rotation to dodge crawlers and serve a real Microsoft/Okta-looking page - judge on domain/cert and reverse-proxy behavior, not the login screenshot.
+- **Validate + FP tuning:** simulate an AiTM sign-in and confirm Conditional Access/CAE revokes or blocks session replay, FIDO2 blocks capture, and SIEM fires on cookie-reuse-from-new-IP. Baseline VPN/CGNAT and roaming users to avoid flagging legitimate IP changes.
+
 ## Prerequisites
 - Azure AD / Entra ID Conditional Access policies
 - SIEM with authentication log ingestion (Azure AD sign-in logs)

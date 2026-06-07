@@ -38,6 +38,14 @@ Use this skill when:
 
 **Do not use** for individual alert triage — ticketing is for confirmed incidents requiring multi-step investigation and remediation, not every SIEM alert.
 
+## Common Misconfigurations & Verification
+
+- **Auto-close without resolution:** workflows that set `state=6`/Resolved (or fire `resolve_incident`) on every SIEM webhook close tickets with no `close_notes`, `close_code`, or disposition, destroying audit evidence. Confirm closed tickets carry a non-empty disposition (true/false positive) and that closure is gated on analyst action, not the create call.
+- **Duplicate tickets per alert:** missing dedup on `u_siem_event_id`/`notable_id` means one notable spawns dozens of incidents. Verify a repeat alert updates the existing ticket (add work note) instead of opening a new one.
+- **SLA clock wrong:** `opened_at` parsed with the wrong timezone or strptime format makes `age_minutes` negative or hugely inflated, so the auto-escalation either never fires or fires instantly. Validate against a ticket with a known open time.
+- **Assignment/severity drift:** `severity_map`/`_get_assignment_group` defaulting to medium/Tier 1 when the alert severity field is absent silently downgrades critical incidents. Confirm urgency/impact and assignment group match the taxonomy for a critical test alert.
+- **Verify** end to end: fire a critical and a low test alert, confirm exactly one ticket each, correct severity→assignment_group routing, SLA timers counting from the right `opened_at`, escalation on breach, and that resolution requires a disposition before the ticket can close.
+
 ## Prerequisites
 
 - Ticketing platform: ServiceNow ITSM, Jira Service Management, or TheHive

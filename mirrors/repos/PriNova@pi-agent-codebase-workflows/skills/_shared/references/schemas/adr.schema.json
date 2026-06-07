@@ -31,12 +31,41 @@
       "items": {
         "type": "object",
         "required": [
-          "id"
+          "id",
+          "title",
+          "status",
+          "context",
+          "decision",
+          "consequences"
         ],
         "properties": {
           "id": {
             "type": "string",
             "pattern": "^adr:[a-z0-9][a-z0-9._/-]*$"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "context": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string"
+          },
+          "consequences": {
+            "type": "array"
+          },
+          "alternatives": {
+            "type": "array"
+          },
+          "related_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "additionalProperties": true

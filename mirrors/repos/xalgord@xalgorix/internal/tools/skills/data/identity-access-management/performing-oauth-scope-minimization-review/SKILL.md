@@ -38,6 +38,15 @@ nist_csf:
 
 **Do not use** for reviewing first-party application permissions within the same trust boundary; OAuth scope minimization focuses on third-party and cross-boundary consent grants.
 
+## Coverage Gaps & Validation
+
+- **Application permissions overlooked:** reviews that focus on delegated (user-consent) scopes miss app-only permissions (`Application` type, admin-consented), which act with no user context and carry the higher risk. Enumerate `appRoleAssignments` per service principal, not just `oauth2PermissionGrants`.
+- **Multi-tenant / external publishers:** apps where `appOwnerOrganizationId` differs from your tenant are third-party data paths that are easy to skip. Flag every grant where the publisher tenant is not yours.
+- **Consent type confusion:** an `AllPrincipals` grant is tenant-wide and affects every user but appears as a single record; do not score it as one-user risk.
+- **Stale but live grants:** an app with no sign-in activity for 90+ days still holds its scopes. Correlate `auditLogs/signIns` for service principals to find grants to revoke.
+- **Unknown scopes default low:** custom or newly added Graph scopes absent from your risk table get under-rated — treat unknowns as high until classified.
+- **Validate completeness:** reconcile the enumerated grants against the approved-application catalog from IT procurement — apps present in the tenant but absent from the catalog are shadow IT. Confirm remediation by re-enumerating grants after revocation/downgrade.
+
 ## Prerequisites
 
 - Admin access to identity providers (Microsoft Entra ID, Okta, Google Workspace)

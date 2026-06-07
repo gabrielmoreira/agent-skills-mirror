@@ -37,6 +37,17 @@ nist_csf:
 
 **Do not use** on networks without authorization from the asset owner, for active injection or fuzzing against production SCADA systems, or as a replacement for safety-instrumented systems (SIS) that provide physical process protection.
 
+## Detection Gaps & Validation
+
+Modbus monitoring misses attacks when it watches the wrong layer. Close these gaps:
+
+- **SPAN that drops one direction:** if the tap only mirrors HMI->PLC, you never see responses or exception codes. Validate bidirectional capture with `tcpdump -i ethX port 502` showing both Job requests and Ack_Data before trusting any baseline.
+- **Function-code allow-lists too coarse:** alerting only on writes (FC 05/06/15/16) misses recon via FC 43 (Read Device ID) and FC 08 (Diagnostics). Confirm detection by replaying a known FC43 enumeration pcap through the analyzer and seeing the alert fire.
+- **Baseline too short:** a 4-hour baseline misses shift-change writes and weekly batch jobs, generating false positives. Validate with a 72-hour minimum spanning at least one full operational cycle.
+- **No register-value semantics:** detecting "a write happened" but not "setpoint 40050 jumped past its safe max" misses the actual sabotage. Confirm per-register min/max/rate limits are loaded.
+- **Unit-ID and transaction-ID blind spots:** gateways multiplex unit IDs, and duplicate transaction IDs from two sources indicate replay. Validate the detector flags an injected duplicate.
+- **Don't conclude "no anomaly"** until you've confirmed the sensor sees the whole VLAN, exception bursts are counted, and a rogue-master test from an unlisted source IP triggers an alert.
+
 ## Prerequisites
 
 - Network tap or SPAN port on the OT network segment carrying Modbus TCP traffic (port 502)

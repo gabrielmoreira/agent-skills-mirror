@@ -31,6 +31,14 @@ nist_csf:
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **UDP (514) silently drops under load:** `@host` (single `@`) sends UDP with no delivery guarantee; messages are lost on congestion with zero error. Use TCP/TLS (`@@` / `omfwd protocol="tcp"`) plus disk-assisted queues so spikes spool instead of vanishing.
+- **"TLS configured" but actually plaintext:** `imtcp`/`omfwd` without `StreamDriver="gtls"` + `StreamDriverMode="1"` falls back to cleartext on 6514. Confirm with `openssl s_client -connect server:6514` returning a cert, and `tcpdump -A port 6514` showing ciphertext rather than readable log lines.
+- **Auth mode anon = any client accepted:** `StreamDriverAuthMode="anon"` trusts any cert. Use `x509/name` with a `permittedPeer` list so only known clients forward; verify a client with the wrong CN is rejected.
+- **Queue not disk-assisted = restart loss:** without `queue.type="LinkedList"` + `queue.filename` + `queue.saveonshutdown="on"`, in-memory queues drop on rsyslog restart. Confirm a `.qi`/spool file exists under the queue path.
+- **Confirm delivery end to end:** `logger -n server -P 6514 -T "rsyslog-test"` from a client, then verify the line lands in the per-host file (`/var/log/remote/<host>/...`). A reachable port is not the same as a stored log.
+
 ## Prerequisites
 
 - Familiarity with security operations concepts and tools

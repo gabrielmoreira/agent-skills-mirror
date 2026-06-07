@@ -36,6 +36,15 @@ nist_csf:
 
 **Do not use** for unauthorized testing against AWS accounts, for assessing non-IAM attack vectors (SSRF, application vulnerabilities), or as a substitute for comprehensive cloud penetration testing. Always obtain written authorization before testing.
 
+## Most Often Missed & How to Confirm
+
+- **Tools report paths that boundaries/SCPs actually block:** Pacu's `iam__privesc_scan` and PMapper edges are computed from identity policies and may ignore permission boundaries and Organization SCPs. Re-check each hit with `aws iam simulate-principal-policy` (it honors boundaries) and, in authorized scope, actually perform the action - a real escalation, not a theoretical edge.
+- **Scoped `iam:PassRole` is the usual gate:** an exploitable `PassRole + lambda:CreateFunction` path dies if `PassRole` is restricted to specific role ARNs. Enumerate exactly which roles are passable with `cloudfox aws permissions` and the policy `Resource`/condition keys before claiming the vector.
+- **Non-obvious service vectors get skipped:** beyond Lambda/EC2, test `glue:CreateDevEndpoint`, `sagemaker:CreateNotebookInstance`, `cloudformation` with a passed role, `datapipeline`, and `ssm:SendCommand` to instance profiles - all pass-role escalations the default scan under-weights.
+- **Resource-based and trust policy paths:** `sts:AssumeRole` hinges on the target role's trust policy; a missing `sts:ExternalId`/MFA condition with a `:root` principal is the confused-deputy win. Read each trust policy, don't infer it from the identity side alone.
+- **How to confirm a real hit:** for `iam:CreatePolicyVersion`, create the version + `SetDefaultPolicyVersion`, then prove admin with a previously-denied call (`aws iam list-users`); for `AssumeRole`, confirm `aws sts assume-role` returns usable credentials. Record the original default version and restore it (managed policies cap at 5 versions).
+- **Don't conclude "not exploitable" until** you've evaluated boundaries and SCPs with `simulate-principal-policy`, enumerated passable role ARNs, and tested the non-Lambda/EC2 service vectors.
+
 ## Prerequisites
 
 - Written authorization for privilege escalation testing in the target AWS account

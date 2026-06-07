@@ -33,6 +33,14 @@ Use this skill when:
 
 **Do not use** for initial backup configuration or scheduling. This skill focuses on post-backup validation.
 
+## Common Misconfigurations & Verification
+
+- **Archive integrity ≠ data integrity:** a `gzip -t` pass or a valid `restic check` only proves the container is well-formed — the files inside can still be corrupted or pre-encrypted. Always hash individual files (SHA-256) against a baseline manifest, and run `restic check --read-data` / `borg check --verify-data` so the actual data blocks are read, not just the index.
+- **The most-missed failure is trusting a backup that predates detection but not infection:** if the ransomware dwell time exceeds the backup age, your "clean" restore point already contains encrypted files or the implant. Scan restored data for ransomware extensions, ransom notes, and high file entropy (>7.9/8.0) before certifying it recoverable.
+- **Broken incremental chains fail silently:** a single corrupted incremental invalidates every restore point after it, yet the backup job still reports success. Verify the full chain restores end-to-end, not just the latest snapshot.
+- **Weak/odd hashing and "immutable" that isn't:** MD5 is broken — use SHA-256/SHA-3. And confirm immutability is real (S3 Object Lock, Azure immutable blob) by attempting a delete/overwrite and confirming it's denied, plus verifying air-gapped copies haven't been silently re-mounted to the network.
+- **Concrete verification it worked:** restore to an isolated environment, then `diff` sorted baseline vs restored manifests (zero deltas), reconcile file counts and total size, run DB consistency checks (`pg_restore --list`, row counts), and confirm validation runs on a schedule with **alerting on failure** — a silently-logged failure is the same as no validation. Confirm the 3-2-1 layout actually holds (3 copies, 2 media, 1 offsite).
+
 ## Prerequisites
 
 - Access to backup storage (local, NAS, S3, Azure Blob, GCS)

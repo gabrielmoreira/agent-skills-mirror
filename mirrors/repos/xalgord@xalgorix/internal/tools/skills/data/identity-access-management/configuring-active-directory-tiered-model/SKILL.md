@@ -34,6 +34,14 @@ Implement Microsoft's Enhanced Security Admin Environment (ESAE) tiered administ
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Tier-0 contamination:** a Domain Admin logs on interactively to a Tier 1/2 server (or Tier 0 admins browse the web from a DC), exposing credentials to theft. Verify with authentication policy silos and check event 4624 LogonType 2/10 on tier-0 assets for non-tier-0 principals — there should be none.
+- **Silos not enforced:** authentication policies are created but assigned in audit-only mode, so cross-tier logons still succeed. Confirm `Get-ADAuthenticationPolicy` shows `Enforce=$true` and the TGT lifetime is short; test that a Tier 1 account is denied a TGT against a Tier 0 host.
+- **PAW gaps:** admins use the PAW but it has internet/email access, or RDP into servers from a normal workstation. Verify PAWs block outbound internet (proxy/firewall) and that "Deny log on through Remote Desktop" GPOs separate the tiers.
+- **Nested/transitive group leakage:** a Tier 2 group is nested into a Tier 0 group (e.g. via Account Operators or built-in container ACLs), silently granting privilege. Audit recursive membership of Domain Admins/Enterprise Admins and protect with AdminSDHolder.
+- **Verification:** run `whoami /groups` and BloodHound from a Tier 2 account to confirm no path reaches Tier 0; confirm `Protected Users` group membership for all tier-0 admins and that LAPS randomizes local admin passwords per host.
+
 ## Prerequisites
 
 - Familiarity with identity access management concepts and tools

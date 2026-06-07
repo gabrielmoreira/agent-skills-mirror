@@ -35,6 +35,14 @@ Role mining is the process of analyzing existing user-permission assignments to 
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Coverage gamed by over-broad roles:** pushing `core_permissions` threshold down (e.g. >50% instead of >80%) inflates coverage to "95%" by handing every cluster member permissions only half of them actually use. Verify deviation/extra-permission rate stays <5% alongside the coverage figure — high coverage with high deviation means the role grants more than people hold.
+- **Jaccard on a sparse matrix:** with a low-density UPA matrix, Jaccard distance collapses dissimilar users into one cluster, producing a giant "catch-all" role. Confirm silhouette score is reported per-k and inspect the largest role for unrelated job codes.
+- **Outliers folded into roles:** admin/break-glass accounts with unique permission sets get absorbed, leaking privileged entitlements into a standard role. Verify outlier detection runs first and high-risk permissions (Domain Admin, prod-write) are excluded from auto-mined roles.
+- **No business validation:** mined roles map to data clusters, not job functions, so they pass metrics but fail audit. Confirm each role has a named business owner and job-code mapping.
+- **Verification:** recompute effective access as `R × P` and diff against the original UPA matrix — every removed permission must be an intended least-privilege reduction, every added permission flagged; re-run `evaluate_role_set` and assert coverage >95% AND deviation <5% together.
+
 ## Prerequisites
 
 - Export of current user-permission assignments (CSV/database)

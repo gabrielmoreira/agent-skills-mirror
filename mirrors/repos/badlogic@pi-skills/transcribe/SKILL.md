@@ -1,27 +1,11 @@
 ---
 name: transcribe
-description: Speech-to-text transcription using Groq Whisper API. Supports m4a, mp3, wav, ogg, flac, webm.
+description: Local speech-to-text transcription on Apple Silicon macOS. Supports wav directly and other audio formats via ffmpeg.
 ---
 
 # Transcribe
 
-Speech-to-text using Groq Whisper API.
-
-## Setup
-
-The script needs `GROQ_API_KEY` environment variable. Check if already set:
-```bash
-echo $GROQ_API_KEY
-```
-
-If not set, guide the user through setup:
-1. Ask if they have a Groq API key
-2. If not, have them sign up at https://console.groq.com/ and create an API key
-3. Have them add to their shell profile (~/.zshrc or ~/.bashrc):
-   ```bash
-   export GROQ_API_KEY="<their-api-key>"
-   ```
-4. Then run `source ~/.zshrc` (or restart terminal)
+Local speech-to-text using `parakeet-cpp-transcribe` on Apple Silicon macOS.
 
 ## Usage
 
@@ -29,11 +13,31 @@ If not set, guide the user through setup:
 {baseDir}/transcribe.sh <audio-file>
 ```
 
-## Supported Formats
+The first run downloads the macOS arm64 binary from the latest `badlogic/pibot` GitHub release into the extension's ignored `bin` directory:
 
-- m4a, mp3, wav, ogg, flac, webm
-- Max file size: 25MB
+```text
+{extensionDir}/bin/parakeet-cpp-transcribe
+```
+
+(`{extensionDir}` is the parent directory of this skill's `{baseDir}`.) The binary downloads its GGUF model automatically if missing.
 
 ## Output
 
-Returns plain text transcription with punctuation and proper capitalization to stdout.
+Plain text timestamped in 15 second chunks is written to stdout:
+
+```text
+[00:00-00:15] transcript text
+[00:15-00:30] more transcript text
+```
+
+Model/GGML diagnostic logs are written to stderr. Redirect stderr to hide them:
+
+```bash
+{baseDir}/transcribe.sh <audio-file> 2>/dev/null
+```
+
+## Requirements
+
+- Apple Silicon macOS only
+- `curl` and `tar`
+- `ffmpeg` for non-WAV input: `brew install ffmpeg`

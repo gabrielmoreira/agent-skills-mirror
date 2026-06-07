@@ -35,6 +35,14 @@ Access recertification (also called access certification or access review) is a 
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Coverage Gaps & Validation
+
+- **Rubber-stamp approvals:** bulk "Certify All" and sub-second per-item decisions are the dominant failure mode. Pull Saviynt decision timestamps and flag campaigns where median review time per line item is implausibly low or one certifier mass-approved.
+- **Excluded non-human identities:** the scope filter that removes service and break-glass accounts from manager reviews often means nobody ever certifies them. Confirm those accounts are covered by a separate entitlement-owner campaign rather than dropped entirely.
+- **Out-of-connector scope:** Saviynt only certifies entitlements it imported. Apps with no connector, local accounts on servers, and direct database logins are invisible to EIC and never reach a reviewer.
+- **Nested-group and indirect entitlements:** a user certified at the role level may inherit access through nested AD groups the reviewer never sees expanded.
+- **Validate completeness:** reconcile the campaign's in-scope identity and entitlement counts against authoritative sources — the HR roster for joiners/movers/leavers, AD/IdP for accounts, and each application's native admin export. The delta is your coverage gap. Then verify revocations actually provisioned to the target system, not just got marked revoked in EIC.
+
 ## Prerequisites
 
 - Saviynt Enterprise Identity Cloud (EIC) tenant with admin access

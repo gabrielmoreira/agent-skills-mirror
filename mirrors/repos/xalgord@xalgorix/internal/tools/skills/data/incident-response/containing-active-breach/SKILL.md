@@ -41,6 +41,15 @@ nist_csf:
 
 **Do not use** for post-incident cleanup when the adversary is no longer active; use eradication procedures instead.
 
+## Common Misconfigurations & Verification
+
+- **Partial containment tips off the adversary:** isolating one host or blocking one C2 IP while the actor holds Domain Admin and three other beacons lets them detect the response and detonate (ransomware) or burrow deeper. Scope the *full* compromise first, then contain compromised hosts, accounts, and all C2 channels in one coordinated action.
+- **Power-off destroys evidence:** pulling the plug or shutting down wipes RAM (fileless payloads, injected code, encryption keys) and breaks chain of custody. Prefer EDR network-isolation that keeps the host powered and the agent reachable; reserve power-off for active mass-destruction you cannot otherwise stop.
+- **Credential containment that misses Kerberos:** disabling accounts and resetting passwords does NOT invalidate existing Kerberos tickets or golden tickets. If Tier-0/DA is compromised you must double-reset KRBTGT (twice, ~12h apart) or the attacker re-authenticates at will. Disable accounts, don't delete (preserve the audit trail).
+- **Persistence beyond the known account:** check for additional service accounts, scheduled tasks, and implants on non-EDR/legacy hosts before declaring contained.
+
+**Verify containment actually held:** confirm C2 beacons have ceased from *every* host (not just isolated ones), confirm disabled creds now produce 4625 failures with no new successes, confirm isolated hosts are unreachable from adjacent subnets, watch honeypot/canary accounts for adversary attempts to break out, and confirm the KRBTGT second reset completes — re-validate rather than assuming the first round worked.
+
 ## Prerequisites
 
 - Confirmed incident classification with P1 or P2 severity from triage

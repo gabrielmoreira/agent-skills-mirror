@@ -35,6 +35,14 @@ Scapy is a Python packet manipulation library that enables crafting, sending, sn
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Offline analysis misses what was never captured:** `rdpcap()` only sees what the tap/SPAN forwarded. Truncated snaplen (`tcpdump -s 96`) strips payload so DNS-tunnel `qry.name` entropy and HTTP bodies vanish — capture full frames (`-s 0`) before scoring.
+- **Scapy reassembles nothing by default:** a SYN-flood ratio check on raw packets misreads retransmits; sessionize with `sessions()`/`packet.sessions()` and follow streams before judging TCP flag ratios, or fragmented C2 (IP `frag`/`MF` bit set) is read as benign noise.
+- **Encrypted blind spots:** DNS-over-HTTPS/DoT (443/853) and TLS exfil have no plaintext `DNSQR.qname` to measure — entropy heuristics silently return nothing. Pivot on SNI from the `TLS` ClientHello, JA3 hashing, and packet-size/timing rather than concluding "no tunneling."
+- **Validate the detector actually fires:** craft a positive sample — `IP()/UDP()/DNS(qd=DNSQR(qname="<60-char-base64>.evil.com"))` written with `wrpcap()` — feed it back through your analysis script, and confirm the high-entropy/long-label rule flags it. No flag means the threshold or layer filter is wrong.
+- **FP tuning:** CDN hostnames, DNS SRV/TXT lookups, and chatty mDNS produce long/odd labels legitimately; baseline `qname` length distribution per host and whitelist known resolvers before alerting.
+
 ## Prerequisites
 
 - Python 3.8+ with `scapy` library installed (`pip install scapy`)

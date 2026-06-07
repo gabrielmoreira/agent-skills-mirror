@@ -31,6 +31,18 @@ nist_csf:
 - During API security testing to identify parameter precedence issues
 - When testing OAuth or payment processing flows for parameter manipulation
 
+### How to CONFIRM a Hit (avoid false negatives)
+- The positive signal is a **security-relevant behavioural change driven by which duplicate wins**: sending `param=A&param=B` produces an outcome that neither `param=A` nor `param=B` alone produces, OR the value the back-end acts on differs from the value the front-end/WAF inspected (price, role, redirect_uri, account). A 200 is not proof — you must show the differential.
+- First map precedence empirically, do not assume: send `q=first&q=second` and read the response to learn whether the stack takes first, last, all-concatenated (comma), or an array. The bug exists when the WAF/validator reads one copy and the business logic reads the other.
+- Confirm WAF-split bypasses by proving the reassembled payload executed (e.g. SQLi/XSS effect appears) while each half alone is blocked/inert — splitting that yields nothing is not a finding.
+- Do NOT conclude negative until you have tried ALL of these:
+  - Both positions for the malicious copy (first AND last), since precedence varies.
+  - Query string, POST body, and duplicate HTTP headers (e.g. two `X-Forwarded-For`).
+  - URL-encoded ampersand injection (`%26`) to smuggle a second param inside a value (client-side HPP / reflected links).
+  - Stack-specific behaviours: PHP/Apache=last, ASP.NET/IIS=comma-concatenated, JSP/Tomcat=first, Node/Express=array, Flask=first — test against the detected stack.
+  - Security-sensitive targets: `redirect_uri`, `state`, `price`/`amount`/`quantity`, `coupon`, `role`, `id` — confirm the SECOND copy actually overrides the enforced one.
+- Identical behaviour to a single param (no precedence split, no validator/logic divergence) means NOT vulnerable — require an attributable differential before reporting.
+
 ## Prerequisites
 - Burp Suite Professional with Intruder and Repeater modules
 - Understanding of HTTP protocol and query string parsing

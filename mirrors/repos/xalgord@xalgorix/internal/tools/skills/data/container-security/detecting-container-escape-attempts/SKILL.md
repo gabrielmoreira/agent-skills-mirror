@@ -40,6 +40,15 @@ Container escape is a critical attack technique where an adversary breaks out of
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Name-based rules are bypassable:** rules keyed on `proc.name in (nsenter, unshare, mount)` are evaded by copying the binary to another name or statically compiling it. Where possible match on `evt.type = setns/unshare/mount` syscalls, not process names.
+- **`proc.is_exe_upper_layer` and `container.privileged`** can be unreliable under containerd; a pod with `hostPID: true` + `nsenter -t 1` or a `hostPath` mount of `/` escapes without tripping namespace-syscall rules because the mount happens at admission, not runtime.
+- **CAP_SYS_ADMIN without `privileged: true`:** an escape via added capability (cgroup `release_agent`, mount) won't match a `container.privileged=true` condition - detect on the capability and the syscall.
+- **Seccomp `SCMP_ACT_LOG` only logs**, it does not block; confirm the profile is actually attached (`docker inspect ... SecurityOpt`).
+- **`release_agent` / `notify_on_release` paths** vary by cgroup v1 vs v2 mount location - a `contains release_agent` match can miss the v2 path.
+- **How to validate the rules fire:** run `falcosecurity/event-generator run syscall --action PtraceAttachContainer`, plus a test pod that `cat /etc/shadow`, writes `/proc/sysrq-trigger`, and runs `nsenter`; grep `kubectl logs -n falco-system -l app.kubernetes.io/name=falco` for the CRITICAL escape rules.
+
 ## Prerequisites
 
 - Linux host with kernel 5.10+ (eBPF support)

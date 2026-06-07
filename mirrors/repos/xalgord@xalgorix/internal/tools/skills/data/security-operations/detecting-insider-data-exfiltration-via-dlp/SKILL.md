@@ -32,6 +32,14 @@ nist_csf:
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Channel coverage gaps are the main false negative:** volume baselines over endpoint/cloud/email logs miss exfil over DNS tunneling, DoH/DoT (encrypted DNS bypasses URL filtering), personal webmail/cloud (Gmail, personal OneDrive/Dropbox), Slack/Discord uploads, and pastebin/git pushes. If the DLP has no sensor on that channel, the 3x-baseline rule never sees the bytes. Enumerate covered channels explicitly and treat uncovered ones as blind spots.
+- **Low-and-slow defeats the 3x threshold:** an insider drip-feeding a few MB/day stays under `user_avg * 3` forever. Add cumulative-over-time (e.g., 30-day rolling sum vs. role peers) and rare-destination detection, not just same-day spikes.
+- **Encryption/encoding hides content:** archived+password-protected ZIPs, renamed extensions, and image steganography evade content classifiers — fall back to volume, destination reputation, and file-entropy signals.
+- **Baseline poisoning:** an insider who ramps up slowly inflates their own `user_avg`, normalizing the abuse. Use peer-group (department/role) baselines alongside per-user history.
+- **Validate the rule fires:** in a lab, transfer a known >3x volume and an off-hours bulk download for a test user and confirm `anomalies` and the off-hours frame populate; verify timestamps are timezone-correct so the `hour < 6 | hour > 22` window isn't shifted. **FP tuning:** backups, legitimate large dataset transfers, developers pushing build artifacts, and shift workers trigger off-hours/volume rules — allowlist by role and known destinations.
+
 ## Prerequisites
 
 - Familiarity with security operations concepts and tools

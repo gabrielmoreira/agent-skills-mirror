@@ -43,6 +43,15 @@ DCSync is an attack technique that abuses the Microsoft Directory Replication Se
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Attempting DCSync without both replication rights.** The account needs *both* DS-Replication-Get-Changes and Get-Changes-All. Operators see one and assume failure. Confirm the actual grant before concluding the account can't replicate.
+- **Grabbing only RC4/NTLM.** Pull AES256 keys too — forging a Golden Ticket with `/aes256` avoids the encryption-downgrade anomaly that RC4 tickets trigger in detections.
+- **Forgetting the domain SID.** Without the SID (and ideally the krbtgt key version) the Golden Ticket is useless; capture it during the dump.
+- **Running against an RODC.** A read-only DC won't hand over secrets; target a writable DC.
+- **Dumping `/all` noisily** when only `krbtgt` was needed — generates a replication spike and Event 4662 storm.
+- **How to confirm:** secretsdump returns the line `krbtgt:502:aad3b435...:<ntlm hash>:::` (and `aes256_hmac` keys with `-just-dc`), or Mimikatz `lsadump::dcsync /user:krbtgt` prints `Hash NTLM:`. Validate the replication right itself with the **DCSync edge in BloodHound** from the controlled principal to the Domain node. Don't conclude the account lacks rights until you've tested against a writable DC and verified both Get-Changes and Get-Changes-All are present.
+
 ## Prerequisites
 
 - Familiarity with red teaming concepts and tools

@@ -38,6 +38,16 @@ nist_csf:
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Audit score without a dynamic scan:** a high static audit score on the OAS says nothing about the running API - always pair Audit with a Conformance Scan against a live target.
+- **Spec does not equal implementation:** the deployed API may expose endpoints/fields absent from the audited spec; scan the real instance and reconcile.
+- **`additionalProperties`/`readOnly` gaps:** Audit flags these but they must be enforced at runtime (API Protect or backend), not just documented.
+- **CI gate that doesn't fail the build:** a min-score set too low or an ignored exit code lets regressions merge.
+- **Auth misconfigured for the scan:** a scan running unauthenticated reports a false "clean" - supply valid tokens in `42c-conf.yaml`.
+
+**How to verify it works:** run Audit and confirm it flags missing auth/constraints; run the Conformance Scan against staging with valid auth and confirm OWASP checks (BOLA/BFLA/injection) execute; intentionally break the spec (remove a constraint) and confirm the CI min-score gate fails the build; diff scanned endpoints against the OAS to catch undocumented routes.
+
 ## Prerequisites
 
 - 42Crunch platform account (free tier available for evaluation)

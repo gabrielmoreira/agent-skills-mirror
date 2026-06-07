@@ -42,6 +42,15 @@ Cyber threat intelligence (CTI) reports from vendors like Mandiant, CrowdStrike,
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Keyword-mapping false positives:** the `TECHNIQUE_KEYWORDS` substring match maps any sentence containing "smb" or "powershell" to a technique, including benign mentions and quoted defender advice. Require a behavior verb + object proximity, not a bare keyword, before emitting a mapping.
+- **Sub-technique precision loss:** mapping "phishing" to T1566 when the report describes an attachment (T1566.001) flattens detection value; prefer the most specific ID the text supports.
+- **STIX 2.1 validity:** Attack Pattern `external_id` must match the ATT&CK ID, the URL must use `/` not `.` for sub-techniques (`T1566/001`), and `kill_chain_phases.phase_name` must be the ATT&CK tactic shortname -- malformed objects fail bundle validation or import silently.
+- **Stale ATT&CK data:** `attackcti` pulls a versioned snapshot; deprecated/revoked technique IDs map to nothing.
+
+To verify: validate the generated bundle round-trips through `stix2.parse()` and imports into a TIP without schema errors; spot-check a sample of mappings against the source sentence and measure precision/recall on a labeled report. Confirm dedup collapses repeated techniques (`seen_techniques`) and that generated Sigma templates carry the right `attack.tXXXX` tags and required data sources before handing them to detection engineering.
+
 ## Prerequisites
 
 - Python 3.9+ with `stix2`, `mitreattack-python`, `spacy`, `requests` libraries

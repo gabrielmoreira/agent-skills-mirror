@@ -38,6 +38,14 @@ nist_csf:
 
 **Do not use** for network-level intrusion detection; use Suricata or Zeek for network traffic analysis. Auditd operates at the kernel level on individual hosts.
 
+## Detection Gaps & Validation
+
+- **Rules not loaded ≠ no activity:** an empty `ausearch -k <key>` often means the rule was never in the kernel, not that nothing happened. Always confirm with `auditctl -l` and check `auditctl -s` for `lost` > 0 (backlog overflow silently drops events — raise `-b` and `--backlog_wait_time`).
+- **execve arg truncation:** long command lines split across multiple `a0..aN` fields and base64-encoded args (`type=EXECVE` with `argc`) are missed by naive greps. Decode with `ausearch -i` and reassemble; attackers pad args to push payloads past the capture window.
+- **Syscall arch blind spot:** a `-F arch=b64` rule will not catch a 32-bit binary. Add the matching `-F arch=b32` rule or `ptrace`/`execve` from 32-bit malware slips through.
+- **Anti-forensics:** `auditctl -e 2` locks rules, but check for `auditd` being killed, `/var/log/audit/audit.log` truncated, or rules flushed (`-D`) — correlate the last log timestamp against `wtmp`/`journalctl` for gaps.
+- **Cross-corroborate every hit:** a credential-access event on `/etc/shadow` should line up with a `USER_LOGIN`/`USER_CMD`, a process in `/proc`, and a shell history entry. Validate by re-triggering the watch (`touch /etc/shadow`) and confirming a fresh event, then pivot to EDR/SIEM to rule out an auditd-only false negative.
+
 ## Prerequisites
 
 - Linux system with `auditd` package installed and the audit daemon running (`systemctl status auditd`)

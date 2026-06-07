@@ -35,6 +35,14 @@ SCIM (System for Cross-domain Identity Management) is an open standard protocol 
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Deprovisioning never reaches the app:** Okta "deactivate" only deprovisions when the assignment is pushed and "Deactivate Users" is enabled; unassigning a user or relying on push-groups alone leaves an orphaned active account. Confirm a deactivated Okta user actually flips `active:false` at the SCIM endpoint, not just loses the app tile.
+- **Hard-delete instead of soft-delete:** the SCIM server should set `active:false`, not return 404 on the record. Verify deactivation maps to your deactivation and that re-activation restores the same `id`.
+- **userName mutability creates duplicates:** if the matching attribute (`userName`) changes on rename, Okta provisions a second account. Confirm the unique identifier is immutable.
+- **Deprovision lag:** measure HR termination → Okta deactivation → SCIM `active:false`; SOX/SOC2 typically expect same-day. Check the Okta provisioning log for queued/failed retries that silently leave access live.
+- **Verify:** the bearer token is rejected after rotation, `filter=userName eq "..."` returns exactly one record, pagination (`startIndex`/`count`) is honored, and the Okta SCIM validator passes CRUD, filtering, and pagination.
+
 ## Prerequisites
 
 - Okta tenant with admin access (Developer or Production)

@@ -33,6 +33,14 @@ Harden LDAP directory services against common attacks including credential harve
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **LDAPS available but cleartext still allowed:** enabling 636/TLS does not disable port 389 simple binds, so credentials still cross the wire in plaintext and downgrade attacks succeed. Verify LDAP signing is *Required* (`Domain controller: LDAP server signing requirements = Require signing`) and confirm a `ldapsearch -x -H ldap://dc` simple bind is rejected.
+- **Channel binding not enforced:** without LDAP channel binding (CBT), an attacker relays NTLM to LDAPS (the classic AD CS/PetitPotam relay). Confirm event 3039/3074 are clean after setting `LdapEnforceChannelBinding=2` and test with `ntlmrelayx` against `ldaps://` — it must fail.
+- **Anonymous bind / over-broad reads:** `dsHeuristics` 7th char enabling anonymous binds, or authenticated users able to read `ms-Mcs-AdmPwd` (LAPS) and `userPassword`. Verify anonymous bind returns no entries and audit ACLs on sensitive attributes.
+- **LDAP injection in apps:** app filters built by string concatenation allow `*)(uid=*))(|(uid=*` style injection. Confirm inputs are escaped per RFC 4515.
+- **Verification:** run `Get-ADObject -SearchBase "CN=Directory Service,..." -Properties dSHeuristics`; confirm signing/CBT registry values on every DC; capture a bind with Wireshark and assert no cleartext `bindRequest` and that the session is TLS 1.2+.
+
 ## Prerequisites
 
 - Familiarity with identity access management concepts and tools

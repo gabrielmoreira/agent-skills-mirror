@@ -32,6 +32,14 @@ nist_csf:
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Server accepts any client cert (no CERT_REQUIRED):** with `verify_mode = CERT_NONE`/`CERT_OPTIONAL` the handshake completes even with no client cert — that is TLS, not mTLS. Set `context.verify_mode = ssl.CERT_REQUIRED` and `load_verify_locations(ca.pem)`. Confirm rejection: `openssl s_client -connect svc:8443` with no `-cert` must fail with `peer did not return a certificate`.
+- **Chain validated but identity not checked:** verifying the cert is CA-signed is not enough — any service holding a CA-issued cert can connect. Enforce the expected SAN/CN per peer (`context.check_hostname` or an explicit SAN allowlist) so service A cannot present service B's valid cert.
+- **Expired/near-expiry certs fail at runtime:** short-lived service certs that aren't rotated cause hard outages. Audit `not_valid_after` and alert before expiry; check with `openssl x509 -enddate -noout -in svc.pem`.
+- **Revocation ignored:** without CRL/OCSP a compromised-but-unexpired cert stays trusted. Confirm revoked certs are actually rejected, not just issued.
+- **Confirm both directions:** test a valid client (success), a no-cert client (rejected), and a cert signed by a different CA — `openssl s_client -cert wrong.pem` must fail with `unknown ca`. Don't conclude mTLS works from one happy-path call.
+
 ## Prerequisites
 
 - Familiarity with security operations concepts and tools

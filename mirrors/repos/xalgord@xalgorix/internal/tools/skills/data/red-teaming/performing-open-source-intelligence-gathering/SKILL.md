@@ -37,6 +37,15 @@ Open Source Intelligence (OSINT) gathering is the first active phase of a red te
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Breach/credential dumps:** check HaveIBeenPwned, Dehashed, and public combolists for `@target.com` creds — often the fastest path to initial access and the most-skipped source.
+- **Code & secret leakage:** GitHub dorking (`org:target "password"`, `filename:.env`), gists/GitLab, and `trufflehog`/`gitleaks` over public repos surface live API keys and tokens.
+- **Attack surface:** enumerate subdomains with `amass`/`subfinder` plus certificate transparency (crt.sh), then resolve to find live hosts — never rely on a single source.
+- **People & email convention:** LinkedIn + `hunter.io` to derive the username/email format and org chart for spraying and phishing.
+- **Document metadata:** `exiftool`/FOCA on public PDFs/Office files leaks usernames, software versions, and internal paths.
+- **Confirm before reporting:** validate that a leaked credential/asset is actually live (in-scope auth test, DNS resolves). Don't conclude "nothing found" until passive (CT logs, breach/paste sites) AND active (subdomain brute, GitHub dorks) sources are exhausted.
+
 ## Prerequisites
 
 - Familiarity with red teaming concepts and tools

@@ -41,6 +41,14 @@ Use this skill when:
 
 **Do not use** for fully autonomous containment without human approval gates — always include analyst decision points for high-impact actions like account disabling or host isolation.
 
+## Common Misconfigurations & Verification
+
+- **Playbook never triggers:** the most common failure is a trigger/label mismatch — the playbook is scoped to `label: ["phishing","notable"]` and `severity: ["high","medium"]`, but Splunk ES sends containers with a different label (e.g., `events` or a custom label) or severity casing, so it ingests but no playbook runs. Verify on the container itself that the label/severity match the trigger, and that the playbook is set `active: true` and `run_as` an account with action permissions.
+- **`phantom.act` silently no-ops on bad asset/action name:** action names are app-specific ("url reputation" vs "url_reputation", "quarantine device" vs "contain device") and must match the configured asset exactly; a typo or wrong `assets=[...]` name fails the action and the callback chain stalls. Check the playbook run's debug/audit log shows each action `success`, not just that the playbook "completed."
+- **Artifact CEF path mismatch:** the playbooks read `cef.sourceAddress`, `cef.type`, `cef.destinationDnsDomain` — if ES maps the IOC to a different CEF field, the `for artifact` loop finds nothing and enrichment/containment never queue. Inspect a real container's artifact CEF keys and align.
+- **Approval gate that auto-expires into inaction:** `phantom.prompt(respond_in_mins=15)` with no timeout branch means a missed prompt leaves the host un-contained with no fallback — define the no-response path explicitly.
+- **Verification:** fire a synthetic test container with known artifacts through the playbook in a non-prod tenant, confirm each action executes against a sandbox asset (VT lookup returns, firewall block logs, prompt reaches the analyst queue), and confirm a clean IOC auto-closes while a malicious one escalates — before enabling on live notables.
+
 ## Prerequisites
 
 - Splunk SOAR (Phantom) 6.x+ deployed with web interface access

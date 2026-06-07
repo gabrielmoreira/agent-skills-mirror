@@ -35,6 +35,16 @@ nist_csf:
 
 **Do not use** for Azure AD or Google Cloud IAM configurations, application-level authorization logic, or federated identity provider setup (see managing-cloud-identity-with-okta).
 
+## Common Misconfigurations & Verification
+
+- **Scoping an identity policy while a broad managed policy stays attached:** `AdministratorAccess` or `PowerUserAccess` still wins. List everything with `aws iam list-attached-role-policies` + `list-role-policies`, then prove the net effect with `aws iam simulate-principal-policy`.
+- **Permission boundaries grant nothing** - they only cap. An action must also be allowed by an identity policy, and the boundary itself must not accidentally permit `iam:*` (escalation). Validate with `simulate-principal-policy`.
+- **MFA-enforcing SCP over-reaches:** `aws:MultiFactorAuthPresent: false` with `BoolIfExists` will deny service roles and `sts:AssumeRole` chains that legitimately have no MFA. Scope `NotAction`/principals and test a role assumption before rollout.
+- **`Resource: "*"` left on sensitive actions** (`s3:*`, `iam:PassRole`) defeats least privilege even with conditions. Confirm `aws accessanalyzer validate-policy` flags no `PassRole` wildcard.
+- **Deleting keys before deactivating** destroys forensics. Set `--status Inactive` first, check `aws iam get-access-key-last-used` for dependents, then delete.
+
+**Verify it actually works:** IAM is eventually consistent, so don't judge a deny from one immediate call. Run `aws iam simulate-principal-policy` for the actions the workload needs (expect `allowed`) and for `iam:CreateUser` / `iam:PassRole` (expect `implicitDeny`/`explicitDeny`), re-run IAM Access Analyzer, and confirm the credential report (`aws iam get-credential-report`) shows no active keys older than the policy threshold.
+
 ## Prerequisites
 
 - AWS account with administrative access or IAM:FullAccess permissions

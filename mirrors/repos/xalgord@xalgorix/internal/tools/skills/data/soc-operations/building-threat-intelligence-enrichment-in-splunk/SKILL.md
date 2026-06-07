@@ -37,6 +37,14 @@ Splunk's Threat Intelligence Framework in Enterprise Security enables SOC teams 
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Lookup join field never matches:** the correlation searches do `lookup ip_threat_intel_lookup ip as dest_ip` and `lookup domain_threat_intel_lookup domain as query`. The #1 failure is a normalization mismatch — the KV Store stores `1.2.3.4` but events carry `1.2.3.4:443`, or the feed stores domains FQDN-lowercased while `query` arrives with a trailing dot or mixed case. The lookup returns null, `where isnotnull(threat_type)` drops everything, and the search runs clean with zero notables. Test with `| inputlookup ip_threat_intel_lookup | head 5` then a `| lookup ... | where isnotnull()` against a known-matching event.
+- **File-hash field shape:** `lookup file_hash_intel_lookup file_hash as Hashes` fails because Sysmon `Hashes` is a multi-value string like `SHA256=ABC...,MD5=...` not a bare hash — extract the algorithm-specific field (`SHA256`) first, and match case (KV Store lowercase vs Sysmon uppercase hex).
+- **KV Store vs CSV / confidence filter:** `domain_confidence > 70` silently excludes feeds that don't populate `confidence` (null is not `> 70`); and a lookup defined as `external_type = kvstore` returns nothing if the collection name in transforms.conf doesn't match collections.conf.
+- **Stale feed looks like clean traffic:** if the modular input stopped polling, the freshness panel shows STALE but correlation just stops matching new IOCs — monitor feed age and alert on it.
+- **Verification:** seed the KV Store with a benign canary IOC (e.g., a test domain you control), generate a matching event, and confirm the correlation search produces an enriched notable with the expected `threat_type`/`ti_source` before trusting production coverage.
+
 ## Prerequisites
 
 - Splunk Enterprise Security (ES) 7.x or later

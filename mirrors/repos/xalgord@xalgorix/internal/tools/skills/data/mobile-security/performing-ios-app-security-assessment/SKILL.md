@@ -45,6 +45,15 @@ Use this skill when:
 
 **Do not use** against applications without explicit written authorization. Do not use on production devices containing real user data unless the engagement scope permits it.
 
+## Most Often Missed & How to Confirm
+
+- **FairPlay-encrypted binary** — `strings`/`otool` on the App Store binary yields nothing useful. Confirm by checking `LC_ENCRYPTION_INFO cryptid=1`, then decrypt with frida-ios-dump before static review.
+- **Keychain accessibility attribute** — dumping items isn't the finding; confirm `kSecAttrAccessibleAlways`/`AfterFirstUnlock` items are readable while the device is locked.
+- **SSL pinning bypass unverified** — confirm by routing through Burp and seeing authenticated traffic, not just a "bypass loaded" message.
+- **ATS still blocking the proxy** — confirm `NSAllowsArbitraryLoads` / exception domains in Info.plist explain missing traffic after a pinning bypass.
+- **Swift-only classes invisible** — non-`@objc` classes don't appear in `ObjC.classes`. Confirm via `Module.enumerateExports()`.
+- **Jailbreak detection** — confirm `ios jailbreak disable` lets the app continue, and that detection isn't re-checked later in the flow.
+
 ## Prerequisites
 
 - Python 3.10+ with pip

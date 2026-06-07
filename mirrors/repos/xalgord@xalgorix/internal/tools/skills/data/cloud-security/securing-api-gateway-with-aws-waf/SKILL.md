@@ -37,6 +37,16 @@ nist_csf:
 
 **Do not use** for network-level DDoS protection (use AWS Shield), for application logic vulnerabilities (use SAST/DAST tools), or for internal API security between microservices (use service mesh authentication and authorization).
 
+## Common Misconfigurations & Verification
+
+- **Web ACL created but never associated** protects nothing. Confirm attachment with `aws wafv2 get-web-acl-for-resource --resource-arn arn:aws:apigateway:REGION::/restapis/API_ID/stages/prod`. API Gateway requires `--scope REGIONAL`; a CLOUDFRONT-scope ACL will not attach.
+- **Rules left in Count / `OverrideAction: Count`** log but never block. Verify the intended managed groups and custom rules show `Action: Block` in `get-web-acl`, not Count.
+- **Rate-based window misunderstanding:** `RateBasedStatement` `Limit` is requests per trailing 5-minute window aggregated per source IP (5-min minimum), so `2000` is not per-minute. Clients behind shared NAT share a key. Confirm blocking with `get-rate-based-statement-managed-keys`.
+- **Scope-down match misses:** a `ByteMatchStatement` on `/api/auth/login` with `LOWERCASE` won't match URL-encoded or case-sensitive upstream paths. Body inspection only covers the first 8 KB unless `SizeConstraintStatement` uses `OversizeHandling: MATCH`.
+- **"Require x-api-key" is not auth:** the `NotStatement` + `PositionalConstraint: EXACTLY` empty-string pattern blocks missing/empty headers but allows any wrong key.
+
+**Verify it actually works:** send a known SQLi/XSS payload and confirm a `403` appears in `aws wafv2 get-sampled-requests --rule-metric-name ...`; flood the login path and confirm `RateLimitLogin` blocks; and confirm logging is on via `get-logging-configuration` (otherwise blocks aren't auditable). Start new rules in Count, review samples, then flip to Block.
+
 ## Prerequisites
 
 - AWS API Gateway (REST or HTTP API) deployed with public endpoints

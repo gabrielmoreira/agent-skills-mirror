@@ -37,6 +37,14 @@ nist_csf:
 
 **Do not use** as a standalone ransomware defense. GPO settings complement but do not replace endpoint detection, backups, network segmentation, and user awareness training.
 
+## Common Misconfigurations & Verification
+
+- **GPO doesn't block the shadow-copy/recovery LOLBins:** the most common gap is leaving `vssadmin delete shadows`, `wbadmin delete catalog`, `bcdedit /set {default} recoveryenabled no`, and `wmic shadowcopy delete` runnable. AppLocker path rules rarely cover these because the binaries live in `C:\Windows\System32` (allowed by default). Add explicit AppLocker/WDAC *deny* rules or an ASR/EDR block for these signed binaries and confirm a non-admin user cannot delete shadows.
+- **ASR rules left in Audit mode:** rules set to action `2` (Audit) log but never block. Verify `AttackSurfaceReductionRules_Actions` is `1` (Block) for the email/Office-child-process rules, not just configured.
+- **AppLocker without Application Identity service running:** rules silently don't enforce if the `AppIDSvc` service isn't set to Automatic. Confirm the service is running, not just that rules exist.
+- **Controlled Folder Access protects defaults but not the file shares:** UNC paths like `\\fileserver\finance` must be added explicitly; CFA only auto-protects Documents/Desktop locally.
+- **Verification:** run `gpresult /r` on a test OU endpoint, then actually attempt the attacks — drop and run an EXE from `%AppData%\Temp` (expect AppLocker 8004), modify a file in a protected folder from an unlisted app (expect CFA 1123), run `vssadmin delete shadows /all /quiet` as a standard user and confirm it is blocked, and open a macro doc to confirm child-process blocking. Pilot on a test OU before domain-wide linkage.
+
 ## Prerequisites
 
 - Windows Server 2016+ Active Directory environment with Group Policy Management Console (GPMC)

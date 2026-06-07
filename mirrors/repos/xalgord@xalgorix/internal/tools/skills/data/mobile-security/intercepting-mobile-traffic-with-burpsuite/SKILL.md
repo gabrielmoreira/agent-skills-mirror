@@ -36,6 +36,15 @@ Use this skill when:
 
 **Do not use** this skill to intercept traffic from applications you are not authorized to test -- traffic interception without authorization violates computer fraud laws.
 
+## Most Often Missed & How to Confirm
+
+- **Android 7+ user-CA distrust** — the proxy "works" for the browser but app traffic is empty. Confirm the CA is installed as a *system* cert (or via Magisk) and that the target app's traffic appears, not just Chrome's.
+- **Certificate pinning masking traffic** — confirm pinning (not proxy misconfig) is the cause by running an Objection/Frida bypass and seeing requests reappear.
+- **Certificate Transparency enforcement** — some apps reject the MITM cert via CT. Confirm by checking for CT failures in logs and bypassing CT separately.
+- **Non-HTTP protocols** — WebSocket/gRPC/MQTT won't show in Burp. Confirm with Wireshark that traffic exists on other channels.
+- **VPN-tunneled apps bypass device proxy** — confirm by checking that no traffic reaches Burp despite a correct proxy, then redirect with iptables on a rooted device.
+- **Invisible proxying for non-proxy-aware clients** — confirm by enabling it when CONNECT requests are missing from HTTP history.
+
 ## Prerequisites
 
 - Burp Suite Professional or Community Edition installed on testing workstation

@@ -43,6 +43,17 @@ Deploy FIDO2/WebAuthn passwordless authentication using security keys and platfo
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+A FIDO2 deployment that still trusts passwords or skips verification is not phishing-resistant — check these:
+
+- **Password fallback left on:** users register a passkey but the login form still accepts password (or password+OTP), so attackers phish the weaker path. Confirm passwordless is *enforced* for the target population and test that a password-only login is rejected, not silently allowed.
+- **`userVerification: discouraged`:** the credential becomes single-factor — anyone holding the key authenticates with no PIN/biometric. Verify the server requests `user_verification: required` and that `verify_authentication_response()` actually checks the UV flag in the authenticator data.
+- **Sign-count / clone detection skipped:** confirm the server rejects or alarms when the returned `signCount` is not greater than the stored value; a flat or regressing counter indicates a cloned authenticator.
+- **RP ID / origin mismatch:** an over-broad `rpId` or unvalidated `clientDataJSON.origin` lets credentials be replayed from look-alike domains. Verify origin and `rpId` are validated server-side against the exact expected host.
+- **Attestation not validated where required (AAL3):** for high-assurance accounts, confirm attestation conveyance is `direct`/`enterprise` and the attestation chain + AAGUID are checked, not `none`.
+- **No backup authenticator / weak recovery:** confirm ≥2 credentials per account and that account recovery never falls back to email or SMS alone, which defeats phishing resistance.
+
 ## Prerequisites
 
 - Familiarity with identity access management concepts and tools

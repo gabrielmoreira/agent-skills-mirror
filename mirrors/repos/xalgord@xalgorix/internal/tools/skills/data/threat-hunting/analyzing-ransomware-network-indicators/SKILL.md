@@ -42,6 +42,15 @@ Before and during ransomware execution, adversaries establish C2 channels, exfil
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Jitter defeats tight interval math.** Cobalt Strike/ransomware loaders sleep with randomized jitter (often 0-50%), inflating the coefficient of variation so a strict CV threshold misses them. Widen the CV window and bucket by destination + JA3 over 24h rather than per-flow.
+- **HTTPS hides the payload.** `conn.log` only sees byte counts. Pair it with `ssl.log` (JA3/JA3S fingerprints, self-signed or short-lived certs) and `x509.log` to catch C2 that looks like normal TLS.
+- **Stale TOR lists = false negatives.** Exit-node lists rotate constantly; refresh hourly, and remember bridges/obfs4 never appear on exit-node feeds at all.
+- **Exfil over allowed channels:** large uploads to sanctioned cloud storage or DNS tunneling slip past outbound byte-ratio rules. Add `dns.log` checks for high query-length, high-entropy subdomains, and TXT-record volume; aggregate low-and-slow transfers per destination over days, not per connection.
+- **Validate the rule fires:** generate a fixed-interval `curl` beacon (e.g., every 60s) to a lab host and confirm the beaconing query flags it; touch a known TOR exit IP and confirm the enrichment/alert triggers.
+- **Tune false positives:** OS/AV update checks, NTP, and SaaS telemetry beacon on regular intervals. Allowlist known update and telemetry ASNs/domains before alerting.
+
 ## Prerequisites
 
 - Zeek conn.log files or NetFlow CSV/JSON exports

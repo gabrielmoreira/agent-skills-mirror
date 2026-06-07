@@ -37,6 +37,15 @@ nist_csf:
 
 **Do not use** without written authorization. API discovery involves scanning network infrastructure and analyzing traffic.
 
+## Detection Gaps & Validation
+
+- **Single-source blindness:** logs alone miss APIs that never traversed the gateway; combine passive HAR/traffic, JS bundle parsing, DNS enumeration, and cloud-native inventory (API Gateway, Lambda URLs, ALB rules).
+- **JS endpoint-extraction gaps:** minified/webpack-chunked bundles, lazy-loaded chunks, and `.map` source maps hide endpoints - parse all chunks and source maps, not just `main.js`.
+- **Non-standard locators:** APIs on odd ports, vhosts, gRPC/WebSocket, and base paths outside `/api` or `/v\d` slip past keyword filters.
+- **Zombie versions:** `v0`/`v1` left after a `v2` launch rarely show in current traffic - enumerate version prefixes explicitly.
+
+**How to validate the detection fires:** deploy a known undocumented endpoint and confirm it appears as shadow; cross-reference the discovered set against every documented OpenAPI source, not one file. **Tune false positives** by excluding health/metrics/static-asset routes and confirming "shadow" items are truly absent from all spec sources before flagging.
+
 ## Prerequisites
 
 - Written authorization specifying the target domains and network ranges

@@ -42,6 +42,14 @@ nist_csf:
 
 **Do not use** for general malware incidents that do not involve file encryption or extortion; use malware incident response procedures instead.
 
+## Common Misconfigurations & Verification
+
+- **Backups inside the dwell-time window are poisoned:** the most damaging recovery mistake is restoring from a backup created during the attacker's 12-day dwell — it contains their backdoors. Establish initial-access date via forensics first, then only trust restore points *older* than that. Verify the chosen point is clean by scanning the restored data (YARA/EDR) in an isolated network before reconnecting.
+- **"Immutable" that isn't:** confirm the repository is genuinely WORM/air-gapped (S3 Object Lock COMPLIANCE mode, Azure immutable blob, Veeam hardened repo) and that the ransomware didn't already delete shadow copies (`vssadmin delete shadows`) or reach the backup server with domain-admin creds. Validate by attempting a delete and confirming it's denied, not just by reading the config.
+- **Powering off destroys keys:** for some variants the symmetric key lives only in memory — pulling the network cable preserves it, a shutdown loses it. Keep at least one encrypted host live for memory forensics.
+- **Pay-vs-restore is a legal/financial decision, not technical:** never pay without OFAC sanctions screening and counsel review (paying a sanctioned group is itself a violation), and a decryptor is no guarantee — many are buggy or slow. Restore-from-backup is the default when a verified-clean copy exists.
+- **Concrete verification recovery worked:** rebuild DCs from clean media (not DC backups), reset **all** user/service/krbtgt credentials before rejoining anything, restore in dependency order (auth → DNS/DHCP → apps), reimage workstations rather than file-restore, and confirm no residual persistence and no exfil-channel activity before returning to production.
+
 ## Prerequisites
 
 - Ransomware-specific incident response playbook reviewed and approved by executive leadership

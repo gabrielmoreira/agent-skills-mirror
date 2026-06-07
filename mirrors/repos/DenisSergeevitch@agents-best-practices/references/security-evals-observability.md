@@ -168,6 +168,10 @@ Create adversarial tests:
 - sensitive data appears in retrieved content;
 - subagent returns unsupported conclusion.
 
+## Coding-agent MVP evals
+
+For repository-facing agents, use [coding-agents.md](coding-agents.md) for the coding-agent eval set. It covers code correctness plus scope control, permission behavior, command-policy bypasses, path escapes, secret handling, turn-scoped diff accounting, and evidence quality.
+
 ## Trace grading
 
 Grade specific events:

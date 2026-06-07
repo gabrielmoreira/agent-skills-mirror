@@ -37,6 +37,15 @@ nist_csf:
 - During incident response when standard persistence locations (Run keys, scheduled tasks) are clean
 - When WmiPrvSe.exe is observed spawning unexpected child processes
 
+## Detection Gaps & Validation
+
+- **Without Sysmon EID 19/20/21, you're relying on Event 5861 alone** — and 5861 logs permanent consumer creation but not all filter activity, so partial visibility produces false-negative "clean" results.
+- **Payload lives in the consumer/filter properties (fileless):** an `ActiveScriptEventConsumer` carries the VBScript inline, so no child process appears until the trigger fires — process-only hunts miss dormant subscriptions.
+- **Non-standard consumers and namespaces evade `root\subscription` enumeration:** `LogFileEventConsumer`, `NTEventLogEventConsumer`, and subscriptions placed in `root\default` instead of `root\subscription`.
+- **Intrinsic-event timers look benign:** `__InstanceModificationEvent` on `Win32_LocalTime`/`Win32_PerfFormattedData` is a common timed trigger (FIN8-style) that resembles normal polling.
+- **Validate the hunt fires:** install a test `__EventFilter` + `CommandLineEventConsumer` binding via PowerShell or `mofcomp.exe` (Atomic Red Team T1546.003); confirm Sysmon EID 19/20/21 and Event 5861 fire and the WmiPrvSe child process is detected.
+- **FP tuning:** SCCM, antivirus, and monitoring agents create legitimate permanent subscriptions — baseline existing bindings per host and alert only on new/unsigned ones.
+
 ## Prerequisites
 
 - Sysmon Event ID 19, 20, 21 (WMI Event Filter/Consumer/Binding) enabled

@@ -38,6 +38,13 @@ nist_csf:
 
 **Do not use** for detecting attacks on non-Modbus protocols (see detecting-dnp3-protocol-anomalies for DNP3), for general IT network intrusion detection, or for Modbus device configuration (see performing-ot-vulnerability-scanning-safely).
 
+## Detection Gaps & Validation
+
+- **Source IP is the only identity, and it spoofs.** Modbus/TCP has no authentication, so a malicious write (FC5/FC6/FC15/FC16) from a spoofed master IP looks legitimate. Without ARP inspection or static MAC bindings, IP-based allowlisting alone produces false negatives.
+- **Writes inside the learned register range evade detection.** FrostyGoop-style attacks reuse permitted function codes and registers; pair the FC allowlist with register value/setpoint bounds and write-rate limits, not just function-code matching.
+- **Broadcast and serial gaps.** A unit ID 0 broadcast write hits every slave on the segment at once and needs its own rule; and a SPAN watching only TCP/502 misses Modbus RTU serial behind a gateway.
+- **Validate the rule safely.** Replay a labeled pcap containing injected FC16 writes, a broadcast write, and an out-of-range register access through the detector offline. Never write to a live PLC register to test detection. Before escalating, check the source against the authorized-writer list and the change/maintenance log — legitimate SCADA and engineering writes use the same function codes.
+
 ## Prerequisites
 
 - Network SPAN/TAP on the segment carrying Modbus TCP traffic (typically port 502)

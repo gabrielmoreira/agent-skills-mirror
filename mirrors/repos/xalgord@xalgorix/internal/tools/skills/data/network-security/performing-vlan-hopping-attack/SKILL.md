@@ -33,6 +33,15 @@ nist_csf:
 
 **Do not use** on production switches without explicit authorization and change management approval, against critical infrastructure VLANs (SCADA, medical devices) without safety controls, or as a denial-of-service vector.
 
+## Most Often Missed & How to Confirm
+
+- **Switch-spoofing (DTP) vs double-tagging are different bugs:** DTP negotiation turns your access port into a trunk (bidirectional, all VLANs); double-tagging is a one-way push into a single VLAN that only works when your access VLAN equals the trunk's native VLAN. Test both — a switch hardened against one may allow the other.
+- **Double-tag preconditions:** the outer `Dot1Q` tag MUST equal the trunk native VLAN (default VLAN 1) and the inner tag is the target. If the native VLAN was changed, the outer tag isn't stripped and the attack silently fails — confirm the native VLAN first.
+- **Unidirectional = no reply expected:** double-tagging gets no response by design, so "no ping reply" is NOT proof it failed. Confirm on the target VLAN with a mirror/monitor capture (`tshark -i ethX -Y "vlan.id == 20 && icmp"`), not from the attacker.
+- **DTP confirmation:** after `yersinia dtp -attack 1`, verify the port actually trunked by capturing 802.1Q-tagged frames (`tcpdump -e -i eth0 vlan`) and bringing up a `vlan` subinterface that reaches another VLAN's gateway.
+- **Don't forget VTP:** in server mode a higher-revision VTP frame can rewrite the VLAN database (lab only — it can wipe VLANs domain-wide).
+- **Don't conclude "segmentation holds"** until you've tried DTP desirable frames, double-tagging with the *correct* native VLAN, confirmed delivery on the target side, and checked `show interfaces switchport` for `dynamic auto/desirable`.
+
 ## Prerequisites
 
 - Written authorization specifying in-scope VLANs and switches for testing

@@ -36,6 +36,14 @@ Use this skill when:
 
 **Do not use** this skill for Linux endpoints (use hardening-linux-endpoint-with-cis-benchmark) or for cloud-native workloads that require CIS cloud benchmarks.
 
+## Common Misconfigurations & Verification
+
+- **GPO linked but not applied:** a linked CIS GPO means nothing until it reaches the host — confirm with `gpresult /h report.html` (or `Get-GPResultantSetOfPolicy`) that the baseline is under "Applied GPOs", not blocked by precedence, a WMI filter, or Block Inheritance on the OU.
+- **Audit settings ineffective without the override:** CIS 17.x advanced audit subcategories are ignored unless "Force audit policy subcategory settings to override" (SCENoApplyLegacyAuditPolicy) is Enabled. Validate on the host with `auditpol /get /category:*`, not the GPMC.
+- **CIS-CAT score masks real gaps:** a high `Assessor-CLI` score only covers Scored items and the profile you selected — running L1 hides missing L2 controls, and an outdated benchmark XML reports false passes. Match the benchmark version to the OS build.
+- **Drift after baseline:** local admins, app installers, or feature updates re-open settings (SMBv1, RDP, a firewall profile set Off). Schedule recurring CIS-CAT scans and feed results to the SIEM for drift detection rather than trusting a one-time pass.
+- **Verify enforcement, not just policy:** after applying, confirm a key control actually blocks — NTLMv2-only (2.3.11.7), Windows Firewall inbound Block per profile (9.x) — and run a 4688 / Atomic Red Team process-creation test to confirm Process Creation auditing (17.6.1) produces events that reach the SIEM.
+
 ## Prerequisites
 
 - Windows 10/11 Enterprise or Windows Server 2019/2022 target endpoints

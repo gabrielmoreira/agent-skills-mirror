@@ -36,6 +36,14 @@ MISP (Malware Information Sharing Platform) is an open-source threat intelligenc
 - When establishing standardized procedures for security team workflows
 - When integrating threat intelligence or vulnerability data into operations
 
+## Detection Gaps & Validation
+
+- **Feed staleness and dedup blindness:** MISP correlation fires only on exact attribute-value matches. A C2 IP stored as `ip-dst` will not correlate with the same value stored as `ip-src` or inside a `network-connection` object - normalize types before trusting a "no correlation" result.
+- **`to_ids` flag mismatch:** attributes with `to_ids=False` never reach Suricata/SIEM exports. A feed that imports IOCs without setting `to_ids` produces silent detection gaps - audit with a search on `controller='attributes', to_ids=False` to surface them.
+- **Expired indicators:** feeds like URLhaus and Feodo Tracker recycle fast; without `first_seen`/`last_seen` decay or `Sighting` objects, blocked IOCs go stale. Validate feed `timestamp` freshness, not just the enabled flag.
+- **Galaxy/cluster drift:** threat-actor attribution via galaxies (e.g. `mitre-intrusion-set`) is only as current as the feed's tagging. Shared-infra IOCs (Cloudflare, bulletproof hosts) cause false attribution - confirm with a second pivot before trusting a galaxy link.
+- **How to validate:** after `fetch_feed`, confirm the event count increased, spot-check that 5 attributes resolve to live IOCs, and verify a known test IOC round-trips through your STIX 2.1/CSV export before declaring the pipeline healthy.
+
 ## Prerequisites
 
 - Python 3.9+ with `pymisp` library installed

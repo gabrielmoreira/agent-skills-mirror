@@ -38,6 +38,15 @@ nist_csf:
 - When threat intel reports indicate process hollowing in active campaigns
 - During purple team exercises validating T1055.012 detection coverage
 
+## Detection Gaps & Validation
+
+- **Event ID 25 requires Sysmon 13+:** ProcessTampering (the cleanest hollowing signal) does not exist on older agents — confirm the Sysmon version or you silently miss every hollowing event. EID 25 also only flags image/section divergence, not all RunPE variants.
+- **CREATE_SUSPENDED is not logged directly:** the suspended-create → unmap → write → resume chain has no single event. Stitch EID 1 (process create) + EID 8 (CreateRemoteThread) + EID 10 (ProcessAccess `0x0008 PROCESS_VM_OPERATION` / `0x0020 PROCESS_VM_WRITE`) on the same target PID.
+- **Image-mismatch hunting:** compare Sysmon EID 7 (ImageLoaded) `OriginalFileName`/hash against the on-disk path; a `svchost.exe` with no `services.exe` parent (EID 1 ParentImage) and outbound EID 3 is a strong tell.
+- **Evasions:** process doppelgänging (T1055.013, NTFS transactions) and process ghosting bypass EID 25; module stomping reuses a legit DLL's memory so ImageLoaded looks clean — fall back to pe-sieve, Hollows Hunter, or Moneta memory scans.
+- **Validate:** run Atomic Red Team **T1055.012** (or a known RunPE PoC) and confirm EID 25 plus the EID 8/10 correlation fire in the SIEM.
+- **Tune FPs:** debuggers, AV/EDR, and installers legitimately write cross-process memory — exclude by signed SourceImage and known RMM/security tooling, not by target name.
+
 ## Prerequisites
 
 - EDR with memory protection monitoring (CrowdStrike, MDE, SentinelOne)

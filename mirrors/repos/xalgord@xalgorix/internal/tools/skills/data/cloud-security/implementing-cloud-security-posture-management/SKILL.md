@@ -36,6 +36,20 @@ nist_csf:
 
 **Do not use** for runtime workload protection (use CWPP tools like Falco or Aqua), for application security testing (use DAST/SAST tools), or for network intrusion detection (use cloud-native IDS like GuardDuty or Network Watcher).
 
+## Common Misconfigurations & Verification
+
+- **Scanner identity over-privileged:** running Prowler/ScoutSuite with write or admin credentials turns the CSPM scanner into a high-value target. Use a dedicated read-only audit role (`SecurityAudit`/`roles/iam.securityReviewer`) and confirm no write actions appear in CloudTrail/audit logs for that principal.
+- **Compliance pack not selected:** `prowler aws` without `--compliance cis_1.5_aws` runs only the default checks, so the CIS/PCI score you report is incomplete. Always pass the explicit framework and confirm in the run header.
+- **Native services not enabled underneath:** Security Hub needs AWS Config, Defender needs auto-provisioning, SCC needs asset discovery. If these are off, drift is simply never detected (not flagged as failing).
+- **Auto-remediation in report-only:** AWS Config remediation with `Automatic:false`, or Azure policy in `DoNotEnforce`, logs drift but never fixes it. Verify `Automatic:true` / `enforcementMode: Default`.
+- **Dedup ignores resource-ID format differences:** the same misconfig from Prowler vs ScoutSuite has different IDs, producing duplicate alerts and fatigue.
+
+```bash
+prowler aws --compliance cis_1.5_aws -M csv -o ./out/     # confirm framework in summary
+gcloud scc settings describe --organization=ORG_ID        # asset discovery enabled
+aws configservice describe-remediation-configurations
+```
+
 ## Prerequisites
 
 - Multi-cloud credentials with read-only security audit permissions across all target environments

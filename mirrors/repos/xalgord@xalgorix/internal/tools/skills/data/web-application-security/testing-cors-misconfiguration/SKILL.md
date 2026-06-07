@@ -31,6 +31,19 @@ nist_csf:
 - When assessing microservice architectures with multiple domains sharing data
 - During security audits of applications using CORS headers for cross-domain communication
 
+## How to CONFIRM a Hit (avoid false negatives)
+
+A high-impact CORS hit is confirmed only when the response **reflects your attacker Origin in `Access-Control-Allow-Origin` AND returns `Access-Control-Allow-Credentials: true`** — together these let an attacker page read authenticated responses cross-origin:
+
+```bash
+curl -s -I -H "Origin: https://evil.example.com" https://api.target.example.com/api/user/profile \
+  | grep -iE "access-control-allow-(origin|credentials)"
+```
+
+Confirm a hit when `Access-Control-Allow-Origin: https://evil.example.com` is echoed back next to `Access-Control-Allow-Credentials: true`. Prove real exploitability with a browser PoC (`fetch(url,{credentials:'include'})`) that actually reads the body — not just the headers.
+
+Do not conclude "not vulnerable" after a single test. You MUST also try: `Origin: null` (sandboxed-iframe / data-URI attack), an arbitrary **subdomain** (`https://evil.target.example.com`), and **prefix/suffix-match** bypasses (`https://target.example.com.evil.com`, `https://eviltarget.example.com`, trailing-dot/backtick tricks). A reflected ACAO **without** credentials is lower impact but still note it — it can leak non-credentialed data and signals broken origin validation worth escalating.
+
 ## Prerequisites
 
 - **Authorization**: Written penetration testing agreement for the target

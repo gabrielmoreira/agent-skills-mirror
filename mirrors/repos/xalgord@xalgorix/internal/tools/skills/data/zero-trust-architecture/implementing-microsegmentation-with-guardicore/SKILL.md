@@ -37,6 +37,18 @@ nist_csf:
 
 **Do not use** for perimeter-only security (use traditional firewalls), for environments with fewer than 50 workloads where VLANs/security groups suffice, or when network team lacks capacity for ongoing policy management.
 
+## Common Misconfigurations & Verification
+
+Microsegmentation most often fails by looking deployed while enforcing nothing. Check for these:
+
+- **Policies stuck in Reveal/monitor mode.** Guardicore Reveal logs what *would* be blocked but passes all traffic; a ring-fence in `REVEAL` is documentation, not a control. Confirm `enforcement_mode: ENFORCE`.
+- **Allow-all base rule shadowing deny rules.** A broad high-priority ALLOW (or a default-allow section) means lower-priority DENY/ring-fence rules never match.
+- **Unlabeled workloads.** Assets missing the `PCI-CDE` or tier labels fall outside policy scope and communicate freely.
+- **Agents in degraded/disconnected state** fail open on that host.
+- **Management/backup/patch traffic** not accounted for, so admins widen rules until segmentation is meaningless.
+
+**How to confirm:** from a non-CDE or web-tier host, attempt the connection that should be blocked (e.g., direct `web-tier -> db-tier` TCP 5432) and verify it is refused, not just logged. Check the violations API shows `action: DENY` with `enforcement_mode: ENFORCE`, confirm every in-scope workload carries a label, and verify agent status is active before trusting the policy.
+
 ## Prerequisites
 
 - Akamai Guardicore Segmentation license (Enterprise or Premium)

@@ -30,6 +30,15 @@ nist_csf:
 - When correlating file access with other timeline artifacts
 - For identifying accessed paths on remote systems or USB devices
 
+## Detection Gaps & Validation
+- **LNK presence does not prove a human opened the file.** Some shortcuts are auto-created (installers, Office MRU, pinned items). Distinguish user-driven Recent/AutomaticDestinations entries from programmatically created ones before asserting intent.
+- **Most-missed artifact: the Jump List `DestList` stream.** `AutomaticDestinations-ms` files carry an MRU-ordered `DestList` with access counts and last-access times — richer than the embedded LNK alone. Parse with JLECmd, not just LECmd.
+- **Target MAC timestamps are a snapshot.** The creation/modified/accessed times embedded in the LNK reflect the target *at the moment the shortcut was written* and can be stale or timestomped; they are not a live filesystem read.
+- **DistributedLinkTracker droid** preserves the original volume serial and MAC even after a file is copied between machines — powerful for attribution, but it points to the *creating* host, which can mislead if the LNK itself was copied.
+- **Timezone:** LNK FILETIME values are UTC. Convert using the source system's `TimeZoneInformation` before placing events on a local timeline.
+- **Anti-forensics:** emptied `Recent`/Jump List folders, timestomped targets, and deleted LNKs (recover from `$MFT`/unallocated or VSS).
+- **Validate / cross-corroborate:** confirm a claimed access against Shellbags (folder browsing), RecentDocs (NTUSER.DAT), Prefetch, `$UsnJrnl`, and USBSTOR/MountPoints2 when the target sits on removable media. A single matching second source promotes a candidate to a finding.
+
 ## Prerequisites
 - Access to LNK files from forensic image (Recent, Desktop, Quick Launch)
 - LECmd (Eric Zimmerman), python-lnk, or LnkParser for analysis

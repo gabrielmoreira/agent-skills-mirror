@@ -36,6 +36,13 @@ MISP (Malware Information Sharing Platform) is an open-source threat intelligenc
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+- **Distribution misconfiguration leaks intel:** the most damaging error is a wrong `distribution` level or sharing-group scope - publishing a TLP:RED event with "All communities" distribution, or adding it to a sync server that forwards onward. Verify the event distribution, every attribute's distribution (attributes can override the event), and the sharing-group member list **before** `publish()`; once synced it cannot be recalled.
+- **to_ids / IDS-flag gaps:** attributes can push benign or context-only indicators (sinkholes, your own infrastructure, sandbox IPs) into partners' detection systems. Set `to_ids=False` on context attributes and run MISP warninglists (RFC1918, known-good domains, public DNS resolvers) before publishing.
+- **Correlation/dedup blind spots:** the same IOC arriving from multiple feeds creates duplicate events and inflated confidence; run `misp.search()` and rely on MISP correlation before creating a new event so you enrich the existing one instead of forking it.
+- **How to confirm a share is safe:** dry-run with a restricted distribution first, confirm TLP tags map to the intended sharing group, and validate the STIX 2.1 export round-trips (re-import and diff) so downstream consumers receive well-formed, correctly marked objects.
+
 ## Prerequisites
 
 - MISP instance (v2.4+) with API access enabled

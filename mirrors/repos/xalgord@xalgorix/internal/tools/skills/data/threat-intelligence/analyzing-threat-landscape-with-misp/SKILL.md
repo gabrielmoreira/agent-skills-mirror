@@ -38,6 +38,15 @@ nist_csf:
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Attribute-type coverage:** counting only `ip-dst`/`domain`/`sha256` undercounts the landscape -- MISP also stores `ip-src`, `hostname`, `url`, `md5`, `sha1`, `filename|sha256`, and `btc`. Enumerate the full `Attribute.type` set or your IOC-type breakdown is biased.
+- **Galaxy/tag inconsistency:** actor attribution lives in `galaxy` clusters (`mitre-intrusion-set`, `threat-actor`) and free-text `Tag`s applied unevenly -- APT28 may appear as "Sofacy", "Fancy Bear", or a galaxy UUID. Normalize via galaxy synonyms before ranking top actors.
+- **Sharing/visibility gaps:** API-key org permissions and event `distribution` levels mean `search()` returns only visible events; "top threat level" skews to what your org can see.
+- **Stale events:** old events inflate counts unless you bound by `--days`/`timestamp`.
+
+To validate: confirm event totals from PyMISP `search()` match the MISP web UI for the same date range and filters; verify pagination is not truncating results (default page limits). Re-run the technique ranking with galaxy-synonym normalization and confirm duplicate actors collapse. Sanity-check that `T1566`-style technique counts come from ATT&CK galaxy clusters, not ad-hoc tags, before reporting a "top technique."
+
 ## Prerequisites
 
 - Familiarity with threat intelligence concepts and tools

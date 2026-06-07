@@ -36,6 +36,14 @@ Splunk SOAR orchestrates and automates security operations through playbooks tha
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Playbook doesn't auto-run on artifacts:** if every `/rest/artifact` POST sets `run_automation: false` (including the last one), the active playbook never triggers on ingest. Set `run_automation: true` on the final artifact, or start it explicitly via `/rest/playbook_run`.
+- **Playbook inactive or wrong label:** a playbook scoped to a label/category that doesn't match the container's `label` never fires. Confirm the container label matches the playbook's configured label and that the playbook is *active*, not just saved.
+- **Auth token lacks automation scope:** a read-only `ph-auth-token` creates containers fine but silently fails to start playbooks. Verify with a `/rest/playbook_run` POST and check for a `200` plus a `playbook_run_id`, not just successful container creation.
+- **Asset/app actions unconfigured:** URL/domain reputation steps fail when the VirusTotal/reputation asset has no API key — the playbook "runs" but its actions error. Poll `/rest/action_run` and confirm each action reaches `success`, not `failed`.
+- **Confirm end to end:** submit a known-bad test `.eml`, then verify a container was created, the playbook reached a terminal `success`, and the verdict/artifacts populated. A created container with no `playbook_run` is a silent failure.
+
 ## Prerequisites
 
 - Python 3.9 or later with `requests` and `email` modules

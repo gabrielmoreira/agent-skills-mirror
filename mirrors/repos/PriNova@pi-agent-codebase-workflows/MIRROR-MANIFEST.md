@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `PriNova/pi-agent-codebase-workflows` — 26 default patterns, 0 followed patterns, 60 file(s) materialized.
+Mirror of `PriNova/pi-agent-codebase-workflows` — 26 default patterns, 0 followed patterns, 62 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PriNova/pi-agent-codebase-workflows` — 26 default patterns, 0 follo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 60 |
+| Files         | 62 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -89,36 +89,38 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 28 | ✓ | [`prompts/safe-start-07-vertical-slice.md`](prompts/safe-start-07-vertical-slice.md) |
 | 29 | ✓ | [`prompts/safe-start-08-handoff.md`](prompts/safe-start-08-handoff.md) |
 | 30 | ✓ | [`prompts/safe-start-all.md`](prompts/safe-start-all.md) |
-| 31 | ✓ | [`skills/_shared/references/artifact-api.md`](skills/_shared/references/artifact-api.md) |
-| 32 | ✓ | [`skills/_shared/references/schemas/adr.schema.json`](skills/_shared/references/schemas/adr.schema.json) |
-| 33 | ✓ | [`skills/_shared/references/schemas/agent-operating-guide.schema.json`](skills/_shared/references/schemas/agent-operating-guide.schema.json) |
-| 34 | ✓ | [`skills/_shared/references/schemas/architecture.schema.json`](skills/_shared/references/schemas/architecture.schema.json) |
-| 35 | ✓ | [`skills/_shared/references/schemas/change-guide.schema.json`](skills/_shared/references/schemas/change-guide.schema.json) |
-| 36 | ✓ | [`skills/_shared/references/schemas/common.schema.json`](skills/_shared/references/schemas/common.schema.json) |
-| 37 | ✓ | [`skills/_shared/references/schemas/contracts.schema.json`](skills/_shared/references/schemas/contracts.schema.json) |
-| 38 | ✓ | [`skills/_shared/references/schemas/data-flow.schema.json`](skills/_shared/references/schemas/data-flow.schema.json) |
-| 39 | ✓ | [`skills/_shared/references/schemas/data-model.schema.json`](skills/_shared/references/schemas/data-model.schema.json) |
-| 40 | ✓ | [`skills/_shared/references/schemas/dependency-rules.schema.json`](skills/_shared/references/schemas/dependency-rules.schema.json) |
-| 41 | ✓ | [`skills/_shared/references/schemas/design-issues.schema.json`](skills/_shared/references/schemas/design-issues.schema.json) |
-| 42 | ✓ | [`skills/_shared/references/schemas/invariants.schema.json`](skills/_shared/references/schemas/invariants.schema.json) |
-| 43 | ✓ | [`skills/_shared/references/schemas/project-intent.schema.json`](skills/_shared/references/schemas/project-intent.schema.json) |
-| 44 | ✓ | [`skills/_shared/references/schemas/repo-inventory.schema.json`](skills/_shared/references/schemas/repo-inventory.schema.json) |
-| 45 | ✓ | [`skills/_shared/references/schemas/risk-register.schema.json`](skills/_shared/references/schemas/risk-register.schema.json) |
-| 46 | ✓ | [`skills/_shared/references/schemas/scopes.schema.json`](skills/_shared/references/schemas/scopes.schema.json) |
-| 47 | ✓ | [`skills/_shared/references/schemas/testing-strategy.schema.json`](skills/_shared/references/schemas/testing-strategy.schema.json) |
-| 48 | ✓ | [`skills/_shared/references/schemas/validation-baseline.schema.json`](skills/_shared/references/schemas/validation-baseline.schema.json) |
-| 49 | ✓ | [`skills/arch-code-review/SKILL.md`](skills/arch-code-review/SKILL.md) |
-| 50 | ✓ | [`skills/codebase-recon/SKILL.md`](skills/codebase-recon/SKILL.md) |
-| 51 | ✓ | [`skills/safe-change/references/bug-fix.md`](skills/safe-change/references/bug-fix.md) |
-| 52 | ✓ | [`skills/safe-change/references/docs-update.md`](skills/safe-change/references/docs-update.md) |
-| 53 | ✓ | [`skills/safe-change/references/feature.md`](skills/safe-change/references/feature.md) |
-| 54 | ✓ | [`skills/safe-change/references/preflight.md`](skills/safe-change/references/preflight.md) |
-| 55 | ✓ | [`skills/safe-change/references/refactoring.md`](skills/safe-change/references/refactoring.md) |
-| 56 | ✓ | [`skills/safe-change/references/risk-fix.md`](skills/safe-change/references/risk-fix.md) |
-| 57 | ✓ | [`skills/safe-change/references/scoped-docs.md`](skills/safe-change/references/scoped-docs.md) |
-| 58 | ✓ | [`skills/safe-change/SKILL.md`](skills/safe-change/SKILL.md) |
-| 59 | ✓ | [`skills/safe-start/SKILL.md`](skills/safe-start/SKILL.md) |
-| 60 | ✓ | [`skills/structured-docs-migration/SKILL.md`](skills/structured-docs-migration/SKILL.md) |
+| 31 | ✓ | [`prompts/validate-structured-docs.md`](prompts/validate-structured-docs.md) |
+| 32 | ✓ | [`skills/_shared/references/artifact-api.md`](skills/_shared/references/artifact-api.md) |
+| 33 | ✓ | [`skills/_shared/references/schemas/adr.schema.json`](skills/_shared/references/schemas/adr.schema.json) |
+| 34 | ✓ | [`skills/_shared/references/schemas/agent-operating-guide.schema.json`](skills/_shared/references/schemas/agent-operating-guide.schema.json) |
+| 35 | ✓ | [`skills/_shared/references/schemas/architecture.schema.json`](skills/_shared/references/schemas/architecture.schema.json) |
+| 36 | ✓ | [`skills/_shared/references/schemas/change-guide.schema.json`](skills/_shared/references/schemas/change-guide.schema.json) |
+| 37 | ✓ | [`skills/_shared/references/schemas/common.schema.json`](skills/_shared/references/schemas/common.schema.json) |
+| 38 | ✓ | [`skills/_shared/references/schemas/contracts.schema.json`](skills/_shared/references/schemas/contracts.schema.json) |
+| 39 | ✓ | [`skills/_shared/references/schemas/data-flow.schema.json`](skills/_shared/references/schemas/data-flow.schema.json) |
+| 40 | ✓ | [`skills/_shared/references/schemas/data-model.schema.json`](skills/_shared/references/schemas/data-model.schema.json) |
+| 41 | ✓ | [`skills/_shared/references/schemas/dependency-rules.schema.json`](skills/_shared/references/schemas/dependency-rules.schema.json) |
+| 42 | ✓ | [`skills/_shared/references/schemas/design-issues.schema.json`](skills/_shared/references/schemas/design-issues.schema.json) |
+| 43 | ✓ | [`skills/_shared/references/schemas/invariants.schema.json`](skills/_shared/references/schemas/invariants.schema.json) |
+| 44 | ✓ | [`skills/_shared/references/schemas/project-intent.schema.json`](skills/_shared/references/schemas/project-intent.schema.json) |
+| 45 | ✓ | [`skills/_shared/references/schemas/repo-inventory.schema.json`](skills/_shared/references/schemas/repo-inventory.schema.json) |
+| 46 | ✓ | [`skills/_shared/references/schemas/risk-register.schema.json`](skills/_shared/references/schemas/risk-register.schema.json) |
+| 47 | ✓ | [`skills/_shared/references/schemas/scopes.schema.json`](skills/_shared/references/schemas/scopes.schema.json) |
+| 48 | ✓ | [`skills/_shared/references/schemas/testing-strategy.schema.json`](skills/_shared/references/schemas/testing-strategy.schema.json) |
+| 49 | ✓ | [`skills/_shared/references/schemas/validation-baseline.schema.json`](skills/_shared/references/schemas/validation-baseline.schema.json) |
+| 50 | ✓ | [`skills/arch-code-review/SKILL.md`](skills/arch-code-review/SKILL.md) |
+| 51 | ✓ | [`skills/codebase-recon/SKILL.md`](skills/codebase-recon/SKILL.md) |
+| 52 | ✓ | [`skills/safe-change/references/bug-fix.md`](skills/safe-change/references/bug-fix.md) |
+| 53 | ✓ | [`skills/safe-change/references/docs-update.md`](skills/safe-change/references/docs-update.md) |
+| 54 | ✓ | [`skills/safe-change/references/feature.md`](skills/safe-change/references/feature.md) |
+| 55 | ✓ | [`skills/safe-change/references/preflight.md`](skills/safe-change/references/preflight.md) |
+| 56 | ✓ | [`skills/safe-change/references/refactoring.md`](skills/safe-change/references/refactoring.md) |
+| 57 | ✓ | [`skills/safe-change/references/risk-fix.md`](skills/safe-change/references/risk-fix.md) |
+| 58 | ✓ | [`skills/safe-change/references/scoped-docs.md`](skills/safe-change/references/scoped-docs.md) |
+| 59 | ✓ | [`skills/safe-change/SKILL.md`](skills/safe-change/SKILL.md) |
+| 60 | ✓ | [`skills/safe-start/SKILL.md`](skills/safe-start/SKILL.md) |
+| 61 | ✓ | [`skills/structured-doc-validate/SKILL.md`](skills/structured-doc-validate/SKILL.md) |
+| 62 | ✓ | [`skills/structured-docs-migration/SKILL.md`](skills/structured-docs-migration/SKILL.md) |
 
 ---
 

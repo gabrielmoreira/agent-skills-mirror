@@ -37,6 +37,21 @@ nist_csf:
 
 **Do not use** for network-level DDoS protection (use AWS Shield or Azure DDoS Protection), for API authentication design (see managing-cloud-identity-with-okta), or for application code-level security fixes (WAF is a compensating control, not a replacement for secure code).
 
+## Common Misconfigurations & Verification
+
+- **Managed rules stuck in Count:** an `OverrideAction` of `{"Count": {}}` evaluates but never blocks — the WAF is purely observational. After validation, switch each managed group to `{"None": {}}` (uses the group's Block action) and confirm with `get-web-acl`.
+- **Web ACL never associated with the resource:** the ACL can exist and look configured while no traffic flows through it. Verify `aws wafv2 list-resources-for-web-acl --web-acl-arn <arn> --resource-type APPLICATION_LOAD_BALANCER` returns the ALB/CloudFront/API Gateway ARN.
+- **Default action Allow with no terminating block rule:** requests fall through and are allowed. Confirm at least the managed groups run in Block.
+- **Rate-based limit too high or wrong scope-down:** a limit of 2000/5min or a scope-down matching the wrong URI lets credential stuffing through; AWS rate rules also have a 5-minute minimum window.
+- **Logging disabled:** without `put-logging-configuration` to S3/Firehose you cannot identify false positives or confirm blocks. Redact `authorization`/`cookie` fields.
+
+```bash
+aws wafv2 get-web-acl --name production-waf --scope REGIONAL --id <id> \
+  --query 'WebACL.Rules[].{Name:Name,Override:OverrideAction,Action:Action}'
+aws wafv2 list-resources-for-web-acl --web-acl-arn <arn> --resource-type APPLICATION_LOAD_BALANCER
+aws wafv2 get-logging-configuration --resource-arn <web-acl-arn>
+```
+
 ## Prerequisites
 
 - AWS ALB/CloudFront, Azure Application Gateway, or Cloudflare configured as the application entry point

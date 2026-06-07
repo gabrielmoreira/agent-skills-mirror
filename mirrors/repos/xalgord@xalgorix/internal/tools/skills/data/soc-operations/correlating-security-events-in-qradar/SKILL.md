@@ -36,6 +36,14 @@ Use this skill when:
 
 **Do not use** for log source onboarding or parsing — that requires QRadar administrator access and DSM editor knowledge.
 
+## Detection Gaps & Validation
+
+- **DSM parsing leaves fields unextracted:** AQL correlation only works if the log source's DSM properly maps `username`, `sourceIP`, `destinationIP` to QRadar fields. A custom/unsupported log source parsed by the generic DSM populates `payload` but leaves `username` NULL, so a rule keyed on "same username" never fires and your `JOIN ... ON e.sourceIP` returns empty. Validate with `SELECT username, sourceIP FROM events WHERE logSourceId=<id>` — if columns are NULL, the gap is DSM extraction, not attacker absence.
+- **QID mapping misroutes events:** events landing under "Unknown" or a wrong QID won't match rules testing `QIDNAME(qid)='Authentication Failure'`. Check Log Activity for events in the "Stored" / unparsed category and fix the QID map before tuning thresholds.
+- **Coalescing hides correlation inputs:** QRadar event coalescing groups near-identical events, so a brute-force rule expecting "10 distinct failures in 5 min" may only see 2 coalesced records and never trigger. Disable coalescing on the relevant log source or account for it in thresholds.
+- **Validate the rule fires:** replay/inject test events (e.g., 25 `5000001` failures then a `5000000` success from one source to one dest) and confirm the building block and correlation rule produce an offense with the expected magnitude.
+- **FP tuning:** scope out scanners/service accounts via reference sets (`Known_Pen_Test_IPs`, service-account watchlist) and use offense `closeReason='False Positive'` analysis (Step 5) to find noisy QID/log-source pairs — raise thresholds or add `NOT in reference set` tests rather than disabling the rule.
+
 ## Prerequisites
 
 - IBM QRadar SIEM 7.5+ with offense management enabled

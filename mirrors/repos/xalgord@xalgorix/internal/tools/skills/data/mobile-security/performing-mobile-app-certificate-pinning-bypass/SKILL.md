@@ -36,6 +36,15 @@ Use this skill when:
 
 **Do not use** to bypass pinning on apps without explicit testing authorization.
 
+## Most Often Missed & How to Confirm
+
+- **Multi-layer pinning** — Objection's bypass clears OkHttp but a custom `TrustManager` still blocks. Confirm by checking traffic actually reaches Burp; if not, hook the remaining layer.
+- **Native/binary-level pinning** — Java/ObjC hooks miss C/C++ validation. Confirm with `frida-trace` on `*Trust*`/`*SSL*` exports and `Interceptor.attach` at the native address.
+- **Certificate Transparency checks** — confirm CT is the blocker (not pinning) by observing CT-specific rejections and bypassing it separately.
+- **Dynamic pin updates (TrustKit)** — the app fetches fresh pins from a server. Confirm by monitoring for pin-rotation requests during a long session.
+- **NetworkSecurityConfig pin-set** — confirm by decompiling and reading `res/xml/network_security_config.xml` for `<pin-set>`.
+- **Bypass success itself** — always confirm by completing an authenticated flow and seeing every request in Burp, including background/API calls.
+
 ## Prerequisites
 
 - Burp Suite configured as proxy with listener on all interfaces

@@ -32,6 +32,19 @@ nist_csf:
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **SSM Agent not installed / instance unmanaged:** `send_command` silently targets nothing if the instance isn't registered with Systems Manager. The EC2 role needs `AmazonSSMManagedInstanceCore` and an SSM VPC endpoint or NAT. Confirm: `aws ssm describe-instance-information --query 'InstanceInformationList[?PingStatus!=\`Online\`]'` (should be empty for monitored hosts).
+- **Command results never checked:** `send_command` returns immediately; the detection signal is in the invocation output, not the call. Pull it with `aws ssm list-command-invocations --command-id <id> --details`.
+- **Brittle `grep` signatures:** matching only `xmrig|minerd` misses renamed/repacked miners and reverse shells. Combine with binary hash comparison against a known-good baseline and outbound-connection (`ss -tnp`) review.
+- **No baseline:** "anomaly" detection with no recorded normal process/network/CPU profile produces only noise. Capture a baseline per instance role first.
+- **Findings go nowhere:** results must be shipped to a sink (SNS/SecurityHub/SIEM); a script that prints locally is not protection.
+
+```bash
+aws ssm describe-instance-information --query 'InstanceInformationList[].[InstanceId,PingStatus]'
+aws ssm list-command-invocations --command-id <id> --details --query 'CommandInvocations[].Status'
+```
+
 ## Prerequisites
 
 - Familiarity with cloud security concepts and tools

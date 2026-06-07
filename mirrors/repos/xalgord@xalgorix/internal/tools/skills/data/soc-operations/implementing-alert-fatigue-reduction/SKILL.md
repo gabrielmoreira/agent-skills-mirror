@@ -36,6 +36,14 @@ Use this skill when:
 
 **Do not use** to justify disabling detection rules without analysis — reducing alerts must not create detection blind spots.
 
+## Common Misconfigurations & Verification
+
+- **Tuning exclusions that suppress true positives:** the biggest risk in fatigue reduction is an over-broad allowlist. `NOT (ParentImage="*\\ccmexec.exe")` or a wildcard `powershell_whitelist.csv` pattern can be abused — attackers spawn from or masquerade as SCCM, so a basename/parent-only exclusion blinds you to real attacks. Anchor exclusions on full path + signer + user context, and re-run the rule's ATT&CK test cases after tuning to prove TP detection still fires (the "detection_impact: None" claim must be verified, not asserted).
+- **RBA threshold set too high:** if the `index=risk | where total_risk >= 75` cutoff is above what a real low-and-slow attack accumulates, the aggregated alert never fires and you've traded 1,200 noisy alerts for a silent miss. Backtest the threshold against known past incidents to confirm they would still have crossed it.
+- **`collect index=risk` not populating:** risk rules silently contribute nothing if the scheduled searches aren't enabled, `risk_object`/`risk_score` fields are misnamed, or the risk index lacks write access — verify `index=risk | stats sum(risk_score) by risk_object` returns data before relying on aggregation.
+- **Dedup/suppression that drops distinct events:** `dedup src, dest, rule_name span=3600` collapses a repeated attack into one and hides escalation; scope suppression narrowly and confirm it isn't eating new TPs.
+- **Verification:** after each change, replay a known-malicious sample through the tuned/RBA pipeline and confirm it still alerts; track FP rate and, critically, TP recall week-over-week (Step 6) so a volume drop isn't actually a detection drop.
+
 ## Prerequisites
 
 - SIEM with 90+ days of alert disposition data (true positive, false positive, benign)

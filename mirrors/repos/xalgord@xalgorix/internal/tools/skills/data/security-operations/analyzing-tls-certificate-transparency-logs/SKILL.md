@@ -35,6 +35,14 @@ nist_csf:
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **CT only sees CA-issued certs:** attackers using self-signed certs, internal CAs, or plain-IP/no-TLS phishing pages never appear in crt.sh. CT is a lead source, not full coverage — pair it with passive DNS and registrar feeds.
+- **Levenshtein misses real typosquats:** homoglyph/IDN attacks (`xn--` punycode, Cyrillic `а` for Latin `a`), combosquats (`example-login.com`, `secure-example.net`), and different-TLD clones (`example.co`, `example-support.io`) have large edit distance from the base domain yet are high-risk. Add homoglyph normalization, keyword-permutation (dnstwist-style), and TLD-swap checks, not edit distance alone.
+- **Wildcard and SAN blind spots:** a single `*.attacker.com` cert hides the actual phishing FQDN; always parse every entry in the `name_value`/SAN list, not just the CN.
+- **Latency and dedup:** CT entries can lag issuance by minutes-to-hours and crt.sh returns many precert/leaf duplicates per cert — dedupe on serial+issuer and don't treat "not yet in CT" as safe.
+- **Validate the query fires:** issue a free Let's Encrypt cert for a lookalike test domain and confirm your `c.search("%.example.com")` surfaces it within the polling window. **FP tuning:** legitimate vendors, CDNs (Cloudflare/Fastly), and marketing microsites issue brand-adjacent certs — maintain an allowlist of known-good issuers and registered owned domains.
+
 ## Prerequisites
 
 - Familiarity with security operations concepts and tools

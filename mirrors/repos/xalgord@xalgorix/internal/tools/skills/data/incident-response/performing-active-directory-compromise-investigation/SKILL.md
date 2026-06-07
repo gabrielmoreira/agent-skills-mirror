@@ -49,6 +49,14 @@ Active Directory (AD) compromise investigation is a critical incident response c
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+- **Golden Ticket evades 4768:** a forged TGT is minted offline with the krbtgt hash, so you see service-ticket requests (`4769`) with **no preceding `4768` AS-REQ** from that account. Hunt for 4769s whose account has no matching 4768, tickets referencing disabled/deleted accounts, RC4 (`0x17`) where the realm is AES-only, and abnormal ticket lifetimes (>10h default).
+- **Silver Ticket leaves almost no DC trail:** it forges a service ticket directly, so there is **no 4768/4769 on the DC at all** — validate at the *target service* host instead (local logon `4624`/`4672` with no corresponding DC Kerberos event).
+- **DCSync looks like replication:** confirm with `4662` containing the replication GUIDs `1131f6aa-9c07-11d1-f79f-00c04fc2dcd2` (DS-Replication-Get-Changes) / `1131f6ad-...` (GetChangesAll) from a principal that is **not** a domain controller. Cross-check `repadmin /showrepl` and netflow for DRSUAPI from non-DC hosts.
+- **Cross-corroborate before declaring scope:** pair `4624` Type 3 (NTLM) + `4648` explicit-cred chains with EDR process lineage to separate pass-the-hash from normal admin activity. A lone 4769 spike is Kerberoasting *or* a busy SPN — confirm with RC4 requests for AES-capable accounts from workstations that never touch that service.
+- **FP tuning / don't conclude clean until:** vuln scanners and PAM tools generate benign 4662/4769 noise — allowlist them. Check krbtgt password age and AdminSDHolder/`Protected Users` ACLs; a "clean" auth log does not rule out a Golden Ticket, so a krbtgt double-reset is the only reliable invalidation.
+
 ## Prerequisites
 
 - Familiarity with incident response concepts and tools

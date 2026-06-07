@@ -37,6 +37,16 @@ nist_csf:
 
 **Do not use** against production environments without explicit authorization and monitoring. RESTler creates and deletes resources aggressively during fuzzing.
 
+## Most Often Missed & How to Confirm
+
+- **Auth-refresh failures = silent unauthenticated fuzzing:** if `token_refresh_cmd` breaks mid-run, RESTler fuzzes as anonymous and "finds nothing" - verify the auth header is live before trusting a clean run.
+- **Stateful sequences over single requests:** the highest-value bugs (use-after-free, cross-tenant access) only appear in producer→consumer chains; don't stop at fuzz-lean's single pass.
+- **Custom dictionary injection:** seed `dict.json` with SQLi/SSRF/path-traversal/oversized values and per-resource `restler_custom_payload` IDs - the default dictionary rarely triggers app-specific bugs.
+- **Checkers that get skipped:** explicitly enable `NamespaceRule` (cross-tenant), `UseAfterFree`, and `PayloadBody` - they are off in lean mode.
+- **Uncovered endpoints:** dependency-resolution failures leave endpoints untested and falsely "clean."
+
+**How to confirm a hit (avoid false negatives):** 500s with stack traces, `NamespaceRule`/`UseAfterFree` bug buckets, and a deleted resource still returning 200 are real hits - reproduce them manually outside RESTler to rule out garbage-collection race noise. **Don't conclude negative until you've** checked coverage (covered vs total endpoints), confirmed auth was valid for the whole run, added app-specific payloads, and run full `fuzz` (not just lean) on the highest-bug services.
+
 ## Prerequisites
 
 - Written authorization specifying the target API and acceptable testing scope

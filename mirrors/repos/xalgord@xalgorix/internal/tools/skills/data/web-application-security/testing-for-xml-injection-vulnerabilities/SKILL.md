@@ -31,6 +31,19 @@ nist_csf:
 - When testing file import/export functionality that handles XML formats
 - During API security testing of SOAP or XML-based web services
 
+### How to CONFIRM a Hit (avoid false negatives)
+- The positive signal is the **injected XML being parsed as structure**, not echoed as text: your injected node/attribute changes the parsed document (a closed tag breaks the surrounding element and the parser reports a structure error, or your extra element is reflected as a real field in the response). For XPath, the positive signal is a logic differential — `' or '1'='1` returns more/all records or logs you in versus a benign value.
+- Distinguish XML injection from XXE: classic XML injection = breaking/adding markup in the document body and seeing it parsed; XXE = an external/parameter ENTITY resolving (file contents, or an OOB DNS/HTTP callback). If you injected an entity, the proof is the entity VALUE appearing or the OOB hit firing — not a 200.
+- For blind XXE/XPath, OOB is the only reliable confirmation: host an external DTD or use a Collaborator/interact.sh host and confirm the inbound DNS/HTTP request.
+- Do NOT conclude negative until you have tried ALL of these:
+  - A structure-breaking probe (`</tag><injected>`, unbalanced quotes) to prove the input reaches the parser.
+  - Entity-based file read (`file:///etc/passwd`, `php://filter/...base64`) AND out-of-band parameter-entity exfiltration when output is not reflected.
+  - SSRF via entity (`http://169.254.169.254/...`) to confirm server-side fetch even when file read is blocked.
+  - Content-Type swaps: send the body as `application/xml`/`text/xml`/`application/soap+xml`, and try converting a JSON endpoint to XML (Content Type Converter).
+  - XPath boolean/length probes (`' or string-length(...)=N or ''='`) for blind XPath.
+  - File-format vectors: SVG, DOCX/XLSX, SAML assertions that are parsed server-side.
+- A reflected-but-unparsed payload (your tags shown as escaped text) is NOT a hit — require evidence the parser acted on it.
+
 ## Prerequisites
 - Burp Suite with XML-related extensions (Content Type Converter, XXE Scanner)
 - XMLLint or similar XML validation tools

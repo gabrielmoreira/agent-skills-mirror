@@ -38,6 +38,13 @@ nist_csf:
 
 **Do not use** for designing the overall Purdue Model segmentation (see implementing-purdue-model-network-segmentation), for deploying IT-only remote access solutions, or for configuring local console access to PLCs.
 
+## Common Misconfigurations & Verification
+
+- **Jump host without MFA or with a bypass path.** A PAM/jump server is worthless if a parallel VPN, split tunnel, or direct RDP to Level 2 still exists. The most common gap is a "temporary" vendor VPN that terminates below the DMZ. Enforce that every remote path lands in the Level 3.5 DMZ and that MFA is required on the intermediate system, not just the perimeter VPN.
+- **Dual-homed jump server defeats the conduit.** A jump host with one NIC in the DMZ and another in the OT zone collapses the boundary. Verify single-homed placement and that the OT-side gateway reaches only pre-approved destination IPs and protocols (RDP/SSH/VNC).
+- **Session recording and auto-expiry not actually enforced.** Confirm clipboard and file transfer are disabled by default, sessions auto-terminate at the approved window, and credentials are revoked — test by letting a session run past its end time.
+- **Verify without disrupting the process.** Validate from the IT side: attempt a direct connection to a Level 1/2 device (must fail), confirm the MFA challenge, and review the recording/SIEM log for a test session. Never test by interrupting an active vendor maintenance session on running equipment.
+
 ## Prerequisites
 
 - IT/OT DMZ (Level 3.5) deployed with dual-firewall architecture

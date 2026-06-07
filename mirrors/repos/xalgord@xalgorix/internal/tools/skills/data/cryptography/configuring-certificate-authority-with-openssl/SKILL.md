@@ -32,6 +32,16 @@ A Certificate Authority (CA) is the trust anchor in a PKI hierarchy, responsible
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **No `nameConstraints` on the intermediate CA:** an unconstrained intermediate can sign a cert for *any* domain. Add a critical `nameConstraints=permitted;DNS:.example.com` extension and verify with `openssl x509 -text -noout | grep -A2 "Name Constraints"`.
+- **Missing `basicConstraints=critical,CA:TRUE,pathlen:0`:** without `pathlen:0` an issuing CA can mint further sub-CAs. Confirm the leaf certs have `CA:FALSE`.
+- **Weak signature algorithm:** a CA signing with `sha1WithRSAEncryption` (or MD5) is trivially forgeable. Force `-sha256`/`-sha384` and reject SHA-1 with `openssl x509 -text | grep "Signature Algorithm"`.
+- **Root key online / not air-gapped, or RSA <4096 / not P-384:** root keys must be offline. Use 4096-bit RSA or P-384 ECDSA.
+- **`keyUsage` not marked critical or includes too much:** CA certs need `keyCertSign,cRLSign` only; leaf certs must NOT have `keyCertSign`.
+- **No CRL/OCSP distribution point:** revocation is impossible. Verify `crlDistributionPoints` and `authorityInfoAccess` are present.
+- **Verify the chain end-to-end:** `openssl verify -CAfile root.pem -untrusted intermediate.pem leaf.pem` must return `OK`, and a cert signed by an untrusted/rogue CA MUST be **rejected**. Test that a cert violating a name constraint fails validation, not just that valid ones pass.
+
 ## Prerequisites
 
 - Familiarity with cryptography concepts and tools

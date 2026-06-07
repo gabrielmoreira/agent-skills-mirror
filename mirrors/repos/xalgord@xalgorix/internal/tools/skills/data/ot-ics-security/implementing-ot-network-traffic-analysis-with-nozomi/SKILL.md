@@ -46,6 +46,14 @@ nist_csf:
 
 **Do not use** for active vulnerability scanning of OT devices (see performing-ot-vulnerability-scanning-safely), for environments standardized on Dragos (see implementing-dragos-platform-for-ot-monitoring), or for IT-only network monitoring.
 
+## Common Misconfigurations & Verification
+
+- **SPAN/TAP coverage gaps create silent blind spots.** Guardian only sees mirrored traffic; oversubscribed SPAN ports drop packets under load, and serial/fieldbus segments below the switch are never seen. Verify coverage per segment against the asset inventory and check sensor packets/sec for drops, not just a green status.
+- **Passive-only misses quiet and one-way assets.** Devices that rarely transmit may never be discovered; use Smart Polling sparingly and only with native protocols — never active scans against fragile PLCs.
+- **Zones not configured, so cross-zone alerts are meaningless.** Behavioral anomaly detection and cross-zone link analysis depend on assets being assigned to zones; an unconfigured deployment reports flows it cannot judge.
+- **Stale threat intelligence or short learning window.** Confirm the Threat Intelligence feed is current and the learning period spanned representative operating modes, or normal batch and shift changes generate false positives.
+- **Verify without disruption.** Validate by reviewing discovered asset and protocol counts, replaying a known IOC into a test sensor, and confirming Splunk/Fortinet/ServiceNow forwarding with a synthetic alert — all passively, never by generating attack traffic on the live OT segment.
+
 ## Prerequisites
 
 - Nozomi Networks Guardian sensor (hardware, VM, or container)

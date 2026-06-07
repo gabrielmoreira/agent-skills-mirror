@@ -46,6 +46,14 @@ nist_csf:
 
 **Do not use** for routine vulnerability scanning results or compliance audit findings that do not represent active security incidents.
 
+## Detection Gaps & Validation
+
+- **The most-missed triage error is closing an alert in isolation:** before declaring a true/false positive, pivot on the same host, user, and hash across the prior 30 days. An "isolated" encoded-PowerShell or quarantined-malware alert is often one stage of a larger chain (initial access → persistence → lateral movement) that single-alert triage hides.
+- **Decode before you dismiss:** never label encoded PowerShell, `mshta`, `rundll32`, or LOLBin activity a false positive without decoding the payload and checking the parent-process chain. `outlook.exe`/`winword.exe` spawning `powershell.exe` is abnormal regardless of the rule's confidence score.
+- **Enrichment "clean" ≠ benign:** zero detections on VirusTotal/OTX/MISP is common for newly registered C2 and fast-flux domains. Confirm severity with asset criticality, data sensitivity, and active-vs-historical state rather than reputation alone.
+- **Cross-corroborate severity inputs:** validate asset criticality from the CMDB (not assumption), confirm the account is genuinely privileged, and verify lateral-movement potential with EDR telemetry before assigning P1/P2 and triggering containment SLAs.
+- **FP tuning:** track each detection rule's historical true-positive rate and suppress chronic noisemakers (authorized scanners, admin tooling, sanctioned data flows) to fight alert fatigue. Don't downgrade to P3/P4 until threat-intel, asset context, and historical correlation agree — and preserve volatile memory before any remediation so a mis-triage isn't unrecoverable.
+
 ## Prerequisites
 
 - Access to SIEM platform (Splunk, Elastic, Microsoft Sentinel) with current alert data

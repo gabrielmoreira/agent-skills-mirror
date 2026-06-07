@@ -33,6 +33,14 @@ Discover and inventory all privileged accounts across enterprise infrastructure 
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Coverage Gaps & Validation
+
+- **Single-source discovery:** scanning only AD privileged groups misses most privilege. Enumerate every plane: AD `AdminCount=1`/AdminSDHolder, local administrators on each member server, SPN/service accounts, AWS IAM (`AdministratorAccess`, `iam:*`, access keys), Azure Global/Privileged Role Admin and managed identities, GCP Owner/Editor, and DB fixed roles (`sysadmin`, `DBA`, superuser).
+- **Indirect / nested privilege:** effective admin via nested AD groups, group-in-group on cloud roles, and role-assumption chains is missed by direct-membership queries — expand recursively.
+- **Non-human and shadow admin:** service accounts, API keys/tokens with admin scope, app-local admin roles, and CI/CD pipeline identities are privileged accounts that no group membership reveals.
+- **Stale/orphaned accounts:** accounts whose owner left or whose application was decommissioned still hold privilege; correlate to last-logon and HR status.
+- **Validate completeness:** reconcile discovery output against each authoritative source independently (AD, every IdP, each cloud IAM, each database) rather than trusting one aggregated feed — the count delta between native exports and your inventory is the discovery gap. Confirm every discovered privileged account is onboarded to PAM, not merely listed.
+
 ## Prerequisites
 
 - Familiarity with identity access management concepts and tools

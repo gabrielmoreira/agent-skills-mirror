@@ -36,6 +36,14 @@ Use this skill when:
 
 **Do not use** this skill for network-based IDS (Suricata, Snort) or for EDR deployment.
 
+## Common Misconfigurations & Verification
+
+- **FIM "realtime" silently downgraded to scheduled:** `realtime="yes"` only works with inotify (Linux) or the USN journal (Windows). On NFS/overlay mounts it falls back to the 12h `<frequency>` scan — touch a file under a watched `/etc` path and confirm a 550/554 alert fires within seconds, not hours. For change-who attribution use `whodata="yes"` (requires auditd).
+- **Agent enrolled but not active:** `/var/ossec/bin/agent_control -l` (or Dashboard → Agents) must show `Active`, not `Never connected`/`Disconnected`. A registered-but-disconnected agent produces zero FIM events while still looking deployed.
+- **Rules present but below the alert threshold:** local rules with `level` < `<log_alert_level>` never reach the manager/SIEM. Confirm 100001-100003 actually index, not just load.
+- **syscheck/rootcheck disabled by a later block:** a second `<syscheck><disabled>yes</disabled>` in an agent-group config overrides the local one. Grep the merged `ossec.conf` on the endpoint, not the template.
+- **Verify end-to-end:** run an Atomic Red Team test such as T1547.001 (add a Run key) or T1070.004 (`unlink` a watched file) and confirm the corresponding rule appears in `alerts.json` and forwards to Splunk/OpenSearch. No alert means a monitoring gap, not a clean host.
+
 ## Prerequisites
 
 - Wazuh server (manager) deployed and accessible from endpoints

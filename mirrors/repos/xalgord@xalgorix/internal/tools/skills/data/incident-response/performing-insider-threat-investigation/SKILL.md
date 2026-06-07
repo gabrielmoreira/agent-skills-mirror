@@ -41,6 +41,14 @@ nist_csf:
 
 **Do not use** for external attacker investigations where compromised credentials are used without insider collusion; use standard incident response procedures instead.
 
+## Detection Gaps & Validation
+
+- **Low-and-slow beats threshold alerts:** the most-missed insider drips data out under DLP limits — 20-50MB/day to personal webmail or a sanctioned cloud tenant over weeks, rather than one big USB dump. Baseline each user's 3-6 month normal (volume, destinations, hours) and alert on sustained deviation, not a single large transfer.
+- **Authorized access ≠ authorized use:** insiders use legitimate credentials, so signature/IOC detection sees nothing. Validate intent by correlating *what* was accessed against job function (UEBA peer-group anomaly), access timing (after-hours/post-resignation), and staging behavior (mass reads, zip/rar creation, renaming to innocuous extensions).
+- **Cover every exfil vector, not just the alerting one:** USB, personal webmail, OneDrive/GDrive/Dropbox sync clients, browser uploads, print jobs, screenshots, AirDrop/Bluetooth, and phone-camera capture of screens. A clean DLP log only rules out the channels DLP inspects — confirm with endpoint sync-client logs, print logs, and badge data.
+- **Cross-corroborate before accusing:** pair behavioral anomaly with content evidence (the actual file, its classification) and a timeline (Git clone logs, USN Journal, cloud activity API). One signal is a lead; a corroborated timeline is a case. Compare against the documented baseline to avoid flagging a genuinely busy quarter as theft.
+- **FP tuning / preserve admissibility:** scope monitoring to legal-approved subjects and exclude sanctioned bulk workflows (backups, data-migration roles). Don't tip off the subject, hash and chain-of-custody all evidence, and image the endpoint before the last day — an untested assumption of guilt collapses without preserved, reproducible evidence.
+
 ## Prerequisites
 
 - Legal counsel approval before initiating any monitoring or investigation of an employee

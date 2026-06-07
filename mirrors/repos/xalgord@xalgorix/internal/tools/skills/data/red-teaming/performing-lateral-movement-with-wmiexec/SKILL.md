@@ -43,6 +43,14 @@ WMI (Windows Management Instrumentation) is a legitimate Windows administration 
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Most Often Missed & How to Confirm
+
+- **Try every exec method before giving up:** if `wmiexec.py` hangs or returns no output, switch to `smbexec.py`, `atexec.py`, or `dcomexec.py` — a blocked `Win32_Process.Create` does not mean the host is unreachable.
+- **Output retrieval is the usual failure point:** wmiexec writes output to a temp file on `ADMIN$`; if that share is unwritable use `-nooutput`/semi-interactive blind exec. No output != no execution.
+- **Auth nuances:** pass-the-hash with `-hashes LM:NT`, Kerberos with `-k -no-pass` (needs a TGT/ccache); confirm 135 + 445 are open and the account is a local admin (CrackMapExec `--shares`).
+- **EDR artifacts to expect:** `wmiprvse.exe` spawning `cmd.exe`/`powershell.exe` is the classic tell; avoid noisy one-liners and consider `--codec`.
+- **Confirm a hit:** your command's stdout returns in the shell AND the target logs `4624` Type 3 logon + `5145` ADMIN$ access from your source IP. Don't conclude "blocked" until you've tried smbexec/atexec/dcomexec, verified creds, and checked port reachability.
+
 ## Prerequisites
 
 - Familiarity with red teaming concepts and tools

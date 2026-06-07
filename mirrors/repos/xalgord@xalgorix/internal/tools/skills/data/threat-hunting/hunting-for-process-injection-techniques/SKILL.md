@@ -42,6 +42,14 @@ Process injection (MITRE ATT&CK T1055) allows adversaries to execute code in the
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Evasions that produce NO Sysmon EID 8:** thread hijacking (`SetThreadContext`), APC injection (`QueueUserAPC`/`NtQueueApcThread`, early-bird), mapping injection (`NtMapViewOfSection`), and process hollowing (`NtUnmapViewOfSection` + `WriteProcessMemory`) all skip `CreateRemoteThread`. They surface only as EID 10 ProcessAccess with `PROCESS_VM_WRITE|PROCESS_VM_OPERATION|PROCESS_CREATE_THREAD`.
+- **Userland-hook bypass:** indirect/direct syscalls and unhooked NTDLL defeat EDR inline hooks, leaving little or no telemetry — corroborate with EID 7 (ImageLoad of unbacked/floating modules) and kernel ETW.
+- **EID 10 noise:** CSRSS, lsass, AV/EDR, and debuggers legitimately open high-access handles. Tune to cross-process opens where GrantedAccess masks `0x1F0FFF`/`0x1FFFFF` AND the source is unsigned or unusual; treat `0x1000`/`0x1400` read-only as benign.
+- **Validate the hunt fires:** run Atomic Red Team T1055.001 (process hollowing), T1055.002, and `mavinject.exe` APC, then confirm EID 8 GrantedAccess and EID 10 access masks are captured.
+- **FP tuning:** allowlist known injector→target pairs (e.g., MsMpEng.exe, vmtoolsd) by signer, not by image name alone.
+
 ## Prerequisites
 
 - Sysmon installed with Event IDs 8 and 10 enabled

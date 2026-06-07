@@ -32,6 +32,28 @@ Docker images in the repo use:
 
 The default public API port in compose is commonly `3001`; the Rust config default is `SERVER_PORT=3000`.
 
+Standalone Linux release bundles are also first-class. The release `install.sh` detects `linux/amd64` or `linux/arm64`, downloads the matching bundle, installs the embedded lite client and API binary, and does not require Docker or Node.js on the target host.
+
+## Standalone Zero-Config Install
+
+For a solo-developer or first-app setup, prefer the zero-config installer path when the user wants AuthOS running quickly:
+
+```bash
+curl -fsSL -o install.sh https://github.com/drmhse/AuthOS/releases/latest/download/install.sh
+chmod +x install.sh
+sudo ./install.sh
+```
+
+Zero-config install starts the SQLite standalone service, prints a one-time `/bootstrap-login#token=...` link, and sends the owner into the lite workspace at `/app/platform-setup`. The lite Platform Setup workspace writes back to the managed config on disk and can queue a service reload.
+
+The zero-config defaults intentionally keep billing disabled and email delivery disabled. A developer can create the first app without Stripe, Polar, or SMTP credentials. Configure SMTP before relying on hosted sign-up, verification email, password reset, invitations, or magic links. Configure Billing only when checkout or portal flows are needed.
+
+If installation is interrupted after managed state has been written, retry the apply step on the host:
+
+```bash
+sudo authos-apply apply --bundle-dir /opt/authos
+```
+
 ## Required Environment
 
 Required at startup:
@@ -41,8 +63,6 @@ Required at startup:
 - `JWT_PRIVATE_KEY_BASE64`: base64-encoded RSA private key PEM.
 - `JWT_PUBLIC_KEY_BASE64`: base64-encoded RSA public key PEM.
 - `JWT_KID`: signing key ID exposed in JWKS.
-- `STRIPE_SECRET_KEY`: required by config even if another billing provider may be selected later.
-- `STRIPE_WEBHOOK_SECRET`: required by config even if another billing provider may be selected later.
 
 Database defaults to `sqlite:./data.db` if `DATABASE_URL` is not set, but production deployments should set it explicitly.
 
@@ -55,8 +75,11 @@ Database defaults to `sqlite:./data.db` if `DATABASE_URL` is not set, but produc
 - `ENCRYPTION_KEY` as 64 hex chars for AES-256-GCM encryption of sensitive provider data
 - `SERVER_HOST` (default `0.0.0.0`)
 - `SERVER_PORT`
-- `BILLING_PROVIDER` (`stripe` default, `polar` supported in source)
+- `BILLING_PROVIDER` (`none` default; accepts `none`, `disabled`, `stripe`, or `polar`)
+- `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` only when `BILLING_PROVIDER=stripe`
+- `STRIPE_API_BASE_URL` only for Stripe-compatible test/proxy endpoints
 - `POLAR_API_KEY` and `POLAR_WEBHOOK_SECRET` when `BILLING_PROVIDER=polar`
+- `POLAR_API_BASE_URL` only for Polar-compatible test/proxy endpoints
 - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`, `SMTP_FROM_NAME`
 - `MAXMIND_LICENSE_KEY`, `GEOIP_DISABLED`, `GEOIP_DATABASE_PATH`
 - `DEVICE_TRUST_SECRET`
@@ -65,6 +88,8 @@ Database defaults to `sqlite:./data.db` if `DATABASE_URL` is not set, but produc
 - `JOB_PROCESSOR_INTERVAL_SECS`, `JOB_PROCESSOR_BATCH_SIZE`
 
 If `ENCRYPTION_KEY` is missing, the API can still start, but source logs that encryption is unavailable. For production, treat that as a failed deployment.
+
+Do not add placeholder Stripe or Polar secrets just to make the process boot. Leave `BILLING_PROVIDER=none` until real provider credentials exist. Invalid `BILLING_PROVIDER` values fail startup instead of silently selecting another provider.
 
 ## Generate Keys
 

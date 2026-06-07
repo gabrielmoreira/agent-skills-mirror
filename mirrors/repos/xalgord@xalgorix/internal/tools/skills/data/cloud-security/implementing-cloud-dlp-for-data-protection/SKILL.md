@@ -45,6 +45,20 @@ nist_csf:
 
 **Do not use** for endpoint DLP (use Microsoft Purview or Symantec DLP agents), for email DLP (use Microsoft 365 DLP or Google Workspace DLP), or for network-level data exfiltration prevention (use VPC endpoint policies and network firewalls).
 
+## Common Misconfigurations & Verification
+
+- **`min_likelihood` set too strict:** GCP DLP defaulting to `VERY_LIKELY` (or Macie thresholds set high) drops real PII. `LIKELY` is the practical floor for SSN/credit-card detection — anything stricter under-reports.
+- **Inspection configured but de-identification never applied:** an `inspectJob`/Macie scan only *finds* data. Mask/tokenize/redact transforms run in a separate `deidentifyContent`/`InfoTypeTransformations` call. Verify the pipeline actually invokes the transform, not just inspection.
+- **DLP job results discarded:** without an `actions.saveFindings.outputConfig` (GCP) or a `classification-export-configuration` (Macie), findings vanish after the job. Confirm `gcloud dlp jobs describe JOB_ID` shows a save action.
+- **Macie scope excludes the real formats:** scoping to specific `OBJECT_EXTENSION` values that omit the actual files means a "clean" report that scanned nothing.
+- **KMS-wrapped crypto key not granted:** FPE/tokenization fails if the DLP service agent lacks `cloudkms.cryptoKeyVersions.useToDecrypt` on the wrapping key.
+
+```bash
+aws macie2 list-classification-jobs --query 'items[].[name,jobStatus]'
+gcloud dlp jobs list --filter="state=DONE" --format="table(name,inspectDetails.result.processedBytes)"
+gcloud dlp jobs describe JOB_ID --format="value(inspectDetails.result.infoTypeStats)"
+```
+
 ## Prerequisites
 
 - Amazon Macie enabled with appropriate S3 bucket permissions

@@ -36,6 +36,14 @@ Dark web monitoring involves systematically scanning Tor hidden services, underg
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+- **Source coverage gaps:** clearnet aggregators (HIBP, Ransomwatch) only cover *known* breaches and publicly posted ransomware victims - invite-only forums, vetted marketplaces, and private Telegram/Discord channels need aged personas and seller vetting you will not get from automated crawling. Absence of a hit is not evidence of safety.
+- **Volatility:** `.onion` paste and leak sites are ephemeral (seized, rotated, or DDoSed within days); cache content at collection time because the URL may be dead before an analyst reviews it.
+- **Language/obfuscation:** actors post in Russian, Farsi, slang, and leetspeak, so naive English keyword matching misses leaks. Normalize/translate and match on stable selectors (corporate email domains, internal project codenames) rather than the brand name alone.
+- **How to confirm a leak:** validate before raising severity - combolist recycling is rampant, so the same `user:pass` reappears across dozens of "new" leaks; cross-check against prior dumps, confirm the domain actually belongs to you, and where lawful test whether the password is still current. Treat a ransomware leak-site listing as confirmed only after matching victim name **plus** a known-internal artifact, not a partial name collision.
+- **OPSEC caveat:** never authenticate to or download from a paste/onion source from an attributable host while validating.
+
 ## Prerequisites
 
 - Tor Browser and Tor proxy (SOCKS5 on port 9050)

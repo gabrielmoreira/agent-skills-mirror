@@ -31,6 +31,18 @@ nist_csf:
 - When assessing applications that perform sensitive operations (password change, fund transfer, settings modification)
 - During security audits of custom authentication and session management mechanisms
 
+### How to CONFIRM a Hit (avoid false negatives)
+
+- **Positive signal**: a cross-site forged request, carrying ONLY the victim's cookies and no valid anti-CSRF token, actually performs the state change (email changed, funds moved, 2FA disabled) — confirmed by inspecting the resulting account state.
+- Confirm the **token-validation gap**: the request still succeeds when the token is missing, empty, random, expired, or belongs to another user/session — that proves the token is not properly tied to the session.
+- A 200 alone is NOT a hit if a valid token was present; an error is NOT a clean negative until you've tried omitting the token entirely and varying content-type/method.
+- Do NOT conclude "not vulnerable" until you have tried:
+  - **Token removal/tamper**: drop the field entirely, send empty, random, stale, and another user's token.
+  - **Header checks**: missing/spoofed `Origin` and `Referer`, and absent custom headers (`X-Requested-With`).
+  - **SameSite reality**: test `Lax` bypass via top-level GET navigation and GET-based state changes.
+  - **Content-type tricks** for JSON APIs (`enctype="text/plain"`, simple-request fetch) to send a forged body cross-site.
+  - **End-to-end PoC**: load the auto-submitting page in the victim's authenticated browser and verify the change actually occurred (not just that the request was sent).
+
 ## Prerequisites
 
 - **Authorization**: Written penetration testing agreement for the target

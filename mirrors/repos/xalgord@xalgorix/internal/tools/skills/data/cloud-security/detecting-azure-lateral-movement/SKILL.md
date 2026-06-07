@@ -37,6 +37,21 @@ Lateral movement in Azure AD/Entra ID differs from on-premises environments. Att
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+Common evasions / false-negatives that defeat these KQL analytics:
+- **Watching only `SigninLogs`.** Refresh-token and PRT replay land in `AADNonInteractiveUserSignInLogs`; app-only pivots land in `AADServicePrincipalSignInLogs`. Interactive-only queries miss both.
+- **Cross-tenant B2B pivots** show `ResultType == 0` with `ResourceTenantId != HomeTenantId` — filter on the tenant mismatch, not just location.
+- **Mailbox delegation abuse** (`Add-MailboxPermission` FullAccess/SendAs, `Add delegated permission grant`) is in the Office 365 / Exchange audit feed, **not** Entra `AuditLogs`.
+- **Credential-add detail** is buried in `TargetResources[0].modifiedProperties[*].newValue` (KeyDescription / KeyType) — keying only on `OperationName` misses cert-based persistence.
+
+Validate the rule actually fires:
+```kql
+union withsource=Tbl AADNonInteractiveUserSignInLogs, AADServicePrincipalSignInLogs, SigninLogs
+| summarize rows=count() by Tbl   // any 0 = diagnostic setting missing, rule is silently dead
+```
+- Tune FP by baselining each service principal's sign-in IP/location over 14+ days before alerting on "new" location, and exclude managed-identity object IDs and known automation egress IPs.
+
 ## Prerequisites
 
 - Azure subscription with Microsoft Sentinel workspace configured

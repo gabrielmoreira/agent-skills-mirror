@@ -30,6 +30,14 @@ nist_csf:
 - For examining file system metadata, deleted files, and embedded artifacts
 - When building a comprehensive case from multiple disk images
 
+## Detection Gaps & Validation
+
+- **Coverage gaps in default ingest:** Autopsy only surfaces what its modules parse. Volume Shadow Copies, `$UsnJrnl`, `$LogFile`, and Recycle Bin `$I` records are not fully timelined unless you enable the relevant modules and add each VSS snapshot as a data source - a file "absent" from the live volume often survives in a shadow copy.
+- **Unallocated/slack not searched by default:** keyword search and hash lookup skip unallocated space unless carving is enabled. Run `blkls` + `bulk_extractor`/PhotoRec over unallocated to recover artifacts the tree view never shows.
+- **NSRL "Known" can hide evidence:** marking NSRL as Known filters files from view, so `mimikatz.exe` renamed to a system filename or a trojanized signed binary slips past. Validate with the Extension-Mismatch module and a YARA/content-hash check, not the filename.
+- **Validate with a second artifact:** corroborate a recovered file's `$STANDARD_INFORMATION` time against `$FILE_NAME`, USN Journal, Prefetch/Amcache, and Event Logs before stating when it existed - `fls`/`istat` `$SI` timestamps alone are forgeable.
+- **Interpretation pitfalls (false positives):** set the case timezone correctly (Autopsy stores UTC; display skew misorders the timeline), watch for clock skew against other evidence, and remember NTFS file tunneling and copy operations can make an MFT entry's dates look like fabricated activity.
+
 ## Prerequisites
 - Autopsy 4.x installed (Windows) or Autopsy 4.x with The Sleuth Kit (Linux)
 - Forensic disk image in raw (dd), E01 (EnCase), or AFF format

@@ -42,6 +42,14 @@ Domain fronting (MITRE ATT&CK T1090.004) is a technique where attackers use diff
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **ECH makes classic SNI≠Host detection blind.** Encrypted Client Hello (and the earlier ESNI) encrypts the SNI entirely, so the SNI-vs-Host mismatch signal disappears. Pivot to JA3/JARM TLS fingerprinting plus destination CDN IP/ASN reputation when SNI is unreadable.
+- **No TLS inspection = no Host header.** Without MITM/inspection the HTTP Host is inside the TLS session and the mismatch is invisible; the hunt silently produces zero findings.
+- **Fronting is shifting to "domainless" fronting and CDN-internal pivots** as Fastly/Cloudflare/CloudFront disabled classic fronting — Azure and other providers still permit variants (T1090.004).
+- **Validate the hunt fires:** with inspection enabled, issue `curl --resolve frontable.cdn:443:<CDN_IP> -H "Host: hidden-c2.example"` and confirm the proxy log captures the SNI↔Host delta and your rule alerts; baseline the default Cobalt Strike / Meterpreter JA3/JARM values.
+- **FP tuning:** legitimate apps and CDNs that legitimately split SNI and Host, plus health-check/monitoring probes — score on reputation differential, not mismatch alone.
+
 ## Prerequisites
 
 - Web proxy or secure web gateway logs with SNI and Host header fields

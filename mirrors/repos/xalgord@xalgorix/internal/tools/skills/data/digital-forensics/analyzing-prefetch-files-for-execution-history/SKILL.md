@@ -30,6 +30,14 @@ nist_csf:
 - When correlating program execution with other forensic artifacts
 - To identify anti-forensic tools or unauthorized software that was run
 
+## Detection Gaps & Validation
+
+- **Prefetch disabled or absent != no execution:** Prefetch is off by default on Windows Server, and on SSD systems `EnablePrefetcher` is often set to 0. An empty or sparse `C:\Windows\Prefetch\` does not mean nothing ran - confirm the policy at `HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters` before concluding "no execution," then pivot to Amcache/ShimCache/SRUM/Event Logs.
+- **Most-missed details inside the .pf:** parse the up-to-8 last-run timestamps (not just the most recent), the run count, and the referenced-file list (loaded DLLs, opened data files). The embedded path hash matters: a hash that doesn't match the on-disk path means the binary ran from a different location (USB, deleted folder) than where it now sits.
+- **Anti-forensics that defeats this analysis:** attackers delete individual `.pf` files or clear the folder - a present executable with no Prefetch, or a folder with fewer files than an active system accumulates, is itself suspicious. Recover deleted `.pf` from `$MFT`/unallocated and Volume Shadow Copies, and corroborate the gap with USN delete events.
+- **Validate with a second source:** Prefetch proves a binary executed at least once - confirm the what/when against Amcache (`Amcache.hve`), ShimCache (AppCompatCache), SRUM, Security 4688 / Sysmon 1 process-creation events, and the on-disk file's `$MFT` times before attributing a run to a user or time.
+- **Interpretation pitfalls (false positives):** the last-run time is when the prefetch was written (~10s after launch start, with historical caveats), run count can reset, and renamed malware (e.g. `svchost.exe` from `%TEMP%`) hides behind a trusted name - check the path hash and referenced files, not the filename. Confirm system timezone and clock skew.
+
 ## Prerequisites
 - Access to Windows Prefetch directory (C:\Windows\Prefetch\) from forensic image
 - PECmd (Eric Zimmerman), WinPrefetchView, or python-prefetch parser

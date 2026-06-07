@@ -35,6 +35,15 @@ Campaign attribution analysis involves systematically evaluating evidence to det
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+Most attribution errors come from treating shared resources as unique fingerprints. Watch these gaps:
+- **Shared-infra false attribution:** Cobalt Strike default profiles, bulletproof-hosting ASNs, and Let's Encrypt certs are reused across unrelated actors. A shared C2 IP adds +30 in the overlap model but proves co-tenancy, not common authorship; require >=2 independent categories before raising confidence.
+- **False flags:** planted PDB paths, foreign-language strings, and borrowed TTPs are deliberate deception. Treat single-category language/timezone artifacts as `neutral` in the ACH matrix, never `consistent`.
+- **Stale TTP profiles:** `attackcti` group-to-technique mappings lag real activity; a low Jaccard score may reflect outdated ATT&CK group data, not a different actor.
+
+To validate the analysis works: seed the ACH matrix with a known-good campaign and confirm the true actor ranks first; verify inconsistent evidence is weighted (-2x) so a single contradiction demotes a hypothesis. Re-run `rank_hypotheses()` after removing the single strongest evidence item -- if the top actor does not change, attribution rests on one point and should be downgraded to MODERATE/LOW. Document at least one competing hypothesis and an explicit false-flag check for every HIGH assessment.
+
 ## Prerequisites
 
 - Python 3.9+ with `attackcti`, `stix2`, `networkx` libraries

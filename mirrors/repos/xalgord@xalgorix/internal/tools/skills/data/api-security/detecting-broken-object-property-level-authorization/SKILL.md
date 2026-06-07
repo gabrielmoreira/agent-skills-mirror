@@ -37,6 +37,15 @@ Broken Object Property Level Authorization (BOPLA), classified as API3:2023 in t
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Mass-assignment silently accepted:** the server returns 200 and echoes only safe fields, but the privileged field (`role`, `is_verified`) was written - confirm by re-fetching the object (GET) with the owner/victim account, never trust the write response body.
+- **Field-name aliasing:** APIs map `isAdmin`, `is_admin`, `admin`, `role_id`, `roles[]`, and nested `account.tier` to the same column - testing only one casing/spelling yields false negatives.
+- **Excessive exposure hides in nested objects and arrays:** sensitive fields appear under `data.items[].owner.ssn` or only on page 2; flatten recursively and check list responses, not just the top-level object.
+- **GraphQL over-fetch:** fields blocked on REST may be reachable via GraphQL aliases/fragments even with introspection disabled.
+
+**How to validate the detection fires:** seed a test object with a known sensitive field and confirm the scanner's `SENSITIVE_PROPERTY_PATTERNS` flag it; submit a known mass-assignment payload and confirm the re-fetch verification step reports the change. **Tune false positives** by maintaining a per-endpoint expected-field allowlist so legitimately public fields (avatar_url, display_name) do not generate noise.
+
 ## Prerequisites
 
 - Target API with endpoints that return or accept object data

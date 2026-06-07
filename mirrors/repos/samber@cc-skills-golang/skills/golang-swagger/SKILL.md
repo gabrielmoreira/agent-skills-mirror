@@ -6,7 +6,7 @@ license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents. Requires go and swag CLI.
 metadata:
   author: samber
-  version: "1.0.0"
+  version: "1.0.1"
   openclaw:
     emoji: "📋"
     homepage: https://github.com/samber/cc-skills-golang
@@ -28,6 +28,9 @@ allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(g
 
 - **Build** — adding Swagger to a new or existing Go project: set up the toolchain, annotate handlers, generate docs, wire the UI endpoint.
 - **Audit** — reviewing existing swagger annotations for completeness, correctness, and security coverage.
+
+**Dependencies:**
+- swag: `go install github.com/swaggo/swag/cmd/swag@latest`
 
 ## Setup
 

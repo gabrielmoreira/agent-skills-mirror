@@ -36,6 +36,17 @@ nist_csf:
 
 **Do not use** for preventing credential compromise (use MFA, credential rotation, and secrets management), for detecting application-level credential theft (use application security monitoring), or for endpoint credential harvesting detection (use EDR tools).
 
+## Detection Gaps & Validation
+
+False-negatives that hide a live credential compromise:
+- **Instance-credential exfil has two variants.** `UnauthorizedAccess:IAMUser/InstanceCredentialExfiltration.OutsideAWS` flips to `.InsideAWS` when the attacker proxies through another AWS account — include **both** in `finding-criteria` or you miss the AWS-internal pivot.
+- **Federated/SSO console logins** may not populate `responseElements.ConsoleLogin == "Success"`; the signal lands in `additionalEventData` / `AssumeRoleWithSAML` instead, so a `ConsoleLogin`-only query misses SSO accounts.
+- **Azure `riskLevelDuringSignIn` requires Entra ID P2.** Without P2, `riskEventTypes_v2` is empty and every risk query returns zero — a silent dead rule, not a clean tenant.
+- **GCP service-account key usage** needs Data Access audit logs (`DATA_READ`/`ADMIN_READ`) explicitly enabled per service — off by default, so `principalEmail:*.iam.gserviceaccount.com` queries see nothing.
+- The `unique_ips > 3` impossible-travel heuristic misses low-and-slow single-residential-proxy abuse and false-positives on NAT/VPN.
+
+Validate: confirm CloudTrail, `SigninLogs`, and GCP audit logs each return rows for the last 24h before trusting "no findings"; FP-tune impossible travel by allowlisting corporate egress and VPN CIDRs.
+
 ## Prerequisites
 
 - AWS GuardDuty enabled across all accounts and regions

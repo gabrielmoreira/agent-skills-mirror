@@ -39,6 +39,16 @@ SQLite is the most widely deployed database engine in the world, used by virtual
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Detection Gaps & Validation
+
+A plain `SELECT *` on the live table is the shallowest possible SQLite exam and misses most recoverable evidence. Cover these or you will under-report:
+
+- **The deleted rows live outside the main tables.** Querying the database with `sqlite3` shows only active records. Deleted data persists in freelist pages, in unallocated space between the cell-pointer array and cell-content area, and in overflow pages. Parse these raw (as the freelist/slack code here does) — "no such message" from a SQL query is not proof it was never there.
+- **WAL and journal hold uncommitted/rolled-back state.** A `-wal` file can contain newer rows not yet checkpointed into the main DB, and older versions of pages superseded by later frames; a `-journal` holds pre-transaction images. NEVER open the DB read-write (it triggers a checkpoint and destroys this evidence) — copy `db`, `-wal`, `-shm`, and `-journal` together, and parse WAL frames page-by-page for multiple versions of the same row.
+- **Secure-delete and VACUUM erase the freelist.** If `PRAGMA secure_delete` was on, or the app ran `VACUUM`/auto-vacuum, deleted-record recovery yields little — note this as a coverage limitation, not a clean device. Carve surrounding unallocated disk space and check for prior DB copies/backups.
+- **Validate timestamps by epoch, then corroborate.** Decode against the correct base: Chrome/WebKit (µs since 1601), Mozilla PRTime (µs since 1970), Unix (s/ms), Mac Absolute (s since 2001). A mis-decoded timestamp can shift events by decades. Cross-check recovered rows against `_shm` indices, app logs, and a second artifact before relying on them.
+- **Interpretation false positives.** Carved freelist fragments may be stale/overwritten and mix bytes from unrelated records — a "recovered URL" can be a Frankenstein of two rows. Browser-history existence shows a page was rendered/visited, not that the user deliberately typed it (prefetch, redirects, ads). Confirm partial recoveries against record structure (valid serial types, rowid) before reporting them as fact.
+
 ## Prerequisites
 
 - DB Browser for SQLite (sqlitebrowser)

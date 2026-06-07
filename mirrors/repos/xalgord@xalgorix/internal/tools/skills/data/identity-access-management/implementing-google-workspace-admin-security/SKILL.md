@@ -38,6 +38,17 @@ nist_csf:
 
 **Do not use** for Microsoft 365 environments; Google Workspace has distinct admin console settings and API configurations that differ from Azure AD/Entra ID controls.
 
+## Common Misconfigurations & Verification
+
+Settings that look enabled but leave the tenant exposed:
+
+- **2SV "available" but not enforced:** enrollment is offered org-wide yet `2sv_enforcement` is off, so users keep password-only login. Confirm with `gam print users fields primaryEmail,isEnrolledIn2Sv,isEnforcedIn2Sv query "isEnforcedIn2Sv=false"` — any non-admin rows are gaps. Also verify phishable methods are blocked: SMS/voice/backup-codes must be in `2sv_disallowed_methods`, not just security keys "preferred."
+- **Super admins without Advanced Protection / security key:** `gam print admins role "Super Admin"` then verify each has `advanced_protection true`; a super admin on TOTP is the weakest link.
+- **DMARC stuck at `p=none`:** monitoring-only never blocks spoofing. Check the live record: `dig +short TXT _dmarc.corp.com` and confirm `p=quarantine` or `p=reject` with `adkim=s; aspf=s`, not `p=none`.
+- **OAuth set to "trusted" exceptions left wide:** confirm `third_party_app_access "BLOCKED"` and audit live grants with `gam all users print tokens` — look for `gmail.send`/`drive` scopes on unapproved client IDs.
+- **External Drive sharing "warn" instead of restricted:** verify `drive_sharing_outside_domain` is `WHITELISTED_DOMAINS` (not `ALLOWED`) and run `gam all users print filelist query "visibility='anyoneWithLink'"` to prove no public links remain.
+- **Context-Aware Access policy created but not bound** to Gmail/Drive/Admin Console apps — confirm the access level is actually assigned, not just defined.
+
 ## Prerequisites
 
 - Google Workspace Business Plus, Enterprise Standard, or Enterprise Plus license

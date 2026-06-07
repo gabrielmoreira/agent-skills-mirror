@@ -33,6 +33,17 @@ Docker Bench for Security is an open-source script that checks dozens of common 
 - When performing scheduled security testing or auditing activities
 - When validating security controls through hands-on testing
 
+## Coverage Gaps & Validation
+
+Docker Bench reports on the host and daemon it can reach - which is rarely the whole picture:
+
+- **Host-scoped, not cluster-scoped:** the script audits one Docker host's daemon, config, and running containers. It does **not** assess Kubernetes, containerd-only nodes, or other hosts in the fleet; a PASS here says nothing about the rest of the estate.
+- **Mounts gate the checks:** the container run needs `--net host --pid host --userns host` and read-only mounts of `/etc`, `/var/lib`, `/usr/lib/systemd`, and `docker.sock`. Miss one and the affected checks silently `[INFO]`/skip rather than fail - looking like success.
+- **WARN is not PASS:** many image/runtime items (5.x) emit `[WARN]` requiring manual judgement (e.g. per-container `--cap-drop`, `--read-only`, `no-new-privileges`); counting only `[FAIL]` understates exposure.
+- **Point-in-time, running containers only:** checks evaluate currently-running containers; an insecure image not running at scan time is invisible.
+
+**Validate:** confirm the scan actually inspected the daemon by checking total check count and that section 2 (daemon) and 5 (runtime) ran, not just section 1. Re-run after remediating `/etc/docker/daemon.json` (`icc`, `no-new-privileges`) **and** `systemctl restart docker`, since the script reads live daemon state. Treat WARN items as manual to-dos and pair Docker Bench with an image scanner (Trivy/Grype) for the vulnerabilities it does not cover.
+
 ## Prerequisites
 
 - Docker Engine installed and running

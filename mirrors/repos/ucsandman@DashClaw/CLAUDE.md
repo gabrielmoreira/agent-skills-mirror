@@ -67,3 +67,14 @@ CI also gates `openapi:check`, `api:inventory:check`, `route-sql:check`, and `ve
 ## Design changes
 
 Before any UI, copy, or visual change, **read `.impeccable.md` at the repo root** - the canonical design context (users, brand, aesthetic, 4 anti-references, 7 tiebreaker principles). **Never hardcode hex values**; use the CSS tokens in `app/globals.css` and the Tailwind theme. A `UserPromptSubmit` hook (`.claude/hooks/impeccable-reminder.py`) nudges you when design keywords appear, but the rule holds either way.
+
+## Lessons from agent-log review (2026-06-05)
+
+DashClaw-specific gaps surfaced from my agent history (most generic rules are already enforced above or by the `.claude/hooks` guards):
+
+- **Model/provider drift, not just version drift.** When supported models change, update `app/lib/providers/providerRegistry.js` (and the model-strategy catalogs) and run `npm run pricing:refresh` — never hardcode model ids or prices. Verify current ids (Context7/web) before wiring them; "Opus 4.6 is out" / "Unknown model: gpt-5.3-codex" has bitten me repeatedly. Latest Opus is 4.8 (2026-06).
+- **Don't cosmetically rename `.jsx`↔`.js`** (e.g. keep `app/connect/page.jsx`). It churns diffs for zero behavior change.
+- **DashClaw MCP server needs only `DASHCLAW_URL` + `DASHCLAW_API_KEY`** (optionally `DASHCLAW_AGENT_ID`). `org_id` is **not** required for MCP — don't add it.
+- **Maintain plugin parity across runtimes.** When you add a capability to the Claude Code plugin, mirror it for Codex and **Hermes** (`plugins/`); those parity gaps have been flagged.
+- **On PR/spec reviews, trust only what you read** — don't pass an implementer's or sub-agent's "it works" through; re-verify against the actual code/tests.
+- **Token/cache discipline — the whales live here.** This repo is where my biggest context burns happen (multi-hundred-turn Opus sessions at >300K context/turn). The global CLAUDE.md "Token & cache discipline" applies; in this repo especially: explore via **GitNexus queries + sub-agents** instead of broad file reads, `/clear` between unrelated tasks, route reviews/exploration to Sonnet/Haiku, and keep build/test logs out of the thread (read only the failures).

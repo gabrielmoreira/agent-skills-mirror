@@ -35,6 +35,14 @@ Use this skill when:
 
 **Do not use** this skill for macOS/Linux application control (use OS-native tools like Gatekeeper or AppArmor) or for enterprise-grade WDAC (Windows Defender Application Control) deployments.
 
+## Common Misconfigurations & Verification
+
+- **Left in Audit-only:** `EnforcementMode="AuditOnly"` on a rule collection logs (8003/8006) but blocks nothing. Confirm `Get-AppLockerPolicy -Effective -Xml` shows `EnforcementMode="Enabled"` on the Exe, Script, Msi, and Dll collections — not just one.
+- **Writable allowed paths:** path rules covering `%PROGRAMFILES%`, `%WINDIR%\Temp`, or `*` let a standard user drop and run a binary. Run `icacls "C:\Program Files\SomeApp"` to find dirs writable by `Users`/`Authenticated Users` inside an allow path.
+- **LOLBin bypass:** publisher/path allow-lists trust Microsoft-signed binaries, so `rundll32`, `regsvr32` (scrobj/`/i:http`), `msbuild`, `mshta`, and `installutil` execute attacker code without an Exe rule firing. Verify explicit Deny rules exist for these in the Exe collection and that they apply to the user's SID.
+- **DLL collection skipped:** Exe rules don't cover DLL sideloading; either enable the Dll collection or accept the gap explicitly.
+- **Verification:** log in as a standard user and try to launch a blocked binary from `%TEMP%` — it must be denied (event 8004), not just audited. Also confirm `Get-Service AppIDSvc` is Running, since rules stop enforcing if it's stopped.
+
 ## Prerequisites
 
 - Windows 10/11 Enterprise or Education, or Windows Server 2016+

@@ -46,6 +46,14 @@ nist_csf:
 
 **Do not use** as the sole backup solution without also maintaining offline/air-gapped copies. Object lock protects against logical deletion but not physical storage failure.
 
+## Common Misconfigurations & Verification
+
+- **Repo not actually immutable — Governance instead of Compliance:** S3 Object Lock in `GOVERNANCE` mode lets any principal with `s3:BypassGovernanceRetention` delete objects, so a compromised admin key wipes backups. Use `COMPLIANCE` mode where even root cannot delete before retention expires. Verify with `aws s3api get-object-lock-configuration`.
+- **`restic forget --prune` defeats immutability:** prune rewrites/deletes pack files; if Object Lock retention is shorter than your `--keep` window, prune fails or, worse, the lock window expires and an attacker prunes everything. Keep retention ≥ longest snapshot policy AND longer than typical ransomware dwell time (~21 days, prefer 30-90).
+- **Repo password / credentials stored on the backed-up host:** if `RESTIC_PASSWORD` and the S3 keys live on the same server ransomware encrypts, the attacker gets repo write access. Store the password in a separate secrets manager and use append-only/write-only IAM keys for the backup client so it can add but not delete snapshots.
+- **`check` without `--read-data`:** plain `restic check` only validates structure, not blob contents. Schedule `restic check --read-data` (or `--read-data-subset`) so bit-rot and tampering are actually caught — that's the "0 errors" in 3-2-1-1-0.
+- **Verification:** run a real restore of random files to a temp path and diff checksums against source; attempt a delete of a locked object and confirm it's denied; confirm a snapshot taken today cannot be removed before the retention date.
+
 ## Prerequisites
 
 - restic binary installed (https://restic.readthedocs.io/)

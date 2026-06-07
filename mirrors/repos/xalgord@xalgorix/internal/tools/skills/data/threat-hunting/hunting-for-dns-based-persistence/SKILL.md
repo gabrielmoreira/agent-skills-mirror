@@ -36,6 +36,15 @@ Attackers establish DNS-based persistence by hijacking DNS records, creating una
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **Passive DNS has sampling gaps.** SecurityTrails free tier (50 queries/month) and similar feeds miss fast-flux and short-lived records, so absence in passive DNS is not proof of safety.
+- **Dangling CNAME → subdomain takeover** is the most-missed path: a CNAME pointing to a deprovisioned cloud resource (released S3 bucket, Azure App Service, Heroku app) lets an attacker claim it with no access to your DNS account at all.
+- **Wildcard `*` records** mask malicious subdomains from enumeration; **NS/MX delegation hijack** survives host reimaging and credential rotation.
+- **DoH/DoT resolution bypasses internal DNS logging** — endpoints resolving via 1.1.1.1/8.8.8.8 over 443 won't appear in your resolver logs.
+- **Validate the hunt fires:** create a test CNAME to a released cloud resource and confirm your takeover/dangling-record detection flags it; diff a fresh zone export (AXFR or provider API) against the baseline and confirm an injected record is caught.
+- **FP tuning:** legitimate CDN/SaaS CNAMEs, dynamic DNS, marketing/transient subdomains, and cloud auto-provisioned records.
+
 ## Prerequisites
 
 - SecurityTrails API key (free tier provides 50 queries/month)

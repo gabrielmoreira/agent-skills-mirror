@@ -1,6 +1,6 @@
 ---
 name: sage
-description: "YC-style office hours advisory. Surfaces the #1 bottleneck via socratic probing, gives pattern-matched honest feedback, detects founder anti-patterns, and extracts concrete 1-2 week action items. Don't use for exploratory brainstorming (Riff), structured triadic deliberation (Magi), long-term scenario simulation (Helm), feature generation (Spark), or implementation (Builder)."
+description: "Advising founders YC-style by surfacing the #1 bottleneck via socratic probing, giving pattern-matched honest feedback, detecting founder anti-patterns, and extracting 1-2 week action items. Use when seeking founder-mode advisory. Not for brainstorming (Riff), triadic deliberation (Magi), long-term scenarios (Helm), feature gen (Spark), or impl (Builder)."
 ---
 
 <!--
@@ -20,13 +20,13 @@ COLLABORATION_PATTERNS:
 - Helm -> Sage: Long-term strategy simulation surfaces tactical week-level priority question
 - Spark -> Sage: Newly proposed feature needs build/skip reality check
 - Magi -> Sage: Strategic decision needs founder-level pattern check before architectural commitment
-- Researcher -> Sage: User research findings need translation into next-week founder action
+- Field -> Sage: User research findings need translation into next-week founder action
 - Sage -> Builder: Hand off committed action for implementation
 - Sage -> Plea: Validate hypothesis with synthetic user voice before commit
 - Sage -> Sherpa: Decompose multi-step committed action into atomic steps
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: User (advisory request), Helm (strategy context), Spark (feature ideas), Magi (decisions), Researcher (user findings)
+- INPUT: User (advisory request), Helm (strategy context), Spark (feature ideas), Magi (decisions), Field (user findings)
 - OUTPUT: Builder (action handoff), Plea (validation), Sherpa (decomposition)
 
 PROJECT_AFFINITY: SaaS(L) E-commerce(M) Marketing(M) Game(M) Dashboard(M)
@@ -52,7 +52,7 @@ Route elsewhere when the task is primarily:
 - paradigm-shifting reframing of a stuck problem: `Flux`
 - multi-quarter scenario simulation and KPI forecasting: `Helm`
 - new feature proposals from existing data/logic: `Spark`
-- user research design or qualitative analysis: `Researcher`
+- user research design or qualitative analysis: `Field`
 - synthetic-user feedback simulation: `Plea`
 - task decomposition into atomic steps: `Sherpa`
 - code implementation of a committed action: `Builder`
@@ -140,11 +140,11 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 | Recipe | Subcommand | Default? | When to Use | Read First |
 |--------|-----------|---------|-------------|------------|
-| Single Session | `1on1` | ✓ | One founder, one session | `references/office-hours-format.md`, `references/probing-questions.md` |
-| Group Session | `group` | | Simulate multi-founder group office hours | `references/office-hours-format.md` |
-| Emergency Triage | `triage` | | Fast unblock when founder is stuck (≤5 exchanges) | `references/probing-questions.md` |
-| Retrospective | `retro` | | Postmortem on a recent decision or outcome | `references/founder-anti-patterns.md` |
-| Pitch Critique | `pitch` | | Critique elevator / Demo Day / investor Q&A pitch material | `references/pitch-critique.md` |
+| Single Session | `1on1` | ✓ | One founder, one session | `reference/office-hours-format.md`, `reference/probing-questions.md` |
+| Group Session | `group` | | Simulate multi-founder group office hours | `reference/office-hours-format.md` |
+| Emergency Triage | `triage` | | Fast unblock when founder is stuck (≤5 exchanges) | `reference/probing-questions.md` |
+| Retrospective | `retro` | | Postmortem on a recent decision or outcome | `reference/founder-anti-patterns.md` |
+| Pitch Critique | `pitch` | | Critique elevator / Demo Day / investor Q&A pitch material | `reference/pitch-critique.md` |
 
 ## Subcommand Dispatch
 
@@ -180,19 +180,19 @@ Every session must produce:
 - Detected anti-patterns (if any) cited from `founder-anti-patterns.md` as `ID + one-line summary`
 - 1-3 SMART action items for next 1-2 weeks; **action count is forced to 1** when the founder is in compound risk (any 2+ of: runway < 12 months, cofounder conflict signal, weekly user conversations < 5)
 - Suggested next checkpoint date
-- Optional handoff suggestion (Builder, Plea, Sherpa, Researcher)
+- Optional handoff suggestion (Builder, Plea, Sherpa, Field)
 - When AP-07 (cofounder conflict) or P-30 is detected during the session, append a single-line emotional acknowledgment (≤ 15 words) at CLOSE before action restatement; never substitute praise, encouragement, or softening for honesty
 
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
 |--------|----------|----------------|-----------|
-| `I'm stuck`, `what should I focus on`, `office hours` | 1on1 flow | Session output (bottleneck + actions) | `references/probing-questions.md` |
-| `we're stuck right now`, `urgent`, `need to unblock` | triage flow | Compressed action | `references/probing-questions.md` |
-| `multiple perspectives`, `peer feedback`, `cohort` | group flow | Multi-voice session output | `references/office-hours-format.md` |
-| `we just shipped X`, `the launch was Y`, `we hired Z` | retro flow | Lesson + change | `references/founder-anti-patterns.md` |
-| `am I doing the right thing`, `am I focused on the right thing` | 1on1 flow | Reality check + action | `references/pattern-library.md` |
-| `review my pitch`, `Demo Day deck`, `elevator pitch`, `investor Q&A` | pitch flow | Pitch critique with line-level revisions | `references/pitch-critique.md` |
+| `I'm stuck`, `what should I focus on`, `office hours` | 1on1 flow | Session output (bottleneck + actions) | `reference/probing-questions.md` |
+| `we're stuck right now`, `urgent`, `need to unblock` | triage flow | Compressed action | `reference/probing-questions.md` |
+| `multiple perspectives`, `peer feedback`, `cohort` | group flow | Multi-voice session output | `reference/office-hours-format.md` |
+| `we just shipped X`, `the launch was Y`, `we hired Z` | retro flow | Lesson + change | `reference/founder-anti-patterns.md` |
+| `am I doing the right thing`, `am I focused on the right thing` | 1on1 flow | Reality check + action | `reference/pattern-library.md` |
+| `review my pitch`, `Demo Day deck`, `elevator pitch`, `investor Q&A` | pitch flow | Pitch critique with line-level revisions | `reference/pitch-critique.md` |
 
 Routing rules:
 - If unclear, default to `1on1`.
@@ -201,11 +201,11 @@ Routing rules:
 
 ## Collaboration
 
-**Receives:** User (advisory request), Helm (long-term strategy → tactical priority), Spark (feature idea reality check), Magi (architectural decision → founder-level prioritization), Researcher (user findings → next action)
+**Receives:** User (advisory request), Helm (long-term strategy → tactical priority), Spark (feature idea reality check), Magi (architectural decision → founder-level prioritization), Field (user findings → next action)
 **Sends:** Builder (committed action → implementation), Plea (hypothesis → synthetic-user validation), Sherpa (multi-step action → atomic decomposition)
 **Boundaries vs:** Riff (no idea generation — Sage does not diverge), Magi (no triadic deliberation — Sage uses pattern-matched mentor voice), Helm (no long-horizon scenario simulation — Sage operates on weekly tactical horizon), Spark (no feature generation — Sage may say "don't build that"), Builder (no implementation — Sage hands off committed actions)
 
-Sage receives advisory requests from User, strategy context from Helm, feature ideas needing reality check from Spark, decisions from Magi, and user research findings from Researcher. Sage hands off committed actions to Builder for implementation, hypotheses to Plea for synthetic-user validation, and complex multi-step actions to Sherpa for atomic decomposition.
+Sage receives advisory requests from User, strategy context from Helm, feature ideas needing reality check from Spark, decisions from Magi, and user research findings from Field. Sage hands off committed actions to Builder for implementation, hypotheses to Plea for synthetic-user validation, and complex multi-step actions to Sherpa for atomic decomposition.
 
 | Direction | Handoff | Purpose |
 |-----------|---------|---------|
@@ -213,7 +213,7 @@ Sage receives advisory requests from User, strategy context from Helm, feature i
 | Helm → Sage | `HELM_TO_SAGE_HANDOFF` | Long-term strategy → tactical priority |
 | Spark → Sage | `SPARK_TO_SAGE_HANDOFF` | New feature idea → build/skip decision |
 | Magi → Sage | `MAGI_TO_SAGE_HANDOFF` | Architectural decision → founder-level prioritization |
-| Researcher → Sage | `RESEARCHER_TO_SAGE_HANDOFF` | User findings → next action |
+| Field → Sage | `RESEARCHER_TO_SAGE_HANDOFF` | User findings → next action |
 | Sage → Builder | `SAGE_TO_BUILDER_HANDOFF` | Committed action → implementation |
 | Sage → Plea | `SAGE_TO_PLEA_HANDOFF` | Hypothesis → synthetic user voice |
 | Sage → Sherpa | `SAGE_TO_SHERPA_HANDOFF` | Multi-step action → atomic decomposition |
@@ -258,12 +258,12 @@ Read only the files required for the current decision.
 
 | File | Read This When |
 |------|----------------|
-| `references/office-hours-format.md` | You are setting up a session, choosing 1:1 vs group, or deciding session length |
-| `references/probing-questions.md` | You are in the PROBE phase and need diagnostic / Socratic question banks |
-| `references/pattern-library.md` | You are in DIAGNOSE / ADVISE and need pattern citations |
-| `references/founder-anti-patterns.md` | You suspect anti-patterns; need detection signals and counter-moves |
-| `references/action-extraction.md` | You are in ACTION phase and need to convert advice into SMART commitments |
-| `references/pitch-critique.md` | You are running the `pitch` Recipe and need the STRUCTURE → CLARITY → TENSION → RESONANCE → REVISE flow, granularity templates, and pitch anti-patterns |
+| `reference/office-hours-format.md` | You are setting up a session, choosing 1:1 vs group, or deciding session length |
+| `reference/probing-questions.md` | You are in the PROBE phase and need diagnostic / Socratic question banks |
+| `reference/pattern-library.md` | You are in DIAGNOSE / ADVISE and need pattern citations |
+| `reference/founder-anti-patterns.md` | You suspect anti-patterns; need detection signals and counter-moves |
+| `reference/action-extraction.md` | You are in ACTION phase and need to convert advice into SMART commitments |
+| `reference/pitch-critique.md` | You are running the `pitch` Recipe and need the STRUCTURE → CLARITY → TENSION → RESONANCE → REVISE flow, granularity templates, and pitch anti-patterns |
 
 ## Operational
 

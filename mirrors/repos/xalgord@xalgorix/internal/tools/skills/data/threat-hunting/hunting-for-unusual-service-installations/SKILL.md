@@ -42,6 +42,15 @@ Attackers frequently install malicious Windows services for persistence and priv
 - When SOC analysts need structured procedures for this analysis type
 - When validating security monitoring coverage for related attack techniques
 
+## Detection Gaps & Validation
+
+- **7045 doesn't cover modification:** EID 7045 (System) logs new user-mode and kernel-driver service installs, but `sc config` / registry edits of an EXISTING service's `ImagePath` raise NO 7045 — hunt EID 4697 (Security, needs "Audit Security System Extension") and Sysmon EID 13 on `HKLM\SYSTEM\CurrentControlSet\Services\*\ImagePath`.
+- **Install-run-delete:** PsExec-style services that install, run, then remove may leave only 7045 + 7036/7034/7009 — correlate those to catch the transient.
+- **svchost-hosted services:** the payload is in `\Parameters\ServiceDll`, not `ImagePath` — inspect that value too.
+- **BYOVD / kernel drivers:** malicious `.sys` loads as a service (type 1) — cross-check Sysmon EID 6 DriverLoad and signature/revocation status.
+- **Validate:** run Atomic T1543.003 (create service via sc.exe and PowerShell); confirm 7045 `ImagePath` + `ServiceType` are captured.
+- **FP tuning:** baseline signed vendor agents (EDR, backup) and built-in Windows services by signer + path.
+
 ## Prerequisites
 
 - Python 3.9+ with `python-evtx`, `lxml`

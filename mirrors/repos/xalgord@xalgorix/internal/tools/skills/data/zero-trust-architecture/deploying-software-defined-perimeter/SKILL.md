@@ -43,6 +43,15 @@ This skill covers deploying SDP using the CSA v2.0 specification, implementing S
 - When building or improving security architecture for this domain
 - When conducting security assessments that require this implementation
 
+## Common Misconfigurations & Verification
+
+- **Gateway not actually default-drop:** if the Accepting Host firewall still permits inbound on the service port, or the app server is reachable on a second NIC/public IP that bypasses the gateway, the dark-cloud property is gone. Confirm the `iptables`/security-group default policy is DROP for all inbound except the SPA listener.
+- **SPA disabled or pre-shared key reused:** running the gateway with SPA off, or sharing one HMAC/HOTP key across all clients, lets anyone who captured a packet replay it. Use per-client SPA keys and enable replay protection.
+- **mTLS client-auth optional:** a gateway that requests but does not *require* a client certificate falls back to server-only TLS, so any user reaches the app after SPA. Set client-cert verification to mandatory and enable OCSP/CRL revocation.
+- **No revocation checking:** a stolen or revoked device certificate still works until CRL/OCSP is enforced.
+
+Verify: from an unauthorized host run `nmap -sS -p- <gateway-ip>` with no SPA sent and confirm ALL ports show filtered (gateway invisible). Attempt a TLS connection with no client cert and confirm rejection; replay a captured SPA packet and confirm denial; test a revoked cert and confirm access fails, with each attempt logged to the SIEM.
+
 ## Prerequisites
 
 - Familiarity with zero trust architecture concepts and tools
