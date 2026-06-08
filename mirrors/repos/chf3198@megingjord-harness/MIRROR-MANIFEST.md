@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `chf3198/megingjord-harness` — 26 default patterns, 1 followed patterns, 96 file(s) materialized.
+Mirror of `chf3198/megingjord-harness` — 26 default patterns, 1 followed patterns, 97 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `chf3198/megingjord-harness` — 26 default patterns, 1 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 96 |
+| Files         | 97 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -138,23 +138,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 77 | ✓ | [`skills/repo-standards-router/INSTALL-GLOBAL.md`](skills/repo-standards-router/INSTALL-GLOBAL.md) |
 | 78 | ✓ | [`skills/repo-standards-router/SKILL.md`](skills/repo-standards-router/SKILL.md) |
 | 79 | ✓ | [`skills/repo-structure-conventions/SKILL.md`](skills/repo-structure-conventions/SKILL.md) |
-| 80 | ✓ | [`skills/role-admin-execution/SKILL.md`](skills/role-admin-execution/SKILL.md) |
-| 81 | ✓ | [`skills/role-baton-orchestrator/SKILL.md`](skills/role-baton-orchestrator/SKILL.md) |
-| 82 | ✓ | [`skills/role-collaborator-execution/SKILL.md`](skills/role-collaborator-execution/SKILL.md) |
-| 83 | ✓ | [`skills/role-consultant-critique/SKILL.md`](skills/role-consultant-critique/SKILL.md) |
-| 84 | ✓ | [`skills/role-it-execution/SKILL.md`](skills/role-it-execution/SKILL.md) |
-| 85 | ✓ | [`skills/role-manager-execution/SKILL.md`](skills/role-manager-execution/SKILL.md) |
-| 86 | ✓ | [`skills/role-red-team-critique/SKILL.md`](skills/role-red-team-critique/SKILL.md) |
-| 87 | ✓ | [`skills/secret-exposure-prevention/SKILL.md`](skills/secret-exposure-prevention/SKILL.md) |
-| 88 | ✓ | [`skills/web-regression-governance/INSTALL-GLOBAL.md`](skills/web-regression-governance/INSTALL-GLOBAL.md) |
-| 89 | ✓ | [`skills/web-regression-governance/SKILL.md`](skills/web-regression-governance/SKILL.md) |
-| 90 | ✓ | [`skills/workflow-self-anneal/INSTALL-GLOBAL.md`](skills/workflow-self-anneal/INSTALL-GLOBAL.md) |
-| 91 | ✓ | [`skills/workflow-self-anneal/SKILL.md`](skills/workflow-self-anneal/SKILL.md) |
-| 92 | ✓ | [`tests/fixtures/governance/golden/claude-code/CLAUDE.md`](tests/fixtures/governance/golden/claude-code/CLAUDE.md) |
-| 93 | ✓ | [`tests/fixtures/governance/golden/continue/.continue/rules/global-governance.md`](tests/fixtures/governance/golden/continue/.continue/rules/global-governance.md) |
-| 94 | ✓ | [`tests/fixtures/governance/golden/continue/.continue/rules/path-scoped-governance.md`](tests/fixtures/governance/golden/continue/.continue/rules/path-scoped-governance.md) |
-| 95 | ✓ | [`tests/fixtures/governance/golden/continue/.continue/rules/priority-p2-governance.md`](tests/fixtures/governance/golden/continue/.continue/rules/priority-p2-governance.md) |
-| 96 | → | [`docs/skills-agents.md`](docs/skills-agents.md) |
+| 80 | ✓ | [`skills/research-redteam-loop/SKILL.md`](skills/research-redteam-loop/SKILL.md) |
+| 81 | ✓ | [`skills/role-admin-execution/SKILL.md`](skills/role-admin-execution/SKILL.md) |
+| 82 | ✓ | [`skills/role-baton-orchestrator/SKILL.md`](skills/role-baton-orchestrator/SKILL.md) |
+| 83 | ✓ | [`skills/role-collaborator-execution/SKILL.md`](skills/role-collaborator-execution/SKILL.md) |
+| 84 | ✓ | [`skills/role-consultant-critique/SKILL.md`](skills/role-consultant-critique/SKILL.md) |
+| 85 | ✓ | [`skills/role-it-execution/SKILL.md`](skills/role-it-execution/SKILL.md) |
+| 86 | ✓ | [`skills/role-manager-execution/SKILL.md`](skills/role-manager-execution/SKILL.md) |
+| 87 | ✓ | [`skills/role-red-team-critique/SKILL.md`](skills/role-red-team-critique/SKILL.md) |
+| 88 | ✓ | [`skills/secret-exposure-prevention/SKILL.md`](skills/secret-exposure-prevention/SKILL.md) |
+| 89 | ✓ | [`skills/web-regression-governance/INSTALL-GLOBAL.md`](skills/web-regression-governance/INSTALL-GLOBAL.md) |
+| 90 | ✓ | [`skills/web-regression-governance/SKILL.md`](skills/web-regression-governance/SKILL.md) |
+| 91 | ✓ | [`skills/workflow-self-anneal/INSTALL-GLOBAL.md`](skills/workflow-self-anneal/INSTALL-GLOBAL.md) |
+| 92 | ✓ | [`skills/workflow-self-anneal/SKILL.md`](skills/workflow-self-anneal/SKILL.md) |
+| 93 | ✓ | [`tests/fixtures/governance/golden/claude-code/CLAUDE.md`](tests/fixtures/governance/golden/claude-code/CLAUDE.md) |
+| 94 | ✓ | [`tests/fixtures/governance/golden/continue/.continue/rules/global-governance.md`](tests/fixtures/governance/golden/continue/.continue/rules/global-governance.md) |
+| 95 | ✓ | [`tests/fixtures/governance/golden/continue/.continue/rules/path-scoped-governance.md`](tests/fixtures/governance/golden/continue/.continue/rules/path-scoped-governance.md) |
+| 96 | ✓ | [`tests/fixtures/governance/golden/continue/.continue/rules/priority-p2-governance.md`](tests/fixtures/governance/golden/continue/.continue/rules/priority-p2-governance.md) |
+| 97 | → | [`docs/skills-agents.md`](docs/skills-agents.md) |
 
 ---
 

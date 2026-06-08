@@ -13,7 +13,9 @@ This skill encodes patterns that apply specifically to Bugcrowd's submission flo
 
 ## 1. VRT Category Selection — Search & Fallback Strategy
 
-Bugcrowd's submission form requires a single VRT (Vulnerability Rating Taxonomy) selection. The dropdown's default severity is bound to the chosen node — pick wrong and the form auto-suggests P4 when the actual impact is P3 or P2.
+Bugcrowd's submission form requires a single VRT (Vulnerability Rating Taxonomy) selection. The dropdown's default severity is bound to the chosen node — pick wrong and the form auto-suggests a lower priority (often P4) when the actual impact is P3 or P2.
+
+> Note: VRT default severities are not fixed constants. Bugcrowd revises the VRT schema across versions, and individual programs can remap defaults via their own priority configuration. The P-values shown in the examples below (e.g., "No Rate Limiting on Form → Login" defaulting to P4) are the typical baseline at time of writing — always read the severity the *current* form actually auto-suggests for *this* program rather than assuming the value here.
 
 ### 1.1 Search hierarchy (try in order, pick the highest-severity match that still describes the bug)
 
@@ -171,9 +173,9 @@ Many high-impact findings are chains of two or more standalone primitives (oracl
 ### 5.1 Filing strategy for chains
 
 1. **Identify the highest-severity chained outcome** (typically the one that maps to a P1/P2 example in the program's Focus Areas).
-2. **File the chain consumer FIRST** — the report whose body describes the full ATO/RCE/etc. impact. Use the chained severity (e.g., P1).
-3. **Within minutes, file the chain primitives** as separate reports — each at its standalone severity (typically P3/P4) but cross-referencing the consumer.
-4. **In each primitive's body**, explicitly note: *"Chain partner: submission [UUID] for the full impact narrative."*
+2. **File the chain primitives FIRST** as separate reports — each at its standalone severity (typically P3/P4). A submission's UUID only exists *after* it is filed, so the primitives must exist before anything can reference them. Leave the cross-reference line in each primitive's body as a placeholder for now.
+3. **File the chain consumer** — the report whose body describes the full ATO/RCE/etc. impact at the chained severity (e.g., P1). Because the primitives already exist, fill in their real UUIDs in the consumer's "Chain partners" block (per §5.2).
+4. **Edit each primitive after filing the consumer** to backfill the consumer's UUID: *"Chain partner: submission [UUID] for the full impact narrative."* (The reference is bidirectional, so one report must be edited after the other is filed — Bugcrowd allows post-submission edits to the description body.)
 
 ### 5.2 Cross-reference template
 
@@ -273,8 +275,8 @@ When you have multiple findings from a single engagement, the order matters.
 
 ### 8.1 Recommended order
 
-1. **The highest-severity, best-evidenced finding first.** Locks in your timestamp on the most valuable bug. If it's a chain consumer, follow with the chain primitives within an hour.
-2. **Cross-referenced primitives next.** File each within an hour of the chain consumer so the cross-references are tight.
+1. **Chain primitives before their consumer.** A consumer references the primitives' report UUIDs, which only exist once the primitives are filed (see §5.1). File the best-evidenced primitive first to lock your timestamp, then the rest of the chain's primitives.
+2. **The chain consumer next** — fill in the real primitive UUIDs, then edit each primitive to backfill the consumer's UUID (Bugcrowd allows post-submission body edits).
 3. **Standalone P3 findings next.** Order by quality of evidence: best-evidenced first, riskier (OOS-adjacent) findings later.
 4. **OOS-risky findings last.** By the time these land, you've established a credible track record on this engagement.
 

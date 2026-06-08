@@ -152,9 +152,18 @@ Node.js version from `.nvmrc` and pnpm 10+.
 ### Implementation Strategy
 
 - Inspect nearby existing abstractions before planning or implementing new helpers, modules, or UI patterns; prefer reuse or small extensions over parallel implementations.
+- For non-trivial behavior that is already well solved by maintained libraries, explicitly consider whether adding or reusing a third-party dependency is safer than implementing from scratch. Favor mature dependencies for accessibility-heavy UI primitives, parsing/serialization, protocol clients, validators, drag/drop, virtualization, date/time handling, and state-machine-like workflows when they reduce project risk.
+- Before adding a dependency in this repo, check existing dependencies first, use `pnpm` so `pnpm-lock.yaml` stays authoritative, and account for extension bundle/runtime impact. Dependency additions or generated lockfile updates are task-scoped when they are required by the selected implementation.
 - If a string participates in runtime branching, shared protocol values, reusable state mapping, or canonical external URLs, do not duplicate it as a bare literal across modules. Prefer a single runtime constant source, and derive types from that source when both runtime and type-level usage are needed.
 - Normalize data at the highest reliable boundary, then pass the normalized shape downward. Once a contract is established, prefer required types in downstream helpers and components instead of reintroducing optional fallbacks at each leaf.
 - Keep fallback behavior close to the layer that defines the rule or owns the data contract. Do not duplicate the same fallback across multiple consumers merely to compensate for weak typing or incomplete normalization upstream.
+
+### UI Component Dependencies
+
+- This repo has shadcn configured via `components.json`. When adding a new shadcn-supported primitive, prefer `pnpm shadcn add <component> --yes` or `pnpm shadcn add <component> --overwrite --yes` when replacing an existing local baseline.
+- Treat the shadcn CLI output as the baseline. Adapt it only as needed for repo conventions: `~/` aliases, `src/components/ui` barrel exports, `cn`, design tokens, floating-layer/z-index behavior, i18n, lint/JSDoc requirements, and component-specific UX.
+- Do not hand-copy shadcn component templates when the CLI can generate them. If the CLI fails, classify whether the failure is tooling, network, auth, package-manager, or registry related; clean unintended partial outputs before retrying or falling back.
+- Do not remove or rewrite shadcn-added dependencies merely to reduce lockfile noise unless dependency cleanup is explicitly in scope. If a generated dependency looks excessive, call it out and keep the task moving unless it creates a concrete build, bundle, license, or runtime problem.
 
 ### Feature Observability and Discoverability
 

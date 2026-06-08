@@ -17,3 +17,4 @@
 - HAMR routing canonical contract: `instructions/hamr-routing.instructions.md` (cost levers, /quota, /mcp, cache-hit gate). Complementary to the Global Task Router lane policy.
 - OWASP Agentic security mapping: `instructions/owasp-agentic-mapping.instructions.md` (OA1-OA10 risk-to-goal mapping; G1-G10 coverage classification).
 - Cross-team artifact-write contract: `instructions/cross-team-artifact-write.instructions.md` (target-runtime team owns schema/contract test; required before manager-handoff on cross-runtime config writes).
+- **2026-H1 key contracts**: doc-coverage gate (COLLABORATOR_HANDOFF must include `doc-coverage:` block for lane:code-change), baton builders (`baton-comment-build.js`), governance chains (`npm run governance:chains:check`), fleet-call-guard (bounded timeout required, PR #2697), credential-prompt-guard (check `.env` before prompting), admin-merge-exception (Epic #2517 gate). Mirror AGENTS.md §Key contracts.

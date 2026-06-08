@@ -28,6 +28,15 @@ Two phases: **Extract** (build the migration guide) and **Upgrade** (use it). If
 
 ---
 
+# Phase 0: Refresh this skill first
+
+The migration process itself evolves, so run its newest version before doing anything else:
+- Ensure the `upstream` remote exists (default `https://github.com/nanocoai/nanoclaw.git`) and fetch: `git fetch upstream --prune`. Detect the upstream branch (`main` or `master`).
+- Refresh this skill from upstream: `git checkout upstream/<branch> -- .claude/skills/migrate-nanoclaw/`
+- Re-read `.claude/skills/migrate-nanoclaw/SKILL.md`. If it changed, **follow the updated version from the top** instead of this one.
+
+This is the only working-tree change expected before the preflight check below; changes limited to `.claude/skills/migrate-nanoclaw/` are this self-refresh — ignore them in the 1.0 clean-tree check and proceed.
+
 # Phase 1: Extract
 
 ## 1.0 Preflight
@@ -463,6 +472,11 @@ Point the branch at the upgraded state with `git reset --hard <upgrade-commit>` 
 ## 2.9 Post-upgrade
 
 Run `pnpm install && pnpm run build` in the main tree to confirm.
+
+Stamp the upgrade marker (required — without it the startup tripwire stops the host on next start). Only do this after the build above succeeds:
+```bash
+pnpm exec tsx scripts/upgrade-state.ts set "" migrate-nanoclaw
+```
 
 Restart the service. Service labels are per-install — derive them from `setup/lib/install-slug.sh`:
 ```bash

@@ -70,9 +70,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`examples/openclaw-plugin/skills/install-openviking-memory/SKILL.md`](examples/openclaw-plugin/skills/install-openviking-memory/SKILL.md) |
 | 10 | ✓ | [`examples/opencode/plugin/skills/openviking/SKILL.md`](examples/opencode/plugin/skills/openviking/SKILL.md) |
 | 11 | ✓ | [`examples/skills/ov_dream/SKILL.md`](examples/skills/ov_dream/SKILL.md) |
-| 12 | ✓ | [`examples/skills/ov-add-data/SKILL.md`](examples/skills/ov-add-data/SKILL.md) |
-| 13 | ✓ | [`examples/skills/ov-search-context/SKILL.md`](examples/skills/ov-search-context/SKILL.md) |
-| 14 | ✓ | [`examples/skills/ov-server-operate/SKILL.md`](examples/skills/ov-server-operate/SKILL.md) |
+| 12 | ✓ | [`examples/skills/ov-resources/SKILL.md`](examples/skills/ov-resources/SKILL.md) |
+| 13 | ✓ | [`examples/skills/ov-server-operate/SKILL.md`](examples/skills/ov-server-operate/SKILL.md) |
+| 14 | ✓ | [`examples/skills/ov-skills/SKILL.md`](examples/skills/ov-skills/SKILL.md) |
 
 ---
 

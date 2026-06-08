@@ -20,6 +20,14 @@ Give opinions directly. Take a position and state what evidence would change it.
 - Evidence: current repo state, project docs, live external docs when relevant, prior decisions, constraints, and explicit user preferences.
 - Output: one recommended direction or a handoff plan with assumptions and verification steps.
 
+## Durable Context Preflight
+
+See [rules/durable-context.md](../../rules/durable-context.md) for when to read durable context, the read-order budget, and the memory-type mapping (planning constraints, reusable patterns, facts that need re-verification against current state).
+
+For `/think`, planning constraints are `decision`, `preference`, and `principle` entries; current repo state, live docs, logs, tests, and remote state override memory. Lock durable decisions and preferences before asking questions. Do not ask the user to restate an intent that the durable context already establishes unless it is risky, stale, or contradicted by current state.
+
+Before outputting any plan, scan the project's `AGENTS.md`, `CLAUDE.md`, `.claude/rules/*.md`, and any local agent-memory summary if the user pointed at one. If the proposed plan contradicts a "hard rule", "never X", "must Y", or "prefer Z" stated in those files, surface the contradiction in the plan output (one sentence: which rule, which step contradicts it, recommended resolution). Do not silently override the rule. If the rule blocks the plan, stop and ask before continuing.
+
 ## Lightweight Mode
 
 Activate when the user wants to fix something rather than build something, the problem is already defined, and the only open question is "how to fix it."
@@ -73,14 +81,6 @@ Output the classification table first. Wait for the user to confirm the accepted
 - Confirm the working path: `pwd` or `git rev-parse --show-toplevel`. Never assume `~/project` and `~/www/project` are the same.
 - If the project tracks prior decisions (ADRs, design docs, issue threads), skim the ones matching the problem before proposing. Skip if none exist.
 - If the plan involves a default value, env var, or config field, open the project's actual config file (e.g. `app.config.json`, `tauri.conf.json`, `package.json`, `.env`) and lift the live value. Never quote a default from memory or docs.
-
-## Durable Context Preflight
-
-See [rules/durable-context.md](../../rules/durable-context.md) for when to read durable context, the read-order budget, and the memory-type mapping (planning constraints, reusable patterns, facts that need re-verification against current state).
-
-For `/think`, planning constraints are `decision`, `preference`, and `principle` entries; current repo state, live docs, logs, tests, and remote state override memory. Lock durable decisions and preferences before asking questions. Do not ask the user to restate an intent that the durable context already establishes unless it is risky, stale, or contradicted by current state.
-
-Before outputting any plan, scan the project's `AGENTS.md`, `CLAUDE.md`, `.claude/rules/*.md`, and any local agent-memory summary if the user pointed at one. If the proposed plan contradicts a "hard rule", "never X", "must Y", or "prefer Z" stated in those files, surface the contradiction in the plan output (one sentence: which rule, which step contradicts it, recommended resolution). Do not silently override the rule. If the rule blocks the plan, stop and ask before continuing.
 
 ## Check for Official Solutions First
 

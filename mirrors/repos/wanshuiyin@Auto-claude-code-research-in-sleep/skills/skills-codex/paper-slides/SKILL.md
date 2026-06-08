@@ -42,7 +42,7 @@ Unlike posters (single page, visual-first), slides tell a **temporal story**: ea
 
 ## Venue Color Schemes
 
-Same as `/paper-poster`:
+Same as `/paper-poster-html`:
 
 | Venue | Primary | Accent | Background | Text |
 |-------|---------|--------|------------|------|

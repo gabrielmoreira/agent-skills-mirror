@@ -2,7 +2,7 @@
 
 Generated at: 2026-02-08T00:00:00.000Z
 
-Total skills: 1520
+Total skills: 1525
 
 ## architecture (99)
 
@@ -197,7 +197,7 @@ Total skills: 1520
 | `wordpress-centric-high-seo-optimized-blogwriting-skill` | Generate clean, human-sounding, SEO-optimized WordPress blog posts with optional Yoast metadata, JSON-LD schema markup, and image SEO planning. Supports modu... | writing, blog, seo, content, wordpress | writing, blog, seo, content, wordpress, centric, high, optimized, blogwriting, skill, generate, clean |
 | `xiaohongshu-content-strategist` | Create viral Xiaohongshu (小红书) content with platform-native strategy, save-rate optimization, trending formats, and search SEO for China's #1 lifestyle platf... | xiaohongshu, chinese-market, content-strategy, social-media, marketing, 红书, 小红书 | xiaohongshu, chinese-market, content-strategy, social-media, marketing, 红书, 小红书, content, strategist, viral, platform, native |
 
-## data-ai (292)
+## data-ai (294)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -411,6 +411,7 @@ Total skills: 1520
 | `obsidian-bases` | Create and edit Obsidian Bases (.base files) with views, filters, formulas, and summaries. Use when working with .base files, creating database-like views of... | obsidian, bases | obsidian, bases, edit, base, files, views, filters, formulas, summaries, working, creating, database |
 | `odoo-edi-connector` | Guide for implementing EDI (Electronic Data Interchange) with Odoo: X12, EDIFACT document mapping, partner onboarding, and automated order processing. | odoo, edi, connector | odoo, edi, connector, implementing, electronic, data, interchange, x12, edifact, document, mapping, partner |
 | `odoo-inventory-optimizer` | Expert guide for Odoo Inventory: stock valuation (FIFO/AVCO), reordering rules, putaway strategies, routes, and multi-warehouse configuration. | odoo, inventory, optimizer | odoo, inventory, optimizer, stock, valuation, fifo, avco, reordering, rules, putaway, routes, multi |
+| `open-dynamic-workflows` | Plan, orchestrate, and adversarially verify parallel AI coding agents with a dynamic multi-agent workflow engine. | multi-agent, orchestration, workflow, adversarial-verification, coding-agents | multi-agent, orchestration, workflow, adversarial-verification, coding-agents, open, dynamic, plan, orchestrate, adversarially, verify, parallel |
 | `photopea-embedded-editor` | Embed Photopea in web apps using photopea.js. Covers embedding, file I/O, scripting, exporting, layers, text, filters, and the full Photoshop-compatible API. | photopea, embedded, editor | photopea, embedded, editor, embed, web, apps, js, covers, embedding, file, scripting, exporting |
 | `php-pro` | Write idiomatic PHP code with generators, iterators, SPL data structures, and modern OOP features. Use PROACTIVELY for high-performance PHP applications. | php | php, pro, write, idiomatic, code, generators, iterators, spl, data, structures, oop, features |
 | `polars` | Fast in-memory DataFrame library for datasets that fit in RAM. Use when pandas is too slow but data still fits in memory. Lazy evaluation, parallel execution... | polars | polars, fast, memory, dataframe, library, datasets, fit, ram, pandas, too, slow, data |
@@ -433,6 +434,7 @@ Total skills: 1520
 | `recursive-context-pruning-token-budgeting` | Optimizes AI agent performance by pruning redundant context, managing token usage, and enforcing ultra-concise, direct-to-value responses. | efficiency, token-optimization, brevity, context-management | efficiency, token-optimization, brevity, context-management, recursive, context, pruning, token, budgeting, optimizes, ai, agent |
 | `referral-program` | You are an expert in viral growth and referral marketing with access to referral program data and third-party tools. Your goal is to help design and optimize... | referral, program | referral, program, viral, growth, marketing, access, data, third, party, goal, optimize, programs |
 | `robius-state-management` | CRITICAL: Use for Robius state management patterns. Triggers on: AppState, persistence, theme switch, 状态管理, Scope::with_data, save state, load state, serde, ... | robius, state | robius, state, critical, triggers, appstate, persistence, theme, switch, scope, data, save, load |
+| `runapi-cli` | Generate AI images, videos, and music/audio from agents using the RunAPI CLI. | runapi, cli, models, automation, codex, claude, gemini | runapi, cli, models, automation, codex, claude, gemini, generate, ai, images, videos, music |
 | `runaway-guard` | Cost-safety discipline for paid AI / inference APIs: treat $-cost as a third complexity dimension alongside time and space. Forces a written per-run $-cap, p... | cost-safety, finops, ai-apis, agents, retries, concurrency, wallet-invariant, gateway | cost-safety, finops, ai-apis, agents, retries, concurrency, wallet-invariant, gateway, runaway, guard, cost, safety |
 | `sankhya-dashboard-html-jsp-custom-best-pratices` | This skill should be used when the user asks for patterns, best practices, creation, or fixing of Sankhya dashboards using HTML, JSP, Java, and SQL. | sankhya, dashboard, jsp, html, sql, best-practices | sankhya, dashboard, jsp, html, sql, best-practices, custom, pratices, skill, should, used, user |
 | `scala-pro` | Master enterprise-grade Scala development with functional programming, distributed systems, and big data processing. Expert in Apache Pekko, Akka, Spark, ZIO... | scala | scala, pro, enterprise, grade, development, functional, programming, distributed, big, data, processing, apache |
@@ -730,7 +732,7 @@ Total skills: 1520
 | `seo-plan` | Strategic SEO planning for new or existing websites. Industry-specific templates, competitive analysis, content strategy, and implementation roadmap. Use whe... | seo, plan | seo, plan, strategic, planning, new, existing, websites, industry, specific, competitive, analysis, content |
 | `yann-lecun-filosofia` | Sub-skill filosófica e pedagógica de Yann LeCun. | persona, ai-philosophy, open-source, education | persona, ai-philosophy, open-source, education, yann, lecun, filosofia, sub, skill, filos, fica, pedag |
 
-## general (361)
+## general (364)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -756,6 +758,7 @@ Total skills: 1520
 | `app-builder/templates` | Project scaffolding templates for new applications. Use when creating new projects from scratch. Contains 12 templates for various tech stacks. | app, builder/templates | app, builder/templates, scaffolding, new, applications, creating, scratch, contains, 12, various, tech, stacks |
 | `app-store-changelog` | Generate user-facing App Store release notes from git history since the last tag. | app, store, changelog | app, store, changelog, generate, user, facing, release, notes, git, history, since, last |
 | `arm-cortex-expert` | Senior embedded software engineer specializing in firmware and driver development for ARM Cortex-M microcontrollers (Teensy, STM32, nRF52, SAMD). | arm, cortex | arm, cortex, senior, embedded, software, engineer, specializing, firmware, driver, development, microcontrollers, teensy |
+| `article-illustrations` | Generate hand-drawn 16:9 article illustrations with the Grav character IP, sparse annotations, and absurd but clear visual metaphors. | illustration, article-graphics, visual-metaphors, image-generation, whiteboard-sketch | illustration, article-graphics, visual-metaphors, image-generation, whiteboard-sketch, article, illustrations, generate, hand, drawn, 16, grav |
 | `ask-questions-if-underspecified` | Clarify requirements before implementing. Use when serious doubts arise. | ask, questions, if, underspecified | ask, questions, if, underspecified, clarify, requirements, before, implementing, serious, doubts, arise |
 | `avalonia-layout-zafiro` | Guidelines for modern Avalonia UI layout using Zafiro.Avalonia, emphasizing shared styles, generic components, and avoiding XAML redundancy. | avalonia, layout, zafiro | avalonia, layout, zafiro, guidelines, ui, emphasizing, shared, styles, generic, components, avoiding, xaml |
 | `avalonia-zafiro-development` | Mandatory skills, conventions, and behavioral rules for Avalonia UI development using the Zafiro toolkit. | avalonia, zafiro | avalonia, zafiro, development, mandatory, skills, conventions, behavioral, rules, ui, toolkit |
@@ -817,6 +820,7 @@ Total skills: 1520
 | `create-branch` | Create a git branch following Sentry naming conventions. Use when asked to "create a branch", "new branch", "start a branch", "make a branch", "switch to a n... | create, branch | create, branch, git, following, sentry, naming, conventions, asked, new, start, switch, starting |
 | `create-issue-gate` | Use when starting a new implementation task and an issue must be created with strict acceptance criteria gating before execution. | create, issue, gate | create, issue, gate, starting, new, task, must, created, strict, acceptance, criteria, gating |
 | `crewai` | Expert in CrewAI - the leading role-based multi-agent framework used by 60% of Fortune 500 companies. | crewai | crewai, leading, role, multi, agent, framework, used, 60, fortune, 500, companies |
+| `cv-generator` | Generate professional, ATS-optimized CVs for FlowCV, Canva, Google Docs, or Word. Handles multi-source merging, JD targeting, seniority adaptation, and human... | cv, resume, ats, career, job-application, career-change | cv, resume, ats, career, job-application, career-change, generator, generate, professional, optimized, cvs, flowcv |
 | `daily` | Documentation and capabilities reference for Daily | daily | daily, documentation, capabilities, reference |
 | `daily-news-report` | Scrapes content based on a preset URL list, filters high-quality technical information, and generates daily Markdown reports. | daily, news, report | daily, news, report, scrapes, content, preset, url, list, filters, high, quality, technical |
 | `debug-buttercup` | All pods run in namespace crs. Use when pods in the crs namespace are in CrashLoopBackOff, OOMKilled, or restarting, multiple services restart simultaneously... | debug, buttercup | debug, buttercup, all, pods, run, namespace, crs, crashloopbackoff, oomkilled, restarting, multiple, restart |
@@ -1076,6 +1080,7 @@ Total skills: 1520
 | `vercel-optimize` | Audit deployed Vercel apps for cost and performance issues using metrics, project config, code scans, and version-aware recommendations. | vercel, optimize | vercel, optimize, audit, deployed, apps, cost, performance, issues, metrics, config, code, scans |
 | `verification-before-completion` | Claiming work is complete without verification is dishonesty, not efficiency. Use when ANY variation of success/completion claims, ANY expression of satisfac... | verification, before, completion | verification, before, completion, claiming, work, complete, without, dishonesty, efficiency, any, variation, success |
 | `vexor-cli` | Semantic file discovery via `vexor`. Use whenever locating where something is implemented/loaded/defined in a medium or large repo, or when the file location... | vexor, cli | vexor, cli, semantic, file, discovery, via, whenever, locating, where, something, implemented, loaded |
+| `video-content-extractor` | Extract key frames from MP4 videos at configurable intervals, run Tesseract OCR, and generate structured Markdown reports with video metadata and timestamped... | video, ocr, ffmpeg, tesseract, frame-extraction, media | video, ocr, ffmpeg, tesseract, frame-extraction, media, content, extractor, extract, key, frames, mp4 |
 | `videodb` | Video and audio perception, indexing, and editing. Ingest files/URLs/live streams, build visual/spoken indexes, search with timestamps, edit timelines, add o... | video, editing, transcription, subtitles, search, streaming, ai-generation, media, live-streams, desktop-capture | video, editing, transcription, subtitles, search, streaming, ai-generation, media, live-streams, desktop-capture, videodb, audio |
 | `visual-emotion-engineer` | One sentence - what this skill does and when to invoke it | visual, emotion | visual, emotion, engineer, one, sentence, what, skill, does, invoke |
 | `web-performance-optimization` | Optimize website and web application performance including loading speed, Core Web Vitals, bundle size, caching strategies, and runtime performance | web, performance, optimization | web, performance, optimization, optimize, website, application, including, loading, speed, core, vitals, bundle |

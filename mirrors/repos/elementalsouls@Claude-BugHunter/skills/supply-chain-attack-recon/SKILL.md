@@ -207,6 +207,10 @@ for repo in $(gh repo list "$ORG" --limit 50 --json name --jq '.[].name'); do
     
     # 5. Self-hosted runner without isolation
     echo "$content" | grep -E 'runs-on:.*self-hosted'
+
+    # 6. Unpinned third-party actions — mutable tag (@v1, @main) vs pinned (@<40-char sha>)
+    #    Mutable tags can be repointed by a compromised action repo (see case #9, tj-actions/changed-files).
+    echo "$content" | grep -E 'uses: *[^ ]+/[^ ]+@(v?[0-9]+([.][0-9]+)*|main|master|latest)\b' | grep -v '@[0-9a-f]\{40\}'
   done
 done
 ```
@@ -217,6 +221,7 @@ done
 |---|---|
 | `pull_request_target` + `actions/checkout` with `ref: pull_request.head.sha` + uses repo secrets | **Critical** — RCE on runner with org secrets |
 | `${{ github.event.pull_request.title }}` interpolated into shell | **Critical** — script injection via PR title |
+| Third-party action pinned to a mutable tag (`uses: org/repo@v1` / `@main`) instead of a commit SHA | **High** — repointable supply-chain vector (see case #9) |
 | Self-hosted runner reachable from public repo workflows | **High** — persistent attacker pivot |
 | Issue-comment-triggered workflow that runs `gh` with token | **High** |
 | Workflow downloads from URL that target controls | **Medium** |
@@ -390,7 +395,7 @@ Each of these is worth reading for what made the attack effective and what red f
 
 Twelve well-documented public cases, mapped to the recon surface above. Each entry: attack name, year, flow, root cause, impact, references, and the recon-skill takeaway.
 
-### 1. SolarWinds Orion / SUNBURST (CVE-2020-10148, Dec 2020)
+### 1. SolarWinds Orion / SUNBURST (CISA AA20-352A, Dec 2020)
 
 - **Flow:** APT29 (UNC2452 / Cozy Bear) breached SolarWinds' build pipeline and inserted the SUNBURST backdoor into `SolarWinds.Orion.Core.BusinessLayer.dll`. The trojanized DLL was code-signed with SolarWinds' legitimate certificate and shipped to ~18,000 customers via the normal auto-update channel between March and June 2020.
 - **Root cause:** Build-environment compromise — attackers modified source mid-compilation; signing infrastructure trusted the build output without verifying source integrity.

@@ -11,6 +11,13 @@ Prefix your first line with 🥷 inline, not as its own paragraph.
 
 Strip AI patterns from prose and rewrite it to sound human. Do not improve vocabulary; remove the performance of improvement.
 
+## Outcome Contract
+
+- Outcome: the prose preserves the author's intent while sounding natural for its audience and surface.
+- Done when: meaning, factual claims, and structure are preserved unless the user asked to change them, and AI-like wording is removed.
+- Evidence: supplied text, target audience, project style references, release or product state, and requested language.
+- Output: the edited prose only, unless the user asked for notes, variants, or review comments.
+
 ## Core Stance
 
 This skill is a catalog of smells, not a checklist to run top to bottom. Use it to recognize AI taste, then make judgment calls. The reference files (especially `write-zh.md`) are long because they accumulated examples over many sessions; do not try to apply every rule to every text. Applying more rules is not doing a better job.
@@ -21,13 +28,6 @@ This skill is a catalog of smells, not a checklist to run top to bottom. Use it 
 - **Prefer fewer, stronger edits.** Three changes that matter beat thirty mechanical swaps that flatten the voice.
 
 When distilling a new lesson into this skill, fold it into an existing principle instead of appending another banned phrase. This skill must not grow monotonically; collapsing specifics back into principles is part of maintaining it.
-
-## Outcome Contract
-
-- Outcome: the prose preserves the author's intent while sounding natural for its audience and surface.
-- Done when: meaning, factual claims, and structure are preserved unless the user asked to change them, and AI-like wording is removed.
-- Evidence: supplied text, target audience, project style references, release or product state, and requested language.
-- Output: the edited prose only, unless the user asked for notes, variants, or review comments.
 
 ## Pre-flight
 

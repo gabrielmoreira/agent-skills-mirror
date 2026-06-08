@@ -11,7 +11,7 @@ import os
 import re
 import sys
 import tempfile
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 
 def dependency_hint() -> str:
@@ -35,7 +35,7 @@ def dependency_hint() -> str:
 
 def get_slide_images(ppt_project_dir: str) -> List[str]:
     """
-    获取幻灯片图片文件列表，按文件名排序
+    获取幻灯片图片文件列表，按页码排序
 
     Args:
         ppt_project_dir: PPT 项目目录（包含 origin_image 子目录）
@@ -65,8 +65,14 @@ def get_slide_images(ppt_project_dir: str) -> List[str]:
             if ext in image_extensions and slide_name_pattern.match(file):
                 image_files.append(file_path)
 
-    # 按文件名排序
-    image_files.sort()
+    def slide_sort_key(path: str) -> Tuple[int, str]:
+        filename = os.path.basename(path)
+        stem = os.path.splitext(filename)[0]
+        return (int(re.search(r"^slide_(\d+)", stem).group(1)), filename.lower())
+
+    # 按页码排序，避免 slide_10 排在 slide_2 前面。
+    # 同页码多文件时按文件名稳定排序。
+    image_files.sort(key=slide_sort_key)
 
     return image_files
 
@@ -354,7 +360,7 @@ def main():
 注意：
   - 图片文件必须放在 origin_image 子目录中
   - 只会读取 slide_01.png、slide_02.png 这类正式图片，其他图片会被忽略
-  - 图片文件按文件名排序
+  - 图片文件按页码排序
   - 建议图片文件命名为: slide_01.png, slide_02.png, ...
   - 每张图片会充满整个幻灯片页面
   - 如果项目目录下存在 speech.md，会按 Slide N 标题写入每页备注

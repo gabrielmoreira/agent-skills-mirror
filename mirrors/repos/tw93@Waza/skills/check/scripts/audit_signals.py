@@ -85,6 +85,12 @@ CLI_CORE_BUCKETS = (
 )
 
 
+# The file-walk helpers below are deliberately duplicated in
+# skills/health/scripts/check_maintainability.py. Both scripts ship
+# standalone (see packaging.allowlist) and run inside an arbitrary target
+# project, so they import only stdlib. Do not hoist them into a shared
+# scripts/ module: it is dev-only, not on the ship allowlist, and would
+# couple a standalone tool to the install layout.
 def is_excluded(path: Path, root: Path) -> bool:
     try:
         parts = path.relative_to(root).parts

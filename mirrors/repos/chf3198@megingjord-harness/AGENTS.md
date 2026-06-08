@@ -57,12 +57,11 @@ This repo is the **development workbench** for the DevEnv Ops Harness runtimes:
 
 - All 3 teams route governed provider calls through HAMR (`https://hamr.chf3198.workers.dev`).
 - Activate per-checkout: `npm run hamr:activate`. Verify: `npm run hamr:sync-verify`.
-- Canonical contract: `instructions/hamr-routing.instructions.md`.
-- Provider-neutral governance contract: `instructions/provider-neutral-governance.instructions.md`.
+- Canonical + provider-neutral contracts: `instructions/hamr-routing.instructions.md`, `instructions/provider-neutral-governance.instructions.md`.
 
 ## Skill index
 
-Auto-derived from `skills/<name>/SKILL.md` frontmatter — see [`docs/skills-agents.md`](docs/skills-agents.md). Regenerate via `node scripts/global/skill-views-derive.js`.
+Auto-derived from `skills/<name>/SKILL.md` — see [`docs/skills-agents.md`](docs/skills-agents.md). Regenerate via `node scripts/global/skill-views-derive.js`.
 
 ## Development → Deploy workflow
 
@@ -77,16 +76,11 @@ Auto-derived from `skills/<name>/SKILL.md` frontmatter — see [`docs/skills-age
 ## Dashboard conventions
 
 - Alpine.js for state, vanilla JS for logic
-- No build step — static files served directly
-- Cloudflare Pages for production deployment
+- No build step; Cloudflare Pages for production deployment
 
-## Merge-evidence convention (cross-runtime, Epic #2295 P1.3)
+## Merge-evidence
 
-PR bodies targeting this harness MUST include merge evidence for their linked issue.
-Preferred form: `merge-evidence-deferred-final: #N` — satisfies `merge-evidence-pr-gate`
-without triggering GitHub auto-close, preserving Consultant terminal-finalize authority.
-Backward-compat: `Closes #N` remains accepted. This convention applies to Claude Code,
-Codex, and Copilot team PRs equally. See `governance-carve-outs/index.md` for rationale.
+Use `merge-evidence-deferred-final: #N` in PR body (or `Closes #N`). See `governance-carve-outs/index.md`.
 
 ## Role Taxonomy
 
@@ -94,3 +88,13 @@ The harness uses a 7-role canonical taxonomy: Manager / Collaborator / Admin /
 Consultant / IT / Red-Team / Client. Guest-Collaborator is reserved but not active.
 Operator is a meta-term for the AI agent — not a distinct role.
 Canonical definition: `instructions/role-baton-routing.instructions.md` §"Role Taxonomy".
+
+## Key contracts (2026-H1)
+
+- **Doc-coverage gate**: `COLLABORATOR_HANDOFF` must include `doc-coverage:` block for `lane:code-change`. See `docs/howto/merge-time-doc-governance.md`.
+- **Baton builders**: Use `baton-comment-build.js`, `pr-comment-build.js`, `changelog-fragment-build.js` for governed artifacts.
+- **Governance chains**: Run `npm run governance:chains:check` on governance path changes. See `docs/howto/governance-chains.md`.
+- **OTel GenAI**: `isValidGenAI()` from `scripts/global/otel-genai-conformance.js`; validate telemetry fields before emit.
+- **Fleet-call-guard**: All fleet calls must use bounded timeout (see `docs/howto/fleet-call-guard.md`; PR #2697).
+- **Credential guard**: Check `credential-availability.js` before prompting user for secrets; `.env` may already have them.
+- **Admin-merge-exception**: Override merges require `merge-bypass:admin-exception` label per Epic #2517.

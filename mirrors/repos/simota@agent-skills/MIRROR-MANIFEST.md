@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `simota/agent-skills` — 26 default patterns, 4 followed patterns, 130 file(s) materialized.
+Mirror of `simota/agent-skills` — 26 default patterns, 4 followed patterns, 131 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `simota/agent-skills` — 26 default patterns, 4 followed patterns, 13
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 130 |
+| Files         | 131 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -186,12 +186,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 122 | ✓ | [`void/SKILL.md`](void/SKILL.md) |
 | 123 | ✓ | [`voyager/SKILL.md`](voyager/SKILL.md) |
 | 124 | ✓ | [`weave/SKILL.md`](weave/SKILL.md) |
-| 125 | ✓ | [`zen/SKILL.md`](zen/SKILL.md) |
-| 126 | ✓ | [`zine/SKILL.md`](zine/SKILL.md) |
-| 127 | → | [`_common/BOUNDARIES.md`](_common/BOUNDARIES.md) |
-| 128 | → | [`_common/GIT_GUIDELINES.md`](_common/GIT_GUIDELINES.md) |
-| 129 | → | [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md) |
-| 130 | → | [`_common/OPUS_48_AUTHORING.md`](_common/OPUS_48_AUTHORING.md) |
+| 125 | ✓ | [`wield/SKILL.md`](wield/SKILL.md) |
+| 126 | ✓ | [`zen/SKILL.md`](zen/SKILL.md) |
+| 127 | ✓ | [`zine/SKILL.md`](zine/SKILL.md) |
+| 128 | → | [`_common/BOUNDARIES.md`](_common/BOUNDARIES.md) |
+| 129 | → | [`_common/GIT_GUIDELINES.md`](_common/GIT_GUIDELINES.md) |
+| 130 | → | [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md) |
+| 131 | → | [`_common/OPUS_48_AUTHORING.md`](_common/OPUS_48_AUTHORING.md) |
 
 ---
 

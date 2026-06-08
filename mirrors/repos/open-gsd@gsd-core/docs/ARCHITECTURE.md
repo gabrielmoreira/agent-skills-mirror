@@ -800,15 +800,15 @@ The migration-specific ownership and source snapshots live in
 | Kilo | `~/.config/kilo` | `./.kilo` | `command/gsd-*.md` | `agents/gsd-*.md` | `kilo.json` or `kilo.jsonc`; no GSD hooks |
 | Gemini CLI | `~/.gemini` | `./.gemini` | `commands/gsd/*.toml` | `agents/gsd-*.md` | `settings.json` feature flag, hooks, and statusline |
 | Codex | `~/.codex` | `./.codex` | `skills/gsd-*/SKILL.md` | `agents/` source markdown plus per-agent TOML | `config.toml` `[agents.gsd-*]`, `[features].hooks` (canonical; legacy alias `codex_hooks` is recognized and migrated forward on reinstall, #3566), and hook tables |
-| GitHub Copilot | `~/.copilot` | `./.github` | `skills/gsd-*/SKILL.md` and `copilot-instructions.md` | `.agent.md` files | No GSD hooks or statusline |
+| GitHub Copilot | `~/.copilot` | `./.github` | `skills/gsd-*/SKILL.md`, `copilot-instructions.md`, and `AGENTS.md` (repo root, local) | `.agent.md` files | Self-contained `sessionStart` hook (`hooks/gsd-session.json`, inline `command` type); no statusline |
 | Antigravity | auto-detected: `~/.gemini/antigravity`, `~/.gemini/antigravity-ide`, or `~/.gemini/antigravity-cli` | `./.agent` | `skills/gsd-*/SKILL.md` | `agents/gsd-*.md` | Gemini-style `settings.json` hook entries when installed by GSD |
-| Cursor | `~/.cursor` | `./.cursor` | `skills/gsd-*/SKILL.md` | `agents/gsd-*.md` | Rule references under `rules/`; no GSD hooks |
+| Cursor | `~/.cursor` | `./.cursor` | `skills/gsd-*/SKILL.md` | `agents/gsd-*.md` | Rule references under `rules/`; `hooks.json` with sessionStart context injection and postToolUse STATE.md monitor (#777) |
 | Windsurf | `~/.codeium/windsurf` | `./.windsurf` | `skills/gsd-*/SKILL.md` | `agents/gsd-*.md` | Rule references under `rules/`; no GSD hooks |
 | Augment Code | `~/.augment` | `./.augment` | `skills/gsd-*/SKILL.md` | `agents/gsd-*.md` | No GSD hooks or statusline |
 | Trae | `~/.trae` | `./.trae` | `skills/gsd-*/SKILL.md` | `agents/gsd-*.md` | Rule references under `rules/`; no GSD hooks |
 | Qwen Code | `~/.qwen` | `./.qwen` | `skills/gsd-*/SKILL.md` | `agents/gsd-*.md` | Common GSD settings and hook entries where supported |
 | Hermes Agent | `~/.hermes` | `./.hermes` | `skills/gsd/DESCRIPTION.md` plus `skills/gsd/gsd-*/SKILL.md` | `agents/gsd-*.md` | Common GSD settings and hook entries where supported |
-| CodeBuddy | `~/.codebuddy` | `./.codebuddy` | `skills/gsd-*/SKILL.md` | `agents/gsd-*.md` | Common GSD settings and hook entries where supported |
+| CodeBuddy | `~/.codebuddy` | `./.codebuddy` | `skills/gsd-*/SKILL.md` (`user-invocable: false`) | `agents/gsd-*.md` | `/gsd-*` slash commands under `commands/`; common GSD settings and hook entries where supported |
 | Cline | `~/.cline` | project root | `.clinerules` | Rules only | No GSD hooks or statusline |
 
 ### Upstream Contract Sources

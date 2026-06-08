@@ -30,6 +30,7 @@ and AI agent governance. All instructions below are binding for Claude Code sess
 @instructions/cross-team-artifact-write.instructions.md
 @instructions/cross-team-communication-tiers.instructions.md
 @instructions/resource-tier-portability.instructions.md
+@instructions/credential-prompt-guard.instructions.md
 
 ## Runtime Context
 

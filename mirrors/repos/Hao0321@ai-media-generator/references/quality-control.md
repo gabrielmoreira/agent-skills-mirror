@@ -127,6 +127,7 @@ Runway Gen-4.5、Veo 3.1 物理理解最強。複雜流體/碰撞優先用這兩
 
 ### 鐵律
 - **影片模型幾乎都不會渲染清晰文字**。Seedance/Kling/Runway 的文字 = 鬼畫符。
+- **⚠️ 例外（2026-06-08 實測）：Google Gemini Omni Flash（Flow）能渲染短英數品牌名**。引號標注 + 指定載體（招牌/燈籠）成功出「Hao0321」清楚可讀。適用 ~7 字內短店名；長句仍不可靠。Veo 3.1 同級亦較強。其他影片模型仍守鐵律。
 - **要精準文字 → 圖像階段先做好**：Ideogram 3.0（文字王）/ Seedream（中英）/ MJ V8.1（改善但仍弱）。
 - **影片 prompt 明寫 `no text, no logo, no captions`** 反而乾淨 —— 讓後製加字。
 

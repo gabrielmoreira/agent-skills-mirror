@@ -133,7 +133,7 @@ $(location
 
 11. **Check cache poisoning** — Test if reflected XSS payloads can be cached and served to other users (especially on CDN-fronted pages), transforming reflected XSS into stored-equivalent.
 
-12. **Validate in target browser** — Always confirm in a real browser before reporting. Many payloads work in Burp but not in Chrome due to XSS auditors or browser parsing differences.
+12. **Validate in target browser** — Always confirm in a real browser before reporting. Many payloads echo back in Burp but fail to execute in a real browser due to CSP, output encoding, framework auto-escaping, context mismatch, WAF normalization, or browser HTML-parsing differences. (Note: Chrome's XSS Auditor was removed in Chrome 78 / Oct 2019 and no shipping browser has one — never attribute a failed PoC to an "XSS auditor".)
 
 ---
 
@@ -269,7 +269,7 @@ curl -sk "https://target.com/page" | grep -i "evil.com"
 ```html
 <!-- Case variation -->
 <ScRiPt>alert(1)</ScRiPt>
-<!-- Null bytes -->
+<!-- Null bytes (legacy/weak — null bytes rarely survive modern HTTP/HTML parsing; low success, don't rely on it) -->
 <scr\x00ipt>alert(1)</scr\x00ipt>
 <!-- Tag breaking -->
 <svg/onload=alert(1)>

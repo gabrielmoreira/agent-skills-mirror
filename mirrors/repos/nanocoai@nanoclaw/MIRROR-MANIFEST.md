@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nanocoai/nanoclaw` — 26 default patterns, 18 followed patterns, 108 file(s) materialized.
+Mirror of `nanocoai/nanoclaw` — 26 default patterns, 19 followed patterns, 109 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `nanocoai/nanoclaw` — 26 default patterns, 18 followed patterns, 108
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 18 |
-| Files         | 108 |
+| Followed pats | 19 |
+| Files         | 109 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,6 +68,7 @@ Mirror of `nanocoai/nanoclaw` — 26 default patterns, 18 followed patterns, 108
 - `docs/docker-sandboxes.md`
 - `CHANGELOG.md`
 - `docs/skills-as-branches.md`
+- `docs/upgrade-recovery.md`
 - `RELEASING.md`
 
 ## File Index
@@ -181,9 +182,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 103 | → | [`docs/migration-dev.md`](docs/migration-dev.md) |
 | 104 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
 | 105 | → | [`docs/skills-as-branches.md`](docs/skills-as-branches.md) |
-| 106 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
-| 107 | → | [`README.md`](README.md) |
-| 108 | → | [`RELEASING.md`](RELEASING.md) |
+| 106 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
+| 107 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
+| 108 | → | [`README.md`](README.md) |
+| 109 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

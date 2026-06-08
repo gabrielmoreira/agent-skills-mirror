@@ -285,9 +285,7 @@ Okta FastPass is push-based + device-bound. Bypasses:
 
 ## Tooling
 
-- **`okta-attacker` / `okta-toolkit`** — open-source Okta attack utilities
-- **`OktaTerrify`** — for post-compromise Okta enumeration
-- **`oktajacking` techniques** — IAM-level abuse (requires admin access)
+- **`OktaTerrify`** (github.com/silverhack/OktaTerrify) — post-compromise Okta device-trust / FastPass enumeration. The only verifiable public Okta-specific offensive tool; no other named, maintained "okta-attacker"/"okta-toolkit" utility is verifiable — build engagement-specific scripts against `/api/v1/*` instead of citing unverified tool names.
 
 ---
 
@@ -360,9 +358,9 @@ These are the canonical public references that justify the techniques in this sk
 - Root cause: Using bcrypt as a general-purpose hash without accounting for the algorithm's 72-byte input limit + cache fallback path inverted the security model (cache trusted over live auth).
 - Year: 2024. Severity: High. Bug introduced Jul 23 2024, internally found and fixed Oct 30 2024 (~3 months exposure window).
 
-### 6. Okta Verify iOS push-response bypass (CVE-2024-VERIFY, disclosed Apr 2024)
+### 6. Okta Verify iOS push-response bypass (CVE-2024-10327, disclosed Oct 2024)
 
-- Refs: <https://sec.okta.com/articles/2024/04/okta-verify-vulnerability-disclosure-report-response-and-remediation/>
+- Refs: <https://trust.okta.com/security-advisories/okta-verify-for-ios-cve-2024-10327/>
 - Flow: Okta Verify iOS 9.25.1-beta / 9.27.0 had a bug in the iOS ContextExtension push-action handler. From the lock screen long-press / drag-down banner / Apple Watch reply path, both the "Yes, it's me" and "No, it's not me" buttons returned the same accept-auth response. A push-fatigued user who explicitly tapped "No" still approved the auth.
 - Root cause: Two notification-response action handlers wired to the same backend confirmation path — UX-level Deny did not propagate as a backend rejection.
 - Year: 2024. Severity: High (silently defeats the user's last line of defence against push fatigue / Scattered-Spider-style push bombing).

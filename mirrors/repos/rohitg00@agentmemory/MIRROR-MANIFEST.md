@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rohitg00/agentmemory` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `rohitg00/agentmemory` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rohitg00/agentmemory` — 26 default patterns, 0 followed patterns, 9
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,14 +60,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`plugin/skills/commit-context/SKILL.md`](plugin/skills/commit-context/SKILL.md) |
-| 3 | ✓ | [`plugin/skills/commit-history/SKILL.md`](plugin/skills/commit-history/SKILL.md) |
-| 4 | ✓ | [`plugin/skills/forget/SKILL.md`](plugin/skills/forget/SKILL.md) |
-| 5 | ✓ | [`plugin/skills/handoff/SKILL.md`](plugin/skills/handoff/SKILL.md) |
-| 6 | ✓ | [`plugin/skills/recall/SKILL.md`](plugin/skills/recall/SKILL.md) |
-| 7 | ✓ | [`plugin/skills/recap/SKILL.md`](plugin/skills/recap/SKILL.md) |
-| 8 | ✓ | [`plugin/skills/remember/SKILL.md`](plugin/skills/remember/SKILL.md) |
-| 9 | ✓ | [`plugin/skills/session-history/SKILL.md`](plugin/skills/session-history/SKILL.md) |
+| 2 | ✓ | [`plugin/skills/agentmemory-agents/SKILL.md`](plugin/skills/agentmemory-agents/SKILL.md) |
+| 3 | ✓ | [`plugin/skills/agentmemory-architecture/SKILL.md`](plugin/skills/agentmemory-architecture/SKILL.md) |
+| 4 | ✓ | [`plugin/skills/agentmemory-config/SKILL.md`](plugin/skills/agentmemory-config/SKILL.md) |
+| 5 | ✓ | [`plugin/skills/agentmemory-hooks/SKILL.md`](plugin/skills/agentmemory-hooks/SKILL.md) |
+| 6 | ✓ | [`plugin/skills/agentmemory-mcp-tools/SKILL.md`](plugin/skills/agentmemory-mcp-tools/SKILL.md) |
+| 7 | ✓ | [`plugin/skills/agentmemory-rest-api/SKILL.md`](plugin/skills/agentmemory-rest-api/SKILL.md) |
+| 8 | ✓ | [`plugin/skills/commit-context/SKILL.md`](plugin/skills/commit-context/SKILL.md) |
+| 9 | ✓ | [`plugin/skills/commit-history/SKILL.md`](plugin/skills/commit-history/SKILL.md) |
+| 10 | ✓ | [`plugin/skills/forget/SKILL.md`](plugin/skills/forget/SKILL.md) |
+| 11 | ✓ | [`plugin/skills/handoff/SKILL.md`](plugin/skills/handoff/SKILL.md) |
+| 12 | ✓ | [`plugin/skills/recall/SKILL.md`](plugin/skills/recall/SKILL.md) |
+| 13 | ✓ | [`plugin/skills/recap/SKILL.md`](plugin/skills/recap/SKILL.md) |
+| 14 | ✓ | [`plugin/skills/remember/SKILL.md`](plugin/skills/remember/SKILL.md) |
+| 15 | ✓ | [`plugin/skills/session-history/SKILL.md`](plugin/skills/session-history/SKILL.md) |
+| 16 | ✓ | [`plugin/skills/write-agentmemory-skill/SKILL.md`](plugin/skills/write-agentmemory-skill/SKILL.md) |
 
 ---
 

@@ -523,7 +523,7 @@ Both the triage pass and the per-slide passes are traced.
 ## Prior Skill Relationship
 
 - Runs **after** `/paper-slides` (or any externally generated deck).
-- Compatible with `/paper-poster` workflow (same color discipline) but
+- Compatible with `/paper-poster-html` workflow (same color discipline) but
   different output cadence.
 - Uses the same `spawn_agent` MCP infrastructure as
   `/auto-paper-improvement-loop`, `/research-review`, etc.

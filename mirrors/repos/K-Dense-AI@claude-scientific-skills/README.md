@@ -352,7 +352,7 @@ networks, and search GEO for similar patterns.
 - **Virtual Screening**: Screen millions of compounds from PubChem/ZINC against protein targets
 - **Lead Optimization**: Analyze structure-activity relationships with RDKit, generate analogs with datamol
 - **ADMET Prediction**: Predict absorption, distribution, metabolism, excretion, and toxicity with DeepChem
-- **Molecular Docking**: Predict binding poses and affinities with DiffDock
+- **Molecular Docking**: Predict binding poses with DiffDock and rescore poses with affinity-oriented tools
 - **Bioactivity Mining**: Query ChEMBL for known inhibitors and analyze SAR patterns
 
 ### 🧬 Bioinformatics & Genomics

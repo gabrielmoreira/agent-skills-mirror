@@ -59,7 +59,6 @@ Open redirect alone is Low. Chained to OAuth = Critical (ATO).
 | URL encoding | `%2Fevil.com` |
 | Null byte | `evil.com%00target.com` |
 | Whitespace | `evil.com%09` or `%20` |
-| CRLF in URL | `evil.com%0d%0aLocation: https://attacker.com` |
 | JavaScript URI | `javascript:window.location='https://evil.com'` |
 | Data URI | `data:text/html,<script>window.location='https://evil.com'</script>` |
 | Subdomain | `https://target.com.evil.com` |

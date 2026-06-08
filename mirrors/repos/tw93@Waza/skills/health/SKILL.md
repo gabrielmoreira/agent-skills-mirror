@@ -40,13 +40,11 @@ For `/health`, audit expectations are `decision`, `preference`, and `principle` 
 
 Pick one. Apply only that tier's requirements.
 
-
-| Tier         | Signal                                  | What's expected                                |
-| ------------ | --------------------------------------- | ---------------------------------------------- |
-| **Simple**   | <500 files, 1 contributor, no CI        | CLAUDE.md only; 0-1 skills; hooks optional     |
-| **Standard** | 500-5K files, small team or CI          | CLAUDE.md + 1-2 rules; 2-4 skills; basic hooks |
-| **Complex**  | >5K files, multi-contributor, active CI | Full six-layer setup required                  |
-
+| Tier | Signal | What's expected |
+|---|---|---|
+| **Simple** | <500 files, 1 contributor, no CI | CLAUDE.md only; 0-1 skills; hooks optional |
+| **Standard** | 500-5K files, small team or CI | CLAUDE.md + 1-2 rules; 2-4 skills; basic hooks |
+| **Complex** | >5K files, multi-contributor, active CI | Full six-layer setup required |
 
 ## Step 1: Collect data
 
@@ -86,7 +84,11 @@ The collector includes both runtime-specific and agent-agnostic surfaces:
 
 Test every MCP server: call one harmless tool per server. Record `live=yes/no` with error detail. Respect `enabled: false` (skip without flagging). For API keys, only check if the env var is set (`echo $VAR | head -c 5`), never print full keys.
 
-## Security Baseline Checks
+## Step 1c: Safety and security checks
+
+These run after collection and before the Step 2 analysis. The first two apply to every audit; the third only to projects with long-running or autonomous agents.
+
+### Security Baseline Checks
 
 Run these on every audit, regardless of tier. They are the floor, not the ceiling.
 
@@ -94,7 +96,7 @@ Run these on every audit, regardless of tier. They are the floor, not the ceilin
 
 **Environment override surface.** Treat the following as attack surface, report when set in tracked files or shipped settings without a justification comment: API base-URL overrides (redirect all traffic to a third party), auto-trust flags for project-local MCP servers, wildcard tool allowlists (`allowedTools: ["*"]`), and permission-skip flags (`--dangerously-skip-permissions` or equivalents). Print file:line and the key name only; never print secrets.
 
-## Memory and Skill Supply Chain
+### Memory and Skill Supply Chain
 
 Treat agent memory and third-party skills as supply-chain artifacts. They run with the user's privileges.
 
@@ -102,7 +104,7 @@ Treat agent memory and third-party skills as supply-chain artifacts. They run wi
 
 **Skill supply chain.** Third-party skills, plugins, and MCP servers run with the user's privileges. For each one not authored in this repo, check: source pinned to a release tag or revision (not `main`, a branch, or a remote git marketplace left tracking its latest head), hook handlers do not write to credential directories, MCP servers have explicit user consent (not auto-trusted by wildcard). Report unpinned sources or unreviewed hook handlers as Structural, not Critical, unless an active exploit signal is present.
 
-## Long-Running Agent Stop Conditions
+### Long-Running Agent Stop Conditions
 
 For projects that use `/loop`, autonomous agents, or any long-running agent flow, the project must define explicit stop conditions. An agent that never stops is a budget and safety incident waiting to happen.
 
@@ -243,15 +245,14 @@ If no issues: `All relevant checks passed. Nothing to fix.`
 
 ## Gotchas
 
-
-| What happened                                                               | Rule                                                                                                                                                                                                                                                                                           |
-| --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Missed the local override                                                   | Always read `settings.local.json` too; it shadows the committed file                                                                                                                                                                                                                           |
-| Subagent timeout reported as MCP failure                                    | MCP failures come from the live probe, not data collection                                                                                                                                                                                                                                     |
-| Reported issues in wrong language                                           | Honor CLAUDE.md Communication rule first                                                                                                                                                                                                                                                       |
-| Flagged intentionally noisy hook as broken                                  | Ask before calling a hook "broken"                                                                                                                                                                                                                                                             |
+| What happened | Rule |
+|---|---|
+| Missed the local override | Always read `settings.local.json` too; it shadows the committed file |
+| Subagent timeout reported as MCP failure | MCP failures come from the live probe, not data collection |
+| Reported issues in wrong language | Honor CLAUDE.md Communication rule first |
+| Flagged intentionally noisy hook as broken | Ask before calling a hook "broken" |
 | Hook seemed not to fire, but it did -- a later UI element rendered above it | Hook firing order is not visual order. Before re-editing the hook config: (a) confirm with `--debug` or by piping output, (b) check whether a diff dialog, permission prompt, or other UI element rendered on top and pushed the hook output offscreen, (c) only then suspect the hook itself. |
-| `/health` burned too much quota on first run                                | Stay in summary mode first. Full conversation extracts and inspector subagents are deep-audit tools, not the default path for Standard projects.                                                                                                                                                 |
-| Treated missing specs/docs as a failure                                     | Decision artifacts are optional by default. Escalate missing docs/specs only when the tier, active handoff risk, or user request makes them necessary.                                                                                                                                           |
-| Treated an ignored AGENTS/CLAUDE file as durable project truth              | Report whether the rule is tracked and distributed. Local overlays can inform the audit, but durable fixes belong in public repo docs or shipped skill/rule files.                                                                                                                               |
-| Treated a review scorecard as maintainability documentation                 | Scorecards are snapshots. Extract the invariant and verification path, then remove or archive the report instead of calling the score itself a durable rule.                                                                                                                                     |
+| `/health` burned too much quota on first run | Stay in summary mode first. Full conversation extracts and inspector subagents are deep-audit tools, not the default path for Standard projects. |
+| Treated missing specs/docs as a failure | Decision artifacts are optional by default. Escalate missing docs/specs only when the tier, active handoff risk, or user request makes them necessary. |
+| Treated an ignored AGENTS/CLAUDE file as durable project truth | Report whether the rule is tracked and distributed. Local overlays can inform the audit, but durable fixes belong in public repo docs or shipped skill/rule files. |
+| Treated a review scorecard as maintainability documentation | Scorecards are snapshots. Extract the invariant and verification path, then remove or archive the report instead of calling the score itself a durable rule. |

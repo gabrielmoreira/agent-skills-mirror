@@ -83,7 +83,7 @@ Sources accepted: local TeX dir / file, local PDF, arXiv id, http(s) URL. Overle
 
 ## Venue Color Schemes
 
-Same as `/paper-poster`:
+Same as `/paper-poster-html`:
 
 | Venue | Primary | Accent | Background | Text |
 |-------|---------|--------|------------|------|

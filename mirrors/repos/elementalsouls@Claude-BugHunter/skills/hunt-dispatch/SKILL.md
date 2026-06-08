@@ -17,12 +17,34 @@ hunt-dispatch mode=wapt box=greybox
 
 ## step 1 — fingerprint (red team only)
 
-run a one-shot fingerprint and parse `recon/<target>/live-hosts.txt` if present:
+fingerprint **every** live host, not just the apex. for multi-host / wildcard
+targets the platform-skill routing must be driven by all banners, not one host's.
+
+use `-L` (follow redirects) — identity-provider and CDN signals
+(`login.microsoftonline.com`, `okta`, `auth0`, CDN banners) routinely sit
+behind a 30x, so a no-redirect `curl -sI` silently misses those matches. pull
+both headers and the landing-page HTML (`__NEXT_DATA__`, `VIEWSTATE`,
+`laravel_session`, `Ignition`, framework markers live in the body, not headers).
 
 ```bash
-curl -sI "https://$TARGET" 2>/dev/null | tr -d '\r'
-test -f "recon/$TARGET/live-hosts.txt" && cat "recon/$TARGET/live-hosts.txt"
+HOSTS="$TARGET"
+if [ -f "recon/$TARGET/live-hosts.txt" ]; then
+  HOSTS=$(cat "recon/$TARGET/live-hosts.txt")
+fi
+for H in $HOSTS; do
+  echo "=== $H ==="
+  # -L follow redirects, -D - dump headers, -o body; cap body to keep context small
+  curl -sSL -m 12 -D - -o /tmp/fp_body "https://$H" 2>/dev/null | tr -d '\r'
+  # surface body-only platform markers
+  grep -aoE '__NEXT_DATA__|/_next/|VIEWSTATE|rO0[AB]|laravel_session|Ignition|Telescope|Whitelabel|/actuator|application/grpc|socket\.io|swagger|\.js\.map' \
+    /tmp/fp_body | sort -u
+done
+rm -f /tmp/fp_body
 ```
+
+if `live-hosts.txt` is absent, the loop still runs once against `$TARGET`. record
+which signal came from which host — a platform skill matched on host B does not
+imply host A runs that stack.
 
 look for the following signals → platform skill mapping:
 
@@ -56,7 +78,48 @@ X-Application-Context | Whitelabel | /actuator → hunt-springboot
 HSTS missing | SPF | DMARC | AXFR           →  hunt-tls-network
 ```
 
-multiple matches → load all matching platform skills.
+### conflict resolution & load budget
+
+real targets almost always return multiple signals at once — e.g. a single host
+can show Cloudflare (CDN) + `login.microsoftonline.com` (redirect) + `__NEXT_DATA__`
+(Next.js front end) + `amazonaws` (origin) simultaneously. loading every match
+blindly can pull 20-plus skills and blow the context window, drowning the
+high-signal skill in noise. apply this precedence and cap:
+
+**priority order (load highest tiers first, stop at the cap):**
+
+```
+tier 1  identity / SSO fabric    okta-attack, m365-entra-attack
+        (own the auth boundary — highest blast radius if compromised)
+tier 2  perimeter appliances     enterprise-vpn-attack, vmware-vcenter-attack
+        (pre-auth RCE / direct internal foothold)
+tier 3  cloud / IAM              cloud-iam-deep, hunt-cloud-misconfig
+        (credential → lateral movement)
+tier 4  app framework / stack    hunt-nextjs, hunt-nodejs, hunt-laravel,
+        hunt-springboot, hunt-aspnet, hunt-sharepoint
+tier 5  protocol / class signals hunt-nosqli, hunt-lfi, hunt-deserialization,
+        hunt-cors, hunt-host-header, hunt-open-redirect, hunt-grpc,
+        hunt-websocket, hunt-dom, hunt-k8s, hunt-cicd, hunt-source-leak,
+        hunt-tls-network, hunt-ldap, hunt-brute-force, hunt-session
+```
+
+**load budget: cap platform-skill loads at 8.** if more than 8 match, keep the
+highest-tier 8 and drop the rest; print the dropped ones under
+`deferred:` in the taxonomy block so they can be loaded on demand later.
+
+**de-dup rules (avoid loading two skills for the same evidence):**
+
+- CDN banner alone (Cloudflare/Akamai/Fastly) is **not** a platform match — it
+  fingerprints the edge, not the app. do not load a skill for it; note it for
+  `hunt-cache-poison` / `hunt-http-smuggling`, which the mode set already carries.
+- `amazonaws` / `azure` / `googleapis` in a **header/origin** → `cloud-iam-deep`.
+  the same string found as a **leaked key/JSON in a JS bundle or APK** → still
+  `cloud-iam-deep`, but flag it as a live-credential lead (higher priority, tier 3
+  becomes tier 1 for that host).
+- a framework marker (`__NEXT_DATA__`, `laravel_session`) and a generic class
+  signal (`?redirect=`, `Access-Control-Allow-Origin`) on the same host → load the
+  framework skill (tier 4) and keep the class skill **only if budget remains**;
+  the WAPT/redteam mode set already loads the common class skills unconditionally.
 
 ## step 2 — load skill set
 
@@ -134,7 +197,43 @@ hunt-source-leak     hunt-tls-network
 
 report format: `report-writing` (`bugcrowd-reporting` if the target is on bugcrowd).
 
-box=greybox: creds already captured by `/hunt`, available in session memory. apply them to every authenticated test.
+box=greybox: creds already captured by `/hunt`, available in session memory.
+
+**do not fan out across the authenticated hunt-\* set until the creds are
+validated.** `/hunt` only prompts for and stores creds (commands/hunt.md) — it
+does not confirm they work. firing every authenticated test with dead, MFA-gated,
+or wrong-role creds wastes the whole run and produces false "no auth surface"
+conclusions. run a single low-cost auth preflight first:
+
+```bash
+# session-cookie creds: one authenticated GET against an identity echo endpoint
+curl -sS -m 12 -b "$SESSION_COOKIE" "https://$TARGET/api/me" -w '\n%{http_code}\n'
+#   200 + your username/email  → live session, role visible in body
+#   401/403                    → dead or insufficient — STOP, re-auth
+
+# bearer/JWT creds: same probe with Authorization
+curl -sS -m 12 -H "Authorization: Bearer $TOKEN" \
+  "https://$TARGET/api/me" -w '\n%{http_code}\n'
+
+# raw user/pass: drive the real login flow once, capture Set-Cookie, then echo
+#   watch for an MFA / step-up challenge in the response — if present, the creds
+#   alone do not yield an authenticated session (see memory: operator-capability)
+```
+
+confirm three things from the preflight, and record them for the hunt-\* skills:
+
+1. **live** — auth probe returns 200, not 401/403.
+2. **role/privilege** — the `/api/me` (or equivalent) body shows the expected
+   role/tenant/scopes. IDOR and authz tests need a known baseline identity; a
+   silently-admin or silently-readonly cred skews every authz finding.
+3. **not MFA-gated** — login did not stop at a 2fa/step-up challenge. if it did,
+   you hold creds but **not** a session — default to least capability and confirm
+   with the operator before claiming authenticated reach.
+
+if the preflight fails, do **not** silently continue as blackbox — surface
+"greybox creds did not validate (HTTP {code} / MFA challenge)" so the operator
+can re-supply. only after a clean preflight: apply the validated session to every
+authenticated test.
 
 ## step 3 — taxonomy print (once, at session start)
 
@@ -145,7 +244,8 @@ emit a deterministic block. plain text, lowercase, colon-delimited, no decoratio
 ```
 loaded for red team: {N} skills
   mindset:    redteam-mindset
-  platform:   {fingerprint-matched skills, or "none detected"}
+  platform:   {fingerprint-matched skills (<=8, tier order), or "none detected"}
+  deferred:   {platform skills past the 8-cap, or omit line if none}
   auth:       hunt-ato, hunt-auth-bypass, hunt-saml, hunt-oauth, hunt-mfa-bypass
   inj:        hunt-rce, hunt-sqli, hunt-ssrf, hunt-file-upload
   infra:      hunt-http-smuggling, hunt-cloud-misconfig

@@ -1,8 +1,8 @@
 ---
 name: hunt-subdomain
-description: Hunting skill for subdomain vulnerabilities. Built from 15 public bug bounty reports including modern provider fingerprints — Microsoft Azure DevOps `cloudapp.azure.com` regional-pool re-issue (1-click OAuth ATO via wildcard `reply_to`), Zendesk help-desk takeover → email interception → password reset chain ($2k), Vercel `cname.vercel-dns.com` deleted-project takeover (2022 + 2025 confirmed), AWS S3 dangling-bucket cookie-scope chain (Affirm), Smartling translation-SaaS namespace re-claim, Fastly CDN service re-attach (2025), and Shopify storefront `shops.myshopify.com` host-mapping takeover (2025). Use when hunting subdomain takeover — emphasis on ATO-chain primitives (OAuth `redirect_uri`, cookie-domain, email DNS).
+description: Hunting skill for subdomain takeover vulnerabilities. Includes modern provider fingerprints — Microsoft Azure DevOps `cloudapp.azure.com` regional-pool re-issue (1-click OAuth ATO via wildcard `reply_to`, Binary Security), Zendesk help-desk takeover → email interception → password reset chain (0xprial writeup), Vercel `cname.vercel-dns.com` deleted-project takeover, plus general Fastly CDN service re-attach and S3 dangling-bucket cookie-scope techniques. Use when hunting subdomain takeover — emphasis on ATO-chain primitives (OAuth `redirect_uri`, cookie-domain, email DNS).
 sources: github, hackerone_public, binarysecurity_research, can-i-take-over-xyz_research
-report_count: 15
+report_count: 3
 ---
 
 ## Crown Jewel Targets
@@ -230,9 +230,9 @@ An attacker finds `feedback.snapchat.com` CNAME pointing to a UserVoice subdomai
 
 ---
 
-## Disclosed Report Citations (Backfill +4 — 2022-2025)
+## Disclosed Report Citations (2022-2023)
 
-The following real, verified bug-bounty / coordinated-disclosure cases extend this skill with **modern provider fingerprints** (Vercel/Azure cloudapp/Zendesk/Shopify era) and explicit ATO-chain examples.
+The following coordinated-disclosure / writeup cases extend this skill with **modern provider fingerprints** (Vercel/Azure cloudapp/Zendesk era) and explicit ATO-chain examples. Citations #12 and #13 are external writeups (not disclosed HackerOne reports) — treat their payout figures as unverified; only #14 has a public H1 report ID.
 
 12. **Microsoft Azure DevOps — Two `cloudapp.azure.com` subdomains + wildcard `*.visualstudio.com` OAuth reply_to → 1-click ATO** ([Binary Security writeup](https://www.binarysecurity.no/posts/2022/11/azure-devops-takeover))
     - Subclass: Azure `cloudapp.azure.com` regional-pool dangling CNAME — chained to ATO
@@ -244,20 +244,19 @@ The following real, verified bug-bounty / coordinated-disclosure cases extend th
     - Subclass: Zendesk help-desk takeover via `xyzdocs.zendesk.com` host-mapping
     - ATO chain: **YES** — researcher configured email forwarding on the hijacked Zendesk instance, intercepted `support@xyz.com` tickets containing payment info + password-reset emails, then triggered password resets on customer accounts that delivered reset links into the attacker's Zendesk inbox
     - Claim flow: `dig CNAME` returns `xyzdocs.zendesk.com` (unregistered) → register free Zendesk trial → add `xyzdocs` as subdomain → enable host-mapping for `admin-support.xyz.com`
-    - Year: 2023 — **$2,000** (Critical: $1,500 base + $500 chain bonus)
+    - Year: 2023 — payout per the 0xprial writeup (blog source; no public HackerOne report ID, treat as unverified)
 
-14. **Sifchain — `proxies.sifchain.finance` → dead Vercel project** ([H1 #1487793](https://hackerone.com/reports/1487793))
+14. **Vercel deleted-project takeover** — a dangling `cname.vercel-dns.com` CNAME pointing to a removed Vercel project can be re-claimed by deploying a new project under that name.
     - Subclass: Vercel dangling CNAME (`cname.vercel-dns.com`) after project deletion
     - Impact: crypto-DEX phishing — `proxies.` subdomain trusted for RPC proxy routing; attacker could serve malicious wallet-drain JS under a "trusted" subdomain
     - Claim flow: subdomain returns Vercel 404 `DEPLOYMENT_NOT_FOUND` → create free Vercel project → Settings → Domains → add `proxies.sifchain.finance` — Vercel verifies the existing CNAME and auto-issues TLS without out-of-band ownership proof
     - Year: 2022 — Sifchain treated as Critical (web3 phishing vector)
 
-15. **Anonymous H1 — `assets.target.com` → unclaimed Fastly service** ([Writeup](https://medium.com/@sohailahmed0x0/fastly-subdomain-takeover-leading-to-bounty-reward-5fff711d0518))
-    - Subclass: Fastly CDN dangling origin/service hostname (modern 2025 confirmation)
-    - Potential ATO chain: would chain to CSP-bypass + JS-injection if the parent domain trusts `assets.` for `script-src`
-    - Claim flow: subdomain returns `Fastly error: unknown domain. Please check that this domain has been added to a service` → sign up for Fastly free trial → create new CDN service → attach `assets.target.com` as the service domain — Fastly accepts without out-of-band ownership proof
-    - Root cause: Fastly historically does not verify CNAME ownership on service-creation; any CNAME pointing into Fastly's anycast can be attached to a fresh service
-    - Year: 2025 — 4-figure bounty ($1,000-$9,999)
+**Fastly CDN dangling-service technique (general, not a single disclosed report):**
+- Fingerprint: subdomain returns `Fastly error: unknown domain. Please check that this domain has been added to a service`
+- Claim flow: sign up for Fastly free trial → create new CDN service → attach the dangling hostname as the service domain
+- Root cause: Fastly historically does not verify CNAME ownership on service-creation; any CNAME pointing into Fastly's anycast can be attached to a fresh service
+- Potential ATO chain: chains to CSP-bypass + JS-injection if the parent domain trusts the `assets.`/CDN host for `script-src`
 
 ---
 
@@ -268,7 +267,7 @@ Subdomain takeover by itself is Low-Medium / Informational on most mature progra
 ### Chain 1 — Takeover + OAuth `redirect_uri` Whitelist → Auth-Code Theft → 1-Click ATO
 
 - **A.** Enumerate the OAuth `redirect_uri` allowlist via `/oauth/authorize` flow. Look for any wildcard `*.target.com` or any takeover-candidate hostname in the static list (e.g., `feedsprod.feeds.visualstudio.com`, `legacy.target.com`).
-- **B.** Find a takeover-able subdomain in that allowlist. Claim it via the provider's onboarding (Vercel project, Azure cloudapp regional pool, S3 bucket, Heroku app, Zendesk, Shopify storefront — see Disclosed Report Citations #1-#15 above).
+- **B.** Find a takeover-able subdomain in that allowlist. Claim it via the provider's onboarding (Vercel project, Azure cloudapp regional pool, S3 bucket, Heroku app, Zendesk, Shopify storefront — see the Disclosed Report Citations above).
 - **C.** Host an OAuth callback receiver on the claimed subdomain. Send victim to `/oauth/authorize?redirect_uri=https://legacy.target.com/cb&response_type=code&client_id=<legit>`. Victim's browser already has session → auth happens transparently → auth code lands on attacker host. Exchange via token endpoint → ATO.
 - **Impact:** Persistent 1-click ATO across every user of the target. OAuth flow is implicit-to-the-user (no consent screen if previously consented), so requires only a single click on attacker's link.
 - **Real shape:** Microsoft Azure DevOps `cloudapp.azure.com` + wildcard `*.visualstudio.com` reply_to chain (Binary Security, Nov 2022 — Disclosed Report Citation #12). Multiple H1 disclosures on SaaS programs with permissive OAuth allowlists.
@@ -279,7 +278,7 @@ Subdomain takeover by itself is Low-Medium / Informational on most mature progra
 - **B.** Take over any sibling (`legacy.target.com`, `feedback.target.com`, `assets.target.com`). The taken-over host can now `Set-Cookie` for the parent domain.
 - **C.** Plant `Set-Cookie: SESSIONID=<attacker_session>; Domain=.target.com` via a script on the taken-over host. Victim visits `app.target.com` with attacker's session cookie attached. Server treats them as the attacker's account → session-fixation ATO.
 - **Impact:** ATO without OAuth or password reset — pure cookie-domain bleed. Especially effective when the parent app uses a non-`__Host-` prefixed session cookie.
-- **Real shape:** Discussed extensively in `hunt-auth-bypass` Duende BFF Attack Class 2 (cookie-domain wildcarding turns subdomain takeover into session fixation). Affirm S3-bucket-takeover cookie-scope class — Disclosed Report Citation #14 (2022).
+- **Real shape:** Discussed extensively in `hunt-auth-bypass` Duende BFF Attack Class 2 (cookie-domain wildcarding turns subdomain takeover into session fixation). Pattern class: S3-bucket-takeover combined with parent-scoped (`Domain=.target.com`) cookies.
 
 ### Chain 3 — Takeover + CSP `script-src` Includes the Taken-Over Host → Persistent Stored XSS on Main App
 

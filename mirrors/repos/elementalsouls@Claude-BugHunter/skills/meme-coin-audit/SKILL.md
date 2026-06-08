@@ -1,6 +1,6 @@
 ---
 name: meme-coin-audit
-description: Meme coin and token security audit — rug pull detection (honeypot, hidden mint, fee manipulation, LP lock bypass), Solana SPL token analysis (freeze authority, mint authority, metadata mutability), Token-2022 extension risks (transfer hooks, permanent delegate), DEX liquidity pool attacks (sandwich amplification, LP drain, bonding curve exploits), pump.fun/Raydium/Jupiter integration risks, token_scanner.py automation, and real exploit examples from 2024-2025. Use for any token audit, rug pull assessment, meme coin security review, or pre-investment due diligence.
+description: Meme coin and token security audit — rug pull detection (honeypot, hidden mint, fee manipulation, LP lock bypass), Solana SPL token analysis (freeze authority, mint authority, metadata mutability), Token-2022 extension risks (transfer hooks, permanent delegate), DEX liquidity pool attacks (sandwich amplification, LP drain, bonding curve exploits), pump.fun/Raydium/Jupiter integration risks, and real exploit examples from 2024-2025. Use for any token audit, rug pull assessment, meme coin security review, or pre-investment due diligence.
 ---
 
 # MEME COIN & TOKEN SECURITY AUDIT
@@ -42,7 +42,7 @@ Check these BEFORE reading a single line of code. If any are true, skip the audi
 ## BUG CLASSES (8 TOKEN-SPECIFIC)
 
 ### 1. HIDDEN MINT / UNLIMITED SUPPLY
-> 35% of meme coin rugs. Deployer mints tokens post-launch, dumps on LP.
+> Common rug pattern. Deployer mints tokens post-launch, dumps on LP.
 
 **Quick grep (EVM):**
 ```bash
@@ -57,7 +57,7 @@ grep -rn "MintTo\|mint_to\|mint_authority" src/ --include="*.rs" | grep -v "test
 **Kill if:** MAX_SUPPLY enforced in every mint path, or mint function removed entirely.
 
 ### 2. HONEYPOT / TRANSFER RESTRICTION
-> 25% of meme coin scams. Buy works, sell blocked.
+> Common scam pattern. Buy works, sell blocked.
 
 **Quick grep:**
 ```bash
@@ -72,7 +72,7 @@ grep -rn "freeze_authority\|transfer_hook\|TransferHook\|permanent_delegate" src
 **Kill if:** No blacklist mapping, no transfer hooks, no freeze authority.
 
 ### 3. FEE MANIPULATION
-> 20% of rugs. Sell fee set to 99% after initial buys.
+> Common rug pattern. Sell fee set to 99% after initial buys.
 
 **Quick grep:**
 ```bash
@@ -136,22 +136,9 @@ grep -rn "swapThreshold\|_rebase\|mandatoryPool" src/ --include="*.sol"
 
 ---
 
-## AUTOMATED SCANNER
+## FAST RED-FLAG SWEEP
 
-Run the token scanner tool for fast red flag detection:
-
-```bash
-# EVM token
-python3 tools/token_scanner.py contracts/Token.sol
-
-# Solana program
-python3 tools/token_scanner.py programs/token/ --chain solana --recursive
-
-# Full directory scan with report
-python3 tools/token_scanner.py src/ --recursive --output findings/token-report.md
-```
-
-The scanner checks all 8 bug classes via regex patterns. It catches:
+Run the 8 bug-class greps above across the source tree for fast red-flag detection. Together they catch:
 - Direct mint/balance manipulation
 - Blacklist and transfer restriction patterns
 - Unbounded fee setters
@@ -161,7 +148,7 @@ The scanner checks all 8 bug classes via regex patterns. It catches:
 - All Solana authority patterns
 - Token-2022 dangerous extensions
 
-**Scanner does NOT check:**
+**Source grep does NOT check** (verify these out-of-band):
 - On-chain state (use Etherscan/Solscan for authority verification)
 - Holder distribution (use DEXTools/Birdeye)
 - LP lock status (use Unicrypt/PinkLock/Solscan)
@@ -286,15 +273,6 @@ When you don't have source code, check on-chain:
 
 ---
 
-## FULL REFERENCE FILES
-
-For deep dives into specific areas:
-- `web3/10-meme-coin-bugs.md` — All 8 bug classes with full code examples and variants
-- `web3/11-solana-token-audit.md` — Solana-specific: SPL authorities, Token-2022, pump.fun, Raydium, Jupiter
-- `web3/12-dex-lp-attacks.md` — DEX & LP manipulation patterns (sandwich, pool sniping, CL position attacks)
-
----
-
 ## Related Skills & Chains
 
 - **`web3-audit`** — When the target is a DeFi protocol (not just a token). Workflow primitive: this skill's 8 token-specific bug classes are a subset of `web3-audit`'s scope; if the target has lending / vault / oracle logic beyond the token contract itself, also load `web3-audit` for the broader 10 DeFi bug classes.
@@ -367,7 +345,7 @@ Five "no"s = walk away. Three "no"s = high risk, only enter with size you'd walk
 
 ### MEV / sandwich amplification on illiquid mints
 
-Buying into a mint with < $50K liquidity guarantees you'll be sandwiched. The bot infrastructure on Solana and Ethereum is institutionalized in 2026 — Jito MEV-share, Flashbots SUAVE, Eden Network, private order-flow auctions. If your trade size > 1% of available liquidity, expect sandwich loss > 5%; > 5% of liquidity, expect > 20% slippage from sandwich alone.
+Buying into a mint with < $50K liquidity guarantees you'll be sandwiched. The bot infrastructure on Solana and Ethereum is institutionalized in 2026 — Jito MEV-share and private order-flow auctions. If your trade size > 1% of available liquidity, expect sandwich loss > 5%; > 5% of liquidity, expect > 20% slippage from sandwich alone.
 
 Mitigations (rank by 2026 effectiveness):
 

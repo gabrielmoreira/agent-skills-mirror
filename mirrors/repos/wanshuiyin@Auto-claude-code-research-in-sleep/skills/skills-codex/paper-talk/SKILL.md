@@ -360,7 +360,7 @@ Forwarded to:
 ## When NOT to Use
 
 - The paper is not yet compiled or claims are not stable. Run `/paper-writing` first.
-- The user wants a poster, not a talk. Use `/paper-poster`.
+- The user wants a poster, not a talk. Use `/paper-poster-html`.
 - The user already has a finished deck and only needs visual polish. Use `/slides-polish` directly — `/paper-talk` would needlessly rebuild.
 - The talk content is unrelated to a paper (general lecture, demo). The orchestration assumes a paper-grounded talk; for ad-hoc decks, use `/paper-slides` directly with manual outline.
 
@@ -368,7 +368,7 @@ Forwarded to:
 
 - Composes `/paper-slides`, `/slides-polish`, `/paper-claim-audit`, `/citation-audit`.
 - Does **not** call `/kill-argument` by default — that is upstream intellectual stress-test, not deck QA. Users who want talk-story stress-test before slide build can run `/kill-argument paper/` first.
-- Sister workflow to `/paper-writing` (paper) and `/paper-poster` (poster).
+- Sister workflow to `/paper-writing` (paper) and `/paper-poster-html` (poster).
 
 ## Empirical Origin
 

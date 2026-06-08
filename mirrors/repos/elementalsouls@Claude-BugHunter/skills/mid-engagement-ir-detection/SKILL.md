@@ -134,9 +134,9 @@ Recommendation:
 
 **Math check:**
 - Your discipline: 1 attempt per user lifetime
-- Smart Lockout default: 10 fails / 10 min
-- Therefore: you cannot mathematically cause Smart Lockout
-- Therefore: every AADSTS50053 you see was caused by someone else
+- Smart Lockout default: lockout after 10 failed attempts; lockout duration starts at 60 seconds and grows with each subsequent lockout (not a flat 10-minute window)
+- Therefore: IF tool logs confirm exactly 1 attempt/user (no burst retries, no parallel-goroutine duplicate sends, no tool misconfiguration), you cannot mathematically cause Smart Lockout — verify `journal.jsonl` shows 1 attempt/user before asserting this
+- Therefore: every NEW AADSTS50053 accumulating during the window (per before/after diff) was caused by someone else; pre-existing locks may stem from the legitimate user's own failures or a prior test run, so attribute only the newly-accumulating locks to an external party
 
 **Confirmation:**
 - Sort locked accounts alphabetically; if they cluster, attacker is using sorted username list
@@ -149,10 +149,12 @@ Subject: Active external password-spray campaign detected during engagement
 
 Observation: During M365 ROPC validation against the <tenant> Entra tenant, <N>
 unique principals returned AADSTS50053 (Smart Lockout) when probed with a single
-password attempt at safe pace. With our hard cap of 1 attempt per user, we cannot
-mathematically cause these lockouts. The locks are pre-existing and continue to
-accumulate during our engagement window — <K> NEW locks observed between
-<timestamp_start> and <timestamp_end>.
+password attempt at safe pace. Our tool journal (journal.jsonl) confirms exactly
+1 attempt per user with no duplicate sends, so under the Smart Lockout default
+(lockout after 10 failed attempts) we cannot have caused these lockouts. The
+attribution below applies to the <K> NEW locks that accumulated during our
+engagement window between <timestamp_start> and <timestamp_end> (per before/after
+diff); pre-existing locks are not attributed to this campaign.
 
 Description: The pattern (alphabetical clustering, real-time accumulation,
 including system mailboxes) is consistent with an external attacker performing

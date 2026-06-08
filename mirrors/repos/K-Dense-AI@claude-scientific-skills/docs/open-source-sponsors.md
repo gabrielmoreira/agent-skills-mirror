@@ -132,7 +132,7 @@ Scientific Agent Skills is built on the shoulders of giants. The 135 skills in t
 
 | Project | Description | Links |
 |---------|-------------|-------|
-| **ESM** | Evolutionary scale modeling | [GitHub](https://github.com/facebookresearch/esm) |
+| **ESM** | Evolutionary scale modeling | [GitHub](https://github.com/Biohub/esm) |
 
 ### Data Formats & I/O
 

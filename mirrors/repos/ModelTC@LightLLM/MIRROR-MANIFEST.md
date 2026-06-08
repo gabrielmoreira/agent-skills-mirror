@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ModelTC/LightLLM` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `ModelTC/LightLLM` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ModelTC/LightLLM` — 26 default patterns, 0 followed patterns, 11 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,10 +66,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`skills/test_model/qwen2.5-14b-fp8kv-gsm8k/SKILL.md`](skills/test_model/qwen2.5-14b-fp8kv-gsm8k/SKILL.md) |
 | 6 | ✓ | [`skills/test_model/qwen3-8b-gsm8k-scenarios/SKILL.md`](skills/test_model/qwen3-8b-gsm8k-scenarios/SKILL.md) |
 | 7 | ✓ | [`skills/test_model/qwen3-8b-pd-nccl/SKILL.md`](skills/test_model/qwen3-8b-pd-nccl/SKILL.md) |
-| 8 | ✓ | [`skills/test_model/qwen3-8b-pd-nixl/SKILL.md`](skills/test_model/qwen3-8b-pd-nixl/SKILL.md) |
-| 9 | ✓ | [`skills/test_model/qwen3-vl-8b-mmmu-val/SKILL.md`](skills/test_model/qwen3-vl-8b-mmmu-val/SKILL.md) |
-| 10 | ✓ | [`skills/test_model/qwen3-vl-8b-vit-sep-mode/SKILL.md`](skills/test_model/qwen3-vl-8b-vit-sep-mode/SKILL.md) |
-| 11 | ✓ | [`skills/test_model/qwen3.5-0.8b-gsm8k-scenarios/SKILL.md`](skills/test_model/qwen3.5-0.8b-gsm8k-scenarios/SKILL.md) |
+| 8 | ✓ | [`skills/test_model/qwen3-8b-pd-nixl/check_nvidia_peermem.sh`](skills/test_model/qwen3-8b-pd-nixl/check_nvidia_peermem.sh) |
+| 9 | ✓ | [`skills/test_model/qwen3-8b-pd-nixl/SKILL.md`](skills/test_model/qwen3-8b-pd-nixl/SKILL.md) |
+| 10 | ✓ | [`skills/test_model/qwen3-vl-8b-mmmu-val/SKILL.md`](skills/test_model/qwen3-vl-8b-mmmu-val/SKILL.md) |
+| 11 | ✓ | [`skills/test_model/qwen3-vl-8b-vit-sep-mode/SKILL.md`](skills/test_model/qwen3-vl-8b-vit-sep-mode/SKILL.md) |
+| 12 | ✓ | [`skills/test_model/qwen3.5-0.8b-gsm8k-scenarios/SKILL.md`](skills/test_model/qwen3.5-0.8b-gsm8k-scenarios/SKILL.md) |
 
 ---
 

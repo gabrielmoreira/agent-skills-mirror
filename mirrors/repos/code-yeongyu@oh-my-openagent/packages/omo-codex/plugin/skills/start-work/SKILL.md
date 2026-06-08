@@ -9,11 +9,11 @@ This skill ports the OpenCode `/start-work` flow onto Codex. Any OpenCode-only t
 
 | OpenCode example | Codex tool to use |
 | --- | --- |
-| `task(subagent_type="explore", ...)` | `spawn_agent(agent_type="explorer", task_name="...", message="...", fork_turns="none")` |
-| `task(subagent_type="librarian", ...)` | `spawn_agent(agent_type="librarian", task_name="...", message="...", fork_turns="none")` |
-| `task(subagent_type="plan", ...)` | `spawn_agent(agent_type="plan", task_name="...", message="...", fork_turns="none")` |
-| `task(subagent_type="oracle", ...)` for final verification | `spawn_agent(agent_type="codex-ultrawork-reviewer", task_name="...", message="...", fork_turns="none")` |
-| `task(category="...", ...)` for implementation or QA | `spawn_agent(agent_type="worker", task_name="...", message="...", fork_turns="none")` |
+| `task(subagent_type="explore", ...)` | `spawn_agent({"task_name":"...","message":"TASK: act as an explorer. ...","fork_turns":"none"})` |
+| `task(subagent_type="librarian", ...)` | `spawn_agent({"task_name":"...","message":"TASK: act as a librarian. ...","fork_turns":"none"})` |
+| `task(subagent_type="plan", ...)` | `spawn_agent({"task_name":"...","message":"TASK: act as a planning agent. ...","fork_turns":"none"})` |
+| `task(subagent_type="oracle", ...)` for final verification | `spawn_agent({"task_name":"...","message":"TASK: act as a rigorous reviewer. ...","fork_turns":"none"})` |
+| `task(category="...", ...)` for implementation or QA | `spawn_agent({"task_name":"...","message":"TASK: act as an implementation or QA worker. ...","fork_turns":"none"})` |
 | `background_output(task_id="...")` | `wait_agent(...)` for mailbox signals; after a timeout, run one `list_agents` check for the named child if reassurance is needed |
 | `dispatchInternalPrompt(...)` | the `Stop` hook emits `{"decision":"block","reason":"<prompt>"}` automatically; see Continuation |
 | `team_*(...)` | `spawn_agent` + `send_message` + `followup_task` + `wait_agent` + `close_agent` |
@@ -25,9 +25,9 @@ When translating `load_skills=[...]`, name the skills inside the spawned agent's
 Every `spawn_agent` message must be self-contained. Start with
 `TASK: <imperative assignment>`, then name `DELIVERABLE`, `SCOPE`, and
 `VERIFY`. State that it is an executable assignment, not a context
-handoff. Role selection requires `agent_type`; `model` +
-`reasoning_effort` alone creates a default agent, not a reviewer or
-worker. Prefer `fork_turns: "none"` unless full history is truly
+handoff. Role or specialty instructions belong inside `message`; the
+Codex tool schema only accepts `task_name`, `message`, and `fork_turns`.
+Prefer `fork_turns: "none"` unless full history is truly
 required; paste only the context the child needs.
 
 Plan and reviewer agents may run for a long time; spawn them in the background, keep doing independent root work, and poll with short wait_agent cycles sized to the work. Never use a single long blocking wait for them, and never spin on tiny timeouts as a failure budget.
@@ -192,9 +192,15 @@ Only after verification passes:
 When all top-level checkboxes in `## TODOs` and `## Final Verification Wave` are complete:
 
 1. Run the plan's final verification commands.
-2. If worktree mode was used, sync `.omo/` state back to the main repo, merge or hand off exactly as requested, and remove the worktree only after successful merge or explicit handoff.
-3. Remove or mark the Boulder work as completed.
-4. Print an `ORCHESTRATION COMPLETE` block with the plan path, verification commands, artifacts, and cleanup receipts.
+2. Complete the **Global Review and Debugging Gate** before any completion claim, PR handoff, or branch handoff:
+   - Invoke the `review-work` skill with the final diff, changed files, user goal, constraints, run command, and verification evidence. All five review lanes must return PASS. A timeout, missing deliverable, ack-only child, `BLOCKED:`, or inconclusive lane is a gate failure, not approval.
+   - Run a debugging-oriented runtime audit even when the review passes: name at least three plausible failure hypotheses for the changed surface, run the distinguishing checks against the actual artifact, and append the ruled-out or confirmed result to `.omo/start-work/ledger.jsonl`.
+   - If any review lane or debugging hypothesis fails, invoke the `debugging` skill, confirm root cause with runtime evidence, add the minimal failing test or reproduction, fix it, rerun the affected verification, then rerun the Global Review and Debugging Gate.
+   - Evidence hygiene is mandatory: redact or mask secrets and sensitive user data before writing `.omo/start-work/ledger.jsonl`, a PR body, or a handoff. Never include raw tokens, credentials, auth headers, cookies, API keys, env dumps, private logs, or PII; use concise summaries, lengths, hashes, or short non-sensitive prefixes instead.
+   - If the work includes creating, updating, or handing off a PR, refresh `git status` and the PR/branch state after the gate, and include only redacted review/debugging evidence in the PR body or handoff.
+3. If worktree mode was used, sync `.omo/` state back to the main repo, merge or hand off exactly as requested, and remove the worktree only after successful merge or explicit handoff.
+4. Remove or mark the Boulder work as completed.
+5. Print an `ORCHESTRATION COMPLETE` block with the plan path, verification commands, Global Review and Debugging Gate verdict, artifacts, and cleanup receipts.
 
 ## Hard rules
 
@@ -202,5 +208,6 @@ When all top-level checkboxes in `## TODOs` and `## Final Verification Wave` are
 - No `--dry-run` as completion evidence.
 - No tests-only completion claim. A Manual-QA artifact is required.
 - No completion claim while an applicable ultraqa adversarial class was never probed. Each applicable class needs a captured observable result; each skipped class needs a one-line not-applicable reason in the ledger.
+- No `ORCHESTRATION COMPLETE`, final response, PR creation, or PR handoff before the Global Review and Debugging Gate passes with recorded evidence.
 - No unprefixed session ids in Boulder state. Codex sessions are always `codex:<session_id>`.
 - No stale-memory execution. The plan and ledger are the durable source of truth.

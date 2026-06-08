@@ -105,11 +105,13 @@ curl -s https://target.com/assets/app.js | grep -oE '"/[a-zA-Z0-9/_-]{3,50}"' | 
 
 **Email verification bypass:**
 ```bash
-# Access monitoring/protected features directly without completing verification
-curl -s https://monitor.target.com/dashboard \
-  -H "Cookie: session=<your_session>" \
-  # Try skipping directly to the post-verification endpoint
-  
+# Skip the verification step: hit the post-verification API endpoint directly
+# with an unverified session. If it succeeds, the gate is UI-only.
+curl -s -X POST https://monitor.target.com/api/monitoring/enable \
+  -H "Cookie: session=<your_unverified_session>" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"victim@example.com"}'
+
 # Replay verification token on different account
 curl -X POST https://target.com/verify \
   -d 'token=VALID_TOKEN_FROM_ACCOUNT_A&email=account_b@example.com'
@@ -155,7 +157,7 @@ grep -iE "x-forwarded-for|x-real-ip|cf-connecting-ip" src/ -r
 | CAPTCHA on subscription forms | Use header-based bypass first; if CAPTCHA is only on the web form, call the underlying API endpoint directly |
 | Email verification gate | Access the post-verification API endpoint directly; replay valid tokens; check if `verified=true` is a client-set cookie/param |
 | Payment amount server validation | Modify currency to a lower-value currency; test with $0.00 or negative amounts; manipulate order IDs to reference different products |
-| Webhook HMAC validation | Test with no signature header; test with empty signature; test replay of a previously captured valid webhook with modified payload |
+| Webhook HMAC validation | Test with no/empty signature header (is validation enforced at all — a modified payload only "passes" if it isn't); replay an UNMODIFIED captured webhook to test missing idempotency/anti-replay |
 | Auth on internal pages | Try unauthenticated; try with a low-privilege account; try path traversal variants (`/employee/../employee/`) |
 | Phone verification (OTP sent) | Submit someone else's number without OTP validation; check if the system grants trust on submission vs. OTP confirmation |
 

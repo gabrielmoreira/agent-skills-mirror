@@ -72,11 +72,7 @@ Use this template to compress repository context before running Waza `/check`. T
 
 ## Public Replies
 
-- Draft replies in the same language as the thread.
-- Do not post comments, close issues, or merge PRs without maintainer approval.
-- For accepted PRs, prefer updating the contributor branch and merging the PR; close without merge only when the direction is rejected, unsafe, out of scope, or the branch cannot be updated and a maintainer commit is explicitly needed.
-- Default reply shape: `@<user>` + thanks, brief reason/action, then update command, release/version, or next step.
-- Keep shipped-fix replies to 1-2 natural sentences unless the project explicitly uses a longer template.
+See `public-reply.md` for the full reply template (language match, `@user` + thanks, factual paragraphs, ship-state line, closure criteria). It is the single source; do not restate the rules here.
 
 ## Release Follow-through
 

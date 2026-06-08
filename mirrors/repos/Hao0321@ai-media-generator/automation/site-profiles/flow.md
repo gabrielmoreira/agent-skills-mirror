@@ -1,9 +1,125 @@
-# Site Profile: Google Flow (Veo 3.1)
+# Site Profile: Google Flow (Veo 3.1 + Gemini Omni)
 
 **URL:** `https://labs.google/fx/tools/flow` (會重導至 `/zh/tools/flow` 或地區別)
-**驗證狀態:** ✅ 2026-04-19 實測
-**平台類型:** Google AI 電影製作平台 (Veo 3.1 官方 UI)
-**Stack:** Next.js React，ref 相對穩定但 **prompt textbox 是 contentEditable DIV** (一樣 form_input 不吃)
+**驗證狀態:** ✅ 2026-04-19 實測（Veo 操作流程）；🆕 2026-06-08 大改版知識（WebSearch 官方+社群多源研究，UI 操作待登入後實機驗證）
+**平台類型:** Google AI 創作工作室（已從「電影工具」升級為 AI Creative Studio）
+**Stack:** Next.js React，prompt textbox 是 contentEditable DIV (form_input 不吃，比照 OiiOii 用 beforeinput 注入)
+
+> ⚠️ **2026-06-08 登入狀態：Flow session 會過期，重進需 Google 帳號選擇 + OAuth 同意。** 登入/授權是安全紅線（Claude 不代做），需用戶親自完成帳號選擇後才能自動化操作。
+
+---
+
+## 0. 🆕🆕 2026 大改版完整地圖（WebSearch 研究，2026-06-08）
+
+### 改版時間軸
+| 日期 | 改版 |
+|---|---|
+| 2026-01-13 | Veo 3.1 更新：更強音訊/prompt 遵從/寫實；**4K 升頻**；音訊帶進 Ingredients/Frames/Extend |
+| **2026-02-25** | **三工具合一**：Flow + Whisk + ImageFX 併成單一介面；**Nano Banana** 成 Flow 內建生圖引擎（直接當 ingredients/frames）|
+| 2026-04-30 | Whisk 永久關閉（未遷移者資產刪除）|
+| **2026-05-19** | **Google I/O 2026**：Flow 升級「AI Creative Studio」；上 **Gemini Omni / Omni Flash**、**Flow Agent**、**Flow Tools**、**Flow Music (Lyria 3 Pro)**、**Flow TV**；**AI Ultra 降價 $250→$100**，新增雙層 |
+
+### 核心功能地圖（功能｜作用｜操作）
+| 功能 | 作用 | 操作要點 |
+|---|---|---|
+| **Text to Video** | 純文字生影片 | model 下拉選 → Video mode → 4/6/8s（10s 限 Omni）|
+| **Frames to Video** | 首/尾幀框構圖 + 轉場 + 動畫化靜圖 | 拖圖到 +Add start frame / +Add end frame → prompt 寫兩幀間動作 |
+| **Ingredients to Video** ⭐ | 餵參考（角色/物件/風格/產品）鎖跨鏡一致 = **Flow 版鎖形狀**，比 OiiOii i2v 更強 | 拖資產進 prompt box，**最多 3 個**；產品放純色/去背背景 |
+| **Extend** | 延長 clip 保一致 | **僅 Veo 生成的影片**；extended clip 不能再套其他編輯 |
+| **Scene Builder** | 多 clip 排序剪輯台 | clip「More→Add to Scene」→ 拖曳排序 + 修剪 → 預覽下載；**Jump To**=換場景保外觀 |
+| **Camera Controls** | 運鏡（angles/dolly/zoom/tracking）| 透過 prompt 鏡頭語彙下達 |
+| **Flow Agent** 🆕 | AI 創作夥伴：brainstorm/劇情建議/批次編輯/整理 collections | 影片拖進 prompt box 描述要改什麼，存進 asset stack 不丟原檔 |
+| **Flow Tools** 🆕 | 自然語言「vibe code」自製工具（影片 resizer / 特效產生器）| Flow 內描述需求即建 |
+| **Flow Music (Lyria 3 Pro)** 🆕 | AI 音樂，可單獨改某段/生替代版/翻譯歌詞 | 對 agent 用講的導演音樂影片 |
+| **Flow TV** 🆕 | 精選 clip 展示牆，**每支公開顯示確切 prompt** = 學 prompt 神器 | labs.google/flow/tv，免訂閱 |
+| **生圖引擎** | Flow 內生圖 | Nano Banana 2（預設免費）/ Nano Banana Pro（Ultra）/ Imagen 4 |
+
+### 🎯 Gemini Omni Flash in Flow（殺手鐧 = 對話式編輯）
+- **切換：** 設定面板把 video model 切「Gemini Omni Flash」（需 AI Plus/Pro/Ultra；**免費額度只能跑 Veo 3.1**）。
+- **Omni 獨家：** 10s clip（Veo 只 4/6/8s）、**Video-to-Video 編輯**、自訂語音、進階角色 reference。
+- **對話式編輯流程：** model 設 Omni → 生成 base scene → **在同一 chat 接著講「換背景 / 改機位 / 套 cinematic zoom」** → 它只改不重跑 → **最多 3 輪 refine**。Edit & Refine 可上傳影片（最長 60s，剪到 30s 上限，選最多 10s 片段編輯）。
+- **這原生解掉 OiiOii「加入對話≠i2v」的坑** —— Omni 的 reference 鎖造型 + 對話改場景是設計核心。
+
+### Omni vs Veo 3.1 選型（Flow 內）
+| 要 | 選 |
+|---|---|
+| 10s / 影片改影片 / 自訂語音 / 對話式迭代改 | **Gemini Omni Flash** |
+| 4K 成品 / 純 t2v / 省 credit / 免費跑 / 拼長片 Extend | **Veo 3.1** |
+
+### 訂閱 + credits（I/O 2026 後，數字待實機確認）
+| 層 | 月費 | credits/月 | Omni Flash |
+|---|---|---|---|
+| Free | $0 | 少量 | ❌（只 Veo 3.1）|
+| AI Plus | $7.99 | 200 | ✅ |
+| AI Pro | $19.99 | 1,000 | ✅（Hao 持有）|
+| AI Ultra | $100 | 10,000 | ✅ + 4K + Nano Banana Pro |
+| AI Ultra 高 | $200 | 25,000 | ✅ 全含 |
+- 原生 720p；1080p 升頻 Free/Pro 免費；4K 升頻約 50cr (待驗證)。Omni Flash 各時長 credit (15/20/25/30、edit 40) 為第三方數字**待 Flow 介面確認**。
+
+### ✅ Omni Flash 文字渲染：短品牌名「可」渲染（2026-06-08 實測）
+
+一般影片模型對文字 = 鬼畫符（見 quality-control §4），**但 Omni Flash 是例外**：用**引號標注 + 指定載體**（招牌/燈籠）成功渲染出店名「**Hao0321**」清楚可讀（毛筆字風格木招牌）。
+- 寫法：`a glowing wooden sign clearly reads "Hao0321"`（引號 + 明確載體）
+- 適用：**短英數品牌名/店名**（~7 字內）。長句、段落文字仍不可靠。
+- x2 變體中通常至少一支文字到位 → 多生幾版挑。
+- 仍不放心 → 走 image-logo（Ideogram/Nano Banana 做對招牌）→ Ingredients/Frames 帶入。但 Omni 一鏡直出短店名已可用。
+
+### ⚠️ x2 可能 1 支成功 1 支被政策擋（2026-06-08 實測）
+
+Omni Flash x2 變體中可能 **1 支正常、1 支跳「失敗：此生成內容可能違反政策」**（遊樂園 prompt 實測，疑似「delighted screams」「screams」等詞觸發）。應對：① 另一支通常 OK 直接用；② 失敗格有 retry/undo/delete 鍵；③ 想兩支都穩 → 移除可能踩線的詞（screams/violence/血腥/裸露/恐懼類）。**安全詞替代**：`delighted screams` → `cheerful laughter`、`excited cheering`。
+
+### Flow 社群 prompt 技巧（X/Reddit/YouTube/官方彙整）
+1. **Camera-first**：每個 prompt **開頭先寫鏡頭**（連「static, locked off」也要寫）—— 鏡頭定整支視覺文法。
+2. **五要素 + 50-60 字**：Subject&Action / Composition&Camera / Environment&Mood（寫畫面感不只寫地點）/ Visual Style（具體如 stop motion）/ Audio。
+3. **`@AssetName` 引用**：打 `@` 接已建資產名引用角色/物件（同 Seedance 概念），保跨鏡一致。
+4. **跨鏡一致咒語**：明確叫 Gemini「**repeat all essential details from prior prompts**」複述前鏡關鍵細節。
+5. **音訊當 sound designer**：別寫「cinematic score」，寫「a single low cello note building over 5s then cut to silence」。
+6. **多輪 surgical 編輯**：每次編輯帶 **preserve 指令** 保留其他部分，把每次生成當草稿逐步改（Omni 原生支援）。
+7. ⚠️ **t2v 要寫足視覺細節**（與 OiiOii i2v「不重述視覺」相反 —— 平台差異，分開記！Frames/Ingredients 模式才回到「視覺交給參考圖、prompt 重心運鏡」）。
+
+### ✅ Live 實機驗證（2026-06-08，Hao Flow PRO 登入後實跑 Omni Flash）
+
+**全程自動化跑通：新建專案 → 設定 Omni Flash → 注入 concept-first prompt → 送出 → x2 影片生成。** 實測 SOP：
+
+```
+1. 首頁 click「+ 新建項目」(~783,605) → URL 變 /project/{uuid}
+2. 底部 prompt 框右側 click「視頻·10s·x2」設定 chip → 彈出設定面板：
+   - 圖片/視頻 tab、幀/素材 子模式、9:16 / 16:9、x1-x4 輸出數
+   - model dropdown（**Omni Flash 預設已選**，10s 預設）、4/6/8/10s 時長
+   - 底部即時顯示「生成將消耗 N 個點數」
+3. ✅ **Omni Flash 16:9 10s x2 = 30 點數**（live 確認，原研究待驗證數字解除）
+   ⚠️ 此期間有「Omni Flash 半價 credits 限時優惠（~6/8）」，30 可能含折扣
+4. Esc 關設定面板
+5. ⚠️⚠️ **Flow prompt 框是 Slate，注入用「純 JS 完整聚焦序列」最可靠**（2026-06-08 二次驗證）：
+   computer.left_click 座標**對不上**（見下 §座標陷阱），改用 JS：
+   ```js
+   const div = [...document.querySelectorAll('[contenteditable="true"]')].find(d=>d.getBoundingClientRect().width>100);
+   div.dispatchEvent(new FocusEvent('focusin', {bubbles:true}));  // ← 關鍵，少這個會聚焦到 BODY
+   div.focus();
+   const target = div.querySelector('p, span, [data-slate-node]') || div;  // 選 inner node 不是 div
+   const range = document.createRange(); range.selectNodeContents(target); range.collapse(false);
+   const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+   // 等 150ms → 驗 document.activeElement 的 contenteditable==='true' → 再 beforeinput insertFromPaste
+   ```
+   驗證 `focusedAfterJS===true` + domLen 大增（實測 773）才算成功。
+6. send button：prompt 框右下，`aria-disabled="false"` 的 button（class 是 styled-components
+   亂碼 sc-xxx，用「box 右緣 + 框內 y 範圍 + not disabled」定位，別靠 class）
+7. 送出後 prompt 框清空 + canvas 出現 x2 影片佔位（shimmer loading）+ 左欄加「視頻」
+8. Omni Flash 10s 生成約 1-3 分鐘
+```
+
+**Flow Slate 注入關鍵差異（vs OiiOii）：**
+| | OiiOii | Flow |
+|---|---|---|
+| beforeinput 前需先 click 聚焦？ | 否（直接注入即可）| **是（必須先 computer.left_click 框）** |
+| send button 定位 | `_send-button_`/`_credit-cost_` | styled-components 亂碼 class → 用位置+aria-disabled |
+| 設定面板 | 底部 toolbar icon | prompt 框右側「視頻·10s·x2」chip |
+
+**⚠️ 座標陷阱（2026-06-08 實測）：** Flow 頁面 **CSS 視窗 = 1920×919（dpr=1）**，但 Chrome MCP 截圖 = **1568×705** → x 縮放 1.224×、y 縮放 1.304×。**computer.left_click 用截圖座標會點錯位**（點 prompt 框結果聚焦 BODY）。生成後 prompt 框降到 CSS y≈809（截圖外）。**結論：Flow 的框互動一律走 JS（querySelector + 上面的聚焦序列），不要靠 computer.left_click 座標。** send button 也用 JS（位置 + aria-disabled）。
+
+**生成後點到既有 clip 會開 /edit/{uuid} 編輯視圖**（有 timeline + Omni Flash「描述編輯需求」對話框 = 對話式編輯入口）；回專案點左上返回鍵。
+
+**登入：** Flow session 會過期，重進停在 `accounts.google.com` 帳號選擇 → 用戶親自完成（Claude 不代登入）。登入後 URL = `labs.google/fx/zh/tools/flow`，首頁有「+ 新建項目」+ Flow TV/Discord/IG/X 頂欄連結 + PRO badge。
 
 ---
 

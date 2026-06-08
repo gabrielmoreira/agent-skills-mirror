@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `open-gsd/gsd-core` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
+Mirror of `open-gsd/gsd-core` — 26 default patterns, 0 followed patterns, 51 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `open-gsd/gsd-core` — 26 default patterns, 0 followed patterns, 50 f
 | Ref           | `next` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 50 |
+| Files         | 51 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -107,8 +107,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 46 | ✓ | [`docs/pt-BR/INVENTORY.md`](docs/pt-BR/INVENTORY.md) |
 | 47 | ✓ | [`docs/zh-CN/ARCHITECTURE.md`](docs/zh-CN/ARCHITECTURE.md) |
 | 48 | ✓ | [`docs/zh-CN/INVENTORY.md`](docs/zh-CN/INVENTORY.md) |
-| 49 | ✓ | [`gsd-core/templates/copilot-instructions.md`](gsd-core/templates/copilot-instructions.md) |
-| 50 | ✓ | [`gsd-core/templates/research-project/ARCHITECTURE.md`](gsd-core/templates/research-project/ARCHITECTURE.md) |
+| 49 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 50 | ✓ | [`gsd-core/templates/copilot-instructions.md`](gsd-core/templates/copilot-instructions.md) |
+| 51 | ✓ | [`gsd-core/templates/research-project/ARCHITECTURE.md`](gsd-core/templates/research-project/ARCHITECTURE.md) |
 
 ---
 

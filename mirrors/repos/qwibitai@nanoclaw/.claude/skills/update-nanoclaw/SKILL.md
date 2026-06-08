@@ -60,11 +60,20 @@ Help a user with a customized NanoClaw install safely incorporate upstream chang
 - Default to MERGE (one-pass conflict resolution). Offer REBASE as an explicit option.
 - Keep token usage low: rely on `git status`, `git log`, `git diff`, and open only conflicted files.
 
+# Step 0a: Refresh this skill first
+The update process itself evolves, so run its newest version before doing anything else:
+- Ensure the `upstream` remote exists (default `https://github.com/nanocoai/nanoclaw.git`) and fetch: `git fetch upstream --prune`. Detect the upstream branch (`main` or `master`).
+- Refresh this skill from upstream: `git checkout upstream/<branch> -- .claude/skills/update-nanoclaw/`
+- Re-read `.claude/skills/update-nanoclaw/SKILL.md`. If it changed, **follow the updated version from the top** instead of this one.
+
+This is the only working-tree change expected before the preflight check; the full update commits it along with everything else.
+
 # Step 0: Preflight (stop early if unsafe)
 Run:
 - `git status --porcelain`
 If output is non-empty:
 - Tell the user to commit or stash first, then stop.
+- Exception: changes limited to `.claude/skills/update-nanoclaw/` are the Step 0a self-refresh — ignore those and proceed.
 
 Confirm remotes:
 - `git remote -v`
@@ -255,6 +264,16 @@ If any channels/providers are installed AND `upstream/channels` or `upstream/pro
 - For each selected option, invoke the corresponding `/add-<channel>` or `/add-<provider>` skill.
 
 If no channels/providers are installed, skip silently.
+
+Proceed to Step 7.9.
+
+# Step 7.9: Stamp the upgrade marker (required)
+After validation has **succeeded**, record that this install reached the new version through the supported path. Without this, the startup tripwire stops the host on its next start.
+
+- `pnpm exec tsx scripts/upgrade-state.ts set "" update-nanoclaw`
+  - The empty version argument stamps the current `package.json` version.
+
+If validation did NOT succeed, do not stamp — leave the tripwire to catch the broken state.
 
 Proceed to Step 8.
 

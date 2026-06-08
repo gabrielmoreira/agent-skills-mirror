@@ -9,11 +9,10 @@ description: "Hunt server-side template injection (SSTI) across Jinja2 (Flask/Dj
 ### Detection Payloads (try all)
 ```
 {{7*7}}          → 49 = Jinja2 / Twig
-${7*7}           → 49 = Freemarker / Velocity
+${7*7}           → 49 = Freemarker / Velocity / Mako (all use ${...})
 <%= 7*7 %>       → 49 = ERB (Ruby)
-#{7*7}           → 49 = Mako
 *{7*7}           → 49 = Spring Thymeleaf
-{{7*'7'}}        → 7777777 = Jinja2 (not Twig)
+{{7*'7'}}        → 7777777 = Jinja2 (Python string repetition); 49 = Twig (numeric coercion of '7'). Differentiates Jinja2 from Twig.
 ```
 
 ### RCE Payloads

@@ -283,9 +283,12 @@ Tokens and secrets must never be reachable from the execution environment where 
 | **Lyric** | Songwriting for Suno AI | Lyrics with metatags, style prompts | Never |
 | **Native** | Mobile development | React Native/Flutter/SwiftUI/Jetpack Compose | Yes |
 | **Rank** | Priority quantification | ICE/RICE/WSJF/MoSCoW/Kano scoring | Never |
+| **Wield** | macOS desktop automation | AppleScript/JXA/osascript, Apple Events app control, UI scripting | Yes |
 
 **Key distinctions:**
 - Mobile app development → Native. Mobile-responsive frontend → Artisan
 - Songwriting/lyrics → Lyric. Audio generation code → Tone
 - Priority scoring → Rank. Multi-perspective decisions → Magi
 - Pre-mortem / failure analysis → Omen. Change impact → Ripple. Incident response → Triage
+- Browser/web automation → Vector. macOS native-app automation (Apple Events) → Wield. iOS app UI automation → Snap
+- Runtime macOS app scripting → Wield. Dotfiles/shell/editor config → Hearth. AI CLI config → Hone

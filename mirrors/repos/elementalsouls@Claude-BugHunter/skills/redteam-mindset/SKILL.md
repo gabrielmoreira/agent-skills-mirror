@@ -125,7 +125,7 @@ The authorized-engagement case: SQLi confirmed on one sub-app (`<app-A>`); four 
 ## Mindset correction #3 — WAPT vs Red Team scope discipline
 
 **Skip these in red team scope (they don't yield access):**
-- IDOR (cross-user read/write — WAPT class)
+- IDOR (cross-user read/write *without* an ATO / privilege-escalation / sensitive-data-exfil chain — WAPT class). NOTE: IDOR is NOT a blanket-skip. IDOR on admin/role-assignment endpoints yields privilege escalation; on password-reset or session objects yields ATO; on file-download or PII handlers yields exfil; on token/key endpoints yields credential capture. Pursue those per the decision rule below.
 - CSRF (state-change-via-tricked-user — WAPT class)
 - Reflected XSS (without account-takeover chain — WAPT class)
 - Missing security headers (WAPT class)
@@ -168,7 +168,7 @@ Aggressive defaults:
 5. **For every mobile app**, decompile + grep for secrets + check pinned certs + identify exported components
 6. **For every "out of scope" SaaS** that's on a corp subdomain, confirm with client — vendor-managed doesn't mean immune (CVE-2022-47966 went unpatched on many on-prem ME-SDP installs)
 
-**Rule:** if you've tested fewer than 60% of the live attack surface, you haven't done red team yet — you've done recon.
+**Rule:** if you haven't actively probed *every* live surface (not just a sampled fraction), you haven't done red team yet — you've done recon.
 
 ---
 

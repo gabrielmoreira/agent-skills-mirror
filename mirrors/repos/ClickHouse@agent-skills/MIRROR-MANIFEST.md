@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ClickHouse/agent-skills` — 26 default patterns, 0 followed patterns, 94 file(s) materialized.
+Mirror of `ClickHouse/agent-skills` — 26 default patterns, 0 followed patterns, 107 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ClickHouse/agent-skills` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 94 |
+| Files         | 107 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -149,10 +149,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 88 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/socket-hangup.md`](skills/clickhouse-js-node-troubleshooting/reference/socket-hangup.md) |
 | 89 | ✓ | [`skills/clickhouse-js-node-troubleshooting/reference/tls.md`](skills/clickhouse-js-node-troubleshooting/reference/tls.md) |
 | 90 | ✓ | [`skills/clickhouse-js-node-troubleshooting/SKILL.md`](skills/clickhouse-js-node-troubleshooting/SKILL.md) |
-| 91 | ✓ | [`skills/clickhousectl-cloud-deploy/metadata.json`](skills/clickhousectl-cloud-deploy/metadata.json) |
-| 92 | ✓ | [`skills/clickhousectl-cloud-deploy/SKILL.md`](skills/clickhousectl-cloud-deploy/SKILL.md) |
-| 93 | ✓ | [`skills/clickhousectl-local-dev/metadata.json`](skills/clickhousectl-local-dev/metadata.json) |
-| 94 | ✓ | [`skills/clickhousectl-local-dev/SKILL.md`](skills/clickhousectl-local-dev/SKILL.md) |
+| 91 | ✓ | [`skills/clickhouse-managed-postgres-rca/AGENTS.md`](skills/clickhouse-managed-postgres-rca/AGENTS.md) |
+| 92 | ✓ | [`skills/clickhouse-managed-postgres-rca/metadata.json`](skills/clickhouse-managed-postgres-rca/metadata.json) |
+| 93 | ✓ | [`skills/clickhouse-managed-postgres-rca/README.md`](skills/clickhouse-managed-postgres-rca/README.md) |
+| 94 | ✓ | [`skills/clickhouse-managed-postgres-rca/rules/heuristic-full-scan.md`](skills/clickhouse-managed-postgres-rca/rules/heuristic-full-scan.md) |
+| 95 | ✓ | [`skills/clickhouse-managed-postgres-rca/rules/heuristic-hot-loop.md`](skills/clickhouse-managed-postgres-rca/rules/heuristic-hot-loop.md) |
+| 96 | ✓ | [`skills/clickhouse-managed-postgres-rca/rules/heuristic-write-congestion.md`](skills/clickhouse-managed-postgres-rca/rules/heuristic-write-congestion.md) |
+| 97 | ✓ | [`skills/clickhouse-managed-postgres-rca/rules/openapi-discovery.md`](skills/clickhouse-managed-postgres-rca/rules/openapi-discovery.md) |
+| 98 | ✓ | [`skills/clickhouse-managed-postgres-rca/rules/output-template.md`](skills/clickhouse-managed-postgres-rca/rules/output-template.md) |
+| 99 | ✓ | [`skills/clickhouse-managed-postgres-rca/rules/prometheus-scrape.md`](skills/clickhouse-managed-postgres-rca/rules/prometheus-scrape.md) |
+| 100 | ✓ | [`skills/clickhouse-managed-postgres-rca/rules/recommend-only.md`](skills/clickhouse-managed-postgres-rca/rules/recommend-only.md) |
+| 101 | ✓ | [`skills/clickhouse-managed-postgres-rca/rules/slow-query-patterns-fields.md`](skills/clickhouse-managed-postgres-rca/rules/slow-query-patterns-fields.md) |
+| 102 | ✓ | [`skills/clickhouse-managed-postgres-rca/rules/triage.md`](skills/clickhouse-managed-postgres-rca/rules/triage.md) |
+| 103 | ✓ | [`skills/clickhouse-managed-postgres-rca/SKILL.md`](skills/clickhouse-managed-postgres-rca/SKILL.md) |
+| 104 | ✓ | [`skills/clickhousectl-cloud-deploy/metadata.json`](skills/clickhousectl-cloud-deploy/metadata.json) |
+| 105 | ✓ | [`skills/clickhousectl-cloud-deploy/SKILL.md`](skills/clickhousectl-cloud-deploy/SKILL.md) |
+| 106 | ✓ | [`skills/clickhousectl-local-dev/metadata.json`](skills/clickhousectl-local-dev/metadata.json) |
+| 107 | ✓ | [`skills/clickhousectl-local-dev/SKILL.md`](skills/clickhousectl-local-dev/SKILL.md) |
 
 ---
 

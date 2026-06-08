@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.1.4] - 2026-06-07
+
+### ✨ Features
+
+- **SubAgent direct context injection** — `subagent-context.js` now uses PreToolUse `updatedInput` to rewrite the spawned teammate's `prompt`, injecting `<ccg-injected-context>` (spec + task + research) directly into the subagent. Previously, context was injected into the lead's `additionalContext` where subagents could never read it. Benefits: subagents born with spec in their prompt; role-based filtering actually reaches the correct agent; lead's context stays clean (less orchestration hallucination). Bash/codeagent-wrapper calls still use `additionalContext` (lead builds the HEREDOC, so that path remains correct). ~10 lines changed.
+- **`outputHook()` extended** — `task-utils.js:outputHook()` now accepts an optional third `extra` parameter, merged into `hookSpecificOutput`. Enables passing `updatedInput`/`permissionDecision` alongside or instead of `additionalContext`. Back-compatible: existing 2-arg calls unchanged.
+
+---
+
 ## [3.1.3] - 2026-06-01
 
 ### 🐛 Fixes

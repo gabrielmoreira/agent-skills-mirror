@@ -301,9 +301,9 @@ XXE classic payloads (`<!ENTITY xxe SYSTEM "file://...">`) are not universally e
 | PHP `DOMDocument` with `LIBXML_NOENT` flag | Expands SYSTEM | **YES** |
 | PHP `simplexml_load_*` with `LIBXML_NOENT` | Expands | **YES** |
 | .NET `XmlDocument` with `XmlResolver` explicitly set | Expands | **YES** |
-| .NET `XmlReader` without `DtdProcessing=Prohibit` | Expands | **YES** |
+| .NET `XmlReader` with `DtdProcessing=Parse` + `XmlResolver` explicitly set | Expands | **YES** (default since .NET 4.5.2 is `DtdProcessing.Prohibit`, which THROWS on any DOCTYPE — modern default is safe) |
 | Python `xml.etree.ElementTree` ≥ 3.7.1 | SYSTEM disabled | NO |
-| Python `lxml` ≥ 5.x | Silently drops SYSTEM content even with `resolve_entities=True` | NO (verified locally — see `docs/verification/phase2g-saml-mfa-xxe.md`) |
+| Python `lxml` (verified 6.x; likely ≥ 5.x) | Drops SYSTEM file content even with `resolve_entities=True`; may still issue network fetches when `no_network=False` | NO for file read (verified locally on 6.1.0 — see `docs/verification/phase2g-saml-mfa-xxe.md`) |
 | Python `xml.dom.minidom` | Default safe in current versions | NO |
 | Python `defusedxml.lxml` | Disabled | NO |
 | Ruby Nokogiri default | Disabled | NO |

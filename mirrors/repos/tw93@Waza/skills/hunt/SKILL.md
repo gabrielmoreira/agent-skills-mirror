@@ -102,7 +102,7 @@ If the blast surfaces unrelated bugs, list them but do not fix in this PR unless
 
 ## Confirm or Discard
 
-Every hypothesis needs one targeted instrument before you touch the fix: a log line, a failing assertion, or the smallest test that would fail if the hypothesis is correct. **The instrument comes before the fix, not after.** The most common agent failure mode is "I read the code, it looks like X is the cause, let me fix it" without ever confirming X actually happens at runtime. Run the instrument. If the evidence contradicts the hypothesis, discard it completely and re-orient with what was just learned. Do not preserve a hypothesis the evidence disproves.
+The instrument-first rule lives in Hard Rules (behavioral/async bugs) above; this is what to do with its result. Run the one probe that would fail if the hypothesis were wrong, then read it. If the evidence contradicts the hypothesis, discard it completely and re-orient on what the probe just showed. Do not stack a fix onto a disproven hypothesis, and do not keep one just because the code "looks like" the cause.
 
 ## Runtime Evidence Ladder
 

@@ -8,24 +8,24 @@ This skill may include examples copied from the OpenCode harness. In Codex, do n
 
 | OpenCode example | Codex tool to use |
 | --- | --- |
-| `call_omo_agent(subagent_type="explore", ...)` | `spawn_agent(agent_type="explorer", task_name="...", message="...", fork_turns="none")` |
-| `call_omo_agent(subagent_type="librarian", ...)` | `spawn_agent(agent_type="librarian", task_name="...", message="...", fork_turns="none")` |
-| `task(subagent_type="plan", ...)` | `spawn_agent(agent_type="plan", task_name="...", message="...", fork_turns="none")` |
-| `task(subagent_type="oracle", ...)` for final verification | `spawn_agent(agent_type="codex-ultrawork-reviewer", task_name="...", message="...", fork_turns="none")` |
-| `task(category="...", ...)` for implementation or QA | `spawn_agent(agent_type="worker", task_name="...", message="...", fork_turns="none")` |
+| `call_omo_agent(subagent_type="explore", ...)` | `spawn_agent({"task_name":"...","message":"TASK: act as an explorer. ...","fork_turns":"none"})` |
+| `call_omo_agent(subagent_type="librarian", ...)` | `spawn_agent({"task_name":"...","message":"TASK: act as a librarian. ...","fork_turns":"none"})` |
+| `task(subagent_type="plan", ...)` | `spawn_agent({"task_name":"...","message":"TASK: act as a planning agent. ...","fork_turns":"none"})` |
+| `task(subagent_type="oracle", ...)` for final verification | `spawn_agent({"task_name":"...","message":"TASK: act as a rigorous reviewer. ...","fork_turns":"none"})` |
+| `task(category="...", ...)` for implementation or QA | `spawn_agent({"task_name":"...","message":"TASK: act as an implementation or QA worker. ...","fork_turns":"none"})` |
 | `background_output(task_id="...")` | `wait_agent(...)` for mailbox signals; after a timeout, run one `list_agents` check for the named child if reassurance is needed |
 | `team_*(...)` | Use Codex native subagents plus `send_message`, `followup_task`, `wait_agent`, and `close_agent` |
 
-Codex full-history forks inherit the parent agent type, model, and reasoning effort, so role-specific spawns with `agent_type` must use a non-full-history fork mode such as `fork_turns="none"`. Include any required conversation context, files, diffs, constraints, and requested skill names directly in the spawned agent's `message`. If a code block below conflicts with this section, this section wins.
+Codex full-history forks inherit parent context, so role-specific behavior must be described in a self-contained `message` and usually should use a non-full-history fork mode such as `fork_turns="none"`. Include any required conversation context, files, diffs, constraints, and requested skill names directly in the spawned agent's `message`. If a code block below conflicts with this section, this section wins.
 
 ## Codex Subagent Reliability
 
 Every `spawn_agent` message must be self-contained. Start with
 `TASK: <imperative assignment>`, then name `DELIVERABLE`, `SCOPE`, and
 `VERIFY`. State that it is an executable assignment, not a context
-handoff. Role selection requires `agent_type`; `model` +
-`reasoning_effort` alone creates a default agent, not a reviewer or
-worker. Prefer `fork_turns: "none"` unless full history is truly
+handoff. Role or specialty instructions belong inside `message`; the
+Codex tool schema only accepts `task_name`, `message`, and `fork_turns`.
+Prefer `fork_turns: "none"` unless full history is truly
 required; paste only the review context that worker needs.
 
 Plan and reviewer agents may run for a long time; spawn them in the background, keep doing independent root work, and poll with short wait_agent cycles sized to the work. Never use a single long blocking wait for them, and never spin on tiny timeouts as a failure budget.
@@ -54,6 +54,19 @@ aggregate result.
 # Review Work - 5-Agent Parallel Review Orchestrator
 
 Launch 5 specialized sub-agents in parallel to review completed implementation work from every angle. All 5 must pass for the review to pass. If even ONE fails, the review fails.
+
+When `review-work` is used as a final implementation, PR, or `$start-work`
+gate, it is blocking. A timeout, missing deliverable, ack-only response,
+explicit `BLOCKED:`, or inconclusive lane is not a pass. Treat that lane as
+failed, investigate the underlying uncertainty with the `debugging` skill when
+runtime behavior may be wrong, fix with evidence, and rerun the affected lane
+before claiming completion or handing off a PR.
+
+Review evidence must be safe to share. Redact or mask secrets and sensitive
+user data before including evidence in logs, PR bodies, or handoffs. Never
+include raw tokens, credentials, auth headers, cookies, API keys, env dumps,
+private logs, or PII; summarize with lengths, hashes, and short non-sensitive
+prefixes when identity is needed.
 
 The 5 agents cover complementary concerns - together they form a comprehensive review that no single reviewer could match:
 

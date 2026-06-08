@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `sgl-project/sglang` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `sgl-project/sglang` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `sgl-project/sglang` — 26 default patterns, 0 followed patterns, 28 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,12 +81,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`docs_new/AGENTS.md`](docs_new/AGENTS.md) |
 | 21 | ✓ | [`python/sglang/multimodal_gen/.claude/CLAUDE.md`](python/sglang/multimodal_gen/.claude/CLAUDE.md) |
 | 22 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-add-model/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-add-model/SKILL.md) |
-| 23 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-ako4all-kernel/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-ako4all-kernel/SKILL.md) |
-| 24 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/benchmark-and-profile.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/benchmark-and-profile.md) |
-| 25 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/existing-fast-paths.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/existing-fast-paths.md) |
-| 26 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/SKILL.md) |
-| 27 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-modelopt-quant/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-modelopt-quant/SKILL.md) |
-| 28 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-performance/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-performance/SKILL.md) |
+| 23 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/benchmark-and-profile.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/benchmark-and-profile.md) |
+| 24 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/existing-fast-paths.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/existing-fast-paths.md) |
+| 25 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/SKILL.md) |
+| 26 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-modelopt-quant/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-modelopt-quant/SKILL.md) |
+| 27 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-performance/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-performance/SKILL.md) |
 
 ---
 

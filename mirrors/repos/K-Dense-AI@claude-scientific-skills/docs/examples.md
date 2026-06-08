@@ -96,7 +96,7 @@ Step 6: Predict properties with DeepChem
 Step 7: Virtual screening with DiffDock
 - Perform molecular docking on top 50 candidates
 - Dock into wild-type EGFR and T790M mutant
-- Calculate binding energies and interaction patterns
+- Rank generated poses by DiffDock confidence, then rescore with GNINA/MM-GBSA for affinity-oriented prioritization
 - Identify compounds with favorable binding to both forms
 
 Step 8: Search PubChem for commercial availability
@@ -568,7 +568,7 @@ Step 5: Search ZINC15 for fragment library
 
 Step 6: Virtual screening with fragment library
 - Use DiffDock to dock fragments into interface pocket
-- Rank by predicted binding affinity
+- Rank by pose confidence, then rescore promising poses with an affinity-oriented method
 - Identify fragments binding to hot spot residues
 - Select top 50 fragments for elaboration
 
@@ -582,7 +582,7 @@ Step 7: Fragment elaboration with RDKit
 
 Step 8: Second round of virtual screening
 - Dock elaborated molecules with DiffDock
-- Calculate binding energies and interaction patterns
+- Analyze interaction patterns and rescore poses with GNINA/MM-GBSA or another affinity-oriented method
 - Prioritize molecules with:
   * Strong binding to hot spot residues
   * Multiple H-bonds and hydrophobic contacts

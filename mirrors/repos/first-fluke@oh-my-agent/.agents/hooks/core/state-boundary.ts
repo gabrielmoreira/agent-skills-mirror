@@ -1,12 +1,13 @@
 #!/usr/bin/env bun
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { basename, join } from "node:path";
+import { recallFacts } from "./agentmemory-client.ts";
 import { agyConversationId, agyProjectDir, isAgyInput } from "./agy-input.ts";
 import { resolveGitRoot } from "./fs-utils.ts";
 import { syncGrokContext } from "./grok-context.ts";
 import { makePromptOutput } from "./hook-output.ts";
 import { writeInjectLog } from "./inject-log.ts";
-import { emitEvent, readEvents } from "./state-emit.ts";
+import { emitEvent, type OmaEvent, readEvents } from "./state-emit.ts";
 import { getActiveSid, readIndex, setLastSession } from "./state-marker.ts";
 import type { HandlerCtx, HandlerResult, HookInput, Vendor } from "./types.ts";
 import { type MemoryFact, renderStateSnapshot } from "./vendor-renderer.ts";
@@ -108,10 +109,49 @@ function getVendorSid(input: Record<string, unknown>): string {
   );
 }
 
+/**
+ * Build a recall query for boundary rehydration. The current user prompt is the
+ * strongest intent signal, so it leads the query; the project name plus the most
+ * recent decision subjects/summaries and workflow phase supplement it for
+ * continuity when the prompt is terse. Returns "" when nothing meaningful is
+ * available (recall is then skipped, keeping the snapshot to local events only).
+ */
+export function buildRecallQuery(
+  projectDir: string,
+  recentEvents: OmaEvent[],
+  promptText?: string,
+): string {
+  const terms: string[] = [];
+  const prompt = (promptText ?? "").trim();
+  // Lead with the prompt (capped) so it dominates the semantic match; the rest
+  // is continuity context the search can still use within the length budget.
+  if (prompt) terms.push(prompt.slice(0, 300));
+  terms.push(basename(projectDir));
+  // Most recent first so the freshest decisions dominate the supplement.
+  for (const event of [...recentEvents].reverse()) {
+    const payload = event.payload ?? {};
+    const pick = (key: string): void => {
+      const value = payload[key];
+      if (typeof value === "string" && value.trim()) terms.push(value.trim());
+    };
+    if (event.kind === "decision.made") {
+      pick("subject");
+      pick("decision");
+    } else if (event.kind === "blocker.raised") {
+      pick("summary");
+    } else if (event.kind === "workflow.phase") {
+      pick("phase");
+    }
+  }
+  // Cap query length so we send a focused signal, not the whole timeline.
+  return terms.slice(0, 8).join(" ").slice(0, 400).trim();
+}
+
 export async function onBoundary(
   projectDir: string,
   vendor: Vendor,
   vendorSid: string,
+  promptText?: string,
 ): Promise<string | null> {
   const idx = readIndex(projectDir);
   const previous = idx.lastSession;
@@ -150,7 +190,13 @@ export async function onBoundary(
   setLastSession(projectDir, vendor, vendorSid);
 
   const recentEvents = readEvents(projectDir, sid).slice(-10);
-  const facts: MemoryFact[] = [];
+  // L2/L3 rehydration: recall enriched facts from AgentMemory for this working
+  // context. Best-effort — returns [] when the daemon is down or recall times
+  // out, so the snapshot degrades to local L1 events only (design D33/D34).
+  const recallQuery = buildRecallQuery(projectDir, recentEvents, promptText);
+  const facts: MemoryFact[] = recallQuery
+    ? await recallFacts(recallQuery, 5)
+    : [];
   const rendered = renderStateSnapshot({
     vendor,
     sid,
@@ -166,7 +212,7 @@ export async function onBoundary(
     fromVendorSid: previous?.vendorSid ?? null,
     toVendor: vendor,
     toVendorSid: vendorSid,
-    recallQuery: null,
+    recallQuery: recallQuery || null,
     facts,
     rendered,
   });
@@ -196,7 +242,14 @@ export async function run(
   if (input.kind !== "prompt") return null;
 
   const { vendor, cwd: projectDir, sid: vendorSid = "unknown" } = ctx;
-  const rendered = await onBoundary(projectDir, vendor, vendorSid);
+  // input.kind === "prompt" is guaranteed by the guard above; the user prompt is
+  // the primary recall signal for boundary rehydration.
+  const rendered = await onBoundary(
+    projectDir,
+    vendor,
+    vendorSid,
+    input.prompt,
+  );
   if (!rendered) return null;
   return { type: "context", additionalContext: rendered };
 }

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 11 followed patterns, 15 file(s) materialized.
+Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 12 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 11 follow
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 11 |
-| Files         | 15 |
+| Followed pats | 12 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,6 +59,7 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 11 follow
 - `docs/shared-memory.md`
 - `docs/observability.md`
 - `docs/cli.md`
+- `docs/consensus.md`
 - `examples/integrations/README.md`
 - `examples/README.md`
 - `examples/production/README.md`
@@ -75,15 +76,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`examples/integrations/with-vercel-ai-sdk/README.md`](examples/integrations/with-vercel-ai-sdk/README.md) |
 | 5 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
 | 6 | → | [`docs/cli.md`](docs/cli.md) |
-| 7 | → | [`docs/context-management.md`](docs/context-management.md) |
-| 8 | → | [`docs/observability.md`](docs/observability.md) |
-| 9 | → | [`docs/providers.md`](docs/providers.md) |
-| 10 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
-| 11 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
-| 12 | → | [`examples/integrations/README.md`](examples/integrations/README.md) |
-| 13 | → | [`examples/production/README.md`](examples/production/README.md) |
-| 14 | → | [`examples/README.md`](examples/README.md) |
-| 15 | → | [`README.md`](README.md) |
+| 7 | → | [`docs/consensus.md`](docs/consensus.md) |
+| 8 | → | [`docs/context-management.md`](docs/context-management.md) |
+| 9 | → | [`docs/observability.md`](docs/observability.md) |
+| 10 | → | [`docs/providers.md`](docs/providers.md) |
+| 11 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
+| 12 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
+| 13 | → | [`examples/integrations/README.md`](examples/integrations/README.md) |
+| 14 | → | [`examples/production/README.md`](examples/production/README.md) |
+| 15 | → | [`examples/README.md`](examples/README.md) |
+| 16 | → | [`README.md`](README.md) |
 
 ---
 

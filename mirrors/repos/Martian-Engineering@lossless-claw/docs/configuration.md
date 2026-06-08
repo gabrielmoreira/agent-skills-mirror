@@ -81,6 +81,11 @@ Most installations only need to override a handful of keys. If you want a comple
     "startup": "rotate",
     "runtime": "rotate"
   },
+  "independentLogFile": {
+    "enabled": true,
+    "file": "/tmp/openclaw/lossless-claw-2026-05-19.log",
+    "maxFileBytes": 104857600
+  },
   "cacheAwareCompaction": {
     "enabled": true,
     "cacheTTLSeconds": 300,
@@ -158,10 +163,15 @@ openclaw plugins install --link /path/to/lossless-claw
 | `autoRotateSessionFiles.sizeBytes` | `integer` | `2097152` | `LCM_AUTO_ROTATE_SESSION_FILES_SIZE_BYTES` | Byte threshold that triggers automatic session-file rotation. |
 | `autoRotateSessionFiles.startup` | `"rotate" \| "warn" \| "off"` | `"rotate"` | `LCM_AUTO_ROTATE_SESSION_FILES_STARTUP` | Startup behavior for oversized indexed OpenClaw session transcripts that also have active LCM bootstrap state. |
 | `autoRotateSessionFiles.runtime` | `"rotate" \| "warn" \| "off"` | `"rotate"` | `LCM_AUTO_ROTATE_SESSION_FILES_RUNTIME` | Runtime behavior after post-turn checks. Runtime `rotate` logs deferral for active session JSONL rewrites and leaves direct rotation to startup or manual `/lcm rotate`. |
+| `independentLogFile.enabled` | `boolean` | `true` | `LCM_LOG_FILE_ENABLED` | Writes lossless-claw JSONL logs to an independent plugin-owned file in addition to OpenClaw's runtime logger. |
+| `independentLogFile.file` | `string` | `/tmp/openclaw/lossless-claw-YYYY-MM-DD.log` | `LCM_LOG_FILE` | Optional log path. A dated `lossless-claw-YYYY-MM-DD.log` path rolls over daily. |
+| `independentLogFile.maxFileBytes` | `integer` | `104857600` | `LCM_LOG_MAX_FILE_BYTES` | Size threshold for rotating the active lossless-claw log file to `.1.log` through `.5.log`. |
 
 > **Multi-profile note:** `OPENCLAW_STATE_DIR` (set by the host OpenClaw gateway) controls where state is stored. When two gateways run on the same host (e.g. separate bot personas), each gateway sets its own `OPENCLAW_STATE_DIR` and lossless-claw automatically uses that directory for the database, large-file payloads, auth-profile lookups, and legacy secrets — no per-profile plugin config is needed.
 
 Automatic session-file rotation rewrites only the live session transcript, keeps the active LCM conversation and durable history intact, and refreshes the bootstrap checkpoint. Before manual or startup rewrites, rotation forces leaf-only compaction for raw context outside the preserved tail so trimmed transcript messages are covered by LCM summaries without running unrelated summary-condensation passes. Startup rotation first scans OpenClaw's current indexed session stores for configured agents, then intersects those candidates with active LCM conversations and matching bootstrap file mappings. Runtime rotation checks from `afterTurn()` and `maintain()` intentionally do not directly rewrite active session JSONL because embedded prompt-lock fences can still be open while tool-call loops and host background maintenance overlap; runtime `rotate` logs a deferral until startup, manual `/lcm rotate`, or a future host-owned full-transcript rewrite primitive is available. Automatic rotation does not create a SQLite backup by default; set `autoRotateSessionFiles.createBackups` to `true` to make startup rotation create one pre-rotation LCM database backup for the batch before any transcript is rewritten. Manual `/lcm rotate` always keeps its backup-backed behavior regardless of this flag. Rotation never runs for ignored sessions, stateless sessions, or sessions without active LCM state. The preserved JSONL tail follows the existing rotate behavior, which is controlled by `freshTailCount`. Transcript GC uses the host-provided `rewriteTranscriptEntries` primitive and defers until host-approved background maintenance when `transcriptGcEnabled` is enabled.
+
+Lossless-claw writes routine operational JSONL logs by default at `/tmp/openclaw/lossless-claw-YYYY-MM-DD.log`, beside OpenClaw's `/tmp/openclaw/openclaw-YYYY-MM-DD.log`. Routine info and debug lines go to the independent file instead of the shared OpenClaw log. Startup banners and warning/error lines still go through OpenClaw's runtime logger so gateway-level startup and failure diagnostics remain visible. The independent file follows the same practical rotation model as OpenClaw: a dated filename rolls over when the local date changes, stale dated files are pruned after 3 days, and an oversized active file is rotated through `.1.log` to `.5.log`.
 
 Every automatic decision emits grep-able log lines prefixed with `[lcm] auto-rotate:`. Startup emits one compact summary line with `phase=startup`, `action=summary`, `scanned`, `eligible`, `rotated`, `warned`, `skipped`, `durationMs`, `bytesRemoved`, and backup fields when a batch backup was created; quiet skips such as missing files, missing bootstrap mappings, and below-threshold files are counted there instead of producing one line per candidate. Rotation detail lines include `phase`, `action`, `sessionId`, `sessionKey`, `sessionFile`, `sizeBytes`, `thresholdBytes`, `durationMs`, `backupPath`, `bytesRemoved`, `preservedTailMessageCount`, and `checkpointSize`; real warning lines include the same available context plus `reason` or `error`.
 
