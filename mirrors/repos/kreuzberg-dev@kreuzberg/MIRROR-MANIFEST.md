@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kreuzberg-dev/kreuzberg` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `kreuzberg-dev/kreuzberg` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kreuzberg-dev/kreuzberg` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,15 +65,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.ai-rulez/skills/format-specific-extraction/SKILL.md`](.ai-rulez/skills/format-specific-extraction/SKILL.md) |
 | 5 | ✓ | [`.ai-rulez/skills/plugin-architecture-patterns/SKILL.md`](.ai-rulez/skills/plugin-architecture-patterns/SKILL.md) |
 | 6 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
-| 7 | ✓ | [`skills/kreuzberg/references/advanced-features.md`](skills/kreuzberg/references/advanced-features.md) |
-| 8 | ✓ | [`skills/kreuzberg/references/cli-reference.md`](skills/kreuzberg/references/cli-reference.md) |
-| 9 | ✓ | [`skills/kreuzberg/references/configuration.md`](skills/kreuzberg/references/configuration.md) |
-| 10 | ✓ | [`skills/kreuzberg/references/nodejs-api.md`](skills/kreuzberg/references/nodejs-api.md) |
-| 11 | ✓ | [`skills/kreuzberg/references/other-bindings.md`](skills/kreuzberg/references/other-bindings.md) |
-| 12 | ✓ | [`skills/kreuzberg/references/python-api.md`](skills/kreuzberg/references/python-api.md) |
-| 13 | ✓ | [`skills/kreuzberg/references/rust-api.md`](skills/kreuzberg/references/rust-api.md) |
-| 14 | ✓ | [`skills/kreuzberg/references/supported-formats.md`](skills/kreuzberg/references/supported-formats.md) |
-| 15 | ✓ | [`skills/kreuzberg/SKILL.md`](skills/kreuzberg/SKILL.md) |
 
 ---
 

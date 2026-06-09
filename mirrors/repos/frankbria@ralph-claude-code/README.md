@@ -179,7 +179,7 @@ cd ralph-claude-code
 ./install.sh
 ```
 
-This adds `ralph`, `ralph-monitor`, `ralph-setup`, `ralph-import`, `ralph-migrate`, `ralph-enable`, and `ralph-enable-ci` commands to your PATH.
+This adds `ralph`, `ralph-monitor`, `ralph-setup`, `ralph-import`, `ralph-queue`, `ralph-migrate`, `ralph-enable`, and `ralph-enable-ci` commands to your PATH.
 
 > **Note**: You only need to do this once per system. After installation, you can delete the cloned repository if desired.
 
@@ -321,10 +321,29 @@ Loop 8: Claude outputs "All tasks complete, project ready"
 ```
 
 **Other exit conditions:**
-- All tasks in `.ralph/fix_plan.md` marked complete
+- All tasks in `.ralph/fix_plan.md` marked complete — except unchecked items under **optional sections**
 - Multiple consecutive "done" signals from Claude Code
 - Too many test-focused loops (indicating feature completeness)
 - Claude API 5-hour usage limit reached (with user prompt to wait or exit)
+
+#### Optional / Future sections in fix_plan.md
+
+By default, Ralph keeps looping until **every** `- [ ]` item is checked. To mark work as
+genuinely optional so it does not block completion, put it under an optional section:
+
+```markdown
+## High Priority
+- [x] Core feature
+
+## Optional
+- [ ] Frontend integration   # does NOT block exit
+- [ ] SMS notifications      # does NOT block exit
+```
+
+Unchecked items under `Optional`, `Future`, `Future Enhancements`, or `Nice to Have` headings
+(and their subsections) are ignored by the completion check. Customize the section names with
+`OPTIONAL_SECTIONS` in `.ralphrc` (comma-separated, case-insensitive). This resolves the
+deadlock where Claude treats low-priority items as skippable while Ralph waits for them.
 
 ## Enabling Ralph in Existing Projects
 
@@ -485,6 +504,97 @@ Generated plans are shown for approval before conversion. Non-interactive sessio
 ### Troubleshooting
 - **"GitHub CLI (gh) is not installed"** — install it from https://cli.github.com
 - **"GitHub CLI is not authenticated"** — run `gh auth login`
+
+## GitHub Issue Lifecycle
+
+Once development is underway, Ralph can close the loop on the whole GitHub workflow. Pass
+`--github-issue <ref>` (a number `69`, `#69`, `owner/repo#69`, or a full issue URL) to `ralph`
+and opt into any of the lifecycle actions below. They all use the `gh` CLI (so the same
+`gh auth login` prerequisite applies), and every GitHub operation degrades gracefully — if a
+call is denied, Ralph logs a warning and keeps developing rather than crashing the loop.
+
+```bash
+# Post a progress comment to the issue every 5 loops while developing
+ralph --github-issue 69 --comment-progress --comment-interval 5
+
+# On completion: open a PR linked to the issue, comment a summary, and close it
+ralph --github-issue 69 --create-pr --link-issue --close-summary --auto-close
+
+# Add labels when closing, and open a follow-up issue for any TODO/FIXME left in the diff
+ralph --github-issue 69 --auto-close --add-label completed \
+      --create-followups --followup-label tech-debt
+
+# Open the PR as a draft for manual review before merge
+ralph --github-issue 69 --create-pr --draft-pr
+```
+
+| Flag | Effect |
+|------|--------|
+| `--github-issue REF` | Track the issue (required for all lifecycle features) |
+| `--comment-progress` | Post progress comments during development |
+| `--comment-interval N` | Comment every N loops (default: 5) |
+| `--auto-close` | Close the issue on graceful completion |
+| `--close-summary` | Post a completion summary comment |
+| `--create-pr` | Create a pull request on completion |
+| `--link-issue` | Add `Closes #N` to the PR body |
+| `--draft-pr` | Create the PR as a draft |
+| `--create-followups` | Open a grouped follow-up issue for TODO/FIXME markers added during dev |
+| `--followup-label LABEL` | Label for follow-up issues (default: `tech-debt`) |
+| `--add-label LABEL` | Label to add on close (repeatable) |
+
+These can also be set in `.ralphrc` (`COMMENT_PROGRESS`, `AUTO_CLOSE`, `CREATE_PR`, etc.).
+Lifecycle state is tracked in `.ralph/.github_lifecycle_state`.
+
+## Batch Processing and Issue Queue
+
+For larger efforts, the `ralph-queue` command builds a persistent queue of work items (GitHub issues or local PRD specs) and processes them sequentially, respecting priority and dependencies. The queue is stored at `.ralph/queue.json` and survives restarts, so an interrupted run can be resumed. See [docs/QUEUE_MANAGEMENT.md](docs/QUEUE_MANAGEMENT.md) for the full guide.
+
+### Building a queue
+
+```bash
+# Queue issues by metadata filter (reuses the import filter flags)
+ralph-queue add --github-label "bug,P0"
+ralph-queue add --github-milestone "v1.0"
+
+# Queue specific issues by number
+ralph-queue add --github-issues 69,70,71
+
+# Queue a local PRD/spec file
+ralph-queue add --prd ./docs/feature.md
+```
+
+When a GitHub issue is queued, its priority is read from `P0`–`P9` / `priority: PN` labels and its dependencies are parsed from the body (`depends on #N`, `blocked by #N`, `requires #N`).
+
+### Managing the queue
+
+```bash
+ralph-queue status            # Show the queue (counts + items); --json for machine output
+ralph-queue next              # Print the id of the next ready item
+ralph-queue reorder           # Sort the queue by priority (P0 first)
+ralph-queue validate          # Check for circular dependencies
+ralph-queue remove 69         # Remove an item by issue number or id
+ralph-queue clear             # Empty the queue
+```
+
+These are also available through `ralph` itself: `ralph --queue-status`, `ralph --queue-next`, `ralph --queue-clear`, and `ralph --queue-remove <id|N>`.
+
+### Processing the queue
+
+```bash
+# Process all ready pending items in priority/dependency order
+ralph --process-queue
+ralph-queue process
+
+# Stop at the first failure instead of skipping it
+ralph --process-queue --halt-on-failure
+
+# Resume after an interruption (only pending items are picked up)
+ralph --resume-queue
+```
+
+For each ready item the processor stages the project from the issue/spec, runs the Ralph loop, commits the work as `Fix #N: <title>` (one commit per issue when in a git repo), then advances. Failed items are marked `failed` and skipped by default (or halt the run with `--halt-on-failure`); items whose dependencies never complete remain `pending`. Progress is written to `.ralph/logs/queue_processing.log` and shown in the `ralph-monitor` dashboard.
+
+Concurrent (parallel) processing is intentionally out of scope — items are processed one at a time on a single branch.
 - **"Could not fetch issue #N"** — check the issue number, your repo access, and the `--repo` value
 - **"No issues match the specified filters"** — relax or remove some filters; only open issues are matched unless `--github-state closed|all` is given. `--dry-run` shows what a filter set matches.
 
@@ -952,6 +1062,12 @@ ralph [OPTIONS]
   --circuit-status        Show circuit breaker status
   --auto-reset-circuit    Auto-reset circuit breaker on startup (bypasses cooldown)
   --reset-session         Reset session state manually
+  --queue-status          Show the issue queue and exit
+  --process-queue         Process pending queued issues sequentially (--halt-on-failure to stop on first failure)
+  --resume-queue          Resume processing the remaining pending issues
+  --queue-next            Print the id of the next ready queued issue
+  --queue-clear           Remove all items from the queue
+  --queue-remove <id|N>   Remove one item from the queue
 ```
 
 > **Full reference**: every flag is documented in depth, with examples and `.ralphrc` patterns, in [docs/CLI_OPTIONS.md](docs/CLI_OPTIONS.md).
@@ -962,6 +1078,9 @@ ralph-setup project-name     # Create new Ralph project
 ralph-enable                 # Enable Ralph in existing project (interactive)
 ralph-enable-ci              # Enable Ralph in existing project (non-interactive)
 ralph-import prd.md project  # Convert PRD/specs to Ralph project
+ralph-queue add --github-label bug   # Build a batch queue of issues
+ralph-queue status           # Show the issue queue
+ralph --process-queue        # Process the queue sequentially
 ralph --monitor              # Start with integrated monitoring
 ralph --status               # Check current loop status
 ralph --verbose              # Enable detailed progress updates

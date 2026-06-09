@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import preflight
 from errors import SkillError
+from nfcore_4_1_0_contract import POLICY_SOURCE_NFCORE_DOCS
 
 _PIPELINE_SOURCE = {
     "source_kind": "local_checkout",
@@ -21,9 +22,23 @@ _PIPELINE_SOURCE = {
 
 
 def _mock_env(monkeypatch):
-    monkeypatch.setattr(preflight, "_check_java", lambda: {"path": "/usr/bin/java", "version": "17.0.8"})
-    monkeypatch.setattr(preflight, "_check_nextflow", lambda: {"path": "/usr/bin/nextflow", "version": "25.04.0"})
-    monkeypatch.setattr(preflight, "_check_profile", lambda profile: {"profile": profile, "backend_path": "/usr/bin/docker", "backend_ready": True})
+    monkeypatch.setattr(
+        preflight, "_check_java", lambda: {"path": "/usr/bin/java", "version": "17.0.8"}
+    )
+    monkeypatch.setattr(
+        preflight,
+        "_check_nextflow",
+        lambda: {"path": "/usr/bin/nextflow", "version": "25.04.0"},
+    )
+    monkeypatch.setattr(
+        preflight,
+        "_check_profile",
+        lambda profile: {
+            "profile": profile,
+            "backend_path": "/usr/bin/docker",
+            "backend_ready": True,
+        },
+    )
 
 
 def _args(tmp_path: Path) -> Namespace:
@@ -35,6 +50,7 @@ def _args(tmp_path: Path) -> Namespace:
         profile="docker",
         demo=False,
         email=None,
+        email_on_fail=None,
         genome=None,
         fasta=str(tmp_path / "genome.fa"),
         gtf=str(tmp_path / "genes.gtf"),
@@ -65,7 +81,9 @@ def _args(tmp_path: Path) -> Namespace:
 def test_preflight_happy_path(tmp_path, monkeypatch):
     args = _args(tmp_path)
     Path(args.fasta).write_text(">chr1\nACGT\n", encoding="utf-8")
-    Path(args.gtf).write_text("chr1\tsrc\tgene\t1\t4\t.\t+\t.\tgene_id \"g1\";\n", encoding="utf-8")
+    Path(args.gtf).write_text(
+        'chr1\tsrc\tgene\t1\t4\t.\t+\t.\tgene_id "g1";\n', encoding="utf-8"
+    )
     _mock_env(monkeypatch)
     result = preflight.run_preflight(
         args,
@@ -73,6 +91,51 @@ def test_preflight_happy_path(tmp_path, monkeypatch):
         samplesheet_summary={"sample_count": 1, "unknown_columns": []},
     )
     assert result["ok"] is True
+
+
+def test_profile_accepts_safe_institutional_executor_component(monkeypatch):
+    monkeypatch.setattr(
+        preflight,
+        "_check_singularity_compatible_profile",
+        lambda profile: {
+            "profile": profile,
+            "backend_path": "/usr/bin/singularity",
+            "backend_ready": True,
+        },
+    )
+    result = preflight._check_profile("singularity,slurm")
+
+    assert result["profile"] == "singularity,slurm"
+    assert result["backend_ready"] is True
+    assert result["components"] == ["singularity", "slurm"]
+
+
+def test_profile_rejects_unsafe_unknown_component():
+    with pytest.raises(SkillError) as exc:
+        preflight._check_profile("docker,bad profile")
+
+    assert exc.value.error_code == "INVALID_PROFILE"
+    assert exc.value.details["invalid_components"] == ["bad profile"]
+
+
+def test_preflight_rejects_missing_nextflow_config(tmp_path, monkeypatch):
+    args = _args(tmp_path)
+    args.extra_config = [str(tmp_path / "missing.config")]
+    Path(args.fasta).write_text(">chr1\nACGT\n", encoding="utf-8")
+    Path(args.gtf).write_text(
+        'chr1\tsrc\tgene\t1\t4\t.\t+\t.\tgene_id "g1";\n', encoding="utf-8"
+    )
+    _mock_env(monkeypatch)
+
+    with pytest.raises(SkillError) as exc:
+        preflight.run_preflight(
+            args,
+            pipeline_source=_PIPELINE_SOURCE,
+            samplesheet_summary={"sample_count": 1, "unknown_columns": []},
+        )
+
+    assert exc.value.error_code == "INVALID_PRESET_CONFIGURATION"
+    assert exc.value.details["field"] == "extra_config"
 
 
 def test_preflight_rejects_missing_reference(tmp_path, monkeypatch):
@@ -94,7 +157,7 @@ def test_fasta_path_with_whitespace_fails_before_nextflow_schema(tmp_path, monke
     fasta = fasta_dir / "genome.fa"
     gtf = tmp_path / "genes.gtf"
     fasta.write_text(">chr1\nACGT\n", encoding="utf-8")
-    gtf.write_text("chr1\tsrc\tgene\t1\t4\t.\t+\t.\tgene_id \"g1\";\n", encoding="utf-8")
+    gtf.write_text('chr1\tsrc\tgene\t1\t4\t.\t+\t.\tgene_id "g1";\n', encoding="utf-8")
     args.fasta = str(fasta)
     args.gtf = str(gtf)
     _mock_env(monkeypatch)
@@ -108,28 +171,6 @@ def test_fasta_path_with_whitespace_fails_before_nextflow_schema(tmp_path, monke
 
     assert exc.value.error_code == "INVALID_PRESET_CONFIGURATION"
     assert exc.value.details["field"] == "fasta"
-
-
-def test_preflight_rejects_fasta_extension_not_matching_nfcore_schema(tmp_path, monkeypatch):
-    args = _args(tmp_path)
-    fasta = tmp_path / "genome.txt"
-    gtf = tmp_path / "genes.gtf"
-    fasta.write_text(">chr1\nACGT\n", encoding="utf-8")
-    gtf.write_text("chr1\tsrc\tgene\t1\t4\t.\t+\t.\tgene_id \"g1\";\n", encoding="utf-8")
-    args.fasta = str(fasta)
-    args.gtf = str(gtf)
-    _mock_env(monkeypatch)
-
-    with pytest.raises(SkillError) as exc:
-        preflight.run_preflight(
-            args,
-            pipeline_source=_PIPELINE_SOURCE,
-            samplesheet_summary={"sample_count": 1, "unknown_columns": []},
-        )
-
-    assert exc.value.error_code == "INVALID_PRESET_CONFIGURATION"
-    assert exc.value.details["field"] == "fasta"
-    assert exc.value.details["schema_pattern"] == r"^\S+\.fn?a(sta)?(\.gz)?$"
 
 
 def test_preflight_rejects_email_not_matching_nfcore_schema(tmp_path, monkeypatch):
@@ -148,25 +189,17 @@ def test_preflight_rejects_email_not_matching_nfcore_schema(tmp_path, monkeypatc
     assert exc.value.details["field"] == "email"
 
 
-def test_standard_preset_requires_explicit_non_auto_protocol(tmp_path, monkeypatch):
+@pytest.mark.parametrize("preset", ["standard", "star", "kallisto"])
+def test_missing_protocol_is_rejected_for_non_cellranger_presets(
+    tmp_path, monkeypatch, preset
+):
     args = _args(tmp_path)
-    args.preset = "standard"
+    args.preset = preset
     args.protocol = None
-    _mock_env(monkeypatch)
-    with pytest.raises(SkillError) as exc:
-        preflight.run_preflight(
-            args,
-            pipeline_source=_PIPELINE_SOURCE,
-            samplesheet_summary={"sample_count": 1, "unknown_columns": []},
-        )
-    assert exc.value.error_code == "INVALID_PRESET_CONFIGURATION"
-    assert exc.value.details["protocol"] == "auto"
-
-
-def test_standard_simpleaf_rejects_smartseq_protocol(tmp_path, monkeypatch):
-    args = _args(tmp_path)
-    args.preset = "standard"
-    args.protocol = "smartseq"
+    Path(args.fasta).write_text(">chr1\nACGT\n", encoding="utf-8")
+    Path(args.gtf).write_text(
+        'chr1\tsrc\tgene\t1\t4\t.\t+\t.\tgene_id "g1";\n', encoding="utf-8"
+    )
     _mock_env(monkeypatch)
 
     with pytest.raises(SkillError) as exc:
@@ -177,167 +210,170 @@ def test_standard_simpleaf_rejects_smartseq_protocol(tmp_path, monkeypatch):
         )
 
     assert exc.value.error_code == "INVALID_PRESET_CONFIGURATION"
-    assert exc.value.details == {"preset": "standard", "protocol": "smartseq"}
+    assert exc.value.details["missing_field"] == "protocol"
+    assert exc.value.details["policy_source"] == POLICY_SOURCE_NFCORE_DOCS
 
 
-def test_star_accepts_smartseq_protocol_supported_by_upstream(tmp_path, monkeypatch):
+@pytest.mark.parametrize("preset", ["cellranger", "cellrangerarc", "cellrangermulti"])
+def test_missing_protocol_preserves_cellranger_auto_detection(
+    tmp_path, monkeypatch, preset
+):
     args = _args(tmp_path)
-    args.preset = "star"
+    args.preset = preset
+    args.protocol = None
+    args.genome = "GRCh38"
+    args.fasta = None
+    args.gtf = None
+    _mock_env(monkeypatch)
+
+    result = preflight.run_preflight(
+        args,
+        pipeline_source=_PIPELINE_SOURCE,
+        samplesheet_summary={
+            "sample_count": 1,
+            "unknown_columns": [],
+            "feature_types": ["gex"],
+        },
+    )
+
+    assert result["ok"] is True
+
+
+@pytest.mark.parametrize("preset", ["star", "kallisto"])
+def test_scrnaseq_accepts_smartseq_protocol_for_documented_presets(
+    tmp_path, monkeypatch, preset
+):
+    args = _args(tmp_path)
+    args.preset = preset
     args.protocol = "smartseq"
     Path(args.fasta).write_text(">chr1\nACGT\n", encoding="utf-8")
-    Path(args.gtf).write_text("chr1\tsrc\tgene\t1\t4\t.\t+\t.\tgene_id \"g1\";\n", encoding="utf-8")
+    Path(args.gtf).write_text(
+        'chr1\tsrc\tgene\t1\t4\t.\t+\t.\tgene_id "g1";\n', encoding="utf-8"
+    )
     _mock_env(monkeypatch)
 
     result = preflight.run_preflight(
         args,
         pipeline_source=_PIPELINE_SOURCE,
-        samplesheet_summary={"sample_count": 1, "unknown_columns": []},
+        samplesheet_summary={
+            "sample_count": 1,
+            "unknown_columns": [],
+            "feature_types": ["gex"],
+        },
     )
 
     assert result["ok"] is True
 
 
-def test_cellrangerarc_accepts_explicit_protocol(tmp_path, monkeypatch):
-    """cellrangerarc must not hard-block non-auto protocols — the pipeline only warns and
-    passes them verbatim to the aligner (Utils.groovy:17-18)."""
+@pytest.mark.parametrize(
+    "preset", ["standard", "cellranger", "cellrangerarc", "cellrangermulti"]
+)
+def test_scrnaseq_rejects_smartseq_protocol_for_unsupported_presets(
+    tmp_path, monkeypatch, preset
+):
     args = _args(tmp_path)
-    args.preset = "cellrangerarc"
-    args.protocol = "10XV3"
-    args.genome = "GRCh38"
-    args.fasta = None
-    args.gtf = None
+    args.preset = preset
+    args.protocol = "smartseq"
+    if preset in {"cellranger", "cellrangerarc", "cellrangermulti"}:
+        args.genome = "GRCh38"
+        args.fasta = None
+        args.gtf = None
     _mock_env(monkeypatch)
-    result = preflight.run_preflight(
-        args,
-        pipeline_source=_PIPELINE_SOURCE,
-        samplesheet_summary={"sample_count": 1, "unknown_columns": []},
-    )
-    assert result["ok"] is True
 
-
-def test_cellrangerarc_accepts_auto_protocol(tmp_path, monkeypatch):
-    """cellrangerarc must accept protocol=auto — this was the only allowed value before
-    F4 fix and must remain valid after the hard-block was removed."""
-    args = _args(tmp_path)
-    args.preset = "cellrangerarc"
-    args.protocol = "auto"
-    args.genome = "GRCh38"
-    args.fasta = None
-    args.gtf = None
-    _mock_env(monkeypatch)
-    result = preflight.run_preflight(
-        args,
-        pipeline_source=_PIPELINE_SOURCE,
-        samplesheet_summary={"sample_count": 1, "unknown_columns": []},
-    )
-    assert result["ok"] is True
-
-
-def test_cellranger_accepts_known_10x_protocol(tmp_path, monkeypatch):
-    """cellranger passes preflight with a standard 10x protocol."""
-    args = _args(tmp_path)
-    args.preset = "cellranger"
-    args.protocol = "10XV3"
-    args.genome = "GRCh38"
-    args.fasta = None
-    args.gtf = None
-    _mock_env(monkeypatch)
-    result = preflight.run_preflight(
-        args,
-        pipeline_source=_PIPELINE_SOURCE,
-        samplesheet_summary={"sample_count": 1, "unknown_columns": []},
-    )
-    assert result["ok"] is True
-
-
-def test_cellranger_accepts_auto_protocol(tmp_path, monkeypatch):
-    """cellranger must accept protocol=auto — the pipeline auto-detects chemistry.
-    This was previously hard-blocked before F2 fix (Utils.groovy:17-18)."""
-    args = _args(tmp_path)
-    args.preset = "cellranger"
-    args.protocol = "auto"
-    args.genome = "GRCh38"
-    args.fasta = None
-    args.gtf = None
-    _mock_env(monkeypatch)
-    result = preflight.run_preflight(
-        args,
-        pipeline_source=_PIPELINE_SOURCE,
-        samplesheet_summary={"sample_count": 1, "unknown_columns": []},
-    )
-    assert result["ok"] is True
-
-
-def test_cellranger_accepts_custom_protocol_string(tmp_path, monkeypatch):
-    """cellranger must not hard-block unrecognized protocols — the pipeline only warns and
-    passes them verbatim to the aligner (Utils.groovy:17-18)."""
-    args = _args(tmp_path)
-    args.preset = "cellranger"
-    args.protocol = "dropseq"
-    args.genome = "GRCh38"
-    args.fasta = None
-    args.gtf = None
-    _mock_env(monkeypatch)
-    result = preflight.run_preflight(
-        args,
-        pipeline_source=_PIPELINE_SOURCE,
-        samplesheet_summary={"sample_count": 1, "unknown_columns": []},
-    )
-    assert result["ok"] is True
-
-
-
-def test_missing_conda_uses_correct_error_code(monkeypatch):
-    import shutil
-    monkeypatch.setattr(shutil, "which", lambda name: None)
     with pytest.raises(SkillError) as exc:
-        preflight._check_profile("conda")
-    assert exc.value.error_code == "MISSING_CONDA"
+        preflight.run_preflight(
+            args,
+            pipeline_source=_PIPELINE_SOURCE,
+            samplesheet_summary={"sample_count": 1, "unknown_columns": []},
+        )
+
+    assert exc.value.error_code == "INVALID_PRESET_CONFIGURATION"
+    assert "Smart-seq" in exc.value.message
+    assert exc.value.details["policy_source"] == POLICY_SOURCE_NFCORE_DOCS
 
 
-def test_missing_singularity_uses_correct_error_code(monkeypatch):
-    import shutil
-    monkeypatch.setattr(shutil, "which", lambda name: None)
+@pytest.mark.parametrize("preset", ["standard", "star", "kallisto"])
+def test_non_cellranger_presets_reject_auto_protocol_case_insensitively(
+    tmp_path, monkeypatch, preset
+):
+    args = _args(tmp_path)
+    args.preset = preset
+    args.protocol = "AUTO"
+    _mock_env(monkeypatch)
+
     with pytest.raises(SkillError) as exc:
-        preflight._check_profile("singularity")
-    assert exc.value.error_code == "MISSING_SINGULARITY"
+        preflight.run_preflight(
+            args,
+            pipeline_source=_PIPELINE_SOURCE,
+            samplesheet_summary={"sample_count": 1, "unknown_columns": []},
+        )
+
+    assert exc.value.error_code == "INVALID_PRESET_CONFIGURATION"
+    assert exc.value.details["protocol"] == "AUTO"
+    assert exc.value.details["policy_source"] == POLICY_SOURCE_NFCORE_DOCS
 
 
-def test_missing_apptainer_uses_correct_error_code(monkeypatch):
-    import shutil
-    monkeypatch.setattr(shutil, "which", lambda name: None)
+@pytest.mark.parametrize(
+    ("preset", "protocol"),
+    [
+        ("cellranger", "dropseq"),
+        ("cellranger", "customchemistry"),
+        ("cellrangerarc", "10XV3"),
+        ("cellrangerarc", "customchemistry"),
+    ],
+)
+def test_cellranger_family_rejects_protocols_outside_nfcore_matrix(
+    tmp_path, monkeypatch, preset, protocol
+):
+    args = _args(tmp_path)
+    args.preset = preset
+    args.protocol = protocol
+    args.genome = "GRCh38"
+    args.fasta = None
+    args.gtf = None
+    _mock_env(monkeypatch)
+
     with pytest.raises(SkillError) as exc:
-        preflight._check_profile("apptainer")
-    assert exc.value.error_code == "MISSING_SINGULARITY"
+        preflight.run_preflight(
+            args,
+            pipeline_source=_PIPELINE_SOURCE,
+            samplesheet_summary={
+                "sample_count": 1,
+                "unknown_columns": [],
+                "feature_types": ["gex"],
+            },
+        )
+
+    assert exc.value.error_code == "INVALID_PRESET_CONFIGURATION"
+    assert exc.value.details["preset"] == preset
+    assert exc.value.details["protocol"] == protocol
+    assert exc.value.details["policy_source"] == POLICY_SOURCE_NFCORE_DOCS
 
 
-def test_singularity_profile_falls_back_to_apptainer_binary(monkeypatch):
-    """--profile singularity must accept an apptainer binary (they are compatible)."""
-    import shutil
-    monkeypatch.setattr(shutil, "which", lambda name: "/usr/bin/apptainer" if name == "apptainer" else None)
-    result = preflight._check_profile("singularity")
-    assert result["backend_ready"] is True
-    assert result["backend_path"] == "/usr/bin/apptainer"
+@pytest.mark.parametrize("preset", ["standard", "star", "kallisto"])
+def test_custom_protocol_passthrough_is_kept_for_documented_aligners(
+    tmp_path, monkeypatch, preset
+):
+    args = _args(tmp_path)
+    args.preset = preset
+    args.protocol = "customchemistry"
+    Path(args.fasta).write_text(">chr1\nACGT\n", encoding="utf-8")
+    Path(args.gtf).write_text(
+        'chr1\tsrc\tgene\t1\t4\t.\t+\t.\tgene_id "g1";\n', encoding="utf-8"
+    )
+    _mock_env(monkeypatch)
 
+    result = preflight.run_preflight(
+        args,
+        pipeline_source=_PIPELINE_SOURCE,
+        samplesheet_summary={
+            "sample_count": 1,
+            "unknown_columns": [],
+            "feature_types": ["gex"],
+        },
+    )
 
-def test_apptainer_profile_falls_back_to_singularity_binary(monkeypatch):
-    """--profile apptainer must accept a singularity binary (they are compatible)."""
-    import shutil
-    monkeypatch.setattr(shutil, "which", lambda name: "/usr/bin/singularity" if name == "singularity" else None)
-    result = preflight._check_profile("apptainer")
-    assert result["backend_ready"] is True
-    assert result["backend_path"] == "/usr/bin/singularity"
-
-
-def test_singularity_error_mentions_both_binaries(monkeypatch):
-    """Error details must list both singularity and apptainer so the user knows what to install."""
-    import shutil
-    monkeypatch.setattr(shutil, "which", lambda name: None)
-    with pytest.raises(SkillError) as exc:
-        preflight._check_profile("singularity")
-    tried = exc.value.details.get("tried", [])
-    assert "singularity" in tried
-    assert "apptainer" in tried
+    assert result["ok"] is True
 
 
 def test_output_dir_not_empty_raises(tmp_path, monkeypatch):
@@ -349,7 +385,7 @@ def test_output_dir_not_empty_raises(tmp_path, monkeypatch):
     fasta = tmp_path / "genome.fa"
     gtf = tmp_path / "genes.gtf"
     fasta.write_text(">chr1\nACGT\n", encoding="utf-8")
-    gtf.write_text("chr1\tsrc\tgene\t1\t4\t.\t+\t.\tgene_id \"g1\";\n", encoding="utf-8")
+    gtf.write_text('chr1\tsrc\tgene\t1\t4\t.\t+\t.\tgene_id "g1";\n', encoding="utf-8")
     args.fasta = str(fasta)
     args.gtf = str(gtf)
     _mock_env(monkeypatch)
@@ -360,34 +396,6 @@ def test_output_dir_not_empty_raises(tmp_path, monkeypatch):
             samplesheet_summary={"sample_count": 1, "unknown_columns": []},
         )
     assert exc.value.error_code == "OUTPUT_DIR_NOT_EMPTY"
-
-
-def test_parse_version_tuple_handles_java_format():
-    assert preflight._parse_version_tuple('openjdk version "17.0.8" 2023-07-18') == (17, 0, 8)
-
-
-def test_parse_version_tuple_handles_nextflow_format():
-    assert preflight._parse_version_tuple("      N E X T F L O W\n      version 25.04.0 build 5940") == (25, 4, 0)
-
-
-def test_parse_version_tuple_returns_empty_for_no_version():
-    assert preflight._parse_version_tuple("no version here at all") == ()
-
-
-def test_unsupported_profile_raises_invalid_profile(monkeypatch):
-    import shutil
-    monkeypatch.setattr(shutil, "which", lambda name: "/usr/bin/docker")
-    with pytest.raises(SkillError) as exc:
-        preflight._check_profile("unsupported_backend")
-    assert exc.value.error_code == "INVALID_PROFILE"
-
-
-def test_command_output_returns_empty_on_timeout(monkeypatch):
-    import subprocess as sp
-    def _raise(*a, **kw):
-        raise sp.TimeoutExpired(cmd=["java"], timeout=10)
-    monkeypatch.setattr(sp, "run", _raise)
-    assert preflight._command_output(["java", "-version"]) == ""
 
 
 def test_genome_shortcut_satisfies_reference_requirement(tmp_path, monkeypatch):
@@ -405,179 +413,9 @@ def test_genome_shortcut_satisfies_reference_requirement(tmp_path, monkeypatch):
     assert result["ok"] is True
 
 
-def test_cellrangerarc_preset_accepted_by_preflight(tmp_path, monkeypatch):
-    """cellrangerarc passes preflight when its reference and ARC-specific files are provided."""
-    args = _args(tmp_path)
-    args.preset = "cellrangerarc"
-    args.protocol = None
-    args.genome = "GRCh38"
-    args.fasta = None
-    args.gtf = None
-    arc_config = tmp_path / "arc_config.json"
-    motifs = tmp_path / "motifs.pfm"
-    arc_config.write_text("{}", encoding="utf-8")
-    motifs.write_text("MOTIF\n", encoding="utf-8")
-    args.cellrangerarc_config = str(arc_config)
-    args.motifs = str(motifs)
-    args.cellrangerarc_reference = "GRCh38-2024-A"
-    _mock_env(monkeypatch)
-    result = preflight.run_preflight(
-        args,
-        pipeline_source=_PIPELINE_SOURCE,
-        samplesheet_summary={"sample_count": 1, "unknown_columns": []},
-    )
-    assert result["ok"] is True
-
-
-def test_cellrangermulti_preset_accepted_by_preflight(tmp_path, monkeypatch):
-    """cellrangermulti must be a recognised preset that passes preflight when reference is provided."""
-    args = _args(tmp_path)
-    args.preset = "cellrangermulti"
-    args.genome = "GRCh38"
-    args.fasta = None
-    args.gtf = None
-    barcodes = tmp_path / "multi_barcodes.csv"
-    barcodes.write_text("sample,barcode\n", encoding="utf-8")
-    args.cellranger_multi_barcodes = str(barcodes)
-    _mock_env(monkeypatch)
-    result = preflight.run_preflight(
-        args,
-        pipeline_source=_PIPELINE_SOURCE,
-        samplesheet_summary={"sample_count": 1, "unknown_columns": []},
-    )
-    assert result["ok"] is True
-
-
-def test_cellrangerarc_reference_alone_does_not_satisfy_requirement(tmp_path, monkeypatch):
-    """cellrangerarc_reference is symbolic metadata, not a reference/index by itself."""
-    args = _args(tmp_path)
-    args.preset = "cellrangerarc"
-    args.protocol = None
-    args.genome = None
-    args.fasta = None
-    args.gtf = None
-    args.cellrangerarc_reference = "GRCh38-2024-A"
-    arc_config = tmp_path / "arc_config.json"
-    motifs = tmp_path / "motifs.pfm"
-    arc_config.write_text("{}", encoding="utf-8")
-    motifs.write_text("MOTIF\n", encoding="utf-8")
-    args.cellrangerarc_config = str(arc_config)
-    args.motifs = str(motifs)
-    _mock_env(monkeypatch)
-    with pytest.raises(SkillError) as exc:
-        preflight.run_preflight(
-            args,
-            pipeline_source=_PIPELINE_SOURCE,
-            samplesheet_summary={"sample_count": 1, "unknown_columns": []},
-        )
-    assert exc.value.error_code == "MISSING_REFERENCE"
-
-
-def test_cellrangerarc_missing_config_fails_preflight(tmp_path, monkeypatch):
-    """ARC-specific files must be validated before launching Nextflow."""
-    args = _args(tmp_path)
-    args.preset = "cellrangerarc"
-    args.protocol = None
-    args.genome = "GRCh38"
-    args.fasta = None
-    args.gtf = None
-    args.cellrangerarc_reference = "GRCh38-2024-A"
-    motifs = tmp_path / "motifs.pfm"
-    motifs.write_text("MOTIF\n", encoding="utf-8")
-    args.motifs = str(motifs)
-    _mock_env(monkeypatch)
-    with pytest.raises(SkillError) as exc:
-        preflight.run_preflight(
-            args,
-            pipeline_source=_PIPELINE_SOURCE,
-            samplesheet_summary={"sample_count": 1, "unknown_columns": []},
-        )
-    assert exc.value.error_code == "INVALID_PRESET_CONFIGURATION"
-    assert exc.value.details["missing_field"] == "cellrangerarc_config"
-
-
-def test_cellrangerarc_missing_reference_name_fails_preflight(tmp_path, monkeypatch):
-    """ARC build mode needs the symbolic reference name used by the ARC config."""
-    args = _args(tmp_path)
-    args.preset = "cellrangerarc"
-    args.protocol = None
-    args.genome = "GRCh38"
-    args.fasta = None
-    args.gtf = None
-    arc_config = tmp_path / "arc_config.json"
-    motifs = tmp_path / "motifs.pfm"
-    arc_config.write_text("{}", encoding="utf-8")
-    motifs.write_text("MOTIF\n", encoding="utf-8")
-    args.cellrangerarc_config = str(arc_config)
-    args.motifs = str(motifs)
-    _mock_env(monkeypatch)
-    with pytest.raises(SkillError) as exc:
-        preflight.run_preflight(
-            args,
-            pipeline_source=_PIPELINE_SOURCE,
-            samplesheet_summary={"sample_count": 1, "unknown_columns": []},
-        )
-    assert exc.value.error_code == "INVALID_PRESET_CONFIGURATION"
-    assert exc.value.details["missing_field"] == "cellrangerarc_reference"
-
-
-def test_cellrangerarc_motifs_are_optional_when_building_reference(tmp_path, monkeypatch):
-    """nf-core/scrnaseq treats motifs as optional for CellRanger ARC mkref."""
-    args = _args(tmp_path)
-    args.preset = "cellrangerarc"
-    args.protocol = None
-    args.genome = "GRCh38"
-    args.fasta = None
-    args.gtf = None
-    args.cellrangerarc_reference = "GRCh38-2024-A"
-    arc_config = tmp_path / "arc_config.json"
-    arc_config.write_text("{}", encoding="utf-8")
-    args.cellrangerarc_config = str(arc_config)
-    # motifs intentionally omitted
-    _mock_env(monkeypatch)
-    result = preflight.run_preflight(
-        args,
-        pipeline_source=_PIPELINE_SOURCE,
-        samplesheet_summary={"sample_count": 1, "unknown_columns": []},
-    )
-    assert result["ok"] is True
-
-
-def test_cellrangerarc_prebuilt_index_skips_build_files(tmp_path, monkeypatch):
-    """A prebuilt ARC/CellRanger index should not require motifs/config build inputs."""
-    args = _args(tmp_path)
-    args.preset = "cellrangerarc"
-    args.protocol = None
-    args.fasta = None
-    args.gtf = None
-    index = tmp_path / "cellranger_arc_index"
-    index.mkdir()
-    args.cellranger_index = str(index)
-    _mock_env(monkeypatch)
-    result = preflight.run_preflight(
-        args,
-        pipeline_source=_PIPELINE_SOURCE,
-        samplesheet_summary={"sample_count": 1, "unknown_columns": []},
-    )
-    assert result["ok"] is True
-
-
-def test_cellrangermulti_without_multiplexed_cmo_barcodes_passes_preflight(tmp_path, monkeypatch):
-    args = _args(tmp_path)
-    args.preset = "cellrangermulti"
-    args.genome = "GRCh38"
-    args.fasta = None
-    args.gtf = None
-    _mock_env(monkeypatch)
-    result = preflight.run_preflight(
-        args,
-        pipeline_source=_PIPELINE_SOURCE,
-        samplesheet_summary={"sample_count": 1, "unknown_columns": [], "feature_types": ["gex", "vdj"]},
-    )
-    assert result["ok"] is True
-
-
-def test_cellrangermulti_cmo_requires_barcodes(tmp_path, monkeypatch):
+def test_cellrangermulti_antibody_capture_requires_feature_barcode_reference(
+    tmp_path, monkeypatch
+):
     args = _args(tmp_path)
     args.preset = "cellrangermulti"
     args.genome = "GRCh38"
@@ -588,60 +426,55 @@ def test_cellrangermulti_cmo_requires_barcodes(tmp_path, monkeypatch):
         preflight.run_preflight(
             args,
             pipeline_source=_PIPELINE_SOURCE,
-            samplesheet_summary={"sample_count": 1, "unknown_columns": [], "feature_types": ["cmo"]},
-        )
-    assert exc.value.error_code == "INVALID_PRESET_CONFIGURATION"
-    assert exc.value.details["missing_field"] == "cellranger_multi_barcodes"
-
-
-def test_cellrangermulti_antibody_capture_requires_feature_barcode_reference(tmp_path, monkeypatch):
-    args = _args(tmp_path)
-    args.preset = "cellrangermulti"
-    args.genome = "GRCh38"
-    args.fasta = None
-    args.gtf = None
-    _mock_env(monkeypatch)
-    with pytest.raises(SkillError) as exc:
-        preflight.run_preflight(
-            args,
-            pipeline_source=_PIPELINE_SOURCE,
-            samplesheet_summary={"sample_count": 1, "unknown_columns": [], "feature_types": ["ab"]},
+            samplesheet_summary={
+                "sample_count": 1,
+                "unknown_columns": [],
+                "feature_types": ["ab"],
+            },
         )
     assert exc.value.error_code == "INVALID_PRESET_CONFIGURATION"
     assert exc.value.details["missing_field"] == "fb_reference"
 
 
-def test_cellrangermulti_vdj_rows_reject_skip_vdjref_without_prebuilt_index(tmp_path, monkeypatch):
-    args = _args(tmp_path)
-    args.preset = "cellrangermulti"
-    args.genome = "GRCh38"
-    args.fasta = None
-    args.gtf = None
-    args.skip_cellrangermulti_vdjref = True
-    _mock_env(monkeypatch)
-
-    with pytest.raises(SkillError) as exc:
-        preflight.run_preflight(
-            args,
-            pipeline_source=_PIPELINE_SOURCE,
-            samplesheet_summary={"sample_count": 1, "unknown_columns": [], "feature_types": ["gex", "vdj"]},
-        )
-
-    assert exc.value.error_code == "INVALID_PRESET_CONFIGURATION"
-    assert exc.value.details["feature_type"] == "vdj"
-    assert exc.value.details["missing_field"] == "cellranger_vdj_index"
-
-
-def test_cellrangermulti_rejects_cmo_and_ffpe_probe_set_together(tmp_path, monkeypatch):
+def test_cellrangermulti_ffpe_probe_set_requires_barcodes_samplesheet(
+    tmp_path, monkeypatch
+):
     args = _args(tmp_path)
     args.preset = "cellrangermulti"
     args.genome = "GRCh38"
     args.fasta = None
     args.gtf = None
     probe_set = tmp_path / "probe_set.csv"
-    barcodes = tmp_path / "multi_barcodes.csv"
     probe_set.write_text("gene_id\n", encoding="utf-8")
-    barcodes.write_text("sample,barcode\n", encoding="utf-8")
+    args.gex_frna_probe_set = str(probe_set)
+    _mock_env(monkeypatch)
+
+    with pytest.raises(SkillError) as exc:
+        preflight.run_preflight(
+            args,
+            pipeline_source=_PIPELINE_SOURCE,
+            samplesheet_summary={
+                "sample_count": 1,
+                "unknown_columns": [],
+                "feature_types": ["gex"],
+            },
+        )
+
+    assert exc.value.error_code == "INVALID_PRESET_CONFIGURATION"
+    assert exc.value.details["missing_field"] == "cellranger_multi_barcodes"
+    assert exc.value.details["field"] == "gex_frna_probe_set"
+
+
+def test_cellrangermulti_rejects_ffpe_and_cmo_combination(tmp_path, monkeypatch):
+    args = _args(tmp_path)
+    args.preset = "cellrangermulti"
+    args.genome = "GRCh38"
+    args.fasta = None
+    args.gtf = None
+    probe_set = tmp_path / "probe_set.csv"
+    barcodes = tmp_path / "barcodes.csv"
+    probe_set.write_text("gene_id\n", encoding="utf-8")
+    barcodes.write_text("sample,cmo_ids\nsampleA,CMO301\n", encoding="utf-8")
     args.gex_frna_probe_set = str(probe_set)
     args.cellranger_multi_barcodes = str(barcodes)
     _mock_env(monkeypatch)
@@ -650,34 +483,138 @@ def test_cellrangermulti_rejects_cmo_and_ffpe_probe_set_together(tmp_path, monke
         preflight.run_preflight(
             args,
             pipeline_source=_PIPELINE_SOURCE,
-            samplesheet_summary={"sample_count": 1, "unknown_columns": [], "feature_types": ["gex", "cmo"]},
+            samplesheet_summary={
+                "sample_count": 1,
+                "unknown_columns": [],
+                "feature_types": ["gex", "cmo"],
+            },
         )
 
     assert exc.value.error_code == "INVALID_PRESET_CONFIGURATION"
-    assert exc.value.details["active_modes"] == ["cmo", "ffpe"]
+    assert exc.value.details["conflicting_fields"] == ["gex_frna_probe_set", "cmo"]
+    assert exc.value.details["policy_source"] == POLICY_SOURCE_NFCORE_DOCS
 
 
-def test_cellrangermulti_ffpe_probe_set_requires_barcodes_samplesheet(tmp_path, monkeypatch):
+def _write_multi_barcodes(path: Path, body_rows: str) -> None:
+    """Write a cellranger_multi_barcodes CSV with the documented 4.1.0 header."""
+    path.write_text(
+        "sample,multiplexed_sample_id,probe_barcode_ids,cmo_ids,ocm_ids,description\n"
+        + body_rows,
+        encoding="utf-8",
+    )
+
+
+def test_cellrangermulti_rejects_mixed_modes_in_one_barcodes_row(tmp_path, monkeypatch):
+    """nf-core/scrnaseq usage docs: the --cellranger-multi-barcodes samplesheet
+    encodes the multiplexing mode per sample via probe_barcode_ids (FFPE), cmo_ids
+    (CMO) and ocm_ids (OCM), which are mutually exclusive. A single sample mixing
+    FFPE and OCM must fail fast in preflight (audit F-2)."""
     args = _args(tmp_path)
     args.preset = "cellrangermulti"
     args.genome = "GRCh38"
     args.fasta = None
     args.gtf = None
-    probe_set = tmp_path / "probe_set.csv"
-    probe_set.write_text("gene_id\n", encoding="utf-8")
-    args.gex_frna_probe_set = str(probe_set)
+    barcodes = tmp_path / "barcodes.csv"
+    _write_multi_barcodes(barcodes, "S1,S1_a,BC001,,OB1,desc\n")  # FFPE + OCM
+    args.cellranger_multi_barcodes = str(barcodes)
     _mock_env(monkeypatch)
 
     with pytest.raises(SkillError) as exc:
         preflight.run_preflight(
             args,
             pipeline_source=_PIPELINE_SOURCE,
-            samplesheet_summary={"sample_count": 1, "unknown_columns": [], "feature_types": ["gex"]},
+            samplesheet_summary={
+                "sample_count": 1,
+                "unknown_columns": [],
+                "feature_types": ["gex"],
+            },
         )
 
     assert exc.value.error_code == "INVALID_PRESET_CONFIGURATION"
-    assert exc.value.details["missing_field"] == "cellranger_multi_barcodes"
-    assert exc.value.details["field"] == "gex_frna_probe_set"
+    assert exc.value.details["conflicting_modes"] == ["FFPE", "OCM"]
+    assert exc.value.details["sample"] == "S1"
+    assert exc.value.details["policy_source"] == POLICY_SOURCE_NFCORE_DOCS
+
+
+def test_cellrangermulti_rejects_mixed_modes_across_sample_rows(tmp_path, monkeypatch):
+    """Two rows of the same physical sample using different modes (CMO then OCM) is
+    rejected — 'using more than one for a single sample' (audit F-2)."""
+    args = _args(tmp_path)
+    args.preset = "cellrangermulti"
+    args.genome = "GRCh38"
+    args.fasta = None
+    args.gtf = None
+    barcodes = tmp_path / "barcodes.csv"
+    _write_multi_barcodes(barcodes, "S1,S1_a,,CMO301,,desc\nS1,S1_b,,,OB2,desc\n")
+    args.cellranger_multi_barcodes = str(barcodes)
+    _mock_env(monkeypatch)
+
+    with pytest.raises(SkillError) as exc:
+        preflight.run_preflight(
+            args,
+            pipeline_source=_PIPELINE_SOURCE,
+            samplesheet_summary={
+                "sample_count": 1,
+                "unknown_columns": [],
+                "feature_types": ["gex"],
+            },
+        )
+
+    assert exc.value.error_code == "INVALID_PRESET_CONFIGURATION"
+    assert exc.value.details["conflicting_modes"] == ["CMO", "OCM"]
+
+
+def test_cellrangermulti_allows_single_mode_ocm_barcodes(tmp_path, monkeypatch):
+    """A barcodes samplesheet using a single mode (OCM only, across rows) must NOT
+    be rejected (audit F-2)."""
+    args = _args(tmp_path)
+    args.preset = "cellrangermulti"
+    args.genome = "GRCh38"
+    args.fasta = None
+    args.gtf = None
+    barcodes = tmp_path / "barcodes.csv"
+    _write_multi_barcodes(barcodes, "S1,S1_a,,,OB1,desc\nS1,S1_b,,,OB2,desc\n")
+    args.cellranger_multi_barcodes = str(barcodes)
+    _mock_env(monkeypatch)
+
+    result = preflight.run_preflight(
+        args,
+        pipeline_source=_PIPELINE_SOURCE,
+        samplesheet_summary={
+            "sample_count": 1,
+            "unknown_columns": [],
+            "feature_types": ["gex"],
+        },
+    )
+
+    assert result["ok"] is True
+
+
+def test_cellrangermulti_barcodes_check_tolerates_unparseable_csv(tmp_path, monkeypatch):
+    """A barcodes CSV the wrapper cannot parse locally is deferred to upstream
+    nf-schema rather than raising a spurious wrapper error (audit F-2)."""
+    args = _args(tmp_path)
+    args.preset = "cellrangermulti"
+    args.genome = "GRCh38"
+    args.fasta = None
+    args.gtf = None
+    barcodes = tmp_path / "barcodes.csv"
+    # No recognised mode columns at all → nothing to validate, must not raise.
+    barcodes.write_text("sample,multiplexed_sample_id\nS1,S1_a\n", encoding="utf-8")
+    args.cellranger_multi_barcodes = str(barcodes)
+    _mock_env(monkeypatch)
+
+    result = preflight.run_preflight(
+        args,
+        pipeline_source=_PIPELINE_SOURCE,
+        samplesheet_summary={
+            "sample_count": 1,
+            "unknown_columns": [],
+            "feature_types": ["gex"],
+        },
+    )
+
+    assert result["ok"] is True
 
 
 def test_genome_and_fasta_mutually_exclusive(tmp_path, monkeypatch):
@@ -697,238 +634,74 @@ def test_genome_and_fasta_mutually_exclusive(tmp_path, monkeypatch):
     assert exc.value.error_code == "CONFLICTING_REFERENCES"
 
 
-def test_docker_info_timeout_raises_docker_not_running(monkeypatch):
-    import shutil
-    import subprocess as sp
-    monkeypatch.setattr(shutil, "which", lambda name: "/usr/bin/docker" if name == "docker" else None)
-    def _raise(*a, **kw):
-        raise sp.TimeoutExpired(cmd=["docker"], timeout=30)
-    monkeypatch.setattr(sp, "run", _raise)
-    with pytest.raises(SkillError) as exc:
-        preflight._check_profile("docker")
-    assert exc.value.error_code == "DOCKER_NOT_RUNNING"
-
-
-def test_check_output_dir_available_allows_params_yaml(tmp_path):
-    """reproducibility/params.yaml must not trigger OUTPUT_DIR_NOT_EMPTY."""
-    from preflight import check_output_dir_available
-    repro = tmp_path / "reproducibility"
-    repro.mkdir()
-    (repro / "params.yaml").write_text("aligner: star\n", encoding="utf-8")
-    check_output_dir_available(tmp_path, resume=False)
-
-
-def test_check_output_dir_available_allows_demo_samplesheet(tmp_path):
-    """reproducibility/samplesheet.demo.csv must not trigger OUTPUT_DIR_NOT_EMPTY."""
-    from preflight import check_output_dir_available
-    repro = tmp_path / "reproducibility"
-    repro.mkdir()
-    (repro / "samplesheet.demo.csv").write_text("sample,fastq_1\n", encoding="utf-8")
-    check_output_dir_available(tmp_path, resume=False)
-
-
-# ---------------------------------------------------------------------------
-# _prompt_for_genome
-# ---------------------------------------------------------------------------
-
-def test_common_genomes_is_nonempty_sequence():
-    from schemas import COMMON_GENOMES
-    assert len(COMMON_GENOMES) > 0
-    assert all(isinstance(g, str) and g for g in COMMON_GENOMES)
-
-
-def test_prompt_for_genome_returns_selection_by_number(monkeypatch):
-    """User entering a valid index returns the corresponding genome string."""
-    from preflight import _prompt_for_genome
-    from schemas import COMMON_GENOMES
-    monkeypatch.setattr("sys.stdin.isatty", lambda: True)
-    monkeypatch.setattr("builtins.input", lambda _prompt="": "1")
-    result = _prompt_for_genome()
-    assert result == COMMON_GENOMES[0]
-
-
-def test_prompt_for_genome_returns_selection_by_name(monkeypatch):
-    """User entering a genome name directly returns that name."""
-    from preflight import _prompt_for_genome
-    from schemas import COMMON_GENOMES
-    monkeypatch.setattr("sys.stdin.isatty", lambda: True)
-    target = COMMON_GENOMES[0]
-    monkeypatch.setattr("builtins.input", lambda _prompt="": target)
-    result = _prompt_for_genome()
-    assert result == target
-
-
-def test_prompt_for_genome_returns_none_in_noninteractive(monkeypatch):
-    """When stdin is not a TTY the prompt returns None rather than blocking."""
-    from preflight import _prompt_for_genome
-    monkeypatch.setattr("sys.stdin.isatty", lambda: False)
-    result = _prompt_for_genome()
-    assert result is None
-
-
-def test_prompt_for_genome_returns_none_on_empty_input(monkeypatch):
-    """Pressing Enter (empty input) returns None so the caller can raise MISSING_REFERENCE."""
-    from preflight import _prompt_for_genome
-    monkeypatch.setattr("sys.stdin.isatty", lambda: True)
-    monkeypatch.setattr("builtins.input", lambda _prompt="": "")
-    result = _prompt_for_genome()
-    assert result is None
-
-
-def test_prompt_for_genome_returns_none_on_invalid_number(monkeypatch):
-    """An out-of-range number returns None so the caller can raise MISSING_REFERENCE."""
-    from preflight import _prompt_for_genome
-    monkeypatch.setattr("sys.stdin.isatty", lambda: True)
-    monkeypatch.setattr("builtins.input", lambda _prompt="": "9999")
-    result = _prompt_for_genome()
-    assert result is None
-
-
-def test_cellrangermulti_accepts_custom_protocol_string(tmp_path, monkeypatch):
-    """cellrangermulti internally uses the cellranger protocol map (Utils.groovy:12).
-    Like cellranger after F2 fix, it must accept any protocol string and delegate
-    validation to the pipeline."""
-    args = _args(tmp_path)
-    args.preset = "cellrangermulti"
-    args.protocol = "dropseq"
-    args.genome = "GRCh38"
-    args.fasta = None
-    args.gtf = None
-    _mock_env(monkeypatch)
-    result = preflight.run_preflight(
-        args,
-        pipeline_source=_PIPELINE_SOURCE,
-        samplesheet_summary={"sample_count": 1, "unknown_columns": []},
-    )
-    assert result["ok"] is True
-
-
 # ── mamba profile ─────────────────────────────────────────────────────────────
-
-def test_mamba_profile_accepted_when_mamba_installed(monkeypatch):
-    import shutil
-    monkeypatch.setattr(shutil, "which", lambda name: "/usr/bin/mamba" if name == "mamba" else None)
-    result = preflight._check_profile("mamba")
-    assert result["backend_ready"] is True
-    assert result["backend_path"] == "/usr/bin/mamba"
-
-
-def test_mamba_profile_falls_back_to_conda_binary(monkeypatch):
-    import shutil
-    monkeypatch.setattr(shutil, "which", lambda name: "/usr/bin/conda" if name == "conda" else None)
-    result = preflight._check_profile("mamba")
-    assert result["backend_ready"] is True
-    assert result["backend_path"] == "/usr/bin/conda"
-
-
-def test_missing_mamba_uses_missing_conda_error(monkeypatch):
-    import shutil
-    monkeypatch.setattr(shutil, "which", lambda name: None)
-    with pytest.raises(SkillError) as exc:
-        preflight._check_profile("mamba")
-    assert exc.value.error_code == "MISSING_CONDA"
 
 
 # ── podman profile ────────────────────────────────────────────────────────────
 
-def test_missing_podman_raises_missing_podman_error(monkeypatch):
-    import shutil
-    monkeypatch.setattr(shutil, "which", lambda name: None)
-    with pytest.raises(SkillError) as exc:
-        preflight._check_profile("podman")
-    assert exc.value.error_code == "MISSING_PODMAN"
-
-
-def test_podman_not_running_raises_podman_not_running(monkeypatch):
-    import shutil
-    import subprocess as sp
-    monkeypatch.setattr(shutil, "which", lambda name: "/usr/bin/podman" if name == "podman" else None)
-    def _raise(*a, **kw):
-        raise sp.TimeoutExpired(cmd=["podman"], timeout=30)
-    monkeypatch.setattr(sp, "run", _raise)
-    with pytest.raises(SkillError) as exc:
-        preflight._check_profile("podman")
-    assert exc.value.error_code == "PODMAN_NOT_RUNNING"
-
-
-def test_podman_profile_accepted_when_running(monkeypatch):
-    import shutil
-    import subprocess as sp
-    monkeypatch.setattr(shutil, "which", lambda name: "/usr/bin/podman" if name == "podman" else None)
-    mock_result = sp.CompletedProcess(args=["podman", "info"], returncode=0, stdout="", stderr="")
-    monkeypatch.setattr(sp, "run", lambda *a, **kw: mock_result)
-    result = preflight._check_profile("podman")
-    assert result["backend_ready"] is True
-    assert result["backend_path"] == "/usr/bin/podman"
-
 
 # ── HPC profiles (shifter, charliecloud) ─────────────────────────────────────
-
-def test_missing_shifter_raises_missing_hpc_runtime(monkeypatch):
-    import shutil
-    monkeypatch.setattr(shutil, "which", lambda name: None)
-    with pytest.raises(SkillError) as exc:
-        preflight._check_profile("shifter")
-    assert exc.value.error_code == "MISSING_HPC_RUNTIME"
-
-
-def test_shifter_profile_accepted_when_installed(monkeypatch):
-    import shutil
-    monkeypatch.setattr(shutil, "which", lambda name: "/usr/bin/shifter" if name == "shifter" else None)
-    result = preflight._check_profile("shifter")
-    assert result["backend_ready"] is True
-    assert result["backend_path"] == "/usr/bin/shifter"
-
-
-def test_missing_charliecloud_raises_missing_hpc_runtime(monkeypatch):
-    import shutil
-    monkeypatch.setattr(shutil, "which", lambda name: None)
-    with pytest.raises(SkillError) as exc:
-        preflight._check_profile("charliecloud")
-    assert exc.value.error_code == "MISSING_HPC_RUNTIME"
-
-
-def test_charliecloud_profile_accepted_when_ch_run_installed(monkeypatch):
-    import shutil
-    monkeypatch.setattr(shutil, "which", lambda name: "/usr/bin/ch-run" if name == "ch-run" else None)
-    result = preflight._check_profile("charliecloud")
-    assert result["backend_ready"] is True
-    assert result["backend_path"] == "/usr/bin/ch-run"
 
 
 # ── macOS + Docker + /tmp warning ─────────────────────────────────────────────
 
-def test_macos_docker_tmp_emits_warning(monkeypatch, capsys):
-    monkeypatch.setattr(preflight.sys, "platform", "darwin")
-    preflight._warn_if_macos_docker_tmp("docker", Path("/tmp/some_run"))
-    captured = capsys.readouterr()
-    assert "WARNING" in captured.err
-    assert "/tmp" in captured.err
+
+def test_seq_center_with_non_star_preset_warns(tmp_path, monkeypatch, capsys):
+    """seq_center only affects STARsolo BAM read groups in nf-core/scrnaseq 4.1.0;
+    forwarding it under another aligner is a harmless no-op, so the wrapper warns
+    rather than silently ignoring it (audit F-6)."""
+    args = _args(tmp_path)
+    args.preset = "kallisto"
+    args.seq_center = "SequencingCenterX"
+    Path(args.fasta).write_text(">chr1\nACGT\n", encoding="utf-8")
+    Path(args.gtf).write_text(
+        'chr1\tsrc\tgene\t1\t4\t.\t+\t.\tgene_id "g1";\n', encoding="utf-8"
+    )
+    _mock_env(monkeypatch)
+
+    preflight.run_preflight(
+        args,
+        pipeline_source=_PIPELINE_SOURCE,
+        samplesheet_summary={"sample_count": 1, "unknown_columns": []},
+    )
+
+    err = capsys.readouterr().err
+    assert "seq_center" in err and "STARsolo" in err
 
 
-def test_macos_docker_private_tmp_emits_warning(monkeypatch, capsys):
-    monkeypatch.setattr(preflight.sys, "platform", "darwin")
-    preflight._warn_if_macos_docker_tmp("docker", Path("/private/tmp/some_run"))
-    captured = capsys.readouterr()
-    assert "WARNING" in captured.err
+def test_seq_center_with_star_preset_does_not_warn(tmp_path, monkeypatch, capsys):
+    args = _args(tmp_path)  # preset defaults to star
+    args.seq_center = "SequencingCenterX"
+    Path(args.fasta).write_text(">chr1\nACGT\n", encoding="utf-8")
+    Path(args.gtf).write_text(
+        'chr1\tsrc\tgene\t1\t4\t.\t+\t.\tgene_id "g1";\n', encoding="utf-8"
+    )
+    _mock_env(monkeypatch)
+
+    preflight.run_preflight(
+        args,
+        pipeline_source=_PIPELINE_SOURCE,
+        samplesheet_summary={"sample_count": 1, "unknown_columns": []},
+    )
+
+    assert "seq_center" not in capsys.readouterr().err
 
 
-def test_macos_docker_home_no_warning(monkeypatch, capsys):
-    monkeypatch.setattr(preflight.sys, "platform", "darwin")
-    preflight._warn_if_macos_docker_tmp("docker", Path("/Users/someone/my_run"))
-    captured = capsys.readouterr()
-    assert captured.err == ""
+def test_nfcore_schema_errors_identify_nfcore_policy(tmp_path, monkeypatch):
+    args = _args(tmp_path)
+    fasta = tmp_path / "genome.txt"
+    gtf = tmp_path / "genes.gtf"
+    fasta.write_text(">chr1\nACGT\n", encoding="utf-8")
+    gtf.write_text('chr1\tsrc\tgene\t1\t4\t.\t+\t.\tgene_id "g1";\n', encoding="utf-8")
+    args.fasta = str(fasta)
+    args.gtf = str(gtf)
+    _mock_env(monkeypatch)
 
+    with pytest.raises(SkillError) as exc:
+        preflight.run_preflight(
+            args,
+            pipeline_source=_PIPELINE_SOURCE,
+            samplesheet_summary={"sample_count": 1, "unknown_columns": []},
+        )
 
-def test_linux_docker_tmp_no_warning(monkeypatch, capsys):
-    monkeypatch.setattr(preflight.sys, "platform", "linux")
-    preflight._warn_if_macos_docker_tmp("docker", Path("/tmp/some_run"))
-    captured = capsys.readouterr()
-    assert captured.err == ""
-
-
-def test_macos_singularity_tmp_no_warning(monkeypatch, capsys):
-    monkeypatch.setattr(preflight.sys, "platform", "darwin")
-    preflight._warn_if_macos_docker_tmp("singularity", Path("/tmp/some_run"))
-    captured = capsys.readouterr()
-    assert captured.err == ""
+    assert exc.value.details.get("policy_source") == POLICY_SOURCE_NFCORE_DOCS

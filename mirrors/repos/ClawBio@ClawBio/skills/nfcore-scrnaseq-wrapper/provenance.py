@@ -14,7 +14,30 @@ _SKILL_DIR = Path(__file__).resolve().parent
 if str(_SKILL_DIR) not in sys.path:
     sys.path.insert(0, str(_SKILL_DIR))
 
-from schemas import DEFAULT_REMOTE_PIPELINE, JAVA_MIN_VERSION, NEXTFLOW_MIN_VERSION, SKILL_ALIAS, SKILL_NAME, SKILL_VERSION
+from clawbio.common.textio import write_text_lf
+from schemas import DEFAULT_REMOTE_PIPELINE, SKILL_ALIAS, SKILL_NAME, SKILL_VERSION
+
+
+def _relativise(path: Path | str, anchor: Path) -> str:
+    """Return ``path`` as POSIX relative to ``anchor`` when inside it, else absolute POSIX."""
+    p = Path(str(path))
+    try:
+        return p.resolve().relative_to(Path(anchor).resolve()).as_posix()
+    except ValueError:
+        return p.as_posix()
+
+
+def _relativise_command(command_str: str, output_dir: Path) -> str:
+    """Replace the absolute output dir (the ``cd`` target) with '.' in a recorded
+    command, so runtime.json does not leak the generation environment's path.
+
+    Both the as-given and resolved POSIX forms are replaced (longest first) to
+    cover whichever the live invocation embedded.
+    """
+    candidates = {Path(output_dir).as_posix(), Path(output_dir).resolve().as_posix()}
+    for anchor in sorted(candidates, key=len, reverse=True):
+        command_str = command_str.replace(anchor, ".")
+    return command_str
 
 
 def write_provenance_bundle(
@@ -31,7 +54,7 @@ def write_provenance_bundle(
     execution_result: dict[str, Any],
     command_str: str,
 ) -> tuple[Path, Path]:
-    provenance_dir = output_dir / "provenance"
+    provenance_dir = output_dir / "reproducibility"
     provenance_dir.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now(timezone.utc).isoformat()
     payloads = build_provenance_payloads(
@@ -48,6 +71,7 @@ def write_provenance_bundle(
         timestamp=timestamp,
     )
     _write_provenance_payloads(provenance_dir, payloads)
+    _copy_policy_files(provenance_dir)
     write_reproducibility_environment(output_dir, preflight_result=preflight_result)
     checksum_file = write_reproducibility_checksums(
         output_dir,
@@ -97,6 +121,7 @@ def build_provenance_payloads(
             samplesheet_summary=samplesheet_summary,
             preflight_result=preflight_result,
             params_path=params_path,
+            output_dir=output_dir,
         ),
         "outputs.json": build_outputs_payload(parsed_outputs),
         "skill.json": build_skill_payload(params_payload),
@@ -119,12 +144,22 @@ def build_runtime_payload(
         "python_version": platform.python_version(),
         "profile": args.profile,
         "resume_used": bool(args.resume),
-        "cwd": str(Path.cwd()),
-        "work_dir": str(output_dir / "upstream" / "work"),
-        "command": command_str,
+        "cwd": ".",
+        "work_dir": _runtime_work_dir(args, output_dir),
+        "command": _relativise_command(command_str, output_dir),
         "java_version": preflight_result["java"]["version"],
         "nextflow_version": preflight_result["nextflow"]["version"],
     }
+
+
+def _runtime_work_dir(args, output_dir: Path) -> str:
+    raw_work_dir = getattr(args, "work_dir", None)
+    if not raw_work_dir:
+        return _relativise(output_dir / "upstream" / "work", output_dir)
+    work_dir = str(raw_work_dir).strip()
+    if "://" in work_dir:
+        return work_dir
+    return Path(work_dir).expanduser().resolve().as_posix()
 
 
 def build_upstream_payload(pipeline_source: dict[str, Any]) -> dict[str, Any]:
@@ -146,6 +181,18 @@ def build_invocation_payload(args, *, timestamp: str) -> dict[str, Any]:
         "check_only": bool(args.check),
         "profile": args.profile,
         "pipeline_version": args.pipeline_version,
+        "allow_dirty_pipeline": bool(getattr(args, "allow_dirty_pipeline", False)),
+        "require_local_pipeline": bool(getattr(args, "require_local_pipeline", False)),
+        "allow_conda_cellranger": bool(getattr(args, "allow_conda_cellranger", False)),
+        "allow_pipeline_version_override": bool(
+            getattr(args, "allow_pipeline_version_override", False)
+        ),
+        "trust_config_params": bool(getattr(args, "trust_config_params", False)),
+        "config_param_overrides": list(getattr(args, "config_param_overrides", []) or []),
+        "work_dir": getattr(args, "work_dir", None) or "",
+        "extra_config": [
+            str(path) for path in (getattr(args, "extra_config", []) or [])
+        ],
     }
 
 
@@ -155,16 +202,39 @@ def build_inputs_payload(
     samplesheet_summary: dict[str, Any],
     preflight_result: dict[str, Any],
     params_path: Path,
+    output_dir: Path,
 ) -> dict[str, Any]:
     return {
-        "samplesheet": str(normalized_samplesheet),
+        "samplesheet": _relativise(normalized_samplesheet, output_dir),
         "samplesheet_checksum": sha256_file(normalized_samplesheet),
         "sample_count": samplesheet_summary["sample_count"],
+        # fastq_paths and reference_paths are deliberately kept absolute: they point
+        # to external data outside the bundle and are remapped by remap_paths.py on
+        # replay, not relativised against the output dir.
         "fastq_paths": [Path(p).as_posix() for p in samplesheet_summary["fastq_paths"]],
         "reference_paths": preflight_result.get("references", {}),
-        "params_path": str(params_path),
+        # Reference *file* digests are recorded here (provenance) rather than in
+        # checksums.sha256, because references live outside the bundle: putting
+        # bare-basename entries in checksums.sha256 would make `sha256sum -c` fail.
+        # Directory indexes (star/simpleaf/cellranger) have no file digest, so they
+        # are skipped here and tracked only by path.
+        "reference_checksums": _reference_file_checksums(
+            preflight_result.get("references", {})
+        ),
+        "params_path": _relativise(params_path, output_dir),
         "params_checksum": sha256_file(params_path),
     }
+
+
+def _reference_file_checksums(references: dict[str, Any]) -> dict[str, str]:
+    checksums: dict[str, str] = {}
+    for field, path in (references or {}).items():
+        if not path:
+            continue
+        p = Path(str(path))
+        if p.is_file():
+            checksums[field] = sha256_file(p)
+    return checksums
 
 
 def build_outputs_payload(parsed_outputs: dict[str, Any]) -> dict[str, Any]:
@@ -189,17 +259,41 @@ def build_skill_payload(params_payload: dict[str, Any]) -> dict[str, Any]:
 
 def _write_provenance_payloads(provenance_dir: Path, payloads: dict[str, Any]) -> None:
     for filename, payload in payloads.items():
-        (provenance_dir / filename).write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        write_text_lf(provenance_dir / filename, json.dumps(payload, indent=2))
 
 
-def write_reproducibility_environment(output_dir: Path, *, preflight_result: dict[str, Any]) -> None:
+def _copy_policy_files(bundle_dir: Path) -> None:
+    """Copy compatibility_policy.json + pinned_versions.json from the skill into the bundle."""
+    import shutil
+
+    src_dir = _SKILL_DIR / "reproducibility"
+    for name in ("compatibility_policy.json", "pinned_versions.json"):
+        src = src_dir / name
+        if src.is_file():
+            shutil.copyfile(src, bundle_dir / name)
+
+
+def write_reproducibility_environment(
+    output_dir: Path, *, preflight_result: dict[str, Any]
+) -> None:
+    java_version = preflight_result["java"]["version"]
+    nextflow_version = preflight_result["nextflow"]["version"]
+    # Make environment.yml an installable recipe (manifest.json keeps the exact
+    # versions for provenance):
+    #  - nextflow is published on bioconda, not conda-forge → add that channel
+    #    and pin the exact engine version (also enforced at replay via NXF_VER).
+    #  - openjdk is pinned to its major series: conda-forge does not publish every
+    #    JDK patch, so an exact patch (e.g. 17.0.10) can be unsatisfiable, and the
+    #    Java patch level does not affect containerised nf-core task results.
+    java_major = str(java_version).split(".")[0]
     write_environment_yml(
         output_dir,
         env_name="clawbio-nfcore-scrnaseq-wrapper",
+        channels=["conda-forge", "bioconda"],
         pip_deps=[],
         conda_deps=[
-            f"openjdk>={JAVA_MIN_VERSION}",
-            f"nextflow>={'.'.join(map(str, NEXTFLOW_MIN_VERSION))}",
+            f"openjdk={java_major}",
+            f"nextflow={nextflow_version}",
         ],
         python_version=f"{platform.python_version_tuple()[0]}.{platform.python_version_tuple()[1]}",
     )
@@ -214,23 +308,45 @@ def write_reproducibility_checksums(
     parsed_outputs: dict[str, Any],
     execution_result: dict[str, Any],
 ) -> Path:
-    checksum_paths: list[Path] = [
+    # checksums.sha256 is a self-verifiable manifest: every entry must resolve
+    # relative to output_dir so `sha256sum -c checksums.sha256` succeeds when run
+    # from the output directory on any OS. Only in-bundle artifacts are listed;
+    # external reference digests live in inputs.json (see _reference_file_checksums)
+    # because bare-basename entries for out-of-tree files would break `-c`.
+    candidate_paths: list[Path] = [
         normalized_samplesheet,
         params_path,
         Path(execution_result["stdout_path"]),
         Path(execution_result["stderr_path"]),
     ]
-    for ref_path in preflight_result.get("references", {}).values():
-        if ref_path:
-            p = Path(str(ref_path))
-            if p.is_file():
-                checksum_paths.append(p)
     for candidate in parsed_outputs.get("h5ad_candidates", []):
-        checksum_paths.append(Path(candidate))
+        candidate_paths.append(Path(candidate))
     if parsed_outputs.get("multiqc_report"):
-        checksum_paths.append(Path(str(parsed_outputs["multiqc_report"])))
-    checksum_paths = list(dict.fromkeys(Path(p) for p in checksum_paths if p))
+        candidate_paths.append(Path(str(parsed_outputs["multiqc_report"])))
+
+    resolved_output_dir = output_dir.resolve()
+    # write_checksums accepts list[Path | str]; declare the same element type so
+    # the invariant list matches its parameter without a cast.
+    checksum_paths: list[Path | str] = []
+    for p in candidate_paths:
+        if not p:
+            continue
+        p = Path(p)
+        if not _is_within(p, resolved_output_dir):
+            # Defensive: anything outside the bundle would get a bare-basename
+            # label and break `sha256sum -c`. In-tree by construction today.
+            continue
+        checksum_paths.append(p)
+    checksum_paths = list(dict.fromkeys(checksum_paths))
     return write_checksums(checksum_paths, output_dir, anchor=output_dir)
+
+
+def _is_within(path: Path, anchor: Path) -> bool:
+    try:
+        path.resolve().relative_to(anchor)
+        return True
+    except ValueError:
+        return False
 
 
 def write_reproducibility_manifest(
@@ -254,10 +370,11 @@ def write_reproducibility_manifest(
         "nextflow_version": runtime["nextflow_version"],
         "python_version": runtime["python_version"],
         "environment_yml_mode": "install_recipe",
+        "work_dir": runtime["work_dir"],
         "params_checksum": inputs["params_checksum"],
         "samplesheet_checksum": inputs["samplesheet_checksum"],
-        "checksums_file": str(checksum_file),
+        "checksums_file": _relativise(checksum_file, output_dir),
     }
     manifest_path = output_dir / "reproducibility" / "manifest.json"
-    manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    write_text_lf(manifest_path, json.dumps(manifest, indent=2))
     return manifest_path

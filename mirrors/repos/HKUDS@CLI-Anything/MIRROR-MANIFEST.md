@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HKUDS/CLI-Anything` — 26 default patterns, 0 followed patterns, 127 file(s) materialized.
+Mirror of `HKUDS/CLI-Anything` — 26 default patterns, 0 followed patterns, 129 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `HKUDS/CLI-Anything` — 26 default patterns, 0 followed patterns, 127
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 127 |
+| Files         | 129 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -174,18 +174,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 113 | ✓ | [`skills/cli-anything-unimol-tools/SKILL.md`](skills/cli-anything-unimol-tools/SKILL.md) |
 | 114 | ✓ | [`skills/cli-anything-unrealinsights/SKILL.md`](skills/cli-anything-unrealinsights/SKILL.md) |
 | 115 | ✓ | [`skills/cli-anything-videocaptioner/SKILL.md`](skills/cli-anything-videocaptioner/SKILL.md) |
-| 116 | ✓ | [`skills/cli-anything-wiremock/SKILL.md`](skills/cli-anything-wiremock/SKILL.md) |
-| 117 | ✓ | [`skills/cli-anything-zoom/SKILL.md`](skills/cli-anything-zoom/SKILL.md) |
-| 118 | ✓ | [`skills/cli-anything-zotero/SKILL.md`](skills/cli-anything-zotero/SKILL.md) |
-| 119 | ✓ | [`skills/cli-hub-meta-skill/SKILL.md`](skills/cli-hub-meta-skill/SKILL.md) |
-| 120 | ✓ | [`skills/README.md`](skills/README.md) |
-| 121 | ✓ | [`slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md`](slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md) |
-| 122 | ✓ | [`unimol_tools/agent-harness/cli_anything/unimol_tools/SKILL.md`](unimol_tools/agent-harness/cli_anything/unimol_tools/SKILL.md) |
-| 123 | ✓ | [`unrealinsights/agent-harness/cli_anything/unrealinsights/skills/SKILL.md`](unrealinsights/agent-harness/cli_anything/unrealinsights/skills/SKILL.md) |
-| 124 | ✓ | [`videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md`](videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md) |
-| 125 | ✓ | [`wiremock/agent-harness/cli_anything/wiremock/skills/SKILL.md`](wiremock/agent-harness/cli_anything/wiremock/skills/SKILL.md) |
-| 126 | ✓ | [`zoom/agent-harness/cli_anything/zoom/skills/SKILL.md`](zoom/agent-harness/cli_anything/zoom/skills/SKILL.md) |
-| 127 | ✓ | [`zotero/agent-harness/cli_anything/zotero/skills/SKILL.md`](zotero/agent-harness/cli_anything/zotero/skills/SKILL.md) |
+| 116 | ✓ | [`skills/cli-anything-wavetone/SKILL.md`](skills/cli-anything-wavetone/SKILL.md) |
+| 117 | ✓ | [`skills/cli-anything-wiremock/SKILL.md`](skills/cli-anything-wiremock/SKILL.md) |
+| 118 | ✓ | [`skills/cli-anything-zoom/SKILL.md`](skills/cli-anything-zoom/SKILL.md) |
+| 119 | ✓ | [`skills/cli-anything-zotero/SKILL.md`](skills/cli-anything-zotero/SKILL.md) |
+| 120 | ✓ | [`skills/cli-hub-meta-skill/SKILL.md`](skills/cli-hub-meta-skill/SKILL.md) |
+| 121 | ✓ | [`skills/README.md`](skills/README.md) |
+| 122 | ✓ | [`slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md`](slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md) |
+| 123 | ✓ | [`unimol_tools/agent-harness/cli_anything/unimol_tools/SKILL.md`](unimol_tools/agent-harness/cli_anything/unimol_tools/SKILL.md) |
+| 124 | ✓ | [`unrealinsights/agent-harness/cli_anything/unrealinsights/skills/SKILL.md`](unrealinsights/agent-harness/cli_anything/unrealinsights/skills/SKILL.md) |
+| 125 | ✓ | [`videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md`](videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md) |
+| 126 | ✓ | [`wavetone/agent-harness/cli_anything/wavetone/skills/SKILL.md`](wavetone/agent-harness/cli_anything/wavetone/skills/SKILL.md) |
+| 127 | ✓ | [`wiremock/agent-harness/cli_anything/wiremock/skills/SKILL.md`](wiremock/agent-harness/cli_anything/wiremock/skills/SKILL.md) |
+| 128 | ✓ | [`zoom/agent-harness/cli_anything/zoom/skills/SKILL.md`](zoom/agent-harness/cli_anything/zoom/skills/SKILL.md) |
+| 129 | ✓ | [`zotero/agent-harness/cli_anything/zotero/skills/SKILL.md`](zotero/agent-harness/cli_anything/zotero/skills/SKILL.md) |
 
 ---
 

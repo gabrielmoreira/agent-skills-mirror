@@ -72,10 +72,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`plugins/dotnet-ai/skills/mcp-csharp-publish/SKILL.md`](plugins/dotnet-ai/skills/mcp-csharp-publish/SKILL.md) |
 | 12 | ✓ | [`plugins/dotnet-ai/skills/mcp-csharp-test/SKILL.md`](plugins/dotnet-ai/skills/mcp-csharp-test/SKILL.md) |
 | 13 | ✓ | [`plugins/dotnet-ai/skills/technology-selection/SKILL.md`](plugins/dotnet-ai/skills/technology-selection/SKILL.md) |
-| 14 | ✓ | [`plugins/dotnet-aspnet/skills/configuring-opentelemetry-dotnet/SKILL.md`](plugins/dotnet-aspnet/skills/configuring-opentelemetry-dotnet/SKILL.md) |
-| 15 | ✓ | [`plugins/dotnet-aspnet/skills/convert-blazor-server-to-webapp/SKILL.md`](plugins/dotnet-aspnet/skills/convert-blazor-server-to-webapp/SKILL.md) |
-| 16 | ✓ | [`plugins/dotnet-aspnet/skills/dotnet-webapi/SKILL.md`](plugins/dotnet-aspnet/skills/dotnet-webapi/SKILL.md) |
-| 17 | ✓ | [`plugins/dotnet-aspnet/skills/minimal-api-file-upload/SKILL.md`](plugins/dotnet-aspnet/skills/minimal-api-file-upload/SKILL.md) |
+| 14 | ✓ | [`plugins/dotnet-aspnetcore/skills/configuring-opentelemetry-dotnet/SKILL.md`](plugins/dotnet-aspnetcore/skills/configuring-opentelemetry-dotnet/SKILL.md) |
+| 15 | ✓ | [`plugins/dotnet-aspnetcore/skills/convert-blazor-server-to-webapp/SKILL.md`](plugins/dotnet-aspnetcore/skills/convert-blazor-server-to-webapp/SKILL.md) |
+| 16 | ✓ | [`plugins/dotnet-aspnetcore/skills/dotnet-webapi/SKILL.md`](plugins/dotnet-aspnetcore/skills/dotnet-webapi/SKILL.md) |
+| 17 | ✓ | [`plugins/dotnet-aspnetcore/skills/minimal-api-file-upload/SKILL.md`](plugins/dotnet-aspnetcore/skills/minimal-api-file-upload/SKILL.md) |
 | 18 | ✓ | [`plugins/dotnet-blazor/skills/author-component/SKILL.md`](plugins/dotnet-blazor/skills/author-component/SKILL.md) |
 | 19 | ✓ | [`plugins/dotnet-blazor/skills/collect-user-input/SKILL.md`](plugins/dotnet-blazor/skills/collect-user-input/SKILL.md) |
 | 20 | ✓ | [`plugins/dotnet-blazor/skills/configure-auth/SKILL.md`](plugins/dotnet-blazor/skills/configure-auth/SKILL.md) |

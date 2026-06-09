@@ -12,8 +12,8 @@ description: >
 user-invocable: true
 metadata:
   tags: [higgsfield, video, image, prompt, cinematic, AI, filmmaking, motion, camera]
-  version: 3.8.2
-  updated: 2026-06-03
+  version: 3.8.3
+  updated: 2026-06-08
   author: O-Side Media
   license: MIT
 ---
@@ -63,7 +63,22 @@ one-click **Apps**.
 
 ---
 
-## Workflow
+## Working Folders — file handling
+
+The project has a `workspace/` folder with three subfolders. Use them for every
+task that involves a user-provided document or a file you produce. This keeps
+uploads and deliverables out of the project root.
+
+| Folder | Role | Your behavior |
+|--------|------|---------------|
+| `workspace/input/` | Documents the user wants you to read (scripts, story bibles, briefs, character sheets, references). | Read from here first. If the user uploaded a file that landed elsewhere in the project root, **move it into `workspace/input/` before working with it**. When you need a document from the user, ask them to drop it in `workspace/input/`. |
+| `workspace/output/` | Files you generate for the user (prompt packs, shot breakdowns, batch CSVs, reports, exported docs). | **Write every file deliverable here**, not to the project root. Tell the user the path when you finish. |
+| `workspace/processed/` | Inputs you have finished consuming. | When a task is complete, **move the source from `input/` to `processed/`** so `input/` stays clean. Never delete the user's files — relocate them. |
+
+Rules:
+- Never scatter user uploads or generated files across the project root or skill folders — route them through `workspace/`.
+- Treat `workspace/input/` as the canonical place to look when the user says "the script / bible / reference I gave you."
+- These three folders' contents are local-only (git-ignored); do not assume anything in them is committed.
 
 ### Fast Path — Simple Creative Requests
 
@@ -248,6 +263,7 @@ Quick summary — five layers, every prompt:
 
 ## @ Reference Rules
 
+- User uploads a document (script, bible, brief, reference notes): read it from `workspace/input/`; if it landed elsewhere, move it there first (see Working Folders above)
 - User uploads image: use `[reference image]` or describe it as "the provided reference"
 - For Soul ID character: note "using Soul ID character reference" in the prompt
 - For video extension: note "extend from [reference video], continue with..."

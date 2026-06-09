@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 4 followed patterns, 15 file(s) materialized.
+Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 6 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 4 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 4 |
-| Files         | 15 |
+| Followed pats | 6 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,8 @@ Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 4 followed patterns,
 
 - `docs/installation.md`
 - `CONTRIBUTING.md`
+- `docs/architecture.md`
+- `docs/cli-reference.md`
 - `docs/development.md`
 - `docs/cli-exit-codes.md`
 
@@ -64,19 +66,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`docs/architecture.md`](docs/architecture.md) |
-| 4 | ✓ | [`docs/cli-reference.md`](docs/cli-reference.md) |
-| 5 | ✓ | [`docs/configuration.md`](docs/configuration.md) |
-| 6 | ✓ | [`docs/conventions.md`](docs/conventions.md) |
+| 3 | ✓ | [`docs/auth-cookie-lifecycle.md`](docs/auth-cookie-lifecycle.md) |
+| 4 | ✓ | [`docs/configuration.md`](docs/configuration.md) |
+| 5 | ✓ | [`docs/conventions.md`](docs/conventions.md) |
+| 6 | ✓ | [`docs/python-api.md`](docs/python-api.md) |
 | 7 | ✓ | [`docs/refactor-history.md`](docs/refactor-history.md) |
 | 8 | ✓ | [`docs/rpc-development.md`](docs/rpc-development.md) |
-| 9 | ✓ | [`docs/stability.md`](docs/stability.md) |
-| 10 | ✓ | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
-| 11 | ✓ | [`SKILL.md`](SKILL.md) |
-| 12 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 13 | → | [`docs/cli-exit-codes.md`](docs/cli-exit-codes.md) |
-| 14 | → | [`docs/development.md`](docs/development.md) |
-| 15 | → | [`docs/installation.md`](docs/installation.md) |
+| 9 | ✓ | [`docs/rpc-reference.md`](docs/rpc-reference.md) |
+| 10 | ✓ | [`docs/stability.md`](docs/stability.md) |
+| 11 | ✓ | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
+| 12 | ✓ | [`SKILL.md`](SKILL.md) |
+| 13 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 14 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 15 | → | [`docs/cli-exit-codes.md`](docs/cli-exit-codes.md) |
+| 16 | → | [`docs/cli-reference.md`](docs/cli-reference.md) |
+| 17 | → | [`docs/development.md`](docs/development.md) |
+| 18 | → | [`docs/installation.md`](docs/installation.md) |
 
 ---
 

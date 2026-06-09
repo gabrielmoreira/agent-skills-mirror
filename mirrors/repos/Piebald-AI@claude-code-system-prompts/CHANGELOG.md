@@ -4,6 +4,31 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.169](https://github.com/Piebald-AI/claude-code-system-prompts/commit/06bfbc6)
+
+_+27,944 tokens_
+
+- **NEW:** Data: Design sync package preview source generator — Adds bundled package-shape preview generation logic for using authored preview files or config-supplied preview args, with honest fallback behavior when no verifiable preview source exists.
+- **NEW:** Data: Design sync story imports module — Adds bundled Storybook preview import-resolution rules for choosing shipped bundle globals, story source, configured shims, custom loaders, and forkable override seams.
+- **NEW:** Data: Design sync Storybook preview source generator — Adds bundled Storybook preview wrapper generation that composes real story modules, supports split story files, and preserves owned hand-edited previews across re-syncs.
+- **NEW:** Data: Superseded message UUID protocol note — Adds an internal protocol note for replacing previously delivered messages during refusal-fallback handling.
+- **NEW:** Data: Supported dialog kinds protocol note — Adds an internal protocol note for request-user-dialog kind negotiation, fail-closed behavior, and staged release gating.
+- **NEW:** Skill: Design sync — Replaces the `/design-sync` slash-command skill with a broader Claude Design sync workflow covering first-run expectations, project selection, source-shape detection, config authoring, delegated package or Storybook sync, upload planning, and post-sync guidance.
+- **NEW:** System Prompt: Autonomous operation guidelines — Adds autonomous-session guidance to proceed on reversible work, stop only for destructive or scope-changing decisions, avoid premature permission questions, and finish promised work before ending the turn.
+- **NEW:** System Prompt: Background worktree isolation guidance — Adds background-session guidance to enter an isolated worktree before code edits while continuing in place for read-only work or failed isolation.
+- **NEW:** System Reminder: Cross-session peer message wrapper — Adds a wrapper for peer-session messages that warns they are not user authority, cannot grant consent, and must not relay denied actions between sessions.
+- **REMOVED:** Skill: /design-sync slash command — Removes the older `/design-sync` slash-command workflow now replaced by the broader Design sync skill and shape-specific sub-skills.
+- Agent Prompt: /schedule slash command — Renames remote scheduled agents as cloud agents throughout the scheduling guidance while preserving the same cloud-isolation behavior and setup flow.
+- Agent Prompt: Security monitor for autonomous agent actions (first part) — Expands consent handling for explicit user-named actions, repeated user instructions after classifier blocks, silence between actions, cross-session messages, and accidental destruction of personal development environments.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Adds personal development environment protections, tightens auto-mode bypass and self-modification rules, and clarifies when workload deletion, permission recording, instruction edits, and settings changes are blocked or user-intent-clearable.
+- Agent Prompt: Worker fork — Tells forked workers not to spawn further subagents and to execute their assigned directive directly.
+- Data: Anthropic CLI — Expands Anthropic CLI reference documentation for installation, authentication, managed-agent workflows, output shaping, scripting patterns, and command examples.
+- Data: Live documentation sources — Updates live documentation references with additional current Claude API and Agent SDK documentation URLs.
+- Skill: /design-sync package source shape — Greatly expands package-shape syncing guidance with generated preview modules, owned preview files, floor-card fallback semantics, config-driven preview args, verification behavior, troubleshooting, and upload expectations.
+- Skill: Design sync Storybook source shape — Reworks the Storybook-shape sync flow around real story-module previews, reference Storybook comparison, per-story screenshot grading, spot checks, persistent grade contracts, import-resolution controls, and global-versus-component fix strategy.
+- System Prompt: Outcome-first communication style — Adds conditional guidance for environments where interim text may not be visible, requiring all final answers, findings, conclusions, and deliverables to be restated in the final message.
+- Tool Description: SendUserFile — Clarifies that files must already exist locally before sending, recommends verifying uncertain paths, and notes that absolute paths avoid working-directory ambiguity.
+
 #### [2.1.168](https://github.com/Piebald-AI/claude-code-system-prompts/commit/7c471a8)
 
 <sub>_No changes to the system prompts in v2.1.168._</sub>

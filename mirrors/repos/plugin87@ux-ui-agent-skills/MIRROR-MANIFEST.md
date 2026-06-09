@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `plugin87/ux-ui-agent-skills` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `plugin87/ux-ui-agent-skills` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `plugin87/ux-ui-agent-skills` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,15 +61,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/a11y-audit/SKILL.md`](.claude/skills/a11y-audit/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/apply-aesthetic/SKILL.md`](.claude/skills/apply-aesthetic/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/design-code/SKILL.md`](.claude/skills/design-code/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/design-component/SKILL.md`](.claude/skills/design-component/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/design-review/SKILL.md`](.claude/skills/design-review/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/design-tokens/SKILL.md`](.claude/skills/design-tokens/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/migrate-design-system/SKILL.md`](.claude/skills/migrate-design-system/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/prototype/SKILL.md`](.claude/skills/prototype/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/redesign/SKILL.md`](.claude/skills/redesign/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/ux-writing/SKILL.md`](.claude/skills/ux-writing/SKILL.md) |
-| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`.claude/skills/brandkit/SKILL.md`](.claude/skills/brandkit/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/design-code/SKILL.md`](.claude/skills/design-code/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/design-component/SKILL.md`](.claude/skills/design-component/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/design-qa/SKILL.md`](.claude/skills/design-qa/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/design-review/SKILL.md`](.claude/skills/design-review/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/design-tokens/SKILL.md`](.claude/skills/design-tokens/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/figma-integration/SKILL.md`](.claude/skills/figma-integration/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/governance/SKILL.md`](.claude/skills/governance/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/image-to-code/SKILL.md`](.claude/skills/image-to-code/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/migrate-design-system/SKILL.md`](.claude/skills/migrate-design-system/SKILL.md) |
+| 13 | ✓ | [`.claude/skills/performance/SKILL.md`](.claude/skills/performance/SKILL.md) |
+| 14 | ✓ | [`.claude/skills/prototype/SKILL.md`](.claude/skills/prototype/SKILL.md) |
+| 15 | ✓ | [`.claude/skills/redesign/SKILL.md`](.claude/skills/redesign/SKILL.md) |
+| 16 | ✓ | [`.claude/skills/token-build/SKILL.md`](.claude/skills/token-build/SKILL.md) |
+| 17 | ✓ | [`.claude/skills/ux-writing/SKILL.md`](.claude/skills/ux-writing/SKILL.md) |
+| 18 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

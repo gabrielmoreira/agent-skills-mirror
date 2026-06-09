@@ -9,9 +9,11 @@ export type Provider =
   | "jimeng"
   | "seedream"
   | "azure"
-  | "codex-cli";
+  | "codex-cli"
+  | "agnes";
 export type Quality = "normal" | "2k";
 export type OpenAIImageApiDialect = "openai-native" | "ratio-metadata";
+export type ResponseFormat = "file" | "url";
 
 export type CliArgs = {
   prompt: string | null;
@@ -26,6 +28,7 @@ export type CliArgs = {
   imageSize: string | null;
   imageSizeSource?: "cli" | "task" | "config" | null;
   imageApiDialect: OpenAIImageApiDialect | null;
+  responseFormat: ResponseFormat | null;
   referenceImages: string[];
   n: number;
   batchFile: string | null;
@@ -46,6 +49,7 @@ export type BatchTaskInput = {
   quality?: Quality | null;
   imageSize?: "1K" | "2K" | "4K" | null;
   imageApiDialect?: OpenAIImageApiDialect | null;
+  responseFormat?: ResponseFormat | null;
   ref?: string[];
   n?: number;
 };
@@ -76,6 +80,7 @@ export type ExtendConfig = {
     seedream: string | null;
     azure: string | null;
     "codex-cli": string | null;
+    agnes: string | null;
   };
   batch?: {
     max_workers?: number | null;

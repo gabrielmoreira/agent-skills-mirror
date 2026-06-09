@@ -24,7 +24,14 @@
     "shifter",
     "charliecloud",
     "wave",
-    "gpu"
+    "gpu",
+    "debug",
+    "arm64",
+    "emulate_amd64",
+    "test",
+    "test_full",
+    "test_cellrangermulti",
+    "test_multiome"
   ],
   "supported_presets": [
     "standard",

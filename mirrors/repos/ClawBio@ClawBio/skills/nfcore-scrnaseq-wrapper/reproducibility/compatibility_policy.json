@@ -2,7 +2,7 @@
   "mode": "stable",
   "update_policy": {
     "pipeline_version": "Manual updates only after validation.",
-    "local_checkout": "Preferred when a sibling scrnaseq checkout is present; record commit, branch, and dirty state.",
+    "local_checkout": "Preferred when a sibling scrnaseq checkout is present; record commit and branch. Dirty checkouts are rejected by default and require explicit --allow-dirty-pipeline opt-in. --require-local-pipeline fails instead of falling back to the remote pipeline.",
     "remote_repo": "Allowed only with an explicit pinned version or tag; never use latest."
   },
   "validation_required_before_update": [
@@ -23,9 +23,13 @@
     "requires_same_resolved_version": true,
     "requires_same_preset": true,
     "requires_same_profile": true,
+    "requires_same_work_dir": true,
     "requires_same_params_checksum": true
   },
   "execution_policy": {
-    "work_dir": "output/upstream/work"
+    "work_dir": "output/upstream/work",
+    "work_dir_policy": "A user-supplied --work-dir may be a local path or an object-store URI for cloud executors and is recorded in provenance/replayed by commands.sh.",
+    "cellranger_conda": "Cell Ranger presets are rejected with conda/mamba by default; --allow-conda-cellranger is required for trusted site configs.",
+    "extra_nextflow_configs": "Only validated -c/--config files are allowed; they are copied into reproducibility/nextflow_configs and replayed by commands.sh. Config contents are trusted Groovy code and are not sandboxed."
   }
 }

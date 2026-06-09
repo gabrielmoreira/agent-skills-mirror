@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `chf3198/megingjord-harness` — 26 default patterns, 1 followed patterns, 97 file(s) materialized.
+Mirror of `chf3198/megingjord-harness` — 26 default patterns, 11 followed patterns, 110 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `chf3198/megingjord-harness` — 26 default patterns, 1 followed patte
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 97 |
+| Followed pats | 11 |
+| Files         | 110 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,17 @@ Mirror of `chf3198/megingjord-harness` — 26 default patterns, 1 followed patte
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `docs/skills-agents.md`
+- `docs/agents-governance.md`
+- `docs/agents-workflow.md`
+- `docs/architecture-baton-model.md`
+- `CONTRIBUTING.md`
+- `docs/contributing-skills.md`
+- `docs/contributing-workflow.md`
+- `docs/contributing-dev-setup.md`
+- `docs/howto/100-line-design-contract.md`
+- `CODE_OF_CONDUCT.md`
+- `wiki/WIKI-operations.md`
+- `wiki/WIKI-typology.md`
 
 ## File Index
 
@@ -60,102 +70,115 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.codex/AGENTS.md`](.codex/AGENTS.md) |
-| 2 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 3 | ✓ | [`.github/instructions/dashboard.instructions.md`](.github/instructions/dashboard.instructions.md) |
-| 4 | ✓ | [`.github/instructions/research.instructions.md`](.github/instructions/research.instructions.md) |
-| 5 | ✓ | [`.github/instructions/scripts.instructions.md`](.github/instructions/scripts.instructions.md) |
-| 6 | ✓ | [`.github/instructions/skills.instructions.md`](.github/instructions/skills.instructions.md) |
-| 7 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 8 | ✓ | [`agents/architect.agent.md`](agents/architect.agent.md) |
-| 9 | ✓ | [`agents/governance-auditor.agent.md`](agents/governance-auditor.agent.md) |
-| 10 | ✓ | [`agents/implementer.agent.md`](agents/implementer.agent.md) |
-| 11 | ✓ | [`agents/planner.agent.md`](agents/planner.agent.md) |
-| 12 | ✓ | [`agents/pre-merge-review/architectural-drift.md`](agents/pre-merge-review/architectural-drift.md) |
-| 13 | ✓ | [`agents/pre-merge-review/bug-detect.md`](agents/pre-merge-review/bug-detect.md) |
-| 14 | ✓ | [`agents/pre-merge-review/doc-coverage.md`](agents/pre-merge-review/doc-coverage.md) |
-| 15 | ✓ | [`agents/pre-merge-review/security.md`](agents/pre-merge-review/security.md) |
-| 16 | ✓ | [`agents/pre-merge-review/test-coverage.md`](agents/pre-merge-review/test-coverage.md) |
-| 17 | ✓ | [`agents/quick.agent.md`](agents/quick.agent.md) |
-| 18 | ✓ | [`agents/release-reviewer.agent.md`](agents/release-reviewer.agent.md) |
-| 19 | ✓ | [`agents/roster.json`](agents/roster.json) |
-| 20 | ✓ | [`agents/router-policy.md`](agents/router-policy.md) |
-| 21 | ✓ | [`agents/router.agent.md`](agents/router.agent.md) |
-| 22 | ✓ | [`agents/security-scanner.agent.md`](agents/security-scanner.agent.md) |
-| 23 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 24 | ✓ | [`generated/governance-adapters/claude-code/CLAUDE.md`](generated/governance-adapters/claude-code/CLAUDE.md) |
-| 25 | ✓ | [`generated/governance-adapters/continue/.continue/rules/governance-controls.md`](generated/governance-adapters/continue/.continue/rules/governance-controls.md) |
-| 26 | ✓ | [`generated/governance-adapters/continue/.continue/rules/harness-goals.md`](generated/governance-adapters/continue/.continue/rules/harness-goals.md) |
-| 27 | ✓ | [`generated/governance-adapters/continue/.continue/rules/operator-identity-context.md`](generated/governance-adapters/continue/.continue/rules/operator-identity-context.md) |
-| 28 | ✓ | [`generated/governance-adapters/continue/.continue/rules/role-baton-routing.md`](generated/governance-adapters/continue/.continue/rules/role-baton-routing.md) |
-| 29 | ✓ | [`generated/governance-adapters/continue/.continue/rules/team-model-signing.md`](generated/governance-adapters/continue/.continue/rules/team-model-signing.md) |
-| 30 | ✓ | [`skills/.plugin-triage.json`](skills/.plugin-triage.json) |
-| 31 | ✓ | [`skills/breaking-change-recovery/SKILL.md`](skills/breaking-change-recovery/SKILL.md) |
-| 32 | ✓ | [`skills/cross-family-review/SKILL.md`](skills/cross-family-review/SKILL.md) |
-| 33 | ✓ | [`skills/docs-drift-maintenance/SKILL.md`](skills/docs-drift-maintenance/SKILL.md) |
-| 34 | ✓ | [`skills/fleet-model-optimizer/SKILL.md`](skills/fleet-model-optimizer/SKILL.md) |
-| 35 | ✓ | [`skills/fleet-portable-config/SKILL.md`](skills/fleet-portable-config/SKILL.md) |
-| 36 | ✓ | [`skills/github-actions-security-hardening/SKILL.md`](skills/github-actions-security-hardening/SKILL.md) |
-| 37 | ✓ | [`skills/github-capability-resolver/SKILL.md`](skills/github-capability-resolver/SKILL.md) |
-| 38 | ✓ | [`skills/github-ops-excellence/INSTALL-GLOBAL.md`](skills/github-ops-excellence/INSTALL-GLOBAL.md) |
-| 39 | ✓ | [`skills/github-ops-excellence/SKILL.md`](skills/github-ops-excellence/SKILL.md) |
-| 40 | ✓ | [`skills/github-ops-tree-router/references/INVOCATION-MAP.md`](skills/github-ops-tree-router/references/INVOCATION-MAP.md) |
-| 41 | ✓ | [`skills/github-ops-tree-router/references/OUTPUT-CONTRACTS.md`](skills/github-ops-tree-router/references/OUTPUT-CONTRACTS.md) |
-| 42 | ✓ | [`skills/github-ops-tree-router/references/OWNER-MATRIX.md`](skills/github-ops-tree-router/references/OWNER-MATRIX.md) |
-| 43 | ✓ | [`skills/github-ops-tree-router/references/PHASE-3-DEOVERLAP-MIGRATION.md`](skills/github-ops-tree-router/references/PHASE-3-DEOVERLAP-MIGRATION.md) |
-| 44 | ✓ | [`skills/github-ops-tree-router/references/SKILL-TREE-REFRACTOR-PLAN.md`](skills/github-ops-tree-router/references/SKILL-TREE-REFRACTOR-PLAN.md) |
-| 45 | ✓ | [`skills/github-ops-tree-router/SKILL.md`](skills/github-ops-tree-router/SKILL.md) |
-| 46 | ✓ | [`skills/github-projects-agile-linkage/SKILL.md`](skills/github-projects-agile-linkage/SKILL.md) |
-| 47 | ✓ | [`skills/github-release-incident-flow/SKILL.md`](skills/github-release-incident-flow/SKILL.md) |
-| 48 | ✓ | [`skills/github-review-merge-admin/SKILL.md`](skills/github-review-merge-admin/SKILL.md) |
-| 49 | ✓ | [`skills/github-ruleset-architecture/SKILL.md`](skills/github-ruleset-architecture/SKILL.md) |
-| 50 | ✓ | [`skills/github-ticket-lifecycle-orchestrator/SKILL.md`](skills/github-ticket-lifecycle-orchestrator/SKILL.md) |
-| 51 | ✓ | [`skills/global-skills-bootstrap/bin/init-global-governance.sh`](skills/global-skills-bootstrap/bin/init-global-governance.sh) |
-| 52 | ✓ | [`skills/global-skills-bootstrap/INSTALL-GLOBAL.md`](skills/global-skills-bootstrap/INSTALL-GLOBAL.md) |
-| 53 | ✓ | [`skills/global-skills-bootstrap/SKILL.md`](skills/global-skills-bootstrap/SKILL.md) |
-| 54 | ✓ | [`skills/global-skills-bootstrap/templates/global-skills.instructions.md`](skills/global-skills-bootstrap/templates/global-skills.instructions.md) |
-| 55 | ✓ | [`skills/global-task-router/SKILL.md`](skills/global-task-router/SKILL.md) |
-| 56 | ✓ | [`skills/llm-wiki-ops-portable/SKILL.md`](skills/llm-wiki-ops-portable/SKILL.md) |
-| 57 | ✓ | [`skills/llm-wiki-ops/SKILL.md`](skills/llm-wiki-ops/SKILL.md) |
-| 58 | ✓ | [`skills/manager-ticket-lifecycle/SKILL.md`](skills/manager-ticket-lifecycle/SKILL.md) |
-| 59 | ✓ | [`skills/mem-watchdog-ops/SKILL.md`](skills/mem-watchdog-ops/SKILL.md) |
-| 60 | ✓ | [`skills/mem-watchdog-ops/watchdog-snapshot.sh`](skills/mem-watchdog-ops/watchdog-snapshot.sh) |
-| 61 | ✓ | [`skills/network-platform-resources/SKILL.md`](skills/network-platform-resources/SKILL.md) |
-| 62 | ✓ | [`skills/openclaw-availability-utilization/SKILL.md`](skills/openclaw-availability-utilization/SKILL.md) |
-| 63 | ✓ | [`skills/openclaw-universal-system/SKILL.md`](skills/openclaw-universal-system/SKILL.md) |
-| 64 | ✓ | [`skills/openrouter-free-failover/SKILL.md`](skills/openrouter-free-failover/SKILL.md) |
-| 65 | ✓ | [`skills/operator-identity-context/INSTALL-GLOBAL.md`](skills/operator-identity-context/INSTALL-GLOBAL.md) |
-| 66 | ✓ | [`skills/operator-identity-context/SKILL.md`](skills/operator-identity-context/SKILL.md) |
-| 67 | ✓ | [`skills/playwright-vision-low-resource/INSTALL-GLOBAL.md`](skills/playwright-vision-low-resource/INSTALL-GLOBAL.md) |
-| 68 | ✓ | [`skills/playwright-vision-low-resource/scripts/apply-workspace-lowram.sh`](skills/playwright-vision-low-resource/scripts/apply-workspace-lowram.sh) |
-| 69 | ✓ | [`skills/playwright-vision-low-resource/scripts/preflight-playwright-mcp.sh`](skills/playwright-vision-low-resource/scripts/preflight-playwright-mcp.sh) |
-| 70 | ✓ | [`skills/playwright-vision-low-resource/SKILL.md`](skills/playwright-vision-low-resource/SKILL.md) |
-| 71 | ✓ | [`skills/playwright-vision-low-resource/templates/mcp.low-resource.jsonc`](skills/playwright-vision-low-resource/templates/mcp.low-resource.jsonc) |
-| 72 | ✓ | [`skills/playwright-vision-low-resource/templates/playwright.low-resource.config.ts`](skills/playwright-vision-low-resource/templates/playwright.low-resource.config.ts) |
-| 73 | ✓ | [`skills/release-version-integrity/SKILL.md`](skills/release-version-integrity/SKILL.md) |
-| 74 | ✓ | [`skills/repo-onboarding-standards/SKILL.md`](skills/repo-onboarding-standards/SKILL.md) |
-| 75 | ✓ | [`skills/repo-profile-governance/INSTALL-GLOBAL.md`](skills/repo-profile-governance/INSTALL-GLOBAL.md) |
-| 76 | ✓ | [`skills/repo-profile-governance/SKILL.md`](skills/repo-profile-governance/SKILL.md) |
-| 77 | ✓ | [`skills/repo-standards-router/INSTALL-GLOBAL.md`](skills/repo-standards-router/INSTALL-GLOBAL.md) |
-| 78 | ✓ | [`skills/repo-standards-router/SKILL.md`](skills/repo-standards-router/SKILL.md) |
-| 79 | ✓ | [`skills/repo-structure-conventions/SKILL.md`](skills/repo-structure-conventions/SKILL.md) |
-| 80 | ✓ | [`skills/research-redteam-loop/SKILL.md`](skills/research-redteam-loop/SKILL.md) |
-| 81 | ✓ | [`skills/role-admin-execution/SKILL.md`](skills/role-admin-execution/SKILL.md) |
-| 82 | ✓ | [`skills/role-baton-orchestrator/SKILL.md`](skills/role-baton-orchestrator/SKILL.md) |
-| 83 | ✓ | [`skills/role-collaborator-execution/SKILL.md`](skills/role-collaborator-execution/SKILL.md) |
-| 84 | ✓ | [`skills/role-consultant-critique/SKILL.md`](skills/role-consultant-critique/SKILL.md) |
-| 85 | ✓ | [`skills/role-it-execution/SKILL.md`](skills/role-it-execution/SKILL.md) |
-| 86 | ✓ | [`skills/role-manager-execution/SKILL.md`](skills/role-manager-execution/SKILL.md) |
-| 87 | ✓ | [`skills/role-red-team-critique/SKILL.md`](skills/role-red-team-critique/SKILL.md) |
-| 88 | ✓ | [`skills/secret-exposure-prevention/SKILL.md`](skills/secret-exposure-prevention/SKILL.md) |
-| 89 | ✓ | [`skills/web-regression-governance/INSTALL-GLOBAL.md`](skills/web-regression-governance/INSTALL-GLOBAL.md) |
-| 90 | ✓ | [`skills/web-regression-governance/SKILL.md`](skills/web-regression-governance/SKILL.md) |
-| 91 | ✓ | [`skills/workflow-self-anneal/INSTALL-GLOBAL.md`](skills/workflow-self-anneal/INSTALL-GLOBAL.md) |
-| 92 | ✓ | [`skills/workflow-self-anneal/SKILL.md`](skills/workflow-self-anneal/SKILL.md) |
-| 93 | ✓ | [`tests/fixtures/governance/golden/claude-code/CLAUDE.md`](tests/fixtures/governance/golden/claude-code/CLAUDE.md) |
-| 94 | ✓ | [`tests/fixtures/governance/golden/continue/.continue/rules/global-governance.md`](tests/fixtures/governance/golden/continue/.continue/rules/global-governance.md) |
-| 95 | ✓ | [`tests/fixtures/governance/golden/continue/.continue/rules/path-scoped-governance.md`](tests/fixtures/governance/golden/continue/.continue/rules/path-scoped-governance.md) |
-| 96 | ✓ | [`tests/fixtures/governance/golden/continue/.continue/rules/priority-p2-governance.md`](tests/fixtures/governance/golden/continue/.continue/rules/priority-p2-governance.md) |
-| 97 | → | [`docs/skills-agents.md`](docs/skills-agents.md) |
+| 2 | ✓ | [`.github/CODE_OF_CONDUCT.md`](.github/CODE_OF_CONDUCT.md) |
+| 3 | ✓ | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
+| 4 | ✓ | [`.github/copilot-instructions-advanced.md`](.github/copilot-instructions-advanced.md) |
+| 5 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 6 | ✓ | [`.github/instructions/dashboard.instructions.md`](.github/instructions/dashboard.instructions.md) |
+| 7 | ✓ | [`.github/instructions/research.instructions.md`](.github/instructions/research.instructions.md) |
+| 8 | ✓ | [`.github/instructions/scripts.instructions.md`](.github/instructions/scripts.instructions.md) |
+| 9 | ✓ | [`.github/instructions/skills.instructions.md`](.github/instructions/skills.instructions.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`agents/architect.agent.md`](agents/architect.agent.md) |
+| 12 | ✓ | [`agents/governance-auditor.agent.md`](agents/governance-auditor.agent.md) |
+| 13 | ✓ | [`agents/implementer.agent.md`](agents/implementer.agent.md) |
+| 14 | ✓ | [`agents/planner.agent.md`](agents/planner.agent.md) |
+| 15 | ✓ | [`agents/pre-merge-review/architectural-drift.md`](agents/pre-merge-review/architectural-drift.md) |
+| 16 | ✓ | [`agents/pre-merge-review/bug-detect.md`](agents/pre-merge-review/bug-detect.md) |
+| 17 | ✓ | [`agents/pre-merge-review/doc-coverage.md`](agents/pre-merge-review/doc-coverage.md) |
+| 18 | ✓ | [`agents/pre-merge-review/security.md`](agents/pre-merge-review/security.md) |
+| 19 | ✓ | [`agents/pre-merge-review/test-coverage.md`](agents/pre-merge-review/test-coverage.md) |
+| 20 | ✓ | [`agents/quick.agent.md`](agents/quick.agent.md) |
+| 21 | ✓ | [`agents/release-reviewer.agent.md`](agents/release-reviewer.agent.md) |
+| 22 | ✓ | [`agents/roster.json`](agents/roster.json) |
+| 23 | ✓ | [`agents/router-policy.md`](agents/router-policy.md) |
+| 24 | ✓ | [`agents/router.agent.md`](agents/router.agent.md) |
+| 25 | ✓ | [`agents/security-scanner.agent.md`](agents/security-scanner.agent.md) |
+| 26 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 27 | ✓ | [`generated/governance-adapters/claude-code/CLAUDE.md`](generated/governance-adapters/claude-code/CLAUDE.md) |
+| 28 | ✓ | [`generated/governance-adapters/continue/.continue/rules/governance-controls.md`](generated/governance-adapters/continue/.continue/rules/governance-controls.md) |
+| 29 | ✓ | [`generated/governance-adapters/continue/.continue/rules/harness-goals.md`](generated/governance-adapters/continue/.continue/rules/harness-goals.md) |
+| 30 | ✓ | [`generated/governance-adapters/continue/.continue/rules/operator-identity-context.md`](generated/governance-adapters/continue/.continue/rules/operator-identity-context.md) |
+| 31 | ✓ | [`generated/governance-adapters/continue/.continue/rules/role-baton-routing.md`](generated/governance-adapters/continue/.continue/rules/role-baton-routing.md) |
+| 32 | ✓ | [`generated/governance-adapters/continue/.continue/rules/team-model-signing.md`](generated/governance-adapters/continue/.continue/rules/team-model-signing.md) |
+| 33 | ✓ | [`skills/.plugin-triage.json`](skills/.plugin-triage.json) |
+| 34 | ✓ | [`skills/breaking-change-recovery/SKILL.md`](skills/breaking-change-recovery/SKILL.md) |
+| 35 | ✓ | [`skills/cross-family-review/SKILL.md`](skills/cross-family-review/SKILL.md) |
+| 36 | ✓ | [`skills/docs-drift-maintenance/SKILL.md`](skills/docs-drift-maintenance/SKILL.md) |
+| 37 | ✓ | [`skills/fleet-model-optimizer/SKILL.md`](skills/fleet-model-optimizer/SKILL.md) |
+| 38 | ✓ | [`skills/fleet-portable-config/SKILL.md`](skills/fleet-portable-config/SKILL.md) |
+| 39 | ✓ | [`skills/github-actions-security-hardening/SKILL.md`](skills/github-actions-security-hardening/SKILL.md) |
+| 40 | ✓ | [`skills/github-capability-resolver/SKILL.md`](skills/github-capability-resolver/SKILL.md) |
+| 41 | ✓ | [`skills/github-ops-excellence/INSTALL-GLOBAL.md`](skills/github-ops-excellence/INSTALL-GLOBAL.md) |
+| 42 | ✓ | [`skills/github-ops-excellence/SKILL.md`](skills/github-ops-excellence/SKILL.md) |
+| 43 | ✓ | [`skills/github-ops-tree-router/references/INVOCATION-MAP.md`](skills/github-ops-tree-router/references/INVOCATION-MAP.md) |
+| 44 | ✓ | [`skills/github-ops-tree-router/references/OUTPUT-CONTRACTS.md`](skills/github-ops-tree-router/references/OUTPUT-CONTRACTS.md) |
+| 45 | ✓ | [`skills/github-ops-tree-router/references/OWNER-MATRIX.md`](skills/github-ops-tree-router/references/OWNER-MATRIX.md) |
+| 46 | ✓ | [`skills/github-ops-tree-router/references/PHASE-3-DEOVERLAP-MIGRATION.md`](skills/github-ops-tree-router/references/PHASE-3-DEOVERLAP-MIGRATION.md) |
+| 47 | ✓ | [`skills/github-ops-tree-router/references/SKILL-TREE-REFRACTOR-PLAN.md`](skills/github-ops-tree-router/references/SKILL-TREE-REFRACTOR-PLAN.md) |
+| 48 | ✓ | [`skills/github-ops-tree-router/SKILL.md`](skills/github-ops-tree-router/SKILL.md) |
+| 49 | ✓ | [`skills/github-projects-agile-linkage/SKILL.md`](skills/github-projects-agile-linkage/SKILL.md) |
+| 50 | ✓ | [`skills/github-release-incident-flow/SKILL.md`](skills/github-release-incident-flow/SKILL.md) |
+| 51 | ✓ | [`skills/github-review-merge-admin/SKILL.md`](skills/github-review-merge-admin/SKILL.md) |
+| 52 | ✓ | [`skills/github-ruleset-architecture/SKILL.md`](skills/github-ruleset-architecture/SKILL.md) |
+| 53 | ✓ | [`skills/github-ticket-lifecycle-orchestrator/SKILL.md`](skills/github-ticket-lifecycle-orchestrator/SKILL.md) |
+| 54 | ✓ | [`skills/global-skills-bootstrap/bin/init-global-governance.sh`](skills/global-skills-bootstrap/bin/init-global-governance.sh) |
+| 55 | ✓ | [`skills/global-skills-bootstrap/INSTALL-GLOBAL.md`](skills/global-skills-bootstrap/INSTALL-GLOBAL.md) |
+| 56 | ✓ | [`skills/global-skills-bootstrap/SKILL.md`](skills/global-skills-bootstrap/SKILL.md) |
+| 57 | ✓ | [`skills/global-skills-bootstrap/templates/global-skills.instructions.md`](skills/global-skills-bootstrap/templates/global-skills.instructions.md) |
+| 58 | ✓ | [`skills/global-task-router/SKILL.md`](skills/global-task-router/SKILL.md) |
+| 59 | ✓ | [`skills/llm-wiki-ops-portable/SKILL.md`](skills/llm-wiki-ops-portable/SKILL.md) |
+| 60 | ✓ | [`skills/llm-wiki-ops/SKILL.md`](skills/llm-wiki-ops/SKILL.md) |
+| 61 | ✓ | [`skills/manager-ticket-lifecycle/SKILL.md`](skills/manager-ticket-lifecycle/SKILL.md) |
+| 62 | ✓ | [`skills/mem-watchdog-ops/SKILL.md`](skills/mem-watchdog-ops/SKILL.md) |
+| 63 | ✓ | [`skills/mem-watchdog-ops/watchdog-snapshot.sh`](skills/mem-watchdog-ops/watchdog-snapshot.sh) |
+| 64 | ✓ | [`skills/network-platform-resources/SKILL.md`](skills/network-platform-resources/SKILL.md) |
+| 65 | ✓ | [`skills/openclaw-availability-utilization/SKILL.md`](skills/openclaw-availability-utilization/SKILL.md) |
+| 66 | ✓ | [`skills/openclaw-universal-system/SKILL.md`](skills/openclaw-universal-system/SKILL.md) |
+| 67 | ✓ | [`skills/openrouter-free-failover/SKILL.md`](skills/openrouter-free-failover/SKILL.md) |
+| 68 | ✓ | [`skills/operator-identity-context/INSTALL-GLOBAL.md`](skills/operator-identity-context/INSTALL-GLOBAL.md) |
+| 69 | ✓ | [`skills/operator-identity-context/SKILL.md`](skills/operator-identity-context/SKILL.md) |
+| 70 | ✓ | [`skills/playwright-vision-low-resource/INSTALL-GLOBAL.md`](skills/playwright-vision-low-resource/INSTALL-GLOBAL.md) |
+| 71 | ✓ | [`skills/playwright-vision-low-resource/scripts/apply-workspace-lowram.sh`](skills/playwright-vision-low-resource/scripts/apply-workspace-lowram.sh) |
+| 72 | ✓ | [`skills/playwright-vision-low-resource/scripts/preflight-playwright-mcp.sh`](skills/playwright-vision-low-resource/scripts/preflight-playwright-mcp.sh) |
+| 73 | ✓ | [`skills/playwright-vision-low-resource/SKILL.md`](skills/playwright-vision-low-resource/SKILL.md) |
+| 74 | ✓ | [`skills/playwright-vision-low-resource/templates/mcp.low-resource.jsonc`](skills/playwright-vision-low-resource/templates/mcp.low-resource.jsonc) |
+| 75 | ✓ | [`skills/playwright-vision-low-resource/templates/playwright.low-resource.config.ts`](skills/playwright-vision-low-resource/templates/playwright.low-resource.config.ts) |
+| 76 | ✓ | [`skills/release-version-integrity/SKILL.md`](skills/release-version-integrity/SKILL.md) |
+| 77 | ✓ | [`skills/repo-onboarding-standards/SKILL.md`](skills/repo-onboarding-standards/SKILL.md) |
+| 78 | ✓ | [`skills/repo-profile-governance/INSTALL-GLOBAL.md`](skills/repo-profile-governance/INSTALL-GLOBAL.md) |
+| 79 | ✓ | [`skills/repo-profile-governance/SKILL.md`](skills/repo-profile-governance/SKILL.md) |
+| 80 | ✓ | [`skills/repo-standards-router/INSTALL-GLOBAL.md`](skills/repo-standards-router/INSTALL-GLOBAL.md) |
+| 81 | ✓ | [`skills/repo-standards-router/SKILL.md`](skills/repo-standards-router/SKILL.md) |
+| 82 | ✓ | [`skills/repo-structure-conventions/SKILL.md`](skills/repo-structure-conventions/SKILL.md) |
+| 83 | ✓ | [`skills/research-redteam-loop/SKILL.md`](skills/research-redteam-loop/SKILL.md) |
+| 84 | ✓ | [`skills/role-admin-execution/SKILL.md`](skills/role-admin-execution/SKILL.md) |
+| 85 | ✓ | [`skills/role-baton-orchestrator/SKILL.md`](skills/role-baton-orchestrator/SKILL.md) |
+| 86 | ✓ | [`skills/role-collaborator-execution/SKILL.md`](skills/role-collaborator-execution/SKILL.md) |
+| 87 | ✓ | [`skills/role-consultant-critique/SKILL.md`](skills/role-consultant-critique/SKILL.md) |
+| 88 | ✓ | [`skills/role-it-execution/SKILL.md`](skills/role-it-execution/SKILL.md) |
+| 89 | ✓ | [`skills/role-manager-execution/SKILL.md`](skills/role-manager-execution/SKILL.md) |
+| 90 | ✓ | [`skills/role-red-team-critique/SKILL.md`](skills/role-red-team-critique/SKILL.md) |
+| 91 | ✓ | [`skills/secret-exposure-prevention/SKILL.md`](skills/secret-exposure-prevention/SKILL.md) |
+| 92 | ✓ | [`skills/web-regression-governance/INSTALL-GLOBAL.md`](skills/web-regression-governance/INSTALL-GLOBAL.md) |
+| 93 | ✓ | [`skills/web-regression-governance/SKILL.md`](skills/web-regression-governance/SKILL.md) |
+| 94 | ✓ | [`skills/workflow-self-anneal/INSTALL-GLOBAL.md`](skills/workflow-self-anneal/INSTALL-GLOBAL.md) |
+| 95 | ✓ | [`skills/workflow-self-anneal/SKILL.md`](skills/workflow-self-anneal/SKILL.md) |
+| 96 | ✓ | [`tests/fixtures/governance/golden/claude-code/CLAUDE.md`](tests/fixtures/governance/golden/claude-code/CLAUDE.md) |
+| 97 | ✓ | [`tests/fixtures/governance/golden/continue/.continue/rules/global-governance.md`](tests/fixtures/governance/golden/continue/.continue/rules/global-governance.md) |
+| 98 | ✓ | [`tests/fixtures/governance/golden/continue/.continue/rules/path-scoped-governance.md`](tests/fixtures/governance/golden/continue/.continue/rules/path-scoped-governance.md) |
+| 99 | ✓ | [`tests/fixtures/governance/golden/continue/.continue/rules/priority-p2-governance.md`](tests/fixtures/governance/golden/continue/.continue/rules/priority-p2-governance.md) |
+| 100 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 101 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 102 | → | [`docs/agents-governance.md`](docs/agents-governance.md) |
+| 103 | → | [`docs/agents-workflow.md`](docs/agents-workflow.md) |
+| 104 | → | [`docs/architecture-baton-model.md`](docs/architecture-baton-model.md) |
+| 105 | → | [`docs/contributing-dev-setup.md`](docs/contributing-dev-setup.md) |
+| 106 | → | [`docs/contributing-skills.md`](docs/contributing-skills.md) |
+| 107 | → | [`docs/contributing-workflow.md`](docs/contributing-workflow.md) |
+| 108 | → | [`docs/howto/100-line-design-contract.md`](docs/howto/100-line-design-contract.md) |
+| 109 | → | [`wiki/WIKI-operations.md`](wiki/WIKI-operations.md) |
+| 110 | → | [`wiki/WIKI-typology.md`](wiki/WIKI-typology.md) |
 
 ---
 

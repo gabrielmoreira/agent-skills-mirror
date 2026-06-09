@@ -65,6 +65,7 @@ const DEFAULT_PROVIDER_RATE_LIMITS: Record<Provider, ProviderRateLimit> = {
   seedream: { concurrency: 3, startIntervalMs: 1100 },
   azure: { concurrency: 3, startIntervalMs: 1100 },
   "codex-cli": { concurrency: 1, startIntervalMs: 2000 },
+  agnes: { concurrency: 3, startIntervalMs: 1100 },
 };
 
 function printUsage(): void {
@@ -79,13 +80,14 @@ Options:
   --image <path>            Output image path (required in single-image mode)
   --batchfile <path>        JSON batch file for multi-image generation
   --jobs <count>            Worker count for batch mode (default: auto, max from config, built-in default 10)
-  --provider google|openai|openrouter|dashscope|zai|minimax|replicate|jimeng|seedream|azure|codex-cli  Force provider (auto-detect by default)
+  --provider google|openai|openrouter|dashscope|zai|minimax|replicate|jimeng|seedream|azure|codex-cli|agnes  Force provider (auto-detect by default)
   -m, --model <id>          Model ID
   --ar <ratio>              Aspect ratio (e.g., 16:9, 1:1, 4:3)
   --size <WxH>              Size (e.g., 1024x1024)
   --quality normal|2k       Quality preset (default: 2k)
   --imageSize 1K|2K|4K      Image size for Google/OpenRouter (default: from quality)
   --imageApiDialect <id>    OpenAI-compatible image dialect: openai-native|ratio-metadata
+  --response-format file|url  Output mode: file (download image, default) or url (return URL text)
   --ref <files...>          Reference images (Google, OpenAI, Azure, OpenRouter, Replicate supported families, MiniMax, Seedream 4.0/4.5/5.0, or DashScope wan2.7-image*)
   --n <count>               Number of images for the current task (default: 1; Replicate currently requires 1)
   --json                    JSON output
@@ -180,6 +182,7 @@ export function parseArgs(argv: string[]): CliArgs {
     imageSize: null,
     imageSizeSource: null,
     imageApiDialect: null,
+    responseFormat: null,
     referenceImages: [],
     n: 1,
     batchFile: null,
@@ -265,7 +268,8 @@ export function parseArgs(argv: string[]): CliArgs {
         v !== "jimeng" &&
         v !== "seedream" &&
         v !== "azure" &&
-        v !== "codex-cli"
+        v !== "codex-cli" &&
+        v !== "agnes"
       ) {
         throw new Error(`Invalid provider: ${v}`);
       }
@@ -316,6 +320,13 @@ export function parseArgs(argv: string[]): CliArgs {
         throw new Error(`Invalid imageApiDialect: ${v}`);
       }
       out.imageApiDialect = v;
+      continue;
+    }
+
+    if (a === "--response-format") {
+      const v = argv[++i];
+      if (v !== "file" && v !== "url") throw new Error(`Invalid response-format: ${v}`);
+      out.responseFormat = v;
       continue;
     }
 
@@ -438,6 +449,7 @@ export function parseSimpleYaml(yaml: string): Partial<ExtendConfig> {
           seedream: null,
           azure: null,
           "codex-cli": null,
+          agnes: null,
         };
         currentKey = "default_model";
         currentProvider = null;
@@ -467,7 +479,8 @@ export function parseSimpleYaml(yaml: string): Partial<ExtendConfig> {
           key === "jimeng" ||
           key === "seedream" ||
           key === "azure" ||
-          key === "codex-cli"
+          key === "codex-cli" ||
+          key === "agnes"
         )
       ) {
         config.batch ??= {};
@@ -487,7 +500,8 @@ export function parseSimpleYaml(yaml: string): Partial<ExtendConfig> {
           key === "jimeng" ||
           key === "seedream" ||
           key === "azure" ||
-          key === "codex-cli"
+          key === "codex-cli" ||
+          key === "agnes"
         )
       ) {
         const cleaned = value.replace(/['"]/g, "");
@@ -641,9 +655,10 @@ export function getConfiguredProviderRateLimits(
     seedream: { ...DEFAULT_PROVIDER_RATE_LIMITS.seedream },
     azure: { ...DEFAULT_PROVIDER_RATE_LIMITS.azure },
     "codex-cli": { ...DEFAULT_PROVIDER_RATE_LIMITS["codex-cli"] },
+    agnes: { ...DEFAULT_PROVIDER_RATE_LIMITS.agnes },
   };
 
-  for (const provider of ["replicate", "google", "openai", "openrouter", "dashscope", "zai", "minimax", "jimeng", "seedream", "azure", "codex-cli"] as Provider[]) {
+  for (const provider of ["replicate", "google", "openai", "openrouter", "dashscope", "zai", "minimax", "jimeng", "seedream", "azure", "codex-cli", "agnes"] as Provider[]) {
     const envPrefix = `BAOYU_IMAGE_GEN_${provider.toUpperCase().replace(/-/g, "_")}`;
     const extendLimit = extendConfig.batch?.provider_limits?.[provider];
     configured[provider] = {
@@ -696,6 +711,7 @@ function inferProviderFromModel(model: string | null): Provider | null {
   if (normalized.includes("seedream") || normalized.includes("seededit")) return "seedream";
   if (normalized === "image-01" || normalized === "image-01-live") return "minimax";
   if (normalized === "glm-image" || normalized === "cogview-4-250304") return "zai";
+  if (normalized.includes("agnes-image")) return "agnes";
   return null;
 }
 
@@ -711,10 +727,11 @@ export function detectProvider(args: CliArgs): Provider {
     args.provider !== "seedream" &&
     args.provider !== "minimax" &&
     args.provider !== "dashscope" &&
-    args.provider !== "codex-cli"
+    args.provider !== "codex-cli" &&
+    args.provider !== "agnes"
   ) {
     throw new Error(
-      "Reference images require a ref-capable provider. Use --provider google (Gemini multimodal), --provider openai (GPT Image edits), --provider azure (Azure OpenAI), --provider openrouter (OpenRouter multimodal), --provider replicate, --provider dashscope with a wan2.7 image model, --provider seedream for supported Seedream models, --provider minimax for MiniMax subject-reference workflows, or --provider codex-cli (Codex image_gen with references)."
+      "Reference images require a ref-capable provider. Use --provider google (Gemini multimodal), --provider openai (GPT Image edits), --provider azure (Azure OpenAI), --provider openrouter (OpenRouter multimodal), --provider replicate, --provider dashscope with a wan2.7 image model, --provider seedream for supported Seedream models, --provider minimax for MiniMax subject-reference workflows, --provider codex-cli (Codex image_gen with references), or --provider agnes (Agnes Image)."
     );
   }
 
@@ -730,6 +747,7 @@ export function detectProvider(args: CliArgs): Provider {
   const hasReplicate = !!process.env.REPLICATE_API_TOKEN;
   const hasJimeng = !!(process.env.JIMENG_ACCESS_KEY_ID && process.env.JIMENG_SECRET_ACCESS_KEY);
   const hasSeedream = !!process.env.ARK_API_KEY;
+  const hasAgnes = !!process.env.AGNES_API_KEY;
   const modelProvider = inferProviderFromModel(args.model);
 
   if (modelProvider === "seedream") {
@@ -753,6 +771,13 @@ export function detectProvider(args: CliArgs): Provider {
     return "zai";
   }
 
+  if (modelProvider === "agnes") {
+    if (!hasAgnes) {
+      throw new Error("Model looks like an Agnes image model, but AGNES_API_KEY is not set.");
+    }
+    return "agnes";
+  }
+
   if (args.referenceImages.length > 0) {
     if (hasGoogle) return "google";
     if (hasOpenai) return "openai";
@@ -761,8 +786,9 @@ export function detectProvider(args: CliArgs): Provider {
     if (hasReplicate) return "replicate";
     if (hasSeedream) return "seedream";
     if (hasMinimax) return "minimax";
+    if (hasAgnes) return "agnes";
     throw new Error(
-      "Reference images require Google, OpenAI, Azure, OpenRouter, Replicate, supported Seedream models, or MiniMax. Set GOOGLE_API_KEY/GEMINI_API_KEY, OPENAI_API_KEY, AZURE_OPENAI_API_KEY+AZURE_OPENAI_BASE_URL, OPENROUTER_API_KEY, REPLICATE_API_TOKEN, ARK_API_KEY, or MINIMAX_API_KEY, or remove --ref."
+      "Reference images require Google, OpenAI, Azure, OpenRouter, Replicate, supported Seedream models, MiniMax, or Agnes. Set GOOGLE_API_KEY/GEMINI_API_KEY, OPENAI_API_KEY, AZURE_OPENAI_API_KEY+AZURE_OPENAI_BASE_URL, OPENROUTER_API_KEY, REPLICATE_API_TOKEN, ARK_API_KEY, MINIMAX_API_KEY, or AGNES_API_KEY, or remove --ref."
     );
   }
 
@@ -777,13 +803,14 @@ export function detectProvider(args: CliArgs): Provider {
     hasReplicate && "replicate",
     hasJimeng && "jimeng",
     hasSeedream && "seedream",
+    hasAgnes && "agnes",
   ].filter(Boolean) as Provider[];
 
   if (available.length === 1) return available[0]!;
   if (available.length > 1) return available[0]!;
 
   throw new Error(
-    "No API key found. Set GOOGLE_API_KEY, GEMINI_API_KEY, OPENAI_API_KEY, AZURE_OPENAI_API_KEY+AZURE_OPENAI_BASE_URL, OPENROUTER_API_KEY, DASHSCOPE_API_KEY, ZAI_API_KEY, MINIMAX_API_KEY, REPLICATE_API_TOKEN, JIMENG keys, or ARK_API_KEY.\n" +
+    "No API key found. Set GOOGLE_API_KEY, GEMINI_API_KEY, OPENAI_API_KEY, AZURE_OPENAI_API_KEY+AZURE_OPENAI_BASE_URL, OPENROUTER_API_KEY, DASHSCOPE_API_KEY, ZAI_API_KEY, MINIMAX_API_KEY, REPLICATE_API_TOKEN, JIMENG keys, ARK_API_KEY, or AGNES_API_KEY.\n" +
       "Create ~/.baoyu-skills/.env or <cwd>/.baoyu-skills/.env with your keys."
   );
 }
@@ -797,7 +824,7 @@ function isRemoteReferenceImage(refPath: string): boolean {
 }
 
 function shouldAllowRemoteReferenceImages(provider: Provider | null): boolean {
-  return provider === "dashscope";
+  return provider === "dashscope" || provider === "agnes";
 }
 
 export async function validateReferenceImages(
@@ -852,6 +879,7 @@ async function loadProviderModule(provider: Provider): Promise<ProviderModule> {
   if (provider === "seedream") return (await import("./providers/seedream")) as ProviderModule;
   if (provider === "azure") return (await import("./providers/azure")) as ProviderModule;
   if (provider === "codex-cli") return (await import("./providers/codex-cli")) as ProviderModule;
+  if (provider === "agnes") return (await import("./providers/agnes")) as ProviderModule;
   return (await import("./providers/openai")) as ProviderModule;
 }
 
@@ -884,6 +912,7 @@ function getModelForProvider(
     if (provider === "seedream" && extendConfig.default_model.seedream) return extendConfig.default_model.seedream;
     if (provider === "azure" && extendConfig.default_model.azure) return extendConfig.default_model.azure;
     if (provider === "codex-cli" && extendConfig.default_model["codex-cli"]) return extendConfig.default_model["codex-cli"];
+    if (provider === "agnes" && extendConfig.default_model.agnes) return extendConfig.default_model.agnes;
   }
   return providerModule.getDefaultModel();
 }
@@ -966,6 +995,7 @@ export function createTaskArgs(baseArgs: CliArgs, task: BatchTaskInput, batchDir
     imageSize: task.imageSize ?? baseArgs.imageSize ?? null,
     imageSizeSource: task.imageSize != null ? "task" : (baseArgs.imageSizeSource ?? null),
     imageApiDialect: task.imageApiDialect ?? baseArgs.imageApiDialect ?? null,
+    responseFormat: task.responseFormat ?? baseArgs.responseFormat ?? null,
     referenceImages: task.ref ? task.ref.map((filePath) => resolveBatchReferencePath(batchDir, filePath)) : [],
     n: task.n ?? baseArgs.n,
     batchFile: null,
@@ -1118,7 +1148,7 @@ async function runBatchTasks(
   const acquireProvider = createProviderGate(providerRateLimits);
   const workerCount = getWorkerCount(tasks.length, jobs, maxWorkers);
   console.error(`Batch mode: ${tasks.length} tasks, ${workerCount} workers, parallel mode enabled.`);
-  for (const provider of ["replicate", "google", "openai", "openrouter", "dashscope", "zai", "minimax", "jimeng", "seedream", "azure", "codex-cli"] as Provider[]) {
+  for (const provider of ["replicate", "google", "openai", "openrouter", "dashscope", "zai", "minimax", "jimeng", "seedream", "azure", "codex-cli", "agnes"] as Provider[]) {
     const limit = providerRateLimits[provider];
     console.error(`- ${provider}: concurrency=${limit.concurrency}, startIntervalMs=${limit.startIntervalMs}`);
   }

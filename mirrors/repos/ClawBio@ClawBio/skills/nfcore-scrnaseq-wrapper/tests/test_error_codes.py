@@ -18,9 +18,12 @@ from schemas import (
 
 def test_all_error_codes_are_string_constants():
     import inspect
+
     attrs = {k: v for k, v in inspect.getmembers(ErrorCode) if not k.startswith("_")}
     assert attrs, "ErrorCode must define at least one constant"
-    assert all(isinstance(v, str) for v in attrs.values()), "All ErrorCode values must be strings"
+    assert all(isinstance(v, str) for v in attrs.values()), (
+        "All ErrorCode values must be strings"
+    )
 
 
 def test_skill_error_accepts_error_code_constant():
@@ -51,17 +54,29 @@ def test_skill_error_to_dict():
 
 
 def test_pinned_versions_match_runtime_constants():
-    path = Path(__file__).resolve().parent.parent / "reproducibility" / "pinned_versions.json"
+    path = (
+        Path(__file__).resolve().parent.parent
+        / "reproducibility"
+        / "pinned_versions.json"
+    )
     pinned = json.loads(path.read_text(encoding="utf-8"))
     assert pinned["pipeline"]["default_version"] == DEFAULT_PIPELINE_VERSION
     assert int(pinned["minimum_versions"]["java"]) == JAVA_MIN_VERSION
-    assert tuple(map(int, pinned["minimum_versions"]["nextflow"].split("."))) == NEXTFLOW_MIN_VERSION
+    assert (
+        tuple(map(int, pinned["minimum_versions"]["nextflow"].split(".")))
+        == NEXTFLOW_MIN_VERSION
+    )
     assert set(pinned["supported_profiles"]) == SUPPORTED_PROFILES
     assert set(pinned["supported_presets"]) == SUPPORTED_PRESETS
 
 
 def test_compatibility_policy_matches_runtime_execution_defaults():
-    path = Path(__file__).resolve().parent.parent / "reproducibility" / "compatibility_policy.json"
+    path = (
+        Path(__file__).resolve().parent.parent
+        / "reproducibility"
+        / "compatibility_policy.json"
+    )
     policy = json.loads(path.read_text(encoding="utf-8"))
     assert policy["resume_policy"]["requires_same_params_checksum"] is True
+    assert policy["resume_policy"]["requires_same_work_dir"] is True
     assert policy["execution_policy"]["work_dir"] == "output/upstream/work"

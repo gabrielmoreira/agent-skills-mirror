@@ -47,12 +47,13 @@ description: Восстановить контекст в начале сесс�
 #### 2a. Паспорт
 - `<project_root>/passport.md` — frontmatter, секция 8 (контекст промптов), секция 10 (текущее состояние)
 
-#### 2b. Obsidian-артефакты
-- `<obsidian_projects>/<name>/dashboard.md` — секция «Сейчас», «Последние сессии»
-- `<obsidian_projects>/<name>/handoff.md` (если есть) — последний snapshot для chat; обязательно вытащи секцию «Точка возврата» (следующий шаг + висящее: неотправленный промпт прошлой сессии, недоделанное, WIP)
-- `<obsidian_projects>/<name>/sessions/` — найди самый свежий .md по mtime; прочти секции «Что сделано», «Открытые вопросы», «Следующие шаги»
-
-Если папки `<obsidian_projects>/<name>/` нет — попробуй legacy путь `<obsidian_sessions>/` отфильтровав по `project: <name>` в frontmatter.
+#### 2b. Obsidian-артефакты (Obsidian Knowledge Vault)
+- Определи путь к хранилищу `<vault_root>` (из секции `## Obsidian Knowledge Vault` в `CLAUDE.md`, либо дефолтная локальная папка `.vault/`, либо глобальная папка проекта `<obsidian_projects>/<name>/`).
+- Прочитай `<vault_root>/00-home/текущие приоритеты.md` — извлеки текущие цели, WIP и следующие шаги.
+- Прочитай `<vault_root>/00-home/index.md` — для понимания структуры доступных в `knowledge/` и `atlas/` заметок.
+- `<vault_root>/handoff.md` (если есть) — последний snapshot для chat; обязательно вытащи секцию «Точка возврата» (следующий шаг + висящее: неотправленный промпт прошлой сессии, недоделанное, WIP).
+- `<vault_root>/sessions/` — найди самый свежий .md по mtime; прочти секции «Что сделано», «Открытые вопросы», «Следующие шаги».
+- Если текущая задача пользователя касается конкретных интеграций, решений или архитектурных вопросов, найди релевантные заметки в `<vault_root>/knowledge/` (или в `atlas/`) и предложи агенту прочитать их.
 
 #### 2c. Git-контекст
 ```bash
@@ -63,15 +64,17 @@ git log --oneline -5            # последние коммиты
 git stash list 2>/dev/null      # есть ли stash'ы
 ```
 
-#### 2d. GSD-контекст (dual-detection v1/v2)
+#### 2d. GSD-контекст (dual-detection v1/v2/core)
 
 Сначала определи версию:
-- `<project_root>/.planning/` → **GSD v1**
-- `<project_root>/.gsd/` → **GSD v2**
+- `<project_root>/.planning/` существует:
+  - Если `<project_root>/.planning/config.json` существует → **GSD Core**
+  - Иначе → **GSD v1**
+- `<project_root>/.gsd/` существует → **GSD v2**
 - Оба → используй `gsd_version` из passport frontmatter; если нет — спроси.
 - Ничего нет → пропусти секцию.
 
-**Если GSD v1 (`.planning/`)** — прочитай в этом порядке (приоритет ↓):
+**Если GSD v1 или GSD Core (`.planning/`)** — прочитай в этом порядке (приоритет ↓):
 
 1. **`.planning/STATE.md`** — главное. Из него: текущий milestone, position (phase/step), последние решения, blockers.
 2. **`.planning/HANDOFF.json`** (если существует) — самый свежий snapshot от `/gsd-pause-work`. Если его mtime > чем у последней mm-сессии — приоритет HANDOFF.
@@ -117,10 +120,10 @@ git stash list 2>/dev/null      # есть ли stash'ы
 Последний коммит: <hash> "<subject>" (<X дней назад>)
 
 📍 Сейчас в работе
-<1-3 строки из dashboard.md «Сейчас» + если есть текущая GSD-фаза — она>
+<1-3 строки из текущие приоритеты.md (раздел WIP/Приоритеты) + если есть текущая GSD-фаза — она>
 
 <Если GSD:>
-🎯 GSD <v1|v2>: M<N> «<milestone_title>», фаза <X>/<Y> — «<phase_title>»
+🎯 GSD <v1|v2|core>: M<N> «<milestone_title>», фаза <X>/<Y> — «<phase_title>»
    Статус: <X задач completed, Y pending, Z blocked>
    Текущая фаза: <статус из STATE.md>
    <Если есть HANDOFF.json свежее последней сессии:>

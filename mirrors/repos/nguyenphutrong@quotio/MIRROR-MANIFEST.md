@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `nguyenphutrong/quotio` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `nguyenphutrong/quotio` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nguyenphutrong/quotio` — 26 default patterns, 0 followed patterns, 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 1 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,12 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.cursorrules`](.cursorrules) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`Quotio/Services/AGENTS.md`](Quotio/Services/AGENTS.md) |
-| 5 | ✓ | [`Quotio/Views/AGENTS.md`](Quotio/Views/AGENTS.md) |
-| 6 | ✓ | [`scripts/AGENTS.md`](scripts/AGENTS.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

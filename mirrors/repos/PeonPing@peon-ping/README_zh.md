@@ -6,11 +6,11 @@
 ![macOS](https://img.shields.io/badge/macOS-blue) ![WSL2](https://img.shields.io/badge/WSL2-blue) ![Linux](https://img.shields.io/badge/Linux-blue) ![Windows](https://img.shields.io/badge/Windows-blue) ![MSYS2](https://img.shields.io/badge/MSYS2-blue) ![SSH](https://img.shields.io/badge/SSH-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-![Claude Code](https://img.shields.io/badge/Claude_Code-hook-ffab01) ![Amp](https://img.shields.io/badge/Amp-adapter-ffab01) ![Gemini CLI](https://img.shields.io/badge/Gemini_CLI-adapter-ffab01) ![GitHub Copilot](https://img.shields.io/badge/GitHub_Copilot-adapter-ffab01) ![Codex](https://img.shields.io/badge/Codex-adapter-ffab01) ![Cursor](https://img.shields.io/badge/Cursor-adapter-ffab01) ![OpenCode](https://img.shields.io/badge/OpenCode-adapter-ffab01) ![Kilo CLI](https://img.shields.io/badge/Kilo_CLI-adapter-ffab01) ![Kiro](https://img.shields.io/badge/Kiro-adapter-ffab01) ![Kimi Code](https://img.shields.io/badge/Kimi_Code-adapter-ffab01) ![Windsurf](https://img.shields.io/badge/Windsurf-adapter-ffab01) ![Antigravity](https://img.shields.io/badge/Antigravity-adapter-ffab01) ![OpenClaw](https://img.shields.io/badge/OpenClaw-adapter-ffab01) ![Rovo Dev CLI](https://img.shields.io/badge/Rovo_Dev_CLI-adapter-ffab01) ![DeepAgents](https://img.shields.io/badge/DeepAgents-adapter-ffab01) ![oh-my-pi](https://img.shields.io/badge/oh--my--pi-adapter-ffab01)
+![Claude Code](https://img.shields.io/badge/Claude_Code-hook-ffab01) ![Amp](https://img.shields.io/badge/Amp-adapter-ffab01) ![Gemini CLI](https://img.shields.io/badge/Gemini_CLI-adapter-ffab01) ![GitHub Copilot](https://img.shields.io/badge/GitHub_Copilot-adapter-ffab01) ![Codex](https://img.shields.io/badge/Codex-adapter-ffab01) ![Cursor](https://img.shields.io/badge/Cursor-adapter-ffab01) ![OpenCode](https://img.shields.io/badge/OpenCode-adapter-ffab01) ![Kilo CLI](https://img.shields.io/badge/Kilo_CLI-adapter-ffab01) ![Kiro](https://img.shields.io/badge/Kiro-adapter-ffab01) ![Kimi Code](https://img.shields.io/badge/Kimi_Code-adapter-ffab01) ![Windsurf](https://img.shields.io/badge/Windsurf-adapter-ffab01) ![Antigravity](https://img.shields.io/badge/Antigravity-adapter-ffab01) ![OpenClaw](https://img.shields.io/badge/OpenClaw-adapter-ffab01) ![Rovo Dev CLI](https://img.shields.io/badge/Rovo_Dev_CLI-adapter-ffab01) ![DeepAgents](https://img.shields.io/badge/DeepAgents-adapter-ffab01) ![oh-my-pi](https://img.shields.io/badge/oh--my--pi-adapter-ffab01) ![Qwen Code](https://img.shields.io/badge/Qwen_Code-adapter-ffab01) ![iFlow CLI](https://img.shields.io/badge/iFlow_CLI-adapter-ffab01) ![Trae](https://img.shields.io/badge/Trae-adapter-ffab01) ![Kiro IDE](https://img.shields.io/badge/Kiro_IDE-adapter-ffab01) ![ECA](https://img.shields.io/badge/ECA-adapter-ffab01)
 
 **当你的 AI 编程助手需要关注时，播放游戏角色语音 + 显示视觉覆盖通知 — 或通过 MCP 让 AI 自行选择音效。**
 
-AI 编程助手完成任务或需要权限时不会通知你。你切换标签页、失去焦点，然后浪费 15 分钟重新进入状态。peon-ping 通过魔兽争霸、星际争霸、传送门、塞尔达等游戏的角色语音和醒目的屏幕横幅来解决这个问题 — 支持 **Claude Code**、**Amp**、**Gemini CLI**、**GitHub Copilot**、**Codex**、**Cursor**、**OpenCode**、**Kilo CLI**、**Kiro**、**Kimi Code**、**Windsurf**、**Google Antigravity**、**Rovo Dev CLI**、**DeepAgents** 及任何 MCP 客户端.
+AI 编程助手完成任务或需要权限时不会通知你。你切换标签页、失去焦点，然后浪费 15 分钟重新进入状态。peon-ping 通过魔兽争霸、星际争霸、传送门、塞尔达等游戏的角色语音和醒目的屏幕横幅来解决这个问题 — 支持 **Claude Code**、**Amp**、**Gemini CLI**、**GitHub Copilot**、**Codex**、**Cursor**、**OpenCode**、**Kilo CLI**、**Kiro**、**Kimi Code**、**Windsurf**、**Google Antigravity**、**Rovo Dev CLI**、**DeepAgents**、**Qwen Code**、**iFlow CLI**、**Trae**、**Kiro IDE**、**ECA** 及任何 MCP 客户端.
 
 **查看演示** &rarr; [peonping.com](https://peonping.com/)
 
@@ -238,6 +238,8 @@ peon-ping 实现了 [编码事件语音包规范（CESP）](https://github.com/P
 | **斜杠命令** | `/peon-ping-toggle` | 在 Claude Code 中工作时 |
 | **CLI** | `peon toggle` | 从任意终端标签页 |
 
+希望它自动生效？设置 [`focus_detect`](#configuration)，让 peon-ping 遵循 macOS 的**专注模式 / 勿扰模式**。专注模式开启时声音和通知自动静音，关闭后恢复。另见 `headphones_only` 和 `meeting_detect`。
+
 其他 CLI 命令：
 
 ```bash
@@ -380,6 +382,8 @@ peon-ping 有三个独立的控制开关，可以混合使用：
 - **headphones_only**（布尔值，默认：`false`）：仅在检测到耳机或外部音频设备时播放声音。启用后，如果内置扬声器是活动输出，声音将被静音 — 适用于开放式办公室。使用 `peon status` 查看状态。支持 macOS（通过 `system_profiler`）和 Linux（通过 PipeWire `wpctl` 或 PulseAudio `pactl`）。
 - **suppress_sound_when_tab_focused**（布尔值，默认：`false`）：当生成钩子事件的终端标签页处于当前活动/聚焦状态时，跳过声音播放。声音仍会在后台标签页中播放，提醒您其他地方发生了事件。桌面和移动通知不受影响。适用于只想在未查看的标签页中听到音频提示的用户。仅支持 macOS（使用 `osascript` 检查最前端应用和 iTerm2 标签页焦点）。
 - **meeting_detect**：检测麦克风是否正在使用中，并在麦克风使用期间临时抑制音频播放。通知仍会正常显示。
+- **focus_detect**（布尔值，默认：`false`）：遵循 macOS 的**专注模式 / 勿扰模式**。peon-ping 通过 `afplay` 播放声音并在自定义窗口中绘制覆盖通知，两者都绕过通知中心，因此系统的专注模式开关默认对它们没有影响。启用后，peon-ping 会直接读取专注模式状态，并在**任意**专注模式（勿扰、工作、睡眠等）激活时抑制输出，关闭专注模式后自动恢复。移动推送（如已配置）不受影响，因为手机会遵循其自身的专注模式。仅支持 macOS，采用失败放行策略（若无法读取专注模式状态，则照常播放声音）。
+- **focus_detect_mode**（字符串，默认：`"all"`）：专注模式激活时 `focus_detect` 抑制的内容。`"all"` 同时静音声音和覆盖/桌面通知。`"sound"` 仅静音声音（通知仍会显示）。`"notifications"` 仅静音通知（声音仍会播放）。当 `focus_detect` 为 `false` 时忽略此设置。
 - **notification_position**（字符串，默认：`"top-center"`）：覆盖通知在屏幕上的显示位置。选项：`"top-left"`、`"top-center"`、`"top-right"`、`"bottom-left"`、`"bottom-center"`、`"bottom-right"`。
 - **notification_dismiss_seconds**（数字，默认：`4`）：覆盖通知在 N 秒后自动消失。设为 `0` 则通知持续显示，需点击关闭。
 - **`CLAUDE_SESSION_NAME` 环境变量**：在启动 `claude` 前设置，为会话指定自定义名称。同时显示在桌面通知标题和终端标签标题中，优先级高于所有配置项。示例：`CLAUDE_SESSION_NAME="Auth Refactor" claude` 或先 `export CLAUDE_SESSION_NAME="功能: Auth"` 再 `claude`。
@@ -622,8 +626,13 @@ peon-ping 适用于任何支持钩子的代理式 IDE。适配器将 IDE 特定�
 | **Rovo Dev CLI** | 适配器 | 如果 `~/.rovodev` 存在，`install.sh` 会自动注册，或手动添加钩子到 `~/.rovodev/config.yml`（[设置](#rovo-dev-cli-设置)） |
 | **DeepAgents** | 适配器 | `bash adapters/deepagents.sh` / `powershell adapters/deepagents.ps1`（[设置](#deepagents-设置)） |
 | **oh-my-pi (omp)** | 适配器 | `bash adapters/omp.sh`（[设置](#oh-my-pi-omp-设置)） |
+| **Qwen Code** | 适配器 | 添加指向 `adapters/qwen.sh`（Windows 用 `.ps1`）的钩子（[设置](#qwen-code-设置)） |
+| **iFlow CLI** | 适配器 | 添加指向 `adapters/iflow.sh`（或 `.ps1`）的钩子（[设置](#iflow-cli-设置)） |
+| **Trae** | 适配器 | 文件系统监视器：`bash adapters/trae.sh &` / `powershell adapters/trae.ps1 -Install`（[设置](#trae-设置)） |
+| **Kiro IDE** | 适配器 | 在 `.kiro/hooks/*.kiro.hook` 中添加调用 `adapters/kiro-ide.sh`（或 `.ps1`）的 Agent 钩子（[设置](#kiro-ide-设置)） |
+| **ECA** | 适配器 | 添加指向 `adapters/eca.sh`（或 `.ps1`）的 shell 钩子（[设置](#eca-设置)） |
 
-> **Windows：** 所有适配器都有原生 PowerShell（`.ps1`）版本。Windows 安装程序（`install.ps1`）会将其复制到 `~/.claude/hooks/peon-ping/adapters/`。文件系统监视器（Amp、Antigravity、Kimi）使用 .NET `FileSystemWatcher` 而非 fswatch/inotifywait — 无需额外依赖。
+> **Windows：** 所有适配器都有原生 PowerShell（`.ps1`）版本。Windows 安装程序（`install.ps1`）会将其复制到 `~/.claude/hooks/peon-ping/adapters/`。文件系统监视器（Amp、Antigravity、Kimi、Trae）使用 .NET `FileSystemWatcher` 而非 fswatch/inotifywait — 无需额外依赖。
 
 ### OpenAI Codex 设置
 
@@ -1069,6 +1078,110 @@ curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/adapters/om
 ```bash
 curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/adapters/omp.sh | bash -s -- --uninstall
 ```
+
+### Qwen Code 设置
+
+为 [Qwen Code](https://github.com/QwenLM/qwen-code)（阿里巴巴）提供的轻量透传适配器。Qwen Code 采用 Claude Code 风格的钩子系统——事件以 JSON 形式通过 stdin 传入，且事件名使用与 peon-ping 一致的 PascalCase CESP 名称——因此该适配器只是给会话 id 打上 `qwen-` 前缀，并丢弃噪声较大的逐工具调用事件。
+
+添加到 `~/.qwen/settings.json`：
+
+```json
+{
+  "hooks": {
+    "SessionStart":       [{ "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/peon-ping/adapters/qwen.sh" }] }],
+    "UserPromptSubmit":   [{ "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/peon-ping/adapters/qwen.sh" }] }],
+    "Stop":               [{ "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/peon-ping/adapters/qwen.sh" }] }],
+    "Notification":       [{ "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/peon-ping/adapters/qwen.sh" }] }],
+    "PostToolUseFailure": [{ "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/peon-ping/adapters/qwen.sh" }] }],
+    "SessionEnd":         [{ "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/peon-ping/adapters/qwen.sh" }] }]
+  }
+}
+```
+
+在 Windows 上，通过 `powershell -NoProfile -File %USERPROFILE%\.claude\hooks\peon-ping\adapters\qwen.ps1` 指向 `qwen.ps1`。
+
+### iFlow CLI 设置
+
+为 [iFlow CLI](https://cli.iflow.cn)（iflow-ai）提供的透传适配器。iFlow 采用 Claude Code 风格的钩子系统（PascalCase 事件经 stdin 传入）；该适配器以 `iflow-` 会话前缀转发有意义的生命周期事件，并将失败的 `PostToolUse` 映射为 `PostToolUseFailure`。
+
+添加到 `~/.iflow/settings.json`（或项目级 `./.iflow/settings.json`）：
+
+```json
+{
+  "hooks": {
+    "SessionStart":     [{ "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/peon-ping/adapters/iflow.sh" }] }],
+    "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/peon-ping/adapters/iflow.sh" }] }],
+    "Stop":             [{ "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/peon-ping/adapters/iflow.sh" }] }],
+    "Notification":     [{ "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/peon-ping/adapters/iflow.sh" }] }],
+    "PostToolUse":      [{ "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/peon-ping/adapters/iflow.sh" }] }],
+    "SessionEnd":       [{ "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/peon-ping/adapters/iflow.sh" }] }]
+  }
+}
+```
+
+### Trae 设置
+
+为 [Trae](https://trae.ai)（字节跳动）提供的文件系统监视器适配器。Trae 是基于 VS Code 的 AI IDE，没有同步的 shell 钩子 API，因此 peon-ping 采用与 Amp、Antigravity 相同的监视方式：出现新的会话文件即 `SessionStart`，空闲计时器（会话文件停止更新）触发 `Stop`。
+
+```bash
+# 前台运行
+bash ~/.claude/hooks/peon-ping/adapters/trae.sh
+# 后台运行
+bash ~/.claude/hooks/peon-ping/adapters/trae.sh &
+```
+
+在 Windows 上：`powershell -File adapters\trae.ps1 -Install` 会注册后台监视器（用 `-Status` / `-Uninstall` 管理）。
+
+Trae 的磁盘会话布局因平台/版本而异且无公开文档，因此被监视的路径可通过环境变量覆盖：
+
+| 变量 | 默认值 |
+|---|---|
+| `TRAE_DATA_DIR` | `~/.trae` |
+| `TRAE_SESSIONS_DIR` | `$TRAE_DATA_DIR/sessions` |
+| `TRAE_SESSION_GLOB` | `*.json` |
+
+需要 `fswatch`（macOS：`brew install fswatch`）或 `inotifywait`（Linux：`apt install inotify-tools`）。Windows 使用 .NET `FileSystemWatcher`——无需额外依赖。
+
+### Kiro IDE 设置
+
+为 **Kiro IDE**（Amazon）提供的钩子适配器——与 [Kiro CLI](#kiro-设置)（`adapters/kiro.sh`）不同。IDE 的 Agent Hooks 是 `.kiro/hooks/*.kiro.hook` JSON 文件；其 `then.type: runCommand` 动作运行 shell 命令时**不传 stdin JSON**，而是把触发的事件名作为 argv 参数传给适配器。
+
+为每个事件创建一个钩子文件，例如 `.kiro/hooks/peon-ping-stop.kiro.hook`：
+
+```json
+{
+  "version": "1.0.0",
+  "enabled": true,
+  "name": "peon-ping-stop",
+  "when": { "type": "agentStop" },
+  "then": {
+    "type": "runCommand",
+    "command": "bash ~/.claude/hooks/peon-ping/adapters/kiro-ide.sh agentStop"
+  }
+}
+```
+
+用 `when.type` = `promptSubmit`（→ `UserPromptSubmit`）、`preToolUse`（→ 权限提示）或 `sessionStart`（→ `SessionStart`）重复创建，每个都把对应事件名作为命令参数传入。`postToolUse` 及文件/用户触发的钩子不携带 peon 相关信号，将被忽略。在 Windows 上，通过 `powershell -NoProfile -File` 指向 `kiro-ide.ps1`。
+
+### ECA 设置
+
+为 [ECA](https://eca.dev)（Editor Code Assistant，编辑器无关的 LLM Agent 集成）提供的 shell 钩子适配器。ECA 通过 stdin 传入 JSON（顶层键为 snake_case），并将钩子类型同时作为 argv 参数传入；该适配器将 ECA 事件映射为 CESP，并使用从 ECA `db_cache_path` 派生的稳定 `eca-` 会话前缀。最初由社区在 PeonPing/peon-ping#261 贡献，现已第一方内置。
+
+向 ECA 配置添加指向该适配器的 shell 钩子，每个事件一个：
+
+```json
+{
+  "hooks": {
+    "sessionStart": [{ "actions": [{ "type": "shell", "command": "bash ~/.claude/hooks/peon-ping/adapters/eca.sh sessionStart" }] }],
+    "preRequest":   [{ "actions": [{ "type": "shell", "command": "bash ~/.claude/hooks/peon-ping/adapters/eca.sh preRequest" }] }],
+    "postRequest":  [{ "actions": [{ "type": "shell", "command": "bash ~/.claude/hooks/peon-ping/adapters/eca.sh postRequest" }] }],
+    "preToolCall":  [{ "actions": [{ "type": "shell", "command": "bash ~/.claude/hooks/peon-ping/adapters/eca.sh preToolCall" }] }],
+    "sessionEnd":   [{ "actions": [{ "type": "shell", "command": "bash ~/.claude/hooks/peon-ping/adapters/eca.sh sessionEnd" }] }]
+  }
+}
+```
+
+**事件映射：** `sessionStart`/`chatStart` → `SessionStart`，`preRequest` → `UserPromptSubmit`，`postRequest`/`subagentPostRequest`/`postToolCall` → `Stop`，`preToolCall` → 权限提示，`sessionEnd` → `SessionEnd`。
 
 ## 远程开发（SSH / Devcontainers / Codespaces）
 

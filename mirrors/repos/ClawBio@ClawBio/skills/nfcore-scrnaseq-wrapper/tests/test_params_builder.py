@@ -8,7 +8,7 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from params_builder import build_params_file
+from params_builder import build_effective_params, build_params_file
 
 
 def _base_args(tmp_path: Path, **overrides) -> Namespace:
@@ -17,7 +17,14 @@ def _base_args(tmp_path: Path, **overrides) -> Namespace:
         preset="star",
         protocol=None,
         email=None,
+        email_on_fail=None,
         multiqc_title=None,
+        multiqc_config=None,
+        multiqc_logo=None,
+        multiqc_methods_description=None,
+        publish_dir_mode=None,
+        trace_report_suffix=None,
+        monochrome_logs=False,
         skip_cellbender=False,
         skip_fastqc=False,
         skip_emptydrops=False,
@@ -53,7 +60,7 @@ def _base_args(tmp_path: Path, **overrides) -> Namespace:
         cellranger_multi_barcodes=None,
         genome=None,
         save_reference=False,
-        save_align_intermeds=False,
+        save_align_intermeds=None,
     )
     defaults.update(overrides)
     return Namespace(**defaults)
@@ -63,8 +70,16 @@ def test_build_params_file_standard(tmp_path):
     samplesheet = tmp_path / "reproducibility" / "samplesheet.valid.csv"
     samplesheet.parent.mkdir()
     samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, preset="standard", protocol="10XV2", fasta=str(tmp_path / "g.fa"), gtf=str(tmp_path / "g.gtf"))
-    path, payload = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
+    args = _base_args(
+        tmp_path,
+        preset="standard",
+        protocol="10XV2",
+        fasta=str(tmp_path / "g.fa"),
+        gtf=str(tmp_path / "g.gtf"),
+    )
+    path, payload = build_params_file(
+        args, normalized_samplesheet=samplesheet, output_dir=tmp_path
+    )
     loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
     assert payload["aligner"] == "simpleaf"
     # Keep --input schema-safe even when the absolute output path contains whitespace.
@@ -79,7 +94,9 @@ def test_input_path_is_relative_when_output_dir_contains_spaces(tmp_path):
     samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
     args = _base_args(tmp_path, preset="star")
 
-    path, _payload = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=output_dir)
+    path, _payload = build_params_file(
+        args, normalized_samplesheet=samplesheet, output_dir=output_dir
+    )
 
     loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
     assert loaded["input"] == "reproducibility/samplesheet.valid.csv"
@@ -90,48 +107,11 @@ def test_build_params_file_demo_omits_input(tmp_path):
     samplesheet = tmp_path / "samplesheet.valid.csv"
     samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
     args = _base_args(tmp_path, demo=True, preset="star")
-    path, _payload = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
+    path, _payload = build_params_file(
+        args, normalized_samplesheet=samplesheet, output_dir=tmp_path
+    )
     loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
     assert "input" not in loaded
-
-
-def test_build_params_file_produces_valid_yaml(tmp_path):
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    kb_index = tmp_path / "kb_index"
-    kb_index.mkdir()
-    whitelist = tmp_path / "whitelist.txt"
-    whitelist.write_text("ACGT\n", encoding="utf-8")
-    args = _base_args(
-        tmp_path,
-        preset="kallisto",
-        protocol="10XV3",
-        skip_cellbender=True,
-        kallisto_index=str(kb_index),
-        barcode_whitelist=str(whitelist),
-    )
-    path, payload = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    assert path.suffix == ".yaml"
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["aligner"] == "kallisto"
-    assert loaded["skip_cellbender"] is True
-    # reference paths must be absolute POSIX paths (resolved, forward slashes)
-    assert loaded["kallisto_index"] == kb_index.resolve().as_posix()
-    assert loaded["barcode_whitelist"] == whitelist.resolve().as_posix()
-
-
-def test_params_paths_use_forward_slashes(tmp_path):
-    """No backslashes in any path written to params.yaml (cross-platform safety)."""
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    fasta = tmp_path / "genome.fa"
-    gtf = tmp_path / "genes.gtf"
-    fasta.write_text(">c\nACGT\n", encoding="utf-8")
-    gtf.write_text("", encoding="utf-8")
-    args = _base_args(tmp_path, preset="star", fasta=str(fasta), gtf=str(gtf))
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    text = path.read_text(encoding="utf-8")
-    assert "\\" not in text, f"Backslash found in params.yaml:\n{text}"
 
 
 def test_reference_paths_are_resolved_to_absolute(tmp_path):
@@ -141,68 +121,45 @@ def test_reference_paths_are_resolved_to_absolute(tmp_path):
     fasta = tmp_path / "genome.fa"
     fasta.write_text(">c\nACGT\n", encoding="utf-8")
     args = _base_args(tmp_path, preset="star", fasta=str(fasta))
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
+    path, _ = build_params_file(
+        args, normalized_samplesheet=samplesheet, output_dir=tmp_path
+    )
     loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
     assert Path(loaded["fasta"]).is_absolute()
 
 
-def test_outdir_uses_forward_slashes(tmp_path):
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, demo=True, preset="star")
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert "\\" not in loaded["outdir"]
-    assert "/" in loaded["outdir"]
-
-
 # ── skip flags ────────────────────────────────────────────────────────────────
 
-def test_skip_fastqc_appears_in_params(tmp_path):
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, skip_fastqc=True)
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["skip_fastqc"] is True
 
-
-def test_skip_emptydrops_writes_independent_param(tmp_path):
-    """skip_emptydrops is a distinct upstream param, not an alias for skip_cellbender."""
+def test_skip_emptydrops_is_deprecated_alias_for_skip_cellbender(tmp_path):
+    """Upstream marks skip_emptydrops as deprecated in favour of skip_cellbender,
+    so --skip-emptydrops must map to skip_cellbender and never emit the deprecated
+    param itself."""
     samplesheet = tmp_path / "samplesheet.valid.csv"
     samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
     args = _base_args(tmp_path, skip_emptydrops=True)
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["skip_emptydrops"] is True
-    assert "skip_cellbender" not in loaded
-
-
-def test_skip_cellbender_appears_in_params(tmp_path):
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, skip_cellbender=True)
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
+    path, _ = build_params_file(
+        args, normalized_samplesheet=samplesheet, output_dir=tmp_path
+    )
     loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
     assert loaded["skip_cellbender"] is True
     assert "skip_emptydrops" not in loaded
-
-
-def test_skip_multiqc_appears_in_params(tmp_path):
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, skip_multiqc=True)
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["skip_multiqc"] is True
 
 
 def test_skip_flags_absent_when_false(tmp_path):
     """Skip flags must not pollute params.yaml when not requested."""
     samplesheet = tmp_path / "samplesheet.valid.csv"
     samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, skip_cellbender=False, skip_fastqc=False, skip_emptydrops=False, skip_multiqc=False)
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
+    args = _base_args(
+        tmp_path,
+        skip_cellbender=False,
+        skip_fastqc=False,
+        skip_emptydrops=False,
+        skip_multiqc=False,
+    )
+    path, _ = build_params_file(
+        args, normalized_samplesheet=samplesheet, output_dir=tmp_path
+    )
     loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
     assert "skip_cellbender" not in loaded
     assert "skip_fastqc" not in loaded
@@ -212,108 +169,57 @@ def test_skip_flags_absent_when_false(tmp_path):
 
 # ── aligner tuning ────────────────────────────────────────────────────────────
 
-def test_star_feature_appears_in_params(tmp_path):
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, preset="star", star_feature="GeneFull")
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["star_feature"] == "GeneFull"
-
-
-def test_simpleaf_umi_resolution_appears_in_params(tmp_path):
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, preset="standard", simpleaf_umi_resolution="cr-like-em")
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["simpleaf_umi_resolution"] == "cr-like-em"
-
-
-def test_kb_workflow_appears_in_params(tmp_path):
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, preset="kallisto", kb_workflow="lamanno")
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["kb_workflow"] == "lamanno"
-
-
-def test_aligner_tuning_absent_when_none(tmp_path):
-    """Aligner tuning params must not appear in params.yaml when not set."""
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, star_feature=None, simpleaf_umi_resolution=None, kb_workflow=None)
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert "star_feature" not in loaded
-    assert "simpleaf_umi_resolution" not in loaded
-    assert "kb_workflow" not in loaded
-
 
 # ── reference management ──────────────────────────────────────────────────────
 
-def test_genome_shortcut_appears_in_params(tmp_path):
+
+def test_save_align_intermeds_false_written_only_when_explicit(tmp_path):
     samplesheet = tmp_path / "samplesheet.valid.csv"
     samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, genome="GRCh38")
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["genome"] == "GRCh38"
-
-
-def test_save_reference_appears_in_params(tmp_path):
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, save_reference=True)
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["save_reference"] is True
-
-
-def test_save_align_intermeds_appears_in_params(tmp_path):
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, save_align_intermeds=True)
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["save_align_intermeds"] is True
-
-
-def test_save_flags_absent_when_false(tmp_path):
-    """Neither save_reference nor save_align_intermeds must appear in params.yaml when not
-    explicitly requested. Omitting them lets the pipeline's nextflow.config defaults apply
-    (save_align_intermeds defaults to true in the upstream pipeline)."""
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, save_reference=False, save_align_intermeds=False)
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert "save_reference" not in loaded
-    assert "save_align_intermeds" not in loaded
+    args = _base_args(tmp_path, save_align_intermeds=False)
+    params = build_effective_params(
+        args, normalized_samplesheet=samplesheet, output_dir=tmp_path
+    )
+    assert params["save_align_intermeds"] is False
 
 
 # ── input/output metadata ─────────────────────────────────────────────────────
 
-def test_email_appears_in_params(tmp_path):
+
+def test_generic_nfcore_params_are_written_when_supplied(tmp_path):
     samplesheet = tmp_path / "samplesheet.valid.csv"
     samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, email="lab@example.com")
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
+    multiqc_config = tmp_path / "multiqc.yaml"
+    multiqc_logo = tmp_path / "logo.png"
+    methods = tmp_path / "methods.yaml"
+    multiqc_config.write_text("title: Test\n", encoding="utf-8")
+    multiqc_logo.write_bytes(b"png")
+    methods.write_text("section: Test\n", encoding="utf-8")
+    args = _base_args(
+        tmp_path,
+        email_on_fail="fail@example.com",
+        multiqc_config=str(multiqc_config),
+        multiqc_logo=str(multiqc_logo),
+        multiqc_methods_description=str(methods),
+        publish_dir_mode="copy",
+        trace_report_suffix="batch42",
+        monochrome_logs=True,
+    )
+    path, _ = build_params_file(
+        args, normalized_samplesheet=samplesheet, output_dir=tmp_path
+    )
     loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["email"] == "lab@example.com"
-
-
-def test_multiqc_title_appears_in_params(tmp_path):
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, multiqc_title="My Experiment QC")
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["multiqc_title"] == "My Experiment QC"
+    assert loaded["email_on_fail"] == "fail@example.com"
+    assert loaded["multiqc_config"] == multiqc_config.resolve().as_posix()
+    assert loaded["multiqc_logo"] == multiqc_logo.resolve().as_posix()
+    assert loaded["multiqc_methods_description"] == methods.resolve().as_posix()
+    assert loaded["publish_dir_mode"] == "copy"
+    assert loaded["trace_report_suffix"] == "batch42"
+    assert loaded["monochrome_logs"] is True
 
 
 # ── STARsolo additional options ───────────────────────────────────────────────
+
 
 def test_star_ignore_sjdbgtf_written_as_string(tmp_path):
     """star_ignore_sjdbgtf schema type is 'string' — must be written as 'true', not boolean True,
@@ -321,80 +227,25 @@ def test_star_ignore_sjdbgtf_written_as_string(tmp_path):
     samplesheet = tmp_path / "samplesheet.valid.csv"
     samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
     args = _base_args(tmp_path, preset="star", star_ignore_sjdbgtf=True)
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
+    path, _ = build_params_file(
+        args, normalized_samplesheet=samplesheet, output_dir=tmp_path
+    )
     loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
     assert loaded["star_ignore_sjdbgtf"] == "true"
     assert not isinstance(loaded["star_ignore_sjdbgtf"], bool)
 
 
-def test_seq_center_appears_in_params(tmp_path):
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, seq_center="GenomicsCore")
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["seq_center"] == "GenomicsCore"
-
-
 # ── Kallisto RNA velocity ─────────────────────────────────────────────────────
-
-def test_kb_t1c_appears_in_params(tmp_path):
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    t1c = tmp_path / "cdna_t2c.txt"
-    t1c.write_text("transcript\tgene\n", encoding="utf-8")
-    args = _base_args(tmp_path, preset="kallisto", kb_t1c=str(t1c))
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["kb_t1c"] == t1c.resolve().as_posix()
-
-
-def test_kb_t2c_appears_in_params(tmp_path):
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    t2c = tmp_path / "intron_t2c.txt"
-    t2c.write_text("transcript\tgene\n", encoding="utf-8")
-    args = _base_args(tmp_path, preset="kallisto", kb_t2c=str(t2c))
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["kb_t2c"] == t2c.resolve().as_posix()
 
 
 # ── CellRanger ────────────────────────────────────────────────────────────────
 
-def test_skip_cellranger_renaming_appears_in_params(tmp_path):
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, preset="cellranger", skip_cellranger_renaming=True)
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["skip_cellranger_renaming"] is True
-
 
 # ── CellRanger ARC ────────────────────────────────────────────────────────────
 
-def test_cellrangerarc_params_appear_in_params(tmp_path):
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    motifs = tmp_path / "jaspar.motifs"
-    motifs.write_text("", encoding="utf-8")
-    arc_config = tmp_path / "arc.json"
-    arc_config.write_text("{}", encoding="utf-8")
-    args = _base_args(
-        tmp_path,
-        preset="cellrangerarc",
-        motifs=str(motifs),
-        cellrangerarc_config=str(arc_config),
-        cellrangerarc_reference="GRCh38-2024-A",
-    )
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["motifs"] == motifs.resolve().as_posix()
-    assert loaded["cellrangerarc_config"] == arc_config.resolve().as_posix()
-    assert loaded["cellrangerarc_reference"] == "GRCh38-2024-A"
-
 
 # ── CellRanger Multi ──────────────────────────────────────────────────────────
+
 
 def test_cellranger_multi_path_params_appear_in_params(tmp_path):
     samplesheet = tmp_path / "samplesheet.valid.csv"
@@ -412,23 +263,17 @@ def test_cellranger_multi_path_params_appear_in_params(tmp_path):
         cellranger_multi_barcodes=str(barcodes),
         gex_cmo_set=str(cmo_set),
     )
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
+    path, _ = build_params_file(
+        args, normalized_samplesheet=samplesheet, output_dir=tmp_path
+    )
     loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
     assert loaded["cellranger_vdj_index"] == vdj_index.resolve().as_posix()
     assert loaded["cellranger_multi_barcodes"] == barcodes.resolve().as_posix()
     assert loaded["gex_cmo_set"] == cmo_set.resolve().as_posix()
 
 
-def test_skip_cellrangermulti_vdjref_appears_in_params(tmp_path):
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    args = _base_args(tmp_path, preset="cellrangermulti", skip_cellrangermulti_vdjref=True)
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded["skip_cellrangermulti_vdjref"] is True
-
-
 # ── igenomes_ignore suppression ───────────────────────────────────────────────
+
 
 def test_igenomes_ignore_set_when_fasta_provided(tmp_path):
     samplesheet = tmp_path / "samplesheet.valid.csv"
@@ -436,19 +281,9 @@ def test_igenomes_ignore_set_when_fasta_provided(tmp_path):
     fasta = tmp_path / "genome.fa"
     fasta.write_text(">c\nACGT\n", encoding="utf-8")
     args = _base_args(tmp_path, preset="star", fasta=str(fasta))
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
-    assert loaded.get("igenomes_ignore") is True
-
-
-def test_igenomes_ignore_set_when_star_index_provided(tmp_path):
-    """igenomes_ignore must be True whenever any explicit reference path is given, not just fasta."""
-    samplesheet = tmp_path / "samplesheet.valid.csv"
-    samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
-    star_idx = tmp_path / "star_idx"
-    star_idx.mkdir()
-    args = _base_args(tmp_path, preset="star", star_index=str(star_idx))
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
+    path, _ = build_params_file(
+        args, normalized_samplesheet=samplesheet, output_dir=tmp_path
+    )
     loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
     assert loaded.get("igenomes_ignore") is True
 
@@ -458,6 +293,8 @@ def test_igenomes_ignore_absent_when_genome_shortcut_used(tmp_path):
     samplesheet = tmp_path / "samplesheet.valid.csv"
     samplesheet.write_text("sample,fastq_1,fastq_2\n", encoding="utf-8")
     args = _base_args(tmp_path, preset="star", genome="GRCh38")
-    path, _ = build_params_file(args, normalized_samplesheet=samplesheet, output_dir=tmp_path)
+    path, _ = build_params_file(
+        args, normalized_samplesheet=samplesheet, output_dir=tmp_path
+    )
     loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
     assert "igenomes_ignore" not in loaded

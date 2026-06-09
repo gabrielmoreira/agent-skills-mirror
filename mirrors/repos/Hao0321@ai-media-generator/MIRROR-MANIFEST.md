@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Hao0321/ai-media-generator` — 26 default patterns, 39 followed patterns, 44 file(s) materialized.
+Mirror of `Hao0321/ai-media-generator` — 26 default patterns, 40 followed patterns, 45 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Hao0321/ai-media-generator` — 26 default patterns, 39 followed patt
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 39 |
-| Files         | 44 |
+| Followed pats | 40 |
+| Files         | 45 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,6 +80,7 @@ Mirror of `Hao0321/ai-media-generator` — 26 default patterns, 39 followed patt
 - `references/camera-language.md`
 - `references/concept-first-prompting.md`
 - `references/quality-control.md`
+- `references/proven-prompts.md`
 - `templates/advanced-recipes.md`
 - `templates/asset-library.md`
 - `templates/storyboard.md`
@@ -120,27 +121,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | → | [`references/midjourney.md`](references/midjourney.md) |
 | 22 | → | [`references/model-picker.md`](references/model-picker.md) |
 | 23 | → | [`references/oiioii.md`](references/oiioii.md) |
-| 24 | → | [`references/quality-control.md`](references/quality-control.md) |
-| 25 | → | [`references/runway.md`](references/runway.md) |
-| 26 | → | [`references/seedance.md`](references/seedance.md) |
-| 27 | → | [`references/seedream.md`](references/seedream.md) |
-| 28 | → | [`references/selector.md`](references/selector.md) |
-| 29 | → | [`references/sora.md`](references/sora.md) |
-| 30 | → | [`references/sound-design.md`](references/sound-design.md) |
-| 31 | → | [`references/stable-diffusion.md`](references/stable-diffusion.md) |
-| 32 | → | [`references/suno.md`](references/suno.md) |
-| 33 | → | [`references/veo.md`](references/veo.md) |
-| 34 | → | [`references/vfx-effects.md`](references/vfx-effects.md) |
-| 35 | → | [`references/vidu.md`](references/vidu.md) |
-| 36 | → | [`templates/advanced-recipes.md`](templates/advanced-recipes.md) |
-| 37 | → | [`templates/asset-library.md`](templates/asset-library.md) |
-| 38 | → | [`templates/auto-pilot.md`](templates/auto-pilot.md) |
-| 39 | → | [`templates/music-video.md`](templates/music-video.md) |
-| 40 | → | [`templates/negative-bank.md`](templates/negative-bank.md) |
-| 41 | → | [`templates/preset-packs.md`](templates/preset-packs.md) |
-| 42 | → | [`templates/storyboard.md`](templates/storyboard.md) |
-| 43 | → | [`templates/token-efficient-mode.md`](templates/token-efficient-mode.md) |
-| 44 | → | [`templates/user-flags.md`](templates/user-flags.md) |
+| 24 | → | [`references/proven-prompts.md`](references/proven-prompts.md) |
+| 25 | → | [`references/quality-control.md`](references/quality-control.md) |
+| 26 | → | [`references/runway.md`](references/runway.md) |
+| 27 | → | [`references/seedance.md`](references/seedance.md) |
+| 28 | → | [`references/seedream.md`](references/seedream.md) |
+| 29 | → | [`references/selector.md`](references/selector.md) |
+| 30 | → | [`references/sora.md`](references/sora.md) |
+| 31 | → | [`references/sound-design.md`](references/sound-design.md) |
+| 32 | → | [`references/stable-diffusion.md`](references/stable-diffusion.md) |
+| 33 | → | [`references/suno.md`](references/suno.md) |
+| 34 | → | [`references/veo.md`](references/veo.md) |
+| 35 | → | [`references/vfx-effects.md`](references/vfx-effects.md) |
+| 36 | → | [`references/vidu.md`](references/vidu.md) |
+| 37 | → | [`templates/advanced-recipes.md`](templates/advanced-recipes.md) |
+| 38 | → | [`templates/asset-library.md`](templates/asset-library.md) |
+| 39 | → | [`templates/auto-pilot.md`](templates/auto-pilot.md) |
+| 40 | → | [`templates/music-video.md`](templates/music-video.md) |
+| 41 | → | [`templates/negative-bank.md`](templates/negative-bank.md) |
+| 42 | → | [`templates/preset-packs.md`](templates/preset-packs.md) |
+| 43 | → | [`templates/storyboard.md`](templates/storyboard.md) |
+| 44 | → | [`templates/token-efficient-mode.md`](templates/token-efficient-mode.md) |
+| 45 | → | [`templates/user-flags.md`](templates/user-flags.md) |
 
 ---
 

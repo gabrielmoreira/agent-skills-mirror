@@ -1,0 +1,4 @@
+interface:
+  display_name: "Woo Guard"
+  short_description: "WooCommerce code guardrails for AI agents"
+  default_prompt: "Use $woo-guard after WooCommerce code is written or changed to review it for HPOS, CRUD, checkout, and money-handling issues."

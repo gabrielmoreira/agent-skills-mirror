@@ -1,8 +1,33 @@
 # Diagnostics
 
-For the MVP, use the native command surface first.
+For the MVP, use the native command surface first. For debugging lossless-claw behavior or failures, inspect the independent Lossless log before the shared OpenClaw gateway log.
 
 ## Fast path
+
+### Independent Lossless log
+
+Check this first when lossless-claw needs to debug itself, because routine `[lcm]` info and debug lines are written here instead of the shared OpenClaw gateway log.
+
+Default path:
+
+```bash
+/tmp/openclaw/lossless-claw-YYYY-MM-DD.log
+```
+
+For today's local log, use:
+
+```bash
+tail -n 200 "/tmp/openclaw/lossless-claw-$(date +%F).log"
+```
+
+Useful patterns:
+
+```bash
+rg -n "\\[lcm\\] (auto-rotate|rotate|runtime\\.llm\\.complete|summary|compact|assembly)" /tmp/openclaw/lossless-claw-*.log
+rg -n "warn|error|failed|truncated|deterministic|fallback" /tmp/openclaw/lossless-claw-*.log
+```
+
+The dated default log rolls over daily. Dated files are pruned after 3 days, and oversized active logs rotate through `.1.log` to `.5.log`. Startup banners and warning/error lines are also sent to OpenClaw's runtime logger, so check `/tmp/openclaw/openclaw-YYYY-MM-DD.log` after the Lossless log when you need gateway-level startup or failure context.
 
 ### `/lossless` (`/lcm` alias)
 

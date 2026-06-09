@@ -63,6 +63,9 @@
 - [illumina-bridge](skills/illumina-bridge/SKILL.md) — alias `illumina`: Import DRAGEN / Illumina result bundles
 - [protocols-io](skills/protocols-io/SKILL.md) — alias `protocols-io`: Search, browse, and retrieve scientific protocols
 - [clinical-variant-reporter](skills/clinical-variant-reporter/SKILL.md) — alias `acmg`: ACMG/AMP clinical variant classification
+- [nfcore-scrnaseq-wrapper](skills/nfcore-scrnaseq-wrapper/SKILL.md) — alias `scrnaseq-pipeline`: Upstream nf-core/scrnaseq single-cell RNA-seq preprocessing from FASTQ with strict preflight and reproducibility bundle
+- [nfcore-rnaseq-wrapper](skills/nfcore-rnaseq-wrapper/SKILL.md) — alias `rnaseq-pipeline`: Upstream nf-core/rnaseq bulk RNA-seq preprocessing from FASTQ or BAM inputs with strict preflight and reproducibility bundle
+- [nfcore-sarek-wrapper](skills/nfcore-sarek-wrapper/SKILL.md) — alias `sarek-pipeline`: nf-core/sarek 3.8.1 mapping through annotation for germline, tumor-only, and somatic paired analyses
 
 ## Active Skills Without Registered CLI Alias
 

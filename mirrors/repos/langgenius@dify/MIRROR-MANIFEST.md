@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 43 file(s) materialized.
+Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 43 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 43 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -92,16 +92,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 31 | ✓ | [`.agents/skills/frontend-testing/references/workflow.md`](.agents/skills/frontend-testing/references/workflow.md) |
 | 32 | ✓ | [`.agents/skills/frontend-testing/SKILL.md`](.agents/skills/frontend-testing/SKILL.md) |
 | 33 | ✓ | [`.agents/skills/how-to-write-component/SKILL.md`](.agents/skills/how-to-write-component/SKILL.md) |
-| 34 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 35 | ✓ | [`api/AGENTS.md`](api/AGENTS.md) |
-| 36 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 37 | ✓ | [`cli/AGENTS.md`](cli/AGENTS.md) |
-| 38 | ✓ | [`cli/src/commands/AGENTS.md`](cli/src/commands/AGENTS.md) |
-| 39 | ✓ | [`dify-agent/AGENTS.md`](dify-agent/AGENTS.md) |
-| 40 | ✓ | [`e2e/AGENTS.md`](e2e/AGENTS.md) |
-| 41 | ✓ | [`packages/dify-ui/AGENTS.md`](packages/dify-ui/AGENTS.md) |
-| 42 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 43 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
+| 34 | ✓ | [`.agents/skills/karpathy-guidelines/SKILL.md`](.agents/skills/karpathy-guidelines/SKILL.md) |
+| 35 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 36 | ✓ | [`api/AGENTS.md`](api/AGENTS.md) |
+| 37 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 38 | ✓ | [`cli/AGENTS.md`](cli/AGENTS.md) |
+| 39 | ✓ | [`cli/src/commands/AGENTS.md`](cli/src/commands/AGENTS.md) |
+| 40 | ✓ | [`dify-agent/AGENTS.md`](dify-agent/AGENTS.md) |
+| 41 | ✓ | [`e2e/AGENTS.md`](e2e/AGENTS.md) |
+| 42 | ✓ | [`packages/dify-ui/AGENTS.md`](packages/dify-ui/AGENTS.md) |
+| 43 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 44 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
 
 ---
 

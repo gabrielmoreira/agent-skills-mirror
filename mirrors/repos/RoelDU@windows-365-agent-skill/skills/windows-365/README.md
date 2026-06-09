@@ -15,7 +15,7 @@ Use Azure Virtual Desktop-specific skills for AVD host pools, session hosts, FSL
 
 ## Evidence mode
 
-For customer-facing supportability questions, the skill should use public Microsoft documentation as the source of truth, fetch the relevant Microsoft Learn page, give a short supportability verdict, include short exact Microsoft wording where available, link to the public source, and clearly state when the public docs are ambiguous or do not explicitly document the answer.
+For customer-facing supportability questions, the skill should use public Microsoft documentation as the source of truth, search and fetch the relevant Microsoft Learn page before answering, give a short supportability verdict, include short exact Microsoft wording where available, link to the public source, and clearly state when the public docs are ambiguous or do not explicitly document the answer. Prefer Microsoft Learn MCP for docs search/fetch and code sample search when available; fall back to `web_fetch`/`fetch_webpage` for known URLs or clients without MCP.
 
 Example question:
 

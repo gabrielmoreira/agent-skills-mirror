@@ -6,13 +6,20 @@ import sys
 from pathlib import Path
 
 
+def _command_path(value: Path | str) -> str:
+    text = str(value)
+    if "://" in text:
+        return text
+    return Path(text).as_posix()
+
+
 def build_nextflow_command(
     *,
-    pipeline_source: dict[str, str | bool],
+    pipeline_source: dict[str, object],
     profile: str,
     params_path: Path,
     resume: bool,
-    work_dir: Path | None = None,
+    work_dir: Path | str | None = None,
     extra_configs: list[Path] | None = None,
 ) -> tuple[list[str], str]:
     source_kind = str(pipeline_source["source_kind"])
@@ -31,7 +38,7 @@ def build_nextflow_command(
     # across macOS, Linux, and Windows (native or via WSL2).
     command.extend(["-profile", profile, "-params-file", params_path.as_posix()])
     if work_dir is not None:
-        command.extend(["-work-dir", work_dir.as_posix()])
+        command.extend(["-work-dir", _command_path(work_dir)])
     for cfg in extra_configs or []:
         command.extend(["-c", cfg.as_posix()])
     if resume:

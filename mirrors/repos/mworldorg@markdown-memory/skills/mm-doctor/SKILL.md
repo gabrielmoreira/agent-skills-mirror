@@ -53,9 +53,9 @@ $item.Target  # должно совпадать с <repo>/skills/mm-bridge
 
 При ошибках предложи: `Запустить scripts/register-skills.py для пере-создания ссылок? (y/n)`. Если y — запусти.
 
-### 4. Obsidian vault
+### 4. Obsidian vault (Базовая настройка)
 
-Из конфига возьми `paths.obsidian_*` пути:
+Если проект не открыт, проверь глобальные пути из конфига `paths.obsidian_*`:
 - ✅ `obsidian_vault` существует
 - ✅ `obsidian_claude_root` существует
 - ✅ `obsidian_bridge` существует (создай если нет — это безопасно)
@@ -74,31 +74,42 @@ $item.Target  # должно совпадать с <repo>/skills/mm-bridge
   Удалить старые? (y/n)
   ```
 
-### 6. Текущий проект (если cwd внутри проекта)
+### 6. Текущий проект и База Знаний (если cwd внутри проекта)
 
 Если в `cwd` или родителях есть `passport.md`:
-- ✅ Frontmatter валидный YAML
-- ✅ Все 11 секций присутствуют
-- ✅ Frontmatter содержит `gsd_version: <none|v1|v2>`
-- ⚠️ `updated:` старше 30 дней → предложи `/mm-init-project --update`
-- ⚠️ Секция 8 «Контекст для промптов» содержит маркер `<!-- TODO: заполни секцию 8 -->` → намекни заполнить
-- ✅ Sync с Obsidian-копией (sha256): совпадают?
-
-Также проверь:
-- ⚠️ Есть `PROJECT_PASSPORT.md` (старый формат) → предложи мигрировать `/mm-init-project`
-- ✅ `<obsidian_projects>/<name>/handoff.md` существует (создаётся на `/mm-init-project`, обновляется на `/mm-save-session`). Если нет → `⚠️ handoff.md отсутствует — запусти /mm save (или /mm next) чтобы создать; он нужен для Project Knowledge claude.ai.`
+- ✅ Frontmatter паспорта валидный YAML
+- ✅ Все 11 секций присутствуют в `passport.md`
+- ✅ Frontmatter содержит `gsd_version: <none|v1|v2|core>`
+- ⚠️ `updated:` в паспорте старше 30 дней → предложи `/mm-init-project --update`
+- ⚠️ Секция 8 «Контекст для промптов» содержит маркер `<!-- TODO: заполни секцию 8 -->` → намекни завить
+- ✅ Определение пути базы знаний `<vault_root>` (локальная папка `.vault/` в корне или глобальная `<obsidian_projects>/<name>/` из конфига)
+- ✅ Папки базы знаний существуют:
+  - `00-home/`
+  - `atlas/`
+  - `knowledge/` (и ее подпапки: `integrations/`, `decisions/`, `debugging/`, `patterns/`, `business/`)
+  - `sessions/`
+  - `inbox/`
+- ✅ Ключевые файлы базы знаний существуют:
+  - `00-home/index.md`
+  - `00-home/текущие приоритеты.md`
+  - `00-home/project-instructions.md`
+  - `handoff.md` (скелет или полный)
+  - `atlas/passport.md` (копия)
+- ✅ В `CLAUDE.md` присутствует секция `## Obsidian Knowledge Vault` с правильным путем к базе знаний.
+- ✅ Sync с копией паспорта в базе знаний (sha256): совпадают?
+- ⚠️ handoff.md существует. Если нет → `⚠️ handoff.md отсутствует — запусти /mm save (или /mm next) чтобы создать; он нужен для Project Knowledge claude.ai.`
 
 ### 6.1. GSD ↔ passport консистентность (если есть GSD)
 
 Если passport `gsd_version` ≠ none, прогони cross-check:
 
 **Проверка 1: версия в passport совпадает с реальностью**
-- Если в passport `gsd_version: v1`, проверь что `<project_root>/.planning/` существует.
+- Если в passport `gsd_version: v1` или `core`, проверь что `<project_root>/.planning/` существует. (Для `core` проверь также наличие `.planning/config.json`).
 - Если `gsd_version: v2` — проверь `<project_root>/.gsd/`.
-- Если расходится → `❌ passport говорит gsd_version: v1, но .planning/ не найдена. Запусти /mm-init-project --update.`
+- Если расходится → `❌ passport говорит gsd_version: <v1|core>, но .planning/ не найдена. Запусти /mm-init-project --update.` (или аналогично для v2).
 
 **Проверка 2: scope не разъехался**
-- Если есть `.planning/PROJECT.md` (v1):
+- Если есть `.planning/PROJECT.md` (v1/core):
   - Прочитай первые 30 строк и сравни с секцией 1 («Назначение») паспорта.
   - Если **ключевые слова не пересекаются** (jaccard < 0.3 на нормализованных tokens) → `⚠️ passport.md секция 1 и .planning/PROJECT.md описывают разное. Возможно scope изменился. Обнови passport через /mm-init-project --update.`
 - Если есть `.gsd/STATE.md` или AGENTS.md → аналогично.
@@ -182,7 +193,7 @@ $item.Target  # должно совпадать с <repo>/skills/mm-bridge
 ⚠️ Obsidian: vault найден, bridge_archive не было — создал
 ✅ Bridge state: next-prompt.md от <date> (свежий)
 ⚠️ Bridge archive: 47 файлов старше 30 дней — предложил удалить
-✅ Текущий проект: <name>, passport валидный (gsd_version: <none|v1|v2>), sync OK
+✅ Текущий проект: <name>, passport валидный (gsd_version: <none|v1|v2|core>), sync OK
 ✅ handoff.md: на месте <или ⚠️ отсутствует — /mm save>
 ✅ GSD-директива в CLAUDE.md: есть <или ⚠️ нет — /mm new для retrofit; или n/a если GSD нет>
 ⚠️ Секция 8 паспорта: TODO-маркер не убран

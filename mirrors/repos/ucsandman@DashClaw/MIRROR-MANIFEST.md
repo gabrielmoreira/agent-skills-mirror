@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ucsandman/DashClaw` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `ucsandman/DashClaw` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ucsandman/DashClaw` — 26 default patterns, 0 followed patterns, 14 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,19 +60,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
-| 2 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 4 | ✓ | [`agents/ceo/AGENTS.md`](agents/ceo/AGENTS.md) |
-| 5 | ✓ | [`agents/ceo/HEARTBEAT.md`](agents/ceo/HEARTBEAT.md) |
-| 6 | ✓ | [`agents/ceo/SOUL.md`](agents/ceo/SOUL.md) |
-| 7 | ✓ | [`agents/ceo/TOOLS.md`](agents/ceo/TOOLS.md) |
-| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 9 | ✓ | [`examples/codex-review-agent/AGENTS.md`](examples/codex-review-agent/AGENTS.md) |
-| 10 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 11 | ✓ | [`plugins/dashclaw/skills/dashclaw-governance/SKILL.md`](plugins/dashclaw/skills/dashclaw-governance/SKILL.md) |
-| 12 | ✓ | [`plugins/dashclaw/skills/dashclaw-platform-intelligence/SKILL.md`](plugins/dashclaw/skills/dashclaw-platform-intelligence/SKILL.md) |
-| 13 | ✓ | [`public/downloads/dashclaw-governance/SKILL.md`](public/downloads/dashclaw-governance/SKILL.md) |
-| 14 | ✓ | [`public/downloads/dashclaw-platform-intelligence/SKILL.md`](public/downloads/dashclaw-platform-intelligence/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/c--projects-dashclaw-route-changes/SKILL.md`](.claude/skills/c--projects-dashclaw-route-changes/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/dashclaw-agent/build-dashclaw/SKILL.md`](.claude/skills/dashclaw-agent/build-dashclaw/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/dashclaw-agent/compliance-drift-evals/SKILL.md`](.claude/skills/dashclaw-agent/compliance-drift-evals/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/dashclaw-agent/create-policies/SKILL.md`](.claude/skills/dashclaw-agent/create-policies/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/dashclaw-agent/instrument-agent/SKILL.md`](.claude/skills/dashclaw-agent/instrument-agent/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/dashclaw-agent/manage-approvals/SKILL.md`](.claude/skills/dashclaw-agent/manage-approvals/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/dashclaw-agent/register-on-dashclaw/SKILL.md`](.claude/skills/dashclaw-agent/register-on-dashclaw/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/dashclaw-agent/setup-dashclaw/SKILL.md`](.claude/skills/dashclaw-agent/setup-dashclaw/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/dashclaw-agent/troubleshoot/SKILL.md`](.claude/skills/dashclaw-agent/troubleshoot/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/dashclaw-governance/SKILL.md`](.claude/skills/dashclaw-governance/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/dashclaw-platform-intelligence/SKILL.md`](.claude/skills/dashclaw-platform-intelligence/SKILL.md) |
+| 13 | ✓ | [`.claude/skills/dashclaw-ship/SKILL.md`](.claude/skills/dashclaw-ship/SKILL.md) |
+| 14 | ✓ | [`.claude/skills/gitnexus/gitnexus-cli/SKILL.md`](.claude/skills/gitnexus/gitnexus-cli/SKILL.md) |
+| 15 | ✓ | [`.claude/skills/gitnexus/gitnexus-debugging/SKILL.md`](.claude/skills/gitnexus/gitnexus-debugging/SKILL.md) |
+| 16 | ✓ | [`.claude/skills/gitnexus/gitnexus-exploring/SKILL.md`](.claude/skills/gitnexus/gitnexus-exploring/SKILL.md) |
+| 17 | ✓ | [`.claude/skills/gitnexus/gitnexus-guide/SKILL.md`](.claude/skills/gitnexus/gitnexus-guide/SKILL.md) |
+| 18 | ✓ | [`.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md`](.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md) |
+| 19 | ✓ | [`.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md`](.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md) |
+| 20 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 21 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 22 | ✓ | [`agents/ceo/AGENTS.md`](agents/ceo/AGENTS.md) |
+| 23 | ✓ | [`agents/ceo/HEARTBEAT.md`](agents/ceo/HEARTBEAT.md) |
+| 24 | ✓ | [`agents/ceo/SOUL.md`](agents/ceo/SOUL.md) |
+| 25 | ✓ | [`agents/ceo/TOOLS.md`](agents/ceo/TOOLS.md) |
+| 26 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 27 | ✓ | [`examples/codex-review-agent/AGENTS.md`](examples/codex-review-agent/AGENTS.md) |
+| 28 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 29 | ✓ | [`plugins/dashclaw/skills/dashclaw-governance/SKILL.md`](plugins/dashclaw/skills/dashclaw-governance/SKILL.md) |
+| 30 | ✓ | [`plugins/dashclaw/skills/dashclaw-platform-intelligence/SKILL.md`](plugins/dashclaw/skills/dashclaw-platform-intelligence/SKILL.md) |
+| 31 | ✓ | [`public/downloads/dashclaw-governance/SKILL.md`](public/downloads/dashclaw-governance/SKILL.md) |
+| 32 | ✓ | [`public/downloads/dashclaw-platform-intelligence/SKILL.md`](public/downloads/dashclaw-platform-intelligence/SKILL.md) |
 
 ---
 

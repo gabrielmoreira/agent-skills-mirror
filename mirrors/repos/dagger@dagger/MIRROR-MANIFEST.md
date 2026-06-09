@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
+Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 25 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 25 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,6 +84,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`skills/dagger-design-proposals/SKILL.md`](skills/dagger-design-proposals/SKILL.md) |
 | 24 | ✓ | [`skills/engine-dev-testing/SKILL.md`](skills/engine-dev-testing/SKILL.md) |
 | 25 | ✓ | [`skills/engine-dev-testing/with-playground.sh`](skills/engine-dev-testing/with-playground.sh) |
+| 26 | ✓ | [`skills/tui-qa/agents/openai.yaml`](skills/tui-qa/agents/openai.yaml) |
+| 27 | ✓ | [`skills/tui-qa/scripts/tui_qa.py`](skills/tui-qa/scripts/tui_qa.py) |
+| 28 | ✓ | [`skills/tui-qa/SKILL.md`](skills/tui-qa/SKILL.md) |
 
 ---
 

@@ -11,6 +11,7 @@ if str(_SKILL_DIR) not in sys.path:
     sys.path.insert(0, str(_SKILL_DIR))
 
 from errors import ErrorCode, SkillError
+from schemas import is_under_tmp
 
 _PROCESS_TERMINATION_GRACE_SECONDS = 10
 
@@ -20,8 +21,11 @@ def execute_nextflow(
     *,
     cwd: Path,
     output_dir: Path,
-    timeout_seconds: int,
+    timeout_seconds: int | None,
 ) -> dict[str, object]:
+    # timeout_seconds=None disables the wall-clock cap entirely (long HPC/cloud
+    # runs whose walltime is enforced by the scheduler). Any positive int caps the
+    # run and kills the process tree on expiry.
     logs_dir = output_dir / "logs"
     logs_dir.mkdir(parents=True, exist_ok=True)
     stdout_path = logs_dir / "stdout.txt"
@@ -31,8 +35,10 @@ def execute_nextflow(
     if sys.platform != "win32":
         popen_kwargs["start_new_session"] = True
 
-    with stdout_path.open("w", encoding="utf-8") as stdout_fh, \
-         stderr_path.open("w", encoding="utf-8") as stderr_fh:
+    with (
+        stdout_path.open("w", encoding="utf-8") as stdout_fh,
+        stderr_path.open("w", encoding="utf-8") as stderr_fh,
+    ):
         try:
             proc = subprocess.Popen(
                 command,
@@ -54,6 +60,9 @@ def execute_nextflow(
 
         try:
             exit_code = proc.wait(timeout=timeout_seconds)
+        except KeyboardInterrupt:
+            _terminate_process_tree(proc)
+            raise
         except subprocess.TimeoutExpired:
             _terminate_process_tree(proc)
             raise SkillError(
@@ -69,7 +78,10 @@ def execute_nextflow(
             stage="execution",
             error_code=ErrorCode.EXECUTION_FAILED,
             message="Nextflow execution failed.",
-            fix="Inspect logs/stdout.txt and logs/stderr.txt, then correct the failing input or environment.",
+            fix=(
+                "Inspect logs/stdout.txt and logs/stderr.txt, then correct the failing input or environment."
+                + _macos_tmp_failure_hint(output_dir)
+            ),
             details={
                 "exit_code": exit_code,
                 "stdout": str(stdout_path),
@@ -84,21 +96,57 @@ def execute_nextflow(
     }
 
 
+def _macos_tmp_failure_hint(output_dir: Path) -> str:
+    """Extra fix hint when a run fails with --output under /tmp on macOS.
+
+    Colima/Docker on macOS does not share /tmp into the VM, a frequent cause of
+    '.command.run: No such file or directory' mid-run. Preflight already WARNs about
+    this; we repeat the actionable hint on failure so the cause is obvious. Empty
+    string on other platforms or when --output is not under /tmp.
+    """
+    if sys.platform != "darwin":
+        return ""
+    if not is_under_tmp(output_dir):
+        return ""
+    return (
+        " On macOS, --output is under /tmp, which Docker/Colima does not share into its VM; "
+        "this commonly surfaces as '.command.run: No such file or directory'. "
+        "Move --output to a path under your HOME directory and re-run."
+    )
+
+
 def _terminate_process_tree(proc: subprocess.Popen) -> None:
-    if sys.platform != "win32":
+    if sys.platform == "win32":
+        # Windows has no os.killpg; ``taskkill /T`` terminates the whole child tree
+        # (Nextflow plus its spawned task processes) instead of orphaning them when
+        # only the parent is killed. Best-effort and guarded: fall back to
+        # proc.kill() if taskkill is unavailable. Native Windows is not officially
+        # supported (preflight warns); WSL2 reports "linux" and takes the POSIX path
+        # below (audit F-7).
         try:
-            pgid = os.getpgid(proc.pid)
-            os.killpg(pgid, signal.SIGTERM)
-            proc.wait(timeout=_PROCESS_TERMINATION_GRACE_SECONDS)
-            return
-        except (OSError, ProcessLookupError, subprocess.TimeoutExpired):
+            subprocess.run(
+                ["taskkill", "/F", "/T", "/PID", str(proc.pid)],
+                capture_output=True,
+                timeout=_PROCESS_TERMINATION_GRACE_SECONDS,
+            )
+        except (OSError, subprocess.SubprocessError):
             pass
-        try:
-            pgid = os.getpgid(proc.pid)
-            os.killpg(pgid, signal.SIGKILL)
-            proc.wait()
-            return
-        except (OSError, ProcessLookupError):
-            pass
+        proc.kill()
+        proc.wait()
+        return
+    try:
+        pgid = os.getpgid(proc.pid)
+        os.killpg(pgid, signal.SIGTERM)
+        proc.wait(timeout=_PROCESS_TERMINATION_GRACE_SECONDS)
+        return
+    except (OSError, ProcessLookupError, subprocess.TimeoutExpired):
+        pass
+    try:
+        pgid = os.getpgid(proc.pid)
+        os.killpg(pgid, signal.SIGKILL)
+        proc.wait()
+        return
+    except (OSError, ProcessLookupError):
+        pass
     proc.kill()
     proc.wait()

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bytedance/deer-flow` — 26 default patterns, 0 followed patterns, 95 file(s) materialized.
+Mirror of `bytedance/deer-flow` — 26 default patterns, 0 followed patterns, 97 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 0 followed patterns, 95
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 95 |
+| Files         | 97 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -115,45 +115,47 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 54 | ✓ | [`skills/public/image-generation/scripts/generate.py`](skills/public/image-generation/scripts/generate.py) |
 | 55 | ✓ | [`skills/public/image-generation/SKILL.md`](skills/public/image-generation/SKILL.md) |
 | 56 | ✓ | [`skills/public/image-generation/templates/doraemon.md`](skills/public/image-generation/templates/doraemon.md) |
-| 57 | ✓ | [`skills/public/newsletter-generation/SKILL.md`](skills/public/newsletter-generation/SKILL.md) |
-| 58 | ✓ | [`skills/public/podcast-generation/scripts/generate.py`](skills/public/podcast-generation/scripts/generate.py) |
-| 59 | ✓ | [`skills/public/podcast-generation/SKILL.md`](skills/public/podcast-generation/SKILL.md) |
-| 60 | ✓ | [`skills/public/podcast-generation/templates/tech-explainer.md`](skills/public/podcast-generation/templates/tech-explainer.md) |
-| 61 | ✓ | [`skills/public/ppt-generation/scripts/generate.py`](skills/public/ppt-generation/scripts/generate.py) |
-| 62 | ✓ | [`skills/public/ppt-generation/SKILL.md`](skills/public/ppt-generation/SKILL.md) |
-| 63 | ✓ | [`skills/public/skill-creator/agents/analyzer.md`](skills/public/skill-creator/agents/analyzer.md) |
-| 64 | ✓ | [`skills/public/skill-creator/agents/comparator.md`](skills/public/skill-creator/agents/comparator.md) |
-| 65 | ✓ | [`skills/public/skill-creator/agents/grader.md`](skills/public/skill-creator/agents/grader.md) |
-| 66 | ✓ | [`skills/public/skill-creator/assets/eval_review.html`](skills/public/skill-creator/assets/eval_review.html) |
-| 67 | ✓ | [`skills/public/skill-creator/eval-viewer/generate_review.py`](skills/public/skill-creator/eval-viewer/generate_review.py) |
-| 68 | ✓ | [`skills/public/skill-creator/eval-viewer/viewer.html`](skills/public/skill-creator/eval-viewer/viewer.html) |
-| 69 | ✓ | [`skills/public/skill-creator/LICENSE.txt`](skills/public/skill-creator/LICENSE.txt) |
-| 70 | ✓ | [`skills/public/skill-creator/references/output-patterns.md`](skills/public/skill-creator/references/output-patterns.md) |
-| 71 | ✓ | [`skills/public/skill-creator/references/schemas.md`](skills/public/skill-creator/references/schemas.md) |
-| 72 | ✓ | [`skills/public/skill-creator/references/workflows.md`](skills/public/skill-creator/references/workflows.md) |
-| 73 | ✓ | [`skills/public/skill-creator/scripts/aggregate_benchmark.py`](skills/public/skill-creator/scripts/aggregate_benchmark.py) |
-| 74 | ✓ | [`skills/public/skill-creator/scripts/generate_report.py`](skills/public/skill-creator/scripts/generate_report.py) |
-| 75 | ✓ | [`skills/public/skill-creator/scripts/improve_description.py`](skills/public/skill-creator/scripts/improve_description.py) |
-| 76 | ✓ | [`skills/public/skill-creator/scripts/init_skill.py`](skills/public/skill-creator/scripts/init_skill.py) |
-| 77 | ✓ | [`skills/public/skill-creator/scripts/package_skill.py`](skills/public/skill-creator/scripts/package_skill.py) |
-| 78 | ✓ | [`skills/public/skill-creator/scripts/quick_validate.py`](skills/public/skill-creator/scripts/quick_validate.py) |
-| 79 | ✓ | [`skills/public/skill-creator/scripts/run_eval.py`](skills/public/skill-creator/scripts/run_eval.py) |
-| 80 | ✓ | [`skills/public/skill-creator/scripts/run_loop.py`](skills/public/skill-creator/scripts/run_loop.py) |
-| 81 | ✓ | [`skills/public/skill-creator/scripts/utils.py`](skills/public/skill-creator/scripts/utils.py) |
-| 82 | ✓ | [`skills/public/skill-creator/SKILL.md`](skills/public/skill-creator/SKILL.md) |
-| 83 | ✓ | [`skills/public/surprise-me/SKILL.md`](skills/public/surprise-me/SKILL.md) |
-| 84 | ✓ | [`skills/public/systematic-literature-review/evals/evals.json`](skills/public/systematic-literature-review/evals/evals.json) |
-| 85 | ✓ | [`skills/public/systematic-literature-review/evals/trigger_eval_set.json`](skills/public/systematic-literature-review/evals/trigger_eval_set.json) |
-| 86 | ✓ | [`skills/public/systematic-literature-review/scripts/arxiv_search.py`](skills/public/systematic-literature-review/scripts/arxiv_search.py) |
-| 87 | ✓ | [`skills/public/systematic-literature-review/SKILL.md`](skills/public/systematic-literature-review/SKILL.md) |
-| 88 | ✓ | [`skills/public/systematic-literature-review/templates/apa.md`](skills/public/systematic-literature-review/templates/apa.md) |
-| 89 | ✓ | [`skills/public/systematic-literature-review/templates/bibtex.md`](skills/public/systematic-literature-review/templates/bibtex.md) |
-| 90 | ✓ | [`skills/public/systematic-literature-review/templates/ieee.md`](skills/public/systematic-literature-review/templates/ieee.md) |
-| 91 | ✓ | [`skills/public/vercel-deploy-claimable/scripts/deploy.sh`](skills/public/vercel-deploy-claimable/scripts/deploy.sh) |
-| 92 | ✓ | [`skills/public/vercel-deploy-claimable/SKILL.md`](skills/public/vercel-deploy-claimable/SKILL.md) |
-| 93 | ✓ | [`skills/public/video-generation/scripts/generate.py`](skills/public/video-generation/scripts/generate.py) |
-| 94 | ✓ | [`skills/public/video-generation/SKILL.md`](skills/public/video-generation/SKILL.md) |
-| 95 | ✓ | [`skills/public/web-design-guidelines/SKILL.md`](skills/public/web-design-guidelines/SKILL.md) |
+| 57 | ✓ | [`skills/public/music-generation/scripts/generate.py`](skills/public/music-generation/scripts/generate.py) |
+| 58 | ✓ | [`skills/public/music-generation/SKILL.md`](skills/public/music-generation/SKILL.md) |
+| 59 | ✓ | [`skills/public/newsletter-generation/SKILL.md`](skills/public/newsletter-generation/SKILL.md) |
+| 60 | ✓ | [`skills/public/podcast-generation/scripts/generate.py`](skills/public/podcast-generation/scripts/generate.py) |
+| 61 | ✓ | [`skills/public/podcast-generation/SKILL.md`](skills/public/podcast-generation/SKILL.md) |
+| 62 | ✓ | [`skills/public/podcast-generation/templates/tech-explainer.md`](skills/public/podcast-generation/templates/tech-explainer.md) |
+| 63 | ✓ | [`skills/public/ppt-generation/scripts/generate.py`](skills/public/ppt-generation/scripts/generate.py) |
+| 64 | ✓ | [`skills/public/ppt-generation/SKILL.md`](skills/public/ppt-generation/SKILL.md) |
+| 65 | ✓ | [`skills/public/skill-creator/agents/analyzer.md`](skills/public/skill-creator/agents/analyzer.md) |
+| 66 | ✓ | [`skills/public/skill-creator/agents/comparator.md`](skills/public/skill-creator/agents/comparator.md) |
+| 67 | ✓ | [`skills/public/skill-creator/agents/grader.md`](skills/public/skill-creator/agents/grader.md) |
+| 68 | ✓ | [`skills/public/skill-creator/assets/eval_review.html`](skills/public/skill-creator/assets/eval_review.html) |
+| 69 | ✓ | [`skills/public/skill-creator/eval-viewer/generate_review.py`](skills/public/skill-creator/eval-viewer/generate_review.py) |
+| 70 | ✓ | [`skills/public/skill-creator/eval-viewer/viewer.html`](skills/public/skill-creator/eval-viewer/viewer.html) |
+| 71 | ✓ | [`skills/public/skill-creator/LICENSE.txt`](skills/public/skill-creator/LICENSE.txt) |
+| 72 | ✓ | [`skills/public/skill-creator/references/output-patterns.md`](skills/public/skill-creator/references/output-patterns.md) |
+| 73 | ✓ | [`skills/public/skill-creator/references/schemas.md`](skills/public/skill-creator/references/schemas.md) |
+| 74 | ✓ | [`skills/public/skill-creator/references/workflows.md`](skills/public/skill-creator/references/workflows.md) |
+| 75 | ✓ | [`skills/public/skill-creator/scripts/aggregate_benchmark.py`](skills/public/skill-creator/scripts/aggregate_benchmark.py) |
+| 76 | ✓ | [`skills/public/skill-creator/scripts/generate_report.py`](skills/public/skill-creator/scripts/generate_report.py) |
+| 77 | ✓ | [`skills/public/skill-creator/scripts/improve_description.py`](skills/public/skill-creator/scripts/improve_description.py) |
+| 78 | ✓ | [`skills/public/skill-creator/scripts/init_skill.py`](skills/public/skill-creator/scripts/init_skill.py) |
+| 79 | ✓ | [`skills/public/skill-creator/scripts/package_skill.py`](skills/public/skill-creator/scripts/package_skill.py) |
+| 80 | ✓ | [`skills/public/skill-creator/scripts/quick_validate.py`](skills/public/skill-creator/scripts/quick_validate.py) |
+| 81 | ✓ | [`skills/public/skill-creator/scripts/run_eval.py`](skills/public/skill-creator/scripts/run_eval.py) |
+| 82 | ✓ | [`skills/public/skill-creator/scripts/run_loop.py`](skills/public/skill-creator/scripts/run_loop.py) |
+| 83 | ✓ | [`skills/public/skill-creator/scripts/utils.py`](skills/public/skill-creator/scripts/utils.py) |
+| 84 | ✓ | [`skills/public/skill-creator/SKILL.md`](skills/public/skill-creator/SKILL.md) |
+| 85 | ✓ | [`skills/public/surprise-me/SKILL.md`](skills/public/surprise-me/SKILL.md) |
+| 86 | ✓ | [`skills/public/systematic-literature-review/evals/evals.json`](skills/public/systematic-literature-review/evals/evals.json) |
+| 87 | ✓ | [`skills/public/systematic-literature-review/evals/trigger_eval_set.json`](skills/public/systematic-literature-review/evals/trigger_eval_set.json) |
+| 88 | ✓ | [`skills/public/systematic-literature-review/scripts/arxiv_search.py`](skills/public/systematic-literature-review/scripts/arxiv_search.py) |
+| 89 | ✓ | [`skills/public/systematic-literature-review/SKILL.md`](skills/public/systematic-literature-review/SKILL.md) |
+| 90 | ✓ | [`skills/public/systematic-literature-review/templates/apa.md`](skills/public/systematic-literature-review/templates/apa.md) |
+| 91 | ✓ | [`skills/public/systematic-literature-review/templates/bibtex.md`](skills/public/systematic-literature-review/templates/bibtex.md) |
+| 92 | ✓ | [`skills/public/systematic-literature-review/templates/ieee.md`](skills/public/systematic-literature-review/templates/ieee.md) |
+| 93 | ✓ | [`skills/public/vercel-deploy-claimable/scripts/deploy.sh`](skills/public/vercel-deploy-claimable/scripts/deploy.sh) |
+| 94 | ✓ | [`skills/public/vercel-deploy-claimable/SKILL.md`](skills/public/vercel-deploy-claimable/SKILL.md) |
+| 95 | ✓ | [`skills/public/video-generation/scripts/generate.py`](skills/public/video-generation/scripts/generate.py) |
+| 96 | ✓ | [`skills/public/video-generation/SKILL.md`](skills/public/video-generation/SKILL.md) |
+| 97 | ✓ | [`skills/public/web-design-guidelines/SKILL.md`](skills/public/web-design-guidelines/SKILL.md) |
 
 ---
 

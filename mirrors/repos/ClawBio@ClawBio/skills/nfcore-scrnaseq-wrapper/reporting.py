@@ -1,45 +1,35 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
-from clawbio.common.portable_commands import write_portable_commands_sh
-from clawbio.common.report import generate_report_footer, generate_report_header, write_result_json
+from clawbio.common.report import (
+    generate_report_footer,
+    generate_report_header,
+    write_result_json,
+)
+from clawbio.common.textio import write_text_lf
 
 _SKILL_DIR = Path(__file__).resolve().parent
 if str(_SKILL_DIR) not in sys.path:
     sys.path.insert(0, str(_SKILL_DIR))
 
-from schemas import SKILL_ALIAS, SKILL_DIR, SKILL_NAME, SKILL_VERSION
+from repro_commands import build_nextflow_commands_sh, write_macos_docker_config
+from schemas import (
+    ALL_REFERENCE_PATH_FIELDS,
+    SKILL_ALIAS,
+    SKILL_DIR,
+    SKILL_NAME,
+    SKILL_VERSION,
+    profile_includes,
+)
 
 _CLAWBIO_SCRIPT = (SKILL_DIR.parent.parent / "clawbio.py").as_posix()
-
-_REPRO_PATH_FLAGS = (
-    "fasta",
-    "gtf",
-    "transcript_fasta",
-    "txp2gene",
-    "simpleaf_index",
-    "kallisto_index",
-    "star_index",
-    "cellranger_index",
-    "barcode_whitelist",
-    "kb_t1c",
-    "kb_t2c",
-    "motifs",
-    "cellrangerarc_config",
-    "cellranger_vdj_index",
-    "gex_frna_probe_set",
-    "gex_target_panel",
-    "gex_cmo_set",
-    "fb_reference",
-    "vdj_inner_enrichment_primers",
-    "gex_barcode_sample_assignment",
-    "cellranger_multi_barcodes",
-)
 
 
 def write_report(
@@ -47,8 +37,8 @@ def write_report(
     *,
     args,
     pipeline_source: dict[str, object],
-    preflight_result: dict[str, object],
-    parsed_outputs: dict[str, object],
+    preflight_result: dict[str, Any],
+    parsed_outputs: dict[str, Any],
     command_str: str,
 ) -> Path:
     lines = build_report_lines(
@@ -60,7 +50,7 @@ def write_report(
         command_str=command_str,
     )
     report_path = output_dir / "report.md"
-    report_path.write_text("\n".join(lines), encoding="utf-8")
+    write_text_lf(report_path, "\n".join(lines))
     return report_path
 
 
@@ -69,13 +59,14 @@ def build_report_lines(
     *,
     args,
     pipeline_source: dict[str, object],
-    preflight_result: dict[str, object],
-    parsed_outputs: dict[str, object],
+    preflight_result: dict[str, Any],
+    parsed_outputs: dict[str, Any],
     command_str: str,
 ) -> list[str]:
     header = generate_report_header(
         "nf-core/scrnaseq Wrapper Report",
         SKILL_NAME,
+        SKILL_VERSION,
         extra_metadata={
             "Preset": args.preset,
             "Profile": args.profile,
@@ -84,6 +75,7 @@ def build_report_lines(
         },
     )
     preferred_h5ad = str(parsed_outputs.get("preferred_h5ad", ""))
+    sample_count = _reported_sample_count(preflight_result, parsed_outputs)
     return [
         header,
         "## Summary",
@@ -99,7 +91,7 @@ def build_report_lines(
         f"- Java: `{preflight_result['java']['version']}`",
         f"- Nextflow: `{preflight_result['nextflow']['version']}`",
         f"- Backend profile: `{args.profile}`",
-        f"- Samples: `{len(parsed_outputs.get('samples_detected', []))}`",
+        f"- Samples: `{sample_count}`",
         "",
         "## Outputs",
         "",
@@ -135,45 +127,38 @@ def _build_handoff_lines(preferred_h5ad: str) -> list[str]:
     ]
 
 
+def _reported_sample_count(
+    preflight_result: dict[str, Any], parsed_outputs: dict[str, Any]
+) -> int:
+    samplesheet = preflight_result.get("samplesheet", {})
+    if isinstance(samplesheet, dict):
+        sample_count = samplesheet.get("sample_count")
+        if isinstance(sample_count, int):
+            return sample_count
+        if isinstance(sample_count, str) and sample_count.isdigit():
+            return int(sample_count)
+    samples_detected = parsed_outputs.get("samples_detected", [])
+    return len(samples_detected) if isinstance(samples_detected, list) else 0
+
+
 _PORTABILITY_NOTICE = """\
 
 # ── Portability notice ────────────────────────────────────────────────────────
-# FASTQ paths in samplesheet.valid.csv are absolute (required by Nextflow).
-# Before replaying on a different machine:
+# Replaying on a different machine? The pipeline itself is fetched from nf-core,
+# but your data and reference paths are machine-specific. Before replaying:
 #
-#   1. Remap FASTQ paths:
+#   1. Remap FASTQ paths in the samplesheet:
 #        python reproducibility/remap_paths.py --old /original/prefix --new /new/prefix
 #
-#   2. Update the --output path above if the output directory changed:
-#        python reproducibility/remap_paths.py --output-dir /new/output/dir
+#   2. Remap reference/index paths in params.yaml (--fasta, --gtf, indexes, ...):
+#        python reproducibility/remap_paths.py --refs-old /original/refs --refs-new /new/refs
 #
-#   3. Verify everything:
+#   3. Verify everything resolves on this machine:
 #        python reproducibility/remap_paths.py --verify
 #
-# If ClawBio is installed at a non-standard path on this machine:
-#   CLAWBIO_REPO=/path/to/ClawBio bash reproducibility/commands.sh
+# The output directory is auto-detected from this script's location — no
+# --output edit is needed when you move the whole bundle.
 """
-
-# Injected into commands.sh after the walk-up block to allow replay when the
-# output directory is outside the repo tree (the typical case).
-_CLAWBIO_REPO_FALLBACK = (
-    'if [[ ! -d "$REPO_ROOT/skills" ]]; then\n'
-    '  echo "ERROR: Could not locate repo root (no skills/ directory found)" >&2\n'
-    '  exit 1\n'
-    'fi'
-)
-_CLAWBIO_REPO_FALLBACK_PATCHED = (
-    'if [[ ! -d "$REPO_ROOT/skills" ]]; then\n'
-    '  if [[ -n "${CLAWBIO_REPO:-}" && -d "${CLAWBIO_REPO}/skills" ]]; then\n'
-    '    REPO_ROOT="$CLAWBIO_REPO"\n'
-    '  else\n'
-    '    echo "ERROR: Could not locate repo root (no skills/ directory found)" >&2\n'
-    '    echo "If ClawBio is installed elsewhere, set CLAWBIO_REPO:" >&2\n'
-    '    echo "  CLAWBIO_REPO=/path/to/ClawBio bash commands.sh" >&2\n'
-    '    exit 1\n'
-    '  fi\n'
-    'fi'
-)
 
 _REMAP_SCRIPT_SRC = SKILL_DIR / "remap_paths.py"
 
@@ -182,116 +167,102 @@ def write_repro_commands(
     output_dir: Path,
     *,
     args,
+    pipeline_source: dict[str, object],
+    nextflow_version: str | None = None,
 ) -> None:
     repro_dir = output_dir / "reproducibility"
-    command_args = build_repro_command_args(output_dir, args=args)
-    write_portable_commands_sh(
-        repro_dir,
-        skill_name=SKILL_NAME,
-        script_name="nfcore_scrnaseq_wrapper.py",
-        args=command_args,
-        generated_at=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+    repro_dir.mkdir(parents=True, exist_ok=True)
+    # Docker bundles always ship macos_docker.config; commands.sh applies it only
+    # on macOS replay hosts (uname-gated), so the same bundle is OS-independent.
+    macos_docker_config = profile_includes(args.profile, "docker")
+    if macos_docker_config:
+        # Match the live run: test-profile resource ceilings only for demo bundles.
+        write_macos_docker_config(output_dir, demo=bool(getattr(args, "demo", False)))
+    copied_extra_configs = _copy_user_nextflow_configs(
+        repro_dir, getattr(args, "extra_config", []) or []
     )
-    commands_sh = repro_dir / "commands.sh"
-    _patch_commands_sh_repo_fallback(commands_sh)
+    script = build_nextflow_commands_sh(
+        pipeline_source=pipeline_source,
+        profile=args.profile,
+        resume=bool(args.resume),
+        demo=bool(getattr(args, "demo", False)),
+        macos_docker_config=macos_docker_config,
+        nextflow_version=nextflow_version,
+        generated_at=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        extra_configs=copied_extra_configs,
+        work_dir=_replay_work_dir(args),
+    )
     if not getattr(args, "demo", False):
-        with commands_sh.open("a", encoding="utf-8") as fh:
-            fh.write(_PORTABILITY_NOTICE)
+        script += _PORTABILITY_NOTICE
+    commands_sh = repro_dir / "commands.sh"
+    write_text_lf(commands_sh, script)
     _write_remap_script(repro_dir)
 
 
-def _patch_commands_sh_repo_fallback(commands_sh: Path) -> None:
-    if not commands_sh.exists():
-        return
-    content = commands_sh.read_text(encoding="utf-8")
-    if _CLAWBIO_REPO_FALLBACK not in content:
-        return
-    commands_sh.write_text(
-        content.replace(_CLAWBIO_REPO_FALLBACK, _CLAWBIO_REPO_FALLBACK_PATCHED),
-        encoding="utf-8",
+def _copy_user_nextflow_configs(repro_dir: Path, config_paths: list[str]) -> list[str]:
+    if not config_paths:
+        return []
+    config_dir = repro_dir / "nextflow_configs"
+    config_dir.mkdir(parents=True, exist_ok=True)
+    copied: list[str] = []
+    for index, raw_path in enumerate(config_paths, start=1):
+        source = Path(raw_path).expanduser().resolve()
+        destination = (
+            config_dir / f"config_{index:02d}_{_safe_config_basename(source.name)}"
+        )
+        shutil.copyfile(source, destination)
+        copied.append(f"reproducibility/nextflow_configs/{destination.name}")
+    return copied
+
+
+def _replay_work_dir(args) -> str:
+    raw_work_dir = getattr(args, "work_dir", None)
+    if not raw_work_dir:
+        return "upstream/work"
+    work_dir = str(raw_work_dir).strip()
+    if "://" in work_dir:
+        return work_dir
+    return Path(work_dir).expanduser().resolve().as_posix()
+
+
+def _safe_config_basename(name: str) -> str:
+    safe = re.sub(r"[^A-Za-z0-9_.-]+", "_", name).strip("._")
+    return safe or "nextflow.config"
+
+
+_REMAP_AUTOGEN_START = "# >>> AUTO-GENERATED reference keys (do not edit by hand) >>>"
+_REMAP_AUTOGEN_END = "# <<< AUTO-GENERATED reference keys <<<"
+_REMAP_AUTOGEN_RE = re.compile(
+    re.escape(_REMAP_AUTOGEN_START) + r".*?" + re.escape(_REMAP_AUTOGEN_END),
+    re.DOTALL,
+)
+
+
+def _render_reference_keys_block() -> str:
+    """Render the _PARAMS_REFERENCE_KEYS tuple from the single canonical source."""
+    keys = "".join(f'    "{field}",\n' for field in ALL_REFERENCE_PATH_FIELDS)
+    return (
+        f"{_REMAP_AUTOGEN_START}\n"
+        f"_PARAMS_REFERENCE_KEYS = (\n{keys})\n"
+        f"{_REMAP_AUTOGEN_END}"
     )
 
 
 def _write_remap_script(repro_dir: Path) -> None:
+    """Ship remap_paths.py into the bundle, regenerating its reference-key block
+    from schemas.ALL_REFERENCE_PATH_FIELDS so the standalone bundle copy can never
+    drift from the canonical list (the bundle has no access to schemas at replay)."""
     repro_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(_REMAP_SCRIPT_SRC, repro_dir / "remap_paths.py")
-
-
-def build_repro_command_args(output_dir: Path, *, args) -> dict[str, str | None]:
-    command_args = _base_repro_command_args(output_dir, args=args)
-    _add_optional_value_flags(command_args, args)
-    _add_optional_boolean_flags(command_args, args)
-    _add_repro_path_flags(command_args, args)
-    return command_args
-
-
-def _base_repro_command_args(output_dir: Path, *, args) -> dict[str, str | None]:
-    command_args: dict[str, str | None] = {
-        "--output": output_dir.as_posix(),
-        "--preset": args.preset,
-        "--profile": args.profile,
-        "--pipeline-version": args.pipeline_version,
-    }
-    if args.demo:
-        command_args["--demo"] = None
-    else:
-        # Resolve to absolute + forward slashes so the repro script works
-        # when pasted into bash on any platform (including Windows Git Bash / WSL2).
-        command_args["--input"] = Path(args.input).expanduser().resolve().as_posix()
-    return command_args
-
-
-def _add_optional_value_flags(command_args: dict[str, str | None], args) -> None:
-    if args.protocol:
-        command_args["--protocol"] = args.protocol
-    if getattr(args, "email", None):
-        command_args["--email"] = args.email
-    if getattr(args, "multiqc_title", None):
-        command_args["--multiqc-title"] = args.multiqc_title
-    if getattr(args, "expected_cells", None) is not None and not args.demo:
-        command_args["--expected-cells"] = str(args.expected_cells)
-    if getattr(args, "skip_cellbender", False) or getattr(args, "skip_emptydrops", False):
-        command_args["--skip-cellbender"] = None
-    if getattr(args, "skip_fastqc", False):
-        command_args["--skip-fastqc"] = None
-    if getattr(args, "skip_multiqc", False):
-        command_args["--skip-multiqc"] = None
-    if getattr(args, "skip_cellranger_renaming", False):
-        command_args["--skip-cellranger-renaming"] = None
-    if getattr(args, "skip_cellrangermulti_vdjref", False):
-        command_args["--skip-cellrangermulti-vdjref"] = None
-    if getattr(args, "star_ignore_sjdbgtf", False):
-        command_args["--star-ignore-sjdbgtf"] = None
-    if getattr(args, "seq_center", None):
-        command_args["--seq-center"] = args.seq_center
-    if getattr(args, "star_feature", None):
-        command_args["--star-feature"] = args.star_feature
-    if getattr(args, "simpleaf_umi_resolution", None):
-        command_args["--simpleaf-umi-resolution"] = args.simpleaf_umi_resolution
-    if getattr(args, "kb_workflow", None):
-        command_args["--kb-workflow"] = args.kb_workflow
-    if getattr(args, "genome", None):
-        command_args["--genome"] = args.genome
-    if getattr(args, "cellrangerarc_reference", None):
-        command_args["--cellrangerarc-reference"] = args.cellrangerarc_reference
-
-
-def _add_optional_boolean_flags(command_args: dict[str, str | None], args) -> None:
-    if getattr(args, "save_reference", False):
-        command_args["--save-reference"] = None
-    if getattr(args, "save_align_intermeds", False):
-        command_args["--save-align-intermeds"] = None
-    if args.resume:
-        command_args["--resume"] = None
-    if getattr(args, "run_downstream", False):
-        command_args["--run-downstream"] = None
-
-
-def _add_repro_path_flags(command_args: dict[str, str | None], args) -> None:
-    for flag_name in _REPRO_PATH_FLAGS:
-        value = getattr(args, flag_name, None)
-        if value:
-            command_args[f"--{flag_name.replace('_', '-')}"] = Path(value).expanduser().resolve().as_posix()
+    source = _REMAP_SCRIPT_SRC.read_text(encoding="utf-8")
+    regenerated, n = _REMAP_AUTOGEN_RE.subn(
+        lambda _m: _render_reference_keys_block(), source, count=1
+    )
+    if n != 1:
+        # Sentinels missing/duplicated — fail loud rather than ship a stale copy.
+        raise RuntimeError(
+            f"Expected exactly one AUTO-GENERATED reference-keys block in {_REMAP_SCRIPT_SRC}, found {n}."
+        )
+    write_text_lf(repro_dir / "remap_paths.py", regenerated)
 
 
 def write_result(
@@ -299,7 +270,7 @@ def write_result(
     *,
     args,
     pipeline_source: dict[str, object],
-    parsed_outputs: dict[str, object],
+    parsed_outputs: dict[str, Any],
     command_str: str,
 ) -> Path:
     output_artifacts = build_output_artifacts(parsed_outputs)
@@ -309,7 +280,11 @@ def write_result(
         parsed_outputs=parsed_outputs,
         output_artifacts=output_artifacts,
     )
-    data = build_result_data(parsed_outputs=parsed_outputs, output_artifacts=output_artifacts, command_str=command_str)
+    data = build_result_data(
+        parsed_outputs=parsed_outputs,
+        output_artifacts=output_artifacts,
+        command_str=command_str,
+    )
     return write_result_json(
         output_dir,
         skill=SKILL_ALIAS,
@@ -319,11 +294,12 @@ def write_result(
     )
 
 
-def build_output_artifacts(parsed_outputs: dict[str, object]) -> dict[str, object]:
+def build_output_artifacts(parsed_outputs: dict[str, Any]) -> dict[str, object]:
     return {
         "preferred_h5ad": parsed_outputs.get("preferred_h5ad", ""),
         "multiqc_report": parsed_outputs.get("multiqc_report", ""),
         "pipeline_info_dir": parsed_outputs.get("pipeline_info_dir", ""),
+        "official_outputs": parsed_outputs.get("official_outputs", {}),
         "h5ad_candidates": parsed_outputs.get("h5ad_candidates", []),
         "rds_candidates": parsed_outputs.get("rds_candidates", []),
     }
@@ -333,7 +309,7 @@ def build_result_summary(
     *,
     args,
     pipeline_source: dict[str, object],
-    parsed_outputs: dict[str, object],
+    parsed_outputs: dict[str, Any],
     output_artifacts: dict[str, object],
 ) -> dict[str, object]:
     return {
@@ -355,7 +331,7 @@ def build_result_summary(
 
 def build_result_data(
     *,
-    parsed_outputs: dict[str, object],
+    parsed_outputs: dict[str, Any],
     output_artifacts: dict[str, object],
     command_str: str,
 ) -> dict[str, object]:
@@ -370,5 +346,5 @@ def build_result_data(
 
 def write_check_result(output_dir: Path, payload: dict[str, object]) -> Path:
     path = output_dir / "check_result.json"
-    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    write_text_lf(path, json.dumps(payload, indent=2))
     return path

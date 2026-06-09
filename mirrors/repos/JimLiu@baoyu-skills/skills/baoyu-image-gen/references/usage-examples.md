@@ -83,6 +83,15 @@ ${BUN_X} {baseDir}/scripts/main.ts --prompt "A cinematic portrait" --image out.p
 
 # Codex CLI with reference images (style/composition guidance)
 ${BUN_X} {baseDir}/scripts/main.ts --prompt "Match this color palette" --image out.png --provider codex-cli --ref source.png --ar 1:1
+
+# Agnes (default model)
+${BUN_X} {baseDir}/scripts/main.ts --prompt "A detailed infographic" --image out.png --provider agnes
+
+# Agnes with aspect ratio and URL output
+${BUN_X} {baseDir}/scripts/main.ts --prompt "A cinematic scene" --image out.txt --provider agnes --ar 16:9 --response-format url
+
+# Agnes with reference image
+${BUN_X} {baseDir}/scripts/main.ts --prompt "Apply this style" --image out.png --provider agnes --ref source.png
 ```
 
 Notes on `codex-cli`:

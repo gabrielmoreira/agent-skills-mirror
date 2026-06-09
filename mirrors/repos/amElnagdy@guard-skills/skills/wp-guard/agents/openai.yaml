@@ -1,0 +1,4 @@
+interface:
+  display_name: "WP Guard"
+  short_description: "WordPress code guardrails for AI agents"
+  default_prompt: "Use $wp-guard after WordPress code is written or changed to review it for security, i18n, and performance issues."

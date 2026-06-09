@@ -1,0 +1,20 @@
+{
+  "name": "session-reflect",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "session-db": "bun run scripts/session-db.ts",
+    "test": "bun test ./tests/session-db.integration.ts"
+  },
+  "dependencies": {
+    "@duckdb/node-api": "^1.5.3-r.3",
+    "commander": "^15.0.0",
+    "fast-glob": "^3.3.3"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

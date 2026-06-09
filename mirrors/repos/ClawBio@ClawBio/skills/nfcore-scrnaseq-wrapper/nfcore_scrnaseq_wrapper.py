@@ -13,6 +13,7 @@ import sys
 import tempfile
 import traceback
 from pathlib import Path
+from typing import Any
 
 _SKILL_DIR = Path(__file__).resolve().parent
 if str(_SKILL_DIR) not in sys.path:
@@ -21,17 +22,36 @@ _PROJECT_ROOT = _SKILL_DIR.parent.parent
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
+from clawbio.common.textio import write_text_lf
 from command_builder import build_nextflow_command
 from errors import ErrorCode, SkillError
 from executor import execute_nextflow
-from outputs_parser import parse_outputs
-from params_builder import build_effective_params, serialize_params_yaml, write_params_yaml
+from nfcore_4_1_0_contract import (
+    INTENTIONALLY_UNSUPPORTED_PARAMS,
+    INTENTIONALLY_UNSUPPORTED_REASONS,
+    NFCORE_SCRNASEQ_VERSION,
+    OFFICIAL_PARAMS,
+    WRAPPER_SUPPORTED_UPSTREAM_PARAMS,
+)
+from outputs_parser import parse_outputs, validate_expected_outputs
+from params_builder import (
+    build_effective_params,
+    serialize_params_yaml,
+    write_params_yaml,
+)
 from pipeline_source import resolve_pipeline_source
 from preflight import check_output_dir_available, run_preflight
 from provenance import write_provenance_bundle
-from reporting import write_check_result, write_report, write_repro_commands, write_result
+from reporting import (
+    write_check_result,
+    write_report,
+    write_repro_commands,
+    write_result,
+)
+from repro_commands import write_macos_docker_config
 from samplesheet_builder import validate_and_normalize_samplesheet
 from schemas import (
+    ALL_REFERENCE_PATH_FIELDS,
     DEFAULT_PIPELINE_VERSION,
     DEFAULT_PRESET,
     DEFAULT_PROFILE,
@@ -39,147 +59,458 @@ from schemas import (
     SKILL_NAME,
     PRESET_ALIGNERS,
     SUPPORTED_PRESETS,
-    SUPPORTED_PROFILES,
+    SYMBOLIC_REFERENCE_FIELDS,
+    profile_includes,
 )
 
 _DOWNSTREAM_HANDOFF_TIMEOUT_SECONDS = 60 * 60
+_DEFAULT_TIMEOUT_HOURS = DEFAULT_TIMEOUT_SECONDS / 3600
+
+# Pipeline-parameter flags the upstream `test` profile owns; supplying any with
+# --demo is a no-op (the wrapper never writes them in demo mode, audit H-01) and the
+# user is warned. This is the full set the hermetic demo ignores: references +
+# protocol + every QC/skip/tuning/save/reporting knob. ``skip_cellbender`` is NOT
+# here — demo FORCES it on (the test data is too small for CellBender), so it is a
+# wrapper-set essential, not an ignored flag.
+_DEMO_IGNORED_FIELDS = (
+    *SYMBOLIC_REFERENCE_FIELDS,
+    "igenomes_base",
+    *ALL_REFERENCE_PATH_FIELDS,
+    "protocol",
+    # aligner tuning
+    "star_feature",
+    "star_ignore_sjdbgtf",
+    "seq_center",
+    "simpleaf_umi_resolution",
+    "kb_workflow",
+    # skip flags (skip_cellbender is forced by demo, never ignored)
+    "skip_fastqc",
+    "skip_multiqc",
+    "skip_cellranger_renaming",
+    "skip_cellrangermulti_vdjref",
+    # save flags
+    "save_reference",
+    "save_align_intermeds",
+    # input metadata + generic reporting
+    "email",
+    "email_on_fail",
+    "multiqc_title",
+    "multiqc_config",
+    "multiqc_logo",
+    "multiqc_methods_description",
+    "publish_dir_mode",
+    "trace_report_suffix",
+    "monochrome_logs",
+)
+
+
+def _timeout_hours(value: str) -> float:
+    try:
+        hours = float(value)
+    except (TypeError, ValueError):
+        raise argparse.ArgumentTypeError(
+            f"--timeout-hours must be a number, got {value!r}"
+        )
+    if hours < 0:
+        raise argparse.ArgumentTypeError(
+            "--timeout-hours must be >= 0 (0 disables the timeout)"
+        )
+    return hours
+
+
+def _resolve_timeout_seconds(args: argparse.Namespace) -> int | None:
+    """Translate --timeout-hours into seconds; 0 disables the cap (returns None)."""
+    hours = getattr(args, "timeout_hours", _DEFAULT_TIMEOUT_HOURS)
+    if hours is None or hours == 0:
+        return None
+    return int(round(hours * 3600))
+
+
+class _PresetAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, values)
+        setattr(namespace, "preset_explicit", True)
+
+
+def _demo_flag_supplied(args: argparse.Namespace, name: str) -> bool:
+    """True when a demo-ignored flag was actually supplied on the CLI."""
+    value = getattr(args, name, None)
+    if name == "save_align_intermeds":
+        # BooleanOptionalAction: None means unset; both --save-… and --no-save-…
+        # (True/False) count as supplied and are equally ignored under --demo.
+        return value is not None
+    return bool(value)
+
+
+def _demo_ignored_flags(args: argparse.Namespace) -> list[str]:
+    """List the pipeline-parameter CLI flags supplied under --demo (all ignored)."""
+    return [
+        f"--{name.replace('_', '-')}"
+        for name in _DEMO_IGNORED_FIELDS
+        if _demo_flag_supplied(args, name)
+    ]
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Run the scrnaseq pipeline through a ClawBio wrapper.")
+    parser = argparse.ArgumentParser(
+        description="Run the scrnaseq pipeline through a ClawBio wrapper."
+    )
     parser.add_argument("--input", help="Path to a valid samplesheet.csv")
-    parser.add_argument("--output", required=True, help="Output directory for the wrapper results")
-    parser.add_argument("--demo", action="store_true", help="Run the pipeline demo with the upstream test profile")
-    parser.add_argument("--check", action="store_true", help="Run preflight only and exit")
-    parser.add_argument("--profile", default=DEFAULT_PROFILE, choices=sorted(SUPPORTED_PROFILES), help="Execution backend profile")
-    parser.add_argument("--pipeline-version", default=DEFAULT_PIPELINE_VERSION, help="Remote pipeline tag/commit fallback")
-    parser.add_argument("--preset", default=DEFAULT_PRESET, choices=sorted(SUPPORTED_PRESETS), help="Curated pipeline preset (standard = simpleaf/alevin-fry, star = STARsolo, kallisto = kb-python, cellranger/cellrangerarc/cellrangermulti = CellRanger variants)")
-    parser.add_argument("--protocol", default=None, help="Protocol forwarded to the aligner (e.g. 10XV3, auto, dropseq, or any custom string). Use 'auto' only for cellranger/cellrangerarc/cellrangermulti. For standard/star/kallisto an explicit non-auto value is required.")
-    parser.add_argument("--email", default=None, help="Email address for pipeline completion notification")
-    parser.add_argument("--multiqc-title", default=None, help="Custom title for the MultiQC report")
-    parser.add_argument("--expected-cells", type=int, default=None, help="Optional override for expected_cells")
-    parser.add_argument("--resume", action="store_true", help="Attempt a compatible Nextflow resume")
+    parser.add_argument(
+        "--output", required=True, help="Output directory for the wrapper results"
+    )
+    parser.add_argument(
+        "--demo",
+        action="store_true",
+        help="Run the pipeline demo with the upstream test profile",
+    )
+    parser.add_argument(
+        "--check", action="store_true", help="Run preflight only and exit"
+    )
+    parser.add_argument(
+        "--profile",
+        default=DEFAULT_PROFILE,
+        help="Execution backend profile or comma-separated nf-core profile list",
+    )
+    parser.add_argument(
+        "--pipeline-version",
+        default=DEFAULT_PIPELINE_VERSION,
+        help="Remote pipeline tag/commit fallback",
+    )
+    parser.add_argument(
+        "--allow-dirty-pipeline",
+        action="store_true",
+        help="Allow an intentionally modified local nf-core/scrnaseq checkout; disabled by default for reproducibility",
+    )
+    parser.add_argument(
+        "--require-local-pipeline",
+        action="store_true",
+        help="Require a verifiable local sibling nf-core/scrnaseq checkout instead of falling back to the remote pipeline",
+    )
+    parser.add_argument(
+        "--allow-pipeline-version-override",
+        action="store_true",
+        help=(
+            f"Allow --pipeline-version other than the pinned {NFCORE_SCRNASEQ_VERSION} contract. "
+            "The wrapper's parameter/protocol/output validations remain 4.1.0-specific, so this is at your own risk."
+        ),
+    )
+    parser.add_argument(
+        "--trust-config-params",
+        action="store_true",
+        help=(
+            "Allow -c/--config files that set params.* (otherwise blocked). nf-core advises against "
+            "setting params in configs; detected overrides are recorded in provenance."
+        ),
+    )
+    parser.add_argument(
+        "-c",
+        "--config",
+        dest="extra_config",
+        action="append",
+        default=[],
+        help="Additional Nextflow config file; may be supplied multiple times for HPC/cloud profiles",
+    )
+    parser.add_argument(
+        "--preset",
+        default=DEFAULT_PRESET,
+        action=_PresetAction,
+        choices=sorted(SUPPORTED_PRESETS),
+        help="Curated pipeline preset (standard = simpleaf/alevin-fry, star = STARsolo, kallisto = kb-python, cellranger/cellrangerarc/cellrangermulti = CellRanger variants)",
+    )
+    parser.set_defaults(preset_explicit=False)
+    parser.add_argument(
+        "--aligner",
+        default=None,
+        choices=sorted(PRESET_ALIGNERS.values()),
+        help="nf-core/scrnaseq aligner name. Alias for --preset; simpleaf maps to preset=standard.",
+    )
+    parser.add_argument(
+        "--protocol",
+        default=None,
+        help="Protocol forwarded to the aligner. Required for standard/star/kallisto; auto is CellRanger-only; other values are mapped when known or passed through by nf-core.",
+    )
+    parser.add_argument(
+        "--email",
+        default=None,
+        help="Email address for pipeline completion notification",
+    )
+    parser.add_argument(
+        "--email-on-fail",
+        default=None,
+        help="Email address for pipeline failure notification only",
+    )
+    parser.add_argument(
+        "--multiqc-title", default=None, help="Custom title for the MultiQC report"
+    )
+    parser.add_argument("--multiqc-config", default=None, help="MultiQC config file")
+    parser.add_argument("--multiqc-logo", default=None, help="MultiQC logo image")
+    parser.add_argument(
+        "--multiqc-methods-description",
+        default=None,
+        help="MultiQC methods description YAML",
+    )
+    parser.add_argument(
+        "--publish-dir-mode",
+        default=None,
+        choices=["symlink", "rellink", "link", "copy", "copyNoFollow", "move"],
+        help="Nextflow publishDir mode",
+    )
+    parser.add_argument(
+        "--trace-report-suffix",
+        default=None,
+        help="Suffix appended to Nextflow trace report filenames",
+    )
+    parser.add_argument(
+        "--monochrome-logs",
+        action="store_true",
+        help="Disable ANSI colors in Nextflow logs",
+    )
+    parser.add_argument(
+        "--expected-cells",
+        type=int,
+        default=None,
+        help="Global override for expected_cells. Single-sample only: for multi-sample sheets set expected_cells per-row instead (a global value is rejected to avoid applying one count to heterogeneous samples).",
+    )
+    parser.add_argument(
+        "--timeout-hours",
+        type=_timeout_hours,
+        default=_DEFAULT_TIMEOUT_HOURS,
+        help="Wall-clock cap for the Nextflow run in hours (default 12). Use 0 to disable the cap for long HPC/cloud runs whose walltime is enforced by the scheduler.",
+    )
+    parser.add_argument(
+        "--work-dir",
+        default=None,
+        help="Nextflow work directory. Defaults to <output>/upstream/work; may be an object-store URI for cloud executors.",
+    )
+    parser.add_argument(
+        "--allow-conda-cellranger",
+        action="store_true",
+        help="Allow Cell Ranger presets with conda/mamba only when a trusted site config supplies Cell Ranger.",
+    )
+    parser.add_argument(
+        "--resume", action="store_true", help="Attempt a compatible Nextflow resume"
+    )
     # Skip flags
-    parser.add_argument("--skip-cellbender", action="store_true", help="Disable the cellbender subworkflow")
-    parser.add_argument("--skip-fastqc", action="store_true", help="Skip the FastQC quality control step")
+    parser.add_argument(
+        "--skip-cellbender",
+        action="store_true",
+        help="Disable the cellbender subworkflow",
+    )
+    parser.add_argument(
+        "--skip-fastqc",
+        action="store_true",
+        help="Skip the FastQC quality control step",
+    )
     parser.add_argument(
         "--skip-emptydrops",
         action="store_true",
         help="Deprecated alias for --skip-cellbender; kept for old commands.",
     )
-    parser.add_argument("--skip-multiqc", action="store_true", help="Skip MultiQC report generation")
-    parser.add_argument("--skip-cellranger-renaming", action="store_true", help="Skip automatic sample renaming in CellRanger modules")
-    parser.add_argument("--skip-cellrangermulti-vdjref", action="store_true", help="Skip mkvdjref step in cellrangermulti (when no VDJ data)")
+    parser.add_argument(
+        "--skip-multiqc", action="store_true", help="Skip MultiQC report generation"
+    )
+    parser.add_argument(
+        "--skip-cellranger-renaming",
+        action="store_true",
+        help="Skip automatic sample renaming in CellRanger modules",
+    )
+    parser.add_argument(
+        "--skip-cellrangermulti-vdjref",
+        action="store_true",
+        help="Skip mkvdjref step in cellrangermulti (when no VDJ data)",
+    )
     # Reference genome
-    parser.add_argument("--genome", default=None, help="iGenomes reference shortcut (e.g. GRCh38, mm10). Mutually exclusive with --fasta/--gtf.")
-    parser.add_argument("--save-reference", action="store_true", help="Save the built reference index for future reuse")
-    parser.add_argument("--save-align-intermeds", action="store_true", help="Save alignment intermediate files (BAMs)")
-    parser.add_argument("--fasta", default=None)
-    parser.add_argument("--gtf", default=None)
-    parser.add_argument("--transcript-fasta", default=None)
-    parser.add_argument("--txp2gene", default=None)
-    parser.add_argument("--simpleaf-index", default=None)
-    parser.add_argument("--kallisto-index", default=None)
-    parser.add_argument("--star-index", default=None)
-    parser.add_argument("--cellranger-index", default=None)
-    parser.add_argument("--barcode-whitelist", default=None)
+    parser.add_argument(
+        "--genome",
+        default=None,
+        help="iGenomes reference shortcut (e.g. GRCh38, mm10). Mutually exclusive with --fasta/--gtf.",
+    )
+    parser.add_argument(
+        "--igenomes-base",
+        default=None,
+        help="Base path/URL for iGenomes references (e.g. a local mirror); overrides the default S3 location.",
+    )
+    parser.add_argument(
+        "--igenomes-ignore",
+        action="store_true",
+        help="Do not load the iGenomes reference config.",
+    )
+    parser.add_argument(
+        "--save-reference",
+        action="store_true",
+        help="Save the built reference index for future reuse",
+    )
+    parser.add_argument(
+        "--save-align-intermeds",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Save alignment intermediate files (BAMs). Use --no-save-align-intermeds to force off; unset defers to nf-core.",
+    )
+    parser.add_argument(
+        "--fasta",
+        default=None,
+        help="Genome FASTA. Path must contain NO whitespace and end in .fa/.fna/.fasta(.gz) (nf-core/scrnaseq 4.1.0 schema). Mutually exclusive with --genome.",
+    )
+    parser.add_argument(
+        "--gtf",
+        default=None,
+        help="Gene annotation GTF (paired with --fasta to build the index). Mutually exclusive with --genome.",
+    )
+    parser.add_argument(
+        "--transcript-fasta",
+        default=None,
+        help="Transcriptome FASTA for simpleaf (used with --txp2gene).",
+    )
+    parser.add_argument(
+        "--txp2gene",
+        default=None,
+        help="Transcript-to-gene mapping for simpleaf (used with --transcript-fasta).",
+    )
+    parser.add_argument(
+        "--simpleaf-index",
+        default=None,
+        help="Prebuilt simpleaf/alevin-fry index directory.",
+    )
+    parser.add_argument(
+        "--kallisto-index", default=None, help="Prebuilt kallisto index."
+    )
+    parser.add_argument(
+        "--star-index", default=None, help="Prebuilt STAR genome index directory."
+    )
+    parser.add_argument(
+        "--cellranger-index",
+        default=None,
+        help="Prebuilt CellRanger / CellRanger ARC reference directory.",
+    )
+    parser.add_argument(
+        "--barcode-whitelist",
+        default=None,
+        help="Custom barcode whitelist (per-aligner format). Auxiliary file; does not replace the genome reference.",
+    )
     # STARsolo extras
-    parser.add_argument("--star-feature", default=None, choices=["Gene", "GeneFull", "Gene Velocyto"], help="STARsolo feature type. 'Gene Velocyto' generates RNA velocity matrices.")
-    parser.add_argument("--star-ignore-sjdbgtf", action="store_true", help="Do not use GTF for SJDB construction (use with --star-feature 'Gene Velocyto')")
-    parser.add_argument("--seq-center", default=None, help="Sequencing center name for BAM read group tag")
+    parser.add_argument(
+        "--star-feature",
+        default=None,
+        choices=["Gene", "GeneFull", "Gene Velocyto"],
+        help="STARsolo feature type. 'Gene Velocyto' generates RNA velocity matrices.",
+    )
+    parser.add_argument(
+        "--star-ignore-sjdbgtf",
+        action="store_true",
+        help="Do not use GTF for SJDB construction (use with --star-feature 'Gene Velocyto')",
+    )
+    parser.add_argument(
+        "--seq-center",
+        default=None,
+        help="Sequencing center name for BAM read group tag",
+    )
     # Simpleaf extras
-    parser.add_argument("--simpleaf-umi-resolution", default=None, choices=["cr-like", "cr-like-em", "parsimony", "parsimony-em", "parsimony-gene", "parsimony-gene-em"], help="UMI resolution strategy for alevin-fry")
+    parser.add_argument(
+        "--simpleaf-umi-resolution",
+        default=None,
+        choices=[
+            "cr-like",
+            "cr-like-em",
+            "parsimony",
+            "parsimony-em",
+            "parsimony-gene",
+            "parsimony-gene-em",
+        ],
+        help="UMI resolution strategy for alevin-fry",
+    )
     # Kallisto/BUS extras
-    parser.add_argument("--kb-workflow", default=None, choices=["standard", "lamanno", "nac"], help="Kallisto workflow type")
-    parser.add_argument("--kb-t1c", default=None, help="cDNA transcripts-to-capture file for RNA velocity (lamanno/nac workflows)")
-    parser.add_argument("--kb-t2c", default=None, help="Intron transcripts-to-capture file for RNA velocity (lamanno/nac workflows)")
+    parser.add_argument(
+        "--kb-workflow",
+        default=None,
+        choices=["standard", "lamanno", "nac"],
+        help="Kallisto workflow type",
+    )
+    parser.add_argument(
+        "--kb-t1c",
+        default=None,
+        help="cDNA transcripts-to-capture file for RNA velocity (lamanno/nac workflows)",
+    )
+    parser.add_argument(
+        "--kb-t2c",
+        default=None,
+        help="Intron transcripts-to-capture file for RNA velocity (lamanno/nac workflows)",
+    )
     # CellRanger ARC
-    parser.add_argument("--motifs", default=None, help="Motif file (e.g. JASPAR) for CellRanger ARC index construction")
-    parser.add_argument("--cellrangerarc-config", default=None, help="Config file for CellRanger ARC index construction")
-    parser.add_argument("--cellrangerarc-reference", default=None, help="Reference genome name used inside the CellRanger ARC config file")
+    parser.add_argument(
+        "--motifs",
+        default=None,
+        help="Motif file (e.g. JASPAR) for CellRanger ARC index construction",
+    )
+    parser.add_argument(
+        "--cellrangerarc-config",
+        default=None,
+        help="Config file for CellRanger ARC index construction",
+    )
+    parser.add_argument(
+        "--cellrangerarc-reference",
+        default=None,
+        help="Reference genome name used inside the CellRanger ARC config file",
+    )
     # CellRanger Multi
-    parser.add_argument("--cellranger-vdj-index", default=None, help="Pre-built CellRanger VDJ reference index")
-    parser.add_argument("--gex-frna-probe-set", default=None, help="Probe set CSV for fixed RNA profiling (FFPE samples)")
-    parser.add_argument("--gex-target-panel", default=None, help="Target panel CSV for targeted gene expression")
-    parser.add_argument("--gex-cmo-set", default=None, help="Cell Multiplexing Oligo (CMO) reference CSV for multiplexed samples")
-    parser.add_argument("--fb-reference", default=None, help="Feature barcoding reference CSV (e.g. antibody capture)")
-    parser.add_argument("--vdj-inner-enrichment-primers", default=None, help="Text file with V(D)J cDNA enrichment primer sequences")
-    parser.add_argument("--gex-barcode-sample-assignment", default=None, help="Barcode-to-sample assignment CSV to override CellRanger defaults")
-    parser.add_argument("--cellranger-multi-barcodes", default=None, help="Additional samplesheet CSV with multiplexed sample information for cellrangermulti")
-    parser.add_argument("--run-downstream", action="store_true", help="Opt in to running scrna_orchestrator after a canonical h5ad is detected")
-    parser.add_argument("--skip-downstream", action="store_true", help="Compatibility flag; downstream handoff is skipped unless --run-downstream is set")
+    parser.add_argument(
+        "--cellranger-vdj-index",
+        default=None,
+        help="Pre-built CellRanger VDJ reference index",
+    )
+    parser.add_argument(
+        "--gex-frna-probe-set",
+        default=None,
+        help="Probe set CSV for fixed RNA profiling (FFPE samples)",
+    )
+    parser.add_argument(
+        "--gex-target-panel",
+        default=None,
+        help="Target panel CSV for targeted gene expression",
+    )
+    parser.add_argument(
+        "--gex-cmo-set",
+        default=None,
+        help="Cell Multiplexing Oligo (CMO) reference CSV for multiplexed samples",
+    )
+    parser.add_argument(
+        "--fb-reference",
+        default=None,
+        help="Feature barcoding reference CSV (e.g. antibody capture)",
+    )
+    parser.add_argument(
+        "--vdj-inner-enrichment-primers",
+        default=None,
+        help="Text file with V(D)J cDNA enrichment primer sequences",
+    )
+    parser.add_argument(
+        "--gex-barcode-sample-assignment",
+        default=None,
+        help="Barcode-to-sample assignment CSV to override CellRanger defaults",
+    )
+    parser.add_argument(
+        "--cellranger-multi-barcodes",
+        default=None,
+        help="Additional samplesheet CSV with multiplexed sample information for cellrangermulti",
+    )
+    parser.add_argument(
+        "--run-downstream",
+        action="store_true",
+        help="Opt in to running scrna_orchestrator after a canonical h5ad is detected",
+    )
+    parser.add_argument(
+        "--skip-downstream",
+        action="store_true",
+        help="Force-skip the downstream handoff even if --run-downstream is given (handoff is already off by default)",
+    )
     return parser
 
 
 def _write_demo_samplesheet(samplesheet_path: Path) -> None:
     samplesheet_path.parent.mkdir(parents=True, exist_ok=True)
-    samplesheet_path.write_text("sample,fastq_1,fastq_2,expected_cells,seq_center\n", encoding="utf-8")
-
-
-def _write_macos_docker_config(output_dir: Path) -> Path:
-    """Write a Nextflow config with macOS + Apple Silicon Docker workarounds.
-
-    Three issues on macOS with Docker (Colima / Docker Desktop):
-
-    1. EDEADLK (errno 35): QEMU-emulated amd64 containers cannot exec files from
-       VirtioFS bind-mounted paths. stageInMode="copy" forces Nextflow to copy
-       inputs to the host work dir before launching each container, giving the
-       guest kernel a clean page-cache state.
-
-    2. ARM64 host / amd64 images: nf-core containers ship only linux/amd64 images.
-       docker.runOptions = "--platform linux/amd64" tells Docker to pull and run
-       the amd64 image under Rosetta / QEMU emulation on Apple Silicon.
-
-    3. STAR FIFO (named-pipe) limitation: STAR creates named pipes under its work
-       dir for streaming reads. VirtioFS does not support FIFOs, so STAR fails with
-       "could not create FIFO file". --outTmpDir /tmp/star_tmp routes _STARtmp to
-       the container's own /tmp (Linux tmpfs) where FIFOs are supported. The full
-       ext.args from conf/modules.config is reproduced here so no flags are lost.
-       Do NOT use a self-referencing closure (task.ext.args ?: "") — that causes a
-       StackOverflowError.
-
-    4. Time limit: macOS Docker (VirtioFS) adds significant I/O overhead. The nf-core
-       test profile caps all tasks at 1 h, which is too short for STAR genome generation
-       and alignment under emulation. resourceLimits.time is raised to 4 h here so the
-       test profile limit is overridden (later configs take precedence in Nextflow).
-
-    IMPORTANT — work directory must be under HOME:
-    Colima (QEMU or VZ backend) only mounts the macOS HOME directory into the VM.
-    /tmp and /private/tmp are NOT mounted; they map to the VM's own filesystem.
-    Use --output under your home directory to avoid ".command.run: No such file"
-    errors. Preflight emits a WARNING when --output is under /tmp.
-    """
-    config_path = output_dir / "reproducibility" / "macos_docker.config"
-    config_path.parent.mkdir(parents=True, exist_ok=True)
-    config_path.write_text(
-        '// macOS + Docker workaround for VirtioFS EDEADLK (errno 35), ARM64 hosts,\n'
-        '// STAR FIFOs, and the nf-core test profile 1 h time cap.\n'
-        'process {\n'
-        '    stageInMode = "copy"\n'
-        '    // VirtioFS I/O overhead makes STAR genome generation and alignment\n'
-        '    // exceed the test profile\'s 1 h cap. Raise the ceiling to 4 h.\n'
-        '    resourceLimits = [\n'
-        '        cpus: 4,\n'
-        '        memory: \'15.GB\',\n'
-        '        time: \'4.h\'\n'
-        '    ]\n'
-        '    // STAR creates FIFOs in _STARtmp; VirtioFS does not support FIFOs.\n'
-        '    // --outTmpDir /tmp/star_tmp routes _STARtmp to the container\'s /tmp\n'
-        '    // (Linux tmpfs), which does support FIFOs.\n'
-        '    // All other flags mirror nf-core/scrnaseq conf/modules.config verbatim\n'
-        '    // so this override does not silently drop --readFilesCommand zcat.\n'
-        '    // Note: do NOT use a closure that references task.ext.args — that\n'
-        '    // causes a StackOverflowError. Instead we reproduce the flags here.\n'
-        '    withName: \'.*STAR_ALIGN.*\' {\n'
-        '        ext.args = { "--readFilesCommand zcat --runDirPerm All_RWX --outWigType bedGraph --twopassMode Basic --outSAMtype BAM SortedByCoordinate --limitBAMsortRAM ${task.memory.toBytes()} --outTmpDir /tmp/star_tmp" }\n'
-        '    }\n'
-        '}\n'
-        'docker {\n'
-        '    runOptions = "--platform linux/amd64"\n'
-        '}\n',
-        encoding="utf-8",
+    write_text_lf(
+        samplesheet_path, "sample,fastq_1,fastq_2,expected_cells,seq_center\n"
     )
-    return config_path
 
 
 def _write_error_result_if_safe(output_dir: Path, payload: dict[str, object]) -> None:
@@ -191,7 +522,7 @@ def _write_error_result_if_safe(output_dir: Path, payload: dict[str, object]) ->
         return
     try:
         output_dir.mkdir(parents=True, exist_ok=True)
-        (output_dir / "result.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        write_text_lf(output_dir / "result.json", json.dumps(payload, indent=2))
     except OSError:
         # stderr still receives the structured payload; avoid masking the root error.
         return
@@ -203,6 +534,8 @@ def main() -> int:
     output_dir = Path(args.output).expanduser().resolve()
 
     try:
+        _apply_aligner_alias(args)
+        _check_pipeline_version_supported(args)
         return _run_wrapper(args, output_dir)
     except SkillError as exc:
         return _handle_skill_error(output_dir, exc)
@@ -210,24 +543,113 @@ def main() -> int:
         return _handle_unexpected_error(output_dir, exc)
 
 
-def _run_wrapper(args: argparse.Namespace, output_dir: Path) -> int:
-    if args.resume:
-        with tempfile.TemporaryDirectory(prefix="clawbio-scrnaseq-resume-") as staging_dir:
-            return _run_wrapper_with_staging(args, output_dir, staging_dir=Path(staging_dir))
-    return _run_wrapper_with_staging(args, output_dir, staging_dir=None)
+def _check_pipeline_version_supported(args: argparse.Namespace) -> None:
+    """Keep execution on the pinned 4.1.0 contract unless explicitly overridden.
 
-
-def _run_wrapper_with_staging(args: argparse.Namespace, output_dir: Path, *, staging_dir: Path | None) -> int:
-    check_output_dir_available(output_dir, resume=args.resume)
-    pipeline_source = resolve_pipeline_source(requested_version=args.pipeline_version)
-    normalized_samplesheet, staged_samplesheet, samplesheet_summary = _prepare_samplesheet(
-        args,
-        output_dir,
-        staging_dir=staging_dir,
+    The wrapper's parameter set, protocol matrix and output validations are
+    hardcoded for nf-core/scrnaseq 4.1.0. Running a different remote tag/commit
+    would apply 4.1.0 rules to a pipeline that may differ, so any non-4.1.0
+    `--pipeline-version` is blocked by default; `--allow-pipeline-version-override`
+    is a recorded, warned opt-in for advanced use (audit finding #1).
+    """
+    requested = str(getattr(args, "pipeline_version", "") or "").strip()
+    if requested == NFCORE_SCRNASEQ_VERSION:
+        return
+    if getattr(args, "allow_pipeline_version_override", False):
+        print(
+            f"WARNING: --pipeline-version {requested!r} differs from the wrapper's pinned "
+            f"nf-core/scrnaseq {NFCORE_SCRNASEQ_VERSION} contract. Parameter, protocol and "
+            f"output validations remain {NFCORE_SCRNASEQ_VERSION}-specific and may not match.",
+            file=sys.stderr,
+        )
+        return
+    raise SkillError(
+        stage="validation",
+        error_code=ErrorCode.PIPELINE_SOURCE_INVALID,
+        message=(
+            f"--pipeline-version must be {NFCORE_SCRNASEQ_VERSION} "
+            "(the version this wrapper's validations are pinned to)."
+        ),
+        fix=(
+            f"Use --pipeline-version {NFCORE_SCRNASEQ_VERSION}, or pass "
+            "--allow-pipeline-version-override to run a different version at your own risk "
+            f"(validations stay {NFCORE_SCRNASEQ_VERSION})."
+        ),
+        details={"requested": requested, "contract_version": NFCORE_SCRNASEQ_VERSION},
     )
-    preflight_result = run_preflight(args, pipeline_source=pipeline_source, samplesheet_summary=samplesheet_summary)
+
+
+def _apply_aligner_alias(
+    args: argparse.Namespace, parser: argparse.ArgumentParser | None = None
+) -> None:
+    """Normalize nf-core's --aligner spelling into the wrapper's --preset spelling."""
+    aligner = getattr(args, "aligner", None)
+    if not aligner:
+        return
+    aligner_to_preset = {
+        aligner_name: preset_name
+        for preset_name, aligner_name in PRESET_ALIGNERS.items()
+    }
+    requested_preset = aligner_to_preset[aligner]
+    supplied_preset = getattr(args, "preset", DEFAULT_PRESET)
+    if getattr(args, "preset_explicit", False) and supplied_preset != requested_preset:
+        message = (
+            f"--aligner {aligner!r} conflicts with --preset {supplied_preset!r}; "
+            f"use --preset {requested_preset!r} or remove one of the two flags."
+        )
+        if parser is not None:
+            parser.error(message)
+        raise SkillError(
+            stage="validation",
+            error_code=ErrorCode.INVALID_PRESET_CONFIGURATION,
+            message="Conflicting aligner and preset were supplied.",
+            fix=message,
+            details={
+                "aligner": aligner,
+                "preset": supplied_preset,
+                "preset_from_aligner": requested_preset,
+            },
+        )
+    args.preset = requested_preset
+
+
+def _run_wrapper(args: argparse.Namespace, output_dir: Path) -> int:
+    # Always validate/normalize the samplesheet into a temporary staging area and
+    # commit it to the output bundle only on a successful execution. This keeps
+    # --check and any failed preflight from leaving a half-written
+    # reproducibility/ behind (audit H-8), and unifies the resume and non-resume
+    # code paths.
+    with tempfile.TemporaryDirectory(prefix="clawbio-scrnaseq-") as staging_dir:
+        return _run_wrapper_with_staging(
+            args, output_dir, staging_dir=Path(staging_dir)
+        )
+
+
+def _run_wrapper_with_staging(
+    args: argparse.Namespace, output_dir: Path, *, staging_dir: Path | None
+) -> int:
+    check_output_dir_available(output_dir, resume=args.resume)
+    pipeline_source = resolve_pipeline_source(
+        requested_version=args.pipeline_version,
+        allow_dirty=bool(getattr(args, "allow_dirty_pipeline", False)),
+        require_local=bool(getattr(args, "require_local_pipeline", False)),
+    )
+    normalized_samplesheet, staged_samplesheet, samplesheet_summary = (
+        _prepare_samplesheet(
+            args,
+            output_dir,
+            staging_dir=staging_dir,
+        )
+    )
+    preflight_result = run_preflight(
+        args, pipeline_source=pipeline_source, samplesheet_summary=samplesheet_summary
+    )
     if args.check:
-        return _write_check_mode_result(output_dir, preflight_result=preflight_result, pipeline_source=pipeline_source)
+        return _write_check_mode_result(
+            output_dir,
+            preflight_result=preflight_result,
+            pipeline_source=pipeline_source,
+        )
     return _run_execution_mode(
         args,
         output_dir=output_dir,
@@ -263,19 +685,34 @@ def _prepare_demo_samplesheet(
             "The nf-core test profile ships STAR-compatible data.",
             file=sys.stderr,
         )
+    ignored_flags = _demo_ignored_flags(args)
+    if ignored_flags:
+        print(
+            f"WARNING: --demo ignores pipeline flags ({', '.join(ignored_flags)}); "
+            "the nf-core test profile owns every input, reference, protocol and "
+            "QC/tuning setting, so these are not written to params.yaml. "
+            "Drop --demo to run the pipeline on the supplied inputs.",
+            file=sys.stderr,
+        )
     args.preset = "star"
     args.skip_cellbender = True
 
     normalized_samplesheet = _final_samplesheet_path(output_dir, demo=True)
-    staged_samplesheet = _staged_samplesheet_path(output_dir, staging_dir=staging_dir, demo=True)
+    staged_samplesheet = _staged_samplesheet_path(
+        output_dir, staging_dir=staging_dir, demo=True
+    )
     _write_demo_samplesheet(staged_samplesheet)
-    return normalized_samplesheet, staged_samplesheet, {
-        "normalized_path": normalized_samplesheet,
-        "sample_count": 0,
-        "sample_names": [],
-        "fastq_paths": [],
-        "unknown_columns": [],
-    }
+    return (
+        normalized_samplesheet,
+        staged_samplesheet,
+        {
+            "normalized_path": normalized_samplesheet,
+            "sample_count": 0,
+            "sample_names": [],
+            "fastq_paths": [],
+            "unknown_columns": [],
+        },
+    )
 
 
 def _prepare_user_samplesheet(
@@ -310,14 +747,18 @@ def _final_samplesheet_path(output_dir: Path, *, demo: bool = False) -> Path:
     return output_dir / "reproducibility" / filename
 
 
-def _staged_samplesheet_path(output_dir: Path, *, staging_dir: Path | None, demo: bool = False) -> Path:
+def _staged_samplesheet_path(
+    output_dir: Path, *, staging_dir: Path | None, demo: bool = False
+) -> Path:
     if staging_dir is not None:
         filename = "samplesheet.demo.csv" if demo else "samplesheet.valid.csv"
         return staging_dir / filename
     return _final_samplesheet_path(output_dir, demo=demo)
 
 
-def _warn_about_preserved_unknown_columns(samplesheet_summary: dict[str, object]) -> None:
+def _warn_about_preserved_unknown_columns(
+    samplesheet_summary: dict[str, object],
+) -> None:
     unknown_columns = samplesheet_summary.get("unknown_columns", [])
     if unknown_columns:
         print(
@@ -329,7 +770,7 @@ def _warn_about_preserved_unknown_columns(samplesheet_summary: dict[str, object]
 def _write_check_mode_result(
     output_dir: Path,
     *,
-    preflight_result: dict[str, object],
+    preflight_result: dict[str, Any],
     pipeline_source: dict[str, object],
 ) -> int:
     payload = {
@@ -337,10 +778,41 @@ def _write_check_mode_result(
         "skill": SKILL_NAME,
         "preflight": preflight_result,
         "pipeline_source": pipeline_source,
+        "parameter_support": _build_parameter_support_summary(),
     }
     write_check_result(output_dir, payload)
     print(json.dumps(payload, indent=2))
     return 0
+
+
+def _build_parameter_support_summary() -> dict[str, object]:
+    return {
+        "nfcore_version": NFCORE_SCRNASEQ_VERSION,
+        # The wrapper deliberately exposes a curated, local-first subset of the
+        # nf-core surface — not full passthrough (audit finding #7).
+        "compatibility_mode": "clawbio_local_first_subset",
+        "official_params_total": len(OFFICIAL_PARAMS),
+        "supported_upstream_total": len(WRAPPER_SUPPORTED_UPSTREAM_PARAMS),
+        "official_params": sorted(OFFICIAL_PARAMS),
+        "supported_upstream": sorted(WRAPPER_SUPPORTED_UPSTREAM_PARAMS),
+        "intentionally_unsupported": sorted(INTENTIONALLY_UNSUPPORTED_PARAMS),
+        "intentionally_unsupported_reasons": dict(
+            sorted(INTENTIONALLY_UNSUPPORTED_REASONS.items())
+        ),
+        "wrapper_policy_params": [
+            "preset",
+            "check",
+            "run_downstream",
+            "skip_downstream",
+            "expected_cells",
+            "timeout_hours",
+            "work_dir",
+            "allow_dirty_pipeline",
+            "require_local_pipeline",
+            "allow_conda_cellranger",
+            "config",
+        ],
+    }
 
 
 def _run_execution_mode(
@@ -348,7 +820,7 @@ def _run_execution_mode(
     *,
     output_dir: Path,
     pipeline_source: dict[str, object],
-    preflight_result: dict[str, object],
+    preflight_result: dict[str, Any],
     normalized_samplesheet: Path,
     staged_samplesheet: Path,
     samplesheet_summary: dict[str, object],
@@ -358,18 +830,23 @@ def _run_execution_mode(
         normalized_samplesheet=normalized_samplesheet,
         output_dir=output_dir,
     )
-    _check_resume_params_checksum(args, output_dir=output_dir, params_payload=params_payload)
+    _check_resume_params_checksum(
+        args, output_dir=output_dir, params_payload=params_payload
+    )
     _commit_validated_samplesheet(staged_samplesheet, normalized_samplesheet)
     params_path = write_params_yaml(params_payload, output_dir=output_dir)
-    command, command_str = _build_nextflow_invocation(args, output_dir, pipeline_source, params_path)
+    command, command_str = _build_nextflow_invocation(
+        args, output_dir, pipeline_source, params_path
+    )
     nextflow_cwd = _nextflow_execution_cwd(output_dir)
     execution_result = execute_nextflow(
         command,
         cwd=nextflow_cwd,
         output_dir=output_dir,
-        timeout_seconds=DEFAULT_TIMEOUT_SECONDS,
+        timeout_seconds=_resolve_timeout_seconds(args),
     )
     parsed_outputs = _parse_outputs_with_effective_aligner(output_dir, args)
+    _raise_if_expected_outputs_missing(parsed_outputs, output_dir=output_dir)
     _write_success_outputs(
         output_dir,
         args=args,
@@ -388,7 +865,9 @@ def _run_execution_mode(
     return 0
 
 
-def _commit_validated_samplesheet(staged_samplesheet: Path, normalized_samplesheet: Path) -> None:
+def _commit_validated_samplesheet(
+    staged_samplesheet: Path, normalized_samplesheet: Path
+) -> None:
     if staged_samplesheet == normalized_samplesheet:
         return
     normalized_samplesheet.parent.mkdir(parents=True, exist_ok=True)
@@ -423,7 +902,9 @@ def _check_resume_params_checksum(
 
 
 def _params_payload_checksum(params_payload: dict[str, object]) -> str:
-    return hashlib.sha256(serialize_params_yaml(params_payload).encode("utf-8")).hexdigest()
+    return hashlib.sha256(
+        serialize_params_yaml(params_payload).encode("utf-8")
+    ).hexdigest()
 
 
 def _build_nextflow_invocation(
@@ -437,19 +918,41 @@ def _build_nextflow_invocation(
         profile=f"test,{args.profile}" if args.demo else args.profile,
         params_path=params_path,
         resume=args.resume,
-        work_dir=output_dir / "upstream" / "work",
+        work_dir=_resolve_nextflow_work_dir(args, output_dir),
         extra_configs=_build_extra_nextflow_configs(args, output_dir),
     )
 
 
-def _build_extra_nextflow_configs(args: argparse.Namespace, output_dir: Path) -> list[Path]:
+def _resolve_nextflow_work_dir(args: argparse.Namespace, output_dir: Path) -> Path | str:
+    raw_work_dir = getattr(args, "work_dir", None)
+    if not raw_work_dir:
+        return output_dir / "upstream" / "work"
+    work_dir = str(raw_work_dir).strip()
+    if "://" in work_dir:
+        return work_dir
+    return Path(work_dir).expanduser().resolve()
+
+
+def _build_extra_nextflow_configs(
+    args: argparse.Namespace, output_dir: Path
+) -> list[Path]:
+    configs = [
+        Path(value).expanduser().resolve()
+        for value in getattr(args, "extra_config", []) or []
+    ]
     # The VirtioFS EDEADLK fix is macOS-specific:
     #   Linux native: no VirtioFS; Docker bind-mounts are direct overlayfs.
     #   Windows/WSL2: Nextflow runs inside WSL2 (reports "Linux"); work dir is on ext4.
     #   Windows native: not officially supported by Nextflow; users should use WSL2.
-    if platform.system() == "Darwin" and args.profile == "docker":
-        return [_write_macos_docker_config(output_dir)]
-    return []
+    if platform.system() == "Darwin" and profile_includes(args.profile, "docker"):
+        # demo gates the test-profile resource ceilings: real runs get only the
+        # always-safe VirtioFS / Apple-Silicon / STAR-FIFO workarounds (audit H-1).
+        configs.append(
+            write_macos_docker_config(
+                output_dir, demo=bool(getattr(args, "demo", False))
+            )
+        )
+    return configs
 
 
 def _nextflow_execution_cwd(output_dir: Path) -> Path:
@@ -462,11 +965,51 @@ def _nextflow_replay_command(command_str: str, cwd: Path) -> str:
     return f"cd {shlex.quote(cwd.as_posix())} && {command_str}"
 
 
-def _parse_outputs_with_effective_aligner(output_dir: Path, args: argparse.Namespace) -> dict[str, object]:
+def _parse_outputs_with_effective_aligner(
+    output_dir: Path, args: argparse.Namespace
+) -> dict[str, object]:
+    parsed_outputs = parse_outputs(output_dir)
+    aligner_effective = PRESET_ALIGNERS[args.preset]
+    demo = bool(getattr(args, "demo", False))
     return {
-        **parse_outputs(output_dir),
-        "aligner_effective": PRESET_ALIGNERS[args.preset],
+        **parsed_outputs,
+        "aligner_effective": aligner_effective,
+        "output_validation": validate_expected_outputs(
+            parsed_outputs,
+            aligner=aligner_effective,
+            # A hermetic demo never writes skip flags (audit H-01), so the test
+            # profile always runs FastQC + MultiQC — validate them as required
+            # regardless of any --skip-* the user passed alongside --demo.
+            skip_multiqc=False if demo else bool(getattr(args, "skip_multiqc", False)),
+            skip_fastqc=False if demo else bool(getattr(args, "skip_fastqc", False)),
+        ),
     }
+
+
+def _raise_if_expected_outputs_missing(
+    parsed_outputs: dict[str, object], *, output_dir: Path
+) -> None:
+    output_validation = parsed_outputs.get("output_validation")
+    if not isinstance(output_validation, dict):
+        return
+    missing_required = output_validation.get("missing_required", [])
+    if not missing_required:
+        return
+    raise SkillError(
+        stage="parsing",
+        error_code=ErrorCode.EXPECTED_OUTPUTS_NOT_FOUND,
+        message="nf-core/scrnaseq completed but required output files or directories were not found.",
+        fix=(
+            "Inspect Nextflow logs in logs/stdout.txt, logs/stderr.txt, and upstream/work. "
+            "If MultiQC was intentionally disabled, rerun the wrapper with --skip-multiqc."
+        ),
+        details={
+            "output_dir": str(output_dir),
+            "aligner_effective": parsed_outputs.get("aligner_effective", ""),
+            "missing_required": missing_required,
+            "missing_optional": output_validation.get("missing_optional", []),
+        },
+    )
 
 
 def _write_success_outputs(
@@ -474,7 +1017,7 @@ def _write_success_outputs(
     *,
     args: argparse.Namespace,
     pipeline_source: dict[str, object],
-    preflight_result: dict[str, object],
+    preflight_result: dict[str, Any],
     params_path: Path,
     params_payload: dict[str, object],
     normalized_samplesheet: Path,
@@ -483,7 +1026,12 @@ def _write_success_outputs(
     execution_result: dict[str, object],
     command_str: str,
 ) -> None:
-    write_repro_commands(output_dir, args=args)
+    write_repro_commands(
+        output_dir,
+        args=args,
+        pipeline_source=pipeline_source,
+        nextflow_version=preflight_result.get("nextflow", {}).get("version"),
+    )
     write_provenance_bundle(
         output_dir,
         args=args,
@@ -514,7 +1062,9 @@ def _write_success_outputs(
     )
 
 
-_SCRNA_ORCHESTRATOR_DEFAULT = _SKILL_DIR.parent / "scrna-orchestrator" / "scrna_orchestrator.py"
+_SCRNA_ORCHESTRATOR_DEFAULT = (
+    _SKILL_DIR.parent / "scrna-orchestrator" / "scrna_orchestrator.py"
+)
 
 
 def _resolve_scrna_orchestrator() -> Path | None:
@@ -531,10 +1081,19 @@ def _run_downstream_handoff(
     parsed_outputs: dict[str, object],
     output_dir: Path,
 ) -> None:
-    if not getattr(args, "run_downstream", False) or getattr(args, "skip_downstream", False):
+    if not getattr(args, "run_downstream", False) or getattr(
+        args, "skip_downstream", False
+    ):
         return
     preferred_h5ad = str(parsed_outputs.get("preferred_h5ad", "")).strip()
     if not preferred_h5ad:
+        h5ad_candidates = parsed_outputs.get("h5ad_candidates", [])
+        if h5ad_candidates:
+            print(
+                "WARNING: downstream handoff was requested, but automatic h5ad selection is ambiguous. "
+                "Inspect result.json h5ad_candidates and run downstream analysis manually with the chosen file.",
+                file=sys.stderr,
+            )
         return
     orchestrator = _resolve_scrna_orchestrator()
     if orchestrator is None:
@@ -548,9 +1107,23 @@ def _run_downstream_handoff(
     cmd = [
         sys.executable,
         str(orchestrator),
-        "--input", preferred_h5ad,
-        "--output", str(downstream_output),
+        "--input",
+        preferred_h5ad,
+        "--output",
+        str(downstream_output),
     ]
+    # Audit trail: the orchestrator script is resolvable via the
+    # CLAWBIO_SCRNA_ORCHESTRATOR env var, so record exactly which script (and its
+    # checksum) was executed for this handoff (audit Hallazgo 9).
+    record: dict[str, object] = {
+        "orchestrator": orchestrator.as_posix(),
+        "orchestrator_sha256": _sha256_file_safe(orchestrator),
+        "orchestrator_source": "env:CLAWBIO_SCRNA_ORCHESTRATOR"
+        if os.environ.get("CLAWBIO_SCRNA_ORCHESTRATOR")
+        else "default_sibling",
+        "preferred_h5ad": preferred_h5ad,
+        "downstream_output": str(downstream_output),
+    }
     print("Handing off to scrna_orchestrator...")
     try:
         result = subprocess.run(
@@ -561,18 +1134,38 @@ def _run_downstream_handoff(
             cwd=str(_PROJECT_ROOT),
         )
     except subprocess.TimeoutExpired:
+        record["status"] = "timeout"
+        _write_handoff_provenance(output_dir, record)
         print(
             "WARNING: downstream scrna_orchestrator timed out. "
             "The nf-core pipeline completed successfully; run downstream analysis manually if needed.",
             file=sys.stderr,
         )
         return
+    record["status"] = "ok" if result.returncode == 0 else "failed"
+    record["returncode"] = result.returncode
+    _write_handoff_provenance(output_dir, record)
     if result.returncode != 0:
         print(
             f"WARNING: downstream scrna_orchestrator exited with code {result.returncode}. "
             "The nf-core pipeline completed successfully; inspect scrna_analysis/ manually.",
             file=sys.stderr,
         )
+
+
+def _sha256_file_safe(path: Path) -> str:
+    """Best-effort SHA-256 of a script; empty string if it cannot be read."""
+    try:
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+    except OSError:
+        return ""
+
+
+def _write_handoff_provenance(output_dir: Path, record: dict[str, object]) -> None:
+    """Persist which downstream orchestrator was executed (path + checksum + outcome)."""
+    provenance_dir = output_dir / "provenance"
+    provenance_dir.mkdir(parents=True, exist_ok=True)
+    write_text_lf(provenance_dir / "handoff.json", json.dumps(record, indent=2))
 
 
 def _handle_skill_error(output_dir: Path, exc: SkillError) -> int:

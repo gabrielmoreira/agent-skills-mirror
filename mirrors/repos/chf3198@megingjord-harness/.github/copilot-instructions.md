@@ -15,6 +15,7 @@ Completion intent is strict: when the active role identifies complete/finish/shi
 ## Repo Purpose
 
 This repo is the **source of truth** for the DevEnv Ops Harness:
+
 1. **skills/** → source skills for Copilot runtime and Codex user skill layer
 2. **instructions/** → global markdown instructions for the harness
 3. **hooks/** → shared hook logic and governance policies
@@ -37,15 +38,12 @@ agents/          ──deploy──▶  ~/.copilot/agents
 ```
 
 **Rule**: Never edit deployed runtimes directly. All changes flow through this repo.
-
-## Fleet Topology
-
-Auto-detected via `scripts/global/fleet-config.js`. Devices live in `inventory/devices.json`.
-IPs resolve from `.env` overrides or Tailscale discovery.
+Fleet is auto-detected via `scripts/global/fleet-config.js` (`inventory/devices.json`).
 
 ## Constraints
 
-- **≤100 lines per file** (lint-enforced)
+- **≤100 lines per file** (lint-enforced; split into linked files — never
+  compress content — see `docs/howto/100-line-design-contract.md`)
 - **JSON for structured data** and **Markdown for prose**
 - **No build step** — dashboard is static HTML/JS/CSS
 - **One live worktree per agent** — see `research/concurrent-agent-worktrees-2026-04-24.md`
@@ -74,8 +72,7 @@ npm test                    # E2E tests
 
 ## Environment
 
-Chromebook dev environment. Agent has root/sudo access.
-Install tools via CLI as needed. Don’t ask permission.
+Chromebook dev environment; agent has root/sudo access. Install tools as needed.
 
 ## User Interaction Rules
 
@@ -85,16 +82,19 @@ Install tools via CLI as needed. Don’t ask permission.
 
 ## Team&Model Signing
 
-AI-authored baton artifacts, PR evidence, and governance docs must include human alias + structured `Team&Model` provenance.
+Every AI-authored baton artifact, PR evidence block, and governance doc must
+carry a `Signed-by: <human-alias>` line and a `Team&Model: <team>:<model>@<host>`
+provenance line. Aliases are derived from `inventory/team-model-signatures.json`.
+See `instructions/team-model-signing.instructions.md` for the full contract.
 
 ## HAMR Cross-Team Routing
 
-All governed provider calls route through HAMR (`https://hamr.chf3198.workers.dev`). Activate per-checkout: `npm run hamr:activate`. Canonical contract: `instructions/hamr-routing.instructions.md`. The Global Task Router (lane selection) and HAMR (cost/observability mechanics) are complementary — HAMR does not duplicate lane policy.
+All governed provider calls route through HAMR (`https://hamr.chf3198.workers.dev`).
+Activate per-checkout: `npm run hamr:activate`. Lane: free → fleet → haiku →
+premium; HAMR handles cost levers and observability.
+Canonical contract: `instructions/hamr-routing.instructions.md`.
 
-## Harness Goal Constitution — Governance > Quality > Zero Cost > Privacy > Portability > Resilience > Throughput > Observability > Interoperability > Maintainability. Record rationale in ticket/PR evidence when a lower-priority goal wins.
-## Cross-Team Artifact-Write Contract — see `instructions/cross-team-artifact-write.instructions.md` (target-runtime team owns schema/contract test; required before manager-handoff on cross-runtime config writes).
-## Hook Behavior Overrides — see `instructions/hook-behavior-overrides.instructions.md` (advisory-vs-blocking contract; Tier-2 self-anneal threshold).
-## OWASP Agentic Security — see `instructions/owasp-agentic-mapping.instructions.md` (OA1-OA10 risk-to-goal mapping; G1-G10 coverage classification).
-## Skill Index — auto-derived per `docs/skills-copilot.md`; regenerate via `node scripts/global/skill-views-derive.js`.
-## Role Taxonomy — 7-role canonical set: Manager / Collaborator / Admin / Consultant / IT / Red-Team / Client. Guest-Collaborator reserved. Operator is a meta-term (not a role). Canonical: `instructions/role-baton-routing.instructions.md` §"Role Taxonomy".
-## Merge-evidence convention (cross-runtime, Epic #2295 P1.3) — PR bodies MUST include merge evidence: preferred `merge-evidence-deferred-final: #N` (no auto-close, Consultant retains terminal-finalize) or backward-compat `Closes #N`. Same marker across Claude Code / Codex / Copilot. Rationale: `governance-carve-outs/index.md`.
+## Advanced Governance Contracts
+
+Goal Constitution, Cross-Team Artifact-Write, Hooks, OWASP, Skill Index, Role
+Taxonomy, Merge-evidence: [copilot-instructions-advanced.md](copilot-instructions-advanced.md)

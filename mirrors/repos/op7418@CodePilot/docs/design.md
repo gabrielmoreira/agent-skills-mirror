@@ -116,7 +116,7 @@ CodePilot 的 CSS token 分两层。本节是项目级原则，虽然 design.md 
 - macOS 覆盖只在 `html[data-platform="darwin"][data-platform-style="auto"]` 生效。其它平台或 `data-platform-style="neutral"` 时，平台 token 仍 fall back 到默认（= 产品 token 等价值）。
 - **平台 token 不允许出现在内容层**（Apple HIG: Liquid Glass 用于 controls / navigation，不用于 content）。如果在 PR 里看到 `--platform-surface-*` 被绑定到内容卡片，直接 reject。
 
-参考：[`docs/exec-plans/active/phase-7b-macos-native-visual-profile.md`](exec-plans/active/phase-7b-macos-native-visual-profile.md) / [`docs/handover/macos-visual-profile.md`](handover/macos-visual-profile.md)。
+参考：[`docs/exec-plans/completed/phase-7b-macos-native-visual-profile.md`](exec-plans/completed/phase-7b-macos-native-visual-profile.md) / [`docs/handover/macos-visual-profile.md`](handover/macos-visual-profile.md)。
 
 ## 图标语义（CodePilot Icon Layer）
 

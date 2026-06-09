@@ -232,6 +232,12 @@ When user approves a draft:
 
 ## Invoice/Bill Processing
 
+> **Handoff first.** If a dedicated bill-pay skill/flow is available in this environment
+> (e.g. an org's `/bill-pay`), do NOT process bills inline — detect the bill, label it
+> `Bills`, and defer to that skill. It owns vendor registry, payment-rail classification,
+> fraud validation, and reconciliation against spend history. The flow below is the
+> **standalone fallback** for environments without one.
+
 When an email is detected as an invoice or bill that requires manual payment action.
 
 ### Scope: Manual-Pay Invoices Only

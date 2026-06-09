@@ -80,6 +80,7 @@ When the user asks a question, match it to a skill and act:
 | Cell segmentation, nucleus segmentation, microscopy, fluorescence microscopy, cellpose, cpsam, image segmentation, cell counting, segmentation mask | `skills/cell-detection/` | Run `cell_detection.py` |
 | WES clinical report English, exome PDF report, whole exome sequencing report, clinical exome PDF | `skills/wes-clinical-report-en/` | Run `wes_clinical_report_en.py` |
 | WES clinical report Spanish, informe clinico WES, exome PDF espanol, Predice, Inbiomedic, Novogene report | `skills/wes-clinical-report-es/` | Run `wes_clinical_report_es.py` |
+| Drug repurposing screen, viability screen, PRISM, compound panel analysis, context-selective compounds, selective killing biomarker | `skills/drug-repurposing-screen/` | Run `drug_repurposing_screen.py` or `clawbio.py run repurposing` |
 | Proteomic aging clocks, organ aging, Olink clock, proteomics clock, organ clock, Goeminne, plasma protein aging, organ-specific aging | `skills/proteomics-clock/` | Run `proteomics_clock.py` |
 | Sample QC triage, sample identity, sex mismatch, fingerprint concordance, contamination, batch shift, low complexity, rerun candidates | `skills/sample-qc-triage/` | Run `sample_qc_triage.py` |
 | CRISPR screen triage, guide counts, depleted genes, knockout screen hits, rank CRISPR hits, follow-up genes | `skills/crispr-screen-triage/` | Run `crispr_screen_triage.py` |
@@ -91,7 +92,7 @@ When the user asks a question, match it to a skill and act:
 
 ## How to Use a Skill
 
-### Skills with Python scripts (pharmgx-reporter, equity-scorer, nutrigx_advisor, claw-metagenomics, genome-compare, bio-orchestrator, variant-annotation, bioconductor-bridge, clinical-trial-finder, data-extractor, illumina-bridge, pubmed-summariser, omics-target-evidence-mapper, target-validation-scorer, scrna-orchestrator, scrna-embedding, diff-visualizer, proteomics-de, struct-predictor, clinical-variant-reporter, multiqc-reporter, labstep, clinpgx, gwas-prs, gwas-lookup, methylation-clock, profile-report, ukb-navigator, galaxy-bridge, flow-bio, rnaseq-de, protocols-io, soul2dna, genome-match, recombinator, fine-mapping, cell-detection, wes-clinical-report-en, wes-clinical-report-es, proteomics-clock, sample-qc-triage, crispr-screen-triage, marker-dominance-mapper, busco-assessor, fastreer, nfcore-sarek-wrapper, phylogenetics-builder)
+### Skills with Python scripts (pharmgx-reporter, equity-scorer, nutrigx_advisor, claw-metagenomics, genome-compare, bio-orchestrator, variant-annotation, bioconductor-bridge, clinical-trial-finder, data-extractor, illumina-bridge, pubmed-summariser, omics-target-evidence-mapper, target-validation-scorer, nfcore-scrnaseq-wrapper, nfcore-rnaseq-wrapper, nfcore-sarek-wrapper, scrna-orchestrator, scrna-embedding, diff-visualizer, proteomics-de, struct-predictor, clinical-variant-reporter, multiqc-reporter, labstep, clinpgx, gwas-prs, gwas-lookup, methylation-clock, profile-report, ukb-navigator, galaxy-bridge, flow-bio, rnaseq-de, protocols-io, soul2dna, genome-match, recombinator, fine-mapping, cell-detection, wes-clinical-report-en, wes-clinical-report-es, proteomics-clock, sample-qc-triage, crispr-screen-triage, marker-dominance-mapper, busco-assessor, fastreer)
 1. Read the skill's `SKILL.md` for domain context
 2. Run the Python script with correct CLI arguments (see below)
 3. Show the user the output — open any generated figures and explain results
@@ -144,6 +145,7 @@ python skills/gwas-prs/gwas_prs.py \
 python skills/gwas-prs/gwas_prs.py \
   --input <23andme_file> --pgs-id PGS000013 --output <report_dir>
 python skills/gwas-prs/gwas_prs.py --demo --output /tmp/prs_demo
+
 
 # GWAS Lookup — federated variant query across 9 genomic databases
 python skills/gwas-lookup/gwas_lookup.py \
@@ -277,6 +279,12 @@ python skills/wes-clinical-report-es/wes_clinical_report_es.py \
   --report-dir <reports_dir> --output-dir <pdf_dir> --samples Sample3
 python skills/wes-clinical-report-es/wes_clinical_report_es.py --demo
 
+# Drug Repurposing Screen — pooled viability QC, hits, selectivity, biomarkers, priority
+python skills/drug-repurposing-screen/drug_repurposing_screen.py --demo --output /tmp/drs_demo
+python skills/drug-repurposing-screen/drug_repurposing_screen.py \
+  --bundle <bundle_dir> --schema <schema.yaml> --objective <objective.yaml> --output <report_dir>
+python clawbio.py run repurposing --demo --output /tmp/drs_demo
+
 # MultiQC — aggregate QC reports across samples and tools
 python skills/multiqc-reporter/multiqc_reporter.py \
   --input <dir> [<dir2> ...] --output <report_dir>
@@ -360,6 +368,7 @@ For instant demos when the user has no data:
 | WES demo report (8 P/LP variants, 6 PGx, synthetic) | `skills/wes-clinical-report-en/examples/demo_WES_Report.md` | wes-clinical-report-en |
 | WES demo report (same, for Spanish output) | `skills/wes-clinical-report-es/examples/demo_WES_Report.md` | wes-clinical-report-es |
 | MultiQC demo (synthetic FastQC, 3 samples — SAMPLE_01/02/03) | `--demo` flag | multiqc-reporter |
+| Drug repurposing toy screen (10 samples × 20 compounds × 2 plates, 3 selective hits) | `--demo` flag | drug-repurposing-screen |
 | fastreeR demo VCF (5 synthetic samples, 20 biallelic SNPs, chr1) | `skills/fastreer/examples/demo_samples.vcf` | fastreer |
 | fastreeR demo FASTA (5 synthetic sequences, 60 bp) | `skills/fastreer/examples/demo_sequences.fasta` | fastreer |
 | Corpas 30x chr20 SNPs + indels (WGS) | `corpas-30x/subsets/chr20_snps_indels.vcf.gz` | variant-annotation, equity-scorer |
@@ -396,6 +405,9 @@ python skills/nutrigx-advisor/nutrigx_advisor.py \
 
 # MultiQC demo
 python skills/multiqc-reporter/multiqc_reporter.py --demo --output /tmp/multiqc_demo
+
+# Drug repurposing screen demo
+python skills/drug-repurposing-screen/drug_repurposing_screen.py --demo --output /tmp/drs_demo
 
 # BUSCO assessor demo
 python skills/busco-assessor/busco_assessor.py --demo --output /tmp/busco_demo

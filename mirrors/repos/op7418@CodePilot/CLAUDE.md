@@ -4,6 +4,21 @@ CodePilot — 多模型 AI Agent 桌面客户端，基于 Electron + Next.js。
 
 > 架构细节见 [ARCHITECTURE.md](./ARCHITECTURE.md)，本文件只包含规则和流程。
 
+## 协作模式（作者 / Claude Code / Codex）
+
+本项目由作者与 Claude Code、Codex 三方协作开发，分工：
+
+- **作者** — 产品方向与决策、最终验收。
+- **Claude Code** — 一般任务是**生成代码**（实现、修改、修复）。审查 Codex 改动时按下方「语义验收与反假数据」逐条核对，不只看 diff 形状。
+- **Codex** — 负责**计划与测试**（执行计划、用例设计、回归验证）。
+
+**Claude Code 优先排查方向（Codex Runtime stop / abort 高发区）：** 接手 Codex Runtime 的中断 / 卡死类问题时，优先确认这四点（前两点常是同一根因——见 `src/lib/stream-session-manager.ts` 注释，composer 的 `isStreaming` gate ≡ `snapshot.phase === 'active'`）：
+
+1. stop / abort 后 Codex app-server 进程是否还活着（`src/lib/codex/app-server-manager.ts`；未被误杀也未僵死）
+2. `streamSnapshot.phase` 是否停在 `active`（abort 后未翻到终态，会让 UI 永远以为在流式）
+3. `sendMessage` 是否被 `isStreaming` 队列 gate 卡住（phase 停在 active → 复合发送排队卡死，参考 GitHub #578）
+4. interrupt 后 thread / turn 状态是否未关闭（残留未结束的 turn，下一轮发送语义错乱）
+
 ## 开发规则
 
 **提交前必须详尽测试：**

@@ -5,12 +5,14 @@ import os
 import re
 import sys
 from pathlib import Path
+from typing import cast
 
 _SKILL_DIR = Path(__file__).resolve().parent
 if str(_SKILL_DIR) not in sys.path:
     sys.path.insert(0, str(_SKILL_DIR))
 
 from errors import ErrorCode, SkillError
+from nfcore_4_1_0_contract import CELLRANGER_FAMILY_PRESETS
 from schemas import (
     REQUIRED_SAMPLE_COLUMNS,
     SUPPORTED_FEATURE_TYPE_VALUES,
@@ -21,8 +23,16 @@ from schemas import (
 _SAMPLE_NAME_RE = re.compile(r"^\S+$")
 _SAMPLE_WHITESPACE_RE = re.compile(r"\s+")
 _FASTQ_BASENAME_RE = re.compile(r"^[^\s/]+\.f(ast)?q\.gz$")
-_CELLRANGER_READ_MARKER_RE = re.compile(r"(?P<prefix>.*)(?P<marker>_R[12])(?P<suffix>(?:_001)?\.f(?:ast)?q\.gz)$")
-_TENX_FASTQ_RE = re.compile(r"^[^\s/]+_S\d+_L\d{3}_(R1|R2|R3|I1|I2)_001\.fastq\.gz$")
+_CELLRANGER_READ_MARKER_RE = re.compile(
+    r"(?P<prefix>.*)(?P<marker>_R[12])(?P<suffix>(?:_001)?\.f(?:ast)?q\.gz)$"
+)
+# 10x Illumina naming convention for Cell Ranger ARC. The extension accepts both
+# .fastq.gz and .fq.gz to match the upstream samplesheet schema (audit F-4); the
+# basename, lane, read-marker and _001 segments stay strict per Cell Ranger.
+_TENX_FASTQ_RE = re.compile(
+    r"^[^\s/]+_S\d+_L\d{3}_(R1|R2|R3|I1|I2)_001\.f(ast)?q\.gz$"
+)
+_REMOTE_URI_RE = re.compile(r"^[a-zA-Z][a-zA-Z0-9+.-]*://")
 _FASTQ_SUFFIXES = (".fastq.gz", ".fq.gz")
 _BASE_OUTPUT_COLUMNS = ("sample", "fastq_1", "fastq_2", "expected_cells", "seq_center")
 _REQUIRED_FASTQ_COLUMNS = ("fastq_1", "fastq_2")
@@ -38,6 +48,9 @@ def validate_and_normalize_samplesheet(
 ) -> dict[str, object]:
     fieldnames, rows = _read_samplesheet(input_path)
     _validate_preset_columns(fieldnames, preset=preset)
+    _validate_expected_cells_override_scope(
+        rows, expected_cells_override=expected_cells_override
+    )
     unknown_columns = _unknown_columns(fieldnames)
     output_columns = _build_output_columns(fieldnames)
     normalized_rows, sample_names, fastq_paths = _normalize_rows(
@@ -47,6 +60,36 @@ def validate_and_normalize_samplesheet(
         expected_cells_override=expected_cells_override,
         preset=preset,
     )
+    empty_expected_cells = sum(
+        1 for row in normalized_rows if not row.get("expected_cells", "")
+    )
+    if empty_expected_cells > 0:
+        # Human-facing notice → stdout. stderr is reserved for the wrapper's
+        # structured error payload (json.dumps on failure); emitting diagnostics
+        # there would make that error JSON unparseable for machine consumers.
+        print(
+            f"WARNING: {empty_expected_cells} sample(s) have an empty 'expected_cells' value. "
+            "The upstream pipeline will use auto-estimation for these samples.",
+            file=sys.stdout,
+        )
+    # nf-core/scrnaseq usage docs: "Since cellranger v7, it is not recommended
+    # anymore to supply the --expected-cells parameter." Surface that advisory for
+    # the whole Cell Ranger family (cellranger/cellrangerarc/cellrangermulti) —
+    # cellranger-arc count also has no --expect-cells and auto-estimates, so the
+    # guidance applies there too. The value is still passed through (guidance, not
+    # a hard error). Uses the centralised family constant so the set cannot drift.
+    if preset in CELLRANGER_FAMILY_PRESETS:
+        with_expected_cells = sum(
+            1 for row in normalized_rows if row.get("expected_cells", "")
+        )
+        if with_expected_cells > 0:
+            print(
+                f"WARNING: 'expected_cells' is set for {with_expected_cells} sample(s) under the "
+                f"{preset!r} preset. Since Cell Ranger v7 the nf-core/scrnaseq docs no longer "
+                "recommend supplying expected_cells; Cell Ranger auto-estimates cell counts.",
+                file=sys.stdout,
+            )
+
     _write_normalized_samplesheet(output_path, output_columns, normalized_rows)
 
     return {
@@ -54,9 +97,19 @@ def validate_and_normalize_samplesheet(
         "sample_count": len(normalized_rows),
         "sample_names": sample_names,
         "fastq_paths": fastq_paths,
-        "sample_types": sorted({row.get("sample_type", "") for row in normalized_rows if row.get("sample_type", "")}),
+        "sample_types": sorted(
+            {
+                row.get("sample_type", "")
+                for row in normalized_rows
+                if row.get("sample_type", "")
+            }
+        ),
         "feature_types": sorted(
-            {row.get("feature_type", "") for row in normalized_rows if row.get("feature_type", "")}
+            {
+                row.get("feature_type", "")
+                for row in normalized_rows
+                if row.get("feature_type", "")
+            }
         ),
         "unknown_columns": unknown_columns,
     }
@@ -74,10 +127,13 @@ def _read_samplesheet(input_path: Path) -> tuple[list[str], list[dict[str, str]]
 
     with input_path.open("r", encoding="utf-8-sig", newline="") as handle:
         reader = csv.DictReader(handle)
-        fieldnames = reader.fieldnames or []
+        fieldnames = list(reader.fieldnames or [])
+        # nf-core/scrnaseq validates the samplesheet by column NAME (assets/
+        # schema_input.json), not by position, so we only require presence here.
+        # Column order is normalized on write (_build_output_columns leads with
+        # sample,fastq_1,fastq_2), so any input order is accepted without loss.
         _validate_required_columns(fieldnames)
-        _validate_required_column_order(fieldnames)
-        rows = list(reader)
+        rows = cast("list[dict[str, str]]", list(reader))
 
     if not rows:
         raise SkillError(
@@ -90,8 +146,40 @@ def _read_samplesheet(input_path: Path) -> tuple[list[str], list[dict[str, str]]
     return fieldnames, rows
 
 
+def _validate_expected_cells_override_scope(
+    rows: list[dict[str, str]],
+    *,
+    expected_cells_override: int | None,
+) -> None:
+    if expected_cells_override is None:
+        return
+    normalized_samples = {
+        _normalize_sample_name(str(row.get("sample", "")).strip())
+        for row in rows
+        if str(row.get("sample", "")).strip()
+    }
+    if len(normalized_samples) <= 1:
+        return
+    raise SkillError(
+        stage="validation",
+        error_code=ErrorCode.INVALID_SAMPLESHEET,
+        message="A global expected_cells override is only safe for single-sample samplesheets.",
+        fix=(
+            "Set expected_cells per row in the samplesheet for multi-sample runs, "
+            "or run one sample at a time when using --expected-cells."
+        ),
+        details={
+            "field": "expected_cells_override",
+            "sample_count": len(normalized_samples),
+            "samples": sorted(normalized_samples),
+        },
+    )
+
+
 def _validate_required_columns(fieldnames: list[str]) -> None:
-    missing_columns = [name for name in REQUIRED_SAMPLE_COLUMNS if name not in fieldnames]
+    missing_columns = [
+        name for name in REQUIRED_SAMPLE_COLUMNS if name not in fieldnames
+    ]
     if missing_columns:
         raise SkillError(
             stage="validation",
@@ -102,27 +190,16 @@ def _validate_required_columns(fieldnames: list[str]) -> None:
         )
 
 
-def _validate_required_column_order(fieldnames: list[str]) -> None:
-    first_columns = tuple(fieldnames[: len(REQUIRED_SAMPLE_COLUMNS)])
-    if first_columns != REQUIRED_SAMPLE_COLUMNS:
-        raise SkillError(
-            stage="validation",
-            error_code=ErrorCode.INVALID_SAMPLESHEET,
-            message="Samplesheet first columns must match the nf-core/scrnaseq input contract.",
-            fix="Use sample, fastq_1, fastq_2 as the first three columns, in that exact order.",
-            details={
-                "expected_first_columns": list(REQUIRED_SAMPLE_COLUMNS),
-                "observed_first_columns": list(first_columns),
-            },
-        )
-
-
 def _validate_preset_columns(fieldnames: list[str], *, preset: str | None) -> None:
     required_by_preset = {
         "cellrangerarc": ("sample_type", "fastq_barcode"),
         "cellrangermulti": ("feature_type",),
     }
-    missing_columns = [name for name in required_by_preset.get(preset or "", ()) if name not in fieldnames]
+    missing_columns = [
+        name
+        for name in required_by_preset.get(preset or "", ())
+        if name not in fieldnames
+    ]
     if missing_columns:
         raise SkillError(
             stage="validation",
@@ -166,8 +243,12 @@ def _normalize_rows(
             expected_cells_override=expected_cells_override,
             preset=preset,
         )
-        _reject_sample_name_collision(raw_samples_by_normalized_sample, row, line_number, sample)
-        _reject_inconsistent_repeated_sample_metadata(metadata_by_sample, line_number, sample, normalized)
+        _reject_sample_name_collision(
+            raw_samples_by_normalized_sample, row, line_number, sample
+        )
+        _reject_inconsistent_repeated_sample_metadata(
+            metadata_by_sample, line_number, sample, normalized
+        )
         _reject_duplicate_fastq_row(seen_rows, line_number, sample, resolved_fastqs)
         normalized_rows.append(normalized)
         sample_names.append(sample)
@@ -188,8 +269,12 @@ def _normalize_samplesheet_row(
     sample = _validate_sample_name(row, line_number)
     sample_type = _validate_sample_type(row, line_number, preset=preset)
     feature_type = _validate_feature_type(row, line_number, preset=preset)
-    resolved_fastqs = _resolve_fastq_columns(row, line_number=line_number, input_path=input_path, preset=preset)
-    _validate_preset_fastq_naming(resolved_fastqs, preset=preset, line_number=line_number)
+    resolved_fastqs = _resolve_fastq_columns(
+        row, line_number=line_number, input_path=input_path, preset=preset
+    )
+    _validate_preset_fastq_naming(
+        resolved_fastqs, preset=preset, line_number=line_number
+    )
     expected_cells = _validate_expected_cells(row, line_number, expected_cells_override)
     normalized = {column: str(row.get(column, "")).strip() for column in output_columns}
     normalized.update(
@@ -220,7 +305,11 @@ def _validate_sample_name(row: dict[str, str], line_number: int) -> str:
             error_code=ErrorCode.INVALID_SAMPLESHEET,
             message="Sample names must be non-empty and cannot contain whitespace after normalization.",
             fix="Provide a non-empty sample value; whitespace is normalized to underscores before validation.",
-            details={"line": line_number, "sample": raw_sample, "normalized_sample": sample},
+            details={
+                "line": line_number,
+                "sample": raw_sample,
+                "normalized_sample": sample,
+            },
         )
     return sample
 
@@ -229,7 +318,9 @@ def _normalize_sample_name(raw_sample: str) -> str:
     return _SAMPLE_WHITESPACE_RE.sub("_", raw_sample.strip())
 
 
-def _validate_sample_type(row: dict[str, str], line_number: int, *, preset: str | None) -> str:
+def _validate_sample_type(
+    row: dict[str, str], line_number: int, *, preset: str | None
+) -> str:
     sample_type = str(row.get("sample_type", "")).strip().lower()
     if preset == "cellrangerarc" and not sample_type:
         raise SkillError(
@@ -241,7 +332,12 @@ def _validate_sample_type(row: dict[str, str], line_number: int, *, preset: str 
         )
     if not sample_type:
         return sample_type
-    if preset == "cellrangerarc" and sample_type not in SUPPORTED_SAMPLE_TYPE_VALUES:
+    # Enum is validated whenever the column carries a value, regardless of preset:
+    # assets/schema_input.json declares sample_type as a property-level enum, so
+    # nf-schema would reject an invalid value at runtime for ANY aligner. Fail fast
+    # in preflight instead of deferring to a late Nextflow error (audit H-08). Only
+    # the *presence* requirement above is preset-specific (cellrangerarc).
+    if sample_type not in SUPPORTED_SAMPLE_TYPE_VALUES:
         raise SkillError(
             stage="validation",
             error_code=ErrorCode.INVALID_SAMPLESHEET,
@@ -252,7 +348,9 @@ def _validate_sample_type(row: dict[str, str], line_number: int, *, preset: str 
     return sample_type
 
 
-def _validate_feature_type(row: dict[str, str], line_number: int, *, preset: str | None) -> str:
+def _validate_feature_type(
+    row: dict[str, str], line_number: int, *, preset: str | None
+) -> str:
     feature_type = str(row.get("feature_type", "")).strip().lower()
     if preset == "cellrangermulti" and not feature_type:
         raise SkillError(
@@ -264,7 +362,12 @@ def _validate_feature_type(row: dict[str, str], line_number: int, *, preset: str
         )
     if not feature_type:
         return feature_type
-    if preset == "cellrangermulti" and feature_type not in SUPPORTED_FEATURE_TYPE_VALUES:
+    # Enum is validated whenever the column carries a value, regardless of preset:
+    # assets/schema_input.json declares feature_type as a property-level enum, so
+    # nf-schema would reject an invalid value at runtime for ANY aligner. Fail fast
+    # in preflight instead of deferring to a late Nextflow error (audit H-08). Only
+    # the *presence* requirement above is preset-specific (cellrangermulti).
+    if feature_type not in SUPPORTED_FEATURE_TYPE_VALUES:
         raise SkillError(
             stage="validation",
             error_code=ErrorCode.INVALID_SAMPLESHEET,
@@ -283,13 +386,17 @@ def _resolve_fastq_columns(
     preset: str | None,
 ) -> dict[str, Path]:
     resolved = {
-        column: _resolve_required_fastq(row, column, line_number=line_number, input_path=input_path)
+        column: _resolve_required_fastq(
+            row, column, line_number=line_number, input_path=input_path
+        )
         for column in _REQUIRED_FASTQ_COLUMNS
     }
     for column in _optional_fastq_columns_for_preset(preset):
         raw_value = str(row.get(column, "")).strip()
         if _row_requires_fastq_barcode(row, column=column, preset=preset):
-            resolved[column] = _resolve_required_fastq(row, column, line_number=line_number, input_path=input_path)
+            resolved[column] = _resolve_required_fastq(
+                row, column, line_number=line_number, input_path=input_path
+            )
             continue
         if _looks_like_fastq_path(raw_value):
             resolved[column] = _resolve_existing_fastq(
@@ -301,11 +408,15 @@ def _resolve_fastq_columns(
     return resolved
 
 
-def _resolve_required_fastq(row: dict[str, str], column: str, *, line_number: int, input_path: Path) -> Path:
+def _resolve_required_fastq(
+    row: dict[str, str], column: str, *, line_number: int, input_path: Path
+) -> Path:
     raw_value = str(row.get(column, "")).strip()
     if not raw_value:
         _raise_missing_fastq_column(column, line_number)
-    return _resolve_existing_fastq(raw_value, column, line_number=line_number, input_path=input_path)
+    return _resolve_existing_fastq(
+        raw_value, column, line_number=line_number, input_path=input_path
+    )
 
 
 def _raise_missing_fastq_column(column: str, line_number: int) -> None:
@@ -320,19 +431,33 @@ def _raise_missing_fastq_column(column: str, line_number: int) -> None:
     raise SkillError(
         stage="validation",
         error_code=ErrorCode.INVALID_SAMPLESHEET,
-        message="This wrapper requires paired-end FASTQs; both fastq_1 and fastq_2 must be provided for every row.",
+        message=(
+            "Both fastq_1 and fastq_2 are required for every row: nf-core/scrnaseq 4.1.0 "
+            "lists 'sample', 'fastq_1' and 'fastq_2' in the samplesheet schema's required "
+            "columns (assets/schema_input.json)."
+        ),
         fix="Provide both FASTQ mates for each row.",
         details={"line": line_number, "column": column},
     )
 
 
 def _optional_fastq_columns_for_preset(preset: str | None) -> tuple[str, ...]:
-    return _OPTIONAL_FASTQ_COLUMNS if preset in {"cellrangerarc", "cellrangermulti"} else ()
+    return (
+        _OPTIONAL_FASTQ_COLUMNS
+        if preset in {"cellrangerarc", "cellrangermulti"}
+        else ()
+    )
 
 
-def _row_requires_fastq_barcode(row: dict[str, str], *, column: str, preset: str | None) -> bool:
+def _row_requires_fastq_barcode(
+    row: dict[str, str], *, column: str, preset: str | None
+) -> bool:
     sample_type = str(row.get("sample_type", "")).strip().lower()
-    return preset == "cellrangerarc" and column == "fastq_barcode" and sample_type == "atac"
+    return (
+        preset == "cellrangerarc"
+        and column == "fastq_barcode"
+        and sample_type == "atac"
+    )
 
 
 def _looks_like_fastq_path(value: str) -> bool:
@@ -341,14 +466,30 @@ def _looks_like_fastq_path(value: str) -> bool:
     return value.endswith(_FASTQ_SUFFIXES)
 
 
-def _resolve_existing_fastq(raw_path: str, column: str, *, line_number: int, input_path: Path) -> Path:
+def _resolve_existing_fastq(
+    raw_path: str, column: str, *, line_number: int, input_path: Path
+) -> Path:
+    if _REMOTE_URI_RE.match(raw_path):
+        raise SkillError(
+            stage="validation",
+            error_code=ErrorCode.INVALID_SAMPLESHEET,
+            message="Remote FASTQ URIs are not supported by this local-first wrapper.",
+            fix="Download FASTQs locally first, then point the samplesheet to local paths.",
+            details={"line": line_number, "column": column, "path": raw_path},
+        )
     fastq_path = Path(raw_path).expanduser()
-    fastq_path = (input_path.parent / fastq_path).resolve() if not fastq_path.is_absolute() else fastq_path.resolve()
+    fastq_path = (
+        (input_path.parent / fastq_path).resolve()
+        if not fastq_path.is_absolute()
+        else fastq_path.resolve()
+    )
     _validate_fastq_path(fastq_path, raw_path, column, line_number)
     return fastq_path
 
 
-def _validate_fastq_path(fastq_path: Path, raw_path: str, column: str, line_number: int) -> None:
+def _validate_fastq_path(
+    fastq_path: Path, raw_path: str, column: str, line_number: int
+) -> None:
     if not fastq_path.exists():
         raise SkillError(
             stage="validation",
@@ -363,7 +504,12 @@ def _validate_fastq_path(fastq_path: Path, raw_path: str, column: str, line_numb
             error_code=ErrorCode.INVALID_FASTQ,
             message="FASTQ filenames must match the nf-core/scrnaseq schema.",
             fix="Use a basename without whitespace and with lowercase .fastq.gz or .fq.gz extension.",
-            details={"line": line_number, "column": column, "path": raw_path, "filename": fastq_path.name},
+            details={
+                "line": line_number,
+                "column": column,
+                "path": raw_path,
+                "filename": fastq_path.name,
+            },
         )
     if not fastq_path.is_file():
         raise SkillError(
@@ -389,13 +535,25 @@ def _validate_preset_fastq_naming(
     preset: str | None,
     line_number: int,
 ) -> None:
+    # FASTQ-naming enforcement is deliberately asymmetric across the Cell Ranger
+    # family (audit F-5):
+    #   * cellranger    → lenient R1/R2 pair-key check.
+    #   * cellrangerarc → strict 10x Illumina naming (ATAC needs the barcode read).
+    #   * cellrangermulti → NOT validated here, on purpose. Cell Ranger Multi maps
+    #     libraries through its own multi samplesheet (--cellranger-multi-barcodes)
+    #     and a [libraries] config, so the per-file 10x convention is resolved by
+    #     the multi config rather than the wrapper's main samplesheet. Imposing the
+    #     strict regex here would reject valid Multi inputs; the naming is left to
+    #     Cell Ranger, which fails clearly if a name is wrong.
     if preset == "cellranger":
         _validate_cellranger_fastq_pair(resolved_fastqs, line_number=line_number)
     if preset == "cellrangerarc":
         _validate_cellrangerarc_fastq_names(resolved_fastqs, line_number=line_number)
 
 
-def _validate_cellranger_fastq_pair(resolved_fastqs: dict[str, Path], *, line_number: int) -> None:
+def _validate_cellranger_fastq_pair(
+    resolved_fastqs: dict[str, Path], *, line_number: int
+) -> None:
     r1_name = resolved_fastqs["fastq_1"].name
     r2_name = resolved_fastqs["fastq_2"].name
     r1_key = _cellranger_pair_key(r1_name, expected_marker="_R1")
@@ -407,7 +565,12 @@ def _validate_cellranger_fastq_pair(resolved_fastqs: dict[str, Path], *, line_nu
         error_code=ErrorCode.INVALID_SAMPLESHEET,
         message="Cell Ranger FASTQ pairs must differ only by R1/R2.",
         fix="Use matched FASTQ basenames such as sample_S1_L001_R1_001.fastq.gz and sample_S1_L001_R2_001.fastq.gz.",
-        details={"line": line_number, "preset": "cellranger", "fastq_1": r1_name, "fastq_2": r2_name},
+        details={
+            "line": line_number,
+            "preset": "cellranger",
+            "fastq_1": r1_name,
+            "fastq_2": r2_name,
+        },
     )
 
 
@@ -418,7 +581,9 @@ def _cellranger_pair_key(filename: str, *, expected_marker: str) -> str:
     return f"{match.group('prefix')}<READ>{match.group('suffix')}"
 
 
-def _validate_cellrangerarc_fastq_names(resolved_fastqs: dict[str, Path], *, line_number: int) -> None:
+def _validate_cellrangerarc_fastq_names(
+    resolved_fastqs: dict[str, Path], *, line_number: int
+) -> None:
     for column, fastq_path in resolved_fastqs.items():
         if _TENX_FASTQ_RE.match(fastq_path.name):
             continue
@@ -444,7 +609,11 @@ def _validate_expected_cells(
     line_number: int,
     expected_cells_override: int | None,
 ) -> str:
-    expected_cells = expected_cells_override if expected_cells_override is not None else row.get("expected_cells", "")
+    expected_cells = (
+        expected_cells_override
+        if expected_cells_override is not None
+        else row.get("expected_cells", "")
+    )
     expected_cells_str = str(expected_cells).strip()
     if not expected_cells_str:
         return expected_cells_str
@@ -490,7 +659,9 @@ def _reject_sample_name_collision(
                 "renormalized_sample": normalized_raw_sample,
             },
         )
-    previous_raw_sample = raw_samples_by_normalized_sample.setdefault(normalized_sample, raw_sample)
+    previous_raw_sample = raw_samples_by_normalized_sample.setdefault(
+        normalized_sample, raw_sample
+    )
     if previous_raw_sample == raw_sample:
         return
     raise SkillError(
@@ -516,7 +687,11 @@ def _reject_duplicate_fastq_row(
     sample: str,
     resolved_fastqs: dict[str, Path],
 ) -> None:
-    row_key = (sample, resolved_fastqs["fastq_1"].as_posix(), resolved_fastqs["fastq_2"].as_posix())
+    row_key = (
+        sample,
+        resolved_fastqs["fastq_1"].as_posix(),
+        resolved_fastqs["fastq_2"].as_posix(),
+    )
     if row_key in seen_rows:
         raise SkillError(
             stage="validation",
@@ -567,7 +742,10 @@ def _write_normalized_samplesheet(
     normalized_rows: list[dict[str, str]],
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    # newline="" + lineterminator="\n": csv.writer defaults to CRLF, which would
+    # make the bundle samplesheet differ from every other (LF) artifact and vary
+    # its checksum. Force LF on every OS for a byte-stable bundle.
     with output_path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=output_columns)
+        writer = csv.DictWriter(handle, fieldnames=output_columns, lineterminator="\n")
         writer.writeheader()
         writer.writerows(normalized_rows)

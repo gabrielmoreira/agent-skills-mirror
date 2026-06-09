@@ -83,8 +83,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`agents/workflows/remote-development.md`](agents/workflows/remote-development.md) |
 | 21 | ✓ | [`agents/workflows/testing.md`](agents/workflows/testing.md) |
 | 22 | ✓ | [`agents/workflows/worktrees.md`](agents/workflows/worktrees.md) |
-| 23 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 24 | ✓ | [`tooling/byoi/README.md`](tooling/byoi/README.md) |
+| 23 | ✓ | [`apps/emdash-desktop/tooling/byoi/README.md`](apps/emdash-desktop/tooling/byoi/README.md) |
+| 24 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 25 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 26 | → | [`LICENSE.md`](LICENSE.md) |
 | 27 | → | [`README.md`](README.md) |

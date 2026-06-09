@@ -12,11 +12,18 @@ description: Инициализирует или обновляет проект
 
 **Skill ПИШЕТ только в эти файлы:**
 - `<project_root>/passport.md` — создаёт или обновляет
-- `<project_root>/CLAUDE.md` — **только** добавляет секцию `## mm-system` если её нет; **никогда** не редактирует существующие секции
-- `<obsidian_projects>/<name>/passport.md` — копия
-- `<obsidian_projects>/<name>/dashboard.md` — создаёт если нет; в режиме update обновляет только `updated:` в frontmatter и секцию «Последние сессии»
-- `<obsidian_projects>/<name>/handoff.md` — создаёт **скелет** если нет; в режиме update НЕ перезаписывает существующий (его обновляет `/mm-save-session` и `/mm-handoff`)
-- `<obsidian_projects>/<name>/project-instructions.md` — пересоздаёт (это деривативный файл)
+- `<project_root>/CLAUDE.md` — **только** добавляет секции `## Obsidian Knowledge Vault` и `## mm-system` если их нет; **никогда** не редактирует существующие секции
+- `<project_root>/.gitignore` — добавляет правила для игнорирования локальных настроек Obsidian (`.vault/.obsidian/`)
+- Файлы Obsidian Vault (хранилище в `<project_root>/.vault/` при локальном режиме или `<obsidian_projects>/<name>/` при глобальном режиме):
+  - `00-home/index.md` — карта всех заметок
+  - `00-home/текущие приоритеты.md` — текущие приоритеты
+  - `00-home/project-instructions.md` — инструкции для claude.ai
+  - `handoff.md` — создаёт **скелет** на старте (в корне хранилища)
+  - `atlas/passport.md` — копия паспорта проекта
+  - `atlas/архитектура проекта.md` — описание архитектуры
+  - `atlas/база данных.md` — схема БД
+  - `atlas/деплой.md` — информация о деплое
+  - Создает папки `knowledge/integrations/`, `knowledge/decisions/`, `knowledge/debugging/`, `knowledge/patterns/`, `knowledge/business/`, `sessions/`, `inbox/` if they don't exist.
 
 **Skill ТОЛЬКО ЧИТАЕТ (никогда не редактирует):**
 - README.md, ARCHITECTURE.md, NOTES.md, OVERVIEW.md, CONTEXT.md, DESIGN.md, ROADMAP.md, TODO.md, BUGS.md, DECISIONS.md, и любые другие *.md в проекте
@@ -178,7 +185,9 @@ git log --oneline -10
 ### 1e. Системы которые могут конфликтовать (dual-detection GSD)
 
 **GSD detection** (определи версию):
-- `<project_root>/.planning/` существует → **GSD v1**. В passport frontmatter `gsd_version: v1`.
+- `<project_root>/.planning/` существует:
+  - Если `<project_root>/.planning/config.json` существует → **GSD Core**. В passport frontmatter `gsd_version: core`.
+  - Иначе → **GSD v1**. В passport frontmatter `gsd_version: v1`.
 - `<project_root>/.gsd/` существует → **GSD v2**. В passport frontmatter `gsd_version: v2`.
 - Оба → **смешанный** (редкость, после миграции). Спроси: какой считать активным?
 - Ни одного → `gsd_version: none`.
@@ -245,7 +254,7 @@ Git: <branch>, <N> коммитов, remote: <url или local>
   (используются ТОЛЬКО для чтения — не будут изменены)
 
 GSD detection:
-  • Версия: <none | v1 (.planning/) | v2 (.gsd/)>
+  • Версия: <none | v1 (.planning/) | v2 (.gsd/) | core (.planning/ config.json)>
   • PROJECT.md: <есть, 240 строк — могу импортировать vision и audience в секции 1, 3>
   • REQUIREMENTS.md: <есть, REQ-001..REQ-014 — топ-5 в секцию 4?>
   • Текущий milestone: <M1 «MVP», phase 03/07 «add /stats command» (in-progress)>
@@ -266,24 +275,32 @@ GSD detection:
 
 Задай только реально неопределённые вопросы (максимум 3-4):
 
-1. **Если найден PROJECT_PASSPORT.md** или другой кандидат миграции:
+1. **Расположение Obsidian Vault (КРИТИЧНО):**
+   Спроси пользователя, где хранить базу знаний (Obsidian Vault):
+   ```
+   Выберите расположение Obsidian Vault для проекта:
+   [1] Локально в папке проекта (рекомендуется: <project_root>/.vault/, версионируется в git, синхронизируется с claude.ai автоматически) — дефолт
+   [2] Глобально в папке Obsidian (из конфига: <obsidian_projects>/<name>/)
+   ```
+
+2. **Если найден PROJECT_PASSPORT.md** или другой кандидат миграции:
    `Найден старый паспорт <file>. Мигрировать его контент в новый passport.md? (y = мигрировать, переименую старый в .legacy / n = игнорировать)`
 
-2. **Если есть passport.md И он явно устарел** (mtime старше 30 дней или git log показывает много коммитов после updated):
+3. **Если есть passport.md И он явно устарел** (mtime старше 30 дней или git log показывает много коммитов после updated):
    Просто переходи в режим update без вопроса.
 
-3. **Если CLAUDE.md > 30 строк**:
-   `CLAUDE.md существует и непустой (<N> строк). Добавить секцию ## mm-system в конец? (y/n)`
+4. **Если CLAUDE.md > 30 строк**:
+   `CLAUDE.md существует и непустой (<N> строк). Добавить правила базы знаний в конец? (y/n)`
 
-4. **Если папка пустая** (новый проект):
+5. **Если папка пустая** (новый проект):
    - Тип: bot / web / lib / script?
    - Язык / фреймворк? (для bot — дефолт `aiogram` из bot_defaults)
    - Назначение в одном предложении?
 
-5. **Если в Obsidian уже есть `<obsidian_projects>/<name>/`**:
-   `Папка в Obsidian уже есть (<N файлов). Update (y) / Создать <name>-2 (n) / Отмена (c)?`
+6. **Если в выбранной директории Vault уже есть файлы**:
+   `В директории базы знаний уже есть файлы. Update (y) / Создать папку с суффиксом -2 (n) / Отмена (c)?`
 
-6. **Если есть GSD (`.planning/PROJECT.md` или `.gsd/`) и режим init**:
+7. **Если есть GSD (`.planning/PROJECT.md` или `.gsd/`) и режим init**:
    `Найден <PROJECT.md / .gsd/>. Импортировать описание/scope в секции 1, 3 паспорта (y) / только сослаться, не дублировать (n) / отмена (c)? Дефолт n — паспорт ссылается, не дублирует.`
 
 Если пользователь говорит «решай сам» — выбирай разумный дефолт, отмечай в финальном отчёте `<assumed: ...>`.
@@ -297,26 +314,37 @@ GSD detection:
 ```
 📋 План записи
 
+Расположение Obsidian Vault: <локальное (.vault/) | глобальное (<path>)>
+
 СОЗДАМ:
   + <project>/passport.md (новый файл, <N> секций)
-    Источники контента: README.md (overview), package.json (стек),
-                        docs/architecture.md (раздел 3),
-                        PROJECT_PASSPORT.md (миграция: разделы 8, 10, 11)
-  + <obsidian>/Projects/<name>/passport.md (копия)
-  + <obsidian>/Projects/<name>/dashboard.md (новый, скелет)
-  + <obsidian>/Projects/<name>/handoff.md (новый, скелет — для Project Knowledge claude.ai)
-  + <obsidian>/Projects/<name>/project-instructions.md (для claude.ai)
-  + <obsidian>/Projects/<name>/sessions/ (пустая папка)
+    Источники: README.md, package.json, etc.
+  + <vault_root>/00-home/index.md (карта всех заметок)
+  + <vault_root>/00-home/текущие приоритеты.md (активные приоритеты)
+  + <vault_root>/00-home/project-instructions.md (инструкции для claude.ai)
+  + <vault_root>/handoff.md (скелет)
+  + <vault_root>/atlas/passport.md (копия паспорта)
+  + <vault_root>/atlas/архитектура проекта.md (архитектура)
+  + <vault_root>/atlas/база данных.md (схемы БД)
+  + <vault_root>/atlas/деплой.md (информация о деплое)
+  + <vault_root>/knowledge/integrations/ (папка)
+  + <vault_root>/knowledge/decisions/ (папка)
+  + <vault_root>/knowledge/debugging/ (папка)
+  + <vault_root>/knowledge/patterns/ (папка)
+  + <vault_root>/knowledge/business/ (папка)
+  + <vault_root>/sessions/ (папка для логов сессий)
+  + <vault_root>/inbox/ (папка для входящего)
 
 ИЗМЕНЮ:
-  ~ <project>/CLAUDE.md (добавлю секцию ## mm-system в конец, +12 строк)
+  ~ <project>/CLAUDE.md (добавлю правила Obsidian Knowledge Vault, +18 строк)
+  <если локальный режим:>
+  ~ <project>/.gitignore (добавлю .vault/.obsidian/ в конец, +2 строки)
 
 ПЕРЕИМЕНУЮ:
   → PROJECT_PASSPORT.md → PROJECT_PASSPORT.md.legacy
-    (после миграции содержимого; оригинал не удаляется)
 
-НЕ ТРОНУ (для справки):
-  README.md, docs/architecture.md, NOTES.md, .planning/*, .env, src/
+НЕ ТРОНУ:
+  README.md, .planning/*, .env, src/
 
 Continue? (y / n / edit)
 ```
@@ -350,23 +378,51 @@ Continue? (y / n / edit)
 
 Frontmatter: `created` из существующего файла или сегодня; `updated` = сегодня; `mm_version` = `config.version` из mm-config.json (подставь значение, не оставляй плейсхолдер `<MM_VERSION>`).
 
-### 4.2. Сгенерируй dashboard.md, handoff.md и project-instructions.md в памяти
+### 4.2. Сгенерируй файлы Obsidian Vault в памяти
 
-Шаблон dashboard и handoff (скелет) см. ниже в Appendix.
-
-**handoff.md — только скелет.** На init сессий ещё нет (или это первое подключение mm к существующему коду), поэтому богатый handoff генерить нечего. Кладём заглушку, чтобы файл существовал для Project Knowledge claude.ai и чтобы ссылка `[[handoff]]` в dashboard не висела битой. Полноценный handoff появится при первом `/mm-save-session` (он делегирует генерацию в `/mm-handoff`). В режиме **update**, если `handoff.md` уже есть — НЕ трогай его (там может быть свежий handoff).
-
-project-instructions: возьми `<skills_repo>/templates/project-instructions.md`, подставь `<PROJECT_NAME>`, добавь секцию «Особенности этого проекта» с топ-3 пунктами из секции 8 паспорта.
+**Сгенерируй структуру и контент для файлов базы знаний:**
+1. **`00-home/index.md`**: Карта всех файлов в Vault. На старте содержит ссылки на `[[текущие приоритеты]]`, `[[project-instructions]]`, `[[handoff]]`, `[[atlas/passport|паспорт проекта]]`, `[[atlas/архитектура проекта]]`, `[[atlas/база данных]]`, `[[atlas/деплой.md]]` и заглушки для подразделов в `knowledge/` и `sessions/`.
+2. **`00-home/текущие приоритеты.md`**: Содержит текущий milestone и приоритетные задачи, извлеченные из GSD или Discovery (на старте).
+3. **`00-home/project-instructions.md`**: Возьми `<skills_repo>/templates/project-instructions.md`, подставь `<PROJECT_NAME>`, замени пути к файлам на новые пути в структуре базы (например, `00-home/index.md` вместо `dashboard.md`), добавь топ-3 пункта из секции 8 паспорта.
+4. **`handoff.md` (в корне Vault)**: Скелет handoff (шаблон см. в Appendix). В режиме **update** не трогай, если файл уже существует.
+5. **`atlas/passport.md`**: Копия сгенерированного `passport.md`.
+6. **`atlas/архитектура проекта.md`**: Содержит описание архитектуры из секции 3 паспорта.
+7. **`atlas/база данных.md`**: Содержит модели данных из секции 6 паспорта.
+8. **`atlas/деплой.md`**: Содержит инструкции и команды деплоя из секции 5/2 паспорта.
 
 ### 4.3. Сгенерируй патч для CLAUDE.md (если нужен)
 
-Если CLAUDE.md существует **и** в нём нет строки `## mm-system` — добавь в конец:
+Если CLAUDE.md существует **и** в нём нет секции `## Obsidian Knowledge Vault` — добавь в конец:
+
+```markdown
+
+## Obsidian Knowledge Vault
+Хранилище знаний: <vault_path>
+
+### При старте сессии
+Прочитай 00-home/index.md и текущие приоритеты.md.
+Если задача касается модуля — прочитай заметку из knowledge/.
+
+### При завершении (пользователь: "сохрани сессию")
+1. Создай заметку в sessions/ с датой
+2. Обнови текущие приоритеты.md
+3. Если решение — создай в knowledge/decisions/
+4. Если баг — создай в knowledge/debugging/
+5. Обнови index.md если новые заметки
+
+## Режимы работы (IDE vs CLI)
+1. **Если ты запущен в чат-окне Antigravity IDE (Gemini)**:
+   - Ты выступаешь **исключительно как Планировщик и Архитектор**.
+   - Тебе **категорически запрещено** самостоятельно изменять файлы проекта, записывать код в файлы или запускать изменяющие состояние команды (типа `git commit`, `git push`).
+   - Твоя задача — использовать инструменты чтения (файлы, логи) и поиска, анализировать код, планировать изменения и генерировать готовый промпт для CLI-агента.
+2. **Если ты запущен в консоли/терминале как CLI-агент (Claude Code / CLI-клиент)**:
+   - Ты выступаешь как **Исполнитель**.
+   - Ты должен автоматически вносить изменения в файлы, запускать тестов, делать коммиты и пушить изменения без подтверждений (согласно Karpathy-style discipline) на основе промптов, полученных из IDE.
 
 ## mm-system
-
 Этот проект подключён к mm-системе.
 - Паспорт: `passport.md` (актуальный source-of-truth)
-- Obsidian: `<obsidian>/Projects/<name>/`
+- База знаний: `<vault_path>`
 - Skills: глобальные `mm-*` (см. `~/.claude/skills/`)
 - Конец сессии: `/mm-save-session`
 - Перед новым чатом claude.ai: `/mm-handoff`
@@ -376,36 +432,31 @@ project-instructions: возьми `<skills_repo>/templates/project-instructions
 - При получении команды (например `/mm resume`, `/mm save`, `/mm setup`, `где мы`, `сохрани сессию`) агент должен найти соответствующий SKILL.md по пути `~/.claude/skills/mm-<name>/SKILL.md` или в каталоге репозитория `$MM_REPO_ROOT/skills/mm-<name>/SKILL.md`, прочесть его и выполнить указанные в нем инструкции.
 ```
 
-**Если `gsd_version != none`** (GSD задетектен в фазе 1e) — добавь в эту же секцию ещё подблок (подставь версию и путь STATE):
-
-```markdown
-
-### GSD в этом проекте
-
-Проект использует **GSD <v1 `.planning/` | v2 `.gsd/`>** — пофазовое планирование. Правило маршрутизации работы (триггер по сложности):
-- **Нетривиальная фича / многошаговая задача** → начни с `/gsd-discuss-phase` или `/gsd-plan-phase`, затем `/gsd-execute-phase`. **Не пиши feature-код ad-hoc в обход фаз.**
-- **Мелочь / однострочник / точечная правка** → `/gsd-fast` (или `/gsd-quick`), либо просто сделай — без церемонии.
-- Перед изменениями сверься с current phase в `<.planning/STATE.md | .gsd/STATE.md>`.
-- Не редактируй `.planning/*` / `.gsd/*` вручную — там file-lock'и и хуки; только через `/gsd-*`.
-
-**Ответы на вопросы с вариантами** (discuss-phase и любые AskUserQuestion, включая «Type something»): ответ «вариант N» + свободный текст = возьми вариант N за основу и **вживи дополнение** пользователя (оно уточняет/переопределяет часть N). Не выбирай просто N, игнорируя текст, и не выбрасывай N. Если дополнение противоречит варианту — переспроси одной строкой.
-```
-
-Если CLAUDE.md нет — создай минимальный с секцией `## mm-system` (+ GSD-подблок, если применимо) + первой строкой `# <name>`.
+Где `<vault_path>` — это `.vault/` (если выбран локальный режим) или `<obsidian_projects>/<name>/` (если глобальный).
 
 ### 4.4. Запиши всё
 
 В строгом порядке (с откатом при падении):
-1. Создай Obsidian-папку и подпапки sessions/.
+1. Создай директорию Vault (`<project_root>/.vault/` или глобальную) и все подпапки: `00-home/`, `atlas/`, `knowledge/integrations/`, `knowledge/decisions/`, `knowledge/debugging/`, `knowledge/patterns/`, `knowledge/business/`, `sessions/`, `inbox/`.
 2. Запиши `<project>/passport.md`.
-3. Запиши `<obsidian>/.../passport.md` (копия).
-4. Запиши `<obsidian>/.../dashboard.md` (если не было).
-5. Запиши `<obsidian>/.../handoff.md` **скелет** (только если файла ещё нет — существующий не трогай).
-6. Запиши `<obsidian>/.../project-instructions.md`.
-7. Если есть PROJECT_PASSPORT.md и пользователь подтвердил миграцию — переименуй в `.legacy`.
-8. Применили патч к CLAUDE.md (если планировали).
+3. Запиши файлы в Vault:
+   - `<vault>/00-home/index.md`
+   - `<vault>/00-home/текущие приоритеты.md`
+   - `<vault>/00-home/project-instructions.md`
+   - `<vault>/handoff.md` (только если не существует)
+   - `<vault>/atlas/passport.md`
+   - `<vault>/atlas/архитектура проекта.md`
+   - `<vault>/atlas/база данных.md`
+   - `<vault>/atlas/деплой.md`
+4. Если выбран локальный режим, открой `<project>/.gitignore`, и если в нём нет строки `.vault/.obsidian/` — добавь в конец:
+   ```
+   # Local Obsidian UI state
+   .vault/.obsidian/
+   ```
+5. Если есть PROJECT_PASSPORT.md и пользователь подтвердил миграцию — переименуй в `.legacy`.
+6. Примени патч к CLAUDE.md.
 
-При ошибке на шагах 4-8: удали созданные файлы шагов 2-6, верни переименованный.
+При ошибке на шагах 1-6: удали созданные файлы и папки, верни переименованный паспорт.
 
 ### 4.5. Проверка инвариантов + secret-grep
 
@@ -445,11 +496,17 @@ project-instructions: возьми `<skills_repo>/templates/project-instructions
 
 Записано:
   ✓ <project>/passport.md
-  ✓ <obsidian>/Projects/<name>/passport.md
-  ✓ <obsidian>/Projects/<name>/dashboard.md
-  ✓ <obsidian>/Projects/<name>/handoff.md (скелет — наполнится при первом /mm-save-session)
-  ✓ <obsidian>/Projects/<name>/project-instructions.md
-  ✓ <project>/CLAUDE.md (добавлена секция mm-system)
+  ✓ <vault>/00-home/index.md (карта всех заметок)
+  ✓ <vault>/00-home/текущие приоритеты.md (активные приоритеты)
+  ✓ <vault>/00-home/project-instructions.md (инструкции для claude.ai)
+  ✓ <vault>/handoff.md (скелет)
+  ✓ <vault>/atlas/passport.md (копия паспорта)
+  ✓ <vault>/atlas/архитектура проекта.md
+  ✓ <vault>/atlas/база данных.md
+  ✓ <vault>/atlas/деплой.md
+  ✓ <project>/CLAUDE.md (добавлены правила Obsidian Knowledge Vault)
+  <если локальный режим:>
+  ✓ <project>/.gitignore (добавлен игнор .vault/.obsidian/)
 
 Перенесено из старого паспорта (если миграция):
   ✓ Секция «Контекст для промптов» (5 правил)

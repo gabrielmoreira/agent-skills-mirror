@@ -6,12 +6,18 @@ from pathlib import Path
 
 import yaml
 
+from clawbio.common.textio import write_text_lf
+
 _SKILL_DIR = Path(__file__).resolve().parent
 if str(_SKILL_DIR) not in sys.path:
     sys.path.insert(0, str(_SKILL_DIR))
 
 from errors import ErrorCode, SkillError
-from schemas import PRESET_ALIGNERS
+from schemas import (
+    ALL_REFERENCE_PATH_FIELDS,
+    GENOME_REFERENCE_FIELDS,
+    PRESET_ALIGNERS,
+)
 
 _WHITESPACE_RE = re.compile(r"\s")
 
@@ -22,29 +28,9 @@ _SKIP_FLAGS = (
     "skip_cellrangermulti_vdjref",
 )
 
-_REFERENCE_PATH_FIELDS = (
-    "fasta",
-    "gtf",
-    "transcript_fasta",
-    "txp2gene",
-    "simpleaf_index",
-    "kallisto_index",
-    "star_index",
-    "cellranger_index",
-    "barcode_whitelist",
-    "kb_t1c",
-    "kb_t2c",
-    "motifs",
-    "cellrangerarc_config",
-    "cellranger_vdj_index",
-    "gex_frna_probe_set",
-    "gex_target_panel",
-    "gex_cmo_set",
-    "fb_reference",
-    "vdj_inner_enrichment_primers",
-    "gex_barcode_sample_assignment",
-    "cellranger_multi_barcodes",
-)
+# Every local path written to params.yaml (genome references + auxiliary files).
+# Only GENOME_REFERENCE_FIELDS suppress iGenomes; see _add_reference_path_params.
+_REFERENCE_PATH_FIELDS = ALL_REFERENCE_PATH_FIELDS
 
 
 def _posix(value: str) -> str:
@@ -57,45 +43,77 @@ def _posix(value: str) -> str:
     return Path(value).expanduser().resolve().as_posix()
 
 
-def build_params_file(args, *, normalized_samplesheet: Path, output_dir: Path) -> tuple[Path, dict[str, object]]:
-    params = build_effective_params(args, normalized_samplesheet=normalized_samplesheet, output_dir=output_dir)
+def build_params_file(
+    args, *, normalized_samplesheet: Path, output_dir: Path
+) -> tuple[Path, dict[str, object]]:
+    params = build_effective_params(
+        args, normalized_samplesheet=normalized_samplesheet, output_dir=output_dir
+    )
     params_path = write_params_yaml(params, output_dir=output_dir)
     return params_path, params
 
 
-def build_effective_params(args, *, normalized_samplesheet: Path, output_dir: Path) -> dict[str, object]:
-    params = _build_base_params(args, normalized_samplesheet=normalized_samplesheet, output_dir=output_dir)
+def build_effective_params(
+    args, *, normalized_samplesheet: Path, output_dir: Path
+) -> dict[str, object]:
+    params = _build_base_params(
+        args, normalized_samplesheet=normalized_samplesheet, output_dir=output_dir
+    )
+    # Fully hermetic demo: the upstream `test` profile owns EVERY pipeline parameter
+    # (input, references, protocol, and all QC/skip/tuning/save/reporting knobs).
+    # Because a -params-file value overrides profile config in Nextflow, writing any
+    # of them would silently alter the test run. Only the wrapper-forced essentials
+    # remain — outdir, aligner=star, igenomes_ignore, skip_cellbender — all already
+    # set by _build_base_params, so demo returns here without emitting anything else
+    # (audit H-01).
+    if getattr(args, "demo", False):
+        return params
     _add_input_metadata_params(params, args)
+    _add_generic_nfcore_params(params, args)
     _add_skip_params(params, args)
     _add_aligner_tuning_params(params, args)
-    _add_symbolic_reference_params(params, args)
     _add_save_flags(params, args)
+    _add_symbolic_reference_params(params, args)
     _add_reference_path_params(params, args)
     return params
 
 
-def _build_base_params(args, *, normalized_samplesheet: Path, output_dir: Path) -> dict[str, object]:
-    upstream_outdir = output_dir / "upstream" / "results"
+def _build_base_params(
+    args, *, normalized_samplesheet: Path, output_dir: Path
+) -> dict[str, object]:
     params: dict[str, object] = {
-        # Forward slashes: safe on all platforms and unambiguous in YAML.
-        "outdir": upstream_outdir.as_posix(),
+        # Relative to cwd: the live run executes from output_dir and replay's
+        # commands.sh cds into output_dir, so this resolves to the same place on
+        # every machine — keeping params.yaml free of absolute prefixes (also
+        # making resume checksums portable). Forward slashes are safe on all platforms.
+        "outdir": "upstream/results",
         "aligner": PRESET_ALIGNERS[args.preset],
-        "skip_cellbender": _skip_cellbender_enabled(args),
     }
+    # skip_cellbender defaults to false upstream, so only emit it when requested
+    # (keeps params.yaml to genuine overrides, matching the other skip flags).
+    if _skip_cellbender_enabled(args):
+        params["skip_cellbender"] = True
     if not args.demo:
-        params["input"] = _schema_safe_input_path(normalized_samplesheet, output_dir=output_dir)
+        params["input"] = _schema_safe_input_path(
+            normalized_samplesheet, output_dir=output_dir
+        )
     else:
         # nf-schema 4.x validates igenomes_base (an S3 URL) even when the test
         # profile provides explicit fasta/gtf. DNS failure aborts before any task
         # runs. igenomes_ignore suppresses that validation when iGenomes is unused.
         params["igenomes_ignore"] = True
-    if args.protocol:
+    # protocol is supplied by the test profile in demo mode (see hermetic-demo
+    # rationale in build_effective_params); never override it from the CLI.
+    if args.protocol and not args.demo:
         params["protocol"] = args.protocol
     return params
 
 
 def _skip_cellbender_enabled(args) -> bool:
-    return bool(getattr(args, "skip_cellbender", False) or getattr(args, "skip_emptydrops", False))
+    return bool(
+        getattr(args, "skip_cellbender", False)
+        or getattr(args, "skip_emptydrops", False)
+    )
 
 
 def _schema_safe_input_path(normalized_samplesheet: Path, *, output_dir: Path) -> str:
@@ -134,6 +152,21 @@ def _add_input_metadata_params(params: dict[str, object], args) -> None:
         params["multiqc_title"] = args.multiqc_title
 
 
+def _add_generic_nfcore_params(params: dict[str, object], args) -> None:
+    if getattr(args, "email_on_fail", None):
+        params["email_on_fail"] = args.email_on_fail
+    for param_name in ("multiqc_config", "multiqc_logo", "multiqc_methods_description"):
+        value = getattr(args, param_name, None)
+        if value:
+            params[param_name] = _posix(value)
+    if getattr(args, "publish_dir_mode", None):
+        params["publish_dir_mode"] = args.publish_dir_mode
+    if getattr(args, "trace_report_suffix", None):
+        params["trace_report_suffix"] = args.trace_report_suffix
+    if getattr(args, "monochrome_logs", False):
+        params["monochrome_logs"] = True
+
+
 def _add_skip_params(params: dict[str, object], args) -> None:
     # Skip flags — only written when True to keep params.yaml clean.
     for flag_name in _SKIP_FLAGS:
@@ -165,27 +198,41 @@ def _add_symbolic_reference_params(params: dict[str, object], args) -> None:
         params["genome"] = args.genome
     if getattr(args, "cellrangerarc_reference", None):
         params["cellrangerarc_reference"] = args.cellrangerarc_reference
+    # igenomes_base is a base location for iGenomes (often an s3:// URL or a local
+    # mirror). Pass it through verbatim — it must NOT be resolved to an absolute
+    # local path (that would corrupt s3:// URLs), and it does not trigger
+    # igenomes_ignore (setting it means iGenomes IS used, from a custom base).
+    if getattr(args, "igenomes_base", None):
+        params["igenomes_base"] = args.igenomes_base
+    if getattr(args, "igenomes_ignore", False):
+        params["igenomes_ignore"] = True
 
 
 def _add_save_flags(params: dict[str, object], args) -> None:
     if getattr(args, "save_reference", False):
         params["save_reference"] = True
-    if getattr(args, "save_align_intermeds", False):
-        params["save_align_intermeds"] = True
+    save_align_intermeds = getattr(args, "save_align_intermeds", None)
+    if save_align_intermeds is not None:
+        params["save_align_intermeds"] = bool(save_align_intermeds)
 
 
 def _add_reference_path_params(params: dict[str, object], args) -> None:
     # All file paths — resolved to absolute POSIX before writing so Nextflow
     # can locate them regardless of its own working directory at runtime.
-    explicit_refs = []
+    explicit_genome_refs = []
     for param_name in _REFERENCE_PATH_FIELDS:
         value = getattr(args, param_name, None)
         if value:
             params[param_name] = _posix(value)
-            explicit_refs.append(param_name)
-    # When fasta/gtf are provided explicitly, iGenomes is unused. Suppress
-    # nf-schema DNS validation of the default igenomes_base S3 URL.
-    if explicit_refs and "fasta" in explicit_refs:
+            if param_name in GENOME_REFERENCE_FIELDS:
+                explicit_genome_refs.append(param_name)
+    # Only a real GENOME reference (e.g. a prebuilt star_index, or fasta+gtf)
+    # means iGenomes is unused, so suppress nf-schema DNS validation of the
+    # default igenomes_base S3 URL. Auxiliary files (barcode whitelists, CMO/
+    # probe/feature sets, primers, multi barcode samplesheets) are NOT genome
+    # references and must never trigger igenomes_ignore — doing so would silently
+    # break a `--genome <shortcut>` run that also supplies one of those files.
+    if explicit_genome_refs:
         params.setdefault("igenomes_ignore", True)
 
 
@@ -193,7 +240,7 @@ def write_params_yaml(params: dict[str, object], *, output_dir: Path) -> Path:
     repro_dir = output_dir / "reproducibility"
     repro_dir.mkdir(parents=True, exist_ok=True)
     params_path = repro_dir / "params.yaml"
-    params_path.write_text(serialize_params_yaml(params), encoding="utf-8")
+    write_text_lf(params_path, serialize_params_yaml(params))
     return params_path
 
 
