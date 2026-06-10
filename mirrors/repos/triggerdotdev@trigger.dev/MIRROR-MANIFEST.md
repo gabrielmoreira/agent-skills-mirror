@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `triggerdotdev/trigger.dev` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `triggerdotdev/trigger.dev` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `triggerdotdev/trigger.dev` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,10 +83,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`packages/cli-v3/skills/authoring-chat-agent/SKILL.md`](packages/cli-v3/skills/authoring-chat-agent/SKILL.md) |
 | 23 | ✓ | [`packages/cli-v3/skills/authoring-tasks/SKILL.md`](packages/cli-v3/skills/authoring-tasks/SKILL.md) |
 | 24 | ✓ | [`packages/cli-v3/skills/chat-agent-advanced/SKILL.md`](packages/cli-v3/skills/chat-agent-advanced/SKILL.md) |
-| 25 | ✓ | [`packages/cli-v3/skills/realtime-and-frontend/SKILL.md`](packages/cli-v3/skills/realtime-and-frontend/SKILL.md) |
-| 26 | ✓ | [`packages/core/CLAUDE.md`](packages/core/CLAUDE.md) |
-| 27 | ✓ | [`packages/redis-worker/CLAUDE.md`](packages/redis-worker/CLAUDE.md) |
-| 28 | ✓ | [`packages/trigger-sdk/CLAUDE.md`](packages/trigger-sdk/CLAUDE.md) |
+| 25 | ✓ | [`packages/cli-v3/skills/getting-started/SKILL.md`](packages/cli-v3/skills/getting-started/SKILL.md) |
+| 26 | ✓ | [`packages/cli-v3/skills/realtime-and-frontend/SKILL.md`](packages/cli-v3/skills/realtime-and-frontend/SKILL.md) |
+| 27 | ✓ | [`packages/core/CLAUDE.md`](packages/core/CLAUDE.md) |
+| 28 | ✓ | [`packages/redis-worker/CLAUDE.md`](packages/redis-worker/CLAUDE.md) |
+| 29 | ✓ | [`packages/trigger-sdk/CLAUDE.md`](packages/trigger-sdk/CLAUDE.md) |
 
 ---
 

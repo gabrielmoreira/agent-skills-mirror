@@ -9,7 +9,7 @@ The upstream prompt references Claude.ai web tools that do not exist in Claude C
 | Web tool | Claude Code equivalent |
 |---|---|
 | `questions_v2` | `AskUserQuestion` (returns answers inline; up to 4 questions/call, follow-up call if more needed) |
-| `done`, `fork_verifier_agent` | `SendUserFile` + the Claude Preview MCP; an `Agent` subagent for thorough checks — see "Verification & debug" below |
+| `done`, `fork_verifier_agent` | `SendUserFile` + the Claude Preview MCP; an `Agent` subagent (prompt: [`../agents/fork-verifier-agent.md`](../agents/fork-verifier-agent.md)) for thorough checks — see "Verification & debug" below |
 | `write_file` (and its `asset:` param) | `Write` — drop the "asset review pane" concept entirely |
 | `copy_files` | `Bash cp` |
 | `read_file`, `list_files`, `view_image` | `Read` (it renders images too), `Glob` / `Bash ls`, `Grep` |
@@ -50,7 +50,7 @@ Preview through the Claude Preview MCP:
 4. `mcp__Claude_Preview__preview_screenshot` to inspect layout. Fix any errors and surface it again.
 5. When the deliverable is ready, hand off the result: `SendUserFile` the file, surface the final `preview_screenshot`, and give the user the served URL so they can open and interact with it directly.
 
-For thorough or directed checks ("screenshot and check the spacing"), spawn an `Agent` subagent to load the file, take screenshots, probe the JS, and report back — useful when you don't want to clutter your own context.
+For thorough or directed checks ("screenshot and check the spacing"), spawn an `Agent` subagent to load the file, take screenshots, probe the JS, and report back — useful when you don't want to clutter your own context. Use the prompt in [`../agents/fork-verifier-agent.md`](../agents/fork-verifier-agent.md) (pass the project dir, the file path(s), and the served URL).
 
 **Preview-harness gotchas (React + Babel prototypes)** — quirks of the Claude Preview MCP, not your code:
 

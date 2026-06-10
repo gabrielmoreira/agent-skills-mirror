@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `promptfoo/promptfoo` — 26 default patterns, 0 followed patterns, 63 file(s) materialized.
+Mirror of `promptfoo/promptfoo` — 26 default patterns, 0 followed patterns, 62 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `promptfoo/promptfoo` — 26 default patterns, 0 followed patterns, 63
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 63 |
+| Files         | 62 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -85,43 +85,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`examples/openai-codex-sdk/skill-comparison/fixtures/v2/.agents/skills/review-standards/SKILL.md`](examples/openai-codex-sdk/skill-comparison/fixtures/v2/.agents/skills/review-standards/SKILL.md) |
 | 25 | ✓ | [`examples/openai-codex-sdk/skills/sample-project/.agents/skills/token-skill/SKILL.md`](examples/openai-codex-sdk/skills/sample-project/.agents/skills/token-skill/SKILL.md) |
 | 26 | ✓ | [`plugins/AGENTS.md`](plugins/AGENTS.md) |
-| 27 | ✓ | [`plugins/promptfoo-evals/skills/promptfoo-evals/SKILL.md`](plugins/promptfoo-evals/skills/promptfoo-evals/SKILL.md) |
-| 28 | ✓ | [`plugins/promptfoo/skills/promptfoo-evals/SKILL.md`](plugins/promptfoo/skills/promptfoo-evals/SKILL.md) |
-| 29 | ✓ | [`plugins/promptfoo/skills/promptfoo-provider-setup/SKILL.md`](plugins/promptfoo/skills/promptfoo-provider-setup/SKILL.md) |
-| 30 | ✓ | [`plugins/promptfoo/skills/promptfoo-redteam-run/SKILL.md`](plugins/promptfoo/skills/promptfoo-redteam-run/SKILL.md) |
-| 31 | ✓ | [`plugins/promptfoo/skills/promptfoo-redteam-setup/SKILL.md`](plugins/promptfoo/skills/promptfoo-redteam-setup/SKILL.md) |
-| 32 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
-| 33 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
-| 34 | ✓ | [`site/docs/red-team/AGENTS.md`](site/docs/red-team/AGENTS.md) |
-| 35 | ✓ | [`site/docs/red-team/CLAUDE.md`](site/docs/red-team/CLAUDE.md) |
-| 36 | ✓ | [`src/app/AGENTS.md`](src/app/AGENTS.md) |
-| 37 | ✓ | [`src/app/CLAUDE.md`](src/app/CLAUDE.md) |
-| 38 | ✓ | [`src/assertions/AGENTS.md`](src/assertions/AGENTS.md) |
-| 39 | ✓ | [`src/codeScan/AGENTS.md`](src/codeScan/AGENTS.md) |
-| 40 | ✓ | [`src/commands/AGENTS.md`](src/commands/AGENTS.md) |
-| 41 | ✓ | [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
-| 42 | ✓ | [`src/contracts/AGENTS.md`](src/contracts/AGENTS.md) |
-| 43 | ✓ | [`src/database/AGENTS.md`](src/database/AGENTS.md) |
-| 44 | ✓ | [`src/matchers/AGENTS.md`](src/matchers/AGENTS.md) |
-| 45 | ✓ | [`src/matchers/CLAUDE.md`](src/matchers/CLAUDE.md) |
-| 46 | ✓ | [`src/models/AGENTS.md`](src/models/AGENTS.md) |
-| 47 | ✓ | [`src/prompts/AGENTS.md`](src/prompts/AGENTS.md) |
-| 48 | ✓ | [`src/providers/AGENTS.md`](src/providers/AGENTS.md) |
-| 49 | ✓ | [`src/providers/CLAUDE.md`](src/providers/CLAUDE.md) |
-| 50 | ✓ | [`src/redteam/AGENTS.md`](src/redteam/AGENTS.md) |
-| 51 | ✓ | [`src/redteam/CLAUDE.md`](src/redteam/CLAUDE.md) |
-| 52 | ✓ | [`src/redteam/plugins/AGENTS.md`](src/redteam/plugins/AGENTS.md) |
-| 53 | ✓ | [`src/scheduler/AGENTS.md`](src/scheduler/AGENTS.md) |
-| 54 | ✓ | [`src/server/AGENTS.md`](src/server/AGENTS.md) |
-| 55 | ✓ | [`src/server/CLAUDE.md`](src/server/CLAUDE.md) |
-| 56 | ✓ | [`src/tracing/AGENTS.md`](src/tracing/AGENTS.md) |
-| 57 | ✓ | [`src/types/AGENTS.md`](src/types/AGENTS.md) |
-| 58 | ✓ | [`src/util/AGENTS.md`](src/util/AGENTS.md) |
-| 59 | ✓ | [`src/validators/AGENTS.md`](src/validators/AGENTS.md) |
-| 60 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
-| 61 | ✓ | [`test/agentSkills/AGENTS.md`](test/agentSkills/AGENTS.md) |
-| 62 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
-| 63 | ✓ | [`test/fixtures/agent-skills/AGENTS.md`](test/fixtures/agent-skills/AGENTS.md) |
+| 27 | ✓ | [`plugins/promptfoo/skills/promptfoo-evals/SKILL.md`](plugins/promptfoo/skills/promptfoo-evals/SKILL.md) |
+| 28 | ✓ | [`plugins/promptfoo/skills/promptfoo-provider-setup/SKILL.md`](plugins/promptfoo/skills/promptfoo-provider-setup/SKILL.md) |
+| 29 | ✓ | [`plugins/promptfoo/skills/promptfoo-redteam-run/SKILL.md`](plugins/promptfoo/skills/promptfoo-redteam-run/SKILL.md) |
+| 30 | ✓ | [`plugins/promptfoo/skills/promptfoo-redteam-setup/SKILL.md`](plugins/promptfoo/skills/promptfoo-redteam-setup/SKILL.md) |
+| 31 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
+| 32 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
+| 33 | ✓ | [`site/docs/red-team/AGENTS.md`](site/docs/red-team/AGENTS.md) |
+| 34 | ✓ | [`site/docs/red-team/CLAUDE.md`](site/docs/red-team/CLAUDE.md) |
+| 35 | ✓ | [`src/app/AGENTS.md`](src/app/AGENTS.md) |
+| 36 | ✓ | [`src/app/CLAUDE.md`](src/app/CLAUDE.md) |
+| 37 | ✓ | [`src/assertions/AGENTS.md`](src/assertions/AGENTS.md) |
+| 38 | ✓ | [`src/codeScan/AGENTS.md`](src/codeScan/AGENTS.md) |
+| 39 | ✓ | [`src/commands/AGENTS.md`](src/commands/AGENTS.md) |
+| 40 | ✓ | [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
+| 41 | ✓ | [`src/contracts/AGENTS.md`](src/contracts/AGENTS.md) |
+| 42 | ✓ | [`src/database/AGENTS.md`](src/database/AGENTS.md) |
+| 43 | ✓ | [`src/matchers/AGENTS.md`](src/matchers/AGENTS.md) |
+| 44 | ✓ | [`src/matchers/CLAUDE.md`](src/matchers/CLAUDE.md) |
+| 45 | ✓ | [`src/models/AGENTS.md`](src/models/AGENTS.md) |
+| 46 | ✓ | [`src/prompts/AGENTS.md`](src/prompts/AGENTS.md) |
+| 47 | ✓ | [`src/providers/AGENTS.md`](src/providers/AGENTS.md) |
+| 48 | ✓ | [`src/providers/CLAUDE.md`](src/providers/CLAUDE.md) |
+| 49 | ✓ | [`src/redteam/AGENTS.md`](src/redteam/AGENTS.md) |
+| 50 | ✓ | [`src/redteam/CLAUDE.md`](src/redteam/CLAUDE.md) |
+| 51 | ✓ | [`src/redteam/plugins/AGENTS.md`](src/redteam/plugins/AGENTS.md) |
+| 52 | ✓ | [`src/scheduler/AGENTS.md`](src/scheduler/AGENTS.md) |
+| 53 | ✓ | [`src/server/AGENTS.md`](src/server/AGENTS.md) |
+| 54 | ✓ | [`src/server/CLAUDE.md`](src/server/CLAUDE.md) |
+| 55 | ✓ | [`src/tracing/AGENTS.md`](src/tracing/AGENTS.md) |
+| 56 | ✓ | [`src/types/AGENTS.md`](src/types/AGENTS.md) |
+| 57 | ✓ | [`src/util/AGENTS.md`](src/util/AGENTS.md) |
+| 58 | ✓ | [`src/validators/AGENTS.md`](src/validators/AGENTS.md) |
+| 59 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 60 | ✓ | [`test/agentSkills/AGENTS.md`](test/agentSkills/AGENTS.md) |
+| 61 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
+| 62 | ✓ | [`test/fixtures/agent-skills/AGENTS.md`](test/fixtures/agent-skills/AGENTS.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `google-gemini/gemini-cli` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
+Mirror of `google-gemini/gemini-cli` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `google-gemini/gemini-cli` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 33 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -82,16 +82,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | ✓ | [`packages/cli/GEMINI.md`](packages/cli/GEMINI.md) |
 | 22 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/greeter/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/greeter/SKILL.md) |
 | 23 | ✓ | [`packages/core/GEMINI.md`](packages/core/GEMINI.md) |
-| 24 | ✓ | [`packages/core/src/skills/builtin/skill-creator/SKILL.md`](packages/core/src/skills/builtin/skill-creator/SKILL.md) |
-| 25 | ✓ | [`packages/devtools/GEMINI.md`](packages/devtools/GEMINI.md) |
-| 26 | ✓ | [`packages/sdk/GEMINI.md`](packages/sdk/GEMINI.md) |
-| 27 | ✓ | [`packages/sdk/test-data/skills/pirate-skill/SKILL.md`](packages/sdk/test-data/skills/pirate-skill/SKILL.md) |
-| 28 | ✓ | [`packages/test-utils/GEMINI.md`](packages/test-utils/GEMINI.md) |
-| 29 | ✓ | [`packages/vscode-ide-companion/GEMINI.md`](packages/vscode-ide-companion/GEMINI.md) |
-| 30 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/critique/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/critique/SKILL.md) |
-| 31 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/memory/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/memory/SKILL.md) |
-| 32 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/metrics/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/metrics/SKILL.md) |
-| 33 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/prs/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/prs/SKILL.md) |
+| 24 | ✓ | [`packages/core/src/skills/builtin/antigravity-support/SKILL.md`](packages/core/src/skills/builtin/antigravity-support/SKILL.md) |
+| 25 | ✓ | [`packages/core/src/skills/builtin/skill-creator/SKILL.md`](packages/core/src/skills/builtin/skill-creator/SKILL.md) |
+| 26 | ✓ | [`packages/devtools/GEMINI.md`](packages/devtools/GEMINI.md) |
+| 27 | ✓ | [`packages/sdk/GEMINI.md`](packages/sdk/GEMINI.md) |
+| 28 | ✓ | [`packages/sdk/test-data/skills/pirate-skill/SKILL.md`](packages/sdk/test-data/skills/pirate-skill/SKILL.md) |
+| 29 | ✓ | [`packages/test-utils/GEMINI.md`](packages/test-utils/GEMINI.md) |
+| 30 | ✓ | [`packages/vscode-ide-companion/GEMINI.md`](packages/vscode-ide-companion/GEMINI.md) |
+| 31 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/critique/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/critique/SKILL.md) |
+| 32 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/memory/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/memory/SKILL.md) |
+| 33 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/metrics/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/metrics/SKILL.md) |
+| 34 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/prs/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/prs/SKILL.md) |
 
 ---
 

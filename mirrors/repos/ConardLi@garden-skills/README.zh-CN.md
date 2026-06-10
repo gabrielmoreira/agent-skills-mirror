@@ -11,7 +11,7 @@
 <td width="50%" valign="top">
 <a href="#web-video-presentation"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-video-presentation-skill.webp" alt="Web Video Presentation Skill" width="100%"></a>
 <br/><a href="#web-video-presentation"><strong>web-video-presentation</strong></a>
-<br/><sub>网页视频 / 演示工程</sub>
+<br/><sub>网页视频 / 演示</sub>
 </td>
 <td width="50%" valign="top">
 <a href="#web-design-engineer"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/web-design-skill.webp" alt="Web Design Skill" width="100%"></a>
@@ -26,9 +26,9 @@
 <br/><sub>图像生成 / Prompt</sub>
 </td>
 <td width="50%" valign="top">
-<a href="#kb-retriever"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/kb-retriever-skill.webp" alt="KB Retriever Skill" width="100%"></a>
-<br/><a href="#kb-retriever"><strong>kb-retriever</strong></a>
-<br/><sub>本地知识库检索</sub>
+<a href="#beautiful-article"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/banner.webp" alt="Beautiful Article Skill" width="100%"></a>
+<br/><a href="#beautiful-article"><strong>beautiful-article</strong></a>
+<br/><sub>任意素材 → 一篇精美的文章</sub>
 </td>
 </tr>
 </table>
@@ -36,7 +36,7 @@
 [![License: MIT](https://img.shields.io/github/license/ConardLi/garden-skills?style=flat-square&color=blue)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/ConardLi/garden-skills?style=flat-square)](https://github.com/ConardLi/garden-skills/stargazers)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](#贡献)
-[![Skills count](https://img.shields.io/badge/skills-4-orange?style=flat-square)](#skills-gallery)
+[![Skills count](https://img.shields.io/badge/skills-5-orange?style=flat-square)](#skills-gallery)
 [![Spec](https://img.shields.io/badge/spec-SKILL.md-black?style=flat-square)](https://agentskills.io)
 
 [English](./README.md) · [中文文档](./README.zh-CN.md) · [日本語](./README.ja-JP.md)
@@ -85,7 +85,7 @@
 
 <sub>↑ 23 套主题一览 —— <a href="./skills/web-video-presentation/README.zh-CN.md#主题画廊"><b>打开完整画廊</b></a>，含真实预览图、设计签名与适合场景标签。</sub>
 
-链接：[README](./skills/web-video-presentation/README.zh-CN.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md) · <!-- DOWNLOAD:web-video-presentation:start -->[下载 v1.2.1 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-video-presentation-v1.2.1/web-video-presentation-1.2.1.zip)<!-- DOWNLOAD:web-video-presentation:end -->
+链接：[README](./skills/web-video-presentation/README.zh-CN.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md) · <!-- DOWNLOAD:web-video-presentation:start -->[下载 v1.2.2 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-video-presentation-v1.2.2/web-video-presentation-1.2.2.zip)<!-- DOWNLOAD:web-video-presentation:end -->
 
 ---
 
@@ -130,7 +130,7 @@
 
 <sub>↑ 25 套有 anchor 的配方里挑出最具代表性的 12 套 —— <a href="./skills/web-design-engineer/README.zh-CN.md#风格配方画廊"><b>打开完整画廊</b></a>，含全部 25 个真实作品（药剂师页、交易工作站、杂志封面、Y2K 门户、Mid-Century 海报……），含签名手法与适合场景标签。</sub>
 
-链接：[README](./skills/web-design-engineer/README.zh-CN.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[下载 v1.2.1 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.2.1/web-design-engineer-1.2.1.zip)<!-- DOWNLOAD:web-design-engineer:end -->
+链接：[README](./skills/web-design-engineer/README.zh-CN.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[下载 v1.2.2 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.2.2/web-design-engineer-1.2.2.zip)<!-- DOWNLOAD:web-design-engineer:end -->
 
 ---
 
@@ -224,7 +224,7 @@
 
 <sub>↑ 从 160+ 公开案例库里挑出的 12 个精选入口 —— <a href="./skills/gpt-image-2/README.zh-CN.md#案例画廊"><b>打开 Skill 案例画廊</b></a> 查看更多模板，也可以直接浏览 <a href="https://gpt-image2.mmh1.top/#/case">线上案例站</a>。</sub>
 
-链接：[README](./skills/gpt-image-2/README.zh-CN.md) · [SKILL.md](./skills/gpt-image-2/SKILL.md) · [Website](./website/gpt-image2-website) · <!-- DOWNLOAD:gpt-image-2:start -->[下载 v1.0.3 .zip](https://github.com/ConardLi/garden-skills/releases/download/gpt-image-2-v1.0.3/gpt-image-2-1.0.3.zip)<!-- DOWNLOAD:gpt-image-2:end -->
+链接：[README](./skills/gpt-image-2/README.zh-CN.md) · [SKILL.md](./skills/gpt-image-2/SKILL.md) · [Website](./website/gpt-image2-website) · <!-- DOWNLOAD:gpt-image-2:start -->[下载 v1.0.4 .zip](https://github.com/ConardLi/garden-skills/releases/download/gpt-image-2-v1.0.4/gpt-image-2-1.0.4.zip)<!-- DOWNLOAD:gpt-image-2:end -->
 
 ---
 
@@ -245,7 +245,46 @@
 - 最多 5 轮检索，让探索过程有边界
 - 内置 `grep`、`pdftotext`、`pdfplumber`、`pandas` 工作流，并强调答案来源
 
-链接：[README](./skills/kb-retriever/README.zh-CN.md) · [SKILL.md](./skills/kb-retriever/SKILL.md) · <!-- DOWNLOAD:kb-retriever:start -->[下载 v1.0.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/kb-retriever-v1.0.0/kb-retriever-1.0.0.zip)<!-- DOWNLOAD:kb-retriever:end -->
+链接：[README](./skills/kb-retriever/README.zh-CN.md) · [SKILL.md](./skills/kb-retriever/SKILL.md) · <!-- DOWNLOAD:kb-retriever:start -->[下载 v1.0.1 .zip](https://github.com/ConardLi/garden-skills/releases/download/kb-retriever-v1.0.1/kb-retriever-1.0.1.zip)<!-- DOWNLOAD:kb-retriever:end -->
+
+---
+
+### [`beautiful-article`](./skills/beautiful-article)
+
+![Beautiful Article Skill](https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/banner.webp)
+
+**类别：** 编辑 · 任意素材 → 一篇精美的文章  
+**适合：** 把 URL / PDF / DOCX / Markdown / 纯文本 / 截图 / 粘贴材料编辑成一篇**比原文更易读、更便于分享和归档的精美文章** —— 长文、briefing、解释文、教程、复盘、视觉随笔、对话访谈转写。
+
+`beautiful-article` 是一个编辑型 harness Skill：它不只是"做个网页"，而是把素材编辑、设计成一篇比原文更易读、更便于分享和归档的精美文章。整个 Skill 走一个 `source → plan → 双确认 → 生成 → 终审 → 修复` 小型流程，并在 3 个硬 checkpoint 暂停，让用户掌握文章类型 / 主题 / 版式 / 配图策略 / 封面 / 交付格式的最终控制权。
+
+亮点：
+
+- **首先是一篇文章** —— 注意力永远在"文章"本身：更好的阅读、更好的节奏、更好的美学。交付物是一份自包含的文件（HTML，可选 PDF），但那是交付细节、不是目标
+- **Reacticle 组件协议** —— prose-first 的语义组件（Hero / Lead / Section / Quote / Callout / Image / Formula / CodeBlock / Table…）+ 仅允许主题 token 的 `Raw` 自由层
+- **10 种文章类型 + 推荐保留比例打包** —— `longform · ~100%` / `tutorial · ~90%` / `full-report · ~80%` / `explainer · ~80%` / `dialogue · ~80%` / `review · ~70%` / `essay · ~70%` / `briefing · ~50%` / `visual-essay · ~40%` / `interactive-explainer · ~25% 摘录 + 75% AI 重构`
+- **11 套主题 authoring profile**（`tufte`、`press`、`bayer`、`bodoni`、`vignelli`、`sottsass`、`freddie`、`andy`、`fuller`、`knuth`、`shannon`）—— 每套是给 Agent 看的 Markdown 契约，不是 CSS 文件
+- **硬协作 checkpoint**，每项决策独立确认（禁止静默替用户选择），自带 3:4 书封封面、TOC 默认开、目标语言地道翻译
+- **分节点质检协议** —— Plan 主 Agent 内联自查、First Spread / Section / Final 用 sub-agent reviewer，修复走最小切片
+
+#### 主题预览
+
+<table>
+<tr>
+<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/tufte.webp" alt="tufte" width="100%"><br/><sub><b>tufte</b></sub></td>
+<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/press.webp" alt="press" width="100%"><br/><sub><b>press</b></sub></td>
+<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/bayer.webp" alt="bayer" width="100%"><br/><sub><b>bayer</b></sub></td>
+<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/bodoni.webp" alt="bodoni" width="100%"><br/><sub><b>bodoni</b></sub></td>
+</tr>
+<tr>
+<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/vignell.webp" alt="vignelli" width="100%"><br/><sub><b>vignelli</b></sub></td>
+<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/sottsass.webp" alt="sottsass" width="100%"><br/><sub><b>sottsass</b></sub></td>
+<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/freddie.webp" alt="freddie" width="100%"><br/><sub><b>freddie</b></sub></td>
+<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/andy.webp" alt="andy" width="100%"><br/><sub><b>andy</b></sub></td>
+</tr>
+</table>
+
+链接：[README](./skills/beautiful-article/README.zh-CN.md) · [SKILL.md](./skills/beautiful-article/SKILL.md) · <!-- DOWNLOAD:beautiful-article:start -->[下载 v0.1.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/beautiful-article-v0.1.0/beautiful-article-0.1.0.zip)<!-- DOWNLOAD:beautiful-article:end -->
 
 ---
 

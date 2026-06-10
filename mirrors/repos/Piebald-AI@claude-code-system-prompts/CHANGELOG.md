@@ -4,6 +4,24 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.170](https://github.com/Piebald-AI/claude-code-system-prompts/commit/7eea5bb)
+
+_+415 tokens_
+
+- **REMOVED:** Data: Superseded message UUID protocol note — Removes the internal refusal-fallback supersede protocol note about replacing previously delivered messages.
+- **REMOVED:** Data: Supported dialog kinds protocol note — Removes the internal request-user-dialog kind negotiation protocol note.
+- Data: Claude API reference — cURL — Adds Fable 5 to adaptive-thinking guidance and marks `budget_tokens` as removed for Fable 5.
+- Data: Claude API reference — Go — Adds the `anthropic.ModelClaudeFable5` SDK constant and tells agents to use it when users request Fable or the most powerful model.
+- Data: Claude API reference — Python — Adds Fable 5 to adaptive-thinking and server-side compaction guidance.
+- Data: Claude API reference — TypeScript — Adds Fable 5 to adaptive-thinking and server-side compaction guidance.
+- Data: Claude model catalog — Adds Claude Fable 5 as the new most-powerful model tier with 1M context, 128K max output, pricing, routing rules, and the Fable-specific `thinking: {type: "disabled"}` breaking change.
+- Data: HTTP error codes reference — Adds Fable 5 to model-specific 400 guidance for removed sampling and budget parameters, including its explicit disabled-thinking error.
+- Data: Prompt Caching — Design & Optimization — Updates prompt-caching minimum-token guidance to list Fable 5 in the 2048-token tier.
+- Data: Streaming reference — Python — Adds Fable 5 to adaptive-thinking streaming guidance.
+- Data: Streaming reference — TypeScript — Adds Fable 5 to adaptive-thinking streaming guidance.
+- Data: Tool use concepts — Adds Fable 5 to dynamic filtering and structured-output supported-model guidance.
+- Skill: Building LLM-powered applications with Claude — Adds Fable 5 model selection, pricing, adaptive-thinking, effort, task-budget, compaction, prefill, output-token, migration, and tool-call parsing guidance.
+
 # [2.1.169](https://github.com/Piebald-AI/claude-code-system-prompts/commit/06bfbc6)
 
 _+27,944 tokens_

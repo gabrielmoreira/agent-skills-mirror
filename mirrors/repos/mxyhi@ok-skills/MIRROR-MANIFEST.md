@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 62 file(s) materialized.
+Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 63 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 62 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 62 |
+| Files         | 63 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -121,6 +121,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 60 | ✓ | [`tdd/refactoring.md`](tdd/refactoring.md) |
 | 61 | ✓ | [`tdd/SKILL.md`](tdd/SKILL.md) |
 | 62 | ✓ | [`tdd/tests.md`](tdd/tests.md) |
+| 63 | ✓ | [`text-to-lottie/SKILL.md`](text-to-lottie/SKILL.md) |
 
 ---
 

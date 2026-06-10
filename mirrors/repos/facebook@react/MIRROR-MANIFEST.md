@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `facebook/react` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `facebook/react` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `facebook/react` — 26 default patterns, 0 followed patterns, 9 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,7 +67,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`.claude/skills/test/SKILL.md`](.claude/skills/test/SKILL.md) |
 | 7 | ✓ | [`.claude/skills/verify/SKILL.md`](.claude/skills/verify/SKILL.md) |
 | 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 9 | ✓ | [`compiler/CLAUDE.md`](compiler/CLAUDE.md) |
+| 9 | ✓ | [`compiler/.claude/skills/compiler-commit/SKILL.md`](compiler/.claude/skills/compiler-commit/SKILL.md) |
+| 10 | ✓ | [`compiler/.claude/skills/compiler-orchestrator/SKILL.md`](compiler/.claude/skills/compiler-orchestrator/SKILL.md) |
+| 11 | ✓ | [`compiler/.claude/skills/compiler-port/SKILL.md`](compiler/.claude/skills/compiler-port/SKILL.md) |
+| 12 | ✓ | [`compiler/.claude/skills/compiler-review/SKILL.md`](compiler/.claude/skills/compiler-review/SKILL.md) |
+| 13 | ✓ | [`compiler/.claude/skills/compiler-verify/SKILL.md`](compiler/.claude/skills/compiler-verify/SKILL.md) |
+| 14 | ✓ | [`compiler/.claude/skills/plan-update/SKILL.md`](compiler/.claude/skills/plan-update/SKILL.md) |
+| 15 | ✓ | [`compiler/.claude/skills/rust-port-status/SKILL.md`](compiler/.claude/skills/rust-port-status/SKILL.md) |
+| 16 | ✓ | [`compiler/CLAUDE.md`](compiler/CLAUDE.md) |
 
 ---
 

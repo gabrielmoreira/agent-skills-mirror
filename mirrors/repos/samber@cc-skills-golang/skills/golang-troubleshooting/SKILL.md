@@ -31,6 +31,7 @@ allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(g
 - **Codebase bug hunt** (explicit audit of a large codebase): Launch up to 5 parallel sub-agents, one per bug category (nil/interface, resources, error handling, races, context/slice/map). Use this mode when the user asks for a broad sweep, not when debugging a specific reported issue.
 
 **Dependencies:**
+
 - dlv: `go install github.com/go-delve/delve/cmd/dlv@latest`
 
 # Go Troubleshooting Guide

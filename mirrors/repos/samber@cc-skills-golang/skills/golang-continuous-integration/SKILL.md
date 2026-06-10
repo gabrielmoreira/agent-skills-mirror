@@ -36,6 +36,7 @@ allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(g
 - **Improve** — auditing or extending an existing pipeline: read current workflow files first, identify gaps against the Quick Reference table, then propose targeted additions without duplicating existing steps.
 
 **Dependencies:**
+
 - goreleaser: `go install github.com/goreleaser/goreleaser/v2@latest`
 - gh: `brew install gh`
 

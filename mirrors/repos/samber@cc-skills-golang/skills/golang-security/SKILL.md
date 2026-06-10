@@ -32,6 +32,7 @@ allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(g
 - **Coding mode** — use when writing new code or fixing a reported vulnerability. Follow the skill's sequential guidance. Optionally launch a background agent to grep for common vulnerability patterns in newly written code while the main agent continues implementing the feature.
 
 **Dependencies:**
+
 - govulncheck: `go install golang.org/x/vuln/cmd/govulncheck@latest`
 
 # Go Security

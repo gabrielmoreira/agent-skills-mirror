@@ -24,19 +24,22 @@
 
 1. **始终使用中文** - 回复、文档、代码注释默认使用中文；若文件已有其他注释语言，保持与现有代码库一致
 2. **先读后写** - 修改文件前先读现状和相邻边界
-3. **避免无关变更** - 不顺手重构、不扩大范围、不主动做 git 提交或分支操作
-4. **默认双平台** - 新增功能、脚本、路径处理默认同时考虑 macOS 与 Windows
-5. **禁止硬编码平台路径** - 用户数据、日志、缓存、凭证等目录必须走系统 API 或统一封装
-6. **优先平台无关入口** - 优先复用 `npm`、`cargo`、Electron / App Server 命令和仓库脚本，不新增只适用于 Bash/zsh 的流程
-7. **未验证的平台假设要显式说明** - 涉及文件系统、进程、终端、快捷键、窗口、托盘、权限时尤其如此
-8. **新增命名禁止品牌前缀** - 新程序、目录、crate/package、Electron IPC channel、App Server 方法、API 网关、类型、模块和脚本默认不得添加 `Lime` / `lime_` / `lime-` 品牌前缀；直接使用领域名，如 `app_server_*`、`app-server`。只有对外发布品牌标识、历史兼容或第三方生态已固定命名时才允许保留，并在执行计划说明原因
-9. **`scripts/` 根目录冻结** - `scripts/` 根目录是历史入口区，不再作为新增脚本默认落点；新增可执行脚本默认放到 `scripts/<domain>/`、`scripts/lib/` 或所属 package，并通过 `npm run governance:scripts` 守住根目录基线。只有公开稳定入口且无法归入领域子目录时才允许例外，必须同步 `scripts/README.md`、`scripts/script-root-governance-baseline.json` 和执行计划退出条件
-10. **新增 Agent 逻辑默认走 App Server** - 新 AI Agent、runtime、host integration、跨 App 复用能力默认落到 `app-server` crates、JSON-RPC 协议、client 与 RuntimeCore；Electron 只作为 Desktop Host bridge，负责 IPC、窗口、托盘、Dock、updater 和 sidecar 生命周期，不是第二套后端或业务 adapter；`agent_runtime_*` / Aster 旧命令只作为 Desktop 兼容 facade，不再直接承接新业务逻辑，除非执行计划明确说明过渡原因和退出条件
-11. **`lime-rs/src/commands/**` 只做旧 Tauri wrapper 删除清理** - 该目录不再承接新的业务逻辑、API adapter、runtime 分支、领域服务实现、compat wrapper 或退场 stub；允许触碰的场景只剩删除旧 wrapper、撤 runner / dispatcher / catalog / mock 注册后的机械编译修复，或记录无法删除的 blocker。新增 Rust 后端能力必须落到 App Server crates / RuntimeCore / services 等 current 事实源；桌面壳能力落到 Electron Desktop Host
-12. **Electron 打包事实源统一 Forge** - Electron packaging / installer / signing / notarization / updater metadata 的 current 配置只允许走 `forge.config.mjs`、`electron-forge package`、`electron-forge make` 与 Forge 官方 maker；运行时更新只允许走 `electron/updateHost.ts` + Electron 内置 `autoUpdater`。旧 builder 配置 / CLI、自定义 Windows installer maker、旧 YAML / blockmap updater metadata 均按 `dead` 处理，不得新增引用或写回文档、CI、守卫、i18n evidence；Windows current installer 为 Forge Squirrel，macOS current updater metadata 为 `RELEASES.json`，Windows current updater metadata 为 `RELEASES`。
-13. **不要继续扩展 compat / deprecated 路径** - 新 API、新命令、新前端入口默认落在当前 `current` 主路径
-14. **规划改了且明确无需兼容时，优先删旧实现** - 如果用户已明确“上一版无人使用 / 不用兼容 / 旧实现阻碍主线”，旧实现默认按 `dead` 或带退出条件的 `deprecated` 处理，不要继续修补、包裹或平移
-15. **`legacy current reference` 不是续命许可** - 旧路线图、旧实现锚点只用于理解现状与迁移，不等于允许继续往旧页面、旧命令、旧协议上加功能
+3. **代码体量边界** - 非生成代码文件接近 `800` 行进入拆分预警，超过 `1000` 行时触碰前必须按领域 / 职责 / 数据边界 / 协议边界拆分；优先复用项目已有模块化模式，如 facade + 子模块、service / repository 分层、projection / selector / helper 分离。无法本轮拆分时，必须在执行计划登记 blocker、风险、退出条件和下一次拆分入口，不得继续追加新业务逻辑
+4. **避免无关变更** - 不顺手重构、不扩大范围、不主动做 git 提交或分支操作
+5. **默认双平台** - 新增功能、脚本、路径处理默认同时考虑 macOS 与 Windows
+6. **禁止硬编码平台路径** - 用户数据、日志、缓存、凭证等目录必须走系统 API 或统一封装
+7. **优先平台无关入口** - 优先复用 `npm`、`cargo`、Electron / App Server 命令和仓库脚本，不新增只适用于 Bash/zsh 的流程
+8. **未验证的平台假设要显式说明** - 涉及文件系统、进程、终端、快捷键、窗口、托盘、权限时尤其如此
+9. **新增命名禁止品牌前缀** - 新程序、目录、crate/package、Electron IPC channel、App Server 方法、API 网关、类型、模块和脚本默认不得添加 `Lime` / `lime_` / `lime-` 品牌前缀；直接使用领域名，如 `app_server_*`、`app-server`。只有对外发布品牌标识、历史兼容或第三方生态已固定命名时才允许保留，并在执行计划说明原因
+10. **`scripts/` 根目录冻结** - `scripts/` 根目录是历史入口区，不再作为新增脚本默认落点；新增可执行脚本默认放到 `scripts/<domain>/`、`scripts/lib/` 或所属 package，并通过 `npm run governance:scripts` 守住根目录基线。只有公开稳定入口且无法归入领域子目录时才允许例外，必须同步 `scripts/README.md`、`scripts/script-root-governance-baseline.json` 和执行计划退出条件
+11. **新增 Agent 逻辑默认走 App Server** - 新 AI Agent、runtime、host integration、跨 App 复用能力默认落到 `app-server` crates、JSON-RPC 协议、client 与 RuntimeCore；Electron 只作为 Desktop Host bridge，负责 IPC、窗口、托盘、Dock、updater 和 sidecar 生命周期，不是第二套后端或业务 adapter；`agent_runtime_*` / Aster 旧命令只作为 Desktop 兼容 facade，不再直接承接新业务逻辑，除非执行计划明确说明过渡原因和退出条件
+12. **`lime-rs/src/**` 逐步收缩到 crates** - `lime-rs/src/**` 是旧主 crate、启动/注册、legacy facade 和迁移来源区，不再作为业务逻辑、领域服务、runtime 分支、API adapter、数据访问或跨 App 复用能力的长期 owner；触碰其中逻辑时，默认优先迁到 `lime-rs/crates/**` 的 App Server、RuntimeCore、services、core、agent 或协议/client crate，桌面壳能力迁到 Electron Desktop Host。只能保留必要 bootstrap / runner 接线、compat facade 委托、撤注册机械修复和带退出条件的 blocker 记录
+13. **旧 Tauri wrapper 删除清理** - `lime-rs/src/commands/**` 该目录不再承接新的业务逻辑、API adapter、runtime 分支、领域服务实现、compat wrapper 或退场 stub；允许触碰的场景只剩删除旧 wrapper、撤 runner / dispatcher / catalog / mock 注册后的机械编译修复，或记录无法删除的 blocker。新增 Rust 后端能力必须落到 App Server crates / RuntimeCore / services 等 current 事实源；桌面壳能力落到 Electron Desktop Host
+14. **前端 DevBridge 按职责治理** - `src/lib/dev-bridge/**` 不是整体删除对象：`safeInvoke`、HTTP client、`app_server_handle_json_lines`、bridge availability / event listener capability 是 current renderer bridge；`commandPolicy` 中旧命令 truth / no-mock fallback 是迁移期 `compat / deprecated`；已迁旧命令名只能进入 `dead` / `test-only` guard。后续治理优先收缩 policy、mock、fallback、负向测试和 contract guard，不得为清旧命令误删 current App Server 传输链；删不动且会跨命令组长期存在的 residual 必须回挂 `internal/exec-plans/tech-debt-tracker.md` 的 `CCD-012`
+15. **Electron 打包事实源统一 Forge** - Electron packaging / installer / signing / notarization / updater metadata 的 current 配置只允许走 `forge.config.mjs`、`electron-forge package`、`electron-forge make` 与 Forge 官方 maker；运行时更新只允许走 `electron/updateHost.ts` + Electron 内置 `autoUpdater`。旧 builder 配置 / CLI、自定义 Windows installer maker、旧 YAML / blockmap updater metadata 均按 `dead` 处理，不得新增引用或写回文档、CI、守卫、i18n evidence；Windows current installer 为 Forge Squirrel，macOS current updater metadata 为 `RELEASES.json`，Windows current updater metadata 为 `RELEASES`。
+16. **不要继续扩展 compat / deprecated 路径** - 新 API、新命令、新前端入口默认落在当前 `current` 主路径
+17. **规划改了且明确无需兼容时，优先删旧实现** - 如果用户已明确“上一版无人使用 / 不用兼容 / 旧实现阻碍主线”，旧实现默认按 `dead` 或带退出条件的 `deprecated` 处理，不要继续修补、包裹或平移
+18. **`legacy current reference` 不是续命许可** - 旧路线图、旧实现锚点只用于理解现状与迁移，不等于允许继续往旧页面、旧命令、旧协议上加功能
 
 ## 工程硬规则
 
@@ -51,7 +54,7 @@
 9. **前端新代码先守住测试分层** - 新增或重写复杂 UI / hook 逻辑时，先抽到 View Model / projection / selector / reducer 并用 `*.unit.test.ts` 覆盖；`*.test.tsx` / component 测试只保留渲染、事件接线和少量关键回归。禁止把业务状态机、筛选/分组/格式化、运行时参数拼装等可纯化分支继续塞进 React 挂载测试；确实不能纯化时，必须在对应路线图或执行计划说明原因、风险层级和验证入口
 10. **用户可见文案必须全球本地化** - 新增或改动的按钮、标题、空态、toast、confirm、prompt、placeholder、aria/title、错误提示、导出 Markdown / copy prompt / artifact title 等 presentation 文案，必须覆盖 Lime current 五语言 `zh-CN / zh-TW / en-US / ja-JP / ko-KR`；前端走 key-based resources，Rust / Electron host / App Server 导出走 locale copy service；禁止只做中文 / 英文双语兜底，除非路线图明确写出临时例外和退出条件
 11. **配置与依赖改动要成组更新** - schema、校验器、消费者、文档、锁文件保持同步
-12. **Rust 变更先小测后全量** - 先跑受影响 crate / 模块 / 定向测试；新增模块尽量控制在 `500 LoC` 内，文件接近 `800 LoC` 时优先拆新模块
+12. **Rust 变更先小测后全量** - 先跑受影响 crate / 模块 / 定向测试；新增模块尽量控制在 `500 LoC` 内，文件接近 `800 LoC` 时优先拆新模块；Rust 文件超过 `1000` 行时同样遵守基础约束中的代码体量边界
 13. **Rust 构建必须走 workspace manifest** - 在仓库根运行 Rust 校验必须带 `--manifest-path "lime-rs/Cargo.toml"`，或先 `cd lime-rs`；禁止直接 `rustc lime-rs/src/*.rs` 编译 Lime 主 crate，避免绕过 workspace 依赖导致 `can't find crate for lime_*` 误报
 14. **Harness Engine 只认单一事实源** - handoff / evidence / replay / analysis / review / GUI 统一消费 `agent_runtime_export_evidence_pack`；`requestTelemetry` 需要按 `session/thread/turn` 真实关联导出，无匹配请求时输出空摘要，不再保留伪 `unlinked`
 

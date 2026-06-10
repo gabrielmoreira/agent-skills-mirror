@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Hao0321/ai-media-generator` — 26 default patterns, 40 followed patterns, 45 file(s) materialized.
+Mirror of `Hao0321/ai-media-generator` — 26 default patterns, 41 followed patterns, 46 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Hao0321/ai-media-generator` — 26 default patterns, 40 followed patt
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 40 |
-| Files         | 45 |
+| Followed pats | 41 |
+| Files         | 46 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,6 +80,7 @@ Mirror of `Hao0321/ai-media-generator` — 26 default patterns, 40 followed patt
 - `references/camera-language.md`
 - `references/concept-first-prompting.md`
 - `references/quality-control.md`
+- `references/multimodel-video-cheatsheet.md`
 - `references/proven-prompts.md`
 - `templates/advanced-recipes.md`
 - `templates/asset-library.md`
@@ -120,29 +121,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | → | [`references/kling.md`](references/kling.md) |
 | 21 | → | [`references/midjourney.md`](references/midjourney.md) |
 | 22 | → | [`references/model-picker.md`](references/model-picker.md) |
-| 23 | → | [`references/oiioii.md`](references/oiioii.md) |
-| 24 | → | [`references/proven-prompts.md`](references/proven-prompts.md) |
-| 25 | → | [`references/quality-control.md`](references/quality-control.md) |
-| 26 | → | [`references/runway.md`](references/runway.md) |
-| 27 | → | [`references/seedance.md`](references/seedance.md) |
-| 28 | → | [`references/seedream.md`](references/seedream.md) |
-| 29 | → | [`references/selector.md`](references/selector.md) |
-| 30 | → | [`references/sora.md`](references/sora.md) |
-| 31 | → | [`references/sound-design.md`](references/sound-design.md) |
-| 32 | → | [`references/stable-diffusion.md`](references/stable-diffusion.md) |
-| 33 | → | [`references/suno.md`](references/suno.md) |
-| 34 | → | [`references/veo.md`](references/veo.md) |
-| 35 | → | [`references/vfx-effects.md`](references/vfx-effects.md) |
-| 36 | → | [`references/vidu.md`](references/vidu.md) |
-| 37 | → | [`templates/advanced-recipes.md`](templates/advanced-recipes.md) |
-| 38 | → | [`templates/asset-library.md`](templates/asset-library.md) |
-| 39 | → | [`templates/auto-pilot.md`](templates/auto-pilot.md) |
-| 40 | → | [`templates/music-video.md`](templates/music-video.md) |
-| 41 | → | [`templates/negative-bank.md`](templates/negative-bank.md) |
-| 42 | → | [`templates/preset-packs.md`](templates/preset-packs.md) |
-| 43 | → | [`templates/storyboard.md`](templates/storyboard.md) |
-| 44 | → | [`templates/token-efficient-mode.md`](templates/token-efficient-mode.md) |
-| 45 | → | [`templates/user-flags.md`](templates/user-flags.md) |
+| 23 | → | [`references/multimodel-video-cheatsheet.md`](references/multimodel-video-cheatsheet.md) |
+| 24 | → | [`references/oiioii.md`](references/oiioii.md) |
+| 25 | → | [`references/proven-prompts.md`](references/proven-prompts.md) |
+| 26 | → | [`references/quality-control.md`](references/quality-control.md) |
+| 27 | → | [`references/runway.md`](references/runway.md) |
+| 28 | → | [`references/seedance.md`](references/seedance.md) |
+| 29 | → | [`references/seedream.md`](references/seedream.md) |
+| 30 | → | [`references/selector.md`](references/selector.md) |
+| 31 | → | [`references/sora.md`](references/sora.md) |
+| 32 | → | [`references/sound-design.md`](references/sound-design.md) |
+| 33 | → | [`references/stable-diffusion.md`](references/stable-diffusion.md) |
+| 34 | → | [`references/suno.md`](references/suno.md) |
+| 35 | → | [`references/veo.md`](references/veo.md) |
+| 36 | → | [`references/vfx-effects.md`](references/vfx-effects.md) |
+| 37 | → | [`references/vidu.md`](references/vidu.md) |
+| 38 | → | [`templates/advanced-recipes.md`](templates/advanced-recipes.md) |
+| 39 | → | [`templates/asset-library.md`](templates/asset-library.md) |
+| 40 | → | [`templates/auto-pilot.md`](templates/auto-pilot.md) |
+| 41 | → | [`templates/music-video.md`](templates/music-video.md) |
+| 42 | → | [`templates/negative-bank.md`](templates/negative-bank.md) |
+| 43 | → | [`templates/preset-packs.md`](templates/preset-packs.md) |
+| 44 | → | [`templates/storyboard.md`](templates/storyboard.md) |
+| 45 | → | [`templates/token-efficient-mode.md`](templates/token-efficient-mode.md) |
+| 46 | → | [`templates/user-flags.md`](templates/user-flags.md) |
 
 ---
 

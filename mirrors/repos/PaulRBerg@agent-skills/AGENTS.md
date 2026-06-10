@@ -7,8 +7,10 @@ Collection of self-contained agent skills for Claude Code, Codex, and compatible
 - `skills/<name>/SKILL.md` is the skill entrypoint.
 - `skills/<name>/references/` contains skill-local reference docs.
 - `skills/<name>/scripts/` contains executable helpers.
+- `skills/<name>/agents/openai.yaml` contains Codex-specific metadata.
 - `skills/<name>/examples/` contains sample files.
 - `skills/<name>/assets/` contains bundled media or other static assets.
+- `.agents/internal-skills/<name>.md` contains repo-private internal skills referenced with `@`.
 - `README.md` lists every skill and stays minimal.
 - `CLAUDE.md` is a symlink to `AGENTS.md`; do not edit it separately.
 
@@ -32,13 +34,28 @@ There is no package manifest or build step. Treat Markdown formatting and skill-
 
 ## Rules
 
-- When asked to create, edit, or remove a skill while the current working directory is this repo, modify the skill under `skills/` here only, not the installed copy under `~/.agents`.
-- When a skill is added or removed, update the skills table in `README.md`.
+- When asked to create, edit, or remove an installable catalog skill while the current working directory is this repo, modify the skill under `skills/` here only, not the installed copy under `~/.agents`.
+- When an installable catalog skill is added or removed, update the skills table in `README.md`.
+- Internal skills are special repo-private runbooks. Place them under `.agents/internal-skills/<name>.md`, not under `skills/`. Do not add them to `README.md`, do not create `agents/openai.yaml`, and do not treat them as installable catalog skills.
 - Keep skills self-contained. Do not de-duplicate content across skills by extracting shared references or canonical files; users install skills individually.
 - Resolve `references/`, `scripts/`, `examples/`, and `assets/` paths relative to the owning skill directory.
 - Bash scripts must be compatible with Bash v3.2 (`/bin/bash`), because Codex uses the built-in Bash by default.
 - In `SKILL.md` frontmatter, sort fields alphabetically but always place `description` last.
 - Keep generated docs terse, imperative, and expert-to-expert.
+- Never leak personal crypto (EVM) addresses in any skill. Use well-known public addresses (e.g. Multicall3, token contracts) or the standard Etherscan doc example (`0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe`) for examples; never hardcode a real user, maintainer, or personal wallet address. The same applies to private keys, mnemonics, and API keys — reference env-var placeholders (`$ETH_PRIVATE_KEY`), never literal secrets.
+
+## Codex Metadata
+
+Every skill must include `skills/<name>/agents/openai.yaml` with this policy:
+
+```yaml
+policy:
+  allow_implicit_invocation: false
+```
+
+Why: this repo keeps Codex skills explicit-only. The skill set is broad, some skills run side-effect-heavy workflows, and implicit matching can surprise users or crowd the startup context. Users should invoke skills intentionally with `$skill-name` or the skill picker.
+
+How: create an `agents/` directory next to `SKILL.md` and add `openai.yaml` with the policy above. If the file later needs UI metadata or tool dependencies, merge those fields into the same file; do not remove the policy.
 
 ## Skill Frontmatter
 

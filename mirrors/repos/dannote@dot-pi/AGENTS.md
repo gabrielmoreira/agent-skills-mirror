@@ -25,3 +25,24 @@ When adding new extensions, skills, or rules:
 2. Keep tables alphabetically sorted
 3. Include Origin column with link to source if adapted from another project
 4. Commit both the component and README update together
+
+## Native pi Tool Rendering Rules
+
+When adding or changing model-facing tool renderers, follow native pi TUI conventions systematically:
+
+1. Use shared primitives from `extensions/shared/render.ts` instead of ad-hoc `new Text(...)` result styling.
+2. Result blocks start with one leading blank line, but do **not** add blanket left padding. Indent only when the structure needs it.
+3. Use semantic colors:
+   - metadata, paths, counts, hidden-detail text: `meta(...)` / muted
+   - primary output/code/content: `primary(...)` / `toolOutput`
+   - important headings/names: `title(...)` / bold `toolOutput`
+   - additions/removals in diffs: success/error
+4. Do not use raw white text for tool output unless it is intentionally neutral prose from the assistant. Tool result content should be styled.
+5. Human-readable metadata order is left-to-right: subject first, then attributes, e.g. `https://example.com/ · 559 B`, not `(559 B) → url`.
+6. Compact renderers show a summary and a few semantic items only. Raw bodies, long snippets, page text, and full diffs belong in expanded output.
+7. If compact output is lossy, show `(ctrl+o to expand)` as a footer with a blank line before it. Do not show the hint when there is nothing hidden.
+8. Never duplicate state/mode labels. If the call line says `dry-run`, the result body must not also say `DRY RUN`.
+9. Search results should be parsed into semantic rows (`count`, `path:line`, source preview), not dumped as raw command stdout.
+10. AST edit dry-run diffs must render like pi's built-in edit diff style; do not expose ast-grep's pseudo-diff format (`1 1│`, etc.).
+11. Absolute paths should be muted and avoided in compact primary text when a shorter name is sufficient.
+12. After renderer changes, run `bun run check`, `bun run test`, `bun run format:check`, and verify representative cases in tmux/asciinema before claiming the UI is fixed.

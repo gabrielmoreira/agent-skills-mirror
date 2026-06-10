@@ -29,6 +29,7 @@ allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(g
 - **Review mode** — auditing existing gRPC code for correctness, security, and operability issues.
 
 **Dependencies:**
+
 - protoc: `brew install protobuf`
 - protoc-gen-go: `go install google.golang.org/protobuf/cmd/protoc-gen-go@latest`
 - protoc-gen-go-grpc: `go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest`

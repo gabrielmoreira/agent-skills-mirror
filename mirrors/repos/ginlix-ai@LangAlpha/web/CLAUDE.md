@@ -98,7 +98,7 @@ The ChatAgent page has side-by-side panels (ChatView + FilePanel). Their headers
 - **Path alias:** `@` → `src/` (configured in both `vite.config.js` and `vitest.config.js`)
 - **Tests:** Co-located in `__tests__/` subdirectories next to the code they test. Vitest + jsdom + Testing Library + `@testing-library/jest-dom`. Global setup mocks `matchMedia`, `IntersectionObserver`, `ResizeObserver` (`src/test/setup.ts`).
 - **UI primitives:** `components/ui/` has Radix-based primitives (dialog, toast, button, card, etc.) using `class-variance-authority` for variant props.
-- **i18n:** `i18next` + `react-i18next`. Setup in `src/i18n.ts` (cross-tab locale sync via `storage` event). Locale-aware number/date formatting via `createFormatter` / `createDateFormatter` in `src/lib/format.ts` — components MUST also call `useTranslation()` so they re-render on locale switch.
+- **i18n:** `i18next` + `react-i18next`. Setup in `src/i18n.ts`; locale persists in a `locale` cookie (helpers + `isSupported`/`SUPPORTED_LOCALES` in `src/lib/locale.ts`), resolved cookie → browser language → `en-US`. No live cross-tab sync — other tabs adopt a change on next navigation. Locale-aware number/date formatting via `createFormatter` / `createDateFormatter` in `src/lib/format.ts` — components MUST also call `useTranslation()` so they re-render on locale switch.
 - **WebSocket:** Real-time market data via `pages/MarketView/contexts/MarketDataWSContext.tsx`.
 
 ### Env Variables
@@ -110,3 +110,4 @@ The ChatAgent page has side-by-side panels (ChatView + FilePanel). Their headers
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | — | Supabase publishable (anon) key |
 | `VITE_AUTH_USER_ID` | `local-dev-user` | User ID when Supabase auth is disabled |
 | `VITE_CDN_BASE` | `/` | Asset base URL for CDN deployments |
+| `VITE_COOKIE_DOMAIN` | (unset = host-only) | Parent domain for first-party cookies (auth + locale); set to share across subdomains (SSO) |

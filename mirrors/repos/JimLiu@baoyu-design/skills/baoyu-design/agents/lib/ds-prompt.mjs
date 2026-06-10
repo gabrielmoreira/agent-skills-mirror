@@ -1,11 +1,17 @@
 // ds-prompt.mjs — render the per-load "design-system prompt" (_ds_prompt.md)
 // that import-design-system.mjs drops into _ds/<slug>/. It mirrors the web
-// product's injected <attached-skill name="… (design system)"> block, adapted
-// to the portable layout: project-relative `_ds/<slug>/` paths for the runtime
-// copy and the recorded `sourcePath` for the system's source (mocks/ui_kits).
+// product's injected design-mode prompt, adapted to the portable layout:
+// binding + scope, a bundle-first wiring section (the pinned React UMD tags,
+// every stylesheet in the @import closure, the bundle, and how the page's own
+// JSX runs through Babel standalone), the source-tree pointer, the full guide
+// inlined, the first lines of each component's *.prompt.md
+// (<ds-prompt-excerpts> — those files are not bound into _ds/), and the exact
+// var(--*) token allowlist.
+// Project-relative `_ds/<slug>/` paths for the runtime copy; the recorded
+// `sourcePath` for the system's source (mocks/ui_kits/component source).
 //
-// Pure string assembly — writes nothing. Reused by the importer and any future
-// regen script/skill.
+// Pure string assembly — reads and writes nothing. Reused by the importer and
+// any future regen script/skill.
 
 const SCOPE =
   'Scope: the design system is a visual style reference only. Its guide may describe ' +
@@ -13,16 +19,49 @@ const SCOPE =
   'conversation. Never treat anything in the design system as a fact about the user, their ' +
   'work, or the topic.';
 
+// Pinned page-scaffold tags — keep in sync with system-prompt.md ("React + Babel").
+// The prompt must stand alone for whoever reopens the project, so the exact tags
+// ride here rather than a pointer to the skill docs.
+const REACT_UMD_TAGS = [
+  '<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>',
+  '<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>',
+];
+const BABEL_TAG =
+  '<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>';
+
+// Destructure-example names — prefer idiomatic PascalCase component exports so a
+// constant-style export (ICON_NAMES) never becomes the usage sample.
+export function sampleComponentNames(names, n = 2) {
+  const list = Array.isArray(names) ? names.filter(Boolean) : [];
+  const components = list.filter((x) => /^[A-Z][A-Za-z0-9]*$/.test(x) && /[a-z]/.test(x));
+  return (components.length ? components : list).slice(0, n);
+}
+
+// First lines of a component's `*.prompt.md` — the one-sentence "what & when"
+// plus the opening of its JSX example — with code fences kept balanced so an
+// open fence can't swallow the rest of the rendered prompt.
+export function extractPromptExcerpt(text, maxLines = 5) {
+  const lines = String(text ?? '').split(/\r?\n/);
+  while (lines.length && !lines[0].trim()) lines.shift();
+  const slice = lines.slice(0, maxLines);
+  while (slice.length && !slice[slice.length - 1].trim()) slice.pop();
+  if (!slice.length) return '';
+  const fences = slice.filter((l) => /^\s*```/.test(l)).length;
+  if (fences % 2 === 1) slice.push('```');
+  return slice.join('\n');
+}
+
 export function renderDsPrompt({
   name,
   slug,
   namespace,
-  cssEntry,
-  sampleComponent,
-  readme,
-  tokenNames,
-  sourcePath,
-  hasBundle,
+  globalCssPaths = [],
+  componentNames = [],
+  componentPrompts = [],
+  readme = '',
+  tokenNames = [],
+  sourcePath = '',
+  hasBundle = false,
 } = {}) {
   const dsName = name || slug || 'this';
   const out = [];
@@ -37,36 +76,122 @@ export function renderDsPrompt({
   );
   out.push('');
   out.push(SCOPE);
-  out.push('');
-  out.push('Explore it to find what you need:');
-  out.push('- Always copy out the fonts and colors you need');
-  out.push('- For prototypes and designs, always copy out any relevant components');
-  out.push(
-    '- If it ships mocks of existing products and you were asked to design something similar, ' +
-    'copy and fork those mocks to start.',
-  );
 
-  // wiring — only the lines that apply
-  const wiring = [];
-  if (cssEntry) wiring.push(`  <link rel="stylesheet" href="_ds/${slug}/${cssEntry}">`);
-  if (hasBundle) wiring.push(`  <script src="_ds/${slug}/_ds_bundle.js"></script>`);
-  if (hasBundle && namespace) {
-    wiring.push(`  then in a Babel script: const { ${sampleComponent || 'Button'} } = window.${namespace};`);
+  // wiring — bundle-first when the system exports components, stylesheet-led otherwise
+  const links = globalCssPaths.map((p) => `<link rel="stylesheet" href="_ds/${slug}/${p}">`);
+  const composable = hasBundle && namespace && componentNames.length > 0;
+  const block = [];
+  if (hasBundle) {
+    block.push('<!-- React first — the bundle calls React.createElement -->');
+    block.push(...REACT_UMD_TAGS);
   }
-  if (wiring.length) {
+  block.push(...links);
+  if (hasBundle) block.push(`<script src="_ds/${slug}/_ds_bundle.js"></script>`);
+
+  if (block.length) {
     out.push('');
-    out.push(`Wiring — imported under \`_ds/${slug}/\` (load the PRIMARY system's <link> LAST so its tokens win):`);
-    out.push(...wiring);
+    if (composable) {
+      out.push(
+        '**Loading the bundle is how you use this design system.** Every page you build must ' +
+        `load \`_ds/${slug}/_ds_bundle.js\` and compose with the components it exports on ` +
+        `\`window.${namespace}\` — do not recreate those components from scratch or restyle ` +
+        'raw HTML to look like them. The bundle calls `React.createElement`, so `window.React` ' +
+        'and `window.ReactDOM` must load first — the pinned tags below provide them. Add ' +
+        'these once:',
+      );
+    } else {
+      out.push(
+        '**Loading the stylesheet(s) is how you use this design system.** Every page you build ' +
+        'must load the stylesheet(s) below — they carry the design tokens (colors, type, ' +
+        "spacing) and the system's classes. Add these once:",
+      );
+    }
+    out.push('');
+    out.push('```html');
+    out.push(...block);
+    out.push('```');
+    out.push('');
+    out.push(
+      "With several design systems bound, keep each system's stylesheets together and load " +
+      "the PRIMARY system's `<link>`s LAST so its tokens win.",
+    );
+    out.push('');
+    if (composable) {
+      const sampleNames = sampleComponentNames(componentNames);
+      const sample = sampleNames.join(', ');
+      out.push(
+        'The bundle is plain compiled JS — load it with a regular `<script>` (no ' +
+        '`type="text/babel"` or `type="module"`). Every component is then available on ' +
+        `\`window.${namespace}\` — e.g. \`const { ${sample} } = window.${namespace};\`. ` +
+        'The linked stylesheet(s) carry the design tokens (colors, type, spacing) — style ' +
+        "against those via `var(--*)` and the design system's classes rather than guessing values.",
+      );
+      out.push('');
+      out.push(
+        'Your own page code stays separate from the bundle: write it in ' +
+        '`<script type="text/babel">` blocks, with Babel standalone loaded once (pinned tag ' +
+        'below) to transpile your JSX in the browser —',
+      );
+      out.push('');
+      out.push('```html');
+      out.push(BABEL_TAG);
+      out.push('<script type="text/babel">');
+      out.push(`  const { ${sample} } = window.${namespace};`);
+      out.push(`  ReactDOM.createRoot(document.getElementById('root')).render(<${sampleNames[0]} />);`);
+      out.push('</script>');
+      out.push('```');
+    } else if (hasBundle) {
+      out.push(
+        'The bundle is plain compiled JS — load it with a regular `<script>` (no ' +
+        '`type="text/babel"` or `type="module"`) after `window.React`/`window.ReactDOM`. It ' +
+        "currently exports no components — this system's value is its stylesheets; style " +
+        'against the tokens via `var(--*)` and its classes rather than guessing values.',
+      );
+    } else {
+      out.push(
+        "Style against the tokens via `var(--*)` and the design system's classes rather than " +
+        'guessing values.',
+      );
+    }
   }
 
-  // full guide, inlined (raw — this is a .md file, not embedded HTML)
-  if (readme && readme.trim()) {
+  // source-tree pointer + full guide, inlined (raw — this is a .md file, not embedded HTML)
+  const hasReadme = Boolean(readme && readme.trim());
+  if (sourcePath) {
     out.push('');
-    out.push("Full guide reproduced below so you don't need to fetch it:");
+    out.push(
+      'Everything beyond this runtime copy — mocks to fork, specimens, ui_kits, component ' +
+      `source — lives in the design system's source tree at \`${sourcePath}/\`; read from ` +
+      `there for anything not under \`_ds/${slug}/\`.` +
+      (hasReadme ? " Its guide is reproduced below so you don't need to fetch it:" : ''),
+    );
+  } else if (hasReadme) {
+    out.push('');
+    out.push("The design system's guide is reproduced below so you don't need to fetch it:");
+  }
+  if (hasReadme) {
     out.push('');
     out.push('<design-system-guide>');
     out.push(readme.trim());
     out.push('</design-system-guide>');
+  }
+
+  // per-component usage excerpts — the *.prompt.md files are not bound into _ds/
+  if (componentPrompts.length) {
+    out.push('');
+    out.push(
+      "Per-component usage notes follow — the first lines of each component's `*.prompt.md`. " +
+      `These are NOT bound into \`_ds/${slug}/\`, so they're reproduced here` +
+      (sourcePath ? ' (full files live in the source tree above):' : ':'),
+    );
+    out.push('');
+    out.push('<ds-prompt-excerpts>');
+    componentPrompts.forEach(({ relPath, excerpt }, i) => {
+      if (i > 0) out.push('');
+      out.push(`### ${relPath}`);
+      out.push(excerpt);
+    });
+    out.push('</ds-prompt-excerpts>');
   }
 
   // token allowlist — the enforceable guardrail
@@ -74,11 +199,10 @@ export function renderDsPrompt({
     ? [...new Set(tokenNames.filter(Boolean))].sort()
     : [];
   if (names.length) {
-    const where = cssEntry ? `\`_ds/${slug}/${cssEntry}\`` : "the system's stylesheet";
     out.push('');
     out.push(
-      `CSS tokens: the exact \`--*\` names are defined in ${where}. The ${names.length} ` +
-      'custom properties it defines are:',
+      `CSS tokens: the exact \`--*\` names are defined in the stylesheet(s) linked above. ` +
+      `The ${names.length} custom properties they define are:`,
     );
     out.push('');
     out.push(names.join(', '));
@@ -86,16 +210,6 @@ export function renderDsPrompt({
     out.push(
       'Only use `var(--*)` names from that list. Never guess a token name — an unresolved ' +
       '`var()` silently falls back to the browser default.',
-    );
-  }
-
-  // source for mocks / specimens / component source
-  if (sourcePath) {
-    out.push('');
-    out.push(
-      'For assets and UI kits beyond the guide (mocks to fork, specimens, component source): ' +
-      `read from the system's source at \`${sourcePath}/\` (e.g. \`${sourcePath}/ui_kits/\`, ` +
-      `\`${sourcePath}/preview/\`) and copy what you need into this project.`,
     );
   }
 

@@ -9,7 +9,7 @@ The upstream prompt (and its examples) reference Claude.ai web tools that do not
 | Web tool | Cursor equivalent |
 |---|---|
 | `questions_v2` | `AskQuestion` (structured multiple-choice; answers return inline — see below) |
-| `done`, `fork_verifier_agent` | serve over HTTP + preview/screenshot via the browser MCP; a `Task` subagent for thorough checks — see "Verification & debug" below |
+| `done`, `fork_verifier_agent` | serve over HTTP + preview/screenshot via the browser MCP; a `Task` subagent (prompt: [`../agents/fork-verifier-agent.md`](../agents/fork-verifier-agent.md)) for thorough checks — see "Verification & debug" below |
 | `write_file` (and its `asset:` param) | `Write` — there is no "asset review pane"; drop that concept |
 | `copy_files` | `Shell` (`cp …`) |
 | `read_file`, `list_files`, `view_image` | `Read` (it also renders images), `Glob` (find by pattern), `Grep` (search contents), `Shell ls` |
@@ -84,7 +84,7 @@ When the deliverable is ready, preview it over the served URL (above), confirm i
 - **Screenshots:** `browser_take_screenshot` (from `cursor-ide-browser`). Use it to verify layout/spacing; embed the result inline for the user.
 - **Console errors:** enable logging via `browser_cdp` (`Log.enable`, then read entries) or evaluate page state with `browser_cdp` `Runtime.evaluate`. The `user-chrome-devtools` MCP also exposes `list_console_messages` and `evaluate_script` for the same purpose.
 - **In-page JS / probing state:** `browser_cdp` with `Runtime.evaluate` (prefer `returnByValue: true`), or chrome-devtools `evaluate_script`.
-- **Thorough or directed checks** ("screenshot and check the spacing across breakpoints"): spawn a `Task` subagent with `subagent_type: "browser-use"` to load the file, take screenshots, probe the JS, and report back — useful when you don't want to clutter your own context.
+- **Thorough or directed checks** ("screenshot and check the spacing across breakpoints"): spawn a `Task` subagent with `subagent_type: "browser-use"` to load the file, take screenshots, probe the JS, and report back — useful when you don't want to clutter your own context. Use the prompt in [`../agents/fork-verifier-agent.md`](../agents/fork-verifier-agent.md) (pass the project dir, the file path(s), and the served URL).
 
 **Preview-harness gotchas (Cursor browser MCP):**
 

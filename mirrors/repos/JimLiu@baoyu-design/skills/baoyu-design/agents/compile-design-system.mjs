@@ -40,9 +40,10 @@ try {
 
 // --- Babel plugin: strip ESM, keep React/window globals -----------------------
 // The reference sources read deps from globals (`const React = window.React`,
-// `const { Icon } = window.<NS>`) and use no ESM imports. Defensively we also
-// strip react/react-dom imports and rewrite relative imports to read from
-// __ds_scope, so an authored component that *does* use imports still bundles.
+// `const { Icon } = window.<NS>`) and use no ESM imports. Authored components
+// may instead `import React from 'react'` and import siblings with relative
+// paths — we strip react/react-dom imports and rewrite relative imports to
+// read from __ds_scope, so both styles bundle.
 function makeStripPlugin({ types: t }) {
   return {
     visitor: {
@@ -134,8 +135,11 @@ function buildBundle(model) {
       // the bundle's per-file try/catch contract
       body = `throw new Error(${JSON.stringify('transpile failed: ' + ((e && e.message) || e))});`;
     }
-    const assign = s.exports.length
-      ? `\nObject.assign(__ds_scope, { ${s.exports.join(', ')} });`
+    // a non-module file never writes a .d.ts-backed component's name into
+    // __ds_scope — the module implementation must win the namespace slot
+    const assignNames = s.isModule ? s.exports : s.exports.filter((n) => !exposed.has(n));
+    const assign = assignNames.length
+      ? `\nObject.assign(__ds_scope, { ${assignNames.join(', ')} });`
       : '';
     blocks.push(
       `// ${s.path}\n` +
@@ -153,7 +157,23 @@ function buildBundle(model) {
     unexposedExports: unexposedExports.map((u) => ({ name: u.name, sourcePath: u.sourcePath })),
   };
 
-  const tail = components.map((c) => `__ds_ns.${c.name} = __ds_scope.${c.name};`).join('\n\n');
+  // .d.ts-backed components first, then PascalCase exports of non-module
+  // sources — bundled and exposed, but with no props contract / adherence /
+  // starting-point eligibility. A module component always keeps its name.
+  const extraExposed = [];
+  for (const s of allSources) {
+    if (s.isModule) continue;
+    for (const name of s.exports) {
+      if (/^[A-Z]/.test(name) && !exposed.has(name)) {
+        exposed.add(name);
+        extraExposed.push(name);
+      }
+    }
+  }
+  const tail = components
+    .map((c) => `__ds_ns.${c.name} = __ds_scope.${c.name};`)
+    .concat(extraExposed.map((n) => `__ds_ns.${n} = __ds_scope.${n};`))
+    .join('\n\n');
 
   return (
     `/* @ds-bundle: ${JSON.stringify(meta)} */\n\n` +

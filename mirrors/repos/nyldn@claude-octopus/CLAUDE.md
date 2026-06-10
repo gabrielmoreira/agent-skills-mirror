@@ -226,10 +226,11 @@ Providers:
 ## Cost Awareness
 
 Always be mindful that external CLIs cost money:
-- 🔴 Codex: ~$0.01-0.15 per query depending on model (GPT-5.4 $2.50/$15 MTok, GPT-5.3-Codex $1.75/$14, Mini $0.25/$2.00 MTok)
-- 🟡 Gemini: ~$0.01-0.03 per query (Gemini Pro)
+- 🔴 Codex: ~$0.01-0.30 per query depending on model (GPT-5.5 $5/$30 MTok — premium default as of v9.44, GPT-5.4 $2.50/$15, GPT-5.3-Codex $1.75/$14, Mini $0.25/$2.00 MTok)
+- 🟡 Gemini: ~$0.01-0.03 per query (Gemini 3.1 Pro Preview $2.50/$10 MTok, 3 Flash Preview $0.25/$1)
 - 🟣 Perplexity: ~$0.01-0.05 per query (Sonar Pro $3/$15 MTok, Sonar $1/$1 MTok)
 - 🔵 Claude (Sonnet 4.6): Included with Claude Code subscription
+- 🔵 Claude (Fable 5, Mythos-class, opt-in via `OCTOPUS_OPUS_MODEL=claude-fable-5`): **$10/$50 per MTok** — 2x Opus 4.8 cost. 1M context, 128K output. Never auto-selected. Note: Anthropic retains prompts/outputs up to 30 days for safety classifiers.
 - 🔵 Claude (Opus 4.8, default when `SUPPORTS_OPUS_4_8=true`): $5/$25 per MTok input/output. 1M context native. Use `high` effort by default; use `xhigh` for hard implementation, deep review, and long-running asynchronous workflows.
 - 🔵 Claude (Opus 4.8 Fast): $10/$50 per MTok — 2x standard cost for roughly 2.5x output speed. Use only when latency matters.
 - 🔵 Claude (Opus 4.7, legacy/current-minus-one): $5/$25 per MTok input/output. Used automatically on Claude Code versions before 2.1.154 when supported.
@@ -237,7 +238,7 @@ Always be mindful that external CLIs cost money:
 - 🔵 Claude (Opus 4.6 Fast, legacy): **$30/$150 per MTok** (6x standard) — lower latency, extra-usage billing for pinned 4.6 sessions.
 - 🟤 OpenCode: Variable cost — free for native models, uses backend provider pricing when routing to OpenAI/Google
 
-Note: Some OpenAI models (o-series reasoning, gpt-4.1, gpt-5.4-pro) require API keys and are NOT available via ChatGPT subscription/OAuth auth.
+Note: Some OpenAI models (o-series reasoning, gpt-4.1, gpt-5.4-pro, gpt-5.5-pro) require API keys and are NOT available via ChatGPT subscription/OAuth auth.
 
 For simple tasks that don't need multi-AI perspectives, suggest using Claude directly without orchestration.
 

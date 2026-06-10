@@ -30,6 +30,16 @@ Execute an approved plan with explicit state, disciplined gates, bounded retries
 10. Refresh the context packet after each completed wave with verified facts, invalidated assumptions, changed paths, and next-wave reuse notes.
 11. Save plan-review artifacts under `plans/artifacts/<task-slug>/` and keep them concise Markdown.
 
+## Codex Subagent Delegation
+
+ControlFlow-Codex is skill-first; it does not install a fixed VS Code-style subagent roster. It still supports Codex subagent delegation when the user explicitly asks for subagents, delegation, or parallel agent work and the runtime exposes `multi_agent_v1.spawn_agent`.
+
+- Use `multi_agent_v1.spawn_agent` only for bounded sidecar work after identifying the local critical-path task.
+- Prefer `explorer` subagents for specific read-only questions and `worker` subagents for disjoint write scopes.
+- Give every subagent a concrete scope, ownership boundary, expected artifact, validation expectation, and "do not revert others' work" instruction.
+- Store subagent outputs under `plans/artifacts/<task-slug>/` so orchestration can review, summarize, and resume without relying on chat memory.
+- If subagent tooling is unavailable or not explicitly authorized, serialize the same work locally with the relevant `$controlflow-*` skills and record the reason in `## Decision Log`.
+
 ## Portable Evidence And Challenge
 
 - Before changing a shared prompt, schema, validator, template, or public interface, run a shared-component usage impact scan and record likely consumers.

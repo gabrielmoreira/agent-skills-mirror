@@ -107,7 +107,7 @@ Spec: `docs/design/2026-05-17-ars-v3.9.0-cross-index-triangulation-measurement-s
 ## v3.7.0 Key Additions
 
 - **Claude Code plugin packaging**: ARS now installs in one line via `/plugin marketplace add Imbad0202/academic-research-skills` + `/plugin install academic-research-skills`. The traditional `git clone + symlink to ~/.claude/skills/` flow continues to work — both tracks are first-class. Repo gains four top-level directories: `.claude-plugin/`, `commands/`, `agents/`, `hooks/`, plus a `skills/` symlink dir; existing 4 skill directories untouched.
-- **10 slash commands** (`commands/ars-*.md`) mapping `MODE_REGISTRY.md` entries to `/ars-<mode>` triggers with model routing pinned in frontmatter — `opus` for `full` and `revision-coach`, `sonnet` for the other 8, no Haiku.
+- **10 slash commands** (`commands/ars-*.md`) mapping `MODE_REGISTRY.md` entries to `/ars-<mode>` triggers — `sonnet` pinned in frontmatter for the light modes (cost routing); the heavy modes (`full`, `reviewer`, `revision-coach`) inherit the session model (the original v3.7.0 `opus` floor was retired in the 2026-06 Fable 5 harness pass — under a stronger session model a floor becomes a downgrade ceiling), no Haiku.
 - **3 plugin-shipped agents** (`agents/*_agent.md`) as relative symlinks to the v3.6.7-hardened downstream agents in `deep-research/agents/`. Source frontmatter gains `model: inherit` so an Opus session keeps Opus agents while the user's PreToolUse `warn-agent-no-model.sh` hook gates Haiku at dispatch.
 - **SessionStart announce hook** (`hooks/hooks.json` + `scripts/announce-ars-loaded.sh`) lists the 10 slash commands + 3 agents + token-budget pointer when the plugin loads. Bash 3.2 compatible.
 - **Phase 2.2 scope reduction note**: a `SubagentStop → run_codex_audit.sh` cross-model audit hook was scoped out for v3.7.0 (contract gap: hook payload carries no stage/deliverable; invoker boundary: same-session in-LLM Bash forbidden by the wrapper). Deferred to a future release.
@@ -129,7 +129,7 @@ Spec: `docs/design/2026-05-17-ars-v3.9.0-cross-index-triangulation-measurement-s
 
 ## v3.6.7 Key Additions
 
-- **Downstream-agent pattern protection layer (Step 1+2)**: `synthesis_agent`, `research_architect_agent` (survey-designer mode), and `report_compiler_agent` (abstract-only mode) carry a `PATTERN PROTECTION (v3.6.7)` block hardening 13 of 18 documented hallucination/drift patterns (A1–A5 narrative-side, B1–B5 instrument-side, C1–C3 publication-side). Step 6 (orchestrator runtime hooks) and Step 8 (synthetic eval case) ship in a follow-up PR.
+- **Downstream-agent pattern protection layer (Step 1+2)**: `synthesis_agent`, `research_architect_agent` (survey-designer mode), and `report_compiler_agent` (abstract-only mode) carry a `PATTERN PROTECTION (v3.6.7)` block hardening 13 of 17 documented hallucination/drift patterns (A1–A5 narrative-side, B1–B5 instrument-side, C1–C3 publication-side). Step 6 (orchestrator runtime hooks) and Step 8 (synthetic eval case) ship in a follow-up PR.
 - **Four reference files in `shared/references/`**: `irb_terminology_glossary.md` (anonymity/confidentiality/de-identification/pseudonymization), `psychometric_terminology_glossary.md` (true reverse-coded vs contrast item), `protected_hedging_phrases.md` (five-rule contract for upstream-marked hedges), `word_count_conventions.md` (whitespace-split + 3–5% buffer).
 - **Cross-model audit prompt template** at `shared/templates/codex_audit_multifile_template.md` covering seven audit dimensions plus a mandatory three-part Section 4(f) check for `report_compiler_agent` bundles.
 - **Static lint + 29-test mutation suite** at `scripts/check_v3_6_7_pattern_protection.py` and `scripts/test_check_v3_6_7_pattern_protection.py`, both wired into `.github/workflows/spec-consistency.yml`.
@@ -199,7 +199,7 @@ Spec: `docs/design/2026-05-17-ars-v3.9.0-cross-index-triangulation-measurement-s
 
 - **Anti-sycophancy protocols**: DA agents score rebuttals 1-5 before conceding. No concession below 4/5. Frame-lock detection.
 - **Intent detection**: Socratic Mentor classifies user intent as exploratory vs. goal-oriented. Exploratory mode disables auto-convergence.
-- **Cross-model verification** (optional): Set `ARS_CROSS_MODEL` env var to enable GPT-5.4 Pro or Gemini 3.1 Pro for integrity sample checks and independent Devil's Advocate critique. Peer-review sixth-reviewer support remains planned. See `shared/cross_model_verification.md`.
+- **Cross-model verification** (optional): Set `ARS_CROSS_MODEL` env var to enable a non-Anthropic verifier (currently GPT-5.5 / GPT-5.5 Pro or Gemini 3.1 Pro) for integrity sample checks and independent Devil's Advocate critique. Peer-review sixth-reviewer support remains planned. See `shared/cross_model_verification.md` for the supported-model table.
 - **AI Self-Reflection Report**: Pipeline Stage 6 now includes AI behavioral self-assessment (concession rate, health alerts, sycophancy risk rating).
 
 ## Routing Discipline (v3.9.2)

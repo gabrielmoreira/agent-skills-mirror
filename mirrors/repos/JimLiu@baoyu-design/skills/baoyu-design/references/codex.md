@@ -7,7 +7,7 @@ The harness-specific tools `system-prompt.md` relies on, for when you are runnin
 | Web tool | Codex equivalent |
 |---|---|
 | `questions_v2` | In Codex Plan Mode, `functions.request_user_input` when available; otherwise ask concise questions in chat and wait for the user's reply. |
-| `done`, `fork_verifier_agent` | Surface the file path / local URL, preview with the Codex Browser plugin, and verify in the current agent by default. Use subagents only when explicitly requested and available. |
+| `done`, `fork_verifier_agent` | Surface the file path / local URL, preview with the Codex Browser plugin, and verify in the current agent by default. Use subagents only when explicitly requested and available; when a subagent is requested, use the prompt in [`../agents/fork-verifier-agent.md`](../agents/fork-verifier-agent.md). |
 | `write_file` (and its `asset:` param) | Codex's normal file editing tools. There is no asset review pane; drop that concept. |
 | `copy_files` | Shell `cp`. |
 | `read_file`, `list_files`, `view_image` | Codex's normal file read/search tools; use the image viewing tool only for local visual inspection. |
@@ -70,7 +70,7 @@ If the Browser plugin is unavailable:
 
 ## Subagent verification
 
-Codex subagents consume additional context and are not the default for this skill. Use them only when the user explicitly asks for parallel verification, a review pass, or subagent work, and only if multi-agent tools are available in the current session.
+Codex subagents consume additional context and are not the default for this skill. Use them only when the user explicitly asks for parallel verification, a review pass, or subagent work, and only if multi-agent tools are available in the current session. When you do spawn one, use the read-only prompt in [`../agents/fork-verifier-agent.md`](../agents/fork-verifier-agent.md) (pass the project dir, the file path(s), and the served URL).
 
 For normal design work, preview, screenshot, console-check, and debug in the current agent.
 

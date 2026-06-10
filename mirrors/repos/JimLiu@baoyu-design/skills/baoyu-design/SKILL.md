@@ -1,21 +1,19 @@
 ---
 name: baoyu-design
 description: >-
-  Create polished design artifacts as self-contained HTML — UI mockups, interactive
-  prototypes, wireframes, landing pages, dashboards, app screens, mobile apps, and
-  slide decks — and set up, import, or author reusable design systems / UI kits. Use
-  this skill whenever the user wants to design, mock up, prototype, wireframe, or
-  visualize any interface, screen, flow, or visual artifact — even when they don't say
-  the word "design" (e.g. "build me a landing page", "show me what a settings screen
-  could look like", "prototype an onboarding flow", "wireframe a few layout ideas",
-  "make a pitch deck"). Also use it to set up a design system, import an existing
-  design system, create a design system or UI kit, or author brand tokens and
-  components (e.g. "set up a design system for our brand", "import this design system",
-  "create a design system", "build a UI kit"). It drives a full design process:
-  clarifying questions, design-context gathering, and production of one or more HTML
-  deliverables — and, for design systems, compiling a loadable component bundle. Runs
-  on portable agent harnesses including Claude Code, Cursor, and Codex Agent —
-  harness-specific tools are resolved from references/.
+  Create polished design artifacts as self-contained HTML: UI mockups, interactive
+  prototypes, wireframes, landing pages, dashboards, app screens, mobile apps, slide
+  decks, and visual explorations. Use whenever the user asks to design, mock up,
+  prototype, wireframe, visualize, or explore an interface, product screen, user
+  flow, content layout, visual artifact, or pitch/deck concept, even if they do not
+  say "design". Also use for setting up, importing, or authoring reusable design
+  systems, UI kits, brand tokens, component libraries, or loadable design-system
+  bundles. The skill guides context gathering, clarifying questions, choosing
+  fidelity, selecting or binding design systems, creating project folders, building
+  one or more HTML deliverables, previewing them, and verifying they load cleanly.
+  It is harness-agnostic for Claude Code, Cursor, Codex Agent, and similar
+  file-capable agents; harness-specific ask, preview, screenshot, and verification
+  tools are resolved from references/.
 ---
 
 # Design

@@ -30,6 +30,7 @@ allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(g
 - **Interpret/fix mode** — reading lint output, suppressing warnings, fixing issues on existing code: start from "Interpreting Output" and "Suppressing Lint Warnings"; use parallel sub-agents for large-scale legacy cleanup.
 
 **Dependencies:**
+
 - golangci-lint: `go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest`
 
 # Go Linting

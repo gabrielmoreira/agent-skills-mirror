@@ -56,30 +56,35 @@ The script reuses the read-only parser, so the copy set is exact and determinist
 - `_ds_bundle.js`, `_ds_manifest.json`, `_adherence.oxlintrc.json`, `README.md`, and `SKILL.md` (when present);
 - the DS's `assets/` directory, if present.
 
-It also **generates `_ds/<slug>/_ds_prompt.md`** — the self-contained per-load design-system prompt (binding + scope + the full guide inlined + the exact `var(--*)` token allowlist + wiring), modeled on the web app's attached-skill block. It is generated, not copied; re-running the import regenerates it (that is the sync path).
+It also **generates `_ds/<slug>/_ds_prompt.md`** — the self-contained per-load design-system prompt (binding + scope + bundle-first wiring: the pinned React UMD tags, every stylesheet `<link>` in the `@import` closure, the bundle `<script>`, and how the page's own JSX runs through the pinned Babel tag + the full guide inlined + per-component usage excerpts from each component's `*.prompt.md` + the exact `var(--*)` token allowlist), modeled on the web app's design-mode prompt. It is generated, not copied; re-running the import regenerates it (that is the sync path).
 
-It writes **only** `_ds/<slug>/` and `_d_meta.json` — never the DS source, and it does not transpile (that stays with `compile-design-system.mjs`). It then prints the namespace, the exact `<link>`/`<script>` wiring lines, a reminder to read `_ds/<slug>/_ds_prompt.md`, any starting points, and warnings (e.g. a missing bundle means the DS was never compiled — compile it first, then re-import).
+It writes **only** `_ds/<slug>/` and `_d_meta.json` — never the DS source, and it does not transpile (that stays with `compile-design-system.mjs`). It then prints the namespace, the exact `<link>`/`<script>` wiring lines (every stylesheet in the closure, then the bundle), a reminder to read `_ds/<slug>/_ds_prompt.md`, any starting points, and warnings (e.g. a missing bundle means the DS was never compiled — compile it first, then re-import).
 
 ### 4. Wire it into your page
 
-For **each** consumed system, add its global-CSS entry and (if you render components) its bundle. Use the wiring lines the script printed:
+**Loading the bundle is how you use a design system.** Every page must load each consumed system's stylesheets and bundle, and compose with the components the bundle exports on `window.<Namespace>` — don't recreate them from scratch or restyle raw HTML to look like them. Use the wiring lines the script printed:
 
 ```html
-<!-- non-primary systems first -->
+<!-- React + ReactDOM first (the pinned UMD tags) — the bundle calls React.createElement -->
+
+<!-- each system's stylesheets as a group, in the closure order the import printed -->
 <link rel="stylesheet" href="_ds/<other-slug>/styles.css">
-<!-- PRIMARY system's <link> LAST so its tokens win on collision -->
+<!-- PRIMARY system's group LAST so its tokens win on collision -->
+<link rel="stylesheet" href="_ds/<primary-slug>/tokens/colors.css">
 <link rel="stylesheet" href="_ds/<primary-slug>/styles.css">
 
+<!-- the bundle is plain compiled JS — a regular <script>, never type="text/babel" or type="module" -->
 <script src="_ds/<slug>/_ds_bundle.js"></script>
 ```
 
-Then pull components from each system's own namespace — `const { Button } = window.<Namespace>;`. Namespaces are unique per system, so JS/component scopes never collide. Global **CSS** is shared scope, though: order the `<link>`s so the **primary system loads last** and wins on same-named tokens (see "Multiple design systems" below).
+Then pull components from each system's own namespace — `const { Button, Card } = window.<Namespace>;` (your own JSX still runs in `type="text/babel"` scripts; only the bundle itself must stay a plain `<script>`). Namespaces are unique per system, so JS/component scopes never collide. Global **CSS** is shared scope, though: order the `<link>` groups so the **primary system loads last** and wins on same-named tokens (see "Multiple design systems" below).
 
 ### 5. Load the design system's prompt (follow it as binding)
 
 Importing and wiring a system is **not** the same as *following* it. Before you design, **load the bound system's prompt** and treat it as the visual contract — for **each** system you imported:
 
-- **Read `_ds/<slug>/_ds_prompt.md`** — the self-contained per-load prompt the importer generates: it states the binding + scope, reproduces the full guide inline, lists the exact `var(--*)` token allowlist, and gives the wiring. This is the one file to load every time you design. (`_ds/<slug>/README.md` and `_ds/<slug>/SKILL.md` are the deeper source refs if you need them; the import script prints a reminder.)
+- **Read `_ds/<slug>/_ds_prompt.md`** — the self-contained per-load prompt the importer generates: it states the binding + scope, gives the bundle-first wiring (the pinned React tags, every stylesheet `<link>`, the bundle `<script>`, and a `type="text/babel"` example for the page's own JSX), reproduces the full guide inline, carries per-component usage excerpts from each component's `*.prompt.md` (those files aren't copied into `_ds/`), and lists the exact `var(--*)` token allowlist. This is the one file to load every time you design. (`_ds/<slug>/README.md` and `_ds/<slug>/SKILL.md` are the deeper source refs if you need them; the import script prints a reminder.)
+- **Compose with the bundle's components.** Build pages from the components the bundle exports on `window.<Namespace>` — never recreate them from scratch or restyle raw HTML to imitate them. The usage excerpts in `_ds_prompt.md` show each component's intent and example JSX at a glance; the full `*.prompt.md` files live in the system's source tree.
 - **It is binding.** Every visual must follow it — don't invent colors, type, spacing, or components that aren't grounded in the system. Build only from its tokens — use `var(--*)` names from the allowlist in `_ds_prompt.md`, and never guess a name (an unresolved `var()` silently falls back to the browser default). With several systems, the **primary** owns the overall visual language; pull only specific components from the others.
 - **Scope — visual style only.** The design system is a *visual style reference*, nothing more. Its guide may describe example products, brands, or people that are unrelated to the user and to what they asked for. Never treat anything in the design system as a fact about the user, their work, or the topic of the conversation.
 - **Mine it for what you need.** Copy out the fonts and colors you use; for prototypes and designs, copy out any relevant components. If the system ships mocks of existing products and you're asked to design something similar, **fork those mocks** to start — it beats designing from scratch. The runtime copy under `_ds/<slug>/` holds the CSS + compiled bundle; the system's **source** (its `sourcePath` in `_d_meta.json`, e.g. `designs/<ds>/ui_kits/`, `preview/`, component files) is where the mocks, specimens, and component source live — read and fork from there.
@@ -172,7 +177,7 @@ A path removes that one version (scoped to `--name` if also given); `--name` alo
 
 When you open or continue an **existing** project (the folder already exists), don't assume a clean slate — **read `<projectDir>/_d_meta.json` first** to recover its design-system binding:
 
-- **`designSystems` is non-empty** → the project is bound. For **each** entry, **load its prompt and follow it as binding** (step 5 above — read `_ds/<slug>/_ds_prompt.md`) *before* you design, honoring `primaryDesignSystem` for token precedence. Then confirm the page wiring is intact (each system's `<link>` present, primary last; the bundle `<script>` present); re-import (below) only if a `_ds/<slug>/` copy is missing or stale. Don't re-ask which system to use — it's already chosen.
+- **`designSystems` is non-empty** → the project is bound. For **each** entry, **load its prompt and follow it as binding** (step 5 above — read `_ds/<slug>/_ds_prompt.md`) *before* you design, honoring `primaryDesignSystem` for token precedence. Then confirm the page wiring is intact (each system's stylesheet `<link>`s present in closure order, primary group last; React/ReactDOM loaded before each bundle `<script>`); re-import (below) only if a `_ds/<slug>/` copy is missing or stale. Don't re-ask which system to use — it's already chosen.
 - **`designSystems` is `[]`, or there is no `_d_meta.json`** → no system is bound; design normally. If the work would benefit from one, offer to add one (discovery in step 1).
 
 To then change what's bound, read `_d_meta.json` for the current systems and:
@@ -186,7 +191,7 @@ To then change what's bound, read `_d_meta.json` for the current systems and:
 
 A project may consume several systems at once. Each `_ds/<slug>/_ds_bundle.js` is namespaced, so JavaScript and components never collide. The one shared surface is **global CSS**: every system's `:root` tokens and base rules land in the same scope, so a later `<link>` overrides an earlier one's same-named variables. Mitigations, in order of preference:
 
-1. Treat one system as **primary** (its `<link>` last, its tokens win) and pull only specific *components* from the others.
+1. Treat one system as **primary** (its `<link>` group last, its tokens win) and pull only specific *components* from the others.
 2. If two systems must fully coexist and genuinely conflict, scope one copy's CSS — out of scope for the import script; do it by hand only if needed.
 
 `<link>` order is the precedence control, and the orchestrator owns that order at wiring time.

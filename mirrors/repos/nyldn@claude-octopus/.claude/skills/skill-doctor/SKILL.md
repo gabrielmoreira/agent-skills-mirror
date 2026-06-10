@@ -75,7 +75,7 @@ fi
 mkdir -p "${HOME}/.claude-octopus"
 ln -sfn "$OCTO_PLUGIN_ROOT" "${HOME}/.claude-octopus/plugin" 2>/dev/null || true
 export OCTO_PLUGIN_ROOT
-cd "$OCTO_PLUGIN_ROOT" && bash scripts/orchestrate.sh doctor
+bash "$OCTO_PLUGIN_ROOT/scripts/orchestrate.sh" doctor
 ```
 
 This runs all 11 check categories and displays a formatted report.
@@ -85,17 +85,17 @@ This runs all 11 check categories and displays a formatted report.
 If the user asks about a specific area, filter:
 
 ```bash
-cd "${HOME}/.claude-octopus/plugin" && bash scripts/orchestrate.sh doctor providers
-cd "${HOME}/.claude-octopus/plugin" && bash scripts/orchestrate.sh doctor auth
-cd "${HOME}/.claude-octopus/plugin" && bash scripts/orchestrate.sh doctor config
-cd "${HOME}/.claude-octopus/plugin" && bash scripts/orchestrate.sh doctor state
-cd "${HOME}/.claude-octopus/plugin" && bash scripts/orchestrate.sh doctor smoke
-cd "${HOME}/.claude-octopus/plugin" && bash scripts/orchestrate.sh doctor hooks
-cd "${HOME}/.claude-octopus/plugin" && bash scripts/orchestrate.sh doctor scheduler
-cd "${HOME}/.claude-octopus/plugin" && bash scripts/orchestrate.sh doctor skills
-cd "${HOME}/.claude-octopus/plugin" && bash scripts/orchestrate.sh doctor conflicts
-cd "${HOME}/.claude-octopus/plugin" && bash scripts/orchestrate.sh doctor agents
-cd "${HOME}/.claude-octopus/plugin" && bash scripts/orchestrate.sh doctor recurrence
+bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor providers
+bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor auth
+bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor config
+bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor state
+bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor smoke
+bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor hooks
+bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor scheduler
+bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor skills
+bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor conflicts
+bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor agents
+bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor recurrence
 ```
 
 ### Step 3: Check & Install Dependencies
@@ -118,13 +118,13 @@ This auto-installs: Codex CLI, Gemini CLI, jq, and the statusline resolver. For 
 
 ```bash
 # Detailed output for troubleshooting
-cd "${HOME}/.claude-octopus/plugin" && bash scripts/orchestrate.sh doctor --verbose
+bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor --verbose
 
 # Machine-readable output
-cd "${HOME}/.claude-octopus/plugin" && bash scripts/orchestrate.sh doctor --json
+bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor --json
 
 # Combine: specific category + verbose
-cd "${HOME}/.claude-octopus/plugin" && bash scripts/orchestrate.sh doctor auth --verbose
+bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor auth --verbose
 ```
 
 ### Step 5: Interactive Remediation (MANDATORY for fixable issues)

@@ -35,6 +35,7 @@ allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(g
 > **Community default.** A company skill that explicitly supersedes `samber/cc-skills-golang@golang-testing` skill takes precedence.
 
 **Dependencies:**
+
 - gotests: `go install github.com/cweill/gotests/gotests@latest`
 
 # Go Testing Best Practices

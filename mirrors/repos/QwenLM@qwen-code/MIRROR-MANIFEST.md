@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 28 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,21 +72,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`.qwen/skills/e2e-testing/SKILL.md`](.qwen/skills/e2e-testing/SKILL.md) |
 | 12 | ✓ | [`.qwen/skills/feat-dev/SKILL.md`](.qwen/skills/feat-dev/SKILL.md) |
 | 13 | ✓ | [`.qwen/skills/memory-leak-debug/SKILL.md`](.qwen/skills/memory-leak-debug/SKILL.md) |
-| 14 | ✓ | [`.qwen/skills/qwen-code-claw/SKILL.md`](.qwen/skills/qwen-code-claw/SKILL.md) |
-| 15 | ✓ | [`.qwen/skills/structured-debugging/SKILL.md`](.qwen/skills/structured-debugging/SKILL.md) |
-| 16 | ✓ | [`.qwen/skills/terminal-capture/SKILL.md`](.qwen/skills/terminal-capture/SKILL.md) |
-| 17 | ✓ | [`.qwen/skills/tmux-real-user-testing/SKILL.md`](.qwen/skills/tmux-real-user-testing/SKILL.md) |
-| 18 | ✓ | [`.qwen/skills/triage/SKILL.md`](.qwen/skills/triage/SKILL.md) |
-| 19 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 20 | ✓ | [`docs/users/features/skills.md`](docs/users/features/skills.md) |
-| 21 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md) |
-| 22 | ✓ | [`packages/core/src/skills/bundled/batch/SKILL.md`](packages/core/src/skills/bundled/batch/SKILL.md) |
-| 23 | ✓ | [`packages/core/src/skills/bundled/loop/SKILL.md`](packages/core/src/skills/bundled/loop/SKILL.md) |
-| 24 | ✓ | [`packages/core/src/skills/bundled/new-app/SKILL.md`](packages/core/src/skills/bundled/new-app/SKILL.md) |
-| 25 | ✓ | [`packages/core/src/skills/bundled/qc-helper/SKILL.md`](packages/core/src/skills/bundled/qc-helper/SKILL.md) |
-| 26 | ✓ | [`packages/core/src/skills/bundled/review/SKILL.md`](packages/core/src/skills/bundled/review/SKILL.md) |
-| 27 | ✓ | [`packages/core/src/skills/bundled/simplify/SKILL.md`](packages/core/src/skills/bundled/simplify/SKILL.md) |
-| 28 | ✓ | [`packages/core/src/skills/bundled/stuck/SKILL.md`](packages/core/src/skills/bundled/stuck/SKILL.md) |
+| 14 | ✓ | [`.qwen/skills/openwork-desktop-sync/SKILL.md`](.qwen/skills/openwork-desktop-sync/SKILL.md) |
+| 15 | ✓ | [`.qwen/skills/qwen-code-claw/SKILL.md`](.qwen/skills/qwen-code-claw/SKILL.md) |
+| 16 | ✓ | [`.qwen/skills/structured-debugging/SKILL.md`](.qwen/skills/structured-debugging/SKILL.md) |
+| 17 | ✓ | [`.qwen/skills/terminal-capture/SKILL.md`](.qwen/skills/terminal-capture/SKILL.md) |
+| 18 | ✓ | [`.qwen/skills/tmux-real-user-testing/SKILL.md`](.qwen/skills/tmux-real-user-testing/SKILL.md) |
+| 19 | ✓ | [`.qwen/skills/triage/SKILL.md`](.qwen/skills/triage/SKILL.md) |
+| 20 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 21 | ✓ | [`docs/users/features/skills.md`](docs/users/features/skills.md) |
+| 22 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md) |
+| 23 | ✓ | [`packages/core/src/skills/bundled/batch/SKILL.md`](packages/core/src/skills/bundled/batch/SKILL.md) |
+| 24 | ✓ | [`packages/core/src/skills/bundled/loop/SKILL.md`](packages/core/src/skills/bundled/loop/SKILL.md) |
+| 25 | ✓ | [`packages/core/src/skills/bundled/new-app/SKILL.md`](packages/core/src/skills/bundled/new-app/SKILL.md) |
+| 26 | ✓ | [`packages/core/src/skills/bundled/qc-helper/SKILL.md`](packages/core/src/skills/bundled/qc-helper/SKILL.md) |
+| 27 | ✓ | [`packages/core/src/skills/bundled/review/SKILL.md`](packages/core/src/skills/bundled/review/SKILL.md) |
+| 28 | ✓ | [`packages/core/src/skills/bundled/simplify/SKILL.md`](packages/core/src/skills/bundled/simplify/SKILL.md) |
+| 29 | ✓ | [`packages/core/src/skills/bundled/stuck/SKILL.md`](packages/core/src/skills/bundled/stuck/SKILL.md) |
 
 ---
 

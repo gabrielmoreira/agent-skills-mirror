@@ -303,6 +303,17 @@ Node.js helper path.
 - `instructions-only`: keep helper dependencies, helper files, and helper
   wrapper scripts out of the target repository entirely.
 
+**Authoritative invocation surface per profile.** Under `vendored-node`, the
+canonical invocation is `node scripts/<name>.mjs`; the package-manager / `npx`
+`bin/` facade (the `idd-*` bin wrappers) is **redundant** in this profile and
+may be skipped — keeping it only adds a second surface to align with the
+instruction files for no portability gain. Under `package-manager` and
+`ephemeral-npx`, the `bin/` facade (`idd-*` bins, invoked through the
+`package.json` scripts or `npx`) **is** the authoritative surface and should be
+retained. `instructions-only` uses neither. When an instruction shows a
+`node scripts/...` command, resolve it to your profile's authoritative surface
+rather than maintaining both.
+
 To switch profiles later, rerun the manifest with both
 `--profile <target-profile>` and `--from-profile <current-profile>`. The
 switch section reports the files, dependency entries, and `package.json`
@@ -631,7 +642,7 @@ Interpretation rules:
   `latestPassingCiCompletedAt`
 - Readiness command: `node scripts/pre-merge-readiness.mjs`
   with `--pr <pr-number>`, `--claim-issue <issue-number>`,
-  `--expected-claim-id <claim-id>`, and
+  `--claim-id <claim-id>`, and
   `--trusted-marker-logins "<trusted-login-1>,<trusted-login-2>"`
 - Stable contract:
   [`pre-merge-readiness.schema.json`][pre-merge-readiness-schema]
@@ -639,6 +650,12 @@ Interpretation rules:
   `threads`, `unrepliedComments`, `reviewerStates`,
   `advisoryWait` (including the effective advisory policy fields), `ci`,
   `claim`, and optional `dispositionEvidence`
+- Authoritative phase role: the live `pre-merge-readiness` run on the
+  current HEAD is the **authoritative source for the final-merge CI and
+  activity fields** at F2/F3. The `review-activity-snapshot` helper builds
+  the **E-phase** activity universe (E1) for review currency; do not reuse
+  its CI/activity values as the F-phase merge decision (they can diverge in
+  the pre-merge window)
 - `reviewerStates.codeownerSelfApproval` diagnoses whether CODEOWNER
   approval can be satisfied by an eligible non-author owner or an
   applicable ruleset or classic pull-request bypass. `deadlock` and

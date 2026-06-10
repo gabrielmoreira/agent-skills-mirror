@@ -26,9 +26,9 @@
 <br/><sub>Image generation / prompting</sub>
 </td>
 <td width="50%" valign="top">
-<a href="#kb-retriever"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/kb-retriever-skill.webp" alt="KB Retriever Skill" width="100%"></a>
-<br/><a href="#kb-retriever"><strong>kb-retriever</strong></a>
-<br/><sub>Local knowledge retrieval</sub>
+<a href="#beautiful-article"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/banner.webp" alt="Beautiful Article Skill" width="100%"></a>
+<br/><a href="#beautiful-article"><strong>beautiful-article</strong></a>
+<br/><sub>Any source → beautiful article</sub>
 </td>
 </tr>
 </table>
@@ -36,7 +36,7 @@
 [![License: MIT](https://img.shields.io/github/license/ConardLi/garden-skills?style=flat-square&color=blue)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/ConardLi/garden-skills?style=flat-square)](https://github.com/ConardLi/garden-skills/stargazers)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](#contributing)
-[![Skills count](https://img.shields.io/badge/skills-4-orange?style=flat-square)](#skills-gallery)
+[![Skills count](https://img.shields.io/badge/skills-5-orange?style=flat-square)](#skills-gallery)
 [![Spec](https://img.shields.io/badge/spec-SKILL.md-black?style=flat-square)](https://agentskills.io)
 
 [English](./README.md) · [中文文档](./README.zh-CN.md) · [日本語](./README.ja-JP.md)
@@ -85,7 +85,7 @@ Highlights:
 
 <sub>↑ All 23 themes at a glance — <a href="./skills/web-video-presentation/README.md#theme-gallery"><b>open the full gallery</b></a> for live 16:9 previews, design signatures, and best-for tags.</sub>
 
-Links: [README](./skills/web-video-presentation/README.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md) · <!-- DOWNLOAD:web-video-presentation:start -->[Download v1.2.1 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-video-presentation-v1.2.1/web-video-presentation-1.2.1.zip)<!-- DOWNLOAD:web-video-presentation:end -->
+Links: [README](./skills/web-video-presentation/README.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md) · <!-- DOWNLOAD:web-video-presentation:start -->[Download v1.2.2 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-video-presentation-v1.2.2/web-video-presentation-1.2.2.zip)<!-- DOWNLOAD:web-video-presentation:end -->
 
 ---
 
@@ -130,7 +130,7 @@ Highlights:
 
 <sub>↑ 12 of 25 anchored recipes — <a href="./skills/web-design-engineer/README.md#style-recipe-gallery"><b>open the full gallery</b></a> for all 25 working artefacts (apothecary pages, trading workstations, magazine covers, Y2K portals, mid-century posters …) with signature moves and best-for tags.</sub>
 
-Links: [README](./skills/web-design-engineer/README.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[Download v1.2.1 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.2.1/web-design-engineer-1.2.1.zip)<!-- DOWNLOAD:web-design-engineer:end -->
+Links: [README](./skills/web-design-engineer/README.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[Download v1.2.2 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.2.2/web-design-engineer-1.2.2.zip)<!-- DOWNLOAD:web-design-engineer:end -->
 
 ---
 
@@ -224,7 +224,7 @@ Highlights:
 
 <sub>↑ 12 selected cases from the 160+ public case library — <a href="./skills/gpt-image-2/README.md#case-gallery"><b>open the skill gallery</b></a> for more templates, or browse the <a href="https://gpt-image2.mmh1.top/#/case">live website</a>.</sub>
 
-Links: [README](./skills/gpt-image-2/README.md) · [SKILL.md](./skills/gpt-image-2/SKILL.md) · [Website](./website/gpt-image2-website) · <!-- DOWNLOAD:gpt-image-2:start -->[Download v1.0.3 .zip](https://github.com/ConardLi/garden-skills/releases/download/gpt-image-2-v1.0.3/gpt-image-2-1.0.3.zip)<!-- DOWNLOAD:gpt-image-2:end -->
+Links: [README](./skills/gpt-image-2/README.md) · [SKILL.md](./skills/gpt-image-2/SKILL.md) · [Website](./website/gpt-image2-website) · <!-- DOWNLOAD:gpt-image-2:start -->[Download v1.0.4 .zip](https://github.com/ConardLi/garden-skills/releases/download/gpt-image-2-v1.0.4/gpt-image-2-1.0.4.zip)<!-- DOWNLOAD:gpt-image-2:end -->
 
 ---
 
@@ -245,7 +245,46 @@ Highlights:
 - Bounds retrieval to at most 5 search rounds so exploration stays controlled
 - Includes workflows for `grep`, `pdftotext`, `pdfplumber`, and `pandas`, with source-aware answer formatting
 
-Links: [README](./skills/kb-retriever/README.md) · [SKILL.md](./skills/kb-retriever/SKILL.md) · <!-- DOWNLOAD:kb-retriever:start -->[Download v1.0.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/kb-retriever-v1.0.0/kb-retriever-1.0.0.zip)<!-- DOWNLOAD:kb-retriever:end -->
+Links: [README](./skills/kb-retriever/README.md) · [SKILL.md](./skills/kb-retriever/SKILL.md) · <!-- DOWNLOAD:kb-retriever:start -->[Download v1.0.1 .zip](https://github.com/ConardLi/garden-skills/releases/download/kb-retriever-v1.0.1/kb-retriever-1.0.1.zip)<!-- DOWNLOAD:kb-retriever:end -->
+
+---
+
+### [`beautiful-article`](./skills/beautiful-article)
+
+![Beautiful Article Skill](https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/banner.webp)
+
+**Category:** Editorial · Any source → beautiful article  
+**Best for:** turning URLs, PDFs, DOCX, Markdown, plain text, screenshots, and pasted notes into a **polished, share-ready article** — long-form, briefings, explainers, tutorials, post-mortems, visual essays, dialogue transcripts.
+
+`beautiful-article` is an editorial harness skill: it does not just "make a webpage", it edits and designs the source material into a polished article that is easier to read, share, and archive than the original. The skill flows through a small `source → plan → double-confirmation → build → final review → repair` loop and pauses at three hard checkpoints so the user keeps editorial control over article type, theme, layout, image strategy, cover, and delivery format.
+
+Highlights:
+
+- **Article first** — the focus is the *article*: better reading, better pacing, better aesthetics. Delivery is a self-contained file (HTML, optional PDF), but that's a delivery detail, not the goal
+- **Reacticle component protocol** — prose-first semantic components (Hero / Lead / Section / Quote / Callout / Image / Formula / CodeBlock / Table…) plus a theme-token-only `Raw` free layer
+- **10 article types with bundled retention ratios** — `longform · ~100%` / `tutorial · ~90%` / `full-report · ~80%` / `explainer · ~80%` / `dialogue · ~80%` / `review · ~70%` / `essay · ~70%` / `briefing · ~50%` / `visual-essay · ~40%` / `interactive-explainer · ~25% excerpt + 75% AI-rebuild`
+- **11 authoring theme profiles** (`tufte`, `press`, `bayer`, `bodoni`, `vignelli`, `sottsass`, `freddie`, `andy`, `fuller`, `knuth`, `shannon`) — each is a Markdown contract for the agent rather than a CSS file
+- **Hard collaboration checkpoints** with item-by-item decision capture (no silent defaults), plus a 3:4 book-style cover, default-on TOC, and language-aware translation step
+- **Per-node quality protocol** — main-agent inline checks for plan, sub-agent reviewers for first spread / sections / final review, repair as minimal slices
+
+#### Theme gallery
+
+<table>
+<tr>
+<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/tufte.webp" alt="tufte" width="100%"><br/><sub><b>tufte</b></sub></td>
+<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/press.webp" alt="press" width="100%"><br/><sub><b>press</b></sub></td>
+<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/bayer.webp" alt="bayer" width="100%"><br/><sub><b>bayer</b></sub></td>
+<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/bodoni.webp" alt="bodoni" width="100%"><br/><sub><b>bodoni</b></sub></td>
+</tr>
+<tr>
+<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/vignell.webp" alt="vignelli" width="100%"><br/><sub><b>vignelli</b></sub></td>
+<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/sottsass.webp" alt="sottsass" width="100%"><br/><sub><b>sottsass</b></sub></td>
+<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/freddie.webp" alt="freddie" width="100%"><br/><sub><b>freddie</b></sub></td>
+<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/andy.webp" alt="andy" width="100%"><br/><sub><b>andy</b></sub></td>
+</tr>
+</table>
+
+Links: [README](./skills/beautiful-article/README.md) · [SKILL.md](./skills/beautiful-article/SKILL.md) · <!-- DOWNLOAD:beautiful-article:start -->[Download v0.1.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/beautiful-article-v0.1.0/beautiful-article-0.1.0.zip)<!-- DOWNLOAD:beautiful-article:end -->
 
 ---
 

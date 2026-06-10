@@ -170,6 +170,7 @@ Prompt 寫完問自己：
 - **🎬 概念先行 Prompting** (prompt 沒主題/畫面很空/效果差/不知道在拍什麼) → [references/concept-first-prompting.md](references/concept-first-prompting.md) — **使用者嫌「prompt 沒主題」「有些畫面不知道在幹嘛」「影片效果差」時必讀**。治「技術詞堆疊但空洞」：先定一句話 concept → 3-beat 敘事弧 → 每個鏡頭做存在性測試 → 才加技術詞。含 6 個產品廣告概念框架
 - **🔧 反瑕疵品質控制** (結果爛了/有瑕疵/不夠精緻怎麼修) → [references/quality-control.md](references/quality-control.md) — **使用者嫌結果有瑕疵、產品變形、塑膠感、閃爍、文字鬼影、動得很假時必讀**。系統化分類 7 類瑕疵 + 對症修法（鎖時間/鎖物理/鎖主體）+ 平台物理強弱速查
 - **🧭 模型選擇大全** (該用哪個模型 / 不熟各家模型) → [references/model-picker.md](references/model-picker.md) — OiiOii 全模型 + Gemini Omni / Kling O-series / Vidu / Hailuo / Wan / Seedance 各家「最強情境 + 招牌 prompt 技巧 + 何時選」+ 命名混淆對照（Gemini Omni vs Kling Omni）
+- **🎬 多模型影片操作手冊** (Wan 2.7 / Kling 3.0 Omni / HappyHorse 怎麼下 prompt / 拉片復刻 / 多模型省成本) → [references/multimodel-video-cheatsheet.md](references/multimodel-video-cheatsheet.md) — Wan 2.7 Thinking Mode 完整 brief + Kling Omni 身份鎖(@element)+物理事件 + HappyHorse 短 prompt+原生音訊 + 拉片復刻先選模式 + 多模型 tier-by-cost/frame-chaining/per-model 重寫 + shot-type 選模型表。**用 OiiOii 新影片模型或要省成本跑多模型時必讀（2026-06 研究+實測）**
 - **📋 經驗證 Prompt 庫** (要現成高品質 prompt / 不想從零寫 / 要範本) → [references/proven-prompts.md](references/proven-prompts.md) — **26+ 個逐字可貼的高品質 prompt**（Google 官方 Veo/Omni guide、Kling 官方、Seedance/Vidu @語法實例、廣告/美食/汽車/精品/多鏡頭/對白），按用途分類 + 來源 + 跨模型語法速查。**使用者要「更好的 prompt / 範例 / 範本」時必讀**
 
 這三個進階檔是 **語彙庫**，不是流程手冊。使用方式：

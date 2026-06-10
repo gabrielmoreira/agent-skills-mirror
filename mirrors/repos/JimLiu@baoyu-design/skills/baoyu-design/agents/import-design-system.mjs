@@ -18,7 +18,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { buildModel } from './lib/ds-core.mjs';
 import { metaPathFor, readMeta, bootstrapMeta, writeMeta } from './lib/asset-store.mjs';
-import { renderDsPrompt } from './lib/ds-prompt.mjs';
+import { renderDsPrompt, extractPromptExcerpt, sampleComponentNames } from './lib/ds-prompt.mjs';
 
 // --- args ---------------------------------------------------------------------
 const argv = process.argv.slice(2);
@@ -178,17 +178,29 @@ if (makePrimary || !meta.primaryDesignSystem) meta.primaryDesignSystem = dsSlug;
 writeMeta(metaPath, meta);
 
 // --- generate the per-load design-system prompt -------------------------------
-const entryCss = model.globalCssPaths.includes(model.globalCssEntry)
-  ? model.globalCssEntry
-  : null;
+// Per-component usage excerpts come from the DS *source* — the *.prompt.md files
+// are deliberately not copied into _ds/, so their first lines ride in the prompt.
+const promptPathFor = (sp) => sp.replace(/\.(jsx|tsx)$/, '.prompt.md');
+const seenPrompts = new Set();
+const componentPrompts = [];
+for (const c of model.components) {
+  const relPrompt = promptPathFor(c.sourcePath);
+  if (seenPrompts.has(relPrompt)) continue; // several exports can share one source file
+  seenPrompts.add(relPrompt);
+  let text;
+  try { text = fs.readFileSync(path.join(dsDir, relPrompt), 'utf8'); } catch { continue; }
+  const excerpt = extractPromptExcerpt(text);
+  if (excerpt) componentPrompts.push({ relPath: relPrompt, excerpt });
+}
 let readmeContent = '';
 try { readmeContent = fs.readFileSync(path.join(dsDir, 'README.md'), 'utf8'); } catch { /* none */ }
 const promptMd = renderDsPrompt({
   name: dsName,
   slug: dsSlug,
   namespace: model.namespace,
-  cssEntry: entryCss,
-  sampleComponent: (model.components[0] && model.components[0].name) || 'Button',
+  globalCssPaths: model.globalCssPaths,
+  componentNames: model.components.map((c) => c.name),
+  componentPrompts,
   readme: readmeContent,
   tokenNames: model.tokens.map((t) => t.name),
   sourcePath: entry.sourcePath,
@@ -207,17 +219,34 @@ out.push(
 );
 out.push(`_d_meta.json: designSystems["${dsSlug}"] recorded; primaryDesignSystem = "${meta.primaryDesignSystem}".`);
 out.push('');
-out.push('Wire it up in your page (load the PRIMARY design system\'s <link> LAST so its tokens win):');
-if (entryCss) out.push(`  <link rel="stylesheet" href="_ds/${dsSlug}/${entryCss}">`);
-else out.push('  (no global CSS entry found in this DS — only the bundle was copied)');
-out.push(`  <script src="_ds/${dsSlug}/_ds_bundle.js"></script>`);
-const sample = (model.components[0] && model.components[0].name) || 'Button';
-out.push(`  then in a Babel script: const { ${sample} } = window.${model.namespace};`);
+if (hasBundle) {
+  out.push(
+    'Wire it up in your page — window.React/window.ReactDOM first (the bundle calls ' +
+    'React.createElement), then every stylesheet below in order, then the bundle as a plain ' +
+    '<script> (no type="text/babel" / type="module"). With several systems, the PRIMARY ' +
+    "system's <link>s load LAST so its tokens win:",
+  );
+} else {
+  out.push(
+    'Wire it up in your page — every stylesheet below in order. With several systems, the ' +
+    "PRIMARY system's <link>s load LAST so its tokens win:",
+  );
+}
+if (model.globalCssPaths.length) {
+  for (const p of model.globalCssPaths) out.push(`  <link rel="stylesheet" href="_ds/${dsSlug}/${p}">`);
+} else {
+  out.push(`  (no global CSS entry found in this DS${hasBundle ? ' — only the bundle was copied' : ''})`);
+}
+if (hasBundle) out.push(`  <script src="_ds/${dsSlug}/_ds_bundle.js"></script>`);
+if (hasBundle && model.components.length) {
+  const sample = sampleComponentNames(model.components.map((c) => c.name)).join(', ');
+  out.push(`  then: const { ${sample} } = window.${model.namespace};`);
+}
 
 out.push('');
 out.push('Next: load this system as a BINDING visual style —');
 out.push(`  read _ds/${dsSlug}/_ds_prompt.md before designing`);
-out.push('  (binding + scope + the full guide + the exact var(--*) token allowlist + wiring).');
+out.push('  (binding + scope + bundle wiring + the full guide + per-component usage notes + the exact var(--*) token allowlist).');
 
 if (model.startingPoints.length) {
   out.push('');

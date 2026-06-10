@@ -285,8 +285,9 @@ During normal plan review, an Archive sidebar tab provides the same browsing via
 
 | Endpoint              | Method | Purpose                                    |
 | --------------------- | ------ | ------------------------------------------ |
-| `/api/diff`           | GET    | Returns `{ rawPatch, gitRef, origin, mode?, diffType, base, hideWhitespace, gitContext, agentCwd? }`. Workspace mode returns `mode: "workspace"` with folder-prefixed paths and no `gitContext`. |
-| `/api/diff/switch`    | POST   | Switch diff type, base branch, or whitespace mode (body: `{ diffType, base?, hideWhitespace? }`) |
+| `/api/diff`           | GET    | Returns `{ rawPatch, gitRef, origin, mode?, diffType, base, hideWhitespace, gitContext, agentCwd?, semanticDiff? }`. Workspace mode returns `mode: "workspace"` with folder-prefixed paths and no `gitContext`. |
+| `/api/diff/switch`    | POST   | Switch diff type, base branch, or whitespace mode (body: `{ diffType, base?, hideWhitespace? }`). Response includes `semanticDiff?`. |
+| `/api/semantic-diff`  | GET    | Runs semantic diff for the active patch and returns parsed sem output or an unavailable/error response (`?fileExt=` / `?fileExts=` optional). |
 | `/api/file-content`   | GET    | Returns `{ oldContent, newContent }` for expandable diff context (`?path=&oldPath=&base=`) |
 | `/api/git-add`        | POST   | Stage/unstage a file (body: `{ filePath, undo? }`) |
 | `/api/feedback`       | POST   | Submit review (body: feedback, annotations, agentSwitch) |
@@ -312,9 +313,9 @@ During normal plan review, an Archive sidebar tab provides the same browsing via
 | `/api/agents/jobs` | POST | Launch an agent job (body: `{ provider, command, label }`) |
 | `/api/agents/jobs` | DELETE | Kill all running agent jobs |
 | `/api/agents/jobs/:id` | DELETE | Kill a specific agent job |
-| `/api/pr-diff-scope` | POST | Switch between layer and full-stack diff scope |
+| `/api/pr-diff-scope` | POST | Switch between layer and full-stack diff scope. Response includes `semanticDiff?`. |
 | `/api/pr-list` | GET | List PRs for the current repo (cached 30s) |
-| `/api/pr-switch` | POST | Switch to a different PR in-place (body: `{ url }`) |
+| `/api/pr-switch` | POST | Switch to a different PR in-place (body: `{ url }`). Response includes `semanticDiff?`. |
 | `/api/tour/:jobId` | GET | Fetch Code Tour result (greeting, stops, checklist) for a completed tour job |
 | `/api/tour/:jobId/checklist` | PUT | Persist checklist item state for a Code Tour |
 | `/api/code-nav/resolve` | POST | Search for symbol definitions and references via ripgrep (body: `{ symbol, filePath, line, charStart, side, language? }`) |

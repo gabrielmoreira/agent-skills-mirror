@@ -1,9 +1,143 @@
 # Site Profile: OiiOii.ai
 
 **URL:** https://www.oiioii.ai/
-**驗證狀態:** ✅ 2026-04-18/19 demo 實測
+**驗證狀態:** ✅ 2026-04-18/19 demo + 多次實測；🆕 **2026-06-08 大改版實測**（見 §0）
 **平台類型:** Multi-agent 動畫/影片創作平台
-**Stack:** React + tldraw canvas (ref 極不穩定，座標優先)
+**Stack:** React + tldraw canvas + **Slate prompt 框**（ref 極不穩定，座標優先；注入用 beforeinput）
+
+---
+
+## 0. 🆕🆕 2026-06-08 大改版完整重測（三大新功能）
+
+**改版公告：「OiiOii 新升級，三大重磅功能全新上線」= 智能畫布 / 拉片復刻 / Skill 庫。** 整個首頁與創作介面重設計。以下實機重測。
+
+### 新首頁佈局
+- **左欄圖示導航（取代舊頂部 chip）**：發現(home) / **新建** / 專案 / 資產 / **技能(Skill庫)**
+- **頂右**：活動 / 通知 / **credits（實測 20,612）PRO** / avatar
+- 「晚安，導演！」+ 最近專案橫列 + **亮點功能模板庫** + 活動 banner
+- **亮點功能模板**（點「開始」直接進對應 workflow）：故事劇情 / **拉片復刻(New)** / 場景設計 / 角色設計 / **商品展示廣告** / 我在世界盃現場 / 世界盃大亂鬥 / 無人機空拍 / 卡牌·放置遊戲買量 / 萌寵·懸疑·搞笑故事 / 貼紙設計
+
+### 🔑 新創作流程（取代舊「新建專案 → 自由畫布 chip」）
+```
+1. 左欄點「新建」→ 直接進 /space/{uuid} canvas（即「智能畫布」，不再需要切自由畫布 chip）
+2. 底部 prompt 列工具改版：+ / 劇本 / 「技能 skill ▾」/「Agent ▾」/ 風格 / 資產 / 語言 / send(粉箭頭)
+3. 選模型 = 點底部「Agent ▾」按鈕（取代舊「智能模型」按鈕）→ 彈出「模型」面板：
+   - 右上「Agent」toggle（= 舊「智能模型」toggle，ON=AI 自動挑模型；要指定模型先關掉）
+   - 圖片 / 影片 tabs
+4. inject prompt 到 Slate 框（beforeinput insertFromPaste **照舊可用**，class `_slate-area-editable_`）
+5. 點 send 粉箭頭
+```
+
+**🔧 可靠的 JS 選模型法（2026-06-10 三模型連測驗證，比純座標穩）：**
+座標會因 fresh space 載入時機/y 偏移落空。穩做法 = **座標點開 Agent 按鈕（~723,665）** 後，其餘全 JS（用 textContent 比對，不靠座標）：
+```js
+// (先座標點 Agent 開面板，因為 button 載入時 textContent 可能空，座標較穩)
+// 然後 JS：
+const toggle=[...document.querySelectorAll('button,[role="switch"],input')].find(el=>{const r=el.getBoundingClientRect();return r.top>360&&r.top<420&&r.left>820;}); toggle?.click(); // 關 Agent toggle
+const vTab=[...document.querySelectorAll('*')].find(el=>el.children.length<=1&&el.textContent.trim()==='影片'); (vTab.closest('button,[role="tab"],div')||vTab).click();
+const opt=[...document.querySelectorAll('*')].find(el=>el.children.length<=2&&el.textContent.trim()==='Kling 3.0 Pro'); opt.scrollIntoView({block:'center'}); (opt.closest('[role="button"],button,li,div')||opt).click();
+// 驗證：currentModel = bottom button 含 model 名
+```
+⚠️ fresh space 要等 ~2.5s canvas 載入。
+
+**🔧🔧 最可靠選模型法（2026-06-10 Wan/Kling Omni/HappyHorse 三連測最終定案）= 全 JS 迴圈開面板：**
+```js
+// JS 迴圈找+點 Agent 按鈕開面板（避開兩大坑，比座標穩）
+for(let i=0;i<3;i++){
+  const ab=[...document.querySelectorAll('button')].find(x=>{const t=(x.textContent||'').trim();const r=x.getBoundingClientRect();return (t==='Agent'||/^Agent/.test(t))&&r.top>600;});
+  if(ab){ ab.click(); await sleep(800); }
+  if(document.body.innerText.includes('Oii Image 2')) break;  // 驗證面板開了
+  await sleep(500);
+}
+// 然後 toggle off / 影片 tab / 點 model（textContent 比對）/ 注入 / send
+```
+**兩大坑（卡很久才發現）：**
+- **🐞 「Claude is active in this tab group」toast 蓋住 Agent 按鈕**（toast 在底部置中 x~655-915，Agent 在 x~723）→ 座標點 Agent 會點到 toast！每次導航 toast 重現。**JS 找 button 不靠座標就免疫**。
+- **🐞 renderer 累積變重**：開過 ~10 個 space 後同 tab 的 tldraw canvas 變重 → 截圖 timeout、座標點擊建出雜框、面板開不了。**解法：開新分頁**（fresh renderer）navigate 到 oiioii.ai/home 重來，舊重 tab 可關。
+- ⚠️ 別連點 Agent 兩次（座標 + JS）= 開了又關（toggle）。一種方法就好。
+
+### 🆕 模型實測成本+品質（2026-06-10 手動模式 4 連測，credits）
+| 模型 | 規格 | credits | 實測結果 |
+|---|---|---|---|
+| **Oii Image 2 [Best]** | 圖片海報 | **7** | ✅ **文字渲染旗艦確認**：「Hao0321 COFFEE」品牌名乾淨正確渲染（多數圖模做不到）。要圖內精準文字（海報/包裝/logo）首選 |
+| **Gemini Omni** | 4s 16:9 720p | **20** | ✅ 球鞋 clean concrete hero，多參輸入 |
+| **Oii X Imagine** | 6s 16:9 | **24** | ✅「低成本超寫實」確認，咖啡乾淨寫實 CP 值高 |
+| Seedance 2.0 pro | (見 §12.5 盒飯 formula) | ~ | 影片旗艦 |
+| 商品展示廣告 skill | 15s 16:9 **1080p** | **~1,500** | ✅ 玫瑰金腕錶精緻，但多 gate agent + 1080p，貴 75× |
+> **手動模式（Agent off + 選模型）每支 7-30cr 超便宜**（圖 7cr / 短影片 20-24cr）；skill 模式貴很多（~1500cr）。要大量試/迭代 → 手動。要圖內文字 → Oii Image 2。要低成本影片 → Oii X Imagine / Gemini Omni。
+
+### 🆕 三模型香水瓶對比（2026-06-10 同 prompt 實測 Kling/Vidu/Hailuo）
+| 模型 | 結果 | note |
+|---|---|---|
+| **Kling 3.0 Pro** | 六角玻璃台座、乾淨棚拍、金噴頭+琥珀液、暗反光 | 乾淨產品棚拍風 |
+| **Vidu Q3 Pro** | 修長瓶、紅琥珀漸層、洋紅氛圍光暈、戲劇打光 | editorial/戲劇感更強 |
+| **Hailuo 2.3 Pro** | （5s）方形瓶、金蓋、圓黑台座、戲劇頂聚光、暗色極簡 | ⚠️ 見下方時長限制；agent 自動修正衝突後成功 |
+- 三者都讓香水瓶清楚當 hero（禁抽象 ✓），但**打光性格不同**：Kling 偏乾淨棚拍、Vidu 偏戲劇 editorial。選模型可依想要的廣告調性。
+- **⚠️⚠️ 模型時長限制不同，切模型舊時長殘留會衝突！**：**Hailuo 2.3 Pro 僅支持 5s**（殘留 6s → 「生成失敗：hailuo23pro 僅支持 5秒」）。**好消息：OiiOii agent 會抓到衝突**並跳「調整為 5 秒繼續 / 換模型」→ 點調整即可。各模型上限：Hailuo 5s / Gemini Omni 預設 4s / X Imagine 6s / Seedance 10s。切模型後檢查時長。
+
+### 🆕 模型清單變動（2026-06-08 實測）
+**圖片：** **Oii Image 2 [Best]**（超強文字控制+寫實，新旗艦，取代 GPT-Image2）/ Oii Nano Pro / Oii Nano 2 / **Oii 4o**（GPT-4o 改名）/ Midjourney niji7 / Seedream 5.0
+**影片：** Seedance 2.0 pro/fast / Seedance 1.5 Pro / **🆕 Gemini Omni**（Google 模型上架了！）/ **🆕 Oii X Imagine**（新）/ Sora2（仍列，API 代理）/ Vidu Q3 Mix/Ref/Pro·Q2 / Kling 3.0 Pro/std·V3 Omni·O1·2.6 / Hailuo 2.3 Pro/Std / Wan 2.7 / HappyHorse / **Oii Agent**（智能路由）
+
+### 自動化延續性（✅ 2026-06-10 新 SOP 實機驗證通過）
+
+**完整驗證路徑（跑 Gemini Omni 球鞋廣告實測成功）：**
+```
+1. 左欄「新建」→ /space/{uuid} canvas
+2. 底部「Agent ▾」按鈕 → 模型面板：
+   - 點右上「Agent」toggle 關掉（粉→灰）才能指定模型（ON=AI自動挑）
+   - 影片 tab → 點「Gemini Omni」（或其他）→ 底部變「⚡自由創作 ▾ + Gemini Omni ▾ + 16:9·4s·720p + 20cr」
+3. Slate beforeinput insertFromPaste 注入 → domLen 增加 ✅ 照舊可用
+4. send button class `_send-section_tx61o_*`（仍 _send-section_ 系列）→ 點擊
+5. ⚠️ **prompt 框不會清空**（before==after），但**左側 Oii Agent 面板出現工作流**（藝術總監規劃完成→激活工作流→工作中…）= 生成已啟動。**別只看框沒清空就以為失敗，要看 agent 面板「工作中…」**
+```
+
+- ✅ **prompt 框仍是 Slate** → beforeinput insertFromPaste 注入法續用
+- ⚠️ **入口變了**：舊「新建專案→自由畫布」JS 點擊鏈失效 → 改「左欄新建 → 直接 canvas」
+- ⚠️ **模型選擇器位置變了**：舊「智能模型」按鈕 → 新「Agent ▾」按鈕；toggle 名稱 智能模型→**Agent**
+- ⚠️ **Gemini Omni 在 OiiOii 預設 4s / 16:9 / 720p = 20 credits**（比 Flow 的 10s 短，要長要改設定）
+- 🆕 新增 **拉片復刻**（上傳參考影片逐鏡復刻）、**Skill 庫**（左欄技能，可複用 workflow）、**商品展示廣告模板**（產品廣告專用，符合「產品清楚 hero」原則，待深測）
+- 下方舊 §1-§12 SOP 多數仍適用（canvas/Slate/盒飯機制未變），但**入口與模型選擇器步驟以本 §0 為準**
+
+### 🆕 Skill 庫 / 模板 = skillId 系統（2026-06-10 完整實測）
+- 首頁「亮點功能」模板點開 = 帶 `?skillId=xxx` 的 space。例：**商品展示廣告 = `ecommerce_ads_skill`**（底部技能按鈕顯示「通用商品展示廣告」）。
+- **🔑 架構發現：OiiOii 的 skill 跟 Claude skill 一樣有 SKILL.md！** agent 實際會「**讀取『ecommerce_ads_skill』的完整 SKILL.md 入口說明**」來知道步驟/規範/約束。= OiiOii skill 庫 = 一堆 SKILL.md 驅動的引導式 agent workflow。
+- **商品展示廣告 skill = 引導式 5 步表單**（不是一鍵生成，注入 prompt 後 agent 抽參數→跳表單）：
+  1. **商品名稱**（從 prompt 自動抽）
+  2. **商品白底圖（可選）** — 「上傳乾淨白底圖讓 AI 精準還原；不傳則自動生成」= **i2v 鎖形狀的產品化**（呼應 quality-control §1 + i2v 流程）
+  3. **商品賣點（至少兩個）**
+  4. **影片時長**：15秒（直接生成精簡片，**推薦**）/ 30秒·60秒（**先生劇本再分段生成** = 多鏡頭結構化長片）
+  5. **旁白/對白語言**：繁中/英/日
+  → 「確認提交」→ **第二組自適應 gate**（agent 依需求智能精簡方案）：製作流程方案（同意直接生 / 修改加模特場景）→ 寬高比（16:9 TVC / 9:16 抖音小紅書 / 1:1 詳情頁）→ 光影動態細節（可選）→ **確認並開始生成** → 自動生 hero 白底圖 → i2v 動畫化 15s
+- **產品廣告最佳路徑（改版後）：** 有真實產品圖 → 商品展示廣告 skill 上傳白底圖（鎖形狀）→ 5 步表單 → 生成。比手動自由畫布更結構化、更符合「產品清楚 hero」。
+- **⚠️⚠️ 成本警告（實測 2026-06-10 完整跑完）：商品展示廣告 skill 一支 15s 1080p 腕錶廣告 = ~1,500 credits**（20,612→19,087）。對比**手動自由創作 Gemini Omni 4s 720p = 20 credits** → **skill 貴約 75×**！貴在：多 gate agent 推理 + 1080p Seedance 2.0 Pro 15s。成品品質：玫瑰金腕錶清楚 hero、1080p、奢華質感到位（符合禁抽象）。
+- **決策：要快/省/迭代 → 手動自由創作（Agent▾→Slate注入→send）；要 1080p 精緻成品+有真實產品圖+不在乎成本 → skill。** 自動化跑 skill 要點 ~10 個「下一步/確認」button（textContent 比對找），且 1080p 生成 ~5-7 分鐘。
+- 其他 skill 同理（各有自己的 SKILL.md + 引導表單）：拉片復刻 / 角色設計 / 場景設計 / 無人機空拍。底部「技能 skill ▾」可切換/疊加。
+- **自動化：** 套 skill = 首頁點模板（或底部技能 skill ▾ 選）→ 進帶 skillId 的 space → Slate 注入 prompt → agent 跳表單 → JS 填表單欄位 + 點「下一步」×N → 「確認提交」。表單欄位是一般 input/contenteditable，下一步/確認提交是一般 button（用 textContent 比對找）。
+
+### ✅ i2v 觸發改版後仍有效（2026-06-10 實機驗證）
+- 右鍵 canvas 圖 → context menu **「生成影片」仍在**（+ 新增「存為角色/存為場景/存為風格」餵一致性/資產系統）。§12.10.10 SOP 不變。
+- 點生成影片 → canvas-side i2v 框：**圖自動附**（多參 slot）+ **Seedance 2.0 pro 自動選** + 預設 16:9·10s·720p·**140cr**。
+- 🆕 i2v 框 tabs：**文生 / 多參（多參考圖，可加圖片+影片）/ 首尾幀（first-last frame 控制）** —— 比舊版增強。
+- 注入運鏡 prompt 進**右側 canvas-side 框**（contenteditable left>600，不是左 agent panel）→ beforeinput 注入 → send（i2v 框右側粉箭頭 left>980）。i2v prompt 照規則 prefix「根據圖片中的物體、畫面、風格來生成影片」+ 只寫運鏡。
+
+### ✅ 一致性系統：存為角色/場景/風格（2026-06-10 實測，免費）
+- 選中 canvas 圖右鍵 → **存為角色 / 存為場景 / 存為風格** → toast「已存為風格」→ 存進**資產庫**。
+- 之後新生成用底部「**資產**」按鈕引用（= Seedance `@AssetName` 分派職責技巧的 OiiOii UI；角色鎖造型、場景鎖背景、風格鎖質感）→ 跨鏡頭一致性。
+- ⚠️ **gotcha：右鍵前要先左鍵「選中」圖**，否則右鍵出的是 canvas 選單（貼上/多選/一鍵整理/添加畫板/上傳）不是圖片選單。圖片選單才有生成影片/存為角色等。
+
+### 🆕 拉片復刻（三大新功能之一，2026-06-10 測繪入口）
+- 首頁「拉片復刻」模板 → 進 canvas，5 步引導 tour（提示 1/5「上傳影片」），中央大框 +上傳，tooltip「**在這裡上傳一段影片開始複刻**」。
+- 用途：**上傳一段參考影片 → 逐鏡復刻**（分析參考片運鏡/節奏/結構 → 重新生成同結構的新片）。適合「看到喜歡的影片想複刻同款運鏡/結構」。
+- ⚠️ **需本地參考影片檔上傳才能跑**（用 file_upload）。本次無參考片，僅測繪入口/用途；完整逐鏡流程待有參考片時跑。
+
+### ✅ Skill 庫 /skill 頁（2026-06-10 實測）
+- 左欄「技能」→ `/skill` 頁 = **OiiOii 官方策展 skill 庫**，分類 tab：全部 / 自媒體 / 廣告行銷 / 遊戲 / 周邊設計。
+- 每個 skill 卡：名稱 + 描述 + 「查看 N 個案例」+ **bookmark 收藏** + **試試看**（= 進帶 skillId 的 space）。例：無人機航拍「需上傳標註路徑的遠景圖（箭頭標起點終點）」。
+- **⚠️ 無 UI 開放用戶自建/上傳自訂 SKILL.md**（這頁沒有 create/新增按鈕）。**複用方式 = bookmark 收藏 + 從創作頁底部「技能 skill ▾」選用官方 skill**。自訂 workflow 目前靠官方 skill 組合，不是自寫 SKILL.md。
+
+### 待深測（下次）
+- 拉片復刻完整逐鏡流程（需用戶提供參考影片檔上傳；入口+用途已測繪，recreation 技巧見 multimodel-video-cheatsheet.md）
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `github/gh-aw` — 26 default patterns, 0 followed patterns, 45 file(s) materialized.
+Mirror of `github/gh-aw` — 26 default patterns, 3 followed patterns, 49 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `github/gh-aw` — 26 default patterns, 0 followed patterns, 45 file(s
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 45 |
+| Followed pats | 3 |
+| Files         | 49 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,9 @@ Mirror of `github/gh-aw` — 26 default patterns, 0 followed patterns, 45 file(s
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `actions/setup/md/safe_outputs_push_to_pr_branch.md`
+- `docs/src/content/docs/reference/checkout.md`
+- `docs/sparseness.md`
 
 ## File Index
 
@@ -64,46 +66,50 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.github/skills/agentic-workflow-designer/SKILL.md`](.github/skills/agentic-workflow-designer/SKILL.md) |
 | 4 | ✓ | [`.github/skills/agentic-workflows/SKILL.md`](.github/skills/agentic-workflows/SKILL.md) |
 | 5 | ✓ | [`.github/skills/awf-release-integrator/SKILL.md`](.github/skills/awf-release-integrator/SKILL.md) |
-| 6 | ✓ | [`.github/skills/console-rendering/SKILL.md`](.github/skills/console-rendering/SKILL.md) |
-| 7 | ✓ | [`.github/skills/copilot-review/SKILL.md`](.github/skills/copilot-review/SKILL.md) |
-| 8 | ✓ | [`.github/skills/custom-agents/SKILL.md`](.github/skills/custom-agents/SKILL.md) |
-| 9 | ✓ | [`.github/skills/debugging-workflows/SKILL.md`](.github/skills/debugging-workflows/SKILL.md) |
-| 10 | ✓ | [`.github/skills/developer/SKILL.md`](.github/skills/developer/SKILL.md) |
-| 11 | ✓ | [`.github/skills/documentation/SKILL.md`](.github/skills/documentation/SKILL.md) |
-| 12 | ✓ | [`.github/skills/error-messages/SKILL.md`](.github/skills/error-messages/SKILL.md) |
-| 13 | ✓ | [`.github/skills/error-pattern-safety/SKILL.md`](.github/skills/error-pattern-safety/SKILL.md) |
-| 14 | ✓ | [`.github/skills/error-recovery-patterns/SKILL.md`](.github/skills/error-recovery-patterns/SKILL.md) |
-| 15 | ✓ | [`.github/skills/gh-agent-session/SKILL.md`](.github/skills/gh-agent-session/SKILL.md) |
-| 16 | ✓ | [`.github/skills/gh-agent-task/SKILL.md`](.github/skills/gh-agent-task/SKILL.md) |
-| 17 | ✓ | [`.github/skills/github-copilot-agent-tips-and-tricks/SKILL.md`](.github/skills/github-copilot-agent-tips-and-tricks/SKILL.md) |
-| 18 | ✓ | [`.github/skills/github-discussion-query/SKILL.md`](.github/skills/github-discussion-query/SKILL.md) |
-| 19 | ✓ | [`.github/skills/github-issue-query/SKILL.md`](.github/skills/github-issue-query/SKILL.md) |
-| 20 | ✓ | [`.github/skills/github-labels-query/SKILL.md`](.github/skills/github-labels-query/SKILL.md) |
-| 21 | ✓ | [`.github/skills/github-mcp-server/SKILL.md`](.github/skills/github-mcp-server/SKILL.md) |
-| 22 | ✓ | [`.github/skills/github-pr-query/SKILL.md`](.github/skills/github-pr-query/SKILL.md) |
-| 23 | ✓ | [`.github/skills/github-script/SKILL.md`](.github/skills/github-script/SKILL.md) |
-| 24 | ✓ | [`.github/skills/github-workflows-query/SKILL.md`](.github/skills/github-workflows-query/SKILL.md) |
-| 25 | ✓ | [`.github/skills/go-codemod/SKILL.md`](.github/skills/go-codemod/SKILL.md) |
-| 26 | ✓ | [`.github/skills/go-linters/SKILL.md`](.github/skills/go-linters/SKILL.md) |
-| 27 | ✓ | [`.github/skills/http-mcp-headers/SKILL.md`](.github/skills/http-mcp-headers/SKILL.md) |
-| 28 | ✓ | [`.github/skills/javascript-refactoring/SKILL.md`](.github/skills/javascript-refactoring/SKILL.md) |
-| 29 | ✓ | [`.github/skills/jqschema/SKILL.md`](.github/skills/jqschema/SKILL.md) |
-| 30 | ✓ | [`.github/skills/messages/SKILL.md`](.github/skills/messages/SKILL.md) |
-| 31 | ✓ | [`.github/skills/otel-queries/SKILL.md`](.github/skills/otel-queries/SKILL.md) |
-| 32 | ✓ | [`.github/skills/pr-finisher/SKILL.md`](.github/skills/pr-finisher/SKILL.md) |
-| 33 | ✓ | [`.github/skills/pr-to-go-linter/SKILL.md`](.github/skills/pr-to-go-linter/SKILL.md) |
-| 34 | ✓ | [`.github/skills/prompt-token-efficiency/SKILL.md`](.github/skills/prompt-token-efficiency/SKILL.md) |
-| 35 | ✓ | [`.github/skills/reporting/SKILL.md`](.github/skills/reporting/SKILL.md) |
-| 36 | ✓ | [`.github/skills/sergo-examples/SKILL.md`](.github/skills/sergo-examples/SKILL.md) |
-| 37 | ✓ | [`.github/skills/skillz-integration/SKILL.md`](.github/skills/skillz-integration/SKILL.md) |
-| 38 | ✓ | [`.github/skills/ssl/SKILL.md`](.github/skills/ssl/SKILL.md) |
-| 39 | ✓ | [`.github/skills/temporary-id-safe-output/SKILL.md`](.github/skills/temporary-id-safe-output/SKILL.md) |
-| 40 | ✓ | [`.github/skills/workflow-step-summaries/SKILL.md`](.github/skills/workflow-step-summaries/SKILL.md) |
-| 41 | ✓ | [`.github/workflows/go-fan.md`](.github/workflows/go-fan.md) |
-| 42 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 43 | ✓ | [`pkg/workflow/data/engines/claude.md`](pkg/workflow/data/engines/claude.md) |
-| 44 | ✓ | [`pkg/workflow/data/engines/gemini.md`](pkg/workflow/data/engines/gemini.md) |
-| 45 | ✓ | [`SKILL.md`](SKILL.md) |
+| 6 | ✓ | [`.github/skills/checkout-credential-review/SKILL.md`](.github/skills/checkout-credential-review/SKILL.md) |
+| 7 | ✓ | [`.github/skills/console-rendering/SKILL.md`](.github/skills/console-rendering/SKILL.md) |
+| 8 | ✓ | [`.github/skills/copilot-review/SKILL.md`](.github/skills/copilot-review/SKILL.md) |
+| 9 | ✓ | [`.github/skills/custom-agents/SKILL.md`](.github/skills/custom-agents/SKILL.md) |
+| 10 | ✓ | [`.github/skills/debugging-workflows/SKILL.md`](.github/skills/debugging-workflows/SKILL.md) |
+| 11 | ✓ | [`.github/skills/developer/SKILL.md`](.github/skills/developer/SKILL.md) |
+| 12 | ✓ | [`.github/skills/documentation/SKILL.md`](.github/skills/documentation/SKILL.md) |
+| 13 | ✓ | [`.github/skills/error-messages/SKILL.md`](.github/skills/error-messages/SKILL.md) |
+| 14 | ✓ | [`.github/skills/error-pattern-safety/SKILL.md`](.github/skills/error-pattern-safety/SKILL.md) |
+| 15 | ✓ | [`.github/skills/error-recovery-patterns/SKILL.md`](.github/skills/error-recovery-patterns/SKILL.md) |
+| 16 | ✓ | [`.github/skills/gh-agent-session/SKILL.md`](.github/skills/gh-agent-session/SKILL.md) |
+| 17 | ✓ | [`.github/skills/gh-agent-task/SKILL.md`](.github/skills/gh-agent-task/SKILL.md) |
+| 18 | ✓ | [`.github/skills/github-copilot-agent-tips-and-tricks/SKILL.md`](.github/skills/github-copilot-agent-tips-and-tricks/SKILL.md) |
+| 19 | ✓ | [`.github/skills/github-discussion-query/SKILL.md`](.github/skills/github-discussion-query/SKILL.md) |
+| 20 | ✓ | [`.github/skills/github-issue-query/SKILL.md`](.github/skills/github-issue-query/SKILL.md) |
+| 21 | ✓ | [`.github/skills/github-labels-query/SKILL.md`](.github/skills/github-labels-query/SKILL.md) |
+| 22 | ✓ | [`.github/skills/github-mcp-server/SKILL.md`](.github/skills/github-mcp-server/SKILL.md) |
+| 23 | ✓ | [`.github/skills/github-pr-query/SKILL.md`](.github/skills/github-pr-query/SKILL.md) |
+| 24 | ✓ | [`.github/skills/github-script/SKILL.md`](.github/skills/github-script/SKILL.md) |
+| 25 | ✓ | [`.github/skills/github-workflows-query/SKILL.md`](.github/skills/github-workflows-query/SKILL.md) |
+| 26 | ✓ | [`.github/skills/go-codemod/SKILL.md`](.github/skills/go-codemod/SKILL.md) |
+| 27 | ✓ | [`.github/skills/go-linters/SKILL.md`](.github/skills/go-linters/SKILL.md) |
+| 28 | ✓ | [`.github/skills/http-mcp-headers/SKILL.md`](.github/skills/http-mcp-headers/SKILL.md) |
+| 29 | ✓ | [`.github/skills/javascript-refactoring/SKILL.md`](.github/skills/javascript-refactoring/SKILL.md) |
+| 30 | ✓ | [`.github/skills/jqschema/SKILL.md`](.github/skills/jqschema/SKILL.md) |
+| 31 | ✓ | [`.github/skills/messages/SKILL.md`](.github/skills/messages/SKILL.md) |
+| 32 | ✓ | [`.github/skills/otel-queries/SKILL.md`](.github/skills/otel-queries/SKILL.md) |
+| 33 | ✓ | [`.github/skills/pr-finisher/SKILL.md`](.github/skills/pr-finisher/SKILL.md) |
+| 34 | ✓ | [`.github/skills/pr-to-go-linter/SKILL.md`](.github/skills/pr-to-go-linter/SKILL.md) |
+| 35 | ✓ | [`.github/skills/prompt-token-efficiency/SKILL.md`](.github/skills/prompt-token-efficiency/SKILL.md) |
+| 36 | ✓ | [`.github/skills/reporting/SKILL.md`](.github/skills/reporting/SKILL.md) |
+| 37 | ✓ | [`.github/skills/sergo-examples/SKILL.md`](.github/skills/sergo-examples/SKILL.md) |
+| 38 | ✓ | [`.github/skills/skillz-integration/SKILL.md`](.github/skills/skillz-integration/SKILL.md) |
+| 39 | ✓ | [`.github/skills/ssl/SKILL.md`](.github/skills/ssl/SKILL.md) |
+| 40 | ✓ | [`.github/skills/temporary-id-safe-output/SKILL.md`](.github/skills/temporary-id-safe-output/SKILL.md) |
+| 41 | ✓ | [`.github/skills/workflow-step-summaries/SKILL.md`](.github/skills/workflow-step-summaries/SKILL.md) |
+| 42 | ✓ | [`.github/workflows/go-fan.md`](.github/workflows/go-fan.md) |
+| 43 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 44 | ✓ | [`pkg/workflow/data/engines/claude.md`](pkg/workflow/data/engines/claude.md) |
+| 45 | ✓ | [`pkg/workflow/data/engines/gemini.md`](pkg/workflow/data/engines/gemini.md) |
+| 46 | ✓ | [`SKILL.md`](SKILL.md) |
+| 47 | → | [`actions/setup/md/safe_outputs_push_to_pr_branch.md`](actions/setup/md/safe_outputs_push_to_pr_branch.md) |
+| 48 | → | [`docs/sparseness.md`](docs/sparseness.md) |
+| 49 | → | [`docs/src/content/docs/reference/checkout.md`](docs/src/content/docs/reference/checkout.md) |
 
 ---
 

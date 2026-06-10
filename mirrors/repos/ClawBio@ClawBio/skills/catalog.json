@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "generated_by": "scripts/generate_catalog.py",
-  "skill_count": 87,
+  "skill_count": 88,
   "galaxy_tool_count": 8182,
   "skills": [
     {
@@ -92,7 +92,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/archaic-introgression/pipeline.py --demo",
+      "demo_command": "python skills/archaic-introgression/archaic_introgression.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [
@@ -544,7 +544,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/clinical-trial-finder/euctr.py --demo",
+      "demo_command": "python skills/clinical-trial-finder/opentargets.py --demo",
       "dependencies": [
         "python>=3.11"
       ],
@@ -578,7 +578,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/clinical-variant-reporter/acmg_engine.py --demo",
+      "demo_command": "python skills/clinical-variant-reporter/clinical_variant_reporter.py --demo",
       "dependencies": [],
       "tags": [
         "acmg",
@@ -833,6 +833,43 @@
       "chaining_partners": [
         "pharmgx-reporter"
       ]
+    },
+    {
+      "name": "drug-repurposing-screen",
+      "cli_alias": null,
+      "description": "Objective-driven pooled viability screen analysis: QC, hit calling, context-selectivity, biomarker sweep, and ranked repurposing candidates. Format-agnostic via schema.yaml + objective.yaml; includes offline demo.",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/drug-repurposing-screen/screen_engine.py --demo",
+      "dependencies": [
+        "python>=3.10",
+        "numpy>=1.24",
+        "pandas>=2.0",
+        "scipy>=1.10",
+        "pyyaml>=6.0",
+        "pyarrow>=14.0"
+      ],
+      "tags": [
+        "drug-repurposing",
+        "viability-screen",
+        "dose-response",
+        "biomarker",
+        "cell-line-panel"
+      ],
+      "trigger_keywords": [
+        "drug repurposing",
+        "repurposing screen",
+        "viability screen",
+        "PRISM",
+        "compound panel",
+        "selective killing biomarker",
+        "pooled viability analysis",
+        "context-selective compound"
+      ],
+      "chaining_partners": []
     },
     {
       "name": "eqtl-catalogue-region-fetch",
@@ -1489,7 +1526,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/illumina-bridge/illumina_bridge.py --demo",
+      "demo_command": "python skills/illumina-bridge/illumina_providers.py --demo",
       "dependencies": [],
       "tags": [
         "illumina",
@@ -1619,7 +1656,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/locuscompare-region-render/_wald_ratio_types.py --demo",
+      "demo_command": "python skills/locuscompare-region-render/cli.py --demo",
       "dependencies": [
         "python>=3.10",
         "numpy>=1.24",
@@ -1975,7 +2012,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/nutrigx-advisor/score_variants.py --demo",
+      "demo_command": "python skills/nutrigx-advisor/parse_input.py --demo",
       "dependencies": [],
       "tags": [
         "nutrigenomics",
@@ -2272,7 +2309,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/pubmed-summariser/pubmed_api.py --demo",
+      "demo_command": "python skills/pubmed-summariser/pubmed_summariser.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [

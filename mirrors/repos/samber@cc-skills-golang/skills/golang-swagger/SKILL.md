@@ -30,6 +30,7 @@ allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(g
 - **Audit** — reviewing existing swagger annotations for completeness, correctness, and security coverage.
 
 **Dependencies:**
+
 - swag: `go install github.com/swaggo/swag/cmd/swag@latest`
 
 ## Setup

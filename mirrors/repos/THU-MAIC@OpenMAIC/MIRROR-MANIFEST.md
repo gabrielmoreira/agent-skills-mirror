@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `THU-MAIC/OpenMAIC` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `THU-MAIC/OpenMAIC` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `THU-MAIC/OpenMAIC` — 26 default patterns, 0 followed patterns, 6 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,12 +59,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/openmaic/references/clone.md`](skills/openmaic/references/clone.md) |
-| 2 | ✓ | [`skills/openmaic/references/generate-flow.md`](skills/openmaic/references/generate-flow.md) |
-| 3 | ✓ | [`skills/openmaic/references/hosted-mode.md`](skills/openmaic/references/hosted-mode.md) |
-| 4 | ✓ | [`skills/openmaic/references/provider-keys.md`](skills/openmaic/references/provider-keys.md) |
-| 5 | ✓ | [`skills/openmaic/references/startup-modes.md`](skills/openmaic/references/startup-modes.md) |
-| 6 | ✓ | [`skills/openmaic/SKILL.md`](skills/openmaic/SKILL.md) |
+| 1 | ✓ | [`packages/@maic/importer/SKILL.md`](packages/@maic/importer/SKILL.md) |
+| 2 | ✓ | [`skills/openmaic/references/clone.md`](skills/openmaic/references/clone.md) |
+| 3 | ✓ | [`skills/openmaic/references/generate-flow.md`](skills/openmaic/references/generate-flow.md) |
+| 4 | ✓ | [`skills/openmaic/references/hosted-mode.md`](skills/openmaic/references/hosted-mode.md) |
+| 5 | ✓ | [`skills/openmaic/references/provider-keys.md`](skills/openmaic/references/provider-keys.md) |
+| 6 | ✓ | [`skills/openmaic/references/startup-modes.md`](skills/openmaic/references/startup-modes.md) |
+| 7 | ✓ | [`skills/openmaic/SKILL.md`](skills/openmaic/SKILL.md) |
 
 ---
 
