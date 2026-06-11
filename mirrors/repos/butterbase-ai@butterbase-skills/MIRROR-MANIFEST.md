@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `butterbase-ai/butterbase-skills` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
+Mirror of `butterbase-ai/butterbase-skills` — 26 default patterns, 0 followed patterns, 40 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `butterbase-ai/butterbase-skills` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 36 |
+| Files         | 40 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,40 +61,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 2 | ✓ | [`SKILL.md`](SKILL.md) |
-| 3 | ✓ | [`skills/ai/SKILL.md`](skills/ai/SKILL.md) |
-| 4 | ✓ | [`skills/auth-setup/SKILL.md`](skills/auth-setup/SKILL.md) |
-| 5 | ✓ | [`skills/build-app/SKILL.md`](skills/build-app/SKILL.md) |
-| 6 | ✓ | [`skills/contributing/SKILL.md`](skills/contributing/SKILL.md) |
-| 7 | ✓ | [`skills/debug-rls/SKILL.md`](skills/debug-rls/SKILL.md) |
-| 8 | ✓ | [`skills/deploy-frontend/SKILL.md`](skills/deploy-frontend/SKILL.md) |
-| 9 | ✓ | [`skills/durable-objects/SKILL.md`](skills/durable-objects/SKILL.md) |
-| 10 | ✓ | [`skills/function-dev/SKILL.md`](skills/function-dev/SKILL.md) |
-| 11 | ✓ | [`skills/integrations/SKILL.md`](skills/integrations/SKILL.md) |
-| 12 | ✓ | [`skills/journey-ai/SKILL.md`](skills/journey-ai/SKILL.md) |
-| 13 | ✓ | [`skills/journey-auth/SKILL.md`](skills/journey-auth/SKILL.md) |
-| 14 | ✓ | [`skills/journey-deploy/SKILL.md`](skills/journey-deploy/SKILL.md) |
-| 15 | ✓ | [`skills/journey-docs/SKILL.md`](skills/journey-docs/SKILL.md) |
-| 16 | ✓ | [`skills/journey-durable/SKILL.md`](skills/journey-durable/SKILL.md) |
-| 17 | ✓ | [`skills/journey-frontend/SKILL.md`](skills/journey-frontend/SKILL.md) |
-| 18 | ✓ | [`skills/journey-functions/SKILL.md`](skills/journey-functions/SKILL.md) |
-| 19 | ✓ | [`skills/journey-idea/SKILL.md`](skills/journey-idea/SKILL.md) |
-| 20 | ✓ | [`skills/journey-plan/SKILL.md`](skills/journey-plan/SKILL.md) |
-| 21 | ✓ | [`skills/journey-preflight/SKILL.md`](skills/journey-preflight/SKILL.md) |
-| 22 | ✓ | [`skills/journey-rag/SKILL.md`](skills/journey-rag/SKILL.md) |
-| 23 | ✓ | [`skills/journey-realtime/SKILL.md`](skills/journey-realtime/SKILL.md) |
-| 24 | ✓ | [`skills/journey-rls/SKILL.md`](skills/journey-rls/SKILL.md) |
-| 25 | ✓ | [`skills/journey-schema/SKILL.md`](skills/journey-schema/SKILL.md) |
-| 26 | ✓ | [`skills/journey-storage/SKILL.md`](skills/journey-storage/SKILL.md) |
-| 27 | ✓ | [`skills/journey-submit/SKILL.md`](skills/journey-submit/SKILL.md) |
-| 28 | ✓ | [`skills/journey-substrate/SKILL.md`](skills/journey-substrate/SKILL.md) |
-| 29 | ✓ | [`skills/journey/SKILL.md`](skills/journey/SKILL.md) |
-| 30 | ✓ | [`skills/migrations/SKILL.md`](skills/migrations/SKILL.md) |
-| 31 | ✓ | [`skills/payments/SKILL.md`](skills/payments/SKILL.md) |
-| 32 | ✓ | [`skills/rag-dev/SKILL.md`](skills/rag-dev/SKILL.md) |
-| 33 | ✓ | [`skills/realtime/SKILL.md`](skills/realtime/SKILL.md) |
-| 34 | ✓ | [`skills/schema-design/SKILL.md`](skills/schema-design/SKILL.md) |
-| 35 | ✓ | [`skills/storage/SKILL.md`](skills/storage/SKILL.md) |
-| 36 | ✓ | [`skills/substrate/SKILL.md`](skills/substrate/SKILL.md) |
+| 3 | ✓ | [`skills/agents/SKILL.md`](skills/agents/SKILL.md) |
+| 4 | ✓ | [`skills/ai/SKILL.md`](skills/ai/SKILL.md) |
+| 5 | ✓ | [`skills/auth-setup/SKILL.md`](skills/auth-setup/SKILL.md) |
+| 6 | ✓ | [`skills/build-app/SKILL.md`](skills/build-app/SKILL.md) |
+| 7 | ✓ | [`skills/contributing/SKILL.md`](skills/contributing/SKILL.md) |
+| 8 | ✓ | [`skills/debug-rls/SKILL.md`](skills/debug-rls/SKILL.md) |
+| 9 | ✓ | [`skills/deploy-frontend/SKILL.md`](skills/deploy-frontend/SKILL.md) |
+| 10 | ✓ | [`skills/durable-objects/SKILL.md`](skills/durable-objects/SKILL.md) |
+| 11 | ✓ | [`skills/function-dev/SKILL.md`](skills/function-dev/SKILL.md) |
+| 12 | ✓ | [`skills/integrations/SKILL.md`](skills/integrations/SKILL.md) |
+| 13 | ✓ | [`skills/journey-agents/SKILL.md`](skills/journey-agents/SKILL.md) |
+| 14 | ✓ | [`skills/journey-ai/SKILL.md`](skills/journey-ai/SKILL.md) |
+| 15 | ✓ | [`skills/journey-auth/SKILL.md`](skills/journey-auth/SKILL.md) |
+| 16 | ✓ | [`skills/journey-deploy/SKILL.md`](skills/journey-deploy/SKILL.md) |
+| 17 | ✓ | [`skills/journey-docs/SKILL.md`](skills/journey-docs/SKILL.md) |
+| 18 | ✓ | [`skills/journey-durable/SKILL.md`](skills/journey-durable/SKILL.md) |
+| 19 | ✓ | [`skills/journey-frontend/SKILL.md`](skills/journey-frontend/SKILL.md) |
+| 20 | ✓ | [`skills/journey-functions/SKILL.md`](skills/journey-functions/SKILL.md) |
+| 21 | ✓ | [`skills/journey-idea/SKILL.md`](skills/journey-idea/SKILL.md) |
+| 22 | ✓ | [`skills/journey-plan/SKILL.md`](skills/journey-plan/SKILL.md) |
+| 23 | ✓ | [`skills/journey-preflight/SKILL.md`](skills/journey-preflight/SKILL.md) |
+| 24 | ✓ | [`skills/journey-rag/SKILL.md`](skills/journey-rag/SKILL.md) |
+| 25 | ✓ | [`skills/journey-realtime/SKILL.md`](skills/journey-realtime/SKILL.md) |
+| 26 | ✓ | [`skills/journey-rls/SKILL.md`](skills/journey-rls/SKILL.md) |
+| 27 | ✓ | [`skills/journey-schema/SKILL.md`](skills/journey-schema/SKILL.md) |
+| 28 | ✓ | [`skills/journey-storage/SKILL.md`](skills/journey-storage/SKILL.md) |
+| 29 | ✓ | [`skills/journey-submit/SKILL.md`](skills/journey-submit/SKILL.md) |
+| 30 | ✓ | [`skills/journey-substrate/SKILL.md`](skills/journey-substrate/SKILL.md) |
+| 31 | ✓ | [`skills/journey-templates/SKILL.md`](skills/journey-templates/SKILL.md) |
+| 32 | ✓ | [`skills/journey/SKILL.md`](skills/journey/SKILL.md) |
+| 33 | ✓ | [`skills/migrations/SKILL.md`](skills/migrations/SKILL.md) |
+| 34 | ✓ | [`skills/payments/SKILL.md`](skills/payments/SKILL.md) |
+| 35 | ✓ | [`skills/rag-dev/SKILL.md`](skills/rag-dev/SKILL.md) |
+| 36 | ✓ | [`skills/realtime/SKILL.md`](skills/realtime/SKILL.md) |
+| 37 | ✓ | [`skills/schema-design/SKILL.md`](skills/schema-design/SKILL.md) |
+| 38 | ✓ | [`skills/storage/SKILL.md`](skills/storage/SKILL.md) |
+| 39 | ✓ | [`skills/substrate/SKILL.md`](skills/substrate/SKILL.md) |
+| 40 | ✓ | [`skills/templates/SKILL.md`](skills/templates/SKILL.md) |
 
 ---
 

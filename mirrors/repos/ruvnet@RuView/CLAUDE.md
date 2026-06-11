@@ -15,7 +15,8 @@ Dual codebase: Python v1 (`v1/`) and Rust port (`v2/`).
 | `wifi-densepose-hardware` | ESP32 aggregator, TDM protocol, channel hopping firmware |
 | `wifi-densepose-ruvector` | RuVector v2.0.4 integration + cross-viewpoint fusion (5 modules) |
 | `wifi-densepose-wasm` | WebAssembly bindings for browser deployment |
-| `wifi-densepose-cli` | CLI tool (`wifi-densepose` binary) |
+| `wifi-densepose-cli` | CLI tool (`wifi-densepose` binary) — `calibrate`/`calibrate-serve`/`enroll`/`train-room`/`room-watch` + MAT (MAT gated behind the `mat` feature; build `--no-default-features` for the aarch64/appliance calibration binary) |
+| `wifi-densepose-calibration` | ADR-151 per-room calibration & specialist training — `baseline → enroll → extract → train` → bank of small specialists (presence/posture/breathing/heartbeat/restlessness/anomaly) + multistatic fusion; pure Rust, edge-deployable |
 | `wifi-densepose-sensing-server` | Lightweight Axum server for WiFi sensing UI |
 | `wifi-densepose-wifiscan` | Multi-BSSID WiFi scanning (ADR-022) |
 | `wifi-densepose-vitals` | ESP32 CSI-grade vital sign extraction (ADR-021) |

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `NeoLabHQ/context-engineering-kit` — 26 default patterns, 1 followed patterns, 69 file(s) materialized.
+Mirror of `NeoLabHQ/context-engineering-kit` — 26 default patterns, 1 followed patterns, 71 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NeoLabHQ/context-engineering-kit` — 26 default patterns, 1 followed
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 69 |
+| Files         | 71 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -124,10 +124,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 63 | ✓ | [`plugins/sdd/skills/create-ideas/SKILL.md`](plugins/sdd/skills/create-ideas/SKILL.md) |
 | 64 | ✓ | [`plugins/sdd/skills/implement-task/SKILL.md`](plugins/sdd/skills/implement-task/SKILL.md) |
 | 65 | ✓ | [`plugins/sdd/skills/plan-task/SKILL.md`](plugins/sdd/skills/plan-task/SKILL.md) |
-| 66 | ✓ | [`plugins/tdd/skills/fix-tests/SKILL.md`](plugins/tdd/skills/fix-tests/SKILL.md) |
-| 67 | ✓ | [`plugins/tdd/skills/test-driven-development/SKILL.md`](plugins/tdd/skills/test-driven-development/SKILL.md) |
-| 68 | ✓ | [`plugins/tdd/skills/write-tests/SKILL.md`](plugins/tdd/skills/write-tests/SKILL.md) |
-| 69 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 66 | ✓ | [`plugins/tdd/skills/design-testing-strategy/SKILL.md`](plugins/tdd/skills/design-testing-strategy/SKILL.md) |
+| 67 | ✓ | [`plugins/tdd/skills/fix-tests/SKILL.md`](plugins/tdd/skills/fix-tests/SKILL.md) |
+| 68 | ✓ | [`plugins/tdd/skills/test-coverage/SKILL.md`](plugins/tdd/skills/test-coverage/SKILL.md) |
+| 69 | ✓ | [`plugins/tdd/skills/test-driven-development/SKILL.md`](plugins/tdd/skills/test-driven-development/SKILL.md) |
+| 70 | ✓ | [`plugins/tdd/skills/write-tests/SKILL.md`](plugins/tdd/skills/write-tests/SKILL.md) |
+| 71 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

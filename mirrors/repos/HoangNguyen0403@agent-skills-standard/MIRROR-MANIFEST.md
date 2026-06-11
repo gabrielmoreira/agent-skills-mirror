@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `HoangNguyen0403/agent-skills-standard` — 26 default patterns, 26 followed patterns, 1329 file(s) materialized.
+Mirror of `HoangNguyen0403/agent-skills-standard` — 26 default patterns, 27 followed patterns, 1330 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `HoangNguyen0403/agent-skills-standard` — 26 default patterns, 26 fo
 | Ref Type      | `branch` |
 | Ref           | `develop` |
 | Default pats  | 26 |
-| Followed pats | 26 |
-| Files         | 1329 |
+| Followed pats | 27 |
+| Files         | 1330 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -57,6 +57,7 @@ Mirror of `HoangNguyen0403/agent-skills-standard` — 26 default patterns, 26 fo
 - `docs/mcp-integration-guide.md`
 - `benchmark-report.md`
 - `cli/ARCHITECTURE.md`
+- `benchmarks/archive/v2.4.6.md`
 - `benchmarks/archive/v2.4.1.md`
 - `benchmarks/archive/v2.4.0.md`
 - `benchmarks/archive/v2.3.0.md`
@@ -1409,10 +1410,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1323 | → | [`benchmarks/archive/v2.3.0.md`](benchmarks/archive/v2.3.0.md) |
 | 1324 | → | [`benchmarks/archive/v2.4.0.md`](benchmarks/archive/v2.4.0.md) |
 | 1325 | → | [`benchmarks/archive/v2.4.1.md`](benchmarks/archive/v2.4.1.md) |
-| 1326 | → | [`cli/ARCHITECTURE.md`](cli/ARCHITECTURE.md) |
-| 1327 | → | [`docs/mcp-integration-guide.md`](docs/mcp-integration-guide.md) |
-| 1328 | → | [`docs/sdlc-workflow-quick-reference.md`](docs/sdlc-workflow-quick-reference.md) |
-| 1329 | → | [`README.md`](README.md) |
+| 1326 | → | [`benchmarks/archive/v2.4.6.md`](benchmarks/archive/v2.4.6.md) |
+| 1327 | → | [`cli/ARCHITECTURE.md`](cli/ARCHITECTURE.md) |
+| 1328 | → | [`docs/mcp-integration-guide.md`](docs/mcp-integration-guide.md) |
+| 1329 | → | [`docs/sdlc-workflow-quick-reference.md`](docs/sdlc-workflow-quick-reference.md) |
+| 1330 | → | [`README.md`](README.md) |
 
 ---
 

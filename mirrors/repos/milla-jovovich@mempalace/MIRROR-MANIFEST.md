@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `milla-jovovich/mempalace` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `milla-jovovich/mempalace` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `milla-jovovich/mempalace` — 26 default patterns, 0 followed pattern
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,15 +60,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
-| 2 | ✓ | [`.claude-plugin/skills/mempalace/SKILL.md`](.claude-plugin/skills/mempalace/SKILL.md) |
-| 3 | ✓ | [`.codex-plugin/skills/help/SKILL.md`](.codex-plugin/skills/help/SKILL.md) |
-| 4 | ✓ | [`.codex-plugin/skills/init/SKILL.md`](.codex-plugin/skills/init/SKILL.md) |
-| 5 | ✓ | [`.codex-plugin/skills/mine/SKILL.md`](.codex-plugin/skills/mine/SKILL.md) |
-| 6 | ✓ | [`.codex-plugin/skills/search/SKILL.md`](.codex-plugin/skills/search/SKILL.md) |
-| 7 | ✓ | [`.codex-plugin/skills/status/SKILL.md`](.codex-plugin/skills/status/SKILL.md) |
-| 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 10 | ✓ | [`integrations/openclaw/SKILL.md`](integrations/openclaw/SKILL.md) |
+| 2 | ✓ | [`.antigravity-plugin/skills/mempalace/SKILL.md`](.antigravity-plugin/skills/mempalace/SKILL.md) |
+| 3 | ✓ | [`.claude-plugin/skills/mempalace/SKILL.md`](.claude-plugin/skills/mempalace/SKILL.md) |
+| 4 | ✓ | [`.codex-plugin/skills/help/SKILL.md`](.codex-plugin/skills/help/SKILL.md) |
+| 5 | ✓ | [`.codex-plugin/skills/init/SKILL.md`](.codex-plugin/skills/init/SKILL.md) |
+| 6 | ✓ | [`.codex-plugin/skills/mine/SKILL.md`](.codex-plugin/skills/mine/SKILL.md) |
+| 7 | ✓ | [`.codex-plugin/skills/search/SKILL.md`](.codex-plugin/skills/search/SKILL.md) |
+| 8 | ✓ | [`.codex-plugin/skills/status/SKILL.md`](.codex-plugin/skills/status/SKILL.md) |
+| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 11 | ✓ | [`integrations/openclaw/SKILL.md`](integrations/openclaw/SKILL.md) |
 
 ---
 

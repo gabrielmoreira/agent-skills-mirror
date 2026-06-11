@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `databricks/databricks-agent-skills` — 26 default patterns, 0 followed patterns, 145 file(s) materialized.
+Mirror of `databricks/databricks-agent-skills` — 26 default patterns, 0 followed patterns, 136 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `databricks/databricks-agent-skills` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 145 |
+| Files         | 136 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -82,17 +82,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | ✓ | [`skills/databricks-apps/assets/databricks.png`](skills/databricks-apps/assets/databricks.png) |
 | 22 | ✓ | [`skills/databricks-apps/assets/databricks.svg`](skills/databricks-apps/assets/databricks.svg) |
 | 23 | ✓ | [`skills/databricks-apps/references/appkit/appkit-sdk.md`](skills/databricks-apps/references/appkit/appkit-sdk.md) |
-| 24 | ✓ | [`skills/databricks-apps/references/appkit/files.md`](skills/databricks-apps/references/appkit/files.md) |
-| 25 | ✓ | [`skills/databricks-apps/references/appkit/frontend.md`](skills/databricks-apps/references/appkit/frontend.md) |
-| 26 | ✓ | [`skills/databricks-apps/references/appkit/genie.md`](skills/databricks-apps/references/appkit/genie.md) |
-| 27 | ✓ | [`skills/databricks-apps/references/appkit/jobs.md`](skills/databricks-apps/references/appkit/jobs.md) |
-| 28 | ✓ | [`skills/databricks-apps/references/appkit/lakebase.md`](skills/databricks-apps/references/appkit/lakebase.md) |
-| 29 | ✓ | [`skills/databricks-apps/references/appkit/model-serving.md`](skills/databricks-apps/references/appkit/model-serving.md) |
-| 30 | ✓ | [`skills/databricks-apps/references/appkit/overview.md`](skills/databricks-apps/references/appkit/overview.md) |
-| 31 | ✓ | [`skills/databricks-apps/references/appkit/proto-contracts.md`](skills/databricks-apps/references/appkit/proto-contracts.md) |
-| 32 | ✓ | [`skills/databricks-apps/references/appkit/proto-first.md`](skills/databricks-apps/references/appkit/proto-first.md) |
-| 33 | ✓ | [`skills/databricks-apps/references/appkit/sql-queries.md`](skills/databricks-apps/references/appkit/sql-queries.md) |
-| 34 | ✓ | [`skills/databricks-apps/references/appkit/trpc.md`](skills/databricks-apps/references/appkit/trpc.md) |
+| 24 | ✓ | [`skills/databricks-apps/references/appkit/custom-endpoints.md`](skills/databricks-apps/references/appkit/custom-endpoints.md) |
+| 25 | ✓ | [`skills/databricks-apps/references/appkit/files.md`](skills/databricks-apps/references/appkit/files.md) |
+| 26 | ✓ | [`skills/databricks-apps/references/appkit/frontend.md`](skills/databricks-apps/references/appkit/frontend.md) |
+| 27 | ✓ | [`skills/databricks-apps/references/appkit/genie.md`](skills/databricks-apps/references/appkit/genie.md) |
+| 28 | ✓ | [`skills/databricks-apps/references/appkit/jobs.md`](skills/databricks-apps/references/appkit/jobs.md) |
+| 29 | ✓ | [`skills/databricks-apps/references/appkit/lakebase.md`](skills/databricks-apps/references/appkit/lakebase.md) |
+| 30 | ✓ | [`skills/databricks-apps/references/appkit/model-serving.md`](skills/databricks-apps/references/appkit/model-serving.md) |
+| 31 | ✓ | [`skills/databricks-apps/references/appkit/overview.md`](skills/databricks-apps/references/appkit/overview.md) |
+| 32 | ✓ | [`skills/databricks-apps/references/appkit/proto-contracts.md`](skills/databricks-apps/references/appkit/proto-contracts.md) |
+| 33 | ✓ | [`skills/databricks-apps/references/appkit/proto-first.md`](skills/databricks-apps/references/appkit/proto-first.md) |
+| 34 | ✓ | [`skills/databricks-apps/references/appkit/sql-queries.md`](skills/databricks-apps/references/appkit/sql-queries.md) |
 | 35 | ✓ | [`skills/databricks-apps/references/other-frameworks.md`](skills/databricks-apps/references/other-frameworks.md) |
 | 36 | ✓ | [`skills/databricks-apps/references/platform-guide.md`](skills/databricks-apps/references/platform-guide.md) |
 | 37 | ✓ | [`skills/databricks-apps/references/testing.md`](skills/databricks-apps/references/testing.md) |
@@ -140,70 +140,61 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 79 | ✓ | [`skills/databricks-pipelines/agents/openai.yaml`](skills/databricks-pipelines/agents/openai.yaml) |
 | 80 | ✓ | [`skills/databricks-pipelines/assets/databricks.png`](skills/databricks-pipelines/assets/databricks.png) |
 | 81 | ✓ | [`skills/databricks-pipelines/assets/databricks.svg`](skills/databricks-pipelines/assets/databricks.svg) |
-| 82 | ✓ | [`skills/databricks-pipelines/references/auto-cdc-python.md`](skills/databricks-pipelines/references/auto-cdc-python.md) |
-| 83 | ✓ | [`skills/databricks-pipelines/references/auto-cdc-sql.md`](skills/databricks-pipelines/references/auto-cdc-sql.md) |
-| 84 | ✓ | [`skills/databricks-pipelines/references/auto-cdc.md`](skills/databricks-pipelines/references/auto-cdc.md) |
-| 85 | ✓ | [`skills/databricks-pipelines/references/auto-loader-python.md`](skills/databricks-pipelines/references/auto-loader-python.md) |
-| 86 | ✓ | [`skills/databricks-pipelines/references/auto-loader-sql.md`](skills/databricks-pipelines/references/auto-loader-sql.md) |
-| 87 | ✓ | [`skills/databricks-pipelines/references/auto-loader.md`](skills/databricks-pipelines/references/auto-loader.md) |
+| 82 | ✓ | [`skills/databricks-pipelines/references/1-project-initialization-with-dab.md`](skills/databricks-pipelines/references/1-project-initialization-with-dab.md) |
+| 83 | ✓ | [`skills/databricks-pipelines/references/2-rapid-iteration-with-cli.md`](skills/databricks-pipelines/references/2-rapid-iteration-with-cli.md) |
+| 84 | ✓ | [`skills/databricks-pipelines/references/auto-cdc-python.md`](skills/databricks-pipelines/references/auto-cdc-python.md) |
+| 85 | ✓ | [`skills/databricks-pipelines/references/auto-cdc-sql.md`](skills/databricks-pipelines/references/auto-cdc-sql.md) |
+| 86 | ✓ | [`skills/databricks-pipelines/references/auto-loader-python.md`](skills/databricks-pipelines/references/auto-loader-python.md) |
+| 87 | ✓ | [`skills/databricks-pipelines/references/auto-loader-sql.md`](skills/databricks-pipelines/references/auto-loader-sql.md) |
 | 88 | ✓ | [`skills/databricks-pipelines/references/dlt-migration.md`](skills/databricks-pipelines/references/dlt-migration.md) |
 | 89 | ✓ | [`skills/databricks-pipelines/references/expectations-python.md`](skills/databricks-pipelines/references/expectations-python.md) |
 | 90 | ✓ | [`skills/databricks-pipelines/references/expectations-sql.md`](skills/databricks-pipelines/references/expectations-sql.md) |
-| 91 | ✓ | [`skills/databricks-pipelines/references/expectations.md`](skills/databricks-pipelines/references/expectations.md) |
-| 92 | ✓ | [`skills/databricks-pipelines/references/foreach-batch-sink-python.md`](skills/databricks-pipelines/references/foreach-batch-sink-python.md) |
-| 93 | ✓ | [`skills/databricks-pipelines/references/foreach-batch-sink.md`](skills/databricks-pipelines/references/foreach-batch-sink.md) |
-| 94 | ✓ | [`skills/databricks-pipelines/references/kafka.md`](skills/databricks-pipelines/references/kafka.md) |
-| 95 | ✓ | [`skills/databricks-pipelines/references/materialized-view-python.md`](skills/databricks-pipelines/references/materialized-view-python.md) |
-| 96 | ✓ | [`skills/databricks-pipelines/references/materialized-view-sql.md`](skills/databricks-pipelines/references/materialized-view-sql.md) |
-| 97 | ✓ | [`skills/databricks-pipelines/references/materialized-view.md`](skills/databricks-pipelines/references/materialized-view.md) |
-| 98 | ✓ | [`skills/databricks-pipelines/references/options-avro.md`](skills/databricks-pipelines/references/options-avro.md) |
-| 99 | ✓ | [`skills/databricks-pipelines/references/options-csv.md`](skills/databricks-pipelines/references/options-csv.md) |
-| 100 | ✓ | [`skills/databricks-pipelines/references/options-json.md`](skills/databricks-pipelines/references/options-json.md) |
-| 101 | ✓ | [`skills/databricks-pipelines/references/options-orc.md`](skills/databricks-pipelines/references/options-orc.md) |
-| 102 | ✓ | [`skills/databricks-pipelines/references/options-parquet.md`](skills/databricks-pipelines/references/options-parquet.md) |
-| 103 | ✓ | [`skills/databricks-pipelines/references/options-text.md`](skills/databricks-pipelines/references/options-text.md) |
-| 104 | ✓ | [`skills/databricks-pipelines/references/options-xml.md`](skills/databricks-pipelines/references/options-xml.md) |
-| 105 | ✓ | [`skills/databricks-pipelines/references/performance.md`](skills/databricks-pipelines/references/performance.md) |
-| 106 | ✓ | [`skills/databricks-pipelines/references/pipeline-configuration.md`](skills/databricks-pipelines/references/pipeline-configuration.md) |
-| 107 | ✓ | [`skills/databricks-pipelines/references/python-basics.md`](skills/databricks-pipelines/references/python-basics.md) |
-| 108 | ✓ | [`skills/databricks-pipelines/references/scd-2-querying.md`](skills/databricks-pipelines/references/scd-2-querying.md) |
-| 109 | ✓ | [`skills/databricks-pipelines/references/sink-python.md`](skills/databricks-pipelines/references/sink-python.md) |
-| 110 | ✓ | [`skills/databricks-pipelines/references/sink.md`](skills/databricks-pipelines/references/sink.md) |
-| 111 | ✓ | [`skills/databricks-pipelines/references/sql-basics.md`](skills/databricks-pipelines/references/sql-basics.md) |
-| 112 | ✓ | [`skills/databricks-pipelines/references/streaming-patterns.md`](skills/databricks-pipelines/references/streaming-patterns.md) |
-| 113 | ✓ | [`skills/databricks-pipelines/references/streaming-table-python.md`](skills/databricks-pipelines/references/streaming-table-python.md) |
-| 114 | ✓ | [`skills/databricks-pipelines/references/streaming-table-sql.md`](skills/databricks-pipelines/references/streaming-table-sql.md) |
-| 115 | ✓ | [`skills/databricks-pipelines/references/streaming-table.md`](skills/databricks-pipelines/references/streaming-table.md) |
-| 116 | ✓ | [`skills/databricks-pipelines/references/temporary-view-python.md`](skills/databricks-pipelines/references/temporary-view-python.md) |
-| 117 | ✓ | [`skills/databricks-pipelines/references/temporary-view-sql.md`](skills/databricks-pipelines/references/temporary-view-sql.md) |
-| 118 | ✓ | [`skills/databricks-pipelines/references/temporary-view.md`](skills/databricks-pipelines/references/temporary-view.md) |
-| 119 | ✓ | [`skills/databricks-pipelines/references/view-sql.md`](skills/databricks-pipelines/references/view-sql.md) |
-| 120 | ✓ | [`skills/databricks-pipelines/references/view.md`](skills/databricks-pipelines/references/view.md) |
-| 121 | ✓ | [`skills/databricks-pipelines/references/workflows.md`](skills/databricks-pipelines/references/workflows.md) |
-| 122 | ✓ | [`skills/databricks-pipelines/references/write-spark-declarative-pipelines.md`](skills/databricks-pipelines/references/write-spark-declarative-pipelines.md) |
-| 123 | ✓ | [`skills/databricks-pipelines/SKILL.md`](skills/databricks-pipelines/SKILL.md) |
-| 124 | ✓ | [`skills/databricks-serverless-migration/agents/openai.yaml`](skills/databricks-serverless-migration/agents/openai.yaml) |
-| 125 | ✓ | [`skills/databricks-serverless-migration/assets/databricks.png`](skills/databricks-serverless-migration/assets/databricks.png) |
-| 126 | ✓ | [`skills/databricks-serverless-migration/assets/databricks.svg`](skills/databricks-serverless-migration/assets/databricks.svg) |
-| 127 | ✓ | [`skills/databricks-serverless-migration/references/code-patterns.md`](skills/databricks-serverless-migration/references/code-patterns.md) |
-| 128 | ✓ | [`skills/databricks-serverless-migration/references/compatibility-checks.md`](skills/databricks-serverless-migration/references/compatibility-checks.md) |
-| 129 | ✓ | [`skills/databricks-serverless-migration/references/configuration-guide.md`](skills/databricks-serverless-migration/references/configuration-guide.md) |
-| 130 | ✓ | [`skills/databricks-serverless-migration/references/failure-reporting.md`](skills/databricks-serverless-migration/references/failure-reporting.md) |
-| 131 | ✓ | [`skills/databricks-serverless-migration/references/install-in-databricks-genie-code.md`](skills/databricks-serverless-migration/references/install-in-databricks-genie-code.md) |
-| 132 | ✓ | [`skills/databricks-serverless-migration/references/jar-migration.md`](skills/databricks-serverless-migration/references/jar-migration.md) |
-| 133 | ✓ | [`skills/databricks-serverless-migration/references/mlflow-uc-patterns.md`](skills/databricks-serverless-migration/references/mlflow-uc-patterns.md) |
-| 134 | ✓ | [`skills/databricks-serverless-migration/references/multi-source-enumeration.md`](skills/databricks-serverless-migration/references/multi-source-enumeration.md) |
-| 135 | ✓ | [`skills/databricks-serverless-migration/references/networking-and-security.md`](skills/databricks-serverless-migration/references/networking-and-security.md) |
-| 136 | ✓ | [`skills/databricks-serverless-migration/references/streaming-migration.md`](skills/databricks-serverless-migration/references/streaming-migration.md) |
-| 137 | ✓ | [`skills/databricks-serverless-migration/SKILL.md`](skills/databricks-serverless-migration/SKILL.md) |
-| 138 | ✓ | [`skills/databricks-vector-search/agents/openai.yaml`](skills/databricks-vector-search/agents/openai.yaml) |
-| 139 | ✓ | [`skills/databricks-vector-search/assets/databricks.png`](skills/databricks-vector-search/assets/databricks.png) |
-| 140 | ✓ | [`skills/databricks-vector-search/assets/databricks.svg`](skills/databricks-vector-search/assets/databricks.svg) |
-| 141 | ✓ | [`skills/databricks-vector-search/references/end-to-end-rag.md`](skills/databricks-vector-search/references/end-to-end-rag.md) |
-| 142 | ✓ | [`skills/databricks-vector-search/references/index-types.md`](skills/databricks-vector-search/references/index-types.md) |
-| 143 | ✓ | [`skills/databricks-vector-search/references/search-modes.md`](skills/databricks-vector-search/references/search-modes.md) |
-| 144 | ✓ | [`skills/databricks-vector-search/references/troubleshooting-and-operations.md`](skills/databricks-vector-search/references/troubleshooting-and-operations.md) |
-| 145 | ✓ | [`skills/databricks-vector-search/SKILL.md`](skills/databricks-vector-search/SKILL.md) |
+| 91 | ✓ | [`skills/databricks-pipelines/references/foreach-batch-sink-python.md`](skills/databricks-pipelines/references/foreach-batch-sink-python.md) |
+| 92 | ✓ | [`skills/databricks-pipelines/references/kafka.md`](skills/databricks-pipelines/references/kafka.md) |
+| 93 | ✓ | [`skills/databricks-pipelines/references/materialized-view-python.md`](skills/databricks-pipelines/references/materialized-view-python.md) |
+| 94 | ✓ | [`skills/databricks-pipelines/references/materialized-view-sql.md`](skills/databricks-pipelines/references/materialized-view-sql.md) |
+| 95 | ✓ | [`skills/databricks-pipelines/references/options-avro.md`](skills/databricks-pipelines/references/options-avro.md) |
+| 96 | ✓ | [`skills/databricks-pipelines/references/options-csv.md`](skills/databricks-pipelines/references/options-csv.md) |
+| 97 | ✓ | [`skills/databricks-pipelines/references/options-json.md`](skills/databricks-pipelines/references/options-json.md) |
+| 98 | ✓ | [`skills/databricks-pipelines/references/options-orc.md`](skills/databricks-pipelines/references/options-orc.md) |
+| 99 | ✓ | [`skills/databricks-pipelines/references/options-parquet.md`](skills/databricks-pipelines/references/options-parquet.md) |
+| 100 | ✓ | [`skills/databricks-pipelines/references/options-text.md`](skills/databricks-pipelines/references/options-text.md) |
+| 101 | ✓ | [`skills/databricks-pipelines/references/options-xml.md`](skills/databricks-pipelines/references/options-xml.md) |
+| 102 | ✓ | [`skills/databricks-pipelines/references/performance.md`](skills/databricks-pipelines/references/performance.md) |
+| 103 | ✓ | [`skills/databricks-pipelines/references/pipeline-configuration.md`](skills/databricks-pipelines/references/pipeline-configuration.md) |
+| 104 | ✓ | [`skills/databricks-pipelines/references/python-basics.md`](skills/databricks-pipelines/references/python-basics.md) |
+| 105 | ✓ | [`skills/databricks-pipelines/references/scd-2-querying.md`](skills/databricks-pipelines/references/scd-2-querying.md) |
+| 106 | ✓ | [`skills/databricks-pipelines/references/sink-python.md`](skills/databricks-pipelines/references/sink-python.md) |
+| 107 | ✓ | [`skills/databricks-pipelines/references/sql-basics.md`](skills/databricks-pipelines/references/sql-basics.md) |
+| 108 | ✓ | [`skills/databricks-pipelines/references/streaming-patterns.md`](skills/databricks-pipelines/references/streaming-patterns.md) |
+| 109 | ✓ | [`skills/databricks-pipelines/references/streaming-table-python.md`](skills/databricks-pipelines/references/streaming-table-python.md) |
+| 110 | ✓ | [`skills/databricks-pipelines/references/streaming-table-sql.md`](skills/databricks-pipelines/references/streaming-table-sql.md) |
+| 111 | ✓ | [`skills/databricks-pipelines/references/temporary-view-python.md`](skills/databricks-pipelines/references/temporary-view-python.md) |
+| 112 | ✓ | [`skills/databricks-pipelines/references/temporary-view-sql.md`](skills/databricks-pipelines/references/temporary-view-sql.md) |
+| 113 | ✓ | [`skills/databricks-pipelines/references/view-sql.md`](skills/databricks-pipelines/references/view-sql.md) |
+| 114 | ✓ | [`skills/databricks-pipelines/SKILL.md`](skills/databricks-pipelines/SKILL.md) |
+| 115 | ✓ | [`skills/databricks-serverless-migration/agents/openai.yaml`](skills/databricks-serverless-migration/agents/openai.yaml) |
+| 116 | ✓ | [`skills/databricks-serverless-migration/assets/databricks.png`](skills/databricks-serverless-migration/assets/databricks.png) |
+| 117 | ✓ | [`skills/databricks-serverless-migration/assets/databricks.svg`](skills/databricks-serverless-migration/assets/databricks.svg) |
+| 118 | ✓ | [`skills/databricks-serverless-migration/references/code-patterns.md`](skills/databricks-serverless-migration/references/code-patterns.md) |
+| 119 | ✓ | [`skills/databricks-serverless-migration/references/compatibility-checks.md`](skills/databricks-serverless-migration/references/compatibility-checks.md) |
+| 120 | ✓ | [`skills/databricks-serverless-migration/references/configuration-guide.md`](skills/databricks-serverless-migration/references/configuration-guide.md) |
+| 121 | ✓ | [`skills/databricks-serverless-migration/references/failure-reporting.md`](skills/databricks-serverless-migration/references/failure-reporting.md) |
+| 122 | ✓ | [`skills/databricks-serverless-migration/references/install-in-databricks-genie-code.md`](skills/databricks-serverless-migration/references/install-in-databricks-genie-code.md) |
+| 123 | ✓ | [`skills/databricks-serverless-migration/references/jar-migration.md`](skills/databricks-serverless-migration/references/jar-migration.md) |
+| 124 | ✓ | [`skills/databricks-serverless-migration/references/mlflow-uc-patterns.md`](skills/databricks-serverless-migration/references/mlflow-uc-patterns.md) |
+| 125 | ✓ | [`skills/databricks-serverless-migration/references/multi-source-enumeration.md`](skills/databricks-serverless-migration/references/multi-source-enumeration.md) |
+| 126 | ✓ | [`skills/databricks-serverless-migration/references/networking-and-security.md`](skills/databricks-serverless-migration/references/networking-and-security.md) |
+| 127 | ✓ | [`skills/databricks-serverless-migration/references/streaming-migration.md`](skills/databricks-serverless-migration/references/streaming-migration.md) |
+| 128 | ✓ | [`skills/databricks-serverless-migration/SKILL.md`](skills/databricks-serverless-migration/SKILL.md) |
+| 129 | ✓ | [`skills/databricks-vector-search/agents/openai.yaml`](skills/databricks-vector-search/agents/openai.yaml) |
+| 130 | ✓ | [`skills/databricks-vector-search/assets/databricks.png`](skills/databricks-vector-search/assets/databricks.png) |
+| 131 | ✓ | [`skills/databricks-vector-search/assets/databricks.svg`](skills/databricks-vector-search/assets/databricks.svg) |
+| 132 | ✓ | [`skills/databricks-vector-search/references/end-to-end-rag.md`](skills/databricks-vector-search/references/end-to-end-rag.md) |
+| 133 | ✓ | [`skills/databricks-vector-search/references/index-types.md`](skills/databricks-vector-search/references/index-types.md) |
+| 134 | ✓ | [`skills/databricks-vector-search/references/search-modes.md`](skills/databricks-vector-search/references/search-modes.md) |
+| 135 | ✓ | [`skills/databricks-vector-search/references/troubleshooting-and-operations.md`](skills/databricks-vector-search/references/troubleshooting-and-operations.md) |
+| 136 | ✓ | [`skills/databricks-vector-search/SKILL.md`](skills/databricks-vector-search/SKILL.md) |
 
 ---
 

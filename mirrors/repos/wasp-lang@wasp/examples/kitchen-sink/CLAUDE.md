@@ -1,0 +1,1 @@
+cache/repos/github.com/wasp-lang@wasp/examples/kitchen-sink/AGENTS.md

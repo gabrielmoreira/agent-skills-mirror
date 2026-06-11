@@ -9,7 +9,7 @@ metadata:
 
 Use this skill to clear provider conversation context for mounted CCB agents.
 
-In the CCB source checkout, this skill is only for clearing the active work-environment CCB collaboration with the installed release `ccb`. It is not a source validation workflow. For testing current source changes, use `ccb_test` from an external test project such as `/home/bfly/yunwei/test_ccb2` instead.
+In the CCB source checkout, this skill is only for clearing the active work-environment CCB collaboration with the installed release `ccb`. It is not a source validation workflow. For testing current source changes, use `/home/bfly/yunwei/ccb_source/ccb_test` from the dedicated external test project `/home/bfly/yunwei/test_ccb2` instead. Other external test projects require explicit `CCB_TEST_ROOTS` or `CCB_SOURCE_ALLOWED_ROOTS`.
 
 Commands:
 

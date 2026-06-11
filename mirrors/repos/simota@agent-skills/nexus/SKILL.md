@@ -54,7 +54,7 @@ Coordinate specialist agents, design the minimum viable chain, and execute safel
 - Verify acceptance criteria before delivery; pair quantitative metrics with human evaluation for high-stakes tasks.
 - Adapt routing from execution evidence with safety constraints; track OE (orchestration efficiency) per chain type.
 - Leverage standardized inter-agent protocols where available: MCP, A2A, ACP.
-- Apply Plan-and-Execute pattern: capable models for planning, cheaper models for execution. Per hub engine: Claude Code = opus plan / sonnet-haiku execute; Codex CLI = `gpt-5.5` plan / `gpt-5.4`-family execute (`CODEX_ORCHESTRATION.md` C3).
+- Apply Plan-and-Execute pattern: capable models for planning, cheaper models for execution. Per hub engine: Claude Code = opus (or fable-5) plan / sonnet-haiku execute; Codex CLI = `gpt-5.5` plan / `gpt-5.4`-family execute (`CODEX_ORCHESTRATION.md` C3). On a Fable 5 hub, default plan/execute effort to `high` (Fable 5 `low`/`medium` already exceed prior-model `xhigh`).
 - Use Anthropic **Managed Agents** vocabulary (SF 2026) — Multiagent Orchestration / Outcomes / Dreaming / Webhooks — and surface an escalation recommendation in `NEXUS_COMPLETE` when workload pattern (multi-day unattended runs, cross-user persistence, platform-level audit) justifies the managed platform. Prefer **Dynamic Workflows** (Claude Code-native, research preview) as execution substrate for large homogeneous parallel sweeps; Nexus stays the routing/recipe layer. Detail: `reference/managed-agents-mapping.md` §5.
 - Output language follows the CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`); identifiers and technical terms remain in English.
 
@@ -69,7 +69,7 @@ Coordinate specialist agents, design the minimum viable chain, and execute safel
 7. **Learn only from evidence.** Routing adaptation requires execution data, verification, and journaled results.
 8. **Prevent circular handoffs.** Enforce max-hop limits (default: 2 round-trips per agent pair) to prevent A→B→A loops.
 9. **Hierarchical decomposition for scale.** For chains with 6+ agents, spawn feature-lead agents that each coordinate 2-3 specialists.
-10. **Author for the active orchestrator engine.** Detect which CLI drives the hub (see **Execution Model → Orchestrator Detection**) and apply the matching authoring protocol per `reference/hub-authoring.md` (Claude Code → OPUS_48_AUTHORING P4/P6/P7/P9; Codex CLI → CODEX_ORCHESTRATION C1/C2/C3/C6/C7; agy → C-principles by analogy under `_common/CLI_COMPATIBILITY.md §3, §9`).
+10. **Author for the active orchestrator engine.** Detect which CLI drives the hub (see **Execution Model → Orchestrator Detection**) and apply the matching authoring protocol per `reference/hub-authoring.md` (Claude Code → OPUS_48_AUTHORING P4/P6/P7/P9, **plus F-principles when the hub runs on Fable 5**; Codex CLI → CODEX_ORCHESTRATION C1/C2/C3/C6/C7; agy → C-principles by analogy under `_common/CLI_COMPATIBILITY.md §3, §9`).
 
 ## Boundaries
 
@@ -221,11 +221,13 @@ Before the first spawn, determine which CLI drives **this hub session**, then bi
 
 | Signal | Hub engine | Spawn API | Authoring protocol | Model map |
 |--------|-----------|-----------|--------------------|-----------|
-| `Agent` tool present | **Claude Code** | `Agent(...)` (L1 fg / L2 `run_in_background`) | `_common/OPUS_48_AUTHORING.md` (P-principles) | sonnet / opus / haiku (see Model Selection) |
+| `Agent` tool present | **Claude Code** | `Agent(...)` (L1 fg / L2 `run_in_background`) | `_common/OPUS_48_AUTHORING.md` (P-principles); **Fable 5 hub → also `reference/hub-authoring.md` § Claude Code hub — Fable 5 (F-principles)** | sonnet / opus / haiku / **fable-5** (see Model Selection) |
 | `spawn_agent` callable (C1 prereqs hold) | **Codex CLI** | `spawn_agent` → `wait_agent` (parallel = N spawn → join all) | `_common/CODEX_ORCHESTRATION.md` (C-principles) | `gpt-5.4` / `gpt-5.5` (see `CLI_COMPATIBILITY.md §4`) |
 | `/agent` in TUI main session | **agy** | `/agent` or `agy -p` headless | C-principles by analogy | per `/model` (see `CLI_COMPATIBILITY.md §4`) |
 
 Codex-hub prereqs (C1): `codex features list \| grep multi_agent` → `true`, and `~/.codex/config.toml` `[agents] max_depth >= 2`. If unmet → internal execution with a concrete reason (`agents.max_depth=1, nested hub cannot recurse`), never a generic "spawn tool not found". `spawn_agent` may be lazily hidden from the tool inventory — attempt the call when prereqs hold (C5). Full per-CLI prereqs and fall-back log forms: **Execution Layers** below + `_common/CLI_COMPATIBILITY.md`.
+
+**Claude Code hub model detection.** The Claude Code hub runs on either Opus 4.8 or Claude Fable 5 (`claude-fable-5`). When the hub session reports running on Fable 5, apply the F-principles in `reference/hub-authoring.md` § Claude Code hub — Fable 5 **on top of** the P-principles: lighter spawn prompts, `high` (not `xhigh`) default effort, longer-turn / async harness expectations, and the mandatory no-reasoning-reproduction rule for spawn prompts (reproducing reasoning triggers `refusal` → Opus 4.8 fallback). When unknown, author for Opus 4.8 defaults — they are safe on both.
 
 ### Spawn Decision Flow
 
@@ -292,7 +294,7 @@ Agent(
 )
 ```
 
-Opus 4.8 requires the four directive fields above (calibrates length to context, restrains tool calls, interprets literally). Codex CLI and agy variants share the same prompt body with engine-specific skill paths, output capture, and effort tuning — full variants, Opus 4.8 note, and parallel-spawn rules → `reference/hub-authoring.md` § Spawn Template Variants. Detailed execution flows → `reference/execution-phases.md`, `reference/orchestration-patterns.md`.
+Opus 4.8 requires the four directive fields above (calibrates length to context, restrains tool calls, interprets literally). **On a Fable 5 hub these directives are lighter, not heavier**: a brief outcome+brevity instruction steers as well as enumerating each field, over-prescriptive spawn prompts degrade output, and any "echo / show / transcribe your reasoning" wording is forbidden (it trips the `reasoning_extraction` refusal). See `reference/hub-authoring.md` § Claude Code hub — Fable 5. Codex CLI and agy variants share the same prompt body with engine-specific skill paths, output capture, and effort tuning — full variants, Opus 4.8 / Fable 5 notes, and parallel-spawn rules → `reference/hub-authoring.md` § Spawn Template Variants. Detailed execution flows → `reference/execution-phases.md`, `reference/orchestration-patterns.md`.
 
 ## Safety Contract
 
@@ -384,6 +386,7 @@ Read only the files that match the current decision point.
 | `reference/output-formats.md` | Canonical final output or handoff templates |
 | `reference/orchestration-patterns.md` | Concrete execution patterns (sequential, parallel, evaluator-loop, verification-gated) |
 | `reference/evaluator-loop-protocol.md` | Generator-Evaluator separation: Sprint Contract + Rubric + orchestration pattern |
+| `reference/loop-engineering-primitives.md` | Mapping the loop-engineering pattern onto Claude Code / Codex primitives (`/loop`, `/goal`, worktree, subagents, memory) with 2026-06 version detail — read when designing a `goal`/apex/summit loop or explaining which primitive implements which loop part |
 | `reference/context-strategy.md` | Decide how context flows between agents |
 | `reference/routing-learning.md` | Adapting routing from execution evidence |
 | `reference/quality-iteration.md` | Output needs post-delivery PDCA improvement |
@@ -405,12 +408,13 @@ Read only the files that match the current decision point.
 | `reference/pack-subcommand.md` | `/nexus pack` — skill profile switch, settings.json edit, backup, diff, confirm |
 | `_common/SKILL_PACKS.md` | Pack membership matrix (10 packs × 130 skills), profile catalog, routing protocol |
 | `_common/OPUS_48_AUTHORING.md` | **Claude Code hub** — P4 / P6 / P7 spawn prompts, output envelopes, effort |
+| `reference/hub-authoring.md` § Claude Code hub — Fable 5 | **Hub runs on `claude-fable-5`** — F-principles: lighter spawn prompts, `high` default effort, longer-turn / async harness, progress grounding, no-reasoning-reproduction rule |
 | `_common/CODEX_ORCHESTRATION.md` | **Codex CLI hub** — C1 spawn-depth, C2 sync fan-out, C3 effort-by-model, C6 checkpoint-resume |
 | `_common/IMAGE_INPUT.md` | Routing request carries an image — five-stage pipeline at CLASSIFY |
 
 ## Operational Notes
 
-Follow `_common/OPERATIONAL.md`, `_common/AUTORUN.md`, `_common/HANDOFF.md`, `_common/GIT_GUIDELINES.md`, `_common/HARNESS_EVOLUTION.md`. For the active orchestrator engine apply `_common/OPUS_48_AUTHORING.md` (Claude Code hub) or `_common/CODEX_ORCHESTRATION.md` (Codex CLI hub). Journal in `.agents/nexus.md`; log to `.agents/PROJECT.md`. No agent names in commits/PRs. Decompose, route, execute, verify, deliver. Keep chains small, handoffs structured, recovery explicit.
+Follow `_common/OPERATIONAL.md`, `_common/AUTORUN.md`, `_common/HANDOFF.md`, `_common/GIT_GUIDELINES.md`, `_common/HARNESS_EVOLUTION.md`. For the active orchestrator engine apply `_common/OPUS_48_AUTHORING.md` (Claude Code hub; add the F-principles in `reference/hub-authoring.md` when the hub runs on Fable 5) or `_common/CODEX_ORCHESTRATION.md` (Codex CLI hub). Journal in `.agents/nexus.md`; log to `.agents/PROJECT.md`. No agent names in commits/PRs. Decompose, route, execute, verify, deliver. Keep chains small, handoffs structured, recovery explicit.
 
 ## AUTORUN Support
 

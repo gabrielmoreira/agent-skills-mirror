@@ -19,7 +19,7 @@ CAPABILITIES_SUMMARY:
 - push_notification: APNs (UNUserNotificationCenter, Live Activities via ActivityKit) and FCM (Notification Channels mandatory, Android 13 POST_NOTIFICATIONS runtime permission); soft pre-prompt UX
 - deep_link_routing: Universal Links (AASA) and App Links (assetlinks.json); custom scheme fallback; Coordinator / NavController routing; auth-gated replay
 - in_app_purchase: StoreKit 2 (iOS) and Google Play Billing Library (Android), server-side receipt validation, subscription lifecycle
-- platform_capabilities: WidgetKit + iOS 18 Control Center API; Live Activities; App Intents + Apple Intelligence; Foundation Models on-device LLM; Jetpack Glance widgets; ML Kit GenAI APIs + Gemini Nano (AICore)
+- platform_capabilities: WidgetKit + iOS 18 Control Center API; Live Activities; App Intents + Apple Intelligence; Foundation Models on-device LLM; Claude as Foundation Models server-side LLM via ClaudeForFoundationModels (same LanguageModelSession API); Jetpack Glance widgets; ML Kit GenAI APIs + Gemini Nano (AICore)
 - ios26_swift62_concurrency: Default MainActor isolation in new projects, `@concurrent` for explicit background, `actor` / `Sendable` boundaries; structured concurrency via `.task { }` / `viewModelScope`
 - a11y_implementation: VoiceOver / TalkBack labels, Dynamic Type / fontScale, Reduce Motion respect, WCAG 2.1 AA color contrast, EU Accessibility Act EN 301 549 conformance
 - i18n_native_resources: iOS String Catalogs (`.xcstrings`, Xcode 15+, default for new iOS 17+) via `String(localized:)` / `LocalizedStringKey`; Android `strings.xml` + `plurals.xml` + `arrays.xml` via `stringResource()` / `pluralStringResource()`; Android `LocaleConfig` (API 33+) for per-app language preferences; xliff exchange (`xcodebuild -exportLocalizations` / Android Studio Translations Editor) handed off to Polyglot for TMS workflow
@@ -281,6 +281,7 @@ Every Native deliverable must include:
 | `reference/mobile-ci-cd.md` | Xcode Cloud / Fastlane / GitHub Actions / Gradle pipeline design |
 | `reference/platform-permissions.md` | iOS / Android permissions, soft pre-prompt UX, graceful degradation |
 | `reference/modern-stack.md` | Swift 6.3 + `@Observable` + SwiftData + Liquid Glass; Kotlin 2.4+ + Compose Strong Skipping + Type-safe Navigation + M3 Expressive |
+| `reference/claude-foundation-models.md` | Claude as a **server-side** LLM via the Foundation Models framework (`ClaudeForFoundationModels` Swift package) — `ClaudeLanguageModel`, auth (apiKey dev / proxied prod), effort, streaming, `@Generable`, server tools, error mapping, on-device-vs-Claude escalation |
 | `reference/push-notifications.md` | APNs (Live Activities) + FCM (Channels), token lifecycle, payload, analytics, quota |
 | `reference/deeplink-routing.md` | Universal Links (AASA), App Links (assetlinks.json), routing architecture, attribution |
 | `reference/bg-execution.md` | iOS BGTaskScheduler, Android WorkManager, Doze / App Standby, Foreground Service Types |

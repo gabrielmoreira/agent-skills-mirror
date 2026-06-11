@@ -59,7 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/diagnose-sandbox-report/SKILL.md`](.claude/skills/diagnose-sandbox-report/SKILL.md) |
+| 1 | ✓ | [`.claude/disabled-skills/diagnose-sandbox-report/SKILL.md`](.claude/disabled-skills/diagnose-sandbox-report/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/dist-build-migration/SKILL.md`](.claude/skills/dist-build-migration/SKILL.md) |
 | 3 | ✓ | [`.claude/skills/multi-version-compliance/SKILL.md`](.claude/skills/multi-version-compliance/SKILL.md) |
 | 4 | ✓ | [`.claude/skills/nx-docs-style-check/SKILL.md`](.claude/skills/nx-docs-style-check/SKILL.md) |

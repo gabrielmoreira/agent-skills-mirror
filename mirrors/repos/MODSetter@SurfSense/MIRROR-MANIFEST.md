@@ -289,11 +289,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 228 | ✓ | [`.cursor/skills/vercel-react-best-practices/rules/server-serialization.md`](.cursor/skills/vercel-react-best-practices/rules/server-serialization.md) |
 | 229 | ✓ | [`.cursor/skills/vercel-react-best-practices/SKILL.md`](.cursor/skills/vercel-react-best-practices/SKILL.md) |
 | 230 | ✓ | [`.cursor/skills/web-design-guidelines/SKILL.md`](.cursor/skills/web-design-guidelines/SKILL.md) |
-| 231 | ✓ | [`surfsense_backend/app/agents/new_chat/skills/builtin/email-drafting/SKILL.md`](surfsense_backend/app/agents/new_chat/skills/builtin/email-drafting/SKILL.md) |
-| 232 | ✓ | [`surfsense_backend/app/agents/new_chat/skills/builtin/kb-research/SKILL.md`](surfsense_backend/app/agents/new_chat/skills/builtin/kb-research/SKILL.md) |
-| 233 | ✓ | [`surfsense_backend/app/agents/new_chat/skills/builtin/meeting-prep/SKILL.md`](surfsense_backend/app/agents/new_chat/skills/builtin/meeting-prep/SKILL.md) |
-| 234 | ✓ | [`surfsense_backend/app/agents/new_chat/skills/builtin/report-writing/SKILL.md`](surfsense_backend/app/agents/new_chat/skills/builtin/report-writing/SKILL.md) |
-| 235 | ✓ | [`surfsense_backend/app/agents/new_chat/skills/builtin/slack-summary/SKILL.md`](surfsense_backend/app/agents/new_chat/skills/builtin/slack-summary/SKILL.md) |
+| 231 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/email-drafting/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/email-drafting/SKILL.md) |
+| 232 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/kb-research/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/kb-research/SKILL.md) |
+| 233 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/meeting-prep/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/meeting-prep/SKILL.md) |
+| 234 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/report-writing/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/report-writing/SKILL.md) |
+| 235 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/slack-summary/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/slack-summary/SKILL.md) |
 | 236 | ✓ | [`surfsense_obsidian/AGENTS.md`](surfsense_obsidian/AGENTS.md) |
 | 237 | ✓ | [`surfsense_web/.cursorrules`](surfsense_web/.cursorrules) |
 

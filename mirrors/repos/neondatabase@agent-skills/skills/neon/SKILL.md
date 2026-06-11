@@ -130,23 +130,125 @@ Remind users to use environment variables for credentials, never commit connecti
 
 ## Branch-First Dev Flow
 
-Default to a branch-first loop that mirrors `git`: one isolated Neon branch per feature, so nothing leaks between features and there are no shared connection strings to copy around. This loop is built on three CLI commands:
+Default to a branch-first loop that mirrors `git`: one isolated Neon branch per feature, so nothing leaks between features and there are no shared connection strings to copy around. Two commands drive it — `link` once per project, then `checkout` per feature — and a third, `env pull`, runs automatically under the hood so the branch you pin is immediately usable:
 
 - `neonctl link` — Interactively links the workspace to a Neon org, project, and branch, writing the IDs to a git-ignored `.neon` file. Run once per project. Once linked, project- and branch-scoped commands no longer need `--project-id` or `--branch` (for example, `neonctl branch list`).
 - `neonctl checkout <branch-name>` — Creates the branch if it doesn't exist, or checks out the existing one, by updating only the branch pointer in `.neon`. Run without a name for an interactive picker. It does not touch code or local Postgres.
-- `neonctl env pull` — Fetches the current branch's Neon environment variables into `.env.local` (override the target with `--env`). No branch ID needed; it reads `.neon`.
+- `neonctl env pull` — Fetches the current branch's Neon environment variables (`DATABASE_URL`, …) into your existing `.env`, or `.env.local` if you don't have one (override the target with `--file`). No branch ID needed; it reads `.neon`. **`link` and `checkout` run this for you by default**, so you rarely call it directly.
 
-Run `link` once when starting on a project:
-
-```bash
-neonctl link
-```
-
-Then for each feature, check out an isolated branch and pull its connection details:
+Run `link` once when starting on a project, then `checkout` per feature:
 
 ```bash
-neonctl checkout dev-add-search
-neonctl env pull
+neonctl link                     # once; also pulls the linked branch's env
+neonctl checkout dev-add-search  # per feature; also pulls the branch's env
 ```
 
-Build against that branch, then repeat `checkout` + `env pull` for the next feature. As the agent, drive this loop yourself: run `checkout` and `env pull` between tasks to get a fresh, isolated database per feature with no shared state to corrupt.
+Because `link` and `checkout` pull env by default, the branch's `DATABASE_URL` lands in your local `.env` automatically — build against it, then `checkout` the next branch and repeat. As the agent, drive this loop yourself: run `checkout` between tasks to get a fresh, isolated database per feature with no shared state to corrupt.
+
+### Updating `.neon` without interactive prompts
+
+Plain `neonctl link` / `neonctl checkout` prompt interactively, which an agent can't answer. Use one of these non-interactive paths instead:
+
+- **`neonctl link --agent`** — a JSON state machine for agents. Each call returns a single JSON object with a `status` (`needs_org` → `needs_project` → `needs_project_details` → `linked`, or `error`), the available `options`, and the exact `next_command_template` to run next. Drive it step by step until `status: "linked"`. (Errors also come back as JSON with exit code 1, so you can always parse the result.)
+- **`neonctl set-context --project-id <id> --org-id <id> --branch-id <id>`** — when you already know the IDs, write all three into `.neon` in one shot. This is a **destructive write**: it replaces the file's contents entirely with exactly these fields, so it's the most direct way to point `.neon` at a specific org / project / branch.
+
+Both avoid prompts entirely; reach for `set-context` when you have the IDs and `link --agent` when you need to discover them.
+
+### Opting out of local env vars
+
+If env vars are injected at runtime instead of written to disk — or you simply don't want secrets in the working tree — pass `--no-env-pull` to `link` / `checkout` and supply the env another way:
+
+- `neon-env run -- <your dev command>` (from `@neondatabase/env`) fetches the branch's vars from your `neon.ts` and injects them into the child process at runtime — no `.env` file needed. This is the runtime counterpart to the on-disk `env pull`.
+- `neon-env export` (from `@neondatabase/env`) prints the branch's env to stdout as dotenv lines or, with `--format json`, JSON — for piping into another env manager rather than running a command. For example, [varlock](https://varlock.dev) can bulk-load it from a `.env.schema` with `@setValuesBulk(exec("neon-env export --format json"), format=json)`.
+- `fetchEnv` from `@neondatabase/env` is the programmatic version of the same thing: resolve the branch's env in code at runtime instead of shelling out to `neon-env run`.
+- `neonctl dev` injects the same vars into your local dev server — it's part of Neon Functions local development (a private preview feature).
+
+When an agent should not write a local `.env`, instruct it (for example in your `AGENTS.md`) to run `neonctl checkout <branch> --no-env-pull` and rely on runtime injection.
+
+For reading env you *already* have on disk (typed and validated against your `neon.ts`), use `parseEnv` — see [Neon Infrastructure as Code](#neon-infrastructure-as-code) below.
+
+## Neon Infrastructure as Code
+
+`neon.ts` is Neon's branch config and infrastructure-as-code file: declare which Neon services your project's branches should have, get type-safe env vars, and program branch settings — all in TypeScript. It's the config layer for Neon as a platform, and it composes with the branch-first loop above. Add it with `@neondatabase/config`:
+
+```bash
+npm i @neondatabase/config
+```
+
+```typescript
+// neon.ts
+import { defineConfig } from "@neondatabase/config/v1";
+
+export default defineConfig({
+  auth: true,
+  dataApi: true,
+});
+```
+
+### Provision services with neonctl config
+
+Every project ships with serverless Postgres; `neon.ts` lets you also declare Neon Auth and the Data API today (Functions, buckets, and the AI Gateway are landing under a `preview` block). Reconcile the declaration from the CLI — the Neon equivalent of `terraform status` / `plan` / `apply`:
+
+```bash
+neonctl config status   # print the branch's live config
+neonctl config plan     # dry-run diff of what apply would change
+neonctl config apply    # provision the declared services
+neonctl deploy          # alias for `neonctl config apply`
+```
+
+### Type-safe env vars with parseEnv
+
+`@neondatabase/env`'s `parseEnv` takes your `neon.ts` config object and returns a parsed, typed env object, validated against the services you declared. The shape of `env` follows your config — enable `auth` and you get `env.auth`, enable `dataApi` and you get `env.dataApi` — and missing variables are flagged with clear errors (for you and your agents). Use it to read env you already have (typically pulled into `.env` by `checkout` / `env pull`); for fetching env at runtime without a file, reach for `fetchEnv` / `neon-env run` instead.
+
+```bash
+npm i @neondatabase/env
+```
+
+```typescript
+import { parseEnv } from "@neondatabase/env/v1";
+import config from "./neon";
+
+const env = parseEnv(config);
+
+console.log(env.postgres.databaseUrl);
+console.log(env.auth.baseUrl);
+```
+
+### How checkout composes with neon.ts
+
+When a `neon.ts` is present, `neonctl checkout` applies your policy as it **creates** a branch, so a fresh branch comes up with its declared settings and services already in place. Checking out an *existing* branch never reconciles it — apply config changes to it explicitly with `neonctl config apply` (or `neonctl deploy`). The bundled `env pull` also checks `neon.ts` against the linked branch and fails fast if the branch is missing a declared service, pointing you at `neonctl deploy` to provision it, so your local env and the remote branch never drift apart silently.
+
+### Branch configuration
+
+Beyond services, `neon.ts` can program what configuration *new* branches receive via the `branch` property — a function of the branch being evaluated that returns its settings:
+
+```typescript
+// neon.ts
+import { defineConfig } from "@neondatabase/config/v1";
+
+export default defineConfig({
+  auth: true,
+  dataApi: true,
+  branch: (branch) => {
+    if (branch.exists) {
+      // leave existing branches untouched
+      return {};
+    }
+    if (branch.name.startsWith("dev")) {
+      return {
+        ttl: "7d", // clean up the branch after 7 days
+        postgres: {
+          computeSettings: {
+            autoscalingLimitMinCu: 0.25, // scale to zero
+            autoscalingLimitMaxCu: 1, // keep it cheap
+            suspendTimeout: "5m",
+          },
+        },
+      };
+    }
+    return {};
+  },
+});
+```
+
+The `branch` function receives the target branch (its `name`, whether it `exists` yet, whether it's the default, and more) and returns the tuning you want. Here new `dev-*` branches get a 7-day TTL so they clean themselves up, plus a cheap scale-to-zero compute profile, while existing branches and everything else fall through to the defaults. Because `neonctl checkout` applies this policy on create, a fresh `dev-*` branch comes up with these settings already in place.

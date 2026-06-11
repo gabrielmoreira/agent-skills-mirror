@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 6 followed patterns, 18 file(s) materialized.
+Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 6 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 6 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,19 +69,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`docs/auth-cookie-lifecycle.md`](docs/auth-cookie-lifecycle.md) |
 | 4 | ✓ | [`docs/configuration.md`](docs/configuration.md) |
 | 5 | ✓ | [`docs/conventions.md`](docs/conventions.md) |
-| 6 | ✓ | [`docs/python-api.md`](docs/python-api.md) |
-| 7 | ✓ | [`docs/refactor-history.md`](docs/refactor-history.md) |
-| 8 | ✓ | [`docs/rpc-development.md`](docs/rpc-development.md) |
-| 9 | ✓ | [`docs/rpc-reference.md`](docs/rpc-reference.md) |
-| 10 | ✓ | [`docs/stability.md`](docs/stability.md) |
-| 11 | ✓ | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
-| 12 | ✓ | [`SKILL.md`](SKILL.md) |
-| 13 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 14 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 15 | → | [`docs/cli-exit-codes.md`](docs/cli-exit-codes.md) |
-| 16 | → | [`docs/cli-reference.md`](docs/cli-reference.md) |
-| 17 | → | [`docs/development.md`](docs/development.md) |
-| 18 | → | [`docs/installation.md`](docs/installation.md) |
+| 6 | ✓ | [`docs/mcp-guide.md`](docs/mcp-guide.md) |
+| 7 | ✓ | [`docs/python-api.md`](docs/python-api.md) |
+| 8 | ✓ | [`docs/refactor-history.md`](docs/refactor-history.md) |
+| 9 | ✓ | [`docs/rpc-development.md`](docs/rpc-development.md) |
+| 10 | ✓ | [`docs/rpc-reference.md`](docs/rpc-reference.md) |
+| 11 | ✓ | [`docs/stability.md`](docs/stability.md) |
+| 12 | ✓ | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
+| 13 | ✓ | [`SKILL.md`](SKILL.md) |
+| 14 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 15 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 16 | → | [`docs/cli-exit-codes.md`](docs/cli-exit-codes.md) |
+| 17 | → | [`docs/cli-reference.md`](docs/cli-reference.md) |
+| 18 | → | [`docs/development.md`](docs/development.md) |
+| 19 | → | [`docs/installation.md`](docs/installation.md) |
 
 ---
 

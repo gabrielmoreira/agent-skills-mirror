@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `hoodini/ai-agents-skills` — 26 default patterns, 0 followed patterns, 175 file(s) materialized.
+Mirror of `hoodini/ai-agents-skills` — 26 default patterns, 0 followed patterns, 206 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `hoodini/ai-agents-skills` — 26 default patterns, 0 followed pattern
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 175 |
+| Files         | 206 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -196,44 +196,75 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 135 | ✓ | [`skills/yuv-design-system/references/web-and-react.md`](skills/yuv-design-system/references/web-and-react.md) |
 | 136 | ✓ | [`skills/yuv-design-system/SKILL.md`](skills/yuv-design-system/SKILL.md) |
 | 137 | ✓ | [`skills/yuv-pilot/SKILL.md`](skills/yuv-pilot/SKILL.md) |
-| 138 | ✓ | [`skills/yuv-video-director/assets/Anton-Regular.woff2`](skills/yuv-video-director/assets/Anton-Regular.woff2) |
-| 139 | ✓ | [`skills/yuv-video-director/assets/FRAME.md`](skills/yuv-video-director/assets/FRAME.md) |
-| 140 | ✓ | [`skills/yuv-video-director/assets/logo-phoenix.png`](skills/yuv-video-director/assets/logo-phoenix.png) |
-| 141 | ✓ | [`skills/yuv-video-director/assets/lottie-burst-generator.py`](skills/yuv-video-director/assets/lottie-burst-generator.py) |
-| 142 | ✓ | [`skills/yuv-video-director/assets/manim-scene-template.py`](skills/yuv-video-director/assets/manim-scene-template.py) |
-| 143 | ✓ | [`skills/yuv-video-director/assets/neural-net-field.js`](skills/yuv-video-director/assets/neural-net-field.js) |
-| 144 | ✓ | [`skills/yuv-video-director/assets/neural-pulse.json`](skills/yuv-video-director/assets/neural-pulse.json) |
-| 145 | ✓ | [`skills/yuv-video-director/assets/phoenix-burst.json`](skills/yuv-video-director/assets/phoenix-burst.json) |
-| 146 | ✓ | [`skills/yuv-video-director/README.md`](skills/yuv-video-director/README.md) |
-| 147 | ✓ | [`skills/yuv-video-director/references/brand-kit.md`](skills/yuv-video-director/references/brand-kit.md) |
-| 148 | ✓ | [`skills/yuv-video-director/references/cinematic.md`](skills/yuv-video-director/references/cinematic.md) |
-| 149 | ✓ | [`skills/yuv-video-director/references/composition-pattern.md`](skills/yuv-video-director/references/composition-pattern.md) |
-| 150 | ✓ | [`skills/yuv-video-director/references/editing.md`](skills/yuv-video-director/references/editing.md) |
-| 151 | ✓ | [`skills/yuv-video-director/references/frame-md.md`](skills/yuv-video-director/references/frame-md.md) |
-| 152 | ✓ | [`skills/yuv-video-director/references/gates.md`](skills/yuv-video-director/references/gates.md) |
-| 153 | ✓ | [`skills/yuv-video-director/references/lottie.md`](skills/yuv-video-director/references/lottie.md) |
-| 154 | ✓ | [`skills/yuv-video-director/references/manim.md`](skills/yuv-video-director/references/manim.md) |
-| 155 | ✓ | [`skills/yuv-video-director/references/prereqs.md`](skills/yuv-video-director/references/prereqs.md) |
-| 156 | ✓ | [`skills/yuv-video-director/SKILL.md`](skills/yuv-video-director/SKILL.md) |
-| 157 | ✓ | [`skills/yuv-viral-video/assets/fonts/Anton-Regular.ttf`](skills/yuv-viral-video/assets/fonts/Anton-Regular.ttf) |
-| 158 | ✓ | [`skills/yuv-viral-video/assets/fonts/Rubik-Black.ttf`](skills/yuv-viral-video/assets/fonts/Rubik-Black.ttf) |
-| 159 | ✓ | [`skills/yuv-viral-video/assets/fonts/Rubik-Bold.ttf`](skills/yuv-viral-video/assets/fonts/Rubik-Bold.ttf) |
-| 160 | ✓ | [`skills/yuv-viral-video/README.md`](skills/yuv-viral-video/README.md) |
-| 161 | ✓ | [`skills/yuv-viral-video/references/setup.md`](skills/yuv-viral-video/references/setup.md) |
-| 162 | ✓ | [`skills/yuv-viral-video/requirements.txt`](skills/yuv-viral-video/requirements.txt) |
-| 163 | ✓ | [`skills/yuv-viral-video/scripts/apple_glass.py`](skills/yuv-viral-video/scripts/apple_glass.py) |
-| 164 | ✓ | [`skills/yuv-viral-video/scripts/build_screen_share.py`](skills/yuv-viral-video/scripts/build_screen_share.py) |
-| 165 | ✓ | [`skills/yuv-viral-video/scripts/build_selfie.py`](skills/yuv-viral-video/scripts/build_selfie.py) |
-| 166 | ✓ | [`skills/yuv-viral-video/scripts/composite_screen_share.py`](skills/yuv-viral-video/scripts/composite_screen_share.py) |
-| 167 | ✓ | [`skills/yuv-viral-video/scripts/composite_selfie.py`](skills/yuv-viral-video/scripts/composite_selfie.py) |
-| 168 | ✓ | [`skills/yuv-viral-video/scripts/make_anims.py`](skills/yuv-viral-video/scripts/make_anims.py) |
-| 169 | ✓ | [`skills/yuv-viral-video/scripts/make_cards_screen_share.py`](skills/yuv-viral-video/scripts/make_cards_screen_share.py) |
-| 170 | ✓ | [`skills/yuv-viral-video/scripts/make_cards_selfie.py`](skills/yuv-viral-video/scripts/make_cards_selfie.py) |
-| 171 | ✓ | [`skills/yuv-viral-video/scripts/make_karaoke.py`](skills/yuv-viral-video/scripts/make_karaoke.py) |
-| 172 | ✓ | [`skills/yuv-viral-video/scripts/make_layout_assets.py`](skills/yuv-viral-video/scripts/make_layout_assets.py) |
-| 173 | ✓ | [`skills/yuv-viral-video/scripts/make_sfx.py`](skills/yuv-viral-video/scripts/make_sfx.py) |
-| 174 | ✓ | [`skills/yuv-viral-video/SKILL.md`](skills/yuv-viral-video/SKILL.md) |
-| 175 | ✓ | [`templates/skill-template/SKILL.md`](templates/skill-template/SKILL.md) |
+| 138 | ✓ | [`skills/yuv-reel-covers/assets/example-cover.png`](skills/yuv-reel-covers/assets/example-cover.png) |
+| 139 | ✓ | [`skills/yuv-reel-covers/assets/example-editorial.png`](skills/yuv-reel-covers/assets/example-editorial.png) |
+| 140 | ✓ | [`skills/yuv-reel-covers/assets/logo-phoenix.png`](skills/yuv-reel-covers/assets/logo-phoenix.png) |
+| 141 | ✓ | [`skills/yuv-reel-covers/assets/yuval-cutout.png`](skills/yuv-reel-covers/assets/yuval-cutout.png) |
+| 142 | ✓ | [`skills/yuv-reel-covers/build_app.py`](skills/yuv-reel-covers/build_app.py) |
+| 143 | ✓ | [`skills/yuv-reel-covers/cover-studio.html`](skills/yuv-reel-covers/cover-studio.html) |
+| 144 | ✓ | [`skills/yuv-reel-covers/fonts/Anton-Regular.woff2`](skills/yuv-reel-covers/fonts/Anton-Regular.woff2) |
+| 145 | ✓ | [`skills/yuv-reel-covers/fonts/Rubik-700.woff2`](skills/yuv-reel-covers/fonts/Rubik-700.woff2) |
+| 146 | ✓ | [`skills/yuv-reel-covers/fonts/Rubik-900.woff2`](skills/yuv-reel-covers/fonts/Rubik-900.woff2) |
+| 147 | ✓ | [`skills/yuv-reel-covers/gen_cover.py`](skills/yuv-reel-covers/gen_cover.py) |
+| 148 | ✓ | [`skills/yuv-reel-covers/prompts.md`](skills/yuv-reel-covers/prompts.md) |
+| 149 | ✓ | [`skills/yuv-reel-covers/README.md`](skills/yuv-reel-covers/README.md) |
+| 150 | ✓ | [`skills/yuv-reel-covers/SKILL.md`](skills/yuv-reel-covers/SKILL.md) |
+| 151 | ✓ | [`skills/yuv-reel-covers/style-spec.md`](skills/yuv-reel-covers/style-spec.md) |
+| 152 | ✓ | [`skills/yuv-video-director/assets/Anton-Regular.woff2`](skills/yuv-video-director/assets/Anton-Regular.woff2) |
+| 153 | ✓ | [`skills/yuv-video-director/assets/brain-fire.json`](skills/yuv-video-director/assets/brain-fire.json) |
+| 154 | ✓ | [`skills/yuv-video-director/assets/builders/explainer-template.tpl`](skills/yuv-video-director/assets/builders/explainer-template.tpl) |
+| 155 | ✓ | [`skills/yuv-video-director/assets/builders/fetch_hebrew_fonts.py`](skills/yuv-video-director/assets/builders/fetch_hebrew_fonts.py) |
+| 156 | ✓ | [`skills/yuv-video-director/assets/builders/gen_explainer.py`](skills/yuv-video-director/assets/builders/gen_explainer.py) |
+| 157 | ✓ | [`skills/yuv-video-director/assets/builders/gen_music_bed.py`](skills/yuv-video-director/assets/builders/gen_music_bed.py) |
+| 158 | ✓ | [`skills/yuv-video-director/assets/builders/gen_music_teaser.py`](skills/yuv-video-director/assets/builders/gen_music_teaser.py) |
+| 159 | ✓ | [`skills/yuv-video-director/assets/builders/gen_news.py`](skills/yuv-video-director/assets/builders/gen_news.py) |
+| 160 | ✓ | [`skills/yuv-video-director/assets/builders/news-template-16x9.tpl`](skills/yuv-video-director/assets/builders/news-template-16x9.tpl) |
+| 161 | ✓ | [`skills/yuv-video-director/assets/builders/news-template-9x16.tpl`](skills/yuv-video-director/assets/builders/news-template-9x16.tpl) |
+| 162 | ✓ | [`skills/yuv-video-director/assets/decode-beam.json`](skills/yuv-video-director/assets/decode-beam.json) |
+| 163 | ✓ | [`skills/yuv-video-director/assets/eye-read.json`](skills/yuv-video-director/assets/eye-read.json) |
+| 164 | ✓ | [`skills/yuv-video-director/assets/FRAME.md`](skills/yuv-video-director/assets/FRAME.md) |
+| 165 | ✓ | [`skills/yuv-video-director/assets/gen_content_lotties.py`](skills/yuv-video-director/assets/gen_content_lotties.py) |
+| 166 | ✓ | [`skills/yuv-video-director/assets/ghost-line.json`](skills/yuv-video-director/assets/ghost-line.json) |
+| 167 | ✓ | [`skills/yuv-video-director/assets/logo-phoenix.png`](skills/yuv-video-director/assets/logo-phoenix.png) |
+| 168 | ✓ | [`skills/yuv-video-director/assets/lottie-burst-generator.py`](skills/yuv-video-director/assets/lottie-burst-generator.py) |
+| 169 | ✓ | [`skills/yuv-video-director/assets/manim-scene-template.py`](skills/yuv-video-director/assets/manim-scene-template.py) |
+| 170 | ✓ | [`skills/yuv-video-director/assets/neural-net-field.js`](skills/yuv-video-director/assets/neural-net-field.js) |
+| 171 | ✓ | [`skills/yuv-video-director/assets/neural-pulse.json`](skills/yuv-video-director/assets/neural-pulse.json) |
+| 172 | ✓ | [`skills/yuv-video-director/assets/orb-extract.json`](skills/yuv-video-director/assets/orb-extract.json) |
+| 173 | ✓ | [`skills/yuv-video-director/assets/phoenix-burst.json`](skills/yuv-video-director/assets/phoenix-burst.json) |
+| 174 | ✓ | [`skills/yuv-video-director/assets/wa-collapse.json`](skills/yuv-video-director/assets/wa-collapse.json) |
+| 175 | ✓ | [`skills/yuv-video-director/assets/what_is_nn.py`](skills/yuv-video-director/assets/what_is_nn.py) |
+| 176 | ✓ | [`skills/yuv-video-director/README.md`](skills/yuv-video-director/README.md) |
+| 177 | ✓ | [`skills/yuv-video-director/references/brand-kit.md`](skills/yuv-video-director/references/brand-kit.md) |
+| 178 | ✓ | [`skills/yuv-video-director/references/cinematic.md`](skills/yuv-video-director/references/cinematic.md) |
+| 179 | ✓ | [`skills/yuv-video-director/references/composition-pattern.md`](skills/yuv-video-director/references/composition-pattern.md) |
+| 180 | ✓ | [`skills/yuv-video-director/references/editing.md`](skills/yuv-video-director/references/editing.md) |
+| 181 | ✓ | [`skills/yuv-video-director/references/frame-md.md`](skills/yuv-video-director/references/frame-md.md) |
+| 182 | ✓ | [`skills/yuv-video-director/references/gates.md`](skills/yuv-video-director/references/gates.md) |
+| 183 | ✓ | [`skills/yuv-video-director/references/lottie.md`](skills/yuv-video-director/references/lottie.md) |
+| 184 | ✓ | [`skills/yuv-video-director/references/manim.md`](skills/yuv-video-director/references/manim.md) |
+| 185 | ✓ | [`skills/yuv-video-director/references/prereqs.md`](skills/yuv-video-director/references/prereqs.md) |
+| 186 | ✓ | [`skills/yuv-video-director/references/teaser-explainer.md`](skills/yuv-video-director/references/teaser-explainer.md) |
+| 187 | ✓ | [`skills/yuv-video-director/SKILL.md`](skills/yuv-video-director/SKILL.md) |
+| 188 | ✓ | [`skills/yuv-viral-video/assets/fonts/Anton-Regular.ttf`](skills/yuv-viral-video/assets/fonts/Anton-Regular.ttf) |
+| 189 | ✓ | [`skills/yuv-viral-video/assets/fonts/Rubik-Black.ttf`](skills/yuv-viral-video/assets/fonts/Rubik-Black.ttf) |
+| 190 | ✓ | [`skills/yuv-viral-video/assets/fonts/Rubik-Bold.ttf`](skills/yuv-viral-video/assets/fonts/Rubik-Bold.ttf) |
+| 191 | ✓ | [`skills/yuv-viral-video/README.md`](skills/yuv-viral-video/README.md) |
+| 192 | ✓ | [`skills/yuv-viral-video/references/setup.md`](skills/yuv-viral-video/references/setup.md) |
+| 193 | ✓ | [`skills/yuv-viral-video/requirements.txt`](skills/yuv-viral-video/requirements.txt) |
+| 194 | ✓ | [`skills/yuv-viral-video/scripts/apple_glass.py`](skills/yuv-viral-video/scripts/apple_glass.py) |
+| 195 | ✓ | [`skills/yuv-viral-video/scripts/build_screen_share.py`](skills/yuv-viral-video/scripts/build_screen_share.py) |
+| 196 | ✓ | [`skills/yuv-viral-video/scripts/build_selfie.py`](skills/yuv-viral-video/scripts/build_selfie.py) |
+| 197 | ✓ | [`skills/yuv-viral-video/scripts/composite_screen_share.py`](skills/yuv-viral-video/scripts/composite_screen_share.py) |
+| 198 | ✓ | [`skills/yuv-viral-video/scripts/composite_selfie.py`](skills/yuv-viral-video/scripts/composite_selfie.py) |
+| 199 | ✓ | [`skills/yuv-viral-video/scripts/make_anims.py`](skills/yuv-viral-video/scripts/make_anims.py) |
+| 200 | ✓ | [`skills/yuv-viral-video/scripts/make_cards_screen_share.py`](skills/yuv-viral-video/scripts/make_cards_screen_share.py) |
+| 201 | ✓ | [`skills/yuv-viral-video/scripts/make_cards_selfie.py`](skills/yuv-viral-video/scripts/make_cards_selfie.py) |
+| 202 | ✓ | [`skills/yuv-viral-video/scripts/make_karaoke.py`](skills/yuv-viral-video/scripts/make_karaoke.py) |
+| 203 | ✓ | [`skills/yuv-viral-video/scripts/make_layout_assets.py`](skills/yuv-viral-video/scripts/make_layout_assets.py) |
+| 204 | ✓ | [`skills/yuv-viral-video/scripts/make_sfx.py`](skills/yuv-viral-video/scripts/make_sfx.py) |
+| 205 | ✓ | [`skills/yuv-viral-video/SKILL.md`](skills/yuv-viral-video/SKILL.md) |
+| 206 | ✓ | [`templates/skill-template/SKILL.md`](templates/skill-template/SKILL.md) |
 
 ---
 

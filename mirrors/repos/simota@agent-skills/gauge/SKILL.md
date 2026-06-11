@@ -175,7 +175,7 @@ Parse the first token of user input.
 - Otherwise → default Recipe (`audit` = SKILL Audit). Apply normal SCAN → CLASSIFY → REPORT → RECOMMEND workflow.
 
 Behavior notes per Recipe:
-- `audit`: Check all 18 structural items + CQ1 (obviousness density) + CQ2 (description trigger-word). PASS/PARTIAL/FAIL + P0-P3 priority. Compute Health Score. Generate fix snippets.
+- `audit`: Check all 18 structural items + CQ1 (obviousness density) + CQ2 (description trigger-word). PASS/PARTIAL/FAIL + P0-P3 priority. Compute Health Score. Generate fix snippets. On a Fable 5 hub (or for skills intended to run there), also apply RR-1 (reasoning-reproduction) per `reference/detection-patterns.md` § RR-1 — informational on an Opus 4.8 hub.
 - `fix`: Generate concrete fix snippets for FAIL/PARTIAL items. Quest section reference required. Do not edit SKILL.md directly.
 - `research`: Web search with T1-T4 source tier classification. Self-update at Safety Level A/B. Strictly respect the change budget (3 per session).
 - `checklist`: Evaluate only the specified item (F1, F2, L1, H1-H3, S1-S10, A1-A2, CQ1, CQ2) with narrowed scope.
@@ -187,6 +187,7 @@ Behavior notes per Recipe:
 |--------|----------|----------------|-----------|
 | `audit`, `check`, `compliance`, `normalize` | Full 20-item scan (18 structural + 2 content) | Compliance report | `reference/normalization-checklist.md`, `reference/content-quality-audit.md` |
 | `obviousness`, `trigger-word`, `description quality`, `content audit` | CQ1/CQ2 focused audit | Content quality report | `reference/content-quality-audit.md` |
+| `reasoning reproduction`, `reasoning_extraction`, `fable 5 refusal`, `show your reasoning` | RR-1 scan (Fable 5 reasoning-reproduction risk) | RR-1 finding list (with contextual-validity guards) | `reference/detection-patterns.md` § RR-1 |
 | `dashboard`, `health score`, `ecosystem health` | Ecosystem-wide matrix | Compliance dashboard | `reference/report-templates.md` |
 | `fix`, `recommend`, `snippet` | Fix plan generation | Fix plan with snippets | `reference/fix-templates.md` |
 | `evolve`, `update`, `best practices`, `calibrate` | Self-evolution cycle | Evolution log | `reference/web-sources.md`, `reference/self-evolution.md` |
@@ -234,7 +235,7 @@ Every deliverable must include:
 | Reference | Read this when |
 |-----------|----------------|
 | `reference/normalization-checklist.md` | You need the 18-item checklist with PASS/PARTIAL/FAIL criteria and P0-P3 priority definitions. |
-| `reference/detection-patterns.md` | You need structural detection rules for each checklist item. |
+| `reference/detection-patterns.md` | You need structural detection rules for each checklist item, or the RR-1 reasoning-reproduction rule (Fable 5 refusal risk). |
 | `reference/fix-templates.md` | You need skeleton templates and Quest-based exemplar patterns for fix generation. |
 | `reference/report-templates.md` | You need dashboard, per-skill, or ecosystem health score formats. |
 | `reference/web-sources.md` | You need web information source tiers, search query templates, or freshness rules. |

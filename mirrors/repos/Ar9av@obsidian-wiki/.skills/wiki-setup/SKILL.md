@@ -177,6 +177,53 @@ Report the results and tell the user they can now:
 5. Run `codex-history-ingest` to mine their Codex sessions (if they use Codex)
 6. Run `wiki-status` again anytime to check the delta
 
+## Optional: Install the Stop Hook (Auto-Capture)
+
+Ask the user: **"Want to auto-capture findings at session end?"**
+
+If yes, install the Stop hook into their global Claude Code settings so that every session
+with meaningful work automatically prompts `/wiki-quick-chat-capture` before closing.
+
+**What the hook does:** reads the session transcript on Stop, counts file edits and shell
+calls, and if significant work happened, asks Claude to run `/wiki-quick-chat-capture` once.
+The `wiki-quick-chat-capture` skill's own KEEP/SKIP gate prevents noise — routine or
+inconclusive sessions are skipped automatically.
+
+**Installation steps:**
+
+1. Find the obsidian-wiki repo path (the directory where this skill lives). If
+   `OBSIDIAN_WIKI_REPO` is set in config, use that. Otherwise, check common locations:
+   `~/Documents/projects/obsidian-wiki`, `~/obsidian-wiki`, or ask the user.
+
+2. Merge the hook entry into `~/.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash <REPO_PATH>/.claude/hooks/wiki-stop-capture.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+   If `~/.claude/settings.json` already exists and has a `hooks.Stop` array, **append** the new
+   entry rather than replacing — don't clobber existing hooks.
+
+3. Confirm: "Stop hook installed. Claude Code will prompt `/wiki-quick-chat-capture` at the
+   end of any session where you write files or run ≥ 4 shell commands."
+
+**To uninstall later:** remove the hook entry from `~/.claude/settings.json` or set
+`HIVEMIND_CAPTURE=false` in your shell to skip capture for a single session.
+
 ## Optional: Refresh QMD After Setup
 
 If `QMD_WIKI_COLLECTION` is configured and the local QMD CLI is available, run `qmd update` after the initial vault files exist so the fresh vault is immediately queryable. No embedding pass is usually needed at setup time because the vault starts empty, so a plain update is enough unless you have already populated pages.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `qwibitai/nanoclaw` — 26 default patterns, 19 followed patterns, 109 file(s) materialized.
+Mirror of `qwibitai/nanoclaw` — 26 default patterns, 21 followed patterns, 111 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `qwibitai/nanoclaw` — 26 default patterns, 19 followed patterns, 109
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 19 |
-| Files         | 109 |
+| Followed pats | 21 |
+| Files         | 111 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,9 +65,11 @@ Mirror of `qwibitai/nanoclaw` — 26 default patterns, 19 followed patterns, 109
 - `docs/architecture-diagram.md`
 - `docs/build-and-runtime.md`
 - `docs/v1-to-v2-changes.md`
+- `docs/customizing.md`
+- `docs/skills-model.md`
+- `docs/skill-guidelines.md`
 - `docs/docker-sandboxes.md`
 - `CHANGELOG.md`
-- `docs/skills-as-branches.md`
 - `docs/upgrade-recovery.md`
 - `RELEASING.md`
 
@@ -174,18 +176,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 95 | → | [`docs/architecture-diagram.md`](docs/architecture-diagram.md) |
 | 96 | → | [`docs/architecture.md`](docs/architecture.md) |
 | 97 | → | [`docs/build-and-runtime.md`](docs/build-and-runtime.md) |
-| 98 | → | [`docs/db-central.md`](docs/db-central.md) |
-| 99 | → | [`docs/db-session.md`](docs/db-session.md) |
-| 100 | → | [`docs/db.md`](docs/db.md) |
-| 101 | → | [`docs/docker-sandboxes.md`](docs/docker-sandboxes.md) |
-| 102 | → | [`docs/isolation-model.md`](docs/isolation-model.md) |
-| 103 | → | [`docs/migration-dev.md`](docs/migration-dev.md) |
-| 104 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
-| 105 | → | [`docs/skills-as-branches.md`](docs/skills-as-branches.md) |
-| 106 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
-| 107 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
-| 108 | → | [`README.md`](README.md) |
-| 109 | → | [`RELEASING.md`](RELEASING.md) |
+| 98 | → | [`docs/customizing.md`](docs/customizing.md) |
+| 99 | → | [`docs/db-central.md`](docs/db-central.md) |
+| 100 | → | [`docs/db-session.md`](docs/db-session.md) |
+| 101 | → | [`docs/db.md`](docs/db.md) |
+| 102 | → | [`docs/docker-sandboxes.md`](docs/docker-sandboxes.md) |
+| 103 | → | [`docs/isolation-model.md`](docs/isolation-model.md) |
+| 104 | → | [`docs/migration-dev.md`](docs/migration-dev.md) |
+| 105 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
+| 106 | → | [`docs/skill-guidelines.md`](docs/skill-guidelines.md) |
+| 107 | → | [`docs/skills-model.md`](docs/skills-model.md) |
+| 108 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
+| 109 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
+| 110 | → | [`README.md`](README.md) |
+| 111 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

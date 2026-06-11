@@ -1,6 +1,6 @@
 ---
 description: "Audit installed Mall plugins for upstream drift, then update or remove with explicit user consent"
-lastReviewed: 2026-05-31
+lastReviewed: 2026-06-10
 ---
 
 # /mall-refresh
@@ -13,11 +13,11 @@ Per [PLAN-mall-automation v3 / ADR-008](https://github.com/fabioc-aloha/Alex_ACT
 
 1. **Run the mechanical drift check**:
 
-   ```pwsh
+   ```bash
    node .github/scripts/audit-mall-drift.cjs --json
    ```
 
-   The script finds the catalog automatically: sibling `../Alex_Skill_Mall/` first, then `~/Alex_Skill_Mall/`, then `C:/Development/Alex_Skill_Mall/` (Windows), then the GitHub raw HTTPS fallback. Pass `--no-network` to disable the HTTPS fallback if the heir is offline by policy. Pass `--catalog=<path>` to override discovery.
+   The script finds the catalog automatically: sibling `../Alex_Skill_Mall/` first, then `~/Alex_Skill_Mall/`, then `~/Development/Alex_Skill_Mall/` (Mac/Linux), then `C:/Development/Alex_Skill_Mall/` (Windows), then the GitHub raw HTTPS fallback. Pass `--no-network` to disable the HTTPS fallback if the heir is offline by policy. Pass `--catalog=<path>` to override discovery.
 
 2. **If no actionable drift** (`UPDATED_UPSTREAM`, `DEPRECATED_UPSTREAM`, `UNMANAGED_LOCAL_PLUGIN` all zero):
    - Report "all local Mall plugins are in sync" and stop.
@@ -48,7 +48,7 @@ Per [PLAN-mall-automation v3 / ADR-008](https://github.com/fabioc-aloha/Alex_ACT
 
 8. **Re-run the drift check** and report the final state:
 
-   ```pwsh
+   ```bash
    node .github/scripts/audit-mall-drift.cjs
    ```
 

@@ -6,7 +6,7 @@ Design system creation instructions:
 
 ## This project is a design system
 
-You are authoring the design system itself, not consuming one. `_ds_bundle.js`, `_ds_manifest.json`, and `_adherence.oxlintrc.json` are **generated artifacts** — never hand-edit them. After you edit components or tokens, (re)generate them by running the portable compiler (a plain shell call on Claude Code / Cursor / Codex):
+You are authoring the design system itself, not consuming one. `_ds_bundle.js`, `_ds_manifest.json`, `_adherence.oxlintrc.json`, and `preview.html` are **generated artifacts** — never hand-edit them. After you edit components or tokens, (re)generate them by running the portable compiler (a plain shell call on Claude Code / Cursor / Codex):
 
 ```
 node <skill>/agents/compile-design-system.mjs designs/<project>
@@ -31,5 +31,13 @@ node <skill>/agents/check-design-system.mjs designs/<project>
 ```
 
 To run it as an isolated read-only subagent (recommended after a batch of edits), launch it with the prompt at [`../agents/design-system-checker.md`](../agents/design-system-checker.md) — see your harness reference (`references/<harness>.md`) for the exact launch tool. Fix what it reports and run again until clean.
+
+**Finish by building the single-file review page** — once compiler + checker are clean, generate `designs/<project>/preview.html` (one self-contained interactive HTML with the Readme and every card) and re-generate it after any later edit:
+
+```
+node <skill>/agents/build-preview.mjs designs/<project>
+```
+
+Full doc: [`design-system-preview.md`](design-system-preview.md).
 
 Once compiled, the `_ds_bundle.js` + `_ds_manifest.json` in this folder make it consumable by other projects (they load `window.<Namespace>.<Component>`).

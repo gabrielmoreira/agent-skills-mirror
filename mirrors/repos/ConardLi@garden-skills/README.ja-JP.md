@@ -261,7 +261,7 @@
 主な特徴:
 
 - **まずは記事ありき** — 焦点は常に「記事」そのもの：より良い読書体験、より良いリズム、より良い美学。配信物は自己完結したファイル（HTML、オプションで PDF）ですが、それは配信ディテールであって目的ではありません
-- **Reacticle コンポーネントプロトコル** — prose-first の意味的コンポーネント（Hero / Lead / Section / Quote / Callout / Image / Formula / CodeBlock / Table…）と、テーマトークンのみ許可される `Raw` 自由層
+- **Reacticle コンポーネントプロトコル** — prose-first の意味的コンポーネント（Hero / Lead / Section / Quote / Callout / Image / Formula / CodeBlock / Table…）と、テーマトークンのみ許可される `Raw` 自由層。基盤の React ライブラリは [`ConardLi/reacticle`](https://github.com/ConardLi/reacticle) にあります
 - **10 種類の記事タイプ + 推奨保留率パッケージ** — `longform · ~100%` / `tutorial · ~90%` / `full-report · ~80%` / `explainer · ~80%` / `dialogue · ~80%` / `review · ~70%` / `essay · ~70%` / `briefing · ~50%` / `visual-essay · ~40%` / `interactive-explainer · ~25% 抜粋 + 75% AI 再構成`
 - **11 種類のテーマ authoring profile**（`tufte`、`press`、`bayer`、`bodoni`、`vignelli`、`sottsass`、`freddie`、`andy`、`fuller`、`knuth`、`shannon`）— 各々が CSS ではなく Agent 向けの Markdown コントラクト
 - **ハードコラボレーションチェックポイント**、項目ごとに独立確認（サイレントデフォルト禁止）、3:4 ブックカバー、TOC デフォルト ON、目標言語へのネイティブ翻訳ステップ

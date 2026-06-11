@@ -52,7 +52,7 @@ Relative imports are fine **within** a slice (`./internal/foo`). Avoid relative 
 Biome's built-in `noRestrictedImports` uses exact module names and does not support glob patterns, so cross-slice prevention is enforced by:
 
 1. Code review (ADR-referenced rules).
-2. `cli/scripts/check-boundaries.mjs` — grep-based CI check that fails when `commands/<x>` files import from `commands/<y>`. `commands/migrations/` is allowlisted as shared infrastructure.
+2. `cli/scripts/check-boundaries.mjs` — path-resolving CI check (wired into `.github/workflows/test.yml`) that fails when `commands/<x>` files import from `commands/<y>`. `commands/migrations/` is allowlisted as shared infrastructure, and a frozen `ALLOWED_EDGES` set documents the sanctioned command-to-command dependencies (doctor→skills/memory/hook diagnostics, install/update→link, memory→recap parsers, market→search transport). Do not extend the edge set to silence a failure — move the shared code to `utils/`, `io/`, or `platform/` instead.
 
 ## `commands/docs/` — Documentation Drift Detection
 

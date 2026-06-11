@@ -21,10 +21,10 @@
 // absolute path or one that includes <projectDir> is normalized to project-relative
 // POSIX before it is stored. If --name is omitted on record it is derived from the
 // filename (basename minus .dc.html/.html). --chat-id is optional and normally
-// omitted in Claude Code (no chat-id surface) — it exists for app-hub parity.
+// omitted in Claude Code (no chat-id surface) — reserved for hosts that have one.
 //
-// Shares the asset model with the importer/host via lib/asset-store.mjs (a port of
-// the reference reducer). Writes ONLY <projectDir>/_d_meta.json. Exit 64 usage, 1 error.
+// Shares the asset model with the importer/host via lib/asset-store.mjs.
+// Writes ONLY <projectDir>/_d_meta.json. Exit 64 usage, 1 error.
 
 import fs from 'node:fs';
 import path from 'node:path';

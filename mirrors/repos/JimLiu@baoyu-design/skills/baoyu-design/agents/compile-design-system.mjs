@@ -116,17 +116,73 @@ function sourceHash(code) {
   return crypto.createHash('sha256').update(code).digest('hex').slice(0, 12);
 }
 
+// The strip plugin turns relative imports into EAGER `const { X } = __ds_scope`
+// reads at the top of each file's IIFE block, so a dependency's block must run
+// before its importers' — alphabetical order breaks whenever a dependency sorts
+// after a dependent (e.g. components/Button.jsx importing ./Icon.jsx works, but
+// ./Zicon.jsx would be undefined). DFS post-order over the already-alphabetical
+// source list keeps output deterministic; files in an import cycle stay in list
+// order (any order is wrong for a cycle — the per-block try/catch contains it).
+function orderForBundle(allSources, rawByPath) {
+  const byPath = new Map(allSources.map((s) => [s.path, s]));
+  // single-statement match: [^;'"] can't cross a side-effect import's quote or
+  // a statement boundary, while still spanning multi-line specifier lists
+  const IMPORT_RE = /import\s+(?:[^;'"]*?\sfrom\s*)?["']([^"']+)["']/g;
+  const EXTS = ['', '.jsx', '.tsx', '.js', '.ts', '/index.jsx', '/index.tsx', '/index.js', '/index.ts'];
+  const resolveSpec = (importer, spec) => {
+    const base = spec.startsWith('/')
+      ? path.posix.normalize(spec.slice(1)) // treat /x/y as DS-root-relative
+      : path.posix.normalize(path.posix.join(path.posix.dirname(importer), spec));
+    for (const ext of EXTS) {
+      if (byPath.has(base + ext)) return base + ext;
+    }
+    return null;
+  };
+  const deps = new Map();
+  for (const s of allSources) {
+    const out = [];
+    const raw = rawByPath.get(s.path) ?? '';
+    IMPORT_RE.lastIndex = 0;
+    let m;
+    while ((m = IMPORT_RE.exec(raw))) {
+      const spec = m[1];
+      if (!spec.startsWith('.') && !spec.startsWith('/')) continue;
+      const target = resolveSpec(s.path, spec);
+      if (target && target !== s.path) out.push(target);
+    }
+    deps.set(s.path, out);
+  }
+  const ordered = [];
+  const state = new Map(); // 1 = visiting (cycle guard), 2 = emitted
+  const visit = (p) => {
+    if (state.get(p)) return;
+    state.set(p, 1);
+    for (const d of deps.get(p) ?? []) visit(d);
+    state.set(p, 2);
+    ordered.push(byPath.get(p));
+  };
+  for (const s of allSources) visit(s.path);
+  return ordered;
+}
+
 function buildBundle(model) {
   const { root, namespace, components, unexposedExports, allSources } = model;
   const sourceHashes = {};
   const blocks = [];
   const exposed = new Set(components.map((c) => c.name));
 
+  // read every source first: hashes stay in allSources (alphabetical) order so
+  // the manifest is stable, while blocks emit in dependency order
+  const rawByPath = new Map();
   for (const s of allSources) {
-    const abs = path.join(root, s.path);
     let raw = '';
-    try { raw = fs.readFileSync(abs, 'utf8'); } catch { /* skip */ }
+    try { raw = fs.readFileSync(path.join(root, s.path), 'utf8'); } catch { /* skip */ }
+    rawByPath.set(s.path, raw);
     sourceHashes[s.path] = sourceHash(raw);
+  }
+
+  for (const s of orderForBundle(allSources, rawByPath)) {
+    const raw = rawByPath.get(s.path) ?? '';
     let body;
     try {
       body = transpile(raw, s.path);

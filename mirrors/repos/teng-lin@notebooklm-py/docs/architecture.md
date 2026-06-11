@@ -503,7 +503,9 @@ the default dependency.
 | [`_auth/extraction.py`](../src/notebooklm/_auth/extraction.py) | Cookie/token extraction from browser sessions. |
 | [`_auth/headers.py`](../src/notebooklm/_auth/headers.py) | HTTP header construction. |
 | [`_auth/cookies.py`](../src/notebooklm/_auth/cookies.py) | Cookie maps + `_update_cookie_input` helper. |
-| [`_auth/cookie_policy.py`](../src/notebooklm/_auth/cookie_policy.py) | Domain allowlist and cookie policy decisions. |
+| [`_auth/cookie_policy.py`](../src/notebooklm/_auth/cookie_policy.py) | Domain allowlist, cookie-domain builder (`build_cookie_domain_allowlist`), and cookie policy decisions. |
+| [`_auth/browser_capture.py`](../src/notebooklm/_auth/browser_capture.py) | Transport-neutral browser launch→navigate→capture→filter→persist core (lazy `playwright`); shared by the interactive CLI login adapter and the layer-3 headless re-auth layer (ADR-0021). The headless arm classifies the landing URL (authenticated→capture, redirected-to-login→`HeadlessLoginRequiredError`). `run_cdp_capture` is an alternative credential source: attach to an operator-pointed already-running Chrome over CDP (`connect_over_cdp`, disconnect-only teardown) using the SAME landing classification + cookie-domain allowlist. |
+| [`_auth/headless_reauth.py`](../src/notebooklm/_auth/headless_reauth.py) | Layer-3 (deepest) auth recovery: when first-party cookies are dead, drive a headless browser against the persistent profile to silently re-mint cookies. Typed honest outcomes (`HeadlessReauthStatus` UNAVAILABLE/FAILED/SUCCESS — never silent `None`). Opt-in only (`refresh_auth(allow_headless=True)` or `NOTEBOOKLM_HEADLESS_REAUTH=1`); local-unattended-only, never the remote/MCP auth path. Alternative credential source: `NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL` (or `attempt_headless_reauth(cdp_url=...)`) attaches to an operator-pointed running Chrome instead of the dedicated profile (freshness mitigation). Also exposes `headless_reauth_readiness()` — a credential-free, browser-free probe (profile present + playwright installed) surfaced by `doctor`. |
 | [`_auth/account.py`](../src/notebooklm/_auth/account.py) | Account profile + multi-account switching. |
 | [`_auth/session.py`](../src/notebooklm/_auth/session.py) | `refresh_auth_session(auth=..., kernel=..., auth_coord=..., lifecycle=..., cookie_persistence=...)` implementation called by `AuthRefreshCoordinator`. Takes five explicit keyword-only collaborators instead of a Session-shaped owner Protocol; the previous `RefreshAuthCore` Protocol and the `update_auth_tokens` / `update_auth_headers` Session-level forwards have been removed. |
 | [`_auth/refresh.py`](../src/notebooklm/_auth/refresh.py) | Token refresh driver (external login command, coalesced runs, secret redaction). |
@@ -624,10 +626,19 @@ The boundary is enforced statically by
 [`tests/_guardrails/test_cli_boundary.py`](../tests/_guardrails/test_cli_boundary.py):
 CLI modules may import public `notebooklm` modules and their own
 intra-CLI private helpers, but not `notebooklm._*`, `notebooklm.rpc.*`,
-or private names from public modules. The same test keeps low-level
-helpers (`runtime`, `context`, `resolve`, `rendering`, `auth_runtime`,
-`options`) from growing upward dependencies on command modules or the
-`cli.helpers` compatibility facade.
+or private names from public modules. **Two sanctioned exceptions** to the
+`notebooklm._*` rule are whitelisted in that gate: `notebooklm._app`
+(the transport-neutral business-logic layer every adapter consumes) and the
+single module `notebooklm._auth.browser_capture` (the transport-neutral
+browser launch→capture→filter→persist core that the Playwright login adapter
+[`cli/services/playwright_login.py`](../src/notebooklm/cli/services/playwright_login.py)
+sits over, per ADR-0021 — interactive presentation stays in `cli/` while the
+neutral core moves down to `_auth`, reachable by the client runtime and the
+future headless re-auth layer). No other `_auth.*` module may be imported by
+the CLI — the rest stays behind the `auth.py` facade. The same test keeps
+low-level helpers (`runtime`, `context`, `resolve`, `rendering`,
+`auth_runtime`, `options`) from growing upward dependencies on command modules
+or the `cli.helpers` compatibility facade.
 
 ## Middleware chain (ADR-0009)
 
@@ -808,6 +819,7 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | File | Purpose |
 |------|---------|
 | `client.py` | Main `NotebookLMClient` class |
+| `_client_assembly.py` | Single private assembly seam (`_assemble_client`) that wires every constructor-set attribute; shared by `NotebookLMClient.__init__` and the canonical test factory (`tests/_helpers/client_factory.py`) so the two construction paths cannot drift. |
 | `_client_composed.py` | Client-owned composition holder for transport, executor, chain host, middleware metadata, and runtime collaborator bundle. |
 | `_client_seams.py` | Constructor-only injectable seams used by tests and collaborator construction. |
 | `_runtime/init.py` | Constructor helpers that validate client runtime kwargs, build collaborators (returning a `RuntimeCollaborators` bundle), wire middleware, and bind `ClientComposed`. |
@@ -815,6 +827,7 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_runtime/config.py` | `DEFAULT_*` knobs and module-level constants. `CORE_LOGGER_NAME = "notebooklm._core"` is intentionally preserved as a compatibility logging contract even though the `_core` module was deleted; renaming it silently breaks downstream `caplog`/logger filters. |
 | `_env.py`, `config.py` | Runtime environment defaults and the public config re-export surface |
 | `_logging.py`, `log.py` | Redaction/correlation logging internals and the public logging helper surface |
+| `_secrets.py` | Canonical runtime registry of must-scrub bare session-cookie names (`RUNTIME_SESSION_COOKIES`), `__Secure-*` / `__Host-*` prefix umbrellas (`SECURE_HOST_UMBRELLA_PATTERNS`, fail-closed for future names), and carrier-agnostic Google credential shapes (`AUTH_TOKEN_SHAPE_PATTERNS` — `g.a000-` / `sidts-` / `ya29.` tokens + the `AIza…` API key) that `_logging.py` redaction and `exceptions.py` scrubbing DERIVE from. Runtime code cannot import from `tests/`, so this restates the cassette sanitizer's must-scrub shapes; `tests/_guardrails/test_runtime_secret_registry_parity.py` asserts lockstep with `tests/cassette_patterns.py` on every axis — bare-cookie superset, umbrella coverage, and regex-string shape equality (issues #1517/#1518). |
 | `_callbacks.py` | Sync-or-async callback invocation helper used by telemetry/retry hooks |
 | `_lookup.py` | `unwrap_or_raise(obj, exc)` — the shared single-row-lookup helper backing the public `get`/`get_or_none` pair (ADR-0019 Enforcement tier-2). The four `sources`/`artifacts`/`notes`/`mind_maps` `get()` methods call it directly to raise their `*NotFoundError` on a miss (the v0.8.0 flip, issue #1247); `notebooks.get()` already raised on its own path and does not route through it. |
 | `_loop_bound.py` | `LoopBoundPrimitive` — template-method base for the loop-affinity `set_bound_loop` protocol. Owns the `_bound_loop` field + a `set_bound_loop` that always stores the binding and fires the `_on_loop_rebind(old, new)` hook only on a real loop change (hook before store). Trivial owners (`TransportDrainTracker`/`ReqidCounter`/`AuthRefreshCoordinator`) use the default no-op hook; clear-on-rebind owners (`ClientComposed`/`SourceUploadPipeline`/`ChatAPI`) override it to discard their cached loop-bound primitive/locks. Owns only the binding + rebind hook — the cross-loop *assert* stays in `_loop_affinity`, and each owner keeps its own `reset_after_open`. |
@@ -869,6 +882,7 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_mind_map.py` | Specific adapter service representing mind-maps, backed by standard notes |
 | `_mind_maps_api.py` | `client.mind_maps` API — unified surface over both mind-map backends (note-backed JSON + interactive studio-artifact), dispatching each op to the correct RPC family (#1256) |
 | `_artifact/downloads.py` | Asynchronous download coordinator for finished artifacts |
+| `_artifact/_redirect_guard.py` | Per-redirect-hop host/scheme revalidation for downloads — rejects off-allowlist / non-HTTPS redirect targets before the request is sent (#1521) |
 | `_artifact/formatters.py` | Markdown, HTML, and plain text formatters for artifacts |
 | `_artifact/payloads.py` | Stable CREATE_ARTIFACT / GENERATE_MIND_MAP request payload builders |
 | `_artifact/listing.py` | Listing and filtering operations for notebook artifacts |
@@ -895,7 +909,9 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_auth/extraction.py` | Cookie/token extraction from browser sessions |
 | `_auth/headers.py` | HTTP header construction |
 | `_auth/cookies.py` | Cookie map manipulation + `_update_cookie_input` |
-| `_auth/cookie_policy.py` | Cookie-domain allowlist and policy decisions |
+| `_auth/cookie_policy.py` | Cookie-domain allowlist, `build_cookie_domain_allowlist` builder, and policy decisions |
+| `_auth/browser_capture.py` | Transport-neutral browser launch→capture→filter→persist core (lazy `playwright`); shared by the interactive CLI login adapter (`cli/services/playwright_login.py`) and the layer-3 headless re-auth layer (ADR-0021) |
+| `_auth/headless_reauth.py` | Layer-3 headless re-auth decision layer: opt-in/profile-gated, typed honest outcomes (`HeadlessReauthStatus`); drives `run_browser_capture(headless=True, interactive=False)`. Local-unattended-only |
 | `cli/label_cmd.py` | `label` command group (list/sources/generate/create/rename/emoji/add/delete); thin Click shells over `client.labels` and the label-listing service (ADR-0008) |
 | `cli/services/label_listing.py` | `label` CLI service: the `label list` members→source-titles join (`execute_label_list`/`LabelListPlan`). Re-exports `resolve_label_id` + `LabelResolutionError` from `_app/labels.py` (the composite `<id\|name>` resolver moved to the neutral layer; the re-export keeps `from .services.label_listing import resolve_label_id` resolving for the command layer + tests) |
 
@@ -922,6 +938,7 @@ src/notebooklm/
 ├── _auth_refresh_retry.py       # Shared auth refresh-and-retry core (RefreshBudget + refresh_and_count) for both retry layers
 ├── _backoff.py                  # Shared retry backoff calculation
 ├── _callbacks.py                # Sync/async callback invocation helper
+├── _client_assembly.py          # Shared client-assembly seam (constructor + test factory)
 ├── _client_composed.py          # Client-owned composition holder
 ├── _client_seams.py             # Constructor-only injectable seams
 ├── _deadline.py                 # RuntimeDeadline helper for aggregate timeouts
@@ -931,6 +948,7 @@ src/notebooklm/
 ├── _idempotency_policy.py       # Declarative per-RPC idempotency classification data (register_default_policies)
 ├── _kernel.py                   # Concrete Kernel transport core
 ├── _logging.py                  # Redaction + correlation logging internals
+├── _secrets.py                  # Canonical runtime secret registry (cookie names + secure/host umbrellas + token/API-key shapes) the redaction patterns derive from
 ├── _lookup.py                   # unwrap_or_raise — shared single-row-lookup helper for get/get_or_none
 ├── _loop_affinity.py            # Event-loop affinity guard helper (assert_bound_loop free function)
 ├── _loop_bound.py               # LoopBoundPrimitive mixin — template-method set_bound_loop + _on_loop_rebind hook for the loop-bound collaborators
@@ -958,7 +976,7 @@ src/notebooklm/
 │   ├── artifacts.py             # Click-free artifact core: get/rename/delete/export + poll/wait/retry; kind-aware mind-map dispatch (mind_maps.list for rename, notes.list_mind_maps for delete), get_artifact raises ArtifactNotFoundError, typed Rename/Export results + ArtifactStatusView/status_view neutral status DTO (CLI builds every --json envelope from the typed fields)
 │   ├── auth_check.py            # Click-free `auth check` diagnostics core: run_auth_check(plan, read_env_auth_json=…) -> AuthCheckResult (storage-exists/json-valid/cookies-present/SID + optional token-fetch); AuthCheckPlan carries pre-resolved values + the auth_source display label; inline-auth read injected (CLI owns the AuthSource plan-build + Rich table + exit code)
 │   ├── chat.py                  # Click-free chat core: conversation-id selection ladder + configure mode/goal/length dispatch + history fetch/format-as-data + ask save-as-note workflow (raises public ValidationError; status emitted into injected ProgressSink)
-│   ├── doctor.py                # Click-free doctor core: run_checks(*, fix, paths) -> DoctorReport (four checks + fixes + has_failures; DoctorPaths injects the path helpers; CLI owns rendering/exit codes)
+│   ├── doctor.py                # Click-free doctor core: run_checks(*, fix, paths) -> DoctorReport (five checks incl. headless-reauth readiness + fixes + has_failures; DoctorPaths injects the path helpers; CLI owns rendering/exit codes)
 │   ├── download.py              # Click-free download core: DownloadPlan/Result/TypeSpec + build_download_plan/execute_download (injected resolvers; CLI builds the --json envelope from the typed DownloadResult)
 │   ├── errors.py                # classify(exc) -> ClassifiedError (category + retriable); class-sensitive
 │   ├── events.py                # ProgressEvent + ProgressSink Protocol (neutral progress seam)
@@ -967,8 +985,9 @@ src/notebooklm/
 │   ├── generate_retry.py        # Click-free `generate` retry/wait: GenerationOutcome, generate_with_retry, handle_generation_result, status extractors, spinner status-line formatter (wait_context/wait_start_sink neutral seams)
 │   ├── labels.py                # Click-free label core: create/sources/generate/rename/emoji/add/remove/delete + the composite resolve_label_id (<id|name>) resolver + LabelResolutionError (injected notebook/source resolvers; members→titles JOIN render stays in cli/services/label_listing.py)
 │   ├── language.py              # Click-free language core: SUPPORTED_LANGUAGES catalog + is_supported_language + LanguageConfigStore (injected config-path/home/atomic-update; get/save/get_language/set_language)
+│   ├── mcp_install.py           # Click-free `mcp install <client>` core: supported-client catalog (claude-desktop/claude-code/cursor/windsurf) + per-OS resolve_config_path + uvx build_server_block + merge_server_config read-modify-merge into mcpServers (created/updated/unchanged; never clobbers unrelated keys); UnsupportedClientError. CLI owns the atomic write (cli/mcp_cmd.py)
 │   ├── notebooks.py             # Click-free notebook core: create/delete/rename/describe(summary)/metadata fetch+compute (injected resolve_notebook_id; summary/metadata serializers stay in cli/notebook_cmd.py)
-│   ├── notes.py                 # Click-free note core: create/get/save/rename/delete + extract_new_note_id + content-preserving rename (resolve_note_content); found-flag results map to the CLI NOT_FOUND/exit-1 path (injected notebook/note resolvers)
+│   ├── notes.py                 # Click-free note core: create/get/save/rename/delete (typed-facade only — notes.create returns a Note) + content-preserving rename (resolve_note_content); found-flag results map to the CLI NOT_FOUND/exit-1 path (injected notebook/note resolvers)
 │   ├── profile.py               # Click-free profile core: gather_profile_list -> ProfileEntry rows (injected list_profiles/resolve_profile/get_storage_path/read_account_metadata), is_protected_profile delete-guard decision, set_default/retarget_default config.json mutators (CLI keeps the locked _atomic_write_config + click.confirm + Rich render)
 │   ├── research.py              # Click-free `research` status/wait core: poll_and_classify -> ResearchStatusResult, ResearchWaitPlan/Result + execute_research_wait (resolver/importer/wait-context injected), validate_research_wait_flags (-> ValidationError); returns typed results only (CLI owns the --json envelope)
 │   ├── resolve.py               # Click-free validate_id + resolve_ref (AmbiguousIdError/Resolution)
@@ -1015,6 +1034,7 @@ src/notebooklm/
 │   └── upload_payloads.py       # Source upload request payload builders
 ├── _artifact/                   # Artifact-feature subpackage (promoted from flat _artifact_*.py, #1328)
 │   ├── __init__.py              # Re-exports the cluster's public service classes/builders
+│   ├── _redirect_guard.py       # Per-redirect-hop host/scheme revalidation for downloads (#1521)
 │   ├── downloads.py             # Artifact download coordinator
 │   ├── formatters.py            # Artifact formatting helpers
 │   ├── payloads.py              # Stable artifact request payload builders
@@ -1043,7 +1063,9 @@ src/notebooklm/
 │   ├── extraction.py            # Cookie/token extraction from browser sessions
 │   ├── headers.py               # HTTP header construction
 │   ├── cookies.py               # Cookie maps + _update_cookie_input
-│   ├── cookie_policy.py         # Domain allowlist and cookie policy
+│   ├── cookie_policy.py         # Domain allowlist + cookie-domain builder and policy
+│   ├── browser_capture.py       # Transport-neutral browser launch→capture→filter→persist core (lazy playwright)
+│   ├── headless_reauth.py       # Layer-3 headless re-auth (opt-in; typed outcomes; local-unattended-only)
 │   ├── account.py               # Account profile + multi-account switching
 │   ├── session.py               # Auth-session refresh implementation via `refresh_auth_session()` and explicit collaborators
 │   ├── storage.py               # Profile/state persistence on disk
@@ -1072,13 +1094,32 @@ src/notebooklm/
 ├── _settings.py                 # SettingsAPI
 ├── _labels.py                   # LabelsAPI — client.labels (source labels: generate/create/list/…)
 ├── notebooklm_cli.py            # Entry-point assembler — imports + registers cli/ groups
+├── mcp/                         # MCP server (opt-in `mcp` extra) — transport-neutral adapter over _app/, sibling to cli/
+│   ├── __init__.py              # Re-exports create_server / SERVER_NAME / SERVER_INSTRUCTIONS
+│   ├── __main__.py              # `notebooklm-mcp` entrypoint: argparse (--profile/--transport/--host/--port/--log-level), stderr logging, loopback HTTP bind guard
+│   ├── server.py                # create_server(profile, client_factory): FastMCP server; lifespan binds one NotebookLMClient; register_all tool-registration seam
+│   ├── _context.py              # AppState dataclass + get_client(ctx) — the lifespan-bound client
+│   ├── _errors.py               # Structured tool-error projection (CATEGORY_TABLE/ERROR_CODES/mcp_errors/to_tool_error/tool_error_payload) over _app.errors.classify
+│   ├── _resolve.py              # resolve_notebook/resolve_source/resolve_note — name + partial-id resolution over _app.resolve plus exact-title matching
+│   ├── _confirm.py              # needs_confirmation() both-mode envelope + READ_ONLY/DESTRUCTIVE ToolAnnotations
+│   └── tools/                   # Per-domain tool modules; each exposes register(mcp) wired by server.register_all
+│       ├── __init__.py          # Tools package marker (no click/rich/cli)
+│       ├── _passthrough.py      # Shared pass-through resolvers (passthrough_notebook_id/passthrough_child_id) for the CLI-shaped _app executors
+│       ├── _preview.py          # title_for_id() — shared id→title lookup for the delete tools' needs_confirmation previews
+│       ├── notebooks.py         # notebook_list/create/describe/rename/delete over _app.notebooks
+│       ├── sources.py           # source_list/get_content/rename/delete/wait/add over _app.source_* (add: url/text/file/youtube via source_add, drive via source_mutations)
+│       ├── chat.py              # chat_ask (client.chat.ask) + chat_configure (_app.chat.execute_configure)
+│       ├── notes.py             # note_create/list/update/delete over _app.notes
+│       ├── artifacts.py         # artifact_list/generate/status/download (enum dispatch over _app.generate + _app.download; stateless poll via _app.artifacts.poll_artifact)
+│       ├── research.py          # research_start (client.research.start) + research_status (_app.research.poll_and_classify) + research_import
+│       └── meta.py              # server_info — package version + auth-health over _app.auth_check (no notebook arg)
 ├── rpc/                         # RPC protocol layer
 │   ├── types.py                 # Method IDs and enums
 │   ├── encoder.py               # Request encoding
 │   ├── decoder.py               # Response parsing
 │   ├── _safe_index.py           # Strict bounds-checked positional access for decoded RPC payloads
 │   └── overrides.py             # Runtime RPC ID override policy (env-driven)
-└── cli/                         # CLI implementation
+├── cli/                         # CLI implementation
     ├── __init__.py              # Re-exports click groups under historical names from *_cmd modules
     ├── _chromium_profiles.py    # Multi-user-data-profile cookie extraction for Chromium browsers
     ├── _download_specs.py       # Registry data for `download <type>` leaf commands
@@ -1103,6 +1144,7 @@ src/notebooklm/
     ├── input.py                 # CLI prompt and stdin input helpers
     ├── label_cmd.py             # label list/sources/generate/create/rename/emoji/add/delete
     ├── language_cmd.py          # Language configuration CLI commands
+    ├── mcp_cmd.py               # `mcp install <client>` command — thin Click adapter over `_app/mcp_install.py`; resolves the client config path (`--config-path` override) and applies the merge inside `notebooklm.io.atomic_update_json` (locked, crash-safe, merge-not-clobber)
     ├── notebook_cmd.py          # list, create, delete, rename
     ├── note_cmd.py              # note commands
     ├── options.py               # Shared CLI option decorators
@@ -1150,6 +1192,21 @@ src/notebooklm/
         ├── source_mutations.py  # Source-mutation CLI adapter over `_app/source_mutations.py` — re-exports plan/result/error/helpers; injects cli.resolve validate_id + resolve_source_id (preserves the resolve_source_id monkeypatch seam) and the click.confirm confirmer
         ├── source_research.py   # `source add-research` CLI adapter — thin wrapper over `_app/source_research.py` (injects the rich-coupled importer; re-exports plan/result + validate_add_research_flags; preserves the import_research_sources monkeypatch seam)
         └── source_serializers.py # Shared JSON serializers for source CLI output
+└── server/                      # Single-tenant REST API adapter (the third _app adapter, after cli/ and mcp/; behind the optional `server` extra). EXPERIMENTAL: /v1 surface may change, excluded from the api-compat gate. Imports no click/rich/cli.
+    ├── __init__.py              # Re-exports create_app + SERVER_NAME; importing it without the `server` extra fails on the fastapi import
+    ├── __main__.py              # `notebooklm-server` entry: argparse + NOTEBOOKLM_SERVER_* env defaults + loopback-bind guard + fail-closed token check
+    ├── app.py                   # create_app(*, client_factory=None) -> FastAPI; ASGI lifespan binds one client; public /healthz; auth-gated /v1 mount (docs/redoc/openapi disabled)
+    ├── _context.py              # AppState (lifespan-bound client + pending registry) + get_client / get_pending FastAPI dependencies
+    ├── _auth.py                 # Bearer-token (constant-time, 401) + loopback-Host (DNS-rebinding guard, 403) dependency for /v1
+    ├── _errors.py               # ErrorCategory -> HTTP status table + _redact + the classify-once exception handler emitting {error:{category,message}}
+    ├── _pending.py              # In-process pending-id registry (per-notebook provenance for poll -> 200-pending vs 404)
+    └── routes/                  # Per-resource FastAPI routers; handlers call _app.serialize.to_jsonable directly
+        ├── __init__.py          # Aggregates the resource routers for the app factory
+        ├── _passthrough.py      # Pass-through resolvers handed to the _app cores (REST works in full ids)
+        ├── notebooks.py         # /v1/notebooks list/get/create/delete
+        ├── sources.py           # /v1/notebooks/{id}/sources list/get/add(url·text·file)/delete + poll-the-resource status
+        ├── chat.py              # POST /v1/notebooks/{id}/chat — blocking ask (no SSE)
+        └── artifacts.py         # /v1/notebooks/{id}/artifacts list/generate/poll/download (registry-projected poll; server-generated temp download path)
 ```
 
 ## ADR cross-references

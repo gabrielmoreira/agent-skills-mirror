@@ -89,7 +89,7 @@ done
 |------------|-----|
 | `--go` on every launch/kill | prevents script from hanging on confirmation prompt |
 | `--headless` on every launch | runs agent in background (no terminal window needed) |
-| `--tag X` on every launch | enables `@X-` prefix routing (more reliable than raw names) |
+| `--tag X` on every launch | enables `@X-` group routing (message every agent in the group at once) |
 | `--thread` on every send/wait | isolates messages per workflow run |
 | `--intent` on every send | tells recipient whether to respond |
 | `trap cleanup ERR INT TERM` | ensures orphan agents are killed on script failure or signal |

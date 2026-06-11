@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `clawwork-ai/ClawWork` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `clawwork-ai/ClawWork` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `clawwork-ai/ClawWork` — 26 default patterns, 0 followed patterns, 6
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,12 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/release-publish/SKILL.md`](.claude/skills/release-publish/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/sync-gateway-docs/SKILL.md`](.claude/skills/sync-gateway-docs/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/team-creator/SKILL.md`](.claude/skills/team-creator/SKILL.md) |
-| 4 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`.claude/skills/pr-cleaner-master/SKILL.md`](.claude/skills/pr-cleaner-master/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/pr-merge-runner/SKILL.md`](.claude/skills/pr-merge-runner/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/release-publish/SKILL.md`](.claude/skills/release-publish/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/sync-gateway-docs/SKILL.md`](.claude/skills/sync-gateway-docs/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/team-creator/SKILL.md`](.claude/skills/team-creator/SKILL.md) |
+| 6 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 7 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

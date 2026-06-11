@@ -35,8 +35,12 @@ const {
 } = model;
 
 // --- summary line ---
+// Cap the inline inventory: a 9000-component .fig import would otherwise bury
+// the verdict in one ~150 KB line. --verbose still prints the full export map.
+const COMPONENTS_SHOWN = 40;
 const compSeg = components.length
-  ? `Components: ${components.length} (${components.map((c) => c.name).join(', ')}).`
+  ? `Components: ${components.length} (${components.slice(0, COMPONENTS_SHOWN).map((c) => c.name).join(', ')}${
+      components.length > COMPONENTS_SHOWN ? `, … +${components.length - COMPONENTS_SHOWN} more — full list with --verbose` : ''}).`
   : 'Components: (none).';
 
 let cardSeg;

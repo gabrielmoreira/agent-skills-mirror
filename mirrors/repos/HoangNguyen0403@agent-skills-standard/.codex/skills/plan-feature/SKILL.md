@@ -19,34 +19,46 @@ When the user asks to perform this workflow, execute the following steps:
 
 # Feature Planning Workflow (PRD / What)
 
-Goal: Produce a decision-complete PRD and implementation plan before code starts.
+Goal: Produce a PM-owned decision-complete PRD, delivery plan, and IT Department handoff before code starts.
 
 ## Steps
 
 1. Load context:
    - Load baseline: `docs/requirements-standards-baseline.md` (PRD section).
+   - **Source BRD Discovery**:
+     - Search `docs/brd/` for a matching `[slug]`.
+     - **Fallback**: Check the most recently modified BRD file.
+     - **Ambiguity**: If >1 recently modified file exists and the intent is unclear, **ask the user to choose/input the target slug before proceeding.**
    - BRD-lite brief, ticket, or user request.
    - Jira/GitHub/GitLab/ADO MCP ticket data when configured; otherwise local ticket text.
    - Existing specs, design references, and repo patterns.
    - `common-product-requirements`, `quality-engineering-business-analysis`, and matched framework skills.
+   - BA handoff fields: BRD objective IDs, stakeholder/validation owner, AS-IS/TO-BE, SMART metric, scope fence, assumptions, glossary, risks, and candidate `REQ-*` placeholders.
+   - IT Department delivery context: target repos, likely owners, dependency teams, environments, release window, support/ops expectations, and QA lane.
 2. Interview:
+   - Draft a provisional PRD direction from current context before asking.
    - Ask only for business logic, scope, constraints, and acceptance criteria that cannot be inferred.
+   - Ask max 3 blocking decisions at a time; include a recommended default and 2-3 options for each.
+   - Treat non-critical unknowns as explicit assumptions.
    - Confirm problem statement, assumptions, target users, JTBD/use cases, platforms, data, analytics, security, performance, rollout, and non-goals.
    - Confirm each requirement has owner, priority, and status.
    - Confirm success metrics and guardrails that must not regress.
+   - Confirm offshore handoff needs: timezone/cadence, decision SLA, artifact source of truth, environment access, UAT owner, and release approver.
    - Stop when requirements are actionable.
 3. Draft PRD:
-   - Save to `docs/specs/prd-[slug].md` when file writes are allowed.
+   - Save to `docs/prd/prd-[slug].md` when file writes are allowed.
    - Keep "what" separate from "how".
    - Add stable requirement IDs and AC IDs.
    - Use Given/When/Then AC when behavior can be misread.
    - Check user stories for specific persona, business value, INVEST, happy path, edge path, and negative path.
    - Link each requirement back to BRD-lite business objective.
    - Include risk categories, rollout/ops, decision log, analytics/telemetry, and changelog.
-   - Mark unresolved items as blockers, not assumptions.
+   - Mark unresolved blocking product decisions as blockers.
+   - Include a RACI table for BA, PM, architect, backend, frontend, mobile, QA, release, and business/UAT approver when more than one delivery role is involved.
 4. Create implementation plan:
    - Define components, contracts, data changes, migrations, risks, and verification.
    - Slice work into fresh-context tasks.
+   - Map each task slice to requirement IDs, AC IDs, likely owner role, repo/module, expected artifact, and verification lane.
    - Identify whether `design-solution` is required before coding.
 5. Route:
    - Architecture unclear -> `design-solution`.
@@ -58,27 +70,45 @@ Goal: Produce a decision-complete PRD and implementation plan before code starts
 
 ```md
 # Feature Plan: [Name]
+
 ## PRD
+
 ## Problem Statement
+
 ## Goals And Guardrails
+
 ## Personas / JTBD
+
 ## Use Cases
+
 ## Requirement Trace
+
 ## User Stories And ACs
+
 ## Decisions
 
 | Decision   | Choice   | Reason   |
 | ---------- | -------- | -------- |
 | [decision] | [choice] | [reason] |
+
+## RACI / IT Department Handoff
+
 ## Analytics / Telemetry
+
 ## Risks And Assumptions
+
 ## Rollout / Ops
+
 ## Implementation Plan
+
 ## Task Slices
+
 ## Verification Plan
+
 ## Next Workflow
 
 design-solution | implement-feature
+
 ## Cost Report
 ```
 

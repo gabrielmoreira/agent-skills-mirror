@@ -1,0 +1,1 @@
+cache/repos/github.com/wasp-lang@wasp/examples/websockets-realtime-voting/../../waspc/data/Cli/starters/skeleton/AGENTS.md

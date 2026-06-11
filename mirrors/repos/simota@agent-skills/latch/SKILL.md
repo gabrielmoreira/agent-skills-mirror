@@ -370,6 +370,7 @@ Every deliverable must include:
 | `reference/skill-quarantine-hook.md` | You need SessionStart skill-manifest drift detection, PreToolUse plugin-install gate, or MCP tool description rug-pull verification. Pairs with the `chain` audit agent and `_common/SECURITY.md`. |
 | `reference/claude-md-update-proposer.md` | You are designing a Stop hook that drafts non-blocking CLAUDE.md update proposals from the just-finished session — covers event/matcher selection, command and prompt variants, filtering rules for what NOT to propose, anti-patterns, and the Hone density-audit pairing. |
 | `reference/skill-usage-telemetry.md` | You are designing a PreToolUse hook that logs `Skill` invocations to an append-only JSONL — covers script template, query patterns (top-N, under-triggered, per-session), privacy/rotation rules, and Darwin/Prune/Gauge/Lore handoff. |
+| `reference/loop-automation-context.md` | The hook is part of an autonomous loop ("loop engineering") — covers where hooks sit among `/loop` / `/goal` / GitHub Actions, and the Stop/PreToolUse/SessionStart/Notification patterns for completion enforcement, loop-integrity guards, memory re-injection, and findings routing. Boundary: loop cadence/contract → Orbit, orchestration → Nexus. |
 | `_common/OPUS_48_AUTHORING.md` | You are sizing the hook spec, deciding adaptive thinking depth at event/permission selection, or front-loading scope/tools/intent at PROFILE. Critical for Latch: P3, P5. |
 
 ## Collaboration

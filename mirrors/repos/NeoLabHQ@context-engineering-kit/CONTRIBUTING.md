@@ -12,6 +12,26 @@ Context Engineering Kit is focused on:
   - **Specialized agents** - Use specialized agents with broad context, when they can be used instead of skill or command. It allow to orcestrator agent more predictable and stable, and decrease chances of context pollution and hallucinations for specialized agents.
   - **Setup-commands** - Use setup commands to update CLAUDE.md file when some short context should be loadeed each time per project for agent. This insure that model really see important information, instead of chance, when using skills.
 
+## Testing marketplace changes
+
+To test marketplace changes, you need to uninstall existing version of marketplace and then apply one of the following approaches to install changed version of marketplace:
+
+### Install from local directory
+
+Add a local directory that contains a `.claude-plugin/marketplace.json` file:
+
+```bash
+/plugin marketplace add ./path/to/context-engineering-kit
+```
+
+### Install from branch
+
+To add a specific branch or tag, append `#` followed by the ref
+
+```bash
+/plugin marketplace add https://github.com/NeoLabHQ/context-engineering-kit.git#v1.0.0
+```
+
 ## Creating a Plugin
 
 ### 1. Choose the Right Category
@@ -26,10 +46,11 @@ Create a directory with these files:
 your-plugin/
 ├── plugin.json       # Required: Plugin metadata
 ├── README.md        # Required: Usage instructions
-├── commands/        # Optional: Slash commands
-│   └── command.md
+├── agents/        # Optional: Slash commands
+│   └── agent.md
 └── skills/          # Optional: Skill definitions
-    └── skill.md
+    └── skill-name/
+        └── SKILL.md
 ```
 
 ### 3. Plugin Manifest

@@ -159,7 +159,7 @@ node <skill>/agents/record-asset.mjs <projectDir> <htmlPath> [flags]
 - `--inherit-from <existingPath>` — group this file under the asset that already owns `<existingPath>` (use for a new *version* of an existing deliverable). Resolved to a name before the filename fallback.
 - `--subtitle "<text>"`; `--width <n>` / `--height <n>` (viewport — `--height` requires `--width`); `--section "<text>"`.
 - `--status needs-review|approved|changes-requested` — defaults to `needs-review`.
-- `--chat-id <id>` — optional; normally omitted in Claude Code (no chat-id surface), kept for app-hub parity.
+- `--chat-id <id>` — optional; normally omitted in Claude Code (no chat-id surface), reserved for hosts that have one.
 
 **Record vs. update.** Each asset owns an ordered `versions[]`. Re-recording a `path` that's **already** under that asset **updates it in place** (status is rewritten; supplied subtitle/viewport/section overwrite; `createdAt` is preserved). A path **not** yet present **appends** a new version with a fresh `createdAt`. So a redesign saved as a new file becomes a new version; re-touching the same file is an in-place update.
 

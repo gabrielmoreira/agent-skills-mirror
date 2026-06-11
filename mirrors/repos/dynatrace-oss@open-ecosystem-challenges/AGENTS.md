@@ -29,7 +29,7 @@ Never create adventure files manually. The correct flow is:
 
 ## Building Challenges
 
-> Read [docs/contributing/adventures.md](./docs/contributing/adventures.md) first — it covers the full step-by-step process.
+> Read [CONTRIBUTING.md](./CONTRIBUTING.md) first — it covers the full step-by-step process.
 > The sections below capture things that are easy to miss on top of that guide.
 
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wondelai/skills` — 26 default patterns, 0 followed patterns, 45 file(s) materialized.
+Mirror of `wondelai/skills` — 26 default patterns, 0 followed patterns, 46 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wondelai/skills` — 26 default patterns, 0 followed patterns, 45 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 45 |
+| Files         | 46 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -98,12 +98,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | ✓ | [`release-it/SKILL.md`](release-it/SKILL.md) |
 | 38 | ✓ | [`scorecard-marketing/SKILL.md`](scorecard-marketing/SKILL.md) |
 | 39 | ✓ | [`software-design-philosophy/SKILL.md`](software-design-philosophy/SKILL.md) |
-| 40 | ✓ | [`storybrand-messaging/SKILL.md`](storybrand-messaging/SKILL.md) |
-| 41 | ✓ | [`system-design/SKILL.md`](system-design/SKILL.md) |
-| 42 | ✓ | [`top-design/SKILL.md`](top-design/SKILL.md) |
-| 43 | ✓ | [`traction-eos/SKILL.md`](traction-eos/SKILL.md) |
-| 44 | ✓ | [`ux-heuristics/SKILL.md`](ux-heuristics/SKILL.md) |
-| 45 | ✓ | [`web-typography/SKILL.md`](web-typography/SKILL.md) |
+| 40 | ✓ | [`steve-jobs-design-review/SKILL.md`](steve-jobs-design-review/SKILL.md) |
+| 41 | ✓ | [`storybrand-messaging/SKILL.md`](storybrand-messaging/SKILL.md) |
+| 42 | ✓ | [`system-design/SKILL.md`](system-design/SKILL.md) |
+| 43 | ✓ | [`top-design/SKILL.md`](top-design/SKILL.md) |
+| 44 | ✓ | [`traction-eos/SKILL.md`](traction-eos/SKILL.md) |
+| 45 | ✓ | [`ux-heuristics/SKILL.md`](ux-heuristics/SKILL.md) |
+| 46 | ✓ | [`web-typography/SKILL.md`](web-typography/SKILL.md) |
 
 ---
 

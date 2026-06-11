@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.1.5] - 2026-06-10
+
+### 🐛 Fixes
+
+- **Finished tasks misjudged as active → endless breadcrumb injection** — The hooks only treated `completed`/`archived` as terminal statuses, but task `status` is free-text written by the model and often drifts to synonyms like `done`/`finished`. A task closed with `status: "done"` was therefore seen as still in-progress, so `workflow-state.js` (and the Codex `ccg-workflow.py` hook) kept injecting its breadcrumb forever. Read-side detection is now tolerant: `task-utils.js` gains `isTerminalStatus()` and `ccg-workflow.py` gains `_is_terminal_status()`, both matching a set of synonyms (`completed`/`complete`/`done`/`finished`/`archived`/`cancelled`/`closed`/`resolved`/...) case-insensitively. Canonical write value remains `completed`; the read side is just forgiving. Verified: `status:"done"` → no active task; `status:"in_progress"` → breadcrumb still injected.
+
+---
+
 ## [3.1.4] - 2026-06-07
 
 ### ✨ Features

@@ -168,6 +168,11 @@ function extractTokens(root, globalCssPaths) {
     while ((m = DECL_RE.exec(css))) {
       const name = m[1];
       const value = m[2].trim();
+      // A real custom-property value never contains an unescaped brace. When it
+      // does, DECL_RE straddled a selector/block boundary — e.g. the BEM rule
+      // `.s2-btn--primary:hover { background: ...; }` mis-reads as a declaration
+      // `--primary: hover { background: ...`. Skip these phantom matches.
+      if (value.includes('{') || value.includes('}')) continue;
       const annotation = m[3] || null;
       raw.push({ name, value, annotation, definedIn: relPath });
       valueByName.set(name, value);

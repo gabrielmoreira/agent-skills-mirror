@@ -456,6 +456,7 @@ Follow `_common/OPERATIONAL.md` for full operational protocol.
 | `reference/examples.md` | Concrete scenario matching for classification, escalation, or expected output. |
 | `reference/nexus-integration.md` | `_AGENT_CONTEXT`, `_STEP_COMPLETE:`, `## NEXUS_HANDOFF`, mode-priority details. |
 | `reference/ralph-loop-pattern.md` | Generating, auditing, or hardening a Ralph-style loop (Huntley lineage): the 9 design principles, 9xx guardrails, AGENTS.md 60-line cap, green-field constraint. |
+| `reference/loop-engineering.md` | Deciding *whether* a loop is the right answer: the loop-engineering concept, lineage (Steinberger / Cherny / Osmani), and the "when NOT to build a loop" applicability limits. Read at INTAKE/CONTRACT when the goal might be better served by a single direct prompt. |
 | `_common/OPUS_48_AUTHORING.md` | Sizing the runner spec, adaptive-thinking depth at checkpoint/replay design, or front-loading goal/steps/recovery tier at DESIGN. Critical: P3, P5. |
 | `_common/SUBAGENT.md` | Spawning Claude Code Agent-tool subagents within Orbit's own work. For apex Phase 6 Codex CLI subagents the authoritative contract is `nexus/reference/apex-recipe.md §Phase 6`. |
 | `nexus/reference/apex-recipe.md` | Driving apex Phase 6: Codex CLI engine availability check, loop contract from accord L3 ACs + omen mitigations + echo friction, Codex spawn scripts, convergence/cost/circuit-breaker audit. |

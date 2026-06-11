@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jabrena/cursor-rules-java` — 26 default patterns, 0 followed patterns, 268 file(s) materialized.
+Mirror of `jabrena/cursor-rules-java` — 26 default patterns, 0 followed patterns, 273 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jabrena/cursor-rules-java` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 268 |
+| Files         | 273 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -327,6 +327,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 266 | ✓ | [`skills/702-technologies-wiremock/SKILL.md`](skills/702-technologies-wiremock/SKILL.md) |
 | 267 | ✓ | [`skills/703-technologies-fuzzing-testing/references/703-technologies-fuzzing-testing.md`](skills/703-technologies-fuzzing-testing/references/703-technologies-fuzzing-testing.md) |
 | 268 | ✓ | [`skills/703-technologies-fuzzing-testing/SKILL.md`](skills/703-technologies-fuzzing-testing/SKILL.md) |
+| 269 | ✓ | [`skills/800-policies-eu-ai-act/assets/questions/800-eu-ai-act-risk-questionnaire.md`](skills/800-policies-eu-ai-act/assets/questions/800-eu-ai-act-risk-questionnaire.md) |
+| 270 | ✓ | [`skills/800-policies-eu-ai-act/assets/reports/800-eu-ai-act-engineering-review-report-template.md`](skills/800-policies-eu-ai-act/assets/reports/800-eu-ai-act-engineering-review-report-template.md) |
+| 271 | ✓ | [`skills/800-policies-eu-ai-act/references/800-policies-eu-ai-act-chapters-summary.md`](skills/800-policies-eu-ai-act/references/800-policies-eu-ai-act-chapters-summary.md) |
+| 272 | ✓ | [`skills/800-policies-eu-ai-act/references/800-policies-eu-ai-act.md`](skills/800-policies-eu-ai-act/references/800-policies-eu-ai-act.md) |
+| 273 | ✓ | [`skills/800-policies-eu-ai-act/SKILL.md`](skills/800-policies-eu-ai-act/SKILL.md) |
 
 ---
 

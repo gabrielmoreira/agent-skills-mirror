@@ -1,6 +1,6 @@
-// asset-store.mjs — the asset half of a project's _d_meta.json. A pure, dependency-
-// free port of the reference app-hub reducer so the importer/recorder scripts and
-// any host share one model for a project's recorded UI deliverables ("assets").
+// asset-store.mjs — the asset half of a project's _d_meta.json. Pure and dependency-
+// free so the importer/recorder scripts and any host share one model for a
+// project's recorded UI deliverables ("assets").
 //
 // An `asset` is a named UI entry point (an HTML page or .dc.html component); each
 // asset holds an ordered list of `versions`. The shape, keyed by display name:
@@ -15,10 +15,6 @@
 //
 // status ∈ "needs-review" (default) | "approved" | "changes-requested".
 //
-// Ported from (read-only references, different repo):
-//   claude-design/restored/app-hub/projectDataReducer.ts  (recordAssetVersion,
-//     unrecordAssetVersion, findAssetNameByPath)
-//   claude-design/restored/app-hub/design-system/assets.ts (getAssetBaseName)
 // Mirrors lib/ds-core.mjs: node stdlib only, named exports, writes nothing on its
 // own — meta is mutated in place and persisted by writeMeta().
 

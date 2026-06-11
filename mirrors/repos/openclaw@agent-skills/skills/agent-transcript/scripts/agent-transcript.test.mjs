@@ -88,3 +88,57 @@ test("append-body replaces an existing transcript section", () => {
   assert.doesNotMatch(output, /old transcript/);
   assert.equal((output.match(/agent-transcript:start/g) || []).length, 1);
 });
+
+test("find scans CLAUDE_CONFIG_DIR projects and labels them as Claude", () => {
+  const dir = tempDir();
+  const home = tempDir();
+  const projectDir = path.join(dir, "projects", "-tmp-agent-transcript");
+  fs.mkdirSync(projectDir, { recursive: true });
+  const session = path.join(projectDir, "11111111-2222-4333-8444-555555555555.jsonl");
+  writeJsonl(session, [
+    { type: "user", message: { role: "user", content: "claude-config-dir-marker" } },
+    { type: "assistant", message: { role: "assistant", content: "Done." } },
+  ]);
+
+  const output = run(["find", "--query", "claude-config-dir-marker", "--since-days", "1", "--max-files", "20"], {
+    env: { ...process.env, HOME: home, CLAUDE_CONFIG_DIR: `${dir}${path.sep}` },
+  });
+  const matches = JSON.parse(output);
+
+  assert.equal(matches.length, 1);
+  assert.equal(matches[0].file, session);
+  assert.equal(matches[0].agent, "claude");
+});
+
+test("find labels explicit roots under trailing-slash CLAUDE_CONFIG_DIR as Claude", () => {
+  const dir = tempDir();
+  const home = tempDir();
+  const projectRoot = path.join(dir, "projects");
+  const projectDir = path.join(projectRoot, "-tmp-agent-transcript");
+  fs.mkdirSync(projectDir, { recursive: true });
+  const session = path.join(projectDir, "22222222-3333-4444-8555-666666666666.jsonl");
+  writeJsonl(session, [
+    { type: "user", message: { role: "user", content: "claude-config-dir-explicit-root-marker" } },
+    { type: "assistant", message: { role: "assistant", content: "Done." } },
+  ]);
+
+  const output = run(
+    [
+      "find",
+      "--query",
+      "claude-config-dir-explicit-root-marker",
+      "--since-days",
+      "1",
+      "--max-files",
+      "20",
+      "--root",
+      projectRoot,
+    ],
+    { env: { ...process.env, HOME: home, CLAUDE_CONFIG_DIR: `${dir}${path.sep}` } }
+  );
+  const matches = JSON.parse(output);
+
+  assert.equal(matches.length, 1);
+  assert.equal(matches[0].file, session);
+  assert.equal(matches[0].agent, "claude");
+});

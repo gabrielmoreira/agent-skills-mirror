@@ -6,22 +6,218 @@
 
 ![Beautiful Article Skill](https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/banner.webp)
 
-### Theme gallery
+---
+
+### Powered by [ReActicle](https://github.com/ConardLi/reacticle)
+
+`beautiful-article` is the editorial **harness** (methodology, checkpoints, theme picker, sub-agent reviewers); [`reacticle`](https://github.com/ConardLi/reacticle) is the underlying **runtime component protocol** the skill writes against — prose-first React components plus a token-based `Raw` escape hatch, all wired into the same theme system.
+
+```
+beautiful-article  (this skill · methodology + harness)
+        │  composes
+        ▼
+reacticle          (npm package · components / themes / Raw / export)
+```
+
+| Layer | What it owns | Where it lives |
+|---|---|---|
+| `beautiful-article` (this skill) | **How** the agent plans, writes, reviews and delivers an article from any source — six numbered phases, three hard checkpoints, theme picker, sub-agent reviewers | This directory |
+| `reacticle` | The component vocabulary + 11 authoring themes the skill compiles into — `Article` / `Hero` / `Lead` / `Section` / `Quote` / `Image` / `Formula` / `CodeBlock` / `Raw` …, each theme a `.css` token bundle + `.md` authoring profile | [`ConardLi/reacticle`](https://github.com/ConardLi/reacticle) · [npm `reacticle`](https://www.npmjs.com/package/reacticle) · [docs](https://rearticle.mmh1.top/) |
+
+The two pair very well but are independently useful: the skill works because it has ReActicle to target, and ReActicle is a perfectly usable React library on its own.
+
+---
+
+### [Showcase](https://mmh1.top/#/ai-article) — articles built with `beautiful-article` + ReActicle
+
+Real long-form articles, each authored end-to-end by an AI agent running this skill against the [`reacticle`](https://www.npmjs.com/package/reacticle) component protocol. Click any cover to open the live, single-file HTML article.
 
 <table>
 <tr>
-<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/tufte.webp" alt="tufte" width="100%"><br/><sub><b>tufte</b></sub></td>
-<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/press.webp" alt="press" width="100%"><br/><sub><b>press</b></sub></td>
-<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/bayer.webp" alt="bayer" width="100%"><br/><sub><b>bayer</b></sub></td>
-<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/bodoni.webp" alt="bodoni" width="100%"><br/><sub><b>bodoni</b></sub></td>
+<td width="50%" valign="top" align="center">
+<a href="https://mmh1.top/#/ai-article/tools">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/tools.webp" alt="Agent Tools 设计的最佳实践" width="320">
+<br><b>Agent Tools 设计的最佳实践</b>
+</a>
+<br><sub>Theme · Freddie · 长文 · 21 min</sub>
+<br><sup>Anthropic 工程团队关于 Tools 的五条原则，与一套评测驱动的方法。</sup>
+</td>
+<td width="50%" valign="top" align="center">
+<a href="https://mmh1.top/#/ai-article/skill">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/skill.webp" alt="Agent Skill 是如何进化的？" width="320">
+<br><b>Agent Skill 是如何进化的？</b>
+</a>
+<br><sub>Theme · Freddie · 解释文 · 8 min</sub>
+<br><sup>把 Skill 文档当成被训练的对象，而不是被复制粘贴的 prompt。</sup>
+</td>
 </tr>
 <tr>
-<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/vignell.webp" alt="vignelli" width="100%"><br/><sub><b>vignelli</b></sub></td>
-<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/sottsass.webp" alt="sottsass" width="100%"><br/><sub><b>sottsass</b></sub></td>
-<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/freddie.webp" alt="freddie" width="100%"><br/><sub><b>freddie</b></sub></td>
-<td width="25%" align="center"><img src="https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/andy.webp" alt="andy" width="100%"><br/><sub><b>andy</b></sub></td>
+<td width="50%" valign="top" align="center">
+<a href="https://mmh1.top/#/ai-article/harness">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/harness.webp" alt="Agent Harness 的解剖图" width="320">
+<br><b>Agent Harness 的解剖图</b>
+</a>
+<br><sub>Theme · Vignelli · 长文 · 12 min</sub>
+<br><sup>智能在模型里；让智能变得有用的，是它周围的那套系统。</sup>
+</td>
+<td width="50%" valign="top" align="center">
+<a href="https://mmh1.top/#/ai-article/prompt-cache">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/prompt-cache.webp" alt="提示词缓存对 Agent 有多重要？" width="320">
+<br><b>提示词缓存对 Agent 有多重要？</b>
+</a>
+<br><sub>Theme · Bayer · 长文 · 15 min</sub>
+<br><sup>缓存命中率是 Agent 的 SLO，Claude Code 团队的反直觉经验。</sup>
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top" align="center">
+<a href="https://mmh1.top/#/ai-article/context">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/context.webp" alt="面向 Agent 的高效上下文工程" width="320">
+<br><b>面向 Agent 的高效上下文工程</b>
+</a>
+<br><sub>Theme · Tufte · 长文 · 16 min</sub>
+<br><sup>本文探讨如何高效地筛选与管理驱动 AI Agent 运转的上下文。</sup>
+</td>
+<td width="50%" valign="top" align="center">
+<a href="https://mmh1.top/#/ai-article/transformer">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/transformer.webp" alt="Attention Is All You Need" width="320">
+<br><b>Attention Is All You Need</b>
+</a>
+<br><sub>Theme · Tufte · 长文 · 30 min</sub>
+<br><sup>一篇重塑现代 AI 的论文，逐层拆给你看。</sup>
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top" align="center">
+<a href="https://mmh1.top/#/ai-article/agent-eval">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/agent-eval.webp" alt="把 AI Agent 的评测讲清楚" width="320">
+<br><b>把 AI Agent 的评测讲清楚</b>
+</a>
+<br><sub>Theme · Tufte · 长文 · 25 min</sub>
+<br><sup>让 Agent 有用的那些能力，恰恰让它难以评测 — 来自 Anthropic 的指南。</sup>
+</td>
+<td width="50%" valign="top" align="center">
+<a href="https://mmh1.top/#/ai-article/agent-loop-codex">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/agent-loop-codex.webp" alt="Codex 的 Agent Loop 是怎么做的？" width="320">
+<br><b>Codex 的 Agent Loop 是怎么做的？</b>
+</a>
+<br><sub>Theme · Sottsass · 长文 · 18 min</sub>
+<br><sup>OpenAI 官方分享：在 Responses API 之上，一条对话是如何被反复"展开"的。</sup>
+</td>
 </tr>
 </table>
+
+---
+
+### [Theme Gallery](https://rearticle.mmh1.top/#/gallery) — one specimen article per theme
+
+> 11 themes shipped. Full theme contracts (`.css` token bundle + `.md` authoring profile, anti-patterns, code/media style) are documented at [Theming](https://rearticle.mmh1.top/#/theming).
+
+Every theme ships with a long-form **specimen article** that lives the theme end-to-end — typography, photography, code, formulas, Raw blocks, the works. Click any cover to read the live article; click the theme name to jump to that theme's section in the docs.
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="https://rearticle.mmh1.top/#/gallery/caffeine-half-life">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/theam-tufte.webp" alt="Tufte · Data-Ink" width="260">
+<br><b>Tufte</b> · Data-Ink
+</a>
+<br><sub>咖啡因与睡眠 · 数据笔记</sub>
+<br><sup>Edward Tufte 数据墨水，证据优先，发丝级图表与最朴素的版式。</sup>
+</td>
+<td width="33%" valign="top" align="center">
+<a href="https://rearticle.mmh1.top/#/gallery/movable-type">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/theam-press.webp" alt="Press · 书卷" width="260">
+<br><b>Press</b> · 书卷
+</a>
+<br><sub>活字之后 · 随笔</sub>
+<br><sup>Stripe Press 式书卷长读物：会落定的标题、氧化血红首字母、纯正文之美。</sup>
+</td>
+<td width="33%" valign="top" align="center">
+<a href="https://rearticle.mmh1.top/#/gallery/pool-exhaustion">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/theam-shannon.webp" alt="Shannon · 工程暗色" width="260">
+<br><b>Shannon</b> · 工程暗色
+</a>
+<br><sub>连接池耗尽 · 故障复盘</sub>
+<br><sup>贝尔实验室技术论文血统，暗底黄金信号、回压依赖、夜间作战气质。</sup>
+</td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="https://rearticle.mmh1.top/#/gallery/orbit-spec">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/theam-vignelli.webp" alt="Vignelli · 瑞士" width="260">
+<br><b>Vignelli</b> · 瑞士网格
+</a>
+<br><sub>Orbit 设计系统规格 · 规格</sub>
+<br><sup>Massimo Vignelli 网格至上、grotesque 字族、瑞士红只承载结构。</sup>
+</td>
+<td width="33%" valign="top" align="center">
+<a href="https://rearticle.mmh1.top/#/gallery/linear-attention">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/knuth.png" alt="Knuth · 学术" width="260">
+<br><b>Knuth</b> · 学术
+</a>
+<br><sub>线性化自注意力 · 预印本</sub>
+<br><sup>Donald Knuth / Computer Modern，编号小节、命题与证明、arXiv 草稿气质。</sup>
+</td>
+<td width="33%" valign="top" align="center">
+<a href="https://rearticle.mmh1.top/#/gallery/first-newsletter">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/theam-freddie.webp" alt="Freddie · 暖黄" width="260">
+<br><b>Freddie</b> · 暖黄
+</a>
+<br><sub>第一封 Newsletter · 上手指南</sub>
+<br><sup>Mailchimp Freddie 黑字荧光，亲和插画 + 不端着的产品上手语气。</sup>
+</td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="https://rearticle.mmh1.top/#/gallery/slow-breathing">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/theam-andy.webp" alt="Andy · 静谧" width="260">
+<br><b>Andy</b> · 静谧
+</a>
+<br><sub>把呼吸放慢 · 练习</sub>
+<br><sup>柔软圆润、呼吸-神经跷跷板，让人慢下来的练习气质。</sup>
+</td>
+<td width="33%" valign="top" align="center">
+<a href="https://rearticle.mmh1.top/#/gallery/front-page">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/theam-bodoni.webp" alt="Bodoni · 报刊" width="260">
+<br><b>Bodoni</b> · 报刊
+</a>
+<br><sub>头版的消亡 · 特稿</sub>
+<br><sup>高对比 Didone 报刊气质，黑白大报、对折线之上的分量。</sup>
+</td>
+<td width="33%" valign="top" align="center">
+<a href="https://rearticle.mmh1.top/#/gallery/geometry-of-meaning">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/theam-bayer.webp" alt="Bayer · 包豪斯" width="260">
+<br><b>Bayer</b> · 包豪斯
+</a>
+<br><sub>形、色、网格 · 教学</sub>
+<br><sup>Herbert Bayer 包豪斯三原色几何，形有性格、色有重量。</sup>
+</td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="https://rearticle.mmh1.top/#/gallery/rate-limiter-spec">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/theam-fuller.webp" alt="Fuller · 蓝图" width="260">
+<br><b>Fuller</b> · 蓝图
+</a>
+<br><sub>限流器设计规格 · 系统设计</sub>
+<br><sup>Buckminster Fuller 工程蓝图，方格纸拓扑、令牌桶模拟，可照着实现。</sup>
+</td>
+<td width="33%" valign="top" align="center">
+<a href="https://rearticle.mmh1.top/#/gallery/color-clash">
+<img src="https://raw.githubusercontent.com/ConardLi/assets/main/imgs/article/theam-sottsass.webp" alt="Sottsass · 孟菲斯" width="260">
+<br><b>Sottsass</b> · 孟菲斯
+</a>
+<br><sub>撞色不翻车 · 设计随笔</sub>
+<br><sup>Memphis 80s 撞色，黑描边、硬投影、轻微旋转的不正经语法。</sup>
+</td>
+<td width="33%" valign="top" align="center">
+&nbsp;
+</td>
+</tr>
+</table>
+
+> Browse all specimens with theme switching, search and filters at the live gallery: <https://rearticle.mmh1.top/#/gallery>.
 
 ---
 

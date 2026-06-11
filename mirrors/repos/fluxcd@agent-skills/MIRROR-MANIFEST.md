@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `fluxcd/agent-skills` — 26 default patterns, 0 followed patterns, 113 file(s) materialized.
+Mirror of `fluxcd/agent-skills` — 26 default patterns, 0 followed patterns, 114 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `fluxcd/agent-skills` — 26 default patterns, 0 followed patterns, 11
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 113 |
+| Files         | 114 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -124,54 +124,55 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 63 | ✓ | [`skills/gitops-knowledge/evals/evals.json`](skills/gitops-knowledge/evals/evals.json) |
 | 64 | ✓ | [`skills/gitops-knowledge/references/best-practices.md`](skills/gitops-knowledge/references/best-practices.md) |
 | 65 | ✓ | [`skills/gitops-knowledge/references/flux-operator.md`](skills/gitops-knowledge/references/flux-operator.md) |
-| 66 | ✓ | [`skills/gitops-knowledge/references/gitless-image-automation.md`](skills/gitops-knowledge/references/gitless-image-automation.md) |
-| 67 | ✓ | [`skills/gitops-knowledge/references/helmrelease.md`](skills/gitops-knowledge/references/helmrelease.md) |
-| 68 | ✓ | [`skills/gitops-knowledge/references/image-automation.md`](skills/gitops-knowledge/references/image-automation.md) |
-| 69 | ✓ | [`skills/gitops-knowledge/references/kustomization.md`](skills/gitops-knowledge/references/kustomization.md) |
-| 70 | ✓ | [`skills/gitops-knowledge/references/mcp-server.md`](skills/gitops-knowledge/references/mcp-server.md) |
-| 71 | ✓ | [`skills/gitops-knowledge/references/notifications.md`](skills/gitops-knowledge/references/notifications.md) |
-| 72 | ✓ | [`skills/gitops-knowledge/references/repo-patterns.md`](skills/gitops-knowledge/references/repo-patterns.md) |
-| 73 | ✓ | [`skills/gitops-knowledge/references/resourcesets.md`](skills/gitops-knowledge/references/resourcesets.md) |
-| 74 | ✓ | [`skills/gitops-knowledge/references/sources.md`](skills/gitops-knowledge/references/sources.md) |
-| 75 | ✓ | [`skills/gitops-knowledge/references/terraform-bootstrap.md`](skills/gitops-knowledge/references/terraform-bootstrap.md) |
-| 76 | ✓ | [`skills/gitops-knowledge/references/web-ui.md`](skills/gitops-knowledge/references/web-ui.md) |
-| 77 | ✓ | [`skills/gitops-knowledge/SKILL.md`](skills/gitops-knowledge/SKILL.md) |
-| 78 | ✓ | [`skills/gitops-repo-audit/assets/schemas/alert-notification-v1beta2.json`](skills/gitops-repo-audit/assets/schemas/alert-notification-v1beta2.json) |
-| 79 | ✓ | [`skills/gitops-repo-audit/assets/schemas/alert-notification-v1beta3.json`](skills/gitops-repo-audit/assets/schemas/alert-notification-v1beta3.json) |
-| 80 | ✓ | [`skills/gitops-repo-audit/assets/schemas/artifactgenerator-source-v1beta1.json`](skills/gitops-repo-audit/assets/schemas/artifactgenerator-source-v1beta1.json) |
-| 81 | ✓ | [`skills/gitops-repo-audit/assets/schemas/bucket-source-v1.json`](skills/gitops-repo-audit/assets/schemas/bucket-source-v1.json) |
-| 82 | ✓ | [`skills/gitops-repo-audit/assets/schemas/externalartifact-source-v1.json`](skills/gitops-repo-audit/assets/schemas/externalartifact-source-v1.json) |
-| 83 | ✓ | [`skills/gitops-repo-audit/assets/schemas/fluxinstance-fluxcd-v1.json`](skills/gitops-repo-audit/assets/schemas/fluxinstance-fluxcd-v1.json) |
-| 84 | ✓ | [`skills/gitops-repo-audit/assets/schemas/fluxreport-fluxcd-v1.json`](skills/gitops-repo-audit/assets/schemas/fluxreport-fluxcd-v1.json) |
-| 85 | ✓ | [`skills/gitops-repo-audit/assets/schemas/gitrepository-source-v1.json`](skills/gitops-repo-audit/assets/schemas/gitrepository-source-v1.json) |
-| 86 | ✓ | [`skills/gitops-repo-audit/assets/schemas/helmchart-source-v1.json`](skills/gitops-repo-audit/assets/schemas/helmchart-source-v1.json) |
-| 87 | ✓ | [`skills/gitops-repo-audit/assets/schemas/helmrelease-helm-v2.json`](skills/gitops-repo-audit/assets/schemas/helmrelease-helm-v2.json) |
-| 88 | ✓ | [`skills/gitops-repo-audit/assets/schemas/helmrepository-source-v1.json`](skills/gitops-repo-audit/assets/schemas/helmrepository-source-v1.json) |
-| 89 | ✓ | [`skills/gitops-repo-audit/assets/schemas/imagepolicy-image-v1.json`](skills/gitops-repo-audit/assets/schemas/imagepolicy-image-v1.json) |
-| 90 | ✓ | [`skills/gitops-repo-audit/assets/schemas/imagepolicy-image-v1beta2.json`](skills/gitops-repo-audit/assets/schemas/imagepolicy-image-v1beta2.json) |
-| 91 | ✓ | [`skills/gitops-repo-audit/assets/schemas/imagerepository-image-v1.json`](skills/gitops-repo-audit/assets/schemas/imagerepository-image-v1.json) |
-| 92 | ✓ | [`skills/gitops-repo-audit/assets/schemas/imagerepository-image-v1beta2.json`](skills/gitops-repo-audit/assets/schemas/imagerepository-image-v1beta2.json) |
-| 93 | ✓ | [`skills/gitops-repo-audit/assets/schemas/imageupdateautomation-image-v1.json`](skills/gitops-repo-audit/assets/schemas/imageupdateautomation-image-v1.json) |
-| 94 | ✓ | [`skills/gitops-repo-audit/assets/schemas/imageupdateautomation-image-v1beta2.json`](skills/gitops-repo-audit/assets/schemas/imageupdateautomation-image-v1beta2.json) |
-| 95 | ✓ | [`skills/gitops-repo-audit/assets/schemas/kustomization-kustomize-v1.json`](skills/gitops-repo-audit/assets/schemas/kustomization-kustomize-v1.json) |
-| 96 | ✓ | [`skills/gitops-repo-audit/assets/schemas/ocirepository-source-v1.json`](skills/gitops-repo-audit/assets/schemas/ocirepository-source-v1.json) |
-| 97 | ✓ | [`skills/gitops-repo-audit/assets/schemas/provider-notification-v1beta2.json`](skills/gitops-repo-audit/assets/schemas/provider-notification-v1beta2.json) |
-| 98 | ✓ | [`skills/gitops-repo-audit/assets/schemas/provider-notification-v1beta3.json`](skills/gitops-repo-audit/assets/schemas/provider-notification-v1beta3.json) |
-| 99 | ✓ | [`skills/gitops-repo-audit/assets/schemas/receiver-notification-v1.json`](skills/gitops-repo-audit/assets/schemas/receiver-notification-v1.json) |
-| 100 | ✓ | [`skills/gitops-repo-audit/assets/schemas/receiver-notification-v1beta2.json`](skills/gitops-repo-audit/assets/schemas/receiver-notification-v1beta2.json) |
-| 101 | ✓ | [`skills/gitops-repo-audit/assets/schemas/resourceset-fluxcd-v1.json`](skills/gitops-repo-audit/assets/schemas/resourceset-fluxcd-v1.json) |
-| 102 | ✓ | [`skills/gitops-repo-audit/assets/schemas/resourcesetinputprovider-fluxcd-v1.json`](skills/gitops-repo-audit/assets/schemas/resourcesetinputprovider-fluxcd-v1.json) |
-| 103 | ✓ | [`skills/gitops-repo-audit/evals/evals.json`](skills/gitops-repo-audit/evals/evals.json) |
-| 104 | ✓ | [`skills/gitops-repo-audit/references/api-migration.md`](skills/gitops-repo-audit/references/api-migration.md) |
-| 105 | ✓ | [`skills/gitops-repo-audit/references/best-practices.md`](skills/gitops-repo-audit/references/best-practices.md) |
-| 106 | ✓ | [`skills/gitops-repo-audit/references/flux-api-summary.md`](skills/gitops-repo-audit/references/flux-api-summary.md) |
-| 107 | ✓ | [`skills/gitops-repo-audit/references/flux-operator-api-summary.md`](skills/gitops-repo-audit/references/flux-operator-api-summary.md) |
-| 108 | ✓ | [`skills/gitops-repo-audit/references/repo-patterns.md`](skills/gitops-repo-audit/references/repo-patterns.md) |
-| 109 | ✓ | [`skills/gitops-repo-audit/references/security-audit.md`](skills/gitops-repo-audit/references/security-audit.md) |
-| 110 | ✓ | [`skills/gitops-repo-audit/scripts/check-deprecated.sh`](skills/gitops-repo-audit/scripts/check-deprecated.sh) |
-| 111 | ✓ | [`skills/gitops-repo-audit/scripts/discover.sh`](skills/gitops-repo-audit/scripts/discover.sh) |
-| 112 | ✓ | [`skills/gitops-repo-audit/scripts/validate.sh`](skills/gitops-repo-audit/scripts/validate.sh) |
-| 113 | ✓ | [`skills/gitops-repo-audit/SKILL.md`](skills/gitops-repo-audit/SKILL.md) |
+| 66 | ✓ | [`skills/gitops-knowledge/references/gitless-gitops.md`](skills/gitops-knowledge/references/gitless-gitops.md) |
+| 67 | ✓ | [`skills/gitops-knowledge/references/gitless-image-automation.md`](skills/gitops-knowledge/references/gitless-image-automation.md) |
+| 68 | ✓ | [`skills/gitops-knowledge/references/helmrelease.md`](skills/gitops-knowledge/references/helmrelease.md) |
+| 69 | ✓ | [`skills/gitops-knowledge/references/image-automation.md`](skills/gitops-knowledge/references/image-automation.md) |
+| 70 | ✓ | [`skills/gitops-knowledge/references/kustomization.md`](skills/gitops-knowledge/references/kustomization.md) |
+| 71 | ✓ | [`skills/gitops-knowledge/references/mcp-server.md`](skills/gitops-knowledge/references/mcp-server.md) |
+| 72 | ✓ | [`skills/gitops-knowledge/references/notifications.md`](skills/gitops-knowledge/references/notifications.md) |
+| 73 | ✓ | [`skills/gitops-knowledge/references/repo-patterns.md`](skills/gitops-knowledge/references/repo-patterns.md) |
+| 74 | ✓ | [`skills/gitops-knowledge/references/resourcesets.md`](skills/gitops-knowledge/references/resourcesets.md) |
+| 75 | ✓ | [`skills/gitops-knowledge/references/sources.md`](skills/gitops-knowledge/references/sources.md) |
+| 76 | ✓ | [`skills/gitops-knowledge/references/terraform-bootstrap.md`](skills/gitops-knowledge/references/terraform-bootstrap.md) |
+| 77 | ✓ | [`skills/gitops-knowledge/references/web-ui.md`](skills/gitops-knowledge/references/web-ui.md) |
+| 78 | ✓ | [`skills/gitops-knowledge/SKILL.md`](skills/gitops-knowledge/SKILL.md) |
+| 79 | ✓ | [`skills/gitops-repo-audit/assets/schemas/alert-notification-v1beta2.json`](skills/gitops-repo-audit/assets/schemas/alert-notification-v1beta2.json) |
+| 80 | ✓ | [`skills/gitops-repo-audit/assets/schemas/alert-notification-v1beta3.json`](skills/gitops-repo-audit/assets/schemas/alert-notification-v1beta3.json) |
+| 81 | ✓ | [`skills/gitops-repo-audit/assets/schemas/artifactgenerator-source-v1beta1.json`](skills/gitops-repo-audit/assets/schemas/artifactgenerator-source-v1beta1.json) |
+| 82 | ✓ | [`skills/gitops-repo-audit/assets/schemas/bucket-source-v1.json`](skills/gitops-repo-audit/assets/schemas/bucket-source-v1.json) |
+| 83 | ✓ | [`skills/gitops-repo-audit/assets/schemas/externalartifact-source-v1.json`](skills/gitops-repo-audit/assets/schemas/externalartifact-source-v1.json) |
+| 84 | ✓ | [`skills/gitops-repo-audit/assets/schemas/fluxinstance-fluxcd-v1.json`](skills/gitops-repo-audit/assets/schemas/fluxinstance-fluxcd-v1.json) |
+| 85 | ✓ | [`skills/gitops-repo-audit/assets/schemas/fluxreport-fluxcd-v1.json`](skills/gitops-repo-audit/assets/schemas/fluxreport-fluxcd-v1.json) |
+| 86 | ✓ | [`skills/gitops-repo-audit/assets/schemas/gitrepository-source-v1.json`](skills/gitops-repo-audit/assets/schemas/gitrepository-source-v1.json) |
+| 87 | ✓ | [`skills/gitops-repo-audit/assets/schemas/helmchart-source-v1.json`](skills/gitops-repo-audit/assets/schemas/helmchart-source-v1.json) |
+| 88 | ✓ | [`skills/gitops-repo-audit/assets/schemas/helmrelease-helm-v2.json`](skills/gitops-repo-audit/assets/schemas/helmrelease-helm-v2.json) |
+| 89 | ✓ | [`skills/gitops-repo-audit/assets/schemas/helmrepository-source-v1.json`](skills/gitops-repo-audit/assets/schemas/helmrepository-source-v1.json) |
+| 90 | ✓ | [`skills/gitops-repo-audit/assets/schemas/imagepolicy-image-v1.json`](skills/gitops-repo-audit/assets/schemas/imagepolicy-image-v1.json) |
+| 91 | ✓ | [`skills/gitops-repo-audit/assets/schemas/imagepolicy-image-v1beta2.json`](skills/gitops-repo-audit/assets/schemas/imagepolicy-image-v1beta2.json) |
+| 92 | ✓ | [`skills/gitops-repo-audit/assets/schemas/imagerepository-image-v1.json`](skills/gitops-repo-audit/assets/schemas/imagerepository-image-v1.json) |
+| 93 | ✓ | [`skills/gitops-repo-audit/assets/schemas/imagerepository-image-v1beta2.json`](skills/gitops-repo-audit/assets/schemas/imagerepository-image-v1beta2.json) |
+| 94 | ✓ | [`skills/gitops-repo-audit/assets/schemas/imageupdateautomation-image-v1.json`](skills/gitops-repo-audit/assets/schemas/imageupdateautomation-image-v1.json) |
+| 95 | ✓ | [`skills/gitops-repo-audit/assets/schemas/imageupdateautomation-image-v1beta2.json`](skills/gitops-repo-audit/assets/schemas/imageupdateautomation-image-v1beta2.json) |
+| 96 | ✓ | [`skills/gitops-repo-audit/assets/schemas/kustomization-kustomize-v1.json`](skills/gitops-repo-audit/assets/schemas/kustomization-kustomize-v1.json) |
+| 97 | ✓ | [`skills/gitops-repo-audit/assets/schemas/ocirepository-source-v1.json`](skills/gitops-repo-audit/assets/schemas/ocirepository-source-v1.json) |
+| 98 | ✓ | [`skills/gitops-repo-audit/assets/schemas/provider-notification-v1beta2.json`](skills/gitops-repo-audit/assets/schemas/provider-notification-v1beta2.json) |
+| 99 | ✓ | [`skills/gitops-repo-audit/assets/schemas/provider-notification-v1beta3.json`](skills/gitops-repo-audit/assets/schemas/provider-notification-v1beta3.json) |
+| 100 | ✓ | [`skills/gitops-repo-audit/assets/schemas/receiver-notification-v1.json`](skills/gitops-repo-audit/assets/schemas/receiver-notification-v1.json) |
+| 101 | ✓ | [`skills/gitops-repo-audit/assets/schemas/receiver-notification-v1beta2.json`](skills/gitops-repo-audit/assets/schemas/receiver-notification-v1beta2.json) |
+| 102 | ✓ | [`skills/gitops-repo-audit/assets/schemas/resourceset-fluxcd-v1.json`](skills/gitops-repo-audit/assets/schemas/resourceset-fluxcd-v1.json) |
+| 103 | ✓ | [`skills/gitops-repo-audit/assets/schemas/resourcesetinputprovider-fluxcd-v1.json`](skills/gitops-repo-audit/assets/schemas/resourcesetinputprovider-fluxcd-v1.json) |
+| 104 | ✓ | [`skills/gitops-repo-audit/evals/evals.json`](skills/gitops-repo-audit/evals/evals.json) |
+| 105 | ✓ | [`skills/gitops-repo-audit/references/api-migration.md`](skills/gitops-repo-audit/references/api-migration.md) |
+| 106 | ✓ | [`skills/gitops-repo-audit/references/best-practices.md`](skills/gitops-repo-audit/references/best-practices.md) |
+| 107 | ✓ | [`skills/gitops-repo-audit/references/flux-api-summary.md`](skills/gitops-repo-audit/references/flux-api-summary.md) |
+| 108 | ✓ | [`skills/gitops-repo-audit/references/flux-operator-api-summary.md`](skills/gitops-repo-audit/references/flux-operator-api-summary.md) |
+| 109 | ✓ | [`skills/gitops-repo-audit/references/repo-patterns.md`](skills/gitops-repo-audit/references/repo-patterns.md) |
+| 110 | ✓ | [`skills/gitops-repo-audit/references/security-audit.md`](skills/gitops-repo-audit/references/security-audit.md) |
+| 111 | ✓ | [`skills/gitops-repo-audit/scripts/check-deprecated.sh`](skills/gitops-repo-audit/scripts/check-deprecated.sh) |
+| 112 | ✓ | [`skills/gitops-repo-audit/scripts/discover.sh`](skills/gitops-repo-audit/scripts/discover.sh) |
+| 113 | ✓ | [`skills/gitops-repo-audit/scripts/validate.sh`](skills/gitops-repo-audit/scripts/validate.sh) |
+| 114 | ✓ | [`skills/gitops-repo-audit/SKILL.md`](skills/gitops-repo-audit/SKILL.md) |
 
 ---
 

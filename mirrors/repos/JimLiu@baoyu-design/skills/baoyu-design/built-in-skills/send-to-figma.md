@@ -4,7 +4,7 @@ description: "Send to Figma\nExport as an editable Figma design"
 ---
 # Send to Figma
 
-Export the current design to Figma using the Figma MCP.
+Export the current design to Figma using the Figma MCP. (This is the export direction — to **import** a local `.fig` file, see [import-from-figma.md](import-from-figma.md).)
 
 This only works with static designs; if you have a deck or prototype, you will need to duplicate the file and reformat it as a horizontal scroll of fixed-size frames for each slide or screen.
 

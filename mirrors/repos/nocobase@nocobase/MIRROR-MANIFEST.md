@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nocobase/nocobase` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `nocobase/nocobase` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nocobase/nocobase` — 26 default patterns, 0 followed patterns, 2 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,6 +61,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`docs/docs/cn/ai-employees/features/skills.md`](docs/docs/cn/ai-employees/features/skills.md) |
+| 4 | ✓ | [`docs/docs/de/ai-employees/features/skills.md`](docs/docs/de/ai-employees/features/skills.md) |
+| 5 | ✓ | [`docs/docs/en/ai-employees/features/skills.md`](docs/docs/en/ai-employees/features/skills.md) |
+| 6 | ✓ | [`docs/docs/es/ai-employees/features/skills.md`](docs/docs/es/ai-employees/features/skills.md) |
+| 7 | ✓ | [`docs/docs/fr/ai-employees/features/skills.md`](docs/docs/fr/ai-employees/features/skills.md) |
+| 8 | ✓ | [`docs/docs/id/ai-employees/features/skills.md`](docs/docs/id/ai-employees/features/skills.md) |
+| 9 | ✓ | [`docs/docs/ja/ai-employees/features/skills.md`](docs/docs/ja/ai-employees/features/skills.md) |
+| 10 | ✓ | [`docs/docs/pt/ai-employees/features/skills.md`](docs/docs/pt/ai-employees/features/skills.md) |
+| 11 | ✓ | [`docs/docs/ru/ai-employees/features/skills.md`](docs/docs/ru/ai-employees/features/skills.md) |
+| 12 | ✓ | [`docs/docs/vi/ai-employees/features/skills.md`](docs/docs/vi/ai-employees/features/skills.md) |
 
 ---
 

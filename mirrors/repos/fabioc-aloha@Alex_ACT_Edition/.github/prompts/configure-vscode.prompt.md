@@ -1,6 +1,6 @@
 ---
 description: "Apply baseline VS Code user-scope settings for fleet policy compliance"
-lastReviewed: 2026-05-26
+lastReviewed: 2026-06-10
 ---
 
 # Configure VS Code
@@ -32,7 +32,31 @@ The baseline payload lives in `.github/config/welcome-baseline.json` (`settings`
 
 5. Report exactly which keys changed and which were already compliant.
 
-## Windows Reference Command
+## Reference Commands
+
+Three shells, one payload. Pick the one for your OS.
+
+### macOS / Linux (bash, zsh)
+
+```bash
+baseline_file=.github/config/welcome-baseline.json
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  user_settings="$HOME/Library/Application Support/Code/User/settings.json"
+else
+  user_settings="$HOME/.config/Code/User/settings.json"
+fi
+mkdir -p "$(dirname "$user_settings")"
+[ -f "$user_settings" ] || echo '{}' > "$user_settings"
+node -e "
+const fs = require('fs');
+const b = JSON.parse(fs.readFileSync('$baseline_file', 'utf8')).settings;
+const c = JSON.parse(fs.readFileSync('$user_settings', 'utf8'));
+for (const k of Object.keys(b)) c[k] = b[k];
+fs.writeFileSync('$user_settings', JSON.stringify(c, null, 2));
+"
+```
+
+### Windows (PowerShell)
 
 ```powershell
 $baseline = Get-Content '.github\config\welcome-baseline.json' -Raw | ConvertFrom-Json -AsHashtable
@@ -42,6 +66,8 @@ $current = Get-Content -Path $userSettings -Raw | ConvertFrom-Json -AsHashtable
 foreach ($k in $baseline.settings.Keys) { $current[$k] = $baseline.settings[$k] }
 $current | ConvertTo-Json -Depth 30 | Set-Content -Path $userSettings -Encoding UTF8
 ```
+
+All three are non-destructive merges — unrelated user-scope keys are preserved.
 
 ## Guardrails
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `strands-agents/sdk-python` — 26 default patterns, 5 followed patterns, 20 file(s) materialized.
+Mirror of `strands-agents/sdk-python` — 26 default patterns, 5 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `strands-agents/sdk-python` — 26 default patterns, 5 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 20 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,18 +71,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`.agents/skills/docs-planner/SKILL.md`](.agents/skills/docs-planner/SKILL.md) |
 | 7 | ✓ | [`.agents/skills/docs-reviewer/SKILL.md`](.agents/skills/docs-reviewer/SKILL.md) |
 | 8 | ✓ | [`.agents/skills/docs-writer/SKILL.md`](.agents/skills/docs-writer/SKILL.md) |
-| 9 | ✓ | [`.agents/skills/strands-review/SKILL.md`](.agents/skills/strands-review/SKILL.md) |
-| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 11 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
-| 12 | ✓ | [`site/SITE-ARCHITECTURE.md`](site/SITE-ARCHITECTURE.md) |
-| 13 | ✓ | [`strands-py/AGENTS.md`](strands-py/AGENTS.md) |
-| 14 | ✓ | [`strands-ts/AGENTS.md`](strands-ts/AGENTS.md) |
-| 15 | ✓ | [`test-infra/AGENTS.md`](test-infra/AGENTS.md) |
-| 16 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 17 | → | [`dev-docs/PR.md`](dev-docs/PR.md) |
-| 18 | → | [`site/CONTRIBUTING.md`](site/CONTRIBUTING.md) |
-| 19 | → | [`strands-py/docs/PR.md`](strands-py/docs/PR.md) |
-| 20 | → | [`strands-py/docs/STYLE_GUIDE.md`](strands-py/docs/STYLE_GUIDE.md) |
+| 9 | ✓ | [`.agents/skills/pr-create/SKILL.md`](.agents/skills/pr-create/SKILL.md) |
+| 10 | ✓ | [`.agents/skills/pr-feedback/fetch-pr-feedback.sh`](.agents/skills/pr-feedback/fetch-pr-feedback.sh) |
+| 11 | ✓ | [`.agents/skills/pr-feedback/SKILL.md`](.agents/skills/pr-feedback/SKILL.md) |
+| 12 | ✓ | [`.agents/skills/pr-writer/get-diff.sh`](.agents/skills/pr-writer/get-diff.sh) |
+| 13 | ✓ | [`.agents/skills/pr-writer/SKILL.md`](.agents/skills/pr-writer/SKILL.md) |
+| 14 | ✓ | [`.agents/skills/README.md`](.agents/skills/README.md) |
+| 15 | ✓ | [`.agents/skills/strands-review/SKILL.md`](.agents/skills/strands-review/SKILL.md) |
+| 16 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 17 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
+| 18 | ✓ | [`site/SITE-ARCHITECTURE.md`](site/SITE-ARCHITECTURE.md) |
+| 19 | ✓ | [`strands-py/AGENTS.md`](strands-py/AGENTS.md) |
+| 20 | ✓ | [`strands-ts/AGENTS.md`](strands-ts/AGENTS.md) |
+| 21 | ✓ | [`test-infra/AGENTS.md`](test-infra/AGENTS.md) |
+| 22 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 23 | → | [`dev-docs/PR.md`](dev-docs/PR.md) |
+| 24 | → | [`site/CONTRIBUTING.md`](site/CONTRIBUTING.md) |
+| 25 | → | [`strands-py/docs/PR.md`](strands-py/docs/PR.md) |
+| 26 | → | [`strands-py/docs/STYLE_GUIDE.md`](strands-py/docs/STYLE_GUIDE.md) |
 
 ---
 

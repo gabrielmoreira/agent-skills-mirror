@@ -10,6 +10,7 @@ Collection of self-contained agent skills for Claude Code, Codex, and compatible
 - `skills/<name>/agents/openai.yaml` contains Codex-specific metadata.
 - `skills/<name>/examples/` contains sample files.
 - `skills/<name>/assets/` contains bundled media or other static assets.
+- `shelved/<name>/` contains retired skills preserved from the old `shelved` branch for reference or restoration.
 - `.agents/internal-skills/<name>.md` contains repo-private internal skills referenced with `@`.
 - `README.md` lists every skill and stays minimal.
 - `CLAUDE.md` is a symlink to `AGENTS.md`; do not edit it separately.
@@ -28,7 +29,9 @@ If `mdformat-check` fails, analyze the errors and fix only files you changed.
 - `just` - list recipes.
 - `just mdformat-check` - check Markdown formatting with `mdformat-gfm` and `mdformat-frontmatter`.
 - `just mdformat-write` - format Markdown in place.
+- `just shelve <skill>` - require a clean worktree, move `skills/<skill>` to `shelved/<skill>`, and commit the move.
 - `just sync` - commit this repo, install skills into `~/.agents`, then commit installed changes there.
+- `just unshelve <skill>` - require a clean worktree, move `shelved/<skill>` to `skills/<skill>`, and commit the move.
 
 There is no package manifest or build step. Treat Markdown formatting and skill-specific helper scripts as the verification surface unless a task introduces a narrower check.
 
@@ -36,6 +39,8 @@ There is no package manifest or build step. Treat Markdown formatting and skill-
 
 - When asked to create, edit, or remove an installable catalog skill while the current working directory is this repo, modify the skill under `skills/` here only, not the installed copy under `~/.agents`.
 - When an installable catalog skill is added or removed, update the skills table in `README.md`.
+- Shelved skills under `shelved/` are not installable catalog skills. Do not list them in `README.md` or sync them to `~/.agents`; keep `agents/openai.yaml` present so restoring a skill is a pure move plus modernization.
+- To restore a shelved skill, move it from `shelved/<name>/` to `skills/<name>/`, bring it up to current repo rules, and update `README.md`.
 - Internal skills are special repo-private runbooks. Place them under `.agents/internal-skills/<name>.md`, not under `skills/`. Do not add them to `README.md`, do not create `agents/openai.yaml`, and do not treat them as installable catalog skills.
 - Keep skills self-contained. Do not de-duplicate content across skills by extracting shared references or canonical files; users install skills individually.
 - Resolve `references/`, `scripts/`, `examples/`, and `assets/` paths relative to the owning skill directory.

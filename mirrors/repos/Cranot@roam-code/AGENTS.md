@@ -5,11 +5,11 @@
 <!-- BEGIN auto-count:Codex-headline -->
 roam-code is a local codebase intelligence CLI for developers and AI coding agents.
 It pre-indexes symbols, call graphs, dependencies, architecture, and git history into
-a local SQLite DB. **241 commands · 227 MCP tools (57 in the default `core` preset) · 28 languages · 100% local · zero API keys.**
+a local SQLite DB. **267 commands · 243 MCP tools (16 in the default `core` preset) · 28 languages · 100% local · zero API keys.**
 <!-- END auto-count:Codex-headline -->
 
 <!-- BEGIN auto-count:Codex-authoritative -->
-Authoritative counts (AST-derived, env-independent): `command_count: 241 · canonical_count: 234 · category_count: 7 · mcp tools registered: 227 · mcp tools in core preset: 57`. The `roam surface --json` envelope additionally exposes `mcp_tool_count_by_preset` for per-preset counts.
+Authoritative counts (AST-derived, env-independent): `command_count: 267 · canonical_count: 260 · category_count: 7 · mcp tools registered: 243 · mcp tools in core preset: 16`. The `roam surface --json` envelope additionally exposes `mcp_tool_count_by_preset` for per-preset counts.
 <!-- END auto-count:Codex-authoritative -->
 
 **Package:** `roam-code` on PyPI. Entry point: `roam.cli:cli`.
@@ -39,7 +39,7 @@ This section codifies what makes a roam command good. Distilled from 212 dogfood
 
 ### Six systemic anti-patterns to NEVER ship
 
-From `internal/dogfood/SYNTHESIS-2026-05-12.md` — validated unchanged across 30 → 59 → 212 evals as failure classes. Several of the original incidents are now SEALED behind regression tests; they are kept here as regression-invariant examples, not as claims that the bug is currently live.
+From the dogfood synthesis notes — validated unchanged across 30 → 59 → 212 evals as failure classes. Several of the original incidents are now SEALED behind regression tests; they are kept here as regression-invariant examples, not as claims that the bug is currently live.
 
 1. **Pattern-1 family — "structured signal lost or never reached".** One root failure family. (A) Hang on missing prerequisite — SEALED (live guard `src/roam/mcp_extras/preflight.py`). (B) Structured signal collapsed to generic `COMMAND_FAILED` by an intermediate layer — SEALED (try-parse stdout as JSON at the wrapper-bridge). (C) Empty-stdout crash on `json.loads()` — SEALED (CLI always emits a structured envelope, even on no-results). (D) Silent success on degraded resolution — LIVE: disclose the resolution state via a `resolution` field + `partial_success: true` + a degraded verdict. Every wrapper that cannot complete normally emits the canonical failure envelope (closed `status` / `error_code` enums; `isError: true` inside a successful JSON-RPC result).
 
@@ -120,6 +120,7 @@ Before merging a new `cmd_X.py`:
 - [ ] Add at least one MCP-level test that runs the compound's actual internal subcommand chain (catches `vuln`/`vulns`-class typos)
 - [ ] Tool description uses imperative voice ("Run X") not declarative ("This command") (LAW 2)
 - [ ] If it returns a verdict that names a follow-up command, that command must be a literal `roam <subcommand>` string — copy-paste-executable (CONSTRAINT 12)
+- [ ] Document which Bash/Read/Grep pattern this command displaces in the command's docstring or a dedicated test — answers "does this displace a question the LLM actually has?" (DOGFOOD-RATIO-TRACKING.md)
 
 ## Quick reference
 
@@ -150,8 +151,8 @@ roam health
 
 ```
 src/roam/
-  cli.py              # Click CLI entry point — LazyGroup, _COMMANDS dict, _CATEGORIES. 241 command names (234 canonical + 7 aliases).
-  mcp_server.py       # FastMCP server (57 tools in core preset; 227 in `full`) + `roam mcp` CLI command
+  cli.py              # Click CLI entry point — LazyGroup, _COMMANDS dict, _CATEGORIES. 267 command names (260 canonical + 7 aliases).
+  mcp_server.py       # FastMCP server (16 tools in core preset; 243 in `full`) + `roam mcp` CLI command
   mcp_extras/         # MCP-native enhancements: sampling, watcher, session, progress, completions
     sampling.py       # Sampling-driven result compression (summarize=True) via Context.sample
     watcher.py        # watchdog observer + notifications/resources/updated (opt-in via ROAM_MCP_WATCH)
@@ -184,12 +185,12 @@ src/roam/
     bridge_django.py   # Django admin/serializer/form/URL → Model + view resolution
     bridge_config.py   # Env var reads → .env/.yml definitions
   catalog/
-    tasks.py           # Universal algorithm catalog — 23 tasks with ranked solution approaches
+    tasks.py           # Universal algorithm catalog — 34 tasks with ranked solution approaches
     detectors.py       # Algorithm anti-pattern detectors — query DB signals to find suboptimal patterns
   languages/
     base.py            # Abstract LanguageExtractor — all languages inherit this
     registry.py        # Language detection + grammar aliasing
-    *_lang.py          # One file per language (python, javascript, typescript, java, go, rust, c, csharp, php, ruby, kotlin, swift, scala, sql, foxpro, apex, aura, visualforce, sfxml, hcl, yaml, generic)
+    *_lang.py          # One file per language (python, javascript, typescript, java, go, rust, c, csharp, php, ruby, kotlin, swift, scala, sql, foxpro, apex, aura, visualforce, sfxml, hcl, yaml, dart, generic)
   graph/
     builder.py         # DB → NetworkX graph
     pagerank.py        # PageRank + centrality metrics
@@ -416,12 +417,12 @@ Agent-developer landing page:
 **Closed-enum vocabulary** (membership validated at receipt construction;
 unknown literals raise `ValueError`):
 
-- `policy_decision` (6 values): `allow`, `deny`, `escalate`, `redact`,
-  `not_evaluated`, `would_deny_dry_run`.
-- `redactions` reasons (9 values, canonical W226 `REDACTION_REASONS`):
+- `policy_decision` (9 values): `pass`, `fail`, `allow`, `deny`,
+  `escalate`, `redact`, `not_evaluated`, `unknown`, `would_deny_dry_run`.
+- `redactions` reasons (10 values, canonical W226 `REDACTION_REASONS`):
   `secret`, `pii`, `sensitive_content`, `size_limit`, `policy`,
   `user_opt_in_required`, `machine_local_path`, `schema_strict`,
-  `producer_not_available`.
+  `producer_not_available`, `prompt_injection_marker`.
 - `receipt_integrity` (4 values, emitted by `verify_chain_with_receipts`):
   `ok`, `missing`, `tampered`, `not_linked`.
 
@@ -477,7 +478,27 @@ correction, `surface --json` top-level keys completion, and
    "Concrete-noun anchor vocabulary" sub-section under LAW 4 above for the accepted terminal
    tokens and the `WRONG`/`RIGHT` worked example. The LAW 4 lint (`tests/test_law4_lint.py`)
    blocks merges on un-anchored facts.
-8. Add tests
+8. **Satisfy the three coverage-ceiling guards a new command trips** — these are
+   independent of the count cascade and are the gaps a fresh command most often leaves
+   (surfaced 2026-06-08 when `cmd_cycles` passed every count drift-guard yet failed all three):
+   - **Mode classification** (`tests/test_mode_classification_coverage.py`) — add the verb to
+     `_MODE_EXTRAS` in `src/roam/modes/policy.py` at the correct tier (pure DB/graph read →
+     `read_only`; FS/DB writes → `safe_edit`+), OR to `_MODE_ALWAYS_ALLOWED` in `cli.py`.
+     Classifying decrements the `UNCLASSIFIED_CEILING`; never raise it silently.
+   - **SARIF disclosure** (`tests/test_sarif_disclosure_coverage.py`) — every `cmd_*.py` must
+     EITHER be in `_SARIF_CONSUMERS` (`cli.py`) and consume `ctx.obj['sarif']`, OR anchor a
+     W1148 SKIP rationale in the module docstring (the literal phrase `SARIF is deliberately
+     NOT …`, as `cmd_clusters.py` does for invocation-scoped rankings).
+   - **Budget coverage** (`tests/test_budget_coverage_survey.py`) — list-payload commands must
+     forward `budget=token_budget` into `json_envelope(...)` (read it via
+     `ctx.obj.get('budget', 0)`); intrinsically-small/fixed-shape envelopes go in
+     `_BUDGET_EXEMPT` with a one-line rationale instead. The real-gap threshold ratchets DOWN.
+9. **If you added an MCP wrapper, run the count cascade AND check the landing page.** Run
+   `python3 dev/build_readme_counts.py --apply` + `python3 scripts/sync_surface_counts.py`
+   (syncs AGENTS.md/README/MCP-cards). The sync script's regexes miss some landing-page spots
+   (newline-split counts, `<strong>`-wrapped numbers, soft-count pages), so
+   `tests/test_w462_landing_page_tool_count_drift.py` may still need a manual 1-number fix.
+10. Add tests
 
 ## Adding a new language (Tier 1)
 
@@ -491,7 +512,9 @@ correction, `surface --json` top-level keys completion, and
 roam supports third-party `roam-plugin-*` packages — the substrate is in
 `src/roam/plugins/` and the reference example is at `dev/example-plugin/`.
 Framework-specific knowledge (nextjs, laravel, prisma, django, …) should ship
-as a plugin rather than landing in core.
+as a plugin rather than landing in core. Plugin-registered commands do NOT count
+toward the "241 commands" headline (W319) — the figure pins core-tree commands
+only; the plugin count surfaces separately in `roam plugins list`.
 
 **Entry-point pattern.** Plugins register via Python entry points; roam
 walks the `roam.plugins` group at startup:
@@ -513,7 +536,14 @@ exposes typed methods for each extension point:
 | `ctx.register_detector(task_id, way_id, detect_fn)`                             | Add an algorithm-catalog detector.                    |
 | `ctx.register_language_extractor(language, factory, *, extensions, grammar_alias)` | Add a per-language symbol/reference extractor.     |
 | `ctx.register_framework_detector(detect_fn)`                                    | Detect which framework a project uses.                |
+| `ctx.register_framework_profile(profile)`                                       | Bundle a detector + file patterns + recommended commands + conventions (W123/Wave28.3 — preferred over the bare detector; internally also calls `register_framework_detector`). |
 | `ctx.register_bridge(bridge)`                                                   | Add a cross-language reference bridge.                |
+
+**W56 contract.** `register_framework_detector`'s `detect_fn` MUST be typed
+`Callable[[pathlib.Path], Optional[str]]`. roam coerces `cwd` to `Path` before
+calling, but plugin authors who pass a bare `str` in unit tests crash at
+`project_root / "Gemfile"`. Annotate `project_root: Path` so `mypy` warns
+callers at the boundary.
 
 **Minimal example.** See `dev/example-plugin/`:
 
@@ -533,6 +563,12 @@ load a plugin without installing it via the env channel:
 ```bash
 PYTHONPATH=dev/example-plugin ROAM_PLUGIN_MODULES=roam_plugin_example roam plugins list
 ```
+
+**Observability triad.** Three commands surface what discovery saw:
+`roam plugins list` (every loaded plugin + contributed capabilities),
+`roam plugins info <name>` (per-plugin detail — commands / detectors /
+extractors / bridges / profiles), `roam plugins doctor` (CI-friendly
+exit code on failed loads — use in your plugin's release pipeline).
 
 Full typed surface lives in `src/roam/plugins/registry.py`. Tests live in
 `tests/test_plugin_substrate.py` and `tests/test_plugin_discovery.py`.
@@ -554,6 +590,44 @@ Full typed surface lives in `src/roam/plugins/registry.py`. Tests live in
 - Run full suite: `pytest tests/`
 - Run specific: `pytest tests/test_comprehensive.py::TestHealth -x -v -n 0`
 - Mark tests needing sequential execution with `@pytest.mark.xdist_group("groupname")`
+
+### Module-cache hygiene (the `sys.modules.pop` rule)
+
+A test that evicts a heavy module to force a cold import —
+`sys.modules.pop("roam.mcp_server", None)` (used by
+`test_cmd_mcp_fast_startup.py` / `test_cmd_mcp_status_cold_start.py` to
+prove the fast-startup wrapper doesn't eagerly import the 8.6k-line
+server) — **MUST restore the cache entry afterward**. `monkeypatch` does
+NOT track raw `sys.modules` pops, so an unrestored pop leaks: the next
+`import roam.mcp_server` anywhere builds a *second* module object, and
+every test file that did a top-level `from roam.mcp_server import X`
+now holds a reference to the orphaned first copy while monkeypatching
+the second — so its stubs silently miss and the real (index-touching)
+code runs. This surfaced as a 2026-05-27 cross-file flake: the three
+monkeypatching tests in `test_validate_plan.py` failed only when a
+popper ran earlier on the same xdist worker (an `xdist_group` marker
+could NOT fix it — the polluting tests live in different files). The
+fix is an autouse fixture in the popper file that snapshots and
+restores the entry:
+
+```python
+@pytest.fixture(autouse=True)
+def _preserve_module_cache():
+    saved = sys.modules.get("roam.mcp_server")
+    try:
+        yield
+    finally:
+        if saved is not None:
+            sys.modules["roam.mcp_server"] = saved
+        else:
+            sys.modules.pop("roam.mcp_server", None)
+```
+
+Rule: any test that pops or `importlib.reload`-with-fresh-import a
+module other tests import at top level must restore the original
+object in teardown. In-place `importlib.reload` is safe (it mutates the
+existing object's dict); `pop` + fresh `import` is not (it creates a
+distinct object).
 
 ## Dependencies
 
@@ -588,7 +662,9 @@ Additional commands: `roam health` (0-100 score), `roam impact <name>` (what bre
 `roam pr-risk` (PR risk score), `roam file <path>` (file skeleton),
 `roam simulate move <sym> <file>` (what-if architecture), `roam orchestrate` (multi-agent partitioning),
 `roam adversarial` (architectural challenges on changed files — composes cycles + clusters + layers + catalog + dead + complexity), `roam mutate move <sym> <file>` (code transforms),
-`roam clones --persist` (populate `clone_pairs` so `critique` and `retrieve` can flag clone classes).
+`roam clones --persist` (populate `clone_pairs` so `critique` and `retrieve` can flag clone classes),
+`roam cycles [--actionable-only]` (import/call cycles as Tarjan SCCs — the focused sibling of `clusters`/`layers`),
+`roam verify --report [--severity fail]` (NON-gating whole-repo ranked error punch-list the agent can work through top-down; pair with `--json` for the flat findings list).
 
 Index-aware text search (added on top of grep / refs):
 - `roam grep <pattern> [--reachable-from <entry>] [--unreachable] [--co-occur] [--missing-pattern P] [--rank-by importance] [--group-by symbol] [--blame] [--heat]` — grep + reachability + PageRank + clones + bridges. Supports `-e` repeatable, `--patterns-from FILE`, `-g` repeatable, `-F`. Engine: ripgrep > git grep > fallback (pin via `ROAM_GREP_ENGINE`).
@@ -596,5 +672,73 @@ Index-aware text search (added on top of grep / refs):
 - `roam delete-check [--source working|staged|pr|head] [--ci]` — gates the diff on surviving references; exits 5 on BREAK-RISK with `--ci`.
 - `roam history-grep <pattern> [--polarity]` — git pickaxe (-S/-G) with author/date and introduced/removed annotation.
 
-Run `roam --help` for the 5-verb core; `roam --help-all` for all 241 command names; `roam surface --json` for the machine-readable inventory. Use `roam --json <cmd>` for structured output.
+Run `roam --help` for the 5-verb core; `roam --help-all` for all 267 command names; `roam surface --json` for the machine-readable inventory. Use `roam --json <cmd>` for structured output.
 Use `roam --sarif health` for CI integration (SARIF 2.1.0).
+
+## Compiler tooling (2026-06-02 wave)
+
+Five diagnostic / measurement commands + new compiler internals shipped
+2026-06-02. They form the compiler's self-observation surface.
+
+### Commands
+
+- **`roam compiler-health`** — 4-section compound dashboard (env-drift vs
+  baselines, routing distribution, per-mode KPIs, self magic-numbers scan)
+  + a 0-100 score + actionable alerts. `--emit-guard-findings PATH` writes
+  the alerts in Roam Guard finding format so they become PR-blocking via
+  `/usr/local/bin/roam-compiler-guard-bridge`.
+- **`roam compiler-corpus --corpus FILE [--limit N]`** — analyze a SAVED
+  prompt corpus (vs compiler-health's live telemetry). Emits L1-route rate,
+  artifact distribution, latency p50/p95, top misses. The recurring
+  measurement instrument for "did a classifier change regress routing?".
+- **`roam envelope-diff <a> <b>`** OR `--from-cache <sha1> <sha2>` — diff
+  two compile envelopes (probe families, classifier, size). Regression CI:
+  `roam envelope-diff "<prompt>" --baseline DIR --regression` (exit 5 on
+  probe-fire drop >10% or confidence drop >0.1); seed via `--update-baseline DIR`.
+  Baselines live in `internal/benchmarks/envelope-baselines/`.
+- **`roam dispatch-trace "<prompt>"`** — classifier path + per-probe
+  fire/skip reasons. `--counterfactual` emits 5 shape-adaptive rephrases
+  and shows where each routes (writing-coach mode).
+- **`roam magic-numbers [path]`** — AST (Python) + tree-sitter (9 langs)
+  scan for unnamed numeric constants. `--cluster` groups by semantic role
+  (context-aware: `len(x)<200` → `size_or_limit`, not `http_status`).
+
+### Compiler classifier procedures added this wave
+
+`symbol_defined_where` (W11: "where is X defined"), `top_n_ranking` (W12:
+"top 5 most-imported files"), `cli_verb_why_slow` (W13: "why is roam index
+slow"), `compare_x_vs_y` (W28: "compare X vs Y" / "diff X and Y"). All
+route to `l1_probe` with embedded probe answers. See
+`src/roam/plan/compiler.py:_classify` + the 6 integration tables
+(`_ARTIFACT_POLICY`, `_L1_PROBE_ELIGIBLE`, `_PER_PROCEDURE_CONF_THRESHOLD`,
+`procedure_keys` ×2, `has_target`).
+
+### Compiler performance env vars
+
+- **`ROAM_ALWAYS_ON_BUDGET_MS`** (default 2500) — total wall budget across
+  all always_on probes per compile. Past budget, remaining probes are
+  cancelled. Fixed the 20s always_on tail (W42).
+- **`ROAM_AGENT_MODE`** — stamped onto `.roam/compile-runs.jsonl` rows so
+  `roam compile-stats --by-mode` populates. The host agent platform sets this in its
+  `runRoamCompile` exec env.
+- **`roam deps <path> --multi`** (W43) — returns imports + importers +
+  git cochange in ONE envelope; `_probe_coupling` uses it to halve
+  subprocess spawns.
+
+### Bench measurement
+
+- **`roam bench-compile --conditions vanilla,compile --model claude-opus-4-8
+  --judge`** — A/B harness. ALWAYS pin `--model claude-opus-4-8` (the
+  `opus[1m]` SDK alias currently resolves to 4.7). `--ground-truth` routes
+  outputs through `internal/benchmarks/oracle_pytest.py` / `oracle_fix_bug.py`.
+- **`python3 scripts/bench_analyze.py <out-dir>`** — re-aggregates any
+  bench-compile output with the HONEST per-dispatched view (timeouts
+  counted at the cap, not dropped). `bench-compile`'s own table drops
+  timeouts and understates the reliability win. Run this on every bench.
+
+### Nightly crons (in `/etc/cron.d/roam-dogfood`)
+
+`roam-compile-prebuild` (00:25, warms top-N W91 cache misses),
+`roam-compiler-health-log` (00:05, trend TSV), `roam-compiler-health-alert`
+(4-hourly), `roam-compiler-guard-bridge` (6-hourly), `roam-adversarial-check`
+(00:15, 12-task robustness regression).

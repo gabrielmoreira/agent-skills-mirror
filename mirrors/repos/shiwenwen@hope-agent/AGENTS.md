@@ -91,7 +91,7 @@ skills/                 内置技能（meta / 编程方法论 vendor / 办公方
 docs/architecture/      子系统设计文档（39 篇，跨 PR 必读单一真相源）
 ```
 
-ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `skills/` `tools/` `channel/` `subagent/` `team/` `cron/` `acp/` `dashboard/` `recap/` `awareness/` `config/` `session/` `project/` `plan/` `ask_user/` `async_jobs/` `failover/` `platform/` `security/` `logging/` `local_llm/`。Vendor skill 来源记录在 `THIRD_PARTY_NOTICES.md`。
+ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `knowledge/` `skills/` `tools/` `channel/` `subagent/` `team/` `cron/` `acp/` `dashboard/` `recap/` `awareness/` `config/` `session/` `project/` `plan/` `ask_user/` `async_jobs/` `failover/` `platform/` `security/` `logging/` `local_llm/`。Vendor skill 来源记录在 `THIRD_PARTY_NOTICES.md`。
 
 ## 技术栈
 
@@ -153,6 +153,28 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `ski
 - **`recall_memory` / `memory_get` 工具返回完整原文**，预算只约束 system prompt 注入
 - Active Memory / Awareness / User Profile 都作为**独立 cache block** 注入，不作废静态前缀缓存
 - **会话级无痕（`sessions.incognito`）**：单一真相源；不注入 Memory / Active Memory / Awareness、跳过自动提取；**关闭即焚**——不进侧边栏列表 / 全局 FTS / Dashboard 统计；**与 Project / IM Channel 互斥**（前端灰化 + 后端入口防御）
+
+### Knowledge Base（知识空间）
+
+详见 [`knowledge-base.md`](docs/architecture/knowledge-base.md)（实现 + 设计契约 D1–D14 决策账本 + 子系统全貌）。对外名「知识空间」（slogan：你的第二大脑），代码中性（模块 `knowledge/`、工具 `note_*`、作用域 `for_knowledge`）。**本节只列跨 PR 红线，实现细节 / 数据流 / 内部结构一律在架构文档**。
+
+- **两类存储分明（D9）**：注册表 + 访问绑定落 `sessions.db`（真相源）；`note/chunk/link/tag` + FTS5 + vec0 落 `~/.hope-agent/knowledge/index.db`（纯可重建缓存，删了从 `.md` 全量重建）。**笔记 = 真实 `.md` 文件，唯一真相源**
+- **访问默认 deny（D10 + WS8）**：唯一入口 `effective_kb_access`——incognito 归零 → IM 默认归零（除非账号级 `kbAccessOptIn` + 群聊 per-chat 确认 `kbAccessChats`，群内 `/kb`；查不到 / 不匹配 fail closed）→ `max(session_attach, project_attach)` → 滤 archived → 外部只读 root cap `read`。source / origin / channel 经 agent 真接线透传，**subagent 按 origin 血缘判定不洗权限**
+- **两鉴权平面物理隔离（D10）**：owner 平面（HTTP / Tauri，`service.rs`）= 本机 / API key 信任，看全部 KB **不经 attach**；agent 平面（`note_*` 工具）走 `effective_kb_access`。`/api/knowledge/{kb}/files/*` 纯 owner、无 session 参数 / 无 fallback
+- **作用域闭合 + 外部只读（D11 + WS7）**：所有读写经 `WorkspaceScope::for_knowledge`；**外部绑定 root 默认只读（桌面也拒），KB 级 `allow_external_writes` opt-in 才解锁外部写**；HTTP 写再叠 `allow_remote_writes`。**后台自主维护永不写外部**（无视 opt-in）
+- **写盘原子 + stale-write guard**：所有笔记写经 `crate::platform::write_atomic`（temp+fsync+rename，**禁回退 `fs::write`**）；`expected_file_hash` 比**磁盘当前 raw BLAKE3**（不比索引 `content_hash`）；`note_patch` 走 `old/new` 唯一文本命中（0 / 多次都拒）。坐标系 D14 / resolve 确定性 #8 / chunk D12 / 图谱布局 J 细节见架构文档「写盘 / 坐标 / 解析 / 布局契约」节
+- **检索 / embedding 独立旗舰（D7）**：chunk FTS5 + vec0 → RRF → MMR → 回 note，**独立 store 绝不折进 `recall_memory`**；知识空间有自己的 `knowledge_embedding` selector（与 `memory_embedding` 物理隔离、不寄生不回退）+ `knowledge_chunk` 参数；二者重 reindex 副作用故 **GUI-only 不进 `ha-settings`**（类比 `active_model`）。排序参数 `knowledge_search`（融合权重 / RRF-k / MMR-λ / 候选倍数，`search.rs::KnowledgeSearchConfig`，`search_notes` 读、`clamped()` 钳值）**纯查询期无 reindex → 正常 MEDIUM 设置**（GUI + `ha-settings`，GUI 带一键恢复默认）
+- **会话感知访问单一入口**：`Agent::resolve_kb_access()`（`agent/mod.rs`）是 agent 侧唯一解析链（source/origin/channel + WS8 + project + `effective_kb_access`，按回合 memoize），系统提示段 / 被动召回 / 工具门控三处共用，不得各自重写。**只服务 schema/prompt/召回，绝不 gate 执行**（执行走 live `access_map`，同一 `resolve` 路径）
+- **无 KB 不注入笔记工具**：`is_kb_scoped_tool`（`note_*` + `session_to_note`，**不含 `knowledge_recall`**）在 schema 构建后过滤——纯 UX / 省 token，**不是安全边界**（执行层兜底）。系统提示「# Knowledge Bases」段同理：`resolve_kb_access()` 为空整段省略，绝不广告会拒的库
+- **读取即 untrusted**：`[[note]]` 注入（桥①）+ 被动相关笔记（桥③，`knowledge_passive_recall`，opt-in 默认关）一律套 `<untrusted_external_data>` 信封、受 `effective_kb_access` 约束、**永不提升为 system 指令**；incognito 零召回、IM 未 opt-in 零访问
+- **`knowledge_recall` 工具（D7）**：一次查 memory + 笔记两 store，**两段独立排序不混排**，薄编排器**绝不折进 / 改动 `recall_memory`**；`Standard{default_deferred:true}` 经 `tool_search` 发现
+- **外部 vault 实时同步（D6）**：`notify` watcher（per-KB 线程 + debounce）+ bind / 启动 reconcile（mtime 增量 + prune）
+- **侧边栏 AI 对话面板**：对话 = `kind='knowledge'` 会话，**从主会话列表 / `/sessions` / 全局 FTS 隐藏**；锚定落 `knowledge_chat_threads`（D9，级联删）。复用主对话 `useChatStream`（新增可选 prop，主对话不传 = 行为不变）；当前文档每轮经 `getExtraAttachments` 以 `source:"quote"` 注入（cache-safe）。选区编辑两路：quote chip 进对话由 AI 改写 / 浮动 `QuickRewriteBar` 一次性
+- **工具精简 `ToolScope::Knowledge`（与 D10 正交）**：仅 schema/prompt 可见性收窄到白名单（`note_*` + `knowledge_recall` + 记忆 + 框架基础），**绝不动 KB 访问**——访问仍由 `effective_kb_access` 单点裁决
+- **精灵 / 灵感模式（`sprite/`，默认关）**：前端**多触发源**（编辑停顿 / 打开笔记 / 对话回复后 / 周期写作 / 大段粘贴，各 `triggers.*` 可配，仅在 AI 对话面板打开时挂）→ owner 命令 `kb_sprite_observe_cmd` → 后端统一节流（cooldown + 时限 + doc-hash 去重）+ side_query（persona 随 `proactive` 分主动/克制档）+ emit `sprite:casting`（LLM 调用期间，驱动猫咪「施法」光效）/ `sprite:suggestion`（紫色柔光气泡，不进消息流）→ 前端瞬态展示。**incognito 零精灵**（前后端双关卡）。非 agent 工具，设置三件套（MEDIUM）
+- **自主维护（Layer 2，默认全关）**：后台扫内部 KB 产提案进 `sessions.db`（D9，级联删）；落地经 owner 平面（用户已批准故**绕 D10**，但写前重读磁盘 hash 守 stale-write + 跳外部只读）；`ha-settings` 归 **HIGH**
+- **块级引用（仅 Obsidian `^block-id`，Logseq 不做）/ 原生大纲只读视图**：见架构文档；大纲红线**只读、永不替代 CM6 底座**
+- **新增 KB 工具 / 端点**：工具走 `tools/note.rs` + `core_tools.rs` + `execution.rs`；Tauri / HTTP owner 薄壳调 `knowledge::service`；逻辑全在 ha-core（红线）
 
 ### 工具 & 审批
 
@@ -248,7 +270,7 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `ski
 - **`source` 字段**：`inbound`（IM 入站新建）/ `attach`（`/session <id>` 显式接管）/ `handover`（GUI handover 或 `/handover` 推到该 chat）。
 - **GUI ↔ IM live 流式镜像**：desktop / HTTP 触发的 turn 通过 [`chat_engine/im_mirror.rs`](crates/ha-core/src/chat_engine/im_mirror.rs) `attach_im_live_mirror` 把 `ChannelStreamSink` 注册到 [`SinkRegistry`](crates/ha-core/src/chat_engine/sink_registry.rs)，引擎 `emit_stream_event` 末尾的 fan-out hook 在每帧把 streaming event 转发到 IM 流式预览任务。turn 收尾走 `finalize_im_live_mirror`：drop SinkHandle → drain `RoundTextAccumulator` → 复用 dispatcher 的 `deliver_split` / `deliver_final_only` / `deliver_preview_merged`，按 IM account 的 `ImReplyMode`（`split / preview / final`）渲染——与 IM 入站 turn 完全对称。**两个通道独立走自己的发送通路**：GUI 永远走 Tauri IPC stream / HTTP `chat:stream_delta` 广播，不受 `imReplyMode` 影响；`imReplyMode` 仅决定 IM 端的呈现形态。错误 / 取消路径走 RAII drop，IM 端保留半截 preview，与入站 cancel 行为一致。`source ∈ {Subagent, ParentInjection, Channel, Cron}` 直接 no-op（IM 入站自己有完整流式管线，subagent/cron 不应外溢到 IM）。
 
-- **新 slash 命令**：`/sessions`（picker 用户对话 session，过滤 cron / subagent / incognito）、`/session [<id>|exit]`（info / attach / detach）、`/projects`（picker）、`/handover <ch:acc:chat[:thread]>`（GUI 端推送，IM 不可见）。`IM_DISABLED_COMMANDS` 仅含 `agent` / `handover`。
+- **新 slash 命令**：`/sessions`（picker 用户对话 session，过滤 cron / subagent / incognito）、`/session [<id>|exit]`（info / attach / detach）、`/projects`（picker）、`/handover <ch:acc:chat[:thread]>`（GUI 端推送，IM 不可见）、`/kb [on|off]`（WS8，群聊 per-chat 确认 KB 访问；DM 仅报状态——账号级 opt-in 在桌面 Settings；无 arg/`status` 报当前生效态）。`IM_DISABLED_COMMANDS` 仅含 `agent` / `handover`。
 - **`channel:session_evicted` 事件**：`attach_session` / `update_session` 在 1:1 接管把旧 chat 物理 detach 之后，对每个被踢的 chat emit 一次此事件，payload `{ channelId, accountId, chatId, threadId, sessionId }`。[`channel/worker/eviction_watcher.rs`](crates/ha-core/src/channel/worker/eviction_watcher.rs) 订阅后调对应 plugin 的 `send_message` 发"this chat has been taken over by another endpoint"通知；`ChannelAccountConfig.notify_session_eviction`（默认 `true`）可静音。
 
 ### Dashboard / Recap / Learning

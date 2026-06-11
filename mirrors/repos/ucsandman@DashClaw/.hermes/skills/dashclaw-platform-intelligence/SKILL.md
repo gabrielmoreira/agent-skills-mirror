@@ -5,7 +5,7 @@ description: DashClaw platform expert for integration, troubleshooting, and gove
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:85132d5f1152b2c68a1f6687bd3cc1790eca52ab`
+**Shape snapshot:** `sha1:63c3809615c811fd55cbf9f615f222e99eefa2cd`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -45,9 +45,9 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 ## At a Glance
 
-- **254** active API routes across **62** categories
-- **4** required + **141** optional environment variables
-- **93** database tables
+- **260** active API routes across **63** categories (308 total including archived)
+- **4** required + **180** optional environment variables
+- **97** database tables
 
 ## API Surface
 
@@ -115,6 +115,7 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `GET, POST` `/api/behavior/insights`
 - `GET, POST` `/api/behavior/recorder`
 - `GET` `/api/behavior/samples`
+- `POST` `/api/behavior/samples/ingest`
 - `POST` `/api/behavior/simulate`
 - `GET, POST` `/api/behavior/suggestions`
 
@@ -145,9 +146,10 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `GET` `/api/code-sessions/manifests/[manifestId]`
 - `GET` `/api/code-sessions/memos`
 - `POST` `/api/code-sessions/memos/regenerate`
-- `GET` `/api/code-sessions/projects`
+- `DELETE, GET` `/api/code-sessions/projects`
+- `DELETE, GET` `/api/code-sessions/projects/[projectId]`
 - `GET` `/api/code-sessions/projects/[projectId]/sessions`
-- `GET` `/api/code-sessions/sessions/[sessionId]`
+- `DELETE, GET` `/api/code-sessions/sessions/[sessionId]`
 - `GET` `/api/code-sessions/sessions/[sessionId]/autopsy`
 - `GET` `/api/code-sessions/sessions/[sessionId]/insights`
 - `POST` `/api/code-sessions/sessions/[sessionId]/optimal-files/manifest`
@@ -204,6 +206,10 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `GET` `/api/drift/metrics`
 - `GET` `/api/drift/snapshots`
 - `GET` `/api/drift/stats`
+
+### `echo`
+
+- `GET, POST` `/api/echo`
 
 ### `evaluations`
 
@@ -395,6 +401,8 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 - `GET, POST` `/api/secrets`
 - `DELETE, PATCH` `/api/secrets/[id]`
+- `POST` `/api/secrets/[id]/value`
+- `GET` `/api/secrets/env`
 - `GET` `/api/secrets/rotation-due`
 
 ### `security`
@@ -411,6 +419,7 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 - `GET, POST` `/api/sessions`
 - `GET, PATCH` `/api/sessions/[sessionId]`
+- `GET` `/api/sessions/[sessionId]/actions`
 - `GET` `/api/sessions/[sessionId]/events`
 
 ### `settings`
@@ -495,9 +504,9 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 These must be set — DashClaw will fail to start without them.
 
-- **`DASHCLAW_API_KEY`** - referenced in 63 file(s)
-- **`DATABASE_URL`** - referenced in 93 file(s)
-- **`ENCRYPTION_KEY`** - referenced in 4 file(s)
+- **`DASHCLAW_API_KEY`** - referenced in 74 file(s)
+- **`DATABASE_URL`** - referenced in 96 file(s)
+- **`ENCRYPTION_KEY`** - referenced in 8 file(s)
 - **`NEXTAUTH_SECRET`** - referenced in 5 file(s)
 
 ## Optional Environment Variables
@@ -515,6 +524,8 @@ These have fallbacks or only activate specific features.
 - `API_SECRET` *(undocumented)*
 - `BASE_URL` *(undocumented)*
 - `CI` *(undocumented)*
+- `CLERK_SECRET_KEY` *(undocumented)*
+- `CLOUDFLARE_API_TOKEN` *(undocumented)*
 - `CONVERGENCE_BENCH_CONCURRENCY` *(undocumented)*
 - `CONVERGENCE_BENCH_ITERATIONS` *(undocumented)*
 - `CONVERGENCE_REPLAY_CONNECT_TIMEOUT_MS` *(undocumented)*
@@ -523,6 +534,12 @@ These have fallbacks or only activate specific features.
 - `CONVERGENCE_SSE_SEND_COUNT` *(undocumented)*
 - `CONVERGENCE_VERBOSE` *(undocumented)*
 - `CRON_SECRET` *(undocumented)*
+- `CUSTOM_GITHUB_TOKEN` *(undocumented)*
+- `CUSTOM_SENTRY_A_TOKEN` *(undocumented)*
+- `CUSTOM_SENTRY_B_TOKEN` *(undocumented)*
+- `CUSTOM_SENTRY_TOKEN` *(undocumented)*
+- `CUSTOM_STRIPE_TEST_KEY` *(undocumented)*
+- `CUSTOM_VERCEL_TOKEN` *(undocumented)*
 - `DASHCLAW_ACT_BINDING` *(undocumented)*
 - `DASHCLAW_ACT_BINDING_TYP` *(undocumented)*
 - `DASHCLAW_AGENT_ID` *(undocumented)*
@@ -530,6 +547,7 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_ALERTS_TELEGRAM` *(undocumented)*
 - `DASHCLAW_ALLOWED_ISSUER` *(undocumented)*
 - `DASHCLAW_API_KEY_ORG` *(undocumented)*
+- `DASHCLAW_AUDIT_MAX_ENTRIES` *(undocumented)*
 - `DASHCLAW_BASE_URL` *(undocumented)*
 - `DASHCLAW_BEHAVIOR_SAMPLES_DIR` *(undocumented)*
 - `DASHCLAW_BEHAVIOR_SAMPLES_ENABLED` *(undocumented)*
@@ -540,11 +558,18 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_GUARD_FALLBACK` *(undocumented)*
 - `DASHCLAW_GUARD_UNAVAILABLE_POLICY` *(undocumented)*
 - `DASHCLAW_HOSTED` *(undocumented)*
+- `DASHCLAW_HTTP_RETRIES` *(undocumented)*
+- `DASHCLAW_HTTP_RETRY_BASE_MS` *(undocumented)*
+- `DASHCLAW_HTTP_TIMEOUT_MS` *(undocumented)*
 - `DASHCLAW_JTI_MAX_TTL_SECONDS` *(undocumented)*
 - `DASHCLAW_JTI_REPLAY_PROTECTION` *(undocumented)*
 - `DASHCLAW_JWT_AUDIENCE` *(undocumented)*
 - `DASHCLAW_LOCAL_ADMIN_PASSWORD` *(undocumented)*
+- `DASHCLAW_LOCAL_HOME` *(undocumented)*
+- `DASHCLAW_LOCK_STALE_MS` *(undocumented)*
+- `DASHCLAW_LOG_STARTUP` *(undocumented)*
 - `DASHCLAW_MAX_ORG_ATTACHMENT_BYTES` *(undocumented)*
+- `DASHCLAW_MEMORY_MAX_ENTRIES` *(undocumented)*
 - `DASHCLAW_MODE` *(undocumented)*
 - `DASHCLAW_NEW_CONNECT_WEBHOOK` *(undocumented)*
 - `DASHCLAW_PAIRING_TTL_MINUTES` *(undocumented)*
@@ -552,6 +577,7 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_RATE_LIMIT_WINDOW_MS` *(undocumented)*
 - `DASHCLAW_SIGNING_KEY_JWK` *(undocumented)*
 - `DASHCLAW_SUPPRESS_LEGACY_WARNING` *(undocumented)*
+- `DASHCLAW_TIMEOUT_MS` *(undocumented)*
 - `DASHCLAW_URL` *(undocumented)*
 - `DISABLE_PROMPT_INJECTION_SCAN` *(undocumented)*
 - `DISCORD_APPROVER_ORG_ID` *(undocumented)*
@@ -576,6 +602,7 @@ These have fallbacks or only activate specific features.
 - `GUARD_LLM_MODEL` *(undocumented)*
 - `GUARD_WEBHOOK_SECRET` *(undocumented)*
 - `HOSTED_CLEANUP_SECRET` *(undocumented)*
+- `HOSTED_DATABASE_URL` *(undocumented)*
 - `HOSTED_MAX_ACTIVE_TRIALS` *(undocumented)*
 - `HOSTED_PROVISION_MAX_PER_IP_PER_DAY` *(undocumented)*
 - `HOSTED_SMOKE_BASE_URL` *(undocumented)*
@@ -583,6 +610,11 @@ These have fallbacks or only activate specific features.
 - `HOSTED_TRIAL_DAYS` *(undocumented)*
 - `INTEGRATION_DATABASE_URL` *(undocumented)*
 - `MOONSHOT_API_KEY` *(undocumented)*
+- `NAMECHEAP_API_KEY` *(undocumented)*
+- `NAMECHEAP_API_USER` *(undocumented)*
+- `NAMECHEAP_CLIENT_IP` *(undocumented)*
+- `NAMECHEAP_SANDBOX` *(undocumented)*
+- `NEON_API_KEY` *(undocumented)*
 - `NEXTAUTH_URL`
 - `NEXT_PUBLIC_` *(undocumented)*
 - `NEXT_PUBLIC_APP_URL` *(undocumented)*
@@ -604,10 +636,17 @@ These have fallbacks or only activate specific features.
 - `OPENAI_API_KEY` *(undocumented)*
 - `ORG_ID` *(undocumented)*
 - `PORT` *(undocumented)*
+- `POSTHOG_PERSONAL_API_KEY` *(undocumented)*
 - `PW_BASE_URL` *(undocumented)*
 - `PW_SMOKE_PORT` *(undocumented)*
 - `PYTHON` *(undocumented)*
 - `PYTHONPATH` *(undocumented)*
+- `QSTASH_CURRENT_SIGNING_KEY` *(undocumented)*
+- `QSTASH_NEXT_SIGNING_KEY` *(undocumented)*
+- `QSTASH_TOKEN` *(undocumented)*
+- `R2_ACCESS_KEY_ID` *(undocumented)*
+- `R2_SECRET_ACCESS_KEY` *(undocumented)*
+- `RAILWAY_TOKEN` *(undocumented)*
 - `REALTIME_BACKEND` *(undocumented)*
 - `REALTIME_ENFORCE_REDIS` *(undocumented)*
 - `REALTIME_MAX_LISTENERS` *(undocumented)*
@@ -620,16 +659,20 @@ These have fallbacks or only activate specific features.
 - `RESEARCH_API_URL` *(undocumented)*
 - `RESEND_API_KEY` *(undocumented)*
 - `S` *(undocumented)*
+- `SENTRY_AUTH_TOKEN` *(undocumented)*
 - `SERVICE_NAME` *(undocumented)*
 - `SQL_CAPTURE_FILE` *(undocumented)*
 - `STARTUP_SMOKE_BASE_URL` *(undocumented)*
 - `STARTUP_SMOKE_INTERVAL_MS` *(undocumented)*
 - `STARTUP_SMOKE_TIMEOUT_MS` *(undocumented)*
+- `STRIPE_LIVE_SECRET_KEY` *(undocumented)*
 - `STRIPE_PRICE_BUSINESS` *(undocumented)*
 - `STRIPE_PRICE_PRO` *(undocumented)*
 - `STRIPE_SECRET_KEY` *(undocumented)*
+- `STRIPE_TEST_SECRET_KEY` *(undocumented)*
 - `STRIPE_WEBHOOK_SECRET` *(undocumented)*
 - `STUB_FAIL_CREATES` *(undocumented)*
+- `SUPABASE_ACCESS_TOKEN` *(undocumented)*
 - `TARGET_ENV` *(undocumented)*
 - `TELEGRAM_ADMIN_CHAT_ID` *(undocumented)*
 - `TELEGRAM_APPROVER_ORG_ID` *(undocumented)*
@@ -638,17 +681,22 @@ These have fallbacks or only activate specific features.
 - `TEST_BASE_URL` *(undocumented)*
 - `TRUST_PROXY` *(undocumented)*
 - `TURNSTILE_SECRET_KEY` *(undocumented)*
+- `TWILIO_AUTH_TOKEN` *(undocumented)*
+- `UPSTASH_API_KEY` *(undocumented)*
+- `UPSTASH_EMAIL` *(undocumented)*
 - `UPSTASH_REDIS_REST_TOKEN` *(undocumented)*
 - `UPSTASH_REDIS_REST_URL` *(undocumented)*
 - `VERCEL` *(undocumented)*
 - `VERCEL_PROJECT_PRODUCTION_URL` *(undocumented)*
+- `VERCEL_TEAM_ID` *(undocumented)*
+- `VERCEL_TOKEN` *(undocumented)*
 - `VERCEL_URL` *(undocumented)*
 - `WEBHOOK_ALLOWED_DOMAINS` *(undocumented)*
 - `X` *(undocumented)*
 
 ## Database Tables
 
-All 93 tables defined in `schema/schema.js` (Drizzle ORM):
+All 97 tables defined in `schema/schema.js` (Drizzle ORM):
 
 - `action_embeddings`
 - `action_records`
@@ -663,6 +711,8 @@ All 93 tables defined in `schema/schema.js` (Drizzle ORM):
 - `api_keys`
 - `approval_notifications`
 - `assumptions`
+- `behavior_dismissals`
+- `behavior_samples`
 - `calendar_events`
 - `code_optimal_file_manifests`
 - `code_projects`
@@ -673,6 +723,8 @@ All 93 tables defined in `schema/schema.js` (Drizzle ORM):
 - `code_session_signals`
 - `code_session_tool_uses`
 - `code_sessions`
+- `compliance_exports`
+- `compliance_schedules`
 - `compliance_snapshots`
 - `contacts`
 - `content`
@@ -756,6 +808,7 @@ These are the `type` strings emitted through `fireWebhooksForOrg` and `deliverNa
 - `integration_mismatch`
 - `lost_confirmation`
 - `mcp_degraded`
+- `message`
 - `stale_action`
 - `test`
 

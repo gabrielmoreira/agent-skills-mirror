@@ -17,7 +17,8 @@ disable-model-invocation: false
 ## Procedure
 
 1. Run `global-skills-bootstrap` in `mode=init` for repository scaffolding.
-2. Classify repository type and risk profile using existing routing skills.
+2. **Provision canonical label taxonomy**: `node scripts/global/label-provision.js --repo=<owner/repo>`. This seeds all `type:*`, `status:*`, `priority:*`, `role:*`, `area:*`, `lane:*`, `resolution:*`, and governance labels required for the baton lifecycle. Manifest: `scripts/global/label-manifest.json` (Refs #2785).
+3. Classify repository type and risk profile using existing routing skills.
 3. Generate baseline repo instructions (`.github/copilot-instructions.md`) with build/test/gate truth.
 4. Add targeted `.github/instructions/*.instructions.md` files for stack-specific rules.
 5. Verify CI has minimum baseline: lint/test, dependency/security review, artifact/release checks.

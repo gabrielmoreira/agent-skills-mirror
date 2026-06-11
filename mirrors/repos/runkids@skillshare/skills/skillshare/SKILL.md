@@ -15,7 +15,7 @@ description: |
   `.agentignore` and `enable`/`disable` for per-agent toggles.
 argument-hint: "[command] [target] [--json] [--dry-run] [-p|-g]"
 metadata:
-  version: v0.20.9
+  version: v0.20.12
 ---
 
 # Skillshare CLI
@@ -42,7 +42,7 @@ skillshare install user/repo --track             # Enable `update` later
 skillshare install user/repo -b develop --all    # Install from branch
 skillshare install user/repo --track -b develop  # Track specific branch
 skillshare install user/repo -s pdf -p           # Install to project
-skillshare install                               # Reinstall all tracked remotes from config
+skillshare install                               # Rehydrate remote skills/tracked repos
 skillshare sync                                  # Always sync after install
 ```
 ### Extras (Rules, Commands, Prompts)

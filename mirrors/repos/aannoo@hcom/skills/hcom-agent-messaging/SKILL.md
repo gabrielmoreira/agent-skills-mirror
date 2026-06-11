@@ -110,7 +110,7 @@ hcom claude          # fresh start
 |---------|-----------|-----|
 | agent not in `hcom list` | agent stopped or never bound | relaunch or wait for binding |
 | message sent but not delivered | check `hcom events --last 5` | verify @mention matches agent name/tag |
-| wrong agent receives message | @mention ambiguity | use `@tag-` prefix for reliable routing |
+| message reaches more than one agent | duplicate base name across tags | target the full `@tag-name` to hit exactly one |
 | messages leaking between workflows | no thread isolation | always use `--thread` |
 
 ### intent system

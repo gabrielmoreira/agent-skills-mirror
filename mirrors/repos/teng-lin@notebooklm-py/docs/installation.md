@@ -233,7 +233,7 @@ pre-commit install
 
 **Why `uv sync --frozen` and not `uv pip install -e ".[all]"`:** the repo has a checked-in `uv.lock`. `uv sync --frozen` enforces the lockfile and fails fast on drift; `uv pip install` ignores the lockfile and re-resolves transitively (will silently get newer versions of `playwright`, `ruff`, etc.).
 
-**Why three extras and not `[all]`:** `[all]` is `pip` extras semantics. `uv sync --extra X` is the `uv` equivalent. The three extras here mirror the contents of `[all]` = `[browser, dev, markdown]`. `cookies` is intentionally excluded (`rookiepy` build issues on Python 3.13+); opt in via `--extra cookies` if needed.
+**Why three extras and not `[all]`:** `[all]` is `pip` extras semantics. `uv sync --extra X` is the `uv` equivalent. The three extras here are the contributor subset of `[all]` = `[browser, dev, markdown, mcp]`. `cookies` is intentionally excluded (`rookiepy` build issues on Python 3.13+) and `mcp` is omitted from the default contributor flow (the MCP server isn't needed for the standard test run); opt into either via `--extra cookies` / `--extra mcp` if needed.
 
 **Why `browser` is part of the contributor install:** the default local test suite includes unit tests that import and patch `playwright.sync_api`, even though they do not launch a real browser. `uv sync --frozen --extra dev` installs pytest/ruff/mypy but not Playwright, so `uv run pytest` will fail with `ModuleNotFoundError: No module named 'playwright'`. Use the full contributor command above before running the default test suite.
 
@@ -282,10 +282,81 @@ Source of truth: `pyproject.toml` `[project.optional-dependencies]`.
 | `browser` | `playwright>=1.40.0` | `notebooklm login` (interactive). | `pip install "notebooklm-py[browser]"` | `uv add "notebooklm-py[browser]"` |
 | `cookies` | `rookiepy>=0.1.0` | `notebooklm login --browser-cookies <browser>`, `notebooklm auth inspect`. | `pip install "notebooklm-py[cookies]"` | `uv add "notebooklm-py[cookies]"` |
 | `markdown` | `markdownify>=0.14.1` | `notebooklm source fulltext -f markdown`. | `pip install "notebooklm-py[markdown]"` | `uv add "notebooklm-py[markdown]"` |
+| `mcp` | `fastmcp>=2.14` | Run the MCP server (`notebooklm-mcp`) so an MCP client/agent can drive NotebookLM as tools. | `pip install "notebooklm-py[mcp]"` | `uv add "notebooklm-py[mcp]"` |
+| `server` | `fastapi`, `uvicorn[standard]`, `python-multipart` | The localhost REST API server (`notebooklm-server`, experimental). See [§ REST API server](#rest-api-server). | `pip install "notebooklm-py[server]"` | `uv add "notebooklm-py[server]"` |
 | `dev` | pytest stack, mypy, ruff (`==0.15.13` exact pin), pre-commit (`>=4.5.1`), vcrpy | Contributor tooling only. Not sufficient for this repo's default `uv run pytest`; add `browser` too because some unit tests import Playwright. | `pip install "notebooklm-py[dev]"` | `uv add "notebooklm-py[dev]"` (in your project) — but contributors *to this repo* use the [Persona E](#e-contributor) `uv sync` flow instead |
-| `all` | Resolves to `browser` + `dev` + `markdown` (**not `cookies`**) | Contributors who do not need `rookiepy`. | `pip install "notebooklm-py[all]"` | `uv add "notebooklm-py[all]"` (in your project) — see [All vs All-Extras](#all-vs-all-extras) |
+| `all` | Resolves to `browser` + `dev` + `markdown` + `mcp` + `server` (**not `cookies`**) | Contributors who do not need `rookiepy`. | `pip install "notebooklm-py[all]"` | `uv add "notebooklm-py[all]"` (in your project) — see [All vs All-Extras](#all-vs-all-extras) |
 
 > **Note on `uv` columns:** the `uv (in your project)` column is for users adding `notebooklm-py` as a dependency in **their own** project (requires a `pyproject.toml` in that project). Contributors working inside *this* repo use the Persona E flow (`uv sync --frozen --extra ...`), governed by this repo's `uv.lock`. Do not run `uv sync` outside a project — it errors with `No pyproject.toml found`.
+
+---
+
+## REST API server
+
+> **⚠️ Experimental.** Like the drafted MCP adapter, the REST server is experimental: the `/v1` surface and behavior may change in a minor release, and it is excluded from the public-API compatibility gate. Pin a version before relying on it for automation. The server also logs an experimental warning on every startup.
+
+A single-tenant, localhost REST API over the same transport-neutral core as the CLI — the natural shape for scripting and agent automation (feed a notebook, generate an artifact, pull it down) without spawning a CLI process per call.
+
+<!-- not mirrored: the server extra is end-user/automation tooling, not part of the contributor `uv sync` flow; CONTRIBUTING.md tracks only browser/dev/markdown. -->
+```bash
+pip install "notebooklm-py[server]"        # fastapi + uvicorn + python-multipart
+```
+
+**Prerequisite:** a provisioned account (`storage_state.json`) from `notebooklm login`. The server holds one account for the process; it does not run browser login itself.
+
+**Launch:**
+
+<!-- not mirrored: REST-server launch (end-user/automation tooling); CONTRIBUTING.md tracks only the contributor `uv sync` flow. -->
+```bash
+export NOTEBOOKLM_SERVER_TOKEN="$(openssl rand -hex 32)"   # REQUIRED — the server refuses to start without it
+notebooklm-server --host 127.0.0.1 --port 8000            # loopback-only by default
+```
+
+Configuration is read from `NOTEBOOKLM_SERVER_*` env vars (overridable by the matching flags):
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `NOTEBOOKLM_SERVER_TOKEN` | *(unset)* | Bearer token every request must present. **Required** — fail-closed if unset. |
+| `NOTEBOOKLM_SERVER_HOST` | `127.0.0.1` | Bind host. Non-loopback is refused unless the elevated-risk override below is set. |
+| `NOTEBOOKLM_SERVER_PORT` | `8000` | Bind port. |
+| `NOTEBOOKLM_SERVER_ALLOW_EXTERNAL_BIND` | *(unset)* | ⚠️ Set to `1` to bind a non-loopback interface. Only behind a trusted reverse proxy — this exposes account-fronting credentials to the network. |
+
+**Surface:** every route is under `/v1` and requires `Authorization: Bearer <token>` plus a loopback `Host` header (a DNS-rebinding guard). `/healthz` is the one public, token-less route. The auto-generated `/docs` / `/openapi.json` schema UI is disabled (it would otherwise be reachable token-less).
+
+<!-- not mirrored: REST-server curl examples (end-user/automation tooling); not part of the contributor install flow. -->
+```bash
+TOKEN=$NOTEBOOKLM_SERVER_TOKEN
+BASE=http://127.0.0.1:8000
+
+curl $BASE/healthz                                                    # {"ok": true}  (no token)
+curl -H "Authorization: Bearer $TOKEN" $BASE/v1/notebooks             # list notebooks
+curl -H "Authorization: Bearer $TOKEN" -d '{"title":"My NB"}' \
+     -H 'Content-Type: application/json' $BASE/v1/notebooks           # create
+curl -H "Authorization: Bearer $TOKEN" -d '{"url":"https://example.com"}' \
+     -H 'Content-Type: application/json' $BASE/v1/notebooks/<id>/sources/url
+curl -H "Authorization: Bearer $TOKEN" -d '{"question":"Summarize"}' \
+     -H 'Content-Type: application/json' $BASE/v1/notebooks/<id>/chat # blocking answer
+```
+
+Endpoints: `/v1/notebooks` (list/get/create/delete); `/v1/notebooks/{id}/sources` (list/get/add via `url`·`text`·`file`/delete); `/v1/notebooks/{id}/chat` (blocking ask, no streaming); `/v1/notebooks/{id}/artifacts` (list / generate / poll / download). Long-running work (source ingest, artifact generation) is **poll-the-resource**: the create call returns immediately and the matching `GET` reports `pending` until the resource is ready (`200`), `404` for an id the server never created, `409`/`410` for a failed/removed artifact.
+
+**Artifacts & uploads:**
+
+<!-- not mirrored: REST-server artifact/upload curl examples (end-user/automation tooling); not part of the contributor install flow. -->
+```bash
+# Generate (non-blocking → 202 + task_id). Omit source_ids to use ALL sources
+# (like the CLI); pass them to scope. Some types (quiz/flashcards) need >=1 source.
+curl -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+     -d '{"type":"quiz"}' $BASE/v1/notebooks/<id>/artifacts        # → {"task_id": ...}
+curl -H "Authorization: Bearer $TOKEN" $BASE/v1/notebooks/<id>/artifacts/<task_id>  # poll
+curl -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+     -d '{"type":"audio"}' $BASE/v1/notebooks/<id>/artifacts/download -o out.mp3     # download
+# File upload is multipart (the original filename + content-type are preserved):
+curl -H "Authorization: Bearer $TOKEN" -F 'file=@./notes.pdf' \
+     $BASE/v1/notebooks/<id>/sources/file
+```
+
+**Error envelope:** every failure is `{"error": {"category": "...", "message": "..."}}` with a category-derived HTTP status — `not_found`→404, `validation`→400/422, `auth`→401/403, `rate_limited`→429, `notebook_limit`→409, server/network→502, timeouts→504. The category is classified once by `_app.errors.classify`, shared with the CLI.
 
 ---
 
@@ -330,6 +401,22 @@ notebooklm skill install               # writes ~/.claude/skills/notebooklm/, ~/
 ```
 
 Optional — only needed if your agent harness reads from those directories and the skill isn't already present.
+
+### Running the MCP server (`mcp` extra)
+
+The MCP server ships behind the optional `mcp` extra (see the extras matrix above) and exposes the same `_app/` business logic over the Model Context Protocol.
+
+<!-- not mirrored: end-user MCP run/config pointer; out of scope for the contributor README -->
+```bash
+notebooklm-mcp                                         # installed console script (stdio transport)
+uvx --from "notebooklm-py[mcp]" notebooklm-mcp         # no install — run straight from PyPI
+```
+
+Wire it into an MCP client with either:
+- `notebooklm mcp install <client>` — auto-writes the server config for `claude-desktop`, `claude-code`, `cursor`, or `windsurf`; or
+- the one-click `.mcpb` desktop bundle built from `desktop-extension/` (Claude Desktop's "Install Extension").
+
+Full usage walkthrough (auth, transports, the 25 tools, workflows, troubleshooting): **[mcp-guide.md](mcp-guide.md)**.
 
 ---
 
@@ -395,7 +482,7 @@ rm -rf ~/.notebooklm                          # optional: remove auth state
 
 > ⚠️  **`pip install ".[all]"` and `uv sync --all-extras` are not equivalent.**
 >
-> - `pyproject.toml` defines: `all = ["notebooklm-py[browser,dev,markdown]"]` — a self-referential extras string that resolves to **browser + dev + markdown only**. It deliberately excludes `cookies` because `rookiepy` has install issues on Python 3.13+ ([CHANGELOG `[0.4.1]`](../CHANGELOG.md)).
+> - `pyproject.toml` defines: `all = ["notebooklm-py[browser,dev,markdown,mcp]"]` — a self-referential extras string that resolves to **browser + dev + markdown + mcp only**. It deliberately excludes `cookies` because `rookiepy` has install issues on Python 3.13+ ([CHANGELOG `[0.4.1]`](../CHANGELOG.md)).
 > - `uv sync --all-extras` installs **every** extra including `cookies`, and may fail on Python 3.13/3.14.
 > - In this repo, prefer `uv sync --frozen --extra browser --extra dev --extra markdown`.
 

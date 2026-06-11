@@ -40,7 +40,7 @@ p5.js 项目除了这个代码库外还包括了以下几个其他的代码库�
 
 # GitHub Issue 流程
 
-* 我们使用 [GitHub issue](https://github.com/processing/p5.js/issues) 跟踪已知的错误和预期的新功能。[Issue labels](./issue_labels.md) 用于将问题分类，例如[适合初学者](https://github.com/processing/p5.js/labels/level%3Abeginner)的问题。
+* 我们使用 [GitHub issue](https://github.com/processing/p5.js/issues) 跟踪已知的错误和预期的新功能。[Issue lables](./issue_labels.md) 用于将问题分类，例如[适合初学者](https://github.com/processing/p5.js/labels/level%3Abeginner)的问题。
 
 * 如果您想开始处理现有问题，请对你打算探查的问题发表评论，以便其他贡献者知道该问题正在处理中并可以提供帮助。
 

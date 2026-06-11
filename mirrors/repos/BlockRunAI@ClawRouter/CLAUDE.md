@@ -53,7 +53,7 @@ src/
 - TypeScript strict mode, ESM
 - Build with tsup, test with vitest
 - Lint with eslint, format with prettier
-- Node >= 20
+- Node >= 22
 - MIT license
 - npm registry: `@blockrun/clawrouter`
 - 15-dimension scoring for model routing (all local, < 1ms)

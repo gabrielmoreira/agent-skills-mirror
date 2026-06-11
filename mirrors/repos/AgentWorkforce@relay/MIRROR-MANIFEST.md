@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AgentWorkforce/relay` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
+Mirror of `AgentWorkforce/relay` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AgentWorkforce/relay` — 26 default patterns, 0 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 30 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -88,7 +88,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 27 | ✓ | [`GEMINI.md`](GEMINI.md) |
 | 28 | ✓ | [`plugins/codex-relay-skill/SKILL.md`](plugins/codex-relay-skill/SKILL.md) |
 | 29 | ✓ | [`plugins/gemini-relay-extension/GEMINI.md`](plugins/gemini-relay-extension/GEMINI.md) |
-| 30 | ✓ | [`web/content/openclaw/SKILL.md`](web/content/openclaw/SKILL.md) |
+| 30 | ✓ | [`web/app/llms.txt/route.ts`](web/app/llms.txt/route.ts) |
+| 31 | ✓ | [`web/content/agent-relay/SKILL.md`](web/content/agent-relay/SKILL.md) |
+| 32 | ✓ | [`web/content/openclaw/SKILL.md`](web/content/openclaw/SKILL.md) |
 
 ---
 

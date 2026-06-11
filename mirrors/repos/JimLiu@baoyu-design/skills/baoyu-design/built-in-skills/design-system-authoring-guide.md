@@ -12,7 +12,7 @@ You are authoring the design system itself, not consuming one. Design systems ar
 
 ### Compiler & checker (portable)
 
-There is **no background compiler** in this harness. `_ds_bundle.js`, `_ds_manifest.json`, and `_adherence.oxlintrc.json` are **generated artifacts** — never hand-edit them. After you edit components, tokens, or cards, (re)generate them yourself by running the compiler (a plain shell call, identical on Claude Code / Cursor / Codex):
+There is **no background compiler** in this harness. `_ds_bundle.js`, `_ds_manifest.json`, `_adherence.oxlintrc.json`, and `preview.html` are **generated artifacts** — never hand-edit them. After you edit components, tokens, or cards, (re)generate them yourself by running the compiler (a plain shell call, identical on Claude Code / Cursor / Codex):
 
 ```
 node <skill>/agents/compile-design-system.mjs designs/<project>
@@ -27,6 +27,14 @@ node <skill>/agents/check-design-system.mjs designs/<project>
 ```
 
 To run it as an isolated read-only subagent (recommended after a batch of edits), launch it with the prompt at [`../agents/design-system-checker.md`](../agents/design-system-checker.md) — see your harness reference (`references/<harness>.md`) for the exact launch tool (Claude → `Agent`; Cursor → `Task`; Codex → inline). Fix what it reports, recompile, and run again until clean. Wherever older instructions said "call `check_design_system`", they mean: recompile, then run this checker.
+
+Once compiler + checker are clean, **build the single-file review page** — it compiles every `@dsCard` card, the Readme, and the starting points into one self-contained interactive `preview.html` in the design-system folder (open it directly in a browser to review everything at once):
+
+```
+node <skill>/agents/build-preview.mjs designs/<project>
+```
+
+Re-run it after any later edit, like the compiler — full doc in [`design-system-preview.md`](design-system-preview.md).
 
 **Namespace.** Compiled components are exposed on `window.<Namespace>` (e.g. `const { Button } = window.AcmeDesignSystem_a1b2c3`). The compiler derives `PascalCase(<project>)_<6hex>` on first compile and **persists it** — on recompile it reads the existing namespace from `_ds_manifest.json` (or the `/* @ds-bundle */` header), so it never changes under you. Get the exact value from `_ds_manifest.json` or by running the checker; cards reference it in their inline scripts.
 
@@ -55,7 +63,7 @@ Nothing is pre-loaded — read only what you need.
   - **Clone into a scratch location OUTSIDE the design-system folder** (e.g. `/tmp/ds-sources/<repo>` or `designs/_sources/<repo>`): the compiler scans the entire project folder, so a clone inside it would pollute token/component discovery and ship into the consumer bundle.
   - **If a repo is private or unreachable**, check `gh auth status`; **stop and ask the user** to authenticate (`gh auth login`), fix access, or supply a local clone path — do not build a half-blind design system.
   - When creating your `readme.md`, reference the URLs of the GitHub projects you used as input, and suggest to the reader that they can explore these repositories further to do a better job of building designs based on this product.
-- **Figma**: use the harness's Figma MCP if present — `get-design-context` to understand the design system and components, and expand variables/child components for their real values (`get_variable_defs`). If no Figma MCP is available, ask the user to export the frames/variables you need. A Figma link you can't open is a blocker — stop and ask the user to fix access.
+- **Figma**: use the harness's Figma MCP if present — `get-design-context` to understand the design system and components, and expand variables/child components for their real values (`get_variable_defs`). If no Figma MCP is available, ask the user to export the frames/variables you need. A Figma link you can't open is a blocker — stop and ask the user to fix access. **If the user has (or can export: File → Save local copy…) a local `.fig` file, prefer [import-from-figma.md](import-from-figma.md)** — it decodes offline and can emit the full component/token set directly, no MCP or account needed.
 - **Slide decks**: read them with the harness's file/image tools, extract key assets + text, and write them to disk.
 
 CRITICAL: do not recreate UIs from screenshots alone unless you have no other choice. The codebase or Figma design context is the source of truth; screenshots are lossy — use them as a high-level guide but always find the real components in code/Figma if you can.
@@ -81,6 +89,7 @@ To begin, create a todo list with the tasks below, then follow it:
 - **Update `readme.md` with a short "index"** pointing the reader to the other files available — a manifest of the root folder, plus a list of components, UI kits, etc.
 - **Create the `SKILL.md` file** (template below).
 - **Compile, run the checker until clean,** then preview a card or two over HTTP to confirm components render with no console errors (see your harness reference for preview tools).
+- **Build `preview.html`** as the last step — `node <skill>/agents/build-preview.mjs designs/<project>` compiles the whole system (Readme + every card) into one self-contained interactive `designs/<project>/preview.html`. Open/screenshot it to confirm cards mount with no `[ds-preview]` console errors, and point the user at it as the one file to review. See [`design-system-preview.md`](design-system-preview.md).
 - **You are done!** The Design System tab shows every registered card. Do NOT summarize your output; just mention CAVEATS (things you couldn't do or are unsure about) and end with a CLEAR, BOLD ASK for the user to help you ITERATE toward perfect.
 
 ## Foundation cards

@@ -38,7 +38,7 @@ Les documents de travail bruts (prompts Perplexity, audits clients) restent dans
 | Ressource | Score Initial | Score Final | Décision | Fichier |
 |-----------|---------------|-------------|----------|---------|
 | **Anthropic Releases** (Jan 16-23, 2026) | - | - | ✅ Suivi régulier | [anthropic-releases-jan16-23-2026.md](./anthropic-releases-jan16-23-2026.md) |
-| **Caliber** (rely-ai-org/caliber) | 3/5 | 3/5 | ✅ Intégré — Configuration Quality | [caliber-config-quality-tool.md](./caliber-config-quality-tool.md) |
+| **Caliber** (rely-ai-org/caliber) | 3/5 | 3/5 | ✅ Intégré: Configuration Quality | [caliber-config-quality-tool.md](./caliber-config-quality-tool.md) |
 | **AST-grep** (Flavien Métivier) | 3/5 | **4/5** | ✅ Intégrer workflow | [astgrep-flavien-metivier.md](./astgrep-flavien-metivier.md) |
 | **MCP Apps** (SEP-1865) | 3/5 | **4/5** | ✅ Intégré (architecture + guide) | [mcp-apps-announcement.md](./mcp-apps-announcement.md) |
 | **Boris Cherny** (Cowork Video) | 4/5 | **4/5** | ✅ Intégré (mental models) | [boris-cowork-video-eval.md](./boris-cowork-video-eval.md) |
@@ -72,7 +72,9 @@ Les documents de travail bruts (prompts Perplexity, audits clients) restent dans
 | **qmd Token Savings** (Simone Ruggiero, Medium) | 2/5 | **2/5** | ❌ Ne pas intégrer (redundant avec grepai, claims non vérifiables) | [2026-02-14-simone-ruggiero-qmd-token-savings-medium.md](./2026-02-14-simone-ruggiero-qmd-token-savings-medium.md) |
 | **Rippletide** (AI Reliability Platform) | 2/5 | **2/5** | ⚠️ Watch only (MCP server tiers, claims non vérifiables, pas de traction) | [072-rippletide-ai-reliability-platform.md](./072-rippletide-ai-reliability-platform.md) |
 | **Community Signals & Benchmark** (March 2026 synthesis) | 4/5 | **3/5** | ✅ No integration (all gaps already covered; 2 factual errors detected) | [community-signals-benchmark-march-2026.md](./community-signals-benchmark-march-2026.md) |
-| **context-evaluator** (PackmindHub/context-evaluator) | 4/5 | **4/5** | ✅ Integrated — third-party-tools.md + 2 patterns in skill-design-patterns.md | [context-evaluator-evaluation.md](./context-evaluator-evaluation.md) |
+| **context-evaluator** (PackmindHub/context-evaluator) | 4/5 | **4/5** | ✅ Integrated: third-party-tools.md + 2 patterns in skill-design-patterns.md | [context-evaluator-evaluation.md](./context-evaluator-evaluation.md) |
+| **liza-mas CLI Tools** (scip-search, mdtoc, functional-clusters, stacklit-cli) | 1-2/5 | **1-2/5** | ❌ Reject (3 tools) / ⚠️ Watch only (stacklit-cli, one-line note) | [liza-mas-token-saving-cli-tools.md](./liza-mas-token-saving-cli-tools.md) |
+| **Semble** (MinishLab/semble) | 3/5 | **3/5** | ✅ Integrated: mcp-servers-ecosystem.md Code Search section | [semble-code-search.md](./semble-code-search.md) |
 
 ## Watch List
 

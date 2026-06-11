@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires a POSIX shell or PowerShell, Python 3 for session-catchup, and read/write access to the workspace. See Kiro Agent Skills — https://kiro.dev/docs/skills/
 allowed-tools: shell read write
 metadata:
-  version: "2.43.0-kiro"
+  version: "3.0.0-kiro"
   integration: kiro
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `modu-ai/moai-adk` — 26 default patterns, 1 followed patterns, 147 file(s) materialized.
+Mirror of `modu-ai/moai-adk` — 26 default patterns, 0 followed patterns, 146 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `modu-ai/moai-adk` — 26 default patterns, 1 followed patterns, 147 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 147 |
+| Followed pats | 0 |
+| Files         | 146 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `modu-ai/moai-adk` — 26 default patterns, 1 followed patterns, 147 f
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `.moai/specs/SPEC-AGENCY-ABSORB-001/spec.md`
+_None._
 
 ## File Index
 
@@ -205,7 +205,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 144 | ✓ | [`internal/template/templates/.claude/skills/moai/references/reference.md`](internal/template/templates/.claude/skills/moai/references/reference.md) |
 | 145 | ✓ | [`internal/template/templates/.claude/skills/moai/SKILL.md`](internal/template/templates/.claude/skills/moai/SKILL.md) |
 | 146 | ✓ | [`internal/template/templates/CLAUDE.md`](internal/template/templates/CLAUDE.md) |
-| 147 | → | [`.moai/specs/SPEC-AGENCY-ABSORB-001/spec.md`](.moai/specs/SPEC-AGENCY-ABSORB-001/spec.md) |
 
 ---
 

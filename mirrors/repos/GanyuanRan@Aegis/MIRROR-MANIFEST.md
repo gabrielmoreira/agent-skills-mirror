@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `GanyuanRan/Aegis` — 26 default patterns, 0 followed patterns, 58 file(s) materialized.
+Mirror of `GanyuanRan/Aegis` — 26 default patterns, 0 followed patterns, 59 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `GanyuanRan/Aegis` — 26 default patterns, 0 followed patterns, 58 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 58 |
+| Files         | 59 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -102,21 +102,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 41 | ✓ | [`skills/update-aegis/SKILL.md`](skills/update-aegis/SKILL.md) |
 | 42 | ✓ | [`skills/using-aegis/references/antigravity-tools.md`](skills/using-aegis/references/antigravity-tools.md) |
 | 43 | ✓ | [`skills/using-aegis/references/codex-tools.md`](skills/using-aegis/references/codex-tools.md) |
-| 44 | ✓ | [`skills/using-aegis/references/copilot-tools.md`](skills/using-aegis/references/copilot-tools.md) |
-| 45 | ✓ | [`skills/using-aegis/references/gemini-tools.md`](skills/using-aegis/references/gemini-tools.md) |
-| 46 | ✓ | [`skills/using-aegis/references/skill-discipline.md`](skills/using-aegis/references/skill-discipline.md) |
-| 47 | ✓ | [`skills/using-aegis/SKILL.md`](skills/using-aegis/SKILL.md) |
-| 48 | ✓ | [`skills/using-git-worktrees/SKILL.md`](skills/using-git-worktrees/SKILL.md) |
-| 49 | ✓ | [`skills/verification-before-completion/SKILL.md`](skills/verification-before-completion/SKILL.md) |
-| 50 | ✓ | [`skills/writing-plans/plan-document-reviewer-prompt.md`](skills/writing-plans/plan-document-reviewer-prompt.md) |
-| 51 | ✓ | [`skills/writing-plans/SKILL.md`](skills/writing-plans/SKILL.md) |
-| 52 | ✓ | [`skills/writing-skills/anthropic-best-practices.md`](skills/writing-skills/anthropic-best-practices.md) |
-| 53 | ✓ | [`skills/writing-skills/examples/CLAUDE_MD_TESTING.md`](skills/writing-skills/examples/CLAUDE_MD_TESTING.md) |
-| 54 | ✓ | [`skills/writing-skills/graphviz-conventions.dot`](skills/writing-skills/graphviz-conventions.dot) |
-| 55 | ✓ | [`skills/writing-skills/persuasion-principles.md`](skills/writing-skills/persuasion-principles.md) |
-| 56 | ✓ | [`skills/writing-skills/render-graphs.js`](skills/writing-skills/render-graphs.js) |
-| 57 | ✓ | [`skills/writing-skills/SKILL.md`](skills/writing-skills/SKILL.md) |
-| 58 | ✓ | [`skills/writing-skills/testing-skills-with-subagents.md`](skills/writing-skills/testing-skills-with-subagents.md) |
+| 44 | ✓ | [`skills/using-aegis/references/complexity-governance.md`](skills/using-aegis/references/complexity-governance.md) |
+| 45 | ✓ | [`skills/using-aegis/references/copilot-tools.md`](skills/using-aegis/references/copilot-tools.md) |
+| 46 | ✓ | [`skills/using-aegis/references/gemini-tools.md`](skills/using-aegis/references/gemini-tools.md) |
+| 47 | ✓ | [`skills/using-aegis/references/skill-discipline.md`](skills/using-aegis/references/skill-discipline.md) |
+| 48 | ✓ | [`skills/using-aegis/SKILL.md`](skills/using-aegis/SKILL.md) |
+| 49 | ✓ | [`skills/using-git-worktrees/SKILL.md`](skills/using-git-worktrees/SKILL.md) |
+| 50 | ✓ | [`skills/verification-before-completion/SKILL.md`](skills/verification-before-completion/SKILL.md) |
+| 51 | ✓ | [`skills/writing-plans/plan-document-reviewer-prompt.md`](skills/writing-plans/plan-document-reviewer-prompt.md) |
+| 52 | ✓ | [`skills/writing-plans/SKILL.md`](skills/writing-plans/SKILL.md) |
+| 53 | ✓ | [`skills/writing-skills/anthropic-best-practices.md`](skills/writing-skills/anthropic-best-practices.md) |
+| 54 | ✓ | [`skills/writing-skills/examples/CLAUDE_MD_TESTING.md`](skills/writing-skills/examples/CLAUDE_MD_TESTING.md) |
+| 55 | ✓ | [`skills/writing-skills/graphviz-conventions.dot`](skills/writing-skills/graphviz-conventions.dot) |
+| 56 | ✓ | [`skills/writing-skills/persuasion-principles.md`](skills/writing-skills/persuasion-principles.md) |
+| 57 | ✓ | [`skills/writing-skills/render-graphs.js`](skills/writing-skills/render-graphs.js) |
+| 58 | ✓ | [`skills/writing-skills/SKILL.md`](skills/writing-skills/SKILL.md) |
+| 59 | ✓ | [`skills/writing-skills/testing-skills-with-subagents.md`](skills/writing-skills/testing-skills-with-subagents.md) |
 
 ---
 

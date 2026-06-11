@@ -228,27 +228,6 @@
 
 ---
 
-### [`kb-retriever`](./skills/kb-retriever)
-
-![Kb Retriever Skill](https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/kb-retriever-skill.webp)
-
-**类别：** 检索 / 本地知识库  
-**适合：** 从本地 `knowledge/` 目录回答问题，检索结构化文档，并在不撑爆上下文的前提下从 Markdown、文本、PDF、Excel 中提取证据。
-
-`kb-retriever` 是一个本地知识库检索 Skill，核心是谨慎、渐进、可溯源。它不会直接加载整文件，而是先走分层索引，缩小候选范围，按文件类型正确处理，再带来源回答问题。
-
-亮点：
-
-- 通过分层 `data_structure.md` 文件先导航知识库，再进入内容检索
-- 对 PDF 和 Excel 强制执行 **先学习再处理**，必须先阅读内置 reference 文档
-- 组合关键词检索、局部窗口读取、同义词扩展和多轮迭代
-- 最多 5 轮检索，让探索过程有边界
-- 内置 `grep`、`pdftotext`、`pdfplumber`、`pandas` 工作流，并强调答案来源
-
-链接：[README](./skills/kb-retriever/README.zh-CN.md) · [SKILL.md](./skills/kb-retriever/SKILL.md) · <!-- DOWNLOAD:kb-retriever:start -->[下载 v1.0.1 .zip](https://github.com/ConardLi/garden-skills/releases/download/kb-retriever-v1.0.1/kb-retriever-1.0.1.zip)<!-- DOWNLOAD:kb-retriever:end -->
-
----
-
 ### [`beautiful-article`](./skills/beautiful-article)
 
 ![Beautiful Article Skill](https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/article/banner.webp)
@@ -261,7 +240,7 @@
 亮点：
 
 - **首先是一篇文章** —— 注意力永远在"文章"本身：更好的阅读、更好的节奏、更好的美学。交付物是一份自包含的文件（HTML，可选 PDF），但那是交付细节、不是目标
-- **Reacticle 组件协议** —— prose-first 的语义组件（Hero / Lead / Section / Quote / Callout / Image / Formula / CodeBlock / Table…）+ 仅允许主题 token 的 `Raw` 自由层
+- **Reacticle 组件协议** —— prose-first 的语义组件（Hero / Lead / Section / Quote / Callout / Image / Formula / CodeBlock / Table…）+ 仅允许主题 token 的 `Raw` 自由层；底层 React 组件库见 [`ConardLi/reacticle`](https://github.com/ConardLi/reacticle)
 - **10 种文章类型 + 推荐保留比例打包** —— `longform · ~100%` / `tutorial · ~90%` / `full-report · ~80%` / `explainer · ~80%` / `dialogue · ~80%` / `review · ~70%` / `essay · ~70%` / `briefing · ~50%` / `visual-essay · ~40%` / `interactive-explainer · ~25% 摘录 + 75% AI 重构`
 - **11 套主题 authoring profile**（`tufte`、`press`、`bayer`、`bodoni`、`vignelli`、`sottsass`、`freddie`、`andy`、`fuller`、`knuth`、`shannon`）—— 每套是给 Agent 看的 Markdown 契约，不是 CSS 文件
 - **硬协作 checkpoint**，每项决策独立确认（禁止静默替用户选择），自带 3:4 书封封面、TOC 默认开、目标语言地道翻译
@@ -287,6 +266,29 @@
 链接：[README](./skills/beautiful-article/README.zh-CN.md) · [SKILL.md](./skills/beautiful-article/SKILL.md) · <!-- DOWNLOAD:beautiful-article:start -->[下载 v0.1.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/beautiful-article-v0.1.0/beautiful-article-0.1.0.zip)<!-- DOWNLOAD:beautiful-article:end -->
 
 ---
+
+
+### [`kb-retriever`](./skills/kb-retriever)
+
+![Kb Retriever Skill](https://cdn.jsdelivr.net/gh/ConardLi/assets@main/imgs/kb-retriever-skill.webp)
+
+**类别：** 检索 / 本地知识库  
+**适合：** 从本地 `knowledge/` 目录回答问题，检索结构化文档，并在不撑爆上下文的前提下从 Markdown、文本、PDF、Excel 中提取证据。
+
+`kb-retriever` 是一个本地知识库检索 Skill，核心是谨慎、渐进、可溯源。它不会直接加载整文件，而是先走分层索引，缩小候选范围，按文件类型正确处理，再带来源回答问题。
+
+亮点：
+
+- 通过分层 `data_structure.md` 文件先导航知识库，再进入内容检索
+- 对 PDF 和 Excel 强制执行 **先学习再处理**，必须先阅读内置 reference 文档
+- 组合关键词检索、局部窗口读取、同义词扩展和多轮迭代
+- 最多 5 轮检索，让探索过程有边界
+- 内置 `grep`、`pdftotext`、`pdfplumber`、`pandas` 工作流，并强调答案来源
+
+链接：[README](./skills/kb-retriever/README.zh-CN.md) · [SKILL.md](./skills/kb-retriever/SKILL.md) · <!-- DOWNLOAD:kb-retriever:start -->[下载 v1.0.1 .zip](https://github.com/ConardLi/garden-skills/releases/download/kb-retriever-v1.0.1/kb-retriever-1.0.1.zip)<!-- DOWNLOAD:kb-retriever:end -->
+
+---
+
 
 ## 安装
 
@@ -496,6 +498,21 @@ npm run validate  # 跑一遍和 PR CI 完全一样的检查
 - **[Anthropic](https://www.anthropic.com)** —— [Agent Skills 规范](https://agentskills.io) 和 [`anthropics/skills`](https://github.com/anthropics/skills) 参考仓库。
 - **[Claude Design](https://www.anthropic.com/news/claude-design-anthropic-labs)** —— `web-design-engineer` 的灵感来源，原系统提示词保留在 [`dist/prompt/claude-design-system-prompt.md`](./dist/prompt/claude-design-system-prompt.md) 供参考。
 - 更广义的 OSS Skill 社区——延伸阅读：[`travisvn/awesome-claude-skills`](https://github.com/travisvn/awesome-claude-skills) 和 [`obra/superpowers`](https://github.com/obra/superpowers)。
+
+---
+
+## Connect
+
+| 平台 | 账号名称 | 链接 |
+| --- | --- | --- |
+| X/Twitter | code秘密花园 | https://x.com/GardenConardLi  |
+| B 站 | code秘密花园 | https://space.bilibili.com/474921808 |
+| 抖音 | code秘密花园 | https://v.douyin.com/i5b33Xfv/ |
+| YouTube | code秘密花园 | https://www.youtube.com/@garden-conard |
+| 小红书 | code秘密花园 | https://www.xiaohongshu.com/user/profile/5af45e78f7e8b903d6e04618 |
+| 公众号 | code秘密花园 | https://cdn.jsdelivr.net/gh/ConardLi/easy-dataset@main/public/imgs/weichat.jpg |
+| GitHub | ConardLi | https://github.com/ConardLi |
+| 个人网站 | Easy AI | https://mmh1.top |
 
 ---
 

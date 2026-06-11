@@ -40,6 +40,29 @@ NOT a replacement for `wiki-capture` (promotes directly to a final wiki page) or
    - `OBSIDIAN_RAW_DIR` (default: `$OBSIDIAN_VAULT_PATH/_raw`)
 2. Ensure `$OBSIDIAN_RAW_DIR` exists. If not, create it.
 
+## Step 0: Gate Evaluation — KEEP or SKIP?
+
+Before extracting anything, make a quick judgment about whether this session has capture value.
+This gate makes the skill safe to call automatically (e.g. from a Stop hook) without spamming
+`_raw/` with noise from routine or inconclusive sessions.
+
+**SKIP** — exit immediately with "Nothing worth capturing in this session." if ALL of the
+following are true:
+- The conversation is purely conversational (planning, Q&A, explanations) with no implementation
+- No error messages, debugging steps, or problem-solving exchanges are visible
+- No surprising or undocumented behavior was encountered
+- Every finding is already obvious from the official docs
+
+**KEEP** — proceed to Step 1 if ANY of the following are true:
+- A fix was applied or a workaround discovered through investigation
+- Non-obvious library/API/framework behavior was discussed and confirmed (e.g. an edge case,
+  an undocumented constraint, a gotcha that cost time)
+- A debugging session reached a concrete conclusion
+- A reusable pattern or technique emerged that isn't obvious from first principles
+
+When invoked automatically via the Stop hook, err toward SKIP — only KEEP if the evidence is
+clear. When invoked manually by the user, err toward KEEP — they called it for a reason.
+
 ## Step 1: Scan the Conversation for Findings
 
 Extract **reusable technical knowledge** — things worth having in 3 months with no memory of

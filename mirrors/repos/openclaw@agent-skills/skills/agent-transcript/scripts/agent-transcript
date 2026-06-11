@@ -58,6 +58,23 @@ function homePath(...parts) {
   return path.join(os.homedir(), ...parts);
 }
 
+function uniquePaths(paths) {
+  const seen = new Set();
+  const out = [];
+  for (const candidate of paths) {
+    const resolved = path.resolve(candidate);
+    if (seen.has(resolved)) continue;
+    seen.add(resolved);
+    out.push(resolved);
+  }
+  return out;
+}
+
+function isPathInside(file, root) {
+  const relative = path.relative(path.resolve(root), path.resolve(file));
+  return relative === "" || (relative && !relative.startsWith("..") && !path.isAbsolute(relative));
+}
+
 function openClawSessionRoots() {
   const stateDir = process.env.OPENCLAW_STATE_DIR || homePath(".openclaw");
   const agentsDir = path.join(stateDir, "agents");
@@ -81,10 +98,18 @@ function openClawSessionRoots() {
   }
 }
 
+function claudeProjectRoots() {
+  const roots = [];
+  const configDir = process.env.CLAUDE_CONFIG_DIR;
+  if (configDir) roots.push(path.join(path.resolve(configDir), "projects"));
+  roots.push(homePath(".claude", "projects"));
+  return uniquePaths(roots);
+}
+
 function defaultRoots() {
   return [
     homePath(".codex", "sessions"),
-    homePath(".claude", "projects"),
+    ...claudeProjectRoots(),
     homePath(".pi", "agent", "sessions"),
     ...openClawSessionRoots(),
   ];
@@ -145,7 +170,7 @@ function stringContent(value) {
 
 function detectAgent(file, rows) {
   if (file.includes(`${path.sep}.codex${path.sep}`)) return "codex";
-  if (file.includes(`${path.sep}.claude${path.sep}`)) return "claude";
+  if (claudeProjectRoots().some((root) => isPathInside(file, root))) return "claude";
   if (file.includes(`${path.sep}.pi${path.sep}`)) return "pi";
   if (
     file.includes(`${path.sep}.openclaw${path.sep}`) ||

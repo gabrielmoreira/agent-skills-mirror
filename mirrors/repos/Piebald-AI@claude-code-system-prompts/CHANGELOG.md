@@ -4,6 +4,38 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.172](https://github.com/Piebald-AI/claude-code-system-prompts/commit/94e0b89)
+
+_+23,890 tokens_
+
+- **NEW:** Data: Design sync sync hashes module — Adds bundled hashing helpers that keep package builds, captures, preview rebuilds, remote diffs, sidecars, and grade carry-forward aligned on shared source, render, style, and grade hash recipes.
+- **NEW:** Data: Managed Agents scheduled deployments — Adds Managed Agents scheduled-deployment documentation for recurring cron schedules, deployment creation, deployment runs, failure behavior, lifecycle operations, jitter, manual runs, and cron/timezone semantics.
+- **NEW:** System Prompt: Claude Fable 5 model identity — Identifies Claude Fable 5 as the current model, explains its relationship to Claude Mythos 5, and directs users to Anthropic's Fable/Mythos announcement for differences.
+- **NEW:** Tool Description: Artifact — Adds an Artifact tool for deploying self-contained HTML or Markdown pages, with file-first usage, same-path redeploy behavior, URL-based updates for existing artifacts, CSP constraints, responsive-design requirements, and favicon guidance.
+- **NEW:** Tool Description: Cowork onboarding role picker — Adds a Cowork onboarding role-picker tool for collecting a selected or typed job role during role-based plugin setup.
+- **REMOVED:** Data: Design sync package preview source generator — Removes the older package-shape preview wrapper generator now superseded by the expanded Design sync build and preview pipeline guidance.
+- Agent Prompt: Managed Agents onboarding flow — Reworks onboarding around a describe -> agent -> environment -> session flow, value-before-credentials setup, credential flagging and collection, environment choices, smoke tests, and scheduled-deployment follow-up.
+- Agent Prompt: Security monitor for autonomous agent actions (first part) — Replaces classify-result tool reporting with explicit XML `<block>` output requirements and narrows intent-resistant language to hard rules rather than permission machinery broadly.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Expands auto-mode classification rules with more detailed handling for user intent, unverified destinations, destructive or shared-resource actions, production access, unsafe agent creation, security weakening, self-modification, and bypass-like controls.
+- Data: Claude model catalog — Updates the model reference from Fable-only positioning toward the Claude 5 family, including Claude Mythos 5 context and adjusted Claude 5 model guidance.
+- Data: Design sync story imports module — Extends Storybook import-resolution support for split files, default exports, composed stories, external meta objects, configured shims, and fallback behavior.
+- Data: HTTP error codes reference — Expands Fable 5 error guidance for unsupported parameters, disabled thinking, adaptive thinking, and migration-related 400 responses.
+- Data: Live documentation sources — Adds current Claude 5, Fable/Mythos, model migration, and related documentation references.
+- Data: Managed Agents client patterns — Updates Managed Agents client guidance with additional sandbox, vault, and runtime setup patterns.
+- Data: Managed Agents core concepts — Refreshes Managed Agents core terminology and configuration guidance while preserving the agent/environment/session model.
+- Data: Managed Agents endpoint reference — Adds Managed Agents deployment and deployment-run API coverage, including scheduled deployments, cron schedules, lifecycle operations, manual runs, and run inspection.
+- Data: Managed Agents events and steering — Expands event-stream and steering guidance for session lifecycle, event handling, tool activity, and intervention patterns.
+- Data: Managed Agents overview — Adds scheduled deployments to the Managed Agents overview and clarifies how recurring autonomous sessions fit with agents, environments, sessions, and vaults.
+- Data: Managed Agents self-hosted sandboxes — Refines self-hosted sandbox guidance for environment setup, worker responsibilities, and managed-agent integration expectations.
+- Data: Managed Agents tools and skills — Expands tool, skill, filesystem, vault, sandbox, and environment guidance for configuring Managed Agents.
+- Skill: Building LLM-powered applications with Claude — Adds Claude 5/Fable/Mythos migration context, scheduled Managed Agents deployment guidance, authentication references, and updated application-building patterns.
+- Skill: Design sync — Greatly expands the Design sync workflow with source-shape selection, stable hash contracts, remote diffing, grade carry-forward, artifact churn detection, verification expectations, and upload planning.
+- Skill: /design-sync package source shape — Expands package-shape Design sync guidance for preview generation, hash-based grading, remote sidecar diffs, targeted rebuilds, upload partitioning, and verification.
+- Skill: Design sync Storybook source shape — Expands Storybook Design sync guidance for hash-stable story imports, source-key grading, rebuild and upload behavior, remote diffs, and verification workflows.
+- Skill: Model migration guide — Adds Claude Fable 5 and Claude Mythos 5 migration guidance, including protected thinking, tokenizer, refusal, data-retention, beta-header, prefill, effort, and verification considerations.
+- System Prompt: Chrome browser MCP tools — Changes deferred Chrome tool-loading guidance to batch the core browser tools and obvious task-specific tools into a single ToolSearch call.
+- System Prompt: Claude in Chrome browser automation — Adds deferred-tool loading instructions that batch core Chrome automation tools and task-specific tools before browser work.
+
 # [2.1.170](https://github.com/Piebald-AI/claude-code-system-prompts/commit/7eea5bb)
 
 _+415 tokens_

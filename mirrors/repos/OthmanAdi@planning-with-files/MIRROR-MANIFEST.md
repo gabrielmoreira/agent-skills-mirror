@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `OthmanAdi/planning-with-files` — 26 default patterns, 3 followed patterns, 121 file(s) materialized.
+Mirror of `OthmanAdi/planning-with-files` — 26 default patterns, 3 followed patterns, 130 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `OthmanAdi/planning-with-files` — 26 default patterns, 3 followed pa
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 121 |
+| Files         | 130 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -168,20 +168,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 105 | ✓ | [`skills/planning-with-files/scripts/attest-plan.sh`](skills/planning-with-files/scripts/attest-plan.sh) |
 | 106 | ✓ | [`skills/planning-with-files/scripts/check-complete.ps1`](skills/planning-with-files/scripts/check-complete.ps1) |
 | 107 | ✓ | [`skills/planning-with-files/scripts/check-complete.sh`](skills/planning-with-files/scripts/check-complete.sh) |
-| 108 | ✓ | [`skills/planning-with-files/scripts/init-session.ps1`](skills/planning-with-files/scripts/init-session.ps1) |
-| 109 | ✓ | [`skills/planning-with-files/scripts/init-session.sh`](skills/planning-with-files/scripts/init-session.sh) |
-| 110 | ✓ | [`skills/planning-with-files/scripts/resolve-plan-dir.ps1`](skills/planning-with-files/scripts/resolve-plan-dir.ps1) |
-| 111 | ✓ | [`skills/planning-with-files/scripts/resolve-plan-dir.sh`](skills/planning-with-files/scripts/resolve-plan-dir.sh) |
-| 112 | ✓ | [`skills/planning-with-files/scripts/session-catchup.py`](skills/planning-with-files/scripts/session-catchup.py) |
-| 113 | ✓ | [`skills/planning-with-files/scripts/set-active-plan.ps1`](skills/planning-with-files/scripts/set-active-plan.ps1) |
-| 114 | ✓ | [`skills/planning-with-files/scripts/set-active-plan.sh`](skills/planning-with-files/scripts/set-active-plan.sh) |
-| 115 | ✓ | [`skills/planning-with-files/SKILL.md`](skills/planning-with-files/SKILL.md) |
-| 116 | ✓ | [`skills/planning-with-files/templates/findings.md`](skills/planning-with-files/templates/findings.md) |
-| 117 | ✓ | [`skills/planning-with-files/templates/progress.md`](skills/planning-with-files/templates/progress.md) |
-| 118 | ✓ | [`skills/planning-with-files/templates/task_plan.md`](skills/planning-with-files/templates/task_plan.md) |
-| 119 | → | [`templates/findings.md`](templates/findings.md) |
-| 120 | → | [`templates/progress.md`](templates/progress.md) |
-| 121 | → | [`templates/task_plan.md`](templates/task_plan.md) |
+| 108 | ✓ | [`skills/planning-with-files/scripts/gate-stop.sh`](skills/planning-with-files/scripts/gate-stop.sh) |
+| 109 | ✓ | [`skills/planning-with-files/scripts/init-session.ps1`](skills/planning-with-files/scripts/init-session.ps1) |
+| 110 | ✓ | [`skills/planning-with-files/scripts/init-session.sh`](skills/planning-with-files/scripts/init-session.sh) |
+| 111 | ✓ | [`skills/planning-with-files/scripts/inject-plan.sh`](skills/planning-with-files/scripts/inject-plan.sh) |
+| 112 | ✓ | [`skills/planning-with-files/scripts/ledger-append.ps1`](skills/planning-with-files/scripts/ledger-append.ps1) |
+| 113 | ✓ | [`skills/planning-with-files/scripts/ledger-append.sh`](skills/planning-with-files/scripts/ledger-append.sh) |
+| 114 | ✓ | [`skills/planning-with-files/scripts/ledger-summary.ps1`](skills/planning-with-files/scripts/ledger-summary.ps1) |
+| 115 | ✓ | [`skills/planning-with-files/scripts/ledger-summary.sh`](skills/planning-with-files/scripts/ledger-summary.sh) |
+| 116 | ✓ | [`skills/planning-with-files/scripts/phase-status.ps1`](skills/planning-with-files/scripts/phase-status.ps1) |
+| 117 | ✓ | [`skills/planning-with-files/scripts/phase-status.sh`](skills/planning-with-files/scripts/phase-status.sh) |
+| 118 | ✓ | [`skills/planning-with-files/scripts/resolve-plan-dir.ps1`](skills/planning-with-files/scripts/resolve-plan-dir.ps1) |
+| 119 | ✓ | [`skills/planning-with-files/scripts/resolve-plan-dir.sh`](skills/planning-with-files/scripts/resolve-plan-dir.sh) |
+| 120 | ✓ | [`skills/planning-with-files/scripts/session-catchup.py`](skills/planning-with-files/scripts/session-catchup.py) |
+| 121 | ✓ | [`skills/planning-with-files/scripts/set-active-plan.ps1`](skills/planning-with-files/scripts/set-active-plan.ps1) |
+| 122 | ✓ | [`skills/planning-with-files/scripts/set-active-plan.sh`](skills/planning-with-files/scripts/set-active-plan.sh) |
+| 123 | ✓ | [`skills/planning-with-files/SKILL.md`](skills/planning-with-files/SKILL.md) |
+| 124 | ✓ | [`skills/planning-with-files/templates/findings.md`](skills/planning-with-files/templates/findings.md) |
+| 125 | ✓ | [`skills/planning-with-files/templates/progress.md`](skills/planning-with-files/templates/progress.md) |
+| 126 | ✓ | [`skills/planning-with-files/templates/task_plan_autonomous.md`](skills/planning-with-files/templates/task_plan_autonomous.md) |
+| 127 | ✓ | [`skills/planning-with-files/templates/task_plan.md`](skills/planning-with-files/templates/task_plan.md) |
+| 128 | → | [`templates/findings.md`](templates/findings.md) |
+| 129 | → | [`templates/progress.md`](templates/progress.md) |
+| 130 | → | [`templates/task_plan.md`](templates/task_plan.md) |
 
 ---
 

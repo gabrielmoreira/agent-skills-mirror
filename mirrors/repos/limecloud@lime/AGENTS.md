@@ -18,7 +18,8 @@
 3. **结果汇报优先** - 收尾说明做了什么、为什么这样做、验证了什么、还剩什么缺口；避免过程性礼貌汇报
 4. **任务完成标准优先** - 以可编译、类型正确、测试通过、功能真实可用作为完成依据；实现细节服从项目既有模式和当前主线目标
 5. **不主动扩大承诺** - 不在完成后追问“要不要继续做 X/Y/Z”；如存在自然下一刀，只简短列出建议，等待用户明确要求
-6. **并行协作先切写集** - 用户说明有其他 Agent / 进程同跑时，先只读盘点 `git status --short` 和目标 diff，声明本轮认领的窄写集；只修改认领文件，发现目标文件已被别人改动或出现未确认的未跟踪相邻产物时，立即切到只读审阅 / 验证，不夹写、不覆盖
+6. **并行协作仅在多 Agent 时启用** - 默认按单 Agent 模式直接动手；只有用户明确说明同时有其他 Agent / 进程在跑，或工作树有未知改动时，才启用 `internal/aiprompts/parallel-agent-collaboration.md` 的写集认领协议（盘点 `git status --short`、声明窄写集、避让脏文件）。不要把它当成默认开工仪式
+7. **复核结论先行** - 用户问“结论 / 复核 / 是否能删 / 是否 dead”时，先用 `3-8` 行给可执行结论和关键证据；除非用户明确要求修文档、补守卫或继续实现，不自动扩展成治理文档清理、全量 inventory 或长 checklist
 
 ## 基础约束
 
@@ -33,13 +34,15 @@
 9. **新增命名禁止品牌前缀** - 新程序、目录、crate/package、Electron IPC channel、App Server 方法、API 网关、类型、模块和脚本默认不得添加 `Lime` / `lime_` / `lime-` 品牌前缀；直接使用领域名，如 `app_server_*`、`app-server`。只有对外发布品牌标识、历史兼容或第三方生态已固定命名时才允许保留，并在执行计划说明原因
 10. **`scripts/` 根目录冻结** - `scripts/` 根目录是历史入口区，不再作为新增脚本默认落点；新增可执行脚本默认放到 `scripts/<domain>/`、`scripts/lib/` 或所属 package，并通过 `npm run governance:scripts` 守住根目录基线。只有公开稳定入口且无法归入领域子目录时才允许例外，必须同步 `scripts/README.md`、`scripts/script-root-governance-baseline.json` 和执行计划退出条件
 11. **新增 Agent 逻辑默认走 App Server** - 新 AI Agent、runtime、host integration、跨 App 复用能力默认落到 `app-server` crates、JSON-RPC 协议、client 与 RuntimeCore；Electron 只作为 Desktop Host bridge，负责 IPC、窗口、托盘、Dock、updater 和 sidecar 生命周期，不是第二套后端或业务 adapter；`agent_runtime_*` / Aster 旧命令只作为 Desktop 兼容 facade，不再直接承接新业务逻辑，除非执行计划明确说明过渡原因和退出条件
-12. **`lime-rs/src/**` 逐步收缩到 crates** - `lime-rs/src/**` 是旧主 crate、启动/注册、legacy facade 和迁移来源区，不再作为业务逻辑、领域服务、runtime 分支、API adapter、数据访问或跨 App 复用能力的长期 owner；触碰其中逻辑时，默认优先迁到 `lime-rs/crates/**` 的 App Server、RuntimeCore、services、core、agent 或协议/client crate，桌面壳能力迁到 Electron Desktop Host。只能保留必要 bootstrap / runner 接线、compat facade 委托、撤注册机械修复和带退出条件的 blocker 记录
-13. **旧 Tauri wrapper 删除清理** - `lime-rs/src/commands/**` 该目录不再承接新的业务逻辑、API adapter、runtime 分支、领域服务实现、compat wrapper 或退场 stub；允许触碰的场景只剩删除旧 wrapper、撤 runner / dispatcher / catalog / mock 注册后的机械编译修复，或记录无法删除的 blocker。新增 Rust 后端能力必须落到 App Server crates / RuntimeCore / services 等 current 事实源；桌面壳能力落到 Electron Desktop Host
+12. **`lime-rs/src/**` 已物理删除** - 该目录是脱离 cargo 构建图的孤儿目录，2026-06-10 整目录删除（约 18.7 万行旧 Tauri command 宏标注代码）。新 Rust 后端能力一律进入 `lime-rs/crates/**`：App Server、RuntimeCore、services、core、agent、协议/client crate；桌面壳能力进入 Electron Desktop Host
+13. **旧 Tauri wrapper 删除清理已收口** - `lime-rs/src/commands/**` 旧 Tauri wrapper 清理区已随 `lime-rs/src/**` 一并删除，不得恢复任何文件；不再承接业务逻辑、API adapter、runtime 分支、领域服务、compat wrapper、退场 stub 或 thin facade。新增 Rust 后端能力落到 App Server crates / RuntimeCore / services 等 current 事实源；桌面壳能力落到 Electron Desktop Host。守卫见 `src/lib/governance/rustCommandsCurrentBoundary.test.ts`
 14. **前端 DevBridge 按职责治理** - `src/lib/dev-bridge/**` 不是整体删除对象：`safeInvoke`、HTTP client、`app_server_handle_json_lines`、bridge availability / event listener capability 是 current renderer bridge；`commandPolicy` 中旧命令 truth / no-mock fallback 是迁移期 `compat / deprecated`；已迁旧命令名只能进入 `dead` / `test-only` guard。后续治理优先收缩 policy、mock、fallback、负向测试和 contract guard，不得为清旧命令误删 current App Server 传输链；删不动且会跨命令组长期存在的 residual 必须回挂 `internal/exec-plans/tech-debt-tracker.md` 的 `CCD-012`
 15. **Electron 打包事实源统一 Forge** - Electron packaging / installer / signing / notarization / updater metadata 的 current 配置只允许走 `forge.config.mjs`、`electron-forge package`、`electron-forge make` 与 Forge 官方 maker；运行时更新只允许走 `electron/updateHost.ts` + Electron 内置 `autoUpdater`。旧 builder 配置 / CLI、自定义 Windows installer maker、旧 YAML / blockmap updater metadata 均按 `dead` 处理，不得新增引用或写回文档、CI、守卫、i18n evidence；Windows current installer 为 Forge Squirrel，macOS current updater metadata 为 `RELEASES.json`，Windows current updater metadata 为 `RELEASES`。
 16. **不要继续扩展 compat / deprecated 路径** - 新 API、新命令、新前端入口默认落在当前 `current` 主路径
 17. **规划改了且明确无需兼容时，优先删旧实现** - 如果用户已明确“上一版无人使用 / 不用兼容 / 旧实现阻碍主线”，旧实现默认按 `dead` 或带退出条件的 `deprecated` 处理，不要继续修补、包裹或平移
 18. **`legacy current reference` 不是续命许可** - 旧路线图、旧实现锚点只用于理解现状与迁移，不等于允许继续往旧页面、旧命令、旧协议上加功能
+19. **目录级 dead 快速判定** - 对整目录旧实现，如果同时满足：已不在构建 / workspace manifest 中，当前工作树已物理删除或 staged delete，已有 current owner 承接，且边界守卫 / 契约检查能防回流，可直接按目录级 `dead / deleted / forbidden-to-restore` 处理；不要求逐文件证明“业务语义无价值”
+20. **历史 checkpoint 不当 current 残留** - `internal/exec-plans/**`、旧路线图和 git history 中记录的历史写集 / 搜索证据默认是 evidence，不是当前 owner 引用；只在这些历史文本被当前规则段落、当前状态摘要或 active checklist 当成现役落点时才清理
 
 ## 工程硬规则
 

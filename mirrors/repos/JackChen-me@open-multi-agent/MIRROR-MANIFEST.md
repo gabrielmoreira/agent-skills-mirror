@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JackChen-me/open-multi-agent` — 26 default patterns, 12 followed patterns, 16 file(s) materialized.
+Mirror of `JackChen-me/open-multi-agent` — 26 default patterns, 12 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JackChen-me/open-multi-agent` — 26 default patterns, 12 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 12 |
-| Files         | 16 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,19 +73,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 2 | ✓ | [`examples/fixtures/paper-replication-triage/README.md`](examples/fixtures/paper-replication-triage/README.md) |
 | 3 | ✓ | [`examples/integrations/express-customer-support/README.md`](examples/integrations/express-customer-support/README.md) |
-| 4 | ✓ | [`examples/integrations/with-vercel-ai-sdk/README.md`](examples/integrations/with-vercel-ai-sdk/README.md) |
-| 5 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
-| 6 | → | [`docs/cli.md`](docs/cli.md) |
-| 7 | → | [`docs/consensus.md`](docs/consensus.md) |
-| 8 | → | [`docs/context-management.md`](docs/context-management.md) |
-| 9 | → | [`docs/observability.md`](docs/observability.md) |
-| 10 | → | [`docs/providers.md`](docs/providers.md) |
-| 11 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
-| 12 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
-| 13 | → | [`examples/integrations/README.md`](examples/integrations/README.md) |
-| 14 | → | [`examples/production/README.md`](examples/production/README.md) |
-| 15 | → | [`examples/README.md`](examples/README.md) |
-| 16 | → | [`README.md`](README.md) |
+| 4 | ✓ | [`examples/integrations/with-tencentdb-memory/README.md`](examples/integrations/with-tencentdb-memory/README.md) |
+| 5 | ✓ | [`examples/integrations/with-vercel-ai-sdk/README.md`](examples/integrations/with-vercel-ai-sdk/README.md) |
+| 6 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
+| 7 | → | [`docs/cli.md`](docs/cli.md) |
+| 8 | → | [`docs/consensus.md`](docs/consensus.md) |
+| 9 | → | [`docs/context-management.md`](docs/context-management.md) |
+| 10 | → | [`docs/observability.md`](docs/observability.md) |
+| 11 | → | [`docs/providers.md`](docs/providers.md) |
+| 12 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
+| 13 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
+| 14 | → | [`examples/integrations/README.md`](examples/integrations/README.md) |
+| 15 | → | [`examples/production/README.md`](examples/production/README.md) |
+| 16 | → | [`examples/README.md`](examples/README.md) |
+| 17 | → | [`README.md`](README.md) |
 
 ---
 

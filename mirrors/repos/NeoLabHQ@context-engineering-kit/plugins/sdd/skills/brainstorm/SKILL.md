@@ -1,7 +1,7 @@
 ---
 name: brainstorm
 description: Use when creating or developing, before writing code or implementation plans - refines rough ideas into fully-formed designs through collaborative questioning, alternative exploration, and incremental validation. Don't use during clear 'mechanical' processes
-argument-hint: Optional initial feature concept or topic to brainstorm
+argument-hint: Optional initial feature concept, topic to brainstorm or draft specification file
 ---
 
 # Brainstorming Ideas Into Designs
@@ -40,17 +40,11 @@ Start by understanding the current project context, then ask questions one at a 
 
 ## After the Design
 
-**Documentation:**
+if user provided draft specification file, then update it directly, if not then use `/add-task` skill to create task file for target approach
 
-- Write the validated design to `.specs/plans/<topic>.design.md`
-- Use write-concisely skill if available
-- Commit the design document to git
+Important: In specification file, write target approach in sections, in `## Initial User Prompt -> ### Requirements` section, before `## Description` section. Description will be filled in future stage.
 
-**Implementation (if continuing):**
-
-- Ask: "Ready to set up for implementation?"
-- Use `/worktrees create` to create isolated workspace
-- Use `/add-task` to create task file for target approach 
+After filling task file, suggest use to run `/clear` and then `/plan-task <task-file-path>` to refine the task file.
 
 ## Key Principles
 

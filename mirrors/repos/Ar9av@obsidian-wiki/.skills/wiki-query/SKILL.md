@@ -15,6 +15,19 @@ description: >
 
 You are answering questions against a compiled Obsidian wiki, not raw source documents. The wiki contains pre-synthesized, cross-referenced knowledge.
 
+## This skill is READ-ONLY
+
+`wiki-query` answers questions. It MUST NOT create or modify any wiki content. The ONLY write it may perform is the single Step 6 append to `log.md`.
+
+Never, even when a change seems obviously helpful:
+- create or edit pages under `concepts/`, `entities/`, `skills/`, `references/`, `synthesis/`, `journal/`, or `projects/`
+- modify `index.md`, `hot.md`, `_insights.md`, or `.manifest.json`
+
+If the user's message contains a new finding, an action request ("save this", "ban X", "record that"), or anything implying a change, **do not perform it.** Answer the question, PROPOSE the change, and route the user to the right skill:
+- quick note / gotcha → `wiki-quick-chat-capture`
+- a full new page → `wiki-capture`
+- a project-knowledge sync → `wiki-update`
+
 ## Before You Start
 
 1. **Resolve config** — follow the Config Resolution Protocol in `llm-wiki/SKILL.md` (walk up CWD for `.env` → `~/.obsidian-wiki/config` → prompt setup). Prefer `~/.obsidian-wiki/config` for cross-project queries when present, even if it is a symlink to the vault `.env`. This gives `OBSIDIAN_VAULT_PATH` and any QMD variables. Works from any project directory.
@@ -197,9 +210,16 @@ Examples in a synthesized answer:
 
 Pages with no lifecycle field (legacy pages predating the schema) are treated the same as `draft` — annotate if stale, skip otherwise. Never fabricate a `lifecycle_reason`; if the field is absent, omit the reason from the annotation.
 
+**Surface the project source path (project-scoped queries).** When the cited pages are project-scoped — their path is under `projects/<name>/...`, or their frontmatter carries a `source_path` field — resolve where the actual code lives so a proposed fix can name real files and a follow-up turn can edit them:
+
+1. Read `$OBSIDIAN_VAULT_PATH/.manifest.json` and look up `.projects.<name>.source_cwd` — this is the authoritative path.
+2. Fallback: if the project isn't in the manifest, use the page's `source_path` frontmatter.
+
+Include a **`Source code:`** line in the answer with that absolute path. When the query implies a code fix is wanted, name the specific files to edit using that path (e.g. `<source_cwd>/public/lib/anticheat.js`) and **offer to implement it as an explicit, separate next step** — but never edit during the query itself (see the READ-ONLY guard above).
+
 ### Step 6: Log the Query
 
-Append to `log.md`:
+Append to `log.md`. This `log.md` append is the *only* write this skill performs — do not edit anything else.
 ```
 - [TIMESTAMP] QUERY query="the user's question" result_pages=N mode=normal|index_only|filtered escalated=true|false
 ```
@@ -215,3 +235,8 @@ Structure answers like this:
 > **Pages consulted:** [[page-a]], [[page-b]], [[page-c]]
 >
 > **Gaps:** [What the wiki doesn't cover that might be relevant]
+>
+> **Source code:** `<source_cwd>` — to implement, the relevant files are `…`.
+> (Say the word and I'll switch out of query mode to make the change.)
+
+The **Source code** line is optional — include it only for project-scoped queries where you resolved a `source_cwd` (see Step 5).

@@ -10,6 +10,7 @@ Query blockchain data using Etherscan's unified API V2. This skill covers:
 - First-funding lookup for an address (PRO `fundedby` with a 2-call free-tier fallback)
 - Multi-chain support via the `chainid` parameter
 - Auto-detection of Free vs Lite vs PRO so paid-only chains and PRO-only endpoints are used when available
+- Token reputation availability: Etherscan exposes this only through paid metadata surfaces, not Lite
 
 **Scope:** Read-only account queries. For other Etherscan API features, consult the fallback documentation.
 
@@ -258,7 +259,7 @@ Query an address's transaction history. Five actions are available under `module
 ### Example Query
 
 ```bash
-curl -s "https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist&address=0x8877bcb2223682048baDD5b09b7eE5a8FA2F3424&startblock=0&endblock=999999999&page=1&offset=100&sort=desc&apikey=$ETHERSCAN_API_KEY"
+curl -s "https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist&address=0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe&startblock=0&endblock=999999999&page=1&offset=100&sort=desc&apikey=$ETHERSCAN_API_KEY"
 ```
 
 ### Response Format
@@ -555,6 +556,18 @@ When `pro_endpoints=true`, the following actions become available (non-exhaustiv
 | `gastracker` | `dailyavggaslimit`, `dailygasused`, `dailyavggasprice`                        | Daily gas metrics                                        |
 
 When `pro_endpoints=false` (free or Lite), prefer the non-PRO equivalents listed in this skill or fall back to per-token loops.
+
+### Token Reputation / Metadata
+
+Etherscan's token reputation badges are **not available on Lite**. The documented API surfaces are:
+
+| Surface              | Endpoint/action                           | Minimum plan | Notes                                                                                            |
+| -------------------- | ----------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------ |
+| Address Metadata API | `module=nametag&action=getaddresstag`     | Pro Plus     | Query the token contract address; response includes numeric `reputation` and `other_attributes`. |
+| Metadata CSV export  | `module=nametag&action=exportaddresstags` | Enterprise   | Bulk export; `other_attributes` can include `TR` token reputation values.                        |
+| Token info           | `module=token&action=tokeninfo`           | Standard     | Returns project/social metadata and `blueCheckmark`, but not the token reputation badge.         |
+
+Do not tell Lite users they can fetch token reputation from Etherscan API. Lite only unlocks all supported chains and higher community rate limits; it does not unlock API Pro endpoints, Pro Plus address metadata, or Enterprise metadata CSV exports.
 
 ### All Plans
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `processing/p5.js` — 26 default patterns, 5 followed patterns, 21 file(s) materialized.
+Mirror of `processing/p5.js` — 26 default patterns, 5 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `processing/p5.js` — 26 default patterns, 5 followed patterns, 21 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 21 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,27 +63,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`contributor_docs/ar/README.md`](contributor_docs/ar/README.md) |
-| 4 | ✓ | [`contributor_docs/es/README.md`](contributor_docs/es/README.md) |
-| 5 | ✓ | [`contributor_docs/hi/README.md`](contributor_docs/hi/README.md) |
-| 6 | ✓ | [`contributor_docs/ja/README.md`](contributor_docs/ja/README.md) |
-| 7 | ✓ | [`contributor_docs/ko/README.md`](contributor_docs/ko/README.md) |
-| 8 | ✓ | [`contributor_docs/project_wrapups/README.md`](contributor_docs/project_wrapups/README.md) |
-| 9 | ✓ | [`contributor_docs/pt-br/README.md`](contributor_docs/pt-br/README.md) |
-| 10 | ✓ | [`contributor_docs/README.md`](contributor_docs/README.md) |
-| 11 | ✓ | [`contributor_docs/sk/README.md`](contributor_docs/sk/README.md) |
-| 12 | ✓ | [`contributor_docs/zh-Hans/README.md`](contributor_docs/zh-Hans/README.md) |
-| 13 | ✓ | [`src/core/README.md`](src/core/README.md) |
-| 14 | ✓ | [`src/math/README.md`](src/math/README.md) |
-| 15 | ✓ | [`src/README.md`](src/README.md) |
-| 16 | ✓ | [`translations/ko/README.md`](translations/ko/README.md) |
-| 17 | → | [`AI_USAGE_POLICY.md`](AI_USAGE_POLICY.md) |
-| 18 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 19 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 20 | → | [`CONTRIBUTORS.md`](CONTRIBUTORS.md) |
-| 21 | → | [`README.md`](README.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`contributor_docs/ar/README.md`](contributor_docs/ar/README.md) |
+| 3 | ✓ | [`contributor_docs/es/README.md`](contributor_docs/es/README.md) |
+| 4 | ✓ | [`contributor_docs/hi/README.md`](contributor_docs/hi/README.md) |
+| 5 | ✓ | [`contributor_docs/ja/README.md`](contributor_docs/ja/README.md) |
+| 6 | ✓ | [`contributor_docs/ko/README.md`](contributor_docs/ko/README.md) |
+| 7 | ✓ | [`contributor_docs/project_wrapups/README.md`](contributor_docs/project_wrapups/README.md) |
+| 8 | ✓ | [`contributor_docs/pt-br/README.md`](contributor_docs/pt-br/README.md) |
+| 9 | ✓ | [`contributor_docs/README.md`](contributor_docs/README.md) |
+| 10 | ✓ | [`contributor_docs/sk/README.md`](contributor_docs/sk/README.md) |
+| 11 | ✓ | [`contributor_docs/zh-Hans/README.md`](contributor_docs/zh-Hans/README.md) |
+| 12 | ✓ | [`src/core/README.md`](src/core/README.md) |
+| 13 | ✓ | [`src/math/README.md`](src/math/README.md) |
+| 14 | ✓ | [`src/README.md`](src/README.md) |
+| 15 | ✓ | [`translations/ko/README.md`](translations/ko/README.md) |
+| 16 | → | [`AI_USAGE_POLICY.md`](AI_USAGE_POLICY.md) |
+| 17 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 18 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 19 | → | [`CONTRIBUTORS.md`](CONTRIBUTORS.md) |
+| 20 | → | [`README.md`](README.md) |
 
 ---
 

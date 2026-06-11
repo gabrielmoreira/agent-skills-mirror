@@ -18,22 +18,24 @@ Goal: Produce a build-ready technical design with explicit boundaries, contracts
    - Trace source: `BRD-OBJ-* -> REQ-* -> AC-*`
 2. Define architecture:
    - Name bounded contexts and module owners.
-   - Define dependency direction.
+   - Define dependency direction and component RACI.
    - Choose sync, async, or hybrid communication.
    - Record data ownership and migration needs.
+   - **Parallel Readiness**: Define early mock/schema contracts so frontend, mobile, and backend can start in parallel.
 3. Define contracts:
    - Functional flows (FRS): user/system steps, inputs/outputs, validations, and error states.
    - For complex flows, use one actor, one goal, one session; split normal course from alternatives and exceptions.
    - Requirement cards: statement, priority, status, source, behavior, NFRs, measurement, and verification lane.
-   - API inputs/outputs and interface contracts.
-   - Events/jobs and async guarantees.
+   - API inputs/outputs and interface contracts (OpenAPI/Protobuf).
+   - Events/jobs and async guarantees (at-least-once, idempotent).
    - Storage shape, ownership, retention, and migration rules.
    - Security, permission, and privacy checks.
    - NFR thresholds for performance, reliability, and scalability.
 4. Plan verification:
    - Unit, integration, E2E, visual, mobile, security, and migration checks.
-   - Save technical requirements to `docs/specs/srs-[slug].md` when file writes are allowed.
-   - Record evidence in `docs/templates/walkthrough.md`.
+   - **Failure Mode Analysis (FMA)**: Define "what happens when it breaks" for every dependency (Circuit breakers, fallbacks, retries).
+   - Save technical requirements to `docs/srs/srs-[slug].md` when file writes are allowed.
+   - Record evidence in `docs/srs/srs-walkthrough.md`.
    - Rollback or degradation path.
 5. Record ADR:
    - Write one concise ADR when architecture or public contract changes.
@@ -48,27 +50,27 @@ Goal: Produce a build-ready technical design with explicit boundaries, contracts
 
 ## Context
 
-## Requirement Trace
+## Requirement Trace (BRD -> PRD -> SRS)
 
-## Architecture
+## Architecture & RACI
 
 ## Functional Flows (FRS)
 
+## Parallel Readiness (Mocks/Schemes)
+
 ## Requirement Cards
 
-## Contracts
+## Contracts (API/Events)
 
 ## Data And Migration
 
-## NFR Thresholds
-
-## Measurement Methods
+## NFR Thresholds & Measurement
 
 ## Security And Privacy
 
-## Failure Modes
+## Failure Mode Analysis (FMA)
 
-## Verification Plan
+## Verification Plan & Evidence Matrix
 
 ## ADR
 

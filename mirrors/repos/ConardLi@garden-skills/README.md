@@ -261,7 +261,7 @@ Links: [README](./skills/kb-retriever/README.md) · [SKILL.md](./skills/kb-retri
 Highlights:
 
 - **Article first** — the focus is the *article*: better reading, better pacing, better aesthetics. Delivery is a self-contained file (HTML, optional PDF), but that's a delivery detail, not the goal
-- **Reacticle component protocol** — prose-first semantic components (Hero / Lead / Section / Quote / Callout / Image / Formula / CodeBlock / Table…) plus a theme-token-only `Raw` free layer
+- **Reacticle component protocol** — prose-first semantic components (Hero / Lead / Section / Quote / Callout / Image / Formula / CodeBlock / Table…) plus a theme-token-only `Raw` free layer; the underlying React library lives at [`ConardLi/reacticle`](https://github.com/ConardLi/reacticle)
 - **10 article types with bundled retention ratios** — `longform · ~100%` / `tutorial · ~90%` / `full-report · ~80%` / `explainer · ~80%` / `dialogue · ~80%` / `review · ~70%` / `essay · ~70%` / `briefing · ~50%` / `visual-essay · ~40%` / `interactive-explainer · ~25% excerpt + 75% AI-rebuild`
 - **11 authoring theme profiles** (`tufte`, `press`, `bayer`, `bodoni`, `vignelli`, `sottsass`, `freddie`, `andy`, `fuller`, `knuth`, `shannon`) — each is a Markdown contract for the agent rather than a CSS file
 - **Hard collaboration checkpoints** with item-by-item decision capture (no silent defaults), plus a 3:4 book-style cover, default-on TOC, and language-aware translation step
@@ -504,6 +504,22 @@ This collection stands on the shoulders of:
 - The broader OSS skill community — see [`travisvn/awesome-claude-skills`](https://github.com/travisvn/awesome-claude-skills) and [`obra/superpowers`](https://github.com/obra/superpowers) for further discovery.
 
 ---
+
+## Connect
+
+| 平台 | 账号名称 | 链接 |
+| --- | --- | --- |
+| X/Twitter | code秘密花园 | https://x.com/GardenConardLi  |
+| B 站 | code秘密花园 | https://space.bilibili.com/474921808 |
+| 抖音 | code秘密花园 | https://v.douyin.com/i5b33Xfv/ |
+| YouTube | code秘密花园 | https://www.youtube.com/@garden-conard |
+| 小红书 | code秘密花园 | https://www.xiaohongshu.com/user/profile/5af45e78f7e8b903d6e04618 |
+| 公众号 | code秘密花园 | https://cdn.jsdelivr.net/gh/ConardLi/easy-dataset@main/public/imgs/weichat.jpg |
+| GitHub | ConardLi | https://github.com/ConardLi |
+| 个人网站 | Easy AI | https://mmh1.top |
+
+---
+
 
 ## License
 

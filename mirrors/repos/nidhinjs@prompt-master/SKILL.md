@@ -1,6 +1,6 @@
 ---
 name: prompt-master
-version: 1.6.0
+version: 1.7.0
 description: Generates optimized prompts for AI tools. Activates only when the user explicitly asks to write, fix, improve, or adapt a prompt for a specific AI tool (LLM, Cursor, Midjourney, image AI, video AI, coding agents, etc.). Does not activate for general conversation, coding tasks, document writing, or other non-prompt-engineering work.
 ---
 
@@ -68,14 +68,26 @@ Identify the tool and route accordingly. Read full templates from [references/te
 ---
 
 **Claude (claude.ai, Claude API, Claude 4.x)**
-- Be explicit and specific — Claude 4.x follows instructions literally. Opus 4.7 especially: it does exactly what you say, nothing more. Missing context = narrow literal output, not a smart guess.
-- XML tags help for complex multi-section prompts: `<context>`, `<task>`, `<constraints>`, `<output_format>`
+
+Current default is **Opus 4.8**. Opus 4.7 is still selectable — keep its notes, but assume 4.8 unless the user names a specific version.
+
+*Durable across Claude 4.x (4.6 / 4.7 / 4.8):*
+- Be explicit and specific — Claude 4.x follows instructions literally. It does exactly what you say, nothing more. Missing context = narrow literal output, not a smart guess.
 - Claude Opus 4.x over-engineers by default — add "Only make changes directly requested. Do not add features or refactor beyond what was asked."
+- XML tags help for complex multi-section prompts: `<context>`, `<task>`, `<constraints>`, `<output_format>`
 - Provide context and reasoning WHY, not just WHAT — Claude generalizes better from explanations
 - Always specify output format and length explicitly
-- For complex or multi-step tasks on Opus 4.7: front-load everything in one turn — intent, constraints, acceptance criteria, relevant files. Every extra back-and-forth turn adds reasoning overhead and token cost.
-- Do NOT add "think step by step" or fixed thinking budget instructions — Opus 4.7 uses adaptive thinking and calibrates depth automatically. To influence depth: "Think carefully before responding" (more) or "Prioritize responding quickly" (less).
-- Use Template M for agentic or multi-step tasks on Opus 4.7.
+- For complex or multi-step tasks: front-load everything in one turn — intent, constraints, acceptance criteria, relevant files. Every extra back-and-forth turn adds reasoning overhead and token cost.
+- Do NOT add "think step by step" or fixed thinking-budget instructions — Opus 4.x uses adaptive thinking and calibrates depth automatically. To influence depth: "Think carefully before responding" (more) or "Prioritize responding quickly" (less).
+- Use Template M for agentic or multi-step tasks.
+
+*Opus 4.8 (current default):*
+- Shares 4.7's literalism and adaptive thinking — the same front-loading discipline applies. Treat the first turn as the only turn for complex work: intent, scope, constraints, acceptance criteria up front.
+- 1M-token context window — large multi-file context can go in a single prompt, but keep it relevant; padding still dilutes attention.
+- Effort/thinking depth is calibrated automatically — do not specify an effort level or thinking budget.
+
+*Opus 4.7 (still selectable):*
+- More literal than 4.6 — vague first turns produce narrower results. Front-load intent, file scope, constraints, and acceptance criteria.
 
 ---
 
@@ -145,10 +157,10 @@ Identify the tool and route accordingly. Read full templates from [references/te
 
 ---
 
-**MiniMax (M2.7 / M2.5)**
+**MiniMax (M3 / M2.7)**
 - OpenAI-compatible API — prompts that work with GPT models transfer directly
 - Strong at instruction following, structured output, and long-context synthesis — 1M context window on M2.7
-- M2.5-highspeed has a 204K context window and is optimized for speed — use for latency-sensitive tasks
+- M2.7-highspeed is optimized for speed — use for latency-sensitive tasks
 - Temperature must be between 0 and 1 (inclusive) — prompts that set temperature above 1 will fail
 - May output reasoning in `<think>` tags — add "Output only the final answer, no reasoning tags." if the user does not want visible thinking
 - Good at code generation, JSON output, and multi-step analysis — leverage these strengths
@@ -161,10 +173,10 @@ Identify the tool and route accordingly. Read full templates from [references/te
 - Agentic — runs tools, edits files, executes commands autonomously
 - Starting state + target state + allowed actions + forbidden actions + stop conditions + checkpoints
 - Stop conditions are MANDATORY — runaway loops are the biggest credit killer
-- Opus 4.7 default in Claude Code is xhigh effort — do NOT specify effort level in prompts, it's already set
-- Opus 4.7 is more literal than 4.6 — vague first turns produce narrower results. Front-load everything: intent, file scope, constraints, acceptance criteria, session strategy.
-- Opus 4.7 uses fewer tool calls by default and reasons more between calls — explicitly instruct tool use when needed: "Read all files in /src/auth/ before starting"
-- Opus 4.7 spawns fewer subagents by default — explicitly request when needed: "Use a subagent to investigate X so it stays out of main context"
+- Default model is Opus 4.8 (4.7 still selectable). Effort and thinking depth are managed by the Claude Code harness on current Opus models — do NOT hardcode an effort level or thinking budget in prompts.
+- Opus 4.7 and 4.8 are more literal than 4.6 — vague first turns produce narrower results. Front-load everything: intent, file scope, constraints, acceptance criteria, session strategy.
+- Opus 4.7+ uses fewer tool calls by default and reasons more between calls — explicitly instruct tool use when needed: "Read all files in /src/auth/ before starting"
+- Opus 4.7+ spawns fewer subagents by default — explicitly request when needed: "Use a subagent to investigate X so it stays out of main context"
 - Claude Opus 4.x over-engineers — add "Only make changes directly requested. Do not add extra files, abstractions, or features."
 - Always scope to specific files and directories — never give a global instruction without a path anchor
 - Human review triggers required: "Stop and ask before deleting any file, adding any dependency, or affecting the database schema"

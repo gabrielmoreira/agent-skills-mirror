@@ -43,13 +43,13 @@ python "$CHECKER" --phase published --repo SeemSeam/claude_codex_bridge --wait-s
 
 The checker is read-only. It catches mechanical drift, but still manually inspect the top of `README.md` and `README_zh.md` because stale "What's New" prose can be semantically wrong even when version numbers are correct.
 
-Use `--phase dev` for ordinary CCB development or maintainer tooling changes that are not intended to create a package release:
+Use `--phase dev` for ordinary CCB development or maintainer tooling changes that are not intended to create a package release. Use `--wait-seconds 0` for lightweight commit/push work where the user did not ask to wait for GitHub Actions:
 
 ```bash
-python "$CHECKER" --phase dev --repo SeemSeam/claude_codex_bridge --wait-seconds 900
+python "$CHECKER" --phase dev --repo SeemSeam/claude_codex_bridge --wait-seconds 0
 ```
 
-`--phase dev` checks that the worktree is clean, the branch is pushed, the current commit's required GitHub workflows are green, and the change set is classified as development-only vs package/release-impacting.
+`--phase dev` checks that the worktree is clean, the branch is pushed, and the change set is classified as development-only vs package/release-impacting. When `--wait-seconds` is greater than 0, it also waits for required GitHub workflows.
 
 `--phase published` checks both release state and homepage state: GitHub latest release, release assets, `SHA256SUMS`, release workflows, branch validation workflows, and README/README_zh as rendered from the repository default branch. Use `--wait-seconds 1800` immediately after tagging so the checker waits for `Release Artifacts` and uploaded assets instead of reporting transient failures.
 
@@ -57,9 +57,9 @@ python "$CHECKER" --phase dev --repo SeemSeam/claude_codex_bridge --wait-seconds
 
 - Before tagging: run `--phase prepare`; fix every FAIL before creating a tag.
 - After pushing a tag or creating a release: run `--phase published --wait-seconds 1800`; fix every FAIL before reporting success.
-- After an interruption: run both phases, then follow the recovery runbook below from the first failing state.
+- After an interruption during release/tag work: run both phases, then follow the recovery runbook below from the first failing state. After an interruption during ordinary development, run only `--phase dev`.
 - During README-only maintenance: still run `--phase prepare` so version badges, release notes, install URLs, and memory wording stay aligned.
-- During normal development: run `--phase dev --wait-seconds 900` after commit/push; if it reports runtime/package changes, decide whether a real release is needed.
+- During normal development: run `--phase dev --wait-seconds 0` after commit/push; use a positive wait only when the user asks for CI verification or the change is risky enough to need it.
 - When the user asks for the final published result, include commit, push, merge-to-main when needed, GitHub Actions verification, Release assets verification, and homepage README verification.
 
 ## Development Version Management
@@ -74,12 +74,23 @@ Use this for CCB development changes, including `dev_tools`, tests, docs, CI, an
 4. Push the branch.
 5. Run:
    ```bash
-   python dev_tools/skills/ccb-github/scripts/check_release_state.py --phase dev --repo SeemSeam/claude_codex_bridge --wait-seconds 900
+   python dev_tools/skills/ccb-github/scripts/check_release_state.py --phase dev --repo SeemSeam/claude_codex_bridge --wait-seconds 0
    ```
 6. If `--phase dev` reports runtime/package changes and the user wants a published package, switch to the Release Preparation Checklist and Publish Sequence.
 7. If the change is development-only, do not create a tag or GitHub Release.
 
-`--phase dev` is intentionally strict: uncommitted changes, unpushed commits, or red/in-progress required workflows mean the development result is not final yet.
+`--phase dev` is intentionally strict about local and push state: uncommitted changes or unpushed commits mean the development result is not final yet. Red or in-progress workflows block completion only when this skill is explicitly waiting for CI.
+
+## Test Scope Policy
+
+Default to the smallest verification set that gives meaningful signal for the files changed. Do not run full-suite tests for small edits unless the user asks, the change crosses shared runtime boundaries, or targeted checks reveal risk.
+
+- README, image, and docs-only edits: run `git diff --check`; optionally run `check_release_state.py --phase dev --wait-seconds 0` after commit/push.
+- Skill edits or skill migration: run `quick_validate.py <skill-dir>` and compare source/active copies with `diff -ru`, excluding caches; do not run pytest for skill-only edits.
+- Installer or shell edits: run `bash -n install.sh` or the relevant shell syntax check, plus focused installer tests that cover the changed behavior.
+- `lib/`, `ccbd`, provider runtime, startup, tmux, or shared behavior edits: run targeted pytest for the touched module and adjacent contract tests; broaden only when the change affects cross-module behavior.
+- Release assets, version files, package build scripts, or explicit release/tag work: use the Release-Only Local Verification below.
+- GitHub homepage updates: merge to the default branch only when the user explicitly asks for homepage visibility, then verify default-branch README and CI as needed.
 
 ## Release Preparation Checklist
 
@@ -107,9 +118,9 @@ GitHub repo homepage requirements:
 - Description and topics should match the current public positioning.
 - If README install URLs or badge links point to an old owner, fix them before tagging.
 
-## Local Verification
+## Release-Only Local Verification
 
-Run at least:
+Use this full local gate only for release/tag/package work, or when runtime/package changes are broad enough that targeted tests are not sufficient. Run at least:
 
 ```bash
 pytest -q

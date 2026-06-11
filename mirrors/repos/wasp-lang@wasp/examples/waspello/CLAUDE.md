@@ -1,0 +1,1 @@
+cache/repos/github.com/wasp-lang@wasp/examples/waspello/AGENTS.md

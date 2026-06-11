@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Bria-AI/bria-skill` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `Bria-AI/bria-skill` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Bria-AI/bria-skill` — 26 default patterns, 0 followed patterns, 12 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,6 +71,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`skills/remove-background/SKILL.md`](skills/remove-background/SKILL.md) |
 | 11 | ✓ | [`skills/vgl/references/schema-reference.md`](skills/vgl/references/schema-reference.md) |
 | 12 | ✓ | [`skills/vgl/SKILL.md`](skills/vgl/SKILL.md) |
+| 13 | ✓ | [`skills/video-remove-background/LICENSE.txt`](skills/video-remove-background/LICENSE.txt) |
+| 14 | ✓ | [`skills/video-remove-background/references/api-endpoints.md`](skills/video-remove-background/references/api-endpoints.md) |
+| 15 | ✓ | [`skills/video-remove-background/references/code-examples/bria_video_client.sh`](skills/video-remove-background/references/code-examples/bria_video_client.sh) |
+| 16 | ✓ | [`skills/video-remove-background/SKILL.md`](skills/video-remove-background/SKILL.md) |
 
 ---
 
