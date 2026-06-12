@@ -200,7 +200,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run bigquery --demo",
+      "demo_command": "python skills/bigquery-public/bigquery_backends.py --demo",
       "dependencies": [],
       "tags": [
         "bigquery",
@@ -246,7 +246,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run bioc --demo",
+      "demo_command": "python skills/bioconductor-bridge/bioconductor_bridge.py --demo",
       "dependencies": [],
       "tags": [
         "bioconductor",
@@ -425,7 +425,7 @@
       "has_script": true,
       "has_tests": false,
       "has_demo": true,
-      "demo_command": "python clawbio.py run metagenomics --demo",
+      "demo_command": "python skills/claw-metagenomics/metagenomics_profiler.py --demo",
       "dependencies": [],
       "tags": [
         "metagenomics",
@@ -614,7 +614,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run clinpgx --demo",
+      "demo_command": "python skills/clinpgx/clinpgx.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [
@@ -638,7 +638,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run crispr-triage --demo",
+      "demo_command": "python skills/crispr-screen-triage/crispr_screen_triage.py --demo",
       "dependencies": [
         "python>=3.10"
       ],
@@ -711,7 +711,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run diffviz --demo",
+      "demo_command": "python skills/diff-visualizer/diff_visualizer.py --demo",
       "dependencies": [],
       "tags": [
         "differential-expression",
@@ -815,8 +815,8 @@
       "status": "mvp",
       "has_script": false,
       "has_tests": false,
-      "has_demo": true,
-      "demo_command": "python clawbio.py run drugphoto --demo",
+      "has_demo": false,
+      "demo_command": null,
       "dependencies": [],
       "tags": [
         "pharmacogenomics",
@@ -913,7 +913,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run equity --demo",
+      "demo_command": "python skills/equity-scorer/equity_scorer.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [
@@ -1056,7 +1056,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run galaxy --demo",
+      "demo_command": "python skills/galaxy-bridge/generate_galaxy_catalog.py --demo",
       "dependencies": [],
       "tags": [
         "galaxy",
@@ -1094,7 +1094,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run compare --demo",
+      "demo_command": "python skills/genome-compare/genome_compare.py --demo",
       "dependencies": [],
       "tags": [
         "genome-comparison",
@@ -1419,7 +1419,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run gwas --demo",
+      "demo_command": "python skills/gwas-lookup/gwas_lookup.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [
@@ -1477,7 +1477,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run prs --demo",
+      "demo_command": "python skills/gwas-prs/gwas_prs.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [
@@ -1698,7 +1698,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run marker-map --demo",
+      "demo_command": "python skills/marker-dominance-mapper/marker_dominance_mapper.py --demo",
       "dependencies": [
         "python>=3.10"
       ],
@@ -1880,7 +1880,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run rnaseq-pipeline --demo",
+      "demo_command": "python skills/nfcore-rnaseq-wrapper/pipeline_source.py --demo",
       "dependencies": [
         "python>=3.11"
       ],
@@ -1919,7 +1919,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run sarek-pipeline --demo",
+      "demo_command": "python skills/nfcore-sarek-wrapper/pipeline_source.py --demo",
       "dependencies": [
         "python>=3.11"
       ],
@@ -1966,7 +1966,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run scrnaseq-pipeline --demo",
+      "demo_command": "python skills/nfcore-scrnaseq-wrapper/pipeline_source.py --demo",
       "dependencies": [
         "python>=3.11",
         "pyyaml"
@@ -2050,7 +2050,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run nutrigx --demo",
+      "demo_command": "python skills/nutrigx_advisor/parse_input.py --demo",
       "dependencies": [],
       "tags": [
         "nutrigenomics",
@@ -2133,7 +2133,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run pharmgx --demo",
+      "demo_command": "python skills/pharmgx-reporter/pharmgx_reporter.py --demo",
       "dependencies": [],
       "tags": [
         "pharmacogenomics",
@@ -2165,7 +2165,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run phylo --demo",
+      "demo_command": "python skills/phylogenetics-builder/phylogenetics_builder.py --demo",
       "dependencies": [
         "python>=3.10",
         "pandas>=2.0",
@@ -2194,7 +2194,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run profile --demo",
+      "demo_command": "python skills/profile-report/profile_report.py --demo",
       "dependencies": [],
       "tags": [
         "profile",
@@ -2412,7 +2412,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run rnaseq --demo",
+      "demo_command": "python skills/rnaseq-de/rnaseq_de.py --demo",
       "dependencies": [],
       "tags": [
         "rna-seq",
@@ -2449,7 +2449,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run sample-qc --demo",
+      "demo_command": "python skills/sample-qc-triage/sample_qc_triage.py --demo",
       "dependencies": [
         "python>=3.10"
       ],
@@ -2479,7 +2479,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run scrna-embedding --demo",
+      "demo_command": "python skills/scrna-embedding/scrna_embedding.py --demo",
       "dependencies": [],
       "tags": [
         "scrna",
@@ -2516,7 +2516,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python clawbio.py run scrna --demo",
+      "demo_command": "python skills/scrna-orchestrator/scrna_orchestrator.py --demo",
       "dependencies": [],
       "tags": [
         "scrna",

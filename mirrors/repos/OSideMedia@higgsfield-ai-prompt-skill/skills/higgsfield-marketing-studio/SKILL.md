@@ -11,6 +11,29 @@ metadata:
 
 # Higgsfield Marketing Studio
 
+## QUICK FACTS
+*Generated-checked block (build_index.py verifies anchors). Read the linked sections for full context — these lines are routing aids, not the rules themselves.*
+- Hard duration cap: 4–15s per clip; out-of-range values get clamped; longer narrative = multi-clip sequence edited externally [→](#7-generation-parameters)
+- 9 presets: UGC, Tutorial, Unboxing (`ugc_unboxing`), Hyper Motion, Product Review, TV Spot, Wild Card, UGC Virtual Try On, Pro Virtual Try On [→](#3-the-9-presets)
+- Pro Virtual Try On slug is `virtual_try_on`, NOT `pro_virtual_try_on` [→](#slug-naming-is-canonical-routing-mode-lives-on-a-different-mcp-call)
+- Preset routing happens via `show_marketing_studio.mode` — `generate_video` has NO `mode` parameter at all [→](#slug-naming-is-canonical-routing-mode-lives-on-a-different-mcp-call)
+- Hook + setting picklists on FIVE presets only: UGC, Tutorial, Unboxing, Product Review, UGC Virtual Try On (NOT Pro Virtual Try On) [→](#4-hook-setting-picklists)
+- 9 hooks (4 stunt / 5 subtle) as of 2026-05-18 — picklists drift; enumerate live for current UUIDs [→](#hooks-9-entries-as-of-2026-05-18-visual-scene-templates-not-verbal-copy)
+- 14 settings (8 realistic / 6 unrealistic) as of 2026-05-18, passed by UUID as `setting_id` [→](#settings-14-entries-as-of-2026-05-18-environment-templates)
+- `avatars` array MUST contain exactly one entry; empty `avatars: []` substitutes a random face per render — always pass one [→](#avatar-field-constraints-consolidated)
+- Two-person scenes: primary in `avatars`, secondary as a reference image in `medias` [→](#avatar-field-constraints-consolidated)
+- `avatars` and `medias` are top-level siblings of `params` — NOT nested under `params`; wrong nesting rejects [→](#avatars-is-a-separate-top-level-media-slot-not-a-nested-parameter)
+- `prompt` is optional; `aspect_ratio` enum: auto/21:9/16:9/4:3/1:1/3:4/9:16; `resolution`: 480p/720p/1080p (default 720p) [→](#7-generation-parameters)
+- No `get_cost: true` preflight for MS — verify spend post-hoc via `transactions(limit=200)` [→](#what-is-not-in-the-schema)
+- Three MS models exist: `marketing_studio_video` (this skill), `marketing_studio_image`, `ms_image` — call `ms_image` "DTC Ads" with users [→](#three-marketing-studio-models-exist-this-sub-skill-covers-the-video-one)
+- Three avatar types: preset (~40 in library), uploaded, text-generated [→](#three-avatar-types)
+- TV Spot has a default packshot beat — negate explicitly ("ABSOLUTELY NO PACKSHOT") when unwanted [→](#3-the-9-presets)
+- Flowing AND sectioned prompt styles both render — "no section labels" is craft opinion, not an engine constraint; default flowing under 50 words [→](#8-output-prompt-style-flowing-or-sectioned-not-a-hard-rule)
+- Cannot do: >15s clips, non-human lip-sync, multi-character dialogue, multi-setting single output, free-form hook/setting IDs, >1 avatar [→](#9-what-marketing-studio-cannot-do)
+- Escape hatches when MS can't render it: Wan 2.7, Veo 3.1, Cinema Studio Video 3.0, Seedance 2.0, Kling 3.0 [→](#escape-hatch-models-for-what-ms-cant-render)
+- Budget anchor: ~$0.06/credit ≈ ~$9 per video (the more credible of two non-canonical rate samples) [→](#use-the-higher-anchor-for-budget-planning)
+
+
 Marketing Studio is Higgsfield's opinionated short-form ad-video product. Generations are bounded by a 4–15 second per-clip cap [Phase 0: Probe 0.3-b], routed through one of nine named presets that dictate camera language, register, and the available picklist of hooks and settings. It's distinct from Higgsfield's general video models (Soul, Seedance, Cinema Studio) — those let you write whatever you want; Marketing Studio enforces ad-format conventions per preset and ships with a built-in library of preset hooks, settings, and avatars.
 
 This sub-skill covers Marketing Studio video. The two image-side Marketing Studio surfaces (`marketing_studio_image` and `ms_image` / "DTC Ads") are named in §2 but covered in the companion `cross-surface-workflow.md`.

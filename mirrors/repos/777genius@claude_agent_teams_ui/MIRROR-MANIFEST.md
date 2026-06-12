@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 9 followed patterns, 21 file(s) materialized.
+Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 10 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 9 followed 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 9 |
-| Files         | 21 |
+| Followed pats | 10 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 9 followed 
 
 - `README.md`
 - `AGENT_CRITICAL_GUARDRAILS.md`
+- `docs/RELEASE.md`
 - `docs/FEATURE_ARCHITECTURE_STANDARD.md`
 - `docs/team-management/debugging-agent-teams.md`
 - `docs/research/gastown-paperclip-comparison-2026-05-16.md`
@@ -69,25 +70,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`docs/iterations/edit-project/README.md`](docs/iterations/edit-project/README.md) |
-| 4 | ✓ | [`docs/iterations/README.md`](docs/iterations/README.md) |
-| 5 | ✓ | [`docs/team-management/README.md`](docs/team-management/README.md) |
-| 6 | ✓ | [`landing/AGENTS.md`](landing/AGENTS.md) |
-| 7 | ✓ | [`landing/docs/iterations/README.md`](landing/docs/iterations/README.md) |
-| 8 | ✓ | [`landing/README.md`](landing/README.md) |
-| 9 | ✓ | [`src/features/agent-graph/README.md`](src/features/agent-graph/README.md) |
-| 10 | ✓ | [`src/features/CLAUDE.md`](src/features/CLAUDE.md) |
-| 11 | ✓ | [`src/features/recent-projects/README.md`](src/features/recent-projects/README.md) |
-| 12 | ✓ | [`src/renderer/features/CLAUDE.md`](src/renderer/features/CLAUDE.md) |
-| 13 | → | [`.github/CODE_OF_CONDUCT.md`](.github/CODE_OF_CONDUCT.md) |
-| 14 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
-| 15 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
-| 16 | → | [`AGENT_CRITICAL_GUARDRAILS.md`](AGENT_CRITICAL_GUARDRAILS.md) |
-| 17 | → | [`docs/FEATURE_ARCHITECTURE_STANDARD.md`](docs/FEATURE_ARCHITECTURE_STANDARD.md) |
-| 18 | → | [`docs/research/gastown-paperclip-comparison-2026-05-16.md`](docs/research/gastown-paperclip-comparison-2026-05-16.md) |
-| 19 | → | [`docs/team-management/debugging-agent-teams.md`](docs/team-management/debugging-agent-teams.md) |
-| 20 | → | [`README.md`](README.md) |
-| 21 | → | [`src/features/README.md`](src/features/README.md) |
+| 3 | ✓ | [`docs/CHANGELOG.md`](docs/CHANGELOG.md) |
+| 4 | ✓ | [`docs/iterations/edit-project/README.md`](docs/iterations/edit-project/README.md) |
+| 5 | ✓ | [`docs/iterations/README.md`](docs/iterations/README.md) |
+| 6 | ✓ | [`docs/team-management/README.md`](docs/team-management/README.md) |
+| 7 | ✓ | [`landing/AGENTS.md`](landing/AGENTS.md) |
+| 8 | ✓ | [`landing/docs/iterations/README.md`](landing/docs/iterations/README.md) |
+| 9 | ✓ | [`landing/README.md`](landing/README.md) |
+| 10 | ✓ | [`src/features/agent-graph/README.md`](src/features/agent-graph/README.md) |
+| 11 | ✓ | [`src/features/CLAUDE.md`](src/features/CLAUDE.md) |
+| 12 | ✓ | [`src/features/recent-projects/README.md`](src/features/recent-projects/README.md) |
+| 13 | ✓ | [`src/renderer/features/CLAUDE.md`](src/renderer/features/CLAUDE.md) |
+| 14 | → | [`.github/CODE_OF_CONDUCT.md`](.github/CODE_OF_CONDUCT.md) |
+| 15 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
+| 16 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
+| 17 | → | [`AGENT_CRITICAL_GUARDRAILS.md`](AGENT_CRITICAL_GUARDRAILS.md) |
+| 18 | → | [`docs/FEATURE_ARCHITECTURE_STANDARD.md`](docs/FEATURE_ARCHITECTURE_STANDARD.md) |
+| 19 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
+| 20 | → | [`docs/research/gastown-paperclip-comparison-2026-05-16.md`](docs/research/gastown-paperclip-comparison-2026-05-16.md) |
+| 21 | → | [`docs/team-management/debugging-agent-teams.md`](docs/team-management/debugging-agent-teams.md) |
+| 22 | → | [`README.md`](README.md) |
+| 23 | → | [`src/features/README.md`](src/features/README.md) |
 
 ---
 

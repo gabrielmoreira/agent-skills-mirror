@@ -539,6 +539,8 @@ bun run dev:marketing  # Marketing site
 bun run dev:vscode     # VS Code extension (watch mode)
 ```
 
+**Local `plannotator` command:** run `bun link` once in the checkout to make the global `plannotator` command use this repo's source (`apps/hook/server/index.ts`) instead of an installed release binary. Commands like `plannotator review` then reflect local changes immediately. Rebuild the bundled HTML when changing UI code (see Build below).
+
 ## Build
 
 ```bash

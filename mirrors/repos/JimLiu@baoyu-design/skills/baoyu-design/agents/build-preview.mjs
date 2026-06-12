@@ -597,7 +597,7 @@ function makeAssetInliner(ctx) {
 
 function resolveRef(ref, baseDir, root) {
   let clean = ref.trim().replace(/[?#].*$/, "");
-  if (!clean || clean.startsWith("data:") || isRemote(clean) || clean.startsWith("javascript:")) return null;
+  if (!clean || isRemote(clean) || /^[a-z][a-z0-9+.-]*:/i.test(clean)) return null; // data:, javascript:, mailto:, …
   try {
     clean = decodeURIComponent(clean);
   } catch {}
@@ -679,7 +679,38 @@ function classifyCdnScript(src) {
   return null;
 }
 
-async function rewriteMarkupAssets(html, baseDir, ctx) {
+// Bare string literals like `const PHOTO = "../assets/x.jpg"` (used via src={PHOTO})
+// carry no attribute name, so match by shape: relative/rooted path + asset extension.
+const STR_REF_RE =
+  /(["'])((?:\.{1,2})?\/[^"'\n]*?\.(?:png|jpe?g|gif|svg|webp|avif|ico|bmp|mp4|webm|mp3|wav|woff2?|ttf|otf))\1/gi;
+
+async function rewriteScriptStringRefs(code, baseDir, ctx) {
+  const refs = [];
+  code.replace(STR_REF_RE, (m, q, ref) => {
+    refs.push(ref);
+    return m;
+  });
+  const resolved = new Map();
+  for (const ref of refs) {
+    if (resolved.has(ref)) continue;
+    const abs = resolveRef(ref, baseDir, ctx.root);
+    // only swap in a successful inline — a miss may be a non-asset string, so keep it verbatim
+    resolved.set(ref, abs ? await ctx.inlineAsset(abs) : null);
+  }
+  return code.replace(STR_REF_RE, (m, q, ref) => {
+    const r = resolved.get(ref);
+    return r ? q + r + q : m;
+  });
+}
+
+// script code is re-rooted into the single preview file, so both JSX/markup
+// attributes and bare string-literal refs need the same inlining as bodyHtml
+async function rewriteScriptAssets(code, baseDir, ctx) {
+  const out = await rewriteMarkupAssets(code, baseDir, ctx, { rewriteEvents: false });
+  return rewriteScriptStringRefs(out, baseDir, ctx);
+}
+
+async function rewriteMarkupAssets(html, baseDir, ctx, { rewriteEvents = true } = {}) {
   const ATTR_RE = /\b(src|poster|href)\s*=\s*("([^"]*)"|'([^']*)')/gi;
   const refs = [];
   html.replace(ATTR_RE, (m, attr, q, v1, v2) => {
@@ -729,9 +760,10 @@ async function rewriteMarkupAssets(html, baseDir, ctx) {
     return out.replace(SRCSET_RE, (m, q, v1, v2) => 'srcset="' + escAttr(map.get(v1 ?? v2) ?? (v1 ?? v2)) + '"');
   })();
   // inline event handlers -> data attributes (run inside the card sandbox)
-  out = out.replace(/\son([a-z]+)\s*=\s*("([^"]*)"|'([^']*)')/gi, (m, evt, q, v1, v2) => {
-    return " data-ds-on" + evt + '="' + escAttr(v1 ?? v2 ?? "") + '"';
-  });
+  if (rewriteEvents)
+    out = out.replace(/\son([a-z]+)\s*=\s*("([^"]*)"|'([^']*)')/gi, (m, evt, q, v1, v2) => {
+      return " data-ds-on" + evt + '="' + escAttr(v1 ?? v2 ?? "") + '"';
+    });
   return out;
 }
 
@@ -809,14 +841,22 @@ async function parseCardHtml(absPath, ctx) {
         warn("script not found: " + src);
         continue;
       }
-      card.scripts.push({ code, babel: isBabel, name: path.basename(abs) });
+      card.scripts.push({
+        code: await rewriteScriptAssets(code, path.dirname(abs), ctx),
+        babel: isBabel,
+        name: path.basename(abs),
+      });
       continue;
     }
     const inner = tag.replace(/^<script\b[^>]*>/i, "").replace(/<\/script>$/i, "");
     if (!inner.trim()) continue;
     if (type && !isBabel && type !== "text/javascript" && type !== "module" && type !== "application/javascript")
       continue; // json templates etc.
-    card.scripts.push({ code: inner, babel: isBabel, name: null });
+    card.scripts.push({
+      code: await rewriteScriptAssets(inner, dir, ctx),
+      babel: isBabel,
+      name: null,
+    });
   }
 
   const bodyM = /<body([^>]*)>([\s\S]*?)<\/body>/i.exec(text);

@@ -37,7 +37,7 @@ and AI agent governance. All instructions below are binding for Claude Code sess
 - Skills (slash commands): `.claude/commands/`
 - Agents: `.claude/agents/`
 - Hook scripts: `~/.claude/hooks/scripts/` (after deploy)
-- Deploy: `npm run deploy:claude` or `npm run deploy:apply` (both runtimes)
+- Deploy: `npm run deploy:apply` deploys the two script-mirror runtimes (Copilot `~/.copilot` + Codex `~/.codex`); `npm run deploy:claude:apply` deploys the Claude Code runtime (`~/.claude`). Run both for full coverage. (Per #2950: `deploy:apply` previously targeted Copilot only, silently drifting Codex; it now targets `both`.)
 - Lint: `npm run lint` — all files must be ≤ 100 lines
 
 ## Concurrent session safety

@@ -43,6 +43,7 @@
 18. **`legacy current reference` 不是续命许可** - 旧路线图、旧实现锚点只用于理解现状与迁移，不等于允许继续往旧页面、旧命令、旧协议上加功能
 19. **目录级 dead 快速判定** - 对整目录旧实现，如果同时满足：已不在构建 / workspace manifest 中，当前工作树已物理删除或 staged delete，已有 current owner 承接，且边界守卫 / 契约检查能防回流，可直接按目录级 `dead / deleted / forbidden-to-restore` 处理；不要求逐文件证明“业务语义无价值”
 20. **历史 checkpoint 不当 current 残留** - `internal/exec-plans/**`、旧路线图和 git history 中记录的历史写集 / 搜索证据默认是 evidence，不是当前 owner 引用；只在这些历史文本被当前规则段落、当前状态摘要或 active checklist 当成现役落点时才清理
+21. **Rust crate 抗膨胀** - 新增 Rust 逻辑禁止默认落 `lime-core` / `services` 平铺层，必须先回答"为什么不是独立模块 / 既有 domain"；参照 Codex "resist adding to core"（见 `internal/refactor/codex-engineering-patterns.md` § 2）。`processor.rs` / `runtime.rs` 等中心文件新增方法时，优先放到对应 domain 子模块（如 `processor/project_git.rs`），中心文件只做 dispatch 接线
 
 ## 工程硬规则
 

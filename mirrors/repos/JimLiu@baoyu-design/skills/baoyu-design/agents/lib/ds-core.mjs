@@ -236,6 +236,83 @@ function collectExports(src) {
 const isCapitalized = (name) => /^[A-Z]/.test(name);
 
 // ---------------------------------------------------------------------------
+// .d.ts prop contracts
+// ---------------------------------------------------------------------------
+
+// Regex-level .d.ts reading, not a TypeScript parser. It covers the contract
+// shape the authoring guide mandates — flat interfaces, optional per-member
+// JSDoc, string-literal unions (single- or double-quoted, inline or multi-line
+// leading-pipe), one alias hop (`name?: IconName`) — and fails open on
+// anything else: an unreadable member just carries no values.
+
+const TYPE_ALIAS_RE =
+  /(?:^|\n)[ \t]*(?:export\s+)?(?:declare\s+)?type\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*=\s*([^;]+);/g;
+const IFACE_HEAD_RE =
+  /(?:^|\n)[ \t]*(?:export\s+)?(?:declare\s+)?interface\s+([A-Za-z_$][A-Za-z0-9_$]*)\b[^{]*\{/g;
+const MEMBER_RE =
+  /(?:^|\n)[ \t]*(?:\/\*\*([\s\S]*?)\*\/\s*)?(?:readonly\s+)?([A-Za-z_$][A-Za-z0-9_$]*)(\?)?\s*:\s*([^;]+);/g;
+
+function unionLiterals(typeText) {
+  const t = String(typeText).replace(/\s+/g, ' ').trim().replace(/^\|\s*/, '');
+  const parts = t.split('|').map((s) => s.trim()).filter(Boolean);
+  if (!parts.length) return null;
+  const values = [];
+  for (const p of parts) {
+    const m = /^(['"])(.*)\1$/.exec(p);
+    if (!m) return null;
+    values.push(m[2]);
+  }
+  return values;
+}
+
+export function parseDtsInterfaces(dtsSrc) {
+  const src = String(dtsSrc ?? '');
+  const aliases = new Map();
+  let m;
+  TYPE_ALIAS_RE.lastIndex = 0;
+  while ((m = TYPE_ALIAS_RE.exec(src))) aliases.set(m[1], m[2].trim());
+
+  const interfaces = [];
+  IFACE_HEAD_RE.lastIndex = 0;
+  while ((m = IFACE_HEAD_RE.exec(src))) {
+    let i = m.index + m[0].length;
+    let depth = 1;
+    let body = '';
+    while (i < src.length && depth > 0) {
+      const ch = src[i];
+      if (ch === '{') depth++;
+      else if (ch === '}') { depth--; if (depth === 0) break; }
+      body += ch;
+      i++;
+    }
+    const props = [];
+    // split single-line interfaces onto rows so the line-anchored member regex
+    // sees every member, while function types (`onChange?: (v) => void`) still
+    // read as one member because their parens hold no `;`
+    const norm = body.replace(/;/g, ';\n');
+    let pm;
+    MEMBER_RE.lastIndex = 0;
+    while ((pm = MEMBER_RE.exec(norm))) {
+      const doc = pm[1] || '';
+      const name = pm[2];
+      const typeText = pm[4].trim();
+      let values = unionLiterals(typeText);
+      if (!values && /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(typeText) && aliases.has(typeText)) {
+        values = unionLiterals(aliases.get(typeText));
+      }
+      const prop = { name };
+      if (values && values.length) prop.values = values;
+      else prop.type = typeText.replace(/\s+/g, ' ');
+      const dm = /@default\s+("?)([^\s*"]+)\1/.exec(doc);
+      if (dm) prop.default = dm[2];
+      props.push(prop);
+    }
+    interfaces.push({ name: m[1], props });
+  }
+  return interfaces;
+}
+
+// ---------------------------------------------------------------------------
 // @dsCard cards + @startingPoint starting points
 // ---------------------------------------------------------------------------
 
@@ -364,6 +441,59 @@ function resolveNamespace(root, projectName) {
 }
 
 // ---------------------------------------------------------------------------
+// risky top-level globals in text/babel blocks
+// ---------------------------------------------------------------------------
+
+// Browser Babel injects each transpiled text/babel block as a classic script
+// and rewrites top-level const/let to var, so every top-level binding becomes a
+// window property. These window names carry accessor or side-effect semantics
+// (window.status coerces to string, window.location navigates, …): a card that
+// shadows one dies with an uncaught pageerror most console tooling never shows.
+const RISKY_GLOBALS = new Set([
+  'status', 'name', 'length', 'top', 'self', 'parent', 'origin', 'event',
+  'location', 'history', 'frames', 'closed', 'opener', 'open', 'close',
+  'stop', 'print', 'focus', 'blur', 'screen', 'scroll',
+]);
+
+const BABEL_BLOCK_RE =
+  /<script[^>]*\btype=["']text\/babel["'][^>]*>([\s\S]*?)<\/script>/gi;
+// column-0 only: authored card code indents nested declarations, and demanding
+// the column keeps strings/JSX text from ever producing a false positive
+const DECL_LINE_RE =
+  /^(?:export\s+)?(?:async\s+)?(?:const|let|var|class|function\s*\*?)\s+(?:([A-Za-z_$][A-Za-z0-9_$]*)|\{([^}]*)\}|\[([^\]]*)\])/;
+
+function destructuredNames(inner) {
+  return inner
+    .split(',')
+    .map((part) => {
+      const p = part.split('=')[0].replace(/^\s*\.\.\./, '').trim();
+      if (!p) return '';
+      const colon = p.indexOf(':');
+      return (colon >= 0 ? p.slice(colon + 1) : p).trim();
+    })
+    .filter((n) => /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(n));
+}
+
+function riskyTopLevelGlobals(html) {
+  const found = new Set();
+  let bm;
+  BABEL_BLOCK_RE.lastIndex = 0;
+  while ((bm = BABEL_BLOCK_RE.exec(html))) {
+    const code = bm[1]
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/`[\s\S]*?`/g, '""')
+      .replace(/(^|[^:])\/\/[^\n]*/g, '$1');
+    for (const line of code.split(/\r?\n/)) {
+      const dm = DECL_LINE_RE.exec(line);
+      if (!dm) continue;
+      const names = dm[1] ? [dm[1]] : destructuredNames(dm[2] ?? dm[3] ?? '');
+      for (const n of names) if (RISKY_GLOBALS.has(n)) found.add(n);
+    }
+  }
+  return [...found];
+}
+
+// ---------------------------------------------------------------------------
 // model assembly
 // ---------------------------------------------------------------------------
 
@@ -422,9 +552,21 @@ export function buildModel(projectDir) {
     const exports = collectExports(src);
     allSources.push({ path: sp, exports, isModule, dtsPath, stem });
     if (isModule) {
+      let dts = '';
+      try { dts = read(path.join(root, dtsPath)); } catch { /* fail open */ }
+      const interfaces = parseDtsInterfaces(dts);
       for (const name of exports) {
         if (isCapitalized(name)) {
-          components.push({ name, sourcePath: sp });
+          const entry = { name, sourcePath: sp };
+          if (!/[a-z]/.test(name)) {
+            entry.kind = 'constant';
+          } else {
+            const iface =
+              interfaces.find((x) => x.name === `${name}Props`) ||
+              interfaces.find((x) => x.name === name);
+            if (iface && iface.props.length) entry.props = iface.props;
+          }
+          components.push(entry);
           if (!nameOwners.has(name)) nameOwners.set(name, []);
           nameOwners.get(name).push(sp);
         } else {
@@ -491,6 +633,13 @@ export function buildModel(projectDir) {
         const comp = path.posix.basename(resolved).replace(SOURCE_EXT, '');
         issues.push(`\`${hp}\` sources component module \`${resolved}\` directly — reference it through \`_ds_bundle.js\` (\`window.<Namespace>.${comp}\`) instead.`);
       }
+    }
+    for (const g of riskyTopLevelGlobals(src)) {
+      issues.push(
+        `\`${hp}\`: top-level \`${g}\` in a text/babel script collides with \`window.${g}\` ` +
+        'once Babel injects the transpiled classic script (top-level const/let become var) — ' +
+        'the card can die with a pageerror the console never shows. Rename the binding.',
+      );
     }
   }
 
@@ -598,4 +747,4 @@ export function buildModel(projectDir) {
   };
 }
 
-export { pascalCase, collectExports, classifyByValue, makeResolver };
+export { pascalCase, collectExports, classifyByValue, makeResolver, riskyTopLevelGlobals };

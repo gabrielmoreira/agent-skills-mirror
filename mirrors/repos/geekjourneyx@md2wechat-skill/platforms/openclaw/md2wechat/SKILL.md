@@ -58,7 +58,11 @@ Run the smallest useful discovery set:
   ```bash
   md2wechat version --json
   md2wechat capabilities --json
+  md2wechat skills list --json
+  md2wechat skills read md2wechat --json
   ```
+
+`md2wechat skills read md2wechat --json` reads the core coding-agent SOP embedded in the current CLI binary. Use it when the local OpenClaw skill copy may be older than the executable on `PATH`; keep OpenClaw installation metadata from this platform skill as the platform-specific layer.
 
 For simple local actions such as `preview`, `humanize`, or a user-specified command with explicit flags, do not run unrelated provider, theme, prompt, or layout discovery.
 

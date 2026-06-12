@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Ar9av/obsidian-wiki` — 26 default patterns, 0 followed patterns, 43 file(s) materialized.
+Mirror of `Ar9av/obsidian-wiki` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Ar9av/obsidian-wiki` — 26 default patterns, 0 followed patterns, 43
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 43 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,42 +66,38 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.skills/copilot-history-ingest/SKILL.md`](.skills/copilot-history-ingest/SKILL.md) |
 | 6 | ✓ | [`.skills/cross-linker/SKILL.md`](.skills/cross-linker/SKILL.md) |
 | 7 | ✓ | [`.skills/daily-update/SKILL.md`](.skills/daily-update/SKILL.md) |
-| 8 | ✓ | [`.skills/data-ingest/SKILL.md`](.skills/data-ingest/SKILL.md) |
-| 9 | ✓ | [`.skills/graph-colorize/SKILL.md`](.skills/graph-colorize/SKILL.md) |
-| 10 | ✓ | [`.skills/hermes-history-ingest/SKILL.md`](.skills/hermes-history-ingest/SKILL.md) |
-| 11 | ✓ | [`.skills/impl-validator/SKILL.md`](.skills/impl-validator/SKILL.md) |
-| 12 | ✓ | [`.skills/ingest-url/SKILL.md`](.skills/ingest-url/SKILL.md) |
-| 13 | ✓ | [`.skills/llm-wiki/SKILL.md`](.skills/llm-wiki/SKILL.md) |
-| 14 | ✓ | [`.skills/memory-bridge/SKILL.md`](.skills/memory-bridge/SKILL.md) |
-| 15 | ✓ | [`.skills/obsidian-wiki-ingest/SKILL.md`](.skills/obsidian-wiki-ingest/SKILL.md) |
-| 16 | ✓ | [`.skills/openclaw-history-ingest/SKILL.md`](.skills/openclaw-history-ingest/SKILL.md) |
-| 17 | ✓ | [`.skills/pi-history-ingest/SKILL.md`](.skills/pi-history-ingest/SKILL.md) |
-| 18 | ✓ | [`.skills/skill-creator/SKILL.md`](.skills/skill-creator/SKILL.md) |
-| 19 | ✓ | [`.skills/tag-taxonomy/SKILL.md`](.skills/tag-taxonomy/SKILL.md) |
-| 20 | ✓ | [`.skills/wiki-agent/SKILL.md`](.skills/wiki-agent/SKILL.md) |
-| 21 | ✓ | [`.skills/wiki-capture/SKILL.md`](.skills/wiki-capture/SKILL.md) |
-| 22 | ✓ | [`.skills/wiki-context-pack/SKILL.md`](.skills/wiki-context-pack/SKILL.md) |
-| 23 | ✓ | [`.skills/wiki-dashboard/SKILL.md`](.skills/wiki-dashboard/SKILL.md) |
-| 24 | ✓ | [`.skills/wiki-dedup/SKILL.md`](.skills/wiki-dedup/SKILL.md) |
-| 25 | ✓ | [`.skills/wiki-digest/SKILL.md`](.skills/wiki-digest/SKILL.md) |
-| 26 | ✓ | [`.skills/wiki-export/SKILL.md`](.skills/wiki-export/SKILL.md) |
-| 27 | ✓ | [`.skills/wiki-history-ingest/SKILL.md`](.skills/wiki-history-ingest/SKILL.md) |
-| 28 | ✓ | [`.skills/wiki-import/SKILL.md`](.skills/wiki-import/SKILL.md) |
-| 29 | ✓ | [`.skills/wiki-ingest/SKILL.md`](.skills/wiki-ingest/SKILL.md) |
-| 30 | ✓ | [`.skills/wiki-lint/SKILL.md`](.skills/wiki-lint/SKILL.md) |
-| 31 | ✓ | [`.skills/wiki-query/SKILL.md`](.skills/wiki-query/SKILL.md) |
-| 32 | ✓ | [`.skills/wiki-quick-chat-capture/SKILL.md`](.skills/wiki-quick-chat-capture/SKILL.md) |
-| 33 | ✓ | [`.skills/wiki-rebuild/SKILL.md`](.skills/wiki-rebuild/SKILL.md) |
-| 34 | ✓ | [`.skills/wiki-research/SKILL.md`](.skills/wiki-research/SKILL.md) |
-| 35 | ✓ | [`.skills/wiki-setup/SKILL.md`](.skills/wiki-setup/SKILL.md) |
-| 36 | ✓ | [`.skills/wiki-stage-commit/SKILL.md`](.skills/wiki-stage-commit/SKILL.md) |
-| 37 | ✓ | [`.skills/wiki-status/SKILL.md`](.skills/wiki-status/SKILL.md) |
-| 38 | ✓ | [`.skills/wiki-switch/SKILL.md`](.skills/wiki-switch/SKILL.md) |
-| 39 | ✓ | [`.skills/wiki-synthesize/SKILL.md`](.skills/wiki-synthesize/SKILL.md) |
-| 40 | ✓ | [`.skills/wiki-update/SKILL.md`](.skills/wiki-update/SKILL.md) |
-| 41 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 42 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 43 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 8 | ✓ | [`.skills/graph-colorize/SKILL.md`](.skills/graph-colorize/SKILL.md) |
+| 9 | ✓ | [`.skills/hermes-history-ingest/SKILL.md`](.skills/hermes-history-ingest/SKILL.md) |
+| 10 | ✓ | [`.skills/impl-validator/SKILL.md`](.skills/impl-validator/SKILL.md) |
+| 11 | ✓ | [`.skills/llm-wiki/SKILL.md`](.skills/llm-wiki/SKILL.md) |
+| 12 | ✓ | [`.skills/memory-bridge/SKILL.md`](.skills/memory-bridge/SKILL.md) |
+| 13 | ✓ | [`.skills/openclaw-history-ingest/SKILL.md`](.skills/openclaw-history-ingest/SKILL.md) |
+| 14 | ✓ | [`.skills/pi-history-ingest/SKILL.md`](.skills/pi-history-ingest/SKILL.md) |
+| 15 | ✓ | [`.skills/skill-creator/SKILL.md`](.skills/skill-creator/SKILL.md) |
+| 16 | ✓ | [`.skills/tag-taxonomy/SKILL.md`](.skills/tag-taxonomy/SKILL.md) |
+| 17 | ✓ | [`.skills/wiki-agent/SKILL.md`](.skills/wiki-agent/SKILL.md) |
+| 18 | ✓ | [`.skills/wiki-capture/SKILL.md`](.skills/wiki-capture/SKILL.md) |
+| 19 | ✓ | [`.skills/wiki-context-pack/SKILL.md`](.skills/wiki-context-pack/SKILL.md) |
+| 20 | ✓ | [`.skills/wiki-dashboard/SKILL.md`](.skills/wiki-dashboard/SKILL.md) |
+| 21 | ✓ | [`.skills/wiki-dedup/SKILL.md`](.skills/wiki-dedup/SKILL.md) |
+| 22 | ✓ | [`.skills/wiki-digest/SKILL.md`](.skills/wiki-digest/SKILL.md) |
+| 23 | ✓ | [`.skills/wiki-export/SKILL.md`](.skills/wiki-export/SKILL.md) |
+| 24 | ✓ | [`.skills/wiki-history-ingest/SKILL.md`](.skills/wiki-history-ingest/SKILL.md) |
+| 25 | ✓ | [`.skills/wiki-import/SKILL.md`](.skills/wiki-import/SKILL.md) |
+| 26 | ✓ | [`.skills/wiki-ingest/SKILL.md`](.skills/wiki-ingest/SKILL.md) |
+| 27 | ✓ | [`.skills/wiki-lint/SKILL.md`](.skills/wiki-lint/SKILL.md) |
+| 28 | ✓ | [`.skills/wiki-query/SKILL.md`](.skills/wiki-query/SKILL.md) |
+| 29 | ✓ | [`.skills/wiki-rebuild/SKILL.md`](.skills/wiki-rebuild/SKILL.md) |
+| 30 | ✓ | [`.skills/wiki-research/SKILL.md`](.skills/wiki-research/SKILL.md) |
+| 31 | ✓ | [`.skills/wiki-setup/SKILL.md`](.skills/wiki-setup/SKILL.md) |
+| 32 | ✓ | [`.skills/wiki-stage-commit/SKILL.md`](.skills/wiki-stage-commit/SKILL.md) |
+| 33 | ✓ | [`.skills/wiki-status/SKILL.md`](.skills/wiki-status/SKILL.md) |
+| 34 | ✓ | [`.skills/wiki-switch/SKILL.md`](.skills/wiki-switch/SKILL.md) |
+| 35 | ✓ | [`.skills/wiki-synthesize/SKILL.md`](.skills/wiki-synthesize/SKILL.md) |
+| 36 | ✓ | [`.skills/wiki-update/SKILL.md`](.skills/wiki-update/SKILL.md) |
+| 37 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 38 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 39 | ✓ | [`GEMINI.md`](GEMINI.md) |
 
 ---
 

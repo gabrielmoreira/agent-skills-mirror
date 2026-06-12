@@ -111,8 +111,8 @@ Run `/manage-channels` to wire the GitHub channel to an agent group, or insert m
 
 ```sql
 -- Create messaging group (one per repo)
-INSERT INTO messaging_groups (id, channel_type, platform_id, name, is_group, unknown_sender_policy, created_at)
-VALUES ('mg-github-myrepo', 'github', 'github:owner/repo', 'owner/repo', 1, '<policy>', datetime('now'));
+INSERT INTO messaging_groups (id, channel_type, platform_id, instance, name, is_group, unknown_sender_policy, created_at)
+VALUES ('mg-github-myrepo', 'github', 'github:owner/repo', 'github', 'owner/repo', 1, '<policy>', datetime('now'));
 
 -- Wire to agent group
 INSERT INTO messaging_group_agents (id, messaging_group_id, agent_group_id, trigger_rules, response_scope, session_mode, priority, created_at)

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Canner/WrenAI` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `Canner/WrenAI` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Canner/WrenAI` — 26 default patterns, 0 followed patterns, 23 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,18 +70,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`core/wren/.claude/CLAUDE.md`](core/wren/.claude/CLAUDE.md) |
 | 10 | ✓ | [`core/wren/src/wren/skills_content/dlt-connector/SKILL.md`](core/wren/src/wren/skills_content/dlt-connector/SKILL.md) |
 | 11 | ✓ | [`core/wren/src/wren/skills_content/enrich-context/SKILL.md`](core/wren/src/wren/skills_content/enrich-context/SKILL.md) |
-| 12 | ✓ | [`core/wren/src/wren/skills_content/generate-mdl/SKILL.md`](core/wren/src/wren/skills_content/generate-mdl/SKILL.md) |
-| 13 | ✓ | [`core/wren/src/wren/skills_content/onboarding/SKILL.md`](core/wren/src/wren/skills_content/onboarding/SKILL.md) |
-| 14 | ✓ | [`core/wren/src/wren/skills_content/usage/SKILL.md`](core/wren/src/wren/skills_content/usage/SKILL.md) |
-| 15 | ✓ | [`docs/core/reference/skills.md`](docs/core/reference/skills.md) |
-| 16 | ✓ | [`skills/.claude-plugin/marketplace.json`](skills/.claude-plugin/marketplace.json) |
-| 17 | ✓ | [`skills/.claude-plugin/plugin.json`](skills/.claude-plugin/plugin.json) |
-| 18 | ✓ | [`skills/AUTHORING.md`](skills/AUTHORING.md) |
-| 19 | ✓ | [`skills/index.json`](skills/index.json) |
-| 20 | ✓ | [`skills/install.sh`](skills/install.sh) |
-| 21 | ✓ | [`skills/README.md`](skills/README.md) |
-| 22 | ✓ | [`skills/SKILLS.md`](skills/SKILLS.md) |
-| 23 | ✓ | [`skills/wren/SKILL.md`](skills/wren/SKILL.md) |
+| 12 | ✓ | [`core/wren/src/wren/skills_content/genbi/SKILL.md`](core/wren/src/wren/skills_content/genbi/SKILL.md) |
+| 13 | ✓ | [`core/wren/src/wren/skills_content/generate-mdl/SKILL.md`](core/wren/src/wren/skills_content/generate-mdl/SKILL.md) |
+| 14 | ✓ | [`core/wren/src/wren/skills_content/onboarding/SKILL.md`](core/wren/src/wren/skills_content/onboarding/SKILL.md) |
+| 15 | ✓ | [`core/wren/src/wren/skills_content/usage/SKILL.md`](core/wren/src/wren/skills_content/usage/SKILL.md) |
+| 16 | ✓ | [`docs/core/reference/skills.md`](docs/core/reference/skills.md) |
+| 17 | ✓ | [`skills/.claude-plugin/marketplace.json`](skills/.claude-plugin/marketplace.json) |
+| 18 | ✓ | [`skills/.claude-plugin/plugin.json`](skills/.claude-plugin/plugin.json) |
+| 19 | ✓ | [`skills/AUTHORING.md`](skills/AUTHORING.md) |
+| 20 | ✓ | [`skills/index.json`](skills/index.json) |
+| 21 | ✓ | [`skills/install.sh`](skills/install.sh) |
+| 22 | ✓ | [`skills/README.md`](skills/README.md) |
+| 23 | ✓ | [`skills/SKILLS.md`](skills/SKILLS.md) |
+| 24 | ✓ | [`skills/wren/SKILL.md`](skills/wren/SKILL.md) |
 
 ---
 

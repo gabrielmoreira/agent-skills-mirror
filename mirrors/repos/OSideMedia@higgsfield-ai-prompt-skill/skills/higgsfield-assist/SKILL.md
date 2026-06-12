@@ -89,6 +89,30 @@ for final in-platform prompt refinement and quick generation.
 **High cost:** Sora 2, Kling 3.0 (with audio), Veo 3, Cinema Studio
 **Apps:** Vary widely — one-click apps are generally efficient
 
+### Quote From the Ledger, Not From Vibes
+
+**Before quoting any credit estimate for multi-shot work, run the generation
+ledger and cite the numbers:**
+
+```bash
+python3 ../../higgsfield_memory.py ratio <project> --credits
+python3 ../../higgsfield_memory.py budget <project> --shots <manifest.json>
+```
+
+- `ratio` gives empirical takes-per-kept per shot type, with the
+  structural-vs-stochastic rejection split (high structural% = rewrite the
+  prompt, don't re-roll; high stochastic% = priced re-roll territory).
+- `budget` multiplies a planned shot manifest by those ratios → expected
+  generations + credit estimate with a stated confidence level.
+- **Never budget from a row marked `low-n`** (under 5 logged generations) —
+  the tool flags them; respect the flag.
+- **If the ledger is empty or thin, say so explicitly** and use the
+  documented default planning ratios — **2–3:1 simple shots, 4–6:1 complex
+  shots — labeled as defaults, not data.** The `budget` command does this
+  labeling automatically; keep the label when you relay the estimate.
+- Every logged generation sharpens these numbers — the logging workflow is
+  one command (`../higgsfield-recall/SKILL.md` § Log the Generation Result).
+
 ### The 5 Most Common Credit Waste Patterns
 
 **1. Generating video before perfecting the image**

@@ -33,11 +33,13 @@ web search evidence (default on; degrades gracefully). `--cap N` = max iteration
 2. **Web augmentation**: fetch 3+ relevant references via WebSearch; inject into
    reviewer prompt. On search failure, log `web-search-unavailable` to
    `~/.megingjord/incidents.jsonl` and continue without web context.
-3. **Dispatch review** (G3 fleet-first):
-   - Fleet: `node scripts/global/fleet-red-team-dispatch.js --ticket N`
-     (timeout: 120 s; model: per `red-team-model-matrix.yml`)
-   - Fleet unreachable/empty → free-cloud fallback:
-     `node scripts/global/free-cloud-dispatch.js` (timeout: 45 s per provider)
+3. **Dispatch review** (G3 fleet-first) — canonical CLI is `cascade-dispatch.js` (#2858 / Epic #2926 D1):
+   - `node scripts/global/cascade-dispatch.js --prompt "<review prompt>" --model qwen2.5-coder:32b [--json]`
+     — orchestrates fleet → free-cloud fallback → escalation; timeouts per `timeout-policy.json`. It already
+     emits `[cascade] escalate→<tier>` to stderr on escalation.
+   - On a fleet **availability** failure it fails over to the $0 free-cloud chain automatically (#2619/#2621);
+     premium is reached only on a free-cloud **capability** failure (Epic #2926 D4).
+   - `fleet-red-team-dispatch.js` is a LIBRARY (no CLI) — do NOT invoke it directly; it redirects here.
    - Cross-family invariant enforced at every tier (no Anthropic model).
 4. **Score check**: if score > gate → post ACCEPT and stop. Else → post ITER
    comment and proceed to rework.

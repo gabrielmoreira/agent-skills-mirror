@@ -11,9 +11,37 @@ metadata:
 
 # Higgsfield Seedance Director
 
+## QUICK FACTS
+*Generated-checked block (build_index.py verifies anchors). Read the linked sections for full context — these lines are routing aids, not the rules themselves.*
+- The filter is an LLM reading full-scene intent, not a keyword blacklist — describe a SCENE, not a subject; fix the voice first [→](#the-filter-model-read-this-first)
+- Instant fail (<10s) = filter rejection; delayed fail (>30s) = infra/complexity — never regenerate an instant fail unchanged [→](#instant-fail-vs-delayed-fail-the-diagnostic)
+- Six slots, in order: Camera + Subject + Action + Setting + Style + Lighting; missing 3+ slots is where flags come from [→](#the-seedance-prompt-formula)
+- Five prompt modes: Reference-Based / Continuation / Expand Shot / Edit Shot / Transformation — pick the mode before writing [→](#seedance-20-prompt-modes)
+- Hard engine rules (age-blind, exit-frame = cut, off-screen = nonexistent, no reflections, ≤3 tracked characters, double-contrast cuts) + high-risk shot table: `ENGINE-RULES.md` in this directory
+- Reference roles: Character / Last-Frame / Environment / Prop — role determines what the prompt may re-describe [→](#reference-roles)
+- Working modes: Exploration / Continuation / Bridging / Repair (distinct from prompt modes) [→](#working-modes-vs-prompt-modes-two-taxonomies)
+- Layer 1 briefing vs Layer 2 production prompt — never paste Layer 1 into the prompt box [→](#two-layer-prompt-authoring)
+- Always preflight: `python3 seedance_lint.py --preflight --model seedance_2_0 "<prompt>"` — enums come from `../../specs/model-specs.json` (fast+1080p and Kling 21:9 are auto-caught) [→](#pre-flight-linter)
+- 480p drafts validate the prompt, NOT the take — no seed param; pin Hero Frame + start/end frames to carry a look [→](#drafts-validate-the-prompt-not-the-take)
+- ZH prompts: hard 1,800-char cap; ZH antislop list enforced by the linter [→](#multi-language-prompt-workarounds)
+- Flagged prompt → rewrite playbook per linter rule, then voice pass [→](#the-rewrite-playbook)
+- Repeated flags → full loop-breaker procedure + LOG THE OUTCOME (`--confirmed` / `add-quality`) [→](#when-the-user-is-already-in-a-failure-loop)
+
+
 Use this skill whenever the user wants a Seedance 2.0 / Seedance Pro prompt, OR
 whenever a Seedance generation has been blocked, flagged, or silently failed.
 This skill's job is to stop credit waste on filter rejections.
+
+> **Engine rules (read with this file):** the hard rendering constraints of the
+> Seedance 2.0 engine — age-blind characters, exit-frame = implicit cut,
+> off-screen = nonexistent, no reflection shots, ≤3 tracked characters, the
+> double-contrast cut rule — live in `ENGINE-RULES.md` in this directory,
+> together with the high-risk shot table (reflections, same-character doubles,
+> crowds, text rendering) and its mitigations. This SKILL.md is the
+> `EN-director` *profile* of that rule core; the `ZH-house` and
+> `bilingual-JSON` profiles (`../../docs/Seedance 2 Skill.md`) obey the same
+> core. Flag high-risk shot types at authoring time — never silently break a
+> rule the project's hero image happens to conflict with.
 
 ---
 
@@ -942,13 +970,16 @@ primitives express at the interface level.
 
 ## Pre-flight Linter
 
-Before the user generates, run the prompt through the preflight linter:
+Before the user generates, run the prompt through the full preflight:
 
 ```
-python3 seedance_lint.py "<prompt text>"
+python3 seedance_lint.py --preflight --model seedance_2_0 "<prompt text>"
 ```
 
-The linter is at the project root (`seedance_lint.py`). It flags:
+The linter is at the project root (`seedance_lint.py`). `--preflight` chains
+three passes into one PASS/WARN/FAIL report:
+
+**1. Filter lint** (always on):
 
 - **Real names** of public figures / celebrities / politicians
 - **Brand, IP, franchise names** (Nike, Marvel, Spider-Man, Pokémon, etc.)
@@ -959,9 +990,55 @@ The linter is at the project root (`seedance_lint.py`). It flags:
   on the text encoder, not the filter)
 - **Conflicting instructions** (moving + frozen, bright + dark, etc.)
 
+**2. Structural lint** (with `--model <id>`; driven by `../../specs/model-specs.json`,
+never guessed) — the expensive failure class:
+
+- Declared shot count ("strictly N shots" / 严格N个镜头) vs actual
+  `【镜头N】`/`[Shot N]` block count
+- Timed beats (`[0-4s]`) summing past the declared duration / model max
+- ZH prompts over the 1,800-character hard cap; ZH antislop phrases
+- `@handle` used before its declaration line
+- Aspect ratio / resolution / mode / duration outside the model's enum —
+  catches Seedance `fast`+1080p (fast cannot output 1080p) and Kling 3.0
+  + 21:9 (no native 21:9)
+
+Settings are read from the prompt's own header lines (`**Aspect ratio**: …`,
+`Resolution: …`, `mode: …`, `Duration: Ns`); override per-field with
+`--ar / --resolution / --mode / --duration`.
+
+**3. Memory recall**: the most relevant past failures from
+`../../db/filter-memory.json` / `../../db/quality-memory.json` surface as INFO notes.
+
 Output is `PASS`, `WARN`, or `FAIL` with the specific fix for each rule hit.
 Treat `FAIL` as "do not hit generate." Treat `WARN` as "likely to pass, but
-here is what to harden."
+here is what to harden." Exit codes: 0 pass/warn, 1 fail, 2 usage — safe to
+script.
+
+---
+
+## Drafts Validate the Prompt, Not the Take
+
+The 480p tier is for **prompt iteration**, not take approval. Seedance 2.0
+exposes **no seed parameter** (verified — `../../specs/model-specs.yaml`
+lists `resolution`, `mode`, `genre` and nothing else), so re-running an
+approved 480p draft at 1080p is a **fresh roll**: a new performance, a new
+camera micro-trajectory, new timing. "Approve cheap, re-render at quality"
+is not a workflow Seedance supports.
+
+| Persists across rolls (prompt-driven — a draft CAN validate it) | Re-rolled fresh every generation (a draft CANNOT validate it) |
+|---|---|
+| Shot count and structure obedience | Performance — expression, gesture nuance, micro-timing |
+| Blocking obedience (positions, directions, entrances/exits) | Camera micro-trajectory within the named move |
+| @handle / identity contamination | Beat timing inside the clip |
+| Dialogue placement | Fine detail (smoke threads, inscription legibility, reflections) |
+| Content-filter pass/fail | |
+
+To carry a look you approved into the final render, use the documented
+transfer mechanism: the **Hero Frame** (`../higgsfield-assist/SKILL.md`)
+plus **start/end-frame pinning** (start_image / end_image reference roles —
+see § Reference Roles above). Pin the frame, not the roll. Fine-detail
+judgments must be **re-checked at final resolution** — 480p hides exactly
+the detail they're about.
 
 ---
 
@@ -1191,9 +1268,19 @@ If the user tells you Seedance has flagged them multiple times in a row:
 2. **Run the preflight linter** on that exact text.
 3. **Apply the rewrite playbook** for every rule the linter hit.
 4. **Do a voice pass** (add Style & Mood, name the camera, present-tense physics).
-5. **Log the fix** to the filter-memory database at the project root so future
-   sessions benefit — use `higgsfield_memory.py` (at the project root) to append
-   an entry describing the blocked prompt, the substitution, and whether it worked.
+5. **Log the outcome** to the learning memory so future sessions benefit. These
+   are concrete steps, not optional polish — the memory system only learns if
+   outcomes actually get written:
+   - After a rewrite **passes Seedance's filter in a real generation**, log it
+     as a confirmed workaround:
+     `python3 seedance_lint.py --confirmed "<the prompt that passed>"`
+   - If you logged a predicted rejection earlier (`--log`) and later learn the
+     outcome: `python3 higgsfield_memory.py update-filter <id> <fixed|workaround|still-blocked>`
+   - After a **quality fix** is confirmed (motion, identity, blocking — not a
+     filter issue): `python3 higgsfield_memory.py add-quality '<json entry>'`
+     with the original prompt, the failure description, and the improved prompt.
+   - For production-specific lessons that shouldn't pollute global memory, add
+     `--project <name>` (entries land in `../../db/projects/`).
 
 Do not let the user regenerate the same prompt with one word changed. That
 is the loop that wastes hours.

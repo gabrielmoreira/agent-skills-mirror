@@ -1,8 +1,8 @@
 # Agent Protocol
 
 **Server:** obsidian-mcp-server
-**Version:** 3.2.4
-**Framework:** [@cyanheads/mcp-ts-core](https://www.npmjs.com/package/@cyanheads/mcp-ts-core) `^0.9.21`
+**Version:** 3.2.7
+**Framework:** [@cyanheads/mcp-ts-core](https://www.npmjs.com/package/@cyanheads/mcp-ts-core) `^0.10.6`
 **Engines:** Bun ≥1.3.11, Node ≥24.0.0
 **MCP SDK:** `@modelcontextprotocol/sdk` ^1.29.0
 **Zod:** ^4.4.3
@@ -181,7 +181,7 @@ Handlers receive a unified `ctx` object. Properties this server actually uses:
 | `ctx.requestId` | Unique request ID — surfaces in log lines for correlation. |
 | `ctx.tenantId` | Tenant ID from JWT or `'default'` for stdio. |
 
-The framework also provides `ctx.state`, `ctx.sample`, and `ctx.progress`. They aren't used by this server — Obsidian is single-vault and stateless from the server's perspective, so per-tenant KV and progress streams aren't needed. See the framework `CLAUDE.md` for the full surface.
+The framework also provides `ctx.state` and `ctx.progress`. They aren't used by this server — Obsidian is single-vault and stateless from the server's perspective, so per-tenant KV and progress streams aren't needed. See the framework `CLAUDE.md` for the full surface.
 
 ---
 
@@ -339,7 +339,7 @@ When you complete a skill's checklist, check the boxes and add a completion time
 | `bun run format:unsafe` | Also apply Biome's unsafe autofixes — review the diff; they can change behavior |
 | `bun run lint:mcp` | Validate MCP definitions against the linter rules |
 | `bun run lint:packaging` | Validate env var alignment between `manifest.json` and `server.json` |
-| `bun run bundle` | Build and pack as `.mcpb` for one-click Claude Desktop install |
+| `bun run bundle` | Build, pack, and clean a `.mcpb` for one-click Claude Desktop install |
 | `bun run test` | Run Vitest tests |
 | `bun run start:stdio` | Production mode (stdio) — requires `bun run build` first |
 | `bun run start:http` | Production mode (HTTP) — requires `bun run build` first |
@@ -350,7 +350,7 @@ When you complete a skill's checklist, check the boxes and add a completion time
 
 ## Bundling
 
-`bun run bundle` produces a `.mcpb` extension bundle for one-click install in Claude Desktop. MCPB is stdio-only — HTTP deployments are unaffected. Delete `manifest.json` and `.mcpbignore` if not shipping MCPB bundles; `lint:packaging` skips cleanly.
+`bun run bundle` produces a `.mcpb` extension bundle for one-click install in Claude Desktop. The pack step is followed by `scripts/clean-mcpb.ts`, which prunes dev dependencies (`mcpb clean`) and strips dependency-shipped agent docs (`node_modules/**` `skills/`, `.claude/`, `.agents/`, `SKILL.md`) that root-anchored `.mcpbignore` patterns cannot reach. MCPB is stdio-only — HTTP deployments are unaffected. Delete `manifest.json` and `.mcpbignore` if not shipping MCPB bundles; `lint:packaging` skips cleanly.
 
 **Adding an env var requires both files:** `server.json` (`environmentVariables[]`) and `manifest.json` (`mcp_config.env` + `user_config`). `lint:packaging` (run by `devcheck`) verifies the env var names match.
 

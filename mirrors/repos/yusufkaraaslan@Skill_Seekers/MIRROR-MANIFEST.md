@@ -7,7 +7,7 @@ ref: development
 
 # Mirror Manifest
 
-Mirror of `yusufkaraaslan/Skill_Seekers` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `yusufkaraaslan/Skill_Seekers` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `yusufkaraaslan/Skill_Seekers` — 26 default patterns, 0 followed pat
 | Ref           | `development` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,6 +63,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`distribution/claude-plugin/skills/skill-builder/SKILL.md`](distribution/claude-plugin/skills/skill-builder/SKILL.md) |
 | 4 | ✓ | [`skills/skill-seekers/SKILL.md`](skills/skill-seekers/SKILL.md) |
+| 5 | ✓ | [`tests/golden/phase2/chat_empty/SKILL.md`](tests/golden/phase2/chat_empty/SKILL.md) |
+| 6 | ✓ | [`tests/golden/phase2/chat_single/SKILL.md`](tests/golden/phase2/chat_single/SKILL.md) |
+| 7 | ✓ | [`tests/golden/phase2/chat_topics/SKILL.md`](tests/golden/phase2/chat_topics/SKILL.md) |
+| 8 | ✓ | [`tests/golden/phase2/chat/SKILL.md`](tests/golden/phase2/chat/SKILL.md) |
+| 9 | ✓ | [`tests/golden/phase2/epub_kw/SKILL.md`](tests/golden/phase2/epub_kw/SKILL.md) |
+| 10 | ✓ | [`tests/golden/phase2/epub/SKILL.md`](tests/golden/phase2/epub/SKILL.md) |
+| 11 | ✓ | [`tests/golden/phase2/html_kw/SKILL.md`](tests/golden/phase2/html_kw/SKILL.md) |
+| 12 | ✓ | [`tests/golden/phase2/html_multi/SKILL.md`](tests/golden/phase2/html_multi/SKILL.md) |
+| 13 | ✓ | [`tests/golden/phase2/html/SKILL.md`](tests/golden/phase2/html/SKILL.md) |
+| 14 | ✓ | [`tests/golden/phase2/jupyter_dir/SKILL.md`](tests/golden/phase2/jupyter_dir/SKILL.md) |
+| 15 | ✓ | [`tests/golden/phase2/jupyter_kw/SKILL.md`](tests/golden/phase2/jupyter_kw/SKILL.md) |
+| 16 | ✓ | [`tests/golden/phase2/jupyter_topics/SKILL.md`](tests/golden/phase2/jupyter_topics/SKILL.md) |
+| 17 | ✓ | [`tests/golden/phase2/jupyter/SKILL.md`](tests/golden/phase2/jupyter/SKILL.md) |
+| 18 | ✓ | [`tests/golden/phase2/man_kw/SKILL.md`](tests/golden/phase2/man_kw/SKILL.md) |
+| 19 | ✓ | [`tests/golden/phase2/man_single/SKILL.md`](tests/golden/phase2/man_single/SKILL.md) |
+| 20 | ✓ | [`tests/golden/phase2/man/SKILL.md`](tests/golden/phase2/man/SKILL.md) |
+| 21 | ✓ | [`tests/golden/phase2/pdf_chapters/SKILL.md`](tests/golden/phase2/pdf_chapters/SKILL.md) |
+| 22 | ✓ | [`tests/golden/phase2/pdf_kw/SKILL.md`](tests/golden/phase2/pdf_kw/SKILL.md) |
+| 23 | ✓ | [`tests/golden/phase2/pdf/SKILL.md`](tests/golden/phase2/pdf/SKILL.md) |
+| 24 | ✓ | [`tests/golden/phase2/pptx_kw/SKILL.md`](tests/golden/phase2/pptx_kw/SKILL.md) |
+| 25 | ✓ | [`tests/golden/phase2/pptx/SKILL.md`](tests/golden/phase2/pptx/SKILL.md) |
+| 26 | ✓ | [`tests/golden/phase2/rss_empty/SKILL.md`](tests/golden/phase2/rss_empty/SKILL.md) |
+| 27 | ✓ | [`tests/golden/phase2/rss/SKILL.md`](tests/golden/phase2/rss/SKILL.md) |
+| 28 | ✓ | [`tests/golden/phase2/word/SKILL.md`](tests/golden/phase2/word/SKILL.md) |
 
 ---
 

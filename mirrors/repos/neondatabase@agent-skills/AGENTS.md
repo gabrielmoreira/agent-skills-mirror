@@ -8,6 +8,15 @@ For the complete Agent Skills specification, see: https://agentskills.io/specifi
 
 A collection of skills for coding agents for working with Neon Serverless Postgres. Skills are packaged instructions and documentation that extend the agent's capabilities.
 
+## Downstream Marketplaces — Keep in Sync
+
+This repo (`skills/`) is the source of truth. The Neon skills are also published as plugins in external marketplaces that **vendor their own copies** of the skill files, so changes here do **not** propagate automatically. Whenever you add or change a skill, open a PR in each downstream marketplace to mirror it:
+
+- **OpenAI** — [`openai/plugins`](https://github.com/openai/plugins), Neon plugin at `plugins/neon-postgres/` (fork: `andrelandgraf/plugins`)
+- **Grok (xAI)** — [`xai-org/plugin-marketplace`](https://github.com/xai-org/plugin-marketplace), Neon plugin at `external_plugins/neon/` (fork: `andrelandgraf/plugin-marketplace`)
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full sync checklist.
+
 ## Creating a New Skill
 
 ### Directory Structure

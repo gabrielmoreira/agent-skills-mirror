@@ -211,6 +211,29 @@ Cinema Studio 3.0's generation engine produces ~90% usable output. If outputs ar
 
 ---
 
+## Log the Outcome — Always
+
+Troubleshooting that isn't logged is troubleshooting the next session repeats.
+After ANY confirmed fix from this skill, write it to the learning memory
+(`../../higgsfield_memory.py`, databases in `../../db/`):
+
+- **Filter workaround confirmed** (the rewritten prompt passed in a real
+  generation): `python3 seedance_lint.py --confirmed "<prompt that passed>"`
+- **Quality fix confirmed** (the improved prompt fixed motion / identity /
+  blocking / audio): `python3 higgsfield_memory.py add-quality '<json>'` with
+  `original_prompt`, `failure_description`, `improved_prompt`, `model_used` —
+  then `update-quality <id> improved` once verified.
+- **Outcome learned later** for an entry that already exists:
+  `python3 higgsfield_memory.py update-filter <id> <fixed|workaround|still-blocked>`
+- **Project-specific lessons**: add `--project <name>` to keep them scoped
+  under `../../db/projects/` instead of global memory.
+
+Before troubleshooting, also CHECK memory first — that's `higgsfield-recall`'s
+job (`query-filter` / `query-quality`); the preflight's MEMORY RECALL section
+does it automatically.
+
+---
+
 ## Related skills
 - `higgsfield-prompt` — MCSLA formula, prompt structure, Identity/Motion separation
 - `higgsfield-recall` — Pre-generation memory check for past failures

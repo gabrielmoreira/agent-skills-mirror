@@ -973,7 +973,11 @@ function textStyleProps(node) {
   if (node.fontName) {
     style.fontFamily = fontStack(node.fontName.family);
     const fontStyle = node.fontName.style;
-    /bold/i.test(fontStyle) ? style.fontWeight = 700 : /semi/i.test(fontStyle) ? style.fontWeight = 600 : /medium/i.test(fontStyle) ? style.fontWeight = 500 : /light/i.test(fontStyle) && (style.fontWeight = 300), /italic/i.test(fontStyle) && (style.fontStyle = "italic");
+    for (const [pattern, weight] of FONT_WEIGHT_PATTERNS) if (pattern.test(fontStyle)) {
+      style.fontWeight = weight;
+      break;
+    }
+    /italic/i.test(fontStyle) && (style.fontStyle = "italic");
   }
   if (node.fontSize && (style.fontSize = node.fontSize), node.textAlignHorizontal) {
     const alignMap = {

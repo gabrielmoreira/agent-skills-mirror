@@ -201,6 +201,7 @@ const promptMd = renderDsPrompt({
   globalCssPaths: model.globalCssPaths,
   componentNames: model.components.map((c) => c.name),
   componentPrompts,
+  componentProps: model.components,
   readme: readmeContent,
   tokenNames: model.tokens.map((t) => t.name),
   sourcePath: entry.sourcePath,

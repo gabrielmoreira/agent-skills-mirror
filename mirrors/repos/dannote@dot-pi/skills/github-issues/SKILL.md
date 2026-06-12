@@ -5,6 +5,30 @@ description: Use gh CLI to view, triage, fix, link, create, or close GitHub Issu
 
 # GitHub Issues Workflow
 
+## Markdown bodies: never inline multiline text
+
+Never pass multiline Markdown through `--body "..."`. Shell quoting can leak literal `\n` into GitHub.
+
+Always write Markdown to a temp file and use `--body-file`:
+
+```bash
+cat > /tmp/body.md <<'EOF'
+## Summary
+
+- ...
+
+## Tests
+
+- `...`
+EOF
+
+gh pr create --body-file /tmp/body.md
+# or
+gh pr edit <number> --body-file /tmp/body.md
+# or
+gh issue create --body-file /tmp/body.md
+```
+
 ## View issue
 
 ```bash

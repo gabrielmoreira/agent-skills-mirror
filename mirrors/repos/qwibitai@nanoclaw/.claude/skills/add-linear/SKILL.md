@@ -119,8 +119,8 @@ Run `/manage-channels` to wire the Linear channel to an agent group, or insert m
 
 ```sql
 -- Create messaging group (one per team)
-INSERT INTO messaging_groups (id, channel_type, platform_id, name, is_group, unknown_sender_policy, created_at)
-VALUES ('mg-linear-eng', 'linear', 'linear:ENG', 'Engineering', 1, 'public', datetime('now'));
+INSERT INTO messaging_groups (id, channel_type, platform_id, instance, name, is_group, unknown_sender_policy, created_at)
+VALUES ('mg-linear-eng', 'linear', 'linear:ENG', 'linear', 'Engineering', 1, 'public', datetime('now'));
 
 -- Wire to agent group
 INSERT INTO messaging_group_agents (id, messaging_group_id, agent_group_id, trigger_rules, response_scope, session_mode, priority, created_at)

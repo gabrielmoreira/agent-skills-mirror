@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kurone-kito/idd-skill` — 26 default patterns, 1 followed patterns, 41 file(s) materialized.
+Mirror of `kurone-kito/idd-skill` — 26 default patterns, 2 followed patterns, 42 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `kurone-kito/idd-skill` — 26 default patterns, 1 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 41 |
+| Followed pats | 2 |
+| Files         | 42 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `kurone-kito/idd-skill` — 26 default patterns, 1 followed patterns, 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/idd-workflow.md`
+- `docs/typescript-sources.md`
 
 ## File Index
 
@@ -100,6 +101,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 39 | ✓ | [`skills/issue-authoring/references/workflow-boundary.md`](skills/issue-authoring/references/workflow-boundary.md) |
 | 40 | ✓ | [`skills/issue-authoring/SKILL.md`](skills/issue-authoring/SKILL.md) |
 | 41 | → | [`docs/idd-workflow.md`](docs/idd-workflow.md) |
+| 42 | → | [`docs/typescript-sources.md`](docs/typescript-sources.md) |
 
 ---
 

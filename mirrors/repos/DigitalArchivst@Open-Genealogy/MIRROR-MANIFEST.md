@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `DigitalArchivst/Open-Genealogy` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
+Mirror of `DigitalArchivst/Open-Genealogy` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `DigitalArchivst/Open-Genealogy` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 34 |
+| Files         | 36 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,38 +61,40 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`benchmark/case-studies/ashe-county-nc/claude.md`](benchmark/case-studies/ashe-county-nc/claude.md) |
 | 2 | ✓ | [`benchmark/case-studies/ashe-county-nc/gemini.md`](benchmark/case-studies/ashe-county-nc/gemini.md) |
-| 3 | ✓ | [`skills/gedcom-creator/examples/expected-output.ged`](skills/gedcom-creator/examples/expected-output.ged) |
-| 4 | ✓ | [`skills/gedcom-creator/examples/parish-register-whitchurch.ged`](skills/gedcom-creator/examples/parish-register-whitchurch.ged) |
-| 5 | ✓ | [`skills/gedcom-creator/examples/parish-register-whitchurch.json`](skills/gedcom-creator/examples/parish-register-whitchurch.json) |
-| 6 | ✓ | [`skills/gedcom-creator/examples/sample-input.json`](skills/gedcom-creator/examples/sample-input.json) |
-| 7 | ✓ | [`skills/gedcom-creator/README.md`](skills/gedcom-creator/README.md) |
-| 8 | ✓ | [`skills/gedcom-creator/scripts/.gitignore`](skills/gedcom-creator/scripts/.gitignore) |
-| 9 | ✓ | [`skills/gedcom-creator/scripts/gedcom_builder.py`](skills/gedcom-creator/scripts/gedcom_builder.py) |
-| 10 | ✓ | [`skills/gedcom-creator/scripts/test_gedcom_builder.py`](skills/gedcom-creator/scripts/test_gedcom_builder.py) |
-| 11 | ✓ | [`skills/gedcom-creator/SKILL.md`](skills/gedcom-creator/SKILL.md) |
-| 12 | ✓ | [`skills/gra/agents/openai.yaml`](skills/gra/agents/openai.yaml) |
-| 13 | ✓ | [`skills/gra/examples/anti-fabrication.md`](skills/gra/examples/anti-fabrication.md) |
-| 14 | ✓ | [`skills/gra/examples/conflict-resolution.md`](skills/gra/examples/conflict-resolution.md) |
-| 15 | ✓ | [`skills/gra/examples/source-classification.md`](skills/gra/examples/source-classification.md) |
-| 16 | ✓ | [`skills/gra/LICENSE`](skills/gra/LICENSE) |
-| 17 | ✓ | [`skills/gra/README.md`](skills/gra/README.md) |
-| 18 | ✓ | [`skills/gra/references/companion-reference.md`](skills/gra/references/companion-reference.md) |
-| 19 | ✓ | [`skills/gra/references/research-assistant-v8.5-full.md`](skills/gra/references/research-assistant-v8.5-full.md) |
-| 20 | ✓ | [`skills/gra/SKILL.md`](skills/gra/SKILL.md) |
-| 21 | ✓ | [`skills/gra/tests/fixtures/t01-three-layer-census.md`](skills/gra/tests/fixtures/t01-three-layer-census.md) |
-| 22 | ✓ | [`skills/gra/tests/fixtures/t02-conflict-resolution.md`](skills/gra/tests/fixtures/t02-conflict-resolution.md) |
-| 23 | ✓ | [`skills/gra/tests/fixtures/t03-disambiguation.md`](skills/gra/tests/fixtures/t03-disambiguation.md) |
-| 24 | ✓ | [`skills/gra/tests/fixtures/t04-anti-fabrication.md`](skills/gra/tests/fixtures/t04-anti-fabrication.md) |
-| 25 | ✓ | [`skills/gra/tests/fixtures/t05-terminology.md`](skills/gra/tests/fixtures/t05-terminology.md) |
-| 26 | ✓ | [`skills/gra/tests/fixtures/t06-negative-evidence.md`](skills/gra/tests/fixtures/t06-negative-evidence.md) |
-| 27 | ✓ | [`skills/gra/tests/fixtures/t07-proof-vehicle.md`](skills/gra/tests/fixtures/t07-proof-vehicle.md) |
-| 28 | ✓ | [`skills/gra/tests/fixtures/t08-citation-completeness.md`](skills/gra/tests/fixtures/t08-citation-completeness.md) |
-| 29 | ✓ | [`skills/gra/tests/fixtures/t09-fan-principle.md`](skills/gra/tests/fixtures/t09-fan-principle.md) |
-| 30 | ✓ | [`skills/gra/tests/fixtures/t10-living-person.md`](skills/gra/tests/fixtures/t10-living-person.md) |
-| 31 | ✓ | [`skills/gra/tests/fixtures/t11-implied-relationship-lawrence.md`](skills/gra/tests/fixtures/t11-implied-relationship-lawrence.md) |
-| 32 | ✓ | [`skills/gra/tests/README.md`](skills/gra/tests/README.md) |
-| 33 | ✓ | [`skills/gra/tests/run_tests.py`](skills/gra/tests/run_tests.py) |
-| 34 | ✓ | [`skills/README.md`](skills/README.md) |
+| 3 | ✓ | [`genealogy-ai-starter-workspace/AGENTS.md`](genealogy-ai-starter-workspace/AGENTS.md) |
+| 4 | ✓ | [`genealogy-ai-starter-workspace/CLAUDE.md`](genealogy-ai-starter-workspace/CLAUDE.md) |
+| 5 | ✓ | [`skills/gedcom-creator/examples/expected-output.ged`](skills/gedcom-creator/examples/expected-output.ged) |
+| 6 | ✓ | [`skills/gedcom-creator/examples/parish-register-whitchurch.ged`](skills/gedcom-creator/examples/parish-register-whitchurch.ged) |
+| 7 | ✓ | [`skills/gedcom-creator/examples/parish-register-whitchurch.json`](skills/gedcom-creator/examples/parish-register-whitchurch.json) |
+| 8 | ✓ | [`skills/gedcom-creator/examples/sample-input.json`](skills/gedcom-creator/examples/sample-input.json) |
+| 9 | ✓ | [`skills/gedcom-creator/README.md`](skills/gedcom-creator/README.md) |
+| 10 | ✓ | [`skills/gedcom-creator/scripts/.gitignore`](skills/gedcom-creator/scripts/.gitignore) |
+| 11 | ✓ | [`skills/gedcom-creator/scripts/gedcom_builder.py`](skills/gedcom-creator/scripts/gedcom_builder.py) |
+| 12 | ✓ | [`skills/gedcom-creator/scripts/test_gedcom_builder.py`](skills/gedcom-creator/scripts/test_gedcom_builder.py) |
+| 13 | ✓ | [`skills/gedcom-creator/SKILL.md`](skills/gedcom-creator/SKILL.md) |
+| 14 | ✓ | [`skills/gra/agents/openai.yaml`](skills/gra/agents/openai.yaml) |
+| 15 | ✓ | [`skills/gra/examples/anti-fabrication.md`](skills/gra/examples/anti-fabrication.md) |
+| 16 | ✓ | [`skills/gra/examples/conflict-resolution.md`](skills/gra/examples/conflict-resolution.md) |
+| 17 | ✓ | [`skills/gra/examples/source-classification.md`](skills/gra/examples/source-classification.md) |
+| 18 | ✓ | [`skills/gra/LICENSE`](skills/gra/LICENSE) |
+| 19 | ✓ | [`skills/gra/README.md`](skills/gra/README.md) |
+| 20 | ✓ | [`skills/gra/references/companion-reference.md`](skills/gra/references/companion-reference.md) |
+| 21 | ✓ | [`skills/gra/references/research-assistant-v8.5-full.md`](skills/gra/references/research-assistant-v8.5-full.md) |
+| 22 | ✓ | [`skills/gra/SKILL.md`](skills/gra/SKILL.md) |
+| 23 | ✓ | [`skills/gra/tests/fixtures/t01-three-layer-census.md`](skills/gra/tests/fixtures/t01-three-layer-census.md) |
+| 24 | ✓ | [`skills/gra/tests/fixtures/t02-conflict-resolution.md`](skills/gra/tests/fixtures/t02-conflict-resolution.md) |
+| 25 | ✓ | [`skills/gra/tests/fixtures/t03-disambiguation.md`](skills/gra/tests/fixtures/t03-disambiguation.md) |
+| 26 | ✓ | [`skills/gra/tests/fixtures/t04-anti-fabrication.md`](skills/gra/tests/fixtures/t04-anti-fabrication.md) |
+| 27 | ✓ | [`skills/gra/tests/fixtures/t05-terminology.md`](skills/gra/tests/fixtures/t05-terminology.md) |
+| 28 | ✓ | [`skills/gra/tests/fixtures/t06-negative-evidence.md`](skills/gra/tests/fixtures/t06-negative-evidence.md) |
+| 29 | ✓ | [`skills/gra/tests/fixtures/t07-proof-vehicle.md`](skills/gra/tests/fixtures/t07-proof-vehicle.md) |
+| 30 | ✓ | [`skills/gra/tests/fixtures/t08-citation-completeness.md`](skills/gra/tests/fixtures/t08-citation-completeness.md) |
+| 31 | ✓ | [`skills/gra/tests/fixtures/t09-fan-principle.md`](skills/gra/tests/fixtures/t09-fan-principle.md) |
+| 32 | ✓ | [`skills/gra/tests/fixtures/t10-living-person.md`](skills/gra/tests/fixtures/t10-living-person.md) |
+| 33 | ✓ | [`skills/gra/tests/fixtures/t11-implied-relationship-lawrence.md`](skills/gra/tests/fixtures/t11-implied-relationship-lawrence.md) |
+| 34 | ✓ | [`skills/gra/tests/README.md`](skills/gra/tests/README.md) |
+| 35 | ✓ | [`skills/gra/tests/run_tests.py`](skills/gra/tests/run_tests.py) |
+| 36 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

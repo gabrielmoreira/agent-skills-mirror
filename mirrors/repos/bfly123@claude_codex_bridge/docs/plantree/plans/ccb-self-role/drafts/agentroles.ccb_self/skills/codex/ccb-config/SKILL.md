@@ -124,6 +124,21 @@ Recommended binding:
 ops = "agentroles.ccb_self:codex"
 ```
 
+When a local agent name is required, keep provider authority in `[windows]` and
+write only the role overlay:
+
+```toml
+[windows]
+ops = "selfops:codex"
+
+[agents.selfops]
+role = "agentroles.ccb_self"
+```
+
+Do not repeat `[windows]`-owned `provider`, `workspace_mode = "inplace"`, or
+`workspace_mode = "git-worktree"` in `[agents.<name>]` overlays. Treat
+`ccb config validate` style warnings as cleanup work before reload.
+
 If validation reports a missing installed role, tell the user to install it:
 
 ```bash

@@ -12,8 +12,8 @@ description: >
 user-invocable: true
 metadata:
   tags: [higgsfield, video, image, prompt, cinematic, AI, filmmaking, motion, camera]
-  version: 3.8.3
-  updated: 2026-06-08
+  version: 3.10.0
+  updated: 2026-06-11
   author: O-Side Media
   license: MIT
 ---
@@ -34,7 +34,7 @@ These rules apply to every Higgsfield response. They are written as a pre-delive
 
 2. **Routed sub-skills opened and read in this conversation.** Match the user's ask to the routing table below, open the matching sub-skill files with the read tool, and READ them. Root `SKILL.md` and `skills/higgsfield-prompt/SKILL.md` are mandatory at minimum on any prompt request. Grepped snippets do not satisfy this rule. Full reads do. If your only access to root `SKILL.md` or `skills/higgsfield-prompt/SKILL.md` in this conversation came from grep results, you have not satisfied this rule — open the file. Platform vocabulary, preset names, and model parameters must come from the files because this platform's lineup changes between releases.
 
-3. **Named vocabulary verified, not invented.** Camera preset names, motion preset names, model names, CLI flag forms, and MCP tool parameter names all come from the skill files or from live verification (`higgsfield model get <model>` for CLI param schemas; `models_explore` for MCP). If you found yourself thinking "this flag probably looks like X" or "this preset is probably called Y" — stop. Read the file or run the verification command. Plausibility is not validity. Do not substitute generic video-prompt vocabulary for named Higgsfield presets; do not invent model versions, camera presets, or motion-preset names. If the user names one you don't see in the skill files, say so and ask for clarification.
+3. **Named vocabulary verified, not invented.** Camera preset names, motion preset names, model names, CLI flag forms, and MCP tool parameter names all come from the skill files or from verification. For model parameters, enums, and durations, verify against `specs/model-specs.yaml` first — it is generated from a dated `models_explore` snapshot (see `snapshot_date` inside the file); if the snapshot is stale (>30 days), verify live instead (`higgsfield model get <model>` for CLI param schemas; `models_explore` for MCP). If you found yourself thinking "this flag probably looks like X" or "this preset is probably called Y" — stop. Read the file or run the verification command. Plausibility is not validity. Do not substitute generic video-prompt vocabulary for named Higgsfield presets; do not invent model versions, camera presets, or motion-preset names. If the user names one you don't see in the skill files, say so and ask for clarification.
 
 4. **MCSLA structure intact on video prompts.** Model · Camera · Subject · Look · Action. Five layers, every video prompt, unless the user explicitly opted out.
 
@@ -42,7 +42,7 @@ These rules apply to every Higgsfield response. They are written as a pre-delive
 
 6. **Preflight surfaced when applicable.** If execution intent is signaled (CLI / MCP / bundled-skills mentioned) AND a video-class or high-cost model is named OR a budget concern is named, surface the two-step preflight (`model get` / `models_explore` for schema, then cost estimate). See `skills/higgsfield-stack/SKILL.md` § Preflight discipline.
 
-7. **Aspect ratio is an enum, not a free-form value.** Check the model's allowed ratios via schema verify before writing them into the header. Anamorphic / 2.35:1 / 2.39:1 are *style register* vocabulary for the Look line, not output ratios. See `vocab.md` § Aspect Ratio: output spec vs. style register.
+7. **Aspect ratio is an enum, not a free-form value.** Check the model's allowed ratios against `specs/model-specs.yaml` before writing them into the header; if the snapshot is stale (>30 days), verify live via schema (`models_explore` / `model get`). Example of why this matters: Seedance 2.0 supports native 21:9, Kling 3.0 does not. Anamorphic / 2.35:1 / 2.39:1 are *style register* vocabulary for the Look line, not output ratios. See `vocab.md` § Aspect Ratio: output spec vs. style register.
 
 8. **Prompt under 200 words.** Soft cap from MCSLA section. Going over is a signal you're padding rather than locking — tighten.
 
@@ -161,6 +161,8 @@ budget constraints, client work), **confirm before generating:**
 | Vibe Motion, motion graphics, kinetic typography, brand animation | `higgsfield-vibe-motion` |
 | Animated text, logo animation, Remotion-based output | `higgsfield-vibe-motion` |
 | Pre-generation memory check, apply past failure fixes | `higgsfield-recall` |
+| User reports a generation result (kept/rejected/flagged) — log it to the ledger | `higgsfield-recall` |
+| Takes-per-kept ratios, credit budgeting from logged data | `higgsfield-assist` |
 | Audio design, dialogue cues, SFX, ambient sound | `higgsfield-audio` |
 | Seedance 2.0 / Pro prompt, flagged prompt, credit waste on Seedance | `higgsfield-seedance` |
 | User has Higgsfield CLI / MCP / bundled skills installed and asks how this skill works alongside them | `higgsfield-stack` |
@@ -258,6 +260,21 @@ Quick summary — five layers, every prompt:
 - Output a clean, ready-to-paste prompt — no meta-commentary after
 - Do not explain what every line does unless the user asks
 - Always name the camera control and motion preset explicitly
+
+---
+
+## Generation Ledger — log every result
+
+Every generation attempt the user reports — kept, rejected, or filter-flagged —
+gets one row in `db/ledger/<project>.json`. The denominator (successes too,
+not just failures) is what turns the memory system into takes-per-kept ratios
+and credit budgets.
+
+**The 5-second rule:** when the user reports a result, ask at most ONE
+question ("keep or reject — what failed?") and write the row yourself with
+one `higgsfield_memory.py log-gen` command. Never ask twice; never present a
+form. Full workflow: `skills/higgsfield-recall/SKILL.md` § Log the Generation
+Result. Ratios and budgeting: `skills/higgsfield-assist/SKILL.md`.
 
 ---
 

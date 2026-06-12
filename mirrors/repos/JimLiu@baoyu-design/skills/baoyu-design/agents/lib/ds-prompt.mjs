@@ -5,8 +5,9 @@
 // every stylesheet in the @import closure, the bundle, and how the page's own
 // JSX runs through Babel standalone), the source-tree pointer, the full guide
 // inlined, the first lines of each component's *.prompt.md
-// (<ds-prompt-excerpts> — those files are not bound into _ds/), and the exact
-// var(--*) token allowlist.
+// (<ds-prompt-excerpts> — those files are not bound into _ds/), the per-component
+// prop contracts with full enum value lists (<ds-component-props>), and the
+// exact var(--*) token allowlist.
 // Project-relative `_ds/<slug>/` paths for the runtime copy; the recorded
 // `sourcePath` for the system's source (mocks/ui_kits/component source).
 //
@@ -38,17 +39,49 @@ export function sampleComponentNames(names, n = 2) {
 }
 
 // First lines of a component's `*.prompt.md` — the one-sentence "what & when"
-// plus the opening of its JSX example — with code fences kept balanced so an
-// open fence can't swallow the rest of the rendered prompt.
-export function extractPromptExcerpt(text, maxLines = 5) {
+// plus its first JSX example as a COMPLETE fenced block (an excerpt cut mid-block
+// would render an empty ```jsx``` fence, which is worse than no example). Blank
+// lines don't count toward maxLines, so a fence that follows the prose is always
+// reached; an overlong block is truncated but re-closed so the fence stays balanced.
+export function extractPromptExcerpt(text, maxLines = 5, maxBlockLines = 14) {
   const lines = String(text ?? '').split(/\r?\n/);
   while (lines.length && !lines[0].trim()) lines.shift();
-  const slice = lines.slice(0, maxLines);
-  while (slice.length && !slice[slice.length - 1].trim()) slice.pop();
-  if (!slice.length) return '';
-  const fences = slice.filter((l) => /^\s*```/.test(l)).length;
-  if (fences % 2 === 1) slice.push('```');
-  return slice.join('\n');
+
+  const out = [];
+  let prose = 0;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (/^\s*```/.test(line)) {
+      out.push(line);
+      let used = 0;
+      let closed = false;
+      for (i += 1; i < lines.length; i++) {
+        if (/^\s*```/.test(lines[i])) { out.push(lines[i]); closed = true; break; }
+        if (used >= maxBlockLines) break;
+        out.push(lines[i]); used += 1;
+      }
+      if (!closed) out.push('```');
+      break;
+    }
+    if (!line.trim()) { if (out.length) out.push(line); continue; }
+    if (prose >= maxLines) break;
+    out.push(line); prose += 1;
+  }
+
+  while (out.length && !out[out.length - 1].trim()) out.pop();
+  if (out.length >= 2 && /^\s*```/.test(out[out.length - 1]) && /^\s*```/.test(out[out.length - 2])) {
+    out.pop(); out.pop();
+    while (out.length && !out[out.length - 1].trim()) out.pop();
+  }
+  return out.join('\n');
+}
+
+// one-line type display for non-enum props: collapse whitespace, fold function
+// signatures, cap length — value lists never pass through here
+function compactType(type) {
+  const t = String(type ?? '').replace(/\s+/g, ' ').trim();
+  if (/^\(.*\)\s*=>/.test(t)) return 'function';
+  return t.length > 40 ? `${t.slice(0, 37)}…` : t;
 }
 
 export function renderDsPrompt({
@@ -58,6 +91,7 @@ export function renderDsPrompt({
   globalCssPaths = [],
   componentNames = [],
   componentPrompts = [],
+  componentProps = [],
   readme = '',
   tokenNames = [],
   sourcePath = '',
@@ -140,6 +174,16 @@ export function renderDsPrompt({
       out.push(`  ReactDOM.createRoot(document.getElementById('root')).render(<${sampleNames[0]} />);`);
       out.push('</script>');
       out.push('```');
+      out.push('');
+      out.push(
+        'In text/babel blocks, never give a top-level binding a window-global name — `status`, ' +
+        '`name`, `open`, `close`, `top`, `self`, `parent`, `origin`, `event`, `length`, ' +
+        '`location`, `history`, `screen`, `scroll`, `stop`, `print`, `focus`, `blur`, `frames`, ' +
+        '`closed`, `opener`. Babel injects the transpiled code as a classic script (top-level ' +
+        'const/let become var), so `const status = …` writes `window.status`, which coerces or ' +
+        'misbehaves, and the page dies with an error the console may never show. Use a longer ' +
+        'name (`statusBadge`, `openItems`).',
+      );
     } else if (hasBundle) {
       out.push(
         'The bundle is plain compiled JS — load it with a regular `<script>` (no ' +
@@ -192,6 +236,33 @@ export function renderDsPrompt({
       out.push(excerpt);
     });
     out.push('</ds-prompt-excerpts>');
+  }
+
+  // per-component prop contracts — names are exhaustive, enum value lists are
+  // complete and never truncated; `*` marks the declared @default
+  const propRows = (Array.isArray(componentProps) ? componentProps : [])
+    .filter((c) => c && c.kind !== 'constant' && Array.isArray(c.props) && c.props.length);
+  if (propRows.length) {
+    out.push('');
+    out.push(
+      'Prop contracts per component (from each `.d.ts`). Prop names are exhaustive — do not ' +
+      'invent props. Enum props list every allowed value; `*` marks the default. Never pass a ' +
+      'value outside these lists:',
+    );
+    out.push('');
+    out.push('<ds-component-props>');
+    for (const c of propRows) {
+      const parts = c.props.map((p) => {
+        if (Array.isArray(p.values) && p.values.length) {
+          const vals = p.values.map((v) => (p.default === v ? `${v}*` : v)).join(' | ');
+          return `${p.name}: ${vals}`;
+        }
+        const t = compactType(p.type) || 'any';
+        return p.default !== undefined ? `${p.name}: ${t} (default ${p.default})` : `${p.name}: ${t}`;
+      });
+      out.push(`${c.name} — ${parts.join(' · ')}`);
+    }
+    out.push('</ds-component-props>');
   }
 
   // token allowlist — the enforceable guardrail

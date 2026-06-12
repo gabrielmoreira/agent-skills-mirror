@@ -803,13 +803,13 @@ bd linear status
 
 **Staleness detection:**
 
-After each successful pull, `bd` writes the current timestamp to `.beads/last_pull`. This enables ambient staleness detection:
+After each successful pull, `bd` writes the current timestamp to `.beads/last_pull` (a local-only, per-machine file covered by the `.beads/.gitignore` template). This enables opt-in staleness detection on `bd linear sync`:
 
 - **`--pull-if-stale`**: Only pull if data is older than the threshold (default 20m). When data is fresh, prints "Linear data is fresh" and exits. In `--json` mode, includes `"is_fresh": true/false`.
 - **`--threshold`**: Override the default 20-minute staleness threshold (e.g., `--threshold 5m`).
 - **Debounce**: A 5-minute debounce prevents agent loops — if a pull completed within the last 5 minutes, data is always treated as fresh regardless of the threshold.
-- **`bd prime` auto-pull**: When `LINEAR_API_KEY` is set and data is stale, `bd prime` automatically pulls from Linear before emitting orientation output.
-- **Per-session warning**: On any `bd` command, if data is stale, a one-time warning is emitted to stderr: `⚠ Linear data is 45m stale — run 'bd linear sync --pull' to refresh`. Suppressed in subsequent commands within the same shell session.
+
+To keep Linear data fresh in agent sessions, run `bd linear sync --pull-if-stale` explicitly (e.g., from a session-start hook). `bd prime` and other core commands do not contact Linear.
 
 **Automatic sync tracking:**
 

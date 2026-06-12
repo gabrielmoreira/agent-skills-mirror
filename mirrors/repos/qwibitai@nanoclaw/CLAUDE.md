@@ -33,7 +33,7 @@ user_dms (user_id, channel_type, messaging_group_id) — cold-DM cache
 
 agent_groups (workspace, memory, CLAUDE.md, personality, container config)
     ↕ many-to-many via messaging_group_agents (session_mode, trigger_rules, priority)
-messaging_groups (one chat/channel on one platform; unknown_sender_policy)
+messaging_groups (one chat/channel on one platform; instance = adapter-instance name, defaults to channel_type; unknown_sender_policy)
 
 sessions (agent_group_id + messaging_group_id + thread_id → per-session container)
 ```

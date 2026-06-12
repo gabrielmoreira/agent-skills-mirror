@@ -173,6 +173,7 @@ GSD uses a multi-agent architecture where thin orchestrators (workflow files) sp
 - Includes `read_first` and `acceptance_criteria` sections
 - Groups plans into dependency waves
 - Performs reachability check to validate plan steps reference accessible files and APIs (v1.32)
+- Enforces a comment-text discipline HARD GATE at plan-write time (`verify.plan-structure`): a literal that an acceptance criterion negative-greps for (`grep -c 'LIT' file == 0`) must not appear verbatim in an `<action>` body; violations fail plan creation. Use `<!-- planner-discipline-allow: LIT -->` to allowlist a legitimate occurrence. (#429)
 
 ---
 
@@ -229,6 +230,7 @@ GSD uses a multi-agent architecture where thin orchestrators (workflow files) sp
 | **Spawned by** | `/gsd-plan-phase` (verification loop, max 3 iterations) |
 | **Parallelism** | Single instance (iterative) |
 | **Tools** | Read, Bash, Glob, Grep |
+| **Disallowed Tools** | Write, Edit, MultiEdit |
 | **Model (balanced)** | Sonnet |
 | **Color** | Green |
 | **Produces** | PASS/FAIL verdict with specific feedback |
@@ -254,6 +256,7 @@ GSD uses a multi-agent architecture where thin orchestrators (workflow files) sp
 | **Spawned by** | `/gsd-audit-milestone` |
 | **Parallelism** | Single instance |
 | **Tools** | Read, Bash, Grep, Glob |
+| **Disallowed Tools** | Write, Edit, MultiEdit |
 | **Model (balanced)** | Sonnet |
 | **Color** | Blue |
 | **Produces** | Integration verification report |
@@ -269,6 +272,7 @@ GSD uses a multi-agent architecture where thin orchestrators (workflow files) sp
 | **Spawned by** | `/gsd-ui-phase` (validation loop, max 2 iterations) |
 | **Parallelism** | Single instance |
 | **Tools** | Read, Bash, Glob, Grep |
+| **Disallowed Tools** | Write, Edit, MultiEdit |
 | **Model (balanced)** | Sonnet |
 | **Color** | Cyan |
 | **Produces** | BLOCK/FLAG/PASS verdict |
@@ -284,6 +288,7 @@ GSD uses a multi-agent architecture where thin orchestrators (workflow files) sp
 | **Spawned by** | `/gsd-execute-phase` (after all executors complete) |
 | **Parallelism** | Single instance |
 | **Tools** | Read, Write, Bash, Grep, Glob |
+| **Disallowed Tools** | Edit, MultiEdit |
 | **Model (balanced)** | Sonnet |
 | **Color** | Green |
 | **Produces** | `{phase}-VERIFICATION.md` |
@@ -327,6 +332,7 @@ GSD uses a multi-agent architecture where thin orchestrators (workflow files) sp
 | **Spawned by** | `/gsd-ui-review` |
 | **Parallelism** | Single instance |
 | **Tools** | Read, Write, Bash, Grep, Glob |
+| **Disallowed Tools** | Edit, MultiEdit |
 | **Model (balanced)** | Sonnet |
 | **Color** | Pink |
 | **Produces** | `{phase}-UI-REVIEW.md` with scores |
@@ -448,6 +454,7 @@ Communication style, decision patterns, debugging approach, UX preferences, vend
 | **Spawned by** | `/gsd-docs-update` (after doc-writer completes) |
 | **Parallelism** | Multiple instances (one per doc file) |
 | **Tools** | Read, Write, Bash, Grep, Glob |
+| **Disallowed Tools** | Edit, MultiEdit |
 | **Model (balanced)** | Sonnet |
 | **Color** | Orange |
 | **Produces** | Structured JSON verification results per doc |
@@ -634,6 +641,7 @@ Twelve additional agents ship under `agents/gsd-*.md` and are used by specialty 
 | **Spawned by** | `/gsd-eval-review` |
 | **Parallelism** | Single instance |
 | **Tools** | Read, Write, Bash, Grep, Glob |
+| **Disallowed Tools** | Edit, MultiEdit |
 | **Model (balanced)** | Sonnet |
 | **Color** | Red |
 | **Produces** | `EVAL-REVIEW.md` with dimension scores, findings, and remediation guidance |

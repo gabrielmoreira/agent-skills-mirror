@@ -11,6 +11,24 @@ metadata:
 
 # Higgsfield Cinema Studio 2.5
 
+## QUICK FACTS
+*Generated-checked block (build_index.py verifies anchors). Read the linked sections for full context — these lines are routing aids, not the rules themselves.*
+- Three Cinema Studio versions coexist (2.5 / 3.0 / 3.5) — user-selected, no auto-routing; always detect the version first [→](#version-detection-ask-first)
+- Hard 512-character prompt cap; 2.5 @ Element chips eat ~80–100 hidden chars each [→](#prompt-character-limit-512-characters)
+- Elements System: define @Characters/@Locations/@Props once, call everywhere [→](#elements-system-define-once-call-everywhere)
+- 3.5 main UI = three pills (Genre / Style / Camera), each Auto by default — override only with a creative reason [→](#the-three-pill-main-surface)
+- 7 confirmed 3.5 genres: General · Action · Horror · Comedy · Noir · Drama · Epic — never invent genre names [→](#cinema-studio-35-genres)
+- Style presets: 8 Color Palettes · 6 Lighting · 9 Camera Moveset Styles, or free-form Manual Style [→](#style-settings-three-operating-modes)
+- Camera axes: 3 bodies · 5 lenses · focal 8/14/35/50/75mm · aperture f/1.4–f/4–f/11; two camera vocabularies coexist — vocabulary follows the selected model [→](#camera-settings-four-axis-panel)
+- Output enums: 7 aspect ratios incl. 21:9 · 480p/720p/1080p · duration 4–15s · Sound On/Off [→](#cinema-studio-35-output-controls)
+- Lead every delivered shot with the one-line settings strip (UI presets ≠ prompt text; never restate strip values in the body) [→](#per-shot-settings-strip)
+- The UI shot counter caps internal cuts — "strictly N shots" must keep N within it (observed cap 4, TODO confirm) [→](#per-shot-settings-strip)
+- Manual Style = saved ≤2,000-char block of project LAWS (grade, lighting law, texture, performance register); it replaces the preset axes [→](#manual-style-authoring-guide)
+- 480p drafts validate the prompt, NOT the take — no seed param; transfer a look via Hero Frame + start/end-frame pinning [→](#drafts-validate-the-prompt-not-the-take)
+- Resolution matrix has two axes: shot physics × delivery context; 4K-finish pipelines master at model max res in std mode [→](#physics-rendering-resolution-decision-matrix)
+- Seedance fast mode cannot output 1080p — drafting in fast then "switching up" silently changes mode AND res [→](#physics-rendering-resolution-decision-matrix)
+
+
 Cinema Studio is Higgsfield's professional filmmaking environment — a full production
 workflow for multi-shot, character-consistent cinematic content. It's fundamentally
 different from single-clip generation: you're building sequences, not individual videos.
@@ -1773,14 +1791,84 @@ Output-side surface in 3.5:
 | Duration | 4s ↔ 15s (preserved across Cinema Studio versions) |
 
 **Quality tiers — practical guidance:**
-- **480p** — draft / exploration tier. Use for prompt iteration before committing to higher-resolution finals.
+- **480p** — draft / exploration tier. Use for prompt iteration before committing to higher-resolution finals. Know its limits: see § Drafts validate the prompt, not the take, directly below.
 - **720p / 1080p** — final-quality tiers. Choice between them depends on what's physical in the scene; see § Physics Rendering — Resolution Decision Matrix below.
+
+#### Drafts validate the prompt, not the take
+
+A 480p draft is **not a cheap preview of the take you will re-render at 1080p**. The Seedance 2.0 schema exposes **no seed parameter** (verified — `../../specs/model-specs.yaml` lists `resolution`, `mode`, `genre` and nothing else), so a higher-resolution re-run is a **fresh roll**, not a re-render. "Approve the take at 480p, re-render it at 1080p" is not a workflow the platform supports.
+
+What a draft CAN validate (persists across rolls, because it's prompt-driven):
+
+- Shot count and structure obedience
+- Blocking obedience (positions, movement directions, entrances/exits)
+- @handle / identity contamination (wrong character traits bleeding across subjects)
+- Dialogue placement
+- Content-filter pass/fail
+
+What a draft CANNOT validate (re-rolled fresh every generation):
+
+- Performance — the specific take's expression, gesture nuance, micro-timing
+- Camera micro-trajectory — the exact path within the named move
+- Beat timing inside the clip
+
+**The documented transfer mechanism for a look you want to keep is the Hero Frame** (`../higgsfield-assist/SKILL.md`) plus **start/end-frame pinning** (§ Keyframe Interpolation in this file) — pin the frame, not the roll. And fine-detail judgments (smoke threads, inscription legibility, reflections) must be **re-checked at final resolution**: 480p hides exactly the detail those judgments are about.
 
 **Sound prompting:** When Sound is On, audio is generated natively alongside video in a single pass. For prompting audio behavior in detail (dialogue, SFX, ambient, music), see `../higgsfield-audio/SKILL.md`.
 
 **Batch Size:** Frame as exploration multiplier — generate multiple variations in one run. Exact cost behavior varies by plan and may change.
 
 > No specific credit cost numbers are listed in this section. Costs vary by plan and change over time — refer to the live Higgsfield plan documentation.
+
+### Per-Shot Settings Strip
+
+Every Cinema Studio 3.5 shot delivered to a user should lead with a one-line **settings strip** that separates *what gets preset in the UI* from *what goes in the prompt box*. Canonical format:
+
+```
+Genre: <genre> · AR: <ratio> · Quality: <480p|720p|1080p> · Duration: <N>s · Shots: <N> · Sound: <On|Off> · Camera: <Body> / <Lens> / <Focal> / <Aperture> · Style: <Auto | preset, preset, preset | Manual>
+```
+
+Worked example:
+
+```
+Genre: Noir · AR: 21:9 · Quality: 1080p · Duration: 12s · Shots: 3 · Sound: On · Camera: Fine Film / Anamorphic / 50mm / f/1.4 · Style: Manual
+```
+
+Rules for the strip:
+
+- **Everything in the strip is a UI control, not prompt text.** Do not restate strip values inside the prompt body — the engine already has them from the panels, and restating them wastes prompt budget and can conflict.
+- Camera axes follow the 3.5 vocabulary (Camera Settings panel above). `Auto` is a legal value for any position — write it explicitly rather than omitting the position, so the user knows nothing was forgotten.
+- `Style:` is either `Auto`, a comma-separated preset stack (Color Palette, Lighting, Camera Moveset Style — the same label format the Style pill itself shows), or `Manual` (meaning: a saved Manual Style block applies — see the authoring guide below).
+- **The UI shot counter caps internal cuts.** A prompt declaring "strictly N shots" must keep N within the counter's value — if the prompt demands more cuts than the counter allows, the engine improvises which ones to drop. The production-observed cap is **4 shots per generation** (2026-06-11 session; TODO — not yet confirmed in platform docs, verify in the live UI before promising more).
+
+### Manual Style — Authoring Guide
+
+Manual Style is a **saved, reusable style block** (≤2,000 characters, written once per project), not a per-shot scratchpad. Knowing what belongs where prevents both bloated prompts and drifting looks:
+
+| Layer | Belongs there | Examples |
+|-------|---------------|----------|
+| **Manual Style block** (saved once, applies to every shot) | The project's invariant look: grade, lighting *law*, texture, performance register | "Bleach-bypass grade, crushed blacks. All light is motivated and practical — no unmotivated fill, ever. 35mm grain with mild halation. Performances restrained, no theatrical gesture." |
+| **Prompt body** (per shot) | What changes shot to shot: subject, blocking, action, the *specific* light sources of this scene, audio cues | "She crosses the loading dock toward the idling truck; sodium floodlight from the left, headlights raking the wall behind her. Footsteps on wet concrete." |
+| **Three Style axes** (when NOT using Manual) | Preset-stack approximation of the same intent | Sodium Decay + Practicals + Intimate Observer |
+
+Authoring rules for the saved block:
+
+- Write **laws, not descriptions** — "all light is motivated" governs every shot; "a streetlamp glows" belongs in one shot's prompt body.
+- Cover the four registers: **grade** (palette + contrast behavior), **lighting law** (what light is allowed to exist), **texture** (stock/grain/halation), **performance register** (acting scale). One or two sentences each — the 2,000-char budget is for precision, not volume.
+- Apply the Style/Director-Language discipline (no vague labels, no director name-drops — see Mode 3 note above).
+- Manual Style **replaces** the three preset axes — don't also stack presets expecting them to combine.
+
+Worked master-style example (a complete saved block):
+
+```
+Cold procedural thriller. Grade: desaturated cool with steel-blue shadows,
+highlights never bloom, blacks held just above crush. Lighting law: every
+source is practical or motivated — fluorescents, monitors, car headlights;
+no beauty fill; faces may fall to 50% shadow. Texture: clean digital with
+faint sensor noise in low light, no film grain, no halation. Performance
+register: contained and procedural — small eye movements over gestures,
+nobody raises their voice.
+```
 
 ### Image Mode
 
@@ -1801,7 +1889,7 @@ The image-mode model picker has two groups: **Cinematic models** (studio-native 
 
 **Soul Cinema is shared between Cinema Studio 3.0 and 3.5 image modes** — see § Cinema Studio 3.0 (Business/Team Plan) above for the 3.0-side acknowledgment. Per-model selection guidance (when to pick which Cinematic model) is documented below in § Per-Cinematic-model selection guide. Sample prompts specific to each Cinematic model are deferred to a future release.
 
-**Featured models — picker overview:** The image-mode picker also surfaces **Featured models** (e.g., Higgsfield Soul 2.0, GPT Image 2, Seedream 5.0 Lite, plus other third-party engines listed in `MODELS-DEEP-REFERENCE.md`). Featured models are selectable from inside the Cinema Studio shell, but selecting one means the **studio-specific UI features (Style Settings, Camera Settings panels) are not available** — the shell remains, but creative control reverts to prompt-only. For Featured-model prompting, route to the model's own documentation in `MODELS-DEEP-REFERENCE.md` rather than treating it as a Cinema Studio configuration problem.
+**Featured models — picker overview:** The image-mode picker also surfaces **Featured models** (e.g., Higgsfield Soul 2.0, GPT Image 2, Seedream 5.0 Lite, plus other third-party engines listed in `../higgsfield-models/MODELS-DEEP-REFERENCE.md`). Featured models are selectable from inside the Cinema Studio shell, but selecting one means the **studio-specific UI features (Style Settings, Camera Settings panels) are not available** — the shell remains, but creative control reverts to prompt-only. For Featured-model prompting, route to the model's own documentation in `../higgsfield-models/MODELS-DEEP-REFERENCE.md` rather than treating it as a Cinema Studio configuration problem.
 
 > ⚠ Note: the Featured list also contains a separately-named model called **Higgsfield Soul Cinema**, which is distinct from the Cinematic-list **Soul Cinema** despite the similar names. The two are not interchangeable.
 
@@ -1868,7 +1956,7 @@ The picker also exposes a **+ Save setup** button — a configured Camera Body +
 - **Soul Cinema identity prompting** — `../higgsfield-soul/SKILL.md`
 - **2.5 camera vocabulary** — § Optical Physics Engine earlier in this file (the same vocabulary that Cinematic Cameras uses)
 - **Five-View Location Sheet workflow** — § Location Reference Sheets earlier in this file (image-mode work pairs naturally with location-sheet generation)
-- **Featured-model documentation** — `MODELS-DEEP-REFERENCE.md` (per-engine specs for the third-party models surfaced in the picker)
+- **Featured-model documentation** — `../higgsfield-models/MODELS-DEEP-REFERENCE.md` (per-engine specs for the third-party models surfaced in the picker)
 
 ### AI Director Toggle
 
@@ -1890,12 +1978,21 @@ Cinema Studio 3.5 exposes an **AI director toggle** in the bottom toolbar of the
 
 This rule applies to **Seedance 2.0** and **Cinema Studio 3.x** outputs (3.0 and 3.5). Higher resolution is not always better — the right choice depends on what is physical in the scene. Rendering more pixels per frame on rapid motion produces shimmer and artifacting; rendering fewer pixels per frame on fine-detail physics produces muddy or melted small elements. Match the resolution tier to the physics of the shot.
 
-| Scene type | Recommended resolution | Reason |
-|------------|------------------------|--------|
-| Fast / chaotic motion (explosions, water flow, crowds, rapid camera moves) | **720p** | Fewer pixels per frame = smoother flow, less shimmer / artifacting on rapid change |
-| Fine-detail physics (hair, sand, small particles, glass shards, fabric weave) | **1080p** | Pixel density needed to keep small elements sharp instead of muddy or melted |
-| Grounded weight (heavy vehicles, suspension travel, mass impact) | **1080p** | Pixel density needed for material weight to read as real |
-| Draft / exploration / iteration | **480p** | Fastest tier for prompt iteration before committing to a final-quality generation |
+The matrix has **two axes**: the physics of the shot AND the delivery context. Read the physics row first, then apply the delivery-context column — a recommendation that is correct for native delivery can be wrong for an upscale-finish pipeline.
+
+| Scene type | Native delivery (social post, 1080p timeline) | Upscale-finish pipeline (4K master) |
+|------------|------------------------------------------------|--------------------------------------|
+| Fast / chaotic motion (explosions, water flow, crowds, rapid camera moves) | **720p** — fewer pixels per frame = smoother flow, less shimmer / artifacting on rapid change | **Model max res, `std` mode** — a 720p master forces a 3× upscale whose cost and artifacts exceed the shimmer it avoids |
+| Fine-detail physics (hair, sand, small particles, glass shards, fabric weave) | **1080p** — pixel density needed to keep small elements sharp instead of muddy or melted | **Model max res, `std` mode** |
+| Grounded weight (heavy vehicles, suspension travel, mass impact) | **1080p** — pixel density needed for material weight to read as real | **Model max res, `std` mode** |
+| Draft / exploration / iteration | **480p** — fastest tier for prompt iteration before committing | **480p for prompt iteration only** — never as a master (see § Drafts validate the prompt, not the take) |
+
+**Upscale-finish rules:**
+
+- Master at the model's **maximum resolution in `std` mode**. Never master below **half the delivery resolution** — below that, the upscaler is inventing detail, not recovering it.
+- Per-shot 720p in a 4K-finish pipeline is allowed only as a **logged exception** (e.g. a shot where shimmer demonstrably ruins the take at 1080p) — note the shot and reason in the shotlist so the finishing stage knows the upscale factor changed.
+
+> **The fast-mode trap (verified from the model schema):** Seedance 2.0's `fast` mode **cannot output 1080p** — per `../../specs/model-specs.yaml`, `mode=fast` forbids `resolution=1080p`. Drafting in `fast` and then "switching up to 1080p" silently changes BOTH the mode and the resolution: the final render runs through a different pipeline (`std`) than the one your draft validated. Preflight the final combination explicitly: `python3 seedance_lint.py --model seedance_2_0 --mode fast --resolution 1080p` fails for exactly this reason.
 
 **See also:** `../higgsfield-seedance/SKILL.md` for Seedance 2.0 prompt mode guidance.
 

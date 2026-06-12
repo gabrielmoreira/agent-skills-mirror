@@ -23,9 +23,17 @@ photodump-presets.md      ← 29 Photodump style presets
 validate.py               ← Pre-release health checks
 higgsfield_memory.py      ← DB operations for learning memory
 seedance_lint.py          ← Seedance preflight linter
+sync_specs.py             ← Regenerates specs/ from a models_explore snapshot
+specs/                    ← Machine-readable model specs (generated — never hand-edit;
+                            video models now, image models TODO pending snapshot)
+build_index.py            ← Regenerates INDEX.md + checks QUICK FACTS anchors
+INDEX.md                  ← Generated heading index of every SKILL.md
+tests/                    ← pytest suite for the Python tooling (CI-run)
 skills/                   ← 25 sub-skill directories + shared/
 templates/                ← 10 genre templates
 db/                       ← Filter + quality memory JSON databases
+db/ledger/                ← Generation ledger (one append-only file per project;
+                            _global.json generated; see db/ledger/README.md)
 docs/                     ← Extended reference documents
 .claude/
   ├── settings.json       ← Permission rules
@@ -42,6 +50,7 @@ docs/                     ← Extended reference documents
 
 ## Rules
 
+- The agent-facing operating HARD RULES live in root `SKILL.md` § HARD RULES — pre-delivery checklist, and ONLY there. Do not restate or renumber them here or in `DISCIPLINE.md`; cite them by number (`validate.py` checks for drift between the three surfaces).
 - Every SKILL.md must have frontmatter: `name`, `description`, `metadata.version`, `metadata.updated`. Sub-skills additionally require `metadata.parent: higgsfield`; the root dispatcher has no parent. (`validate.py` enforces this.)
 - Sub-skill `metadata.version` values are **independent** and intentionally out of sync with the root release version (newer surfaces sit at 1.x, legacy ones at 3.x). Do not "fix" them to match the root version — the root SKILL.md frontmatter is the single source of truth for the release version.
 - The root SKILL.md is the dispatcher. Sub-skills live in skills/. Never nest the dispatcher under mnt/ — that path is a Claude runtime artifact location, not a skill install path. Every buildable `skills/higgsfield-*/` must be routed from root SKILL.md (`validate.py` reconciles disk ↔ dispatcher).

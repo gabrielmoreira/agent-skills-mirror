@@ -12,7 +12,7 @@ You are authoring the design system itself, not consuming one. `_ds_bundle.js`, 
 node <skill>/agents/compile-design-system.mjs designs/<project>
 ```
 
-(`<skill>` is this skill's directory.) See [`design-system-authoring-guide.md`](design-system-authoring-guide.md) for the full authoring flow — including importing sources from GitHub repos (browse the tree with `gh api`, sparse-checkout only the paths you need into a scratch dir outside the project).
+(`<skill>` is this skill's directory.) See [`design-system-authoring-guide.md`](design-system-authoring-guide.md) for the full authoring flow — including importing sources from GitHub repos (see [`import-from-github.md`](import-from-github.md): browse with `gh api`, sparse-checkout only the paths you need into a scratch dir outside the project).
 
 What the compiler looks for:
 - **Global CSS**: `styles.css` (or `index.css`/`globals.css`/`global.css`/`main.css`/`theme.css`/`app.css`/`tokens.css`) at the project root, plus everything it `@import`s. Tokens and `@font-face` are read from that closure.

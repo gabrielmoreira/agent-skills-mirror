@@ -2,7 +2,7 @@
 name: optimize
 description: Drive structured autoresearch iteration after evo:discover and the baseline commit -- scan-subagent cross-cutting analysis between rounds, frontier-based parent selection, ideator dispatch on stall, verifier pre/post hooks, annotation discipline. Width is set via subagents=N (1 for serial workloads, larger for parallel); the loop's structural value applies at any width.
 argument-hint: "[subagents=N] [budget=N] [stall=N]"
-evo_version: 0.5.1
+evo_version: 0.5.2
 ---
 
 Run the `evo` optimization loop. Each round, the orchestrator writes structured briefs and spawns subagents that execute within them. Each subagent is semi-autonomous: it reads the pointer traces, forms the concrete edit, runs experiments, and can iterate within its branch. Runs until interrupted or the stall limit is reached.

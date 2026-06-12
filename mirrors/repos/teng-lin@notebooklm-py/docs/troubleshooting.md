@@ -1,7 +1,7 @@
 # Troubleshooting
 
 **Status:** Active
-**Last Updated:** 2026-05-14
+**Last Updated:** 2026-06-11
 
 Common issues, known limitations, and workarounds for `notebooklm-py`.
 
@@ -37,15 +37,16 @@ This means most "CSRF token expired" errors resolve automatically.
 
 #### Cookie freshness for long-running / unattended use
 
-Google rotates `__Secure-1PSIDTS` (the freshness partner of `__Secure-1PSID`) on its own cadence; the on-disk `Expires` field is **not** a reliable predictor of server-side validity. The library handles freshness in five layers, ordered cheapest to heaviest:
+Google rotates `__Secure-1PSIDTS` (the freshness partner of `__Secure-1PSID`) on its own cadence; the on-disk `Expires` field is **not** a reliable predictor of server-side validity. The library handles freshness in layered fallbacks, ordered cheapest to heaviest:
 
 1. **Per-call rotation poke** (default ON) — every `fetch_tokens` makes a best-effort POST to `accounts.google.com/RotateCookies`. Disable with `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE=1`.
 2. **Periodic background poke** — pass `keepalive=<seconds>` to `NotebookLMClient` for clients held open for hours.
-3. **External recovery script** — `NOTEBOOKLM_REFRESH_CMD` runs when auth has fully expired, then retries once.
-4. **Manual re-login** — `notebooklm login`.
-5. **External scheduler** — `notebooklm auth refresh` driven by cron / launchd / systemd / Task Scheduler / k8s CronJob, for idle profiles with no Python process running. Recommended cadence: 15–20 minutes.
+3. **Layer-3 headless re-auth** — explicit Python opt-in via `await client.refresh_auth(allow_headless=True)`, or automatic mid-RPC opt-in with `NOTEBOOKLM_HEADLESS_REAUTH=1`. This drives the persisted browser profile, or attaches to a loopback Chrome DevTools endpoint from `NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL`. Treat CDP as account-equivalent: only use `127.0.0.1` / `localhost`, never a remote browser.
+4. **External recovery script** — `NOTEBOOKLM_REFRESH_CMD` runs when auth has fully expired, then retries once.
+5. **Manual re-login** — `notebooklm login`.
+6. **External scheduler** — `notebooklm auth refresh` driven by cron / launchd / systemd / Task Scheduler / k8s CronJob, for idle profiles with no Python process running. Recommended cadence: 15–20 minutes.
 
-Most users only need layer 1 — it's on by default and requires no configuration. For the full strategy (trade-offs between layers, including Python kwargs like `keepalive_min_interval` and environment variables like `NOTEBOOKLM_REFRESH_CMD_USE_SHELL`, and ready-to-paste launchd / systemd / cron / Task Scheduler / k8s CronJob recipes), see **[docs/auth-cookie-lifecycle.md#tldr](auth-cookie-lifecycle.md#tldr)** for a quick orientation, then [§4 The architecture](auth-cookie-lifecycle.md#4--the-architecture) for the per-layer deep dive.
+Most users only need layer 1 — it's on by default and requires no configuration. For the full strategy (trade-offs between layers, including Python kwargs like `keepalive_min_interval` and environment variables like `NOTEBOOKLM_REFRESH_CMD_USE_SHELL`, and ready-to-paste launchd / systemd / cron / Task Scheduler / k8s CronJob recipes), see **[docs/auth-cookie-lifecycle.md#tldr](auth-cookie-lifecycle.md#tldr)** for a quick orientation, then [§4 The architecture](auth-cookie-lifecycle.md#4-the-architecture) for the per-layer deep dive.
 
 #### macOS: `--browser-cookies` prompts for your password
 
@@ -231,31 +232,88 @@ from notebooklm import NotebookLMClient
 The value must be exactly `"1"` — `"0"`, `"true"`, etc. are treated as
 unset (still truncated).
 
-#### "RPCError: [3]" or "UserDisplayableError"
+#### "RPCError: [3]" (Invalid argument) / "UserDisplayableError"
 
-**Cause:** Google API returned an error, typically:
-- Invalid parameters
-- Resource not found
+**Cause:** Google's API rejected the request. Common cases:
+- Invalid parameters or a not-found resource ID
+- Account quota exceeded (for `create`, status `[3]` is also the notebook-limit signal)
 - Rate limiting
 
 **Solution:**
 - Check that notebook/source IDs are valid
 - Add delays between operations (see Rate Limiting section)
 
+**If it only affects _write_ operations** (`create`, `source add`, `generate`) while reads (`list`, `ask`) keep working — **and the web UI still works** — the likely cause is that Google changed the request payload (wire format) for those RPCs and `notebooklm-py` is still sending the old shape. Google rolls these out gradually, so it can hit some accounts before others.
+
+> **First, rule out a mis-decoded success.** Re-run the failing action, then check `notebooklm list`: if the resource was actually **created** despite the error, it's a *response*-decoding issue (share the **Response** below). If it was **not** created, Google rejected our **request** (share the **Payload** below).
+
+**Help us fix it — share the web UI's payload (no cookies needed).** Either option below leaks nothing: cookies, the `at=` CSRF token, and `Set-Cookie` live in request/response *headers*, never inside the `f.req` payload.
+
+> **⚠️ Never paste the raw `.har` itself.** A HAR contains your cookies, the `at=` CSRF token, and the full NotebookLM page HTML — which embeds API keys, the CSRF token, and your account email. Only ever share the **scrubber's output** below (or the single `f.req` line from Option B). The scrubber processes only `/batchexecute` calls and redacts every value, so the page HTML never reaches its output.
+
+**Option A — thorough, auto-scrubbed (recommended; captures every RPC + its response).**
+
+This walkthrough takes ~2 minutes. You never copy a cookie, a token, or the raw HAR — a small bundled script does the redaction for you.
+
+1. **Open DevTools on the Network tab.** In Chrome/Edge press <kbd>F12</kbd> (or <kbd>Cmd</kbd>+<kbd>Opt</kbd>+<kbd>I</kbd> on macOS); in Firefox press <kbd>F12</kbd>. Click the **Network** tab at the top of the panel.
+2. **Arm the capture.** Tick **Preserve log** (Chrome) / **Persist Logs** (Firefox) so a page reload doesn't wipe the capture, and confirm the round **● Record** button is red (it usually is by default).
+3. **Reproduce the failure.** In the NotebookLM tab, perform the exact action that fails — e.g. create a notebook, or add a source. You'll see `batchexecute?rpcids=…` rows appear in the Network list. You can stop as soon as the action errors.
+4. **Export the session to a file:**
+   - **Chrome/Edge:** click the ⤓ **Export HAR…** download icon in the Network toolbar (or right-click any row → **Save all as HAR with content**).
+   - **Firefox:** click the ⚙️ gear / **…** menu in the Network toolbar → **Save All As HAR**.
+
+   Save it as `capture.har`. (The "with content" variant matters — it's what includes the *response* bodies the scrubber reports.)
+5. **Scrub it.** From your `notebooklm-py` checkout, run the bundled script (stdlib-only — no install needed):
+
+   ```console
+   $ python scripts/scrub_rpc_har.py capture.har
+   NotebookLM RPC capture — string values → <str:N>; cookies / headers / at= / Set-Cookie never read:
+
+   CCqFvf  (CREATE_NOTEBOOK)
+     request : ["<str:7>",null,null,[2],[1]]
+     response: HTTP 200 | status_code=[3] | result=null
+
+   1 call(s). Safe to share — no cookies / CSRF / session tokens are present (they live in headers, which this tool never reads).
+   ```
+
+   Narrow to a single RPC with `--rpcid` if the capture is noisy:
+
+   ```console
+   $ python scripts/scrub_rpc_har.py capture.har --rpcid CCqFvf
+   ```
+
+   The script reads **only** each request's `f.req` field and the response body — never the headers/cookies arrays, never the non-`batchexecute` page HTML — and replaces every text value with its length (`<str:7>`). It refuses to print if any raw string ever slips through, so the output is safe by construction.
+6. **Paste that output** into the issue. Read it back first as a sanity check: every value should be `<str:N>`, never readable text.
+
+   - `status_code=[3]` with `result=null` → Google rejected our **request** (a payload/wire-format change). This is what we need to fix it.
+   - A non-null `result` → the call actually worked and this is a **response**-decode issue; share it just the same.
+
+**Option B — quick, one RPC by hand (no script).** Use this if you can't run the script.
+
+1. In DevTools → **Network**, click the `batchexecute?rpcids=…` POST for the failing call (e.g. `rpcids=CCqFvf` for create, `izAoDd` for add-source).
+2. Open the **Payload** tab (Chrome) / **Request** tab (Firefox), copy **only** the `f.req` value — **not** the `at=` field beside it, and don't open the **Cookies**/**Headers** tabs.
+3. Replace any free text (title, URL) with `REDACTED` and paste it. We diff it against what the library sends — `["<title>", null, null, [2], [1]]` for create — and update the payload.
+
 ### Generation Failures
 
-#### Audio/Video generation returns None
+#### Audio/Video generation is refused immediately
 
-**Cause:** Known issue with artifact generation under heavy load or rate limiting.
+**Cause:** NotebookLM refused the generation kickoff synchronously (often quota,
+feature availability, rate limiting, or an RPC shape drift). In v0.8.0 the
+Python API raises instead of returning `None`.
 
-**Workaround:**
+**What to do:**
 ```bash
-# Use --wait to see if it eventually succeeds
-notebooklm generate audio --wait
+# Let the CLI surface the typed error envelope / message
+notebooklm generate audio --wait --json
 
-# Or poll manually
-notebooklm artifact poll <task_id>
+# If generation was accepted and you have a task id, poll manually
+notebooklm artifact poll <task_id> --json
 ```
+
+In Python, catch `RateLimitError`, `ArtifactFeatureUnavailableError`, or
+`RPCError` depending on the failure. If kickoff succeeds and later polling
+times out, use the timeout guidance below.
 
 #### Audio/Video task times out as pending or in progress
 
@@ -306,15 +364,19 @@ You can also pipe extracted text through stdin:
 python extract_article_text.py ./article.html | notebooklm source add - --type text --title "Article"
 ```
 
-#### Text/Markdown files upload but return None
+#### Text/Markdown upload succeeds but processing/content is wrong
 
-**Cause:** Known issue with native text file uploads.
+**Cause:** The upload was accepted, but NotebookLM processed unexpected content
+or reported a source-processing error. Current `add_file()` returns a `Source`;
+missing or untrusted source IDs raise `SourceAddError` instead of returning
+`None`.
 
-**Workaround:** Use `add_text` instead:
+**Workaround:** When you control the text, bypass file-type inference and use
+`add_text`:
 ```bash
 # Instead of: notebooklm source add ./notes.txt
 # Do:
-notebooklm source add "$(cat ./notes.txt)"
+notebooklm source add - --type text --title "My Notes" < ./notes.txt
 ```
 
 Or in Python:
@@ -403,7 +465,7 @@ notebooklm source delete-by-title "Exact Source Title"
 Google enforces strict rate limits on the batchexecute endpoint.
 
 **Symptoms:**
-- RPC calls return `None`
+- `RateLimitError` in Python, or CLI JSON with `code: "RATE_LIMITED"`
 - `RPCError` with ID `R7cb6c`
 - `UserDisplayableError` with code `[3]`
 

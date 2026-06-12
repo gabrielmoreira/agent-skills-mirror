@@ -61,26 +61,50 @@ Claude Code → stdin JSON → parse → render lines → stdout → Claude Code
 
 ```
 src/
-├── index.ts           # Entry point
-├── stdin.ts           # Parse Claude's JSON input
-├── transcript.ts      # Parse transcript JSONL
-├── config-reader.ts   # Read MCP/rules configs
-├── config.ts          # Load/validate user config
-├── git.ts             # Git status (branch, dirty, ahead/behind)
-├── types.ts           # TypeScript interfaces
+├── index.ts             # Entry point
+├── stdin.ts             # Parse Claude's JSON input
+├── transcript.ts        # Parse transcript JSONL
+├── config-reader.ts     # Read MCP/rules configs
+├── config.ts            # Load/validate user config
+├── git.ts               # Git status (branch, dirty, ahead/behind)
+├── cost.ts              # Cost estimation (native stdin cost preferred)
+├── effort.ts            # Thinking effort parsing
+├── external-usage.ts    # External usage snapshot fallback / balance_label
+├── speed-tracker.ts     # Output speed tracking
+├── context-cache.ts     # Context/usage caching across invocations
+├── memory.ts            # System memory stats
+├── claude-config-dir.ts # Resolve the Claude config directory
+├── constants.ts         # Shared constants
+├── debug.ts             # Debug logging
+├── extra-cmd.ts         # Run an optional user command for a custom label
+├── version.ts           # Plugin version handling
+├── i18n/                # HUD label translations (en, zh-Hans)
+├── utils/               # Shared helpers
+├── types.ts             # TypeScript interfaces
 └── render/
-    ├── index.ts       # Main render coordinator
-    ├── session-line.ts   # Compact mode: single line with all info
-    ├── tools-line.ts     # Tool activity (opt-in)
-    ├── agents-line.ts    # Agent status (opt-in)
-    ├── todos-line.ts     # Todo progress (opt-in)
-    ├── colors.ts         # ANSI color helpers
+    ├── index.ts             # Main render coordinator
+    ├── session-line.ts      # Compact mode: single line with all info
+    ├── tools-line.ts        # Tool activity (opt-in)
+    ├── skills-mcp-line.ts   # Skills & MCP activity (opt-in)
+    ├── agents-line.ts       # Agent status (opt-in)
+    ├── todos-line.ts        # Todo progress (opt-in)
+    ├── colors.ts            # ANSI color helpers
+    ├── width.ts             # Terminal width / CJK-aware measurement
+    ├── format-reset-time.ts # Usage reset time formatting
     └── lines/
-        ├── index.ts      # Barrel export
-        ├── project.ts    # Line 1: model bracket + project + git
-        ├── identity.ts   # Line 2a: context bar
-        ├── usage.ts      # Line 2b: usage bar (combined with identity)
-        └── environment.ts # Config counts (opt-in)
+        ├── index.ts         # Barrel export
+        ├── project.ts       # Model bracket + project + git (+ advisor)
+        ├── identity.ts      # Context bar
+        ├── usage.ts         # Usage bar (merged with context by default)
+        ├── environment.ts   # Config counts (opt-in)
+        ├── advisor.ts       # Advisor model label (opt-in)
+        ├── cost.ts          # Session cost display
+        ├── prompt-cache.ts  # Prompt cache countdown
+        ├── memory.ts        # Memory usage display
+        ├── session-time.ts  # Session duration / timestamps
+        ├── session-tokens.ts # Session token totals
+        ├── added-dirs.ts    # /add-dir workspace directories
+        └── label-align.ts   # Label column alignment
 ```
 
 ### Output Format (default expanded layout)
@@ -92,9 +116,11 @@ Context █████░░░░░ 45% │ Usage ██░░░░░░░
 
 Lines 1-2 always shown. Additional lines are opt-in via config:
 - Tools line (`showTools`): ◐ Edit: auth.ts | ✓ Read ×3
+- Skills/MCP lines (`showSkills` / `showMcp`): active Skill invocations and MCP servers; when the Skills line is enabled, Skill-tool entries are suppressed from the tools line
 - Agents line (`showAgents`): ◐ explore [haiku]: Finding auth code
 - Todos line (`showTodos`): ▸ Fix authentication bug (2/5)
 - Environment line (`showConfigCounts`): 2 CLAUDE.md | 4 rules
+- Advisor label (`showAdvisor`): inlined on the project line, e.g. `Advisor: Opus 4.7`
 
 ### Context Thresholds
 

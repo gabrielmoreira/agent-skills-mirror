@@ -17,6 +17,7 @@ CAPABILITIES_SUMMARY:
 - context_overflow_prevention: Enforce memory pointer pattern and clear terminal states to prevent context window inflation
 - apex_loop_driver: Drive nexus apex Phase 6 implementation loop via Codex CLI spawn_agent/wait_agent subagent tools
 - summit_improvement_driver: Drive nexus summit Phase 5 PDCA improvement loop (max 3 iter, tri-engine, Agent Tennis circuit breaker)
+- enact_loop_driver: Drive a nexus enact build-loop work package Charter-natively — §10 DoD as external DONE gate, append PKG_* events to §9 run-log, two-level resume (run vs loop)
 
 COLLABORATION_PATTERNS:
 - Nexus -> Orbit: Loop execution context and delegation
@@ -35,6 +36,7 @@ COLLABORATION_PATTERNS:
 - Orbit -> Triage: Failure escalation with loop context
 - Nexus[apex] -> Orbit: apex Phase 6 delegation — loop contract (accord L3 ACs + omen mitigations + echo friction) + Codex CLI engine context
 - Nexus[summit] -> Orbit: summit Phase 5 delegation — improvement loop with tri-engine branches + magi arbitration + Agent Tennis circuit breaker config
+- Nexus[enact] -> Orbit: enact build-loop delegation — Charter §4/§5/§7/§10 slice; §10 per-package DoD as DONE gate; append PKG_* to §9 run-log
 
 BIDIRECTIONAL_PARTNERS:
 - INPUT: Nexus (loop context), User (goals), Scout (bug context), Lore (loop patterns), Judge (quality feedback), Beacon (observability alerts), Triage (incident context)
@@ -61,6 +63,7 @@ Use Orbit when the user needs:
 - stuck-loop detection when an agent repeats semantically equivalent actions without progress [Source: dev.to/boucle2026 — Stuck Agent Detection from 220 Loops]
 - driving the **nexus summit improvement loop** (Phase 5): orbit is the named driver for the max-3-iteration PDCA loop with Agent Tennis circuit breaker and magi arbitration — see `nexus/reference/summit-recipe.md`
 - driving the **nexus apex implementation loop** (Phase 6): orbit designs the loop contract from accord L3 ACs + omen mitigations + echo friction signals, then generates Codex CLI spawn scripts (`spawn_agent`/`wait_agent`/`send_input`/`resume_agent`/`close_agent`) — see `nexus/reference/apex-recipe.md`
+- driving the **nexus enact build loop** (Charter-driven): when `enact` delegates a build-loop work package, orbit consumes the read-only Charter §4/§5/§7/§10 slice, uses the §10 per-package DoD checklist as the external DONE gate, and appends `PKG_START`/`PKG_RECOVER`/`PKG_DONE` to the §9 run-log (`docs/CHARTER.run.log.md`) — see `reference/charter-loop-driver.md`
 
 Route elsewhere when the task is primarily:
 - multi-agent task chain orchestration: `Nexus`
@@ -90,6 +93,7 @@ Route elsewhere when the task is primarily:
 - When the goal invokes Ralph Loop semantics (`PROMPT.md`, `<promise>COMPLETE</promise>`, `cat PROMPT.md \| claude`, ghuntley-style scripts), follow `reference/ralph-loop-pattern.md`.
 - When driving nexus **apex Phase 6**: engine is fixed to **Codex CLI** (5 subagent tools). Run the engine availability check (`agents.max_depth >= 2`, tools permitted) before consuming the loop contract; no silent fallback to Claude Agent. See `reference/resilience-patterns.md §Codex CLI engine check`.
 - When driving nexus **summit Phase 5**: tri-engine improvement loop (Claude / Codex / agy) up to `max_loops = 3`, arbiter = magi. See `reference/resilience-patterns.md §Tri-engine improvement loop`.
+- When driving a nexus **enact build loop**: consume the Charter §4/§5/§7/§10 slice read-only (sha256-pinned, never mutate); the external DONE gate is the §10 per-package DoD checklist; append `PKG_START`/`PKG_RECOVER`/`PKG_DONE` to the enact §9 run-log (default `docs/CHARTER.run.log.md`); engine per §5 (Codex CLI `gpt-5.5` default, run the availability check before consuming). Orbit drives one package and reports terminal status back to `enact` — it does not construct the team or sequence other packages. See `reference/charter-loop-driver.md`.
 - Lay out runner prompts with `PROMPT_CACHE_BREAKPOINTS=4` `cache_control` breakpoints (system / tools / goal / context tail). Run each iteration in a dedicated `git worktree`. Gate DONE through an **independent critic model** (`CRITIC_MODEL=haiku` default).
 - Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3** (eagerly Read goal, operation contracts, prior loop telemetry, checkpoint state at DESIGN) and **P5** (think step-by-step at durable-execution checkpoint/replay, atomic write, OTel adoption, RECOVER-mode triage) as critical. P1/P2 recommended.
 

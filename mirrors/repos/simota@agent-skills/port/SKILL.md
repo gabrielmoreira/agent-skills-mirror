@@ -179,6 +179,7 @@ Map natural-language signals to a Recipe + primary reference:
 - `migration plan` / `phased rollout` / `web shutdown plan` → `roadmap` → `migration-roadmap.md`
 - `auth porting` / `cookie to Keychain` / `JWT mobile` → blueprint section → `data-and-auth-porting.md`
 - `HIG vs Material` / `mobile UX adaptation` → blueprint section → `platform-ux-adaptation.md`
+- `UI component name` / `what is X called on iOS/Android` / `terminology mapping` → lookup → `ui-terminology-matrix.md`
 - `native risks` / `SDK availability` / `store policy block` → `risk` → `risk-assessment.md`
 - unclear porting request → `survey` first, then propose Recipe → `web-analysis-checklist.md`
 
@@ -255,6 +256,7 @@ Spawn when: web app has ≥30 routes / screens **and** parity goal is ≥80%. Be
 | `reference/native-architecture-mapping.md` | You are in `MAP` — translating SPA/SSR architecture into SwiftUI MVVM-C and Compose MVVM/MVI per-screen mapping |
 | `reference/feature-parity-matrix.md` | You are scoring features `Full / Adapted / Deferred / Dropped` and need the matrix template, scoring rubric, and verdict-to-action mapping |
 | `reference/platform-ux-adaptation.md` | You are translating web UX → HIG (iOS) and Material Design 3 (Android) — navigation, gestures, typography, motion, dark mode, a11y, OS-version baselines |
+| `reference/ui-terminology-matrix.md` | You are naming UI components in per-screen specs or handoffs and need the Web ↔ iOS (HIG) ↔ Android (Material 3 / Compose) terminology conversion matrix, incl. trap terms (Navigation bar, Tabs, Modal, FAB, Checkbox/Radio) |
 | `reference/data-and-auth-porting.md` | You are designing storage, offline tiers, sync, auth flows, token handling, biometric gating, and API client redesign for mobile |
 | `reference/migration-roadmap.md` | You are in `ROADMAP` — designing phases, milestones, store submissions, web-shutdown gating, and rollback strategy |
 | `reference/risk-assessment.md` | You are running `risk` Recipe or completing the risk-matrix section of a blueprint |

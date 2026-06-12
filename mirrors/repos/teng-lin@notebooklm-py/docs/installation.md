@@ -37,14 +37,25 @@ This is the canonical installation guide for `notebooklm-py`. The README has a q
 
 ## Quick install (TL;DR by persona)
 
+> **Installing the CLI on macOS / Linux — use an isolated installer.** Plain
+> `pip install` into the *system* interpreter fails on modern macOS (Homebrew
+> Python) and Debian/Ubuntu with `error: externally-managed-environment`
+> ([PEP 668](https://peps.python.org/pep-0668/)). For CLI/app use, prefer
+> **`uv tool install`** or **`pipx install`** — they put `notebooklm` (and
+> `notebooklm-mcp` / `notebooklm-server`) on your PATH in a dedicated environment
+> without touching system Python. Plain `pip` still works **inside a virtualenv**
+> and on **Windows** (python.org's Python is not externally-managed). Library
+> users install into their own project's venv (`uv add` / `pip install`), so
+> PEP 668 never applies.
+
 | Persona | Install command |
 |---|---|
-| **A — AI Agent** | `pip install "notebooklm-py[browser]"` (then optionally `pip install "notebooklm-py[cookies]"` if Python < 3.13) |
-| **B — End user** | `pip install "notebooklm-py[browser]"` (or `pipx install "notebooklm-py[browser]"` for isolation) |
-| **C — Library user** | `pip install notebooklm-py` |
-| **D — Headless server / CI** | `pip install notebooklm-py` (no Playwright; ship a `storage_state.json`) |
+| **A — AI Agent** | `pip install "notebooklm-py[browser]"` in the user's active env (fall back to `uv tool install` / `pipx install` on an *externally-managed-environment* error) |
+| **B — End user** | `uv tool install "notebooklm-py[browser]"` or `pipx install "notebooklm-py[browser]"` (isolated; avoids the PEP 668 error) |
+| **C — Library user** | `uv add notebooklm-py` (or `pip install notebooklm-py` inside your project venv) |
+| **D — Headless server / CI** | `pip install notebooklm-py` inside a venv/container; ship a `storage_state.json` (no Playwright) |
 | **E — Contributor** | `uv sync --frozen --extra browser --extra dev --extra markdown && uv run playwright install chromium && uv run pre-commit install` |
-| **F — Power user** | `pip install "notebooklm-py[browser,cookies,markdown]"` (Python ≤ 3.12 only) |
+| **F — Power user** | `uv tool install --python 3.12 "notebooklm-py[browser,cookies,markdown]"` (the `cookies` extra needs Python ≤ 3.12; `--python 3.12` makes uv provision a matching interpreter even if your default is 3.13+) |
 
 ---
 
@@ -73,6 +84,8 @@ else
     echo "Skipping [cookies] on Python 3.13+ (rookiepy unavailable). Use 'notebooklm login' interactively."
 fi
 ```
+
+> If `pip install` errors with `externally-managed-environment` (modern macOS / Debian system Python, [PEP 668](https://peps.python.org/pep-0668/)), retry with `uv tool install "notebooklm-py[browser]"` or `pipx install "notebooklm-py[browser]"` — isolated installs that don't touch system Python. Inside an active virtualenv, `pip` works as-is.
 
 **Why two separate calls (not `[browser,cookies]`):** the combined form is atomic — if `rookiepy` fails to compile, the whole install fails and the user gets **nothing**. Splitting means `[browser]` always succeeds; `[cookies]` is recoverable.
 
@@ -129,20 +142,22 @@ Occasional CLI use.
 
 **Prerequisites:** Python 3.10+ already installed.
 
-**Recommended (cross-platform default, including Windows):**
-
-<!-- not mirrored: end-user pip install (Persona B); CONTRIBUTING.md tracks the in-repo `uv sync` flow only -->
-```bash
-pip install "notebooklm-py[browser]"
-```
-
-For an isolated install (avoids polluting your env), use `pipx` or `uv tool`:
+**Recommended — isolated install (macOS / Linux / Windows):**
 
 <!-- not mirrored: end-user isolated install (pipx / uv tool); CONTRIBUTING.md targets in-repo contributors -->
 ```bash
-pipx install "notebooklm-py[browser]"
-# OR (if you already have uv: https://docs.astral.sh/uv/getting-started/installation/)
 uv tool install "notebooklm-py[browser]"
+# OR, with pipx:
+pipx install "notebooklm-py[browser]"
+```
+
+Both put `notebooklm` on your PATH in a dedicated environment, so they work even where the system Python is locked down — modern macOS (Homebrew) and Debian/Ubuntu reject a plain `pip install` into it with `error: externally-managed-environment` ([PEP 668](https://peps.python.org/pep-0668/)). (If you don't have `uv` yet: <https://docs.astral.sh/uv/getting-started/installation/>.)
+
+Plain `pip` is fine **inside a virtualenv**, or on Windows (python.org's Python is not externally-managed):
+
+<!-- not mirrored: end-user pip install in a venv (Persona B); CONTRIBUTING.md tracks the in-repo `uv sync` flow only -->
+```bash
+pip install "notebooklm-py[browser]"
 ```
 
 **Post-install:** Run `notebooklm login` once. The CLI auto-installs Chromium on first run (~170 MB, 30–90 s, **no progress bar — be patient**).
@@ -151,7 +166,7 @@ uv tool install "notebooklm-py[browser]"
 
 <!-- not mirrored: end-user post-install verify (Persona B); contributors run the test suite instead -->
 ```bash
-notebooklm --version              # → 0.4.x
+notebooklm --version
 notebooklm login                  # opens Chromium for Google sign-in
 notebooklm auth check --test      # confirms auth roundtrip, with explicit success message
 ```
@@ -233,7 +248,7 @@ pre-commit install
 
 **Why `uv sync --frozen` and not `uv pip install -e ".[all]"`:** the repo has a checked-in `uv.lock`. `uv sync --frozen` enforces the lockfile and fails fast on drift; `uv pip install` ignores the lockfile and re-resolves transitively (will silently get newer versions of `playwright`, `ruff`, etc.).
 
-**Why three extras and not `[all]`:** `[all]` is `pip` extras semantics. `uv sync --extra X` is the `uv` equivalent. The three extras here are the contributor subset of `[all]` = `[browser, dev, markdown, mcp]`. `cookies` is intentionally excluded (`rookiepy` build issues on Python 3.13+) and `mcp` is omitted from the default contributor flow (the MCP server isn't needed for the standard test run); opt into either via `--extra cookies` / `--extra mcp` if needed.
+**Why three extras and not `[all]`:** `[all]` is `pip` extras semantics. `uv sync --extra X` is the `uv` equivalent. The three extras here are the contributor subset of `[all]` = `[browser, dev, markdown, mcp, server]`. `cookies` is intentionally excluded (`rookiepy` build issues on Python 3.13+), and `mcp` / `server` are omitted from the default contributor flow because those adapters are not needed for the standard local suite; opt in via `--extra cookies` / `--extra mcp` / `--extra server` if needed.
 
 **Why `browser` is part of the contributor install:** the default local test suite includes unit tests that import and patch `playwright.sync_api`, even though they do not launch a real browser. `uv sync --frozen --extra dev` installs pytest/ruff/mypy but not Playwright, so `uv run pytest` will fail with `ModuleNotFoundError: No module named 'playwright'`. Use the full contributor command above before running the default test suite.
 
@@ -284,7 +299,7 @@ Source of truth: `pyproject.toml` `[project.optional-dependencies]`.
 | `markdown` | `markdownify>=0.14.1` | `notebooklm source fulltext -f markdown`. | `pip install "notebooklm-py[markdown]"` | `uv add "notebooklm-py[markdown]"` |
 | `mcp` | `fastmcp>=2.14` | Run the MCP server (`notebooklm-mcp`) so an MCP client/agent can drive NotebookLM as tools. | `pip install "notebooklm-py[mcp]"` | `uv add "notebooklm-py[mcp]"` |
 | `server` | `fastapi`, `uvicorn[standard]`, `python-multipart` | The localhost REST API server (`notebooklm-server`, experimental). See [§ REST API server](#rest-api-server). | `pip install "notebooklm-py[server]"` | `uv add "notebooklm-py[server]"` |
-| `dev` | pytest stack, mypy, ruff (`==0.15.13` exact pin), pre-commit (`>=4.5.1`), vcrpy | Contributor tooling only. Not sufficient for this repo's default `uv run pytest`; add `browser` too because some unit tests import Playwright. | `pip install "notebooklm-py[dev]"` | `uv add "notebooklm-py[dev]"` (in your project) — but contributors *to this repo* use the [Persona E](#e-contributor) `uv sync` flow instead |
+| `dev` | pytest stack, mypy, ruff (`==0.15.15` exact pin), pre-commit (`>=4.5.1`), vcrpy | Contributor tooling only. Not sufficient for this repo's default `uv run pytest`; add `browser` too because some unit tests import Playwright. | `pip install "notebooklm-py[dev]"` | `uv add "notebooklm-py[dev]"` (in your project) — but contributors *to this repo* use the [Persona E](#e-contributor) `uv sync` flow instead |
 | `all` | Resolves to `browser` + `dev` + `markdown` + `mcp` + `server` (**not `cookies`**) | Contributors who do not need `rookiepy`. | `pip install "notebooklm-py[all]"` | `uv add "notebooklm-py[all]"` (in your project) — see [All vs All-Extras](#all-vs-all-extras) |
 
 > **Note on `uv` columns:** the `uv (in your project)` column is for users adding `notebooklm-py` as a dependency in **their own** project (requires a `pyproject.toml` in that project). Contributors working inside *this* repo use the Persona E flow (`uv sync --frozen --extra ...`), governed by this repo's `uv.lock`. Do not run `uv sync` outside a project — it errors with `No pyproject.toml found`.
@@ -293,13 +308,14 @@ Source of truth: `pyproject.toml` `[project.optional-dependencies]`.
 
 ## REST API server
 
-> **⚠️ Experimental.** Like the drafted MCP adapter, the REST server is experimental: the `/v1` surface and behavior may change in a minor release, and it is excluded from the public-API compatibility gate. Pin a version before relying on it for automation. The server also logs an experimental warning on every startup.
+> **⚠️ Experimental.** Like the MCP adapter, the REST server is experimental: the `/v1` surface and behavior may change in a minor release, and it is excluded from the public-API compatibility gate. Pin a version before relying on it for automation. The server also logs an experimental warning on every startup.
 
 A single-tenant, localhost REST API over the same transport-neutral core as the CLI — the natural shape for scripting and agent automation (feed a notebook, generate an artifact, pull it down) without spawning a CLI process per call.
 
 <!-- not mirrored: the server extra is end-user/automation tooling, not part of the contributor `uv sync` flow; CONTRIBUTING.md tracks only browser/dev/markdown. -->
 ```bash
-pip install "notebooklm-py[server]"        # fastapi + uvicorn + python-multipart
+uv tool install "notebooklm-py[server]"    # fastapi + uvicorn + python-multipart
+# OR, with pipx:  pipx install "notebooklm-py[server]"   (or plain pip inside a venv)
 ```
 
 **Prerequisite:** a provisioned account (`storage_state.json`) from `notebooklm login`. The server holds one account for the process; it does not run browser login itself.
@@ -345,7 +361,7 @@ Endpoints: `/v1/notebooks` (list/get/create/delete); `/v1/notebooks/{id}/sources
 <!-- not mirrored: REST-server artifact/upload curl examples (end-user/automation tooling); not part of the contributor install flow. -->
 ```bash
 # Generate (non-blocking → 202 + task_id). Omit source_ids to use ALL sources
-# (like the CLI); pass them to scope. Some types (quiz/flashcards) need >=1 source.
+# (like the CLI); pass them to scope. Some types (quiz/flashcards) need at least one source.
 curl -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
      -d '{"type":"quiz"}' $BASE/v1/notebooks/<id>/artifacts        # → {"task_id": ...}
 curl -H "Authorization: Bearer $TOKEN" $BASE/v1/notebooks/<id>/artifacts/<task_id>  # poll
@@ -437,7 +453,7 @@ Full usage walkthrough (auth, transports, the 25 tools, workflows, troubleshooti
 <!-- not mirrored: end-user smoke test; contributors run `uv run pytest` instead -->
 ```bash
 notebooklm create "My First Notebook"
-notebooklm source add https://en.wikipedia.org/wiki/Python_(programming_language)
+notebooklm source add 'https://en.wikipedia.org/wiki/Python_(programming_language)'
 notebooklm ask "Summarize the sources in three sentences"
 ```
 
@@ -482,7 +498,7 @@ rm -rf ~/.notebooklm                          # optional: remove auth state
 
 > ⚠️  **`pip install ".[all]"` and `uv sync --all-extras` are not equivalent.**
 >
-> - `pyproject.toml` defines: `all = ["notebooklm-py[browser,dev,markdown,mcp]"]` — a self-referential extras string that resolves to **browser + dev + markdown + mcp only**. It deliberately excludes `cookies` because `rookiepy` has install issues on Python 3.13+ ([CHANGELOG `[0.4.1]`](../CHANGELOG.md)).
+> - `pyproject.toml` defines: `all = ["notebooklm-py[browser,dev,markdown,mcp,server]"]` — a self-referential extras string that resolves to **browser + dev + markdown + mcp + server only**. It deliberately excludes `cookies` because `rookiepy` has install issues on Python 3.13+ ([CHANGELOG `[0.4.1]`](../CHANGELOG.md)).
 > - `uv sync --all-extras` installs **every** extra including `cookies`, and may fail on Python 3.13/3.14.
 > - In this repo, prefer `uv sync --frozen --extra browser --extra dev --extra markdown`.
 

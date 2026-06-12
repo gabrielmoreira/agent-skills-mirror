@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 29 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 36 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,27 +67,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`.qwen/skills/codegraph/pr-analysis.md`](.qwen/skills/codegraph/pr-analysis.md) |
 | 7 | ✓ | [`.qwen/skills/codegraph/schema.md`](.qwen/skills/codegraph/schema.md) |
 | 8 | ✓ | [`.qwen/skills/codegraph/SKILL.md`](.qwen/skills/codegraph/SKILL.md) |
-| 9 | ✓ | [`.qwen/skills/docs-audit-and-refresh/SKILL.md`](.qwen/skills/docs-audit-and-refresh/SKILL.md) |
-| 10 | ✓ | [`.qwen/skills/docs-update-from-diff/SKILL.md`](.qwen/skills/docs-update-from-diff/SKILL.md) |
-| 11 | ✓ | [`.qwen/skills/e2e-testing/SKILL.md`](.qwen/skills/e2e-testing/SKILL.md) |
-| 12 | ✓ | [`.qwen/skills/feat-dev/SKILL.md`](.qwen/skills/feat-dev/SKILL.md) |
-| 13 | ✓ | [`.qwen/skills/memory-leak-debug/SKILL.md`](.qwen/skills/memory-leak-debug/SKILL.md) |
-| 14 | ✓ | [`.qwen/skills/openwork-desktop-sync/SKILL.md`](.qwen/skills/openwork-desktop-sync/SKILL.md) |
-| 15 | ✓ | [`.qwen/skills/qwen-code-claw/SKILL.md`](.qwen/skills/qwen-code-claw/SKILL.md) |
-| 16 | ✓ | [`.qwen/skills/structured-debugging/SKILL.md`](.qwen/skills/structured-debugging/SKILL.md) |
-| 17 | ✓ | [`.qwen/skills/terminal-capture/SKILL.md`](.qwen/skills/terminal-capture/SKILL.md) |
-| 18 | ✓ | [`.qwen/skills/tmux-real-user-testing/SKILL.md`](.qwen/skills/tmux-real-user-testing/SKILL.md) |
-| 19 | ✓ | [`.qwen/skills/triage/SKILL.md`](.qwen/skills/triage/SKILL.md) |
-| 20 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 21 | ✓ | [`docs/users/features/skills.md`](docs/users/features/skills.md) |
-| 22 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md) |
-| 23 | ✓ | [`packages/core/src/skills/bundled/batch/SKILL.md`](packages/core/src/skills/bundled/batch/SKILL.md) |
-| 24 | ✓ | [`packages/core/src/skills/bundled/loop/SKILL.md`](packages/core/src/skills/bundled/loop/SKILL.md) |
-| 25 | ✓ | [`packages/core/src/skills/bundled/new-app/SKILL.md`](packages/core/src/skills/bundled/new-app/SKILL.md) |
-| 26 | ✓ | [`packages/core/src/skills/bundled/qc-helper/SKILL.md`](packages/core/src/skills/bundled/qc-helper/SKILL.md) |
-| 27 | ✓ | [`packages/core/src/skills/bundled/review/SKILL.md`](packages/core/src/skills/bundled/review/SKILL.md) |
-| 28 | ✓ | [`packages/core/src/skills/bundled/simplify/SKILL.md`](packages/core/src/skills/bundled/simplify/SKILL.md) |
-| 29 | ✓ | [`packages/core/src/skills/bundled/stuck/SKILL.md`](packages/core/src/skills/bundled/stuck/SKILL.md) |
+| 9 | ✓ | [`.qwen/skills/create-issue/SKILL.md`](.qwen/skills/create-issue/SKILL.md) |
+| 10 | ✓ | [`.qwen/skills/docs-audit-and-refresh/SKILL.md`](.qwen/skills/docs-audit-and-refresh/SKILL.md) |
+| 11 | ✓ | [`.qwen/skills/docs-update-from-diff/SKILL.md`](.qwen/skills/docs-update-from-diff/SKILL.md) |
+| 12 | ✓ | [`.qwen/skills/e2e-testing/SKILL.md`](.qwen/skills/e2e-testing/SKILL.md) |
+| 13 | ✓ | [`.qwen/skills/feat-dev/SKILL.md`](.qwen/skills/feat-dev/SKILL.md) |
+| 14 | ✓ | [`.qwen/skills/memory-leak-debug/SKILL.md`](.qwen/skills/memory-leak-debug/SKILL.md) |
+| 15 | ✓ | [`.qwen/skills/openwork-desktop-sync/SKILL.md`](.qwen/skills/openwork-desktop-sync/SKILL.md) |
+| 16 | ✓ | [`.qwen/skills/qwen-code-claw/SKILL.md`](.qwen/skills/qwen-code-claw/SKILL.md) |
+| 17 | ✓ | [`.qwen/skills/structured-debugging/SKILL.md`](.qwen/skills/structured-debugging/SKILL.md) |
+| 18 | ✓ | [`.qwen/skills/terminal-capture/SKILL.md`](.qwen/skills/terminal-capture/SKILL.md) |
+| 19 | ✓ | [`.qwen/skills/tmux-real-user-testing/SKILL.md`](.qwen/skills/tmux-real-user-testing/SKILL.md) |
+| 20 | ✓ | [`.qwen/skills/triage/SKILL.md`](.qwen/skills/triage/SKILL.md) |
+| 21 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 22 | ✓ | [`docs/users/features/skills.md`](docs/users/features/skills.md) |
+| 23 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md) |
+| 24 | ✓ | [`packages/core/src/skills/bundled/batch/SKILL.md`](packages/core/src/skills/bundled/batch/SKILL.md) |
+| 25 | ✓ | [`packages/core/src/skills/bundled/loop/SKILL.md`](packages/core/src/skills/bundled/loop/SKILL.md) |
+| 26 | ✓ | [`packages/core/src/skills/bundled/new-app/SKILL.md`](packages/core/src/skills/bundled/new-app/SKILL.md) |
+| 27 | ✓ | [`packages/core/src/skills/bundled/qc-helper/SKILL.md`](packages/core/src/skills/bundled/qc-helper/SKILL.md) |
+| 28 | ✓ | [`packages/core/src/skills/bundled/review/SKILL.md`](packages/core/src/skills/bundled/review/SKILL.md) |
+| 29 | ✓ | [`packages/core/src/skills/bundled/simplify/SKILL.md`](packages/core/src/skills/bundled/simplify/SKILL.md) |
+| 30 | ✓ | [`packages/core/src/skills/bundled/stuck/SKILL.md`](packages/core/src/skills/bundled/stuck/SKILL.md) |
+| 31 | ✓ | [`packages/desktop/.agents/skills/desktop-brand-builder/SKILL.md`](packages/desktop/.agents/skills/desktop-brand-builder/SKILL.md) |
+| 32 | ✓ | [`packages/desktop/.agents/skills/desktop-develop/SKILL.md`](packages/desktop/.agents/skills/desktop-develop/SKILL.md) |
+| 33 | ✓ | [`packages/desktop/.agents/skills/desktop-pet/SKILL.md`](packages/desktop/.agents/skills/desktop-pet/SKILL.md) |
+| 34 | ✓ | [`packages/desktop/apps/electron/resources/AGENTS.md`](packages/desktop/apps/electron/resources/AGENTS.md) |
+| 35 | ✓ | [`packages/desktop/apps/electron/resources/docs/craft-cli.md`](packages/desktop/apps/electron/resources/docs/craft-cli.md) |
+| 36 | ✓ | [`packages/desktop/apps/electron/resources/docs/skills.md`](packages/desktop/apps/electron/resources/docs/skills.md) |
 
 ---
 

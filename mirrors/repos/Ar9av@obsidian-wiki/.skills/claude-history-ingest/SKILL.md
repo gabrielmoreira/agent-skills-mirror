@@ -19,6 +19,7 @@ This skill can be invoked directly or via the `wiki-history-ingest` router (`/wi
 1. **Resolve config** — follow the Config Resolution Protocol in `llm-wiki/SKILL.md` (walk up CWD for `.env` → `~/.obsidian-wiki/config` → prompt setup). This gives `OBSIDIAN_VAULT_PATH` and `CLAUDE_HISTORY_PATH` (defaults to `~/.claude`)
 2. Read `.manifest.json` at the vault root to check what's already been ingested
 3. Read `index.md` at the vault root to know what the wiki already contains
+4. **Project Scoping** — read `WIKI_SKIP_PROJECTS` from config (comma-separated substrings). Exclude any project directory whose name contains one of them from **every** step below (scan, delta, sampling, manifest writes). If the user names extra projects to skip this run, add them. Apply the exclusion **once, uniformly** — don't hand-write `grep -v` filters into individual commands, which drifts between the scan and manifest steps.
 
 ## Ingest Modes
 
@@ -30,6 +31,26 @@ Check `.manifest.json` for each source file (conversation JSONL, memory file). O
 - Files whose modification time is newer than their `ingested_at` in the manifest
 
 This is usually what you want — the user ran a few new sessions and wants to capture the delta.
+
+> **Canonical paths when comparing.** The manifest keys are absolute paths with `~` expanded (see `llm-wiki/SKILL.md` → `.manifest.json`). Before deciding a file is "new", expand its path the same way — otherwise a file already tracked as `~/.claude/...` looks new when you scanned it as `/Users/me/.claude/...` (or vice-versa) and gets re-ingested. The `scripts/manifest.py` helper does this for you:
+>
+> ```bash
+> # New/modified sources, honoring WIKI_SKIP_PROJECTS + --skip, paths already canonical:
+> python3 "$OBSIDIAN_WIKI_REPO/scripts/manifest.py" delta "$OBSIDIAN_VAULT_PATH" \
+>   --scan "$CLAUDE_HISTORY_PATH/projects/*/memory/*.md"
+> # One-time repair if the manifest already mixes ~ and absolute keys:
+> python3 "$OBSIDIAN_WIKI_REPO/scripts/manifest.py" normalize "$OBSIDIAN_VAULT_PATH" --dry-run
+> ```
+>
+> The helper is optional — if it's unavailable, do the same expansion inline before every manifest lookup and write.
+
+### Conversation Sampling Heuristic
+
+A history path can hold hundreds of conversation JSONLs — do not try to read them all. Per project:
+
+- **If the project already has memory files** (`memory/*.md`), those are the pre-distilled signal. Ingest them and **skip the project's raw conversations** in append mode unless the user asks for a deeper pass.
+- **If the project has no memory files**, read only the **3 most recent** conversation JSONLs (by mtime) to characterize it.
+- Always report what you sampled vs skipped (e.g. "agenttower: 7 memory files ingested, 18 conversations skipped"), so the coverage gap is visible rather than silent.
 
 ### Full Mode
 
@@ -62,6 +83,13 @@ Claude Code stores data in two locations. Scan **both**.
 ```
 
 ### Source 2: `~/Library/Application Support/Claude/local-agent-mode-sessions/` (Desktop app agent sessions)
+
+> **Pre-check first.** Many users are CLI-only and have no desktop sessions. Before walking the structure below, confirm it's non-empty:
+> ```bash
+> DESKTOP_SESSIONS="$HOME/Library/Application Support/Claude/local-agent-mode-sessions"
+> [ -d "$DESKTOP_SESSIONS" ] && find "$DESKTOP_SESSIONS" -name "audit.jsonl" | head -1
+> ```
+> If that prints nothing, skip this entire section (Source 2 + Step 3b) and don't narrate it.
 
 The Claude desktop app stores local agent mode sessions here. The structure is deeply nested:
 
@@ -327,7 +355,7 @@ Update `index.md` and `log.md` per the standard process:
 - [TIMESTAMP] CLAUDE_HISTORY_INGEST projects=N conversations=M desktop_sessions=D audit_logs=A pages_updated=X pages_created=Y mode=append|full
 ```
 
-**`hot.md`** — Read `$OBSIDIAN_VAULT_PATH/hot.md` (create from the template in `wiki-ingest` if missing). Update **Recent Activity** with a one-line summary — e.g. "Ingested 5 Claude conversations across 2 projects; surfaced patterns in API design and testing strategy." Keep the last 3 operations. Update **Active Threads** if any ongoing project is now better understood. Update `updated` timestamp.
+**`hot.md`** — Read `$OBSIDIAN_VAULT_PATH/hot.md` (create from the template in `wiki-ingest` if missing). Update **Recent Activity** with a one-line summary — e.g. "Ingested 5 Claude conversations across 2 projects; surfaced patterns in API design and testing strategy." Keep the last 3 operations. Update **Active Threads** if any ongoing project is now better understood. **Update the `updated:` field in the frontmatter** to the current timestamp — this is easy to forget; the body edit and the frontmatter bump must both happen.
 
 ## Privacy
 

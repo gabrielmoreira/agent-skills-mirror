@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `databricks/databricks-agent-skills` — 26 default patterns, 0 followed patterns, 136 file(s) materialized.
+Mirror of `databricks/databricks-agent-skills` — 26 default patterns, 1 followed patterns, 137 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `databricks/databricks-agent-skills` — 26 default patterns, 0 follow
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 136 |
+| Followed pats | 1 |
+| Files         | 137 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `databricks/databricks-agent-skills` — 26 default patterns, 0 follow
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `hooks/README.md`
 
 ## File Index
 
@@ -195,6 +195,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 134 | ✓ | [`skills/databricks-vector-search/references/search-modes.md`](skills/databricks-vector-search/references/search-modes.md) |
 | 135 | ✓ | [`skills/databricks-vector-search/references/troubleshooting-and-operations.md`](skills/databricks-vector-search/references/troubleshooting-and-operations.md) |
 | 136 | ✓ | [`skills/databricks-vector-search/SKILL.md`](skills/databricks-vector-search/SKILL.md) |
+| 137 | → | [`hooks/README.md`](hooks/README.md) |
 
 ---
 

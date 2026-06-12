@@ -264,7 +264,7 @@ Full roster at `gsd-core/workflows/*.md`. Workflows are thin orchestrators that 
 
 ---
 
-## References (67 shipped)
+## References (68 shipped)
 
 Full roster at `gsd-core/references/*.md`. References are shared knowledge documents that workflows and agents `@-reference`. The groupings below match [`docs/ARCHITECTURE.md`](ARCHITECTURE.md#references-gsd-corereferencesmd) — core, workflow, thinking-model clusters, and the modular planner decomposition.
 
@@ -354,6 +354,7 @@ The `gsd-planner` agent is decomposed into a core agent plus reference modules t
 | `planner-antipatterns.md` | Planner anti-patterns and specificity examples. |
 | `planner-chunked.md` | Chunked mode return formats (`## OUTLINE COMPLETE`, `## PLAN COMPLETE`) for Windows stdio hang mitigation. |
 | `planner-gap-closure.md` | Gap-closure mode behavior (reads VERIFICATION.md, targeted replanning). |
+| `planner-guidance.md` | Expository planner guidance: philosophy, task types/sizing, interface-first ordering, user setup, dependency graph, granularity calibration, and structured-return templates. |
 | `planner-reviews.md` | Cross-AI review integration (reads REVIEWS.md from `/gsd-review`). |
 | `planner-revision.md` | Plan revision patterns for iterative refinement. |
 | `planner-source-audit.md` | Planner source-audit and authority-limit rules. |
@@ -370,7 +371,7 @@ The `gsd-planner` agent is decomposed into a core agent plus reference modules t
 
 ---
 
-## CLI Modules (105 shipped)
+## CLI Modules (107 shipped)
 
 Full listing: `gsd-core/bin/lib/*.cjs`.
 
@@ -452,6 +453,7 @@ Full listing: `gsd-core/bin/lib/*.cjs`.
 | `roadmap.cjs` | ROADMAP.md parsing, phase extraction, plan progress |
 | `runtime-artifact-layout.cjs` | Runtime artifact layout module — resolves the artifact directory shapes (commands, agents, skills) for each supported runtime; single source of truth for per-runtime artifact placement (#3663) |
 | `runtime-config-adapter-registry.cjs` | Explicit runtime config adapter registry — resolves per-runtime config-mutation install intent (install surface, shared-settings gate, finish-phase permission writer); see ADR-58. |
+| `runtime-hooks-surface.cjs` | Runtime hooks surface module — standalone hook-surface writer functions extracted from bin/install.js (ADR-857 phase 5f-1); owns Cline/Cursor/Copilot/Codex hook artifact generation and reconciliation. |
 | `runtime-name-policy.cjs` | Runtime name normalization policy — canonical token sanitization for runtime identifiers used in path construction and display |
 | `runtime-homes.cjs` | Canonical runtime → global config/skills directory mapping; first-class support for all 15 runtimes including Hermes nested layout and Cline rules-based exclusion (#3126) |
 | `runtime-slash.cjs` | Runtime-aware slash-command formatter — single source of truth for emitting `/gsd-<cmd>` (skills-based runtimes) and `$gsd-<cmd>` (codex) in user-facing output and persisted artifacts (#3584) |
@@ -467,6 +469,7 @@ Full listing: `gsd-core/bin/lib/*.cjs`.
 | `task-command-router.cjs` | Thin CJS subcommand router adapter for `gsd-tools task` |
 | `template.cjs` | Template selection and filling with variable substitution |
 | `uat.cjs` | UAT file parsing, verification debt tracking, audit-uat support |
+| `uat-predicate.cjs` | UAT-passed predicate — markdown-aware evaluation of HUMAN-UAT results; returns pass only when all required checks pass; ignores false-positive contexts (frontmatter, fenced code, blockquotes, HTML comments) |
 | `ui-safety-gate.cjs` | Shell-free word-boundary UI token detector (#3706, #3718); reads phase-section text from stdin, exits 0 (UI found) or 1 (no UI); also deployed to `gsd-core/bin/lib/` so the GSD installer ships it to `$RUNTIME_DIR` (#448) |
 | `update-context.cjs` | Pure install-context resolver for `/gsd:update` — runtime/scope/config-dir/version detection (LOCAL/GLOBAL/UNKNOWN) ported from update.md bash; backs `gsd-tools update-context` (#498) |
 | `validate-command-router.cjs` | Thin CJS subcommand router adapter for `gsd-tools validate` |

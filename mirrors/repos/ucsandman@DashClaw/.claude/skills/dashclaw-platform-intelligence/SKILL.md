@@ -5,7 +5,7 @@ description: DashClaw platform expert for integration, troubleshooting, and gove
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:63c3809615c811fd55cbf9f615f222e99eefa2cd`
+**Shape snapshot:** `sha1:80aeab798d5b99cde30e8dc0976dd6835d089c94`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -45,9 +45,9 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 ## At a Glance
 
-- **260** active API routes across **63** categories (308 total including archived)
-- **4** required + **180** optional environment variables
-- **97** database tables
+- **273** active API routes across **65** categories (321 total including archived)
+- **4** required + **181** optional environment variables
+- **100** database tables
 
 ## API Surface
 
@@ -92,6 +92,8 @@ neither exists. When you cannot run the queries above, fall back **in this order
 ### `approvals`
 
 - `POST` `/api/approvals/[actionId]`
+- `POST` `/api/approvals/bulk`
+- `GET` `/api/approvals/floods`
 
 ### `artifacts`
 
@@ -185,6 +187,10 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `GET` `/api/cron/reset-meters`
 - `POST` `/api/cron/routing-maintenance`
 - `GET` `/api/cron/signals`
+
+### `digest`
+
+- `GET` `/api/digest/fleet`
 
 ### `discord`
 
@@ -345,12 +351,15 @@ neither exists. When you cannot run the queries above, fall back **in this order
 ### `policies`
 
 - `DELETE, GET, PATCH, POST` `/api/policies`
+- `GET` `/api/policies/contract`
 - `POST` `/api/policies/generate`
 - `POST` `/api/policies/import`
 - `GET` `/api/policies/modes`
 - `POST` `/api/policies/modes/import`
 - `POST` `/api/policies/modes/preview`
 - `GET` `/api/policies/proof`
+- `GET` `/api/policies/review`
+- `POST` `/api/policies/review/verdict`
 - `POST` `/api/policies/simulate`
 - `GET` `/api/policies/summary`
 - `GET` `/api/policies/templates`
@@ -480,6 +489,16 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 - `GET` `/api/widget/summary`
 
+### `work-orders`
+
+- `GET, POST` `/api/work-orders`
+- `DELETE, GET` `/api/work-orders/[workOrderId]`
+- `GET` `/api/work-orders/[workOrderId]/artifacts`
+- `POST` `/api/work-orders/[workOrderId]/complete`
+- `POST` `/api/work-orders/claim`
+- `GET, POST` `/api/work-orders/types`
+- `DELETE, GET, PUT` `/api/work-orders/types/[type]`
+
 ### `workflows`
 
 - `POST` `/api/workflows/draft`
@@ -504,8 +523,8 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 These must be set — DashClaw will fail to start without them.
 
-- **`DASHCLAW_API_KEY`** - referenced in 74 file(s)
-- **`DATABASE_URL`** - referenced in 96 file(s)
+- **`DASHCLAW_API_KEY`** - referenced in 75 file(s)
+- **`DATABASE_URL`** - referenced in 97 file(s)
 - **`ENCRYPTION_KEY`** - referenced in 8 file(s)
 - **`NEXTAUTH_SECRET`** - referenced in 5 file(s)
 
@@ -602,13 +621,13 @@ These have fallbacks or only activate specific features.
 - `GUARD_LLM_MODEL` *(undocumented)*
 - `GUARD_WEBHOOK_SECRET` *(undocumented)*
 - `HOSTED_CLEANUP_SECRET` *(undocumented)*
-- `HOSTED_DATABASE_URL` *(undocumented)*
 - `HOSTED_MAX_ACTIVE_TRIALS` *(undocumented)*
 - `HOSTED_PROVISION_MAX_PER_IP_PER_DAY` *(undocumented)*
 - `HOSTED_SMOKE_BASE_URL` *(undocumented)*
 - `HOSTED_TRIAL_ACTION_CAP` *(undocumented)*
 - `HOSTED_TRIAL_DAYS` *(undocumented)*
 - `INTEGRATION_DATABASE_URL` *(undocumented)*
+- `MODEL` *(undocumented)*
 - `MOONSHOT_API_KEY` *(undocumented)*
 - `NAMECHEAP_API_KEY` *(undocumented)*
 - `NAMECHEAP_API_USER` *(undocumented)*
@@ -692,11 +711,12 @@ These have fallbacks or only activate specific features.
 - `VERCEL_TOKEN` *(undocumented)*
 - `VERCEL_URL` *(undocumented)*
 - `WEBHOOK_ALLOWED_DOMAINS` *(undocumented)*
+- `WORKER_AGENT_ID` *(undocumented)*
 - `X` *(undocumented)*
 
 ## Database Tables
 
-All 97 tables defined in `schema/schema.js` (Drizzle ORM):
+All 100 tables defined in `schema/schema.js` (Drizzle ORM):
 
 - `action_embeddings`
 - `action_records`
@@ -794,15 +814,20 @@ All 97 tables defined in `schema/schema.js` (Drizzle ORM):
 - `waitlist`
 - `webhook_deliveries`
 - `webhooks`
+- `work_order_receipts`
+- `work_order_types`
+- `work_orders`
 - `workflows`
 
 ## Signal Types
 
 These are the `type` strings emitted through `fireWebhooksForOrg` and `deliverNativeNotifications`. Webhooks can subscribe to any subset by putting the type in their `events: [...]` array (or use `['all']` for everything).
 
+- `approval_flood`
 - `autonomy_spike`
 - `branch_stale`
 - `cost_exceeded`
+- `coverage_drop`
 - `green_insufficient`
 - `integration_health_changed`
 - `integration_mismatch`

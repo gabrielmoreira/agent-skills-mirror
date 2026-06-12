@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mworldorg/markdown-memory` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `mworldorg/markdown-memory` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mworldorg/markdown-memory` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,10 +69,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`skills/mm-resume/SKILL.md`](skills/mm-resume/SKILL.md) |
 | 9 | ✓ | [`skills/mm-save-session/SKILL.md`](skills/mm-save-session/SKILL.md) |
 | 10 | ✓ | [`skills/mm-setup/SKILL.md`](skills/mm-setup/SKILL.md) |
-| 11 | ✓ | [`skills/mm-vault/SKILL.md`](skills/mm-vault/SKILL.md) |
-| 12 | ✓ | [`skills/mm/SKILL.md`](skills/mm/SKILL.md) |
-| 13 | ✓ | [`vendor/ecc-search-first/SKILL.md`](vendor/ecc-search-first/SKILL.md) |
-| 14 | ✓ | [`vendor/ecc-security-review/SKILL.md`](vendor/ecc-security-review/SKILL.md) |
+| 11 | ✓ | [`skills/mm-update/SKILL.md`](skills/mm-update/SKILL.md) |
+| 12 | ✓ | [`skills/mm-vault/SKILL.md`](skills/mm-vault/SKILL.md) |
+| 13 | ✓ | [`skills/mm/SKILL.md`](skills/mm/SKILL.md) |
+| 14 | ✓ | [`vendor/ecc-search-first/SKILL.md`](vendor/ecc-search-first/SKILL.md) |
+| 15 | ✓ | [`vendor/ecc-security-review/SKILL.md`](vendor/ecc-security-review/SKILL.md) |
 
 ---
 

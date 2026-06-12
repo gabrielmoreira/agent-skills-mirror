@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Unclecheng-li/VulnClaw` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `Unclecheng-li/VulnClaw` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Unclecheng-li/VulnClaw` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,8 +70,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`vulnclaw/skills/specialized/osint-recon/SKILL.md`](vulnclaw/skills/specialized/osint-recon/SKILL.md) |
 | 10 | ✓ | [`vulnclaw/skills/specialized/pentest-tools/SKILL.md`](vulnclaw/skills/specialized/pentest-tools/SKILL.md) |
 | 11 | ✓ | [`vulnclaw/skills/specialized/rapid-checklist/SKILL.md`](vulnclaw/skills/specialized/rapid-checklist/SKILL.md) |
-| 12 | ✓ | [`vulnclaw/skills/specialized/web-pentest/SKILL.md`](vulnclaw/skills/specialized/web-pentest/SKILL.md) |
-| 13 | ✓ | [`vulnclaw/skills/specialized/web-security-advanced/SKILL.md`](vulnclaw/skills/specialized/web-security-advanced/SKILL.md) |
+| 12 | ✓ | [`vulnclaw/skills/specialized/secknowledge-skill/SKILL.md`](vulnclaw/skills/specialized/secknowledge-skill/SKILL.md) |
+| 13 | ✓ | [`vulnclaw/skills/specialized/web-pentest/SKILL.md`](vulnclaw/skills/specialized/web-pentest/SKILL.md) |
+| 14 | ✓ | [`vulnclaw/skills/specialized/web-security-advanced/SKILL.md`](vulnclaw/skills/specialized/web-security-advanced/SKILL.md) |
 
 ---
 

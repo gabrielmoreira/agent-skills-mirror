@@ -56,7 +56,11 @@ Run the smallest useful discovery set:
   ```bash
   md2wechat version --json
   md2wechat capabilities --json
+  md2wechat skills list --json
+  md2wechat skills read md2wechat --json
   ```
+
+`md2wechat skills read md2wechat --json` reads the SOP embedded in the current CLI binary. Prefer it when the installed external skill, README, or repository checkout may be stale relative to the executable on `PATH`.
 
 For simple local actions such as `preview`, `humanize`, or a user-specified command with explicit flags, do not run unrelated provider, theme, prompt, or layout discovery.
 

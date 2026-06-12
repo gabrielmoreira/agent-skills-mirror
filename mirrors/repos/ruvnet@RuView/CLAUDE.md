@@ -10,9 +10,9 @@ Dual codebase: Python v1 (`v1/`) and Rust port (`v2/`).
 | `wifi-densepose-core` | Core types, traits, error types, CSI frame primitives |
 | `wifi-densepose-signal` | SOTA signal processing + RuvSense multistatic sensing (16 modules) |
 | `wifi-densepose-nn` | Neural network inference (ONNX, PyTorch, Candle backends) |
-| `wifi-densepose-train` | Training pipeline with ruvector integration + ruview_metrics |
+| `wifi-densepose-train` | Training pipeline with ruvector integration + ruview_metrics; MAE pretraining recipe (`mae.rs`, ADR-152 §2.3) + WiFlow-STD port (`wiflow_std/`, tch-gated) |
 | `wifi-densepose-mat` | Mass Casualty Assessment Tool — disaster survivor detection |
-| `wifi-densepose-hardware` | ESP32 aggregator, TDM protocol, channel hopping firmware |
+| `wifi-densepose-hardware` | ESP32 aggregator, TDM protocol, channel hopping firmware; `ieee80211bf/` 802.11bf forward-compat protocol model (ADR-153) |
 | `wifi-densepose-ruvector` | RuVector v2.0.4 integration + cross-viewpoint fusion (5 modules) |
 | `wifi-densepose-wasm` | WebAssembly bindings for browser deployment |
 | `wifi-densepose-cli` | CLI tool (`wifi-densepose` binary) — `calibrate`/`calibrate-serve`/`enroll`/`train-room`/`room-watch` + MAT (MAT gated behind the `mat` feature; build `--no-default-features` for the aarch64/appliance calibration binary) |
@@ -73,6 +73,8 @@ All 5 ruvector crates integrated in workspace:
 - ADR-031: RuView sensing-first RF mode (Proposed)
 - ADR-032: Multistatic mesh security hardening (Proposed)
 - ADR-148: Drone swarm control system / `ruview-swarm` (In Progress)
+- ADR-152: WiFi-Pose SOTA 2026 intake — geometry conditioning, WiFlow-STD benchmark (measurement (a) complete: claims MEASURED-EQUIVALENT at ~96% PCK@20), MAE recipe (Proposed; §2.1–2.3, 2.6 implemented)
+- ADR-153: IEEE 802.11bf-2025 forward-compatibility protocol model (Accepted — amends ADR-152 §2.4)
 
 ### Supported Hardware
 

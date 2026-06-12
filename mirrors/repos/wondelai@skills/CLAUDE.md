@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Purpose
 
-This is a collection of 43 agent skills for Claude Code and agentskills.io-compatible agents. Skills provide specialized domain knowledge and frameworks for specific use cases (UX design, marketing, product strategy, sales, operations, positioning, virality, code quality, systems architecture, etc.).
+This is a collection of 50 agent skills for Claude Code and agentskills.io-compatible agents. Skills provide specialized domain knowledge and frameworks for specific use cases (UX design, marketing, product strategy, sales, operations, positioning, virality, code quality, systems architecture, etc.).
 
 ## Repository Structure
 
@@ -21,7 +21,7 @@ skills/
 └── README.md              # Skill catalog with descriptions and installation instructions
 ```
 
-## Current Skills (43)
+## Current Skills (50)
 
 | Category | Skills |
 |----------|--------|
@@ -29,11 +29,11 @@ skills/
 | **Marketing/CRO** | cro-methodology, storybrand-messaging, scorecard-marketing, contagious, one-page-marketing |
 | **Sales/Influence** | influence-psychology, predictable-revenue, made-to-stick, hundred-million-offers |
 | **Product/Innovation** | jobs-to-be-done, lean-startup, design-sprint, inspired-product, continuous-discovery, 37signals-way |
-| **Product/Strategy** | mom-test, negotiation |
-| **Strategy/Growth** | crossing-the-chasm, blue-ocean-strategy, traction-eos, obviously-awesome |
-| **Code Quality** | clean-code, refactoring-patterns, software-design-philosophy, pragmatic-programmer, domain-driven-design |
-| **Systems/Architecture** | ddia-systems, system-design, clean-architecture, release-it, high-perf-browser |
-| **Other** | drive-motivation |
+| **Product/Strategy** | mom-test, negotiation, monetizing-innovation, lean-analytics |
+| **Strategy/Growth** | crossing-the-chasm, blue-ocean-strategy, traction-eos, obviously-awesome, good-strategy-bad-strategy, cold-start-problem |
+| **Code Quality** | clean-code, refactoring-patterns, software-design-philosophy, pragmatic-programmer, domain-driven-design, working-with-legacy-code |
+| **Systems/Architecture** | ddia-systems, system-design, clean-architecture, release-it, high-perf-browser, team-topologies |
+| **Team/Management** | drive-motivation, high-output-management |
 
 ## Skill File Format
 
@@ -118,15 +118,15 @@ The YAML frontmatter `description` field is critical for skill discovery - it sh
 ```bash
 /plugin marketplace add wondelai/skills
 
-/plugin install product-strategy@wondelai-skills    # Jobs to Be Done, Negotiation, Mom Test
+/plugin install product-strategy@wondelai-skills    # Jobs to Be Done, Negotiation, Mom Test, Monetizing Innovation, Lean Analytics
 /plugin install ux-design@wondelai-skills           # Refactoring UI, iOS HIG, UX Heuristics, Hooked, Improve Retention, Web Typography, Top Design, Design of Everyday Things, Lean UX, Microinteractions, Steve Jobs Design Review
 /plugin install marketing-cro@wondelai-skills       # CRO, StoryBrand, Scorecard Marketing, Contagious, 1-Page Marketing
 /plugin install sales-influence@wondelai-skills     # Influence Psychology, Predictable Revenue, Made to Stick, $100M Offers
 /plugin install product-innovation@wondelai-skills  # Lean Startup, Design Sprint, Design of Everyday Things, Inspired, Continuous Discovery
-/plugin install strategy-growth@wondelai-skills     # Crossing the Chasm, Blue Ocean Strategy, Traction/EOS, Obviously Awesome
-/plugin install team-motivation@wondelai-skills     # Drive (Autonomy, Mastery, Purpose)
-/plugin install code-craftsmanship@wondelai-skills  # Clean Code, Refactoring Patterns, Software Design Philosophy, Pragmatic Programmer, DDD
-/plugin install systems-architecture@wondelai-skills # DDIA, System Design, Clean Architecture, Release It!, High Performance Browser Networking
+/plugin install strategy-growth@wondelai-skills     # Crossing the Chasm, Blue Ocean Strategy, Traction/EOS, Obviously Awesome, Good Strategy Bad Strategy, Cold Start Problem
+/plugin install team-motivation@wondelai-skills     # Drive (Autonomy, Mastery, Purpose), High Output Management
+/plugin install code-craftsmanship@wondelai-skills  # Clean Code, Refactoring Patterns, Software Design Philosophy, Pragmatic Programmer, DDD, Working with Legacy Code
+/plugin install systems-architecture@wondelai-skills # DDIA, System Design, Clean Architecture, Release It!, High Performance Browser Networking, Team Topologies
 ```
 
 ### Via skills.sh

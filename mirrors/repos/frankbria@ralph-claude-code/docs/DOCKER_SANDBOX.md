@@ -33,15 +33,25 @@ ralph_loop.sh ── docker exec ──────────▶  claude -p ".
 
 ## Setup
 
-Docker must be installed and the daemon running. Build the default image:
+Docker must be installed and the daemon running. Pull the official image
+(published to GHCR on release tags — Issue #298) or build it yourself:
 
 ```bash
-# From a source checkout
+# Pull the official image and give it the default name
+docker pull ghcr.io/frankbria/ralph-sandbox:latest
+docker tag ghcr.io/frankbria/ralph-sandbox:latest ralph-sandbox:latest
+
+# Or build locally from a source checkout
 docker build -t ralph-sandbox .
 
 # Or from a global install (install.sh copies the Dockerfile to ~/.ralph)
 docker build -t ralph-sandbox ~/.ralph
 ```
+
+Releases are tagged `ghcr.io/frankbria/ralph-sandbox:<version>` and `:latest`,
+built multi-arch (linux/amd64 + linux/arm64) and smoke-tested (`claude
+--version` as a non-root user) before publishing. You can also point
+`--sandbox-image ghcr.io/frankbria/ralph-sandbox:latest` at it directly.
 
 The default image is `node:20-slim` plus git, jq, python3, and the Claude Code
 CLI, with the base image's non-root `node` user as the default. At runtime the
@@ -59,9 +69,11 @@ writes to the bind-mounted workspace keeps your host ownership and the seeded
 | `--sandbox-cpus NUM` | `2` | CPU limit (decimals allowed, e.g. `1.5`) |
 | `--sandbox-network MODE` | `bridge` | `none`, `bridge`, or `host` |
 
-`e2b`, `daytona`, and `cloudflare` providers are planned (issues #75, #79,
-#80) and currently rejected with a clear error. The sub-flags require a
-provider (either `--sandbox docker` or `SANDBOX_PROVIDER` in `.ralphrc`).
+The `e2b` cloud provider is also available — see
+[E2B_SANDBOX.md](E2B_SANDBOX.md). `daytona` and `cloudflare` are not
+planned (issues #79, #80) and are rejected with a clear error. The sub-flags
+require their provider (either via `--sandbox` or `SANDBOX_PROVIDER` in
+`.ralphrc`).
 
 `.ralphrc` equivalents (CLI flags override):
 
@@ -142,7 +154,7 @@ ralph --sandbox docker --sandbox-image my-ml-sandbox
 | Symptom | Fix |
 |---------|-----|
 | `Docker daemon is not reachable` | Start the Docker service (`sudo systemctl start docker`, or Docker Desktop) |
-| `Sandbox image 'ralph-sandbox:latest' not found` | `docker build -t ralph-sandbox ~/.ralph` (or the repo root) |
+| `Sandbox image 'ralph-sandbox:latest' not found` | `docker pull ghcr.io/frankbria/ralph-sandbox:latest && docker tag ghcr.io/frankbria/ralph-sandbox:latest ralph-sandbox:latest` — or build: `docker build -t ralph-sandbox ~/.ralph` |
 | Claude auth errors inside the container | Export `ANTHROPIC_API_KEY`, or log in on the host first so `~/.claude/.credentials.json` exists |
 | Loop hangs then times out with `--sandbox-network none` | Expected — `none` blocks the Claude API; use `bridge` |
 | Orphaned container after a hard kill (`kill -9`) | `docker ps --filter name=ralph-sandbox` then `docker rm -f <id>`; normal exits and Ctrl+C clean up automatically |

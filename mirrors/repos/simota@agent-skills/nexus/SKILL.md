@@ -144,6 +144,8 @@ Agent disambiguation → `reference/agent-disambiguation.md`
 | Kaizen | `kaizen` | Existing-feature continuous improvement (perf / UX / code-quality / feature-extension). 4-8 agents | See `reference/recipes-detail.md` | `reference/recipes-detail.md`, `reference/inline-recipes.md` |
 | Proactive | `proactive` | `/Nexus` with no arguments — project state scan | `Scan project → recommend` | `reference/proactive-mode.md` |
 | Apex | `apex` | Full-cycle auto-implementation: discovery → spec → parallel design → risk gate → loop → ship. 8-25 agents. **Confirm before launch.** | See `reference/recipes-detail.md` | `reference/recipes-detail.md`, `reference/apex-recipe.md`, `reference/apex-walkthrough.md` |
+| Charter | `charter` | **Repo-wide analysis → self-driving Charter incl. team design + checklists.** Document-first; stops at durable `docs/CHARTER.md` (no execution). Designs **multi-engine orchestration** (Claude Code plan/design + Codex CLI build loops) and §10 checklists (pre-flight / per-package DoD / progress tracker / final delivery). Pair with `enact` to run it. 5-15 agents. | See `reference/recipes-detail.md` | `reference/recipes-detail.md`, `reference/charter-recipe.md` |
+| Enact | `enact` | **Execute a Charter end-to-end** — construct the team from §5 roster, orchestrate §4 work breakdown, verify, ship. **Runs to completion**: drives every package to a terminal state, no mid-run stops except §8 safety red lines (L4/destructive/out-of-scope); announce-and-proceed. Streams progress to an **append-only run log** (`docs/CHARTER.run.log.md`) for audit + `resume`. `enact <path>` / `dry-run` / `resume` / `log=`. 6-30+ agents. | See `reference/recipes-detail.md` | `reference/recipes-detail.md`, `reference/enact-recipe.md` |
 | Goal Setup | `goal` | `/goal` autonomous long-running execution setup. 1-3 agents, no code execution | `Hone → Latch → Scribe? → DELIVER` | `reference/goal-recipe.md` |
 | Essential | `essential` | Must-have feature **verdict + conditional implementation** — converges on THE ONE feature. Subtraction-oriented | See `reference/recipes-detail.md` | `reference/recipes-detail.md`, `reference/inline-recipes.md` |
 | Killer | `killer` | Killer feature **verdict + conditional flagged implementation** via cross-engine triangulation. Dual-engine baseline (Claude + Codex); agy optional | See `reference/recipes-detail.md` | `reference/recipes-detail.md`, `reference/inline-recipes.md` |
@@ -172,6 +174,8 @@ For natural-language input without an explicit subcommand. **Subcommand match al
 | `review`, `check`, `audit` | legacy quality review (`routing-matrix.md`) |
 | `brainstorm`, `riff`, `ideate`, `sounding board` | Riff direct (single-agent) |
 | `apex`, `auto-impl`, `full implementation`, `discovery to launch` | `apex` |
+| `charter`, `instruction document`, `analyze repo and design a team`, `self-driving team charter`, `team operating manual`, `team design spec` | `charter` |
+| `enact`, `run the charter`, `execute the instruction document`, `build team from charter and run`, `orchestrate the charter` | `enact` |
 | `goal`, `/goal setup`, `autonomous loop setup` | `goal` |
 | `essential`, `must-have`, `MVP definition`, `core feature`, `cut scope` | `essential` |
 | `killer`, `killer feature`, `differentiator`, `decisive feature` | `killer` |
@@ -323,7 +327,7 @@ Opus 4.8 requires the four directive fields above (calibrates length to context,
 
 ## Routing Quick Start
 
-Canonical matrix: `reference/routing-matrix.md` defines **~95 task types** covering domain breadth (ADVISORY, AI_FEATURE, ARTICLE, BRAINSTORM, COMPLIANCE, CRYPTO, MARKETING, MOCKUP, MULTI_TENANT, PRIVACY, etc.). The Recipes table above exposes the **most-used 17** as explicit subcommands; the remaining ~78 task types are reachable only via the `classify` (default) flow. Recipe-driven chains (Apex / Summit / Acceptance / Growth-Acceptance / Essential / Killer / Kaizen) are in the Recipes table. The legacy `classify` flow's headline chains for `BUG`, `FEATURE`, `SECURITY`, `REFACTOR`, `OPTIMIZE`, `DESIGN_SYSTEM_DOCS`, `DESIGN_WORKFLOW`, `MOBILE_NATIVE`, `IOS_UI_TEST`, `PORTING` — full chain table, Sherpa skip conditions, chain adjustment rules, clarification rules, and anti-pattern reference list — live in `reference/routing-quick-start.md`.
+Canonical matrix: `reference/routing-matrix.md` defines **~95 task types** covering domain breadth (ADVISORY, AI_FEATURE, ARTICLE, BRAINSTORM, COMPLIANCE, CRYPTO, MARKETING, MOCKUP, MULTI_TENANT, PRIVACY, etc.). The Recipes table above exposes the **most-used 19** as explicit subcommands; the remaining ~78 task types are reachable only via the `classify` (default) flow. Recipe-driven chains (Apex / Charter / Enact / Summit / Acceptance / Growth-Acceptance / Essential / Killer / Kaizen) are in the Recipes table. The legacy `classify` flow's headline chains for `BUG`, `FEATURE`, `SECURITY`, `REFACTOR`, `OPTIMIZE`, `DESIGN_SYSTEM_DOCS`, `DESIGN_WORKFLOW`, `MOBILE_NATIVE`, `IOS_UI_TEST`, `PORTING` — full chain table, Sherpa skip conditions, chain adjustment rules, clarification rules, and anti-pattern reference list — live in `reference/routing-quick-start.md`.
 
 **Chain reference hierarchy (Source of Truth):**
 - `routing-matrix.md` — owns task type → default chain (95 types). **Primary SoT for "which agents fire for task X"**.
@@ -399,6 +403,8 @@ Read only the files that match the current decision point.
 | `reference/official-skill-categories.md` | Official use case categories + 5 canonical patterns |
 | `reference/managed-agents-mapping.md` | Managed Agents / Outcomes / Dreaming / Webhooks mapping + Dynamic Workflows |
 | `reference/apex-recipe.md` | `/nexus apex` — phase contracts, sub-orchestration topology, Risk Gate |
+| `reference/charter-recipe.md` | `/nexus charter` — repo analysis → Charter authoring incl. team design (stops at the document); Charter schema, invocation modes, charter→enact split |
+| `reference/enact-recipe.md` | `/nexus enact` — execute a Charter: team construction from §5 → end-to-end orchestration → verify/ship; Confirm Gate, `dry-run`/`resume` modes |
 | `reference/apex-walkthrough.md` | Human-facing apex — Mermaid flowcharts, storyboards, failure paths |
 | `reference/{goal,acceptance,growth-acceptance,summit,transmute,venture,package,podium}-recipe.md` | Per-Recipe specs — phase contracts, chain templates, cost profiles |
 | `_common/PROOF_CARRYING.md` | `/nexus acceptance` Tier policy + G1-G10. **Mandatory before `acceptance`.** |
@@ -408,7 +414,7 @@ Read only the files that match the current decision point.
 | `reference/pack-subcommand.md` | `/nexus pack` — skill profile switch, settings.json edit, backup, diff, confirm |
 | `_common/SKILL_PACKS.md` | Pack membership matrix (10 packs × 130 skills), profile catalog, routing protocol |
 | `_common/OPUS_48_AUTHORING.md` | **Claude Code hub** — P4 / P6 / P7 spawn prompts, output envelopes, effort |
-| `reference/hub-authoring.md` § Claude Code hub — Fable 5 | **Hub runs on `claude-fable-5`** — F-principles: lighter spawn prompts, `high` default effort, longer-turn / async harness, progress grounding, no-reasoning-reproduction rule |
+| `reference/hub-authoring.md` § Claude Code hub — Fable 5 | **Hub runs on `claude-fable-5`** — F-principles: lighter spawn prompts, `high` default effort, longer-turn / async harness, progress grounding, no-reasoning-reproduction rule, verbatim `send_to_user` tool for async runs |
 | `_common/CODEX_ORCHESTRATION.md` | **Codex CLI hub** — C1 spawn-depth, C2 sync fan-out, C3 effort-by-model, C6 checkpoint-resume |
 | `_common/IMAGE_INPUT.md` | Routing request carries an image — five-stage pipeline at CLASSIFY |
 

@@ -668,15 +668,19 @@ CREATE TABLE agent_groups (
 );
 
 -- Platform groups/channels (WhatsApp group, Slack channel, Discord channel, email thread, etc.)
+-- One row per chat PER ADAPTER INSTANCE. instance defaults to channel_type
+-- (the "default instance"), so single-instance installs never see it.
 CREATE TABLE messaging_groups (
   id                     TEXT PRIMARY KEY,
   channel_type           TEXT NOT NULL,     -- 'whatsapp', 'slack', 'discord', 'telegram', 'email'
   platform_id            TEXT NOT NULL,     -- platform-specific ID (JID, channel ID, etc.)
+  instance               TEXT NOT NULL,     -- adapter-instance name; default = channel_type
   name                   TEXT,
   is_group               INTEGER DEFAULT 0,
   unknown_sender_policy  TEXT NOT NULL DEFAULT 'strict',  -- 'strict' | 'request_approval' | 'public'
   created_at             TEXT NOT NULL,
-  UNIQUE(channel_type, platform_id)
+  denied_at              TEXT,
+  UNIQUE(channel_type, platform_id, instance)
 );
 
 -- Users (messaging platform identities, namespaced "<channel_type>:<handle>")

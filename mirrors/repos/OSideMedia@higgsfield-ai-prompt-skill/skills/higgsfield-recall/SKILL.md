@@ -169,6 +169,40 @@ Before finalizing any prompt, check:
 
 ---
 
+## Log the Generation Result — One Question, One Command
+
+Every generation attempt belongs in the **generation ledger**
+(`../../db/ledger/` — kept AND rejected; the denominator is what makes
+takes-per-kept ratios possible). The write path is agent-side and obeys the
+**5-second rule**: at most one short question, then the agent runs one
+command. The human never formats JSON, never fills a form.
+
+**When the user reports a generation result** (pastes a link, says "that one
+worked", "trash", "the face drifted again"):
+
+1. If the verdict and reason are already clear from what they said, **ask
+   nothing** — log it directly.
+2. Otherwise ask **exactly one question**: *"keep or reject — what failed?"*
+   If they don't answer, drop it. **Never ask twice, never nag.**
+3. Write the row yourself:
+
+```bash
+python3 ../../higgsfield_memory.py log-gen <project> \
+  --model seedance_2_0 --tags dialogue-cu,two-char \
+  --outcome rejected --reason extra-cuts --credits 160
+```
+
+- `--tags` and `--reason` come from the controlled vocabularies in
+  `../../db/ledger/README.md` — map the user's words to the nearest vocab
+  value (`"face drifted"` → `identity-drift`); never invent new values.
+- Add `--draft` for 480p exploration rolls (excluded from headline ratios).
+- Wrong verdict logged? `python3 ../../higgsfield_memory.py amend-gen
+  <id> outcome=kept` — corrections are superseding rows, history stays.
+- Project name: the user's production name if one is established in the
+  conversation, else `default`.
+
+---
+
 ## Database Status Check
 
 To see current knowledge base size:

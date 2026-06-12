@@ -14,6 +14,7 @@ Kreuzberg provides async/sync APIs, text chunking, language detection, keyword e
 - [Architecture](https://docs.kreuzberg.dev/concepts/architecture/): Rust core with polyglot bindings architecture
 - [Extraction Pipeline](https://docs.kreuzberg.dev/concepts/extraction-pipeline/): How document extraction works
 - [Plugin System](https://docs.kreuzberg.dev/concepts/plugin-system/): Extend Kreuzberg with custom extractors and backends
+- [Reranking](https://docs.kreuzberg.dev/concepts/reranking/): Query-time document reranking with cross-encoders
 - [MIME Detection](https://docs.kreuzberg.dev/guides/extraction/#mime-type-detection): Automatic file format detection
 - [Performance](https://docs.kreuzberg.dev/guides/development/#performance): Performance characteristics and optimization
 
@@ -28,6 +29,7 @@ Kreuzberg provides async/sync APIs, text chunking, language detection, keyword e
 - [Keyword Extraction](https://docs.kreuzberg.dev/guides/keywords/): YAKE and RAKE keyword extraction
 - [Advanced Features](https://docs.kreuzberg.dev/guides/advanced/): Advanced usage patterns
 - [Named-Entity Recognition](https://docs.kreuzberg.dev/guides/ner/): Detect people, organisations, locations, and caller-supplied zero-shot labels via gline-rs or LLM
+- [Reranking](https://docs.kreuzberg.dev/guides/reranking/): Cross-encoder document reranking for RAG retrieval
 - [Redaction & Anonymisation](https://docs.kreuzberg.dev/guides/redaction/): Strip PII from extracted text with the pattern engine plus optional NER backend
 - [Document Summarisation](https://docs.kreuzberg.dev/guides/summarization/): Extractive TextRank (local) or LLM abstractive summaries
 - [Document Translation](https://docs.kreuzberg.dev/guides/translation/): Translate content into a BCP-47 target language via any liter-llm provider

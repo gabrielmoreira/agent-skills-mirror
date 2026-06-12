@@ -155,6 +155,7 @@ Ralph is an implementation of the Geoffrey Huntley's technique for Claude Code t
 - **Clean Uninstall** - Dedicated uninstall script for complete removal
 - **Live Streaming Output** - Real-time visibility into Claude Code execution with `--live` flag
 - **Docker Sandbox Execution** - Run Claude Code in an isolated container with `--sandbox docker` (resource limits, network policy, secure credential handoff)
+- **E2B Cloud Sandbox Execution** - Run Claude Code in an E2B cloud sandbox with `--sandbox e2b` (file sync, session recovery, cost tracking with `--sandbox-max-cost`)
 
 ## Quick Start
 
@@ -606,7 +607,11 @@ Run Claude Code inside an isolated Docker container instead of directly on your 
 ### Setup
 
 ```bash
-# One time: build the default sandbox image (from a source checkout, or ~/.ralph after install)
+# One time: pull the official image (published on release tags)...
+docker pull ghcr.io/frankbria/ralph-sandbox:latest
+docker tag ghcr.io/frankbria/ralph-sandbox:latest ralph-sandbox:latest
+
+# ...or build it yourself (from a source checkout, or ~/.ralph after install)
 docker build -t ralph-sandbox .
 ```
 
@@ -629,7 +634,36 @@ Equivalent `.ralphrc` settings: `SANDBOX_PROVIDER`, `SANDBOX_DOCKER_IMAGE`, `SAN
 - Otherwise, your `~/.claude/.credentials.json` is **copied** into a container-scoped directory mounted as the container's home — the container never touches your real `~/.claude`
 - Both are removed by the automatic cleanup on exit (including Ctrl+C)
 
-A persistent container serves all loop iterations (Claude session state survives between loops); it is stopped and removed when the loop exits. If sandbox setup fails, Ralph refuses to fall back to host execution. E2B, Daytona, and Cloudflare cloud sandboxes are planned (#75, #79, #80). See [docs/DOCKER_SANDBOX.md](docs/DOCKER_SANDBOX.md) for details.
+A persistent container serves all loop iterations (Claude session state survives between loops); it is stopped and removed when the loop exits. If sandbox setup fails, Ralph refuses to fall back to host execution. See [docs/DOCKER_SANDBOX.md](docs/DOCKER_SANDBOX.md) for details.
+
+## E2B Cloud Sandbox Execution
+
+Run Claude Code inside an [E2B](https://e2b.dev) cloud sandbox instead of on your machine (Issue #75). Like the Docker provider, Ralph's loop, rate limiting, and monitoring stay host-side — but since the cloud has no bind mount, the project is uploaded once at startup and changed files are downloaded back after every iteration.
+
+### Setup
+
+```bash
+pip install e2b                       # official E2B Python SDK (the transport)
+export E2B_API_KEY="e2b_..."          # or: store in ~/.ralph/e2b_api_key (chmod 600)
+```
+
+### Usage
+
+```bash
+ralph --sandbox e2b                                   # base template; claude CLI auto-bootstrapped
+ralph --sandbox e2b --sandbox-template my-template    # custom template with claude preinstalled
+ralph --sandbox e2b --sandbox-timeout 7200            # 2h session timeout (expired sandboxes auto-recreate)
+ralph --sandbox e2b --sandbox-max-cost 5.00 --sandbox-cost-alert 2.00   # budget controls
+ralph --sandbox e2b --sandbox-keep-alive              # leave it running; reuse with --sandbox-id <id>
+ralph --monitor --sandbox e2b                         # works with tmux monitoring (cost shown in the dashboard)
+
+# Sync filtering (Issue #76): control what uploads/downloads
+ralph --sandbox e2b --sync-include "src/**,tests/**,*.md" --sync-exclude "*.log,node_modules"
+```
+
+Equivalent `.ralphrc` settings: `SANDBOX_E2B_TEMPLATE`, `SANDBOX_E2B_TIMEOUT`, `SANDBOX_E2B_KEEP_ALIVE`, `SANDBOX_E2B_MAX_COST`, `SANDBOX_E2B_COST_ALERT`, `SANDBOX_E2B_COST_PER_HOUR` (CLI flags override; the API key itself never goes in `.ralphrc`).
+
+Claude auth reaches the sandbox via `ANTHROPIC_API_KEY` (passed as a sandbox env var) or a copy of your host `~/.claude/.credentials.json`. Cost is estimated as cumulative runtime × `SANDBOX_E2B_COST_PER_HOUR` (cost accrues across sandbox replacements, so `--sandbox-max-cost` spans the whole run) and surfaced in `status.json`, the monitor, and `.ralph/logs/e2b_cost.log`. File sync includes deletion propagation — files removed or renamed in the sandbox are deleted from the host after each iteration. What syncs is filterable: `--sync-include`/`--sync-exclude` patterns, a `.ralphignore` file (gitignore-like subset), and a large-file policy (`SYNC_MAX_FILE_SIZE`/`SYNC_LARGE_FILE_ACTION`); upload and download log file-count + size summaries. Note: commits made *inside* the sandbox are not synced back — changes arrive as uncommitted modifications on the host (`.git` is excluded from sync in both directions). Docker and E2B are the supported providers; additional providers (Daytona, Cloudflare) are not planned (#79, #80). See [docs/E2B_SANDBOX.md](docs/E2B_SANDBOX.md) and [docs/SANDBOX_SYNC.md](docs/SANDBOX_SYNC.md) for details.
 
 ## Configuration
 
